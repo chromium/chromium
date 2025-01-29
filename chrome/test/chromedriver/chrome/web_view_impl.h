@@ -216,7 +216,7 @@ class WebViewImpl : public WebView {
   void SetFrame(const std::string& new_frame_id) override;
 
   const WebViewImpl* GetParent() const;
-  const WebViewImpl* GetTab() const;
+  const WebViewImpl* GetTab();
   std::string GetTabId() override;
   Status GetActivePage(WebView** web_view) override;
   bool Lock();

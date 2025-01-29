@@ -635,7 +635,7 @@ std::string WebViewImpl::GetTabId() {
   return GetTab()->id_;
 }
 
-const WebViewImpl* WebViewImpl::GetTab() const {
+const WebViewImpl* WebViewImpl::GetTab() {
   const WebViewImpl* root_view = this;
   while (root_view->parent_ != nullptr) {
     root_view = root_view->parent_;
@@ -1641,11 +1641,30 @@ Status WebViewImpl::WaitForPendingNavigations(const std::string& frame_id,
     keep_waiting = status.code() == kNoSuchExecutionContext ||
                    status.code() == kAbortedByNavigation;
   }
-  // if (status.code() == kTargetDetached) {
-  //   // TODO: Verify if this is okay to return Ok on target detached.
-  //   // probably need to check that it's part of an activation here.
-  //   return status;
-  // }
+
+  if (status.code() == kTargetDetached) {
+    // If this is a page being detached during an MPArch activation, we want to
+    // wait until the tab has acquired a new page and that has completed its
+    // navigation, before we call this original navigation as complete.
+    WebViewImpl* tab = const_cast<WebViewImpl*>(GetTab());
+    status = tab->WaitForPendingActivePage(timeout);
+    if (status.IsError()) {
+      return status;
+    }
+
+    WebView* maybe_new_page = nullptr;
+    status = tab->GetActivePage(&maybe_new_page);
+    if (status.IsError()) {
+      return status;
+    }
+
+    status = maybe_new_page->WaitForPendingNavigations("", timeout,
+                                                       stop_load_on_timeout);
+    if (status.IsError()) {
+      return status;
+    }
+  }
+
   if (status.code() == kTimeout && stop_load_on_timeout) {
     VLOG(0) << "Timed out. Stopping navigation...";
     navigation_tracker_->set_timed_out(true);
@@ -2109,11 +2128,6 @@ Status WebViewImpl::IsNotPendingNavigation(const std::string& frame_id,
   Status status =
       navigation_tracker_->IsPendingNavigation(timeout, &is_pending);
   if (status.IsError()) {
-    if (status.code() == kTargetDetached) {
-      // Special case handling: During MPArch activation, the frame is detached.
-      *is_not_pending = !is_pending;
-      return Status(kOk);
-    }
     return status;
   }
   // An alert may block the pending navigation.
