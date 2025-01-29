@@ -13,6 +13,7 @@
 namespace blink {
 
 class GridSizingTrackCollection;
+struct GridItemData;
 
 class CORE_EXPORT MasonryLayoutAlgorithm
     : public LayoutAlgorithm<MasonryNode, BoxFragmentBuilder, BlockBreakToken> {
@@ -28,6 +29,14 @@ class CORE_EXPORT MasonryLayoutAlgorithm
   GridSizingTrackCollection BuildGridAxisTracks() const;
 
   wtf_size_t ComputeAutomaticRepetitions() const;
+
+  ConstraintSpace CreateConstraintSpace(
+      const GridItemData& masonry_item,
+      const LogicalSize& containing_size,
+      LayoutResultCacheSlot result_cache_slot) const;
+
+  ConstraintSpace CreateConstraintSpaceForMeasure(
+      const GridItemData& masonry_item) const;
 };
 
 }  // namespace blink
