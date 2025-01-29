@@ -245,6 +245,10 @@ bool IsErrorMessage(const content::WebContentsConsoleObserver::Message& msg) {
   return msg.log_level == blink::mojom::ConsoleMessageLevel::kError;
 }
 
+bool IsInfoMessage(const content::WebContentsConsoleObserver::Message& msg) {
+  return msg.log_level == blink::mojom::ConsoleMessageLevel::kInfo;
+}
+
 std::string ReplacePortInString(std::string str, uint16_t port) {
   const std::string kToReplace("{{port}}");
   size_t index = str.find(kToReplace);
@@ -7038,7 +7042,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
   url::Origin shared_storage_origin = url::Origin::Create(main_url);
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
-  console_observer.SetFilter(base::BindRepeating(IsErrorMessage));
+  console_observer.SetFilter(base::BindRepeating(IsInfoMessage));
 
   EXPECT_TRUE(ExecJs(shell(), R"(
       sharedStorage.worklet.addModule('shared_storage/simple_module.js');

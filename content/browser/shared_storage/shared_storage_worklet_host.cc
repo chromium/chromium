@@ -1420,7 +1420,7 @@ void SharedStorageWorkletHost::OnRunURLSelectionOperationOnWorkletFinished(
         devtools_instrumentation::LogWorkletMessage(
             static_cast<RenderFrameHostImpl&>(
                 document_service_->render_frame_host()),
-            blink::mojom::ConsoleMessageLevel::kError,
+            blink::mojom::ConsoleMessageLevel::kInfo,
             "Insufficient budget for selectURL().");
       } else if (!script_execution_succeeded) {
         devtools_instrumentation::LogWorkletMessage(
