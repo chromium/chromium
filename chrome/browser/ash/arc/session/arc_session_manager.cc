@@ -939,6 +939,7 @@ void ArcSessionManager::Shutdown() {
   fast_app_reinstall_starter_.reset();
   arc_ui_availability_reporter_.reset();
   arc_dlc_install_notification_manager_.reset();
+  hardware_checker_.reset();
   profile_ = nullptr;
   state_ = State::NOT_INITIALIZED;
   if (scoped_opt_in_tracker_) {
@@ -948,6 +949,11 @@ void ArcSessionManager::Shutdown() {
   for (auto& observer : observer_list_) {
     observer.OnShutdown();
   }
+}
+
+void ArcSessionManager::SetHardwareCheckerForTesting(
+    std::unique_ptr<ArcRevenHardwareChecker> hardware_checker) {
+  hardware_checker_ = std::move(hardware_checker);
 }
 
 void ArcSessionManager::ShutdownSession() {
@@ -1994,6 +2000,11 @@ void ArcSessionManager::ExpandPropertyFilesAndReadSalt() {
   }
 
   if (NeedRevenDLC()) {
+    // Check if a mock hardware checker has already been created for testing.
+    // If not, create a new one to initialize the hardware_checker_ member.
+    if (!hardware_checker_) {
+      hardware_checker_ = std::make_unique<arc::ArcRevenHardwareChecker>();
+    }
     // Check if the Reven device is compatible for ARC.
     hardware_checker_->IsRevenDeviceCompatibleForArc(
         base::BindOnce(&ArcSessionManager::OnEnableArcOnReven,
