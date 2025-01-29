@@ -132,10 +132,6 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
     Browser* browser,
     ExtensionsMenuHandler* menu_handler)
     : browser_(browser), menu_handler_(menu_handler) {
-  // This is set so that the extensions menu doesn't fall outside the monitor in
-  // a maximized window in 1024x768. See https://crbug.com/1096630.
-  // TODO(crbug.com/40891805): Consider making the height dynamic.
-  constexpr int kMaxExtensionButtonsHeightDp = 448;
   views::FlexSpecification stretch_specification =
       views::FlexSpecification(views::LayoutOrientation::kHorizontal,
                                views::MinimumFlexSizeRule::kScaleToZero,
@@ -178,85 +174,13 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
               /*margins=*/gfx::Insets::VH(control_vertical_spacing,
                                           dialog_insets.left()),
               stretch_specification),
-          // Contents.
-          views::Builder<views::ScrollView>()
-              .ClipHeightTo(0, kMaxExtensionButtonsHeightDp)
-              .SetDrawOverflowIndicator(false)
-              .SetHorizontalScrollBarMode(
-                  views::ScrollView::ScrollBarMode::kDisabled)
-              .SetProperty(views::kMarginsKey,
-                           gfx::Insets::VH(control_vertical_spacing, 0))
-              .SetContents(
-                  views::Builder<views::BoxLayoutView>()
-                      .SetOrientation(views::BoxLayout::Orientation::kVertical)
-                      // Horizontal dialog margins are added inside the scroll
-                      // view contents to have the scroll bar by the dialog
-                      // border.
-                      .SetInsideBorderInsets(
-                          gfx::Insets::VH(0, dialog_insets.left()))
-                      .AddChildren(
-                          // Reload section.
-                          views::Builder<SectionContainer>()
-                              .CopyAddressTo(&reload_section_)
-                              .SetVisible(false)
-                              .SetCrossAxisAlignment(
-                                  views::BoxLayout::CrossAxisAlignment::kCenter)
-                              .AddChildren(
-                                  views::Builder<views::Label>()
-                                      .SetText(l10n_util::GetStringUTF16(
-                                          IDS_EXTENSIONS_MENU_MESSAGE_SECTION_RELOAD_CONTAINER_DESCRIPTION_TEXT))
-                                      .SetTextContext(
-                                          ChromeTextContext::
-                                              CONTEXT_DIALOG_BODY_TEXT_SMALL)
-                                      .SetTextStyle(views::style::STYLE_BODY_3)
-                                      .SetEnabledColorId(
-                                          kColorExtensionsMenuSecondaryText)
-                                      .SetMultiLine(true),
-                                  views::Builder<views::MdTextButton>()
-                                      .SetCallback(base::BindRepeating(
-                                          &ExtensionsMenuHandler::
-                                              OnReloadPageButtonClicked,
-                                          base::Unretained(menu_handler_)))
-                                      .SetBgColorIdOverride(
-                                          kColorExtensionsMenuContainerBackground)
-                                      .SetProperty(views::kMarginsKey,
-                                                   gfx::Insets::TLBR(
-                                                       control_vertical_spacing,
-                                                       0, 0, 0))
-                                      .SetText(l10n_util::GetStringUTF16(
-                                          IDS_EXTENSIONS_MENU_MESSAGE_SECTION_RELOAD_CONTAINER_BUTTON_TEXT))
-                                      .SetTooltipText(l10n_util::GetStringUTF16(
-                                          IDS_EXTENSIONS_MENU_MESSAGE_SECTION_RELOAD_CONTAINER_BUTTON_TOOLTIP))),
-                          // Extensions requests section.
-                          views::Builder<SectionContainer>()
-                              .CopyAddressTo(&requests_section_)
-                              .SetVisible(false)
-                              .AddChildren(
-                                  // Header.
-                                  views::Builder<views::Label>()
-                                      .SetText(l10n_util::GetStringUTF16(
-                                          IDS_EXTENSIONS_MENU_REQUESTS_ACCESS_SECTION_TITLE))
-                                      .SetTextContext(
-                                          ChromeTextContext::
-                                              CONTEXT_DIALOG_BODY_TEXT_SMALL)
-                                      .SetEnabledColorId(
-                                          kColorExtensionsMenuText)
-                                      .SetTextStyle(
-                                          views::style::STYLE_BODY_2_EMPHASIS)
-                                      .SetHorizontalAlignment(gfx::ALIGN_LEFT),
-                                  // Empty container for the requests entries.
-                                  views::Builder<views::BoxLayoutView>()
-                                      .CopyAddressTo(&requests_entries_view_)
-                                      .SetOrientation(
-                                          views::BoxLayout::Orientation::
-                                              kVertical)),
-                          // Menu items section.
-                          views::Builder<SectionContainer>()
-                              .CopyAddressTo(&menu_items_)
-                              .SetProperty(
-                                  views::kMarginsKey,
-                                  gfx::Insets::TLBR(control_vertical_spacing, 0,
-                                                    0, 0)))),
+          CreateContentsBuilder(
+              /*scroll_margins=*/gfx::Insets::VH(control_vertical_spacing, 0),
+              /*contents_margins=*/gfx::Insets::VH(0, dialog_insets.left()),
+              /*reload_button_margins=*/
+              gfx::Insets::TLBR(control_vertical_spacing, 0, 0, 0),
+              /*menu_items_margins=*/
+              gfx::Insets::TLBR(control_vertical_spacing, 0, 0, 0)),
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
           CreateWebstoreButtonBuilder(),
 #endif
@@ -565,6 +489,86 @@ ExtensionsMenuMainPageView::CreateSiteSettingsBuilder(
                   base::BindRepeating(
                       &ExtensionsMenuHandler::OnSiteSettingsToggleButtonPressed,
                       base::Unretained(menu_handler_)))));
+}
+
+views::Builder<views::ScrollView>
+ExtensionsMenuMainPageView::CreateContentsBuilder(
+    gfx::Insets scroll_margins,
+    gfx::Insets contents_margins,
+    gfx::Insets reload_button_margins,
+    gfx::Insets menu_items_margins) {
+  // This is set so that the extensions menu doesn't fall outside the monitor in
+  // a maximized window in 1024x768. See https://crbug.com/1096630.
+  // TODO(crbug.com/40891805): Consider making the height dynamic.
+  constexpr int kMaxExtensionButtonsHeightDp = 448;
+
+  return views::Builder<views::ScrollView>()
+      .ClipHeightTo(0, kMaxExtensionButtonsHeightDp)
+      .SetDrawOverflowIndicator(false)
+      .SetHorizontalScrollBarMode(views::ScrollView::ScrollBarMode::kDisabled)
+      .SetProperty(views::kMarginsKey, scroll_margins)
+      .SetContents(
+          views::Builder<views::BoxLayoutView>()
+              .SetOrientation(views::BoxLayout::Orientation::kVertical)
+              // Horizontal dialog margins are added inside the scroll
+              // view contents to have the scroll bar by the dialog
+              // border.
+              .SetInsideBorderInsets(contents_margins)
+              .AddChildren(
+                  // Reload section.
+                  views::Builder<SectionContainer>()
+                      .CopyAddressTo(&reload_section_)
+                      .SetVisible(false)
+                      .SetCrossAxisAlignment(
+                          views::BoxLayout::CrossAxisAlignment::kCenter)
+                      .AddChildren(
+                          views::Builder<views::Label>()
+                              .SetText(l10n_util::GetStringUTF16(
+                                  IDS_EXTENSIONS_MENU_MESSAGE_SECTION_RELOAD_CONTAINER_DESCRIPTION_TEXT))
+                              .SetTextContext(
+                                  ChromeTextContext::
+                                      CONTEXT_DIALOG_BODY_TEXT_SMALL)
+                              .SetTextStyle(views::style::STYLE_BODY_3)
+                              .SetEnabledColorId(
+                                  kColorExtensionsMenuSecondaryText)
+                              .SetMultiLine(true),
+                          views::Builder<views::MdTextButton>()
+                              .SetCallback(base::BindRepeating(
+                                  &ExtensionsMenuHandler::
+                                      OnReloadPageButtonClicked,
+                                  base::Unretained(menu_handler_)))
+                              .SetBgColorIdOverride(
+                                  kColorExtensionsMenuContainerBackground)
+                              .SetProperty(views::kMarginsKey,
+                                           reload_button_margins)
+                              .SetText(l10n_util::GetStringUTF16(
+                                  IDS_EXTENSIONS_MENU_MESSAGE_SECTION_RELOAD_CONTAINER_BUTTON_TEXT))
+                              .SetTooltipText(l10n_util::GetStringUTF16(
+                                  IDS_EXTENSIONS_MENU_MESSAGE_SECTION_RELOAD_CONTAINER_BUTTON_TOOLTIP))),
+                  // Access requests section.
+                  views::Builder<SectionContainer>()
+                      .CopyAddressTo(&requests_section_)
+                      .SetVisible(false)
+                      .AddChildren(
+                          // Header.
+                          views::Builder<views::Label>()
+                              .SetText(l10n_util::GetStringUTF16(
+                                  IDS_EXTENSIONS_MENU_REQUESTS_ACCESS_SECTION_TITLE))
+                              .SetTextContext(
+                                  ChromeTextContext::
+                                      CONTEXT_DIALOG_BODY_TEXT_SMALL)
+                              .SetEnabledColorId(kColorExtensionsMenuText)
+                              .SetTextStyle(views::style::STYLE_BODY_2_EMPHASIS)
+                              .SetHorizontalAlignment(gfx::ALIGN_LEFT),
+                          // Empty container for the requests entries.
+                          views::Builder<views::BoxLayoutView>()
+                              .CopyAddressTo(&requests_entries_view_)
+                              .SetOrientation(
+                                  views::BoxLayout::Orientation::kVertical)),
+                  // Menu items section.
+                  views::Builder<SectionContainer>()
+                      .CopyAddressTo(&menu_items_)
+                      .SetProperty(views::kMarginsKey, menu_items_margins)));
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)

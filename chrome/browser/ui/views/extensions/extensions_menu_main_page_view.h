@@ -126,6 +126,14 @@ class ExtensionsMenuMainPageView : public views::View {
       gfx::Insets margins,
       views::FlexSpecification);
 
+  // Returns the contents builder, which contains the reload section, the access
+  // requests section and the menu items section on a scrollable view.
+  [[nodiscard]] views::Builder<views::ScrollView> CreateContentsBuilder(
+      gfx::Insets scroll_margins,
+      gfx::Insets contents_margins,
+      gfx::Insets reload_button_margins,
+      gfx::Insets menu_items_margins);
+
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Returns the webstore button builder.
   [[nodiscard]] views::Builder<HoverButton> CreateWebstoreButtonBuilder();
