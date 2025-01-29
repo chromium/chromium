@@ -283,6 +283,11 @@ void WaylandConnection::SetShutdownCb(base::OnceCallback<void()> shutdown_cb) {
   event_source()->SetShutdownCb(std::move(shutdown_cb));
 }
 
+void WaylandConnection::SetUserInputTaskRunner(
+    scoped_refptr<base::SingleThreadTaskRunner> user_input_task_runner) {
+  user_input_task_runner_ = std::move(user_input_task_runner);
+}
+
 void WaylandConnection::SetPlatformCursor(wl_cursor* cursor_data,
                                           int buffer_scale) {
   if (!cursor_)

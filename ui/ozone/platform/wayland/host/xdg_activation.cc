@@ -105,15 +105,17 @@ void XdgActivation::Activate(wl_surface* surface,
 
 void XdgActivation::RequestNewToken(
     base::nix::XdgActivationTokenCallback callback) const {
-  if (!task_runner_->RunsTasksInCurrentSequence()) {
+  auto task_runner = connection_->user_input_task_runner();
+  CHECK(task_runner);
+  if (!task_runner->RunsTasksInCurrentSequence()) {
     // This is not guaranteed to be called from the UI thread always.
     // So post a task to avoid race conditions if the request queue is accessed
     // simultaneously from requests and completion callbacks and handle the case
     // where the call may be from a non-sequenced task.
-    task_runner_->PostTask(FROM_HERE,
-                           base::BindOnce(&XdgActivation::RequestNewToken,
-                                          weak_ptr_factory_.GetMutableWeakPtr(),
-                                          std::move(callback)));
+    task_runner->PostTask(FROM_HERE,
+                          base::BindOnce(&XdgActivation::RequestNewToken,
+                                         weak_ptr_factory_.GetMutableWeakPtr(),
+                                         std::move(callback)));
     return;
   }
   constexpr size_t kMaxQueueSize = 100;

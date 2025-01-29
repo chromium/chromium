@@ -51,6 +51,8 @@ TEST_F(XdgActivationTest, RequestNewToken) {
 
   // When window is shown, it automatically gets keyboard focus. Reset it
   connection_->window_manager()->SetKeyboardFocusedWindow(nullptr);
+  connection_->SetUserInputTaskRunner(
+      task_environment_.GetMainThreadTaskRunner());
 
   auto surface_id1 = window1->root_surface()->get_surface_id();
   auto surface_id2 = window2->root_surface()->get_surface_id();
@@ -133,6 +135,8 @@ TEST_F(XdgActivationTest, RequestNewToken) {
 // empty token instead of adding them to the queue for sending to the server
 // later.
 TEST_F(XdgActivationTest, RequestNewToken_TooManyRequests) {
+  connection_->SetUserInputTaskRunner(
+      task_environment_.GetMainThreadTaskRunner());
   // The first 100 requests should just be queued.
   for (int i = 0; i < 100; ++i) {
     connection_->xdg_activation()->RequestNewToken(
