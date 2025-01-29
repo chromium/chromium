@@ -166,9 +166,7 @@ Node* RetargetInput(Node* node) {
       possible_select = NodeTraversal::Parent(*node);
     }
     if (auto* select = DynamicTo<HTMLSelectElement>(possible_select)) {
-      if (select->IsAppearanceBaseButton(
-              HTMLSelectElement::StyleUpdateBehavior::kDontUpdateStyle) &&
-          node == select->SlottedButton()) {
+      if (select->IsAppearanceBaseButton() && node == select->SlottedButton()) {
         return select;
       }
     }
