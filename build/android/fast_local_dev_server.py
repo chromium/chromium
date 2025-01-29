@@ -250,7 +250,8 @@ class BuildManager:
   def open_tty(cls, tty_path):
     # Do not open the same tty multiple times. Use st_ino and st_dev to compare
     # file descriptors.
-    st = os.stat(tty_path)
+    tty = open(tty_path, 'wt')
+    st = os.stat(tty.fileno())
     tty_key = (st.st_ino, st.st_dev)
     with cls._lock:
       # Dedupes ttys
@@ -258,7 +259,9 @@ class BuildManager:
         # TTYs are kept open for the lifetime of the server so that broadcast
         # messages (e.g. uncaught exceptions) can be sent to them even if they
         # are not currently building anything.
-        cls._cached_ttys[tty_key] = open(tty_path, 'wt')
+        cls._cached_ttys[tty_key] = tty
+      else:
+        tty.close()
       return cls._cached_ttys[tty_key]
 
   @classmethod
