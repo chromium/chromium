@@ -1925,8 +1925,7 @@ class InterestGroupAuction::BuyerHelper
           server_filtered_pagg_requests_reserved,
       std::map<std::string, PrivateAggregationRequests>
           server_filtered_pagg_requests_non_reserved,
-      auction_worklet::mojom::PrivateAggregationRequestPtr
-          non_kanon_private_aggregation_request,
+      PrivateAggregationRequests non_kanon_private_aggregation_requests,
       std::map<BiddingAndAuctionResponse::DebugReportKey, std::optional<GURL>>
           component_win_debugging_only_reports,
       std::map<url::Origin, std::vector<GURL>>
@@ -2032,7 +2031,8 @@ class InterestGroupAuction::BuyerHelper
         std::move(server_filtered_pagg_requests_reserved);
     bid_state->server_filtered_pagg_requests_non_reserved =
         std::move(server_filtered_pagg_requests_non_reserved);
-    if (non_kanon_private_aggregation_request) {
+    for (auto& non_kanon_private_aggregation_request :
+         non_kanon_private_aggregation_requests) {
       bid_state->non_kanon_private_aggregation_requests.emplace_back(
           std::move(non_kanon_private_aggregation_request));
     }
@@ -6743,7 +6743,7 @@ InterestGroupAuction::CreateGhostBidFromServerResponse() {
       /*server_filtered_pagg_requests_reserved=*/{},
       /*server_filtered_pagg_requests_non_reserved=*/{},
       std::move(saved_response_->k_anon_ghost_winner
-                    ->non_kanon_private_aggregation_request),
+                    ->non_kanon_private_aggregation_requests),
       /*component_win_debugging_only_reports=*/{},
       /*server_filtered_debugging_only_reports=*/{});
 }

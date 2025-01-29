@@ -17742,10 +17742,12 @@ TEST_P(AdAuctionServiceImplBAndAKAnonEnabledTest,
                       .Set("interestGroupIndex", base::Value(win_idx))
                       .Set("owner", base::Value("https://a.test/"))
                       .Set("ghostWinnerPrivateAggregationSignals",
-                           base::Value::Dict()
-                               .Set("bucket", base::Value(std::vector<uint8_t>{
-                                                  0x04, 0x01}))
-                               .Set("value", base::Value(4))))))));
+                           base::Value::List().Append(base::Value(
+                               base::Value::Dict()
+                                   .Set("bucket",
+                                        base::Value(
+                                            std::vector<uint8_t>{0x04, 0x01}))
+                                   .Set("value", base::Value(4))))))))));
   std::string unframed_response;
   ASSERT_TRUE(compression::GzipCompress(
       auction_worklet::test::ToCborVector(response_value), &unframed_response));
