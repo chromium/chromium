@@ -30,6 +30,7 @@ namespace glic {
 DECLARE_CUSTOM_ELEMENT_EVENT_TYPE(kGlicWidgetAttached);
 
 class GlicView;
+class WebUIContentsContainer;
 class GlicWindowResizeAnimation;
 
 // This class owns and manages the glic window. This class has the same lifetime
@@ -287,8 +288,7 @@ class GlicWindowController : public views::WidgetObserver {
   const raw_ptr<Profile> profile_;
   // Keep profile alive as long as the glic web contents. This object should be
   // destroyed when the profile needs to be destroyed.
-  class ContentsAndProfileKeepAlive;
-  std::unique_ptr<ContentsAndProfileKeepAlive> contents_;
+  std::unique_ptr<WebUIContentsContainer> contents_;
 
   // Contains the glic webview. In the attached state the parent is set to a
   // browser window. In the detached state the parent is set to holder_widget_.
