@@ -1125,14 +1125,26 @@ bool HTMLSelectElement::IsInDialogMode() const {
 void HTMLSelectElement::IncreaseContentModelViolationCount() {
   CHECK(RuntimeEnabledFeatures::CustomizableSelectEnabled());
   DCHECK(IsAppearanceBaseButton());
+  bool dialog_mode_changed = !content_model_violations_count_;
   ++content_model_violations_count_;
+  if (dialog_mode_changed) {
+    if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache()) {
+      cache->MarkElementDirty(this);
+    }
+  }
 }
 
 void HTMLSelectElement::DecreaseContentModelViolationCount() {
   CHECK(RuntimeEnabledFeatures::CustomizableSelectEnabled());
   DCHECK(IsAppearanceBaseButton());
+  bool dialog_mode_changed = content_model_violations_count_ == 1;
   if (content_model_violations_count_ > 0U) {
     --content_model_violations_count_;
+  }
+  if (dialog_mode_changed) {
+    if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache()) {
+      cache->MarkElementDirty(this);
+    }
   }
 }
 

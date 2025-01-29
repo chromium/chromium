@@ -3081,6 +3081,21 @@ ax::mojom::blink::Role AXObject::ComputeFinalRoleForSerialization() const {
     }
   }
 
+  // Customizable select elements which have interactive content in their popup
+  // get their role changed to dialog. This is computed before serialization
+  // because there is a lot of other code which looks at kMenuListPopup which we
+  // don't want to adjust for the popup being changed to a dialog.
+  if (role_ == ax::mojom::blink::Role::kMenuListPopup &&
+      RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
+    if (auto* parent = ParentObject()) {
+      if (auto* select = DynamicTo<HTMLSelectElement>(parent->GetNode())) {
+        if (select->IsAppearanceBasePicker() && select->IsInDialogMode()) {
+          return ax::mojom::blink::Role::kDialog;
+        }
+      }
+    }
+  }
+
   // TODO(accessibility): Consider moving the image vs. image map role logic
   // here. Currently it is implemented in AXPlatformNode subclasses and thus
   // not available to the InspectorAccessibilityAgent.

@@ -2228,6 +2228,12 @@ IN_PROC_BROWSER_TEST_P(CustomizableSelectEnabledDumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("custom-select-label-element.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(CustomizableSelectEnabledDumpAccessibilityTreeTest,
+                       AccessibilityCustomSelectForbiddenInteractiveContent) {
+  RunHtmlTest(
+      FILE_PATH_LITERAL("custom-select-forbidden-interactive-content.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityDd) {
   RunHtmlTest(FILE_PATH_LITERAL("dd.html"));
 }

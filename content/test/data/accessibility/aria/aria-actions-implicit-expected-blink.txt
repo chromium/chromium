@@ -2,7 +2,7 @@ rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
 ++++++comboBoxSelect collapsed value='hello world'
-++++++++menuListPopup invisible ispopup=auto
+++++++++dialog invisible ispopup=auto
 ++++++++++menuListOption name='hello world' selected=true actionsIds=button
 ++++++++++++genericContainer ignored
 ++++++++++++++button name='hello world'
