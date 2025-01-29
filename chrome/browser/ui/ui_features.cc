@@ -64,9 +64,6 @@ const base::FeatureParam<base::TimeDelta> kRepromptDuration{
 const base::FeatureParam<int> kMaxPromptCount{&kDefaultBrowserPromptRefresh,
                                               "max_prompt_count", -1};
 
-const base::FeatureParam<int> kRepromptDurationMultiplier{
-    &kDefaultBrowserPromptRefresh, "reprompt_duration_multiplier", 1};
-
 // Create new Extensions app menu option (removing "More Tools -> Extensions")
 // with submenu to manage extensions and visit chrome web store.
 BASE_FEATURE(kExtensionsMenuInAppMenu,
