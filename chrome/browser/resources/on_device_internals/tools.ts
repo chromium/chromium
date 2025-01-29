@@ -193,6 +193,8 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
     super.ready();
     this.getPerformanceClass_();
     this.$.temperatureInput.inputElement.step = '0.1';
+    this.$.imageInput.addEventListener(
+        'change', this.onImageChange_.bind(this));
   }
 
   private async getPerformanceClass_() {
