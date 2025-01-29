@@ -18,7 +18,7 @@ import pytest
 from anys import ANY_DICT, ANY_LIST, ANY_NUMBER, ANY_STR
 from test_helpers import (ANY_TIMESTAMP, ANY_UUID, AnyExtending,
                           execute_command, send_JSON_command, subscribe,
-                          wait_for_event)
+                          wait_for_command, wait_for_event)
 
 from . import create_blocked_request
 
@@ -507,7 +507,7 @@ async def test_provide_response_works_with_non_latin(websocket, context_id,
             },
         })
 
-    await send_JSON_command(
+    command_id = await send_JSON_command(
         websocket, {
             "method": "browsingContext.navigate",
             "params": {
@@ -539,8 +539,10 @@ async def test_provide_response_works_with_non_latin(websocket, context_id,
             },
         })
 
-    event_response = await wait_for_event(websocket,
-                                          "network.responseCompleted")
+    # Wait for the navigation to complete
+    # Else we may try to execute the command
+    # while there is no realm
+    await wait_for_command(websocket, command_id)
 
     result = await execute_command(
         websocket, {
