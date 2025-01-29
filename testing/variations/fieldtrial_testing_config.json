@@ -22613,6 +22613,24 @@
             ]
         }
     ],
+    "SpeculativeFixForServiceWorkerDataInDidStartServiceWorkerContext": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SpeculativeFixForServiceWorkerDataInDidStartServiceWorkerContext"
+                    ]
+                }
+            ]
+        }
+    ],
     "SpeculativeImageDecodes": [
         {
             "platforms": [
