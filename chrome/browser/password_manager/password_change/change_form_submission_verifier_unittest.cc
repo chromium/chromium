@@ -208,3 +208,24 @@ TEST_F(ChangeFormSubmissionVerifierTest, Failed) {
 
   EXPECT_FALSE(completion_future.Get());
 }
+
+TEST_F(ChangeFormSubmissionVerifierTest, OnTimeout) {
+  auto form_manager = CreateFormManager();
+
+  base::test::TestFuture<bool> completion_future;
+  auto verifier =
+      CreateVerifier(form_manager.get(), completion_future.GetCallback());
+
+  // Verify submission isn't verified for `kSubmissionWaitingTimeout` seconds.
+  EXPECT_CALL(*optimization_service(), ExecuteModel).Times(0);
+  task_environment()->AdvanceClock(
+      ChangeFormSubmissionVerifier::kSubmissionWaitingTimeout);
+  testing::Mock::VerifyAndClearExpectations(optimization_service());
+
+  // Now verification should be triggered on timeout.
+  EXPECT_CALL(*optimization_service(), ExecuteModel)
+      .WillOnce(WithArg<3>(Invoke(&PostResponse<true>)));
+
+  EXPECT_TRUE(completion_future.Wait());
+  EXPECT_TRUE(completion_future.Take());
+}

@@ -56,6 +56,12 @@ void ChangeFormSubmissionVerifier::FillChangePasswordForm(
                      weak_ptr_factory_.GetWeakPtr(),
                      *form_manager->GetParsedObservedForm(),
                      form_manager->GetDriver(), old_password, new_password));
+
+  // Proceed with verifying password on timeout, in case submission was not
+  // captured.
+  timeout_timer_.Start(FROM_HERE,
+                       ChangeFormSubmissionVerifier::kSubmissionWaitingTimeout,
+                       this, &ChangeFormSubmissionVerifier::RequestAXTree);
 }
 
 void ChangeFormSubmissionVerifier::OnPasswordFormSubmission(
@@ -70,6 +76,8 @@ void ChangeFormSubmissionVerifier::OnPasswordFormSubmission(
     return;
   }
   RequestAXTree();
+  // Stop timer since submission has been detected.
+  timeout_timer_.Reset();
 }
 
 void ChangeFormSubmissionVerifier::SavePassword(

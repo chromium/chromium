@@ -9,6 +9,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -33,6 +34,8 @@ class ModelQualityLogEntry;
 class ChangeFormSubmissionVerifier {
  public:
   using FormSubmissionResultCallback = base::OnceCallback<void(bool)>;
+  static constexpr base::TimeDelta kSubmissionWaitingTimeout =
+      base::Seconds(10);
 
   ChangeFormSubmissionVerifier(content::WebContents* web_contents,
                                FormSubmissionResultCallback callback);
@@ -76,6 +79,7 @@ class ChangeFormSubmissionVerifier {
           execution_result,
       std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
 
+  base::OneShotTimer timeout_timer_;
   base::WeakPtr<content::WebContents> web_contents_;
   FormSubmissionResultCallback callback_;
   std::unique_ptr<password_manager::PasswordFormManager> form_manager_;
