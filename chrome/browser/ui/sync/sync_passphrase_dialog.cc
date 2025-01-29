@@ -91,8 +91,9 @@ void ShowSyncPassphraseDialog(
 
   // The OK button is initially disabled, as the passphrase must be non-empty.
   ui::DialogModel::Button::Params ok_button_params;
-  ok_button_params.SetEnabled(false);
-  ok_button_params.SetId(kSyncPassphraseOkButtonFieldId);
+  ok_button_params.SetEnabled(false)
+      .SetLabel(l10n_util::GetStringUTF16(IDS_SYNC_PASSPHRASE_DIALOG_OK_BUTTON))
+      .SetId(kSyncPassphraseOkButtonFieldId);
 
   // Callback for the OK button.
   // If the passphrase is correct, the dialog is closed. If it's incorrect, the
