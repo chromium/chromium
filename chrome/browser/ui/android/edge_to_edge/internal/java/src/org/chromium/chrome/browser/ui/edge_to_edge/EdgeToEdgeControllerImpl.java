@@ -197,10 +197,6 @@ public class EdgeToEdgeControllerImpl
         mInsetObserver.addInsetsConsumer(
                 mWindowInsetsConsumer, InsetConsumerSource.EDGE_TO_EDGE_CONTROLLER_IMPL);
 
-        assert mInsetObserver.getLastRawWindowInsets() != null
-                : "The inset observer should have non-null insets by the time the"
-                        + " EdgeToEdgeControllerImpl is initialized.";
-        mSystemInsets = getSystemInsets(mInsetObserver.getLastRawWindowInsets());
         mEdgeToEdgeStateProvider = mEdgeToEdgeManager.getEdgeToEdgeStateProvider();
         mEdgeToEdgeToken = mEdgeToEdgeStateProvider.acquireSetDecorFitsSystemWindowToken();
 
@@ -209,9 +205,9 @@ public class EdgeToEdgeControllerImpl
         // false for now, and updated later if padding gets applied.
         mEdgeToEdgeManager.setContentFitsWindowInsets(false);
 
-        drawToEdge(
-                EdgeToEdgeUtils.isPageOptedIntoEdgeToEdge(mCurrentTab),
-                /* changedWindowState= */ true);
+        // retriggerOnApplyWindowInsets to populate all the initial state.
+        mIsPageOptedIntoEdgeToEdge = EdgeToEdgeUtils.isPageOptedIntoEdgeToEdge(mCurrentTab);
+        mInsetObserver.retriggerOnApplyWindowInsets();
     }
 
     @VisibleForTesting
@@ -301,6 +297,7 @@ public class EdgeToEdgeControllerImpl
         mBottomControlsHeight = bottomControlsHeight;
         updateBrowserControlsVisibility(bottomControlsHeight > 0);
         adjustEdgePaddings();
+        pushSafeAreaInsetUpdate();
     }
 
     // LayoutStateProvider.LayoutStateObserver
@@ -420,6 +417,7 @@ public class EdgeToEdgeControllerImpl
 
         if (changedPageOptedIn || changedDrawToEdge || changedWindowState) {
             adjustEdgePaddings();
+            pushSafeAreaInsetUpdate();
             updatePadAdjusters();
 
             for (var observer : mEdgeChangeObservers) {
@@ -555,7 +553,9 @@ public class EdgeToEdgeControllerImpl
                     newPaddings.right,
                     newPaddings.bottom);
         }
+    }
 
+    private void pushSafeAreaInsetUpdate() {
         // In fullscreen mode, we should never needed to add additional area to the bottom insets
         // since nav bar will be hidden. This is another workaround that on some Android versions,
         // during split screen mode, bottom insets are counted as part of the Chrome window even
