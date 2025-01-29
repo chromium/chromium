@@ -149,10 +149,12 @@ class GpuIntegrationTest(
 
   # Used for storing the contents of about:gpu between test runs and for
   # determining whether the contents need to be retrieved again after a browser
-  # restart.
+  # restart. This caching is also shared with the tag generation code to avoid
+  # unnecessary communication with the browser when args did not change.
   _about_gpu_content = None
   _test_that_started_browser = None
   _args_changed_this_browser_start = True
+  _cached_platform_tags: Optional[List[str]] = None
 
   tab: Optional[ct.Tab] = None
 
@@ -1165,6 +1167,9 @@ class GpuIntegrationTest(
     angle renderer, and command line decoder tags to that list before
     returning it.
     """
+    if not cls._args_changed_this_browser_start and cls._cached_platform_tags:
+      return cls._cached_platform_tags
+
     tags = super(GpuIntegrationTest, cls).GetPlatformTags(browser)
     system_info = browser.GetSystemInfo()
     if system_info:
@@ -1216,6 +1221,8 @@ class GpuIntegrationTest(
     if display_server:
       tags.append(display_server)
     tags = gpu_helper.ReplaceTags(tags)
+
+    cls._cached_platform_tags = tags
     return tags
 
   @classmethod

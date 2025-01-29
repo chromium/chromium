@@ -466,11 +466,14 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       return None
 
     binary = 'trace_processor_shell'
-    if os_name and os_name.lower() in ('android', 'fuchsia'):
+    if os_name and os_name.lower() in ('android', 'chromeos', 'fuchsia'):
       # trace_processor_shell is compiled and available locally in the output
       # directory, but does not get included in the CAS inputs due to remote
       # platform build weirdness. So, use the symlinked versions instead. See
       # crbug.com/383999365 for more information.
+      # ChromeOS technically doesn't need to use the symlinked version since the
+      # binary is included, just in a subdirectory. However, use the symlinked
+      # version for consistency.
       binary = 'host_trace_processor_shell'
 
     output_directory = self.GetOriginalFinderOptions().chromium_output_dir
@@ -490,11 +493,20 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
   def _GetTraceProcessorForTrace(self, trace: bytes) -> tp.TraceProcessor:
     # The default 2 second load timeout works in almost all cases, but can
-    # cause flakes on rare occasions, particularly on Mac/Debug.
+    # cause flakes on rare occasions. Known slow configurations are:
+    #   * Mac/Debug (due to slower binaries?)
+    #   * Mac/NVIDIA (due to old/slow hardware)
+    #   * Linux (unknown cause)
     load_timeout = 2
-    if (self.browser.browser_type == 'debug'
-        and self.platform.GetOSName() == 'mac'):
-      load_timeout = 10
+    slow_load_timeout = 10
+    os_name = self.browser.platform.GetOSName()
+    if os_name == 'mac':
+      if self.browser.browser_type == 'debug':
+        load_timeout = slow_load_timeout
+      elif 'nvidia' in self.__class__.GetPlatformTags(self.browser):
+        load_timeout = slow_load_timeout
+    elif os_name == 'linux':
+      load_timeout = slow_load_timeout
 
     processor_path = self._GetLocalPerfettoTraceProcessorPath()
     if processor_path:
