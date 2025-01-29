@@ -1,0 +1,8 @@
+# crbug.com/376095153
+-org.chromium.chrome.browser.display_cutout.DisplayCutoutTest.*
+
+# crbug.com/376527109
+-org.chromium.chrome.browser.tasks.tab_management.TabListContainerViewBinderTest.testSetInitialScrollIndex_Grid
+
+# crbug.com/368117896
+-org.chromium.chrome.browser.commerce.coupons.DiscountsIntegrationTest.testRenderDiscountContextualPageActionIcon
