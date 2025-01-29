@@ -4,6 +4,8 @@
 
 #include "content/browser/preloading/prerender/prerender_handle_impl.h"
 
+#include <limits>
+
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/prerender/prerender_host.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
@@ -13,6 +15,12 @@
 namespace content {
 
 namespace {
+
+int32_t GetNextHandleId() {
+  static int32_t next_handle_id = 1;
+  CHECK_LT(next_handle_id, std::numeric_limits<int32_t>::max());
+  return next_handle_id++;
+}
 
 // Returns true when the error callback should be fired. The callback does not
 // need to be fired when prerendering succeed but is never activated, or it is
@@ -139,7 +147,8 @@ PrerenderHandleImpl::PrerenderHandleImpl(
     base::WeakPtr<PrerenderHostRegistry> prerender_host_registry,
     FrameTreeNodeId frame_tree_node_id,
     const GURL& prerendering_url)
-    : prerender_host_registry_(std::move(prerender_host_registry)),
+    : handle_id_(GetNextHandleId()),
+      prerender_host_registry_(std::move(prerender_host_registry)),
       frame_tree_node_id_(frame_tree_node_id),
       prerendering_url_(prerendering_url) {
   CHECK(!prerendering_url_.is_empty());
@@ -160,6 +169,10 @@ PrerenderHandleImpl::~PrerenderHandleImpl() {
 
   prerender_host_registry_->CancelHost(frame_tree_node_id_,
                                        PrerenderFinalStatus::kTriggerDestroyed);
+}
+
+int32_t PrerenderHandleImpl::GetHandleId() const {
+  return handle_id_;
 }
 
 const GURL& PrerenderHandleImpl::GetInitialPrerenderingUrl() const {

@@ -20,6 +20,7 @@ import android.net.Uri;
 import android.net.http.SslCertificate;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CancellationSignal;
 import android.os.Debug;
 import android.os.Handler;
 import android.os.Message;
@@ -1834,6 +1835,7 @@ public class AwContents implements SmartClipProvider {
     public void startPrerendering(
             @NonNull String prerenderingUrl,
             @Nullable AwPrefetchParameters prefetchParameters,
+            @Nullable CancellationSignal cancellationSignal,
             @NonNull Executor callbackExecutor,
             @NonNull Callback<Void> activationCallback,
             @NonNull Callback<Throwable> errorCallback) {
@@ -1851,15 +1853,30 @@ public class AwContents implements SmartClipProvider {
         // implementation, bind a tentative error message here. See also the comments in
         // `PrerenderHandleImpl::OnHostDestroyed()`.
         // TODO(crbug.com/41490450): Pass a more meaningful error message to the error callback.
-        AwContentsJni.get()
-                .startPrerendering(
-                        mNativeAwContents,
-                        prerenderingUrl,
-                        prefetchParameters,
-                        () -> callbackExecutor.execute(activationCallback.bind(null)),
-                        () ->
-                                callbackExecutor.execute(
-                                        errorCallback.bind(new Exception("Prerendering fails."))));
+        int prerenderId =
+                AwContentsJni.get()
+                        .startPrerendering(
+                                mNativeAwContents,
+                                prerenderingUrl,
+                                prefetchParameters,
+                                () -> callbackExecutor.execute(activationCallback.bind(null)),
+                                () ->
+                                        callbackExecutor.execute(
+                                                errorCallback.bind(
+                                                        new Exception("Prerendering fails."))));
+        if (prerenderId > 0 && cancellationSignal != null) {
+            cancellationSignal.setOnCancelListener(
+                    new CancellationSignal.OnCancelListener() {
+                        @Override
+                        public void onCancel() {
+                            ThreadUtils.runOnUiThread(
+                                    () -> {
+                                        AwContentsJni.get()
+                                                .cancelPrerendering(mNativeAwContents, prerenderId);
+                                    });
+                        }
+                    });
+        }
     }
 
     public void cancelAllPrerendering() {
@@ -4885,12 +4902,14 @@ public class AwContents implements SmartClipProvider {
 
         void flushBackForwardCache(long nativeAwContents, int reason);
 
-        void startPrerendering(
+        int startPrerendering(
                 long nativeAwContents,
                 @JniType("std::string") @NonNull String prerenderingUrl,
                 @Nullable AwPrefetchParameters prefetchParameters,
                 @NonNull Runnable activationCallback,
                 @NonNull Runnable errorCallback);
+
+        void cancelPrerendering(long nativeAwContents, int prerenderId);
 
         void cancelAllPrerendering(long nativeAwContents);
     }
