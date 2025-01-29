@@ -6,11 +6,13 @@
 #define CHROME_BROWSER_PERMISSIONS_GENAI_MODEL_HANDLER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
-
-class OptimizationGuideKeyedService;
+#include "components/optimization_guide/proto/features/permissions_ai.pb.h"
 
 namespace permissions {
+
 class GenAiModelHandler
     : public optimization_guide::OnDeviceModelAvailabilityObserver {
  public:
@@ -19,14 +21,55 @@ class GenAiModelHandler
   GenAiModelHandler(const GenAiModelHandler&) = delete;
   GenAiModelHandler& operator=(const GenAiModelHandler&) = delete;
 
+  bool IsOnDeviceModelAvailable();
+
+  void InquireGenAiOnDeviceModel(
+      std::string rendered_text,
+      base::OnceCallback<
+          void(std::optional<optimization_guide::proto::PermissionsAiResponse>)>
+          callback);
+
  private:
-  // optimization_guide::OnDeviceModelAvailabilityObserver
+  // Adds itself as OnDeviceModelAvailabilityObserver to the optimization guide
+  // infrastructure.
+  void StartListeningToOnDeviceModelUpdate();
+
+  // Remove itself as OnDeviceModelAvailabilityObserver from the optimization
+  // guide infrastructure, e.g. when the model is done downloading.
+  void StopListeningToOnDeviceModelUpdate();
+
+  // Initializes session_ field.
+  void CreateModelExecutorSession();
+
+  // optimization_guide::OnDeviceModelAvailabilityObserver.
   void OnDeviceModelAvailabilityChanged(
       optimization_guide::ModelBasedCapabilityKey feature,
       optimization_guide::OnDeviceModelEligibilityReason reason) override;
 
+  void SetOnDeviceModelAvailable();
+
+  std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
+      session_;
+
+  void OnModelExecutionComplete(
+      optimization_guide::OptimizationGuideModelStreamingExecutionResult
+          result);
+
   // The underlying session provided by optimization guide component.
   raw_ptr<OptimizationGuideKeyedService> optimization_guide_;
+
+  // It is set to true when the on-device model is not readily available, but
+  // it's expected to be ready soon. See `kWaitableReasons` for more details.
+  bool observing_on_device_model_availability_ = false;
+  bool on_device_model_available_ = false;
+
+  // Model downloading has begun at this point in time.
+  base::TimeTicks on_device_download_start_time_;
+  base::TimeTicks session_execution_start_time_;
+  base::OnceCallback<void(
+      std::optional<optimization_guide::proto::PermissionsAiResponse>)>
+      inquire_on_device_model_callback_;
+  base::WeakPtrFactory<GenAiModelHandler> weak_ptr_factory_{this};
 };
 }  // namespace permissions
 

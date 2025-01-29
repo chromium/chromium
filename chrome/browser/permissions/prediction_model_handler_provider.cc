@@ -36,7 +36,6 @@ PredictionModelHandlerProvider::PredictionModelHandlerProvider(
                   OPTIMIZATION_TARGET_GEOLOCATION_PERMISSION_PREDICTIONS))
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 {
-  // TODO(crbug.com/382447738) Start genai model downloading
 }
 
 PredictionModelHandlerProvider::~PredictionModelHandlerProvider() = default;
