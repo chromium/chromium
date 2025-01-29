@@ -372,7 +372,7 @@ class DownloadAuthenticationFactorsRegistrationStateRequest
  private:
   void StartOrContinueRequest(const std::string* next_page_token = nullptr) {
     request_ = std::make_unique<TrustedVaultRequest>(
-        account_id_, TrustedVaultRequest::HttpMethod::kGet,
+        security_domain_, account_id_, TrustedVaultRequest::HttpMethod::kGet,
         next_page_token ? net::AppendQueryParameter(base_url_, "page_token",
                                                     *next_page_token)
                         : base_url_,
@@ -611,7 +611,8 @@ TrustedVaultConnectionImpl::DownloadNewKeys(
   // TODO(crbug.com/40255601): consider retries for keys downloading after
   // initial failure returned to the upper layers.
   auto request = std::make_unique<TrustedVaultRequest>(
-      account_info.account_id, TrustedVaultRequest::HttpMethod::kGet,
+      security_domain_, account_info.account_id,
+      TrustedVaultRequest::HttpMethod::kGet,
       GetGetSecurityDomainMemberURL(
           trusted_vault_service_url_,
           device_key_pair->public_key().ExportToBytes()),
@@ -637,7 +638,8 @@ TrustedVaultConnectionImpl::DownloadIsRecoverabilityDegraded(
     const CoreAccountInfo& account_info,
     IsRecoverabilityDegradedCallback callback) {
   auto request = std::make_unique<TrustedVaultRequest>(
-      account_info.account_id, TrustedVaultRequest::HttpMethod::kGet,
+      security_domain_, account_info.account_id,
+      TrustedVaultRequest::HttpMethod::kGet,
       GetGetSecurityDomainURL(trusted_vault_service_url_, security_domain_),
       /*serialized_request_proto=*/std::nullopt,
       /*max_retry_duration=*/base::Seconds(0), GetOrCreateURLLoaderFactory(),
@@ -674,7 +676,8 @@ TrustedVaultConnectionImpl::SendJoinSecurityDomainsRequest(
     AuthenticationFactorType authentication_factor_type,
     JoinSecurityDomainsCallback callback) {
   auto request = std::make_unique<TrustedVaultRequest>(
-      account_info.account_id, TrustedVaultRequest::HttpMethod::kPost,
+      security_domain_, account_info.account_id,
+      TrustedVaultRequest::HttpMethod::kPost,
       GetJoinSecurityDomainURL(trusted_vault_service_url_, security_domain_),
       /*serialized_request_proto=*/
       CreateJoinSecurityDomainsRequest(security_domain_, member_keys_source,

@@ -1894,16 +1894,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sync.TrustedVaultAccessTokenFetchSuccess" enum="Boolean"
-    expires_after="2025-06-22">
-  <owner>mmoskvitin@google.com</owner>
-  <owner>mastiz@chromium.org</owner>
-  <summary>
-    Records whether access token fetching attempt was successful upon every
-    request to Security Domains service.
-  </summary>
-</histogram>
-
 <histogram name="Sync.TrustedVaultAddKeysAttemptIsSuccessful" enum="Boolean"
     expires_after="2025-06-30">
   <owner>mmoskvitin@google.com</owner>
