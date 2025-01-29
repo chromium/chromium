@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser_save_point.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
+#include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
@@ -1802,13 +1803,12 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenStream& stream,
 
       if (name_and_classes->empty()) {
         const CSSParserToken& ident = stream.Peek();
-        if (ident.GetType() == kIdentToken) {
-          name_and_classes->push_back(ident.Value().ToAtomicString());
-          stream.Consume();
-        } else if (ident.GetType() == kDelimiterToken &&
-                   ident.Delimiter() == '*') {
+        if (ident.GetType() == kDelimiterToken && ident.Delimiter() == '*') {
           name_and_classes->push_back(CSSSelector::UniversalSelectorAtom());
           stream.Consume();
+        } else if (auto* custom_ident = css_parsing_utils::ConsumeCustomIdent(
+                       stream, *context_)) {
+          name_and_classes->push_back(custom_ident->Value());
         } else {
           return false;
         }
@@ -1823,10 +1823,12 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenStream& stream,
           return false;
         }
 
-        if (stream.Peek().GetType() != kIdentToken) {
+        CSSCustomIdentValue* custom_ident =
+            css_parsing_utils::ConsumeCustomIdent(stream, *context_);
+        if (!custom_ident) {
           return false;
         }
-        name_and_classes->push_back(stream.Consume().Value().ToAtomicString());
+        name_and_classes->push_back(custom_ident->Value());
       }
 
       stream.ConsumeWhitespace();
