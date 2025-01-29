@@ -442,6 +442,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Tab.Organization.Dedupe.DeclutterTabCount" units="tabs"
+    expires_after="2025-06-22">
+  <owner>emshack@chromium.org</owner>
+  <owner>shibalik@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    Logs the number of duplicate tabs selected for removal using Tab Declutter
+    on Desktop. Duplicate tabs are tabs that have the same url excluding
+    fragment identifier. This is logged from the controller after closing the
+    duplicate tabs.
+  </summary>
+</histogram>
+
+<histogram name="Tab.Organization.Dedupe.ExcludedTabCount" units="tabs"
+    expires_after="2025-06-22">
+  <owner>emshack@chromium.org</owner>
+  <owner>shibalik@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    Logs the number of duplicate tabs excluded from removal during Tab Declutter
+    on Desktop. Duplicate tabs are tabs that have the same url excluding
+    fragment identifier. This is logged from the controller before closing the
+    duplicate tabs.
+  </summary>
+</histogram>
+
 <histogram name="Tab.Organization.Organization.LabelEdited" enum="Boolean"
     expires_after="2025-06-22">
   <owner>dpenning@chromium.org</owner>
