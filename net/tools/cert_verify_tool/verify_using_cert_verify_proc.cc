@@ -65,8 +65,6 @@ void PrintCertVerifyResult(const net::CertVerifyResult& result) {
     std::cout << "has_sha1\n";
   if (result.is_issued_by_known_root)
     std::cout << "is_issued_by_known_root\n";
-  if (result.is_issued_by_additional_trust_anchor)
-    std::cout << "is_issued_by_additional_trust_anchor\n";
 
   if (result.verified_cert) {
     std::cout << "chain:\n "

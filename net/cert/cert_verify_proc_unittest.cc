@@ -1746,7 +1746,6 @@ TEST_P(CertVerifyProcInternalTest, AdditionalTrustAnchors) {
   int error = Verify(cert.get(), "127.0.0.1", flags, &verify_result);
   EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
   EXPECT_EQ(CERT_STATUS_AUTHORITY_INVALID, verify_result.cert_status);
-  EXPECT_FALSE(verify_result.is_issued_by_additional_trust_anchor);
 
   // Now add the |ca_cert| to the |trust_anchors|, and verification should pass.
   CertificateList trust_anchors;
@@ -1755,7 +1754,6 @@ TEST_P(CertVerifyProcInternalTest, AdditionalTrustAnchors) {
   error = Verify(cert.get(), "127.0.0.1", flags, &verify_result);
   EXPECT_THAT(error, IsOk());
   EXPECT_EQ(0U, verify_result.cert_status);
-  EXPECT_TRUE(verify_result.is_issued_by_additional_trust_anchor);
 
   // Clearing the |trust_anchors| makes verification fail again (the cache
   // should be skipped).
@@ -1763,7 +1761,6 @@ TEST_P(CertVerifyProcInternalTest, AdditionalTrustAnchors) {
   error = Verify(cert.get(), "127.0.0.1", flags, &verify_result);
   EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
   EXPECT_EQ(CERT_STATUS_AUTHORITY_INVALID, verify_result.cert_status);
-  EXPECT_FALSE(verify_result.is_issued_by_additional_trust_anchor);
 }
 
 TEST_P(CertVerifyProcInternalTest, AdditionalIntermediates) {
@@ -1798,7 +1795,6 @@ TEST_P(CertVerifyProcInternalTest, AdditionalIntermediates) {
   EXPECT_TRUE(x509_util::CryptoBufferEqual(
       verify_result.verified_cert->intermediate_buffers().front().get(),
       intermediate_cert->cert_buffer()));
-  EXPECT_FALSE(verify_result.is_issued_by_additional_trust_anchor);
 }
 
 TEST_P(CertVerifyProcInternalTest, AdditionalIntermediateDuplicatesRoot) {
@@ -1818,8 +1814,7 @@ TEST_P(CertVerifyProcInternalTest, AdditionalIntermediateDuplicatesRoot) {
   // additional_trust_anchors.
   ScopedTestRoot trust_root(root_cert);
   // In addition to the intermediate cert, the root cert is also configured as
-  // an additional *untrusted* certificate, which is harmless. This shouldn't
-  // cause the result to be considered as is_issued_by_additional_trust_anchor.
+  // an additional *untrusted* certificate, which is harmless.
   SetUpWithAdditionalCerts(
       {}, {root->GetX509Certificate(), intermediate->GetX509Certificate()});
   CertVerifyResult verify_result;
@@ -1827,7 +1822,6 @@ TEST_P(CertVerifyProcInternalTest, AdditionalIntermediateDuplicatesRoot) {
   EXPECT_THAT(error, IsOk());
   ASSERT_TRUE(verify_result.verified_cert);
   EXPECT_EQ(verify_result.verified_cert->intermediate_buffers().size(), 2U);
-  EXPECT_FALSE(verify_result.is_issued_by_additional_trust_anchor);
 }
 
 TEST_P(CertVerifyProcInternalTest, AdditionalTrustAnchorDuplicateIntermediate) {
@@ -1852,7 +1846,6 @@ TEST_P(CertVerifyProcInternalTest, AdditionalTrustAnchorDuplicateIntermediate) {
   EXPECT_THAT(Verify(leaf->GetX509Certificate().get(), kHostname,
                      /*flags=*/0, &verify_result),
               IsOk());
-  EXPECT_TRUE(verify_result.is_issued_by_additional_trust_anchor);
 
   // Leaf should still verify after root is also in intermediates list.
   intermediates.push_back(root->GetX509Certificate());
@@ -1860,7 +1853,6 @@ TEST_P(CertVerifyProcInternalTest, AdditionalTrustAnchorDuplicateIntermediate) {
   EXPECT_THAT(Verify(leaf->GetX509Certificate().get(), kHostname,
                      /*flags=*/0, &verify_result),
               IsOk());
-  EXPECT_TRUE(verify_result.is_issued_by_additional_trust_anchor);
 }
 
 // Tests that certificates issued by user-supplied roots are not flagged as
