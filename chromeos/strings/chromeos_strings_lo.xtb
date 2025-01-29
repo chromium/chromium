@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">ຍົກ​ເລີກ​ແລ້ວ</translation>
 <translation id="1020274983236703756">ເນື້ອຫາພິເສດສະເພາະຂອງ <ph name="PRODUCT_NAME" /> ມີໃຫ້ແລ້ວຕອນນີ້</translation>
 <translation id="1022628058306505708">ກະແສໂລກ</translation>
+<translation id="102432830749687801">ກວດສອບໃຫ້ໝັ້ນໃຈວ່າທ່ານໃຊ້ແອັບການໂອນຍ້າຍເນື້ອຫາໂດຍ Google ເພື່ອຍ້າຍຂໍ້ມູນບັນຊີໂຮງຮຽນຂອງທ່ານໄປໃສ່ບັນຊີສ່ວນຕົວຂອງທ່ານກ່ອນທີ່ທ່ານຈະສູນເສຍສິດເຂົ້າເຖິງ.</translation>
 <translation id="1026212596705997935">ກຳລັງໃຊ້ທາງລັດສຳລັບ "<ph name="CONFLICT_ACCEL_NAME" />" ຢູ່. ກົດປຸ່ມທາງລັດໃໝ່. ເພື່ອແທນທີ່ທາງລັດທີ່ມີຢູ່ກ່ອນແລ້ວ, ໃຫ້ກົດປຸ່ມທາງລັດນີ້ອີກເທື່ອໜຶ່ງ.</translation>
 <translation id="1030856839388844477">ຣີເຊັດການນຳໃຊ້ອິນເຕີເນັດ</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> ຫົວຂໍ້, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
@@ -93,6 +94,7 @@
 <translation id="1394661041439318933">ອຸປະກອນມີແບັດເຕີຣີເຄສ <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="1397738625398125236">ສາມາດທົດສອບການເຊື່ອມຕໍ່ເກດເວໄດ້</translation>
 <translation id="1398634363027580500">ເວລາແຝງ HTTPS ສູງຫຼາຍ</translation>
+<translation id="1406389211945506521">ຂໍຂອບໃຈສຳລັບການແບ່ງປັນປະສົບການຂອງທ່ານ. ຄຳຕິຊົມຂອງທ່ານຈະຊ່ວຍໃຫ້ພວກເຮົາສ້າງເນື້ອຫາທີ່ຖືກຕ້ອງ ແລະ ມີປະໂຫຍດຫຼາຍຂຶ້ນ.</translation>
 <translation id="1407069428457324124">ຮູບແບບສີສັນມືດ</translation>
 <translation id="1413240736185167732">ບໍ່ສຳເລັດ, ຕົວກັ່ນຕອງຂັດຂ້ອງ</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
@@ -198,8 +200,10 @@
 <translation id="1808803439260407870">ສິນລະປະຄລາດສິກ</translation>
 <translation id="181434555916624618">ໃນຕອນນີ້, ລະບົບຈະບໍ່ສະແດງຜົນການຊອກຫາທີ່ມີຜູ້ຄົນ. ກະລຸນາລອງໃຊ້ prompt ອື່ນ.</translation>
 <translation id="1815850098929213707">ປຸ່ມທີ່ເລືອກແມ່ນ <ph name="KEYS" />. ແຕະປຸ່ມເພື່ອແກ້ໄຂຕົວຄວບຄຸມ</translation>
+<translation id="1818174214124933000">ເມື່ອທ່ານເລືອກສົ່ງ, ຄຳຕິຊົມ ແລະ ເນື້ອຫາຂອງທ່ານ (ສະແດງຢູ່ທາງລຸ່ມ) ຈະຖືກສົ່ງໄປໃຫ້ Google, ເຊິ່ງກວດສອບໂດຍທີມງານ ແລະ ໃຊ້ເພື່ອເຝິກ ຫຼື ປັບປຸງຜະລິດຕະພັນ ແລະ ບໍລິການຂອງພວກເຮົາໂດຍເປັນໄປຕາມ <ph name="LINK_POLICY_BEGIN" />ນະໂຍບາຍຄວາມເປັນສ່ວນຕົວ<ph name="LINK_POLICY_END" /> ແລະ <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />ຂໍ້ກຳນົດ Google<ph name="LINK_TERMS_OF_SERVICE_END" />.</translation>
 <translation id="1823120442877418684">ຕົວອັກສອນ</translation>
 <translation id="1827738518074806965">ຫ້ອງສະແດງງານສິນລະປະ</translation>
+<translation id="183287940576828840">ບໍ່ເໝາະສົມ/ບໍ່ປອດໄພ</translation>
 <translation id="1834032517784994783">ເລືອກພາສາຂອງການຖອດຖ່າຍຂໍ້ຄວາມ</translation>
 <translation id="1836553715834333258">ສີຂອງລະບົບ</translation>
 <translation id="183675228220305365">ສົມຈິງ</translation>
@@ -226,6 +230,7 @@
 <translation id="1908234395526491708">ຂໍ UDP ບໍ່ສຳເລັດ</translation>
 <translation id="1908394185991500139">ລູກສອນຊ້າຍ</translation>
 <translation id="1914144885717544695">ໃນວັນສຸກ</translation>
+<translation id="1915960750806557358">ແບ່ງປັນຄຳຕິຊົມ ຫຼື ອະທິບາຍບັນຫາຂອງທ່ານ. ກວດສອບວ່າບໍ່ຮວມເອົາສິ່ງໃດກໍຕາມທີ່ເປັນສ່ວນຕົວ, ລະອຽດອ່ອນ ຫຼື ເປັນຄວາມລັບ.</translation>
 <translation id="1923388006036088459">ສີເນັ້ນ</translation>
 <translation id="1945403655450283000">ຕົວບັນທຶກ</translation>
 <translation id="1947737735496445907">ພິມແລ້ວ</translation>
@@ -312,7 +317,6 @@
 <translation id="2308243864813041101">ຖອດປລັກສາຍ USB <ph name="DEVICE_NAME" /> ຄືນໃໝ່ເພື່ອສືບຕໍ່ຂັ້ນຕອນການອັບເດດ</translation>
 <translation id="2320295602967756579">ເປີດການນຳໃຊ້ຮູບແບບສີສັນແຈ້ງ</translation>
 <translation id="2323506179655536734">ຂ້າມແລ້ວ</translation>
-<translation id="2323755382216917952">ການອັບເດດນີ້ຮຽກຮ້ອງໃຫ້ທ່ານຣີສະຕາດຄອມພິວເຕີຂອງທ່ານເພື່ອສໍາເລັດການຕິດຕັ້ງ. ການອັບເດດນີ້ອາດໃຊ້ເວລາສອງສາມນາທີເພື່ອສຳເລັດ. ໃນຂະນະທີ່ກຳລັງອັບເດດເຟີມແວຢູ່, ຢ່າຖອດປລັກອອກ ຫຼື ປິດເຄື່ອງຄອມພິວເຕີຂອງທ່ານ.</translation>
 <translation id="2324354238778375592">ລອຍ</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2346474577291266260">ດີເລີດ (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -458,7 +462,6 @@
 <translation id="3178532070248519384">ອາວອງກາດ</translation>
 <translation id="3182676044300231689">ໃສ່ prompt ເຊັ່ນ: "ເຮັດໃຫ້ໝັ້ນໃຈຫຼາຍຂຶ້ນ"</translation>
 <translation id="3188257591659621405">ໄຟລ໌ຂອງຂ້ອຍ</translation>
-<translation id="3188931456353313123">ການອັບເດດນີ້ສະໜອງໂດຍຜູ້ຜະລິດອຸປະກອນ ແລະ ຍັງບໍ່ໄດ້ຮັບການຢັ້ງຢືນຈາກ Google.</translation>
 <translation id="319101249942218879">ປ່ຽນຮູບແທນຕົວແລ້ວ</translation>
 <translation id="3192947282887913208">ໄຟລ໌ສຽງ</translation>
 <translation id="3199982728237701504">ຕົວປ້ອນເອກະສານ (ສອງດ້ານ)</translation>
@@ -597,6 +600,7 @@
 <translation id="387301095347517405">ຈຳນວນເທື່ອທີ່ແບັດເຕີຣີຂອງທ່ານມີຮອບການສາກໄຟເຕັມ.</translation>
 <translation id="3877066159641251281">ຟັງຄຳແປ</translation>
 <translation id="3880601782712134623">ກວດຫາສຽງທີ່ແຕກຕ່າງກັນ ແລະ ຕິດປ້າຍກຳກັບທົ່ວໄປໃຫ້ຜູ້ເວົ້າແຕ່ລະຄົນ ເຊັ່ນ: ຜູ້ເວົ້າ 1 ແລະ ຜູ້ເວົ້າ 2 ໂດຍອັດຕະໂນມັດ</translation>
+<translation id="38811596981744338">ປະເດັນທາງກົດໝາຍ</translation>
 <translation id="3885327323343477505">ປ່ຽນພາບພັກໜ້າຈໍ</translation>
 <translation id="3889914174935857450">ວັນທີທີ່ຣີເຊັດ</translation>
 <translation id="3897092660631435901">ເມ​ນູ</translation>
@@ -823,6 +827,7 @@
 <translation id="4921665434385737356">ສາກ <ph name="RATE" /> ໃນ <ph name="NUM_SECONDS" /> ວິນາທີ.</translation>
 <translation id="4930320165497208503">ເພື່ອຕັ້ງຄ່າ ຫຼື ອັບເດດການເຊື່ອມຕໍ່, ໃຫ້ເຂົ້າໄປຫາ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າ<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">ວັນ​ທີ</translation>
+<translation id="494102685638938793"><ph name="LINK_TEXT" />, ເປີດໃນແຖບໃໝ່</translation>
 <translation id="4946927805998996217">ກຳລັງສ້າງຂໍ້ມູນສະຫຼຸບ</translation>
 <translation id="4950314376641394653">ອັບເດດເຟີມແວ <ph name="DEVICE_NAME" /> ເປັນເວີຊັນ <ph name="VERSION" /> ແລ້ວ</translation>
 <translation id="4950893758552030541">ອຸໂມງຕົ້ນໄມ້</translation>
@@ -1210,6 +1215,7 @@
 <translation id="6692996468359469499">ຮັບຂໍ້ມູນທີ່ກ່ຽວຂ້ອງກັບການເລືອກຂອງທ່ານ</translation>
 <translation id="6694534975463174713">ລັອກ</translation>
 <translation id="6700703207451721535">ບໍ່ອະນຸຍາດໃຫ້ເຂົ້າເຖິງລິ້ງນີ້. ກະລຸນາກວດສອບກັບຄູຂອງທ່ານຫາກທ່ານຕ້ອງການສິດເຂົ້າເຖິງ.</translation>
+<translation id="6703179086771097594">ແມ່ນຫຍັງທີ່ຍັງເຮັດວຽກໄດ້ບໍ່ດີ?</translation>
 <translation id="6704062477274546131">ຄວາມລະອຽດ DNS</translation>
 <translation id="6712933881624804031">ຮ່ອມພູ</translation>
 <translation id="6716013206176357696">ສະຕຣໍເບີຣີ</translation>
@@ -1284,6 +1290,7 @@
 <translation id="7058278511608979688">ສິ້ນສຸດ ແລະ ບັນທຶກ</translation>
 <translation id="7059230779847288458">ກໍາລັງສາກ
 <ph name="TIME_VALUE" />: ຈົນເຕັມ</translation>
+<translation id="7064209589142995848">ການໂອນຍ້າຍເນື້ອຫາ</translation>
 <translation id="7065336548231472971">ເລືອກ <ph name="LANGUAGE_NAME" /> ແລ້ວ</translation>
 <translation id="7066538517128343186">ກະແຈ <ph name="KEY" /></translation>
 <translation id="7068619307603204412">ກະກຽມອຸປະກອນຂອງທ່ານ</translation>
@@ -1595,6 +1602,7 @@
 <translation id="8476942730579767658">ໜ້າຈໍ ແລະ ໂຕະ</translation>
 <translation id="8477536061607044749">ການອອກແບບກຣາຟິກ</translation>
 <translation id="8477551185774834963">ເວລາໃນການຕອບສະໜອງ DNS ສູງກວ່າເກນທີ່ຍອມຮັບໄດ້ເລັກນ້ອຍ</translation>
+<translation id="8481308460877552925">ບໍ່ຖືກຕ້ອງຕາມຂໍ້ເທັດຈິງ</translation>
 <translation id="8482376765267780829">ເລືອກບາງຂໍ້ຄວາມເພື່ອເຮັດໃຫ້ງ່າຍ</translation>
 <translation id="8483248364096924578">ທີ່ຢູ່ IP</translation>
 <translation id="8491311378305535241">ບໍ່ສາມາດເຊື່ອມຕໍ່ຜ່ານ firewall ຫາເວັບໄຊ HTTP ຈາກແອັບ Android ໄດ້</translation>

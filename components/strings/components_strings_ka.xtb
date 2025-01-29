@@ -962,6 +962,7 @@
 <translation id="2674170444375937751">დარწმუნებული ხართ, რომ გსურთ ამ გვერდების თქვენი ისტორიიდან წაშლა?</translation>
 <translation id="2674524144218093528">სახლის სამღებრო სამუშაოები და მოპირკეთება</translation>
 <translation id="2674804415323431591">შემოთავაზებების დამალვა</translation>
+<translation id="26774279487328902">ჩანართების <ph name="GROUP_COUNT" /> ჯგუფი აღარ არის ხელმისაწვდომი</translation>
 <translation id="2677748264148917807">დატოვება</translation>
 <translation id="2683195745483370038">ნაპოვნია სხვა შედეგები</translation>
 <translation id="2686919536310834199">გაგზავნეთ გამოხმაურება დაწერაში დახმარებასთან დაკავშირებით.</translation>
@@ -2266,6 +2267,7 @@
 <translation id="5001526427543320409">მესამე მხარის ქუქი-ჩანაწერები</translation>
 <translation id="5002932099480077015">თუ ჩართულია, Chrome თქვენი ბარათის ასლს ამ მოწყობილობაში ფორმათა უფრო სწრაფად შევსებისთვის შეინახავს.</translation>
 <translation id="5007392906805964215">გადახედვა</translation>
+<translation id="500790844453430087">ჩანართების ჯგუფები „<ph name="GROUP_TITLE_1" />“ და „<ph name="GROUP_TITLE_2" />“ აღარ არის ხელმისაწვდომი</translation>
 <translation id="5011561501798487822">აღმოჩენილია ენა</translation>
 <translation id="5015510746216210676">მოწყობილობის სახელი:</translation>
 <translation id="5017554619425969104">თქვენ მიერ კოპირებული ტექსტი</translation>
@@ -2373,6 +2375,7 @@
 <translation id="519422657042045905">ანოტაცია მიუწვდომელია</translation>
 <translation id="5200063972779787617">ანგარიშში მისამართის შენახვა</translation>
 <translation id="5201306358585911203">ამ გვერდში ჩაშენებული გვერდი იუწყება:</translation>
+<translation id="5205114269877707377"><ph name="OMNIBOX_ACTION_FOCUSED_FRIENDLY_MATCH_TEXT" />, ხელმისაწვდომი ქმედებების გასაცნობად დააჭირეთ კლავიშს „ჩანართი“, არჩეული ქმედების შესასრულებლად დააჭირეთ Enter-ს.</translation>
 <translation id="5205222826937269299">აუცილებელია სახელის მითითება</translation>
 <translation id="5206392433295093945">საძინებელი</translation>
 <translation id="5209670883520018268">ლანგარი 20</translation>
@@ -2738,6 +2741,7 @@
 <translation id="5866898949289125849">თქვენ ათვალიერებთ დეველოპერთა ხელსაწყოების გვერდს</translation>
 <translation id="5869405914158311789">ეს საიტი მიუწვდომელია</translation>
 <translation id="5869522115854928033">შენახული პაროლები</translation>
+<translation id="5872215789867188990">ჩანართების ჯგუფი „<ph name="GROUP_TITLE" />“ აღარ არის ხელმისაწვდომი</translation>
 <translation id="5872692522325383488">IBAN შენახულია</translation>
 <translation id="5873297634595728366">სატრანსპორტო საშუალებები დიზელის ძრავით</translation>
 <translation id="5877359070305966420">ადამიანური რესურსები</translation>
@@ -3442,7 +3446,6 @@
 <translation id="7110368079836707726">კოლეჯები და უნივერსიტეტები</translation>
 <translation id="7111012039238467737">(სწორია)</translation>
 <translation id="7111507312244504964">კერძო საკუთრების ინსპექტირება და შეფასება</translation>
-<translation id="7112327784801341716">თქვენი ამჟამინდელი ინფორმაცია არ ჩანს? ინფორმაციის განახლებისთვის დაუკავშირდით თქვენს ბანკს.</translation>
 <translation id="7116334367957017155">შენახული მისამართები არ გაქვთ. დაამატეთ მისამართი, ის Google-ის სხვადასხვა პროდუქტში რომ გამოიყენოთ.</translation>
 <translation id="7118618213916969306">გაცვლის ბუფერში URL-ის ძიება, <ph name="SHORT_URL" /></translation>
 <translation id="7118852830504022370">ამ გაფრთხილებას ხედავთ იმიტომ, რომ ამ საიტის მიერ HTTPS მხარდაუჭერელია. <ph name="BEGIN_LEARN_MORE_LINK" />შეიტყვეთ მეტი ამ გაფრთხილების შესახებ<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -3504,7 +3507,6 @@
 <translation id="7219179957768738017">კავშირი იყენებს <ph name="SSL_VERSION" />-ს.</translation>
 <translation id="7220786058474068424">მუშავდება</translation>
 <translation id="7221855153210829124">შეტყობინებების ჩვენება</translation>
-<translation id="7221857374443660083">თქვენს ბანკს სურს, დარწმუნდეს, რომ ეს ნამდვილად თქვენ ხართ</translation>
 <translation id="722454870747268814">ახალი ინკოგნიტო ჩანართი</translation>
 <translation id="7227293336683593977">ფასის ისტორია</translation>
 <translation id="7232352818707016189">მეტი მოქმედება ცხრილების შედარებისთვის</translation>

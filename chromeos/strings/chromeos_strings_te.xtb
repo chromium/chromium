@@ -204,6 +204,7 @@
 <translation id="1823120442877418684">పాత్రలు</translation>
 <translation id="1827738518074806965">చిత్రకళా గ్యాలరీ</translation>
 <translation id="183287940576828840">అభ్యంతరకరమైనది/సురక్షితం కానిది</translation>
+<translation id="1834032517784994783">మాటల టైపింగ్ భాషను ఎంచుకోండి</translation>
 <translation id="1836553715834333258">సిస్టమ్ రంగు</translation>
 <translation id="183675228220305365">రియలిస్ట్</translation>
 <translation id="1838374766361614909">శోధనను తీసివేయండి</translation>
@@ -316,7 +317,6 @@
 <translation id="2308243864813041101">అప్‌డేట్ ప్రాసెస్‌ను కొనసాగించడానికి, <ph name="DEVICE_NAME" /> USB కేబుల్‌ను అన్‌ప్లగ్ చేయండి</translation>
 <translation id="2320295602967756579">లేత రంగు రూపాన్ని ఎనేబుల్ చేయండి</translation>
 <translation id="2323506179655536734">స్కిప్ చేయబడింది</translation>
-<translation id="2323755382216917952">ఈ అప్‌డేట్‌కు మీరు ఇన్‌స్టాలేషన్‌ను పూర్తి చేయడానికి మీ కంప్యూటర్‌ను రీస్టార్ట్ చేయవలసి ఉంటుంది. ఈ అప్‌డేట్ పూర్తి కావడానికి కొన్ని నిమిషాలు పట్టే అవకాశం ఉంది. ఫర్మ్‌వేర్ అప్‌డేట్ అవుతున్నప్పుడు, అన్‌ప్లగ్ చేయవద్దు లేదా మీ కంప్యూటర్‌ను షట్ డౌన్ చేయవద్దు.</translation>
 <translation id="2324354238778375592">ఫ్లోట్</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2346474577291266260">అద్భుతంగా ఉంది (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -462,7 +462,6 @@
 <translation id="3178532070248519384">అవాంట్-గార్డ్</translation>
 <translation id="3182676044300231689">"మరింత కాన్ఫిడెంట్‌గా ఉండేలా రాయి" వంటి ప్రాంప్ట్‌ను ఎంటర్ చేయండి</translation>
 <translation id="3188257591659621405">నా ఫైళ్లు</translation>
-<translation id="3188931456353313123">ఈ అప్‌డేట్‌ను పరికరాలను తయారు చేసే ప్రొవైడర్ అందిస్తున్నారు, సదరు అప్‌డేట్‌ను Google వెరిఫై చేయలేదు.</translation>
 <translation id="319101249942218879">అవతార్ ఇమేజ్ మారింది</translation>
 <translation id="3192947282887913208">ఆడియో  ఫైళ్ళు</translation>
 <translation id="3199982728237701504">డాక్యుమెంట్ ఫీడర్ (రెండు వైపులా)</translation>
@@ -733,6 +732,7 @@
 <translation id="4483049906298469269">డిఫాల్ట్-యేతర నెట్‌వర్క్ గేట్‌వేను పింగ్ చేయడంలో విఫలమైంది</translation>
 <translation id="4483498983731992167">టైప్ చేసిన మాటల ఫైల్‌ను క్రియేట్ చేయడం సాధ్యం కాదు</translation>
 <translation id="4486524074141928967">మీరు <ph name="TIME" />‌కు సైన్ అవుట్ అవుతారు</translation>
+<translation id="4487890678161807486">మాటల టైపింగ్ భాష సెలెక్టర్‌ను తెరవండి</translation>
 <translation id="4500722292849917410">షార్ట్‌కట్ అందుబాటులో లేదు. మోడిఫయర్ కీని (ctrl, alt, shift, లేదా <ph name="META_KEY" />) ఉపయోగించి కొత్త షార్ట్‌కట్‌ను నొక్కండి.</translation>
 <translation id="4500966230243561393">ఇంటర్‌ఫేస్ రంగు</translation>
 <translation id="4503223151711056411">ఎడమ వైపు బాణం</translation>

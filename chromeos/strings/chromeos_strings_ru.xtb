@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">Отменено</translation>
 <translation id="1020274983236703756">Эксклюзивный контент для <ph name="PRODUCT_NAME" /></translation>
 <translation id="1022628058306505708">Движения земли</translation>
+<translation id="102432830749687801">Используйте приложение "Перенос контента" от Google, чтобы заранее перенести информацию из учебного аккаунта в личный.</translation>
 <translation id="1026212596705997935">Это сочетание клавиш используется для действия "<ph name="CONFLICT_ACCEL_NAME" />". Нажмите его ещё раз, чтобы заменить исходное сочетание клавиш, или выберите новое.</translation>
 <translation id="1030856839388844477">Сбросить данные</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (потоки: <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" /> ГГц)</translation>
@@ -93,6 +94,7 @@
 <translation id="1394661041439318933">Чехол заряжен на <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="1397738625398125236">Запрос ping к шлюзу</translation>
 <translation id="1398634363027580500">очень большое время ожидания HTTPS</translation>
+<translation id="1406389211945506521">Заранее спасибо. Ваш отзыв поможет нам создавать более полезный и достоверный контент.</translation>
 <translation id="1407069428457324124">Тёмная тема</translation>
 <translation id="1413240736185167732">Сбой: ошибка в работе фильтра</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
@@ -198,8 +200,11 @@
 <translation id="1808803439260407870">Классическое искусство</translation>
 <translation id="181434555916624618">Результаты с изображением людей пока недоступны. Попробуйте ввести другой запрос.</translation>
 <translation id="1815850098929213707">Выбрана клавиша "<ph name="KEYS" />". Чтобы настроить управление, нажмите кнопку.</translation>
+<translation id="1818174214124933000">Нажав "Отправить", вы передадите компании Google отзыв и указанную ниже информацию. Они будут проверены нашими специалистами и использованы для улучшения продуктов и сервисов или машинного обучения согласно <ph name="LINK_POLICY_BEGIN" />Политике конфиденциальности<ph name="LINK_POLICY_END" /> и <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Условиям использования Google<ph name="LINK_TERMS_OF_SERVICE_END" />.</translation>
 <translation id="1823120442877418684">Объекты</translation>
 <translation id="1827738518074806965">Галерея</translation>
+<translation id="183287940576828840">Неприемлемый или небезопасный контент</translation>
+<translation id="1834032517784994783">Выберите язык расшифровки</translation>
 <translation id="1836553715834333258">Цвет системных элементов</translation>
 <translation id="183675228220305365">реализм</translation>
 <translation id="1838374766361614909">Удалить условия поиска</translation>
@@ -225,6 +230,7 @@
 <translation id="1908234395526491708">Невыполненные запросы UDP.</translation>
 <translation id="1908394185991500139">стрелка влево</translation>
 <translation id="1914144885717544695">в пятницу</translation>
+<translation id="1915960750806557358">Оставьте отзыв или опишите проблему. Не указывайте персональные и конфиденциальные данные.</translation>
 <translation id="1923388006036088459">Акцентные цвета</translation>
 <translation id="1945403655450283000">Диктофон</translation>
 <translation id="1947737735496445907">Напечатано</translation>
@@ -311,7 +317,6 @@
 <translation id="2308243864813041101">Чтобы продолжить обновление, отключите USB-кабель устройства "<ph name="DEVICE_NAME" />".</translation>
 <translation id="2320295602967756579">Использовать светлую тему</translation>
 <translation id="2323506179655536734">ПРОПУЩЕНО</translation>
-<translation id="2323755382216917952">Чтобы выполнить обновление, потребуется перезагрузить компьютер. Установка может занять несколько минут. Пока идет обновление встроенного ПО, не выключайте компьютер и не отключайте его от сети питания.</translation>
 <translation id="2324354238778375592">Плавающий режим</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2346474577291266260">Отличный (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -457,7 +462,6 @@
 <translation id="3178532070248519384">авангард</translation>
 <translation id="3182676044300231689">Введите запрос, например "сделай тон текста увереннее"</translation>
 <translation id="3188257591659621405">Мои файлы</translation>
-<translation id="3188931456353313123">Это обновление предоставлено производителем устройства и не проверено Google.</translation>
 <translation id="319101249942218879">Аватар изменен</translation>
 <translation id="3192947282887913208">Аудиофайлы</translation>
 <translation id="3199982728237701504">Автоподатчик документов (двусторонний)</translation>
@@ -596,6 +600,7 @@
 <translation id="387301095347517405">Количество полных циклов зарядки батареи</translation>
 <translation id="3877066159641251281">Озвучить перевод</translation>
 <translation id="3880601782712134623">автоматически определять отдельные голоса и присваивать каждому из них стандартные обозначения, например "Говорящий 1" и "Говорящий 2";</translation>
+<translation id="38811596981744338">Нарушение законодательства</translation>
 <translation id="3885327323343477505">Изменить заставку</translation>
 <translation id="3889914174935857450">Дата сброса данных</translation>
 <translation id="3897092660631435901">Меню</translation>
@@ -727,6 +732,7 @@
 <translation id="4483049906298469269">Не удалось выполнить проверку ping сетевого шлюза, не заданного по умолчанию.</translation>
 <translation id="4483498983731992167">Не удалось создать расшифровку</translation>
 <translation id="4486524074141928967">В <ph name="TIME" /> запланирован выход из системы</translation>
+<translation id="4487890678161807486">Открыть окно, где можно выбрать язык расшифровки</translation>
 <translation id="4500722292849917410">Недопустимое сочетание клавиш. Выберите новое с клавишей-модификатором: Ctrl, Alt, Shift или <ph name="META_KEY" />.</translation>
 <translation id="4500966230243561393">Цвет интерфейса</translation>
 <translation id="4503223151711056411">Стрелка влево</translation>
@@ -821,6 +827,7 @@
 <translation id="4921665434385737356">Батарея зарядилась на <ph name="RATE" /> за <ph name="NUM_SECONDS" /> сек.</translation>
 <translation id="4930320165497208503">Чтобы задать или изменить параметры подключения, перейдите в <ph name="BEGIN_LINK" />настройки<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Дата</translation>
+<translation id="494102685638938793"><ph name="LINK_TEXT" />. Страница откроется в новой вкладке.</translation>
 <translation id="4946927805998996217">Создание заметок к записи</translation>
 <translation id="4950314376641394653">Встроенное ПО для устройства "<ph name="DEVICE_NAME" />" было обновлено до версии <ph name="VERSION" />.</translation>
 <translation id="4950893758552030541">аллея деревьев</translation>
@@ -1208,6 +1215,7 @@
 <translation id="6692996468359469499">Получайте информацию об объектах на экране</translation>
 <translation id="6694534975463174713">Блокировка</translation>
 <translation id="6700703207451721535">По данной ссылке доступ запрещен. Обратитесь к преподавателю.</translation>
+<translation id="6703179086771097594">Какая проблема возникла?</translation>
 <translation id="6704062477274546131">Разрешение DNS</translation>
 <translation id="6712933881624804031">долина</translation>
 <translation id="6716013206176357696">клубника</translation>
@@ -1281,6 +1289,7 @@
 <translation id="7049916119678019302">Перейдите в настройки и скачайте модель расшифровки.</translation>
 <translation id="7058278511608979688">Завершить и сохранить</translation>
 <translation id="7059230779847288458">Заряжается, осталось <ph name="TIME_VALUE" /></translation>
+<translation id="7064209589142995848">Перенос контента</translation>
 <translation id="7065336548231472971">Вы выбрали <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7066538517128343186">клавиша <ph name="KEY" /></translation>
 <translation id="7068619307603204412">Подготовьте устройство</translation>
@@ -1592,6 +1601,7 @@
 <translation id="8476942730579767658">Окна и рабочие столы</translation>
 <translation id="8477536061607044749">графический дизайн</translation>
 <translation id="8477551185774834963">Задержка на сервере доменных имен незначительно превышает допустимое значение.</translation>
+<translation id="8481308460877552925">Фактические ошибки</translation>
 <translation id="8482376765267780829">Выделите нужный текст</translation>
 <translation id="8483248364096924578">IP-адрес</translation>
 <translation id="8491311378305535241">Не удается подключиться к HTTPS-сайтам из приложений для Android через брандмауэр.</translation>

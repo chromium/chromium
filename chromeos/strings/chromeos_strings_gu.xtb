@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">રદ કરેલા</translation>
 <translation id="1020274983236703756"><ph name="PRODUCT_NAME" /> માટે વિશિષ્ટ અસેટ હવે ઉપલબ્ધ છે</translation>
 <translation id="1022628058306505708">અર્થ ફ્લો</translation>
+<translation id="102432830749687801">તમે ઍક્સેસ ગુમાવો તે પહેલાં તમારી સ્કૂલના એકાઉન્ટ ડેટાને તમારા વ્યક્તિગત એકાઉન્ટમાં ખસેડવા માટે Googleની કન્ટેન્ટ ટ્રાન્સફર કરવા માટેની ઍપનો ઉપયોગ કરવાની ખાતરી કરો.</translation>
 <translation id="1026212596705997935">આ શૉર્ટકટનો ઉપયોગ "<ph name="CONFLICT_ACCEL_NAME" />" માટે કરવામાં આવી રહ્યો છે. કોઈ નવો શૉર્ટકટ દબાવો. હાલના શૉર્ટકટને બદલવા માટે, આ શૉર્ટકટને ફરી દબાવો.</translation>
 <translation id="1030856839388844477">ડેટા વપરાશ રીસેટ કરો</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> થ્રેડ, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
@@ -93,6 +94,7 @@
 <translation id="1394661041439318933">ડિવાઇસના કેસમાં <ph name="BATTERY_PERCENTAGE" />% બૅટરી છે.</translation>
 <translation id="1397738625398125236">ગેટવેને પિંગ કરી શકાય છે</translation>
 <translation id="1398634363027580500">HTTPSની અતિ ઉચ્ચ વિલંબતા</translation>
+<translation id="1406389211945506521">તમારો અનુભવ શેર કરવા બદલ આભાર. તમારો પ્રતિસાદ અમને વધુ સચોટ અને લાભદાયક કન્ટેન્ટ બનાવવામાં સહાય કરે છે.</translation>
 <translation id="1407069428457324124">ઘેરી થીમ</translation>
 <translation id="1413240736185167732">નિષ્ફળ થયું - ફિલ્ટર નિષ્ફળ થયું</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
@@ -198,8 +200,10 @@
 <translation id="1808803439260407870">ક્લાસિક આર્ટ</translation>
 <translation id="181434555916624618">હમણાં માટે, લોકો સાથેના પરિણામો બતાવવામાં આવશે નહીં. કોઈ અન્ય પ્રૉમ્પ્ટ અજમાવી જુઓ.</translation>
 <translation id="1815850098929213707">પસંદ કરેલી કી <ph name="KEYS" /> છે. કન્ટ્રોલમાં ફેરફાર કરવા માટે બટન પર ટૅપ કરો</translation>
+<translation id="1818174214124933000">જ્યારે તમે મોકલવાનું પસંદ કરો, ત્યારે તમારો પ્રતિસાદ અને કન્ટેન્ટ (નીચે બતાવ્યા મુજબ) Googleને મોકલવામાં આવે છે, માનવો દ્વારા રિવ્યૂ કરવામાં આવે છે તથા <ph name="LINK_POLICY_BEGIN" />પ્રાઇવસી પૉલિસી<ph name="LINK_POLICY_END" /> અને <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Googleની સેવાની શરતો<ph name="LINK_TERMS_OF_SERVICE_END" />ને આધીન રહીને અમારી પ્રોડક્ટ અને સેવાઓને પ્રશિક્ષણ આપવા કે બહેતર બનાવવા માટે ઉપયોગમાં લેવામાં આવે છે.</translation>
 <translation id="1823120442877418684">અક્ષરો</translation>
 <translation id="1827738518074806965">આર્ટ ગૅલરી</translation>
+<translation id="183287940576828840">અપમાનજનક/અસલામત</translation>
 <translation id="1836553715834333258">સિસ્ટમનો રંગ</translation>
 <translation id="183675228220305365">વાસ્તવવાદી</translation>
 <translation id="1838374766361614909">શોધ સાફ કરો</translation>
@@ -225,6 +229,7 @@
 <translation id="1908234395526491708">UDP વિનંતી નિષ્ફળ થઈ</translation>
 <translation id="1908394185991500139">તીર ડાબું</translation>
 <translation id="1914144885717544695">શુક્રવારે</translation>
+<translation id="1915960750806557358">તમારો પ્રતિસાદ શેર કરો અથવા તમારી સમસ્યાનું વર્ણન કરો. વ્યક્તિગત, સંવેદનશીલ કે ગોપનીય હોય તેવી કોઈપણ માહિતી શામેલ ન કરવાની ખાતરી કરો.</translation>
 <translation id="1923388006036088459">ઍક્સેન્ટના રંગ</translation>
 <translation id="1945403655450283000">રેકોર્ડર</translation>
 <translation id="1947737735496445907">પ્રિન્ટ થઈ ગયું</translation>
@@ -311,7 +316,6 @@
 <translation id="2308243864813041101">અપડેટની પ્રક્રિયા ચાલુ રાખવા માટે <ph name="DEVICE_NAME" />ના USB કેબલને અનપ્લગ કરો</translation>
 <translation id="2320295602967756579">ઝાંખી થીમ ચાલુ કરો</translation>
 <translation id="2323506179655536734">છોડ્યું</translation>
-<translation id="2323755382216917952">આ અપડેટ માટે ઇન્સ્ટૉલ કરવાની પ્રક્રિયા પૂર્ણ કરવા માટે જરૂરી છે કે તમે તમારું કમ્પ્યૂટર ફરી શરૂ કરો. આ અપડેટ પૂર્ણ થવામાં થોડો સમય લાગી શકે છે. ફર્મવેયર અપડેટ થવાની પ્રક્રિયા ચાલતી હોય ત્યારે તમારા કમ્પ્યૂટરના પ્લગને કાઢી નાખશો નહીં કે તેને શટ ડાઉન કરશો નહીં.</translation>
 <translation id="2324354238778375592">ફ્લોટિંગ વિન્ડો</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2346474577291266260">ઉત્તમ (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -457,7 +461,6 @@
 <translation id="3178532070248519384">આવાં ગાર્દ</translation>
 <translation id="3182676044300231689">"તેને વધુ આત્મવિશ્વાસી બનાવો" જેવો પ્રૉમ્પ્ટ દાખલ કરો</translation>
 <translation id="3188257591659621405">મારી ફાઇલો</translation>
-<translation id="3188931456353313123">આ અપડેટ ડિવાઇસ નિર્માતા દ્વારા આપવામાં આવે છે અને તેની Google દ્વારા ચકાસણી કરવામાં આવી નથી.</translation>
 <translation id="319101249942218879">અવતારની છબી બદલવામાં આવી</translation>
 <translation id="3192947282887913208">ઑડિયો ફાઇલો</translation>
 <translation id="3199982728237701504">દસ્તાવેજનું ફીડર (બન્ને બાજુથી)</translation>
@@ -596,6 +599,7 @@
 <translation id="387301095347517405">તમારી બૅટરી પૂર્ણ ચાર્જિંગ સાયકલમાંથી પસાર થયાની સંખ્યા</translation>
 <translation id="3877066159641251281">અનુવાદ સાંભળો</translation>
 <translation id="3880601782712134623">અલગ-અલગ વૉઇસની ઑટોમૅટિક રીતે ભાળ મેળવે છે અને દરેક સ્પીકરને કોઈ સામાન્ય લેબલ આપે છે, જેમ કે સ્પીકર 1 અને સ્પીકર 2</translation>
+<translation id="38811596981744338">કાનૂની સમસ્યા</translation>
 <translation id="3885327323343477505">સ્ક્રીન સેવર બદલો</translation>
 <translation id="3889914174935857450">ડેટા રિસેટ કરો</translation>
 <translation id="3897092660631435901">મેનૂ</translation>
@@ -821,6 +825,7 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> સેકન્ડમાં <ph name="RATE" /> ચાર્જ કરી.</translation>
 <translation id="4930320165497208503">કનેક્શનનું સેટઅપ કરવા અથવા તેને અપડેટ કરવા માટે, <ph name="BEGIN_LINK" />સેટિંગ<ph name="END_LINK" />માં જાઓ.</translation>
 <translation id="4932733599132424254">તારીખ</translation>
+<translation id="494102685638938793"><ph name="LINK_TEXT" />, નવા ટૅબમાં ખૂલે છે</translation>
 <translation id="4946927805998996217">સારાંશ જનરેટ કરી રહ્યાં છીએ</translation>
 <translation id="4950314376641394653"><ph name="DEVICE_NAME" /> ફર્મવેયર વર્ઝન <ph name="VERSION" /> પર અપડેટ કરાયું</translation>
 <translation id="4950893758552030541">વૃક્ષની ટનલ</translation>
@@ -1208,6 +1213,7 @@
 <translation id="6692996468359469499">તમારી પસંદગી સંબંધિત માહિતી મેળવો</translation>
 <translation id="6694534975463174713">લૉક</translation>
 <translation id="6700703207451721535">આ લિંક માટે ઍક્સેસની મંજૂરી નથી. જો તમને ઍક્સેસની જરૂર હોય, તો તમારા શિક્ષક સાથે ચેક કરો.</translation>
+<translation id="6703179086771097594">તમારા માટે શું યોગ્ય ન હતું?</translation>
 <translation id="6704062477274546131">DNSનો ઉકેલ</translation>
 <translation id="6712933881624804031">ખીણ</translation>
 <translation id="6716013206176357696">સ્ટ્રોબેરી</translation>
@@ -1281,6 +1287,7 @@
 <translation id="7049916119678019302">સેટિંગમાં જઈને ટ્રાન્સક્રિપ્શન મૉડલ ડાઉનલોડ કરો</translation>
 <translation id="7058278511608979688">બંધ કરો અને સાચવો</translation>
 <translation id="7059230779847288458">ચાર્જ થઈ રહી છે, પૂર્ણ ચાર્જ થવામાં <ph name="TIME_VALUE" /> બાકી</translation>
+<translation id="7064209589142995848">કન્ટેન્ટ ટ્રાન્સફર</translation>
 <translation id="7065336548231472971"><ph name="LANGUAGE_NAME" /> પસંદ કરી</translation>
 <translation id="7066538517128343186"><ph name="KEY" /> કી</translation>
 <translation id="7068619307603204412">તમારું ડિવાઇસ તૈયાર કરો</translation>
@@ -1592,6 +1599,7 @@
 <translation id="8476942730579767658">વિન્ડો અને ડેસ્ક</translation>
 <translation id="8477536061607044749">ગ્રાફિક ડિઝાઇન</translation>
 <translation id="8477551185774834963">DNSની વિલંબતા મંજૂરીયોગ્ય થ્રેશોલ્ડ કરતાં થોડી વધુ છે</translation>
+<translation id="8481308460877552925">તથ્યાત્મક રીતે ખોટું છે</translation>
 <translation id="8482376765267780829">સરળ બનાવવા માટે અમુક ટેક્સ્ટ પસંદ કરો</translation>
 <translation id="8483248364096924578">IP સરનામું</translation>
 <translation id="8491311378305535241">Android ઍપથી ફાયરવૉલ મારફતે HTTP વેબસાઇટ સાથે કનેક્ટ કરી શકતા નથી</translation>

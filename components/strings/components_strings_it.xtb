@@ -271,6 +271,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1448166547804028941">Impossibile impostare le chiavi "<ph name="DATA_CONTROLS_FIRST_KEY_SET" />" nello stesso dizionario delle chiavi "<ph name="DATA_CONTROLS_SECOND_KEY_SET" />"</translation>
 <translation id="1455413310270022028">Gomma</translation>
+<translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{Visualizza 0 recensioni}=1{Visualizza 1 recensione}other{Visualizza tutte e # le recensioni}}</translation>
 <translation id="1458059624921545588">Persone e società</translation>
 <translation id="1458140305240870199">Biancheria intima</translation>
 <translation id="1459693405370120464">Meteo</translation>
@@ -961,6 +962,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2674170444375937751">Eliminare le pagine dalla cronologia?</translation>
 <translation id="2674524144218093528">Verniciatura e finitura case</translation>
 <translation id="2674804415323431591">Nascondi suggerimenti</translation>
+<translation id="26774279487328902"><ph name="GROUP_COUNT" /> gruppi di schede non sono più disponibili</translation>
 <translation id="2677748264148917807">Esci</translation>
 <translation id="2683195745483370038">Altri risultati trovati</translation>
 <translation id="2686919536310834199">Invia feedback per Aiutami a scrivere.</translation>
@@ -1953,6 +1955,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4407758156081352648">Per motivi di sicurezza, la tua organizzazione non consente di riutilizzare le password in Chrome. Le password in Chrome sono criptate per proteggere la privacy degli utenti.</translation>
 <translation id="4408413947728134509">Cookie: <ph name="NUM_COOKIES" /></translation>
 <translation id="4412074349188076601">Questa configurazione è contrassegnata come installabile, ma non è stata fornita alcuna immagine per questa architettura, quindi non può essere installata.</translation>
+<translation id="4412377069090572315">Cosa dicono le persone</translation>
 <translation id="4414452699610169758">Utilizza Gestore delle password di Google e la Compilazione automatica di Chrome per salvare e compilare password, metodi di pagamento e indirizzi</translation>
 <translation id="4414515549596849729">cookie e dati dei siti</translation>
 <translation id="4415156962929755728">Plastica (lucida)</translation>
@@ -2261,6 +2264,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5001526427543320409">Cookie di terze parti</translation>
 <translation id="5002932099480077015">Se questa opzione viene attivata, Chrome memorizza una copia della carta sul dispositivo per velocizzare la compilazione dei moduli.</translation>
 <translation id="5007392906805964215">Visualizza</translation>
+<translation id="500790844453430087">I gruppi di schede "<ph name="GROUP_TITLE_1" />" e "<ph name="GROUP_TITLE_2" />" non sono più disponibili</translation>
 <translation id="5011561501798487822">Lingua rilevata</translation>
 <translation id="5015510746216210676">Nome macchina:</translation>
 <translation id="5017554619425969104">Testo copiato</translation>
@@ -2368,6 +2372,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="519422657042045905">Annotazione non disponibile</translation>
 <translation id="5200063972779787617">Salva l'indirizzo nell'account</translation>
 <translation id="5201306358585911203">Una pagina incorporata in questa pagina dice</translation>
+<translation id="5205114269877707377"><ph name="OMNIBOX_ACTION_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab per sfogliare le azioni disponibili, quindi Invio per eseguire l'azione selezionata.</translation>
 <translation id="5205222826937269299">Nome obbligatorio</translation>
 <translation id="5206392433295093945">Camera da letto</translation>
 <translation id="5209670883520018268">Vassoio 20</translation>
@@ -2733,6 +2738,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5866898949289125849">Stai visualizzando una pagina di strumenti per sviluppatori</translation>
 <translation id="5869405914158311789">Impossibile raggiungere il sito</translation>
 <translation id="5869522115854928033">Password salvate</translation>
+<translation id="5872215789867188990">Il gruppo di schede "<ph name="GROUP_TITLE" />" non è più disponibile</translation>
 <translation id="5872692522325383488">IBAN salvato</translation>
 <translation id="5873297634595728366">Veicoli diesel</translation>
 <translation id="5877359070305966420">Risorse umane</translation>
@@ -2774,6 +2780,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5937560539988385583">Pagina tradotta</translation>
 <translation id="5938153366081463283">Aggiungi carta virtuale</translation>
 <translation id="5938793338444039872">Troy</translation>
+<translation id="5938866385061293322">Queste informazioni provengono da siti web di recensioni indipendenti come Trustpilot, ScamAdviser, Google e altri. I riepiloghi vengono creati con l'AI.</translation>
 <translation id="5944297261866530437">Tessuto (lucido)</translation>
 <translation id="5950901984834744590">Rasoi e rasoi elettrici</translation>
 <translation id="5951495562196540101">Impossibile effettuare la registrazione con l'account consumer (è disponibile la licenza inclusa).</translation>
@@ -3139,6 +3146,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6567832540451970450">L'amministratore consente <ph name="PERMISSION" /> per questo sito</translation>
 <translation id="6568793038316600992">Pulsante Gestisci metodi di pagamento, attiva per gestire i tuoi pagamenti e i dati delle carte di credito nelle impostazioni di Chrome</translation>
 <translation id="6569060085658103619">È visualizzata la pagina di un'estensione</translation>
+<translation id="6572867903637058088">Hai trovato questa informazione utile?</translation>
 <translation id="6573200754375280815">Perforatura doppia a destra</translation>
 <translation id="6574762126505704998">Riempi</translation>
 <translation id="6575408526598156416">Salva nell'account</translation>
@@ -3434,7 +3442,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="7110368079836707726">Istituti superiori e Università</translation>
 <translation id="7111012039238467737">(Valido)</translation>
 <translation id="7111507312244504964">Valutazioni e perizie immobiliari</translation>
-<translation id="7112327784801341716">I dati non sono aggiornati? Contatta la banca per aggiornarli.</translation>
 <translation id="7116334367957017155">Non hai indirizzi salvati. Aggiungi un indirizzo per utilizzarlo su tutti i prodotti Google.</translation>
 <translation id="7118618213916969306">Cerca URL dagli appunti, <ph name="SHORT_URL" /></translation>
 <translation id="7118852830504022370">Questo avviso è stato visualizzato perché il sito non supporta HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Scopri di più sull'avviso<ph name="END_LEARN_MORE_LINK" />.</translation>
@@ -3497,7 +3504,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="7219179957768738017">La connessione utilizza <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Elaborazione in corso</translation>
 <translation id="7221855153210829124">Mostrare le notifiche</translation>
-<translation id="7221857374443660083">La tua banca vuole verificare la tua identità</translation>
 <translation id="722454870747268814">Nuova scheda in incognito</translation>
 <translation id="7227293336683593977">Cronologia dei prezzi</translation>
 <translation id="7232352818707016189">Altre azioni per la tabella Confronta</translation>
@@ -4319,9 +4325,11 @@ Ulteriori dettagli:
 <translation id="8672535691554698269">Reti di computer</translation>
 <translation id="8675446170353411473">È in corso il caricamento dei tuoi file su <ph name="CLOUD_PROVIDER" /></translation>
 <translation id="8676424191133491403">Nessun ritardo</translation>
+<translation id="8679727228072670864">{COUNT,plural, =1{{COUNT} tabella eliminata}other{{COUNT} tabelle eliminate}}</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, risposta, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Impossibile caricare la pagina web all'indirizzo <ph name="PAGE" /> perché:</translation>
 <translation id="8682297334444610648">Gioco Dino, tocca per giocare</translation>
+<translation id="8685225035093721011">Recensioni del negozio</translation>
 <translation id="8686424632716064939">Sicurezza informatica</translation>
 <translation id="8687278439622293018">La voce <ph name="ENTRY_VOICEOVER" /> è stata eliminata</translation>
 <translation id="8687429322371626002">Il tuo dispositivo e il tuo account sono gestiti da <ph name="MANAGER" />.</translation>

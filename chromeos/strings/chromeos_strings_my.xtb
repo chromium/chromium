@@ -204,6 +204,7 @@
 <translation id="1823120442877418684">အကြောင်းအရာ</translation>
 <translation id="1827738518074806965">ပန်းချီပြခန်း</translation>
 <translation id="183287940576828840">ရိုင်းပျသည်/လုံခြုံမှုမရှိပါ</translation>
+<translation id="1834032517784994783">စာသားမှတ်တမ်း ဘာသာစကား ရွေးရန်</translation>
 <translation id="1836553715834333258">စနစ် အရောင်</translation>
 <translation id="183675228220305365">သရုပ်မှန်ပုံဖော်သူ</translation>
 <translation id="1838374766361614909">ရှာဖွေမှုကို ရှင်းပါ</translation>
@@ -316,7 +317,6 @@
 <translation id="2308243864813041101">အပ်ဒိတ်လုပ်ငန်းစဉ် ရှေ့ဆက်ရန် <ph name="DEVICE_NAME" /> USB ကြိုးကို ပလတ်ဖြုတ်ပါ</translation>
 <translation id="2320295602967756579">လင်းသည့် အပြင်အဆင် ဖွင့်ရန်</translation>
 <translation id="2323506179655536734">ကျော်လိုက်သည်</translation>
-<translation id="2323755382216917952">ထည့်သွင်းမှု အပြီးသတ်ရန်အတွက် ဤအပ်ဒိတ်သည် သင့်ကွန်ပျူတာကို ပြန်စရန် လိုအပ်သည်။ ဤအပ်ဒိတ်အပြီးသတ်ရန် မိနစ်အနည်းငယ် ကြာနိုင်သည်။ ဖာမ်းဝဲအပ်ဒိတ်လုပ်နေစဉ် သင့်ကွန်ပျူတာကို ပလတ်မဖြုတ်ပါနှင့် (သို့) အပြီးမပိတ်ပါနှင့်။</translation>
 <translation id="2324354238778375592">မျှောရန်</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2346474577291266260">အလွန်ကောင်း (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -462,7 +462,6 @@
 <translation id="3178532070248519384">အတွေးအမြင်သစ် အနုပညာ</translation>
 <translation id="3182676044300231689">“ယုံကြည်မှုပိုရှိအောင်လုပ်ပါ” ကဲ့သို့ တိုက်တွန်းချက်ထည့်ရန်</translation>
 <translation id="3188257591659621405">ကျွန်ုပ်၏ဖိုင်များ</translation>
-<translation id="3188931456353313123">ဤအပ်ဒိတ်ကို စက်ထုတ်လုပ်သူက ပံ့ပိုးထားသဖြင့် Google က စိစစ်မထားပါ။</translation>
 <translation id="319101249942218879">အယ်ဗတာပုံ ပြောင်းလိုက်သည်</translation>
 <translation id="3192947282887913208">အသံ ဖိုင်များ</translation>
 <translation id="3199982728237701504">စာရွက်စာတမ်း ထည့်ရန်ဗန်း (နှစ်ဘက်သုံး)</translation>
@@ -733,6 +732,7 @@
 <translation id="4483049906298469269">မူရင်းမဟုတ်သည့် ကွန်ရက်ဂိတ်ဝကို ပင်လုပ်၍မရပါ</translation>
 <translation id="4483498983731992167">စာသားမှတ်တမ်း ပြုလုပ်၍မရပါ</translation>
 <translation id="4486524074141928967"><ph name="TIME" /> တွင် သင် ထွက်သွားပါမည်</translation>
+<translation id="4487890678161807486">စာသားမှတ်တမ်း ဘာသာစကား ရွေးချယ်စနစ် ဖွင့်ရန်</translation>
 <translation id="4500722292849917410">ဖြတ်လမ်းလင့်ခ် မရနိုင်ပါ။ မွမ်းမံခလုတ် (Ctrl၊ Alt၊ Shift သို့မဟုတ် <ph name="META_KEY" />) ဖြင့် ဖြတ်လမ်းလင့်ခ်အသစ်ကို နှိပ်ပါ။</translation>
 <translation id="4500966230243561393">အင်တာဖေ့စ် အရောင်</translation>
 <translation id="4503223151711056411">ဘယ်ညွှန်မြား</translation>

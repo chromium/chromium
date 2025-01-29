@@ -204,6 +204,7 @@
 <translation id="1823120442877418684">Personaje</translation>
 <translation id="1827738518074806965">Galerie de imagini</translation>
 <translation id="183287940576828840">Jignitor / Neadecvat</translation>
+<translation id="1834032517784994783">Selectează limba pentru transcriere</translation>
 <translation id="1836553715834333258">Culoarea sistemului</translation>
 <translation id="183675228220305365">realist</translation>
 <translation id="1838374766361614909">Șterge căutarea</translation>
@@ -316,7 +317,6 @@
 <translation id="2308243864813041101">Deconectează cablul USB pentru <ph name="DEVICE_NAME" /> pentru a continua procesul de actualizare</translation>
 <translation id="2320295602967756579">Activează tema luminoasă</translation>
 <translation id="2323506179655536734">OMIS</translation>
-<translation id="2323755382216917952">Pentru a finaliza instalarea actualizării, trebuie să repornești computerul. Actualizarea poate dura câteva minute. Nu deconecta sau nu închide computerul în timpul actualizării firmware-ului.</translation>
 <translation id="2324354238778375592">Suprapus</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2346474577291266260">Excelentă (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -462,7 +462,6 @@
 <translation id="3178532070248519384">avant-gardist</translation>
 <translation id="3182676044300231689">Introdu o solicitare precum „mai încrezător”</translation>
 <translation id="3188257591659621405">Fișierele mele</translation>
-<translation id="3188931456353313123">Actualizarea este oferită de producătorul dispozitivului și nu a fost verificată de Google.</translation>
 <translation id="319101249942218879">Imaginea avatar a fost schimbată</translation>
 <translation id="3192947282887913208">Fișiere audio</translation>
 <translation id="3199982728237701504">Alimentator de documente (față-verso)</translation>
@@ -733,6 +732,7 @@
 <translation id="4483049906298469269">Nu s-a putut da ping către gateway-ul de rețea care nu este prestabilit</translation>
 <translation id="4483498983731992167">Nu se poate crea transcrierea</translation>
 <translation id="4486524074141928967">Te vei deconecta la <ph name="TIME" /></translation>
+<translation id="4487890678161807486">Deschide selectorul de limbă pentru transcriere</translation>
 <translation id="4500722292849917410">Comanda rapidă nu este disponibilă. Introdu o nouă comandă rapidă folosind o tastă de modificare (Ctrl, Alt, Shift sau <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Culoarea interfeței</translation>
 <translation id="4503223151711056411">Săgeată spre stânga</translation>

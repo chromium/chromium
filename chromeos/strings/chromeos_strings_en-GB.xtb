@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">Cancelled</translation>
 <translation id="1020274983236703756">Exclusive <ph name="PRODUCT_NAME" /> assets now available</translation>
 <translation id="1022628058306505708">Earth Flow</translation>
+<translation id="102432830749687801">Make sure that you use the Content Transfer app by Google to move your school account data to your personal account before you lose access.</translation>
 <translation id="1026212596705997935">Shortcut is being used for '<ph name="CONFLICT_ACCEL_NAME" />'. Press a new shortcut. To replace the existing shortcut, press this shortcut again.</translation>
 <translation id="1030856839388844477">Reset data usage</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> threads, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
@@ -93,6 +94,7 @@
 <translation id="1394661041439318933">Device has <ph name="BATTERY_PERCENTAGE" />% case battery.</translation>
 <translation id="1397738625398125236">Gateway can be pinged</translation>
 <translation id="1398634363027580500">Very high HTTPS latency</translation>
+<translation id="1406389211945506521">Thanks for sharing your experience. Your feedback helps us to create more accurate and beneficial content.</translation>
 <translation id="1407069428457324124">Dark theme</translation>
 <translation id="1413240736185167732">Failed – Filter failed</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
@@ -198,8 +200,10 @@
 <translation id="1808803439260407870">Classic art</translation>
 <translation id="181434555916624618">For now, results with people won't be shown. Try another prompt.</translation>
 <translation id="1815850098929213707">Selected key is <ph name="KEYS" />. Tap on the button to edit the control</translation>
+<translation id="1818174214124933000">When you select 'Send', your feedback and content (shown below) will be sent to Google, reviewed by humans and used to train or improve our products and services subject to the <ph name="LINK_POLICY_BEGIN" />Privacy Policy<ph name="LINK_POLICY_END" /> and <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Google Terms of Service<ph name="LINK_TERMS_OF_SERVICE_END" />.</translation>
 <translation id="1823120442877418684">Characters</translation>
 <translation id="1827738518074806965">Art gallery</translation>
+<translation id="183287940576828840">Offensive/Unsafe</translation>
 <translation id="1836553715834333258">System colour</translation>
 <translation id="183675228220305365">realist</translation>
 <translation id="1838374766361614909">Clear search</translation>
@@ -225,6 +229,7 @@
 <translation id="1908234395526491708">UDP request failures</translation>
 <translation id="1908394185991500139">arrow left</translation>
 <translation id="1914144885717544695">on Friday</translation>
+<translation id="1915960750806557358">Share your feedback or describe your issue. Make sure that you don't include anything that is personal, sensitive or confidential.</translation>
 <translation id="1923388006036088459">Accent colours</translation>
 <translation id="1945403655450283000">Recorder</translation>
 <translation id="1947737735496445907">Printed</translation>
@@ -311,7 +316,6 @@
 <translation id="2308243864813041101">Unplug the <ph name="DEVICE_NAME" /> USB cable to continue the update process</translation>
 <translation id="2320295602967756579">Enable Light theme</translation>
 <translation id="2323506179655536734">SKIPPED</translation>
-<translation id="2323755382216917952">This update requires you to restart your computer to complete installation. This update may take a few minutes to complete. While the firmware is updating, do not unplug or shut down your computer.</translation>
 <translation id="2324354238778375592">Float</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2346474577291266260">Excellent (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -457,7 +461,6 @@
 <translation id="3178532070248519384">avant-garde</translation>
 <translation id="3182676044300231689">Enter a prompt like 'make it more confident'</translation>
 <translation id="3188257591659621405">My files</translation>
-<translation id="3188931456353313123">This update is provided by the device manufacturer and hasn't been verified by Google.</translation>
 <translation id="319101249942218879">Avatar image changed</translation>
 <translation id="3192947282887913208">Audio Files</translation>
 <translation id="3199982728237701504">Document feeder (two-sided)</translation>
@@ -596,6 +599,7 @@
 <translation id="387301095347517405">The number of times that your battery has gone through a full charging cycle</translation>
 <translation id="3877066159641251281">Listen to translation</translation>
 <translation id="3880601782712134623">Automatically detect distinct voices and give each speaker a generic label, such as Speaker 1 and Speaker 2</translation>
+<translation id="38811596981744338">Legal issue</translation>
 <translation id="3885327323343477505">Change screen saver</translation>
 <translation id="3889914174935857450">Reset date</translation>
 <translation id="3897092660631435901">Menu</translation>
@@ -821,6 +825,7 @@
 <translation id="4921665434385737356">Charged <ph name="RATE" /> in <ph name="NUM_SECONDS" /> seconds.</translation>
 <translation id="4930320165497208503">To set up or update a connection, go to <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Date</translation>
+<translation id="494102685638938793"><ph name="LINK_TEXT" />, opens in new tab</translation>
 <translation id="4946927805998996217">Generating summary</translation>
 <translation id="4950314376641394653">Firmware <ph name="DEVICE_NAME" /> has been updated to version <ph name="VERSION" /></translation>
 <translation id="4950893758552030541">tree tunnel</translation>
@@ -1208,6 +1213,7 @@
 <translation id="6692996468359469499">Get info related to your selection</translation>
 <translation id="6694534975463174713">lock</translation>
 <translation id="6700703207451721535">Access isn’t allowed for this link. Check with your teacher if you need access.</translation>
+<translation id="6703179086771097594">What didn't work well?</translation>
 <translation id="6704062477274546131">DNS resolution</translation>
 <translation id="6712933881624804031">valley</translation>
 <translation id="6716013206176357696">strawberries</translation>
@@ -1281,6 +1287,7 @@
 <translation id="7049916119678019302">Download transcription model in Settings</translation>
 <translation id="7058278511608979688">End and save</translation>
 <translation id="7059230779847288458">Charging; <ph name="TIME_VALUE" /> until full</translation>
+<translation id="7064209589142995848">Content Transfer</translation>
 <translation id="7065336548231472971"><ph name="LANGUAGE_NAME" /> selected</translation>
 <translation id="7066538517128343186">the <ph name="KEY" /> key</translation>
 <translation id="7068619307603204412">Prepare your device</translation>
@@ -1592,6 +1599,7 @@ Download the transcription model (up to 100 MB) to get these transcriptions.</tr
 <translation id="8476942730579767658">Windows and desks</translation>
 <translation id="8477536061607044749">graphic design</translation>
 <translation id="8477551185774834963">DNS latency slightly above allowable threshold</translation>
+<translation id="8481308460877552925">Factually incorrect</translation>
 <translation id="8482376765267780829">Select some text to simplify</translation>
 <translation id="8483248364096924578">IP address</translation>
 <translation id="8491311378305535241">Can't connect through firewall to HTTP websites from Android apps</translation>

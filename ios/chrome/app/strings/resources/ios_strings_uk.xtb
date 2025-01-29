@@ -427,7 +427,6 @@
 <translation id="2789552044937754463">{COUNT,plural, =1{Пароль збережено у вашому обліковому записі Google ({EMAIL})}one{Паролі збережено у вашому обліковому записі Google ({EMAIL})}few{Паролі збережено у вашому обліковому записі Google ({EMAIL})}many{Паролі збережено у вашому обліковому записі Google ({EMAIL})}other{Паролі збережено у вашому обліковому записі Google ({EMAIL})}}</translation>
 <translation id="2791174088547598693">Додати пароль…</translation>
 <translation id="2797302972324086597">Код країни</translation>
-<translation id="2802403747691280910">Закрито вкладок: <ph name="NUMBER_OF_TABS_REMOVED" /></translation>
 <translation id="2816489851009559785">Меню → Налаштування → Вебпереглядач за умовчанням</translation>
 <translation id="2818821771744632548">Ви вийшли з облікового запису <ph name="USER_NAME" />, коли було скинуто налаштування iPhone. Щоб увійти знову, натисніть "Продовжити" нижче.</translation>
 <translation id="2819667972867209401">Коли цей параметр увімкнено, дані зберігаються в обліковому записі Google. Якщо його вимкнути, дані зберігатимуться лише на пристрої і видалятимуться, коли ви вийдете з облікового запису.</translation>
@@ -562,6 +561,7 @@
 <translation id="3517216995152707259">Якщо видалити дані вебперегляду, ви не вийдете з облікового запису Google. Для цього потрібно <ph name="BEGIN_LINK" />вийти з Chrome<ph name="END_LINK" />.</translation>
 <translation id="3519193562722059437">Щоб переглядати веб-сторінки, відкрийте вкладку.</translation>
 <translation id="3519905498307021260">{count,plural, =1{Відкрити вкладку}one{Відкрити {count} вкладку}few{Відкрити {count} вкладки}many{Відкрити {count} вкладок}other{Відкрити {count} вкладки}}</translation>
+<translation id="3523513363815970085">Сховати картку "Улюблені сайти"</translation>
 <translation id="3523789730715594198">Синхронізацію можна будь-коли вимкнути в налаштуваннях. Google може персоналізувати Пошук і інші сервіси на основі вашої історії.</translation>
 <translation id="3527085408025491307">Папка</translation>
 <translation id="3529024052484145543">Небезпечно</translation>
@@ -837,6 +837,7 @@
 <translation id="4769198578611055647">Дає змогу користуватися збереженими ключами доступу на будь-якому пристрої</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Відкрити в анонімному режимі?</translation>
+<translation id="479208892659046780">Улюблені сайти</translation>
 <translation id="4792385443586519711">Назва компанії</translation>
 <translation id="479628432297359449">Зупинити завантаження?</translation>
 <translation id="4796496140132859135">Група вкладок. Згорнуто.</translation>
@@ -1591,7 +1592,6 @@
 <translation id="7975036700432177008">Спробувати</translation>
 <translation id="797588153137233716">Меню → Історія → Видалити дані вебперегляду</translation>
 <translation id="7977451675950311423">Попереджає, якщо ви використовуєте пароль, який було зламано через порушення безпеки даних.</translation>
-<translation id="7977482887663636093">Нових вкладок: <ph name="NUMBER_OF_TABS_ADDED" />. Закрито вкладок: <ph name="NUMBER_OF_TABS_REMOVED" />.</translation>
 <translation id="797824194429476746">Вкладки залишатимуться відкритими на цьому пристрої, однак групу буде видалено назавжди.</translation>
 <translation id="797874245254030665">Користуйтеся паролями й ключами доступу в будь-якому додатку</translation>
 <translation id="7982789257301363584">Мережа</translation>
@@ -1778,7 +1778,6 @@
 <translation id="8728922029615312208">Закрити всі</translation>
 <translation id="8730621377337864115">Готово</translation>
 <translation id="87371078663613140">Перегляньте варіанти на панелі меню</translation>
-<translation id="8739706427581741437">Нових вкладок: <ph name="NUMBER_OF_TABS_ADDED" /></translation>
 <translation id="8741627442233023406">{count,plural, =1{Переглянути вкладку…}one{Переглянути всі вкладки…}few{Переглянути всі вкладки…}many{Переглянути всі вкладки…}other{Переглянути всі вкладки…}}</translation>
 <translation id="8741995161408053644">Історія веб-перегляду може також зберігатися у вашому обліковому записі Google на сторінці <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="874599634440689554">Створити посилання</translation>

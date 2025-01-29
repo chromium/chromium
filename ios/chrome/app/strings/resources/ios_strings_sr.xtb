@@ -427,7 +427,6 @@
 <translation id="2789552044937754463">{COUNT,plural, =1{Лозинка је сачувана на Google налогу, {EMAIL}}one{Лозинке су сачуване на Google налогу, {EMAIL}}few{Лозинке су сачуване на Google налогу, {EMAIL}}other{Лозинке су сачуване на Google налогу, {EMAIL}}}</translation>
 <translation id="2791174088547598693">Додај лозинку…</translation>
 <translation id="2797302972324086597">Позивни број за земљу</translation>
-<translation id="2802403747691280910">Затворених: <ph name="NUMBER_OF_TABS_REMOVED" /></translation>
 <translation id="2816489851009559785">Мени → Подешавања → Подразумевани прегледач</translation>
 <translation id="2818821771744632548">Одјављени сте са налога <ph name="USER_NAME" /> у склопу ресетовања iPhone-а. Да бисте се поново пријавили, додирните Настави испод.</translation>
 <translation id="2819667972867209401">Када је укључено, подаци се чувају на Google налогу. Када је искључено, подаци се чувају само на овом уређају и бришу се ако се одјавите.</translation>
@@ -1593,7 +1592,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7975036700432177008">Испробај</translation>
 <translation id="797588153137233716">Мени → Историја → Избриши податке прегледања</translation>
 <translation id="7977451675950311423">Упозорава вас ако користите лозинку која је угрожена при повреди података.</translation>
-<translation id="7977482887663636093">Нових картица: <ph name="NUMBER_OF_TABS_ADDED" />, затворених: <ph name="NUMBER_OF_TABS_REMOVED" /></translation>
 <translation id="797824194429476746">Картице ће остати отворене на овом уређају, али ће група бити трајно избрисана.</translation>
 <translation id="797874245254030665">Приступајте лозинкама и приступним кључевима из било које апликације</translation>
 <translation id="7982789257301363584">Мрежа</translation>
@@ -1604,6 +1602,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="800361585186029508">Отвара унете URL-ове у Google Chrome-у.</translation>
 <translation id="8005666035647241369">У Google менаџеру лозинки на овом уређају</translation>
 <translation id="8011489434346330032">Веб-инспектор</translation>
+<translation id="8017015647846870183">Из Google менаџера лозинки, укључујући лозинке и приступне кључеве</translation>
 <translation id="802154636333426148">Преузимање није успело</translation>
 <translation id="8023170444051056234">Одмах ћете изгубити приступ групи картица <ph name="GROUP_NAME" /> и она ће бити избрисана са свих уређаја</translation>
 <translation id="8023878949384262191">Проширује одељак.</translation>
@@ -1780,7 +1779,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8728922029615312208">Затвори све</translation>
 <translation id="8730621377337864115">Готово</translation>
 <translation id="87371078663613140">Истражите опције на траци менија</translation>
-<translation id="8739706427581741437">Нових картица: <ph name="NUMBER_OF_TABS_ADDED" /></translation>
 <translation id="8741627442233023406">{count,plural, =1{Прегледај картицу…}one{Прегледај све картице…}few{Прегледај све картице…}other{Прегледај све картице…}}</translation>
 <translation id="8741995161408053644">Google налог има друге облике историје прегледања на <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="874599634440689554">Направи линк</translation>

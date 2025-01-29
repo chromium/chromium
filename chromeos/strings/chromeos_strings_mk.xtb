@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">Откажано</translation>
 <translation id="1020274983236703756">Сега се достапни ексклузивни средства за <ph name="PRODUCT_NAME" /></translation>
 <translation id="1022628058306505708">Earth Flow</translation>
+<translation id="102432830749687801">Погрижете се да ја користите апликацијата „Префрлање содржини“ од Google за да ги префрлите податоците од вашата училишна сметка во вашата лична сметка пред да го изгубите пристапот.</translation>
 <translation id="1026212596705997935">Кратенката се користи за „<ph name="CONFLICT_ACCEL_NAME" />“. Притиснете нова кратенка. За да ја замените постојната кратенка, притиснете ја оваа кратенка повторно.</translation>
 <translation id="1030856839388844477">Ресетирајте го потрошениот интернет</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> низи, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
@@ -93,6 +94,7 @@
 <translation id="1394661041439318933">Нивото на батерија на футролата е <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="1397738625398125236">Може да се испрати пинг до порталот</translation>
 <translation id="1398634363027580500">Многу висока латенција на HTTPS</translation>
+<translation id="1406389211945506521">Фала што го споделувате вашето доживување. Повратните информации ни помагаат да создаваме попрецизни и покорисни содржини.</translation>
 <translation id="1407069428457324124">Темна тема</translation>
 <translation id="1413240736185167732">Неуспешно - филтерот не успеа</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
@@ -198,8 +200,10 @@
 <translation id="1808803439260407870">Класична уметност</translation>
 <translation id="181434555916624618">Засега, резултатите со луѓе нема да се прикажуваат. Обидете се со друго барање.</translation>
 <translation id="1815850098929213707">Избраното копче е <ph name="KEYS" />. Допрете го копчето за да ја измените контролата</translation>
+<translation id="1818174214124933000">Кога ќе изберете „Испрати“, повратните информации и содржините (прикажани подолу) ќе се испратат до Google, ќе ги прегледуваат луѓе и ќе се користат за обучување или подобрување на нашите производи и услуги што подлежи на <ph name="LINK_POLICY_BEGIN" />Политиката за приватност<ph name="LINK_POLICY_END" /> и <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Условите за користење на Google<ph name="LINK_TERMS_OF_SERVICE_END" />.</translation>
 <translation id="1823120442877418684">Знаци</translation>
 <translation id="1827738518074806965">Уметничка галерија</translation>
+<translation id="183287940576828840">Навредливо/Небезбедно</translation>
 <translation id="1836553715834333258">Системска боја</translation>
 <translation id="183675228220305365">реалист</translation>
 <translation id="1838374766361614909">Исчисти го пребарувањето</translation>
@@ -225,6 +229,7 @@
 <translation id="1908234395526491708">Неуспешни UDP-барања</translation>
 <translation id="1908394185991500139">стрелка налево</translation>
 <translation id="1914144885717544695">во петок</translation>
+<translation id="1915960750806557358">Споделете ги вашите повратни информации или опишете го проблемот. Погрижете се да не наведувате лични, чувствителни или доверливи податоци.</translation>
 <translation id="1923388006036088459">Бои за истакнување</translation>
 <translation id="1945403655450283000">Диктафон</translation>
 <translation id="1947737735496445907">Отпечатено</translation>
@@ -311,7 +316,6 @@
 <translation id="2308243864813041101">Исклучете го USB-кабелот на <ph name="DEVICE_NAME" /> повторно за да продолжите со процесот на ажурирање</translation>
 <translation id="2320295602967756579">Овозможи светла тема</translation>
 <translation id="2323506179655536734">ПРЕСКОКНАТО</translation>
-<translation id="2323755382216917952">Ова ажурирање бара да се рестартира компјутерот за да се заврши инсталацијата. Може да бидат потребни неколку минути за да заврши ажурирањево. Додека се ажурира фирмверот, не исклучувајте го компјутерот од струја или не исклучувајте го компјутерот.</translation>
 <translation id="2324354238778375592">Лебдечко</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2346474577291266260">Одличен (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -457,7 +461,6 @@
 <translation id="3178532070248519384">авангарда</translation>
 <translation id="3182676044300231689">Внесете барање како „направи да звучи посамоуверено“</translation>
 <translation id="3188257591659621405">Мои датотеки</translation>
-<translation id="3188931456353313123">Ова ажурирање го обезбедува производителот на уредот и не е потврдено од Google.</translation>
 <translation id="319101249942218879">Сликата на аватарот е променета</translation>
 <translation id="3192947282887913208">Аудиодатотеки</translation>
 <translation id="3199982728237701504">Внесувач на документи (двостран)</translation>
@@ -596,6 +599,7 @@
 <translation id="387301095347517405">Колку пати батеријата поминала низ целосен циклус на полнење</translation>
 <translation id="3877066159641251281">Слушнете го преводот</translation>
 <translation id="3880601782712134623">за да открива различни гласови автоматски и на секој од нив да му доделува етикета како „Говорник 1“ и „Говорник 2“</translation>
+<translation id="38811596981744338">Правен проблем</translation>
 <translation id="3885327323343477505">Променете го штедачот на екранот</translation>
 <translation id="3889914174935857450">Датум на ресетирање</translation>
 <translation id="3897092660631435901">Мени</translation>
@@ -821,6 +825,7 @@
 <translation id="4921665434385737356">Наполнета <ph name="RATE" /> за <ph name="NUM_SECONDS" /> секунди.</translation>
 <translation id="4930320165497208503">За да поставите или ажурирате врска, одете во <ph name="BEGIN_LINK" />Поставки<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Датум</translation>
+<translation id="494102685638938793"><ph name="LINK_TEXT" />, се отвора во нова картичка</translation>
 <translation id="4946927805998996217">Се генерира резиме</translation>
 <translation id="4950314376641394653">Фирмверот на <ph name="DEVICE_NAME" /> е ажуриран на верзијата <ph name="VERSION" /></translation>
 <translation id="4950893758552030541">тунел од дрвја</translation>
@@ -1208,6 +1213,7 @@
 <translation id="6692996468359469499">Добивајте информации поврзани со вашиот избор</translation>
 <translation id="6694534975463174713">брава</translation>
 <translation id="6700703207451721535">Пристапот не е дозволен за линков. Проверете со наставникот ако ви треба пристап.</translation>
+<translation id="6703179086771097594">Што не функционираше добро?</translation>
 <translation id="6704062477274546131">Одредување со DNS</translation>
 <translation id="6712933881624804031">долина</translation>
 <translation id="6716013206176357696">јагоди</translation>
@@ -1281,6 +1287,7 @@
 <translation id="7049916119678019302">Преземете го моделот за транскрипции во „Поставки“</translation>
 <translation id="7058278511608979688">Заврши и зачувај</translation>
 <translation id="7059230779847288458">Се полни, <ph name="TIME_VALUE" /> до полна</translation>
+<translation id="7064209589142995848">Префрлање содржини</translation>
 <translation id="7065336548231472971">Избрано: <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7066538517128343186">копче <ph name="KEY" /></translation>
 <translation id="7068619307603204412">Подгответе го уредот</translation>
@@ -1592,6 +1599,7 @@
 <translation id="8476942730579767658">Прозорци и работни површини</translation>
 <translation id="8477536061607044749">графички дизајн</translation>
 <translation id="8477551185774834963">Латенцијата на DNS е малку над дозволениот праг</translation>
+<translation id="8481308460877552925">Фактички неточно</translation>
 <translation id="8482376765267780829">Изберете текст за да се поедностави</translation>
 <translation id="8483248364096924578">IP-адреса</translation>
 <translation id="8491311378305535241">Не може да се поврзе преку заштитен ѕид со веб-сајтови со HTTP од апликации на Android</translation>

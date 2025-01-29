@@ -298,7 +298,6 @@
 <translation id="5286907366254680517">检测到</translation>
 <translation id="5294316920224716406">当您在无痕模式下浏览内容时，Chromium 会在使用不安全的连接加载网站前向您发出警告</translation>
 <translation id="5296845517486664001">在试用期间，如果 Chromium 随机将您加入到了其中某项正在进行的试用活动，您的浏览记录会影响您看到的广告以及系统推测出的兴趣（如下所示）。为了保护您的隐私，Chromium 每个月都会按保留时间先后顺序删除您的部分兴趣。</translation>
-<translation id="5310474266708705970">以 <ph name="USER_EMAIL" /> 的身份登录 Chromium</translation>
 <translation id="5313228254328109263">Chromium Updater Internal Service</translation>
 <translation id="5352264705793813212">Chromium 找到了一些供您审查的安全建议</translation>
 <translation id="5352361688875342522">其他 Chromium 个人资料</translation>
@@ -363,6 +362,7 @@
 <translation id="6145820983052037069">您可在此处切换 Chromium 个人资料</translation>
 <translation id="615103374448673771">如果您允许使用 Cookie，Chromium 便可能会使用 Cookie 进行预加载</translation>
 <translation id="6165508094623778733">了解详情</translation>
+<translation id="6173308241973263798">清除账号中的 Chromium 数据</translation>
 <translation id="6174920971222007286">这可能是个危险文件<ph name="LINE_BREAK" />如果您提供了密码，Chromium 可为您检查此下载内容。系统会将该文件的相关信息发送给 Google 安全浏览功能，但文件内容和密码会保留在您的设备上。</translation>
 <translation id="6182736845697986886">更新服务器出现内部错误，因此安装失败。</translation>
 <translation id="6183079672144801177">请确保您已在“<ph name="TARGET_DEVICE_NAME" />”上登录 Chromium，然后再次尝试发送。</translation>
@@ -429,6 +429,7 @@
 <translation id="684888714667046800">无法连接到互联网。如果使用防火墙，请确保 <ph name="PRODUCT_EXE_NAME" /> 在许可名单中。</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6873893289264747459">Chromium 发现“<ph name="EXTENSION_NAME" />”包含恶意软件</translation>
+<translation id="6877631896957360295">如果您忘记了口令或想更改此设置，请<ph name="SETTINGS_LINK" />您账号中的 Chromium 数据。</translation>
 <translation id="6896758677409633944">复制</translation>
 <translation id="6929417474050522668">在试用期间，Ad measurement 允许您访问的网站向 Chromium 请求信息来对网站上的广告进行效果衡量。Ad measurement 会在网站间传输尽可能少的信息，从而限制跨网站跟踪。</translation>
 <translation id="6940431691900807093">之后，您访问的网站可向 Chromium 请求查看您的兴趣，以便向您展示个性化广告。Chromium 最多可共享 3 项兴趣信息。</translation>

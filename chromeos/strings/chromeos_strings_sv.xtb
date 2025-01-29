@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">Avbröts</translation>
 <translation id="1020274983236703756">Exklusiva <ph name="PRODUCT_NAME" />-tillgångar är nu tillgängliga</translation>
 <translation id="1022628058306505708">Earth Flow</translation>
+<translation id="102432830749687801">Se till att använda appen Innehållsöverföring från Google för att flytta data från ditt skolkonto till ditt personliga konto innan du förlorar åtkomsten.</translation>
 <translation id="1026212596705997935">Kortkommandot används för <ph name="CONFLICT_ACCEL_NAME" />. Tryck på ett nytt kortkommando. Tryck på det befintliga kortkommandot igen om du vill ersätta det.</translation>
 <translation id="1030856839388844477">Återställ dataanvändning</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> trådar, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
@@ -93,6 +94,7 @@
 <translation id="1394661041439318933">Batterinivån för enhetens fodral är <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="1397738625398125236">Gateway går att pinga</translation>
 <translation id="1398634363027580500">Mycket hög HTTPS-fördröjning</translation>
+<translation id="1406389211945506521">Tack för du berättar om din upplevelse. Din feedback hjälper oss att skapa mer korrekt och användbart innehåll.</translation>
 <translation id="1407069428457324124">Mörkt tema</translation>
 <translation id="1413240736185167732">Misslyckades – filterfel</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
@@ -198,8 +200,10 @@
 <translation id="1808803439260407870">Klassisk konst</translation>
 <translation id="181434555916624618">Just nu visas inga resultat med personer. Testa en annan prompt.</translation>
 <translation id="1815850098929213707">Tangenten <ph name="KEYS" /> har valts. Tryck på knappen för att redigera kontrollen</translation>
+<translation id="1818174214124933000">När du väljer Skicka skickas din feedback och ditt innehåll (som visas nedan) till Google, granskas av människor och används för att träna eller förbättra våra produkter och tjänster i enlighet med <ph name="LINK_POLICY_BEGIN" />integritetspolicyn<ph name="LINK_POLICY_END" /> och <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Google Användarvillkor<ph name="LINK_TERMS_OF_SERVICE_END" />.</translation>
 <translation id="1823120442877418684">Figurer</translation>
 <translation id="1827738518074806965">Konstgalleri</translation>
+<translation id="183287940576828840">Stötande/osäkert</translation>
 <translation id="1836553715834333258">Systemfärg</translation>
 <translation id="183675228220305365">realism</translation>
 <translation id="1838374766361614909">Rensa sökning</translation>
@@ -225,6 +229,7 @@
 <translation id="1908234395526491708">Misslyckade UDP-förfrågningar</translation>
 <translation id="1908394185991500139">vänsterpil</translation>
 <translation id="1914144885717544695">på fredag</translation>
+<translation id="1915960750806557358">Ge feedback eller beskriv problemet. Inkludera inget som är personligt, känsligt eller konfidentiellt.</translation>
 <translation id="1923388006036088459">Accentfärger</translation>
 <translation id="1945403655450283000">Ljudinspelare</translation>
 <translation id="1947737735496445907">Utskrivet</translation>
@@ -311,7 +316,6 @@
 <translation id="2308243864813041101">Koppla från USB-kabeln från <ph name="DEVICE_NAME" /> för att fortsätta uppdateringsprocessen</translation>
 <translation id="2320295602967756579">Aktivera ljust tema</translation>
 <translation id="2323506179655536734">HOPPADES ÖVER</translation>
-<translation id="2323755382216917952">Du måste starta om datorn för att slutföra installationen av den här uppdateringen. Uppdateringen kan ta några minuter. Koppla inte från eller stäng av datorn medan firmware uppdateras.</translation>
 <translation id="2324354238778375592">Flytande knapp</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2346474577291266260">Utmärkt (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -457,7 +461,6 @@
 <translation id="3178532070248519384">avantgarde</translation>
 <translation id="3182676044300231689">Skriv en prompt, till exempel ”gör det mer självsäkert”</translation>
 <translation id="3188257591659621405">Mina filer</translation>
-<translation id="3188931456353313123">Den här uppdateringen tillhandahålls av enhetstillverkaren och har inte verifierats av Google.</translation>
 <translation id="319101249942218879">Avatarbild har ändrats</translation>
 <translation id="3192947282887913208">Ljudfiler</translation>
 <translation id="3199982728237701504">Dokumentmatare (tvåsidig)</translation>
@@ -596,6 +599,7 @@
 <translation id="387301095347517405">Antalet gånger som batteriet har laddats hela sin kapacitet</translation>
 <translation id="3877066159641251281">Lyssna på översättningen</translation>
 <translation id="3880601782712134623">Identifiera automatiskt olika röster och ge varje talare en generisk etikett, till exempel Talare 1 och Talare 2</translation>
+<translation id="38811596981744338">Juridiskt problem</translation>
 <translation id="3885327323343477505">Ändra skärmsläckare</translation>
 <translation id="3889914174935857450">Återställ datum</translation>
 <translation id="3897092660631435901">Meny</translation>
@@ -821,6 +825,7 @@
 <translation id="4921665434385737356">Har laddat <ph name="RATE" /> på <ph name="NUM_SECONDS" /> sekunder.</translation>
 <translation id="4930320165497208503">Öppna <ph name="BEGIN_LINK" />inställningarna<ph name="END_LINK" /> om du vill konfigurera eller uppdatera en anslutning.</translation>
 <translation id="4932733599132424254">Datum</translation>
+<translation id="494102685638938793"><ph name="LINK_TEXT" />, öppnas på en ny flik</translation>
 <translation id="4946927805998996217">Skapar sammanfattning</translation>
 <translation id="4950314376641394653">Firmware på <ph name="DEVICE_NAME" /> har uppdaterats till version <ph name="VERSION" /></translation>
 <translation id="4950893758552030541">trädtunnel</translation>
@@ -1208,6 +1213,7 @@
 <translation id="6692996468359469499">Få information utifrån det du markerar</translation>
 <translation id="6694534975463174713">lås</translation>
 <translation id="6700703207451721535">Åtkomst tillåts inte för den här länken. Kolla med läraren om du behöver åtkomst.</translation>
+<translation id="6703179086771097594">Vad fungerade mindre bra?</translation>
 <translation id="6704062477274546131">DNS-matchning</translation>
 <translation id="6712933881624804031">en dal</translation>
 <translation id="6716013206176357696">jordgubbar</translation>
@@ -1281,6 +1287,7 @@
 <translation id="7049916119678019302">Ladda ned transkriptionsmodell i inställningarna</translation>
 <translation id="7058278511608979688">Avsluta och spara</translation>
 <translation id="7059230779847288458">Laddas – fulladdat om <ph name="TIME_VALUE" /></translation>
+<translation id="7064209589142995848">Innehållsöverföring</translation>
 <translation id="7065336548231472971"><ph name="LANGUAGE_NAME" /> har valts</translation>
 <translation id="7066538517128343186">nyckeln <ph name="KEY" /></translation>
 <translation id="7068619307603204412">Förbered enheten</translation>
@@ -1592,6 +1599,7 @@ Ladda ned transkriptionsmodellen (upp till 100 MB) för att få transkriptioner
 <translation id="8476942730579767658">Fönster och skrivbord</translation>
 <translation id="8477536061607044749">grafisk design</translation>
 <translation id="8477551185774834963">DNS-latensen är något högre än det godtagbara tröskelvärdet</translation>
+<translation id="8481308460877552925">Sakfel</translation>
 <translation id="8482376765267780829">Markera texten du vill förenkla</translation>
 <translation id="8483248364096924578">IP-adress</translation>
 <translation id="8491311378305535241">Det gick inte att ansluta till HTTPS-webbplatser från Android-appar genom brandvägg</translation>

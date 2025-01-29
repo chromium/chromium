@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">रद्द</translation>
 <translation id="1020274983236703756">खास <ph name="PRODUCT_NAME" /> ऐसेट अब उपलब्ध हैं</translation>
 <translation id="1022628058306505708">अर्थ फ़्लो</translation>
+<translation id="102432830749687801">स्कूल वाले अपने खाते का ऐक्सेस हटने से पहले, उस पर मौजूद डेटा को निजी खाते में ट्रांसफ़र करें. इसके लिए, Google का कॉन्टेंट ट्रांसफ़र ऐप्लिकेशन इस्तेमाल करें.</translation>
 <translation id="1026212596705997935">यह शॉर्टकट "<ph name="CONFLICT_ACCEL_NAME" />" के लिए इस्तेमाल किया जा रहा है. कोई नया शॉर्टकट दबाएं. मौजूदा शॉर्टकट को बदलने के लिए, इस शॉर्टकट को फिर से दबाएं.</translation>
 <translation id="1030856839388844477">मोबाइल डेटा खर्च से जुड़ी जानकारी को रीसेट करें</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> थ्रेड, <ph name="CPU_MAX_CLOCK_SPEED" />गीगाहर्ट्ज़)</translation>
@@ -93,6 +94,7 @@
 <translation id="1394661041439318933">डिवाइस के केस में <ph name="BATTERY_PERCENTAGE" />% बैटरी बची है.</translation>
 <translation id="1397738625398125236">गेटवे को पिंग किया जा सकता है</translation>
 <translation id="1398634363027580500">एचटीटीपीएस अनुरोधों में इंतज़ार का समय बहुत ज़्यादा है</translation>
+<translation id="1406389211945506521">अपना अनुभव शेयर करने के लिए धन्यवाद. आपके सुझाव, शिकायत या राय से, हमें ज़्यादा सटीक और फ़ायदेमंद कॉन्टेंट बनाने में मदद मिलती है.</translation>
 <translation id="1407069428457324124">गहरे रंग वाली थीम</translation>
 <translation id="1413240736185167732">प्रिंट नहीं हो पाया - फ़िल्टर में कोई गड़बड़ी हुई</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
@@ -198,8 +200,10 @@
 <translation id="1808803439260407870">क्लासिक आर्ट</translation>
 <translation id="181434555916624618">फ़िलहाल, ऐसी इमेज जनरेट नहीं की जा सकती जिसमें लोग शामिल हों. किसी अन्य इमेज का निर्देश देकर देखें.</translation>
 <translation id="1815850098929213707"><ph name="KEYS" /> बटन को चुना गया है. कंट्रोल में बदलाव करने के लिए, बटन पर टैप करें</translation>
+<translation id="1818174214124933000">'भेजें' को चुनने पर, आपके सुझाव, शिकायत या राय और कॉन्टेंट (यहां दिखाया गया है) को Google के पास भेजा जाएगा. उसकी समीक्षा मैन्युअल तरीके से की जाएगी. साथ ही, <ph name="LINK_POLICY_BEGIN" />निजता नीति<ph name="LINK_POLICY_END" /> और <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Google की सेवा की शर्तों<ph name="LINK_TERMS_OF_SERVICE_END" /> के हिसाब से, इसका इस्तेमाल हमारे प्रॉडक्ट और सेवाओं को ट्रेन करने या उन्हें बेहतर बनाने में किया जाएगा.</translation>
 <translation id="1823120442877418684">कैरेक्टर</translation>
 <translation id="1827738518074806965">आर्ट गैलरी</translation>
+<translation id="183287940576828840">आपत्तिजनक/असुरक्षित</translation>
 <translation id="1836553715834333258">सिस्टम का रंग</translation>
 <translation id="183675228220305365">रियलिस्ट</translation>
 <translation id="1838374766361614909">खोज साफ़ करें</translation>
@@ -225,6 +229,7 @@
 <translation id="1908234395526491708">यूडीपी अनुरोध पूरे नहीं हो पाए</translation>
 <translation id="1908394185991500139">लेफ़्ट ऐरो</translation>
 <translation id="1914144885717544695">शुक्रवार को</translation>
+<translation id="1915960750806557358">सुझाव, शिकायत या राय भेजें या अपनी समस्या के बारे में बताएं. पक्का करें कि इसमें कोई भी निजी, संवेदनशील या गोपनीय जानकारी शामिल न हो.</translation>
 <translation id="1923388006036088459">एक्सेंट के रंग</translation>
 <translation id="1945403655450283000">Recorder</translation>
 <translation id="1947737735496445907">प्रिंट किया गया</translation>
@@ -311,7 +316,6 @@
 <translation id="2308243864813041101">अपडेट की प्रोसेस जारी रखने के लिए, <ph name="DEVICE_NAME" /> का यूएसबी केबल हटाएं</translation>
 <translation id="2320295602967756579">हल्के रंग वाली थीम चालू करें</translation>
 <translation id="2323506179655536734">छोड़ दिया गया</translation>
-<translation id="2323755382216917952">इस अपडेट का इंस्टॉलेशन पूरा करने के लिए, कंप्यूटर को रीस्टार्ट करना होगा. इस अपडेट को पूरा होने में कुछ मिनट लग सकते हैं. फ़र्मवेयर के अपडेट होने तक, अपने कंप्यूटर को अनप्लग या शट डाउन न करें.</translation>
 <translation id="2324354238778375592">फ़्लोट</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> डीपीआई</translation>
 <translation id="2346474577291266260">सिग्नल बहुत अच्छा है (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -457,7 +461,6 @@
 <translation id="3178532070248519384">अवांत-गार्द</translation>
 <translation id="3182676044300231689">"इसे बदलकर बेहतर बनाओ" जैसा कोई प्रॉम्प्ट डालें</translation>
 <translation id="3188257591659621405">मेरी फ़ाइलें</translation>
-<translation id="3188931456353313123">यह अपडेट, डिवाइस बनाने वाली कंपनी ने उपलब्ध कराया है और Google ने इसकी पुष्टि नहीं की है.</translation>
 <translation id="319101249942218879">अवतार इमेज बदली गई</translation>
 <translation id="3192947282887913208">ऑडियो फ़ाइलें</translation>
 <translation id="3199982728237701504">डॉक्यूमेंट फ़ीडर (दो तरफ़ वाला)</translation>
@@ -596,6 +599,7 @@
 <translation id="387301095347517405">इतनी बार आपकी बैटरी पूरी चार्ज हुई है</translation>
 <translation id="3877066159641251281">अनुवाद सुनें</translation>
 <translation id="3880601782712134623">यह अलग-अलग आवाज़ों की पहचान करता है. साथ ही, पहचानी गई हर आवाज़ को एक लेबल देता है. जैसे, स्पीकर 1 और स्पीकर 2</translation>
+<translation id="38811596981744338">कानूनी समस्या</translation>
 <translation id="3885327323343477505">स्क्रीन सेवर बदलें</translation>
 <translation id="3889914174935857450">तारीख रीसेट करें</translation>
 <translation id="3897092660631435901">मेन्यू</translation>
@@ -821,6 +825,7 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> सेकंड में <ph name="RATE" /> चार्ज हुई.</translation>
 <translation id="4930320165497208503">किसी कनेक्शन को सेट अप या अपडेट करने के लिए, <ph name="BEGIN_LINK" />सेटिंग पर जाएं<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">तारीख</translation>
+<translation id="494102685638938793"><ph name="LINK_TEXT" />, नए टैब में खुलेगा</translation>
 <translation id="4946927805998996217">खास जानकारी जनरेट की जा रही है</translation>
 <translation id="4950314376641394653"><ph name="DEVICE_NAME" /> फ़र्मवेयर को <ph name="VERSION" /> पर अपडेट कर दिया गया है</translation>
 <translation id="4950893758552030541">ट्री टनल</translation>
@@ -1209,6 +1214,7 @@
 <translation id="6692996468359469499">चुनी हुई सामग्री से जुड़ी जानकारी पाएं</translation>
 <translation id="6694534975463174713">लॉक करें</translation>
 <translation id="6700703207451721535">इस लिंक को ऐक्सेस करने की अनुमति नहीं है. इसका ऐक्सेस पाने के लिए, अपने शिक्षक से संपर्क करें.</translation>
+<translation id="6703179086771097594">आपको क्या अच्छा नहीं लगा?</translation>
 <translation id="6704062477274546131">डीएनएस रिज़ॉल्यूशन</translation>
 <translation id="6712933881624804031">वादी</translation>
 <translation id="6716013206176357696">स्ट्रॉबेरी</translation>
@@ -1282,6 +1288,7 @@
 <translation id="7049916119678019302">सेटिंग में जाकर, बोले जा रहे शब्दों को टेक्स्ट में बदलने का मॉडल डाउनलोड करें</translation>
 <translation id="7058278511608979688">बंद करें और सेव करें</translation>
 <translation id="7059230779847288458">चार्ज हो रहा है, पूरा चार्ज होने में <ph name="TIME_VALUE" /> लगेंगे</translation>
+<translation id="7064209589142995848">कॉन्टेंट ट्रांसफ़र</translation>
 <translation id="7065336548231472971"><ph name="LANGUAGE_NAME" /> को चुना गया</translation>
 <translation id="7066538517128343186"><ph name="KEY" /> कुंजी</translation>
 <translation id="7068619307603204412">अपने डिवाइस को तैयार करें</translation>
@@ -1592,6 +1599,7 @@
 <translation id="8476942730579767658">विंडो और डेस्क</translation>
 <translation id="8477536061607044749">ग्राफ़िक डिज़ाइन</translation>
 <translation id="8477551185774834963">डीएनएस, इंतज़ार की समयसीमा से थोड़ा ऊपर है</translation>
+<translation id="8481308460877552925">तथ्यों के हिसाब से गलत है</translation>
 <translation id="8482376765267780829">आसान शब्दों में समझने के लिए, कोई टेक्स्ट चुनें</translation>
 <translation id="8483248364096924578">आईपी पता</translation>
 <translation id="8491311378305535241">Android ऐप्लिकेशन से, फ़ायरवॉल के ज़रिए, एचटीटीपीएस वेबसाइटों से नहीं जोड़ा जा सकता</translation>

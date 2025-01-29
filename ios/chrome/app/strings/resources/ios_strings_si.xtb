@@ -427,7 +427,6 @@
 <translation id="2789552044937754463">{COUNT,plural, =1{මුරපදය ඔබේ Google ගිණුමේ, {EMAIL} සුරකින ලදි}one{මුරපද ඔබේ Google ගිණුමේ, {EMAIL} සුරකින ලදි}other{මුරපද ඔබේ Google ගිණුමේ, {EMAIL} සුරකින ලදි}}</translation>
 <translation id="2791174088547598693">මුරපදය එක් කරන්න</translation>
 <translation id="2797302972324086597">රටේ කේතය</translation>
-<translation id="2802403747691280910"><ph name="NUMBER_OF_TABS_REMOVED" /> වැසිණි</translation>
 <translation id="2816489851009559785">මෙනුව → සැකසීම් → පෙරනිමි බ්‍රවුසරය</translation>
 <translation id="2818821771744632548">ඔබේ iPhone යළි සැකසීමේ කොටසක් ලෙස, ඔබ ඔබේ <ph name="USER_NAME" /> ගිණුමෙන් වරන ලදි. නැවත පුරන්නට, පහත "ඉදිරියට යන්න" වෙත තට්ටු කරන්න.</translation>
 <translation id="2819667972867209401">ක්‍රියාත්මක වන විට, දත්ත ඔබේ Google ගිණුමේ සුරකිනු ලැබේ. ක්‍රියාවිරහිත වූ විට, දත්ත සුරැකෙන්නේ මෙම උපාංගයට පමණක් වන අතර ඔබ වරනය වුවහොත් මකනු ලැබේ.</translation>
@@ -562,6 +561,7 @@
 <translation id="3517216995152707259">ඔබේ බ්‍රවුස් කිරීමේ දත්ත මැකීම ඔබව ඔබේ Google ගිණුමෙන් වරන්නේ නැත. එසේ කිරීමට, <ph name="BEGIN_LINK" />Chrome වෙතින් වරන්න<ph name="END_LINK" />.</translation>
 <translation id="3519193562722059437">වෙබය බ්‍රවුස් කිරීමට පටිත්තක් විවෘත කරන්න.</translation>
 <translation id="3519905498307021260">{count,plural, =1{පටිත්ත විවෘත කරන්න}one{පටිති {count} විවෘත කරන්න}other{පටිති {count} විවෘත කරන්න}}</translation>
+<translation id="3523513363815970085">"ඔබේ ඉහළම අඩවි" සඟවන්න</translation>
 <translation id="3523789730715594198">ඔබට සැකසීම් තුළ ඕනෑම වේලාවකට සමමුහූර්ත කිරීම නැවැත්විය හැක. Google ඔබේ ඉතිහාසය මත පදනම්ව සෙවීම සහ අනෙකුත් සේවා පුද්ගලායන කරාවි.</translation>
 <translation id="3527085408025491307">ෆෝල්ඩරය</translation>
 <translation id="3529024052484145543">සුරක්‍ෂිත නැත</translation>
@@ -837,6 +837,7 @@
 <translation id="4769198578611055647">ඕනෑම උපාංගයක සුරකින ලද මුරයතුරු වෙත ප්‍රවේශ වීමට ඔබට උදවු කරයි</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">අප්‍රසිද්ධියේ විවෘත කරන්න ද?</translation>
+<translation id="479208892659046780">ඔබේ ඉහළම අඩවි</translation>
 <translation id="4792385443586519711">සමාගමේ නම</translation>
 <translation id="479628432297359449">බාගැනීම නවතන්න ද?</translation>
 <translation id="4796496140132859135">පටිති සමූහය. හැකිළවිණි.</translation>
@@ -1591,7 +1592,6 @@
 <translation id="7975036700432177008">උත්සාහ කරන්න</translation>
 <translation id="797588153137233716">මෙනුව → ඉතිහාසය → බ්‍රවුස් කිරීමේ දත්ත මකන්න</translation>
 <translation id="7977451675950311423">ඔබ දත්ත කඩකිරීමක අවදානමට ලක් වූ මුරපදයක් භාවිතා කරන්නේ නම් ඔබට අනතුරු අඟවයි.</translation>
-<translation id="7977482887663636093">නව පටිති <ph name="NUMBER_OF_TABS_ADDED" />, <ph name="NUMBER_OF_TABS_REMOVED" /> වැසිණි</translation>
 <translation id="797824194429476746">පටිති මෙම උපාංගය මත විවෘතව පවතින නමුත් සමූහය ස්ථිරව මකනු ලැබේ.</translation>
 <translation id="797874245254030665">ඕනෑම යෙදුමකින් ඔබේ මුරපද සහ මුරයතුරු වෙත ප්‍රවේශ වන්න</translation>
 <translation id="7982789257301363584">ජාලය</translation>
@@ -1778,7 +1778,6 @@
 <translation id="8728922029615312208">සියල්ල වසන්න</translation>
 <translation id="8730621377337864115">අවසන්</translation>
 <translation id="87371078663613140">මෙනු තීරුවේ ඇති විකල්ප ගවේෂණය කරන්න</translation>
-<translation id="8739706427581741437">නව පටිති <ph name="NUMBER_OF_TABS_ADDED" /></translation>
 <translation id="8741627442233023406">{count,plural, =1{පටිත්ත සමාලෝචනය කරන්න…}one{සියලු පටිති සමාලෝචනය කරන්න…}other{සියලු පටිති සමාලෝචනය කරන්න…}}</translation>
 <translation id="8741995161408053644">ඔබගේ Google ගිණුමට <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> දී බ්‍රවුස් කිරීමේ ඉතිහාසයේ වෙනත් ආකාරයන් තිබිය හැක.</translation>
 <translation id="874599634440689554">සබැඳියක් තනන්න</translation>

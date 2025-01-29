@@ -204,6 +204,7 @@
 <translation id="1823120442877418684">Itens</translation>
 <translation id="1827738518074806965">Galeria de arte</translation>
 <translation id="183287940576828840">Ofensivo/Perigoso</translation>
+<translation id="1834032517784994783">Selecionar o idioma da transcrição</translation>
 <translation id="1836553715834333258">Cor do sistema</translation>
 <translation id="183675228220305365">realista</translation>
 <translation id="1838374766361614909">Limpar pesquisa</translation>
@@ -316,7 +317,6 @@
 <translation id="2308243864813041101">Desconecte o cabo USB do <ph name="DEVICE_NAME" /> para continuar o processo de atualização</translation>
 <translation id="2320295602967756579">Ativar o tema claro</translation>
 <translation id="2323506179655536734">IGNORADO</translation>
-<translation id="2323755382216917952">Para concluir a instalação, é necessário reiniciar o computador. A atualização pode levar alguns minutos para ser concluída. Não desconecte ou desligue o computador enquanto o firmware estiver atualizando.</translation>
 <translation id="2324354238778375592">Flutuante</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2346474577291266260">Excelente (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -462,7 +462,6 @@
 <translation id="3178532070248519384">vanguarda</translation>
 <translation id="3182676044300231689">Insira um comando como "pareça mais confiante"</translation>
 <translation id="3188257591659621405">Meus arquivos</translation>
-<translation id="3188931456353313123">Essa atualização é fornecida pelo fabricante do dispositivo e não foi verificada pelo Google.</translation>
 <translation id="319101249942218879">A imagem do avatar foi alterada</translation>
 <translation id="3192947282887913208">Arquivos de áudio</translation>
 <translation id="3199982728237701504">Alimentador de documentos (frente e verso)</translation>
@@ -733,6 +732,7 @@
 <translation id="4483049906298469269">Falha no ping do gateway de rede não padrão</translation>
 <translation id="4483498983731992167">Não é possível criar a transcrição</translation>
 <translation id="4486524074141928967">Sua conta será desconectada às <ph name="TIME" /></translation>
+<translation id="4487890678161807486">Abrir o seletor de idioma da transcrição</translation>
 <translation id="4500722292849917410">Atalho indisponível. Pressione um novo atalho usando uma tecla modificadora (Ctrl, Alt, Shift ou <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Cor da interface</translation>
 <translation id="4503223151711056411">Seta para a esquerda</translation>

@@ -271,6 +271,7 @@
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1448166547804028941">"<ph name="DATA_CONTROLS_FIRST_KEY_SET" />" түлхүүрийг "<ph name="DATA_CONTROLS_SECOND_KEY_SET" />" түлхүүртэй ижил толь бичигт тохируулах боломжгүй</translation>
 <translation id="1455413310270022028">Баллуур</translation>
+<translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{0 шүүмжийг харах}=1{1 шүүмжийг харах}other{Бүх # шүүмжийг харах}}</translation>
 <translation id="1458059624921545588">Хүмүүс, нийгэм</translation>
 <translation id="1458140305240870199">Дотуур хувцаснууд</translation>
 <translation id="1459693405370120464">Цаг агаар</translation>
@@ -961,6 +962,7 @@
 <translation id="2674170444375937751">Та өөрийн түүхээс эдгээр хуудсыг устгахдаа итгэлтэй байна уу?</translation>
 <translation id="2674524144218093528">Байшин будах болон чимхлүүр засал</translation>
 <translation id="2674804415323431591">Зөвлөмжүүдийг нуух</translation>
+<translation id="26774279487328902"><ph name="GROUP_COUNT" /> табын бүлэг цаашид боломжгүй болсон</translation>
 <translation id="2677748264148917807">Үлдээх</translation>
 <translation id="2683195745483370038">Бусад илэрц олдлоо</translation>
 <translation id="2686919536310834199">Надад бичихэд тусал онцлогт зориулж санал хүсэлт илгээнэ үү.</translation>
@@ -1957,6 +1959,7 @@
 <translation id="4407758156081352648">Танай байгууллага аюулгүй байдлыг хадгалахын тулд нууц үгийг Chrome-д дахин ашиглахыг зөвшөөрдөггүй. Chrome дахь нууц үгийг хэрэглэгчийн нууцлалыг хамгаалахын тулд шифрлэдэг.</translation>
 <translation id="4408413947728134509"><ph name="NUM_COOKIES" /> күүки</translation>
 <translation id="4412074349188076601">Энэ тохируулгыг суулгах боломжтой гэж тэмдэглэсэн хэдий ч энэ архитектурт ямар ч системийн хуулбар олгоогүй тул үүнийг суулгах боломжгүй.</translation>
+<translation id="4412377069090572315">Хүмүүс юу гэж байна вэ?</translation>
 <translation id="4414452699610169758">Нууц үг, төлбөрийн хэрэгсэл, хаягуудыг хадгалах болон бөглөхөд Google Нууц үгний менежер, Chrome-н автоматаар бөглөх хэсгийг ашиглана уу</translation>
 <translation id="4414515549596849729">күүки болон сайтын өгөгдөл</translation>
 <translation id="4415156962929755728">Хуванцар (маш гялгар)</translation>
@@ -2265,6 +2268,7 @@
 <translation id="5001526427543320409">Гуравдагч талын күүки</translation>
 <translation id="5002932099480077015">Идэвхжсэн тохиолдолд Chrome нь таны энэ төхөөрөмж дэх картын хуулбарыг маягт хурдан бөглөхийн тулд хадгалах болно.</translation>
 <translation id="5007392906805964215">Шалгах</translation>
+<translation id="500790844453430087">"<ph name="GROUP_TITLE_1" />", "<ph name="GROUP_TITLE_2" />" табын бүлгүүд цаашид боломжгүй болсон</translation>
 <translation id="5011561501798487822">Илэрсэн хэл</translation>
 <translation id="5015510746216210676">Машины нэр:</translation>
 <translation id="5017554619425969104">Таны хуулсан текст</translation>
@@ -2372,6 +2376,7 @@
 <translation id="519422657042045905">Тэмдэглэгээ боломжгүй байна</translation>
 <translation id="5200063972779787617">Бүртгэлд хаяг хадгалах</translation>
 <translation id="5201306358585911203">Энэ хуудсанд оруулсан хуудас хэлэхдээ</translation>
+<translation id="5205114269877707377"><ph name="OMNIBOX_ACTION_FOCUSED_FRIENDLY_MATCH_TEXT" />, боломжтой үйлдлүүдийг харахын тулд Tab, дараа нь сонгосон үйдлийг гүйцэтгэхийн тулд Enter дарна уу.</translation>
 <translation id="5205222826937269299">Нэр шаардлагатай</translation>
 <translation id="5206392433295093945">Унтлагын өрөө</translation>
 <translation id="5209670883520018268">Тавиур 20</translation>
@@ -2737,6 +2742,7 @@
 <translation id="5866898949289125849">Та хөгжүүлэгч хэрэгслийн хуудсыг харж байна</translation>
 <translation id="5869405914158311789">Энэ сайтад холбогдох боломжгүй</translation>
 <translation id="5869522115854928033">Хадгалагдсан нууц үг</translation>
+<translation id="5872215789867188990">"<ph name="GROUP_TITLE" />" табын бүлэг цаашид боломжгүй болсон</translation>
 <translation id="5872692522325383488">Олон улсын банк акаунтны дугаарыг хадгалсан</translation>
 <translation id="5873297634595728366">Дизель тээврийн хэрэгслүүд</translation>
 <translation id="5877359070305966420">Хүний нөөц</translation>
@@ -2778,6 +2784,7 @@
 <translation id="5937560539988385583">Хуудсыг орчуулсан</translation>
 <translation id="5938153366081463283">Виртуал карт нэмнэ үү</translation>
 <translation id="5938793338444039872">Troy</translation>
+<translation id="5938866385061293322">Энэ мэдээлэл Trustpilot, ScamAdviser, Google болон шүүмжийн бусад бие даасан вебсайтаас ирсэн. Хураангуйг ХОУ-аар үүсгэдэг.</translation>
 <translation id="5944297261866530437">Даавуу (маш гялгар)</translation>
 <translation id="5950901984834744590">Сахлын хутга, сахлын машинууд</translation>
 <translation id="5951495562196540101">Хэрэглэгчийн бүртгэлээр бүртгүүлэх боломжгүй (багцалсан лиценз боломжтой).</translation>
@@ -3143,6 +3150,7 @@
 <translation id="6567832540451970450">Танай администратор энэ сайтад <ph name="PERMISSION" />-г зөвшөөрдөг</translation>
 <translation id="6568793038316600992">Төлбөрийн хэрэгсэл удирдах товчлуур, төлбөр болон кредит картаа Chrome-н тохиргоонд удирдахын тулд идэвхжүүлнэ үү</translation>
 <translation id="6569060085658103619">Та өргөтгөлийн хуудсыг харж байна.</translation>
+<translation id="6572867903637058088">Энэ тус болсон уу?</translation>
 <translation id="6573200754375280815">Баруун ирмэг дагуу хоёр нүх цоолох</translation>
 <translation id="6574762126505704998">Дүүргэх</translation>
 <translation id="6575408526598156416">Бүртгэлд хадгалах</translation>
@@ -3438,7 +3446,6 @@
 <translation id="7110368079836707726">Коллеж, их сургуулиуд</translation>
 <translation id="7111012039238467737">(Хүчинтэй)</translation>
 <translation id="7111507312244504964">Үл хөдлөх хөрөнгийн шалгалт болон үнэлгээ</translation>
-<translation id="7112327784801341716">Одоогийн мэдээлэл тань харагдахгүй байна уу? Үүнийг шинэчлэхийн тулд банктайгаа холбогдоно уу.</translation>
 <translation id="7116334367957017155">Танд хадгалсан ямар ч хаяг байхгүй байна. Google-н бүтээгдэхүүнүүдэд ашиглах хаяг нэмнэ үү.</translation>
 <translation id="7118618213916969306">Түр санах ойн URL болох <ph name="SHORT_URL" />-г хайх</translation>
 <translation id="7118852830504022370">Энэ сайт HTTPS-г дэмждэггүй тул та энэ сануулгыг харж байна. <ph name="BEGIN_LEARN_MORE_LINK" />Энэ сануулгын талаар нэмэлт мэдээлэл авах<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -3500,7 +3507,6 @@
 <translation id="7219179957768738017">Холболт нь <ph name="SSL_VERSION" />-ыг ашигладаг.</translation>
 <translation id="7220786058474068424">Боловсруулж байна</translation>
 <translation id="7221855153210829124">Мэдэгдэл харуулах</translation>
-<translation id="7221857374443660083">Таны банк таныг мөн болохыг баталгаажуулахыг хүсэж байна</translation>
 <translation id="722454870747268814">Шинэ Нууцлалтай таб</translation>
 <translation id="7227293336683593977">Үнийн түүх</translation>
 <translation id="7232352818707016189">Хүснэгтийг харьцуулахад зориулсан бусад үйлдэл</translation>
@@ -4321,9 +4327,11 @@
 <translation id="8672535691554698269">Компьютерын сүлжээнүүд</translation>
 <translation id="8675446170353411473">Таны файлуудыг <ph name="CLOUD_PROVIDER" />-д байршуулж байна</translation>
 <translation id="8676424191133491403">Хүлээхгүй</translation>
+<translation id="8679727228072670864">{COUNT,plural, =1{{COUNT} хүснэгтийг устгасан}other{{COUNT} хүснэгтийг устгасан}}</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, хариулт, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054"><ph name="PAGE" />-ын веб хуудсыг дараах шалтгааны улмаас ачаалж чадсангүй:</translation>
 <translation id="8682297334444610648">Dino тоглоом, тоглохын тулд товшино уу</translation>
+<translation id="8685225035093721011">Дэлгүүрийн шүүмж</translation>
 <translation id="8686424632716064939">Компьютерын аюулгүй байдал</translation>
 <translation id="8687278439622293018"><ph name="ENTRY_VOICEOVER" /> оруулгыг устгасан</translation>
 <translation id="8687429322371626002">Таны төхөөрөмж болон бүртгэлийг <ph name="MANAGER" /> удирддаг.</translation>

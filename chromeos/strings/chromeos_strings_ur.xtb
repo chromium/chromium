@@ -204,6 +204,7 @@
 <translation id="1823120442877418684">حروف</translation>
 <translation id="1827738518074806965">آرٹ گیلری</translation>
 <translation id="183287940576828840">جارحانہ/غیر محفوظ</translation>
+<translation id="1834032517784994783">ٹرانسکرپشن کی زبان منتخب کریں</translation>
 <translation id="1836553715834333258">سسٹم کا رنگ</translation>
 <translation id="183675228220305365">حقیقت پسند</translation>
 <translation id="1838374766361614909">تلاش صاف کریں</translation>
@@ -316,7 +317,6 @@
 <translation id="2308243864813041101">‏اپ ڈیٹ ہونے کے عمل کو جاری رکھنے کے لیے <ph name="DEVICE_NAME" /> کے USB کیبل کو ان پلگ کریں</translation>
 <translation id="2320295602967756579">ہلکی تھیم فعال کریں</translation>
 <translation id="2323506179655536734">نظر انداز کردہ</translation>
-<translation id="2323755382216917952">اس اپ ڈیٹ کے لیے آپ کو انسٹالیشن مکمل کرنے کے لیے اپنے کمپیوٹر کو دوبارہ شروع کرنے کی ضرورت ہے۔ اس اپ ڈیٹ کو مکمل ہونے میں چند منٹ لگ سکتے ہیں۔ جب فرم ویئر اپ ڈیٹ ہونے کے دوران اپنے کمپیوٹر کو ان پلگ یا شٹ ڈاؤن نہ کریں۔</translation>
 <translation id="2324354238778375592">فلوٹ</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2346474577291266260">عمدہ (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -462,7 +462,6 @@
 <translation id="3178532070248519384">Avant-Garde</translation>
 <translation id="3182676044300231689">"اسے مزید پُر اعتماد بنائیں" جیسا پرامپٹ درج کریں</translation>
 <translation id="3188257591659621405">میری فائلز</translation>
-<translation id="3188931456353313123">‏یہ اپ ڈیٹ آلہ کے کسی مینوفیکچرر کی طرف سے فراہم کی گئی ہے، ساتھ ہی Google نے بھی اس کی توثیق نہیں کی ہے۔</translation>
 <translation id="319101249942218879">اوتار تصویر تبدیل کی گئی</translation>
 <translation id="3192947282887913208">آڈیو فائلز</translation>
 <translation id="3199982728237701504">دستاویز فیڈر (دو طرفہ)</translation>
@@ -733,6 +732,7 @@
 <translation id="4483049906298469269">غیر ڈیفالٹ نیٹ ورک گیٹ وے کو پنگ کرنے میں ناکام</translation>
 <translation id="4483498983731992167">ٹرانسکرپٹ تخلیق نہیں ہو سکتا</translation>
 <translation id="4486524074141928967">آپ <ph name="TIME" /> پر سائن آؤٹ ہو جائیں گے</translation>
+<translation id="4487890678161807486">ٹرانسکرپشن کا زبان منتخب کنندہ کھولیں</translation>
 <translation id="4500722292849917410">‏شارٹ کٹ دستیاب نہیں ہے۔ موڈیفائر کلید (ctrl, alt, shift, یا <ph name="META_KEY" />) کا استعمال کرتے ہوئے ایک نیا شارٹ کٹ دبائیں۔</translation>
 <translation id="4500966230243561393">انٹرفیس کا رنگ</translation>
 <translation id="4503223151711056411">بائیں تیر کا نشان</translation>

@@ -427,7 +427,6 @@
 <translation id="2789552044937754463">{COUNT,plural, =1{Сырсөз Google аккаунтуңузга ({EMAIL}) сакталды}other{Сырсөздөр Google аккаунтуңузга ({EMAIL}) сакталды}}</translation>
 <translation id="2791174088547598693">Сырсөз кошуу…</translation>
 <translation id="2797302972324086597">Өлкөнүн коду</translation>
-<translation id="2802403747691280910"><ph name="NUMBER_OF_TABS_REMOVED" /> жабылды</translation>
 <translation id="2816489851009559785">Меню → Жөндөөлөр → Демейки серепчи</translation>
 <translation id="2818821771744632548">iPhone'ду баштапкы абалга келтирүүдө <ph name="USER_NAME" /> аккаунтунан чыктыңыз. Кайрадан кирүү үчүн төмөндөгү "Улантуу" баскычын басыңыз.</translation>
 <translation id="2819667972867209401">Параметр күйүп турганда, маалымат Google аккаунтуңузга сакталат. Ал эми өчүп турганда ушул түзмөккө гана сакталып, аккаунтуңуздан чыкканда өчүрүлөт.</translation>
@@ -562,6 +561,7 @@
 <translation id="3517216995152707259">Серептөө дайындарыңыз өчүрүлсө, Google аккаунтуңуздан чыгарылбайсыз. Аккаунтуңуздан чыгуу үчүн <ph name="BEGIN_LINK" />Chrome'дон чыгыңыз<ph name="END_LINK" />.</translation>
 <translation id="3519193562722059437">Интернетте серептөө үчүн өтмөк ачыңыз.</translation>
 <translation id="3519905498307021260">{count,plural, =1{Өтмөктү ачуу}other{{count} өтмөктү ачуу}}</translation>
+<translation id="3523513363815970085">"Көп кирген сайттарыңызды" жашыруу</translation>
 <translation id="3523789730715594198">Шайкештирүүнү параметрлерден каалаган убакта токтото аласыз. Google таржымалыңыздын негизинде Издөөнү жана башка кызматтарды жекелештириши мүмкүн.</translation>
 <translation id="3527085408025491307">Куржун</translation>
 <translation id="3529024052484145543">Кооптуу</translation>
@@ -837,6 +837,7 @@
 <translation id="4769198578611055647">Сакталган киргизүүчү ачкычтарды бардык түзмөктөрдө колдонууга мүмкүндүк берет</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Жашыруун режимде ачылсынбы?</translation>
+<translation id="479208892659046780">Көп кирген сайттарыңыз</translation>
 <translation id="4792385443586519711">Компаниянын аталышы</translation>
 <translation id="479628432297359449">Жүктөп алуу токтотулсунбу?</translation>
 <translation id="4796496140132859135">Өтмөктөр тобу. Жыйыштырылды.</translation>
@@ -1591,7 +1592,6 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="7975036700432177008">Байкап көрүү</translation>
 <translation id="797588153137233716">Меню → Таржымал → Серептөө дайындарын өчүрүү</translation>
 <translation id="7977451675950311423">Колдонулган сызсөздү кимдир бирөө билип алган болсо, ал тууралуу эскертет.</translation>
-<translation id="7977482887663636093"><ph name="NUMBER_OF_TABS_ADDED" /> жаңы өтмөк, <ph name="NUMBER_OF_TABS_REMOVED" /> жабылды</translation>
 <translation id="797824194429476746">Өтмөктөр бул түзмөктө ачык бойдон калып, бирок топ биротоло өчүрүлөт.</translation>
 <translation id="797874245254030665">Сырсөздөрүңүз менен киргизүүчү ачкычтарыңызды каалаган колдонмодон көрүңүз</translation>
 <translation id="7982789257301363584">Тармак</translation>
@@ -1778,7 +1778,6 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="8728922029615312208">Баарын жабуу</translation>
 <translation id="8730621377337864115">Бүттү</translation>
 <translation id="87371078663613140">Меню тилкесиндеги параметрлерди карап чыгыңыз</translation>
-<translation id="8739706427581741437"><ph name="NUMBER_OF_TABS_ADDED" /> жаңы өтмөк</translation>
 <translation id="8741627442233023406">{count,plural, =1{Өтмөктү карап көрүү…}other{Бардык өтмөктөрдү карап көрүү…}}</translation>
 <translation id="8741995161408053644">Google аккаунтуңуздун серептөө таржымалынын башка түрлөрү <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> дарегинде болушу мүмкүн.</translation>
 <translation id="874599634440689554">Шилтеме түзүү</translation>

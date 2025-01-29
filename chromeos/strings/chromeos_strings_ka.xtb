@@ -204,6 +204,7 @@
 <translation id="1823120442877418684">სიმბოლოები</translation>
 <translation id="1827738518074806965">ხელოვნების გალერეა</translation>
 <translation id="183287940576828840">შეურაცხმყოფელი/არასანდო</translation>
+<translation id="1834032517784994783">გახსენით ტრანსკრიპტის ენა</translation>
 <translation id="1836553715834333258">სისტემის ფერი</translation>
 <translation id="183675228220305365">რეალისტური</translation>
 <translation id="1838374766361614909">ძიების გასუფთავება</translation>
@@ -316,7 +317,6 @@
 <translation id="2308243864813041101">გამოაერთეთ <ph name="DEVICE_NAME" />-ის USB კაბელი, რომ განახლება განაგრძოთ</translation>
 <translation id="2320295602967756579">ღია თემის ჩართვა</translation>
 <translation id="2323506179655536734">გამოტოვებულია</translation>
-<translation id="2323755382216917952">ამ განახლების ინსტალაციის დასასრულებლად საჭიროა კომპიუტერის გადატვირთვა. განახლების დასრულებას რამდენიმე წუთი დასჭირდება. ჩაშენებული პროგრამული უზრუნველყოფის განახლების დროს ნუ გამორთავთ ან გათიშავთ კომპიუტერს.</translation>
 <translation id="2324354238778375592">ლივლივი</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2346474577291266260">შესანიშნავი (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -462,7 +462,6 @@
 <translation id="3178532070248519384">ავანგარდი</translation>
 <translation id="3182676044300231689">შეიყვანეთ მოთხოვნა — მაგალითად, „მეტი თავდაჯერებულობის მიცემა“</translation>
 <translation id="3188257591659621405">ჩემი ფაილები</translation>
-<translation id="3188931456353313123">ამ განახლებას უზრუნველყოფს მოწყობილობის მწარმოებელი და ის Google-ს არ შეუმოწმებია.</translation>
 <translation id="319101249942218879">ავატარის სურათი შეცვლილია</translation>
 <translation id="3192947282887913208">აუდიო ფაილები</translation>
 <translation id="3199982728237701504">დოკუმენტების მიმწოდი (ორმხრივი)</translation>
@@ -733,6 +732,7 @@
 <translation id="4483049906298469269">არანაგულისხმევი ქსელის გეითვეისთან კავშირის შემოწმება ვერ მოხერხდა</translation>
 <translation id="4483498983731992167">ტრანსკრიპტის შექმნა ვერ მოხერხდა</translation>
 <translation id="4486524074141928967">თქვენ სისტემიდან გამოხვალთ <ph name="TIME" />-ზე</translation>
+<translation id="4487890678161807486">გახსენით ტრანსკრიპტის ენის ამომრჩევი</translation>
 <translation id="4500722292849917410">მალსახმობი მიუწვდომელია. დააჭირეთ ახალ მალსახმობს მოდიფიკატორი კლავიშის (ctrl, alt, shift ან <ph name="META_KEY" />) მეშვეობით.</translation>
 <translation id="4500966230243561393">ინტერფეისის ფერი</translation>
 <translation id="4503223151711056411">ისარი მარცხნივ</translation>

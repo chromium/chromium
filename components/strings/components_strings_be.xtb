@@ -271,6 +271,7 @@
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1448166547804028941">Ключы "<ph name="DATA_CONTROLS_FIRST_KEY_SET" />" нельга наладзіць у тым жа слоўніку, што і ключы "<ph name="DATA_CONTROLS_SECOND_KEY_SET" />"</translation>
 <translation id="1455413310270022028">Сцірка</translation>
+<translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{Паказаць водгукі (0)}=1{Паказаць 1 водгук}one{Паказаць усе водгукі (#)}few{Паказаць усе водгукі (#)}many{Паказаць усе водгукі (#)}other{Паказаць усе водгукі (#)}}</translation>
 <translation id="1458059624921545588">Людзі і грамадства</translation>
 <translation id="1458140305240870199">Нацельная бялізна</translation>
 <translation id="1459693405370120464">Надвор’е</translation>
@@ -962,6 +963,7 @@
 <translation id="2674170444375937751">Сапраўды выдаліць гэтыя старонкі з гісторыі?</translation>
 <translation id="2674524144218093528">Малярныя і аддзелачныя работы</translation>
 <translation id="2674804415323431591">Схаваць прапановы</translation>
+<translation id="26774279487328902">Групы ўкладак (<ph name="GROUP_COUNT" />) больш не даступныя</translation>
 <translation id="2677748264148917807">Выйсці</translation>
 <translation id="2683195745483370038">Іншыя знойдзеныя вынікі</translation>
 <translation id="2686919536310834199">Адпраўце водгук пра дапамогу з напісаннем.</translation>
@@ -1956,6 +1958,7 @@
 <translation id="4407758156081352648">У мэтах бяспекі ваша арганізацыя не дазваляе паўторна выкарыстоўваць паролі ў Chrome. Для абароны прыватнасці карыстальнікаў паролі ў Chrome зашыфроўваюцца.</translation>
 <translation id="4408413947728134509">Файлы cookie: <ph name="NUM_COOKIES" /></translation>
 <translation id="4412074349188076601">Гэта канфігурацыя пазначана як даступная для ўсталявання, але яе нельга ўсталяваць, бо для гэтай архітэктуры няма даступных вобразаў.</translation>
+<translation id="4412377069090572315">Што кажуць людзі</translation>
 <translation id="4414452699610169758">Выкарыстоўвайце Менеджар пароляў Google і функцыю аўтазапаўнення ў Chrome, каб захоўваць і ўводзіць паролі, спосабы аплаты і адрасы</translation>
 <translation id="4414515549596849729">файлы сookie і даныя сайтаў</translation>
 <translation id="4415156962929755728">Высакаглянцавы пластык</translation>
@@ -2264,6 +2267,7 @@
 <translation id="5001526427543320409">Староннія файлы cookie</translation>
 <translation id="5002932099480077015">Пры ўключэнні гэтага параметра Chrome будзе захоўваць копію вашай карткі на гэтай прыладзе ў мэтах хутчэйшага запаўнення форм.</translation>
 <translation id="5007392906805964215">Праглядзець</translation>
+<translation id="500790844453430087">Групы ўкладак "<ph name="GROUP_TITLE_1" />" і "<ph name="GROUP_TITLE_2" />" больш не даступныя</translation>
 <translation id="5011561501798487822">Выяўленая мова</translation>
 <translation id="5015510746216210676">Назва прылады:</translation>
 <translation id="5017554619425969104">Скапіраваны вамі тэкст</translation>
@@ -2735,6 +2739,7 @@
 <translation id="5866898949289125849">Вы праглядаеце старонку інструментаў распрацоўшчыка</translation>
 <translation id="5869405914158311789">Гэты сайт недаступны</translation>
 <translation id="5869522115854928033">Захаваныя паролі</translation>
+<translation id="5872215789867188990">Група ўкладак "<ph name="GROUP_TITLE" />" больш не даступная</translation>
 <translation id="5872692522325383488">Нумар IBAN захаваны</translation>
 <translation id="5873297634595728366">Дызельныя аўтамабілі</translation>
 <translation id="5877359070305966420">Кадры</translation>
@@ -2776,6 +2781,7 @@
 <translation id="5937560539988385583">Старонка перакладзена</translation>
 <translation id="5938153366081463283">Дадаць віртуальную картку</translation>
 <translation id="5938793338444039872">Troy</translation>
+<translation id="5938866385061293322">Гэта інфармацыя атрымана з незалежных вэб-сайтаў з водгукамі, такіх як Trustpilot, ScamAdviser, Google і іншых. Рэзюмэ створаны штучным інтэлектам.</translation>
 <translation id="5944297261866530437">Высакаглянцавая тканіна</translation>
 <translation id="5950901984834744590">Электрабрытвы і станкі для галення</translation>
 <translation id="5951495562196540101">Не ўдалося зарэгістраваць з дапамогай уліковага запісу спажыўца (даступна пакетная ліцэнзія).</translation>
@@ -3142,6 +3148,7 @@
 <translation id="6567832540451970450">Ваш адміністратар дае гэтаму сайту дазвол "<ph name="PERMISSION" />"</translation>
 <translation id="6568793038316600992">Кнопка "Наладзіць спосабы аплаты". Каб кіраваць плацяжамі і звесткамі крэдытных картак праз налады Chrome, націсніце яе.</translation>
 <translation id="6569060085658103619">Вы праглядаеце старонку пашырэння</translation>
+<translation id="6572867903637058088">Гэта карысна?</translation>
 <translation id="6573200754375280815">Дзве дзіркі справа</translation>
 <translation id="6574762126505704998">Запоўніць</translation>
 <translation id="6575408526598156416">Захаваць ва ўліковым запісе</translation>
@@ -3437,7 +3444,6 @@
 <translation id="7110368079836707726">Вышэйшыя навучальныя ўстановы</translation>
 <translation id="7111012039238467737">(Сапраўдны)</translation>
 <translation id="7111507312244504964">Ацэнка кошту і экспертыза нерухомай маёмасці</translation>
-<translation id="7112327784801341716">Не бачыце сваю бягучую інфармацыю? Звярніцеся ў банк, каб абнавіць яе.</translation>
 <translation id="7116334367957017155">У вас няма захаваных адрасоў. Дадайце адрас, каб выкарыстоўваць яго ў прадуктах Google.</translation>
 <translation id="7118618213916969306">Пошук URL-адраса з буфера абмену: <ph name="SHORT_URL" /></translation>
 <translation id="7118852830504022370">Гэта папярэджанне паказана вам, бо дадзены сайт не падтрымлівае HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Даведацца больш пра гэта папярэджанне<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -3499,7 +3505,6 @@
 <translation id="7219179957768738017">На падключэнні выкарыстоўваецца <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Ідзе апрацоўка</translation>
 <translation id="7221855153210829124">Паказваць апавяшчэнні</translation>
-<translation id="7221857374443660083">Ваш банк хоча пераканацца, што гэта сапраўды вы.</translation>
 <translation id="722454870747268814">Новая ўкладка ў рэжыме інкогніта</translation>
 <translation id="7227293336683593977">Гісторыя цэн</translation>
 <translation id="7232352818707016189">Іншыя дзеянні для табліцы параўнання</translation>
@@ -4321,9 +4326,11 @@
 <translation id="8672535691554698269">Камп’ютарныя сеткі</translation>
 <translation id="8675446170353411473">Файлы запампоўваюцца ў воблака "<ph name="CLOUD_PROVIDER" />"</translation>
 <translation id="8676424191133491403">Без затрымкі</translation>
+<translation id="8679727228072670864">{COUNT,plural, =1{{COUNT} табліца выдалена}one{{COUNT} табліца выдалена}few{{COUNT} табліцы выдалены}many{{COUNT} табліц выдалена}other{{COUNT} табліцы выдалена}}</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, адказ, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Немагчыма загрузіць вэб-старонку па адрасе <ph name="PAGE" />, бо:</translation>
 <translation id="8682297334444610648">Гульня з дыназаўрам – дакраніцеся, каб гуляць</translation>
+<translation id="8685225035093721011">Водгукі на краму</translation>
 <translation id="8686424632716064939">Камп’ютарная бяспека</translation>
 <translation id="8687278439622293018">Запіс "<ph name="ENTRY_VOICEOVER" />" выдалены</translation>
 <translation id="8687429322371626002">Вашай прыладай і ўліковым запісам кіруе <ph name="MANAGER" />.</translation>

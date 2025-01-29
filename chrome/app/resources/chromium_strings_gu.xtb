@@ -301,7 +301,6 @@
 <translation id="5286907366254680517">ભાળ મળી</translation>
 <translation id="5294316920224716406">છૂપા મોડમાં બ્રાઉઝ કરતી વખતે, અસુરક્ષિત કનેક્શનનો ઉપયોગ કરીને સાઇટ લોડ કરતા પહેલાં Chromium તમને ચેતવણી આપશે</translation>
 <translation id="5296845517486664001">જ્યારે અજમાયશો ચાલુ હોય અને જો Chromium કોઈ સક્રિય અજમાયશમાં કોઈપણ ક્રમમાં તમારી ગોઠવણ કરી લે, તો તમારો બ્રાઉઝિંગ ઇતિહાસ તમને દેખાતી જાહેરાતો અને નીચે જણાવેલી અનુમાનિત રુચિઓને અસર કરે છે. તમારી પ્રાઇવસીની સુરક્ષા કરવા માટે Chromium નવા વિષયો આવતા જાય, તેના આધારે દર મહિને તમારી રુચિના વિષયોને ડિલીટ કરે છે.</translation>
-<translation id="5310474266708705970">Chromiumમાં <ph name="USER_EMAIL" /> તરીકે સાઇન ઇન કરો</translation>
 <translation id="5313228254328109263">Chromium અપડેટર આંતરિક સેવા</translation>
 <translation id="5352264705793813212">Chromiumને તમારા રિવ્યૂ માટે કેટલાક સલામતી સંબંધિત સુઝાવો મળ્યા છે</translation>
 <translation id="5352361688875342522">અન્ય Chromium પ્રોફાઇલ</translation>
@@ -312,7 +311,7 @@
 <translation id="5386450000063123300">Chromium અપડેટ થઈ રહ્યું છે (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Chromiumમાં સાઇન-ઇનની મંજૂરી આપો</translation>
 <translation id="5405650547142096840">Chromium માંથી દૂર કરો</translation>
-<translation id="5427571867875391349">Chromium ને તમારા ડિફોલ્ટ બ્રાઉઝર તરીકે સેટ કરો</translation>
+<translation id="5427571867875391349">Chromiumને તમારા ડિફૉલ્ટ બ્રાઉઝર તરીકે સેટ કરો</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium બીટા</translation>
 <translation id="5473971139929175403">આ Linux વિતરણ સિસ્ટમ પર Chromium હવે સપોર્ટ કરતું ન હોવાથી કદાચ તે યોગ્ય રીતે કાર્ય ન કરે</translation>
 <translation id="5475924890392386523">Chromium દ્વારા આ ડાઉનલોડ બ્લૉક કરવામાં આવ્યું છે, કારણ કે આ ફાઇલ તમારા વ્યક્તિગત અને સોશિયલ નેટવર્ક એકાઉન્ટને નુકસાન પહોંચાડી શકે છે</translation>
@@ -366,6 +365,7 @@
 <translation id="6145820983052037069">તમે અહીં એક Chromium પ્રોફાઇલથી બીજી Chromium પ્રોફાઇલ પર સ્વિચ કરી શકો છો</translation>
 <translation id="615103374448673771">જો તમે કુકીને મંજૂરી આપો, તો Chromium પહેલેથી લોડ કરતી વખતે તેનો ઉપયોગ કરી શકે છે</translation>
 <translation id="6165508094623778733">વધુ જાણો</translation>
+<translation id="6173308241973263798">તમારા એકાઉન્ટમાંનો Chromium ડેટા સાફ કરો</translation>
 <translation id="6174920971222007286">આ ફાઇલ જોખમી હોઈ શકે છે<ph name="LINE_BREAK" />જો તમે પાસવર્ડ પ્રદાન કરો છો, તો Chromium તમારા માટે આ ડાઉનલોડને તપાસી શકે છે. ફાઇલ વિશેની માહિતી Google Safe Browsingને મોકલવામાં આવે છે, પરંતુ ફાઇલનું કન્ટેન્ટ અને પાસવર્ડ તમારા ડિવાઇસમાં જ રહે છે.</translation>
 <translation id="6182736845697986886">કોઈ અપડેટ સર્વરની આંતરિક ભૂલને કારણે ઇન્સ્ટૉલેશન નિષ્ફળ રહ્યું.</translation>
 <translation id="6183079672144801177">ખાતરી કરો કે તમે તમારા <ph name="TARGET_DEVICE_NAME" /> પર Chromiumમાં સાઇન ઇન કર્યું છે અને પછી ફરીથી મોકલવાનો પ્રયાસ કરો.</translation>
@@ -373,7 +373,7 @@
 <translation id="6219195342503754812">{0,plural, =0{Chromium હમણાં ફરીથી લૉન્ચ થશે}=1{Chromium 1 સેકન્ડમાં ફરીથી લૉન્ચ થશે}one{Chromium # સેકન્ડમાં ફરીથી લૉન્ચ થશે}other{Chromium # સેકન્ડમાં ફરીથી લૉન્ચ થશે}}</translation>
 <translation id="6241367896540709610">ફાઇલો ડાઉનલોડ કરવા માટે, Chromiumને સ્ટોરેજના ઍક્સેસની પરવાનગીની જરૂર છે</translation>
 <translation id="6245734527075554892">URLsને Chromiumમાં સ્ટોર કરેલી અસુરક્ષિત સાઇટની સૂચિ સાથે સરખાવીને ચેક કરે છે</translation>
-<translation id="6248213926982192922">Chromium ને ડિફોલ્ટ બ્રાઉઝર બનાવો</translation>
+<translation id="6248213926982192922">Chromiumને ડિફૉલ્ટ બ્રાઉઝર બનાવો</translation>
 <translation id="6268381023930128611">Chromiumમાંથી સાઇન આઉટ કરીએ?</translation>
 <translation id="6270547683008298381">આ ટૅબ વધારાના સંસાધનોનો ઉપયોગ કરી રહ્યાં છે. તમારા પર્ફોર્મન્સને બહેતર બનાવવા માટે, Chromiumને તેમને નિષ્ક્રિય કરવા દો.</translation>
 <translation id="6281746429495226318">તમારી Chromium પ્રોફાઇલને કસ્ટમાઇઝ કરો</translation>
@@ -432,6 +432,7 @@
 <translation id="684888714667046800">ઇન્ટરનેટ સાથે કનેક્ટ કરી શકતા નથી. જો તમે કોઈ ફાયરવૉલનો ઉપયોગ કરતા હો, તો કૃપા કરીને ખાતરી કરો કે <ph name="PRODUCT_EXE_NAME" /> વ્હાઇટલિસ્ટમાં છે.</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6873893289264747459">Chromiumને "<ph name="EXTENSION_NAME" />"માં માલવેર હોવાનું જાણવા મળ્યું છે</translation>
+<translation id="6877631896957360295">જો તમે તમારો પાસફ્રેઝ ભૂલી ગયા હો અથવા આ સેટિંગ બદલવા માગતા હો, તો તમારા એકાઉન્ટમાંનો Chromiumનો ડેટા <ph name="SETTINGS_LINK" />.</translation>
 <translation id="6896758677409633944">કૉપિ કરો</translation>
 <translation id="6929417474050522668">અજમાયશો ચાલુ હોય ત્યારે, Ad measurement તમે જેની મુલાકાત લો છો તે સાઇટને Chromium પાસેથી માહિતીની વિનંતી કરવાની મંજૂરી આપે છે, જે સાઇટને તેની જાહેરાતોનું કાર્યપ્રદર્શન માપવામાં સહાય કરે છે. Ad measurement સાઇટ વચ્ચે શક્ય તેટલી ઓછી માહિતી ટ્રાન્સફર કરીને, સાઇટ દ્વારા પરસ્પરના ટ્રૅકિંગને પ્રતિબંધિત કરે છે.</translation>
 <translation id="6940431691900807093">પછી, તમે જેની મુલાકાત લો તે સાઇટ Chromiumને તમારી રુચિઓ જોવા માટે કહી શકે છે, જેથી તમને જોવા મળતી જાહેરાતોને મનગમતી બનાવી શકાય. Chromium વધુમાં વધુ 3 રુચિ શેર કરી શકે છે.</translation>

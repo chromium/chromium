@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">Zrušeno</translation>
 <translation id="1020274983236703756">Jsou k dispozici exkluzivní položky pro <ph name="PRODUCT_NAME" /></translation>
 <translation id="1022628058306505708">Plynoucí Země</translation>
+<translation id="102432830749687801">Než ztratíte přístup, pomocí aplikace Přenos obsahu od Googlu přeneste data ze svého školního účtu na osobní.</translation>
 <translation id="1026212596705997935">Zkratka se používá pro „<ph name="CONFLICT_ACCEL_NAME" />“. Stiskněte novou zkratku. Pokud existující zkratku chcete nahradit, stiskněte tuto zkratku znovu.</translation>
 <translation id="1030856839388844477">Resetovat využití dat</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (počet vláken: <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
@@ -93,6 +94,7 @@
 <translation id="1394661041439318933">Stav baterie pouzdra je <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="1397738625398125236">Pingnutí brány</translation>
 <translation id="1398634363027580500">Velmi vysoká latence HTTPS</translation>
+<translation id="1406389211945506521">Děkujeme za vaše názory. Vaše zpětná vazba nám pomůže vytvářet přesnější a přínosnější obsah.</translation>
 <translation id="1407069428457324124">Tmavý motiv</translation>
 <translation id="1413240736185167732">Tisk selhal – selhal filtr</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
@@ -198,8 +200,10 @@
 <translation id="1808803439260407870">Klasické umění</translation>
 <translation id="181434555916624618">Výsledky s lidmi se zatím nezobrazují. Zkuste jiný pokyn.</translation>
 <translation id="1815850098929213707">Vybraná klávesa je <ph name="KEYS" />. Klepnutím na tlačítko ovládací prvek upravíte</translation>
+<translation id="1818174214124933000">Když vyberete Odeslat, vaše zpětná vazba a obsah (zobrazené níže) budou odeslány do Googlu, zkontrolovány lidmi a použity k trénování nebo vylepšování našich produktů a služeb v souladu se <ph name="LINK_POLICY_BEGIN" />zásadami ochrany soukromí<ph name="LINK_POLICY_END" /> a <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />smluvními podmínkami společnosti Google<ph name="LINK_TERMS_OF_SERVICE_END" />.</translation>
 <translation id="1823120442877418684">Objekty</translation>
 <translation id="1827738518074806965">Galerie umění</translation>
+<translation id="183287940576828840">Nevhodné/nebezpečné</translation>
 <translation id="1836553715834333258">Systémová barva</translation>
 <translation id="183675228220305365">realistismus</translation>
 <translation id="1838374766361614909">Vymazat vyhledávání</translation>
@@ -225,6 +229,7 @@
 <translation id="1908234395526491708">Selhání požadavků UDP</translation>
 <translation id="1908394185991500139">šipka vlevo</translation>
 <translation id="1914144885717544695">v pátek</translation>
+<translation id="1915960750806557358">Sdělte nám svůj názor nebo popište svůj problém. Neuvádějte žádné osobní, citlivé ani důvěrné informace.</translation>
 <translation id="1923388006036088459">Barvy zvýraznění</translation>
 <translation id="1945403655450283000">Diktafon</translation>
 <translation id="1947737735496445907">Vytištěno</translation>
@@ -311,7 +316,6 @@
 <translation id="2308243864813041101">Pokud chcete v procesu aktualizace pokračovat, odpojte od zařízení <ph name="DEVICE_NAME" /> kabel USB</translation>
 <translation id="2320295602967756579">Aktivovat světlý motiv</translation>
 <translation id="2323506179655536734">PŘESKOČENO</translation>
-<translation id="2323755382216917952">K dokončení instalace této aktualizace je potřeba restartovat počítač. Dokončení této aktualizace může trvat několik minut. Během aktualizace firmwaru neodpojujte ani nevypínejte počítač.</translation>
 <translation id="2324354238778375592">Plovoucí</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2346474577291266260">Vynikající (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -457,7 +461,6 @@
 <translation id="3178532070248519384">avantgarda</translation>
 <translation id="3182676044300231689">Zadejte pokyn, například „uprav text, aby zněl jistěji“</translation>
 <translation id="3188257591659621405">Moje soubory</translation>
-<translation id="3188931456353313123">Tuto aktualizaci poskytuje výrobce zařízení a nebyla ověřena společností Google.</translation>
 <translation id="319101249942218879">Obrázek avatara se změnil</translation>
 <translation id="3192947282887913208">Zvukové soubory</translation>
 <translation id="3199982728237701504">Podavač dokumentů (oboustranných)</translation>
@@ -596,6 +599,7 @@
 <translation id="387301095347517405">Údaj, kolikrát baterie prošla celým cyklem nabíjení</translation>
 <translation id="3877066159641251281">Poslechnout si překlad</translation>
 <translation id="3880601782712134623">Automaticky rozpozná jednotlivé hlasy a každému přidělí obecný štítek, například Mluvčí 1 a Mluvčí 2</translation>
+<translation id="38811596981744338">Právní problém</translation>
 <translation id="3885327323343477505">Změnit spořič obrazovky</translation>
 <translation id="3889914174935857450">Datum resetování</translation>
 <translation id="3897092660631435901">Nabídka</translation>
@@ -821,6 +825,7 @@
 <translation id="4921665434385737356">Nabito na <ph name="RATE" /> za <ph name="NUM_SECONDS" /> s.</translation>
 <translation id="4930320165497208503">Pokud chcete nastavit nebo aktualizovat připojení, přejděte do sekce <ph name="BEGIN_LINK" />Nastavení<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Datum</translation>
+<translation id="494102685638938793"><ph name="LINK_TEXT" />, otevře se na nové kartě</translation>
 <translation id="4946927805998996217">Generování souhrnu</translation>
 <translation id="4950314376641394653">Firmware zařízení <ph name="DEVICE_NAME" /> byl aktualizován na verzi <ph name="VERSION" /></translation>
 <translation id="4950893758552030541">stromový tunel</translation>
@@ -1208,6 +1213,7 @@
 <translation id="6692996468359469499">Získejte informace týkající se vybraného obsahu</translation>
 <translation id="6694534975463174713">zámek</translation>
 <translation id="6700703207451721535">Přístup k tomuto odkazu není povolen. Pokud ho potřebujete, obraťte se na svého učitele.</translation>
+<translation id="6703179086771097594">Co se nepovedlo?</translation>
 <translation id="6704062477274546131">Překlad DNS</translation>
 <translation id="6712933881624804031">údolí</translation>
 <translation id="6716013206176357696">jahody</translation>
@@ -1281,6 +1287,7 @@
 <translation id="7049916119678019302">Stáhněte v Nastavení model přepisu</translation>
 <translation id="7058278511608979688">Ukončit a uložit</translation>
 <translation id="7059230779847288458">Nabíjení, <ph name="TIME_VALUE" /> do úplného nabití</translation>
+<translation id="7064209589142995848">Přenos obsahu</translation>
 <translation id="7065336548231472971">Je vybrán jazyk <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7066538517128343186">klávesa <ph name="KEY" /></translation>
 <translation id="7068619307603204412">Připravte zařízení</translation>
@@ -1592,6 +1599,7 @@ Pokud přepisy chcete získat, stáhněte si pro ně model (až 100 MB).</trans
 <translation id="8476942730579767658">Okna a plochy</translation>
 <translation id="8477536061607044749">grafický design</translation>
 <translation id="8477551185774834963">DNS má latenci mírně nad prahovou hodnotou</translation>
+<translation id="8481308460877552925">Faktická chyba</translation>
 <translation id="8482376765267780829">Vyberte nějaký text ke zjednodušení</translation>
 <translation id="8483248364096924578">IP adresa</translation>
 <translation id="8491311378305535241">Z aplikací pro Android se přes firewall nelze připojit k webům HTTPS</translation>

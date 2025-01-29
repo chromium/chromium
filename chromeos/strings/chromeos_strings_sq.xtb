@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">Anuluar</translation>
 <translation id="1020274983236703756">Tani ofrohen elemente ekskluzive për <ph name="PRODUCT_NAME" /></translation>
 <translation id="1022628058306505708">Rrjedha e tokës</translation>
+<translation id="102432830749687801">Sigurohu që të përdorësh aplikacionin "Transferimi i përmbajtjes" nga Google për të zhvendosur të dhënat e llogarisë së shkollës te llogaria jote personale para se të humbasësh qasjen.</translation>
 <translation id="1026212596705997935">Shkurtorja po përdoret për "<ph name="CONFLICT_ACCEL_NAME" />". Shtyp një shkurtore të re. Për të zëvendësuar shkurtoren ekzistuese, shtyp përsëri këtë shkurtore.</translation>
 <translation id="1030856839388844477">Rivendos përdorimin e të dhënave</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> nënprocese, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
@@ -93,6 +94,7 @@
 <translation id="1394661041439318933">Pajisja ka <ph name="BATTERY_PERCENTAGE" />% bateri në kasë.</translation>
 <translation id="1397738625398125236">Porta e kalimit mund të kryejë verifikimin "ping"</translation>
 <translation id="1398634363027580500">Vonesë shumë e lartë në HTTPS</translation>
+<translation id="1406389211945506521">Faleminderit që ndan përvojën tënde. Komentet e tua na ndihmojnë të krijojmë përmbajtje më të sakta dhe të dobishme.</translation>
 <translation id="1407069428457324124">Tema e errët</translation>
 <translation id="1413240736185167732">Dështoi - Filtri dështoi</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
@@ -198,8 +200,10 @@
 <translation id="1808803439260407870">Art klasik</translation>
 <translation id="181434555916624618">Për momentin, rezultatet me personat nuk do të shfaqen. Provo një kërkesë tjetër.</translation>
 <translation id="1815850098929213707">Tasti i zgjedhur është <ph name="KEYS" />. Trokit te butoni për të modifikuar kontrollin</translation>
+<translation id="1818174214124933000">Kur zgjedh "Dërgo", komentet dhe përmbajtjet e tua (të shfaqura më poshtë) do të dërgohen te Google, do të shqyrtohen nga njerëz dhe do të përdoren për të trajnuar ose përmirësuar produktet dhe shërbimet tona sipas <ph name="LINK_POLICY_BEGIN" />Politikës së privatësisë<ph name="LINK_POLICY_END" /> dhe <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />"Kushteve të shërbimit" të Google<ph name="LINK_TERMS_OF_SERVICE_END" />.</translation>
 <translation id="1823120442877418684">Personazhe</translation>
 <translation id="1827738518074806965">Galeri arti</translation>
+<translation id="183287940576828840">Fyese/e pasigurt</translation>
 <translation id="1836553715834333258">Ngjyra e sistemit</translation>
 <translation id="183675228220305365">realist</translation>
 <translation id="1838374766361614909">Fshi kërkimin</translation>
@@ -225,6 +229,7 @@
 <translation id="1908234395526491708">Dështimet e kërkesave UDP</translation>
 <translation id="1908394185991500139">shigjeta majtas</translation>
 <translation id="1914144885717544695">të premten</translation>
+<translation id="1915960750806557358">Ndaj komentet e tua ose përshkruaj problemin tënd. Sigurohu që të mos përdorësh asgjë që është personale, delikate ose konfidenciale.</translation>
 <translation id="1923388006036088459">Ngjyrat e theksimit</translation>
 <translation id="1945403655450283000">Regjistruesi</translation>
 <translation id="1947737735496445907">Printuar</translation>
@@ -311,7 +316,6 @@
 <translation id="2308243864813041101">Hiq kabllon USB të pajisjes "<ph name="DEVICE_NAME" />" për të vazhduar procesin e përditësimit</translation>
 <translation id="2320295602967756579">Aktivizo temën e ndriçuar</translation>
 <translation id="2323506179655536734">KAPËRCYER</translation>
-<translation id="2323755382216917952">Ky përditësim kërkon që të rinisësh kompjuterin për të përfunduar instalimin. Mund të duhen disa minuta për përfundimin e këtij përditësimi. Mos e hiq nga priza dhe mos e fik kompjuterin gjatë përditësimit të firmuerit.</translation>
 <translation id="2324354238778375592">Pluskuese</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2346474577291266260">E shkëlqyer (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -457,7 +461,6 @@
 <translation id="3178532070248519384">avantgardë</translation>
 <translation id="3182676044300231689">Fut një kërkesë si p.sh. "bëje me më shumë vetëbesim"</translation>
 <translation id="3188257591659621405">Skedarët e mi</translation>
-<translation id="3188931456353313123">Ky përditësim ofrohet nga prodhuesi i pajisjes dhe nuk është verifikuar nga Google.</translation>
 <translation id="319101249942218879">Imazhi i avatarit u ndryshua</translation>
 <translation id="3192947282887913208">Skedarët audio</translation>
 <translation id="3199982728237701504">Furnizuesi i dokumentit (dy anë)</translation>
@@ -596,6 +599,7 @@
 <translation id="387301095347517405">Numri i herëve që bateria ka kryer një cikël të plotë karikimi</translation>
 <translation id="3877066159641251281">Dëgjo përkthimin</translation>
 <translation id="3880601782712134623">Të zbulojë automatikisht zërat e veçantë dhe t'i japë çdo folësi një etiketë të përgjithshme, si p.sh. "Folësi 1" dhe "Folësi 2".</translation>
+<translation id="38811596981744338">Problem ligjor</translation>
 <translation id="3885327323343477505">Ndrysho mbrojtësin e ekranit</translation>
 <translation id="3889914174935857450">Rivendos datën</translation>
 <translation id="3897092660631435901">Menyja</translation>
@@ -821,6 +825,7 @@
 <translation id="4921665434385737356">U karikua <ph name="RATE" /> në <ph name="NUM_SECONDS" /> sekonda.</translation>
 <translation id="4930320165497208503">Për të konfiguruar ose përditësuar një lidhje, shko te <ph name="BEGIN_LINK" />Cilësimet<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Data</translation>
+<translation id="494102685638938793"><ph name="LINK_TEXT" />, hapet në skedë të re</translation>
 <translation id="4946927805998996217">Po gjenerohet përmbledhja</translation>
 <translation id="4950314376641394653">Firmueri <ph name="DEVICE_NAME" /> është përditësuar në versionin <ph name="VERSION" /></translation>
 <translation id="4950893758552030541">tunel pemësh</translation>
@@ -1208,6 +1213,7 @@
 <translation id="6692996468359469499">Merr informacion në lidhje me përzgjedhjen tënde</translation>
 <translation id="6694534975463174713">kyç</translation>
 <translation id="6700703207451721535">Qasja nuk lejohet për këtë lidhje. Kontakto me mësuesin tënd nëse ke nevojë për qasje.</translation>
+<translation id="6703179086771097594">Çfarë nuk funksionoi?</translation>
 <translation id="6704062477274546131">Rezolucioni i DNS-së</translation>
 <translation id="6712933881624804031">luginë</translation>
 <translation id="6716013206176357696">luleshtrydhe</translation>
@@ -1281,6 +1287,7 @@
 <translation id="7049916119678019302">Shkarko modelin e transkriptimit te "Cilësimet"</translation>
 <translation id="7058278511608979688">Mbaro dhe ruaj</translation>
 <translation id="7059230779847288458">Po karikohet, <ph name="TIME_VALUE" /> derisa të mbushet</translation>
+<translation id="7064209589142995848">Transferimi i përmbajtjes</translation>
 <translation id="7065336548231472971">Është zgjedhur: <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7066538517128343186">tasti <ph name="KEY" /></translation>
 <translation id="7068619307603204412">Përgatit pajisjen</translation>
@@ -1592,6 +1599,7 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="8476942730579767658">Dritaret dhe tavolinat e punës</translation>
 <translation id="8477536061607044749">e dizajnit grafik</translation>
 <translation id="8477551185774834963">Vonesa e DNS-së është pak më lart se pragu i lejueshëm</translation>
+<translation id="8481308460877552925">E pasaktë në lidhje me faktet</translation>
 <translation id="8482376765267780829">Zgjidh një pjesë të tekstit për ta thjeshtuar</translation>
 <translation id="8483248364096924578">Adresa e IP-së</translation>
 <translation id="8491311378305535241">Nuk mund të lidhesh me uebsajtet HTTPS nëpërmjet murit mbrojtës nga aplikacionet për Android</translation>

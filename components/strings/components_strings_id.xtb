@@ -271,6 +271,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1448166547804028941">Kunci "<ph name="DATA_CONTROLS_FIRST_KEY_SET" />" tidak dapat ditetapkan dalam kamus yang sama dengan kunci "<ph name="DATA_CONTROLS_SECOND_KEY_SET" />"</translation>
 <translation id="1455413310270022028">Penghapus</translation>
+<translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{Lihat 0 ulasan}=1{Lihat 1 ulasan}other{Lihat semua (#) ulasan}}</translation>
 <translation id="1458059624921545588">Tokoh &amp; Masyarakat</translation>
 <translation id="1458140305240870199">Pakaian Dalam</translation>
 <translation id="1459693405370120464">Cuaca</translation>
@@ -962,6 +963,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2674170444375937751">Yakin ingin menghapus halaman ini dari histori?</translation>
 <translation id="2674524144218093528">Pengecatan &amp; Penyelesaian Rumah</translation>
 <translation id="2674804415323431591">Sembunyikan saran</translation>
+<translation id="26774279487328902"><ph name="GROUP_COUNT" /> grup tab tidak lagi tersedia</translation>
 <translation id="2677748264148917807">Keluar</translation>
 <translation id="2683195745483370038">Hasil lain ditemukan</translation>
 <translation id="2686919536310834199">Kirim masukan untuk Bantu tulis.</translation>
@@ -1956,6 +1958,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="4407758156081352648">Untuk menjaga keamanan, organisasi Anda tidak mengizinkan sandi digunakan kembali di Chrome. Sandi di Chrome dienkripsi untuk melindungi privasi pengguna.</translation>
 <translation id="4408413947728134509">Cookie <ph name="NUM_COOKIES" /></translation>
 <translation id="4412074349188076601">Konfigurasi ini ditandai sebagai dapat diinstal, tetapi tidak ada gambar yang disediakan untuk arsitektur ini, sehingga tidak dapat diinstal.</translation>
+<translation id="4412377069090572315">Pendapat orang lain</translation>
 <translation id="4414452699610169758">Gunakan Pengelola Sandi Google dan Isi Otomatis Chrome untuk menyimpan dan mengisi sandi, metode pembayaran, dan alamat</translation>
 <translation id="4414515549596849729">cookie dan data situs</translation>
 <translation id="4415156962929755728">Plastik (Kilap Tinggi)</translation>
@@ -2264,6 +2267,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="5001526427543320409">Cookie pihak ketiga</translation>
 <translation id="5002932099480077015">Jika diaktifkan, Chrome akan menyimpan salinan kartu Anda di perangkat ini untuk pengisian formulir yang lebih cepat.</translation>
 <translation id="5007392906805964215">Tinjau</translation>
+<translation id="500790844453430087">Grup tab "<ph name="GROUP_TITLE_1" />" dan "<ph name="GROUP_TITLE_2" />" tidak lagi tersedia</translation>
 <translation id="5011561501798487822">Bahasa yang Terdeteksi</translation>
 <translation id="5015510746216210676">Nama Mesin:</translation>
 <translation id="5017554619425969104">Teks yang Anda salin</translation>
@@ -2371,6 +2375,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="519422657042045905">Anotasi tidak tersedia</translation>
 <translation id="5200063972779787617">Simpan alamat di akun</translation>
 <translation id="5201306358585911203">Halaman tersemat di halaman ini menyatakan</translation>
+<translation id="5205114269877707377"><ph name="OMNIBOX_ACTION_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab untuk menjelajahi tindakan yang tersedia, lalu tekan Enter untuk menjalankan tindakan yang dipilih.</translation>
 <translation id="5205222826937269299">Nama wajib diisi</translation>
 <translation id="5206392433295093945">Kamar Tidur</translation>
 <translation id="5209670883520018268">Baki 20</translation>
@@ -2736,6 +2741,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="5866898949289125849">Anda sedang menampilkan halaman developer tools</translation>
 <translation id="5869405914158311789">Situs ini tidak dapat dijangkau</translation>
 <translation id="5869522115854928033">Sandi tersimpan</translation>
+<translation id="5872215789867188990">Grup tab "<ph name="GROUP_TITLE" />" tidak lagi tersedia</translation>
 <translation id="5872692522325383488">IBAN disimpan</translation>
 <translation id="5873297634595728366">Kendaraan Diesel</translation>
 <translation id="5877359070305966420">Sumber Daya Manusia</translation>
@@ -2777,6 +2783,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="5937560539988385583">Halaman diterjemahkan</translation>
 <translation id="5938153366081463283">Tambahkan kartu virtual</translation>
 <translation id="5938793338444039872">Troy</translation>
+<translation id="5938866385061293322">Info ini berasal dari situs ulasan independen seperti Trustpilot, ScamAdviser, Google, dan lainnya. Ringkasan dibuat dengan AI.</translation>
 <translation id="5944297261866530437">Kain (Kilap Tinggi)</translation>
 <translation id="5950901984834744590">Pisau Cukur &amp; Alat Cukur</translation>
 <translation id="5951495562196540101">Tidak dapat mendaftar dengan akun konsumen (tersedia paket lisensi).</translation>
@@ -3143,6 +3150,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="6567832540451970450">Administrator Anda mengizinkan <ph name="PERMISSION" /> untuk situs ini</translation>
 <translation id="6568793038316600992">Tombol Kelola metode pembayaran, aktifkan untuk mengelola info pembayaran dan kartu kredit di setelan Chrome</translation>
 <translation id="6569060085658103619">Anda melihat halaman ekstensi</translation>
+<translation id="6572867903637058088">Apakah ini membantu?</translation>
 <translation id="6573200754375280815">Dua lubang di kanan</translation>
 <translation id="6574762126505704998">Isi</translation>
 <translation id="6575408526598156416">Simpan di akun</translation>
@@ -3438,7 +3446,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="7110368079836707726">Perguruan Tinggi &amp; Universitas</translation>
 <translation id="7111012039238467737">(Valid)</translation>
 <translation id="7111507312244504964">Inspeksi &amp; Penilaian Properti</translation>
-<translation id="7112327784801341716">Info Anda yang ditampilkan bukan yang terbaru? Hubungi bank untuk memperbaruinya.</translation>
 <translation id="7116334367957017155">Anda belum menyimpan alamat. Tambahkan alamat untuk digunakan di berbagai produk Google.</translation>
 <translation id="7118618213916969306">Telusuri URL papan klip, <ph name="SHORT_URL" /></translation>
 <translation id="7118852830504022370">Anda melihat peringatan ini karena situs ini tidak mendukung HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Pelajari lebih lanjut peringatan ini<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -3501,7 +3508,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="7219179957768738017">Koneksi menggunakan <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Dalam proses</translation>
 <translation id="7221855153210829124">Tampilkan notifikasi</translation>
-<translation id="7221857374443660083">Bank Anda ingin memastikan bahwa ini memang Anda</translation>
 <translation id="722454870747268814">Tab Samaran Baru</translation>
 <translation id="7227293336683593977">Histori Harga</translation>
 <translation id="7232352818707016189">Tindakan lainnya untuk tabel Bandingkan</translation>
@@ -4318,9 +4324,11 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="8672535691554698269">Jaringan Komputer</translation>
 <translation id="8675446170353411473">File Anda sedang diupload ke <ph name="CLOUD_PROVIDER" /></translation>
 <translation id="8676424191133491403">Tanpa penundaan</translation>
+<translation id="8679727228072670864">{COUNT,plural, =1{{COUNT} tabel dihapus}other{{COUNT} tabel dihapus}}</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, dengan jawaban, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Halaman web di <ph name="PAGE" /> tidak dapat dimuat karena:</translation>
 <translation id="8682297334444610648">Game Dino, ketuk untuk memainkan</translation>
+<translation id="8685225035093721011">Ulasan toko</translation>
 <translation id="8686424632716064939">Keamanan Komputer</translation>
 <translation id="8687278439622293018">Entri <ph name="ENTRY_VOICEOVER" /> telah dihapus</translation>
 <translation id="8687429322371626002">Perangkat dan akun Anda dikelola oleh <ph name="MANAGER" />.</translation>

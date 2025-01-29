@@ -316,7 +316,6 @@
 <translation id="2308243864813041101">請拔除「<ph name="DEVICE_NAME" />」的 USB 傳輸線，以繼續進行更新程序</translation>
 <translation id="2320295602967756579">啟用淺色主題</translation>
 <translation id="2323506179655536734">已略過</translation>
-<translation id="2323755382216917952">請重新啟動電腦，才能完成更新的安裝程序。這項更新可能需要幾分鐘才能完成。韌體更新期間，請勿拔下電腦插頭或關機。</translation>
 <translation id="2324354238778375592">浮動</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2346474577291266260">極佳 (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -462,7 +461,6 @@
 <translation id="3178532070248519384">前衛主義</translation>
 <translation id="3182676044300231689">輸入提示，例如「使用較堅定的語氣」</translation>
 <translation id="3188257591659621405">我的檔案</translation>
-<translation id="3188931456353313123">這項更新是由裝置製造商提供，但尚未經過 Google 驗證。</translation>
 <translation id="319101249942218879">顯示圖片已變更</translation>
 <translation id="3192947282887913208">音訊檔</translation>
 <translation id="3199982728237701504">文件送紙器 (雙面)</translation>

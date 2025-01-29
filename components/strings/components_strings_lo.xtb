@@ -271,6 +271,7 @@
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1448166547804028941">ບໍ່ສາມາດຕັ້ງຄ່າລະຫັດ "<ph name="DATA_CONTROLS_FIRST_KEY_SET" />" ໃນວັດຈະນານຸກົມດຽວກັນກັບ "<ph name="DATA_CONTROLS_SECOND_KEY_SET" />" ໄດ້</translation>
 <translation id="1455413310270022028">ຢາງລຶບ</translation>
+<translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{ເບິ່ງ 0 ຄຳຕິຊົມ}=1{ເບິ່ງ 1 ຄຳຕິຊົມ}other{ເບິ່ງທັງໝົດ # ຄຳຕິຊົມ}}</translation>
 <translation id="1458059624921545588">ຜູ້ຄົນ ແລະ ສັງຄົມ</translation>
 <translation id="1458140305240870199">ຊຸດຊັ້ນໃນ</translation>
 <translation id="1459693405370120464">ສະພາບອາກາດ</translation>
@@ -1957,6 +1958,7 @@
 <translation id="4407758156081352648">ອົງກອນຂອງທ່ານບໍ່ອະນຸຍາດໃຫ້ໃຊ້ລະຫັດຜ່ານຊ້ຳໃນ Chrome ເພື່ອຮັກສາຄວາມປອດໄພ. ລະຫັດຜ່ານໃນ Chrome ໄດ້ຖືກເຂົ້າລະຫັດເພື່ອປົກປ້ອງຄວາມເປັນສ່ວນຕົວຂອງຜູ້ໃຊ້.</translation>
 <translation id="4408413947728134509">ຄຸກກີ້ <ph name="NUM_COOKIES" /></translation>
 <translation id="4412074349188076601">ການຕັ້ງຄ່ານີ້ຖືກໝາຍວ່າສາມາດຕິດຕັ້ງໄດ້, ແຕ່ບໍ່ມີຮູບໃຫ້ສຳລັບສະຖາປັດຕະຍະກຳນີ້, ດັ່ງນັ້ນຈຶ່ງບໍ່ສາມາດຕິດຕັ້ງມັນໄດ້.</translation>
+<translation id="4412377069090572315">ຄຳເຫັນຈາກຜູ້ອື່ນ</translation>
 <translation id="4414452699610169758">ໃຊ້ຕົວຈັດການລະຫັດຜ່ານ Google ແລະ ການຕື່ມຂໍ້ມູນອັດຕະໂນມັດຂອງ Chrome ເພື່ອບັນທຶກ ແລະ ຕື່ມລະຫັດຜ່ານ, ວິທີການຈ່າຍເງິນ ແລະ ທີ່ຢູ່</translation>
 <translation id="4414515549596849729">ຄຸກກີ້ ແລະ ຂໍ້ມູນເວັບໄຊ</translation>
 <translation id="4415156962929755728">ພລາສຕິກ (ມັນວາວຫຼາຍ)</translation>
@@ -2373,6 +2375,7 @@
 <translation id="519422657042045905">ຄຳອະທິບາຍປະກອບບໍ່ສາມາດໃຊ້ໄດ້</translation>
 <translation id="5200063972779787617">ບັນທຶກທີ່ຢູ່ໃນບັນຊີ</translation>
 <translation id="5201306358585911203">ໜ້າຝັງຕິດໃນໜ້ານີ້ບອກວ່າ</translation>
+<translation id="5205114269877707377"><ph name="OMNIBOX_ACTION_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດ Tab ເພື່ອເລືອກເບິ່ງຄຳສັ່ງທີ່ມີໃຫ້, ຈາກນັ້ນກົດ Enter ເພື່ອເປີດໃຊ້ຄຳສັ່ງທີ່ເລືອກ.</translation>
 <translation id="5205222826937269299">ຈຳເປັນຕ້ອງມີຊື່</translation>
 <translation id="5206392433295093945">ຫ້ອງນອນ</translation>
 <translation id="5209670883520018268">ຖາດ 20</translation>
@@ -2780,6 +2783,7 @@
 <translation id="5937560539988385583">ແປໜ້າແລ້ວ</translation>
 <translation id="5938153366081463283">ເພີ່ມບັດສະເໝືອນ</translation>
 <translation id="5938793338444039872">Troy</translation>
+<translation id="5938866385061293322">ຂໍ້ມູນນີ້ມາຈາກເວັບໄຊຕິຊົມທີ່ເປັນເອກະລາດເຊັ່ນ: Trustpilot, ScamAdviser, Google ແລະ ອື່ນໆອີກ. ບົດສະຫຼຸບແມ່ນສ້າງດ້ວຍ AI.</translation>
 <translation id="5944297261866530437">ຜ້າ (ມັນວາວຫຼາຍ)</translation>
 <translation id="5950901984834744590">ມີດແຖ ແລະ ເຄື່ອງໂກນໜວດ</translation>
 <translation id="5951495562196540101">ບໍ່ສາມາດລົງທະບຽນດ້ວຍບັນຊີຜູ້ຊົມໃຊ້ໄດ້ (ມີໃບອະນຸຍາດແບບແພັກເກດ).</translation>
@@ -3146,6 +3150,7 @@
 <translation id="6567832540451970450">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານອະນຸຍາດໃຫ້ໃຊ້ <ph name="PERMISSION" /> ສຳລັບເວັບໄຊນີ້</translation>
 <translation id="6568793038316600992">ປຸ່ມຈັດການວິທີການຈ່າຍເງິນ, ເປີດນຳໃຊ້ເພື່ອຈັດການການຈ່າຍເງິນ ແລະ ຂໍ້ມູນບັດເຄຣດິດຂອງທ່ານໃນການຕັ້ງຄ່າ Chrome</translation>
 <translation id="6569060085658103619">ທ່ານກຳລັງເບິ່ງໜ້າສ່ວນຂະຫຍາຍ</translation>
+<translation id="6572867903637058088">ຂໍ້ມູນນີ້ມີປະໂຫຍດບໍ?</translation>
 <translation id="6573200754375280815">ເຈາະຮູຢູ່ເບື້ອງຂວາສອງຮູ</translation>
 <translation id="6574762126505704998">ຕື່ມສີ</translation>
 <translation id="6575408526598156416">ບັນທຶກໃນບັນຊີ</translation>
@@ -3441,7 +3446,6 @@
 <translation id="7110368079836707726">ວິທະຍາໄລ ແລະ ມະຫາວິທະຍາໄລ</translation>
 <translation id="7111012039238467737">(ໃຊ້ໄດ້)</translation>
 <translation id="7111507312244504964">ການກວດສອບ ແລະ ປະເມີນຄ່າສັບສິນ</translation>
-<translation id="7112327784801341716">ບໍ່ເຫັນຂໍ້ມູນປັດຈຸບັນຂອງທ່ານບໍ? ກະລຸນາຕິດຕໍ່ທະນາຄານຂອງທ່ານເພື່ອອັບເດດມັນ.</translation>
 <translation id="7116334367957017155">ທ່ານບໍ່ໄດ້ບັນທຶກທີ່ຢູ່ໃດໆໄວ້. ເພີ່ມທີ່ຢູ່ເພື່ອໃຊ້ມັນໃນຜະລິດຕະພັນຕ່າງໆຂອງ Google.</translation>
 <translation id="7118618213916969306">ຊອກຫາ URL ຄລິບບອດ, <ph name="SHORT_URL" /></translation>
 <translation id="7118852830504022370">ທ່ານເຫັນຄຳເຕືອນນີ້ເນື່ອງຈາກເວັບໄຊນີ້ບໍ່ຮອງຮັບ HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />ສຶກສາເພີ່ມເຕີມກ່ຽວກັບຄຳເຕືອນນີ້<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -3503,7 +3507,6 @@
 <translation id="7219179957768738017">ການເຊື່ອມຕໍ່ໃຊ້ <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">ກຳລັງດຳເນີນການ</translation>
 <translation id="7221855153210829124">ສະ​ແດງ​ການ​ແຈ້ງ​ເຕືອນ</translation>
-<translation id="7221857374443660083">ທະນາຄານຂອງທ່ານຕ້ອງການກວດສອບໃຫ້ໝັ້ນໃຈວ່າແມ່ນທ່ານ</translation>
 <translation id="722454870747268814">ແຖບທີ່ບໍ່ເຜີຍຕົວຕົນໃໝ່</translation>
 <translation id="7227293336683593977">ປະຫວັດລາຄາ</translation>
 <translation id="7232352818707016189">ຄຳສັ່ງເພີ່ມເຕີມສຳລັບຕາຕະລາງປຽບທຽບ</translation>
@@ -4324,9 +4327,11 @@
 <translation id="8672535691554698269">ລະບົບເຄືອຂ່າຍຄອມພິວເຕີ</translation>
 <translation id="8675446170353411473">ກຳລັງອັບໂຫຼດໄຟລ໌ຂອງທ່ານໄປໃສ່ <ph name="CLOUD_PROVIDER" /></translation>
 <translation id="8676424191133491403">ບໍ່ໜ່ວງເວລາ</translation>
+<translation id="8679727228072670864">{COUNT,plural, =1{ລຶບ {COUNT} ຕາຕະລາງແລ້ວ}other{ລຶບ {COUNT} ຕາຕະລາງແລ້ວ}}</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, ຄຳ​ຕອບ, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">ໜ້າ​ເວັບ​ຢູ່​ທີ່ <ph name="PAGE" /> ບໍ່​ສາ​ມາດ​ໂຫຼດ​ໄດ້​ເພາະ​ວ່າ:</translation>
 <translation id="8682297334444610648">ເກມໄດໂນເສົາ, ແຕະເພື່ອຫຼິ້ນ</translation>
+<translation id="8685225035093721011">ຄຳຕິຊົມຮ້ານຄ້າ</translation>
 <translation id="8686424632716064939">ລະບົບຄວາມປອດໄພຄອມພິວເຕີ</translation>
 <translation id="8687278439622293018">ຂໍ້ຄວາມ <ph name="ENTRY_VOICEOVER" /> ໄດ້ຖືກລຶບອອກແລ້ວ</translation>
 <translation id="8687429322371626002">ອຸປະກອນ ແລະ ບັນຊີຂອງທ່ານຖືກຈັດການໂດຍ <ph name="MANAGER" />.</translation>

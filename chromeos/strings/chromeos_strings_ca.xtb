@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">S'ha cancel·lat</translation>
 <translation id="1020274983236703756">Els recursos exclusius de <ph name="PRODUCT_NAME" /> ja estan disponibles</translation>
 <translation id="1022628058306505708">Moviment de la Terra</translation>
+<translation id="102432830749687801">Assegura't d'utilitzar l'aplicació Transferència de contingut de Google per moure les dades del teu compte de centre educatiu al teu compte personal abans no perdis l'accés.</translation>
 <translation id="1026212596705997935">S'està utilitzant la drecera per a <ph name="CONFLICT_ACCEL_NAME" />. Prem una drecera nova. Per substituir la drecera existent, torna a prémer aquesta.</translation>
 <translation id="1030856839388844477">Restableix l'ús de dades</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> fils, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
@@ -93,6 +94,7 @@
 <translation id="1394661041439318933">La funda del dispositiu té un <ph name="BATTERY_PERCENTAGE" />% de bateria.</translation>
 <translation id="1397738625398125236">Es pot fer ping a la passarel·la</translation>
 <translation id="1398634363027580500">La latència d'HTTPS és molt alta</translation>
+<translation id="1406389211945506521">Gràcies per compartir la teva experiència. Els teus suggeriments ens ajuden a crear contingut més precís i útil.</translation>
 <translation id="1407069428457324124">Tema fosc</translation>
 <translation id="1413240736185167732">Error: error en el filtre</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
@@ -198,8 +200,10 @@
 <translation id="1808803439260407870">Art clàssic</translation>
 <translation id="181434555916624618">De moment, no es mostraran resultats amb persones. Prova-ho amb una altra indicació.</translation>
 <translation id="1815850098929213707">La tecla seleccionada és <ph name="KEYS" />. Toca el botó per editar el control.</translation>
+<translation id="1818174214124933000">Quan seleccionis Envia, els teus suggeriments i contingut (que es mostren més avall) s'enviaran a Google, els revisarà un equip de persones i s'utilitzaran per entrenar o millorar els nostres productes i serveis d'acord amb la <ph name="LINK_POLICY_BEGIN" />política de privadesa<ph name="LINK_POLICY_END" /> i les <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />condicions del servei<ph name="LINK_TERMS_OF_SERVICE_END" /> de Google.</translation>
 <translation id="1823120442877418684">Temes</translation>
 <translation id="1827738518074806965">Galeria d'art</translation>
+<translation id="183287940576828840">Ofensiu / No segur</translation>
 <translation id="1834032517784994783">Selecciona l'idioma de transcripció</translation>
 <translation id="1836553715834333258">Color del sistema</translation>
 <translation id="183675228220305365">realista</translation>
@@ -226,6 +230,7 @@
 <translation id="1908234395526491708">Errors en la sol·licitud d'UDP</translation>
 <translation id="1908394185991500139">fletxa esquerra</translation>
 <translation id="1914144885717544695">divendres</translation>
+<translation id="1915960750806557358">Comparteix els teus suggeriments o descriu el problema. Assegura't de no incloure-hi informació personal, sensible ni confidencial.</translation>
 <translation id="1923388006036088459">Colors d'èmfasi</translation>
 <translation id="1945403655450283000">Gravadora</translation>
 <translation id="1947737735496445907">Imprès</translation>
@@ -312,7 +317,6 @@
 <translation id="2308243864813041101">Desconnecta el cable USB del <ph name="DEVICE_NAME" /> per continuar amb el procés d'actualització</translation>
 <translation id="2320295602967756579">Activa el tema clar</translation>
 <translation id="2323506179655536734">OMÈS</translation>
-<translation id="2323755382216917952">Aquesta actualització requereix que reiniciïs l'ordinador per completar-ne la instal·lació. L'actualització pot tardar uns quants minuts a completar-se. Mentre el microprogramari s'actualitza, no desconnectis ni apaguis l'ordinador.</translation>
 <translation id="2324354238778375592">Flotant</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> ppp</translation>
 <translation id="2346474577291266260">Excel·lent (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -458,7 +462,6 @@
 <translation id="3178532070248519384">avantguardista</translation>
 <translation id="3182676044300231689">Introdueix una indicació, com ara "que soni amb més seguretat"</translation>
 <translation id="3188257591659621405">Els meus fitxers</translation>
-<translation id="3188931456353313123">Aquesta actualització la proporciona el fabricant del dispositiu i Google no l'ha verificat.</translation>
 <translation id="319101249942218879">La imatge d'avatar ha canviat</translation>
 <translation id="3192947282887913208">Fitxers d'àudio</translation>
 <translation id="3199982728237701504">Alimentador de documents (a dues cares)</translation>
@@ -597,6 +600,7 @@
 <translation id="387301095347517405">El nombre de vegades que la bateria s'ha carregat completament</translation>
 <translation id="3877066159641251281">Escolta la traducció</translation>
 <translation id="3880601782712134623">Detectar automàticament cadascuna de les veus i assignar a cada interlocutor una etiqueta genèrica, com ara Interlocutor 1 i Interlocutor 2</translation>
+<translation id="38811596981744338">Problema legal</translation>
 <translation id="3885327323343477505">Canvia l'estalvi de pantalla</translation>
 <translation id="3889914174935857450">Data de restabliment</translation>
 <translation id="3897092660631435901">Menú</translation>
@@ -823,6 +827,7 @@
 <translation id="4921665434385737356">S'ha carregat un <ph name="RATE" /> en <ph name="NUM_SECONDS" /> segons.</translation>
 <translation id="4930320165497208503">Per configurar o actualitzar una connexió, ves a <ph name="BEGIN_LINK" />Configuració<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Data</translation>
+<translation id="494102685638938793"><ph name="LINK_TEXT" />, s'obre en una pestanya nova</translation>
 <translation id="4946927805998996217">S'està generant el resum</translation>
 <translation id="4950314376641394653">El microprogramari del dispositiu <ph name="DEVICE_NAME" /> s'ha actualitzat a la versió <ph name="VERSION" /></translation>
 <translation id="4950893758552030541">túnel d'arbres</translation>
@@ -1210,6 +1215,7 @@
 <translation id="6692996468359469499">Obtén informació relacionada amb la teva selecció</translation>
 <translation id="6694534975463174713">cadenat</translation>
 <translation id="6700703207451721535">No es permet accedir a aquest enllaç. Consulta al professor si necessites accés.</translation>
+<translation id="6703179086771097594">Què no ha anat bé?</translation>
 <translation id="6704062477274546131">Resolució de DNS</translation>
 <translation id="6712933881624804031">una vall</translation>
 <translation id="6716013206176357696">maduixes</translation>
@@ -1283,6 +1289,7 @@
 <translation id="7049916119678019302">Baixa el model de transcripció a Configuració</translation>
 <translation id="7058278511608979688">Finalitza i desa</translation>
 <translation id="7059230779847288458">S'està carregant. <ph name="TIME_VALUE" /> per completar la càrrega.</translation>
+<translation id="7064209589142995848">Transferència de contingut</translation>
 <translation id="7065336548231472971">S'ha seleccionat <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7066538517128343186">la tecla <ph name="KEY" /></translation>
 <translation id="7068619307603204412">Prepara el dispositiu</translation>
@@ -1594,6 +1601,7 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="8476942730579767658">Finestres i escriptoris</translation>
 <translation id="8477536061607044749">de disseny gràfic</translation>
 <translation id="8477551185774834963">La latència DNS supera lleugerament el llindar permès</translation>
+<translation id="8481308460877552925">La informació no és correcta</translation>
 <translation id="8482376765267780829">Selecciona text per simplificar-lo</translation>
 <translation id="8483248364096924578">Adreça IP</translation>
 <translation id="8491311378305535241">No es pot establir la connexió amb llocs web HTTPS a través del tallafoc des d'aplicacions d'Android</translation>

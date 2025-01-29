@@ -427,7 +427,6 @@
 <translation id="2789552044937754463">{COUNT,plural, =1{‏تم حفظ كلمة المرور في حسابك على Google، {EMAIL}.}zero{‏تم حفظ كلمات المرور في حسابك على Google، {EMAIL}.}two{‏تم حفظ كلمتَيْ المرور في حسابك على Google، {EMAIL}.}few{‏تم حفظ كلمات المرور في حسابك على Google، {EMAIL}.}many{‏تم حفظ كلمات المرور في حسابك على Google، {EMAIL}.}other{‏تم حفظ كلمات المرور في حسابك على Google، {EMAIL}.}}</translation>
 <translation id="2791174088547598693">إضافة كلمة مرور…</translation>
 <translation id="2797302972324086597">رمز البلد</translation>
-<translation id="2802403747691280910">تم إغلاق <ph name="NUMBER_OF_TABS_REMOVED" /></translation>
 <translation id="2816489851009559785">"القائمة" ← "الإعدادات" ← "المتصفِّح التلقائي"</translation>
 <translation id="2818821771744632548">‏تم تسجيل خروج حسابك <ph name="USER_NAME" /> كجزء من عملية إعادة ضبط هاتف iPhone. لإعادة تسجيل الدخول، انقر على "متابعة" أدناه.</translation>
 <translation id="2819667972867209401">‏عند تفعيل هذا الخيار، يتم حفظ البيانات في حسابك على Google. وعند إيقافه، سيتم حفظ البيانات على هذا الجهاز فقط وحذفها عند تسجيل الخروج.</translation>
@@ -1591,7 +1590,6 @@
 <translation id="7975036700432177008">تجربة</translation>
 <translation id="797588153137233716">"القائمة" ← "السجلّ" ← "حذف بيانات التصفّح"</translation>
 <translation id="7977451675950311423">ستتلقّى تحذيرًا إذا كنت تستخدم كلمة مرور تم اختراقها في عملية اختراق للبيانات.</translation>
-<translation id="7977482887663636093">عدد علامات التبويب الجديدة: <ph name="NUMBER_OF_TABS_ADDED" />، تم إغلاق <ph name="NUMBER_OF_TABS_REMOVED" /></translation>
 <translation id="797824194429476746">ستظل علامات التبويب مفتوحة على هذا الجهاز، ولكن سيتم حذف المجموعة نهائيًا.</translation>
 <translation id="797874245254030665">الوصول إلى كلمات المرور ومفاتيح المرور من أي تطبيق</translation>
 <translation id="7982789257301363584">الشبكة</translation>
@@ -1779,7 +1777,6 @@
 <translation id="8728922029615312208">إغلاق الكل</translation>
 <translation id="8730621377337864115">تم</translation>
 <translation id="87371078663613140">اطّلِع على الخيارات في شريط القوائم.</translation>
-<translation id="8739706427581741437">عدد علامات التبويب الجديدة: <ph name="NUMBER_OF_TABS_ADDED" /></translation>
 <translation id="8741627442233023406">{count,plural, =1{مراجعة علامة التبويب…}zero{مراجعة جميع علامات التبويب…}two{مراجعة علامتَي التبويب…}few{مراجعة جميع علامات التبويب…}many{مراجعة جميع علامات التبويب…}other{مراجعة جميع علامات التبويب…}}</translation>
 <translation id="8741995161408053644">‏قد يتضمّن حسابك على Google نماذج أخرى من سجلّ التصفّح في <ph name="BEGIN_LINK" /> history.google.com <ph name="END_LINK" />.</translation>
 <translation id="874599634440689554">إنشاء رابط</translation>

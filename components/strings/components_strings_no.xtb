@@ -271,6 +271,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1448166547804028941">Nøklene «<ph name="DATA_CONTROLS_FIRST_KEY_SET" />» kan ikke være angitt i samme ordliste som nøklene «<ph name="DATA_CONTROLS_SECOND_KEY_SET" />»</translation>
 <translation id="1455413310270022028">Viskelær</translation>
+<translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{Vis 0 anmeldelser}=1{Vis 1 anmeldelse}other{Vis alle # anmeldelsene}}</translation>
 <translation id="1458059624921545588">Personer og samfunn</translation>
 <translation id="1458140305240870199">Undertøy</translation>
 <translation id="1459693405370120464">Vær</translation>
@@ -1956,6 +1957,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4407758156081352648">For å opprettholde sikkerheten tillater ikke organisasjonen din at passord gjenbrukes i Chrome. Passord i Chrome krypteres for å beskytte brukernes personvern.</translation>
 <translation id="4408413947728134509">Informasjonskapsler <ph name="NUM_COOKIES" /></translation>
 <translation id="4412074349188076601">Denne konfigurasjonen er merket som installerbar, men det finnes ingen avbildning for denne arkitekturen, så den kan ikke installeres.</translation>
+<translation id="4412377069090572315">Dette sier andre</translation>
 <translation id="4414452699610169758">Bruk Google Passordlagring og Chrome Autofyll til å lagre og fylle ut passord, betalingsmåter og adresser</translation>
 <translation id="4414515549596849729">informasjonskapsler og nettstedsdata</translation>
 <translation id="4415156962929755728">Plast (høy glans)</translation>
@@ -2371,6 +2373,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="519422657042045905">Annotering er ikke tilgjengelig</translation>
 <translation id="5200063972779787617">Lagre adressen i kontoen</translation>
 <translation id="5201306358585911203">På en innebygd side på denne siden står det</translation>
+<translation id="5205114269877707377"><ph name="OMNIBOX_ACTION_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab for å bla gjennom tilgjengelige handlinger, og trykk deretter på Enter for å utføre den valgte handlingen.</translation>
 <translation id="5205222826937269299">Navn er obligatorisk</translation>
 <translation id="5206392433295093945">Soverom</translation>
 <translation id="5209670883520018268">Skuff 20</translation>
@@ -2777,6 +2780,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5937560539988385583">Siden er oversatt</translation>
 <translation id="5938153366081463283">Legg til et virtuelt kort</translation>
 <translation id="5938793338444039872">Troy</translation>
+<translation id="5938866385061293322">Denne informasjonen kommer fra uavhengige anmeldelsesnettsteder som Trustpilot, ScamAdviser, Google med flere. Sammendragene opprettes med AI.</translation>
 <translation id="5944297261866530437">Stoff (høyglans)</translation>
 <translation id="5950901984834744590">Barberhøvler og barbermaskiner</translation>
 <translation id="5951495562196540101">Kan ikke registrere med en forbrukerkonto (medfølgende lisens er tilgjengelig).</translation>
@@ -3143,6 +3147,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6567832540451970450">Administratoren din tillater at dette nettstedet bruker <ph name="PERMISSION" /></translation>
 <translation id="6568793038316600992">Knappen «Administrer betalingsmåter» – aktiver for å administrere betalingene og kredittkortopplysningene dine i Chrome-innstillingene</translation>
 <translation id="6569060085658103619">Du ser på en utvidelsesside</translation>
+<translation id="6572867903637058088">Er dette nyttig?</translation>
 <translation id="6573200754375280815">To hull høyre</translation>
 <translation id="6574762126505704998">Fyll</translation>
 <translation id="6575408526598156416">Lagre i kontoen</translation>
@@ -3438,7 +3443,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7110368079836707726">Høyskoler og universiteter</translation>
 <translation id="7111012039238467737">(Gyldig)</translation>
 <translation id="7111507312244504964">Verdivurdering og -taksering</translation>
-<translation id="7112327784801341716">Er ikke informasjonen riktig? Kontakt banken for å oppdatere den.</translation>
 <translation id="7116334367957017155">Du har ingen lagrede adresser. Legg til en adresse for å bruke den i alle Google-produkter.</translation>
 <translation id="7118618213916969306">Søk etter nettadressen <ph name="SHORT_URL" /> på utklippstavlen</translation>
 <translation id="7118852830504022370">Du ser denne advarselen fordi dette nettstedet ikke støtter HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Finn ut mer om denne advarselen<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -3501,7 +3505,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7219179957768738017">Tilkoblingen bruker <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Behandler</translation>
 <translation id="7221855153210829124">Vis varsler</translation>
-<translation id="7221857374443660083">Banken vil bekrefte identiteten din</translation>
 <translation id="722454870747268814">Ny inkognitofane</translation>
 <translation id="7227293336683593977">Prishistorikk</translation>
 <translation id="7232352818707016189">Flere handlinger for Sammenligning-tabellen</translation>
@@ -4321,9 +4324,11 @@ Mer informasjon:
 <translation id="8672535691554698269">Datamaskinnettverk</translation>
 <translation id="8675446170353411473">Filene dine blir lastet opp til <ph name="CLOUD_PROVIDER" /></translation>
 <translation id="8676424191133491403">Uten forsinkelse</translation>
+<translation id="8679727228072670864">{COUNT,plural, =1{{COUNT} tabell er slettet}other{{COUNT} tabeller er slettet}}</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, svar, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Nettsiden på <ph name="PAGE" /> kunne ikke lastes inn fordi</translation>
 <translation id="8682297334444610648">Dino-spillet – trykk for å spille</translation>
+<translation id="8685225035093721011">Butikkanmeldelser</translation>
 <translation id="8686424632716064939">Datasikkerhet</translation>
 <translation id="8687278439622293018">Oppføringen <ph name="ENTRY_VOICEOVER" /> er slettet</translation>
 <translation id="8687429322371626002">Enheten og kontoen din administreres av <ph name="MANAGER" />.</translation>

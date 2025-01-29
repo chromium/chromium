@@ -3648,6 +3648,19 @@ Wenn <ph name="PRODUCT_NAME" /> nicht ordnungsgemäß beendet wird, z. B. beim 
 <translation id="3700193037252896716">Häufigkeit, mit der Neustarts wiederholt werden sollen.</translation>
 <translation id="3700318587977845664">Häufigkeit der Updateprüfungen.</translation>
 <translation id="3701121231485832347">Legt die Einstellungen für mit <ph name="MS_AD_NAME" /> verwaltete <ph name="PRODUCT_OS_NAME" />-Geräte fest.</translation>
+<translation id="3701177991731919830">Mit dieser Richtlinie wird die App „Inhaltsübertragung“ für verwaltete Nutzer aktiviert. Mit „Inhaltsübertragung“ können Nutzer ihre Daten von ihrem verwalteten Konto in ein Privatnutzerkonto übertragen.
+
+Wenn „<ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_IS_ENABLED_VALUE" />“ auf „<ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_IS_ENABLED_VALUE_TRUE" />“ festgelegt ist, wird die App „Inhaltsübertragung“ am Start- und Enddatum sowie zwischen diesen beiden Tagen gemäß Ortszeit angezeigt.
+
+Wenn „<ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_IS_ENABLED_VALUE" />“ auf „<ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_IS_ENABLED_VALUE_FALSE" />“ festgelegt oder nicht konfiguriert ist, wird die App nicht angezeigt.
+
+Wenn „<ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_START_DATE_VALUE" />“ nicht konfiguriert ist, wird die App bis zum Enddatum angezeigt.
+
+Wenn „<ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_END_DATE_VALUE" />“ nicht konfiguriert ist, wird die App ab dem Startdatum dauerhaft angezeigt.
+
+Wenn weder „<ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_START_DATE_VALUE" />“ noch „<ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_END_DATE_VALUE" />“ konfiguriert sind, wird die App dauerhaft angezeigt. Bei Ungültigkeit des Start- und Enddatums wird die App „Inhaltsübertragung“ nicht angezeigt. Dies gilt auch, wenn die Datumsangaben nicht existieren oder das Enddatum vor dem Startdatum liegt.
+
+Die Datenübertragung mit Datenexport muss ebenfalls aktiviert sein, damit die App „Inhaltsübertragung“ richtig funktioniert. Weitere Informationen findest du unter https://support.google.com/a/answer/6364687.</translation>
 <translation id="3702518095257671450">Remote-Attestierung</translation>
 <translation id="3702647575225525306"><ph name="POLICY_NAME" /> – Das einzeilige Feld ist veraltet und wird in Zukunft entfernt. Bitte nutze das mehrzeilige Textfeld unten.</translation>
 <translation id="3711561721191203926">Wenn diese Richtlinie aktiviert ist und aufgrund fehlgeschlagener <ph name="PRIVATE_NETWORK_ACCESS" />-Prüfungen in <ph name="DEV_TOOLS_NAME" /> eine Warnung angezeigt werden sollte, wird stattdessen die Hauptanfrage blockiert.
@@ -8337,6 +8350,12 @@ Wenn diese Richtlinie auf „<ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_
       Ist die Richtlinie nicht konfiguriert, erscheint die Ablage standardmäßig unten auf dem Bildschirm und der Nutzer hat die Möglichkeit, diese Position zu ändern.</translation>
 <translation id="7039815268521168329">Ablauf „Voice Match mit Google Assistant“ bei der Ersteinrichtung anzeigen</translation>
 <translation id="7040229947030068419">Beispielwert</translation>
+<translation id="7044626519138840387">Eine Liste von Ursprüngen von Remote-Desktop-Client-Apps, die WebAuthn API-Anfragen ausführen können, die aus einer Browsersitzung auf einem Remote-Host stammen.
+
+Jeder in dieser Richtlinie konfigurierte Ursprung kann WebAuthn-Anfragen für Relying-Party-IDs (RP-IDs) stellen, die normalerweise nicht zulässig wären.
+
+Nur gültige HTTPS-Ursprünge sind zulässig. Platzhalter werden nicht unterstützt.
+Ungültige Einträge werden ignoriert.</translation>
 <translation id="7044883996351280650">Android-Dienst "Sicherung und Wiederherstellung" konfigurieren</translation>
 <translation id="7045221780834308118">Wenn die Richtlinie aktiviert ist, können Webanwendungen von Drittanbietern die Desk API verwenden, um <ph name="PRODUCT_OS_NAME" />-Desktops zu steuern. Wenn die Richtlinie nicht konfiguriert oder deaktiviert ist, ist die <ph name="DESK_API_NAME" /> nicht verfügbar. Die Richtlinie wird nur auf registrierten Geräten angewendet.</translation>
 <translation id="7046113122884041950">Smart Lock nicht zulassen</translation>
@@ -10495,6 +10514,7 @@ Wenn die Richtlinie nicht konfiguriert ist, werden bei der ersten Ausführung ke
 <translation id="8734543507835977857">Verzögerungen bei der Energieverwaltung und Begrenzungen der Sitzungslänge zu Beginn der Sitzung starten</translation>
 <translation id="8736538322216687231">Minimalen eingeschränkten Modus auf YouTube erzwingen</translation>
 <translation id="873800217865395140">Häufigkeit der Erhebung der Websitetelemetrie in Millisekunden.</translation>
+<translation id="8743149927570551353">Konfigurieren, wann das <ph name="PRODUCT_OS_NAME" />-Tool „Inhaltsübertragung“ verfügbar ist</translation>
 <translation id="8743902569031401303">Safe Browsing-Umfragen zulassen</translation>
 <translation id="8744844164152340112">Dadurch wird festgelegt, welches Design zum Rendern der Benutzeroberfläche während der OOBE (Out-of-Box-Experience) und während einer Sitzung verwendet wird.
       Dieser automatische Modus wechselt bei Sonnenauf- und untergang zwischen dem hellen und dunklen Design.
@@ -11099,6 +11119,7 @@ Weitere Informationen zu sicheren Kontexten findest du unter https://www.w3.org/
 <translation id="9149075762533142978">Die Funktion „QR‑Code‑Generator“ ist aktiviert.</translation>
 <translation id="9149678135092892302">Erfassen von Versionsinformationen deaktivieren</translation>
 <translation id="9150416707757015439">Diese Richtlinie ist veraltet. Bitte verwende stattdessen "IncognitoModeAvailability". Aktiviert den Inkognitomodus in <ph name="PRODUCT_NAME" />. Wenn diese Einstellung aktiviert oder nicht konfiguriert ist, können Nutzer Webseiten im Inkognitomodus öffnen. Sollte die Einstellung deaktiviert sein, können Nutzer Webseiten nicht im Inkognitomodus öffnen. Ist die Richtlinie nicht konfiguriert, so ist die Funktion aktiviert, sodass Nutzer den Inkognitomodus verwenden können.</translation>
+<translation id="9151267823917882070">Zulässige Ursprünge für WebAuthn-Anfragen über einen Proxy von Remote-Desktop-Anwendungen.</translation>
 <translation id="9152473318295429890">Kontextbezogene Vorschläge ähnlicher Webseiten aktivieren</translation>
 <translation id="9155218447258425310">Dauer der Benachrichtigung über die Entfernung der Smartcard für <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="9155375380628728544">Wenn die Richtlinie konfiguriert ist, können Nutzer nur eine der in dieser Richtlinie angegebenen Sprachen zur Liste der bevorzugten Sprachen hinzufügen.

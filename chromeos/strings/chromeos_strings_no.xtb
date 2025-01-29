@@ -316,7 +316,6 @@
 <translation id="2308243864813041101">Koble fra USB-kabelen for <ph name="DEVICE_NAME" /> for å fortsette oppdateringsprosessen</translation>
 <translation id="2320295602967756579">Slå på lyst tema</translation>
 <translation id="2323506179655536734">HOPPET OVER</translation>
-<translation id="2323755382216917952">Denne oppdateringen krever at du starter datamaskinen på nytt for å fullføre installasjonen. Det kan ta noen minutter å fullføre denne oppdateringen. Ikke koble fra eller slå av datamaskinen mens fastvaren oppdateres.</translation>
 <translation id="2324354238778375592">Løsne</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2346474577291266260">Utmerket (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -462,7 +461,6 @@
 <translation id="3178532070248519384">avant-garde</translation>
 <translation id="3182676044300231689">Skriv inn en forespørsel som «Vær mer selvsikker»</translation>
 <translation id="3188257591659621405">Mine filer</translation>
-<translation id="3188931456353313123">Denne oppdateringen leveres av enhetsprodusenten og er ikke bekreftet av Google.</translation>
 <translation id="319101249942218879">Brukerbildet er endret</translation>
 <translation id="3192947282887913208">Lydfiler</translation>
 <translation id="3199982728237701504">Dokumentmater (tosidig)</translation>

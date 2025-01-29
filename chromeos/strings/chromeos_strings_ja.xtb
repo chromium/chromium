@@ -204,6 +204,7 @@
 <translation id="1823120442877418684">キャラクター</translation>
 <translation id="1827738518074806965">アート ギャラリー</translation>
 <translation id="183287940576828840">不適切 / 危険</translation>
+<translation id="1834032517784994783">音声文字変換の言語を選択する</translation>
 <translation id="1836553715834333258">システムカラー</translation>
 <translation id="183675228220305365">写実主義</translation>
 <translation id="1838374766361614909">検索をクリア</translation>
@@ -316,7 +317,6 @@
 <translation id="2308243864813041101">更新プロセスを続行するには、<ph name="DEVICE_NAME" /> の USB ケーブルを取り外してください</translation>
 <translation id="2320295602967756579">ライトモードを有効にする</translation>
 <translation id="2323506179655536734">スキップ</translation>
-<translation id="2323755382216917952">この更新プログラムをインストールするには、パソコンを再起動する必要があります。更新が完了するまで数分かかる場合があります。ファームウェアのアップデート中、パソコンの電源コードを抜いたり、シャットダウンしたりしないでください。</translation>
 <translation id="2324354238778375592">フロート表示</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2346474577291266260">非常に強い（<ph name="SIGNAL_STRENGTH" />）</translation>
@@ -462,7 +462,6 @@
 <translation id="3178532070248519384">アバンギャルド</translation>
 <translation id="3182676044300231689">「自信のある文体に」などのプロンプトを入力</translation>
 <translation id="3188257591659621405">マイファイル</translation>
-<translation id="3188931456353313123">このアップデートはデバイス メーカーから提供されたもので、Google で確認は行っていません。</translation>
 <translation id="319101249942218879">アバター画像を変更しました</translation>
 <translation id="3192947282887913208">音声ファイル</translation>
 <translation id="3199982728237701504">ドキュメント フィーダー（両面）</translation>
@@ -733,6 +732,7 @@
 <translation id="4483049906298469269">デフォルト以外のネットワーク ゲートウェイに向けた ping が失敗しました</translation>
 <translation id="4483498983731992167">文字起こしを作成できません</translation>
 <translation id="4486524074141928967"><ph name="TIME" /> にログアウトします</translation>
+<translation id="4487890678161807486">音声文字変換の言語選択ツールを開く</translation>
 <translation id="4500722292849917410">このショートカットは使用できません。修飾キー（Ctrl、Alt、Shift、または <ph name="META_KEY" />）を使用して新しいショートカットを押してください。</translation>
 <translation id="4500966230243561393">インターフェースの色</translation>
 <translation id="4503223151711056411">左矢印</translation>

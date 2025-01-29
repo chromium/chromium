@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">Ακυρώθηκε</translation>
 <translation id="1020274983236703756">Διατίθενται πλέον αποκλειστικά στοιχεία <ph name="PRODUCT_NAME" /></translation>
 <translation id="1022628058306505708">Κίνηση της Γης</translation>
+<translation id="102432830749687801">Φροντίστε να χρησιμοποιήσετε την εφαρμογή Μεταφορά περιεχομένου της Google, για να μεταφέρετε τα δεδομένα του σχολικού λογαριασμού στον προσωπικό λογαριασμό σας, προτού χάσετε την πρόσβαση.</translation>
 <translation id="1026212596705997935">Η συντόμευση χρησιμοποιείται για τη λειτουργία <ph name="CONFLICT_ACCEL_NAME" />. Πατήστε μια νέα συντόμευση. Για να αντικαταστήσετε την υπάρχουσα συντόμευση, πατήστε ξανά αυτή τη συντόμευση.</translation>
 <translation id="1030856839388844477">Επαναφορά χρήσης δεδομένων</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> νήματα, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
@@ -93,6 +94,7 @@
 <translation id="1394661041439318933">Η μπαταρία θήκης της συσκευής βρίσκεται στο <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="1397738625398125236">Η πύλη λαμβάνει ping</translation>
 <translation id="1398634363027580500">Πολύ μεγάλος λανθάνων χρόνος HTTPS</translation>
+<translation id="1406389211945506521">Σας ευχαριστούμε που μοιραστήκατε την εμπειρία σας. Τα σχόλιά σας μας βοηθούν να δημιουργήσουμε πιο ακριβές και χρήσιμο περιεχόμενο.</translation>
 <translation id="1407069428457324124">Σκούρο θέμα</translation>
 <translation id="1413240736185167732">Σφάλμα - Πρόβλημα φίλτρου</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
@@ -198,8 +200,10 @@
 <translation id="1808803439260407870">Κλασική τέχνη</translation>
 <translation id="181434555916624618">Προς το παρόν, τα αποτελέσματα που περιέχουν άτομα δεν θα εμφανίζονται. Δοκιμάστε άλλη οδηγία.</translation>
 <translation id="1815850098929213707">Το επιλεγμένο πλήκτρο είναι <ph name="KEYS" />. Πατήστε το κουμπί για να επεξεργαστείτε το στοιχείο ελέγχου</translation>
+<translation id="1818174214124933000">Όταν επιλέξετε αποστολή, τα σχόλια και το περιεχόμενό σας (εμφανίζονται παρακάτω) θα σταλούν στην Google, θα υποβληθούν σε έλεγχο από ανθρώπους και θα χρησιμοποιηθούν για την εκπαίδευση ή τη βελτίωση των προϊόντων και των υπηρεσιών μας, σύμφωνα με την <ph name="LINK_POLICY_BEGIN" />Πολιτική απορρήτου<ph name="LINK_POLICY_END" /> και τους <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Όρους Παροχής Υπηρεσιών της Google<ph name="LINK_TERMS_OF_SERVICE_END" />.</translation>
 <translation id="1823120442877418684">Χαρακτήρες</translation>
 <translation id="1827738518074806965">Γκαλερί</translation>
+<translation id="183287940576828840">Προσβλητικό / Μη ασφαλές</translation>
 <translation id="1836553715834333258">Χρώμα συστήματος</translation>
 <translation id="183675228220305365">ρεαλισμού</translation>
 <translation id="1838374766361614909">Διαγραφή αναζητήσεων</translation>
@@ -225,6 +229,7 @@
 <translation id="1908234395526491708">Σφάλματα αιτήματος UDP</translation>
 <translation id="1908394185991500139">αριστερό βέλος</translation>
 <translation id="1914144885717544695">την Παρασκευή</translation>
+<translation id="1915960750806557358">Μοιραστείτε τα σχόλιά σας ή περιγράψτε το πρόβλημά σας. Φροντίστε να μην συμπεριλάβετε προσωπικές, ευαίσθητες ή εμπιστευτικές πληροφορίες.</translation>
 <translation id="1923388006036088459">Χρώματα έμφασης</translation>
 <translation id="1945403655450283000">Εγγραφή</translation>
 <translation id="1947737735496445907">Εκτυπώθηκε</translation>
@@ -311,7 +316,6 @@
 <translation id="2308243864813041101">Αποσυνδέστε το καλώδιο USB της συσκευής <ph name="DEVICE_NAME" /> για να συνεχίσετε τη διαδικασία ενημέρωσης</translation>
 <translation id="2320295602967756579">Ενεργοποίηση φωτεινού θέματος</translation>
 <translation id="2323506179655536734">ΠΑΡΑΒΛΕΦΘΗΚΕ</translation>
-<translation id="2323755382216917952">Για την ολοκλήρωση της εγκατάστασης, η ενημέρωση απαιτεί την επανεκκίνηση του υπολογιστή σας. Η ολοκλήρωση της ενημέρωσης μπορεί να διαρκέσει μερικά λεπτά. Κατά την ενημέρωση του υλικολογισμικού, μην αποσυνδέσετε τον υπολογιστή και μην τερματίσετε τη λειτουργία του.</translation>
 <translation id="2324354238778375592">Κινούμενο</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2346474577291266260">Τέλειο (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -457,7 +461,6 @@
 <translation id="3178532070248519384">αβάν γκαρντ</translation>
 <translation id="3182676044300231689">Πληκτρολογήστε μια οδηγία όπως "να αποπνέει περισσότερη σιγουριά"</translation>
 <translation id="3188257591659621405">Τα αρχεία μου</translation>
-<translation id="3188931456353313123">Αυτή η ενημέρωση παρέχεται από τον κατασκευαστή της συσκευής και δεν έχει επαληθευτεί από την Google.</translation>
 <translation id="319101249942218879">Η εικόνα avatar άλλαξε</translation>
 <translation id="3192947282887913208">Αρχεία ήχου</translation>
 <translation id="3199982728237701504">Τροφοδότης εγγράφων (Διπλής όψης)</translation>
@@ -596,6 +599,7 @@
 <translation id="387301095347517405">Ο αριθμός των φορών που η μπαταρία σας ολοκλήρωσε έναν πλήρη κύκλο φόρτισης</translation>
 <translation id="3877066159641251281">Ακρόαση μετάφρασης</translation>
 <translation id="3880601782712134623">Να εντοπίζει αυτόματα ξεχωριστές φωνές και να εκχωρεί μια γενική ετικέτα σε κάθε ομιλητή, όπως Ομιλητής 1 και Ομιλητής 2</translation>
+<translation id="38811596981744338">Νομικό ζήτημα</translation>
 <translation id="3885327323343477505">Αλλαγή προφύλαξης οθόνης</translation>
 <translation id="3889914174935857450">Επαναφορά ημερομηνίας</translation>
 <translation id="3897092660631435901">Μενού</translation>
@@ -821,6 +825,7 @@
 <translation id="4921665434385737356">Φόρτιση κατά <ph name="RATE" /> σε <ph name="NUM_SECONDS" /> δευτερόλεπτα.</translation>
 <translation id="4930320165497208503">Για να ρυθμίσετε ή να ενημερώσετε μια σύνδεση, μεταβείτε στις <ph name="BEGIN_LINK" />Ρυθμίσεις<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Ημερομηνία</translation>
+<translation id="494102685638938793"><ph name="LINK_TEXT" />, ανοίγει σε νέα καρτέλα</translation>
 <translation id="4946927805998996217">Δημιουργία σύνοψης σε εξέλιξη</translation>
 <translation id="4950314376641394653">Το υλικολογισμικό της συσκευής <ph name="DEVICE_NAME" /> έχει ενημερωθεί στην έκδοση <ph name="VERSION" /></translation>
 <translation id="4950893758552030541">τούνελ δέντρων</translation>
@@ -1208,6 +1213,7 @@
 <translation id="6692996468359469499">Λάβετε πληροφορίες σχετικά με την επιλογή σας.</translation>
 <translation id="6694534975463174713">κλειδαριά</translation>
 <translation id="6700703207451721535">Δεν επιτρέπεται η πρόσβαση για αυτόν τον σύνδεσμο. Αν χρειάζεστε πρόσβαση, ρωτήστε τον καθηγητή σας.</translation>
+<translation id="6703179086771097594">Τι δεν λειτούργησε σωστά;</translation>
 <translation id="6704062477274546131">Επίλυση DNS</translation>
 <translation id="6712933881624804031">κοιλάδα</translation>
 <translation id="6716013206176357696">φράουλες</translation>
@@ -1281,6 +1287,7 @@
 <translation id="7049916119678019302">Κατεβάστε το μοντέλο μεταγραφής στις Ρυθμίσεις</translation>
 <translation id="7058278511608979688">Λήξη και αποθήκευση</translation>
 <translation id="7059230779847288458">Φόρτιση, απομένουν <ph name="TIME_VALUE" /> μέχρι την ολοκλήρωση</translation>
+<translation id="7064209589142995848">Μεταφορά περιεχομένου</translation>
 <translation id="7065336548231472971">Επιλέχθηκαν <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7066538517128343186">το κλειδί <ph name="KEY" /></translation>
 <translation id="7068619307603204412">Προετοιμασία της συσκευής</translation>
@@ -1592,6 +1599,7 @@
 <translation id="8476942730579767658">Παράθυρα και γραφεία</translation>
 <translation id="8477536061607044749">γραφιστικού σχεδίου</translation>
 <translation id="8477551185774834963">Ο λανθάνων χρόνος DNS έχει υπερβεί ελαφρώς το επιτρεπόμενο ελάχιστο όριο.</translation>
+<translation id="8481308460877552925">Πραγματολογικώς λανθασμένο</translation>
 <translation id="8482376765267780829">Επιλέξτε κείμενο για απλοποίηση</translation>
 <translation id="8483248364096924578">Διεύθυνση IP</translation>
 <translation id="8491311378305535241">Δεν είναι δυνατή η σύνδεση μέσω τείχους προστασίας σε ιστοτόπους HTTP μέσω εφαρμογών Android</translation>

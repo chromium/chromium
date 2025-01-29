@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">Atcelts</translation>
 <translation id="1020274983236703756">Tagad ir pieejami ekskluzīvi <ph name="PRODUCT_NAME" /> līdzekļi</translation>
 <translation id="1022628058306505708">Zemes plūsma</translation>
+<translation id="102432830749687801">Izmantojiet Google lietotni Satura pārsūtīšana, lai pārvietotu savus skolas konta datus uz personīgo kontu, pirms zaudējat piekļuvi.</translation>
 <translation id="1026212596705997935">Īsinājumtaustiņš tiek izmantots darbībai “<ph name="CONFLICT_ACCEL_NAME" />”. Nospiediet jaunu īsinājumtaustiņu. Lai aizstātu esošo īsinājumtaustiņu, vēlreiz nospiediet šo īsinājumtaustiņu.</translation>
 <translation id="1030856839388844477">Atiestatīt datu lietojumu</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (pavedienu skaits: <ph name="THREAD_COUNT" />; <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
@@ -93,6 +94,7 @@
 <translation id="1394661041439318933">Futrāļa akumulatora uzlādes līmenis: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="1397738625398125236">Vārteju var ehotestēt</translation>
 <translation id="1398634363027580500">Ļoti liels HTTPS latentums</translation>
+<translation id="1406389211945506521">Paldies, ka dalījāties pieredzē! Jūsu atsauksmes palīdz mums veidot precīzāku un noderīgāku saturu.</translation>
 <translation id="1407069428457324124">Tumšais motīvs</translation>
 <translation id="1413240736185167732">Neizdevās — filtra kļūme</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
@@ -198,8 +200,10 @@
 <translation id="1808803439260407870">klasiskā māksla</translation>
 <translation id="181434555916624618">Pagaidām netiek rādīti rezultāti, kuros redzamas personas. Izmēģiniet citu uzvedni.</translation>
 <translation id="1815850098929213707">Ir atlasīts taustiņš <ph name="KEYS" />. Lai rediģētu vadīklu, pieskarieties pogai.</translation>
+<translation id="1818174214124933000">Kad atlasīsiet iespēju “Sūtīt”, jūsu atsauksmes un saturs (parādīts tālāk) tiks nosūtīts uzņēmumam Google, to pārskatīs cilvēki un tas tiks izmantots, lai apmācītu vai uzlabotu mūsu produktus un pakalpojumus saskaņā ar <ph name="LINK_POLICY_BEGIN" />konfidencialitātes politiku<ph name="LINK_POLICY_END" /> un <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Google pakalpojumu sniegšanas noteikumiem<ph name="LINK_TERMS_OF_SERVICE_END" />.</translation>
 <translation id="1823120442877418684">Objekti</translation>
 <translation id="1827738518074806965">Mākslas galerija</translation>
+<translation id="183287940576828840">Aizvainojošs/nedrošs</translation>
 <translation id="1836553715834333258">Sistēmas krāsa</translation>
 <translation id="183675228220305365">reālisms</translation>
 <translation id="1838374766361614909">Notīrīt meklēšanas vaicājumu</translation>
@@ -225,6 +229,7 @@
 <translation id="1908234395526491708">UDP pieprasījumu kļūmes</translation>
 <translation id="1908394185991500139">kreisā bultiņa</translation>
 <translation id="1914144885717544695">piektdien</translation>
+<translation id="1915960750806557358">Sniedziet atsauksmes vai aprakstiet problēmu. Neiekļaujiet nekādu personas, sensitīvu vai konfidenciālu informāciju.</translation>
 <translation id="1923388006036088459">Izcēluma krāsas</translation>
 <translation id="1945403655450283000">Ierakstītājs</translation>
 <translation id="1947737735496445907">Izdrukāts</translation>
@@ -311,7 +316,6 @@
 <translation id="2308243864813041101">Lai turpinātu atjaunināšanas procesu, atvienojiet ierīces (<ph name="DEVICE_NAME" />) USB vadu.</translation>
 <translation id="2320295602967756579">Iespējot gaišo motīvu</translation>
 <translation id="2323506179655536734">IZLAISTA</translation>
-<translation id="2323755382216917952">Lai pabeigtu instalēšanu, jums ir jārestartē dators. Šī atjaunināšana var ilgt dažas minūtes. Kamēr notiek aparātprogrammatūras atjaunināšana, neatvienojiet datoru no barošanas avota un neizslēdziet to.</translation>
 <translation id="2324354238778375592">Peldošais režīms</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2346474577291266260">Izcils (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -457,7 +461,6 @@
 <translation id="3178532070248519384">avangards</translation>
 <translation id="3182676044300231689">Ievadiet uzvedni, piemēram, “padarīt to pārliecinošāku”.</translation>
 <translation id="3188257591659621405">Mani faili</translation>
-<translation id="3188931456353313123">Šo atjauninājumu nodrošina ierīces ražotājs, un uzņēmums Google to nav verificējis.</translation>
 <translation id="319101249942218879">Iemiesojuma attēls ir nomainīts</translation>
 <translation id="3192947282887913208">Audio faili</translation>
 <translation id="3199982728237701504">Dokumentu padevējs (divpusēji)</translation>
@@ -596,6 +599,7 @@
 <translation id="387301095347517405">Cik pilnu uzlādes ciklu ir bijis jūsu akumulatoram</translation>
 <translation id="3877066159641251281">Klausīties tulkojumu</translation>
 <translation id="3880601782712134623">automātiski noteiktu atšķirīgas balsis un katram runātājam piešķirtu vispārīgu iezīmi, piemēram, “1. runātājs” un “2. runātājs”;</translation>
+<translation id="38811596981744338">Juridiska problēma</translation>
 <translation id="3885327323343477505">Mainīt ekrānsaudzētāju</translation>
 <translation id="3889914174935857450">Atiestatīt datumu</translation>
 <translation id="3897092660631435901">Izvēlne</translation>
@@ -821,6 +825,7 @@
 <translation id="4921665434385737356">Uzlādes apjoms: <ph name="RATE" /> <ph name="NUM_SECONDS" /> sekundēs.</translation>
 <translation id="4930320165497208503">Lai iestatītu vai atjauninātu savienojumu, pārejiet uz <ph name="BEGIN_LINK" />iestatījumiem<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Datums</translation>
+<translation id="494102685638938793"><ph name="LINK_TEXT" />, saite tiks atvērta jaunā cilnē</translation>
 <translation id="4946927805998996217">Notiek apkopojuma ģenerēšana…</translation>
 <translation id="4950314376641394653">Ierīces <ph name="DEVICE_NAME" /> aparātprogrammatūra tika atjaunināta uz versiju <ph name="VERSION" /></translation>
 <translation id="4950893758552030541">koku tunelis</translation>
@@ -1208,6 +1213,7 @@
 <translation id="6692996468359469499">Iespēja saņemt informāciju par atlasīto saturu</translation>
 <translation id="6694534975463174713">bloķēt</translation>
 <translation id="6700703207451721535">Piekļuve šai saitei nav atļauta. Ja ir nepieciešama piekļuve, sazinieties ar skolotāju.</translation>
+<translation id="6703179086771097594">Kas nedarbojās labi?</translation>
 <translation id="6704062477274546131">DNS atrise</translation>
 <translation id="6712933881624804031">ieleja</translation>
 <translation id="6716013206176357696">zemenes</translation>
@@ -1281,6 +1287,7 @@
 <translation id="7049916119678019302">Iestatījumos lejupielādējiet transkribēšanas modeli</translation>
 <translation id="7058278511608979688">Beigt un saglabāt</translation>
 <translation id="7059230779847288458">Notiek uzlāde. Atlikušais laiks līdz pilnai uzlādei: <ph name="TIME_VALUE" /></translation>
+<translation id="7064209589142995848">Satura pārsūtīšana</translation>
 <translation id="7065336548231472971">Atlasītā valoda ir <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7066538517128343186">taustiņš <ph name="KEY" /></translation>
 <translation id="7068619307603204412">Ierīces sagatavošana</translation>
@@ -1592,6 +1599,7 @@ Lai varētu izveidot šādas transkripcijas, lejupielādējiet transkribēšanas
 <translation id="8476942730579767658">Logi un darbvietas</translation>
 <translation id="8477536061607044749">grafiskais dizains</translation>
 <translation id="8477551185774834963">DNS latentums nedaudz pārsniedz pieļaujamo slieksni</translation>
+<translation id="8481308460877552925">Faktu kļūda</translation>
 <translation id="8482376765267780829">Atlasiet tekstu, ko vienkāršot.</translation>
 <translation id="8483248364096924578">IP adrese</translation>
 <translation id="8491311378305535241">Nevar izveidot savienojumu ar HTTP vietnēm no Android lietotnēm, ja ir iespējots ugunsmūris</translation>

@@ -204,6 +204,7 @@
 <translation id="1823120442877418684">Herufi</translation>
 <translation id="1827738518074806965">Matunzio ya sanaa</translation>
 <translation id="183287940576828840">Ni ya kukera au Si salama</translation>
+<translation id="1834032517784994783">Chagua lugha ya unukuzi</translation>
 <translation id="1836553715834333258">Rangi ya mfumo</translation>
 <translation id="183675228220305365">uhalisia</translation>
 <translation id="1838374766361614909">Futa utafutaji</translation>
@@ -316,7 +317,6 @@
 <translation id="2308243864813041101">Chomoa kebo ya USB ya <ph name="DEVICE_NAME" /> ili uendelee na mchakato wa kusasisha</translation>
 <translation id="2320295602967756579">Washa mandhari meupe</translation>
 <translation id="2323506179655536734">LIMERUKWA</translation>
-<translation id="2323755382216917952">Unahitaji kuzima kisha uwashe kompyuta yako ili ikamilishe kuweka sasisho hili. Sasisho hili linaweza kuchukua dakika chache kukamilika. Usichomoe kwenye chaji wala kuzima kompyuta yako programu dhibiti inaposasishwa.</translation>
 <translation id="2324354238778375592">Inayoelea</translation>
 <translation id="2326139988748364651">Dpi <ph name="RESOLUTION_VALUE" /></translation>
 <translation id="2346474577291266260">Thabiti zaidi (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -462,7 +462,6 @@
 <translation id="3178532070248519384">mtindo wa avant-garde</translation>
 <translation id="3182676044300231689">Weka kidokezo kama vile "fanya nionekane mwenye kujiamini zaidi"</translation>
 <translation id="3188257591659621405">Faili zangu</translation>
-<translation id="3188931456353313123">Sasisho hili limetolewa na watengenezaji wa kifaa na halijathibitishwa na Google.</translation>
 <translation id="319101249942218879">Picha ya ishara imebadilishwa</translation>
 <translation id="3192947282887913208">Faili za Sauti</translation>
 <translation id="3199982728237701504">Mashine ya kuingiza Hati (Pande mbili)</translation>
@@ -733,6 +732,7 @@
 <translation id="4483049906298469269">Imeshindwa kuita lango la mtandao usio chaguomsingi</translation>
 <translation id="4483498983731992167">Imeshindwa kutayarisha manukuu</translation>
 <translation id="4486524074141928967">Utaondolewa kwenye akaunti <ph name="TIME" /></translation>
+<translation id="4487890678161807486">Fungua kiteua lugha ya unukuzi</translation>
 <translation id="4500722292849917410">Njia ya mkato haipatikani. Bonyeza njia mpya ya mkato ukitumia kitufe cha kurekebisha (ctrl, alt, shift au <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Rangi ya kiolesura</translation>
 <translation id="4503223151711056411">Kishale cha kushoto</translation>

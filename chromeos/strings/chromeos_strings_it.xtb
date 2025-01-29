@@ -204,6 +204,7 @@
 <translation id="1823120442877418684">Soggetti</translation>
 <translation id="1827738518074806965">Galleria d'arte</translation>
 <translation id="183287940576828840">Contenuti offensivi/non sicuri</translation>
+<translation id="1834032517784994783">Seleziona la lingua della trascrizione</translation>
 <translation id="1836553715834333258">Colore sistema</translation>
 <translation id="183675228220305365">realista</translation>
 <translation id="1838374766361614909">Cancella ricerca</translation>
@@ -316,7 +317,6 @@
 <translation id="2308243864813041101">Scollega il cavo USB di <ph name="DEVICE_NAME" /> per continuare il processo di aggiornamento</translation>
 <translation id="2320295602967756579">Abilita il tema chiaro</translation>
 <translation id="2323506179655536734">SALTATO</translation>
-<translation id="2323755382216917952">Per completare l'installazione di questo aggiornamento, devi riavviare il computer. Il completamento potrebbe richiedere alcuni minuti. Durante l'aggiornamento del firmware, non scollegare o spegnere il computer.</translation>
 <translation id="2324354238778375592">Mobile</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2346474577291266260">Eccellente (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -462,7 +462,6 @@
 <translation id="3178532070248519384">avant-garde</translation>
 <translation id="3182676044300231689">Inserisci un prompt come "fa' in modo che mostri maggiore sicurezza"</translation>
 <translation id="3188257591659621405">I miei file</translation>
-<translation id="3188931456353313123">Questo aggiornamento è fornito dal produttore del dispositivo e non è stato verificato da Google.</translation>
 <translation id="319101249942218879">Immagine dell'avatar cambiata</translation>
 <translation id="3192947282887913208">File audio</translation>
 <translation id="3199982728237701504">Alimentatore di documenti (fronte e retro)</translation>
@@ -733,6 +732,7 @@
 <translation id="4483049906298469269">impossibile eseguire il ping del gateway di rete non predefinito</translation>
 <translation id="4483498983731992167">Impossibile creare la trascrizione</translation>
 <translation id="4486524074141928967">Il tuo account verrà disconnesso alle ore <ph name="TIME" /></translation>
+<translation id="4487890678161807486">Apri il selettore lingua della trascrizione</translation>
 <translation id="4500722292849917410">Scorciatoia non disponibile. Premi una nuova scorciatoia utilizzando un tasto di modifica (Ctrl, Alt, Maiusc o <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Colore interfaccia</translation>
 <translation id="4503223151711056411">Freccia sinistra</translation>

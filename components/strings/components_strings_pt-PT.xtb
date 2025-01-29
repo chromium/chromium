@@ -962,6 +962,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2674170444375937751">Tem a certeza de que quer eliminar estas páginas do seu histórico?</translation>
 <translation id="2674524144218093528">Pintura e acabamento de casas</translation>
 <translation id="2674804415323431591">Oculte as sugestões</translation>
+<translation id="26774279487328902"><ph name="GROUP_COUNT" /> grupos de separadores já não estão disponíveis</translation>
 <translation id="2677748264148917807">Sair</translation>
 <translation id="2683195745483370038">Outros resultados encontrados</translation>
 <translation id="2686919536310834199">Envie feedback sobre a funcionalidade Ajuda-me a escrever.</translation>
@@ -2266,6 +2267,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5001526427543320409">Cookies de terceiros</translation>
 <translation id="5002932099480077015">Quando esta opção está ativada, o Chrome armazena uma cópia do seu cartão neste dispositivo para preencher formulários mais rapidamente.</translation>
 <translation id="5007392906805964215">Rever</translation>
+<translation id="500790844453430087">Os grupos de separadores "<ph name="GROUP_TITLE_1" />" e "<ph name="GROUP_TITLE_2" />" já não estão disponíveis</translation>
 <translation id="5011561501798487822">Idioma detetado</translation>
 <translation id="5015510746216210676">Nome do computador:</translation>
 <translation id="5017554619425969104">Texto que copiou</translation>
@@ -2373,6 +2375,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="519422657042045905">As notas não estão disponíveis.</translation>
 <translation id="5200063972779787617">Guarde a morada na conta</translation>
 <translation id="5201306358585911203">Uma página incorporada nesta página diz</translation>
+<translation id="5205114269877707377"><ph name="OMNIBOX_ACTION_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab para procurar ações disponíveis e, em seguida, Enter para executar a ação selecionada.</translation>
 <translation id="5205222826937269299">Nome obrigatório</translation>
 <translation id="5206392433295093945">Quarto</translation>
 <translation id="5209670883520018268">Tabuleiro 20</translation>
@@ -2738,6 +2741,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5866898949289125849">Está a visualizar uma página de ferramentas para programadores</translation>
 <translation id="5869405914158311789">Não é possível aceder a este site</translation>
 <translation id="5869522115854928033">Palavras-passe guardadas</translation>
+<translation id="5872215789867188990">O grupo de separadores "<ph name="GROUP_TITLE" />" já não está disponível</translation>
 <translation id="5872692522325383488">IBAN (Número Internacional de Conta Bancária) guardado</translation>
 <translation id="5873297634595728366">Veículos a gasóleo</translation>
 <translation id="5877359070305966420">Recursos humanos</translation>
@@ -3442,7 +3446,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="7110368079836707726">Faculdades e universidades</translation>
 <translation id="7111012039238467737">(Válido)</translation>
 <translation id="7111507312244504964">Inspeções e avaliações de propriedades</translation>
-<translation id="7112327784801341716">Não vê as suas informações atuais? Contacte o banco para as atualizar.</translation>
 <translation id="7116334367957017155">Não tem moradas guardadas. Adicione uma morada para a usar nos produtos Google.</translation>
 <translation id="7118618213916969306">Pesquisar URL da área de transferência, <ph name="SHORT_URL" /></translation>
 <translation id="7118852830504022370">Está a ver este aviso porque o site não suporta HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais acerca deste aviso<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -3505,7 +3508,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="7219179957768738017">A ligação utiliza <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">A processar</translation>
 <translation id="7221855153210829124">Mostrar notificações</translation>
-<translation id="7221857374443660083">O banco quer confirmar a sua identidade</translation>
 <translation id="722454870747268814">Novo separador anónimo</translation>
 <translation id="7227293336683593977">Histórico de preços</translation>
 <translation id="7232352818707016189">Mais ações para a tabela Comparar</translation>

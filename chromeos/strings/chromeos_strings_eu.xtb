@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">Bertan behera utzi da</translation>
 <translation id="1020274983236703756"><ph name="PRODUCT_NAME" /> gailuaren baliabide esklusiboak eskuragai</translation>
 <translation id="1022628058306505708">Lurraren fluxua</translation>
+<translation id="102432830749687801">Erabili Google-ren Eduki-transferentzia aplikazioa zure ikastetxeko kontuko datuak zure kontu pertsonalera eramateko, hura erabiltzeko baimena galdu baino lehen.</translation>
 <translation id="1026212596705997935">"<ph name="CONFLICT_ACCEL_NAME" />" funtziorako erabiltzen da lasterbidea. Sakatu beste lasterbide bat. Lehendik dagoen lasterbidea ordezteko, sakatu lasterbide hau berriro.</translation>
 <translation id="1030856839388844477">Berrezarri datu-erabilera</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> hari, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
@@ -93,6 +94,7 @@
 <translation id="1394661041439318933">Bateriaren ehuneko <ph name="BATTERY_PERCENTAGE" /> geratzen zaio gailuaren kutxari.</translation>
 <translation id="1397738625398125236">Ping egin dakioke atebideari</translation>
 <translation id="1398634363027580500">HTTPS eskaeren latentzia oso luzea</translation>
+<translation id="1406389211945506521">Eskerrik asko zure esperientzia partekatzeagatik. Zure iritziak eduki zehatzagoa eta onuragarriagoa sortzen laguntzen digu.</translation>
 <translation id="1407069428457324124">Gai iluna</translation>
 <translation id="1413240736185167732">Hutsegitea - Iragazkiak huts egin du</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
@@ -198,8 +200,10 @@
 <translation id="1808803439260407870">arte klasikoa</translation>
 <translation id="181434555916624618">Oraingoz, jendea duten emaitzak ez dira erakutsiko. Probatu beste eskaera-mezu batekin.</translation>
 <translation id="1815850098929213707"><ph name="KEYS" /> tekla dago hautatuta. Sakatu botoia kontrolatzeko aukera editatzeko</translation>
+<translation id="1818174214124933000">"Bidali" hautatzen duzunean, zure iritzia eta edukia (behean erakusten dena) Google-ra bidaliko da, gizakiek berrikusiko dute eta gure produktuak eta zerbitzuak trebatzeko eta hobetzeko erabiliko dira, <ph name="LINK_POLICY_BEGIN" />Pribatutasun-gidalerroak<ph name="LINK_POLICY_END" /> eta <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Google-ren Zerbitzu-Baldintzak<ph name="LINK_TERMS_OF_SERVICE_END" /> gordeta.</translation>
 <translation id="1823120442877418684">Elementuak</translation>
 <translation id="1827738518074806965">Arte-galeria</translation>
+<translation id="183287940576828840">Iraingarria edo ez segurua</translation>
 <translation id="1836553715834333258">Sistemaren kolorea</translation>
 <translation id="183675228220305365">errealista</translation>
 <translation id="1838374766361614909">Garbitu bilaketa</translation>
@@ -225,6 +229,7 @@
 <translation id="1908234395526491708">UDP bidezko eskaeren hutsegiteak</translation>
 <translation id="1908394185991500139">ezkerrera egiteko gezi-tekla</translation>
 <translation id="1914144885717544695">ostiralean</translation>
+<translation id="1915960750806557358">Partekatu iritzia edo azaldu zer arazo duzun. Ez sartu pertsonala, kontuzkoa edo isilpekoa den informaziorik.</translation>
 <translation id="1923388006036088459">Nabarmentzeko koloreak</translation>
 <translation id="1945403655450283000">Grabagailua</translation>
 <translation id="1947737735496445907">Inprimatuta</translation>
@@ -311,7 +316,6 @@
 <translation id="2308243864813041101">Eguneratzen jarraitzeko, deskonektatu <ph name="DEVICE_NAME" /> gailuaren USB kablea</translation>
 <translation id="2320295602967756579">Gaitu gai iluna</translation>
 <translation id="2323506179655536734">SALTATUTA</translation>
-<translation id="2323755382216917952">Eguneratzea instalatzen amaitzeko, ordenagailua berrabiarazi behar duzu. Agian minutu batzuk beharko dira eguneratzea amaitzeko. Firmwarea eguneratu bitartean, ez deskonektatu ezta itzali ordenagailua.</translation>
 <translation id="2324354238778375592">Leiho gainerakorra</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2346474577291266260">Bikaina (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -457,7 +461,6 @@
 <translation id="3178532070248519384">abangoardia</translation>
 <translation id="3182676044300231689">Idatzi eskaera-mezu bat; adibidez, "eman tonu ziurrago bat"</translation>
 <translation id="3188257591659621405">Nire fitxategiak</translation>
-<translation id="3188931456353313123">Eguneratze hau gailuaren fabrikatzaileak hornitu du, eta Google-k ez du egiaztatu.</translation>
 <translation id="319101249942218879">Aldatu da abatarra</translation>
 <translation id="3192947282887913208">Audio-fitxategiak</translation>
 <translation id="3199982728237701504">Dokumentu-elikatzailea (bi aldekoa)</translation>
@@ -596,6 +599,7 @@
 <translation id="387301095347517405">Bateriak kargatze-ziklo osoa zenbat aldiz egin duen</translation>
 <translation id="3877066159641251281">Entzun itzulpena</translation>
 <translation id="3880601782712134623">Ahots desberdinak automatikoki hauteman, eta hizlari bakoitzari etiketa orokor bat eman; adibidez, Hizlaria 1 eta Hizlaria 2.</translation>
+<translation id="38811596981744338">Legezko arazoa</translation>
 <translation id="3885327323343477505">Aldatu pantaila-babeslea</translation>
 <translation id="3889914174935857450">Berrezartzeko data</translation>
 <translation id="3897092660631435901">Menua</translation>
@@ -821,6 +825,7 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> segundo behar izan dira <ph name="RATE" /> kargatzeko.</translation>
 <translation id="4930320165497208503">Konexio bat konfiguratu edo eguneratzeko, joan <ph name="BEGIN_LINK" />ezarpenetara<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Data</translation>
+<translation id="494102685638938793"><ph name="LINK_TEXT" />, beste fitxa batean irekiko da</translation>
 <translation id="4946927805998996217">Laburpena sortzen</translation>
 <translation id="4950314376641394653"><ph name="DEVICE_NAME" /> gailuaren firmwarea <ph name="VERSION" /> bertsiora eguneratu da</translation>
 <translation id="4950893758552030541">zuhaitz-tunela</translation>
@@ -1208,6 +1213,7 @@
 <translation id="6692996468359469499">Lortu hautatutakoari buruzko informazioa</translation>
 <translation id="6694534975463174713">sarraila</translation>
 <translation id="6700703207451721535">Ez duzu esteka hau atzitzeko baimenik. Galdetu irakasleari ea baimena behar duzun.</translation>
+<translation id="6703179086771097594">Zerk ez du behar bezala funtzionatu?</translation>
 <translation id="6704062477274546131">DNS bidezko ebazpena</translation>
 <translation id="6712933881624804031">Ibar</translation>
 <translation id="6716013206176357696">marrubiak</translation>
@@ -1281,6 +1287,7 @@
 <translation id="7049916119678019302">Deskargatu transkripzio-eredua Ezarpenak atalean</translation>
 <translation id="7058278511608979688">Amaitu eta gorde</translation>
 <translation id="7059230779847288458">Kargatzen; <ph name="TIME_VALUE" /> geratzen dira guztiz kargatu arte</translation>
+<translation id="7064209589142995848">Eduki-transferentzia</translation>
 <translation id="7065336548231472971"><ph name="LANGUAGE_NAME" /> hautatu da</translation>
 <translation id="7066538517128343186"><ph name="KEY" /> gakoa</translation>
 <translation id="7068619307603204412">Prestatu gailua</translation>
@@ -1592,6 +1599,7 @@ Transkripzio horiek lortzeko, deskargatu transkripzio-eredua (gehienez ere 100 
 <translation id="8476942730579767658">Leihoak eta lan-eremuak</translation>
 <translation id="8477536061607044749">diseinu grafikoa</translation>
 <translation id="8477551185774834963">DNSaren latentzia onartzen den atalasetik apur bat gorago dago</translation>
+<translation id="8481308460877552925">Objektiboki ez da zuzena</translation>
 <translation id="8482376765267780829">Hautatu sinplifikatu nahi duzun testua</translation>
 <translation id="8483248364096924578">IP helbidea</translation>
 <translation id="8491311378305535241">Ezin da konektatu HTTPS darabilten webguneetara suebakiaren bidez Android-erako aplikazioetatik</translation>

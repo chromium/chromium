@@ -427,7 +427,6 @@ O teu motor de busca é <ph name="DSE_NAME" />. No caso de que queiras eliminar 
 <translation id="2789552044937754463">{COUNT,plural, =1{O contrasinal gardouse na túa Conta de Google, {EMAIL}}other{Os contrasinais gardáronse na túa Conta de Google, {EMAIL}}}</translation>
 <translation id="2791174088547598693">Engadir contrasinal…</translation>
 <translation id="2797302972324086597">Código de país</translation>
-<translation id="2802403747691280910">Pestanas pechadas: <ph name="NUMBER_OF_TABS_REMOVED" /></translation>
 <translation id="2816489851009559785">Menú → Configuración → Navegador predeterminado</translation>
 <translation id="2818821771744632548">Para poder restablecer o iPhone, pechouse a sesión da túa conta (<ph name="USER_NAME" />). Se queres volver iniciar a sesión, toca Continuar máis abaixo.</translation>
 <translation id="2819667972867209401">Cando a opción está activada, os datos gárdanse na túa Conta de Google. Cando está desactivada, os datos gárdanse só neste dispositivo e elimínanse ao pechar a sesión.</translation>
@@ -562,6 +561,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3517216995152707259">Ao eliminar os teus datos de navegación, non se pecha a sesión da túa Conta de Google. Para facelo, <ph name="BEGIN_LINK" />pecha a sesión en Chrome<ph name="END_LINK" />.</translation>
 <translation id="3519193562722059437">Abre unha pestana para examinar a web.</translation>
 <translation id="3519905498307021260">{count,plural, =1{Abrir a pestana}other{Abrir {count} pestanas}}</translation>
+<translation id="3523513363815970085">Ocultar Sitios principais</translation>
 <translation id="3523789730715594198">Podes deter a sincronización cando queiras na configuración. Google pode personalizar a Busca e outros servizos en función do teu historial.</translation>
 <translation id="3527085408025491307">Cartafol</translation>
 <translation id="3529024052484145543">Contido non-seguro</translation>
@@ -837,6 +837,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="4769198578611055647">Axúdache a acceder ás claves de acceso gardadas en calquera dispositivo</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Queres abrir a ligazón no modo de incógnito?</translation>
+<translation id="479208892659046780">Sitios principais</translation>
 <translation id="4792385443586519711">Nome da empresa</translation>
 <translation id="479628432297359449">Queres deter a descarga?</translation>
 <translation id="4796496140132859135">Grupo de pestanas. Contraído.</translation>
@@ -1591,7 +1592,6 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="7975036700432177008">Probar</translation>
 <translation id="797588153137233716">Menú → Historial → Eliminar datos de navegación</translation>
 <translation id="7977451675950311423">Avísate cando usas un contrasinal vulnerado nunha violación da seguranza dos datos.</translation>
-<translation id="7977482887663636093">Pestanas novas: <ph name="NUMBER_OF_TABS_ADDED" />, pestanas pechadas: <ph name="NUMBER_OF_TABS_REMOVED" /></translation>
 <translation id="797824194429476746">As pestanas permanecerán abertas neste dispositivo, pero o grupo eliminarase de maneira permanente.</translation>
 <translation id="797874245254030665">Accede aos contrasinais e claves de acceso desde calquera aplicación</translation>
 <translation id="7982789257301363584">Rede</translation>
@@ -1778,7 +1778,6 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8728922029615312208">Pechar todo</translation>
 <translation id="8730621377337864115">Feito</translation>
 <translation id="87371078663613140">Explora as opcións da barra de menú</translation>
-<translation id="8739706427581741437">Pestanas novas: <ph name="NUMBER_OF_TABS_ADDED" /></translation>
 <translation id="8741627442233023406">{count,plural, =1{Revisar a pestana…}other{Revisar todas as pestanas…}}</translation>
 <translation id="8741995161408053644">É posible que a túa conta de Google teña outras formas do historial de navegación en <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="874599634440689554">Crear ligazón</translation>

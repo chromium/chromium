@@ -427,7 +427,6 @@
 <translation id="2789552044937754463">{COUNT,plural, =1{మీ Google ఖాతా, {EMAIL}‌లో పాస్‌వర్డ్ సేవ్ చేయబడింది}other{మీ Google ఖాతా, {EMAIL}‌లో పాస్‌వర్డ్‌లను సేవ్ చేయబడ్డాయి}}</translation>
 <translation id="2791174088547598693">పాస్‌వర్డ్‌ను జోడించండి…</translation>
 <translation id="2797302972324086597">దేశం కోడ్</translation>
-<translation id="2802403747691280910"><ph name="NUMBER_OF_TABS_REMOVED" /> మూసివేయబడ్డాయి</translation>
 <translation id="2816489851009559785">మెనూ → సెట్టింగ్‌లు → ఆటోమేటిక్ బ్రౌజర్</translation>
 <translation id="2818821771744632548">మీ iPhone రీసెట్ ప్రాసెస్‌లో భాగంగా మీరు మీ ఖాతా <ph name="USER_NAME" /> నుండి సైన్ అవుట్ చేయబడ్డారు. తిరిగి సైన్ ఇన్ చేయడానికి, దిగువున ఉన్న "కొనసాగండి" అనే ఆప్షన్‌ను ట్యాప్ చేయండి.</translation>
 <translation id="2819667972867209401">ఆన్‌లో ఉన్నప్పుడు, మీ Google ఖాతాలో డేటా సేవ్ చేయబడుతుంది. ఆఫ్‌లో ఉన్నప్పుడు, డేటా ఈ పరికరంలో మాత్రమే సేవ్ అవుతుంది, మీరు సైన్ అవుట్ చేస్తే తొలగించబడుతుంది.</translation>
@@ -1593,7 +1592,6 @@
 <translation id="7975036700432177008">ప్రయత్నించు</translation>
 <translation id="797588153137233716">మెనూ → హిస్టరీ → బ్రౌజింగ్ డేటాను తొలగించండి</translation>
 <translation id="7977451675950311423">మీరు డేటా ఉల్లంఘనలో చోరీకి గురైన పాస్‌వర్డ్‌ని ఉపయోగిస్తే అది మిమ్మల్ని హెచ్చరిస్తుంది.</translation>
-<translation id="7977482887663636093"><ph name="NUMBER_OF_TABS_ADDED" /> కొత్త ట్యాబ్‌లు, <ph name="NUMBER_OF_TABS_REMOVED" /> మూసివేయబడ్డాయి</translation>
 <translation id="797824194429476746">ఈ పరికరంలో ట్యాబ్‌లు అలాగే తెరిచి ఉంటాయి, కానీ గ్రూప్ శాశ్వతంగా తొలగించబడుతుంది.</translation>
 <translation id="797874245254030665">ఏ యాప్ నుండి అయినా మీ పాస్‌వర్డ్‌లు, పాస్-కీలను యాక్సెస్ చేయండి</translation>
 <translation id="7982789257301363584">నెట్‌వర్క్</translation>
@@ -1780,7 +1778,6 @@
 <translation id="8728922029615312208">అన్నింటినీ మూసివేయండి</translation>
 <translation id="8730621377337864115">పూర్తయింది</translation>
 <translation id="87371078663613140">మెనూ బార్‌లోని ఆప్షన్‌లను అన్వేషించండి</translation>
-<translation id="8739706427581741437"><ph name="NUMBER_OF_TABS_ADDED" /> కొత్త ట్యాబ్‌లు</translation>
 <translation id="8741627442233023406">{count,plural, =1{ట్యాబ్‌ను రివ్యూ చేయండి…}other{ట్యాబ్‌లన్నింటినీ రివ్యూ చేయండి…}}</translation>
 <translation id="8741995161408053644"><ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />వద్ద మీ Google ఖాతాలో ఇతర బ్రౌజింగ్ హిస్టరీ రకాలు ఉండవచ్చు.</translation>
 <translation id="874599634440689554">లింక్‌ను క్రియేట్ చేయండి</translation>

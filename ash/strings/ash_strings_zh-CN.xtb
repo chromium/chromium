@@ -281,6 +281,7 @@
 <translation id="1925320505152357008">不到 1 分钟</translation>
 <translation id="1928739107511554905">要想获取此项更新，请在已连接该键盘的情况下使用触摸屏重新启动您的 Chromebook。</translation>
 <translation id="1929331825127010451">返回问题</translation>
+<translation id="1946615340060705561">按“c”键即可释放</translation>
 <translation id="1948405482892809935">切换到下一个用户</translation>
 <translation id="1951012854035635156">智能助理</translation>
 <translation id="1954252331066828794">已完成屏幕录制</translation>
@@ -489,6 +490,7 @@
 <translation id="2689613560355655046">桌面 8</translation>
 <translation id="2695305337569143674">网络</translation>
 <translation id="2697697418792422688">显示键盘设置。已选择“<ph name="KEYBOARD_NAME" />”。</translation>
+<translation id="2699913284398121653">使用 Content Transfer 应用将学校账号数据转移到个人账号</translation>
 <translation id="2700493154570097719">设置键盘</translation>
 <translation id="2701576323154693023">热点已开启（Wi-Fi 已关闭）</translation>
 <translation id="2704781753052663061">连接到其他 Wi-Fi 网络</translation>
@@ -1973,6 +1975,7 @@
 <translation id="7611213136657090146">已重新连接相机。</translation>
 <translation id="7613620083300976559">开启游戏控件</translation>
 <translation id="761736749114493194">开启/关闭相机取景功能。<ph name="STATE_TEXT" /></translation>
+<translation id="7621008024906456933">“快速分享”设置</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> 华氏度</translation>
 <translation id="7627303771480696593">提问</translation>
 <translation id="7634648064048557203">相机已对准右下角</translation>

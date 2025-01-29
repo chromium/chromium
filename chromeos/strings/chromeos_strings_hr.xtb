@@ -204,6 +204,7 @@
 <translation id="1823120442877418684">Objekti</translation>
 <translation id="1827738518074806965">Umjetnička galerija</translation>
 <translation id="183287940576828840">Uvredljivo/nesigurno</translation>
+<translation id="1834032517784994783">Odaberite jezik prijepisa</translation>
 <translation id="1836553715834333258">Boja sustava</translation>
 <translation id="183675228220305365">realističnom</translation>
 <translation id="1838374766361614909">Brisanje pretraživanja</translation>
@@ -316,7 +317,6 @@
 <translation id="2308243864813041101">Iskopčajte USB kabel uređaja <ph name="DEVICE_NAME" /> da biste nastavili s postupkom ažuriranja</translation>
 <translation id="2320295602967756579">Omogućivanje svijetle teme</translation>
 <translation id="2323506179655536734">PRESKOČENO</translation>
-<translation id="2323755382216917952">Za ovo ažuriranje trebate ponovno pokrenuti računalo da biste dovršili instalaciju. To ažuriranje može potrajati nekoliko minuta. Dok se firmware ažurira, nemojte iskopčavati računalo niti ga isključivati.</translation>
 <translation id="2324354238778375592">Plutajući</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2346474577291266260">Izvrstan (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -462,7 +462,6 @@
 <translation id="3178532070248519384">avangardnom</translation>
 <translation id="3182676044300231689">Unesite upit kao što je "neka bude sigurnije"</translation>
 <translation id="3188257591659621405">Moje datoteke</translation>
-<translation id="3188931456353313123">Ovo ažuriranje omogućuje proizvođač uređaja, a Google ga nije potvrdio.</translation>
 <translation id="319101249942218879">Promijenjena je slika avatara</translation>
 <translation id="3192947282887913208">Audio datoteke</translation>
 <translation id="3199982728237701504">Ulagač dokumenata (dvostrano)</translation>
@@ -733,6 +732,7 @@
 <translation id="4483049906298469269">Pinganje pristupnika mreže koja nije zadana nije uspjelo</translation>
 <translation id="4483498983731992167">Prijepis se ne može izraditi</translation>
 <translation id="4486524074141928967">Odjavit ćete se u <ph name="TIME" /></translation>
+<translation id="4487890678161807486">Otvori alat za odabir jezika prijepisa</translation>
 <translation id="4500722292849917410">Prečac nije dostupan. Pritisnite novi prečac pomoću modifikatorske tipke (ctrl, alt, shift ili <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Boja sučelja</translation>
 <translation id="4503223151711056411">Strelica lijevo</translation>

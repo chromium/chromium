@@ -316,7 +316,6 @@
 <translation id="2308243864813041101">Irrota USB-johto (<ph name="DEVICE_NAME" />) jatkaaksesi päivitysprosessia</translation>
 <translation id="2320295602967756579">Ota vaalea teema käyttöön</translation>
 <translation id="2323506179655536734">OHITETTU</translation>
-<translation id="2323755382216917952">Tämän päivityksen asennuksen viimeistely edellyttää tietokoneen uudelleenkäynnistämistä. Päivitys voi kestää muutaman minuutin. Älä irrota tietokoneen virtaa äläkä sammuta sitä laiteohjelmiston päivityksen aikana.</translation>
 <translation id="2324354238778375592">Kelluva</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2346474577291266260">Erinomainen (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -462,7 +461,6 @@
 <translation id="3178532070248519384">avantgarde</translation>
 <translation id="3182676044300231689">Lisää kehote, esimerkiksi "lisää itsevarmuutta"</translation>
 <translation id="3188257591659621405">Omat tiedostot</translation>
-<translation id="3188931456353313123">Päivityksen tarjoaa laitevalmistaja, eikä Google ole vahvistanut sitä.</translation>
 <translation id="319101249942218879">Avatarkuva vaihdettu</translation>
 <translation id="3192947282887913208">Äänitiedostot</translation>
 <translation id="3199982728237701504">Syöttölaite (kaksipuolinen)</translation>

@@ -317,7 +317,6 @@
 <translation id="2308243864813041101">প্রসেস আপডেট করা চালিয়ে যেতে <ph name="DEVICE_NAME" />-এর USB কেবেল আনপ্লাগ করুন</translation>
 <translation id="2320295602967756579">হালকা থিম চালু করুন</translation>
 <translation id="2323506179655536734">এড়ানো হয়েছে</translation>
-<translation id="2323755382216917952">এই আপডেটের জন্য, ইনস্টলেশন সম্পূর্ণ করতে আপনার কম্পিউটার রিস্টার্ট করতে হবে। এই আপডেট সম্পূর্ণ হতে কয়েক মিনিট সময় লাগতে পারে। ফার্মওয়্যার আপডেট করার সময়, আপনার কম্পিউটার আনপ্লাগ বা বন্ধ করবেন না।</translation>
 <translation id="2324354238778375592">ফ্লোট</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2346474577291266260">গড় (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -463,7 +462,6 @@
 <translation id="3178532070248519384">আভান্ট-গার্ডে</translation>
 <translation id="3182676044300231689">"এটি পরিবর্তন করে উন্নত করুন"-এর মতো কোনও প্রম্পট লিখুন</translation>
 <translation id="3188257591659621405">আমার ফাইল</translation>
-<translation id="3188931456353313123">এই আপডেটটি দিয়েছে ডিভাইস প্রস্তুতকারী এবং তা Google-এর মাধ্যমে যাচাই করা হয়নি।</translation>
 <translation id="319101249942218879">অবতারের ছবি পরিবর্তন করা হয়েছে</translation>
 <translation id="3192947282887913208">অডিও ফাইল</translation>
 <translation id="3199982728237701504">ডকুমেন্ট ফিডার (দুই পিঠের)</translation>

@@ -3645,6 +3645,19 @@ Si <ph name="PRODUCT_NAME" /> ne se ferme pas correctement (par exemple, si le n
 <translation id="3700193037252896716">Fréquence de redémarrage prévue.</translation>
 <translation id="3700318587977845664">Fréquence de recherche des mises à jour.</translation>
 <translation id="3701121231485832347">Contrôle les paramètres propres aux appareils <ph name="PRODUCT_OS_NAME" /> gérés par <ph name="MS_AD_NAME" />.</translation>
+<translation id="3701177991731919830">Cette règle active l'appli Transfert de contenus pour les utilisateurs gérés. Cette appli aide les utilisateurs à transférer leurs données depuis leur compte géré vers un compte personnel.
+
+Si la règle <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_IS_ENABLED_VALUE" /> est définie sur <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_IS_ENABLED_VALUE_TRUE" />, l'appli Transfert de contenus est affichée à la date de début et entre les dates de début et de fin en fonction de l'heure locale.
+
+Si la règle <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_IS_ENABLED_VALUE" /> est définie sur <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_IS_ENABLED_VALUE_FALSE" /> ou n'est pas définie, l'appli n'est pas affichée.
+
+Si la règle <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_START_DATE_VALUE" /> n'est pas définie, l'appli est affichée jusqu'à la date de fin.
+
+Si la règle <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_END_DATE_VALUE" /> n'est pas définie, l'appli est affichée indéfiniment à partir de la date de début.
+
+Si les règles <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_START_DATE_VALUE" /> et <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_END_DATE_VALUE" /> ne sont pas définies, l'appli est affichée indéfiniment. Si les dates de début et de fin ne sont pas valides, l'appli n'est pas affichée. Par exemple, si les dates fournies n'existent pas ou si la date de fin est antérieure à la date de début.
+
+Le transfert de données avec Takeout doit aussi être activé pour que l'appli fonctionne correctement. Pour en savoir plus, consultez https://support.google.com/a/answer/6364687.</translation>
 <translation id="3702518095257671450">Attestation à distance</translation>
 <translation id="3702647575225525306"><ph name="POLICY_NAME" /> (Le champ constitué d'une seule ligne est abandonné et va être supprimé prochainement. Utilisez à la place la zone de texte à plusieurs lignes ci-dessous.)</translation>
 <translation id="3711561721191203926">Lorsque cette règle est activée, la requête principale est bloquée chaque fois qu'un avertissement est censé s'afficher dans <ph name="DEV_TOOLS_NAME" /> en raison de l'échec des vérifications <ph name="PRIVATE_NETWORK_ACCESS" />.
@@ -8351,6 +8364,12 @@ Si cette règle est définie sur <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_
       Si cette règle n'est pas configurée, l'étagère est placée par défaut au bas de l'écran. Toutefois, l'utilisateur peut la mettre à un autre endroit.</translation>
 <translation id="7039815268521168329">Afficher la procédure Voice Match pour l'Assistant Google lors de la configuration initiale</translation>
 <translation id="7040229947030068419">Exemple de valeur :</translation>
+<translation id="7044626519138840387">Liste des origines des applis clientes de bureau à distance pouvant exécuter des requêtes API WebAuthn envoyées à partir d'une session de navigation sur un hôte à distance.
+
+Toute origine configurée dans cette règle peut envoyer des requêtes WebAuthn pour des ID de tiers de confiance qu'elle ne devrait normalement pas pouvoir réclamer.
+
+Seules les origines HTTPS valides sont autorisées. Les caractères génériques ne sont pas pris en charge.
+Les entrées non valides sont ignorées.</translation>
 <translation id="7044883996351280650">Gérer le service de sauvegarde et de restauration Android</translation>
 <translation id="7045221780834308118">Si cette règle est activée, les applis Web tierces peuvent utiliser l'API Desk pour contrôler les bureaux <ph name="PRODUCT_OS_NAME" />. Si elle n'est pas configurée ou si elle est désactivée, <ph name="DESK_API_NAME" /> ne sera pas disponible. Cette règle ne s'applique qu'aux appareils enregistrés.</translation>
 <translation id="7046113122884041950">Ne pas autoriser Smart Lock</translation>
@@ -10513,6 +10532,7 @@ Si cette règle n'est pas configurée, aucun mot de passe enregistré n'est impo
 <translation id="8734543507835977857">Démarrer les délais de gestion de l'alimentation et les limites de longueur de session au démarrage de la session</translation>
 <translation id="8736538322216687231">Appliquer un mode restreint minimal sur YouTube</translation>
 <translation id="873800217865395140">Fréquence de collecte des données télémétriques de site Web en millisecondes.</translation>
+<translation id="8743149927570551353">Configurer quand l'outil Transfert de contenus <ph name="PRODUCT_OS_NAME" /> est disponible</translation>
 <translation id="8743902569031401303">Autoriser les enquêtes sur la navigation sécurisée</translation>
 <translation id="8744844164152340112">Contrôle le thème utilisé pour afficher l'UI pendant la configuration initiale et en cours de session (sombre/clair/auto).
       Le mode Auto alterne automatiquement entre le thème sombre et le thème clair au lever et au coucher du soleil.
@@ -11121,6 +11141,7 @@ Si ce paramètre est activé ou n'est pas configuré, les utilisateurs peuvent o
 Si ce paramètre est désactivé, les utilisateurs ne peuvent pas ouvrir de pages Web en mode navigation privée. 
 
 Si cette règle n'est pas configurée, ce paramètre est activé et l'utilisateur est en mesure d'utiliser le mode navigation privée.</translation>
+<translation id="9151267823917882070">Origines autorisées pour les requêtes WebAuthn envoyées par proxy à partir d'applis de bureau à distance.</translation>
 <translation id="9152473318295429890">Activer les suggestions contextuelles des pages Web associées</translation>
 <translation id="9155218447258425310">Durée d'affichage de la notification de retrait de la carte à puce pour <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="9155375380628728544">Permet aux utilisateurs d'ajouter une seule des langues répertoriées dans cette règle à la liste des langues préférées.

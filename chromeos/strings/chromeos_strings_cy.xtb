@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">Canslwyd</translation>
 <translation id="1020274983236703756">Asedau <ph name="PRODUCT_NAME" /> unigryw ar gael nawr</translation>
 <translation id="1022628058306505708">Llif y Ddaear</translation>
+<translation id="102432830749687801">Gwnewch yn siŵr eich bod yn defnyddio'r ap Trosglwyddo Cynnwys gan Google i symud data eich cyfrif ysgol i'ch cyfrif personol cyn i chi golli mynediad.</translation>
 <translation id="1026212596705997935">Mae'r llwybr byr yn cael ei ddefnyddio ar gyfer "<ph name="CONFLICT_ACCEL_NAME" />". Pwyswch lwybr byr newydd. I ddisodli'r llwybr byr presennol, pwyswch y llwybr byr hwn eto.</translation>
 <translation id="1030856839388844477">Ailosod defnydd data</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> o drywyddau, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
@@ -93,6 +94,7 @@
 <translation id="1394661041439318933">Mae gan y ddyfais <ph name="BATTERY_PERCENTAGE" />% o fatri cas.</translation>
 <translation id="1397738625398125236">Gellir Pingio porth</translation>
 <translation id="1398634363027580500">Cuddni HTTPS uchel iawn</translation>
+<translation id="1406389211945506521">Diolch am rannu eich profiad. Mae eich adborth yn ein helpu i greu cynnwys mwy cywir a buddiol.</translation>
 <translation id="1407069428457324124">Thema dywyll</translation>
 <translation id="1413240736185167732">Methwyd - Wedi methu â hidlo</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
@@ -198,8 +200,10 @@
 <translation id="1808803439260407870">Celf glasurol</translation>
 <translation id="181434555916624618">Am y tro, ni fydd canlyniadau gyda phobl yn cael eu dangos. Rhowch gynnig ar anogwr arall.</translation>
 <translation id="1815850098929213707">Y fysell a ddewiswyd yw <ph name="KEYS" />. Tapiwch ar y botwm i olygu'r rheolydd</translation>
+<translation id="1818174214124933000">Pan fyddwch yn dewis anfon, bydd eich adborth a'ch cynnwys (a ddangosir isod) yn cael eu hanfon at Google, eu hadolygu gan bobl, a'u defnyddio i hyfforddi neu wella ein cynnyrch a'n gwasanaethau yn amodol ar y <ph name="LINK_POLICY_BEGIN" />Polisi Preifatrwydd<ph name="LINK_POLICY_END" /> a <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Thelerau Gwasanaeth Google<ph name="LINK_TERMS_OF_SERVICE_END" />.</translation>
 <translation id="1823120442877418684">nodau</translation>
 <translation id="1827738518074806965">Oriel gelf</translation>
+<translation id="183287940576828840">Sarhaus/Anniogel</translation>
 <translation id="1836553715834333258">Lliw system</translation>
 <translation id="183675228220305365">realaeth</translation>
 <translation id="1838374766361614909">Clirio'r blwch chwilio</translation>
@@ -225,6 +229,7 @@
 <translation id="1908234395526491708">Methiannau ceisiadau UDP</translation>
 <translation id="1908394185991500139">saeth i'r chwith</translation>
 <translation id="1914144885717544695">ar ddydd Gwener</translation>
+<translation id="1915960750806557358">Rhannwch eich adborth neu disgrifiwch eich problem. Gwnewch yn siŵr nad ydych yn cynnwys unrhyw beth sy'n bersonol, yn sensitif neu'n gyfrinachol.</translation>
 <translation id="1923388006036088459">Lliwiau acen</translation>
 <translation id="1945403655450283000">Recordydd</translation>
 <translation id="1947737735496445907">Argraffwyd</translation>
@@ -311,7 +316,6 @@
 <translation id="2308243864813041101">Dadblygiwch y cebl USB <ph name="DEVICE_NAME" /> i barhau â'r broses ddiweddaru</translation>
 <translation id="2320295602967756579">Galluogi'r themau olau</translation>
 <translation id="2323506179655536734">WEDI HEPGOR</translation>
-<translation id="2323755382216917952">Mae'r diweddariad hwn yn gofyn i chi ailgychwyn eich cyfrifiadur i gwblhau'r gosodiad. Gall y diweddariad hwn gymryd ychydig funudau i'w gwblhau. Tra bod y gadarnwedd yn diweddaru, peidiwch â dad-blygio neu gau eich cyfrifiadur.</translation>
 <translation id="2324354238778375592">Arnofio</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2346474577291266260">Ardderchog (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -457,7 +461,6 @@
 <translation id="3178532070248519384">avant-garde</translation>
 <translation id="3182676044300231689">Rhowch anogwr fel "gwneud yn fwy hyderus"</translation>
 <translation id="3188257591659621405">Fy ffeiliau</translation>
-<translation id="3188931456353313123">Darperir y diweddariad hwn gan wneuthurwr y ddyfais ac nid yw wedi'i ddilysu gan Google.</translation>
 <translation id="319101249942218879">Wedi newid y llun rhithffurf</translation>
 <translation id="3192947282887913208">Ffeiliau Sain</translation>
 <translation id="3199982728237701504">Bwydydd Dogfen (Dwy ochr)</translation>
@@ -596,6 +599,7 @@
 <translation id="387301095347517405">Nifer o weithiau y mae eich batri wedi mynd drwy gylch gwefru llawn</translation>
 <translation id="3877066159641251281">Gwrando ar y cyfieithiad</translation>
 <translation id="3880601782712134623">Canfod lleisiau gwahanol yn awtomatig a rhoi label generig fel Siaradwr 1 a Siaradwr 2 i bob siaradwr</translation>
+<translation id="38811596981744338">Mater cyfreithiol</translation>
 <translation id="3885327323343477505">Newid arbedwr sgrîn</translation>
 <translation id="3889914174935857450">Ailosod dyddiad</translation>
 <translation id="3897092660631435901">Dewislen</translation>
@@ -821,6 +825,7 @@
 <translation id="4921665434385737356">Wedi gwefru <ph name="RATE" /> mewn <ph name="NUM_SECONDS" /> eiliad.</translation>
 <translation id="4930320165497208503">I osod neu ddiweddaru cysylltiad, ewch i'r <ph name="BEGIN_LINK" />Gosodiadau<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Dyddiad</translation>
+<translation id="494102685638938793"><ph name="LINK_TEXT" />, yn agor mewn tab newydd</translation>
 <translation id="4946927805998996217">Wrthi'n cynhyrchu crynodeb</translation>
 <translation id="4950314376641394653">Mae caledwedd <ph name="DEVICE_NAME" /> wedi'i diweddaru i fersiwn <ph name="VERSION" /></translation>
 <translation id="4950893758552030541">twnnel coed</translation>
@@ -1208,6 +1213,7 @@
 <translation id="6692996468359469499">Cael gwybodaeth sy'n gysylltiedig â'ch dewis</translation>
 <translation id="6694534975463174713">clo</translation>
 <translation id="6700703207451721535">Ni chaniateir mynediad ar gyfer y ddolen hon. Gwiriwch gyda'ch athro os oes angen mynediad.</translation>
+<translation id="6703179086771097594">Beth na weithiodd yn dda?</translation>
 <translation id="6704062477274546131">Cydraniad DNS</translation>
 <translation id="6712933881624804031">dyffryn</translation>
 <translation id="6716013206176357696">mefus</translation>
@@ -1281,6 +1287,7 @@
 <translation id="7049916119678019302">Lawrlwytho'r model trawsgrifio yn y Gosodiadau</translation>
 <translation id="7058278511608979688">Gorffen a chadw</translation>
 <translation id="7059230779847288458">Wrthi'n gwefru, <ph name="TIME_VALUE" /> nes ei fod yn llawn</translation>
+<translation id="7064209589142995848">Trosglwyddo Cynnwys</translation>
 <translation id="7065336548231472971"><ph name="LANGUAGE_NAME" /> wedi'u dewis</translation>
 <translation id="7066538517128343186">y fysell <ph name="KEY" /></translation>
 <translation id="7068619307603204412">Paratoi eich dyfais</translation>
@@ -1592,6 +1599,7 @@ Lawrlwythwch y model trawsgrifio (hyd at 100MB) i gael y trawsgrifiadau hyn.</tr
 <translation id="8476942730579767658">Ffenestri a desgiau</translation>
 <translation id="8477536061607044749">dylunio graffeg</translation>
 <translation id="8477551185774834963">Mae cuddni DNS ychydig yn uwch na'r trothwy a ganiateir</translation>
+<translation id="8481308460877552925">Yn ffeithiol anghywir</translation>
 <translation id="8482376765267780829">Dewiswch ychydig o destun i'w symleiddio</translation>
 <translation id="8483248364096924578">Cyfeiriad IP</translation>
 <translation id="8491311378305535241">Methu â chysylltu â gwefannau HTTPS o apiau Android drwy fur cadarn</translation>

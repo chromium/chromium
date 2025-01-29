@@ -271,6 +271,7 @@
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1448166547804028941">Τα κλειδιά "<ph name="DATA_CONTROLS_FIRST_KEY_SET" />" δεν μπορούν να οριστούν στο ίδιο λεξικό με τα κλειδιά "<ph name="DATA_CONTROLS_SECOND_KEY_SET" />"</translation>
 <translation id="1455413310270022028">Γόμα</translation>
+<translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{Προβολή 0 αξιολογήσεων}=1{Προβολή 1 αξιολόγησης}other{Προβολή και των # αξιολογήσεων}}</translation>
 <translation id="1458059624921545588">Άνθρωποι και κοινωνία</translation>
 <translation id="1458140305240870199">Εσώρουχα</translation>
 <translation id="1459693405370120464">Καιρός</translation>
@@ -1957,6 +1958,7 @@
 <translation id="4407758156081352648">Για τη διατήρηση της ασφάλειας, ο οργανισμός σας δεν επιτρέπει την εκ νέου χρήση κωδικών πρόσβασης στο Chrome. Οι κωδικοί πρόσβασης στο Chrome κρυπτογραφούνται για την προστασία του απορρήτου των χρηστών.</translation>
 <translation id="4408413947728134509">Cookie <ph name="NUM_COOKIES" /></translation>
 <translation id="4412074349188076601">Αυτή η διαμόρφωση έχει επισημανθεί ότι διαθέτει δυνατότητα εγκατάστασης, αλλά δεν παρέχεται εικόνα για αυτή την αρχιτεκτονική. Συνεπώς, η εγκατάστασή της δεν είναι δυνατή.</translation>
+<translation id="4412377069090572315">Τι λένε οι χρήστες</translation>
 <translation id="4414452699610169758">Χρησιμοποιήστε τη Διαχείριση κωδικών πρόσβασης Google και την Αυτόματη συμπλήρωση του Chrome για αποθήκευση και συμπλήρωση κωδικών πρόσβασης, τρόπων πληρωμής και διευθύνσεων</translation>
 <translation id="4414515549596849729">cookie και δεδομένα ιστοτόπου</translation>
 <translation id="4415156962929755728">Πλαστικό (Υψηλής στιλπνότητας)</translation>
@@ -2373,6 +2375,7 @@
 <translation id="519422657042045905">Ο σχολιασμός δεν διατίθεται</translation>
 <translation id="5200063972779787617">Αποθήκευση διεύθυνσης στον λογαριασμό</translation>
 <translation id="5201306358585911203">Μια ενσωματωμένη σελίδα σε αυτήν τη σελίδα λέει</translation>
+<translation id="5205114269877707377"><ph name="OMNIBOX_ACTION_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε Tab για να περιηγηθείτε στις διαθέσιμες ενέργειες και έπειτα πατήστε Enter για να εκτελέσετε την επιλεγμένη ενέργεια.</translation>
 <translation id="5205222826937269299">Απαιτείται όνομα</translation>
 <translation id="5206392433295093945">Κρεβατοκάμαρα</translation>
 <translation id="5209670883520018268">Τροφοδότης χαρτιού 20</translation>
@@ -2779,6 +2782,7 @@
 <translation id="5937560539988385583">Η σελίδα μεταφράστηκε</translation>
 <translation id="5938153366081463283">Προσθήκη εικονικής κάρτας</translation>
 <translation id="5938793338444039872">Troy</translation>
+<translation id="5938866385061293322">Αυτές οι πληροφορίες προέρχονται από ιστοτόπους με προσωπικές αξιολογήσεις, όπως το Trustpilot, το ScamAdviser, η Google και άλλοι. Οι συνόψεις δημιουργούνται με AI.</translation>
 <translation id="5944297261866530437">Ύφασμα (Υψηλής στιλπνότητας)</translation>
 <translation id="5950901984834744590">Ξυραφάκια και ξυριστικές μηχανές</translation>
 <translation id="5951495562196540101">Δεν είναι δυνατή η εγγραφή με λογαριασμό προσωπικής χρήσης (διατίθεται σχετική άδεια).</translation>
@@ -3145,6 +3149,7 @@
 <translation id="6567832540451970450">Ο διαχειριστής σας επιτρέπει την άδεια <ph name="PERMISSION" /> για αυτόν τον ιστότοπο</translation>
 <translation id="6568793038316600992">Κουμπί Διαχείριση τρόπων πληρωμής, ενεργοποιήστε το για να διαχειριστείτε τα στοιχεία πληρωμών και πιστωτικών καρτών από τις ρυθμίσεις του Chrome</translation>
 <translation id="6569060085658103619">Βλέπετε μια σελίδα επέκτασης</translation>
+<translation id="6572867903637058088">Είναι χρήσιμο αυτό;</translation>
 <translation id="6573200754375280815">Διπλό τρύπημα στα δεξιά</translation>
 <translation id="6574762126505704998">Πλήρωση</translation>
 <translation id="6575408526598156416">Αποθήκευση στον λογαριασμό</translation>
@@ -3440,7 +3445,6 @@
 <translation id="7110368079836707726">Κολέγια και πανεπιστήμια</translation>
 <translation id="7111012039238467737">(Έγκυρο)</translation>
 <translation id="7111507312244504964">Αξιολογήσεις και εκτιμήσεις ακινήτων</translation>
-<translation id="7112327784801341716">Δεν βλέπετε τα τρέχοντα στοιχεία σας; Επικοινωνήστε με την τράπεζά σας για να γίνει ενημέρωση.</translation>
 <translation id="7116334367957017155">Δεν έχετε αποθηκεύσει καμία διεύθυνση. Προσθέστε μια διεύθυνση για να τη χρησιμοποιείτε στα προϊόντα Google.</translation>
 <translation id="7118618213916969306">Αναζήτηση URL στο πρόχειρο, <ph name="SHORT_URL" /></translation>
 <translation id="7118852830504022370">Η συγκεκριμένη ειδοποίηση εμφανίζεται επειδή αυτός ο ιστότοπος δεν υποστηρίζει HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Μάθετε περισσότερα σχετικά με αυτή την ειδοποίηση<ph name="END_LEARN_MORE_LINK" />.</translation>
@@ -3503,7 +3507,6 @@
 <translation id="7219179957768738017">Στη σύνδεση χρησιμοποιείται <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Επεξεργασία</translation>
 <translation id="7221855153210829124">Εμφάνιση ειδοποιήσεων</translation>
-<translation id="7221857374443660083">Η τράπεζά σας θέλει να επαληθεύσει την ταυτότητά σας</translation>
 <translation id="722454870747268814">Νέα καρτέλα ανώνυμης περιήγησης</translation>
 <translation id="7227293336683593977">Ιστορικό τιμών</translation>
 <translation id="7232352818707016189">Περισσότερες ενέργειες για τον συγκριτικό πίνακα</translation>
@@ -4325,9 +4328,11 @@
 <translation id="8672535691554698269">Δίκτυα υπολογιστών</translation>
 <translation id="8675446170353411473">Τα αρχεία σας ανεβαίνουν στο <ph name="CLOUD_PROVIDER" /></translation>
 <translation id="8676424191133491403">Χωρίς καθυστέρηση</translation>
+<translation id="8679727228072670864">{COUNT,plural, =1{Διαγράφηκε {COUNT} πίνακας}other{Διαγράφηκαν {COUNT} πίνακες}}</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, απάντηση, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Η φόρτωση της ιστοσελίδας στη διεύθυνση <ph name="PAGE" /> δεν ήταν δυνατή επειδή:</translation>
 <translation id="8682297334444610648">Παιχνίδι με δεινόσαυρο. Πατήστε για να παίξετε</translation>
+<translation id="8685225035093721011">Αξιολογήσεις καταστήματος</translation>
 <translation id="8686424632716064939">Ασφάλεια υπολογιστών</translation>
 <translation id="8687278439622293018">Η καταχώριση <ph name="ENTRY_VOICEOVER" /> διαγράφηκε</translation>
 <translation id="8687429322371626002">Η διαχείριση της συσκευής και του λογαριασμού γίνεται από τον τομέα <ph name="MANAGER" />.</translation>

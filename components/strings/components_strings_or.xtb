@@ -961,6 +961,7 @@
 <translation id="2674170444375937751">ଆପଣଙ୍କ ଇତିବୃତ୍ତିରୁ ଏହି ପୃଷ୍ଠାଗୁଡିକ ଆପଣ ବିଲୋପ କରିବାକୁ ଚାହୁଁଥିବାର ନିଶ୍ଚିତ କି?</translation>
 <translation id="2674524144218093528">ହାଉସ ପେଣ୍ଟିଂ ଏବଂ ଫିନିସିଂ</translation>
 <translation id="2674804415323431591">ପ୍ରସ୍ତାବଗୁଡ଼ିକୁ ଲୁଚାନ୍ତୁ</translation>
+<translation id="26774279487328902"><ph name="GROUP_COUNT" /> ଟାବ ଗ୍ରୁପ ଆଉ ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="2677748264148917807">ଛାଡ଼ନ୍ତୁ</translation>
 <translation id="2683195745483370038">ଅନ୍ୟ ଫଳାଫଳ ମିଳିଲା</translation>
 <translation id="2686919536310834199">"ମୋତେ ଲେଖିବାରେ ସାହାଯ୍ୟ କରନ୍ତୁ" ପାଇଁ ମତାମତ ପଠାନ୍ତୁ।</translation>
@@ -2261,6 +2262,7 @@
 <translation id="5001526427543320409">ତୃତୀୟ-ପକ୍ଷ କୁକୀଗୁଡ଼ିକ</translation>
 <translation id="5002932099480077015">ଯଦି ସକ୍ଷମ ଥାଏ, ତେବେ Chrome ଦ୍ରୁତତର ଫର୍ମ ପୂରଣ ପାଇଁ ଆପଣଙ୍କ କାର୍ଡର ଏକ କପି ଏହି ଡିଭାଇସ୍‌ରେ ଷ୍ଟୋର୍ କରିବ।</translation>
 <translation id="5007392906805964215">ସମୀକ୍ଷା କରନ୍ତୁ</translation>
+<translation id="500790844453430087">"<ph name="GROUP_TITLE_1" />" ଏବଂ "<ph name="GROUP_TITLE_2" />" "ଟାବ ଗ୍ରୁପ ଆଉ ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="5011561501798487822">ଚିହ୍ନଟ କରାଯାଇଥିବା ଭାଷା</translation>
 <translation id="5015510746216210676">ମେସିନ୍ ନାମ:</translation>
 <translation id="5017554619425969104">ଆପଣ କପି କରିଥିବା ଟେକ୍ସଟ୍</translation>
@@ -2733,6 +2735,7 @@
 <translation id="5866898949289125849">ଆପଣ ଏକ ଡେଭେଲପର୍ ଟୁଲ୍ସର ପୃଷ୍ଠା ଦେଖୁଛନ୍ତି</translation>
 <translation id="5869405914158311789">ଏହି ସାଇଟ୍‌ରେ ପହଞ୍ଚି ହେବନାହିଁ</translation>
 <translation id="5869522115854928033">ସଞ୍ଚିତ ପାସୱାର୍ଡସମୂହ</translation>
+<translation id="5872215789867188990">"<ph name="GROUP_TITLE" />" ଟାବ ଗ୍ରୁପ ଆଉ ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="5872692522325383488">IBAN ସେଭ କରାଯାଇଛି</translation>
 <translation id="5873297634595728366">ଡିଜେଲ ଗାଡ଼ି</translation>
 <translation id="5877359070305966420">ମାନବ ସମ୍ବଳ</translation>
@@ -3434,7 +3437,6 @@
 <translation id="7110368079836707726">କଲେଜ ଏବଂ ବିଶ୍ୱବିଦ୍ୟାଳୟଗୁଡ଼ିକ</translation>
 <translation id="7111012039238467737">(ବୈଧ)</translation>
 <translation id="7111507312244504964">ସମ୍ପତ୍ତି ଯାଞ୍ଚ ଏବଂ ମୂଲ୍ୟାଙ୍କନ</translation>
-<translation id="7112327784801341716">ଆପଣଙ୍କ ବର୍ତ୍ତମାନର ସୂଚନା ଦେଖାଯାଉନାହିଁ? ଏହାକୁ ଅପଡେଟ କରିବା ପାଇଁ ଆପଣଙ୍କ ବେଙ୍କ ସହ କଣ୍ଟାକ୍ଟ କରନ୍ତୁ।</translation>
 <translation id="7116334367957017155">ଆପଣଙ୍କର ସେଭ ହୋଇଥିବା କୌଣସି ଠିକଣା ନାହିଁ। ଏକ ଠିକଣାକୁ ସମଗ୍ର Googleରେ ବ୍ୟବହାର କରିବା ପାଇଁ ଏହାକୁ ଯୋଗ କରନ୍ତୁ।</translation>
 <translation id="7118618213916969306">କ୍ଲିପ୍‌ବୋର୍ଡ URL, <ph name="SHORT_URL" />କୁ ଖୋଜନ୍ତୁ</translation>
 <translation id="7118852830504022370">ଏହି ସାଇଟ HTTPSକୁ ସପୋର୍ଟ କରୁନଥିବା ଯୋଗୁଁ ଆପଣ ଏହି ଚେତାବନୀ ଦେଖୁଛନ୍ତି। <ph name="BEGIN_LEARN_MORE_LINK" />ଏହି ଚେତାବନୀ ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -3496,7 +3498,6 @@
 <translation id="7219179957768738017">ସଂଯୋଗ <ph name="SSL_VERSION" />ର ବ୍ୟବହାର କରିଥାଏ।</translation>
 <translation id="7220786058474068424">ପ୍ରକ୍ରିୟାକରଣ ହେଉଛି</translation>
 <translation id="7221855153210829124">ବିଜ୍ଞପ୍ତି ଦେଖାନ୍ତୁ</translation>
-<translation id="7221857374443660083">ଏହା ଆପଣ ଅଟନ୍ତି ବୋଲି ଆପଣଙ୍କ ବେଙ୍କ ସୁନିଶ୍ଚିତ କରିବାକୁ ଚାହେଁ</translation>
 <translation id="722454870747268814">ନୂଆ ଇନକଗ୍ନିଟୋ ଟାବ୍</translation>
 <translation id="7227293336683593977">ମୂଲ୍ୟ ଇତିହାସ</translation>
 <translation id="7232352818707016189">କମ୍ପେୟାର ଟେବୁଲ ପାଇଁ ଅଧିକ କାର୍ଯ୍ୟ</translation>

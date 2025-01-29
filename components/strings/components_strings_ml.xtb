@@ -962,6 +962,7 @@
 <translation id="2674170444375937751">നിങ്ങളുടെ ചരിത്രത്തില്‍ നിന്നും ഈ പേജുകള്‍ മായ്ക്കുന്നതിന് നിങ്ങള്‍ താല്പര്യമുണ്ടോ?</translation>
 <translation id="2674524144218093528">വീടിന്റെ പെയിന്റിംഗും ഫിനിഷിംഗും</translation>
 <translation id="2674804415323431591">നിർദ്ദേശങ്ങൾ മറയ്‌ക്കുക</translation>
+<translation id="26774279487328902"><ph name="GROUP_COUNT" /> ടാബ് ഗ്രൂപ്പുകൾ ഇനി ലഭ്യമല്ല</translation>
 <translation id="2677748264148917807">ഉപേക്ഷിക്കുക</translation>
 <translation id="2683195745483370038">മറ്റ് ഫലങ്ങൾ കണ്ടെത്തി</translation>
 <translation id="2686919536310834199">എന്നെ എഴുതാൻ സഹായിക്കൂ ഫീച്ചറിനുള്ള ഫീഡ്ബാക്ക് അയയ്ക്കുക.</translation>
@@ -2265,6 +2266,7 @@
 <translation id="5001526427543320409">മൂന്നാം-കക്ഷി കുക്കികൾ</translation>
 <translation id="5002932099480077015">പ്രവർത്തനക്ഷമമാക്കിയെങ്കിൽ, വേഗത്തിൽ ഫോം പൂരിപ്പിക്കാൻ Chrome ഈ ഉപകരണത്തിൽ നിങ്ങളുടെ കാർഡിന്റെ ഒരു പകർപ്പ് സൂക്ഷിക്കും.</translation>
 <translation id="5007392906805964215">അവലോകനം ചെയ്യുക</translation>
+<translation id="500790844453430087">"<ph name="GROUP_TITLE_1" />", "<ph name="GROUP_TITLE_2" />" എന്നീ ടാബ് ഗ്രൂപ്പുകൾ ഇനി ലഭ്യമല്ല</translation>
 <translation id="5011561501798487822">ഭാഷ തിരിച്ചറിഞ്ഞു</translation>
 <translation id="5015510746216210676">മെഷീനിന്‍റെ പേര്‌:</translation>
 <translation id="5017554619425969104">നിങ്ങൾ പകർത്തിയ ടെക്‌സ്‌റ്റ്</translation>
@@ -2737,6 +2739,7 @@
 <translation id="5866898949289125849">നിങ്ങൾ ഒരു ഡെവലപ്പർ ടൂളുകളുടെ പേജാണ് കാണുന്നത്</translation>
 <translation id="5869405914158311789">ഈ സൈറ്റ് ലഭ്യമാക്കാനാകുന്നില്ല</translation>
 <translation id="5869522115854928033">സംരക്ഷിച്ച പാസ്‌വേഡുകള്‍</translation>
+<translation id="5872215789867188990">"<ph name="GROUP_TITLE" />" ടാബ് ഗ്രൂപ്പ് ഇനി ലഭ്യമല്ല</translation>
 <translation id="5872692522325383488">IBAN സംരക്ഷിച്ചു</translation>
 <translation id="5873297634595728366">ഡീസൽ വാഹനങ്ങൾ</translation>
 <translation id="5877359070305966420">മാനവ വിഭവശേഷി</translation>
@@ -3441,7 +3444,6 @@
 <translation id="7110368079836707726">കോളേജുകളും സർവകലാശാലകളും</translation>
 <translation id="7111012039238467737">(സാധുതയുള്ളത്)</translation>
 <translation id="7111507312244504964">പ്രോപ്പർട്ടി പരിശോധനകളും മൂല്യനിർണ്ണയങ്ങളും</translation>
-<translation id="7112327784801341716">നിങ്ങളുടെ നിലവിലെ വിവരങ്ങൾ കാണുന്നില്ലേ? ഇത് അപ്ഡേറ്റ് ചെയ്യാൻ നിങ്ങളുടെ ബാങ്കുമായി ബന്ധപ്പെടുക.</translation>
 <translation id="7116334367957017155">നിങ്ങൾക്ക് സംരക്ഷിച്ചിരിക്കുന്ന വിലാസങ്ങളൊന്നുമില്ല. Google ഉൽപ്പന്നങ്ങളിലുടനീളം ഉപയോഗിക്കാൻ ഒരു വിലാസം ചേർക്കുക.</translation>
 <translation id="7118618213916969306">ക്ലിപ്പ്ബോർഡ് URL-നുള്ള തിരയൽ, <ph name="SHORT_URL" /></translation>
 <translation id="7118852830504022370">ഈ സൈറ്റ് HTTPS പിന്തുണയ്‌ക്കാത്തതിനാലാണ് നിങ്ങൾ ഈ മുന്നറിയിപ്പ് കാണുന്നത്. <ph name="BEGIN_LEARN_MORE_LINK" />ഈ മുന്നറിയിപ്പിനെ കുറിച്ച് കൂടുതലറിയുക<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -3504,7 +3506,6 @@
 <translation id="7219179957768738017">കണക്ഷന്‍ <ph name="SSL_VERSION" /> ഉപയോഗിക്കുന്നു.</translation>
 <translation id="7220786058474068424">പ്രോസസ്സുചെയ്യുന്നു</translation>
 <translation id="7221855153210829124">അറിയിപ്പുകൾ കാണിക്കുക</translation>
-<translation id="7221857374443660083">ഇത് നിങ്ങൾ തന്നെയാണെന്ന് ബാങ്കിന് ഉറപ്പാക്കേണ്ടതുണ്ട്</translation>
 <translation id="722454870747268814">പുതിയ ആൾമാറാട്ട ടാബ്</translation>
 <translation id="7227293336683593977">നിരക്ക് ചരിത്രം</translation>
 <translation id="7232352818707016189">താരതമ്യ പട്ടികയ്ക്കുള്ള കൂടുതൽ പ്രവർത്തനങ്ങൾ</translation>

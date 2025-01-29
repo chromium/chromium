@@ -962,6 +962,7 @@
 <translation id="2674170444375937751">Удалить эти страницы из истории посещений?</translation>
 <translation id="2674524144218093528">Малярные и отделочные работы</translation>
 <translation id="2674804415323431591">Скрыть подсказки</translation>
+<translation id="26774279487328902">Несколько групп вкладок (<ph name="GROUP_COUNT" />) больше не доступны.</translation>
 <translation id="2677748264148917807">Выйти</translation>
 <translation id="2683195745483370038">Другие результаты</translation>
 <translation id="2686919536310834199">Оставить отзыв о генераторе текстов</translation>
@@ -2265,6 +2266,7 @@
 <translation id="5001526427543320409">Сторонние файлы cookie</translation>
 <translation id="5002932099480077015">Chrome будет хранить на этом устройстве данные карты для быстрого заполнения форм.</translation>
 <translation id="5007392906805964215">Посмотреть</translation>
+<translation id="500790844453430087">Группы вкладок "<ph name="GROUP_TITLE_1" />" и "<ph name="GROUP_TITLE_2" />" больше не доступны.</translation>
 <translation id="5011561501798487822">Автоматически определенный язык</translation>
 <translation id="5015510746216210676">Имя компьютера:</translation>
 <translation id="5017554619425969104">Скопированный текст</translation>
@@ -2737,6 +2739,7 @@
 <translation id="5866898949289125849">Вы просматриваете страницу инструментов разработчика</translation>
 <translation id="5869405914158311789">Не удается получить доступ к сайту</translation>
 <translation id="5869522115854928033">Сохраненные пароли</translation>
+<translation id="5872215789867188990">Группа вкладок "<ph name="GROUP_TITLE" />" больше не доступна.</translation>
 <translation id="5872692522325383488">Код IBAN сохранен</translation>
 <translation id="5873297634595728366">Дизельные автомобили</translation>
 <translation id="5877359070305966420">Кадровые ресурсы</translation>
@@ -3441,7 +3444,6 @@
 <translation id="7110368079836707726">Колледжи и университеты</translation>
 <translation id="7111012039238467737">(действительный)</translation>
 <translation id="7111507312244504964">Инспекция и оценка имущества</translation>
-<translation id="7112327784801341716">Если вы видите устаревшие данные, обратитесь в свой банк.</translation>
 <translation id="7116334367957017155">У вас нет ни одного сохраненного адреса. Укажите его, чтобы использовать автозаполнение в продуктах Google.</translation>
 <translation id="7118618213916969306">Поиск по адресу <ph name="SHORT_URL" /> из буфера обмена</translation>
 <translation id="7118852830504022370">Вы видите это предупреждение, потому что сайт не поддерживает HTTPS. Подробнее <ph name="BEGIN_LEARN_MORE_LINK" />об этом предупреждении<ph name="END_LEARN_MORE_LINK" />…</translation>
@@ -3504,7 +3506,6 @@
 <translation id="7219179957768738017">В этом подключении используется протокол <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Подождите…</translation>
 <translation id="7221855153210829124">Показ уведомлений</translation>
-<translation id="7221857374443660083">Банку нужно убедиться, что это действительно вы</translation>
 <translation id="722454870747268814">Новая вкладка инкогнито</translation>
 <translation id="7227293336683593977">История изменения цен</translation>
 <translation id="7232352818707016189">Ещё действия для сравнительной таблицы</translation>

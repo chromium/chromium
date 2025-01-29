@@ -490,6 +490,7 @@ Hi ha <ph name="DEVICECOUNT" /> dispositius connectats.</translation>
 <translation id="2689613560355655046">Escriptori 8</translation>
 <translation id="2695305337569143674">web</translation>
 <translation id="2697697418792422688">Mostra la configuració del teclat. S'ha seleccionat <ph name="KEYBOARD_NAME" />.</translation>
+<translation id="2699913284398121653">Utilitza l'aplicació Transferència de contingut per moure les dades del teu compte de centre educatiu al teu compte personal</translation>
 <translation id="2700493154570097719">Defineix el teu teclat</translation>
 <translation id="2701576323154693023">El punt d'accés Wi‐Fi està activat (la Wi-Fi està desactivada)</translation>
 <translation id="2704781753052663061">Uneix-te a altres xarxes Wi-Fi</translation>
@@ -1976,6 +1977,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="7611213136657090146">S'ha tornat a connectar la càmera.</translation>
 <translation id="7613620083300976559">Activa els controls del joc</translation>
 <translation id="761736749114493194">Commuta l'enquadrament de la càmera. <ph name="STATE_TEXT" /></translation>
+<translation id="7621008024906456933">Configuració de Quick Share</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
 <translation id="7627303771480696593">Fes una pregunta</translation>
 <translation id="7634648064048557203">La càmera s'ha ajustat a l'extrem inferior dret</translation>

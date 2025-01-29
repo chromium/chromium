@@ -316,7 +316,6 @@
 <translation id="2308243864813041101">Изключете USB кабела на <ph name="DEVICE_NAME" />, за да продължите процеса на актуализиране</translation>
 <translation id="2320295602967756579">Активиране на светлата тема</translation>
 <translation id="2323506179655536734">ПРОПУСНАТО</translation>
-<translation id="2323755382216917952">Актуализацията изисква да рестартирате компютъра си, за да завършите инсталирането. Тя може да отнеме няколко минути. Докато фърмуерът се актуализира, не изключвайте компютъра си.</translation>
 <translation id="2324354238778375592">Плаващо</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2346474577291266260">Отлична (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -462,7 +461,6 @@
 <translation id="3178532070248519384">авангард</translation>
 <translation id="3182676044300231689">Въведете подкана, като например „да звучи по-уверено“</translation>
 <translation id="3188257591659621405">Моите файлове</translation>
-<translation id="3188931456353313123">Тази актуализация е предоставена от производителя на устройството и не е потвърдена от Google.</translation>
 <translation id="319101249942218879">Изображението на аватара бе променено</translation>
 <translation id="3192947282887913208">Аудиофайлове</translation>
 <translation id="3199982728237701504">Подавач на документи (двустранно)</translation>

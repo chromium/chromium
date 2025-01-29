@@ -427,7 +427,6 @@ Il tuo motore di ricerca è <ph name="DSE_NAME" />. Consulta le relative istruzi
 <translation id="2789552044937754463">{COUNT,plural, =1{Password salvata nel tuo Account Google: {EMAIL}}other{Password salvate nel tuo Account Google: {EMAIL}}}</translation>
 <translation id="2791174088547598693">Aggiungi password…</translation>
 <translation id="2797302972324086597">Codice paese</translation>
-<translation id="2802403747691280910"><ph name="NUMBER_OF_TABS_REMOVED" /> chiusa</translation>
 <translation id="2816489851009559785">Menu → Impostazioni → Browser predefinito</translation>
 <translation id="2818821771744632548">Il tuo account <ph name="USER_NAME" /> è stato disconnesso durante il ripristino dell'iPhone. Per accedere di nuovo, tocca "Continua" di seguito.</translation>
 <translation id="2819667972867209401">In caso di attivazione, i dati vengono salvati nel tuo Account Google. In caso di disattivazione, i dati vengono salvati solo su questo dispositivo e vengono eliminati se ti disconnetti.</translation>
@@ -1593,7 +1592,6 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="7975036700432177008">Prova</translation>
 <translation id="797588153137233716">Menu → Cronologia → Elimina dati di navigazione</translation>
 <translation id="7977451675950311423">Ricevi un avviso se utilizzi una password che è stata compromessa a causa di una violazione dei dati.</translation>
-<translation id="7977482887663636093"><ph name="NUMBER_OF_TABS_ADDED" /> nuove schede, <ph name="NUMBER_OF_TABS_REMOVED" /> chiusa</translation>
 <translation id="797824194429476746">Le schede rimarranno aperte su questo dispositivo, ma il gruppo verrà eliminato definitivamente.</translation>
 <translation id="797874245254030665">Accedi alle tue password e passkey da qualsiasi app</translation>
 <translation id="7982789257301363584">Rete</translation>
@@ -1780,7 +1778,6 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8728922029615312208">Chiudi tutte</translation>
 <translation id="8730621377337864115">Fine</translation>
 <translation id="87371078663613140">Esplora le opzioni nella barra dei menu</translation>
-<translation id="8739706427581741437"><ph name="NUMBER_OF_TABS_ADDED" /> nuove schede</translation>
 <translation id="8741627442233023406">{count,plural, =1{Rivedi la scheda…}other{Rivedi tutte le schede…}}</translation>
 <translation id="8741995161408053644">Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione all'indirizzo <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="874599634440689554">Crea link</translation>

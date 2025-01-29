@@ -317,7 +317,6 @@
 <translation id="2308243864813041101">업데이트를 계속하려면 <ph name="DEVICE_NAME" />에서 USB 케이블을 분리하세요.</translation>
 <translation id="2320295602967756579">밝은 테마 사용 설정</translation>
 <translation id="2323506179655536734">건너뜀</translation>
-<translation id="2323755382216917952">이 업데이트의 경우 설치를 완료하려면 컴퓨터를 다시 시작해야 합니다. 이 업데이트에는 몇 분 정도 소요될 수 있습니다. 펌웨어 업데이트 도중에 컴퓨터의 전원을 뽑거나 컴퓨터를 종료하지 마세요.</translation>
 <translation id="2324354238778375592">플로팅</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" />dpi</translation>
 <translation id="2346474577291266260">우수(<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -463,7 +462,6 @@
 <translation id="3178532070248519384">아방가르드</translation>
 <translation id="3182676044300231689">'더 자신 있게 표현해 줘'와 같은 프롬프트를 입력해 보세요</translation>
 <translation id="3188257591659621405">내 파일</translation>
-<translation id="3188931456353313123">이 업데이트는 기기 제조업체에서 제공하며, Google의 확인을 거치지 않았습니다.</translation>
 <translation id="319101249942218879">아바타 이미지 변경됨</translation>
 <translation id="3192947282887913208">오디오 파일</translation>
 <translation id="3199982728237701504">서류 급지(양면)</translation>

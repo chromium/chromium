@@ -489,6 +489,7 @@
 <translation id="2689613560355655046">डेस्क 8</translation>
 <translation id="2695305337569143674">वेब</translation>
 <translation id="2697697418792422688">कीबोर्ड की सेटिंग दिखाएं. <ph name="KEYBOARD_NAME" /> को चुना गया है.</translation>
+<translation id="2699913284398121653">स्कूल वाले अपने खाते के डेटा को निजी खाते में ट्रांसफ़र करने के लिए, कॉन्टेंट ट्रांसफ़र ऐप्लिकेशन का इस्तेमाल करें</translation>
 <translation id="2700493154570097719">अपना कीबोर्ड सेट करें</translation>
 <translation id="2701576323154693023">हॉटस्पॉट चालू है (वाई-फ़ाई बंद है)</translation>
 <translation id="2704781753052663061">अन्य वाई-फ़ाई नेटवर्क से कनेक्ट करें</translation>
@@ -1976,6 +1977,7 @@
 <translation id="7611213136657090146">कैमरा फिर से कनेक्ट हो गया है.</translation>
 <translation id="7613620083300976559">गेम के कंट्रोल चालू करें</translation>
 <translation id="761736749114493194">ऑटो फ़्रेमिंग की सुविधा टॉगल करें. <ph name="STATE_TEXT" /></translation>
+<translation id="7621008024906456933">क्विक शेयर की सेटिंग</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° फ़ैरनहाइट</translation>
 <translation id="7627303771480696593">कोई सवाल पूछें</translation>
 <translation id="7634648064048557203">कैमरा इनपुट की झलक, अब नीचे बाएं कोने में दिखेगी</translation>

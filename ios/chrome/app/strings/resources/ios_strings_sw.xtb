@@ -427,7 +427,6 @@ Mtambo wako wa kutafuta ni <ph name="DSE_NAME" />. Angalia maagizo ya mtambo huo
 <translation id="2789552044937754463">{COUNT,plural, =1{Nenosiri limehifadhiwa kwenye Akaunti yako ya Google, {EMAIL}}other{Manenosiri yamehifadhiwa kwenye Akaunti yako ya Google, {EMAIL}}}</translation>
 <translation id="2791174088547598693">Weka Nenosiri…</translation>
 <translation id="2797302972324086597">Msimbo wa nchi</translation>
-<translation id="2802403747691280910">Umefunga <ph name="NUMBER_OF_TABS_REMOVED" /></translation>
 <translation id="2816489851009559785">Menyu → Mipangilio → Kivinjari chaguomsingi</translation>
 <translation id="2818821771744632548">Uliondolewa kwenye akaunti yako, <ph name="USER_NAME" />, ikiwa ni sehemu ya kuweka upya mipangilio ya iPhone yako. Ili uingie tena katika akaunti, bofya "Endelea" hapa chini.</translation>
 <translation id="2819667972867209401">Ukiwasha, data inahifadhiwa kwenye Akaunti yako ya Google. Ukizima, inahifadhi data kwenye kifaa hiki pekee na inafutwa iwapo utaondoka kwenye akaunti.</translation>
@@ -1593,7 +1592,6 @@ Tovuti zinaweza kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="7975036700432177008">Jaribu</translation>
 <translation id="797588153137233716">Menyu → Historia → Futa data ya kuvinjari</translation>
 <translation id="7977451675950311423">Hukutahadharisha iwapo unatumia nenosiri ambalo limeathiriwa na ufichuzi haramu wa data.</translation>
-<translation id="7977482887663636093">Vichupo <ph name="NUMBER_OF_TABS_ADDED" /> vipya, umefunga <ph name="NUMBER_OF_TABS_REMOVED" /></translation>
 <translation id="797824194429476746">Vichupo hivi havitafungwa kwenye kifaa hiki lakini kikundi kitafutwa kabisa.</translation>
 <translation id="797874245254030665">Kufikia manenosiri na funguo zako za siri kwenye programu yoyote</translation>
 <translation id="7982789257301363584">Mtandao</translation>
@@ -1780,7 +1778,6 @@ Tovuti zinaweza kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="8728922029615312208">Funga vyote</translation>
 <translation id="8730621377337864115">Nimemaliza</translation>
 <translation id="87371078663613140">Angalia chaguo katika upau wa menyu</translation>
-<translation id="8739706427581741437">Vichupo <ph name="NUMBER_OF_TABS_ADDED" /> vipya</translation>
 <translation id="8741627442233023406">{count,plural, =1{Kagua kichupo…}other{Kagua vichupo vyote…}}</translation>
 <translation id="8741995161408053644">Huenda Akaunti yako ya Google ina aina nyingine za historia ya kuvinjari kwenye <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="874599634440689554">Buni kiungo</translation>

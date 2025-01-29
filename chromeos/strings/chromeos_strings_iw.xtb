@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">בוטל</translation>
 <translation id="1020274983236703756">נוספו נכסים בלעדיים ל-<ph name="PRODUCT_NAME" /></translation>
 <translation id="1022628058306505708">זרימה בכדור הארץ</translation>
+<translation id="102432830749687801">‏צריך להעביר את הנתונים מהחשבון הבית ספרי לחשבון האישי עם אפליקציית "העברת תוכן" של Google לפני שהגישה אליהם תאבד.</translation>
 <translation id="1026212596705997935">מקש הקיצור הזה משמש לביצוע הפעולה '<ph name="CONFLICT_ACCEL_NAME" />'. עליך להקיש על מקש קיצור אחר. כדי להחליף את קיצור הדרך הקיים, צריך להקיש שוב על מקש הקיצור הזה.</translation>
 <translation id="1030856839388844477">איפוס השימוש בחבילת הגלישה</translation>
 <translation id="1047458377670401304">‏<ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> שרשורים, GHz‏ <ph name="CPU_MAX_CLOCK_SPEED" />)</translation>
@@ -93,6 +94,7 @@
 <translation id="1394661041439318933">רמת הטעינה של סוללת הנרתיק במכשיר: %<ph name="BATTERY_PERCENTAGE" />.</translation>
 <translation id="1397738625398125236">אפשר לבדוק אם יש חיבור לשער באמצעות פינג</translation>
 <translation id="1398634363027580500">‏משך זמן אחזור HTTPS ארוך מאוד</translation>
+<translation id="1406389211945506521">תודה ששיתפת את החוויה שלך. המשוב עוזר לנו ליצור תוכן מדויק ומועיל יותר.</translation>
 <translation id="1407069428457324124">עיצוב כהה</translation>
 <translation id="1413240736185167732">נכשלה – הסינון נכשל</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
@@ -198,8 +200,10 @@
 <translation id="1808803439260407870">אומנות קלאסית</translation>
 <translation id="181434555916624618">כרגע, תוצאות עם אנשים לא יוצגו. אפשר לנסות הנחיה אחרת.</translation>
 <translation id="1815850098929213707">המקש שנבחר הוא <ph name="KEYS" />. כדי לערוך את הרכיב האינטראקטיבי, צריך ללחוץ על הכפתור</translation>
+<translation id="1818174214124933000">‏אחרי הבחירה באפשרות "שליחה", המשוב והתוכן שלך (שמוצגים למטה) יישלחו אל Google, ייבדקו על ידי בודקים אנושיים וישמשו לאימון או לשיפור המוצרים והשירותים שלנו בכפוף ל<ph name="LINK_POLICY_BEGIN" />מדיניות הפרטיות<ph name="LINK_POLICY_END" /> ו<ph name="LINK_TERMS_OF_SERVICE_BEGIN" />לתנאים וההגבלות של Google<ph name="LINK_TERMS_OF_SERVICE_END" />.</translation>
 <translation id="1823120442877418684">דימויים</translation>
 <translation id="1827738518074806965">גלריית אומנות</translation>
+<translation id="183287940576828840">מידע פוגעני או לא בטוח</translation>
 <translation id="1836553715834333258">צבע המערכת</translation>
 <translation id="183675228220305365">ריאליסטי</translation>
 <translation id="1838374766361614909">ניקוי חיפוש</translation>
@@ -225,6 +229,7 @@
 <translation id="1908234395526491708">‏בקשות UDP נכשלו</translation>
 <translation id="1908394185991500139">חץ שמאלה</translation>
 <translation id="1914144885717544695">ביום שישי</translation>
+<translation id="1915960750806557358">נשמח לקבל ממך משוב או תיאור של הבעיה. חשוב להקפיד שלא לכלול מידע אישי, רגיש או סודי.</translation>
 <translation id="1923388006036088459">צבעים משניים</translation>
 <translation id="1945403655450283000">מכשיר הקלטה</translation>
 <translation id="1947737735496445907">הודפסה</translation>
@@ -311,7 +316,6 @@
 <translation id="2308243864813041101">‏כדי להמשיך בתהליך העדכון, צריך לנתק את כבל ה-USB של <ph name="DEVICE_NAME" /></translation>
 <translation id="2320295602967756579">הפעלת העיצוב הבהיר</translation>
 <translation id="2323506179655536734">לא בוצעה בדיקה</translation>
-<translation id="2323755382216917952">העדכון הזה דורש הפעלה מחדש של המחשב כדי להשלים את ההתקנה. העדכון הזה יכול לקחת כמה דקות עד שיסתיים. במהלך עדכון הקושחה אין לנתק את המחשב או לכבות אותו.</translation>
 <translation id="2324354238778375592">מצב צף</translation>
 <translation id="2326139988748364651">‏<ph name="RESOLUTION_VALUE" /> ‏DPI</translation>
 <translation id="2346474577291266260">מצוין (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -457,7 +461,6 @@
 <translation id="3178532070248519384">אוונגרד</translation>
 <translation id="3182676044300231689">אפשר להזין הנחיה כמו "אני רוצה שזה יישמע עם יותר ביטחון עצמי"</translation>
 <translation id="3188257591659621405">הקבצים שלי</translation>
-<translation id="3188931456353313123">‏העדכון הזה סופק על ידי יצרן המכשיר והוא לא אומת על ידי Google.</translation>
 <translation id="319101249942218879">תמונת הדמות שונתה</translation>
 <translation id="3192947282887913208">קובצי אודיו</translation>
 <translation id="3199982728237701504">הכנסת מסמכים (שני צדדים)</translation>
@@ -596,6 +599,7 @@
 <translation id="387301095347517405">מספר הפעמים שבהן הסוללה נטענה במלואה</translation>
 <translation id="3877066159641251281">האזנה לתרגום</translation>
 <translation id="3880601782712134623">לזהות אוטומטית קולות ייחודיים ולתת לכל אחד מהם תווית גנרית, כמו 'דובר 1' ו'דובר 2'</translation>
+<translation id="38811596981744338">בעיה משפטית</translation>
 <translation id="3885327323343477505">החלפת שומר המסך</translation>
 <translation id="3889914174935857450">תאריך האיפוס</translation>
 <translation id="3897092660631435901">תפריט</translation>
@@ -821,6 +825,7 @@
 <translation id="4921665434385737356">התבצעה טעינה של <ph name="RATE" /> ב-<ph name="NUM_SECONDS" /> שניות.</translation>
 <translation id="4930320165497208503">כדי להגדיר או לעדכן חיבור, צריך לעבור ל<ph name="BEGIN_LINK" />הגדרות<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">תאריך</translation>
+<translation id="494102685638938793">‫<ph name="LINK_TEXT" />, פתיחה בכרטיסייה חדשה</translation>
 <translation id="4946927805998996217">הסיכום בשלבי יצירה</translation>
 <translation id="4950314376641394653">הקושחה במכשיר <ph name="DEVICE_NAME" /> עודכנה לגרסה <ph name="VERSION" /></translation>
 <translation id="4950893758552030541">מנהרת עצים</translation>
@@ -1208,6 +1213,7 @@
 <translation id="6692996468359469499">קבלת מידע בקשר לבחירה שלך</translation>
 <translation id="6694534975463174713">מנעול</translation>
 <translation id="6700703207451721535">אין הרשאה לגשת לקישור הזה. אם דרושה לך גישה, עליך לפנות למורה שלך.</translation>
+<translation id="6703179086771097594">מה לא עבד טוב?</translation>
 <translation id="6704062477274546131">‏פענוח DNS</translation>
 <translation id="6712933881624804031">עמק</translation>
 <translation id="6716013206176357696">תותים</translation>
@@ -1281,6 +1287,7 @@
 <translation id="7049916119678019302">אפשר להוריד את מודל התמלול בהגדרות</translation>
 <translation id="7058278511608979688">סיום ושמירה</translation>
 <translation id="7059230779847288458">בטעינה, <ph name="TIME_VALUE" /> עד לטעינה מלאה</translation>
+<translation id="7064209589142995848">העברת תוכן</translation>
 <translation id="7065336548231472971">בחרת <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7066538517128343186">מקש <ph name="KEY" /></translation>
 <translation id="7068619307603204412">הכנת המכשיר</translation>
@@ -1592,6 +1599,7 @@
 <translation id="8476942730579767658">חלונות ושולחנות עבודה וירטואליים</translation>
 <translation id="8477536061607044749">עיצוב גרפי</translation>
 <translation id="8477551185774834963">‏זמן האחזור של ה-DNS חורג מעט מהסף המותר</translation>
+<translation id="8481308460877552925">תוכן שמכיל עובדות שגויות</translation>
 <translation id="8482376765267780829">צריך לבחור טקסט כדי לפשט</translation>
 <translation id="8483248364096924578">‏כתובת IP</translation>
 <translation id="8491311378305535241">‏לא ניתן להתחבר עם חומת אש לאתרי HTTPS מאפליקציות ל-Android</translation>

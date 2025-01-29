@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">Скасовано</translation>
 <translation id="1020274983236703756">Доступні ексклюзивні об’єкти <ph name="PRODUCT_NAME" /></translation>
 <translation id="1022628058306505708">Опливина</translation>
+<translation id="102432830749687801">Щоб уникнути цього, перенесіть дані з облікового запису закладу освіти в особистий за допомогою додатка Перенесення контенту від Google.</translation>
 <translation id="1026212596705997935">Ця комбінація клавіш використовується для дії "<ph name="CONFLICT_ACCEL_NAME" />". Застосуйте нову комбінацію. Щоб замінити наявну комбінацію клавіш, натисніть її ще раз.</translation>
 <translation id="1030856839388844477">Скинути дані</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (потоків: <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" /> ГГц)</translation>
@@ -93,6 +94,7 @@
 <translation id="1394661041439318933">Рівень заряду акумулятора чохла – <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="1397738625398125236">Шлюз можна перевірити</translation>
 <translation id="1398634363027580500">дуже велика затримка HTTPS</translation>
+<translation id="1406389211945506521">Дякуємо, що поділилися враженнями. Ваші відгуки допомагають нам створювати точніший і корисніший контент.</translation>
 <translation id="1407069428457324124">Темна тема</translation>
 <translation id="1413240736185167732">Не надруковано – помилка фільтра</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
@@ -198,8 +200,10 @@
 <translation id="1808803439260407870">Класичне мистецтво</translation>
 <translation id="181434555916624618">Зараз ця функція не показує згенеровані зображення, на яких є люди. Спробуйте інший запит.</translation>
 <translation id="1815850098929213707">Вибрано клавішу <ph name="KEYS" />. Натисніть кнопку, щоб змінити елемент керування.</translation>
+<translation id="1818174214124933000">Коли ви натиснете кнопку "Надіслати", ваш відгук, а також контент, який показано нижче, буде надіслано в Google. Після перевірки нашими спеціалістами ці дані використовуватимуться для навчання й покращення наших продуктів і сервісів відповідно до <ph name="LINK_POLICY_BEGIN" />Політики конфіденційності<ph name="LINK_POLICY_END" /> й <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Загальних положень і умов Google<ph name="LINK_TERMS_OF_SERVICE_END" />.</translation>
 <translation id="1823120442877418684">Об’єкти</translation>
 <translation id="1827738518074806965">Мистецька галерея</translation>
+<translation id="183287940576828840">Образливий або небезпечний контент</translation>
 <translation id="1836553715834333258">Колір системи</translation>
 <translation id="183675228220305365">реалізм</translation>
 <translation id="1838374766361614909">Очистити поле пошуку</translation>
@@ -225,6 +229,7 @@
 <translation id="1908234395526491708">Не виконано запити за протоколом UDP</translation>
 <translation id="1908394185991500139">стрілка вліво</translation>
 <translation id="1914144885717544695">у п’ятницю</translation>
+<translation id="1915960750806557358">Залиште відгук або опишіть проблему. Не вказуйте особисту, чутливу або конфіденційну інформацію.</translation>
 <translation id="1923388006036088459">Акцентні кольори</translation>
 <translation id="1945403655450283000">Диктофон</translation>
 <translation id="1947737735496445907">Надруковано</translation>
@@ -311,7 +316,6 @@
 <translation id="2308243864813041101">Щоб продовжити оновлення, від’єднайте кабель USB від пристрою <ph name="DEVICE_NAME" /></translation>
 <translation id="2320295602967756579">Увімкнути світлу тему</translation>
 <translation id="2323506179655536734">ПРОПУЩЕНО</translation>
-<translation id="2323755382216917952">Щоб завершити оновлення, потрібно перезапустити комп’ютер. Це може тривати кілька хвилин. Поки мікропрограма оновлюється, не відключайте комп’ютер від мережі живлення й не завершуйте його роботу.</translation>
 <translation id="2324354238778375592">Плаваюче вікно</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2346474577291266260">Чудовий сигнал (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -457,7 +461,6 @@
 <translation id="3178532070248519384">авангард</translation>
 <translation id="3182676044300231689">Введіть запит, наприклад "перепиши впевненішим тоном"</translation>
 <translation id="3188257591659621405">Мої файли</translation>
-<translation id="3188931456353313123">Це оновлення надано виробником пристрою. Ми не перевіряли його.</translation>
 <translation id="319101249942218879">Аватар змінено</translation>
 <translation id="3192947282887913208">Аудіофайли</translation>
 <translation id="3199982728237701504">Пристрій автоподачі документів (двосторонній)</translation>
@@ -596,6 +599,7 @@
 <translation id="387301095347517405">Кількість повних циклів заряджання акумулятора</translation>
 <translation id="3877066159641251281">Слухати переклад</translation>
 <translation id="3880601782712134623">автоматично виявляти різні голоси й призначати кожному мовцю загальні мітки, як-от "Мовець 1" і "Мовець 2";</translation>
+<translation id="38811596981744338">Порушення законодавства</translation>
 <translation id="3885327323343477505">Змінити заставку</translation>
 <translation id="3889914174935857450">Скинути дату</translation>
 <translation id="3897092660631435901">Меню</translation>
@@ -821,6 +825,7 @@
 <translation id="4921665434385737356">Акумулятор зарядився на <ph name="RATE" /> за <ph name="NUM_SECONDS" /> с.</translation>
 <translation id="4930320165497208503">Щоб налаштувати або оновити з’єднання, перейдіть у <ph name="BEGIN_LINK" />Налаштування<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Дата</translation>
+<translation id="494102685638938793"><ph name="LINK_TEXT" /> (відкриється в новій вкладці)</translation>
 <translation id="4946927805998996217">Створення підсумку</translation>
 <translation id="4950314376641394653"><ph name="DEVICE_NAME" />: мікропрограму пристрою оновлено до версії <ph name="VERSION" /></translation>
 <translation id="4950893758552030541">тунель із дерев</translation>
@@ -1208,6 +1213,7 @@
 <translation id="6692996468359469499">Отримати інформацію, пов'язану з виділеним текстом</translation>
 <translation id="6694534975463174713">блокування</translation>
 <translation id="6700703207451721535">Доступ до цього посилання заборонено. Якщо він вам потрібен, зверніться до викладача.</translation>
+<translation id="6703179086771097594">Що вам не сподобалося?</translation>
 <translation id="6704062477274546131">Розпізнавання DNS</translation>
 <translation id="6712933881624804031">долина</translation>
 <translation id="6716013206176357696">полуниця</translation>
@@ -1281,6 +1287,7 @@
 <translation id="7049916119678019302">Завантажте модель транскрипції в налаштуваннях</translation>
 <translation id="7058278511608979688">Завершити та зберегти</translation>
 <translation id="7059230779847288458">Заряджається (<ph name="TIME_VALUE" /> до повного зарядження)</translation>
+<translation id="7064209589142995848">Перенесення контенту</translation>
 <translation id="7065336548231472971">Вибрано <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7066538517128343186">клавіша <ph name="KEY" /></translation>
 <translation id="7068619307603204412">Підготуйте пристрій</translation>
@@ -1592,6 +1599,7 @@
 <translation id="8476942730579767658">Вікна й робочі столи</translation>
 <translation id="8477536061607044749">графічний дизайн</translation>
 <translation id="8477551185774834963">Затримка DNS трохи довша, ніж дозволено</translation>
+<translation id="8481308460877552925">Недостовірна інформація</translation>
 <translation id="8482376765267780829">Щоб спростити текст, виділіть його</translation>
 <translation id="8483248364096924578">IP-адреса</translation>
 <translation id="8491311378305535241">Не вдається підключитися з додатків для Android до веб-сайтів HTTP через брандмауер</translation>

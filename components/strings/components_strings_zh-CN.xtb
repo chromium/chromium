@@ -271,6 +271,7 @@
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1448166547804028941">如果字典中有键“<ph name="DATA_CONTROLS_SECOND_KEY_SET" />”，就无法设置键“<ph name="DATA_CONTROLS_FIRST_KEY_SET" />”</translation>
 <translation id="1455413310270022028">橡皮擦</translation>
+<translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{查看 0 条评价}=1{查看 1 条评价}other{查看全部 # 条评价}}</translation>
 <translation id="1458059624921545588">人与社会</translation>
 <translation id="1458140305240870199">内衣</translation>
 <translation id="1459693405370120464">天气</translation>
@@ -961,6 +962,7 @@
 <translation id="2674170444375937751">确定要从历史记录中删除这些页吗？</translation>
 <translation id="2674524144218093528">房屋粉刷与修整</translation>
 <translation id="2674804415323431591">隐藏建议</translation>
+<translation id="26774279487328902"><ph name="GROUP_COUNT" /> 个标签页分组已不可用</translation>
 <translation id="2677748264148917807">离开</translation>
 <translation id="2683195745483370038">找到其他结果</translation>
 <translation id="2686919536310834199">针对“帮我写”功能发送反馈。</translation>
@@ -1952,6 +1954,7 @@
 <translation id="4407758156081352648">为确保安全，贵组织不允许在 Chrome 中重复使用密码。Chrome 中的密码会加密，以保护用户隐私。</translation>
 <translation id="4408413947728134509"><ph name="NUM_COOKIES" />Cookie</translation>
 <translation id="4412074349188076601">该配置已被标记为可安装，但系统未为此架构提供任何映像，所以无法安装该配置。</translation>
+<translation id="4412377069090572315">其他用户的评价</translation>
 <translation id="4414452699610169758">使用 Google 密码管理工具和 Chrome 自动填充功能，保存及填充密码、支付方式和地址</translation>
 <translation id="4414515549596849729">Cookie 和网站数据</translation>
 <translation id="4415156962929755728">塑料（高光）</translation>
@@ -2260,6 +2263,7 @@
 <translation id="5001526427543320409">第三方 Cookie</translation>
 <translation id="5002932099480077015">如果您选中此项，Chrome 会将您的卡的副本存储在此设备上，以加快表单填写速度。</translation>
 <translation id="5007392906805964215">查看</translation>
+<translation id="500790844453430087">“<ph name="GROUP_TITLE_1" />”和“<ph name="GROUP_TITLE_2" />”标签页分组已不可用</translation>
 <translation id="5011561501798487822">检测到的语言</translation>
 <translation id="5015510746216210676">设备名称：</translation>
 <translation id="5017554619425969104">您复制的文字</translation>
@@ -2367,6 +2371,7 @@
 <translation id="519422657042045905">注释不可用</translation>
 <translation id="5200063972779787617">将地址保存到账号</translation>
 <translation id="5201306358585911203">此网页上的嵌入式页面显示</translation>
+<translation id="5205114269877707377"><ph name="OMNIBOX_ACTION_FOCUSED_FRIENDLY_MATCH_TEXT" />，按 Tab 键能浏览可执行的操作，然后按 Enter 键能执行选定的操作。</translation>
 <translation id="5205222826937269299">需要提供名称</translation>
 <translation id="5206392433295093945">卧室</translation>
 <translation id="5209670883520018268">纸匣 20</translation>
@@ -2732,6 +2737,7 @@
 <translation id="5866898949289125849">您当前查看的是一个开发者工具页面</translation>
 <translation id="5869405914158311789">无法访问此网站</translation>
 <translation id="5869522115854928033">已保存的密码</translation>
+<translation id="5872215789867188990">“<ph name="GROUP_TITLE" />”标签页分组已不可用</translation>
 <translation id="5872692522325383488">已保存 IBAN</translation>
 <translation id="5873297634595728366">柴油车</translation>
 <translation id="5877359070305966420">人力资源</translation>
@@ -2773,6 +2779,7 @@
 <translation id="5937560539988385583">网页翻译完毕</translation>
 <translation id="5938153366081463283">添加虚拟卡</translation>
 <translation id="5938793338444039872">Troy</translation>
+<translation id="5938866385061293322">这些信息来自 Trustpilot、ScamAdviser、Google 等独立评价网站。摘要是使用 AI 生成的。</translation>
 <translation id="5944297261866530437">织物（高光）</translation>
 <translation id="5950901984834744590">剃刀与刮胡刀</translation>
 <translation id="5951495562196540101">无法通过消费者账号注册（有封装的许可）。</translation>
@@ -2986,7 +2993,7 @@
 <translation id="6304398603974202180">多媒体软件</translation>
 <translation id="6305205051461490394">无法访问 <ph name="URL" />。</translation>
 <translation id="6306713302480826305">系统将从这部设备以及您已登录的其他设备中删除此地址</translation>
-<translation id="6307968763353904914">您的银行目前无法提供适用于此付款方式的虚拟卡，但您仍可以使用 <ph name="CARD_LABEL" /> 卡在线付款。</translation>
+<translation id="6307968763353904914">您的银行目前无法提供适用于此支付方式的虚拟卡，但您仍可以使用 <ph name="CARD_LABEL" /> 卡在线支付。</translation>
 <translation id="6311410654831092784">卡纸</translation>
 <translation id="6311642842034740437">具有特定名称的地点</translation>
 <translation id="6312113039770857350">网页无法打开</translation>
@@ -3138,6 +3145,7 @@
 <translation id="6567832540451970450">您的管理员允许此网站使用<ph name="PERMISSION" /></translation>
 <translation id="6568793038316600992">“管理付款方式”按钮，激活它即可在 Chrome 设置中管理您的付款和信用卡信息</translation>
 <translation id="6569060085658103619">您正在查看扩展程序页面</translation>
+<translation id="6572867903637058088">这是否有用？</translation>
 <translation id="6573200754375280815">双孔（右侧）</translation>
 <translation id="6574762126505704998">填充</translation>
 <translation id="6575408526598156416">保存到账号</translation>
@@ -3433,7 +3441,6 @@
 <translation id="7110368079836707726">学院与大学</translation>
 <translation id="7111012039238467737">（有效）</translation>
 <translation id="7111507312244504964">不动产检测与评估</translation>
-<translation id="7112327784801341716">看到的不是您的最新信息？请让银行更新您的信息。</translation>
 <translation id="7116334367957017155">您尚未保存任何地址。请添加地址，以便在各种 Google 产品中使用。</translation>
 <translation id="7118618213916969306">搜索剪贴板上的网址：<ph name="SHORT_URL" /></translation>
 <translation id="7118852830504022370">您之所以会看到此警告，是因为该网站不支持 HTTPS。<ph name="BEGIN_LEARN_MORE_LINK" />详细了解此警告<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -3496,7 +3503,6 @@
 <translation id="7219179957768738017">该连接使用 <ph name="SSL_VERSION" />。</translation>
 <translation id="7220786058474068424">正在处理</translation>
 <translation id="7221855153210829124">显示通知</translation>
-<translation id="7221857374443660083">银行想确认您的身份</translation>
 <translation id="722454870747268814">新的无痕式标签页</translation>
 <translation id="7227293336683593977">既往价格</translation>
 <translation id="7232352818707016189">可对比较表格执行的更多操作</translation>
@@ -3871,6 +3877,7 @@
 <translation id="784404208867107517">已分组的历史记录</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{无}=1{1 个应用（<ph name="EXAMPLE_APP_1" />）}=2{2 个应用（<ph name="EXAMPLE_APP_1" />、<ph name="EXAMPLE_APP_2" />）}other{# 个应用（<ph name="EXAMPLE_APP_1" />、<ph name="EXAMPLE_APP_2" />、<ph name="AND_MORE" />）}}</translation>
 <translation id="7846161022626028328">出错了，请重试。</translation>
+<translation id="784623644169604270">近期无活动</translation>
 <translation id="785476343534277563">学院体育</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7860345425589240791">请重新输入<ph name="SIDE_OF_CARD" />的失效日期和 CVC</translation>
@@ -4078,7 +4085,7 @@
 <translation id="8241712895048303527">在此网站上拦截</translation>
 <translation id="8242426110754782860">继续</translation>
 <translation id="8246482227229072868">戒指</translation>
-<translation id="8248406213705193919">安全保存信用卡信息吗？</translation>
+<translation id="8248406213705193919">要安全保存信用卡信息吗？</translation>
 <translation id="8249296373107784235">取消</translation>
 <translation id="824968735947741546">正在将（自动检测到的）<ph name="SOURCE" />翻译成<ph name="TARGET" /></translation>
 <translation id="8250094606476360498">此地址目前已保存到该设备上。如需在所有 Google 产品中使用此地址，请将它保存到您的 Google 账号 (<ph name="ACCOUNT" />) 中。</translation>
@@ -4318,9 +4325,11 @@
 <translation id="8672535691554698269">计算机网络</translation>
 <translation id="8675446170353411473">正在将文件上传到“<ph name="CLOUD_PROVIDER" />”</translation>
 <translation id="8676424191133491403">无延迟</translation>
+<translation id="8679727228072670864">{COUNT,plural, =1{已删除 {COUNT} 个表格}other{已删除 {COUNT} 个表格}}</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />，答案，<ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">位于 <ph name="PAGE" /> 的网页无法加载，因为：</translation>
 <translation id="8682297334444610648">恐龙游戏，点按即可畅玩</translation>
+<translation id="8685225035093721011">商店评价</translation>
 <translation id="8686424632716064939">计算机安全</translation>
 <translation id="8687278439622293018">已删除条目“<ph name="ENTRY_VOICEOVER" />”</translation>
 <translation id="8687429322371626002">您的设备和账号由 <ph name="MANAGER" /> 管理。</translation>
