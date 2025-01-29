@@ -459,11 +459,19 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
         Address bar
       </message>
 
-      <message name="IDS_ADDRESS_BAR_SETTINGS_DESCRIPTION" desc="TODO">
+      <message name="IDS_ADDRESS_BAR_SETTINGS_CURRENTLY_ON_TOP" desc="Description for Address Bar Settings image when the address bar is top-anchored.">
+        Address bar currently on top
+      </message>
+
+      <message name="IDS_ADDRESS_BAR_SETTINGS_CURRENTLY_ON_BOTTOM" desc="Description for Address Bar Settings image when the address bar is bottom-anchored.">
+        Address bar currently on bottom
+      </message>
+
+      <message name="IDS_ADDRESS_BAR_SETTINGS_DESCRIPTION" desc="Label explaining an alternative way to change the address bar position.">
         You can also touch and hold the address bar to change the position.
       </message>
 
-      <message name="IDS_ADDRESS_BAR_SETTINGS_DESCRIPTION_FOLDABLE" desc="TODO">
+      <message name="IDS_ADDRESS_BAR_SETTINGS_DESCRIPTION_FOLDABLE" desc="Label explaining how to change the address bar position on foldable devices.">
         When your device is folded, you can choose an option or touch and hold the address bar to change the position.
       </message>
 
