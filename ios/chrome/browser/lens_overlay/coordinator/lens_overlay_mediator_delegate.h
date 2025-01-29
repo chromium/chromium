@@ -5,11 +5,13 @@
 #ifndef IOS_CHROME_BROWSER_LENS_OVERLAY_COORDINATOR_LENS_OVERLAY_MEDIATOR_DELEGATE_H_
 #define IOS_CHROME_BROWSER_LENS_OVERLAY_COORDINATOR_LENS_OVERLAY_MEDIATOR_DELEGATE_H_
 
+#import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_tab_change_responder.h"
+
 class GURL;
 @class LensOverlayMediator;
 
 /// Delegate for events in LensOverlayMediator.
-@protocol LensOverlayMediatorDelegate
+@protocol LensOverlayMediatorDelegate <LensOverlayTabChangeResponder>
 
 /// The lens overlay menu (3-dots) did open.
 - (void)lensOverlayMediatorDidOpenOverlayMenu:(LensOverlayMediator*)mediator;

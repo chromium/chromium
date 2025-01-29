@@ -14,6 +14,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/lens/lens_url_utils.h"
 #import "ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider.h"
+#import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_result_page_mediator_delegate.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_error_handler.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_result_page_consumer.h"
@@ -521,6 +522,10 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
 
 /// Activates the web state with the given `URL`.
 - (void)activateWebStateWithURL:(GURL)URL {
+  if (IsLensOverlaySameTabNavigationEnabled()) {
+    [self.delegate respondToTabWillChange];
+  }
+
   if (WebStateList* webStateList = _webStateList.get()) {
     int index = webStateList->GetIndexOfWebStateWithURL(URL);
     if (index != WebStateList::kInvalidIndex) {

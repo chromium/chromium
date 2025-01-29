@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_LENS_OVERLAY_COORDINATOR_LENS_RESULT_PAGE_MEDIATOR_DELEGATE_H_
 
 #import "components/lens/lens_overlay_new_tab_source.h"
+#import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_tab_change_responder.h"
 
 @class LensResultPageMediator;
 class GURL;
@@ -14,7 +15,7 @@ class WebState;
 }  // namespace web
 
 /// Delegate for the lens result page mediator.
-@protocol LensResultPageMediatorDelegate
+@protocol LensResultPageMediatorDelegate <LensOverlayTabChangeResponder>
 
 /// Called when the web state gets destroyed.
 - (void)lensResultPageWebStateDestroyed;
