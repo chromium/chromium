@@ -15,8 +15,8 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.download.BackgroundNetworkStatusListener.Observer;
 import org.chromium.net.ConnectionType;
@@ -44,7 +44,7 @@ public class NetworkStatusListenerAndroid implements BackgroundNetworkStatusList
         private Handler mNetworkThreadHandler;
 
         // The object that performs actual network queries on a background thread.
-        private @Nullable BackgroundNetworkStatusListener mBackgroundNetworkStatusListener;
+        private BackgroundNetworkStatusListener mBackgroundNetworkStatusListener;
 
         private boolean mReady;
         private @ConnectionType int mConnectionType = ConnectionType.CONNECTION_UNKNOWN;
@@ -57,12 +57,13 @@ public class NetworkStatusListenerAndroid implements BackgroundNetworkStatusList
             HandlerThread handlerThread = new HandlerThread(THREAD_NAME);
             handlerThread.start();
             mNetworkThreadHandler = new Handler(handlerThread.getLooper());
-            mNetworkThreadHandler.post(
-                    () -> {
-                        ThreadUtils.assertOnBackgroundThread();
-                        mBackgroundNetworkStatusListener =
-                                new BackgroundNetworkStatusListener(this);
-                    });
+            mNetworkThreadHandler.post(this::initOnNetworkThread);
+        }
+
+        @Initializer
+        private void initOnNetworkThread() {
+            ThreadUtils.assertOnBackgroundThread();
+            mBackgroundNetworkStatusListener = new BackgroundNetworkStatusListener(this);
         }
 
         void start(BackgroundNetworkStatusListener.Observer observer) {
@@ -72,7 +73,6 @@ public class NetworkStatusListenerAndroid implements BackgroundNetworkStatusList
             if (mReady) observer.onNetworkStatusReady(mConnectionType);
         }
 
-        @NullUnmarked
         void stop(BackgroundNetworkStatusListener.Observer observer) {
             mNetworkThreadHandler.post(
                     () -> {

@@ -4,6 +4,8 @@
 
 package org.chromium.components.module_installer.engine;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 
 import androidx.annotation.VisibleForTesting;
@@ -14,7 +16,6 @@ import com.google.android.play.core.splitinstall.model.SplitInstallSessionStatus
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.NullUnmarked;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -104,13 +105,12 @@ class SplitCompatEngine implements InstallEngine {
         };
     }
 
-    @NullUnmarked
-    private void notifyListeners(String moduleName, Boolean success) {
-        for (InstallListener listener : sSessions.get(moduleName)) {
+    private void notifyListeners(String moduleName, boolean success) {
+        List<InstallListener> listeners = sSessions.remove(moduleName);
+        assumeNonNull(listeners);
+        for (InstallListener listener : listeners) {
             notifyListener(listener, success);
         }
-
-        sSessions.remove(moduleName);
 
         unregisterUpdateListener();
     }

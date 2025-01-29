@@ -4,6 +4,8 @@
 
 package org.chromium.components.browser_ui.util;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.graphics.Bitmap;
 import android.os.Looper;
 
@@ -14,7 +16,6 @@ import org.chromium.base.DiscardableReferencePool;
 import org.chromium.base.SysUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 
 import java.lang.ref.WeakReference;
@@ -133,8 +134,8 @@ public class BitmapCache {
         return getBitmapCache().size();
     }
 
-    @NullUnmarked
     private RecentlyUsedCache getBitmapCache() {
+        assumeNonNull(mBitmapCache);
         RecentlyUsedCache bitmapCache = mBitmapCache.get();
         if (bitmapCache == null) {
             bitmapCache = new RecentlyUsedCache(mCacheSize);

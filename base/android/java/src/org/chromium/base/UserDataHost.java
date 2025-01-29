@@ -109,10 +109,11 @@ public final class UserDataHost {
             throw new IllegalArgumentException();
         }
 
-        if (!mUserDataMap.containsKey(key)) {
+        UserData ret = mUserDataMap.remove(key);
+        if (ret == null) {
             throw new IllegalStateException("UserData for the key is not present.");
         }
-        return key.cast(mUserDataMap.remove(key));
+        return key.cast(ret);
     }
 
     /**

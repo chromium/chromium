@@ -212,7 +212,7 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
         }
 
         // For testing.
-        @NullUnmarked
+        @SuppressWarnings("NullAway")
         ConnectivityManagerDelegate() {
             mConnectivityManager = null;
             // All the methods below should be overridden.
@@ -547,7 +547,7 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
         }
 
         // For testing.
-        @NullUnmarked
+        @SuppressWarnings("NullAway")
         WifiManagerDelegate() {
             // All the methods below should be overridden.
             mContext = null;

@@ -4,6 +4,8 @@
 
 package org.chromium.device.bluetooth.wrapper;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
@@ -20,6 +22,7 @@ import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 
 import java.util.HashMap;
+import java.util.Objects;
 
 /** Wraps android.bluetooth.BluetoothDevice. */
 @NullMarked
@@ -27,7 +30,7 @@ public class BluetoothDeviceWrapper {
     private static final String TAG = "Bluetooth";
     public static final int DEVICE_CLASS_UNSPECIFIED = 0x1F00;
 
-    private final BluetoothDevice mDevice;
+    private final @Nullable BluetoothDevice mDevice;
     final HashMap<BluetoothGattCharacteristic, BluetoothGattCharacteristicWrapper>
             mCharacteristicsToWrappers;
     final HashMap<BluetoothGattDescriptor, BluetoothGattDescriptorWrapper> mDescriptorsToWrappers;
@@ -45,6 +48,7 @@ public class BluetoothDeviceWrapper {
             boolean autoConnect,
             BluetoothGattCallbackWrapper callback,
             int transport) {
+        assumeNonNull(mDevice);
         return new BluetoothGattWrapper(
                 mDevice.connectGatt(
                         context,
@@ -55,6 +59,7 @@ public class BluetoothDeviceWrapper {
     }
 
     public String getAddress() {
+        assumeNonNull(mDevice);
         return mDevice.getAddress();
     }
 
@@ -69,32 +74,36 @@ public class BluetoothDeviceWrapper {
     }
 
     public int getBondState() {
+        assumeNonNull(mDevice);
         return mDevice.getBondState();
     }
 
     public String getName() {
+        assumeNonNull(mDevice);
         return mDevice.getName();
     }
 
     public int getType() {
+        assumeNonNull(mDevice);
         return mDevice.getType();
     }
 
     public ParcelUuid[] getUuids() {
+        assumeNonNull(mDevice);
         return mDevice.getUuids();
     }
 
     @Override
     public boolean equals(Object o) {
         if (o instanceof BluetoothDeviceWrapper) {
-            return mDevice.equals(((BluetoothDeviceWrapper) o).mDevice);
+            return Objects.equals(mDevice, ((BluetoothDeviceWrapper) o).mDevice);
         }
         return false;
     }
 
     @Override
     public int hashCode() {
-        return mDevice.hashCode();
+        return mDevice == null ? 0 : mDevice.hashCode();
     }
 
     /**

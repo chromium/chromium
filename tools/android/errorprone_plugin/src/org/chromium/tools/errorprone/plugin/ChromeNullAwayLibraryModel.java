@@ -57,7 +57,9 @@ public class ChromeNullAwayLibraryModel implements LibraryModels {
 
     @Override
     public ImmutableSet<MethodRef> nullableReturns() {
-        return ImmutableSet.of();
+        return ImmutableSet.of(
+                methodRef("java.util.Map", "put(K, V)"),
+                methodRef("java.util.Map", "remove(java.lang.Object)"));
     }
 
     @Override
