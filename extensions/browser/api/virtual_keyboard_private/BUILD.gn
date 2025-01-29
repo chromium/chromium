@@ -15,19 +15,26 @@ source_set("virtual_keyboard_private") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  deps = [
-    "//content/public/browser",
+  public_deps = [
+    "//base",
+    "//build:chromeos_buildflags",
+    "//extensions/browser:browser_sources",
     "//extensions/common/api",
   ]
 
-  if (is_chromeos) {
-    deps += [ "//ash" ]
-  }
-
-  public_deps = [
+  deps = [
     ":virtual_keyboard_delegate",
-    "//extensions/browser:browser_sources",
+    "//content/public/browser",
   ]
+
+  if (is_chromeos) {
+    deps += [
+      "//ash",
+      "//chromeos/crosapi/mojom",
+      "//ui/base",
+      "//ui/color:color_headers",
+    ]
+  }
 }
 
 source_set("virtual_keyboard_delegate") {
@@ -35,8 +42,8 @@ source_set("virtual_keyboard_delegate") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  deps = [
-    "//content/public/browser",
+  public_deps = [
+    "//base",
     "//extensions/common/api",
     "//ui/gfx/geometry",
   ]
