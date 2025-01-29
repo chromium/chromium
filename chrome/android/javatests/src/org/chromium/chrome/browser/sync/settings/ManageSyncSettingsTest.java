@@ -22,6 +22,7 @@ import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
@@ -555,6 +556,39 @@ public class ManageSyncSettingsTest {
                         });
         Assert.assertFalse(activeDataTypes.contains(DataType.HISTORY));
         Assert.assertFalse(activeDataTypes.contains(DataType.SESSIONS));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Sync"})
+    @Features.EnableFeatures(SigninFeatures.HISTORY_OPT_IN_ENTRY_POINTS)
+    public void
+            testSyncHistoryAndTabsToggle_typeManagedByCustodian_historyOptInEntryPointsEnabled() {
+        setupMockSyncService();
+        mSyncTestRule.setUpAccountAndSignInForTesting();
+        when(mSyncService.isTypeManagedByCustodian(UserSelectableType.HISTORY)).thenReturn(true);
+        when(mSyncService.isTypeManagedByCustodian(UserSelectableType.TABS)).thenReturn(true);
+
+        startManageSyncPreferences();
+
+        // We should not attempt to display the IPH.
+        verifyNoInteractions(mHistoryOptInIphControllerMock);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Sync"})
+    @Features.EnableFeatures(SigninFeatures.HISTORY_OPT_IN_ENTRY_POINTS)
+    public void testSyncHistoryAndTabsToggle_typesManagedByPolicy_historyOptInEntryPointsEnabled() {
+        setupMockSyncService();
+        mSyncTestRule.setUpAccountAndSignInForTesting();
+        when(mSyncService.isTypeManagedByPolicy(UserSelectableType.HISTORY)).thenReturn(true);
+        when(mSyncService.isTypeManagedByPolicy(UserSelectableType.TABS)).thenReturn(true);
+
+        startManageSyncPreferences();
+
+        // We should not attempt to display the IPH.
+        verifyNoInteractions(mHistoryOptInIphControllerMock);
     }
 
     @Test
