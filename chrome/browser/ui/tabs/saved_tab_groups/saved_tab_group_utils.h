@@ -35,6 +35,11 @@ namespace tab_groups {
 class SavedTabGroupTab;
 class TabGroupSyncService;
 
+enum class GroupDeletionReason {
+  ClosedLastTab,
+  UngroupedLastTab,
+};
+
 class SavedTabGroupUtils {
  public:
   SavedTabGroupUtils() = delete;
@@ -78,8 +83,8 @@ class SavedTabGroupUtils {
   // runs the callback if the dialog is not shown or it shows the dialog
   // and the callback is run asynchronously through the dialog.
   static void MaybeShowSavedTabGroupDeletionDialog(
-      Browser* browser,
-      DeletionDialogController::DialogType type,
+      const Browser* browser,
+      GroupDeletionReason reason,
       const std::vector<TabGroupId>& group_ids,
       base::OnceCallback<void()> callback);
 

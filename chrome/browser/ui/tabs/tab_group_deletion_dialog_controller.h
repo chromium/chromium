@@ -31,11 +31,14 @@ class DeletionDialogController {
  public:
   // Mapping of the different text strings and user preferences on this dialog.
   enum class DialogType {
+    // Saved tab group dialogs.
     DeleteSingle,
-    DeleteSingleShared,
     UngroupSingle,
     RemoveTabAndDelete,
     CloseTabAndDelete,
+    // Shared tab group dialogs.
+    DeleteSingleShared,
+    CloseTabAndKeepOrLeaveGroup,
     LeaveGroup,
   };
 
@@ -61,8 +64,8 @@ class DeletionDialogController {
   struct DialogState {
     DialogState(DialogType type_,
                 ui::DialogModel* dialog_model_,
-                base::OnceClosure on_ok_button_pressed_,
-                base::OnceClosure on_cancel_button_pressed_);
+                base::OnceClosure callback_,
+                std::optional<base::OnceClosure> keep_groups_);
     ~DialogState();
 
     // The type the dialog was initiated with.
@@ -73,10 +76,10 @@ class DeletionDialogController {
     raw_ptr<ui::DialogModel> dialog_model;
 
     // Callback that runs when the OK button is pressed.
-    base::OnceClosure on_ok_button_pressed;
+    base::OnceClosure callback;
 
-    // Callback that runs when the Cancel button is pressed.
-    base::OnceClosure on_cancel_button_pressed;
+    // Callback to handle the 'keep' case of CloseTabAndKeepOrLeaveGroup.
+    std::optional<base::OnceClosure> keep_groups;
   };
 
   explicit DeletionDialogController(Browser* browser);
@@ -101,8 +104,10 @@ class DeletionDialogController {
   // showing, and if the skip dialog option hasn't been set to true.
   // `dialog_metadata` contains information that is used to help construct the
   // strings for the dialog.
-  bool MaybeShowDialog(const DialogMetadata& dialog_metadata,
-                       base::OnceCallback<void()> on_ok_callback);
+  bool MaybeShowDialog(
+      const DialogMetadata& dialog_metadata,
+      base::OnceCallback<void()> callback,
+      std::optional<base::OnceCallback<void()>> keep_groups = std::nullopt);
 
   void SetPrefsPreventShowingDialogForTesting(bool should_prevent_dialog);
 

@@ -348,9 +348,8 @@ void BrowserTabStripModelDelegate::OnGroupsDestruction(
     std::move(close_callback).Run();
   } else {
     tab_groups::SavedTabGroupUtils::MaybeShowSavedTabGroupDeletionDialog(
-        browser_,
-        tab_groups::DeletionDialogController::DialogType::CloseTabAndDelete,
-        group_ids, std::move(close_callback));
+        browser_, tab_groups::GroupDeletionReason::ClosedLastTab, group_ids,
+        std::move(close_callback));
   }
 }
 
@@ -358,9 +357,8 @@ void BrowserTabStripModelDelegate::OnRemovingAllTabsFromGroups(
     const std::vector<tab_groups::TabGroupId>& group_ids,
     base::OnceCallback<void()> callback) {
   tab_groups::SavedTabGroupUtils::MaybeShowSavedTabGroupDeletionDialog(
-      browser_,
-      tab_groups::DeletionDialogController::DialogType::RemoveTabAndDelete,
-      group_ids, std::move(callback));
+      browser_, tab_groups::GroupDeletionReason::UngroupedLastTab, group_ids,
+      std::move(callback));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
