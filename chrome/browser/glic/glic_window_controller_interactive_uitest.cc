@@ -82,6 +82,24 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, DoNotCrashOnBrowserClose) {
   ui_test_utils::WaitForBrowserToClose();
 }
 
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, AttachedWidgetHasFocus) {
+  RunTestSequence(
+      OpenGlicWindow(GlicWindowMode::kAttached), CheckControllerHasWidget(true),
+      CheckControllerWidgetMode(GlicWindowMode::kAttached),
+      CheckResult(
+          [this] { return window_controller().GetGlicWidget()->IsActive(); },
+          true, "Glic is active"));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, DetachedWidgetHasFocus) {
+  RunTestSequence(
+      OpenGlicWindow(GlicWindowMode::kDetached), CheckControllerHasWidget(true),
+      CheckControllerWidgetMode(GlicWindowMode::kDetached),
+      CheckResult(
+          [this] { return window_controller().GetGlicWidget()->IsActive(); },
+          true, "Glic is active"));
+}
+
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, DoNotCrashWhenReopening) {
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kAttached), CloseGlicWindow(),
                   OpenGlicWindow(GlicWindowMode::kAttached));
@@ -182,16 +200,13 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
 
   RunTestSequence(ObserveState(views::test::kCurrentWidgetFocus),
                   OpenGlicWindow(GlicWindowMode::kDetached),
-                  // Note: it is possible that this will re-activate the browser
-                  // window on some platforms, which will cause an error. If
-                  // this flakes, feel free to disable the test.
-                  //
-                  // (This is likely one reason the test flakes on Linux; see
-                  // above.)
                   Do([this, &glic_native_view] {
                     auto* const widget = window_controller().GetGlicWidget();
                     glic_native_view = widget->GetNativeView();
-                    widget->Deactivate();
+                    // Activating the browser should deactivate glic. Calling
+                    // Deactivate() on the glic widget is unreliable on some
+                    // platforms and has no effect on Mac.
+                    browser()->GetBrowserView().Activate();
                   }),
                   SimulateGlicHotkey(),
                   WaitForState(views::test::kCurrentWidgetFocus,
