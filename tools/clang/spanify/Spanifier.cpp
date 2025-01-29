@@ -74,6 +74,88 @@ AST_MATCHER(clang::ParmVarDecl, isArrayParm) {
   return Node.getOriginalType()->isArrayType();
 }
 
+// Returns the size of the array/string literal. It is stored in the
+// `output_size` parameter.
+// Returns true if the size is known, false otherwise.
+bool ArraySize(const clang::Expr* expr, uint64_t* output_size) {
+  // C-style arrays with a known size.
+  //
+  // Note that some arrays in templates have a known size at instantiating
+  // time, but it is not determined at this point.
+  if (const auto* constant_array = clang::dyn_cast<clang::ConstantArrayType>(
+          expr->getType()->getUnqualifiedDesugaredType())) {
+    *output_size = constant_array->getSize().getLimitedValue();
+    return true;
+  }
+
+  // String literals.
+  if (const auto* string_literal =
+          clang::dyn_cast<clang::StringLiteral>(expr)) {
+    *output_size = string_literal->getLength() + 1;
+    return true;
+  }
+
+  return false;
+}
+
+// Return whether the subscript access is guaranteed to be safe, false
+// otherwise.
+//
+// This is based on `llvm-project/clang/lib/Analysis/UnsafeBufferUsage.cpp`.
+AST_MATCHER(clang::ArraySubscriptExpr, isSafeArraySubscript) {
+  // No guarantees if the array's size is not known.
+  uint64_t size = 0;
+  if (!ArraySize(Node.getBase()->IgnoreParenImpCasts(), &size)) {
+    return false;
+  }
+
+  // If the index depends on a template parameter, it could be out of bounds, we
+  // don't know yet at this point.
+  clang::Expr::EvalResult eval_index;
+  const clang::Expr* index_expr = Node.getIdx();
+  if (index_expr->isValueDependent()) {
+    return false;
+  }
+
+  // Try to evaluate the index expression. If we can't evaluate it, we can't
+  // provide any guarantees.
+  if (!index_expr->EvaluateAsInt(eval_index, Finder->getASTContext())) {
+    return false;
+  }
+  // `APInt` stands for Arbitrary Precision Integer.
+  llvm::APInt index_value = eval_index.Val.getInt();
+
+  // Negative indices are out of bounds. Hopefully, this never happens in
+  // Chromium. Print a warning for Chromium developers to know about them.
+  if (index_value.isNegative()) {
+    clang::SourceManager& source_manager =
+        Finder->getASTContext().getSourceManager();
+    llvm::errs() << llvm::formatv(
+        "{0}:{1}: Warning: array subscript out of bounds: {0} < 0\n",
+        source_manager.getFilename(Node.getExprLoc()),
+        source_manager.getSpellingLineNumber(Node.getExprLoc()),
+        index_value.getSExtValue());
+    return false;
+  }
+
+  // If the index is greater than or equal to the size of the array, it's out of
+  // bounds. Hopefully, this never happens in Chromium. Print a warning for
+  // Chromium developers to know about them.
+  if (index_value.uge(size)) {
+    clang::SourceManager& source_manager =
+        Finder->getASTContext().getSourceManager();
+    llvm::errs() << llvm::formatv(
+        "{0}:{1}: Warning: array subscript out of bounds: {2} >= {3}\n",
+        source_manager.getFilename(Node.getExprLoc()),
+        source_manager.getSpellingLineNumber(Node.getExprLoc()),
+        index_value.getSExtValue(), size);
+    return false;
+  }
+
+  // The subscript is guaranteed to be safe!
+  return true;
+}
+
 struct Node {
   // A replacement follows the following format:
   // `r:::<file path>:::<offset>:::<length>:::<replacement text>`
@@ -1626,13 +1708,16 @@ class Spanifier {
     auto buffer_expr1 = traverse(
         clang::TK_IgnoreUnlessSpelledInSource,
         expr(ignoringParenCasts(anyOf(
-                 arraySubscriptExpr(hasLHS(lhs_expr_variations)),
+                 // Unsafe pointer subscript:
+                 arraySubscriptExpr(hasLHS(lhs_expr_variations),
+                                    unless(isSafeArraySubscript())),
+                 // Unsafe pointer arithmetic:
                  binaryOperation(
                      anyOf(hasOperatorName("+="), hasOperatorName("+")),
                      hasLHS(lhs_expr_variations)),
                  unaryOperator(hasOperatorName("++"),
                                hasUnaryOperand(lhs_expr_variations)),
-                 // for raw_ptr ops
+                 // Unsafe std::raw_ptr arithmetic:
                  cxxOperatorCallExpr(anyOf(hasOverloadedOperatorName("[]"),
                                            hasOperatorName("++")),
                                      hasArgument(0, lhs_expr_variations)))))
@@ -1645,10 +1730,12 @@ class Spanifier {
                 unless(exclusions), unless(hasExternalFormalLinkage()))
             .bind("array_variable");
 
-    auto buffer_expr2 = traverse(
-        clang::TK_IgnoreUnlessSpelledInSource,
-        expr(ignoringParenCasts(
-            arraySubscriptExpr(hasLHS(declRefExpr(to(array_variable)))))));
+    auto buffer_expr2 =
+        traverse(clang::TK_IgnoreUnlessSpelledInSource,
+                 expr(ignoringParenCasts(
+                     // Unsafe C-style array subscript:
+                     arraySubscriptExpr(hasLHS(declRefExpr(to(array_variable))),
+                                        unless(isSafeArraySubscript())))));
     match_finder_.addMatcher(buffer_expr2, &potential_nodes_);
 
     auto c_style_array_var = varDecl(hasType(arrayType()), unless(exclusions),
