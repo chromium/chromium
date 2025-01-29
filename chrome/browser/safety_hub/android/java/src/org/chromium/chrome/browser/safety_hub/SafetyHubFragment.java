@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.safety_hub;
 
-import static org.chromium.chrome.browser.safety_hub.DeprecatedSafetyHubModuleViewBinder.getModuleState;
 import static org.chromium.chrome.browser.safety_hub.DeprecatedSafetyHubModuleViewBinder.isBrowserStateSafe;
 import static org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.getDashboardModuleTypeForModuleOption;
 import static org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.recordDashboardInteractions;
@@ -26,16 +25,12 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
-import org.chromium.chrome.browser.password_manager.PasswordStoreCredential;
-import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.safety_hub.DeprecatedSafetyHubModuleProperties.ModuleOption;
 import org.chromium.chrome.browser.safety_hub.DeprecatedSafetyHubModuleProperties.ModuleState;
 import org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.DashboardInteractions;
 import org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.DashboardModuleType;
 import org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.LifecycleEvent;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.settings.CardPreference;
 import org.chromium.components.browser_ui.settings.ExpandablePreferenceGroup;
@@ -48,10 +43,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Fragment containing Safety hub. */
 public class SafetyHubFragment extends SafetyHubBaseFragment
-        implements SafetyHubFetchService.Observer,
-                PasswordStoreBridge.PasswordStoreObserver,
-                SigninManager.SignInStateObserver,
-                SafetyHubModuleMediatorDelegate {
+        implements SafetyHubModuleMediatorDelegate {
     private static final String PREF_PASSWORDS = "passwords_account";
     private static final String PREF_UPDATE = "update_check";
     private static final String PREF_UNUSED_PERMISSIONS = "permissions";
@@ -79,11 +71,7 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
     private static final int ORGANIC_HATS_SURVEY_DELAY_MS = 10000;
 
     private SafetyHubModuleDelegate mDelegate;
-    private SafetyHubFetchService mSafetyHubFetchService;
-    private PropertyModel mPasswordCheckPropertyModel;
     private PropertyModel mBrowserStateModule;
-    private PasswordStoreBridge mPasswordStoreBridge;
-    private SigninManager mSigninManager;
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
     private CallbackController mCallbackController;
 
@@ -93,6 +81,7 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
     private SafetyHubSafeBrowsingModuleMediator mSafeBrowsingModuleMediator;
     private SafetyHubUpdateCheckModuleMediator mUpdateCheckModuleMediator;
     private SafetyHubNotificationsModuleMediator mNotificationsModuleMediator;
+    private SafetyHubAccountPasswordsModuleMediator mAccountPasswordsModuleMediator;
 
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
@@ -107,12 +96,12 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         SettingsUtils.addPreferencesFromResource(this, R.xml.safety_hub_preferences);
         mPageTitle.set(getString(R.string.prefs_safety_check));
 
-        mSafetyHubFetchService = SafetyHubFetchServiceFactory.getForProfile(getProfile());
-        mSigninManager = IdentityServicesProvider.get().getSigninManager(getProfile());
+        SafetyHubFetchService safetyHubFetchService =
+                SafetyHubFetchServiceFactory.getForProfile(getProfile());
 
         mUpdateCheckModuleMediator =
                 new SafetyHubUpdateCheckModuleMediator(
-                        findPreference(PREF_UPDATE), this, mDelegate, mSafetyHubFetchService);
+                        findPreference(PREF_UPDATE), this, mDelegate, safetyHubFetchService);
         mPermissionsRevocationModuleMediator =
                 new SafetyHubPermissionsRevocationModuleMediator(
                         findPreference(PREF_UNUSED_PERMISSIONS),
@@ -126,8 +115,17 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                         findPreference(PREF_NOTIFICATIONS_REVIEW),
                         this,
                         NotificationPermissionReviewBridge.getForProfile(getProfile()));
+        mAccountPasswordsModuleMediator =
+                new SafetyHubAccountPasswordsModuleMediator(
+                        findPreference(PREF_PASSWORDS),
+                        this,
+                        mDelegate,
+                        UserPrefs.get(getProfile()),
+                        safetyHubFetchService,
+                        IdentityServicesProvider.get().getSigninManager(getProfile()),
+                        getProfile());
 
-        setUpAccountPasswordCheckModule();
+        mAccountPasswordsModuleMediator.setUpModule();
         mUpdateCheckModuleMediator.setUpModule();
         mPermissionsRevocationModuleMediator.setUpModule();
         mSafeBrowsingModuleMediator.setUpModule();
@@ -141,19 +139,6 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         // Notify the magic stack to dismiss the active module.
         if (ChromeFeatureList.sSafetyHubMagicStack.isEnabled()) {
             MagicStackBridge.getForProfile(getProfile()).dismissActiveModule();
-        }
-    }
-
-    private PropertyModel getModulePropertyModel(@ModuleOption int option) {
-        switch (option) {
-            case ModuleOption.ACCOUNT_PASSWORDS:
-                return mPasswordCheckPropertyModel;
-            case ModuleOption.NOTIFICATION_REVIEW:
-            case ModuleOption.UPDATE_CHECK:
-            case ModuleOption.UNUSED_PERMISSIONS:
-            case ModuleOption.SAFE_BROWSING:
-            default:
-                throw new IllegalArgumentException();
         }
     }
 
@@ -184,12 +169,10 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
     private void setUpBrowserStateModule() {
         CardPreference browserStatePreference = findPreference(PREF_BROWSER_STATE_INDICATOR);
         int compromisedPasswordsCount =
-                UserPrefs.get(getProfile()).getInteger(Pref.BREACHED_CREDENTIALS_COUNT);
-        int weakPasswordsCount =
-                UserPrefs.get(getProfile()).getInteger(Pref.WEAK_CREDENTIALS_COUNT);
-        int reusedPasswordsCount =
-                UserPrefs.get(getProfile()).getInteger(Pref.REUSED_CREDENTIALS_COUNT);
-        int totalPasswordsCount = mDelegate.getAccountPasswordsCount(mPasswordStoreBridge);
+                mAccountPasswordsModuleMediator.getCompromisedPasswordsCount();
+        int weakPasswordsCount = mAccountPasswordsModuleMediator.getWeakPasswordsCount();
+        int reusedPasswordsCount = mAccountPasswordsModuleMediator.getReusedPasswordsCount();
+        int totalPasswordsCount = mAccountPasswordsModuleMediator.getTotalPasswordsCount();
         int sitesWithUnusedPermissionsCount =
                 mPermissionsRevocationModuleMediator.getRevokedPermissionsCount();
         int notificationPermissionsForReviewCount =
@@ -233,35 +216,6 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                 mBrowserStateModule,
                 browserStatePreference,
                 DeprecatedSafetyHubModuleViewBinder::bindBrowserStateProperties);
-    }
-
-    private void setUpAccountPasswordCheckModule() {
-        boolean isSignedIn = SafetyHubUtils.isSignedIn(getProfile());
-        int compromisedPasswordsCount =
-                UserPrefs.get(getProfile()).getInteger(Pref.BREACHED_CREDENTIALS_COUNT);
-        SafetyHubExpandablePreference passwordCheckPreference = findPreference(PREF_PASSWORDS);
-
-        mPasswordCheckPropertyModel =
-                new PropertyModel.Builder(
-                                DeprecatedSafetyHubModuleProperties
-                                        .PASSWORD_CHECK_SAFETY_HUB_MODULE_KEYS)
-                        .with(DeprecatedSafetyHubModuleProperties.IS_VISIBLE, true)
-                        .with(DeprecatedSafetyHubModuleProperties.IS_SIGNED_IN, isSignedIn)
-                        .with(
-                                DeprecatedSafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT,
-                                compromisedPasswordsCount)
-                        .build();
-
-        PropertyModelChangeProcessor.create(
-                mPasswordCheckPropertyModel,
-                passwordCheckPreference,
-                DeprecatedSafetyHubModuleViewBinder::bindPasswordCheckProperties);
-        mSafetyHubFetchService.addObserver(this);
-        mSigninManager.addSignInStateObserver(this);
-        if (SafetyHubUtils.isSignedIn(getProfile())) {
-            mPasswordStoreBridge = new PasswordStoreBridge(getProfile());
-            mPasswordStoreBridge.addObserver(this, true);
-        }
     }
 
     private void setUpSafetyTipsModule() {
@@ -324,7 +278,7 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         updateAllModules();
 
         // Fetch the passwords again to get the latest result.
-        mSafetyHubFetchService.fetchCredentialsCount(success -> {});
+        mAccountPasswordsModuleMediator.triggerNewCredentialFetch();
     }
 
     @Override
@@ -332,11 +286,6 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         super.onDestroy();
         recordAllModulesState(LifecycleEvent.ON_EXIT);
 
-        mSafetyHubFetchService.removeObserver(this);
-        mSigninManager.removeSignInStateObserver(this);
-        if (mPasswordStoreBridge != null) {
-            mPasswordStoreBridge.removeObserver(this);
-        }
         if (mCallbackController != null) {
             mCallbackController.destroy();
             mCallbackController = null;
@@ -353,47 +302,15 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
             mNotificationsModuleMediator.destroy();
             mNotificationsModuleMediator = null;
         }
-    }
-
-    @Override
-    public void passwordCountsChanged() {
-        updatePasswordCheckPreference();
-    }
-
-    @Override
-    public void updateStatusChanged() {
-        // no-op.
-    }
-
-    @Override
-    public void onSavedPasswordsChanged(int count) {
-        updatePasswordCheckPreference();
-    }
-
-    @Override
-    public void onEdit(PasswordStoreCredential credential) {}
-
-    @Override
-    public void onSignedIn() {
-        if (mPasswordStoreBridge == null) {
-            mPasswordStoreBridge = new PasswordStoreBridge(getProfile());
-            mPasswordStoreBridge.addObserver(this, true);
+        if (mAccountPasswordsModuleMediator != null) {
+            mAccountPasswordsModuleMediator.destroy();
+            mAccountPasswordsModuleMediator = null;
         }
-        updatePasswordCheckPreference();
-    }
-
-    @Override
-    public void onSignedOut() {
-        if (mPasswordStoreBridge != null) {
-            mPasswordStoreBridge.removeObserver(this);
-            mPasswordStoreBridge = null;
-        }
-        updatePasswordCheckPreference();
     }
 
     private void updateAllModules() {
         mUpdateCheckModuleMediator.updateModule();
-        updatePasswordCheckPreference();
+        mAccountPasswordsModuleMediator.updateModule();
         mSafeBrowsingModuleMediator.updateModule();
         mPermissionsRevocationModuleMediator.updateModule();
         mNotificationsModuleMediator.updateModule();
@@ -411,50 +328,15 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         boolean hasNonManagedWarningState = hasNonManagedWarningState();
 
         for (@ModuleOption int i = ModuleOption.OPTION_FIRST; i < ModuleOption.NUM_ENTRIES; i++) {
-            // TODO(https://crbug.com/388788381): Migrate all the modules to set the module expand
-            // state in their mediators.
-            if (i == ModuleOption.UNUSED_PERMISSIONS) {
-                mPermissionsRevocationModuleMediator.setModuleExpandState(
-                        hasNonManagedWarningState);
-            } else if (i == ModuleOption.SAFE_BROWSING) {
-                mSafeBrowsingModuleMediator.setModuleExpandState(hasNonManagedWarningState);
-            } else if (i == ModuleOption.UPDATE_CHECK) {
-                mUpdateCheckModuleMediator.setModuleExpandState(hasNonManagedWarningState);
-            } else if (i == ModuleOption.NOTIFICATION_REVIEW) {
-                mNotificationsModuleMediator.setModuleExpandState(hasNonManagedWarningState);
-            } else {
-                updateModuleExpandState(i, hasNonManagedWarningState);
-            }
+            getModuleMediator(i).setModuleExpandState(hasNonManagedWarningState);
         }
     }
 
     private boolean hasNonManagedWarningState() {
         for (@ModuleOption int i = ModuleOption.OPTION_FIRST; i < ModuleOption.NUM_ENTRIES; i++) {
-            @ModuleState int moduleState;
-            boolean managed;
-            // TODO(https://crbug.com/388788381): Migrate all the modules to get the module and
-            // managed  state from their mediators.
-            if (i == ModuleOption.UNUSED_PERMISSIONS) {
-                moduleState = mPermissionsRevocationModuleMediator.getModuleState();
-                managed = mPermissionsRevocationModuleMediator.isManaged();
-            } else if (i == ModuleOption.SAFE_BROWSING) {
-                moduleState = mSafeBrowsingModuleMediator.getModuleState();
-                managed = mSafeBrowsingModuleMediator.isManaged();
-            } else if (i == ModuleOption.UPDATE_CHECK) {
-                moduleState = mUpdateCheckModuleMediator.getModuleState();
-                managed = mUpdateCheckModuleMediator.isManaged();
-            } else if (i == ModuleOption.NOTIFICATION_REVIEW) {
-                moduleState = mNotificationsModuleMediator.getModuleState();
-                managed = mNotificationsModuleMediator.isManaged();
-            } else {
-                PropertyModel propertyModel = getModulePropertyModel(i);
-                moduleState = getModuleState(propertyModel, i);
-                managed =
-                        propertyModel.get(
-                                DeprecatedSafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY);
-            }
-
-            if (moduleState == ModuleState.WARNING && !managed) {
+            SafetyHubModuleMediator moduleMediator = getModuleMediator(i);
+            if (moduleMediator.getModuleState() == ModuleState.WARNING
+                    && !moduleMediator.isManaged()) {
                 return true;
             }
         }
@@ -474,121 +356,50 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         mBrowserStateModule.set(
                 DeprecatedSafetyHubModuleProperties.NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT,
                 mNotificationsModuleMediator.getNotificationsPermissionsCount());
-    }
-
-    private void updateModuleExpandState(
-            @ModuleOption int option, boolean hasNonManagedWarningState) {
-        PropertyModel propertyModel = getModulePropertyModel(option);
-        @ModuleState int moduleState = getModuleState(propertyModel, option);
-        boolean managed =
-                propertyModel.get(DeprecatedSafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY);
-
-        switch (moduleState) {
-            case ModuleState.WARNING:
-                propertyModel.set(
-                        DeprecatedSafetyHubModuleProperties.IS_EXPANDED,
-                        !managed || !hasNonManagedWarningState);
-                break;
-            case ModuleState.UNAVAILABLE:
-            case ModuleState.INFO:
-                propertyModel.set(
-                        DeprecatedSafetyHubModuleProperties.IS_EXPANDED,
-                        !hasNonManagedWarningState);
-                break;
-            case ModuleState.SAFE:
-                propertyModel.set(DeprecatedSafetyHubModuleProperties.IS_EXPANDED, false);
-                break;
-            default:
-                throw new IllegalArgumentException();
-        }
+        mBrowserStateModule.set(
+                DeprecatedSafetyHubModuleProperties.IS_SIGNED_IN,
+                SafetyHubUtils.isSignedIn(getProfile()));
+        mBrowserStateModule.set(
+                DeprecatedSafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT,
+                mAccountPasswordsModuleMediator.getCompromisedPasswordsCount());
+        mBrowserStateModule.set(
+                DeprecatedSafetyHubModuleProperties.WEAK_PASSWORDS_COUNT,
+                mAccountPasswordsModuleMediator.getWeakPasswordsCount());
+        mBrowserStateModule.set(
+                DeprecatedSafetyHubModuleProperties.REUSED_PASSWORDS_COUNT,
+                mAccountPasswordsModuleMediator.getReusedPasswordsCount());
+        mBrowserStateModule.set(
+                DeprecatedSafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT,
+                mAccountPasswordsModuleMediator.getTotalPasswordsCount());
     }
 
     public void setDelegate(SafetyHubModuleDelegate safetyHubModuleDelegate) {
         mDelegate = safetyHubModuleDelegate;
     }
 
-    private void updatePasswordCheckPreference() {
-        int compromisedPasswordsCount =
-                UserPrefs.get(getProfile()).getInteger(Pref.BREACHED_CREDENTIALS_COUNT);
-        int weakPasswordsCount =
-                UserPrefs.get(getProfile()).getInteger(Pref.WEAK_CREDENTIALS_COUNT);
-        int reusedPasswordsCount =
-                UserPrefs.get(getProfile()).getInteger(Pref.REUSED_CREDENTIALS_COUNT);
-        int totalPasswordsCount = mDelegate.getAccountPasswordsCount(mPasswordStoreBridge);
-        boolean isPasswordSavingEnabled =
-                UserPrefs.get(getProfile()).getBoolean(Pref.CREDENTIALS_ENABLE_SERVICE);
-        boolean disabledByPolicy =
-                UserPrefs.get(getProfile()).isManagedPreference(Pref.CREDENTIALS_ENABLE_SERVICE)
-                        && !isPasswordSavingEnabled;
-
-        mPasswordCheckPropertyModel.set(
-                DeprecatedSafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT,
-                compromisedPasswordsCount);
-        mPasswordCheckPropertyModel.set(
-                DeprecatedSafetyHubModuleProperties.WEAK_PASSWORDS_COUNT, weakPasswordsCount);
-        mPasswordCheckPropertyModel.set(
-                DeprecatedSafetyHubModuleProperties.REUSED_PASSWORDS_COUNT, reusedPasswordsCount);
-        mPasswordCheckPropertyModel.set(
-                DeprecatedSafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount);
-        mPasswordCheckPropertyModel.set(
-                DeprecatedSafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY, disabledByPolicy);
-        mPasswordCheckPropertyModel.set(
-                DeprecatedSafetyHubModuleProperties.IS_SIGNED_IN,
-                SafetyHubUtils.isSignedIn(getProfile()));
-        mPasswordCheckPropertyModel.set(
-                DeprecatedSafetyHubModuleProperties.ACCOUNT_EMAIL,
-                SafetyHubUtils.getAccountEmail(getProfile()));
-        if (SafetyHubUtils.isSignedIn(getProfile())) {
-            mPasswordCheckPropertyModel.set(
-                    DeprecatedSafetyHubModuleProperties.PRIMARY_BUTTON_LISTENER,
-                    v -> {
-                        mDelegate.showPasswordCheckUi(getContext());
-                        recordDashboardInteractions(DashboardInteractions.OPEN_PASSWORD_MANAGER);
-                    });
-            mPasswordCheckPropertyModel.set(
-                    DeprecatedSafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER,
-                    v -> {
-                        mDelegate.showPasswordCheckUi(getContext());
-                        recordDashboardInteractions(DashboardInteractions.OPEN_PASSWORD_MANAGER);
-                    });
-        } else {
-            mPasswordCheckPropertyModel.set(
-                    DeprecatedSafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER,
-                    v -> {
-                        mDelegate.launchSigninPromo(getContext());
-                        recordDashboardInteractions(DashboardInteractions.SHOW_SIGN_IN_PROMO);
-                    });
+    private SafetyHubModuleMediator getModuleMediator(@ModuleOption int option) {
+        switch (option) {
+            case ModuleOption.UNUSED_PERMISSIONS:
+                return mPermissionsRevocationModuleMediator;
+            case ModuleOption.SAFE_BROWSING:
+                return mSafeBrowsingModuleMediator;
+            case ModuleOption.UPDATE_CHECK:
+                return mUpdateCheckModuleMediator;
+            case ModuleOption.NOTIFICATION_REVIEW:
+                return mNotificationsModuleMediator;
+            case ModuleOption.ACCOUNT_PASSWORDS:
+                return mAccountPasswordsModuleMediator;
+            default:
+                throw new IllegalArgumentException();
         }
-
-        mBrowserStateModule.set(
-                DeprecatedSafetyHubModuleProperties.IS_SIGNED_IN,
-                SafetyHubUtils.isSignedIn(getProfile()));
-        mBrowserStateModule.set(
-                DeprecatedSafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT,
-                compromisedPasswordsCount);
-        mBrowserStateModule.set(
-                DeprecatedSafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount);
-
-        onUpdateNeeded();
     }
 
     private void recordAllModulesState(@LifecycleEvent String event) {
         for (@ModuleOption int i = ModuleOption.OPTION_FIRST; i < ModuleOption.NUM_ENTRIES; i++) {
-            @ModuleState int moduleState;
-            // TODO(https://crbug.com/388788381): Migrate all the modules to get the module and
-            // managed state from their mediators.
-            if (i == ModuleOption.UNUSED_PERMISSIONS) {
-                moduleState = mPermissionsRevocationModuleMediator.getModuleState();
-            } else if (i == ModuleOption.SAFE_BROWSING) {
-                moduleState = mSafeBrowsingModuleMediator.getModuleState();
-            } else if (i == ModuleOption.UPDATE_CHECK) {
-                moduleState = mUpdateCheckModuleMediator.getModuleState();
-            } else if (i == ModuleOption.NOTIFICATION_REVIEW) {
-                moduleState = mNotificationsModuleMediator.getModuleState();
-            } else {
-                moduleState = getModuleState(getModulePropertyModel(i), i);
-            }
-            recordModuleState(moduleState, getDashboardModuleTypeForModuleOption(i), event);
+            recordModuleState(
+                    getModuleMediator(i).getModuleState(),
+                    getDashboardModuleTypeForModuleOption(i),
+                    event);
         }
 
         @ModuleState
