@@ -47,7 +47,7 @@ namespace {
 using ::cryptohome::KeyLabel;
 
 constexpr char kTestAccount[] = "user@test.com";
-constexpr char kFakeGaia[] = "fake_gaia";
+constexpr GaiaId::Literal kFakeGaia("fake_gaia");
 constexpr char kExpectedPassword[] = "qwerty";
 
 class LocalAuthenticationRequestControllerImplPixelTest : public AshTestBase {
@@ -84,8 +84,7 @@ class LocalAuthenticationRequestControllerImplPixelTest : public AshTestBase {
     UserDataAuthClient::InitializeFake();
     SystemSaltGetter::Initialize();
 
-    test_account_id_ =
-        AccountId::FromUserEmailGaiaId(kTestAccount, GaiaId(kFakeGaia));
+    test_account_id_ = AccountId::FromUserEmailGaiaId(kTestAccount, kFakeGaia);
 
     SetExpectedCredentialsWithDbusClient(test_account_id_, kExpectedPassword);
 

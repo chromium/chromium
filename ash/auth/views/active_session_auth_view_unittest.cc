@@ -32,7 +32,7 @@ namespace ash {
 namespace {
 
 const char kTestAccount[] = "user@test.com";
-const char kFakeGaia[] = "fake_gaia";
+const GaiaId::Literal kFakeGaia("fake_gaia");
 const std::u16string title = u"title";
 const std::u16string description = u"description";
 
@@ -56,7 +56,7 @@ class ActiveSessionAuthViewUnitTest : public AshTestBase {
         std::make_unique<user_manager::FakeUserManager>(local_state());
 
     AccountId account_id =
-        AccountId::FromUserEmailGaiaId(kTestAccount, GaiaId(kFakeGaia));
+        AccountId::FromUserEmailGaiaId(kTestAccount, kFakeGaia);
     fake_user_manager->AddGaiaUser(account_id,
                                    user_manager::UserType::kRegular);
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(

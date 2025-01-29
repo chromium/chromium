@@ -71,7 +71,7 @@ using ::testing::WithArg;
 
 namespace ash::boca {
 namespace {
-constexpr char kGaiaId[] = "123";
+constexpr GaiaId::Literal kGaiaId("123");
 constexpr char kUserEmail[] = "cat@gmail.com";
 constexpr char kWebviewHostName[] = "boca";
 
@@ -267,8 +267,7 @@ class BocaAppPageHandlerTest : public testing::Test {
     fake_user_manager_.Reset(
         std::make_unique<user_manager::FakeUserManager>(&local_state_));
 
-    auto account_id =
-        AccountId::FromUserEmailGaiaId(kUserEmail, GaiaId(kGaiaId));
+    auto account_id = AccountId::FromUserEmailGaiaId(kUserEmail, kGaiaId);
     auto browser_context_helper_delegate =
         std::make_unique<ash::FakeBrowserContextHelperDelegate>();
     auto* browser_context_helper_delegate_ptr =
@@ -407,7 +406,7 @@ TEST_F(BocaAppPageHandlerTest, CreateSessionWithFullInput) {
   base::test::TestFuture<bool> future_1;
 
   ::boca::UserIdentity teacher;
-  teacher.set_gaia_id(kGaiaId);
+  teacher.set_gaia_id(kGaiaId.ToString());
   CreateSessionRequest request(
       nullptr, teacher, config->session_duration,
       ::boca::Session::SessionState::Session_SessionState_ACTIVE,
@@ -417,7 +416,7 @@ TEST_F(BocaAppPageHandlerTest, CreateSessionWithFullInput) {
           // Unique pointer have ownership issue, have to do manual deep copy
           // here instead of using SaveArg.
           Invoke([&](auto request) {
-            ASSERT_EQ(kGaiaId, request->teacher().gaia_id());
+            ASSERT_EQ(kGaiaId.ToString(), request->teacher().gaia_id());
             ASSERT_EQ(session_duration, request->duration());
             ASSERT_EQ(
                 ::boca::Session::SessionState::Session_SessionState_ACTIVE,
@@ -537,7 +536,7 @@ TEST_F(BocaAppPageHandlerTest, CreateSessionWithCritialInputOnly) {
       mojom::OnTaskConfigPtr(nullptr), mojom::CaptionConfigPtr(nullptr), "");
 
   ::boca::UserIdentity teacher;
-  teacher.set_gaia_id(kGaiaId);
+  teacher.set_gaia_id(kGaiaId.ToString());
   CreateSessionRequest request(
       nullptr, teacher, config->session_duration,
       ::boca::Session::SessionState::Session_SessionState_ACTIVE,
@@ -547,7 +546,7 @@ TEST_F(BocaAppPageHandlerTest, CreateSessionWithCritialInputOnly) {
           // Unique pointer have ownership issue, have to do manual deep copy
           // here instead of using SaveArg.
           Invoke([&](auto request) {
-            ASSERT_EQ(kGaiaId, request->teacher().gaia_id());
+            ASSERT_EQ(kGaiaId.ToString(), request->teacher().gaia_id());
             ASSERT_EQ(session_duration, request->duration());
             ASSERT_EQ(
                 ::boca::Session::SessionState::Session_SessionState_ACTIVE,
@@ -579,8 +578,7 @@ TEST_F(BocaAppPageHandlerTest, GetSessionWithFullInputTest) {
   // API callback.
   base::test::TestFuture<mojom::SessionResultPtr> future_1;
 
-  GetSessionRequest request(nullptr, false, GaiaId(kGaiaId),
-                            future.GetCallback());
+  GetSessionRequest request(nullptr, false, kGaiaId, future.GetCallback());
   EXPECT_CALL(*session_client_impl(), GetSession(_))
       .WillOnce(WithArg<0>(Invoke([&](auto request) {
         auto session = std::make_unique<::boca::Session>();
@@ -712,8 +710,7 @@ TEST_F(BocaAppPageHandlerTest, GetSessionWithPartialInputTest) {
       future;
   // API callback.
   base::test::TestFuture<mojom::SessionResultPtr> future_1;
-  GetSessionRequest request(nullptr, false, GaiaId(kGaiaId),
-                            future.GetCallback());
+  GetSessionRequest request(nullptr, false, kGaiaId, future.GetCallback());
   EXPECT_CALL(*session_client_impl(), GetSession(_))
       .WillOnce(WithArg<0>(Invoke([&](auto request) {
         auto session = std::make_unique<::boca::Session>();
@@ -740,8 +737,7 @@ TEST_F(BocaAppPageHandlerTest, GetSessionWithHTTPError) {
   // API callback.
   base::test::TestFuture<mojom::SessionResultPtr> future_1;
 
-  GetSessionRequest request(nullptr, false, GaiaId(kGaiaId),
-                            future.GetCallback());
+  GetSessionRequest request(nullptr, false, kGaiaId, future.GetCallback());
   EXPECT_CALL(*session_client_impl(), GetSession(_))
       .WillOnce(WithArg<0>(Invoke([&](auto request) {
         request->callback().Run(
@@ -765,8 +761,7 @@ TEST_F(BocaAppPageHandlerTest, GetSessionWithNullPtrInputTest) {
   // API callback.
   base::test::TestFuture<mojom::SessionResultPtr> future_1;
 
-  GetSessionRequest request(nullptr, false, GaiaId(kGaiaId),
-                            future.GetCallback());
+  GetSessionRequest request(nullptr, false, kGaiaId, future.GetCallback());
   EXPECT_CALL(*session_client_impl(), GetSession(_))
       .WillOnce(WithArg<0>(Invoke(
           [&](auto request) { request->callback().Run(base::ok(nullptr)); })));
@@ -789,8 +784,7 @@ TEST_F(BocaAppPageHandlerTest, GetSessionWithNonActiveSessionTest) {
       future;
   // API callback.
   base::test::TestFuture<mojom::SessionResultPtr> future_1;
-  GetSessionRequest request(nullptr, false, GaiaId(kGaiaId),
-                            future.GetCallback());
+  GetSessionRequest request(nullptr, false, kGaiaId, future.GetCallback());
   EXPECT_CALL(*session_client_impl(), GetSession(_))
       .WillOnce(WithArg<0>(Invoke([&](auto request) {
         request->callback().Run(std::make_unique<::boca::Session>());
@@ -815,8 +809,7 @@ TEST_F(BocaAppPageHandlerTest,
   // API callback.
   base::test::TestFuture<mojom::SessionResultPtr> future_1;
 
-  GetSessionRequest request(nullptr, false, GaiaId(kGaiaId),
-                            future.GetCallback());
+  GetSessionRequest request(nullptr, false, kGaiaId, future.GetCallback());
   EXPECT_CALL(*session_client_impl(), GetSession(_))
       .WillOnce(WithArg<0>(Invoke([&](auto request) {
         auto session = std::make_unique<::boca::Session>();
@@ -852,7 +845,7 @@ TEST_F(BocaAppPageHandlerTest, EndSessionSucceed) {
   base::test::TestFuture<std::optional<mojom::UpdateSessionError>> future_1;
 
   ::boca::UserIdentity teacher;
-  teacher.set_gaia_id(kGaiaId);
+  teacher.set_gaia_id(kGaiaId.ToString());
   UpdateSessionRequest request(nullptr, teacher, session_id,
                                future.GetCallback());
 
@@ -861,7 +854,7 @@ TEST_F(BocaAppPageHandlerTest, EndSessionSucceed) {
           // Unique pointer have ownership issue, have to do manual deep copy
           // here instead of using SaveArg.
           Invoke([&](auto request) {
-            ASSERT_EQ(kGaiaId, request->teacher().gaia_id());
+            ASSERT_EQ(kGaiaId.ToString(), request->teacher().gaia_id());
             ASSERT_EQ(::boca::Session::PAST, *request->session_state());
             request->callback().Run(std::make_unique<::boca::Session>());
           })));
@@ -888,7 +881,7 @@ TEST_F(BocaAppPageHandlerTest, EndSessionWithHTTPFailure) {
   base::test::TestFuture<std::optional<mojom::UpdateSessionError>> future_1;
 
   ::boca::UserIdentity teacher;
-  teacher.set_gaia_id(kGaiaId);
+  teacher.set_gaia_id(kGaiaId.ToString());
   UpdateSessionRequest request(nullptr, teacher, session_id,
                                future.GetCallback());
 
@@ -897,7 +890,7 @@ TEST_F(BocaAppPageHandlerTest, EndSessionWithHTTPFailure) {
           // Unique pointer have ownership issue, have to do manual deep copy
           // here instead of using SaveArg.
           Invoke([&](auto request) {
-            ASSERT_EQ(kGaiaId, request->teacher().gaia_id());
+            ASSERT_EQ(kGaiaId.ToString(), request->teacher().gaia_id());
             ASSERT_EQ(::boca::Session::PAST, *request->session_state());
             request->callback().Run(
                 base::unexpected(google_apis::ApiErrorCode::HTTP_FORBIDDEN));
@@ -1497,7 +1490,7 @@ TEST_F(BocaAppPageHandlerTest, RemoveStudentSucceedAlsoRemoveFromLocalSession) {
   // API callback.
   base::test::TestFuture<std::optional<mojom::RemoveStudentError>> future_1;
 
-  RemoveStudentRequest request(nullptr, GaiaId(kGaiaId), session_id,
+  RemoveStudentRequest request(nullptr, kGaiaId, session_id,
                                future.GetCallback());
 
   const char student_id[] = "4";
@@ -1506,7 +1499,7 @@ TEST_F(BocaAppPageHandlerTest, RemoveStudentSucceedAlsoRemoveFromLocalSession) {
           // Unique pointer have ownership issue, have to do manual deep copy
           // here instead of using SaveArg.
           Invoke([&](auto request) {
-            ASSERT_EQ(GaiaId(kGaiaId), request->gaia_id());
+            ASSERT_EQ(kGaiaId, request->gaia_id());
             ASSERT_EQ(1u, request->student_ids().size());
             ASSERT_EQ(student_id, request->student_ids()[0]);
             request->callback().Run(true);
@@ -1534,7 +1527,7 @@ TEST_F(BocaAppPageHandlerTest, RemoveStudentWithHTTPFailure) {
   // API callback.
   base::test::TestFuture<std::optional<mojom::RemoveStudentError>> future_1;
 
-  RemoveStudentRequest request(nullptr, GaiaId(kGaiaId), session_id,
+  RemoveStudentRequest request(nullptr, kGaiaId, session_id,
                                future.GetCallback());
 
   const char student_id[] = "id";
@@ -1543,7 +1536,7 @@ TEST_F(BocaAppPageHandlerTest, RemoveStudentWithHTTPFailure) {
           // Unique pointer have ownership issue, have to do manual deep copy
           // here instead of using SaveArg.
           Invoke([&](auto request) {
-            ASSERT_EQ(GaiaId(kGaiaId), request->gaia_id());
+            ASSERT_EQ(kGaiaId, request->gaia_id());
             ASSERT_EQ(1u, request->student_ids().size());
             ASSERT_EQ(student_id, request->student_ids()[0]);
             request->callback().Run(

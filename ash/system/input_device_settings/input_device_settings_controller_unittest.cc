@@ -232,11 +232,11 @@ constexpr char kUserEmail1[] = "example1@abc.com";
 constexpr char kUserEmail2[] = "joy@abc.com";
 constexpr char kUserEmail3[] = "joy1@abc.com";
 const AccountId kAccountId1 =
-    AccountId::FromUserEmailGaiaId(kUserEmail1, GaiaId(kUserEmail1));
+    AccountId::FromUserEmailGaiaId(kUserEmail1, GaiaId("1111"));
 const AccountId kAccountId2 =
-    AccountId::FromUserEmailGaiaId(kUserEmail2, GaiaId(kUserEmail2));
+    AccountId::FromUserEmailGaiaId(kUserEmail2, GaiaId("2222"));
 const AccountId kAccountId3 =
-    AccountId::FromUserEmailGaiaId(kUserEmail3, GaiaId(kUserEmail3));
+    AccountId::FromUserEmailGaiaId(kUserEmail3, GaiaId("3333"));
 
 constexpr char kKbdTopRowPropertyName[] = "CROS_KEYBOARD_TOP_ROW_LAYOUT";
 constexpr char kKbdTopRowLayoutUnspecified[] = "";

@@ -19,8 +19,9 @@ namespace ash {
 namespace {
 
 constexpr char kUser1[] = "user1@test.com";
+constexpr GaiaId::Literal kUser1GaiaId("11111");
 const AccountId kAccountId1 =
-    AccountId::FromUserEmailGaiaId(kUser1, GaiaId(kUser1));
+    AccountId::FromUserEmailGaiaId(kUser1, kUser1GaiaId);
 
 const uint64_t kAssetId = 1;
 const uint64_t kUnitId = 1;

@@ -47,7 +47,7 @@ const std::string kUser1 = "user1@test.com";
 constexpr std::string_view kExpectedMigrationFileContents =
     "migration_file_contents";
 const AccountId kAccountId1 =
-    AccountId::FromUserEmailGaiaId(kUser1, GaiaId(kUser1));
+    AccountId::FromUserEmailGaiaId(kUser1, GaiaId::Literal("gaia_id1"));
 constexpr SkColor kDefaultImageColor = SkColorSetARGB(255, 31, 63, 127);
 
 SkBitmap CreateBitmap(SkColor color = kDefaultImageColor) {
@@ -308,7 +308,7 @@ TEST_F(SeaPenWallpaperManagerTest, GetImageIdsMultipleAccounts) {
 
   const std::string kUser2 = "user2@test.com";
   const AccountId kAccountId2 =
-      AccountId::FromUserEmailGaiaId(kUser2, GaiaId(kUser2));
+      AccountId::FromUserEmailGaiaId(kUser2, GaiaId("gaia_id2"));
   ASSERT_NE(kAccountId1.GetAccountIdKey(), kAccountId2.GetAccountIdKey());
 
   {
@@ -499,7 +499,7 @@ TEST_F(SeaPenWallpaperManagerTest, GetImageAndMetadataOtherAccount) {
   {
     // Try to retrieve the image with another account.
     const AccountId other_account_id = AccountId::FromUserEmailGaiaId(
-        "other_user@test.com", GaiaId("other_user@test.com"));
+        "other_user@test.com", GaiaId("other_user_gaia_id"));
 
     base::test::TestFuture<const gfx::ImageSkia&,
                            personalization_app::mojom::RecentSeaPenImageInfoPtr>
@@ -594,7 +594,7 @@ TEST_F(SeaPenWallpaperManagerTest, DeleteImageRemovesFromDisk) {
 TEST_F(SeaPenWallpaperManagerTest, DeleteImageForOtherUserFails) {
   constexpr uint32_t image_id = 999u;
   const AccountId other_account_id = AccountId::FromUserEmailGaiaId(
-      "other_user@test.com", GaiaId("other_user@test.com"));
+      "other_user@test.com", GaiaId("other_user_gaia_id"));
 
   // Save a test image with the same id for both users.
   for (const auto& account_id : {kAccountId1, other_account_id}) {

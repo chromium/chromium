@@ -24,7 +24,7 @@ namespace ash {
 namespace {
 
 constexpr char kUserEmail[] = "user1@gmail.com";
-constexpr char kFakeGaia[] = "fake_gaia";
+constexpr GaiaId::Literal kFakeGaia("fake_gaia");
 
 const std::u16string kTitle(u"Auth header view pixeltest title");
 const std::u16string kErrorTitle(u"Auth header view pixeltest error");
@@ -51,7 +51,7 @@ class AuthHeaderPixelTest : public AshTestBase {
     auto fake_user_manager =
         std::make_unique<user_manager::FakeUserManager>(local_state());
     AccountId account_id =
-        AccountId::FromUserEmailGaiaId(kUserEmail, GaiaId(kFakeGaia));
+        AccountId::FromUserEmailGaiaId(kUserEmail, kFakeGaia);
     fake_user_manager->AddGaiaUser(account_id,
                                    user_manager::UserType::kRegular);
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(

@@ -33,7 +33,7 @@ namespace ash {
 namespace {
 
 constexpr char kUserEmail[] = "expected_email@example.com";
-constexpr char kFakeGaia[] = "fake_gaia";
+constexpr GaiaId::Literal kFakeGaia("fake_gaia");
 constexpr char kExpectedPassword[] = "expected_password";
 constexpr char kExpectedPin[] = "123456";
 constexpr char kExpectedSalt[] = "test salt";
@@ -94,7 +94,7 @@ class ActiveSessionAuthControllerTest
   }
 
   void AddUserToUserManager() {
-    account_id_ = AccountId::FromUserEmailGaiaId(kUserEmail, GaiaId(kFakeGaia));
+    account_id_ = AccountId::FromUserEmailGaiaId(kUserEmail, kFakeGaia);
     user_manager_->AddGaiaUser(account_id_, user_manager::UserType::kRegular);
     user_manager_->UserLoggedIn(
         account_id_,
