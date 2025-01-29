@@ -10,6 +10,16 @@
 #define _Static_assert(predicate, message) static_assert(predicate, message)
 #endif
 
+// pthreadpool's internal headers include <stdatomic.h>, and Chromium's headers
+// include <atomic>. These are incompatible before C++23 (e.g.
+// atomic_is_lock_free is a macro in the C header and a template in the C++
+// one). To resolve this, use the types/functions from the C++ header only and
+// block inclusion of the C header by defining its include guard. See
+// crbug.com/391750836.
+#include <atomic>
+#define _LIBCPP_STDATOMIC_H
+using namespace std;
+
 // Configuration header.
 #include "threadpool-common.h"
 
