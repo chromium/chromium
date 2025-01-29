@@ -11627,7 +11627,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "kIOSEnableDeleteAllSavedCredentials"
+                        "IOSEnableDeleteAllSavedCredentials"
                     ]
                 }
             ]
