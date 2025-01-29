@@ -76,12 +76,12 @@ build_webui_tests("build") {
       "ink2_viewer_toolbar_test.ts",
     ]
 
-    if (!is_chromeos_ash) {
+    if (!is_chromeos) {
       files += [ "ink2_disabled_test.ts" ]
     }
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     files += [ "printing_icon_test.ts" ]
   }
 

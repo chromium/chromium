@@ -235,7 +235,7 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
   bool DisallowV8FeatureFlagOverrides() const override;
   void AppendContentSecurityPolicy(
       const blink::WebURL& url,
-      blink::WebVector<blink::WebContentSecurityPolicyHeader>* csp) override;
+      std::vector<blink::WebContentSecurityPolicyHeader>* csp) override;
   bool IsFilePickerAllowedForCrossOriginSubframe(
       const blink::WebSecurityOrigin& origin) override;
   base::PlatformThreadId GetIOThreadId() const override;

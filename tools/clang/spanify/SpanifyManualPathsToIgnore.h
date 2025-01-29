@@ -83,6 +83,19 @@ inline constexpr std::array kSpanifyManualPathsToIgnore = {
     // cannot
     // catch it even though glslang_tab.cpp.h is in third_party/
     "MachineIndependent/",
+
+    // Exclusion for potential performance reasons with the std::array rewrite.
+    // Please run additional performance benchmarks before rewriting these
+    // files. In particular the changes to WTF's vector.h
+    "skia/ext/",
+    "third_party/blink/renderer/core/css/parser/css_parser_fast_paths.cc",
+    "third_party/blink/renderer/core/layout/inline/line_breaker.cc",
+    "third_party/blink/renderer/core/paint/box_border_painter.cc",
+    "third_party/blink/renderer/platform/image-decoders/",
+    "third_party/blink/renderer/platform/text/",
+    "third_party/blink/renderer/platform/wtf/",
+    "url/url_canon_host.cc",
+    "url/url_canon_path.cc",
 };
 
 #endif  // TOOLS_CLANG_SPANIFY_SPANIFYMANUALPATHSTOIGNORE_H_

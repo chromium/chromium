@@ -913,7 +913,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessPerOriginIsolatedSandboxedIframeTest,
       child->current_frame_host()->GetSiteInstance();
   EXPECT_NE(site_instance_root, site_instance2);
   EXPECT_NE(site_instance1, site_instance2);
-  EXPECT_NE(site_instance1->GetProcess(), site_instance2->GetProcess());
+  EXPECT_NE(site_instance1->GetOrCreateProcess(), site_instance2->GetProcess());
 }
 
 // Test that navigating cross-origin from a non-sandboxed iframe to a CSP

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+  <if expr="use_internal_isolated_origins">
+    <include name="IDR_ISOLATED_ORIGINS" file="../site_isolation/internal/isolated_origins.txt" type="BINDATA" compress="gzip" />
+  </if>
+  <if expr="not use_internal_isolated_origins">
+    <include name="IDR_ISOLATED_ORIGINS" file="../site_isolation/isolated_origins_placeholder.txt" type="BINDATA" />
+  </if>
+</grit-part>

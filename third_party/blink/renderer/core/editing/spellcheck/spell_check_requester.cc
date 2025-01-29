@@ -45,7 +45,7 @@ namespace blink {
 namespace {
 
 static Vector<TextCheckingResult> ToCoreResults(
-    const WebVector<WebTextCheckingResult>& results) {
+    const std::vector<WebTextCheckingResult>& results) {
   Vector<TextCheckingResult> core_results;
   for (size_t i = 0; i < results.size(); ++i)
     core_results.push_back(results[i]);
@@ -58,7 +58,7 @@ class WebTextCheckingCompletionImpl : public WebTextCheckingCompletion {
       : request_(request) {}
 
   void DidFinishCheckingText(
-      const WebVector<WebTextCheckingResult>& results) override {
+      const std::vector<WebTextCheckingResult>& results) override {
     if (request_)
       request_->DidSucceed(ToCoreResults(results));
     request_ = nullptr;

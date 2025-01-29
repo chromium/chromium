@@ -89,7 +89,7 @@ class WebContentCaptureClientTestHelper : public WebContentCaptureClient {
     return base::Milliseconds(500);
   }
 
-  void DidCaptureContent(const WebVector<WebContentHolder>& data,
+  void DidCaptureContent(const std::vector<WebContentHolder>& data,
                          bool first_data) override {
     data_ = data;
     first_data_ = first_data;
@@ -100,21 +100,21 @@ class WebContentCaptureClientTestHelper : public WebContentCaptureClient {
     }
   }
 
-  void DidUpdateContent(const WebVector<WebContentHolder>& data) override {
+  void DidUpdateContent(const std::vector<WebContentHolder>& data) override {
     updated_data_ = data;
     for (auto& d : data)
       updated_text_.push_back(d.GetValue());
   }
 
-  void DidRemoveContent(WebVector<int64_t> data) override {
+  void DidRemoveContent(std::vector<int64_t> data) override {
     removed_data_ = data;
   }
 
   bool FirstData() const { return first_data_; }
 
-  const WebVector<WebContentHolder>& Data() const { return data_; }
+  const std::vector<WebContentHolder>& Data() const { return data_; }
 
-  const WebVector<WebContentHolder>& UpdatedData() const {
+  const std::vector<WebContentHolder>& UpdatedData() const {
     return updated_data_;
   }
 
@@ -124,7 +124,7 @@ class WebContentCaptureClientTestHelper : public WebContentCaptureClient {
 
   const Vector<String>& UpdatedText() const { return updated_text_; }
 
-  const WebVector<int64_t>& RemovedData() const { return removed_data_; }
+  const std::vector<int64_t>& RemovedData() const { return removed_data_; }
 
   void ResetResults() {
     first_data_ = false;
@@ -136,9 +136,9 @@ class WebContentCaptureClientTestHelper : public WebContentCaptureClient {
 
  private:
   bool first_data_ = false;
-  WebVector<WebContentHolder> data_;
-  WebVector<WebContentHolder> updated_data_;
-  WebVector<int64_t> removed_data_;
+  std::vector<WebContentHolder> data_;
+  std::vector<WebContentHolder> updated_data_;
+  std::vector<int64_t> removed_data_;
   Vector<String> all_text_;
   Vector<String> updated_text_;
   Vector<String> captured_text_;
@@ -253,7 +253,7 @@ class ContentCaptureTest : public PageTestBase,
     GetOrResetContentCaptureManager()->OnLayoutTextWillBeDestroyed(*node);
   }
 
-  void RemoveUnsentNode(const WebVector<WebContentHolder>& sent_nodes) {
+  void RemoveUnsentNode(const std::vector<WebContentHolder>& sent_nodes) {
     // Find a node isn't in sent_nodes
     for (auto node : nodes_) {
       bool found_in_sent = false;

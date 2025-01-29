@@ -128,9 +128,9 @@ bool ShellContentBrowserClient::ShouldUseProcessPerSite(
     content::BrowserContext* browser_context,
     const GURL& site_url) {
   // This ensures that all render views created for a single app will use the
-  // same render process (see content::SiteInstance::GetProcess). Otherwise the
-  // default behavior of ContentBrowserClient will lead to separate render
-  // processes for the background page and each app window view.
+  // same render process (see content::SiteInstance::GetOrCreateProcess).
+  // Otherwise the default behavior of ContentBrowserClient will lead to
+  // separate render processes for the background page and each app window view.
   return true;
 }
 

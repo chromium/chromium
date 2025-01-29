@@ -453,6 +453,12 @@ class MockHostResolverBase::ServiceEndpointRequestImpl
     return resolve_error_info_;
   }
 
+  const HostCache::EntryStaleness* GetStaleInfo() const override {
+    return nullptr;
+  }
+
+  bool IsStaleWhileRefresing() const override { return false; }
+
   void ChangeRequestPriority(RequestPriority priority) override {
     priority_ = priority;
   }

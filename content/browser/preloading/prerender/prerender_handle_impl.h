@@ -31,8 +31,9 @@ class PrerenderHandleImpl final : public PrerenderHandle,
   base::WeakPtr<PrerenderHandle> GetWeakPtr() override;
   void SetPreloadingAttemptFailureReason(
       PreloadingFailureReason reason) override;
-  void SetActivationCallback(base::OnceClosure activation_callback) override;
-  void SetErrorCallback(base::OnceClosure error_callback) override;
+  void AddActivationCallback(base::OnceClosure activation_callback) override;
+  void AddErrorCallback(base::OnceClosure error_callback) override;
+  bool IsValid() const override;
 
   // PrerenderHost::Observer:
   void OnActivated() override;
@@ -52,9 +53,11 @@ class PrerenderHandleImpl final : public PrerenderHandle,
 
   const GURL prerendering_url_;
 
-  bool was_activated_ = false;
-  base::OnceClosure activation_callback_;
-  base::OnceClosure error_callback_;
+  enum class State { kValid, kActivated, kCanceled };
+  State state_ = State::kValid;
+
+  std::vector<base::OnceClosure> activation_callbacks_;
+  std::vector<base::OnceClosure> error_callbacks_;
 
   base::WeakPtrFactory<PrerenderHandle> weak_factory_{this};
 };

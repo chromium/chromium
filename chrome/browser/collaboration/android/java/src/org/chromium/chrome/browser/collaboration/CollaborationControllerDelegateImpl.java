@@ -317,6 +317,12 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
             String syncId, LocalTabGroupId localId, long resultWithGroupTokenCallback) {
         DataSharingCreateUiConfig.CreateCallback createCallback =
                 new DataSharingCreateUiConfig.CreateCallback() {
+                    private long mResultCallback;
+
+                    {
+                        mResultCallback = resultWithGroupTokenCallback;
+                    }
+
                     @Override
                     public void onGroupCreatedWithWait(
                             org.chromium.components.sync.protocol.GroupData result,
@@ -333,7 +339,8 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
                                         Outcome.SUCCESS,
                                         result.getGroupId(),
                                         result.getAccessToken(),
-                                        resultWithGroupTokenCallback);
+                                        mResultCallback);
+                        mResultCallback = 0;
                     }
 
                     @Override
@@ -344,9 +351,12 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
 
                     @Override
                     public void onSessionFinished() {
-                        CollaborationControllerDelegateImplJni.get()
-                                .runResultWithGroupTokenCallback(
-                                        Outcome.CANCEL, null, null, resultWithGroupTokenCallback);
+                        mCloseScreenRunnable = null;
+                        if (mResultCallback != 0) {
+                            CollaborationControllerDelegateImplJni.get()
+                                    .runResultWithGroupTokenCallback(
+                                            Outcome.CANCEL, null, null, mResultCallback);
+                        }
                     }
                 };
 

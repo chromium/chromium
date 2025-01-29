@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <utility>
+#include <vector>
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -28,7 +29,6 @@
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/public/platform/web_media_key_system_configuration.h"
 #include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/renderer/platform/media/media_player_util.h"
 
@@ -203,7 +203,7 @@ bool KeySystemConfigSelector::WebLocalFrameDelegate::AllowStorageAccessSync(
 
 struct KeySystemConfigSelector::SelectionRequest {
   std::string key_system;
-  WebVector<WebMediaKeySystemConfiguration> candidate_configurations;
+  std::vector<WebMediaKeySystemConfiguration> candidate_configurations;
   SelectConfigCB cb;
   bool was_permission_requested = false;
   bool is_permission_granted = false;
@@ -487,7 +487,7 @@ EmeConfig::Rule KeySystemConfigSelector::GetEncryptionSchemeConfigRule(
 bool KeySystemConfigSelector::GetSupportedCapabilities(
     const std::string& key_system,
     EmeMediaType media_type,
-    const WebVector<WebMediaKeySystemMediaCapability>&
+    const std::vector<WebMediaKeySystemMediaCapability>&
         requested_media_capabilities,
     // Corresponds to the partial configuration, plus restrictions.
     KeySystemConfigSelector::ConfigState* config_state,
@@ -763,7 +763,7 @@ KeySystemConfigSelector::GetSupportedConfiguration(
   //         let session types be candidate configuration's sessionTypes member.
   //       - Otherwise, let session types be [ "temporary" ].
   //         (Done in MediaKeySystemAccessInitializer.)
-  WebVector<WebEncryptedMediaSessionType> session_types =
+  std::vector<WebEncryptedMediaSessionType> session_types =
       candidate.session_types;
 
   // 13. For each value in session types:
@@ -1006,7 +1006,7 @@ KeySystemConfigSelector::GetSupportedConfiguration(
 
 void KeySystemConfigSelector::SelectConfig(
     const WebString& key_system,
-    const WebVector<WebMediaKeySystemConfiguration>& candidate_configurations,
+    const std::vector<WebMediaKeySystemConfiguration>& candidate_configurations,
     SelectConfigCB cb) {
   // Continued from requestMediaKeySystemAccess(), step 6, from
   // https://w3c.github.io/encrypted-media/#requestmediakeysystemaccess

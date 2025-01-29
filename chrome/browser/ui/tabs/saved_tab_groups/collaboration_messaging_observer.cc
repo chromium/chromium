@@ -23,19 +23,6 @@ using collaboration::messaging::MessagingBackendServiceFactory;
 namespace tab_groups {
 namespace {
 
-// Get the TabModelStrip that contains this group ID.
-TabStripModel* GetTabStripModelWithGroup(LocalTabGroupID local_tab_group_id) {
-  const Browser* const browser_with_local_group_id =
-      SavedTabGroupUtils::GetBrowserWithTabGroupId(local_tab_group_id);
-  CHECK(browser_with_local_group_id);
-
-  TabStripModel* tab_strip_model =
-      browser_with_local_group_id->tab_strip_model();
-  CHECK(tab_strip_model && tab_strip_model->SupportsTabGroups());
-
-  return tab_strip_model;
-}
-
 // Get the TabStrip that contains this group ID.
 TabStrip* GetTabStripWithGroup(LocalTabGroupID local_tab_group_id) {
   const Browser* const browser_with_local_group_id =
@@ -64,40 +51,28 @@ std::optional<LocalTabGroupID> UnwrapTabGroupID(PersistentMessage message) {
 // Returns the tab strip index of the tab. If the sync service is not
 // available, returns std::nullopt. Asserts that the tab can be found.
 std::optional<int> GetTabStripIndex(LocalTabID local_tab_id,
-                                    LocalTabGroupID local_tab_group_id,
-                                    Profile* profile) {
-  auto* tab_group_sync_service =
-      SavedTabGroupUtils::GetServiceForProfile(profile);
-  if (!tab_group_sync_service) {
-    return std::nullopt;
+                                    LocalTabGroupID local_tab_group_id) {
+  const Browser* const browser_with_local_group_id =
+      SavedTabGroupUtils::GetBrowserWithTabGroupId(local_tab_group_id);
+  CHECK(browser_with_local_group_id);
+
+  TabStripModel* tab_strip_model =
+      browser_with_local_group_id->tab_strip_model();
+  CHECK(tab_strip_model && tab_strip_model->SupportsTabGroups());
+
+  const gfx::Range tab_indices = tab_strip_model->group_model()
+                                     ->GetTabGroup(local_tab_group_id)
+                                     ->ListTabs();
+  for (size_t grouped_tab_index = tab_indices.start();
+       grouped_tab_index < tab_indices.end(); grouped_tab_index++) {
+    const tabs::TabInterface* const tab =
+        tab_strip_model->GetTabAtIndex(grouped_tab_index);
+    if (tab->GetHandle().raw_value() == local_tab_id) {
+      return grouped_tab_index;
+    }
   }
 
-  // Get the index in the tab strip of the first tab in the group.
-  auto group_offset_in_tabstrip = GetTabStripModelWithGroup(local_tab_group_id)
-                                      ->group_model()
-                                      ->GetTabGroup(local_tab_group_id)
-                                      ->GetFirstTab();
-  if (!group_offset_in_tabstrip.has_value()) {
-    return std::nullopt;
-  }
-
-  // Get the index in the group of the tab.
-  auto saved_tab_group = tab_group_sync_service->GetGroup(local_tab_group_id);
-  if (!saved_tab_group.has_value()) {
-    return std::nullopt;
-  }
-
-  auto tab_offset_in_group = saved_tab_group->GetIndexOfTab(local_tab_id);
-  if (!tab_offset_in_group.has_value()) {
-    // When hiding a DIRTY_TAB message on a deleted tab (e.g. the tab was
-    // deleted by another user), this tab won't be found in the group.
-    return std::nullopt;
-  }
-
-  auto tabstrip_index =
-      group_offset_in_tabstrip.value() + tab_offset_in_group.value();
-
-  return tabstrip_index;
+  return std::nullopt;
 }
 
 // Unwrapped tab information used to access the tab.
@@ -112,8 +87,7 @@ struct TabInfo {
 // * tab metadata exists and contains the tab ID
 // * tab group metadata exists and contains the group ID
 // * the tab can be found in the tab strip
-std::optional<TabInfo> UnwrapTabInfo(PersistentMessage message,
-                                     Profile* profile) {
+std::optional<TabInfo> UnwrapTabInfo(PersistentMessage message) {
   auto local_tab_group_id = UnwrapTabGroupID(message);
   if (!local_tab_group_id.has_value()) {
     return std::nullopt;
@@ -129,9 +103,8 @@ std::optional<TabInfo> UnwrapTabInfo(PersistentMessage message,
     return std::nullopt;
   }
 
-  // Get tab index.
-  auto tabstrip_index = GetTabStripIndex(local_tab_id.value(),
-                                         local_tab_group_id.value(), profile);
+  auto tabstrip_index =
+      GetTabStripIndex(local_tab_id.value(), local_tab_group_id.value());
   if (!tabstrip_index.has_value()) {
     return std::nullopt;
   }
@@ -145,6 +118,7 @@ std::optional<TabInfo> UnwrapTabInfo(PersistentMessage message,
 void CollaborationMessagingObserver::HandleDirtyTabGroup(
     PersistentMessage message,
     MessageDisplayStatus display) {
+  // TODO(crbug.com/392604409): Refactor to use a TabGroupFeature.
   if (auto local_tab_group_id = UnwrapTabGroupID(message)) {
     GetTabStripWithGroup(local_tab_group_id.value())
         ->SetTabGroupNeedsAttention(local_tab_group_id.value(),
@@ -155,7 +129,8 @@ void CollaborationMessagingObserver::HandleDirtyTabGroup(
 void CollaborationMessagingObserver::HandleDirtyTab(
     PersistentMessage message,
     MessageDisplayStatus display) {
-  if (auto tab_info = UnwrapTabInfo(message, profile_)) {
+  // TODO(crbug.com/392604409): Refactor to use a TabFeature.
+  if (auto tab_info = UnwrapTabInfo(message)) {
     GetTabStripWithGroup(tab_info->local_tab_group_id)
         ->SetTabNeedsAttention(tab_info->tabstrip_index,
                                display == MessageDisplayStatus::kDisplay);
@@ -164,24 +139,20 @@ void CollaborationMessagingObserver::HandleDirtyTab(
 
 void CollaborationMessagingObserver::HandleChip(PersistentMessage message,
                                                 MessageDisplayStatus display) {
-  auto tab_info = UnwrapTabInfo(message, profile_);
+  std::optional<TabInfo> tab_info = UnwrapTabInfo(message);
   if (!tab_info.has_value()) {
     return;
   }
 
-  tabs::TabInterface* tab =
-      GetTabStripModelWithGroup(tab_info->local_tab_group_id)
-          ->GetTabAtIndex(tab_info->tabstrip_index);
-  if (!tab) {
-    return;
-  }
-  auto* tab_features = tab->GetTabFeatures();
-  CHECK(tab_features);
-
-  if (display == MessageDisplayStatus::kDisplay) {
-    tab_features->collaboration_messaging_tab_data()->SetMessage(message);
-  } else {
-    tab_features->collaboration_messaging_tab_data()->ClearMessage(message);
+  if (tabs::TabInterface* tab = SavedTabGroupUtils::GetGroupedTab(
+          tab_info->local_tab_group_id, tab_info->local_tab_id)) {
+    if (display == MessageDisplayStatus::kDisplay) {
+      tab->GetTabFeatures()->collaboration_messaging_tab_data()->SetMessage(
+          message);
+    } else {
+      tab->GetTabFeatures()->collaboration_messaging_tab_data()->ClearMessage(
+          message);
+    }
   }
 }
 

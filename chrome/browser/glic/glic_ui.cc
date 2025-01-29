@@ -29,6 +29,9 @@
 
 namespace glic {
 
+// static
+bool GlicUI::simulate_no_connection_ = false;
+
 GlicUIConfig::GlicUIConfig()
     : DefaultWebUIConfig(content::kChromeUIScheme, chrome::kChromeUIGlicHost) {}
 
@@ -42,7 +45,6 @@ GlicUI::GlicUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
       {"errorNotice", IDS_GLIC_ERROR_NOTICE},
       {"errorNoticeActionButton", IDS_GLIC_ERROR_NOTICE_ACTION_BUTTON},
       {"errorNoticeHeader", IDS_GLIC_ERROR_NOTICE_HEADER},
-      {"loadingNotice", IDS_GLIC_LOADING_NOTICE},
       {"offlineNotice", IDS_GLIC_OFFLINE_NOTICE},
       {"offlineNoticeAction", IDS_GLIC_OFFLINE_NOTICE_ACTION},
       {"offlineNoticeActionButton", IDS_GLIC_OFFLINE_NOTICE_ACTION_BUTTON},
@@ -76,6 +78,7 @@ GlicUI::GlicUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   source->AddInteger("preLoadingTimeMs", features::kGlicPreLoadingTimeMs.Get());
   source->AddInteger("minLoadingTimeMs", features::kGlicMinLoadingTimeMs.Get());
   source->AddInteger("maxLoadingTimeMs", features::kGlicMaxLoadingTimeMs.Get());
+  source->AddBoolean("simulateNoConnection", simulate_no_connection_);
 
   // Set up guest api source.
   // This comes from 'glic_api_injection' in

@@ -136,7 +136,7 @@ suite('Logger', () => {
         await metrics.whenCalled('recordVoiceType'));
   });
 
-  // <if expr="chromeos_ash">
+  // <if expr="is_chromeos">
   test('logSpeechPlaySession with other voice on ChromeOS', async () => {
     logger.logSpeechPlaySession(
         defaultSpeechStartTime, createSpeechSynthesisVoice({name: 'Sleepy'}));
@@ -147,7 +147,7 @@ suite('Logger', () => {
   });
   // </if>
 
-  // <if expr="not chromeos_ash">
+  // <if expr="not is_chromeos">
   test('logSpeechPlaySession with other voice on Desktop', async () => {
     logger.logSpeechPlaySession(
         defaultSpeechStartTime, createSpeechSynthesisVoice({name: 'Dopey'}));

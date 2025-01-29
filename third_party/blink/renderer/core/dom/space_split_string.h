@@ -151,6 +151,18 @@ class CORE_EXPORT SpaceSplitString {
 
 CORE_EXPORT std::ostream& operator<<(std::ostream&, const SpaceSplitString&);
 
+template <>
+struct ThreadingTrait<SpaceSplitString> {
+  STATIC_ONLY(ThreadingTrait);
+  static constexpr ThreadAffinity kAffinity = kMainThreadOnly;
+};
+
+template <>
+struct ThreadingTrait<SpaceSplitString::Data> {
+  STATIC_ONLY(ThreadingTrait);
+  static constexpr ThreadAffinity kAffinity = kMainThreadOnly;
+};
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_DOM_SPACE_SPLIT_STRING_H_

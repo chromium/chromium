@@ -96,6 +96,9 @@ class UpdateServiceImplImpl : public UpdateService {
       base::RepeatingCallback<void(const UpdateState&)> state_update,
       base::OnceCallback<void(Result)> callback);
 
+  void GetAppStatesImpl(
+      base::OnceCallback<void(const std::vector<AppState>&)> callback);
+
   void CheckForUpdateImpl(
       const std::string& app_id,
       Priority priority,
@@ -109,6 +112,25 @@ class UpdateServiceImplImpl : public UpdateService {
       const std::string& install_data_index,
       Priority priority,
       PolicySameVersionUpdate policy_same_version_update,
+      const std::string& language,
+      base::RepeatingCallback<void(const UpdateState&)> state_update,
+      base::OnceCallback<void(Result)> callback);
+
+  void InstallImpl(
+      const RegistrationRequest& registration,
+      const std::string& client_install_data,
+      const std::string& install_data_index,
+      Priority priority,
+      const std::string& language,
+      base::RepeatingCallback<void(const UpdateState&)> state_update,
+      base::OnceCallback<void(Result)> callback);
+
+  void RunInstallerImpl(
+      const std::string& app_id,
+      const base::FilePath& installer_path,
+      const std::string& install_args,
+      const std::string& install_data,
+      const std::string& install_settings,
       const std::string& language,
       base::RepeatingCallback<void(const UpdateState&)> state_update,
       base::OnceCallback<void(Result)> callback);

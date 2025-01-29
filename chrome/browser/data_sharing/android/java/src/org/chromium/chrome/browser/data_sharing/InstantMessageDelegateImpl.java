@@ -31,7 +31,6 @@ import org.chromium.components.collaboration.messaging.MessageUtils;
 import org.chromium.components.collaboration.messaging.MessagingBackendService;
 import org.chromium.components.collaboration.messaging.MessagingBackendService.InstantMessageDelegate;
 import org.chromium.components.data_sharing.DataSharingService;
-import org.chromium.components.data_sharing.DataSharingUIDelegate;
 import org.chromium.components.data_sharing.GroupMember;
 import org.chromium.components.data_sharing.configs.DataSharingAvatarBitmapConfig;
 import org.chromium.components.data_sharing.configs.DataSharingAvatarBitmapConfig.DataSharingAvatarCallback;
@@ -95,7 +94,7 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
     }
 
     private final List<AttachedWindowInfo> mAttachList = new ArrayList<>();
-    private final DataSharingUIDelegate mDataSharingUiDelegate;
+    private final DataSharingService mDataSharingService;
     private final TabGroupSyncService mTabGroupSyncService;
 
     /**
@@ -108,7 +107,7 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
             DataSharingService dataSharingService,
             TabGroupSyncService tabGroupSyncService) {
         messagingBackendService.setInstantMessageDelegate(this);
-        mDataSharingUiDelegate = dataSharingService.getUiDelegate();
+        mDataSharingService = dataSharingService;
         mTabGroupSyncService = tabGroupSyncService;
     }
 
@@ -244,7 +243,7 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
                         .setAvatarSizeInPixels(sizeInPixels)
                         .setDataSharingAvatarCallback(onBitmap)
                         .build();
-        mDataSharingUiDelegate.getAvatarBitmap(config);
+        mDataSharingService.getUiDelegate().getAvatarBitmap(config);
     }
 
     private void showTabRemoved(

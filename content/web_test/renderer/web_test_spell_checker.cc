@@ -21,9 +21,8 @@ namespace content {
 
 namespace {
 
-void Append(blink::WebVector<blink::WebString>* data,
-            const blink::WebString& item) {
-  blink::WebVector<blink::WebString> result(data->size() + 1);
+void Append(std::vector<blink::WebString>* data, const blink::WebString& item) {
+  std::vector<blink::WebString> result(data->size() + 1);
   for (size_t i = 0; i < data->size(); ++i)
     result[i] = (*data)[i];
   result[data->size()] = item;
@@ -135,7 +134,7 @@ bool WebTestSpellChecker::IsMultiWordMisspelling(
 
 void WebTestSpellChecker::FillSuggestionList(
     const blink::WebString& word,
-    blink::WebVector<blink::WebString>* suggestions) {
+    std::vector<blink::WebString>* suggestions) {
   if (word == "wellcome")
     Append(suggestions, blink::WebString::FromUTF8("welcome"));
   else if (word == "upper case")

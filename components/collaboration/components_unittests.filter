@@ -3,4 +3,5 @@
 *EmptyCollaborationServiceTest.*
 *MessagingBackendServiceBridgeTest.*
 *MessagingBackendServiceImplTest.*
+*MessagingBackendStoreTest.*
 *TabGroupChangeNotifierImplTest.*

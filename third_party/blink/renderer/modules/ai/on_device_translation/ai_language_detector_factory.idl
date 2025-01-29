@@ -5,10 +5,12 @@
 ]
 interface AILanguageDetectorFactory {
   [
+    Measure,
     CallWith=ScriptState,
     RaisesException
   ]
   Promise<AILanguageDetector> create(optional AILanguageDetectorCreateOptions options = {});
+  // TODO(crbug.com/390459311): Replace with availability.
   [
     CallWith=ScriptState
   ]

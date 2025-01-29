@@ -11,7 +11,6 @@ import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 import android.util.Pair;
 
 import org.chromium.base.test.transit.Elements;
-import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
@@ -19,7 +18,6 @@ import org.chromium.chrome.test.transit.SoftKeyboardFacility;
 import org.chromium.chrome.test.transit.omnibox.FakeOmniboxSuggestions;
 import org.chromium.chrome.test.transit.omnibox.OmniboxFacility;
 import org.chromium.chrome.test.transit.page.PageStation;
-import org.chromium.components.omnibox.OmniboxFeatures;
 
 import java.util.List;
 
@@ -56,11 +54,7 @@ public class RegularNewTabPageStation extends PageStation {
                 });
 
         elements.declareView(SEARCH_LOGO);
-        if (OmniboxFeatures.sAndroidHubSearch.isEnabled()) {
-            elements.declareView(SEARCH_BOX, ViewElement.unscopedOption());
-        } else {
-            elements.declareView(SEARCH_BOX);
-        }
+        elements.declareView(SEARCH_BOX);
         elements.declareView(MOST_VISITED_TILES_CONTAINER);
 
         elements.declareEnterCondition(new NtpLoadedCondition(mPageLoadedSupplier));

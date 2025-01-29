@@ -34,13 +34,7 @@ base::WeakPtr<Kcer> ExtraInstances::GetEmptyKcer() {
 // static
 base::WeakPtr<Kcer> ExtraInstances::GetDeviceKcer() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   return Get()->device_kcer_->GetWeakPtr();
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  // At the moment `device_kcer_` is never initialized for Lacros. This can be
-  // changed if needed.
-  return GetEmptyKcer();
-#endif
 }
 
 void ExtraInstances::InitializeDeviceKcer(
@@ -60,9 +54,7 @@ ExtraInstances::ExtraInstances() {
   empty_kcer_.Initialize(/*token_task_runner=*/nullptr, /*user_token=*/nullptr,
                          /*device_token=*/nullptr);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   device_kcer_ = std::make_unique<internal::KcerImpl>();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 // Never called (see NoDestructor<>).

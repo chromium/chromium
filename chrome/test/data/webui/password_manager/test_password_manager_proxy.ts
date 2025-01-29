@@ -22,7 +22,6 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
     groups: chrome.passwordsPrivate.CredentialGroup[],
     insecureCredentials: chrome.passwordsPrivate.PasswordUiEntry[],
     isAccountStorageEnabled: boolean,
-    isAccountStorageDefault: boolean,
     passwords: chrome.passwordsPrivate.PasswordUiEntry[],
     isPasswordManagerPinAvailable: boolean,
     isCloudAuthenticatorConnected: boolean,
@@ -77,7 +76,6 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       'getSavedPasswordList',
       'getUrlCollection',
       'importPasswords',
-      'isAccountStoreDefault',
       'isConnectedToCloudAuthenticator',
       'isAccountStorageEnabled',
       'isPasswordManagerPinAvailable',
@@ -110,7 +108,6 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       groups: [],
       insecureCredentials: [],
       isAccountStorageEnabled: false,
-      isAccountStorageDefault: false,
       passwords: [],
       isPasswordManagerPinAvailable: false,
       isCloudAuthenticatorConnected: false,
@@ -386,11 +383,6 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
   setAccountStorageEnabled(enabled: boolean) {
     this.methodCalled('setAccountStorageEnabled');
     this.data.isAccountStorageEnabled = enabled;
-  }
-
-  isAccountStoreDefault() {
-    this.methodCalled('isAccountStoreDefault');
-    return Promise.resolve(this.data.isAccountStorageDefault);
   }
 
   movePasswordsToAccount(ids: number[]) {

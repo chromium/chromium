@@ -4020,6 +4020,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PASSWORD_SETTINGS_CREDENTIAL_DELETION_TEXT" desc="Section title in password settings, explaining to the user what data will be deleted. [iOS Only]">
         From Google Password Manager, including passwords and passkeys
       </message>
+      <message name="IDS_IOS_PASSWORD_SETTINGS_NO_CREDENTIAL_DELETION_TEXT" desc="Section title in password settings, explaining to the user there is no data to be deleted. [iOS Only]">
+        No saved passwords or passkeys
+      </message>
       <message name="IDS_IOS_PASSWORD_SETTINGS_DELETE_ALL_CREDENTIALS_DESCRIPTION" desc="Description of the confirmation alert when the user tap delete all data button. The 'list of sites &amp; apps' corresponds to the data shown in the 'Never Saved' section in the home page of Password Manager. [iOS only]">
         {password, plural,
         =0 {{passkey, plural,

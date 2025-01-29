@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_text_checking_result.h"
 
 namespace content {
@@ -20,9 +19,8 @@ namespace content {
 // suitable for any other usages.
 class WebTestSpellChecker {
  public:
-  static void FillSuggestionList(
-      const blink::WebString& word,
-      blink::WebVector<blink::WebString>* suggestions);
+  static void FillSuggestionList(const blink::WebString& word,
+                                 std::vector<blink::WebString>* suggestions);
 
   WebTestSpellChecker();
   ~WebTestSpellChecker();

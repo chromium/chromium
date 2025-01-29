@@ -2,12 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from '//resources/js/assert.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {getLineChartColor} from '../../controller/line_chart_controller.js';
-import {DataSeries} from '../../model/data_series.js';
-import type {DataPointsStatistics} from '../../model/data_series.js';
 import {toFixedFloat} from '../../utils/number_utils.js';
 
 import {getTemplate} from './chart_summary_table.html.js';

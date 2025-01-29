@@ -171604,6 +171604,32 @@
        {}
       ]
      ],
+     "scroll-marker-group-016.html": [
+      "c2c99c664055a5f7b8b5597458e73b182930e018",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "scroll-marker-group-017.html": [
+      "54d5bcf178b23b4e96d5cb4abd5618862cc8c44b",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "scroll-marker-group-add-dynamic-001.html": [
       "b12fcdef1b1259e916c3670223289b26b02cce22",
       [
@@ -182890,6 +182916,58 @@
        [
         [
          "/css/css-scoping/slotted-file-selector-button-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "slotted-has-001.html": [
+      "f70bac7eca386d9060530c2c7b7048cc3c5c2f57",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "slotted-has-002.html": [
+      "9ecbea5d413f9244e346e90b25c678471dfc9b53",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "slotted-has-003.html": [
+      "1ea412492c567e82fe8e911a90cfd5e54f704907",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "slotted-has-004.html": [
+      "adf50da13a95a5e95e681cb726ac0c1991394d3d",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
          "=="
         ]
        ],
@@ -312145,6 +312223,12 @@
     }
    },
    "ai": {
+    "resources": {
+     "util.js": [
+      "49d677edae26df95eac3078dc6deb4dd6c3b3f72",
+      []
+     ]
+    },
     "translator": {
      "DIR_METADATA": [
       "e6ed0a4d029acba85ba0f3707f52d6b732d6f539",
@@ -371076,6 +371160,10 @@
       "parse-part-expected.txt": [
        "9158ae11684661b45fcabf57524f6cad2d0dc88a",
        []
+      ],
+      "parse-slotted-expected.txt": [
+       "4a234c6f211e55eb6876423a17cdea7848cd4788",
+       []
       ]
      },
      "remove-hovered-element-ref.html": [
@@ -386914,7 +387002,7 @@
        []
       ],
       "gentestutilsunion.py": [
-       "c9d4963d9e15976e5e57c393fb929c6c6b7da8c1",
+       "85c42c13a48f575517ae10f0db186268e9e238c7",
        []
       ],
       "name2dir-canvas.yaml": [
@@ -396391,7 +396479,7 @@
         []
        ],
        "popover-utils.js": [
-        "eb5dab38245d5a85eb80bbaaf1dce7e5ccbb7728",
+        "10783e6fc39a65001c8cf00ceccbd33d5dcc60c9",
         []
        ]
       }
@@ -398108,7 +398196,7 @@
       "interest-target": {
        "resources": {
         "invoker-utils.js": [
-         "cedc823a5bacaee9812ea0b2edb23b00735b7529",
+         "0116dbdecb27f965da840c1c0dd4cf318a6ce984",
          []
         ]
        }
@@ -450865,7 +450953,7 @@
       ]
      ],
      "ai_translator_translate.tentative.https.any.js": [
-      "ce2a722c5f9172da87f56ef062abc4c4ff1cb90e",
+      "664bc8ff2d1bfe4db995d990e23151c3dff8a89e",
       [
        "ai/translator/ai_translator_translate.tentative.https.any.html",
        {
@@ -450881,6 +450969,10 @@
          [
           "timeout",
           "long"
+         ],
+         [
+          "script",
+          "../resources/util.js"
          ]
         ],
         "timeout": "long"
@@ -450901,6 +450993,10 @@
          [
           "timeout",
           "long"
+         ],
+         [
+          "script",
+          "../resources/util.js"
          ]
         ],
         "timeout": "long"
@@ -450921,6 +451017,10 @@
          [
           "timeout",
           "long"
+         ],
+         [
+          "script",
+          "../resources/util.js"
          ]
         ],
         "timeout": "long"
@@ -450941,6 +451041,10 @@
          [
           "timeout",
           "long"
+         ],
+         [
+          "script",
+          "../resources/util.js"
          ]
         ],
         "timeout": "long"
@@ -518420,7 +518524,7 @@
        ]
       ],
       "parse-slotted.html": [
-       "4b7b4a3b56fd05a628aa92bf5e110ffccb75d9f0",
+       "47fafdf2b35d6f55098ed7464fea39d25d956694",
        [
         null,
         {}
@@ -563496,7 +563600,7 @@
       ]
      ],
      "auction-config-passed-to-worklets.https.window.js": [
-      "dae7d7d806ab8659032070dbeab291d1ad1284aa",
+      "dec49b80a96967e86d318f9e31995c1786e95654",
       [
        "fledge/tentative/auction-config-passed-to-worklets.https.window.html?1-5",
        {
@@ -572638,9 +572742,9 @@
       ]
      ],
      "score-ad-browser-signals.https.window.js": [
-      "ac9d7e337c2466a2d4897e86563cee6d768e63c2",
+      "23fee313af53b5431928f6d4c5cd406c3ccb915c",
       [
-       "fledge/tentative/score-ad-browser-signals.https.window.html",
+       "fledge/tentative/score-ad-browser-signals.https.window.html?1-last",
        {
         "script_metadata": [
          [
@@ -572666,6 +572770,10 @@
          [
           "timeout",
           "long"
+         ],
+         [
+          "variant",
+          "?1-last"
          ]
         ],
         "timeout": "long"
@@ -629344,6 +629452,15 @@
           }
          ]
         ],
+        "select-iterate-before-beginning.tentative.html": [
+         "5ccaa111499d55a1ebe8446e045bc672ff0943d7",
+         [
+          null,
+          {
+           "testdriver": true
+          }
+         ]
+        ],
         "select-keyboard-behavior.tentative.html": [
          "f6722a70637d4cb0447512775a38236c9326d4be",
          [
@@ -630158,7 +630275,7 @@
         ]
        ],
        "dialog-closedby.html": [
-        "cb72b701a0c602d318b9444b83ab314adfb2fcd7",
+        "65902ed2d5ffc2ee45e367b188012f2da87e0c36",
         [
          null,
          {
@@ -631022,7 +631139,7 @@
        ]
       ],
       "popover-attribute-basic.html": [
-       "067ce18f6a0b8ccae75c8a774c5a70243a555b32",
+       "51fc8885629b0d22fd877c4ec015ab87a122800f",
        [
         null,
         {
@@ -636083,7 +636200,7 @@
         ]
        ],
        "interesttarget-basic-delays.tentative.html": [
-        "eb5d9b6a855aad4be2a6008fd4f3918a9fe85fb3",
+        "9a4806a8ae60e1baf36ff5465301248243aac36c",
         [
          null,
          {
@@ -636116,7 +636233,7 @@
         ]
        ],
        "interesttarget-has-interest-pseudo.tentative.html": [
-        "2c097a5824945027b978c3e51b28ac239c92d1c6",
+        "2ace6fdcd44e028bf8ddc4bb68f33e67afa403a8",
         [
          null,
          {
@@ -636125,7 +636242,7 @@
         ]
        ],
        "interesttarget-hide-delay.tentative.html": [
-        "a1499b83752e0dae25db30cedeec1dd128eac632",
+        "71d4babec7cb66373e952051959a62e9e7f2564f",
         [
          null,
          {
@@ -636144,7 +636261,7 @@
         ]
        ],
        "interesttarget-show-delay.tentative.html": [
-        "599d61f91a8c2849bd2a549b1d86878405380f39",
+        "a260eda3fb71704a53c271f8638c581fdd950a06",
         [
          null,
          {

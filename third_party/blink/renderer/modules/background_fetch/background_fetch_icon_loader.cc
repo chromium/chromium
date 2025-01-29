@@ -96,7 +96,7 @@ void BackgroundFetchIconLoader::DidGetIconDisplaySizeIfSoLoadIcon(
 KURL BackgroundFetchIconLoader::PickBestIconForDisplay(
     ExecutionContext* execution_context,
     int ideal_size_pixels) {
-  WebVector<Manifest::ImageResource> icons;
+  std::vector<Manifest::ImageResource> icons;
   for (auto& icon : icons_) {
     // Update the src of |icon| to include the base URL in case relative paths
     // were used.

@@ -29,6 +29,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/check.h"
 #include "base/check_is_test.h"
 #include "base/containers/span.h"
@@ -39,12 +40,14 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/account_id/account_id.h"
 #include "components/feedback/feedback_constants.h"
 #include "components/manta/proto/scanner.pb.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
@@ -60,6 +63,29 @@ constexpr char kScannerNotifierId[] = "ash.scanner";
 
 constexpr char kScannerActionSuccessToastId[] = "scanner_action_success";
 constexpr char kScannerActionFailureToastId[] = "scanner_action_failure";
+
+std::u16string GetToastMessageForActionFailure(
+    manta::proto::ScannerAction::ActionCase action_case) {
+  switch (action_case) {
+    case manta::proto::ScannerAction::kNewEvent:
+      return l10n_util::GetStringUTF16(
+          IDS_ASH_SCANNER_ACTION_FAILURE_TOAST_CREATE_EVENT);
+    case manta::proto::ScannerAction::kNewContact:
+      return l10n_util::GetStringUTF16(
+          IDS_ASH_SCANNER_ACTION_FAILURE_TOAST_CREATE_CONTACT);
+    case manta::proto::ScannerAction::kNewGoogleDoc:
+      return l10n_util::GetStringUTF16(
+          IDS_ASH_SCANNER_ACTION_FAILURE_TOAST_CREATE_DOC);
+    case manta::proto::ScannerAction::kNewGoogleSheet:
+      return l10n_util::GetStringUTF16(
+          IDS_ASH_SCANNER_ACTION_FAILURE_TOAST_CREATE_SHEET);
+    case manta::proto::ScannerAction::kCopyToClipboard:
+      return l10n_util::GetStringUTF16(
+          IDS_ASH_SCANNER_ACTION_FAILURE_TOAST_COPY_TEXT_AND_FORMAT);
+    case manta::proto::ScannerAction::ACTION_NOT_SET:
+      NOTREACHED();
+  }
+}
 
 // Shows an action progress notification. Note that this will remove the
 // previous action notification if there is one.
@@ -440,12 +466,9 @@ void ScannerController::OnActionFinished(
 
     ToastManager::Get()->Show(std::move(toast_data));
   } else {
-    // TODO: crbug.com/383926250 - The action failure text should depend on the
-    // type of action attempted.
-    constexpr char16_t kPlaceholderActionFailureText[] = u"Action Failed";
-    ToastManager::Get()->Show(ToastData(kScannerActionFailureToastId,
-                                        ToastCatalogName::kScannerActionFailure,
-                                        kPlaceholderActionFailureText));
+    ToastManager::Get()->Show(ToastData(
+        kScannerActionFailureToastId, ToastCatalogName::kScannerActionFailure,
+        GetToastMessageForActionFailure(action_case)));
   }
 
   if (!on_action_finished_for_testing_.is_null()) {

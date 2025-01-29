@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/graphics/video_frame_resource_provider.h"
 
 #include <memory>
+#include <vector>
 
 #include "base/containers/adapters.h"
 #include "base/containers/to_vector.h"
@@ -20,7 +21,6 @@
 #include "media/base/limits.h"
 #include "media/base/video_frame.h"
 #include "media/renderers/video_resource_updater.h"
-#include "third_party/blink/public/platform/web_vector.h"
 
 namespace blink {
 

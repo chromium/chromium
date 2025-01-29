@@ -232,6 +232,58 @@ export declare interface GlicBrowserHost {
    * be enabled only when it's necessary.
    */
   setAudioDucking?(enabled: boolean): void;
+
+  /**
+   * Returns an object that holds metrics-related functionality.
+   */
+  getMetrics?(): GlicBrowserHostMetrics;
+}
+
+/**
+ * @todo Not yet implemented. https://crbug.com/391417447
+ *
+ * Provides measurement-related functionality to the Glic web client.
+ *
+ * The typical sequence of events should be either:
+ *  onUserInputSubmitted -> onResponseStarted -> onResponseStopped -> (repeat)
+ * or
+ *  onUserInputSubmitted -> onResponseStopped -> (repeat)
+ *
+ * This is the core flow for metrics and the web client should do its best to
+ * provide accurate and timely callbacks.
+ *
+ * The concepts of session and rating are less well defined. There are
+ * intentionally no constraints on when or how often they are called.
+ */
+export declare interface GlicBrowserHostMetrics {
+  /**
+   *
+   * Called when the user has submitted input via the web client.
+   *
+   */
+  onUserInputSubmitted?(mode: WebClientMode): void;
+
+  /**
+   * Called when the web client has sufficiently processed the input such that
+   * it is able to start providing a response.
+   */
+  onResponseStarted?(): void;
+
+  /**
+   * Called when the response was completed, cancelled, or paused for the first
+   * time.
+   */
+  onResponseStopped?(): void;
+
+  /**
+   * Called when a session terminates.
+   */
+  onSessionTerminated?(): void;
+
+  /**
+   * Called when the user rates a response.
+   */
+  onResponseRated?(positive: boolean): void;
 }
 
 /** Web client's operation modes */

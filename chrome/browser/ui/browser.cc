@@ -3630,7 +3630,7 @@ bool Browser::ShouldCreateBackgroundContents(
 
   // Ensure that we're trying to open this from the extension's process.
   extensions::ProcessMap* process_map = extensions::ProcessMap::Get(profile_);
-  if (!source_site_instance->GetProcess() ||
+  if (!source_site_instance->HasProcess() ||
       !process_map->Contains(
           extension->id(),
           source_site_instance->GetProcess()->GetDeprecatedID())) {

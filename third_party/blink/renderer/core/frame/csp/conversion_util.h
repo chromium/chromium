@@ -18,7 +18,7 @@ CORE_EXPORT
 network::mojom::blink::ContentSecurityPolicyPtr ConvertToMojoBlink(
     const WebContentSecurityPolicy& policy);
 
-// Helper function that applies ConvertToBlink above to a WebVector.
+// Helper function that applies ConvertToBlink above to a std::vector.
 CORE_EXPORT
 Vector<network::mojom::blink::ContentSecurityPolicyPtr> ConvertToMojoBlink(
     const std::vector<WebContentSecurityPolicy>& policy);

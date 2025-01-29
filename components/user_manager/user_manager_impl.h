@@ -432,11 +432,20 @@ class USER_MANAGER_EXPORT UserManagerImpl : public UserManager {
   // Notifies observers that merge session state had changed.
   void NotifyMergeSessionStateChanged();
 
-  // Insert |user| at the front of the LRU user list.
-  void SetLRUUser(User* user);
+  // Handles the given user's log-in state update.
+  void OnUserLoggedIn(User& user, std::string_view username_hash);
 
-  // Updates num-users crash key.
-  void UpdateCrashKey(int num_users, std::optional<UserType> active_user_type);
+  // Handles the event that a Primary user session is created.
+  void OnPrimaryUserLoggedIn(User& user);
+
+  // Handles the active user switching.
+  void OnActiveUserSwitched(User& new_active_user);
+
+  // Updates "num-users" crash key.
+  static void UpdateNumLoggedInUsersCrashKey(size_t num_users);
+
+  // Updates "session-type" crash key.
+  static void UpdateSessionTypeCrashKey(UserType active_user_type);
 
   // Sends metrics in response to a user with gaia account (regular) logging in.
   void SendGaiaUserLoginMetrics(const AccountId& account_id);

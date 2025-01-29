@@ -279,7 +279,7 @@ TEST_F(PasswordSettingsViewControllerTest,
   id<PasswordSettingsConsumer> consumer =
       base::apple::ObjCCast<PasswordSettingsViewController>(controller());
   [consumer setCanDeleteAllCredentials:NO];
-  [consumer updateDeleteAllCredentialsButton];
+  [consumer updateDeleteAllCredentialsSection];
   EXPECT_TRUE(
       GetTableViewItem(ExpectedSectionAfterAlwaysVisibleTopSections() + 1,
                        /*item=*/0)
@@ -299,7 +299,7 @@ TEST_F(PasswordSettingsViewControllerTest,
   id<PasswordSettingsConsumer> consumer =
       base::apple::ObjCCast<PasswordSettingsViewController>(controller());
   [consumer setCanDeleteAllCredentials:YES];
-  [consumer updateDeleteAllCredentialsButton];
+  [consumer updateDeleteAllCredentialsSection];
   EXPECT_FALSE(
       GetTableViewItem(ExpectedSectionAfterAlwaysVisibleTopSections() + 1,
                        /*item=*/0)

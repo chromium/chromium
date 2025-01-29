@@ -1563,6 +1563,9 @@ extern const char kOmniboxStarterPackExpansionDescription[];
 extern const char kOmniboxStarterPackIPHName[];
 extern const char kOmniboxStarterPackIPHDescription[];
 
+extern const char kOmniboxFocusTriggersWebAndSRPZeroSuggestName[];
+extern const char kOmniboxFocusTriggersWebAndSRPZeroSuggestDescription[];
+
 extern const char kOmniboxZeroSuggestPrefetchDebouncingName[];
 extern const char kOmniboxZeroSuggestPrefetchDebouncingDescription[];
 

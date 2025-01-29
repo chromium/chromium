@@ -10,10 +10,40 @@
 #include "base/compiler_specific.h"
 #include "base/strings/string_util.h"
 #include "chromeos/ash/experiences/arc/intent_helper/intent_constants.h"
-#include "chromeos/ash/experiences/arc/mojom/intent_helper.mojom.h"
 #include "url/gurl.h"
 
 namespace arc {
+
+bool IsKnownPatternType(PatternType type) {
+  switch (type) {
+    case PatternType::kUnknown:
+    case PatternType::kLiteral:
+    case PatternType::kPrefix:
+    case PatternType::kSimpleGlob:
+    case PatternType::kAdvancedGlob:
+    case PatternType::kSuffix:
+      return true;
+  }
+  return false;
+}
+
+std::ostream& operator<<(std::ostream& os, PatternType type) {
+  switch (type) {
+    case PatternType::kUnknown:
+      return os << "kUnknown";
+    case PatternType::kLiteral:
+      return os << "kLiteral";
+    case PatternType::kPrefix:
+      return os << "kPrefix";
+    case PatternType::kSimpleGlob:
+      return os << "kSimpleGlob";
+    case PatternType::kAdvancedGlob:
+      return os << "kAdvancedGlob";
+    case PatternType::kSuffix:
+      return os << "kSuffix";
+  }
+  return os << "Unknown PatternType value: " << static_cast<int>(type);
+}
 
 IntentFilter::IntentFilter() = default;
 IntentFilter::IntentFilter(IntentFilter&& other) = default;
@@ -87,7 +117,7 @@ IntentFilter::PatternMatcher::PatternMatcher(
     IntentFilter::PatternMatcher&& other) = default;
 
 IntentFilter::PatternMatcher::PatternMatcher(const std::string& pattern,
-                                             mojom::PatternType match_type)
+                                             PatternType match_type)
     : pattern_(pattern), match_type_(match_type) {}
 
 IntentFilter::PatternMatcher& IntentFilter::PatternMatcher::operator=(

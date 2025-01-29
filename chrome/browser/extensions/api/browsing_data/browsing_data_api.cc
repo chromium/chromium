@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 // Defines the Chrome Extensions BrowsingData API functions, which entail
 // clearing browsing data, and clearing the browser's cache (which, let's be
 // honest, are the same thing), as specified in the extension API JSON.

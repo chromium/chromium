@@ -915,7 +915,7 @@ void RenderThreadImpl::InitializeRenderer(
   user_agent_metadata_ = user_agent_metadata;
   cors_exempt_header_list_ = cors_exempt_header_list;
 
-  blink::WebVector<blink::WebString> web_cors_exempt_header_list(
+  std::vector<blink::WebString> web_cors_exempt_header_list(
       cors_exempt_header_list.size());
   std::ranges::transform(
       cors_exempt_header_list, web_cors_exempt_header_list.begin(),

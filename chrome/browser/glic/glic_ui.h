@@ -31,6 +31,12 @@ class GlicUI : public ui::MojoWebUIController,
   void BindInterface(
       mojo::PendingReceiver<glic::mojom::PageHandlerFactory> receiver);
 
+  // When called, the UI will believe it is offline when it is launched from the
+  // current test.
+  static void simulate_no_connection_for_testing() {
+    simulate_no_connection_ = true;
+  }
+
  private:
   void CreatePageHandler(
       mojo::PendingReceiver<glic::mojom::PageHandler> receiver) override;
@@ -38,6 +44,8 @@ class GlicUI : public ui::MojoWebUIController,
   std::unique_ptr<GlicPageHandler> page_handler_;
 
   mojo::Receiver<glic::mojom::PageHandlerFactory> page_factory_receiver_{this};
+
+  static bool simulate_no_connection_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

@@ -120,7 +120,7 @@ void ContentCaptureTask::SendContent(
   auto* client = GetWebContentCaptureClient(*document);
   DCHECK(client);
 
-  WebVector<WebContentHolder> content_batch;
+  std::vector<WebContentHolder> content_batch;
   content_batch.reserve(kBatchSize);
   // Only send changed content after the new content was sent.
   bool sending_changed_content = !doc_session.HasUnsentCapturedContent();

@@ -159,13 +159,13 @@ URLLoaderThrottleProviderImpl::Clone() {
       main_thread_task_runner_, base::PassKey<URLLoaderThrottleProviderImpl>());
 }
 
-blink::WebVector<std::unique_ptr<blink::URLLoaderThrottle>>
+std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
 URLLoaderThrottleProviderImpl::CreateThrottles(
     base::optional_ref<const blink::LocalFrameToken> local_frame_token,
     const network::ResourceRequest& request) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  blink::WebVector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
+  std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
 
   // Some throttles have already been added in the browser for frame resources.
   // Don't add them for frame requests.

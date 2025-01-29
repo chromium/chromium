@@ -13,9 +13,13 @@
 #include <utility>
 #include <vector>
 
+#include "base/files/file_util.h"
+#include "base/json/json_string_value_serializer.h"
 #include "base/memory/ref_counted.h"
+#include "base/process/launch.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/enterprise_companion/global_constants.h"
@@ -29,12 +33,15 @@
 #include "chrome/updater/test/integration_tests_impl.h"
 #include "chrome/updater/test/test_scope.h"
 #include "chrome/updater/test/unit_test_util.h"
+#include "chrome/updater/updater_branding.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/test/test_reg_util_win.h"
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/win_constants.h"
+#elif BUILDFLAG(IS_MAC)
+#include "chrome/updater/util/mac_util.h"
 #endif
 
 namespace updater {
@@ -43,7 +50,7 @@ namespace {
 
 #if BUILDFLAG(IS_WIN)
 constexpr char kGlobalPolicyKey[] = "";
-#elif !BUILDFLAG(IS_MAC)
+#else
 constexpr char kGlobalPolicyKey[] = "global";
 #endif
 
@@ -840,12 +847,6 @@ TEST_F(PolicyServiceTest, PolicyServiceProxyConfiguration_Get) {
 class PolicyManagersTest : public ::testing::Test {
  protected:
   void SetUp() override {
-#if BUILDFLAG(IS_MAC)
-    if (IsSystemInstall(GetUpdaterScopeForTesting())) {
-      GTEST_SKIP();
-    }
-#endif
-
     ASSERT_NO_FATAL_FAILURE(DeleteOverridesFile());
 
 #if BUILDFLAG(IS_WIN)
@@ -854,19 +855,60 @@ class PolicyManagersTest : public ::testing::Test {
 #endif
   }
 
-  void TearDown() override {
-#if BUILDFLAG(IS_MAC)
-    if (IsSystemInstall(GetUpdaterScopeForTesting())) {
-      GTEST_SKIP();
-    }
-#endif
-
-    ASSERT_NO_FATAL_FAILURE(DeleteOverridesFile());
-  }
+  void TearDown() override { ASSERT_NO_FATAL_FAILURE(DeleteOverridesFile()); }
 
   void DeleteOverridesFile() {
-    ASSERT_TRUE(
-        test::DeleteFileAndEmptyParentDirectories(overrides_file_path_));
+    ASSERT_TRUE(base::DeleteFile(*overrides_file_path_))
+        << *overrides_file_path_;
+  }
+
+#if BUILDFLAG(IS_MAC)
+  void RunCommand(const std::vector<std::string> argv,
+                  bool check_result = false) const {
+    base::Process process = base::LaunchProcess(argv, {});
+    if (!process.IsValid()) {
+      VLOG(2) << "Failed to launch command.";
+      return;
+    }
+    int exit_code = -1;
+    EXPECT_TRUE(process.WaitForExitWithTimeout(TestTimeouts::action_timeout(),
+                                               &exit_code));
+    if (check_result) {
+      EXPECT_EQ(exit_code, 0);
+    }
+  }
+#endif
+
+  void SetPlatformPolicies(const base::Value::Dict& policies) const {
+#if BUILDFLAG(IS_MAC)
+    const base::FilePath policy_file_path =
+        GetLibraryFolderPath(UpdaterScope::kSystem)
+            ->AppendASCII("Managed Preferences")
+            .AppendASCII(LEGACY_GOOGLE_UPDATE_APPID ".plist");
+
+    if (!base::PathExists(policy_file_path)) {
+      RunCommand(std::vector<std::string>({"/usr/bin/sudo", "/usr/bin/plutil",
+                                           "-create", "binary1",
+                                           policy_file_path.value()}));
+    }
+
+    std::string policy_json_string;
+    JSONStringValueSerializer serializer(&policy_json_string);
+    serializer.Serialize(policies);
+    RunCommand(std::vector<std::string>(
+        {"/usr/bin/sudo", "/usr/bin/plutil", "-replace", "updatePolicies",
+         "-json", policy_json_string, policy_file_path.value()}));
+
+    // Refresh policies and force flushing preferences cache.
+    const CFStringRef domain = CFSTR(LEGACY_GOOGLE_UPDATE_APPID);
+    ASSERT_TRUE(CFPreferencesSynchronize(domain, kCFPreferencesAnyUser,
+                                         kCFPreferencesCurrentHost));
+    RunCommand(std::vector<std::string>(
+                   {"/usr/bin/sudo", "/usr/bin/killall", "cfprefsd"}),
+               /*check_result=*/false);
+#else
+    test::SetPlatformPolicies(policies);
+#endif
   }
 
  private:
@@ -918,9 +960,13 @@ TEST_F(PolicyManagersTest, ValidDeviceManagementManager) {
   }
 }
 
-// TODO(crbug.com/389965546): enable these tests for mac.
-#if !BUILDFLAG(IS_MAC)
 TEST_F(PolicyManagersTest, ValidDictPlatformPolicies) {
+#if BUILDFLAG(IS_MAC)
+  if (!IsSystemInstall(GetUpdaterScopeForTesting())) {
+    GTEST_SKIP() << "test skipped for user install.";
+  }
+#endif
+
   base::Value::Dict dict_policies;
   dict_policies.Set("a", 1);
 
@@ -933,7 +979,7 @@ TEST_F(PolicyManagersTest, ValidDictPlatformPolicies) {
   policies.Set(kGlobalPolicyKey,
                base::Value::Dict().Set("CloudPolicyOverridesPlatformPolicy",
                                        kPolicyEnabled));
-  ASSERT_NO_FATAL_FAILURE(test::SetPlatformPolicies(policies));
+  ASSERT_NO_FATAL_FAILURE(SetPlatformPolicies(policies));
 
   PolicyService::PolicyManagers managers(CreateExternalConstants());
   managers.ResetDeviceManagementManager({});
@@ -950,13 +996,19 @@ TEST_F(PolicyManagersTest, ValidDictPlatformPolicies) {
 }
 
 TEST_F(PolicyManagersTest, ValidDeviceManagementPlatformPolicyNoCloudOverride) {
+#if BUILDFLAG(IS_MAC)
+  if (!IsSystemInstall(GetUpdaterScopeForTesting())) {
+    GTEST_SKIP() << "test skipped for user install.";
+  }
+#endif
+
   ASSERT_TRUE(ExternalConstantsBuilder().SetMachineManaged(true).Overwrite());
 
   base::Value::Dict policies;
   policies.Set(kGlobalPolicyKey,
                base::Value::Dict().Set("CloudPolicyOverridesPlatformPolicy",
                                        kPolicyDisabled));
-  ASSERT_NO_FATAL_FAILURE(test::SetPlatformPolicies(policies));
+  ASSERT_NO_FATAL_FAILURE(SetPlatformPolicies(policies));
 
   auto omaha_settings =
       std::make_unique<::wireless_android_enterprise_devicemanagement::
@@ -984,13 +1036,19 @@ TEST_F(PolicyManagersTest, ValidDeviceManagementPlatformPolicyNoCloudOverride) {
 }
 
 TEST_F(PolicyManagersTest, ValidDeviceManagementPlatformPolicyCloudOverride) {
+#if BUILDFLAG(IS_MAC)
+  if (!IsSystemInstall(GetUpdaterScopeForTesting())) {
+    GTEST_SKIP() << "test skipped for user install.";
+  }
+#endif
+
   ASSERT_TRUE(ExternalConstantsBuilder().SetMachineManaged(true).Overwrite());
 
   base::Value::Dict policies;
   policies.Set(kGlobalPolicyKey,
                base::Value::Dict().Set("CloudPolicyOverridesPlatformPolicy",
                                        kPolicyEnabled));
-  ASSERT_NO_FATAL_FAILURE(test::SetPlatformPolicies(policies));
+  ASSERT_NO_FATAL_FAILURE(SetPlatformPolicies(policies));
 
   auto omaha_settings =
       std::make_unique<::wireless_android_enterprise_devicemanagement::
@@ -1012,6 +1070,12 @@ TEST_F(PolicyManagersTest, ValidDeviceManagementPlatformPolicyCloudOverride) {
 
 TEST_F(PolicyManagersTest,
        ValidDictDeviceManagementPlatformPolicyCloudOverride) {
+#if BUILDFLAG(IS_MAC)
+  if (!IsSystemInstall(GetUpdaterScopeForTesting())) {
+    GTEST_SKIP() << "test skipped for user install.";
+  }
+#endif
+
   base::Value::Dict dict_policies;
   dict_policies.Set("a", 1);
 
@@ -1024,7 +1088,7 @@ TEST_F(PolicyManagersTest,
   policies.Set(kGlobalPolicyKey,
                base::Value::Dict().Set("CloudPolicyOverridesPlatformPolicy",
                                        kPolicyEnabled));
-  ASSERT_NO_FATAL_FAILURE(test::SetPlatformPolicies(policies));
+  ASSERT_NO_FATAL_FAILURE(SetPlatformPolicies(policies));
 
   auto omaha_settings =
       std::make_unique<::wireless_android_enterprise_devicemanagement::
@@ -1044,6 +1108,5 @@ TEST_F(PolicyManagersTest,
   EXPECT_EQ(managers.managers()[2 + kPlatformPolicyManagerDefined]->source(),
             "Default");
 }
-#endif  // !BUILDFLAG(IS_MAC)
 
 }  // namespace updater

@@ -3845,7 +3845,7 @@ TEST_P(PartitionAllocTest, ZapOnFree) {
   void* ptr = allocator.root()->Alloc(1, type_name);
   EXPECT_TRUE(ptr);
   memset(ptr, 'A', 1);
-  constexpr auto kFlags = FreeFlags::kZap | FreeFlags::kSchedulerLoopQuarantine;
+  constexpr auto kFlags = FreeFlags::kSchedulerLoopQuarantine;
   allocator.root()->Free<kFlags>(ptr);
   // Accessing memory after free requires a retag.
   ptr = TagPtr(ptr);

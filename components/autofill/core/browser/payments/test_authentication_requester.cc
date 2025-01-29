@@ -27,6 +27,7 @@ void TestAuthenticationRequester::OnCvcAuthenticationComplete(
   if (*did_succeed_) {
     DCHECK(response.card);
     number_ = response.card->number();
+    record_type_ = response.card->record_type();
   }
 }
 
@@ -48,6 +49,7 @@ void TestAuthenticationRequester::OnFIDOAuthenticationComplete(
   if (*did_succeed_) {
     DCHECK(response.card);
     number_ = response.card->number();
+    record_type_ = response.card->record_type();
   }
   failure_type_ = response.failure_type;
 }
@@ -71,6 +73,7 @@ void TestAuthenticationRequester::OnOtpAuthenticationComplete(
   if (*did_succeed_) {
     DCHECK(response.card);
     number_ = response.card->number();
+    record_type_ = response.card->record_type();
   }
 }
 

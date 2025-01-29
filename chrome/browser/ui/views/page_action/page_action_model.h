@@ -37,6 +37,8 @@ class PageActionModelInterface {
       const actions::ActionItem* action_item) = 0;
   virtual void SetShowRequested(base::PassKey<PageActionController>,
                                 bool requested) = 0;
+  virtual void SetTabActive(base::PassKey<PageActionController>,
+                            bool is_active) = 0;
   virtual void SetHasPinnedIcon(base::PassKey<PageActionController>,
                                 bool has_pinned_icon) = 0;
   virtual void SetOverrideText(
@@ -67,6 +69,8 @@ class PageActionModel : public PageActionModelInterface {
                                const actions::ActionItem* action_item) override;
   void SetShowRequested(base::PassKey<PageActionController>,
                         bool requested) override;
+  void SetTabActive(base::PassKey<PageActionController>,
+                    bool is_active) override;
   void SetHasPinnedIcon(base::PassKey<PageActionController>,
                         bool has_pinned_icon) override;
 
@@ -85,6 +89,9 @@ class PageActionModel : public PageActionModelInterface {
  private:
   // Notifies observers of a model change.
   void NotifyChange();
+
+  // Represents whether the tab this model belongs to is active.
+  bool is_tab_active_ = false;
 
   // Represents whether this page action has a corresponding pinned icon sharing
   // the same action.

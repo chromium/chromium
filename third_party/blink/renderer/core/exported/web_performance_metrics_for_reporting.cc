@@ -74,7 +74,7 @@ WebPerformanceMetricsForReporting::BackForwardCacheRestore() const {
       restore_timings =
           private_->timingForReporting()->BackForwardCacheRestore();
 
-  WebVector<BackForwardCacheRestoreTiming> timings(restore_timings.size());
+  std::vector<BackForwardCacheRestoreTiming> timings(restore_timings.size());
   for (wtf_size_t i = 0; i < restore_timings.size(); i++) {
     timings[i].navigation_start =
         base::Milliseconds(restore_timings[i].navigation_start).InSecondsF();

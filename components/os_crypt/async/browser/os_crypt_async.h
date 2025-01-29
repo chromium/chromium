@@ -14,6 +14,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/types/expected.h"
 #include "components/os_crypt/async/browser/key_provider.h"
 #include "components/os_crypt/async/common/encryptor.h"
 
@@ -76,7 +77,7 @@ class COMPONENT_EXPORT(OS_CRYPT_ASYNC) OSCryptAsync {
   void CallbackHelper(InitCallback callback, Encryptor::Option option) const;
   void HandleKey(ProviderIterator current,
                  const std::string& tag,
-                 std::optional<Encryptor::Key> key);
+                 base::expected<Encryptor::Key, KeyProvider::KeyError> key);
 
   std::unique_ptr<Encryptor> encryptor_instance_
       GUARDED_BY_CONTEXT(sequence_checker_);

@@ -1184,10 +1184,7 @@ void LayerTreeHost::AnimateLayers(base::TimeTicks monotonic_time) {
     mutator_host()->UpdateAnimationState(true, events.get());
 
   if (!events->IsEmpty()) {
-    // If not using layer lists, animation state changes will require
-    // rebuilding property trees to track them.
-    if (!IsUsingLayerLists())
-      property_trees()->set_needs_rebuild(true);
+    property_tree_delegate_->OnAnimateLayers();
 
     // A commit is required to push animation changes to the compositor.
     SetNeedsCommit();

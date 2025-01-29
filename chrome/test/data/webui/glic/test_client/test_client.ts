@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {GlicBrowserHost, GlicWebClient, Observable, TabData} from 'chrome://glic/glic_api/glic_api.js';
+import type {GlicBrowserHost, GlicWebClient, Observable, OpenPanelInfo, PanelState, TabData} from '/glic/glic_api/glic_api.js';
+import {WebClientMode} from '/glic/glic_api/glic_api.js';
 
 import {createGlicHostRegistryOnLoad} from '../api_boot.js';
 
@@ -91,6 +92,13 @@ class WebClient implements GlicWebClient {
         updatePermissionSwitch(permission, enabled);
       });
     }
+  }
+
+  async notifyPanelWillOpen(panelState: PanelState):
+      Promise<void|OpenPanelInfo> {
+    logMessage(`notifyPanelWillOpen(${JSON.stringify(panelState)})`);
+    this.browser!.resizeWindow(400, 500);
+    return {startingMode: WebClientMode.TEXT};
   }
 
   async notifyPanelClosed() {

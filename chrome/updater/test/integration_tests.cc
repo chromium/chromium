@@ -1669,15 +1669,43 @@ TEST_F(IntegrationTest, MultipleUpdateAllsMultipleNetRequests) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
-TEST_F(IntegrationTest, GetAppStates) {
+class IntegrationGetAppStatesTest : public ::testing::WithParamInterface<bool>,
+                                    public IntegrationTest {
+ public:
+  bool UseLegacyInstallApp() const { return GetParam(); }
+
+  void InstallAppId(const std::string& app_id) {
+    if (UseLegacyInstallApp()) {
+#if BUILDFLAG(IS_WIN)
+      ASSERT_NO_FATAL_FAILURE(LegacyInstallApp(app_id));
+#else
+      FAIL();
+#endif
+    } else {
+      ASSERT_NO_FATAL_FAILURE(InstallApp(app_id));
+    }
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(UseLegacyInstallApp,
+                         IntegrationGetAppStatesTest,
+#if BUILDFLAG(IS_WIN)
+                         ::testing::Bool());
+#else
+                         ::testing::Values(false));
+#endif
+
+TEST_P(IntegrationGetAppStatesTest, Test) {
   ScopedServer test_server(test_commands_);
   ASSERT_NO_FATAL_FAILURE(Install());
 
   const std::string kAppId("test");
   const base::Version v1("0.1");
-  ASSERT_NO_FATAL_FAILURE(InstallApp(kAppId));
+  ASSERT_NO_FATAL_FAILURE(InstallAppId(kAppId));
 
-  ASSERT_NO_FATAL_FAILURE(ExpectAppVersion(kAppId, v1));
+  if (!UseLegacyInstallApp()) {
+    ASSERT_NO_FATAL_FAILURE(ExpectAppVersion(kAppId, v1));
+  }
 
   base::Value::Dict expected_app_state;
   expected_app_state.Set("app_id", kAppId);
@@ -1691,6 +1719,7 @@ TEST_F(IntegrationTest, GetAppStates) {
   expected_app_states.Set(kAppId, std::move(expected_app_state));
 
   ASSERT_NO_FATAL_FAILURE(GetAppStates(expected_app_states));
+  ASSERT_NO_FATAL_FAILURE(ExpectAppVersion(kAppId, v1));
 
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
   ASSERT_NO_FATAL_FAILURE(Uninstall());

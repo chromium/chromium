@@ -9,6 +9,7 @@
 #include <array>
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
@@ -27,7 +28,6 @@
 #include "components/spellcheck/renderer/spellcheck_language.h"
 #include "components/spellcheck/renderer/spellcheck_provider_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_text_checking_completion.h"
 #include "third_party/blink/public/web/web_text_checking_result.h"
 
@@ -114,7 +114,7 @@ class SpellCheckTest : public testing::Test {
  protected:
   void TestSpellCheckParagraph(const std::u16string& input,
                                const std::vector<SpellCheckResult>& expected) {
-    blink::WebVector<blink::WebTextCheckingResult> results;
+    std::vector<blink::WebTextCheckingResult> results;
     spell_check()->SpellCheckParagraph(input, provider_.GetSpellCheckHost(),
                                        &results);
 
@@ -139,7 +139,7 @@ class SpellCheckTest : public testing::Test {
 
 struct MockTextCheckingResult {
   size_t completion_count_ = 0;
-  blink::WebVector<blink::WebTextCheckingResult> last_results_;
+  std::vector<blink::WebTextCheckingResult> last_results_;
 };
 
 // A fake completion object for verification.
@@ -149,7 +149,7 @@ class MockTextCheckingCompletion : public blink::WebTextCheckingCompletion {
       : result_(result) {}
 
   void DidFinishCheckingText(
-      const blink::WebVector<blink::WebTextCheckingResult>& results) override {
+      const std::vector<blink::WebTextCheckingResult>& results) override {
     result_->completion_count_++;
     result_->last_results_ = results;
   }
@@ -1256,7 +1256,7 @@ TEST_F(SpellCheckTest, CreateTextCheckingResultsKeepsMarkers) {
   std::vector<SpellCheckResult> spellcheck_results;
   spellcheck_results.push_back(
       SpellCheckResult(SpellCheckResult::SPELLING, 0, 2, std::u16string()));
-  blink::WebVector<blink::WebTextCheckingResult> textcheck_results;
+  std::vector<blink::WebTextCheckingResult> textcheck_results;
   spell_check()->CreateTextCheckingResults(
       SpellCheck::USE_HUNSPELL_FOR_GRAMMAR, provider_.GetSpellCheckHost(), 0,
       text, spellcheck_results, &textcheck_results);
@@ -1274,7 +1274,7 @@ TEST_F(SpellCheckTest, CreateTextCheckingResultsAddsGrammarMarkers) {
   std::vector<SpellCheckResult> spellcheck_results;
   spellcheck_results.push_back(
       SpellCheckResult(SpellCheckResult::SPELLING, 7, 4, std::u16string()));
-  blink::WebVector<blink::WebTextCheckingResult> textcheck_results;
+  std::vector<blink::WebTextCheckingResult> textcheck_results;
   spell_check()->CreateTextCheckingResults(
       SpellCheck::USE_HUNSPELL_FOR_GRAMMAR, provider_.GetSpellCheckHost(), 0,
       text, spellcheck_results, &textcheck_results);
@@ -1348,7 +1348,7 @@ TEST_F(SpellCheckTest, CreateTextCheckingResultsKeepsTypographicalApostrophe) {
       SpellCheckResult(SpellCheckResult::SPELLING, 6, 6,
                        std::vector<std::u16string>({u"have", u"haven't"})));
 
-  blink::WebVector<blink::WebTextCheckingResult> textcheck_results;
+  std::vector<blink::WebTextCheckingResult> textcheck_results;
   spell_check()->CreateTextCheckingResults(
       SpellCheck::USE_HUNSPELL_FOR_GRAMMAR, provider_.GetSpellCheckHost(), 0,
       text, spellcheck_results, &textcheck_results);

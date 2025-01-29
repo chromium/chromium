@@ -61,9 +61,6 @@ class XdgActivation : public wl::GlobalObjectRegistrar<XdgActivation> {
 
   const raw_ptr<WaylandConnection> connection_;
 
-  scoped_refptr<base::SequencedTaskRunner> task_runner_ =
-      base::SequencedTaskRunner::GetCurrentDefault();
-
   base::WeakPtrFactory<XdgActivation> weak_ptr_factory_{this};
 };
 

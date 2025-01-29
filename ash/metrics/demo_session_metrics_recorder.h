@@ -83,9 +83,10 @@ class ASH_EXPORT DemoSessionMetricsRecorder
     kZoom = 39,
     kSumo = 40,
     kAdobeSpark = 41,
+    kMinecraft = 42,
     // Add future entries above this comment, in sync with enums.xml.
     // Update kMaxValue to the last value.
-    kMaxValue = kAdobeSpark,
+    kMaxValue = kMinecraft,
   };
 
   static constexpr char kUserClicksAndPressesMetric[] =

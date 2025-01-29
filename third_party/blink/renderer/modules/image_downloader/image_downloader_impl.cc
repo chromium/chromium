@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/modules/image_downloader/image_downloader_impl.h"
 
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
@@ -18,7 +19,6 @@
 #include "third_party/blink/public/platform/interface_registry.h"
 #include "third_party/blink/public/platform/web_data.h"
 #include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_image.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -46,7 +46,7 @@ WTF::Vector<SkBitmap> DecodeImageData(const std::string& data,
       bitmaps.push_back(bitmap);
     }
   } else {
-    blink::WebVector<SkBitmap> original_bitmaps =
+    std::vector<SkBitmap> original_bitmaps =
         blink::WebImage::FramesFromData(buffer);
     bitmaps.AppendRange(std::make_move_iterator(original_bitmaps.begin()),
                         std::make_move_iterator(original_bitmaps.end()));

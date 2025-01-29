@@ -4,6 +4,19 @@
 
 assert(is_chromeos)
 
+static_library("intent_filter") {
+  sources = [
+    "intent_constants.h",
+    "intent_filter.cc",
+    "intent_filter.h",
+  ]
+
+  deps = [
+    "//base",
+    "//url",
+  ]
+}
+
 static_library("intent_helper") {
   sources = [
     "activity_icon_loader.cc",
@@ -19,16 +32,13 @@ static_library("intent_helper") {
     "control_camera_app_delegate.h",
     "custom_tab.cc",
     "custom_tab.h",
-    "intent_constants.cc",
-    "intent_constants.h",
-    "intent_filter.cc",
-    "intent_filter.h",
     "link_handler_model.cc",
     "link_handler_model.h",
     "open_url_delegate.h",
   ]
 
   public_deps = [
+    ":intent_filter",
     "//ash/components/arc:prefs",
     "//ui/aura",
     "//ui/views",

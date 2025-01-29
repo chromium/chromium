@@ -819,7 +819,7 @@ Vector<gfx::Size> ManifestParser::ParseIconSizes(const JSONObject* icon) {
     return Vector<gfx::Size>();
   }
 
-  WebVector<gfx::Size> web_sizes =
+  std::vector<gfx::Size> web_sizes =
       WebIconSizesParser::ParseIconSizes(WebString(*sizes_str));
   Vector<gfx::Size> sizes;
   for (auto& size : web_sizes) {

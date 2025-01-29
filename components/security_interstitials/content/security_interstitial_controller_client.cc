@@ -28,7 +28,7 @@ SecurityInterstitialControllerClient::SecurityInterstitialControllerClient(
     const GURL& default_safe_page,
     std::unique_ptr<SettingsPageHelper> settings_page_helper)
     : ControllerClient(std::move(metrics_helper)),
-      web_contents_(web_contents),
+      web_contents_(web_contents->GetWeakPtr()),
       prefs_(prefs),
       app_locale_(app_locale),
       default_safe_page_(default_safe_page),
@@ -97,10 +97,10 @@ void SecurityInterstitialControllerClient::OpenUrlInNewForegroundTab(
 
 void SecurityInterstitialControllerClient::OpenEnhancedProtectionSettings() {
 #if BUILDFLAG(IS_ANDROID)
-  settings_page_helper_->OpenEnhancedProtectionSettings(web_contents_);
+  settings_page_helper_->OpenEnhancedProtectionSettings(&*web_contents_);
 #else
   settings_page_helper_->OpenEnhancedProtectionSettingsWithIph(
-      web_contents_,
+      &*web_contents_,
       safe_browsing::SafeBrowsingSettingReferralMethod::kSecurityInterstitial);
 #endif
 }

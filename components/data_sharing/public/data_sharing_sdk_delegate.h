@@ -32,8 +32,13 @@ class DataSharingSDKDelegate {
   virtual ~DataSharingSDKDelegate() = default;
 
 #if BUILDFLAG(IS_ANDROID)
+  using CreateJavaDelegateCallback =
+      base::OnceCallback<base::android::ScopedJavaLocalRef<jobject>()>;
+
+  // Callback to create the java object. The java object is created only when
+  // the sdk is used to avoid overhead of library loading.
   static std::unique_ptr<DataSharingSDKDelegate> CreateDelegate(
-      ScopedJavaLocalRef<jobject> sdk_delegate);
+      CreateJavaDelegateCallback sdk_delegate);
 #endif  // BUILDFLAG(IS_ANDROID)
 
   virtual void Initialize(

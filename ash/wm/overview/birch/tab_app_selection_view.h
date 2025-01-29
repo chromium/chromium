@@ -27,10 +27,21 @@ class ASH_EXPORT TabAppSelectionView : public views::BoxLayoutView {
   TabAppSelectionView& operator=(const TabAppSelectionView&) = delete;
   ~TabAppSelectionView() override;
 
+  const views::View* focus_view() const { return focus_view_; }
+
   // Unselects the current selected tab app view if any.
   void ClearSelection();
 
-  void ProcessKeyEvent(ui::KeyEvent* event);
+  // Moves the focus between the selected item and user feedback with Tab key.
+  // Returns true if the focus is still in the selector after moving, false
+  // otherwise.
+  bool AdvanceFocusForTabKey(bool reverse);
+
+  // Moves the focus between the items with up and down arrow key.
+  void AdvanceFocusForArrowKey(bool up);
+
+  // Triggers the button callback if the `focus_view_` is a button.
+  void MaybePressOnFocusView();
 
   // Removes the item associated with given `identifier` when corresponding
   // windows or desks are closed.
@@ -40,20 +51,34 @@ class ASH_EXPORT TabAppSelectionView : public views::BoxLayoutView {
   class TabAppSelectionItemView;
   class UserFeedbackView;
 
+  friend class TabAppKeyboardNavigationTest;
+
   FRIEND_TEST_ALL_PREFIXES(CoralPixelDiffTest, CoralSelectorView);
   FRIEND_TEST_ALL_PREFIXES(TabAppSelectionViewTest, CloseSelectorItems);
   FRIEND_TEST_ALL_PREFIXES(TabAppSelectionViewTest, RecordsHistogram);
+  FRIEND_TEST_ALL_PREFIXES(TabAppKeyboardNavigationTest, TabForward);
+  FRIEND_TEST_ALL_PREFIXES(TabAppKeyboardNavigationTest, TabBackward);
 
   // We don't use an enum class to avoid too many explicit casts at callsites.
   enum ViewID : int {
     kTabSubtitleID = 1,
     kAppSubtitleID,
     kCloseButtonID,
+    kUserFeedbackID,
     kThumbsUpID,
     kThumbsDownID,
   };
 
-  void AdvanceSelection(bool reverse);
+  std::optional<size_t> GetSelectedIndex() const;
+
+  // Builds the focus list of the selected item and user feedback.
+  std::vector<views::View*> BuildFocusList();
+
+  // Move the focus from `focus_view_` to `next_focus_view`.
+  void MoveFocus(views::View* next_focus_view);
+
+  void SetFocus(views::View* focus_view);
+  void SetBlur(views::View* blur_view);
 
   // Destroys `sender` and destroys subtitles if necessary (`sender` was the
   // last tab or app).
@@ -64,6 +89,8 @@ class ASH_EXPORT TabAppSelectionView : public views::BoxLayoutView {
   // Deselects all items except `sender`.
   void OnItemTapped(TabAppSelectionItemView* sender);
 
+  views::View* GetItemViewAtForTesting(int i);
+
   // Unique identifier for the contents of the selection view.
   const base::Token group_id_;
 
@@ -72,6 +99,8 @@ class ASH_EXPORT TabAppSelectionView : public views::BoxLayoutView {
   raw_ptr<views::ScrollView> scroll_view_;
 
   std::vector<raw_ptr<TabAppSelectionItemView>> item_views_;
+
+  raw_ptr<views::View> focus_view_ = nullptr;
 };
 
 }  // namespace ash

@@ -62,6 +62,7 @@ void HTMLSelectedContentElement::DidNotifySubtreeInsertionsToDocument() {
         // If there are multiple ancestor selects, then cloning can lead to
         // infinite loops, so disable this element.
         disabled_ = true;
+        break;
       }
       first_ancestor_select = select;
       select->SelectedContentElementInserted(this);

@@ -134,6 +134,12 @@ class FailingServiceEndpointRequestImpl
     return ResolveErrorInfo(error_);
   }
 
+  const HostCache::EntryStaleness* GetStaleInfo() const override {
+    return nullptr;
+  }
+
+  bool IsStaleWhileRefresing() const override { return false; }
+
   void ChangeRequestPriority(RequestPriority priority) override {}
 
  private:
@@ -321,6 +327,13 @@ std::unique_ptr<HostResolver> HostResolver::Factory::CreateStandaloneResolver(
 }
 
 HostResolver::ResolveHostParameters::ResolveHostParameters() = default;
+
+HostResolver::ResolveHostParameters::ResolveHostParameters(
+    const ResolveHostParameters&) = default;
+
+HostResolver::ResolveHostParameters&
+HostResolver::ResolveHostParameters::operator=(const ResolveHostParameters&) =
+    default;
 
 HostResolver::~HostResolver() = default;
 

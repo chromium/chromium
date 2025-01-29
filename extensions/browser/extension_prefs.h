@@ -417,7 +417,7 @@ class ExtensionPrefs : public KeyedService {
   void RemoveDisableReason(const ExtensionId& extension_id,
                            disable_reason::DisableReason disable_reason);
   void ReplaceDisableReasons(const ExtensionId& extension_id,
-                             DisableReasonSet disable_reasons);
+                             const DisableReasonSet& disable_reasons);
   void ClearDisableReasons(const ExtensionId& extension_id);
 
   // The methods above will start returning / accepting a `flat_set` of

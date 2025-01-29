@@ -366,14 +366,6 @@ export interface PasswordManagerProxy {
   setAccountStorageEnabled(enabled: boolean): void;
 
   /**
-   * Requests whether the account store is a default location for saving
-   * passwords. False means the device store is a default one. Must be called
-   * when account storage is enabled.
-   * @return A promise that resolves to whether the account store is default.
-   */
-  isAccountStoreDefault(): Promise<boolean>;
-
-  /**
    * Moves a list of passwords from the device to the account
    * @param ids The ids for the password entries being moved.
    */
@@ -619,10 +611,6 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
 
   setAccountStorageEnabled(enabled: boolean) {
     chrome.passwordsPrivate.setAccountStorageEnabled(enabled);
-  }
-
-  isAccountStoreDefault() {
-    return chrome.passwordsPrivate.isAccountStoreDefault();
   }
 
   movePasswordsToAccount(ids: number[]) {

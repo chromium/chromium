@@ -1,0 +1,94 @@
+The test verifies functionality of querying DOM structure for carousel related pseudo elements
+PASS: setChildNodes event was fired once
+PASS: Carousel is only child of carouselParent
+Carousel DOM tree:
+  UL
+    LI
+      #text
+      ::marker
+    LI
+      #text
+      ::marker
+    LI
+      #text
+      ::marker
+    LI
+      #text
+      ::marker
+    LI
+      #text
+      ::marker
+    LI
+      #text
+      ::marker
+    LI
+      #text
+      ::marker
+    LI
+      #text
+      ::marker
+    LI
+      #text
+      ::marker
+    LI
+      #text
+      ::marker
+    LI
+      #text
+      ::marker
+    LI
+      #text
+      ::marker
+    LI
+      #text
+      ::marker
+    LI
+      #text
+      ::marker
+    LI
+      #text
+      ::marker
+    LI
+      #text
+      ::marker
+    LI
+      #text
+      ::marker
+    ::scroll-marker-group
+    ::scroll-button(inline-start)
+    ::scroll-button(inline-end)
+    ::column
+      ::scroll-marker
+    ::column
+      ::scroll-marker
+PASS: Nested scroll marker is present
+Scroll marker styles:
+&::column::scroll-marker
+{
+  content: ' ';
+}
+Changing carousel class
+Wait for events for pseudo element changes
+Check that columns were removed and scroll markers were moved to list items
+::column removed from UL
+::column removed from UL
+::scroll-marker added to LI
+::scroll-marker added to LI
+::scroll-marker added to LI
+::scroll-marker added to LI
+::scroll-marker added to LI
+::scroll-marker added to LI
+::scroll-marker added to LI
+::scroll-marker added to LI
+::scroll-marker added to LI
+::scroll-marker added to LI
+::scroll-marker added to LI
+::scroll-marker added to LI
+::scroll-marker added to LI
+::scroll-marker added to LI
+::scroll-marker added to LI
+::scroll-marker added to LI
+::scroll-marker added to LI
+::scroll-marker removed from ::column
+::scroll-marker removed from ::column
+

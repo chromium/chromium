@@ -78,7 +78,11 @@ class CORE_EXPORT HTMLOptionElement final : public HTMLElement {
   void setSelectedForBinding(bool);
 
   HTMLDataListElement* OwnerDataListElement() const;
-  HTMLSelectElement* OwnerSelectElement() const;
+
+  // OwnerSelectElement gets nearest_ancestor_select_ and SetOwnerSelectElement
+  // assigns to it. See comment on nearest_ancestor_select_.
+  HTMLSelectElement* OwnerSelectElement(bool skip_check = false) const;
+  void SetOwnerSelectElement(HTMLSelectElement*);
 
   String label() const;
   void setLabel(const AtomicString&);
@@ -150,7 +154,18 @@ class CORE_EXPORT HTMLOptionElement final : public HTMLElement {
 
   void DefaultEventHandlerInternal(Event&);
 
+  void RecalcOwnerSelectElement() const;
+
   Member<OptionTextObserver> text_observer_;
+
+  // The closest ancestor <select> in the DOM tree, without crossing any shadow
+  // boundaries. This is cached as a performance optimization for
+  // OwnerSelectElement(), and is kept up to date in InsertedInto() and
+  // RemovedFrom(). Only set when SelectParserRelaxation is enabled.
+  // TODO(crbug.com/1511354): Consider using a flat tree traversal here
+  // instead of a node traversal. That would probably also require changing
+  // HTMLOptionsCollection to support flat tree traversals as well.
+  Member<HTMLSelectElement> nearest_ancestor_select_;
 
   // Represents 'selectedness'.
   // https://html.spec.whatwg.org/C/#concept-option-selectedness

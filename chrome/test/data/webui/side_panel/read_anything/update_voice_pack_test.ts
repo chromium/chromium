@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-// <if expr="chromeos_ash">
+// <if expr="is_chromeos">
 import type {LanguageToastElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 // </if>
 import {BrowserProxy, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
@@ -224,7 +224,7 @@ suite('UpdateVoicePack', () => {
     });
   });
 
-  // <if expr="chromeos_ash">
+  // <if expr="is_chromeos">
   suite('download notification', () => {
     const lang = 'en-us';
     let toast: LanguageToastElement;

@@ -14,7 +14,7 @@ import {DownloadsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs} from 'chrome://settings/settings.js';
-// <if expr="chromeos_ash">
+// <if expr="is_chromeos">
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 // </if>
 
@@ -49,7 +49,7 @@ class TestDownloadsBrowserProxy extends TestBrowserProxy implements
     this.methodCalled('resetAutoOpenFileTypes');
   }
 
-  // <if expr="chromeos_ash">
+  // <if expr="is_chromeos">
   getDownloadLocationText(path: string) {
     this.methodCalled('getDownloadLocationText', path);
     return Promise.resolve('downloads-text');
@@ -110,7 +110,7 @@ suite('DownloadsHandler', function() {
     assertFalse(!!button);
   });
 
-  // <if expr="chromeos_ash">
+  // <if expr="is_chromeos">
   function setDefaultDownloadPathPref(downloadPath: string) {
     downloadsPage.setPrefValue('download.default_directory', downloadPath);
   }

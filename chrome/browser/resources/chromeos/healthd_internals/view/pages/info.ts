@@ -7,7 +7,7 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 import type {CpuUsage} from '../../model/cpu_usage_helper.js';
 import {getAverageCpuUsage} from '../../utils/cpu_usage_utils.js';
 import type {HealthdApiTelemetryResult, SystemZramInfo} from '../../utils/externs.js';
-import {getFormattedMemory, getFormattedMemoryFromRaw, getFormattedMemoryWithPercentage, MemoryUnitEnum} from '../../utils/memory_utils.js';
+import {getFormattedMemory, MemoryUnitEnum} from '../../utils/memory_utils.js';
 import {toFixedFloat} from '../../utils/number_utils.js';
 import type {HealthdInternalsPage} from '../../utils/page_interface.js';
 import {UiUpdateHelper} from '../../utils/ui_update_helper.js';

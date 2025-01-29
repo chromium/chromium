@@ -322,7 +322,7 @@ void PaymentInstruments::OnRequestPermission(
       // is a MIME type, but the browser side will do that anyway.
       icon->type = image_object->getTypeOr("").Left(kMaxTypeLength);
       icon->purpose.push_back(blink::mojom::ManifestImageResource_Purpose::ANY);
-      WebVector<gfx::Size> web_sizes =
+      std::vector<gfx::Size> web_sizes =
           WebIconSizesParser::ParseIconSizes(image_object->getSizesOr(""));
       for (const auto& web_size : web_sizes) {
         icon->sizes.push_back(web_size);

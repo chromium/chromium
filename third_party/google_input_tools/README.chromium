@@ -41,5 +41,5 @@ Removed unused i18n.input.common.dom.isEditable in chrome/os/inputview/dom.js.
 
 Removed iframe handling in chrome/os/inputview/hwt_util.js.
 
-Removed unused i18n.input.common.dom.getSameDomainDocuments in
-chrome/os/inputview/dom.js.
+Removed unused i18n.input.common.dom.getSameDomainFrameDocuments and
+getSameDomainDoc in chrome/os/inputview/dom.js.

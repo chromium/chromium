@@ -45,6 +45,10 @@ export class GlicAppController {
   maxWaitTimer: number|undefined;
   webViewLoaded: boolean = false;
 
+  // This is used to simulate no connection for tests.
+  simulateNoConnection: boolean =
+      loadTimeData.getBoolean('simulateNoConnection');
+
   // Last seen width and height of guest panel.
   lastWidth: number = 400;
   lastHeight: number = 80;
@@ -68,6 +72,10 @@ export class GlicAppController {
 
     this.webview = this.createWebView();
 
+    this.preLoadingTimer = setTimeout(() => {
+      this.showLoading();
+    }, kPreHoldLoadingTimeMs);
+
     this.updateOnlineState(navigator.onLine);
     window.addEventListener('online', () => {
       this.updateOnlineState(true);
@@ -75,10 +83,6 @@ export class GlicAppController {
     window.addEventListener('offline', () => {
       this.updateOnlineState(false);
     });
-
-    this.preLoadingTimer = setTimeout(() => {
-      this.showLoading();
-    }, kPreHoldLoadingTimeMs);
   }
 
   onLoadCommit(e: any): void {
@@ -221,11 +225,15 @@ export class GlicAppController {
     if (this.webViewLoaded) {
       return;
     }
-    if (online) {
+    if (online && !this.simulateNoConnection) {
       this.beginLoadingSequence();
     } else {
       clearTimeout(this.maxWaitTimer);
       this.maxWaitTimer = undefined;
+      clearTimeout(this.minHoldTimer);
+      this.minHoldTimer = undefined;
+      clearTimeout(this.preLoadingTimer);
+      this.preLoadingTimer = undefined;
       this.destroyWebview();
       this.showPanel('offlinePanel');
     }

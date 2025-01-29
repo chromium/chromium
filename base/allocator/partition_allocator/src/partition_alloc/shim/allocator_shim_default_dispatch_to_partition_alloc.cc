@@ -571,7 +571,6 @@ template class PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
     PartitionAllocFunctionsInternal<
         partition_alloc::AllocFlags::kNoHooks,
         partition_alloc::FreeFlags::kNoHooks |
-            partition_alloc::FreeFlags::kZap |
             partition_alloc::FreeFlags::kSchedulerLoopQuarantine>;
 
 // static

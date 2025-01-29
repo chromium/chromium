@@ -17,27 +17,15 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/interactive_test.h"
 #include "ui/base/interaction/polling_state_observer.h"
 
 namespace glic::test {
 
 namespace internal {
-
-// Observes `controller` for whether it has a loaded web client.
-// This can only happen when the glic page has sent the appropriate "I'm fully
-// initialized" message, so by this point the glic window should be capable of
-// sending messages to the browser.
-class GlicInitializedStateObserver
-    : public ui::test::PollingStateObserver<bool> {
- public:
-  explicit GlicInitializedStateObserver(const GlicWindowController& controller);
-  ~GlicInitializedStateObserver() override;
-};
-
-DECLARE_STATE_IDENTIFIER_VALUE(GlicInitializedStateObserver,
-                               kGlicInitializedState);
 
 // Observes `controller` for changes to state().
 class GlicWindowControllerStateObserver
@@ -72,14 +60,39 @@ class InteractiveGlicTestT : public T {
     kDetached,
   };
 
+  // What portions of the glic window should be instrumented on open.
+  enum GlicInstrumentMode {
+    // Instruments the host as `kGlicHostElementId` and contents as
+    // `kGlicContentsElementId`.
+    kHostAndContents,
+    // Instruments only the host as `kGlicHostElementId`.
+    kHostOnly,
+    // Does not instrument either.
+    kNone
+  };
+
+  // Constructor that takes `FieldTrialParams` for the glic flag and then
+  // forwards the rest of the args.
   template <typename... Args>
-  explicit InteractiveGlicTestT(Args&&... args)
+  explicit InteractiveGlicTestT(const base::FieldTrialParams& glic_params,
+                                Args&&... args)
       : T(std::forward<Args>(args)...) {
-    features_.InitWithFeatures(
-        /*enabled_features=*/
-        {features::kGlic, features::kTabstripComboButton},
-        /*disabled_features=*/{});
+    features_.InitWithFeaturesAndParameters(
+        {{features::kGlic, glic_params}, {features::kTabstripComboButton, {}}},
+        {});
   }
+
+  // Default constructor (no forwarded args or field trial parameters).
+  InteractiveGlicTestT() : InteractiveGlicTestT(base::FieldTrialParams()) {}
+
+  // Constructor with no field trial params; all arguments are forwarded to the
+  // base class.
+  template <typename Arg, typename... Args>
+    requires(!std::same_as<base::FieldTrialParams, std::remove_cvref_t<Arg>>)
+  explicit InteractiveGlicTestT(Arg&& arg, Args&&... args)
+      : InteractiveGlicTestT(base::FieldTrialParams(),
+                             std::forward<Arg>(arg),
+                             std::forward<Args>(args)...) {}
 
   ~InteractiveGlicTestT() override = default;
 
@@ -102,87 +115,84 @@ class InteractiveGlicTestT : public T {
                                         .spec());
   }
 
-  auto WaitForElementVisible(
-      const InteractiveBrowserTestApi::DeepQuery& path_to_element) {
-    DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementIsVisible);
-
-    InteractiveBrowserTestApi::StateChange element_visibility_change;
-    element_visibility_change.event = kElementIsVisible;
-    element_visibility_change.where = path_to_element;
-    element_visibility_change.test_function = "(el) => !el.hidden";
-    return InteractiveBrowserTestApi::WaitForStateChange(
-        kGlicHostElementId, element_visibility_change);
-  }
-
-  // Waits for glic to be ready and instruments it as `kGlicContentsElementId`.
-  // This method does not wait for glic to show (only for it to be loaded), so
-  // this should not be used directly by interactive ui tests. Instead, use
-  // ToggleGlicWindowAndWaitForShow.
-  auto WaitForAndInstrumentGlic() {
+  // Ensures that the WebContents for some combination of glic host and contents
+  // are instrumented, per `instrument_mode`.
+  auto WaitForAndInstrumentGlic(GlicInstrumentMode instrument_mode) {
     // NOTE: The use of "Api::" here is required because this is a template
     // class with weakly-specified base class; it is not necessary in derived
     // test classes.
-    auto steps = Api::Steps(
-        Api::UninstrumentWebContents(kGlicContentsElementId, false),
-        Api::UninstrumentWebContents(kGlicHostElementId, false),
-        Api::ObserveState(internal::kGlicInitializedState,
-                          std::ref(window_controller())),
-        Api::InAnyContext(Api::Steps(
-            Api::InstrumentNonTabWebView(kGlicHostElementId,
-                                         GlicView::kWebViewElementIdForTesting),
-            Api::InstrumentInnerWebContents(kGlicContentsElementId,
-                                            kGlicHostElementId, 0),
-            Api::WaitForWebContentsReady(kGlicContentsElementId))),
-        Api::WaitForState(internal::kGlicInitializedState, true),
-        Api::StopObservingState(internal::kGlicInitializedState),
-        WaitForElementVisible(kPathToGuestPanel));
+    Api::MultiStep steps;
+
+    switch (instrument_mode) {
+      case GlicInstrumentMode::kHostAndContents:
+        steps = Api::Steps(
+            Api::UninstrumentWebContents(kGlicContentsElementId, false),
+            Api::UninstrumentWebContents(kGlicHostElementId, false),
+            Api::ObserveState(internal::kGlicWindowControllerState,
+                              std::ref(window_controller())),
+            Api::InAnyContext(Api::Steps(
+                Api::InstrumentNonTabWebView(
+                    kGlicHostElementId, GlicView::kWebViewElementIdForTesting),
+                Api::InstrumentInnerWebContents(kGlicContentsElementId,
+                                                kGlicHostElementId, 0),
+                Api::WaitForWebContentsReady(kGlicContentsElementId))),
+            Api::WaitForState(internal::kGlicWindowControllerState,
+                              GlicWindowController::State::kOpen),
+            Api::StopObservingState(internal::kGlicWindowControllerState)
+            /*, WaitForElementVisible(kPathToGuestPanel)*/);
+        break;
+      case GlicInstrumentMode::kHostOnly:
+        steps = Api::Steps(
+            Api::UninstrumentWebContents(kGlicHostElementId, false),
+            Api::ObserveState(internal::kGlicWindowControllerState,
+                              std::ref(window_controller())),
+            Api::InAnyContext(Api::InstrumentNonTabWebView(
+                kGlicHostElementId, GlicView::kWebViewElementIdForTesting)),
+            Api::WaitForState(
+                internal::kGlicWindowControllerState,
+                testing::Matcher<GlicWindowController::State>(testing::AnyOf(
+                    GlicWindowController::State::kWaitingForGlicToLoad,
+                    GlicWindowController::State::kOpen))),
+            Api::StopObservingState(internal::kGlicWindowControllerState));
+        break;
+      case GlicInstrumentMode::kNone:
+        // no-op.
+        break;
+    }
+
     Api::AddDescriptionPrefix(steps, "WaitForAndInstrumentGlic");
     return steps;
   }
 
   // Activate one of the glic entrypoints.
-  // Also instruments the glic UI as `kGlicContentsElementId`.
-  auto ToggleGlicWindow(GlicWindowMode mode) {
-    // TODO steps = Api::Steps(std::move(steps), WaitForAndInstrumentGlic());
-    switch (mode) {
+  //
+  // If `instrument_glic_contents` is true both the host and contents will be
+  // instrumented (see `WaitForAndInstrumentGlic()`) else only the host will be
+  // instrumented (`WaitForAndInstrumentGlicHostOnly()`).
+  auto OpenGlicWindow(GlicWindowMode window_mode,
+                      GlicInstrumentMode instrument_mode =
+                          GlicInstrumentMode::kHostAndContents) {
+    // NOTE: The use of "Api::" here is required because this is a template
+    // class with weakly-specified base class; it is not necessary in derived
+    // test classes.
+    Api::MultiStep steps;
+    steps.push_back(
+        EnsureGlicWindowState("window must be closed in order to open it",
+                              GlicWindowController::State::kClosed));
+    // Technically, this toggles the window, but we've already ensured that it's
+    // closed.
+    switch (window_mode) {
       case GlicWindowMode::kAttached:
-        return Api::PressButton(kGlicButtonElementId);
+        steps.push_back(Api::PressButton(kGlicButtonElementId));
+        break;
       case GlicWindowMode::kDetached:
-        return Api::Do([this] { window_controller().Toggle(nullptr); });
+        steps.push_back(
+            Api::Do([this] { window_controller().ShowDetachedForTesting(); }));
+        break;
     }
-  }
-
-  auto ForceShowDetached() {
-    return Api::Do([this] { window_controller().ShowDetachedForTesting(); });
-  }
-
-  // Activate a glic entrypoint and wait for the window to open.
-  auto ToggleGlicWindowAndWaitForShow(GlicWindowMode mode) {
-    auto steps = Api::Steps(
-        Api::ObserveState(internal::kGlicWindowControllerState,
-                          std::ref(window_controller())),
-        // TODO: figure out how to deactivate browser so Toggle(nullptr) doesn't
-        // try to attach
-        mode == GlicWindowMode::kDetached ? ForceShowDetached()
-                                          : ToggleGlicWindow(mode),
-        WaitForAndInstrumentGlic(),
-        Api::WaitForState(internal::kGlicWindowControllerState,
-                          GlicWindowController::State::kOpen),
-        Api::StopObservingState(internal::kGlicWindowControllerState), );
-    Api::AddDescriptionPrefix(steps, "ToggleGlicWindowAndWaitForShow");
-    return steps;
-  }
-
-  // Activate a glic entrypoint and wait for the window to hide.
-  auto ToggleGlicWindowAndWaitForHide(GlicWindowMode mode) {
-    auto steps = Api::Steps(
-        Api::ObserveState(internal::kGlicWindowControllerState,
-                          std::ref(window_controller())),
-        ToggleGlicWindow(mode),
-        Api::WaitForState(internal::kGlicWindowControllerState,
-                          GlicWindowController::State::kClosed),
-        Api::StopObservingState(internal::kGlicWindowControllerState), );
-    Api::AddDescriptionPrefix(steps, "ToggleGlicWindowAndWaitForHide");
+    steps =
+        Api::Steps(std::move(steps), WaitForAndInstrumentGlic(instrument_mode));
+    Api::AddDescriptionPrefix(steps, "OpenGlicWindow");
     return steps;
   }
 
@@ -200,12 +210,17 @@ class InteractiveGlicTestT : public T {
   }
 
   // Closes the glic window, which must be open.
+  //
+  // TODO: this only works if glic is actually loaded; handle the case where the
+  // contents pane has either not loaded or failed to load.
   auto CloseGlicWindow() {
     // NOTE: The use of "Api::" here is required because this is a template
     // class with weakly-specified base class; it is not necessary in derived
     // test classes.
     auto steps = Api::InAnyContext(Api::Steps(
-        Api::ClickElement(kGlicContentsElementId, kPathToMockGlicCloseButton),
+        EnsureGlicWindowState("cannot close window if it is not open",
+                              GlicWindowController::State::kOpen),
+        ClickMockGlicElement(kPathToMockGlicCloseButton),
         Api::WaitForHide(kGlicViewElementId)));
     Api::AddDescriptionPrefix(steps, "CloseGlicWindow");
     return steps;
@@ -219,6 +234,14 @@ class InteractiveGlicTestT : public T {
 
   GlicWindowController& window_controller() {
     return glic_service()->window_controller();
+  }
+
+  template <typename... M>
+  auto EnsureGlicWindowState(const std::string& desc, M&&... matchers) {
+    return Api::CheckResult([this]() { return window_controller().state(); },
+                            testing::Matcher<GlicWindowController::State>(
+                                testing::AnyOf(std::forward<M>(matchers)...)),
+                            desc);
   }
 
  private:

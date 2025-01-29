@@ -83,10 +83,6 @@ export class HealthdInternalsCpuCardElement extends PolymerElement {
   }
 
   updateCpuUsageData(physcialCpuUsage: Array<Array<CpuUsage|null>>) {
-    const systemPercentage = 0;
-    const userPercentage = 0;
-    const idlePercentage = 0;
-
     const flattenCpuUsage: (CpuUsage)[] =
         physcialCpuUsage.flat().filter(usage => usage !== null);
     const averageUsage = getAverageCpuUsage(flattenCpuUsage);

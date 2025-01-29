@@ -558,7 +558,7 @@ bool V8ScriptValueSerializerForModules::WriteCryptoKey(
   WriteUint32(KeyUsagesForWireFormat(key.Usages(), key.Extractable()));
 
   // Write key data.
-  WebVector<uint8_t> key_data;
+  std::vector<uint8_t> key_data;
   if (!Platform::Current()->Crypto()->SerializeKeyForClone(key, key_data) ||
       key_data.size() > std::numeric_limits<uint32_t>::max()) {
     exception_state.ThrowDOMException(

@@ -1057,8 +1057,9 @@ void ExtensionPrefs::RemoveDisableReason(
   NotifyDisableReasonsChanged(extension_id);
 }
 
-void ExtensionPrefs::ReplaceDisableReasons(const ExtensionId& extension_id,
-                                           DisableReasonSet disable_reasons) {
+void ExtensionPrefs::ReplaceDisableReasons(
+    const ExtensionId& extension_id,
+    const DisableReasonSet& disable_reasons) {
   // TODO(crbug.com/372186532) This assertion is temporary. Many callers do
   // this:
   //

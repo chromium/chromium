@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 // The tests in this file attempt to verify the following through simulation:
 // a) That a server experiencing overload will actually benefit from the
 //    anti-DDoS throttling logic, i.e. that its traffic spike will subside

@@ -567,9 +567,8 @@ class CONTENT_EXPORT RenderFrameImpl
   void FrameDetached(blink::DetachReason detach_reason) override;
   void DidChangeName(const blink::WebString& name) override;
   void DidMatchCSS(
-      const blink::WebVector<blink::WebString>& newly_matching_selectors,
-      const blink::WebVector<blink::WebString>& stopped_matching_selectors)
-      override;
+      const std::vector<blink::WebString>& newly_matching_selectors,
+      const std::vector<blink::WebString>& stopped_matching_selectors) override;
   bool ShouldReportDetailedMessageForSourceAndSeverity(
       blink::mojom::ConsoleMessageLevel log_level,
       const blink::WebString& source) override;

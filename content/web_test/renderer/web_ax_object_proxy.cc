@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "content/web_test/renderer/web_ax_object_proxy.h"
 
 #include <stddef.h>
@@ -114,7 +119,7 @@ gfx::Rect BoundsForCharacter(const blink::WebAXObject& object,
     gfx::RectF inline_text_box_rect = BoundsForObject(inline_text_box);
 
     int local_index = character_index - start;
-    blink::WebVector<int> character_offsets;
+    std::vector<int> character_offsets;
     inline_text_box.CharacterOffsets(character_offsets);
     if (character_offsets.size() != name.length())
       return gfx::Rect();
@@ -196,8 +201,8 @@ void GetBoundariesForOneWord(const blink::WebAXObject& object,
       continue;
     int local_index = character_index - start;
 
-    blink::WebVector<int> starts;
-    blink::WebVector<int> ends;
+    std::vector<int> starts;
+    std::vector<int> ends;
     inline_text_box.GetWordBoundaries(starts, ends);
     size_t word_count = starts.size();
     DCHECK_EQ(ends.size(), word_count);
@@ -1242,7 +1247,7 @@ int32_t WebAXObjectProxy::RowHeadersCount() {
   if (!UpdateLayout()) {
     return 0;
   }
-  blink::WebVector<blink::WebAXObject> headers;
+  std::vector<blink::WebAXObject> headers;
   accessibility_object_.RowHeaders(headers);
   return static_cast<int32_t>(headers.size());
 }
@@ -1258,7 +1263,7 @@ int32_t WebAXObjectProxy::ColumnHeadersCount() {
   if (!UpdateLayout()) {
     return 0;
   }
-  blink::WebVector<blink::WebAXObject> headers;
+  std::vector<blink::WebAXObject> headers;
   accessibility_object_.ColumnHeaders(headers);
   return static_cast<int32_t>(headers.size());
 }
@@ -1362,7 +1367,7 @@ v8::Local<v8::Object> WebAXObjectProxy::AriaOwnsElementAtIndex(unsigned index) {
   if (!UpdateLayout()) {
     return v8::Local<v8::Object>();
   }
-  blink::WebVector<blink::WebAXObject> elements;
+  std::vector<blink::WebAXObject> elements;
   accessibility_object_.AriaOwns(elements);
   size_t element_count = elements.size();
   if (index >= element_count)
@@ -1446,7 +1451,7 @@ v8::Local<v8::Object> WebAXObjectProxy::RowHeaderAtIndex(unsigned index) {
   if (!UpdateLayout()) {
     return v8::Local<v8::Object>();
   }
-  blink::WebVector<blink::WebAXObject> headers;
+  std::vector<blink::WebAXObject> headers;
   accessibility_object_.RowHeaders(headers);
   size_t header_count = headers.size();
   if (index >= header_count)
@@ -1459,7 +1464,7 @@ v8::Local<v8::Object> WebAXObjectProxy::ColumnHeaderAtIndex(unsigned index) {
   if (!UpdateLayout()) {
     return v8::Local<v8::Object>();
   }
-  blink::WebVector<blink::WebAXObject> headers;
+  std::vector<blink::WebAXObject> headers;
   accessibility_object_.ColumnHeaders(headers);
   size_t header_count = headers.size();
   if (index >= header_count)
@@ -1849,7 +1854,7 @@ std::string WebAXObjectProxy::NameFrom() {
     return "";
   }
   ax::mojom::NameFrom name_from = ax::mojom::NameFrom::kNone;
-  blink::WebVector<blink::WebAXObject> name_objects;
+  std::vector<blink::WebAXObject> name_objects;
   accessibility_object_.GetName(name_from, name_objects);
   switch (name_from) {
     case ax::mojom::NameFrom::kNone:
@@ -1864,7 +1869,7 @@ int WebAXObjectProxy::NameElementCount() {
     return 0;
   }
   ax::mojom::NameFrom name_from;
-  blink::WebVector<blink::WebAXObject> name_objects;
+  std::vector<blink::WebAXObject> name_objects;
   accessibility_object_.GetName(name_from, name_objects);
   return static_cast<int>(name_objects.size());
 }
@@ -1874,7 +1879,7 @@ v8::Local<v8::Object> WebAXObjectProxy::NameElementAtIndex(unsigned index) {
     return {};
   }
   ax::mojom::NameFrom name_from;
-  blink::WebVector<blink::WebAXObject> name_objects;
+  std::vector<blink::WebAXObject> name_objects;
   accessibility_object_.GetName(name_from, name_objects);
   if (index >= name_objects.size())
     return {};
@@ -1886,10 +1891,10 @@ std::string WebAXObjectProxy::Description() {
     return "";
   }
   ax::mojom::NameFrom name_from;
-  blink::WebVector<blink::WebAXObject> name_objects;
+  std::vector<blink::WebAXObject> name_objects;
   accessibility_object_.GetName(name_from, name_objects);
   ax::mojom::DescriptionFrom description_from;
-  blink::WebVector<blink::WebAXObject> description_objects;
+  std::vector<blink::WebAXObject> description_objects;
   return accessibility_object_
       .Description(name_from, description_from, description_objects)
       .Utf8();
@@ -1900,11 +1905,11 @@ std::string WebAXObjectProxy::DescriptionFrom() {
     return "";
   }
   ax::mojom::NameFrom name_from;
-  blink::WebVector<blink::WebAXObject> name_objects;
+  std::vector<blink::WebAXObject> name_objects;
   accessibility_object_.GetName(name_from, name_objects);
   ax::mojom::DescriptionFrom description_from =
       ax::mojom::DescriptionFrom::kNone;
-  blink::WebVector<blink::WebAXObject> description_objects;
+  std::vector<blink::WebAXObject> description_objects;
   accessibility_object_.Description(name_from, description_from,
                                     description_objects);
   switch (description_from) {
@@ -1920,7 +1925,7 @@ std::string WebAXObjectProxy::Placeholder() {
     return "";
   }
   ax::mojom::NameFrom name_from;
-  blink::WebVector<blink::WebAXObject> name_objects;
+  std::vector<blink::WebAXObject> name_objects;
   accessibility_object_.GetName(name_from, name_objects);
   return accessibility_object_.Placeholder(name_from).Utf8();
 }
@@ -1937,10 +1942,10 @@ int WebAXObjectProxy::DescriptionElementCount() {
     return 0;
   }
   ax::mojom::NameFrom name_from;
-  blink::WebVector<blink::WebAXObject> name_objects;
+  std::vector<blink::WebAXObject> name_objects;
   accessibility_object_.GetName(name_from, name_objects);
   ax::mojom::DescriptionFrom description_from;
-  blink::WebVector<blink::WebAXObject> description_objects;
+  std::vector<blink::WebAXObject> description_objects;
   accessibility_object_.Description(name_from, description_from,
                                     description_objects);
   return static_cast<int>(description_objects.size());
@@ -1952,10 +1957,10 @@ v8::Local<v8::Object> WebAXObjectProxy::DescriptionElementAtIndex(
     return v8::Local<v8::Object>();
   }
   ax::mojom::NameFrom name_from;
-  blink::WebVector<blink::WebAXObject> name_objects;
+  std::vector<blink::WebAXObject> name_objects;
   accessibility_object_.GetName(name_from, name_objects);
   ax::mojom::DescriptionFrom description_from;
-  blink::WebVector<blink::WebAXObject> description_objects;
+  std::vector<blink::WebAXObject> description_objects;
   accessibility_object_.Description(name_from, description_from,
                                     description_objects);
   if (index >= description_objects.size())

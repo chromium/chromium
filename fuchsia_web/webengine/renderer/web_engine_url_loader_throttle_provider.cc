@@ -37,7 +37,7 @@ WebEngineURLLoaderThrottleProvider::Clone() {
   return cloned_provider;
 }
 
-blink::WebVector<std::unique_ptr<blink::URLLoaderThrottle>>
+std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
 WebEngineURLLoaderThrottleProvider::CreateThrottles(
     base::optional_ref<const blink::LocalFrameToken> local_frame_token,
     const network::ResourceRequest& request) {
@@ -49,7 +49,7 @@ WebEngineURLLoaderThrottleProvider::CreateThrottles(
     return {};
   }
 
-  blink::WebVector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
+  std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
   auto rules = content_renderer_client_->GetRewriteRulesForFrameToken(
       local_frame_token.value());
   if (rules) {

@@ -63,14 +63,13 @@ bool ScreenAIPreSandboxHook(base::FilePath binary_path,
   std::vector<BrokerFilePermission> permissions{
       BrokerFilePermission::ReadOnly("/dev/urandom"),
       BrokerFilePermission::ReadOnly("/proc/cpuinfo"),
-      BrokerFilePermission::ReadOnly("/proc/meminfo")};
+      BrokerFilePermission::ReadOnly("/proc/meminfo"),
+      BrokerFilePermission::ReadOnly("/sys/devices/system/cpu/possible")};
 
 #if BUILDFLAG(IS_CHROMEOS)
   permissions.push_back(BrokerFilePermission::ReadOnly("/proc/self/status"));
   permissions.push_back(
       BrokerFilePermission::ReadOnly("/sys/devices/system/cpu/kernel_max"));
-  permissions.push_back(
-      BrokerFilePermission::ReadOnly("/sys/devices/system/cpu/possible"));
   permissions.push_back(
       BrokerFilePermission::ReadOnly("/sys/devices/system/cpu/present"));
 #endif

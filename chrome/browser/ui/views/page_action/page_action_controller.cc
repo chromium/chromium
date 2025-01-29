@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
 
+#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/views/page_action/page_action_model.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
@@ -11,6 +12,8 @@
 #include "ui/actions/actions.h"
 
 namespace page_actions {
+
+using PassKey = base::PassKey<PageActionController>;
 
 PageActionController::PageActionController(
     PinnedToolbarActionsModel* pinned_actions_model,
@@ -24,45 +27,65 @@ PageActionController::PageActionController(
 PageActionController::~PageActionController() = default;
 
 void PageActionController::Initialize(
+    tabs::TabInterface& tab_interface,
     const std::vector<actions::ActionId>& action_ids) {
+  tab_activated_callback_subscription_ =
+      tab_interface.RegisterDidActivate(base::BindRepeating(
+          &PageActionController::OnTabActivated, base::Unretained(this)));
+  tab_deactivated_callback_subscription_ =
+      tab_interface.RegisterWillDeactivate(base::BindRepeating(
+          &PageActionController::OnTabWillDeactivate, base::Unretained(this)));
   for (actions::ActionId id : action_ids) {
-    Register(id);
+    Register(id, tab_interface.IsActivated());
   }
   if (pinned_actions_observation_.GetSource()) {
     PinnedActionsModelChanged();
   }
 }
 
-void PageActionController::Register(actions::ActionId action_id) {
-  page_actions_.emplace(action_id, CreateModel(action_id));
+void PageActionController::Register(actions::ActionId action_id,
+                                    bool is_tab_active) {
+  std::unique_ptr<PageActionModelInterface> model = CreateModel(action_id);
+  model->SetTabActive(PassKey(), is_tab_active);
+  page_actions_.emplace(action_id, std::move(model));
 }
 
 void PageActionController::Show(actions::ActionId action_id) {
-  FindPageActionModel(action_id).SetShowRequested(
-      base::PassKey<PageActionController>(), true);
+  FindPageActionModel(action_id).SetShowRequested(PassKey(), true);
 }
 
 void PageActionController::Hide(actions::ActionId action_id) {
-  FindPageActionModel(action_id).SetShowRequested(
-      base::PassKey<PageActionController>(), false);
+  FindPageActionModel(action_id).SetShowRequested(PassKey(), false);
 }
 
 void PageActionController::ActionItemChanged(
     const actions::ActionItem* action_item) {
   auto& model = FindPageActionModel(action_item->GetActionId().value());
-  model.SetActionItemProperties(base::PassKey<PageActionController>(),
-                                action_item);
+  model.SetActionItemProperties(PassKey(), action_item);
+}
+
+void PageActionController::OnTabActivated(tabs::TabInterface* tab) {
+  SetModelsTabActive(true);
+}
+
+void PageActionController::OnTabWillDeactivate(tabs::TabInterface* tab) {
+  SetModelsTabActive(false);
+}
+
+void PageActionController::SetModelsTabActive(bool is_active) {
+  for (auto& [id, model] : page_actions_) {
+    model->SetTabActive(PassKey(), is_active);
+  }
 }
 
 void PageActionController::OverrideText(actions::ActionId action_id,
                                         const std::u16string& override_text) {
-  FindPageActionModel(action_id).SetOverrideText(
-      base::PassKey<PageActionController>(), override_text);
+  FindPageActionModel(action_id).SetOverrideText(PassKey(), override_text);
 }
 
 void PageActionController::ClearOverrideText(actions::ActionId action_id) {
   FindPageActionModel(action_id).SetOverrideText(
-      base::PassKey<PageActionController>(), /*override_text=*/std::nullopt);
+      PassKey(), /*override_text=*/std::nullopt);
 }
 
 void PageActionController::AddObserver(
@@ -101,7 +124,7 @@ void PageActionController::PinnedActionsModelChanged() {
   CHECK(pinned_actions_model);
   for (auto& [id, model] : page_actions_) {
     const bool is_pinned = pinned_actions_model->Contains(id);
-    model->SetHasPinnedIcon(base::PassKey<PageActionController>(), is_pinned);
+    model->SetHasPinnedIcon(PassKey(), is_pinned);
   }
 }
 

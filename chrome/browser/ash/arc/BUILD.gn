@@ -166,7 +166,6 @@ source_set("unit_tests") {
     "//chrome/browser/ui/webui/ash/login",
     "//chrome/test:test_support",
     "//chromeos/ash/components/install_attributes",
-    "//chromeos/ash/experiences/arc/process:unit_tests",
     "//components/sync_preferences:test_support",
     "//components/user_manager",
     "//content/test:test_support",

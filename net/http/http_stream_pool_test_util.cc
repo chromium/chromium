@@ -78,6 +78,15 @@ ResolveErrorInfo FakeServiceEndpointRequest::GetResolveErrorInfo() {
   return resolve_error_info_;
 }
 
+const HostCache::EntryStaleness* FakeServiceEndpointRequest::GetStaleInfo()
+    const {
+  return nullptr;
+}
+
+bool FakeServiceEndpointRequest::IsStaleWhileRefresing() const {
+  return false;
+}
+
 void FakeServiceEndpointRequest::ChangeRequestPriority(
     RequestPriority priority) {
   priority_ = priority;

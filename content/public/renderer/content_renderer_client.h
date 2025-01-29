@@ -455,7 +455,7 @@ class CONTENT_EXPORT ContentRendererClient {
   // `url`. This allows the embedder to customize the applied CSP.
   virtual void AppendContentSecurityPolicy(
       const blink::WebURL& url,
-      blink::WebVector<blink::WebContentSecurityPolicyHeader>* csp);
+      std::vector<blink::WebContentSecurityPolicyHeader>* csp);
 
   // Returns a RendererFactory to use as the "base" for a
   // RendererFactorySelector. Returns `nullptr` to get the default behaviour.

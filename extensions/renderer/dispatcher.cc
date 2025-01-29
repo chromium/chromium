@@ -122,6 +122,10 @@ namespace extensions {
 
 namespace {
 
+BASE_FEATURE(kSpeculativeFixForServiceWorkerDataInDidStartServiceWorkerContext,
+             "SpeculativeFixForServiceWorkerDataInDidStartServiceWorkerContext",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 static const char kOnSuspendEvent[] = "runtime.onSuspend";
 static const char kOnSuspendCanceledEvent[] = "runtime.onSuspendCanceled";
 
@@ -755,11 +759,27 @@ void Dispatcher::DidStartServiceWorkerContextOnWorkerThread(
   const int thread_id = content::WorkerThread::GetCurrentId();
   CHECK_NE(thread_id, kMainThreadId);
   auto* service_worker_data = WorkerThreadDispatcher::GetServiceWorkerData();
-  CHECK(service_worker_data);
-  service_worker_data->GetServiceWorkerHost()->DidStartServiceWorkerContext(
-      service_worker_data->context()->GetExtensionID(),
-      *service_worker_data->activation_sequence(), service_worker_scope,
-      service_worker_version_id, thread_id);
+  if (base::FeatureList::IsEnabled(
+          kSpeculativeFixForServiceWorkerDataInDidStartServiceWorkerContext)) {
+    // `service_worker_data` can be nullptr if the extension is already unloaded
+    // and the worker thread termination started.
+    //
+    // TODO(crbug.com/389971360) If this does seem to fix it, we should check
+    // `thread_state_` or `requested_to_terminate_` to confirm we're in
+    // termination when `service_worker_data` is false here.
+    if (service_worker_data) {
+      service_worker_data->GetServiceWorkerHost()->DidStartServiceWorkerContext(
+          service_worker_data->context()->GetExtensionID(),
+          *service_worker_data->activation_sequence(), service_worker_scope,
+          service_worker_version_id, thread_id);
+    }
+  } else {
+    CHECK(service_worker_data);
+    service_worker_data->GetServiceWorkerHost()->DidStartServiceWorkerContext(
+        service_worker_data->context()->GetExtensionID(),
+        *service_worker_data->activation_sequence(), service_worker_scope,
+        service_worker_version_id, thread_id);
+  }
 }
 
 void Dispatcher::WillDestroyServiceWorkerContextOnWorkerThread(

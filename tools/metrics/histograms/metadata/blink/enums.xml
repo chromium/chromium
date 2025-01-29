@@ -5842,6 +5842,14 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5249" label="AboutSrcdocToBeControlledByServiceWorker"/>
   <int value="5250"
       label="DisplayNoneComputedInContentVisibilityAutoLockedSubtree"/>
+  <int value="5251" label="V8AITranslator_SourceLanguage_AttributeGetter"/>
+  <int value="5252" label="V8AITranslator_TargetLanguage_AttributeGetter"/>
+  <int value="5253" label="V8AITranslator_Destroy_Method"/>
+  <int value="5254" label="V8AITranslator_Translate_Method"/>
+  <int value="5255" label="V8AITranslator_TranslateStreaming_Method"/>
+  <int value="5256" label="V8AITranslatorFactory_Create_Method"/>
+  <int value="5257" label="V8AILanguageDetectorFactory_Create_Method"/>
+  <int value="5258" label="V8AILanguageDetector_Destroy_Method"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

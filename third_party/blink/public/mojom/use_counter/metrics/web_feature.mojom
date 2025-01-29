@@ -4634,6 +4634,14 @@ enum WebFeature {
   kV8AILanguageModelCapabilities_MaxTemperature_AttributeGetter = 5248,
   kAboutSrcdocToBeControlledByServiceWorker = 5249,
   kDisplayNoneComputedInContentVisibilityAutoLockedSubtree = 5250,
+  kV8AITranslator_SourceLanguage_AttributeGetter = 5251,
+  kV8AITranslator_TargetLanguage_AttributeGetter = 5252,
+  kV8AITranslator_Destroy_Method = 5253,
+  kV8AITranslator_Translate_Method = 5254,
+  kV8AITranslator_TranslateStreaming_Method = 5255,
+  kV8AITranslatorFactory_Create_Method = 5256,
+  kV8AILanguageDetectorFactory_Create_Method = 5257,
+  kV8AILanguageDetector_Destroy_Method = 5258,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

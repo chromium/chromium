@@ -10,6 +10,7 @@
 #include "components/autofill/core/browser/payments/amount_extraction_heuristic_regexes.pb.h"
 
 using ::autofill::core::browser::payments::HeuristicRegexes;
+using ::autofill::core::browser::payments::HeuristicRegexes_GenericDetails;
 
 namespace autofill::payments {
 
@@ -40,10 +41,12 @@ bool AmountExtractionHeuristicRegexes::PopulateStringFromComponent(
     return false;
   }
 
-  keyword_pattern_ = heuristic_regexes.generic_details().keyword_pattern();
-  amount_pattern_ = heuristic_regexes.generic_details().amount_pattern();
+  std::unique_ptr<HeuristicRegexes_GenericDetails> details =
+      base::WrapUnique(heuristic_regexes.release_generic_details());
+  keyword_pattern_ = base::WrapUnique(details->release_keyword_pattern());
+  amount_pattern_ = base::WrapUnique(details->release_amount_pattern());
   number_of_ancestor_levels_to_search_ =
-      heuristic_regexes.generic_details().number_of_ancestor_levels_to_search();
+      details->number_of_ancestor_levels_to_search();
 
   autofill::autofill_metrics::LogAmountExtractionComponentInstallationResult(
       autofill::autofill_metrics::AmountExtractionComponentInstallationResult::
@@ -51,18 +54,19 @@ bool AmountExtractionHeuristicRegexes::PopulateStringFromComponent(
   return true;
 }
 
-std::string AmountExtractionHeuristicRegexes::keyword_pattern() const {
-  if (keyword_pattern_.empty()) {
-    return kDefaultKeywordPattern;
+const std::string& AmountExtractionHeuristicRegexes::keyword_pattern() const {
+  if (!keyword_pattern_) {
+    keyword_pattern_ = std::make_unique<std::string>(kDefaultKeywordPattern);
   }
-  return keyword_pattern_;
+  return *keyword_pattern_;
 }
 
-std::string AmountExtractionHeuristicRegexes::amount_pattern() const {
-  if (amount_pattern_.empty()) {
-    return kDefaultAmountPatternPattern;
+const std::string& AmountExtractionHeuristicRegexes::amount_pattern() const {
+  if (!amount_pattern_) {
+    amount_pattern_ =
+        std::make_unique<std::string>(kDefaultAmountPatternPattern);
   }
-  return amount_pattern_;
+  return *amount_pattern_;
 }
 
 uint32_t AmountExtractionHeuristicRegexes::number_of_ancestor_levels_to_search()

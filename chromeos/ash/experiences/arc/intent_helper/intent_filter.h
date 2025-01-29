@@ -12,9 +12,20 @@ class GURL;
 
 namespace arc {
 
-namespace mojom {
-enum class PatternType;
-}  // namespace mojom
+enum class PatternType {
+  kUnknown = -1,
+  kLiteral = 0,
+  kPrefix = 1,
+  kSimpleGlob = 2,
+  kAdvancedGlob = 3,
+  kSuffix = 4,
+};
+
+// Returns true if the given `type` is a known value.
+bool IsKnownPatternType(PatternType type);
+
+// Outputs the stringified value to `os`.
+std::ostream& operator<<(std::ostream& os, PatternType type);
 
 // A chrome-side implementation of Android's IntentFilter class.  This is used
 // to approximate the intent filtering and determine whether a given URL is
@@ -47,17 +58,17 @@ class IntentFilter {
    public:
     PatternMatcher();
     PatternMatcher(PatternMatcher&& other);
-    PatternMatcher(const std::string& pattern, mojom::PatternType match_type);
+    PatternMatcher(const std::string& pattern, PatternType match_type);
     PatternMatcher(const PatternMatcher&) = delete;
     PatternMatcher& operator=(const PatternMatcher&) = delete;
     PatternMatcher& operator=(PatternMatcher&& other);
 
     const std::string& pattern() const { return pattern_; }
-    mojom::PatternType match_type() const { return match_type_; }
+    PatternType match_type() const { return match_type_; }
 
    private:
     std::string pattern_;
-    mojom::PatternType match_type_;
+    PatternType match_type_;
   };
 
   IntentFilter();

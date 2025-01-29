@@ -34,17 +34,17 @@ class AmountExtractionHeuristicRegexes final {
   bool PopulateStringFromComponent(const std::string& binary_pb);
 
   // See comment for `keyword_pattern_`.
-  std::string keyword_pattern() const;
+  const std::string& keyword_pattern() const;
 
   // See comment for `amount_pattern_`.
-  std::string amount_pattern() const;
+  const std::string& amount_pattern() const;
 
   // See comment for `number_of_ancestor_levels_to_search_`.
   uint32_t number_of_ancestor_levels_to_search() const;
 
   void ResetRegexStringPatternsForTesting() {
-    keyword_pattern_.clear();
-    amount_pattern_.clear();
+    keyword_pattern_.reset();
+    amount_pattern_.reset();
     number_of_ancestor_levels_to_search_ =
         kDefaultNumberOfAncestorLevelsToSearch;
   }
@@ -54,12 +54,13 @@ class AmountExtractionHeuristicRegexes final {
   static constexpr char kDefaultAmountPatternPattern[] =
       R"regexp((?:\$)\s*\d{1,3}(?:[.,]\d{3})*(?:[.,]\d{2})?)regexp";
   static constexpr uint32_t kDefaultNumberOfAncestorLevelsToSearch = 6;
+
   // A keyword pattern string used for amount extraction from DOM search
-  // process.
-  std::string keyword_pattern_;
+  // process. Invalidated by PopulateStringFromComponent().
+  mutable std::unique_ptr<std::string> keyword_pattern_;
   // An amount pattern string used for amount extraction from DOM search
-  // process.
-  std::string amount_pattern_;
+  // process. Invalidated by PopulateStringFromComponent().
+  mutable std::unique_ptr<std::string> amount_pattern_;
   // The number of ancestor levels to search in the amount extraction process.
   uint32_t number_of_ancestor_levels_to_search_ =
       kDefaultNumberOfAncestorLevelsToSearch;

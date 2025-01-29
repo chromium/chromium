@@ -75,9 +75,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuNudgeController
       delete;
   ~MultitaskMenuNudgeController() override;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
-#endif
 
   // Attempts to show the nudge. Reads preferences and then calls
   // `OnGetPreferences()`.

@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/webui/top_chrome/untrusted_top_chrome_web_ui_controller.h"
 #include "chrome/grit/orca_resources.h"
 #include "chrome/grit/orca_resources_map.h"
+#include "chromeos/ash/services/orca/public/mojom/orca_service.mojom.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"

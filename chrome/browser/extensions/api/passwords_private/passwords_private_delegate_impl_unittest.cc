@@ -1176,26 +1176,6 @@ TEST_F(PasswordsPrivateDelegateImplTest,
   EXPECT_FALSE(urls.has_value());
 }
 
-TEST_F(PasswordsPrivateDelegateImplTest, IsAccountStoreDefault) {
-  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
-  auto* client =
-      MockPasswordManagerClient::CreateForWebContentsAndGet(web_contents.get());
-  ON_CALL(*(client->GetPasswordFeatureManager()), IsOptedInForAccountStorage)
-      .WillByDefault(Return(true));
-
-  auto delegate = CreateDelegate();
-
-  EXPECT_CALL(*(client->GetPasswordFeatureManager()),
-              IsOptedInForAccountStorage)
-      .WillOnce(Return(true));
-  EXPECT_TRUE(delegate->IsAccountStoreDefault(web_contents.get()));
-
-  EXPECT_CALL(*(client->GetPasswordFeatureManager()),
-              IsOptedInForAccountStorage)
-      .WillOnce(Return(false));
-  EXPECT_FALSE(delegate->IsAccountStoreDefault(web_contents.get()));
-}
-
 TEST_F(PasswordsPrivateDelegateImplTest, TestMovePasswordsToAccountStore) {
   std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
   auto* client =

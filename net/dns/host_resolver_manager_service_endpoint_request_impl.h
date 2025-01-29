@@ -54,6 +54,8 @@ class HostResolverManager::ServiceEndpointRequestImpl
   const std::set<std::string>& GetDnsAliasResults() override;
   bool EndpointsCryptoReady() override;
   ResolveErrorInfo GetResolveErrorInfo() override;
+  const HostCache::EntryStaleness* GetStaleInfo() const override;
+  bool IsStaleWhileRefresing() const override;
   void ChangeRequestPriority(RequestPriority priority) override;
 
   // These should only be called from HostResolver::Job.
@@ -94,7 +96,11 @@ class HostResolverManager::ServiceEndpointRequestImpl
 
   void SetFinalizedResultFromLegacyResults(const HostCache::Entry& results);
 
+  void MaybeClearStaleResults();
+
   void LogCancelRequest();
+
+  void NotifyDelegateOfUpdated();
 
   ClientSocketFactory* GetClientSocketFactory();
 
@@ -132,6 +138,12 @@ class HostResolverManager::ServiceEndpointRequestImpl
   // DoStartJob().
   std::optional<JobKey> job_key_;
   std::deque<TaskType> tasks_;
+
+  // These fields are set when the cache has stale results and `this` allows to
+  // lookup the cache. Cleared upon receiving fresh results if `this` allows
+  // stale results while refreshing.
+  std::optional<HostCache::EntryStaleness> stale_info_;
+  std::vector<ServiceEndpoint> stale_endpoints_;
 
   // Set when a job is associated with `this`. Must be valid unless
   // `resolve_context_` becomes invalid. Cleared when the endpoints are

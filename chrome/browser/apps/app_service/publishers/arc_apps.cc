@@ -491,15 +491,15 @@ std::vector<apps::IntentFilterPtr> GetHardcodedPlayStoreIntentFilters() {
   authorities.emplace_back("play.google.com", -1);
 
   std::vector<arc::IntentFilter::PatternMatcher> paths;
-  paths.emplace_back("", arc::mojom::PatternType::PATTERN_LITERAL);
-  paths.emplace_back("/", arc::mojom::PatternType::PATTERN_LITERAL);
-  paths.emplace_back("/store", arc::mojom::PatternType::PATTERN_PREFIX);
-  paths.emplace_back("/redeem", arc::mojom::PatternType::PATTERN_PREFIX);
-  paths.emplace_back("/wishlist", arc::mojom::PatternType::PATTERN_PREFIX);
-  paths.emplace_back("/apps/test/", arc::mojom::PatternType::PATTERN_PREFIX);
-  paths.emplace_back("/apps", arc::mojom::PatternType::PATTERN_LITERAL);
-  paths.emplace_back("/apps/launch", arc::mojom::PatternType::PATTERN_LITERAL);
-  paths.emplace_back("/protect/home", arc::mojom::PatternType::PATTERN_PREFIX);
+  paths.emplace_back("", arc::PatternType::kLiteral);
+  paths.emplace_back("/", arc::PatternType::kLiteral);
+  paths.emplace_back("/store", arc::PatternType::kPrefix);
+  paths.emplace_back("/redeem", arc::PatternType::kPrefix);
+  paths.emplace_back("/wishlist", arc::PatternType::kPrefix);
+  paths.emplace_back("/apps/test/", arc::PatternType::kPrefix);
+  paths.emplace_back("/apps", arc::PatternType::kLiteral);
+  paths.emplace_back("/apps/launch", arc::PatternType::kLiteral);
+  paths.emplace_back("/protect/home", arc::PatternType::kPrefix);
 
   std::vector<apps::IntentFilterPtr> intent_filters;
   apps::IntentFilterPtr filter = apps_util::CreateIntentFilterForArc(

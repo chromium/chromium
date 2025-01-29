@@ -24,7 +24,6 @@ goog.require('goog.dom');
 goog.require('goog.dom.TagName');
 goog.require('goog.dom.classlist');
 goog.require('goog.style');
-goog.require('goog.uri.utils');
 goog.require('i18n.input.common.GlobalSettings');
 
 
@@ -55,55 +54,6 @@ i18n.input.common.dom.setClasses = function(elem, classes) {
         goog.dom.classlist.add(elem, classes[i]);
       }
     }
-  }
-};
-
-
-/**
- * Check the iframe whether is the same domain as the current domain.
- * Returns the iframe content document when it's the same domain,
- * otherwise return null.
- *
- * @param {!Element} element The iframe element.
- * @return {Document} The iframe content document.
- */
-i18n.input.common.dom.getSameDomainFrameDoc = function(element) {
-  var uid = goog.getUid(document);
-  var frameUid = goog.getUid(element);
-  var states = i18n.input.common.dom.sameDomainIframes_[uid];
-  if (!states) {
-    states = i18n.input.common.dom.sameDomainIframes_[uid] = {};
-  }
-  /** @preserveTry */
-  try {
-    var url = window.location.href || '';
-    //Note: cross-domain IFRAME's src can be:
-    //     http://www...
-    //     https://www....
-    //     //www.
-    // Non-cross-domain IFRAME's src can be:
-    //     javascript:...
-    //     javascript://...
-    //     abc:...
-    //     abc://...
-    //     abc//...
-    //     path/index.html
-    if (!(frameUid in states)) {
-      if (element.src) {
-        var pos = element.src.indexOf('//');
-        var protocol = pos < 0 ? 'N/A' : element.src.slice(0, pos);
-        states[frameUid] = (protocol != '' &&
-            protocol != 'http:' &&
-            protocol != 'https:' ||
-            goog.uri.utils.haveSameDomain(element.src, url));
-      } else {
-        states[frameUid] = true;
-      }
-    }
-    return states[frameUid] ? goog.dom.getFrameContentDocument(element) : null;
-  } catch (e) {
-    states[frameUid] = false;
-    return null;
   }
 };
 

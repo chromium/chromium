@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {AnnotatedPageData, ChromeVersion, DraggableArea, ErrorWithReason, GlicBrowserHost, GlicHostRegistry, GlicWebClient, Observable, PanelState, PdfDocumentData, Subscriber, TabContextOptions, TabContextResult, TabData, UserProfileInfo} from '../glic_api/glic_api.js';
+import type {AnnotatedPageData, ChromeVersion, DraggableArea, ErrorWithReason, GlicBrowserHost, GlicHostRegistry, GlicWebClient, Observable, OpenPanelInfo, PanelState, PdfDocumentData, Subscriber, TabContextOptions, TabContextResult, TabData, UserProfileInfo} from '../glic_api/glic_api.js';
 import {GetTabContextErrorReason} from '../glic_api/glic_api.js';
 
 import {PostMessageRequestReceiver, PostMessageRequestSender} from './post_message_transport.js';
@@ -58,12 +58,18 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
   }
 
   async glicWebClientNotifyPanelWillOpen(payload: {panelState: PanelState}):
-      Promise<void> {
+      Promise<{openPanelInfo?: OpenPanelInfo}> {
+    let openPanelInfo: OpenPanelInfo|undefined;
     try {
-      await this.webClient.notifyPanelWillOpen?.(payload.panelState);
+      const result =
+          await this.webClient.notifyPanelWillOpen?.(payload.panelState);
+      if (result) {
+        openPanelInfo = result;
+      }
     } catch (e) {
       console.error(e);
     }
+    return {openPanelInfo};
   }
 
   glicWebClientNotifyPanelClosed(): void {

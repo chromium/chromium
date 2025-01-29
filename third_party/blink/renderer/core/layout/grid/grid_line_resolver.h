@@ -68,7 +68,7 @@ class GridLineResolver {
       GridTrackSizingDirection track_direction) const;
 
   GridSpan ResolveGridPositionsFromStyle(
-      const ComputedStyle& grid_item_style,
+      const ComputedStyle& item_style,
       GridTrackSizingDirection track_direction) const;
 
   const NamedGridLinesMap& ImplicitNamedLinesMap(

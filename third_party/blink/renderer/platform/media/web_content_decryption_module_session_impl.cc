@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/platform/media/web_content_decryption_module_session_impl.h"
 
 #include <memory>
+#include <vector>
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
@@ -31,7 +32,6 @@
 #include "third_party/blink/public/platform/web_encrypted_media_key_information.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/platform/media/cdm_result_promise.h"
 #include "third_party/blink/renderer/platform/media/cdm_result_promise_helper.h"
 #include "third_party/blink/renderer/platform/media/cdm_session_adapter.h"
@@ -476,7 +476,7 @@ void WebContentDecryptionModuleSessionImpl::OnSessionKeysChange(
     bool has_additional_usable_key,
     media::CdmKeysInfo keys_info) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  WebVector<WebEncryptedMediaKeyInformation> keys(keys_info.size());
+  std::vector<WebEncryptedMediaKeyInformation> keys(keys_info.size());
   for (size_t i = 0; i < keys_info.size(); ++i) {
     auto& key_info = keys_info[i];
     keys[i].SetId(WebData(key_info->key_id));

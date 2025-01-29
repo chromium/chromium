@@ -205,7 +205,7 @@ crbug.com/1416920 [ win debug ] GpuCrash_InfoForHardwareGpu [ Failure ]
 crbug.com/365565140 [ win qualcomm ] ContextLost_WebGPUUnblockedAfterUserInitiatedReload [ Failure ]
 
 # Flaky Timed out while waiting 10s for IsJavaScriptExpressionTrue
-crbug.com/384605105 [ mac amd ] ContextLost_WebGLContextRestoredInHiddenTab [ RetryOnFailure ]
+crbug.com/384605105 [ amd-0x7340 angle-opengl debug graphite-disabled no-asan no-clang-coverage sonoma ] ContextLost_WebGLContextRestoredInHiddenTab [ RetryOnFailure ]
 crbug.com/384605105 [ mac intel no-asan ] ContextLost_WebGLContextRestoredInHiddenTab [ RetryOnFailure ]
 crbug.com/384605105 [ win intel ] ContextLost_WebGLContextRestoredInHiddenTab [ RetryOnFailure ]
 crbug.com/384605105 [ win nvidia ] ContextLost_WebGLContextRestoredInHiddenTab [ RetryOnFailure ]

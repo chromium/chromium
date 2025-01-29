@@ -11,10 +11,7 @@ static_library("kiosk") {
     "kiosk_utils.cc",
     "kiosk_utils.h",
   ]
-  deps = [
-    "//build:chromeos_buildflags",
-    "//chromeos/crosapi/mojom",
-  ]
+  deps = [ "//chromeos/crosapi/mojom" ]
 
   if (is_chromeos_ash) {
     deps += [ "//components/user_manager" ]
@@ -30,10 +27,7 @@ static_library("test_support") {
     "kiosk_test_utils.cc",
     "kiosk_test_utils.h",
   ]
-  deps = [
-    "//build:chromeos_buildflags",
-    "//chromeos/crosapi/mojom",
-  ]
+  deps = [ "//chromeos/crosapi/mojom" ]
   if (is_chromeos_ash) {
     deps += [
       "//components/account_id",

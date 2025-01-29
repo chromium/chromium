@@ -76,7 +76,8 @@ class ProfileDestroyerTest : public testing::Test,
   content::RenderProcessHost* CreatedRendererProcessHost(Profile* profile) {
     site_instances_.emplace_back(content::SiteInstance::Create(profile));
 
-    content::RenderProcessHost* rph = site_instances_.back()->GetProcess();
+    content::RenderProcessHost* rph =
+        site_instances_.back()->GetOrCreateProcess();
     EXPECT_TRUE(rph);
     rph->SetIsUsed();
     return rph;

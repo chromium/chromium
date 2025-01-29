@@ -11,11 +11,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "build/buildflag.h"
 
-// This file is only for the feature flags that are shared between ash-chrome
-// and lacros-chrome that are not common. For ash features, please add them
-// in //ash/constants/ash_features.h.
 namespace chromeos {
-
 namespace features {
 
 // All features in alphabetical order. The features should be documented
@@ -56,7 +52,6 @@ BASE_DECLARE_FEATURE(kEnablePkcs12ToChapsDualWrite);
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) BASE_DECLARE_FEATURE(kEssentialSearch);
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 BASE_DECLARE_FEATURE(kGeminiAppPreinstall);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 BASE_DECLARE_FEATURE(kKioskHeartbeatsViaERP);
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) BASE_DECLARE_FEATURE(kMahi);
@@ -68,10 +63,7 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS) BASE_DECLARE_FEATURE(kMahiManaged);
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) BASE_DECLARE_FEATURE(kPompano);
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 BASE_DECLARE_FEATURE(kMahiSummarizeSelected);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-#if BUILDFLAG(IS_CHROMEOS)
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) BASE_DECLARE_FEATURE(kMagicBoostRevamp);
-#endif  // BUILDFLAG(IS_CHROMEOS)
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) BASE_DECLARE_FEATURE(kMahiDebugging);
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) BASE_DECLARE_FEATURE(kOrca);
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) BASE_DECLARE_FEATURE(kOrcaDogfood);
@@ -201,6 +193,7 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 bool IsFeatureManagementHistoryEmbeddingEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 bool AreOverviewSessionInitOptimizationsEnabled();
+
 }  // namespace features
 }  // namespace chromeos
 

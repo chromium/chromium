@@ -11652,6 +11652,10 @@ void WebContentsImpl::CancelAllPrerendering() {
       PrerenderFinalStatus::kAllPrerenderingCanceled);
 }
 
+bool WebContentsImpl::IsAllowedToStartPrerendering() {
+  return GetPrerenderHostRegistry()->IsAllowedToStartPrerenderingForEmbedder();
+}
+
 void WebContentsImpl::BackNavigationLikely(PreloadingPredictor predictor,
                                            WindowOpenDisposition disposition) {
   CHECK(!IsBeingDestroyed());

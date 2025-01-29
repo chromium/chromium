@@ -44,7 +44,7 @@ void SpellCheckClient::CheckSpelling(
     const blink::WebString& text,
     size_t& misspelled_offset,
     size_t& misspelled_length,
-    blink::WebVector<blink::WebString>* optional_suggestions) {
+    std::vector<blink::WebString>* optional_suggestions) {
   if (!enabled_) {
     misspelled_offset = 0;
     misspelled_length = 0;
@@ -99,7 +99,7 @@ void SpellCheckClient::FinishLastTextCheck() {
                                     &misspelled_position, &misspelled_length);
       if (!misspelled_length)
         break;
-      blink::WebVector<blink::WebString> suggestions;
+      std::vector<blink::WebString> suggestions;
       spell_checker_.FillSuggestionList(
           blink::WebString::FromUTF16(
               text.substr(misspelled_position, misspelled_length)),

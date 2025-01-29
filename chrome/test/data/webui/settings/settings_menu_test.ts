@@ -146,7 +146,7 @@ suite('SettingsMenu', function() {
         'defaultBrowser',
         // </if>
         'downloads', 'languages', 'onStartup', 'people', 'reset',
-        // <if expr="not chromeos_ash">
+        // <if expr="not is_chromeos">
         'system',
         // </if>
       ];

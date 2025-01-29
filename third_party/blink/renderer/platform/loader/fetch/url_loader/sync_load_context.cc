@@ -105,7 +105,7 @@ void SyncLoadContext::StartAsyncWithWaitableEvent(
     uint32_t loader_options,
     std::unique_ptr<network::PendingSharedURLLoaderFactory>
         pending_url_loader_factory,
-    WebVector<std::unique_ptr<URLLoaderThrottle>> throttles,
+    std::vector<std::unique_ptr<URLLoaderThrottle>> throttles,
     SyncLoadResponse* response,
     SyncLoadContext** context_for_redirect,
     base::WaitableEvent* redirect_or_response_event,

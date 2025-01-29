@@ -43,7 +43,7 @@ WebServiceWorkerFetchContext::Create(
     CrossVariantMojoReceiver<
         mojom::blink::SubresourceLoaderUpdaterInterfaceBase>
         pending_subresource_loader_updater,
-    const WebVector<WebString>& web_cors_exempt_header_list,
+    const std::vector<WebString>& web_cors_exempt_header_list,
     const bool is_third_party_context) {
   base::UmaHistogramCounts100(
       "ServiceWorker.CorsExemptHeaderListSize",
@@ -166,7 +166,7 @@ void WebServiceWorkerFetchContextImpl::FinalizeRequest(WebURLRequest& request) {
   }
 }
 
-WebVector<std::unique_ptr<URLLoaderThrottle>>
+std::vector<std::unique_ptr<URLLoaderThrottle>>
 WebServiceWorkerFetchContextImpl::CreateThrottles(
     const network::ResourceRequest& request) {
   const bool needs_to_skip_throttling =

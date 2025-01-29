@@ -28,10 +28,6 @@
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "ui/platform_window/extensions/wayland_extension.h"
-#endif
-
 DEFINE_UI_CLASS_PROPERTY_TYPE(chromeos::ImmersiveFullscreenController*)
 
 namespace chromeos {

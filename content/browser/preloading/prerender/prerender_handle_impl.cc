@@ -179,42 +179,53 @@ void PrerenderHandleImpl::SetPreloadingAttemptFailureReason(
   prerender_host->preloading_attempt()->SetFailureReason(reason);
 }
 
-void PrerenderHandleImpl::SetActivationCallback(
+void PrerenderHandleImpl::AddActivationCallback(
     base::OnceClosure activation_callback) {
+  CHECK_EQ(State::kValid, state_);
   CHECK(activation_callback);
-  CHECK(!activation_callback_);
-  if (was_activated_) {
-    std::move(activation_callback).Run();
-    return;
-  }
-  activation_callback_ = std::move(activation_callback);
+  activation_callbacks_.push_back(std::move(activation_callback));
 }
 
-void PrerenderHandleImpl::SetErrorCallback(base::OnceClosure error_callback) {
+void PrerenderHandleImpl::AddErrorCallback(base::OnceClosure error_callback) {
+  CHECK_EQ(State::kValid, state_);
   CHECK(error_callback);
-  CHECK(!error_callback_);
-  error_callback_ = std::move(error_callback);
+  error_callbacks_.push_back(std::move(error_callback));
+}
+
+bool PrerenderHandleImpl::IsValid() const {
+  switch (state_) {
+    case State::kValid:
+      return true;
+    case State::kActivated:
+    case State::kCanceled:
+      return false;
+  }
 }
 
 void PrerenderHandleImpl::OnActivated() {
-  CHECK(!was_activated_);
-  was_activated_ = true;
+  CHECK_EQ(State::kValid, state_);
+  state_ = State::kActivated;
 
   // An error should not be reported after activation.
-  error_callback_.Reset();
+  error_callbacks_.clear();
 
-  if (activation_callback_) {
-    std::move(activation_callback_).Run();
+  std::vector<base::OnceClosure> callbacks;
+  callbacks.swap(activation_callbacks_);
+  // Don't touch `this` after this line, as a callback could destroy `this`.
+  for (auto& callback : callbacks) {
+    std::move(callback).Run();
   }
 }
 
 void PrerenderHandleImpl::OnFailed(PrerenderFinalStatus status) {
-  if (!error_callback_) {
-    return;
-  }
+  CHECK_EQ(State::kValid, state_);
+  state_ = State::kCanceled;
+
+  // An activation never happen after cancellation.
+  activation_callbacks_.clear();
 
   if (!ShouldFireErrorCallback(status)) {
-    error_callback_.Reset();
+    error_callbacks_.clear();
     return;
   }
 
@@ -222,7 +233,12 @@ void PrerenderHandleImpl::OnFailed(PrerenderFinalStatus status) {
   // Note that we should not expose detailed reasons to prevent embedders from
   // depending on them. Such an implicit contract with embedders would impair
   // flexibility of internal implementation.
-  std::move(error_callback_).Run();
+  std::vector<base::OnceClosure> callbacks;
+  callbacks.swap(error_callbacks_);
+  // Don't touch `this` after this line, as a callback could destroy `this`.
+  for (auto& callback : callbacks) {
+    std::move(callback).Run();
+  }
 }
 
 PrerenderHost* PrerenderHandleImpl::GetPrerenderHost() {

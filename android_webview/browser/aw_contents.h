@@ -24,6 +24,7 @@
 #include "android_webview/browser/safe_browsing/aw_safe_browsing_ui_manager.h"
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/containers/circular_deque.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -203,9 +204,9 @@ class AwContents : public FindHelper::Listener,
   void StartPrerendering(
       JNIEnv* env,
       const std::string& prerendering_url,
-      const base::android::JavaParamRef<jobject>& prefetch_params,
-      const base::android::JavaParamRef<jobject>& activation_callback,
-      const base::android::JavaParamRef<jobject>& error_callback);
+      const base::android::JavaParamRef<jobject>& j_prefetch_params,
+      const base::android::JavaParamRef<jobject>& j_activation_callback,
+      const base::android::JavaParamRef<jobject>& j_error_callback);
   void CancelAllPrerendering(JNIEnv* env);
 
   bool GetViewTreeForceDarkState() { return view_tree_force_dark_state_; }
@@ -373,7 +374,8 @@ class AwContents : public FindHelper::Listener,
   std::unique_ptr<content_relationship_verification::DigitalAssetLinksHandler>
       asset_link_handler_;
 
-  std::unique_ptr<content::PrerenderHandle> prerender_handle_;
+  base::circular_deque<std::unique_ptr<content::PrerenderHandle>>
+      prerender_handles_;
 
   bool view_tree_force_dark_state_ = false;
   std::string scheme_;

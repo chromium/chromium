@@ -1239,6 +1239,13 @@ void HTMLSelectElement::ElementInserted(Node& node) {
 
 void HTMLSelectElement::OptionInserted(HTMLOptionElement& option,
                                        bool option_is_selected) {
+  if (RuntimeEnabledFeatures::SelectParserRelaxationEnabled()) {
+    // During parsing, ChildrenChanged (which calls this) on the parent is
+    // called before InsertedInto on the child; during DOM mutation the reverse
+    // is true. Thus we need to set the owner select in both places.
+    option.SetOwnerSelectElement(this);
+  }
+
   DCHECK_EQ(option.OwnerSelectElement(), this);
   option.SetWasOptionInsertedCalled(true);
   SetRecalcListItems();

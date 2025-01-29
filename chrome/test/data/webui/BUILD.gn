@@ -106,7 +106,7 @@ source_set("browser_tests") {
     sources += [ "cr_components/certificate_manager/certificate_manager_component_browsertest.cc" ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "chromeos/ash_common/ash_common_browsertest.cc",
       "chromeos/ash_common/ash_common_resources_browsertest.cc",
@@ -147,7 +147,7 @@ source_set("browser_tests") {
     ]
   }
 
-  if (enable_dice_support || is_chromeos_ash) {
+  if (enable_dice_support || is_chromeos) {
     sources += [ "gaia_auth_host/gaia_auth_host_browsertest.cc" ]
   }
 
@@ -218,7 +218,7 @@ source_set("browser_tests") {
     "//net:test_support",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [
       "//ash/webui/boca_ui",
       "//ash/webui/sanitize_ui:sanitize_ui",
@@ -281,7 +281,7 @@ source_set("interactive_ui_tests") {
     sources += [ "cr_components/certificate_manager/certificate_manager_component_interactive_test.cc" ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "chromeos/ash_common/cr_elements/ash_common_cr_elements_focus_test.cc",
       "chromeos/settings/os_settings_focus_test.cc",
@@ -307,7 +307,7 @@ source_set("interactive_ui_tests") {
   }
 }
 
-if (is_chromeos_ash) {
+if (is_chromeos) {
   group("closure_compile") {
     testonly = true
     deps = [ "chromeos:closure_compile" ]
@@ -380,7 +380,7 @@ webui_ts_library("build_ts") {
     "trusted_html.ts",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     in_files += [ "mocha_adapter.js" ]
   }
 
@@ -589,12 +589,12 @@ generate_grd("build_grd") {
     ]
   }
 
-  if (enable_dice_support || is_chromeos_ash) {
+  if (enable_dice_support || is_chromeos) {
     deps += [ "gaia_auth_host:build_grdp" ]
     grdp_files += [ "$target_gen_dir/gaia_auth_host/resources.grdp" ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [
       "chromeos:build_grdp",
       "chromeos:build_web_ui_test_mojo_lite_grdp",

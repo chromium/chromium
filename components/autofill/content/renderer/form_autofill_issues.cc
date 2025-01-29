@@ -15,7 +15,6 @@
 #include "components/autofill/core/common/form_field_data.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_autofill_client.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_element_collection.h"
@@ -33,7 +32,6 @@ using blink::WebInputElement;
 using blink::WebLabelElement;
 using blink::WebLocalFrame;
 using blink::WebString;
-using blink::WebVector;
 using blink::mojom::GenericIssueErrorType;
 
 namespace autofill::form_issues {
@@ -113,12 +111,12 @@ int GetShadowHostDOMNodeId(const WebFormControlElement& element) {
 }
 
 void MaybeAppendDuplicateIdForInputDevtoolsIssue(
-    const WebVector<WebFormControlElement>& elements,
+    const std::vector<WebFormControlElement>& elements,
     std::vector<FormIssue>& form_issues) {
   const WebString& id_attr = GetWebString<kId>();
 
   // Create copies of |elements| with ids that can be modified
-  WebVector<WebFormControlElement> elements_with_id_attr;
+  std::vector<WebFormControlElement> elements_with_id_attr;
   elements_with_id_attr.reserve(elements.size());
   for (const auto& element : elements) {
     if (IsAutofillableElement(element) && !element.GetIdAttribute().IsEmpty()) {
@@ -221,8 +219,9 @@ void MaybeAppendInputAssignedAutocompleteValueToIdOrNameAttributesDevtoolsIssue(
   }
 }
 
-void AppendFormIssuesInternal(const WebVector<WebFormControlElement>& elements,
-                              std::vector<FormIssue>& form_issues) {
+void AppendFormIssuesInternal(
+    const std::vector<WebFormControlElement>& elements,
+    std::vector<FormIssue>& form_issues) {
   if (elements.size() == 0) {
     return;
   }
@@ -255,7 +254,7 @@ void AppendFormIssuesInternal(const WebVector<WebFormControlElement>& elements,
 // and returns a vector that is the union of `form_issues` and the new issues
 // found.
 std::vector<FormIssue> GetFormIssues(
-    const blink::WebVector<blink::WebFormControlElement>& control_elements,
+    const std::vector<blink::WebFormControlElement>& control_elements,
     std::vector<FormIssue> form_issues) {
   AppendFormIssuesInternal(control_elements, form_issues);
   return form_issues;
@@ -343,7 +342,7 @@ void MaybeEmitFormIssuesToDevtools(blink::WebLocalFrame& web_local_frame,
 }
 
 std::vector<FormIssue> GetFormIssuesForTesting(  // IN-TEST
-    const blink::WebVector<blink::WebFormControlElement>& control_elements,
+    const std::vector<blink::WebFormControlElement>& control_elements,
     std::vector<FormIssue> form_issues) {
   return GetFormIssues(control_elements, form_issues);
 }

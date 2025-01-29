@@ -245,12 +245,7 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
 
   private updateDefaultStore_() {
     if (this.isAccountStoreUser) {
-      PasswordManagerImpl.getInstance().isAccountStoreDefault().then(
-          isAccountStoreDefault => {
-            this.$.storePicker.value = isAccountStoreDefault ?
-                this.storeOptionAccountValue_ :
-                this.storeOptionDeviceValue_;
-          });
+      this.$.storePicker.value = this.storeOptionAccountValue_;
     }
   }
 

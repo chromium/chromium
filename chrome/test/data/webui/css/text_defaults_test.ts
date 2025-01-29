@@ -20,7 +20,7 @@ function getExpectedFontFamily(expectingSystemFont: boolean): string {
       // <if expr="is_win">
       '"Segoe UI"';
       // </if>
-      // <if expr="chromeos_ash">
+      // <if expr="is_chromeos">
       'Roboto';
       // </if>
       // <if expr="is_fuchsia">

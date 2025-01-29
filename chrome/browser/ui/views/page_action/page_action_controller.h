@@ -12,6 +12,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "ui/actions/action_id.h"
 
@@ -41,8 +42,8 @@ class PageActionController : public PinnedToolbarActionsModel::Observer {
   PageActionController& operator=(const PageActionController&) = delete;
   ~PageActionController() override;
 
-  void Initialize(const std::vector<actions::ActionId>& action_ids);
-  void Register(actions::ActionId action_id);
+  void Initialize(tabs::TabInterface& tab_interface,
+                  const std::vector<actions::ActionId>& action_ids);
 
   void Hide(actions::ActionId action_id);
   void Show(actions::ActionId action_id);
@@ -79,8 +80,15 @@ class PageActionController : public PinnedToolbarActionsModel::Observer {
   using PageActionModelsMap =
       std::map<actions::ActionId, std::unique_ptr<PageActionModelInterface>>;
 
+  // Creates a page action model for the given id, and initializes it's values.
+  void Register(actions::ActionId action_id, bool is_tab_active);
+
   PageActionModelInterface& FindPageActionModel(
       actions::ActionId action_id) const;
+
+  void OnTabActivated(tabs::TabInterface* tab);
+  void OnTabWillDeactivate(tabs::TabInterface* tab);
+  void SetModelsTabActive(bool is_active);
 
   void ActionItemChanged(const actions::ActionItem* action_item);
   void PinnedActionsModelChanged();
@@ -88,13 +96,16 @@ class PageActionController : public PinnedToolbarActionsModel::Observer {
   std::unique_ptr<PageActionModelInterface> CreateModel(
       actions::ActionId action_id);
 
+  const raw_ptr<PageActionModelFactory> page_action_model_factory_ = nullptr;
+
   PageActionModelsMap page_actions_;
 
   base::ScopedObservation<PinnedToolbarActionsModel,
                           PinnedToolbarActionsModel::Observer>
       pinned_actions_observation_{this};
 
-  const raw_ptr<PageActionModelFactory> page_action_model_factory_ = nullptr;
+  base::CallbackListSubscription tab_activated_callback_subscription_;
+  base::CallbackListSubscription tab_deactivated_callback_subscription_;
 };
 
 }  // namespace page_actions

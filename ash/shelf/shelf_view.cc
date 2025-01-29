@@ -124,6 +124,12 @@ constexpr float kDraggedImageOpacity = 0.5f;
 
 namespace {
 
+// `BoundsAnimator` drives the animation and the delegate itself does not.
+// Hence the animation delegate that is used by `BoundsAnimator` to notify
+// animation progress can just be `gfx::AnimationDelegate` and does not need to
+// be a `views::AnimationDelegateViews`.
+using BoundsAnimatorDelegate = gfx::AnimationDelegate;
+
 // The dimensions, in pixels, of the separator between pinned and unpinned
 // items.
 constexpr int kSeparatorSize = 20;
@@ -272,9 +278,9 @@ class ShelfView::FadeInAnimationDelegate
   raw_ptr<ShelfView> shelf_view_ = nullptr;
 };
 
-// AnimationDelegate used when deleting an item. This steadily decreased the
-// opacity of the layer as the animation progress.
-class ShelfView::FadeOutAnimationDelegate : public gfx::AnimationDelegate {
+// FadeOutAnimationDelegate used when deleting an item. This steadily decreased
+// the opacity of the layer as the animation progress.
+class ShelfView::FadeOutAnimationDelegate : public BoundsAnimatorDelegate {
  public:
   FadeOutAnimationDelegate(ShelfView* host, std::unique_ptr<views::View> view)
       : shelf_view_(host), view_(std::move(view)) {}
@@ -284,7 +290,7 @@ class ShelfView::FadeOutAnimationDelegate : public gfx::AnimationDelegate {
 
   ~FadeOutAnimationDelegate() override = default;
 
-  // AnimationDelegate overrides:
+  // BoundsAnimatorDelegate overrides:
   void AnimationProgressed(const Animation* animation) override {
     view_->layer()->SetOpacity(1 - animation->GetCurrentValue());
   }
@@ -304,10 +310,10 @@ class ShelfView::FadeOutAnimationDelegate : public gfx::AnimationDelegate {
   std::unique_ptr<views::View> view_;
 };
 
-// AnimationDelegate used to trigger fading an element in. When an item is
-// inserted this delegate is attached to the animation that expands the size of
-// the item.  When done it kicks off another animation to fade the item in.
-class ShelfView::StartFadeAnimationDelegate : public gfx::AnimationDelegate {
+// StartFadeAnimationDelegate used to trigger fading an element in. When an item
+// is inserted this delegate is attached to the animation that expands the size
+// of the item.  When done it kicks off another animation to fade the item in.
+class ShelfView::StartFadeAnimationDelegate : public BoundsAnimatorDelegate {
  public:
   StartFadeAnimationDelegate(ShelfView* host, views::View* view)
       : shelf_view_(host), view_(view) {}
@@ -318,7 +324,7 @@ class ShelfView::StartFadeAnimationDelegate : public gfx::AnimationDelegate {
 
   ~StartFadeAnimationDelegate() override = default;
 
-  // AnimationDelegate overrides:
+  // BoundsAnimatorDelegate overrides:
   void AnimationEnded(const Animation* animation) override {
     shelf_view_->FadeIn(view_);
   }
@@ -1214,12 +1220,11 @@ void ShelfView::EndDrag(bool cancel) {
   const int item_index = model_->ItemIndexByID(item_id);
   if (item_index >= 0) {
     drag_and_drop_view = view_model_->view_at(item_index);
-    std::unique_ptr<gfx::AnimationDelegate> animation_delegate;
 
     // Resets the dragged view's opacity at the end of drag. Otherwise, if
     // the app is already pinned on shelf before drag starts, the dragged view
     // will be invisible when drag ends.
-    animation_delegate =
+    auto animation_delegate =
         std::make_unique<StartFadeAnimationDelegate>(this, drag_and_drop_view);
 
     if (cancel) {
@@ -2275,8 +2280,7 @@ void ShelfView::ShelfItemAdded(int model_index) {
   // works better with zero animation duration.
   if (!bounds_animator_->GetAnimationDuration().is_zero()) {
     bounds_animator_->SetAnimationDelegate(
-        view, std::unique_ptr<gfx::AnimationDelegate>(
-                  new StartFadeAnimationDelegate(this, view)));
+        view, std::make_unique<StartFadeAnimationDelegate>(this, view));
   }
 }
 

@@ -52,7 +52,6 @@ using blink::WebLanguageDetectionDetails;
 using blink::WebLocalFrame;
 using blink::WebScriptSource;
 using blink::WebString;
-using blink::WebVector;
 
 namespace {
 

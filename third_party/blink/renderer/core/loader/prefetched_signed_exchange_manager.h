@@ -38,7 +38,8 @@ class PrefetchedSignedExchangeManager final
       LocalFrame* frame,
       const String& outer_link_header,
       const String& inner_link_header,
-      WebVector<std::unique_ptr<WebNavigationParams::PrefetchedSignedExchange>>
+      std::vector<
+          std::unique_ptr<WebNavigationParams::PrefetchedSignedExchange>>
           prefetched_signed_exchanges);
 
   PrefetchedSignedExchangeManager(

@@ -254,7 +254,7 @@ void WebElement::PasteText(const WebString& text, bool replace_all) {
                                           /*should_smart_replace=*/true));
 }
 
-WebVector<WebLabelElement> WebElement::Labels() const {
+std::vector<WebLabelElement> WebElement::Labels() const {
   auto* html_element = blink::DynamicTo<HTMLElement>(ConstUnwrap<Element>());
   if (!html_element)
     return {};

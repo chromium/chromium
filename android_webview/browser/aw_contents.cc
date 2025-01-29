@@ -1495,21 +1495,52 @@ void AwContents::FlushBackForwardCache(JNIEnv* env, jint reason) {
 void AwContents::StartPrerendering(
     JNIEnv* env,
     const std::string& prerendering_url,
-    const base::android::JavaParamRef<jobject>& prefetch_params,
-    const base::android::JavaParamRef<jobject>& activation_callback,
-    const base::android::JavaParamRef<jobject>& error_callback) {
+    const base::android::JavaParamRef<jobject>& j_prefetch_params,
+    const base::android::JavaParamRef<jobject>& j_activation_callback,
+    const base::android::JavaParamRef<jobject>& j_error_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK(j_activation_callback);
+  CHECK(j_error_callback);
+
+  base::OnceClosure activation_callback =
+      base::BindOnce(&base::android::RunRunnableAndroid,
+                     ScopedJavaGlobalRef<jobject>(env, j_activation_callback));
+  base::OnceClosure error_callback =
+      base::BindOnce(&base::android::RunRunnableAndroid,
+                     ScopedJavaGlobalRef<jobject>(env, j_error_callback));
+
+  // Clean up the canceled handles.
+  base::EraseIf(prerender_handles_,
+                [](std::unique_ptr<content::PrerenderHandle>& handle) {
+                  return !handle->IsValid();
+                });
+
+  // If the valid PrerenderHandle for the same URL exists, add the callbacks to
+  // the handle instead of starting a new one.
+  for (auto& handle : prerender_handles_) {
+    if (handle->GetInitialPrerenderingUrl().spec() == prerendering_url) {
+      handle->AddActivationCallback(std::move(activation_callback));
+      handle->AddErrorCallback(std::move(error_callback));
+      return;
+    }
+  }
 
   // Cancel existing prerendering before starting a new one to avoid hitting the
   // limit.
-  // TODO(https://crbug.com/41490450): Allow multiple prerenders to run
-  // sequentially.
-  prerender_handle_.reset();
+  if (!web_contents_->IsAllowedToStartPrerendering()) {
+    // Erase the oldest prerendering to free up the capacity for the new
+    // attempt. If the handles are already empty, other embedder triggers should
+    // be running. In that case, there is no way to trigger. Let this request
+    // fail eventually.
+    if (!prerender_handles_.empty()) {
+      prerender_handles_.pop_front();
+    }
+  }
 
   net::HttpRequestHeaders additional_headers =
-      GetAdditionalHeadersFromPrefetchParameters(env, prefetch_params);
+      GetAdditionalHeadersFromPrefetchParameters(env, j_prefetch_params);
   std::optional<net::HttpNoVarySearchData> no_vary_search_hint =
-      GetExpectedNoVarySearchFromPrefetchParameters(env, prefetch_params);
+      GetExpectedNoVarySearchFromPrefetchParameters(env, j_prefetch_params);
 
   // This is the same as the page transition of WebView.loadUrl().
   auto page_transition = ui::PageTransitionFromInt(
@@ -1518,34 +1549,25 @@ void AwContents::StartPrerendering(
   // TODO(https://crbug.com/41490450): Do the following:
   // - Pass a valid PreloadingAttempt.
   // - Pass a valid navigation handle callback.
-  prerender_handle_ = web_contents_->StartPrerendering(
-      GURL(prerendering_url), content::PreloadingTriggerType::kEmbedder,
-      "WebView", std::move(additional_headers), std::move(no_vary_search_hint),
-      page_transition,
-      /*should_warm_up_compositor=*/false,
-      /*should_prepare_paint_tree=*/false,
-      content::PreloadingHoldbackStatus::kUnspecified,
-      /*preloading_attempt=*/nullptr, /*url_match_predicate=*/{},
-      /*prerender_navigation_handle_callback=*/{});
+  // - Run multiple prerendering in a sequential manner, not in parallel.
+  std::unique_ptr<content::PrerenderHandle> prerender_handle =
+      web_contents_->StartPrerendering(
+          GURL(prerendering_url), content::PreloadingTriggerType::kEmbedder,
+          "WebView", std::move(additional_headers),
+          std::move(no_vary_search_hint), page_transition,
+          /*should_warm_up_compositor=*/false,
+          /*should_prepare_paint_tree=*/false,
+          content::PreloadingHoldbackStatus::kUnspecified,
+          /*preloading_attempt=*/nullptr, /*url_match_predicate=*/{},
+          /*prerender_navigation_handle_callback=*/{});
 
-  if (prerender_handle_) {
-    if (activation_callback) {
-      prerender_handle_->SetActivationCallback(base::BindOnce(
-          &base::android::RunRunnableAndroid,
-          ScopedJavaGlobalRef<jobject>(env, activation_callback)));
-    }
-    if (error_callback) {
-      prerender_handle_->SetErrorCallback(
-          base::BindOnce(&base::android::RunRunnableAndroid,
-                         ScopedJavaGlobalRef<jobject>(env, error_callback)));
-    }
+  if (prerender_handle) {
+    prerender_handle->AddActivationCallback(std::move(activation_callback));
+    prerender_handle->AddErrorCallback(std::move(error_callback));
+    prerender_handles_.push_back(std::move(prerender_handle));
   } else {
-    if (error_callback) {
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE,
-          base::BindOnce(&base::android::RunRunnableAndroid,
-                         ScopedJavaGlobalRef<jobject>(env, error_callback)));
-    }
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(error_callback));
   }
 }
 
@@ -1663,7 +1685,7 @@ void AwContents::PrimaryPageChanged(content::Page& page) {
   // TODO(https://crbug.com/378601799): Consider allowing prerendered pages
   // triggered by the WebView prerender API to outlive PrimaryPageChanged. See
   // the issue for the context.
-  prerender_handle_.reset();
+  prerender_handles_.clear();
 
   std::string scheme = page.GetMainDocument().GetLastCommittedURL().scheme();
   const url::Origin& origin = page.GetMainDocument().GetLastCommittedOrigin();

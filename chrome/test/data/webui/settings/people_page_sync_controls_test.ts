@@ -148,7 +148,7 @@ suite('SyncControlsTest', async function() {
     assertFalse(syncControls.hidden);
   });
 
-  // <if expr="chromeos_ash">
+  // <if expr="is_chromeos">
   test('SyncCookiesSupported', async function() {
     // Sync everything enabled.
     assertTrue(syncEverything.checked);

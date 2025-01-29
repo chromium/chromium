@@ -69,6 +69,8 @@ source_set("impl") {
     "glic_window_controller.cc",
     "glic_window_resize_animation.cc",
     "guest_util.cc",
+    "webui_contents_container.cc",
+    "webui_contents_container.h",
   ]
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   deps = [
@@ -178,6 +180,8 @@ source_set("interactive_ui_tests") {
   sources = [
     "border_view_interactive_uitest.cc",
     "glic_settings_util_interactive_uitest.cc",
+    "glic_tab_indicator_helper_interactive_uitest.cc",
+    "glic_ui_interactive_uitest.cc",
     "glic_window_controller_interactive_uitest.cc",
   ]
   deps = [

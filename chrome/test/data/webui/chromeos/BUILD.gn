@@ -11,7 +11,7 @@ import("//tools/typescript/webui_ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("../build_webui_tests.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 if (include_js2gtest_tests) {
   js2gtest("interactive_ui_tests_js_webui") {

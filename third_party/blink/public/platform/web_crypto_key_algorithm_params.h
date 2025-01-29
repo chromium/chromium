@@ -31,10 +31,11 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_CRYPTO_KEY_ALGORITHM_PARAMS_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_CRYPTO_KEY_ALGORITHM_PARAMS_H_
 
+#include <vector>
+
 #include "base/containers/span.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_crypto_algorithm.h"
-#include "third_party/blink/public/platform/web_vector.h"
 
 namespace blink {
 
@@ -50,7 +51,8 @@ class WebCryptoKeyAlgorithmDictionary {
   virtual void SetString(const char*, const char*) = 0;
   virtual void SetUint(const char*, unsigned) = 0;
   virtual void SetAlgorithm(const char*, const WebCryptoAlgorithm&) = 0;
-  virtual void SetUint8Array(const char*, const WebVector<unsigned char>&) = 0;
+  virtual void SetUint8Array(const char*,
+                             const std::vector<unsigned char>&) = 0;
 };
 
 enum WebCryptoKeyAlgorithmParamsType {
@@ -127,7 +129,7 @@ class WebCryptoRsaHashedKeyAlgorithmParams
 
   unsigned ModulusLengthBits() const { return modulus_length_bits_; }
 
-  const WebVector<unsigned char>& PublicExponent() const {
+  const std::vector<unsigned char>& PublicExponent() const {
     return public_exponent_;
   }
 
@@ -145,7 +147,7 @@ class WebCryptoRsaHashedKeyAlgorithmParams
 
  private:
   unsigned modulus_length_bits_;
-  WebVector<unsigned char> public_exponent_;
+  std::vector<unsigned char> public_exponent_;
   WebCryptoAlgorithm hash_;
 };
 

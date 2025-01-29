@@ -23,7 +23,6 @@
 #include "chrome/browser/ash/arc/session/arc_activation_necessity_checker.h"
 #include "chrome/browser/ash/arc/session/arc_app_id_provider_impl.h"
 #include "chrome/browser/ash/arc/session/arc_requirement_checker.h"
-#include "chrome/browser/ash/arc/session/arc_reven_hardware_checker.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
 #include "chrome/browser/ash/arc/session/arc_vm_data_migration_necessity_checker.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_mount_provider_registry.h"
@@ -407,9 +406,7 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
 
   // The unit test will use a mock hardware checker for testing.
   void SetHardwareCheckerForTesting(
-      std::unique_ptr<ArcRevenHardwareChecker> hardware_checker) {
-    hardware_checker_ = std::move(hardware_checker);
-  }
+      std::unique_ptr<ArcRevenHardwareChecker> hardware_checker);
 
   // The unit test will inject an ArcDlcInstallNotificationManager for
   // testing.
@@ -598,8 +595,7 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   std::unique_ptr<ArcPaiStarter> pai_starter_;
   std::unique_ptr<ArcFastAppReinstallStarter> fast_app_reinstall_starter_;
   std::unique_ptr<ArcUiAvailabilityReporter> arc_ui_availability_reporter_;
-  std::unique_ptr<ArcRevenHardwareChecker> hardware_checker_ =
-      std::make_unique<arc::ArcRevenHardwareChecker>();
+  std::unique_ptr<ArcRevenHardwareChecker> hardware_checker_;
 
   // The time when the sign in process started.
   base::TimeTicks sign_in_start_time_;

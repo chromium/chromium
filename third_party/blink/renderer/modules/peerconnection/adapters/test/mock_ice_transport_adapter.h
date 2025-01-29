@@ -20,7 +20,7 @@ class MockIceTransportAdapter : public testing::NiceMock<IceTransportAdapter> {
   MOCK_METHOD4(StartGathering,
                void(const cricket::IceParameters&,
                     const cricket::ServerAddresses&,
-                    const WebVector<cricket::RelayServerConfig>&,
+                    const std::vector<cricket::RelayServerConfig>&,
                     IceTransportPolicy));
   MOCK_METHOD3(Start,
                void(const cricket::IceParameters&,

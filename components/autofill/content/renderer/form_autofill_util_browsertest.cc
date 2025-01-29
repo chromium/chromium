@@ -4,6 +4,8 @@
 
 #include "components/autofill/content/renderer/form_autofill_util.h"
 
+#include <vector>
+
 #include "base/feature_list.h"
 #include "base/metrics/field_trial.h"
 #include "base/strings/strcat.h"
@@ -29,7 +31,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/public/web/web_element_collection.h"
@@ -54,7 +55,6 @@ using ::blink::WebInputElement;
 using ::blink::WebLocalFrame;
 using ::blink::WebNode;
 using ::blink::WebString;
-using ::blink::WebVector;
 using ::testing::_;
 using ::testing::AllOf;
 using ::testing::ElementsAre;
@@ -433,7 +433,7 @@ TEST_F(FormAutofillUtilsTest, FindChildTextSkipElementTest) {
     SCOPED_TRACE(test_case.description);
     LoadHTML(test_case.html);
     WebElement target = GetElementById(GetDocument(), "target");
-    WebVector<WebElement> web_to_skip =
+    std::vector<WebElement> web_to_skip =
         GetDocument().QuerySelectorAll("div[class='skip']");
     std::set<WebNode> to_skip;
     for (const WebElement& element : web_to_skip) {
@@ -703,7 +703,7 @@ TEST_F(FormAutofillUtilsTest, IsFocusable) {
 
 TEST_F(FormAutofillUtilsTest, FindFormByUniqueId) {
   LoadHTML("<body><form id='form1'></form><form id='form2'></form></body>");
-  WebVector<WebFormElement> forms = GetDocument().Forms();
+  std::vector<WebFormElement> forms = GetDocument().Forms();
 
   for (const auto& form : forms)
     EXPECT_EQ(form, GetFormByRendererId(GetFormRendererId(form)));

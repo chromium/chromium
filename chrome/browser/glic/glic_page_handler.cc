@@ -230,7 +230,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   // GlicWebClientAccess implementation.
 
   void PanelWillOpen(const mojom::PanelState& panel_state,
-                     base::OnceClosure done) override {
+                     PanelWillOpenCallback done) override {
     web_client_->NotifyPanelWillOpen(panel_state.Clone(), std::move(done));
   }
 

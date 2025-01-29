@@ -55,7 +55,7 @@ static inline int PartialStringToInt(const String& string,
 
 }  // namespace
 
-WebVector<gfx::Size> WebIconSizesParser::ParseIconSizes(
+std::vector<gfx::Size> WebIconSizesParser::ParseIconSizes(
     const WebString& web_sizes_string) {
   String sizes_string = web_sizes_string;
   std::vector<gfx::Size> icon_sizes;

@@ -781,6 +781,14 @@ public class WindowAndroid
         return manager.getOrCreateNativeBridge();
     }
 
+    @CalledByNative
+    private void showToast(String text) {
+        Context context = getContext().get();
+        if (context != null) {
+            Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
+        }
+    }
+
     /**
      * @return Whether this instance is destroyed.
      */

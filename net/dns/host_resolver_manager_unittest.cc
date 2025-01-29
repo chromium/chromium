@@ -525,10 +525,17 @@ bool HostResolverManagerTest::GetLastIpv6ProbeResult() {
 
 void HostResolverManagerTest::PopulateCache(const HostCache::Key& key,
                                             IPEndPoint endpoint) {
-  resolver_->CacheResult(resolve_context_->host_cache(), key,
-                         HostCache::Entry(OK, {endpoint}, /*aliases=*/{},
-                                          HostCache::Entry::SOURCE_UNKNOWN),
-                         base::Seconds(1));
+  std::vector<IPEndPoint> endpoints = {endpoint};
+  PopulateCache(key, std::move(endpoints));
+}
+
+void HostResolverManagerTest::PopulateCache(const HostCache::Key& key,
+                                            std::vector<IPEndPoint> endpoints) {
+  resolver_->CacheResult(
+      resolve_context_->host_cache(), key,
+      HostCache::Entry(OK, std::move(endpoints), /*aliases=*/{},
+                       HostCache::Entry::SOURCE_UNKNOWN),
+      base::Seconds(1));
 }
 
 const std::pair<const HostCache::Key, HostCache::Entry>*

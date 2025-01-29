@@ -5,6 +5,7 @@
 import("//build/config/android/config.gni")
 import("//build/config/features.gni")
 import("//components/safe_browsing/buildflags.gni")
+import("//components/site_isolation/site_isolation.gni")
 import("//components/supervised_user/buildflags.gni")
 import("//pdf/features.gni")
 import("//printing/buildflags/buildflags.gni")
@@ -73,6 +74,7 @@ grit("components_resources") {
     "safe_browsing_mode=$safe_browsing_mode",
     "is_fuchsia=$is_fuchsia",
     "use_blink=$use_blink",
+    "use_internal_isolated_origins=$use_internal_isolated_origins",
   ]
 
   deps = [

@@ -13,6 +13,7 @@
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/buildflag.h"
 #include "components/os_crypt/async/common/algorithm.mojom.h"
 #include "components/os_crypt/sync/os_crypt.h"
 #include "crypto/aead.h"
@@ -102,7 +103,7 @@ Encryptor::Encryptor(KeyRing keys, const std::string& provider_for_encryption)
   // sync compatible.
   bool already_found_os_crypt_compatible = false;
   for (const auto& key : keys_) {
-    if (key.second.is_os_crypt_sync_compatible_) {
+    if (key.second.has_value() && key.second->is_os_crypt_sync_compatible_) {
       CHECK(!already_found_os_crypt_compatible)
           << "Cannot have more than one key marked OSCrypt sync compatible.";
       already_found_os_crypt_compatible = true;
@@ -242,9 +243,10 @@ std::optional<std::vector<uint8_t>> Encryptor::EncryptString(
 
   const auto& it = keys_.find(provider_for_encryption_);
 
-  if (it == keys_.end()) {
-    // This can happen if there is no default provider, or `keys_` is empty. In
-    // this case, fall back to legacy OSCrypt encryption.
+  if (it == keys_.end() || !it->second.has_value()) {
+    // This can happen if there is no default provider, or `keys_` is empty, or
+    // if the key is temporarily unavailable for encryption. In these cases,
+    // fall back to legacy OSCrypt encryption.
     std::string ciphertext;
     if (OSCrypt::EncryptString(data, &ciphertext)) {
       return std::vector<uint8_t>(ciphertext.cbegin(), ciphertext.cend());
@@ -253,7 +255,7 @@ std::optional<std::vector<uint8_t>> Encryptor::EncryptString(
   }
 
   const auto& [provider, key] = *it;
-  std::vector<uint8_t> ciphertext = key.Encrypt(base::as_byte_span(data));
+  std::vector<uint8_t> ciphertext = key->Encrypt(base::as_byte_span(data));
 
   // This adds the provider prefix on the start of the data.
   ciphertext.insert(ciphertext.begin(), provider.cbegin(), provider.cend());
@@ -266,6 +268,7 @@ std::optional<std::string> Encryptor::DecryptData(
     DecryptFlags* flags) const {
   if (flags) {
     flags->should_reencrypt = false;
+    flags->temporarily_unavailable = false;
   }
 
   if (data.empty()) {
@@ -277,27 +280,49 @@ std::optional<std::string> Encryptor::DecryptData(
       continue;
     }
     if (std::ranges::equal(provider, data.first(provider.size()))) {
-      // This removes the provider prefix from the front of the data.
-      auto ciphertext = data.subspan(provider.size());
-      // The Key does the raw decrypt.
-      auto plaintext = key.Decrypt(ciphertext);
-      if (plaintext) {
-        if (flags) {
-          flags->should_reencrypt = provider != provider_for_encryption_;
+      if (key.has_value()) {
+        // This removes the provider prefix from the front of the data.
+        auto ciphertext = data.subspan(provider.size());
+        // The Key does the raw decrypt.
+        auto plaintext = key->Decrypt(ciphertext);
+        if (plaintext) {
+          if (flags) {
+            flags->should_reencrypt = provider != provider_for_encryption_;
+          }
+          return std::string(plaintext->begin(), plaintext->end());
+        } else {
+          // A key is present, and the data header matches the key prefix, but
+          // the decrypt did not work. This either means the data is invalid, or
+          // the key is invalid. This is a permanent failure.
+          return std::nullopt;
         }
-        return std::string(plaintext->begin(), plaintext->end());
+      } else {
+        // Indicate that this might be a temporary failure.
+        if (flags) {
+          flags->temporarily_unavailable = true;
+        }
+        return std::nullopt;
       }
     }
   }
 
   // No keys are loaded, or no suitable provider was found, or decryption
-  // failed. Fallback to using legacy OSCrypt to attempt decryption.
+  // failed.
+  if (!OSCrypt::IsEncryptionAvailable()) {
+    if (flags) {
+      flags->temporarily_unavailable = true;
+    }
+    return std::nullopt;
+  }
+
+  // OSCrypt is available, so fallback to using legacy OSCrypt to attempt
+  // decryption.
   std::string string_data(data.begin(), data.end());
   std::string plaintext;
   if (OSCrypt::DecryptString(string_data, &plaintext)) {
-    // If fallback to OSCrypt happened but there is a valid key provider, then
-    // recommend re-encryption.
-    if (!provider_for_encryption_.empty() && flags) {
+    // If fallback to OSCrypt happened but there is a valid key provider, with a
+    // valid key, then recommend re-encryption.
+    if (flags && DefaultEncryptionProviderAvailable()) {
       flags->should_reencrypt = true;
     }
     return plaintext;
@@ -326,7 +351,11 @@ bool Encryptor::DecryptString16(const std::string& ciphertext,
 Encryptor Encryptor::Clone(Option option) const {
   KeyRing keyring;
   for (const auto& [provider, key] : keys_) {
-    keyring.emplace(provider, key.Clone());
+    if (key.has_value()) {
+      keyring.emplace(provider, key->Clone());
+    } else {
+      keyring.emplace(provider, std::nullopt);
+    }
   }
 
   std::string provider_for_encryption;
@@ -337,7 +366,7 @@ Encryptor Encryptor::Clone(Option option) const {
       break;
     case Option::kEncryptSyncCompat:
       for (const auto& [provider, key] : keyring) {
-        if (key.is_os_crypt_sync_compatible_) {
+        if (key.has_value() && key->is_os_crypt_sync_compatible_) {
           provider_for_encryption = provider;
           break;
         }
@@ -350,8 +379,7 @@ Encryptor Encryptor::Clone(Option option) const {
 }
 
 bool Encryptor::IsEncryptionAvailable() const {
-  if (!provider_for_encryption_.empty() &&
-      keys_.contains(provider_for_encryption_)) {
+  if (DefaultEncryptionProviderAvailable()) {
     return true;
   }
 
@@ -364,6 +392,12 @@ bool Encryptor::IsDecryptionAvailable() const {
   }
 
   return OSCrypt::IsEncryptionAvailable();
+}
+
+bool Encryptor::DefaultEncryptionProviderAvailable() const {
+  return !provider_for_encryption_.empty() &&
+         keys_.contains(provider_for_encryption_) &&
+         keys_.at(provider_for_encryption_).has_value();
 }
 
 }  // namespace os_crypt_async

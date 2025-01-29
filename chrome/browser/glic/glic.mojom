@@ -209,11 +209,30 @@ struct PanelState {
   int32? window_id;
 };
 
+
+// Web client's operation modes.
+// WARNING: These enum values should match
+// chrome/browser/resources/glic/glic_api/glic_api.ts
+// Warning: this is used for UMA histograms, so values should not be
+// renumbered. See GlicWebClientMode in
+// tools/metrics/histograms/metadata/glic/enums.xml
+[Stable, Extensible]
+enum WebClientMode {
+  [Default] kUnknown = -1,
+  // Text operation mode.
+  kText = 0,
+  // Audio operation mode.
+  kAudio = 1,
+};
+
 // Access from the browser to the Glic web client by proxy of the WebUI page.
 interface WebClient {
   // Informs the web client that the panel will open. Chrome will wait to open
   // the panel until after this returns.
-  NotifyPanelWillOpen(PanelState panel_state) => ();
+  // `web_client_mode` informs Chrome of the current web client mode, which may
+  // be kUnknown for clients that do not support it.
+  NotifyPanelWillOpen(PanelState panel_state) =>
+      (WebClientMode web_client_mode);
 
   // Informs the web client that the panel was closed. Chrome will try to keep
   // the web client alive until this function returns.

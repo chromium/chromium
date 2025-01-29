@@ -17,7 +17,7 @@ import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import type {BrowserProxy} from '../browser_proxy.js';
 import type {PanelState as PanelStateMojo, TabData as TabDataMojo, WebClientHandlerInterface, WebClientInterface} from '../glic.mojom-webui.js';
-import {GetTabContextErrorReason as MojoGetTabContextErrorReason, WebClientHandlerRemote, WebClientReceiver} from '../glic.mojom-webui.js';
+import {GetTabContextErrorReason as MojoGetTabContextErrorReason, WebClientHandlerRemote, WebClientMode, WebClientReceiver} from '../glic.mojom-webui.js';
 import type {DraggableArea, PanelState, Screenshot, TabContextOptions, WebPageData} from '../glic_api/glic_api.js';
 import {DEFAULT_PDF_SIZE_LIMIT, GetTabContextErrorReason} from '../glic_api/glic_api.js';
 import type {GlicAppController} from '../glic_app_controller.js';
@@ -58,13 +58,21 @@ class WebClientImpl implements WebClientInterface {
     await this.sender.requestWithResponse('glicWebClientNotifyPanelClosed', {});
   }
 
-  async notifyPanelWillOpen(panelState: PanelStateMojo): Promise<void> {
-    await this.sender.requestWithResponse(
+  async notifyPanelWillOpen(panelState: PanelStateMojo):
+      Promise<{webClientMode: WebClientMode}> {
+    const result = await this.sender.requestWithResponse(
         'glicWebClientNotifyPanelWillOpen',
         {panelState: panelStateToClient(panelState)});
+
     // The web client is ready to show, ensure the webview is
     // displayed.
     this.appController.openGuestPanel();
+
+    return {
+      webClientMode:
+          (result.openPanelInfo?.startingMode as WebClientMode | undefined) ??
+          WebClientMode.kUnknown,
+    };
   }
 
   notifyPanelWasClosed(): Promise<void> {

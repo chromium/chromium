@@ -43,7 +43,8 @@ ReadWriteCardsManagerImpl::ReadWriteCardsManagerImpl()
           g_browser_process->shared_url_loader_factory(),
           quick_answers_controller_->GetQuickAnswersDelegate()));
 
-  if (chromeos::features::IsOrcaEnabled()) {
+  if (chromeos::features::IsOrcaEnabled() ||
+      ash::features::IsLobsterEnabled()) {
     editor_menu_controller_ =
         std::make_unique<editor_menu::EditorMenuControllerImpl>();
   }
@@ -116,7 +117,8 @@ ReadWriteCardsManagerImpl::GetControllers(
   auto opt_in_features =
       GetMagicBoostOptInFeatures(params, editor_menu_card_context);
 
-  if (opt_in_features) {
+  // When the magic boost revamp logic is enabled.
+  if (opt_in_features && !chromeos::features::IsMagicBoostRevampEnabled()) {
     crosapi::mojom::MagicBoostController::TransitionAction action =
         crosapi::mojom::MagicBoostController::TransitionAction::kDoNothing;
 

@@ -27,7 +27,6 @@ source_set("wm") {
 
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//chromeos/ui/base",
     "//components/prefs",
     "//components/url_matcher",

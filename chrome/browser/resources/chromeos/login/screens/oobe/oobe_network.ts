@@ -17,7 +17,6 @@ import '../../components/dialogs/oobe_loading_dialog.js';
 
 import type {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {NetworkList} from 'chrome://resources/ash/common/network/network_list_types.js';
 import type {NetworkSelectElement} from 'chrome://resources/ash/common/network/network_select.js';
 import {assert} from 'chrome://resources/js/assert.js';
 

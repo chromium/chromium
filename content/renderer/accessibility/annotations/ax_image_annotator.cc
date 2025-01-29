@@ -51,7 +51,6 @@ using blink::WebDocument;
 using blink::WebElement;
 using blink::WebNode;
 using blink::WebString;
-using blink::WebVector;
 
 namespace content {
 
@@ -306,7 +305,7 @@ void AXImageAnnotator::AddImageAnnotationsForNode(WebAXObject& src,
   // Reject images that are explicitly empty, or that have a
   // meaningful name already.
   ax::mojom::NameFrom name_from;
-  WebVector<WebAXObject> name_objects;
+  std::vector<WebAXObject> name_objects;
   WebString web_name = src.GetName(name_from, name_objects);
 
   // If an image has a nonempty name, compute whether we should add an
@@ -759,7 +758,7 @@ void AXImageAnnotator::OnImageAnnotated(
   // as a function of whether the retrieved image label was
   // a success, an error, or empty.
   ax::mojom::NameFrom name_from;
-  blink::WebVector<blink::WebAXObject> name_objects;
+  std::vector<blink::WebAXObject> name_objects;
   blink::WebString web_name = image.GetName(name_from, name_objects);
   int non_stop_length = GetLengthAfterRemovingStopwords(web_name.Utf8());
 

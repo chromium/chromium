@@ -66,7 +66,7 @@ mojom::blink::InsecureRequestPolicy WebFrame::GetInsecureRequestPolicy() const {
   return ToCoreFrame(*this)->GetSecurityContext()->GetInsecureRequestPolicy();
 }
 
-WebVector<unsigned> WebFrame::GetInsecureRequestToUpgrade() const {
+std::vector<unsigned> WebFrame::GetInsecureRequestToUpgrade() const {
   const SecurityContext::InsecureNavigationsSet& set =
       ToCoreFrame(*this)->GetSecurityContext()->InsecureNavigationsToUpgrade();
   return base::ToVector(SecurityContext::SerializeInsecureNavigationSet(set));

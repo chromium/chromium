@@ -111,21 +111,30 @@ class CONTENT_EXPORT SiteInstance : public base::RefCounted<SiteInstance> {
   virtual BrowsingInstanceId GetBrowsingInstanceId() = 0;
 
   // Whether this SiteInstance has a running process associated with it.
-  // This may return true before the first call to GetProcess(), in cases where
-  // we use process-per-site and there is an existing process available.
+  // This may return true before the first call to GetOrCreateProcess(), in
+  // cases where we use process-per-site and there is an existing process
+  // available.
   virtual bool HasProcess() = 0;
+
+  // Returns the current RenderProcessHost being used to render pages for this
+  // SiteInstance. If there is no RenderProcessHost (because either none has
+  // yet been created or there was one but it was cleanly destroyed (e.g. when
+  // it is not actively being used)), this method will crash.
+  // Use `GetOrCreateProcess` instead if renderer process creation is
+  // required.
+  virtual RenderProcessHost* GetProcess() = 0;
 
   // Returns the current RenderProcessHost being used to render pages for this
   // SiteInstance.  If there is no RenderProcessHost (because either none has
   // yet been created or there was one but it was cleanly destroyed (e.g. when
-  // it is not actively being used), then this method will create a new
+  // it is not actively being used)), this method will create a new
   // RenderProcessHost (and a new ID).  Note that renderer process crashes leave
   // the current RenderProcessHost (and ID) in place.
   //
   // For sites that require process-per-site mode (e.g., NTP), this will
   // ensure only one RenderProcessHost for the site exists within the
   // BrowserContext.
-  virtual RenderProcessHost* GetProcess() = 0;
+  virtual RenderProcessHost* GetOrCreateProcess() = 0;
 
   // Returns the ID of the SiteInstanceGroup this SiteInstance belongs to. If
   // the SiteInstance has no group, return 0, which is an invalid

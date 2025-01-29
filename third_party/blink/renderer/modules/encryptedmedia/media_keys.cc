@@ -241,7 +241,7 @@ class GetStatusForPolicyResultPromise
 
 MediaKeys::MediaKeys(
     ExecutionContext* context,
-    const WebVector<WebEncryptedMediaSessionType>& supported_session_types,
+    const std::vector<WebEncryptedMediaSessionType>& supported_session_types,
     std::unique_ptr<WebContentDecryptionModule> cdm,
     const MediaKeysConfig& config)
     : ActiveScriptWrappable<MediaKeys>({}),

@@ -12,14 +12,6 @@ namespace glic::test {
 
 namespace internal {
 
-DEFINE_STATE_IDENTIFIER_VALUE(GlicInitializedStateObserver,
-                              kGlicInitializedState);
-GlicInitializedStateObserver::GlicInitializedStateObserver(
-    const GlicWindowController& controller)
-    : PollingStateObserver(
-          [&controller]() { return controller.web_client() != nullptr; }) {}
-GlicInitializedStateObserver::~GlicInitializedStateObserver() = default;
-
 GlicWindowControllerStateObserver::GlicWindowControllerStateObserver(
     const GlicWindowController& controller)
     : PollingStateObserver([&controller]() { return controller.state(); }) {}

@@ -176,7 +176,7 @@ void EditorMenuControllerImpl::OnChipButtonPressed(
 }
 
 void EditorMenuControllerImpl::OnTabSelected(int index) {
-  if (!card_session_ || card_session_->editor_manager() == nullptr) {
+  if (card_session_ == nullptr) {
     return;
   }
 
@@ -187,8 +187,7 @@ void EditorMenuControllerImpl::OnTabSelected(int index) {
 
 void EditorMenuControllerImpl::OnTextfieldArrowButtonPressed(
     std::u16string_view text) {
-  if (text.empty() || !card_session_ ||
-      card_session_->editor_manager() == nullptr) {
+  if (text.empty() || card_session_ == nullptr) {
     return;
   }
 
@@ -266,9 +265,23 @@ void EditorMenuControllerImpl::LogEditorMode(const EditorMode& editor_mode) {
 
 void EditorMenuControllerImpl::GetEditorMenuCardContext(
     base::OnceCallback<void(const EditorMenuCardContext&)> callback) {
-  if (!card_session_ || card_session_->editor_manager() == nullptr) {
+  if (card_session_ == nullptr) {
     return;
   }
+
+  if (card_session_->editor_manager() == nullptr) {
+    OnGetEditorCardMenuContext(
+        std::move(callback), card_session_->GetLobsterMode(),
+        // At this stage, we do not need to be 100% correct about the text
+        // selection data, because it will be updated later from
+        // EditorMenuControllerImpl::OnTextAvailable.
+        EditorContext(EditorMode::kHardBlocked,
+                      EditorTextSelectionMode::kNoSelection,
+                      /*consent_status_settled=*/false,
+                      /*preset_queries=*/{}));
+    return;
+  }
+
   card_session_->editor_manager()->GetEditorPanelContext(
       base::BindOnce(&EditorMenuControllerImpl::OnGetEditorCardMenuContext,
                      weak_factory_.GetWeakPtr(), std::move(callback),

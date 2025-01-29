@@ -772,4 +772,28 @@ SavedTabGroupUtils::GetRecentActivity(Profile* profile,
   return messaging_service->GetActivityLog(activity_log_params);
 }
 
+// static
+tabs::TabInterface* SavedTabGroupUtils::GetGroupedTab(LocalTabGroupID group_id,
+                                                      LocalTabID tab_id) {
+  const Browser* const browser =
+      SavedTabGroupUtils::GetBrowserWithTabGroupId(group_id);
+  if (!browser) {
+    return nullptr;
+  }
+
+  TabStripModel* tab_strip_model = browser->tab_strip_model();
+  const gfx::Range tab_indices =
+      tab_strip_model->group_model()->GetTabGroup(group_id)->ListTabs();
+  for (size_t grouped_tab_index = tab_indices.start();
+       grouped_tab_index < tab_indices.end(); grouped_tab_index++) {
+    tabs::TabInterface* const tab =
+        tab_strip_model->GetTabAtIndex(grouped_tab_index);
+    if (tab->GetHandle().raw_value() == tab_id) {
+      return tab;
+    }
+  }
+
+  return nullptr;
+}
+
 }  // namespace tab_groups

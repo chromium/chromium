@@ -139,43 +139,6 @@ std::optional<std::string> UnwrapTabUrl(ActivityLogItem item) {
   return std::nullopt;
 }
 
-// TODO(crbug.com/392150086): Refactor this into utilities.
-std::optional<int> GetTabStripIndex(tab_groups::LocalTabGroupID group_id,
-                                    tab_groups::LocalTabID tab_id) {
-  auto* browser =
-      tab_groups::SavedTabGroupUtils::GetBrowserWithTabGroupId(group_id);
-  if (!browser) {
-    return std::nullopt;
-  }
-
-  auto group_offset_in_tabstrip = browser->tab_strip_model()
-                                      ->group_model()
-                                      ->GetTabGroup(group_id)
-                                      ->GetFirstTab();
-  if (!group_offset_in_tabstrip.has_value()) {
-    return std::nullopt;
-  }
-
-  auto* tab_group_sync_service =
-      tab_groups::SavedTabGroupUtils::GetServiceForProfile(browser->profile());
-  if (!tab_group_sync_service) {
-    return std::nullopt;
-  }
-
-  auto saved_tab_group = tab_group_sync_service->GetGroup(group_id);
-  if (!saved_tab_group.has_value()) {
-    return std::nullopt;
-  }
-  auto tab_offset_in_group = saved_tab_group->GetIndexOfTab(tab_id);
-  if (!tab_offset_in_group.has_value()) {
-    return std::nullopt;
-  }
-
-  auto tabstrip_index =
-      group_offset_in_tabstrip.value() + tab_offset_in_group.value();
-  return tabstrip_index;
-}
-
 }  // namespace
 
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kRecentActivityBubbleDialogId);
@@ -296,17 +259,16 @@ void RecentActivityRowView::FocusTab() {
     return;
   }
 
-  auto* browser = tab_groups::SavedTabGroupUtils::GetBrowserWithTabGroupId(
-      group_id.value());
-  if (!browser) {
+  // Find the grouped tab and activate it within the tab strip model.
+  tabs::TabInterface* tab = tab_groups::SavedTabGroupUtils::GetGroupedTab(
+      group_id.value(), tab_id.value());
+  if (!tab) {
+    // Early return in the case that this tab has already been closed.
     return;
   }
-
-  std::optional<int> tab_index =
-      GetTabStripIndex(group_id.value(), tab_id.value());
-  if (tab_index.has_value()) {
-    browser->tab_strip_model()->ActivateTabAt(tab_index.value());
-  }
+  TabStripModel* tab_strip_model =
+      tab->GetBrowserWindowInterface()->GetTabStripModel();
+  tab_strip_model->ActivateTabAt(tab_strip_model->GetIndexOfTab(tab));
 }
 
 void RecentActivityRowView::ReopenTab() {

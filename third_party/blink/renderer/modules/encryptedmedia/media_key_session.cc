@@ -1021,7 +1021,7 @@ void MediaKeySession::OnSessionClosed(media::CdmSessionClosedReason reason) {
 
   // 5. Run the Update Key Statuses algorithm on the session, providing
   //    an empty sequence.
-  OnSessionKeysChange(WebVector<WebEncryptedMediaKeyInformation>(), false);
+  OnSessionKeysChange(std::vector<WebEncryptedMediaKeyInformation>(), false);
 
   // 6. Run the Update Expiration algorithm on the session, providing NaN.
   OnSessionExpirationUpdate(std::numeric_limits<double>::quiet_NaN());
@@ -1075,7 +1075,7 @@ void MediaKeySession::OnSessionExpirationUpdate(
 }
 
 void MediaKeySession::OnSessionKeysChange(
-    const WebVector<WebEncryptedMediaKeyInformation>& keys,
+    const std::vector<WebEncryptedMediaKeyInformation>& keys,
     bool has_additional_usable_key) {
   DVLOG(MEDIA_KEY_SESSION_LOG_LEVEL)
       << __func__ << "(" << this << ") with " << keys.size()

@@ -262,6 +262,10 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
     size_t in_slot_metadata_size = 0;
 #endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     bool use_configurable_pool = false;
+    // Despite its name, `FreeFlags` for zapping is deleted and does not exist.
+    // This value is used for SchedulerLoopQuarantine.
+    // TODO(https://crbug.com/351974425): group this setting and quarantine
+    // setting in one place.
     bool zapping_by_free_flags = false;
     bool eventually_zero_freed_memory = false;
     bool scheduler_loop_quarantine = false;
@@ -1518,16 +1522,11 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeInline(void* object) {
   // cacheline ping-pong.
   PA_PREFETCH(slot_span);
 
-  // Further down, we may zap the memory, no point in doing it twice.  We may
-  // zap twice if kZap is enabled without kSchedulerLoopQuarantine. Make sure it
-  // does not happen. This is not a hard requirement: if this is deemed cheap
-  // enough, it can be relaxed, the static_assert() is here to make it a
-  // conscious decision.
-  static_assert(!ContainsFlags(flags, FreeFlags::kZap) ||
-                    ContainsFlags(flags, FreeFlags::kSchedulerLoopQuarantine),
-                "kZap and kSchedulerLoopQuarantine should be used together to "
-                "avoid double zapping");
-  if constexpr (ContainsFlags(flags, FreeFlags::kZap)) {
+  // TODO(crbug.com/40287058): Collecting objects for
+  // `kSchedulerLoopQuarantineBranch` here means it "delays" other checks (BRP
+  // refcount, cookie, etc.)
+  // For better debuggability, we should do these checks before quarantining.
+  if constexpr (ContainsFlags(flags, FreeFlags::kSchedulerLoopQuarantine)) {
     // No need to zap direct mapped allocations, as they are unmapped right
     // away. This also ensures that we don't needlessly memset() very large
     // allocations.
@@ -1536,12 +1535,7 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeInline(void* object) {
       internal::SecureMemset(object, internal::kFreedByte,
                              GetSlotUsableSize(slot_span));
     }
-  }
-  // TODO(crbug.com/40287058): Collecting objects for
-  // `kSchedulerLoopQuarantineBranch` here means it "delays" other checks (BRP
-  // refcount, cookie, etc.)
-  // For better debuggability, we should do these checks before quarantining.
-  if constexpr (ContainsFlags(flags, FreeFlags::kSchedulerLoopQuarantine)) {
+
     if (settings.scheduler_loop_quarantine) {
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
       // TODO(keishi): Add `[[likely]]` when brp is fully enabled as

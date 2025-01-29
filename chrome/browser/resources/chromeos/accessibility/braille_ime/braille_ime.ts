@@ -212,8 +212,7 @@ export class BrailleIme {
    * @param requestId
    */
   private onKeyEvent_(
-      // @ts-ignore Unread value
-      engineID: string, event: KeyboardEvent, requestId: string): undefined {
+      _engineID: string, event: KeyboardEvent, _requestId: string): undefined {
     const result = this.processKey_(event);
     if (result === undefined || event.requestId === undefined) {
       return;

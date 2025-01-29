@@ -6,10 +6,10 @@
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_NAVIGATION_CONTROL_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/functional/callback.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_document_loader.h"
 #include "third_party/blink/public/web/web_frame_load_type.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -80,7 +80,7 @@ class WebNavigationControl : public WebLocalFrame {
   // - The beforeunload event gets dispatched.
   // Note that the navigation might not actually start.
   virtual void MaybeStartOutermostMainFrameNavigation(
-      const WebVector<WebURL>& urls) const = 0;
+      const std::vector<WebURL>& urls) const = 0;
 
   // Marks the frame as loading, before WebLocalFrameClient issues a navigation
   // request through the browser process on behalf of the frame.

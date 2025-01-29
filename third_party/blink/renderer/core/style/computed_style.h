@@ -1088,6 +1088,28 @@ class ComputedStyle final : public ComputedStyleBase {
                                             : GridTemplateRows();
   }
 
+  // In the following masonry methods, `TrackStart` and `TrackEnd`,
+  // `track_direction` should be the same orientation as masonry's track
+  // direction. Otherwise, the positions should be auto.
+  const GridPosition& TrackStart(
+      GridTrackSizingDirection track_direction) const {
+    if (IsDisplayMasonryBox()) {
+      DCHECK(track_direction == MasonryTrackSizingDirection());
+      return MasonryTrackStart();
+    }
+    const bool is_for_columns = track_direction == kForColumns;
+    return is_for_columns ? GridColumnStart() : GridRowStart();
+  }
+
+  const GridPosition& TrackEnd(GridTrackSizingDirection track_direction) const {
+    if (IsDisplayMasonryBox()) {
+      DCHECK(track_direction == MasonryTrackSizingDirection());
+      return MasonryTrackEnd();
+    }
+    const bool is_for_columns = track_direction == kForColumns;
+    return is_for_columns ? GridColumnEnd() : GridRowEnd();
+  }
+
   // Writing mode utility functions.
   WritingDirectionMode GetWritingDirection() const {
     return {GetWritingMode(), Direction()};
@@ -1604,6 +1626,7 @@ class ComputedStyle final : public ComputedStyleBase {
   bool IsDisplayTableBox() const { return IsDisplayTableBox(Display()); }
   bool IsDisplayFlexibleBox() const { return IsDisplayFlexibleBox(Display()); }
   bool IsDisplayGridBox() const { return IsDisplayGridBox(Display()); }
+  bool IsDisplayMasonryBox() const { return IsDisplayMasonryBox(Display()); }
   bool IsDisplayFlexibleOrGridBox() const {
     return IsDisplayFlexibleBox(Display()) || IsDisplayGridBox(Display());
   }

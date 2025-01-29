@@ -9,9 +9,8 @@
 #include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_view.h"
 #include "chrome/browser/glic/glic_window_resize_animation.h"
-#include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
+#include "chrome/browser/glic/webui_contents_container.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
-#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -21,12 +20,9 @@
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/glic_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_action_container.h"
-#include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_delegate.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_observer.h"
-#include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/event_monitor.h"
 #include "ui/views/interaction/element_tracker_views.h"
@@ -45,9 +41,10 @@ namespace {
 // Default value for adding a buffer to the attachment zone.
 constexpr static int kAttachmentBuffer = 20;
 
-constexpr static int kWidgetDefaultWidth = 400;
-constexpr static int kWidgetTopBarHeight = 80;
-static constexpr int kAnimationDurationMs = 300;
+constexpr static int kWidgetDefaultWidth = 300;
+constexpr static int kWidgetTopBarHeight = 48;
+constexpr static int kAnimationDurationMs = 300;
+constexpr static int kInitialDetachedYPosition = 48;
 
 constexpr char kHistogramGlicPanelPresentationTimeAllModes[] =
     "Glic.PanelPresentationTime.All";
@@ -67,58 +64,6 @@ mojom::PanelState CreatePanelState(bool widget_visible,
 }
 
 }  // namespace
-
-class GlicWindowController::ContentsAndProfileKeepAlive
-    : public content::WebContentsDelegate {
- public:
-  ContentsAndProfileKeepAlive(Profile* profile,
-                              GlicWindowController* glic_window_controller)
-      : profile_keep_alive_(profile, ProfileKeepAliveOrigin::kGlicView),
-        web_contents_(content::WebContents::Create(
-            content::WebContents::CreateParams(profile))),
-        glic_window_controller_(glic_window_controller) {
-    DCHECK(web_contents_);
-    web_contents_->SetDelegate(this);
-    web_contents_->SetPageBaseBackgroundColor(SK_ColorTRANSPARENT);
-    web_contents_->GetController().LoadURLWithParams(
-        content::NavigationController::LoadURLParams(
-            GURL{chrome::kChromeUIGlicURL}));
-  }
-
-  ~ContentsAndProfileKeepAlive() override { web_contents_->ClosePage(); }
-
-  ContentsAndProfileKeepAlive(const ContentsAndProfileKeepAlive&) = delete;
-  ContentsAndProfileKeepAlive& operator=(const ContentsAndProfileKeepAlive&) =
-      delete;
-
-  content::WebContents* web_contents() { return web_contents_.get(); }
-
- private:
-  // content::WebContentsDelegate:
-  bool HandleKeyboardEvent(
-      content::WebContents* source,
-      const input::NativeWebKeyboardEvent& event) override {
-    GlicView* glic_view = glic_window_controller_->GetGlicView();
-    if (!glic_view) {
-      return false;
-    }
-    return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
-        event, glic_view->web_view()->GetFocusManager());
-  }
-  void RequestMediaAccessPermission(
-      content::WebContents* web_contents,
-      const content::MediaStreamRequest& request,
-      content::MediaResponseCallback callback) override {
-    MediaCaptureDevicesDispatcher::GetInstance()->ProcessMediaAccessRequest(
-        web_contents, request, std::move(callback), nullptr);
-  }
-
-  ScopedProfileKeepAlive profile_keep_alive_;
-  std::unique_ptr<content::WebContents> web_contents_;
-  views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
-  // Unowned
-  raw_ptr<GlicWindowController> glic_window_controller_;
-};
 
 // Helper class for observing mouse and key events from native window.
 class GlicWindowController::WindowEventObserver : public ui::EventObserver {
@@ -279,7 +224,15 @@ void GlicWindowController::Toggle(BrowserWindowInterface* bwi) {
     }
   }
 
-  if (state_ == State::kOpen) {
+  // Pressing the button or the hotkey when the window is open, or waiting to
+  // load should close it. The latter is required because otherwise if there
+  // were an error loading the backend (or if it just took a long time) then the
+  // button/hotkey would become unresponsive.
+  //
+  // In the future, when the WebUI can send its status back to the controller
+  // via mojom, we could explicitly restrict the second case to loading,
+  // offline, and error states.
+  if (state_ == State::kOpen || state_ == State::kWaitingForGlicToLoad) {
     if (new_attached_browser) {
       if (new_attached_browser == attached_browser_) {
         // Button was clicked on same browser: close.
@@ -355,7 +308,7 @@ void GlicWindowController::Show(Browser* browser) {
   show_start_time_ = base::TimeTicks::Now();
 
   if (!contents_) {
-    contents_ = std::make_unique<ContentsAndProfileKeepAlive>(profile_, this);
+    contents_ = std::make_unique<WebUIContentsContainer>(profile_, this);
   }
 
   if (browser) {
@@ -389,7 +342,7 @@ gfx::Rect GlicWindowController::GetInitialDetachedBounds() {
   gfx::Point top_right_point = GetTopRightPositionForDetachedGlicWindow();
   int padding = 50;
   initial_rect.set_x(top_right_point.x() - widget_size.width() - padding);
-  initial_rect.set_y(top_right_point.y() + padding);
+  initial_rect.set_y(top_right_point.y());
   initial_rect.set_size(widget_size);
   return initial_rect;
 }
@@ -444,10 +397,25 @@ void GlicWindowController::OpenDetached() {
   glic_widget_ = CreateGlicWidget(profile_, initial_bounds);
   glic_widget_observation_.Observe(glic_widget_.get());
 
-  // We skip the showing animation and jump straight to waiting for glic to
-  // load.
-  GetGlicView()->web_view()->SetWebContents(contents_->web_contents());
-  state_ = State::kWaitingForGlicToLoad;
+  // Be sure to reparent the widget and set its state first before showing it.
+  MaybeCreateHolderWindowAndReparent();
+#if BUILDFLAG(IS_MAC)
+  // Be careful to not activate, so that in case Chromium isn't the front-most
+  // app it's not brought to the front.
+  GetGlicWidget()->ShowInactive();
+#else
+  GetGlicWidget()->Show();
+#endif
+
+  gfx::Rect target_bounds = glic_widget_->GetWindowBoundsInScreen();
+  target_bounds.set_y(initial_bounds.y() + kInitialDetachedYPosition);
+  // TODO(crbug.com/389982576): Match the background color of the widget with
+  // the web client background.
+  GetGlicView()->SetBackground(
+      views::CreateRoundedRectBackground(SK_ColorBLACK, 12));
+  AnimateBounds(target_bounds, base::Milliseconds(kAnimationDurationMs),
+                base::BindOnce(&GlicWindowController::OpenAnimationFinished,
+                               GetWeakPtr()));
 }
 
 // This happens after the web client is initialized. It signals the web client
@@ -462,7 +430,10 @@ void GlicWindowController::WaitForGlicToLoad() {
       base::BindOnce(&GlicWindowController::GlicLoaded, GetWeakPtr()));
 }
 
-void GlicWindowController::GlicLoaded() {
+void GlicWindowController::GlicLoaded(mojom::WebClientMode starting_mode) {
+  // TODO: Use `starting_mode` to log latency metrics.
+  DVLOG(1) << "GlicLoaded with " << starting_mode;
+
   glic_loaded_ = true;
   if (state_ == State::kWaitingForGlicToLoad) {
     ShowFinish();
@@ -486,18 +457,6 @@ void GlicWindowController::ShowFinish() {
     return;
   }
   state_ = State::kOpen;
-
-  if (!attached_browser_) {
-    // Be sure to reparent the widget and set its state first before showing it.
-    MaybeCreateHolderWindowAndReparent();
-#if BUILDFLAG(IS_MAC)
-    // Be careful to not activate, so that in case Chromium isn't the front-most
-    // app it's not brought to the front.
-    GetGlicWidget()->ShowInactive();
-#else
-    GetGlicWidget()->Show();
-#endif
-  }
 
   if (web_client_ && !show_start_time_.is_null()) {
     base::UmaHistogramCustomTimes(kHistogramGlicPanelPresentationTimeAllModes,
@@ -1001,7 +960,7 @@ GlicWindowController::AddWindowActivationChangedCallback(
 
 void GlicWindowController::Preload() {
   if (!contents_) {
-    contents_ = std::make_unique<ContentsAndProfileKeepAlive>(profile_, this);
+    contents_ = std::make_unique<WebUIContentsContainer>(profile_, this);
   }
 }
 

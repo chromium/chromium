@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 
 #include <content-type-v1-client-protocol.h>
@@ -281,6 +286,11 @@ void WaylandConnection::RoundTripQueue() {
 
 void WaylandConnection::SetShutdownCb(base::OnceCallback<void()> shutdown_cb) {
   event_source()->SetShutdownCb(std::move(shutdown_cb));
+}
+
+void WaylandConnection::SetUserInputTaskRunner(
+    scoped_refptr<base::SingleThreadTaskRunner> user_input_task_runner) {
+  user_input_task_runner_ = std::move(user_input_task_runner);
 }
 
 void WaylandConnection::SetPlatformCursor(wl_cursor* cursor_data,
