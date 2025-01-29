@@ -7,6 +7,12 @@
 
 #include "content/public/browser/navigation_throttle.h"
 
+class Profile;
+
+namespace base {
+class TickClock;
+}
+
 namespace apps {
 
 // Navigation throttle that will be used on ChromeOS to implement the parts of
@@ -20,6 +26,10 @@ class ChromeOsReimplNavigationCapturingThrottle
   static std::unique_ptr<content::NavigationThrottle> MaybeCreate(
       content::NavigationHandle* handle);
 
+  // Set clock used for timing to enable manipulation during tests.
+  static base::AutoReset<const base::TickClock*> SetClockForTesting(
+      const base::TickClock* tick_clock);
+
   ChromeOsReimplNavigationCapturingThrottle(
       const ChromeOsReimplNavigationCapturingThrottle&) = delete;
   ChromeOsReimplNavigationCapturingThrottle& operator=(
@@ -30,11 +40,22 @@ class ChromeOsReimplNavigationCapturingThrottle
   const char* GetNameForLogging() override;
   ThrottleCheckResult WillStartRequest() override;
   ThrottleCheckResult WillRedirectRequest() override;
-  ThrottleCheckResult WillProcessResponse() override;
 
  private:
-  explicit ChromeOsReimplNavigationCapturingThrottle(
-      content::NavigationHandle* navigation_handle);
+  ChromeOsReimplNavigationCapturingThrottle(
+      content::NavigationHandle* navigation_handle,
+      Profile* profile);
+
+  // Identify whether web contents need to be deleted post navigation capturing.
+  bool IsEmptyDanglingWebContentsAfterLinkCapture();
+
+  // Identify if the current navigation was triggered via a link click and not
+  // any other sources.
+  bool IsCapturableLinkClick();
+
+  raw_ref<Profile> profile_;
+  base::WeakPtrFactory<ChromeOsReimplNavigationCapturingThrottle>
+      weak_ptr_factory_{this};
 };
 
 }  // namespace apps
