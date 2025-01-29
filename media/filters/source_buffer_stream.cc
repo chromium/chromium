@@ -1927,9 +1927,15 @@ void SourceBufferStream::SetSelectedRangeIfNeeded(
     return;
   }
 
+  auto* range = FindExistingRangeFor(seek_timestamp)->get();
+  if (!range->CanSeekTo(seek_timestamp)) {
+    DVLOG(2) << __func__ << " " << GetStreamTypeName()
+             << " couldn't find range seekable to timestamp";
+    return;
+  }
+
   DCHECK(track_buffer_.empty());
-  SeekAndSetSelectedRange(FindExistingRangeFor(seek_timestamp)->get(),
-                          seek_timestamp);
+  SeekAndSetSelectedRange(range, seek_timestamp);
 }
 
 base::TimeDelta SourceBufferStream::FindNewSelectedRangeSeekTimestamp(
