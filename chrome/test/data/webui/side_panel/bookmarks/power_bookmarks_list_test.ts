@@ -4,7 +4,7 @@
 
 import 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_list.js';
 
-import {SortOrder, ViewType} from 'chrome://bookmarks-side-panel.top-chrome/bookmarks.mojom-webui.js';
+import {ActionSource, SortOrder, ViewType} from 'chrome://bookmarks-side-panel.top-chrome/bookmarks.mojom-webui.js';
 import {BookmarksApiProxyImpl} from 'chrome://bookmarks-side-panel.top-chrome/bookmarks_api_proxy.js';
 import type {PowerBookmarkRowElement} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmark_row.js';
 import {NESTED_BOOKMARKS_BASE_MARGIN, NESTED_BOOKMARKS_MARGIN_PER_DEPTH} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmark_row.js';
@@ -761,6 +761,77 @@ suite('SidePanelPowerBookmarksListTest', () => {
     assertEquals(1, bookmarksApi.getCallCount('deleteBookmarks'));
     assertEquals('3', bookmarksApi.getArgs('deleteBookmarks')[0][0]);
     assertEquals('5', bookmarksApi.getArgs('deleteBookmarks')[0][1]);
+  });
+
+  test('EditBookmarkWithBookmarksInTransportModeDisabled', async () => {
+    // Disable the feature flag.
+    loadTimeData.overrideValues({isBookmarksInTransportModeEnabled: false});
+    await initializeUI();
+
+    const bookmark = getBookmarkWithId('3')!;
+    const contextMenu = powerBookmarksList.$.contextMenu;
+    const editClicked = eventToPromise('edit-clicked', contextMenu);
+
+    // Open the context menu.
+    contextMenu.showAtPosition(
+        new MouseEvent('click'), [bookmark], false, false);
+    await waitAfterNextRender(contextMenu);
+
+    // Get the edit option in the menu.
+    const menuItems =
+        contextMenu.shadowRoot!.querySelectorAll('.dropdown-item');
+    assertEquals(
+        menuItems[3]!.textContent!.includes(loadTimeData.getString('menuEdit')),
+        true);
+    const editItem = contextMenu.shadowRoot!.querySelectorAll<HTMLElement>(
+        '.dropdown-item')[3]!;
+
+    // Click on edit and wait for the call to propagate.
+    editItem.click();
+    await editClicked;
+    await flushTasks();
+
+    // The edit dialog is opened.
+    const editDialog = powerBookmarksList.$.editDialog;
+    assertTrue(editDialog.$.dialog.open);
+    assertEquals(bookmark.title, editDialog.$.nameInput.inputElement.value);
+    assertEquals(bookmark.url, editDialog.$.urlInput.inputElement.value);
+  });
+
+  test('EditBookmarkWithBookmarksInTransportModeEnabled', async () => {
+    // Enable the feature flag.
+    loadTimeData.overrideValues({isBookmarksInTransportModeEnabled: true});
+    await initializeUI();
+
+    const bookmarkId = '3';
+    const contextMenu = powerBookmarksList.$.contextMenu;
+    const editClicked = eventToPromise('edit-clicked', contextMenu);
+
+    // Open the context menu.
+    contextMenu.showAtPosition(
+        new MouseEvent('click'), [getBookmarkWithId(bookmarkId)!], false,
+        false);
+    await waitAfterNextRender(contextMenu);
+
+    // Get the edit option in the menu.
+    const menuItems =
+        contextMenu.shadowRoot!.querySelectorAll('.dropdown-item');
+    assertEquals(
+        menuItems[3]!.textContent!.includes(loadTimeData.getString('menuEdit')),
+        true);
+    const editItem = contextMenu.shadowRoot!.querySelectorAll<HTMLElement>(
+        '.dropdown-item')[3]!;
+
+    // Click on edit and wait for the call to propagate.
+    editItem.click();
+    await editClicked;
+    await flushTasks();
+
+    // The native edit dialog is opened.
+    assertEquals(1, bookmarksApi.getCallCount('contextMenuEdit'));
+    assertEquals(bookmarkId, bookmarksApi.getArgs('contextMenuEdit')[0][0][0]);
+    assertEquals(
+        ActionSource.kBookmark, bookmarksApi.getArgs('contextMenuEdit')[0][1]);
   });
 
   test('LogsBookmarkCountMetric', async () => {

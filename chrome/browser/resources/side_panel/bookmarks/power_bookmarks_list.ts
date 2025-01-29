@@ -298,6 +298,8 @@ export class PowerBookmarksListElement extends PolymerElement {
   private updatedElementIds_: string[] = [];
   private bookmarksTreeViewEnabled_: boolean =
       loadTimeData.getBoolean('bookmarksTreeViewEnabled');
+  private isBookmarksInTransportModeEnabled: boolean =
+      loadTimeData.getBoolean('isBookmarksInTransportModeEnabled');
   private rebuildNavigationElementsDebouncer_: Debouncer|null = null;
 
   constructor() {
@@ -1151,9 +1153,16 @@ export class PowerBookmarksListElement extends PolymerElement {
 
   private showEditDialog_(
       bookmarks: chrome.bookmarks.BookmarkTreeNode[], moveOnly: boolean) {
-    this.$.editDialog.showDialog(
-        this.activeFolderPath_, this.bookmarksService_.getTopLevelBookmarks(),
-        bookmarks, moveOnly);
+    if (moveOnly || !this.isBookmarksInTransportModeEnabled) {
+      // TODO(crbug.com/380817651): Replace this with the native move dialog.
+      this.$.editDialog.showDialog(
+          this.activeFolderPath_, this.bookmarksService_.getTopLevelBookmarks(),
+          bookmarks, moveOnly);
+      return;
+    }
+
+    this.bookmarksApi_.contextMenuEdit(
+        bookmarks.map(bookmark => bookmark.id), ActionSource.kBookmark);
   }
 
   private onBulkEditMenuClicked_(event: MouseEvent) {
