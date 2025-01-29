@@ -195,7 +195,7 @@ public class NativePageBitmapCapturer implements UnownedUserData {
     }
 
     private static boolean enableHardwareDraw() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
                 && ChromeFeatureList.isEnabled(
                         ChromeFeatureList.NATIVE_PAGE_TRANSITION_HARDWARE_CAPTURE);
     }
