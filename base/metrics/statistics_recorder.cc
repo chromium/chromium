@@ -9,6 +9,7 @@
 
 #include "base/metrics/statistics_recorder.h"
 
+#include <algorithm>
 #include <string_view>
 
 #include "base/at_exit.h"
@@ -23,7 +24,6 @@
 #include "base/metrics/metrics_hashes.h"
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/metrics/record_histogram_checker.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
@@ -523,7 +523,7 @@ StatisticsRecorder::Histograms StatisticsRecorder::GetHistograms(
 
 // static
 StatisticsRecorder::Histograms StatisticsRecorder::Sort(Histograms histograms) {
-  ranges::sort(histograms, &HistogramNameLesser);
+  std::ranges::sort(histograms, &HistogramNameLesser);
   return histograms;
 }
 

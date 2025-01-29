@@ -17,7 +17,6 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/ranges/from_range.h"
 
 #if DCHECK_IS_ON()

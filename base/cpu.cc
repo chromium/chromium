@@ -21,9 +21,10 @@
 #include <asm/hwcap.h>
 #include <sys/auxv.h>
 
+#include <algorithm>
+
 #include "base/files/file_util.h"
 #include "base/numerics/checked_math.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"

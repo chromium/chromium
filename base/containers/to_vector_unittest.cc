@@ -4,11 +4,11 @@
 
 #include "base/containers/to_vector.h"
 
+#include <ranges>
 #include <set>
 
 #include "base/containers/adapters.h"
 #include "base/containers/flat_set.h"
-#include "base/ranges/ranges.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

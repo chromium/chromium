@@ -7,12 +7,12 @@
 #include <objc/runtime.h>
 #include <stddef.h>
 
+#include <algorithm>
 #include <vector>
 
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 
 @interface CRBProtocolObservers () {
   Protocol* _protocol;
@@ -116,7 +116,7 @@ id Iterator::GetNext() {
 
 - (void)removeObserver:(id)observer {
   DCHECK(observer);
-  auto it = base::ranges::find(_observers, observer);
+  auto it = std::ranges::find(_observers, observer);
   if (it != _observers.end()) {
     if (_invocationDepth) {
       *it = nil;

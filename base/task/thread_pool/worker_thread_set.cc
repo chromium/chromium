@@ -4,9 +4,10 @@
 
 #include "base/task/thread_pool/worker_thread_set.h"
 
+#include <algorithm>
+
 #include "base/check_op.h"
 #include "base/containers/contains.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/thread_pool/worker_thread.h"
 
 namespace base::internal {

@@ -21,7 +21,6 @@
 #include "base/dcheck_is_on.h"
 #include "base/notreached.h"
 #include "base/observer_list_internal.h"
-#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
 
@@ -325,7 +324,7 @@ class ObserverList {
   // not in this list.
   void RemoveObserver(const ObserverType* obs) {
     DCHECK(obs);
-    const auto it = ranges::find_if(
+    const auto it = std::ranges::find_if(
         observers_, [obs](const auto& o) { return o.IsEqual(obs); });
     if (it == observers_.end()) {
       return;
@@ -349,7 +348,7 @@ class ObserverList {
     if (obs == nullptr) {
       return false;
     }
-    return ranges::find_if(observers_, [obs](const auto& o) {
+    return std::ranges::find_if(observers_, [obs](const auto& o) {
              return o.IsEqual(obs);
            }) != observers_.end();
   }

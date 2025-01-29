@@ -20,7 +20,6 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr_exclusion.h"
-#include "base/ranges/algorithm.h"
 
 namespace base {
 
@@ -41,7 +40,7 @@ constexpr bool is_sorted_and_unique(const Range& range, Comp comp) {
   // Being unique implies that there are no adjacent elements that
   // compare equal. So this checks that each element is strictly less
   // than the element after it.
-  return ranges::adjacent_find(range, std::not_fn(comp)) ==
+  return std::ranges::adjacent_find(range, std::not_fn(comp)) ==
          std::ranges::end(range);
 }
 
@@ -1029,7 +1028,7 @@ template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
 auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::lower_bound(
     const Key& key) const -> const_iterator {
   KeyValueCompare comp(comp_);
-  return ranges::lower_bound(*this, key, comp);
+  return std::ranges::lower_bound(*this, key, comp);
 }
 
 template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
@@ -1050,7 +1049,7 @@ auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::lower_bound(
   const KeyTypeOrK<K>& key_ref = key;
 
   KeyValueCompare comp(comp_);
-  return ranges::lower_bound(*this, key_ref, comp);
+  return std::ranges::lower_bound(*this, key_ref, comp);
 }
 
 template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
@@ -1063,7 +1062,7 @@ template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
 auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::upper_bound(
     const Key& key) const -> const_iterator {
   KeyValueCompare comp(comp_);
-  return ranges::upper_bound(*this, key, comp);
+  return std::ranges::upper_bound(*this, key, comp);
 }
 
 template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
@@ -1084,7 +1083,7 @@ auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::upper_bound(
   const KeyTypeOrK<K>& key_ref = key;
 
   KeyValueCompare comp(comp_);
-  return ranges::upper_bound(*this, key_ref, comp);
+  return std::ranges::upper_bound(*this, key_ref, comp);
 }
 
 // ----------------------------------------------------------------------------

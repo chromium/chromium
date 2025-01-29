@@ -9,6 +9,7 @@
 
 #include "base/task/sequence_manager/sequence_manager_impl.h"
 
+#include <algorithm>
 #include <array>
 #include <atomic>
 #include <optional>
@@ -29,7 +30,6 @@
 #include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/sequence_manager/enqueue_order.h"
 #include "base/task/sequence_manager/task_queue_impl.h"
 #include "base/task/sequence_manager/task_time_observer.h"
@@ -541,7 +541,7 @@ void SequenceManagerImpl::LogTaskDebugInfo(
     case Settings::TaskLogging::kEnabledWithBacktrace: {
       std::array<const void*, PendingTask::kTaskBacktraceLength + 1> task_trace;
       task_trace[0] = task->posted_from.program_counter();
-      ranges::copy(task->task_backtrace, task_trace.begin() + 1);
+      std::ranges::copy(task->task_backtrace, task_trace.begin() + 1);
       size_t length = 0;
       while (length < task_trace.size() && task_trace[length]) {
         ++length;

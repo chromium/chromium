@@ -4,8 +4,9 @@
 
 #include "base/power_monitor/battery_level_provider.h"
 
+#include <algorithm>
+
 #include "base/power_monitor/power_monitor_buildflags.h"
-#include "base/ranges/algorithm.h"
 
 namespace base {
 
@@ -29,7 +30,7 @@ BatteryLevelProvider::BatteryState BatteryLevelProvider::MakeBatteryState(
   state.battery_count = static_cast<int>(battery_details.size());
   state.is_external_power_connected =
       battery_details.size() == 0 ||
-      base::ranges::any_of(battery_details, [](const BatteryDetails& details) {
+      std::ranges::any_of(battery_details, [](const BatteryDetails& details) {
         return details.is_external_power_connected;
       });
 

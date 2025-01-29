@@ -20,7 +20,6 @@
 #include "base/check_op.h"
 #include "base/logging.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/third_party/icu/icu_utf.h"
 
 namespace base::internal {
@@ -587,9 +586,9 @@ std::optional<std::basic_string<CharT>> DoReplaceStringPlaceholders(
           const size_t index = static_cast<size_t>(*i - '1');
           if (offsets) {
             ReplacementOffset r_offset(index, formatted.size());
-            r_offsets.insert(
-                ranges::upper_bound(r_offsets, r_offset, &CompareParameter),
-                r_offset);
+            r_offsets.insert(std::ranges::upper_bound(r_offsets, r_offset,
+                                                      &CompareParameter),
+                             r_offset);
           }
           if (index < substitutions) {
             formatted.append(subst.at(index));

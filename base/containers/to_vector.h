@@ -5,15 +5,13 @@
 #ifndef BASE_CONTAINERS_TO_VECTOR_H_
 #define BASE_CONTAINERS_TO_VECTOR_H_
 
+#include <algorithm>
 #include <functional>
 #include <iterator>
 #include <ranges>
 #include <type_traits>
 #include <utility>
 #include <vector>
-
-#include "base/ranges/algorithm.h"
-#include "base/ranges/ranges.h"
 
 namespace base {
 
@@ -28,14 +26,14 @@ namespace base {
 // Complexity: Exactly `size(range)` applications of `proj`.
 template <typename Range, typename Proj = std::identity>
   requires std::ranges::sized_range<Range> && std::ranges::input_range<Range> &&
-           std::indirectly_unary_invocable<Proj, ranges::iterator_t<Range>>
+           std::indirectly_unary_invocable<Proj, std::ranges::iterator_t<Range>>
 auto ToVector(Range&& range, Proj proj = {}) {
   using ProjectedType =
-      std::projected<ranges::iterator_t<Range>, Proj>::value_type;
+      std::projected<std::ranges::iterator_t<Range>, Proj>::value_type;
   std::vector<ProjectedType> container;
   container.reserve(std::ranges::size(range));
-  ranges::transform(std::forward<Range>(range), std::back_inserter(container),
-                    std::move(proj));
+  std::ranges::transform(std::forward<Range>(range),
+                         std::back_inserter(container), std::move(proj));
   return container;
 }
 

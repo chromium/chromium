@@ -13,6 +13,7 @@
 #include <stddef.h>
 #include <sys/param.h>
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
@@ -20,7 +21,6 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -332,7 +332,7 @@ void FilePathWatcherKQueue::Cancel() {
       DPLOG(ERROR) << "close kqueue";
     }
     kqueue_ = -1;
-    base::ranges::for_each(events_, ReleaseEvent);
+    std::ranges::for_each(events_, ReleaseEvent);
     events_.clear();
     callback_.Reset();
   }
