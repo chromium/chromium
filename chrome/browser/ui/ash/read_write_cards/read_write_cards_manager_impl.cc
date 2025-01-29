@@ -117,7 +117,8 @@ ReadWriteCardsManagerImpl::GetControllers(
   auto opt_in_features =
       GetMagicBoostOptInFeatures(params, editor_menu_card_context);
 
-  if (opt_in_features) {
+  // When the magic boost revamp logic is enabled.
+  if (opt_in_features && !chromeos::features::IsMagicBoostRevampEnabled()) {
     crosapi::mojom::MagicBoostController::TransitionAction action =
         crosapi::mojom::MagicBoostController::TransitionAction::kDoNothing;
 

@@ -53,8 +53,7 @@ void ExpectControllersEqual(
 
 }  // namespace
 
-class ReadWriteCardsManagerImplTest : public ChromeAshTestBase,
-                                      public testing::WithParamInterface<bool> {
+class ReadWriteCardsManagerImplTest : public ChromeAshTestBase {
  public:
   ReadWriteCardsManagerImplTest() = default;
 
@@ -64,23 +63,7 @@ class ReadWriteCardsManagerImplTest : public ChromeAshTestBase,
 
   ~ReadWriteCardsManagerImplTest() override = default;
 
-  // ChromeAshTestBase:
   void SetUp() override {
-    if (IsMahiEnabled()) {
-      scoped_feature_list_.InitWithFeatures(
-          /*enabled_features=*/{chromeos::features::kMahi,
-                                chromeos::features::kOrca,
-                                chromeos::features::kFeatureManagementMahi,
-                                chromeos::features::kFeatureManagementOrca},
-          /*disabled_features=*/{});
-    } else {
-      scoped_feature_list_.InitWithFeatures(
-          /*enabled_features=*/{chromeos::features::kOrca,
-                                chromeos::features::kFeatureManagementOrca},
-          /*disabled_features=*/{chromeos::features::kMahi,
-                                 chromeos::features::kFeatureManagementMahi});
-    }
-
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         chromeos::switches::kMahiRestrictionsOverride);
 
@@ -101,8 +84,6 @@ class ReadWriteCardsManagerImplTest : public ChromeAshTestBase,
     manager_ = std::make_unique<ReadWriteCardsManagerImpl>();
   }
 
-  bool IsMahiEnabled() { return GetParam(); }
-
   void TearDown() override {
     manager_.reset();
     magic_boost_state_.reset();
@@ -114,19 +95,17 @@ class ReadWriteCardsManagerImplTest : public ChromeAshTestBase,
 
   void OnGetEditorMenuCardContext(
       editor_menu::FetchControllersCallback callback,
+      const content::ContextMenuParams& context_menu_params,
       editor_menu::EditorMode editor_mode,
       bool editor_consent_status_settled) {
-    content::ContextMenuParams params;
-    params.is_editable = true;
-
     const editor_menu::EditorMenuCardContext editor_menu_card_context =
         editor_menu::EditorMenuCardContext()
             .set_consent_status_settled(editor_consent_status_settled)
             .set_editor_mode(editor_mode)
             .build();
 
-    manager_->OnGetEditorMenuCardContext(params, std::move(callback),
-                                         editor_menu_card_context);
+    manager_->OnGetEditorMenuCardContext(
+        context_menu_params, std::move(callback), editor_menu_card_context);
   }
 
   std::vector<base::WeakPtr<chromeos::ReadWriteCardController>> GetControllers(
@@ -174,9 +153,41 @@ class ReadWriteCardsManagerImplTest : public ChromeAshTestBase,
   TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
 };
 
-INSTANTIATE_TEST_SUITE_P(, ReadWriteCardsManagerImplTest, testing::Bool());
+class ReadWriteCardsManagerImplWithAndWithoutMahiTest
+    : public ReadWriteCardsManagerImplTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  // ReadWriteCardsManagerImplTest overrides
+  void SetUp() override {
+    if (IsMahiEnabled()) {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/
+          {
+              chromeos::features::kMahi,
+              chromeos::features::kOrca,
+              chromeos::features::kFeatureManagementMahi,
+              chromeos::features::kFeatureManagementOrca,
+          },
+          /*disabled_features=*/{chromeos::features::kMagicBoostRevamp});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{chromeos::features::kOrca,
+                                chromeos::features::kFeatureManagementOrca},
+          /*disabled_features=*/{chromeos::features::kMahi,
+                                 chromeos::features::kFeatureManagementMahi,
+                                 chromeos::features::kMagicBoostRevamp});
+    }
+    ReadWriteCardsManagerImplTest::SetUp();
+  }
 
-TEST_P(ReadWriteCardsManagerImplTest, InputPassword) {
+  bool IsMahiEnabled() { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         ReadWriteCardsManagerImplWithAndWithoutMahiTest,
+                         testing::Bool());
+
+TEST_P(ReadWriteCardsManagerImplWithAndWithoutMahiTest, InputPassword) {
   content::ContextMenuParams params;
   params.form_control_type = blink::mojom::FormControlType::kInputPassword;
   TestingProfile profile;
@@ -188,7 +199,7 @@ TEST_P(ReadWriteCardsManagerImplTest, InputPassword) {
                      std::vector<ReadWriteCardController*>{}));
 }
 
-TEST_P(ReadWriteCardsManagerImplTest, MahiNotDistillable) {
+TEST_P(ReadWriteCardsManagerImplWithAndWithoutMahiTest, MahiNotDistillable) {
   QuickAnswersState::Get()->SetEligibilityForTesting(true);
   magic_boost_state_->AsyncWriteConsentStatus(HMRConsentStatus::kApproved);
 
@@ -211,7 +222,8 @@ TEST_P(ReadWriteCardsManagerImplTest, MahiNotDistillable) {
       GetControllers(params));
 }
 
-TEST_P(ReadWriteCardsManagerImplTest, QuickAnswersAndMahiControllersApproved) {
+TEST_P(ReadWriteCardsManagerImplWithAndWithoutMahiTest,
+       QuickAnswersAndMahiControllersApproved) {
   QuickAnswersState::Get()->SetEligibilityForTesting(true);
 
   // Test these behaviors when Magic Boost consent is approved.
@@ -258,7 +270,8 @@ TEST_P(ReadWriteCardsManagerImplTest, QuickAnswersAndMahiControllersApproved) {
       GetControllers(params));
 }
 
-TEST_P(ReadWriteCardsManagerImplTest, QuickAnswersAndMahiControllersDeclined) {
+TEST_P(ReadWriteCardsManagerImplWithAndWithoutMahiTest,
+       QuickAnswersAndMahiControllersDeclined) {
   QuickAnswersState::Get()->SetEligibilityForTesting(true);
 
   TestingProfile profile;
@@ -299,7 +312,7 @@ TEST_P(ReadWriteCardsManagerImplTest, QuickAnswersAndMahiControllersDeclined) {
       GetControllers(params));
 }
 
-TEST_P(ReadWriteCardsManagerImplTest,
+TEST_P(ReadWriteCardsManagerImplWithAndWithoutMahiTest,
        MagicBoostOptInQuickAnswerAndMahiNoSelectedText) {
   QuickAnswersState::Get()->SetEligibilityForTesting(true);
 
@@ -345,7 +358,7 @@ TEST_P(ReadWriteCardsManagerImplTest,
          "is unset on unselected text and Mahi is disabled";
 }
 
-TEST_P(ReadWriteCardsManagerImplTest,
+TEST_P(ReadWriteCardsManagerImplWithAndWithoutMahiTest,
        MagicBoostOptInQuickAnswerAndMahiSelectedText) {
   QuickAnswersState::Get()->SetEligibilityForTesting(true);
 
@@ -396,8 +409,10 @@ TEST_P(ReadWriteCardsManagerImplTest,
 
 // Tests that the appropriate controller is returned given the editor mode
 // provided in each case.
-TEST_P(ReadWriteCardsManagerImplTest,
+TEST_P(ReadWriteCardsManagerImplWithAndWithoutMahiTest,
        OnGetEditorContextSoftBlockedAndConsentStatusAlreadySet) {
+  content::ContextMenuParams params;
+  params.is_editable = true;
   // If no text is selected, editor mode is kSoftBlocked and editor consent
   // status is already set, no card is shown.
   OnGetEditorMenuCardContext(
@@ -405,7 +420,7 @@ TEST_P(ReadWriteCardsManagerImplTest,
           &ExpectControllersEqual,
           "Wrong controller is fetched when editor mode is kSoftBlocked",
           std::vector<ReadWriteCardController*>{}),
-      editor_menu::EditorMode::kSoftBlocked,
+      params, editor_menu::EditorMode::kSoftBlocked,
       /*editor_consent_status_settled=*/true);
 
   if (IsMahiEnabled()) {
@@ -415,15 +430,17 @@ TEST_P(ReadWriteCardsManagerImplTest,
   }
 }
 
-TEST_P(ReadWriteCardsManagerImplTest,
+TEST_P(ReadWriteCardsManagerImplWithAndWithoutMahiTest,
        OnGetEditorContextHardBlockedAndEditorConsentStatusUnset) {
+  content::ContextMenuParams params;
+  params.is_editable = true;
   // If no text is selected and editor mode is kHardBlocked, no card is shown
   OnGetEditorMenuCardContext(
       base::BindOnce(
           &ExpectControllersEqual,
           "Wrong controller is fetched when editor mode is kHardBlocked",
           std::vector<ReadWriteCardController*>{}),
-      editor_menu::EditorMode::kHardBlocked,
+      params, editor_menu::EditorMode::kHardBlocked,
       /*editor_consent_status_settled=*/false);
 
   if (IsMahiEnabled()) {
@@ -433,8 +450,10 @@ TEST_P(ReadWriteCardsManagerImplTest,
   }
 }
 
-TEST_P(ReadWriteCardsManagerImplTest,
+TEST_P(ReadWriteCardsManagerImplWithAndWithoutMahiTest,
        OnGetEditorContextSoftBlockedAndEditorConsentStatusUnset) {
+  content::ContextMenuParams params;
+  params.is_editable = true;
   OnGetEditorMenuCardContext(
       base::BindOnce(
           &ExpectControllersEqual,
@@ -443,7 +462,7 @@ TEST_P(ReadWriteCardsManagerImplTest,
               ? std::vector<
                     ReadWriteCardController*>{magic_boost_card_controller()}
               : std::vector<ReadWriteCardController*>{}),
-      editor_menu::EditorMode::kSoftBlocked,
+      params, editor_menu::EditorMode::kSoftBlocked,
       /*editor_consent_status_settled=*/false);
 
   if (IsMahiEnabled()) {
@@ -455,7 +474,11 @@ TEST_P(ReadWriteCardsManagerImplTest,
   }
 }
 
-TEST_P(ReadWriteCardsManagerImplTest, OnGetEditorContextPromoCard) {
+TEST_P(ReadWriteCardsManagerImplWithAndWithoutMahiTest,
+       OnGetEditorContextPromoCard) {
+  content::ContextMenuParams params;
+  params.is_editable = true;
+
   OnGetEditorMenuCardContext(
       base::BindOnce(
           &ExpectControllersEqual,
@@ -465,7 +488,7 @@ TEST_P(ReadWriteCardsManagerImplTest, OnGetEditorContextPromoCard) {
                     ReadWriteCardController*>{magic_boost_card_controller()}
               : std::vector<
                     ReadWriteCardController*>{editor_menu_controller()}),
-      editor_menu::EditorMode::kConsentNeeded,
+      params, editor_menu::EditorMode::kConsentNeeded,
       /*editor_consent_status_settled=*/false);
 
   if (IsMahiEnabled()) {
@@ -478,23 +501,157 @@ TEST_P(ReadWriteCardsManagerImplTest, OnGetEditorContextPromoCard) {
   }
 }
 
-TEST_P(ReadWriteCardsManagerImplTest, OnGetEditorContextWrite) {
+TEST_P(ReadWriteCardsManagerImplWithAndWithoutMahiTest,
+       OnGetEditorContextWrite) {
+  content::ContextMenuParams params;
+  params.is_editable = true;
+
   OnGetEditorMenuCardContext(
       base::BindOnce(
           &ExpectControllersEqual,
           "Wrong controller is fetched when editor mode is kWrite",
           std::vector<ReadWriteCardController*>{editor_menu_controller()}),
-      editor_menu::EditorMode::kWrite, /*editor_consent_status_settled=*/true);
+      params, editor_menu::EditorMode::kWrite,
+      /*editor_consent_status_settled=*/true);
 }
 
-TEST_P(ReadWriteCardsManagerImplTest, OnGetEditorContextRewrite) {
+TEST_P(ReadWriteCardsManagerImplWithAndWithoutMahiTest,
+       OnGetEditorContextRewrite) {
+  content::ContextMenuParams params;
+  params.is_editable = true;
   OnGetEditorMenuCardContext(
       base::BindOnce(
           &ExpectControllersEqual,
           "Wrong controller is fetched when editor mode is kRewrite",
           std::vector<ReadWriteCardController*>{editor_menu_controller()}),
-      editor_menu::EditorMode::kRewrite,
+      params, editor_menu::EditorMode::kRewrite,
       /*editor_consent_status_settled=*/true);
 }
+
+class ReadWriteCardsManagerImplWithMagicBoostRevampTest
+    : public ReadWriteCardsManagerImplTest,
+      public testing::WithParamInterface<
+          std::tuple</*has_text_selection=*/bool,
+                     /*is_textfield_editable=*/bool,
+                     /*hmr_consent_status=*/HMRConsentStatus,
+                     /*editor_mode=*/editor_menu::EditorMode>> {
+ public:
+  // ReadWriteCardsManagerImplTest overrides
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{chromeos::features::kMahi,
+                              chromeos::features::kOrca,
+                              chromeos::features::kFeatureManagementMahi,
+                              chromeos::features::kFeatureManagementOrca,
+                              chromeos::features::kMagicBoostRevamp},
+        /*disabled_features=*/{});
+
+    ReadWriteCardsManagerImplTest::SetUp();
+  }
+
+  bool GetHasTextSelectionTestValue() { return std::get<0>(GetParam()); }
+
+  bool GetIsTextfieldEditableTestValue() { return std::get<1>(GetParam()); }
+
+  HMRConsentStatus GetHmrConsentStatusTestValue() {
+    return std::get<2>(GetParam());
+  }
+
+  editor_menu::EditorMode GetEditorModeTestValue() {
+    return std::get<3>(GetParam());
+  }
+
+  std::vector<ReadWriteCardController*> GetExpectedListOfControllers() {
+    if (GetIsTextfieldEditableTestValue() &&
+        (GetEditorModeTestValue() == editor_menu::EditorMode::kConsentNeeded ||
+         GetEditorModeTestValue() == editor_menu::EditorMode::kWrite ||
+         GetEditorModeTestValue() == editor_menu::EditorMode::kRewrite)) {
+      return {editor_menu_controller()};
+    }
+
+    if (GetHmrConsentStatusTestValue() != HMRConsentStatus::kDeclined) {
+      if (GetHasTextSelectionTestValue()) {
+        return {quick_answers_controller(), mahi_menu_controller()};
+      }
+      return {mahi_menu_controller()};
+    }
+
+    return {};
+  }
+
+  std::string GetTestFailureMessage() {
+    std::string editor_mode = [&](editor_menu::EditorMode editor_mode) {
+      switch (editor_mode) {
+        case editor_menu::EditorMode::kHardBlocked:
+          return "hard blocked";
+        case editor_menu::EditorMode::kSoftBlocked:
+          return "soft blocked";
+        case editor_menu::EditorMode::kConsentNeeded:
+          return "consent needed";
+        case editor_menu::EditorMode::kRewrite:
+          return "rewrite";
+        case editor_menu::EditorMode::kWrite:
+          return "write";
+      }
+    }(GetEditorModeTestValue());
+
+    std::string hmr_consent_status = [&](HMRConsentStatus consent_status) {
+      switch (consent_status) {
+        case chromeos::HMRConsentStatus::kUnset:
+          return "unset";
+        case chromeos::HMRConsentStatus::kApproved:
+          return "approved";
+        case chromeos::HMRConsentStatus::kDeclined:
+          return "declined";
+        case chromeos::HMRConsentStatus::kPendingDisclaimer:
+          return "pending disclaimer";
+      }
+    }(GetHmrConsentStatusTestValue());
+
+    return base::StrCat(
+        {"Wrong controller is fetched when ",
+         GetHasTextSelectionTestValue() ? "some text" : "no text",
+         " is selected, the text is ",
+         GetIsTextfieldEditableTestValue() ? "editable" : "non-editable",
+         ", editor is in ", editor_mode, " mode and hmr consent status is ",
+         hmr_consent_status});
+  }
+};
+
+TEST_P(ReadWriteCardsManagerImplWithMagicBoostRevampTest, GetControllers) {
+  mahi_menu_controller()->set_is_distillable_for_testing(true);
+  magic_boost_state_->AsyncWriteConsentStatus(GetHmrConsentStatusTestValue());
+  QuickAnswersState::Get()->SetEligibilityForTesting(true);
+  content::ContextMenuParams context_menu_params;
+  context_menu_params.is_editable = GetIsTextfieldEditableTestValue();
+  context_menu_params.selection_text =
+      GetHasTextSelectionTestValue() ? u"text selection" : u"";
+
+  OnGetEditorMenuCardContext(
+      base::BindOnce(&ExpectControllersEqual, GetTestFailureMessage(),
+                     GetExpectedListOfControllers()),
+      context_menu_params,
+      /*editor_mode=*/GetEditorModeTestValue(),
+      /*editor_consent_status_settled=*/
+      GetEditorModeTestValue() != editor_menu::EditorMode::kConsentNeeded);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    ReadWriteCardsManagerImplWithMagicBoostRevampTest,
+    testing::Combine(
+        /*has_text_selection=*/testing::Bool(),
+        /*is_textfield_editable=*/testing::Bool(),
+        /*hmr_consent_status=*/
+        testing::Values(chromeos::HMRConsentStatus::kUnset,
+                        chromeos::HMRConsentStatus::kApproved,
+                        chromeos::HMRConsentStatus::kDeclined,
+                        chromeos::HMRConsentStatus::kPendingDisclaimer),
+        /*editor_mode=*/
+        testing::Values(chromeos::editor_menu::EditorMode::kHardBlocked,
+                        chromeos::editor_menu::EditorMode::kSoftBlocked,
+                        chromeos::editor_menu::EditorMode::kConsentNeeded,
+                        chromeos::editor_menu::EditorMode::kRewrite,
+                        chromeos::editor_menu::EditorMode::kWrite)));
 
 }  // namespace chromeos
