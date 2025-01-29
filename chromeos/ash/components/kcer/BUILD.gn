@@ -3,10 +3,9 @@
 # found in the LICENSE file.
 
 import("//testing/libfuzzer/fuzzer_test.gni")
-import("//testing/test.gni")
 import("//third_party/protobuf/proto_library.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 component("kcer") {
   defines = [ "IS_KCER_IMPL" ]
@@ -54,17 +53,16 @@ component("kcer") {
   ]
 
   public_deps = [ ":chaps_proto" ]
+
   deps = [
     "//base",
+    "//chromeos/ash/components/chaps_util",
     "//chromeos/ash/components/dbus/chaps",
     "//chromeos/constants",
     "//chromeos/crosapi/mojom",
     "//content/public/browser",
     "//net",
   ]
-  if (is_chromeos_ash) {
-    deps += [ "//chromeos/ash/components/chaps_util" ]
-  }
 }
 
 proto_library("chaps_proto") {

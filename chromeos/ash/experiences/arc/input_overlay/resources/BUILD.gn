@@ -5,7 +5,7 @@
 import("//tools/grit/grit_rule.gni")
 
 # TODO(b/207518736): This target will be changed to proto soon. When that
-# happens, also add assert(is_chromeos_ash) for compliance.
+# happens, also add assert(is_chromeos) for compliance.
 
 grit("resources") {
   source = "input_overlay_resources.grd"
