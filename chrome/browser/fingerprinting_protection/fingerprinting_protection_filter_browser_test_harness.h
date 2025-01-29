@@ -80,6 +80,10 @@ class FingerprintingProtectionFilterBrowserTest
   static constexpr const char kEvaluationTotalCPUDurationForPage[] =
       "FingerprintingProtection.PageLoad.SubresourceEvaluation."
       "TotalCPUDuration";
+  static constexpr const char kSubresourceLoadEvaluationWallDuration[] =
+      "FingerprintingProtection.SubresourceLoad.Evaluation.WallDuration";
+  static constexpr const char kSubresourceLoadEvaluationCpuDuration[] =
+      "FingerprintingProtection.SubresourceLoad.Evaluation.CPUDuration";
 
   // Names of the performance measurement histograms for Incognito.
   static constexpr const char kEvaluationTotalWallDurationForIncognitoPage[] =

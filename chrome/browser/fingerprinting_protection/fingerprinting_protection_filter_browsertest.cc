@@ -337,6 +337,12 @@ IN_PROC_BROWSER_TEST_F(
   // FP performance measurements from DocumentSubresourceFilter. Currently, the
   // codepath is not triggered in FP browser tests because requests from
   // localhost are ignored in RendererUrlLoaderThrottle.
+
+  // Expect 4 subresource loads, 1 per frame in
+  // `kMultiPlatformTestFrameSetPath`: "one", "two", "three" + 1 from
+  // `NavigateFrame` call above.
+  histogram_tester.ExpectTotalCount(kSubresourceLoadEvaluationWallDuration, 4);
+  histogram_tester.ExpectTotalCount(kSubresourceLoadEvaluationCpuDuration, 4);
 }
 
 // TODO(https://crbug.com/379336042): The following tests cannot be included for
@@ -531,6 +537,11 @@ IN_PROC_BROWSER_TEST_F(
   histogram_tester.ExpectTotalCount(kSubresourceLoadsDisallowedForPage, 1);
   histogram_tester.ExpectTotalCount(kEvaluationTotalWallDurationForPage, 1);
   histogram_tester.ExpectTotalCount(kEvaluationTotalCPUDurationForPage, 1);
+
+  // Expect 6 subresource loads, 1 per frame in `kTestFrameSetPath`: "one",
+  // "two", "three", "four", "five" + 1 from `NavigateFrame` call above.
+  histogram_tester.ExpectTotalCount(kSubresourceLoadEvaluationWallDuration, 6);
+  histogram_tester.ExpectTotalCount(kSubresourceLoadEvaluationCpuDuration, 6);
 }
 
 // TODO(https://crbug.com/382055410): Adjust
