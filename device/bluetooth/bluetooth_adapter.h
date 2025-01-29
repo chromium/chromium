@@ -380,6 +380,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
     kIdle,
   };
 
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.device.bluetooth
   enum class PermissionStatus { kUndetermined = 0, kDenied, kAllowed };
 
   // The ErrorCallback is used for methods that can fail in which case it is

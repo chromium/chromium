@@ -154,6 +154,20 @@ final class ChromeBluetoothAdapter extends BroadcastReceiver {
         }
     }
 
+    // Implements BluetoothAdapterAndroid::GetOsPermissionStatus.
+    // No need to check whether we are allowed to show permission request dialogs. The front end
+    // code takes care of it.
+    @CalledByNative
+    private int getOsPermissionStatus() {
+        if (!isPresent()) {
+            return PermissionStatus.DENIED;
+        }
+        if (hasPermissionToScan()) {
+            return PermissionStatus.ALLOWED;
+        }
+        return PermissionStatus.DENIED;
+    }
+
     // Implements BluetoothAdapterAndroid::IsDiscoverable.
     @CalledByNative
     private boolean isDiscoverable() {
@@ -175,7 +189,7 @@ final class ChromeBluetoothAdapter extends BroadcastReceiver {
      */
     @CalledByNative
     private boolean startScan(List<ScanFilter> filters) {
-        if (!isPresent() || !canScan()) {
+        if (!isPresent() || !hasPermissionToScan()) {
             return false;
         }
 
@@ -254,7 +268,7 @@ final class ChromeBluetoothAdapter extends BroadcastReceiver {
      *     are on.
      */
     @RequiresNonNull("mAdapter")
-    private boolean canScan() {
+    private boolean hasPermissionToScan() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             Context context = mAdapter.getContext();
             return context.checkCallingOrSelfPermission(Manifest.permission.BLUETOOTH_SCAN)
