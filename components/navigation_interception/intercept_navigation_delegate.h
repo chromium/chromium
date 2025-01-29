@@ -90,7 +90,10 @@ class InterceptNavigationDelegate : public base::SupportsUserData::Data {
 
   void OnShouldIgnoreNavigationResult(bool should_ignore);
 
-  void FinishPendingShouldIgnoreCheck();
+  // Requests that clients finish any pending ShouldIgnore checks synchronously.
+  // If finishing the check synchronously is not possible, further
+  // redirects/commits will be deferred.
+  void RequestFinishPendingShouldIgnoreCheck();
 
   // See ContentBrowserClient::HandleExternalProtocol for the semantics around
   // |out_factory|.

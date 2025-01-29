@@ -42,7 +42,7 @@ class InterceptNavigationThrottle : public content::NavigationThrottle {
       content::NavigationHandle* navigation_handle,
       CheckCallback should_ignore_callback,
       SynchronyMode async_mode,
-      std::optional<base::RepeatingClosure> finish_async_work_callback);
+      std::optional<base::RepeatingClosure> request_finish_async_work_callback);
 
   InterceptNavigationThrottle(const InterceptNavigationThrottle&) = delete;
   InterceptNavigationThrottle& operator=(const InterceptNavigationThrottle&) =
@@ -57,11 +57,16 @@ class InterceptNavigationThrottle : public content::NavigationThrottle {
   const char* GetNameForLogging() override;
 
  private:
+  friend class InterceptNavigationThrottleTest;
   ThrottleCheckResult CheckIfShouldIgnoreNavigation();
   void OnCheckComplete(bool should_ignore);
-  void FinishPendingCheck();
+  void RequestFinishPendingCheck();
 
   bool ShouldCheckAsynchronously() const;
+
+  content::NavigationThrottle::ThrottleCheckResult Defer();
+
+  base::WeakPtr<InterceptNavigationThrottle> GetWeakPtrForTesting();
 
   // This callback should be called at the start of navigation and every
   // redirect, until |should_ignore_| is true.
@@ -71,7 +76,7 @@ class InterceptNavigationThrottle : public content::NavigationThrottle {
   // This callback will be called if a redirect comes in before the previous
   // should_ignore_callback_ completes, and requires that the outstanding
   // should_ignore_callback_ completes before returning.
-  std::optional<base::RepeatingClosure> finish_async_work_callback_;
+  std::optional<base::RepeatingClosure> request_finish_async_work_callback_;
 
   // Note that the CheckCallback currently has thread affinity on the Java side.
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
@@ -83,6 +88,15 @@ class InterceptNavigationThrottle : public content::NavigationThrottle {
 
   // Whether a should ignore check is in progress.
   bool pending_check_ = false;
+
+  // Whether a navigation is being deferred because of an outstanding should
+  // ignore check.
+  bool deferring_ = false;
+
+  // True if a redirect is doing the deferring.
+  bool deferring_redirect_ = false;
+
+  base::TimeTicks defer_start_;
 
   base::WeakPtrFactory<InterceptNavigationThrottle> weak_factory_{this};
 };

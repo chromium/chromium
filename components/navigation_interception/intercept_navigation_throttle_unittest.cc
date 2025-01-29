@@ -9,7 +9,9 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "content/public/browser/navigation_handle.h"
@@ -23,6 +25,7 @@
 #include "url/gurl.h"
 
 using base::test::RunOnceCallback;
+using base::test::RunOnceCallbackRepeatedly;
 using content::NavigationThrottle;
 using testing::_;
 using testing::AllOf;
@@ -80,12 +83,16 @@ class InterceptNavigationThrottleTest
     }
   }
 
-  static std::unique_ptr<content::NavigationThrottle> CreateThrottle(
+  std::unique_ptr<content::NavigationThrottle> CreateThrottle(
       InterceptNavigationThrottle::CheckCallback callback,
+      base::RepeatingClosure request_finish_closure,
       content::NavigationHandle* handle) {
-    return std::make_unique<InterceptNavigationThrottle>(
-        handle, callback, navigation_interception::SynchronyMode::kAsync,
-        base::DoNothing());
+    std::unique_ptr<InterceptNavigationThrottle> throttle =
+        std::make_unique<InterceptNavigationThrottle>(
+            handle, callback, navigation_interception::SynchronyMode::kAsync,
+            request_finish_closure);
+    throttle_ = throttle.get()->GetWeakPtrForTesting();
+    return throttle;
   }
 
   std::unique_ptr<content::TestNavigationThrottleInserter>
@@ -94,9 +101,11 @@ class InterceptNavigationThrottleTest
         web_contents(),
         base::BindRepeating(
             &InterceptNavigationThrottleTest::CreateThrottle,
+            base::Unretained(this),
             base::BindRepeating(
                 &MockInterceptCallbackReceiver::ShouldIgnoreNavigation,
-                base::Unretained(mock_callback_receiver_.get()))));
+                base::Unretained(mock_callback_receiver_.get())),
+            request_finish_closure_.Get()));
   }
 
   NavigationThrottle::ThrottleCheckResult SimulateNavigation(
@@ -126,9 +135,109 @@ class InterceptNavigationThrottleTest
     return simulator->GetLastThrottleCheckResult();
   }
 
+  void OnCheckComplete(bool should_ignore) {
+    throttle_->OnCheckComplete(should_ignore);
+  }
+
   base::test::ScopedFeatureList scoped_feature_;
   std::unique_ptr<MockInterceptCallbackReceiver> mock_callback_receiver_;
+  base::MockRepeatingClosure request_finish_closure_;
+  base::WeakPtr<InterceptNavigationThrottle> throttle_;
 };
+
+TEST_P(InterceptNavigationThrottleTest, AsyncRequestCompletesWhenRequested) {
+  if (!GetParam()) {
+    GTEST_SKIP();
+  }
+  ON_CALL(request_finish_closure_, Run()).WillByDefault([this]() {
+    OnCheckComplete(false);
+  });
+  EXPECT_CALL(*mock_callback_receiver_,
+              ShouldIgnoreNavigation(NavigationHandleUrlIsTest(), _, _))
+      .Times(2);
+  EXPECT_CALL(request_finish_closure_, Run()).Times(2);
+  NavigationThrottle::ThrottleCheckResult result =
+      SimulateNavigation(GURL(kTestUrl), {GURL(kTestUrl)}, false);
+
+  EXPECT_EQ(NavigationThrottle::PROCEED, result);
+}
+
+TEST_P(InterceptNavigationThrottleTest, AsyncRequestDefersWhenRequested) {
+  if (!GetParam()) {
+    GTEST_SKIP();
+  }
+  EXPECT_CALL(*mock_callback_receiver_,
+              ShouldIgnoreNavigation(NavigationHandleUrlIsTest(), Eq(true), _))
+      .Times(2);
+  EXPECT_CALL(
+      *mock_callback_receiver_,
+      ShouldIgnoreNavigation(NavigationHandleUrlIsTest(), Eq(false), _));
+  EXPECT_CALL(request_finish_closure_, Run()).Times(2);
+  ON_CALL(*mock_callback_receiver_, ShouldIgnoreNavigation(_, Eq(false), _))
+      .WillByDefault(RunOnceCallback<2>(false));
+
+  auto throttle_inserter = CreateThrottleInserter();
+  std::unique_ptr<content::NavigationSimulator> simulator =
+      content::NavigationSimulator::CreateRendererInitiated(GURL(kTestUrl),
+                                                            main_rfh());
+  simulator->Start();
+  EXPECT_EQ(NavigationThrottle::PROCEED,
+            simulator->GetLastThrottleCheckResult().action());
+
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&, this] {
+        EXPECT_TRUE(simulator->IsDeferred());
+        OnCheckComplete(false);
+      }));
+  simulator->Redirect(GURL(kTestUrl));
+  EXPECT_FALSE(simulator->IsDeferred());
+  EXPECT_EQ(NavigationThrottle::PROCEED,
+            simulator->GetLastThrottleCheckResult().action());
+
+  simulator->Redirect(GURL(kTestUrl));
+  EXPECT_FALSE(simulator->IsDeferred());
+  EXPECT_EQ(NavigationThrottle::PROCEED,
+            simulator->GetLastThrottleCheckResult().action());
+
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&, this] {
+        EXPECT_TRUE(simulator->IsDeferred());
+        OnCheckComplete(false);
+      }));
+  simulator->Commit();
+
+  EXPECT_EQ(NavigationThrottle::PROCEED,
+            simulator->GetLastThrottleCheckResult().action());
+}
+
+TEST_P(InterceptNavigationThrottleTest, RequestDefersWhenClientNotReady) {
+  if (GetParam()) {
+    GTEST_SKIP();
+  }
+  EXPECT_CALL(
+      *mock_callback_receiver_,
+      ShouldIgnoreNavigation(NavigationHandleUrlIsTest(), Eq(false), _));
+  EXPECT_CALL(request_finish_closure_, Run()).Times(0);
+
+  auto throttle_inserter = CreateThrottleInserter();
+  std::unique_ptr<content::NavigationSimulator> simulator =
+      content::NavigationSimulator::CreateRendererInitiated(GURL(kTestUrl),
+                                                            main_rfh());
+
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&, this] {
+        EXPECT_TRUE(simulator->IsDeferred());
+        OnCheckComplete(false);
+      }));
+  simulator->Start();
+  EXPECT_EQ(NavigationThrottle::PROCEED,
+            simulator->GetLastThrottleCheckResult().action());
+  EXPECT_FALSE(simulator->IsDeferred());
+
+  simulator->Commit();
+  EXPECT_EQ(NavigationThrottle::PROCEED,
+            simulator->GetLastThrottleCheckResult().action());
+}
 
 TEST_P(InterceptNavigationThrottleTest,
        RequestCompletesIfNavigationNotIgnored) {
@@ -136,6 +245,7 @@ TEST_P(InterceptNavigationThrottleTest,
       .WillByDefault(RunOnceCallback<2>(false));
   EXPECT_CALL(*mock_callback_receiver_,
               ShouldIgnoreNavigation(NavigationHandleUrlIsTest(), _, _));
+  EXPECT_CALL(request_finish_closure_, Run()).Times(0);
   NavigationThrottle::ThrottleCheckResult result =
       SimulateNavigation(GURL(kTestUrl), {}, false);
 
@@ -147,6 +257,7 @@ TEST_P(InterceptNavigationThrottleTest, RequestCancelledIfNavigationIgnored) {
       .WillByDefault(RunOnceCallback<2>(true));
   EXPECT_CALL(*mock_callback_receiver_,
               ShouldIgnoreNavigation(NavigationHandleUrlIsTest(), _, _));
+  EXPECT_CALL(request_finish_closure_, Run()).Times(0);
   NavigationThrottle::ThrottleCheckResult result =
       SimulateNavigation(GURL(kTestUrl), {}, false);
 
@@ -158,6 +269,7 @@ TEST_P(InterceptNavigationThrottleTest, CallbackIsPostFalseForGet) {
               ShouldIgnoreNavigation(
                   AllOf(NavigationHandleUrlIsTest(), Not(IsPost())), _, _))
       .WillOnce(RunOnceCallback<2>(false));
+  EXPECT_CALL(request_finish_closure_, Run()).Times(0);
 
   NavigationThrottle::ThrottleCheckResult result =
       SimulateNavigation(GURL(kTestUrl), {}, false);
@@ -170,6 +282,8 @@ TEST_P(InterceptNavigationThrottleTest, CallbackIsPostTrueForPost) {
               ShouldIgnoreNavigation(
                   AllOf(NavigationHandleUrlIsTest(), IsPost()), _, _))
       .WillOnce(RunOnceCallback<2>(false));
+  EXPECT_CALL(request_finish_closure_, Run()).Times(0);
+
   NavigationThrottle::ThrottleCheckResult result =
       SimulateNavigation(GURL(kTestUrl), {}, true);
 
@@ -186,6 +300,7 @@ TEST_P(InterceptNavigationThrottleTest,
               ShouldIgnoreNavigation(
                   AllOf(NavigationHandleUrlIsTest(), Not(IsPost())), _, _))
       .WillOnce(RunOnceCallback<2>(false));
+  EXPECT_CALL(request_finish_closure_, Run()).Times(0);
 
   NavigationThrottle::ThrottleCheckResult result =
       SimulateNavigation(GURL(kTestUrl), {GURL(kTestUrl)}, true);
