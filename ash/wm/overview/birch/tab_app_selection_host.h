@@ -43,6 +43,12 @@ class TabAppSelectionHost : public views::Widget {
 
   gfx::Rect GetDesiredBoundsInScreen();
 
+  // Handles the focus moving by Tab key. Tab app selector has different
+  // navigation behaviors for the Tab key and arrow key. The arrow key
+  // navigation will be handled by
+  // `TabAppSelectionView::AdvanceFocusForArrowKey`.
+  void AdvanceFocusForTabKey(bool reverse);
+
   std::unique_ptr<SelectionHostHider> hider_;
   const raw_ptr<CoralChipButton> owner_;
 
