@@ -49,11 +49,14 @@ class NET_EXPORT SessionService {
   // header.
   // `net_log` is the log corresponding to the request receiving the
   // Sec-Session-Registration header.
+  // 'original_request_initiator` was the initiator for the request that
+  // received the Sec-Session-Registration header.
   virtual void RegisterBoundSession(
       OnAccessCallback on_access_callback,
       RegistrationFetcherParam registration_params,
       const IsolationInfo& isolation_info,
-      const NetLogWithSource& net_log) = 0;
+      const NetLogWithSource& net_log,
+      const std::optional<url::Origin>& original_request_initiator) = 0;
 
   // Check if a request should be deferred due to the session cookie being
   // missing. This should only be called once the request has the correct

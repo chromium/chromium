@@ -13,6 +13,7 @@
 #include "base/json/json_writer.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "crypto/signature_verifier.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -58,6 +59,12 @@ std::unique_ptr<net::test_server::HttpResponse> RequestHandler(
     std::optional<std::string> json = base::WriteJson(registration_response);
     EXPECT_TRUE(json.has_value());
     response->set_content(*json);
+    return response;
+  } else if (request.relative_url == "/resource_triggered_dbsc_registration") {
+    response->set_content_type("text/html");
+    response->set_content(base::StringPrintf(
+        R"*(<html><body onload="fetch('%s')"></body></html>)*",
+        base_url.Resolve("/dbsc_required").spec()));
     return response;
   }
   return nullptr;

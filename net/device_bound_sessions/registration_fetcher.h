@@ -76,6 +76,7 @@ class NET_EXPORT RegistrationFetcher {
       const URLRequestContext* context,
       const IsolationInfo& isolation_info,
       std::optional<NetLogSource> net_log_source,
+      const std::optional<url::Origin>& original_request_initiator,
       RegistrationCompleteCallback callback);
 
   // Starts the network request to the DBSC refresh endpoint with existing key
@@ -88,6 +89,7 @@ class NET_EXPORT RegistrationFetcher {
       const URLRequestContext* context,
       const IsolationInfo& isolation_info,
       std::optional<net::NetLogSource> net_log_source,
+      const std::optional<url::Origin>& original_request_initiator,
       RegistrationCompleteCallback callback,
       unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>
           key_id);

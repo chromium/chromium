@@ -12,7 +12,9 @@
 #include "components/unexportable_keys/features.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "net/base/features.h"
+#include "net/cookies/canonical_cookie_test_helpers.h"
 #include "net/device_bound_sessions/session_access.h"
 #include "net/device_bound_sessions/session_key.h"
 #include "net/device_bound_sessions/test_support.h"
@@ -65,7 +67,7 @@ class DeviceBoundSessionBrowserTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(DeviceBoundSessionBrowserTest,
-                       AccessCalledOnRegistration) {
+                       AccessCalledOnRegistrationFromNavigation) {
   base::test::TestFuture<SessionAccess> future;
   DeviceBoundSessionAccessObserver observer(
       browser()->tab_strip_model()->GetActiveWebContents(),
@@ -77,6 +79,30 @@ IN_PROC_BROWSER_TEST_F(DeviceBoundSessionBrowserTest,
   EXPECT_EQ(access.session_key.site,
             net::SchemefulSite(embedded_test_server()->base_url()));
   EXPECT_EQ(access.session_key.id, SessionKey::Id("session_id"));
+}
+
+IN_PROC_BROWSER_TEST_F(DeviceBoundSessionBrowserTest,
+                       AccessCalledOnRegistrationFromResource) {
+  base::test::TestFuture<SessionAccess> future;
+  DeviceBoundSessionAccessObserver observer(
+      browser()->tab_strip_model()->GetActiveWebContents(),
+      future.GetRepeatingCallback<const SessionAccess&>());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("/resource_triggered_dbsc_registration")));
+
+  SessionAccess access = future.Take();
+  EXPECT_EQ(access.session_key.site,
+            net::SchemefulSite(embedded_test_server()->base_url()));
+  EXPECT_EQ(access.session_key.id, SessionKey::Id("session_id"));
+
+  EXPECT_THAT(
+      GetCanonicalCookies(browser()
+                              ->tab_strip_model()
+                              ->GetActiveWebContents()
+                              ->GetBrowserContext(),
+                          embedded_test_server()->GetURL("/dbsc_required")),
+      testing::Contains(net::MatchesCookieWithName("auth_cookie")));
 }
 
 }  // namespace
