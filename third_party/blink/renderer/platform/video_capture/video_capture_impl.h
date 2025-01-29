@@ -159,6 +159,7 @@ class PLATFORM_EXPORT VideoCaptureImpl
   bool ProcessBuffer(media::mojom::blink::ReadyBufferPtr ready_buffer);
   static bool BindVideoFrameOnMediaTaskRunner(
       media::GpuVideoAcceleratorFactories* gpu_factories,
+      std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer,
       VideoFrameInitData& video_frame_init_data,
       base::OnceCallback<void()> on_gmb_not_supported);
 
