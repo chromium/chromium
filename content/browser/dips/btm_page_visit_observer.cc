@@ -108,6 +108,10 @@ void BtmPageVisitObserver::DidFinishNavigation(
     return;
   }
 
+  base::Time now = clock_->Now();
+  current_page_.visit_duration = last_page_change_time_.has_value()
+                                     ? (now - last_page_change_time_.value())
+                                     : base::TimeDelta();
   auto [navigation, final_url_cookie_access] =
       state->CreateNavigationInfo(*navigation_handle);
   // Don't report the visit right away; put it in the pending queue and wait a
@@ -122,6 +126,7 @@ void BtmPageVisitObserver::DidFinishNavigation(
 
   current_page_ = BtmPageVisitInfo{navigation_handle->GetURL(),
                                    IsWrite(final_url_cookie_access)};
+  last_page_change_time_ = now;
 }
 
 void BtmPageVisitObserver::ReportVisit() {

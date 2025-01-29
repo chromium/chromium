@@ -37,6 +37,10 @@ class BtmPageVisitRecorder {
   // successful, or `false` if it times out.
   [[nodiscard]] bool WaitForSize(size_t n);
 
+  void SetObserverClockForTesting(base::Clock* clock) {
+    observer_.SetClockForTesting(clock);
+  }
+
  private:
   // The state needed to implement `WaitForSize()`.
   struct WaitState {
@@ -143,6 +147,14 @@ MATCHER_P(HadSuccessfulWebAuthnAssertion,
               testing::DescribeMatcher<bool>(matcher, negation)) {
   return testing::ExplainMatchResult(
       matcher, arg.had_successful_web_authn_assertion, result_listener);
+}
+
+MATCHER_P(VisitDuration,
+          matcher,
+          "has visit_duration that " +
+              testing::DescribeMatcher<base::TimeDelta>(matcher, negation)) {
+  return testing::ExplainMatchResult(matcher, arg.visit_duration,
+                                     result_listener);
 }
 
 }  // namespace content

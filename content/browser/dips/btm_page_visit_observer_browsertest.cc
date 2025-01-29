@@ -4,6 +4,7 @@
 
 #include "content/browser/dips/btm_page_visit_observer.h"
 
+#include "base/test/simple_test_clock.h"
 #include "content/browser/dips/btm_page_visit_observer_test_utils.h"
 #include "content/browser/dips/dips_test_utils.h"
 #include "content/browser/dips/dips_utils.h"
@@ -175,6 +176,47 @@ IN_PROC_BROWSER_TEST_F(BtmPageVisitObserverBrowserTest, NavigationInitiation) {
                           AllOf(Navigation(AllOf(WasRendererInitiated(true),
                                                  WasUserInitiated(false))),
                                 HasUrl(url3))));
+}
+
+IN_PROC_BROWSER_TEST_F(BtmPageVisitObserverBrowserTest, VisitDuration) {
+  const GURL url1 =
+      embedded_https_test_server().GetURL("a.test", "/empty.html");
+  const GURL url2 =
+      embedded_https_test_server().GetURL("b.test", "/empty.html");
+  const GURL url3 =
+      embedded_https_test_server().GetURL("c.test", "/empty.html");
+  const base::TimeDelta time_elapsed_before_first_page_visit =
+      base::Microseconds(777);
+  const base::TimeDelta visit_duration1 = base::Minutes(2);
+  const base::TimeDelta visit_duration2 = base::Milliseconds(888);
+  WebContents* web_contents = shell()->web_contents();
+  BtmPageVisitRecorder recorder(web_contents);
+  base::SimpleTestClock test_clock;
+  recorder.SetObserverClockForTesting(&test_clock);
+
+  test_clock.Advance(time_elapsed_before_first_page_visit);
+  ASSERT_TRUE(NavigateToURL(web_contents, url1));
+  test_clock.Advance(visit_duration1);
+  ASSERT_TRUE(NavigateToURL(web_contents, url2));
+  test_clock.Advance(visit_duration2);
+  ASSERT_TRUE(NavigateToURL(web_contents, url3));
+  ASSERT_TRUE(recorder.WaitForSize(3));
+
+  ASSERT_THAT(
+      recorder.visits(),
+      ElementsAre(
+          AllOf(PreviousPage(
+                    // Even though time elapsed between tab open and the first
+                    // page visit, we want visit durations on blank tabs to be
+                    // reported as 0.
+                    AllOf(HasUrl(GURL()), VisitDuration(base::TimeDelta()))),
+                HasUrl(url1)),
+          AllOf(
+              PreviousPage(AllOf(HasUrl(url1), VisitDuration(visit_duration1))),
+              HasUrl(url2)),
+          AllOf(
+              PreviousPage(AllOf(HasUrl(url2), VisitDuration(visit_duration2))),
+              HasUrl(url3))));
 }
 
 // WebAuthn tests do not work on Android because there is currently no way to

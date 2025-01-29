@@ -16,7 +16,8 @@ std::ostream& operator<<(std::ostream& out, const BtmPageVisitInfo& page) {
              << page.had_qualifying_storage_access
              << ", received_user_activation=" << page.received_user_activation
              << ", had_successful_webauthn_assertion="
-             << page.had_successful_web_authn_assertion << "}";
+             << page.had_successful_web_authn_assertion
+             << ", visit_duration=" << page.visit_duration << "}";
 }
 
 std::ostream& operator<<(std::ostream& out,
