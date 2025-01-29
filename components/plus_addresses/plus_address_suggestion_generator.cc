@@ -111,9 +111,7 @@ bool ShouldOfferPlusAddressCreationOnForm(
     case PasswordFormClassification::Type::kSignupForm:
       return true;
     case PasswordFormClassification::Type::kLoginForm:
-      if (base::FeatureList::IsEnabled(
-              features::kPlusAddressOfferCreationIfPasswordFieldIsNotVisible) &&
-          !IsPasswordFieldVisible(focused_form, form_classification)) {
+      if (!IsPasswordFieldVisible(focused_form, form_classification)) {
         return true;
       }
       return form_has_unexpected_field_types_for_login_form();
