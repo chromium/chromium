@@ -1859,17 +1859,19 @@ bool PrerenderHostRegistry::IsAllowedToStartPrerenderingForTrigger(
     std::optional<blink::mojom::SpeculationEagerness> eagerness) {
   PrerenderLimitGroup limit_group =
       GetPrerenderLimitGroup(trigger_type, eagerness);
-  int host_count = GetHostCountByLimitGroup(limit_group);
 
   // Apply the limit of maximum number of running prerenders per
   // PrerenderLimitGroup.
   switch (limit_group) {
-    case PrerenderLimitGroup::kSpeculationRulesEager:
+    case PrerenderLimitGroup::kSpeculationRulesEager: {
+      int host_count = GetHostCountByLimitGroup(limit_group);
       return host_count < base::GetFieldTrialParamByFeatureAsInt(
                               features::kPrerender2NewLimitAndScheduler,
                               kMaxNumOfRunningSpeculationRulesEagerPrerenders,
                               10);
+    }
     case PrerenderLimitGroup::kSpeculationRulesNonEager: {
+      int host_count = GetHostCountByLimitGroup(limit_group);
       int limit_non_eager = base::GetFieldTrialParamByFeatureAsInt(
           features::kPrerender2NewLimitAndScheduler,
           kMaxNumOfRunningSpeculationRulesNonEagerPrerenders, 2);
@@ -1903,9 +1905,7 @@ bool PrerenderHostRegistry::IsAllowedToStartPrerenderingForTrigger(
       return true;
     }
     case PrerenderLimitGroup::kEmbedder:
-      return host_count < base::GetFieldTrialParamByFeatureAsInt(
-                              features::kPrerender2NewLimitAndScheduler,
-                              kMaxNumOfRunningEmbedderPrerenders, 2);
+      return IsAllowedToStartPrerenderingForEmbedder();
   }
 }
 
@@ -1964,6 +1964,15 @@ bool PrerenderHostRegistry::PrerenderCanBeStartedWhenInitiatorIsInBackground() {
   }
 
   return true;
+}
+
+bool PrerenderHostRegistry::IsAllowedToStartPrerenderingForEmbedder() {
+  int host_count = GetHostCountByLimitGroup(PrerenderLimitGroup::kEmbedder);
+  return base::GetFieldTrialParamByFeatureAsInt(
+             features::kPrerender2NewLimitAndScheduler,
+             kMaxNumOfRunningEmbedderPrerenders, 2) -
+             host_count >
+         0;
 }
 
 }  // namespace content

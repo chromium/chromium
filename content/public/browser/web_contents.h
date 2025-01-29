@@ -1590,6 +1590,12 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   // Cancels all prerendering hosted on this WebContents.
   virtual void CancelAllPrerendering() = 0;
 
+  // Returns true when prerendering can be triggered by StartPrerendering()
+  // without hitting the number limit of running prerenders. When this returns
+  // false, an embedder is expected to cancel existing prerendering before
+  // starting a new one.
+  virtual bool IsAllowedToStartPrerendering() = 0;
+
   // May be called when the embedder believes that it is likely that the user
   // will perform a back navigation due to the trigger indicated by `predictor`
   // (e.g. they're hovering over a back button). `disposition` indicates where

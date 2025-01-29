@@ -263,6 +263,10 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
 
   bool PrerenderCanBeStartedWhenInitiatorIsInBackground();
 
+  // Returns true when prerendering can be triggered for embedders without
+  // hitting the number limit of running prerenders.
+  bool IsAllowedToStartPrerenderingForEmbedder();
+
  private:
   // WebContentsObserver implementation:
   void DidStartNavigation(NavigationHandle* navigation_handle) override;
