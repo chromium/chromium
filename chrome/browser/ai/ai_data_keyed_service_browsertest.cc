@@ -10,6 +10,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ai/ai_data_keyed_service_factory.h"
 #include "chrome/browser/autofill_ai/chrome_autofill_ai_client.h"
 #include "chrome/browser/history_embeddings/history_embeddings_service_factory.h"
@@ -51,6 +52,8 @@
 namespace {
 
 using ::testing::ReturnRef;
+using AiData = AiDataKeyedService::AiData;
+using AiDataSpecifier = AiDataKeyedService::AiDataSpecifier;
 
 class MockAutofillAiModelExecutor
     : public autofill_ai::AutofillAiModelExecutor {
@@ -88,11 +91,7 @@ class AiDataKeyedServiceBrowserTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
-
-    https_server_ = std::make_unique<net::EmbeddedTestServer>(
-        net::EmbeddedTestServer::TYPE_HTTPS);
     https_server_->AddDefaultHandlers(GetChromeTestDataDir());
-
     ASSERT_TRUE(https_server_->Start());
 
     HistoryEmbeddingsServiceFactory::GetInstance()->SetTestingFactory(
@@ -104,20 +103,10 @@ class AiDataKeyedServiceBrowserTest : public InProcessBrowserTest {
                   std::make_unique<history_embeddings::MockAnswerer>(),
                   std::make_unique<history_embeddings::MockIntentClassifier>());
         }));
-
-    url_ = https_server_->GetURL("/simple.html");
   }
 
-  void SetAiData(base::OnceClosure quit_closure,
-                 AiDataKeyedService::AiData ai_data) {
-    ai_data_ = std::move(ai_data);
-    std::move(quit_closure).Run();
-  }
-
-  GURL url() { return url_; }
-
-  AiDataKeyedService* ai_data_service() {
-    return AiDataKeyedServiceFactory::GetAiDataKeyedService(
+  AiDataKeyedService& ai_data_service() {
+    return *AiDataKeyedServiceFactory::GetAiDataKeyedService(
         browser()->profile());
   }
 
@@ -125,50 +114,40 @@ class AiDataKeyedServiceBrowserTest : public InProcessBrowserTest {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
-  const AiDataKeyedService::AiData& ai_data() { return ai_data_; }
-
   void LoadSimplePage() {
-    content::NavigateToURLBlockUntilNavigationsComplete(web_contents(), url_,
-                                                        1);
+    content::NavigateToURLBlockUntilNavigationsComplete(
+        web_contents(), https_server_->GetURL("/simple.html"), 1);
   }
 
-  void QueryAiData() {
-    base::RunLoop run_loop;
-    ai_data_service()->GetAiData(
-        1, web_contents(), "",
-        base::BindOnce(&AiDataKeyedServiceBrowserTest::SetAiData,
-                       base::Unretained(this), run_loop.QuitClosure()),
-        1);
-    run_loop.Run();
-    DCHECK(ai_data());
+  AiData QueryAiData() {
+    base::test::TestFuture<AiData> ai_data;
+    ai_data_service().GetAiData(1, web_contents(), "", ai_data.GetCallback(),
+                                1);
+    return ai_data.Get();
   }
 
-  void QueryAiDataWithSpecifier(AiDataKeyedService::AiDataSpecifier specifier) {
-    base::RunLoop run_loop;
-    ai_data_service()->GetAiDataWithSpecifier(
-        web_contents(), std::move(specifier),
-        base::BindOnce(&AiDataKeyedServiceBrowserTest::SetAiData,
-                       base::Unretained(this), run_loop.QuitClosure()));
-    run_loop.Run();
-    DCHECK(ai_data());
+  AiData QueryAiDataWithSpecifier(AiDataSpecifier specifier) {
+    base::test::TestFuture<AiData> ai_data;
+    ai_data_service().GetAiDataWithSpecifier(
+        web_contents(), std::move(specifier), ai_data.GetCallback());
+    return ai_data.Get();
   }
 
-  void LoadSimplePageAndData() {
+  AiData LoadSimplePageAndData() {
     LoadSimplePage();
-    QueryAiData();
+    return QueryAiData();
   }
 
-  void LoadSimplePageAndDataWithSpecifier(
-      AiDataKeyedService::AiDataSpecifier specifier) {
+  AiData LoadSimplePageAndDataWithSpecifier(AiDataSpecifier specifier) {
     LoadSimplePage();
-    QueryAiDataWithSpecifier(std::move(specifier));
+    return QueryAiDataWithSpecifier(std::move(specifier));
   }
 
  private:
   autofill::test::AutofillBrowserTestEnvironment autofill_test_environment_;
-  GURL url_;
-  std::unique_ptr<net::EmbeddedTestServer> https_server_;
-  AiDataKeyedService::AiData ai_data_;
+  std::unique_ptr<net::EmbeddedTestServer> https_server_ =
+      std::make_unique<net::EmbeddedTestServer>(
+          net::EmbeddedTestServer::TYPE_HTTPS);
 };
 
 IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest,
@@ -182,52 +161,52 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, GetsData) {
-  LoadSimplePageAndData();
-  EXPECT_TRUE(ai_data());
+  EXPECT_TRUE(LoadSimplePageAndData().has_value());
 }
 
 IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, InnerText) {
-  LoadSimplePageAndData();
-  ASSERT_TRUE(ai_data());
-  EXPECT_EQ(ai_data()->page_context().inner_text(), "Non empty simple page");
+  AiData ai_data = LoadSimplePageAndData();
+  ASSERT_TRUE(ai_data.has_value());
+  EXPECT_EQ(ai_data->page_context().inner_text(), "Non empty simple page");
 }
 
 IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, InnerTextOffset) {
-  LoadSimplePageAndData();
-  ASSERT_TRUE(ai_data());
-  EXPECT_EQ(ai_data()->page_context().inner_text_offset(), 0u);
+  AiData ai_data = LoadSimplePageAndData();
+  ASSERT_TRUE(ai_data.has_value());
+  EXPECT_EQ(ai_data->page_context().inner_text_offset(), 0u);
 }
 
 IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, Title) {
-  LoadSimplePageAndData();
-  ASSERT_TRUE(ai_data());
-  EXPECT_EQ(ai_data()->page_context().title(), "OK");
+  AiData ai_data = LoadSimplePageAndData();
+  ASSERT_TRUE(ai_data.has_value());
+  EXPECT_EQ(ai_data->page_context().title(), "OK");
 }
 
 IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, Url) {
-  LoadSimplePageAndData();
-  ASSERT_TRUE(ai_data());
-  EXPECT_NE(ai_data()->page_context().url().find("simple"), std::string::npos);
+  AiData ai_data = LoadSimplePageAndData();
+  ASSERT_TRUE(ai_data.has_value());
+  EXPECT_NE(ai_data->page_context().url().find("simple"), std::string::npos);
 }
 
 IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest,
                        EmptyHistoryResultWithEmptyQueryString) {
-  AiDataKeyedService::AiDataSpecifier specifier;
+  AiDataSpecifier specifier;
   auto* history_query_specifiers =
       specifier.mutable_browser_data_collection_specifier()
           ->mutable_history_query_specifiers();
   history_query_specifiers->add_history_queries()->set_query("");
-  LoadSimplePageAndDataWithSpecifier(std::move(specifier));
-  EXPECT_TRUE(ai_data()->history_query_result().empty());
+  AiData ai_data = LoadSimplePageAndDataWithSpecifier(std::move(specifier));
+  ASSERT_TRUE(ai_data.has_value());
+  EXPECT_TRUE(ai_data->history_query_result().empty());
 }
 
 IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, AxTreeUpdate) {
-  LoadSimplePageAndData();
-  ASSERT_TRUE(ai_data());
+  AiData ai_data = LoadSimplePageAndData();
+  ASSERT_TRUE(ai_data.has_value());
   // If there are nodes and the titles is correct, then the AX tree is filled
   // out.
-  EXPECT_GT(ai_data()->page_context().ax_tree_data().nodes().size(), 0);
-  EXPECT_EQ(ai_data()->page_context().ax_tree_data().tree_data().title(), "OK");
+  EXPECT_GT(ai_data->page_context().ax_tree_data().nodes().size(), 0);
+  EXPECT_EQ(ai_data->page_context().ax_tree_data().tree_data().title(), "OK");
 }
 
 IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, TabData) {
@@ -246,12 +225,11 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, TabData) {
   vis_data2.SetTitle(u"ok");
   tab_group2->SetVisualData(vis_data2);
 
-  LoadSimplePageAndData();
-  ASSERT_TRUE(ai_data());
-
-  EXPECT_EQ(ai_data()->active_tab_id(), 0);
-  EXPECT_EQ(ai_data()->tabs().size(), 3);
-  EXPECT_EQ(ai_data()->pre_existing_tab_groups().size(), 2);
+  AiData ai_data = LoadSimplePageAndData();
+  ASSERT_TRUE(ai_data.has_value());
+  EXPECT_EQ(ai_data->active_tab_id(), 0);
+  EXPECT_EQ(ai_data->tabs().size(), 3);
+  EXPECT_EQ(ai_data->pre_existing_tab_groups().size(), 2);
 }
 
 IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, TabInnerText) {
@@ -270,10 +248,10 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, TabInnerText) {
   vis_data2.SetTitle(u"ok");
   tab_group2->SetVisualData(vis_data2);
 
-  LoadSimplePageAndData();
-  ASSERT_TRUE(ai_data());
-  EXPECT_EQ(ai_data()->active_tab_id(), 0);
-  for (const auto& tab_in_proto : ai_data()->tabs()) {
+  AiData ai_data = LoadSimplePageAndData();
+  ASSERT_TRUE(ai_data.has_value());
+  EXPECT_EQ(ai_data->active_tab_id(), 0);
+  for (const auto& tab_in_proto : ai_data->tabs()) {
     if (tab_in_proto.tab_id() == 0) {
       EXPECT_EQ(tab_in_proto.title(), "OK");
       EXPECT_NE(tab_in_proto.url().find("simple"), std::string::npos);
@@ -286,9 +264,10 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, TabInnerText) {
 IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, TabInnerTextLimit) {
   LoadSimplePageAndData();
   chrome::AddTabAt(browser(), GURL("bar.com"), -1, true);
-  LoadSimplePageAndData();
-  EXPECT_EQ(ai_data()->active_tab_id(), 1);
-  for (auto& tab : ai_data()->tabs()) {
+  AiData ai_data = LoadSimplePageAndData();
+  ASSERT_TRUE(ai_data.has_value());
+  EXPECT_EQ(ai_data->active_tab_id(), 1);
+  for (auto& tab : ai_data->tabs()) {
     if (tab.tab_id() == 0) {
       EXPECT_EQ(tab.page_context().inner_text(), "Non empty simple page");
     }
@@ -299,22 +278,24 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, TabInnerTextLimit) {
 }
 
 IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, Screenshot) {
-  LoadSimplePageAndData();
+  AiData ai_data = LoadSimplePageAndData();
+  ASSERT_TRUE(ai_data.has_value());
   content::RequestFrame(web_contents());
-  EXPECT_NE(ai_data()->page_context().tab_screenshot(), "");
+  EXPECT_NE(ai_data->page_context().tab_screenshot(), "");
 }
 
 IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, SiteEngagementScores) {
-  LoadSimplePageAndData();
-  EXPECT_EQ(ai_data()->site_engagement().entries().size(), 1);
-  EXPECT_NE(ai_data()->site_engagement().entries()[0].url(), "");
-  EXPECT_GE(ai_data()->site_engagement().entries()[0].score(), 0);
+  AiData ai_data = LoadSimplePageAndData();
+  ASSERT_TRUE(ai_data.has_value());
+  EXPECT_EQ(ai_data->site_engagement().entries().size(), 1);
+  EXPECT_NE(ai_data->site_engagement().entries()[0].url(), "");
+  EXPECT_GE(ai_data->site_engagement().entries()[0].score(), 0);
 }
 
 IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, AIPageContent) {
-  LoadSimplePageAndData();
-
-  const auto& page_content = ai_data()->page_context().annotated_page_content();
+  AiData ai_data = LoadSimplePageAndData();
+  ASSERT_TRUE(ai_data.has_value());
+  const auto& page_content = ai_data->page_context().annotated_page_content();
   const auto& content_attributes =
       page_content.root_node().content_attributes();
   EXPECT_EQ(content_attributes.attribute_type(),
@@ -322,7 +303,7 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, AIPageContent) {
 }
 
 IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, SpecifierOn) {
-  AiDataKeyedService::AiDataSpecifier specifier;
+  AiDataSpecifier specifier;
   auto* browser_specifier =
       specifier.mutable_browser_data_collection_specifier();
   auto* foreground_tab_specifier =
@@ -341,26 +322,27 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, SpecifierOn) {
   browser_specifier->set_site_engagement(true);
   browser_specifier->set_tab_groups(true);
 
-  LoadSimplePageAndDataWithSpecifier(std::move(specifier));
-  EXPECT_NE(ai_data()->page_context().tab_screenshot(), "");
-  const auto& page_content = ai_data()->page_context().annotated_page_content();
+  AiData ai_data = LoadSimplePageAndDataWithSpecifier(std::move(specifier));
+  ASSERT_TRUE(ai_data.has_value());
+  EXPECT_NE(ai_data->page_context().tab_screenshot(), "");
+  const auto& page_content = ai_data->page_context().annotated_page_content();
   const auto& content_attributes =
       page_content.root_node().content_attributes();
   EXPECT_EQ(content_attributes.attribute_type(),
             optimization_guide::proto::CONTENT_ATTRIBUTE_ROOT);
-  EXPECT_EQ(ai_data()->site_engagement().entries().size(), 1);
-  EXPECT_NE(ai_data()->site_engagement().entries()[0].url(), "");
-  EXPECT_GE(ai_data()->site_engagement().entries()[0].score(), 0);
+  EXPECT_EQ(ai_data->site_engagement().entries().size(), 1);
+  EXPECT_NE(ai_data->site_engagement().entries()[0].url(), "");
+  EXPECT_GE(ai_data->site_engagement().entries()[0].score(), 0);
 }
 
 IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, SpecifierOff) {
-  AiDataKeyedService::AiDataSpecifier specifier;
-  LoadSimplePageAndDataWithSpecifier(std::move(specifier));
-
-  EXPECT_EQ(ai_data()->page_context().tab_screenshot(), "");
-  EXPECT_EQ(ai_data()->page_context().inner_text(), "");
-  EXPECT_EQ(ai_data()->site_engagement().entries().size(), 0);
-  EXPECT_TRUE(ai_data()->history_query_result().empty());
+  AiDataSpecifier specifier;
+  AiData ai_data = LoadSimplePageAndDataWithSpecifier(std::move(specifier));
+  ASSERT_TRUE(ai_data.has_value());
+  EXPECT_EQ(ai_data->page_context().tab_screenshot(), "");
+  EXPECT_EQ(ai_data->page_context().inner_text(), "");
+  EXPECT_EQ(ai_data->site_engagement().entries().size(), 0);
+  EXPECT_TRUE(ai_data->history_query_result().empty());
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -414,22 +396,19 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTestWithFormsPredictions,
   client->SetModelExecutorForTesting(
       std::move(mock_autofill_ai_model_executor));
 
-  LoadSimplePageAndData();
-
-  ASSERT_TRUE(ai_data());
-  ASSERT_EQ(ai_data()->forms_predictions_request().entries().size(), 1);
-  EXPECT_EQ(ai_data()->forms_predictions_request().entries()[0].key(),
+  AiData ai_data = LoadSimplePageAndData();
+  ASSERT_TRUE(ai_data.has_value());
+  ASSERT_EQ(ai_data->forms_predictions_request().entries().size(), 1);
+  EXPECT_EQ(ai_data->forms_predictions_request().entries()[0].key(),
             "test_key");
-  EXPECT_EQ(ai_data()->forms_predictions_request().entries()[0].value(),
+  EXPECT_EQ(ai_data->forms_predictions_request().entries()[0].value(),
             "test_value");
-  ASSERT_EQ(ai_data()
-                ->forms_predictions_response()
+  ASSERT_EQ(ai_data->forms_predictions_response()
                 .form_data()
                 .filled_form_field_data()
                 .size(),
             1);
-  EXPECT_EQ(ai_data()
-                ->forms_predictions_response()
+  EXPECT_EQ(ai_data->forms_predictions_response()
                 .form_data()
                 .filled_form_field_data()[0]
                 .normalized_label(),
@@ -463,12 +442,12 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest,
       expected_form.fields()[0].global_id().frame_token->ToString());
   global_id->set_renderer_id(
       expected_form.fields()[0].global_id().renderer_id.value());
-  QueryAiDataWithSpecifier(std::move(specifier));
+  AiData ai_data = QueryAiDataWithSpecifier(std::move(specifier));
 
   // Expect that the result matches `expected_form`.
-  ASSERT_TRUE(ai_data()->has_form_data());
-  const optimization_guide::proto::FormData& actual_form =
-      ai_data()->form_data();
+  ASSERT_TRUE(ai_data.has_value());
+  ASSERT_TRUE(ai_data->has_form_data());
+  const optimization_guide::proto::FormData& actual_form = ai_data->form_data();
   ASSERT_EQ(actual_form.fields_size(), 2);
   EXPECT_EQ(actual_form.fields(0).field_label(),
             base::UTF16ToUTF8(expected_form.fields()[0].label()));
