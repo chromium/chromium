@@ -94,4 +94,13 @@ void PropertyTreeLayerListDelegate::OnAnimateLayers() {
   // This is a no-op in layer list mode.
 }
 
+void PropertyTreeLayerListDelegate::RegisterViewportPropertyIds(
+    const ViewportPropertyIds& ids) {
+  host()->SetViewportPropertyIds(ids);
+  // Outer viewport properties exist only if inner viewport property exists.
+  DCHECK(ids.inner_scroll != kInvalidPropertyNodeId ||
+         (ids.outer_scroll == kInvalidPropertyNodeId &&
+          ids.outer_clip == kInvalidPropertyNodeId));
+}
+
 }  // namespace cc

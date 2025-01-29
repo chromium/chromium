@@ -14,6 +14,7 @@
 namespace cc {
 
 class LayerTreeHost;
+struct ViewportPropertyIds;
 
 // This is an interface that LayerTreeHosts and LayerTreeHostClients can
 // implement to control how the host's property trees are kept up to date.
@@ -43,6 +44,8 @@ class PropertyTreeDelegate {
       const std::optional<TargetSnapAreaElementIds>& snap_target_ids) = 0;
 
   virtual void OnAnimateLayers() = 0;
+
+  virtual void RegisterViewportPropertyIds(const ViewportPropertyIds& ids) = 0;
 };
 
 }  // namespace cc

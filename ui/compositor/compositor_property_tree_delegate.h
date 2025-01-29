@@ -16,6 +16,7 @@
 
 namespace cc {
 class LayerTreeHost;
+struct ViewportPropertyIds;
 }
 
 namespace ui {
@@ -56,6 +57,7 @@ class COMPOSITOR_EXPORT CompositorPropertyTreeDelegate
       const std::optional<cc::TargetSnapAreaElementIds>& snap_target_ids)
       override;
   void OnAnimateLayers() override;
+  void RegisterViewportPropertyIds(const cc::ViewportPropertyIds& ids) override;
 
  private:
   raw_ptr<Observer> observer_ = nullptr;

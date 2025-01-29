@@ -1294,12 +1294,11 @@ void LayerTreeHost::SetRootLayer(scoped_refptr<Layer> new_root_layer) {
 
 void LayerTreeHost::RegisterViewportPropertyIds(
     const ViewportPropertyIds& ids) {
-  DCHECK(IsUsingLayerLists());
+  property_tree_delegate_->RegisterViewportPropertyIds(ids);
+}
+
+void LayerTreeHost::SetViewportPropertyIds(const ViewportPropertyIds& ids) {
   pending_commit_state()->viewport_property_ids = ids;
-  // Outer viewport properties exist only if inner viewport property exists.
-  DCHECK(ids.inner_scroll != kInvalidPropertyNodeId ||
-         (ids.outer_scroll == kInvalidPropertyNodeId &&
-          ids.outer_clip == kInvalidPropertyNodeId));
 }
 
 Layer* LayerTreeHost::InnerViewportScrollLayerForTesting() {

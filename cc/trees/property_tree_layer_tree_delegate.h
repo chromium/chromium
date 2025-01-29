@@ -36,6 +36,7 @@ class CC_EXPORT PropertyTreeLayerTreeDelegate : public PropertyTreeDelegate {
       const gfx::Vector2dF& delta,
       const std::optional<TargetSnapAreaElementIds>& snap_target_ids) override;
   void OnAnimateLayers() override;
+  void RegisterViewportPropertyIds(const ViewportPropertyIds& ids) override;
 
  private:
   raw_ptr<LayerTreeHost> host_ = nullptr;

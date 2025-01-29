@@ -46,4 +46,9 @@ void PropertyTreeLayerTreeDelegate::OnAnimateLayers() {
   host()->property_trees()->set_needs_rebuild(true);
 }
 
+void PropertyTreeLayerTreeDelegate::RegisterViewportPropertyIds(
+    const ViewportPropertyIds& ids) {
+  // This is a no-op in layer tree mode.
+}
+
 }  // namespace cc
