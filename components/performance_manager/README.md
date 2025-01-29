@@ -32,7 +32,7 @@ Here’s an overview picture of the intended architecture:
 - Content Proxies are a convenience feature to allow easy and safe access from nodes in the graph
   to the corresponding content entity for any task that needs to run on the main thread.
 
-The graph lives on the Performance Manager Sequence, as do all graph observers and mutators.
+The graph lives on the main thread, as do all graph observers and mutators.
 The graph structure can be viewed in the graph tab of the `chrome://discards WebUI.`
 
 In addition to the above, the Performance Manager also provides support for
