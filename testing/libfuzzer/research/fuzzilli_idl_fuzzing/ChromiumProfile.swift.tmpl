@@ -113,7 +113,9 @@ let js{{identifier}} = ObjectGroup(
   {% else %}
     :
   {% endfor -%}
-  ]
+  ]{%- if group.parent %},
+  parent: "{{group.parent}}"
+  {%- endif %}
 )
 {%- endmacro -%}
 
