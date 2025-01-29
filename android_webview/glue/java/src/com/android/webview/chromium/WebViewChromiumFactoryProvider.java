@@ -432,31 +432,37 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
 
             AndroidXProcessGlobalConfig.extractConfigFromApp(application.getClassLoader());
 
-            CommandLine cl = CommandLine.getInstance();
+            // Limiting scope of the command line switch object before it is passed to native.
+            // The reference to `cl` eventually becomes a stale object, causing incorrect behavior,
+            // since Java switches are incongruent with Native switches.
+            {
+                CommandLine cl = CommandLine.getInstance();
 
-            boolean multiProcess = webViewDelegate.isMultiProcessEnabled();
-            if (multiProcess) {
-                cl.appendSwitch(AwSwitches.WEBVIEW_SANDBOXED_RENDERER);
-            }
-            Log.i(
-                    TAG,
-                    "version=%s (%s) minSdkVersion=%s isBundle=%s multiprocess=%s packageId=%s",
-                    VersionConstants.PRODUCT_VERSION,
-                    BuildConfig.VERSION_CODE,
-                    BuildConfig.MIN_SDK_VERSION,
-                    BundleUtils.isBundle(),
-                    multiProcess,
-                    packageId);
+                boolean multiProcess = webViewDelegate.isMultiProcessEnabled();
+                if (multiProcess) {
+                    cl.appendSwitch(AwSwitches.WEBVIEW_SANDBOXED_RENDERER);
+                }
+                Log.i(
+                        TAG,
+                        "version=%s (%s) minSdkVersion=%s isBundle=%s multiprocess=%s packageId=%s",
+                        VersionConstants.PRODUCT_VERSION,
+                        BuildConfig.VERSION_CODE,
+                        BuildConfig.MIN_SDK_VERSION,
+                        BundleUtils.isBundle(),
+                        multiProcess,
+                        packageId);
 
-            // Enable modern SameSite cookie behavior if the app targets at least S.
-            if (ctx.getApplicationInfo().targetSdkVersion >= Build.VERSION_CODES.S) {
-                cl.appendSwitch(AwSwitches.WEBVIEW_ENABLE_MODERN_COOKIE_SAME_SITE);
-            }
+                // Enable modern SameSite cookie behavior if the app targets at least S.
+                if (ctx.getApplicationInfo().targetSdkVersion >= Build.VERSION_CODES.S) {
+                    cl.appendSwitch(AwSwitches.WEBVIEW_ENABLE_MODERN_COOKIE_SAME_SITE);
+                }
 
-            // Enable logging JS console messages in system logs only if the app is debuggable or
-            // it's a debuggable android build.
-            if (BuildInfo.isDebugAndroidOrApp()) {
-                cl.appendSwitch(AwSwitches.WEBVIEW_LOG_JS_CONSOLE_MESSAGES);
+                // Enable logging JS console messages in system logs only if the app is debuggable
+                // or
+                // it's a debuggable android build.
+                if (BuildInfo.isDebugAndroidOrApp()) {
+                    cl.appendSwitch(AwSwitches.WEBVIEW_LOG_JS_CONSOLE_MESSAGES);
+                }
             }
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -520,8 +526,17 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                 deleteContentsOnPackageDowngrade(packageInfo);
             }
 
-            // TODO (crbug.com/389121692): Add a check here to configure partitioned cookies based
-            // on what we get back from AndroidX.
+            // TODO(crbug.com/389121692): Get the default behavior from shouldEnableChips
+            boolean partitionedCookies =
+                    androidXConfig.getPartitionedCookiesEnabled() == null
+                            ? true
+                            : androidXConfig.getPartitionedCookiesEnabled();
+            if (!partitionedCookies) {
+                CommandLine.getInstance().appendSwitch("disable-partitioned-cookies");
+                Log.d(TAG, "CHIPS Disabled");
+            } else {
+                Log.d(TAG, "CHIPS Enabled");
+            }
 
             // Now safe to use WebView data directory.
 
