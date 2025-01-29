@@ -85,17 +85,53 @@ CREATE PERFETTO TABLE chrome_graphics_pipeline_display_frame_steps(
   -- Start time of the parent Chrome scheduler task (if any) of this step.
   task_start_time_ts TIMESTAMP)
 AS
+WITH steps_with_potential_duplicates AS (
+    SELECT
+      id,
+      ts,
+      dur,
+      extract_arg(arg_set_id, 'chrome_graphics_pipeline.step') AS step,
+      extract_arg(arg_set_id, 'chrome_graphics_pipeline.display_trace_id')
+        AS display_trace_id,
+      utid,
+      ts - (
+        EXTRACT_ARG(
+          thread_slice.arg_set_id,
+          'current_task.event_offset_from_task_start_time_us'
+        ) * 1000
+      ) AS task_start_time_ts
+    FROM thread_slice
+    WHERE name = 'Graphics.Pipeline' AND display_trace_id IS NOT NULL
+), steps_with_ordering AS (
+  SELECT
+    *,
+    ROW_NUMBER() OVER (
+      -- Partition the steps so that, if the same step (for the same graphics
+      -- pipeline) was emitted more than once (e.g. due to b:390610512), the
+      -- step ends up in the same partition as all its duplicates. This will
+      -- enable us to deduplicate the steps later.
+      PARTITION BY display_trace_id, step, utid
+      -- If there are multiple STEP_DRAW_AND_SWAP or multiple
+      -- STEP_SURFACE_AGGREGATION steps, we assume that all duplicates except
+      -- the last one were cancelled, so we only care about the last
+      -- STEP_DRAW_AND_SWAP/STEP_SURFACE_AGGREGATION step. We don't have any
+      -- preference for other steps but, for the sake of determinism and
+      -- consistency, let's always pick the last step.
+      ORDER BY ts DESC
+    ) AS ordering_within_partition
+  FROM steps_with_potential_duplicates
+)
 SELECT
   id,
   ts,
   dur,
-  extract_arg(arg_set_id, 'chrome_graphics_pipeline.step') AS step,
-  extract_arg(arg_set_id, 'chrome_graphics_pipeline.display_trace_id')
-    AS display_trace_id,
+  step,
+  display_trace_id,
   utid,
-  ts - (EXTRACT_ARG(thread_slice.arg_set_id, 'current_task.event_offset_from_task_start_time_us') * 1000) AS task_start_time_ts
-FROM thread_slice
-WHERE name = 'Graphics.Pipeline' AND display_trace_id IS NOT NULL;
+  task_start_time_ts
+FROM steps_with_ordering
+-- This is where we actually remove duplicate steps.
+WHERE ordering_within_partition = 1;
 
 -- Links surface frames (`chrome_graphics_pipeline_surface_frame_steps`) to the
 -- the first display frame (`chrome_graphics_pipeline_display_frame_steps`) into
