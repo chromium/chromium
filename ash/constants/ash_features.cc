@@ -1206,7 +1206,7 @@ BASE_FEATURE(kGrowthCampaignsCrOSEvents,
 // Enables demo mode sign in with growth campaigns.
 BASE_FEATURE(kGrowthCampaignsDemoModeSignIn,
              "GrowthCampaignsDemoModeSignIn",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether growth campaigns experiment tag targeting is enabled. The
 // flag also used by finch to tag the session with finch params.
