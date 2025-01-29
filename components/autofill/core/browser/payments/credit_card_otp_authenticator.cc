@@ -290,11 +290,6 @@ void CreditCardOtpAuthenticator::OnDidGetRealPan(
   }
 
   if (result == PaymentsRpcResult::kSuccess) {
-    if (response_details.card_type !=
-        payments::PaymentsAutofillClient::PaymentsRpcCardType::kVirtualCard) {
-      // Currently we offer OTP authentication only for virtual cards.
-      NOTREACHED();
-    }
     // If |flow_status| is present, this intermediate status allows the user to
     // stay in the current session to finish the unmasking with certain user
     // actions rather than ending the flow.
@@ -333,7 +328,13 @@ void CreditCardOtpAuthenticator::OnDidGetRealPan(
 
     unmask_request_->card.SetNumber(
         base::UTF8ToUTF16(response_details.real_pan));
-    unmask_request_->card.set_record_type(CreditCard::RecordType::kVirtualCard);
+    // When a masked card is fetched, it is transformed into a full server card
+    // locally and cached for any re-fills on the same page.
+    if (response_details.card_type ==
+        payments::PaymentsAutofillClient::PaymentsRpcCardType::kServerCard) {
+      unmask_request_->card.set_record_type(
+          CreditCard::RecordType::kFullServerCard);
+    }
     unmask_request_->card.SetExpirationMonthFromString(
         base::UTF8ToUTF16(response_details.expiration_month),
         /*app_locale=*/std::string());

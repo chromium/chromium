@@ -95,7 +95,11 @@ class CreditCardOtpAuthenticatorTestBase : public testing::Test {
     response.expiration_month = test::NextMonth();
     response.expiration_year = test::NextYear();
     response.card_type =
-        payments::PaymentsAutofillClient::PaymentsRpcCardType::kVirtualCard;
+        card_.record_type() == CreditCard::RecordType::kVirtualCard
+            ? payments::PaymentsAutofillClient::PaymentsRpcCardType::
+                  kVirtualCard
+            : payments::PaymentsAutofillClient::PaymentsRpcCardType::
+                  kServerCard;
     authenticator_->OnDidGetRealPan(result, response);
   }
 
@@ -105,7 +109,11 @@ class CreditCardOtpAuthenticatorTestBase : public testing::Test {
     response.flow_status = flow_status;
     response.context_token = context_token;
     response.card_type =
-        payments::PaymentsAutofillClient::PaymentsRpcCardType::kVirtualCard;
+        card_.record_type() == CreditCard::RecordType::kVirtualCard
+            ? payments::PaymentsAutofillClient::PaymentsRpcCardType::
+                  kVirtualCard
+            : payments::PaymentsAutofillClient::PaymentsRpcCardType::
+                  kServerCard;
     authenticator_->OnDidGetRealPan(PaymentsRpcResult::kSuccess, response);
   }
 
@@ -169,21 +177,31 @@ class CreditCardOtpAuthenticatorTest
   void SetUp() override {
     CreditCardOtpAuthenticatorTestBase::SetUp();
     CardUnmaskChallengeOptionType option_type = std::get<0>(GetParam());
-    CreditCard::RecordType record_type = std::get<1>(GetParam());
+    record_type_ = std::get<1>(GetParam());
     CreateSelectedOtpChallengeOption(option_type);
 
+    // Masked Server card is only tested for SmsOtp.
     if (option_type == CardUnmaskChallengeOptionType::kSmsOtp &&
-        record_type == CreditCard::RecordType::kMaskedServerCard) {
+        record_type_ == CreditCard::RecordType::kMaskedServerCard) {
       card_.set_card_info_retrieval_enrollment_state(
           CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled);
-    } else {
-      card_.set_record_type(CreditCard::RecordType::kVirtualCard);
     }
+    card_.set_record_type(record_type_);
   }
 
   std::string GetOtpAuthType() {
     return autofill_metrics::GetOtpAuthType(std::get<0>(GetParam()));
   }
+
+  // Recordtype of unmasked server card changes to kFullServerCard;
+  CreditCard::RecordType GetUnmaskedCardRecordType() {
+    return record_type_ == CreditCard::RecordType::kMaskedServerCard
+               ? CreditCard::RecordType::kFullServerCard
+               : record_type_;
+  }
+
+ private:
+  CreditCard::RecordType record_type_;
 };
 
 // Test the yellow path SMAS based OTP challenege flow.
@@ -226,6 +244,7 @@ TEST_P(CreditCardOtpAuthenticatorTest, AuthenticateServerCardSuccess) {
   ASSERT_TRUE(requester_->did_succeed().has_value());
   EXPECT_TRUE(*(requester_->did_succeed()));
   EXPECT_EQ(kTestNumber16, requester_->number());
+  EXPECT_EQ(GetUnmaskedCardRecordType(), requester_->record_type());
 }
 
 TEST_P(CreditCardOtpAuthenticatorTest, AuthenticateServerCardSuccessMetrics) {
@@ -572,6 +591,7 @@ TEST_P(CreditCardOtpAuthenticatorTest, OtpAuthMismatchThenRetry) {
   ASSERT_TRUE(requester_->did_succeed().has_value());
   EXPECT_TRUE(*(requester_->did_succeed()));
   EXPECT_EQ(kTestNumber16, requester_->number());
+  EXPECT_EQ(GetUnmaskedCardRecordType(), requester_->record_type());
   EXPECT_FALSE(payments_autofill_client().show_otp_input_dialog());
 }
 
@@ -690,6 +710,7 @@ TEST_P(CreditCardOtpAuthenticatorTest, OtpAuthExpiredThenResendOtp) {
   ASSERT_TRUE(requester_->did_succeed().has_value());
   EXPECT_TRUE(*(requester_->did_succeed()));
   EXPECT_EQ(kTestNumber16, requester_->number());
+  EXPECT_EQ(GetUnmaskedCardRecordType(), requester_->record_type());
 }
 
 TEST_P(CreditCardOtpAuthenticatorTest, OtpAuthExpiredThenResendOtpMetrics) {
@@ -792,19 +813,24 @@ TEST_P(CreditCardOtpAuthenticatorTest, OtpAuthCancelledMetrics) {
 INSTANTIATE_TEST_SUITE_P(
     ,
     CreditCardOtpAuthenticatorTest,
-    testing::Combine(
-        testing::Values(CardUnmaskChallengeOptionType::kSmsOtp,
-                        CardUnmaskChallengeOptionType::kEmailOtp),
-        testing::Values(CreditCard::RecordType::kVirtualCard,
-                        CreditCard::RecordType::kMaskedServerCard)));
+    // Skip kEmailOtp with kMaskedServerCard as it is not supported.
+    testing::ValuesIn({
+        std::make_tuple(CardUnmaskChallengeOptionType::kSmsOtp,
+                        CreditCard::RecordType::kVirtualCard),
+        std::make_tuple(CardUnmaskChallengeOptionType::kSmsOtp,
+                        CreditCard::RecordType::kMaskedServerCard),
+        std::make_tuple(CardUnmaskChallengeOptionType::kEmailOtp,
+                        CreditCard::RecordType::kVirtualCard),
+    }));
 
-// CardInfoRetrieval currently only supports SmsOtp, hence setting up
-// a separate SmsOtp test for it.
-class CreditCardOtpAuthenticatorCardInfoRetrievalTest
+// CardInfoRetrieval currently only supports SmsOtp, hence setting up a
+// separate SmsOtp error handling test for it. All other test cases are
+// covered by the above parameterized tests.
+class CreditCardOtpAuthenticatorCardInfoRetrievalErrorTest
     : public CreditCardOtpAuthenticatorTestBase {
  public:
-  CreditCardOtpAuthenticatorCardInfoRetrievalTest() = default;
-  ~CreditCardOtpAuthenticatorCardInfoRetrievalTest() override = default;
+  CreditCardOtpAuthenticatorCardInfoRetrievalErrorTest() = default;
+  ~CreditCardOtpAuthenticatorCardInfoRetrievalErrorTest() override = default;
 
   void SetUp() override {
     CreditCardOtpAuthenticatorTestBase::SetUp();
@@ -816,7 +842,7 @@ class CreditCardOtpAuthenticatorCardInfoRetrievalTest
 
 // Test failure of SelectChallenge option for cards enrolled in runtime
 // retrieval.
-TEST_F(CreditCardOtpAuthenticatorCardInfoRetrievalTest,
+TEST_F(CreditCardOtpAuthenticatorCardInfoRetrievalErrorTest,
        SelectChallengeOptionFailsWithCardInfoRetrievalError) {
   base::HistogramTester histogram_tester;
   // Simulate server returns card info retrieval permanent failure.
@@ -854,7 +880,7 @@ TEST_F(CreditCardOtpAuthenticatorCardInfoRetrievalTest,
 
 // Server returns try again failure for cards enrolled in runtime retrieval
 // after user enters the OTP.
-TEST_F(CreditCardOtpAuthenticatorCardInfoRetrievalTest,
+TEST_F(CreditCardOtpAuthenticatorCardInfoRetrievalErrorTest,
        OtpAuthServerCardInfoRetrievalError) {
   for (bool server_returned_decline_details : {true, false}) {
     base::HistogramTester histogram_tester;
