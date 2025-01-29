@@ -93,11 +93,9 @@ class CORE_EXPORT FetchLaterUtil {
   static bool ShouldClearDeferredFetchPolicy(Frame* frame);
 
   // Performs the calculation of "available deferred fetch quota" algorithm
-  // that requires a control document and a request URL.
+  // that requires a document and a request URL.
   //
-  // `frame` must be the frame of a control document obtained from
-  // `GetDeferredFetchControlFrame()`, i.e. the spec wording "control document"
-  // means `frame->GetDocument()`.
+  // `frame` is the source frame of the request `url`.
   // `url` is the request URL to calculate the deferred fetch quota for.
   //
   // https://whatpr.org/fetch/1647.html#available-deferred-fetch-quota
@@ -158,10 +156,10 @@ class CORE_EXPORT FetchLaterUtil {
   static uint32_t CountDescendantsWithReservedMinimalQuota(
       const Frame* control_frame);
 
-  // Returns corresponding reserved deferred-fetch quota on a control document
+  // Returns corresponding reserved deferred-fetch quota on a control frame
   // `frame`.
   //
-  // This method implements Step 1~5 of the following algorithm:
+  // This method implements Step 3~6 of the following algorithm:
   // https://whatpr.org/fetch/1647.html#available-deferred-fetch-quota
   static uint32_t GetReservedDeferredFetchQuota(const Frame* frame);
 };

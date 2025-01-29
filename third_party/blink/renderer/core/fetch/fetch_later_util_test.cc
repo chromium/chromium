@@ -768,15 +768,10 @@ TEST_F(ShouldClearDeferredFetchPolicyTest, MultipleLevelFrames) {
 class GetAvailableDeferredFetchQuotaTest : public DeferredFetchPolicyTestBase {
  protected:
   // This helper method obtains the available deferred-fetch quota for the
-  // control document of `source_frame` when making a request to `url` from
-  // `source_frame`. This mimics how `GetDeferredFetchControlFrame()` is used
-  // in reality.
+  // `source_frame` when making a request to `url` from `source_frame`.
   [[nodiscard]] uint64_t GetAvailableQuota(Frame* source_frame,
                                            const KURL& url) {
-    // `GetDeferredFetchControlFrame() only accepts a control document.
-    auto* control_frame =
-        FetchLaterUtil::GetDeferredFetchControlFrame(source_frame);
-    return FetchLaterUtil::GetAvailableDeferredFetchQuota(control_frame, url);
+    return FetchLaterUtil::GetAvailableDeferredFetchQuota(source_frame, url);
   }
 };
 

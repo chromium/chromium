@@ -4004,11 +4004,11 @@ enum WebFeature {
   kV8RTCEncodedAudioFrame_SetMetadata_Method = 4645,
   kV8FetchLaterResult_Activated_AttributeGetter = 4646,
   kV8Window_FetchLater_Method = 4647,
-  kFetchLaterInvokeStateDeferred = 4648,
-  kFetchLaterInvokeStateScheduled = 4649,
-  kFetchLaterInvokeStateTerminated = 4650,
+  kOBSOLETE_FetchLaterInvokeStateDeferred = 4648,
+  kOBSOLETE_FetchLaterInvokeStateScheduled = 4649,
+  kOBSOLETE_FetchLaterInvokeStateTerminated = 4650,
   kFetchLaterInvokeStateAborted = 4651,
-  kFetchLaterInvokeStateActivated = 4652,
+  kOBSOLETE_FetchLaterInvokeStateActivated = 4652,
   kFetchLaterErrorUnknownBodyLength = 4653,
   kFetchLaterErrorQuotaExceeded = 4654,
   kV8FileSystemHandle_GetCloudIdentifiers_Method = 4655,
@@ -4642,6 +4642,8 @@ enum WebFeature {
   kV8AITranslatorFactory_Create_Method = 5256,
   kV8AILanguageDetectorFactory_Create_Method = 5257,
   kV8AILanguageDetector_Destroy_Method = 5258,
+  kFetchLaterInvokeStatePending = 5259,
+  kFetchLaterInvokeStateSent = 5260,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

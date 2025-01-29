@@ -5157,11 +5157,11 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4645" label="V8RTCEncodedAudioFrame_SetMetadata_Method"/>
   <int value="4646" label="V8FetchLaterResult_Activated_AttributeGetter"/>
   <int value="4647" label="V8Window_FetchLater_Method"/>
-  <int value="4648" label="FetchLaterInvokeStateDeferred"/>
-  <int value="4649" label="FetchLaterInvokeStateScheduled"/>
-  <int value="4650" label="FetchLaterInvokeStateTerminated"/>
+  <int value="4648" label="OBSOLETE_FetchLaterInvokeStateDeferred"/>
+  <int value="4649" label="OBSOLETE_FetchLaterInvokeStateScheduled"/>
+  <int value="4650" label="OBSOLETE_FetchLaterInvokeStateTerminated"/>
   <int value="4651" label="FetchLaterInvokeStateAborted"/>
-  <int value="4652" label="FetchLaterInvokeStateActivated"/>
+  <int value="4652" label="OBSOLETE_FetchLaterInvokeStateActivated"/>
   <int value="4653" label="FetchLaterErrorUnknownBodyLength"/>
   <int value="4654" label="FetchLaterErrorQuotaExceeded"/>
   <int value="4655" label="V8FileSystemHandle_GetCloudIdentifiers_Method"/>
@@ -5850,6 +5850,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5256" label="V8AITranslatorFactory_Create_Method"/>
   <int value="5257" label="V8AILanguageDetectorFactory_Create_Method"/>
   <int value="5258" label="V8AILanguageDetector_Destroy_Method"/>
+  <int value="5259" label="FetchLaterInvokeStatePending"/>
+  <int value="5260" label="FetchLaterInvokeStateSent"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
