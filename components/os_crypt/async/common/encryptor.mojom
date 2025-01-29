@@ -25,6 +25,8 @@ struct Encryptor {
   // The provider key to use for encryption from the `key_entries` map below.
   string provider_for_encryption;
   // A map of provider names to Key entries to use for encrypt and decrypt
-  // operations.
-  map<string, Key> key_entries;
+  // operations. If no key is present it means an attempt to obtain a key was
+  // made to the key provider, but a temporary failure resulted in none being
+  // provided.
+  map<string, Key?> key_entries;
 };

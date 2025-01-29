@@ -638,7 +638,10 @@ void FreedesktopSecretKeyProvider::FinalizeFailure(InitStatus status,
     return;
   }
   RecordInitStatus(status, detail);
-  std::move(key_callback_).Run(kEncryptionTag, std::nullopt);
+  // TODO(crbug.com/389016528): Indicate whether this is a temporary or
+  // permanent failure depending on the `status` and `detail`.
+  std::move(key_callback_)
+      .Run(kEncryptionTag, base::unexpected(KeyError::kTemporarilyUnavailable));
   CloseSession();
 }
 
