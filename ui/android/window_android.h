@@ -109,6 +109,8 @@ class UI_ANDROID_EXPORT WindowAndroid : public ViewAndroid {
       const base::android::JavaParamRef<jobject>& obj);
   void SendUnfoldLatencyBeginTimestamp(JNIEnv* env, jlong begin_time);
 
+  void ShowToast(const std::string text);
+
   // Return whether the specified Android permission is granted.
   bool HasPermission(const std::string& permission);
   // Return whether the specified Android permission can be requested by Chrome.
