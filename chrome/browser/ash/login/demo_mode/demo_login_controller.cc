@@ -285,13 +285,6 @@ DemoLoginController::ResultCode GetDemoAccountRequestResult(
                     : DemoLoginController::ResultCode::kRequestFailed;
 }
 
-void OnCleanUpDemoAccountError(
-    const DemoLoginController::ResultCode result_code) {
-  // TODO(crbug.com/364214790): Record metric for the failure.
-  LOG(ERROR) << "Failed to clean up demo account. Result code: "
-             << static_cast<int>(result_code);
-}
-
 std::string_view GetMachineID() {
   return (system::StatisticsProvider::GetInstance()->GetMachineID())
       .value_or(std::string_view());
@@ -539,7 +532,9 @@ void DemoLoginController::MaybeCleanupPreviousDemoAccount() {
   std::optional<base::Value::Dict> device_identifier =
       GetDeviceIdentifier(login_scope_device_id);
   if (!device_identifier) {
-    OnSetupDemoAccountError(ResultCode::kCannotObtainDMTokenAndClientID);
+    OnCleanUpDemoAccountError(ResultCode::kCannotObtainDMTokenAndClientID);
+    // Try request for new demo account regardless of the cleanup result.
+    SendSetupDemoAccountRequest();
     return;
   }
 
@@ -560,17 +555,23 @@ void DemoLoginController::OnCleanUpDemoAccountComplete(
     std::unique_ptr<std::string> response_body) {
   auto result = GetDemoAccountRequestResult(url_loader_.get(), *response_body);
   if (result != ResultCode::kSuccess) {
-    if (clean_up_failed_callback_for_testing_) {
-      std::move(clean_up_failed_callback_for_testing_).Run(result);
-    } else {
-      OnCleanUpDemoAccountError(result);
-      LogServerResponseError(*response_body, /*is_setup*/ false);
-    }
+    LogServerResponseError(*response_body, /*is_setup*/ false);
+    OnCleanUpDemoAccountError(result);
+  }
+  url_loader_.reset();
+  // Try request for new demo account regardless of the cleanup result.
+  SendSetupDemoAccountRequest();
+}
+
+void DemoLoginController::OnCleanUpDemoAccountError(
+    const DemoLoginController::ResultCode result_code) {
+  if (clean_up_failed_callback_for_testing_) {
+    std::move(clean_up_failed_callback_for_testing_).Run(result_code);
   }
 
-  url_loader_.reset();
-  // Try request for new demo account regardless clean up result.
-  SendSetupDemoAccountRequest();
+  // TODO(crbug.com/364214790): Record metric for the failure.
+  LOG(ERROR) << "Failed to clean up demo account. Result code: "
+             << static_cast<int>(result_code);
 }
 
 std::optional<base::Value::Dict> DemoLoginController::GetDeviceIdentifier(
