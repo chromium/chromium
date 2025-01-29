@@ -184,16 +184,6 @@ bool CanMoveAccountToService(
 }
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
-// This feature controls whether or not token data is re-encrypted when OSCrypt
-// indicates that it should be. This is intended as an emergency 'off-switch' in
-// case any unexpected issues are encountered in the key migration.
-// TODO(crbug.com/366375488): Remove once migration is proven to work reliably.
-namespace features {
-BASE_FEATURE(kEnableReEncryptOfTokenData,
-             "EnableReEncryptOfTokenData",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-}  // namespace features
-
 }  // namespace
 
 // This class sends a request to GAIA to revoke the given refresh token from
@@ -660,8 +650,6 @@ void MutableProfileOAuth2TokenServiceDelegate::LoadAllCredentialsIntoMemory(
 
     if (load_account) {
       if (!revoke_token && should_reencrypt) {
-        if (base::FeatureList::IsEnabled(
-                features::kEnableReEncryptOfTokenData)) {
           did_reencrypt = true;
           PersistCredentials(account_id, refresh_token
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
@@ -669,7 +657,6 @@ void MutableProfileOAuth2TokenServiceDelegate::LoadAllCredentialsIntoMemory(
                              wrapped_binding_key
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
           );
-        }
       }
       RecordAccountAvailabilityStartup(account_id, refresh_token);
 
