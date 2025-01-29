@@ -23,8 +23,17 @@ class PrerenderHandle {
   virtual base::WeakPtr<PrerenderHandle> GetWeakPtr() = 0;
   virtual void SetPreloadingAttemptFailureReason(
       PreloadingFailureReason reason) = 0;
-  virtual void SetActivationCallback(base::OnceClosure activation_callback) = 0;
-  virtual void SetErrorCallback(base::OnceClosure error_callback) = 0;
+
+  // Adds a callback to be called on activation. This can be called multiple
+  // times.
+  virtual void AddActivationCallback(base::OnceClosure activation_callback) = 0;
+
+  // Adds a callback to be called when an error happens. This can be called
+  // multiple times.
+  virtual void AddErrorCallback(base::OnceClosure error_callback) = 0;
+
+  // Returns true when prerendering has not been activated or canceled yet.
+  virtual bool IsValid() const = 0;
 };
 
 }  // namespace content

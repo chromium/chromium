@@ -96,23 +96,23 @@ public class AwPrerenderTest extends AwParameterizedTest {
     private TestWebMessageListener mDeferredWebMessageListener;
     private TestWebMessageListener mPrerenderLifecycleWebMessageListener;
 
-    private class ActivationCallbackHelper extends CallbackHelper {
+    private static class ActivationCallbackHelper extends CallbackHelper {
         public Callback<Void> getCallback() {
             return new Callback<Void>() {
                 @Override
                 public void onResult(Void result) {
-                    mActivationCallbackHelper.notifyCalled();
+                    notifyCalled();
                 }
             };
         }
     }
 
-    private class PrerenderErrorCallbackHelper extends CallbackHelper {
+    private static class PrerenderErrorCallbackHelper extends CallbackHelper {
         public Callback<Throwable> getCallback() {
             return new Callback<Throwable>() {
                 @Override
                 public void onResult(Throwable result) {
-                    mPrerenderErrorCallbackHelper.notifyCalled();
+                    notifyCalled();
                 }
             };
         }
@@ -1759,5 +1759,87 @@ public class AwPrerenderTest extends AwParameterizedTest {
         Assert.assertEquals(1, mTestServer.getRequestCountForUrl(prefetchPath));
         Assert.assertEquals(0, mTestServer.getRequestCountForUrl(prerenderPath));
         Assert.assertEquals(0, mTestServer.getRequestCountForUrl(navigationPath));
+    }
+
+    // Tests the case where prerendering is triggered for the same URL multiple times. Only one
+    // prerendering navigation should happen.
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
+    @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
+    public void testDuplicatePrerenderSuccess() throws Throwable {
+        loadInitialPage();
+
+        var histogramWatcher = createFinalStatusHistogramWatcher(/*kActivated*/ 0);
+
+        var activationCallbackHelper1 = new ActivationCallbackHelper();
+        var activationCallbackHelper2 = new ActivationCallbackHelper();
+        var errorCallbackHelper1 = new PrerenderErrorCallbackHelper();
+        var errorCallbackHelper2 = new PrerenderErrorCallbackHelper();
+
+        startPrerendering(
+                mPrerenderingUrl,
+                null,
+                activationCallbackHelper1.getCallback(),
+                errorCallbackHelper1.getCallback());
+
+        startPrerendering(
+                mPrerenderingUrl,
+                null,
+                activationCallbackHelper2.getCallback(),
+                errorCallbackHelper2.getCallback());
+
+        // Wait until the prerendered page is loaded.
+        mPrerenderLifecycleWebMessageListener.waitForOnPostMessage();
+
+        activatePage(mPrerenderingUrl, ActivationBy.LOAD_URL);
+
+        // Wait until the navigation activates the prerendered page. Both the activation callbacks
+        // should be called.
+        activationCallbackHelper1.waitForNext();
+        activationCallbackHelper2.waitForNext();
+        histogramWatcher.pollInstrumentationThreadUntilSatisfied();
+        Assert.assertEquals(1, mTestServer.getRequestCountForUrl(PRERENDER_URL));
+    }
+
+    // Tests the case where prerendering is triggered for the same URL multiple times and then
+    // canceled.
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
+    @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
+    public void testDuplicatePrerenderCancel() throws Throwable {
+        loadInitialPage();
+
+        var histogramWatcher = createFinalStatusHistogramWatcher(/*kAllPrerenderingCanceled*/ 81);
+
+        var activationCallbackHelper1 = new ActivationCallbackHelper();
+        var activationCallbackHelper2 = new ActivationCallbackHelper();
+        var errorCallbackHelper1 = new PrerenderErrorCallbackHelper();
+        var errorCallbackHelper2 = new PrerenderErrorCallbackHelper();
+
+        startPrerendering(
+                mPrerenderingUrl,
+                null,
+                activationCallbackHelper1.getCallback(),
+                errorCallbackHelper1.getCallback());
+
+        startPrerendering(
+                mPrerenderingUrl,
+                null,
+                activationCallbackHelper2.getCallback(),
+                errorCallbackHelper2.getCallback());
+
+        // Wait until the prerendered page is loaded.
+        mPrerenderLifecycleWebMessageListener.waitForOnPostMessage();
+
+        ThreadUtils.runOnUiThreadBlocking(() -> mAwContents.cancelAllPrerendering());
+
+        // Wait until the prerendered page is canceled. Both the cancel callbacks should be called.
+        errorCallbackHelper1.waitForNext();
+        errorCallbackHelper2.waitForNext();
+        histogramWatcher.pollInstrumentationThreadUntilSatisfied();
     }
 }

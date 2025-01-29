@@ -1495,10 +1495,30 @@ void AwContents::FlushBackForwardCache(JNIEnv* env, jint reason) {
 void AwContents::StartPrerendering(
     JNIEnv* env,
     const std::string& prerendering_url,
-    const base::android::JavaParamRef<jobject>& prefetch_params,
-    const base::android::JavaParamRef<jobject>& activation_callback,
-    const base::android::JavaParamRef<jobject>& error_callback) {
+    const base::android::JavaParamRef<jobject>& j_prefetch_params,
+    const base::android::JavaParamRef<jobject>& j_activation_callback,
+    const base::android::JavaParamRef<jobject>& j_error_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK(j_activation_callback);
+  CHECK(j_error_callback);
+
+  base::OnceClosure activation_callback =
+      base::BindOnce(&base::android::RunRunnableAndroid,
+                     ScopedJavaGlobalRef<jobject>(env, j_activation_callback));
+  base::OnceClosure error_callback =
+      base::BindOnce(&base::android::RunRunnableAndroid,
+                     ScopedJavaGlobalRef<jobject>(env, j_error_callback));
+
+  // If the valid PrerenderHandle for the same URL exists, add the callbacks to
+  // the handle instead of starting a new one.
+  if (prerender_handle_ &&
+      prerender_handle_->GetInitialPrerenderingUrl().spec() ==
+          prerendering_url &&
+      prerender_handle_->IsValid()) {
+    prerender_handle_->AddActivationCallback(std::move(activation_callback));
+    prerender_handle_->AddErrorCallback(std::move(error_callback));
+    return;
+  }
 
   // Cancel existing prerendering before starting a new one to avoid hitting the
   // limit.
@@ -1507,9 +1527,9 @@ void AwContents::StartPrerendering(
   prerender_handle_.reset();
 
   net::HttpRequestHeaders additional_headers =
-      GetAdditionalHeadersFromPrefetchParameters(env, prefetch_params);
+      GetAdditionalHeadersFromPrefetchParameters(env, j_prefetch_params);
   std::optional<net::HttpNoVarySearchData> no_vary_search_hint =
-      GetExpectedNoVarySearchFromPrefetchParameters(env, prefetch_params);
+      GetExpectedNoVarySearchFromPrefetchParameters(env, j_prefetch_params);
 
   // This is the same as the page transition of WebView.loadUrl().
   auto page_transition = ui::PageTransitionFromInt(
@@ -1529,23 +1549,11 @@ void AwContents::StartPrerendering(
       /*prerender_navigation_handle_callback=*/{});
 
   if (prerender_handle_) {
-    if (activation_callback) {
-      prerender_handle_->SetActivationCallback(base::BindOnce(
-          &base::android::RunRunnableAndroid,
-          ScopedJavaGlobalRef<jobject>(env, activation_callback)));
-    }
-    if (error_callback) {
-      prerender_handle_->SetErrorCallback(
-          base::BindOnce(&base::android::RunRunnableAndroid,
-                         ScopedJavaGlobalRef<jobject>(env, error_callback)));
-    }
+    prerender_handle_->AddActivationCallback(std::move(activation_callback));
+    prerender_handle_->AddErrorCallback(std::move(error_callback));
   } else {
-    if (error_callback) {
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE,
-          base::BindOnce(&base::android::RunRunnableAndroid,
-                         ScopedJavaGlobalRef<jobject>(env, error_callback)));
-    }
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(error_callback));
   }
 }
 
