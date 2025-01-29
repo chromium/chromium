@@ -42,9 +42,9 @@ config("host_implementation") {
 
     if (is_chrome_branded && is_official_build) {
       defines += [ "REMOTING_ENABLE_CRASH_REPORTING" ]
-      if (is_linux && enable_chromoting_crashpad) {
-        defines += [ "REMOTING_ENABLE_CRASHPAD" ]
-      }
+    }
+    if (is_linux && enable_chromoting_crashpad) {
+      defines += [ "REMOTING_ENABLE_CRASHPAD" ]
     }
   }
   if (is_win) {
