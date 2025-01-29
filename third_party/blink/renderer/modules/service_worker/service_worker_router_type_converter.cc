@@ -285,6 +285,13 @@ std::optional<ServiceWorkerRouterSource> RouterSourceEnumToBlink(
       return source;
     }
     case V8RouterSourceEnum::Enum::kRaceNetworkAndFetchHandler: {
+      if (fetch_handler_type ==
+          mojom::blink::ServiceWorkerFetchHandlerType::kNoHandler) {
+        exception_state.ThrowTypeError(
+            "race-network-and-fetch-event source is specified without a fetch"
+            " handler");
+        return std::nullopt;
+      }
       ServiceWorkerRouterSource source;
       source.type = network::mojom::ServiceWorkerRouterSourceType::kRace;
       source.race_source.emplace();

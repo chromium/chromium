@@ -731,7 +731,12 @@ void ServiceWorkerRouterEvaluator::Compile() {
       bool has_fetch_event =
           (s.type ==
            network::mojom::ServiceWorkerRouterSourceType::kFetchEvent);
-      has_fetch_event_source_ |= has_fetch_event;
+      bool has_race_network_and_fetch_event =
+          (s.type == network::mojom::ServiceWorkerRouterSourceType::kRace &&
+           s.race_source->target == blink::ServiceWorkerRouterRaceSource::
+                                        TargetEnum::kNetworkAndFetchHandler);
+      require_fetch_handler_ |=
+          (has_fetch_event | has_race_network_and_fetch_event);
       has_non_fetch_event_source_ |= !has_fetch_event;
     }
     compiled_rules_.emplace_back(std::move(rule));
