@@ -9,6 +9,7 @@ Builds and serves the glic test client.
 import argparse
 import http.server
 import os
+import shutil
 import socketserver
 import subprocess
 import sys
@@ -16,7 +17,7 @@ import sys
 
 def build(outdir: str):
     subprocess.run([
-        'autoninja', '-C', outdir,
+        shutil.which('autoninja'), '-C', outdir,
         'chrome/test/data/webui/glic:generate_test_files'
     ],
                    stdout=sys.stdout,
