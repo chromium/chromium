@@ -24,6 +24,11 @@ class BookmarkMergedSurfaceServiceObserver : public base::CheckedObserver {
       const BookmarkParentFolder& parent,
       const base::flat_map<size_t, raw_ptr<const bookmarks::BookmarkNode>>&
           old_indices_to_nodes) = 0;
+
+  virtual void BookmarkNodeMoved(const BookmarkParentFolder& old_parent,
+                                 size_t old_index,
+                                 const BookmarkParentFolder& new_parent,
+                                 size_t new_index) = 0;
 };
 
 #endif  // CHROME_BROWSER_BOOKMARKS_BOOKMARK_MERGED_SURFACE_SERVICE_OBSERVER_H_
