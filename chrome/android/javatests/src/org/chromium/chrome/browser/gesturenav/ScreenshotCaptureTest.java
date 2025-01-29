@@ -154,6 +154,7 @@ public class ScreenshotCaptureTest {
     @Feature({"RenderTest"})
     @EnableFeatures({ChromeFeatureList.NATIVE_PAGE_TRANSITION_HARDWARE_CAPTURE})
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    @DisableIf.Build(sdk_is_less_than = VERSION_CODES.S)
     public void testNavigatingAwayFromNtpToNormalPageHardware(boolean nightModeEnabled)
             throws IOException, TimeoutException, InterruptedException {
         mRenderTestRule.setVariantPrefix("hardware");
