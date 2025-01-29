@@ -11,7 +11,6 @@
 #include <memory>
 #include <set>
 
-#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/containers/stack.h"
@@ -221,9 +220,7 @@ bool DatabaseCheckHelper::ScanDatabase() {
       // value: "<pickled FileInfo>"
       FileInfo file_info;
       if (!FileInfoFromPickle(
-              // TODO(crbug.com/392729138): Avoid UNSAFE_ here.
-              base::Pickle::WithUnownedBuffer(base::as_byte_span(UNSAFE_TODO(
-                  base::span(itr->value().data(), itr->value().size())))),
+              base::Pickle::WithUnownedBuffer(base::as_byte_span(itr->value())),
               &file_info)) {
         return false;
       }

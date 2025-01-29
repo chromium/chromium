@@ -12,7 +12,6 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/compiler_specific.h"
 #include "base/debug/leak_annotations.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
@@ -91,9 +90,8 @@ leveldb::Slice MakeSlice(base::span<const uint8_t> data) {
 
 DomStorageDatabase::KeyValuePair MakeKeyValuePair(const leveldb::Slice& key,
                                                   const leveldb::Slice& value) {
-  // TODO(crbug.com/392729138): Avoid UNSAFE_ here.
-  auto key_span = UNSAFE_TODO(base::span(key.data(), key.size()));
-  auto value_span = UNSAFE_TODO(base::span(value.data(), value.size()));
+  base::span key_span(key);
+  base::span value_span(value);
   return DomStorageDatabase::KeyValuePair(
       DomStorageDatabase::Key(key_span.begin(), key_span.end()),
       DomStorageDatabase::Value(value_span.begin(), value_span.end()));
