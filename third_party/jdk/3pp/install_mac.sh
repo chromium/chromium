@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright 2023 The Chromium Authors
+# Copyright 2025 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -10,16 +10,16 @@ set -x
 # The commands below should output the built product to this directory.
 PREFIX="$1"
 
-# The directory structure will be like "jdk-23.0.2+7/{bin,conf,...}".
+# The directory structure will be like "jdk-23.0.2+7/Contents/{Home,MacOS,...}".
 # We rename the root dir "jdk-23.0.2+7" to "current"
 mv jdk-* current
 
-mv current/bin/java current/bin/java.chromium
+mv current/Contents/Home/bin/java current/Contents/Home/bin/java.chromium
 echo '#!/bin/sh
 
 # https://crbug.com/1441023
 exec "$0.chromium" -XX:+PerfDisableSharedMem "$@"
-' > current/bin/java
-chmod a+x current/bin/java
+' > current/Contents/Home/bin/java
+chmod a+x current/Contents/Home/bin/java
 
-mv current/* "$PREFIX"
+mv current/Contents "$PREFIX"
