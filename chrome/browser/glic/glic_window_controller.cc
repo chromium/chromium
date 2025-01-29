@@ -224,7 +224,15 @@ void GlicWindowController::Toggle(BrowserWindowInterface* bwi) {
     }
   }
 
-  if (state_ == State::kOpen) {
+  // Pressing the button or the hotkey when the window is open, or waiting to
+  // load should close it. The latter is required because otherwise if there
+  // were an error loading the backend (or if it just took a long time) then the
+  // button/hotkey would become unresponsive.
+  //
+  // In the future, when the WebUI can send its status back to the controller
+  // via mojom, we could explicitly restrict the second case to loading,
+  // offline, and error states.
+  if (state_ == State::kOpen || state_ == State::kWaitingForGlicToLoad) {
     if (new_attached_browser) {
       if (new_attached_browser == attached_browser_) {
         // Button was clicked on same browser: close.

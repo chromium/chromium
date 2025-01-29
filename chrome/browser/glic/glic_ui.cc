@@ -29,6 +29,9 @@
 
 namespace glic {
 
+// static
+bool GlicUI::simulate_no_connection_ = false;
+
 GlicUIConfig::GlicUIConfig()
     : DefaultWebUIConfig(content::kChromeUIScheme, chrome::kChromeUIGlicHost) {}
 
@@ -76,6 +79,7 @@ GlicUI::GlicUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   source->AddInteger("preLoadingTimeMs", features::kGlicPreLoadingTimeMs.Get());
   source->AddInteger("minLoadingTimeMs", features::kGlicMinLoadingTimeMs.Get());
   source->AddInteger("maxLoadingTimeMs", features::kGlicMaxLoadingTimeMs.Get());
+  source->AddBoolean("simulateNoConnection", simulate_no_connection_);
 
   // Set up guest api source.
   // This comes from 'glic_api_injection' in

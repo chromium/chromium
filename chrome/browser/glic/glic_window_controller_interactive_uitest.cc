@@ -28,7 +28,10 @@
 #include "content/public/test/browser_test_utils.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/interaction/interaction_test_util_views.h"
+#include "ui/views/interaction/widget_focus_observer.h"
 #include "ui/views/test/button_test_api.h"
 
 namespace glic {
@@ -45,91 +48,71 @@ class GlicWindowControllerUiTest : public test::InteractiveGlicTest {
   }
 
   auto CheckControllerWidgetMode(GlicWindowMode mode) {
-    bool check_mode = mode == GlicWindowMode::kAttached;
-    return CheckResult([this]() { return window_controller().IsAttached(); },
-                       check_mode, "CheckControllerWidgetMode");
+    return CheckResult(
+        [this]() {
+          return window_controller().IsAttached() ? GlicWindowMode::kAttached
+                                                  : GlicWindowMode::kDetached;
+        },
+        mode, "CheckControllerWidgetMode");
+  }
+
+  auto SimulateGlicHotkey() {
+    // TODO: Actually implement the hotkey when we know what it is.
+    return Do([this]() { window_controller().Toggle(nullptr); });
   }
 };
 
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, ShowAndCloseAttachedWidget) {
-  RunTestSequence(ToggleGlicWindowAndWaitForShow(GlicWindowMode::kAttached),
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kAttached),
                   CheckControllerHasWidget(true),
                   CheckControllerWidgetMode(GlicWindowMode::kAttached),
                   CloseGlicWindow(), CheckControllerHasWidget(false));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, ShowAndCloseDetachedWidget) {
-  RunTestSequence(ToggleGlicWindowAndWaitForShow(GlicWindowMode::kDetached),
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached),
                   CheckControllerHasWidget(true),
                   CheckControllerWidgetMode(GlicWindowMode::kDetached),
                   CloseGlicWindow(), CheckControllerHasWidget(false));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, DoNotCrashOnBrowserClose) {
-  RunTestSequence(ToggleGlicWindowAndWaitForShow(GlicWindowMode::kAttached));
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kAttached));
   chrome::CloseAllBrowsers();
   ui_test_utils::WaitForBrowserToClose();
 }
 
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, DoNotCrashWhenReopening) {
-  RunTestSequence(ToggleGlicWindowAndWaitForShow(GlicWindowMode::kAttached),
-                  CloseGlicWindow(),
-                  ToggleGlicWindowAndWaitForShow(GlicWindowMode::kAttached));
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kAttached), CloseGlicWindow(),
+                  OpenGlicWindow(GlicWindowMode::kAttached));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
                        OpenAttachedThenOpenAttachedToSameBrowserCloses) {
-  RunTestSequence(ToggleGlicWindowAndWaitForShow(GlicWindowMode::kAttached),
-                  CheckControllerHasWidget(true),
-
-                  ToggleGlicWindowAndWaitForHide(GlicWindowMode::kAttached),
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kAttached), CloseGlicWindow(),
+                  OpenGlicWindow(GlicWindowMode::kAttached), CloseGlicWindow(),
                   CheckControllerHasWidget(false));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
                        OpenAttachedThenOpenAttachedToDifferentBrowser) {
-  const BrowserList* active_browser_list = BrowserList::GetInstance();
-
-  // Open a second browser window.
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::NEW_WINDOW,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_BROWSER);
-  ASSERT_EQ(2u, active_browser_list->size());
-  Browser* new_browser = active_browser_list->get(1);
+  Browser* const new_browser = CreateBrowser(browser()->profile());
 
   RunTestSequence(
-      ToggleGlicWindowAndWaitForShow(GlicWindowMode::kAttached),
+      OpenGlicWindow(GlicWindowMode::kAttached),
+      CheckControllerWidgetMode(GlicWindowMode::kAttached),
+      InContext(new_browser->window()->GetElementContext(),
+                PressButton(kGlicButtonElementId)),
       CheckControllerHasWidget(true),
       CheckControllerWidgetMode(GlicWindowMode::kAttached),
-
-      Do([this, new_browser] { window_controller().Toggle(new_browser); }),
-      CheckControllerHasWidget(true),
-      CheckControllerWidgetMode(GlicWindowMode::kAttached),
-
       CheckResult(
           [this] { return window_controller().GetAttachedBrowserForTesting(); },
           new_browser, "attached to the other browser"));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
-                       HotkeyWhenAttachedToActiveBrowserCloses) {
-  RunTestSequence(ToggleGlicWindowAndWaitForShow(GlicWindowMode::kAttached),
-                  CheckControllerHasWidget(true), Do([this] {
-                    window_controller()
-                        .GetAttachedBrowserForTesting()
-                        ->GetBrowserView()
-                        .Activate();
-                  }),
-                  // Glic should close.
-                  ToggleGlicWindowAndWaitForHide(GlicWindowMode::kDetached),
-                  CheckControllerHasWidget(false));
-}
-
-IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
                        OpenDetachedAndThenOpenAttached) {
-  RunTestSequence(ToggleGlicWindowAndWaitForShow(GlicWindowMode::kDetached),
-                  CheckControllerHasWidget(true),
-                  CheckControllerWidgetMode(GlicWindowMode::kDetached),
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached),
                   PressButton(kGlicButtonElementId),
                   WaitForEvent(kGlicButtonElementId, kGlicWidgetAttached),
                   CheckControllerHasWidget(true),
@@ -137,20 +120,55 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
                   CloseGlicWindow(), CheckControllerHasWidget(false));
 }
 
+constexpr char kActivateSurfaceIncompatibilityNotice[] =
+    "Programmatic window activation does not work on the Weston reference "
+    "implementation of Wayland used on Linux testbots. It also doesn't work "
+    "reliably on Linux in general. For this reason, some of these tests which "
+    "use ActivateSurface() may be skipped on machine configurations which do "
+    "not reliably support them.";
+
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
+                       ButtonWhenAttachedToActiveBrowserCloses) {
+  RunTestSequence(
+      OpenGlicWindow(GlicWindowMode::kAttached),
+      SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
+                              kActivateSurfaceIncompatibilityNotice),
+      ActivateSurface(kBrowserViewElementId),
+      // Glic should close.
+      PressButton(kGlicButtonElementId),
+      InAnyContext(WaitForHide(kGlicViewElementId)),
+      CheckControllerHasWidget(false));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
+                       HotkeyWhenAttachedToActiveBrowserCloses) {
+  RunTestSequence(
+      OpenGlicWindow(GlicWindowMode::kAttached),
+      // Glic should close.
+      SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
+                              kActivateSurfaceIncompatibilityNotice),
+      ActivateSurface(kBrowserViewElementId), SimulateGlicHotkey(),
+      InAnyContext(WaitForHide(kGlicViewElementId)),
+      CheckControllerHasWidget(false));
+}
+
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
                        HotkeyWhenDetachedActiveCloses) {
   RunTestSequence(
-      ToggleGlicWindowAndWaitForShow(GlicWindowMode::kDetached),
-      CheckControllerHasWidget(true),
-      CheckControllerWidgetMode(GlicWindowMode::kDetached),
-      Do([this] { window_controller().GetGlicWidget()->Activate(); }),
-
-      // Glic should close.
-      ToggleGlicWindowAndWaitForHide(GlicWindowMode::kDetached),
+      OpenGlicWindow(GlicWindowMode::kDetached),
+      SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
+                              kActivateSurfaceIncompatibilityNotice),
+      InAnyContext(ActivateSurface(test::kGlicHostElementId)),
+      SimulateGlicHotkey(), InAnyContext(WaitForHide(kGlicViewElementId)),
       CheckControllerHasWidget(false));
 }
 
 // TODO(392649231): Fix and enable.
+//
+// Note that window activation - especially programmatic activation - is very
+// unreliable on Linux testbots, specifically those running the Weston
+// reference implementation of Wayland. Because of this, it might not be
+// possible to get this test to work on most Linux testbots.
 #if BUILDFLAG(IS_LINUX)
 #define MAYBE_HotkeyWhenOpenDetachedInactiveActivates \
   DISABLED_HotkeyWhenOpenDetachedInactiveActivates
@@ -160,17 +178,27 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
 #endif
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
                        MAYBE_HotkeyWhenOpenDetachedInactiveActivates) {
-  RunTestSequence(
-      ToggleGlicWindowAndWaitForShow(GlicWindowMode::kDetached),
-      CheckControllerHasWidget(true),
-      CheckControllerWidgetMode(GlicWindowMode::kDetached),
-      Do([this] { window_controller().GetGlicWidget()->Deactivate(); }),
-      ToggleGlicWindow(GlicWindowMode::kDetached),
+  gfx::NativeView glic_native_view;
 
-      // Glic should activate
-      CheckControllerHasWidget(true),
-      CheckResult([this] { return window_controller().IsActive(); }, true,
-                  "Glic is active"));
+  RunTestSequence(ObserveState(views::test::kCurrentWidgetFocus),
+                  OpenGlicWindow(GlicWindowMode::kDetached),
+                  // Note: it is possible that this will re-activate the browser
+                  // window on some platforms, which will cause an error. If
+                  // this flakes, feel free to disable the test.
+                  //
+                  // (This is likely one reason the test flakes on Linux; see
+                  // above.)
+                  Do([this, &glic_native_view] {
+                    auto* const widget = window_controller().GetGlicWidget();
+                    glic_native_view = widget->GetNativeView();
+                    widget->Deactivate();
+                  }),
+                  SimulateGlicHotkey(),
+                  WaitForState(views::test::kCurrentWidgetFocus,
+                               std::ref(glic_native_view)),
+                  CheckControllerHasWidget(true),
+                  CheckResult([this] { return window_controller().IsActive(); },
+                              true, "Glic is active"));
 }
 
 class GlicWindowControllerWithMemoryPressureUiTest
