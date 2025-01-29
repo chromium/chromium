@@ -706,7 +706,7 @@
 <translation id="2221227930294879156">飲食料品のイベント</translation>
 <translation id="2222604080869344662">ダウンロードを続行するには、OneDrive にログインしてください</translation>
 <translation id="2224337661447660594">インターネットに接続されていません</translation>
-<translation id="2225927550500503913">仮想カードはオンになっています</translation>
+<translation id="2225927550500503913">仮想カードは有効になっています</translation>
 <translation id="2226636330183131181">Wi-Fi ネットワークに<ph name="BEGIN_LINK" />ログイン<ph name="END_LINK" />しています</translation>
 <translation id="2227758700723188171">奨学金</translation>
 <translation id="2228057197024893428">この住所は現在、Chrome に保存されています。Google サービス全体で使用するには、Google アカウント（<ph name="ACCOUNT" />）に保存してください。</translation>
@@ -1564,7 +1564,7 @@
 <translation id="374325029554577103">フィットネス商品</translation>
 <translation id="3743765582345153106">自動入力を使用するときは常に確認する</translation>
 <translation id="3744111561329211289">バックグラウンド同期</translation>
-<translation id="3744212718085287312">次回から仮想カードでセキュリティを高めますか？</translation>
+<translation id="3744212718085287312">次回から仮想カードでセキュリティを強化しますか？</translation>
 <translation id="3744899669254331632"><ph name="SITE" /> から送信された暗号化済みの認証情報を Chromium で処理できないため、現在このウェブサイトにアクセスできません。通常、ネットワーク エラーやネットワークへの攻撃は一時的なものです。しばらくするとページにアクセスできるようになります。</translation>
 <translation id="3745599309295009257">入力したテキストとページのコンテンツおよび URL が Google に送信され、人間による確認が行われ、この機能の改善に使用されます。個人情報（医療や財務情報など）を入力したり、個人情報や機密情報を含むサイトでこのツールを使用したりしないでください。</translation>
 <translation id="3748009735914587286">金属（高光沢）</translation>

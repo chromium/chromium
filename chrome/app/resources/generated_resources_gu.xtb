@@ -827,7 +827,7 @@
 <translation id="1573127087832371028">સમસ્યાનું વર્ણન કરો</translation>
 <translation id="1574335334663388774">આ ડિવાઇસમાં પહેલેથી જ <ph name="APP_NAME" />, વર્ઝન <ph name="APP_VERSION" /> ઇન્સ્ટૉલ કરેલી છે</translation>
 <translation id="1575741822946219011">ભાષાઓ અને ઇનપુટ</translation>
-<translation id="1576594961618857597">ડિફોલ્ટ સફેદ અવતાર</translation>
+<translation id="1576594961618857597">ડિફૉલ્ટ સફેદ અવતાર</translation>
 <translation id="1576729678809834061">આ શોધ પરિણામની જાણ કરો</translation>
 <translation id="1578488449637163638">ડાર્ક</translation>
 <translation id="1578558981922970608">ફરજિયાત બંધ</translation>
@@ -1315,7 +1315,7 @@
 <translation id="1915073950770830761">canary</translation>
 <translation id="1915307458270490472">સમાપ્ત કરો</translation>
 <translation id="1915734383465415025">સ્ટોર નંબર</translation>
-<translation id="1916502483199172559">ડિફોલ્ટ લાલ અવતાર</translation>
+<translation id="1916502483199172559">ડિફૉલ્ટ લાલ અવતાર</translation>
 <translation id="1916770123977586577">આ સાઇટ પર તમારા અપડેટ કરેલા સેટિંગ લાગુ પાડવા માટે, આ પેજને ફરીથી લોડ કરો</translation>
 <translation id="1917766536967060661">તમે તરત જ “<ph name="GROUP_NAME" />” ટૅબના ગ્રૂપનો ઍક્સેસ ગુમાવશો અને <ph name="BLOCKED_MEMBER_FULL_NAME" /> (<ph name="BLOCKED_MEMBER_EMAIL" />) Googleની બધી સેવાઓમાં તમારી સાથે ક્રિયાપ્રતિક્રિયા કરી શકશે નહીં.</translation>
 <translation id="1918127774159128277">WiFi Directની ક્ષમતાઓ રિફ્રેશ કરો</translation>
@@ -1934,7 +1934,7 @@
 <translation id="2332115969598251205"><ph name="PRIMARY_EMAIL" />માં સાચવેલા ડિવાઇસ લોડ કરી શકાતા નથી. તમારું ઇન્ટરનેટ કનેક્શન ચેક કરો અને ફરી પ્રયાસ કરો.</translation>
 <translation id="2332131598580221120">સ્ટોરમાં જુઓ</translation>
 <translation id="2332515770639153015">Safe Browsingમાં વધારેલી સુરક્ષા ચાલુ છે</translation>
-<translation id="2332742915001411729">ડિફોલ્ટ પર ફરીથી સેટ કરો</translation>
+<translation id="2332742915001411729">ડિફૉલ્ટ પર રીસેટ કરો</translation>
 <translation id="2333166365943957309">UI | યૂઝર ઇન્ટરફેસ (UI) હાઇઆરાર્કી</translation>
 <translation id="233375395665273385">ડિલીટ કરો અને સાઇન આઉટ કરો</translation>
 <translation id="233471714539944337">સંવેદનશીલ કન્ટેન્ટ</translation>
@@ -3063,7 +3063,7 @@
 <translation id="3132996321662585180">દરરોજ રિફ્રેશ કરો</translation>
 <translation id="3134312457920437826">એક્સ્ટેન્શન ઇન્સ્ટૉલ કરી શકાતું નથી, કારણ કે તે સપોર્ટેડ ન હોય એવા કોઈ મેનિફેસ્ટ વર્ઝનનો ઉપયોગ કરે છે.</translation>
 <translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> પ્રયોગ માટે પ્રયોગનું સ્ટેટસ પસંદ કરો. પ્રયોગનું વર્ણન: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
-<translation id="3139925690611372679">ડિફોલ્ટ પીળો અવતાર</translation>
+<translation id="3139925690611372679">ડિફૉલ્ટ પીળો અવતાર</translation>
 <translation id="3141093262818886744">તેમ છતાં ખોલો</translation>
 <translation id="3141318088920353606">સાંભળી રહ્યાં છીએ...</translation>
 <translation id="3142562627629111859">નવું Group</translation>
@@ -3171,7 +3171,7 @@
 <translation id="3222779980972075989"><ph name="USB_VM_NAME" /> સાથે કનેક્ટ કરો</translation>
 <translation id="3223109931751684474">આ ડિવાઇસ પર તમારી પાસકીનો ઍક્સેસ કાઢી નાખો</translation>
 <translation id="3223531857777746191">રીસેટ કરો બટન</translation>
-<translation id="3225084153129302039">ડિફોલ્ટ જાંબલી અવતાર</translation>
+<translation id="3225084153129302039">ડિફૉલ્ટ જાંબલી અવતાર</translation>
 <translation id="3225319735946384299">કોડ સાઇનિંગ </translation>
 <translation id="3226487301970807183">ડાબેથી સંરેખિત બાજુની પૅનલ ટૉગલ કરો</translation>
 <translation id="322708765617468434">સેટઅપ કર્યા પછી તમે હંમેશા અન્ય કોઈપણ વ્યક્તિને ડિવાઇસમાં ઉમેરી શકો છો. દરેક વ્યક્તિ તેમનો અનુભવ મનગમતો બનાવી શકે છે અને ડેટા ખાનગી રાખી શકે છે.</translation>
@@ -5036,7 +5036,7 @@
 <translation id="4541706525461326392">પ્રોફાઇલ કાઢી નાખી રહ્યાં છીએ. આમાં થોડો સમય લાગી શકે છે.</translation>
 <translation id="4542520061254486227"><ph name="WEBSITE_1" /> અને <ph name="WEBSITE_2" /> પર તમારો ડેટા વાંચી શકે છે</translation>
 <translation id="4543778593405494224">પ્રમાણપત્ર મેનેજર</translation>
-<translation id="4544174279960331769">ડિફોલ્ટ વાદળી અવતાર</translation>
+<translation id="4544174279960331769">ડિફૉલ્ટ વાદળી અવતાર</translation>
 <translation id="4545028762441890696">તેને ફરીથી ચાલુ કરવા માટે, આના તરફથી નવી પરવાનગીઓ સ્વીકારો:</translation>
 <translation id="4545759655004063573">અપૂરતી પરવાનગીઓને કારણે સાચવી શકાતું નથી. કૃપા કરીને બીજી જગ્યાએ સાચવો.</translation>
 <translation id="4546345569117159016">જમણું બટન</translation>
@@ -5560,7 +5560,7 @@
 <translation id="49027928311173603">સર્વરમાંથી ડાઉનલોડ કરેલી પૉલિસી અમાન્ય છે: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4903967893652864401">આ બૅકગ્રાઉન્ડની પ્રવૃત્તિ અને સ્મૂધ સ્ક્રોલિંગ જેવી વિઝ્યુઅલ ઇફેક્ટને મર્યાદિત કરીને બૅટરી પાવર વધારે છે.</translation>
 <translation id="4906490889887219338">નેટવર્ક ફાઇલ શેર સેટઅપ કરો અથવા મેનેજ કરો. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
-<translation id="4906679076183257864">ડિફોલ્ટ પર ફરીથી સેટ કરો</translation>
+<translation id="4906679076183257864">ડિફૉલ્ટ પર રીસેટ કરો</translation>
 <translation id="4907129260985716018">આ એક્સ્ટેન્શન તમારી સાઇટનો ડેટા ક્યારે વાંચી અને તેમાં ફેરફાર કરી શકે તે પસંદ કરો</translation>
 <translation id="4908811072292128752">બે સાઇટ એકસાથે બ્રાઉઝ કરવા માટે એક નવી ટૅબ ખોલો</translation>
 <translation id="4909038193460299775">આ એકાઉન્ટ <ph name="DOMAIN" /> દ્વારા મેનેજ કરવામાં આવી રહ્યું હોવાથી, આ ડિવાઇસ પરથી તમારા બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને બીજા સેટિંગ સાફ કરવામાં આવશે. જો કે, તમારો ડેટા તમારા Google એકાઉન્ટમાં સ્ટોર રહેશે અને <ph name="BEGIN_LINK" />Google ડૅશબોર્ડ<ph name="END_LINK" /> પર મેનેજ કરવામાં આવી શકે છે.</translation>
@@ -5617,7 +5617,7 @@
 <translation id="495164417696120157">{COUNT,plural, =1{એક ફાઇલ}one{# ફાઇલ}other{# ફાઇલ}}</translation>
 <translation id="495170559598752135">ક્રિયાઓ</translation>
 <translation id="4951966678293618079">આ સાઇટ માટે ક્યારેય પાસવર્ડ સાચવશો નહીં</translation>
-<translation id="4953808748584563296">ડિફોલ્ટ નારંગી અવતાર</translation>
+<translation id="4953808748584563296">ડિફૉલ્ટ નારંગી અવતાર</translation>
 <translation id="4954652437333037880">ફાઇલ</translation>
 <translation id="4955707703665801001"><ph name="FEATURE_NAME" /> માટે દૃશ્યતા</translation>
 <translation id="4955710816792587366">તમારો પિન પસંદ કરો</translation>
@@ -5918,6 +5918,7 @@
 <translation id="5177479852722101802">કૅમેરા અને માઇક્રોફોનના ઍક્સેસને બ્લૉક કરવાનું ચાલુ રાખો</translation>
 <translation id="5177549709747445269">તમે મોબાઇલ ડેટાનો ઉપયોગ કરી રહ્યાં છો</translation>
 <translation id="5178667623289523808">પાછલું શોધો</translation>
+<translation id="5180276433875360121"><ph name="CERT_LIST" /> બતાવો</translation>
 <translation id="5181140330217080051">ડાઉનલોડ કરી રહ્યું છે</translation>
 <translation id="5181172023548002891"><ph name="ACCOUNT" /> માટે Google પાસવર્ડ મેનેજરમાં સાચવો</translation>
 <translation id="5181551096188687373">આ પાસવર્ડને માત્ર આ ડિવાઇસ પર સાચવેલો છે. તમારા અન્ય ડિવાઇસમાં તેનો ઉપયોગ કરવા માટે, તેને તમારા Google એકાઉન્ટ <ph name="USER_EMAIL" />માં સાચવો.</translation>
@@ -5987,7 +5988,7 @@
 <translation id="5225463052809312700">કૅમેરા ચાલુ કરો</translation>
 <translation id="5226514125747186">સાઇટના આઇકનની ફરતે કોઈ ડૉટવાળું વર્તુળ દેખાશે. <ph name="BEGIN_LINK" />નિષ્ક્રિય ટૅબ વિશે વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="5226731562812684363">વેબસાઇટને તમારા લોકેશનનો ઉપયોગ કરવાની મંજૂરી આપવામાં આવી નથી</translation>
-<translation id="5227679487546032910">ડિફોલ્ટ મોરપીચ્છ અવતાર</translation>
+<translation id="5227679487546032910">ડિફૉલ્ટ મોરપીંછ અવતાર</translation>
 <translation id="5228245824943774148"><ph name="NUM_DEVICES_CONNECTED" /> ડિવાઇસ કનેક્ટ કર્યા</translation>
 <translation id="5228579091201413441">સિંક ચાલુ કરો</translation>
 <translation id="5228704301508740018">{GROUP_COUNT,plural, =1{શું ટૅબનું ગ્રૂપ અનગ્રૂપ કરીએ?}one{શું ટૅબનું ગ્રૂપ અનગ્રૂપ કરીએ?}other{શું ટૅબના ગ્રૂપ અનગ્રૂપ કરીએ?}}</translation>
@@ -9922,7 +9923,7 @@ USB ડિવાઇસ</translation>
 <translation id="8061970399284390013">જોડણી અને વ્યાકરણ ચેક કરવું</translation>
 <translation id="8061991877177392872">એવું લાગી રહ્યું છે કે તમે પહેલેથી જ અન્ય ડિવાઇસ પર તમારા Assistant વડે Voice Matchનું સેટઅપ કર્યું છે. આ ડિવાઇસ પર વૉઇસ મૉડલ બનાવવા માટે, અગાઉના આ બધા રેકોર્ડિંગનો ઉપયોગ કરવામાં આવ્યો હતો.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{કાગળની 1 શીટ}one{કાગળની {COUNT} શીટ}other{કાગળની {COUNT} શીટ}}</translation>
-<translation id="8063235345342641131">ડિફોલ્ટ લીલો અવતાર</translation>
+<translation id="8063235345342641131">ડિફૉલ્ટ લીલો અવતાર</translation>
 <translation id="8063535366119089408">ફાઇલ જુઓ</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8064279191081105977">ગ્રૂપ <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>

@@ -5908,6 +5908,7 @@
 <translation id="5177479852722101802">仍然禁止访问摄像头和麦克风</translation>
 <translation id="5177549709747445269">您正在使用移动数据网络</translation>
 <translation id="5178667623289523808">查找上一个</translation>
+<translation id="5180276433875360121">显示<ph name="CERT_LIST" /></translation>
 <translation id="5181140330217080051">正在下载</translation>
 <translation id="5181172023548002891">保存到 <ph name="ACCOUNT" /> 的 Google 密码管理工具</translation>
 <translation id="5181551096188687373">这个密码仅会保存到此设备上。如果想在您的其他设备上使用它，请将它保存到您的 Google 账号 <ph name="USER_EMAIL" /> 中。</translation>
