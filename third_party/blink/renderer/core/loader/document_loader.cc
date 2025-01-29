@@ -981,6 +981,7 @@ void DocumentLoader::RunURLAndHistoryUpdateSteps(
     scoped_refptr<SerializedScriptValue> data,
     WebFrameLoadType type,
     FirePopstate fire_popstate,
+    bool should_skip_screenshot,
     bool is_browser_initiated,
     bool is_synchronously_committed,
     std::optional<scheduler::TaskAttributionId>
@@ -996,7 +997,7 @@ void DocumentLoader::RunURLAndHistoryUpdateSteps(
       is_browser_initiated, is_synchronously_committed,
       soft_navigation_heuristics_task_id,
       LocalFrame::HasTransientUserActivation(frame_),
-      /*has_ua_visual_transition*/ false);
+      /*has_ua_visual_transition*/ false, should_skip_screenshot);
 }
 
 void DocumentLoader::UpdateForSameDocumentNavigation(
@@ -1012,7 +1013,8 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
     std::optional<scheduler::TaskAttributionId>
         soft_navigation_heuristics_task_id,
     bool has_transient_user_activation,
-    bool has_ua_visual_transition) {
+    bool has_ua_visual_transition,
+    bool should_skip_screenshot) {
   CHECK_EQ(IsBackForwardOrRestore(type), !!history_item);
   TRACE_EVENT1("blink", "FrameLoader::updateForSameDocumentNavigation", "url",
                new_url.GetString().Ascii());
@@ -1092,10 +1094,9 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
   frame_->GetFrameScheduler()->DidCommitProvisionalLoad(
       commit_type == kWebHistoryInertCommit,
       FrameScheduler::NavigationType::kSameDocument);
-
   GetLocalFrameClient().DidFinishSameDocumentNavigation(
       commit_type, is_synchronously_committed, same_document_navigation_type,
-      is_client_redirect_, is_browser_initiated);
+      is_client_redirect_, is_browser_initiated, should_skip_screenshot);
   probe::DidNavigateWithinDocument(frame_, same_document_navigation_type);
 
   // If intercept() was called during this same-document navigation's
@@ -1636,7 +1637,8 @@ mojom::CommitResult DocumentLoader::CommitSameDocumentNavigation(
     bool is_browser_initiated,
     bool has_ua_visual_transition,
     std::optional<scheduler::TaskAttributionId>
-        soft_navigation_heuristics_task_id) {
+        soft_navigation_heuristics_task_id,
+    bool should_skip_screenshot) {
   DCHECK(!IsReloadLoadType(frame_load_type));
   DCHECK(frame_->GetDocument());
   DCHECK(!is_browser_initiated || !is_synchronously_committed);
@@ -1707,6 +1709,7 @@ mojom::CommitResult DocumentLoader::CommitSameDocumentNavigation(
         is_synchronously_committed;
     params->soft_navigation_heuristics_task_id =
         soft_navigation_heuristics_task_id;
+    params->should_skip_screenshot = should_skip_screenshot;
     auto dispatch_result =
         frame_->DomWindow()->navigation()->DispatchNavigateEvent(params);
     if (dispatch_result == NavigationApi::DispatchResult::kAbort) {
@@ -1735,13 +1738,15 @@ mojom::CommitResult DocumentLoader::CommitSameDocumentNavigation(
                 client_redirect_policy, has_transient_user_activation,
                 WTF::RetainedRef(initiator_origin), is_browser_initiated,
                 is_synchronously_committed, triggering_event_info,
-                soft_navigation_heuristics_task_id, has_ua_visual_transition));
+                soft_navigation_heuristics_task_id, has_ua_visual_transition,
+                should_skip_screenshot));
   } else {
     CommitSameDocumentNavigationInternal(
         url, frame_load_type, history_item, same_document_navigation_type,
         client_redirect_policy, has_transient_user_activation, initiator_origin,
         is_browser_initiated, is_synchronously_committed, triggering_event_info,
-        soft_navigation_heuristics_task_id, has_ua_visual_transition);
+        soft_navigation_heuristics_task_id, has_ua_visual_transition,
+        should_skip_screenshot);
   }
   return mojom::CommitResult::Ok;
 }
@@ -1759,7 +1764,8 @@ void DocumentLoader::CommitSameDocumentNavigationInternal(
     mojom::blink::TriggeringEventInfo triggering_event_info,
     std::optional<scheduler::TaskAttributionId>
         soft_navigation_heuristics_task_id,
-    bool has_ua_visual_transition) {
+    bool has_ua_visual_transition,
+    bool should_skip_screenshot) {
   // If this function was scheduled to run asynchronously, this DocumentLoader
   // might have been detached before the task ran.
   if (!frame_)
@@ -1812,7 +1818,7 @@ void DocumentLoader::CommitSameDocumentNavigationInternal(
       frame_load_type, FirePopstate::kYes, initiator_origin,
       is_browser_initiated, is_synchronously_committed,
       soft_navigation_heuristics_task_id, has_transient_user_activation,
-      has_ua_visual_transition);
+      has_ua_visual_transition, should_skip_screenshot);
   if (!frame_)
     return;
 

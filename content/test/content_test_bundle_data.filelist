@@ -6352,6 +6352,7 @@ data/cacheable2.js.mock-http-headers
 data/cacheable_long.html
 data/cacheable_long.html.mock-http-headers
 data/changing_color.html
+data/changing_color_navigate.html
 data/click-nocontent-link.html
 data/click-noreferrer-links.html
 data/client_redirect.html

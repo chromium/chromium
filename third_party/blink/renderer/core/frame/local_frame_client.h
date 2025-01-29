@@ -155,7 +155,8 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
       bool is_synchronously_committed,
       mojom::blink::SameDocumentNavigationType,
       bool is_client_redirect,
-      bool is_browser_initiated) {}
+      bool is_browser_initiated,
+      bool should_skip_screenshot) {}
   virtual void DidFailAsyncSameDocumentCommit() {}
   virtual void DispatchDidOpenDocumentInputStream(const KURL&) {}
   virtual void DispatchDidReceiveTitle(const String&) = 0;

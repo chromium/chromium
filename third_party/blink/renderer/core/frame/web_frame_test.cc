@@ -8140,7 +8140,8 @@ TEST_F(WebFrameTest, SameDocumentHistoryNavigationCommitType) {
       mojom::blink::TriggeringEventInfo::kNotFromEvent,
       /*is_browser_initiated=*/true,
       /*has_ua_visual_transition,=*/false,
-      /*soft_navigation_heuristics_task_id=*/std::nullopt);
+      /*soft_navigation_heuristics_task_id=*/std::nullopt,
+      /*should_skip_screenshot=*/false);
   EXPECT_EQ(kWebBackForwardCommit, client.LastCommitType());
 }
 
@@ -8163,7 +8164,8 @@ TEST_F(WebFrameTest, SameDocumentHistoryNavigationPropagatesSequenceNumber) {
       mojom::blink::TriggeringEventInfo::kNotFromEvent,
       /*is_browser_initiated=*/true,
       /*has_ua_visual_transition,=*/false,
-      /*soft_navigation_heuristics_task_id=*/std::nullopt);
+      /*soft_navigation_heuristics_task_id=*/std::nullopt,
+      /*should_skip_screenshot=*/false);
 
   EXPECT_EQ(item->ItemSequenceNumber(),
             web_view_helper.GetLayerTreeHost()

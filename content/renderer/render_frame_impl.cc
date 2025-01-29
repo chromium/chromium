@@ -236,7 +236,6 @@
 #include "third_party/blink/public/web/web_searchable_form_data.h"
 #include "third_party/blink/public/web/web_security_policy.h"
 #include "third_party/blink/public/web/web_serialized_script_value.h"
-#include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/public/web/web_v8_features.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "third_party/blink/public/web/web_widget.h"
@@ -297,7 +296,6 @@ using blink::WebSecurityOrigin;
 using blink::WebSecurityPolicy;
 using blink::WebSerializedScriptValue;
 using blink::WebServiceWorkerProvider;
-using blink::WebSettings;
 using blink::WebString;
 using blink::WebThreadSafeData;
 using blink::WebURL;
@@ -3353,13 +3351,15 @@ void RenderFrameImpl::CommitSameDocumentNavigation(
       initiator_origin =
           navigation_state->common_params().initiator_origin.value();
     }
+    bool should_skip_screenshot =
+        navigation_state->commit_params().should_skip_screenshot;
 
     // Load the request.
     commit_status = frame_->CommitSameDocumentNavigation(
         url, load_type, item_for_history_navigation, is_client_redirect,
         started_with_transient_activation, initiator_origin,
         is_browser_initiated, has_ua_visual_transition,
-        soft_navigation_heuristics_task_id);
+        soft_navigation_heuristics_task_id, should_skip_screenshot);
 
     // If `commit_status` is Ok, RunCommitSameDocumentNavigationCallback() was
     // called in DidCommitNavigationInternal() or the NavigationApi deferred the
