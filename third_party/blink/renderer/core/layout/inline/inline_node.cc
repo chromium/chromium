@@ -171,7 +171,7 @@ class ReusingTextShaper final {
     };
     if (allow_shape_cache_) {
       DCHECK(RuntimeEnabledFeatures::LayoutNGShapeCacheEnabled());
-      return font.GetNGShapeCache().GetOrCreate(
+      return font.PrimaryFont()->GetShapeCache().GetOrCreate(
           shaper_.GetText(), start_item.Direction(), ShapeFunc);
     }
     return ShapeFunc();
@@ -1338,7 +1338,16 @@ bool InlineNode::IsNGShapeCacheAllowed(
   }
   const Font& font =
       override_font ? *override_font : single_item.FontWithSvgScaling();
-  return !spacing.SetSpacing(font.GetFontDescription());
+  if (font.HasNonInitialFontFeatures()) [[unlikely]] {
+    // Non-initial font features can't be cached because the cache is in
+    // `SimpleFontData`.
+    return false;
+  }
+  const FontDescription& font_description = font.GetFontDescription();
+  if (spacing.SetSpacing(font_description)) [[unlikely]] {
+    return false;
+  }
+  return true;
 }
 
 void InlineNode::ShapeText(InlineItemsData* data,
