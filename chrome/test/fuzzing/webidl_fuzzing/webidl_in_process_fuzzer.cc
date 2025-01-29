@@ -9,6 +9,7 @@
 #include "chrome/test/fuzzing/in_process_proto_fuzzer.h"
 #include "chrome/test/fuzzing/webidl_fuzzing/webidl_fuzzer_grammar.h"
 #include "chrome/test/fuzzing/webidl_fuzzing/webidl_fuzzer_grammar.pb.h"
+#include "components/permissions/permission_request_manager.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "testing/libfuzzer/proto/lpm_interface.h"
@@ -51,6 +52,11 @@ void WebIDLInProcessFuzzer::SetUpOnMainThread() {
   ASSERT_TRUE(embedded_https_test_server().Start());
   CHECK(ui_test_utils::NavigateToURL(
       browser(), embedded_https_test_server().GetURL("/echo")));
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  permissions::PermissionRequestManager::FromWebContents(contents)
+      ->set_auto_response_for_test(
+          permissions::PermissionRequestManager::ACCEPT_ALL);
 }
 
 WebIDLInProcessFuzzer::WebIDLInProcessFuzzer()
