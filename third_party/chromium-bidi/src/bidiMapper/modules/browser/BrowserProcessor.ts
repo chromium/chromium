@@ -26,16 +26,21 @@ import {
 import type {CdpClient} from '../../BidiMapper.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 
+import type {UserContextStorage} from './UserContextStorage.js';
+
 export class BrowserProcessor {
   readonly #browserCdpClient: CdpClient;
   readonly #browsingContextStorage: BrowsingContextStorage;
+  readonly #userContextStorage: UserContextStorage;
 
   constructor(
     browserCdpClient: CdpClient,
     browsingContextStorage: BrowsingContextStorage,
+    userContextStorage: UserContextStorage,
   ) {
     this.#browserCdpClient = browserCdpClient;
     this.#browsingContextStorage = browsingContextStorage;
+    this.#userContextStorage = userContextStorage;
   }
 
   close(): EmptyResult {
@@ -90,20 +95,8 @@ export class BrowserProcessor {
   }
 
   async getUserContexts(): Promise<Browser.GetUserContextsResult> {
-    const result = await this.#browserCdpClient.sendCommand(
-      'Target.getBrowserContexts',
-    );
     return {
-      userContexts: [
-        {
-          userContext: 'default',
-        },
-        ...result.browserContextIds.map((id) => {
-          return {
-            userContext: id,
-          };
-        }),
-      ],
+      userContexts: await this.#userContextStorage.getUserContexts(),
     };
   }
 

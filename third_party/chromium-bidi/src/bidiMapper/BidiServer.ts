@@ -27,6 +27,7 @@ import type {BidiCommandParameterParser} from './BidiParser.js';
 import type {BidiTransport} from './BidiTransport.js';
 import {CommandProcessor, CommandProcessorEvents} from './CommandProcessor.js';
 import {BluetoothProcessor} from './modules/bluetooth/BluetoothProcessor.js';
+import {UserContextStorage} from './modules/browser/UserContextStorage.js';
 import {CdpTargetManager} from './modules/cdp/CdpTargetManager.js';
 import {BrowsingContextStorage} from './modules/context/BrowsingContextStorage.js';
 import {NetworkStorage} from './modules/network/NetworkStorage.js';
@@ -91,7 +92,11 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
     );
     this.#transport = bidiTransport;
     this.#transport.setOnMessage(this.#handleIncomingMessage);
-    this.#eventManager = new EventManager(this.#browsingContextStorage);
+    const userUserContextStorage = new UserContextStorage(browserCdpClient);
+    this.#eventManager = new EventManager(
+      this.#browsingContextStorage,
+      userUserContextStorage,
+    );
     const networkStorage = new NetworkStorage(
       this.#eventManager,
       this.#browsingContextStorage,
@@ -111,6 +116,7 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
       this.#preloadScriptStorage,
       networkStorage,
       this.#bluetoothProcessor,
+      userUserContextStorage,
       parser,
       async (options: MapperOptions) => {
         // This is required to ignore certificate errors when service worker is fetched.

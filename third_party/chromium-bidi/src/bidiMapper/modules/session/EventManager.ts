@@ -17,8 +17,10 @@
 
 import type {BidiPlusChannel} from '../../../protocol/chromium-bidi.js';
 import {
+  type Browser,
   ChromiumBidi,
   InvalidArgumentException,
+  NoSuchUserContextException,
   type BrowsingContext,
 } from '../../../protocol/protocol.js';
 import {Buffer} from '../../../utils/Buffer.js';
@@ -27,6 +29,7 @@ import {EventEmitter} from '../../../utils/EventEmitter.js';
 import {IdWrapper} from '../../../utils/IdWrapper.js';
 import type {Result} from '../../../utils/result.js';
 import {OutgoingMessage} from '../../OutgoingMessage.js';
+import type {UserContextStorage} from '../browser/UserContextStorage.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 
 import {assertSupportedEvent} from './events.js';
@@ -118,9 +121,15 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
     ((contextId: BrowsingContext.BrowsingContext) => void)[]
   >;
 
-  constructor(browsingContextStorage: BrowsingContextStorage) {
+  #userContextStorage: UserContextStorage;
+
+  constructor(
+    browsingContextStorage: BrowsingContextStorage,
+    userContextStorage: UserContextStorage,
+  ) {
     super();
     this.#browsingContextStorage = browsingContextStorage;
+    this.#userContextStorage = userContextStorage;
     this.#subscriptionManager = new SubscriptionManager(browsingContextStorage);
     this.#subscribeHooks = new DefaultMap(() => []);
   }
@@ -213,10 +222,17 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
   async subscribe(
     eventNames: ChromiumBidi.EventNames[],
     contextIds: BrowsingContext.BrowsingContext[],
+    userContextIds: Browser.UserContext[],
     channel: BidiPlusChannel,
   ): Promise<string> {
     for (const name of eventNames) {
       assertSupportedEvent(name);
+    }
+
+    if (userContextIds.length && contextIds.length) {
+      throw new InvalidArgumentException(
+        'Both userContexts and contexts cannot be specified.',
+      );
     }
 
     // First check if all the contexts are known.
@@ -224,6 +240,21 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
       if (contextId !== null) {
         // Assert the context is known. Throw exception otherwise.
         this.#browsingContextStorage.getContext(contextId);
+      }
+    }
+
+    // Validate user contexts.
+    if (userContextIds.length) {
+      const userContexts = await this.#userContextStorage.getUserContexts();
+      const knownUserContextIds = new Set(
+        userContexts.map((userContext) => userContext.userContext),
+      );
+      for (const userContextId of userContextIds) {
+        if (!knownUserContextIds.has(userContextId)) {
+          throw new NoSuchUserContextException(
+            `User context ${userContextId} not found`,
+          );
+        }
       }
     }
 
@@ -260,6 +291,7 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
     const subscription = this.#subscriptionManager.subscribe(
       eventNames,
       contextIds,
+      userContextIds,
       channel,
     );
 

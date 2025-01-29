@@ -33,6 +33,7 @@ import type {BidiCommandParameterParser} from './BidiParser.js';
 import type {MapperOptions} from './BidiServer.js';
 import type {BluetoothProcessor} from './modules/bluetooth/BluetoothProcessor.js';
 import {BrowserProcessor} from './modules/browser/BrowserProcessor.js';
+import type {UserContextStorage} from './modules/browser/UserContextStorage.js';
 import {CdpProcessor} from './modules/cdp/CdpProcessor.js';
 import {BrowsingContextProcessor} from './modules/context/BrowsingContextProcessor.js';
 import type {BrowsingContextStorage} from './modules/context/BrowsingContextStorage.js';
@@ -85,6 +86,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
     preloadScriptStorage: PreloadScriptStorage,
     networkStorage: NetworkStorage,
     bluetoothProcessor: BluetoothProcessor,
+    userContextStorage: UserContextStorage,
     parser: BidiCommandParameterParser = new BidiNoOpParser(),
     initConnection: (options: MapperOptions) => Promise<void>,
     logger?: LoggerFn,
@@ -99,6 +101,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
     this.#browserProcessor = new BrowserProcessor(
       browserCdpClient,
       browsingContextStorage,
+      userContextStorage,
     );
     this.#browsingContextProcessor = new BrowsingContextProcessor(
       browserCdpClient,

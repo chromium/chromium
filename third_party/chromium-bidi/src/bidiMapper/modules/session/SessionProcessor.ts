@@ -149,6 +149,7 @@ export class SessionProcessor {
     const subscription = await this.#eventManager.subscribe(
       params.events as ChromiumBidi.EventNames[],
       params.contexts ?? [],
+      params.userContexts ?? [],
       channel,
     );
     return {

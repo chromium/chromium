@@ -21,6 +21,7 @@ import type {CdpClient} from '../../../cdp/CdpClient.js';
 import {ChromiumBidi, Network} from '../../../protocol/protocol.js';
 import {ProcessingQueue} from '../../../utils/ProcessingQueue.js';
 import type {OutgoingMessage} from '../../OutgoingMessage.js';
+import {UserContextStorage} from '../browser/UserContextStorage.js';
 import type {CdpTarget} from '../cdp/CdpTarget.js';
 import type {BrowsingContextImpl} from '../context/BrowsingContextImpl.js';
 import {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
@@ -75,9 +76,10 @@ describe('NetworkStorage', () => {
       id: MockCdpNetworkEvents.defaultFrameId,
     } as unknown as BrowsingContextImpl;
     cdpClient = cdpTarget.cdpClient;
+    const userContextStorage = new UserContextStorage(cdpClient);
     // We need to add it the storage to emit properly
     browsingContextStorage.addContext(browsingContext);
-    eventManager = new EventManager(browsingContextStorage);
+    eventManager = new EventManager(browsingContextStorage, userContextStorage);
     processingQueue = new ProcessingQueue<OutgoingMessage>(
       async ({message}) => {
         if (message.type === 'event') {
@@ -93,6 +95,7 @@ describe('NetworkStorage', () => {
       // Verify that the Request send the message
       // To the correct context
       [MockCdpNetworkEvents.defaultFrameId],
+      [],
       {},
     );
     eventManager.on(EventManagerEvents.Event, ({message, event}) => {

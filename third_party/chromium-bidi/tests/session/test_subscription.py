@@ -70,6 +70,35 @@ async def test_subscribeWithoutContext_subscribesToEventsInAllContexts(
 
 
 @pytest.mark.asyncio
+async def test_subscribeUserContext(websocket, context_id, html):
+    result = await execute_command(
+        websocket, {
+            "method": "session.subscribe",
+            "params": {
+                "events": ["browsingContext.load"],
+                "userContexts": ["default"]
+            }
+        })
+    assert result == {'subscription': ANY_UUID}
+
+    # Navigate to some page.
+    await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": html("<h2>test</h2>"),
+                "wait": "complete",
+                "context": context_id
+            }
+        })
+
+    # Wait for `browsingContext.load` event.
+    resp = await read_JSON_message(websocket)
+    assert resp["method"] == "browsingContext.load"
+    assert resp["params"]["context"] == context_id
+
+
+@pytest.mark.asyncio
 async def test_subscribeWithContext_subscribesToEventsInGivenContext(
         websocket, context_id, html):
     result = await execute_command(
