@@ -144,7 +144,7 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/memory/ptr_util.h"
-#include "base/ranges/from_range.h"
+#include "base/types/cxx23_from_range.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 
 namespace base {

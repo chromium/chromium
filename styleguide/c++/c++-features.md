@@ -1113,8 +1113,6 @@ iterator-sentinel pair or a single range argument.
 
 **Notes:**
 *** promo
-Supersedes `//base`'s backports in `//base/ranges/algorithm.h`.
-
 [Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/ZnIbkfJ0Glw)
 ***
 
@@ -1922,7 +1920,7 @@ standard library.
 
 **Notes:**
 *** promo
-Overlaps with `base/ranges/algorithm.h`.
+Overlaps with `std::ranges::`.
 ***
 
 ### FixedArray <sup>[banned]</sup>

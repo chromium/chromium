@@ -9,7 +9,6 @@
 
 #include "base/containers/adapters.h"
 #include "base/containers/span.h"
-#include "base/ranges/algorithm.h"
 
 std::string StackTraceGetter::CurrentStackTrace(int max_depth, int skip_count) {
   base::debug::StackTrace stack_trace;

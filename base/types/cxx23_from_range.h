@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_RANGES_FROM_RANGE_H_
-#define BASE_RANGES_FROM_RANGE_H_
+#ifndef BASE_TYPES_CXX23_FROM_RANGE_H_
+#define BASE_TYPES_CXX23_FROM_RANGE_H_
 
 namespace base {
 
@@ -22,4 +22,4 @@ constexpr inline from_range_t from_range;
 
 }  // namespace base
 
-#endif  // BASE_RANGES_FROM_RANGE_H_
+#endif  // BASE_TYPES_CXX23_FROM_RANGE_H_
