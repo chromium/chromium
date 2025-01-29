@@ -2411,10 +2411,9 @@ void X11Window::UpdateWMUserTime(Event* event) {
   EventType type = event->type();
   if (type == EventType::kMousePressed || type == EventType::kKeyPressed ||
       type == EventType::kTouchPressed) {
-    uint32_t wm_user_time_ms =
-        (event->time_stamp() - base::TimeTicks()).InMilliseconds();
     connection_->SetProperty(xwindow_, x11::GetAtom("_NET_WM_USER_TIME"),
-                             x11::Atom::CARDINAL, wm_user_time_ms);
+                             x11::Atom::CARDINAL,
+                             X11EventSource::GetInstance()->GetTimestamp());
   }
 }
 
