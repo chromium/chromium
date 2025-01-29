@@ -103,18 +103,19 @@ void DriveSkyvaultUploader::Run() {
     return;
   }
 
+  // Observe Drive updates.
+  drive::DriveIntegrationService::Observer::Observe(drive_integration_service_);
+
   if (drive::util::GetDriveConnectionStatus(profile_) !=
       drive::util::ConnectionStatus::kConnected) {
-    LOG(ERROR) << "No connection to Drive";
-    OnEndCopy(MigrationUploadError::kServiceUnavailable);
+    LOG(ERROR) << "Waiting for connection to Drive";
+    waiting_for_connection_ = true;
     return;
   }
 
   // Observe IO tasks updates.
   io_task_controller_observer_.Observe(io_task_controller_);
 
-  // Observe Drive updates.
-  drive::DriveIntegrationService::Observer::Observe(drive_integration_service_);
   drivefs::DriveFsHost::Observer::Observe(
       drive_integration_service_->GetDriveFsHost());
 
@@ -415,6 +416,15 @@ void DriveSkyvaultUploader::OnError(const drivefs::mojom::DriveError& error) {
 
 void DriveSkyvaultUploader::OnDriveConnectionStatusChanged(
     drive::util::ConnectionStatus status) {
+  if (waiting_for_connection_) {
+    if (status == drive::util::ConnectionStatus::kConnected) {
+      LOG(ERROR) << "Reconnected to Drive";
+      waiting_for_connection_ = false;
+      drive::DriveIntegrationService::Observer::Reset();
+      Run();
+    }
+    return;
+  }
   if (status != drive::util::ConnectionStatus::kConnected) {
     LOG(ERROR) << "Lost connection to Drive during upload";
     OnEndCopy(MigrationUploadError::kServiceUnavailable);
