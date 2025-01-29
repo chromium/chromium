@@ -42,6 +42,11 @@ inline constexpr char kSyncKeepEverythingSynced[] =
 inline constexpr char kSelectedTypesPerAccount[] =
     "sync.selected_types_per_account";
 
+// Dict specifying the sync transport data (e.g. cache GUID, birthday, etc) per
+// account.
+inline constexpr char kSyncTransportDataPerAccount[] =
+    "sync.transport_data_per_account";
+
 #if BUILDFLAG(IS_CHROMEOS)
 // Boolean specifying whether sync was disabled due to a dashboard reset event.
 inline constexpr char kSyncDisabledViaDashboard[] =
