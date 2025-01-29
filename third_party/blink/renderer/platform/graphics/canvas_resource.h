@@ -186,6 +186,9 @@ class PLATFORM_EXPORT CanvasResource
     return viz::TransferableResource::ResourceSource::kCanvas;
   }
 
+  // Creates an unaccelerated bitmap from this resource's mappable SharedImage.
+  scoped_refptr<StaticBitmapImage> CreateUnacceleratedBitmap();
+
   gpu::InterfaceBase* InterfaceBase() const;
   gpu::gles2::GLES2Interface* ContextGL() const;
   gpu::raster::RasterInterface* RasterInterface() const;
