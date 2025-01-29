@@ -126,9 +126,4 @@ public class TileView extends FrameLayout {
             mOnFocusViaSelectionListener.run();
         }
     }
-
-    @Override
-    public boolean isFocused() {
-        return super.isFocused() || isSelected();
-    }
 }

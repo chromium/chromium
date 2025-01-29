@@ -287,9 +287,14 @@ public final class BaseSuggestionViewBinder<T extends View>
         Drawable background;
 
         if (sFocusableDrawableState == null) {
+            var context = view.getContext();
+            @BrandedColorScheme int scheme = model.get(SuggestionCommonProperties.COLOR_SCHEME);
             background =
                     OmniboxResourceProvider.getStatefulSuggestionBackground(
-                            view.getContext(), model.get(SuggestionCommonProperties.COLOR_SCHEME));
+                            context,
+                            OmniboxResourceProvider.getStandardSuggestionBackgroundColor(
+                                    context, scheme),
+                            scheme);
             sFocusableDrawableState = background.getConstantState();
         } else {
             if (sFocusableDrawableState == metadata.backgroundConstantState) return;

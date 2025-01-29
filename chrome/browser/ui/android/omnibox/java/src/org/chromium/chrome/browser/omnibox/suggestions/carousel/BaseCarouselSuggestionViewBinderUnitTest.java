@@ -66,9 +66,10 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
     @Test
     public void modelList_setItems() {
         final List<ListItem> tiles = new ArrayList<>();
-        tiles.add(new ListItem(0, null));
-        tiles.add(new ListItem(0, null));
-        tiles.add(new ListItem(0, null));
+        PropertyModel tileModel = mock(PropertyModel.class);
+        tiles.add(new ListItem(0, tileModel));
+        tiles.add(new ListItem(0, tileModel));
+        tiles.add(new ListItem(0, tileModel));
 
         Assert.assertEquals(0, mTiles.size());
         mModel.set(BaseCarouselSuggestionViewProperties.TILES, tiles);
@@ -81,9 +82,10 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
     @Test
     public void modelList_clearItems() {
         final List<ListItem> tiles = new ArrayList<>();
-        tiles.add(new ListItem(0, null));
-        tiles.add(new ListItem(0, null));
-        tiles.add(new ListItem(0, null));
+        PropertyModel tileModel = mock(PropertyModel.class);
+        tiles.add(new ListItem(0, tileModel));
+        tiles.add(new ListItem(0, tileModel));
+        tiles.add(new ListItem(0, tileModel));
 
         Assert.assertEquals(0, mTiles.size());
         mModel.set(BaseCarouselSuggestionViewProperties.TILES, tiles);
