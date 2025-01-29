@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.share.page_info_sheet;
+package org.chromium.chrome.browser.ai;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -24,7 +24,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -38,9 +37,8 @@ public class PageSummaryButtonControllerUnitTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private BottomSheetController mBottomSheetController;
     @Mock private ModalDialogManager mModalDialogManager;
-    @Mock private PageInfoSharingController mPageInfoSharingController;
+    @Mock private AiAssistantService mAiAssistantService;
     @Mock private Tab mTab;
 
     @Test
@@ -51,11 +49,7 @@ public class PageSummaryButtonControllerUnitTest {
                 activity -> {
                     PageSummaryButtonController controller =
                             new PageSummaryButtonController(
-                                    activity,
-                                    mBottomSheetController,
-                                    mModalDialogManager,
-                                    () -> mTab,
-                                    mPageInfoSharingController);
+                                    activity, mModalDialogManager, () -> mTab, mAiAssistantService);
 
                     ButtonData buttonData = controller.get(mTab);
 
@@ -75,18 +69,13 @@ public class PageSummaryButtonControllerUnitTest {
                 activity -> {
                     PageSummaryButtonController controller =
                             new PageSummaryButtonController(
-                                    activity,
-                                    mBottomSheetController,
-                                    mModalDialogManager,
-                                    () -> mTab,
-                                    mPageInfoSharingController);
+                                    activity, mModalDialogManager, () -> mTab, mAiAssistantService);
 
                     ButtonData buttonData = controller.get(mTab);
 
                     buttonData.getButtonSpec().getOnClickListener().onClick(null);
 
-                    verify(mPageInfoSharingController)
-                            .sharePageInfo(activity, mBottomSheetController, null, mTab);
+                    verify(mAiAssistantService).showAi(activity, mTab);
                 });
     }
 }
