@@ -95,8 +95,6 @@ struct CORE_EXPORT InvalidationSetDeleter {
 // We avoid virtual functions to minimize space consumption.
 class CORE_EXPORT InvalidationSet
     : public WTF::RefCounted<InvalidationSet, InvalidationSetDeleter> {
-  USING_FAST_MALLOC_WITH_TYPE_NAME(blink::InvalidationSet);
-
  public:
   InvalidationSet(const InvalidationSet&) = delete;
   InvalidationSet& operator=(const InvalidationSet&) = delete;

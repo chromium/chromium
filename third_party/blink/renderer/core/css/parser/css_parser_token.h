@@ -78,8 +78,6 @@ enum HashTokenType {
 };
 
 class CORE_EXPORT CSSParserToken {
-  USING_FAST_MALLOC(CSSParserToken);
-
  public:
   enum BlockType {
     kNotBlock,
@@ -277,7 +275,7 @@ class CORE_EXPORT CSSParserToken {
   unsigned value_is_8bit_ : 1;
 
   // These are free bits. You may take from them if you need.
-  unsigned padding_ : 12;
+  [[maybe_unused]] unsigned padding_ : 12;
 
   unsigned value_length_;
   union {

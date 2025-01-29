@@ -16,8 +16,6 @@
 namespace blink {
 
 class CSSTokenizerInputStream {
-  USING_FAST_MALLOC(CSSTokenizerInputStream);
-
  public:
   explicit CSSTokenizerInputStream(StringView input)
       : string_length_(input.length()), string_(input) {}
