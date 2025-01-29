@@ -1350,4 +1350,35 @@ TEST_F(ElementTest, GenerateScrollMarkerGroup) {
       non_scroller->GetPseudoElement(kPseudoIdScrollMarkerGroupBefore));
 }
 
+TEST_F(ElementTest, NestedMarkerInheritsFromPseudoParent) {
+  ScopedCSSNestedPseudoElementsForTest feature(false);
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+    li {
+      list-style-type: none;
+    }
+
+    li::before {
+      content: '';
+      list-style-type: disc;
+      list-style-position: inside;
+      float: left;
+      display: list-item;
+    }
+    </style>
+    <ul>
+      <li id="target">Item 1</li>
+    </ul>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* target = GetElementById("target");
+  Element* before = target->GetPseudoElement(kPseudoIdBefore);
+  Element* marker = before->GetPseudoElement(kPseudoIdMarker);
+
+  EXPECT_EQ(marker->GetComputedStyle()->ListStyleType()->GetCounterStyleName(),
+            AtomicString("disc"));
+}
+
 }  // namespace blink
