@@ -10,6 +10,7 @@ import("//extensions/buildflags/buildflags.gni")
 # TODO(https://crbug.com/356905053): Continue moving more here.
 extensions_api_schema_files_ = [
   "alarms.idl",
+  "declarative_net_request.idl",
   "i18n.json",
   "idle.json",
   "offscreen.idl",
@@ -53,7 +54,6 @@ if (enable_extensions) {
     "bluetooth_socket.idl",
     "cec_private.idl",
     "clipboard.idl",
-    "declarative_net_request.idl",
     "dns.idl",
     "events.json",
     "extension_options_internal.idl",
@@ -104,7 +104,6 @@ if (enable_extensions) {
 # API by moving these entries to the `extensions_api_schema_files_` above.
 if (enable_desktop_android_extensions) {
   extensions_types_only_schema_files_ += [
-    "declarative_net_request.idl",
     "scripts_internal.idl",
     "types.json",
     "extension_types.json",
