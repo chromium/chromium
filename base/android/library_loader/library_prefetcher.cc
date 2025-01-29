@@ -15,7 +15,6 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-#include <algorithm>
 #include <atomic>
 #include <cstdlib>
 #include <memory>
@@ -31,6 +30,7 @@
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/process/process_metrics.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
@@ -296,7 +296,7 @@ int NativeLibraryPrefetcher::PercentageOfResidentCode(size_t start,
   }
   total_pages += residency.size();
   resident_pages += static_cast<size_t>(
-      std::ranges::count_if(residency, [](unsigned char x) { return x & 1; }));
+      ranges::count_if(residency, [](unsigned char x) { return x & 1; }));
   if (total_pages == 0) {
     return -1;
   }

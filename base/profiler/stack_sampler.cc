@@ -4,7 +4,6 @@
 
 #include "base/profiler/stack_sampler.h"
 
-#include <algorithm>
 #include <iterator>
 #include <utility>
 
@@ -22,6 +21,7 @@
 #include "base/profiler/stack_copier.h"
 #include "base/profiler/suspendable_thread_delegate.h"
 #include "base/profiler/unwinder.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/thread_pool.h"
 
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC)
@@ -351,8 +351,8 @@ std::vector<Frame> StackSampler::WalkStack(
   do {
     // Choose an authoritative unwinder for the current module. Use the first
     // unwinder that thinks it can unwind from the current frame.
-    auto unwinder = std::ranges::find_if(
-        unwinders, [&stack](const UnwinderCapture& unwinder) {
+    auto unwinder =
+        ranges::find_if(unwinders, [&stack](const UnwinderCapture& unwinder) {
           return GetUnwinder(unwinder)->CanUnwindFrom(stack.back());
         });
     if (unwinder == unwinders.end()) {

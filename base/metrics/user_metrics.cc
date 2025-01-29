@@ -6,12 +6,12 @@
 
 #include <stddef.h>
 
-#include <algorithm>
 #include <vector>
 
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
+#include "base/ranges/algorithm.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/trace_event/base_tracing.h"
@@ -69,7 +69,7 @@ void RemoveActionCallback(const ActionCallback& callback) {
   DCHECK(g_task_runner.Get());
   DCHECK(g_task_runner.Get()->BelongsToCurrentThread());
   std::vector<ActionCallback>* callbacks = g_callbacks.Pointer();
-  const auto i = std::ranges::find(*callbacks, callback);
+  const auto i = ranges::find(*callbacks, callback);
   if (i != callbacks->end()) {
     callbacks->erase(i);
   }

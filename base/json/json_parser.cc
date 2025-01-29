@@ -9,7 +9,6 @@
 
 #include "base/json/json_parser.h"
 
-#include <algorithm>
 #include <cmath>
 #include <iterator>
 #include <string_view>
@@ -23,6 +22,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -445,7 +445,7 @@ std::optional<Value> JSONParser::ConsumeDictionary() {
   ConsumeChar();  // Closing '}'.
   // Reverse |dict_storage| to keep the last of elements with the same key in
   // the input.
-  std::ranges::reverse(values);
+  ranges::reverse(values);
   return Value(Value::Dict(std::make_move_iterator(values.begin()),
                            std::make_move_iterator(values.end())));
 }

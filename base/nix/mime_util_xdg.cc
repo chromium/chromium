@@ -4,7 +4,6 @@
 
 #include "base/nix/mime_util_xdg.h"
 
-#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -17,6 +16,7 @@
 #include "base/nix/xdg_util.h"
 #include "base/no_destructor.h"
 #include "base/numerics/byte_conversions.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "build/build_config.h"
@@ -262,7 +262,7 @@ std::string GetFileMimeType(const FilePath& filepath) {
 
     Time now = Time::Now();
     if (last_check + Seconds(5) < now) {
-      if (std::ranges::any_of(*xdg_mime_files, [](const FileInfo& file_info) {
+      if (ranges::any_of(*xdg_mime_files, [](const FileInfo& file_info) {
             File::Info info;
             return !GetFileInfo(file_info.path, &info) ||
                    info.last_modified != file_info.last_modified;

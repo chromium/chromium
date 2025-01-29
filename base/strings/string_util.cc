@@ -19,7 +19,6 @@
 #include <time.h>
 #include <wchar.h>
 
-#include <algorithm>
 #include <limits>
 #include <optional>
 #include <string_view>
@@ -28,6 +27,7 @@
 
 #include "base/check_op.h"
 #include "base/no_destructor.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util_impl_helpers.h"
 #include "base/strings/string_util_internal.h"
 #include "base/strings/utf_string_conversion_utils.h"
@@ -258,7 +258,7 @@ bool IsStringUTF8AllowingNoncharacters(std::string_view str) {
 }
 
 bool EqualsASCII(std::u16string_view str, std::string_view ascii) {
-  return std::ranges::equal(ascii, str);
+  return ranges::equal(ascii, str);
 }
 
 bool StartsWith(std::string_view str,

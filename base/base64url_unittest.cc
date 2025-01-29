@@ -4,9 +4,9 @@
 
 #include "base/base64url.h"
 
-#include <algorithm>
 #include <string_view>
 
+#include "base/ranges/algorithm.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -159,7 +159,7 @@ TEST(Base64UrlTest, DecodeIntoVector) {
   static constexpr uint8_t kExpected[] = {'1', '2', '3', '4'};
   std::optional<std::vector<uint8_t>> result =
       Base64UrlDecode("MTIzNA", Base64UrlDecodePolicy::DISALLOW_PADDING);
-  ASSERT_TRUE(std::ranges::equal(*result, kExpected));
+  ASSERT_TRUE(ranges::equal(*result, kExpected));
 }
 
 TEST(Base64UrlTest, DecodeDisallowPaddingPolicy) {

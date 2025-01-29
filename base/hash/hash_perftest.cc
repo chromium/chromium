@@ -7,13 +7,13 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <algorithm>
 #include <string>
 #include <vector>
 
 #include "base/containers/span.h"
 #include "base/hash/sha1.h"
 #include "base/rand_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -59,7 +59,7 @@ void RunTest(const char* hash_name,
       utime[i] = TimeTicks::Now() - start;
       total_test_time += utime[i];
     }
-    std::ranges::sort(utime);
+    ranges::sort(utime);
   }
 
   reporter.AddResult(kMetricRuntime, total_test_time.InMicrosecondsF());
@@ -78,9 +78,8 @@ void RunTest(const char* hash_name,
 
   // Convert to a comma-separated string so we can report every data point.
   std::vector<std::string> rate_strings(utime.size());
-  std::ranges::transform(utime, rate_strings.begin(), [rate](const auto& t) {
-    return NumberToString(rate(t));
-  });
+  ranges::transform(utime, rate_strings.begin(),
+                    [rate](const auto& t) { return NumberToString(rate(t)); });
   reporter.AddResultList(kMetricThroughput, JoinString(rate_strings, ","));
 }
 

@@ -4,12 +4,12 @@
 
 #include "base/profiler/module_cache.h"
 
-#include <algorithm>
 #include <iterator>
 #include <string_view>
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 
 namespace base {

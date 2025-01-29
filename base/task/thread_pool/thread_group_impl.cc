@@ -130,7 +130,7 @@ class ThreadGroupImpl::WorkerDelegate : public WorkerThread::Delegate,
   template <typename Worker>
   bool ContainsWorker(const std::vector<scoped_refptr<Worker>>& workers,
                       const WorkerThread* worker) {
-    auto it = std::ranges::find_if(
+    auto it = ranges::find_if(
         workers,
         [worker](const scoped_refptr<Worker>& i) { return i.get() == worker; });
     return it != workers.end();
@@ -607,7 +607,7 @@ void ThreadGroupImpl::WorkerDelegate::CleanupLockRequired(
   }
 
   // Remove the worker from |workers_|.
-  auto worker_iter = std::ranges::find(outer_->workers_, worker);
+  auto worker_iter = ranges::find(outer_->workers_, worker);
   CHECK(worker_iter != outer_->workers_.end(), base::NotFatalUntil::M125);
   outer_->workers_.erase(worker_iter);
 }

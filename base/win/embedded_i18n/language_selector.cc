@@ -15,6 +15,7 @@
 
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/i18n.h"
@@ -48,7 +49,7 @@ struct AvailableLanguageAliases {
 bool IsArraySortedAndLowerCased(span<const LangToOffset> languages_to_offset) {
   return std::is_sorted(languages_to_offset.begin(),
                         languages_to_offset.end()) &&
-         std::ranges::all_of(languages_to_offset, [](const auto& lang) {
+         base::ranges::all_of(languages_to_offset, [](const auto& lang) {
            auto language = AsStringPiece16(lang.first);
            return ToLowerASCII(language) == language;
          });

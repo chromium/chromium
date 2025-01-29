@@ -64,7 +64,7 @@ struct UniquePtrComparator {
 // Example usage:
 //   std::vector<std::unique_ptr<Foo>> vector;
 //   Foo* element = ...
-//   auto iter = std::ranges::find_if(vector, MatchesUniquePtr(element));
+//   auto iter = base::ranges::find_if(vector, MatchesUniquePtr(element));
 //
 // Example of erasing from container:
 //   EraseIf(v, MatchesUniquePtr(element));

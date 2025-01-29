@@ -9,6 +9,7 @@
 #include <sstream>
 
 #include "base/pending_task.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/common/task_annotator.h"
 #include "build/build_config.h"
 
@@ -52,7 +53,7 @@ TaskTrace::TaskTrace() {
   }
   std::array<const void*, PendingTask::kTaskBacktraceLength + 1> task_trace;
   task_trace[0] = current_task->posted_from.program_counter();
-  std::ranges::copy(current_task->task_backtrace, task_trace.begin() + 1);
+  ranges::copy(current_task->task_backtrace, task_trace.begin() + 1);
   size_t length = 0;
   while (length < task_trace.size() && task_trace[length]) {
     ++length;

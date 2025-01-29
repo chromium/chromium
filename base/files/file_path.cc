@@ -18,6 +18,7 @@
 #include "base/files/safe_base_name.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/pickle.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
@@ -258,7 +259,7 @@ std::vector<FilePath::StringType> FilePath::GetComponents() const {
     ret_val.emplace_back(dir.value(), 0, letter + 1);
   }
 
-  std::ranges::reverse(ret_val);
+  ranges::reverse(ret_val);
   return ret_val;
 }
 

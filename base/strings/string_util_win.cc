@@ -4,10 +4,10 @@
 
 #include "base/strings/string_util_win.h"
 
-#include <algorithm>
 #include <optional>
 #include <string_view>
 
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util_impl_helpers.h"
 
 namespace base {
@@ -78,7 +78,7 @@ bool ContainsOnlyChars(std::wstring_view input, std::wstring_view characters) {
 }
 
 bool EqualsASCII(std::wstring_view str, std::string_view ascii) {
-  return std::ranges::equal(ascii, str);
+  return ranges::equal(ascii, str);
 }
 
 bool StartsWith(std::wstring_view str,

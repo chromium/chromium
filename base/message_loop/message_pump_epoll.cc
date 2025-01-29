@@ -11,7 +11,6 @@
 
 #include <sys/eventfd.h>
 
-#include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <optional>
@@ -25,6 +24,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/posix/eintr_wrapper.h"
+#include "base/ranges/algorithm.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/trace_event/base_tracing.h"
@@ -425,7 +425,7 @@ void MessagePumpEpoll::UnregisterInterest(
 
   EpollEventEntry& entry = entry_it->second;
   auto& interests = entry.interests;
-  auto* it = std::ranges::find(interests, interest);
+  auto* it = ranges::find(interests, interest);
   CHECK(it != interests.end(), base::NotFatalUntil::M125);
   interests.erase(it);
 

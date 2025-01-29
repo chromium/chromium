@@ -17,6 +17,7 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat_win.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/lock.h"
@@ -337,7 +338,7 @@ StackTrace::StackTrace(const CONTEXT* context) {
 void StackTrace::InitTrace(const CONTEXT* context_record) {
   if (ShouldSuppressOutput()) {
     CHECK_EQ(count_, 0U);
-    std::ranges::fill(trace_, nullptr);
+    base::ranges::fill(trace_, nullptr);
     return;
   }
 
@@ -382,7 +383,7 @@ void StackTrace::InitTrace(const CONTEXT* context_record) {
     trace_[count_++] = reinterpret_cast<void*>(stack_frame.AddrPC.Offset);
   }
 
-  std::ranges::fill(span(trace_).last(trace_.size() - count_), nullptr);
+  base::ranges::fill(span(trace_).last(trace_.size() - count_), nullptr);
 }
 
 // static

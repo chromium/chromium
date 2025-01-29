@@ -17,7 +17,7 @@ namespace base {
 // likely unexpected and not intended. This is because the expression
 // `set.find(kFoo)` is ill-formed, since there is no implimit conversion from
 // std::string_view to `std::string`. This means Contains would fall back to the
-// general purpose `std::ranges::find(set, kFoo)` linear search.
+// general purpose `base::ranges::find(set, kFoo)` linear search.
 // To fix this clients can either use a more generic comparator like std::less<>
 // (in this case `set.find()` accepts any type that is comparable to a
 // std::string), or pass an explicit projection parameter to Contains, at which

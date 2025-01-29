@@ -9,6 +9,7 @@
 
 #include "base/check_op.h"
 #include "base/debug/alias.h"
+#include "base/ranges/algorithm.h"
 #include "base/test/gtest_util.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -214,7 +215,7 @@ TEST(CheckedContiguousIterator, OptimizedCopy) {
   Iter out_end = std::copy(in_begin, in_end, out_begin);
   EXPECT_EQ(out_end, out_begin + (in_end - in_begin));
 
-  EXPECT_TRUE(std::ranges::equal(arr_in, arr_out));
+  EXPECT_TRUE(ranges::equal(arr_in, arr_out));
 }
 #endif  // defined(_LIBCPP_VERSION)
 

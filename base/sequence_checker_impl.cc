@@ -11,6 +11,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/debug/stack_trace.h"
+#include "base/ranges/algorithm.h"
 #include "base/sequence_token.h"
 #include "base/synchronization/lock_subtle.h"
 #include "base/threading/platform_thread.h"
@@ -190,9 +191,9 @@ void SequenceCheckerImpl::EnsureAssigned() const {
   // detail of `SequenceCheckerImpl` and doesn't provide mutual exclusion
   // guarantees to the caller).
   DCHECK(locks_.empty());
-  std::ranges::remove_copy(subtle::GetTrackedLocksHeldByCurrentThread(),
-                           std::back_inserter(locks_),
-                           reinterpret_cast<uintptr_t>(&lock_));
+  ranges::remove_copy(subtle::GetTrackedLocksHeldByCurrentThread(),
+                      std::back_inserter(locks_),
+                      reinterpret_cast<uintptr_t>(&lock_));
 #endif  // DCHECK_IS_ON()
 
   DCHECK(sequence_token_.IsValid());

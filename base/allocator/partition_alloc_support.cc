@@ -4,7 +4,6 @@
 
 #include "base/allocator/partition_alloc_support.h"
 
-#include <algorithm>
 #include <array>
 #include <cinttypes>
 #include <cstdint>
@@ -32,6 +31,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/pending_task.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
@@ -465,7 +465,7 @@ std::string ExtractDanglingPtrSignature(std::string stacktrace) {
   size_t caller_index = 0;
   for (size_t i = 0; i < lines.size(); ++i) {
     for (const auto& patterns : callee_patterns) {
-      if (std::ranges::all_of(patterns, [&](std::string_view pattern) {
+      if (ranges::all_of(patterns, [&](std::string_view pattern) {
             return lines[i].find(pattern) != std::string_view::npos;
           })) {
         caller_index = i + 1;
@@ -667,7 +667,7 @@ void CheckDanglingRawPtrBufferEmpty() {
     std::vector<std::array<const void*, 32>> stack_traces =
         internal::InstanceTracer::GetStackTracesForDanglingRefs(entry->id);
     for (const auto& raw_stack_trace : stack_traces) {
-      CHECK(std::ranges::is_partitioned(raw_stack_trace, is_frame_ptr_not_null))
+      CHECK(ranges::is_partitioned(raw_stack_trace, is_frame_ptr_not_null))
           << "`raw_stack_trace` is expected to be partitioned: non-null values "
              "at the begining followed by `nullptr`s.";
       LOG(ERROR) << "Dangling reference from:\n";
@@ -675,8 +675,8 @@ void CheckDanglingRawPtrBufferEmpty() {
                         // This call truncates the `nullptr` tail of the stack
                         // trace (see the `is_partitioned` CHECK above).
                         span(raw_stack_trace.begin(),
-                             std::ranges::partition_point(
-                                 raw_stack_trace, is_frame_ptr_not_null)))
+                             ranges::partition_point(raw_stack_trace,
+                                                     is_frame_ptr_not_null)))
                  << "\n";
     }
 #else

@@ -5,7 +5,6 @@
 #ifndef BASE_CALLBACK_LIST_H_
 #define BASE_CALLBACK_LIST_H_
 
-#include <algorithm>
 #include <list>
 #include <memory>
 #include <utility>
@@ -16,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/types/is_instantiation.h"
 
 // OVERVIEW:
@@ -174,7 +174,7 @@ class CallbackListBase {
   // Returns whether the list of registered callbacks is empty (from an external
   // perspective -- meaning no remaining callbacks are live).
   bool empty() const {
-    return std::ranges::all_of(
+    return ranges::all_of(
         callbacks_, [](const auto& callback) { return callback.is_null(); });
   }
 

@@ -20,7 +20,6 @@
 #endif
 #include <stdio.h>
 
-#include <algorithm>
 #include <fstream>
 #include <limits>
 #include <memory>
@@ -36,6 +35,7 @@
 #include "base/functional/function_ref.h"
 #include "base/notreached.h"
 #include "base/posix/eintr_wrapper.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -504,7 +504,7 @@ FilePath GetUniquePath(const FilePath& path) {
 FilePath GetUniquePathWithSuffixFormat(const FilePath& path,
                                        base::cstring_view suffix_format) {
   DCHECK(!path.empty());
-  DCHECK_EQ(std::ranges::count(suffix_format, '%'), 1);
+  DCHECK_EQ(base::ranges::count(suffix_format, '%'), 1);
   DCHECK(base::Contains(suffix_format, "%d"));
 
   if (!PathExists(path)) {

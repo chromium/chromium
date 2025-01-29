@@ -4,7 +4,6 @@
 
 #include "base/profiler/stack_unwind_data.h"
 
-#include <algorithm>
 #include <iterator>
 #include <utility>
 
@@ -21,6 +20,7 @@
 #include "base/profiler/stack_copier.h"
 #include "base/profiler/suspendable_thread_delegate.h"
 #include "base/profiler/unwinder.h"
+#include "base/ranges/algorithm.h"
 
 namespace base {
 

@@ -4,10 +4,9 @@
 
 #include "base/scoped_observation.h"
 
-#include <algorithm>
-
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/scoped_observation_traits.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -36,7 +35,7 @@ void TestSource::AddObserver(TestSourceObserver* observer) {
 }
 
 void TestSource::RemoveObserver(TestSourceObserver* observer) {
-  auto it = std::ranges::find(observers_, observer);
+  auto it = base::ranges::find(observers_, observer);
   EXPECT_TRUE(it != observers_.end());
   observers_.erase(it);
 }

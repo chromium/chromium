@@ -10,7 +10,6 @@
 #include <stdint.h>
 #include <sys/errno.h>
 
-#include <algorithm>
 #include <optional>
 
 #include "base/apple/mach_logging.h"
@@ -29,6 +28,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
@@ -246,7 +246,7 @@ ProcessRequirement::Builder ProcessRequirement::Builder::Identifier(
 ProcessRequirement::Builder ProcessRequirement::Builder::IdentifierIsOneOf(
     std::vector<std::string> identifiers) && {
   CHECK(identifiers.size());
-  CHECK(std::ranges::all_of(identifiers, &std::string::size));
+  CHECK(base::ranges::all_of(identifiers, &std::string::size));
   CHECK(identifiers_.empty());
   identifiers_ = std::move(identifiers);
   return std::move(*this);
@@ -317,7 +317,7 @@ ProcessRequirement::Builder::HasSameCertificateType() && {
 ProcessRequirement::Builder ProcessRequirement::Builder::TeamIdentifier(
     std::string team_identifier) && {
   CHECK(team_identifier_.empty());
-  CHECK(std::ranges::all_of(team_identifier, base::IsAsciiAlphaNumeric<char>));
+  CHECK(base::ranges::all_of(team_identifier, base::IsAsciiAlphaNumeric<char>));
   team_identifier_ = std::move(team_identifier);
   has_same_team_identifier_called_ = false;
   return std::move(*this);

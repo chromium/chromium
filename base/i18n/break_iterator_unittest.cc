@@ -6,10 +6,10 @@
 
 #include <stddef.h>
 
-#include <algorithm>
 #include <string_view>
 #include <vector>
 
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -407,7 +407,7 @@ TEST(BreakIteratorTest, IsSentenceBoundary) {
   sentence_breaks.push_back(24);
   sentence_breaks.push_back(42);
   for (size_t i = 0; i < str.size(); i++) {
-    if (std::ranges::find(sentence_breaks, i) != sentence_breaks.end()) {
+    if (ranges::find(sentence_breaks, i) != sentence_breaks.end()) {
       EXPECT_TRUE(iter.IsSentenceBoundary(i)) << " at index=" << i;
     } else {
       EXPECT_FALSE(iter.IsSentenceBoundary(i)) << " at index=" << i;

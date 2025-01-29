@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/ranges/algorithm.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 TEST(DebugAlias, Test) {

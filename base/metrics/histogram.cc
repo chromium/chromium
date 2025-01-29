@@ -35,6 +35,7 @@
 #include "base/metrics/statistics_recorder.h"
 #include "base/notreached.h"
 #include "base/pickle.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
@@ -1221,7 +1222,7 @@ class CustomHistogram::Factory : public Histogram::Factory {
     std::vector<int> ranges = *custom_ranges_;
     ranges.push_back(0);  // Ensure we have a zero value.
     ranges.push_back(HistogramBase::kSampleType_MAX);
-    std::ranges::sort(ranges);
+    ranges::sort(ranges);
     auto removed = std::ranges::unique(ranges);
     ranges.erase(removed.begin(), removed.end());
 

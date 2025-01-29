@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include <algorithm>
 #include <array>
 #include <ostream>
 #include <set>
@@ -22,6 +21,7 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_param_associator.h"
 #include "base/metrics/persistent_memory_allocator.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -46,7 +46,7 @@ BASE_FEATURE(kFeatureOffByDefault,
 std::string SortFeatureListString(const std::string& feature_list) {
   std::vector<std::string_view> features =
       FeatureList::SplitFeatureListString(feature_list);
-  std::ranges::sort(features);
+  ranges::sort(features);
   return JoinString(features, ",");
 }
 

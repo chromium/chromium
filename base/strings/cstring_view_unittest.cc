@@ -4,7 +4,6 @@
 
 #include "base/strings/cstring_view.h"
 
-#include <algorithm>
 #include <concepts>
 #include <limits>
 #include <sstream>
@@ -12,6 +11,7 @@
 
 #include "base/containers/span.h"
 #include "base/debug/alias.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -1084,7 +1084,7 @@ TEST(CStringViewTest, Example_CtorLiteral) {
 }
 
 TEST(CStringViewTest, CompatibleWithRanges) {
-  EXPECT_EQ(2, std::ranges::count(cstring_view("hello"), 'l'));
+  EXPECT_EQ(2, ranges::count(cstring_view("hello"), 'l'));
 }
 
 TEST(CStringViewTest, ConstructFromStringLiteralWithEmbeddedNul) {

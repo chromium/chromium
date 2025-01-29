@@ -17,6 +17,7 @@
 #include "base/base_export.h"
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
+#include "base/ranges/algorithm.h"
 #include "base/win/winrt_foundation_helpers.h"
 
 namespace base {
@@ -253,7 +254,7 @@ class Vector
   }
 
   IFACEMETHODIMP IndexOf(AbiT value, unsigned* index, boolean* found) override {
-    auto iter = std::ranges::find_if(vector_, [&value](const StorageT& elem) {
+    auto iter = base::ranges::find_if(vector_, [&value](const StorageT& elem) {
       return internal::IsEqual(elem, value);
     });
     *index = iter != vector_.end() ? std::distance(vector_.begin(), iter) : 0;
