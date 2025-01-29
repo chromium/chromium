@@ -183,6 +183,7 @@ destination_files = glob(["**"]) - glob([
     "Android.extras.bp",
     "METADATA",
     "MODULE_LICENSE_BSD",
+    "PREUPLOAD.cfg",
 
     "android/**",
     "test_runner/**",
