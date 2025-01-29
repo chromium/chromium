@@ -188,6 +188,21 @@ interface WebClientHandler {
   // `PageHandler.SyncWebviewCookies()`, except this call originates from the
   // webview.
   SyncCookies() => (bool success);
+
+  // Called when the user submits input.
+  OnUserInputSubmitted(WebClientMode mode);
+
+  // Called when the web client starts to respond.
+  OnResponseStarted();
+
+  // Called when the web client stops responding.
+  OnResponseStopped();
+
+  // Called when the session is terminated.
+  OnSessionTerminated();
+
+  // Called when the user rates a response.
+  OnResponseRated(bool positive);
 };
 
 // State of the glic panel.

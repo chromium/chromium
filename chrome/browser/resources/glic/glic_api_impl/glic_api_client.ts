@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {AnnotatedPageData, ChromeVersion, DraggableArea, ErrorWithReason, GlicBrowserHost, GlicHostRegistry, GlicWebClient, ObservableValue, OpenPanelInfo, PanelState, PdfDocumentData, Subscriber, TabContextOptions, TabContextResult, TabData, UserProfileInfo} from '../glic_api/glic_api.js';
+import type {AnnotatedPageData, ChromeVersion, DraggableArea, ErrorWithReason, GlicBrowserHost, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, ObservableValue, OpenPanelInfo, PanelState, PdfDocumentData, Subscriber, TabContextOptions, TabContextResult, TabData, UserProfileInfo} from '../glic_api/glic_api.js';
 import {GetTabContextErrorReason} from '../glic_api/glic_api.js';
 
 import {PostMessageRequestReceiver, PostMessageRequestSender} from './post_message_transport.js';
@@ -132,6 +132,7 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
   private permissionStateLocation = ObservableValueImpl.withNoValue<boolean>();
   private permissionStateTabContext =
       ObservableValueImpl.withNoValue<boolean>();
+  private metrics: GlicBrowserHostMetricsImpl;
 
   constructor(private webClient: GlicWebClient, windowProxy: WindowProxy) {
     this.sender = new PostMessageRequestSender(windowProxy, 'chrome://glic');
@@ -139,6 +140,7 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
         new PostMessageRequestReceiver('chrome://glic', windowProxy, this);
     this.webClientMessageHandler =
         new WebClientMessageHandler(this.webClient, this);
+    this.metrics = new GlicBrowserHostMetricsImpl(this.sender);
 
     for (const name of Object.getOwnPropertyNames(
              WebClientMessageHandler.prototype)) {
@@ -321,6 +323,34 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
 
   setAudioDucking?(enabled: boolean): void {
     this.sender.requestNoResponse('glicBrowserSetAudioDucking', {enabled});
+  }
+
+  getMetrics(): GlicBrowserHostMetrics {
+    return this.metrics;
+  }
+}
+
+class GlicBrowserHostMetricsImpl implements GlicBrowserHostMetrics {
+  constructor(private sender: PostMessageRequestSender) {}
+
+  onUserInputSubmitted(mode: number): void {
+    this.sender.requestNoResponse('glicBrowserOnUserInputSubmitted', {mode});
+  }
+
+  onResponseStarted(): void {
+    this.sender.requestNoResponse('glicBrowserOnResponseStarted', {});
+  }
+
+  onResponseStopped(): void {
+    this.sender.requestNoResponse('glicBrowserOnResponseStopped', {});
+  }
+
+  onSessionTerminated(): void {
+    this.sender.requestNoResponse('glicBrowserOnSessionTerminated', {});
+  }
+
+  onResponseRated(positive: boolean): void {
+    this.sender.requestNoResponse('glicBrowserOnResponseRated', {positive});
   }
 }
 

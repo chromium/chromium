@@ -14,6 +14,7 @@ interface PageElementTypes {
   focusedUrl: HTMLInputElement;
   contextAccessIndicator: HTMLInputElement;
   syncCookiesBn: HTMLButtonElement;
+  testLogsBn: HTMLButtonElement;
   syncCookieStatus: HTMLSpanElement;
   getUserProfileInfoBn: HTMLButtonElement;
   getUserProfileInfoStatus: HTMLSpanElement;
@@ -178,6 +179,18 @@ $.syncCookiesBn.addEventListener('click', async () => {
   } catch (e) {
     $.syncCookieStatus!.innerText = `Caught error: ${e}`;
   }
+});
+
+$.testLogsBn.addEventListener('click', () => {
+  getBrowser()?.getMetrics?.().onUserInputSubmitted?.(WebClientMode.TEXT);
+  getBrowser()?.getMetrics?.().onResponseStarted?.();
+  getBrowser()?.getMetrics?.().onResponseStopped?.();
+  getBrowser()?.getMetrics?.().onResponseRated?.(true);
+  getBrowser()?.getMetrics?.().onUserInputSubmitted?.(WebClientMode.AUDIO);
+  getBrowser()?.getMetrics?.().onResponseStarted?.();
+  getBrowser()?.getMetrics?.().onResponseStopped?.();
+  getBrowser()?.getMetrics?.().onResponseRated?.(false);
+  getBrowser()?.getMetrics?.().onSessionTerminated?.();
 });
 
 $.getUserProfileInfoBn.addEventListener('click', async () => {
