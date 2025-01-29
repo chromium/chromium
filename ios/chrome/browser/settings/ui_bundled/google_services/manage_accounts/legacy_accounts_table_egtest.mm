@@ -515,18 +515,4 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   [BookmarkEarlGreyUI verifyEmptyBackgroundIsAbsent];
 }
 
-// Tests that the sign-out footer is not shown when the user is not syncing.
-- (void)testSignOutFooterForSignInOnlyUser {
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-
-  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
-  [self openAccountSettings];
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_allOf(grey_accessibilityLabel(l10n_util::GetNSString(
-                         IDS_IOS_DISCONNECT_DIALOG_SYNCING_FOOTER_INFO_MOBILE)),
-                     grey_sufficientlyVisible(), nil)]
-      assertWithMatcher:grey_nil()];
-}
-
 @end

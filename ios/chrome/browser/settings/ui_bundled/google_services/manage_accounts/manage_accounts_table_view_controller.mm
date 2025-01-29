@@ -233,10 +233,6 @@ typedef NS_ENUM(NSInteger, EditAccountListItemType) {
   [self reloadData];
 }
 
-- (void)updateErrorSectionModelAndReloadViewIfNeeded:(BOOL)reloadViewIfNeeded {
-  return;
-}
-
 - (void)updateIdentityViewItem:(IdentityViewItem*)identityViewItem {
   TableViewAccountItem* item =
       base::apple::ObjCCastStrict<TableViewAccountItem>(

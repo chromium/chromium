@@ -7,12 +7,9 @@
 #import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
-#import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_service_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
-#import "ios/chrome/browser/settings/model/sync/utils/account_error_ui_info.h"
-#import "ios/chrome/browser/settings/model/sync/utils/identity_error_util.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts/identity_view_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts/manage_accounts_consumer.h"
@@ -31,16 +28,13 @@
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_observer_bridge.h"
 #import "ios/chrome/browser/signin/model/constants.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
-#import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
-#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 @interface ManageAccountsMediator () <ChromeAccountManagerServiceObserver,
-                                      IdentityManagerObserverBridgeDelegate,
-                                      SyncObserverModelBridge>
+                                      IdentityManagerObserverBridgeDelegate>
 @end
 
 @implementation ManageAccountsMediator {
@@ -53,19 +47,13 @@
   raw_ptr<signin::IdentityManager> _identityManager;
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityManagerObserver;
-  raw_ptr<syncer::SyncService> _syncService;
-  std::unique_ptr<SyncObserverBridge> _syncObserver;
-
-  // The type of account error that is being displayed in the error section for
-  // syncing accounts. Is set to kNone when there is no error section.
-  syncer::SyncService::UserActionableError _diplayedAccountErrorType;
 }
 
-- (instancetype)initWithSyncService:(syncer::SyncService*)syncService
-              accountManagerService:
-                  (ChromeAccountManagerService*)accountManagerService
-                        authService:(AuthenticationService*)authService
-                    identityManager:(signin::IdentityManager*)identityManager {
+- (instancetype)
+    initWithAccountManagerService:
+        (ChromeAccountManagerService*)accountManagerService
+                      authService:(AuthenticationService*)authService
+                  identityManager:(signin::IdentityManager*)identityManager {
   self = [super init];
   if (self) {
     _accountManagerService = accountManagerService;
@@ -77,9 +65,6 @@
     _identityManagerObserver =
         std::make_unique<signin::IdentityManagerObserverBridge>(identityManager,
                                                                 self);
-    _syncService = syncService;
-    _syncObserver = std::make_unique<SyncObserverBridge>(self, _syncService);
-    _diplayedAccountErrorType = syncer::SyncService::UserActionableError::kNone;
   }
   return self;
 }
@@ -90,8 +75,6 @@
   _authService = nullptr;
   _identityManager = nullptr;
   _identityManagerObserver.reset();
-  _syncObserver.reset();
-  _syncService = nullptr;
 }
 
 #pragma mark - AccountsModelIdentityDataSource
@@ -104,17 +87,6 @@
                                          size:(IdentityAvatarSize)size {
   return _accountManagerService->GetIdentityAvatarWithIdentity(
       identity, IdentityAvatarSize::TableViewIcon);
-}
-
-- (BOOL)isAccountSignedInNotSyncing {
-  // TODO(crbug.com/40066949): Simplify once kSync becomes unreachable or is
-  // deleted from the codebase. See ConsentLevel::kSync documentation for
-  // details.
-  return !_syncService->HasSyncConsent();
-}
-
-- (AccountErrorUIInfo*)accountErrorUIInfo {
-  return GetAccountErrorUIInfo(_syncService);
 }
 
 - (IdentityViewItem*)primaryIdentityViewItem {
@@ -194,12 +166,6 @@
   // Only attempt to pop the top-most view controller once the account list
   // has been dismissed.
   [self.consumer popView];
-}
-
-#pragma mark - SyncObserverModelBridge
-
-- (void)onSyncStateChanged {
-  [self.consumer updateErrorSectionModelAndReloadViewIfNeeded:YES];
 }
 
 #pragma mark - Private
