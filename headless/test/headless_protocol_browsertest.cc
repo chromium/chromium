@@ -636,6 +636,16 @@ HEADLESS_PROTOCOL_TEST_P(HeadlessProtocolBrowserTestSitePerProcess,
                          SitePerProcess,
                          "sanity/site-per-process.js")
 
+// The test brlow requires beginFrameControl which is currently not supported
+// on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_IOCommandAfterInput DISABLED_IOCommandAfterInput
+#else
+#define MAYBE_IOCommandAfterInput IOCommandAfterInput
+#endif
+HEADLESS_PROTOCOL_TEST(MAYBE_IOCommandAfterInput,
+                       "input/io-command-after-input.js")
+
 #define HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(              \
     TEST_NAME, SCRIPT_NAME, COMMAND_LINE_EXTRAS)                      \
                                                                       \
