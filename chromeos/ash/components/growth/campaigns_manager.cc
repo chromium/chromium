@@ -458,8 +458,8 @@ void CampaignsManager::OnCampaignsLoaded(
 
   campaigns_loaded_ = true;
 
-  std::move(load_callback).Run();
   RecordQueuedEventsAndMaybeTrigger();
+  std::move(load_callback).Run();
   NotifyCampaignsLoaded();
 }
 
