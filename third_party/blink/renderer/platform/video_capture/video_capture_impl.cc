@@ -277,13 +277,13 @@ struct VideoCaptureImpl::VideoFrameInitData {
       frame_or_buffer;
 };
 
-std::optional<VideoCaptureImpl::VideoFrameInitData>
-VideoCaptureImpl::CreateVideoFrameInitData(
+bool VideoCaptureImpl::ProcessBuffer(
     media::mojom::blink::ReadyBufferPtr ready_buffer) {
   const auto iter = client_buffers_.find(ready_buffer->buffer_id);
   CHECK(iter != client_buffers_.end());
   scoped_refptr<BufferContext> buffer_context = iter->second;
 
+  auto reference_time = *ready_buffer->info->metadata.reference_time;
   VideoFrameInitData video_frame_init_data = {
       .ready_buffer = std::move(ready_buffer),
       .buffer_context = buffer_context};
@@ -412,7 +412,7 @@ VideoCaptureImpl::CreateVideoFrameInitData(
         if (!video_frame_init_data.ready_buffer->info->is_premapped ||
             !buffer_context->data()) {
           // If the frame isn't premapped, can't do anything here.
-          return std::nullopt;
+          return false;
         }
 
         scoped_refptr<media::VideoFrame> frame =
@@ -426,7 +426,7 @@ VideoCaptureImpl::CreateVideoFrameInitData(
                 buffer_context->data_size(),
                 video_frame_init_data.ready_buffer->info->timestamp);
         if (!frame) {
-          return std::nullopt;
+          return false;
         }
         video_frame_init_data.frame_or_buffer = frame;
         break;
@@ -484,21 +484,53 @@ VideoCaptureImpl::CreateVideoFrameInitData(
               base::span<uint8_t>(premapped_data, premapped_data_size));
       if (!buffer) {
         LOG(ERROR) << "Failed to open GpuMemoryBuffer handle";
-        return std::nullopt;
+        return false;
       }
       video_frame_init_data.frame_or_buffer = std::move(buffer);
+
+      // Convert the GpuMemoryBuffer to a VideoFrame.
+      media_task_runner_->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              [](media::GpuVideoAcceleratorFactories* gpu_factories,
+                 VideoFrameInitData video_frame_init_data,
+                 base::OnceCallback<void(VideoFrameInitData)>
+                     on_frame_ready_callback,
+                 base::OnceCallback<void()> on_gpu_context_lost,
+                 base::OnceCallback<void()> on_gmb_not_supported) {
+                if (!VideoCaptureImpl::BindVideoFrameOnMediaTaskRunner(
+                        gpu_factories, video_frame_init_data,
+                        std::move(on_gmb_not_supported))) {
+                  // Bind failed.
+                  std::move(on_gpu_context_lost).Run();
+                  video_frame_init_data.frame_or_buffer =
+                      scoped_refptr<media::VideoFrame>(nullptr);
+                }
+                std::move(on_frame_ready_callback)
+                    .Run(std::move(video_frame_init_data));
+              },
+              gpu_factories_, std::move(video_frame_init_data),
+              base::BindPostTaskToCurrentDefault(
+                  base::BindOnce(&VideoCaptureImpl::OnVideoFrameReady,
+                                 weak_factory_.GetWeakPtr(), reference_time)),
+              base::BindPostTask(
+                  main_task_runner_,
+                  base::BindOnce(&VideoCaptureImpl::OnGpuContextLost,
+                                 weak_factory_.GetWeakPtr())),
+              base::BindPostTaskToCurrentDefault(
+                  base::BindOnce(&VideoCaptureImpl::OnGmbNotSupported,
+                                 weak_factory_.GetWeakPtr()))));
+      return true;
     }
   }
-  if (auto* video_frame = absl::get_if<scoped_refptr<media::VideoFrame>>(
-          &video_frame_init_data.frame_or_buffer)) {
-    (*video_frame)
-        ->set_metadata(video_frame_init_data.ready_buffer->info->metadata);
-  }
-  CHECK(absl::holds_alternative<scoped_refptr<media::VideoFrame>>(
-            video_frame_init_data.frame_or_buffer) ||
-        absl::holds_alternative<std::unique_ptr<gfx::GpuMemoryBuffer>>(
-            video_frame_init_data.frame_or_buffer));
-  return video_frame_init_data;
+
+  auto* video_frame = absl::get_if<scoped_refptr<media::VideoFrame>>(
+      &video_frame_init_data.frame_or_buffer);
+  CHECK(video_frame);
+  (*video_frame)
+      ->set_metadata(video_frame_init_data.ready_buffer->info->metadata);
+  OnVideoFrameReady(reference_time, std::move(video_frame_init_data));
+  return true;
 }
 
 // Creates SharedImage mailboxes for |gpu_memory_buffer_handle_| and wraps the
@@ -960,62 +992,16 @@ void VideoCaptureImpl::OnBufferReady(
                        "time_delta", buffer->info->timestamp.InMicroseconds());
 
   const int buffer_id = buffer->buffer_id;
-  // Convert `buffer` into a media::VideoFrame or a gfx::GpuMemoryBuffer.
-  std::optional<VideoFrameInitData> video_frame_init_data =
-      CreateVideoFrameInitData(std::move(buffer));
-  if (!video_frame_init_data.has_value()) {
-    // Error during initialization of the frame or buffer.
+  // Process the `buffer` to convert it into a media::VideoFrame directly or via
+  // creating GpuMemoryBuffers.
+  if (!ProcessBuffer(std::move(buffer))) {
+    // Error during initialization of the VideoFrame or GpuMemoryBuffer.
     OnFrameDropped(media::VideoCaptureFrameDropReason::
                        kVideoCaptureImplFailedToWrapDataAsMediaVideoFrame);
     GetVideoCaptureHost()->ReleaseBuffer(device_id_, buffer_id,
                                          DefaultFeedback());
     return;
   }
-
-  if (absl::holds_alternative<std::unique_ptr<gfx::GpuMemoryBuffer>>(
-          video_frame_init_data->frame_or_buffer)) {
-    // To make the frame ready we must convert gfx::GpuMemoryBuffer to
-    // media::VideoFrame on the media task runner.
-    media_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(
-                       [](media::GpuVideoAcceleratorFactories* gpu_factories,
-                          VideoFrameInitData video_frame_init_data,
-                          base::OnceCallback<void(VideoFrameInitData)>
-                              on_frame_ready_callback,
-                          base::OnceCallback<void()> on_gpu_context_lost,
-                          base::OnceCallback<void()> on_gmb_not_supported) {
-                         if (!VideoCaptureImpl::BindVideoFrameOnMediaTaskRunner(
-                                 gpu_factories, video_frame_init_data,
-                                 std::move(on_gmb_not_supported))) {
-                           // Bind failed.
-                           std::move(on_gpu_context_lost).Run();
-                           // Proceed to invoke |on_frame_ready_callback| even
-                           // though we failed - it takes care of reporting the
-                           // frame as dropped when it is set to null.
-                           video_frame_init_data.frame_or_buffer =
-                               scoped_refptr<media::VideoFrame>(nullptr);
-                         }
-                         std::move(on_frame_ready_callback)
-                             .Run(std::move(video_frame_init_data));
-                       },
-                       gpu_factories_, std::move(*video_frame_init_data),
-                       base::BindPostTaskToCurrentDefault(base::BindOnce(
-                           &VideoCaptureImpl::OnVideoFrameReady,
-                           weak_factory_.GetWeakPtr(), reference_time)),
-                       base::BindPostTask(
-                           main_task_runner_,
-                           base::BindOnce(&VideoCaptureImpl::OnGpuContextLost,
-                                          weak_factory_.GetWeakPtr())),
-                       base::BindPostTaskToCurrentDefault(
-                           base::BindOnce(&VideoCaptureImpl::OnGmbNotSupported,
-                                          weak_factory_.GetWeakPtr()))));
-    return;
-  }
-
-  // No round-trip to media task runner needed.
-  CHECK(absl::holds_alternative<scoped_refptr<media::VideoFrame>>(
-      video_frame_init_data->frame_or_buffer));
-  OnVideoFrameReady(reference_time, std::move(*video_frame_init_data));
 }
 
 void VideoCaptureImpl::OnVideoFrameReady(
