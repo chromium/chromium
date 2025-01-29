@@ -158,10 +158,12 @@ TEST_F(MessagingBackendStoreTest, ClearDirtyTabMessagesForGroup) {
             store_->GetDirtyMessagesForGroup(collaboration_id, DirtyType::kAll)
                 .size());
 
-  store_->ClearDirtyTabMessagesForGroup(collaboration_id);
+  auto cleared_messages =
+      store_->ClearDirtyTabMessagesForGroup(collaboration_id);
   EXPECT_EQ(0u,
             store_->GetDirtyMessagesForGroup(collaboration_id, DirtyType::kAll)
                 .size());
+  EXPECT_EQ(2u, cleared_messages.size());
 }
 
 TEST_F(MessagingBackendStoreTest, ClearDirtyMessageById) {

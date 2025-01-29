@@ -42,7 +42,7 @@ class MessagingBackendStore {
       DirtyType dirty_type) = 0;
 
   // Clear all dirty tab messages for a group.
-  virtual void ClearDirtyTabMessagesForGroup(
+  virtual std::vector<collaboration_pb::Message> ClearDirtyTabMessagesForGroup(
       const data_sharing::GroupId& collaboration_id) = 0;
 
   // Clear the dirty message for a single message.

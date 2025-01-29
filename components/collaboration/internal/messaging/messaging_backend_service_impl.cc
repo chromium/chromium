@@ -493,7 +493,35 @@ void MessagingBackendServiceImpl::ClearDirtyTabMessagesForGroup(
     // Unable to find collaboration.
     return;
   }
-  store_->ClearDirtyTabMessagesForGroup(*collaboration_group_id);
+
+  std::optional<tab_groups::SavedTabGroup> tab_group =
+      tab_group_sync_service_->GetGroup(group_id);
+
+  // Clear the dirty bits from the storage.
+  auto cleared_messages =
+      store_->ClearDirtyTabMessagesForGroup(*collaboration_group_id);
+
+  // Since the dirty bits are cleared from DB, hide any dirty dots from the tabs
+  // and tab groups if they are already showing.
+  for (auto& message : cleared_messages) {
+    PersistentMessage persistent_message;
+    persistent_message.collaboration_event =
+        ToCollaborationEvent(message.event_type());
+    persistent_message.attribution =
+        CreateMessageAttributionForTabUpdates(message, tab_group, std::nullopt);
+    NotifyHidePersistentMessagesForTypes(
+        persistent_message, {PersistentNotificationType::CHIP,
+                             PersistentNotificationType::DIRTY_TAB});
+
+    if (persistent_message.attribution.tab_group_metadata &&
+        persistent_message.attribution.tab_group_metadata->sync_tab_group_id) {
+      base::Uuid tab_group_id =
+          persistent_message.attribution.tab_group_metadata->sync_tab_group_id
+              .value();
+      DisplayOrHideTabGroupDirtyDotForTabGroup(*collaboration_group_id,
+                                               tab_group_id);
+    }
+  }
 }
 
 void MessagingBackendServiceImpl::OnStoreInitialized(bool success) {
