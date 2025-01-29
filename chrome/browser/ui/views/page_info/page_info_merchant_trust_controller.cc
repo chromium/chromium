@@ -6,6 +6,9 @@
 
 #include "chrome/browser/page_info/merchant_trust_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/hats/hats_service.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_ui_delegate.h"
 #include "chrome/browser/ui/page_info/merchant_trust_side_panel.h"
 #include "chrome/browser/ui/views/page_info/page_info_merchant_trust_content_view.h"
@@ -30,6 +33,13 @@ PageInfoMerchantTrustController::PageInfoMerchantTrustController(
       base::BindOnce(
           &PageInfoMerchantTrustController::OnMerchantTrustDataFetched,
           base::Unretained(this)));
+
+  auto* hats_service =
+      HatsServiceFactory::GetForProfile(profile, /*create_if_necessary=*/true);
+  if (hats_service) {
+    content_view_->SetHatsButtonVisibility(hats_service->CanShowSurvey(
+        kHatsSurveyTriggerMerchantTrustLearnSurvey));
+  }
 
   interaction_timer_.Start(
       FROM_HERE, page_info::kMerchantTrustRequiredInteractionDuration.Get(),
@@ -63,7 +73,15 @@ void PageInfoMerchantTrustController::ViewReviewsPressed() {
 }
 
 void PageInfoMerchantTrustController::HatsButtonPressed() {
-  // TODO(crbug.com/381405880): Open the HaTS.
+  auto* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  auto* hats_service =
+      HatsServiceFactory::GetForProfile(profile, /*create_if_necessary=*/true);
+  if (!hats_service) {
+    return;
+  }
+  hats_service->LaunchSurvey(kHatsSurveyTriggerMerchantTrustLearnSurvey);
+  // TODO(crbug.com/381405880): Set loading string to HaTS button.
 }
 
 void PageInfoMerchantTrustController::InitCallbacks() {

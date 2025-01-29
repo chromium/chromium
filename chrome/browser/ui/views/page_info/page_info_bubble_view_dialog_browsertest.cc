@@ -1119,13 +1119,7 @@ INSTANTIATE_TEST_SUITE_P(
 class PageInfoBubbleViewMerchantTrustDialogBrowserTest
     : public DialogBrowserTest {
  public:
-  PageInfoBubbleViewMerchantTrustDialogBrowserTest() {
-    std::vector<base::test::FeatureRefAndParams> enabled_features = {
-        {page_info::kMerchantTrust,
-         {{page_info::kMerchantTrustForceShowUIForTestingName, "true"}}},
-        {page_info::kPageInfoAboutThisSiteMoreLangs, {}}};
-    feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
-  }
+  PageInfoBubbleViewMerchantTrustDialogBrowserTest() { SetUpFeatureList(); }
 
   void SetUpOnMainThread() override {
     https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
@@ -1186,8 +1180,18 @@ class PageInfoBubbleViewMerchantTrustDialogBrowserTest
     return https_server_.GetURL(host, "/title1.html");
   }
 
- private:
+ protected:
   base::test::ScopedFeatureList feature_list_;
+
+  virtual void SetUpFeatureList() {
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {page_info::kMerchantTrust,
+         {{page_info::kMerchantTrustForceShowUIForTestingName, "true"}}},
+        {page_info::kPageInfoAboutThisSiteMoreLangs, {}}};
+    feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
+  }
+
+ private:
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
 };
 
@@ -1207,6 +1211,48 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewMerchantTrustDialogBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewMerchantTrustDialogBrowserTest,
                        InvokeUi_MerchantTrustSubpage) {
-  set_baseline("6111370");
+  set_baseline("6191871");
+  ShowAndVerifyUi();
+}
+
+class PageInfoBubbleViewMerchantTrustHatsDialogBrowserTest
+    : public PageInfoBubbleViewMerchantTrustDialogBrowserTest {
+ public:
+  // DialogBrowserTest:
+  void ShowUi(const std::string& name) override {
+    // Bubble dialogs' bounds may exceed the display's work area.
+    // https://crbug.com/893292.
+    set_should_verify_dialog_bounds(false);
+
+    ASSERT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), GetUrl(kMerchantTrustUrl)));
+
+    OpenPageInfoBubble(browser());
+    // Set static site name to prevent flakes caused by changing port.
+    SetStaticSiteName(u"Example site");
+
+    PageInfoBubbleView* bubble_view = static_cast<PageInfoBubbleView*>(
+        PageInfoBubbleView::GetPageInfoBubbleForTesting());
+    bubble_view->OpenMerchantTrustPage();
+  }
+
+ protected:
+  void SetUpFeatureList() override {
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {page_info::kMerchantTrust,
+         {{page_info::kMerchantTrustForceShowUIForTestingName, "true"}}},
+        {features::kHappinessTrackingSurveysForDesktopDemo, {}},
+        {page_info::kMerchantTrustLearnSurvey,
+         {
+             {"probability", "1"},
+             {"user_prompted", "true"},
+             {"en_site_id", "load"},
+         }}};
+    feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewMerchantTrustHatsDialogBrowserTest,
+                       InvokeUi_MerchantTrustSubpage) {
   ShowAndVerifyUi();
 }

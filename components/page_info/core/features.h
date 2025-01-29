@@ -87,6 +87,13 @@ extern const base::FeatureParam<base::TimeDelta>
 extern const base::FeatureParam<base::TimeDelta>
     kMerchantTrustRequiredInteractionDuration;
 
+// Enables the 'Merchant trust' sentiment survey that will be available for
+// users in the page info. This should be set in the fieldtrial config along
+// with the trigger ID for the corresponding survey (as en_site_id),
+// probability (as probability) and that the survey is user triggered (as
+// user_prompted).
+BASE_DECLARE_FEATURE(kMerchantTrustLearnSurvey);
+
 }  // namespace page_info
 
 #endif  // COMPONENTS_PAGE_INFO_CORE_FEATURES_H_

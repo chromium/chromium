@@ -61,6 +61,10 @@
           wrapper.setAttribute('style', 'width:1000px; height:1000px');
         };
       }
+
+      if (params.get('trigger_id') == "load") {
+        history.pushState('', '', '#loaded');
+      }
     </script>
   </head>
   <body>

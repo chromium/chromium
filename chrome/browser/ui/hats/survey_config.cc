@@ -164,6 +164,8 @@ constexpr char kHatsSurveyTriggerMerchantTrustEvaluationControlSurvey[] =
     "merchant-trust-evaluation-control-survey";
 constexpr char kHatsSurveyTriggerMerchantTrustEvaluationExperimentSurvey[] =
     "merchant-trust-evaluation-experiment-survey";
+constexpr char kHatsSurveyTriggerMerchantTrustLearnSurvey[] =
+    "merchant-trust-learn-survey";
 
 namespace {
 
@@ -581,6 +583,9 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
   survey_configs.emplace_back(
       &page_info::kMerchantTrustEvaluationExperimentSurvey,
       kHatsSurveyTriggerMerchantTrustEvaluationExperimentSurvey);
+
+  survey_configs.emplace_back(&page_info::kMerchantTrustLearnSurvey,
+                              kHatsSurveyTriggerMerchantTrustLearnSurvey);
 
 #else
   survey_configs.emplace_back(&chrome::android::kChromeSurveyNextAndroid,

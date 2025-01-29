@@ -24,6 +24,7 @@ class PageInfoMerchantTrustContentView : public views::FlexLayoutView,
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kElementIdForTesting);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kViewReviewsId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kHatsButtonId);
 
   PageInfoMerchantTrustContentView();
   ~PageInfoMerchantTrustContentView() override;
@@ -38,6 +39,7 @@ class PageInfoMerchantTrustContentView : public views::FlexLayoutView,
   void SetReviewsSummary(std::u16string summary);
   void SetRating(double rating);
   void SetReviewCount(int count);
+  void SetHatsButtonVisibility(bool visible);
 
   // views::View:
   gfx::Size CalculatePreferredSize(
@@ -56,6 +58,7 @@ class PageInfoMerchantTrustContentView : public views::FlexLayoutView,
   raw_ptr<StarRatingView> star_rating_view_;
   raw_ptr<RichHoverButton> view_reviews_button_;
   raw_ptr<views::Label> summary_label_;
+  raw_ptr<RichHoverButton> hats_button_;
 
   base::RepeatingCallbackList<void(const ui::Event&)>
       learn_more_link_callback_list_;

@@ -28,6 +28,8 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PageInfoMerchantTrustContentView,
                                       kElementIdForTesting);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PageInfoMerchantTrustContentView,
                                       kViewReviewsId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PageInfoMerchantTrustContentView,
+                                      kHatsButtonId);
 
 PageInfoMerchantTrustContentView::PageInfoMerchantTrustContentView() {
   ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
@@ -42,7 +44,7 @@ PageInfoMerchantTrustContentView::PageInfoMerchantTrustContentView() {
   view_reviews_button_ = AddChildView(CreateViewReviewsButton());
   view_reviews_button_->SetProperty(views::kMarginsKey,
                                     gfx::Insets().set_bottom(bottom_margin));
-  AddChildView(CreateHatsButton());
+  hats_button_ = AddChildView(CreateHatsButton());
   // No bottom margin for the content view because the HaTS button acts as a
   // footer.
   SetProperty(views::kMarginsKey, gfx::Insets::TLBR(0, 0, 0, 0));
@@ -82,6 +84,10 @@ void PageInfoMerchantTrustContentView::SetRating(double rating) {
 void PageInfoMerchantTrustContentView::SetReviewCount(int count) {
   view_reviews_button_->SetTitleText(l10n_util::GetPluralStringFUTF16(
       IDS_PAGE_INFO_MERCHANT_TRUST_VIEW_ALL_REVIEWS, count));
+}
+
+void PageInfoMerchantTrustContentView::SetHatsButtonVisibility(bool visible) {
+  hats_button_->SetVisible(visible);
 }
 
 std::unique_ptr<views::View>
@@ -166,6 +172,8 @@ PageInfoMerchantTrustContentView::CreateHatsButton() {
       std::u16string());
   hats_button->SetBackground(
       views::CreateThemedSolidBackground(ui::kColorSysNeutralContainer));
+  hats_button->SetProperty(views::kElementIdentifierKey, kHatsButtonId);
+  hats_button->SetVisible(false);
   return hats_button;
 }
 
