@@ -26,13 +26,12 @@
         title="DeleteDictionary"></cr-icon-button>
       <cr-button on-click="importDictionary_">
         <span>
-          Import
+          $i18n{japaneseDictionaryImport}
         </span>
       </cr-button>
       <cr-button on-click="exportDictionary_">
-        <!-- TODO(crbug.com/382344109): Translate UI strings -->
         <span>
-          Export
+          $i18n{japaneseDictionaryExport}
         </span>
       </cr-button>
     </div>
@@ -47,8 +46,9 @@
     </os-japanese-dictionary-entry-row>
   </template>
   <template is="dom-if" if="[[shouldShowAddButton_(dict.entries.length)]]">
-    <cr-icon-button iron-icon="cr:add" on-click="addEntry_"
-      title="AddEntry">
-    </cr-icon-button>
+    <cr-button on-click="addEntry_">
+      <iron-icon slot="prefix-icon" icon="cr:add"></iron-icon>
+        $i18n{japaneseDictionaryNewEntry}
+    </cr-button>
   </template>
 </iron-collapse>

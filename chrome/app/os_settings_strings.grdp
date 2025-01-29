@@ -719,6 +719,33 @@
   <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_DISABLE_PERSONALIZED_SUGGESTIONS" desc="The label for the setting toggle to enable or disable the personalized conversions and custom user dictionaries for Japanese. The original string in Japanese is '学習機能、入力履歴からのサジェスト機能、ユーザ辞書機能を無効にする'.">
     Disable personalized conversions and suggestions as well as user dictionary
   </message>
+  <message name="IDS_OS_SETTINGS_LANGUAGES_JAPANESE_DICTIONARY_NAME" desc="Label for the text box of the Japanese user settings which allows them to change the name of their custom dictionary for Japanese input.">
+    Name
+  </message>
+  <message name="IDS_OS_SETTINGS_LANGUAGES_JAPANESE_DICTIONARY_READING" desc="Label for the text box of the Japanese user settings which allows them to change the 'reading' of their custom dictionary for Japanese input. The 'reading' is a query used to get the target Japanese text. It's typically in Hiragana (e.g. ぐーぐるけんさく). In Japanese, this text should be: よみ">
+    Reading
+  </message>
+  <message name="IDS_OS_SETTINGS_LANGUAGES_JAPANESE_DICTIONARY_WORD" desc="Label for the text box of the Japanese user settings which allows them to change the 'word' of their custom dictionary for Japanese input. The target 'reading' text would be transformed into a 'word' that is registered by the user. (e.g. グーグル検索). In Japanese this text should be: 単語">
+    Word
+  </message>
+  <message name="IDS_OS_SETTINGS_LANGUAGES_JAPANESE_DICTIONARY_CATEGORY" desc="Label for the text box of the Japanese user settings which allows them to change the 'category' of their custom dictionary entry for Japaneses input. The category includes grammatical categories such as Noun, Verb etc. In Japanese this text should be: 品詞">
+    Category
+  </message>
+  <message name="IDS_OS_SETTINGS_LANGUAGES_JAPANESE_DICTIONARY_COMMENT" desc="Label for the text box of the Japanese user settings which allows them to change the 'comment' of their custom dictionary for Japaneses input. In Japanese this text should be: コメント">
+    Comment
+  </message>
+  <message name="IDS_OS_SETTINGS_LANGUAGES_JAPANESE_DICTIONARY_IMPORT" desc="Button to import a Japanese dictionary from a file on the device. In Japanese, this text should be: インポート">
+    Import
+  </message>
+  <message name="IDS_OS_SETTINGS_LANGUAGES_JAPANESE_DICTIONARY_EXPORT" desc="Button to export a Japanese dictionary to a file on the device. In Japanese, this text should be: エクスポート">
+    Export
+  </message>
+  <message name="IDS_OS_SETTINGS_LANGUAGES_JAPANESE_DICTIONARY_NEW_ENTRY" desc="Button to add a new entry into a Japanese dictionary. In Japanese, this text should be: 単語を追加">
+    New entry
+  </message>
+  <message name="IDS_OS_SETTINGS_LANGUAGES_JAPANESE_DICTIONARY_ADD_DICTIONARY" desc="Button to add a new Japanese dictionary. In Japanese, this text should be: 辞書を作成">
+    Add dictionary
+  </message>
   <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_ENABLE_DOUBLE_SPACE_PERIOD" desc="The label for the input method option to enable double-space to type period (when an user types two consecutive space, it outputs a period).">
     Double-space to type period
   </message>
