@@ -115,8 +115,8 @@ cast::common::StopReason::Type ToProtoType(
 const cast::common::Dictionary::Entry* FindEntry(
     const std::string& key,
     const cast::common::Dictionary& dict) {
-  auto iter = base::ranges::find(dict.entries(), key,
-                                 &cast::common::Dictionary::Entry::key);
+  auto iter = std::ranges::find(dict.entries(), key,
+                                &cast::common::Dictionary::Entry::key);
   if (iter == dict.entries().end()) {
     return nullptr;
   }
