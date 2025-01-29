@@ -128,9 +128,8 @@ FeaturePromoResult FeaturePromoLifecycle::CanShow() const {
       //
       // Note that snoozes do not count towards the show cap; the cap only
       // applies to showing when the IPH is neither dismissed nor snoozed.
-      if (result && features::IsUserEducationV2() &&
-          data->show_count - data->snooze_count >=
-              features::GetMaxPromoShowCount()) {
+      if (result && data->show_count - data->snooze_count >=
+                        features::GetMaxPromoShowCount()) {
         result = FeaturePromoResult::kExceededMaxShowCount;
       }
       return result;
@@ -160,9 +159,8 @@ bool FeaturePromoLifecycle::CanSnooze() const {
     case PromoType::kSnooze:
     case PromoType::kTutorial:
       // Only enforce snooze count in V2 to avoid breaking backwards behavior.
-      return !features::IsUserEducationV2() ||
-             storage_service_->GetSnoozeCount(*iph_feature_) <
-                 features::GetMaxSnoozeCount();
+      return storage_service_->GetSnoozeCount(*iph_feature_) <
+             features::GetMaxSnoozeCount();
     case PromoType::kRotating:
       // TODO(dfried): Should snooze promos be allowed in rotating promos?
       return true;
@@ -287,27 +285,15 @@ FeaturePromoResult FeaturePromoLifecycle::CanShowSnoozePromo(
   const auto now = GetCurrentTime();
 
   // Figure out when the promo can show next.
-  if (features::IsUserEducationV2()) {
-    // In V2, there is a separate cooldown if a promo is snoozed vs. shown but
-    // not snoozed, for example, if it was aborted for some other reason and not
-    // dismissed.
-    if (now < promo_data.last_snooze_time + features::GetSnoozeDuration()) {
-      return FeaturePromoResult::kSnoozed;
-    }
-    if (now < promo_data.last_show_time + features::GetAbortCooldown()) {
-      return FeaturePromoResult::kRecentlyAborted;
-    }
-  } else {
-    // In V1, it was always the default snooze duration from the previous
-    // show or snooze time (non-snoozed IPH were subject to "non-clicker policy"
-    // which still used the default snooze duration).
-    const auto snooze_time = features::GetSnoozeDuration();
-    if (now < promo_data.last_snooze_time + snooze_time) {
-      return FeaturePromoResult::kSnoozed;
-    }
-    if (now < promo_data.last_show_time + snooze_time) {
-      return FeaturePromoResult::kRecentlyAborted;
-    }
+  //
+  // There is a separate cooldown if a promo is snoozed vs. shown but not
+  // snoozed, for example, if it was aborted for some other reason and not
+  // dismissed.
+  if (now < promo_data.last_snooze_time + features::GetSnoozeDuration()) {
+    return FeaturePromoResult::kSnoozed;
+  }
+  if (now < promo_data.last_show_time + features::GetAbortCooldown()) {
+    return FeaturePromoResult::kRecentlyAborted;
   }
 
   return FeaturePromoResult::Success();
