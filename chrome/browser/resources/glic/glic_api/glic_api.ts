@@ -162,7 +162,7 @@ export declare interface GlicBrowserHost {
   showProfilePicker?(): void;
 
   // Returns the state of the panel.
-  getPanelState?(): Observable<PanelState>;
+  getPanelState?(): ObservableValue<PanelState>;
 
   /**
    * @todo Replace with the separate notifications about tab change and tab
@@ -172,20 +172,20 @@ export declare interface GlicBrowserHost {
    * whenever the focus changes due to the user switching tabs or navigating the
    * current focused tab.
    *
-   * @returns An observable for `TabData` values that will be updated when a new
-   *          tab is focused or the current tab is navigated. The value will be
-   *          `undefined` if there's no active tab or it cannot be focused.
+   * @returns An ObservableValue for `TabData` values that will be updated when
+   *     a new tab is focused or the current tab is navigated. The value will be
+   *     `undefined` if there's no active tab or it cannot be focused.
    */
-  getFocusedTabState?(): Observable<TabData|undefined>;
+  getFocusedTabState?(): ObservableValue<TabData|undefined>;
 
   // Returns the state of the microphone permission.
-  getMicrophonePermissionState?(): Observable<boolean>;
+  getMicrophonePermissionState?(): ObservableValue<boolean>;
 
   // Returns the state of the location permission.
-  getLocationPermissionState?(): Observable<boolean>;
+  getLocationPermissionState?(): ObservableValue<boolean>;
 
   // Returns the state of the tab context permission.
-  getTabContextPermissionState?(): Observable<boolean>;
+  getTabContextPermissionState?(): ObservableValue<boolean>;
 
   // Set the state of the microphone permission in settings. Returns a promise
   // that resolves when the browser has stored the new pref value.
@@ -496,13 +496,27 @@ export declare interface DraggableArea {
   height: number;
 }
 
-// A value that can be observed.
+/**
+ * A generic interface for observing a stream of values.
+ *
+ * Subscriptions should be kept only while necessary, as they incur some cost.
+ * When not needed anymore, call Subscriber.unsubscribe() on the instance
+ * returned by subscribe.
+ */
 export declare interface Observable<T> {
-  // Get the current value.
-  getValue(): T;
   // Listen for changes.
   subscribe(change: (newValue: T) => void): Subscriber;
 }
+
+/**
+ * An observable value that may change over time. A subscriber is guaranteed to
+ * be called once with the value, and again anytime the value changes. Note that
+ * the subscriber may or may not be invoked immediately upon calling
+ * subscribe().
+ *
+ * See also comments about Observable.
+ */
+export interface ObservableValue<T> extends Observable<T> {}
 
 export declare interface Subscriber {
   unsubscribe(): void;

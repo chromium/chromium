@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {AnnotatedPageData, ChromeVersion, DraggableArea, ErrorWithReason, GlicBrowserHost, GlicHostRegistry, GlicWebClient, Observable, OpenPanelInfo, PanelState, PdfDocumentData, Subscriber, TabContextOptions, TabContextResult, TabData, UserProfileInfo} from '../glic_api/glic_api.js';
+import type {AnnotatedPageData, ChromeVersion, DraggableArea, ErrorWithReason, GlicBrowserHost, GlicHostRegistry, GlicWebClient, ObservableValue, OpenPanelInfo, PanelState, PdfDocumentData, Subscriber, TabContextOptions, TabContextResult, TabData, UserProfileInfo} from '../glic_api/glic_api.js';
 import {GetTabContextErrorReason} from '../glic_api/glic_api.js';
 
 import {PostMessageRequestReceiver, PostMessageRequestSender} from './post_message_transport.js';
@@ -124,11 +124,14 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
   private handlerFunctionNames: Set<string> = new Set();
   private webClientMessageHandler: WebClientMessageHandler;
   private chromeVersion?: ChromeVersion;
-  private panelState?: ObservableValue<PanelState>;
-  private focusedTabState?: ObservableValue<TabData|undefined>;
-  private permissionStateMicrophone?: ObservableValue<boolean>;
-  private permissionStateLocation?: ObservableValue<boolean>;
-  private permissionStateTabContext?: ObservableValue<boolean>;
+  private panelState = ObservableValueImpl.withNoValue<PanelState>();
+  private focusedTabState =
+      ObservableValueImpl.withNoValue<TabData|undefined>();
+  private permissionStateMicrophone =
+      ObservableValueImpl.withNoValue<boolean>();
+  private permissionStateLocation = ObservableValueImpl.withNoValue<boolean>();
+  private permissionStateTabContext =
+      ObservableValueImpl.withNoValue<boolean>();
 
   constructor(private webClient: GlicWebClient, windowProxy: WindowProxy) {
     this.sender = new PostMessageRequestSender(windowProxy, 'chrome://glic');
@@ -152,16 +155,16 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
   async webClientCreated() {
     const state = await this.sender.requestWithResponse(
         'glicBrowserWebClientCreated', {});
-    this.panelState = new ObservableValue<PanelState>(state.panelState);
-    this.focusedTabState = new ObservableValue<TabData|undefined>(
+    this.panelState.assignAndSignal(state.panelState);
+    this.focusedTabState.assignAndSignal(
         state.focusedTab ? convertTabDataFromPrivate(state.focusedTab) :
                            undefined);
-    this.permissionStateMicrophone =
-        new ObservableValue(state.microphonePermissionEnabled);
-    this.permissionStateLocation =
-        new ObservableValue(state.locationPermissionEnabled);
-    this.permissionStateTabContext =
-        new ObservableValue(state.tabContextPermissionEnabled);
+    this.permissionStateMicrophone.assignAndSignal(
+        state.microphonePermissionEnabled);
+    this.permissionStateLocation.assignAndSignal(
+        state.locationPermissionEnabled);
+    this.permissionStateTabContext.assignAndSignal(
+        state.tabContextPermissionEnabled);
     this.chromeVersion = state.chromeVersion;
   }
 
@@ -254,24 +257,24 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
         'glicBrowserSetWindowDraggableAreas', {areas});
   }
 
-  getPanelState(): ObservableValue<PanelState> {
-    return this.panelState!;
+  getPanelState(): ObservableValueImpl<PanelState> {
+    return this.panelState;
   }
 
-  getFocusedTabState(): ObservableValue<TabData|undefined> {
-    return this.focusedTabState!;
+  getFocusedTabState(): ObservableValueImpl<TabData|undefined> {
+    return this.focusedTabState;
   }
 
-  getMicrophonePermissionState(): ObservableValue<boolean> {
-    return this.permissionStateMicrophone!;
+  getMicrophonePermissionState(): ObservableValueImpl<boolean> {
+    return this.permissionStateMicrophone;
   }
 
-  getLocationPermissionState(): ObservableValue<boolean> {
-    return this.permissionStateLocation!;
+  getLocationPermissionState(): ObservableValueImpl<boolean> {
+    return this.permissionStateLocation;
   }
 
-  getTabContextPermissionState(): ObservableValue<boolean> {
-    return this.permissionStateTabContext!;
+  getTabContextPermissionState(): ObservableValueImpl<boolean> {
+    return this.permissionStateTabContext;
   }
 
   setMicrophonePermissionState(enabled: boolean): Promise<void> {
@@ -455,11 +458,30 @@ class ObservableSubscription<T> implements Subscriber {
   }
 }
 
-class ObservableValue<T> implements Observable<T> {
+/**
+ * A observable value that can change over time. If value is initialized, sends
+ * it to new subscribers upon subscribe().
+ */
+class ObservableValueImpl<T> implements ObservableValue<T> {
   private subscribers: Set<ObservableSubscription<T>> = new Set();
-  constructor(private value: T) {}
+
+  private constructor(private isSet: boolean, private value: T|undefined) {}
+
+  /** Create an ObservableValue which has an initial value. */
+  static withValue<T>(value: T) {
+    return new ObservableValueImpl(true, value);
+  }
+
+  /**
+   * Create an Observable which has no initial value. Subscribers will not be
+   * called until after assignAndSignal() is called the first time.
+   */
+  static withNoValue<T>() {
+    return new ObservableValueImpl<T>(false, undefined);
+  }
 
   assignAndSignal(v: T) {
+    this.isSet = true;
     this.value = v;
     this.subscribers.forEach((sub) => {
       // Ignore if removed since forEach was called.
@@ -470,14 +492,13 @@ class ObservableValue<T> implements Observable<T> {
   }
 
   // Observable impl.
-  getValue(): T {
-    return this.value;
-  }
-
   subscribe(change: (newValue: T) => void): Subscriber {
     const newSub = new ObservableSubscription(
         change, (sub) => this.subscribers.delete(sub));
     this.subscribers.add(newSub);
+    if (this.isSet) {
+      change(this.value!);
+    }
     return newSub;
   }
 }

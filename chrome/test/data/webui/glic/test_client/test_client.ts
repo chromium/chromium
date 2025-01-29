@@ -74,7 +74,6 @@ class WebClient implements GlicWebClient {
     logMessage(`Chrome version: ${JSON.stringify(ver)}`);
 
     const focusedTabState = await this.browser.getFocusedTabState!();
-    focusedTabChanged(focusedTabState.getValue());
     focusedTabState.subscribe(focusedTabChanged);
 
     // Initialize permission switches and subscribe for updates.
@@ -87,7 +86,6 @@ class WebClient implements GlicWebClient {
     for (const permission of Object.keys(permissionStates) as
          PermissionSwitchName[]) {
       const state = permissionStates[permission]!;
-      updatePermissionSwitch(permission, state.getValue());
       state.subscribe((enabled) => {
         updatePermissionSwitch(permission, enabled);
       });
