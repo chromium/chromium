@@ -11,6 +11,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/signin/core/browser/account_management_type_metrics_recorder.h"
 #import "google_apis/gaia/gaia_id.h"
+#import "ios/chrome/app/change_profile_commands.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
@@ -143,6 +144,10 @@ class AccountProfileMapper::Assigner : public SystemIdentityManagerObserver {
           identity_access_token_refresh_failed_cb);
   ~Assigner() override;
 
+  void SetChangeProfileCommandsHandler(id<ChangeProfileCommands> handler) {
+    handler_ = handler;
+  }
+
   std::optional<std::string> FindProfileNameForGaiaID(
       const GaiaId& gaia_id) const;
 
@@ -163,6 +168,9 @@ class AccountProfileMapper::Assigner : public SystemIdentityManagerObserver {
   // Returns the ProfileAttributesStorageIOS if available - it can be null in
   // tests where no ProfileManager exists.
   ProfileAttributesStorageIOS* GetProfileAttributesStorage();
+
+  // Helper to delete a profile given its name.
+  void DeleteProfileNamed(std::string_view name);
 
   // Callback for SystemIdentityManager::IterateOverIdentities(). Checks the
   // mapping of `identity` to a profile, and attaches (or re-attaches) it as
@@ -191,6 +199,11 @@ class AccountProfileMapper::Assigner : public SystemIdentityManagerObserver {
       system_identity_manager_observation_{this};
 
   raw_ptr<ProfileManagerIOS> profile_manager_;
+
+  // The ChangeProfileCommands handler. If nil, the code assumes that there
+  // is not UI loaded yet and that it is safe to delete profiles directly
+  // using the ProfileManagerIOS.
+  __weak id<ChangeProfileCommands> handler_;
 
   IdentitiesOnDeviceChangedCallback identitites_on_device_changed_cb_;
   MappingUpdatedCallback mapping_updated_cb_;
@@ -291,6 +304,7 @@ void AccountProfileMapper::Assigner::MakePersonalProfileManagedWithGaiaID(
   for (const GaiaId& gaia_id : personal_gaia_ids) {
     DetachGaiaIdFromProfile(storage, previous_personal_profile_name, gaia_id);
   }
+
   // Delete the old managed profile (if it exists).
   if (abandoned_managed_profile_name) {
     // The old managed profile must not have been initialized, so that no actual
@@ -299,14 +313,8 @@ void AccountProfileMapper::Assigner::MakePersonalProfileManagedWithGaiaID(
         !storage
              ->GetAttributesForProfileWithName(*abandoned_managed_profile_name)
              .IsFullyInitialized());
-    // Also, the old managed profile mustn't be loaded, since it's going to be
-    // deleted and there's no good way to unload it.
-    CHECK(
-        !profile_manager_->GetProfileWithName(*abandoned_managed_profile_name));
 
-    // TODO(crbug.com/331783685): Call the proper profile deletion API once it
-    // exists, see crbug.com/380903168.
-    storage->RemoveProfile(*abandoned_managed_profile_name);
+    DeleteProfileNamed(*abandoned_managed_profile_name);
   }
 
   // Register a new personal profile.
@@ -355,17 +363,8 @@ void AccountProfileMapper::Assigner::OnIdentityListChanged() {
           DetachGaiaIdFromProfile(attributes_storage, profile_name, gaia_id);
         } else {
           // A managed identity was removed, so its corresponding profile
-          // should be deleted. This is only possible if the profile isn't
-          // currently loaded
-          CHECK(profile_manager_);
-          if (!profile_manager_->GetProfileWithName(profile_name)) {
-            attributes_storage->RemoveProfile(profile_name);
-            // TODO(crbug.com/331783685): Also delete the actual profile
-            // folder from disk, once an API for that exists.
-          }
-          // Else: If the profile is currently loaded, do nothing. Deletion
-          // will be attempted again the next time account-profile mappings
-          // are processed (e.g. on the next browser restart).
+          // should be deleted.
+          DeleteProfileNamed(profile_name);
         }
       }
     }
@@ -411,6 +410,21 @@ ProfileAttributesStorageIOS*
 AccountProfileMapper::Assigner::GetProfileAttributesStorage() {
   return profile_manager_ ? profile_manager_->GetProfileAttributesStorage()
                           : nullptr;
+}
+
+void AccountProfileMapper::Assigner::DeleteProfileNamed(std::string_view name) {
+  if (handler_) {
+    [handler_ deleteProfile:name completion:base::DoNothing()];
+    return;
+  }
+
+  // This may be reached if DeleteProfileNamed(...) is called during the
+  // AccountProfileMapper constructor (as the handler is set at a later
+  // stage), during application shutdown (as the AccountProfileMapper may
+  // outlive the handler) or during unit tests. In all cases there should
+  // be no UI loaded and thus it is safe to simply mark the profile for
+  // deletion directly via the ProfileManagerIOS.
+  profile_manager_->MarkProfileForDeletion(name);
 }
 
 std::string AccountProfileMapper::Assigner::GetPersonalProfileName() {
@@ -623,6 +637,12 @@ AccountProfileMapper::AccountProfileMapper(
 
 AccountProfileMapper::~AccountProfileMapper() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+void AccountProfileMapper::SetChangeProfileCommandsHandler(
+    id<ChangeProfileCommands> handler) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  assigner_->SetChangeProfileCommandsHandler(handler);
 }
 
 void AccountProfileMapper::AddObserver(AccountProfileMapper::Observer* observer,

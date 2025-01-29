@@ -119,6 +119,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/signin/model/account_profile_mapper.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/device_orientation/scoped_force_portrait_orientation.h"
@@ -517,6 +518,12 @@ void DeleteProfileContinuation(base::OnceClosure done_closure,
   [ClientRegistration registerClients];
 
   _chromeMain = [ChromeMainStarter startChromeMain];
+
+  // Register the ChangeProfileCommands handler with AccountProfileMapper.
+  GetApplicationContext()
+      ->GetAccountProfileMapper()
+      ->SetChangeProfileCommandsHandler(HandlerForProtocol(
+          self.appState.appCommandDispatcher, ChangeProfileCommands));
 
   // Start recording field trial info.
   [[PreviousSessionInfo sharedInstance] beginRecordingFieldTrials];

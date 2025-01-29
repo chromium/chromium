@@ -16,6 +16,7 @@
 #import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
 
+@protocol ChangeProfileCommands;
 class GaiaId;
 class ProfileManagerIOS;
 @protocol SystemIdentity;
@@ -69,6 +70,9 @@ class AccountProfileMapper {
   AccountProfileMapper& operator=(const AccountProfileMapper&) = delete;
 
   ~AccountProfileMapper();
+
+  // Sets the ChangeProfileCommands handler.
+  void SetChangeProfileCommandsHandler(id<ChangeProfileCommands> handler);
 
   // Adds/removes observers for a profile based on `profile_name`.
   void AddObserver(Observer* observer, std::string_view profile_name);

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/signin/model/account_profile_mapper.h"
 
+#import "base/containers/contains.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
@@ -13,6 +14,7 @@
 #import "base/test/test_file_util.h"
 #import "base/test/test_future.h"
 #import "base/uuid.h"
+#import "ios/chrome/app/change_profile_commands.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
@@ -29,6 +31,48 @@
 
 using testing::_;
 using testing::UnorderedElementsAre;
+
+@interface FakeChangeProfileCommands : NSObject <ChangeProfileCommands>
+
+- (instancetype)initWithProfileManager:(ProfileManagerIOS*)manager
+    NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_UNAVAILABLE;
+
+- (void)shutdown;
+
+@property(nonatomic, readonly) BOOL deleteProfileCalled;
+
+@end
+
+@implementation FakeChangeProfileCommands {
+  raw_ptr<ProfileManagerIOS> _manager;
+}
+
+- (instancetype)initWithProfileManager:(ProfileManagerIOS*)manager {
+  if ((self = [super init])) {
+    DCHECK(manager);
+    _manager = manager;
+  }
+  return self;
+}
+
+- (void)shutdown {
+  _manager = nullptr;
+}
+
+- (void)changeProfile:(std::string_view)profileName
+             forScene:(SceneState*)sceneState
+         continuation:(ChangeProfileContinuation)continuation {
+  NOTREACHED();
+}
+
+- (void)deleteProfile:(std::string_view)profileName
+           completion:(ProfileDeletedCallback)completion {
+  _deleteProfileCalled = YES;
+  _manager->MarkProfileForDeletion(profileName);
+}
+
+@end
 
 namespace {
 
@@ -126,6 +170,9 @@ class FakeProfileManagerIOS : public ProfileManagerIOS {
   }
 
   ProfileIOS* GetProfileWithName(std::string_view name) override {
+    if (IsProfileMarkedForDeletion(name)) {
+      return nullptr;
+    }
     auto it = profiles_map_.find(name);
     if (it != profiles_map_.end()) {
       return it->second.get();
@@ -146,7 +193,7 @@ class FakeProfileManagerIOS : public ProfileManagerIOS {
   }
 
   bool CanCreateProfileWithName(std::string_view name) const override {
-    return !HasProfileWithName(name);
+    return !HasProfileWithName(name) && !IsProfileMarkedForDeletion(name);
   }
 
   std::string ReserveNewProfileName() override {
@@ -161,7 +208,8 @@ class FakeProfileManagerIOS : public ProfileManagerIOS {
   }
 
   bool CanDeleteProfileWithName(std::string_view name) const override {
-    return false;
+    return HasProfileWithName(name) &&
+           name != profile_attributes_storage_.GetPersonalProfileName();
   }
 
   bool LoadProfileAsync(std::string_view name,
@@ -195,9 +243,14 @@ class FakeProfileManagerIOS : public ProfileManagerIOS {
   void UnloadProfile(std::string_view name) override { NOTREACHED(); }
   void UnloadAllProfiles() override { NOTREACHED(); }
 
-  void MarkProfileForDeletion(std::string_view name) override { NOTREACHED(); }
+  void MarkProfileForDeletion(std::string_view name) override {
+    DCHECK(CanDeleteProfileWithName(name));
+    profiles_marked_for_deletion_.insert(std::string(name));
+    profile_attributes_storage_.RemoveProfile(name);
+  }
+
   bool IsProfileMarkedForDeletion(std::string_view name) const override {
-    NOTREACHED();
+    return base::Contains(profiles_marked_for_deletion_, name);
   }
 
   ProfileAttributesStorageIOS* GetProfileAttributesStorage() override {
@@ -209,6 +262,8 @@ class FakeProfileManagerIOS : public ProfileManagerIOS {
 
   std::map<std::string, std::unique_ptr<FakeProfileIOS>, std::less<>>
       profiles_map_;
+
+  std::set<std::string, std::less<>> profiles_marked_for_deletion_;
 };
 
 class AccountProfileMapperTest : public PlatformTest {
@@ -922,16 +977,25 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
 // Tests that the personal profile gets correctly converted into a managed
 // profile on MakePersonalProfileManagedWithGaiaID(), and a new personal profile
 // gets created.
+//
+// This test is identical to *.ConvertsPersonalProfileToManaged but set a
+// ChangeProfileCommands handler. Together the two tests checks that both
+// code path (with and without a ChangeProfileCommands) work.
 TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
-       ConvertsPersonalProfileToManaged) {
+       ConvertsPersonalProfileToManaged_UsingChangeProfileCommands) {
   // Separate profiles are only available in iOS 17+.
   if (!@available(iOS 17, *)) {
     return;
   }
   ASSERT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 1u);
 
+  FakeChangeProfileCommands* handler = [[FakeChangeProfileCommands alloc]
+      initWithProfileManager:profile_manager_.get()];
+
   account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
       system_identity_manager_, profile_manager_.get());
+  account_profile_mapper_->SetChangeProfileCommandsHandler(handler);
+  ASSERT_FALSE(handler.deleteProfileCalled);
 
   // A personal and a managed account get added.
   system_identity_manager_->AddIdentity(gmail_identity1);
@@ -965,6 +1029,7 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   account_profile_mapper_->AddObserver(&mock_observer,
                                        original_personal_profile_name);
   EXPECT_CALL(mock_observer, OnIdentityListChanged());
+  EXPECT_FALSE(handler.deleteProfileCalled);
 
   // Simulate that the user signs in with the managed account, and chooses to
   // take existing local data along, i.e. convert the personal profile into a
@@ -989,12 +1054,16 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
       /*known_profile_names=*/{new_personal_profile_name});
   EXPECT_NE(new_personal_profile_name, original_personal_profile_name);
   EXPECT_EQ(new_managed_profile_name, original_personal_profile_name);
+  EXPECT_TRUE(handler.deleteProfileCalled);
 
   // The accounts should be assigned to the appropriate *new* profiles.
   EXPECT_NSEQ(expected_identities_personal,
               GetIdentitiesForProfile(new_personal_profile_name));
   EXPECT_NSEQ(expected_identities_managed,
               GetIdentitiesForProfile(new_managed_profile_name));
+
+  // Ensure the object no longer reference the ProfileManagerIOS.
+  [handler shutdown];
 }
 
 }  // namespace
