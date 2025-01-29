@@ -22,7 +22,7 @@ class WGSLLanguageFeatures : public ScriptWrappable,
 
  public:
   explicit WGSLLanguageFeatures(
-      const std::vector<wgpu::WGSLFeatureName>& features);
+      const std::vector<wgpu::WGSLLanguageFeatureName>& features);
 
   bool has(const String& feature) const;
   bool hasForBinding(ScriptState* script_state,

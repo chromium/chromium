@@ -1026,42 +1026,43 @@ const char* FromDawnEnum(wgpu::AdapterType dawn_enum) {
   NOTREACHED();
 }
 
-bool FromDawnEnum(wgpu::WGSLFeatureName dawn_enum, V8WGSLFeatureName* result) {
+bool FromDawnEnum(wgpu::WGSLLanguageFeatureName dawn_enum,
+                  V8WGSLFeatureName* result) {
   switch (dawn_enum) {
-    case wgpu::WGSLFeatureName::ReadonlyAndReadwriteStorageTextures:
+    case wgpu::WGSLLanguageFeatureName::ReadonlyAndReadwriteStorageTextures:
       *result = V8WGSLFeatureName(
           V8WGSLFeatureName::Enum::kReadonlyAndReadwriteStorageTextures);
       return true;
-    case wgpu::WGSLFeatureName::Packed4x8IntegerDotProduct:
+    case wgpu::WGSLLanguageFeatureName::Packed4x8IntegerDotProduct:
       *result = V8WGSLFeatureName(
           V8WGSLFeatureName::Enum::kPacked4X8IntegerDotProduct);
       return true;
-    case wgpu::WGSLFeatureName::UnrestrictedPointerParameters:
+    case wgpu::WGSLLanguageFeatureName::UnrestrictedPointerParameters:
       *result = V8WGSLFeatureName(
           V8WGSLFeatureName::Enum::kUnrestrictedPointerParameters);
       return true;
-    case wgpu::WGSLFeatureName::PointerCompositeAccess:
+    case wgpu::WGSLLanguageFeatureName::PointerCompositeAccess:
       *result =
           V8WGSLFeatureName(V8WGSLFeatureName::Enum::kPointerCompositeAccess);
       return true;
 
-    case wgpu::WGSLFeatureName::ChromiumTestingUnimplemented:
+    case wgpu::WGSLLanguageFeatureName::ChromiumTestingUnimplemented:
       *result = V8WGSLFeatureName(
           V8WGSLFeatureName::Enum::kChromiumTestingUnimplemented);
       return true;
-    case wgpu::WGSLFeatureName::ChromiumTestingUnsafeExperimental:
+    case wgpu::WGSLLanguageFeatureName::ChromiumTestingUnsafeExperimental:
       *result = V8WGSLFeatureName(
           V8WGSLFeatureName::Enum::kChromiumTestingUnsafeExperimental);
       return true;
-    case wgpu::WGSLFeatureName::ChromiumTestingExperimental:
+    case wgpu::WGSLLanguageFeatureName::ChromiumTestingExperimental:
       *result = V8WGSLFeatureName(
           V8WGSLFeatureName::Enum::kChromiumTestingExperimental);
       return true;
-    case wgpu::WGSLFeatureName::ChromiumTestingShippedWithKillswitch:
+    case wgpu::WGSLLanguageFeatureName::ChromiumTestingShippedWithKillswitch:
       *result = V8WGSLFeatureName(
           V8WGSLFeatureName::Enum::kChromiumTestingShippedWithKillswitch);
       return true;
-    case wgpu::WGSLFeatureName::ChromiumTestingShipped:
+    case wgpu::WGSLLanguageFeatureName::ChromiumTestingShipped:
       *result =
           V8WGSLFeatureName(V8WGSLFeatureName::Enum::kChromiumTestingShipped);
       return true;

@@ -78,7 +78,7 @@ V8GPUTextureFormat FromDawnEnum(wgpu::TextureFormat dawn_enum);
 V8GPUBufferMapState FromDawnEnum(wgpu::BufferMapState dawn_enum);
 const char* FromDawnEnum(wgpu::BackendType dawn_enum);
 const char* FromDawnEnum(wgpu::AdapterType dawn_enum);
-[[nodiscard]] bool FromDawnEnum(wgpu::WGSLFeatureName dawn_enum,
+[[nodiscard]] bool FromDawnEnum(wgpu::WGSLLanguageFeatureName dawn_enum,
                                 V8WGSLFeatureName* result);
 
 }  // namespace blink
