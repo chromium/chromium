@@ -34,6 +34,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/common/extension_features.h"
 #include "google_apis/gaia/gaia_id.h"
+#include "services/device/public/cpp/device_features.h"
 #include "services/device/public/cpp/hid/hid_blocklist.h"
 #include "services/device/public/cpp/test/fake_hid_manager.h"
 #include "services/device/public/mojom/hid.mojom.h"
@@ -71,7 +72,11 @@ constexpr char kTestExtensionId[] = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 // Main text fixture.
 class HidChooserContextTestBase {
  public:
-  HidChooserContextTestBase() = default;
+  HidChooserContextTestBase() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kSecurityKeyHidInterfacesAreFido);
+  }
+
   HidChooserContextTestBase(const HidChooserContextTestBase&) = delete;
   HidChooserContextTestBase& operator=(const HidChooserContextTestBase&) =
       delete;
@@ -182,6 +187,25 @@ class HidChooserContextTestBase {
   device::mojom::HidDeviceInfoPtr ConnectFidoDeviceBlocking() {
     auto device = CreateDevice(/*serial_number=*/"");
     device->collections[0]->usage->usage_page = device::mojom::kPageFido;
+    device->collections[0]->usage->usage = 1;
+    return ConnectDeviceBlocking(std::move(device));
+  }
+
+  // Security key devices with multiple USB HID interfaces may have some that
+  // are not FIDO. This method creates a HidDeviceInfoPtr representing one of
+  // the non-FIDO sibling interfaces of a known security key.
+  device::mojom::HidDeviceInfoPtr ConnectFidoSiblingDeviceBlocking() {
+    // Device identifiers for a known security key
+    static constexpr uint16_t kVendorGoogle = 0x18d1;
+    static constexpr uint16_t kProductTitan = 0x5026;
+
+    auto device = CreateDevice(/*serial_number=*/"");
+    device->vendor_id = kVendorGoogle;
+    device->product_id = kProductTitan;
+    device->is_excluded_by_blocklist =
+        device::HidBlocklist::Get().IsVendorProductBlocked(kVendorGoogle,
+                                                           kProductTitan);
+    device->collections[0]->usage->usage_page = device::mojom::kPageVendor;
     device->collections[0]->usage->usage = 1;
     return ConnectDeviceBlocking(std::move(device));
   }
@@ -331,6 +355,7 @@ class HidChooserContextTestBase {
   MockHidDeviceObserver device_observer_;
   base::ScopedObservation<HidChooserContext, HidChooserContext::DeviceObserver>
       scoped_device_observation_{&device_observer_};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class HidChooserContextTest : public HidChooserContextTestBase,
@@ -1257,6 +1282,30 @@ TEST_P(HidChooserContextAffiliatedTest, FidoAllowlistAndPolicy) {
   // Connect a device matching the first policy rule. If the policy could be set
   // then the policy-granted origin should already have permission.
   auto device = ConnectFidoDeviceBlocking();
+  EXPECT_EQ(is_affiliated(), context()->HasDevicePermission(
+                                 kFidoAndPolicyAllowedOrigin, *device));
+  EXPECT_FALSE(context()->HasDevicePermission(kOtherOrigin, *device));
+}
+
+TEST_P(HidChooserContextAffiliatedTest,
+       FidoAllowlistAndPolicyAppliesToSiblingInterface) {
+  const auto kFidoAndPolicyAllowedOrigin = url::Origin::Create(
+      GURL("chrome-extension://ckcendljdlmgnhghiaomidhiiclmapok"));
+  const auto kOtherOrigin = url::Origin::Create(GURL("https://other.origin"));
+
+  // Configure a policy to grant permission for a privileged origin to access a
+  // blocklisted device.
+  SetAllowDevicesForUrlsPolicy(R"(
+      [
+        {
+          "devices": [{ "vendor_id": 6353, "product_id": 20518 }],
+          "urls": [ "chrome-extension://ckcendljdlmgnhghiaomidhiiclmapok" ]
+        }
+      ])");
+
+  // Connect a device matching the policy rule. If the policy could be set then
+  // the policy-granted origin should already have permission.
+  auto device = ConnectFidoSiblingDeviceBlocking();
   EXPECT_EQ(is_affiliated(), context()->HasDevicePermission(
                                  kFidoAndPolicyAllowedOrigin, *device));
   EXPECT_FALSE(context()->HasDevicePermission(kOtherOrigin, *device));
