@@ -422,7 +422,10 @@ void GlicWindowController::WaitForGlicToLoad() {
       base::BindOnce(&GlicWindowController::GlicLoaded, GetWeakPtr()));
 }
 
-void GlicWindowController::GlicLoaded() {
+void GlicWindowController::GlicLoaded(mojom::WebClientMode starting_mode) {
+  // TODO: Use `starting_mode` to log latency metrics.
+  DVLOG(1) << "GlicLoaded with " << starting_mode;
+
   glic_loaded_ = true;
   if (state_ == State::kWaitingForGlicToLoad) {
     ShowFinish();

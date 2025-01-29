@@ -6,7 +6,7 @@
 // ash/webui/personalization_app/tools/gen_tsconfig.py --root_out_dir out/pc \
 //   --gn_target chrome/test/data/webui/glic:build_ts
 
-import type {GlicBrowserHost, GlicWebClient, PanelState} from 'chrome://glic/glic_api/glic_api.js';
+import type {GlicBrowserHost, GlicWebClient, PanelState} from '/glic/glic_api/glic_api.js';
 
 import {createGlicHostRegistryOnLoad} from './api_boot.js';
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {GlicApiBootMessage, GlicHostRegistry, WithGlicApi} from 'chrome://glic/glic_api/glic_api.js';
+import type {GlicApiBootMessage, GlicHostRegistry, WithGlicApi} from '/glic/glic_api/glic_api.js';
 
 // Note: Although the actual glic client does something similar, this code is
 // test-only.

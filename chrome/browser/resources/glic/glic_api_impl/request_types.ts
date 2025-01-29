@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {AnnotatedPageData, ChromeVersion, DraggableArea, GetTabContextErrorReason, PanelState, PdfDocumentData, TabContextOptions, TabContextResult, TabData, UserProfileInfo} from '../glic_api/glic_api.js';
+import type {AnnotatedPageData, ChromeVersion, DraggableArea, GetTabContextErrorReason, OpenPanelInfo, PanelState, PdfDocumentData, TabContextOptions, TabContextResult, TabData, UserProfileInfo} from '../glic_api/glic_api.js';
 
 /*
 This file defines messages sent over postMessage in-between the Glic WebUI
@@ -157,7 +157,9 @@ export declare interface WebClientRequestTypes {
     request: {
       panelState: PanelState,
     },
-    response: void,
+    response: {
+      openPanelInfo?: OpenPanelInfo,
+    },
   };
   glicWebClientNotifyPanelWasClosed: {
     request: {},
