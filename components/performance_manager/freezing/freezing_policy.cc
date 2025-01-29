@@ -347,7 +347,7 @@ void FreezingPolicy::OnCannotFreezeReasonChange(const PageNode* page_node,
       for (auto browsing_instance_id : GetBrowsingInstances(page_node)) {
         auto it = browsing_instances_.find(browsing_instance_id);
         CHECK(it != browsing_instances_.end());
-        it->second.had_cannot_freeze_reason_since_last_cpu_measurement = true;
+        it->second.cannot_freeze_reasons_since_last_cpu_measurement.Put(reason);
       }
 
       UpdateFrozenState(page_node);
@@ -362,15 +362,14 @@ void FreezingPolicy::OnCannotFreezeReasonChange(const PageNode* page_node,
 }
 
 //  static
-bool FreezingPolicy::HasCannotFreezeReason(
+CannotFreezeReasonSet FreezingPolicy::GetCannotFreezeReasons(
     const BrowsingInstanceState& browsing_instance_state) {
+  CannotFreezeReasonSet reasons;
   for (const PageNode* page : browsing_instance_state.pages) {
     const auto& page_freezing_state = PageFreezingState::FromPage(page);
-    if (!page_freezing_state.cannot_freeze_reasons.empty()) {
-      return true;
-    }
+    reasons.PutAll(page_freezing_state.cannot_freeze_reasons);
   }
-  return false;
+  return reasons;
 }
 
 void FreezingPolicy::OnPassedToGraph(Graph* graph) {
@@ -901,8 +900,8 @@ void FreezingPolicy::UpdateFrozenStateOnCPUMeasurement(
       continue;
     }
 
-    if (browsing_instance_it->second
-            .had_cannot_freeze_reason_since_last_cpu_measurement) {
+    if (!browsing_instance_it->second
+             .cannot_freeze_reasons_since_last_cpu_measurement.empty()) {
       // CPU-intensive in background while having a `CannotFreezeReason` isn't
       // recorded (it's acceptable to use a lot of CPU while playing audio,
       // running a videoconference call...).
@@ -913,12 +912,11 @@ void FreezingPolicy::UpdateFrozenStateOnCPUMeasurement(
     UpdateFrozenState(*browsing_instance_it->second.pages.begin());
   }
 
-  // Update `had_cannot_freeze_reason_since_last_cpu_measurement` for all
-  // browsing instances.
+  // Update `cannot_freeze_reasons_since_last_cpu_measurement` for all browsing
+  // instances.
   for (auto& [_, browsing_instance_state] : browsing_instances_) {
-    browsing_instance_state
-        .had_cannot_freeze_reason_since_last_cpu_measurement =
-        HasCannotFreezeReason(browsing_instance_state);
+    browsing_instance_state.cannot_freeze_reasons_since_last_cpu_measurement =
+        GetCannotFreezeReasons(browsing_instance_state);
   }
 }
 

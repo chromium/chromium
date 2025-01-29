@@ -97,9 +97,9 @@ class FreezingPolicy : public PageNodeObserver,
     // Whether a group of same-origin frames/workers associated with this
     // browsing instance used a lot of CPU in background.
     bool cpu_intensive_in_background = false;
-    // Whether a page associated with this browsing instance had a
-    // `CannotFreezeReason` at any time since the last CPU measurement.
-    bool had_cannot_freeze_reason_since_last_cpu_measurement = false;
+    // `CannotFreezeReason`s applicable to this browsing instance at any point
+    // since the last CPU measurement.
+    CannotFreezeReasonSet cannot_freeze_reasons_since_last_cpu_measurement;
     // First per-origin Private Memory Footprint measurement taken after this
     // browsing instance became frozen. Empty if not all pages in this browsing
     // instance are frozen.
@@ -126,9 +126,9 @@ class FreezingPolicy : public PageNodeObserver,
                                   bool add,
                                   CannotFreezeReason reason);
 
-  // Returns true iff a page associated with `browsing_instance_state` has a
-  // `CannotFreezeReason`.
-  static bool HasCannotFreezeReason(
+  // Returns the union of `CannotFreezeReason`s applicable to pages associated
+  // with `browsing_instance_state`.
+  static CannotFreezeReasonSet GetCannotFreezeReasons(
       const BrowsingInstanceState& browsing_instance_state);
 
   // GraphOwned implementation:
