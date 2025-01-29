@@ -16532,7 +16532,7 @@
                         "version": "1"
                     },
                     "enable_features": [
-                        "EnablePasswordsSyncErrorMessageAlternative"
+                        "SyncEnablePasswordsSyncErrorMessageAlternative"
                     ]
                 }
             ]
