@@ -50,9 +50,9 @@ public class CommandLineTest {
     }
 
     void loadJni() {
-        Assert.assertFalse(CommandLine.isNativeImplementationForTesting());
+        Assert.assertFalse(CommandLine.getInstance().hasSwitchedToNative());
         LibraryLoader.getInstance().ensureInitialized();
-        Assert.assertTrue(CommandLine.isNativeImplementationForTesting());
+        Assert.assertTrue(CommandLine.getInstance().hasSwitchedToNative());
     }
 
     void checkInitSwitches() {
