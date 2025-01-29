@@ -111,6 +111,10 @@ class ServerCertificateDatabaseService : public KeyedService {
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 #endif
 
+  base::WeakPtr<ServerCertificateDatabaseService> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
  private:
   void HandleModificationResult(base::OnceCallback<void(bool)> callback,
                                 bool success);

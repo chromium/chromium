@@ -25,6 +25,7 @@ include_rules = [
   "+components/pref_registry",
   "+components/prefs",
   "+components/proxy_config",
+  "+components/server_certificate_database",
   "+components/url_formatter",
   "+components/user_manager",
   "+crypto",
