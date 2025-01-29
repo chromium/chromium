@@ -76,6 +76,10 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
     // updated as part of the commit are passed in `committed_data_types`.
     virtual void OnCommit(syncer::DataTypeSet committed_data_types) {}
 
+    // Called whenever a get updates request is received by FakeServer.
+    virtual void OnWillGetUpdates(
+        const sync_pb::ClientToServerMessage& message) {}
+
     // Called after FakeServer has processed a successful get updates request.
     virtual void OnSuccessfulGetUpdates() {}
   };
