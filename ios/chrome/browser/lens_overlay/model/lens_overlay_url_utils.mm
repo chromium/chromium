@@ -23,4 +23,10 @@ bool IsLensOverlaySRP(GURL url) {
          lens_surface == "4";
 }
 
+std::string ExtractQueryFromLensOverlaySRP(GURL url) {
+  std::string search_term = "";
+  net::GetValueForKeyInQuery(url, "q", &search_term);
+  return search_term;
+}
+
 }  // namespace lens

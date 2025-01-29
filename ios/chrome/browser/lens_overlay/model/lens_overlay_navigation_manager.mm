@@ -14,17 +14,6 @@
 #import "ios/web/public/web_state.h"
 #import "net/base/url_util.h"
 
-namespace {
-
-/// Extracts the search query from the SRP `url`.
-std::string ExtractQueryFromSRP(const GURL& url) {
-  std::string search_term = "";
-  net::GetValueForKeyInQuery(url, "q", &search_term);
-  return search_term;
-}
-
-}  // namespace
-
 #pragma mark - LensResultItem
 
 LensOverlayNavigationManager::LensResultItem::LensResultItem(
@@ -134,10 +123,10 @@ void LensOverlayNavigationManager::DidStartNavigation(
   if (navigation_context && !navigation_context->IsSameDocument()) {
     GURL navigation_url = navigation_context->GetUrl();
 
-    if (IsNavigationRelatedSearch(web_state->GetVisibleURL(), navigation_url)) {
-      NSString* omnibox_text =
-          base::SysUTF8ToNSString(ExtractQueryFromSRP(navigation_url));
-      [mutator_ onRelatedSearchLoaded:omnibox_text];
+    if (lens::IsLensOverlaySRP(navigation_url)) {
+      NSString* omnibox_text = [NSString
+          cr_fromString:lens::ExtractQueryFromLensOverlaySRP(navigation_url)];
+      [mutator_ onSRPLoadWithOmniboxText:omnibox_text];
       RegisterSubNavigation(navigation_url, omnibox_text.cr_UTF16String);
     } else {
       RegisterSubNavigation(navigation_url, PreviousOmniboxText());

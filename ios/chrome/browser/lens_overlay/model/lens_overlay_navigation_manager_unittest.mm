@@ -10,6 +10,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/uuid.h"
+#import "components/lens/lens_url_utils.h"
 #import "components/variations/scoped_variations_ids_provider.h"
 #import "components/variations/variations_ids_provider.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/fake_chrome_lens_overlay_result.h"
@@ -54,6 +55,15 @@ class LensOverlayNavigationManagerTest : public PlatformTest {
   GURL GenerateRandomURL() {
     return GURL("https://some-url.com/" +
                 base::Uuid::GenerateRandomV4().AsLowercaseString());
+  }
+
+  /// Returns a lens overlay SRP URL with `query_text` as query parameter.
+  GURL LensOverlaySRPWithQueryText(const std::string& query_text) {
+    GURL url = GURL("https://www.google.com/search");
+    url = net::AppendOrReplaceQueryParameter(
+        url, lens::kLensSurfaceQueryParameter, "4");
+    url = net::AppendOrReplaceQueryParameter(url, "q", query_text);
+    return url;
   }
 
   /// Generates a Lens result.
@@ -318,4 +328,31 @@ TEST_F(LensOverlayNavigationManagerTest, UnimodalOmniboxNavigationBack) {
                                     /*expect_can_go_back=*/YES);
 
   GoBackExpectingURLReload(URL1, /*expect_can_go_back=*/NO);
+}
+
+// Tests loading lens overlay SRP updates the navigation text.
+TEST_F(LensOverlayNavigationManagerTest, SRPNavigationUpdatesText) {
+  id<ChromeLensOverlayResult> result1 = GenerateResult(1);
+  SimulateLensDidGenerateResult(result1, /*expect_load=*/YES,
+                                /*expect_can_go_back=*/NO);
+  // Lens navigation loads `URL1`.
+  GURL URL1 = result1.searchResultURL;
+
+  // Web navigation to SRP `URL2` with `text1`.
+  NSString* text1 = @"some query text";
+  GURL URL2 = LensOverlaySRPWithQueryText(text1.cr_UTF8String);
+  OCMExpect([mock_mutator_ onSRPLoadWithOmniboxText:text1]);
+  SimulateWebNavigation(URL2, /*expect_can_go_back=*/YES);
+  EXPECT_OCMOCK_VERIFY(mock_mutator_);
+
+  // Web navigation to SRP `URL3` with `text2`.
+  NSString* text2 = @"some other text";
+  GURL URL3 = LensOverlaySRPWithQueryText(text2.cr_UTF8String);
+  OCMExpect([mock_mutator_ onSRPLoadWithOmniboxText:text2]);
+  SimulateWebNavigation(URL3, /*expect_can_go_back=*/YES);
+  EXPECT_OCMOCK_VERIFY(mock_mutator_);
+
+  // Go back expecting `URL2` with `text1`.
+  GoBackExpectingURLReload(URL2, /*expect_can_go_back=*/YES);
+  EXPECT_TRUE([latest_loaded_omnibox_text_ isEqualToString:text1]);
 }

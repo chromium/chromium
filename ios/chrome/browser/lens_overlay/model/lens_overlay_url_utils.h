@@ -12,6 +12,9 @@ namespace lens {
 /// Whether the `url` is a lens overlay SRP.
 bool IsLensOverlaySRP(GURL url);
 
+/// Returns the search tearm of the lens overlay SRP.
+std::string ExtractQueryFromLensOverlaySRP(GURL url);
+
 }  // namespace lens
 
 #endif  // IOS_CHROME_BROWSER_LENS_OVERLAY_MODEL_LENS_OVERLAY_URL_UTILS_H_
