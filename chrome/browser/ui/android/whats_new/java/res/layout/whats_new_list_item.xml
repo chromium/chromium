@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<org.chromium.chrome.browser.ui.android.whats_new.WhatsNewListItemView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/whats_new_item_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="@dimen/whats_new_bottom_sheet_margin"
+    android:layout_marginEnd="@dimen/whats_new_bottom_sheet_margin"
+    android:layout_marginTop="@dimen/whats_new_bottom_sheet_margin">
+
+    <org.chromium.components.browser_ui.widget.RoundedCornerImageView
+        android:id="@+id/whats_new_item_image"
+        app:cornerRadiusBottomEnd="@dimen/whats_new_thumbnail_radius"
+        app:cornerRadiusBottomStart="@dimen/whats_new_thumbnail_radius"
+        app:cornerRadiusTopEnd="@dimen/whats_new_thumbnail_radius"
+        app:cornerRadiusTopStart="@dimen/whats_new_thumbnail_radius"
+        android:layout_height="@dimen/whats_new_list_item_icon_size"
+        android:layout_width="@dimen/whats_new_list_item_icon_size"
+        android:layout_marginEnd="@dimen/whats_new_list_item_content_padding"
+        app:srcCompat="@drawable/ic_chrome"
+        android:scaleType="centerCrop"/>
+
+    <TextView
+        android:id="@+id/whats_new_item_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/whats_new_item_image"
+        android:ellipsize="end"
+        android:gravity="start|top"
+        android:maxLines="1"
+        android:textAppearance="@style/TextAppearance.Headline2Thick.Secondary"
+        tools:ignore="NestedWeights" />
+
+    <TextView
+        android:id="@+id/whats_new_item_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/whats_new_item_image"
+        android:layout_below="@id/whats_new_item_title"
+        android:ellipsize="end"
+        android:gravity="start|top"
+        android:maxLines="2"
+        android:textAppearance="@style/TextAppearance.TextSmall.Secondary" />
+
+</org.chromium.chrome.browser.ui.android.whats_new.WhatsNewListItemView>

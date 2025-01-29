@@ -7,9 +7,13 @@ package org.chromium.chrome.browser.ui.android.whats_new;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ListView;
 
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.ui.modelutil.LayoutViewBuilder;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.modelutil.ModelListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -20,7 +24,9 @@ public class WhatsNewCoordinator {
     private final WhatsNewBottomSheetContent mBottomSheetContent;
 
     private final View mView;
+
     private final PropertyModel mPropertyModel;
+    private final ModelList mModelList;
 
     /**
      * Constructs and initializes the WhatsNewCoordinator.
@@ -32,8 +38,18 @@ public class WhatsNewCoordinator {
         // Inflate the XML.
         mView = LayoutInflater.from(context).inflate(R.layout.whats_new_page, /* root= */ null);
 
+        mModelList = new ModelList();
+        ModelListAdapter adapter = new ModelListAdapter(mModelList);
+        adapter.registerType(
+                WhatsNewListItemProperties.DEFAULT_ITEM_TYPE,
+                new LayoutViewBuilder<WhatsNewListItemView>(R.layout.whats_new_list_item),
+                WhatsNewListItemViewBinder::bind);
+
+        ListView listView = mView.findViewById(R.id.whats_new_items_list);
+        listView.setAdapter(adapter);
+
         mPropertyModel = new PropertyModel.Builder(WhatsNewProperties.ALL_KEYS).build();
-        mMediator = new WhatsNewMediator(mPropertyModel);
+        mMediator = new WhatsNewMediator(context, mPropertyModel, mModelList);
 
         mBottomSheetContent =
                 new WhatsNewBottomSheetContent(
@@ -57,6 +73,10 @@ public class WhatsNewCoordinator {
 
     PropertyModel getModelForTesting() {
         return mPropertyModel;
+    }
+
+    ModelList getModelListForTesting() {
+        return mModelList;
     }
 
     private boolean isEnabled() {
