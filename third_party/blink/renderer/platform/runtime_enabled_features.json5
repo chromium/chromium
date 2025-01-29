@@ -4179,12 +4179,6 @@
       status: "stable",
     },
     {
-      // Feature for optimizing SVG transform changes. This is a kill switch in
-      // case we encounter issues with these optimizations.
-      name: "SvgTransformOptimization",
-      status: "stable",
-    },
-    {
       // crbug.com/40890818
       name: "SvgTspanBboxCache",
       status: "stable",
