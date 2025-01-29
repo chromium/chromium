@@ -20,7 +20,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
@@ -63,6 +65,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.device_reauth.BiometricStatus;
@@ -96,6 +99,7 @@ import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.regional_capabilities.RegionalCapabilitiesService;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.DataType;
@@ -121,6 +125,7 @@ import java.util.Set;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DoNotBatch(reason = "TODO(crbug.com/40743432): SyncTestRule doesn't support batching.")
+@Features.DisableFeatures(SigninFeatures.HISTORY_OPT_IN_ENTRY_POINTS)
 public class ManageSyncSettingsTest {
     private static final int RENDER_TEST_REVISION = 6;
 
@@ -183,6 +188,7 @@ public class ManageSyncSettingsTest {
     @Mock private HistorySyncHelper mHistorySyncHelperMock;
     @Mock private SyncService mSyncService;
     @Mock private ReauthenticatorBridge mReauthenticatorMock;
+    @Mock private HistoryOptInIphController mHistoryOptInIphControllerMock;
 
     @Before
     public void setUp() {
@@ -203,6 +209,7 @@ public class ManageSyncSettingsTest {
         when(mRegionalCapabilities.isInEeaCountry()).thenReturn(false);
 
         HistorySyncHelper.setInstanceForTesting(mHistorySyncHelperMock);
+        HistoryOptInIphController.setInstanceForTesting(mHistoryOptInIphControllerMock);
 
         mUiDataTypes = new HashMap<>();
         mUiDataTypes.put(UserSelectableType.AUTOFILL, ManageSyncSettings.PREF_SYNC_AUTOFILL);
@@ -505,6 +512,52 @@ public class ManageSyncSettingsTest {
     }
 
     @Test
+    @LargeTest
+    @Feature({"Sync"})
+    @Features.EnableFeatures(SigninFeatures.HISTORY_OPT_IN_ENTRY_POINTS)
+    public void testSyncHistoryAndTabsToggle_historyOptInEntryPointsEnabled() {
+        mSyncTestRule.setUpAccountAndSignInForTesting();
+        SyncTestUtil.waitForSyncTransportActive();
+
+        ManageSyncSettings fragment = startManageSyncPreferences();
+        ChromeSwitchPreference historyToggle =
+                (ChromeSwitchPreference)
+                        fragment.findPreference(
+                                ManageSyncSettings.PREF_ACCOUNT_SECTION_HISTORY_TOGGLE);
+        // Opening settings with the history toggle off triggers the request to display the IPH. The
+        // request is triggered twice: once for history and once for tabs.
+        verify(mHistoryOptInIphControllerMock, times(2)).showIph(any(), any());
+
+        SyncService syncService = mSyncTestRule.getSyncService();
+
+        // Switching history sync on from settings clears history sync declined prefs.
+        mSyncTestRule.togglePreference(historyToggle);
+        verify(mHistorySyncHelperMock).clearHistorySyncDeclinedPrefs();
+
+        Set<Integer> activeDataTypes =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            return syncService.getActiveDataTypes();
+                        });
+        Assert.assertTrue(activeDataTypes.contains(DataType.HISTORY));
+        Assert.assertTrue(activeDataTypes.contains(DataType.SESSIONS));
+
+        // Switching history sync off from settings records history sync declined prefs but does not
+        // trigger the request to show the IPH.
+        mSyncTestRule.togglePreference(historyToggle);
+        verify(mHistorySyncHelperMock).recordHistorySyncDeclinedPrefs();
+        verifyNoMoreInteractions(mHistoryOptInIphControllerMock);
+
+        activeDataTypes =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            return syncService.getActiveDataTypes();
+                        });
+        Assert.assertFalse(activeDataTypes.contains(DataType.HISTORY));
+        Assert.assertFalse(activeDataTypes.contains(DataType.SESSIONS));
+    }
+
+    @Test
     @SmallTest
     @Feature({"Sync"})
     @DisabledTest(message = "https://crbug.com/1188548")
@@ -665,11 +718,7 @@ public class ManageSyncSettingsTest {
     @EnableFeatures({ChromeFeatureList.ENABLE_BATCH_UPLOAD_FROM_SETTINGS})
     public void testSigninSettingsBatchUploadCardVisibilityWhenSyncIsConfiguring()
             throws Exception {
-        ReauthenticatorBridge.setInstanceForTesting(mReauthenticatorMock);
-        when(mReauthenticatorMock.getBiometricAvailabilityStatus())
-                .thenReturn(BiometricStatus.ONLY_LSKF_AVAILABLE);
-        SyncServiceFactory.setInstanceForTesting(mSyncService);
-        when(mSyncService.getTransportState()).thenReturn(TransportState.CONFIGURING);
+        setupMockSyncService(BiometricStatus.ONLY_LSKF_AVAILABLE, TransportState.CONFIGURING);
         doAnswer(
                         args -> {
                             HashMap<Integer, LocalDataDescription> localDataDescription =
@@ -816,11 +865,7 @@ public class ManageSyncSettingsTest {
     @Feature({"Sync", "RenderTest"})
     @EnableFeatures({ChromeFeatureList.ENABLE_BATCH_UPLOAD_FROM_SETTINGS})
     public void testSigninSettingsBatchUploadEntryDescriptionPassword() throws Exception {
-        ReauthenticatorBridge.setInstanceForTesting(mReauthenticatorMock);
-        when(mReauthenticatorMock.getBiometricAvailabilityStatus())
-                .thenReturn(BiometricStatus.BIOMETRICS_AVAILABLE);
-        SyncServiceFactory.setInstanceForTesting(mSyncService);
-        when(mSyncService.getTransportState()).thenReturn(TransportState.ACTIVE);
+        setupMockSyncService();
         doAnswer(
                         args -> {
                             HashMap<Integer, LocalDataDescription> localDataDescription =
@@ -859,11 +904,7 @@ public class ManageSyncSettingsTest {
     @Feature({"Sync", "RenderTest"})
     @EnableFeatures({ChromeFeatureList.ENABLE_BATCH_UPLOAD_FROM_SETTINGS})
     public void testSigninSettingsBatchUploadEntryDescriptionOther() throws Exception {
-        ReauthenticatorBridge.setInstanceForTesting(mReauthenticatorMock);
-        when(mReauthenticatorMock.getBiometricAvailabilityStatus())
-                .thenReturn(BiometricStatus.BIOMETRICS_AVAILABLE);
-        SyncServiceFactory.setInstanceForTesting(mSyncService);
-        when(mSyncService.getTransportState()).thenReturn(TransportState.ACTIVE);
+        setupMockSyncService();
         doAnswer(
                         args -> {
                             HashMap<Integer, LocalDataDescription> localDataDescription =
@@ -902,11 +943,7 @@ public class ManageSyncSettingsTest {
     @Feature({"Sync", "RenderTest"})
     @EnableFeatures({ChromeFeatureList.ENABLE_BATCH_UPLOAD_FROM_SETTINGS})
     public void testSigninSettingsBatchUploadEntryDescriptionPasswordAndOther() throws Exception {
-        ReauthenticatorBridge.setInstanceForTesting(mReauthenticatorMock);
-        when(mReauthenticatorMock.getBiometricAvailabilityStatus())
-                .thenReturn(BiometricStatus.BIOMETRICS_AVAILABLE);
-        SyncServiceFactory.setInstanceForTesting(mSyncService);
-        when(mSyncService.getTransportState()).thenReturn(TransportState.ACTIVE);
+        setupMockSyncService();
         doAnswer(
                         args -> {
                             HashMap<Integer, LocalDataDescription> localDataDescription =
@@ -945,11 +982,7 @@ public class ManageSyncSettingsTest {
     @Feature({"Sync", "RenderTest"})
     @EnableFeatures({ChromeFeatureList.ENABLE_BATCH_UPLOAD_FROM_SETTINGS})
     public void testSigninSettingsBatchUploadDialogShouldShowPasswordsToggle() throws Exception {
-        ReauthenticatorBridge.setInstanceForTesting(mReauthenticatorMock);
-        when(mReauthenticatorMock.getBiometricAvailabilityStatus())
-                .thenReturn(BiometricStatus.BIOMETRICS_AVAILABLE);
-        SyncServiceFactory.setInstanceForTesting(mSyncService);
-        when(mSyncService.getTransportState()).thenReturn(TransportState.ACTIVE);
+        setupMockSyncService();
         doAnswer(
                         args -> {
                             HashMap<Integer, LocalDataDescription> localDataDescription =
@@ -998,11 +1031,7 @@ public class ManageSyncSettingsTest {
     @EnableFeatures({ChromeFeatureList.ENABLE_BATCH_UPLOAD_FROM_SETTINGS})
     public void testSigninSettingsBatchUploadDialogShouldShowBookmarksAndReadingListToggles()
             throws Exception {
-        ReauthenticatorBridge.setInstanceForTesting(mReauthenticatorMock);
-        when(mReauthenticatorMock.getBiometricAvailabilityStatus())
-                .thenReturn(BiometricStatus.BIOMETRICS_AVAILABLE);
-        SyncServiceFactory.setInstanceForTesting(mSyncService);
-        when(mSyncService.getTransportState()).thenReturn(TransportState.ACTIVE);
+        setupMockSyncService();
         doAnswer(
                         args -> {
                             HashMap<Integer, LocalDataDescription> localDataDescription =
@@ -1050,11 +1079,7 @@ public class ManageSyncSettingsTest {
     @Feature({"Sync", "RenderTest"})
     @EnableFeatures({ChromeFeatureList.ENABLE_BATCH_UPLOAD_FROM_SETTINGS})
     public void testSigninSettingsBatchUploadDialogShouldShowAllToggles() throws Exception {
-        ReauthenticatorBridge.setInstanceForTesting(mReauthenticatorMock);
-        when(mReauthenticatorMock.getBiometricAvailabilityStatus())
-                .thenReturn(BiometricStatus.BIOMETRICS_AVAILABLE);
-        SyncServiceFactory.setInstanceForTesting(mSyncService);
-        when(mSyncService.getTransportState()).thenReturn(TransportState.ACTIVE);
+        setupMockSyncService();
         doAnswer(
                         args -> {
                             HashMap<Integer, LocalDataDescription> localDataDescription =
@@ -1104,11 +1129,7 @@ public class ManageSyncSettingsTest {
     public void
             testSigninSettingsBatchUploadEntryDescriptionForPasswordsNotRequestedWhenAuthUnavailable()
                     throws Exception {
-        ReauthenticatorBridge.setInstanceForTesting(mReauthenticatorMock);
-        when(mReauthenticatorMock.getBiometricAvailabilityStatus())
-                .thenReturn(BiometricStatus.UNAVAILABLE);
-        SyncServiceFactory.setInstanceForTesting(mSyncService);
-        when(mSyncService.getTransportState()).thenReturn(TransportState.ACTIVE);
+        setupMockSyncService(BiometricStatus.UNAVAILABLE, TransportState.ACTIVE);
 
         mSyncTestRule.setUpAccountAndSignInForTesting();
         startManageSyncPreferences();
@@ -1356,6 +1377,19 @@ public class ManageSyncSettingsTest {
             Assert.assertFalse(dataType.isChecked());
             Assert.assertFalse(dataType.isEnabled());
         }
+    }
+
+    private void setupMockSyncService(
+            @BiometricStatus int biometricAvailabilityStatus, @TransportState int transportState) {
+        ReauthenticatorBridge.setInstanceForTesting(mReauthenticatorMock);
+        when(mReauthenticatorMock.getBiometricAvailabilityStatus())
+                .thenReturn(biometricAvailabilityStatus);
+        SyncServiceFactory.setInstanceForTesting(mSyncService);
+        when(mSyncService.getTransportState()).thenReturn(transportState);
+    }
+
+    private void setupMockSyncService() {
+        setupMockSyncService(BiometricStatus.BIOMETRICS_AVAILABLE, TransportState.ACTIVE);
     }
 
     private ManageSyncSettings startManageSyncPreferences() {

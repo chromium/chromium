@@ -1068,6 +1068,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/sync/settings/BatchUploadCardPreference.java",
   "java/src/org/chromium/chrome/browser/sync/settings/CentralAccountCardPreference.java",
   "java/src/org/chromium/chrome/browser/sync/settings/GoogleServicesSettings.java",
+  "java/src/org/chromium/chrome/browser/sync/settings/HistoryOptInIphController.java",
   "java/src/org/chromium/chrome/browser/sync/settings/IdentityErrorCardPreference.java",
   "java/src/org/chromium/chrome/browser/sync/settings/ManageSyncSettings.java",
   "java/src/org/chromium/chrome/browser/sync/settings/PersonalizeGoogleServicesSettings.java",

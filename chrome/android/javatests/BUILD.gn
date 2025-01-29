@@ -1213,6 +1213,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.sync") {
     "src/org/chromium/chrome/browser/sync/UkmTest.java",
     "src/org/chromium/chrome/browser/sync/settings/AccountManagementFragmentTest.java",
     "src/org/chromium/chrome/browser/sync/settings/GoogleServicesSettingsTest.java",
+    "src/org/chromium/chrome/browser/sync/settings/HistoryOptInIphControllerTest.java",
     "src/org/chromium/chrome/browser/sync/settings/IdentityErrorCardPreferenceTest.java",
     "src/org/chromium/chrome/browser/sync/settings/ManageSyncSettingsTest.java",
     "src/org/chromium/chrome/browser/sync/settings/ManageSyncSettingsWithFakeSyncServiceImplTest.java",

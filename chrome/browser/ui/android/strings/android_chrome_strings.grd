@@ -2536,6 +2536,10 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_ACCOUNT_SECTION_HISTORY_TOGGLE" desc="History and tabs, one of the data types that we allow syncing. Shown on next to the toggle that controls whether history should be saved in the Google Account and synced across devices.">
         History and tabs
       </message>
+      <!-- TODO(crbug.com/388201776): Replace with final version and make translateable. -->
+      <message name="IDS_ACCOUNT_SECTION_HISTORY_TOGGLE_HELP" translateable="false">
+        To quickly get back to sites you’ve visited, sync your history and tabs
+      </message>
       <message name="IDS_ACCOUNT_SECTION_BOOKMARKS_TOGGLE" desc="Bookmarks, one of the data types that we allow syncing. Shown on next to the toggle that controls whether bookmarks should be saved in the Google Account and synced across devices.">
         Bookmarks
       </message>
