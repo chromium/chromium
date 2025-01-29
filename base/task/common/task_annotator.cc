@@ -18,7 +18,6 @@
 #include "base/hash/md5.h"
 #include "base/logging.h"
 #include "base/metrics/metrics_hashes.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "base/trace_event/base_tracing.h"
 #include "base/tracing_buildflags.h"
@@ -188,7 +187,7 @@ void TaskAnnotator::RunTaskImpl(PendingTask& pending_task) {
   task_backtrace.back() = reinterpret_cast<void*>(0x0d00d1d1d178119);
 
   task_backtrace[1] = pending_task.posted_from.program_counter();
-  ranges::copy(pending_task.task_backtrace, task_backtrace.begin() + 2);
+  std::ranges::copy(pending_task.task_backtrace, task_backtrace.begin() + 2);
   task_backtrace[kStackTaskTraceSnapshotSize - 2] =
       reinterpret_cast<void*>(pending_task.ipc_hash);
   debug::Alias(&task_backtrace);

@@ -11,6 +11,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <optional>
 
 #include "base/base_paths.h"
@@ -18,7 +19,6 @@
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/scoped_native_library.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
@@ -245,7 +245,7 @@ TEST(ImmediateCrashTest, ExpectedOpcodeSequence) {
   // false - but let's still go through the motions above so we spot any
   // problems in this _test code_ in as many build permutations as possible.
 #if defined(OFFICIAL_BUILD)
-  auto it = ranges::find(body, kRet);
+  auto it = std::ranges::find(body, kRet);
   ASSERT_NE(body.end(), it) << "Failed to find return opcode";
   it++;
 

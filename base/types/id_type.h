@@ -5,11 +5,11 @@
 #ifndef BASE_TYPES_ID_TYPE_H_
 #define BASE_TYPES_ID_TYPE_H_
 
+#include <algorithm>
 #include <cstdint>
 #include <functional>
 #include <type_traits>
 
-#include "base/ranges/algorithm.h"
 #include "base/types/strong_alias.h"
 
 namespace base {
@@ -62,22 +62,22 @@ class IdType : public StrongAlias<TypeMarker, WrappedType> {
                                                       kExtraInvalidValues...};
 
   static_assert(std::is_unsigned_v<WrappedType> ||
-                    base::ranges::all_of(kAllInvalidValues,
-                                         [](WrappedType v) { return v <= 0; }),
+                    std::ranges::all_of(kAllInvalidValues,
+                                        [](WrappedType v) { return v <= 0; }),
                 "If signed, invalid values should be negative or equal to zero "
                 "to avoid overflow issues.");
 
-  static_assert(base::ranges::all_of(kAllInvalidValues,
-                                     [](WrappedType v) {
-                                       return kFirstGeneratedId != v;
-                                     }),
+  static_assert(std::ranges::all_of(kAllInvalidValues,
+                                    [](WrappedType v) {
+                                      return kFirstGeneratedId != v;
+                                    }),
                 "The first generated ID cannot be invalid.");
 
   static_assert(std::is_unsigned_v<WrappedType> ||
-                    base::ranges::all_of(kAllInvalidValues,
-                                         [](WrappedType v) {
-                                           return kFirstGeneratedId > v;
-                                         }),
+                    std::ranges::all_of(kAllInvalidValues,
+                                        [](WrappedType v) {
+                                          return kFirstGeneratedId > v;
+                                        }),
                 "If signed, the first generated ID must be greater than all "
                 "invalid values so that the monotonically increasing "
                 "GenerateNextId method will never return an invalid value.");
@@ -106,7 +106,7 @@ class IdType : public StrongAlias<TypeMarker, WrappedType> {
       : StrongAlias<TypeMarker, WrappedType>::StrongAlias(kInvalidValue) {}
 
   constexpr bool is_null() const {
-    return base::ranges::any_of(kAllInvalidValues, [this](WrappedType value) {
+    return std::ranges::any_of(kAllInvalidValues, [this](WrappedType value) {
       return this->value() == value;
     });
   }

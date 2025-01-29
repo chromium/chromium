@@ -17,6 +17,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+#include <algorithm>
 #include <iterator>
 #include <map>
 #include <utility>
@@ -24,7 +25,6 @@
 #include "base/check.h"
 #include "base/no_destructor.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util_win.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_localalloc.h"
@@ -258,23 +258,23 @@ std::optional<std::vector<Sid>> Sid::FromSddlStringVector(
 std::vector<Sid> Sid::FromNamedCapabilityVector(
     const std::vector<std::wstring>& capability_names) {
   std::vector<Sid> sids;
-  ranges::transform(capability_names, std::back_inserter(sids),
-                    FromNamedCapability);
+  std::ranges::transform(capability_names, std::back_inserter(sids),
+                         FromNamedCapability);
   return sids;
 }
 
 std::vector<Sid> Sid::FromKnownCapabilityVector(
     const std::vector<WellKnownCapability>& capabilities) {
   std::vector<Sid> sids;
-  ranges::transform(capabilities, std::back_inserter(sids),
-                    FromKnownCapability);
+  std::ranges::transform(capabilities, std::back_inserter(sids),
+                         FromKnownCapability);
   return sids;
 }
 
 std::vector<Sid> Sid::FromKnownSidVector(
     const std::vector<WellKnownSid>& known_sids) {
   std::vector<Sid> sids;
-  ranges::transform(known_sids, std::back_inserter(sids), FromKnownSid);
+  std::ranges::transform(known_sids, std::back_inserter(sids), FromKnownSid);
   return sids;
 }
 

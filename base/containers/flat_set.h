@@ -5,11 +5,11 @@
 #ifndef BASE_CONTAINERS_FLAT_SET_H_
 #define BASE_CONTAINERS_FLAT_SET_H_
 
+#include <algorithm>
 #include <functional>
 #include <vector>
 
 #include "base/containers/flat_tree.h"
-#include "base/ranges/algorithm.h"
 
 namespace base {
 
@@ -174,8 +174,8 @@ constexpr flat_set<Key, Compare, Container> MakeFlatSet(
     const Projection& proj = Projection()) {
   Container elements;
   internal::ReserveIfSupported(elements, unprojected_elements);
-  base::ranges::transform(unprojected_elements, std::back_inserter(elements),
-                          proj);
+  std::ranges::transform(unprojected_elements, std::back_inserter(elements),
+                         proj);
   return flat_set<Key, Compare, Container>(std::move(elements), comp);
 }
 

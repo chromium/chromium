@@ -9,6 +9,7 @@
 
 #include "base/trace_event/trace_log.h"
 
+#include <algorithm>
 #include <cmath>
 #include <memory>
 #include <string_view>
@@ -28,7 +29,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/process/process.h"
 #include "base/process/process_metrics.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"

@@ -380,8 +380,8 @@ constexpr flat_map<Key, Mapped, KeyCompare, Container> MakeFlatMap(
     const Projection& proj = Projection()) {
   Container elements;
   internal::ReserveIfSupported(elements, unprojected_elements);
-  base::ranges::transform(unprojected_elements, std::back_inserter(elements),
-                          proj);
+  std::ranges::transform(unprojected_elements, std::back_inserter(elements),
+                         proj);
   return flat_map<Key, Mapped, KeyCompare, Container>(std::move(elements),
                                                       comp);
 }
