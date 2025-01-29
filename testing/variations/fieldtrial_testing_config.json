@@ -13629,21 +13629,6 @@
             ]
         }
     ],
-    "LocalPasswordsAndroidAccessLossWarning": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "UnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning"
-                    ]
-                }
-            ]
-        }
-    ],
     "LofnPermissiveUsbPassthrough": [
         {
             "platforms": [

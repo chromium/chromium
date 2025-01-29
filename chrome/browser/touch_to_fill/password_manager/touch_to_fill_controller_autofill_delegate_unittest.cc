@@ -352,7 +352,8 @@ TEST_F(TouchToFillControllerAutofillTest,
   scoped_feature_list().InitWithFeatures(
       {password_manager::features::
            kUnifiedPasswordManagerLocalPasswordsMigrationWarning},
-      {});
+      {password_manager::features::
+           kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning});
   profile()->GetPrefs()->SetInteger(
       password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
       static_cast<int>(
