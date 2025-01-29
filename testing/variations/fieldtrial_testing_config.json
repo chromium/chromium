@@ -11618,6 +11618,21 @@
             ]
         }
     ],
+    "IOSDeleteAllSavedCredentials": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "kIOSEnableDeleteAllSavedCredentials"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSDockingPromo": [
         {
             "platforms": [
