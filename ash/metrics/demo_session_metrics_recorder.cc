@@ -60,50 +60,72 @@ DemoModeApp GetAppFromAppId(const std::string& app_id) {
     return DemoModeApp::kScreensaver;
   }
 
-  if (app_id == app_constants::kChromeAppId)
+  if (app_id == app_constants::kChromeAppId) {
     return DemoModeApp::kBrowser;
-  if (app_id == extension_misc::kFilesManagerAppId)
+  }
+  if (app_id == extension_misc::kFilesManagerAppId) {
     return DemoModeApp::kFiles;
-  if (app_id == extension_misc::kCalculatorAppId)
+  }
+  if (app_id == extension_misc::kCalculatorAppId) {
     return DemoModeApp::kCalculator;
-  if (app_id == extension_misc::kCalendarDemoAppId)
+  }
+  if (app_id == extension_misc::kCalendarDemoAppId) {
     return DemoModeApp::kCalendar;
-  if (app_id == extension_misc::kGoogleDocsDemoAppId)
+  }
+  if (app_id == extension_misc::kGoogleDocsDemoAppId) {
     return DemoModeApp::kGoogleDocsChromeApp;
-  if (app_id == extension_misc::kGoogleDocsPwaAppId)
+  }
+  if (app_id == extension_misc::kGoogleDocsPwaAppId) {
     return DemoModeApp::kGoogleDocsPwa;
-  if (app_id == extension_misc::kGoogleMeetPwaAppId)
+  }
+  if (app_id == extension_misc::kGoogleMeetPwaAppId) {
     return DemoModeApp::kGoogleMeetPwa;
-  if (app_id == extension_misc::kGoogleSheetsDemoAppId)
+  }
+  if (app_id == extension_misc::kGoogleSheetsDemoAppId) {
     return DemoModeApp::kGoogleSheetsChromeApp;
-  if (app_id == extension_misc::kGoogleSheetsPwaAppId)
+  }
+  if (app_id == extension_misc::kGoogleSheetsPwaAppId) {
     return DemoModeApp::kGoogleSheetsPwa;
-  if (app_id == extension_misc::kGoogleSlidesDemoAppId)
+  }
+  if (app_id == extension_misc::kGoogleSlidesDemoAppId) {
     return DemoModeApp::kGoogleSlidesChromeApp;
-  if (app_id == kHelpAppId)
+  }
+  if (app_id == kHelpAppId) {
     return DemoModeApp::kGetHelp;
-  if (app_id == extension_misc::kGoogleKeepAppId)
+  }
+  if (app_id == extension_misc::kGoogleKeepAppId) {
     return DemoModeApp::kGoogleKeepChromeApp;
-  if (app_id == extensions::kWebStoreAppId)
+  }
+  if (app_id == extensions::kWebStoreAppId) {
     return DemoModeApp::kWebStore;
-  if (app_id == extension_misc::kYoutubeAppId)
+  }
+  if (app_id == extension_misc::kYoutubeAppId) {
     return DemoModeApp::kYouTube;
-  if (app_id == extension_misc::kYoutubePwaAppId)
+  }
+  if (app_id == extension_misc::kYoutubePwaAppId) {
     return DemoModeApp::kYoutubePwa;
-  if (app_id == extension_misc::kSpotifyAppId)
+  }
+  if (app_id == extension_misc::kSpotifyAppId) {
     return DemoModeApp::kSpotify;
-  if (app_id == extension_misc::kBeFunkyAppId)
+  }
+  if (app_id == extension_misc::kBeFunkyAppId) {
     return DemoModeApp::kBeFunky;
-  if (app_id == extension_misc::kClipchampAppId)
+  }
+  if (app_id == extension_misc::kClipchampAppId) {
     return DemoModeApp::kClipchamp;
-  if (app_id == extension_misc::kGeForceNowAppId)
+  }
+  if (app_id == extension_misc::kGeForceNowAppId) {
     return DemoModeApp::kGeForceNow;
-  if (app_id == extension_misc::kZoomAppId)
+  }
+  if (app_id == extension_misc::kZoomAppId) {
     return DemoModeApp::kZoom;
-  if (app_id == extension_misc::kSumoAppId)
+  }
+  if (app_id == extension_misc::kSumoAppId) {
     return DemoModeApp::kSumo;
-  if (app_id == extension_misc::kAdobeSparkAppId)
+  }
+  if (app_id == extension_misc::kAdobeSparkAppId) {
     return DemoModeApp::kAdobeSpark;
+  }
 
   return DemoModeApp::kOtherChromeApp;
 }
@@ -112,44 +134,60 @@ DemoModeApp GetAppFromAppId(const std::string& app_id) {
 DemoModeApp GetAppFromPackageName(const std::string& package_name) {
   // Google apps.
   if (package_name == "com.google.Photos" ||
-      package_name == "com.google.android.apps.photos")
+      package_name == "com.google.android.apps.photos") {
     return DemoModeApp::kGooglePhotos;
+  }
   if (package_name == "com.google.Sheets" ||
-      package_name == "com.google.android.apps.docs.editors.sheets")
+      package_name == "com.google.android.apps.docs.editors.sheets") {
     return DemoModeApp::kGoogleSheetsAndroidApp;
+  }
   if (package_name == "com.google.Slides" ||
-      package_name == "com.google.android.apps.docs.editors.slides")
+      package_name == "com.google.android.apps.docs.editors.slides") {
     return DemoModeApp::kGoogleSlidesAndroidApp;
-  if (package_name == "com.google.android.keep")
+  }
+  if (package_name == "com.google.android.keep") {
     return DemoModeApp::kGoogleKeepAndroidApp;
-  if (package_name == "com.android.vending")
+  }
+  if (package_name == "com.android.vending") {
     return DemoModeApp::kPlayStore;
+  }
 
   // Third-party apps.
-  if (package_name == "com.gameloft.android.ANMP.GloftA8HMD")
+  if (package_name == "com.gameloft.android.ANMP.GloftA8HMD") {
     return DemoModeApp::kAsphalt8;
+  }
   if (package_name == "com.gameloft.android.ANMP.GloftA9HM" ||
-      package_name == "com.gameloft.android.ANMP.GloftA9HMD")
+      package_name == "com.gameloft.android.ANMP.GloftA9HMD") {
     return DemoModeApp::kAsphalt9;
+  }
   if (package_name == "com.chucklefish.stardewvalley" ||
-      package_name == "com.chucklefish.stardewvalleydemo")
+      package_name == "com.chucklefish.stardewvalleydemo") {
     return DemoModeApp::kStardewValley;
+  }
   if (package_name == "com.nexstreaming.app.kinemasterfree" ||  // nocheck
       package_name ==
           "com.nexstreaming.app.kinemasterfree.demo.chromebook") {  // nocheck
     return DemoModeApp::kKinemaster;                                // nocheck
   }
   if (package_name == "com.pixlr.express" ||
-      package_name == "com.pixlr.express.chromebook.demo")
+      package_name == "com.pixlr.express.chromebook.demo") {
     return DemoModeApp::kPixlr;
-  if (package_name == "com.brakefield.painter")
+  }
+  if (package_name == "com.brakefield.painter") {
     return DemoModeApp::kInfinitePainter;
-  if (package_name == "com.myscript.nebo.demo")
+  }
+  if (package_name == "com.myscript.nebo.demo") {
     return DemoModeApp::kMyScriptNebo;
-  if (package_name == "com.steadfastinnovation.android.projectpapyrus")
+  }
+  if (package_name == "com.steadfastinnovation.android.projectpapyrus") {
     return DemoModeApp::kSquid;
-  if (package_name == "com.autodesk.autocadws.demo")
+  }
+  if (package_name == "com.autodesk.autocadws.demo") {
     return DemoModeApp::kAutoCAD;
+  }
+  if (package_name == "com.mojang.minecrafttrialpe") {
+    return DemoModeApp::kMinecraft;
+  }
 
   return DemoModeApp::kOtherArcApp;
 }
@@ -243,8 +281,9 @@ class DemoSessionMetricsRecorder::ActiveAppArcPackageNameObserver
   void OnWindowPropertyChanged(aura::Window* window,
                                const void* key,
                                intptr_t old) override {
-    if (key != kArcPackageNameKey)
+    if (key != kArcPackageNameKey) {
       return;
+    }
 
     const std::string* package_name = GetArcPackageName(window);
 
@@ -259,8 +298,9 @@ class DemoSessionMetricsRecorder::ActiveAppArcPackageNameObserver
   }
 
   void OnWindowDestroyed(aura::Window* window) override {
-    if (scoped_observations_.IsObservingSource(window))
+    if (scoped_observations_.IsObservingSource(window)) {
       scoped_observations_.RemoveObservation(window);
+    }
   }
 
   void ObserveWindow(aura::Window* window) {
@@ -294,8 +334,9 @@ class DemoSessionMetricsRecorder::UniqueAppsLaunchedArcPackageNameObserver
   void OnWindowPropertyChanged(aura::Window* window,
                                const void* key,
                                intptr_t old) override {
-    if (key != kArcPackageNameKey)
+    if (key != kArcPackageNameKey) {
       return;
+    }
 
     const std::string* package_name = GetArcPackageName(window);
 
@@ -334,8 +375,9 @@ DemoSessionMetricsRecorder::DemoSessionMetricsRecorder(
       active_app_arc_package_name_observer_(
           std::make_unique<ActiveAppArcPackageNameObserver>(this)) {
   // Outside of tests, use a normal repeating timer.
-  if (!timer_.get())
+  if (!timer_.get()) {
     timer_ = std::make_unique<base::RepeatingTimer>();
+  }
 
   StartRecording();
   observation_.Observe(ui::UserActivityDetector::Get());
@@ -402,12 +444,14 @@ bool DemoSessionMetricsRecorder::ShouldRecordAppLaunch(
 void DemoSessionMetricsRecorder::OnWindowActivated(ActivationReason reason,
                                                    aura::Window* gained_active,
                                                    aura::Window* lost_active) {
-  if (!gained_active)
+  if (!gained_active) {
     return;
+  }
 
   // Don't count popup windows.
-  if (gained_active->GetType() != aura::client::WINDOW_TYPE_NORMAL)
+  if (gained_active->GetType() != aura::client::WINDOW_TYPE_NORMAL) {
     return;
+  }
 
   chromeos::AppType app_type = GetAppType(gained_active);
 
@@ -434,8 +478,9 @@ void DemoSessionMetricsRecorder::OnWindowActivated(ActivationReason reason,
 
   // Some app_ids are empty, i.e the "You will be signed out
   // in X seconds" modal dialog in Demo Mode, so skip those.
-  if (app_id.empty())
+  if (app_id.empty()) {
     return;
+  }
 
   RecordAppLaunch(app_id, app_type);
 }
@@ -451,8 +496,9 @@ void DemoSessionMetricsRecorder::OnUserActivity(const ui::Event* event) {
   ReportSamples();
 
   // Restart the timer if the device has been idle.
-  if (!timer_->IsRunning())
+  if (!timer_->IsRunning()) {
     StartRecording();
+  }
   periods_since_activity_ = 0;
 }
 
@@ -490,8 +536,9 @@ void DemoSessionMetricsRecorder::TakeSampleOrPause() {
   }
 
   aura::Window* window = Shell::Get()->activation_client()->GetActiveWindow();
-  if (!window)
+  if (!window) {
     return;
+  }
 
   // If there is no ARC package name available, set up a listener
   // to be informed when it is available.
@@ -507,15 +554,17 @@ void DemoSessionMetricsRecorder::TakeSampleOrPause() {
 }
 
 void DemoSessionMetricsRecorder::ReportSamples() {
-  for (DemoModeApp app : unreported_samples_)
+  for (DemoModeApp app : unreported_samples_) {
     UMA_HISTOGRAM_ENUMERATION("DemoMode.ActiveApp", app);
+  }
   unreported_samples_.clear();
 }
 
 void DemoSessionMetricsRecorder::ReportUniqueAppsLaunched() {
-  if (unique_apps_launched_recording_enabled_)
+  if (unique_apps_launched_recording_enabled_) {
     UMA_HISTOGRAM_COUNTS_100("DemoMode.UniqueAppsLaunched",
                              unique_apps_launched_.size());
+  }
   unique_apps_launched_.clear();
 }
 

@@ -3629,6 +3629,7 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="39" label="Zoom (PWA)"/>
   <int value="40" label="Sumo (PWA)"/>
   <int value="41" label="Adobe Spark (PWA)"/>
+  <int value="42" label="Minecraft"/>
 </enum>
 
 <enum name="DemoModeAppLaunchSource">
