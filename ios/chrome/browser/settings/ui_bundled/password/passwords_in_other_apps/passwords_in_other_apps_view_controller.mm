@@ -265,6 +265,13 @@ CGFloat const kContentOptimalWidth = 327;
       constraintEqualToConstant:kTitleTopMinimumMargin];
   imageHeightConstraint.priority = UILayoutPriorityDefaultHigh - 1;
   imageHeightConstraint.active = YES;
+
+  if (@available(iOS 17, *)) {
+    NSArray<UITrait>* traits =
+        TraitCollectionSetForTraits(@[ UITraitVerticalSizeClass.class ]);
+    [self registerForTraitChanges:traits
+                       withAction:@selector(updateImageOnTraitChange)];
+  }
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -322,13 +329,19 @@ CGFloat const kContentOptimalWidth = 327;
   [self.navigationController setToolbarHidden:YES animated:YES];
 }
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
+  if (@available(iOS 17, *)) {
+    return;
+  }
+
   if (self.traitCollection.verticalSizeClass !=
       previousTraitCollection.verticalSizeClass) {
-    self.imageView.image = [self createOrUpdateImage:self.imageView.image];
+    [self updateImageOnTraitChange];
   }
 }
+#endif
 
 #pragma mark - Accessors
 
@@ -741,6 +754,11 @@ CGFloat const kContentOptimalWidth = 327;
 // Selector of self.actionButton and link in caption text view.
 - (void)didTapActionButton {
   [self.delegate openApplicationSettings];
+}
+
+// A helper function invoked when the device's UITrait have been changed.
+- (void)updateImageOnTraitChange {
+  self.imageView.image = [self createOrUpdateImage:self.imageView.image];
 }
 
 @end
