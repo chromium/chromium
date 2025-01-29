@@ -65,6 +65,11 @@ void StatusIconButtonLinux::OnSetDelegate() {
     return;
   }
 
+  // The delegate may have been cleared.
+  if (!delegate_) {
+    return;
+  }
+
   widget_ = std::make_unique<StatusIconWidget>();
 
   const int width = std::max(1, delegate_->GetImage().width());
