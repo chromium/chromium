@@ -44,6 +44,9 @@
   BOOL _shareAvailable;
   // Whether the group is shared.
   BOOL _shared;
+  // Whether the user owns the shared group.
+  // This should only be checked if `_shared` is true.
+  BOOL _owner;
 }
 
 - (instancetype)init {
@@ -90,8 +93,9 @@
   [self configureMenuButton];
 }
 
-- (void)setShared:(BOOL)shared {
+- (void)setShared:(BOOL)shared owner:(BOOL)owner {
   _shared = shared;
+  _owner = owner;
   [self configureMenuButton];
 }
 
@@ -194,6 +198,7 @@
 
 // Handles taps on the menu button.
 - (void)menuButtonTapped:(id)sender {
+  [self.mutator updateSharedState];
   base::RecordAction(base::UserMetricsAction(
       _displayedOnNTP ? "MobileTabGroupIndicatorShowNTPMenu"
                       : "MobileTabGroupIndicatorShowMenu"));
@@ -259,10 +264,24 @@
           [weakSelf.mutator closeGroup];
         }]];
     if (!_incognito) {
-      [destructiveActions
-          addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
-            [weakSelf.mutator deleteGroupWithConfirmation:YES];
-          }]];
+      if (_shared) {
+        if (_owner) {
+          [destructiveActions
+              addObject:[actionFactory actionToDeleteSharedTabGroupWithBlock:^{
+                [weakSelf.mutator deleteSharedGroupWithConfirmation:YES];
+              }]];
+        } else {
+          [destructiveActions
+              addObject:[actionFactory actionToLeaveSharedTabGroupWithBlock:^{
+                [weakSelf.mutator leaveSharedGroupWithConfirmation:YES];
+              }]];
+        }
+      } else {
+        [destructiveActions
+            addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
+              [weakSelf.mutator deleteGroupWithConfirmation:YES];
+            }]];
+      }
     }
   } else {
     [destructiveActions

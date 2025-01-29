@@ -586,4 +586,21 @@ void AddColloaborationGroupToFakeServer(const std::string& collaboration_id) {
           update_time, collaboration_id));
 }
 
+void DeleteSharedGroupFromFakeServer(const base::Uuid& uuid) {
+  std::vector<sync_pb::SyncEntity> shared_groups =
+      gSyncFakeServer->GetSyncEntitiesByDataType(syncer::SHARED_TAB_GROUP_DATA);
+
+  // Remove the entity with a matching `uuid`.
+  for (const sync_pb::SyncEntity& group : shared_groups) {
+    const sync_pb::SharedTabGroupDataSpecifics actual_specifics =
+        group.specifics().shared_tab_group_data();
+    if (actual_specifics.guid() == uuid.AsLowercaseString()) {
+      // Replace it with a tombstone to remove it from sync.
+      gSyncFakeServer->InjectEntity(
+          syncer::PersistentTombstoneEntity::CreateFromEntity(group));
+      return;
+    }
+  }
+}
+
 }  // namespace chrome_test_util

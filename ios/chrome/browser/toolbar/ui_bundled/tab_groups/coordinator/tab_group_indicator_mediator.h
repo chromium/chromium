@@ -14,6 +14,10 @@ namespace collaboration {
 class CollaborationService;
 }  // namespace collaboration
 
+namespace data_sharing {
+class DataSharingService;
+}  // namespace data_sharing
+
 namespace feature_engagement {
 class Tracker;
 }  // namespace feature_engagement
@@ -49,6 +53,8 @@ class WebStateList;
                 shareKitService:(ShareKitService*)shareKitService
            collaborationService:
                (collaboration::CollaborationService*)collaborationService
+             dataSharingService:
+                 (data_sharing::DataSharingService*)dataSharingService
                        consumer:(id<TabGroupIndicatorConsumer>)consumer
                    webStateList:(WebStateList*)webStateList
                       URLLoader:(UrlLoadingBrowserAgent*)URLLoader

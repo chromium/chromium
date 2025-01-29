@@ -89,6 +89,8 @@
 #import "net/base/apple/url_conversions.h"
 #import "ui/gfx/image/image.h"
 
+using PeopleGroupActionOutcome =
+    data_sharing::DataSharingService::PeopleGroupActionOutcome;
 using PinnedState = WebStateSearchCriteria::PinnedState;
 
 namespace {
@@ -1736,19 +1738,13 @@ void LogPriceDropMetrics(web::WebState* web_state) {
   const data_sharing::GroupId groupId = data_sharing::GroupId(collabId.value());
 
   __weak BaseGridMediator* weakSelf = self;
-  auto callback = base::BindOnce(^(
-      data_sharing::DataSharingService::PeopleGroupActionOutcome outcome) {
-    // If updating the group on the server failed, restore the tab group
-    // locally.
-    if (outcome !=
-        data_sharing::DataSharingService::PeopleGroupActionOutcome::kSuccess) {
-      [weakSelf restoreTabGroupAfterServerFailure:savedGroupId];
-    }
+  auto callback = base::BindOnce(^(PeopleGroupActionOutcome outcome) {
+    BOOL success = outcome == PeopleGroupActionOutcome::kSuccess;
+    [weakSelf handTakeActionForActionTypeOutcome:success];
   });
 
-  // Close the group locally to make the delete animation appear faster.
-  tab_groups::utils::CloseTabGroupLocally(group, _webStateList,
-                                          tabGroupSyncService);
+  // TODO(crbug.com/393073658): Block the screen.
+
   // Asynchronously call on the server.
   switch (actionType) {
     case TabGroupActionType::kLeaveSharedTabGroup:
@@ -1759,22 +1755,17 @@ void LogPriceDropMetrics(web::WebState* web_state) {
       break;
     case TabGroupActionType::kUngroupTabGroup:
     case TabGroupActionType::kDeleteTabGroup:
-
     case TabGroupActionType::kLeaveOrKeepSharedTabGroup:
     case TabGroupActionType::kDeleteOrKeepSharedTabGroup:
       NOTREACHED();
   }
 }
 
-// Restores the tab group if an error occurred while attempting to leave or
-// delete it.
-- (void)restoreTabGroupAfterServerFailure:(const base::Uuid)savedGroupId {
-  tab_groups::TabGroupSyncService* tabGroupSyncService =
-      tab_groups::TabGroupSyncServiceFactory::GetForProfile(self.profile);
-  tabGroupSyncService->OpenTabGroup(
-      savedGroupId,
-      std::make_unique<tab_groups::IOSTabGroupActionContext>(self.browser));
-  // TODO(crbug.com/375587197): Show a snackbar here.
+// Called when `performAction:forSharedTabGroup:` server's call returned.
+- (void)handTakeActionForActionTypeOutcome:(BOOL)success {
+  // TODO(crbug.com/393073658):
+  // - Unblock the screen.
+  // - Show an error if needed.
 }
 
 // Exits Tab grid of `itemBrowser`'s window.

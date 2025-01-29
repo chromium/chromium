@@ -875,6 +875,31 @@ id<GREYMatcher> ShareGroupButton();
 // group.
 id<GREYMatcher> ManageGroupButton();
 
+// Returns the matcher for `Leave Group` button in the context menu of a shared
+// tab group.
+id<GREYMatcher> LeaveSharedGroupButton();
+
+// Returns the matcher for `Leave Group` button in the confirmation dialog of a
+// shared tab group.
+id<GREYMatcher> LeaveSharedGroupConfirmationButton();
+
+// Returns the matcher for `Delete Group` button in the context menu of a shared
+// tab group.
+id<GREYMatcher> DeleteSharedGroupButton();
+
+// Returns the matcher for `Delete Group` button in the confirmation dialog of a
+// shared tab group.
+id<GREYMatcher> DeleteSharedConfirmationButton();
+
+// Returns the matcher for the shared tab group Share flow view.
+id<GREYMatcher> FakeShareFlowView();
+
+// Returns the matcher for the shared tab group Manage flow view.
+id<GREYMatcher> FakeManageFlowView();
+
+// Returns the matcher for the shared tab group Join flow view.
+id<GREYMatcher> FakeJoinFlowView();
+
 #pragma mark - Tab Groups Panel
 
 // Returns the matcher for the tab groups panel view.

@@ -159,7 +159,6 @@
     case TabGroupActionType::kLeaveOrKeepSharedTabGroup:
     case TabGroupActionType::kDeleteOrKeepSharedTabGroup:
       return l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_KEEPSHAREDGROUP);
-
     case TabGroupActionType::kUngroupTabGroup:
     case TabGroupActionType::kDeleteTabGroup:
     case TabGroupActionType::kLeaveSharedTabGroup:
