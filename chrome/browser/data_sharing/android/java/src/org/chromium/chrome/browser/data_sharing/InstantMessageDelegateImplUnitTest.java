@@ -265,6 +265,34 @@ public class InstantMessageDelegateImplUnitTest {
     }
 
     @Test
+    public void testTabNavigated_doubleShow() {
+        mDelegate.displayInstantaneousMessage(
+                newInstantMessage(CollaborationEvent.TAB_UPDATED), mSuccessCallback);
+
+        verify(mManagedMessageDispatcher)
+                .enqueueWindowScopedMessage(mPropertyModelCaptor.capture(), anyBoolean());
+        PropertyModel propertyModel = mPropertyModelCaptor.getValue();
+
+        verify(mSuccessCallback, never()).onResult(anyBoolean());
+
+        // Initial show, should trigger the success callback.
+        propertyModel.get(ON_FULLY_VISIBLE).onResult(true);
+        verify(mSuccessCallback).onResult(true);
+
+        // See crbug.com/393023075, it seems message dispatching will re-trigger visibly.
+        // Chrome is backgrounded.
+        propertyModel.get(ON_FULLY_VISIBLE).onResult(false);
+        // Chrome is foregrounded.
+        propertyModel.get(ON_FULLY_VISIBLE).onResult(true);
+
+        // Message stops showing naturally
+        propertyModel.get(ON_FULLY_VISIBLE).onResult(false);
+
+        // Callback should still only have been invoked once.
+        verify(mSuccessCallback, times(1)).onResult(anyBoolean());
+    }
+
+    @Test
     public void testCollaborationMemberAdded() {
         InstantMessage message = newInstantMessage(CollaborationEvent.COLLABORATION_MEMBER_ADDED);
         message.attribution.collaborationId = COLLABORATION_ID1;

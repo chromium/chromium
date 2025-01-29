@@ -73,22 +73,23 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
         }
     }
 
-    /** Helper class similar to Runnable, but can only run once. */
-    private static class OnceRunnable implements Runnable {
-        private final Runnable mRunnable;
-        private boolean mHasRun;
+    /**
+     * Helper class similar to {@link Runnable}, but only runs the first time it it invoked. After
+     * this the reference to the underlying {@link Runnable} is let go, allowing garbage collection.
+     * Subsequent invocations are ignored.
+     */
+    private static class ReuseSafeOnceRunnable implements Runnable {
+        private @Nullable Runnable mRunnable;
 
-        public OnceRunnable(Runnable runnable) {
+        public ReuseSafeOnceRunnable(@Nullable Runnable runnable) {
             mRunnable = runnable;
         }
 
         @Override
         public void run() {
-            if (!mHasRun) {
+            if (mRunnable != null) {
                 mRunnable.run();
-                mHasRun = true;
-            } else {
-                assert false;
+                mRunnable = null;
             }
         }
     }
@@ -181,7 +182,7 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
                 return;
             }
 
-            OnceRunnable onSuccess = new OnceRunnable(successCallback.bind(true));
+            ReuseSafeOnceRunnable onSuccess = new ReuseSafeOnceRunnable(successCallback.bind(true));
             if (collaborationEvent == CollaborationEvent.TAB_REMOVED) {
                 showTabRemoved(
                         message, activity, messageDispatcher, tabGroupModelFilter, onSuccess);
