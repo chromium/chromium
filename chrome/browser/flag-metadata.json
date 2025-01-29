@@ -3837,6 +3837,14 @@
     "expiry_milestone": 135
   },
   {
+    "name": "enable-snackbar-in-settings",
+    "owners": [
+      "uno-desktop@google.com",
+      "//components/signin/OWNERS"
+    ],
+    "expiry_milestone": 138
+  },
+  {
     "name": "enable-speculation-rules-prerendering-target-hint",
     "owners": [ "//content/browser/preloading/prerender/OWNERS" ],
     "expiry_milestone": 135

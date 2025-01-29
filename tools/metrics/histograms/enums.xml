@@ -10436,6 +10436,7 @@ from previous Chrome versions.
   <int value="-1451644187" label="OverviewSwipeToClose:enabled"/>
   <int value="-1450657485" label="EnableHardwareMirrorMode:enabled"/>
   <int value="-1450576851" label="OmniboxUIExperimentVerticalLayout:enabled"/>
+  <int value="-1450079733" label="EnableSnackbarInSettings:enabled"/>
   <int value="-1449928353" label="TabletToolbarReordering:enabled"/>
   <int value="-1449728470"
       label="LegacyTechReportEnableCookieIssueReports:disabled"/>
@@ -18109,6 +18110,7 @@ from previous Chrome versions.
   <int value="1592595046" label="HeuristicMemorySaver:enabled"/>
   <int value="1592642621" label="TabletToolbarReordering:disabled"/>
   <int value="1592843279" label="WebXrSharedBuffers:enabled"/>
+  <int value="1593315881" label="EnableSnackbarInSettings:disabled"/>
   <int value="1593720927" label="GamepadVibration:disabled"/>
   <int value="1593883073" label="OfflineIndicatorV2:disabled"/>
   <int value="1593917165" label="SimplifiedNTP:disabled"/>

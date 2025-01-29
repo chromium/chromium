@@ -11760,6 +11760,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::
              kAutofillEnableAllowlistForBmoCardCategoryBenefits)},
+    {"enable-snackbar-in-settings",
+     flag_descriptions::kEnableSnackbarInSettingsName,
+     flag_descriptions::kEnableSnackbarInSettingsDescription,
+     kOsMac | kOsWin | kOsLinux,
+     FEATURE_VALUE_TYPE(switches::kEnableSnackbarInSettings)},
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

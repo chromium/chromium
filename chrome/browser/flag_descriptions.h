@@ -276,6 +276,9 @@ extern const char kMediaSessionEnterPictureInPictureDescription[];
 extern const char kEnableDrDcName[];
 extern const char kEnableDrDcDescription[];
 
+extern const char kEnableSnackbarInSettingsName[];
+extern const char kEnableSnackbarInSettingsDescription[];
+
 extern const char kUseAndroidStagingSmdsName[];
 extern const char kUseAndroidStagingSmdsDescription[];
 
