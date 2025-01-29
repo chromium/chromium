@@ -777,7 +777,7 @@ void SimpleSynchronousEntry::ReadSparseData(const SparseRequest& in_entry_op,
   char* buf = out_buf->data();
   int read_so_far = 0;
 
-  if (!sparse_file_open()) {
+  if (!sparse_file_open() || !buf_len) {
     *out_result = 0;
     return;
   }
