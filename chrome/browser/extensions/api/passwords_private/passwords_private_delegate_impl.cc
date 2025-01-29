@@ -21,17 +21,16 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_event_router.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_event_router_factory.h"
+#include "chrome/browser/extensions/profile_util.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_sender_service_factory.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -291,12 +290,11 @@ void MaybeShowProfileSwitchIPH(Profile* profile) {
   Browser* launched_app = web_app::AppBrowserController::FindForWebApp(
       *profile, ash::kPasswordManagerAppId);
 
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
   // Try to show promo only if there is profile menu button and there are
   // multiple profiles.
   if (launched_app && launched_app->app_controller() &&
       launched_app->app_controller()->HasProfileMenuButton() &&
-      profile_manager && profile_manager->GetNumberOfProfiles() > 1) {
+      extensions::profile_util::GetNumberOfProfiles() > 1) {
     launched_app->window()->MaybeShowProfileSwitchIPH();
   }
 #endif

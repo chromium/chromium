@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/device_settings_test_helper.h"
 #include "chrome/browser/extensions/api/enterprise_device_attributes/enterprise_device_attributes_api.h"
+#include "chrome/browser/extensions/profile_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -78,9 +79,9 @@ class EnterpriseDeviceAttributesApiAshTest
         TestingProfile* signin_profile;
         signin_profile = static_cast<TestingProfile*>(
             ash::ProfileHelper::GetSigninProfile());
-        EXPECT_TRUE(ProfileManager::GetPrimaryUserProfile()->IsSameOrParent(
+        EXPECT_TRUE(profile_util::GetPrimaryUserProfile()->IsSameOrParent(
             signin_profile));
-        ASSERT_EQ(signin_profile, ProfileManager::GetPrimaryUserProfile());
+        ASSERT_EQ(signin_profile, profile_util::GetPrimaryUserProfile());
         break;
       case TestProfileChoice::kNonAffiliatedProfile:
         AddUser(/*is_affiliated=*/false);

@@ -7,7 +7,8 @@
 #include "chrome/browser/ash/system/timezone_resolver_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/extensions/profile_util.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/settings_private.h"
 #include "components/user_manager/user_manager.h"
 
@@ -44,8 +45,7 @@ void GeneratedTimeZonePrefBase::UpdateTimeZonePrefControlledBy(
   } else if (profile_->IsChild()) {
     out_pref->controlled_by = settings_api::ControlledBy::kParent;
     out_pref->enforcement = settings_api::Enforcement::kParentSupervised;
-  } else if (!profile_->IsSameOrParent(
-                 ProfileManager::GetPrimaryUserProfile())) {
+  } else if (!profile_->IsSameOrParent(profile_util::GetPrimaryUserProfile())) {
     out_pref->controlled_by = settings_api::ControlledBy::kPrimaryUser;
     out_pref->controlled_by_name =
         user_manager::UserManager::Get()->GetPrimaryUser()->GetDisplayEmail();
