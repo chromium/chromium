@@ -28,7 +28,7 @@ void TestWatchDog::OnNotify(const std::string& data) {
     display_name = "[" + filter_->pattern.value_or("NO_PATTERN") + "]";
   }
 
-  VLOG(4) << display_name << " watchdog tripped!";
+  VLOG(2) << display_name << " watchdog tripped!";
 }
 
 }  // namespace ash::cfm
