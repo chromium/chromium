@@ -713,7 +713,7 @@ NSString* const kDomain2 = @"domain2.com";
   // Add the switch to make sure that fakeIdentity1 is known at startup to avoid
   // automatic sign out.
   config.additional_args.push_back(std::string("-") +
-                                   test_switches::kSignInAtStartup);
+                                   test_switches::kAddFakeIdentitiesAtStartup);
 
   // Relaunch the app to take the configuration into account.
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];

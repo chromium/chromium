@@ -234,7 +234,7 @@ static const char* kInterstitialDetails = "Details";
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   // Add the switch to make sure that the user stays signed in in the restart.
   config.additional_args.push_back(std::string("-") +
-                                   test_switches::kSignInAtStartup);
+                                   test_switches::kAddFakeIdentitiesAtStartup);
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
   // Check the previously used tabs are maintained.

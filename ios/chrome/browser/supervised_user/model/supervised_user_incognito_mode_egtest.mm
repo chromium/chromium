@@ -222,8 +222,6 @@ id<GREYMatcher> SupervisedIncognitoMessage() {
   // supervised account.
   AppLaunchConfiguration config;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  config.additional_args.push_back(
-      base::StrCat({"--", test_switches::kSignInAtStartup}));
   config.additional_args.push_back(base::StrCat({
     "-", test_switches::kAddFakeIdentitiesAtStartup, "=",
         [FakeSystemIdentity encodeIdentitiesToBase64:@[ fakeIdentity ]]

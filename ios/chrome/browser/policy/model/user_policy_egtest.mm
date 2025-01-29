@@ -295,8 +295,6 @@ void WaitForVisibleChromeManagementURL() {
       policy::kUserPolicyForSigninAndNoSyncConsentLevel);
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   config.additional_args.push_back(
-      base::StrCat({"--", test_switches::kSignInAtStartup}));
-  config.additional_args.push_back(
       std::string("-") + test_switches::kAddFakeIdentitiesAtStartup + "=" +
       [FakeSystemIdentity encodeIdentitiesToBase64:@[ fakeManagedIdentity ]]);
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
@@ -333,8 +331,6 @@ void WaitForVisibleChromeManagementURL() {
   // the managed account.
   config = [self appConfigurationForTestCase];
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  config.additional_args.push_back(
-      base::StrCat({"--", test_switches::kSignInAtStartup}));
   config.additional_args.push_back(
       std::string("-") + test_switches::kAddFakeIdentitiesAtStartup + "=" +
       [FakeSystemIdentity encodeIdentitiesToBase64:@[ fakeManagedIdentity ]]);
@@ -386,8 +382,6 @@ void WaitForVisibleChromeManagementURL() {
   // managed account.
   config = [self appConfigurationForTestCase];
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  config.additional_args.push_back(
-      base::StrCat({"--", test_switches::kSignInAtStartup}));
   config.additional_args.push_back(
       std::string("-") + test_switches::kAddFakeIdentitiesAtStartup + "=" +
       [FakeSystemIdentity encodeIdentitiesToBase64:@[ fakeManagedIdentity ]]);

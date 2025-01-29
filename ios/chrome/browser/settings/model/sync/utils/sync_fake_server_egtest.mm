@@ -178,8 +178,6 @@ void ClearRelevantData() {
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   config.features_enabled = enabled;
   config.features_disabled = disabled;
-  config.additional_args.push_back(
-      base::StrCat({"--", test_switches::kSignInAtStartup}));
   config.additional_args.push_back(base::StrCat({
     "-", test_switches::kAddFakeIdentitiesAtStartup, "=",
         [FakeSystemIdentity encodeIdentitiesToBase64:@[ identity ]]

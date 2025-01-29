@@ -78,7 +78,7 @@
   AppLaunchConfiguration config;
 
   config.additional_args.push_back(std::string("-") +
-                                   test_switches::kSignInAtStartup);
+                                   test_switches::kAddFakeIdentitiesAtStartup);
   config.additional_args.push_back("-FirstRunForceEnabled");
   config.additional_args.push_back("true");
   // Relaunches the app at each test to rewind the startup state.
