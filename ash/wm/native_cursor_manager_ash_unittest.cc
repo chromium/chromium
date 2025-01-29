@@ -8,6 +8,7 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/cursor_manager_test_api.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/test/aura_test_utils.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/test/test_windows.h"
@@ -100,6 +101,24 @@ TEST_F(NativeCursorManagerAshTest, SetCursorSize) {
 
   cursor_manager->SetCursorSize(ui::CursorSize::kNormal);
   EXPECT_EQ(ui::CursorSize::kNormal, cursor_manager->GetCursorSize());
+}
+
+TEST_F(NativeCursorManagerAshTest, SetCursorColor) {
+  ::wm::CursorManager* cursor_manager = Shell::Get()->cursor_manager();
+
+  EXPECT_EQ(ui::kDefaultCursorColor, cursor_manager->GetCursorColor());
+
+  cursor_manager->SetCursorColor(SK_ColorRED);
+  EXPECT_EQ(SK_ColorRED, cursor_manager->GetCursorColor());
+
+  cursor_manager->SetCursorColor(SK_ColorGREEN);
+  EXPECT_EQ(SK_ColorGREEN, cursor_manager->GetCursorColor());
+
+  cursor_manager->SetCursorColor(SK_ColorYELLOW);
+  EXPECT_EQ(SK_ColorYELLOW, cursor_manager->GetCursorColor());
+
+  cursor_manager->SetCursorColor(ui::kDefaultCursorColor);
+  EXPECT_EQ(ui::kDefaultCursorColor, cursor_manager->GetCursorColor());
 }
 
 TEST_F(NativeCursorManagerAshTest, SetDeviceScaleFactorAndRotation) {
