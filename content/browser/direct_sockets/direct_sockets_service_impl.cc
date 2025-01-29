@@ -184,6 +184,60 @@ void RequestPrivateNetworkAccessAndCreateSocket(
                           std::move(finish_callback)));
 }
 
+// Deletes the DirectSocketsServiceImpl when the connected document is
+// destroyed.
+class DocumentHelper
+    : public DocumentService<blink::mojom::DirectSocketsService> {
+ public:
+  DocumentHelper(
+      std::unique_ptr<DirectSocketsServiceImpl> service,
+      RenderFrameHost* render_frame_host,
+      mojo::PendingReceiver<blink::mojom::DirectSocketsService> receiver)
+      : DocumentService(*render_frame_host, std::move(receiver)),
+        service_(std::move(service)) {}
+
+  DocumentHelper(const DocumentHelper&) = delete;
+  DocumentHelper& operator=(const DocumentHelper&) = delete;
+
+  ~DocumentHelper() override = default;
+
+  // blink::mojom::DirectSocketsService:
+  void OpenTCPSocket(
+      blink::mojom::DirectTCPSocketOptionsPtr options,
+      mojo::PendingReceiver<network::mojom::TCPConnectedSocket> socket,
+      mojo::PendingRemote<network::mojom::SocketObserver> observer,
+      OpenTCPSocketCallback callback) override {
+    service_->OpenTCPSocket(std::move(options), std::move(socket),
+                            std::move(observer), std::move(callback));
+  }
+  void OpenConnectedUDPSocket(
+      blink::mojom::DirectConnectedUDPSocketOptionsPtr options,
+      mojo::PendingReceiver<network::mojom::RestrictedUDPSocket> receiver,
+      mojo::PendingRemote<network::mojom::UDPSocketListener> listener,
+      OpenConnectedUDPSocketCallback callback) override {
+    service_->OpenConnectedUDPSocket(std::move(options), std::move(receiver),
+                                     std::move(listener), std::move(callback));
+  }
+  void OpenBoundUDPSocket(
+      blink::mojom::DirectBoundUDPSocketOptionsPtr options,
+      mojo::PendingReceiver<network::mojom::RestrictedUDPSocket> receiver,
+      mojo::PendingRemote<network::mojom::UDPSocketListener> listener,
+      OpenBoundUDPSocketCallback callback) override {
+    service_->OpenBoundUDPSocket(std::move(options), std::move(receiver),
+                                 std::move(listener), std::move(callback));
+  }
+  void OpenTCPServerSocket(
+      blink::mojom::DirectTCPServerSocketOptionsPtr options,
+      mojo::PendingReceiver<network::mojom::TCPServerSocket> socket,
+      OpenTCPServerSocketCallback callback) override {
+    service_->OpenTCPServerSocket(std::move(options), std::move(socket),
+                                  std::move(callback));
+  }
+
+ private:
+  const std::unique_ptr<DirectSocketsServiceImpl> service_;
+};
+
 }  // namespace
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -278,9 +332,8 @@ class DirectSocketsServiceImpl::FirewallHoleDelegate
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 DirectSocketsServiceImpl::DirectSocketsServiceImpl(
-    RenderFrameHost* render_frame_host,
-    mojo::PendingReceiver<blink::mojom::DirectSocketsService> receiver)
-    : DocumentService(*render_frame_host, std::move(receiver)),
+    RenderFrameHost* render_frame_host)
+    : context_(render_frame_host),
       resolver_(network::SimpleHostResolver::Create(
           /*network_context_factory=*/base::BindRepeating(
               &DirectSocketsServiceImpl::GetNetworkContext,
@@ -314,7 +367,9 @@ void DirectSocketsServiceImpl::CreateForFrame(
         "Frame is not sufficiently isolated to use Direct Sockets.");
     return;
   }
-  new DirectSocketsServiceImpl(render_frame_host, std::move(receiver));
+  new DocumentHelper(
+      base::WrapUnique(new DirectSocketsServiceImpl(render_frame_host)),
+      render_frame_host, std::move(receiver));
 }
 
 void DirectSocketsServiceImpl::OpenTCPSocket(
