@@ -75,6 +75,10 @@ StatusIconLinuxWrapper::~StatusIconLinuxWrapper() {
   if (menu_model_) {
     menu_model_->RemoveObserver(this);
   }
+
+  if (auto* status_icon = GetStatusIcon()) {
+    status_icon->SetDelegate(nullptr);
+  }
 }
 
 void StatusIconLinuxWrapper::SetImage(const gfx::ImageSkia& image) {
