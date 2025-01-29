@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 
 namespace base {
 namespace debug {
@@ -88,19 +89,19 @@ BASE_EXPORT size_t wcslcpy(wchar_t* dst, const wchar_t* src, size_t dst_size);
 // Convenience macro that copies the null-terminated string from `c_str` into a
 // stack-allocated char array named `var_name` that holds up to `array_size - 1`
 // characters and should be preserved in memory dumps.
-#define DEBUG_ALIAS_FOR_CSTR(var_name, c_str, array_size)  \
-  char var_name[array_size] = {};                          \
-  ::base::strlcpy(var_name, (c_str), std::size(var_name)); \
+#define DEBUG_ALIAS_FOR_CSTR(var_name, c_str, array_size)               \
+  char var_name[array_size] = {};                                       \
+  UNSAFE_TODO(::base::strlcpy(var_name, (c_str), std::size(var_name))); \
   ::base::debug::Alias(var_name)
 
-#define DEBUG_ALIAS_FOR_U16CSTR(var_name, c_str, array_size)   \
-  char16_t var_name[array_size] = {};                          \
-  ::base::u16cstrlcpy(var_name, (c_str), std::size(var_name)); \
+#define DEBUG_ALIAS_FOR_U16CSTR(var_name, c_str, array_size)                \
+  char16_t var_name[array_size] = {};                                       \
+  UNSAFE_TODO(::base::u16cstrlcpy(var_name, (c_str), std::size(var_name))); \
   ::base::debug::Alias(var_name)
 
-#define DEBUG_ALIAS_FOR_WCHARCSTR(var_name, c_str, array_size) \
-  wchar_t var_name[array_size] = {};                           \
-  ::base::wcslcpy(var_name, (c_str), std::size(var_name));     \
+#define DEBUG_ALIAS_FOR_WCHARCSTR(var_name, c_str, array_size)          \
+  wchar_t var_name[array_size] = {};                                    \
+  UNSAFE_TODO(::base::wcslcpy(var_name, (c_str), std::size(var_name))); \
   ::base::debug::Alias(var_name)
 
 // Code folding is a linker optimization whereby the linker identifies functions
