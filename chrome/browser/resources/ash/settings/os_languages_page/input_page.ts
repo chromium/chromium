@@ -318,6 +318,23 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
         allowedInputMethodsForceEnabled.value;
   }
 
+  private addInputMethodButtonDisabled_(): boolean {
+    // Disable if all input methods are enabled by policy.
+    if (this.inputMethodsEnabledByPolicy_()) {
+      return true;
+    }
+    // Disable if all allowed input methods are already enabled.
+    if (this.languages &&
+        !this.languages!.inputMethods!.supported
+             .filter(
+                 inputMethod =>
+                     !this.languageHelper.isInputMethodEnabled(inputMethod.id))
+             .some(inputMethod => !inputMethod.isProhibitedByPolicy)) {
+      return true;
+    }
+    return false;
+  }
+
   /**
    * Handler for click events on an input method on the main page,
    * which sets it as the current input method.
