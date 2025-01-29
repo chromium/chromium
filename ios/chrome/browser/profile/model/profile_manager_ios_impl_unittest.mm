@@ -324,8 +324,10 @@ TEST_F(ProfileManagerIOSImplTest, CreateProfile_MarkedForDeletion) {
   EXPECT_TRUE(profile_manager().GetProfileWithName(kProfileName1));
   EXPECT_FALSE(profile_manager().GetProfileWithName(kProfileName2));
 
-  // Ensures that the profile cannot be created.
+  // Ensures that the profile cannot be created and has been removed from
+  // the profile attributes storage.
   ASSERT_FALSE(profile_manager().CreateProfile(kProfileName2));
+  ASSERT_FALSE(attributes_storage().HasProfileWithName(kProfileName2));
 }
 
 // Tests that calling CreateProfileAsync(...) a second time returns the Profile
@@ -601,6 +603,7 @@ TEST_F(ProfileManagerIOSImplTest, MarkProfileForDeletion) {
 
   EXPECT_TRUE(profile_manager().GetProfileWithName(kProfileName1));
   EXPECT_FALSE(profile_manager().GetProfileWithName(kProfileName2));
+  EXPECT_FALSE(attributes_storage().HasProfileWithName(kProfileName2));
   EXPECT_TRUE(observer.on_profile_marked_for_permanent_deletation_called());
 }
 
@@ -633,6 +636,7 @@ TEST_F(ProfileManagerIOSImplTest,
 
   EXPECT_TRUE(profile_manager().GetProfileWithName(kProfileName1));
   EXPECT_FALSE(profile_manager().GetProfileWithName(kProfileName2));
+  EXPECT_FALSE(attributes_storage().HasProfileWithName(kProfileName2));
   EXPECT_FALSE(observer.on_profile_marked_for_permanent_deletation_called());
 }
 
@@ -643,6 +647,7 @@ TEST_F(ProfileManagerIOSImplTest,
   // Create a few profiles synchronously.
   ASSERT_TRUE(profile_manager().CreateProfile(kProfileName1));
   ASSERT_TRUE(profile_manager().CreateProfile(kProfileName2));
+
   // Check that the profiles are accessible.
   EXPECT_TRUE(profile_manager().GetProfileWithName(kProfileName1));
   EXPECT_TRUE(profile_manager().GetProfileWithName(kProfileName2));
@@ -650,4 +655,5 @@ TEST_F(ProfileManagerIOSImplTest,
   // Mark profile for deletion.
   profile_manager().MarkProfileForDeletion(kProfileName2);
   EXPECT_FALSE(profile_manager().CanCreateProfileWithName(kProfileName2));
+  EXPECT_FALSE(attributes_storage().HasProfileWithName(kProfileName2));
 }
