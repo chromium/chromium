@@ -158,5 +158,47 @@ TEST_F(AutofillAiSuggestionsTest, NonMatchingEntity_DoNoReturnSuggestions) {
   EXPECT_EQ(suggestions.size(), 0u);
 }
 
+TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestion_DedupeSuggestions) {
+  autofill::EntityInstance passport_entity =
+      autofill::test::GetPassportEntityInstance();
+  autofill::test::PassportEntityOptions passport_a_with_different_expiry_date;
+  passport_a_with_different_expiry_date.expiry_date = "01/12/2001";
+  autofill::test::PassportEntityOptions passport_a_without_an_expiry_date;
+  passport_a_with_different_expiry_date.expiry_date = nullptr;
+  autofill::test::PassportEntityOptions another_persons_passport_options;
+  another_persons_passport_options.name = "Jon doe";
+  another_persons_passport_options.number = "927908CYGAS1";
+  autofill::EntityInstance another_persons_passport =
+      autofill::test::GetPassportEntityInstance(
+          another_persons_passport_options);
+  std::vector<autofill::EntityInstance> entities = {
+      passport_entity, another_persons_passport,
+      autofill::test::GetPassportEntityInstance(
+          passport_a_with_different_expiry_date),
+      autofill::test::GetPassportEntityInstance(
+          passport_a_without_an_expiry_date)};
+
+  autofill::FieldType triggering_field_type = autofill::PASSPORT_NAME_TAG;
+  std::unique_ptr<autofill::FormStructure> form =
+      CreateFormStructure({triggering_field_type, autofill::PASSPORT_NUMBER,
+                           autofill::PASSPORT_ISSUING_COUNTRY_TAG});
+  std::vector<autofill::Suggestion> suggestions = CreateFillingSuggestionsV2(
+      *form, form->fields()[0]->global_id(), entities);
+
+  // The passport with passport_a_with_different_expiry_date should be
+  // deduped because while it has an unique attribute (expiry date), the form
+  // does not contain a field with autofill::PASSPORT_ISSUE_DATE_TAG, which
+  // makes it identical to `passport_entity`. The passport with
+  // passport_a_without_an_expiry_date should be deduped because it is a
+  // proper subset of `passport_entity`.
+  EXPECT_EQ(suggestions.size(), 2u);
+  EXPECT_EQ(suggestions[0].main_text.value,
+            GetEntityInstanceValueForFieldType(passport_entity,
+                                               triggering_field_type));
+  EXPECT_EQ(suggestions[1].main_text.value,
+            GetEntityInstanceValueForFieldType(another_persons_passport,
+                                               triggering_field_type));
+}
+
 }  // namespace
 }  // namespace autofill_ai
