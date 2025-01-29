@@ -352,6 +352,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
                 animatingToBottom
                         ? controlContainerHeight
                         : mBrowserControlsSizer.getBottomControlOffset());
+        mBrowserControlsSizer.setAnimateBrowserControlsHeightChanges(false);
 
         // Commit the new layer sizes and visibilities we calculated above to avoid inconsistency.
         mBottomControlsStacker.requestLayerUpdate(false);
