@@ -47,21 +47,46 @@ const FakeSystemIdentity* kSecondaryIdentity =
     [FakeSystemIdentity fakeIdentity2];
 const FakeSystemIdentity* kSecondaryIdentity2 =
     [FakeSystemIdentity fakeIdentity3];
+
+enum FeaturesState {
+  // Using APIs from ChromeAccountManagerService to retrieve accounts, and with
+  // all accounts being assigned to the same single profile.
+  kOldApiWithoutSeparateProfiles,
+  // Using APIs from IdentityManager to retrieve accounts, and with all accounts
+  // being assigned to the same single profile.
+  kNewApiWithoutSeparateProfiles,
+  // Using APIs from IdentityManager to retrieve accounts, and with managed
+  // accounts being assigned into their own separate profiles.
+  kNewApiWithSeparateProfiles
+  // Note: "SeparateProfiles" depends on "NewApi", so there's no
+  // "OldAPiWithSeparateProfiles" variant.
+};
 }  // namespace
 
 // The test param determines whether `kSeparateProfilesForManagedAccounts` is
 // enabled.
-class AccountMenuMediatorTest : public PlatformTest,
-                                public testing::WithParamInterface<bool> {
+class AccountMenuMediatorTest
+    : public PlatformTest,
+      public testing::WithParamInterface<FeaturesState> {
  public:
   AccountMenuMediatorTest() {
-    const bool separate_profiles = GetParam();
     base::flat_map<base::test::FeatureRef, bool> feature_states;
-    feature_states[kSeparateProfilesForManagedAccounts] = separate_profiles;
-    // `kSeparateProfilesForManagedAccounts` depends on
-    // `kUseAccountListFromIdentityManager`.
-    if (separate_profiles) {
-      feature_states[kUseAccountListFromIdentityManager] = true;
+    switch (GetParam()) {
+      case kOldApiWithoutSeparateProfiles:
+        feature_states[kUseAccountListFromIdentityManager] = false;
+        feature_states[kSeparateProfilesForManagedAccounts] = false;
+        break;
+      case kNewApiWithoutSeparateProfiles:
+        feature_states[kUseAccountListFromIdentityManager] = true;
+        feature_states[kSeparateProfilesForManagedAccounts] = false;
+        break;
+      case kNewApiWithSeparateProfiles:
+        feature_states[kUseAccountListFromIdentityManager] = true;
+        feature_states[kSeparateProfilesForManagedAccounts] = true;
+        break;
+        // Note: `kSeparateProfilesForManagedAccounts` depends on
+        // `kUseAccountListFromIdentityManager`, so there's no "false + true"
+        // case.
     }
     feature_list_.InitWithFeatureStates(feature_states);
   }
@@ -541,8 +566,16 @@ TEST_P(AccountMenuMediatorTest, TestViewControllerWantToBeClosed) {
 
 INSTANTIATE_TEST_SUITE_P(,
                          AccountMenuMediatorTest,
-                         testing::Bool(),
-                         [](const testing::TestParamInfo<bool>& info) {
-                           return info.param ? "WithSeparateProfiles"
-                                             : "WithoutSeparateProfiles";
+                         testing::ValuesIn({kOldApiWithoutSeparateProfiles,
+                                            kNewApiWithoutSeparateProfiles,
+                                            kNewApiWithSeparateProfiles}),
+                         [](const testing::TestParamInfo<FeaturesState>& info) {
+                           switch (info.param) {
+                             case kOldApiWithoutSeparateProfiles:
+                               return "OldApiWithoutSeparateProfile";
+                             case kNewApiWithoutSeparateProfiles:
+                               return "NewApiWithoutSeparateProfiles";
+                             case kNewApiWithSeparateProfiles:
+                               return "NewApiWithSeparateProfiles";
+                           }
                          });
