@@ -4,12 +4,19 @@
 
 #include "ash/scanner/scanner_feedback.h"
 
+#include <cstddef>
+#include <optional>
+#include <string>
+#include <string_view>
 #include <utility>
 #include <variant>
+#include <vector>
 
 #include "base/containers/to_value_list.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "components/manta/proto/scanner.pb.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace ash {
 
@@ -147,6 +154,81 @@ base::Value::Dict CopyToClipboardToDict(
   return base::Value::Dict().Set("copy_to_clipboard", std::move(dict));
 }
 
+class UserFacingValueWriter {
+ public:
+  explicit UserFacingValueWriter(size_t depth_limit, size_t output_limit)
+      : user_facing_string_(""),
+        depth_limit_(depth_limit),
+        output_limit_(output_limit) {}
+
+  void BuildString(absl::monostate node) { OutputValue("null"); }
+  void BuildString(bool node) { OutputValue(node ? "true" : "false"); }
+  void BuildString(int node) { OutputValue(base::NumberToString(node)); }
+  void BuildString(double node) { OutputValue(base::NumberToString(node)); }
+  void BuildString(std::string_view node) { OutputValue(node); }
+  void BuildString(const base::Value::BlobStorage& node) {
+    user_facing_string_.reset();
+  }
+  void BuildString(const base::Value::Dict& node) {
+    if (path_.size() >= depth_limit_) {
+      user_facing_string_.reset();
+      return;
+    }
+
+    for (auto [key, value] : node) {
+      path_.push_back(key);
+      value.Visit([this](const auto& member) { BuildString(member); });
+      path_.pop_back();
+    }
+  }
+  void BuildString(const base::Value::List& node) {
+    if (path_.size() >= depth_limit_) {
+      user_facing_string_.reset();
+      return;
+    }
+
+    size_t i = 0;
+    for (const base::Value& value : node) {
+      path_.push_back(base::NumberToString(i));
+      value.Visit([this](const auto& member) { BuildString(member); });
+      path_.pop_back();
+      ++i;
+    }
+  }
+
+  std::optional<std::string>&& user_facing_string() && {
+    return std::move(user_facing_string_);
+  }
+
+ private:
+  void OutputValue(std::string_view value) {
+    if (!user_facing_string_.has_value()) {
+      return;
+    }
+
+    if (!path_.empty()) {
+      user_facing_string_->append(path_[0]);
+      for (size_t i = 1; i < path_.size(); ++i) {
+        user_facing_string_->push_back('.');
+        user_facing_string_->append(path_[i]);
+      }
+      user_facing_string_->append(": ");
+    }
+    user_facing_string_->append(value);
+    user_facing_string_->push_back('\n');
+
+    if (user_facing_string_->size() > output_limit_) {
+      user_facing_string_.reset();
+      return;
+    }
+  }
+
+  std::vector<std::string> path_;
+  std::optional<std::string> user_facing_string_;
+  size_t depth_limit_;
+  size_t output_limit_;
+};
+
 }  // namespace
 
 base::Value::Dict ScannerActionToDict(manta::proto::ScannerAction action) {
@@ -171,6 +253,14 @@ base::Value::Dict ScannerActionToDict(manta::proto::ScannerAction action) {
     case manta::proto::ScannerAction::ACTION_NOT_SET:
       return base::Value::Dict();
   }
+}
+
+std::optional<std::string> ValueToUserFacingString(base::ValueView value,
+                                                   size_t depth_limit,
+                                                   size_t output_limit) {
+  UserFacingValueWriter writer(depth_limit, output_limit);
+  value.Visit([&writer](const auto& value) { writer.BuildString(value); });
+  return std::move(writer).user_facing_string();
 }
 
 }  // namespace ash

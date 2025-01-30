@@ -4,6 +4,8 @@
 
 #include "ash/scanner/scanner_controller.h"
 
+#include <cstddef>
+#include <limits>
 #include <memory>
 #include <optional>
 #include <string>
@@ -63,6 +65,10 @@ constexpr char kScannerNotifierId[] = "ash.scanner";
 
 constexpr char kScannerActionSuccessToastId[] = "scanner_action_success";
 constexpr char kScannerActionFailureToastId[] = "scanner_action_failure";
+
+constexpr size_t kUserFacingStringDepthLimit = 20;
+constexpr size_t kUserFacingStringOutputLimit =
+    std::numeric_limits<size_t>::max();
 
 std::u16string GetToastMessageForActionFailure(
     manta::proto::ScannerAction::ActionCase action_case) {
@@ -268,12 +274,19 @@ void ExecutePopulatedAction(
 }
 
 void OnFeedbackFormSendButtonClicked(const AccountId& account_id,
+                                     base::Value::Dict action_dict,
                                      ScannerFeedbackInfo feedback_info,
                                      const std::string& user_description) {
+  std::optional<std::string> pretty_printed_action = base::WriteJsonWithOptions(
+      action_dict, base::JsonOptions::OPTIONS_PRETTY_PRINT);
+  // JSON serialisation should always succeed as the depth of the Dict is fixed,
+  // and no binary values should appear in the Dict.
+  CHECK(pretty_printed_action.has_value());
+
   // Work around limitations with `feedback::RedactionTool` by prepending two
   // spaces and appending a new line to any data to be redacted.
   std::string description =
-      base::StrCat({"details:  ", feedback_info.action_details,
+      base::StrCat({"details:  ", *pretty_printed_action,
                     "\nuser_description:  ", user_description, "\n"});
 
   Shell::Get()->shell_delegate()->SendSpecializedFeatureFeedback(
@@ -404,17 +417,22 @@ void ScannerController::OpenFeedbackDialog(
     manta::proto::ScannerAction action,
     scoped_refptr<base::RefCountedMemory> screenshot) {
   base::Value::Dict action_dict = ScannerActionToDict(std::move(action));
-  std::optional<std::string> pretty_printed_action = base::WriteJsonWithOptions(
-      action_dict, base::JsonOptions::OPTIONS_PRETTY_PRINT);
-  // JSON serialisation should always succeed as the depth of the Dict is fixed,
-  // and no binary values should appear in the Dict.
-  CHECK(pretty_printed_action.has_value());
+
+  std::optional<std::string> user_facing_string = ValueToUserFacingString(
+      action_dict, kUserFacingStringDepthLimit, kUserFacingStringOutputLimit);
+  // `user_facing_string` can only be nullopt if:
+  // - `ScannerActionToDict` output a binary value, which is impossible,
+  // - `ScannerActionToDict` output a more-than-twenty nested value, which is
+  //   impossible (all returned values are at most three-nested)
+  // - the excessively large output limit is hit, which should be impossible.
+  CHECK(user_facing_string.has_value());
 
   delegate_->OpenFeedbackDialog(
       account_id,
-      ScannerFeedbackInfo(std::move(*pretty_printed_action),
+      ScannerFeedbackInfo(std::move(*user_facing_string),
                           std::move(screenshot)),
-      base::BindOnce(&OnFeedbackFormSendButtonClicked, account_id));
+      base::BindOnce(&OnFeedbackFormSendButtonClicked, account_id,
+                     std::move(action_dict)));
 }
 
 void ScannerController::SetOnActionFinishedForTesting(
