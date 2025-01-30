@@ -15,6 +15,7 @@ namespace ash {
 
 struct ASH_PUBLIC_EXPORT ScannerFeedbackInfo {
   std::string action_details;
+  // If nullptr, no image is shown in the feedback form.
   scoped_refptr<base::RefCountedMemory> screenshot;
 
   ScannerFeedbackInfo(std::string action_details,

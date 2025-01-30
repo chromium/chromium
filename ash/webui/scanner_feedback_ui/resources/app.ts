@@ -92,7 +92,10 @@ export class ScannerFeedbackAppElement extends I18nMixin
   };
   private readonly extraInfoCallback = () =>
       FEEDBACK_INFO_PROMISE.then(feedbackInfo => feedbackInfo.actionDetails);
-  private screenshotUrl = '';
+  // This value has two null states: undefined, meaning that the feedback info
+  // Promise has not resolved yet, and empty string, meaning that the feedback
+  // info Promise resolved with a null screenshot URL.
+  private screenshotUrl?: string;
   private readonly revertToPreviousScreen = () =>
       PAGE_HANDLER_REMOTE.closeDialog();
   private readonly submitFeedback = (userDescription: string) =>
@@ -101,13 +104,13 @@ export class ScannerFeedbackAppElement extends I18nMixin
   constructor() {
     super();
     FEEDBACK_INFO_PROMISE.then(feedbackInfo => {
-      this.screenshotUrl = feedbackInfo.screenshotUrl.url;
+      this.screenshotUrl = feedbackInfo.screenshotUrl?.url ?? '';
     });
   }
 
   // Used in computed bindings:
-  private isEmpty(string: string): boolean {
-    return string === '';
+  private isUndefined(value: unknown): value is undefined {
+    return value === undefined;
   }
 }
 

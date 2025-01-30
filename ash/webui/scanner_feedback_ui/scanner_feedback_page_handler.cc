@@ -49,12 +49,16 @@ void ScannerFeedbackPageHandler::GetFeedbackInfo(
   }
 
   feedback_info_ptr->action_details = feedback_info->action_details;
-  feedback_info_ptr->screenshot_url = GURL(base::StrCat({
-      kScannerFeedbackUntrustedUrl,
-      kScannerFeedbackScreenshotPrefix,
-      id_.ToString(),
-      kScannerFeedbackScreenshotSuffix,
-  }));
+  if (feedback_info->screenshot != nullptr) {
+    feedback_info_ptr->screenshot_url = GURL(base::StrCat({
+        kScannerFeedbackUntrustedUrl,
+        kScannerFeedbackScreenshotPrefix,
+        id_.ToString(),
+        kScannerFeedbackScreenshotSuffix,
+    }));
+  } else {
+    feedback_info_ptr->screenshot_url = std::nullopt;
+  }
 
   std::move(callback).Run(std::move(feedback_info_ptr));
 }
