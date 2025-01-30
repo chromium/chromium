@@ -359,7 +359,7 @@ bool HTMLDialogElement::HandleCommandInternal(HTMLElement& invoker,
   if (HasPopoverAttribute() && popoverOpen()) {
     AddConsoleMessage(mojom::blink::ConsoleMessageSource::kOther,
                       mojom::blink::ConsoleMessageLevel::kError,
-                      "Dialog invokeactions are ignored on open popovers.");
+                      "Dialog commands are ignored on open popovers.");
     return false;
   }
 
@@ -373,7 +373,7 @@ bool HTMLDialogElement::HandleCommandInternal(HTMLElement& invoker,
       AddConsoleMessage(
           mojom::blink::ConsoleMessageSource::kOther,
           mojom::blink::ConsoleMessageLevel::kWarning,
-          "A closing invokeaction attempted to close an already closed Dialog");
+          "A command attempted to close an already closed Dialog");
     }
   } else if (command == CommandEventType::kShowModal) {
     if (isConnected() && !open) {
@@ -383,7 +383,7 @@ bool HTMLDialogElement::HandleCommandInternal(HTMLElement& invoker,
       AddConsoleMessage(
           mojom::blink::ConsoleMessageSource::kOther,
           mojom::blink::ConsoleMessageLevel::kWarning,
-          "An invokeaction attempted to open an already open Dialog as modal");
+          "A command attempted to open an already open Dialog as a modal");
     }
   }
 
