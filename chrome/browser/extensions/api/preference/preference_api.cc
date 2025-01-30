@@ -16,7 +16,6 @@
 #include "base/lazy_instance.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/pref_mapping.h"
 #include "chrome/browser/extensions/pref_transformer_interface.h"
@@ -43,10 +42,6 @@
 #include "extensions/common/permissions/permissions_data.h"
 #include "media/media_buildflags.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/chromeos/extensions/controlled_pref_mapping.h"
-#endif
 
 using extensions::mojom::APIPermissionID;
 
