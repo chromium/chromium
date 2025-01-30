@@ -16,7 +16,6 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Token;
@@ -43,11 +42,11 @@ public class TabGroupColorViewProvider implements Destroyable {
     private final Callback<List<GroupMember>> mOnGroupMembersChanged = this::onGroupMembersChanged;
     private final Callback<Integer> mOnGroupSharedStateChanged = this::onGroupSharedStateChanged;
     private final @NonNull Context mContext;
-    private final @NonNull Token mTabGroupId;
     private final boolean mIsIncognito;
     private final @Nullable DataSharingService mDataSharingService;
-    private final @Nullable SharedGroupObserver mSharedGroupObserver;
+    private final @Nullable TransitiveSharedGroupObserver mTransitiveSharedGroupObserver;
 
+    private @NonNull Token mTabGroupId;
     private @TabGroupColorId int mColorId;
     private @Nullable FrameLayout mFrameLayout;
     private @Nullable SharedImageTilesCoordinator mSharedImageTilesCoordinator;
@@ -78,45 +77,56 @@ public class TabGroupColorViewProvider implements Destroyable {
         boolean servicesExist = tabGroupSyncService != null && dataSharingService != null;
         if (servicesExist && collaborationService.getServiceStatus().isAllowedToJoin()) {
             mDataSharingService = dataSharingService;
-            mSharedGroupObserver =
-                    new SharedGroupObserver(
-                            tabGroupId,
-                            tabGroupSyncService,
-                            dataSharingService,
-                            collaborationService);
-            mSharedGroupObserver.getGroupMembersSupplier().addObserver(mOnGroupMembersChanged);
-            mSharedGroupObserver
+            mTransitiveSharedGroupObserver =
+                    new TransitiveSharedGroupObserver(
+                            tabGroupSyncService, dataSharingService, collaborationService);
+            mTransitiveSharedGroupObserver.setTabGroupId(tabGroupId);
+            mTransitiveSharedGroupObserver
+                    .getGroupMembersSupplier()
+                    .addObserver(mOnGroupMembersChanged);
+            mTransitiveSharedGroupObserver
                     .getGroupSharedStateSupplier()
                     .addObserver(mOnGroupSharedStateChanged);
         } else {
             mDataSharingService = null;
-            mSharedGroupObserver = null;
+            mTransitiveSharedGroupObserver = null;
         }
     }
 
     @Override
     public void destroy() {
-        if (mSharedGroupObserver != null) {
-            mSharedGroupObserver.destroy();
-            mSharedGroupObserver.getGroupMembersSupplier().removeObserver(mOnGroupMembersChanged);
-            mSharedGroupObserver
+        if (mTransitiveSharedGroupObserver != null) {
+            mTransitiveSharedGroupObserver.destroy();
+            mTransitiveSharedGroupObserver
+                    .getGroupMembersSupplier()
+                    .removeObserver(mOnGroupMembersChanged);
+            mTransitiveSharedGroupObserver
                     .getGroupSharedStateSupplier()
                     .removeObserver(mOnGroupSharedStateChanged);
             detachAndDestroySharedImageTiles();
         }
     }
 
-    /** Returns the tab group id that this tab group color view provider is for. */
-    public @NonNull Token getTabGroupId() {
-        return mTabGroupId;
-    }
-
     /** Returns whether the group is a collaboration. */
     public boolean hasCollaborationId() {
-        if (mSharedGroupObserver == null) return false;
+        if (mTransitiveSharedGroupObserver == null) return false;
 
         return TabShareUtils.isCollaborationIdValid(
-                mSharedGroupObserver.getCollaborationIdSupplier().get());
+                mTransitiveSharedGroupObserver.getCollaborationIdSupplier().get());
+    }
+
+    /**
+     * Sets the tab group id to observer. This cannot be null
+     *
+     * @param tabGroupId The tab group id to use.
+     */
+    public void setTabGroupId(@NonNull Token tabGroupId) {
+        assert tabGroupId != null;
+        mTabGroupId = tabGroupId;
+
+        if (mTransitiveSharedGroupObserver != null) {
+            mTransitiveSharedGroupObserver.setTabGroupId(tabGroupId);
+        }
     }
 
     /**
@@ -200,12 +210,14 @@ public class TabGroupColorViewProvider implements Destroyable {
 
         if (mFrameLayout == null) return;
 
-        @Nullable String collaborationId = mSharedGroupObserver.getCollaborationIdSupplier().get();
+        @Nullable
+        String collaborationId = mTransitiveSharedGroupObserver.getCollaborationIdSupplier().get();
         if (!TabShareUtils.isCollaborationIdValid(collaborationId)) return;
 
         @Nullable
         @GroupSharedState
-        Integer groupSharedState = mSharedGroupObserver.getGroupSharedStateSupplier().get();
+        Integer groupSharedState =
+                mTransitiveSharedGroupObserver.getGroupSharedStateSupplier().get();
         if (!shouldShowSharedImageTiles(groupSharedState)) return;
 
         mSharedImageTilesCoordinator =
@@ -248,7 +260,8 @@ public class TabGroupColorViewProvider implements Destroyable {
     private void onGroupMembersChanged(@Nullable List<GroupMember> members) {
         if (mSharedImageTilesCoordinator == null) return;
 
-        @Nullable String collaborationId = mSharedGroupObserver.getCollaborationIdSupplier().get();
+        @Nullable
+        String collaborationId = mTransitiveSharedGroupObserver.getCollaborationIdSupplier().get();
         if (members != null && TabShareUtils.isCollaborationIdValid(collaborationId)) {
             mSharedImageTilesCoordinator.onGroupMembersChanged(collaborationId, members);
         } else {
@@ -272,9 +285,13 @@ public class TabGroupColorViewProvider implements Destroyable {
                 && groupSharedState != GroupSharedState.COLLABORATION_ONLY;
     }
 
-    @VisibleForTesting
     @TabGroupColorId
     int getTabGroupColorIdForTesting() {
         return mColorId;
+    }
+
+    @NonNull
+    Token getTabGroupIdForTesting() {
+        return mTabGroupId;
     }
 }

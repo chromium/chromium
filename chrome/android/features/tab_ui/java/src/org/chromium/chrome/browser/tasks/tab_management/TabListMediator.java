@@ -2859,7 +2859,7 @@ class TabListMediator implements TabListNotificationHandler {
                             mCollaborationService);
             model.set(TAB_GROUP_COLOR_VIEW_PROVIDER, provider);
         } else {
-            assert Objects.equals(tabGroupId, provider.getTabGroupId());
+            provider.setTabGroupId(tabGroupId);
             provider.setTabGroupColorId(colorId);
         }
     }
