@@ -91,8 +91,7 @@ security_state::SecurityLevel SslValidityChecker::GetSecurityLevel(
       security_state::GetVisibleSecurityState(web_contents);
   DCHECK(state);
 
-  return security_state::GetSecurityLevel(
-      *state, /*used_policy_installed_certificate=*/false);
+  return security_state::GetSecurityLevel(*state);
 }
 
 }  // namespace payments

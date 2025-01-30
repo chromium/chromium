@@ -57,7 +57,6 @@ class ChromeSecurityStateTabHelper : public SecurityStateTabHelper,
   explicit ChromeSecurityStateTabHelper(content::WebContents* web_contents);
 
   security_state::MaliciousContentStatus GetMaliciousContentStatus() const;
-  bool UsedPolicyInstalledCertificate() const override;
 };
 
 #endif  // CHROME_BROWSER_SSL_CHROME_SECURITY_STATE_TAB_HELPER_H_

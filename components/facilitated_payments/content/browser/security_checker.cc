@@ -60,8 +60,7 @@ security_state::SecurityLevel SecurityChecker::GetSecurityLevel(
 
   CHECK(state) << "security_state::VisibleSecurityState was a nullpt.";
 
-  return security_state::GetSecurityLevel(
-      *state, /*used_policy_installed_certificate=*/false);
+  return security_state::GetSecurityLevel(*state);
 }
 
 bool SecurityChecker::IsPaymentPermissionsPolicyEnabled(

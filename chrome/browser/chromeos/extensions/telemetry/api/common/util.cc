@@ -34,9 +34,7 @@ bool IsWebContentsSecure(content::WebContents* contents) {
   // Ensure the URL connection is secure (e.g. valid certificate).
   const auto visible_security_state =
       security_state::GetVisibleSecurityState(contents);
-  return security_state::GetSecurityLevel(
-             *visible_security_state,
-             /*used_policy_installed_certificate=*/false) ==
+  return security_state::GetSecurityLevel(*visible_security_state) ==
          security_state::SecurityLevel::SECURE;
 }
 
