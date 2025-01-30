@@ -39,6 +39,7 @@ const uint64_t testuint64 = 0xCE8CA925'3104BDF7ULL;
 const float testfloat = 3.1415926935f;
 const double testdouble = 2.71828182845904523;
 const std::string teststring("Hello world");  // note non-aligned string length
+const std::string testemptystring("");
 const std::wstring testwstring(L"Hello, world");
 const std::u16string teststring16(u"Hello, world");
 const char testrawstring[] = "Hello new world";  // Test raw string writing
@@ -93,6 +94,10 @@ void VerifyResult(const Pickle& pickle) {
   EXPECT_TRUE(iter.ReadString(&outstring));
   EXPECT_EQ(teststring, outstring);
 
+  std::string outstring2;
+  EXPECT_TRUE(iter.ReadString(&outstring2));
+  EXPECT_EQ(testemptystring, outstring2);
+
   std::u16string outstring16;
   EXPECT_TRUE(iter.ReadString16(&outstring16));
   EXPECT_EQ(teststring16, outstring16);
@@ -141,6 +146,7 @@ TEST(PickleTest, EncodeDecode) {
   pickle.WriteFloat(testfloat);
   pickle.WriteDouble(testdouble);
   pickle.WriteString(teststring);
+  pickle.WriteString(testemptystring);
   pickle.WriteString16(teststring16);
   pickle.WriteString(testrawstring);
   pickle.WriteString16(testrawstring16);
