@@ -36,6 +36,7 @@ constexpr char kImageURLOptionSquareCrop[] = "c";
 constexpr char kImageURLOptionCircleCrop[] = "cc";
 // Option to disable default avatar if user doesn't have a custom one.
 constexpr char kImageURLOptionNoSilhouette[] = "ns";
+constexpr char kImageURLOptionRequestPng[] = "rp";
 
 std::string BuildImageURLOptionsString(int image_size,
                                        bool no_silhouette,
@@ -59,6 +60,12 @@ std::string BuildImageURLOptionsString(int image_size,
   switch (crop) {
     case signin::AvatarCropType::kCircle:
       url_options.push_back(kImageURLOptionCircleCrop);
+      // If the png option exists, remove it before adding it back. This
+      // ensures a predictable order of options.
+      std::erase(url_options, kImageURLOptionRequestPng);
+      // Request the image as a PNG so the circle crop leaves a
+      // transparent background.
+      url_options.push_back(kImageURLOptionRequestPng);
       break;
     case signin::AvatarCropType::kSquare:
     case signin::AvatarCropType::kDefault:
