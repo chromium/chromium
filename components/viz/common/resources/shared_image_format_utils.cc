@@ -15,22 +15,6 @@
 
 namespace viz {
 
-SkColorType ToClosestSkColorTypeDeprecated(bool gpu_compositing,
-                                           SharedImageFormat format) {
-  CHECK(format.is_single_plane());
-
-  if (!gpu_compositing) {
-    // TODO(crbug.com/41472025): Remove this assumption and have clients tag
-    // resources with the correct format.
-    // In software compositing we lazily use RGBA_8888 throughout the system,
-    // but actual pixel encodings are the native skia bit ordering, which can be
-    // RGBA or BGRA.
-    return kN32_SkColorType;
-  }
-
-  return ToClosestSkColorType(format);
-}
-
 SkColorType ToClosestSkColorType(SharedImageFormat format) {
   CHECK(format.is_single_plane());
 

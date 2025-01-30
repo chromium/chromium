@@ -44,13 +44,6 @@ class TestInProcessContextProvider;
 COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT)
 SkColorType ToClosestSkColorType(SharedImageFormat format);
 
-// Legacy version of the above, allowing to set `gpu_compositing` to false,
-// which essentially hardcodes N32. This is due to how legacy SharedBitmap
-// worked.
-COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT)
-SkColorType ToClosestSkColorTypeDeprecated(bool gpu_compositing,
-                                           SharedImageFormat format);
-
 // Returns the closest SkColorType for a given `format` that does not prefer
 // external sampler and `plane_index`. For single planar formats (eg. RGBA) the
 // plane_index must be zero and it's equivalent to calling function above.
