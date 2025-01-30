@@ -22,11 +22,11 @@ class PEResource {
   PEResource(const wchar_t* name, const wchar_t* type, HMODULE module);
 
   // Returns true if the resource is valid.
-  bool IsValid();
+  bool IsValid() const;
 
   // Returns the size in bytes of the resource. Returns zero if the resource is
   // not valid.
-  size_t Size();
+  size_t Size() const;
 
   // Creates a file in |path| with a copy of the resource. If the resource can
   // not be loaded into memory or if it cannot be written to disk it returns
