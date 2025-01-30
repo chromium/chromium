@@ -383,9 +383,10 @@ constexpr CGFloat kActivityLabelAvatarSize = 16;
 
 - (void)closeItemWithIdentifier:(GridItemIdentifier*)identifier {
   CHECK_EQ(identifier.type, GridItemType::kTab);
+  web::WebStateID webStateID = identifier.tabSwitcherItem.identifier;
   if (_tabGroup->range().count() > 1 || ![self isShared] ||
       !_collaborationService) {
-    [self closeItemWithID:identifier.tabSwitcherItem.identifier];
+    [self closeItemWithID:webStateID];
     return;
   }
 
@@ -394,10 +395,12 @@ constexpr CGFloat kActivityLabelAvatarSize = 16;
 
   switch (userRole) {
     case data_sharing::MemberRole::kOwner:
-      [self.tabGroupDelegate tabGroupMediatorCloseLastTabAsOwner:self];
+      [self.tabGroupDelegate tabGroupMediatorCloseLastTabAsOwner:self
+                                               lastTabIdentifier:webStateID];
       break;
     case data_sharing::MemberRole::kMember:
-      [self.tabGroupDelegate tabGroupMediatorCloseLastTabAsMember:self];
+      [self.tabGroupDelegate tabGroupMediatorCloseLastTabAsMember:self
+                                                lastTabIdentifier:webStateID];
       break;
     case data_sharing::MemberRole::kInvitee:
     case data_sharing::MemberRole::kUnknown:
