@@ -18240,6 +18240,23 @@
             ]
         }
     ],
+    "ProgressiveAccessibility": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ProgressiveAccessibility"
+                    ]
+                }
+            ]
+        }
+    ],
     "ProjectorUseDVSPlaybackEndpoint": [
         {
             "platforms": [
