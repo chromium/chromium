@@ -400,7 +400,7 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
                     initialRect.offset(-leftOffset, -initialTopOffset);
                     finalRect.offset(-leftOffset, -finalTopOffset);
                     animationDataSupplier.set(
-                            new ShrinkExpandAnimationData(
+                            ShrinkExpandAnimationData.createHubShrinkExpandAnimationData(
                                     initialRect,
                                     finalRect,
                                     initialTopCornerRadius,
