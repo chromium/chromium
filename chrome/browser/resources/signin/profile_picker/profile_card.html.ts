@@ -43,7 +43,7 @@ export function getHtml(this: ProfileCardElement) {
       isGlicVersion() || this.profileState.hasEnterpriseLabel}" required>
     </cr-input>
     <div id="hoverUnderline" ?hidden="${
-      isGlicVersion() || this.profileState.hasEnterpriseLabel}">></div>
+      isGlicVersion() || this.profileState.hasEnterpriseLabel}"></div>
   </div>
   <profile-card-menu .profileState="${this.profileState}"
       ?hidden="${isGlicVersion()}">
