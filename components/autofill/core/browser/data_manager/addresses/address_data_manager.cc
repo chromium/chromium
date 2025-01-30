@@ -12,12 +12,10 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/containers/to_vector.h"
-#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/single_thread_task_runner.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_cleaner.h"
 #include "components/autofill/core/browser/data_quality/addresses/profile_requirement_utils.h"
@@ -800,29 +798,9 @@ void AddressDataManager::OnProfileChangeDone(const std::string& guid) {
 
 void AddressDataManager::LogStoredDataMetrics() const {
   const std::vector<const AutofillProfile*> profile_pointers = GetProfiles();
-  std::vector<AutofillProfile> profiles = base::ToVector(
-      profile_pointers, [](const AutofillProfile* p) { return *p; });
-
   autofill_metrics::LogStoredProfileMetrics(profile_pointers);
   autofill_metrics::LogStoredProfileTokenQualityMetrics(profile_pointers);
   autofill_metrics::LogStoredProfileCountWithAlternativeName(profile_pointers);
-
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillLogDeduplicationMetrics)) {
-    // Since the computation of deduplication metrics is expensive, the
-    // recording is delayed by 15 seconds (arbitrary number) to prevent startup
-    // time regressions.
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(
-            [](std::vector<AutofillProfile> profiles, std::string app_locale) {
-              autofill_metrics::LogDeduplicationStartupMetrics(
-                  std::move(profiles), std::move(app_locale));
-            },
-            profiles, app_locale_),
-        base::Seconds(15));
-  }
-
   autofill_metrics::LogLocalProfileSupersetMetrics(std::move(profile_pointers),
                                                    app_locale_);
 }
