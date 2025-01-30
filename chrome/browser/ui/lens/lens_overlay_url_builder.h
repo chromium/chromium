@@ -91,6 +91,10 @@ GURL GetSearchResultsUrlFromRedirectUrl(const GURL& url);
 // results.
 GURL RemoveIgnoredSearchURLParameters(const GURL& url);
 
+// Remove parameters that cause the SRP to be rendered for the side panel. Used
+// when opening the SRP in a new tab.
+GURL RemoveSidePanelURLParameters(const GURL& url);
+
 // Builds the appropriate translate service URL for fetching supported
 // languages.
 GURL BuildTranslateLanguagesURL(std::string country, std::string language);

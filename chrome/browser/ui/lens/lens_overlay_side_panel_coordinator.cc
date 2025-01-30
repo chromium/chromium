@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_coordinator.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/companion/text_finder/text_finder_manager.h"
 #include "chrome/browser/companion/text_finder/text_highlighter_manager.h"
@@ -26,8 +27,11 @@
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_dismissal_source.h"
 #include "components/lens/lens_overlay_invocation_source.h"
+#include "components/lens/lens_overlay_metrics.h"
+#include "components/lens/lens_overlay_side_panel_menu_option.h"
 #include "components/lens/lens_overlay_side_panel_result.h"
 #include "components/shared_highlighting/core/common/fragment_directives_utils.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -332,6 +336,7 @@ void LensOverlaySidePanelCoordinator::DidStartNavigation(
                                       kChromeSideSearchVersionHeaderValue);
   lens_overlay_controller_->SetSidePanelIsOffline(
       net::NetworkChangeNotifier::IsOffline());
+  lens_overlay_controller_->SetSidePanelNewTabUrl(GURL());
   lens_overlay_controller_->SetSidePanelIsLoadingResults(true);
 }
 
@@ -344,6 +349,8 @@ void LensOverlaySidePanelCoordinator::DOMContentLoaded(
     return;
   }
 
+  lens_overlay_controller_->SetSidePanelNewTabUrl(
+      render_frame_host->GetLastCommittedURL());
   lens_overlay_controller_->SetSidePanelIsLoadingResults(false);
 }
 
@@ -516,6 +523,15 @@ LensOverlaySidePanelCoordinator::GetMoreInfoCallback() {
 std::unique_ptr<ui::MenuModel>
 LensOverlaySidePanelCoordinator::GetMoreInfoMenuModel() {
   auto menu_model = std::make_unique<ui::SimpleMenuModel>(this);
+  if (lens::features::IsLensOverlaySidePanelOpenInNewTabEnabled()) {
+    menu_model->AddItemWithIcon(
+        COMMAND_OPEN_IN_NEW_TAB,
+        l10n_util::GetStringUTF16(IDS_ACCNAME_OPEN_IN_NEW_TAB),
+        ui::ImageModel::FromVectorIcon(kOpenInNewIcon, ui::kColorMenuIcon,
+                                       ui::SimpleMenuModel::kDefaultIconSize));
+    menu_model->SetEnabledAt(
+        0, lens_overlay_controller_->ShouldEnableOpenInNewTab());
+  }
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   menu_model->AddItemWithIcon(
       COMMAND_MY_ACTIVITY,
@@ -544,19 +560,33 @@ LensOverlaySidePanelCoordinator::GetMoreInfoMenuModel() {
 void LensOverlaySidePanelCoordinator::ExecuteCommand(int command_id,
                                                      int event_flags) {
   switch (command_id) {
+    case COMMAND_OPEN_IN_NEW_TAB: {
+      lens::RecordSidePanelMenuOptionSelected(
+          lens::LensOverlaySidePanelMenuOption::kOpenInNewTab);
+      lens_overlay_controller_->OpenInNewTabRequestedByEvent(event_flags);
+      break;
+    }
     case COMMAND_MY_ACTIVITY: {
+      lens::RecordSidePanelMenuOptionSelected(
+          lens::LensOverlaySidePanelMenuOption::kMyActivity);
       lens_overlay_controller_->ActivityRequestedByEvent(event_flags);
       break;
     }
     case COMMAND_LEARN_MORE: {
+      lens::RecordSidePanelMenuOptionSelected(
+          lens::LensOverlaySidePanelMenuOption::kLearnMore);
       lens_overlay_controller_->InfoRequestedByEvent(event_flags);
       break;
     }
     case COMMAND_SEND_FEEDBACK: {
+      lens::RecordSidePanelMenuOptionSelected(
+          lens::LensOverlaySidePanelMenuOption::kSendFeedback);
       lens_overlay_controller_->FeedbackRequestedByEvent(event_flags);
       break;
     }
     default: {
+      lens::RecordSidePanelMenuOptionSelected(
+          lens::LensOverlaySidePanelMenuOption::kUnknown);
       NOTREACHED() << "Unknown option";
     }
   }

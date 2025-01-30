@@ -14,6 +14,7 @@
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/lens/lens_overlay_mime_type.h"
 #include "components/lens/lens_overlay_new_tab_source.h"
+#include "components/lens/lens_overlay_side_panel_menu_option.h"
 #include "components/lens/lens_overlay_side_panel_result.h"
 #include "components/lens/lens_permission_user_action.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -118,6 +119,10 @@ void RecordPdfPageCount(uint32_t page_count);
 // Records the side panel result status when attempting a load into the side
 // panel.
 void RecordSidePanelResultStatus(SidePanelResultStatus status);
+
+// Records that a side panel menu option has been selected.
+void RecordSidePanelMenuOptionSelected(
+    lens::LensOverlaySidePanelMenuOption menu_option);
 
 }  // namespace lens
 

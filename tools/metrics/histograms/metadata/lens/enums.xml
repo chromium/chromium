@@ -117,6 +117,22 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/lens/lens_overlay_new_tab_source.h:LensOverlayNewTabSource) -->
 
+<!-- LINT.IfChange(LensOverlaySidePanelMenuOption) -->
+
+<enum name="LensOverlaySidePanelMenuOption">
+  <summary>
+    Options that may be selected in the lens overlay side panel more options
+    menu.
+  </summary>
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Open in new tab"/>
+  <int value="2" label="My Activity"/>
+  <int value="3" label="Learn more"/>
+  <int value="4" label="Send feedback"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/lens/lens_overlay_side_panel_menu_option.h:LensOverlaySidePanelMenuOption) -->
+
 <!-- LINT.IfChange(LensOverlayUserAction) -->
 
 <enum name="LensOverlayUserAction">

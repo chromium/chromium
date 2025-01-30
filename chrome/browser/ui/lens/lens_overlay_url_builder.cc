@@ -27,7 +27,7 @@ namespace {
 inline constexpr char kTextQueryParameterKey[] = "q";
 
 // Query parameter for denoting a search companion request.
-inline constexpr char kSearchCompanionParameterKey[] = "gsc";
+inline constexpr char kChromeSidePanelParameterKey[] = "gsc";
 
 // Query parameter for the search session id.
 inline constexpr char kSearchSessionIdParameterKey[] = "gsessionid";
@@ -175,7 +175,7 @@ GURL AppendCommonSearchParametersToURL(const GURL& url_to_modify,
                                        bool use_dark_mode) {
   GURL new_url = url_to_modify;
   new_url = net::AppendOrReplaceQueryParameter(
-      new_url, kSearchCompanionParameterKey,
+      new_url, kChromeSidePanelParameterKey,
       lens::features::GetLensOverlayGscQueryParamValue());
   new_url = net::AppendOrReplaceQueryParameter(
       new_url, kLanguageCodeParameterKey,
@@ -348,7 +348,7 @@ const std::string GetLensModeParameterValue(const GURL& url) {
 bool HasCommonSearchQueryParameters(const GURL& url) {
   // Needed to prevent memory leaks even though we do not use the output.
   std::string temp_output_string;
-  return net::GetValueForKeyInQuery(url, kSearchCompanionParameterKey,
+  return net::GetValueForKeyInQuery(url, kChromeSidePanelParameterKey,
                                     &temp_output_string) &&
          net::GetValueForKeyInQuery(url, kLanguageCodeParameterKey,
                                     &temp_output_string) &&
@@ -408,6 +408,13 @@ GURL RemoveIgnoredSearchURLParameters(const GURL& url) {
     processed_url = net::AppendOrReplaceQueryParameter(
         processed_url, query_param, std::nullopt);
   }
+  return processed_url;
+}
+
+GURL RemoveSidePanelURLParameters(const GURL& url) {
+  GURL processed_url = url;
+  processed_url = net::AppendOrReplaceQueryParameter(
+      processed_url, kChromeSidePanelParameterKey, std::nullopt);
   return processed_url;
 }
 
