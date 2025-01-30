@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/public/cpp/shell_window_ids.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/aura/window.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -64,31 +65,26 @@ ShelfBubble::ShelfBubble(
     : views::BubbleDialogDelegateView(
           anchor,
           arrow_position.value_or(GetArrow(alignment))),
-      for_tooltip_(for_tooltip),
-      background_animator_(
-          /* Don't pass the Shelf so the translucent color is always used. */
-          nullptr,
-          Shell::Get()->wallpaper_controller()) {
+      for_tooltip_(for_tooltip) {
+  set_color(SK_ColorTRANSPARENT);
+
   // Bubbles that use transparent colors should not paint their ClientViews to a
   // layer as doing so could result in visual artifacts.
   SetPaintClientToLayer(false);
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
-  background_animator_.Init(ShelfBackgroundType::kDefaultBg);
-  background_animator_.AddObserver(this);
 
   // Place the bubble in the same display as the anchor.
   set_parent_window(
       anchor_widget()->GetNativeWindow()->GetRootWindow()->GetChildById(
           kShellWindowId_SettingBubbleContainer));
+
   // We override the role because the base class sets it to alert dialog,
   // which results in each tooltip title being announced twice on screen
   // readers each time it is shown.
   SetAccessibleWindowRole(ax::mojom::Role::kDialog);
 }
 
-ShelfBubble::~ShelfBubble() {
-  background_animator_.RemoveObserver(this);
-}
+ShelfBubble::~ShelfBubble() = default;
 
 void ShelfBubble::CreateBubble() {
   // Actually create the bubble.
@@ -97,10 +93,6 @@ void ShelfBubble::CreateBubble() {
   // Settings that should only be changed just after bubble creation.
   GetBubbleFrameView()->SetCornerRadius(border_radius_);
   GetBubbleFrameView()->SetBackgroundColor(color());
-}
-
-void ShelfBubble::UpdateShelfBackground(SkColor color) {
-  set_color(color);
 }
 
 std::unique_ptr<views::NonClientFrameView>
