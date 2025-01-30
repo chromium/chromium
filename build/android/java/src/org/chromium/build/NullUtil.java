@@ -6,7 +6,6 @@ package org.chromium.build;
 
 import org.chromium.build.annotations.Contract;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 
 /** Helpers related to NullAway's nullness checking. */
@@ -24,7 +23,7 @@ public class NullUtil {
      *
      * <p>Expressions are supported. E.g.: assumeNonNull(foo.getBar());
      */
-    @NullUnmarked // Since it does not actually check.
+    @SuppressWarnings("NullAway") // Since it does not actually check.
     @Contract("null -> fail") // Means you do not need to use the return value.
     public static <T> T assumeNonNull(@Nullable T object) {
         return object;

@@ -4,6 +4,8 @@
 
 package org.chromium.components.browser_ui.widget.image_tiles;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Rect;
@@ -18,7 +20,6 @@ import androidx.recyclerview.widget.RecyclerView.ItemDecoration;
 import androidx.recyclerview.widget.RecyclerView.State;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.R;
 import org.chromium.ui.animation.EmptyAnimationListener;
@@ -83,10 +84,9 @@ class TileListView {
     }
 
     /** Scrolls to the beginning of the list if possible. */
-    @NullUnmarked
     void scrollToBeginning() {
         if (mView.computeHorizontalScrollOffset() != 0) {
-            mView.getLayoutManager().scrollToPosition(0);
+            assumeNonNull(mView.getLayoutManager()).scrollToPosition(0);
         }
     }
 

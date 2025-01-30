@@ -211,11 +211,11 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
                     (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         }
 
-        // For testing.
+        @VisibleForTesting
         @SuppressWarnings("NullAway")
         ConnectivityManagerDelegate() {
+            // Tests must mock all methods.
             mConnectivityManager = null;
-            // All the methods below should be overridden.
         }
 
         /**
@@ -546,10 +546,10 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
             mContext = context;
         }
 
-        // For testing.
+        @VisibleForTesting
         @SuppressWarnings("NullAway")
         WifiManagerDelegate() {
-            // All the methods below should be overridden.
+            // Tests must mock all methods.
             mContext = null;
         }
 

@@ -13,7 +13,6 @@ import android.util.SparseArray;
 import org.jni_zero.JNINamespace;
 
 import org.chromium.base.Log;
-import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -31,7 +30,7 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 @JNINamespace("media")
 @SuppressWarnings("deprecation")
-@NullMarked
+@NullUnmarked
 public class VideoCaptureCamera extends VideoCapture
         implements android.hardware.Camera.PreviewCallback {
     private static final String TAG = "VideoCapture";
@@ -117,7 +116,6 @@ public class VideoCaptureCamera extends VideoCapture
         return cameraInfo;
     }
 
-    @NullUnmarked
     private static android.hardware.Camera.@Nullable Parameters getCameraParameters(
             android.hardware.@Nullable Camera camera) {
         android.hardware.Camera.Parameters parameters;
@@ -163,7 +161,6 @@ public class VideoCaptureCamera extends VideoCapture
     }
 
     private class CrPictureCallback implements android.hardware.Camera.PictureCallback {
-        @NullUnmarked
         @Override
         public void onPictureTaken(byte[] data, android.hardware.Camera camera) {
             try {
@@ -723,7 +720,6 @@ public class VideoCaptureCamera extends VideoCapture
         onGetPhotoCapabilitiesReply(VideoCaptureCamera.this, callbackId, builder.build());
     }
 
-    @NullUnmarked
     @Override
     public void setPhotoOptions(
             double zoom,
@@ -888,7 +884,6 @@ public class VideoCaptureCamera extends VideoCapture
                 });
     }
 
-    @NullUnmarked
     @Override
     public void takePhotoAsync(final long callbackId) {
         if (mCamera == null || !mIsRunning) {
@@ -958,7 +953,6 @@ public class VideoCaptureCamera extends VideoCapture
         mCamera.takePicture(null, null, null, new CrPictureCallback());
     }
 
-    @NullUnmarked
     @Override
     public void deallocateInternal() {
         if (mCamera == null) return;
@@ -976,7 +970,6 @@ public class VideoCaptureCamera extends VideoCapture
         }
     }
 
-    @NullUnmarked
     private void setPreviewCallback(android.hardware.Camera.@Nullable PreviewCallback cb) {
         mCamera.setPreviewCallbackWithBuffer(cb);
     }

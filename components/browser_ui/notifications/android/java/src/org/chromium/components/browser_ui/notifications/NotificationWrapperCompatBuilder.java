@@ -4,6 +4,8 @@
 
 package org.chromium.components.browser_ui.notifications;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -20,7 +22,6 @@ import androidx.core.graphics.drawable.IconCompat;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.notifications.channels.ChannelsInitializer;
 
@@ -79,10 +80,9 @@ public class NotificationWrapperCompatBuilder implements NotificationWrapperBuil
         return this;
     }
 
-    @NullUnmarked
     @Override
     public NotificationWrapperBuilder setSmallIcon(Icon icon) {
-        mBuilder.setSmallIcon(IconCompat.createFromIcon(mContext, icon));
+        mBuilder.setSmallIcon(assumeNonNull(IconCompat.createFromIcon(mContext, icon)));
         return this;
     }
 
