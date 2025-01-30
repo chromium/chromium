@@ -516,6 +516,12 @@ void PreFreezeBackgroundMemoryTrimmer::StartSelfCompaction(
     uint64_t max_bytes,
     base::TimeTicks started_at) {
   TRACE_EVENT0("base", "StartSelfCompaction");
+  {
+    base::AutoLock locker(lock_);
+    process_compacted_metadata_.emplace(
+        "PreFreezeBackgroundMemoryTrimmer.ProcessCompacted",
+        /*is_compacted=*/1, base::SampleMetadataScope::kProcess);
+  }
   metric->RecordBeforeMetrics();
   MaybePostSelfCompactionTask(std::move(task_runner), std::move(regions),
                               std::move(metric), max_bytes, started_at);
@@ -545,6 +551,7 @@ void PreFreezeBackgroundMemoryTrimmer::MaybeCancelSelfCompaction() {
 
 void PreFreezeBackgroundMemoryTrimmer::MaybeCancelSelfCompactionInternal() {
   base::AutoLock locker(lock_);
+  process_compacted_metadata_.reset();
   self_compaction_last_cancelled_ = base::TimeTicks::Now();
 }
 
