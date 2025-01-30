@@ -64,15 +64,12 @@ constexpr ink::AffineTransform kIdentityTransform;
 
 ink::StrokeInput::ToolType GetToolTypeFromTouchEvent(
     const blink::WebTouchEvent& event) {
-  // TODO(crbug.com/377733396): Investigate how multiple touches and pens should
-  // behave. For now, if there is any pen touch, set the tool type to pen.
-  for (size_t i = 0; i < event.touches_length; ++i) {
-    if (event.touches[i].pointer_type ==
-        blink::WebPointerProperties::PointerType::kPen) {
-      return ink::StrokeInput::ToolType::kStylus;
-    }
-  }
-  return ink::StrokeInput::ToolType::kTouch;
+  // Assumes the caller already handled multi-touch events.
+  CHECK_EQ(event.touches_length, 1u);
+  return event.touches[0].pointer_type ==
+                 blink::WebPointerProperties::PointerType::kPen
+             ? ink::StrokeInput::ToolType::kStylus
+             : ink::StrokeInput::ToolType::kTouch;
 }
 
 PdfInkModule::StrokeInputPoints GetStrokePointsForTesting(  // IN-TEST
