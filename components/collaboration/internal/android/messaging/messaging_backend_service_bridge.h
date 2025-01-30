@@ -63,8 +63,7 @@ class MessagingBackendServiceBridge
   void ClearDirtyTabMessagesForGroup(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& j_caller,
-      const base::android::JavaParamRef<jobject>& j_local_group_id,
-      const base::android::JavaParamRef<jstring>& j_sync_group_id);
+      const base::android::JavaParamRef<jstring>& j_collaboration_id);
   void ClearPersistentMessage(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& j_caller,

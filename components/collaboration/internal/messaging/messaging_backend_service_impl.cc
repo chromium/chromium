@@ -539,17 +539,18 @@ void MessagingBackendServiceImpl::ClearDirtyTabMessagesForGroup(
 }
 
 void MessagingBackendServiceImpl::ClearDirtyTabMessagesForGroup(
-    tab_groups::EitherGroupID group_id) {
-  std::optional<data_sharing::GroupId> collaboration_group_id =
-      GetCollaborationGroupId(group_id);
-  if (!collaboration_group_id) {
-    // Unable to find collaboration.
-    return;
+    const data_sharing::GroupId& collaboration_group_id) {
+  std::optional<tab_groups::SavedTabGroup> tab_group;
+  for (const auto& group : tab_group_sync_service_->GetAllGroups()) {
+    if (group.collaboration_id() &&
+        data_sharing::GroupId(group.collaboration_id().value().value()) ==
+            collaboration_group_id) {
+      tab_group = group;
+      break;
+    }
   }
 
-  std::optional<tab_groups::SavedTabGroup> tab_group =
-      tab_group_sync_service_->GetGroup(group_id);
-  ClearDirtyTabMessagesForGroup(*collaboration_group_id, tab_group);
+  ClearDirtyTabMessagesForGroup(collaboration_group_id, tab_group);
 }
 
 void MessagingBackendServiceImpl::OnStoreInitialized(bool success) {

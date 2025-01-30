@@ -120,11 +120,11 @@ public interface MessagingBackendService {
     List<ActivityLogItem> getActivityLog(ActivityLogQueryParams params);
 
     /**
-     * Clears all dirty messages associated with a group ID. Doesn't apply to instant messages.
+     * Clears all dirty messages associated with a collaboration. Doesn't apply to instant messages.
      *
-     * @param groupId The ID of the group to scope messages to.
+     * @param collaborationId The associated collaboration ID.
      */
-    void clearDirtyTabMessagesForGroup(EitherGroupId groupId);
+    void clearDirtyTabMessagesForGroup(String collaborationId);
 
     /**
      * Clears a given persistent message. Internally clears out the specified dirty bit from the DB

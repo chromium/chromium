@@ -37,7 +37,9 @@ class MockMessagingBackendService : public MessagingBackendService {
   MOCK_METHOD(std::vector<ActivityLogItem>,
               GetActivityLog,
               (const ActivityLogQueryParams&));
-  MOCK_METHOD(void, ClearDirtyTabMessagesForGroup, (tab_groups::EitherGroupID));
+  MOCK_METHOD(void,
+              ClearDirtyTabMessagesForGroup,
+              (const data_sharing::GroupId&));
   MOCK_METHOD(void,
               ClearPersistentMessage,
               (const base::Uuid&, std::optional<PersistentNotificationType>));

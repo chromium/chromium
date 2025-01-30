@@ -37,7 +37,7 @@ class EmptyMessagingBackendService : public MessagingBackendService {
   std::vector<ActivityLogItem> GetActivityLog(
       const ActivityLogQueryParams& params) override;
   void ClearDirtyTabMessagesForGroup(
-      tab_groups::EitherGroupID group_id) override;
+      const data_sharing::GroupId& collaboration_group_id) override;
   void ClearPersistentMessage(
       const base::Uuid& message_id,
       std::optional<PersistentNotificationType> type) override;
