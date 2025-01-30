@@ -226,6 +226,8 @@ void DesktopMediaListController::OnSourceAdded(int index) {
 
   const DesktopMediaList::Source& source = GetSource(index);
 
+  VLOG(1) << "DMLC::OnSourceAdded: source_id = " << source.id.id;
+
   if (ShouldAutoAccept(source)) {
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,

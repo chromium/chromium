@@ -55,6 +55,8 @@ API_AVAILABLE(macos(14.0))
 - (void)contentSharingPicker:(SCContentSharingPicker*)picker
          didUpdateWithFilter:(SCContentFilter*)filter
                    forStream:(SCStream*)stream {
+  VLOG(1) << "NSCPM::contentSharingPicker:didUpdateWithFilter: source_id = "
+          << _assignedSourceId;
   contentFilter = filter;
 
   Source source;
@@ -66,12 +68,18 @@ API_AVAILABLE(macos(14.0))
 
 - (void)contentSharingPicker:(SCContentSharingPicker*)picker
           didCancelForStream:(SCStream*)stream {
+  VLOG(1) << "NSCPM:contentSharingPicker:didCancelForStream: source_id = "
+          << _assignedSourceId;
   if (_cancelCallback) {
     std::move(_cancelCallback).Run();
   }
 }
 
 - (void)contentSharingPickerStartDidFailWithError:(NSError*)error {
+  VLOG(1) << "NSCPM::contentSharingPickerStartDidFailWithError: source_id = "
+          << _assignedSourceId << ", code = " << [error code]
+          << ", domain = " << [error domain]
+          << ", description = " << [error localizedDescription];
   if (_errorCallback) {
     std::move(_errorCallback).Run();
   }
@@ -163,11 +171,15 @@ void NativeScreenCapturePickerMac::Open(
       config.allowedPickerModes = SCContentSharingPickerModeSingleDisplay;
       picker.defaultConfiguration = config;
       picker.maximumStreamCount = max_stream_count;
+      VLOG(1) << "NSCPM: Show screen-sharing picker for source_id = "
+              << next_id_ - 1;
       [picker presentPickerUsingContentStyle:SCShareableContentStyleDisplay];
     } else {
       config.allowedPickerModes = SCContentSharingPickerModeSingleWindow;
       picker.defaultConfiguration = config;
       picker.maximumStreamCount = max_stream_count;
+      VLOG(1) << "NSCPM: Show window-sharing picker for source_id = "
+              << next_id_ - 1;
       [picker presentPickerUsingContentStyle:SCShareableContentStyleWindow];
     }
   } else {
