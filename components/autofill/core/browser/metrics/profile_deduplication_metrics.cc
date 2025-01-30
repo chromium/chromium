@@ -35,8 +35,6 @@ namespace {
 
 constexpr std::string_view kStartupHistogramPrefix =
     "Autofill.Deduplication.ExistingProfiles.";
-constexpr std::string_view kImportHistogramPrefix =
-    "Autofill.Deduplication.NewProfile.";
 
 int CalculateQualityScoreForProfile(
     base::span<const ProfileTokenQuality::ObservationType>
@@ -298,42 +296,6 @@ void LogDeduplicationStartupMetrics(std::vector<AutofillProfile> profiles,
       FROM_HERE, base::BindOnce(&PerformNextBatchOfDedupliactonMetricsRecording,
                                 /*index=*/0, std::move(profiles),
                                 std::move(app_locale), std::vector<int>()));
-}
-
-void LogDeduplicationImportMetrics(
-    bool did_user_accept,
-    const AutofillProfile& import_candidate,
-    base::span<const AutofillProfile* const> existing_profiles,
-    std::string_view app_locale) {
-  DCHECK(!base::Contains(
-      existing_profiles, import_candidate.guid(),
-      [](const AutofillProfile* profile) { return profile->guid(); }));
-  if (existing_profiles.empty()) {
-    // Don't pollute metrics with cases where obviously no duplicates exists.
-    return;
-  }
-
-  // Calculate the `duplication_rank`.
-  std::vector<DifferingProfileWithTypeSet> min_incompatible_sets =
-      AddressDataCleaner::CalculateMinimalIncompatibleProfileWithTypeSets(
-          import_candidate, existing_profiles,
-          AutofillProfileComparator(app_locale));
-  const int duplication_rank = GetDuplicationRank(min_incompatible_sets);
-  if (duplication_rank < 1 || duplication_rank > 5) {
-    return;
-  }
-
-  // Emit the actual metrics, based on the user decision.
-  const std::string metric_name_prefix = base::StrCat(
-      {kImportHistogramPrefix, did_user_accept ? "Accepted" : "Declined", "."});
-  base::UmaHistogramCounts100(
-      base::StrCat({metric_name_prefix, "RankOfStoredQuasiDuplicateProfiles"}),
-      duplication_rank);
-  LogTypeOfQuasiDuplicateTokenMetric(metric_name_prefix, duplication_rank,
-                                     min_incompatible_sets);
-  LogQualityOfQuasiDuplicateTokenMetric(metric_name_prefix, import_candidate,
-                                        duplication_rank, min_incompatible_sets,
-                                        /*is_import=*/true);
 }
 
 }  // namespace autofill::autofill_metrics
