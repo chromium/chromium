@@ -363,6 +363,7 @@ class PdfInkModuleTest : public testing::Test {
   void EnableAnnotationMode() {
     EXPECT_TRUE(
         ink_module().OnMessage(CreateSetAnnotationModeMessageForTesting(true)));
+    EXPECT_TRUE(ink_module().enabled());
   }
 
   FakeClient& client() { return client_; }
@@ -387,7 +388,6 @@ TEST_F(PdfInkModuleTest, UnknownMessage) {
 // Verify that a get eraser message gets the eraser parameters.
 TEST_F(PdfInkModuleTest, HandleGetAnnotationBrushMessageEraser) {
   EnableAnnotationMode();
-  EXPECT_TRUE(ink_module().enabled());
 
   EXPECT_CALL(client(), PostMessage)
       .WillOnce([](const base::Value::Dict& dict) {
@@ -409,7 +409,6 @@ TEST_F(PdfInkModuleTest, HandleGetAnnotationBrushMessageEraser) {
 // Verify that a get pen message gets the pen brush parameters.
 TEST_F(PdfInkModuleTest, HandleGetAnnotationBrushMessagePen) {
   EnableAnnotationMode();
-  EXPECT_TRUE(ink_module().enabled());
 
   EXPECT_CALL(client(), PostMessage)
       .WillOnce([](const base::Value::Dict& dict) {
@@ -436,7 +435,6 @@ TEST_F(PdfInkModuleTest, HandleGetAnnotationBrushMessagePen) {
 // Verify that a get highlighter message gets the highlighter brush parameters.
 TEST_F(PdfInkModuleTest, HandleGetAnnotationBrushMessageHighlighter) {
   EnableAnnotationMode();
-  EXPECT_TRUE(ink_module().enabled());
 
   EXPECT_CALL(client(), PostMessage)
       .WillOnce([](const base::Value::Dict& dict) {
@@ -464,7 +462,6 @@ TEST_F(PdfInkModuleTest, HandleGetAnnotationBrushMessageHighlighter) {
 // parameters.
 TEST_F(PdfInkModuleTest, HandleGetAnnotationBrushMessageDefault) {
   EnableAnnotationMode();
-  EXPECT_TRUE(ink_module().enabled());
 
   EXPECT_CALL(client(), PostMessage)
       .WillOnce([](const base::Value::Dict& dict) {
@@ -492,7 +489,6 @@ TEST_F(PdfInkModuleTest, HandleGetAnnotationBrushMessageDefault) {
 // parameters if the brush has changed from the default brush.
 TEST_F(PdfInkModuleTest, HandleGetAnnotationBrushMessageCurrent) {
   EnableAnnotationMode();
-  EXPECT_TRUE(ink_module().enabled());
 
   // Set the brush to eraser.
   EXPECT_TRUE(ink_module().OnMessage(CreateSetAnnotationBrushMessageForTesting(
@@ -518,7 +514,6 @@ TEST_F(PdfInkModuleTest, HandleGetAnnotationBrushMessageCurrent) {
 // Verify that a set eraser message sets the annotation brush to an eraser.
 TEST_F(PdfInkModuleTest, HandleSetAnnotationBrushMessageEraser) {
   EnableAnnotationMode();
-  EXPECT_TRUE(ink_module().enabled());
 
   base::Value::Dict message = CreateSetAnnotationBrushMessageForTesting(
       "eraser", /*size=*/2.5, nullptr);
@@ -534,7 +529,6 @@ TEST_F(PdfInkModuleTest, HandleSetAnnotationBrushMessageEraser) {
 // given params.
 TEST_F(PdfInkModuleTest, HandleSetAnnotationBrushMessagePen) {
   EnableAnnotationMode();
-  EXPECT_TRUE(ink_module().enabled());
 
   TestAnnotationBrushMessageParams message_params{/*color_r=*/10,
                                                   /*color_g=*/255,
@@ -560,7 +554,6 @@ TEST_F(PdfInkModuleTest, HandleSetAnnotationBrushMessagePen) {
 // highlighter, with the given params.
 TEST_F(PdfInkModuleTest, HandleSetAnnotationBrushMessageHighlighter) {
   EnableAnnotationMode();
-  EXPECT_TRUE(ink_module().enabled());
 
   TestAnnotationBrushMessageParams message_params{/*color_r=*/240,
                                                   /*color_g=*/133,
@@ -586,7 +579,6 @@ TEST_F(PdfInkModuleTest, HandleSetAnnotationBrushMessageHighlighter) {
 // brush.
 TEST_F(PdfInkModuleTest, HandleSetAnnotationBrushMessageColorZero) {
   EnableAnnotationMode();
-  EXPECT_TRUE(ink_module().enabled());
 
   TestAnnotationBrushMessageParams message_params{/*color_r=*/0, /*color_g=*/0,
                                                   /*color_b=*/0};
@@ -685,7 +677,6 @@ TEST_F(PdfInkModuleTest, MaybeSetCursorWhenChangingBrushes) {
   }
 
   EnableAnnotationMode();
-  EXPECT_TRUE(ink_module().enabled());
 
   TestAnnotationBrushMessageParams message_params{/*color_r=*/0,
                                                   /*color_g=*/255,
@@ -720,7 +711,6 @@ TEST_F(PdfInkModuleTest, MaybeSetCursorWhenChangingZoom) {
   }
 
   EnableAnnotationMode();
-  EXPECT_TRUE(ink_module().enabled());
 
   TestAnnotationBrushMessageParams message_params{/*color_r=*/0,
                                                   /*color_g=*/255,
@@ -735,7 +725,6 @@ TEST_F(PdfInkModuleTest, MaybeSetCursorWhenChangingZoom) {
 
 TEST_F(PdfInkModuleTest, ContentFocusedPostMessage) {
   EnableAnnotationMode();
-  EXPECT_TRUE(ink_module().enabled());
 
   blink::WebMouseEvent mouse_down_event =
       MouseEventBuilder().CreateLeftClickAtPosition(gfx::PointF()).Build();
@@ -1666,10 +1655,8 @@ TEST_F(PdfInkModuleStrokeTest, EraseStrokeWithPen) {
 }
 
 TEST_F(PdfInkModuleStrokeTest, RunStrokeMissedEndEventDuringDrawing) {
+  EnableAnnotationMode();
   InitializeSimpleSinglePageBasicLayout();
-  EXPECT_TRUE(ink_module().OnMessage(
-      CreateSetAnnotationModeMessageForTesting(/*enable=*/true)));
-  EXPECT_TRUE(ink_module().enabled());
 
   // No need to distinguish between pen or highlighter here.
   EXPECT_TRUE(
@@ -1679,10 +1666,8 @@ TEST_F(PdfInkModuleStrokeTest, RunStrokeMissedEndEventDuringDrawing) {
 }
 
 TEST_F(PdfInkModuleStrokeTest, RunStrokeMissedEndEventDuringErasing) {
+  EnableAnnotationMode();
   InitializeSimpleSinglePageBasicLayout();
-  EXPECT_TRUE(ink_module().OnMessage(
-      CreateSetAnnotationModeMessageForTesting(/*enable=*/true)));
-  EXPECT_TRUE(ink_module().enabled());
 
   SelectEraserToolOfSize(3.0f);
 
@@ -2472,7 +2457,6 @@ TEST_F(PdfInkModuleUndoRedoTest, UndoRedoEraseLoadedV2Shapes) {
 
   InitializeSimpleSinglePageBasicLayout();
   EnableAnnotationMode();
-  ASSERT_TRUE(ink_module().enabled());
 
   // Stroke with the eraser tool in the corner opposite from `kCornerPoints`,
   // which does nothing.
