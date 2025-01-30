@@ -66,7 +66,7 @@ class WebClientImpl implements WebClientInterface {
 
     // The web client is ready to show, ensure the webview is
     // displayed.
-    this.appController.webClientReady();
+    this.appController.openGuestPanel();
 
     return {
       webClientMode:
