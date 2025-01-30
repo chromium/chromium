@@ -91,6 +91,17 @@ void CompositorPropertyTreeDelegate::OnElementFilterMutated(
                                                             list_type, filters);
 }
 
+void CompositorPropertyTreeDelegate::OnElementBackdropFilterMutated(
+    cc::ElementId element_id,
+    cc::ElementListType list_type,
+    const cc::FilterOperations& backdrop_filters) {
+  // TODO(crbug.com/389771428): Implement this w/ layer lists. For now,
+  // just call the base class implementation to ensure that we don't get
+  // out of date.
+  cc::PropertyTreeLayerTreeDelegate::OnElementBackdropFilterMutated(
+      element_id, list_type, backdrop_filters);
+}
+
 void CompositorPropertyTreeDelegate::SetObserverForTesting(Observer* observer) {
   observer_ = observer;
 }

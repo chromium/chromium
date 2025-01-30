@@ -65,6 +65,10 @@ class COMPOSITOR_EXPORT CompositorPropertyTreeDelegate
   void OnElementFilterMutated(cc::ElementId element_id,
                               cc::ElementListType list_type,
                               const cc::FilterOperations& filters) override;
+  void OnElementBackdropFilterMutated(
+      cc::ElementId element_id,
+      cc::ElementListType list_type,
+      const cc::FilterOperations& backdrop_filters) override;
 
  private:
   raw_ptr<Observer> observer_ = nullptr;

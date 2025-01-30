@@ -76,4 +76,13 @@ void PropertyTreeLayerTreeDelegate::OnElementFilterMutated(
   layer->OnFilterAnimated(filters);
 }
 
+void PropertyTreeLayerTreeDelegate::OnElementBackdropFilterMutated(
+    ElementId element_id,
+    ElementListType list_type,
+    const FilterOperations& backdrop_filters) {
+  Layer* layer = host()->LayerByElementId(element_id);
+  DCHECK(layer);
+  layer->OnBackdropFilterAnimated(backdrop_filters);
+}
+
 }  // namespace cc
