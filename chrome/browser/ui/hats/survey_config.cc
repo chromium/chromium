@@ -645,92 +645,120 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
   survey_configs.emplace_back(
       &autofill::features::kPlusAddressAcceptedFirstTimeCreateSurvey,
       kHatsSurveyTriggerPlusAddressAcceptedFirstTimeCreate,
-      /*presupplied_trigger_id=*/std::nullopt, std::vector<std::string>{},
+      /*presupplied_trigger_id=*/std::nullopt,
+      /*product_specific_bits_data_fields=*/std::vector<std::string>{},
+      /*product_specific_string_data_fields=*/
       std::vector<std::string>{
           plus_addresses::hats::kPlusAddressesCount,
           plus_addresses::hats::kFirstPlusAddressCreationTime,
           plus_addresses::hats::kLastPlusAddressFillingTime});
   survey_configs.back().SetCooldownPeriodOverride(base::Days(
-      autofill::features::
-          kPlusAddressAcceptedFirstTimeCreateSurveyCooldownOverrideDays.Get()));
+      base::FeatureParam<int>(
+          &autofill::features::kPlusAddressAcceptedFirstTimeCreateSurvey,
+          plus_addresses::hats::kCooldownOverrideDays, 0)
+          .Get()));
 
   survey_configs.emplace_back(
       &autofill::features::kPlusAddressDeclinedFirstTimeCreateSurvey,
       kHatsSurveyTriggerPlusAddressDeclinedFirstTimeCreate,
-      /*presupplied_trigger_id=*/std::nullopt, std::vector<std::string>{},
+      /*presupplied_trigger_id=*/std::nullopt,
+      /*product_specific_bits_data_fields=*/std::vector<std::string>{},
+      /*product_specific_string_data_fields=*/
       std::vector<std::string>{
           plus_addresses::hats::kPlusAddressesCount,
           plus_addresses::hats::kFirstPlusAddressCreationTime,
           plus_addresses::hats::kLastPlusAddressFillingTime});
   survey_configs.back().SetCooldownPeriodOverride(base::Days(
-      autofill::features::
-          kPlusAddressDeclinedFirstTimeCreateSurveyCooldownOverrideDays.Get()));
+      base::FeatureParam<int>(
+          &autofill::features::kPlusAddressDeclinedFirstTimeCreateSurvey,
+          plus_addresses::hats::kCooldownOverrideDays, 0)
+          .Get()));
 
   survey_configs.emplace_back(
       &autofill::features::kPlusAddressUserCreatedMultiplePlusAddressesSurvey,
       kHatsSurveyTriggerPlusAddressCreatedMultiplePlusAddresses,
-      /*presupplied_trigger_id=*/std::nullopt, std::vector<std::string>{},
+      /*presupplied_trigger_id=*/std::nullopt,
+      /*product_specific_bits_data_fields=*/std::vector<std::string>{},
+      /*product_specific_string_data_fields=*/
       std::vector<std::string>{
           plus_addresses::hats::kPlusAddressesCount,
           plus_addresses::hats::kFirstPlusAddressCreationTime,
           plus_addresses::hats::kLastPlusAddressFillingTime});
-  survey_configs.back().SetCooldownPeriodOverride(base::Days(
-      autofill::features::
-          kPlusAddressUserCreatedMultiplePlusAddressesSurveyCooldownOverrideDays
-              .Get()));
+  survey_configs.back().SetCooldownPeriodOverride(
+      base::Days(base::FeatureParam<int>(
+                     &autofill::features::
+                         kPlusAddressUserCreatedMultiplePlusAddressesSurvey,
+                     plus_addresses::hats::kCooldownOverrideDays, 0)
+                     .Get()));
 
   survey_configs.emplace_back(
       &autofill::features::
           kPlusAddressUserCreatedPlusAddressViaManualFallbackSurvey,
       kHatsSurveyTriggerPlusAddressCreatedPlusAddressViaManualFallback,
-      /*presupplied_trigger_id=*/std::nullopt, std::vector<std::string>{},
+      /*presupplied_trigger_id=*/std::nullopt,
+      /*product_specific_bits_data_fields=*/std::vector<std::string>{},
+      /*product_specific_string_data_fields=*/
       std::vector<std::string>{
           plus_addresses::hats::kPlusAddressesCount,
           plus_addresses::hats::kFirstPlusAddressCreationTime,
           plus_addresses::hats::kLastPlusAddressFillingTime});
   survey_configs.back().SetCooldownPeriodOverride(base::Days(
-      autofill::features::
-          kPlusAddressUserCreatedPlusAddressViaManualFallbackSurveyCooldownOverrideDays
-              .Get()));
+      base::FeatureParam<int>(
+          &autofill::features::
+              kPlusAddressUserCreatedPlusAddressViaManualFallbackSurvey,
+          plus_addresses::hats::kCooldownOverrideDays, 0)
+          .Get()));
 
   survey_configs.emplace_back(
       &autofill::features::kPlusAddressUserDidChoosePlusAddressOverEmailSurvey,
       kHatsSurveyTriggerPlusAddressDidChoosePlusAddressOverEmailSurvey,
-      /*presupplied_trigger_id=*/std::nullopt, std::vector<std::string>{},
+      /*presupplied_trigger_id=*/std::nullopt,
+      /*product_specific_bits_data_fields=*/std::vector<std::string>{},
+      /*product_specific_string_data_fields=*/
       std::vector<std::string>{
           plus_addresses::hats::kPlusAddressesCount,
           plus_addresses::hats::kFirstPlusAddressCreationTime,
           plus_addresses::hats::kLastPlusAddressFillingTime});
-  survey_configs.back().SetCooldownPeriodOverride(base::Days(
-      autofill::features::
-          kPlusAddressUserDidChoosePlusAddressOverEmailSurveyCooldownOverrideDays
-              .Get()));
+  survey_configs.back().SetCooldownPeriodOverride(
+      base::Days(base::FeatureParam<int>(
+                     &autofill::features::
+                         kPlusAddressUserDidChoosePlusAddressOverEmailSurvey,
+                     plus_addresses::hats::kCooldownOverrideDays, 0)
+                     .Get()));
 
   survey_configs.emplace_back(
       &autofill::features::kPlusAddressUserDidChooseEmailOverPlusAddressSurvey,
       kHatsSurveyTriggerPlusAddressDidChooseEmailOverPlusAddressSurvey,
-      /*presupplied_trigger_id=*/std::nullopt, std::vector<std::string>{},
+      /*presupplied_trigger_id=*/std::nullopt,
+      /*product_specific_bits_data_fields=*/std::vector<std::string>{},
+      /*product_specific_string_data_fields=*/
       std::vector<std::string>{
           plus_addresses::hats::kPlusAddressesCount,
           plus_addresses::hats::kFirstPlusAddressCreationTime,
           plus_addresses::hats::kLastPlusAddressFillingTime});
-  survey_configs.back().SetCooldownPeriodOverride(base::Days(
-      autofill::features::
-          kPlusAddressUserDidChooseEmailOverPlusAddressSurveyCooldownOverrideDays
-              .Get()));
+  survey_configs.back().SetCooldownPeriodOverride(
+      base::Days(base::FeatureParam<int>(
+                     &autofill::features::
+                         kPlusAddressUserDidChooseEmailOverPlusAddressSurvey,
+                     plus_addresses::hats::kCooldownOverrideDays, 0)
+                     .Get()));
 
   survey_configs.emplace_back(
       &autofill::features::kPlusAddressFilledPlusAddressViaManualFallbackSurvey,
       kHatsSurveyTriggerPlusAddressFilledPlusAddressViaManualFallback,
-      /*presupplied_trigger_id=*/std::nullopt, std::vector<std::string>{},
+      /*presupplied_trigger_id=*/std::nullopt,
+      /*product_specific_bits_data_fields=*/std::vector<std::string>{},
+      /*product_specific_string_data_fields=*/
       std::vector<std::string>{
           plus_addresses::hats::kPlusAddressesCount,
           plus_addresses::hats::kFirstPlusAddressCreationTime,
           plus_addresses::hats::kLastPlusAddressFillingTime});
-  survey_configs.back().SetCooldownPeriodOverride(base::Days(
-      autofill::features::
-          kPlusAddressFilledPlusAddressViaManualFallbackSurveyCooldownOverrideDays
-              .Get()));
+  survey_configs.back().SetCooldownPeriodOverride(
+      base::Days(base::FeatureParam<int>(
+                     &autofill::features::
+                         kPlusAddressFilledPlusAddressViaManualFallbackSurvey,
+                     plus_addresses::hats::kCooldownOverrideDays, 0)
+                     .Get()));
 
   return survey_configs;
 }

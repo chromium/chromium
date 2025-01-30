@@ -272,6 +272,9 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   // Subscribes or unsubscribes `layer_context_` to subsequent BeginFrames.
   void SetLayerContextWantsBeginFrames(bool wants_begin_frames);
 
+  void RegisterSurfaceAnimationManagerNotification(
+      base::OnceCallback<void()> callback);
+
  private:
   friend class CompositorFrameSinkSupportTestBase;
   friend class DisplayTest;
@@ -573,6 +576,10 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   // submitted compositor frames directly to `this`.
   std::unique_ptr<LayerContextImpl> layer_context_;
   bool layer_context_wants_begin_frames_ = false;
+
+  // If exists, then we need to notify this callback when we have a
+  // SurfaceAnimationManager.
+  base::OnceCallback<void()> surface_animation_manager_callback_;
 
   base::WeakPtrFactory<CompositorFrameSinkSupport> weak_factory_{this};
 };

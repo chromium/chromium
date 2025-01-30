@@ -36,17 +36,6 @@ int GetDuplicationRank(
 void LogDeduplicationStartupMetrics(std::vector<AutofillProfile> profiles,
                                     std::string app_locale);
 
-// Logs various metrics around quasi duplicates after the user was shown a
-// new profile prompt for the `import_candidate`. `existing_profiles` are the
-// other profiles this user has stored at the time of import, and
-// `did_user_accept` indidcates if the user accepted (with or without edits) or
-// declined the prompt.
-void LogDeduplicationImportMetrics(
-    bool did_user_accept,
-    const AutofillProfile& import_candidate,
-    base::span<const AutofillProfile* const> existing_profiles,
-    std::string_view app_locale);
-
 }  // namespace autofill::autofill_metrics
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PROFILE_DEDUPLICATION_METRICS_H_

@@ -57,6 +57,12 @@ CreateModelExecutionResponder(
         complete_callback,
     base::RepeatingClosure overflow_callback);
 
+// Creates a closed ReadableStream without any chunk.
+MODULES_EXPORT
+ReadableStream* CreateEmptyReadableStream(
+    ScriptState* script_state,
+    AIMetrics::AISessionType session_type);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_AI_MODEL_EXECUTION_RESPONDER_H_

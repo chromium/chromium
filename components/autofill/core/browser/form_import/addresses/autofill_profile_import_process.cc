@@ -471,13 +471,6 @@ void ProfileImportProcess::CollectMetrics(
         UserAccepted() ? *confirmed_import_candidate_ : *import_candidate_,
         app_locale_);
     LogUkmMetrics(num_edited_fields);
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillLogDeduplicationMetrics)) {
-      autofill_metrics::LogDeduplicationImportMetrics(
-          UserAccepted(),
-          UserAccepted() ? *confirmed_import_candidate_ : *import_candidate_,
-          existing_profiles, app_locale_);
-    }
     if (UserAccepted()) {
       autofill_metrics::LogNewProfileStorageLocation(
           *confirmed_import_candidate_);

@@ -44,7 +44,6 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -79,6 +78,7 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.BlankCTATabInitialStatePublicTransitRule;
 import org.chromium.chrome.test.transit.hub.IncognitoTabSwitcherStation;
 import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
+import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.page.PageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
@@ -299,7 +299,6 @@ public class SensitiveContentTest {
     // This test also tests if metrics are recorded properly.
     @Test
     @LargeTest
-    @DisabledTest(message = "See https://crbug.com/392980546")
     @EnableFeatures(SensitiveContentFeatures.SENSITIVE_CONTENT_WHILE_SWITCHING_TABS)
     public void testIncognitoTabSwitcherBecomesSensitive() {
         final String histogram =
@@ -327,7 +326,7 @@ public class SensitiveContentTest {
         incognitoTabSwitcher =
                 incognitoTabSwitcher.closeTabAtIndex(1, IncognitoTabSwitcherStation.class);
         // Select the only remaining incognito tab.
-        page = incognitoTabSwitcher.selectTabAtIndex(0, WebPageStation.newBuilder());
+        page = incognitoTabSwitcher.selectTabAtIndex(0, IncognitoNewTabPageStation.newBuilder());
         // Open the incognito tab switcher.
         incognitoTabSwitcher = page.openIncognitoTabSwitcher();
         // Check that the incognito tab switcher is not sensitive anymore.
@@ -336,7 +335,7 @@ public class SensitiveContentTest {
         histogramWatcherForFalseBucket.assertExpected();
 
         // Go back to a tab to cleanup tab state.
-        incognitoTabSwitcher.selectTabAtIndex(0, WebPageStation.newBuilder());
+        incognitoTabSwitcher.selectTabAtIndex(0, IncognitoNewTabPageStation.newBuilder());
     }
 
     @Test

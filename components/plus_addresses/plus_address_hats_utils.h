@@ -16,6 +16,13 @@ inline constexpr char kLastPlusAddressFillingTime[] =
     "Time passed since the user has filled a plus address the last time, in "
     "seconds";
 
+// Plus address survey parameters:
+//
+// The custom survey cooldown override for plus addresses HaTS surveys. The
+// survey can be triggered after this cooldown period instead of the default
+// 180 days delay.
+inline constexpr char kCooldownOverrideDays[] = "cooldown-override-days";
+
 }  // namespace plus_addresses::hats
 
 #endif  // COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_HATS_UTILS_H_
