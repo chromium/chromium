@@ -2341,6 +2341,38 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="History.Embeddings.ScheduledJobCount" units="jobs"
+    expires_after="2025-07-31">
+  <owner>orinj@chromium.org</owner>
+  <owner>src/components/history_embeddings/OWNERS</owner>
+  <summary>
+    Number of jobs (groups of passages) that were already scheduled by the
+    SchedulingEmbedder at the moment a new job is enqueued.
+  </summary>
+</histogram>
+
+<histogram name="History.Embeddings.ScheduledJobDuration" units="ms"
+    expires_after="2025-07-31">
+  <owner>orinj@chromium.org</owner>
+  <owner>src/components/history_embeddings/OWNERS</owner>
+  <summary>
+    The number of milliseconds that a job existed in the SchedulingEmbedder job
+    queue. Logged when a job is completed by having all its passages embedded.
+    Canceled jobs do not log this histogram, as queries are normally and
+    frequently canceled.
+  </summary>
+</histogram>
+
+<histogram name="History.Embeddings.ScheduledPassageCount" units="passages"
+    expires_after="2025-07-31">
+  <owner>orinj@chromium.org</owner>
+  <owner>src/components/history_embeddings/OWNERS</owner>
+  <summary>
+    Number of passages that were already scheduled by the SchedulingEmbedder at
+    the moment a new job is enqueued.
+  </summary>
+</histogram>
+
 <histogram name="History.Embeddings.Search.Completed" enum="Boolean"
     expires_after="2025-07-31">
   <owner>orinj@chromium.org</owner>

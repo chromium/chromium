@@ -18,6 +18,12 @@
 
 namespace history_embeddings {
 
+using ComputePassagesEmbeddingsFuture =
+    base::test::TestFuture<std::vector<std::string>,
+                           std::vector<Embedding>,
+                           SchedulingEmbedder::TaskId,
+                           passage_embeddings::ComputeEmbeddingsStatus>;
+
 class MockEmbedderWithDelay : public MockEmbedder {
  public:
   static constexpr base::TimeDelta kTimeout = base::Seconds(1);
@@ -55,11 +61,6 @@ class SchedulingEmbedderTest : public testing::Test {
 };
 
 TEST_F(SchedulingEmbedderTest, UserInitiatedJobTakesPriority) {
-  using ComputePassagesEmbeddingsFuture =
-      base::test::TestFuture<std::vector<std::string>, std::vector<Embedding>,
-                             SchedulingEmbedder::TaskId,
-                             passage_embeddings::ComputeEmbeddingsStatus>;
-
   auto embedder = MakeEmbedder();
 
   // Submit a passive priority task.
@@ -93,6 +94,52 @@ TEST_F(SchedulingEmbedderTest, UserInitiatedJobTakesPriority) {
   EXPECT_EQ(embeddings_1.size(), 2u);
   EXPECT_EQ(task_id_1, expected_task_id_1);
   EXPECT_EQ(status_1, passage_embeddings::ComputeEmbeddingsStatus::kSuccess);
+}
+
+TEST_F(SchedulingEmbedderTest, JobCompletionRecordsHistograms) {
+  auto embedder = MakeEmbedder();
+
+  ComputePassagesEmbeddingsFuture future1;
+  ComputePassagesEmbeddingsFuture future2;
+  ComputePassagesEmbeddingsFuture future3;
+  embedder->ComputePassagesEmbeddings(
+      passage_embeddings::PassagePriority::kPassive, {"test passage 1"},
+      future1.GetCallback());
+  auto task_id = embedder->ComputePassagesEmbeddings(
+      passage_embeddings::PassagePriority::kUserInitiated,
+      {"test passage 2a", "test passage 2b"}, future2.GetCallback());
+  embedder->ComputePassagesEmbeddings(
+      passage_embeddings::PassagePriority::kPassive, {"test passage 3"},
+      future3.GetCallback());
+  embedder->TryCancel(task_id);
+  EXPECT_TRUE(future1.Wait());
+  EXPECT_TRUE(future2.Wait());
+  EXPECT_TRUE(future3.Wait());
+
+  // Only two of the jobs completed normally; one was canceled.
+  // So there will only be two duration samples but three counts are logged as
+  // the jobs are all started.
+  histogram_tester_.ExpectTotalCount("History.Embeddings.ScheduledJobDuration",
+                                     2);
+  histogram_tester_.ExpectTotalCount("History.Embeddings.ScheduledJobCount", 3);
+  histogram_tester_.ExpectTotalCount("History.Embeddings.ScheduledPassageCount",
+                                     3);
+
+  histogram_tester_.ExpectBucketCount("History.Embeddings.ScheduledJobCount", 0,
+                                      1);
+  histogram_tester_.ExpectBucketCount("History.Embeddings.ScheduledJobCount", 1,
+                                      1);
+  histogram_tester_.ExpectBucketCount("History.Embeddings.ScheduledJobCount", 2,
+                                      1);
+  histogram_tester_.ExpectBucketCount(
+      "History.Embeddings.ScheduledPassageCount", 0, 1);
+  histogram_tester_.ExpectBucketCount(
+      "History.Embeddings.ScheduledPassageCount", 1, 1);
+
+  // When the third job is started, 1 + 2 = 3 passages are waiting in the
+  // previous two jobs.
+  histogram_tester_.ExpectBucketCount(
+      "History.Embeddings.ScheduledPassageCount", 3, 1);
 }
 
 }  // namespace history_embeddings
