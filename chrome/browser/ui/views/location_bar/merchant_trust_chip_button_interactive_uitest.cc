@@ -297,10 +297,21 @@ IN_PROC_BROWSER_TEST_F(MerchantTrustChipButtonInteractiveUITest,
       PressButton(PageInfoMainView::kMerchantTrustElementId),
       // Wait for the subpage to be open.
       WaitForShow(PageInfoMerchantTrustContentView::kElementIdForTesting),
+      WaitForShow(PageInfoMerchantTrustContentView::kHatsButtonId),
+      CheckView(
+          PageInfoMerchantTrustContentView::kHatsButtonId,
+          [](RichHoverButton* button) { return button->GetTitleText(); },
+          l10n_util::GetStringUTF16(IDS_PAGE_INFO_MERCHANT_TRUST_HATS_BUTTON)),
       // Press the HaTS button.
       PressButton(PageInfoMerchantTrustContentView::kHatsButtonId),
+      CheckView(
+          PageInfoMerchantTrustContentView::kHatsButtonId,
+          [](RichHoverButton* button) { return button->GetTitleText(); },
+          l10n_util::GetStringUTF16(
+              IDS_PAGE_INFO_MERCHANT_TRUST_HATS_LOADING_BUTTON)),
+      // Wait for the bubble to be closed and for the survey to show.
+      WaitForHide(PageInfoMerchantTrustContentView::kElementIdForTesting),
       InAnyContext(WaitForShow(kHatsNextWebDialogId)),
-      // Wait for the survey to show.
       CheckHistogramCounts(kHatsShouldShowSurveyReasonHistogram,
                            HatsServiceDesktop::ShouldShowSurveyReasons::kYes,
                            1));

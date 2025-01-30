@@ -858,6 +858,12 @@
   <message name="IDS_PAGE_INFO_MERCHANT_TRUST_HATS_BUTTON" desc="The button in merchant trust page info subpage that open HaTS dialog which allows users to submit a survey about the feature.">
     Is this helpful?
   </message>
+  <message name="IDS_PAGE_INFO_MERCHANT_TRUST_HATS_LOADING_BUTTON" desc="The loading state of the button in merchant trust page info subpage. It is shown after user has clicked it but before survey dialog is opened.">
+    Opening survey...
+  </message>
+  <message name="IDS_PAGE_INFO_MERCHANT_TRUST_HATS_FAILED_BUTTON" desc="The failed state of the button in merchant trust page info subpage. It is shown after user has clicked it and the survey failed to load.">
+    An error occurred with the survey.
+  </message>
 
   <!-- History strings -->
   <if expr="is_ios">
