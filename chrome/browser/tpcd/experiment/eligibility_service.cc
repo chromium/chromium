@@ -105,10 +105,6 @@ void EligibilityService::MarkProfileEligibility(bool is_client_eligible) {
   // mismatches.
   UmaHistogramProfileEligibilityMismatch(profile_eligibility_->is_eligible(),
                                          is_client_eligible);
-  base::UmaHistogramEnumeration(
-      "PrivacySandbox.CookieDeprecationFacilitatedTesting."
-      "ReasonForComputedEligibilityForProfile",
-      profile_eligibility_->reason());
 
   UpdateCookieDeprecationLabel();
 

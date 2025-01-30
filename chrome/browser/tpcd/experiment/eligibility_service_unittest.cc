@@ -50,10 +50,6 @@ constexpr char kReasonForEligibilityStoredInPrefsHistogram[] =
     "PrivacySandbox.CookieDeprecationFacilitatedTesting."
     "ReasonForEligibilityStoredInPrefs";
 
-constexpr char kReasonForComputedEligibilityForProfileHistogram[] =
-    "PrivacySandbox.CookieDeprecationFacilitatedTesting."
-    "ReasonForComputedEligibilityForProfile";
-
 }  // namespace
 
 class EligibilityServiceTestBase : public testing::Test {
@@ -114,10 +110,6 @@ TEST_F(EligibilityServiceTest, ClientEligibilityKnown_ClientEligibilityNotSet) {
                                          experiment_manager_.get());
 
   histograms.ExpectTotalCount(kReasonForEligibilityStoredInPrefsHistogram, 0);
-  histograms.ExpectUniqueSample(
-      kReasonForComputedEligibilityForProfileHistogram,
-      /*sample=*/TpcdExperimentEligibility::Reason::kEligible,
-      /*expected_bucket_count=*/1);
 }
 
 TEST_F(EligibilityServiceTest,
@@ -143,10 +135,6 @@ TEST_F(EligibilityServiceTest,
       kReasonForEligibilityStoredInPrefsHistogram,
       /*sample=*/TpcdExperimentEligibility::Reason::k3pCookiesBlocked,
       /*expected_bucket_count=*/1);
-  histograms.ExpectUniqueSample(
-      kReasonForComputedEligibilityForProfileHistogram,
-      /*sample=*/TpcdExperimentEligibility::Reason::k3pCookiesBlocked,
-      /*expected_bucket_count=*/1);
 }
 
 TEST_F(EligibilityServiceTest,
@@ -170,10 +158,6 @@ TEST_F(EligibilityServiceTest,
 
   histograms.ExpectUniqueSample(
       kReasonForEligibilityStoredInPrefsHistogram,
-      /*sample=*/TpcdExperimentEligibility::Reason::kEligible,
-      /*expected_bucket_count=*/1);
-  histograms.ExpectUniqueSample(
-      kReasonForComputedEligibilityForProfileHistogram,
       /*sample=*/TpcdExperimentEligibility::Reason::kEligible,
       /*expected_bucket_count=*/1);
 }
