@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"

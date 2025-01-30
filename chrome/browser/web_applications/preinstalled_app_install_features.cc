@@ -7,6 +7,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/auto_reset.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ref.h"
 #include "build/build_config.h"

@@ -8,6 +8,7 @@
 
 #include <memory>
 
+#include "base/auto_reset.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
 #include "chrome/browser/extensions/extension_management.h"

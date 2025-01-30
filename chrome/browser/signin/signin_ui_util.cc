@@ -4,6 +4,7 @@
 
 #include "chrome/browser/signin/signin_ui_util.h"
 
+#include "base/auto_reset.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"

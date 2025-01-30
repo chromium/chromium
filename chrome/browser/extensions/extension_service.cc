@@ -12,6 +12,7 @@
 #include <set>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/barrier_closure.h"
 #include "base/check_op.h"
 #include "base/command_line.h"

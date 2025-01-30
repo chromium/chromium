@@ -16,6 +16,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/callback_list.h"
 #include "base/check.h"
 #include "base/containers/contains.h"

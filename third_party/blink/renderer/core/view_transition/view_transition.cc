@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/trees/layer_tree_host.h"

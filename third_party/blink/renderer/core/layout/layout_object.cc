@@ -32,6 +32,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "partition_alloc/partition_alloc.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"

@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/core/html/html_dialog_element.h"
 
+#include "base/auto_reset.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_focus_options.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"

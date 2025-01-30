@@ -4,6 +4,7 @@
 
 #include "chrome/browser/signin/accounts_policy_manager.h"
 
+#include "base/auto_reset.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"

@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/auto_reset.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"

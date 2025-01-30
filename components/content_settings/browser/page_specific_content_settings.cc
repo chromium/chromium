@@ -7,6 +7,7 @@
 #include <list>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/functional/overloaded.h"
 #include "base/lazy_instance.h"

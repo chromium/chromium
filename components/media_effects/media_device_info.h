@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_MEDIA_EFFECTS_MEDIA_DEVICE_INFO_H_
 #define COMPONENTS_MEDIA_EFFECTS_MEDIA_DEVICE_INFO_H_
 
+#include "base/auto_reset.h"
 #include "base/system/system_monitor.h"
 #include "media/audio/audio_device_description.h"
 #include "mojo/public/cpp/bindings/remote.h"

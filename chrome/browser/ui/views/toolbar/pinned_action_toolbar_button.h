@@ -10,6 +10,7 @@
 #include <string>
 #include <type_traits>
 
+#include "base/auto_reset.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container_layout.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_button_status_indicator.h"

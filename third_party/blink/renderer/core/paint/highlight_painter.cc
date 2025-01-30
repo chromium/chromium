@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/paint/highlight_painter.h"
 
+#include "base/auto_reset.h"
 #include "base/not_fatal_until.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/editing/editor.h"

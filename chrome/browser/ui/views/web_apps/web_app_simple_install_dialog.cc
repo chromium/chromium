@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "base/auto_reset.h"
 #include "base/metrics/user_metrics.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"

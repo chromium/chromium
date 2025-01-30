@@ -7,6 +7,7 @@
 #include <string>
 #include <type_traits>
 
+#include "base/auto_reset.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
 #include "chrome/app/vector_icons/vector_icons.h"
