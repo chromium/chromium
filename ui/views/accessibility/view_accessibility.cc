@@ -238,7 +238,14 @@ void ViewAccessibility::OverrideFocus(AXVirtualView* virtual_view) {
 }
 
 bool ViewAccessibility::IsAccessibilityFocusable() const {
-  return data_.HasState(ax::mojom::State::kFocusable);
+  bool focusable = data_.HasState(ax::mojom::State::kFocusable);
+  if (focusable) {
+    CHECK(!should_be_invisible_ &&
+          !data_.HasState(ax::mojom::State::kInvisible))
+        << "A view that is focusable should not be marked as invisible. This is"
+           "also enforced in RunAccessibilityPaintChecks.";
+  }
+  return focusable;
 }
 
 bool ViewAccessibility::IsFocusedForTesting() const {
@@ -466,26 +473,10 @@ void ViewAccessibility::SetName(const std::string& name,
 }
 
 void ViewAccessibility::SetName(const std::string& name) {
-  if (GetCachedNameFrom() == ax::mojom::NameFrom::kAttributeExplicitlyEmpty &&
-      !name.empty()) {
-    // If the name was set to be explicitly empty, but then a value was set, we
-    // must reset the cached name from. As a default, Views have in the past
-    // used the kAttribute name from.
-    SetName(name, ax::mojom::NameFrom::kAttribute);
-    return;
-  }
   SetName(name, GetCachedNameFrom());
 }
 
 void ViewAccessibility::SetName(const std::u16string& name) {
-  if (GetCachedNameFrom() == ax::mojom::NameFrom::kAttributeExplicitlyEmpty &&
-      !name.empty()) {
-    // If the name was set to be explicitly empty, but then a value was set, we
-    // must reset the cached name from. As a default, Views have in the past
-    // used the kAttribute name from.
-    SetName(name, ax::mojom::NameFrom::kAttribute);
-    return;
-  }
   SetName(name, GetCachedNameFrom());
 }
 
@@ -681,7 +672,13 @@ void ViewAccessibility::ClearActiveDescendant() {
 }
 
 void ViewAccessibility::SetIsInvisible(bool is_invisible) {
-  SetState(ax::mojom::State::kInvisible, is_invisible);
+  if (is_invisible == should_be_invisible_) {
+    return;
+  }
+
+  should_be_invisible_ = is_invisible;
+
+  UpdateInvisibleState();
 }
 
 void ViewAccessibility::SetIsDefault(bool is_default) {
@@ -1100,34 +1097,107 @@ void ViewAccessibility::SetAutoComplete(const std::string& autocomplete) {
                            autocomplete);
 }
 
+void ViewAccessibility::SetHasFocusableAncestor(bool ancestor_focusable) {
+  has_focusable_ancestor_ = ancestor_focusable;
+  UpdateIgnoredState();
+}
+
+void ViewAccessibility::SetHasFocusableAncestorRecursive(
+    bool ancestor_focusable) {
+  for (auto& child : view_->children()) {
+    child->GetViewAccessibility().SetHasFocusableAncestor(ancestor_focusable);
+    // If the child has been explicitly set to focusable, we skip its subtree
+    // since their state will be respected and should already be up to date.
+    if (child->GetFocusBehavior() != View::FocusBehavior::NEVER) {
+      continue;
+    }
+    child->GetViewAccessibility().SetHasFocusableAncestorRecursive(
+        ancestor_focusable);
+  }
+
+  UpdateIgnoredState();
+}
+
 void ViewAccessibility::UpdateFocusableState() {
   bool is_focusable = view_->GetFocusBehavior() != View::FocusBehavior::NEVER &&
-                      GetIsEnabled() && view_->IsDrawn() &&
+                      GetIsEnabled() &&
+                      !data_.HasState(ax::mojom::State::kInvisible) &&
                       !ViewAccessibility::GetIsIgnored();
+  if (is_focusable) {
+    CHECK(!should_be_invisible_ &&
+          !data_.HasState(ax::mojom::State::kInvisible))
+        << "A view that focusable should not be marked as invisible. This is a "
+           "check we also make in the Paint Checks.";
+  }
   SetState(ax::mojom::State::kFocusable, is_focusable);
 }
 
-void ViewAccessibility::UpdateFocusableStateRecursive() {
+void ViewAccessibility::UpdateInvisibleByInheritanceRecursive(
+    const View* initial_view,
+    bool invisible_by_inheritance) {
   internal::ScopedChildrenLock lock(view_);
-  UpdateFocusableState();
+  if (view_.get() != initial_view) {
+    is_invisible_by_inheritance_ = invisible_by_inheritance;
+    if (!view_->GetVisible()) {
+      return;
+    }
+  }
+  UpdateInvisibleState();
+
   for (auto& child : view_->children()) {
-    child->GetViewAccessibility().UpdateFocusableStateRecursive();
+    child->GetViewAccessibility().UpdateInvisibleByInheritanceRecursive(
+        initial_view, invisible_by_inheritance);
   }
 }
 
-void ViewAccessibility::UpdateStatesForViewAndDescendants() {
+void ViewAccessibility::OnViewHasNewAncestor(const View* new_ancestor) {
+  CHECK(view_->parent());
+  // We need to make sure that we are propagating the right values down the
+  // recursive calls. For the invisible state, this means we look at the direct
+  // parent, rather than the `new_ancestor`, which in subsequent recursive calls
+  // could be a root of an entire tree that is getting reparented. This is
+  // because if at some point during the recursion, the parent is invisible, it
+  // should affect its descendants, even if `new_ancestor` is not. For example, if
+  // we have a tree like this:
+  // A (visible)
+  //   B (invisible)
+  // and then a separate tree:
+  // C (invisible)
+  //   D (invisible by inheritance of C)
+  // and then we reparent C to be a child of A:
+  // A (visible)
+  //   B (invisible)
+  //   C (invisible)
+  //     D (invisible by inheritance of C)
+  // Even though `A` is visible ( A would be `new_ancestor`), we need to make
+  // sure that during the recursion, we don't mark `D` as visible, since it's
+  // parent is invisible.
+  bool parent_invisible =
+      view_->parent()->GetViewAccessibility().is_invisible_by_inheritance() ||
+      !view_->parent()->GetVisible();
+  bool ancestor_focusable =
+      new_ancestor->GetFocusBehavior() != View::FocusBehavior::NEVER ||
+      new_ancestor->GetViewAccessibility().has_focusable_ancestor();
+
   internal::ScopedChildrenLock lock(view_);
-  UpdateFocusableState();
+
+  is_invisible_by_inheritance_ = parent_invisible;
+
+  UpdateInvisibleState();
+
+  // We only want to propagate the `ancestor_focusable` value if it's true. This
+  // is because if this view is unfocusable, and it gets added to a tree with a
+  // focusable ancestor, it should now be marked as ignored. However, being
+  // added to a tree with an unfocusable ancestor doesn't affect the ignored
+  // state of this view or its descendants.
+  if (ancestor_focusable) {
+    SetHasFocusableAncestor(ancestor_focusable);
+  }
+
   UpdateReadyToNotifyEvents();
   for (auto& child : view_->children()) {
-    child->GetViewAccessibility().UpdateStatesForViewAndDescendants();
+    child->GetViewAccessibility().OnViewHasNewAncestor(new_ancestor);
   }
-}
-
-void ViewAccessibility::SetRootViewIsReadyToNotifyEvents() {
-  CHECK(!view_->parent())
-      << "This method should only be called on the RootView.";
-  ready_to_notify_events_ = true;
 }
 
 void ViewAccessibility::SetRootViewURL(const std::string& url) {
@@ -1137,10 +1207,18 @@ void ViewAccessibility::SetRootViewURL(const std::string& url) {
   OnStringAttributeChanged(ax::mojom::StringAttribute::kUrl, url);
 }
 
+void ViewAccessibility::SetRootViewIsReadyToNotifyEvents() {
+  CHECK(!view_->parent())
+      << "This method should only be called on the RootView.";
+  ready_to_notify_events_ = true;
+}
+
 void ViewAccessibility::UpdateInvisibleState() {
   bool is_invisible =
-      !view_->GetVisible() && data_.role != ax::mojom::Role::kAlert;
+      (!view_->GetVisible() && data_.role != ax::mojom::Role::kAlert) ||
+      is_invisible_by_inheritance_ || should_be_invisible_;
   SetState(ax::mojom::State::kInvisible, is_invisible);
+  UpdateFocusableState();
 }
 
 void ViewAccessibility::SetChildTreeID(ui::AXTreeID tree_id) {
@@ -1372,8 +1450,18 @@ void ViewAccessibility::UnpruneSubtree() {
 }
 
 void ViewAccessibility::UpdateIgnoredState() {
+// TODO(crbug.com/371237539): In ChromeOS, its not an expectation that being
+// a view unfocusable descendant of a focusable ancestor will make the view
+// ignored.
+#if !BUILDFLAG(IS_CHROMEOS)
+  bool is_ignored = should_be_ignored_ || pruned_ ||
+                    data_.role == ax::mojom::Role::kNone ||
+                    (has_focusable_ancestor_ &&
+                     view_->GetFocusBehavior() == View::FocusBehavior::NEVER);
+#else
   bool is_ignored =
       should_be_ignored_ || pruned_ || data_.role == ax::mojom::Role::kNone;
+#endif  // !BUILDFLAG(IS_CHROMEOS)
   SetState(ax::mojom::State::kIgnored, is_ignored);
   UpdateFocusableState();
 }
