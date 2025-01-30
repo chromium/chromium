@@ -1430,7 +1430,7 @@ void PasswordManager::OnLoginSuccessful() {
           submitted_manager->GetInsecureCredentials(),
           submitted_manager->GetSubmittedForm()->username_value) &&
       !IsSingleUsernameSubmission(*submitted_manager->GetSubmittedForm())) {
-    leak_delegate_.StartLeakCheck(LeakDetectionInitiator::kSignInCheck,
+    leak_delegate_.StartLeakCheck(client_->GetLeakDetectionInitiator(),
                                   submitted_manager->GetPendingCredentials(),
                                   submitted_manager->GetURL());
   }

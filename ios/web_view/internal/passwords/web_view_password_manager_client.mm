@@ -11,6 +11,7 @@
 #import "components/autofill/core/browser/logging/log_manager.h"
 #import "components/autofill/core/browser/logging/log_router.h"
 #import "components/keyed_service/core/service_access_type.h"
+#import "components/password_manager/core/browser/leak_detection/leak_detection_request_utils.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/password_manager/ios/password_manager_ios_util.h"
@@ -25,6 +26,7 @@
 #import "net/cert/cert_status_flags.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
+using password_manager::LeakDetectionInitiator;
 using password_manager::PasswordFormManagerForUI;
 using password_manager::PasswordManagerMetricsRecorder;
 using password_manager::PasswordStoreInterface;
@@ -215,6 +217,11 @@ void WebViewPasswordManagerClient::NotifyUserAutoSignin(
 void WebViewPasswordManagerClient::NotifyUserCouldBeAutoSignedIn(
     std::unique_ptr<password_manager::PasswordForm> form) {
   helper_.NotifyUserCouldBeAutoSignedIn(std::move(form));
+}
+
+password_manager::LeakDetectionInitiator
+WebViewPasswordManagerClient::GetLeakDetectionInitiator() {
+  return password_manager::LeakDetectionInitiator::kIOSWebViewSignInCheck;
 }
 
 void WebViewPasswordManagerClient::NotifySuccessfulLoginWithExistingPassword(

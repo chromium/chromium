@@ -566,6 +566,8 @@ class PasswordManagerClient {
                                    bool show_warning_text,
                                    base::OnceClosure confirmation_callback) = 0;
 #endif  // !BUILDFLAG(IS_IOS)
+
+  virtual password_manager::LeakDetectionInitiator GetLeakDetectionInitiator();
 };
 
 }  // namespace password_manager
