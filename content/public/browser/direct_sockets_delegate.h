@@ -21,17 +21,18 @@ class CONTENT_EXPORT DirectSocketsDelegate {
  public:
   enum class ProtocolType { kTcp, kConnectedUdp, kBoundUdp, kTcpServer };
 
-  virtual ~DirectSocketsDelegate() = default;
+  struct RequestDetails {
+    std::string address;
+    uint16_t port;
+    ProtocolType protocol;
+  };
 
-  // Allows embedders to introduce additional rules for API access.
-  virtual bool IsAPIAccessAllowed(content::RenderFrameHost& rfh) = 0;
+  virtual ~DirectSocketsDelegate() = default;
 
   // Allows embedders to introduce additional rules for specific
   // addresses/ports.
-  virtual bool ValidateAddressAndPort(content::RenderFrameHost& rfh,
-                                      const std::string& address,
-                                      uint16_t port,
-                                      ProtocolType) = 0;
+  virtual bool ValidateRequest(content::RenderFrameHost& rfh,
+                               const RequestDetails&) = 0;
 
   // Allows embedders to introduce additional rules for private network access.
   virtual void RequestPrivateNetworkAccess(

@@ -87,39 +87,30 @@ void FulfillWithError(base::OnceCallback<void(int32_t, Args...)> callback,
   std::move(callback).Run(net_error, std::remove_cvref_t<Args>()...);
 }
 
-bool IsAPIAccessAllowed(RenderFrameHost& rfh) {
+bool ValidateRequest(RenderFrameHost& rfh,
+                     const std::string& address,
+                     uint16_t port,
+                     DirectSocketsDelegate::ProtocolType protocol) {
   auto* delegate = GetContentClient()->browser()->GetDirectSocketsDelegate();
   if (!delegate) {
     // No additional rules from the embedder.
     return true;
   }
-  return delegate->IsAPIAccessAllowed(rfh);
+  return delegate->ValidateRequest(rfh, {address, port, protocol});
 }
 
-bool ValidateAddressAndPort(RenderFrameHost& rfh,
-                            const std::string& address,
-                            uint16_t port,
-                            DirectSocketsDelegate::ProtocolType protocol) {
-  auto* delegate = GetContentClient()->browser()->GetDirectSocketsDelegate();
-  if (!delegate) {
-    // No additional rules from the embedder.
-    return true;
-  }
-  return delegate->ValidateAddressAndPort(rfh, address, port, protocol);
+bool ValidateRequest(RenderFrameHost& rfh,
+                     const net::IPEndPoint& ip_endpoint,
+                     DirectSocketsDelegate::ProtocolType protocol) {
+  return ValidateRequest(rfh, ip_endpoint.address().ToString(),
+                         ip_endpoint.port(), protocol);
 }
 
-bool ValidateAddressAndPort(RenderFrameHost& rfh,
-                            const net::IPEndPoint& ip_endpoint,
-                            DirectSocketsDelegate::ProtocolType protocol) {
-  return ValidateAddressAndPort(rfh, ip_endpoint.address().ToString(),
-                                ip_endpoint.port(), protocol);
-}
-
-bool ValidateAddressAndPort(RenderFrameHost& rfh,
-                            const net::HostPortPair& host_port_pair,
-                            DirectSocketsDelegate::ProtocolType protocol) {
-  return ValidateAddressAndPort(rfh, host_port_pair.host(),
-                                host_port_pair.port(), protocol);
+bool ValidateRequest(RenderFrameHost& rfh,
+                     const net::HostPortPair& host_port_pair,
+                     DirectSocketsDelegate::ProtocolType protocol) {
+  return ValidateRequest(rfh, host_port_pair.host(), host_port_pair.port(),
+                         protocol);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -379,9 +370,8 @@ void DirectSocketsServiceImpl::OpenTCPSocket(
     OpenTCPSocketCallback callback) {
   net::HostPortPair remote_addr = options->remote_addr;
 
-  if (!IsAPIAccessAllowed(render_frame_host()) ||
-      !ValidateAddressAndPort(render_frame_host(), remote_addr,
-                              DirectSocketsDelegate::ProtocolType::kTcp)) {
+  if (!ValidateRequest(render_frame_host(), remote_addr,
+                       DirectSocketsDelegate::ProtocolType::kTcp)) {
     FulfillWithError(std::move(callback), net::ERR_ACCESS_DENIED);
     return;
   }
@@ -410,10 +400,8 @@ void DirectSocketsServiceImpl::OpenConnectedUDPSocket(
     OpenConnectedUDPSocketCallback callback) {
   net::HostPortPair remote_addr = options->remote_addr;
 
-  if (!IsAPIAccessAllowed(render_frame_host()) ||
-      !ValidateAddressAndPort(
-          render_frame_host(), remote_addr,
-          DirectSocketsDelegate::ProtocolType::kConnectedUdp)) {
+  if (!ValidateRequest(render_frame_host(), remote_addr,
+                       DirectSocketsDelegate::ProtocolType::kConnectedUdp)) {
     FulfillWithError(std::move(callback), net::ERR_ACCESS_DENIED);
     return;
   }
@@ -440,9 +428,8 @@ void DirectSocketsServiceImpl::OpenBoundUDPSocket(
     mojo::PendingReceiver<network::mojom::RestrictedUDPSocket> receiver,
     mojo::PendingRemote<network::mojom::UDPSocketListener> listener,
     OpenBoundUDPSocketCallback callback) {
-  if (!IsAPIAccessAllowed(render_frame_host()) ||
-      !ValidateAddressAndPort(render_frame_host(), options->local_addr,
-                              DirectSocketsDelegate::ProtocolType::kBoundUdp)) {
+  if (!ValidateRequest(render_frame_host(), options->local_addr,
+                       DirectSocketsDelegate::ProtocolType::kBoundUdp)) {
     FulfillWithError(std::move(callback), net::ERR_ACCESS_DENIED);
     return;
   }
@@ -495,10 +482,8 @@ void DirectSocketsServiceImpl::OpenTCPServerSocket(
     blink::mojom::DirectTCPServerSocketOptionsPtr options,
     mojo::PendingReceiver<network::mojom::TCPServerSocket> socket,
     OpenTCPServerSocketCallback callback) {
-  if (!IsAPIAccessAllowed(render_frame_host()) ||
-      !ValidateAddressAndPort(
-          render_frame_host(), options->local_addr,
-          DirectSocketsDelegate::ProtocolType::kTcpServer)) {
+  if (!ValidateRequest(render_frame_host(), options->local_addr,
+                       DirectSocketsDelegate::ProtocolType::kTcpServer)) {
     FulfillWithError(std::move(callback), net::ERR_ACCESS_DENIED);
     return;
   }

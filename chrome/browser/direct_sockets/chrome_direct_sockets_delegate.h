@@ -10,11 +10,8 @@
 class ChromeDirectSocketsDelegate : public content::DirectSocketsDelegate {
  public:
   // content::DirectSocketsDelegate:
-  bool IsAPIAccessAllowed(content::RenderFrameHost& rfh) override;
-  bool ValidateAddressAndPort(content::RenderFrameHost& rfh,
-                              const std::string& address,
-                              uint16_t port,
-                              ProtocolType protocol) override;
+  bool ValidateRequest(content::RenderFrameHost& rfh,
+                       const RequestDetails&) override;
   void RequestPrivateNetworkAccess(content::RenderFrameHost& rfh,
                                    base::OnceCallback<void(bool)>) override;
 };
