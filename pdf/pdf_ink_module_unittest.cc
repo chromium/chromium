@@ -1151,6 +1151,65 @@ TEST_F(PdfInkModuleStrokeTest, AnnotationWithPenIfEnabled) {
                    /*page_index=*/0, ink::StrokeInput::ToolType::kStylus));
 }
 
+TEST_F(PdfInkModuleStrokeTest, IgnoreTouchEventsAfterPenEvent) {
+  EnableAnnotationMode();
+  InitializeSimpleSinglePageBasicLayout();
+
+  const std::vector<base::span<const gfx::PointF>> all_move_points{
+      base::span_from_ref(kMouseMovePoint),
+  };
+  ApplyStrokeWithTouchAtPoints(base::span_from_ref(kMouseDownPoint),
+                               all_move_points,
+                               base::span_from_ref(kMouseUpPoint));
+  EXPECT_EQ(3, ink_module().GetInputOfTypeCountForPageForTesting(
+                   /*page_index=*/0, ink::StrokeInput::ToolType::kTouch));
+
+  ApplyStrokeWithTouchAtPoints(base::span_from_ref(kMouseDownPoint),
+                               all_move_points,
+                               base::span_from_ref(kMouseUpPoint));
+  EXPECT_EQ(6, ink_module().GetInputOfTypeCountForPageForTesting(
+                   /*page_index=*/0, ink::StrokeInput::ToolType::kTouch));
+  EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
+                   /*page_index=*/0, ink::StrokeInput::ToolType::kStylus));
+
+  ApplyStrokeWithPenAtPoints(base::span_from_ref(kMouseDownPoint),
+                             all_move_points,
+                             base::span_from_ref(kMouseUpPoint));
+  EXPECT_EQ(6, ink_module().GetInputOfTypeCountForPageForTesting(
+                   /*page_index=*/0, ink::StrokeInput::ToolType::kTouch));
+  EXPECT_EQ(3, ink_module().GetInputOfTypeCountForPageForTesting(
+                   /*page_index=*/0, ink::StrokeInput::ToolType::kStylus));
+
+  ApplyStrokeWithTouchAtPoints(base::span_from_ref(kMouseDownPoint),
+                               all_move_points,
+                               base::span_from_ref(kMouseUpPoint));
+  // TODO(crbug.com/392650039): Ignore touch, so this should be 6 instead of 9.
+  EXPECT_EQ(9, ink_module().GetInputOfTypeCountForPageForTesting(
+                   /*page_index=*/0, ink::StrokeInput::ToolType::kTouch));
+  EXPECT_EQ(3, ink_module().GetInputOfTypeCountForPageForTesting(
+                   /*page_index=*/0, ink::StrokeInput::ToolType::kStylus));
+
+  ApplyStrokeWithPenAtPoints(base::span_from_ref(kMouseDownPoint),
+                             all_move_points,
+                             base::span_from_ref(kMouseUpPoint));
+  // TODO(crbug.com/392650039): Ignore touch, so this should be 6 instead of 9.
+  EXPECT_EQ(9, ink_module().GetInputOfTypeCountForPageForTesting(
+                   /*page_index=*/0, ink::StrokeInput::ToolType::kTouch));
+  EXPECT_EQ(6, ink_module().GetInputOfTypeCountForPageForTesting(
+                   /*page_index=*/0, ink::StrokeInput::ToolType::kStylus));
+
+  ApplyStrokeWithTouchAtPoints(base::span_from_ref(kMouseDownPoint),
+                               all_move_points,
+                               base::span_from_ref(kMouseUpPoint));
+  EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
+                   /*page_index=*/0, ink::StrokeInput::ToolType::kMouse));
+  // TODO(crbug.com/392650039): Ignore touch, so this should be 6 instead of 12.
+  EXPECT_EQ(12, ink_module().GetInputOfTypeCountForPageForTesting(
+                    /*page_index=*/0, ink::StrokeInput::ToolType::kTouch));
+  EXPECT_EQ(6, ink_module().GetInputOfTypeCountForPageForTesting(
+                   /*page_index=*/0, ink::StrokeInput::ToolType::kStylus));
+}
+
 TEST_F(PdfInkModuleStrokeTest, CanonicalAnnotationPoints) {
   // Setup to support examining the page stroke points for a layout that is
   // more complicated than what is provide by
