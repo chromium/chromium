@@ -97,6 +97,7 @@
 #include "extensions/browser/api/web_request/web_request_info.h"
 #include "extensions/browser/blocked_action_type.h"
 #include "extensions/browser/browsertest_util.h"
+#include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_action_manager.h"
 #include "extensions/browser/extension_prefs.h"
@@ -646,6 +647,14 @@ class DeclarativeNetRequestBrowserTest
     return ExecuteScriptInBackgroundPageAndReturnString(
         extension_id,
         base::StringPrintf(kSetExtensionActionOptionsScript, options.c_str()));
+  }
+
+  // Navigates to `url` in the active tab. Blocks until the navigation
+  // completes. The navigation may result in an error page.
+  void NavigateToURL(const GURL& url) {
+    content::NavigateToURLBlockUntilNavigationsComplete(
+        GetActiveWebContents(), url, /*number_of_navigations=*/1,
+        /*ignore_uncommitted_navigations=*/false);
   }
 
   // Navigates frame with name |frame_name| to |url|.
@@ -1270,7 +1279,6 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
   EXPECT_EQ(content::PAGE_TYPE_ERROR, GetPageType());
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 // Tests case sensitive url filters.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
                        BlockRequests_IsUrlFilterCaseSensitive) {
@@ -1312,7 +1320,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
         embedded_test_server()->GetURL(test_case.hostname, test_case.path);
     SCOPED_TRACE(base::StringPrintf("Testing %s", url.spec().c_str()));
 
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    NavigateToURL(url);
     EXPECT_EQ(test_case.expect_main_frame_loaded,
               WasFrameWithScriptLoaded(GetPrimaryMainFrame()));
 
@@ -1376,7 +1384,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
                                               "/page_with_two_frames.html");
     SCOPED_TRACE(base::StringPrintf("Testing %s", url.spec().c_str()));
 
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    NavigateToURL(url);
     content::RenderFrameHost* main_frame = GetPrimaryMainFrame();
     EXPECT_TRUE(WasFrameWithScriptLoaded(main_frame));
     EXPECT_EQ(content::PAGE_TYPE_NORMAL, GetPageType());
@@ -1391,10 +1399,16 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
   }
 }
 
+#if BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/371298229): Flaky on Android.
+#define MAYBE_BlockRequests_RequestDomains DISABLED_BlockRequests_RequestDomains
+#else
+#define MAYBE_BlockRequests_RequestDomains BlockRequests_RequestDomains
+#endif
 // Tests the "requestDomains" and "excludedRequestDomains" properties of
 // declarativeNetRequest rule conditions.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
-                       BlockRequests_RequestDomains) {
+                       MAYBE_BlockRequests_RequestDomains) {
   struct {
     size_t id;
     std::vector<std::string> request_domains;
@@ -1425,7 +1439,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
       "example.com",
       "/request_domain_test.html?w.com,x.com,subdomain.x.com,y.com,a.x.com,"
       "subdomain.a.x.com,z.com");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  NavigateToURL(url);
   ASSERT_TRUE(WasFrameWithScriptLoaded(GetPrimaryMainFrame()));
   ASSERT_EQ(content::PAGE_TYPE_NORMAL, GetPageType());
 
@@ -1478,7 +1492,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
 
   GURL url =
       embedded_test_server()->GetURL("example.com", "/domain_type_test.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  NavigateToURL(url);
   ASSERT_TRUE(WasFrameWithScriptLoaded(GetPrimaryMainFrame()));
   ASSERT_EQ(content::PAGE_TYPE_NORMAL, GetPageType());
 
@@ -1533,10 +1547,10 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules({rule}));
 
   // Opens a chrome-untrusted:// page.
-  auto* rfh = ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("chrome-untrusted://test/title1.html"),
-      WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  NavigateToURL(GURL("chrome-untrusted://test/title1.html"));
+  auto* web_contents = GetActiveWebContents();
+  content::WaitForLoadStop(web_contents);
+  auto* rfh = web_contents->GetPrimaryMainFrame();
 
   {
     // Trigger a `window.open()` to a Web origin from chrome-untrusted:// page.
@@ -1593,10 +1607,10 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
   ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules({rule}));
 
   // Opens a chrome-untrusted:// page.
-  auto* rfh = ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("chrome-untrusted://test/title1.html"),
-      WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  NavigateToURL(GURL("chrome-untrusted://test/title1.html"));
+  auto* web_contents = GetActiveWebContents();
+  content::WaitForLoadStop(web_contents);
+  auto* rfh = web_contents->GetPrimaryMainFrame();
 
   // Start a subframe navigation to Web origin.
   const auto web_url =
@@ -1650,7 +1664,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, AllowBlock) {
         base::StringPrintf("/pages_with_script/page.html?num=%d", i));
     SCOPED_TRACE(base::StringPrintf("Testing %s", url.spec().c_str()));
 
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    NavigateToURL(url);
 
     // All requests ending with odd numbers should be blocked.
     const bool page_should_load = (i % 2 == 0);
@@ -1729,7 +1743,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, AllowRedirect) {
     GURL url = test_case.initial_url;
     SCOPED_TRACE(base::StringPrintf("Testing %s", url.spec().c_str()));
 
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    NavigateToURL(url);
     EXPECT_TRUE(WasFrameWithScriptLoaded(GetPrimaryMainFrame()));
 
     GURL final_url = web_contents()->GetLastCommittedURL();
@@ -1754,7 +1768,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, AllowRedirect) {
     GURL url = test_case.initial_url;
     SCOPED_TRACE(base::StringPrintf("Testing %s", url.spec().c_str()));
 
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    NavigateToURL(url);
     EXPECT_TRUE(WasFrameWithScriptLoaded(GetPrimaryMainFrame()));
 
     GURL final_url = web_contents()->GetLastCommittedURL();
@@ -1818,11 +1832,15 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
 
   {
     SCOPED_TRACE("Testing DisableExtension");
-    DisableExtension(extension_id);
+    DisableExtension(extension_id, disable_reason::DISABLE_USER_ACTION);
     WaitForExtensionsWithRulesetsCount(0);
     test_extension_enabled(false);
   }
 
+#if !BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/391920604, crbug.com/391920206): Port to desktop Android
+  // when EnableExtension(), ReloadExtension(), and UninstallExtension() are
+  // supported.
   {
     SCOPED_TRACE("Testing EnableExtension");
     EnableExtension(extension_id);
@@ -1847,6 +1865,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
     WaitForExtensionsWithRulesetsCount(0);
     test_extension_enabled(false);
   }
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 // Tests that multiple enabled extensions with declarative rulesets having
@@ -1896,7 +1915,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
                                               "/pages_with_script/page.html");
     SCOPED_TRACE(base::StringPrintf("Testing %s", url.spec().c_str()));
 
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    NavigateToURL(url);
     EXPECT_EQ(test_case.expect_main_frame_loaded,
               WasFrameWithScriptLoaded(GetPrimaryMainFrame()));
     content::PageType expected_page_type = test_case.expect_main_frame_loaded
@@ -1949,7 +1968,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
   // corresponding to the most recently installed extension.
   GURL url = embedded_test_server()->GetURL("example.com",
                                             "/pages_with_script/page.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  NavigateToURL(url);
   EXPECT_EQ(content::PAGE_TYPE_NORMAL, GetPageType());
   EXPECT_TRUE(WasFrameWithScriptLoaded(GetPrimaryMainFrame()));
   GURL final_url = web_contents()->GetLastCommittedURL();
@@ -2021,7 +2040,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, BlockAndRedirect) {
     std::string url = get_url_for_host(test_case.hostname);
     SCOPED_TRACE(base::StringPrintf("Testing %s", url.c_str()));
 
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(url)));
+    NavigateToURL(GURL(url));
     EXPECT_EQ(test_case.expected_main_frame_loaded,
               WasFrameWithScriptLoaded(GetPrimaryMainFrame()));
 
@@ -2091,7 +2110,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, RedirectPriority) {
                                               "/pages_with_script/page.html");
     SCOPED_TRACE(base::StringPrintf("Testing %s", url.spec().c_str()));
 
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    NavigateToURL(url);
     EXPECT_EQ(content::PAGE_TYPE_NORMAL, GetPageType());
     EXPECT_TRUE(WasFrameWithScriptLoaded(GetPrimaryMainFrame()));
     GURL final_url = web_contents()->GetLastCommittedURL();
@@ -2182,7 +2201,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, UpgradeRules) {
     GURL url = get_url_for_host(test_case.hostname);
     SCOPED_TRACE(base::StringPrintf("Testing %s", url.spec().c_str()));
 
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    NavigateToURL(url);
 
     if (!test_case.expected_final_url) {
       EXPECT_EQ(content::PAGE_TYPE_ERROR, GetPageType());
@@ -2208,23 +2227,19 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
   const ExtensionId& extension_id = last_loaded_extension_id();
   GURL url = embedded_test_server()->GetURL("example.com",
                                             "/pages_with_script/page.html");
-  Browser* incognito_browser = CreateIncognitoBrowser();
 
   auto test_enabled_in_incognito = [&](bool expected_enabled_in_incognito) {
     EXPECT_EQ(expected_enabled_in_incognito,
               util::IsIncognitoEnabled(extension_id, profile()));
 
     // The url should be blocked in normal context.
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    NavigateToURL(url);
     EXPECT_FALSE(WasFrameWithScriptLoaded(GetPrimaryMainFrame()));
     EXPECT_EQ(content::PAGE_TYPE_ERROR, GetPageType());
 
     // In incognito context, the url should be blocked if the extension is
     // enabled in incognito mode.
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(incognito_browser, url));
-    // Get the web contents for the main tab in the incognito browser.
-    content::WebContents* tab =
-        incognito_browser->tab_strip_model()->GetActiveWebContents();
+    content::WebContents* tab = PlatformOpenURLOffTheRecord(profile(), url);
     EXPECT_EQ(!expected_enabled_in_incognito,
               WasFrameWithScriptLoaded(tab->GetPrimaryMainFrame()));
     content::PageType expected_page_type = expected_enabled_in_incognito
@@ -2341,15 +2356,16 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, HostAccessPermission) {
       continue;
     }
 
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_case.url));
+    NavigateToURL(test_case.url);
     EXPECT_EQ(content::PAGE_TYPE_NORMAL, GetPageType());
     EXPECT_EQ(*test_case.expected_final_url,
               web_contents()->GetLastCommittedURL());
   }
 }
 
-#if BUILDFLAG(IS_MAC) && !defined(NDEBUG)
+#if (BUILDFLAG(IS_MAC) && !defined(NDEBUG)) || BUILDFLAG(IS_ANDROID)
 // Times out on mac-debug: https://crbug.com/1159418
+// Flaky on Android: https://crbug.com/371298229
 #define MAYBE_ChromeURLS DISABLED_ChromeURLS
 #else
 #define MAYBE_ChromeURLS ChromeURLS
@@ -2368,13 +2384,16 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, MAYBE_ChromeURLS) {
       chrome::kChromeUIExtensionsURL, chrome::kChromeUIVersionURL};
 
   for (const char* url : test_urls) {
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(url)));
+    NavigateToURL(GURL(url));
     EXPECT_EQ(content::PAGE_TYPE_NORMAL, GetPageType());
   }
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 // Test that a packed extension with a DNR ruleset behaves correctly after
 // browser restart.
+// TODO(crbug.com/391924202): Port to desktop Android once it supports packed
+// extensions.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest_Packed,
                        PRE_BrowserRestart) {
   // This is not tested for unpacked extensions since the unpacked extension
@@ -2455,6 +2474,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest_Packed,
 
 // Tests than an extension can omit the "declarative_net_request" manifest key
 // but can still use dynamic rules.
+// TODO(crbug.com/392953825): Port to desktop Android once EnableExtension() is
+// supported there.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, ZeroRulesets) {
   set_config_flags(ConfigFlag::kConfig_HasBackgroundScript |
                    ConfigFlag::kConfig_OmitDeclarativeNetRequestKey);
@@ -2485,6 +2506,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, ZeroRulesets) {
   WaitForExtensionsWithRulesetsCount(1);
   EXPECT_TRUE(IsNavigationBlocked(url));
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Ensure that when an extension blocks a main-frame request using
 // declarativeNetRequest, the resultant error page attributes this to an
@@ -2494,8 +2516,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
   ASSERT_NO_FATAL_FAILURE(
       LoadExtensionWithRules({CreateMainFrameBlockRule("example.com")}));
 
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), GetURLForFilter("example.com")));
+  NavigateToURL(GetURLForFilter("example.com"));
   EXPECT_EQ(content::PAGE_TYPE_ERROR, GetPageType());
 
   std::string body =
@@ -2556,7 +2577,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, RendererCacheCleared) {
       "example.com", "/cached/page_with_cacheable_script.html");
 
   // With no extension loaded, the request to the script should succeed.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  NavigateToURL(url);
   EXPECT_EQ(content::PAGE_TYPE_NORMAL, GetPageType());
   EXPECT_TRUE(WasFrameWithScriptLoaded(GetPrimaryMainFrame()));
 
@@ -2572,7 +2593,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, RendererCacheCleared) {
   // Another request to |url| should not cause a network request for
   // script.js since it will be served by the renderer's in-memory
   // cache.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  NavigateToURL(url);
   EXPECT_EQ(content::PAGE_TYPE_NORMAL, GetPageType());
   EXPECT_TRUE(WasFrameWithScriptLoaded(GetPrimaryMainFrame()));
   EXPECT_FALSE(base::Contains(
@@ -2586,20 +2607,21 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, RendererCacheCleared) {
   // Adding an extension ruleset should have cleared the renderer's in-memory
   // cache. Hence the browser process will observe the request to
   // script.js and block it.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  NavigateToURL(url);
   EXPECT_EQ(content::PAGE_TYPE_NORMAL, GetPageType());
   EXPECT_FALSE(WasFrameWithScriptLoaded(GetPrimaryMainFrame()));
   EXPECT_TRUE(base::Contains(
       ruleset_manager_observer()->GetAndResetRequestSeen(), observed_url));
 
   // Disable the extension.
-  DisableExtension(last_loaded_extension_id());
+  DisableExtension(last_loaded_extension_id(),
+                   disable_reason::DISABLE_USER_ACTION);
   WaitForExtensionsWithRulesetsCount(0);
 
   // Disabling the extension should cause the request to succeed again. The
   // request for the script will again be observed by the browser since it's not
   // in the renderer's in-memory cache.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  NavigateToURL(url);
   EXPECT_EQ(content::PAGE_TYPE_NORMAL, GetPageType());
   EXPECT_TRUE(WasFrameWithScriptLoaded(GetPrimaryMainFrame()));
   EXPECT_EQ(expect_request_seen,
@@ -2621,19 +2643,18 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
   // Configure a PAC script. Need to do this after the extension is loaded, so
   // that the PAC isn't already loaded by the time the extension starts
   // affecting requests.
-  PrefService* pref_service = browser()->profile()->GetPrefs();
+  PrefService* pref_service = profile()->GetPrefs();
   pref_service->SetDict(proxy_config::prefs::kProxy,
                         ProxyConfigDictionary::CreatePacScript(
                             embedded_test_server()->GetURL("/self.pac").spec(),
                             true /* pac_mandatory */));
   // Flush the proxy configuration change over the Mojo pipe to avoid any races.
-  ProfileNetworkContextServiceFactory::GetForContext(browser()->profile())
+  ProfileNetworkContextServiceFactory::GetForContext(profile())
       ->FlushProxyConfigMonitorForTesting();
 
   // Verify that the extension can't intercept the network request.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
-      GURL("http://does.not.resolve.test/pages_with_script/page.html")));
+  NavigateToURL(
+      GURL("http://does.not.resolve.test/pages_with_script/page.html"));
   EXPECT_TRUE(WasFrameWithScriptLoaded(GetPrimaryMainFrame()));
   EXPECT_EQ(content::PAGE_TYPE_NORMAL, GetPageType());
 }
@@ -2671,12 +2692,10 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
   // Extension 1 should not be able to block the request to its own
   // manifest.json or that of the Extension 2, even with "<all_urls>" host
   // permissions.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           get_manifest_url(extension_id_1)));
+  NavigateToURL(get_manifest_url(extension_id_1));
   GURL final_url = web_contents()->GetLastCommittedURL();
   EXPECT_EQ(content::PAGE_TYPE_NORMAL, GetPageType());
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           get_manifest_url(extension_id_2)));
+  NavigateToURL(get_manifest_url(extension_id_2));
   EXPECT_EQ(content::PAGE_TYPE_NORMAL, GetPageType());
 }
 
@@ -2684,9 +2703,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, ImageCollapsed) {
   // Loads a page with an image and returns whether the image was collapsed.
   auto is_image_collapsed = [this]() {
-    EXPECT_TRUE(ui_test_utils::NavigateToURL(
-        browser(),
-        embedded_test_server()->GetURL("google.com", "/image.html")));
+    NavigateToURL(embedded_test_server()->GetURL("google.com", "/image.html"));
     EXPECT_EQ(content::PAGE_TYPE_NORMAL, GetPageType());
     const std::string script = "!!window.imageCollapsed;";
     return content::EvalJs(web_contents(), script).ExtractBool();
@@ -2718,7 +2735,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, IFrameCollapsed) {
 
   // Load a page with two iframes (|kFrameName1| and |kFrameName2|). Initially
   // both the frames should be loaded successfully.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
+  NavigateToURL(page_url);
   ASSERT_TRUE(WasFrameWithScriptLoaded(GetPrimaryMainFrame()));
   {
     SCOPED_TRACE("No extension loaded");
@@ -2732,7 +2749,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, IFrameCollapsed) {
   ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules({rule}));
 
   // Reloading the page should cause |kFrameName1| to be collapsed.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
+  NavigateToURL(page_url);
   ASSERT_TRUE(WasFrameWithScriptLoaded(GetPrimaryMainFrame()));
   {
     SCOPED_TRACE("Extension loaded initial");
@@ -2775,9 +2792,12 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, IFrameCollapsed) {
   }
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 // Tests that we correctly reindex a corrupted ruleset. This is only tested for
 // packed extensions, since the JSON ruleset is reindexed on each extension
 // load for unpacked extensions, so corruption is not an issue.
+// TODO(crbug.com/391924202): Port to desktop Android once packed extensions
+// are supported.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest_Packed,
                        CorruptedIndexedRuleset) {
   set_config_flags(ConfigFlag::kConfig_HasBackgroundScript);
@@ -2898,6 +2918,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest_Packed,
 }
 
 // Tests that we reindex rulesets on checksum mismatch.
+// TODO(crbug.com/392953825): Port to desktop Android once EnableExtension()
+// is supported.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
                        RulesetLoadReindexOnChecksumMismatch) {
   const size_t kNumStaticRulesets = 4;
@@ -2976,6 +2998,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
   VerifyNavigations(expected_blocked_urls,
                     /*expected_allowed_urls=*/std::vector<GURL>());
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Tests that checksum mismatches resulting from prefs corruption shouldn't
 // prevent rulesets from being re-enabled.
@@ -3042,8 +3065,11 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
   VerifyNavigations(google_url, /*expected_allowed_urls=*/std::vector<GURL>());
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 // Tests that we reindex the extension rulesets in case its ruleset format
 // version is not the same as one used by Chrome.
+// TODO(crbug.com/391924202): Port to desktop Android once packed extensions
+// are supported.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest_Packed,
                        ReindexOnRulesetVersionMismatch) {
   set_config_flags(ConfigFlag::kConfig_HasBackgroundScript);
@@ -3125,6 +3151,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest_Packed,
 // Tests that static ruleset preferences are deleted on uninstall for an edge
 // case where ruleset loading is completed after extension uninstallation.
 // Regression test for crbug.com/1067441.
+// TODO(crbug.com/392953825): Port to desktop Android once EnableExtension() is
+// supported.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
                        RulesetPrefsDeletedOnUninstall) {
   ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules({} /* rules */));
@@ -3349,16 +3377,14 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
 
   // Request made by index.html to script.js should be blocked despite the
   // extension having no active host permissions to the request.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL(
-                     "example.com", "/pages_with_script/index.html")));
+  NavigateToURL(embedded_test_server()->GetURL(
+      "example.com", "/pages_with_script/index.html"));
   EXPECT_FALSE(WasFrameWithScriptLoaded(GetPrimaryMainFrame()));
 
   // Sanity check that the script.js request is not blocked if does not match a
   // rule.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL(
-                     "foo.com", "/pages_with_script/index.html")));
+  NavigateToURL(embedded_test_server()->GetURL(
+      "foo.com", "/pages_with_script/index.html"));
   EXPECT_TRUE(WasFrameWithScriptLoaded(GetPrimaryMainFrame()));
 }
 

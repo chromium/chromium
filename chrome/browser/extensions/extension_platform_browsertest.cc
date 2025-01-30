@@ -340,8 +340,10 @@ content::WebContents* ExtensionPlatformBrowserTest::PlatformOpenURLOffTheRecord(
   tab_model_ = std::make_unique<TestTabModel>(incognito_profile);
   TabModelList::AddTabModel(tab_model_.get());
   content::WebContents* web_contents = tab_model_->GetActiveWebContents();
-  // This blocks until the navigation completes.
-  CHECK(content::NavigateToURL(web_contents, url));
+  // This blocks until the navigation completes. The return value is ignored
+  // because some tests intentionally navigate to blocked URLs which fail to
+  // load.
+  (void)content::NavigateToURL(web_contents, url);
   return web_contents;
 #endif
 }
