@@ -11,6 +11,13 @@
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_form_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_input_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_option_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_select_element.h"
+#include "third_party/blink/renderer/core/html/forms/option_list.h"
+#include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
@@ -345,6 +352,55 @@ void ProcessTableNode(const LayoutTable& layout_table,
     }
   }
   attributes.table_data = std::move(table_data);
+}
+
+void ProcessFormNode(const HTMLFormElement& form_element,
+                     mojom::blink::AIPageContentAttributes& attributes,
+                     const ComputedStyle& document_style) {
+  attributes.attribute_type = mojom::blink::AIPageContentAttributeType::kForm;
+  if (!IsVisible(*form_element.GetLayoutObject())) {
+    return;
+  }
+  auto form_data = mojom::blink::AIPageContentFormData::New();
+  if (const auto& name = form_element.GetName()) {
+    form_data->form_name = name;
+  }
+  attributes.form_data = std::move(form_data);
+}
+
+void ProcessFormControlNode(const HTMLFormControlElement& form_control_element,
+                            mojom::blink::AIPageContentAttributes& attributes,
+                            const ComputedStyle& document_style) {
+  attributes.attribute_type =
+      mojom::blink::AIPageContentAttributeType::kFormControl;
+  if (!IsVisible(*form_control_element.GetLayoutObject())) {
+    return;
+  }
+  auto form_control_data = mojom::blink::AIPageContentFormControlData::New();
+  form_control_data->form_control_type = form_control_element.FormControlType();
+  form_control_data->field_name = form_control_element.GetName();
+  form_control_data->is_required = form_control_element.IsRequired();
+  if (const auto* text_control_element =
+          DynamicTo<TextControlElement>(form_control_element)) {
+    form_control_data->field_value = text_control_element->Value();
+    form_control_data->placeholder =
+        text_control_element->GetPlaceholderValue();
+  }
+  if (const auto* html_input_element =
+          DynamicTo<HTMLInputElement>(form_control_element)) {
+    form_control_data->is_checked = html_input_element->Checked();
+  }
+  if (const auto* select_element =
+          DynamicTo<HTMLSelectElement>(form_control_element)) {
+    for (auto& option_element : select_element->GetOptionList()) {
+      auto select_option = mojom::blink::AIPageContentSelectOption::New();
+      select_option->value = option_element.value();
+      select_option->text = option_element.text();
+      select_option->is_selected = option_element.Selected();
+      form_control_data->select_options.push_back(std::move(select_option));
+    }
+  }
+  attributes.form_control_data = std::move(form_control_data);
 }
 
 mojom::blink::AIPageContentTableRowType GetTableRowType(
@@ -756,6 +812,12 @@ AIPageContentAgent::ContentBuilder::MaybeGenerateContentNode(
   } else if (object.IsTableCell()) {
     attributes.attribute_type =
         mojom::blink::AIPageContentAttributeType::kTableCell;
+  } else if (const auto* form_element =
+                 DynamicTo<HTMLFormElement>(object.GetNode())) {
+    ProcessFormNode(*form_element, attributes, document_style);
+  } else if (const auto* form_control =
+                 DynamicTo<HTMLFormControlElement>(object.GetNode())) {
+    ProcessFormControlNode(*form_control, attributes, document_style);
   } else if (element && IsHeadingTag(*element)) {
     attributes.attribute_type =
         mojom::blink::AIPageContentAttributeType::kHeading;

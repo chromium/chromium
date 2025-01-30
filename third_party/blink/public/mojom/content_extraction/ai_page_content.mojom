@@ -4,6 +4,7 @@
 
 module blink.mojom;
 
+import "third_party/blink/public/mojom/forms/form_control_type.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/origin.mojom";
@@ -34,6 +35,7 @@ enum AIPageContentAttributeType {
 
   // Structured chunks.
   kForm,
+  kFormControl,
   kTable,
   kTableRow,
   kTableCell,
@@ -147,7 +149,46 @@ struct AIPageContentTableRowData {
 };
 
 struct AIPageContentFormData {
-  // TODO(crbug.com/381879263): Add fields for form data.
+  string? form_name;
+};
+
+// Represents an option in a select field. See below for example.
+//
+// HTML                                      | value  | text
+// ------------------------------------------+--------+------
+// <option value=Foo label=Bar>Baz</option>  | "Foo"  | "Bar"
+// <option value=Foo>Bar</option>            | "Foo"  | "Bar"
+// <option label=Bar>Foo</option>            | "Foo"  | "Bar"
+// <option>Foo</option>                      | "Foo"  | "Foo"
+// <option value=Foo></option>               | "Foo"  | ""
+// <option label=Bar></option>               | ""     | "Bar"
+struct AIPageContentSelectOption {
+  string? value;
+  string? text;
+  bool is_selected;
+};
+
+struct AIPageContentFormControlData {
+  // The type of control for this form field.
+  FormControlType form_control_type;
+
+  // The name for the field.
+  string? field_name;
+
+  // The value of the field.
+  string? field_value;
+
+  // The options for a select field, if applicable.
+  array<AIPageContentSelectOption> select_options;
+
+  // The placeholder text for the field.
+  string? placeholder;
+
+  // Whether the field is checked.
+  bool is_checked;
+
+  // Whether the field is required.
+  bool is_required;
 };
 
 struct AIPageContentAttributes {
@@ -174,6 +215,9 @@ struct AIPageContentAttributes {
 
   // Only set if attribute_type is kForm.
   AIPageContentFormData? form_data;
+
+  // Only set if attribute_type is kFormControl.
+  AIPageContentFormControlData? form_control_data;
 
   // Only set if attribute_type is kTable.
   AIPageContentTableData? table_data;

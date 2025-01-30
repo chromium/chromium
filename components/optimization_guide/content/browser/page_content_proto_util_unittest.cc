@@ -518,5 +518,75 @@ TEST(PageContentProtoUtilTest, ConvertAnnotatedRoles) {
             optimization_guide::proto::ANNOTATED_ROLE_FOOTER);
 }
 
+TEST(PageContentProtoUtilTest, ConvertFormData) {
+  auto root_content = CreatePageContent();
+  auto form_node =
+      CreateContentNode(blink::mojom::AIPageContentAttributeType::kForm);
+  form_node->content_attributes->form_data =
+      blink::mojom::AIPageContentFormData::New();
+  form_node->content_attributes->form_data->form_name = "form name";
+  root_content->root_node->children_nodes.emplace_back(std::move(form_node));
+
+  proto::AnnotatedPageContent proto;
+  EXPECT_TRUE(ConvertAIPageContentToProto(root_content, proto));
+
+  EXPECT_EQ(proto.version(),
+            optimization_guide::proto::ANNOTATED_PAGE_CONTENT_VERSION_1_0);
+  ASSERT_EQ(proto.root_node().children_nodes_size(), 1);
+  const auto& form_data_proto =
+      proto.root_node().children_nodes(0).content_attributes().form_data();
+  EXPECT_EQ(form_data_proto.form_name(), "form name");
+}
+
+TEST(PageContentProtoUtilTest, ConvertFormControlData) {
+  auto root_content = CreatePageContent();
+  auto form_control_node =
+      CreateContentNode(blink::mojom::AIPageContentAttributeType::kFormControl);
+  form_control_node->content_attributes->form_control_data =
+      blink::mojom::AIPageContentFormControlData::New();
+  form_control_node->content_attributes->form_control_data->form_control_type =
+      blink::mojom::FormControlType::kSelectOne;
+  form_control_node->content_attributes->form_control_data->field_name =
+      "field name";
+  form_control_node->content_attributes->form_control_data->field_value =
+      "field value";
+  form_control_node->content_attributes->form_control_data->placeholder =
+      "placeholder";
+  form_control_node->content_attributes->form_control_data->is_checked = true;
+  form_control_node->content_attributes->form_control_data->is_required = false;
+  form_control_node->content_attributes->form_control_data->select_options
+      .push_back(blink::mojom::AIPageContentSelectOption::New());
+  form_control_node->content_attributes->form_control_data->select_options[0]
+      ->value = "option value";
+  form_control_node->content_attributes->form_control_data->select_options[0]
+      ->text = "option text";
+  form_control_node->content_attributes->form_control_data->select_options[0]
+      ->is_selected = true;
+  root_content->root_node->children_nodes.emplace_back(
+      std::move(form_control_node));
+
+  proto::AnnotatedPageContent proto;
+  EXPECT_TRUE(ConvertAIPageContentToProto(root_content, proto));
+
+  EXPECT_EQ(proto.version(),
+            optimization_guide::proto::ANNOTATED_PAGE_CONTENT_VERSION_1_0);
+  ASSERT_EQ(proto.root_node().children_nodes_size(), 1);
+  const auto& form_control_data_proto = proto.root_node()
+                                            .children_nodes(0)
+                                            .content_attributes()
+                                            .form_control_data();
+  EXPECT_EQ(form_control_data_proto.form_control_type(),
+            optimization_guide::proto::FORM_CONTROL_TYPE_SELECT_ONE);
+  EXPECT_EQ(form_control_data_proto.field_name(), "field name");
+  EXPECT_EQ(form_control_data_proto.field_value(), "field value");
+  EXPECT_EQ(form_control_data_proto.placeholder(), "placeholder");
+  EXPECT_TRUE(form_control_data_proto.is_checked());
+  EXPECT_FALSE(form_control_data_proto.is_required());
+  ASSERT_EQ(form_control_data_proto.select_options_size(), 1);
+  EXPECT_EQ(form_control_data_proto.select_options(0).value(), "option value");
+  EXPECT_EQ(form_control_data_proto.select_options(0).text(), "option text");
+  EXPECT_TRUE(form_control_data_proto.select_options(0).is_selected());
+}
+
 }  // namespace
 }  // namespace optimization_guide
