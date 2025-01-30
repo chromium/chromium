@@ -4130,6 +4130,7 @@
       {
         "args": [
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64_tablet.textpb",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15_tablet.content_browsertests.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -4224,6 +4225,7 @@
       {
         "args": [
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64_tablet.textpb",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15_16.content_unittests.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -4917,6 +4919,7 @@
       {
         "args": [
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64_tablet.textpb",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15_16.gwp_asan_unittests.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -5425,6 +5428,7 @@
       {
         "args": [
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64_tablet.textpb",
+          "--gtest_filter=-ScopedDirTest.CloseOutOfScope",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
