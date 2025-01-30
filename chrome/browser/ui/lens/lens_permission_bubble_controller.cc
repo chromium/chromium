@@ -104,12 +104,6 @@ LensPermissionBubbleController::CreateLensPermissionDialogModel() {
           &LensPermissionBubbleController::OnHelpCenterLinkClicked,
           weak_ptr_factory_.GetWeakPtr()));
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  bool dark_mode =
-      lens::LensOverlayShouldUseDarkMode(ThemeServiceFactory::GetForProfile(
-          browser_window_interface_->GetProfile()));
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
   auto description_text =
       lens::features::IsLensOverlayContextualSearchboxEnabled()
           ? ui::DialogModelLabel::CreateWithReplacement(
@@ -122,10 +116,8 @@ LensPermissionBubbleController::CreateLensPermissionDialogModel() {
       .SetTitle(
           l10n_util::GetStringUTF16(IDS_LENS_PERMISSION_BUBBLE_DIALOG_TITLE))
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      .SetIcon(ui::ImageModel::FromVectorIcon(
-          dark_mode ? vector_icons::kGoogleGLogoMonochromeIcon
-                    : vector_icons::kGoogleColorIcon,
-          dark_mode ? ui::kColorRefPrimary100 : ui::kColorIcon, 20))
+      .SetIcon(ui::ImageModel::FromVectorIcon(vector_icons::kGoogleColorIcon,
+                                              ui::kColorIcon, 20))
       .SetBannerImage(ui::ImageModel::FromImageSkia(
           *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
               IDR_LENS_PERMISSION_MODAL_IMAGE)))
