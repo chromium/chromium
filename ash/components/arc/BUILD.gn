@@ -134,13 +134,13 @@ static_library("arc") {
     ":arc_metrics_constants",
     ":prefs",
     "//chromeos/ash/components/cryptohome",
+    "//chromeos/ash/experiences/arc/message_center",
   ]
 
   deps = [
     "//ash",
     "//ash/keyboard/ui",
     "//ash/public/cpp",
-    "//ash/public/cpp/external_arc:external_arc",
     "//ash/style",
     "//ash/style/mojom:color_scheme_shared_cpp_sources",
     "//chromeos/ash/components/audio",
@@ -412,6 +412,7 @@ static_library("arc_test_support") {
     ":notification_test_support",
     "//ash/components/arc:compat_mode_test_support",
     "//chromeos/ash/experiences/arc/intent_helper",
+    "//chromeos/ash/experiences/arc/message_center:test_support",
   ]
 
   deps = [
@@ -505,7 +506,6 @@ source_set("unit_tests") {
     "//ash/constants",
     "//ash/keyboard/ui",
     "//ash/public/cpp",
-    "//ash/public/cpp/external_arc:external_arc",
     "//ash/style/mojom:color_scheme_shared_cpp_sources",
     "//base",
     "//base/test:test_support",
@@ -526,6 +526,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/login/login_state",
     "//chromeos/ash/components/network:test_support",
     "//chromeos/ash/experiences/arc/media_session",
+    "//chromeos/ash/experiences/arc/message_center",
     "//chromeos/components/disks:prefs",
     "//chromeos/dbus/power",
     "//chromeos/dbus/power:power_manager_proto",

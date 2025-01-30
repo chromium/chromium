@@ -4951,7 +4951,6 @@ static_library("browser") {
       "//ash/components/arc:arc_base",
       "//ash/components/arc:arc_base_utils",
       "//ash/constants",
-      "//ash/public/cpp/external_arc",
       "//ash/webui/annotator",
       "//ash/webui/annotator/mojom:annotator_mojo_bindings",
       "//ash/webui/boca_ui",
