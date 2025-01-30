@@ -235,6 +235,18 @@ class CertGenerator {
   scoped_refptr<net::X509Certificate> GetX509Cert();
 
  private:
+  // A subset of `bssl::SignatureAlgorithm` enum that is supported by
+  // `CertBuilder::SignatureAlgorithmToDer()`. If other values are passed,
+  // `CertBuilder` fails the test. For this enum to work with `ConsumeEnum()`,
+  // the mapping to the original enum has to be done manually.
+  enum class SupportedSignatureAlgorithm {
+    kRsaPkcs1Sha1,
+    kRsaPkcs1Sha256,
+    kEcdsaSha1,
+    kEcdsaSha256,
+    kMaxValue = kEcdsaSha256,
+  };
+
   inline bool GetBool();
   inline int GetInt();
   inline uint64_t GetUint64();
@@ -243,6 +255,7 @@ class CertGenerator {
   inline GURL GetGurl();
   inline net::IPAddress GetIpAddress();
   std::vector<bssl::KeyUsageBit> GetKeyUsages();
+  inline bssl::SignatureAlgorithm GetSignatureAlgorithm();
 
   void GenerateCert();
 
@@ -350,6 +363,21 @@ std::vector<bssl::KeyUsageBit> CertGenerator::GetKeyUsages() {
     result.push_back(bssl::KEY_USAGE_BIT_DECIPHER_ONLY);
   }
   return result;
+}
+
+bssl::SignatureAlgorithm CertGenerator::GetSignatureAlgorithm() {
+  SupportedSignatureAlgorithm algorithm =
+      data_provider_->ConsumeEnum<SupportedSignatureAlgorithm>();
+  switch (algorithm) {
+    case SupportedSignatureAlgorithm::kRsaPkcs1Sha1:
+      return bssl::SignatureAlgorithm::kRsaPkcs1Sha1;
+    case SupportedSignatureAlgorithm::kRsaPkcs1Sha256:
+      return bssl::SignatureAlgorithm::kRsaPkcs1Sha256;
+    case SupportedSignatureAlgorithm::kEcdsaSha1:
+      return bssl::SignatureAlgorithm::kEcdsaSha1;
+    case SupportedSignatureAlgorithm::kEcdsaSha256:
+      return bssl::SignatureAlgorithm::kEcdsaSha256;
+  }
 }
 
 void CertGenerator::GenerateCert() {
@@ -509,8 +537,7 @@ void CertGenerator::GenerateCert() {
     cert_builder_->SetAuthorityKeyIdentifier(GetString());
   }
   if (GetBool()) {
-    cert_builder_->SetSignatureAlgorithm(
-        data_provider_->ConsumeEnum<bssl::SignatureAlgorithm>());
+    cert_builder_->SetSignatureAlgorithm(GetSignatureAlgorithm());
   }
   if (GetBool()) {
     cert_builder_->SetSignatureAlgorithmTLV(GetString());
