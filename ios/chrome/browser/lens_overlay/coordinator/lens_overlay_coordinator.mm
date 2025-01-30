@@ -341,7 +341,9 @@ const int kExpectedExitAnimationCount = 2;
     [self destroyLensUI:NO
                  reason:lens::LensOverlayDismissalSource::
                             kErrorScreenshotCreationFailed];
-    completion(NO);
+    if (completion) {
+      completion(NO);
+    }
   }
 }
 
