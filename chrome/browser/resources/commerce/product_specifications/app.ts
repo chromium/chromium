@@ -76,12 +76,12 @@ export interface TableColumn {
 export interface ProductSpecificationsElement {
   $: {
     comparisonTableList: ComparisonTableListElement,
+    contentContainer: HTMLElement,
     empty: HTMLElement,
     error: HTMLElement,
     errorToast: CrToastElement,
     header: HeaderElement,
     loading: HTMLElement,
-    managementContainer: HTMLElement,
     newColumnSelector: NewColumnSelectorElement,
     offlineToast: CrToastElement,
     productSelector: ProductSelectorElement,
@@ -232,6 +232,7 @@ export class ProductSpecificationsElement extends CrLitElement {
   static override get properties() {
     return {
       appState_: {type: Object},
+      id_: {type: Object},
       sets_: {type: Array},
       loadingState_: {type: Object},
       productSpecificationsFeatureState_: {type: Object},
@@ -247,6 +248,7 @@ export class ProductSpecificationsElement extends CrLitElement {
   }
 
   protected appState_: AppState = AppState.NO_CONTENT;
+  protected id_: Uuid|null = null;
   protected loadingState_: LoadingState = {loading: false, urlCount: 0};
   protected productSpecificationsFeatureState_:
       ProductSpecificationsFeatureState;
@@ -259,10 +261,10 @@ export class ProductSpecificationsElement extends CrLitElement {
 
   private callbackRouter_: PageCallbackRouter;
   private eventTracker_: EventTracker = new EventTracker();
-  private id_: Uuid|null = null;
   private isWindowFocused_: boolean = true;
   private listenerIds_: number[] = [];
   private loadingAnimationSlideDurationMs_: number = 200;
+  private contentContainerIsHidden_: boolean = false;
   private minLoadingAnimationMs_: number = 500;
   private pendingSetUpdate_: (() => void)|null = null;
   private productSpecificationsProxy_: ProductSpecificationsBrowserProxy =
@@ -288,7 +290,9 @@ export class ProductSpecificationsElement extends CrLitElement {
       this.appState_ = this.computeAppState_();
     }
 
-    if (changedPrivateProperties.has('sets_') ||
+    if (changedPrivateProperties.has('appState_') ||
+        changedPrivateProperties.has('id_') ||
+        changedPrivateProperties.has('sets_') ||
         changedPrivateProperties.has('showEmptyState_')) {
       this.showComparisonTableList_ = this.computeShowComparisonTableList_();
     }
@@ -474,7 +478,8 @@ export class ProductSpecificationsElement extends CrLitElement {
       return false;
     }
 
-    return this.showEmptyState_ && this.id_ === null && this.sets_.length > 0;
+    return this.showEmptyState_ && this.id_ === null && this.sets_.length > 0 &&
+        this.appState_ === AppState.TABLE_EMPTY;
   }
 
   protected canShowFooter_(
@@ -513,6 +518,7 @@ export class ProductSpecificationsElement extends CrLitElement {
     if (urls.length === 0) {
       this.tableColumns_ = [];
       this.updateEmptyState_(true);
+      await this.showContentContainer_();
       return;
     }
 
@@ -639,6 +645,15 @@ export class ProductSpecificationsElement extends CrLitElement {
         this.id_ = null;
         return false;
       }
+
+      // Hide the content container if transitioning from the empty state. We
+      // will only show the loading state later if the set has at least one URL.
+      // The comparison table list will be hidden once the table ID is set, so
+      // we hide the content container first.
+      if (this.appState_ === AppState.TABLE_EMPTY) {
+        await this.hideContentContainer_();
+      }
+
       this.id_ = set.uuid;
       document.title = set.name;
       this.setName_ = set.name;
@@ -862,6 +877,11 @@ export class ProductSpecificationsElement extends CrLitElement {
 
     if (urlSetChanged) {
       this.closeAllProductSelectionMenus_();
+
+      // Hide the content container as we might transition directly to the
+      // empty state if there are no URLs left.
+      await this.hideContentContainer_();
+
       this.populateTable_(set.urls.map(url => url.url));
     } else if (orderChanged) {
       const newCols: TableColumn[] = [];
@@ -916,8 +936,14 @@ export class ProductSpecificationsElement extends CrLitElement {
         'experimentalFeatureDisclaimer', loadTimeData.getString('userEmail'));
   }
 
-  private async fadeAndSlideOutManagementContainer_() {
-    await this.$.managementContainer
+  // Hide the content container with an animation if not already hidden.
+  private async hideContentContainer_() {
+    if (this.contentContainerIsHidden_) {
+      return;
+    }
+
+    this.contentContainerIsHidden_ = true;
+    await this.$.contentContainer
         .animate(
             [
               {opacity: 1, transform: 'translateY(0px)'},
@@ -934,8 +960,13 @@ export class ProductSpecificationsElement extends CrLitElement {
         .finished;
   }
 
-  private async fadeAndSlideInManagementContainer_() {
-    await this.$.managementContainer
+  // Show the content container with an animation if not already shown.
+  private async showContentContainer_() {
+    if (!this.contentContainerIsHidden_) {
+      return;
+    }
+
+    await this.$.contentContainer
         .animate(
             [
               {
@@ -950,6 +981,7 @@ export class ProductSpecificationsElement extends CrLitElement {
               fill: 'forwards',
             })
         .finished;
+    this.contentContainerIsHidden_ = false;
   }
 
   // Resolves upon updating the loading state.
@@ -966,18 +998,18 @@ export class ProductSpecificationsElement extends CrLitElement {
     }
 
     return new Promise<void>(async resolve => {
-      await this.fadeAndSlideOutManagementContainer_();
+      await this.hideContentContainer_();
       this.loadingState_ = {loading: true, urlCount};
       resolve();
-      await this.fadeAndSlideInManagementContainer_();
+      await this.showContentContainer_();
       this.dispatchLoadingStartEvent_();
     });
   }
 
   private async exitLoadingState_() {
-    await this.fadeAndSlideOutManagementContainer_();
+    await this.hideContentContainer_();
     this.loadingState_ = {loading: false, urlCount: 0};
-    await this.fadeAndSlideInManagementContainer_();
+    await this.showContentContainer_();
     this.dispatchLoadingEndEvent_();
   }
 

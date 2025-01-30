@@ -227,7 +227,7 @@ suite('AppTest', () => {
     productSpecificationsProxy.setResultFor(
         'getCallbackRouter', callbackRouter);
     productSpecificationsProxy.setResultFor(
-        'maybeShowDisclosure', Promise.resolve({show: false}));
+        'maybeShowDisclosure', Promise.resolve({disclosureShown: false}));
     ProductSpecificationsBrowserProxyImpl.setInstance(
         productSpecificationsProxy);
     router.reset();
@@ -2567,6 +2567,42 @@ suite('AppTest', () => {
 
       const listElement = appElement.$.comparisonTableList;
       assertArrayEquals(SPECS_SETS, listElement.tables);
+    });
+
+    test('list is hidden if sync is disabled', async () => {
+      shoppingServiceApi.setResultFor(
+          'getProductSpecificationsFeatureState', Promise.resolve({
+            state: {
+              isSyncingTabCompare: false,
+              canLoadFullPageUi: true,
+              canManageSets: true,
+              canFetchData: true,
+              isAllowedForEnterprise: true,
+              isSignedIn: true,
+            },
+          }));
+      await createAppElement();
+      await microtasksFinished();
+
+      assertFalse(isVisible(appElement.$.comparisonTableList));
+    });
+
+    test('list is hidden in error state', async () => {
+      shoppingServiceApi.setResultFor(
+          'getProductSpecificationsFeatureState', Promise.resolve({
+            state: {
+              isSyncingTabCompare: true,
+              canLoadFullPageUi: true,
+              canManageSets: true,
+              canFetchData: false,
+              isAllowedForEnterprise: true,
+              isSignedIn: true,
+            },
+          }));
+      await createAppElement();
+      await microtasksFinished();
+
+      assertFalse(isVisible(appElement.$.comparisonTableList));
     });
 
     test('list updates on set updated', async () => {

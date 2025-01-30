@@ -36,7 +36,7 @@ product-specifications-header {
   width: 100%;
 }
 
-#managementContainer {
+#contentContainer {
   align-items: flex-start;
   box-sizing: border-box;
   display: flex;
