@@ -68,6 +68,14 @@ void ServiceWorkerInstalledScriptsSender::StartSendingScript(
   DCHECK(current_sending_url_.is_empty());
   state_ = State::kSendingScripts;
 
+  // (crbug.com/352578800) Override the state and bypass reading the scripts as
+  // it does not exist since the registration is a fake one and therefore there
+  // is no actual script.
+  if (resource_id == blink::mojom::kSyntheticResponseServiceWorkerResourceId) {
+    state_ = State::kIdle;
+    return;
+  }
+
   if (!owner_->context()) {
     Abort(ServiceWorkerInstalledScriptReader::FinishedReason::kNoContextError);
     return;

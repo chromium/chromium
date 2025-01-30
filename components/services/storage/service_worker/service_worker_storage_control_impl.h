@@ -80,6 +80,10 @@ class ServiceWorkerStorageControlImpl
                              GetUsageForStorageKeyCallback callback) override;
   void GetAllRegistrationsDeprecated(
       GetAllRegistrationsDeprecatedCallback calback) override;
+  void GetFakeRegistrationForClientUrl(
+      const GURL& client_url,
+      const blink::StorageKey& key,
+      FindRegistrationForClientUrlCallback callback) override;
   void StoreRegistration(
       mojom::ServiceWorkerRegistrationDataPtr registration,
       std::vector<mojom::ServiceWorkerResourceRecordPtr> resources,

@@ -24,6 +24,7 @@
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_info.h"
+#include "content/browser/service_worker/service_worker_loader_helpers.h"
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/common/service_worker/service_worker_router_evaluator.h"
@@ -369,6 +370,20 @@ void ServiceWorkerRegistry::FindRegistrationForClientUrl(
         /*callback=*/base::DoNothing(),
         storage::mojom::ServiceWorkerDatabaseStatus::kErrorNotFound, nullptr,
         std::vector(scopes->begin(), scopes->end()));
+    return;
+  }
+  if (service_worker_loader_helpers::IsEligibleForSyntheticResponse(
+          client_url)) {
+    // If `client_url` is eligible for SyntheticResponse, create a fake
+    // ServiceWorker registration so that the navigation is handled by
+    // ServiceWorker main resource loader.
+    CreateInvokerAndStartRemoteCall(
+        &storage::mojom::ServiceWorkerStorageControl::
+            GetFakeRegistrationForClientUrl,
+        base::BindOnce(&ServiceWorkerRegistry::DidFindRegistrationForClientUrl,
+                       weak_factory_.GetWeakPtr(), client_url, key,
+                       trace_event_id, base::DoNothing()),
+        client_url, key);
     return;
   }
   CreateInvokerAndStartRemoteCall(
