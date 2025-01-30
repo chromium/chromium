@@ -1158,7 +1158,10 @@ export class Authenticator extends EventTarget {
       // Fall through to finish the auth flow even if this.needPassword
       // is true. This is because the flag is used as an intention to get
       // password when it is available but not a mandatory requirement.
-      console.warn('Authenticator: No password scraped for SAML.');
+      const flowString = this.authFlow === AuthFlow.SAML ? 'SAML' : 'DEFAULT';
+      console.warn(
+        'Authenticator: No password when completing online auth. Auth flow is: '
+        + flowString);
     } else if (this.needPassword) {
       if (this.samlHandler_.scrapedPasswordCount === 1) {
         // If we scraped exactly one password, we complete the
