@@ -135,6 +135,31 @@ void SpeechRecognition::abort() {
   }
 }
 
+void SpeechRecognition::updateContext(SpeechRecognitionContext* context,
+                                      ExceptionState& exception_state) {
+  if (!session_) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "An ongoing speech recognition session is required to update the "
+        "recognition context.");
+    return;
+  }
+
+  WTF::Vector<media::mojom::blink::SpeechRecognitionPhrasePtr> phrases;
+  if (context->phrases()) {
+    for (unsigned int i = 0; i < context->phrases()->length(); i++) {
+      SpeechRecognitionPhrase* phrase = context->phrases()->item(i);
+      phrases.emplace_back(media::mojom::blink::SpeechRecognitionPhrase::New(
+          phrase->phrase(), phrase->boost()));
+    }
+  }
+  media::mojom::blink::SpeechRecognitionRecognitionContextPtr
+      recognition_context =
+          media::mojom::blink::SpeechRecognitionRecognitionContext::New(
+              std::move(phrases));
+  session_->UpdateRecognitionContext(std::move(recognition_context));
+}
+
 ScriptPromise<IDLBoolean> SpeechRecognition::onDeviceWebSpeechAvailable(
     ScriptState* script_state,
     const String& lang,

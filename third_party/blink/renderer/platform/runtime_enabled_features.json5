@@ -4978,6 +4978,9 @@
       status: "stable",
     },
     {
+      name: "WebSpeechRecognitionContext",
+    },
+    {
       name: "WebTransportCustomCertificates",
       origin_trial_feature_name: "WebTransportCustomCertificates",
       status: "stable",
