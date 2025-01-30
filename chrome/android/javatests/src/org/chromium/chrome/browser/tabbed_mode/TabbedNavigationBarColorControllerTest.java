@@ -180,7 +180,7 @@ public class TabbedNavigationBarColorControllerTest {
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
         View rootView = activity.findViewById(R.id.tab_switcher_view_holder_stub);
         ScrimCoordinator scrimCoordinator =
-                activity.getRootUiCoordinatorForTesting().getScrimCoordinatorForTesting();
+                activity.getRootUiCoordinatorForTesting().getScrimCoordinator();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

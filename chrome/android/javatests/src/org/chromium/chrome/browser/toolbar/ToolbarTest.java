@@ -199,7 +199,7 @@ public class ToolbarTest {
         ChromeActivity activity = mActivityTestRule.getActivity();
         ToolbarManager toolbarManager = activity.getToolbarManager();
         ScrimCoordinator scrimCoordinator =
-                activity.getRootUiCoordinatorForTesting().getScrimCoordinatorForTesting();
+                activity.getRootUiCoordinatorForTesting().getScrimCoordinator();
         scrimCoordinator.disableAnimationForTesting(true);
 
         assertNull("The scrim should be null.", scrimCoordinator.getViewForTesting());

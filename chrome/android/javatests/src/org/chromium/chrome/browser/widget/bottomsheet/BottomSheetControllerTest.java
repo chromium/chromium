@@ -113,9 +113,7 @@ public class BottomSheetControllerTest {
                     BottomSheetTestSupport.setSmallScreen(false);
 
                     mScrimCoordinator =
-                            mActivity
-                                    .getRootUiCoordinatorForTesting()
-                                    .getScrimCoordinatorForTesting();
+                            mActivity.getRootUiCoordinatorForTesting().getScrimCoordinator();
                     mScrimCoordinator.disableAnimationForTesting(true);
 
                     mSheetController =

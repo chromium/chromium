@@ -216,7 +216,7 @@ public class NewTabPageTest {
                 mActivityTestRule
                         .getActivity()
                         .getRootUiCoordinatorForTesting()
-                        .getScrimCoordinatorForTesting();
+                        .getScrimCoordinator();
         scrimCoordinator.disableAnimationForTesting(true);
         onView(withId(R.id.search_box)).perform(click());
         View view = mNtp.getView().findViewById(R.id.search_box);
