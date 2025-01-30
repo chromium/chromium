@@ -418,6 +418,25 @@ size_t CountCookiesAndGenerateListsForPossibleDeletion(
   return total_cookies_at_priority;
 }
 
+// Fills in the host & domain lists for `could_be_deleted` with every cookie
+// in `cookies`.
+DeletionCookieLists
+CountCookiesAndGenerateListsForPossibleDeletionPartitionedCookies(
+    const CookieMonster::CookieItList& cookies) {
+  DeletionCookieLists could_be_deleted;
+  for (auto list_it = cookies.begin(); list_it != cookies.end(); list_it++) {
+    const auto cookiemap_it = *list_it;
+    const auto& cookie = cookiemap_it->second;
+
+    if (cookie->IsHostCookie()) {
+      could_be_deleted.host_cookies.push_back(list_it);
+    } else {  // Is a domain cookie.
+      could_be_deleted.domain_cookies.push_back(list_it);
+    }
+  }
+  return could_be_deleted;
+}
+
 // Records minutes until the expiration date of a cookie to the appropriate
 // histogram. Only histograms cookies that have an expiration date (i.e. are
 // persistent).
@@ -2229,15 +2248,82 @@ size_t CookieMonster::GarbageCollectPartitionedCookies(
       std::sort(non_expired_cookie_its.begin(), non_expired_cookie_its.end(),
                 LRACookieSorter);
 
-      for (size_t i = 0;
-           bytes_used > kPerPartitionDomainMaxCookieBytes ||
-           non_expired_cookie_its.size() - i > kPerPartitionDomainMaxCookies;
-           ++i) {
-        bytes_used -= NameValueSizeBytes(*non_expired_cookie_its[i]->second);
-        InternalDeletePartitionedCookie(
-            cookie_partition_it, non_expired_cookie_its[i], true,
-            DELETE_COOKIE_EVICTED_PER_PARTITION_DOMAIN);
-        ++num_deleted;
+      // When OBC behavior is enabled, we need to consider the partitioned
+      // cookies that are domain cookies first and delete those, and then we
+      // want to delete host cookies.
+      if (cookie_util::IsOriginBoundCookiesPartiallyEnabled()) {
+        CookieItList cookie_it_list = CookieItList(
+            non_expired_cookie_its.begin(), non_expired_cookie_its.end());
+        DeletionCookieLists could_be_deleted =
+            CountCookiesAndGenerateListsForPossibleDeletionPartitionedCookies(
+                cookie_it_list);
+
+        // Delete domain cookies first.
+        // We have 3 layers of iterators to consider:
+        // The `could_be_deleted` list's iterator, which points to...
+        // The `cookies` list's iterator, which points to...
+        // The CookieMap's iterator which is used to delete the actual cookie
+        // from the backend. For each cookie deleted all three of these will
+        // need to erased, in a bottom up approach.
+        size_t num_cookies_deleted = 0;
+        for (auto domain_list_it = could_be_deleted.domain_cookies.begin();
+             domain_list_it != could_be_deleted.domain_cookies.end() &&
+             (bytes_used > kPerPartitionDomainMaxCookieBytes ||
+              non_expired_cookie_its.size() - num_cookies_deleted >
+                  kPerPartitionDomainMaxCookies);
+             ++num_cookies_deleted) {
+          auto cookies_list_it = *domain_list_it;
+          auto cookie_map_it = *cookies_list_it;
+
+          bytes_used -= NameValueSizeBytes(*cookie_map_it->second);
+
+          // Delete from the cookie store.
+          InternalDeletePartitionedCookie(
+              cookie_partition_it, cookie_map_it, /*sync_to_store=*/true,
+              DELETE_COOKIE_EVICTED_PER_PARTITION_DOMAIN);
+
+          // Delete from `cookie_it_list`.
+          cookie_it_list.erase(cookies_list_it);
+          // Delete from `could_be_deleted`.
+          domain_list_it =
+              could_be_deleted.domain_cookies.erase(domain_list_it);
+          ++num_deleted;
+        }
+
+        // Now do the same for host cookies.
+        for (auto host_list_it = could_be_deleted.host_cookies.begin();
+             host_list_it != could_be_deleted.host_cookies.end() &&
+             (bytes_used > kPerPartitionDomainMaxCookieBytes ||
+              non_expired_cookie_its.size() - num_cookies_deleted >
+                  kPerPartitionDomainMaxCookies);
+             ++num_cookies_deleted) {
+          auto cookies_list_it = *host_list_it;
+          auto cookie_map_it = *cookies_list_it;
+
+          bytes_used -= NameValueSizeBytes(*cookie_map_it->second);
+
+          // Delete from the cookie store.
+          InternalDeletePartitionedCookie(
+              cookie_partition_it, cookie_map_it, /*sync_to_store=*/true,
+              DELETE_COOKIE_EVICTED_PER_PARTITION_DOMAIN);
+
+          // Delete from `cookie_it_list`.
+          cookie_it_list.erase(cookies_list_it);
+          // Delete from `could_be_deleted`.
+          host_list_it = could_be_deleted.host_cookies.erase(host_list_it);
+          ++num_deleted;
+        }
+      } else {
+        for (size_t i = 0;
+             bytes_used > kPerPartitionDomainMaxCookieBytes ||
+             non_expired_cookie_its.size() - i > kPerPartitionDomainMaxCookies;
+             ++i) {
+          bytes_used -= NameValueSizeBytes(*non_expired_cookie_its[i]->second);
+          InternalDeletePartitionedCookie(
+              cookie_partition_it, non_expired_cookie_its[i], true,
+              DELETE_COOKIE_EVICTED_PER_PARTITION_DOMAIN);
+          ++num_deleted;
+        }
       }
     }
   }
