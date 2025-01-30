@@ -262,6 +262,7 @@ class CONTENT_EXPORT TracingScenario : public TracingScenarioBase,
   const bool privacy_filtering_enabled_;
   const bool is_local_scenario_;
   const bool request_startup_tracing_;
+  const bool use_system_backend_ = false;
   State current_state_ = State::kDisabled;
   std::vector<std::unique_ptr<BackgroundTracingRule>> setup_rules_;
 

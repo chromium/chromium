@@ -40,6 +40,10 @@ BASE_FEATURE(kEnablePerfettoSystemTracing,
 #endif
 );
 
+BASE_FEATURE(kEnablePerfettoSystemBackgroundTracing,
+             "EnablePerfettoSystemBackgroundTracing",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
 
 namespace tracing {
@@ -55,6 +59,12 @@ bool ShouldSetupSystemTracing() {
   }
   return features::kEnablePerfettoSystemTracing.default_state ==
          base::FEATURE_ENABLED_BY_DEFAULT;
+}
+
+bool SystemBackgroundTracingEnabled() {
+  return ShouldSetupSystemTracing() &&
+         base::FeatureList::IsEnabled(
+             features::kEnablePerfettoSystemBackgroundTracing);
 }
 
 }  // namespace tracing

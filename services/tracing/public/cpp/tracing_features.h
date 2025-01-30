@@ -21,6 +21,9 @@ extern const COMPONENT_EXPORT(TRACING_CPP) base::Feature
 extern const COMPONENT_EXPORT(TRACING_CPP) base::Feature
     kEnablePerfettoSystemTracing;
 
+extern const COMPONENT_EXPORT(TRACING_CPP) base::Feature
+    kEnablePerfettoSystemBackgroundTracing;
+
 }  // namespace features
 
 namespace tracing {
@@ -29,6 +32,10 @@ namespace tracing {
 // can be influenced by the feature above or other situations (like debug
 // android builds).
 bool COMPONENT_EXPORT(TRACING_CPP) ShouldSetupSystemTracing();
+
+// Returns true if the system tracing backend is available for background
+// tracing scenarios.
+bool COMPONENT_EXPORT(TRACING_CPP) SystemBackgroundTracingEnabled();
 
 }  // namespace tracing
 

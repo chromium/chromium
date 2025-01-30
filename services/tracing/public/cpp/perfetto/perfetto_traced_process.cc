@@ -5,9 +5,11 @@
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
 
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_config.h"
@@ -236,12 +238,31 @@ void PerfettoTracedProcess::SetupForTesting(
 }
 
 void PerfettoTracedProcess::ResetForTesting() {
-  task_runner_ = nullptr;
-  tracing_backend_.reset();
   startup_tracing_needed_ = false;
-  // TODO(skyostil): We only uninitialize Perfetto for now, but there may also
-  // be other tracing-related state which should not leak between tests.
-  perfetto::Tracing::ResetForTesting();
+  base::WaitableEvent on_reset_done;
+  // The tracing backend is used internally in Perfetto on the |task_runner_|
+  // sequence. Reset and destroy the backend on the task runner to avoid racing
+  // in resetting Perfetto.
+  auto reset_task = base::BindOnce(
+      [](decltype(tracing_backend_) tracing_backend,
+         base::WaitableEvent* on_reset_done) {
+        tracing_backend.reset();
+        // TODO(skyostil): We only uninitialize Perfetto
+        // for now, but there may also be other
+        // tracing-related state which should not leak
+        // between tests.
+        perfetto::Tracing::ResetForTesting();
+        on_reset_done->Signal();
+      },
+      std::move(tracing_backend_), &on_reset_done);
+  if (task_runner_->RunsTasksInCurrentSequence()) {
+    std::move(reset_task).Run();
+  } else {
+    task_runner_->PostTask(FROM_HERE, std::move(reset_task));
+
+    on_reset_done.Wait();
+  }
+  task_runner_ = nullptr;
 }
 
 void PerfettoTracedProcess::RequestStartupTracing(

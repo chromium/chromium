@@ -719,7 +719,13 @@ PerfettoTracingBackend::ConnectProducer(const ConnectProducerArgs& args) {
 
   // Return the ProducerEndpoint to the tracing muxer, and then call
   // BindProducerConnectionIfNecessary().
-  muxer_task_runner_->PostTask([this] { BindProducerConnectionIfNecessary(); });
+  muxer_task_runner_->PostTask([weak_this = weak_factory_.GetWeakPtr()] {
+    if (!weak_this) {
+      // Can be destroyed in testing.
+      return;
+    }
+    weak_this->BindProducerConnectionIfNecessary();
+  });
   return producer_endpoint;
 }
 
@@ -741,7 +747,13 @@ void PerfettoTracingBackend::OnProducerConnected(
   }
 
   if (task_runner) {
-    task_runner->PostTask([this] { BindProducerConnectionIfNecessary(); });
+    task_runner->PostTask([weak_this = weak_factory_.GetWeakPtr()] {
+      if (!weak_this) {
+        // Can be destroyed in testing.
+        return;
+      }
+      weak_this->BindProducerConnectionIfNecessary();
+    });
   }
 }
 

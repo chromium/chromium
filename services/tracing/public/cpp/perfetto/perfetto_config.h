@@ -38,7 +38,8 @@ bool COMPONENT_EXPORT(TRACING_CPP) AdaptPerfettoConfigForChrome(
     bool privacy_filtering_enabled = false,
     bool enable_package_name_filter = false,
     perfetto::protos::gen::ChromeConfig::ClientPriority =
-        perfetto::protos::gen::ChromeConfig::USER_INITIATED);
+        perfetto::protos::gen::ChromeConfig::USER_INITIATED,
+    bool enable_system_backend = false);
 
 }  // namespace tracing
 

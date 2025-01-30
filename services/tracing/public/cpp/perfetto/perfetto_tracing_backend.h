@@ -6,6 +6,7 @@
 #define SERVICES_TRACING_PUBLIC_CPP_PERFETTO_PERFETTO_TRACING_BACKEND_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -67,6 +68,8 @@ class PerfettoTracingBackend : public perfetto::TracingBackend {
 
   scoped_refptr<base::SequencedTaskRunner> consumer_connection_task_runner_;
   ConsumerConnectionFactory consumer_connection_factory_;
+
+  base::WeakPtrFactory<PerfettoTracingBackend> weak_factory_{this};
 };
 
 }  // namespace tracing
