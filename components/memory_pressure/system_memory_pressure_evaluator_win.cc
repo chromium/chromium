@@ -26,6 +26,41 @@ namespace win {
 
 namespace {
 
+// Whether to use available memory commit instead of available physical
+// memory for Windows memory pressure detection.
+BASE_FEATURE(kCommitAvailableMemoryPressure,
+             "UseAvailableMemoryThresholds",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, allows setting custom thresholds for commit-based
+// memory pressure detection via the |kCommitAvailableCriticalThresholdMB|
+// and |kCommitAvailableModerateThresholdMB| parameters.
+BASE_FEATURE(kCommitAvailableMemoryPressureThresholds,
+             "CommitAvailableMemoryPressureThresholds",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Default thresholds for commit-based memory pressure detection.
+const int kDefaultCommitAvailableCriticalThresholdMb = 200;
+const int kDefaultCommitAvailableModerateThresholdMb = 500;
+
+// The amount of commit available (in MB) below which the system is considered
+// to be under critical memory pressure. The default value is equal to
+// kSmallMemoryDefaultCriticalThresholdMb (200).
+BASE_FEATURE_PARAM(int,
+                   kCommitAvailableCriticalThresholdMB,
+                   &kCommitAvailableMemoryPressureThresholds,
+                   "CommitAvailableCriticalThresholdMB",
+                   kDefaultCommitAvailableCriticalThresholdMb);
+
+// The amount of commit available (in MB) below which the system is considered
+// to be under moderate memory pressure. The default value is equal to
+// kSmallMemoryDefaultModerateThresholdMb (500).
+BASE_FEATURE_PARAM(int,
+                   kCommitAvailableModerateThresholdMB,
+                   &kCommitAvailableMemoryPressureThresholds,
+                   "CommitAvailableModerateThresholdMB",
+                   kDefaultCommitAvailableModerateThresholdMb);
+
 static const DWORDLONG kMBBytes = 1024 * 1024;
 
 // Implements ObjectWatcher::Delegate by forwarding to a provided callback.
@@ -234,8 +269,32 @@ SystemMemoryPressureEvaluator::CalculateCurrentPressureLevel() {
   }
   RecordCommitHistograms(mem_status);
 
-  // How much system memory is actively available for use right now, in MBs.
-  int phys_free = static_cast<int>(mem_status.ullAvailPhys / kMBBytes);
+  // How much physical system memory is available for use right now, in MBs.
+  int phys_free_mb = static_cast<int>(mem_status.ullAvailPhys / kMBBytes);
+
+  // The maximum amount of memory the current process can commit, in MBs.
+  int commit_available_mb =
+      static_cast<int>(mem_status.ullAvailPageFile / kMBBytes);
+
+  if (phys_free_mb > moderate_threshold_mb_ &&
+      commit_available_mb > kCommitAvailableModerateThresholdMB.Get()) {
+    // No memory pressure under any of the 2 detection systems. Return
+    // early to avoid activating the experiment for clients who don't
+    // have memory pressure.
+    return base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
+  }
+
+  if (base::FeatureList::IsEnabled(kCommitAvailableMemoryPressure)) {
+    if (commit_available_mb < kCommitAvailableCriticalThresholdMB.Get()) {
+      return base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL;
+    }
+
+    if (commit_available_mb < kCommitAvailableModerateThresholdMB.Get()) {
+      return base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE;
+    }
+
+    return base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
+  }
 
   // TODO(chrisha): This should eventually care about address space pressure,
   // but the browser process (where this is running) effectively never runs out
@@ -246,12 +305,12 @@ SystemMemoryPressureEvaluator::CalculateCurrentPressureLevel() {
   // system memory pressure.
 
   // Determine if the physical memory is under critical memory pressure.
-  if (phys_free <= critical_threshold_mb_) {
+  if (phys_free_mb <= critical_threshold_mb_) {
     return base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL;
   }
 
   // Determine if the physical memory is under moderate memory pressure.
-  if (phys_free <= moderate_threshold_mb_) {
+  if (phys_free_mb <= moderate_threshold_mb_) {
     return base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE;
   }
 
