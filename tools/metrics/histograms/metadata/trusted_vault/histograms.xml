@@ -59,6 +59,7 @@ chromium-metrics-reviews@google.com.
     Records the outcome of device registration attempt upon request completion
     or failure.
   </summary>
+  <token key="SecurityDomainId" variants="SecurityDomainId"/>
 </histogram>
 
 <histogram name="TrustedVault.DeviceRegistrationState{SecurityDomainId}"
