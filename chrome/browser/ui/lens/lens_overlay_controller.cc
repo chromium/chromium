@@ -1805,11 +1805,13 @@ void LensOverlayController::UpdatePageContextualization(
     SuppressGhostLoader();
   }
 
+#if BUILDFLAG(ENABLE_PDF)
   // If the new page is a PDF, fetch the text from the page to be used as early
   // suggest signals.
   if (content_type == lens::MimeType::kPdf) {
     FetchVisiblePageIndexAndGetPartialPdfText(page_count.value_or(0));
   }
+#endif
 
   lens_overlay_query_controller_->SendPageContentUpdateRequest(
       initialization_data_->page_content_bytes_,
@@ -2043,6 +2045,7 @@ void LensOverlayController::InitializeOverlay(
   InitializeOverlayUI(*initialization_data_);
   base::UmaHistogramBoolean("Lens.Overlay.Shown", true);
 
+#if BUILDFLAG(ENABLE_PDF)
   // If PDF content was extracted from the page, fetch the text from the PDF to
   // be used as early suggest signals.
   if (initialization_data_->page_content_type_ == lens::MimeType::kPdf &&
@@ -2051,6 +2054,7 @@ void LensOverlayController::InitializeOverlay(
     FetchVisiblePageIndexAndGetPartialPdfText(
         initialization_data_->pdf_page_count_.value());
   }
+#endif
 
   // If the StartQueryFlow optimization is enabled, the page contents will not
   // be sent with the initial image request, so we need to send it here.

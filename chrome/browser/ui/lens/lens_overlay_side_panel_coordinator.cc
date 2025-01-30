@@ -278,10 +278,10 @@ void LensOverlaySidePanelCoordinator::DidStartNavigation(
       lens::GetSearchResultsUrlFromRedirectUrl(nav_url).is_empty()) {
     navigation_handle->SetSilentlyIgnoreErrors();
 
+#if BUILDFLAG(ENABLE_PDF)
     content::WebContents* web_contents =
         lens_overlay_controller_->GetTabInterface()->GetContents();
 
-#if BUILDFLAG(ENABLE_PDF)
     // If a PDFDocumentHelper is found attached to the current web contents,
     // that means that the PDF viewer is currently loaded in it.
     if (ShouldHandlePDFViewportChange(nav_url)) {
