@@ -122,4 +122,9 @@ BASE_FEATURE(kDevToolsAnimationStylesInStylesTab,
              "DevToolsAnimationStylesInStylesTab",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Whether the new DevTools "Workspaces" features are enabled.
+BASE_FEATURE(kDevToolsImprovedWorkspaces,
+             "DevToolsImprovedWorkspaces",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features

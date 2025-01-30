@@ -1642,7 +1642,7 @@
 
 - (bool)hasIdentitiesOnDevice {
   ProfileIOS* profile = self.browser->GetProfile();
-  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+  if (IsUseAccountListFromIdentityManagerEnabled()) {
     return !IdentityManagerFactory::GetForProfile(profile)
                 ->GetAccountsOnDevice()
                 .empty();

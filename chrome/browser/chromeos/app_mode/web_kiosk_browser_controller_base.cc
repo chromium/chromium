@@ -6,7 +6,6 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_ui_manager_impl.h"
@@ -39,11 +38,9 @@ bool WebKioskBrowserControllerBase::HasReloadButton() const {
   return false;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 bool WebKioskBrowserControllerBase::ShouldShowCustomTabBar() const {
   return false;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 ui::ImageModel WebKioskBrowserControllerBase::GetWindowAppIcon() const {
   if (app_icon_) {

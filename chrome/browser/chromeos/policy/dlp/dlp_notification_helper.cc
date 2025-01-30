@@ -4,7 +4,8 @@
 
 #include "chrome/browser/chromeos/policy/dlp/dlp_notification_helper.h"
 
-#include "build/chromeos_buildflags.h"
+#include "ash/constants/notifier_catalogs.h"
+#include "ash/public/cpp/new_window_delegate.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_constants.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
@@ -19,16 +20,6 @@
 #include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/notifier_catalogs.h"
-#include "ash/public/cpp/new_window_delegate.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/ui/browser_navigator.h"
-#include "chrome/browser/ui/browser_navigator_params.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace policy {
 
@@ -47,22 +38,10 @@ constexpr char kVideoCaptureStoppedNotificationId[] =
 constexpr char kDlpPolicyNotifierId[] = "policy.dlp";
 
 void OnNotificationClicked(const std::string id) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::NewWindowDelegate::GetPrimary()->OpenUrl(
       GURL(dlp::kDlpLearnMoreUrl),
       ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       ash::NewWindowDelegate::Disposition::kNewForegroundTab);
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  // The dlp policy applies to the main profile, so use the main profile for
-  // opening the page.
-  NavigateParams navigate_params(
-      ProfileManager::GetPrimaryUserProfile(), GURL(dlp::kDlpLearnMoreUrl),
-      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK |
-                                ui::PAGE_TRANSITION_FROM_API));
-  navigate_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-  navigate_params.window_action = NavigateParams::SHOW_WINDOW;
-  Navigate(&navigate_params);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   NotificationDisplayServiceFactory::GetForProfile(
       ProfileManager::GetActiveUserProfile())
@@ -76,23 +55,14 @@ void ShowDlpNotification(const std::string& id,
       message_center::NOTIFICATION_TYPE_SIMPLE, id, title, message,
       /*icon=*/ui::ImageModel(), /*display_source=*/std::u16string(),
       /*origin_url=*/GURL(),
-#if BUILDFLAG(IS_CHROMEOS_ASH)
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kDlpPolicyNotifierId,
                                  ash::NotificationCatalogName::kDlpPolicy),
-#else
-      message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
-                                 kDlpPolicyNotifierId),
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
       message_center::RichNotificationData(),
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           base::BindRepeating(&OnNotificationClicked, id)));
   // Set critical warning color.
   notification.set_accent_color_id(ui::kColorSysError);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  notification.set_system_notification_warning_level(
-      message_center::SystemNotificationWarningLevel::CRITICAL_WARNING);
-#endif
   notification.set_vector_small_image(vector_icons::kBusinessIcon);
   notification.set_renotify(true);
   NotificationDisplayServiceFactory::GetForProfile(

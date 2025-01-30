@@ -264,17 +264,26 @@ void AdaptDataSourceConfig(
     perfetto::DataSourceConfig* config,
     const std::string& chrome_config_string,
     bool privacy_filtering_enabled,
-    perfetto::protos::gen::ChromeConfig::ClientPriority client_priority) {
+    perfetto::protos::gen::ChromeConfig::ClientPriority client_priority,
+    bool enable_system_backend = false) {
   if (!config->has_target_buffer()) {
     config->set_target_buffer(0);
   }
-  auto* chrome_config = config->mutable_chrome_config();
-  chrome_config->set_privacy_filtering_enabled(privacy_filtering_enabled);
-  // There are no use case for legacy json, since this is used to adapt
-  // background tracing configs.
-  chrome_config->set_convert_to_legacy_json(false);
-  chrome_config->set_client_priority(client_priority);
-  chrome_config->set_trace_config(chrome_config_string);
+
+  // Adapt data source config if
+  // 1. the scenario uses the default custom backend, or
+  // 2. the scenario uses the system backend. Only Chrome data source should be
+  // adapted. Other data source names are ignored.
+  if (!enable_system_backend || (config->name() == "track_event" ||
+                                 config->name().starts_with("org.chromium."))) {
+    auto* chrome_config = config->mutable_chrome_config();
+    chrome_config->set_privacy_filtering_enabled(privacy_filtering_enabled);
+    // There are no use case for legacy json, since this is used to adapt
+    // background tracing configs.
+    chrome_config->set_convert_to_legacy_json(false);
+    chrome_config->set_client_priority(client_priority);
+    chrome_config->set_trace_config(chrome_config_string);
+  }
 
   if (!config->track_event_config_raw().empty()) {
     config->set_name("track_event");
@@ -347,7 +356,8 @@ bool AdaptPerfettoConfigForChrome(
     perfetto::TraceConfig* perfetto_config,
     bool privacy_filtering_enabled,
     bool enable_package_name_filter,
-    perfetto::protos::gen::ChromeConfig::ClientPriority client_priority) {
+    perfetto::protos::gen::ChromeConfig::ClientPriority client_priority,
+    bool enable_system_backend) {
   if (perfetto_config->buffers_size() < 1) {
     auto* buffer_config = perfetto_config->add_buffers();
     buffer_config->set_size_kb(GetDefaultTraceBufferSize());

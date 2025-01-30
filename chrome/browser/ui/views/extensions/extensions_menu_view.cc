@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/auto_reset.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"

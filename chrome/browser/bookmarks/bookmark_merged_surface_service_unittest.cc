@@ -25,6 +25,7 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace {
 
@@ -104,6 +105,14 @@ class TestBookmarkClientWithManagedService
 class MockBookmarkMergedSurfaceServiceObserver
     : public BookmarkMergedSurfaceServiceObserver {
  public:
+  MOCK_METHOD(void, BookmarkMergedSurfaceServiceLoaded, ());
+
+  MOCK_METHOD(void, BookmarkMergedSurfaceServiceBeingDeleted, ());
+
+  MOCK_METHOD(void,
+              BookmarkNodeAdded,
+              (const BookmarkParentFolder& parent, size_t index));
+
   MOCK_METHOD(void,
               BookmarkNodesRemoved,
               (const BookmarkParentFolder&,
@@ -131,12 +140,13 @@ class MockBookmarkMergedSurfaceServiceObserver
 
 class BookmarkMergedSurfaceServiceTest : public testing::Test {
  public:
-  void LoadBookmarkModelWithManaged(size_t managed_bookmarks_size) {
-    LoadBookmarkModel(true, managed_bookmarks_size);
+  void CreateBookmarkMergedSurfaceServiceWithManaged(
+      size_t managed_bookmarks_size) {
+    CreateBookmarkMergedSurfaceService(true, managed_bookmarks_size);
   }
 
-  void LoadBookmarkModel(bool with_managed_node = false,
-                         size_t managed_bookmarks_size = 0) {
+  void CreateBookmarkMergedSurfaceService(bool with_managed_node = false,
+                                          size_t managed_bookmarks_size = 0) {
     std::unique_ptr<bookmarks::TestBookmarkClient> bookmark_client;
     if (with_managed_node) {
       CHECK(managed_bookmarks_size);
@@ -204,7 +214,7 @@ class BookmarkMergedSurfaceServiceTest : public testing::Test {
 
 TEST_F(BookmarkMergedSurfaceServiceTest, GetChildrenCount) {
   const size_t kManagedBookmarksSize = 5;
-  LoadBookmarkModelWithManaged(kManagedBookmarksSize);
+  CreateBookmarkMergedSurfaceServiceWithManaged(kManagedBookmarksSize);
   EXPECT_EQ(
       service().GetChildrenCount(BookmarkParentFolder::BookmarkBarFolder()),
       0u);
@@ -240,7 +250,7 @@ TEST_F(BookmarkMergedSurfaceServiceTest, GetChildrenCount) {
 }
 
 TEST_F(BookmarkMergedSurfaceServiceTest, GetChildrenWithAccountNodes) {
-  LoadBookmarkModel();
+  CreateBookmarkMergedSurfaceService();
   model().CreateAccountPermanentFolders();
   const BookmarkNode* local_bb_node = model().bookmark_bar_node();
   const BookmarkNode* account_bb_node = model().account_bookmark_bar_node();
@@ -293,13 +303,13 @@ TEST_F(BookmarkMergedSurfaceServiceTest, GetChildrenWithAccountNodes) {
 }
 
 TEST_F(BookmarkMergedSurfaceServiceTest, ManagedNodeNull) {
-  LoadBookmarkModel();
+  CreateBookmarkMergedSurfaceService();
   EXPECT_EQ(service().GetChildrenCount(BookmarkParentFolder::ManagedFolder()),
             0u);
 }
 
 TEST_F(BookmarkMergedSurfaceServiceTest, GetIndexOf) {
-  LoadBookmarkModelWithManaged(/*managed_bookmarks_size=*/3);
+  CreateBookmarkMergedSurfaceServiceWithManaged(/*managed_bookmarks_size=*/3);
   AddNodesFromModelString(&model(), model().bookmark_bar_node(),
                           "1 2 3 f1:[ 4 5 ] ");
   AddNodesFromModelString(&model(), model().other_node(), "6 7 8 ");
@@ -315,7 +325,7 @@ TEST_F(BookmarkMergedSurfaceServiceTest, GetIndexOf) {
 }
 
 TEST_F(BookmarkMergedSurfaceServiceTest, GetNodeAtIndex) {
-  LoadBookmarkModel();
+  CreateBookmarkMergedSurfaceService();
   AddNodesFromModelString(&model(), model().bookmark_bar_node(),
                           "1 2 3 f1:[ 4 5 ] ");
   AddNodesFromModelString(&model(), model().other_node(), "6 7 8 ");
@@ -345,7 +355,7 @@ TEST_F(BookmarkMergedSurfaceServiceTest, GetNodeAtIndex) {
 }
 
 TEST_F(BookmarkMergedSurfaceServiceTest, IsParentFolderManaged) {
-  LoadBookmarkModelWithManaged(2);
+  CreateBookmarkMergedSurfaceServiceWithManaged(2);
   AddNodesFromModelString(&model(), model().bookmark_bar_node(), "f1:[ 4 5 ]");
 
   EXPECT_FALSE(service().IsParentFolderManaged(
@@ -364,7 +374,7 @@ TEST_F(BookmarkMergedSurfaceServiceTest, IsParentFolderManaged) {
 
 TEST_F(BookmarkMergedSurfaceServiceTest,
        IsParentFolderManagedNoManagedService) {
-  LoadBookmarkModel();
+  CreateBookmarkMergedSurfaceService();
   AddNodesFromModelString(&model(), model().bookmark_bar_node(), "f1:[ 4 5 ]");
   EXPECT_FALSE(
       service().IsParentFolderManaged(BookmarkParentFolder::FromFolderNode(
@@ -372,7 +382,7 @@ TEST_F(BookmarkMergedSurfaceServiceTest,
 }
 
 TEST_F(BookmarkMergedSurfaceServiceTest, MoveToPermanentFolder) {
-  LoadBookmarkModel();
+  CreateBookmarkMergedSurfaceService();
   AddNodesFromModelString(&model(), model().bookmark_bar_node(), "1 2 3 ");
   AddNodesFromModelString(&model(), model().other_node(), "4 5 6 ");
 
@@ -386,7 +396,7 @@ TEST_F(BookmarkMergedSurfaceServiceTest, MoveToPermanentFolder) {
 
 TEST_F(BookmarkMergedSurfaceServiceTest,
        MoveToPermanentFolderWithAccountNodes) {
-  LoadBookmarkModel();
+  CreateBookmarkMergedSurfaceService();
   model().CreateAccountPermanentFolders();
 
   AddNodesFromModelString(&model(), model().bookmark_bar_node(), "1 2 3 ");
@@ -431,7 +441,7 @@ TEST_F(BookmarkMergedSurfaceServiceTest,
 }
 
 TEST_F(BookmarkMergedSurfaceServiceTest, MoveToBookmarkNode) {
-  LoadBookmarkModel();
+  CreateBookmarkMergedSurfaceService();
   AddNodesFromModelString(&model(), model().bookmark_bar_node(),
                           "1 2 3 f1:[ 4 5 ] ");
   AddNodesFromModelString(&model(), model().other_node(), "6 7 8 ");
@@ -450,7 +460,7 @@ TEST_F(BookmarkMergedSurfaceServiceTest, MoveToBookmarkNode) {
 }
 
 TEST_F(BookmarkMergedSurfaceServiceTest, MoveFromAccountToLocalStorage) {
-  LoadBookmarkModel();
+  CreateBookmarkMergedSurfaceService();
   model().CreateAccountPermanentFolders();
 
   AddNodesFromModelString(&model(), model().bookmark_bar_node(), "f1:[ 1 2 ] ");
@@ -480,7 +490,7 @@ TEST_F(BookmarkMergedSurfaceServiceTest, MoveFromAccountToLocalStorage) {
 }
 
 TEST_F(BookmarkMergedSurfaceServiceTest, MoveFromLocalToAccountStorage) {
-  LoadBookmarkModel();
+  CreateBookmarkMergedSurfaceService();
   model().CreateAccountPermanentFolders();
 
   AddNodesFromModelString(&model(), model().bookmark_bar_node(), "1 2 3 ");
@@ -510,7 +520,7 @@ TEST_F(BookmarkMergedSurfaceServiceTest, MoveFromLocalToAccountStorage) {
 }
 
 TEST_F(BookmarkMergedSurfaceServiceTest, CopyBookmarkNodeData) {
-  LoadBookmarkModel();
+  CreateBookmarkMergedSurfaceService();
   AddNodesFromModelString(&model(), model().bookmark_bar_node(),
                           "1 2 3 f1:[ 4 5 ] ");
   AddNodesFromModelString(&model(), model().other_node(), "6 7 8 f2:[ 9 ] ");
@@ -530,7 +540,7 @@ TEST_F(BookmarkMergedSurfaceServiceTest, CopyBookmarkNodeData) {
 }
 
 TEST_F(BookmarkMergedSurfaceServiceTest, CopyBookmarkNodeDataMultipleNodes) {
-  LoadBookmarkModel();
+  CreateBookmarkMergedSurfaceService();
   AddNodesFromModelString(&model(), model().bookmark_bar_node(),
                           "1 2 3 f1:[ 4 5 ] ");
   AddNodesFromModelString(&model(), model().other_node(), "6 7 8 f2:[ 9 ] ");
@@ -552,7 +562,7 @@ TEST_F(BookmarkMergedSurfaceServiceTest, CopyBookmarkNodeDataMultipleNodes) {
 }
 
 TEST_F(BookmarkMergedSurfaceServiceTest, CopyBookmarkNodeToPermanentFolder) {
-  LoadBookmarkModel();
+  CreateBookmarkMergedSurfaceService();
   AddNodesFromModelString(&model(), model().bookmark_bar_node(), "1 2 3 ");
   AddNodesFromModelString(&model(), model().other_node(), "6 7 8 f2:[ 9 ] ");
 
@@ -590,7 +600,7 @@ TEST_F(BookmarkMergedSurfaceServiceTest, CopyBookmarkNodeToPermanentFolder) {
 
 TEST_F(BookmarkMergedSurfaceServiceTest,
        GetUnderlyingNodesForNonPermanentNode) {
-  LoadBookmarkModel();
+  CreateBookmarkMergedSurfaceService();
   AddNodesFromModelString(&model(), model().bookmark_bar_node(),
                           "1 2 3 f1:[ 4 5 ] ");
   const BookmarkNode* node = model().bookmark_bar_node()->children()[3].get();
@@ -600,7 +610,7 @@ TEST_F(BookmarkMergedSurfaceServiceTest,
 
 TEST_F(BookmarkMergedSurfaceServiceTest,
        GetUnderlyingNodesManagedPermanentNode) {
-  LoadBookmarkModelWithManaged(/*managed_bookmarks_size=*/2);
+  CreateBookmarkMergedSurfaceServiceWithManaged(/*managed_bookmarks_size=*/2);
   {
     BookmarkParentFolder folder = BookmarkParentFolder::ManagedFolder();
     EXPECT_THAT(service().GetUnderlyingNodes(folder),
@@ -617,7 +627,7 @@ TEST_F(BookmarkMergedSurfaceServiceTest,
 }
 
 TEST_F(BookmarkMergedSurfaceServiceTest, GetUnderlyingNodesPermanentNode) {
-  LoadBookmarkModel();
+  CreateBookmarkMergedSurfaceService();
   {
     BookmarkParentFolder folder = BookmarkParentFolder::BookmarkBarFolder();
     EXPECT_THAT(service().GetUnderlyingNodes(folder),
@@ -637,7 +647,7 @@ TEST_F(BookmarkMergedSurfaceServiceTest, GetUnderlyingNodesPermanentNode) {
 
 TEST_F(BookmarkMergedSurfaceServiceTest,
        GetDefaultParentForNewNodesForNonPermanentNode) {
-  LoadBookmarkModel();
+  CreateBookmarkMergedSurfaceService();
   AddNodesFromModelString(&model(), model().bookmark_bar_node(),
                           "1 2 3 f1:[ 4 5 ] ");
   const BookmarkNode* node = model().bookmark_bar_node()->children()[3].get();
@@ -647,7 +657,7 @@ TEST_F(BookmarkMergedSurfaceServiceTest,
 
 TEST_F(BookmarkMergedSurfaceServiceTest,
        GetDefaultParentForNewNodesForPermanentNode) {
-  LoadBookmarkModel();
+  CreateBookmarkMergedSurfaceService();
   BookmarkParentFolder folder = BookmarkParentFolder::BookmarkBarFolder();
   EXPECT_EQ(service().GetDefaultParentForNewNodes(folder),
             model().bookmark_bar_node());
@@ -657,8 +667,52 @@ TEST_F(BookmarkMergedSurfaceServiceTest,
             model().account_bookmark_bar_node());
 }
 
+TEST_F(BookmarkMergedSurfaceServiceTest, BookmarkNodeAdded) {
+  CreateBookmarkMergedSurfaceService();
+  model().CreateAccountPermanentFolders();
+  const BookmarkNode* local_bb_node = model().bookmark_bar_node();
+  const BookmarkNode* account_bb_node = model().account_bookmark_bar_node();
+  ASSERT_TRUE(account_bb_node);
+
+  BookmarkParentFolder bb_folder = BookmarkParentFolder::BookmarkBarFolder();
+  const GURL kUrl("http://foo.com");
+  EXPECT_CALL(mock_service_observer(), BookmarkNodeAdded(bb_folder, 0));
+  const BookmarkNode* new_node = model().AddURL(local_bb_node, 0, u"L1", kUrl);
+  EXPECT_EQ(service().GetNodeAtIndex(bb_folder, 0u), new_node);
+
+  // Add node to the account.
+  EXPECT_CALL(mock_service_observer(), BookmarkNodeAdded(bb_folder, 0));
+  new_node = model().AddURL(account_bb_node, 0, u"A1", kUrl);
+  EXPECT_EQ(service().GetNodeAtIndex(bb_folder, 0u), new_node);
+
+  // Add folder to `local_bb_node`.
+  EXPECT_CALL(mock_service_observer(), BookmarkNodeAdded(bb_folder, 2u));
+  const BookmarkNode* folder_node =
+      model().AddFolder(local_bb_node, 1, u"title");
+  EXPECT_EQ(service().GetNodeAtIndex(bb_folder, 2u), folder_node);
+
+  // Add another account node.
+  EXPECT_CALL(mock_service_observer(), BookmarkNodeAdded(bb_folder, 1));
+  new_node = model().AddURL(account_bb_node, 1, u"A2", kUrl);
+  EXPECT_EQ(service().GetNodeAtIndex(bb_folder, 1u), new_node);
+
+  EXPECT_THAT(service().GetChildren(bb_folder),
+              HasOrderedChildren(std::vector<const BookmarkNode*>{
+                  account_bb_node->children()[0].get(),
+                  account_bb_node->children()[1].get(),
+                  local_bb_node->children()[0].get(),
+                  local_bb_node->children()[1].get()}));
+
+  // Add new node to `folder_node`.
+  BookmarkParentFolder folder(
+      BookmarkParentFolder::FromFolderNode(folder_node));
+  EXPECT_CALL(mock_service_observer(), BookmarkNodeAdded(folder, 0));
+  new_node = model().AddURL(folder_node, 0, u"1", kUrl);
+  EXPECT_EQ(service().GetNodeAtIndex(folder, 0u), new_node);
+}
+
 TEST_F(BookmarkMergedSurfaceServiceTest, BookmarkNodeRemovedOrderingTracked) {
-  LoadBookmarkModel();
+  CreateBookmarkMergedSurfaceService();
   model().CreateAccountPermanentFolders();
   const BookmarkNode* local_bb_node = model().bookmark_bar_node();
   const BookmarkNode* account_bb_node = model().account_bookmark_bar_node();
@@ -667,6 +721,7 @@ TEST_F(BookmarkMergedSurfaceServiceTest, BookmarkNodeRemovedOrderingTracked) {
   BookmarkParentFolder bb_folder = BookmarkParentFolder::BookmarkBarFolder();
   AddNodesFromModelString(&model(), local_bb_node, "1 2 3 f1:[ 4 5 ] ");
   AddNodesFromModelString(&model(), account_bb_node, "7 8 9 f3:[ 10 11 ] ");
+
   const auto& local_children = local_bb_node->children();
   const auto& account_children = account_bb_node->children();
   std::vector<const BookmarkNode*> expected_children{
@@ -709,7 +764,7 @@ TEST_F(BookmarkMergedSurfaceServiceTest, BookmarkNodeRemovedOrderingTracked) {
 }
 
 TEST_F(BookmarkMergedSurfaceServiceTest, BookmarkNodeRemovedCustomOrder) {
-  LoadBookmarkModel();
+  CreateBookmarkMergedSurfaceService();
   model().CreateAccountPermanentFolders();
   const BookmarkNode* local_bb_node = model().bookmark_bar_node();
   const BookmarkNode* account_bb_node = model().account_bookmark_bar_node();
@@ -745,9 +800,10 @@ TEST_F(BookmarkMergedSurfaceServiceTest, BookmarkNodeRemovedCustomOrder) {
 }
 
 TEST_F(BookmarkMergedSurfaceServiceTest, BookmarkNodeRemovedNonTrackedNode) {
-  LoadBookmarkModel();
+  CreateBookmarkMergedSurfaceService();
   AddNodesFromModelString(&model(), model().bookmark_bar_node(),
                           "1 2 3 f1:[ 4 5 ] ");
+
   // Remove node "4".
   const size_t index = 0;
   const BookmarkNode* parent_node =
@@ -765,7 +821,7 @@ TEST_F(BookmarkMergedSurfaceServiceTest, BookmarkNodeRemovedNonTrackedNode) {
 
 TEST_F(BookmarkMergedSurfaceServiceTest,
        BookmarkNodeRemovedAccountNodeWithChildNodes) {
-  LoadBookmarkModel();
+  CreateBookmarkMergedSurfaceService();
   model().CreateAccountPermanentFolders();
 
   BookmarkParentFolder bb_folder = BookmarkParentFolder::BookmarkBarFolder();
@@ -788,7 +844,7 @@ TEST_F(BookmarkMergedSurfaceServiceTest,
 
 TEST_F(BookmarkMergedSurfaceServiceTest,
        BookmarkNodeRemovedAccountNodeCustomOrder) {
-  LoadBookmarkModel();
+  CreateBookmarkMergedSurfaceService();
   model().CreateAccountPermanentFolders();
   BookmarkParentFolder bb_folder = BookmarkParentFolder::BookmarkBarFolder();
   AddNodesFromModelString(&model(), model().bookmark_bar_node(),
@@ -827,7 +883,7 @@ TEST_F(BookmarkMergedSurfaceServiceTest,
 
 TEST_F(BookmarkMergedSurfaceServiceTest,
        BookmarkNodeRemovedAccountNodeWithNoChildren) {
-  LoadBookmarkModel();
+  CreateBookmarkMergedSurfaceService();
   model().CreateAccountPermanentFolders();
   BookmarkParentFolder bb_folder = BookmarkParentFolder::BookmarkBarFolder();
   AddNodesFromModelString(&model(), model().bookmark_bar_node(),
@@ -841,7 +897,7 @@ TEST_F(BookmarkMergedSurfaceServiceTest,
 
 TEST_F(BookmarkMergedSurfaceServiceTest,
        BookmarkNodeRemovedAccountNodeOrderingNotTracked) {
-  LoadBookmarkModel();
+  CreateBookmarkMergedSurfaceService();
   model().CreateAccountPermanentFolders();
   BookmarkParentFolder bb_folder = BookmarkParentFolder::BookmarkBarFolder();
   AddNodesFromModelString(&model(), model().account_bookmark_bar_node(),
@@ -861,7 +917,7 @@ TEST_F(BookmarkMergedSurfaceServiceTest,
 
 TEST_F(BookmarkMergedSurfaceServiceTest,
        BookmarkNodeMovedBetweenPermanentFolders) {
-  LoadBookmarkModel();
+  CreateBookmarkMergedSurfaceService();
   model().CreateAccountPermanentFolders();
   AddNodesFromModelString(&model(), model().bookmark_bar_node(),
                           "1 2 3 f1:[ 4 5 ] ");
@@ -895,7 +951,7 @@ TEST_F(BookmarkMergedSurfaceServiceTest,
 
 TEST_F(BookmarkMergedSurfaceServiceTest,
        BookmarkNodeMovedWithinSamePermanentFolder) {
-  LoadBookmarkModel();
+  CreateBookmarkMergedSurfaceService();
   model().CreateAccountPermanentFolders();
   AddNodesFromModelString(&model(), model().bookmark_bar_node(),
                           "1 2 3 f1:[ 4 5 ] ");
@@ -935,7 +991,7 @@ TEST_F(BookmarkMergedSurfaceServiceTest,
 
 TEST_F(BookmarkMergedSurfaceServiceTest,
        BookmarkNodeMovedFromPermanentFolderToAFolder) {
-  LoadBookmarkModel();
+  CreateBookmarkMergedSurfaceService();
   model().CreateAccountPermanentFolders();
   AddNodesFromModelString(&model(), model().bookmark_bar_node(),
                           "1 2 3 f1:[ 4 5 ] ");
@@ -964,7 +1020,7 @@ TEST_F(BookmarkMergedSurfaceServiceTest,
 
 TEST_F(BookmarkMergedSurfaceServiceTest,
        BookmarkNodeMovedFromFolderToPermanentFolder) {
-  LoadBookmarkModel();
+  CreateBookmarkMergedSurfaceService();
   model().CreateAccountPermanentFolders();
   AddNodesFromModelString(&model(), model().bookmark_bar_node(),
                           "1 2 3 f1:[ 4 5 ] ");
@@ -992,7 +1048,7 @@ TEST_F(BookmarkMergedSurfaceServiceTest,
 }
 
 TEST_F(BookmarkMergedSurfaceServiceTest, BookmarkNodeChanged) {
-  LoadBookmarkModel();
+  CreateBookmarkMergedSurfaceService();
   AddNodesFromModelString(&model(), model().bookmark_bar_node(),
                           "1 2 3 f1:[ 4 5 ] ");
   const std::u16string kOriginalTitle(u"foo");
@@ -1007,7 +1063,7 @@ TEST_F(BookmarkMergedSurfaceServiceTest, BookmarkNodeChanged) {
 }
 
 TEST_F(BookmarkMergedSurfaceServiceTest, BookmarkNodeFaviconChanged) {
-  LoadBookmarkModel();
+  CreateBookmarkMergedSurfaceService();
   const BookmarkNode* bookmark_bar_node = model().bookmark_bar_node();
   const std::u16string kTitle(u"foo");
   const GURL kPageURL("http://www.google.com");
@@ -1023,7 +1079,7 @@ TEST_F(BookmarkMergedSurfaceServiceTest, BookmarkNodeFaviconChanged) {
 
 TEST_F(BookmarkMergedSurfaceServiceTest,
        BookmarkParentFolderChildrenReordered) {
-  LoadBookmarkModel();
+  CreateBookmarkMergedSurfaceService();
   AddNodesFromModelString(&model(), model().bookmark_bar_node(), "A B C D ");
   const BookmarkNode* parent = model().bookmark_bar_node();
 
@@ -1042,7 +1098,7 @@ TEST_F(BookmarkMergedSurfaceServiceTest,
 }
 
 TEST_F(BookmarkMergedSurfaceServiceTest, BookmarkAllUserNodesRemoved) {
-  LoadBookmarkModel();
+  CreateBookmarkMergedSurfaceService();
   model().CreateAccountPermanentFolders();
   AddNodesFromModelString(&model(), model().bookmark_bar_node(),
                           "1 2 3 f1:[ 4 5 ] ");

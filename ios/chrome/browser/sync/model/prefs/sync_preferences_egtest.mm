@@ -94,9 +94,7 @@ void WaitForPreferenceValue(int pref_value) {
 
   // Sign in and sign out.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
-  [ChromeEarlGrey
-      waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
+  [SigninEarlGrey signinAndWaitForSyncTransportStateActive:fakeIdentity];
   // Pref is not committed to the server.
   WaitForTestPreferenceOnFakeServer(false);
   [SigninEarlGrey signOut];
@@ -148,9 +146,7 @@ void WaitForPreferenceValue(int pref_value) {
 - (void)testAccountPrefValueRemovedOnSignout {
   // Set a pref value of `kTestPrefValue2` in account.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
-  [ChromeEarlGrey
-      waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
+  [SigninEarlGrey signinAndWaitForSyncTransportStateActive:fakeIdentity];
 
   [ChromeEarlGrey setIntegerValue:kTestPrefValue2
                       forUserPref:kTestSyncablePref];
@@ -230,9 +226,7 @@ void WaitForPreferenceValue(int pref_value) {
 - (void)setTestSyncablePrefValueTo:(int)pref_value
                    forFakeIdentity:(FakeSystemIdentity*)fakeIdentity {
   // Sign in and set the pref value.
-  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
-  [ChromeEarlGrey
-      waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
+  [SigninEarlGrey signinAndWaitForSyncTransportStateActive:fakeIdentity];
   [ChromeEarlGrey setIntegerValue:pref_value forUserPref:kTestSyncablePref];
   WaitForTestPreferenceOnFakeServer(true);
   [SigninEarlGrey signOut];

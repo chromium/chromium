@@ -17,6 +17,7 @@
 #include "components/collaboration/public/messaging/activity_log.h"
 #include "components/collaboration/public/messaging/message.h"
 #include "components/collaboration/public/messaging/messaging_backend_service.h"
+#include "components/collaboration/test_support/mock_messaging_backend_service.h"
 #include "components/data_sharing/public/group_data.h"
 #include "components/saved_tab_groups/public/android/tab_group_sync_conversions_bridge.h"
 #include "components/saved_tab_groups/public/android/tab_group_sync_conversions_utils.h"
@@ -66,40 +67,6 @@ PersistentMessagesToCollaborationEventArray(
 }
 
 }  // namespace
-
-class MockMessagingBackendService : public MessagingBackendService {
- public:
-  MockMessagingBackendService() = default;
-  ~MockMessagingBackendService() override = default;
-
-  // MessagingBackendService implementation.
-  MOCK_METHOD(void, SetInstantMessageDelegate, (InstantMessageDelegate*));
-  MOCK_METHOD(void, AddPersistentMessageObserver, (PersistentMessageObserver*));
-  MOCK_METHOD(void,
-              RemovePersistentMessageObserver,
-              (PersistentMessageObserver*));
-  MOCK_METHOD(bool, IsInitialized, ());
-  MOCK_METHOD(std::vector<PersistentMessage>,
-              GetMessagesForTab,
-              (tab_groups::EitherTabID,
-               std::optional<PersistentNotificationType>));
-  MOCK_METHOD(std::vector<PersistentMessage>,
-              GetMessagesForGroup,
-              (tab_groups::EitherGroupID,
-               std::optional<PersistentNotificationType>));
-  MOCK_METHOD(std::vector<PersistentMessage>,
-              GetMessages,
-              (std::optional<PersistentNotificationType>));
-  MOCK_METHOD(std::vector<ActivityLogItem>,
-              GetActivityLog,
-              (const ActivityLogQueryParams&));
-  MOCK_METHOD(void, ClearDirtyTabMessagesForGroup, (tab_groups::EitherGroupID));
-  MOCK_METHOD(void, RemoveMessages, (const std::vector<base::Uuid>&));
-  MOCK_METHOD(void,
-              AddActivityLogForTesting,
-              (data_sharing::GroupId collaboration_id,
-               const std::vector<ActivityLogItem>& activity_log));
-};
 
 class MessagingBackendServiceBridgeTest : public testing::Test {
  public:

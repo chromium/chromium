@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <set>
 
+#include "base/auto_reset.h"
 #include "base/containers/map_util.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"

@@ -61,9 +61,8 @@ public class AccountSelectionWidgetModeControllerTest extends AccountSelectionJU
             mIdpData.setRpContext(rpContext);
             mMediator.showAccounts(
                     mTestEtldPlusOne,
-                    mTestEtldPlusOne2,
                     Arrays.asList(mNewUserAccount),
-                    mIdpData,
+                    Arrays.asList(mIdpData),
                     /* isAutoReauthn= */ false,
                     /* newAccounts= */ Collections.EMPTY_LIST);
             mMediator.showVerifySheet(mAnaAccount);
@@ -84,9 +83,8 @@ public class AccountSelectionWidgetModeControllerTest extends AccountSelectionJU
             // showVerifySheet is called in showAccounts when isAutoReauthn is true
             mMediator.showAccounts(
                     mTestEtldPlusOne,
-                    mTestEtldPlusOne2,
                     Arrays.asList(mAnaAccount),
-                    mIdpData,
+                    Arrays.asList(mIdpData),
                     /* isAutoReauthn= */ true,
                     /* newAccounts= */ Collections.EMPTY_LIST);
 
@@ -119,9 +117,8 @@ public class AccountSelectionWidgetModeControllerTest extends AccountSelectionJU
 
         mMediator.showAccounts(
                 mTestEtldPlusOne,
-                mTestEtldPlusOne2,
                 Arrays.asList(mAnaAccount),
-                mIdpData,
+                Arrays.asList(mIdpData),
                 /* isAutoReauthn= */ false,
                 /* newAccounts= */ Collections.EMPTY_LIST);
 
@@ -145,9 +142,8 @@ public class AccountSelectionWidgetModeControllerTest extends AccountSelectionJU
 
         mMediator.showAccounts(
                 mTestEtldPlusOne,
-                mTestEtldPlusOne2,
                 Arrays.asList(mAnaAccount),
-                mIdpData,
+                Arrays.asList(mIdpData),
                 /* isAutoReauthn= */ false,
                 /* newAccounts= */ Collections.EMPTY_LIST);
 

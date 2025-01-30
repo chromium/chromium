@@ -13,8 +13,6 @@ source_set("server") {
   ]
 
   deps = [
-    "//ash/public/cpp",
-    "//ash/public/cpp/external_arc",
     "//base",
     "//components/exo",
     "//components/exo/wayland",
@@ -32,8 +30,7 @@ source_set("unit_tests") {
   deps = [
     ":server",
     "//ash:test_support",
-    "//ash/public/cpp",
-    "//ash/public/cpp/external_arc",
+    "//ash/components/arc",
     "//base/test:test_support",
     "//components/exo",
     "//components/exo:test_support",

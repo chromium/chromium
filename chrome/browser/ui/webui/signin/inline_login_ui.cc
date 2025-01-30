@@ -47,8 +47,6 @@
 #include "chrome/browser/ui/webui/ash/edu_coexistence/edu_coexistence_login_handler.h"
 #include "chrome/browser/ui/webui/signin/ash/edu_account_login_handler.h"
 #include "chrome/browser/ui/webui/signin/ash/inline_login_handler_impl.h"
-#include "chrome/grit/arc_account_picker_resources.h"
-#include "chrome/grit/arc_account_picker_resources_map.h"
 #include "chrome/grit/edu_coexistence_resources.h"
 #include "chrome/grit/edu_coexistence_resources_map.h"
 #include "chrome/grit/gaia_action_buttons_resources.h"
@@ -129,7 +127,6 @@ void CreateAndAddWebUIDataSource(Profile* profile) {
       network::mojom::CSPDirectiveName::ConnectSrc, "connect-src *;");
 
 #if BUILDFLAG(IS_CHROMEOS)
-  source->AddResourcePaths(kArcAccountPickerResources);
   source->AddResourcePaths(kGaiaActionButtonsResources);
   source->AddResourcePaths(kEduCoexistenceResources);
   source->AddResourcePaths(kSupervisionResources);
@@ -171,13 +168,10 @@ void CreateAndAddWebUIDataSource(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS)
       {"title", IDS_ACCOUNT_MANAGER_DIALOG_TITLE},
       {"ok", IDS_APP_OK},
-      {"nextButtonLabel", IDS_ACCOUNT_MANAGER_DIALOG_NEXT_BUTTON},
       {"accountManagerDialogWelcomeTitle",
        IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_TITLE},
       {"accountManagerDialogWelcomeCheckbox",
        IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_CHECKBOX},
-      {"accountManagerDialogArcAccountPickerTitle",
-       IDS_ACCOUNT_MANAGER_DIALOG_ARC_ACCOUNT_PICKER_TITLE},
       {"addAccountLabel", IDS_ACCOUNT_MANAGER_DIALOG_ADD_ACCOUNT_LABEL},
       {"accountUseInArcButtonLabel",
        IDS_SETTINGS_ACCOUNT_MANAGER_USE_IN_ARC_BUTTON_LABEL},
@@ -212,23 +206,6 @@ void CreateAndAddWebUIDataSource(Profile* profile) {
       "secondaryGoogleAccountSigninAllowed",
       profile->GetPrefs()->GetBoolean(
           ::account_manager::prefs::kSecondaryGoogleAccountSigninAllowed));
-  source->AddBoolean("isArcAccountRestrictionsEnabled", false);
-  // The "Apps Settings" link points to Apps > Manage your apps.
-  source->AddString(
-      "accountManagerDialogArcToggleLabel",
-      l10n_util::GetStringFUTF16(
-          IDS_ACCOUNT_MANAGER_DIALOG_ARC_TOGGLE_LABEL,
-          base::UTF8ToUTF16(
-              chrome::GetOSSettingsUrl(
-                  chromeos::settings::mojom::kAppManagementSubpagePath)
-                  .spec())));
-  source->AddString(
-      "accountManagerDialogArcAccountPickerBody",
-      l10n_util::GetStringFUTF16(
-          IDS_ACCOUNT_MANAGER_DIALOG_ARC_ACCOUNT_PICKER_BODY,
-          base::UTF8ToUTF16(chrome::GetOSSettingsUrl(
-                                chromeos::settings::mojom::kPeopleSectionPath)
-                                .spec())));
   source->AddBoolean("shouldSkipWelcomePage",
                      profile->GetPrefs()->GetBoolean(
                          ash::prefs::kShouldSkipInlineLoginWelcomePage));

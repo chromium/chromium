@@ -5,9 +5,9 @@
 #include "chrome/browser/ash/arc/vmm/arc_system_state_bridge.h"
 
 #include "base/no_destructor.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
+#include "content/public/browser/browser_context.h"
 
 namespace arc {
 
@@ -51,8 +51,7 @@ void ArcSystemStateBridge::EnsureFactoryBuilt() {
 
 ArcSystemStateBridge::ArcSystemStateBridge(content::BrowserContext* context,
                                            ArcBridgeService* bridge_service)
-    : arc_bridge_service_(bridge_service),
-      profile_(Profile::FromBrowserContext(context)) {
+    : arc_bridge_service_(bridge_service) {
   arc_bridge_service_->system_state()->SetHost(this);
   DVLOG(2) << "ArcSystemStateBridge created";
 }

@@ -203,7 +203,6 @@ static_library("crosapi") {
     "//ash/components/arc",
     "//ash/components/arc:arc_base_utils",
     "//ash/constants",
-    "//ash/public/cpp/external_arc",
     "//ash/webui/camera_app_ui",
     "//ash/webui/connectivity_diagnostics",
     "//ash/webui/diagnostics_ui",
@@ -266,13 +265,11 @@ static_library("crosapi") {
     "//chrome/browser/ash/privacy_hub",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/remote_apps",
-    "//chrome/browser/ash/scalable_iph",
     "//chrome/browser/ash/scanning",
     "//chrome/browser/ash/settings",
     "//chrome/browser/ash/system",
     "//chrome/browser/ash/system_web_apps",
     "//chrome/browser/ash/system_web_apps/apps",
-    "//chrome/browser/ash/system_web_apps/apps/help_app",
     "//chrome/browser/ash/video_conference",
     "//chrome/browser/chromeos/extensions/echo_private",
     "//chrome/browser/chromeos/extensions/external_loader",
@@ -454,8 +451,6 @@ static_library("crosapi") {
   ]
 
   allow_circular_includes_from = [
-    "//chrome/browser/ash/scalable_iph",
-    "//chrome/browser/ash/system_web_apps/apps/help_app",
     "//chrome/browser/ash/video_conference",
     "//chrome/browser/chromeos/extensions/echo_private",
     "//chrome/browser/chromeos/extensions/external_loader",
@@ -581,7 +576,6 @@ source_set("unit_tests") {
     "//ash",
     "//ash:test_support",
     "//ash/components/arc:arc_test_support",
-    "//ash/public/cpp/external_arc:test_support",
     "//base",
     "//base/test:test_config",
     "//base/test:test_support",

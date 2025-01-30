@@ -66,13 +66,20 @@ ContextualCueingHelper::ContextualCueingHelper(
 
 ContextualCueingHelper::~ContextualCueingHelper() = default;
 
-// content::WebContentsObserver
-void ContextualCueingHelper::DocumentOnLoadCompletedInPrimaryMainFrame() {
-  last_navigation_cue_label_.clear();
-  if (remaining_quiet_loads_ > 0) {
-    --remaining_quiet_loads_;
+void ContextualCueingHelper::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (!navigation_handle->IsInMainFrame()) {
     return;
   }
+  if (PageTransitionCoreTypeIs(navigation_handle->GetPageTransition(),
+                               ui::PAGE_TRANSITION_RELOAD)) {
+    return;
+  }
+  contextual_cueing_service_->ReportPageLoad(navigation_handle->GetURL());
+}
+
+void ContextualCueingHelper::DocumentOnLoadCompletedInPrimaryMainFrame() {
+  last_navigation_cue_label_.clear();
 
   if (!contextual_cueing_service_->CanShowNudge()) {
     return;
@@ -107,9 +114,6 @@ void ContextualCueingHelper::DocumentOnLoadCompletedInPrimaryMainFrame() {
     }
   }
 
-  if (!last_navigation_cue_label_.empty()) {
-    remaining_quiet_loads_ = kMinPageCountBetweenNudges.Get();
-  }
   glic_nudge_controller->UpdateNudgeLabel(web_contents(),
                                           last_navigation_cue_label_);
 }

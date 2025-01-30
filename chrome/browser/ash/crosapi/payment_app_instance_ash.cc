@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "ash/public/cpp/external_arc/overlay/arc_overlay_manager.h"
 #include "base/check.h"
 #include "base/check_is_test.h"
 #include "base/logging.h"
@@ -14,6 +13,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chromeos/ash/experiences/arc/overlay/arc_overlay_manager.h"
 #include "chromeos/ash/experiences/arc/pay/arc_payment_app_bridge.h"
 #include "components/payments/core/native_error_strings.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"

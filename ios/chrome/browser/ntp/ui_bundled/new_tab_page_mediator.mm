@@ -244,7 +244,7 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 #pragma mark - ChromeAccountManagerServiceObserver
 
 - (void)identityUpdated:(id<SystemIdentity>)identity {
-  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+  if (IsUseAccountListFromIdentityManagerEnabled()) {
     // Listening to `onExtendedAccountInfoUpdated` instead.
     return;
   }
@@ -286,7 +286,7 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 }
 
 - (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
-  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
+  if (!IsUseAccountListFromIdentityManagerEnabled()) {
     // Listening to `identityUpdated` instead.
     return;
   }

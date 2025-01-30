@@ -84,7 +84,7 @@ source_set("browser_tests") {
   }
 
   if (is_chromeos_ash) {
-    deps += [ "//ash/public/cpp/external_arc:external_arc" ]
+    deps += [ "//ash/components/arc" ]
   }
 }
 

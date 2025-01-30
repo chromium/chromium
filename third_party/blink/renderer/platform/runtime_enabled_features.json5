@@ -2357,7 +2357,7 @@
     // When this flag is disabled only v1 actions (popover and dialog defaults) will work.
     {
       name: "HTMLInvokeActionsV2",
-      status: "experimental",
+      status: "test",
     },
     // Adds support for the experimental `invoketarget` and `invokeaction`
     // attributes, as specified in the open-ui "Invokers" explainer.

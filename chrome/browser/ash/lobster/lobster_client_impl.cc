@@ -40,6 +40,10 @@ void LobsterClientImpl::InflateCandidate(
   service_->InflateCandidate(seed, query, std::move(callback));
 }
 
+void LobsterClientImpl::ShowDisclaimerUI() {
+  return service_->ShowDisclaimerUI();
+}
+
 void LobsterClientImpl::LoadUI(std::optional<std::string> query,
                                ash::LobsterMode mode,
                                const gfx::Rect& caret_bounds) {

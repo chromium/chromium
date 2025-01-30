@@ -60,6 +60,8 @@ class ASH_EXPORT LobsterController {
                                          bool support_image_insertion,
                                          const gfx::Rect& caret_bounds);
 
+  void LoadUIFromCachedContext();
+
  private:
   friend class Trigger;
 

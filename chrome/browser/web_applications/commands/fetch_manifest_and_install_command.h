@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/functional/callback_forward.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"

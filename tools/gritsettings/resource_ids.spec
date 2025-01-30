@@ -208,10 +208,6 @@
     "META": {"sizes": {"includes": [5]}},
     "includes": [3000],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/arc_account_picker/resources.grd": {
-    "META": {"sizes": {"includes": [10],}},
-    "includes": [3020],
-  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/assistant_optin/assistant_optin_resources.grd": {
     "META": {"sizes": {"includes": [80]}},
     "includes": [3040],

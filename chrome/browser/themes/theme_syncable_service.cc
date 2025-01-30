@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/base64.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"

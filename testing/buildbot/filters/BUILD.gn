@@ -21,6 +21,7 @@ source_set("android_browsertests_filters") {
 
   data = [
     "//testing/buildbot/filters/android.desktop.emulator_14.android_browsertests.filter",
+    "//testing/buildbot/filters/android.desktop.emulator_15.android_browsertests.filter",
     "//testing/buildbot/filters/android.emulator_10.android_browsertests.filter",
   ]
 }
@@ -116,6 +117,7 @@ source_set("chrome_public_test_apk_filters") {
     "//testing/buildbot/filters/android.emulator_13.chrome_public_test_apk.filter",
     "//testing/buildbot/filters/android.emulator_14.chrome_public_test_apk.filter",
     "//testing/buildbot/filters/android.emulator_15_tablet_landscape.chrome_public_test_apk.filter",
+    "//testing/buildbot/filters/android.emulator_15_tablet.chrome_public_test_apk.filter",
     "//testing/buildbot/filters/android.emulator_15.chrome_public_test_apk.filter",
     "//testing/buildbot/filters/android.emulator_o.chrome_public_test_apk.filter",
     "//testing/buildbot/filters/android.emulator_p.chrome_public_test_apk.filter",

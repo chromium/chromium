@@ -60,9 +60,8 @@ public class AccountSelectionWidgetModeIntegrationTest extends AccountSelectionI
                 () -> {
                     mAccountSelection.showAccounts(
                             EXAMPLE_ETLD_PLUS_ONE,
-                            TEST_ETLD_PLUS_ONE_2,
                             Arrays.asList(NEW_BOB),
-                            mIdpDataWithAddAccount,
+                            Arrays.asList(mIdpDataWithAddAccount),
                             /* isAutoReauthn= */ false,
                             /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);

@@ -38,7 +38,11 @@ class MockProducer : public perfetto::Producer {
   MockProducer();
   ~MockProducer() override;
 
-  void Connect(PerfettoService* service,
+  inline void Connect(PerfettoService* service,
+                      const std::string& producer_name) {
+    Connect(service->GetService(), producer_name);
+  }
+  void Connect(perfetto::TracingService* service,
                const std::string& producer_name,
                uid_t uid = 42,
                pid_t pid = 1025);

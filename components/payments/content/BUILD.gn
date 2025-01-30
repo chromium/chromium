@@ -96,7 +96,6 @@ static_library("content") {
 
     deps += [
       "//ash/components/arc",
-      "//ash/public/cpp/external_arc",
       "//chromeos/components/payments/mojom",
     ]
   } else {
@@ -292,7 +291,6 @@ source_set("unit_tests") {
     deps += [
       "//ash/components/arc",
       "//ash/components/arc:arc_test_support",
-      "//ash/public/cpp/external_arc:test_support",
       "//chromeos/ash/experiences/arc/intent_helper",
       "//chromeos/ash/experiences/arc/mojom",
       "//chromeos/components/payments:test_support",

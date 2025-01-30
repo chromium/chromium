@@ -297,7 +297,7 @@ NSString* GetPromoLabelString(
 #pragma mark - ChromeAccountManagerServiceObserver
 
 - (void)identityListChanged {
-  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+  if (IsUseAccountListFromIdentityManagerEnabled()) {
     // Listening to `onAccountsOnDeviceChanged` instead.
     return;
   }
@@ -305,7 +305,7 @@ NSString* GetPromoLabelString(
 }
 
 - (void)identityUpdated:(id<SystemIdentity>)identity {
-  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+  if (IsUseAccountListFromIdentityManagerEnabled()) {
     // Listening to `onExtendedAccountInfoUpdated` instead.
     return;
   }
@@ -321,7 +321,7 @@ NSString* GetPromoLabelString(
 #pragma mark -  IdentityManagerObserver
 
 - (void)onAccountsOnDeviceChanged {
-  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
+  if (!IsUseAccountListFromIdentityManagerEnabled()) {
     // Listening to `identityListChanged` instead.
     return;
   }
@@ -329,7 +329,7 @@ NSString* GetPromoLabelString(
 }
 
 - (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
-  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
+  if (!IsUseAccountListFromIdentityManagerEnabled()) {
     // Listening to `identityUpdated` instead.
     return;
   }

@@ -15,6 +15,7 @@
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
+#include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/test/mock_compositor_frame_sink.h"
 #include "third_party/blink/renderer/platform/graphics/test/mock_embedded_frame_sink_provider.h"
 #include "third_party/blink/renderer/platform/graphics/test/test_webgraphics_shared_image_interface_provider.h"
@@ -123,8 +124,8 @@ class CanvasResourceDispatcherTest
 
     dispatcher_ = std::make_unique<MockCanvasResourceDispatcher>();
     resource_provider_ = CanvasResourceProvider::CreateSharedBitmapProvider(
-        gfx::Size(kWidth, kHeight), kN32_SkColorType, kPremul_SkAlphaType,
-        gfx::ColorSpace::CreateSRGB(),
+        gfx::Size(kWidth, kHeight), GetN32FormatForCanvas(),
+        kPremul_SkAlphaType, gfx::ColorSpace::CreateSRGB(),
         CanvasResourceProvider::ShouldInitialize::kCallClear,
         test_web_shared_image_interface_provider_.get());
   }

@@ -7,6 +7,7 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"
@@ -33,6 +34,7 @@
 #include "content/test/content_browser_test_utils_internal.h"
 #include "ipc/ipc_security_test_util.h"
 #include "net/base/features.h"
+#include "net/base/filename_util.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_access_result.h"
 #include "net/cookies/cookie_util.h"
@@ -616,6 +618,87 @@ IN_PROC_BROWSER_TEST_F(CookieBrowserTest, ETldDomainCookiesHeader) {
     EXPECT_TRUE(NavigateToURL(shell(), http_url));
     EXPECT_EQ("", got_cookie_on_request);
   }
+}
+
+enum class CookieFileMode { kDefault, kEnabled, kDisabled };
+
+class CookieFileBrowserTest
+    : public ContentBrowserTest,
+      public ::testing::WithParamInterface<CookieFileMode> {
+ protected:
+  void SetUpOnMainThread() override {
+    // Setup file url.
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    EXPECT_TRUE(file_directory_.CreateUniqueTempDir());
+    base::FilePath file_path =
+        file_directory_.GetPath().AppendASCII("index.html");
+    EXPECT_TRUE(base::WriteFile(file_path, ""));
+    file_url_ = net::FilePathToFileURL(file_path);
+
+    // Setup cookie manager.
+    bool file_cookie_enabled;
+    switch (GetParam()) {
+      case CookieFileMode::kDefault:
+        // Nothing to do.
+        return;
+      case CookieFileMode::kEnabled:
+        file_cookie_enabled = true;
+        break;
+      case CookieFileMode::kDisabled:
+        file_cookie_enabled = false;
+        break;
+    }
+    base::RunLoop run_loop;
+    shell()
+        ->web_contents()
+        ->GetBrowserContext()
+        ->GetDefaultStoragePartition()
+        ->GetCookieManagerForBrowserProcess()
+        ->AllowFileSchemeCookies(file_cookie_enabled,
+                                 base::BindLambdaForTesting([&](bool success) {
+                                   EXPECT_TRUE(success);
+                                   run_loop.Quit();
+                                 }));
+    run_loop.Run();
+  }
+
+  GURL file_url_;
+
+ private:
+  base::ScopedTempDir file_directory_;
+};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         CookieFileBrowserTest,
+                         ::testing::Values(CookieFileMode::kDefault,
+                                           CookieFileMode::kEnabled,
+                                           CookieFileMode::kDisabled));
+
+// Try to set and get cookies on a file URL.
+IN_PROC_BROWSER_TEST_P(CookieFileBrowserTest, SetAndGetCookie) {
+  // Navigate to file.
+  EXPECT_TRUE(NavigateToURL(shell(), file_url_));
+  RenderFrameHost* frame = shell()->web_contents()->GetPrimaryMainFrame();
+
+  // File cookies always appear to be writable.
+  EXPECT_TRUE(EvalJs(frame, "navigator.cookieEnabled").ExtractBool());
+
+  // File cookies can only be set if they are enabled.
+  bool can_set_cookies;
+  switch (GetParam()) {
+    case CookieFileMode::kDefault:
+      // TODO(crbug.com/378604901): Perhapse this should be allowed by default.
+      can_set_cookies = false;
+      return;
+    case CookieFileMode::kEnabled:
+      can_set_cookies = true;
+      break;
+    case CookieFileMode::kDisabled:
+      can_set_cookies = false;
+      break;
+  }
+  SetCookieFromJS(frame, "test=1");
+  EXPECT_EQ(can_set_cookies ? "test=1" : "", GetCookieFromJS(frame));
 }
 
 }  // namespace content

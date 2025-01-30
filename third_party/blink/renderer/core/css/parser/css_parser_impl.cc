@@ -14,6 +14,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/cpu.h"
 #include "third_party/blink/renderer/core/animation/timeline_offset.h"
 #include "third_party/blink/renderer/core/core_probes_inl.h"

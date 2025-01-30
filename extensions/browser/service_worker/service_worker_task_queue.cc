@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/containers/map_util.h"

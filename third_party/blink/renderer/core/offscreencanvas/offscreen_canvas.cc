@@ -574,7 +574,7 @@ CanvasResourceProvider* OffscreenCanvas::GetOrCreateResourceProvider() {
     base::WeakPtr<CanvasResourceDispatcher> dispatcher_weakptr =
         GetOrCreateResourceDispatcher()->GetWeakPtr();
     provider = CanvasResourceProvider::CreateSharedBitmapProvider(
-        Size(), sk_color_type, alpha_type, color_space,
+        Size(), format, alpha_type, color_space,
         CanvasResourceProvider::ShouldInitialize::kCallClear,
         SharedGpuContext::SharedImageInterfaceProvider(), this);
   }

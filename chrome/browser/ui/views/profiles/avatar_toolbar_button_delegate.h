@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 
+#include "base/auto_reset.h"
 #include "base/callback_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"

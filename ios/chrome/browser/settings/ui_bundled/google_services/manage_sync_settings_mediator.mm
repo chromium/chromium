@@ -1081,7 +1081,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
 #pragma mark - IdentityManagerObserverBridgeDelegate
 
 - (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
-  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
+  if (!IsUseAccountListFromIdentityManagerEnabled()) {
     // Listening to `identityUpdated` instead.
     return;
   }
@@ -1108,7 +1108,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
 #pragma mark - ChromeAccountManagerServiceObserver
 
 - (void)identityUpdated:(id<SystemIdentity>)identity {
-  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+  if (IsUseAccountListFromIdentityManagerEnabled()) {
     // Listening to `onExtendedAccountInfoUpdated` instead.
     return;
   }

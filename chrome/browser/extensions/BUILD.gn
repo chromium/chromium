@@ -1051,7 +1051,6 @@ source_set("extensions") {
         "//chrome/browser/chromeos/app_mode",
         "//chrome/browser/chromeos/drivefs",
         "//chrome/browser/chromeos/drivefs:native_message_host_origins",
-        "//chrome/browser/chromeos/extensions:constants",
         "//chrome/browser/chromeos/extensions/file_system_provider",
         "//chrome/browser/chromeos/extensions/login_screen/login/cleanup",
         "//chrome/browser/chromeos/extensions/smart_card_provider_private:smart_card_provider_private",

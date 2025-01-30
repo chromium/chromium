@@ -79,6 +79,11 @@ using base::test::ios::WaitUntilConditionOrTimeout;
   [self verifySignedInWithFakeIdentity:identity];
 }
 
+- (void)signinAndWaitForSyncTransportStateActive:(FakeSystemIdentity*)identity {
+  [self signinWithFakeIdentity:identity];
+  [ChromeEarlGrey waitForSyncTransportStateActiveWithTimeout:base::Seconds(10)];
+}
+
 - (void)signinAndEnableLegacySyncFeature:(FakeSystemIdentity*)identity {
   [SigninEarlGreyAppInterface signinAndEnableLegacySyncFeature:identity];
   [self verifyPrimaryAccountWithEmail:identity.userEmail

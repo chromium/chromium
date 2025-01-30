@@ -507,7 +507,7 @@ void DownloadToolbarUIController::UpdateDownloadIcon(
   // Whether to update the icon after processing any changes.
   bool update_icon = false;
 
-  if (updates.show_animation) {
+  if (updates.show_animation && show_download_started_animation_) {
     has_pending_download_started_animation_ = true;
     auto* container = GetPinnedToolbarActionsContainer(browser_view_);
     container->GetAnimatingLayoutManager()->PostOrQueueAction(base::BindOnce(
@@ -778,7 +778,20 @@ DownloadToolbarUIController::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
+// If the browser was inactive when the bubble was shown, then the bubble would
+// be inactive. This would prevent close-on-deactivate, making the bubble
+// unclosable. To work around this, we activate the bubble when the current
+// browser becomes active, so that clicking outside the bubble will deactivate
+// and close it.
 void DownloadToolbarUIController::OnBrowserSetLastActive(Browser* browser) {
+  if (browser == browser_view_->browser() && bubble_delegate_ &&
+      !bubble_delegate_->GetWidget()->IsClosed()) {
+    // We need to defer activating the download bubble when the browser window
+    // is being activated, otherwise this is ineffective on macOS.
+    content::GetUIThreadTaskRunner()->PostTask(
+        FROM_HERE, base::BindOnce(&views::Widget::Activate,
+                                  bubble_delegate_->GetWidget()->GetWeakPtr()));
+  }
   UpdateIconDormant();
 }
 
@@ -805,6 +818,7 @@ void DownloadToolbarUIController::ShowPendingDownloadStartedAnimation() {
   if (!has_pending_download_started_animation_) {
     return;
   }
+  CHECK(show_download_started_animation_);
   has_pending_download_started_animation_ = false;
   if (!gfx::Animation::ShouldRenderRichAnimation()) {
     return;

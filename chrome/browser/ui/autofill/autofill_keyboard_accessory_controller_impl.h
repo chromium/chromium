@@ -37,16 +37,10 @@ struct Suggestion;
 class AutofillKeyboardAccessoryControllerImpl
     : public AutofillKeyboardAccessoryController {
  public:
-  using ShowPasswordMigrationWarningCallback = base::RepeatingCallback<void(
-      gfx::NativeWindow,
-      Profile*,
-      password_manager::metrics_util::PasswordMigrationWarningTriggers)>;
-
   AutofillKeyboardAccessoryControllerImpl(
       base::WeakPtr<AutofillSuggestionDelegate> delegate,
       content::WebContents* web_contents,
-      PopupControllerCommon controller_common,
-      ShowPasswordMigrationWarningCallback show_pwd_migration_warning_callback);
+      PopupControllerCommon controller_common);
 
   AutofillKeyboardAccessoryControllerImpl(
       const AutofillKeyboardAccessoryControllerImpl&) = delete;
@@ -157,11 +151,6 @@ class AutofillKeyboardAccessoryControllerImpl
   // If set to true, the popup will stay open regardless of external changes on
   // the machine that would normally cause the popup to be hidden.
   bool keep_popup_open_for_testing_ = false;
-
-  // Callback invoked to try to show the password migration warning on Android.
-  // Used to facilitate testing.
-  // TODO(crbug.com/40272324): Remove when the warning isn't needed anymore.
-  ShowPasswordMigrationWarningCallback show_pwd_migration_warning_callback_;
 
   // The `FillingProduct` that matches the suggestions shown in the popup.
   // The first `IsStandaloneSuggestionType()` is used to define what the

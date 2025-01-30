@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/post_delayed_memory_reduction_task.h"
 #include "base/no_destructor.h"
+#include "base/profiler/sample_metadata.h"
 #include "base/task/delayed_task_handle.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
@@ -305,6 +306,8 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
   //     frozen by App Freezer.
   base::TimeTicks self_compaction_last_cancelled_ GUARDED_BY(lock_) =
       base::TimeTicks::Min();
+  std::optional<base::ScopedSampleMetadata> process_compacted_metadata_
+      GUARDED_BY(lock_);
   bool supports_modern_trim_;
 };
 

@@ -75,7 +75,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_pref_names.h"
-#include "ash/constants/ash_pref_names.h"  // nogncheck
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "chrome/browser/ash/app_restore/full_restore_prefs.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_pref_names.h"
@@ -88,7 +87,6 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/supervised_user_cros_settings_provider.h"
 #include "chrome/browser/ash/system/timezone_util.h"
-#include "chrome/browser/chromeos/extensions/controlled_pref_mapping.h"
 #include "chrome/browser/extensions/api/settings_private/chromeos_resolve_time_zone_by_geolocation_method_short.h"
 #include "chrome/browser/extensions/api/settings_private/chromeos_resolve_time_zone_by_geolocation_on_off.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -1153,33 +1151,33 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   (*s_allowlist)[::prefs::kPrintingAPIExtensionsAllowlist] =
       settings_api::PrefType::kList;
 
-  (*s_allowlist)[chromeos::prefs::kAccessibilityFocusHighlightEnabled] =
+  (*s_allowlist)[ash::prefs::kAccessibilityFocusHighlightEnabled] =
       settings_api::PrefType::kBoolean;
-  (*s_allowlist)[chromeos::prefs::kDockedMagnifierEnabled] =
+  (*s_allowlist)[ash::prefs::kDockedMagnifierEnabled] =
       settings_api::PrefType::kBoolean;
-  (*s_allowlist)[chromeos::prefs::kAccessibilityAutoclickEnabled] =
+  (*s_allowlist)[ash::prefs::kAccessibilityAutoclickEnabled] =
       settings_api::PrefType::kBoolean;
-  (*s_allowlist)[chromeos::prefs::kAccessibilityCaretHighlightEnabled] =
+  (*s_allowlist)[ash::prefs::kAccessibilityCaretHighlightEnabled] =
       settings_api::PrefType::kBoolean;
-  (*s_allowlist)[chromeos::prefs::kAccessibilityCursorHighlightEnabled] =
+  (*s_allowlist)[ash::prefs::kAccessibilityCursorHighlightEnabled] =
       settings_api::PrefType::kBoolean;
-  (*s_allowlist)[chromeos::prefs::kAccessibilityDictationEnabled] =
+  (*s_allowlist)[ash::prefs::kAccessibilityDictationEnabled] =
       settings_api::PrefType::kBoolean;
-  (*s_allowlist)[chromeos::prefs::kAccessibilityHighContrastEnabled] =
+  (*s_allowlist)[ash::prefs::kAccessibilityHighContrastEnabled] =
       settings_api::PrefType::kBoolean;
-  (*s_allowlist)[chromeos::prefs::kAccessibilityLargeCursorEnabled] =
+  (*s_allowlist)[ash::prefs::kAccessibilityLargeCursorEnabled] =
       settings_api::PrefType::kBoolean;
-  (*s_allowlist)[chromeos::prefs::kAccessibilityScreenMagnifierEnabled] =
+  (*s_allowlist)[ash::prefs::kAccessibilityScreenMagnifierEnabled] =
       settings_api::PrefType::kBoolean;
-  (*s_allowlist)[chromeos::prefs::kAccessibilitySelectToSpeakEnabled] =
+  (*s_allowlist)[ash::prefs::kAccessibilitySelectToSpeakEnabled] =
       settings_api::PrefType::kBoolean;
-  (*s_allowlist)[chromeos::prefs::kAccessibilitySpokenFeedbackEnabled] =
+  (*s_allowlist)[ash::prefs::kAccessibilitySpokenFeedbackEnabled] =
       settings_api::PrefType::kBoolean;
-  (*s_allowlist)[chromeos::prefs::kAccessibilityStickyKeysEnabled] =
+  (*s_allowlist)[ash::prefs::kAccessibilityStickyKeysEnabled] =
       settings_api::PrefType::kBoolean;
-  (*s_allowlist)[chromeos::prefs::kAccessibilitySwitchAccessEnabled] =
+  (*s_allowlist)[ash::prefs::kAccessibilitySwitchAccessEnabled] =
       settings_api::PrefType::kBoolean;
-  (*s_allowlist)[chromeos::prefs::kAccessibilityVirtualKeyboardEnabled] =
+  (*s_allowlist)[ash::prefs::kAccessibilityVirtualKeyboardEnabled] =
       settings_api::PrefType::kBoolean;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

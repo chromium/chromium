@@ -12,7 +12,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/public/cpp/external_arc/overlay/arc_overlay_manager.h"
+#include "chromeos/ash/experiences/arc/overlay/arc_overlay_manager.h"
 #endif
 
 namespace payments {

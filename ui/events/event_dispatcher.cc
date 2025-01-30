@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/auto_reset.h"
 #include "ui/events/event_target.h"
 #include "ui/events/event_targeter.h"
 

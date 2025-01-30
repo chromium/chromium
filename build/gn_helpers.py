@@ -32,7 +32,7 @@ _CHROMIUM_ROOT = os.path.abspath(
 
 ARGS_GN_FILENAME = 'args.gn'
 BUILD_VARS_FILENAME = 'build_vars.json'
-IMPORT_RE = re.compile(r'^import\("//(\S+)"\)')
+IMPORT_RE = re.compile(r'^import\("(\S+)"\)')
 
 
 class GNError(Exception):
@@ -287,7 +287,20 @@ class GNValueParser(object):
       regex_match = IMPORT_RE.match(line)
       if not regex_match:
         raise GNError('Not a valid import string: %s' % line)
-      import_path = os.path.join(self.checkout_root, regex_match.group(1))
+      import_path = regex_match.group(1)
+
+      if import_path.startswith("//"):
+        import_path = os.path.join(self.checkout_root, import_path[2:])
+      elif sys.platform.startswith('win32'):
+        if import_path.startswith("/"):
+          # gn users '/C:/path/to/foo.gn', not 'C:/path/to/foo.gn' on windows
+          import_path = import_path[1:]
+        else:
+          raise GNError('Need /-prefix for an absolute path: %s' % import_path)
+
+      if not os.path.isabs(import_path):
+        raise GNError('Unable to use relative path in import path: %s' %
+                      import_path)
       with open(import_path) as f:
         imported_args = f.read()
       self.input = self.input.replace(line, imported_args)

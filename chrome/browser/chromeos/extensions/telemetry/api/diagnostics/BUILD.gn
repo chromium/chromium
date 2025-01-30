@@ -22,7 +22,6 @@ source_set("diagnostics") {
 
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//chrome/browser/chromeos/extensions/telemetry/api/common",
     "//chrome/browser/chromeos/extensions/telemetry/api/routines:routine_manager",
     "//chrome/common/chromeos/extensions/api",
@@ -51,7 +50,6 @@ source_set("browser_tests") {
   deps = [
     ":diagnostics",
     "//base",
-    "//build:chromeos_buildflags",
     "//chrome/browser/chromeos/extensions/telemetry/api/common:test_support",
     "//chrome/browser/chromeos/extensions/telemetry/api/routines:test_support",
     "//chrome/browser/ui",

@@ -12,7 +12,9 @@
 #include "components/data_sharing/public/group_data.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/features.h"
+#include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings.h"
 
 namespace collaboration {
 
@@ -199,11 +201,20 @@ void CollaborationServiceImpl::FinishShareFlow(
 }
 
 SyncStatus CollaborationServiceImpl::GetSyncStatus() {
-  syncer::DataTypeSet data_types = sync_service_->GetActiveDataTypes();
-  if (data_types.Has(syncer::DataType::SAVED_TAB_GROUP) &&
-      data_types.Has(syncer::DataType::COLLABORATION_GROUP)) {
+  syncer::SyncUserSettings* user_settings = sync_service_->GetUserSettings();
+  // The mapping between the selected type and what is actually sync'ed is done
+  // in `GetUserSelectableTypeInfo()`.
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
+  if (user_settings->GetSelectedTypes().Has(
+          syncer::UserSelectableType::kTabs)) {
     return SyncStatus::kSyncEnabled;
   }
+#else
+  if (user_settings->GetSelectedTypes().HasAll(
+          {syncer::UserSelectableType::kSavedTabGroups})) {
+    return SyncStatus::kSyncEnabled;
+  }
+#endif
 
   if (sync_service_->IsSyncFeatureEnabled()) {
     // Sync-the-feature is enabled, but the required data types are not.

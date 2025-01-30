@@ -178,7 +178,7 @@ bool ShouldPresentUserSigninUpgrade(ProfileIOS* profile,
   // before ForceStartupSigninPromo() to avoid any DCHECK failures if
   // ForceStartupSigninPromo() returns true.
   NSSet<NSString*>* identities_on_device_gaia_ids;
-  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+  if (IsUseAccountListFromIdentityManagerEnabled()) {
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(profile);
     identities_on_device_gaia_ids =
@@ -290,7 +290,7 @@ void RecordUpgradePromoSigninStarted(
   [defaults setObject:base::SysUTF8ToNSString(current_version.GetString())
                forKey:kDisplayedSSORecallForMajorVersionKey];
   NSSet<NSString*>* gaia_id_on_device_set;
-  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+  if (IsUseAccountListFromIdentityManagerEnabled()) {
     std::vector<AccountInfo> account_infos =
         identity_manager->GetAccountsOnDevice();
     gaia_id_on_device_set = GaiaIdSetWithAccountInfos(account_infos);
@@ -338,7 +338,7 @@ Tribool TriboolFromCapabilityResult(SystemIdentityCapabilityResult result) {
 NSArray<id<SystemIdentity>>* GetIdentitiesOnDevice(
     signin::IdentityManager* identityManager,
     ChromeAccountManagerService* accountManagerService) {
-  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
+  if (!IsUseAccountListFromIdentityManagerEnabled()) {
     return accountManagerService->GetAllIdentities();
   }
   std::vector<AccountInfo> accountInfos =

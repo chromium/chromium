@@ -7,7 +7,7 @@
 
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
-#include "build/chromeos_buildflags.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/api_guard_delegate.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/base_telemetry_extension_browser_test.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/fake_api_guard_delegate.h"
@@ -16,6 +16,9 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/crosapi/cpp/telemetry/fake_probe_service.h"
 #include "chromeos/crosapi/mojom/probe_service.mojom.h"
+#include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/common/extension_features.h"
 #include "net/base/net_errors.h"
@@ -24,20 +27,6 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "components/user_manager/scoped_user_manager.h"
-#include "components/user_manager/user.h"
-#include "components/user_manager/user_manager.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "chromeos/crosapi/mojom/diagnostics_service.mojom.h"
-#include "chromeos/startup/browser_init_params.h"
-#include "components/policy/core/common/policy_loader_lacros.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace chromeos {
 
@@ -784,11 +773,9 @@ class TelemetryExtensionApiGuardRealDelegateBrowserTest
     // a FakeApiGuardDelegate instance.
     extensions::ExtensionBrowserTest::SetUpOnMainThread();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     // Must be initialized before dealing with UserManager.
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
         std::make_unique<ash::FakeChromeUserManager>());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     https_server_.StartAcceptingConnections();
 
@@ -810,7 +797,6 @@ class TelemetryExtensionApiGuardRealDelegateBrowserTest
         fake_probe_service_->BindNewPipeAndPassRemote());
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   void TearDownOnMainThread() override {
     // Explicitly removing the user is required; otherwise ProfileHelper keeps
     // a dangling pointer to the User.
@@ -820,25 +806,12 @@ class TelemetryExtensionApiGuardRealDelegateBrowserTest
         GetFakeUserManager()->GetActiveUser()->GetAccountId());
     user_manager_enabler_.reset();
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
  protected:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::FakeChromeUserManager* GetFakeUserManager() const {
     return static_cast<ash::FakeChromeUserManager*>(
         user_manager::UserManager::Get());
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Returns whether the Diagnostics interface is available. It may
-  // not be available on earlier versions of ash-chrome.
-  bool IsServiceAvailable() const {
-    chromeos::LacrosService* lacros_service = chromeos::LacrosService::Get();
-    return lacros_service &&
-           lacros_service->IsAvailable<crosapi::DiagnosticsService>();
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   GURL GetPwaGURL() const { return https_server_.GetURL("/ssl/google.html"); }
 
@@ -850,9 +823,7 @@ class TelemetryExtensionApiGuardRealDelegateBrowserTest
 
   std::unique_ptr<FakeProbeService> fake_probe_service_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 
 // Smoke test to verify that real ApiGuardDelegate works in prod.
@@ -861,19 +832,6 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionApiGuardRealDelegateBrowserTest,
                        DISABLED_CanAccessRunBatteryCapacityRoutine) {
   SetUpProbeService();
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // We can't run this test if Ash doesn't support the crosapi
-  // interface.
-  if (!IsServiceAvailable()) {
-    return;
-  }
-
-  // Check that device ownership is set up.
-  ASSERT_TRUE(
-      chromeos::BrowserInitParams::GetForTests()->is_current_user_device_owner);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Add a new user and make it owner.
   auto* const user_manager = GetFakeUserManager();
   const AccountId account_id = AccountId::FromUserEmail("user@example.com");
@@ -881,7 +839,6 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionApiGuardRealDelegateBrowserTest,
   user_manager->LoginUser(account_id);
   user_manager->SwitchActiveUser(account_id);
   user_manager->SetOwnerId(account_id);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Make sure PWA UI is open and secure.
   auto* pwa_page_rfh =
@@ -907,19 +864,6 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionApiGuardRealDelegateBrowserTest,
                        DISABLED_UseCacheForMultipleApiAccess) {
   SetUpProbeService();
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // We can't run this test if Ash doesn't support the crosapi
-  // interface.
-  if (!IsServiceAvailable()) {
-    return;
-  }
-
-  auto init_params = chromeos::BrowserInitParams::GetForTests()->Clone();
-  init_params->is_current_user_device_owner = true;
-  chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Add a new user and make it owner.
   auto* const user_manager = GetFakeUserManager();
   const AccountId account_id = AccountId::FromUserEmail("user@example.com");
@@ -927,7 +871,6 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionApiGuardRealDelegateBrowserTest,
   user_manager->LoginUser(account_id);
   user_manager->SwitchActiveUser(account_id);
   user_manager->SetOwnerId(account_id);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Make sure PWA UI is open and secure.
   auto* pwa_page_rfh =

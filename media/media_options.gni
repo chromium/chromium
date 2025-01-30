@@ -50,6 +50,11 @@ declare_args() {
   # decoding of VP9 and VP8A type content.
   media_use_libvpx = true
 
+  # Enables the use of OpenSLES on Android.
+  # Should not be disabled for versions of Android before Q, since we only
+  # support AAudio on level 29 and above.
+  media_use_opensles = true
+
   # non-blink builds doesn't use ffmpeg, libvpx.
   if (!use_blink) {
     media_use_ffmpeg = false

@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "chrome/browser/browser_process.h"

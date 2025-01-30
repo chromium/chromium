@@ -4,7 +4,7 @@
 
 #include <utility>
 
-#include "ash/public/cpp/external_arc/overlay/test/test_arc_overlay_manager.h"
+#include "chromeos/ash/experiences/arc/overlay/test/test_arc_overlay_manager.h"
 #include "chromeos/ash/experiences/arc/pay/arc_payment_app_bridge.h"
 #include "chromeos/ash/experiences/arc/test/arc_payment_app_bridge_test_support.h"
 #include "chromeos/components/payments/mojom/payment_app.mojom.h"

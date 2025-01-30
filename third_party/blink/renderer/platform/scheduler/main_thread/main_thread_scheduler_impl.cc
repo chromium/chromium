@@ -2232,9 +2232,6 @@ void MainThreadSchedulerImpl::RemovePageScheduler(
 
 void MainThreadSchedulerImpl::OnPageFrozen(
     base::MemoryReductionTaskContext called_from) {
-  main_thread_only().renderer_frozen_metadata.emplace(
-      "MainThreadSchedulerImpl.RendererFrozen", /* is_frozen */ 1,
-      base::SampleMetadataScope::kProcess);
 #if BUILDFLAG(IS_ANDROID)
   memory_purge_manager_.SetOnAllPagesFrozenCallback(base::BindRepeating(
       [](MainThreadSchedulerImpl* s, bool is_frozen) {
@@ -2248,6 +2245,9 @@ void MainThreadSchedulerImpl::OnPageFrozen(
 #endif
   memory_purge_manager_.OnPageFrozen(called_from);
   UpdatePolicy();
+  main_thread_only().renderer_frozen_metadata.emplace(
+      "MainThreadSchedulerImpl.RendererFrozen", /* is_frozen */ 1,
+      base::SampleMetadataScope::kProcess);
 }
 
 void MainThreadSchedulerImpl::OnPageResumed() {

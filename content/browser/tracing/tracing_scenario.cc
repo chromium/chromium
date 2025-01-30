@@ -22,6 +22,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_config.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
+#include "services/tracing/public/cpp/tracing_features.h"
 #include "third_party/perfetto/protos/perfetto/config/track_event/track_event_config.gen.h"
 
 namespace content {
@@ -245,6 +246,7 @@ TracingScenario::TracingScenario(
       privacy_filtering_enabled_(enable_privacy_filter),
       is_local_scenario_(is_local_scenario),
       request_startup_tracing_(request_startup_tracing),
+      use_system_backend_(config.use_system_backend()),
       trace_config_(config.trace_config()),
       scenario_delegate_(scenario_delegate) {}
 
@@ -253,10 +255,13 @@ TracingScenario::~TracingScenario() = default;
 bool TracingScenario::Initialize(
     const perfetto::protos::gen::ScenarioConfig& config,
     bool enable_package_name_filter) {
+  bool enable_system_backend =
+      use_system_backend_ && tracing::SystemBackgroundTracingEnabled();
   if (!tracing::AdaptPerfettoConfigForChrome(
           &trace_config_, privacy_filtering_enabled_,
           enable_package_name_filter,
-          perfetto::protos::gen::ChromeConfig::BACKGROUND)) {
+          perfetto::protos::gen::ChromeConfig::BACKGROUND,
+          enable_system_backend)) {
     return false;
   }
   for (const auto& nested_config : config.nested_scenarios()) {
@@ -318,7 +323,15 @@ void TracingScenario::GenerateMetadataProto(
 
 std::unique_ptr<perfetto::TracingSession>
 TracingScenario::CreateTracingSession() {
-  return perfetto::Tracing::NewTrace(perfetto::BackendType::kCustomBackend);
+  // If the scenario is configured to use the system backend, the platform
+  // should support it (see OnSetupTrigger()). Otherwise this is a configuration
+  // error.
+  DCHECK(!use_system_backend_ || tracing::SystemBackgroundTracingEnabled());
+  auto backend_type =
+      (use_system_backend_ && tracing::SystemBackgroundTracingEnabled())
+          ? perfetto::BackendType::kSystemBackend
+          : perfetto::BackendType::kCustomBackend;
+  return perfetto::Tracing::NewTrace(backend_type);
 }
 
 void TracingScenario::SetupTracingSession() {
@@ -430,6 +443,12 @@ void TracingScenario::OnNestedScenarioUpload(
 bool TracingScenario::OnSetupTrigger(
     const BackgroundTracingRule* triggered_rule) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Skip this scenario if it requires the system backend, but the system
+  // backend is unavailable (a configuration error).
+  if (use_system_backend_ && !tracing::SystemBackgroundTracingEnabled()) {
+    return false;
+  }
 
   if (!scenario_delegate_->OnScenarioActive(this)) {
     return false;

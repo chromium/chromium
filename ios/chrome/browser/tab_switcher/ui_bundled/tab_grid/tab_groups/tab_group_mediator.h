@@ -37,12 +37,14 @@ class WebStateList;
 // Called when the:
 // * last tab is closed,
 // * user is the OWNER of the tab group.
-- (void)tabGroupMediatorCloseLastTabAsOwner:(TabGroupMediator*)mediator;
+- (void)tabGroupMediatorCloseLastTabAsOwner:(TabGroupMediator*)mediator
+                          lastTabIdentifier:(web::WebStateID)identifier;
 
 // Called when the:
 // * last tab is closed,
 // * user is a MEMBER of the tab group.
-- (void)tabGroupMediatorCloseLastTabAsMember:(TabGroupMediator*)mediator;
+- (void)tabGroupMediatorCloseLastTabAsMember:(TabGroupMediator*)mediator
+                           lastTabIdentifier:(web::WebStateID)identifier;
 
 @end
 

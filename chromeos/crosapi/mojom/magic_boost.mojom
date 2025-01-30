@@ -7,7 +7,7 @@ module crosapi.mojom;
 // This API is used to forward requests to conduct Magic Boost opt-in flow
 // from Lacros (Client) to the actual implementation in Ash-Chrome.
 // Next Method ID: 2
-// Next MinVersion: 4
+// Next MinVersion: 5
 [Uuid="7045789d-b1df-422c-a9c2-39990e977b2b"]
 interface MagicBoostController {
   // Specifies which action to complete after the opt-in flow has been
@@ -22,6 +22,9 @@ interface MagicBoostController {
 
     // Show the Mahi panel after completing the opt-in flow.
     [MinVersion=3] kShowHmrPanel,
+
+    // Show the Lobster UI after completing the opt-in flow.
+    [MinVersion=4] kShowLobsterPanel,
   };
 
   // Specifies which features are the opt in ones.

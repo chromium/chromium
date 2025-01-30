@@ -33,6 +33,7 @@ class ASH_PUBLIC_EXPORT LobsterClient {
                                 InflateCandidateCallback) = 0;
   virtual void QueueInsertion(const std::string& image_bytes,
                               StatusCallback insert_status_callback) = 0;
+  virtual void ShowDisclaimerUI() = 0;
   virtual void LoadUI(std::optional<std::string> query,
                       LobsterMode mode,
                       const gfx::Rect& caret_bounds) = 0;

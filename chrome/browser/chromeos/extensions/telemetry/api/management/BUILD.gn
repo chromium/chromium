@@ -18,7 +18,6 @@ source_set("management") {
 
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//chrome/browser/chromeos/extensions/telemetry/api/common",
     "//chrome/browser/extensions",
     "//chrome/common/chromeos/extensions/api",
@@ -49,7 +48,6 @@ source_set("browser_tests") {
   deps = [
     ":management",
     "//base",
-    "//build:chromeos_buildflags",
     "//chrome/browser/chromeos/extensions/telemetry/api/common:test_support",
     "//chromeos/ash/components/telemetry_extension/management",
     "//chromeos/crosapi/mojom",

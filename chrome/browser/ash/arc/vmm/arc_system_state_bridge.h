@@ -12,8 +12,6 @@
 #include "chromeos/ash/experiences/arc/mojom/system_state.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 
-class Profile;
-
 namespace content {
 class BrowserContext;
 }  // namespace content
@@ -67,8 +65,6 @@ class ArcSystemStateBridge : public KeyedService,
       arc_bridge_service_;  // Owned by ArcServiceManager.
 
   mojom::SystemAppRunningStatePtr state_;
-
-  const raw_ptr<Profile> profile_;
 
   base::ObserverList<Observer> observer_list_;
 

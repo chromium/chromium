@@ -6,6 +6,7 @@
 
 #include <string_view>
 
+#include "base/auto_reset.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"

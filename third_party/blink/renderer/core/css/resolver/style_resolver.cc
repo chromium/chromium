@@ -110,7 +110,6 @@
 #include "third_party/blink/renderer/core/html/track/vtt/vtt_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
-#include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/mathml/mathml_fraction_element.h"
 #include "third_party/blink/renderer/core/mathml/mathml_operator_element.h"
@@ -1268,11 +1267,10 @@ const ComputedStyle* StyleResolver::ResolveStyle(
   }
 
   if (InvalidationTracingFlag::IsEnabled()) [[unlikely]] {
-    DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT_WITH_CATEGORIES(
+    TRACE_EVENT_INSTANT1(
         TRACE_DISABLED_BY_DEFAULT("devtools.timeline.invalidationTracking"),
-        "StyleResolver::ResolveStyle",
-        inspector_style_resolver_resolve_style_event::Data, element,
-        style_request.pseudo_id);
+        "StyleResolver::ResolveStyle", TRACE_EVENT_SCOPE_THREAD, "elementId",
+        IdentifiersFactory::IntIdForNode(element));
   }
 
   DCHECK(GetDocument().GetFrame());
@@ -1402,10 +1400,10 @@ void StyleResolver::InitStyle(Element& element,
 
     // Highlight Pseudos may use var() references but those must be resolved
     // against the originating element. Share the variables from the originating
-    // style.
-    state.StyleBuilder().CopyInheritedVariablesFrom(
+    // style and remove any from the highlight chain.
+    state.StyleBuilder().SetInheritedVariablesFrom(
         state.OriginatingElementStyle());
-    state.StyleBuilder().CopyNonInheritedVariablesFrom(
+    state.StyleBuilder().SetNonInheritedVariablesFrom(
         state.OriginatingElementStyle());
   } else {
     state.CreateNewStyle(

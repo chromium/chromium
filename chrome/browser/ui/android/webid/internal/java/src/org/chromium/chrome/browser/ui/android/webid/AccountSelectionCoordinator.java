@@ -205,13 +205,12 @@ public class AccountSelectionCoordinator
     @Override
     public boolean showAccounts(
             String rpEtldPlusOne,
-            String idpEtldPlusOne,
             List<Account> accounts,
-            IdentityProviderData idpData,
+            List<IdentityProviderData> idpDataList,
             boolean isAutoReauthn,
             List<Account> newAccounts) {
         return mMediator.showAccounts(
-                rpEtldPlusOne, idpEtldPlusOne, accounts, idpData, isAutoReauthn, newAccounts);
+                rpEtldPlusOne, accounts, idpDataList, isAutoReauthn, newAccounts);
     }
 
     @Override

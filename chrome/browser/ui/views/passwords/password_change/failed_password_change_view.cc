@@ -31,9 +31,9 @@ std::unique_ptr<views::View> CreateFooterView() {
   // TODO(crbug.com/381054978): Use proper strings.
   return CreateGooglePasswordManagerLabel(
       /*text_message_id=*/
-      IDS_PASSWORD_BUBBLES_FOOTER_SAVING_ON_DEVICE,
+      IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_FOOTER,
       /*link_message_id=*/
-      IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SAVING_ON_DEVICE,
+      IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_SETTINGS_LINK,
       open_password_manager_closure);
 }
 

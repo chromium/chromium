@@ -302,8 +302,8 @@ void LoginOnUff() {
   GREYAssertEqual(1, credentialsCount, @"Wrong number of initial credentials.");
 
   // Sign in with identity where the credential still lives in the local store.
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
-  [ChromeEarlGrey waitForSyncTransportStateActiveWithTimeout:base::Seconds(10)];
+  [SigninEarlGrey signinAndWaitForSyncTransportStateActive:[FakeSystemIdentity
+                                                               fakeIdentity1]];
 
   // Load the page again and have a new password value to save.
   [self loadLoginPage];
@@ -415,8 +415,8 @@ void LoginOnUff() {
 #define MAYBE_testPasswordGeneration testPasswordGeneration
 #endif
 - (void)MAYBE_testPasswordGeneration {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
-  [ChromeEarlGrey waitForSyncTransportStateActiveWithTimeout:base::Seconds(10)];
+  [SigninEarlGrey signinAndWaitForSyncTransportStateActive:[FakeSystemIdentity
+                                                               fakeIdentity1]];
 
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/simple_signup_form.html")];
   [ChromeEarlGrey waitForWebStateContainingText:"Signup form."];
@@ -451,8 +451,8 @@ void LoginOnUff() {
 
 // Tests that password generation is offered for signed in not syncing users.
 - (void)testPasswordGenerationForSignedInAccount {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
-  [ChromeEarlGrey waitForSyncTransportStateActiveWithTimeout:base::Seconds(10)];
+  [SigninEarlGrey signinAndWaitForSyncTransportStateActive:[FakeSystemIdentity
+                                                               fakeIdentity1]];
 
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/simple_signup_form.html")];
   [ChromeEarlGrey waitForWebStateContainingText:"Signup form."];
@@ -494,8 +494,8 @@ void LoginOnUff() {
   DISABLED_testPasswordGenerationWhileSignedInWithPasswordsDisabled
 #endif
 - (void)MAYBE_testPasswordGenerationWhileSignedInWithPasswordsDisabled {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
-  [ChromeEarlGrey waitForSyncTransportStateActiveWithTimeout:base::Seconds(10)];
+  [SigninEarlGrey signinAndWaitForSyncTransportStateActive:[FakeSystemIdentity
+                                                               fakeIdentity1]];
 
   // Disable Passwords toggle in account settings.
   [ChromeEarlGreyUI openSettingsMenu];
@@ -542,8 +542,8 @@ void LoginOnUff() {
   // the signed in account.
   [ChromeEarlGrey addSyncPassphrase:kPassphrase];
 
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
-  [ChromeEarlGrey waitForSyncTransportStateActiveWithTimeout:base::Seconds(10)];
+  [SigninEarlGrey signinAndWaitForSyncTransportStateActive:[FakeSystemIdentity
+                                                               fakeIdentity1]];
 
   // Verify encryption error is showing in in account settings.
   [ChromeEarlGreyUI openSettingsMenu];

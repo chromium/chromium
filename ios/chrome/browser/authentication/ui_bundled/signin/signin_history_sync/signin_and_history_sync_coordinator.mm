@@ -241,7 +241,7 @@ enum class SignInHistorySyncStep {
   switch (_currentStep) {
     case SignInHistorySyncStep::kStart: {
       bool hasIdentitiesOnDevice = false;
-      if (AreSeparateProfilesForManagedAccountsEnabled()) {
+      if (IsUseAccountListFromIdentityManagerEnabled()) {
         signin::IdentityManager* identityManager =
             IdentityManagerFactory::GetForProfile(self.browser->GetProfile());
         hasIdentitiesOnDevice = !identityManager->GetAccountsOnDevice().empty();

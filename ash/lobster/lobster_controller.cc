@@ -82,6 +82,13 @@ std::unique_ptr<LobsterController::Trigger> LobsterController::CreateTrigger(
              : nullptr;
 }
 
+void LobsterController::LoadUIFromCachedContext() {
+  if (active_session_ == nullptr) {
+    return;
+  }
+  active_session_->LoadUIFromCachedContext();
+}
+
 void LobsterController::StartSession(std::unique_ptr<LobsterClient> client,
                                      std::optional<std::string> query,
                                      LobsterEntryPoint entry_point,
@@ -98,7 +105,17 @@ void LobsterController::StartSession(std::unique_ptr<LobsterClient> client,
   active_session_ =
       std::make_unique<LobsterSessionImpl>(std::move(client), entry_point);
   lobster_client_ptr->SetActiveSession(active_session_.get());
-  active_session_->LoadUI(query, mode, caret_bounds);
+
+  switch (lobster_client_ptr->GetSystemState().status) {
+    case LobsterStatus::kConsentNeeded:
+      active_session_->ShowDisclaimerUIAndCacheQuery(query);
+      return;
+    case LobsterStatus::kEnabled:
+      active_session_->LoadUI(query, mode, caret_bounds);
+      return;
+    case LobsterStatus::kBlocked:
+      return;
+  }
 }
 
 }  // namespace ash

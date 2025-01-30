@@ -10,7 +10,6 @@
 
 import 'chrome://chrome-signin/inline_login_app.js';
 
-import type {AccountAdditionOptions} from 'chrome://chrome-signin/arc_account_picker/arc_util.js';
 import type {InlineLoginAppElement} from 'chrome://chrome-signin/inline_login_app.js';
 import {View} from 'chrome://chrome-signin/inline_login_app.js';
 import {InlineLoginBrowserProxyImpl} from 'chrome://chrome-signin/inline_login_browser_proxy.js';
@@ -33,10 +32,9 @@ suite('InlineLoginSigninBlockedByPolicyPageTest', () => {
         .querySelector('div.active[slot="view"]')!.id;
   }
 
-  function testSetup(dialogArgs: AccountAdditionOptions|null) {
+  setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testBrowserProxy = new TestInlineLoginBrowserProxy();
-    testBrowserProxy.setDialogArguments(dialogArgs);
     InlineLoginBrowserProxyImpl.setInstance(testBrowserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     inlineLoginComponent = /** @type {InlineLoginAppElement} */ (
@@ -48,10 +46,9 @@ suite('InlineLoginSigninBlockedByPolicyPageTest', () => {
     signinBlockedByPolicyPageComponent =
         inlineLoginComponent.shadowRoot!.querySelector(
             'signin-blocked-by-policy-page')!;
-  }
+  });
 
   test('BlockedSigninPage', () => {
-    testSetup(/*dialogArgs=*/ null);
     // Fire web UI listener to switch the ui view to
     // `signinBlockedByPolicy`.
     webUIListenerCallback(
@@ -79,7 +76,6 @@ suite('InlineLoginSigninBlockedByPolicyPageTest', () => {
   });
 
   test('FireWebUIListenerCallback', () => {
-    testSetup(/*dialogArgs=*/ null);
     // Fire web UI listener to switch the ui view to
     // `signinBlockedByPolicy`.
     webUIListenerCallback(
@@ -116,7 +112,6 @@ suite('InlineLoginSigninBlockedByPolicyPageTest', () => {
   });
 
   test('OkButton', async () => {
-    testSetup(/*dialogArgs=*/ null);
     // Fire web UI listener to switch the ui view to
     // `signinBlockedByPolicy`.
     webUIListenerCallback(

@@ -94,7 +94,10 @@ class FullscreenSigninViewBinder {
             view.getTitle().setText(textId);
         } else if (propertyKey == FullscreenSigninProperties.SUBTITLE_STRING_ID) {
             @StringRes int textId = model.get(FullscreenSigninProperties.SUBTITLE_STRING_ID);
-            view.getSubtitle().setText(textId);
+            if (textId != 0) {
+                view.getSubtitle().setText(textId);
+            }
+            updateBottomGroupVisibility(view, model);
         } else if (propertyKey == FullscreenSigninProperties.DISMISS_BUTTON_STRING_ID) {
             @StringRes int textId = model.get(FullscreenSigninProperties.DISMISS_BUTTON_STRING_ID);
             view.getDismissButtonView().setText(textId);
@@ -172,12 +175,14 @@ class FullscreenSigninViewBinder {
                 model.get(FullscreenSigninProperties.IS_SELECTED_ACCOUNT_SUPERVISED);
         final boolean showManagementNotice =
                 model.get(FullscreenSigninProperties.SHOW_ENTERPRISE_MANAGEMENT_NOTICE);
+        final @StringRes int textId = model.get(FullscreenSigninProperties.SUBTITLE_STRING_ID);
         view.getTitle().setVisibility(showInitialLoadProgressSpinner ? View.GONE : View.VISIBLE);
         view.getSubtitle()
                 .setVisibility(
                         !showInitialLoadProgressSpinner
                                         && !isSelectedAccountSupervised
                                         && !showManagementNotice
+                                        && textId != 0
                                 ? View.VISIBLE
                                 : View.GONE);
 

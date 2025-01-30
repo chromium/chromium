@@ -20,6 +20,7 @@
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -115,6 +116,7 @@ std::u16string GetDetailedErrorMessage(
 
 // static
 void BruschettaInstallerView::Show(Profile* profile,
+                                   PrefService& local_state,
                                    const guest_os::GuestId& guest_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (bruschetta::GetInstallableConfigs(profile).empty()) {
@@ -124,7 +126,7 @@ void BruschettaInstallerView::Show(Profile* profile,
   }
   if (!g_bruschetta_installer_view) {
     g_bruschetta_installer_view =
-        new BruschettaInstallerView(profile, guest_id);
+        new BruschettaInstallerView(profile, local_state, guest_id);
     views::DialogDelegate::CreateDialogWidget(g_bruschetta_installer_view,
                                               nullptr, nullptr);
   }
@@ -154,6 +156,7 @@ BEGIN_METADATA(BruschettaInstallerView, TitleLabel)
 END_METADATA
 
 BruschettaInstallerView::BruschettaInstallerView(Profile* profile,
+                                                 PrefService& local_state,
                                                  guest_os::GuestId guest_id)
     : profile_(profile), observation_(this), guest_id_(guest_id) {
   // Layout constants from the spec used for the plugin vm installer.
@@ -256,12 +259,14 @@ BruschettaInstallerView::BruschettaInstallerView(Profile* profile,
   if (dark_light_controller) {
     dark_light_controller->AddObserver(this);
   }
-  installer_factory_ =
-      base::BindRepeating([](Profile* profile, base::OnceClosure closure) {
+  installer_factory_ = base::BindRepeating(
+      [](PrefService& local_state, Profile* profile, base::OnceClosure closure)
+          -> std::unique_ptr<bruschetta::BruschettaInstaller> {
         return static_cast<std::unique_ptr<bruschetta::BruschettaInstaller>>(
             std::make_unique<bruschetta::BruschettaInstallerImpl>(
-                profile, std::move(closure)));
-      });
+                profile, local_state, std::move(closure)));
+      },
+      std::ref(local_state));
 }
 
 BruschettaInstallerView::~BruschettaInstallerView() {

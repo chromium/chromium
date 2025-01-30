@@ -146,7 +146,6 @@ function_registration("api_registration") {
       # TODO: We should pull these out into a separate build and function
       # generation step so that //chrome/browser/extensions has fewer
       # dependencies on //chrome/browser/chromeos.
-      "//chrome/browser/chromeos/extensions:constants",
       "//chrome/browser/chromeos/extensions/accessibility_service_private",
       "//chrome/browser/chromeos/extensions/info_private",
       "//chrome/browser/chromeos/extensions/login_screen/login_screen_storage",

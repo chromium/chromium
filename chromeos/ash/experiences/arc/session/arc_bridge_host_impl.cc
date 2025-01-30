@@ -7,11 +7,11 @@
 #include <algorithm>
 #include <utility>
 
-#include "ash/public/cpp/external_arc/message_center/arc_notification_manager.h"
 #include "ash/public/cpp/message_center/arc_notifications_host_initializer.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "chromeos/ash/experiences/arc/arc_features.h"
+#include "chromeos/ash/experiences/arc/message_center/arc_notification_manager.h"
 #include "chromeos/ash/experiences/arc/mojom/adbd.mojom.h"
 #include "chromeos/ash/experiences/arc/mojom/app.mojom.h"
 #include "chromeos/ash/experiences/arc/mojom/app_permissions.mojom.h"

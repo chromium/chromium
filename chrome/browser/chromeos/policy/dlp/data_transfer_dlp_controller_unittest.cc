@@ -14,7 +14,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/types/optional_util.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/test/mock_dlp_rules_manager.h"
@@ -40,10 +39,6 @@
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_service.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace policy {
 
@@ -121,7 +116,6 @@ std::unique_ptr<content::WebContents> CreateTestWebContents(
       browser_context, std::move(site_instance));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 data_controls::Component GetComponent(ui::EndpointType endpoint_type) {
   switch (endpoint_type) {
     case ui::EndpointType::kArc:
@@ -134,7 +128,6 @@ data_controls::Component GetComponent(ui::EndpointType endpoint_type) {
       return data_controls::Component::kUnknownComponent;
   }
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 
@@ -178,9 +171,6 @@ class DataTransferDlpControllerTest
   base::HistogramTester histogram_tester_;
   std::unique_ptr<data_controls::DlpReportingManager> reporting_manager_;
   std::vector<DlpPolicyEvent> events_;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  chromeos::LacrosService lacros_service_;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 };
 
 TEST_F(DataTransferDlpControllerTest, NullSrc) {
@@ -502,10 +492,8 @@ INSTANTIATE_TEST_SUITE_P(
     DlpControllerTest,
     ::testing::Combine(::testing::Values(std::nullopt,
                                          ui::EndpointType::kDefault,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
                                          ui::EndpointType::kUnknownVm,
                                          ui::EndpointType::kBorealis,
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
                                          ui::EndpointType::kUrl),
                        testing::Bool()));
 
@@ -719,7 +707,6 @@ TEST_P(DlpControllerTest, Warn_DropIfAllowed) {
       true, 1);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Create a version of the test class for parameterized testing.
 class DlpControllerVMsTest : public DataTransferDlpControllerTest {
  protected:
@@ -923,6 +910,5 @@ TEST_P(DlpControllerVMsTest, Warn_DropIfAllowed) {
           data_controls::dlp::kDragDropBlockedUMA,
       true, 1);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace policy

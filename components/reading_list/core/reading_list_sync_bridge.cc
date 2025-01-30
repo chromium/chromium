@@ -7,6 +7,7 @@
 #include <set>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"

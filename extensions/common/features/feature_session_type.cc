@@ -4,6 +4,7 @@
 
 #include "extensions/common/features/feature_session_type.h"
 
+#include "base/auto_reset.h"
 #include "base/check_op.h"
 
 namespace extensions {

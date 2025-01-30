@@ -196,6 +196,23 @@ void MessagingBackendServiceBridge::ClearDirtyTabMessagesForGroup(
   }
 }
 
+void MessagingBackendServiceBridge::ClearPersistentMessage(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& j_caller,
+    const base::android::JavaParamRef<jstring>& j_message_id,
+    jint j_type) {
+  CHECK(j_message_id);
+  auto message_id = base::Uuid::ParseLowercase(
+      base::android::ConvertJavaStringToUTF8(env, j_message_id));
+  auto type = static_cast<PersistentNotificationType>(j_type);
+  std::optional<PersistentNotificationType> type_opt = std::make_optional(type);
+  if (type == PersistentNotificationType::UNDEFINED) {
+    type_opt = std::nullopt;
+  }
+
+  service_->ClearPersistentMessage(message_id, type_opt);
+}
+
 void MessagingBackendServiceBridge::RunInstantaneousMessageSuccessCallback(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& j_caller,

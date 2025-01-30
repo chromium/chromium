@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#include "base/auto_reset.h"
 #include "base/clang_profiling_buildflags.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"

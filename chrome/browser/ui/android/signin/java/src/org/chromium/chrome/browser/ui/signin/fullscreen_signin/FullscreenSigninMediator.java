@@ -255,14 +255,18 @@ public class FullscreenSigninMediator
 
         if (isSigninSupported) {
             mModel.set(FullscreenSigninProperties.TITLE_STRING_ID, mConfig.titleId);
+            SyncService syncService = SyncServiceFactory.getForProfile(profile);
+            boolean isSyncDataManaged =
+                    IntStream.range(UserSelectableType.FIRST_TYPE, UserSelectableType.LAST_TYPE + 1)
+                            .anyMatch(syncService::isTypeManagedByPolicy);
+            mModel.set(
+                    FullscreenSigninProperties.SUBTITLE_STRING_ID,
+                    isSyncDataManaged
+                            ? R.string.signin_fre_subtitle_without_sync
+                            : mConfig.subtitleId);
+        } else {
+            mModel.set(FullscreenSigninProperties.SUBTITLE_STRING_ID, 0);
         }
-        SyncService syncService = SyncServiceFactory.getForProfile(profile);
-        boolean isSyncDataManaged =
-                IntStream.range(UserSelectableType.FIRST_TYPE, UserSelectableType.LAST_TYPE + 1)
-                        .anyMatch(syncService::isTypeManagedByPolicy);
-        mModel.set(
-                FullscreenSigninProperties.SUBTITLE_STRING_ID,
-                isSyncDataManaged ? R.string.signin_fre_subtitle_without_sync : mConfig.subtitleId);
 
         mAllowMetricsAndCrashUploading = !isMetricsReportingDisabledByPolicy;
         mModel.set(

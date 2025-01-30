@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/css/invalidation/rule_invalidation_data_visitor.h"
 
+#include "base/auto_reset.h"
 #include "base/memory/stack_allocated.h"
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
 #include "third_party/blink/renderer/core/css/style_scope.h"

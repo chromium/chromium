@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ash/magic_boost/magic_boost_controller_ash.h"
 
+#include "ash/lobster/lobster_controller.h"
 #include "ash/public/cpp/new_window_delegate.h"
+#include "ash/shell.h"
 #include "ash/system/magic_boost/magic_boost_disclaimer_view.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/input_method/editor_panel_manager.h"
@@ -100,6 +102,13 @@ void MagicBoostControllerAsh::OnDisclaimerAcceptButtonPressed(
     case TransitionAction::kShowHmrPanel:
       chromeos::MahiManager::Get()->OpenMahiPanel(
           display_id, disclaimer_widget_->GetWindowBoundsInScreen());
+      break;
+    case TransitionAction::kShowLobsterPanel:
+      LobsterController* lobster_controller =
+          ash::Shell::Get()->lobster_controller();
+      if (lobster_controller != nullptr) {
+        lobster_controller->LoadUIFromCachedContext();
+      }
       break;
   }
 

@@ -58,7 +58,6 @@ static_library("bruschetta") {
   deps = [
     "//ash/constants",
     "//chrome/app:generated_resources",
-    "//chrome/browser:browser_process",
     "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/crostini",
     "//chrome/browser/ash/guest_os/public",
@@ -72,6 +71,7 @@ static_library("bruschetta") {
     "//components/policy:generated",
     "//components/policy:policy_code_generate",
     "//components/policy/core/common",
+    "//components/prefs",
     "//components/strings:components_strings",
     "//content/public/browser",
     "//crypto",
@@ -110,6 +110,7 @@ source_set("browser_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
+    "//chrome/browser:browser_process",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",

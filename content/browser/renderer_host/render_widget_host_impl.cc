@@ -427,6 +427,10 @@ RenderWidgetHostImpl::RenderWidgetHostImpl(
               : nullptr) {
   base::ScopedUmaHistogramTimer histogram_timer(
       "Navigation.RenderWidgetHostConstructor");
+
+  // The page should be hidden during prerendering.
+  CHECK(!frame_tree_ || !frame_tree_->is_prerendering() || hidden);
+
   CHECK(frame_token_message_queue_);
   frame_token_message_queue_->Init(this);
 
@@ -854,6 +858,9 @@ void RenderWidgetHostImpl::WasHidden() {
 void RenderWidgetHostImpl::WasShown(
     blink::mojom::RecordContentToVisibleTimeRequestPtr
         record_tab_switch_time_request) {
+  // The page should never be visible during prerendering.
+  CHECK(!frame_tree_ || !frame_tree_->is_prerendering());
+
   if (!is_hidden_) {
     return;
   }

@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/containers/adapters.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"

@@ -713,7 +713,7 @@ id<SystemIdentity> GetDisplayedIdentity(
       // by the mediator. We should not have no identity. This can be reproduced
       // with EGtests with bots. The identity notification might not have
       // received yet. Let's update the promo identity.
-      [self identityListChanged];
+      [self handleIdentityListChanged];
     }
     DCHECK(self.displayedIdentity)
         << base::SysNSStringToUTF8([self description]);
@@ -1031,7 +1031,7 @@ id<SystemIdentity> GetDisplayedIdentity(
 #pragma mark - ChromeAccountManagerServiceObserver
 
 - (void)identityListChanged {
-  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+  if (IsUseAccountListFromIdentityManagerEnabled()) {
     // Listening to `onAccountsOnDeviceChanged` instead.
     return;
   }
@@ -1039,7 +1039,7 @@ id<SystemIdentity> GetDisplayedIdentity(
 }
 
 - (void)identityUpdated:(id<SystemIdentity>)identity {
-  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+  if (IsUseAccountListFromIdentityManagerEnabled()) {
     // Listening to `onExtendedAccountInfoUpdated` instead.
     return;
   }
@@ -1055,7 +1055,7 @@ id<SystemIdentity> GetDisplayedIdentity(
 #pragma mark -  IdentityManagerObserver
 
 - (void)onAccountsOnDeviceChanged {
-  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
+  if (!IsUseAccountListFromIdentityManagerEnabled()) {
     // Listening to `identityListChanged` instead.
     return;
   }
@@ -1063,7 +1063,7 @@ id<SystemIdentity> GetDisplayedIdentity(
 }
 
 - (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
-  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
+  if (!IsUseAccountListFromIdentityManagerEnabled()) {
     // Listening to `identityUpdated` instead.
     return;
   }

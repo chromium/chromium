@@ -457,11 +457,8 @@ TEST_F(ScannerControllerTest, ActionSuccessToastButtonOpensFeedbackDialog) {
 
   auto [unused_account_id, feedback_dialog_info,
         unused_send_feedback_callback] = feedback_info_future.Take();
-  EXPECT_THAT(feedback_dialog_info.action_details, IsJson(R"json({
-    "copy_to_clipboard": {
-      "html_text": "<b>Hello</b>",
-    }
-  })json"));
+  EXPECT_EQ(feedback_dialog_info.action_details,
+            "copy_to_clipboard.html_text: <b>Hello</b>\n");
 }
 
 TEST_F(ScannerControllerTest, ActionSuccessToastDoesNotHaveButtonIfDisabled) {
@@ -529,14 +526,12 @@ TEST_F(ScannerControllerTest, OpenFeedbackDialogCallsDelegate) {
   auto [account_id, feedback_dialog_info, unused_send_feedback_callback] =
       feedback_info_future.Take();
   EXPECT_EQ(account_id, active_account);
-  EXPECT_THAT(feedback_dialog_info.action_details, IsJson(R"json({
-    "new_event": {
-      "title": "🌏",
-      "description": "formerly \"Geo Sync\"",
-      "dates": "20241014T160000/20241014T161500",
-      "location": "Wonderland",
-    }
-  })json"));
+  EXPECT_EQ(feedback_dialog_info.action_details,
+            R"(new_event.dates: 20241014T160000/20241014T161500
+new_event.description: formerly "Geo Sync"
+new_event.location: Wonderland
+new_event.title: 🌏
+)");
   ASSERT_TRUE(feedback_dialog_info.screenshot);
   EXPECT_EQ(base::as_string_view(*feedback_dialog_info.screenshot),
             "testimage");

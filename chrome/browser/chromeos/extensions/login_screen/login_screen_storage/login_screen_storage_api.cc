@@ -6,17 +6,11 @@
 
 #include "base/strings/strcat.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
-#include "chrome/common/extensions/api/login_screen_storage.h"
-#include "chromeos/crosapi/mojom/login_screen_storage.mojom.h"
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_service.h"
-#else
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/login_screen_storage_ash.h"
-#endif
+#include "chrome/common/extensions/api/login_screen_storage.h"
+#include "chromeos/crosapi/mojom/login_screen_storage.mojom.h"
 
 namespace login_screen_storage = extensions::api::login_screen_storage;
 
@@ -26,32 +20,9 @@ const char kPersistentDataKeyPrefix[] = "persistent_data_";
 const char kCredentialsKeyPrefix[] = "credentials_";
 
 crosapi::mojom::LoginScreenStorage* GetLoginScreenStorageApi() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return chromeos::LacrosService::Get()
-      ->GetRemote<crosapi::mojom::LoginScreenStorage>()
-      .get();
-#else
   return crosapi::CrosapiManager::Get()
       ->crosapi_ash()
       ->login_screen_storage_ash();
-#endif
-}
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-const char kUnsupportedByAsh[] = "Not supported by ash.";
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-// Performs common crosapi validation. These errors are not caused by the
-// extension so they are considered recoverable. Returns an error message on
-// error, or nullopt on success.
-std::optional<std::string> ValidateCrosapi() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (!chromeos::LacrosService::Get()
-           ->IsAvailable<crosapi::mojom::LoginScreenStorage>()) {
-    return kUnsupportedByAsh;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-  return std::nullopt;
 }
 
 }  // namespace
@@ -92,11 +63,6 @@ LoginScreenStorageStorePersistentDataFunction::Run() {
       login_screen_storage::StorePersistentData::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  std::optional<std::string> error = ValidateCrosapi();
-  if (error.has_value()) {
-    return RespondNow(Error(error.value()));
-  }
-
   std::vector<std::string> keys;
   const std::vector<std::string>& receiver_ids =
       std::move(params->extension_ids);
@@ -129,11 +95,6 @@ LoginScreenStorageRetrievePersistentDataFunction::Run() {
       login_screen_storage::RetrievePersistentData::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  std::optional<std::string> error = ValidateCrosapi();
-  if (error.has_value()) {
-    return RespondNow(Error(error.value()));
-  }
-
   const std::string key = base::StrCat(
       {kPersistentDataKeyPrefix, params->owner_id, "_", extension_id()});
 
@@ -154,11 +115,6 @@ LoginScreenStorageStoreCredentialsFunction::Run() {
   std::optional<login_screen_storage::StoreCredentials::Params> params =
       login_screen_storage::StoreCredentials::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
-
-  std::optional<std::string> error = ValidateCrosapi();
-  if (error.has_value()) {
-    return RespondNow(Error(error.value()));
-  }
 
   std::vector<std::string> keys;
   std::string key = base::StrCat({kCredentialsKeyPrefix, params->extension_id});
@@ -183,11 +139,6 @@ LoginScreenStorageRetrieveCredentialsFunction::
 
 ExtensionFunction::ResponseAction
 LoginScreenStorageRetrieveCredentialsFunction::Run() {
-  std::optional<std::string> error = ValidateCrosapi();
-  if (error.has_value()) {
-    return RespondNow(Error(error.value()));
-  }
-
   std::string key = base::StrCat({kCredentialsKeyPrefix, extension_id()});
 
   auto callback = base::BindOnce(

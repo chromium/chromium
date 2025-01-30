@@ -13,12 +13,15 @@
 #include "ash/capture_mode/action_button_view.h"
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/capture_mode_util.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/system_shadow.h"
 #include "ash/style/typography.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "ui/aura/window.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -35,6 +38,7 @@
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/link.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/vector_icons.h"
@@ -59,6 +63,9 @@ constexpr int kErrorViewLeadingIconSize = 20;
 // Padding to the right of the error view's leading icon, to separate the icon
 // from the error message label.
 constexpr auto kErrorViewLeadingIconRightPadding = 4;
+
+// Padding around the try again link in the error view.
+constexpr auto kErrorViewTryAgainLinkPadding = gfx::Insets::TLBR(0, 8, 0, 4);
 
 // The horizontal distance between action buttons in a row.
 constexpr int kActionButtonSpacing = 10;
@@ -113,6 +120,21 @@ ActionButtonContainerView::ErrorView::ErrorView()
           .SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
               TypographyToken::kCrosAnnotation1))
           .Build());
+
+  // TODO(crbug.com/388451361): Implement keyboard navigation for the try again
+  // link.
+  AddChildView(
+      views::Builder<views::Link>()
+          .CopyAddressTo(&try_again_link_)
+          .SetText(l10n_util::GetStringUTF16(
+              IDS_ASH_SCANNER_ERROR_TRY_AGAIN_LINK_TEXT))
+          .SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
+              TypographyToken::kCrosButton2))
+          .SetEnabledColorId(cros_tokens::kCrosSysPrimary)
+          .SetForceUnderline(false)
+          .SetProperty(views::kMarginsKey, kErrorViewTryAgainLinkPadding)
+          .SetVisible(false)
+          .Build());
 }
 
 ActionButtonContainerView::ErrorView::~ErrorView() = default;
@@ -141,6 +163,12 @@ void ActionButtonContainerView::ErrorView::OnBoundsChanged(
 void ActionButtonContainerView::ErrorView::SetErrorMessage(
     const std::u16string& error_message) {
   error_label_->SetText(error_message);
+}
+
+void ActionButtonContainerView::ErrorView::SetTryAgainCallback(
+    base::RepeatingClosure try_again_callback) {
+  try_again_link_->SetVisible(!try_again_callback.is_null());
+  try_again_link_->SetCallback(std::move(try_again_callback));
 }
 
 const std::u16string&
@@ -223,8 +251,10 @@ const views::View::Views& ActionButtonContainerView::GetActionButtons() const {
 }
 
 void ActionButtonContainerView::ShowErrorView(
-    const std::u16string& error_message) {
+    const std::u16string& error_message,
+    base::RepeatingClosure try_again_callback) {
   error_view_->SetErrorMessage(error_message);
+  error_view_->SetTryAgainCallback(std::move(try_again_callback));
   error_view_->SetVisible(true);
 }
 

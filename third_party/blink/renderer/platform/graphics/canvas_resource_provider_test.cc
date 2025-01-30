@@ -606,7 +606,7 @@ TEST_F(CanvasResourceProviderTest,
           TestWebGraphicsSharedImageInterfaceProvider::Create();
 
   EXPECT_FALSE(CanvasResourceProvider::CreateSharedBitmapProvider(
-      gfx::Size(10, 10), kN32_SkColorType, kPremul_SkAlphaType,
+      gfx::Size(10, 10), GetN32FormatForCanvas(), kPremul_SkAlphaType,
       gfx::ColorSpace::CreateSRGB(),
       CanvasResourceProvider::ShouldInitialize::kCallClear,
       test_web_shared_image_interface_provider.get()));
@@ -624,7 +624,7 @@ TEST_F(CanvasResourceProviderTest,
           TestWebGraphicsSharedImageInterfaceProvider::Create();
 
   auto provider = CanvasResourceProvider::CreateSharedBitmapProvider(
-      kSize, kInfo.colorType(), kInfo.alphaType(),
+      kSize, GetN32FormatForCanvas(), kInfo.alphaType(),
       gfx::ColorSpace::CreateSRGB(),
       CanvasResourceProvider::ShouldInitialize::kCallClear,
       test_web_shared_image_interface_provider.get());

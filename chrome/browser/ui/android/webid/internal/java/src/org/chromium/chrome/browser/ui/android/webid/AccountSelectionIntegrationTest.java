@@ -102,9 +102,8 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
                 () -> {
                     mAccountSelection.showAccounts(
                             EXAMPLE_ETLD_PLUS_ONE,
-                            TEST_ETLD_PLUS_ONE_2,
                             Arrays.asList(RETURNING_ANA, NEW_BOB),
-                            mIdpData,
+                            Arrays.asList(mIdpData),
                             /* isAutoReauthn= */ false,
                             /* newAccounts= */ Collections.EMPTY_LIST);
                 });
@@ -123,9 +122,8 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
                 () -> {
                     mAccountSelection.showAccounts(
                             EXAMPLE_ETLD_PLUS_ONE,
-                            TEST_ETLD_PLUS_ONE_2,
                             Arrays.asList(RETURNING_ANA, NEW_BOB),
-                            mIdpData,
+                            Arrays.asList(mIdpData),
                             /* isAutoReauthn= */ false,
                             /* newAccounts= */ Collections.EMPTY_LIST);
                 });
@@ -144,9 +142,8 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
                 () -> {
                     mAccountSelection.showAccounts(
                             EXAMPLE_ETLD_PLUS_ONE,
-                            TEST_ETLD_PLUS_ONE_2,
                             Arrays.asList(NEW_BOB),
-                            mIdpData,
+                            Arrays.asList(mIdpData),
                             /* isAutoReauthn= */ false,
                             /* newAccounts= */ Collections.EMPTY_LIST);
                 });
@@ -218,9 +215,8 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
                 () -> {
                     mAccountSelection.showAccounts(
                             EXAMPLE_ETLD_PLUS_ONE,
-                            TEST_ETLD_PLUS_ONE_2,
                             Arrays.asList(RETURNING_ANA, NEW_BOB),
-                            mIdpData,
+                            Arrays.asList(mIdpData),
                             /* isAutoReauthn= */ false,
                             /* newAccounts= */ Collections.EMPTY_LIST);
                 });
@@ -365,9 +361,8 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
                 () -> {
                     mAccountSelection.showAccounts(
                             EXAMPLE_ETLD_PLUS_ONE,
-                            TEST_ETLD_PLUS_ONE_2,
                             Arrays.asList(NEW_BOB, RETURNING_ANA),
-                            mIdpDataWithAddAccount,
+                            Arrays.asList(mIdpDataWithAddAccount),
                             /* isAutoReauthn= */ false,
                             /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);

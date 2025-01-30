@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//extensions/buildflags/buildflags.gni")
 
 assert(enable_extensions)
@@ -25,7 +24,6 @@ static_library("login_state") {
   ]
 
   deps = [
-    "//build:chromeos_buildflags",
     "//chrome/browser/profiles:profile",
     "//chrome/common:non_code_constants",
     "//content/public/browser",
@@ -44,7 +42,6 @@ source_set("browser_tests") {
 
   deps = [
     ":login_state",
-    "//build:chromeos_buildflags",
     "//chrome/test:test_support",
     "//components/session_manager:base",
     "//components/session_manager/core",
@@ -65,7 +62,6 @@ source_set("unit_tests") {
   deps = [
     ":login_state",
     "//base",
-    "//build:chromeos_buildflags",
     "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/crosapi:test_support",
     "//chrome/common:non_code_constants",

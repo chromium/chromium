@@ -10,23 +10,40 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
+#include "ash/public/cpp/session/session_controller.h"
+#include "ash/public/cpp/session/session_types.h"
 #include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
+#include "ash/webui/shimless_rma/backend/external_app_dialog.h"
 #include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/strings/string_util.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
-#include "build/chromeos_buildflags.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/hardware_info_delegate.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/remote_probe_service_strategy.h"
 #include "chrome/browser/extensions/extension_management_test_util.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
+#include "chrome/common/chromeos/extensions/chromeos_system_extension_info.h"  // nogncheck
+#include "chrome/common/url_constants.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "chromeos/crosapi/cpp/telemetry/fake_probe_service.h"
 #include "chromeos/crosapi/mojom/probe_service.mojom.h"
+#include "components/account_id/account_id.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/ssl_status.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_id.h"
@@ -38,40 +55,10 @@
 #include "net/test/test_data_directory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
-#include "ash/public/cpp/session/session_controller.h"
-#include "ash/public/cpp/session/session_types.h"
-#include "ash/shell.h"
-#include "ash/webui/shimless_rma/backend/external_app_dialog.h"
-#include "base/command_line.h"
-#include "base/strings/string_util.h"
-#include "base/task/sequenced_task_runner.h"
-#include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/common/chromeos/extensions/chromeos_system_extension_info.h"  // nogncheck
-#include "chrome/common/url_constants.h"
-#include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
-#include "components/account_id/account_id.h"
-#include "components/user_manager/scoped_user_manager.h"
-#include "components/user_manager/user.h"
-#include "content/public/browser/web_contents_observer.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "chromeos/startup/browser_init_params.h"
-#include "components/policy/core/common/policy_loader_lacros.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 namespace chromeos {
 
 namespace {
-
 namespace crosapi = crosapi::mojom;
-
 }
 
 struct ExtensionInfoTestParams {
@@ -128,9 +115,7 @@ const std::vector<ExtensionInfoTestParams> kAllExtensionInfoTestParams{
         /*manufacturer=*/"Lenovo"),
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr char kUserEmail[] = "user@example.com";
-#endif  // IS_CHROMEOS_ASH
 
 // Tests that Chrome OS System Extensions must fulfill the requirements to
 // access Telemetry Extension APIs. All tests are parameterized with the
@@ -160,22 +145,11 @@ class ApiGuardDelegateTest
 
     // Make sure device manufacturer is allowlisted.
     SetDeviceManufacturer(manufacturer());
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    auto params = crosapi::BrowserInitParams::New();
-    params->is_current_user_device_owner = true;
-    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(params));
-
-    profile()->SetIsMainProfile(true);
-    ASSERT_TRUE(profile()->IsMainProfile());
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   std::optional<std::string> GetDefaultProfileName() override {
     return kUserEmail;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
  protected:
   extensions::ExtensionId extension_id() const {
@@ -190,13 +164,11 @@ class ApiGuardDelegateTest
 
   const extensions::Extension* extension() { return extension_.get(); }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   void SetUserAsOwner() {
     // Make sure the current user is affiliated.
     const AccountId account_id = AccountId::FromUserEmail(kUserEmail);
     user_manager()->SetOwnerId(account_id);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   void SetDeviceManufacturer(const std::string& manufacturer) {
     HardwareInfoDelegate::Get().ClearCacheForTesting();
@@ -245,17 +217,9 @@ class ApiGuardDelegateTest
 };
 
 TEST_P(ApiGuardDelegateTest, CurrentUserNotOwner) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Make sure the current user is not the device owner.
   const AccountId regular_user = AccountId::FromUserEmail("regular@gmail.com");
   user_manager()->SetOwnerId(regular_user);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto params = crosapi::BrowserInitParams::New();
-  params->is_current_user_device_owner = false;
-  chromeos::BrowserInitParams::SetInitParamsForTests(std::move(params));
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   auto api_guard_delegate = ApiGuardDelegate::Factory::Create();
   base::test::TestFuture<std::optional<std::string>> future;
@@ -268,7 +232,6 @@ TEST_P(ApiGuardDelegateTest, CurrentUserNotOwner) {
   EXPECT_EQ("This extension is not run by the device owner", error.value());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_P(ApiGuardDelegateTest, OwnershipDelayed) {
   OpenAppUIUrlAndSetCertificateWithStatus(/*cert_status=*/net::OK);
   auto api_guard_delegate = ApiGuardDelegate::Factory::Create();
@@ -284,30 +247,9 @@ TEST_P(ApiGuardDelegateTest, OwnershipDelayed) {
   std::optional<std::string> error = future.Get();
   EXPECT_FALSE(error.has_value()) << error.value();
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-TEST_P(ApiGuardDelegateTest, CurrentUserOwnerButNotMainLacrosProfile) {
-  // Don't set the current profile as the main profile.
-  profile()->SetIsMainProfile(false);
-  ASSERT_FALSE(profile()->IsMainProfile());
-
-  auto api_guard_delegate = ApiGuardDelegate::Factory::Create();
-  base::test::TestFuture<std::optional<std::string>> future;
-  api_guard_delegate->CanAccessApi(profile(), extension(),
-                                   future.GetCallback());
-
-  ASSERT_TRUE(future.Wait());
-  std::optional<std::string> error = future.Get();
-  ASSERT_TRUE(error.has_value());
-  EXPECT_EQ("This extension is not run by the device owner", error.value());
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 TEST_P(ApiGuardDelegateTest, AppNotOpen) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   SetUserAsOwner();
-#endif  // IS_CHROMEOS_ASH
   auto api_guard_delegate = ApiGuardDelegate::Factory::Create();
   base::test::TestFuture<std::optional<std::string>> future;
   api_guard_delegate->CanAccessApi(profile(), extension(),
@@ -320,9 +262,7 @@ TEST_P(ApiGuardDelegateTest, AppNotOpen) {
 }
 
 TEST_P(ApiGuardDelegateTest, AppIsOpenButNotSecure) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   SetUserAsOwner();
-#endif  // IS_CHROMEOS_ASH
   OpenAppUIUrlAndSetCertificateWithStatus(
       /*cert_status=*/net::CERT_STATUS_INVALID);
 
@@ -338,9 +278,7 @@ TEST_P(ApiGuardDelegateTest, AppIsOpenButNotSecure) {
 }
 
 TEST_P(ApiGuardDelegateTest, ManufacturerNotAllowed) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   SetUserAsOwner();
-#endif  // IS_CHROMEOS_ASH
   OpenAppUIUrlAndSetCertificateWithStatus(/*cert_status=*/net::OK);
 
   // Make sure device manufacturer is not allowed.
@@ -359,9 +297,7 @@ TEST_P(ApiGuardDelegateTest, ManufacturerNotAllowed) {
 }
 
 TEST_P(ApiGuardDelegateTest, SkipManufacturerCheck) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   SetUserAsOwner();
-#endif  // IS_CHROMEOS_ASH
   OpenAppUIUrlAndSetCertificateWithStatus(/*cert_status=*/net::OK);
   // Append the switch to skip the manufacturer check.
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
@@ -381,9 +317,7 @@ TEST_P(ApiGuardDelegateTest, SkipManufacturerCheck) {
 }
 
 TEST_P(ApiGuardDelegateTest, NoError) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   SetUserAsOwner();
-#endif  // IS_CHROMEOS_ASH
   OpenAppUIUrlAndSetCertificateWithStatus(/*cert_status=*/net::OK);
 
   auto api_guard_delegate = ApiGuardDelegate::Factory::Create();
@@ -405,20 +339,7 @@ class ApiGuardDelegateAffiliatedUserTest : public ApiGuardDelegateTest {
   ApiGuardDelegateAffiliatedUserTest() = default;
   ~ApiGuardDelegateAffiliatedUserTest() override = default;
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  void SetUp() override {
-    ApiGuardDelegateTest::SetUp();
-
-    // Make sure the main user is affiliated.
-    auto init_params = crosapi::BrowserInitParams::New();
-    init_params->session_type = crosapi::SessionType::kPublicSession;
-    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
-    ASSERT_TRUE(policy::PolicyLoaderLacros::IsMainUserAffiliated());
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
  protected:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   void LogIn(std::string_view email, const GaiaId& gaia_id) override {
     BrowserWithTestWindowTest::LogIn(email, gaia_id);
     user_manager()->SetUserPolicyStatus(
@@ -427,7 +348,6 @@ class ApiGuardDelegateAffiliatedUserTest : public ApiGuardDelegateTest {
         /*is_affiliated=*/true);
     ash_test_helper()->test_session_controller_client()->AddUserSession(email);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 
 TEST_P(ApiGuardDelegateAffiliatedUserTest, ExtensionNotForceInstalled) {
@@ -542,9 +462,6 @@ TEST_P(ApiGuardDelegateAffiliatedUserTest, NoError) {
 INSTANTIATE_TEST_SUITE_P(All,
                          ApiGuardDelegateAffiliatedUserTest,
                          testing::ValuesIn(kAllExtensionInfoTestParams));
-
-// TODO(b/292227137): Migrate Shimless RMA app to LaCrOS.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 
 class WebContentsCloseWaiter : public content::WebContentsObserver {
  public:
@@ -697,7 +614,5 @@ INSTANTIATE_TEST_SUITE_P(
         "isolated-app://"
         "pt2jysa7yu326m2cbu5mce4rrajvguagronrsqwn5dhbaris6eaaaaic/*",
         /*manufacturer=*/"HP")));
-
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace chromeos

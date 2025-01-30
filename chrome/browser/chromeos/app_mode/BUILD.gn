@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//ppapi/buildflags/buildflags.gni")
 
 assert(is_chromeos)
@@ -54,7 +53,6 @@ static_library("app_mode") {
   public_deps = [
     "//base",
     "//build:buildflag_header_h",
-    "//build:chromeos_buildflags",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:browser_list",
@@ -132,6 +130,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui/exclusive_access",
     "//chrome/browser/ui/tabs:test_support",
     "//chrome/browser/web_applications",
+    "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/common:constants",
     "//chrome/common:non_code_constants",
     "//chrome/test:test_support",

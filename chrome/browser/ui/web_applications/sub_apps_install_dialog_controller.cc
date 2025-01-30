@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"

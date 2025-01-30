@@ -10,6 +10,8 @@
 
 #include "ash/ash_export.h"
 #include "ash/capture_mode/capture_mode_types.h"
+#include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -23,6 +25,7 @@ struct VectorIcon;
 
 namespace views {
 class Label;
+class Link;
 }
 
 namespace ash {
@@ -36,7 +39,8 @@ class ASH_EXPORT ActionButtonContainerView : public views::View {
   METADATA_HEADER(ActionButtonContainerView, views::View)
 
  public:
-  // A view that displays an error message and icon.
+  // A view that displays an error message and icon. It may optionally also show
+  // a try again link.
   class ASH_EXPORT ErrorView : public views::BoxLayoutView {
     METADATA_HEADER(ErrorView, views::BoxLayoutView)
 
@@ -53,12 +57,20 @@ class ASH_EXPORT ActionButtonContainerView : public views::View {
     // Sets the error message to show on the error view.
     void SetErrorMessage(const std::u16string& error_message);
 
+    // Sets the callback to run when the try again link is pressed. Note that
+    // the try again link is only shown if `try_again_callback` is not null.
+    void SetTryAgainCallback(base::RepeatingClosure try_again_callback);
+
+    views::Link* try_again_link_for_testing() { return try_again_link_; }
+
     const std::u16string& GetErrorMessageForTesting() const;
 
    private:
     std::unique_ptr<SystemShadow> shadow_;
 
     raw_ptr<views::Label> error_label_ = nullptr;
+
+    raw_ptr<views::Link> try_again_link_ = nullptr;
   };
 
   ActionButtonContainerView();
@@ -83,8 +95,12 @@ class ASH_EXPORT ActionButtonContainerView : public views::View {
   // Returns the action buttons in this container.
   const views::View::Views& GetActionButtons() const;
 
-  // Shows an error view with the given `error_message`.
-  void ShowErrorView(const std::u16string& error_message);
+  // Shows an error view with the given `error_message`. If `try_again_callback`
+  // is not null, then the error view will also show a try again link that runs
+  // `try_again_callback` when pressed.
+  void ShowErrorView(
+      const std::u16string& error_message,
+      base::RepeatingClosure try_again_callback = base::NullCallback());
 
   // Hides the error view.
   void HideErrorView();
@@ -95,7 +111,7 @@ class ASH_EXPORT ActionButtonContainerView : public views::View {
   // copy text and search buttons.
   void StartSmartActionsButtonTransition();
 
-  const ErrorView* error_view_for_testing() const { return error_view_; }
+  ErrorView* error_view_for_testing() { return error_view_; }
 
  private:
   // Called when the smart actions button has faded out, to start the transition

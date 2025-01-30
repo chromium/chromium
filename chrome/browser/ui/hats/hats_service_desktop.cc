@@ -501,12 +501,7 @@ bool HatsServiceDesktop::CanShowSurvey(const std::string& trigger) const {
     if (last_survey_started_time.has_value()) {
       const base::TimeDelta elapsed_time_since_last_start =
           base::Time::Now() - *last_survey_started_time;
-      const std::optional<base::TimeDelta> cooldown_override =
-          config.GetCooldownPeriodOverride(profile());
-      const base::TimeDelta cooldown_period =
-          cooldown_override.has_value() ? *cooldown_override
-                                        : kMinimumTimeBetweenSurveyStarts;
-      if (elapsed_time_since_last_start < cooldown_period) {
+      if (elapsed_time_since_last_start < kMinimumTimeBetweenSurveyStarts) {
         UMA_HISTOGRAM_ENUMERATION(
             kHatsShouldShowSurveyReasonHistogram,
             ShouldShowSurveyReasons::kNoLastSurveyTooRecent);

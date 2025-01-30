@@ -1074,7 +1074,7 @@ CanvasResourceProvider::CreateBitmapProvider(
 std::unique_ptr<CanvasResourceProvider>
 CanvasResourceProvider::CreateSharedBitmapProvider(
     gfx::Size size,
-    SkColorType sk_color_type,
+    viz::SharedImageFormat format,
     SkAlphaType alpha_type,
     const gfx::ColorSpace& color_space,
     ShouldInitialize should_initialize,
@@ -1091,8 +1091,8 @@ CanvasResourceProvider::CreateSharedBitmapProvider(
   }
 
   auto provider = std::make_unique<CanvasResourceProviderSharedBitmap>(
-      size, viz::SkColorTypeToSinglePlaneSharedImageFormat(sk_color_type),
-      alpha_type, color_space, shared_image_interface_provider, resource_host);
+      size, format, alpha_type, color_space, shared_image_interface_provider,
+      resource_host);
   if (provider->IsValid()) {
     if (should_initialize ==
         CanvasResourceProvider::ShouldInitialize::kCallClear)
@@ -1137,24 +1137,20 @@ CanvasResourceProvider::CreateSharedImageProvider(
 
   const bool is_accelerated = raster_mode == RasterMode::kGPU;
 
-  SkColorType adjusted_color_type = sk_color_type;
+  auto format = viz::SkColorTypeToSinglePlaneSharedImageFormat(sk_color_type);
   // TODO(https://crbug.com/1210946): Pass in info as is for all cases.
   // Overriding the info to use RGBA instead of N32 is needed because code
   // elsewhere assumes RGBA. OTOH the software path seems to be assuming N32
   // somewhere in the later pipeline but for offscreen canvas only.
   if (!shared_image_usage_flags.HasAny(gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
                                        gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE)) {
-    if (is_accelerated && sk_color_type != kRGBA_F16_SkColorType) {
-      adjusted_color_type = kRGBA_8888_SkColorType;
+    if (is_accelerated && format != viz::SinglePlaneFormat::kRGBA_F16) {
+      format = viz::SinglePlaneFormat::kRGBA_8888;
     }
   }
 
   const bool is_gpu_memory_buffer_image_allowed =
-      is_gpu_compositing_enabled &&
-      IsGMBAllowed(
-          size,
-          viz::SkColorTypeToSinglePlaneSharedImageFormat(adjusted_color_type),
-          capabilities) &&
+      is_gpu_compositing_enabled && IsGMBAllowed(size, format, capabilities) &&
       SharedGpuContext::GetGpuMemoryBufferManager();
 
   if (raster_mode == RasterMode::kCPU && !is_gpu_memory_buffer_image_allowed)
@@ -1179,17 +1175,16 @@ CanvasResourceProvider::CreateSharedImageProvider(
 
 #if BUILDFLAG(IS_MAC)
   if (shared_image_usage_flags.Has(gpu::SHARED_IMAGE_USAGE_SCANOUT) &&
-      is_accelerated && adjusted_color_type == kRGBA_8888_SkColorType) {
+      is_accelerated && format == viz::SinglePlaneFormat::kRGBA_8888) {
     // GPU-accelerated scannout usage on Mac uses IOSurface.  Must switch from
     // RGBA_8888 to BGRA_8888 in that case.
-    adjusted_color_type = kBGRA_8888_SkColorType;
+    format = viz::SinglePlaneFormat::kBGRA_8888;
   }
 #endif
 
   auto provider = std::make_unique<CanvasResourceProviderSharedImage>(
-      size, viz::SkColorTypeToSinglePlaneSharedImageFormat(adjusted_color_type),
-      alpha_type, color_space, context_provider_wrapper, is_accelerated,
-      shared_image_usage_flags, resource_host);
+      size, format, alpha_type, color_space, context_provider_wrapper,
+      is_accelerated, shared_image_usage_flags, resource_host);
   if (provider->IsValid()) {
     if (should_initialize ==
         CanvasResourceProvider::ShouldInitialize::kCallClear)

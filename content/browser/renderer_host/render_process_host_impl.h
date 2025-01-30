@@ -209,8 +209,8 @@ class CONTENT_EXPORT RenderProcessHostImpl
 
   // Exposed as a public constant to share with other entities that need to
   // accommodate frame/process shutdown delays.
-  static constexpr int kKeepAliveHandleFactoryTimeoutInMSec = 30 * 1000;
-  static const base::TimeDelta kKeepAliveHandleFactoryTimeout;
+  static constexpr base::TimeDelta kKeepAliveHandleFactoryTimeout =
+      base::Seconds(30);
 
   // Create a new RenderProcessHost. The storage partition for the process
   // is retrieved from |browser_context| based on information in

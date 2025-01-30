@@ -82,6 +82,7 @@ class MockLobsterClient : public LobsterClient {
               (const std::string& image_bytes,
                StatusCallback insert_status_callback),
               (override));
+  MOCK_METHOD(void, ShowDisclaimerUI, (), (override));
   MOCK_METHOD(void,
               LoadUI,
               (std::optional<std::string> query,

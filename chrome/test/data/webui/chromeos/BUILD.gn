@@ -36,7 +36,6 @@ if (include_js2gtest_tests) {
     # separate action so need to be separated out.
     sources = [
       "account_manager/account_manager_browsertest.js",
-      "arc_account_picker/arc_account_picker_browsertest.js",
       "ash_common/i18n_process_test.js",
       "ash_common/post_message_api/post_message_api_browsertest.js",
       "assertions.js",
@@ -121,7 +120,6 @@ group("closure_compile") {
   public_deps = [
     ":closure_compile_local",
     "account_manager:closure_compile",
-    "arc_account_picker:closure_compile",
     "ash_common:closure_compile",
   ]
 }
@@ -148,8 +146,6 @@ build_webui_tests("build") {
     # subfolder targets.
     "account_manager/account_migration_welcome_test.js",
     "account_manager/test_account_manager_browser_proxy.js",
-    "arc_account_picker/arc_account_picker_test.js",
-    "arc_account_picker/test_util.js",
     "bluetooth/bluetooth_base_page_test.ts",
     "bluetooth/bluetooth_battery_icon_percentage_test.ts",
     "bluetooth/bluetooth_device_battery_info_test.ts",
@@ -241,9 +237,6 @@ build_webui_tests("build") {
   mojo_files_deps = [ ":web_ui_test_bindings_ts__generator" ]
 
   ts_definitions = [
-    "//chrome/browser/resources/chromeos/arc_account_picker/arc_account_picker_app.d.ts",
-    "//chrome/browser/resources/chromeos/arc_account_picker/arc_account_picker_browser_proxy.d.ts",
-    "//chrome/test/data/webui/chromeos/arc_account_picker/test_util.d.ts",
     "//tools/typescript/definitions/chrome_send.d.ts",
     "//tools/typescript/definitions/metrics_private.d.ts",
     "//tools/typescript/definitions/pending.d.ts",
@@ -252,9 +245,6 @@ build_webui_tests("build") {
   ts_path_mappings = [
     "*/strings.m.js|" +
         rebase_path("//tools/typescript/definitions/strings.d.ts",
-                    target_gen_dir),
-    "chrome://chrome-signin/arc_account_picker/*|" +
-        rebase_path("//chrome/browser/resources/chromeos/arc_account_picker/*",
                     target_gen_dir),
     "chrome://internet-detail-dialog/*|" + rebase_path(
             "${root_gen_dir}/chrome/browser/resources/chromeos/internet_detail_dialog/tsc/*",

@@ -1443,10 +1443,6 @@ RenderProcessHost* RenderProcessHostImpl::CreateRenderProcessHost(
 const unsigned int RenderProcessHostImpl::kMaxFrameDepthForPriority =
     std::numeric_limits<unsigned int>::max();
 
-// static
-const base::TimeDelta RenderProcessHostImpl::kKeepAliveHandleFactoryTimeout =
-    base::Milliseconds(kKeepAliveHandleFactoryTimeoutInMSec);
-
 RenderProcessHostImpl::RenderProcessHostImpl(
     BrowserContext* browser_context,
     StoragePartitionImpl* storage_partition_impl,

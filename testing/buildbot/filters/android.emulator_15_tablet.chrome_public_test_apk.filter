@@ -1,0 +1,10 @@
+# crbug.com/376095153
+-org.chromium.chrome.browser.display_cutout.DisplayCutoutTest.*
+
+# crbug.com/393201693
+-org.chromium.chrome.browser.contextualsearch.ContextualSearchRelatedSearchesTest.testRelatedSearchesInBar
+-org.chromium.chrome.browser.contextualsearch.ContextualSearchRelatedSearchesTest.testRelatedSearchesInBarWithDefaultQuery_Ellipsize
+-org.chromium.chrome.browser.contextualsearch.ContextualSearchRelatedSearchesTest.testRelatedSearchesInBarForDefinitionCard
+
+# crbug.com/368117896
+-org.chromium.chrome.browser.commerce.coupons.DiscountsIntegrationTest.testRenderDiscountContextualPageActionIcon

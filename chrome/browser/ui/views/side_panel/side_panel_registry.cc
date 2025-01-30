@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/auto_reset.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
