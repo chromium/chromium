@@ -786,6 +786,7 @@ Document::Document(const DocumentInit& initializer,
       token_(initializer.GetToken()),
       is_initial_empty_document_(initializer.IsInitialEmptyDocument()),
       is_prerendering_(initializer.IsPrerendering()),
+      is_for_discard_(initializer.IsForDiscard()),
       dom_window_(initializer.GetWindow()),
       execution_context_(initializer.GetExecutionContext()),
       agent_(initializer.GetAgent()),
@@ -8699,8 +8700,9 @@ PropertyRegistry& Document::EnsurePropertyRegistry() {
 
 DocumentResourceCoordinator* Document::GetResourceCoordinator() {
   // `resource_coordinator_` is cleared in Shutdown() and must not be recreated
-  // afterwards, when the Document is no longer active.
-  if (!resource_coordinator_ && IsActive()) {
+  // afterwards, when the Document is no longer active. If `is_for_discard_` do
+  // not instantiate a resource coordinator.
+  if (!resource_coordinator_ && IsActive() && !is_for_discard_) {
     CHECK(GetFrame(), base::NotFatalUntil::M135);
     if (auto* frame = GetFrame()) {
       resource_coordinator_ = DocumentResourceCoordinator::MaybeCreate(

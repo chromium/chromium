@@ -83,6 +83,7 @@
 #include "third_party/blink/public/mojom/window_features/window_features.mojom-blink.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/web_cache.h"
+#include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_response.h"
@@ -12034,6 +12035,32 @@ TEST_F(WebFrameTest, DiscardFrame) {
                     ->GetDocument()
                     ->documentElement()
                     ->innerText());
+}
+
+// Tests to ensure that DocumentResourceCoordinators are not instantiated for
+// discarded documents, which are installed following a frame discard operation.
+TEST_F(WebFrameTest, ResourceCoordinatorNotCreatedForDiscardedDocument) {
+  blink::WebRuntimeFeatures::EnablePerformanceManagerInstrumentation(true);
+  DisableRendererSchedulerThrottling();
+  RegisterMockedHttpURLLoad("foo.html");
+
+  frame_test_helpers::WebViewHelper helper;
+  helper.InitializeAndLoad(base_url_ + "foo.html");
+
+  Document* initial_document =
+      To<LocalFrame>(helper.GetWebView()->GetPage()->MainFrame())
+          ->GetDocument();
+  EXPECT_TRUE(initial_document->GetResourceCoordinator());
+
+  helper.LocalMainFrame()->GetFrame()->Discard();
+  RunPendingTasks();
+
+  // Discarded documents should not create resource coordinators.
+  Document* discarded_document =
+      To<LocalFrame>(helper.GetWebView()->GetPage()->MainFrame())
+          ->GetDocument();
+  EXPECT_NE(initial_document, discarded_document);
+  EXPECT_FALSE(discarded_document->GetResourceCoordinator());
 }
 
 TEST_F(WebFrameTest, EmptyJavascriptFrameUrl) {
