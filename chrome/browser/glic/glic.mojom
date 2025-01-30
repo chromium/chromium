@@ -233,7 +233,7 @@ struct PanelState {
 // tools/metrics/histograms/metadata/glic/enums.xml
 [Stable, Extensible]
 enum WebClientMode {
-  [Default] kUnknown = -1,
+  [Default] kUnknown = 2,
   // Text operation mode.
   kText = 0,
   // Audio operation mode.
