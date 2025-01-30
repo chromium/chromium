@@ -7,6 +7,7 @@
 
 #include <list>
 
+#include "base/callback_list.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "ui/views/layout/box_layout_view.h"
 
@@ -19,8 +20,8 @@ class PageActionView;
 // TODO(crbug.com/376285664): Revisit the Layout View used, and make sure
 // BoxLayoutView behaves well with AnimatingLayoutManager or switch to a
 // different layout (e.g. FlexLayoutView).
-class PageActionContainerView : public views::View {
-  METADATA_HEADER(PageActionContainerView, views::View)
+class PageActionContainerView : public views::BoxLayoutView {
+  METADATA_HEADER(PageActionContainerView, views::BoxLayoutView)
  public:
   PageActionContainerView(const std::vector<actions::ActionItem*>& action_items,
                           IconLabelBubbleView::Delegate* icon_view_delegate);
@@ -36,7 +37,20 @@ class PageActionContainerView : public views::View {
   PageActionView* GetPageActionView(actions::ActionId page_action_id);
 
  private:
+  // Updates the container insets depending on it current state. Following
+  // can happen:
+  // 1. `page_action_views_` is empty or all views in `page_action_views_` are
+  // not visible. In this case, the right inset will be 0.
+  // 2. At least one of the views in `page_action_views_` is visible. In the
+  // case, the right inset will be set to the appropriate value.
+  //
+  // TODO(crbug.com/384969003): After the page actions migration, this right
+  // spacing will no longer be needed.
+  void SetContainerInsideBorderInsets();
+
   std::map<actions::ActionId, raw_ptr<PageActionView>> page_action_views_;
+  std::list<base::CallbackListSubscription>
+      page_action_views_visible_subscriptions_;
 };
 
 }  // namespace page_actions

@@ -47,7 +47,6 @@ class PageActionController : public PinnedToolbarActionsModel::Observer {
 
   void Hide(actions::ActionId action_id);
   void Show(actions::ActionId action_id);
-  void ShowSuggestionChip(actions::ActionId action_id);
 
   // By default, in suggestion chip mode, the ActionItem text will be used as
   // the control label. However, features can provide a custom text to use

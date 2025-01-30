@@ -13,31 +13,29 @@
 #include "ui/actions/actions.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/insets.h"
-#include "ui/views/layout/flex_layout.h"
 
 namespace page_actions {
 
 PageActionContainerView::PageActionContainerView(
     const std::vector<actions::ActionItem*>& action_items,
     IconLabelBubbleView::Delegate* icon_view_delegate) {
-  auto* layout = SetLayoutManager(std::make_unique<views::FlexLayout>());
-  layout->SetMainAxisAlignment(views::LayoutAlignment::kEnd);
+  SetBetweenChildSpacing(kPageActionBetweenIconSpacing);
 
-  // Add 8 dip after each child.
-  layout->SetDefault(views::kMarginsKey,
-                     gfx::Insets().set_right(kPageActionBetweenIconSpacing));
+  // Right align to clip the leftmost items first when not enough space.
+  SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kEnd);
 
-  for (auto* action_item : action_items) {
-    auto* child = AddChildView(
+  for (actions::ActionItem* action_item : action_items) {
+    PageActionView* view = AddChildView(
         std::make_unique<PageActionView>(action_item, icon_view_delegate));
+    page_action_views_[action_item->GetActionId().value()] = view;
 
-    page_action_views_[action_item->GetActionId().value()] = child;
-
-    child->SetProperty(views::kFlexBehaviorKey,
-                       views::FlexSpecification(
-                           views::MinimumFlexSizeRule::kPreferredSnapToMinimum,
-                           views::MaximumFlexSizeRule::kPreferred));
+    page_action_views_visible_subscriptions_.push_back(
+        view->AddVisibleChangedCallback(base::BindRepeating(
+            &PageActionContainerView::SetContainerInsideBorderInsets,
+            base::Unretained(this))));
   }
+
+  SetContainerInsideBorderInsets();
 }
 
 PageActionContainerView::~PageActionContainerView() = default;
@@ -49,9 +47,18 @@ void PageActionContainerView::SetController(PageActionController* controller) {
 }
 
 PageActionView* PageActionContainerView::GetPageActionView(
-    actions::ActionId action_id) {
-  auto id_to_view = page_action_views_.find(action_id);
+    actions::ActionId page_action_id) {
+  auto id_to_view = page_action_views_.find(page_action_id);
   return id_to_view != page_action_views_.end() ? id_to_view->second : nullptr;
+}
+
+void PageActionContainerView::SetContainerInsideBorderInsets() {
+  const bool at_least_one_visible = std::any_of(
+      page_action_views_.begin(), page_action_views_.end(),
+      [](const auto& id_to_view) { return id_to_view.second->GetVisible(); });
+
+  SetInsideBorderInsets(gfx::Insets().set_right(
+      at_least_one_visible ? kPageActionBetweenIconSpacing : 0));
 }
 
 BEGIN_METADATA(PageActionContainerView)

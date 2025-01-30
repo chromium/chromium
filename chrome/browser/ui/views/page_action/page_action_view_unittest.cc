@@ -302,24 +302,30 @@ TEST_F(PageActionViewWithMockModelTest, OnThemeChangedUpdatesIconImage) {
 }
 
 // Test that UpdateBorder adjusts the insets based on label visibility.
-TEST_F(PageActionViewWithMockModelTest, UpdateBorderAdjustsInsets) {
-  EXPECT_CALL(*model(), GetShowSuggestionChip()).WillRepeatedly(Return(true));
-  page_action_view()->OnPageActionModelChanged(*model());
-  const gfx::Insets initial_insets = page_action_view()->GetInsets();
+TEST_F(PageActionViewTest, UpdateBorderAdjustsInsets) {
+  // Test case: Label visibility is true.
+  page_action_view()->SetShouldShowLabelForTesting(true);
+  gfx::Insets initial_insets = page_action_view()->GetInsets();
 
+  // Simulate UpdateBorder when label is visible.
   page_action_view()->UpdateBorder();
-  const gfx::Insets insets_with_chip = page_action_view()->GetInsets();
+  gfx::Insets updated_insets_true = page_action_view()->GetInsets();
 
-  EXPECT_EQ(initial_insets, insets_with_chip);
+  // Verify that insets are updated when the label is visible.
+  EXPECT_NE(initial_insets, updated_insets_true);
 
-  EXPECT_CALL(*model(), GetShowSuggestionChip()).WillRepeatedly(Return(false));
-  page_action_view()->OnPageActionModelChanged(*model());
+  // Test case: Label visibility is false.
+  page_action_view()->SetShouldShowLabelForTesting(false);
 
+  // Simulate UpdateBorder when label is not visible.
   page_action_view()->UpdateBorder();
-  const gfx::Insets insets_without_chip = page_action_view()->GetInsets();
+  gfx::Insets updated_insets_false = page_action_view()->GetInsets();
 
-  EXPECT_NE(initial_insets, insets_without_chip);
-  EXPECT_NE(insets_with_chip, insets_without_chip);
+  // Verify that insets remain unchanged when the label is not visible.
+  EXPECT_EQ(initial_insets, updated_insets_false);
+
+  // Verify that true and false cases result in different insets.
+  EXPECT_NE(updated_insets_true, updated_insets_false);
 }
 
 class PageActionViewTriggerTest : public PageActionViewTest {

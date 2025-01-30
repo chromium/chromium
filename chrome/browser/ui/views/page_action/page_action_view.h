@@ -38,12 +38,12 @@ class PageActionView : public IconLabelBubbleView,
   // TODO(crbug.com/388524315): Merge OnNewActiveController and this method.
   void SetModel(PageActionModelInterface* model);
 
-  // PageActionModelObserver:
+  // PageActionModelObserver
   void OnPageActionModelChanged(const PageActionModelInterface& model) override;
   void OnPageActionModelWillBeDeleted(
       const PageActionModelInterface& model) override;
 
-  // IconLabelBubbleView:
+  // IconLabelBubbleView
   void ViewHierarchyChanged(
       const views::ViewHierarchyChangedDetails& details) override;
   void OnThemeChanged() override;
@@ -53,11 +53,10 @@ class PageActionView : public IconLabelBubbleView,
   bool ShouldShowSeparator() const override;
   bool ShouldUpdateInkDropOnClickCanceled() const override;
   void NotifyClick(const ui::Event& event) override;
-  gfx::Size GetMinimumSize() const override;
 
   actions::ActionId GetActionId() const;
 
-  views::View* GetLabelForTesting();
+  void SetShouldShowLabelForTesting(bool should_show_label);
 
  private:
   // The image associated with the `action_item_` size may be different from the
@@ -68,6 +67,8 @@ class PageActionView : public IconLabelBubbleView,
   // The page action can be in icon mode and suggestion chip mode. This helper
   // ensures that the correct styling is applied based on the current mode.
   void UpdateStyle(bool is_suggestion_chip);
+
+  bool should_show_label_ = false;
 
   base::WeakPtr<actions::ActionItem> action_item_ = nullptr;
   base::ScopedObservation<PageActionModelInterface, PageActionModelObserver>
