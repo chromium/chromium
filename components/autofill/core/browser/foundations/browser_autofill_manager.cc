@@ -2700,7 +2700,11 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
   CreditCardSuggestionSummary summary;
   std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
       client(), trigger_field, autofill_trigger_field.Type().GetStorableType(),
-      summary, ShouldShowScanCreditCard(form, trigger_field),
+      summary,
+      form_structure.IsCompleteCreditCardForm(
+          FormStructure::CreditCardFormCompleteness::
+              kCompleteCreditCardFormIncludingCvcAndName),
+      ShouldShowScanCreditCard(form, trigger_field),
       ShouldShowCardsFromAccountOption(form, trigger_field, trigger_source),
       four_digit_combinations_in_dom_,
       /*autofilled_last_four_digits_in_form_for_filtering=*/

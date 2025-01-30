@@ -54,6 +54,8 @@ struct CreditCardSuggestionSummary {
 // Generates suggestions for all available credit cards based on the
 // `trigger_field_type`, `trigger_field` and `four_digit_combinations_in_dom`.
 // `summary` contains metadata about the returned suggestions.
+// `is_complete_form` indicates whether a credit card form is considered
+// complete for the purposes of "Save and Fill".
 // `autofilled_last_four_digits_in_form_for_filtering` are the last four digits
 // of a card number that will be used for suggestion filtering. This is used to
 // avoid showing suggestions that is unrelated to the cards that have already
@@ -63,6 +65,7 @@ std::vector<Suggestion> GetSuggestionsForCreditCards(
     const FormFieldData& trigger_field,
     FieldType trigger_field_type,
     CreditCardSuggestionSummary& summary,
+    bool is_complete_form,
     bool should_show_scan_credit_card,
     bool should_show_cards_from_account,
     const std::vector<std::string>& four_digit_combinations_in_dom,
