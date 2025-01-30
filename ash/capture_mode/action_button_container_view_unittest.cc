@@ -19,6 +19,7 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/link.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_utils.h"
@@ -126,7 +127,7 @@ TEST_F(ActionButtonContainerViewTest, SmartActionsButtonTransition) {
 
 TEST_F(ActionButtonContainerViewTest, ShowsErrorView) {
   ActionButtonContainerView action_button_container;
-  const ActionButtonContainerView::ErrorView* error_view =
+  ActionButtonContainerView::ErrorView* error_view =
       action_button_container.error_view_for_testing();
 
   EXPECT_FALSE(error_view->GetVisible());
@@ -135,10 +136,39 @@ TEST_F(ActionButtonContainerViewTest, ShowsErrorView) {
 
   EXPECT_TRUE(error_view->GetVisible());
   EXPECT_EQ(error_view->GetErrorMessageForTesting(), u"Error message");
+  EXPECT_FALSE(error_view->try_again_link_for_testing()->GetVisible());
 
   action_button_container.HideErrorView();
 
   EXPECT_FALSE(error_view->GetVisible());
+}
+
+TEST_F(ActionButtonContainerViewTest, ShowsErrorViewWithTryAgainLink) {
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  widget->SetBounds(gfx::Rect(50, 50, 300, 200));
+  widget->Show();
+  auto* action_button_container =
+      widget->SetContentsView(std::make_unique<ActionButtonContainerView>());
+  base::test::TestFuture<void> try_again_future;
+
+  action_button_container->ShowErrorView(
+      u"Error message", try_again_future.GetRepeatingCallback());
+
+  ActionButtonContainerView::ErrorView* error_view =
+      action_button_container->error_view_for_testing();
+  EXPECT_TRUE(error_view->GetVisible());
+  views::Link* try_again_link = error_view->try_again_link_for_testing();
+  EXPECT_TRUE(try_again_link->GetVisible());
+
+  // Check that clicking the try again link runs the try again callback.
+  ViewDrawnWaiter().Wait(try_again_link);
+  ui::test::EventGenerator event_generator(GetRootWindow(widget.get()));
+  event_generator.MoveMouseTo(
+      try_again_link->GetBoundsInScreen().CenterPoint());
+  event_generator.ClickLeftButton();
+
+  EXPECT_TRUE(try_again_future.Wait());
 }
 
 }  // namespace
