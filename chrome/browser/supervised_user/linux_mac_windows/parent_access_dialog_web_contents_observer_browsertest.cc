@@ -16,6 +16,7 @@
 #include "chrome/test/supervised_user/supervision_mixin.h"
 #include "components/supervised_user/core/browser/proto/parent_access_callback.pb.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
+#include "components/supervised_user/test_support/parent_access_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "net/dns/mock_host_resolver.h"
@@ -40,32 +41,6 @@ struct TestParam {
   std::string test_name_suffix;
 };
 
-// Helper method that returns a base64 encoded approval result.
-std::string CreatePacpApprovalResult() {
-  kids::platform::parentaccess::client::proto::ParentAccessCallback
-      parent_access_callback;
-  kids::platform::parentaccess::client::proto::OnParentVerified*
-      on_parent_verified = parent_access_callback.mutable_on_parent_verified();
-  kids::platform::parentaccess::client::proto::ParentAccessToken* token =
-      on_parent_verified->mutable_parent_access_token();
-  token->set_token("TEST_TOKEN");
-  kids::platform::parentaccess::client::proto::Timestamp* expire_time =
-      token->mutable_expire_time();
-  expire_time->set_seconds(123456);
-  return base::Base64Encode(parent_access_callback.SerializeAsString());
-}
-
-// Helper method that returns a base64 encoded resize result.
-std::string CreatePacpResizeResult() {
-  kids::platform::parentaccess::client::proto::ParentAccessCallback
-      parent_access_callback;
-  kids::platform::parentaccess::client::proto::OnPageSizeChanged*
-      on_page_size_changed =
-          parent_access_callback.mutable_on_page_size_changed();
-  on_page_size_changed->set_content_height(40);
-  return base::Base64Encode(parent_access_callback.SerializeAsString());
-}
-
 std::string CreateInvalidEncodingResult() {
   // Non base64 characters.
   return "*INVALID*CHARS";
@@ -79,7 +54,7 @@ std::string CreateInvalidPacpResponse() {
 std::string GetPacpApprovalResultMatchingForgivingDecoding() {
   // Returns a result that can be decoded only in base64 forgiving decoding
   // mofe.
-  std::string encoded_result = CreatePacpApprovalResult();
+  std::string encoded_result = supervised_user::CreatePacpApprovalResult();
 
   // Make the input size non divisible by 4 in order to fail strict decoding.
   // Remove the padding if there was any.
@@ -221,9 +196,9 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(
         TestParam({.redirect_to_target_url = true,
                    // Approval result provided and navigation completes.
-                   .result_query_param =
-                       base::StringPrintf("result=%s",
-                                          CreatePacpApprovalResult()),
+                   .result_query_param = base::StringPrintf(
+                       "result=%s",
+                       supervised_user::CreatePacpApprovalResult()),
                    .expected_approval_result =
                        supervised_user::LocalApprovalResult::kApproved,
                    .test_name_suffix = "CompletesApprovalFlow"}),
@@ -239,17 +214,17 @@ INSTANTIATE_TEST_SUITE_P(
              .test_name_suffix = "CompletesApprovalFlowWithForgivingDecoding"}),
         TestParam({.redirect_to_target_url = false,
                    // Approval result provide by navigation does not complete.
-                   .result_query_param =
-                       base::StringPrintf("result=%s",
-                                          CreatePacpApprovalResult()),
+                   .result_query_param = base::StringPrintf(
+                       "result=%s",
+                       supervised_user::CreatePacpApprovalResult()),
                    .test_name_suffix = "ApprovalFlowDoesNotReachEndUrl"}),
-        TestParam(
-            {.redirect_to_target_url = true,
-             // A result is provided and navigation completes,
-             // but the result should be ignored by the approval flow.
-             .result_query_param = base::StringPrintf("result=%s",
-                                                      CreatePacpResizeResult()),
-             .test_name_suffix = "IgnoresResult"}),
+        TestParam({.redirect_to_target_url = true,
+                   // A result is provided and navigation completes,
+                   // but the result should be ignored by the approval flow.
+                   .result_query_param = base::StringPrintf(
+                       "result=%s",
+                       supervised_user::CreatePacpResizeResult()),
+                   .test_name_suffix = "IgnoresResult"}),
         TestParam(
             {.redirect_to_target_url = true,
              // A result is provided and navigation completes,

@@ -7,6 +7,7 @@
 
 #import "base/functional/callback.h"
 #import "components/supervised_user/core/common/supervised_user_constants.h"
+#import "ios/chrome/browser/supervised_user/model/parent_access_tab_helper_delegate.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 #import "ios/web/public/web_state_user_data.h"
 
@@ -27,11 +28,8 @@ class ParentAccessTabHelper
   ParentAccessTabHelper(const ParentAccessTabHelper&) = delete;
   ParentAccessTabHelper& operator=(const ParentAccessTabHelper&) = delete;
 
-  // Sets the commands handler.
-  void SetCommandsHandler(id<ParentAccessCommands> commands_handler);
-
-  // Sets the completion callback handling the approval result.
-  void SetApprovalResultCallback(ParentAccessApprovalResultCallback callback);
+  // Sets the delegate.
+  void SetDelegate(id<ParentAccessTabHelperDelegate> delegate);
 
   // web::WebStatePolicyDecider
   void ShouldAllowRequest(
@@ -40,9 +38,8 @@ class ParentAccessTabHelper
       web::WebStatePolicyDecider::PolicyDecisionCallback callback) override;
 
  private:
-  // Handler to manage the parent access bottom sheet.
-  __weak id<ParentAccessCommands> commands_handler_;
-  ParentAccessApprovalResultCallback approval_result_callback_;
+  // Delegate to manage the parent access bottom sheet.
+  id<ParentAccessTabHelperDelegate> delegate_;
 
   friend class web::WebStateUserData<ParentAccessTabHelper>;
 

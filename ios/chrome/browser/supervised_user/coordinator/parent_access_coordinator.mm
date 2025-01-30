@@ -12,10 +12,12 @@
 #import "ios/chrome/browser/shared/public/commands/parent_access_commands.h"
 #import "ios/chrome/browser/supervised_user/coordinator/parent_access_mediator.h"
 #import "ios/chrome/browser/supervised_user/model/parent_access_tab_helper.h"
+#import "ios/chrome/browser/supervised_user/model/parent_access_tab_helper_delegate.h"
 #import "ios/chrome/browser/supervised_user/ui/parent_access_bottom_sheet_view_controller.h"
 #import "ios/web/public/web_state.h"
 
-@interface ParentAccessCoordinator () <UIAdaptivePresentationControllerDelegate>
+@interface ParentAccessCoordinator () <UIAdaptivePresentationControllerDelegate,
+                                       ParentAccessTabHelperDelegate>
 @end
 
 @implementation ParentAccessCoordinator {
@@ -45,9 +47,7 @@
   ParentAccessTabHelper::CreateForWebState(webState.get());
   ParentAccessTabHelper* tabHelper =
       ParentAccessTabHelper::FromWebState(webState.get());
-  tabHelper->SetCommandsHandler(HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ParentAccessCommands));
-  tabHelper->SetApprovalResultCallback(std::move(_callback));
+  tabHelper->SetDelegate(self);
 
   _mediator =
       [[ParentAccessMediator alloc] initWithWebState:std::move(webState)];
@@ -70,13 +70,24 @@
   _viewController = nil;
 }
 
+#pragma mark - ParentAccessTabHelperDelegate
+
+- (void)hideParentAccessBottomSheetWithResult:
+    (supervised_user::LocalApprovalResult)result {
+  id<ParentAccessCommands> handler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ParentAccessCommands);
+  [handler hideParentAccessBottomSheet];
+  if (_callback) {
+    std::move(_callback).Run(result);
+  }
+}
+
 #pragma mark - UIAdaptivePresentationControllerDelegate
 
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
-  id<ParentAccessCommands> handler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ParentAccessCommands);
-  [handler hideParentAccessBottomSheet];
+  [self hideParentAccessBottomSheetWithResult:
+            supervised_user::LocalApprovalResult::kDeclined];
 }
 
 @end

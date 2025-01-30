@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/parent_access_commands.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
+#import "ios/chrome/browser/supervised_user/model/parent_access_tab_helper_delegate.h"
 #import "ios/web/public/web_state_user_data.h"
 #import "net/base/apple/url_conversions.h"
 
@@ -24,14 +25,9 @@ ParentAccessTabHelper::ParentAccessTabHelper(web::WebState* web_state)
 
 ParentAccessTabHelper::~ParentAccessTabHelper() = default;
 
-void ParentAccessTabHelper::SetCommandsHandler(
-    id<ParentAccessCommands> commands_handler) {
-  commands_handler_ = commands_handler;
-}
-
-void ParentAccessTabHelper::SetApprovalResultCallback(
-    ParentAccessApprovalResultCallback callback) {
-  approval_result_callback_ = std::move(callback);
+void ParentAccessTabHelper::SetDelegate(
+    id<ParentAccessTabHelperDelegate> delegate) {
+  delegate_ = delegate;
 }
 
 void ParentAccessTabHelper::ShouldAllowRequest(
@@ -43,9 +39,8 @@ void ParentAccessTabHelper::ShouldAllowRequest(
   std::optional<std::string> encoded_callback =
       supervised_user::MaybeGetPacpResultFromUrl(net::GURLWithNSURL(url));
 
-  // Allow the request to proceed if it does not include an encoded result, or
-  // if the encoded result is empty.
-  if (!encoded_callback.has_value() || encoded_callback.value().empty()) {
+  // Allow the request to proceed if it does not include an encoded result.
+  if (!encoded_callback.has_value()) {
     std::move(callback).Run(PolicyDecision::Allow());
     return;
   }
@@ -55,28 +50,26 @@ void ParentAccessTabHelper::ShouldAllowRequest(
                                       base::Base64DecodePolicy::kForgiving);
   if (!parsed_result.GetCallback()) {
     // Early return on malformed results.
-    // TODO(crbug.com/384514294): Add metrics on the error type.
+    [delegate_ hideParentAccessBottomSheetWithResult:
+                   supervised_user::LocalApprovalResult::kError];
     std::move(callback).Run(PolicyDecision::Allow());
     return;
   }
 
   ParentAccessCallback parent_access_callback =
       parsed_result.GetCallback().value();
+  supervised_user::LocalApprovalResult result;
   switch (parent_access_callback.callback_case()) {
     case ParentAccessCallback::CallbackCase::kOnParentVerified:
-      CHECK(!approval_result_callback_.is_null());
-      std::move(approval_result_callback_)
-          .Run(supervised_user::LocalApprovalResult::kApproved);
-      [commands_handler_ hideParentAccessBottomSheet];
+      result = supervised_user::LocalApprovalResult::kApproved;
       break;
       // TODO(crbug.com/384514294): Add support for the cancellation message
       // once PACP returns it for the approval flow.
     default:
-      // TODO(crbug.com/384514294): Add logging and handling of unexpected
-      // messages.
+      result = supervised_user::LocalApprovalResult::kError;
       break;
   }
-
+  [delegate_ hideParentAccessBottomSheetWithResult:result];
   std::move(callback).Run(PolicyDecision::Allow());
 }
 

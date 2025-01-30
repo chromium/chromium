@@ -12,6 +12,7 @@ source_set("model") {
     "list_family_members_service_factory.mm",
     "parent_access_tab_helper.h",
     "parent_access_tab_helper.mm",
+    "parent_access_tab_helper_delegate.h",
     "supervised_user_error.h",
     "supervised_user_error.mm",
     "supervised_user_error_container.h",
@@ -97,6 +98,7 @@ source_set("unit_tests") {
   sources = [
     "child_account_service_factory_unittest.mm",
     "list_family_members_service_factory_unittest.mm",
+    "parent_access_tab_helper_unittest.mm",
     "supervised_user_metrics_service_factory_unittest.mm",
     "supervised_user_service_factory_unittest.mm",
     "supervised_user_settings_service_factory_unittest.mm",
