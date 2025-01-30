@@ -42,6 +42,7 @@
 #include "ui/ozone/platform/wayland/host/linux_ui_delegate_wayland.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_connector.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
+#include "ui/ozone/platform/wayland/host/wayland_clipboard.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_cursor_factory.h"
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"

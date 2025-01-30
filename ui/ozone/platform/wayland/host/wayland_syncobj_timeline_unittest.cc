@@ -14,6 +14,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/test/mock_drm_syncobj_ioctl_wrapper.h"
 #include "ui/ozone/platform/wayland/test/test_fd_factory.h"
 #include "ui/ozone/platform/wayland/test/test_wayland_server_thread.h"

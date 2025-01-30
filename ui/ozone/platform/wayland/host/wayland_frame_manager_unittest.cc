@@ -9,6 +9,7 @@
 #include "base/files/file_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/ozone/platform/wayland/gpu/wayland_buffer_manager_gpu.h"
+#include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
 #include "ui/ozone/platform/wayland/test/scoped_wl_array.h"

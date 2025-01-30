@@ -10,6 +10,8 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/observer_list.h"
+#include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "components/device_event_log/device_event_log.h"
