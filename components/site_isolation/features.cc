@@ -67,5 +67,16 @@ const char kStrictSiteIsolationMemoryThresholdParamName[] =
 const char kPartialSiteIsolationMemoryThresholdParamName[] =
     "partial_site_isolation_threshold_mb";
 
+// kOriginIsolationMemoryThreshold is checked after
+// kSiteIsolationMemoryThresholds, and (if enabled) is used to determine if a
+// device has the necessary resources to participate in origin isolation (a
+// stronger model than site isolation, but with potentially higher resource
+// usage).
+BASE_FEATURE(kOriginIsolationMemoryThreshold,
+             "OriginIsolationMemoryThreshold",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const char kOriginIsolationMemoryThresholdParamName[] =
+    "origin_isolation_threshold_mb";
+
 }  // namespace features
 }  // namespace site_isolation

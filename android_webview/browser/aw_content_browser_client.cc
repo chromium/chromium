@@ -1014,6 +1014,14 @@ bool AwContentBrowserClient::ShouldDisableSiteIsolation(
   return true;
 }
 
+bool AwContentBrowserClient::ShouldDisableOriginIsolation() {
+  // Since AW does not yet support OOPIFs, we must return true here to disable
+  // features that may trigger OOPIFs, such as origin isolation.
+  //
+  // Adding OOPIF support for AW is tracked by https://crbug.com/806404.
+  return true;
+}
+
 bool AwContentBrowserClient::ShouldLockProcessToSite(
     content::BrowserContext* browser_context,
     const GURL& effective_url) {

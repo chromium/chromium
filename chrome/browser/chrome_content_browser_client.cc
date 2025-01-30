@@ -2557,6 +2557,11 @@ bool ChromeContentBrowserClient::ShouldDisableSiteIsolation(
       ShouldDisableSiteIsolationDueToMemoryThreshold(site_isolation_mode);
 }
 
+bool ChromeContentBrowserClient::ShouldDisableOriginIsolation() {
+  return site_isolation::SiteIsolationPolicy::
+      ShouldDisableOriginIsolationDueToMemoryThreshold();
+}
+
 std::vector<std::string>
 ChromeContentBrowserClient::GetAdditionalSiteIsolationModes() {
   std::vector<std::string> modes;
