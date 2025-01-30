@@ -1087,6 +1087,19 @@ public class StripLayoutHelperManagerTest {
         assertTrue(
                 "Ensure top padding increase the entire height",
                 motionEventHandled(SCREEN_WIDTH / 2, topPadding + TAB_STRIP_HEIGHT_PX - 1));
+
+        // topBound(1) = msbOffsetY(3) + topPadding(10) - touchSlop(12)
+        // bottomBound(57) = msbOffsetY(3) + topPadding(10) + msbHeight(32) + touchSlop(12)
+        assertEquals(
+                "Touch target top bound for MSB is incorrect.",
+                1,
+                mStripLayoutHelperManager.getModelSelectorButton().getTouchTargetBounds().top,
+                0f);
+        assertEquals(
+                "Touch target bottom bound for MSB is incorrect.",
+                57,
+                mStripLayoutHelperManager.getModelSelectorButton().getTouchTargetBounds().bottom,
+                0f);
     }
 
     @Test

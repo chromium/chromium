@@ -7,8 +7,6 @@ package org.chromium.chrome.browser.compositor.overlays.strip;
 import android.graphics.RectF;
 import android.util.FloatProperty;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.chrome.browser.layouts.components.VirtualView;
 
 import java.util.List;
@@ -328,7 +326,6 @@ public abstract class StripLayoutView implements VirtualView {
      * @param right - Right inset to apply to touch target.
      * @param bottom - Bottom inset to apply to touch target.
      */
-    @VisibleForTesting
     public void setTouchTargetInsets(Float left, Float top, Float right, Float bottom) {
         if (left != null) mTouchTargetInsetLeft = left;
         if (right != null) mTouchTargetInsetRight = right;

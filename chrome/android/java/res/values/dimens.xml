@@ -96,8 +96,6 @@ found in the LICENSE file.
     <dimen name="compositor_tab_title_text_size">13sp</dimen>
     <!-- The size of the bounding box for favicons. -->
     <dimen name="compositor_tab_title_favicon_size">16dp</dimen>
-    <!-- Slop value for allowing slight misses on the compositor button. -->
-    <dimen name="compositor_button_slop">10dp</dimen>
 
     <!-- The activity indicator bubble dimensions on tab favicons for tablet tab strip. -->
     <dimen name="compositor_tab_title_favicon_bubble_inner_size">6dp</dimen>
