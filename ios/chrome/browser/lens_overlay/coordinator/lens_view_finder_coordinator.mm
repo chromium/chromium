@@ -127,7 +127,7 @@ const CGFloat kBottomCornerRadius = 108.0;
     (LensOverlayDismissalCause)dismissalCause {
   if (dismissalCause != LensOverlayDismissalCauseSwipeDown) {
     // All other dismissal sources cause the UI to shut down.
-    [self exitLensViewFinder];
+    [self exitLensViewFinderAnimated:NO];
   }
 }
 
@@ -187,7 +187,7 @@ const CGFloat kBottomCornerRadius = 108.0;
 
 - (void)lensControllerDidTapDismissButton:
     (id<ChromeLensViewFinderController>)lensController {
-  [self exitLensViewFinder];
+  [self exitLensViewFinderAnimated:YES];
 }
 
 - (void)lensControllerWillAppear:
@@ -202,9 +202,10 @@ const CGFloat kBottomCornerRadius = 108.0;
 
 #pragma mark - Private
 
-- (void)exitLensViewFinder {
+- (void)exitLensViewFinderAnimated:(BOOL)animated {
   if (self.baseViewController.presentedViewController == _lensViewController) {
-    [self.baseViewController dismissViewControllerAnimated:YES completion:nil];
+    [self.baseViewController dismissViewControllerAnimated:animated
+                                                completion:nil];
   }
 }
 
