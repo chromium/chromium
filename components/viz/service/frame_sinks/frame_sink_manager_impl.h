@@ -215,6 +215,9 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   void GetForceEnableZoomState(
       const FrameSinkId& frame_sink_id,
       GetForceEnableZoomStateCallback callback) override;
+  void WaitForSurfaceAnimationManager(
+      const FrameSinkId& frame_sink_id,
+      WaitForSurfaceAnimationManagerCallback callback) override;
 
   void DestroyFrameSinkBundle(const FrameSinkBundleId& id);
 

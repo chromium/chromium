@@ -23,4 +23,9 @@ interface FrameSinkManagerTestApi {
   // |frame_sink_id| in Viz for tests with InputVizard.
   [Sync]
   GetForceEnableZoomState(FrameSinkId frame_sink_id) => (bool enabled);
+
+  // This calls notifies the callback when the given frame sink has a
+  // SurfaceAnimationManager.
+  [Sync]
+  WaitForSurfaceAnimationManager(FrameSinkId frame_sink_id) => ();
 };

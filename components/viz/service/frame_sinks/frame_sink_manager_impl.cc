@@ -1178,6 +1178,15 @@ void FrameSinkManagerImpl::GetForceEnableZoomState(
   std::move(callback).Run(enabled);
 }
 
+void FrameSinkManagerImpl::WaitForSurfaceAnimationManager(
+    const FrameSinkId& frame_sink_id,
+    WaitForSurfaceAnimationManagerCallback callback) {
+  auto* support = FrameSinkManagerImpl::GetFrameSinkForId(frame_sink_id);
+  CHECK(support);
+
+  support->RegisterSurfaceAnimationManagerNotification(std::move(callback));
+}
+
 void FrameSinkManagerImpl::ClearUnclaimedViewTransitionResources(
     const blink::ViewTransitionToken& transition_token) {
   transition_token_to_animation_manager_.erase(transition_token);

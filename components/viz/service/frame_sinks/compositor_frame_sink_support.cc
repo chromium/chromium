@@ -1661,6 +1661,9 @@ void CompositorFrameSinkSupport::ProcessCompositorFrameTransitionDirective(
               base::BindOnce(&CompositorFrameSinkSupport::
                                  OnSaveTransitionDirectiveProcessed,
                              base::Unretained(this)));
+      if (surface_animation_manager_callback_) {
+        std::move(surface_animation_manager_callback_).Run();
+      }
       break;
     case CompositorFrameTransitionDirective::Type::kAnimateRenderer: {
       if (directive.maybe_cross_frame_sink()) {
@@ -1784,6 +1787,16 @@ void CompositorFrameSinkSupport::SetLayerContextWantsBeginFrames(
     bool wants_begin_frames) {
   layer_context_wants_begin_frames_ = wants_begin_frames;
   UpdateNeedsBeginFramesInternal();
+}
+
+void CompositorFrameSinkSupport::RegisterSurfaceAnimationManagerNotification(
+    base::OnceCallback<void()> callback) {
+  if (!view_transition_token_to_animation_manager_.empty()) {
+    std::move(callback).Run();
+  } else {
+    CHECK(!surface_animation_manager_callback_);
+    surface_animation_manager_callback_ = std::move(callback);
+  }
 }
 
 void CompositorFrameSinkSupport::DestroySelf() {
