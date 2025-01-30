@@ -11,6 +11,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/files/file_descriptor_watcher_posix.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -30,6 +31,8 @@ namespace device {
 // interface available on Linux, Chrome OS and Android.
 class UsbDeviceHandleUsbfs : public UsbDeviceHandle {
  public:
+  class BlockingTaskRunnerHelper;
+
   // Constructs a new device handle from an existing |device| and open file
   // descriptor to that device. |blocking_task_runner| must run tasks on a
   // thread that supports FileDescriptorWatcher.
@@ -39,6 +42,16 @@ class UsbDeviceHandleUsbfs : public UsbDeviceHandle {
       base::ScopedFD lifeline_fd,
       const std::string& client_id,
       scoped_refptr<base::SequencedTaskRunner> blocking_task_runner);
+
+  // Takes a pre-constructed BlockingTaskRunnerHelper,
+  // it is used to inject a mock helper for testing
+  UsbDeviceHandleUsbfs(
+      scoped_refptr<UsbDevice> device,
+      base::ScopedFD fd,
+      base::ScopedFD lifeline_fd,
+      const std::string& client_id,
+      scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
+      std::unique_ptr<BlockingTaskRunnerHelper> helper);
 
   // UsbDeviceHandle implementation.
   scoped_refptr<UsbDevice> GetDevice() const override;
@@ -95,7 +108,8 @@ class UsbDeviceHandleUsbfs : public UsbDeviceHandle {
   virtual void FinishClose();
 
  private:
-  class BlockingTaskRunnerHelper;
+  friend class MockBlockingTaskRunnerHelper;
+
   struct Transfer;
   struct InterfaceInfo {
     uint8_t alternate_setting;
@@ -118,6 +132,9 @@ class UsbDeviceHandleUsbfs : public UsbDeviceHandle {
   void ReleaseInterfaceComplete(int interface_number,
                                 ResultCallback callback,
                                 bool success);
+  void ClaimInterfaceComplete(int interface_number,
+                              ResultCallback callback,
+                              bool success);
   void IsochronousTransferInternal(uint8_t endpoint_address,
                                    scoped_refptr<base::RefCountedBytes> buffer,
                                    size_t total_length,
@@ -138,6 +155,12 @@ class UsbDeviceHandleUsbfs : public UsbDeviceHandle {
   void DiscardUrbBlocking(Transfer* transfer);
   void UrbDiscarded(Transfer* transfer);
 
+  // Check if this interface claimed by this handler.
+  bool IsInterfaceClaimedByThis(int interface_number) const;
+
+  // Check if this interface claimed by any handler of this USB device.
+  bool IsInterfaceClaimedByAny(int interface_number) const;
+
   scoped_refptr<UsbDevice> device_;
   int fd_;  // Copy of the base::ScopedFD held by |helper_|. Valid if |device_|.
   std::optional<std::string>
@@ -155,13 +178,55 @@ class UsbDeviceHandleUsbfs : public UsbDeviceHandle {
 
   // Helper object exists on the blocking task thread and all calls to it and
   // its destruction must be posted there.
-  base::SequenceBound<BlockingTaskRunnerHelper> helper_;
+  base::SequenceBound<std::unique_ptr<BlockingTaskRunnerHelper>> helper_;
 
   std::list<std::unique_ptr<Transfer>> transfers_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<UsbDeviceHandleUsbfs> weak_factory_{this};
+};
+
+class UsbDeviceHandleUsbfs::BlockingTaskRunnerHelper {
+ public:
+  BlockingTaskRunnerHelper();
+
+  BlockingTaskRunnerHelper(const BlockingTaskRunnerHelper&) = delete;
+  BlockingTaskRunnerHelper& operator=(const BlockingTaskRunnerHelper&) = delete;
+
+  virtual ~BlockingTaskRunnerHelper();
+
+  virtual void Initialize(base::ScopedFD fd,
+                          base::ScopedFD lifeline_fd,
+                          base::WeakPtr<UsbDeviceHandleUsbfs> device_handle,
+                          scoped_refptr<base::SequencedTaskRunner> task_runner);
+
+  virtual void ReleaseFileDescriptor();
+
+  virtual bool SetConfiguration(int configuration_value);
+  virtual bool ClaimInterface(int interface_number);
+  virtual bool ReleaseInterface(int interface_number);
+  virtual bool SetInterface(int interface_number, int alternate_setting);
+  virtual bool ResetDevice();
+  virtual bool ClearHalt(uint8_t endpoint_address);
+  virtual void DiscardUrb(Transfer* transfer);
+
+  // Detach the interface from a kernel driver before ClaimInterface
+  virtual bool DetachInterface(int interface_number);
+
+  // Reattach the interface to a kernel driver after ReleaseInterface
+  virtual bool ReattachInterface(int interface_number);
+
+ private:
+  // Called when |fd_| is writable without blocking.
+  virtual void OnFileCanWriteWithoutBlocking();
+
+  base::ScopedFD fd_;
+  base::ScopedFD lifeline_fd_;
+  base::WeakPtr<UsbDeviceHandleUsbfs> device_handle_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  std::unique_ptr<base::FileDescriptorWatcher::Controller> watch_controller_;
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace device
