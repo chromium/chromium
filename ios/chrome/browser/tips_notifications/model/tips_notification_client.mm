@@ -770,7 +770,7 @@ void TipsNotificationClient::ClassifyUser() {
 }
 
 bool TipsNotificationClient::HasIdentitiesOnDevice(ProfileIOS* profile) const {
-  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+  if (IsUseAccountListFromIdentityManagerEnabled()) {
     return !IdentityManagerFactory::GetForProfile(profile)
                 ->GetAccountsOnDevice()
                 .empty();

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_mediator.h"
 
+#import "base/containers/flat_map.h"
 #import "base/memory/raw_ptr.h"
 #import "base/test/metrics/user_action_tester.h"
 #import "base/test/scoped_feature_list.h"
@@ -54,8 +55,15 @@ class AccountMenuMediatorTest : public PlatformTest,
                                 public testing::WithParamInterface<bool> {
  public:
   AccountMenuMediatorTest() {
-    feature_list_.InitWithFeatureState(kSeparateProfilesForManagedAccounts,
-                                       GetParam());
+    const bool separate_profiles = GetParam();
+    base::flat_map<base::test::FeatureRef, bool> feature_states;
+    feature_states[kSeparateProfilesForManagedAccounts] = separate_profiles;
+    // `kSeparateProfilesForManagedAccounts` depends on
+    // `kUseAccountListFromIdentityManager`.
+    if (separate_profiles) {
+      feature_states[kUseAccountListFromIdentityManager] = true;
+    }
+    feature_list_.InitWithFeatureStates(feature_states);
   }
 
   void SetUp() override {
