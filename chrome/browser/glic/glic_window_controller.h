@@ -176,6 +176,7 @@ class GlicWindowController : public views::WidgetObserver {
     kOpenAnimation,
     kWaitingForGlicToLoad,
     kOpen,
+    kDetaching,
     kClosingToReopenDetached,
     kCloseAnimation,
   };
@@ -216,6 +217,9 @@ class GlicWindowController : public views::WidgetObserver {
 
   // Finishes closing off the widget after running the closing animation.
   void CloseFinish(bool reopen_detached);
+
+  // Called when the Detach() animation ends.
+  void DetachFinished();
 
   // Causes an immediate close (eg, for during shutdown).
   void ForceClose();

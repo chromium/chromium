@@ -40,6 +40,7 @@ DEFINE_CUSTOM_ELEMENT_EVENT_TYPE(kGlicWidgetAttached);
 namespace {
 // Default value for adding a buffer to the attachment zone.
 constexpr static int kAttachmentBuffer = 20;
+constexpr static int kDetachYDistance = 36;
 
 constexpr static int kWidgetDefaultWidth = 300;
 constexpr static int kWidgetTopBarHeight = 48;
@@ -567,16 +568,23 @@ void GlicWindowController::Attach() {
 }
 
 void GlicWindowController::Detach() {
+  if (state_ != State::kOpen || !attached_browser_) {
+    return;
+  }
+  state_ = State::kDetaching;
   MaybeCreateHolderWindowAndReparent();
-  // TODO (crbug.com/388922182) Determine where to move the window to. Currently
-  // moves to the top right of the display.
-  gfx::Size screen_size =
-      display::Screen::GetScreen()->GetPrimaryDisplay().GetSizeInPixel();
-  gfx::Rect widget_bounds = glic_widget_->GetWindowBoundsInScreen();
-  widget_bounds.set_origin(
-      gfx::Point(screen_size.width() - widget_bounds.width(), 0));
-  AnimateBounds(widget_bounds, base::Milliseconds(kAnimationDurationMs),
-                base::DoNothing());
+
+  // Move down a little bit when detaching.
+  gfx::Rect new_bounds = glic_widget_->GetWindowBoundsInScreen();
+  new_bounds.set_y(new_bounds.y() + kDetachYDistance);
+
+  AnimateBounds(
+      new_bounds, base::Milliseconds(kAnimationDurationMs),
+      base::BindOnce(&GlicWindowController::DetachFinished, GetWeakPtr()));
+}
+
+void GlicWindowController::DetachFinished() {
+  state_ = State::kOpen;
 }
 
 void GlicWindowController::AttachToBrowser(Browser* browser) {
@@ -910,6 +918,9 @@ void GlicWindowController::MaybeCreateHolderWindowAndReparent() {
   attached_browser_ = nullptr;
   attached_browser_widget_observation_.Reset();
   browser_close_subscription_.reset();
+
+  gfx::Rect bounds = glic_widget_->GetWindowBoundsInScreen();
+
   if (!holder_widget_) {
     holder_widget_ = std::make_unique<views::Widget>();
     views::Widget::InitParams params(
@@ -919,10 +930,12 @@ void GlicWindowController::MaybeCreateHolderWindowAndReparent() {
     params.accept_events = false;
     // Widget name is specified for debug purposes.
     params.name = "HolderWindow";
-    params.bounds = glic_widget_->GetWindowBoundsInScreen();
+    params.bounds = bounds;
     params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
     holder_widget_->Init(std::move(params));
     holder_widget_->ShowInactive();
+  } else {
+    holder_widget_->SetBounds(bounds);
   }
 
   glic_widget_->Reparent(holder_widget_.get());
