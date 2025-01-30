@@ -332,6 +332,18 @@ const ComputedStyle* PseudoElement::CustomStyleForLayoutObject(
                    view_transition_name_));
 }
 
+// static
+bool PseudoElement::IsLayoutSiblingOfOriginatingElement(PseudoId pseudo_id) {
+  return pseudo_id == kPseudoIdScrollButtonBlockStart ||
+         pseudo_id == kPseudoIdScrollButtonInlineStart ||
+         pseudo_id == kPseudoIdScrollButtonBlockEnd ||
+         pseudo_id == kPseudoIdScrollButtonInlineEnd ||
+         pseudo_id == kPseudoIdScrollButton ||
+         pseudo_id == kPseudoIdScrollMarkerGroup ||
+         pseudo_id == kPseudoIdScrollMarkerGroupAfter ||
+         pseudo_id == kPseudoIdScrollMarkerGroupBefore;
+}
+
 const ComputedStyle* PseudoElement::AdjustedLayoutStyle(
     const ComputedStyle& style,
     const ComputedStyle& layout_parent_style) {

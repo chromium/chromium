@@ -8895,8 +8895,23 @@ const ComputedStyle* Element::StyleForPseudoElement(
   DCHECK(!IsTransitionPseudoElement(GetPseudoId()) ||
          (GetDocument().documentElement() == this));
 
+  StyleRequest style_request = request;
+  if (PseudoElement::IsLayoutSiblingOfOriginatingElement(pseudo_id)) {
+    CHECK(request.parent_override);
+    const ComputedStyle* layout_parent_style = request.parent_override;
+    Element* layout_parent =
+        LayoutTreeBuilderTraversal::LayoutParentElement(*this);
+    CHECK(layout_parent);
+    // Only root element doesn't have layout grand parent.
+    if (Element* layout_grand_parent =
+            LayoutTreeBuilderTraversal::LayoutParentElement(*layout_parent)) {
+      layout_parent_style = layout_grand_parent->GetComputedStyle();
+    }
+    style_request.layout_parent_override = layout_parent_style;
+  }
+
   const ComputedStyle* result = GetDocument().GetStyleResolver().ResolveStyle(
-      this, style_recalc_context, request);
+      this, style_recalc_context, style_request);
   if (result && result->GetCounterDirectives()) {
     SetPseudoElementStylesChangeCounters(true);
   }
