@@ -755,8 +755,6 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
             "third_party/blink/renderer/core/css/parser/css_proto_converter.cc",
             "third_party/blink/renderer/core/editing/ime/edit_context.cc",
             "third_party/blink/renderer/platform/graphics/bitmap_image_test.cc",
-            "tools/binary_size/libsupersize/viewer/caspian/diff_test.cc",
-            "tools/binary_size/libsupersize/viewer/caspian/tree_builder_test.cc",
             _THIRD_PARTY_EXCEPT_BLINK
         ],
     ),
