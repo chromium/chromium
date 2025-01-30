@@ -104,8 +104,6 @@ IGNORED_README = {
     # The real README.chromium lives nested inside each dependency.
     "third_party/androidx/README.chromium",
     # This is not used in AOSP and not imported.
-    "third_party/llvm-libc/README.chromium",
-    # This is not used in AOSP and not imported.
     "third_party/aosp_dalvik/README.chromium",
     # b/369075726, those crates are missing LICENSE files upstream, once fixed
     # and imported, we will create a README for those.
