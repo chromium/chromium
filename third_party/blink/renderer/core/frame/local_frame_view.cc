@@ -980,6 +980,12 @@ void LocalFrameView::RunPostLifecycleSteps() {
   ForAllRemoteFrameViews([](RemoteFrameView& frame_view) {
     frame_view.UpdateCompositingScaleFactor();
   });
+
+  ForAllNonThrottledLocalFrameViews([](LocalFrameView& frame_view) {
+    auto lifecycle_observers = frame_view.lifecycle_observers_;
+    for (auto& observer : lifecycle_observers)
+      observer->DidFinishPostLifecycleSteps(frame_view);
+  });
 }
 
 void LocalFrameView::RunIntersectionObserverSteps() {

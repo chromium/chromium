@@ -156,6 +156,13 @@ class CORE_EXPORT LocalFrameView final
 
     // Called after the layout lifecycle phase.
     virtual void DidFinishLayout() {}
+
+    // Called when the lifecycle is complete and an update has been pushed to the
+    // compositor.
+    // This hook should be preferred for updating state that needs the lifecycle to
+    // be clean but don't need to update state that is pushed further in the
+    // rendering pipeline.
+    virtual void DidFinishPostLifecycleSteps(const LocalFrameView&) {}
   };
 
   explicit LocalFrameView(LocalFrame&);

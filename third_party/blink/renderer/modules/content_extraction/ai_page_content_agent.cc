@@ -4,8 +4,10 @@
 
 #include "third_party/blink/renderer/modules/content_extraction/ai_page_content_agent.h"
 
+#include "base/time/time.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -374,6 +376,66 @@ void ProcessTableRowNode(const LayoutTableRow& layout_table_row,
   attributes.table_row_data = std::move(table_row_data);
 }
 
+// Records latency metrics for the given latency and total latency.
+void RecordLatencyMetrics(base::TimeDelta latency,
+                          base::TimeDelta latency_with_scheduling_delay,
+                          bool is_main_frame,
+                          const mojom::blink::AIPageContentOptions& options) {
+  if (is_main_frame) {
+    UMA_HISTOGRAM_TIMES(
+        "OptimizationGuide.AIPageContent.RendererLatency.MainFrame", latency);
+  } else {
+    UMA_HISTOGRAM_TIMES(
+        "OptimizationGuide.AIPageContent.RendererLatency.RemoteSubFrame",
+        latency);
+  }
+
+  if (options.on_critical_path) {
+    if (is_main_frame) {
+      UMA_HISTOGRAM_TIMES(
+          "OptimizationGuide.AIPageContent.RendererLatencyWithSchedulingDelay."
+          "Critical."
+          "MainFrame",
+          latency_with_scheduling_delay);
+    } else {
+      UMA_HISTOGRAM_TIMES(
+          "OptimizationGuide.AIPageContent.RendererLatencyWithSchedulingDelay."
+          "Critical."
+          "RemoteSubFrame",
+          latency_with_scheduling_delay);
+    }
+  } else {
+    if (is_main_frame) {
+      UMA_HISTOGRAM_TIMES(
+          "OptimizationGuide.AIPageContent.RendererLatencyWithSchedulingDelay."
+          "NonCritical."
+          "MainFrame",
+          latency_with_scheduling_delay);
+    } else {
+      UMA_HISTOGRAM_TIMES(
+          "OptimizationGuide.AIPageContent.RendererLatencyWithSchedulingDelay."
+          "NonCritical."
+          "RemoteSubFrame",
+          latency_with_scheduling_delay);
+    }
+  }
+}
+
+// Runs the given tasks.
+void RunTasks(WTF::Vector<base::OnceClosure> tasks) {
+  for (auto& task : tasks) {
+    std::move(task).Run();
+  }
+}
+
+bool ShouldRunLifecycleForSyncExtraction(
+    const mojom::blink::AIPageContentOptions& options) {
+  // Including hidden searchable content requires layout for nodes which are
+  // skipped during rendering. So we need a special lifecycle for them and can't
+  // use the computed state from the regular lifecycle update.
+  return options.on_critical_path || options.include_hidden_searchable_content;
+}
+
 }  // namespace
 
 // static
@@ -431,32 +493,62 @@ void AIPageContentAgent::Trace(Visitor* visitor) const {
   Supplement<Document>::Trace(visitor);
 }
 
+void AIPageContentAgent::DidFinishPostLifecycleSteps(const LocalFrameView&) {
+  RunTasksIfReady();
+}
+
 void AIPageContentAgent::GetAIPageContent(
     mojom::blink::AIPageContentOptionsPtr options,
     GetAIPageContentCallback callback) {
-  if (options->on_critical_path) {
-    GetAIPageContentSync(std::move(options), std::move(callback),
-                         base::TimeTicks());
+  base::TimeTicks start_time = base::TimeTicks::Now();
+
+  if (ShouldRunLifecycleForSyncExtraction(*options)) {
+    GetAIPageContentSync(std::move(options), std::move(callback), start_time);
     return;
   }
 
-  // Note: We could maintain a set of all pending requests to batch process them
-  // when the idle task runs. But it's better for this to be handled in the
-  // browser process.
-  //
-  // TODO(crbug.com/389117697): Consider running this after a frame is
-  // committed, in case that happens before the idle task runs.
-  ThreadScheduler::Current()->PostIdleTask(
-      FROM_HERE, WTF::BindOnce(&AIPageContentAgent::GetAIPageContentSync,
-                               WrapWeakPersistent(this), std::move(options),
-                               std::move(callback)));
+  if (!is_registered_) {
+    is_registered_ = true;
+    if (LocalFrameView* view = GetSupplementable()->View()) {
+      view->RegisterForLifecycleNotifications(this);
+    }
+  }
+
+  // Running lifecycle beyond layout is expensive and the information is only
+  // needed to compute geometry. Limit the update to layout if we don't need the
+  // geometry.
+  // We don't expect many overlapping calls to this service as the browser will
+  // only issue one request at a time.
+  if (options->include_geometry) {
+    geometry_tasks_.push_back(WTF::BindOnce(
+        &AIPageContentAgent::GetAIPageContentSync, WrapWeakPersistent(this),
+        std::move(options), std::move(callback), start_time));
+  } else {
+    layout_clean_tasks_.push_back(WTF::BindOnce(
+        &AIPageContentAgent::GetAIPageContentSync, WrapWeakPersistent(this),
+        std::move(options), std::move(callback), start_time));
+  }
+
+  // Run tasks if the document lifecycle is at least as advanced.
+  RunTasksIfReady();
+}
+
+void AIPageContentAgent::RunTasksIfReady() {
+  if (GetSupplementable()->Lifecycle().GetState() >=
+      DocumentLifecycle::kPrePaintClean) {
+    RunTasks(std::move(geometry_tasks_));
+  }
+  if (GetSupplementable()->Lifecycle().GetState() >=
+      DocumentLifecycle::kLayoutClean) {
+    RunTasks(std::move(layout_clean_tasks_));
+  }
 }
 
 void AIPageContentAgent::GetAIPageContentSync(
     mojom::blink::AIPageContentOptionsPtr options,
     GetAIPageContentCallback callback,
-    base::TimeTicks deadline) const {
-  const auto start_time = base::TimeTicks::Now();
+    base::TimeTicks start_time) const {
+  const auto sync_start_time = base::TimeTicks::Now();
 
   auto content = GetAIPageContentInternal(*options);
   if (!content) {
@@ -465,36 +557,9 @@ void AIPageContentAgent::GetAIPageContentSync(
   }
 
   const auto end_time = base::TimeTicks::Now();
-  const auto latency = end_time - start_time;
-  const bool is_main_frame =
-      GetSupplementable()->GetFrame()->IsOutermostMainFrame();
-  if (is_main_frame) {
-    UMA_HISTOGRAM_TIMES(
-        "OptimizationGuide.AIPageContent.RendererLatency.MainFrame", latency);
-  } else {
-    UMA_HISTOGRAM_TIMES(
-        "OptimizationGuide.AIPageContent.RendererLatency.RemoteSubFrame",
-        latency);
-  }
-
-  if (deadline != base::TimeTicks()) {
-    base::TimeDelta exceed_duration = base::Milliseconds(0);
-    if (end_time > deadline) {
-      exceed_duration = end_time - deadline;
-    }
-    if (is_main_frame) {
-      UMA_HISTOGRAM_TIMES(
-          "OptimizationGuide.AIPageContent.IdleDeadlineExceedDuration."
-          "MainFrame",
-          exceed_duration);
-    } else {
-      UMA_HISTOGRAM_TIMES(
-          "OptimizationGuide.AIPageContent.IdleDeadlineExceedDuration."
-          "RemoteSubFrame",
-          exceed_duration);
-    }
-  }
-
+  RecordLatencyMetrics(end_time - sync_start_time, end_time - start_time,
+                       GetSupplementable()->GetFrame()->IsOutermostMainFrame(),
+                       *options);
   std::move(callback).Run(std::move(content));
 }
 
@@ -529,33 +594,35 @@ mojom::blink::AIPageContentPtr AIPageContentAgent::ContentBuilder::Build(
   // activation reason of FindInPage.
   std::vector<DisplayLockDocumentState::ScopedForceActivatableDisplayLocks>
       forced_activatable_locks;
-  if (options_->include_hidden_searchable_content) {
-    forced_activatable_locks.emplace_back(
-        document.GetDisplayLockDocumentState()
-            .GetScopedForceActivatableLocks());
-    document.View()->ForAllChildLocalFrameViews(
-        [&](LocalFrameView& frame_view) {
-          if (!frame_view.GetFrame().GetDocument()) {
-            return;
-          }
+  if (ShouldRunLifecycleForSyncExtraction(*options_)) {
+    if (options_->include_hidden_searchable_content) {
+      forced_activatable_locks.emplace_back(
+          document.GetDisplayLockDocumentState()
+              .GetScopedForceActivatableLocks());
+      document.View()->ForAllChildLocalFrameViews(
+          [&](LocalFrameView& frame_view) {
+            if (!frame_view.GetFrame().GetDocument()) {
+              return;
+            }
 
-          forced_activatable_locks.emplace_back(
-              frame_view.GetFrame()
-                  .GetDocument()
-                  ->GetDisplayLockDocumentState()
-                  .GetScopedForceActivatableLocks());
-        });
-  }
+            forced_activatable_locks.emplace_back(
+                frame_view.GetFrame()
+                    .GetDocument()
+                    ->GetDisplayLockDocumentState()
+                    .GetScopedForceActivatableLocks());
+          });
+    }
 
-  // Running lifecycle beyond layout is expensive and the information is only
-  // needed to compute geometry. Limit the update to layout if we don't need the
-  // geometry.
-  if (options_->include_geometry) {
-    document.View()->UpdateAllLifecyclePhasesExceptPaint(
-        DocumentUpdateReason::kUnknown);
-  } else {
-    document.View()->UpdateLifecycleToLayoutClean(
-        DocumentUpdateReason::kUnknown);
+    // Running lifecycle beyond layout is expensive and the information is only
+    // needed to compute geometry. Limit the update to layout if we don't need
+    // the geometry.
+    if (options_->include_geometry) {
+      document.View()->UpdateAllLifecyclePhasesExceptPaint(
+          DocumentUpdateReason::kUnknown);
+    } else {
+      document.View()->UpdateLifecycleToLayoutClean(
+          DocumentUpdateReason::kUnknown);
+    }
   }
 
   auto* layout_view = document.GetLayoutView();
