@@ -38,7 +38,6 @@ web_component_files = [
   "network/network_password_input.js",
   "network/network_property_list_mojo.js",
   "network/sim_lock_dialogs.js",
-  "network/apn_selection_dialog_list_item.js",
   "smb_shares/add_smb_share_dialog.js",
 ]
 
@@ -102,6 +101,7 @@ web_component_files_ts = [
   "network/apn_list.ts",
   "network/apn_list_item.ts",
   "network/apn_selection_dialog.ts",
+  "network/apn_selection_dialog_list_item.ts",
   "network/network_apnlist.ts",
   "network/network_choose_mobile.ts",
   "network/network_config.ts",
@@ -454,6 +454,7 @@ generate_definitions_js_files = [
   "network/apn_list.html.js",
   "network/apn_list_item.html.js",
   "network/apn_selection_dialog.html.js",
+  "network/apn_selection_dialog_list_item.html.js",
   "network/cellular_utils.js",
   "network/cr_policy_network_behavior_mojo.js",
   "network/mojo_interface_provider.js",
@@ -538,7 +539,6 @@ checked_in_dts_files = [
   "multidevice_setup/mojo_api.d.ts",
   "multidevice_setup/multidevice_setup.d.ts",
 
-  "network/apn_selection_dialog_list_item.d.ts",
   "network/cr_policy_network_indicator_mojo.d.ts",
   "network/network_config_select.d.ts",
   "network/network_config_toggle.d.ts",

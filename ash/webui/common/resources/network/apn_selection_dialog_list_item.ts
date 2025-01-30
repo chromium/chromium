@@ -10,25 +10,19 @@
 import '//resources/ash/common/cr_elements/cr_shared_style.css.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
-import {getApnDisplayName} from '//resources/ash/common/network/cellular_utils.js';
+import {ApnProperties} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 
 import {getTemplate} from './apn_selection_dialog_list_item.html.js';
+import {getApnDisplayName} from './cellular_utils.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const ApnSelectionDialogListItemElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+const ApnSelectionDialogListItemElementBase = I18nMixin(PolymerElement);
 
-/** @polymer */
 export class ApnSelectionDialogListItem extends
     ApnSelectionDialogListItemElementBase {
   static get is() {
-    return 'apn-selection-dialog-list-item';
+    return 'apn-selection-dialog-list-item' as const;
   }
 
   static get template() {
@@ -37,7 +31,6 @@ export class ApnSelectionDialogListItem extends
 
   static get properties() {
     return {
-      /** @type {ApnProperties} */
       apn: {
         type: Object,
       },
@@ -49,22 +42,21 @@ export class ApnSelectionDialogListItem extends
     };
   }
 
-  /**
-   * @param {!ApnProperties} apn
-   * @return {string}
-   * @private
-   */
-  getApnDisplayName_(apn) {
+  apn: ApnProperties;
+  selected: boolean;
+
+  private getApnDisplayName_(apn: ApnProperties): string {
     return getApnDisplayName(this.i18n.bind(this), apn);
   }
 
-  /**
-   * @param {!ApnProperties} apn
-   * @return {boolean}
-   * @private
-   */
-  shouldHideSecondaryApnName_(apn) {
+  private shouldHideSecondaryApnName_(apn: ApnProperties): boolean {
     return apn.accessPointName === this.getApnDisplayName_(apn);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [ApnSelectionDialogListItem.is]: ApnSelectionDialogListItem;
   }
 }
 
