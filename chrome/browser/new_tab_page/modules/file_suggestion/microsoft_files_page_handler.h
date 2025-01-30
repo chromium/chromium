@@ -48,6 +48,9 @@ class MicrosoftFilesPageHandler
                       std::unique_ptr<std::string> response_body);
   void OnJsonParsed(GetFilesCallback callback,
                     data_decoder::DataDecoder::ValueOrError result);
+  std::vector<file_suggestion::mojom::FilePtr> SortAndRemoveDuplicates(
+      std::vector<std::pair<base::Time, file_suggestion::mojom::FilePtr>>
+          unsorted_suggestions);
   mojo::Receiver<file_suggestion::mojom::MicrosoftFilesPageHandler> handler_;
   raw_ptr<PrefService> pref_service_;
   std::unique_ptr<network::SimpleURLLoader> url_loader_;

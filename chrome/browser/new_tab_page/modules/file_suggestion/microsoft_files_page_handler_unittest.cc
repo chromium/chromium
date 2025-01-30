@@ -300,9 +300,9 @@ TEST_F(MicrosoftFilesPageHandlerTestForNonInsights, GetNonInsightsFiles) {
       R"(openxmlformats-officedocument.wordprocessingml.document"
           },
           "fileSystemInfo": {
-            "lastAccessedDateTime": "2024-01-07T19:13:00Z"
+            "lastAccessedDateTime": "2024-01-20T19:13:00Z"
           },
-          "lastModifiedDateTime": "2024-01-07T19:13:00Z"
+          "lastModifiedDateTime": "2024-01-20T19:13:00Z"
         },
         {
           "id": "1",
@@ -313,9 +313,9 @@ TEST_F(MicrosoftFilesPageHandlerTestForNonInsights, GetNonInsightsFiles) {
       R"(openxmlformats-officedocument.wordprocessingml.document"
           },
           "fileSystemInfo": {
-            "lastAccessedDateTime": "2024-01-07T19:13:00Z"
+            "lastAccessedDateTime": "2024-01-19T19:13:00Z"
           },
-          "lastModifiedDateTime": "2024-01-09T19:13:00Z",
+          "lastModifiedDateTime": "2024-01-19T19:13:00Z",
           "remoteItem": {
             "shared": {
               "sharedDateTime": "2024-01-07T11:13:00Z",
@@ -343,10 +343,10 @@ TEST_F(MicrosoftFilesPageHandlerTestForNonInsights, GetNonInsightsFiles) {
             "mimeType": "application/vnd.)"
       R"(openxmlformats-officedocument.wordprocessingml.document"
           },
-          "lastModifiedDateTime": "2024-01-07T11:13:00Z",
+          "lastModifiedDateTime": "2024-01-18T11:13:00Z",
           "remoteItem": {
             "shared": {
-              "sharedDateTime": "2024-01-07T11:13:00Z",
+              "sharedDateTime": "2024-01-18T11:13:00Z",
               "sharedBy": {
                 "user": {
                   "displayName": "User 1"
@@ -363,10 +363,10 @@ TEST_F(MicrosoftFilesPageHandlerTestForNonInsights, GetNonInsightsFiles) {
             "mimeType": "application/vnd.)"
       R"(openxmlformats-officedocument.wordprocessingml.document"
           },
-          "lastModifiedDateTime": "2024-01-15T16:13:00Z",
+          "lastModifiedDateTime": "2024-01-17T16:13:00Z",
           "remoteItem": {
             "shared": {
-              "sharedDateTime": "2024-01-15T16:13:00Z",
+              "sharedDateTime": "2024-01-17T16:13:00Z",
               "sharedBy": {
                 "user": {
                   "displayName": "User 1"
@@ -688,4 +688,149 @@ TEST_F(MicrosoftFilesPageHandlerTestForTrending, MakeRequestAfterRetryTimeout) {
       kTrendingFilesEndpoint, response);
 
   EXPECT_EQ(future.Get().size(), 1u);
+}
+
+// Ensures duplicate files are not found in the final file suggestion list.
+TEST_F(MicrosoftFilesPageHandlerTestForNonInsights, RemoveDuplicates) {
+  base::test::TestFuture<std::vector<file_suggestion::mojom::FilePtr>> future;
+
+  handler().GetFiles(future.GetCallback());
+
+  // Response includes duplicate for the file with id: "1"
+  std::string response =
+      R"({
+    "responses" : [
+      {
+        "id": "recent",
+        "status": "200",
+        "body": {
+          "value": [
+            {
+              "id": "1",
+              "name": "Document 1.docx",
+              "webUrl": "https://foo.com/document1.docx",
+              "file": {
+                "mimeType": "application/vnd.)"
+      R"(openxmlformats-officedocument.wordprocessingml.document"
+              },
+              "fileSystemInfo": {
+                "lastAccessedDateTime": "2024-01-07T19:13:00Z"
+              },
+              "remoteItem": {
+                "shared": {
+                  "sharedDateTime": "2024-01-07T11:13:00Z",
+                  "sharedBy": {
+                    "user": {
+                      "displayName": "User 1"
+                    }
+                  }
+                }
+              },
+              "lastModifiedDateTime": "2024-01-07T19:13:00Z"
+            },
+            {
+              "id": "2",
+              "name": "Presentation.pptx",
+              "webUrl": "https://foo.com/presentation.pptx",
+              "file": {
+                "mimeType": "application/vnd.)"
+      R"(openxmlformats-officedocument.presentationml.presentation"
+              },
+              "fileSystemInfo": {
+                "lastAccessedDateTime": "2024-01-08T19:13:00Z"
+              },
+              "lastModifiedDateTime": "2024-01-08T17:13:00Z"
+            },
+            {
+              "id": "3",
+              "name": "Document xyz.docx",
+              "webUrl": "https://foo.com/documentxyz.docx",
+              "file": {
+                "mimeType": "application/vnd.)"
+      R"(openxmlformats-officedocument.wordprocessingml.document"
+              },
+              "fileSystemInfo": {
+                "lastAccessedDateTime": "2024-01-09T18:13:00Z"
+              },
+              "lastModifiedDateTime": "2024-05-08T17:12:00Z"
+            }
+          ]
+        }
+      },
+      {
+        "id": "shared",
+        "status": "200",
+        "body": {
+          "value": [
+            {
+              "id": "1",
+              "name": "Document 1.docx",
+              "webUrl": "https://foo.com/document1.xlsx",
+              "file": {
+                "mimeType": "application/vnd.)"
+      R"(openxmlformats-officedocument.wordprocessingml.document"
+              },
+              "lastModifiedDateTime": "2024-01-17T11:13:00Z",
+              "remoteItem": {
+                "shared": {
+                  "sharedDateTime": "2024-01-07T11:13:00Z",
+                  "sharedBy": {
+                    "user": {
+                      "displayName": "User 1"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "id": "5",
+              "name": "Shared Document.docx",
+              "webUrl": "https://foo.com/document3.docx",
+              "file": {
+                "mimeType": "application/vnd.)"
+      R"(openxmlformats-officedocument.wordprocessingml.document"
+              },
+              "lastModifiedDateTime": "2024-01-11T11:13:00Z",
+              "remoteItem": {
+                "shared": {
+                  "sharedDateTime": "2024-01-11T11:13:00Z",
+                  "sharedBy": {
+                    "user": {
+                      "displayName": "User 2"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "id": "6",
+              "name": "Roadmap.pptx",
+              "webUrl": "https://foo.com/roadmap.pptx",
+              "file": {
+                "mimeType": "application/vnd.)"
+      R"(openxmlformats-officedocument.presentationml.presentation"
+              },
+              "lastModifiedDateTime": "2024-01-12T09:13:00Z",
+              "remoteItem": {
+                "shared": {
+                  "sharedDateTime": "2024-01-12T11:13:00Z",
+                  "sharedBy": {
+                    "user": {
+                      "displayName": "User 1"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    ]
+  })";
+
+  test_url_loader_factory().SimulateResponseForPendingRequest(
+      kNonInsightsRequestUrl, response);
+  const std::vector<file_suggestion::mojom::FilePtr>& suggestions =
+      future.Get();
+  EXPECT_EQ(suggestions.size(), 5u);
 }
