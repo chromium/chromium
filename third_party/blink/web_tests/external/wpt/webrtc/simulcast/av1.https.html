@@ -13,7 +13,7 @@
 <script>
 promise_test(async t => {
   assert_implements('getCapabilities' in RTCRtpSender, 'RTCRtpSender.getCapabilities not supported');
-  assert_implements_optional(RTCRtpSender.getCapabilities('video').codecs.find(c => c.mimeType === 'video/VP9'), 'VP9 not supported');
+  assert_implements_optional(RTCRtpSender.getCapabilities('video').codecs.find(c => c.mimeType === 'video/AV1'), 'AV1 not supported');
 
   const rids = [0, 1];
   const pc1 = new RTCPeerConnection();
@@ -22,6 +22,6 @@ promise_test(async t => {
   t.add_cleanup(() => pc2.close());
 
   return negotiateSimulcastAndWaitForVideo(t, await getCameraStream(t), rids, pc1, pc2,
-                                           {mimeType: 'video/VP9'});
-}, 'VP9 simulcast setup with two streams');
+                                           {mimeType: 'video/AV1'});
+}, 'AV1 simulcast setup with two streams');
 </script>

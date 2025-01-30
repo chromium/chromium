@@ -42204,6 +42204,19 @@
         ],
         {}
        ]
+      ],
+      "table-among-floats-001.html": [
+       "3bc8f4514528633e92222d0e65db7118259e7049",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-200px-square.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
       ]
      },
      "linebox": {
@@ -130539,6 +130552,19 @@
        {}
       ]
      ],
+     "lang-attribute-affects-rendering.html": [
+      "041fd8f5abdc1524b585673e919de83126efe49a",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/lang-attribute-affects-rendering-ref.html",
+         "!="
+        ]
+       ],
+       {}
+      ]
+     ],
      "line-gap-override.html": [
       "487fb2ea59d91cc57715a44e33198fc6223c1d68",
       [
@@ -177903,7 +177929,7 @@
        ]
       ],
       "highlight-cascade-008.html": [
-       "720e2f0469d056475e0d502a19546e6fbfb4567c",
+       "00b35a72a662a723d29f9e2efc24f8d05d6cc69c",
        [
         null,
         [
@@ -178655,7 +178681,7 @@
       ]
      ],
      "highlight-styling-001.html": [
-      "7fe76d19380caff7ed1efe3e5023d629dcb0f96a",
+      "2a7bb3967af200a50dacfac176fcac605ba5b047",
       [
        null,
        [
@@ -279173,6 +279199,19 @@
        ],
        {}
       ]
+     ],
+     "ElementInternals-reportValidity-delegatesFocus.html": [
+      "b4c92ee469440c3277988909a4a6499ce000b87b",
+      [
+       null,
+       [
+        [
+         "/custom-elements/form-associated/ElementInternals-reportValidity-delegatesFocus-notref.html",
+         "!="
+        ]
+       ],
+       {}
+      ]
      ]
     }
    },
@@ -294245,7 +294284,7 @@
          ]
         ],
         "select-multiple-base-appearance.html": [
-         "e8079a0a6429b2f24dc5009d798f4e332864f2eb",
+         "48673b446bc8e6e6cce72e6c4d29671bed313779",
          [
           null,
           [
@@ -312125,6 +312164,10 @@
     "name": {
      "ReadMe.md": [
       "be955258530b6634f6233f8c5b6670f6c83f54e5",
+      []
+     ],
+     "comp_labelledby-expected.txt": [
+      "59722aeec804a17cee43dce747ec5f8a2dfb032b",
       []
      ],
      "comp_tooltip.tentative-expected.txt": [
@@ -335279,6 +335322,10 @@
      ],
      "inheritance-expected.txt": [
       "f524a983cd93c33c00fa115e40827cb275b8acc2",
+      []
+     ],
+     "lang-attribute-affects-rendering-ref.html": [
+      "f832a1ef61fe39141c9566f1d76d52161607d83d",
       []
      ],
      "line-gap-override-ref.html": [
@@ -371627,6 +371674,10 @@
       "dda233296569d8ec855855434a4947d8a847a2c6",
       []
      ],
+     "ElementInternals-reportValidity-delegatesFocus-notref.html": [
+      "be34f0783f61824dcaf7d1da03cb9cd524ded29c",
+      []
+     ],
      "WEB_FEATURES.yml": [
       "e40f6e12ae43b8399cf2f67824609c9050460812",
       []
@@ -395855,7 +395906,7 @@
          []
         ],
         "select-multiple-base-appearance-ref.html": [
-         "f94d1dd87e229c285e9c77489b6731bd4758f0dd",
+         "45a74da7559c72ee5840c00842aef4fc23915e0e",
          []
         ],
         "select-only-picker-opt-in-ref.html": [
@@ -433323,32 +433374,320 @@
       {}
      ]
     ],
-    "idbcursor-advance-continue-async.htm": [
-     "2490e9e7e0d18ea41a345a70548106842e7aec44",
+    "idbcursor-advance-continue-async.any.js": [
+     "30a5d8180d8433a113347f057342f79e8f8c1928",
      [
-      null,
-      {}
+      "IndexedDB/idbcursor-advance-continue-async.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBCursor asyncness"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbcursor-advance-continue-async.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBCursor asyncness"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbcursor-advance-continue-async.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBCursor asyncness"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbcursor-advance-continue-async.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBCursor asyncness"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
-    "idbcursor-advance-exception-order.html": [
-     "1abbc9acc2a20013916b957bf11253dcb6aebb5e",
+    "idbcursor-advance-exception-order.any.js": [
+     "bd87686af8874f80c08a82b28360ce36ab1ce6a3",
      [
-      null,
-      {}
+      "IndexedDB/idbcursor-advance-exception-order.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IndexedDB: IDBCursor advance() Exception Ordering"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbcursor-advance-exception-order.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IndexedDB: IDBCursor advance() Exception Ordering"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbcursor-advance-exception-order.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IndexedDB: IDBCursor advance() Exception Ordering"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbcursor-advance-exception-order.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IndexedDB: IDBCursor advance() Exception Ordering"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
-    "idbcursor-advance-invalid.htm": [
-     "4e8472efd5905e0cf2da33d73a267897e58d6fed",
+    "idbcursor-advance-invalid.any.js": [
+     "3d6ff1638fc667343550c46f20e4b624d7fc6ddc",
      [
-      null,
-      {}
+      "IndexedDB/idbcursor-advance-invalid.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBCursor.advance() - invalid"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbcursor-advance-invalid.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBCursor.advance() - invalid"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbcursor-advance-invalid.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBCursor.advance() - invalid"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbcursor-advance-invalid.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBCursor.advance() - invalid"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
-    "idbcursor-advance.htm": [
-     "c72ac2f16f4a60666aa2a4023f008c9219681e52",
+    "idbcursor-advance.any.js": [
+     "576d0ec6671bc37d479a87a678163682e89e1e25",
      [
-      null,
-      {}
+      "IndexedDB/idbcursor-advance.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBCursor.advance()"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbcursor-advance.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBCursor.advance()"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbcursor-advance.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBCursor.advance()"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbcursor-advance.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBCursor.advance()"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
     "idbcursor-continue-exception-order.htm": [
@@ -436588,18 +436927,162 @@
       {}
      ]
     ],
-    "idbobjectstore-add-put-exception-order.html": [
-     "e5a73d4b9fa038cd35bacedece8ab610582dc468",
+    "idbobjectstore-add-put-exception-order.any.js": [
+     "e1f34cfc7bff910f9c50897e1dc0bef7e401449f",
      [
-      null,
-      {}
+      "IndexedDB/idbobjectstore-add-put-exception-order.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IndexedDB: IDBObjectStore add()/put() Exception Ordering"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore-add-put-exception-order.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IndexedDB: IDBObjectStore add()/put() Exception Ordering"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore-add-put-exception-order.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IndexedDB: IDBObjectStore add()/put() Exception Ordering"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore-add-put-exception-order.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IndexedDB: IDBObjectStore add()/put() Exception Ordering"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
-    "idbobjectstore-clear-exception-order.html": [
-     "993704d1d3a588bc122adecc7323a708d5e65393",
+    "idbobjectstore-clear-exception-order.any.js": [
+     "efb8cfa2b432f5cd4a44b9b8ca3ae0c40aa86e54",
      [
-      null,
-      {}
+      "IndexedDB/idbobjectstore-clear-exception-order.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IndexedDB: IDBObjectStore clear() Exception Ordering"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore-clear-exception-order.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IndexedDB: IDBObjectStore clear() Exception Ordering"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore-clear-exception-order.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IndexedDB: IDBObjectStore clear() Exception Ordering"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore-clear-exception-order.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IndexedDB: IDBObjectStore clear() Exception Ordering"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
     "idbobjectstore-cross-realm-methods.html": [
@@ -436609,18 +437092,162 @@
       {}
      ]
     ],
-    "idbobjectstore-delete-exception-order.html": [
-     "c33667f4b387355e4b9a4d5ff1ab2fc52b78360c",
+    "idbobjectstore-delete-exception-order.any.js": [
+     "dc2baae3f67f9b554581cd7e79f88ee95aaa1a80",
      [
-      null,
-      {}
+      "IndexedDB/idbobjectstore-delete-exception-order.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IndexedDB: IDBObjectStore delete() Exception Ordering"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore-delete-exception-order.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IndexedDB: IDBObjectStore delete() Exception Ordering"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore-delete-exception-order.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IndexedDB: IDBObjectStore delete() Exception Ordering"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore-delete-exception-order.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IndexedDB: IDBObjectStore delete() Exception Ordering"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
-    "idbobjectstore-deleteIndex-exception-order.html": [
-     "9e9bf1e138c1ec68e934ebbd13c345e42205b165",
+    "idbobjectstore-deleteIndex-exception-order.any.js": [
+     "1575d4aaae1a8b5d43715e620e364eef599edc86",
      [
-      null,
-      {}
+      "IndexedDB/idbobjectstore-deleteIndex-exception-order.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IndexedDB: IDBObjectStore deleteIndex() Exception Ordering"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore-deleteIndex-exception-order.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IndexedDB: IDBObjectStore deleteIndex() Exception Ordering"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore-deleteIndex-exception-order.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IndexedDB: IDBObjectStore deleteIndex() Exception Ordering"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore-deleteIndex-exception-order.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IndexedDB: IDBObjectStore deleteIndex() Exception Ordering"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
     "idbobjectstore-getAll-enforcerange.html": [
@@ -436644,11 +437271,83 @@
       {}
      ]
     ],
-    "idbobjectstore-query-exception-order.html": [
-     "b28572619ef59571befe773a7c1321dacca42bae",
+    "idbobjectstore-query-exception-order.any.js": [
+     "f2417ec73da45cea346b8b8389d544d3f378d76a",
      [
-      null,
-      {}
+      "IndexedDB/idbobjectstore-query-exception-order.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IndexedDB: IDBObjectStore query method Ordering"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore-query-exception-order.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IndexedDB: IDBObjectStore query method Ordering"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore-query-exception-order.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IndexedDB: IDBObjectStore query method Ordering"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore-query-exception-order.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IndexedDB: IDBObjectStore query method Ordering"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
     "idbobjectstore-rename-abort.any.js": [
@@ -438069,25 +438768,225 @@
       }
      ]
     ],
-    "idbrequest-onupgradeneeded.htm": [
-     "73f22697f6eeb8d1a485cff382931f573470b81c",
+    "idbrequest-onupgradeneeded.any.js": [
+     "1ceb784762d2671768a6724b5666f4cd43ebaf06",
      [
-      null,
-      {}
+      "IndexedDB/idbrequest-onupgradeneeded.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IDBRequest onupgradeneeded tests"
+        ],
+        [
+         "global",
+         "window,worker"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbrequest-onupgradeneeded.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IDBRequest onupgradeneeded tests"
+        ],
+        [
+         "global",
+         "window,worker"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbrequest-onupgradeneeded.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IDBRequest onupgradeneeded tests"
+        ],
+        [
+         "global",
+         "window,worker"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbrequest-onupgradeneeded.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IDBRequest onupgradeneeded tests"
+        ],
+        [
+         "global",
+         "window,worker"
+        ]
+       ]
+      }
      ]
     ],
-    "idbrequest_error.html": [
-     "56d2ddb0083b0c3c3bcaeac61c74c6153e942863",
+    "idbrequest_error.any.js": [
+     "2614db60fb2309e05c552fa6bdf35025e5f4e34a",
      [
-      null,
-      {}
+      "IndexedDB/idbrequest_error.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IDBRequest.error"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbrequest_error.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IDBRequest.error"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbrequest_error.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IDBRequest.error"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbrequest_error.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IDBRequest.error"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
-    "idbrequest_result.html": [
-     "6ec81cc29b8bfaaecb71e273f892bb44833498ae",
+    "idbrequest_result.any.js": [
+     "035dd54d563a77d231166273935ba56a09e998d2",
      [
-      null,
-      {}
+      "IndexedDB/idbrequest_result.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IDBRequest.result"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbrequest_result.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IDBRequest.result"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbrequest_result.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IDBRequest.result"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbrequest_result.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IDBRequest.result"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
     "idbtransaction-db-SameObject.html": [
@@ -451043,7 +451942,7 @@
       ]
      ],
      "comp_labelledby.html": [
-      "2a22fd8919122ef37103fc09d71cb753eb4ffb91",
+      "96c234d4d08db2cfcf8e2368dd3064968ddceefc",
       [
        null,
        {
@@ -451206,7 +452105,7 @@
       ]
      ],
      "detector.https.tentative.any.js": [
-      "6bd3a41b8cd8396d9bb890fe17bd753adc4f232e",
+      "8530ba5e8e9795dec2b549c87b2b0b35b02f3d3d",
       [
        "ai/language_detection/detector.https.tentative.any.html",
        {
@@ -451354,7 +452253,7 @@
       ]
      ],
      "ai_translator_translate.tentative.https.any.js": [
-      "664bc8ff2d1bfe4db995d990e23151c3dff8a89e",
+      "1066a9cff61edc1af1744b719103bb355662b869",
       [
        "ai/translator/ai_translator_translate.tentative.https.any.html",
        {
@@ -497387,7 +498286,7 @@
        ]
       ],
       "highlight-cascade-009.html": [
-       "e95de9a78156c51ddd001b8a5b9a1dac3517da83",
+       "f063c11d217daa30bb5512e9f60a3da76df195bc",
        [
         null,
         {}
@@ -497395,6 +498294,13 @@
       ],
       "highlight-cascade-010.html": [
        "bbfcffb16aa28091d063048a9b7c609fd1ec5409",
+       [
+        null,
+        {}
+       ]
+      ],
+      "highlight-cascade-011.html": [
+       "89f200485855d329d75afe4e79b25baa01b1c030",
        [
         null,
         {}
@@ -530722,6 +531628,37 @@
       [
        null,
        {
+        "timeout": "long"
+       }
+      ]
+     ],
+     "typing-text-in-direct-child-of-editing-host.html": [
+      "8e7746c03d91a9fc160f7acd522cadbdc9f60bc4",
+      [
+       "editing/run/typing-text-in-direct-child-of-editing-host.html?white-space=normal",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/run/typing-text-in-direct-child-of-editing-host.html?white-space=pre",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/run/typing-text-in-direct-child-of-editing-host.html?white-space=pre-line",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/run/typing-text-in-direct-child-of-editing-host.html?white-space=pre-wrap",
+       {
+        "testdriver": true,
         "timeout": "long"
        }
       ]
@@ -777833,6 +778770,16 @@
      ]
     ],
     "simulcast": {
+     "av1.https.html": [
+      "bcad048d7afb3ed1b3117baa6afcb6688d6abf3d",
+      [
+       null,
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ]
+     ],
      "basic.https.html": [
       "46c0969a405b5e7b51bd63d01824abdb2342ce10",
       [
@@ -777914,7 +778861,7 @@
       ]
      ],
      "setParameters-maxFramerate.https.html": [
-      "a1a167e059224cb3de65b8118ef84a397ac550b8",
+      "ebd2a22fbdaea001a15551f51126744ba900b6c4",
       [
        null,
        {
@@ -777934,7 +778881,7 @@
       ]
      ],
      "vp9-scalability-mode.https.html": [
-      "1c2d48c5dc417be7559de0e7911b6a4a049ab354",
+      "55d43495e4d1eb51f9e6db0efe565279d1ff183d",
       [
        null,
        {
@@ -777944,7 +778891,7 @@
       ]
      ],
      "vp9.https.html": [
-      "d366120b6e84b92c1221089a89121d84af8cf08c",
+      "b7ef90e6522358fdd3353250cffa58d5517ce1ea",
       [
        null,
        {
@@ -817697,7 +818644,7 @@
          ]
         ],
         "invalid.py": [
-         "e553a2e501ebfcef65dc302bcf53c22af975e496",
+         "850c71b51fcc46693bf9f31486e43e1991c89d6d",
          [
           null,
           {}

@@ -2710,6 +2710,7 @@ crbug.com/383880384 [ Mac ] external/wpt/css/css-properties-values-api/registere
 crbug.com/383880384 [ Win ] external/wpt/css/css-properties-values-api/registered-property-change-style-002.html [ Failure Pass ]
 
 # ====== New tests from wpt-importer added here ======
+external/wpt/webrtc/simulcast/av1.https.html [ Skip Timeout ]
 crbug.com/392927699 external/wpt/css/css-lists/list-style-position-001.html [ Failure ]
 crbug.com/392927987 [ Mac15 ] external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-to-same-origin.https.html?5-6 [ Crash ]
 crbug.com/392944181 external/wpt/css/css-scoping/slotted-has-001.html [ Failure ]

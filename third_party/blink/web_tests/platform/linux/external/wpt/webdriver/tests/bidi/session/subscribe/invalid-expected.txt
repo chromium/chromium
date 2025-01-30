@@ -1,0 +1,29 @@
+This is a wdspec test.
+[FAIL] test_params_user_context_invalid_type[True]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_user_context_invalid_type[foo]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_user_context_invalid_type[42]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_user_context_invalid_type[value3]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_user_context_empty
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_user_context_value_invalid_type[None]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_user_context_value_invalid_type[True]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_user_context_value_invalid_type[42]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_user_context_value_invalid_type[value3]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_user_context_value_invalid_type[value4]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_user_context_value_invalid_value
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_user_context_and_contexts
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_subscribe_to_closed_user_context
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+Harness: the test ran to completion.
+
