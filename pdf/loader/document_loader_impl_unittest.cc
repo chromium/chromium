@@ -44,10 +44,12 @@ class TestURLLoader : public URLLoaderWrapper {
       // We should call callbacks to prevent memory leaks.
       // The callbacks don't do anything, because the objects that created the
       // callbacks have been destroyed.
-      if (IsWaitRead())
+      if (IsWaitRead()) {
         CallReadCallback(-1);
-      if (IsWaitOpen())
-        CallOpenCallback(-1);
+      }
+      if (IsWaitOpen()) {
+        CallOpenCallback(/*success=*/false);
+      }
     }
 
     int content_length() const { return content_length_; }
@@ -100,15 +102,15 @@ class TestURLLoader : public URLLoaderWrapper {
       did_read_callback_ = std::move(read_callback);
     }
 
-    void SetOpenCallback(base::OnceCallback<void(int)> open_callback,
+    void SetOpenCallback(base::OnceCallback<void(bool)> open_callback,
                          gfx::Range req_byte_range) {
       did_open_callback_ = std::move(open_callback);
       set_open_byte_range(req_byte_range);
     }
 
-    void CallOpenCallback(int result) {
+    void CallOpenCallback(bool success) {
       DCHECK(IsWaitOpen());
-      std::move(did_open_callback_).Run(result);
+      std::move(did_open_callback_).Run(success);
     }
 
     void CallReadCallback(int result) {
@@ -117,7 +119,7 @@ class TestURLLoader : public URLLoaderWrapper {
     }
 
    private:
-    base::OnceCallback<void(int)> did_open_callback_;
+    base::OnceCallback<void(bool)> did_open_callback_;
     base::OnceCallback<void(int)> did_read_callback_;
 
     int content_length_ = -1;
@@ -169,7 +171,7 @@ class TestURLLoader : public URLLoaderWrapper {
                  const std::string& referrer_url,
                  uint32_t position,
                  uint32_t size,
-                 base::OnceCallback<void(int)> callback) override {
+                 base::OnceCallback<void(bool)> callback) override {
     data_->SetOpenCallback(std::move(callback),
                            gfx::Range(position, position + size));
   }
@@ -220,7 +222,7 @@ class TestClient : public DocumentLoader::Client {
 
   void SendAllPartialData() {
     partial_loader_data_.set_byte_range(partial_loader_data_.open_byte_range());
-    partial_loader_data_.CallOpenCallback(0);
+    partial_loader_data_.CallOpenCallback(/*success=*/true);
     uint32_t length = partial_loader_data_.byte_range().length();
     while (length > 0) {
       constexpr uint32_t max_part_len = kDefaultRequestSize;
@@ -514,7 +516,7 @@ TEST_F(DocumentLoaderImplTest, PartialRequestLastChunk) {
       client.full_page_loader_data()->content_length());
   client.partial_loader_data()->set_byte_range(
       client.partial_loader_data()->open_byte_range());
-  client.partial_loader_data()->CallOpenCallback(0);
+  client.partial_loader_data()->CallOpenCallback(/*success=*/true);
   uint32_t data_length = client.partial_loader_data()->byte_range().length();
   while (data_length > kDefaultRequestSize) {
     client.partial_loader_data()->CallReadCallback(kDefaultRequestSize);
@@ -580,7 +582,7 @@ TEST_F(DocumentLoaderImplTest, ClearPendingRequests) {
   loader.ClearPendingRequests();
   // Current request should continue loading.
   EXPECT_TRUE(client.partial_loader_data()->IsWaitOpen());
-  client.partial_loader_data()->CallOpenCallback(0);
+  client.partial_loader_data()->CallOpenCallback(/*success=*/true);
   client.partial_loader_data()->CallReadCallback(kDefaultRequestSize);
   EXPECT_FALSE(client.partial_loader_data()->closed());
   // Current request should continue loading, because no other request queued.
@@ -613,7 +615,7 @@ TEST_F(DocumentLoaderImplTest, ClearPendingRequests) {
         client.partial_loader_data()->open_byte_range());
   }
   EXPECT_TRUE(client.partial_loader_data()->IsWaitOpen());
-  client.partial_loader_data()->CallOpenCallback(0);
+  client.partial_loader_data()->CallOpenCallback(/*success=*/true);
   // Override pending requests.
   loader.ClearPendingRequests();
   loader.RequestData(70 * kDefaultRequestSize + 100, 10);
@@ -713,7 +715,7 @@ TEST_F(DocumentLoaderImplTest, RequestData) {
     client.partial_loader_data()->set_byte_range(
         client.partial_loader_data()->open_byte_range());
   }
-  client.partial_loader_data()->CallOpenCallback(0);
+  client.partial_loader_data()->CallOpenCallback(/*success=*/true);
   // Override pending requests.
   loader.ClearPendingRequests();
   loader.RequestData(38 * kDefaultRequestSize + 200, 10);
@@ -731,7 +733,7 @@ TEST_F(DocumentLoaderImplTest, RequestData) {
     client.partial_loader_data()->set_byte_range(
         client.partial_loader_data()->open_byte_range());
   }
-  client.partial_loader_data()->CallOpenCallback(0);
+  client.partial_loader_data()->CallOpenCallback(/*success=*/true);
   // Override pending requests.
   loader.ClearPendingRequests();
   loader.RequestData(39 * kDefaultRequestSize + 200, 10);
@@ -854,7 +856,7 @@ TEST_F(DocumentLoaderImplTest, PartialStopOnStatusCodeError) {
 
   EXPECT_TRUE(client.partial_loader_data()->IsWaitOpen());
   client.partial_loader_data()->set_status_code(404);
-  client.partial_loader_data()->CallOpenCallback(0);
+  client.partial_loader_data()->CallOpenCallback(/*success=*/true);
   EXPECT_TRUE(client.partial_loader_data()->closed());
 }
 
@@ -873,7 +875,7 @@ TEST_F(DocumentLoaderImplTest,
 
   EXPECT_TRUE(client.partial_loader_data()->IsWaitOpen());
   client.partial_loader_data()->set_byte_range(gfx::Range::InvalidRange());
-  client.partial_loader_data()->CallOpenCallback(0);
+  client.partial_loader_data()->CallOpenCallback(/*success=*/true);
   EXPECT_FALSE(client.partial_loader_data()->closed());
   // Partial loader is used to load the whole page, like full page loader.
   EXPECT_FALSE(loader.is_partial_loader_active());
@@ -893,7 +895,7 @@ TEST_F(DocumentLoaderImplTest, PartialMultiPart) {
 
   EXPECT_TRUE(client.partial_loader_data()->IsWaitOpen());
   client.partial_loader_data()->set_is_multipart(true);
-  client.partial_loader_data()->CallOpenCallback(0);
+  client.partial_loader_data()->CallOpenCallback(/*success=*/true);
   client.partial_loader_data()->set_byte_range(
       gfx::Range(17 * kDefaultRequestSize, 18 * kDefaultRequestSize));
   client.partial_loader_data()->CallReadCallback(kDefaultRequestSize);
@@ -915,7 +917,7 @@ TEST_F(DocumentLoaderImplTest, PartialMultiPartRangeError) {
 
   EXPECT_TRUE(client.partial_loader_data()->IsWaitOpen());
   client.partial_loader_data()->set_is_multipart(true);
-  client.partial_loader_data()->CallOpenCallback(0);
+  client.partial_loader_data()->CallOpenCallback(/*success=*/true);
   client.partial_loader_data()->set_byte_range(gfx::Range::InvalidRange());
   client.partial_loader_data()->CallReadCallback(kDefaultRequestSize);
   EXPECT_FALSE(
@@ -936,7 +938,7 @@ TEST_F(DocumentLoaderImplTest, PartialConnectionErrorOnOpen) {
   client.full_page_loader_data()->CallReadCallback(kDefaultRequestSize);
 
   EXPECT_TRUE(client.partial_loader_data()->IsWaitOpen());
-  client.partial_loader_data()->CallOpenCallback(-3);
+  client.partial_loader_data()->CallOpenCallback(/*success=*/false);
   EXPECT_TRUE(client.partial_loader_data()->closed());
 
   // Partial loading should not restart after any error.
@@ -961,7 +963,7 @@ TEST_F(DocumentLoaderImplTest, PartialConnectionErrorOnRead) {
   EXPECT_TRUE(client.partial_loader_data()->IsWaitOpen());
   client.partial_loader_data()->set_byte_range(
       gfx::Range(17 * kDefaultRequestSize, 18 * kDefaultRequestSize));
-  client.partial_loader_data()->CallOpenCallback(0);
+  client.partial_loader_data()->CallOpenCallback(/*success=*/true);
   EXPECT_TRUE(client.partial_loader_data()->IsWaitRead());
   client.partial_loader_data()->CallReadCallback(-3);
   EXPECT_TRUE(client.partial_loader_data()->closed());
@@ -1127,7 +1129,7 @@ TEST_F(DocumentLoaderImplTest, IgnoreDataMoreThanExpectedWithPartial) {
   // Send data.
   client.partial_loader_data()->set_byte_range(
       client.partial_loader_data()->open_byte_range());
-  client.partial_loader_data()->CallOpenCallback(0);
+  client.partial_loader_data()->CallOpenCallback(/*success=*/true);
   uint32_t length = expected_length;
   while (length > 0) {
     constexpr uint32_t max_part_len = kDefaultRequestSize;
@@ -1169,7 +1171,7 @@ TEST_F(DocumentLoaderImplTest, IgnoreDataMoreThanExpectedWithPartialAtFileEnd) {
   // Send data to file end and extra non expected data.
   client.partial_loader_data()->set_byte_range(
       gfx::Range(kFirstPartial, kRealSize));
-  client.partial_loader_data()->CallOpenCallback(0);
+  client.partial_loader_data()->CallOpenCallback(/*success=*/true);
   uint32_t length = client.partial_loader_data()->byte_range().length();
   while (length > 0) {
     constexpr uint32_t max_part_len = kDefaultRequestSize;
