@@ -65,6 +65,9 @@ class PLATFORM_EXPORT ThreadScheduler {
   virtual void PostNonNestableIdleTask(const base::Location&,
                                        Thread::IdleTask) = 0;
 
+  // Releases memory associated with cancelled idle tasks (best effort).
+  virtual void RemoveCancelledIdleTasks() = 0;
+
   // Returns a task runner for kV8 tasks. Can be called from any thread.
   virtual scoped_refptr<base::SingleThreadTaskRunner> V8TaskRunner() = 0;
 

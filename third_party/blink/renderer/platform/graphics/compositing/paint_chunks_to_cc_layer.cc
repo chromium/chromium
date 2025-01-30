@@ -1277,7 +1277,8 @@ void LayerPropertiesUpdater::UpdateScrollHitTestData(const PaintChunk& chunk) {
     auto scroll_element_id = scroll_node->GetCompositorElementId();
     auto& scroll_tree =
         layer_.layer_tree_host()->property_trees()->scroll_tree_mutable();
-    if (hit_test_data.scrolling_contents_cull_rect.Contains(
+    if (hit_test_data.scrolling_contents_cull_rect == InfiniteIntRect() ||
+        hit_test_data.scrolling_contents_cull_rect.Contains(
             scroll_node->ContentsRect())) {
       scroll_tree.ClearScrollingContentsCullRect(scroll_element_id);
     } else {

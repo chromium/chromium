@@ -551,6 +551,9 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   virtual void IncrementPendingReuseRefCount() = 0;
   virtual void DecrementPendingReuseRefCount() = 0;
 
+  // Returns the pending reuse ref count.
+  virtual int GetPendingReuseRefCountForTesting() const = 0;
+
   // Sets all the various process lifetime ref counts to zero (e.g., keep alive,
   // worker, etc). Called when the browser context will be destroyed so this
   // RenderProcessHost can immediately die.

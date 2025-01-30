@@ -133,6 +133,8 @@ class TabDeclutterController {
 
   void StartNudgeTimer();
 
+  void LogExcludedDuplicateTabMetrics();
+
   bool IsTabExcluded(tabs::TabInterface* tab) const;
 
   void ResetAndDoubleNudgeTimer();

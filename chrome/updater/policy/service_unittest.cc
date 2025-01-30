@@ -858,8 +858,15 @@ class PolicyManagersTest : public ::testing::Test {
   void TearDown() override { ASSERT_NO_FATAL_FAILURE(DeleteOverridesFile()); }
 
   void DeleteOverridesFile() {
+#if BUILDFLAG(IS_MAC)
+    if (base::PathExists(*overrides_file_path_)) {
+      RunCommand(std::vector<std::string>(
+          {"/usr/bin/sudo", "/bin/rm", overrides_file_path_->value()}));
+    }
+#else
     ASSERT_TRUE(base::DeleteFile(*overrides_file_path_))
         << *overrides_file_path_;
+#endif
   }
 
 #if BUILDFLAG(IS_MAC)

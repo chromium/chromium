@@ -103,4 +103,8 @@ void PropertyTreeLayerListDelegate::RegisterViewportPropertyIds(
           ids.outer_clip == kInvalidPropertyNodeId));
 }
 
+void PropertyTreeLayerListDelegate::OnUnregisterElement(ElementId element_id) {
+  // This is a no-op in layer list mode.
+}
+
 }  // namespace cc

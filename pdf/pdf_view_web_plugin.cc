@@ -513,13 +513,13 @@ void PdfViewWebPlugin::SendSetSmoothScrolling() {
 }
 
 void PdfViewWebPlugin::DidOpen(std::unique_ptr<UrlLoader> loader,
-                               int32_t result) {
-  if (result == kSuccess) {
+                               Result result) {
+  if (result == Result::kSuccess) {
     if (!engine_->HandleDocumentLoad(std::move(loader), url_)) {
       document_load_state_ = DocumentLoadState::kLoading;
       DocumentLoadFailed();
     }
-  } else if (result != kErrorAborted) {
+  } else if (result != Result::kErrorAborted) {
     DocumentLoadFailed();
   }
 }
@@ -1202,9 +1202,9 @@ void PdfViewWebPlugin::SubmitForm(const std::string& url,
                                              weak_factory_.GetWeakPtr()));
 }
 
-void PdfViewWebPlugin::DidFormOpen(int32_t result) {
+void PdfViewWebPlugin::DidFormOpen(Result result) {
   // TODO(crbug.com/41317525): Process response.
-  LOG_IF(ERROR, result != kSuccess) << "DidFormOpen failed: " << result;
+  LOG_IF(ERROR, result != Result::kSuccess) << "DidFormOpen failed: " << result;
   form_loader_.reset();
 }
 
@@ -2678,8 +2678,8 @@ void PdfViewWebPlugin::LoadAvailablePreviewPage() {
 }
 
 void PdfViewWebPlugin::DidOpenPreview(std::unique_ptr<UrlLoader> loader,
-                                      int32_t result) {
-  DCHECK_EQ(result, kSuccess);
+                                      Result result) {
+  DCHECK_EQ(result, Result::kSuccess);
 
   // `preview_engine_` holds a `raw_ptr` to `preview_client_`.
   // We need to explicitly destroy it before clobbering

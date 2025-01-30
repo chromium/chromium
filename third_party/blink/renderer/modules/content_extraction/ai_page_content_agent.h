@@ -5,10 +5,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CONTENT_EXTRACTION_AI_PAGE_CONTENT_AGENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CONTENT_EXTRACTION_AI_PAGE_CONTENT_AGENT_H_
 
+#include "base/functional/callback_forward.h"
 #include "base/types/pass_key.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver_set.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
@@ -25,7 +27,8 @@ class LocalFrame;
 class MODULES_EXPORT AIPageContentAgent final
     : public GarbageCollected<AIPageContentAgent>,
       public mojom::blink::AIPageContentAgent,
-      public Supplement<Document> {
+      public Supplement<Document>,
+      public LocalFrameView::LifecycleNotificationObserver {
  public:
   static const char kSupplementName[];
   static AIPageContentAgent* From(Document&);
@@ -49,11 +52,16 @@ class MODULES_EXPORT AIPageContentAgent final
   // public for testing.
   mojom::blink::AIPageContentPtr GetAIPageContentInternal(
       const mojom::blink::AIPageContentOptions& options) const;
+  // LocalFrameView::LifecycleNotificationObserver overrides.
+  void DidFinishPostLifecycleSteps(const LocalFrameView&) override;
 
  private:
   void GetAIPageContentSync(mojom::blink::AIPageContentOptionsPtr options,
                             GetAIPageContentCallback callback,
-                            base::TimeTicks deadline) const;
+                            base::TimeTicks start_time) const;
+  // Runs tasks if the document lifecycle is at least as advanced as the
+  // associated vector.
+  void RunTasksIfReady();
 
   // Synchronously services a single request.
   class ContentBuilder {
@@ -88,6 +96,12 @@ class MODULES_EXPORT AIPageContentAgent final
 
   HeapMojoReceiverSet<mojom::blink::AIPageContentAgent, AIPageContentAgent>
       receiver_set_;
+  // Already registered for lifetime notifications.
+  bool is_registered_ = false;
+  // Tasks to run when geometry is needed.
+  WTF::Vector<base::OnceClosure> geometry_tasks_;
+  // Tasks to run when geometry is not needed.
+  WTF::Vector<base::OnceClosure> layout_clean_tasks_;
 };
 
 }  // namespace blink

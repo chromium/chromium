@@ -24,6 +24,7 @@
 #include "chrome/browser/performance_manager/policies/background_tab_loading_policy.h"
 #include "chrome/browser/performance_manager/policies/frame_throttling_policy.h"
 #include "chrome/browser/performance_manager/policies/freezing_opt_out_checker.h"
+#include "chrome/browser/performance_manager/policies/keep_alive_dse_policy.h"
 #include "chrome/browser/performance_manager/policies/policy_features.h"
 #include "chrome/browser/performance_manager/policies/working_set_trimmer_policy.h"
 #include "chrome/browser/performance_manager/user_tuning/profile_discard_opt_out_list_helper.h"
@@ -263,6 +264,12 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
                                SidePanelLoadingVoter>();
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+  if (base::FeatureList::IsEnabled(performance_manager::features::
+                                       kKeepDefaultSearchEngineRendererAlive)) {
+    graph->PassToGraph(
+        std::make_unique<performance_manager::policies::KeepAliveDSEPolicy>());
+  }
 }
 
 content::FeatureObserverClient*

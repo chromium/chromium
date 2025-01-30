@@ -16643,6 +16643,24 @@
             ]
         }
     ],
+    "PdfUseShowSaveFilePicker": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PdfUseShowSaveFilePicker"
+                    ]
+                }
+            ]
+        }
+    ],
     "PdfUseSkiaRenderer": [
         {
             "platforms": [

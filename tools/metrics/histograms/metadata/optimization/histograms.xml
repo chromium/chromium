@@ -442,25 +442,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="OptimizationGuide.AIPageContent.IdleDeadlineExceedDuration.{FrameType}"
-    units="ms" expires_after="2025-12-15">
-  <owner>khushalsagar@chromium.org</owner>
-  <owner>abigailbklein@google.com</owner>
-  <summary>
-    If AIPageContent extraction is not on the critical path, we use an idle task
-    to schedule it at an optimal time. The idle task is provided a deadline by
-    which it should ideally be done.
-
-    This metric records the duration by which the idle task's deadline was
-    exceeded. A 0 value indicates the extraction finished before or at the
-    deadline.
-
-    The metric is only recorded for extractions scheduled using an idle task.
-  </summary>
-  <token key="FrameType" variants="FrameType"/>
-</histogram>
-
 <histogram name="OptimizationGuide.AIPageContent.RendererLatency.{FrameType}"
     units="ms" expires_after="2025-12-15">
   <owner>khushalsagar@chromium.org</owner>
@@ -469,6 +450,37 @@ chromium-metrics-reviews@google.com.
     Records the duration for extracting the AIPageContent from a LocalFrame tree
     in the renderer. Recorded once for each extraction in the renderer process.
     The metric is split for main frames vs remote subframes.
+
+    Does not included time while waiting for lifecycle events to complete.
+  </summary>
+  <token key="FrameType" variants="FrameType"/>
+</histogram>
+
+<histogram
+    name="OptimizationGuide.AIPageContent.RendererLatencyWithSchedulingDelay.Critical.{FrameType}"
+    units="ms" expires_after="2025-12-15">
+  <owner>khushalsagar@chromium.org</owner>
+  <owner>abigailbklein@google.com</owner>
+  <summary>
+    Records the duration for extracting the AIPageContent from a LocalFrame tree
+    in the renderer. Recorded once for each extraction in the renderer process.
+    The metric is split for main frames vs remote subframes. Includes time while
+    waiting for lifecycle events to complete. Only for calls that were critical.
+  </summary>
+  <token key="FrameType" variants="FrameType"/>
+</histogram>
+
+<histogram
+    name="OptimizationGuide.AIPageContent.RendererLatencyWithSchedulingDelay.NonCritical.{FrameType}"
+    units="ms" expires_after="2025-12-15">
+  <owner>khushalsagar@chromium.org</owner>
+  <owner>abigailbklein@google.com</owner>
+  <summary>
+    Records the duration for extracting the AIPageContent from a LocalFrame tree
+    in the renderer. Recorded once for each extraction in the renderer process.
+    The metric is split for main frames vs remote subframes. Includes time while
+    waiting for lifecycle events to complete. Only for calls that were
+    non-critical.
   </summary>
   <token key="FrameType" variants="FrameType"/>
 </histogram>

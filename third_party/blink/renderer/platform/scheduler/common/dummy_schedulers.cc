@@ -280,6 +280,7 @@ class DummyWebMainThreadScheduler : public WebThreadScheduler,
                            Thread::IdleTask) override {}
   void PostNonNestableIdleTask(const base::Location&,
                                Thread::IdleTask) override {}
+  void RemoveCancelledIdleTasks() override {}
   void AddRAILModeObserver(RAILModeObserver*) override {}
   void RemoveRAILModeObserver(RAILModeObserver const*) override {}
   base::TimeTicks MonotonicallyIncreasingVirtualTime() override {

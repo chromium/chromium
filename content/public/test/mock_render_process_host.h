@@ -182,6 +182,7 @@ class MockRenderProcessHost : public RenderProcessHost {
   void DecrementWorkerRefCount() override;
   void IncrementPendingReuseRefCount() override;
   void DecrementPendingReuseRefCount() override;
+  int GetPendingReuseRefCountForTesting() const override;
   bool AreRefCountsDisabled() override;
   mojom::Renderer* GetRendererInterface() override;
 
@@ -312,8 +313,6 @@ class MockRenderProcessHost : public RenderProcessHost {
   void OverrideRendererInterfaceForTesting(
       std::unique_ptr<mojo::AssociatedRemote<mojom::Renderer>>
           renderer_interface);
-
-  int GetPendingReuseRefCountForTesting() const;
 
   bool is_renderer_locked_to_site() const {
     return is_renderer_locked_to_site_;

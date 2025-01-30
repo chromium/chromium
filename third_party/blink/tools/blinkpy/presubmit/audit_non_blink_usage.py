@@ -28,7 +28,7 @@ _DISALLOW_NON_BLINK_MOJOM = (
     'for non-blink mojom types, or "mojom::blink::Foo" instead of '
     '"[[::]blink::]mojom::Foo" for blink mojom types, unless you have clear '
     'reasons not to do so. Make sure to include '
-    '".../foo-mojom-blink[-forward].h".',
+    '".../foo.mojom-blink[-forward].h".',
     'Warning')
 
 _DISALLOW_CONTINUATION_DATA_ = (

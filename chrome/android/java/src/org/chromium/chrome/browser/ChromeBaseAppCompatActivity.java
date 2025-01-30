@@ -193,12 +193,15 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         if (EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled()) {
             mEdgeToEdgeLayoutCoordinator = ensureEdgeToEdgeLayoutCoordinator();
         }
+        // TODO(crbug.com/393195226): Cleanup EdgeToEdgeManager and EdgeToEdgeSystemBarColorHelper
+        //  when edge to edge supports status bar coloring in tabbed mode.
         mEdgeToEdgeManager =
                 new EdgeToEdgeManager(
                         this,
                         mEdgeToEdgeStateProvider,
                         createSystemBarColorHelperSupplier(),
-                        shouldDrawEdgeToEdgeOnCreate());
+                        shouldDrawEdgeToEdgeOnCreate(),
+                        EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled());
 
         if (EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled()) {
             initializeSystemBarColors();

@@ -134,6 +134,11 @@
           </cr-link-row>
         </if>
       </div>
+
+      <if expr="is_chromeos">
+        <certificate-provisioning-list remove-header-padding>
+        </certificate-provisioning-list>
+      </if>
     </div>
 
     <local-certs-section-v2 id="localCertSection"

@@ -83,6 +83,7 @@ class DummyMainThreadScheduler : public MainThreadScheduler {
                            Thread::IdleTask) override {}
   void PostNonNestableIdleTask(const base::Location&,
                                Thread::IdleTask) override {}
+  void RemoveCancelledIdleTasks() override {}
   scoped_refptr<base::SingleThreadTaskRunner> V8TaskRunner() override {
     return nullptr;
   }

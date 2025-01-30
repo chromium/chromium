@@ -127,6 +127,35 @@ void AddCertificateManagerV2Strings(content::WebUIDataSource* html_source) {
       {"certificateManagerV2PlatformCertsManageLinkAriaDescription",
        IDS_SETTINGS_CERTIFICATE_MANAGER_V2_PLATFORM_CERTS_MANAGE_LINK_ARIA_DESCRIPTION},
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_CHROMEOS)
+      {"certificateProvisioningListHeader",
+       IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_LIST_HEADER},
+      {"certificateProvisioningRefresh",
+       IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_REFRESH},
+      {"certificateProvisioningReset",
+       IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_RESET},
+      {"certificateProvisioningDetails",
+       IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_DETAILS},
+      {"certificateProvisioningAdvancedSectionTitle",
+       IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_ADVANCED},
+      {"certificateProvisioningProfileName",
+       IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_CERTIFICATE_PROFILE_NAME},
+      {"certificateProvisioningProfileId",
+       IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_CERTIFICATE_PROFILE_ID},
+      {"certificateProvisioningStatus",
+       IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_STATUS},
+      {"certificateProvisioningStatusId",
+       IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_STATUS_ID},
+      {"certificateProvisioningLastUpdate",
+       IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_LAST_UPDATE},
+      {"certificateProvisioningLastUnsuccessfulStatus",
+       IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_LAST_UNSUCCESSFUL_STATUS},
+      {"certificateProvisioningPublicKey", IDS_CERT_DETAILS_SUBJECT_KEY},
+      // For ChromeOS provisioning UI
+      {"moreActions", IDS_SETTINGS_MORE_ACTIONS},
+      {"menu", IDS_MENU},
+      {"close", IDS_CLOSE},
+#endif  // BUILDFLAG(IS_CHROMEOS)
       {"certificateManagerV2PlatformCertsViewLink",
        IDS_SETTINGS_CERTIFICATE_MANAGER_V2_PLATFORM_CERTS_VIEW_LINK},
       {"certificateManagerV2Platform",
@@ -202,6 +231,9 @@ CertificateManagerUI::CertificateManagerUI(content::WebUI* web_ui)
         "clientCertImportAndBindAllowed",
         client_cert_policy.IsManagementAllowed(
             ClientCertManagementAccessControls::kHardwareBacked));
+    web_ui->AddMessageHandler(
+        chromeos::cert_provisioning::CertificateProvisioningUiHandler::
+            CreateForProfile(profile));
 #endif
 
     auto plural_string_handler = std::make_unique<PluralStringHandler>();

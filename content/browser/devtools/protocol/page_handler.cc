@@ -909,6 +909,54 @@ void PageHandler::DownloadWillBegin(FrameTreeNode* ftn,
   pending_downloads_.insert(item);
 }
 
+void PageHandler::DidStartNavigating(
+    FrameTreeNode& ftn,
+    const GURL& url,
+    const base::UnguessableToken& loader_id,
+    const blink::mojom::NavigationType& navigation_type) {
+  std::string navigation_type_str;
+  switch (navigation_type) {
+    case blink::mojom::NavigationType::RELOAD:
+      navigation_type_str =
+          Page::FrameStartedNavigating::NavigationTypeEnum::Reload;
+      break;
+    case blink::mojom::NavigationType::RELOAD_BYPASSING_CACHE:
+      navigation_type_str = Page::FrameStartedNavigating::NavigationTypeEnum::
+          ReloadBypassingCache;
+      break;
+    case blink::mojom::NavigationType::RESTORE:
+      navigation_type_str =
+          Page::FrameStartedNavigating::NavigationTypeEnum::Restore;
+      break;
+    case blink::mojom::NavigationType::RESTORE_WITH_POST:
+      navigation_type_str =
+          Page::FrameStartedNavigating::NavigationTypeEnum::RestoreWithPost;
+      break;
+    case blink::mojom::NavigationType::HISTORY_SAME_DOCUMENT:
+      navigation_type_str =
+          Page::FrameStartedNavigating::NavigationTypeEnum::HistorySameDocument;
+      break;
+    case blink::mojom::NavigationType::HISTORY_DIFFERENT_DOCUMENT:
+      navigation_type_str = Page::FrameStartedNavigating::NavigationTypeEnum::
+          HistoryDifferentDocument;
+      break;
+    case blink::mojom::NavigationType::SAME_DOCUMENT:
+      navigation_type_str =
+          Page::FrameStartedNavigating::NavigationTypeEnum::SameDocument;
+      break;
+    case blink::mojom::NavigationType::DIFFERENT_DOCUMENT:
+      navigation_type_str =
+          Page::FrameStartedNavigating::NavigationTypeEnum::DifferentDocument;
+      break;
+    default:
+      NOTREACHED();
+  }
+
+  frontend_->FrameStartedNavigating(
+      ftn.current_frame_host()->devtools_frame_token().ToString(), url.spec(),
+      loader_id.ToString(), navigation_type_str);
+}
+
 void PageHandler::OnFrameDetached(const base::UnguessableToken& frame_id) {
   if (!enabled_)
     return;

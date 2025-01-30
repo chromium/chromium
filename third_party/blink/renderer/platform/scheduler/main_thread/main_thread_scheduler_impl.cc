@@ -2010,6 +2010,10 @@ void MainThreadSchedulerImpl::PostNonNestableIdleTask(
   IdleTaskRunner()->PostNonNestableIdleTask(location, std::move(task));
 }
 
+void MainThreadSchedulerImpl::RemoveCancelledIdleTasks() {
+  idle_helper_.RemoveCancelledIdleTasks();
+}
+
 scoped_refptr<base::SingleThreadTaskRunner>
 MainThreadSchedulerImpl::V8TaskRunner() {
   return v8_task_runner_;

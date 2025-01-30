@@ -7,6 +7,7 @@ package org.chromium.components.browser_ui.edge_to_edge;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -166,10 +167,29 @@ public class EdgeToEdgeSystemBarColorHelperUnitTest {
         verify(mWindow).setStatusBarColor(Color.RED);
     }
 
+    @Test
+    public void initWhenNotEdgeToEdge_canColorStatusBarColorIsFalse() {
+        mDelegateHelperSupplier.set(mDelegateColorHelper);
+        mEdgeToEdgeColorHelper =
+                new EdgeToEdgeSystemBarColorHelper(
+                        mWindow,
+                        mShouldContentFitsWindowInsetsSupplier,
+                        mDelegateHelperSupplier,
+                        /* canColorStatusBarColor= */ false);
+
+        mEdgeToEdgeColorHelper.setStatusBarColor(Color.RED);
+        // Status bar should not be colored when canColorStatusBarColor is false.
+        verify(mWindow, never()).setStatusBarColor(anyInt());
+        verify(mDelegateColorHelper, never()).setStatusBarColor(anyInt());
+    }
+
     private void initEdgeToEdgeColorHelper() {
         mEdgeToEdgeColorHelper =
                 new EdgeToEdgeSystemBarColorHelper(
-                        mWindow, mShouldContentFitsWindowInsetsSupplier, mDelegateHelperSupplier);
+                        mWindow,
+                        mShouldContentFitsWindowInsetsSupplier,
+                        mDelegateHelperSupplier,
+                        /* canColorStatusBarColor= */ true);
         mWindowHelper = mEdgeToEdgeColorHelper.getWindowHelperForTesting();
     }
 }

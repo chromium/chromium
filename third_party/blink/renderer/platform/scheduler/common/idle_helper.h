@@ -104,6 +104,9 @@ class PLATFORM_EXPORT IdleHelper : public base::TaskObserver,
   // Prevents any further idle tasks from running.
   void Shutdown();
 
+  // Releases memory associated with cancelled idle tasks (best effort).
+  void RemoveCancelledIdleTasks();
+
   // Returns the idle task runner. Tasks posted to this runner may be reordered
   // relative to other task types and may be starved for an arbitrarily long
   // time if no idle time is available.

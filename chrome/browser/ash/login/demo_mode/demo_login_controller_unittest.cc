@@ -180,7 +180,7 @@ class DemoLoginControllerTest : public testing::Test {
   }
 
   // Mock a setup response return provided `gaia_id`. Verify that setup request
-  // gets triggered and login is success.
+  // gets triggered and the login is successful.
   void MockSuccessSetupResponseAndVerifyLogin(const GaiaId& gaia_id) {
     // Mock a setup request will be success.
     test_url_loader_factory_.AddResponse(
@@ -312,13 +312,15 @@ TEST_F(DemoLoginControllerTest, InValidGaia) {
   loop.Run();
 }
 
-TEST_F(DemoLoginControllerTest, CannotObtainDMTokenAndClientID) {
-  // In unit tests, there is no real cloud policy manager as
+TEST_F(DemoLoginControllerTest,
+       SetupDemoAccountCannotObtainDMTokenAndClientID) {
+  // In unit tests, there is no real cloud policy manager and
   // `policy_connector_ash->GetDeviceCloudPolicyManager()` is null. We remove
   // the fake one here so `DemoLoginController::GetDeviceIntegrity()` cannot
   // find any policy managers, and it will return failure (an empty
   // base::Value::Dict), causing the request to fail.
   GetDemoLoginController()->SetDeviceCloudPolicyManagerForTesting(nullptr);
+
   base::RunLoop loop;
   EXPECT_CALL(login_display_host(), CompleteLogin).Times(0);
   GetDemoLoginController()->SetSetupFailedCallbackForTest(
@@ -343,7 +345,7 @@ TEST_F(DemoLoginControllerTest, ServerCleanUpSuccess) {
   local_state->SetString(prefs::kDemoModeSessionIdentifier, last_session_id);
   base::MockCallback<DemoLoginController::FailedRequestCallback>
       cleanup_failed_callback;
-  // `cleanup_failed_callback` is not called means no failure for clean up.
+  // `cleanup_failed_callback` not called means no failure for the cleanup.
   EXPECT_CALL(cleanup_failed_callback, Run(testing::_)).Times(0);
   GetDemoLoginController()->SetCleanUpFailedCallbackForTest(
       cleanup_failed_callback.Get());
@@ -366,7 +368,7 @@ TEST_F(DemoLoginControllerTest, ServerCleanUpSuccess) {
 TEST_F(DemoLoginControllerTest, ServerCleanUpFailed) {
   AppendTestUserToUserList();
   auto* local_state = g_browser_process->local_state();
-  local_state->SetString(prefs::kDemoAccountGaiaId, "123");
+  local_state->SetString(prefs::kDemoAccountGaiaId, kTestGaiaId.ToString());
   const std::string last_session_id = "device_id";
   local_state->SetString(prefs::kDemoModeSessionIdentifier, last_session_id);
   test_url_loader_factory_.AddResponse(GetCleanUpUrl().spec(), "{}",
@@ -391,8 +393,49 @@ TEST_F(DemoLoginControllerTest, ServerCleanUpFailed) {
       local_state->GetString(prefs::kDemoModeSessionIdentifier);
   EXPECT_NE(new_session_id, last_session_id);
 
-  // Expect test account is removed from local even server clean up failed.
+  // Expect the test account to be removed from local even if the server cleanup
+  // failed.
   ExpectOnlyDeviceLocalAccountInUserList();
+}
+
+TEST_F(DemoLoginControllerTest,
+       CleanupDemoAccountCannotObtainDMTokenAndClientID) {
+  // In unit tests, there is no real cloud policy manager and
+  // `policy_connector_ash->GetDeviceCloudPolicyManager()` is null. We remove
+  // the fake one here so `DemoLoginController::GetDeviceIdentifier()` cannot
+  // find any policy managers, and it will return failure and cause the request
+  // to fail.
+  GetDemoLoginController()->SetDeviceCloudPolicyManagerForTesting(nullptr);
+
+  AppendTestUserToUserList();
+  auto* local_state = g_browser_process->local_state();
+  local_state->SetString(prefs::kDemoAccountGaiaId, kTestGaiaId.ToString());
+  const std::string last_session_id = "device_id";
+  local_state->SetString(prefs::kDemoModeSessionIdentifier, last_session_id);
+
+  // Right after the account cleanup failed, it'll try to set up the demo
+  // account regardless of the cleanup result. However, it's still
+  // unable to obtain the DM Token and the Client ID, so it will fail again and
+  // fall back to MGS.
+  base::RunLoop loop;
+  GetDemoLoginController()->SetCleanUpFailedCallbackForTest(
+      base::BindLambdaForTesting([&](const DemoLoginController::ResultCode
+                                         result_code) {
+        EXPECT_EQ(
+            result_code,
+            DemoLoginController::ResultCode::kCannotObtainDMTokenAndClientID);
+        loop.Quit();
+      }));
+
+  // Verify demo account login gets triggered by `ExistingUserController`.
+  ConfigureAutoLoginSetting();
+  loop.Run();
+
+  // Expect the test account to be removed even if the cleanup failed.
+  ExpectOnlyDeviceLocalAccountInUserList();
+
+  // Expect auto login managed guest session to start.
+  EXPECT_TRUE(existing_user_controller()->IsAutoLoginTimerRunningForTesting());
 }
 
 TEST_F(DemoLoginControllerTest, FallbackToMGS) {
@@ -412,7 +455,7 @@ TEST_F(DemoLoginControllerTest, FallbackToMGS) {
 
   loop.Run();
 
-  // Expect auto login managed guest session starts.
+  // Expect auto login managed guest session to start.
   EXPECT_TRUE(existing_user_controller()->IsAutoLoginTimerRunningForTesting());
 }
 

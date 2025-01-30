@@ -56,7 +56,8 @@ public class EdgeToEdgeManagerUnitTest {
                 mActivity,
                 mEdgeToEdgeStateProvider,
                 mSystemBarColorHelperSupplier,
-                shouldDrawEdgeToEdge);
+                shouldDrawEdgeToEdge,
+                /* canColorStatusBarColor= */ true);
     }
 
     @Test
@@ -94,7 +95,8 @@ public class EdgeToEdgeManagerUnitTest {
                         mActivity,
                         mEdgeToEdgeStateProvider,
                         systemBarColorHelperSupplier,
-                        /* shouldDrawEdgeToEdge= */ true);
+                        /* shouldDrawEdgeToEdge= */ true,
+                        /* canColorStatusBarColor= */ true);
 
         assertNull(
                 edgeToEdgeManager
@@ -118,7 +120,8 @@ public class EdgeToEdgeManagerUnitTest {
                         mActivity,
                         mEdgeToEdgeStateProvider,
                         systemBarColorHelperSupplier,
-                        /* shouldDrawEdgeToEdge= */ false);
+                        /* shouldDrawEdgeToEdge= */ false,
+                        /* canColorStatusBarColor= */ true);
         assertTrue(
                 "The manager should have been initialized with the content fitting the window"
                         + " insets.",
@@ -133,6 +136,25 @@ public class EdgeToEdgeManagerUnitTest {
         assertTrue(
                 "The content should be fitting the window.",
                 edgeToEdgeManager.getContentFitsWindowInsetsSupplier().get());
+    }
+
+    @Test
+    public void testCanColorStatusBarColorIsFalse() {
+        EdgeToEdgeManager edgeToEdgeManager =
+                new EdgeToEdgeManager(
+                        mActivity,
+                        mEdgeToEdgeStateProvider,
+                        mSystemBarColorHelperSupplier,
+                        /* shouldDrawEdgeToEdge= */ true,
+                        /* canColorStatusBarColor= */ false);
+
+        assertNotNull(edgeToEdgeManager.getEdgeToEdgeStateProvider());
+        assertNotNull(edgeToEdgeManager.getEdgeToEdgeSystemBarColorHelper());
+        assertEquals(
+                mSystemBarColorHelper,
+                edgeToEdgeManager
+                        .getEdgeToEdgeSystemBarColorHelper()
+                        .getEdgeToEdgeDelegateHelperForTesting());
     }
 
     @Test

@@ -19,6 +19,8 @@
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
+using DecrementOnDelete = blink::ScriptedIdleTaskController::DecrementOnDelete;
+
 namespace base {
 
 // Cancellation traits for a "scheduler idle task".
@@ -26,21 +28,25 @@ template <>
 struct CallbackCancellationTraits<
     blink::ScriptedIdleTaskController::SchedulerIdleTaskDeclType,
     std::tuple<blink::WeakPersistent<blink::ScriptedIdleTaskController>,
-               blink::ScriptedIdleTaskController::CallbackId>> {
+               blink::ScriptedIdleTaskController::CallbackId,
+               DecrementOnDelete>> {
   static constexpr bool is_cancellable = true;
 
   static bool IsCancelled(
       blink::ScriptedIdleTaskController::SchedulerIdleTaskDeclType,
       const blink::WeakPersistent<blink::ScriptedIdleTaskController>&
           controller,
-      const blink::ScriptedIdleTaskController::CallbackId& id) {
+      const blink::ScriptedIdleTaskController::CallbackId& id,
+      const DecrementOnDelete&) {
     return !controller || !controller->HasCallback(id);
   }
 
   static bool MaybeValid(
       blink::ScriptedIdleTaskController::SchedulerIdleTaskDeclType,
-      const blink::WeakPersistent<blink::ScriptedIdleTaskController>&,
-      const blink::ScriptedIdleTaskController::CallbackId&) {
+      const blink::WeakPersistent<blink::ScriptedIdleTaskController>&
+          controller,
+      const blink::ScriptedIdleTaskController::CallbackId&,
+      const DecrementOnDelete&) {
     // No effort is made return a thread-safe guess of validity.
     return true;
   }
@@ -71,6 +77,10 @@ void UpdateMaxIdleTasksCrashKey(size_t num_pending_idle_tasks) {
 }
 
 }  // namespace
+
+BASE_FEATURE(kRemoveCancelledScriptedIdleTasks,
+             "RemoveCancelledScriptedIdleTasks",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 IdleTask::~IdleTask() {
   CHECK(!delayed_task_handle_.IsValid());
@@ -149,6 +159,23 @@ ScriptedIdleTaskController::RegisterCallback(
   return id;
 }
 
+ScriptedIdleTaskController::DecrementOnDelete::DecrementOnDelete(
+    RefCountedCounter counter)
+    : counter_(std::move(counter)) {}
+
+ScriptedIdleTaskController::DecrementOnDelete::~DecrementOnDelete() {
+  if (counter_) {
+    CHECK_GT(counter_->data, 0u, base::NotFatalUntil::M136);
+    --counter_->data;
+  }
+}
+
+ScriptedIdleTaskController::DecrementOnDelete::DecrementOnDelete(
+    DecrementOnDelete&&) = default;
+ScriptedIdleTaskController::DecrementOnDelete&
+ScriptedIdleTaskController::DecrementOnDelete::operator=(DecrementOnDelete&&) =
+    default;
+
 void ScriptedIdleTaskController::PostSchedulerIdleAndTimeoutTasks(
     CallbackId id,
     uint32_t timeout_millis) {
@@ -192,6 +219,18 @@ void ScriptedIdleTaskController::CancelCallback(CallbackId id) {
   }
 
   RemoveIdleTask(id);
+
+  // Sweep the queue to remove cancelled idle tasks when 1000 are accumulated.
+  //
+  // Note: When tasks are in `idle_tasks_to_reschedule_`, it is possible for
+  // `num_scheduler_idle_tasks_` to be less than `idle_tasks_.size()`.
+  if (num_scheduler_idle_tasks_->data > idle_tasks_.size() &&
+      num_scheduler_idle_tasks_->data - idle_tasks_.size() > 1000 &&
+      base::FeatureList::IsEnabled(kRemoveCancelledScriptedIdleTasks)) {
+    scheduler_->RemoveCancelledIdleTasks();
+    CHECK_LE(num_scheduler_idle_tasks_->data, idle_tasks_.size(),
+             base::NotFatalUntil::M136);
+  }
 }
 
 bool ScriptedIdleTaskController::HasCallback(CallbackId id) const {
@@ -199,14 +238,19 @@ bool ScriptedIdleTaskController::HasCallback(CallbackId id) const {
 }
 
 void ScriptedIdleTaskController::PostSchedulerIdleTask(CallbackId id) {
+  ++num_scheduler_idle_tasks_->data;
   scheduler_->PostIdleTask(
       FROM_HERE, WTF::BindOnce(&ScriptedIdleTaskController::SchedulerIdleTask,
-                               WrapWeakPersistent(this), id));
+                               WrapWeakPersistent(this), id,
+                               DecrementOnDelete(num_scheduler_idle_tasks_)));
 }
 
 void ScriptedIdleTaskController::SchedulerIdleTask(
     CallbackId id,
+    DecrementOnDelete decrement_on_delete,
     base::TimeTicks deadline) {
+  CHECK_GT(num_scheduler_idle_tasks_->data, 0u, base::NotFatalUntil::M136);
+
   if (!idle_tasks_.Contains(id)) {
     return;
   }

@@ -104,6 +104,8 @@ class DemoLoginController
   // Called on clean up demo account complete.
   void OnCleanUpDemoAccountComplete(std::unique_ptr<std::string> response_body);
 
+  void OnCleanUpDemoAccountError(const ResultCode result_code);
+
   // We keep this function in-class because it needs to access the member
   // `policy_manager_for_testing_`, which is set by unit tests through
   // SetDeviceCloudPolicyManagerForTesting().

@@ -32,12 +32,14 @@ public class EdgeToEdgeManager {
      *     used to color the system bars when edge to edge is enabled.
      * @param shouldDrawEdgeToEdge Whether the host activity intends to draw edge-to-edge by
      *     default.
+     * @param canColorStatusBarColor Whether the status bar color is able to be changed.
      */
     public EdgeToEdgeManager(
             Activity activity,
             EdgeToEdgeStateProvider edgeToEdgeStateProvider,
             OneshotSupplier<SystemBarColorHelper> systemBarColorHelperSupplier,
-            boolean shouldDrawEdgeToEdge) {
+            boolean shouldDrawEdgeToEdge,
+            boolean canColorStatusBarColor) {
         mContentFitsWindowInsetsSupplier.set(!shouldDrawEdgeToEdge);
 
         mEdgeToEdgeStateProvider = edgeToEdgeStateProvider;
@@ -45,7 +47,8 @@ public class EdgeToEdgeManager {
                 new EdgeToEdgeSystemBarColorHelper(
                         activity.getWindow(),
                         getContentFitsWindowInsetsSupplier(),
-                        systemBarColorHelperSupplier);
+                        systemBarColorHelperSupplier,
+                        canColorStatusBarColor);
 
         if (shouldDrawEdgeToEdge) {
             mEdgeToEdgeToken = mEdgeToEdgeStateProvider.acquireSetDecorFitsSystemWindowToken();

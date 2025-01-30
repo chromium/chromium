@@ -147,6 +147,7 @@ class BASE_EXPORT TaskQueueImpl : public TaskQueue {
   AddOnTaskPostedHandler(OnTaskPostedHandler handler) override;
   void SetTaskExecutionTraceLogger(TaskExecutionTraceLogger logger) override;
   std::unique_ptr<QueueEnabledVoter> CreateQueueEnabledVoter() override;
+  void RemoveCancelledTasks() override;
 
   void SetQueueEnabled(bool enabled);
   void UnregisterTaskQueue();

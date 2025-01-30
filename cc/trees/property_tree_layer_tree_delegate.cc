@@ -51,4 +51,8 @@ void PropertyTreeLayerTreeDelegate::RegisterViewportPropertyIds(
   // This is a no-op in layer tree mode.
 }
 
+void PropertyTreeLayerTreeDelegate::OnUnregisterElement(ElementId element_id) {
+  host()->mutator_host()->RemoveElementId(element_id);
+}
+
 }  // namespace cc
