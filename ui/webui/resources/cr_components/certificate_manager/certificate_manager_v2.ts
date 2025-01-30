@@ -17,6 +17,9 @@ import './certificate_manager_v2_icons.html.js';
 import './certificate_manager_style_v2.css.js';
 import './crs_section_v2.js';
 import './local_certs_section_v2.js';
+// <if expr="is_chromeos">
+import './certificate_provisioning_list.js';
+// </if>
 import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/cr_toast/cr_toast.js';
 import '//resources/cr_elements/cr_toolbar/cr_toolbar.js';

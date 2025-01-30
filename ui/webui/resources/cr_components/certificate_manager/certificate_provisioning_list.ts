@@ -36,6 +36,7 @@ export class CertificateProvisioningListElement extends
 
   static get properties() {
     return {
+      removeHeaderPadding: Boolean,
       provisioningProcesses_: {
         type: Array,
         value() {
@@ -52,10 +53,15 @@ export class CertificateProvisioningListElement extends
     };
   }
 
+  removeHeaderPadding: boolean = false;
   private provisioningProcesses_: CertificateProvisioningProcess[];
   private provisioningDetailsDialogModel_: CertificateProvisioningProcess|null;
   private showProvisioningDetailsDialog_: boolean;
   private previousAnchor_: HTMLElement|null = null;
+
+  private headerClassList_(removeHeaderPadding: boolean): string {
+    return removeHeaderPadding ? 'header-box' : 'header-box padding';
+  }
 
   /**
    * @param provisioningProcesses The list of certificate provisioning
