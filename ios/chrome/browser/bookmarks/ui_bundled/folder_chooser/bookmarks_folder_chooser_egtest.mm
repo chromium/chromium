@@ -720,9 +720,8 @@ BookmarkStorageType kindOfTestToStorageType(KindOfTest kind) {
   [self util_testMoveAndUndoFromModel:KindOfTest::kAccount
                               toModel:KindOfTest::kAccount];
 }
-// TODO(crbug.com/326425036): Moving the bookmarks fails in test but not when
-// reproduced manually.
-- (void)DISABLED_testMoveAndUndoLocalToAccount {
+
+- (void)testMoveAndUndoLocalToAccount {
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testMoveAndUndoFromModel:KindOfTest::kLocal
                               toModel:KindOfTest::kAccount];
