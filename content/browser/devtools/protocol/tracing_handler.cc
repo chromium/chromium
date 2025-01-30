@@ -1046,18 +1046,19 @@ void TracingHandler::OnFrameFromVideoConsumer(
     return;
   }
   const SkBitmap skbitmap = DevToolsVideoConsumer::GetSkBitmapFromFrame(frame);
-  uint64_t frame_sequence = *frame->metadata().frame_sequence;
-  // TODO(jacktfranklin): consume the source_id
-
   // This reference_time is an ESTIMATE. It is set by the compositor frame sink
   // from the `expected_display_time`, which is based on a previously known
   // frame start PLUS the vsync interval (eg 16.6ms)
   base::TimeTicks expected_display_time = *frame->metadata().reference_time;
 
-  TRACE_EVENT_OBJECT_SNAPSHOT_WITH_ID_AND_TIMESTAMP(
-      TRACE_DISABLED_BY_DEFAULT("devtools.screenshot"), "Screenshot",
-      frame_sequence, expected_display_time,
-      std::make_unique<DevToolsTraceableScreenshot>(skbitmap));
+  uint64_t frame_sequence = *frame->metadata().frame_sequence;
+  uint64_t source_id = *frame->metadata().source_id;
+
+  TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("devtools.screenshot"),
+                      "Screenshot", "expected_display_time",
+                      expected_display_time, "frame_sequence", frame_sequence,
+                      "source_id", source_id, "snapshot",
+                      std::make_unique<DevToolsTraceableScreenshot>(skbitmap));
 
   ++number_of_screenshots_from_video_consumer_;
   DCHECK(video_consumer_);
