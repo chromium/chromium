@@ -37,6 +37,7 @@ class PageActionModelInterface {
       const actions::ActionItem* action_item) = 0;
   virtual void SetShowRequested(base::PassKey<PageActionController>,
                                 bool requested) = 0;
+  virtual void SetShowSuggestionChip(base::PassKey<PageActionController>) = 0;
   virtual void SetTabActive(base::PassKey<PageActionController>,
                             bool is_active) = 0;
   virtual void SetHasPinnedIcon(base::PassKey<PageActionController>,
@@ -69,6 +70,7 @@ class PageActionModel : public PageActionModelInterface {
                                const actions::ActionItem* action_item) override;
   void SetShowRequested(base::PassKey<PageActionController>,
                         bool requested) override;
+  void SetShowSuggestionChip(base::PassKey<PageActionController>) override;
   void SetTabActive(base::PassKey<PageActionController>,
                     bool is_active) override;
   void SetHasPinnedIcon(base::PassKey<PageActionController>,
