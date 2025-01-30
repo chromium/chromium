@@ -36,8 +36,8 @@ std::set<int> TestSizesToGenerate() {
       icon_size::k48,
       icon_size::k128,
   };
-  return std::set<int>(kIconSizesToGenerate,
-                       kIconSizesToGenerate + std::size(kIconSizesToGenerate));
+  return std::set<int>(std::begin(kIconSizesToGenerate),
+                       std::end(kIconSizesToGenerate));
 }
 
 void ValidateAllIconsWithURLsArePresent(

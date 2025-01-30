@@ -109,8 +109,7 @@ const CpuUarchTableEntry kCpuUarchTable[] = {
     // clang-format on
 };
 
-const CpuUarchTableEntry* kCpuUarchTableEnd =
-    kCpuUarchTable + std::size(kCpuUarchTable);
+const CpuUarchTableEntry* kCpuUarchTableEnd = std::end(kCpuUarchTable);
 
 bool CpuUarchTableCmp(const CpuUarchTableEntry& a,
                       const CpuUarchTableEntry& b) {
