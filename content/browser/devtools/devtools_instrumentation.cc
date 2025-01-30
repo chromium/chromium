@@ -2530,6 +2530,14 @@ void DidChangeFrameLoadingState(FrameTreeNode& ftn) {
                    ftn);
 }
 
+void DidStartNavigating(FrameTreeNode& ftn,
+                        const GURL& url,
+                        const base::UnguessableToken& loader_id,
+                        const blink::mojom::NavigationType& navigation_type) {
+  DispatchToAgents(&ftn, &protocol::PageHandler::DidStartNavigating, ftn, url,
+                   loader_id, navigation_type);
+}
+
 }  // namespace devtools_instrumentation
 
 }  // namespace content

@@ -110,7 +110,7 @@
                     "bringToFront", "setDownloadBehavior", "getAppManifest", "crash", "close", "setWebLifecycleState", "captureSnapshot", "getInstallabilityErrors", "getManifestIcons", "setBypassCSP", "getAppId", "addCompilationCache", "setPrerenderingAllowed"],
                 "include_events": ["frameDetached", "colorPicked", "interstitialShown", "interstitialHidden", "javascriptDialogOpening",
                      "javascriptDialogClosed", "downloadWillBegin", "downloadProgress", "screencastVisibilityChanged", "screencastFrame",
-                     "backForwardCacheNotUsed", "frameStartedLoading", "frameStoppedLoading"],
+                     "backForwardCacheNotUsed", "frameStartedLoading", "frameStoppedLoading", "frameStartedNavigating"],
                 "async": ["captureScreenshot", "navigate", "getAppManifest", "reload", "captureSnapshot", "getInstallabilityErrors", "getManifestIcons", "getAppId"]
             },
             {

@@ -98,6 +98,10 @@ class PageHandler : public DevToolsDomainHandler,
   void DidCloseJavaScriptDialog(bool success, const std::u16string& user_input);
   void NavigationReset(NavigationRequest* navigation_request);
   void DownloadWillBegin(FrameTreeNode* ftn, download::DownloadItem* item);
+  void DidStartNavigating(FrameTreeNode& ftn,
+                          const GURL& url,
+                          const base::UnguessableToken& loader_id,
+                          const blink::mojom::NavigationType& navigation_type);
 
   void OnFrameDetached(const base::UnguessableToken& frame_id);
   void DidChangeFrameLoadingState(const FrameTreeNode& ftn);

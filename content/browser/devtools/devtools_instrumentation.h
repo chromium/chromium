@@ -488,6 +488,10 @@ void OnFencedFrameReportResponseReceived(
     scoped_refptr<net::HttpResponseHeaders> headers);
 
 void DidChangeFrameLoadingState(FrameTreeNode& ftn);
+void DidStartNavigating(FrameTreeNode& ftn,
+                        const GURL& url,
+                        const base::UnguessableToken& loader_id,
+                        const blink::mojom::NavigationType& navigation_type);
 
 // Returns true if devtools wants to override the cookie settings.
 bool ApplyNetworkCookieControlsOverrides(

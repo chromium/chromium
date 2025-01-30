@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<script>
+  window.addEventListener('beforeunload', (event) => {
+    {
+      event.preventDefault();
+      event.returnValue = 'Are you sure?';
+    }
+  }, false)
+</script>
+<a href='http://devtools.test:8000/inspector-protocol/resources/empty.html'>link</a>

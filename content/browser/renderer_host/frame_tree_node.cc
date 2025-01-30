@@ -624,6 +624,12 @@ void FrameTreeNode::TakeNavigationRequest(
     was_discarded_ = false;
   }
   render_manager()->DidCreateNavigationRequest(navigation_request_.get());
+
+  devtools_instrumentation::DidStartNavigating(
+      *this, navigation_request_->common_params().url,
+      navigation_request_->devtools_navigation_token(),
+      navigation_request_->common_params().navigation_type);
+
   DidStartLoading(previous_frame_tree_loading_state);
 }
 
