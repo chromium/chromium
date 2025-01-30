@@ -5,7 +5,6 @@
 
 import contextlib
 import datetime
-import json
 import pathlib
 import unittest
 import os
@@ -29,11 +28,11 @@ class RegexTest(unittest.TestCase):
                      server.BUILD_ID_RE)
 
 
-def sendMessage(message_dict):
+def sendMessage(message):
   with contextlib.closing(socket.socket(socket.AF_UNIX)) as sock:
     sock.settimeout(1)
     sock.connect(server_utils.SOCKET_ADDRESS)
-    server_utils.SendMessage(sock, json.dumps(message_dict).encode('utf-8'))
+    server_utils.SendMessage(sock, message)
 
 
 def pollServer():
@@ -189,6 +188,13 @@ class ServerStartedTest(unittest.TestCase):
 
   def testWaitForBuildServerCall(self):
     callServer(['--wait-for-build', self.id()])
+    self.assertEqual(self.getTtyContents(), '')
+
+  def testWaitForIdleServerCall(self):
+    self.sendTask(['true'])
+    self.waitForTasksDone()
+    proc_result = callServer(['--wait-for-idle'])
+    self.assertIn('All', proc_result.stdout)
     self.assertEqual(self.getTtyContents(), '')
 
   def testCancelBuildServerCall(self):
