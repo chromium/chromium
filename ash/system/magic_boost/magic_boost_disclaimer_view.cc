@@ -14,6 +14,7 @@
 #include "ash/style/typography.h"
 #include "ash/system/magic_boost/magic_boost_constants.h"
 #include "base/functional/bind.h"
+#include "build/branding_buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -35,6 +36,10 @@
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chromeos/ash/resources/internal/strings/grit/ash_internal_strings.h"
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 namespace ash {
 
@@ -91,8 +96,16 @@ views::Builder<views::StyledLabel> GetTextBodyBuilder(
 }
 
 views::Builder<views::StyledLabel> GetParagraphOneBuilder() {
-  return GetTextBodyBuilder(l10n_util::GetStringUTF16(
-                                IDS_ASH_MAGIC_BOOST_DISCLAMIER_PARAGRAPH_ONE))
+  return GetTextBodyBuilder(
+             l10n_util::GetStringUTF16(
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+                 ash::features::IsLobsterEnabled()
+                     ? IDS_ASH_MAGIC_BOOST_WITH_LOBSTER_DISCLAIMER_PARAGRAPH_ONE
+                     : IDS_ASH_MAGIC_BOOST_DISCLAMIER_PARAGRAPH_ONE)
+#else
+                 IDS_ASH_MAGIC_BOOST_DISCLAMIER_PARAGRAPH_ONE)
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+                 )
       .SetID(magic_boost::ViewId::DisclaimerViewParagraphOne);
 }
 
@@ -102,7 +115,15 @@ views::Builder<views::StyledLabel> GetParagraphTwoBuilder(
   const std::u16string link_text =
       l10n_util::GetStringUTF16(IDS_ASH_MAGIC_BOOST_DISCLAIMER_TERMS_LINK_TEXT);
   const std::u16string text = l10n_util::GetStringFUTF16(
-      IDS_ASH_MAGIC_BOOST_DISCLAIMER_PARAGRAPH_TWO, {link_text}, &offsets);
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      ash::features::IsLobsterEnabled()
+          ? IDS_ASH_MAGIC_BOOST_WITH_LOBSTER_DISCLAIMER_PARAGRAPH_TWO
+          : IDS_ASH_MAGIC_BOOST_DISCLAIMER_PARAGRAPH_TWO
+#else
+      IDS_ASH_MAGIC_BOOST_DISCLAIMER_PARAGRAPH_TWO
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      ,
+      {link_text}, &offsets);
 
   return views::Builder<views::StyledLabel>()
       .SetText(text)
@@ -119,8 +140,16 @@ views::Builder<views::StyledLabel> GetParagraphTwoBuilder(
 }
 
 views::Builder<views::StyledLabel> GetParagraphThreeBuilder() {
-  return GetTextBodyBuilder(l10n_util::GetStringUTF16(
-                                IDS_ASH_MAGIC_BOOST_DISCLAIMER_PARAGRAPH_THREE))
+  return GetTextBodyBuilder(
+             l10n_util::GetStringUTF16(
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+                 ash::features::IsLobsterEnabled()
+                     ? IDS_ASH_MAGIC_BOOST_WITH_LOBSTER_DISCLAIMER_PARAGRAPH_THREE
+                     : IDS_ASH_MAGIC_BOOST_DISCLAIMER_PARAGRAPH_THREE
+#else
+                 IDS_ASH_MAGIC_BOOST_DISCLAIMER_PARAGRAPH_THREE
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+                 ))
       .SetID(magic_boost::ViewId::DisclaimerViewParagraphThree);
 }
 
@@ -130,7 +159,15 @@ views::Builder<views::StyledLabel> GetParagraphFourBuilder(
   const std::u16string link_text = l10n_util::GetStringUTF16(
       IDS_ASH_MAGIC_BOOST_DISCLAIMER_LEARN_MORE_LINK_TEXT);
   const std::u16string text = l10n_util::GetStringFUTF16(
-      IDS_ASH_MAGIC_BOOST_DISCLAIMER_PARAGRAPH_FOUR, {link_text}, &offsets);
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      ash::features::IsLobsterEnabled()
+          ? IDS_ASH_MAGIC_BOOST_WITH_LOBSTER_DISCLAIMER_PARAGRAPH_FOUR
+          : IDS_ASH_MAGIC_BOOST_DISCLAIMER_PARAGRAPH_FOUR
+#else
+      IDS_ASH_MAGIC_BOOST_DISCLAIMER_PARAGRAPH_FOUR
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      ,
+      {link_text}, &offsets);
 
   return views::Builder<views::StyledLabel>()
       .SetText(text)
