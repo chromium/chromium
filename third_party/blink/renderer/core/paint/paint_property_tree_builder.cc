@@ -1212,6 +1212,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateIndividualTransform(
           CompositorElementIdNamespace::kPrimaryTransform;
 
       const ComputedStyle& style = object_.StyleRef();
+      bool new_rendering_context = false;
       if (object_.IsBox()) {
         auto& box = To<LayoutBox>(object_);
         // Each individual fragment should have its own transform origin, based
@@ -1238,13 +1239,13 @@ void FragmentPaintPropertyTreeBuilder::UpdateIndividualTransform(
         state.transform_and_origin =
             TransformAndOriginState(box, reference_box, compute_matrix);
 
-        // TODO(trchen): transform-style should only be respected if a
-        // PaintLayer is created. If a node with transform-style: preserve-3d
-        // does not exist in an existing rendering context, it establishes a
-        // new one.
+        // If a node with transform-style: preserve-3d does not exist in an
+        // existing rendering context, it establishes a new one.
         state.rendering_context_id = context_.rendering_context_id;
-        if (handling_transform_property && style.Preserves3D() &&
-            !state.rendering_context_id) {
+        new_rendering_context = handling_transform_property &&
+                                style.Preserves3D() &&
+                                !state.rendering_context_id;
+        if (new_rendering_context) {
           state.rendering_context_id = WTF::GetHash(&object_);
         }
 
@@ -1271,14 +1272,17 @@ void FragmentPaintPropertyTreeBuilder::UpdateIndividualTransform(
         if (object_.HasHiddenBackface()) {
           state.backface_visibility =
               TransformPaintPropertyNode::BackfaceVisibility::kHidden;
-        } else if (!context_.can_inherit_backface_visibility ||
+        } else if (new_rendering_context ||
+                   !context_.can_inherit_backface_visibility ||
                    style.Has3DTransformOperation()) {
-          // We want to set backface-visibility back to visible, if the
-          // parent doesn't allow this element to inherit backface visibility
-          // (e.g. if the parent preserves 3d), or this element has a
-          // syntactically-3D transform in *any* of the transform properties
-          // (not just 'transform'). This means that backface-visibility on
-          // an ancestor element no longer affects this element.
+          // We want to set backface-visibility back to visible, if
+          // - this element establishes a new 3d rendering context,
+          // - the parent doesn't allow this element to inherit backface
+          //   visibility (e.g. if the parent preserves 3d), or
+          // - this element has a syntactically-3D transform in *any* of the
+          //   transform properties (not just 'transform').
+          // This means that backface-visibility on an ancestor element no
+          // longer affects this element.
           state.backface_visibility =
               TransformPaintPropertyNode::BackfaceVisibility::kVisible;
         } else {
