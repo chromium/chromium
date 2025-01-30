@@ -337,9 +337,7 @@ void SearchBookmarksForText(NSString* search_text) {
 }
 
 // Tests long presses on managed bookmark items in search results.
-// TODO(crbug.com/40684788): Long press unexpectedly triggers a tap (only in
-// earl grey tests).
-- (void)DISABLED_testLongPressOnSearchResults {
+- (void)testLongPressOnSearchResults {
   [BookmarkEarlGreyUI openBookmarks];
   SearchBookmarksForText(@"URL\n");
 
