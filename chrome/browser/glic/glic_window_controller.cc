@@ -50,6 +50,9 @@ constexpr static int kInitialDetachedYPosition = 48;
 
 constexpr char kHistogramGlicPanelPresentationTime[] =
     "Glic.PanelPresentationTime";
+constexpr static int kCornerRadius = 12;
+constexpr static SkColor kDefaultBackgroundColor =
+    SkColorSetARGB(255, 27, 28, 29);
 
 mojom::PanelState CreatePanelState(bool widget_visible,
                                    Browser* attached_browser) {
@@ -391,8 +394,8 @@ void GlicWindowController::OpenAttached(Browser* browser) {
 
   // TODO(crbug.com/389982576): Match the background color of the widget with
   // the web client background.
-  GetGlicView()->SetBackground(
-      views::CreateRoundedRectBackground(SK_ColorBLACK, 12));
+  GetGlicView()->SetBackground(views::CreateRoundedRectBackground(
+      kDefaultBackgroundColor, kCornerRadius));
 
   // If there's a browser, then animate.
   AnimateBounds(target_bounds, base::Milliseconds(kAnimationDurationMs),
