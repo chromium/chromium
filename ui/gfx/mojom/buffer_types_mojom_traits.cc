@@ -5,12 +5,7 @@
 #include "ui/gfx/mojom/buffer_types_mojom_traits.h"
 
 #include "build/build_config.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/scoped_hardware_buffer_handle.h"
-#include "mojo/public/cpp/system/message_pipe.h"
-#include "mojo/public/cpp/system/scope_to_message_pipe.h"
-#endif
+#include "ui/gfx/mojom/native_handle_types.mojom-shared.h"
 
 namespace mojo {
 
@@ -63,23 +58,9 @@ gfx::mojom::GpuMemoryBufferPlatformHandlePtr StructTraits<
 #endif
     case gfx::ANDROID_HARDWARE_BUFFER: {
 #if BUILDFLAG(IS_ANDROID)
-      // We must keep a ref to the AHardwareBuffer alive until the receiver has
-      // acquired its own reference. We do this by sending a message pipe handle
-      // along with the buffer. When the receiver deserializes (or even if they
-      // die without ever reading the message) their end of the pipe will be
-      // closed. We will eventually detect this and release the AHB reference.
-      mojo::MessagePipe tracking_pipe;
-      auto wrapped_handle = gfx::mojom::AHardwareBufferHandle::New(
-          mojo::PlatformHandle(
-              handle.android_hardware_buffer.SerializeAsFileDescriptor()),
-          std::move(tracking_pipe.handle0));
-
-      // Pass ownership of the input handle to our tracking pipe to keep the AHB
-      // alive until it's deserialized.
-      mojo::ScopeToMessagePipe(std::move(handle.android_hardware_buffer),
-                               std::move(tracking_pipe.handle1));
       return gfx::mojom::GpuMemoryBufferPlatformHandle::
-          NewAndroidHardwareBufferHandle(std::move(wrapped_handle));
+          NewAndroidHardwareBufferHandle(
+              std::move(handle.android_hardware_buffer));
 #else
       break;
 #endif
@@ -150,17 +131,9 @@ bool StructTraits<gfx::mojom::GpuMemoryBufferHandleDataView,
     case gfx::mojom::GpuMemoryBufferPlatformHandleDataView::Tag::
         kAndroidHardwareBufferHandle: {
       out->type = gfx::ANDROID_HARDWARE_BUFFER;
-      gfx::mojom::AHardwareBufferHandlePtr buffer_handle =
+      out->android_hardware_buffer =
           std::move(platform_handle->get_android_hardware_buffer_handle());
-      if (!buffer_handle)
-        return false;
-
-      base::ScopedFD scoped_fd = buffer_handle->buffer_handle.TakeFD();
-      if (!scoped_fd.is_valid())
-        return false;
-      out->android_hardware_buffer = base::android::ScopedHardwareBufferHandle::
-          DeserializeFromFileDescriptor(std::move(scoped_fd));
-      return out->android_hardware_buffer.is_valid();
+      return true;
     }
 #endif
   }
