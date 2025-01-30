@@ -124,8 +124,7 @@ class ZeroCopyRasterBufferImpl : public RasterBuffer {
     RasterBufferProvider::PlaybackToMemory(
         mapping->GetMemoryForPlane(0).data(), format_, resource_size_,
         mapping->Stride(0), raster_source, raster_full_rect, raster_full_rect,
-        transform, resource_color_space_,
-        /*gpu_compositing=*/true, playback_settings);
+        transform, resource_color_space_, playback_settings);
   }
 
   bool SupportsBackgroundThreadPriority() const override { return true; }
