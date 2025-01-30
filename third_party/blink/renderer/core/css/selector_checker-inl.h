@@ -200,10 +200,28 @@ bool EasySelectorChecker::AttributeMatches(const Element& element,
                                            const QualifiedName& attr,
                                            const AtomicString& value,
                                            bool case_insensitive) {
+#if !DCHECK_IS_ON()
+  // In non-debug builds, we test the Bloom filter here and exit early
+  // if the attribute could not exist on the element. For non-debug builds,
+  // we go through the entire normal operation but verify that the Bloom
+  // filter would not erroneously reject a match.
+  if (!element.CouldHaveAttribute(attr)) {
+    return false;
+  }
+#endif
+
   element.SynchronizeAttribute(attr.LocalName());
   AttributeCollection attributes = element.AttributesWithoutUpdate();
   for (const auto& attribute_item : attributes) {
     if (AttributeItemHasName(attribute_item, element, attr)) {
+#if DCHECK_IS_ON()
+      // NOTE: Even if the value doesn't match, we want to check that the
+      // attribute name was properly found.
+      DCHECK(element.CouldHaveAttribute(attr))
+          << element << " should have contained attribute " << attr
+          << ", Bloom bits on element are "
+          << element.AttributeBloomFilterForDebug();
+#endif
       return attribute_item.Value() == value ||
              (case_insensitive &&
               EqualIgnoringASCIICase(attribute_item.Value(), value));
