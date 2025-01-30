@@ -53,7 +53,9 @@ ModalDialogWrapper::ModalDialogWrapper(
       env, reinterpret_cast<uintptr_t>(this), window_android_->GetJavaObject());
 }
 
-ModalDialogWrapper::~ModalDialogWrapper() = default;
+ModalDialogWrapper::~ModalDialogWrapper() {
+  dialog_model_->OnDialogDestroying(DialogModelHost::GetPassKey());
+}
 
 void ModalDialogWrapper::BuildPropertyModel() {
   JNIEnv* env = base::android::AttachCurrentThread();
