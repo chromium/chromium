@@ -316,8 +316,11 @@ void IpProtectionProxyConfigDirectFetcher::Retriever::
       network::SimpleURLLoader::Create(std::move(resource_request),
                                        kGetProxyConfigTrafficAnnotation);
   // Retry on network changes, as sometimes this occurs during browser startup.
+  // A network change during DNS resolution results in a DNS error rather than
+  // a network change error, so retry in those cases as well.
   url_loader->SetRetryOptions(
-      2, network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE);
+      2, network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE |
+             network::SimpleURLLoader::RETRY_ON_NAME_NOT_RESOLVED);
 
   url_loader->AttachStringForUpload(body, kProtobufContentType);
   auto* url_loader_ptr = url_loader.get();
