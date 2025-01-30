@@ -28,6 +28,9 @@ constexpr static float kBorderWidth = 5.0f;
 // The amount of time for the opacity to go from 0 to 1.
 constexpr static base::TimeDelta kOpacityRampUpDuration =
     base::Milliseconds(500);
+// The amount of time for the opacity to go from 1 to 0.
+constexpr static base::TimeDelta kOpacityRampDownDuration =
+    base::Milliseconds(200);
 // The amount of time for the border empasis to go from 0 the max, and from max
 // back to 0 (symmetical).
 constexpr static base::TimeDelta kEmphasisRampDuration =
@@ -138,8 +141,9 @@ class BorderView::BorderViewUpdater {
         break;
       }
       case UpdateBorderReason::kContextAccessIndicatorOff: {
-        // TODO(baranerf): Implement this path by ramping the opacity down.
-        border_view_->CancelAnimation();
+        if (border_view_->compositor_) {
+          border_view_->StartRampingDown();
+        }
         break;
       }
       case UpdateBorderReason::kFocusedTabChanged_NoFocusChange: {
@@ -162,8 +166,9 @@ class BorderView::BorderViewUpdater {
         break;
       }
       case UpdateBorderReason::kFocusedTabChanged_LostFocus: {
-        // TODO(baranerf): Implement this path by ramping the opacity down.
-        border_view_->CancelAnimation();
+        if (border_view_->compositor_) {
+          border_view_->StartRampingDown();
+        }
         break;
       }
     }
@@ -325,28 +330,41 @@ void BorderView::OnAnimationStep(base::TimeTicks timestamp) {
   if (first_emphasis_frame_.is_null()) {
     first_emphasis_frame_ = timestamp;
   }
+  if (record_first_ramp_down_frame_) {
+    first_ramp_down_frame_ = timestamp;
+    record_first_ramp_down_frame_ = false;
+  }
 
   base::TimeDelta emphasis_since_first_frame =
       timestamp - first_emphasis_frame_;
   emphasis_ = GetEmphasis(emphasis_since_first_frame);
   base::TimeDelta opacity_since_first_frame = timestamp - first_frame_time_;
-  opacity_ = GetOpacity(opacity_since_first_frame);
-
-  bool emphasis_done =
-      emphasis_ == 0.f && !emphasis_since_first_frame.is_zero();
-  bool opacity_done = opacity_ == 1.f && !opacity_since_first_frame.is_zero();
+  opacity_ = GetOpacity(timestamp);
 
   // Don't animate if:
-  // - `skip_animation_` is explicitly toggled.
-  // - The animations have exhausted.
+  // - `skip_animation_` is explicitly toggled, or
+  // - The animations have exhausted and we haven't started ramping down.
   // We shouldn't be an observer for more than 60 seconds
   // (CompositorAnimationObserver::NotifyFailure()).
-  bool remove_animation_observer =
-      skip_animation_ || (emphasis_done && opacity_done);
-  if (remove_animation_observer) {
+  bool emphasis_done =
+      emphasis_ == 0.f && !emphasis_since_first_frame.is_zero();
+  bool opacity_ramp_up_done =
+      opacity_ == 1.f && !opacity_since_first_frame.is_zero();
+  bool show_steady_state =
+      skip_animation_ || (emphasis_done && opacity_ramp_up_done &&
+                          first_ramp_down_frame_.is_null());
+
+  if (show_steady_state) {
     // If skipping the animation the class does not need to be an animation
     // observer.
     compositor_->RemoveAnimationObserver(this);
+    return;
+  }
+
+  bool opacity_ramp_down_done =
+      opacity_ == 0.f && !first_ramp_down_frame_.is_null();
+  if (opacity_ramp_down_done) {
+    CancelAnimation();
     return;
   }
 
@@ -396,6 +414,7 @@ void BorderView::CancelAnimation() {
   compositor_ = nullptr;
   first_frame_time_ = base::TimeTicks{};
   first_emphasis_frame_ = base::TimeTicks{};
+  first_ramp_down_frame_ = base::TimeTicks{};
   opacity_ = 0.f;
   emphasis_ = 0.f;
 
@@ -430,15 +449,47 @@ void BorderView::ResetEmphasisAndReplay() {
   SchedulePaint();
 }
 
-float BorderView::GetOpacity(base::TimeDelta delta) const {
+float BorderView::GetOpacity(base::TimeTicks timestamp) const {
   if (skip_animation_) {
     return 1.0f;
   }
-  if (delta < kOpacityRampUpDuration) {
-    return static_cast<float>(delta.InMillisecondsF() /
-                              kOpacityRampUpDuration.InMillisecondsF());
+
+  if (!first_ramp_down_frame_.is_null()) {
+    // The ramp up opacity could be any value between 0-1 during the ramp up
+    // time. Thus, the ramping down opacity must be deducted from the value of
+    // ramp up opacity at the time of `first_ramp_down_frame_`.
+    base::TimeDelta delta = first_ramp_down_frame_ - first_frame_time_;
+    float ramp_up_opacity =
+        std::clamp(static_cast<float>(delta.InMillisecondsF() /
+                                      kOpacityRampUpDuration.InMillisecondsF()),
+                   0.0f, 1.0f);
+
+    base::TimeDelta time_since_first_ramp_down_frame =
+        timestamp - first_ramp_down_frame_;
+    float ramp_down_opacity =
+        static_cast<float>((time_since_first_ramp_down_frame.InMillisecondsF() /
+                            kOpacityRampDownDuration.InMillisecondsF()) *
+                           ramp_up_opacity);
+
+    return std::clamp(ramp_up_opacity - ramp_down_opacity, 0.0f, 1.0f);
+  } else {
+    base::TimeDelta time_since_first_frame = timestamp - first_frame_time_;
+    return std::clamp(
+        static_cast<float>(time_since_first_frame.InMillisecondsF() /
+                           kOpacityRampUpDuration.InMillisecondsF()),
+        0.0f, 1.0f);
   }
-  return 1.0f;
+}
+
+void BorderView::StartRampingDown() {
+  CHECK(compositor_);
+
+  // From now on the opacity will be decreased until it reaches 0.
+  record_first_ramp_down_frame_ = true;
+
+  if (!compositor_->HasAnimationObserver(this)) {
+    compositor_->AddAnimationObserver(this);
+  }
 }
 
 BEGIN_METADATA(BorderView)

@@ -67,7 +67,10 @@ class BorderView : public views::View,
   void ResetEmphasisAndReplay();
 
   // A value from 0 to 1 indicating the opacity of the border.
-  float GetOpacity(base::TimeDelta delta) const;
+  float GetOpacity(base::TimeTicks timestamp) const;
+
+  // Sets the necessary bits to start ramping down the opacity once it's called.
+  void StartRampingDown();
 
   // A utility class that subscribe to `GlicKeyedService` for various browser UI
   // status change.
@@ -85,6 +88,9 @@ class BorderView : public views::View,
 
   base::TimeTicks first_frame_time_;
   base::TimeTicks first_emphasis_frame_;
+
+  bool record_first_ramp_down_frame_ = false;
+  base::TimeTicks first_ramp_down_frame_;
 
   raw_ptr<Tester> tester_ = nullptr;
 };
