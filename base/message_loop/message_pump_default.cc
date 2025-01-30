@@ -70,7 +70,7 @@ void MessagePumpDefault::Run(Delegate* delegate) {
         event_.Wait();
       }
     } else {
-      TRACE_EVENT("base", "TimeWait", "delay_ms",
+      TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("base"), "TimeWait", "delay_ms",
                   next_work_info.remaining_delay().InMilliseconds());
       // Not handling shorter sleeps to keep the code as simple as possible.
       if (ShouldBusyLoop() &&
@@ -140,8 +140,8 @@ bool MessagePumpDefault::ShouldBusyLoop() const {
 bool MessagePumpDefault::BusyWaitOnEvent(base::TimeTicks before) {
   bool signaled = false;
   {
-    TRACE_EVENT("base", "BusyWait", "last_wait_time_ms",
-                last_wait_time_.InMillisecondsF(),
+    TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("base"), "BusyWait",
+                "last_wait_time_ms", last_wait_time_.InMillisecondsF(),
                 "wait_time_exponential_moving_average_ms",
                 wait_time_exponential_moving_average_.InMillisecondsF());
     do {
