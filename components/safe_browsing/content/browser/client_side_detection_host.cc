@@ -942,6 +942,10 @@ void ClientSideDetectionHost::MaybeSendClientPhishingRequest(
   if (can_extract_visual_features_result !=
       visual_utils::CanExtractVisualFeaturesResult::kCanExtractVisualFeatures) {
     verdict->clear_visual_features();
+  } else {
+    base::UmaHistogramBoolean("SBClientPhishing.HasVisualFeaturesImage",
+                              verdict->has_visual_features() &&
+                                  verdict->visual_features().has_image());
   }
 
   if (IsEnhancedProtectionEnabled(*delegate_->GetPrefs())) {
