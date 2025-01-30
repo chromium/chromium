@@ -25,10 +25,13 @@ window.addEventListener('load', () => {
       browserProxy.handler.closePanel();
     });
   }
-  document.getElementById('retry')!.addEventListener('click', () => {
-    appController!.updateOnlineState(navigator.onLine);
-  });
+  document.getElementById('retry')!.addEventListener(
+      'click',
+      () => {
+          // For now, do nothing. The button is inactive. The dialog will
+          // disappear on its own if the network comes back online.
+      });
   document.getElementById('reload')?.addEventListener('click', () => {
-    appController.beginLoadingSequence(30000);
+    appController.reload();
   });
 });
