@@ -25,6 +25,7 @@ mojo_ts_files = [
   "mojo/public/mojom/base/text_direction.mojom-webui.ts",
   "mojo/public/mojom/base/time.mojom-converters.ts",
   "mojo/public/mojom/base/time.mojom-webui.ts",
+  "mojo/public/mojom/base/time_converters.ts",
   "mojo/public/mojom/base/token.mojom-webui.ts",
   "mojo/public/mojom/base/unguessable_token.mojom-webui.ts",
   "mojo/public/mojom/base/uuid.mojom-webui.ts",
@@ -40,8 +41,6 @@ mojo_ts_files = [
   "url/mojom/origin.mojom-webui.ts",
   "url/mojom/url.mojom-webui.ts",
 ]
-
-mojo_converters = [ "mojo/public/mojom/base/time_converters.ts" ]
 
 if (is_ios) {
   mojo_ts_files += [ "ui/base/mojom/ui_base_types.mojom-webui.ts" ]
@@ -86,6 +85,7 @@ preprocess_if_expr("copy_mojo_ts") {
   out_folder = "$target_gen_dir/preprocessed"
   in_files = mojo_ts_files
   deps = [
+    "//mojo/public/mojom/base:base_ts__copy_converters",
     "//mojo/public/mojom/base:base_ts__generator",
     "//mojo/public/mojom/base:protobuf_support_ts__generator",
     "//skia/public/mojom:mojom_ts__generator",
@@ -121,26 +121,17 @@ preprocess_if_expr("copy_mojo_ts") {
   }
 }
 
-preprocess_if_expr("copy_converters") {
-  visibility = [ ":build_ts" ]
-
-  in_folder = "//"
-  out_folder = "$target_gen_dir/preprocessed"
-  in_files = mojo_converters
-}
-
 ts_library("build_ts") {
   root_dir = "$target_gen_dir/preprocessed"
   out_dir = tsc_folder
   composite = true
 
-  in_files = mojo_ts_files + mojo_converters
+  in_files = mojo_ts_files
 
   definitions = [ "$tsc_folder/mojo/public/js/bindings.d.ts" ]
 
   extra_deps = [
     ":copy_bindings_dts",
-    ":copy_converters",
     ":copy_mojo_ts",
   ]
 

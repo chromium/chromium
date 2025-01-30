@@ -39,7 +39,7 @@ import type {
 {% endfor %}
 
 {% for typemap in typemapped_structs.values() -%}
-import { {{typemap.converter}} } from './{{typemap.converter_import}}';
+import { {{typemap.converter}} } from './{{typemap|converter_import}}';
 {% endfor -%}
 
 {#--- Constants #}

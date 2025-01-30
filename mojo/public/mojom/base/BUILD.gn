@@ -650,12 +650,12 @@ mojom_component("base") {
 
   ts_typemaps = [
     {
+      source = "time_converters.ts"
       types = [
         {
+          converter = "JsTimeConverter"
           mojom = "mojo_base.mojom.JSTime"
           ts = "Date"
-          converter = "JsTimeConverter"
-          import = "time_converters.js"
         },
       ]
     },
