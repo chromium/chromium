@@ -228,8 +228,8 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
     return injected_author_style_sheets_;
   }
 
-  CSSStyleSheet* InspectorStyleSheet() const {
-    return inspector_style_sheet_.Get();
+  const HeapVector<Member<CSSStyleSheet>>& InspectorStyleSheets() const {
+    return inspector_style_sheet_list_;
   }
 
   void AddTextTrack(TextTrack*);
@@ -285,7 +285,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
                    WebCssOrigin = WebCssOrigin::kAuthor);
   void RemoveInjectedSheet(const StyleSheetKey&,
                            WebCssOrigin = WebCssOrigin::kAuthor);
-  CSSStyleSheet& EnsureInspectorStyleSheet();
+  CSSStyleSheet& CreateInspectorStyleSheet();
   RuleSet* WatchedSelectorsRuleSet() {
     DCHECK(global_rule_set_);
     return global_rule_set_->WatchedSelectorsRuleSet();
@@ -986,7 +986,8 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   // continue.
   int pending_parser_blocking_stylesheets_{0};
 
-  Member<CSSStyleSheet> inspector_style_sheet_;
+  // Stylesheets inserted by DevTools.
+  HeapVector<Member<CSSStyleSheet>> inspector_style_sheet_list_;
 
   Member<DocumentStyleSheetCollection> document_style_sheet_collection_;
 
