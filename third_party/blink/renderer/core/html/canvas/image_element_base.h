@@ -27,7 +27,7 @@ class CORE_EXPORT ImageElementBase : public CanvasImageSource,
   // base for both elements.
   static Image::ImageDecodingMode ParseImageDecodingMode(const AtomicString&);
 
-  gfx::Size BitmapSourceSize() const override;
+  ImageBitmapSourceStatus CheckUsability() const override;
   ScriptPromise<ImageBitmap> CreateImageBitmap(ScriptState*,
                                                std::optional<gfx::Rect>,
                                                const ImageBitmapOptions*,

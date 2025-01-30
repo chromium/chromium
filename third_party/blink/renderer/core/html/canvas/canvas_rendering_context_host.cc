@@ -377,6 +377,16 @@ bool CanvasRenderingContextHost::IsOffscreenCanvas() const {
   return host_type_ == HostType::kOffscreenCanvasHost;
 }
 
+ImageBitmapSourceStatus CanvasRenderingContextHost::CheckUsability() const {
+  const gfx::Size size = Size();
+  if (size.IsEmpty()) {
+    return base::unexpected(size.width() == 0
+                                ? ImageBitmapSourceError::kZeroWidth
+                                : ImageBitmapSourceError::kZeroHeight);
+  }
+  return base::ok();
+}
+
 IdentifiableToken CanvasRenderingContextHost::IdentifiabilityInputDigest(
     const CanvasRenderingContext* const context) const {
   const uint64_t context_digest =

@@ -123,6 +123,7 @@ class CORE_EXPORT Blob : public ScriptWrappable,
   mojo::PendingRemote<mojom::blink::Blob> AsMojoBlob() const;
 
   // ImageBitmapSource implementation
+  ImageBitmapSourceStatus CheckUsability() const override { return base::ok(); }
   bool IsBlob() const override { return true; }
 
  protected:

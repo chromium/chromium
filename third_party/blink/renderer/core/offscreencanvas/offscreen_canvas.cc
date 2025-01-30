@@ -285,10 +285,6 @@ scoped_refptr<Image> OffscreenCanvas::GetSourceImageForCanvas(
       reason, std::move(image), alpha_disposition);
 }
 
-gfx::Size OffscreenCanvas::BitmapSourceSize() const {
-  return Size();
-}
-
 ScriptPromise<ImageBitmap> OffscreenCanvas::CreateImageBitmap(
     ScriptState* script_state,
     std::optional<gfx::Rect> crop_rect,

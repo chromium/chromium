@@ -453,10 +453,9 @@ ImageBitmap::ImageBitmap(const SkPixmap& pixmap,
 ImageBitmap::ImageBitmap(ImageData* data,
                          std::optional<gfx::Rect> crop_rect,
                          const ImageBitmapOptions* options) {
-  const ParsedOptions parsed_options =
-      ParseOptions(options, crop_rect, data->BitmapSourceSize(),
-                   ImageOrientationEnum::kOriginTopLeft,
-                   /*source_is_unpremul=*/true);
+  const ParsedOptions parsed_options = ParseOptions(
+      options, crop_rect, data->Size(), ImageOrientationEnum::kOriginTopLeft,
+      /*source_is_unpremul=*/true);
   if (DstBufferSizeHasOverflow(parsed_options))
     return;
 
@@ -752,6 +751,13 @@ gfx::Size ImageBitmap::Size() const {
   DCHECK_GT(image_->width(), 0);
   DCHECK_GT(image_->height(), 0);
   return image_->PreferredDisplaySize();
+}
+
+ImageBitmapSourceStatus ImageBitmap::CheckUsability() const {
+  if (is_neutered_) {
+    return base::unexpected(ImageBitmapSourceError::kInvalid);
+  }
+  return base::ok();
 }
 
 ScriptPromise<ImageBitmap> ImageBitmap::CreateImageBitmap(

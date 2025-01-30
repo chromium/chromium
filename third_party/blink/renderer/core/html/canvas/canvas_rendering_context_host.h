@@ -33,6 +33,7 @@ class StaticBitmapImage;
 
 class CORE_EXPORT CanvasRenderingContextHost : public CanvasResourceHost,
                                                public CanvasImageSource,
+                                               public ImageBitmapSource,
                                                public GarbageCollectedMixin {
  public:
   enum class HostType {
@@ -113,6 +114,9 @@ class CORE_EXPORT CanvasRenderingContextHost : public CanvasResourceHost,
 
   // blink::CanvasImageSource
   bool IsOffscreenCanvas() const override;
+
+  // ImageBitmapSource implementation
+  ImageBitmapSourceStatus CheckUsability() const override;
 
   // This method attempts to ensure that the canvas' resource exists on the GPU.
   // A HTMLCanvasElement can downgrade itself from GPU to CPU when readback

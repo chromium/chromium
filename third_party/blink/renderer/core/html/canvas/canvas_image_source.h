@@ -42,7 +42,7 @@ class Image;
 enum SourceImageStatus {
   kNormalSourceImageStatus,
   kUndecodableSourceImageStatus,     // Image element with a 'broken' image
-  kZeroSizeCanvasSourceImageStatus,  // Source is a canvas with width or heigh
+  kZeroSizeCanvasSourceImageStatus,  // Source is a canvas with width or height
                                      // of zero
   kZeroSizeImageSourceStatus,    // Image element with width or height of zero
   kIncompleteSourceImageStatus,  // Image element with no source media
