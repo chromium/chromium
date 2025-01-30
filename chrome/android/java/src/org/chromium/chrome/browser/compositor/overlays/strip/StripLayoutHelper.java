@@ -1849,29 +1849,26 @@ public class StripLayoutHelper
         // 1. Reset the button state.
         mNewTabButton.drag(x, y);
 
-        // 2. Enter reorder mode either if a. the view was initially clicked by a mouse or b. the
-        // view was long-pressed, but we suppressed reorder mode to instead show the view's context
-        // menu. For case 2.b., dismiss the aforementioned context menu.
+        // 2.a. Enter reorder mode either if the view was initially clicked by a mouse OR the view
+        // was long-pressed, but we suppressed reorder mode to instead show the view's context menu.
+        // In the second case, dismiss the aforementioned context menu.
         boolean shouldTriggerReorder =
-                !mReorderDelegate.getInReorderMode()
+                mDelayedReorderView != null
+                        && !mReorderDelegate.getInReorderMode()
                         && (Math.abs(x - mDelayedReorderInitialX) > INITIATE_REORDER_DRAG_THRESHOLD
                                 || !isViewContextMenuShowing());
-        if (mDelayedReorderView != null && shouldTriggerReorder) {
-            if (!(mDelayedReorderView instanceof StripLayoutGroupTitle)
-                    || ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_STRIP_GROUP_REORDER)) {
-                if (isViewContextMenuShowing()) mTabGroupContextMenuCoordinator.dismiss();
-                // Intentionally start the reorder at the initial long-press x. The difference from
-                // the current event (accumulatedDeltaX in step 3) will then "snap" the interacting
-                // view to its expected position.
-                startReorderMode(
-                        mDelayedReorderInitialX,
-                        y,
-                        mDelayedReorderView,
-                        ReorderType.START_DRAG_DROP);
-            }
-        }
-
-        if (mReorderDelegate.getInReorderMode()) {
+        boolean canReorderViewType =
+                !(mDelayedReorderView instanceof StripLayoutGroupTitle)
+                        || ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_STRIP_GROUP_REORDER);
+        if (shouldTriggerReorder && canReorderViewType) {
+            if (isViewContextMenuShowing()) mTabGroupContextMenuCoordinator.dismiss();
+            // Intentionally start the reorder at the initial long-press x. The difference from the
+            // current event (accumulatedDeltaX in step 3) will then "snap" the interacting view to
+            // its expected position.
+            startReorderMode(
+                    mDelayedReorderInitialX, y, mDelayedReorderView, ReorderType.START_DRAG_DROP);
+        } else if (mReorderDelegate.getInReorderMode()) {
+            // 2.b. If already reordering, instead update the in-progress reorder.
             mReorderDelegate.updateReorderPosition(
                     mStripViews,
                     mStripGroupTitles,
@@ -1880,7 +1877,7 @@ public class StripLayoutHelper
                     deltaX,
                     ReorderType.DRAG_WITHIN_STRIP);
         } else if (!isViewContextMenuShowing()) {
-            // 3.b. Handle scroll if the tab group context menu is not showing.
+            // 2.c. Otherwise, if the context menu is not showing, scroll the tab strip.
             if (!mIsStripScrollInProgress) {
                 mIsStripScrollInProgress = true;
                 RecordUserAction.record("MobileToolbarSlideTabs");
