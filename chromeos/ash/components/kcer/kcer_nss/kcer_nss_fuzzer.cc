@@ -28,6 +28,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "crypto/hash.h"
 #include "net/cert/x509_util.h"
+#include "net/cert/x509_util_nss.h"
 #include "net/test/cert_builder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -922,6 +923,15 @@ void KcerFuzzer::RunImportX509Cert() {
   if (!base::Contains(available_tokens_, token)) {
     ASSERT_FALSE(import_waiter.Get().has_value());
     EXPECT_EQ(import_waiter.Get().error(), Error::kTokenIsNotAvailable);
+    return;
+  }
+
+  if (import_waiter.Get().error() == Error::kInvalidCertificate) {
+    // `CertBuilder` can generate certs that are not accepted by NSS. Double
+    // check that the cert indeed wasn't supposed to be imported and continue.
+    EXPECT_TRUE(net::x509_util::CreateCERTCertificateListFromBytes(
+                    cert->cert_span(), net::X509Certificate::FORMAT_AUTO)
+                    .empty());
     return;
   }
 
