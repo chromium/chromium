@@ -943,7 +943,8 @@ TEST_P(AppManagementPageHandlerArcTest, SetAppLocale) {
 INSTANTIATE_TEST_SUITE_P(
     ,
     AppManagementPageHandlerArcTest,
-    testing::Values(apps::test::LinkCapturingFeatureVersion::kV1DefaultOff),
+    testing::Values(apps::test::LinkCapturingFeatureVersion::kV1DefaultOff,
+                    apps::test::LinkCapturingFeatureVersion::kV2DefaultOff),
     apps::test::LinkCapturingVersionToString);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -951,7 +952,8 @@ INSTANTIATE_TEST_SUITE_P(
     ,
     AppManagementPageHandlerTestBase,
 #if BUILDFLAG(IS_CHROMEOS)
-    testing::Values(apps::test::LinkCapturingFeatureVersion::kV1DefaultOff)
+    testing::Values(apps::test::LinkCapturingFeatureVersion::kV1DefaultOff,
+                    apps::test::LinkCapturingFeatureVersion::kV2DefaultOff)
 #else
     testing::Values(apps::test::LinkCapturingFeatureVersion::kV2DefaultOff,
                     apps::test::LinkCapturingFeatureVersion::kV2DefaultOn)
