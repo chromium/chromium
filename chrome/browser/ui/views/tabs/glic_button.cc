@@ -74,6 +74,14 @@ void GlicButton::ToggleUI() {
 #endif  // BUILDFLAG(ENABLE_GLIC)
 }
 
+void GlicButton::SetDropToAttachIndicator(bool indicate) {
+  if (indicate) {
+    SetBackgroundFrameActiveColorId(ui::kColorSysStateHeaderHover);
+  } else {
+    SetBackgroundFrameActiveColorId(kColorNewTabButtonCRBackgroundFrameActive);
+  }
+}
+
 BEGIN_METADATA(GlicButton)
 END_METADATA
 

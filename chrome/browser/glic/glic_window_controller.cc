@@ -9,6 +9,7 @@
 #include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_view.h"
 #include "chrome/browser/glic/glic_window_resize_animation.h"
+#include "chrome/browser/glic/scoped_glic_button_indicator.h"
 #include "chrome/browser/glic/webui_contents_container.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -595,7 +596,7 @@ void GlicWindowController::AttachToBrowser(Browser* browser) {
   holder_widget_.reset();
 
   views::Widget* browser_widget =
-      browser->window()->AsBrowserView()->GetWidgetForAnchoring();
+      browser->GetBrowserView().GetWidgetForAnchoring();
   CHECK(browser_widget);
 
   // Makes the glic widget a child view of the given widget's browser.
@@ -752,6 +753,7 @@ void GlicWindowController::CloseFinish(bool reopen_detached) {
   browser_close_subscription_.reset();
   glic_widget_observation_.Reset();
   glic_widget_.reset();
+  scoped_glic_button_indicator_.reset();
   NotifyIfPanelStateChanged();
 
   if (web_client_) {
@@ -805,29 +807,67 @@ void GlicWindowController::HandleWindowDragWithOffset(
     in_move_loop_ = true;
     const views::Widget::MoveLoopSource move_loop_source =
         views::Widget::MoveLoopSource::kMouse;
+    // Set glic to a floating z-order while dragging so browsers brought into
+    // focus by HandleGlicButtonIndicator won't show in front of glic.
+    GetGlicWidget()->SetZOrderLevel(ui::ZOrderLevel::kFloatingWindow);
     GetGlicWidget()->RunMoveLoop(
         mouse_offset, move_loop_source,
         views::Widget::MoveLoopEscapeBehavior::kDontHide);
     in_move_loop_ = false;
+    // set glic z-order back to normal after drag is done.
+    GetGlicWidget()->SetZOrderLevel(ui::ZOrderLevel::kNormal);
+    scoped_glic_button_indicator_.reset();
     // Check whether `GetGlicWidget()` is in a position to attach to a
     // browser window.
-    HandleAttachmentToBrowserWindows(GetGlicWidget());
+    HandleAttachmentToBrowserWindows();
+  } else {
+    // While in a move loop, look for nearby browsers to toggle the drop to
+    // attach indicator.
+    HandleGlicButtonIndicator();
   }
 }
 
-void GlicWindowController::HandleAttachmentToBrowserWindows(
-    views::Widget* widget) {
-  // This should only ever be called after a move is completed.
-  CHECK(!in_move_loop_);
+void GlicWindowController::HandleAttachmentToBrowserWindows() {
+  Browser* browser = FindBrowserForAttachment();
+  // No browser within attachment range so maybe reparent under an empty holder
+  // widget.
+  if (!browser) {
+    MaybeCreateHolderWindowAndReparent();
+    return;
+  }
+  // Attach to the found browser.
+  AttachToBrowser(browser);
+}
 
+void GlicWindowController::HandleGlicButtonIndicator() {
+  Browser* browser = FindBrowserForAttachment();
+  // No browser within attachment range so reset indicators
+  if (!browser) {
+    scoped_glic_button_indicator_.reset();
+    return;
+  }
+  GlicButton* glic_button =
+      browser->GetBrowserView().tab_strip_region_view()->GetGlicButton();
+  // If there isn't an existing scoped indicator for this button, create one.
+  if (!scoped_glic_button_indicator_ ||
+      scoped_glic_button_indicator_->GetGlicButton() != glic_button) {
+    // Bring the browser to the front.
+    browser->GetBrowserView().GetWidget()->Activate();
+    scoped_glic_button_indicator_ =
+        std::make_unique<ScopedGlicButtonIndicator>(glic_button);
+  }
+}
+
+Browser* GlicWindowController::FindBrowserForAttachment() {
   // The profile must have started off as Glic enabled since a Glic widget is
   // open but it may have been disabled at runtime by policy. In this edge-case,
   // prevent reattaching back to a window (as it no longer has a GlicButton).
   if (!GlicEnabling::IsEnabledForProfile(profile_)) {
-    return;
+    return nullptr;
   }
 
-  gfx::Point glic_top_right = widget->GetWindowBoundsInScreen().top_right();
+  gfx::Point glic_top_right =
+      GetGlicWidget()->GetWindowBoundsInScreen().top_right();
   // Loops through all browsers in activation order with the latest accessed
   // browser first.
   for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
@@ -837,7 +877,7 @@ void GlicWindowController::HandleAttachmentToBrowserWindows(
 
     // If the profile is enabled, the Glic button must be available.
     auto* tab_strip_region_view =
-        browser->window()->AsBrowserView()->tab_strip_region_view();
+        browser->GetBrowserView().tab_strip_region_view();
     CHECK(tab_strip_region_view);
     CHECK(tab_strip_region_view->GetGlicButton());
 
@@ -850,21 +890,12 @@ void GlicWindowController::HandleAttachmentToBrowserWindows(
                                 attachment_zone.right() + kAttachmentBuffer,
                                 attachment_zone.bottom());
 
-    // If there is no active drag (i.e. the previous drag has ended)
-    // then determine whether the glic window should be attached or detached
-    // from the browser window.
     if (attachment_zone.Contains(glic_top_right)) {
-      AttachToBrowser(browser);
-      return;
-    }
-
-    // If farther than the attachment threshold from the current parent
-    // widget, reparent under an empty holder widget.
-    if (attached_browser_ == browser) {
-      MaybeCreateHolderWindowAndReparent();
-      return;
+      return browser;
     }
   }
+  // No browser found near glic.
+  return nullptr;
 }
 
 void GlicWindowController::MovePositionToBrowserGlicButton(Browser* browser,

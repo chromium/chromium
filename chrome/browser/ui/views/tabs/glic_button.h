@@ -30,6 +30,8 @@ class GlicButton : public TabStripControlButton {
   // Triggers the UI programmatically.
   void ToggleUI();
 
+  void SetDropToAttachIndicator(bool indicate);
+
  private:
   // Tab strip that contains this button.
   // TODO(crbug.com/382768227): Remove DanglingUntriaged.
