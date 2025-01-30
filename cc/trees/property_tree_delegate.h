@@ -9,6 +9,7 @@
 
 #include "cc/input/scroll_snap_data.h"
 #include "cc/paint/element_id.h"
+#include "cc/trees/mutator_host_client.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
 namespace cc {
@@ -33,6 +34,7 @@ class PropertyTreeDelegate {
 
   virtual void SetLayerTreeHost(LayerTreeHost* host) = 0;
   virtual LayerTreeHost* host() = 0;
+  virtual const LayerTreeHost* host() const = 0;
 
   // Called by LayerTreeHost::DoUpdateLayers() to ensure that the
   // property trees are up-to-date.
@@ -48,6 +50,9 @@ class PropertyTreeDelegate {
   virtual void RegisterViewportPropertyIds(const ViewportPropertyIds& ids) = 0;
 
   virtual void OnUnregisterElement(ElementId id) = 0;
+
+  virtual bool IsElementInPropertyTrees(ElementId element_id,
+                                        ElementListType list_type) const = 0;
 };
 
 }  // namespace cc

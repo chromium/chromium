@@ -1800,11 +1800,8 @@ void LayerTreeHost::BuildPropertyTreesForTesting() {
 bool LayerTreeHost::IsElementInPropertyTrees(ElementId element_id,
                                              ElementListType list_type) const {
   DCHECK(IsMainThread());
-  if (IsUsingLayerLists()) {
-    return list_type == ElementListType::ACTIVE &&
-           property_trees()->HasElement(element_id);
-  }
-  return list_type == ElementListType::ACTIVE && LayerByElementId(element_id);
+  return property_tree_delegate_->IsElementInPropertyTrees(element_id,
+                                                           list_type);
 }
 
 void LayerTreeHost::SetMutatorsNeedCommit() {
