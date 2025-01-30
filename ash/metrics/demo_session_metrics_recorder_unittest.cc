@@ -19,6 +19,7 @@
 #include "ash/wm/window_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/timer/mock_timer.h"
 #include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -31,6 +32,8 @@
 
 namespace ash {
 namespace {
+
+constexpr char kUserEmail[] = "crosdemoandapbp@gmail.com";
 
 // Tests app usage recorded by DemoSessionMetricsRecorder.
 // Mocks out the timer to control the sampling cycle. Tests will create and
@@ -175,6 +178,8 @@ class DemoSessionMetricsRecorderTest : public AshTestBase {
  protected:
   // Captures histograms.
   std::unique_ptr<base::HistogramTester> histogram_tester_;
+
+  base::UserActionTester user_action_tester_;
 
   // The test target.
   std::unique_ptr<DemoSessionMetricsRecorder> metrics_recorder_;
@@ -771,6 +776,68 @@ TEST_F(DemoSessionMetricsRecorderTest,
   // sample.
   histogram_tester_->ExpectUniqueSample(
       DemoSessionMetricsRecorder::kUserClicksAndPressesMetric, 0, 0);
+}
+
+// In MGS demo session, test user actively exits the session. Check the
+// corresponding user actions are recorded.
+TEST_F(DemoSessionMetricsRecorderTest, UserActivelyExitsMGS) {
+  TestSessionControllerClient* session = GetSessionControllerClient();
+  // Simulate to enter the demo MGS.
+  session->Reset();
+  session->AddUserSession(kUserEmail, user_manager::UserType::kPublicAccount);
+  session->SetSessionState(session_manager::SessionState::ACTIVE);
+
+  DemoSessionMetricsRecorder::RecordExitSessionAction(
+      DemoSessionMetricsRecorder::ExitSessionFrom::kShelf);
+  EXPECT_EQ(1, user_action_tester_.GetActionCount("DemoMode.ExitFromShelf"));
+
+  DemoSessionMetricsRecorder::RecordExitSessionAction(
+      DemoSessionMetricsRecorder::ExitSessionFrom::kSystemTray);
+  EXPECT_EQ(1,
+            user_action_tester_.GetActionCount("DemoMode.ExitFromSystemTray"));
+
+  DemoSessionMetricsRecorder::RecordExitSessionAction(
+      DemoSessionMetricsRecorder::ExitSessionFrom::kSystemTrayPowerButton);
+  EXPECT_EQ(1, user_action_tester_.GetActionCount(
+                   "DemoMode.ExitFromSystemTrayPowerButton"));
+
+  // Since it's not signed-in, expect signed-in session related user actions to
+  // have zero count.
+  EXPECT_EQ(
+      0, user_action_tester_.GetActionCount("DemoMode.SignedIn.ExitFromShelf"));
+  EXPECT_EQ(0, user_action_tester_.GetActionCount(
+                   "DemoMode.SignedIn.ExitFromSystemTray"));
+  EXPECT_EQ(0, user_action_tester_.GetActionCount(
+                   "DemoMode.SignedIn.ExitFromSystemTrayPowerButton"));
+}
+
+// In signed-in demo session, test user actively exits the session. Check the
+// corresponding user actions are recorded.
+TEST_F(DemoSessionMetricsRecorderTest, UserActivelyExitsSignedInSession) {
+  // Simulate to sign in the session with a regular user.
+  GetSessionControllerClient()->AddUserSession(kUserEmail);
+
+  // Even though it's signed-in, the generic exit demo session user actions are
+  // still recorded.
+  DemoSessionMetricsRecorder::RecordExitSessionAction(
+      DemoSessionMetricsRecorder::ExitSessionFrom::kShelf);
+  EXPECT_EQ(1, user_action_tester_.GetActionCount("DemoMode.ExitFromShelf"));
+  EXPECT_EQ(
+      1, user_action_tester_.GetActionCount("DemoMode.SignedIn.ExitFromShelf"));
+
+  DemoSessionMetricsRecorder::RecordExitSessionAction(
+      DemoSessionMetricsRecorder::ExitSessionFrom::kSystemTray);
+  EXPECT_EQ(1,
+            user_action_tester_.GetActionCount("DemoMode.ExitFromSystemTray"));
+  EXPECT_EQ(1, user_action_tester_.GetActionCount(
+                   "DemoMode.SignedIn.ExitFromSystemTray"));
+
+  DemoSessionMetricsRecorder::RecordExitSessionAction(
+      DemoSessionMetricsRecorder::ExitSessionFrom::kSystemTrayPowerButton);
+  EXPECT_EQ(1, user_action_tester_.GetActionCount(
+                   "DemoMode.ExitFromSystemTrayPowerButton"));
+  EXPECT_EQ(1, user_action_tester_.GetActionCount(
+                   "DemoMode.SignedIn.ExitFromSystemTrayPowerButton"));
 }
 
 }  // namespace

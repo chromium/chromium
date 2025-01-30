@@ -89,8 +89,16 @@ class ASH_EXPORT DemoSessionMetricsRecorder
     kMaxValue = kMinecraft,
   };
 
+  enum class ExitSessionFrom {
+    kShelf = 0,
+    kSystemTray = 1,
+    kSystemTrayPowerButton = 2,
+  };
+
   static constexpr char kUserClicksAndPressesMetric[] =
       "DemoMode.UserClicksAndPresses";
+
+  static void RecordExitSessionAction(ExitSessionFrom recorded_from);
 
   // The recorder will create a normal timer by default. Tests should provide a
   // mock timer to control sampling periods.

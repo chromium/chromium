@@ -10,11 +10,13 @@
 
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/window_properties.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf_window_watcher.h"
 #include "ash/shell.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/metrics/user_metrics.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -32,6 +34,8 @@ namespace ash {
 namespace {
 
 using DemoModeApp = DemoSessionMetricsRecorder::DemoModeApp;
+
+using ExitSessionFrom = DemoSessionMetricsRecorder::ExitSessionFrom;
 
 // How often to sample.
 constexpr auto kSamplePeriod = base::Seconds(1);
@@ -261,6 +265,33 @@ void ReportHistogramLongSecondsTimes100(const char* name,
                                  /*min=*/1, /*max=*/60 * 60, /*buckets=*/100);
 }
 
+std::string GetExitSessionActionName(ExitSessionFrom recorded_from,
+                                     bool for_signed_in_session) {
+  if (for_signed_in_session) {
+    switch (recorded_from) {
+      case ExitSessionFrom::kShelf:
+        return "DemoMode.SignedIn.ExitFromShelf";
+      case ExitSessionFrom::kSystemTray:
+        return "DemoMode.SignedIn.ExitFromSystemTray";
+      case ExitSessionFrom::kSystemTrayPowerButton:
+        return "DemoMode.SignedIn.ExitFromSystemTrayPowerButton";
+      default:
+        NOTREACHED();
+    }
+  } else {
+    switch (recorded_from) {
+      case ExitSessionFrom::kShelf:
+        return "DemoMode.ExitFromShelf";
+      case ExitSessionFrom::kSystemTray:
+        return "DemoMode.ExitFromSystemTray";
+      case ExitSessionFrom::kSystemTrayPowerButton:
+        return "DemoMode.ExitFromSystemTrayPowerButton";
+      default:
+        NOTREACHED();
+    }
+  }
+}
+
 }  // namespace
 
 // Observes for changes in a window's ArcPackageName property for the purpose of
@@ -366,6 +397,28 @@ class DemoSessionMetricsRecorder::UniqueAppsLaunchedArcPackageNameObserver
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       scoped_observation_{this};
 };
+
+// static
+void DemoSessionMetricsRecorder::RecordExitSessionAction(
+    ExitSessionFrom recorded_from) {
+  // Record generic exit demo session user action regardless of the signed-in
+  // status.
+  const std::string action_name =
+      GetExitSessionActionName(recorded_from, false);
+  base::RecordAction(base::UserMetricsAction(action_name.c_str()));
+
+  // Check if the current session is signed-in (a regular user). Signed-in
+  // sessions have a regular user account and a better demo experience, whereas
+  // tranditional demo mode is a managed guest session.
+  std::optional<user_manager::UserType> user_type =
+      Shell::Get()->session_controller()->GetUserType();
+  if (user_type && *user_type == user_manager::UserType::kRegular) {
+    // Record signed-in session related action.
+    const std::string signed_in_action_name =
+        GetExitSessionActionName(recorded_from, true);
+    base::RecordAction(base::UserMetricsAction(signed_in_action_name.c_str()));
+  }
+}
 
 DemoSessionMetricsRecorder::DemoSessionMetricsRecorder(
     std::unique_ptr<base::RepeatingTimer> timer)
