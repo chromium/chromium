@@ -800,11 +800,6 @@ void WritableStream::MarkFirstWriteRequestInFlight(WritableStream* stream) {
 
   //  5. Set stream.[[inFlightWriteRequest]] to writeRequest.
   stream->in_flight_write_request_ = write_request;
-
-  // `in_flight_write_request_` might await a promise that can be GCed before
-  // fulfilling (e.g., `TransformStream::backpressure_change_promise_`), so it
-  // should be allowed to as well.
-  stream->in_flight_write_request_->SuppressDetachCheck();
 }
 
 void WritableStream::UpdateBackpressure(ScriptState* script_state,
