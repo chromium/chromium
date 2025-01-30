@@ -559,7 +559,7 @@ TEST(IndexedDBLevelDBCodingTest, EncodeDecodeIDBKeyPath) {
                        0      // Type is null
     };
     encoded_paths.push_back(
-        std::string(expected, expected + std::size(expected)));
+        std::string(std::begin(expected), std::end(expected)));
   }
 
   {
@@ -569,7 +569,7 @@ TEST(IndexedDBLevelDBCodingTest, EncodeDecodeIDBKeyPath) {
                        0      // Length is 0
     };
     encoded_paths.push_back(
-        std::string(expected, expected + std::size(expected)));
+        std::string(std::begin(expected), std::end(expected)));
   }
 
   {
@@ -579,7 +579,7 @@ TEST(IndexedDBLevelDBCodingTest, EncodeDecodeIDBKeyPath) {
                        3, 0, 'f', 0, 'o', 0, 'o'  // String length 3, UTF-16BE
     };
     encoded_paths.push_back(
-        std::string(expected, expected + std::size(expected)));
+        std::string(std::begin(expected), std::end(expected)));
   }
 
   {
@@ -590,7 +590,7 @@ TEST(IndexedDBLevelDBCodingTest, EncodeDecodeIDBKeyPath) {
                        'r'  // String length 7, UTF-16BE
     };
     encoded_paths.push_back(
-        std::string(expected, expected + std::size(expected)));
+        std::string(std::begin(expected), std::end(expected)));
   }
 
   {
@@ -605,7 +605,7 @@ TEST(IndexedDBLevelDBCodingTest, EncodeDecodeIDBKeyPath) {
                        'r'  // Member 3 (String length 7)
     };
     encoded_paths.push_back(
-        std::string(expected, expected + std::size(expected)));
+        std::string(std::begin(expected), std::end(expected)));
   }
 
   ASSERT_EQ(key_paths.size(), encoded_paths.size());
