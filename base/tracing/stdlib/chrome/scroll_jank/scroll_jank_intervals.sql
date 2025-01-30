@@ -43,7 +43,7 @@ SELECT
     AS frame_jank_ts,
   cast_int!((e.delay_since_last_frame - e.vsync_interval) * 1e6)
     AS frame_jank_dur
-FROM chrome_gesture_scroll_events s
+FROM chrome_gesture_scroll_updates s
 JOIN chrome_janky_frames e
   ON s.id = e. event_latency_id;
 

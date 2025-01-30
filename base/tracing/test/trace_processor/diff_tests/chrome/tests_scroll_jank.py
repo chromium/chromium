@@ -66,18 +66,16 @@ class ChromeScrollJankStdlib(TestSuite):
         SELECT
           id,
           ts,
-          dur,
-          gesture_scroll_begin_ts,
-          gesture_scroll_end_ts
+          dur
         FROM chrome_scrolls
         ORDER by id;
         """,
         out=Csv("""
-        "id","ts","dur","gesture_scroll_begin_ts","gesture_scroll_end_ts"
-        4328,1035865535981926,1255745000,1035865535981926,1035866753550926
-        4471,1035866799527926,1358505000,1035866799527926,1035868108723926
-        4620,1035868146266926,111786000,1035868146266926,1035868230937926
-        4652,1035868607429926,1517121000,1035868607429926,1035870086449926
+        "id","ts","dur"
+        1,1035865535981926,1255745000
+        2,1035866799527926,1358505000
+        3,1035868146266926,111786000
+        4,1035868607429926,1517121000
         """))
 
   def test_chrome_scroll_input_offsets(self):
@@ -177,10 +175,10 @@ class ChromeScrollJankStdlib(TestSuite):
         """,
         out=Csv("""
         "scroll_id","missed_vsyncs","frame_count","presented_frame_count","janky_frame_count","janky_frame_percent"
-        4328,"[NULL]",110,110,0,0.000000
-        4471,1,120,119,1,0.840000
-        4620,1,9,6,1,16.670000
-        4652,4,133,129,4,3.100000
+        1,"[NULL]",110,110,0,0.000000
+        2,1,120,119,1,0.840000
+        3,1,9,6,1,16.670000
+        4,4,133,129,4,3.100000
         """))
 
   def test_chrome_scroll_jank_intervals_v3(self):
