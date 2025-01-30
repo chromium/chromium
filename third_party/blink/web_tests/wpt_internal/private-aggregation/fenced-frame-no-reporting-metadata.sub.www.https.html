@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<title>Test Private Aggregation doesn't work without metadata.</title>
+<meta name="timeout" content="long">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="/wpt_internal/fenced_frame/resources/utils.js"></script>
+<script src="../aggregation-service/support/aggregation-service.js"></script>
+<script src="/wpt_internal/private-aggregation/resources/utils.js"></script>
+
+<body>
+<script>
+"use strict";
+
+const reportPoller = new ReportPoller(
+    '/.well-known/private-aggregation/report-protected-audience',
+    '/.well-known/private-aggregation/debug/report-protected-audience',
+    /*fullTimeoutMs=*/ 5000,
+);
+
+private_aggregation_promise_test(async t => {
+  const fencedframe = await attachFencedFrameContext();
+  await fencedframe.execute(() => {
+    window.fence.reportEvent("aggregate");
+  });
+
+  await reportPoller.pollReportsAndAssert(
+      /*expectedNumReports=*/ 0, /*expectedNumDebugReports=*/ 0);
+}, 'Private Aggregation events should not send from fenced frames ' +
+   'without reporting metadata.');
+</script>
+</body>
+</html>

@@ -477,36 +477,6 @@ TEST_F(FencedFrameConfigMojomTraitsTest, ConfigMojomTraitsTest) {
   }
 }
 
-// Test `has_fenced_frame_reporting`, which only appears in
-// FencedFrameProperties, and does not use the redacted mechanism used by other
-// fields.
-TEST_F(FencedFrameConfigMojomTraitsTest,
-       PropertiesHasFencedFrameReportingTest) {
-  FencedFrameProperties properties;
-  RedactedFencedFrameProperties input_properties =
-      properties.RedactFor(FencedFrameEntity::kEmbedder);
-  EXPECT_FALSE(input_properties.has_fenced_frame_reporting());
-  RedactedFencedFrameProperties output_properties;
-  mojo::test::SerializeAndDeserialize<blink::mojom::FencedFrameProperties>(
-      input_properties, output_properties);
-  EXPECT_FALSE(output_properties.has_fenced_frame_reporting());
-
-  // Create a reporting service with a dummy SharedURLLoaderFactory.
-  properties.fenced_frame_reporter_ = FencedFrameReporter::CreateForFledge(
-      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(nullptr),
-      /*browser_context=*/browser_context(),
-      /*direct_seller_is_seller=*/false,
-      /*private_aggregation_manager=*/nullptr,
-      /*main_frame_origin=*/url::Origin(),
-      /*winner_origin=*/url::Origin(),
-      /*winner_aggregation_coordinator_origin=*/std::nullopt);
-  input_properties = properties.RedactFor(FencedFrameEntity::kEmbedder);
-  EXPECT_TRUE(input_properties.has_fenced_frame_reporting());
-  mojo::test::SerializeAndDeserialize<blink::mojom::FencedFrameProperties>(
-      input_properties, output_properties);
-  EXPECT_TRUE(output_properties.has_fenced_frame_reporting());
-}
-
 // Test `can_disable_untrusted_network`, which only appears in
 // FencedFrameProperties, and does not use the redacted mechanism used by other
 // fields.

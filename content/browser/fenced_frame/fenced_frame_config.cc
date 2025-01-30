@@ -298,15 +298,6 @@ FencedFrameProperties::RedactFor(FencedFrameEntity entity) const {
     }
   }
 
-  if (fenced_frame_reporter_ || is_ad_component_) {
-    // An ad component should use its parent's fenced frame reporter. Even
-    // though it does not have a reporter in its `FencedFrameProperties`, this
-    // flag is still marked as true. Content that is cross-origin to the
-    // config's mapped url gets access to its parent's reporter only if both the
-    // parent and the content opt in to cross-origin event reporting.
-    redacted_properties.has_fenced_frame_reporting_ = true;
-  }
-
   // The mode never needs to be redacted, because it is a function of which API
   // was called to generate the config, rather than any cross-site data.
   redacted_properties.mode_ = mode_;

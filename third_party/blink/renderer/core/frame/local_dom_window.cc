@@ -2574,16 +2574,12 @@ Fence* LocalDOMWindow::fence() {
     return nullptr;
   }
   if (!GetFrame()->IsInFencedFrameTree()) {
-    // We temporarily allow window.fence in iframes with fenced frame reporting
-    // metadata (navigated by urn:uuids).
-    // If we are in an iframe that doesn't qualify, return nullptr.
+    // We temporarily allow window.fence in iframes loaded via
+    // FencedFrameConfigs (navigated by a config's associated urn:uuid since
+    // iframes don't support config objects directly). If we are in an iframe
+    // that doesn't qualify, return nullptr.
     if (!blink::features::IsAllowURNsInIframeEnabled() ||
-        !GetFrame()->GetDocument()->Loader()->FencedFrameProperties() ||
-        !GetFrame()
-             ->GetDocument()
-             ->Loader()
-             ->FencedFrameProperties()
-             ->has_fenced_frame_reporting()) {
+        !GetFrame()->GetDocument()->Loader()->FencedFrameProperties()) {
       return nullptr;
     }
   }

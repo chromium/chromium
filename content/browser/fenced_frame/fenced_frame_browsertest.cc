@@ -6590,6 +6590,7 @@ class FencedFrameReportEventBrowserTest
       kModeNotOpaque,
       kCrossOrigin,
       kNoMeta,
+      kNoConfig,
       kNoDestination,
       kNoReportingURL,
       kInvalidReportingURL,
@@ -6611,7 +6612,12 @@ class FencedFrameReportEventBrowserTest
         return "Fenced event reporting is only available in same-origin "
                "subframes.";
       case Step::Result::kNoMeta:
-        return "This frame did not register reporting metadata.";
+        return "This frame was loaded with a FencedFrameConfig that did not "
+               "have any reporting metadata associated with it (via "
+               "selectURL()'s reportingMetadata or Protected Audience's "
+               "registerAdBeacon()).";
+      case Step::Result::kNoConfig:
+        return "This frame was not loaded with a FencedFrameConfig.";
       case Step::Result::kNoDestination:
         return "This frame did not register reporting metadata for "
                "destination *";
@@ -7043,7 +7049,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
         return message.log_level == blink::mojom::ConsoleMessageLevel::kError;
       };
   console_observer.SetFilter(base::BindRepeating(filter));
-  console_observer.SetPattern(GetErrorPattern(Step::Result::kNoMeta));
+  console_observer.SetPattern(GetErrorPattern(Step::Result::kNoConfig));
 
   // Perform the reportEvent call, with a unique body.
   const char report_event_script[] = R"(

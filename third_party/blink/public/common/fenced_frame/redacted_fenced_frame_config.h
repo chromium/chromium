@@ -214,9 +214,6 @@ struct BLINK_COMMON_EXPORT RedactedFencedFrameProperties {
   shared_storage_budget_metadata() const {
     return shared_storage_budget_metadata_;
   }
-  bool has_fenced_frame_reporting() const {
-    return has_fenced_frame_reporting_;
-  }
   const DeprecatedFencedFrameMode& mode() const { return mode_; }
   const std::vector<blink::mojom::PermissionsPolicyFeature>&
   effective_enabled_permissions() const {
@@ -250,7 +247,6 @@ struct BLINK_COMMON_EXPORT RedactedFencedFrameProperties {
       nested_urn_config_pairs_;
   std::optional<RedactedFencedFrameProperty<SharedStorageBudgetMetadata>>
       shared_storage_budget_metadata_;
-  bool has_fenced_frame_reporting_ = false;
   DeprecatedFencedFrameMode mode_ = DeprecatedFencedFrameMode::kDefault;
   std::vector<blink::mojom::PermissionsPolicyFeature>
       effective_enabled_permissions_;

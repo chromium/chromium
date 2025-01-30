@@ -37,13 +37,12 @@ TEST_F(FenceTest, ReportPrivateAggregationEvent) {
       MakeGarbageCollected<Fence>(*(GetDocument().GetFrame()->DomWindow()));
   fence->reportPrivateAggregationEvent("event", scope.GetExceptionState());
 
-  // We expect this to make it past all the other checks, except for the
-  // reporting metadata check. Since this is loaded in a vacuum and not the
-  // result of an ad auction, we expect it to output the reporting metadata
-  // error.
+  // We expect this to make it past all the other checks, except for the fenced
+  // frame properties check. Since this is loaded in a vacuum and not the result
+  // of an ad auction, we expect it to output the reporting metadata error.
   EXPECT_EQ(ConsoleMessages().size(), 1u);
   EXPECT_EQ(ConsoleMessages().front(),
-            "This frame did not register reporting metadata.");
+            "This frame was not loaded with a FencedFrameConfig.");
 }
 
 TEST_F(FenceTest, ReportPrivateAggregationReservedEvent) {

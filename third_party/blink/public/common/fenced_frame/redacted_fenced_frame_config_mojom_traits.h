@@ -306,10 +306,6 @@ struct BLINK_COMMON_EXPORT
       const blink::FencedFrame::RedactedFencedFrameProperties& properties) {
     return properties.shared_storage_budget_metadata_;
   }
-  static bool has_fenced_frame_reporting(
-      const blink::FencedFrame::RedactedFencedFrameProperties& properties) {
-    return properties.has_fenced_frame_reporting_;
-  }
   static const blink::FencedFrame::DeprecatedFencedFrameMode& mode(
       const blink::FencedFrame::RedactedFencedFrameProperties& properties) {
     return properties.mode_;

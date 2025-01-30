@@ -9619,16 +9619,23 @@ void RenderFrameHostImpl::SendPrivateAggregationRequestsForFencedFrameEvent(
   }
   const std::optional<FencedFrameProperties>& fenced_frame_properties =
       frame_tree_node_->GetFencedFrameProperties();
-  if (!fenced_frame_properties.has_value() ||
-      !fenced_frame_properties->fenced_frame_reporter()) {
-    // No associated fenced frame reporter. This should have been captured
+  if (!fenced_frame_properties.has_value()) {
+    // No associated fenced frame properties. This should have been captured
     // in the renderer process at `Fence::reportEvent`.
     // This implies there is an inconsistency between the browser and the
     // renderer.
     mojo::ReportBadMessage(
-        "This frame had reporting metadata registered in its renderer process"
-        "but not in its browser process. The reporting metadata should be"
-        "consistent between the two.");
+        "This frame had fenced frame properties registered in its renderer "
+        "process but not in its browser process. This should be consistent "
+        "between the two.");
+    return;
+  }
+  if (!fenced_frame_properties->fenced_frame_reporter()) {
+    AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kWarning,
+        "This frame was loaded with a FencedFrameConfig that did not have any "
+        "reporting metadata associated with it (via selectURL()'s "
+        "reportingMetadata or Protected Audience's registerAdBeacon()).");
     return;
   }
   if (!fenced_frame_properties->mapped_url().has_value() ||
@@ -10048,14 +10055,21 @@ bool RenderFrameHostImpl::IsFencedFrameReportingFromRendererAllowed(
     return false;
   }
 
-  if (!fenced_frame_properties.has_value() ||
-      !fenced_frame_properties->fenced_frame_reporter()) {
-    // No associated fenced frame reporter. This should have been captured
+  if (!fenced_frame_properties.has_value()) {
+    // No associated fenced frame properties. This should have been captured
     // in the renderer process at `Fence::reportEvent`.
     // This implies there is an inconsistency between the browser and the
     // renderer.
     mojo::ReportBadMessage(
-        "This frame has no fenced frame reporter registered in the browser.");
+        "This frame has no fenced frame properties registered in the browser.");
+    return false;
+  }
+  if (!fenced_frame_properties->fenced_frame_reporter()) {
+    AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kWarning,
+        "This frame was loaded with a FencedFrameConfig that did not have any "
+        "reporting metadata associated with it (via selectURL()'s "
+        "reportingMetadata or Protected Audience's registerAdBeacon()).");
     return false;
   }
 
@@ -10161,11 +10175,18 @@ void RenderFrameHostImpl::SetFencedFrameAutomaticBeaconReportEventData(
   // `fenced_frame_properties` will exist for both fenced frames as well as
   // iframes loaded with a urn:uuid. This allows URN iframes to call this
   // function without getting bad-messaged.
-  if (!fenced_frame_properties ||
-      !fenced_frame_properties->fenced_frame_reporter()) {
+  if (!fenced_frame_properties) {
     mojo::ReportBadMessage(
         "Automatic beacon data can only be set in fenced frames or iframes "
-        "loaded from a config with a fenced frame reporter.");
+        "loaded from a config.");
+    return;
+  }
+  if (!fenced_frame_properties->fenced_frame_reporter()) {
+    AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kWarning,
+        "This frame was loaded with a FencedFrameConfig that did not have any "
+        "reporting metadata associated with it (via selectURL()'s "
+        "reportingMetadata or Protected Audience's registerAdBeacon()).");
     return;
   }
   // This metadata should only be present in the renderer in frames that are
