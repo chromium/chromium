@@ -311,8 +311,8 @@ public class TabUiUtils {
         Tab tab = filter.getTabModel().getTabById(tabId);
         LocalTabGroupId localTabGroupId = TabGroupSyncUtils.getLocalTabGroupId(tab);
 
-        dataSharingTabManager.createGroupFlow(
-                activity, tabGroupDisplayName, localTabGroupId, (ignored) -> {});
+        dataSharingTabManager.createOrManageFlow(
+                activity, /* syncId= */ null, localTabGroupId, (ignored) -> {});
     }
 
     /**

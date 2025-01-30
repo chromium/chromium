@@ -40,6 +40,7 @@ import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.PrimaryActionClickBehavior;
+import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.base.WindowAndroid;
@@ -338,14 +339,19 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
                         R.string.data_sharing_browser_message_joined_tab_group,
                         givenName,
                         tabGroupTitle);
+        String syncId = MessageUtils.extractSyncTabGroupId(message);
+        Token localId = MessageUtils.extractTabGroupId(message);
         String buttonText = activity.getString(R.string.data_sharing_browser_message_manage);
         GroupMember groupMember = MessageUtils.extractMember(message);
         Runnable openManageSharingRunnable =
                 () -> {
                     // TODO(crbug.com/379148260): Use shared #isCollaborationIdValid.
                     if (!TextUtils.isEmpty(collaborationId)) {
-                        dataSharingTabManager.showManageSharing(
-                                activity, collaborationId, /* finishRunnable= */ null);
+                        dataSharingTabManager.createOrManageFlow(
+                                activity,
+                                syncId,
+                                new LocalTabGroupId(localId),
+                                /* createGroupFinishedCallback= */ null);
                     }
                 };
 

@@ -428,7 +428,7 @@ public class DataSharingTabManagerUnitTest {
     public void testShareOrManageFlowWithCollaborationService() {
         doReturn(mProfile).when(mProfile).getOriginalProfile();
         doReturn(mSavedTabGroup).when(mTabGroupSyncService).getGroup(LOCAL_ID);
-        mDataSharingTabManager.createGroupFlow(mActivity, TITLE, LOCAL_ID, null);
+        mDataSharingTabManager.createOrManageFlow(mActivity, /* syncId= */ null, LOCAL_ID, null);
 
         verify(mCollaborationService).startShareOrManageFlow(any(), eq(SYNC_GROUP_ID1));
     }
@@ -443,7 +443,7 @@ public class DataSharingTabManagerUnitTest {
                 .when(mDistillerUrlUtilsJniMock)
                 .getOriginalUrlFromDistillerUrl(any(String.class));
 
-        mDataSharingTabManager.createGroupFlow(mActivity, TITLE, LOCAL_ID, null);
+        mDataSharingTabManager.createOrManageFlow(mActivity, /* syncId= */ null, LOCAL_ID, null);
 
         ArgumentCaptor<DataSharingManageUiConfig> uiConfigCaptor =
                 ArgumentCaptor.forClass(DataSharingManageUiConfig.class);
@@ -500,8 +500,8 @@ public class DataSharingTabManagerUnitTest {
         mSavedTabGroup.collaborationId = null;
         doReturn(mSavedTabGroup).when(mTabGroupSyncService).getGroup(LOCAL_ID);
 
-        mDataSharingTabManager.createGroupFlow(
-                mActivity, TITLE, LOCAL_ID, mCreateGroupFinishedCallback);
+        mDataSharingTabManager.createOrManageFlow(
+                mActivity, /* syncId= */ null, LOCAL_ID, mCreateGroupFinishedCallback);
 
         ArgumentCaptor<DataSharingCreateUiConfig> uiConfigCaptor =
                 ArgumentCaptor.forClass(DataSharingCreateUiConfig.class);
@@ -564,8 +564,8 @@ public class DataSharingTabManagerUnitTest {
         mSavedTabGroup.collaborationId = null;
         doReturn(mSavedTabGroup).when(mTabGroupSyncService).getGroup(LOCAL_ID);
 
-        mDataSharingTabManager.createGroupFlow(
-                mActivity, TITLE, LOCAL_ID, mCreateGroupFinishedCallback);
+        mDataSharingTabManager.createOrManageFlow(
+                mActivity, /* syncId= */ null, LOCAL_ID, mCreateGroupFinishedCallback);
 
         ArgumentCaptor<DataSharingCreateUiConfig> uiConfigCaptor =
                 ArgumentCaptor.forClass(DataSharingCreateUiConfig.class);

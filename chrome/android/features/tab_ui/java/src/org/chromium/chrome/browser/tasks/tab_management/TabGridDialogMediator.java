@@ -954,8 +954,11 @@ public class TabGridDialogMediator
                     TabGroupColorChangeActionType.VIA_OVERFLOW_MENU);
         } else if (menuId == R.id.manage_sharing) {
             RecordUserAction.record("TabGridDialogMenu.ManageSharing");
-            mDataSharingTabManager.showManageSharing(
-                    mActivity, collaborationId, /* finishRunnable= */ null);
+            mDataSharingTabManager.createOrManageFlow(
+                    mActivity,
+                    /* syncId= */ null,
+                    new LocalTabGroupId(tabGroupId),
+                    /* createGroupFinishedCallback= */ null);
         } else if (menuId == R.id.recent_activity) {
             RecordUserAction.record("TabGridDialogMenu.RecentActivity");
             mDataSharingTabManager.showRecentActivity(mActivity, collaborationId);

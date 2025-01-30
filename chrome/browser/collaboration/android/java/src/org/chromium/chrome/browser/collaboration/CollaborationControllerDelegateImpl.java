@@ -16,7 +16,6 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.data_sharing.DataSharingMetrics;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
-import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.NoAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.WithAccountSigninMode;
@@ -34,7 +33,6 @@ import org.chromium.components.data_sharing.configs.DataSharingJoinUiConfig;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
-import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
@@ -360,7 +358,8 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
                     }
                 };
 
-        SavedTabGroup existingGroup = getSavedTabGroupForEitherId(syncId, localId);
+        SavedTabGroup existingGroup =
+                mDataSharingTabManager.getSavedTabGroupForEitherId(syncId, localId);
 
         String sessionId =
                 mDataSharingTabManager.showShareDialog(
@@ -403,7 +402,8 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
      */
     @CalledByNative
     void showManageDialog(String syncId, LocalTabGroupId localId, long resultCallback) {
-        SavedTabGroup existingGroup = getSavedTabGroupForEitherId(syncId, localId);
+        SavedTabGroup existingGroup =
+                mDataSharingTabManager.getSavedTabGroupForEitherId(syncId, localId);
 
         String sessionId =
                 mDataSharingTabManager.showManageSharing(
@@ -418,22 +418,6 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
                 () -> {
                     mDataSharingTabManager.getUiDelegate().destroyFlow(sessionId);
                 };
-    }
-
-    private SavedTabGroup getSavedTabGroupForEitherId(String syncId, LocalTabGroupId localId) {
-        TabGroupSyncService tabGroupSyncService =
-                TabGroupSyncServiceFactory.getForProfile(mDataSharingTabManager.getProfile());
-        assert tabGroupSyncService != null;
-
-        SavedTabGroup existingGroup = null;
-        if (syncId != null) {
-            existingGroup = tabGroupSyncService.getGroup(syncId);
-        } else {
-            existingGroup = tabGroupSyncService.getGroup(localId);
-        }
-        assert existingGroup != null;
-
-        return existingGroup;
     }
 
     /**

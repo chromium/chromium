@@ -4411,13 +4411,11 @@ public class TabListMediatorUnitTest {
         createTabGroup(group1, TAB1_ID, TAB_GROUP_ID);
         mMediator.resetWithListOfTabs(tabs, false);
 
-        String myTitle = "Unshared group";
         // Assert that the callback performs as expected.
-        mModelList.get(POSITION1).model.set(TabProperties.TITLE, myTitle);
         assertNotNull(mModelList.get(POSITION1).model.get(TabProperties.TAB_ACTION_BUTTON_DATA));
         when(mTabGroupModelFilter.getGroupLastShownTabId(TAB_GROUP_ID)).thenReturn(TAB1_ID);
         mMediator.onMenuItemClicked(R.id.share_group, TAB_GROUP_ID, /* collaborationId= */ null);
-        verify(mDataSharingTabManager).createGroupFlow(eq(mActivity), eq(myTitle), any(), any());
+        verify(mDataSharingTabManager).createOrManageFlow(eq(mActivity), eq(null), any(), any());
     }
 
     @Test

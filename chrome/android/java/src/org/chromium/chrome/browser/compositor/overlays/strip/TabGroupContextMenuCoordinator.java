@@ -50,6 +50,7 @@ import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.KeyboardVisibilityDelegate;
@@ -218,8 +219,11 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                         tabGroupDisplayName);
                 recordUserAction("ShareGroup");
             } else if (menuId == R.id.manage_sharing) {
-                dataSharingTabManager.showManageSharing(
-                        activity, collaborationId, /* finishRunnable= */ null);
+                dataSharingTabManager.createOrManageFlow(
+                        activity,
+                        /* syncId= */ null,
+                        new LocalTabGroupId(tabGroupId),
+                        /* createGroupFinishedCallback= */ null);
                 recordUserAction("ManageSharing");
             } else if (menuId == R.id.recent_activity) {
                 dataSharingTabManager.showRecentActivity(activity, collaborationId);

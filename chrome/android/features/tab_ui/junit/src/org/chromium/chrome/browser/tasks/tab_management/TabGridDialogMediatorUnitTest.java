@@ -297,11 +297,11 @@ public class TabGridDialogMediatorUnitTest {
 
         mModel.get(TabGridDialogProperties.SHARE_BUTTON_CLICK_LISTENER).onClick(null);
         verify(mDataSharingTabManager)
-                .createGroupFlow(eq(mActivity), anyString(), eq(LOCAL_TAB_GROUP_ID), any());
+                .createOrManageFlow(eq(mActivity), eq(null), eq(LOCAL_TAB_GROUP_ID), any());
 
         mModel.get(TabGridDialogProperties.SHARE_IMAGE_TILES_CLICK_LISTENER).onClick(null);
         verify(mDataSharingTabManager, times(2))
-                .createGroupFlow(eq(mActivity), anyString(), eq(LOCAL_TAB_GROUP_ID), any());
+                .createOrManageFlow(eq(mActivity), eq(null), eq(LOCAL_TAB_GROUP_ID), any());
 
         mModel.get(TabGridDialogProperties.SEND_FEEDBACK_RUNNABLE).run();
         // TODO(crbug.com/391766089): Replace the second isNull() with the categoryTag.
@@ -1496,7 +1496,8 @@ public class TabGridDialogMediatorUnitTest {
 
         mMediator.onToolbarMenuItemClick(R.id.manage_sharing, TAB_GROUP_ID, COLLABORATION_ID1);
         assertEquals(1, mActionTester.getActionCount("TabGridDialogMenu.ManageSharing"));
-        verify(mDataSharingTabManager).showManageSharing(any(), eq(COLLABORATION_ID1), eq(null));
+        verify(mDataSharingTabManager)
+                .createOrManageFlow(any(), eq(null), eq(LOCAL_TAB_GROUP_ID), eq(null));
     }
 
     @Test
