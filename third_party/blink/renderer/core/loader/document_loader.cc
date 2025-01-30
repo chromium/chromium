@@ -397,10 +397,10 @@ struct SameSizeAsDocumentLoader
   base::Uuid base_auction_nonce;
   LoaderFreezeMode defers_loading;
   bool last_navigation_had_transient_user_activation;
+  bool last_navigation_had_trusted_initiator;
   bool had_sticky_activation;
   bool is_browser_initiated;
   bool is_prerendering;
-  bool is_same_origin_navigation;
   bool has_text_fragment_token;
   bool was_discarded;
   bool loading_main_document_from_mhtml_archive;
