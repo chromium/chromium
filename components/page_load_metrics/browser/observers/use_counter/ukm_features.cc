@@ -446,6 +446,14 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kV8WasmExnRef,
           WebFeature::kV8WasmExceptionHandling,
           WebFeature::kTextAutosizing,
+          WebFeature::kV8AITranslator_SourceLanguage_AttributeGetter,
+          WebFeature::kV8AITranslator_TargetLanguage_AttributeGetter,
+          WebFeature::kV8AITranslator_Destroy_Method,
+          WebFeature::kV8AITranslator_Translate_Method,
+          WebFeature::kV8AITranslator_TranslateStreaming_Method,
+          WebFeature::kV8AITranslatorFactory_Create_Method,
+          WebFeature::kV8AILanguageDetectorFactory_Create_Method,
+          WebFeature::kV8AILanguageDetector_Destroy_Method,
       }));
   return *opt_in_features;
 }
