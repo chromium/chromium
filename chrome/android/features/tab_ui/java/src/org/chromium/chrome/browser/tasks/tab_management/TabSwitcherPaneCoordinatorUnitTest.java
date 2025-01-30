@@ -77,7 +77,7 @@ import org.chromium.chrome.browser.ui.favicon.FaviconHelperJni;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
-import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.ServiceStatus;
 import org.chromium.components.collaboration.messaging.MessagingBackendService;
@@ -111,7 +111,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private TabContentManager mTabContentManager;
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
-    @Mock private ScrimCoordinator mScrimCoordinator;
+    @Mock private ScrimManager mScrimManager;
     @Mock private DataSharingService mDataSharingService;
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private TabSwitcherMessageManager mMessageManager;
@@ -206,7 +206,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
                         mTabGroupModelFilterSupplier,
                         mTabContentManager,
                         mBrowserControlsStateProvider,
-                        mScrimCoordinator,
+                        mScrimManager,
                         mModalDialogManager,
                         mBottomSheetController,
                         mDataSharingTabManager,

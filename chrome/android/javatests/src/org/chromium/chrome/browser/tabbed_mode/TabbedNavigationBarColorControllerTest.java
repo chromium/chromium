@@ -45,7 +45,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
-import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.DOMUtils;
@@ -179,8 +179,7 @@ public class TabbedNavigationBarColorControllerTest {
 
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
         View rootView = activity.findViewById(R.id.tab_switcher_view_holder_stub);
-        ScrimCoordinator scrimCoordinator =
-                activity.getRootUiCoordinatorForTesting().getScrimCoordinator();
+        ScrimManager scrimManager = activity.getRootUiCoordinatorForTesting().getScrimManager();
 
         PropertyModel outerPropertyModel =
                 ThreadUtils.runOnUiThreadBlocking(
@@ -190,8 +189,8 @@ public class TabbedNavigationBarColorControllerTest {
                                             .with(ScrimProperties.ANCHOR_VIEW, rootView)
                                             .with(ScrimProperties.AFFECTS_NAVIGATION_BAR, true)
                                             .build();
-                            scrimCoordinator.showScrim(propertyModel);
-                            scrimCoordinator.forceAnimationToFinish(propertyModel);
+                            scrimManager.showScrim(propertyModel);
+                            scrimManager.forceAnimationToFinish(propertyModel);
                             return propertyModel;
                         });
 
@@ -203,7 +202,7 @@ public class TabbedNavigationBarColorControllerTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
-                        scrimCoordinator.hideScrim(
+                        scrimManager.hideScrim(
                                 outerPropertyModel, /* animate= */ false, /* duration= */ 0));
         assertEquals(
                 mActivityTestRule.getActivity().getActivityTab().getBackgroundColor(),

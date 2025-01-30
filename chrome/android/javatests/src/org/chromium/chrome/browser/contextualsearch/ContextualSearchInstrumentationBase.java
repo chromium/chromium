@@ -127,7 +127,7 @@ public class ContextualSearchInstrumentationBase {
                     activity,
                     ProfileManager.getLastUsedRegularProfile(),
                     null,
-                    activity.getRootUiCoordinatorForTesting().getScrimCoordinator(),
+                    activity.getRootUiCoordinatorForTesting().getScrimManager(),
                     activity.getActivityTabProvider(),
                     activity.getFullscreenManager(),
                     activity.getBrowserControlsManager(),

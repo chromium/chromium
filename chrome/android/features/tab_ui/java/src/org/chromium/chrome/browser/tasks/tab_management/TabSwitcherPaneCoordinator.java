@@ -62,7 +62,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
-import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.ServiceStatus;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -159,7 +159,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
      * @param tabGroupModelFilterSupplier The supplier of the tab model filter fo rthis pane.
      * @param tabContentManager For management of thumbnails.
      * @param browserControlsStateProvider For determining thumbnail size.
-     * @param scrimCoordinator The scrim coordinator to use for the tab grid dialog.
+     * @param scrimManager The scrim component to use for the tab grid dialog.
      * @param modalDialogManager The modal dialog manager for the activity.
      * @param bottomSheetController The {@link BottomSheetController} for the current activity.
      * @param dataSharingTabManager The {@link} DataSharingTabManager managing communication between
@@ -184,7 +184,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
             @NonNull ObservableSupplier<TabGroupModelFilter> tabGroupModelFilterSupplier,
             @NonNull TabContentManager tabContentManager,
             @NonNull BrowserControlsStateProvider browserControlsStateProvider,
-            @NonNull ScrimCoordinator scrimCoordinator,
+            @NonNull ScrimManager scrimManager,
             @NonNull ModalDialogManager modalDialogManager,
             @NonNull BottomSheetController bottomSheetController,
             @NonNull DataSharingTabManager dataSharingTabManager,
@@ -252,7 +252,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                                                 getGridCardOnClickListenerProvider(),
                                                 TabSwitcherPaneCoordinator.this
                                                         ::getTabGridDialogAnimationSourceView,
-                                                scrimCoordinator,
+                                                scrimManager,
                                                 actionConfirmationManager,
                                                 mModalDialogManager,
                                                 desktopWindowStateManager);

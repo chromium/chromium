@@ -159,7 +159,7 @@ import org.chromium.components.browser_ui.edge_to_edge.SystemBarColorHelper;
 import org.chromium.components.browser_ui.widget.CoordinatorLayoutForPointer;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
-import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.ServiceStatus;
 import org.chromium.components.feature_engagement.FeatureConstants;
@@ -893,15 +893,13 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     }
 
     @Override
-    protected ScrimCoordinator buildScrimWidget() {
-        ScrimCoordinator scrimCoordinator = new ScrimCoordinator(mActivity, mCoordinator);
-        scrimCoordinator
+    protected ScrimManager buildScrimWidget() {
+        ScrimManager scrimManager = new ScrimManager(mActivity, mCoordinator);
+        scrimManager
                 .getStatusBarColorSupplier()
                 .addObserver(mStatusBarColorController::setScrimColor);
-        scrimCoordinator
-                .getNavigationBarColorSupplier()
-                .addObserver(this::onNavBarScrimColorChanged);
-        return scrimCoordinator;
+        scrimManager.getNavigationBarColorSupplier().addObserver(this::onNavBarScrimColorChanged);
+        return scrimManager;
     }
 
     @SuppressLint("NewApi")

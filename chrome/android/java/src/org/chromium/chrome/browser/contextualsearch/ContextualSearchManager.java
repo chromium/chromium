@@ -60,7 +60,7 @@ import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
-import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingResultType;
 import org.chromium.components.external_intents.ExternalNavigationParams;
@@ -142,7 +142,7 @@ public class ContextualSearchManager
     private final ContextualSearchTranslation mTranslateController;
     private final ContextualSearchSelectionClient mContextualSearchSelectionClient;
 
-    private final ScrimCoordinator mScrimCoordinator;
+    private final ScrimManager mScrimManager;
 
     /** The fullscreen state of the browser. */
     private final FullscreenManager mFullscreenManager;
@@ -254,7 +254,7 @@ public class ContextualSearchManager
      * @param profile The Profile associated with this ContextualSearchManager.
      * @param tabPromotionDelegate The {@link ContextualSearchTabPromotionDelegate} that is
      *     responsible for building tabs from contextual search {@link WebContents}.
-     * @param scrimCoordinator A mechanism for showing and hiding the shared scrim.
+     * @param scrimManager A mechanism for showing and hiding the shared scrim.
      * @param tabSupplier Access to the tab that is currently active.
      * @param fullscreenManager Access to the fullscreen state.
      * @param browserControlsStateProvider Access to the current state of the browser controls.
@@ -266,7 +266,7 @@ public class ContextualSearchManager
             Activity activity,
             Profile profile,
             ContextualSearchTabPromotionDelegate tabPromotionDelegate,
-            ScrimCoordinator scrimCoordinator,
+            ScrimManager scrimManager,
             Supplier<Tab> tabSupplier,
             FullscreenManager fullscreenManager,
             BrowserControlsStateProvider browserControlsStateProvider,
@@ -276,7 +276,7 @@ public class ContextualSearchManager
         mActivity = activity;
         mProfile = profile;
         mTabPromotionDelegate = tabPromotionDelegate;
-        mScrimCoordinator = scrimCoordinator;
+        mScrimManager = scrimManager;
         mTabSupplier = tabSupplier;
         mFullscreenManager = fullscreenManager;
         mBrowserControlsStateProvider = browserControlsStateProvider;
@@ -1350,8 +1350,8 @@ public class ContextualSearchManager
     }
 
     @Override
-    public ScrimCoordinator getScrimCoordinator() {
-        return mScrimCoordinator;
+    public ScrimManager getScrimManager() {
+        return mScrimManager;
     }
 
     @Override

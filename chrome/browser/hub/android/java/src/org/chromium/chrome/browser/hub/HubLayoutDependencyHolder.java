@@ -13,7 +13,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 
 import java.util.function.DoubleConsumer;
 
@@ -32,8 +32,8 @@ public class HubLayoutDependencyHolder {
     /**
      * @param hubManagerSupplier The supplier of {@link HubManager}.
      * @param hubRootViewGroupSupplier The supplier of the root view to attach the {@link Hub} to.
-     * @param scrimCoordinator The browser scrim coordinator used for displaying scrims when
-     *     transitioning to or from the {@link HubLayout} where applicable.
+     * @param scrimManager The browser scrim component used for displaying scrims when transitioning
+     *     to or from the {@link HubLayout} where applicable.
      * @param scrimAnchorViewSupplier The supplier of the anchor view to attach {@link HubLayout}
      *     scrims to. This should not return null after the HubLayout is initialized.
      * @param isIncognitoSupplier Whether the UI is currently in incognito mode. Used only for the
@@ -43,7 +43,7 @@ public class HubLayoutDependencyHolder {
     public HubLayoutDependencyHolder(
             @NonNull LazyOneshotSupplier<HubManager> hubManagerSupplier,
             @NonNull LazyOneshotSupplier<ViewGroup> hubRootViewGroupSupplier,
-            @NonNull ScrimCoordinator scrimCoordinator,
+            @NonNull ScrimManager scrimManager,
             @NonNull Supplier<View> scrimAnchorViewSupplier,
             @NonNull ObservableSupplier<Boolean> isIncognitoSupplier,
             @NonNull DoubleConsumer onToolbarAlphaChange) {
@@ -51,7 +51,7 @@ public class HubLayoutDependencyHolder {
                 hubManagerSupplier,
                 hubRootViewGroupSupplier,
                 new HubLayoutScrimController(
-                        scrimCoordinator, scrimAnchorViewSupplier, isIncognitoSupplier),
+                        scrimManager, scrimAnchorViewSupplier, isIncognitoSupplier),
                 onToolbarAlphaChange);
     }
 

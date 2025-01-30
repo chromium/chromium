@@ -14,16 +14,16 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.components.browser_ui.styles.ChromeColors;
-import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/** Wrapper around {@link ScrimCoordinator} to inject into {@link HubLayout}. */
+/** Wrapper around {@link ScrimManager} to inject into {@link HubLayout}. */
 public class HubLayoutScrimController implements ScrimController {
     // From TabSwitcherLayout.java.
     private static final int SCRIM_FADE_DURATION_MS = 350;
 
-    private final @NonNull ScrimCoordinator mScrimCoordinator;
+    private final @NonNull ScrimManager mScrimManager;
     private final @NonNull Supplier<View> mAnchorViewSupplier;
     private final @NonNull ObservableSupplier<Boolean> mIsIncognitoSupplier;
     private final @NonNull Callback<Boolean> mOnIncognitoChange = this::onIncognitoChange;
@@ -31,16 +31,16 @@ public class HubLayoutScrimController implements ScrimController {
     private @Nullable PropertyModel mPropertyModel;
 
     /**
-     * @param scrimCoordinator The {@link ScrimCoordinator} to use.
+     * @param scrimManager The {@link ScrimManager} to use.
      * @param anchorViewSupplier The supplier for a {@link View} to anchor the scrim to. This must
      *     not return null if a scrim is going to be shown.
      * @param isIncognitoSupplier For checking and observing if the current UI is incognito.
      */
     public HubLayoutScrimController(
-            @NonNull ScrimCoordinator scrimCoordinator,
+            @NonNull ScrimManager scrimManager,
             @NonNull Supplier<View> anchorViewSupplier,
             @NonNull ObservableSupplier<Boolean> isIncognitoSupplier) {
-        mScrimCoordinator = scrimCoordinator;
+        mScrimManager = scrimManager;
         mAnchorViewSupplier = anchorViewSupplier;
         mIsIncognitoSupplier = isIncognitoSupplier;
     }
@@ -58,27 +58,27 @@ public class HubLayoutScrimController implements ScrimController {
 
         mPropertyModel = scrimPropertiesBuilder.build();
         mIsIncognitoSupplier.addObserver(mOnIncognitoChange);
-        mScrimCoordinator.showScrim(mPropertyModel);
+        mScrimManager.showScrim(mPropertyModel);
     }
 
     @Override
     public void startHidingScrim() {
-        if (!mScrimCoordinator.isShowingScrim()) return;
+        if (!mScrimManager.isShowingScrim()) return;
 
         mIsIncognitoSupplier.removeObserver(mOnIncognitoChange);
-        mScrimCoordinator.hideScrim(mPropertyModel, /* animate= */ true, SCRIM_FADE_DURATION_MS);
+        mScrimManager.hideScrim(mPropertyModel, /* animate= */ true, SCRIM_FADE_DURATION_MS);
         mPropertyModel = null;
     }
 
     /** Forces the current animation to finish. */
     public void forceAnimationToFinish() {
-        mScrimCoordinator.forceAnimationToFinish(mPropertyModel);
+        mScrimManager.forceAnimationToFinish(mPropertyModel);
     }
 
     private void onIncognitoChange(Boolean ignored) {
         if (mPropertyModel == null) return;
 
-        mScrimCoordinator.setScrimColor(calculateScrimColor(), mPropertyModel);
+        mScrimManager.setScrimColor(calculateScrimColor(), mPropertyModel);
     }
 
     private @ColorInt int calculateScrimColor() {

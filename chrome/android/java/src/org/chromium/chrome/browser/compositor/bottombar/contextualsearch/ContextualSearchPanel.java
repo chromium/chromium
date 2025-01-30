@@ -37,7 +37,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
-import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.WindowAndroid;
@@ -112,14 +112,14 @@ public class ContextualSearchPanel extends OverlayPanel {
     private ContextualSearchSceneLayer mSceneLayer;
 
     /**
-     * A ScrimCoordinator for adjusting the Status Bar's brightness when a scrim is present (when
-     * the panel is open).
+     * A ScrimManager for adjusting the Status Bar's brightness when a scrim is present (when the
+     * panel is open).
      */
-    private ScrimCoordinator mScrimCoordinator;
+    private ScrimManager mScrimManager;
 
     /**
-     * Params that configure our use of the ScrimCoordinator for adjusting the Status Bar's
-     * brightness when a scrim is present (when the panel is open).
+     * Params that configure our use of the ScrimManager for adjusting the Status Bar's brightness
+     * when a scrim is present (when the panel is open).
      */
     private PropertyModel mScrimProperties;
 
@@ -319,8 +319,8 @@ public class ContextualSearchPanel extends OverlayPanel {
         super.onClosed(reason);
 
         if (mSceneLayer != null) mSceneLayer.hideTree();
-        if (mScrimCoordinator != null) {
-            mScrimCoordinator.hideScrim(mScrimProperties, /* animate= */ false);
+        if (mScrimManager != null) {
+            mScrimManager.hideScrim(mScrimProperties, /* animate= */ false);
         }
 
         mDidStartCollapsing = false;
@@ -850,22 +850,22 @@ public class ContextualSearchPanel extends OverlayPanel {
                 (maxBrightness - basePageBrightness) / (maxBrightness - minBrightness);
         if (!getCanHideAndroidBrowserControls()) scrimAndroidToolbar(statusBarAlpha);
         if (statusBarAlpha == 0.0) {
-            if (mScrimCoordinator != null) {
-                mScrimCoordinator.hideScrim(mScrimProperties, /* animate= */ false);
+            if (mScrimManager != null) {
+                mScrimManager.hideScrim(mScrimProperties, /* animate= */ false);
             }
             mScrimProperties = null;
-            mScrimCoordinator = null;
+            mScrimManager = null;
         } else {
-            mScrimCoordinator = mManagementDelegate.getScrimCoordinator();
+            mScrimManager = mManagementDelegate.getScrimManager();
             if (mScrimProperties == null) {
                 mScrimProperties =
                         new PropertyModel.Builder(ScrimProperties.ALL_KEYS)
                                 .with(ScrimProperties.AFFECTS_STATUS_BAR, true)
                                 .with(ScrimProperties.ANCHOR_VIEW, getCompositorViewHolder())
                                 .build();
-                mScrimCoordinator.showScrim(mScrimProperties);
+                mScrimManager.showScrim(mScrimProperties);
             }
-            mScrimCoordinator.setAlpha(statusBarAlpha, mScrimProperties);
+            mScrimManager.setAlpha(statusBarAlpha, mScrimProperties);
         }
     }
 

@@ -77,7 +77,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -118,7 +118,7 @@ public class TabGridDialogViewBinderTest {
     private @Nullable View mImageTilesContainer;
     private @Nullable View mSendFeedbackButton;
     private ImageView mHairline;
-    private ScrimCoordinator mScrimCoordinator;
+    private ScrimManager mScrimManager;
     private GridLayoutManager mLayoutManager;
     private LinearLayoutManager mLinearLayoutManager;
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
@@ -187,8 +187,8 @@ public class TabGridDialogViewBinderTest {
                         assertNull(mShareButton);
                         assertNull(mImageTilesContainer);
                     }
-                    mScrimCoordinator = new ScrimCoordinator(sActivity, parentView);
-                    mTabGridDialogView.setupScrimCoordinator(mScrimCoordinator);
+                    mScrimManager = new ScrimManager(sActivity, parentView);
+                    mTabGridDialogView.setupScrimManager(mScrimManager);
 
                     mModel =
                             new PropertyModel.Builder(TabGridDialogProperties.ALL_KEYS)
@@ -340,7 +340,7 @@ public class TabGridDialogViewBinderTest {
         mModel.set(TabGridDialogProperties.SCRIMVIEW_CLICK_RUNNABLE, scrimClickRunnable);
         // Open the dialog to show the ScrimView.
         mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, true);
-        View scrimView = mScrimCoordinator.getViewForTesting();
+        View scrimView = mScrimManager.getViewForTesting();
         scrimView.performClick();
         assertTrue(scrimViewClicked.get());
     }

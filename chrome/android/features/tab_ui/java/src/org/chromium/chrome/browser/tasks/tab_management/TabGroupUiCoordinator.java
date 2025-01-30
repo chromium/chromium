@@ -42,7 +42,7 @@ import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.ServiceStatus;
 import org.chromium.components.data_sharing.DataSharingService;
@@ -69,7 +69,7 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
     private final PropertyModel mModel;
     private final TabGroupUiToolbarView mToolbarView;
     private final ViewGroup mTabListContainerView;
-    private final ScrimCoordinator mScrimCoordinator;
+    private final ScrimManager mScrimManager;
     private final ObservableSupplier<Boolean> mOmniboxFocusStateSupplier;
     private final BottomSheetController mBottomSheetController;
     private final DataSharingTabManager mDataSharingTabManager;
@@ -97,7 +97,7 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
             @NonNull Activity activity,
             @NonNull ViewGroup parentView,
             @NonNull BrowserControlsStateProvider browserControlsStateProvider,
-            @NonNull ScrimCoordinator scrimCoordinator,
+            @NonNull ScrimManager scrimManager,
             @NonNull ObservableSupplier<Boolean> omniboxFocusStateSupplier,
             @NonNull BottomSheetController bottomSheetController,
             @NonNull DataSharingTabManager dataSharingTabManager,
@@ -110,7 +110,7 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
         try (TraceEvent e = TraceEvent.scoped("TabGroupUiCoordinator.constructor")) {
             mActivity = activity;
             mBrowserControlsStateProvider = browserControlsStateProvider;
-            mScrimCoordinator = scrimCoordinator;
+            mScrimManager = scrimManager;
             mOmniboxFocusStateSupplier = omniboxFocusStateSupplier;
             mModel = new PropertyModel(TabGroupUiProperties.ALL_KEYS);
 
@@ -162,7 +162,7 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
                         null,
                         null,
                         null,
-                        mScrimCoordinator,
+                        mScrimManager,
                         mActionConfirmationSupplier.get(),
                         mModalDialogManager,
                         /* desktopWindowStateManager= */ null);
@@ -218,7 +218,7 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
 
             // TODO(crbug.com/40631286): find a way to enable interactions between grid tab switcher
             //  and the dialog here.
-            if (mScrimCoordinator != null) {
+            if (mScrimManager != null) {
                 mTabGridDialogControllerSupplier =
                         LazyOneshotSupplier.fromSupplier(this::initTabGridDialogCoordinator);
             } else {

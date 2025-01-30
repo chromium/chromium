@@ -55,7 +55,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFacto
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
-import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -97,7 +97,7 @@ public class CreatorCoordinator
     private final CreatorSnackbarController mCreatorSnackbarController;
     private final WindowAndroid mWindowAndroid;
     private BottomSheetController mBottomSheetController;
-    private ScrimCoordinator mScrimCoordinator;
+    private ScrimManager mScrimManager;
     private ViewGroup mBottomSheetContainer;
     private Profile mProfile;
     private Stream mStream;
@@ -394,7 +394,7 @@ public class CreatorCoordinator
 
     /** Set up the bottom sheet for this activity. */
     private void initBottomSheet() {
-        mScrimCoordinator = new ScrimCoordinator(mActivity, mCreatorViewGroup);
+        mScrimManager = new ScrimManager(mActivity, mCreatorViewGroup);
 
         mBottomSheetContainer = new FrameLayout(mActivity);
         mBottomSheetContainer.setId(R.id.creator_content_preview_bottom_sheet);
@@ -403,7 +403,7 @@ public class CreatorCoordinator
         mCreatorViewGroup.addView(mBottomSheetContainer);
         mBottomSheetController =
                 BottomSheetControllerFactory.createBottomSheetController(
-                        () -> mScrimCoordinator,
+                        () -> mScrimManager,
                         (sheet) -> {},
                         mActivity.getWindow(),
                         KeyboardVisibilityDelegate.getInstance(),

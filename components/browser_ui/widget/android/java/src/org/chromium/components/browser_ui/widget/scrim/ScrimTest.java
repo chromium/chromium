@@ -74,7 +74,7 @@ public class ScrimTest {
     @SuppressLint("StaticFieldLeak")
     private static FrameLayout sParent;
 
-    private ScrimCoordinator mScrimCoordinator;
+    private ScrimManager mScrimManager;
     private View mAnchorView;
 
     private final PayloadCallbackHelper<Integer> mStatusBarColorHelper =
@@ -109,11 +109,11 @@ public class ScrimTest {
                     mAnchorView = new View(sActivity);
                     sParent.addView(mAnchorView);
 
-                    mScrimCoordinator = new ScrimCoordinator(sActivity, sParent);
-                    mScrimCoordinator
+                    mScrimManager = new ScrimManager(sActivity, sParent);
+                    mScrimManager
                             .getStatusBarColorSupplier()
                             .addObserver(mStatusBarColorHelper::notifyCalled);
-                    mScrimCoordinator
+                    mScrimManager
                             .getNavigationBarColorSupplier()
                             .addObserver(mNavBarColorHelper::notifyCalled);
 
@@ -135,7 +135,7 @@ public class ScrimTest {
 
     @After
     public void tearDownTest() {
-        ThreadUtils.runOnUiThreadBlocking(() -> mScrimCoordinator.destroy());
+        ThreadUtils.runOnUiThreadBlocking(() -> mScrimManager.destroy());
     }
 
     @Test
@@ -148,12 +148,12 @@ public class ScrimTest {
         assertEquals(
                 "Scrim should be completely visible.",
                 1.0f,
-                mScrimCoordinator.getViewForTesting().getAlpha(),
+                mScrimManager.getViewForTesting().getAlpha(),
                 MathUtils.EPSILON);
 
         int callCount = mVisibilityChangeCallbackHelper.getCallCount();
         ThreadUtils.runOnUiThreadBlocking(
-                () -> mScrimCoordinator.hideScrim(model, /* animate= */ false));
+                () -> mScrimManager.hideScrim(model, /* animate= */ false));
         mVisibilityChangeCallbackHelper.waitForCallback(callCount, 1);
         assertScrimVisibility(false);
     }
@@ -165,7 +165,7 @@ public class ScrimTest {
         PropertyModel model = buildModel(false, true, Color.RED);
         showScrim(model, /* animate= */ true);
 
-        ScrimView scrimView = mScrimCoordinator.getViewForTesting();
+        ScrimView scrimView = mScrimManager.getViewForTesting();
         assertEquals(
                 "Scrim should be completely visible.",
                 1.0f,
@@ -175,8 +175,8 @@ public class ScrimTest {
         int callCount = mVisibilityChangeCallbackHelper.getCallCount();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mScrimCoordinator.hideScrim(model, /* animate= */ true);
-                    mScrimCoordinator.forceAnimationToFinish(model);
+                    mScrimManager.hideScrim(model, /* animate= */ true);
+                    mScrimManager.forceAnimationToFinish(model);
                     assertEquals(
                             "Scrim should be completely invisible.",
                             0.0f,
@@ -206,13 +206,13 @@ public class ScrimTest {
         assertScrimColor(Color.GREEN);
 
         ThreadUtils.runOnUiThreadBlocking(
-                () -> mScrimCoordinator.hideScrim(model, /* animate= */ false));
+                () -> mScrimManager.hideScrim(model, /* animate= */ false));
 
         CriteriaHelper.pollUiThread(
                 () -> {
                     Criteria.checkThat(
                             "Scrim should be null after being hidden.",
-                            mScrimCoordinator.getViewForTesting(),
+                            mScrimManager.getViewForTesting(),
                             Matchers.nullValue());
                 });
     }
@@ -230,7 +230,7 @@ public class ScrimTest {
                 Color.GREEN, mStatusBarColorHelper.getPayloadByIndexBlocking(callCount).intValue());
 
         callCount = mStatusBarColorHelper.getCallCount();
-        ThreadUtils.runOnUiThreadBlocking(() -> mScrimCoordinator.setScrimColor(Color.RED, model));
+        ThreadUtils.runOnUiThreadBlocking(() -> mScrimManager.setScrimColor(Color.RED, model));
         assertScrimColor(Color.RED);
         assertEquals(
                 Color.RED, mStatusBarColorHelper.getPayloadByIndexBlocking(callCount).intValue());
@@ -242,7 +242,7 @@ public class ScrimTest {
     public void testHierarchy_behindAnchor() throws TimeoutException {
         showScrim(buildModel(false, false, Color.RED), /* animate= */ false);
 
-        View scrimView = mScrimCoordinator.getViewForTesting();
+        View scrimView = mScrimManager.getViewForTesting();
         assertEquals("The parent view of the scrim is incorrect.", sParent, scrimView.getParent());
         assertTrue(
                 "The scrim should be positioned behind the anchor.",
@@ -255,7 +255,7 @@ public class ScrimTest {
     public void testHierarchy_inFrontOfAnchor() throws TimeoutException {
         showScrim(buildModel(false, true, Color.RED), /* animate= */ false);
 
-        View scrimView = mScrimCoordinator.getViewForTesting();
+        View scrimView = mScrimManager.getViewForTesting();
         assertEquals("The parent view of the scrim is incorrect.", sParent, scrimView.getParent());
         assertTrue(
                 "The scrim should be positioned in front of the anchor.",
@@ -269,7 +269,7 @@ public class ScrimTest {
         showScrim(buildModel(false, true, Color.RED), /* animate= */ false);
 
         int callCount = mScrimClickCallbackHelper.getCallCount();
-        ScrimView scrimView = mScrimCoordinator.getViewForTesting();
+        ScrimView scrimView = mScrimManager.getViewForTesting();
         ThreadUtils.runOnUiThreadBlocking(scrimView::callOnClick);
         mScrimClickCallbackHelper.waitForCallback(callCount, 1);
     }
@@ -293,7 +293,7 @@ public class ScrimTest {
         showScrim(model, /* animate= */ false);
 
         int gestureCallCount = mDelegatedEventHelper.getCallCount();
-        ScrimView scrimView = mScrimCoordinator.getViewForTesting();
+        ScrimView scrimView = mScrimManager.getViewForTesting();
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         scrimView.dispatchTouchEvent(
@@ -316,11 +316,11 @@ public class ScrimTest {
         PropertyModel model = buildModel(false, true, Color.RED);
         showScrim(model, /* animate= */ true);
 
-        ThreadUtils.runOnUiThreadBlocking(() -> mScrimCoordinator.setAlpha(0.5f, model));
+        ThreadUtils.runOnUiThreadBlocking(() -> mScrimManager.setAlpha(0.5f, model));
 
         assertFalse(
                 "Animations should not be running.",
-                mScrimCoordinator.areAnimationsRunningForTesting());
+                mScrimManager.areAnimationsRunningForTesting());
     }
 
     @Test
@@ -342,12 +342,12 @@ public class ScrimTest {
         PropertyModel model = buildModel(false, true, Color.RED);
         showScrim(model, /* animate= */ false);
 
-        ThreadUtils.runOnUiThreadBlocking(() -> mScrimCoordinator.setAlpha(0.5f, model));
+        ThreadUtils.runOnUiThreadBlocking(() -> mScrimManager.setAlpha(0.5f, model));
 
         assertEquals(
                 "Scrim alpha should be 0.5f.",
                 0.5f,
-                mScrimCoordinator.getViewForTesting().getAlpha(),
+                mScrimManager.getViewForTesting().getAlpha(),
                 MathUtils.EPSILON);
 
         assertEquals(
@@ -418,7 +418,7 @@ public class ScrimTest {
 
         showScrim(model, /* animate= */ false);
 
-        View scrimView = mScrimCoordinator.getViewForTesting();
+        View scrimView = mScrimManager.getViewForTesting();
         assertEquals(
                 "Scrim top margin is incorrect.",
                 topMargin,
@@ -434,13 +434,13 @@ public class ScrimTest {
 
         assertScrimVisibility(true);
 
-        View oldScrim = mScrimCoordinator.getViewForTesting();
+        View oldScrim = mScrimManager.getViewForTesting();
 
         PropertyModel secondModel = buildModel(false, true, Color.BLUE);
         showScrim(secondModel, /* animate= */ false);
         assertScrimColor(Color.BLUE);
 
-        View newScrim = mScrimCoordinator.getViewForTesting();
+        View newScrim = mScrimManager.getViewForTesting();
 
         assertNotEquals("The view should have changed.", oldScrim, newScrim);
         assertEquals("The old scrim should be gone.", View.GONE, oldScrim.getVisibility());
@@ -449,7 +449,7 @@ public class ScrimTest {
         assertScrimColor(Color.BLUE);
 
         ThreadUtils.runOnUiThreadBlocking(
-                () -> mScrimCoordinator.hideScrim(secondModel, /* animate= */ false));
+                () -> mScrimManager.hideScrim(secondModel, /* animate= */ false));
         ThreadUtils.runOnUiThreadBlocking(() -> firstModel.set(BACKGROUND_COLOR, Color.GREEN));
     }
 
@@ -468,14 +468,14 @@ public class ScrimTest {
         TestScrimVisibilityObserver o1 = new TestScrimVisibilityObserver();
         TestScrimVisibilityObserver o2 = new TestScrimVisibilityObserver();
 
-        ThreadUtils.runOnUiThreadBlocking(() -> mScrimCoordinator.addObserver(o1));
+        ThreadUtils.runOnUiThreadBlocking(() -> mScrimManager.addObserver(o1));
         PropertyModel firstModel = buildModel(false, true, Color.RED);
         showScrim(firstModel, /* animate= */ false);
 
         assertTrue(o1.mVisible);
         assertFalse(o2.mVisible);
 
-        ThreadUtils.runOnUiThreadBlocking(() -> mScrimCoordinator.addObserver(o2));
+        ThreadUtils.runOnUiThreadBlocking(() -> mScrimManager.addObserver(o2));
 
         PropertyModel secondModel = buildModel(false, true, Color.BLUE);
         showScrim(secondModel, /* animate= */ false);
@@ -485,13 +485,13 @@ public class ScrimTest {
         assertFalse(o2.mVisible);
 
         ThreadUtils.runOnUiThreadBlocking(
-                () -> mScrimCoordinator.hideScrim(firstModel, /* animate= */ false));
+                () -> mScrimManager.hideScrim(firstModel, /* animate= */ false));
         // Above hideScrim should no-op, wrong model.
         assertTrue(o1.mVisible);
         assertFalse(o2.mVisible);
 
         ThreadUtils.runOnUiThreadBlocking(
-                () -> mScrimCoordinator.hideScrim(secondModel, /* animate= */ false));
+                () -> mScrimManager.hideScrim(secondModel, /* animate= */ false));
         assertFalse(o1.mVisible);
         assertFalse(o2.mVisible);
 
@@ -508,7 +508,7 @@ public class ScrimTest {
      * @param showInFrontOfAnchor Whether the scrim shows in front of the anchor view.
      * @param color The color to use for the overlay. If only using required keys, this value is
      *     ignored.
-     * @return A model to pass to the scrim coordinator.
+     * @return A model to pass to the {@link ScrimManager}.
      */
     private PropertyModel buildModel(
             boolean affectsStatusBar, boolean showInFrontOfAnchor, @ColorInt int color) {
@@ -535,22 +535,22 @@ public class ScrimTest {
         int callCount = mVisibilityChangeCallbackHelper.getCallCount();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mScrimCoordinator.showScrim(model);
+                    mScrimManager.showScrim(model);
 
                     // Animations are disabled for these types of tests, so just make sure the
                     // animation was created then continue as if we weren't running animation.
                     if (animate) {
                         assertTrue(
                                 "Animations should be running.",
-                                mScrimCoordinator.areAnimationsRunningForTesting());
+                                mScrimManager.areAnimationsRunningForTesting());
                     }
 
-                    mScrimCoordinator.forceAnimationToFinish(model);
-                    assertFalse(mScrimCoordinator.areAnimationsRunningForTesting());
+                    mScrimManager.forceAnimationToFinish(model);
+                    assertFalse(mScrimManager.areAnimationsRunningForTesting());
                     assertEquals(
                             "Scrim should be completely visible.",
                             1.0f,
-                            mScrimCoordinator.getViewForTesting().getAlpha(),
+                            mScrimManager.getViewForTesting().getAlpha(),
                             MathUtils.EPSILON);
                 });
 
@@ -563,7 +563,7 @@ public class ScrimTest {
         assertEquals(
                 "Scrim color was incorrect.",
                 color,
-                ((ColorDrawable) mScrimCoordinator.getViewForTesting().getBackground()).getColor());
+                ((ColorDrawable) mScrimManager.getViewForTesting().getBackground()).getColor());
     }
 
     /**
@@ -578,11 +578,11 @@ public class ScrimTest {
                         assertEquals(
                                 "The scrim should be visible.",
                                 View.VISIBLE,
-                                mScrimCoordinator.getViewForTesting().getVisibility());
+                                mScrimManager.getViewForTesting().getVisibility());
                     } else {
                         assertNull(
                                 "The scrim should be null after being hidden.",
-                                mScrimCoordinator.getViewForTesting());
+                                mScrimManager.getViewForTesting());
                     }
                 });
     }

@@ -26,7 +26,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 public class ScrimProperties {
     /**
      * An invalid color that can be specified for {@link #BACKGROUND_COLOR}. This will trigger the
-     * use of the default color set when the {@link ScrimCoordinator} was constructed.
+     * use of the default color set when the {@link ScrimManager} was constructed.
      */
     public static final @ColorInt int INVALID_COLOR = Color.TRANSPARENT;
 

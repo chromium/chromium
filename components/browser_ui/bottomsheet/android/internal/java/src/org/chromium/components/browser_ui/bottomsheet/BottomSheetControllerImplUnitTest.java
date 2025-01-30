@@ -32,7 +32,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
-import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 
 /** Unit tests for {@link BottomSheetControllerImpl}. */
@@ -41,7 +41,7 @@ import org.chromium.ui.KeyboardVisibilityDelegate;
 public class BottomSheetControllerImplUnitTest {
     private static final int APP_HEADER_HEIGHT = 42;
 
-    @Mock private ScrimCoordinator mScrimCoordinator;
+    @Mock private ScrimManager mScrimManager;
     @Mock private KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
     @Mock private ViewGroup mRoot;
     @Mock private DesktopWindowStateManager mDesktopWindowStateManager;
@@ -50,7 +50,7 @@ public class BottomSheetControllerImplUnitTest {
     @Captor ArgumentCaptor<BottomSheetObserver> mBottomSheetObserverCaptor;
 
     private BottomSheetControllerImpl mController;
-    private final OneshotSupplierImpl<ScrimCoordinator> mScrimCoordinatorSupplier =
+    private final OneshotSupplierImpl<ScrimManager> mScrimManagerSupplier =
             new OneshotSupplierImpl<>();
     private final Callback<View> mInitializedCallback = view -> {};
     private Window mWindow;
@@ -65,11 +65,11 @@ public class BottomSheetControllerImplUnitTest {
         mWindow = activity.getWindow();
         when(mRoot.getContext()).thenReturn(activity);
         when(mRoot.findViewById(R.id.bottom_sheet)).thenReturn(mBottomSheet);
-        mScrimCoordinatorSupplier.set(mScrimCoordinator);
+        mScrimManagerSupplier.set(mScrimManager);
         mRootSupplier.set(mRoot);
         mController =
                 new BottomSheetControllerImpl(
-                        mScrimCoordinatorSupplier,
+                        mScrimManagerSupplier,
                         mInitializedCallback,
                         mWindow,
                         mKeyboardVisibilityDelegate,
@@ -155,7 +155,7 @@ public class BottomSheetControllerImplUnitTest {
 
     @Test
     public void testScrimStartsVisible() {
-        doReturn(true).when(mScrimCoordinator).isShowingScrim();
+        doReturn(true).when(mScrimManager).isShowingScrim();
         mController.runSheetInitializerForTesting();
         verify(mBottomSheet).addObserver(mBottomSheetObserverCaptor.capture());
 

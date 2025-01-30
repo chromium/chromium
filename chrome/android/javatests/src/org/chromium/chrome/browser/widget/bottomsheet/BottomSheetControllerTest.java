@@ -63,7 +63,7 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.TestBottomSheetContent;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
-import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -100,7 +100,7 @@ public class BottomSheetControllerTest {
     private TestBottomSheetContent mPeekableContent;
     private TestBottomSheetContent mNonPeekableContent;
     private TestBottomSheetContent mBackInterceptingContent;
-    private ScrimCoordinator mScrimCoordinator;
+    private ScrimManager mScrimManager;
     private int mSuppressionToken;
     private TestEdgeToEdgeController mEdgeToEdgeController;
 
@@ -112,9 +112,8 @@ public class BottomSheetControllerTest {
                 () -> {
                     BottomSheetTestSupport.setSmallScreen(false);
 
-                    mScrimCoordinator =
-                            mActivity.getRootUiCoordinatorForTesting().getScrimCoordinator();
-                    mScrimCoordinator.disableAnimationForTesting(true);
+                    mScrimManager = mActivity.getRootUiCoordinatorForTesting().getScrimManager();
+                    mScrimManager.disableAnimationForTesting(true);
 
                     mSheetController =
                             mActivity.getRootUiCoordinatorForTesting().getBottomSheetController();
@@ -615,20 +614,20 @@ public class BottomSheetControllerTest {
     public void testScrim() throws ExecutionException {
         requestContentInSheet(mLowPriorityContent, true);
 
-        assertNull("There should currently be no scrim.", mScrimCoordinator.getViewForTesting());
+        assertNull("There should currently be no scrim.", mScrimManager.getViewForTesting());
 
         expandSheet();
 
         assertEquals(
                 "The scrim should be visible.",
                 View.VISIBLE,
-                ((View) mScrimCoordinator.getViewForTesting()).getVisibility());
+                ((View) mScrimManager.getViewForTesting()).getVisibility());
 
         ThreadUtils.runOnUiThreadBlocking(() -> mSheetController.collapseSheet(false));
 
         assertNull(
                 "There should be no scrim when the sheet is closed.",
-                mScrimCoordinator.getViewForTesting());
+                mScrimManager.getViewForTesting());
     }
 
     @Test
@@ -644,7 +643,7 @@ public class BottomSheetControllerTest {
         assertEquals(
                 "The scrim should not be visible with a custom scrim lifecycle.",
                 null,
-                mScrimCoordinator.getViewForTesting());
+                mScrimManager.getViewForTesting());
     }
 
     @Test
@@ -688,8 +687,7 @@ public class BottomSheetControllerTest {
 
         expandSheet();
 
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> ((View) mScrimCoordinator.getViewForTesting()).callOnClick());
+        ThreadUtils.runOnUiThreadBlocking(mScrimManager.getViewForTesting()::callOnClick);
 
         closedCallbackHelper.waitForCallback(0);
     }
