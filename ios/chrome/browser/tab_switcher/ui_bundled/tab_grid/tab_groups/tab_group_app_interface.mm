@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_group_sync_earl_grey_app_interface.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_group_app_interface.h"
 
 #import "base/strings/string_number_conversions.h"
 #import "components/data_sharing/public/data_sharing_service.h"
@@ -95,7 +95,7 @@ ACTION_TEMPLATE(InvokeCallbackArgument,
 
 }  // namespace
 
-@implementation TabGroupSyncEarlGreyAppInterface
+@implementation TabGroupAppInterface
 
 + (void)prepareFakeSavedTabGroups:(NSInteger)numberOfGroups {
   CHECK(IsTabGroupSyncEnabled());
