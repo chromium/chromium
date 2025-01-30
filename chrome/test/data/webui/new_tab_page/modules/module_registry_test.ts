@@ -117,6 +117,35 @@ suite('NewTabPageModulesModuleRegistryTest', () => {
     assertEquals(1, metrics.count('NewTabPage.Modules.LoadDuration.baz', 118));
   });
 
+  test('does not initialize module without id and name', async () => {
+    // Arrange.
+    const fooElement = createElement();
+    const barElement = createElement();
+    const fooDescriptor =
+        new ModuleDescriptor('foo', () => Promise.resolve(fooElement));
+    const barDescriptor =
+        new ModuleDescriptor('bar', () => Promise.resolve(barElement));
+    handler.setResultFor('getModulesOrder', Promise.resolve({
+      moduleIds: [],
+    }));
+    // Only return barDescriptor when `getModulesIdNames` is called.
+    handler.setResultFor('getModulesIdNames', Promise.resolve({
+      data: [{id: barDescriptor.id, name: barDescriptor.id} as ModuleIdName],
+    }));
+
+    // Act - Attempt to initialize both foo and bar modules.
+    const moduleRegistry = new ModuleRegistry([fooDescriptor, barDescriptor]);
+    const modulesPromise = moduleRegistry.initializeModules(0);
+    callbackRouterRemote.setDisabledModules(false, []);
+
+    // Arrange - Ensure only bar module loads since foo was not part of result
+    // for `getModulesIdNames`.
+    const modules = await modulesPromise;
+    assertEquals(1, modules.length);
+    assertEquals('bar', modules[0]!.descriptor.id);
+    assertDeepEquals(barElement, modules[0]!.elements[0]);
+  });
+
   suite('reorder', () => {
     test(
         'instantiates reordered modules without disabled modules', async () => {

@@ -17,6 +17,8 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/new_tab_page/feature_promo_helper/new_tab_page_feature_promo_helper.h"
+#include "chrome/browser/new_tab_page/microsoft_auth/microsoft_auth_service.h"
+#include "chrome/browser/new_tab_page/microsoft_auth/microsoft_auth_service_observer.h"
 #include "chrome/browser/new_tab_page/modules/new_tab_page_modules.h"
 #include "chrome/browser/new_tab_page/promos/promo_service.h"
 #include "chrome/browser/new_tab_page/promos/promo_service_observer.h"
@@ -81,7 +83,8 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
                           public NtpBackgroundServiceObserver,
                           public ui::SelectFileDialog::Listener,
                           public PromoServiceObserver,
-                          public optimization_guide::SettingsEnabledObserver {
+                          public optimization_guide::SettingsEnabledObserver,
+                          public MicrosoftAuthServiceObserver {
  public:
   NewTabPageHandler(mojo::PendingReceiver<new_tab_page::mojom::PageHandler>
                         pending_page_handler,
@@ -208,6 +211,9 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
   // SettingsEnabledObserver:
   void OnChangeInFeatureCurrentlyEnabledState(bool is_now_enabled) override;
 
+  // MicrosoftAuthServiceObserver:
+  void OnAuthStateUpdated() override;
+
   // SelectFileDialog::Listener:
   void FileSelected(const ui::SelectedFileInfo& file, int index) override;
   void FileSelectionCanceled() override;
@@ -306,6 +312,8 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
       ntp_custom_background_service_observation_{this};
   base::ScopedObservation<PromoService, PromoServiceObserver>
       promo_service_observation_{this};
+  base::ScopedObservation<MicrosoftAuthService, MicrosoftAuthServiceObserver>
+      microsoft_auth_service_observation_{this};
   std::optional<base::TimeTicks> promo_load_start_time_;
   base::Value::Dict interaction_module_id_trigger_dict_;
 

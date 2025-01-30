@@ -17,6 +17,13 @@ inline constexpr char kMicrosoftAuthenticationModuleId[] =
 inline constexpr char kOutlookCalendarModuleId[] = "outlook_calendar";
 inline constexpr char kMicrosoftFilesModuleId[] = "microsoft_files";
 
+// All modules that require successful Microsoft authentication before being
+// loaded.
+inline constexpr std::array<const char*, 2> kMicrosoftAuthDependentModuleIds = {
+    kMicrosoftFilesModuleId,
+    kOutlookCalendarModuleId,
+};
+
 }  // namespace ntp_modules
 
 #endif  // CHROME_BROWSER_NEW_TAB_PAGE_MODULES_MODULES_CONSTANTS_H_
