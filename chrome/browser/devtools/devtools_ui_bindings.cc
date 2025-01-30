@@ -1668,6 +1668,13 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
                       std::move(ai_assistance_file_agent_dict));
   }
 
+  base::Value::Dict devtools_improved_workspaces_dict;
+  devtools_improved_workspaces_dict.Set(
+      "enabled",
+      base::FeatureList::IsEnabled(::features::kDevToolsImprovedWorkspaces));
+  response_dict.Set("devToolsImprovedWorkspaces",
+                    std::move(devtools_improved_workspaces_dict));
+
   base::Value::Dict ve_logging_dict;
   ve_logging_dict.Set(
       "enabled", base::FeatureList::IsEnabled(::features::kDevToolsVeLogging));

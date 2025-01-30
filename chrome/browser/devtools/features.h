@@ -74,6 +74,9 @@ BASE_DECLARE_FEATURE(kDevToolsVeLogging);
 extern const base::FeatureParam<bool> kDevToolsVeLoggingTesting;
 
 BASE_DECLARE_FEATURE(kDevToolsAnimationStylesInStylesTab);
+
+BASE_DECLARE_FEATURE(kDevToolsImprovedWorkspaces);
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_DEVTOOLS_FEATURES_H_
