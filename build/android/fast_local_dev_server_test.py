@@ -150,7 +150,7 @@ class ServerStartedTest(unittest.TestCase):
   def testRunsQuietTask(self):
     self.sendTask(['true'])
     self.waitForTasksDone()
-    self.assertEqual(self.getTtyContents(), '')
+    self.assertEqual(self.getTtyContents(), '\x1b]2;Analysis Steps: 1/1\x07')
 
   def testRunsNoisyTask(self):
     self.sendTask(['echo', 'some_output'])

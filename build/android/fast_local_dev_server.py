@@ -183,6 +183,13 @@ class TaskStats:
       return cls._completed_tasks
 
   @classmethod
+  def total_tasks(cls, build_id: str = None):
+    with cls._lock:
+      if build_id:
+        return cls._total_task_count_per_build[build_id]
+      return cls._total_tasks
+
+  @classmethod
   def query_build(cls, query_build_id: str = None):
     with cls._lock:
       active_builds = BuildManager.get_live_builds()
@@ -307,6 +314,13 @@ class TaskManager:
   @classmethod
   def task_done(cls, task: Task):
     TaskStats.complete_task(build_id=task.build_id)
+    if task.tty:
+      total = TaskStats.total_tasks(task.build_id)
+      completed = TaskStats.num_completed_tasks(task.build_id)
+      msg = f'Analysis Steps: {completed}/{total}'
+      task.tty.write(f'\033]2;{msg}\007')
+      task.tty.flush()
+
     with cls._lock:
       cls._current_tasks.discard(task)
 
