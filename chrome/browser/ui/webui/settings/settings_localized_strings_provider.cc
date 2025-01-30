@@ -494,8 +494,7 @@ void AddAiStrings(content::WebUIDataSource* html_source) {
       {"passwordChangeSettingContent", IDS_SETTINGS_PASSWORD_CHANGE_CONTENT},
       {"passwordChangeSettingEncryption",
        IDS_SETTINGS_PASSWORD_CHANGE_ENCRYPTION},
-      {"passwordChangeLearnMore",
-       IDS_SETTINGS_PASSWORD_CHANGE_SUBLABEL_LEARN_MORE},
+      {"passwordChangeLearnMore", IDS_SETTINGS_PASSWORD_CHANGE_SUBLABEL},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 

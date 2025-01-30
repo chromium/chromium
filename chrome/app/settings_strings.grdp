@@ -4595,14 +4595,11 @@
   </message>
 
     <!-- Experimental settings - Password Change -->
-  <message name="IDS_SETTINGS_PASSWORD_CHANGE_LABEL" translateable="false" desc="Primary label for password change entry in settings.">
-    Password Change
+  <message name="IDS_SETTINGS_PASSWORD_CHANGE_LABEL" desc="Primary label for password change entry in settings.">
+    Automated password Change
   </message>
   <message name="IDS_SETTINGS_PASSWORD_CHANGE_SUBLABEL" desc="Sublabel for password change entry in settings.">
     When Chrome finds one of your passwords in a data breach, it can offer to change your password for you when you sign in
-  </message>
-  <message name="IDS_SETTINGS_PASSWORD_CHANGE_SUBLABEL_LEARN_MORE" translateable="false" desc="Shown in the payments section of settings. Descriptive text to inform the user that credit cards can be accessed online. Has a link.">
-    When Chrome finds one of your passwords in a data breach, it can offer to change your password for you when you sign in.
   </message>
   <message name="IDS_SETTINGS_PASSWORD_CHANGE_DATA_BREACH" desc="One of the bullet points explaining what happens when the feature is used.">
     When one of your passwords is found in a data breach, Google Password Manager asks if you want it changed to a strong password
@@ -4610,11 +4607,11 @@
   <message name="IDS_SETTINGS_PASSWORD_CHANGE_WHERE_SAVED" desc="One of the bullet points explaining what happens when the feature is used.">
     You don't need to remember the password because it gets saved for you in Google Password Manager
   </message>
-  <message name="IDS_SETTINGS_PASSWORD_CHANGE_EXPERIMENTAL" translateable="false" desc="One of the things to consider when using the feature.">
-    This feature is experimental
+  <message name="IDS_SETTINGS_PASSWORD_CHANGE_EXPERIMENTAL" desc="One of the things to consider when using the feature.">
+    This feature uses AI and is experimental
   </message>
-  <message name="IDS_SETTINGS_PASSWORD_CHANGE_CONTENT" translateable="false" desc="One of the things to consider when using the feature.">
-    Content from this site is sent to Google and may be used to improve the feature.
+  <message name="IDS_SETTINGS_PASSWORD_CHANGE_CONTENT" desc="One of the things to consider when using the feature.">
+    Content from this site is sent to Google and may be seen by human reviewers to improve this feature
   </message>
   <message name="IDS_SETTINGS_PASSWORD_CHANGE_ENCRYPTION" desc="One of the things to consider when using the feature.">
     Your password is encrypted and never seen by anyone
