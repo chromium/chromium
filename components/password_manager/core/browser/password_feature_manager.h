@@ -28,14 +28,6 @@ class PasswordFeatureManager {
   // before.
   virtual bool IsBiometricAuthenticationBeforeFillingEnabled() const = 0;
 
-  // Note on password-account-storage methods on desktop vs mobile:
-  // On desktop, there is an explicit per-user opt-in, and various associated
-  // settings (e.g. which store is the default). On mobile, there is no explicit
-  // opt-in, and no per-user settings.
-  // As a consequence, all the corresponding setters (opting in/out, setting the
-  // default store, etc) only exist on desktop. The getters exist on mobile too,
-  // but have different (usually simpler) implementation.
-
   // Whether the Google account storage for passwords is enabled for the current
   // signed-in user. This always returns false for sync-the-feature users and
   // signed out users. Account storage can be enabled/disabled via

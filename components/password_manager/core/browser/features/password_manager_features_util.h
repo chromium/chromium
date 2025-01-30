@@ -48,16 +48,6 @@ enum class PasswordAccountStorageUsageLevel {
   kSyncing = 2,
 };
 
-// Note on password-account-storage methods on desktop vs mobile:
-// On desktop, there is an explicit per-user opt-in, and various associated
-// settings (e.g. which store is the default). On mobile, there is no explicit
-// opt-in, and no per-user settings.
-// As a consequence, all the corresponding setters (opting in/out, setting the
-// default store, etc) only exist on desktop. The getters exist on mobile too,
-// but have different (usually simpler) implementation.
-// Accordingly, the implementation is split up into *_common.cc, *_desktop.cc,
-// and *_mobile.cc files.
-
 // Internal helpers, not meant to be used directly:
 namespace internal {
 bool CanAccountStorageBeEnabled(const PrefService* pref_service,
