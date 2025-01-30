@@ -596,8 +596,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
   // Sign in.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
-  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
-  [ChromeEarlGrey waitForSyncTransportStateActiveWithTimeout:base::Seconds(10)];
+  [SigninEarlGrey signinAndWaitForSyncTransportStateActive:fakeIdentity];
 
   // Open the account settings.
   [ChromeEarlGreyUI openSettingsMenu];

@@ -249,10 +249,8 @@ void ClearRelevantData() {
   // Sign in to sync, after a bookmark has been injected in the sync server.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
-  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinAndWaitForSyncTransportStateActive:fakeIdentity];
 
-  [ChromeEarlGrey
-      waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
   [BookmarkEarlGrey verifyBookmarksWithTitle:@"hoo"
                                expectedCount:1
                                    inStorage:BookmarkStorageType::kAccount];
@@ -263,18 +261,14 @@ void ClearRelevantData() {
 - (void)testSyncCheckSameCacheGuid_SignOutAndSignIn {
   // Sign in a fake identity, and store the initial sync guid.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
-  [ChromeEarlGrey
-      waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
+  [SigninEarlGrey signinAndWaitForSyncTransportStateActive:fakeIdentity];
   std::string original_guid = [ChromeEarlGrey syncCacheGUID];
 
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
   [SigninEarlGrey signOut];
 
   // Sign the user back in, and verify the guid has *not* changed.
-  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
-  [ChromeEarlGrey
-      waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
+  [SigninEarlGrey signinAndWaitForSyncTransportStateActive:fakeIdentity];
   GREYAssertTrue([ChromeEarlGrey syncCacheGUID] == original_guid,
                  @"guid changed after user signed out and signed back in");
 }
@@ -284,9 +278,7 @@ void ClearRelevantData() {
 - (void)testSyncCheckDifferentCacheGuid_SignOutAndSignInWithDifferentAccount {
   // Sign in a fake identity, and store the initial sync guid.
   FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity1];
-  [ChromeEarlGrey
-      waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
+  [SigninEarlGrey signinAndWaitForSyncTransportStateActive:fakeIdentity1];
   std::string original_guid = [ChromeEarlGrey syncCacheGUID];
 
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity1];
@@ -294,9 +286,7 @@ void ClearRelevantData() {
 
   // Sign a different user in, and verify the guid has changed.
   FakeSystemIdentity* fakeIdentity2 = [FakeSystemIdentity fakeIdentity2];
-  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity2];
-  [ChromeEarlGrey
-      waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
+  [SigninEarlGrey signinAndWaitForSyncTransportStateActive:fakeIdentity2];
   GREYAssertTrue(
       [ChromeEarlGrey syncCacheGUID] != original_guid,
       @"guid didn't change after user signed out and different user signed in");
@@ -433,10 +423,7 @@ void ClearRelevantData() {
   // Sign in to sync.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
-  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
-
-  [ChromeEarlGrey
-      waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
+  [SigninEarlGrey signinAndWaitForSyncTransportStateActive:fakeIdentity];
 
   [BookmarkEarlGrey verifyBookmarksWithTitle:title1
                                expectedCount:1

@@ -92,6 +92,10 @@ class GURL;
 // TODO(crbug.com/40067025): Remove this last remark when sync is disabled.
 - (void)signinWithFakeIdentity:(FakeSystemIdentity*)identity;
 
+// Calls `[self signinWithFakeIdentity:identity]` and then waits for sync
+// transport state to become active.
+- (void)signinAndWaitForSyncTransportStateActive:(FakeSystemIdentity*)identity;
+
 // TODO(crbug.com/40066949): Remove all tests invoking this when deleting the
 // MaybeMigrateSyncingUserToSignedIn() call on //ios (not right after launching
 // kMigrateSyncingUserToSignedIn).
