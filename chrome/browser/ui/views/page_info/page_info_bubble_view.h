@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/views/page_info/page_info_history_controller.h"
 #include "chrome/browser/ui/views/page_info/page_info_navigation_handler.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/page_info/core/page_info_types.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 class ChromePageInfoUiDelegate;
@@ -51,7 +52,8 @@ class PageInfoBubbleView : public PageInfoBubbleViewBase,
   void OpenPermissionPage(ContentSettingsType type) override;
   void OpenAdPersonalizationPage() override;
   void OpenCookiesPage() override;
-  void OpenMerchantTrustPage() override;
+  void OpenMerchantTrustPage(
+      page_info::MerchantBubbleOpenReferrer referrer) override;
   void CloseBubble() override;
 
   // WebContentsObserver:

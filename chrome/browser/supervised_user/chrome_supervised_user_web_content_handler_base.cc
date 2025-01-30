@@ -77,6 +77,8 @@ void ChromeSupervisedUserWebContentHandlerBase::GoBack() {
   OnInterstitialDone();
 }
 
+void ChromeSupervisedUserWebContentHandlerBase::MaybeCloseLocalApproval() {}
+
 bool ChromeSupervisedUserWebContentHandlerBase::
     AttemptMoveAwayFromCurrentFrameURL() {
   // No need to do anything if the WebContents is in the process of being

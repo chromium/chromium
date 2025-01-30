@@ -91,7 +91,7 @@ public class LocationBarFocusScrimHandler implements UrlFocusChangeListener {
             mScrimCoordinator.showScrim(mScrimModel);
             mScrimShown = true;
         } else if (!hasFocus && mScrimShown) {
-            mScrimCoordinator.hideScrim(true);
+            mScrimCoordinator.hideScrim(mScrimModel, /* animate= */ true);
             mScrimShown = false;
         }
     }

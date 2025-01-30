@@ -35,7 +35,7 @@ class PasswordFeatureManagerImpl : public PasswordFeatureManager {
 
   bool IsBiometricAuthenticationBeforeFillingEnabled() const override;
 
-  bool IsOptedInForAccountStorage() const override;
+  bool IsAccountStorageEnabled() const override;
   features_util::PasswordAccountStorageUsageLevel
   ComputePasswordAccountStorageUsageLevel() const override;
 

@@ -372,6 +372,10 @@ bool ContentBrowserClient::ShouldDisableSiteIsolation(
   return false;
 }
 
+bool ContentBrowserClient::ShouldDisableOriginIsolation() {
+  return false;
+}
+
 std::vector<std::string>
 ContentBrowserClient::GetAdditionalSiteIsolationModes() {
   return std::vector<std::string>();

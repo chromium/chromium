@@ -938,6 +938,42 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.BottomControlsStacker.NumberOfVisibleLayers"
+    units="layers" expires_after="2026-01-27">
+  <owner>pnoland@chromium.org</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <summary>
+    Records the number of visible bottom controls layers. Recorded when a
+    navigation finishes in the main frame of the active tab.
+  </summary>
+</histogram>
+
+<histogram
+    name="Android.BottomControlsStacker.PercentageOfWindowUsedByBottomControlsAtMaxHeight"
+    units="%" expires_after="2026-01-27">
+  <owner>pnoland@chromium.org</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <summary>
+    Records the percentage of the window's total height used by the bottom
+    controls stack at full height. This is the maximum % the window is obscured
+    by the bottom controls, which can ordinarily be scrolled off. Recorded when
+    a navigation finishes in the main frame of the active tab.
+  </summary>
+</histogram>
+
+<histogram
+    name="Android.BottomControlsStacker.PercentageOfWindowUsedByBottomControlsAtMinHeight"
+    units="%" expires_after="2026-01-27">
+  <owner>pnoland@chromium.org</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <summary>
+    Records the percentage of the window's total height used by the bottom
+    controls stack at its minimum height. This is the minimum % the window is
+    obscured by the bottom controls, which cannot ordinarily be scrolled off.
+    Recorded when a navigation finishes in the main frame of the active tab.
+  </summary>
+</histogram>
+
 <histogram name="Android.BrowserControls.OutstandingChangedOnFinish"
     enum="BooleanChanged" expires_after="2025-06-22">
   <owner>skym@chromium.org</owner>

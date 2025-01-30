@@ -30,12 +30,6 @@ struct DifferingProfileWithTypeSet {
 int GetDuplicationRank(
     base::span<const DifferingProfileWithTypeSet> min_incompatible_sets);
 
-// Logs various metrics around quasi duplicates (= profiles that are duplicates
-// except for a small number of types) for the `profiles` a user has stored at
-// browser startup.
-void LogDeduplicationStartupMetrics(std::vector<AutofillProfile> profiles,
-                                    std::string app_locale);
-
 }  // namespace autofill::autofill_metrics
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PROFILE_DEDUPLICATION_METRICS_H_

@@ -1363,6 +1363,46 @@ TEST_F(ContentSecurityPolicyTest, IsStrictPolicyEnforced) {
   EXPECT_TRUE(csp->IsStrictPolicyEnforced());
 }
 
+TEST_F(ContentSecurityPolicyTest, UnsafeHashesMetric) {
+  struct TestCase {
+    const char* header;
+    bool expected_unsafe_hashes;
+  } cases[] = {
+      {"object-src 'none'", false},
+      {"script-src 'none'", false},
+      {"script-src 'nonce-abc'", false},
+      {"script-src 'sha256-abc'", false},
+      {"script-src 'nonce-abc' 'strict-dynamic'", false},
+      {"script-src 'sha256-abc' 'strict-dynamic'", false},
+      {"script-src 'sha256-abc' https://example.com/", false},
+      {"script-src 'sha256-abc' https://example.com/ 'strict-dynamic'", false},
+      {"script-src 'unsafe-hashes' 'sha256-abc'", true},
+      {"default-src 'unsafe-hashes' 'sha256-abc'", true},
+      // Consider recording the use counter for style-src and formaction
+      // directives too:
+      {"style-src 'unsafe-hashes' 'sha256-abc'", false},
+      {"form-action 'unsafe-hashes' 'sha256-abc'", false},
+      // unsafe-hashes doesn't apply to any other directive:
+      {"object-src 'unsafe-hashes' 'sha256-abc'", false},
+  };
+
+  for (const auto& test : cases) {
+    SCOPED_TRACE(testing::Message()
+                 << "[Enforce] Header: `" << test.header << "`");
+    csp = MakeGarbageCollected<ContentSecurityPolicy>();
+    csp->AddPolicies(ParseContentSecurityPolicies(
+        test.header, ContentSecurityPolicyType::kEnforce,
+        ContentSecurityPolicySource::kHTTP, *secure_origin));
+    auto dummy = std::make_unique<DummyPageHolder>();
+    csp->BindToDelegate(
+        dummy->GetFrame().DomWindow()->GetContentSecurityPolicyDelegate());
+
+    EXPECT_EQ(
+        test.expected_unsafe_hashes,
+        dummy->GetDocument().IsUseCounted(WebFeature::kCSPWithUnsafeHashes));
+  }
+}
+
 TEST_F(ContentSecurityPolicyTest, ReasonableRestrictionMetrics) {
   struct TestCase {
     const char* header;

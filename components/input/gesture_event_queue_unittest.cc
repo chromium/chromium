@@ -69,8 +69,11 @@ class GestureEventQueueTest : public testing::Test,
 
   // GestureEventQueueClient
   void SendGestureEventImmediately(
-      const GestureEventWithLatencyInfo& event) override {
+      const GestureEventWithLatencyInfo& event,
+      DispatchToRendererCallback& dispatch_callback) override {
     ++sent_gesture_event_count_;
+    std::move(dispatch_callback)
+        .Run(event.event, DispatchToRendererResult::kDispatched);
     if (sync_ack_result_) {
       std::unique_ptr<blink::mojom::InputEventResultState> ack_result =
           std::move(sync_ack_result_);
@@ -130,7 +133,9 @@ class GestureEventQueueTest : public testing::Test,
   void SimulateGestureEvent(const WebGestureEvent& gesture) {
     GestureEventWithLatencyInfo gesture_event(gesture);
     if (!queue()->PassToFlingController(gesture_event)) {
-      queue()->DebounceOrForwardEvent(gesture_event);
+      ScopedDispatchToRendererCallback dispatch_callback(base::DoNothing());
+      queue()->DebounceOrForwardEvent(gesture_event,
+                                      dispatch_callback.callback);
     }
   }
 

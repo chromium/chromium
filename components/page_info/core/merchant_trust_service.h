@@ -16,6 +16,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
 #include "components/page_info/core/page_info_types.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/origin.h"
 
 class GURL;
@@ -48,7 +49,10 @@ enum class MerchantTrustInteraction {
   kSidePanelOpened = 2,
   kBubbleClosed = 3,
   kSidePanelClosed = 4,
-  kMaxValue = kSidePanelClosed
+  kBubbleOpenedFromLocationBarChip = 5,
+  kSidePanelOpenedOnSameTabNavigation = 6,
+  kSidePanelClosedOnSameTabNavigation = 7,
+  kMaxValue = kSidePanelClosedOnSameTabNavigation
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/security/enums.xml:MerchantTrustInteraction)
 
@@ -91,8 +95,12 @@ class MerchantTrustService : public KeyedService {
   // either a control or an experiment survey depending on the feature state.
   virtual void MaybeShowEvaluationSurvey();
 
-  void RecordMerchantTrustInteraction(GURL url,
-                                      MerchantTrustInteraction interaction);
+  virtual void RecordMerchantTrustInteraction(
+      const GURL& url,
+      MerchantTrustInteraction interaction) const;
+
+  void RecordMerchantTrustUkm(ukm::SourceId source_id,
+                              MerchantTrustInteraction interaction) const;
 
   void SetClockForTesting(base::Clock* clock) { clock_ = clock; }
 

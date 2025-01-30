@@ -180,18 +180,20 @@ public class TabbedNavigationBarColorControllerTest {
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
         View rootView = activity.findViewById(R.id.tab_switcher_view_holder_stub);
         ScrimCoordinator scrimCoordinator =
-                activity.getRootUiCoordinatorForTesting().getScrimCoordinatorForTesting();
+                activity.getRootUiCoordinatorForTesting().getScrimCoordinator();
 
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    PropertyModel propertyModel =
-                            new PropertyModel.Builder(ScrimProperties.ALL_KEYS)
-                                    .with(ScrimProperties.ANCHOR_VIEW, rootView)
-                                    .with(ScrimProperties.AFFECTS_NAVIGATION_BAR, true)
-                                    .build();
-                    scrimCoordinator.showScrim(propertyModel);
-                    scrimCoordinator.forceAnimationToFinish();
-                });
+        PropertyModel outerPropertyModel =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            PropertyModel propertyModel =
+                                    new PropertyModel.Builder(ScrimProperties.ALL_KEYS)
+                                            .with(ScrimProperties.ANCHOR_VIEW, rootView)
+                                            .with(ScrimProperties.AFFECTS_NAVIGATION_BAR, true)
+                                            .build();
+                            scrimCoordinator.showScrim(propertyModel);
+                            scrimCoordinator.forceAnimationToFinish();
+                            return propertyModel;
+                        });
 
         double regularBrightness = ColorUtils.calculateLuminance(mRegularNavigationColor);
         @ColorInt int withScrim = mWindow.getNavigationBarColor();
@@ -199,7 +201,10 @@ public class TabbedNavigationBarColorControllerTest {
                 mActivityTestRule.getActivity().getActivityTab().getBackgroundColor(), withScrim);
         assertTrue(regularBrightness > ColorUtils.calculateLuminance(withScrim));
 
-        ThreadUtils.runOnUiThreadBlocking(() -> scrimCoordinator.hideScrim(false, 0));
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        scrimCoordinator.hideScrim(
+                                outerPropertyModel, /* animate= */ false, /* duration= */ 0));
         assertEquals(
                 mActivityTestRule.getActivity().getActivityTab().getBackgroundColor(),
                 mWindow.getNavigationBarColor());

@@ -15,6 +15,7 @@
 #include "content/browser/service_worker/service_worker_client.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
+#include "content/browser/service_worker/service_worker_loader_helpers.h"
 #include "content/browser/service_worker/service_worker_main_resource_handle.h"
 #include "content/browser/service_worker/service_worker_object_host.h"
 #include "content/public/common/content_client.h"
@@ -246,11 +247,17 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
 
   // If we know there's no service worker for the storage key, let's skip asking
   // the storage to check the existence.
+  //
+  // crbug.com/352578800: `MaybeHasRegistrationForStorageKey()` doesn't reflect
+  // the fake registration initially. If the URL is eligible for
+  // SyntheticResponse, do not skip service worker.
   bool skip_service_worker =
       skip_service_worker_ ||
       !OriginCanAccessServiceWorkers(tentative_resource_request.url) ||
-      !handle_->context_wrapper()->MaybeHasRegistrationForStorageKey(
-          handle_->service_worker_client()->key());
+      !(handle_->context_wrapper()->MaybeHasRegistrationForStorageKey(
+            handle_->service_worker_client()->key()) ||
+        service_worker_loader_helpers::IsEligibleForSyntheticResponse(
+            tentative_resource_request.url));
 
   // Create and start the handler for this request. It will invoke the loader
   // callback or fallback callback.

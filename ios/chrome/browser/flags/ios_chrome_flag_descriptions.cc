@@ -510,6 +510,11 @@ const char kFullscreenPromosManagerSkipInternalLimitsDescription[] =
     "When enabled, the internal Impression Limits of the Promos Manager will "
     "be ignored; this is useful for local development.";
 
+const char kFullscreenTransitionName[] = "Fullscreen Transition Tweaks";
+const char kFullscreenTransitionDescription[] =
+    "When enabled, the transition of fullscreen is either delayed or the speed "
+    "of the transition is increased-decreased.";
+
 const char kFullscreenSmoothScrollingName[] = "Fullscreen Smooth Scrolling";
 const char kFullscreenSmoothScrollingDescription[] =
     "When enabled, the web view's insets are updated for scoll events. If "

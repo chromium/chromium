@@ -47,6 +47,7 @@ source_set("impl") {
     "//base",
     "//build:branding_buildflags",
     "//chrome/app/vector_icons",
+    "//chrome/browser:shell_integration",
     "//chrome/browser/feedback:feedback",
     "//chrome/browser/feedback:feedback_enum",
     "//chrome/common",

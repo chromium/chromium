@@ -341,6 +341,14 @@ TEST_F(AVCConversionTest, ValidAnnexBConstructs) {
   }
 }
 
+TEST_F(AVCConversionTest, EmptyBuffer) {
+  std::vector<SubsampleEntry> subsamples;
+  auto result = AVC::AnalyzeAnnexB(nullptr, 0, subsamples);
+  EXPECT_TRUE(result.is_conformant);
+  EXPECT_TRUE(subsamples.empty());
+  EXPECT_FALSE(result.is_keyframe.has_value());
+}
+
 TEST_F(AVCConversionTest, InvalidAnnexBConstructs) {
   struct {
     const char* case_string;

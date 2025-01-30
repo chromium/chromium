@@ -26,8 +26,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
 import org.chromium.ui.util.ColorUtils;
 
-import java.util.Objects;
-
 /** This class holds the animation and related business logic for the scrim. */
 @NullMarked
 class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
@@ -108,6 +106,10 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
         return ColorUtils.applyAlphaFloat(color, alpha);
     }
 
+    /* package */ @Nullable PropertyModel getModel() {
+        return mModel;
+    }
+
     /* package */ ObservableSupplier<Integer> getStatusBarColorSupplier() {
         return mStatusBarColorSupplier;
     }
@@ -178,6 +180,7 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
 
     /**
      * Triggers a fade out of the scrim creating a new animation if necessary.
+     *
      * @param animate Whether the scrim should fade out.
      * @param animDurationMs Duration for animation run.
      */
@@ -219,7 +222,7 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
         if (!animate) mOverlayFadeOutAnimator.end();
     }
 
-    /* package */ void setAlpha(float alpha, PropertyModel propertyModel) {
+    /* package */ void setAlpha(float alpha) {
         if (mOverlayAnimator != null) {
             Log.w(TAG, "Scrim setAlpha was called during an animation.");
             mOverlayAnimator.cancel();
@@ -258,9 +261,7 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
         }
     }
 
-    /*package */
-    void setScrimColor(@ColorInt int scrimColor, PropertyModel propertyModel) {
-        if (!Objects.equals(mModel, propertyModel)) return;
+    /* package */ void setScrimColor(@ColorInt int scrimColor) {
         assumeNonNull(mModel); // https://github.com/uber/NullAway/issues/1136
         mModel.set(ScrimProperties.BACKGROUND_COLOR, scrimColor);
         mFullScrimColorSupplier.set(scrimColor);

@@ -1991,6 +1991,7 @@ if (!is_android) {
       "//chrome/browser:global_features",
       "//chrome/browser:main_extra_parts",
       "//chrome/browser:primitives",
+      "//chrome/browser:shell_integration",
       "//chrome/browser/accessibility:test_support",
       "//chrome/browser/accessibility:utils",
       "//chrome/browser/ai",
@@ -10286,6 +10287,7 @@ if (!is_android) {
       "//chrome/browser",
       "//chrome/browser:browser_process",
       "//chrome/browser:main_extra_parts",
+      "//chrome/browser:shell_integration",
       "//chrome/browser/apps/app_service",
       "//chrome/browser/apps/app_service:app_registry_cache_waiter",
       "//chrome/browser/apps/app_service/app_icon",
@@ -10989,6 +10991,7 @@ if (!is_android && !is_chromeos_device) {
         "../browser/ui/startup/default_browser_prompt/default_browser_prompt_interactive_uitest.cc",
         "../browser/ui/views/infobars/default_browser_infobar_interactive_uitest.cc",
       ]
+      deps += [ "//chrome/browser:shell_integration" ]
     } else {
       deps += [ "//chrome/browser/smart_card:smart_card" ]
     }

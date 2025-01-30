@@ -4675,11 +4675,12 @@ TEST_P(RendererPixelTest, TileDrawQuadNearestNeighbor) {
   constexpr bool needs_blending = true;
   constexpr bool nearest_neighbor = true;
   constexpr bool force_anti_aliasing_off = false;
-  constexpr SharedImageFormat format = SinglePlaneFormat::kRGBA_8888;
+  const SharedImageFormat format = is_software_renderer()
+                                       ? SinglePlaneFormat::kBGRA_8888
+                                       : SinglePlaneFormat::kRGBA_8888;
   gfx::Rect viewport(this->device_viewport_size_);
 
-  SkColorType ct =
-      ToClosestSkColorTypeDeprecated(!is_software_renderer(), format);
+  SkColorType ct = ToClosestSkColorType(format);
   SkImageInfo info = SkImageInfo::Make(2, 2, ct, kPremul_SkAlphaType);
   SkBitmap bitmap;
   bitmap.allocPixels(info);
@@ -4692,10 +4693,9 @@ TEST_P(RendererPixelTest, TileDrawQuadNearestNeighbor) {
   gfx::Size tile_size(2, 2);
   ResourceId resource;
   if (!is_software_renderer()) {
-    resource = CreateGpuResource(this->child_context_provider_,
-                                 this->child_resource_provider_.get(),
-                                 tile_size, SinglePlaneFormat::kRGBA_8888,
-                                 gfx::ColorSpace(), MakePixelSpan(bitmap));
+    resource = CreateGpuResource(
+        this->child_context_provider_, this->child_resource_provider_.get(),
+        tile_size, format, gfx::ColorSpace(), MakePixelSpan(bitmap));
   } else {
     resource = this->AllocateAndFillSoftwareResource(
         this->child_context_provider_, tile_size, bitmap);

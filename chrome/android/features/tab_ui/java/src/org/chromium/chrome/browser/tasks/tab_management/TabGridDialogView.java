@@ -981,9 +981,10 @@ public class TabGridDialogView extends FrameLayout {
         mCurrentDialogAnimator = mHideDialogAnimation;
         if (mScrimCoordinator.isShowingScrim()) {
             if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)) {
-                mScrimCoordinator.hideScrim(true, SCRIM_FADE_DURATION_MS);
+                mScrimCoordinator.hideScrim(
+                        mScrimPropertyModel, /* animate= */ true, SCRIM_FADE_DURATION_MS);
             } else {
-                mScrimCoordinator.hideScrim(true);
+                mScrimCoordinator.hideScrim(mScrimPropertyModel, /* animate= */ true);
             }
         }
         mHideDialogAnimation.start();

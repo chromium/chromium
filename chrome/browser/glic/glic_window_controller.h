@@ -274,6 +274,8 @@ class GlicWindowController : public views::WidgetObserver {
       Profile* profile,
       const gfx::Rect& initial_bounds);
 
+  void ResetPresentationTimingState();
+
   // Observes the widget for the attached browser.
   base::ScopedObservation<views::Widget, WidgetObserver>
       attached_browser_widget_observation_{this};
@@ -333,8 +335,12 @@ class GlicWindowController : public views::WidgetObserver {
 
   base::ObserverList<StateObserver> state_observers_;
 
-  // The timestamp when the glic window starts to be shown.
+  // The following two variables are used together for recording metrics and are
+  // reset together after the panel show is finished. The timestamp when the
+  // glic window starts to be shown.
   base::TimeTicks show_start_time_;
+  // Web client's operation modes.
+  mojom::WebClientMode starting_mode_;
 
   base::WeakPtrFactory<GlicWindowController> weak_ptr_factory_{this};
 };

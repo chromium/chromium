@@ -569,6 +569,7 @@ void PageInfoMainView::OnMerchantTrustDataFetched(
   merchant_trust_section_->AddChildView(
       CreateMerchantTrustButton(merchant_data.value()));
   extended_site_info_section_->SetVisible(true);
+  ui_delegate_->RecordMerchantTrustButtonShown();
 }
 
 gfx::Size PageInfoMainView::CalculatePreferredSize(
@@ -694,10 +695,10 @@ std::unique_ptr<views::View> PageInfoMainView::CreateAdPersonalizationButton() {
 
 std::unique_ptr<views::View> PageInfoMainView::CreateMerchantTrustButton(
     page_info::MerchantData value) {
-  // TODO(crbug.com/381215331): Add add actual string.
   auto merchant_trust_button = std::make_unique<RichHoverButton>(
       base::BindRepeating(&PageInfoNavigationHandler::OpenMerchantTrustPage,
-                          base::Unretained(navigation_handler_)),
+                          base::Unretained(navigation_handler_),
+                          page_info::MerchantBubbleOpenReferrer::kPageInfo),
       PageInfoViewFactory::GetImageModel(vector_icons::kStorefrontIcon),
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_MERCHANT_TRUST_HEADER),
       std::u16string(), PageInfoViewFactory::GetOpenSubpageIcon());

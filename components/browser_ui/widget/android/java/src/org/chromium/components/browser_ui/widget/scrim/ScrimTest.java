@@ -142,7 +142,8 @@ public class ScrimTest {
     @SmallTest
     @Feature({"Scrim"})
     public void testVisibility() throws TimeoutException {
-        showScrim(buildModel(false, true, Color.RED), false);
+        PropertyModel model = buildModel(false, true, Color.RED);
+        showScrim(model, /* animate= */ false);
 
         assertEquals(
                 "Scrim should be completely visible.",
@@ -151,7 +152,8 @@ public class ScrimTest {
                 MathUtils.EPSILON);
 
         int callCount = mVisibilityChangeCallbackHelper.getCallCount();
-        ThreadUtils.runOnUiThreadBlocking(() -> mScrimCoordinator.hideScrim(false));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mScrimCoordinator.hideScrim(model, /* animate= */ false));
         mVisibilityChangeCallbackHelper.waitForCallback(callCount, 1);
         assertScrimVisibility(false);
     }
@@ -160,7 +162,8 @@ public class ScrimTest {
     @SmallTest
     @Feature({"Scrim"})
     public void testVisibilityWithForceToFinish() throws TimeoutException {
-        showScrim(buildModel(false, true, Color.RED), true);
+        PropertyModel model = buildModel(false, true, Color.RED);
+        showScrim(model, /* animate= */ true);
 
         ScrimView scrimView = mScrimCoordinator.getViewForTesting();
         assertEquals(
@@ -172,7 +175,7 @@ public class ScrimTest {
         int callCount = mVisibilityChangeCallbackHelper.getCallCount();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mScrimCoordinator.hideScrim(true);
+                    mScrimCoordinator.hideScrim(model, /* animate= */ true);
                     mScrimCoordinator.forceAnimationToFinish();
                     assertEquals(
                             "Scrim should be completely invisible.",
@@ -188,7 +191,7 @@ public class ScrimTest {
     @SmallTest
     @Feature({"Scrim"})
     public void testColor_default() throws TimeoutException {
-        showScrim(buildModel(false, true, Color.RED), false);
+        showScrim(buildModel(false, true, Color.RED), /* animate= */ false);
 
         assertScrimColor(Color.RED);
     }
@@ -197,11 +200,13 @@ public class ScrimTest {
     @SmallTest
     @Feature({"Scrim"})
     public void testColor_custom() throws TimeoutException {
-        showScrim(buildModel(false, true, Color.GREEN), false);
+        PropertyModel model = buildModel(false, true, Color.GREEN);
+        showScrim(model, /* animate= */ false);
 
         assertScrimColor(Color.GREEN);
 
-        ThreadUtils.runOnUiThreadBlocking(() -> mScrimCoordinator.hideScrim(false));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mScrimCoordinator.hideScrim(model, /* animate= */ false));
 
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -219,7 +224,7 @@ public class ScrimTest {
         PropertyModel model = buildModel(true, true, Color.GREEN);
 
         int callCount = mStatusBarColorHelper.getCallCount();
-        showScrim(model, false);
+        showScrim(model, /* animate= */ false);
         assertScrimColor(Color.GREEN);
         assertEquals(
                 Color.GREEN, mStatusBarColorHelper.getPayloadByIndexBlocking(callCount).intValue());
@@ -235,7 +240,7 @@ public class ScrimTest {
     @SmallTest
     @Feature({"Scrim"})
     public void testHierarchy_behindAnchor() throws TimeoutException {
-        showScrim(buildModel(false, false, Color.RED), false);
+        showScrim(buildModel(false, false, Color.RED), /* animate= */ false);
 
         View scrimView = mScrimCoordinator.getViewForTesting();
         assertEquals("The parent view of the scrim is incorrect.", sParent, scrimView.getParent());
@@ -248,7 +253,7 @@ public class ScrimTest {
     @SmallTest
     @Feature({"Scrim"})
     public void testHierarchy_inFrontOfAnchor() throws TimeoutException {
-        showScrim(buildModel(false, true, Color.RED), false);
+        showScrim(buildModel(false, true, Color.RED), /* animate= */ false);
 
         View scrimView = mScrimCoordinator.getViewForTesting();
         assertEquals("The parent view of the scrim is incorrect.", sParent, scrimView.getParent());
@@ -261,7 +266,7 @@ public class ScrimTest {
     @SmallTest
     @Feature({"Scrim"})
     public void testObserver_clickEvent() throws TimeoutException {
-        showScrim(buildModel(false, true, Color.RED), false);
+        showScrim(buildModel(false, true, Color.RED), /* animate= */ false);
 
         int callCount = mScrimClickCallbackHelper.getCallCount();
         ScrimView scrimView = mScrimCoordinator.getViewForTesting();
@@ -285,7 +290,7 @@ public class ScrimTest {
                                     .build();
                         });
 
-        showScrim(model, false);
+        showScrim(model, /* animate= */ false);
 
         int gestureCallCount = mDelegatedEventHelper.getCallCount();
         ScrimView scrimView = mScrimCoordinator.getViewForTesting();
@@ -301,7 +306,7 @@ public class ScrimTest {
     @Feature({"Scrim"})
     public void testAnimation_running() throws TimeoutException {
         // The showScrim method includes checks for animation state.
-        showScrim(buildModel(false, true, Color.RED), true);
+        showScrim(buildModel(false, true, Color.RED), /* animate= */ true);
     }
 
     @Test
@@ -309,7 +314,7 @@ public class ScrimTest {
     @Feature({"Scrim"})
     public void testAnimation_canceled() throws TimeoutException {
         PropertyModel model = buildModel(false, true, Color.RED);
-        showScrim(model, true);
+        showScrim(model, /* animate= */ true);
 
         ThreadUtils.runOnUiThreadBlocking(() -> mScrimCoordinator.setAlpha(0.5f, model));
 
@@ -323,7 +328,7 @@ public class ScrimTest {
     @Feature({"Scrim"})
     public void testAffectsStatusBar_enabled() throws TimeoutException {
         int colorCallCount = mStatusBarColorHelper.getCallCount();
-        showScrim(buildModel(true, true, Color.RED), false);
+        showScrim(buildModel(true, true, Color.RED), /* animate= */ false);
         assertEquals(
                 Color.RED,
                 mStatusBarColorHelper.getPayloadByIndexBlocking(colorCallCount).intValue());
@@ -335,7 +340,7 @@ public class ScrimTest {
     public void testAffectsStatusBar_disabled() throws TimeoutException {
         int callCount = mStatusBarColorHelper.getCallCount();
         PropertyModel model = buildModel(false, true, Color.RED);
-        showScrim(model, false);
+        showScrim(model, /* animate= */ false);
 
         ThreadUtils.runOnUiThreadBlocking(() -> mScrimCoordinator.setAlpha(0.5f, model));
 
@@ -367,7 +372,7 @@ public class ScrimTest {
                                     .with(BACKGROUND_COLOR, Color.RED)
                                     .build();
                         });
-        showScrim(model, false);
+        showScrim(model, /* animate= */ false);
 
         assertEquals(
                 Color.RED, mNavBarColorHelper.getPayloadByIndexBlocking(colorCallCount).intValue());
@@ -387,7 +392,7 @@ public class ScrimTest {
                                     .with(VISIBILITY_CALLBACK, mVisibilityChangeCallback)
                                     .build();
                         });
-        showScrim(model, false);
+        showScrim(model, /* animate= */ false);
 
         assertEquals(
                 "No events to the navigation bar callback should have occurred",
@@ -411,7 +416,7 @@ public class ScrimTest {
                                     .build();
                         });
 
-        showScrim(model, false);
+        showScrim(model, /* animate= */ false);
 
         View scrimView = mScrimCoordinator.getViewForTesting();
         assertEquals(
@@ -425,13 +430,14 @@ public class ScrimTest {
     @Feature({"Scrim"})
     public void testOldScrimHidden() throws TimeoutException {
         PropertyModel firstModel = buildModel(false, true, Color.RED);
-        showScrim(firstModel, false);
+        showScrim(firstModel, /* animate= */ false);
 
         assertScrimVisibility(true);
 
         View oldScrim = mScrimCoordinator.getViewForTesting();
 
-        showScrim(buildModel(false, true, Color.BLUE), false);
+        PropertyModel secondModel = buildModel(false, true, Color.BLUE);
+        showScrim(secondModel, /* animate= */ false);
         assertScrimColor(Color.BLUE);
 
         View newScrim = mScrimCoordinator.getViewForTesting();
@@ -442,7 +448,8 @@ public class ScrimTest {
         ThreadUtils.runOnUiThreadBlocking(() -> firstModel.set(BACKGROUND_COLOR, Color.MAGENTA));
         assertScrimColor(Color.BLUE);
 
-        ThreadUtils.runOnUiThreadBlocking(() -> mScrimCoordinator.hideScrim(false));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mScrimCoordinator.hideScrim(secondModel, /* animate= */ false));
         ThreadUtils.runOnUiThreadBlocking(() -> firstModel.set(BACKGROUND_COLOR, Color.GREEN));
     }
 
@@ -463,24 +470,32 @@ public class ScrimTest {
 
         ThreadUtils.runOnUiThreadBlocking(() -> mScrimCoordinator.addObserver(o1));
         PropertyModel firstModel = buildModel(false, true, Color.RED);
-        showScrim(firstModel, false);
+        showScrim(firstModel, /* animate= */ false);
 
         assertTrue(o1.mVisible);
         assertFalse(o2.mVisible);
 
         ThreadUtils.runOnUiThreadBlocking(() -> mScrimCoordinator.addObserver(o2));
 
-        showScrim(buildModel(false, true, Color.BLUE), false);
+        PropertyModel secondModel = buildModel(false, true, Color.BLUE);
+        showScrim(secondModel, /* animate= */ false);
 
         assertTrue(o1.mVisible);
         // No update for o2 yet since the visibility hasn't changed.
         assertFalse(o2.mVisible);
 
-        ThreadUtils.runOnUiThreadBlocking(() -> mScrimCoordinator.hideScrim(false));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mScrimCoordinator.hideScrim(firstModel, /* animate= */ false));
+        // Above hideScrim should no-op, wrong model.
+        assertTrue(o1.mVisible);
+        assertFalse(o2.mVisible);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mScrimCoordinator.hideScrim(secondModel, /* animate= */ false));
         assertFalse(o1.mVisible);
         assertFalse(o2.mVisible);
 
-        showScrim(buildModel(false, true, Color.BLUE), false);
+        showScrim(buildModel(false, true, Color.BLUE), /* animate= */ false);
 
         assertTrue(o1.mVisible);
         assertTrue(o2.mVisible);

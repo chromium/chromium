@@ -160,12 +160,6 @@ void ChromeSecurityStateTabHelper::PrimaryPageChanged(content::Page& page) {
   MaybeShowKnownInterceptionDisclosureDialog(web_contents(), cert_status);
 }
 
-// TODO(crbug.com/40928765): Remove this feature entirely by removing
-// security_state::SECURE_WITH_POLICY_INSTALLED_CERT.
-bool ChromeSecurityStateTabHelper::UsedPolicyInstalledCertificate() const {
-  return false;
-}
-
 security_state::MaliciousContentStatus
 ChromeSecurityStateTabHelper::GetMaliciousContentStatus() const {
   using enum safe_browsing::SBThreatType;

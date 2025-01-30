@@ -19,6 +19,15 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
+const PROCESS_ID = 'dummyProcessId';
+const PROFILE_ID = 'dummyProfileId';
+const PROFILE_NAME = 'Dummy Profile Name';
+const PUBLIC_KEY = 'dummyPublicKey';
+const STATE_ID = 8;
+const STATE_NAME_1 = 'dummyStateName';
+const STATE_NAME_2 = 'dummyStateName2';
+const TIME_SINCE_LAST_UPDATE = 'dummyTimeSinceLastUpdate';
+const LAST_UNSUCCESSFUL_MESSAGE = 'dummyLastUnsuccessfulMessage';
 
 /**
  * A test version of CertificateProvisioningBrowserProxy.
@@ -52,14 +61,15 @@ class TestCertificateProvisioningBrowserProxy extends TestBrowserProxy
 function createSampleCertificateProvisioningProcess(isUpdated: boolean):
     CertificateProvisioningProcess {
   return {
-    certProfileId: 'dummyProfileId',
-    certProfileName: 'Dummy Profile Name',
+    processId: PROCESS_ID,
+    certProfileId: PROFILE_ID,
+    certProfileName: PROFILE_NAME,
     isDeviceWide: true,
-    publicKey: 'dummyPublicKey',
-    stateId: 8,
-    status: isUpdated ? 'dummyStateName2' : 'dummyStateName',
-    timeSinceLastUpdate: 'dummyTimeSinceLastUpdate',
-    lastUnsuccessfulMessage: 'dummyLastUnsuccessfulMessage',
+    publicKey: PUBLIC_KEY,
+    stateId: STATE_ID,
+    status: isUpdated ? STATE_NAME_2 : STATE_NAME_1,
+    timeSinceLastUpdate: TIME_SINCE_LAST_UPDATE,
+    lastUnsuccessfulMessage: LAST_UNSUCCESSFUL_MESSAGE,
   };
 }
 
@@ -238,6 +248,43 @@ suite('DetailsDialogTests', function() {
     assertTrue(dialog.$.dialog.open);
   });
 
+  test('SeeDetails', async function() {
+    const certProfileName =
+        dialog.shadowRoot!.querySelector<HTMLElement>(
+                              '#certProfileName')!.innerText;
+    assertEquals(certProfileName, PROFILE_NAME);
+
+    const certProfileId =
+        dialog.shadowRoot!.querySelector<HTMLElement>(
+                              '#certProfileId')!.innerText;
+    assertEquals(certProfileId, PROFILE_ID);
+
+    const processId =
+        dialog.shadowRoot!.querySelector<HTMLElement>('#processId')!.innerText;
+    assertEquals(processId, PROCESS_ID);
+
+    const status =
+        dialog.shadowRoot!.querySelector<HTMLElement>('#status')!.innerText;
+    assertEquals(status, STATE_NAME_1);
+
+    const timeSinceLastUpdate =
+        dialog.shadowRoot!.querySelector<HTMLElement>(
+                              '#timeSinceLastUpdate')!.innerText;
+    assertEquals(timeSinceLastUpdate, TIME_SINCE_LAST_UPDATE);
+
+    dialog.shadowRoot!.querySelector<HTMLElement>('#advancedInfo')!.click();
+
+    // Not entirely clear why the advanced info fields have extra formatting
+    // around them, but that's how it already has been for years.
+    const stateId =
+        dialog.shadowRoot!.querySelector<HTMLElement>('#stateId')!.innerText;
+    assertEquals(stateId, '\n          ' + STATE_ID + '\n        ');
+
+    const publicKey =
+        dialog.shadowRoot!.querySelector<HTMLElement>('#publicKey')!.innerText;
+    assertEquals(publicKey, '\n          ' + PUBLIC_KEY + '\n        ');
+  });
+
   test('RefreshProcess', async function() {
     // Simulate clicking 'Refresh'.
     dialog.$.refresh.click();
@@ -259,13 +306,13 @@ suite('DetailsDialogTests', function() {
     await browserProxy.whenCalled('refreshCertificateProvisioningProcesses');
 
     // Check the status of dialog.model.
-    assertEquals(dialog.model.status, 'dummyStateName');
+    assertEquals(dialog.model.status, STATE_NAME_1);
     webUIListenerCallback(
         'certificate-provisioning-processes-changed',
         [createSampleCertificateProvisioningProcess(true)]);
     flush();
     // Check if the status of dialog.model is updated accordingly.
-    assertEquals(dialog.model.status, 'dummyStateName2');
+    assertEquals(dialog.model.status, STATE_NAME_2);
   });
 
   /**

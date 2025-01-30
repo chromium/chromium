@@ -727,6 +727,10 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual bool ShouldDisableSiteIsolation(
       SiteIsolationMode site_isolation_mode);
 
+  // Allows the embedder to programmatically control whether Origin Isolation
+  // should be disabled.
+  virtual bool ShouldDisableOriginIsolation();
+
   // Retrieves names of any additional site isolation modes from the embedder.
   virtual std::vector<std::string> GetAdditionalSiteIsolationModes();
 

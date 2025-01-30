@@ -62,9 +62,8 @@ enum SecurityLevel {
   // by the system administrator has been observed in this profile, suggesting
   // a MITM was present.
   //
-  // Used only on ChromeOS, this status is unreached on other platforms.
-  // TODO(crbug.com/40928765): make this work on all platforms when the
-  // non-chromeos-specific policies are added.
+  // TODO(crbug.com/40928765): remove this option, as it is unused on all
+  // platforms.
   SECURE_WITH_POLICY_INSTALLED_CERT = 4,
 
   // Attempted HTTPS and failed, page not authenticated, HTTPS with
@@ -221,11 +220,8 @@ constexpr SecurityLevel kRanInsecureContentLevel = DANGEROUS;
 
 // Returns a SecurityLevel to describe the current page.
 // |visible_security_state| contains the relevant security state.
-// |used_policy_installed_certificate| indicates whether the page or request
-// is known to be loaded with a certificate installed by the system admin.
 SecurityLevel GetSecurityLevel(
-    const VisibleSecurityState& visible_security_state,
-    bool used_policy_installed_certificate);
+    const VisibleSecurityState& visible_security_state);
 
 // Returns true if the current page was loaded using a cryptographic protocol
 // and its certificate has any major errors.
@@ -238,8 +234,8 @@ bool IsSchemeCryptographic(const GURL& url);
 // Returns true for a valid |url| with localhost or file:// scheme origin.
 bool IsOriginLocalhostOrFile(const GURL& url);
 
-// Returns true if the page has a valid SSL certificate. Only SECURE and
-// SECURE_WITH_POLICY_INSTALLED_CERT are considered valid.
+// Returns true if the page has a valid SSL certificate. Only SECURE is
+// considered valid.
 bool IsSslCertificateValid(security_state::SecurityLevel security_level);
 
 // Returns the given prefix suffixed with a dot and the current security level.

@@ -16,6 +16,7 @@
 
 namespace page_info {
 class MerchantTrustService;
+enum class MerchantTrustInteraction;
 }  // namespace page_info
 
 class PageInfoMerchantTrustContentView;
@@ -26,6 +27,9 @@ class PageInfoMerchantTrustController : public content::WebContentsObserver {
       PageInfoMerchantTrustContentView* content_view,
       content::WebContents* web_contents);
   ~PageInfoMerchantTrustController() override;
+
+  void MerchantBubbleOpened(page_info::MerchantBubbleOpenReferrer referrer);
+  void MerchantBubbleClosed();
 
  private:
   void OnMerchantTrustDataFetched(
@@ -38,6 +42,7 @@ class PageInfoMerchantTrustController : public content::WebContentsObserver {
   void OnSurveyFailed();
   void InitCallbacks();
   void RecordInteractionPref();
+  void RecordInteraction(page_info::MerchantTrustInteraction interaction);
 
   raw_ptr<PageInfoMerchantTrustContentView> content_view_;
   page_info::MerchantData merchant_data_;

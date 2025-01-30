@@ -58,6 +58,7 @@ source_set("platform_apps") {
     "//build:chromeos_buildflags",
     "//chrome/app:command_ids",
     "//chrome/browser:browser_process",
+    "//chrome/browser:shell_integration",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/extensions",
     "//chrome/browser/media/router/discovery",

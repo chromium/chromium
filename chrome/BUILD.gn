@@ -383,7 +383,8 @@ if (!is_android && !is_mac) {
   }
 
   # TODO(crbug.com/40204298): Make this work on other platforms.
-  if (is_linux && current_toolchain == default_toolchain && !is_component_build) {
+  if (is_linux && current_toolchain == default_toolchain &&
+      !is_component_build) {
     private_code_test("chrome_private_code_test") {
       linker_inputs_dep = ":chrome_initial"
       executable_name = _chrome_output_name
@@ -1405,6 +1406,7 @@ group("dependencies") {
     "//build:chromeos_buildflags",
     "//chrome/browser",
     "//chrome/browser:buildflags",
+    "//chrome/browser:shell_integration",
     "//chrome/browser/policy:path_parser",
     "//chrome/child",
     "//chrome/common",

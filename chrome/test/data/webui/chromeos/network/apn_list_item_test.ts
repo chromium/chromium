@@ -25,6 +25,7 @@ import {FakeNetworkConfig} from '../fake_network_config_mojom.js';
 
 const TEST_APN_EVENT_DATA_GUID = 'test_guid';
 
+// TODO(crbug.com/367734332): Move into cellular_utils.ts.
 const TEST_APN_EVENT_DATA: ApnEventData = {
   apn: {
     accessPointName: 'test_apn',
@@ -81,6 +82,7 @@ suite('ApnListItemTest', function() {
     return flushTasks();
   }
 
+  // TODO(crbug.com/367734332): Move into cellular_utils.ts.
   function createTestApnWithOverridenValues(overrides: Partial<ApnProperties>):
       ApnProperties {
     return {...TEST_APN_EVENT_DATA.apn, ...overrides};

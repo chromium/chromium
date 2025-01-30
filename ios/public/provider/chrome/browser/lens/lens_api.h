@@ -10,6 +10,7 @@
 #import <optional>
 
 #import "base/functional/callback.h"
+#import "ios/public/provider/chrome/browser/lens/lens_image_metadata.h"
 #import "ios/public/provider/chrome/browser/lens/lens_query.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 
@@ -72,12 +73,6 @@ enum class LensEntrypoint;
 - (void)lensController:(id<ChromeLensViewFinderController>)lensController
           didSelectURL:(GURL)url;
 
-// Called when the user picked or captured an image.
-- (void)lensController:(id<ChromeLensViewFinderController>)lensController
-             didSelectImage:(UIImage*)image
-    serializedViewportState:(NSString*)viewportState
-              isCameraImage:(BOOL)isCameraImage;
-
 // Called when the Lens UI is added to a view hierarchy.
 - (void)lensControllerWillAppear:
     (id<ChromeLensViewFinderController>)lensController;
@@ -85,6 +80,17 @@ enum class LensEntrypoint;
 // Called after the Lens UI was removed from a view hierarchy.
 - (void)lensControllerWillDisappear:
     (id<ChromeLensViewFinderController>)lensController;
+
+// Called when the user picked or captured an image.
+- (void)lensController:(id<ChromeLensViewFinderController>)lensController
+    didSelectImageWithMetadata:(id<LensImageMetadata>)imageMetadata;
+
+// Deprecated. Use `lensController:didSelectImageWithMetadata:`
+// Called when the user picked or captured an image.
+- (void)lensController:(id<ChromeLensViewFinderController>)lensController
+             didSelectImage:(UIImage*)image
+    serializedViewportState:(NSString*)viewportState
+              isCameraImage:(BOOL)isCameraImage;
 
 @end
 

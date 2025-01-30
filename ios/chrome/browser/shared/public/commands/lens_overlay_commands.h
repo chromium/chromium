@@ -10,6 +10,8 @@
 #import "components/lens/lens_overlay_dismissal_source.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_entrypoint.h"
 
+@protocol LensImageMetadata;
+
 /// Commands related to Lens Overlay.
 @protocol LensOverlayCommands
 
@@ -24,6 +26,12 @@
 - (void)searchImageWithLens:(UIImage*)image
                  entrypoint:(LensOverlayEntrypoint)entrypoint
                  completion:(void (^)(BOOL))completion;
+
+/// Responds to a search image with Lens request by creating a new Lens UI with
+/// the given image. The completion is called once the UI is presented.
+- (void)searchWithLensImageMetadata:(id<LensImageMetadata>)metadata
+                         entrypoint:(LensOverlayEntrypoint)entrypoint
+                         completion:(void (^)(BOOL))completion;
 
 /// Display the lens overlay, if it exists.
 - (void)showLensUI:(BOOL)animated;

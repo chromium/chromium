@@ -20,6 +20,7 @@ import android.widget.FrameLayout.LayoutParams;
 
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -53,6 +54,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ToolbarPositionController.StateTransition;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
 /** Unit tests for {@link ToolbarPositionController}. */
@@ -243,6 +245,7 @@ public class ToolbarPositionControllerTest {
     private ObservableSupplierImpl<Integer> mBottomToolbarOffsetSupplier =
             new ObservableSupplierImpl<>();
     private HistogramWatcher mStartupExpectation;
+    private WindowAndroid mWindowAndroid;
 
     static class FakeKeyboardVisibilityDelegate extends KeyboardVisibilityDelegate {
         private boolean mIsShowing;
@@ -272,7 +275,9 @@ public class ToolbarPositionControllerTest {
         doReturn(mProgressBarLayoutParams).when(mProgressBarContainer).getLayoutParams();
         mContext = ContextUtils.getApplicationContext();
         doReturn(mContext.getResources()).when(mProgressBarContainer).getResources();
-        mBottomControlsStacker = new BottomControlsStacker(mBrowserControlsSizer);
+        mWindowAndroid = new WindowAndroid(mContext, false);
+        mBottomControlsStacker =
+                new BottomControlsStacker(mBrowserControlsSizer, mContext, mWindowAndroid);
         mBrowserControlsSizer.setControlsPosition(
                 ControlsPosition.TOP, TOOLBAR_HEIGHT, 0, 0, 0, 0, 0);
         mControlContainerLayoutParams.gravity = Gravity.START | Gravity.TOP;
@@ -301,6 +306,11 @@ public class ToolbarPositionControllerTest {
                         mBottomToolbarOffsetSupplier,
                         mProgressBarContainer,
                         mContext);
+    }
+
+    @After
+    public void tearDown() {
+        mWindowAndroid.destroy();
     }
 
     /**

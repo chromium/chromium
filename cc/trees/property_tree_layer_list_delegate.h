@@ -11,6 +11,7 @@
 #include "cc/cc_export.h"
 #include "cc/input/scroll_snap_data.h"
 #include "cc/paint/element_id.h"
+#include "cc/trees/mutator_host_client.h"
 #include "cc/trees/property_tree_delegate.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
@@ -30,6 +31,7 @@ class CC_EXPORT PropertyTreeLayerListDelegate : public PropertyTreeDelegate {
   // PropertyTreeDelegate overrides.
   void SetLayerTreeHost(LayerTreeHost* host) override;
   LayerTreeHost* host() override;
+  const LayerTreeHost* host() const override;
   void UpdatePropertyTreesIfNeeded() override;
   void UpdateScrollOffsetFromImpl(
       const ElementId& id,
@@ -38,6 +40,8 @@ class CC_EXPORT PropertyTreeLayerListDelegate : public PropertyTreeDelegate {
   void OnAnimateLayers() override;
   void RegisterViewportPropertyIds(const ViewportPropertyIds& ids) override;
   void OnUnregisterElement(ElementId id) override;
+  bool IsElementInPropertyTrees(ElementId element_id,
+                                ElementListType list_type) const override;
 
  private:
   raw_ptr<LayerTreeHost> host_ = nullptr;

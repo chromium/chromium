@@ -9,6 +9,7 @@
 #include "cc/input/scroll_snap_data.h"
 #include "cc/paint/element_id.h"
 #include "cc/trees/layer_tree_host.h"
+#include "cc/trees/mutator_host_client.h"
 #include "cc/trees/property_tree_builder.h"
 #include "ui/compositor/compositor_export.h"
 #include "ui/gfx/geometry/vector2d_f.h"
@@ -67,6 +68,16 @@ void CompositorPropertyTreeDelegate::OnUnregisterElement(
   // just call the base class implementation to ensure that we don't get
   // out of date.
   cc::PropertyTreeLayerTreeDelegate::OnUnregisterElement(element_id);
+}
+
+bool CompositorPropertyTreeDelegate::IsElementInPropertyTrees(
+    cc::ElementId element_id,
+    cc::ElementListType list_type) const {
+  // TODO(crbug.com/389771428): Implement this w/ layer lists. For now,
+  // just call the base class implementation to ensure that we don't get
+  // out of date.
+  return cc::PropertyTreeLayerTreeDelegate::IsElementInPropertyTrees(element_id,
+                                                                     list_type);
 }
 
 void CompositorPropertyTreeDelegate::SetObserverForTesting(Observer* observer) {

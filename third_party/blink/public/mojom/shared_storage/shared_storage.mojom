@@ -38,6 +38,7 @@ struct PrivateAggregationConfig {
   url.mojom.Origin? aggregation_coordinator_origin;
   string? context_id;
   uint32 filtering_id_max_bytes;
+  uint16? max_contributions;
 };
 
 // Implemented by the browser and exposed to the renderer process on a

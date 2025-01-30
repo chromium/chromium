@@ -114,6 +114,8 @@ class COMPONENT_EXPORT(INPUT) InputRouterClient {
       const std::optional<std::vector<gfx::Rect>>& line_bounds) = 0;
   virtual StylusInterface* GetStylusInterface() = 0;
   virtual void OnStartStylusWriting() = 0;
+
+  virtual DispatchToRendererCallback GetDispatchToRendererCallback() = 0;
 };
 
 }  // namespace input

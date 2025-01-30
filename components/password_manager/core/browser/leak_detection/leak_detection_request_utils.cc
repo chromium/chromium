@@ -193,6 +193,7 @@ TriggerBackendNotification ShouldTriggerBackendNotificationForInitiator(
     case LeakDetectionInitiator::kSignInCheck:
     case LeakDetectionInitiator::kBulkSyncedPasswordsCheck:
     case LeakDetectionInitiator::kEditCheck:
+    case LeakDetectionInitiator::kIOSWebViewSignInCheck:
     case LeakDetectionInitiator::kIGABulkSyncedPasswordsCheck:
     case LeakDetectionInitiator::kClientUseCaseUnspecified:
       return TriggerBackendNotification(false);

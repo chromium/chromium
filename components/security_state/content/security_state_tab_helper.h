@@ -51,8 +51,6 @@ class SecurityStateTabHelper
   SecurityStateTabHelper(content::WebContents* web_contents,
                          UsesEmbedderInformation uses_embedder_information);
 
-  virtual bool UsedPolicyInstalledCertificate() const;
-
  private:
   friend class content::WebContentsUserData<SecurityStateTabHelper>;
 

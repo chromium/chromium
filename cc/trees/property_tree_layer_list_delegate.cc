@@ -7,6 +7,7 @@
 #include "base/trace_event/trace_event.h"
 #include "cc/layers/heads_up_display_layer.h"
 #include "cc/trees/layer_tree_host.h"
+#include "cc/trees/mutator_host_client.h"
 
 namespace cc {
 
@@ -15,6 +16,10 @@ void PropertyTreeLayerListDelegate::SetLayerTreeHost(LayerTreeHost* host) {
 }
 
 LayerTreeHost* PropertyTreeLayerListDelegate::host() {
+  return host_;
+}
+
+const LayerTreeHost* PropertyTreeLayerListDelegate::host() const {
   return host_;
 }
 
@@ -105,6 +110,13 @@ void PropertyTreeLayerListDelegate::RegisterViewportPropertyIds(
 
 void PropertyTreeLayerListDelegate::OnUnregisterElement(ElementId element_id) {
   // This is a no-op in layer list mode.
+}
+
+bool PropertyTreeLayerListDelegate::IsElementInPropertyTrees(
+    ElementId element_id,
+    ElementListType list_type) const {
+  return list_type == ElementListType::ACTIVE &&
+         host()->property_trees()->HasElement(element_id);
 }
 
 }  // namespace cc

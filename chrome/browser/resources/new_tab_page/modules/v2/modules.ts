@@ -217,6 +217,8 @@ export class ModulesV2Element extends AppElementBase {
         (this.maxColumnCount_ - 1) * CONTAINER_GAP_WIDTH;
 
     if (this.microsoftModuleEnabled_) {
+      // TODO(crbug.com/386390756): Remove this call once silent token
+      // acquisition is changed.
       this.startMicrosoftAuth();
     }
     // TODO(crbug.com/390713116): If Microsoft Auth is enabled and silent

@@ -256,6 +256,7 @@ void CertificateProvisioningUiHandler::GotStatus(
 
   for (auto& process : status) {
     base::Value::Dict entry;
+    entry.Set("processId", std::move(process->process_id.value()));
     entry.Set("certProfileId", std::move(process->cert_profile_id));
     entry.Set("certProfileName", std::move(process->cert_profile_name));
     entry.Set("isDeviceWide", process->is_device_wide);

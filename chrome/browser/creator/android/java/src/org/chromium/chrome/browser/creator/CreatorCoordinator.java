@@ -97,7 +97,7 @@ public class CreatorCoordinator
     private final CreatorSnackbarController mCreatorSnackbarController;
     private final WindowAndroid mWindowAndroid;
     private BottomSheetController mBottomSheetController;
-    private ScrimCoordinator mScrim;
+    private ScrimCoordinator mScrimCoordinator;
     private ViewGroup mBottomSheetContainer;
     private Profile mProfile;
     private Stream mStream;
@@ -394,7 +394,7 @@ public class CreatorCoordinator
 
     /** Set up the bottom sheet for this activity. */
     private void initBottomSheet() {
-        mScrim = new ScrimCoordinator(mActivity, mCreatorViewGroup);
+        mScrimCoordinator = new ScrimCoordinator(mActivity, mCreatorViewGroup);
 
         mBottomSheetContainer = new FrameLayout(mActivity);
         mBottomSheetContainer.setId(R.id.creator_content_preview_bottom_sheet);
@@ -403,7 +403,7 @@ public class CreatorCoordinator
         mCreatorViewGroup.addView(mBottomSheetContainer);
         mBottomSheetController =
                 BottomSheetControllerFactory.createBottomSheetController(
-                        () -> mScrim,
+                        () -> mScrimCoordinator,
                         (sheet) -> {},
                         mActivity.getWindow(),
                         KeyboardVisibilityDelegate.getInstance(),

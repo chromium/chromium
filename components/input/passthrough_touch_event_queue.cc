@@ -88,14 +88,21 @@ void PassthroughTouchEventQueue::SendTouchCancelEventForTouchEvent(
       WebInputEvent::Type::kTouchCancel,
       // TODO(rbyers): Shouldn't we use a fresh timestamp?
       event.event.TimeStamp(), &event.event);
-  SendTouchEventImmediately(&event, false);
+  {
+    ScopedDispatchToRendererCallback dispatch_callback(
+        client_->GetDispatchToRendererCallback());
+    SendTouchEventImmediately(&event, false, dispatch_callback.callback);
+  }
 }
 
 void PassthroughTouchEventQueue::QueueEvent(
-    const TouchEventWithLatencyInfo& event) {
+    const TouchEventWithLatencyInfo& event,
+    DispatchToRendererCallback& dispatch_callback) {
   TRACE_EVENT0("input", "PassthroughTouchEventQueue::QueueEvent");
 
   if (FilterBeforeForwarding(event.event) != PreFilterResult::kUnfiltered) {
+    std::move(dispatch_callback)
+        .Run(event.event, DispatchToRendererResult::kNotDispatched);
     client_->OnFilteringTouchEvent(event.event);
 
     TouchEventWithLatencyInfoAndAckState event_with_ack_state = event;
@@ -107,7 +114,7 @@ void PassthroughTouchEventQueue::QueueEvent(
     return;
   }
   TouchEventWithLatencyInfo cloned_event(event);
-  SendTouchEventImmediately(&cloned_event, true);
+  SendTouchEventImmediately(&cloned_event, true, dispatch_callback);
 }
 
 void PassthroughTouchEventQueue::PrependTouchScrollNotification() {
@@ -118,7 +125,11 @@ void PassthroughTouchEventQueue::PrependTouchScrollNotification() {
       WebInputEvent::Type::kTouchScrollStarted, WebInputEvent::kNoModifiers,
       ui::EventTimeForNow(), LatencyInfo());
   touch.event.dispatch_type = WebInputEvent::DispatchType::kEventNonBlocking;
-  SendTouchEventImmediately(&touch, true);
+  {
+    ScopedDispatchToRendererCallback dispatch_callback(
+        client_->GetDispatchToRendererCallback());
+    SendTouchEventImmediately(&touch, true, dispatch_callback.callback);
+  }
 }
 
 void PassthroughTouchEventQueue::ProcessTouchAck(
@@ -251,7 +262,8 @@ void PassthroughTouchEventQueue::AckTouchEventToClient(
 
 void PassthroughTouchEventQueue::SendTouchEventImmediately(
     TouchEventWithLatencyInfo* touch,
-    bool wait_for_ack) {
+    bool wait_for_ack,
+    DispatchToRendererCallback& dispatch_callback) {
   // Note: Touchstart events are marked cancelable to allow transitions between
   // platform scrolling and JS pinching. Touchend events, however, remain
   // uncancelable, mitigating the risk of jank when transitioning to a fling.
@@ -298,7 +310,7 @@ void PassthroughTouchEventQueue::SendTouchEventImmediately(
       base::TimeTicks::Now();
   if (wait_for_ack)
     outstanding_touches_.insert(*touch);
-  client_->SendTouchEventImmediately(*touch);
+  client_->SendTouchEventImmediately(*touch, dispatch_callback);
 }
 
 PassthroughTouchEventQueue::PreFilterResult

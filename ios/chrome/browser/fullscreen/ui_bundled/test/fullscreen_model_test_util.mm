@@ -37,7 +37,7 @@ void SimulateFullscreenUserScrollForProgress(FullscreenModel* model,
 
 CGFloat GetFullscreenOffsetDeltaForProgress(FullscreenModel* model,
                                             CGFloat progress) {
-  CGFloat height_delta = model->toolbar_height_delta();
+  CGFloat height_delta = model->get_toolbar_height_delta();
   CGFloat base_offset =
       GetFullscreenBaseOffsetForProgress(model, model->progress());
   CGFloat final_y_content_offset =
@@ -48,5 +48,5 @@ CGFloat GetFullscreenOffsetDeltaForProgress(FullscreenModel* model,
 CGFloat GetFullscreenBaseOffsetForProgress(FullscreenModel* model,
                                            CGFloat progress) {
   return model->GetYContentOffset() -
-         (1.0 - progress) * model->toolbar_height_delta();
+         (1.0 - progress) * model->get_toolbar_height_delta();
 }

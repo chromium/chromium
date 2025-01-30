@@ -324,6 +324,13 @@ void RenderInputRouter::DecrementInFlightEventCount(
   delegate_->DecrementInFlightEventCount(ack_source);
 }
 
+void RenderInputRouter::OnInputDispatchedToRendererResult(
+    const blink::WebInputEvent& event,
+    DispatchToRendererResult result) {
+  delegate_->NotifyObserversOfInputEvent(
+      event, result == DispatchToRendererResult::kDispatched);
+}
+
 void RenderInputRouter::DidOverscroll(const ui::DidOverscrollParams& params) {
   if (view_input_) {
     view_input_->DidOverscroll(params);
@@ -410,7 +417,12 @@ void RenderInputRouter::ForwardGestureEventWithLatencyInfo(
   DispatchInputEventWithLatencyInfo(
       gesture_with_latency.event, &gesture_with_latency.latency,
       &gesture_with_latency.event.GetModifiableEventLatencyMetadata());
-  SendGestureEventWithLatencyInfo(gesture_with_latency);
+  {
+    ScopedDispatchToRendererCallback dispatch_callback(
+        GetDispatchToRendererCallback());
+    SendGestureEventWithLatencyInfo(gesture_with_latency,
+                                    dispatch_callback.callback);
+  }
 }
 
 void RenderInputRouter::ForwardWheelEventWithLatencyInfo(
@@ -418,6 +430,11 @@ void RenderInputRouter::ForwardWheelEventWithLatencyInfo(
     const ui::LatencyInfo& latency_info) {
   render_input_router_client_->ForwardWheelEventWithLatencyInfo(wheel_event,
                                                                 latency_info);
+}
+
+DispatchToRendererCallback RenderInputRouter::GetDispatchToRendererCallback() {
+  return base::BindOnce(&RenderInputRouter::OnInputDispatchedToRendererResult,
+                        base::Unretained(this));
 }
 
 void RenderInputRouter::OnWheelEventAck(
@@ -483,7 +500,6 @@ void RenderInputRouter::DispatchInputEventWithLatencyInfo(
     ui::LatencyInfo* latency,
     ui::EventLatencyMetadata* event_latency_metadata) {
   latency_tracker_->OnInputEvent(event, latency, event_latency_metadata);
-  delegate_->NotifyObserversOfInputEvent(event);
 }
 
 void RenderInputRouter::ForwardTouchEventWithLatencyInfo(
@@ -511,7 +527,13 @@ void RenderInputRouter::ForwardTouchEventWithLatencyInfo(
   DispatchInputEventWithLatencyInfo(
       touch_with_latency.event, &touch_with_latency.latency,
       &touch_with_latency.event.GetModifiableEventLatencyMetadata());
-  input_router_->SendTouchEvent(touch_with_latency);
+
+  {
+    ScopedDispatchToRendererCallback dispatch_callback(
+        GetDispatchToRendererCallback());
+    input_router_->SendTouchEvent(touch_with_latency,
+                                  dispatch_callback.callback);
+  }
 }
 
 std::unique_ptr<RenderInputRouterIterator>
@@ -528,7 +550,8 @@ void RenderInputRouter::ShowContextMenuAtPoint(
 }
 
 void RenderInputRouter::SendGestureEventWithLatencyInfo(
-    const GestureEventWithLatencyInfo& gesture_with_latency) {
+    const GestureEventWithLatencyInfo& gesture_with_latency,
+    DispatchToRendererCallback& dispatch_callback) {
   const blink::WebGestureEvent& gesture_event = gesture_with_latency.event;
   if (gesture_event.GetType() == WebInputEvent::Type::kGestureScrollBegin) {
     DCHECK(
@@ -566,7 +589,7 @@ void RenderInputRouter::SendGestureEventWithLatencyInfo(
       // shows the end of a scroll sequence and resets is_in_gesture_scroll_.
     }
   }
-  input_router()->SendGestureEvent(gesture_with_latency);
+  input_router()->SendGestureEvent(gesture_with_latency, dispatch_callback);
 }
 
 void RenderInputRouter::DidStopFlinging() {
@@ -604,6 +627,11 @@ void RenderInputRouter::ResetWidgetInputInterfaces() {
 void RenderInputRouter::SetInputTargetClientForTesting(
     mojo::Remote<viz::mojom::InputTargetClient> input_target_client) {
   input_target_client_ = std::move(input_target_client);
+}
+
+void RenderInputRouter::SetWidgetInputHandlerForTesting(
+    mojo::Remote<blink::mojom::WidgetInputHandler> widget_input_handler) {
+  widget_input_handler_ = std::move(widget_input_handler);
 }
 
 }  // namespace input

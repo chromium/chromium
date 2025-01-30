@@ -110,7 +110,7 @@ std::optional<std::string> GetAccountForSaving(
     return std::nullopt;
   }
   if (IsSyncFeatureEnabledIncludingPasswords(sync_service) ||
-      features_util::IsOptedInForAccountStorage(pref_service, sync_service)) {
+      features_util::IsAccountStorageEnabled(pref_service, sync_service)) {
     return sync_service->GetAccountInfo().email;
   }
   return std::nullopt;

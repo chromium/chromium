@@ -7,8 +7,13 @@ package org.chromium.chrome.browser.browser_controls;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+
+import android.content.Context;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -20,10 +25,13 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerScrollBehavior;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerType;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerVisibility;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.display.DisplayAndroid;
 
 /** Unit tests for the BrowserStateBrowserControlsVisibilityDelegate. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -42,13 +50,24 @@ public class BottomControlsStackerUnitTest {
     private static final @LayerType int BOTTOM_LAYER = LayerType.TEST_BOTTOM_LAYER;
 
     @Mock BrowserControlsSizer mBrowserControlsSizer;
+    @Mock private Context mContext;
+    @Mock private WindowAndroid mWindowAndroid;
+    @Mock private Resources mResources;
+    @Mock private DisplayAndroid mDisplayAndroid;
 
     private BottomControlsStacker mBottomControlsStacker;
+    private Configuration mConfig = new Configuration();
 
     @Before
     public void setup() {
         MockitoAnnotations.openMocks(this);
-        mBottomControlsStacker = new BottomControlsStacker(mBrowserControlsSizer);
+        doReturn(mResources).when(mContext).getResources();
+        doReturn(mConfig).when(mResources).getConfiguration();
+        doReturn(mDisplayAndroid).when(mWindowAndroid).getDisplay();
+        doReturn(1.0f).when(mDisplayAndroid).getDipScale();
+        mConfig.screenHeightDp = 800;
+        mBottomControlsStacker =
+                new BottomControlsStacker(mBrowserControlsSizer, mContext, mWindowAndroid);
     }
 
     @Test
@@ -1579,6 +1598,62 @@ public class BottomControlsStackerUnitTest {
         // Final frame of the animation
         onBottomControlsOffsetChanged(150, 0, true, false);
         assertLayerYOffset(top, 0);
+    }
+
+    @Test
+    public void testLayerMetrics() {
+        TestLayer top =
+                new TestLayer(
+                        TOP_LAYER,
+                        100,
+                        LayerScrollBehavior.DEFAULT_SCROLL_OFF,
+                        LayerVisibility.VISIBLE);
+        TestLayer bottom =
+                new TestLayer(
+                        BOTTOM_LAYER,
+                        50,
+                        LayerScrollBehavior.DEFAULT_SCROLL_OFF,
+                        LayerVisibility.VISIBLE_IF_OTHERS_VISIBLE);
+        mBottomControlsStacker.addLayer(top);
+        mBottomControlsStacker.addLayer(bottom);
+        mBottomControlsStacker.requestLayerUpdate(false);
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Android.BottomControlsStacker.NumberOfVisibleLayers", 2)
+                        .expectIntRecord(
+                                "Android.BottomControlsStacker.PercentageOfWindowUsedByBottomControlsAtMaxHeight",
+                                150 / 800)
+                        .expectIntRecord(
+                                "Android.BottomControlsStacker.PercentageOfWindowUsedByBottomControlsAtMinHeight",
+                                0)
+                        .build();
+
+        mBottomControlsStacker.notifyDidFinishNavigationInPrimaryMainFrame();
+        histogramWatcher.assertExpected();
+
+        TestLayer middle =
+                new TestLayer(
+                        MID_LAYER,
+                        10,
+                        LayerScrollBehavior.NEVER_SCROLL_OFF,
+                        LayerVisibility.VISIBLE);
+        mBottomControlsStacker.addLayer(middle);
+        mBottomControlsStacker.requestLayerUpdate(false);
+
+        histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Android.BottomControlsStacker.NumberOfVisibleLayers", 3)
+                        .expectIntRecord(
+                                "Android.BottomControlsStacker.PercentageOfWindowUsedByBottomControlsAtMaxHeight",
+                                160 / 800)
+                        .expectIntRecord(
+                                "Android.BottomControlsStacker.PercentageOfWindowUsedByBottomControlsAtMinHeight",
+                                60 / 800)
+                        .build();
+
+        mBottomControlsStacker.notifyDidFinishNavigationInPrimaryMainFrame();
+        histogramWatcher.assertExpected();
     }
 
     // Test helpers

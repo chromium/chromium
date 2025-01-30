@@ -1026,4 +1026,26 @@ BASE_DECLARE_FEATURE(kIOSPasskeysM2);
 // prerequisite.
 bool IOSPasskeysM2Enabled();
 
+extern const char kFullscreenTransitionSlower[];
+extern const char kFullscreenTransitionDefaultSpeed[];
+extern const char kFullscreenTransitionFaster[];
+extern const char kFullscreenTransitionSpeedParam[];
+
+enum class FullscreenTransitionSpeed {
+  kSlower = 0,
+  kFaster = 1,
+};
+
+FullscreenTransitionSpeed FullscreenTransitionSpeedParam();
+
+bool IsFullscreenTransitionSet();
+
+bool IsFullscreenTransitionOffsetSet();
+
+extern const char kMediumFullscreenTransitionOffsetParam[];
+
+// Feature flag to changes the distance of unique scrolling before triggering
+// the fullscreen transition or the speed of the transition.
+BASE_DECLARE_FEATURE(kFullscreenTransition);
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

@@ -15,6 +15,7 @@ source_set("page_action") {
     "page_action_model_observer.h",
     "page_action_triggers.h",
     "page_action_view.h",
+    "pwa_install.h",
   ]
 
   sources = [
@@ -24,12 +25,14 @@ source_set("page_action") {
     "page_action_model.cc",
     "page_action_triggers.cc",
     "page_action_view.cc",
+    "pwa_install.cc",
   ]
 
   public_deps = [
     "//base",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ui/actions:actions_headers",
+    "//components/metrics/structured:structured_events",
     "//ui/actions:actions_headers",
     "//ui/base/metadata",
     "//ui/views",

@@ -6,6 +6,7 @@
 #define COMPONENTS_VIZ_SERVICE_INPUT_INPUT_MANAGER_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
@@ -109,7 +110,8 @@ class VIZ_SERVICE_EXPORT InputManager
   void NotifyObserversOfInputEvent(
       const FrameSinkId& frame_sink_id,
       const base::UnguessableToken& grouping_id,
-      std::unique_ptr<blink::WebCoalescedInputEvent> event) override;
+      std::unique_ptr<blink::WebCoalescedInputEvent> event,
+      bool dispatched_to_renderer) override;
   void NotifyObserversOfInputEventAcks(
       const FrameSinkId& frame_sink_id,
       const base::UnguessableToken& grouping_id,

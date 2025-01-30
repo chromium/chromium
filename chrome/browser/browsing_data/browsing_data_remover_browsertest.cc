@@ -891,7 +891,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
   sync_service->GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kPasswords,
       !switches::IsExplicitBrowserSigninUIOnDesktopEnabled());
-  ASSERT_EQ(password_manager::features_util::IsOptedInForAccountStorage(
+  ASSERT_EQ(password_manager::features_util::IsAccountStorageEnabled(
                 prefs, sync_service),
             !switches::IsExplicitBrowserSigninUIOnDesktopEnabled());
 
@@ -900,14 +900,14 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
   signin::MakePrimaryAccountAvailable(identity_manager, kTestEmail,
                                       signin::ConsentLevel::kSignin);
 
-  EXPECT_EQ(password_manager::features_util::IsOptedInForAccountStorage(
+  EXPECT_EQ(password_manager::features_util::IsAccountStorageEnabled(
                 prefs, sync_service),
             switches::IsExplicitBrowserSigninUIOnDesktopEnabled());
 }
 
 IN_PROC_BROWSER_TEST_F(
     BrowsingDataRemoverBrowserTest,
-    ClearingCookiesWithFilterAlsoClearsPasswordAccountStorageOptIn) {
+    ClearingCookiesWithFilterAlsoClearsPasswordAccountStorageSetting) {
   const char kTestEmail[] = "foo@gmail.com";
   PrefService* prefs = GetProfile()->GetPrefs();
   syncer::SyncService* sync_service =
@@ -920,12 +920,12 @@ IN_PROC_BROWSER_TEST_F(
   sync_service->GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kPasswords,
       !switches::IsExplicitBrowserSigninUIOnDesktopEnabled());
-  ASSERT_EQ(password_manager::features_util::IsOptedInForAccountStorage(
+  ASSERT_EQ(password_manager::features_util::IsAccountStorageEnabled(
                 prefs, sync_service),
             !switches::IsExplicitBrowserSigninUIOnDesktopEnabled());
 
   // Clearing cookies for some random domain should have no effect on the
-  // opt-in.
+  // setting.
   signin::ClearPrimaryAccount(identity_manager);
   {
     std::unique_ptr<BrowsingDataFilterBuilder> filter_builder =
@@ -937,11 +937,11 @@ IN_PROC_BROWSER_TEST_F(
   }
   signin::MakePrimaryAccountAvailable(identity_manager, kTestEmail,
                                       signin::ConsentLevel::kSignin);
-  EXPECT_EQ(password_manager::features_util::IsOptedInForAccountStorage(
+  EXPECT_EQ(password_manager::features_util::IsAccountStorageEnabled(
                 prefs, sync_service),
             !switches::IsExplicitBrowserSigninUIOnDesktopEnabled());
 
-  // Clearing cookies for google.com should clear the opt-in.
+  // Clearing cookies for google.com should clear the setting.
   signin::ClearPrimaryAccount(identity_manager);
   {
     std::unique_ptr<BrowsingDataFilterBuilder> filter_builder =
@@ -953,7 +953,7 @@ IN_PROC_BROWSER_TEST_F(
   }
   signin::MakePrimaryAccountAvailable(identity_manager, kTestEmail,
                                       signin::ConsentLevel::kSignin);
-  EXPECT_EQ(password_manager::features_util::IsOptedInForAccountStorage(
+  EXPECT_EQ(password_manager::features_util::IsAccountStorageEnabled(
                 prefs, sync_service),
             switches::IsExplicitBrowserSigninUIOnDesktopEnabled());
 }
@@ -1026,7 +1026,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, ClearSiteData) {
     sync_service->GetUserSettings()->SetSelectedType(
         syncer::UserSelectableType::kPasswords,
         !switches::IsExplicitBrowserSigninUIOnDesktopEnabled());
-    ASSERT_EQ(password_manager::features_util::IsOptedInForAccountStorage(
+    ASSERT_EQ(password_manager::features_util::IsAccountStorageEnabled(
                   prefs, sync_service),
               !switches::IsExplicitBrowserSigninUIOnDesktopEnabled());
     signin::ClearPrimaryAccount(identity_manager);
@@ -1036,11 +1036,11 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, ClearSiteData) {
                                         signin::ConsentLevel::kSignin);
 
     if (test_case.expects_keep_optin_pref) {
-      EXPECT_EQ(password_manager::features_util::IsOptedInForAccountStorage(
+      EXPECT_EQ(password_manager::features_util::IsAccountStorageEnabled(
                     prefs, sync_service),
                 !switches::IsExplicitBrowserSigninUIOnDesktopEnabled());
     } else {
-      EXPECT_EQ(password_manager::features_util::IsOptedInForAccountStorage(
+      EXPECT_EQ(password_manager::features_util::IsAccountStorageEnabled(
                     prefs, sync_service),
                 switches::IsExplicitBrowserSigninUIOnDesktopEnabled());
     }

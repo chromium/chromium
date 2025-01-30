@@ -32,7 +32,35 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="InputMode">
     <variant name="All"/>
+    <variant name="Audio"/>
+    <variant name="Text"/>
   </token>
+</histogram>
+
+<histogram name="Glic.Response.Rated" enum="BooleanPositive"
+    expires_after="2026-01-15">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <summary>Recorded anytime a response is rated.</summary>
+</histogram>
+
+<histogram name="Glic.Response.StartTime" units="ms" expires_after="2026-01-15">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <summary>
+    Measures the time from a user's submitted input until a response starts.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Response.StopTime" units="ms" expires_after="2026-01-15">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <summary>
+    Measures the time from a user's submitted input until a response stops.
+  </summary>
 </histogram>
 
 <histogram name="Glic.TabContext.PdfContentsRequested" enum="PdfRequestStates"

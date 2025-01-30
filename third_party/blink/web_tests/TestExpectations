@@ -2804,13 +2804,6 @@ crbug.com/385918134 [ Linux ] external/wpt/wasm/core/simd/simd_load_zero.wast.js
 crbug.com/385918134 [ Linux ] external/wpt/wasm/core/traps.wast.js.html [ Crash ]
 crbug.com/386049994 [ Mac13 ] external/wpt/webrtc-encoded-transform/RTCRtpScriptTransform-encoded-transform.https.html [ Timeout ]
 crbug.com/386049994 [ Mac14 ] external/wpt/webrtc-encoded-transform/RTCRtpScriptTransform-encoded-transform.https.html [ Timeout ]
-crbug.com/384980894 [ Mac11-arm64 ] external/wpt/html/semantics/forms/the-select-element/customizable-select/select-mouse-behavior.tentative.html [ Timeout ]
-crbug.com/384980894 [ Mac12 ] external/wpt/html/semantics/forms/the-select-element/customizable-select/select-mouse-behavior.tentative.html [ Timeout ]
-crbug.com/384980894 [ Mac13 ] external/wpt/html/semantics/forms/the-select-element/customizable-select/select-mouse-behavior.tentative.html [ Timeout ]
-crbug.com/384980894 [ Mac14 ] external/wpt/html/semantics/forms/the-select-element/customizable-select/select-mouse-behavior.tentative.html [ Timeout ]
-crbug.com/384980894 [ Mac14-arm64 ] external/wpt/html/semantics/forms/the-select-element/customizable-select/select-mouse-behavior.tentative.html [ Timeout ]
-crbug.com/384980894 [ Mac15 ] external/wpt/html/semantics/forms/the-select-element/customizable-select/select-mouse-behavior.tentative.html [ Timeout ]
-crbug.com/384980894 [ Win11-arm64 ] external/wpt/html/semantics/forms/the-select-element/customizable-select/select-mouse-behavior.tentative.html [ Timeout ]
 crbug.com/384773801 [ Mac13 ] external/wpt/webrtc/RTCRtpReceiver-jitterBufferTarget.html [ Timeout ]
 crbug.com/384773801 [ Mac14 ] external/wpt/webrtc/RTCRtpReceiver-jitterBufferTarget.html [ Timeout ]
 crbug.com/384549263 [ Mac15 ] external/wpt/webrtc/RTCPeerConnection-constructor.html [ Timeout ]
@@ -6234,7 +6227,6 @@ crbug.com/40146374 virtual/select-parser-relaxation/external/wpt/html/semantics/
 crbug.com/40146374 external/wpt/html/semantics/forms/the-select-element/customizable-select/select-option-images.tentative.html [ Failure Pass ]
 crbug.com/40146374 virtual/popover-anchor-relationships-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-open-invalidation.tentative.html [ Failure Pass ]
 
-crbug.com/340657191 [ Linux ] external/wpt/html/semantics/forms/the-select-element/customizable-select/native-popup-with-wrapper-div.tentative.html [ Failure ]
 crbug.com/362922565 virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-type-to-search.tentative.html [ Failure ]
 crbug.com/362922565 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-type-to-search.tentative.html [ Failure ]
 crbug.com/366415131 external/wpt/html/semantics/forms/the-select-element/customizable-select/picker-and-slotted.tentative.html [ Failure ]
@@ -8285,8 +8277,6 @@ crbug.com/356930166 [ Mac15-arm64 ] external/wpt/webrtc/simplecall.https.html [ 
 [ Mac14 ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/pseudo-with-classes-match-ident.html [ Failure Pass ]
 [ Mac14 ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/pseudo-with-classes-match-multiple-wildcard.html [ Failure Pass ]
 
-crbug.com/392121635 webexposed/global-interface-listing.html [ Failure Skip Timeout ]
-
 # Temporarily disable for DevTools change
 crbug.com/325443331 http/tests/devtools/a11y-axe-core/sources/dom-breakpoints-pane-a11y-test.js [ Failure Pass ]
 crbug.com/325443331 http/tests/devtools/network/failed-request-response-mimetype.js [ Failure Pass ]
@@ -8619,6 +8609,12 @@ crbug.com/388445687 http/tests/devtools/console/console-viewport-selection.js [ 
 crbug.com/391381439 http/tests/devtools/components/minimum-size.js [ Failure Pass ]
 crbug.com/391381439 http/tests/devtools/components/split-widget.js [ Failure Pass ]
 crbug.com/391381439 http/tests/devtools/unit/viewport-datagrid-items-attached-to-dom.js [ Failure Pass ]
+
+# Temporarily disabled to unblock https://crrev.com/c/6216261
+crbug.com/391381439 http/tests/devtools/security/blocked-mixed-content.js [ Failure Pass ]
+crbug.com/391381439 http/tests/devtools/security/mixed-content-active-and-passive-reload.js [ Failure Pass ]
+crbug.com/391381439 http/tests/devtools/security/mixed-content-reload.js [ Failure Pass ]
+crbug.com/391381439 http/tests/devtools/security/security-blocked-mixed-content.js [ Failure Pass ]
 
 # Temporarily disabled to unblock https://crrev.com/c/6164904
 crbug.com/388445687 http/tests/devtools/a11y-axe-core/performance/settings-pane-a11y-test.js [ Failure Pass ]

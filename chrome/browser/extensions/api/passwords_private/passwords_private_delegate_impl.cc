@@ -703,7 +703,7 @@ void PasswordsPrivateDelegateImpl::MovePasswordsToAccount(
   auto* client = ChromePasswordManagerClient::FromWebContents(web_contents);
   DCHECK(client);
 
-  if (!client->GetPasswordFeatureManager()->IsOptedInForAccountStorage()) {
+  if (!client->GetPasswordFeatureManager()->IsAccountStorageEnabled()) {
     return;
   }
 
@@ -835,7 +835,7 @@ PasswordsPrivateDelegateImpl::GetExportProgressStatus() {
 }
 
 bool PasswordsPrivateDelegateImpl::IsAccountStorageEnabled() {
-  return password_manager::features_util::IsOptedInForAccountStorage(
+  return password_manager::features_util::IsAccountStorageEnabled(
       profile_->GetPrefs(), SyncServiceFactory::GetForProfile(profile_));
 }
 
@@ -845,7 +845,7 @@ void PasswordsPrivateDelegateImpl::SetAccountStorageEnabled(
   auto* client = ChromePasswordManagerClient::FromWebContents(web_contents);
   DCHECK(client);
   if (enabled ==
-      client->GetPasswordFeatureManager()->IsOptedInForAccountStorage()) {
+      client->GetPasswordFeatureManager()->IsAccountStorageEnabled()) {
     return;
   }
   SyncServiceFactory::GetForProfile(profile_)

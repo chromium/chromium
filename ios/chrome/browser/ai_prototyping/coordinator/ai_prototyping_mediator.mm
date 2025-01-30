@@ -96,10 +96,11 @@
 
 - (void)executeFreeformServerQuery:(NSString*)query
                 systemInstructions:(NSString*)systemInstructions
-                includePageContext:(BOOL)includePageContext {
+                includePageContext:(BOOL)includePageContext
+                       temperature:(float)temperature {
   optimization_guide::proto::BlingPrototypingRequest request;
 
-  // Set the whitespace-trimmer query on the request.
+  // Set the whitespace-trimmed query on the request.
   NSString* trimmedQuery = [query
       stringByTrimmingCharactersInSet:[NSCharacterSet
                                           whitespaceAndNewlineCharacterSet]];
@@ -113,6 +114,9 @@
     request.set_system_instructions(
         base::SysNSStringToUTF8(trimmedSystemInstructions));
   }
+
+  // Set the temperature on the request.
+  request.set_temperature(temperature);
 
   __weak __typeof(self) weakSelf = self;
   base::OnceCallback<void(const std::string&)> handle_response_callback =

@@ -42,5 +42,6 @@ robolectric_library("junit") {
     "//content/public/android:content_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java",
   ]
 }

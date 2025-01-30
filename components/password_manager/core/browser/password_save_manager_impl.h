@@ -152,7 +152,7 @@ class PasswordSaveManagerImpl : public PasswordSaveManager {
   // Clones the current object into |clone|. |clone| must not be null.
   void CloneInto(PasswordSaveManagerImpl* clone);
 
-  bool IsOptedInForAccountStorage() const;
+  bool IsAccountStorageEnabled() const;
   bool ShouldStoreGeneratedPasswordsInAccountStore() const;
   PasswordForm::Store GetPasswordStoreForSavingImpl(
       const PendingCredentialsStates& states) const;

@@ -42,6 +42,9 @@ struct CertProvisioningBackendServerError {
 };
 
 struct CertProvisioningProcessStatus {
+  // The ID of the certificate provisioning process.
+  [MinVersion=2]
+  string? process_id@9;
   // ID of the certificate provisioning process from the policy.
   string cert_profile_id@0;
   // Human-readable certificate profile name (UTF-8).

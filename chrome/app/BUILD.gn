@@ -148,6 +148,7 @@ static_library("test_support") {
     "//base",
     "//chrome/browser",
     "//chrome/browser:buildflags",
+    "//chrome/browser:shell_integration",
     "//chrome/browser/policy:path_parser",
     "//chrome/child",
     "//chrome/common",

@@ -12166,6 +12166,20 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="GlicResponse">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>Tracks a single input/response in glic.</description>
+</action>
+
+<action name="GlicSessionEnd">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>Tracks a session in glic is terminated.</description>
+</action>
+
 <action name="Go">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
@@ -21210,37 +21224,28 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="MerchantTrust.BubbleClosed.FamiliarSite">
+<action name="MerchantTrust.BubbleClosed">
   <owner>tommasin@chromium.org</owner>
   <owner>privacy-on-the-web@google.com</owner>
   <description>
-    Triggered when user closes the merchant trust bubble on a familiar site.
+    Triggered when user closes the merchant trust bubble.
   </description>
 </action>
 
-<action name="MerchantTrust.BubbleClosed.UnfamiliarSite">
+<action name="MerchantTrust.BubbleOpenedFromLocationBarChip">
   <owner>tommasin@chromium.org</owner>
   <owner>privacy-on-the-web@google.com</owner>
   <description>
-    Triggered when user closes the merchant trust bubble on an unfamiliar site.
+    Triggered when user opens the merchant trust bubble from the location bar
+    chip.
   </description>
 </action>
 
-<action name="MerchantTrust.BubbleOpenedFromPageInfo.FamiliarSite">
+<action name="MerchantTrust.BubbleOpenedFromPageInfo">
   <owner>tommasin@chromium.org</owner>
   <owner>privacy-on-the-web@google.com</owner>
   <description>
-    Triggered when user opens the merchant trust bubble from the page info row
-    on a familiar site.
-  </description>
-</action>
-
-<action name="MerchantTrust.BubbleOpenedFromPageInfo.UnfamiliarSite">
-  <owner>tommasin@chromium.org</owner>
-  <owner>privacy-on-the-web@google.com</owner>
-  <description>
-    Triggered when user opens the merchant trust bubble from the page info row
-    on an unfamiliar site.
+    Triggered when user opens the merchant trust bubble from the page info row.
   </description>
 </action>
 
@@ -21252,55 +21257,46 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="MerchantTrust.PageInfoRowSeen.FamiliarSite">
+<action name="MerchantTrust.PageInfoRowSeen">
   <owner>tommasin@chromium.org</owner>
   <owner>privacy-on-the-web@google.com</owner>
   <description>
-    Triggered when user sees the merchant trust page info row on a familiar
-    site.
+    Triggered when user sees the merchant trust page info row.
   </description>
 </action>
 
-<action name="MerchantTrust.PageInfoRowSeen.UnfamiliarSite">
+<action name="MerchantTrust.SidePanelClosed">
   <owner>tommasin@chromium.org</owner>
   <owner>privacy-on-the-web@google.com</owner>
   <description>
-    Triggered when user sees the merchant trust page info row on an unfamiliar
-    site.
+    Triggered when user closes the merchant trust side panel.
   </description>
 </action>
 
-<action name="MerchantTrust.SidePanelClosed.FamiliarSite">
+<action name="MerchantTrust.SidePanelClosedOnSameTabNavigation">
   <owner>tommasin@chromium.org</owner>
   <owner>privacy-on-the-web@google.com</owner>
   <description>
-    Triggered when user closes the merchant trust side panel on a familiar site.
+    Triggered when the side panel is opened and the user navigates to a
+    non-merchant site on the same tab, causing the panel to close.
   </description>
 </action>
 
-<action name="MerchantTrust.SidePanelClosed.UnfamiliarSite">
+<action name="MerchantTrust.SidePanelOpened">
   <owner>tommasin@chromium.org</owner>
   <owner>privacy-on-the-web@google.com</owner>
   <description>
-    Triggered when user closes the merchant trust side panel on an unfamiliar
-    site.
+    Triggered when user opens the merchant trust side panel.
   </description>
 </action>
 
-<action name="MerchantTrust.SidePanelOpened.FamiliarSite">
+<action name="MerchantTrust.SidePanelOpenedOnSameTabNavigation">
   <owner>tommasin@chromium.org</owner>
   <owner>privacy-on-the-web@google.com</owner>
   <description>
-    Triggered when user opens the merchant trust side panel on a familiar site.
-  </description>
-</action>
-
-<action name="MerchantTrust.SidePanelOpened.UnfamiliarSite">
-  <owner>tommasin@chromium.org</owner>
-  <owner>privacy-on-the-web@google.com</owner>
-  <description>
-    Triggered when user opens the merchant trust side panel on an unfamiliar
-    site.
+    Triggered when the side panel is already opened on a merchant site and the
+    user navigates to a another merchant site on the same tab, which opens a new
+    panel on the same tab.
   </description>
 </action>
 
@@ -48369,6 +48365,30 @@ should be able to be added at any place in this file.
       label="Enhanced Protection setting has been synced to Off"/>
   <affected-action name="Toast.ActionButtonClicked"/>
   <affected-action name="Toast.CloseButtonClicked"/>
+</action-suffix>
+
+<action-suffix separator="." ordering="suffix">
+  <suffix name="FamiliarSite" label="Recorded on a familiar site."/>
+  <affected-action name="MerchantTrust.BubbleClosed"/>
+  <affected-action name="MerchantTrust.BubbleOpenedFromLocationBarChip"/>
+  <affected-action name="MerchantTrust.BubbleOpenedFromPageInfo"/>
+  <affected-action name="MerchantTrust.PageInfoRowSeen"/>
+  <affected-action name="MerchantTrust.SidePanelClosed"/>
+  <affected-action name="MerchantTrust.SidePanelClosedOnSameTabNavigation"/>
+  <affected-action name="MerchantTrust.SidePanelOpened"/>
+  <affected-action name="MerchantTrust.SidePanelOpenedOnSameTabNavigation"/>
+</action-suffix>
+
+<action-suffix separator="." ordering="suffix">
+  <suffix name="UnfamiliarSite" label="Recorded on an unfamiliar site."/>
+  <affected-action name="MerchantTrust.BubbleClosed"/>
+  <affected-action name="MerchantTrust.BubbleOpenedFromLocationBarChip"/>
+  <affected-action name="MerchantTrust.BubbleOpenedFromPageInfo"/>
+  <affected-action name="MerchantTrust.PageInfoRowSeen"/>
+  <affected-action name="MerchantTrust.SidePanelClosed"/>
+  <affected-action name="MerchantTrust.SidePanelClosedOnSameTabNavigation"/>
+  <affected-action name="MerchantTrust.SidePanelOpened"/>
+  <affected-action name="MerchantTrust.SidePanelOpenedOnSameTabNavigation"/>
 </action-suffix>
 
 </actions>

@@ -40,6 +40,7 @@ class IOSWebContentHandlerImpl : public supervised_user::WebContentHandler {
   void CleanUpInfoBarOnMainFrame() override;
   int64_t GetInterstitialNavigationId() const override;
   void GoBack() override;
+  void MaybeCloseLocalApproval() override;
 
  private:
   // Processes the outcome of the local approval request.

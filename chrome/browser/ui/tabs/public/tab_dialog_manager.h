@@ -25,6 +25,7 @@ class DialogDelegate;
 namespace tabs {
 
 class TabDialogWidgetObserver;
+class BrowserWindowWidgetObserver;
 
 // Class provides a mechanism to show a tab-scoped dialog.
 class TabDialogManager : public content::WebContentsObserver {
@@ -87,6 +88,7 @@ class TabDialogManager : public content::WebContentsObserver {
   std::optional<content::WebContents::ScopedIgnoreInputEvents>
       scoped_ignore_input_events_;
   std::unique_ptr<TabDialogWidgetObserver> tab_dialog_widget_observer_;
+  std::unique_ptr<BrowserWindowWidgetObserver> browser_window_widget_observer_;
 };
 
 }  // namespace tabs

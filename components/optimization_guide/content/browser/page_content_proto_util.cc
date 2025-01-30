@@ -9,6 +9,7 @@
 #include "base/notreached.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
+#include "third_party/blink/public/mojom/forms/form_control_type.mojom-shared.h"
 #include "url/gurl.h"
 
 namespace optimization_guide {
@@ -31,6 +32,8 @@ optimization_guide::proto::ContentAttributeType ConvertAttributeType(
       return optimization_guide::proto::CONTENT_ATTRIBUTE_IMAGE;
     case blink::mojom::AIPageContentAttributeType::kForm:
       return optimization_guide::proto::CONTENT_ATTRIBUTE_FORM;
+    case blink::mojom::AIPageContentAttributeType::kFormControl:
+      return optimization_guide::proto::CONTENT_ATTRIBUTE_FORM_CONTROL;
     case blink::mojom::AIPageContentAttributeType::kTable:
       return optimization_guide::proto::CONTENT_ATTRIBUTE_TABLE;
     case blink::mojom::AIPageContentAttributeType::kTableRow:
@@ -164,6 +167,113 @@ void ConvertAnchorData(
   }
 }
 
+void ConvertFormData(const blink::mojom::AIPageContentFormData& mojom_form_data,
+                     optimization_guide::proto::FormInfo* proto_form_data) {
+  if (mojom_form_data.form_name) {
+    proto_form_data->set_form_name(*mojom_form_data.form_name);
+  }
+}
+
+optimization_guide::proto::FormControlType ConvertFormControlType(
+    blink::mojom::FormControlType form_control_type) {
+  switch (form_control_type) {
+    case blink::mojom::FormControlType::kButtonButton:
+      return optimization_guide::proto::FORM_CONTROL_TYPE_BUTTON_BUTTON;
+    case blink::mojom::FormControlType::kButtonSubmit:
+      return optimization_guide::proto::FORM_CONTROL_TYPE_BUTTON_SUBMIT;
+    case blink::mojom::FormControlType::kButtonReset:
+      return optimization_guide::proto::FORM_CONTROL_TYPE_BUTTON_RESET;
+    case blink::mojom::FormControlType::kButtonPopover:
+      return optimization_guide::proto::FORM_CONTROL_TYPE_BUTTON_POPOVER;
+    case blink::mojom::FormControlType::kFieldset:
+      return optimization_guide::proto::FORM_CONTROL_TYPE_FIELDSET;
+    case blink::mojom::FormControlType::kInputButton:
+      return optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_BUTTON;
+    case blink::mojom::FormControlType::kInputCheckbox:
+      return optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_CHECKBOX;
+    case blink::mojom::FormControlType::kInputColor:
+      return optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_COLOR;
+    case blink::mojom::FormControlType::kInputDate:
+      return optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_DATE;
+    case blink::mojom::FormControlType::kInputDatetimeLocal:
+      return optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_DATETIME_LOCAL;
+    case blink::mojom::FormControlType::kInputEmail:
+      return optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_EMAIL;
+    case blink::mojom::FormControlType::kInputFile:
+      return optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_FILE;
+    case blink::mojom::FormControlType::kInputHidden:
+      return optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_HIDDEN;
+    case blink::mojom::FormControlType::kInputImage:
+      return optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_IMAGE;
+    case blink::mojom::FormControlType::kInputMonth:
+      return optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_MONTH;
+    case blink::mojom::FormControlType::kInputNumber:
+      return optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_NUMBER;
+    case blink::mojom::FormControlType::kInputPassword:
+      return optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_PASSWORD;
+    case blink::mojom::FormControlType::kInputRadio:
+      return optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_RADIO;
+    case blink::mojom::FormControlType::kInputRange:
+      return optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_RANGE;
+    case blink::mojom::FormControlType::kInputReset:
+      return optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_RESET;
+    case blink::mojom::FormControlType::kInputSearch:
+      return optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_SEARCH;
+    case blink::mojom::FormControlType::kInputSubmit:
+      return optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_SUBMIT;
+    case blink::mojom::FormControlType::kInputTelephone:
+      return optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_TELEPHONE;
+    case blink::mojom::FormControlType::kInputText:
+      return optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_TEXT;
+    case blink::mojom::FormControlType::kInputTime:
+      return optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_TIME;
+    case blink::mojom::FormControlType::kInputUrl:
+      return optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_URL;
+    case blink::mojom::FormControlType::kInputWeek:
+      return optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_WEEK;
+    case blink::mojom::FormControlType::kOutput:
+      return optimization_guide::proto::FORM_CONTROL_TYPE_OUTPUT;
+    case blink::mojom::FormControlType::kSelectOne:
+      return optimization_guide::proto::FORM_CONTROL_TYPE_SELECT_ONE;
+    case blink::mojom::FormControlType::kSelectMultiple:
+      return optimization_guide::proto::FORM_CONTROL_TYPE_SELECT_MULTIPLE;
+    case blink::mojom::FormControlType::kTextArea:
+      return optimization_guide::proto::FORM_CONTROL_TYPE_TEXT_AREA;
+  }
+  NOTREACHED();
+}
+
+void ConvertFormControlData(
+    const blink::mojom::AIPageContentFormControlData& mojom_form_control_data,
+    optimization_guide::proto::FormControlData* proto_form_control_data) {
+  proto_form_control_data->set_form_control_type(
+      ConvertFormControlType(mojom_form_control_data.form_control_type));
+  proto_form_control_data->set_is_checked(mojom_form_control_data.is_checked);
+  proto_form_control_data->set_is_required(mojom_form_control_data.is_required);
+  if (mojom_form_control_data.field_name) {
+    proto_form_control_data->set_field_name(
+        *mojom_form_control_data.field_name);
+  }
+  if (mojom_form_control_data.field_value) {
+    proto_form_control_data->set_field_value(
+        *mojom_form_control_data.field_value);
+  }
+  if (mojom_form_control_data.placeholder) {
+    proto_form_control_data->set_placeholder(
+        *mojom_form_control_data.placeholder);
+  }
+  for (const auto& select_option : mojom_form_control_data.select_options) {
+    auto* proto_select_option = proto_form_control_data->add_select_options();
+    if (select_option->value) {
+      proto_select_option->set_value(*select_option->value);
+    }
+    if (select_option->text) {
+      proto_select_option->set_text(*select_option->text);
+    }
+    proto_select_option->set_is_selected(select_option->is_selected);
+  }
+}
+
 void ConvertTableData(
     const blink::mojom::AIPageContentTableData& mojom_table_data,
     optimization_guide::proto::TableData* proto_table_data) {
@@ -237,6 +347,15 @@ bool ConvertAttributes(
         blink::mojom::AIPageContentAttributeType::kForm) {
       return false;
     }
+    ConvertFormData(*mojom_attributes.form_data,
+                    proto_attributes->mutable_form_data());
+  } else if (mojom_attributes.form_control_data) {
+    if (mojom_attributes.attribute_type !=
+        blink::mojom::AIPageContentAttributeType::kFormControl) {
+      return false;
+    }
+    ConvertFormControlData(*mojom_attributes.form_control_data,
+                           proto_attributes->mutable_form_control_data());
   } else if (mojom_attributes.table_data) {
     if (mojom_attributes.attribute_type !=
         blink::mojom::AIPageContentAttributeType::kTable) {

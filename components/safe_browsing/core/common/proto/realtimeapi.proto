@@ -7,12 +7,12 @@
 
 syntax = "proto2";
 
-option optimize_for = LITE_RUNTIME;
-
 package safe_browsing;
 
 import "components/enterprise/common/proto/connectors.proto";
 import "components/safe_browsing/core/common/proto/csd.proto";
+
+option optimize_for = LITE_RUNTIME;
 
 message RTLookupRequest {
   // If applicable, URL submitted from Chrome.
@@ -111,6 +111,10 @@ message RTLookupRequest {
 
   // The Android app that launched Chrome.
   optional ReferringAppInfo referring_app_info = 15;
+
+  // Local IP addresses of the device. This is only used for enterprise
+  // requests.
+  repeated string local_ips = 16;
 }
 
 message RTLookupResponse {

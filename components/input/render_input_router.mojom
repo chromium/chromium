@@ -74,7 +74,8 @@ interface RenderInputRouterDelegateClient {
   // Notifies InputEventObservers in the browser of input events being handled
   // on Viz (with InputVizard).
   NotifyObserversOfInputEvent(viz.mojom.FrameSinkId id,
-                              blink.mojom.Event event);
+                              blink.mojom.Event event,
+                              bool dispatched_to_renderer);
 
   // Notifies InputEventObservers in the browser of input event acks being
   // handled on Viz (with InputVizard).

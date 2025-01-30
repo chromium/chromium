@@ -1154,7 +1154,7 @@ class MultiStoreFormFetcherTest : public FormFetcherImplTestBase {
 TEST_F(MultiStoreFormFetcherTest, CloningMultiStoreFetcherClonesState) {
   Fetch();
   // Simulate a user in the account mode.
-  ON_CALL(*client()->GetPasswordFeatureManager(), IsOptedInForAccountStorage())
+  ON_CALL(*client()->GetPasswordFeatureManager(), IsAccountStorageEnabled())
       .WillByDefault(Return(true));
 
   // Create and push a blocked account store entry to complete the fetch.
@@ -1176,7 +1176,7 @@ TEST_F(MultiStoreFormFetcherTest, CloningMultiStoreFetcherClonesState) {
 TEST_F(MultiStoreFormFetcherTest, CloningMultiStoreFetcherResumesFetch) {
   Fetch();
   // Simulate a user in the account mode.
-  ON_CALL(*client()->GetPasswordFeatureManager(), IsOptedInForAccountStorage())
+  ON_CALL(*client()->GetPasswordFeatureManager(), IsAccountStorageEnabled())
       .WillByDefault(Return(true));
 
   // A cloned multi-store fetcher must be a multi-store fetcher itself and
@@ -1253,13 +1253,13 @@ TEST_F(MultiStoreFormFetcherTest, BlockedEntryInTheAccountStore) {
   DeliverPasswordStoreResults(std::move(results), {});
 
   // Simulate a user in the account mode.
-  ON_CALL(*client()->GetPasswordFeatureManager(), IsOptedInForAccountStorage())
+  ON_CALL(*client()->GetPasswordFeatureManager(), IsAccountStorageEnabled())
       .WillByDefault(Return(true));
   EXPECT_TRUE(form_fetcher_->IsBlocklisted());
 
-  // Now simulate a user who isn't opted in for the account storage. In this
-  // case, the blocked entry in the account store shouldn't matter.
-  ON_CALL(*client()->GetPasswordFeatureManager(), IsOptedInForAccountStorage())
+  // Now simulate a user with account storage disabled. In this case, the
+  // blocked entry in the account store shouldn't matter.
+  ON_CALL(*client()->GetPasswordFeatureManager(), IsAccountStorageEnabled())
       .WillByDefault(Return(false));
   EXPECT_FALSE(form_fetcher_->IsBlocklisted());
 }
@@ -1274,13 +1274,13 @@ TEST_F(MultiStoreFormFetcherTest, BlockedEntryInTheProfileStore) {
   DeliverPasswordStoreResults(std::move(results), {});
 
   // Simulate a user in the account mode.
-  ON_CALL(*client()->GetPasswordFeatureManager(), IsOptedInForAccountStorage())
+  ON_CALL(*client()->GetPasswordFeatureManager(), IsAccountStorageEnabled())
       .WillByDefault(Return(true));
   EXPECT_FALSE(form_fetcher_->IsBlocklisted());
 
-  // Now simulate a user who isn't opted in for the account storage. In this
-  // case, the blocked entry in the profile store should take effect.
-  ON_CALL(*client()->GetPasswordFeatureManager(), IsOptedInForAccountStorage())
+  // Now simulate a user with account storage disabled. In this case, the
+  // blocked entry in the profile store should take effect.
+  ON_CALL(*client()->GetPasswordFeatureManager(), IsAccountStorageEnabled())
       .WillByDefault(Return(false));
   EXPECT_TRUE(form_fetcher_->IsBlocklisted());
 }

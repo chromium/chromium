@@ -186,7 +186,7 @@ void PasswordGenerationManagerTest::ForwardByMinute() {
 }
 
 void PasswordGenerationManagerTest::SetAccountStoreEnabled(bool is_enabled) {
-  ON_CALL(*client().GetPasswordFeatureManager(), IsOptedInForAccountStorage())
+  ON_CALL(*client().GetPasswordFeatureManager(), IsAccountStorageEnabled())
       .WillByDefault(testing::Return(is_enabled));
 }
 

@@ -217,6 +217,9 @@ message ContentAnalysisRequest {
   // WebProtect right away, and cannot upload full content.
   optional bool require_metadata_verdict = 21;
 
+  // Local IP addresses of the device.
+  repeated string local_ips = 22;
+
   // Reserved to make sure there is no overlap with DeepScanningClientRequest.
   reserved 3, 4, 6 to 8;
 }

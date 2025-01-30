@@ -5,12 +5,14 @@
 #include "components/history_embeddings/scheduling_embedder.h"
 
 #include <memory>
+#include <numeric>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/check_op.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "components/history_embeddings/vector_database.h"
 #include "components/passage_embeddings/passage_embeddings_types.h"
@@ -65,6 +67,15 @@ SchedulingEmbedder::TaskId SchedulingEmbedder::ComputePassagesEmbeddings(
     passage_embeddings::PassagePriority priority,
     std::vector<std::string> passages,
     ComputePassagesEmbeddingsCallback callback) {
+  base::UmaHistogramCounts1000("History.Embeddings.ScheduledJobCount",
+                               jobs_.size());
+  base::UmaHistogramCounts1000(
+      "History.Embeddings.ScheduledPassageCount",
+      std::accumulate(
+          jobs_.begin(), jobs_.end(), 0u, [](size_t sum, const Job& job) {
+            return sum + job.passages.size() - job.embeddings.size();
+          }));
+
   TaskId task_id = next_task_id_;
   next_task_id_++;
 
@@ -258,6 +269,8 @@ void SchedulingEmbedder::OnEmbeddingsComputed(
       read_index++;
     }
     if (job.embeddings.size() == job.passages.size()) {
+      base::UmaHistogramTimes("History.Embeddings.ScheduledJobDuration",
+                              job.timer.Elapsed());
       VLOG(2) << "Finished embedding work for " << job.passages.size()
               << " passages starting with `" << job.passages[0] << "`";
       std::move(job.callback)

@@ -62,15 +62,6 @@ BASE_FEATURE(kPlusAddressGlobalToggle,
              "PlusAddressGlobalToggle",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-// When enabled, users that have accepted the legal notice will see a
-// streamlined flow for creating plus addresses that never leaves the Autofill
-// popup.
-BASE_FEATURE(kPlusAddressInlineCreation,
-             "PlusAddressInlineCreation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-
 // When enabled, plus address creation is offered on all email fields that are
 // not a username field - even if they are on a login form or a change password
 // form.

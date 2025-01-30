@@ -605,8 +605,6 @@ TEST_F(PlusAddressServiceRequestsTest, OngoingRequestsCancelledOnSignout) {
 TEST_F(PlusAddressServiceRequestsTest,
        OnShowedInlineSuggestionWithoutProposedAddress) {
   base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList feature_list{
-      features::kPlusAddressInlineCreation};
   base::test::TestFuture<std::vector<Suggestion>,
                          AutofillSuggestionTriggerSource>
       callback;
@@ -634,8 +632,6 @@ TEST_F(PlusAddressServiceRequestsTest,
 // Tests that an error suggestion is shown if the reserve call times out.
 TEST_F(PlusAddressServiceRequestsTest,
        OnShowedInlineSuggestionWithReserveError) {
-  base::test::ScopedFeatureList feature_list{
-      features::kPlusAddressInlineCreation};
   base::HistogramTester histogram_tester;
   base::MockCallback<PlusAddressService::UpdateSuggestionsCallback> callback;
 
@@ -673,8 +669,6 @@ TEST_F(PlusAddressServiceRequestsTest,
 // additional address is reserved.
 TEST_F(PlusAddressServiceRequestsTest,
        OnShowedInlineSuggestionWithProposedAddress) {
-  base::test::ScopedFeatureList feature_list{
-      features::kPlusAddressInlineCreation};
   base::HistogramTester histogram_tester;
   base::UserActionTester user_action_tester;
   base::MockCallback<PlusAddressService::UpdateSuggestionsCallback> callback;
@@ -701,8 +695,6 @@ TEST_F(PlusAddressServiceRequestsTest,
 // endpoint is made. On success, the popup is hidden and the plus address is
 // filled.
 TEST_F(PlusAddressServiceRequestsTest, OnAcceptedInlineSuggestion) {
-  base::test::ScopedFeatureList feature_list{
-      features::kPlusAddressInlineCreation};
   base::HistogramTester histogram_tester;
   base::UserActionTester user_action_tester;
   base::test::TestFuture<std::vector<Suggestion>,
@@ -762,8 +754,6 @@ TEST_F(PlusAddressServiceRequestsTest, OnAcceptedInlineSuggestion) {
 // dialog.
 TEST_F(PlusAddressServiceRequestsTest,
        OnAcceptedInlineSuggestionAffiliationError) {
-  base::test::ScopedFeatureList feature_list{
-      features::kPlusAddressInlineCreation};
   base::test::TestFuture<std::vector<Suggestion>,
                          AutofillSuggestionTriggerSource>
       update_callback;
@@ -820,8 +810,6 @@ TEST_F(PlusAddressServiceRequestsTest,
 // suggestion returns with a HTTP_REQUEST_TIMEOUT error, a call is made to show
 // an error dialog that allows trying again
 TEST_F(PlusAddressServiceRequestsTest, OnAcceptedInlineSuggestionTimeoutError) {
-  base::test::ScopedFeatureList feature_list{
-      features::kPlusAddressInlineCreation};
   base::MockCallback<PlusAddressService::UpdateSuggestionsCallback>
       update_callback;
   base::MockCallback<PlusAddressService::HideSuggestionsCallback> hide_callback;
@@ -1824,8 +1812,6 @@ TEST_F(PlusAddressSuggestionsTest, DidFillPlusAddress) {
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 TEST_F(PlusAddressSuggestionsTest, OnClickedRefreshInlineSuggestion) {
-  base::test::ScopedFeatureList feature_list{
-      features::kPlusAddressInlineCreation};
   base::HistogramTester histogram_tester;
   base::UserActionTester user_action_tester;
   base::MockCallback<PlusAddressService::UpdateSuggestionsCallback> callback;

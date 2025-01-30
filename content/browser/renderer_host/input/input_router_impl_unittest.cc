@@ -171,8 +171,13 @@ class InputRouterImplTestBase : public testing::Test {
     input::NativeWebKeyboardEventWithLatencyInfo key_event(
         type, WebInputEvent::kNoModifiers, ui::EventTimeForNow(),
         ui::LatencyInfo());
-    input_router_->SendKeyboardEvent(
-        key_event, disposition_handler_->CreateKeyboardEventCallback());
+    {
+      input::ScopedDispatchToRendererCallback dispatch_callback(
+          client_->GetDispatchToRendererCallback());
+      input_router_->SendKeyboardEvent(
+          key_event, disposition_handler_->CreateKeyboardEventCallback(),
+          dispatch_callback.callback);
+    }
   }
 
   void SimulateWheelEvent(float x,
@@ -187,20 +192,32 @@ class InputRouterImplTestBase : public testing::Test {
         precise ? ui::ScrollGranularity::kScrollByPrecisePixel
                 : ui::ScrollGranularity::kScrollByPixel);
     wheel_event.phase = phase;
-    input_router_->SendWheelEvent(
-        input::MouseWheelEventWithLatencyInfo(wheel_event));
+    {
+      input::ScopedDispatchToRendererCallback dispatch_callback(
+          client_->GetDispatchToRendererCallback());
+      input_router_->SendWheelEvent(
+          input::MouseWheelEventWithLatencyInfo(wheel_event),
+          dispatch_callback.callback);
+    }
   }
 
   void SimulateWheelEvent(WebMouseWheelEvent::Phase phase) {
-    input_router_->SendWheelEvent(input::MouseWheelEventWithLatencyInfo(
-        SyntheticWebMouseWheelEventBuilder::Build(phase)));
+    input::ScopedDispatchToRendererCallback dispatch_callback(
+        client_->GetDispatchToRendererCallback());
+    input_router_->SendWheelEvent(
+        input::MouseWheelEventWithLatencyInfo(
+            SyntheticWebMouseWheelEventBuilder::Build(phase)),
+        dispatch_callback.callback);
   }
 
   void SimulateMouseEvent(WebInputEvent::Type type, int x, int y) {
+    input::ScopedDispatchToRendererCallback dispatch_callback(
+        client_->GetDispatchToRendererCallback());
     input_router_->SendMouseEvent(
         input::MouseEventWithLatencyInfo(
             SyntheticWebMouseEventBuilder::Build(type, x, y, 0)),
-        disposition_handler_->CreateMouseEventCallback());
+        disposition_handler_->CreateMouseEventCallback(),
+        dispatch_callback.callback);
   }
 
   void SimulateGestureEvent(WebGestureEvent gesture) {
@@ -226,8 +243,13 @@ class InputRouterImplTestBase : public testing::Test {
       gesture.data.fling_cancel.prevent_boosting = true;
     }
 
-    input_router_->SendGestureEvent(
-        input::GestureEventWithLatencyInfo(gesture));
+    {
+      input::ScopedDispatchToRendererCallback dispatch_callback(
+          client_->GetDispatchToRendererCallback());
+      input_router_->SendGestureEvent(
+          input::GestureEventWithLatencyInfo(gesture),
+          dispatch_callback.callback);
+    }
   }
 
   void SimulateGestureEvent(WebInputEvent::Type type,
@@ -288,8 +310,13 @@ class InputRouterImplTestBase : public testing::Test {
 
   uint32_t SendTouchEvent() {
     uint32_t touch_event_id = touch_event_.unique_touch_event_id;
-    input_router_->SendTouchEvent(
-        input::TouchEventWithLatencyInfo(touch_event_));
+    {
+      input::ScopedDispatchToRendererCallback dispatch_callback(
+          client_->GetDispatchToRendererCallback());
+      input_router_->SendTouchEvent(
+          input::TouchEventWithLatencyInfo(touch_event_),
+          dispatch_callback.callback);
+    }
     touch_event_.ResetPoints();
     return touch_event_id;
   }
@@ -383,8 +410,13 @@ class InputRouterImplTestBase : public testing::Test {
       blink::mojom::TouchActionOptionalPtr touch_action,
       blink::mojom::InputEventResultState state) {
     PressTouchPoint(1, 1);
-    input_router_->SendTouchEvent(
-        input::TouchEventWithLatencyInfo(touch_event_));
+    {
+      input::ScopedDispatchToRendererCallback dispatch_callback(
+          client_->GetDispatchToRendererCallback());
+      input_router_->SendTouchEvent(
+          input::TouchEventWithLatencyInfo(touch_event_),
+          dispatch_callback.callback);
+    }
     input_router_->TouchEventHandled(
         input::TouchEventWithLatencyInfo(touch_event_),
         blink::mojom::InputEventResultSource::kMainThread, ui::LatencyInfo(),
@@ -400,8 +432,13 @@ class InputRouterImplTestBase : public testing::Test {
   void StopTimeoutMonitorTest() {
     ResetTouchAction();
     PressTouchPoint(1, 1);
-    input_router_->SendTouchEvent(
-        input::TouchEventWithLatencyInfo(touch_event_));
+    {
+      input::ScopedDispatchToRendererCallback dispatch_callback(
+          client_->GetDispatchToRendererCallback());
+      input_router_->SendTouchEvent(
+          input::TouchEventWithLatencyInfo(touch_event_),
+          dispatch_callback.callback);
+    }
     EXPECT_TRUE(input_router_->touch_event_queue_.IsTimeoutRunningForTesting());
     input_router_->TouchEventHandled(
         input::TouchEventWithLatencyInfo(touch_event_),
@@ -424,8 +461,13 @@ class InputRouterImplTestBase : public testing::Test {
     input_router_->OnHasTouchEventConsumers(std::move(touch_event_consumers));
     EXPECT_FALSE(input_router_->AllowedTouchAction().has_value());
     PressTouchPoint(1, 1);
-    input_router_->SendTouchEvent(
-        input::TouchEventWithLatencyInfo(touch_event_));
+    {
+      input::ScopedDispatchToRendererCallback dispatch_callback(
+          client_->GetDispatchToRendererCallback());
+      input_router_->SendTouchEvent(
+          input::TouchEventWithLatencyInfo(touch_event_),
+          dispatch_callback.callback);
+    }
     input_router_->OnTouchEventAck(
         input::TouchEventWithLatencyInfo(touch_event_), source, ack_state);
     EXPECT_EQ(input_router_->AllowedTouchAction(), expected_touch_action);

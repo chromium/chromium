@@ -79,7 +79,8 @@ bool RenderInputRouterDelegateImpl::PreHandleGestureEvent(
 }
 
 void RenderInputRouterDelegateImpl::NotifyObserversOfInputEvent(
-    const blink::WebInputEvent& event) {
+    const blink::WebInputEvent& event,
+    bool dispatched_to_renderer) {
   if (IsInputEventContinuous(event)) {
     return;
   }
@@ -87,7 +88,8 @@ void RenderInputRouterDelegateImpl::NotifyObserversOfInputEvent(
       std::make_unique<blink::WebCoalescedInputEvent>(event, ui::LatencyInfo());
 
   delegate_->NotifyObserversOfInputEvent(frame_sink_id_, grouping_id_,
-                                         std::move(web_coalesced_event));
+                                         std::move(web_coalesced_event),
+                                         dispatched_to_renderer);
 }
 
 void RenderInputRouterDelegateImpl::NotifyObserversOfInputEventAcks(

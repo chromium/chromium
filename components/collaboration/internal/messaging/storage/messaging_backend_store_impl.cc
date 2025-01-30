@@ -104,8 +104,8 @@ MessagingBackendStoreImpl::ClearDirtyTabMessagesForGroup(
 
   // Clear dirty bit for all tab messages.
   for (auto& [message_id, message] : messages_per_group.value()->tab_messages) {
-    if (IsDirty(message, DirtyType::kAll)) {
-      message.set_dirty(static_cast<int>(DirtyType::kNone));
+    if (IsDirty(message, DirtyType::kDotAndChip)) {
+      message.set_dirty(ClearDirty(message, DirtyType::kDotAndChip));
       cleared_messages.emplace_back(message);
     }
   }

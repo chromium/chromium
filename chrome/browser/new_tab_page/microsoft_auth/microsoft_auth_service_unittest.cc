@@ -6,7 +6,10 @@
 
 #include "chrome/browser/new_tab_page/microsoft_auth/microsoft_auth_service_factory.h"
 #include "chrome/browser/new_tab_page/microsoft_auth/microsoft_auth_service_observer.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/search/ntp_features.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -27,10 +30,15 @@ std::unique_ptr<TestingProfile> MakeTestingProfile() {
 
 class MicrosoftAuthServiceTest : public testing::Test {
  public:
-  MicrosoftAuthServiceTest()
-      : profile_(MakeTestingProfile()),
-        auth_service_(
-            MicrosoftAuthServiceFactory::GetForProfile(profile_.get())) {}
+  MicrosoftAuthServiceTest() : profile_(MakeTestingProfile()) {
+    profile_->GetTestingPrefService()->SetManagedPref(
+        prefs::kNtpSharepointModuleVisible, base::Value(true));
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{ntp_features::kNtpMicrosoftAuthenticationModule,
+                              ntp_features::kNtpSharepointModule},
+        /*disabled_features=*/{});
+    auth_service_ = MicrosoftAuthServiceFactory::GetForProfile(profile_.get());
+  }
 
   ~MicrosoftAuthServiceTest() override = default;
 
@@ -49,6 +57,7 @@ class MicrosoftAuthServiceTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<TestingProfile> profile_;
+  base::test::ScopedFeatureList feature_list_;
   raw_ptr<MicrosoftAuthService> auth_service_;
   MockMicrosoftAuthServiceObserver observer_;
   base::ScopedObservation<MicrosoftAuthService, MicrosoftAuthServiceObserver>

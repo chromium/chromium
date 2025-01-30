@@ -1,0 +1,13 @@
+[document web]
+++[section]
+++++[combo box]
+++++++[menu]
+++++++++[menu item] name='1' selectable selected
+++++++++[menu item] name='2' selectable
+++[canvas]
+++++[static] name='<newline>  '
+++++[combo box]
+++++++[menu]
+++++++++[menu item] name='1' selectable selected
+++++++++[menu item] name='2' selectable
+++++[static] name='<newline>'

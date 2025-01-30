@@ -4111,7 +4111,7 @@ class ChromeBrowsingDataRemoverDelegateWithAccountPasswordsTest
 #endif
   }
 
-  void OptInToAccountStorage() {
+  void EnableAccountStorage() {
     sync_service()->SetSignedIn(
 #if BUILDFLAG(IS_ANDROID)
         signin::ConsentLevel::kSync
@@ -4119,7 +4119,7 @@ class ChromeBrowsingDataRemoverDelegateWithAccountPasswordsTest
         signin::ConsentLevel::kSignin
 #endif
     );
-    ASSERT_TRUE(password_manager::features_util::IsOptedInForAccountStorage(
+    ASSERT_TRUE(password_manager::features_util::IsAccountStorageEnabled(
         GetProfile()->GetPrefs(), sync_service()));
   }
 };
@@ -4132,7 +4132,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateWithAccountPasswordsTest,
        DisableAutoSignInAfterRemovingPasswords) {
   // Set up the necessary futures for account and profile PasswordStores, so the
   // the test can wait for them later.
-  OptInToAccountStorage();
+  EnableAccountStorage();
   TestFuture<base::OnceClosure> profile_auto_signin_cb, account_auto_signin_cb;
   TestFuture<base::OnceCallback<void(bool)>> account_remove_cb;
   TestFuture<base::OnceCallback<void(bool)>> account_sync_cb;

@@ -319,7 +319,9 @@ public class ContextualSearchPanel extends OverlayPanel {
         super.onClosed(reason);
 
         if (mSceneLayer != null) mSceneLayer.hideTree();
-        if (mScrimCoordinator != null) mScrimCoordinator.hideScrim(false);
+        if (mScrimCoordinator != null) {
+            mScrimCoordinator.hideScrim(mScrimProperties, /* animate= */ false);
+        }
 
         mDidStartCollapsing = false;
     }
@@ -848,11 +850,11 @@ public class ContextualSearchPanel extends OverlayPanel {
                 (maxBrightness - basePageBrightness) / (maxBrightness - minBrightness);
         if (!getCanHideAndroidBrowserControls()) scrimAndroidToolbar(statusBarAlpha);
         if (statusBarAlpha == 0.0) {
-            if (mScrimCoordinator != null) mScrimCoordinator.hideScrim(false);
+            if (mScrimCoordinator != null) {
+                mScrimCoordinator.hideScrim(mScrimProperties, /* animate= */ false);
+            }
             mScrimProperties = null;
             mScrimCoordinator = null;
-            return;
-
         } else {
             mScrimCoordinator = mManagementDelegate.getScrimCoordinator();
             if (mScrimProperties == null) {

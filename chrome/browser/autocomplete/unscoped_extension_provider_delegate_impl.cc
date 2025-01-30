@@ -86,10 +86,12 @@ void UnscopedExtensionProviderDelegateImpl::OnOmniboxSuggestionsReady(
   // Discard suggestions
   // 1) with a stale request ID's.
   // 2) that come from an extension that has already returned suggestions.
-  // 3) if 2 extensions have already returned suggestions.
+  // 4) if the provider is done. since this provider allows post done updates,
+  //    it will only be done if the user closes the omnibox, arrows down in the
+  //    omnibox, or if all extensions have returned suggestions.
   if (suggestions->request_id != current_request_id_ ||
       base::Contains(extension_id_to_group_id_map_, extension_id) ||
-      next_available_group_index_ == kReservedGroupIdMap.size()) {
+      provider_->done()) {
     return;
   }
 
@@ -134,7 +136,14 @@ void UnscopedExtensionProviderDelegateImpl::OnOmniboxSuggestionsReady(
   ACMatches* matches = provider_->matches();
   matches->insert(matches->end(), extension_suggest_matches_.begin(),
                   extension_suggest_matches_.end());
-  provider_->set_done(true);
+  // The only case where done can be be true is when all extensions have
+  // returned suggestions.
+  if (next_available_group_index_ == kReservedGroupIdMap.size() ||
+      provider_->GetTemplateURLService()
+              ->GetUnscopedModeExtensionIds()
+              .size() == 1) {
+    provider_->set_done(true);
+  }
   provider_->NotifyListeners(!extension_suggest_matches_.empty());
 }
 

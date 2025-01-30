@@ -101,6 +101,22 @@ bool IsPathRestrictionSatisfiedInternal(
   return true;
 }
 
+bool IsEligibleForSyntheticResponseInternal(const GURL& client_url,
+                                            const std::string& allowed_urls) {
+  const std::vector<std::string> parsed_urls = base::SplitString(
+      allowed_urls, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  for (const auto& it : parsed_urls) {
+    const GURL url = GURL(it);
+    // TODO(crbug.com/352578800): It's OK to use `start_with()` as far as the
+    // variation of given `client_url` value is limited, but consider
+    // replacing it with the standard SW scope matching if possible.
+    if (client_url.spec().starts_with(it)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 }  // namespace
 
 bool CheckResponseHead(
@@ -339,6 +355,22 @@ const base::flat_set<std::string> FetchHandlerBypassedHashStrings() {
           ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY));
 
   return *result;
+}
+
+bool IsEligibleForSyntheticResponse(const GURL& client_url) {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kServiceWorkerSyntheticResponse)) {
+    return false;
+  }
+  const std::string allowed_urls =
+      blink::features::kServiceWorkerSyntheticResponseAllowedUrls.Get();
+  return IsEligibleForSyntheticResponseInternal(client_url, allowed_urls);
+}
+
+bool IsEligibleForSyntheticResponseForTesting(  // IN-TEST
+    const GURL& client_url,
+    const std::string& allowed_urls) {
+  return IsEligibleForSyntheticResponseInternal(client_url, allowed_urls);
 }
 
 }  // namespace service_worker_loader_helpers

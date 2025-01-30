@@ -9,6 +9,7 @@
 #include "cc/cc_export.h"
 #include "cc/input/scroll_snap_data.h"
 #include "cc/paint/element_id.h"
+#include "cc/trees/mutator_host_client.h"
 #include "cc/trees/property_tree_delegate.h"
 #include "cc/trees/property_tree_layer_tree_delegate.h"
 #include "ui/compositor/compositor_export.h"
@@ -59,6 +60,8 @@ class COMPOSITOR_EXPORT CompositorPropertyTreeDelegate
   void OnAnimateLayers() override;
   void RegisterViewportPropertyIds(const cc::ViewportPropertyIds& ids) override;
   void OnUnregisterElement(cc::ElementId id) override;
+  bool IsElementInPropertyTrees(cc::ElementId element_id,
+                                cc::ElementListType list_type) const override;
 
  private:
   raw_ptr<Observer> observer_ = nullptr;

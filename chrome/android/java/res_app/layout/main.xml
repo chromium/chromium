@@ -159,6 +159,13 @@ found in the LICENSE file.
             android:inflatedId="@+id/tab_hover_card_holder"
             android:layout="@layout/tab_hover_card_holder" />
 
+        <ViewStub
+            android:id="@+id/tab_strip_tooltip_holder_stub"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inflatedId="@+id/tab_strip_tooltip_holder"
+            android:layout="@layout/tab_strip_tooltip_holder" />
+
         <org.chromium.components.messages.MessageContainer
             android:id="@+id/message_container"
             android:layout_width="match_parent"

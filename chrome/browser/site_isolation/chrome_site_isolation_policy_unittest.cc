@@ -63,7 +63,9 @@ class ChromeSiteIsolationPolicyTest : public testing::Test {
         switches::kEnableLowEndDeviceMode);
     EXPECT_EQ(512, base::SysInfo::AmountOfPhysicalMemoryMB());
 
-    mode_feature_.InitAndEnableFeature(features::kSitePerProcess);
+    mode_feature_.InitWithFeatures(
+        {features::kSitePerProcess, features::kOriginKeyedProcessesByDefault},
+        {});
     site_isolation::SiteIsolationPolicy::
         SetDisallowMemoryThresholdCachingForTesting(true);
   }
@@ -73,8 +75,7 @@ class ChromeSiteIsolationPolicyTest : public testing::Test {
         SetDisallowMemoryThresholdCachingForTesting(false);
   }
 
-  // Note that this only sets the memory threshold for strict site isolation,
-  // which is the only mode this test currently cares about.
+  // Note that this only sets the memory threshold for strict site isolation.
   void SetMemoryThreshold(const std::string& threshold) {
     threshold_feature_.InitAndEnableFeatureWithParameters(
         site_isolation::features::kSiteIsolationMemoryThresholds,
@@ -83,10 +84,20 @@ class ChromeSiteIsolationPolicyTest : public testing::Test {
           threshold}});
   }
 
+  // Note that this only sets the memory threshold for
+  // kOriginKeyedProcessesByDefault isolation.
+  void SetOriginMemoryThreshold(const std::string& threshold) {
+    origin_threshold_feature_.InitAndEnableFeatureWithParameters(
+        site_isolation::features::kOriginIsolationMemoryThreshold,
+        {{site_isolation::features::kOriginIsolationMemoryThresholdParamName,
+          threshold}});
+  }
+
  private:
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList mode_feature_;
   base::test::ScopedFeatureList threshold_feature_;
+  base::test::ScopedFeatureList origin_threshold_feature_;
 };
 
 TEST_F(ChromeSiteIsolationPolicyTest, NoIsolationBelowMemoryThreshold) {
@@ -98,12 +109,38 @@ TEST_F(ChromeSiteIsolationPolicyTest, NoIsolationBelowMemoryThreshold) {
       content::SiteIsolationPolicy::UseDedicatedProcessesForAllSites());
 }
 
+TEST_F(ChromeSiteIsolationPolicyTest, NoOriginIsolationBelowMemoryThreshold) {
+  if (ShouldSkipBecauseOfConflictingCommandLineSwitches()) {
+    GTEST_SKIP();
+  }
+
+  SetOriginMemoryThreshold("768");
+  EXPECT_FALSE(
+      content::SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault());
+}
+
 TEST_F(ChromeSiteIsolationPolicyTest, IsolationAboveMemoryThreshold) {
   if (ShouldSkipBecauseOfConflictingCommandLineSwitches())
     return;
 
   SetMemoryThreshold("128");
   EXPECT_TRUE(content::SiteIsolationPolicy::UseDedicatedProcessesForAllSites());
+}
+
+TEST_F(ChromeSiteIsolationPolicyTest, OriginIsolationAboveMemoryThreshold) {
+  if (ShouldSkipBecauseOfConflictingCommandLineSwitches()) {
+    GTEST_SKIP();
+  }
+
+  SetOriginMemoryThreshold("128");
+  // Android browser client allows it, but
+  // content::SiteIsolationPolicy::UseDedicatedProcessesForAllSites disables it
+  // unless --site-per-process is specified. So, for an above-threshold case,
+  // UseDedicatedProcessesForAllSites() controls the value of
+  // AreOriginKeyedProcessesEnabledByDefault().
+  EXPECT_EQ(
+      content::SiteIsolationPolicy::UseDedicatedProcessesForAllSites(),
+      content::SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault());
 }
 
 TEST_F(ChromeSiteIsolationPolicyTest, IsolatedOriginsContainChromeOrigins) {

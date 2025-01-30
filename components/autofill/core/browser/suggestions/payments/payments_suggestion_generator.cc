@@ -907,6 +907,25 @@ Suggestion CreateBnplSuggestion() {
   return bnpl_suggestion;
 }
 
+// Determines whether the "Save and Fill" suggestion should be shown in the
+// credit card autofill dropdown. The suggestion is shown if all of the
+// following conditions are met:
+// 1. The user has no credit cards saved.
+// 2. The credit card form is complete for the purposes of "Save and Fill".
+// 3. The user is not in incognito mode.
+// 4. A field within the credit card form is clicked and has no more than 3
+// characters entered.
+bool ShouldShowCreditCardSaveAndFill(const AutofillClient& client,
+                                     bool is_complete_form,
+                                     const FormFieldData& trigger_field) {
+  return client.GetPersonalDataManager()
+             .payments_data_manager()
+             .GetCreditCards()
+             .empty() &&
+         is_complete_form && !client.IsOffTheRecord() &&
+         trigger_field.value().length() <= 3;
+}
+
 // Used to manually enable credit card upload in tests.
 std::optional<bool> credit_card_upload_enabled_test_;
 
@@ -917,16 +936,15 @@ std::vector<Suggestion> GetSuggestionsForCreditCards(
     const FormFieldData& trigger_field,
     FieldType trigger_field_type,
     CreditCardSuggestionSummary& summary,
+    bool is_complete_form,
     bool should_show_scan_credit_card,
     bool should_show_cards_from_account,
     const std::vector<std::string>& four_digit_combinations_in_dom,
     const std::u16string& autofilled_last_four_digits_in_form_for_filtering) {
   std::vector<Suggestion> suggestions;
-  if (client.GetPersonalDataManager()
-          .payments_data_manager()
-          .GetCreditCards()
-          .empty() &&
-      base::FeatureList::IsEnabled(features::kAutofillEnableSaveAndFill)) {
+  if (base::FeatureList::IsEnabled(features::kAutofillEnableSaveAndFill) &&
+      ShouldShowCreditCardSaveAndFill(client, is_complete_form,
+                                      trigger_field)) {
     bool display_gpay_logo = false;
     suggestions.push_back(
         CreateSaveAndFillSuggestion(client, display_gpay_logo));

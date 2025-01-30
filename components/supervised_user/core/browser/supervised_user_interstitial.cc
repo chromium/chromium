@@ -64,7 +64,9 @@ SupervisedUserInterstitial::SupervisedUserInterstitial(
       *supervised_user_service.GetURLFilter(), reason);
 }
 
-SupervisedUserInterstitial::~SupervisedUserInterstitial() = default;
+SupervisedUserInterstitial::~SupervisedUserInterstitial() {
+  web_content_handler_->MaybeCloseLocalApproval();
+}
 
 // static
 std::string SupervisedUserInterstitial::GetHTMLContents(

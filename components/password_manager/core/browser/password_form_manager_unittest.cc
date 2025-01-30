@@ -513,7 +513,7 @@ class PasswordFormManagerTest : public testing::Test,
     ON_CALL(client_, IsCommittedMainFrameSecure()).WillByDefault(Return(true));
     ON_CALL(crowdsourcing_manager(), StartUploadRequest)
         .WillByDefault(Return(true));
-    ON_CALL(*client_.GetPasswordFeatureManager(), IsOptedInForAccountStorage)
+    ON_CALL(*client_.GetPasswordFeatureManager(), IsAccountStorageEnabled)
         .WillByDefault(Return(false));
 
     ON_CALL(client_, GetLastCommittedURL())
@@ -4104,7 +4104,7 @@ TEST_P(PasswordFormManagerTest, MovableToAccountStore) {
                                        signin::ConsentLevel::kSignin);
   ON_CALL(client_, GetIdentityManager())
       .WillByDefault(Return(identity_test_env_.identity_manager()));
-  ON_CALL(*client_.GetPasswordFeatureManager(), IsOptedInForAccountStorage)
+  ON_CALL(*client_.GetPasswordFeatureManager(), IsAccountStorageEnabled)
       .WillByDefault(Return(true));
   EXPECT_TRUE(form_manager_->IsMovableToAccountStore());
 }
@@ -5005,7 +5005,7 @@ TEST_F(PasswordFormManagerTestWithMockedSaver, Blocklist) {
 }
 
 TEST_F(PasswordFormManagerTestWithMockedSaver, MoveCredentialsToAccountStore) {
-  ON_CALL(*client_.GetPasswordFeatureManager(), IsOptedInForAccountStorage)
+  ON_CALL(*client_.GetPasswordFeatureManager(), IsAccountStorageEnabled)
       .WillByDefault(Return(true));
   EXPECT_CALL(*mock_password_save_manager(),
               MoveCredentialsToAccountStore(
@@ -5028,7 +5028,7 @@ TEST_F(PasswordFormManagerTestWithMockedSaver,
 
   ON_CALL(client_, GetIdentityManager())
       .WillByDefault(Return(identity_test_env_.identity_manager()));
-  ON_CALL(*client_.GetPasswordFeatureManager(), IsOptedInForAccountStorage)
+  ON_CALL(*client_.GetPasswordFeatureManager(), IsAccountStorageEnabled)
       .WillByDefault(Return(true));
 
   identity_test_env_.SetPrimaryAccount(kEmail, signin::ConsentLevel::kSync);

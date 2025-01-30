@@ -73,7 +73,7 @@ std::unique_ptr<KeyedService> BuildTestSyncService(
 void SetupAccountPasswordStore(syncer::TestSyncService* sync_service,
                                PrefService* pref_service) {
   sync_service->SetSignedIn(signin::ConsentLevel::kSignin);
-  ASSERT_TRUE(password_manager::features_util::IsOptedInForAccountStorage(
+  ASSERT_TRUE(password_manager::features_util::IsAccountStorageEnabled(
       pref_service, sync_service));
 }
 
@@ -300,8 +300,8 @@ TEST_F(SaveUpdateBubbleControllerTest, CloseWithoutInteraction) {
       password_manager::metrics_util::NO_DIRECT_INTERACTION);
 }
 
-TEST_F(SaveUpdateBubbleControllerTest, ClickSaveInLocalStore) {
-  ON_CALL(*password_feature_manager(), IsOptedInForAccountStorage)
+TEST_F(SaveUpdateBubbleControllerTest, ClickSaveWithAccountStorageDisabled) {
+  ON_CALL(*password_feature_manager(), IsAccountStorageEnabled)
       .WillByDefault(Return(false));
   PretendPasswordWaiting();
 
@@ -318,8 +318,8 @@ TEST_F(SaveUpdateBubbleControllerTest, ClickSaveInLocalStore) {
   DestroyModelExpectReason(password_manager::metrics_util::CLICKED_ACCEPT);
 }
 
-TEST_F(SaveUpdateBubbleControllerTest, ClickSaveInAccountStoreWhileOptedIn) {
-  ON_CALL(*password_feature_manager(), IsOptedInForAccountStorage)
+TEST_F(SaveUpdateBubbleControllerTest, ClickSaveWithAccountStorageEnabled) {
+  ON_CALL(*password_feature_manager(), IsAccountStorageEnabled)
       .WillByDefault(Return(true));
   PretendPasswordWaiting();
 
@@ -336,10 +336,8 @@ TEST_F(SaveUpdateBubbleControllerTest, ClickSaveInAccountStoreWhileOptedIn) {
   DestroyModelExpectReason(password_manager::metrics_util::CLICKED_ACCEPT);
 }
 
-TEST_F(SaveUpdateBubbleControllerTest, ClickUpdateWhileNotOptedIn) {
-  // This is testing that updating a password should not trigger an account
-  // store opt in flow even if the user isn't opted in.
-  ON_CALL(*password_feature_manager(), IsOptedInForAccountStorage)
+TEST_F(SaveUpdateBubbleControllerTest, ClickUpdateWhileAccountStorageDisabled) {
+  ON_CALL(*password_feature_manager(), IsAccountStorageEnabled)
       .WillByDefault(Return(false));
   PretendUpdatePasswordWaiting();
 
@@ -730,7 +728,7 @@ TEST_F(SaveUpdateBubbleControllerTest, UpdateBothStoresAffectsTheAccountStore) {
 TEST_F(SaveUpdateBubbleControllerTest,
        SaveInAccountStoreAffectsTheAccountStore) {
   SetupAccountPasswordStore(sync_service(), prefs());
-  ON_CALL(*password_feature_manager(), IsOptedInForAccountStorage)
+  ON_CALL(*password_feature_manager(), IsAccountStorageEnabled)
       .WillByDefault(Return(true));
   PretendPasswordWaiting();
   EXPECT_TRUE(
@@ -740,7 +738,7 @@ TEST_F(SaveUpdateBubbleControllerTest,
 TEST_F(SaveUpdateBubbleControllerTest,
        SaveInProfileStoreDoesntAffectTheAccountStore) {
   SetupAccountPasswordStore(sync_service(), prefs());
-  ON_CALL(*password_feature_manager(), IsOptedInForAccountStorage)
+  ON_CALL(*password_feature_manager(), IsAccountStorageEnabled)
       .WillByDefault(Return(false));
   PretendPasswordWaiting();
   EXPECT_FALSE(

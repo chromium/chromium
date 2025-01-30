@@ -224,6 +224,12 @@ bool CertProvisioningWorkerDynamic::IsWorkerMarkedForReset() const {
   return is_schedueled_for_reset_;
 }
 
+const std::string& CertProvisioningWorkerDynamic::GetProcessId() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  return process_id_;
+}
+
 const CertProfile& CertProvisioningWorkerDynamic::GetCertProfile() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

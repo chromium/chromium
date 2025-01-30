@@ -40,6 +40,7 @@ class SupervisedUserWebContentHandlerImpl
                             const std::u16string& child_display_name,
                             const supervised_user::UrlFormatter& url_formatter,
                             ApprovalRequestInitiatedCallback callback) override;
+  void MaybeCloseLocalApproval() override;
 
  private:
   void CreateObserverFromContents(base::TimeTicks start_time,
@@ -50,6 +51,8 @@ class SupervisedUserWebContentHandlerImpl
       const GURL& target_url,
       base::TimeTicks start_time,
       supervised_user::LocalApprovalResult result);
+
+  void CloseDialog();
 
   std::unique_ptr<ParentAccessDialogWebContentsObserver>
       dialog_web_contents_observer_;

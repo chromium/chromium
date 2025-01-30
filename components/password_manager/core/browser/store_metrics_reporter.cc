@@ -528,7 +528,7 @@ void ReportMultiStoreMetrics(
                              std::u16string>> profile_store_results,
     std::unique_ptr<std::map<std::pair<std::string, std::u16string>,
                              std::u16string>> account_store_results,
-    bool is_opted_in) {
+    bool is_account_storage_enabled) {
   // Count the contents of the account store as compared to the profile store:
   // - Additional:  Credentials that are in the account store, but not in the
   //                profile store.
@@ -582,7 +582,7 @@ void ReportMultiStoreMetrics(
     ++profile_it;
   }
 
-  if (is_opted_in) {
+  if (is_account_storage_enabled) {
     base::UmaHistogramCounts100(
         base::StrCat(
             {kPasswordManager, ".AccountStoreVsProfileStore4.Additional"}),
@@ -605,7 +605,7 @@ void ReportMultiStoreMetrics(
 StoreMetricsReporter::CredentialsCount ReportAllMetrics(
     bool custom_passphrase_enabled,
     const std::string& sync_username,
-    bool is_opted_in_account_storage,
+    bool is_account_storage_enabled,
     bool is_safe_browsing_enabled,
     std::optional<std::vector<std::unique_ptr<PasswordForm>>>
         profile_store_results,
@@ -660,7 +660,7 @@ StoreMetricsReporter::CredentialsCount ReportAllMetrics(
     ReportMultiStoreMetrics(
         std::move(profile_store_passwords_per_signon_and_username),
         std::move(account_store_passwords_per_signon_and_username),
-        is_opted_in_account_storage);
+        is_account_storage_enabled);
   }
 
   return credentials_count;
@@ -728,8 +728,8 @@ StoreMetricsReporter::StoreMetricsReporter(
   custom_passphrase_enabled_ = IsCustomPassphraseEnabled(
       password_manager::sync_util::GetPasswordSyncState(sync_service));
 
-  is_opted_in_account_storage_ =
-      features_util::IsOptedInForAccountStorage(prefs_, sync_service);
+  is_account_storage_enabled_ =
+      features_util::IsAccountStorageEnabled(prefs_, sync_service);
 
   is_safe_browsing_enabled_ = safe_browsing::IsSafeBrowsingEnabled(*prefs_);
 
@@ -802,7 +802,7 @@ void StoreMetricsReporter::OnGetPasswordStoreResultsFrom(
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
       base::BindOnce(&ReportAllMetrics, custom_passphrase_enabled_,
-                     sync_username_, is_opted_in_account_storage_,
+                     sync_username_, is_account_storage_enabled_,
                      is_safe_browsing_enabled_,
                      std::exchange(profile_store_results_, std::nullopt),
                      std::exchange(account_store_results_, std::nullopt)),

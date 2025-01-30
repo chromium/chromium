@@ -101,7 +101,8 @@ TabGroupSyncServiceFactory::GetDefaultFactory() {
 
 TabGroupSyncServiceFactory::TabGroupSyncServiceFactory()
     : ProfileKeyedServiceFactoryIOS("TabGroupSyncServiceFactory",
-                                    ServiceCreation::kCreateWithProfile),
+                                    ServiceCreation::kCreateWithProfile,
+                                    TestingCreation::kNoServiceForTests),
       synthetic_field_trial_helper_(std::make_unique<SyntheticFieldTrialHelper>(
           base::BindRepeating(&TabGroupSyncServiceFactory::OnHadSyncedTabGroup),
           base::BindRepeating(

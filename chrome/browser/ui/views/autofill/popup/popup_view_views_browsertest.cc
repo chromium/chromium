@@ -510,11 +510,6 @@ class PopupViewViewsPlusAddressSuggestionBrowsertest
     : public PopupViewViewsBrowsertestBase {
  public:
   PopupViewViewsPlusAddressSuggestionBrowsertest() {
-    features_.InitWithFeatures(
-        /*enabled_features=*/
-        {plus_addresses::features::kPlusAddressUserOnboardingEnabled,
-         plus_addresses::features::kPlusAddressInlineCreation},
-        /*disabled_features*/ {});
     setting_service().set_is_plus_addresses_enabled(true);
   }
 
@@ -538,7 +533,8 @@ class PopupViewViewsPlusAddressSuggestionBrowsertest
   }
 
  private:
-  base::test::ScopedFeatureList features_;
+  base::test::ScopedFeatureList features_{
+      plus_addresses::features::kPlusAddressUserOnboardingEnabled};
   autofill::test::AutofillUnitTestEnvironment autofill_env_;
 
   plus_addresses::FakePlusAddressAllocator allocator_;

@@ -71,10 +71,10 @@ public class HistoryActivity extends SnackbarActivity {
         ViewGroup sheetContainer =
                 (ViewGroup)
                         LayoutInflater.from(this).inflate(R.layout.bottom_sheet_container, null);
-        ScrimCoordinator scrim = new ScrimCoordinator(this, contentView);
+        ScrimCoordinator scrimCoordinator = new ScrimCoordinator(this, contentView);
         mBottomSheetController =
                 BottomSheetControllerFactory.createBottomSheetController(
-                        () -> scrim,
+                        () -> scrimCoordinator,
                         CallbackUtils.emptyCallback(),
                         getWindow(),
                         KeyboardVisibilityDelegate.getInstance(),

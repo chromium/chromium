@@ -195,6 +195,16 @@ class AIPageContentAgentTest : public testing::Test {
     EXPECT_EQ(geometry.visible_bounding_box, expected_visible_bounding_box);
   }
 
+  void CheckFormControlNode(
+      const mojom::blink::AIPageContentNode& node,
+      const mojom::blink::FormControlType& expected_form_control_type) {
+    const auto& attributes = *node.content_attributes;
+    EXPECT_EQ(attributes.attribute_type,
+              mojom::blink::AIPageContentAttributeType::kFormControl);
+    EXPECT_EQ(attributes.form_control_data->form_control_type,
+              expected_form_control_type);
+  }
+
   const mojom::blink::AIPageContentNode& GetSingleTableCell(
       const mojom::blink::AIPageContentNode& table) {
     CheckTableNode(table);
@@ -1668,6 +1678,222 @@ TEST_F(AIPageContentAgentTest, NoHiddenButSearchableContent) {
 
   const auto& text_node = *content->root_node->children_nodes[1];
   CheckTextNode(text_node, "visible text");
+}
+
+TEST_F(AIPageContentAgentTest, FormWithTextInput) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <form name='myform'>"
+      "    <label for='input1'>Lorem Ipsum</label>"
+      "    <input type='text' id='input1' name='LI' value='Lorem'>"
+      "    <label for='input2'>Ipsum Dolor</label>"
+      "    <input type='text' id='input2' name='ID' value='Ipsum' required>"
+      "  </form>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto* agent = AIPageContentAgent::GetOrCreateForTesting(
+      *helper_.LocalMainFrame()->GetFrame()->GetDocument());
+  ASSERT_TRUE(agent);
+
+  auto content = GetAIPageContent();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  const auto& root = *content->root_node;
+  EXPECT_EQ(root.children_nodes.size(), 1u);
+
+  const auto& form = *root.children_nodes[0];
+  EXPECT_EQ(form.content_attributes->attribute_type,
+            mojom::blink::AIPageContentAttributeType::kForm);
+  EXPECT_EQ(form.content_attributes->form_data->form_name, "myform");
+  EXPECT_EQ(form.children_nodes.size(), 4u);
+
+  CheckTextNode(*form.children_nodes[0], "Lorem Ipsum");
+
+  const auto& text_input1 = *form.children_nodes[1];
+  CheckFormControlNode(text_input1, mojom::blink::FormControlType::kInputText);
+  EXPECT_EQ(text_input1.content_attributes->form_control_data->field_name,
+            "LI");
+  EXPECT_EQ(text_input1.content_attributes->form_control_data->field_value,
+            "Lorem");
+  EXPECT_FALSE(text_input1.content_attributes->form_control_data->is_required);
+  EXPECT_EQ(text_input1.children_nodes.size(), 1u);
+  CheckContainerNode(*text_input1.children_nodes[0]);
+  EXPECT_EQ(text_input1.children_nodes[0]->children_nodes.size(), 1u);
+  CheckTextNode(*text_input1.children_nodes[0]->children_nodes[0], "Lorem");
+
+  CheckTextNode(*form.children_nodes[2], "Ipsum Dolor");
+
+  const auto& text_input2 = *form.children_nodes[3];
+  CheckFormControlNode(text_input2, mojom::blink::FormControlType::kInputText);
+  EXPECT_EQ(text_input2.content_attributes->form_control_data->field_name,
+            "ID");
+  EXPECT_EQ(text_input2.content_attributes->form_control_data->field_value,
+            "Ipsum");
+  EXPECT_TRUE(text_input2.content_attributes->form_control_data->is_required);
+  EXPECT_EQ(text_input2.children_nodes.size(), 1u);
+  CheckContainerNode(*text_input2.children_nodes[0]);
+  EXPECT_EQ(text_input2.children_nodes[0]->children_nodes.size(), 1u);
+  CheckTextNode(*text_input2.children_nodes[0]->children_nodes[0], "Ipsum");
+}
+
+TEST_F(AIPageContentAgentTest, FormWithSelect) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <form name='myform'>"
+      "    <select name='LI'>"
+      "      <option value='Lorem'>Lorem Text</option>"
+      "      <option value='Ipsum'>Ipsum Text</option>"
+      "    </select>"
+      "  </form>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto* agent = AIPageContentAgent::GetOrCreateForTesting(
+      *helper_.LocalMainFrame()->GetFrame()->GetDocument());
+  ASSERT_TRUE(agent);
+
+  auto content = GetAIPageContent();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  const auto& root = *content->root_node;
+  EXPECT_EQ(root.children_nodes.size(), 1u);
+
+  const auto& form = *root.children_nodes[0];
+  EXPECT_EQ(form.content_attributes->attribute_type,
+            mojom::blink::AIPageContentAttributeType::kForm);
+  EXPECT_EQ(form.content_attributes->form_data->form_name, "myform");
+  EXPECT_EQ(form.children_nodes.size(), 1u);
+
+  const auto& select = *form.children_nodes[0];
+  CheckFormControlNode(select, mojom::blink::FormControlType::kSelectOne);
+
+  const auto& select_options =
+      select.content_attributes->form_control_data->select_options;
+  ASSERT_EQ(select_options.size(), 2u);
+
+  EXPECT_EQ(select_options[0]->value, "Lorem");
+  EXPECT_EQ(select_options[0]->text, "Lorem Text");
+  EXPECT_TRUE(select_options[0]->is_selected);
+
+  EXPECT_EQ(select_options[1]->value, "Ipsum");
+  EXPECT_EQ(select_options[1]->text, "Ipsum Text");
+  EXPECT_FALSE(select_options[1]->is_selected);
+
+  EXPECT_EQ(select.children_nodes.size(), 1u);
+  CheckTextNode(*select.children_nodes[0], "Lorem Text");
+}
+
+TEST_F(AIPageContentAgentTest, FormWithCheckbox) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <form name='vehicles'>"
+      "    <input type='checkbox' id='vehicle1' name='vehicle1' value='Bike'>"
+      "    <label for='vehicle1'>I have a bike</label><br>"
+      "    <input type='checkbox' id='vehicle2' name='vehicle2' value='Car' "
+      "     checked>"
+      "    <label for='vehicle2'>I have a car</label><br>"
+      "  </form>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto* agent = AIPageContentAgent::GetOrCreateForTesting(
+      *helper_.LocalMainFrame()->GetFrame()->GetDocument());
+  ASSERT_TRUE(agent);
+
+  auto content = GetAIPageContent();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  const auto& root = *content->root_node;
+  EXPECT_EQ(root.children_nodes.size(), 1u);
+
+  const auto& form = *root.children_nodes[0];
+  EXPECT_EQ(form.content_attributes->attribute_type,
+            mojom::blink::AIPageContentAttributeType::kForm);
+  EXPECT_EQ(form.content_attributes->form_data->form_name, "vehicles");
+  EXPECT_EQ(form.children_nodes.size(), 4u);
+
+  const auto& checkbox1 = *form.children_nodes[0];
+  CheckFormControlNode(checkbox1,
+                       mojom::blink::FormControlType::kInputCheckbox);
+  EXPECT_EQ(checkbox1.content_attributes->form_control_data->field_name,
+            "vehicle1");
+  EXPECT_EQ(checkbox1.content_attributes->form_control_data->field_value,
+            "Bike");
+  EXPECT_FALSE(checkbox1.content_attributes->form_control_data->is_checked);
+  EXPECT_EQ(checkbox1.children_nodes.size(), 0u);
+
+  CheckTextNode(*form.children_nodes[1], "I have a bike");
+
+  const auto& checkbox2 = *form.children_nodes[2];
+  CheckFormControlNode(checkbox2,
+                       mojom::blink::FormControlType::kInputCheckbox);
+  EXPECT_EQ(checkbox2.content_attributes->form_control_data->field_name,
+            "vehicle2");
+  EXPECT_EQ(checkbox2.content_attributes->form_control_data->field_value,
+            "Car");
+  EXPECT_TRUE(checkbox2.content_attributes->form_control_data->is_checked);
+  EXPECT_EQ(checkbox2.children_nodes.size(), 0u);
+
+  CheckTextNode(*form.children_nodes[3], "I have a car");
+}
+
+TEST_F(AIPageContentAgentTest, FormWithRadio) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <form name='vehicles'>"
+      "    <input type='radio' id='vehicle1' name='vehicle1' value='Bike'>"
+      "    <label for='vehicle1'>I have a bike</label><br>"
+      "    <input type='radio' id='vehicle2' name='vehicle2' value='Car' "
+      "     checked>"
+      "    <label for='vehicle2'>I have a car</label><br>"
+      "  </form>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto* agent = AIPageContentAgent::GetOrCreateForTesting(
+      *helper_.LocalMainFrame()->GetFrame()->GetDocument());
+  ASSERT_TRUE(agent);
+
+  auto content = GetAIPageContent();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  const auto& root = *content->root_node;
+  EXPECT_EQ(root.children_nodes.size(), 1u);
+
+  const auto& form = *root.children_nodes[0];
+  EXPECT_EQ(form.content_attributes->attribute_type,
+            mojom::blink::AIPageContentAttributeType::kForm);
+  EXPECT_EQ(form.content_attributes->form_data->form_name, "vehicles");
+  EXPECT_EQ(form.children_nodes.size(), 4u);
+
+  const auto& radio1 = *form.children_nodes[0];
+  CheckFormControlNode(radio1, mojom::blink::FormControlType::kInputRadio);
+  EXPECT_EQ(radio1.content_attributes->form_control_data->field_name,
+            "vehicle1");
+  EXPECT_EQ(radio1.content_attributes->form_control_data->field_value, "Bike");
+  EXPECT_FALSE(radio1.content_attributes->form_control_data->is_checked);
+  EXPECT_EQ(radio1.children_nodes.size(), 0u);
+
+  CheckTextNode(*form.children_nodes[1], "I have a bike");
+
+  const auto& radio2 = *form.children_nodes[2];
+  CheckFormControlNode(radio2, mojom::blink::FormControlType::kInputRadio);
+  EXPECT_EQ(radio2.content_attributes->form_control_data->field_name,
+            "vehicle2");
+  EXPECT_EQ(radio2.content_attributes->form_control_data->field_value, "Car");
+  EXPECT_TRUE(radio2.content_attributes->form_control_data->is_checked);
+  EXPECT_EQ(radio2.children_nodes.size(), 0u);
+
+  CheckTextNode(*form.children_nodes[3], "I have a car");
 }
 
 }  // namespace

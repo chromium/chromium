@@ -14,6 +14,10 @@ extern const CGFloat kHorizontalInset;
 extern const CGFloat kMainStackTopInset;
 extern const CGFloat kMainStackViewSpacing;
 extern const CGFloat kResponseContainerHeightMultiplier;
+extern const CGFloat kVerticalInset;
+extern const CGFloat kButtonStackViewSpacing;
+extern const CGFloat kDefaultTemperature;
+extern const CGFloat kTemperatureSliderSteps;
 
 // Enum representing the prototyping pages for different features.
 enum class AIPrototypingFeature : NSInteger {

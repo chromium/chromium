@@ -28,6 +28,7 @@
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+#import "ui/base/device_form_factor.h"
 
 using ::testing::_;
 
@@ -227,6 +228,10 @@ TEST_F(TabGroupSyncUtilTest,
        TestMoveTabGroupsAcrossRegularBrowsersSyncDisabled) {
   feature_list_.Reset();
   feature_list_.InitAndDisableFeature(kTabGroupSync);
+  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
+    // Feature has been launched on phones.
+    return;
+  }
 
   WebStateList* web_state_list = browser_->GetWebStateList();
   WebStateList* other_web_state_list = other_browser_->GetWebStateList();

@@ -6,8 +6,11 @@
 
 #include "third_party/jni_zero/generate_jni/JniUtil_jni.h"
 #include "third_party/jni_zero/system_jni/Arrays_jni.h"
+#include "third_party/jni_zero/system_jni/Boolean_jni.h"
 #include "third_party/jni_zero/system_jni/Collection_jni.h"
+#include "third_party/jni_zero/system_jni/Integer_jni.h"
 #include "third_party/jni_zero/system_jni/List_jni.h"
+#include "third_party/jni_zero/system_jni/Long_jni.h"
 #include "third_party/jni_zero/system_jni/Map_jni.h"
 
 namespace jni_zero {
@@ -71,6 +74,30 @@ jint CollectionSize(JNIEnv* env, const JavaRef<jobject>& collection) {
 
 jint MapSize(JNIEnv* env, const JavaRef<jobject>& map) {
   return JNI_Map::Java_Map_size(env, map);
+}
+
+bool FromJavaBoolean(JNIEnv* env, const JavaRef<jobject>& j_bool) {
+  return static_cast<bool>(JNI_Boolean::Java_Boolean_booleanValue(env, j_bool));
+}
+
+ScopedJavaLocalRef<jobject> ToJavaBoolean(JNIEnv* env, bool val) {
+  return JNI_Boolean::Java_Boolean_valueOf__boolean(env, val);
+}
+
+int32_t FromJavaInteger(JNIEnv* env, const JavaRef<jobject>& j_int) {
+  return static_cast<int32_t>(JNI_Integer::Java_Integer_intValue(env, j_int));
+}
+
+ScopedJavaLocalRef<jobject> ToJavaInteger(JNIEnv* env, int32_t val) {
+  return JNI_Integer::Java_Integer_valueOf__int(env, val);
+}
+
+int64_t FromJavaLong(JNIEnv* env, const JavaRef<jobject>& j_long) {
+  return static_cast<int64_t>(JNI_Long::Java_Long_longValue(env, j_long));
+}
+
+ScopedJavaLocalRef<jobject> ToJavaLong(JNIEnv* env, int64_t val) {
+  return JNI_Long::Java_Long_valueOf__long(env, val);
 }
 
 }  // namespace jni_zero

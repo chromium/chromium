@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView;
+import org.chromium.chrome.browser.compositor.overlays.strip.TooltipManager;
 import org.chromium.ui.MotionEventUtils;
 
 import java.lang.annotation.Retention;
@@ -60,6 +61,9 @@ public class CompositorButton extends StripLayoutView {
     private boolean mIsPressedFromMouse;
     private boolean mIsHovered;
     private String mAccessibilityDescriptionIncognito = "";
+
+    @Nullable private TooltipManager mTooltipManager;
+
     // @StripLayoutView the button was embedded in. Null if it's not a child view.
     @Nullable private final StripLayoutView mParentView;
     private final @ButtonType int mType;
@@ -274,12 +278,23 @@ public class CompositorButton extends StripLayoutView {
     }
 
     /**
-     * Set whether button is hovered on.
+     * Set whether button is hovered on and notify the tooltip manager if the hover state changed.
      *
      * @param isHovered Whether the button is hovered on.
      */
     public void setHovered(boolean isHovered) {
+        if (mTooltipManager != null && mIsHovered != isHovered) {
+            mTooltipManager.setHovered(this, isHovered);
+        }
         mIsHovered = isHovered;
+    }
+
+    @Override
+    public void setVisible(boolean isVisible) {
+        if (!isVisible) {
+            setHovered(false);
+        }
+        super.setVisible(isVisible);
     }
 
     /**
@@ -310,5 +325,14 @@ public class CompositorButton extends StripLayoutView {
      */
     public boolean getShouldApplyHoverBackground() {
         return isHovered() || isPressedFromMouse();
+    }
+
+    /**
+     * @param tooltipManager The {@link
+     *     org.chromium.chrome.browser.compositor.overlays.strip.TooltipManager} responsible for the
+     *     tooltip associated with this button.
+     */
+    public void setTooltipManager(TooltipManager tooltipManager) {
+        mTooltipManager = tooltipManager;
     }
 }

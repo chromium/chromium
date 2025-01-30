@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
 #include "components/history_embeddings/embedder.h"
@@ -115,6 +116,9 @@ class SchedulingEmbedder
 
     // Completed embeddings; may be partial.
     std::vector<Embedding> embeddings;
+
+    // Measures total job duration, from creation to completion.
+    base::ElapsedTimer timer;
   };
 
   // Intercepts metadata so that work can be queued up while the primary

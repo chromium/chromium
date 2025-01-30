@@ -686,6 +686,15 @@ ordinary bugs and be fixed by them. However, they can be considered only if
 there is a demonstrable way to show a memory corruption. e.g. with a POC causing
 crash with ASAN **without the flags above**.
 
+<a name="TOC-hard-coded-lists"></a>
+### My domain is on the [Public Suffix List / HSTS preload list / etc.] upstream but this is not yet reflected in Chrome! Is this a security bug?
+
+Chrome does not make any guarantees about how soon additions to or removals from
+external lists like the [HSTS preload list](https://hstspreload.org) or the
+[Public Suffix List (PSL)](https://publicsuffix.org/) will be incorporated into Chrome.
+If you believe Chrome's copies of these lists are notably out-of-date, we are
+happy to field bug reports but we do not consider this to be a vulnerability.
+
 ## Certificates & Connection Indicators
 
 <a name="TOC-Where-are-the-security-indicators-located-in-the-browser-window-"></a>

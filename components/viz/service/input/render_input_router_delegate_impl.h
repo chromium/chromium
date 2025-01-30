@@ -39,7 +39,8 @@ class VIZ_SERVICE_EXPORT RenderInputRouterDelegateImpl
     virtual void NotifyObserversOfInputEvent(
         const FrameSinkId& frame_sink_id,
         const base::UnguessableToken& grouping_id,
-        std::unique_ptr<blink::WebCoalescedInputEvent> event) = 0;
+        std::unique_ptr<blink::WebCoalescedInputEvent> event,
+        bool dispatched_to_renderer) = 0;
     virtual void NotifyObserversOfInputEventAcks(
         const FrameSinkId& frame_sink_id,
         const base::UnguessableToken& grouping_id,
@@ -75,7 +76,8 @@ class VIZ_SERVICE_EXPORT RenderInputRouterDelegateImpl
   bool IsIgnoringWebInputEvents(
       const blink::WebInputEvent& event) const override;
   bool PreHandleGestureEvent(const blink::WebGestureEvent& event) override;
-  void NotifyObserversOfInputEvent(const blink::WebInputEvent& event) override;
+  void NotifyObserversOfInputEvent(const blink::WebInputEvent& event,
+                                   bool dispatched_to_renderer) override;
   void NotifyObserversOfInputEventAcks(
       blink::mojom::InputEventResultSource ack_source,
       blink::mojom::InputEventResultState ack_result,

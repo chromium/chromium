@@ -101,7 +101,7 @@ void PasskeyUpgradeRequestController::ContinuePendingUpgradeRequest() {
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile());
   password_manager::PasswordStoreInterface* password_store = nullptr;
-  if (password_manager::features_util::IsOptedInForAccountStorage(
+  if (password_manager::features_util::IsAccountStorageEnabled(
           profile()->GetPrefs(), sync_service)) {
     password_store = AccountPasswordStoreFactory::GetForProfile(
                          profile(), ServiceAccessType::EXPLICIT_ACCESS)

@@ -62,7 +62,9 @@ class InputObserver : public RenderWidgetHost::InputEventObserver {
 
   void OnInputEvent(const RenderWidgetHost& widget,
                     const blink::WebInputEvent& event) override {
-    CHECK_EQ(event.GetType(), blink::WebInputEvent::Type::kMouseWheel);
+    if (event.GetType() != blink::WebInputEvent::Type::kMouseWheel) {
+      return;
+    }
 
     const blink::WebMouseWheelEvent& wheel_event =
         static_cast<const blink::WebMouseWheelEvent&>(event);
@@ -229,13 +231,28 @@ class MockObserver : public content::WebContentsObserver {
 // Make a callback that expects `result` and then unblock `run_loop`.
 base::OnceCallback<void(CSCResult)> MakeCallbackExpectingResult(
     base::RunLoop* run_loop,
-    CSCResult expected_result) {
+    CSCResult expected_result,
+    MockWidgetInputHandler* mock_widget_input_handler) {
   return base::BindOnce(
-      [](base::RunLoop* run_loop, CSCResult expected_result, CSCResult result) {
+      [](base::RunLoop* run_loop, CSCResult expected_result,
+         MockWidgetInputHandler* mock_widget_input_handler, CSCResult result) {
         EXPECT_EQ(result, expected_result);
+
+        // Run callbacks corresponding to `DispatchEvent` method in
+        // `WidgetInputHandler` to allow processing of inputs in
+        // `MouseWheelEventQueue`.
+        if (mock_widget_input_handler) {
+          MockWidgetInputHandler::MessageVector messages =
+              mock_widget_input_handler->GetAndResetDispatchedMessages();
+          if (!messages.empty()) {
+            messages.clear();
+            mock_widget_input_handler->FlushReceiverForTesting();
+          }
+        }
+
         run_loop->Quit();
       },
-      run_loop, expected_result);
+      run_loop, expected_result, mock_widget_input_handler);
 }
 
 class CapturedSurfaceControllerTestBase : public RenderViewHostTestHarness {
@@ -248,6 +265,14 @@ class CapturedSurfaceControllerTestBase : public RenderViewHostTestHarness {
     SetUpTestTabs();
     StartCaptureOf(*capturee_);
     AwaitWebContentsResolution();
+
+    auto* test_host = static_cast<TestRenderWidgetHost*>(
+        capturee_->GetRenderWidgetHostImpl());
+    mojo::Remote<blink::mojom::WidgetInputHandler> remote;
+    mock_widget_input_handler_ = std::make_unique<MockWidgetInputHandler>(
+        remote.BindNewPipeAndPassReceiver(), mojo::NullRemote());
+    test_host->GetRenderInputRouter()->SetWidgetInputHandlerForTesting(
+        std::move(remote));
   }
 
   void SetUpTestTabs(bool focus_capturer = true) {
@@ -278,6 +303,7 @@ class CapturedSurfaceControllerTestBase : public RenderViewHostTestHarness {
   }
 
   void TearDown() override {
+    mock_widget_input_handler_.reset();
     permission_manager_ = nullptr;
     controller_.reset();
     capturer_.reset();
@@ -323,6 +349,7 @@ class CapturedSurfaceControllerTestBase : public RenderViewHostTestHarness {
   std::unique_ptr<base::RunLoop> on_zoom_level_change_run_loop_;
   std::optional<base::WeakPtr<WebContents>> last_resolved_web_contents_;
   std::optional<int> zoom_level_;
+  std::unique_ptr<MockWidgetInputHandler> mock_widget_input_handler_ = nullptr;
 };
 
 class CapturedSurfaceControllerSendWheelTest
@@ -361,7 +388,8 @@ TEST_F(CapturedSurfaceControllerSendWheelTest, CorrectScaling) {
           /*y=*/0.5,
           /*wheel_delta_x=*/300,
           /*wheel_delta_y=*/400),
-      MakeCallbackExpectingResult(&run_loop, CSCResult::kSuccess));
+      MakeCallbackExpectingResult(&run_loop, CSCResult::kSuccess,
+                                  mock_widget_input_handler_.get()));
   run_loop.Run();
 }
 
@@ -377,7 +405,8 @@ TEST_F(CapturedSurfaceControllerSendWheelTest,
           /*y=*/0.5,
           /*wheel_delta_x=*/300,
           /*wheel_delta_y=*/400),
-      MakeCallbackExpectingResult(&run_loop, CSCResult::kUnknownError));
+      MakeCallbackExpectingResult(&run_loop, CSCResult::kUnknownError,
+                                  mock_widget_input_handler_.get()));
   run_loop.Run();
 }
 
@@ -393,7 +422,8 @@ TEST_F(CapturedSurfaceControllerSendWheelTest,
           /*y=*/0.5,
           /*wheel_delta_x=*/300,
           /*wheel_delta_y=*/400),
-      MakeCallbackExpectingResult(&run_loop, CSCResult::kUnknownError));
+      MakeCallbackExpectingResult(&run_loop, CSCResult::kUnknownError,
+                                  mock_widget_input_handler_.get()));
   run_loop.Run();
 }
 
@@ -410,7 +440,8 @@ TEST_F(CapturedSurfaceControllerSendWheelTest,
           /*y=*/0.5,
           /*wheel_delta_x=*/300,
           /*wheel_delta_y=*/400),
-      MakeCallbackExpectingResult(&run_loop, CSCResult::kSuccess));
+      MakeCallbackExpectingResult(&run_loop, CSCResult::kSuccess,
+                                  mock_widget_input_handler_.get()));
   run_loop.Run();
 }
 
@@ -427,7 +458,8 @@ TEST_F(CapturedSurfaceControllerSendWheelTest,
           /*y=*/0.5,
           /*wheel_delta_x=*/300,
           /*wheel_delta_y=*/400),
-      MakeCallbackExpectingResult(&run_loop, CSCResult::kSuccess));
+      MakeCallbackExpectingResult(&run_loop, CSCResult::kSuccess,
+                                  mock_widget_input_handler_.get()));
   run_loop.Run();
 }
 
@@ -469,10 +501,11 @@ TEST_F(CapturedSurfaceControllerZoomEventTest, ZoomEventUpdateTarget) {
   AwaitWebContentsResolution();
 
   // Set a temporary zoom level so only the second WebContents is affected.
-  HostZoomMapImpl* host_zoom_map = static_cast<HostZoomMapImpl*>(
-      HostZoomMap::GetForWebContents(new_capturee_->web_contents()));
-  host_zoom_map->SetTemporaryZoomLevel(new_main_rfh->GetGlobalId(),
-                                       blink::ZoomFactorToZoomLevel(1.1));
+  HostZoomMapImpl* mock_widget_input_handler_zoom_map =
+      static_cast<HostZoomMapImpl*>(
+          HostZoomMap::GetForWebContents(new_capturee_->web_contents()));
+  mock_widget_input_handler_zoom_map->SetTemporaryZoomLevel(
+      new_main_rfh->GetGlobalId(), blink::ZoomFactorToZoomLevel(1.1));
 
   AwaitOnZoomLevelChange();
   ASSERT_TRUE(zoom_level_);
@@ -500,8 +533,9 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(CapturedSurfaceControllerSetZoomLevelTest, SetZoomLevelSuccess) {
   permission_manager_->SetPermissionResult(CSCPermissionResult::kGranted);
   base::RunLoop run_loop;
-  controller_->SetZoomLevel(
-      zoom_level_, MakeCallbackExpectingResult(&run_loop, CSCResult::kSuccess));
+  controller_->SetZoomLevel(zoom_level_, MakeCallbackExpectingResult(
+                                             &run_loop, CSCResult::kSuccess,
+                                             mock_widget_input_handler_.get()));
   run_loop.Run();
 
   EXPECT_EQ(zoom_level_, capturee_->GetZoomLevel());
@@ -540,7 +574,8 @@ TEST_P(CapturedSurfaceControllerSetZoomTemporarinessTest,
   permission_manager_->SetPermissionResult(CSCPermissionResult::kGranted);
   base::RunLoop run_loop;
   controller_->SetZoomLevel(
-      200, MakeCallbackExpectingResult(&run_loop, CSCResult::kSuccess));
+      200, MakeCallbackExpectingResult(&run_loop, CSCResult::kSuccess,
+                                       mock_widget_input_handler_.get()));
   run_loop.Run();
   ASSERT_EQ(capturee_->GetZoomLevel(), 200);
 
@@ -572,16 +607,18 @@ class CapturedSurfaceControllerInterfaceTestBase
       case CapturedSurfaceControlAPI::kSendWheel:
         controller_->SendWheel(
             MakeCapturedWheelActionPtr(),
-            MakeCallbackExpectingResult(run_loop, expected_result));
+            MakeCallbackExpectingResult(run_loop, expected_result,
+                                        mock_widget_input_handler_.get()));
         return;
       case CapturedSurfaceControlAPI::kSetZoomLevel:
         controller_->SetZoomLevel(
             /*zoom_level=*/100,
-            MakeCallbackExpectingResult(run_loop, expected_result));
+            MakeCallbackExpectingResult(run_loop, expected_result,
+                                        /*mock_widget_input_handler=*/nullptr));
         return;
       case CapturedSurfaceControlAPI::kRequestPermission:
-        controller_->RequestPermission(
-            MakeCallbackExpectingResult(run_loop, expected_result));
+        controller_->RequestPermission(MakeCallbackExpectingResult(
+            run_loop, expected_result, /*mock_widget_input_handler=*/nullptr));
         return;
     }
     NOTREACHED();
@@ -961,7 +998,8 @@ TEST_P(CapturedSurfaceControllerSendWheelClampTest, ClampMinWheelDeltaX) {
           /*y=*/0,
           /*wheel_delta_x=*/std::numeric_limits<WheelDeltaType>::min(),
           /*wheel_delta_y=*/0),
-      MakeCallbackExpectingResult(&run_loop, CSCResult::kSuccess));
+      MakeCallbackExpectingResult(&run_loop, CSCResult::kSuccess,
+                                  mock_widget_input_handler_.get()));
   run_loop.Run();
 }
 
@@ -980,7 +1018,8 @@ TEST_P(CapturedSurfaceControllerSendWheelClampTest, ClampMaxWheelDeltaX) {
           /*y=*/0,
           /*wheel_delta_x=*/std::numeric_limits<WheelDeltaType>::max(),
           /*wheel_delta_y=*/0),
-      MakeCallbackExpectingResult(&run_loop, CSCResult::kSuccess));
+      MakeCallbackExpectingResult(&run_loop, CSCResult::kSuccess,
+                                  mock_widget_input_handler_.get()));
   run_loop.Run();
 }
 
@@ -999,7 +1038,8 @@ TEST_P(CapturedSurfaceControllerSendWheelClampTest, ClampMinWheelDeltaY) {
           /*y=*/0,
           /*wheel_delta_x=*/0,
           /*wheel_delta_y=*/std::numeric_limits<WheelDeltaType>::min()),
-      MakeCallbackExpectingResult(&run_loop, CSCResult::kSuccess));
+      MakeCallbackExpectingResult(&run_loop, CSCResult::kSuccess,
+                                  mock_widget_input_handler_.get()));
   run_loop.Run();
 }
 
@@ -1018,7 +1058,8 @@ TEST_P(CapturedSurfaceControllerSendWheelClampTest, ClampMaxWheelDeltaY) {
           /*y=*/0,
           /*wheel_delta_x=*/0,
           /*wheel_delta_y=*/std::numeric_limits<WheelDeltaType>::max()),
-      MakeCallbackExpectingResult(&run_loop, CSCResult::kSuccess));
+      MakeCallbackExpectingResult(&run_loop, CSCResult::kSuccess,
+                                  mock_widget_input_handler_.get()));
   run_loop.Run();
 }
 
@@ -1040,7 +1081,8 @@ TEST_F(WebContentsObserverCscNotifiedTest, NotifiedBySendWheelIfSuccessful) {
           /*y=*/0.5,
           /*wheel_delta_x=*/300,
           /*wheel_delta_y=*/400),
-      MakeCallbackExpectingResult(&run_loop, CSCResult::kSuccess));
+      MakeCallbackExpectingResult(&run_loop, CSCResult::kSuccess,
+                                  mock_widget_input_handler_.get()));
   run_loop.Run();
 }
 
@@ -1052,7 +1094,8 @@ TEST_F(WebContentsObserverCscNotifiedTest, NotifiedBySetZoomLevelIfSuccessful) {
 
   base::RunLoop run_loop;
   controller_->SetZoomLevel(
-      200, MakeCallbackExpectingResult(&run_loop, CSCResult::kSuccess));
+      200, MakeCallbackExpectingResult(&run_loop, CSCResult::kSuccess,
+                                       mock_widget_input_handler_.get()));
   run_loop.Run();
 }
 
@@ -1070,7 +1113,8 @@ TEST_F(WebContentsObserverCscNotifiedTest,
           /*y=*/0.5,
           /*wheel_delta_x=*/300,
           /*wheel_delta_y=*/400),
-      MakeCallbackExpectingResult(&run_loop, CSCResult::kNoPermissionError));
+      MakeCallbackExpectingResult(&run_loop, CSCResult::kNoPermissionError,
+                                  mock_widget_input_handler_.get()));
   run_loop.Run();
 }
 
@@ -1082,8 +1126,9 @@ TEST_F(WebContentsObserverCscNotifiedTest,
   EXPECT_CALL(observer, OnCapturedSurfaceControl()).Times(0);
 
   base::RunLoop run_loop;
-  controller_->SetZoomLevel(200, MakeCallbackExpectingResult(
-                                     &run_loop, CSCResult::kNoPermissionError));
+  controller_->SetZoomLevel(
+      200, MakeCallbackExpectingResult(&run_loop, CSCResult::kNoPermissionError,
+                                       mock_widget_input_handler_.get()));
   run_loop.Run();
 }
 

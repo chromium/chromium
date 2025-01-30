@@ -183,7 +183,7 @@ build_webui_tests("build") {
     "multidevice_setup/start_setup_page_test.js",
     "network/apn_list_item_test.ts",
     "network/apn_list_test.ts",
-    "network/apn_selection_dialog_list_item_test.js",
+    "network/apn_selection_dialog_list_item_test.ts",
     "network/apn_selection_dialog_test.ts",
     "network/cr_policy_network_behavior_mojo_tests.js",
     "network/cr_policy_network_indicator_mojo_tests.js",

@@ -1259,7 +1259,8 @@ class CONTENT_EXPORT WebContentsImpl
   // input::mojom::RenderInputRouterDelegateClient -----------------------------
   void NotifyObserversOfInputEvent(
       const viz::FrameSinkId& frame_sink_id,
-      std::unique_ptr<blink::WebCoalescedInputEvent> event) override;
+      std::unique_ptr<blink::WebCoalescedInputEvent> event,
+      bool dispatched_to_renderer) override;
   void NotifyObserversOfInputEventAcks(
       const viz::FrameSinkId& frame_sink_id,
       blink::mojom::InputEventResultSource ack_source,

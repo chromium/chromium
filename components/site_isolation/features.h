@@ -15,6 +15,8 @@ BASE_DECLARE_FEATURE(kSiteIsolationForOAuthSites);
 BASE_DECLARE_FEATURE(kSiteIsolationMemoryThresholds);
 extern const char kStrictSiteIsolationMemoryThresholdParamName[];
 extern const char kPartialSiteIsolationMemoryThresholdParamName[];
+BASE_DECLARE_FEATURE(kOriginIsolationMemoryThreshold);
+extern const char kOriginIsolationMemoryThresholdParamName[];
 
 }  // namespace features
 }  // namespace site_isolation

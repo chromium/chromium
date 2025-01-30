@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/test/iwa_test_server_configurator.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/json/json_writer.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/bundle_versions_storage.h"
@@ -40,19 +41,21 @@ void IwaTestServerConfigurator::AddBundle(
 
   factory_->AddResponse(web_bundle_url.spec(), bundle_ref.GetBundleData());
 
-  RegenerateServedUpdateManifest(web_bundle_id);
+  SetServedUpdateManifestResponse(
+      web_bundle_id, net::HttpStatusCode::HTTP_OK,
+      *base::WriteJson(storage_.GetUpdateManifest(web_bundle_id)));
 }
 
-void IwaTestServerConfigurator::RegenerateServedUpdateManifest(
-    const web_package::SignedWebBundleId& web_bundle_id) {
+void IwaTestServerConfigurator::SetServedUpdateManifestResponse(
+    const web_package::SignedWebBundleId& web_bundle_id,
+    net::HttpStatusCode http_status,
+    std::string_view json_content) {
   network::mojom::URLResponseHeadPtr head =
-      network::CreateURLResponseHead(net::HttpStatusCode::HTTP_OK);
+      network::CreateURLResponseHead(http_status);
   head->mime_type = "application/json";
   network::URLLoaderCompletionStatus status;
-
-  factory_->AddResponse(
-      storage_.GetUpdateManifestUrl(web_bundle_id), std::move(head),
-      *base::WriteJson(storage_.GetUpdateManifest(web_bundle_id)), status);
+  factory_->AddResponse(storage_.GetUpdateManifestUrl(web_bundle_id),
+                        std::move(head), json_content, status);
 }
 
 // static

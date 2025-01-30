@@ -29,7 +29,8 @@ enum TabOrganizationRequest_TabOrganizationModelStrategy : int;
 // Executes a freeform prototyping request to a server-hosted model.
 - (void)executeFreeformServerQuery:(NSString*)query
                 systemInstructions:(NSString*)systemInstructions
-                includePageContext:(BOOL)includePageContext;
+                includePageContext:(BOOL)includePageContext
+                       temperature:(float)temperature;
 
 // Executes a tab organization request with a given organization `strategy`.
 - (void)executeGroupTabsWithStrategy:

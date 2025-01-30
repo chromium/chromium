@@ -1225,6 +1225,7 @@ public class ToolbarManager
 
                             mToolbar.onNavigatedToDifferentPage();
                             maybeTriggerCacheRefreshForZeroSuggest(navigation.getUrl());
+                            mBottomControlsStacker.notifyDidFinishNavigationInPrimaryMainFrame();
                         }
 
                         // If the load failed due to a different navigation, there is no need to

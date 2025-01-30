@@ -11,6 +11,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/circular_deque.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
@@ -64,9 +65,12 @@ class PassthroughTouchEventQueueTest : public testing::Test,
 
   // PassthroughTouchEventQueueClient
   void SendTouchEventImmediately(
-      const TouchEventWithLatencyInfo& event) override {
+      const TouchEventWithLatencyInfo& event,
+      DispatchToRendererCallback& dispatch_callback) override {
     sent_events_.push_back(event.event);
     sent_events_ids_.push_back(event.event.unique_touch_event_id);
+    std::move(dispatch_callback)
+        .Run(event.event, DispatchToRendererResult::kDispatched);
     if (sync_ack_result_) {
       auto sync_ack_result = std::move(sync_ack_result_);
       SendTouchEventAckWithID(*sync_ack_result,
@@ -92,6 +96,10 @@ class PassthroughTouchEventQueueTest : public testing::Test,
   }
 
   void FlushDeferredGestureQueue() override {}
+
+  DispatchToRendererCallback GetDispatchToRendererCallback() override {
+    return base::DoNothing();
+  }
 
  protected:
   void SetUpForTouchMoveSlopTesting(double slop_length_dips) {
@@ -137,8 +145,12 @@ class PassthroughTouchEventQueueTest : public testing::Test,
       event.moved_beyond_slop_region =
           event.GetType() == WebInputEvent::Type::kTouchMove;
     }
-    queue_->QueueEvent(
-        TouchEventWithLatencyInfo(event, ui::LatencyInfo()));
+    {
+      ScopedDispatchToRendererCallback dispatch_callback(
+          GetDispatchToRendererCallback());
+      queue_->QueueEvent(TouchEventWithLatencyInfo(event, ui::LatencyInfo()),
+                         dispatch_callback.callback);
+    }
   }
 
   void SendTouchEventAck(blink::mojom::InputEventResultState ack_result) {

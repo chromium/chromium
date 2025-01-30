@@ -577,11 +577,11 @@ bool AreMatchingCredentials(const CredentialUIEntry& credential,
     // Only offer moving to the account if all of these hold.
     // - The embedder of this page wants to support it.
     // - The entry was flagged as local only in the top-level view.
-    // - The user is interested in saving passwords to the account, i.e. they
-    // are opted in to account storage.
+    // - The user is interested in saving passwords to the account, i.e. account
+    // storage is enabled.
     credentialDetails.shouldOfferToMoveToAccount =
         self.context == DetailsContext::kPasswordSettings &&
-        password_manager::features_util::IsOptedInForAccountStorage(
+        password_manager::features_util::IsAccountStorageEnabled(
             _prefService, _syncService) &&
         ShouldShowLocalOnlyIcon(credential, _syncService);
     [passwords addObject:credentialDetails];
@@ -631,7 +631,7 @@ bool AreMatchingCredentials(const CredentialUIEntry& credential,
 }
 
 // Returns YES if all of the following conditions are met:
-// * User is syncing or signed in and opted in to account storage.
+// * User is syncing or signed in with account storage enabled.
 // * Password sending feature is enabled.
 // * Build is branded (bypassed with a command line switch in EG tests).
 - (BOOL)shouldDisplayShareButton {

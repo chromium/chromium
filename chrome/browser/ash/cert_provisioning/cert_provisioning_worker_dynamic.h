@@ -53,6 +53,7 @@ class CertProvisioningWorkerDynamic : public CertProvisioningWorker {
   void MarkWorkerForReset() override;
   bool IsWorkerMarkedForReset() const override;
   bool IsWaiting() const override;
+  const std::string& GetProcessId() const override;
   const CertProfile& GetCertProfile() const override;
   const std::vector<uint8_t>& GetPublicKey() const override;
   CertProvisioningWorkerState GetState() const override;

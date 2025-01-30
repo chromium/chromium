@@ -11,6 +11,7 @@
 #include "components/device_reauth/device_authenticator.h"
 #include "components/password_manager/core/browser/field_info_manager.h"
 #include "components/password_manager/core/browser/http_auth_manager.h"
+#include "components/password_manager/core/browser/leak_detection/leak_detection_request_utils.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/version_info/channel.h"
@@ -87,6 +88,11 @@ void PasswordManagerClient::PromptUserToEnableAutosignin() {}
 
 bool PasswordManagerClient::IsOffTheRecord() const {
   return false;
+}
+
+password_manager::LeakDetectionInitiator
+PasswordManagerClient::GetLeakDetectionInitiator() {
+  return password_manager::LeakDetectionInitiator::kSignInCheck;
 }
 
 profile_metrics::BrowserProfileType PasswordManagerClient::GetProfileType()

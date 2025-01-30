@@ -280,15 +280,15 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
-  'skia_revision': 'e6daf687b558c6693eb74ef8659ae1210ee889f5',
+  'skia_revision': '087e23289016026672376c02c8837ba4091c748b',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'v8_revision': '2b27430d4a7ecb56d50c457f2789dd272fa5dfa1',
+  'v8_revision': 'cd72e5887551f365b52e7cb152ab4ced3a21928a',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
-  'angle_revision': 'a870888a2e59e1f2cccc15adc3a35c31b707c3b2',
+  'angle_revision': '03019646f37cbf7a71a1b1aca23dc49a80377292',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling SwiftShader
   # and whatever else without interference from each other.
@@ -356,7 +356,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling CrossBench
   # and whatever else without interference from each other.
-  'crossbench_revision': 'cebed28ad74141d441e17521c4d01e1d1a41503e',
+  'crossbench_revision': '2bbb8e4357aff841bbadf86a61886bd1990c7afc',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libFuzzer
   # and whatever else without interference from each other.
@@ -372,7 +372,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': '72ecee69ca766261814f656e9c56850f420b6918',
+  'devtools_frontend_revision': '40a817dd17e5cd11dd946c939a700755158e5fa3',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -1448,7 +1448,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    '316ad1fcc33afd1181aea37fd097e4ff9d22002c',
+    '931e687d2baf14c4545dd192f1ffaa5240983f33',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
@@ -1913,7 +1913,7 @@ deps = {
   # Tools used when building Chrome for Chrome OS. This affects both the Simple
   # Chrome workflow, as well as the chromeos-chrome ebuild.
   'src/third_party/chromite': {
-      'url': Var('chromium_git') + '/chromiumos/chromite.git' + '@' + '6012514d379e33a2cef925a6d3b1f4a36d60a0f4',
+      'url': Var('chromium_git') + '/chromiumos/chromite.git' + '@' + '913b72e6383a13c91c2eb80f9033bcc0f1bc1b26',
       'condition': 'checkout_chromeos',
   },
 
@@ -2442,7 +2442,7 @@ deps = {
     Var('pdfium_git') + '/pdfium.git' + '@' +  Var('pdfium_revision'),
 
   'src/third_party/perfetto':
-    Var('android_git') + '/platform/external/perfetto.git' + '@' + '36939399ed1feffd9b2547361b3dd0d1e8aec109',
+    Var('android_git') + '/platform/external/perfetto.git' + '@' + 'a2f98364efbc365895bc1422d43d90d5d9cfd223',
 
   'src/base/tracing/test/data': {
     'bucket': 'perfetto',
@@ -2945,7 +2945,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/help_app/app',
-        'version': '_m6NoaPMcpGexbIu6QrYfd2he37ED2NTsL1PhTzO-1AC',
+        'version': 'gSdKYMRC7gfHJ958up-lRZHU6tgMsjZ0hl1YpDpSOgkC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
@@ -2956,7 +2956,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/media_app/app',
-        'version': '94s5lHMhRM2M_eOnKE9dchH1cnReOwzABtpC_rzlMIMC',
+        'version': '8pIWqDYn5tj71xnehD6XNAgsdxRnMPrrYR9ApBCB_2kC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
@@ -4537,7 +4537,7 @@ deps = {
 
   'src/ios_internal':  {
       'url': Var('chrome_git') + '/chrome/ios_internal.git' + '@' +
-        '850349e608ceff20352522803115ca4f1be8d91c',
+        'ee6abd608990b02b4a5d5937fb24e05549aabcdb',
       'condition': 'checkout_ios and checkout_src_internal',
   },
 

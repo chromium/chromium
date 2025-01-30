@@ -6,17 +6,17 @@
 
 namespace {
 
-// The time it takes for the presenting animation to complete.
-const CGFloat kPresentingTransitionAnimationDuration = .4;
+// The time it takes for the animation to complete.
+static const CGFloat kTransitionAnimationDuration = .35;
 
-// The time it takes for the dismissal animation to complete.
-const CGFloat kDismissalTransitionAnimationDuration = .3;
+// The diming percentage of the base view during the custom presentation.
+static const CGFloat kLVFPresentationDimmingPercentage = .5;
 
-// Motion curves for the presentation animation.
-static const CGFloat kPresentationAnimationCurve0 = 0.05;
-static const CGFloat kPresentationAnimationCurve1 = 0.7;
-static const CGFloat kPresentationAnimationCurve2 = 0.1;
-static const CGFloat kPresentationAnimationCurve3 = 1.;
+// Motion curves for the presentation animation (ease-out).
+static const CGFloat kPresentationAnimationCurve0 = 0.25;
+static const CGFloat kPresentationAnimationCurve1 = 0.46;
+static const CGFloat kPresentationAnimationCurve2 = 0.45;
+static const CGFloat kPresentationAnimationCurve3 = 0.94;
 
 }  // namespace
 
@@ -64,9 +64,7 @@ static const CGFloat kPresentationAnimationCurve3 = 1.;
 
 - (NSTimeInterval)transitionDuration:
     (id<UIViewControllerContextTransitioning>)transitionContext {
-  return [self isPresentingFromContext:transitionContext]
-             ? kPresentingTransitionAnimationDuration
-             : kDismissalTransitionAnimationDuration;
+  return kTransitionAnimationDuration;
 }
 
 - (void)animateTransition:
@@ -81,6 +79,29 @@ static const CGFloat kPresentationAnimationCurve3 = 1.;
 
 #pragma mark - Private methods
 
+- (void)animateTransitionWithContext:
+            (id<UIViewControllerContextTransitioning>)transitionContext
+                          animations:(void (^)())animations
+                          completion:(void (^)())completion {
+  UIViewPropertyAnimator* animator = [[UIViewPropertyAnimator alloc]
+      initWithDuration:[self transitionDuration:transitionContext]
+         controlPoint1:CGPointMake(kPresentationAnimationCurve0,
+                                   kPresentationAnimationCurve1)
+         controlPoint2:CGPointMake(kPresentationAnimationCurve2,
+                                   kPresentationAnimationCurve3)
+            animations:animations];
+
+  [animator addCompletion:^(UIViewAnimatingPosition finalPosition) {
+    if (completion) {
+      completion();
+    }
+    BOOL success = ![transitionContext transitionWasCancelled];
+    [transitionContext completeTransition:success];
+  }];
+
+  [animator startAnimation];
+}
+
 - (void)animatePresenting:
     (id<UIViewControllerContextTransitioning>)transitionContext {
   UIView* containerView = [transitionContext containerView];
@@ -89,65 +110,86 @@ static const CGFloat kPresentationAnimationCurve3 = 1.;
   UIViewController* lensViewController = [transitionContext
       viewControllerForKey:UITransitionContextToViewControllerKey];
 
+  UIView* initialView =
+      [transitionContext
+          viewControllerForKey:UITransitionContextFromViewControllerKey]
+          .view;
+  UIView* initialViewSnapshot =
+      [initialView snapshotViewAfterScreenUpdates:YES];
+
+  [containerView addSubview:initialViewSnapshot];
   [containerView addSubview:lensView];
   [containerView bringSubviewToFront:lensView];
-  CGRect startingFrame = containerView.bounds;
+
+  CGRect startingFrameForLVF = containerView.bounds;
+  CGRect finalFrameForBase = initialView.bounds;
+
   BOOL isLeftSlide = _transitionType == LensViewFinderTransitionSlideFromLeft;
-  if (isLeftSlide) {
-    startingFrame.origin.x = -startingFrame.size.width;
-  } else {
-    startingFrame.origin.x = containerView.bounds.size.width;
-  }
+  int gain = isLeftSlide ? 1 : -1;
+  finalFrameForBase.origin.x = gain * finalFrameForBase.size.width / 2;
+  startingFrameForLVF.origin.x = -gain * startingFrameForLVF.size.width;
 
-  lensView.frame = startingFrame;
+  lensView.layer.masksToBounds = YES;
+  lensView.frame = startingFrameForLVF;
 
-  UIViewPropertyAnimator* animator = [[UIViewPropertyAnimator alloc]
-      initWithDuration:[self transitionDuration:transitionContext]
-         controlPoint1:CGPointMake(kPresentationAnimationCurve0,
-                                   kPresentationAnimationCurve1)
-         controlPoint2:CGPointMake(kPresentationAnimationCurve2,
-                                   kPresentationAnimationCurve3)
-            animations:^{
-              lensView.frame = [transitionContext
-                  finalFrameForViewController:lensViewController];
-            }];
+  UIView* dimmingView =
+      [[UIView alloc] initWithFrame:initialViewSnapshot.frame];
+  dimmingView.backgroundColor = [UIColor blackColor];
+  dimmingView.alpha = 0;
+  [initialViewSnapshot addSubview:dimmingView];
 
-  [animator addCompletion:^(UIViewAnimatingPosition finalPosition) {
-    BOOL success = ![transitionContext transitionWasCancelled];
-    [transitionContext completeTransition:success];
-  }];
-
-  [animator startAnimation];
+  [self animateTransitionWithContext:transitionContext
+      animations:^{
+        initialViewSnapshot.frame = finalFrameForBase;
+        dimmingView.alpha = kLVFPresentationDimmingPercentage;
+        lensView.frame =
+            [transitionContext finalFrameForViewController:lensViewController];
+      }
+      completion:^{
+        [initialViewSnapshot removeFromSuperview];
+      }];
 }
 
 - (void)animateDismissal:
     (id<UIViewControllerContextTransitioning>)transitionContext {
   UIView* containerView = [transitionContext containerView];
-  UIView* toView = [transitionContext viewForKey:UITransitionContextToViewKey];
   UIView* lensView =
       [transitionContext viewForKey:UITransitionContextFromViewKey];
+  UIViewController* targetViewController = [transitionContext
+      viewControllerForKey:UITransitionContextToViewControllerKey];
+  UIView* targetView = targetViewController.view;
+  UIView* targetViewSnapshot = [targetView snapshotViewAfterScreenUpdates:YES];
 
-  // Create and add a Lens view snapshot.
-  UIView* lensViewSnapshot = [lensView snapshotViewAfterScreenUpdates:YES];
+  [containerView addSubview:targetViewSnapshot];
+  [containerView bringSubviewToFront:lensView];
 
-  [containerView addSubview:toView];
-  [containerView addSubview:lensViewSnapshot];
-  [lensView removeFromSuperview];
-  [containerView bringSubviewToFront:lensViewSnapshot];
+  CGRect finalFrameForLVF = containerView.bounds;
+  CGRect startingFrameForSnapshot = containerView.bounds;
 
-  lensViewSnapshot.alpha = 1.0;
+  BOOL isLeftSlide = _transitionType == LensViewFinderTransitionSlideFromLeft;
+  int gain = isLeftSlide ? 1 : -1;
+  finalFrameForLVF.origin.x = -gain * finalFrameForLVF.size.width;
+  startingFrameForSnapshot.origin.x =
+      gain * startingFrameForSnapshot.size.width / 2;
+  targetViewSnapshot.frame = startingFrameForSnapshot;
 
-  [UIView animateWithDuration:[self transitionDuration:transitionContext]
+  UIView* dimmingView = [[UIView alloc] initWithFrame:targetViewSnapshot.frame];
+  dimmingView.backgroundColor = [UIColor blackColor];
+  dimmingView.alpha = kLVFPresentationDimmingPercentage;
+
+  [targetViewSnapshot addSubview:dimmingView];
+
+  [self animateTransitionWithContext:transitionContext
       animations:^{
-        lensViewSnapshot.alpha = 0.0;
+        lensView.frame = finalFrameForLVF;
+        dimmingView.alpha = 0;
+        dimmingView.frame = [transitionContext
+            finalFrameForViewController:targetViewController];
+        targetViewSnapshot.frame = [transitionContext
+            finalFrameForViewController:targetViewController];
       }
-      completion:^(BOOL finished) {
-        BOOL success = ![transitionContext transitionWasCancelled];
-        if (success) {
-          [lensViewSnapshot removeFromSuperview];
-        }
-
-        [transitionContext completeTransition:success];
+      completion:^{
+        [targetViewSnapshot removeFromSuperview];
       }];
 }
 

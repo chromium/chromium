@@ -307,9 +307,15 @@ void AwBrowserMainParts::RegisterSyntheticTrials() {
   }
   JNIEnv* env = base::android::AttachCurrentThread();
   bool use_webview_context = Java_AwBrowserMainParts_getUseWebViewContext(env);
+  bool partitioned_cookies_enablement_state =
+      Java_AwBrowserMainParts_getPartitionedCookiesDefaultState(env);
   AwMetricsServiceAccessor::RegisterSyntheticFieldTrial(
       metrics, "WebViewSeparateResourceContextMetrics",
       use_webview_context ? "Enabled" : "Control",
+      variations::SyntheticTrialAnnotationMode::kCurrentLog);
+  AwMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+      metrics, "WebViewPartitionedCookiesMetrics",
+      partitioned_cookies_enablement_state ? "Control" : "Disabled",
       variations::SyntheticTrialAnnotationMode::kCurrentLog);
 }
 

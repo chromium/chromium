@@ -167,12 +167,6 @@ ban_features = [
 [crate.nom]
 remove_deps = ['minimal-lexical']
 
-[crate.png]
-extra_kv = { configs_to_remove = [
-  # This allows using `std::simd`, which seems to help in microbenchmarks.
-  '//build/config/compiler:disallow_unstable_features',
-] }
-
 [crate.prost]
 extra_input_roots = ['../README.md']
 group = 'test'

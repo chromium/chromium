@@ -23,6 +23,8 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "net/base/url_util.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/gurl.h"
 
 namespace {
@@ -40,6 +42,14 @@ std::string GetUserActionString(
       return "BubbleClosed";
     case page_info::MerchantTrustInteraction::kSidePanelClosed:
       return "SidePanelClosed";
+    case page_info::MerchantTrustInteraction::kBubbleOpenedFromLocationBarChip:
+      return "BubbleOpenedFromLocationBarChip";
+    case page_info::MerchantTrustInteraction::
+        kSidePanelOpenedOnSameTabNavigation:
+      return "SidePanelOpenedOnSameTabNavigation";
+    case page_info::MerchantTrustInteraction::
+        kSidePanelClosedOnSameTabNavigation:
+      return "SidePanelClosedOnSameTabNavigation";
   }
 }
 
@@ -218,24 +228,55 @@ bool MerchantTrustService::CanShowEvaluationSurvey() {
 }
 
 void MerchantTrustService::RecordMerchantTrustInteraction(
-    GURL url,
-    MerchantTrustInteraction interaction) {
+    const GURL& url,
+    MerchantTrustInteraction interaction) const {
   MerchantFamiliarity merchant_familiarity =
       delegate_->GetSiteEngagementScore(url) >= kMerchantFamiliarityThreshold
           ? MerchantFamiliarity::kFamiliar
           : MerchantFamiliarity::kNotFamiliar;
 
-  std::string histogram_name = base::StrCat(
-      {"Security.PageInfo.MerchantTrustInteraction.",
-       GetFamiliarityString(merchant_familiarity)});
+  std::string histogram_name =
+      base::StrCat({"Security.PageInfo.MerchantTrustInteraction.",
+                    GetFamiliarityString(merchant_familiarity)});
 
   std::string user_action_string =
-      base::StrCat({"MerchantTrust.",
-                    GetUserActionString(interaction), ".",
+      base::StrCat({"MerchantTrust.", GetUserActionString(interaction), ".",
                     GetFamiliarityString(merchant_familiarity)});
 
   base::UmaHistogramEnumeration(histogram_name, interaction);
   base::RecordAction(base::UserMetricsAction(user_action_string.c_str()));
+}
+
+void MerchantTrustService::RecordMerchantTrustUkm(
+    ukm::SourceId source_id,
+    MerchantTrustInteraction interaction) const {
+  if (source_id == ukm::kInvalidSourceId) {
+    return;
+  }
+
+  switch (interaction) {
+    case MerchantTrustInteraction::kPageInfoRowShown:
+      ukm::builders::Shopping_MerchantTrust_RowSeen(source_id)
+          .SetHasOccurred(true)
+          .Record(ukm::UkmRecorder::Get());
+      break;
+    case MerchantTrustInteraction::kBubbleOpenedFromPageInfo:
+    case MerchantTrustInteraction::kBubbleOpenedFromLocationBarChip:
+      ukm::builders::Shopping_MerchantTrust_BubbleOpened(source_id)
+          .SetHasOccurred(true)
+          .Record(ukm::UkmRecorder::Get());
+      break;
+    case MerchantTrustInteraction::kSidePanelOpened:
+      ukm::builders::Shopping_MerchantTrust_SidePanelOpened(source_id)
+          .SetHasOccurred(true)
+          .Record(ukm::UkmRecorder::Get());
+      break;
+    case MerchantTrustInteraction::kBubbleClosed:
+    case MerchantTrustInteraction::kSidePanelClosed:
+    case MerchantTrustInteraction::kSidePanelOpenedOnSameTabNavigation:
+    case MerchantTrustInteraction::kSidePanelClosedOnSameTabNavigation:
+      break;
+  }
 }
 
 }  // namespace page_info

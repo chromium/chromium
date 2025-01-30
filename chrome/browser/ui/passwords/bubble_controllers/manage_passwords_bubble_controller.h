@@ -103,7 +103,7 @@ class ManagePasswordsBubbleController : public PasswordBubbleControllerBase {
   bool UsernameExists(const std::u16string& username);
 
   // Returns whether user can currently use account storage.
-  bool IsOptedInForAccountStorage() const;
+  bool IsAccountStorageEnabled() const;
 
   void set_details_bubble_credential(
       const std::optional<password_manager::PasswordForm>& password) {

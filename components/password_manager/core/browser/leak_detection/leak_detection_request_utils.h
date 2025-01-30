@@ -23,7 +23,8 @@ enum class LeakDetectionInitiator {
   kClientUseCaseUnspecified = 4,
   kDesktopProactivePasswordCheckup = 5,
   kIosProactivePasswordCheckup = 6,
-  kMaxValue = kIosProactivePasswordCheckup,
+  kIOSWebViewSignInCheck = 7,
+  kMaxValue = kIOSWebViewSignInCheck,
 };
 
 // Contains the payload for analysing one credential against the leaks.

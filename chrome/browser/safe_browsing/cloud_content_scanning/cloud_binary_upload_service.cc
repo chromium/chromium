@@ -573,8 +573,8 @@ void CloudBinaryUploadService::OnGetResponse(
 
   for (const auto& result : response.results()) {
     if (result.has_tag() && !result.tag().empty()) {
-      VLOG(1) << "Request " << request->request_token()
-              << " finished scanning tag <" << result.tag() << ">";
+      DVLOG(1) << "Request " << request->request_token()
+               << " finished scanning tag <" << result.tag() << ">";
       received_connector_results_[request_id][result.tag()] = result;
     }
   }
@@ -783,8 +783,8 @@ bool CloudBinaryUploadService::ResponseIsComplete(Request::Id request_id) {
     if (received_connector_results_[request_id].count(tag) == 0) {
       response_is_complete = false;
       if (!request->fcm_notification_token().empty()) {
-        VLOG(1) << "Request " << request->request_token() << " is waiting for <"
-                << tag << "> scanning to complete.";
+        DVLOG(1) << "Request " << request->request_token()
+                 << " is waiting for <" << tag << "> scanning to complete.";
       }
     }
   }

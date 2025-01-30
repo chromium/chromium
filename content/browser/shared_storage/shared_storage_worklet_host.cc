@@ -1639,7 +1639,8 @@ SharedStorageWorkletHost::MaybeConstructPrivateAggregationOperationDetails(
           PrivateAggregationCallerApi::kSharedStorage,
           private_aggregation_config->context_id,
           private_aggregation_config->filtering_id_max_bytes,
-          /*max_contributions=*/std::nullopt)) {
+          static_cast<std::optional<size_t>>(
+              private_aggregation_config->max_contributions))) {
     timeout = base::Seconds(5);
   }
 
@@ -1649,7 +1650,8 @@ SharedStorageWorkletHost::MaybeConstructPrivateAggregationOperationDetails(
       private_aggregation_config->context_id, std::move(timeout),
       private_aggregation_config->aggregation_coordinator_origin,
       private_aggregation_config->filtering_id_max_bytes,
-      /*max_contributions=*/std::nullopt,
+      static_cast<std::optional<size_t>>(
+          private_aggregation_config->max_contributions),
       pa_operation_details->pa_host.InitWithNewPipeAndPassReceiver());
   CHECK(success);
 

@@ -65,9 +65,9 @@ public class HubLayoutScrimController implements ScrimController {
     public void startHidingScrim() {
         if (!mScrimCoordinator.isShowingScrim()) return;
 
-        mPropertyModel = null;
         mIsIncognitoSupplier.removeObserver(mOnIncognitoChange);
-        mScrimCoordinator.hideScrim(true, SCRIM_FADE_DURATION_MS);
+        mScrimCoordinator.hideScrim(mPropertyModel, /* animate= */ true, SCRIM_FADE_DURATION_MS);
+        mPropertyModel = null;
     }
 
     /** Forces the current animation to finish. */

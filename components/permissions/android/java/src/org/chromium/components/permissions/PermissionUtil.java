@@ -33,8 +33,8 @@ public class PermissionUtil {
      * additional checks being done to guard this with the immersive feature can likely also be
      * removed.
      */
-    public static final String ANDROID_PERMISSION_SCENE_UNDERSTANDING =
-            "android.permission.SCENE_UNDERSTANDING";
+    public static final String ANDROID_PERMISSION_SCENE_UNDERSTANDING_FINE =
+            "android.permission.SCENE_UNDERSTANDING_FINE";
 
     public static final String ANDROID_PERMISSION_HAND_TRACKING =
             "android.permission.HAND_TRACKING";
@@ -68,7 +68,9 @@ public class PermissionUtil {
         android.Manifest.permission.POST_NOTIFICATIONS
     };
 
-    private static final String[] OPENXR_PERMISSIONS = {ANDROID_PERMISSION_SCENE_UNDERSTANDING};
+    private static final String[] OPENXR_PERMISSIONS = {
+        ANDROID_PERMISSION_SCENE_UNDERSTANDING_FINE
+    };
 
     private static final String[] HAND_TRACKING_PERMISSIONS = {ANDROID_PERMISSION_HAND_TRACKING};
 

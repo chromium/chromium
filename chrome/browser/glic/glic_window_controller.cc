@@ -46,8 +46,8 @@ constexpr static int kWidgetTopBarHeight = 48;
 constexpr static int kAnimationDurationMs = 300;
 constexpr static int kInitialDetachedYPosition = 48;
 
-constexpr char kHistogramGlicPanelPresentationTimeAllModes[] =
-    "Glic.PanelPresentationTime.All";
+constexpr char kHistogramGlicPanelPresentationTime[] =
+    "Glic.PanelPresentationTime";
 
 mojom::PanelState CreatePanelState(bool widget_visible,
                                    Browser* attached_browser) {
@@ -441,6 +441,7 @@ void GlicWindowController::WaitForGlicToLoad() {
 void GlicWindowController::GlicLoaded(mojom::WebClientMode starting_mode) {
   // TODO: Use `starting_mode` to log latency metrics.
   DVLOG(1) << "GlicLoaded with " << starting_mode;
+  starting_mode_ = starting_mode;
 
   glic_loaded_ = true;
   if (state_ == State::kWaitingForGlicToLoad) {
@@ -466,11 +467,25 @@ void GlicWindowController::ShowFinish() {
   }
   state_ = State::kOpen;
 
+  // Record the presentation time of showing the glic panel in an UMA histogram.
   if (web_client_ && !show_start_time_.is_null()) {
-    base::UmaHistogramCustomTimes(kHistogramGlicPanelPresentationTimeAllModes,
-                                  (base::TimeTicks::Now() - show_start_time_),
-                                  base::Milliseconds(1), base::Seconds(60), 50);
-    show_start_time_ = base::TimeTicks();
+    std::string input_mode;
+    if (starting_mode_ == mojom::WebClientMode::kText) {
+      input_mode = ".Text";
+    } else if (starting_mode_ == mojom::WebClientMode::kAudio) {
+      input_mode = ".Audio";
+    }
+    base::TimeDelta presentation_time =
+        base::TimeTicks::Now() - show_start_time_;
+    base::UmaHistogramCustomTimes(
+        base::StrCat({kHistogramGlicPanelPresentationTime, ".All"}),
+        presentation_time, base::Milliseconds(1), base::Seconds(60), 50);
+    if (starting_mode_ != mojom::WebClientMode::kUnknown) {
+      base::UmaHistogramCustomTimes(
+          base::StrCat({kHistogramGlicPanelPresentationTime, input_mode}),
+          presentation_time, base::Milliseconds(1), base::Seconds(60), 50);
+    }
+    ResetPresentationTimingState();
   }
 
   window_event_observer_ =
@@ -1001,6 +1016,11 @@ void GlicWindowController::Shutdown() {
   // Hide first, then clean up (but do not animate).
   ForceClose();
   contents_.reset();
+}
+
+void GlicWindowController::ResetPresentationTimingState() {
+  show_start_time_ = base::TimeTicks();
+  starting_mode_ = mojom::WebClientMode::kUnknown;
 }
 
 }  // namespace glic

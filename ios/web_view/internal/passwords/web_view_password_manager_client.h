@@ -138,6 +138,8 @@ class WebViewPasswordManagerClient
   safe_browsing::PasswordProtectionService* GetPasswordProtectionService()
       const override;
 
+  password_manager::LeakDetectionInitiator GetLeakDetectionInitiator() override;
+
  private:
   __weak id<PasswordManagerClientBridge> bridge_;
 

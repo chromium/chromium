@@ -1774,7 +1774,6 @@ class TestSoftwareBacking : public ResourcePool::SoftwareBacking {
 // into the pixels in the array.
 class TestSoftwareRasterBufferProvider : public FakeRasterBufferProviderImpl {
  public:
-  static constexpr bool kIsGpuCompositing = true;
   static constexpr viz::SharedImageFormat kSharedImageFormat =
       viz::SinglePlaneFormat::kRGBA_8888;
 
@@ -2147,8 +2146,7 @@ TEST_F(PixelInspectTileManagerTest, LowResHasNoImage) {
     EXPECT_TRUE(tile->draw_info().IsReadyToDraw());
 
     gfx::Size resource_size = tile->draw_info().resource_size();
-    SkColorType ct = ToClosestSkColorTypeDeprecated(
-        TestSoftwareRasterBufferProvider::kIsGpuCompositing,
+    SkColorType ct = ToClosestSkColorType(
         TestSoftwareRasterBufferProvider::kSharedImageFormat);
     auto info = SkImageInfo::Make(resource_size.width(), resource_size.height(),
                                   ct, kPremul_SkAlphaType);

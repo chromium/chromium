@@ -35,7 +35,9 @@
 #include "chrome/browser/new_tab_page/feature_promo_helper/new_tab_page_feature_promo_helper.h"
 #include "chrome/browser/new_tab_page/microsoft_auth/microsoft_auth_service.h"
 #include "chrome/browser/new_tab_page/microsoft_auth/microsoft_auth_service_factory.h"
+#include "chrome/browser/new_tab_page/modules/modules_constants.h"
 #include "chrome/browser/new_tab_page/modules/new_tab_page_modules.h"
+#include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/new_tab_page/promos/promo_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -499,8 +501,6 @@ NewTabPageHandler::NewTabPageHandler(
               GURL(chrome::kChromeUINewTabPageURL),
               ntp_navigation_start_time),
       promo_service_(PromoServiceFactory::GetForProfile(profile)),
-      microsoft_auth_service_(
-          MicrosoftAuthServiceFactory::GetForProfile(profile)),
       interaction_module_id_trigger_dict_(
           MakeModuleInteractionTriggerIdDictionary()),
       tab_changed_subscription_(webui::RegisterTabInterfaceChanged(
@@ -530,6 +530,13 @@ NewTabPageHandler::NewTabPageHandler(
           ->AddModelExecutionSettingsEnabledObserver(this);
     }
   }
+
+  microsoft_auth_service_ = MicrosoftAuthServiceFactory::GetForProfile(profile);
+  if (microsoft_auth_service_) {
+    microsoft_auth_service_->AddObserver(this);
+    OnAuthStateUpdated();
+  }
+
   if (base::FeatureList::IsEnabled(
           ntp_features::kNtpBackgroundImageErrorDetection)) {
     ntp_custom_background_service_->VerifyCustomBackgroundImageURL();
@@ -564,6 +571,9 @@ NewTabPageHandler::~NewTabPageHandler() {
     optimization_guide_keyed_service_
         ->RemoveModelExecutionSettingsEnabledObserver(this);
     optimization_guide_keyed_service_ = nullptr;
+  }
+  if (microsoft_auth_service_) {
+    microsoft_auth_service_->RemoveObserver(this);
   }
 }
 
@@ -1127,6 +1137,8 @@ void NewTabPageHandler::OnPromoLinkClicked() {
   LogEvent(NTP_MIDDLE_SLOT_PROMO_LINK_CLICKED);
 }
 
+// TODO(crbug.com/386390756): Remove this method once modules.ts stops fetching
+// auth states.
 void NewTabPageHandler::GetMicrosoftAuthState(
     GetMicrosoftAuthStateCallback callback) {
   std::move(callback).Run(microsoft_auth_service_->GetAuthState());
@@ -1271,6 +1283,39 @@ void NewTabPageHandler::OnPromoServiceShuttingDown() {
 void NewTabPageHandler::OnChangeInFeatureCurrentlyEnabledState(
     bool is_now_enabled) {
   page_->SetWallpaperSearchButtonVisibility(is_now_enabled);
+}
+
+void NewTabPageHandler::OnAuthStateUpdated() {
+  new_tab_page::mojom::AuthState state =
+      microsoft_auth_service_->GetAuthState();
+
+  const std::vector<std::string> auth_dependent_modules(
+      ntp_modules::kMicrosoftAuthDependentModuleIds.begin(),
+      ntp_modules::kMicrosoftAuthDependentModuleIds.end());
+  const std::string auth_id = ntp_modules::kMicrosoftAuthenticationModuleId;
+  std::vector<std::string> enabled_modules;
+  std::vector<std::string> disabled_modules;
+  switch (state) {
+    case new_tab_page::mojom::AuthState::kNone:
+      break;
+    case new_tab_page::mojom::AuthState::kError:
+      enabled_modules.push_back(auth_id);
+      disabled_modules = auth_dependent_modules;
+      break;
+    case new_tab_page::mojom::AuthState::kSuccess:
+      enabled_modules = auth_dependent_modules;
+      disabled_modules.push_back(auth_id);
+      break;
+    default:
+      NOTREACHED();
+  }
+
+  for (const auto& module_id : enabled_modules) {
+    SetModuleDisabled(module_id, false);
+  }
+  for (const auto& module_id : disabled_modules) {
+    SetModuleDisabled(module_id, true);
+  }
 }
 
 void NewTabPageHandler::FileSelected(const ui::SelectedFileInfo& file,

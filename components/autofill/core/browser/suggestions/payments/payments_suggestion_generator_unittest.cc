@@ -1731,6 +1731,7 @@ TEST_F(PaymentsSuggestionGeneratorTest,
   CreditCardSuggestionSummary summary;
   std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
       *autofill_client(), FormFieldData(), CREDIT_CARD_NUMBER, summary,
+      /*is_complete_form=*/true,
       /*should_show_scan_credit_card=*/false,
       /*should_show_cards_from_account=*/false,
       /*four_digit_combinations_in_dom=*/{},
@@ -1761,6 +1762,7 @@ TEST_F(PaymentsSuggestionGeneratorTest,
   CreditCardSuggestionSummary summary;
   std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
       *autofill_client(), FormFieldData(), CREDIT_CARD_NUMBER, summary,
+      /*is_complete_form=*/true,
       /*should_show_scan_credit_card=*/false,
       /*should_show_cards_from_account=*/false,
       /*four_digit_combinations_in_dom=*/{},
@@ -1791,6 +1793,7 @@ TEST_F(PaymentsSuggestionGeneratorTest,
   CreditCardSuggestionSummary summary;
   std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
       *autofill_client(), FormFieldData(), CREDIT_CARD_NUMBER, summary,
+      /*is_complete_form=*/true,
       /*should_show_scan_credit_card=*/false,
       /*should_show_cards_from_account=*/false,
       /*four_digit_combinations_in_dom=*/{},
@@ -1808,6 +1811,7 @@ TEST_F(PaymentsSuggestionGeneratorTest,
   CreditCardSuggestionSummary summary;
   std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
       *autofill_client(), FormFieldData(), CREDIT_CARD_NUMBER, summary,
+      /*is_complete_form=*/true,
       /*should_show_scan_credit_card=*/false,
       /*should_show_cards_from_account=*/false,
       /*four_digit_combinations_in_dom=*/{},
@@ -1817,6 +1821,91 @@ TEST_F(PaymentsSuggestionGeneratorTest,
   EXPECT_THAT(suggestions[0],
               EqualsSuggestion(SuggestionType::kCreditCardEntry));
 }
+
+TEST_F(PaymentsSuggestionGeneratorTest,
+       SaveAndFillSuggestion_NotOfferedWhenCreditCardFormIsIncomplete) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillEnableSaveAndFill);
+
+  CreditCardSuggestionSummary summary;
+  std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
+      *autofill_client(), FormFieldData(), CREDIT_CARD_NUMBER, summary,
+      /*is_complete_form=*/false,
+      /*should_show_scan_credit_card=*/false,
+      /*should_show_cards_from_account=*/false,
+      /*four_digit_combinations_in_dom=*/{},
+      /*autofilled_last_four_digits_in_form_for_filtering=*/u"");
+
+  EXPECT_TRUE(suggestions.empty());
+}
+
+TEST_F(PaymentsSuggestionGeneratorTest,
+       SaveAndFillSuggestion_NotOfferedWhenIncognito) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillEnableSaveAndFill);
+  autofill_client()->set_is_off_the_record(true);
+
+  CreditCardSuggestionSummary summary;
+  std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
+      *autofill_client(), FormFieldData(), CREDIT_CARD_NUMBER, summary,
+      /*is_complete_form=*/true,
+      /*should_show_scan_credit_card=*/false,
+      /*should_show_cards_from_account=*/false,
+      /*four_digit_combinations_in_dom=*/{},
+      /*autofilled_last_four_digits_in_form_for_filtering=*/u"");
+
+  EXPECT_TRUE(suggestions.empty());
+}
+
+TEST_F(PaymentsSuggestionGeneratorTest,
+       SaveAndFillSuggestion_NotOfferedWhenFieldHasMoreThanThreeChars) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillEnableSaveAndFill);
+
+  CreditCardSuggestionSummary summary;
+  FormFieldData field;
+  field.set_value(u"1234");
+  std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
+      *autofill_client(), field, CREDIT_CARD_NUMBER, summary,
+      /*is_complete_form=*/true,
+      /*should_show_scan_credit_card=*/false,
+      /*should_show_cards_from_account=*/false,
+      /*four_digit_combinations_in_dom=*/{},
+      /*autofilled_last_four_digits_in_form_for_filtering=*/u"");
+
+  EXPECT_TRUE(suggestions.empty());
+}
+
+// Verify "Save and Fill" suggestion is offered when the user is not in
+// incognito mode, has no saved credit cards, the credit card form is complete
+// (has CVC, cardholder name, card number, and expiration date fields), and a
+// field within the form group is focused with no more than 3 characters
+// entered.
+TEST_F(PaymentsSuggestionGeneratorTest,
+       SaveAndFillSuggestion_OfferedWhenCriteriaMet) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillEnableSaveAndFill);
+  SetCreditCardUploadEnabledForTest(/*credit_card_upload_enabled=*/true);
+
+  // Verify user is not in incognito mode.
+  ASSERT_FALSE(autofill_client()->IsOffTheRecord());
+  CreditCardSuggestionSummary summary;
+  std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
+      *autofill_client(), FormFieldData(), CREDIT_CARD_NUMBER, summary,
+      /*is_complete_form=*/true,
+      /*should_show_scan_credit_card=*/false,
+      /*should_show_cards_from_account=*/false,
+      /*four_digit_combinations_in_dom=*/{},
+      /*autofilled_last_four_digits_in_form_for_filtering=*/u"");
+
+  EXPECT_THAT(
+      suggestions,
+      ElementsAre(
+          EqualsSuggestion(SuggestionType::kSaveAndFillCreditCardEntry),
+          EqualsSuggestion(SuggestionType::kSeparator),
+          EqualsManagePaymentsMethodsSuggestion(/*with_gpay_logo=*/true)));
+}
+
 // This class helps test the credit card contents that are displayed in
 // Autofill suggestions. It covers suggestions on Desktop/Android dropdown,
 // and on Android keyboard accessory.
@@ -2870,6 +2959,7 @@ TEST_F(
   std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
       *autofill_client(), field,
       FieldType::CREDIT_CARD_STANDALONE_VERIFICATION_CODE, summary,
+      /*is_complete_form=*/false,
       /*should_show_scan_credit_card=*/false,
       /*should_show_cards_from_account=*/false,
       /*four_digit_combinations_in_dom=*/{"1234"},
@@ -3240,6 +3330,7 @@ TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
   std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
       *autofill_client(), FormFieldData(),
       FieldType::CREDIT_CARD_STANDALONE_VERIFICATION_CODE, summary,
+      /*is_complete_form=*/false,
       /*should_show_scan_credit_card=*/false,
       /*should_show_cards_from_account=*/false,
       /*four_digit_combinations_in_dom=*/{"1111", "1113"},
@@ -3274,6 +3365,7 @@ TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
   std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
       *autofill_client(), FormFieldData(),
       FieldType::CREDIT_CARD_VERIFICATION_CODE, summary,
+      /*is_complete_form=*/false,
       /*should_show_scan_credit_card=*/false,
       /*should_show_cards_from_account=*/false,
       /*four_digit_combinations_in_dom=*/{"1113"},
@@ -3300,6 +3392,7 @@ TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
   std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
       *autofill_client(), FormFieldData(),
       FieldType::CREDIT_CARD_STANDALONE_VERIFICATION_CODE, summary,
+      /*is_complete_form=*/false,
       /*should_show_scan_credit_card=*/false,
       /*should_show_cards_from_account=*/false,
       /*four_digit_combinations_in_dom=*/{},
@@ -3316,6 +3409,7 @@ TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
   std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
       *autofill_client(), FormFieldData(),
       FieldType::CREDIT_CARD_STANDALONE_VERIFICATION_CODE, summary,
+      /*is_complete_form=*/false,
       /*should_show_scan_credit_card=*/false,
       /*should_show_cards_from_account=*/false,
       /*four_digit_combinations_in_dom=*/{"0000", "9999"},
@@ -3339,6 +3433,7 @@ TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
   std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
       *autofill_client(), FormFieldData(),
       FieldType::CREDIT_CARD_STANDALONE_VERIFICATION_CODE, summary,
+      /*is_complete_form=*/false,
       /*should_show_scan_credit_card=*/false,
       /*should_show_cards_from_account=*/false,
       /*four_digit_combinations_in_dom=*/{"1234"},
@@ -3372,6 +3467,7 @@ TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
   std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
       *autofill_client(), field,
       FieldType::CREDIT_CARD_STANDALONE_VERIFICATION_CODE, summary,
+      /*is_complete_form=*/false,
       /*should_show_scan_credit_card=*/false,
       /*should_show_cards_from_account=*/false,
       /*four_digit_combinations_in_dom=*/{"1234"},

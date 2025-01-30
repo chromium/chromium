@@ -70,6 +70,7 @@ source_set("browser_tests") {
 
   deps = [
     "//chrome/app:command_ids",
+    "//chrome/browser:shell_integration",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service:app_registry_cache_waiter",
     "//chrome/browser/apps/app_service:test_support",

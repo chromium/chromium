@@ -14,7 +14,9 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
+#include "components/web_modal/modal_dialog_host.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/navigation_handle.h"
@@ -177,6 +179,45 @@ void ConfigureDesiredBoundsDelegate(
 
 }  // namespace
 
+// Applies positioning changes from the browser window widget to the tracked
+// Widget.
+class BrowserWindowWidgetObserver : public views::WidgetObserver {
+ public:
+  BrowserWindowWidgetObserver(BrowserWindowInterface* host_browser_window,
+                              views::Widget* dialog_widget)
+      : host_(host_browser_window), dialog_widget_(dialog_widget) {
+    CHECK(host_);
+    CHECK(dialog_widget_);
+    browser_window_widget_observation_.Observe(
+        host_browser_window->TopContainer()->GetWidget());
+  }
+  BrowserWindowWidgetObserver(const BrowserWindowWidgetObserver&) = delete;
+  BrowserWindowWidgetObserver& operator=(const BrowserWindowWidgetObserver&) =
+      delete;
+  ~BrowserWindowWidgetObserver() override = default;
+
+  // WidgetObserver:
+  void OnWidgetBoundsChanged(views::Widget* widget,
+                             const gfx::Rect& new_bounds) override {
+    CHECK(host_);
+    if (dialog_widget_->IsVisible()) {
+      UpdateModalDialogPosition(
+          dialog_widget_, host_,
+          dialog_widget_->GetRootView()->GetPreferredSize({}));
+    }
+  }
+
+ private:
+  // The modal host for the widget that owns this observer.
+  raw_ptr<BrowserWindowInterface> host_;
+
+  // The widget being tracked.
+  raw_ptr<views::Widget> dialog_widget_;
+
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      browser_window_widget_observation_{this};
+};
+
 TabDialogManager::TabDialogManager(TabInterface* tab_interface)
     : content::WebContentsObserver(tab_interface->GetContents()),
       tab_interface_(tab_interface) {
@@ -207,10 +248,9 @@ void TabDialogManager::ShowDialogAndBlockTabInteraction(views::Widget* widget) {
   CHECK(tab_interface_->CanShowModalUI());
   CHECK(!widget_);
   widget_ = widget;
-  ConfigureDesiredBoundsDelegate(widget_.get(),
-                                 tab_interface_->GetBrowserWindowInterface());
-  UpdateModalDialogPosition(widget_.get(),
-                            tab_interface_->GetBrowserWindowInterface(),
+  auto* browser_window_interface = tab_interface_->GetBrowserWindowInterface();
+  ConfigureDesiredBoundsDelegate(widget_.get(), browser_window_interface);
+  UpdateModalDialogPosition(widget_.get(), browser_window_interface,
                             widget_->GetRootView()->GetPreferredSize({}));
   widget_->SetNativeWindowProperty(
       views::kWidgetIdentifierKey,
@@ -224,6 +264,9 @@ void TabDialogManager::ShowDialogAndBlockTabInteraction(views::Widget* widget) {
       std::make_unique<TabDialogWidgetObserver>(this, widget_.get());
   // TODO(crbug.com/377820808): Call tab_interface_->ShowModalUI().
   if (tab_interface_->IsActivated()) {
+    browser_window_widget_observer_ =
+        std::make_unique<BrowserWindowWidgetObserver>(browser_window_interface,
+                                                      widget_.get());
     widget_->Show();
   }
 }
@@ -255,6 +298,7 @@ void TabDialogManager::WidgetDestroyed(views::Widget* widget) {
   widget_ = nullptr;
   tab_dialog_widget_observer_.reset();
   scoped_ignore_input_events_.reset();
+  browser_window_widget_observer_.reset();
   tab_interface_->GetBrowserWindowInterface()->SetWebContentsBlocked(
       tab_interface_->GetContents(), /*blocked=*/false);
 }
@@ -292,6 +336,9 @@ void TabDialogManager::TabDidEnterForeground(TabInterface* tab_interface) {
     UpdateModalDialogPosition(widget_.get(),
                               tab_interface_->GetBrowserWindowInterface(),
                               widget_->GetRootView()->GetPreferredSize({}));
+    browser_window_widget_observer_ =
+        std::make_unique<BrowserWindowWidgetObserver>(
+            tab_interface_->GetBrowserWindowInterface(), widget_.get());
     widget_->SetVisible(true);
   }
 }
@@ -299,6 +346,7 @@ void TabDialogManager::TabDidEnterForeground(TabInterface* tab_interface) {
 void TabDialogManager::TabWillEnterBackground(TabInterface* tab_interface) {
   if (widget_) {
     widget_->SetVisible(false);
+    browser_window_widget_observer_.reset();
   }
 }
 

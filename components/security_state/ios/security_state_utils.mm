@@ -111,8 +111,7 @@ security_state::SecurityLevel GetSecurityLevelForWebState(
     return security_state::NONE;
   }
   return security_state::GetSecurityLevel(
-      *GetVisibleSecurityStateForWebState(web_state),
-      false /* used policy installed certificate */);
+      *GetVisibleSecurityStateForWebState(web_state));
 }
 
 }  // namespace security_state

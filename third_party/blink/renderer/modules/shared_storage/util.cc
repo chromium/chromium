@@ -171,6 +171,23 @@ bool CheckPrivateAggregationConfig(
         options.privateAggregationConfig()->filteringIdMaxBytes());
   }
 
+  if (options.privateAggregationConfig()->hasMaxContributions() &&
+      base::FeatureList::IsEnabled(
+          features::kPrivateAggregationApiMaxContributions)) {
+    const auto requested_max_contributions =
+        options.privateAggregationConfig()->maxContributions();
+    if (requested_max_contributions == 0) {
+      resolver.Reject(V8ThrowDOMException::CreateOrEmpty(
+          script_state.GetIsolate(), DOMExceptionCode::kDataError,
+          "maxContributions must be positive"));
+      return false;
+    }
+    const uint16_t max_contributions_clamped =
+        base::MakeClampedNum(requested_max_contributions);
+    out_private_aggregation_config->max_contributions =
+        max_contributions_clamped;
+  }
+
   return true;
 }
 

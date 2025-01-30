@@ -738,7 +738,7 @@ void PasswordAccessoryControllerImpl::ChangeCurrentOriginSavePasswordsStatus(
 
   password_manager::PasswordStoreInterface* store;
   if (password_client_->GetPasswordFeatureManager()
-          ->IsOptedInForAccountStorage()) {
+          ->IsAccountStorageEnabled()) {
     store = password_client_->GetAccountPasswordStore();
   } else {
     store = password_client_->GetProfilePasswordStore();
