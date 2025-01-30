@@ -64,15 +64,13 @@ base::test::FeatureRefAndParams cool_down_period_overriden{
     autofill::features::kPlusAddressAcceptedFirstTimeCreateSurvey,
     {{"probability", "1.000"},
      {"survey", kHatsSurveyTriggerPlusAddressAcceptedFirstTimeCreate},
-     {"plus-address-accepted-first-time-create-survey-cooldown-override-days",
-      /*days=*/"14"}}};
+     {"cooldown-override-days", /*days=*/"14"}}};
 base::test::FeatureRefAndParams cool_down_period_overriden_and_group_controlled{
     autofill::features::kPlusAddressAcceptedFirstTimeCreateSurvey,
     {{variations::internal::kGoogleGroupFeatureParamName, kRelevantGroupId},
      {"probability", "1.000"},
      {"survey", kHatsSurveyTriggerPlusAddressAcceptedFirstTimeCreate},
-     {"plus-address-accepted-first-time-create-survey-cooldown-override-days",
-      /*days=*/"14"}}};
+     {"cooldown-override-days", /*days=*/"14"}}};
 
 class ScopedSetMetricsConsent {
  public:
@@ -361,10 +359,11 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(groups_manager->IsFeatureEnabledForProfile(
       autofill::features::kPlusAddressAcceptedFirstTimeCreateSurvey));
   // The cooldown override for the feature should be set to 14 days.
-  EXPECT_EQ(
-      autofill::features::
-          kPlusAddressAcceptedFirstTimeCreateSurveyCooldownOverrideDays.Get(),
-      14);
+  EXPECT_EQ(base::FeatureParam<int>(
+                &autofill::features::kPlusAddressAcceptedFirstTimeCreateSurvey,
+                plus_addresses::hats::kCooldownOverrideDays, 0)
+                .Get(),
+            14);
 
   HatsServiceDesktop::SurveyMetadata metadata;
   metadata.any_last_survey_started_time = base::Time::Now();
@@ -411,10 +410,11 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(groups_manager->IsFeatureEnabledForProfile(
       autofill::features::kPlusAddressAcceptedFirstTimeCreateSurvey));
   // The cooldown override for the feature should be set to 14 days.
-  EXPECT_EQ(
-      autofill::features::
-          kPlusAddressAcceptedFirstTimeCreateSurveyCooldownOverrideDays.Get(),
-      14);
+  EXPECT_EQ(base::FeatureParam<int>(
+                &autofill::features::kPlusAddressAcceptedFirstTimeCreateSurvey,
+                plus_addresses::hats::kCooldownOverrideDays, 0)
+                .Get(),
+            14);
 
   HatsServiceDesktop::SurveyMetadata metadata;
   metadata.any_last_survey_started_time = base::Time::Now() - base::Days(365);
@@ -460,10 +460,11 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(groups_manager->IsFeatureEnabledForProfile(
       autofill::features::kPlusAddressAcceptedFirstTimeCreateSurvey));
   // The cooldown override for the feature should be set to 14 days.
-  EXPECT_EQ(
-      autofill::features::
-          kPlusAddressAcceptedFirstTimeCreateSurveyCooldownOverrideDays.Get(),
-      14);
+  EXPECT_EQ(base::FeatureParam<int>(
+                &autofill::features::kPlusAddressAcceptedFirstTimeCreateSurvey,
+                plus_addresses::hats::kCooldownOverrideDays, 0)
+                .Get(),
+            14);
 
   HatsServiceDesktop::SurveyMetadata metadata;
   metadata.any_last_survey_started_time = base::Time::Now();
