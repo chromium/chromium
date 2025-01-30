@@ -63,4 +63,9 @@ bool TestPageSpecificContentSettingsDelegate::IsFrameAllowlistedForJavaScript(
   return false;
 }
 
+bool TestPageSpecificContentSettingsDelegate::IsPiPWindow(
+    content::WebContents* web_contents) {
+  return false;
+}
+
 }  // namespace content_settings
