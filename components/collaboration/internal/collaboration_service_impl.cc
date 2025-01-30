@@ -4,6 +4,8 @@
 
 #include "components/collaboration/internal/collaboration_service_impl.h"
 
+#include "base/functional/callback_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/collaboration/internal/collaboration_controller.h"
 #include "components/collaboration/internal/metrics.h"
 #include "components/collaboration/public/collaboration_flow_type.h"
@@ -75,25 +77,14 @@ void CollaborationServiceImpl::StartJoinFlow(
     token = parse_result.value();
   }
 
-  if (join_controllers_.contains(token)) {
-    auto it = join_controllers_.find(token);
-    it->second->PromoteCurrentSession();
-    return;
-  }
+  // TODO(crbug.com/393194653): Promote the active screen instead of closing and
+  // starting a new flow if flow is ongoing.
 
-  ExitConflictingFlows();
+  ExitConflictingFlows(base::BindOnce(
+      &CollaborationServiceImpl::StartJoinFlowInternal,
+      weak_ptr_factory_.GetWeakPtr(), std::move(delegate), token));
 
   RecordJoinEvent(CollaborationServiceJoinEvent::kStarted);
-
-  // Invalid url parsing will start a new join flow with empty GroupToken. This
-  // is needed in order to show the url parsing error message to the user.
-  join_controllers_.insert(
-      {token, std::make_unique<CollaborationController>(
-                  Flow(FlowType::kJoin, token), this,
-                  data_sharing_service_.get(), tab_group_sync_service_.get(),
-                  sync_service_.get(), std::move(delegate),
-                  base::BindOnce(&CollaborationServiceImpl::FinishJoinFlow,
-                                 weak_ptr_factory_.GetWeakPtr(), token))});
 }
 
 void CollaborationServiceImpl::StartShareOrManageFlow(
@@ -105,19 +96,11 @@ void CollaborationServiceImpl::StartShareOrManageFlow(
     return;
   }
 
-  ExitConflictingFlows();
+  ExitConflictingFlows(base::BindOnce(
+      &CollaborationServiceImpl::StartShareOrManageFlowInternal,
+      weak_ptr_factory_.GetWeakPtr(), std::move(delegate), group_id));
 
   RecordShareOrManageEvent(CollaborationServiceShareOrManageEvent::kStarted);
-  // Invalid url parsing will start a new join flow with empty GroupToken. This
-  // is needed in order to show the url parsing error message to the user.
-  share_controllers_.insert(
-      {group_id,
-       std::make_unique<CollaborationController>(
-           Flow(FlowType::kShareOrManage, group_id), this,
-           data_sharing_service_.get(), tab_group_sync_service_.get(),
-           sync_service_.get(), std::move(delegate),
-           base::BindOnce(&CollaborationServiceImpl::FinishShareFlow,
-                          weak_ptr_factory_.GetWeakPtr(), group_id))});
 }
 
 ServiceStatus CollaborationServiceImpl::GetServiceStatus() {
@@ -192,12 +175,18 @@ CollaborationServiceImpl::GetJoinControllersForTesting() {
 
 void CollaborationServiceImpl::FinishJoinFlow(
     const data_sharing::GroupToken& token) {
-  join_controllers_.erase(join_controllers_.find(token));
+  auto it = join_controllers_.find(token);
+  if (it != join_controllers_.end()) {
+    join_controllers_.erase(it);
+  }
 }
 
 void CollaborationServiceImpl::FinishShareFlow(
     const tab_groups::EitherGroupID& group_id) {
-  share_controllers_.erase(share_controllers_.find(group_id));
+  auto it = share_controllers_.find(group_id);
+  if (it != share_controllers_.end()) {
+    share_controllers_.erase(it);
+  }
 }
 
 SyncStatus CollaborationServiceImpl::GetSyncStatus() {
@@ -277,13 +266,44 @@ void CollaborationServiceImpl::RefreshServiceStatus() {
   }
 }
 
-void CollaborationServiceImpl::ExitConflictingFlows() {
+void CollaborationServiceImpl::ExitConflictingFlows(
+    base::OnceCallback<void()> finish_callback) {
   for (const auto& [token, controller] : join_controllers_) {
     controller->Exit();
   }
   for (const auto& [id, controller] : share_controllers_) {
     controller->Exit();
   }
+
+  // Post task to start new flow after all flows finishes.
+  // Note: Invalid url parsing will start a new join flow with empty GroupToken.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, std::move(finish_callback));
+}
+
+void CollaborationServiceImpl::StartJoinFlowInternal(
+    std::unique_ptr<CollaborationControllerDelegate> delegate,
+    const GroupToken& token) {
+  join_controllers_.insert(
+      {token, std::make_unique<CollaborationController>(
+                  Flow(FlowType::kJoin, token), this,
+                  data_sharing_service_.get(), tab_group_sync_service_.get(),
+                  sync_service_.get(), std::move(delegate),
+                  base::BindOnce(&CollaborationServiceImpl::FinishJoinFlow,
+                                 weak_ptr_factory_.GetWeakPtr(), token))});
+}
+
+void CollaborationServiceImpl::StartShareOrManageFlowInternal(
+    std::unique_ptr<CollaborationControllerDelegate> delegate,
+    const tab_groups::EitherGroupID& group_id) {
+  share_controllers_.insert(
+      {group_id,
+       std::make_unique<CollaborationController>(
+           Flow(FlowType::kShareOrManage, group_id), this,
+           data_sharing_service_.get(), tab_group_sync_service_.get(),
+           sync_service_.get(), std::move(delegate),
+           base::BindOnce(&CollaborationServiceImpl::FinishShareFlow,
+                          weak_ptr_factory_.GetWeakPtr(), group_id))});
 }
 
 }  // namespace collaboration
