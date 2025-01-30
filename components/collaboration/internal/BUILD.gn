@@ -191,6 +191,7 @@ source_set("messaging_unit_tests") {
     deps += [
       ":messaging_native_j_unittests_jni_headers",
       ":messaging_native_java_unittests_java",
+      "//components/collaboration:test_support",
       "//components/collaboration/public:messaging_public",
       "//components/data_sharing/public",
       "//components/saved_tab_groups/public:conversion_utils",

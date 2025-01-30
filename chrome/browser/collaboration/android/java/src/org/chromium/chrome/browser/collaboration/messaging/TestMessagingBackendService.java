@@ -62,4 +62,8 @@ class TestMessagingBackendService implements MessagingBackendService {
 
     @Override
     public void clearDirtyTabMessagesForGroup(EitherGroupId groupId) {}
+
+    @Override
+    public void clearPersistentMessage(
+            String messageId, Optional</* @PersistentNotificationType */ Integer> type) {}
 }

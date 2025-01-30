@@ -1447,6 +1447,31 @@ TEST_F(MessagingBackendServiceImplTest,
             message3.attribution.tab_group_metadata->sync_tab_group_id.value());
 }
 
+TEST_F(MessagingBackendServiceImplTest,
+       TestClearPersistentMessage_SpecificType) {
+  CreateAndInitializeService();
+
+  base::Uuid uuid1 = base::Uuid::GenerateRandomV4();
+  EXPECT_CALL(*unowned_messaging_backend_store_,
+              ClearDirtyMessage(Eq(uuid1), Eq(DirtyType::kDot)))
+      .Times(1);
+
+  service_->ClearPersistentMessage(uuid1,
+                                   PersistentNotificationType::DIRTY_TAB);
+}
+
+TEST_F(MessagingBackendServiceImplTest, TestClearPersistentMessage_AllTypes) {
+  CreateAndInitializeService();
+
+  base::Uuid uuid1 = base::Uuid::GenerateRandomV4();
+
+  EXPECT_CALL(*unowned_messaging_backend_store_,
+              ClearDirtyMessage(Eq(uuid1), Eq(DirtyType::kAll)))
+      .Times(1);
+
+  service_->ClearPersistentMessage(uuid1, std::nullopt);
+}
+
 TEST_F(MessagingBackendServiceImplTest, TestRemoveMessages) {
   CreateAndInitializeService();
 

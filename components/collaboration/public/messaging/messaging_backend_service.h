@@ -94,6 +94,13 @@ class MessagingBackendService : public KeyedService,
   virtual void ClearDirtyTabMessagesForGroup(
       tab_groups::EitherGroupID group_id) = 0;
 
+  // Invoked to clear a given persistent message. This will clear the specified
+  // dirty bit on the message entry of the database. If std::nullopt is passed,
+  // all dirty bits of that message will be cleared.
+  virtual void ClearPersistentMessage(
+      const base::Uuid& message_id,
+      std::optional<PersistentNotificationType> type) = 0;
+
   // Invoked to remove a list of given messages from the backend storage.
   virtual void RemoveMessages(const std::vector<base::Uuid>& message_ids) = 0;
 

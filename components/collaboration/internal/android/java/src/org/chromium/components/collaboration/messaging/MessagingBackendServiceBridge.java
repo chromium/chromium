@@ -169,6 +169,21 @@ import java.util.Optional;
                         mNativeMessagingBackendServiceBridge, this, localGroupId, syncGroupId);
     }
 
+    @Override
+    public void clearPersistentMessage(
+            String messageId, Optional</* @PersistentNotificationType */ Integer> type) {
+        Integer type_int;
+        if (type == null || !type.isPresent()) {
+            type_int = PersistentNotificationType.UNDEFINED;
+        } else {
+            type_int = type.get();
+        }
+
+        MessagingBackendServiceBridgeJni.get()
+                .clearPersistentMessage(
+                        mNativeMessagingBackendServiceBridge, this, messageId, type_int);
+    }
+
     @CalledByNative
     private static MessagingBackendServiceBridge create(long nativeMessagingBackendServiceBridge) {
         return new MessagingBackendServiceBridge(nativeMessagingBackendServiceBridge);
@@ -262,5 +277,11 @@ import java.util.Optional;
                 MessagingBackendServiceBridge caller,
                 long callback,
                 boolean success);
+
+        void clearPersistentMessage(
+                long nativeMessagingBackendServiceBridge,
+                MessagingBackendServiceBridge caller,
+                String messageId,
+                @PersistentNotificationType int type);
     }
 }

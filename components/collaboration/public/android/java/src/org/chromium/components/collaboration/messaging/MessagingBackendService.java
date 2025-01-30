@@ -125,4 +125,14 @@ public interface MessagingBackendService {
      * @param groupId The ID of the group to scope messages to.
      */
     void clearDirtyTabMessagesForGroup(EitherGroupId groupId);
+
+    /**
+     * Clears a given persistent message. Internally clears out the specified dirty bit from the DB
+     * for the message.
+     *
+     * @param messageId The ID of the messasge.
+     * @param type The message type to clear. Pass Optional.empty() to clear out all message types.
+     */
+    void clearPersistentMessage(
+            String messageId, Optional</* @PersistentNotificationType */ Integer> type);
 }

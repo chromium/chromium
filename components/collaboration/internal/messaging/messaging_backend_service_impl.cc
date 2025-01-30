@@ -1014,6 +1014,13 @@ void MessagingBackendServiceImpl::OnGroupMemberRemoved(
   store_->AddMessage(message);
 }
 
+void MessagingBackendServiceImpl::ClearPersistentMessage(
+    const base::Uuid& message_id,
+    std::optional<PersistentNotificationType> type) {
+  store_->ClearDirtyMessage(
+      message_id, GetDirtyTypeFromPersistentNotificationTypeForQuery(type));
+}
+
 void MessagingBackendServiceImpl::RemoveMessages(
     const std::vector<base::Uuid>& message_ids) {
   for (const base::Uuid& message_id : message_ids) {
