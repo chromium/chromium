@@ -22,6 +22,9 @@ static_library("vmm") {
     "vmm_metrics_provider.h",
   ]
 
+  # We should keep this because of the circular dependencies on:
+  # - //chrome/browser/ash/arc/session
+  # - //chrome/browser/ash/arc/instance_throttle
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
@@ -31,7 +34,6 @@ static_library("vmm") {
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/app_list/arc",
-    "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/dbus/concierge",
     "//chromeos/ash/components/dbus/concierge:concierge_proto",
     "//chromeos/ash/components/throttle",

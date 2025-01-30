@@ -5599,7 +5599,6 @@ static_library("browser") {
       "//chrome/browser/ash/arc/session",
       "//chrome/browser/ash/arc/tracing",
       "//chrome/browser/ash/arc/tts",
-      "//chrome/browser/ash/arc/vmm",
       "//chrome/browser/ash/arc/window_predictor",
       "//chrome/browser/ash/assistant",
       "//chrome/browser/ash/attestation",
