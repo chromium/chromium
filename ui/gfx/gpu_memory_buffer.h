@@ -153,6 +153,13 @@ class COMPONENT_EXPORT(GFX) GpuMemoryBuffer {
   // caller takes ownership of the returned handle.
   virtual GpuMemoryBufferHandle CloneHandle() const = 0;
 
+#if BUILDFLAG(IS_WIN)
+  // Used to set the use_premapped_memory flag in the GpuMemoryBufferImplDXGI to
+  // indicate whether to use the premapped memory or not. It is only used with
+  // MappableSI. See GpuMemoryBufferImplDXGI override for more details.
+  virtual void SetUsePreMappedMemory(bool use_premapped_memory) {}
+#endif
+
   // Dumps information about the memory backing the GpuMemoryBuffer to |pmd|.
   // The memory usage is attributed to |buffer_dump_guid|.
   // |tracing_process_id| uniquely identifies the process owning the memory.

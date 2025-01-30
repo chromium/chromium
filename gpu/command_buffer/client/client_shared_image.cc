@@ -480,6 +480,13 @@ std::unique_ptr<RasterScopedAccess> ClientSharedImage::BeginRasterAccess(
                                                  sync_token, readonly));
 }
 
+#if BUILDFLAG(IS_WIN)
+void ClientSharedImage::SetUsePreMappedMemory(bool use_premapped_memory) {
+  CHECK(gpu_memory_buffer_);
+  gpu_memory_buffer_->SetUsePreMappedMemory(use_premapped_memory);
+}
+#endif
+
 // static
 scoped_refptr<ClientSharedImage> ClientSharedImage::CreateForTesting() {
   return CreateForTesting(viz::SinglePlaneFormat::kRGBA_8888, GL_TEXTURE_2D);

@@ -63,9 +63,6 @@ class GPU_EXPORT GpuMemoryBufferImplDXGI : public GpuMemoryBufferImpl {
   gfx::GpuMemoryBufferType GetType() const override;
   gfx::GpuMemoryBufferHandle CloneHandle() const override;
 
-  HANDLE GetHandle() const;
-  const gfx::DXGIHandleToken& GetToken() const;
-
   // This method allows clients to explicitly specify that it wants to use the
   // |premapped_memory_| which is internally created by this class from the GMB
   // handle shared memory |region_| instead of client providing it.
@@ -74,7 +71,10 @@ class GPU_EXPORT GpuMemoryBufferImplDXGI : public GpuMemoryBufferImpl {
   // Windows media capture code will need to use this api in order to transition
   // to MappableSI. It is currently not used until the media capture code is
   // converted to MappableSI.
-  void UsePreMappedMemory(bool use_premapped_memory);
+  void SetUsePreMappedMemory(bool use_premapped_memory) override;
+
+  HANDLE GetHandle() const;
+  const gfx::DXGIHandleToken& GetToken() const;
 
  private:
   GpuMemoryBufferImplDXGI(gfx::GpuMemoryBufferId id,
