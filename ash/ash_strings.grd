@@ -8952,8 +8952,8 @@ To shut down the device, press and hold the power button on the device again.
       <message name="IDS_ASH_BIRCH_CORAL_SELECTOR_APP_SUBTITLE" desc="In the birch coral button selector UI, the subtitle for the app section.">
         Apps
       </message>
-      <message name="IDS_ASH_BIRCH_CORAL_SELECTOR_ACCESSIBLE_NAME" translateable="false" desc="The accessible name for the birch coral button selector UI.">
-        Coral selector
+      <message name="IDS_ASH_BIRCH_CORAL_SELECTOR_ACCESSIBLE_NAME" desc="The accessible name for the birch coral button selector UI.">
+        Items in the suggested group
       </message>
       <message name="IDS_ASH_BIRCH_CORAL_SELECTOR_ITEM_CLOSE_BUTTON_TOOLTIP" desc="The tooltip of the close button on smart grouping expanded menu item">
         Remove item from suggested group
