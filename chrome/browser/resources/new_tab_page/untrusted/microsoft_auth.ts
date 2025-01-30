@@ -10,6 +10,7 @@
 import {MicrosoftAuthUntrustedDocumentProxy} from './microsoft_auth_proxy.js';
 import type {AuthenticationResult, AuthError, Configuration, PopupRequest} from './msal_browser.js';
 import {PublicClientApplication} from './msal_browser.js';
+import {AuthState} from './ntp_microsoft_auth_shared_ui.mojom-webui.js';
 import type {MicrosoftAuthUntrustedDocumentCallbackRouter} from './ntp_microsoft_auth_shared_ui.mojom-webui.js';
 import type {MicrosoftAuthUntrustedPageHandlerRemote} from './ntp_microsoft_auth_untrusted_ui.mojom-webui.js';
 
@@ -36,15 +37,22 @@ const requestConfig: typeof PopupRequest = {
 };
 
 const msalApp = new PublicClientApplication(msalConfig);
-let callbackRouter: MicrosoftAuthUntrustedDocumentCallbackRouter;
+let callbackRouterToParent: MicrosoftAuthUntrustedDocumentCallbackRouter;
+let callbackRouterToHandler: MicrosoftAuthUntrustedDocumentCallbackRouter;
 let handler: MicrosoftAuthUntrustedPageHandlerRemote;
-msalApp.initialize().then(() => {
-  callbackRouter =
-      MicrosoftAuthUntrustedDocumentProxy.getInstance().callbackRouter;
-  callbackRouter.acquireTokenPopup.addListener(acquireTokenPopup);
-  callbackRouter.acquireTokenSilent.addListener(acquireTokenSilent);
-  callbackRouter.signOut.addListener(signOut);
-  handler = MicrosoftAuthUntrustedDocumentProxy.getInstance().handler;
+msalApp.initialize().then(async () => {
+  const proxy = MicrosoftAuthUntrustedDocumentProxy.getInstance();
+  callbackRouterToParent = proxy.callbackRouterToParent;
+  callbackRouterToHandler = proxy.callbackRouterToHandler;
+  handler = proxy.handler;
+  callbackRouterToHandler.acquireTokenSilent.addListener(acquireTokenSilent);
+  callbackRouterToParent.acquireTokenPopup.addListener(acquireTokenPopup);
+  callbackRouterToParent.signOut.addListener(signOut);
+
+  const {state} = await handler.getAuthState();
+  if (state === AuthState.kNone) {
+    acquireTokenSilent();
+  }
 });
 
 function handleAcquireTokenResponse(result: typeof AuthenticationResult|null) {
@@ -90,5 +98,5 @@ function signOut() {
         postLogoutRedirectUri:
             'https://chromeenterprise.google/ntp-microsoft-auth',
       })
-      .then(handler.clearAuthData);
+      .then(() => handler.clearAuthData());
 }

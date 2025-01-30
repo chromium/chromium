@@ -3,11 +3,10 @@
 // found in the LICENSE file.
 
 import type {Module, ModuleWrapperElement, NamedWidth} from 'chrome://new-tab-page/lazy_load.js';
-import {MODULE_CUSTOMIZE_ELEMENT_ID, ModuleDescriptor, ModuleRegistry, ModulesV2Element, ParentTrustedDocumentProxy, SUPPORTED_MODULE_WIDTHS} from 'chrome://new-tab-page/lazy_load.js';
+import {MODULE_CUSTOMIZE_ELEMENT_ID, ModuleDescriptor, ModuleRegistry, ModulesV2Element, SUPPORTED_MODULE_WIDTHS} from 'chrome://new-tab-page/lazy_load.js';
 import {NewTabPageProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import type {PageRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
 import {PageCallbackRouter, PageHandlerRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
-import {AuthState, MicrosoftAuthUntrustedDocumentRemote} from 'chrome://new-tab-page/ntp_microsoft_auth_shared_ui.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
@@ -22,7 +21,6 @@ const MAX_COLUMN_COUNT = 5;
 const NO_MAX_INSTANCE_COUNT = -1;
 
 suite('NewTabPageModulesModulesV2Test', () => {
-  let authChildDocument: TestMock<MicrosoftAuthUntrustedDocumentRemote>;
   let callbackRouterRemote: PageRemote;
   let handler: TestMock<PageHandlerRemote>;
   let metrics: MetricsTracker;
@@ -38,10 +36,6 @@ suite('NewTabPageModulesModulesV2Test', () => {
         PageHandlerRemote,
         (mock: PageHandlerRemote) =>
             NewTabPageProxy.setInstance(mock, new PageCallbackRouter()));
-
-    authChildDocument = installMock(
-        MicrosoftAuthUntrustedDocumentRemote,
-        mock => ParentTrustedDocumentProxy.setInstance(mock));
 
     metrics = fakeMetricsPrivate();
     moduleRegistry = installMock(ModuleRegistry);
@@ -759,21 +753,5 @@ suite('NewTabPageModulesModulesV2Test', () => {
                       'ntp-module-wrapper')) as ModuleWrapperElement[],
               layoutChangeScenario.after);
         });
-  });
-
-  Object.values(AuthState).forEach((state) => {
-    test(`Silent auth when auth state ${state}`, async () => {
-      // Arrange.
-      loadTimeData.overrideValues({microsoftModuleEnabled: true});
-      handler.setResultFor('getMicrosoftAuthState', {state});
-      const modulesElement =
-          await createModulesElement([], true, SAMPLE_SCREEN_WIDTH);
-      await waitAfterNextRender(modulesElement);
-
-      // Assert.
-      assertEquals(
-          authChildDocument.getCallCount('acquireTokenSilent'),
-          state === AuthState.kNone ? 1 : 0);
-    });
   });
 });

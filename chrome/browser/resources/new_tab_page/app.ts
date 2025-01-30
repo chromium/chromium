@@ -30,9 +30,11 @@ import {CustomizeDialogPage} from './customize_dialog_types.js';
 import type {IframeElement} from './iframe.js';
 import type {LogoElement} from './logo.js';
 import {recordDuration, recordLoadDuration} from './metrics_utils.js';
+import {ParentTrustedDocumentProxy} from './modules/microsoft_auth_frame_connector.js';
 import type {PageCallbackRouter, PageHandlerRemote, Theme} from './new_tab_page.mojom-webui.js';
 import {CustomizeChromeSection, IphFeature, NtpBackgroundImageSource} from './new_tab_page.mojom-webui.js';
 import {NewTabPageProxy} from './new_tab_page_proxy.js';
+import type {MicrosoftAuthUntrustedDocumentRemote} from './ntp_microsoft_auth_shared_ui.mojom-webui.js';
 import {$$} from './utils.js';
 import {Action as VoiceAction, recordVoiceAction} from './voice_search_overlay.js';
 import {WindowProxy} from './window_proxy.js';
@@ -295,6 +297,7 @@ export class AppElement extends AppElementBase {
   private callbackRouter_: PageCallbackRouter;
   private pageHandler_: PageHandlerRemote;
   private backgroundManager_: BackgroundManager;
+  private connectMicrosoftAuthToParentDocumentListenerId_: number|null = null;
   private setThemeListenerId_: number|null = null;
   private setCustomizeChromeSidePanelVisibilityListener_: number|null = null;
   private setWallpaperSearchButtonVisibilityListener_: number|null = null;
@@ -361,6 +364,15 @@ export class AppElement extends AppElementBase {
     super.connectedCallback();
     realboxCanShowSecondarySideMediaQueryList.addEventListener(
         'change', this.onRealboxCanShowSecondarySideChanged_.bind(this));
+
+    // Listen for chrome-untrusted://ntp-microsoft-auth iframe trying to
+    // connect to the NTP.
+    this.connectMicrosoftAuthToParentDocumentListenerId_ =
+        this.callbackRouter_.connectToParentDocument.addListener(
+            (childDocumentRemote: MicrosoftAuthUntrustedDocumentRemote) => {
+              ParentTrustedDocumentProxy.setInstance(childDocumentRemote);
+            });
+
     this.setThemeListenerId_ =
         this.callbackRouter_.setTheme.addListener((theme: Theme) => {
           if (!this.theme_) {
@@ -448,6 +460,8 @@ export class AppElement extends AppElementBase {
     super.disconnectedCallback();
     realboxCanShowSecondarySideMediaQueryList.removeEventListener(
         'change', this.onRealboxCanShowSecondarySideChanged_.bind(this));
+    this.callbackRouter_.removeListener(
+        this.connectMicrosoftAuthToParentDocumentListenerId_!);
     this.callbackRouter_.removeListener(this.setThemeListenerId_!);
     this.callbackRouter_.removeListener(
         this.setCustomizeChromeSidePanelVisibilityListener_!);

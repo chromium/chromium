@@ -41,9 +41,11 @@ class NtpMicrosoftAuthUntrustedUI
 
  private:
   // new_tab_page::mojom::MicrosoftAuthUntrustedDocumentInterfacesFactory:
-  void CreatePageHandler(mojo::PendingReceiver<
-                         new_tab_page::mojom::MicrosoftAuthUntrustedPageHandler>
-                             handler) override;
+  void CreatePageHandler(
+      mojo::PendingReceiver<
+          new_tab_page::mojom::MicrosoftAuthUntrustedPageHandler> handler,
+      mojo::PendingRemote<new_tab_page::mojom::MicrosoftAuthUntrustedDocument>
+          document) override;
   void ConnectToParentDocument(
       mojo::PendingRemote<new_tab_page::mojom::MicrosoftAuthUntrustedDocument>
           child_untrusted_document_remote) override;

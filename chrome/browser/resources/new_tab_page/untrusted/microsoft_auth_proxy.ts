@@ -11,31 +11,41 @@ export class MicrosoftAuthUntrustedDocumentProxy {
   static getInstance(): MicrosoftAuthUntrustedDocumentProxy {
     if (!instance) {
       const handler = new MicrosoftAuthUntrustedPageHandlerRemote();
-      const callbackRouter = new MicrosoftAuthUntrustedDocumentCallbackRouter();
+      const callbackRouterToParent =
+          new MicrosoftAuthUntrustedDocumentCallbackRouter();
+      const callbackRouterToHandler =
+          new MicrosoftAuthUntrustedDocumentCallbackRouter();
       const factoryRemote =
           MicrosoftAuthUntrustedDocumentInterfacesFactory.getRemote();
       factoryRemote.connectToParentDocument(
-          callbackRouter.$.bindNewPipeAndPassRemote());
-      factoryRemote.createPageHandler(handler.$.bindNewPipeAndPassReceiver());
-      instance =
-          new MicrosoftAuthUntrustedDocumentProxy(callbackRouter, handler);
+          callbackRouterToParent.$.bindNewPipeAndPassRemote());
+      factoryRemote.createPageHandler(
+          handler.$.bindNewPipeAndPassReceiver(),
+          callbackRouterToHandler.$.bindNewPipeAndPassRemote());
+      instance = new MicrosoftAuthUntrustedDocumentProxy(
+          callbackRouterToParent, callbackRouterToHandler, handler);
     }
     return instance;
   }
 
   static setInstance(
-      callbackRouter: MicrosoftAuthUntrustedDocumentCallbackRouter,
+      callbackRouterToParent: MicrosoftAuthUntrustedDocumentCallbackRouter,
+      callbackRouterToHandler: MicrosoftAuthUntrustedDocumentCallbackRouter,
       handler: MicrosoftAuthUntrustedPageHandlerRemote) {
-    instance = new MicrosoftAuthUntrustedDocumentProxy(callbackRouter, handler);
+    instance = new MicrosoftAuthUntrustedDocumentProxy(
+        callbackRouterToParent, callbackRouterToHandler, handler);
   }
 
-  callbackRouter: MicrosoftAuthUntrustedDocumentCallbackRouter;
+  callbackRouterToParent: MicrosoftAuthUntrustedDocumentCallbackRouter;
+  callbackRouterToHandler: MicrosoftAuthUntrustedDocumentCallbackRouter;
   handler: MicrosoftAuthUntrustedPageHandlerRemote;
 
   private constructor(
-      callbackRouter: MicrosoftAuthUntrustedDocumentCallbackRouter,
+      callbackRouterToParent: MicrosoftAuthUntrustedDocumentCallbackRouter,
+      callbackRouterToHandler: MicrosoftAuthUntrustedDocumentCallbackRouter,
       handler: MicrosoftAuthUntrustedPageHandlerRemote) {
-    this.callbackRouter = callbackRouter;
+    this.callbackRouterToParent = callbackRouterToParent;
+    this.callbackRouterToHandler = callbackRouterToHandler;
     this.handler = handler;
   }
 }

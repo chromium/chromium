@@ -23,13 +23,16 @@ interface MicrosoftAuthUntrustedDocumentInterfacesFactory {
 
   // Passes the chrome-untrusted:// frame's receiver to create a page handler
   // when the Microsoft Authentication Library is initialized.
-  CreatePageHandler(pending_receiver<MicrosoftAuthUntrustedPageHandler> handler);
+  CreatePageHandler(pending_receiver<MicrosoftAuthUntrustedPageHandler> handler,
+      pending_remote<MicrosoftAuthUntrustedDocument> document);
 };
 
 // Browser-side handler for requests from WebUI document.
 interface MicrosoftAuthUntrustedPageHandler {
   // Clears data for Microsoft auth.
   ClearAuthData();
+  // Gets the current cached state of auth.
+  GetAuthState() => (AuthState state);
   // Sets Microsoft API access token in the browser-side.
   SetAccessToken(AccessToken access_token);
   // Sets error state for Microsoft auth in the browser-side.
