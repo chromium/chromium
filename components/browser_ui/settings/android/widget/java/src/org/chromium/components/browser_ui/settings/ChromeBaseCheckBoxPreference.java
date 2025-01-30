@@ -4,6 +4,8 @@
 
 package org.chromium.components.browser_ui.settings;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.TextView;
@@ -11,12 +13,16 @@ import android.widget.TextView;
 import androidx.preference.CheckBoxPreference;
 import androidx.preference.PreferenceViewHolder;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /** Contains the basic functionality that should be shared by all CheckBoxPreference in Chrome. */
+@NullMarked
 public class ChromeBaseCheckBoxPreference extends CheckBoxPreference {
     /** Indicates if the preference uses a custom layout. */
     private final boolean mHasCustomLayout;
 
-    private ManagedPreferenceDelegate mManagedPrefDelegate;
+    private @Nullable ManagedPreferenceDelegate mManagedPrefDelegate;
 
     /** Constructor for use in Java. */
     public ChromeBaseCheckBoxPreference(Context context) {
@@ -24,7 +30,7 @@ public class ChromeBaseCheckBoxPreference extends CheckBoxPreference {
     }
 
     /** Constructor for inflating from XML. */
-    public ChromeBaseCheckBoxPreference(Context context, AttributeSet attrs) {
+    public ChromeBaseCheckBoxPreference(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         mHasCustomLayout = ManagedPreferencesUtils.isCustomLayoutApplied(context, attrs);
     }
@@ -42,7 +48,7 @@ public class ChromeBaseCheckBoxPreference extends CheckBoxPreference {
     @Override
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
-        ((TextView) holder.findViewById(android.R.id.title)).setSingleLine(false);
+        ((TextView) assumeNonNull(holder.findViewById(android.R.id.title))).setSingleLine(false);
         ManagedPreferencesUtils.onBindViewToPreference(mManagedPrefDelegate, this, holder.itemView);
     }
 

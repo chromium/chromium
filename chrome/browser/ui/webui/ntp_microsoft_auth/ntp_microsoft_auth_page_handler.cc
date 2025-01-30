@@ -15,28 +15,40 @@
 MicrosoftAuthUntrustedPageHandler::MicrosoftAuthUntrustedPageHandler(
     mojo::PendingReceiver<
         new_tab_page::mojom::MicrosoftAuthUntrustedPageHandler> handler,
+    mojo::PendingRemote<new_tab_page::mojom::MicrosoftAuthUntrustedDocument>
+        document,
     Profile* profile)
     : handler_(this, std::move(handler)),
-      auth_service_(MicrosoftAuthServiceFactory::GetForProfile(profile)) {}
+      document_(std::move(document)),
+      auth_service_(MicrosoftAuthServiceFactory::GetForProfile(profile)) {
+  CHECK(auth_service_);
+  microsoft_auth_service_observation_.Observe(auth_service_);
+}
 
 MicrosoftAuthUntrustedPageHandler::~MicrosoftAuthUntrustedPageHandler() =
     default;
 
 void MicrosoftAuthUntrustedPageHandler::ClearAuthData() {
-  if (auth_service_) {
-    auth_service_->ClearAuthData();
-  }
+  auth_service_->ClearAuthData();
+}
+
+void MicrosoftAuthUntrustedPageHandler::GetAuthState(
+    GetAuthStateCallback callback) {
+  std::move(callback).Run(auth_service_->GetAuthState());
 }
 
 void MicrosoftAuthUntrustedPageHandler::SetAccessToken(
     new_tab_page::mojom::AccessTokenPtr token) {
-  if (auth_service_) {
-    auth_service_->SetAccessToken(std::move(token));
-  }
+  auth_service_->SetAccessToken(std::move(token));
 }
 
 void MicrosoftAuthUntrustedPageHandler::SetAuthStateError() {
-  if (auth_service_) {
-    auth_service_->SetAuthStateError();
+  auth_service_->SetAuthStateError();
+}
+
+void MicrosoftAuthUntrustedPageHandler::OnAuthStateUpdated() {
+  new_tab_page::mojom::AuthState auth_state = auth_service_->GetAuthState();
+  if (auth_state == new_tab_page::mojom::AuthState::kNone) {
+    document_->AcquireTokenSilent();
   }
 }

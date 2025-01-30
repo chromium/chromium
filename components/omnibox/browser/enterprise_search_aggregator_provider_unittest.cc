@@ -8,7 +8,10 @@
 #include <string>
 #include <vector>
 
+#include "base/json/json_reader.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/omnibox/browser/autocomplete_input.h"
@@ -17,7 +20,9 @@
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
+#include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
+#include "components/search_engines/template_url_service.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "ui/base/page_transition_types.h"
 
@@ -28,15 +33,83 @@ using testing::Return;
 class FakeEnterpriseSearchAggregatorProvider
     : public EnterpriseSearchAggregatorProvider {
  public:
+  explicit FakeEnterpriseSearchAggregatorProvider(
+      AutocompleteProviderClient* client)
+      : EnterpriseSearchAggregatorProvider(client) {}
+
+  using EnterpriseSearchAggregatorProvider::SuggestionType;
+
   using EnterpriseSearchAggregatorProvider::CreateMatch;
-  using EnterpriseSearchAggregatorProvider ::done_;
   using EnterpriseSearchAggregatorProvider::EnterpriseSearchAggregatorProvider;
   using EnterpriseSearchAggregatorProvider::IsProviderAllowed;
+  using EnterpriseSearchAggregatorProvider::
+      ParseEnterpriseSearchAggregatorSearchResults;
+
+  using EnterpriseSearchAggregatorProvider ::done_;
+  using EnterpriseSearchAggregatorProvider::input_;
   using EnterpriseSearchAggregatorProvider::matches_;
 
  protected:
   ~FakeEnterpriseSearchAggregatorProvider() override = default;
 };
+
+const std::string kGoodJsonResponse = base::StringPrintf(
+    R"({
+      "querySuggestions": [
+        {
+          "suggestion": "Document 1",
+          "dataStore": []
+        }
+      ],
+      "peopleSuggestions": [
+        {
+          "document": {
+            "name": "sundar",
+            "derivedStructData": {
+              "name": {
+                "display_name_lower": "john doe",
+                "familyName": "Doe",
+                "givenName": "John",
+                "given_name_lower": "john",
+                "family_name_lower": "doe",
+                "displayName": "John Doe",
+                "userName": "john@example.com"
+              },
+              "emails": [
+                {
+                  "type": "primary",
+                  "value": "john@example.com"
+                }
+              ],
+              "displayPhoto": {
+                "url": "www.example.com"
+              }
+            }
+          },
+          "dataStore": "project 1"
+        }
+      ],
+      "contentSuggestions": [
+        {
+          "suggestion": "critical crash",
+          "contentType": "THIRD_PARTY",
+          "document": {
+            "name": "Document 2",
+            "structData": {
+              "title": "Critical Crash",
+              "uri": "www.example.com"
+            },
+            "derivedStructData": {
+              "source_type": "jira",
+              "entity_type": "issue",
+              "title": "Critical Crash",
+              "link": "https://www.example.com"
+            }
+          },
+          "dataStore": "project2"
+        }
+      ]
+      })");
 
 class EnterpriseSearchAggregatorProviderTestBase {
  protected:
@@ -79,16 +152,26 @@ class EnterpriseSearchAggregatorProviderTestBase {
 
 class EnterpriseSearchAggregatorProviderTest
     : public EnterpriseSearchAggregatorProviderTestBase,
-      public testing::Test {};
+      public testing::Test {
+ public:
+  void SetUp() override {
+    TemplateURLData data;
+    data.SetShortName(u"test");
+    data.SetKeyword(u"test");
+    data.SetURL("http://www.yahoo.com/{searchTerms}");
+    client_->GetTemplateURLService()->Add(std::make_unique<TemplateURL>(data));
+  }
+};
 
 TEST_F(EnterpriseSearchAggregatorProviderTest, CreateMatch) {
   AutocompleteInput input{u"input text", metrics::OmniboxEventProto::OTHER,
                           TestSchemeClassifier()};
   input.set_keyword_mode_entry_method(metrics::OmniboxEventProto::TAB);
 
-  auto match =
-      provider_->CreateMatch(input, u"keyword", true, 1000, "https://url.com",
-                             u"title", u"additional text");
+  auto match = provider_->CreateMatch(
+      input, u"keyword",
+      FakeEnterpriseSearchAggregatorProvider::SuggestionType::QUERY, true, 1000,
+      "https://url.com", u"title", u"additional text");
   EXPECT_EQ(match.destination_url.spec(), "https://url.com/");
   EXPECT_EQ(match.fill_into_edit, u"https://url.com");
   EXPECT_EQ(match.description, u"title");
@@ -109,7 +192,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, IsProviderAllowed) {
   AutocompleteInput input(u"text text", metrics::OmniboxEventProto::OTHER,
                           TestSchemeClassifier());
 
-  // Check` IsProviderAllowed()` returns true when all conditions pass.
+  // Check `IsProviderAllowed()` returns true when all conditions pass.
   EXPECT_TRUE(provider_->IsProviderAllowed(input));
 
   {
@@ -143,6 +226,46 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, StartCallsStop) {
   EXPECT_TRUE(provider_->done());
 }
 
+// Test response is parsed accurately.
+TEST_F(EnterpriseSearchAggregatorProviderTest,
+       ParseEnterpriseSearchAggregatorSearchResults) {
+  std::optional<base::Value> response =
+      base::JSONReader::Read(kGoodJsonResponse);
+  ASSERT_TRUE(response);
+  ASSERT_TRUE(response->is_dict());
+  AutocompleteInput input{u"test text", metrics::OmniboxEventProto::OTHER,
+                          TestSchemeClassifier()};
+  input.set_keyword_mode_entry_method(metrics::OmniboxEventProto::TAB);
+
+  provider_->input_ = input;
+
+  provider_->ParseEnterpriseSearchAggregatorSearchResults(*response);
+  ACMatches matches = provider_->matches_;
+
+  EXPECT_EQ(matches.size(), 3u);
+
+  for (int i = 0; i < int(matches.size()); i++) {
+    EXPECT_EQ(matches[i].relevance, 1000 - i);
+  }
+
+  EXPECT_EQ(matches[0].type, AutocompleteMatchType::SEARCH_SUGGEST);
+  EXPECT_EQ(matches[0].contents, u"Document 1");
+  EXPECT_EQ(matches[0].description, u"");
+  EXPECT_EQ(matches[0].destination_url,
+            GURL("http://www.yahoo.com/Document%201"));
+
+  EXPECT_EQ(matches[1].type, AutocompleteMatchType::SEARCH_SUGGEST);
+  EXPECT_EQ(matches[1].contents, u"John Doe");
+  EXPECT_EQ(matches[1].description, u"john@example.com");
+  EXPECT_EQ(matches[1].destination_url,
+            GURL("http://www.yahoo.com/john@example.com"));
+
+  EXPECT_EQ(matches[2].type, AutocompleteMatchType::NAVSUGGEST);
+  EXPECT_EQ(matches[2].contents, u"");
+  EXPECT_EQ(matches[2].description, u"Critical Crash");
+  EXPECT_EQ(matches[2].destination_url, GURL("https://www.example.com"));
+}
+
 class EnterpriseSearchAggregatorProviderFeaturedByPolicyTest
     : public EnterpriseSearchAggregatorProviderTestBase,
       public testing::TestWithParam<bool> {};
@@ -172,9 +295,10 @@ TEST_P(EnterpriseSearchAggregatorProviderFeaturedByPolicyTest, CacheMatches) {
   EXPECT_THAT(GetMatches(), testing::ElementsAre(u"https://wikipedia.org"));
 
   // Set an old match.
-  provider_->matches_ = {provider_->CreateMatch(input, u"keyword", true, 1500,
-                                                "https://cached.org", u"cached",
-                                                u"cached")};
+  provider_->matches_ = {provider_->CreateMatch(
+      input, u"keyword",
+      FakeEnterpriseSearchAggregatorProvider::SuggestionType::QUERY, true, 1500,
+      "https://cached.org", u"cached", u"cached")};
 
   // Call `Start()`, old match should still be present.
   provider_->Start(input, false);
@@ -186,3 +310,10 @@ TEST_P(EnterpriseSearchAggregatorProviderFeaturedByPolicyTest, CacheMatches) {
 
   EXPECT_THAT(GetMatches(), testing::ElementsAre(u"https://wikipedia.org"));
 }
+
+// TODO(manukh): Test that results with missing fields aren't added to the
+//   provider's `matches_`.
+// TODO(manukh): Test that an empty results response clears the provider's
+//   `matches_`.
+// TODO(manukh): Test that an error response does NOT clears the provider's
+//   `matches_`.

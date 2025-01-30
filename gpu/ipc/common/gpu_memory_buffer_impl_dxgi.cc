@@ -142,7 +142,33 @@ GpuMemoryBufferImplDXGI::DoMapAsync(base::OnceCallback<void(bool)> result_cb) {
     return base::BindOnce(std::move(result_cb), true);
   }
 
-  if (premapped_memory_.data()) {
+  // Only client which uses premapped_memory is media capture code. When
+  // MappableSI is disabled, client provides |premapped_memory_| and
+  // |use_premapped_memory_| is set to true if it is valid. When MappableSI is
+  // enabled, client will first create a GpuMemoryBuffer via Mappable shared
+  // image and then set |use_premapped_memory_| flag via
+  // ClientSharedImage::SetPreMappedMemory().
+  // If |use_premapped_memory_| is set to true, |premapped_memory_| will be
+  // created here internally as below if its not already created.
+  if (use_premapped_memory_) {
+    if (!premapped_memory_.data()) {
+      CHECK(region_.IsValid());
+      region_mapping_ = region_.Map();
+      CHECK(region_mapping_.IsValid());
+      premapped_memory_ = region_mapping_.GetMemoryAsSpan<uint8_t>();
+
+      if (premapped_memory_.data() &&
+          premapped_memory_.size() <
+              gfx::BufferSizeForBufferFormat(size_, format_)) {
+        LOG(ERROR) << "GpuMemoryBufferImplDXGI: Premapped memory has "
+                      "insufficient size.";
+        premapped_memory_ = base::span<uint8_t>();
+        region_mapping_ = base::WritableSharedMemoryMapping();
+        use_premapped_memory_ = false;
+        return base::BindOnce(std::move(result_cb), false);
+      }
+    }
+    CHECK(premapped_memory_.data());
     ++map_count_;
     return base::BindOnce(std::move(result_cb), true);
   }
@@ -207,11 +233,11 @@ void* GpuMemoryBufferImplDXGI::memory(size_t plane) {
     return nullptr;
   }
 
-  uint8_t* plane_addr =
-      (premapped_memory_.data() ? premapped_memory_.data()
-                                : shared_memory_handle_->GetMapping()
-                                      .GetMemoryAsSpan<uint8_t>()
-                                      .data());
+  uint8_t* plane_addr = (use_premapped_memory_ && premapped_memory_.data())
+                            ? premapped_memory_.data()
+                            : shared_memory_handle_->GetMapping()
+                                  .GetMemoryAsSpan<uint8_t>()
+                                  .data();
   // This is safe, since we already checked that the requested plane is
   // valid for current buffer format.
   plane_addr += gfx::BufferOffsetForBufferFormat(size_, format_, plane);
@@ -265,7 +291,7 @@ const gfx::DXGIHandleToken& GpuMemoryBufferImplDXGI::GetToken() const {
   return dxgi_token_;
 }
 
-void GpuMemoryBufferImplDXGI::UsePreMappedMemory(bool use_premapped_memory) {
+void GpuMemoryBufferImplDXGI::SetUsePreMappedMemory(bool use_premapped_memory) {
   use_premapped_memory_ = use_premapped_memory;
 
   // Not used currently until the media capture code is converted to use
@@ -291,25 +317,21 @@ GpuMemoryBufferImplDXGI::GpuMemoryBufferImplDXGI(
       gpu_memory_buffer_manager_(gpu_memory_buffer_manager),
       shared_memory_pool_(std::move(pool)),
       premapped_memory_(premapped_memory) {
-  if (use_premapped_memory_) {
-    // Not reached until media capture code is converted to use MappableSI.
-    // Also note that this will replace |premapped_memory_| which is provided by
-    // the client above in GpuMemoryBufferImplDXGI(). |region_| will be used to
-    // create the pre mapped memory instead.
-    CHECK(region_.IsValid());
-    region_mapping_ = region_.Map();
-    CHECK(region_mapping_.IsValid());
-    premapped_memory_ = region_mapping_.GetMemoryAsSpan<uint8_t>();
-  }
-
+  // Note that |premapped_memory_| used here is the one supplied by the
+  // client. Once the clients are converted to use MappableSI,
+  // |premapped_memory_| will no longer be provided by clients. It will be
+  // created internally from the |region_| provided as a part of GMB
+  // handle by the client. Below code and |premapped_memory_| from above
+  // constructor will be removed after conversion.
+  use_premapped_memory_ = !!premapped_memory_.data();
   if (premapped_memory_.data() &&
       premapped_memory_.size() <
           gfx::BufferSizeForBufferFormat(size_, format_)) {
     LOG(ERROR)
         << "GpuMemoryBufferImplDXGI: Premapped memory has insufficient size.";
     premapped_memory_ = base::span<uint8_t>();
-    region_mapping_ = base::WritableSharedMemoryMapping();
     use_premapped_memory_ = false;
   }
 }
+
 }  // namespace gpu

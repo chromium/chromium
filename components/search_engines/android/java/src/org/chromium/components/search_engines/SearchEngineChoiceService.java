@@ -5,8 +5,6 @@ package org.chromium.components.search_engines;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.MainThread;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
@@ -17,6 +15,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.TransitiveObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.search_engines.SearchEngineCountryDelegate.DeviceChoiceEventType;
 
 import java.lang.annotation.Retention;
@@ -34,9 +34,10 @@ import java.time.Instant;
  * <p>The object is a singleton rather than being profile-scoped as device properties apply to all
  * profiles, it also allows an instance to be created before the native is initialized.
  */
+@NullMarked
 public class SearchEngineChoiceService {
     private static final String TAG = "DeviceChoiceDialog";
-    private static SearchEngineChoiceService sInstance;
+    private static @Nullable SearchEngineChoiceService sInstance;
 
     /**
      * Gets reset to {@code null} after the device country is obtained.
@@ -120,7 +121,7 @@ public class SearchEngineChoiceService {
     /** Overrides the instance of the singleton for tests. */
     @MainThread
     @VisibleForTesting
-    public static void setInstanceForTests(SearchEngineChoiceService instance) {
+    public static void setInstanceForTests(@Nullable SearchEngineChoiceService instance) {
         ThreadUtils.checkUiThread();
         sInstance = instance;
         if (instance != null) {
@@ -130,7 +131,7 @@ public class SearchEngineChoiceService {
 
     @VisibleForTesting
     @MainThread
-    public SearchEngineChoiceService(@NonNull SearchEngineCountryDelegate delegate) {
+    public SearchEngineChoiceService(SearchEngineCountryDelegate delegate) {
         ThreadUtils.checkUiThread();
         mDelegate = delegate;
 
@@ -304,7 +305,7 @@ public class SearchEngineChoiceService {
     }
 
     private static ObservableSupplier<Boolean> createIsDeviceChoiceRequiredSupplier(
-            @NonNull SearchEngineCountryDelegate delegate) {
+            SearchEngineCountryDelegate delegate) {
         var alwaysFalseSupplier = new ObservableSupplierImpl<>(false);
 
         if (!SearchEnginesFeatures.isEnabled(SearchEnginesFeatures.CLAY_BLOCKING)) {

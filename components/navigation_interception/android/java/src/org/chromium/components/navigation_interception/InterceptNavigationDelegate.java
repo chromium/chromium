@@ -9,6 +9,8 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.RequiredCallback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.PageTransition;
@@ -16,6 +18,7 @@ import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
 @JNINamespace("navigation_interception")
+@NullMarked
 public abstract class InterceptNavigationDelegate {
     /**
      * This method is called for every top-level navigation within the associated WebContents. The
@@ -65,7 +68,7 @@ public abstract class InterceptNavigationDelegate {
      *     subframe to, or null if no action is to be taken.
      */
     @CalledByNative
-    protected GURL handleSubframeExternalProtocol(
+    protected @Nullable GURL handleSubframeExternalProtocol(
             GURL escapedUrl,
             @PageTransition int transition,
             boolean hasUserGesture,

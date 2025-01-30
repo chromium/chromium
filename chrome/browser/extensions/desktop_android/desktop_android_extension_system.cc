@@ -7,10 +7,13 @@
 #include <memory>
 #include <string>
 
+#include "base/base_switches.h"
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/threading/thread_restrictions.h"
+#include "chrome/browser/extensions/load_error_reporter.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/value_store/value_store_factory_impl.h"
 #include "content/public/browser/browser_context.h"
@@ -219,6 +222,11 @@ void DesktopAndroidExtensionSystem::InitForRegularProfile(
   if (is_ready()) {
     return;
   }
+
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  bool allow_noisy_errors =
+      !command_line->HasSwitch(::switches::kNoErrorDialogs);
+  LoadErrorReporter::Init(allow_noisy_errors);
 
   registrar_delegate_ =
       std::make_unique<DesktopAndroidExtensionRegistrarDelegate>(

@@ -293,11 +293,8 @@ class BASE_EXPORT SysInfo {
   // including user-visible changes, for acceptable performance.
   // For general memory optimizations, consider |AmountOfPhysicalMemoryMB|.
   //
-  // On Android this returns:
-  //   true when memory <= 1GB on Android O and later.
-  //   true when memory <= 512MB on Android N and earlier.
-  // This is not the same as "low-memory" and will be false on a large number of
-  // <=1GB pre-O Android devices. See: |detectLowEndDevice| in SysUtils.java.
+  // On Android this returns true when memory <= 1GB on Android O and later.
+  // This is not the same as "low-memory".
   // On Desktop this returns true when memory <= 2GB.
   static bool IsLowEndDevice();
 

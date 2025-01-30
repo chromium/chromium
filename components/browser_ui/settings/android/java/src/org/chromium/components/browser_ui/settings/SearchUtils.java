@@ -4,17 +4,21 @@
 
 package org.chromium.components.browser_ui.settings;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ImageView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /** A helper class for applying the default search behavior to search items in Chromium settings. */
+@NullMarked
 public class SearchUtils {
     /**
      * This interface allows to react to changed search queries when initialized with
@@ -38,11 +42,13 @@ public class SearchUtils {
      * @param changeListener The listener to be notified when the user changes the query.
      */
     public static void initializeSearchView(
-            @NonNull MenuItem searchItem,
+            MenuItem searchItem,
             @Nullable String initialQuery,
             @Nullable Activity activity,
-            @NonNull QueryChangeListener changeListener) {
+            QueryChangeListener changeListener) {
         SearchView searchView = (SearchView) searchItem.getActionView();
+        assumeNonNull(searchView);
+
         searchView.setImeOptions(EditorInfo.IME_FLAG_NO_FULLSCREEN);
 
         // Restore the search view if a query was recovered.
@@ -110,8 +116,8 @@ public class SearchUtils {
      * @return Returns true if the item is a search item and could be handled. False otherwise.
      */
     public static boolean handleSearchNavigation(
-            @NonNull MenuItem selectedItem,
-            @NonNull MenuItem searchItem,
+            MenuItem selectedItem,
+            MenuItem searchItem,
             @Nullable String query,
             @Nullable Activity activity) {
         if (selectedItem.getItemId() != android.R.id.home || query == null) return false;
@@ -124,8 +130,9 @@ public class SearchUtils {
      * @param searchItem The menu item that contains the search item.
      * @param activity Optional. If set, overflow icons in the activity's action bar will be hidden.
      */
-    public static void clearSearch(@NonNull MenuItem searchItem, @Nullable Activity activity) {
+    public static void clearSearch(MenuItem searchItem, @Nullable Activity activity) {
         SearchView searchView = (SearchView) searchItem.getActionView();
+        assumeNonNull(searchView);
         searchView.setQuery(null, false);
         searchView.setIconified(true);
         searchItem.collapseActionView();
@@ -133,8 +140,9 @@ public class SearchUtils {
     }
 
     private static void updateActionBarButtons(
-            MenuItem searchItem, String query, @Nullable Activity activity) {
+            MenuItem searchItem, @Nullable String query, @Nullable Activity activity) {
         SearchView searchView = (SearchView) searchItem.getActionView();
+        assumeNonNull(searchView);
         ImageView clearButton = findSearchClearButton(searchView);
         clearButton.setVisibility(query == null || query.equals("") ? View.GONE : View.VISIBLE);
         if (activity != null) {

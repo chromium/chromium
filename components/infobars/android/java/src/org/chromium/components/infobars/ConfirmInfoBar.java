@@ -11,6 +11,7 @@ import androidx.annotation.ColorRes;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.infobar.ActionType;
 
 /**
@@ -19,6 +20,7 @@ import org.chromium.chrome.browser.infobar.ActionType;
  * TODO(newt): merge this into InfoBar.java.
  */
 @JNINamespace("infobars")
+@NullMarked
 public class ConfirmInfoBar extends InfoBar {
     /** Text shown on the primary button, e.g. "OK". */
     private final String mPrimaryButtonText;

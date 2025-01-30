@@ -4,19 +4,21 @@
 
 package org.chromium.components.browser_ui.device_lock;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.app.KeyguardManager;
 import android.content.Context;
-
-import androidx.annotation.NonNull;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.base.WindowAndroid;
 
 /** This bridge allows native web C++ code to launch DeviceLockActivity. */
+@NullMarked
 public class DeviceLockBridge {
     /**
      * Whether the Device Lock page has been shown to the user and acknowledged with a device lock
@@ -45,14 +47,14 @@ public class DeviceLockBridge {
      * flow.
      */
     @CalledByNative
-    private void launchDeviceLockUiBeforeRunningCallback(@NonNull WindowAndroid windowAndroid) {
+    private void launchDeviceLockUiBeforeRunningCallback(WindowAndroid windowAndroid) {
         if (mNativeDeviceLockBridge == 0) {
             return;
         }
         final Context context = windowAndroid.getContext().get();
         if (context != null) {
             DeviceLockActivityLauncher deviceLockActivityLauncher =
-                    DeviceLockActivityLauncherSupplier.from(windowAndroid).get();
+                    assumeNonNull(DeviceLockActivityLauncherSupplier.from(windowAndroid)).get();
             deviceLockActivityLauncher.launchDeviceLockActivity(
                     context,
                     null,

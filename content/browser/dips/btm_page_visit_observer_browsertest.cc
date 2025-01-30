@@ -240,6 +240,43 @@ IN_PROC_BROWSER_TEST_F(BtmPageVisitObserverBrowserTest, VisitDuration) {
               HasUrl(url3))));
 }
 
+IN_PROC_BROWSER_TEST_F(BtmPageVisitObserverBrowserTest, PageTransition) {
+  const GURL url1 =
+      embedded_https_test_server().GetURL("a.test", "/empty.html");
+  const GURL url2 =
+      embedded_https_test_server().GetURL("b.test", "/empty.html");
+  const GURL url3 =
+      embedded_https_test_server().GetURL("c.test", "/empty.html");
+  const ui::PageTransition transition_type2 = ui::PAGE_TRANSITION_AUTO_BOOKMARK;
+  const ui::PageTransition transition_type3 = ui::PAGE_TRANSITION_LINK;
+  WebContents* web_contents = shell()->web_contents();
+  BtmPageVisitRecorder recorder(web_contents);
+
+  ASSERT_TRUE(NavigateToURL(web_contents, url1));
+  NavigationController::LoadURLParams navigation_params2(url2);
+  navigation_params2.transition_type = transition_type2;
+  NavigateToURLBlockUntilNavigationsComplete(web_contents, navigation_params2,
+                                             1);
+  NavigationController::LoadURLParams navigation_params3(url3);
+  navigation_params3.transition_type = transition_type3;
+  NavigateToURLBlockUntilNavigationsComplete(web_contents, navigation_params3,
+                                             1);
+  ASSERT_TRUE(recorder.WaitForSize(3));
+
+  EXPECT_THAT(
+      recorder.visits(),
+      ElementsAre(AllOf(PreviousPage(HasUrl(GURL())),
+                        Navigation(PageTransitionCoreTypeIs(
+                            ui::PageTransition::PAGE_TRANSITION_TYPED)),
+                        HasUrl(url1)),
+                  AllOf(PreviousPage(HasUrl(url1)),
+                        Navigation(PageTransitionCoreTypeIs(transition_type2)),
+                        HasUrl(url2)),
+                  AllOf(PreviousPage(HasUrl(url2)),
+                        Navigation(PageTransitionCoreTypeIs(transition_type3)),
+                        HasUrl(url3))));
+}
+
 // WebAuthn tests do not work on Android because there is currently no way to
 // install a virtual authenticator.
 // TODO(crbug.com/40269763): Implement automated testing once the infrastructure

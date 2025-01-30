@@ -10,6 +10,10 @@
 // Implementation of a proto version of mojo_parse_message_fuzzer that sends
 // multiple messages per run.
 
+#include "build/build_config.h"
+#if BUILDFLAG(IS_WIN)
+#include "base/at_exit.h"
+#endif  // BUILDFLAG(IS_WIN)
 #include "base/functional/bind.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
@@ -63,6 +67,12 @@ struct Environment {
         "MojoParseMessageFuzzerProcess");
     mojo::core::Init();
   }
+
+#if BUILDFLAG(IS_WIN)
+  // Windows thread executor has a dependency on AtExitManager.
+  std::unique_ptr<base::AtExitManager> at_exit_manager_ =
+      std::make_unique<base::AtExitManager>();
+#endif  // BUILDFLAG(IS_WIN)
 
   // Task executor to send and handle messages on.
   base::SingleThreadTaskExecutor main_task_executor;

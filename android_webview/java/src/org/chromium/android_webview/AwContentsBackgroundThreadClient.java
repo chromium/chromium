@@ -4,14 +4,11 @@
 
 package org.chromium.android_webview;
 
-import androidx.annotation.NonNull;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.Log;
-import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 
 /**
  * Delegate for handling callbacks. All methods are called on the background thread.
@@ -22,31 +19,31 @@ import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 public abstract class AwContentsBackgroundThreadClient {
     private static final String TAG = "AwBgThreadClient";
 
-    public abstract WebResourceResponseInfo shouldInterceptRequest(
-            AwContentsClient.AwWebResourceRequest request);
+    public abstract void shouldInterceptRequest(
+            AwContentsClient.AwWebResourceRequest request, WebResponseCallback callback);
 
     // Protected methods ---------------------------------------------------------------------------
 
-    @NonNull
     @CalledByNative
-    private AwWebResourceInterceptResponse shouldInterceptRequestFromNative(
+    private void shouldInterceptRequestFromNative(
             String url,
             boolean isMainFrame,
             boolean hasUserGesture,
             String method,
             String[] requestHeaderNames,
-            String[] requestHeaderValues) {
+            String[] requestHeaderValues,
+            int requestId) {
+        WebResponseCallback callback = new WebResponseCallback(requestId);
         try {
-            return new AwWebResourceInterceptResponse(
-                    shouldInterceptRequest(
-                            new AwContentsClient.AwWebResourceRequest(
-                                    url,
-                                    isMainFrame,
-                                    hasUserGesture,
-                                    method,
-                                    requestHeaderNames,
-                                    requestHeaderValues)),
-                    /* raisedException= */ false);
+            shouldInterceptRequest(
+                    new AwContentsClient.AwWebResourceRequest(
+                            url,
+                            isMainFrame,
+                            hasUserGesture,
+                            method,
+                            requestHeaderNames,
+                            requestHeaderValues),
+                    callback);
         } catch (Throwable e) {
             Log.e(
                     TAG,
@@ -58,7 +55,7 @@ public abstract class AwContentsBackgroundThreadClient {
                         throw e;
                     });
 
-            return new AwWebResourceInterceptResponse(null, /* raisedException= */ true);
+            callback.clientRaisedException();
         }
     }
 }

@@ -303,17 +303,6 @@ void TabbedPaneTab::OnStateChanged() {
   // TabbedPaneTab design spec dictates special handling of font weight for
   // the windows platform when dealing with border style tabs.
   if (tab_strip_->GetStyle() == TabbedPane::TabStripStyle::kHighlight) {
-    // Notify assistive tools to update this tab's selected status. The way
-    // ChromeOS accessibility is implemented right now, firing almost any event
-    // will work, we just need to trigger its state to be refreshed.
-    if (state_ == State::kInactive) {
-      // TODO(crbug.com/325137417): This view doesn't set the AXCheckedState, it
-      // only sets the kSelected attribute. Investigate why this is and whether
-      // we should fire another type of event automatically from the
-      // accessibility cache.
-      NotifyAccessibilityEvent(ax::mojom::Event::kCheckedStateChanged, true);
-    }
-
     // Style the tab text according to the spec for highlight style tabs. We no
     // longer have windows specific bolding of text in this case.
     int font_size_delta = 1;

@@ -17,7 +17,6 @@ import("//chrome/browser/page_load_metrics/integration_tests/jsdeps.gni")
 import("//chrome/browser/page_load_metrics/integration_tests/sources.gni")
 import("//chrome/browser/sync/test/integration/sync_integration_tests.gni")
 import("//chrome/common/features.gni")
-
 import("//chrome/services/speech/buildflags/buildflags.gni")
 import("//chrome/test/include_js_tests.gni")
 import("//chrome/version.gni")
@@ -1774,6 +1773,7 @@ if (is_android) {
         "../browser/extensions/api/browsing_data/browsing_data_test.cc",
         "../browser/extensions/api/cookies/cookies_apitest.cc",
         "../browser/extensions/api/declarative_net_request/declarative_net_request_apitest.cc",
+        "../browser/extensions/api/declarative_net_request/declarative_net_request_browsertest.cc",
         "../browser/extensions/api/i18n/i18n_apitest.cc",
         "../browser/extensions/api/idle/idle_apitest.cc",
         "../browser/extensions/api/module/module_apitest.cc",
@@ -1809,6 +1809,7 @@ if (is_android) {
         "//components/web_package",
         "//components/web_package/test_support",
         "//extensions/common/api",
+        "//ui/webui:test_support",
       ]
 
       data += [
@@ -2117,7 +2118,6 @@ if (!is_android) {
       "//chrome/browser/ui/omnibox",
       "//chrome/browser/ui/page_action:icon_type",
       "//chrome/browser/ui/page_info",
-      "//chrome/browser/ui/pdf",
       "//chrome/browser/ui/permission_bubble:browser_tests",
       "//chrome/browser/ui/prefs:browser_tests",
       "//chrome/browser/ui/promos:utils",
@@ -3648,6 +3648,7 @@ if (!is_android) {
       deps += [
         "../browser/pdf",
         "../browser/pdf:pdf_extension_test_utils",
+        "../browser/ui/pdf",
         "//components/pdf/browser",
         "//components/pdf/common:constants",
         "//components/pdf/common:util",

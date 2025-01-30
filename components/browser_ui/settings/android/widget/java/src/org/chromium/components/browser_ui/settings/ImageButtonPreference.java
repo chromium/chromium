@@ -4,6 +4,8 @@
 
 package org.chromium.components.browser_ui.settings;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
@@ -11,15 +13,18 @@ import android.view.View;
 import androidx.annotation.DrawableRes;
 import androidx.preference.PreferenceViewHolder;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.widget.ChromeImageButton;
 
 /**
  * A preference with an ImageButton as widget. Clicks on the image button will trigger the
  * OnPreferenceClickListener. Clicks on the preference itself are ignored.
  */
+@NullMarked
 public class ImageButtonPreference extends ChromeBasePreference implements View.OnClickListener {
     private @DrawableRes int mImage;
-    private String mContentDescription;
+    private @Nullable String mContentDescription;
 
     public ImageButtonPreference(Context context) {
         super(context);
@@ -46,6 +51,7 @@ public class ImageButtonPreference extends ChromeBasePreference implements View.
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
         ChromeImageButton imageButton = (ChromeImageButton) holder.findViewById(R.id.image_button);
+        assumeNonNull(imageButton);
         imageButton.setImageResource(mImage);
         if (mContentDescription != null) {
             imageButton.setContentDescription(mContentDescription);

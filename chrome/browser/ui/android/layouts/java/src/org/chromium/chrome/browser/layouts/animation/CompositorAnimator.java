@@ -13,13 +13,13 @@ import android.provider.Settings;
 import android.util.FloatProperty;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableFloatPropertyKey;
@@ -30,6 +30,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 /** An animator that can be used for animations in the Browser Compositor. */
+@NullMarked
 public class CompositorAnimator extends Animator {
     private static final String TAG = "CompositorAnimator";
 
@@ -85,9 +86,11 @@ public class CompositorAnimator extends Animator {
     private float mAnimatedFraction;
 
     /** The value that the animation should start with (ending at {@link #mEndValue}). */
+    @SuppressWarnings("NullAway.Init")
     private Supplier<Float> mStartValue;
 
     /** The value that the animation will transition to (starting at {@link #mStartValue}). */
+    @SuppressWarnings("NullAway.Init")
     private Supplier<Float> mEndValue;
 
     /** The duration of the animation in ms. */
@@ -330,7 +333,7 @@ public class CompositorAnimator extends Animator {
      * Create a new animator for the current context.
      * @param handler The {@link CompositorAnimationHandler} responsible for running the animation.
      */
-    public CompositorAnimator(@NonNull CompositorAnimationHandler handler) {
+    public CompositorAnimator(CompositorAnimationHandler handler) {
         mHandler = new WeakReference<>(handler);
 
         // The default interpolator is decelerate; this mimics the existing ChromeAnimation

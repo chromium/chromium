@@ -76,7 +76,7 @@ public class MessageUtils {
     }
 
     /** Returns the collaboration id or null. */
-    public static String extractCollaborationId(@Nullable InstantMessage message) {
+    public static @Nullable String extractCollaborationId(@Nullable InstantMessage message) {
         return message == null || message.attribution == null
                 ? null
                 : message.attribution.collaborationId;

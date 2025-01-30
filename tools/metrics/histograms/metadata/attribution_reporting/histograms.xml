@@ -240,6 +240,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Conversions.AggregatableReport.TimeFromTriggerToReportSentSuccessfullyExceeds30Days"
+    enum="Boolean" expires_after="2025-05-25">
+  <owner>tquintanilla@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records whether the time difference between a trigger and its reporting is
+    greater than 30 days. This is emitted only when an aggregatable report is
+    sent successfully to the reporting endpoint, and not emitted for debug
+    reports.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.AggregatableReport.TotalBudgetPerReport"
     units="budget consumed" expires_after="2025-03-16">
   <owner>linnan@chromium.org</owner>
@@ -1365,6 +1378,19 @@ chromium-metrics-reviews@google.com.
     Records the time between a trigger and its reporting. This is emitted only
     when an event-level report is sent successfully to the reporting endpoint,
     and not emitted for debug reports.
+  </summary>
+</histogram>
+
+<histogram
+    name="Conversions.TimeFromTriggerToReportSentSuccessfullyExceeds30Days"
+    enum="Boolean" expires_after="2025-05-25">
+  <owner>tquintanilla@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records whether the time difference between a trigger and its reporting is
+    greater than 30 days. This is emitted only when an event-level report is
+    sent successfully to the reporting endpoint, and not emitted for debug
+    reports.
   </summary>
 </histogram>
 

@@ -415,10 +415,11 @@ public class StripLayoutHelper
     private float mRightMargin;
     private float mLeftFadeWidth;
     private float mRightFadeWidth;
-    // Padding regions on both ends of the strip where strip touch events are blocked. Different
-    // than margins, no strip widgets should be drawn within the padding region.
+    // Padding regions on the edges of the strip where strip touch events are blocked. Different
+    // from margins, no strip widgets should be drawn within the padding regions.
     private float mLeftPadding;
     private float mRightPadding;
+    private float mTopPadding;
 
     // New tab button with tab strip end padding
     private final float mFixedEndPadding;
@@ -521,7 +522,6 @@ public class StripLayoutHelper
      * @param actionConfirmationManager The {@link ActionConfirmationManager} for group actions.
      * @param modalDialogManager The {@link ModalDialogManager} for the context menu.
      * @param dataSharingTabManager The {@link DataSharingTabManager} for shared groups.
-     * @param tabStripHeight The height of current tab strip.
      * @param tabStripVisibleSupplier Supplier of the boolean indicating whether the tab strip is
      *     visible. The tab strip can be hidden due to the tab switcher being displayed or the
      *     window width is less than 600dp.
@@ -572,7 +572,8 @@ public class StripLayoutHelper
                         NEW_TAB_BUTTON_BACKGROUND_WIDTH_DP,
                         NEW_TAB_BUTTON_BACKGROUND_HEIGHT_DP,
                         this,
-                        R.drawable.ic_new_tab_button);
+                        R.drawable.ic_new_tab_button,
+                        NEW_TAB_BUTTON_CLICK_SLOP_DP);
         mNewTabButton.setBackgroundResourceId(R.drawable.bg_circle_tab_strip_button);
 
         int apsBackgroundHoveredTint =
@@ -642,7 +643,6 @@ public class StripLayoutHelper
         mNewTabButton.setDrawY(NEW_TAB_BUTTON_BACKGROUND_Y_OFFSET_DP);
 
         mNewTabButton.setIncognito(incognito);
-        mNewTabButton.setClickSlop(NEW_TAB_BUTTON_CLICK_SLOP_DP);
         Resources res = context.getResources();
         mNewTabButton.setAccessibilityDescription(
                 res.getString(R.string.accessibility_toolbar_btn_new_tab),
@@ -911,6 +911,7 @@ public class StripLayoutHelper
      * @param time The current time of the app in ms.
      * @param leftPadding The new left padding.
      * @param rightPadding The new right padding.
+     * @param topPadding The new top padding.
      */
     public void onSizeChanged(
             float width,
@@ -918,11 +919,13 @@ public class StripLayoutHelper
             boolean orientationChanged,
             long time,
             float leftPadding,
-            float rightPadding) {
+            float rightPadding,
+            float topPadding) {
         if (mWidth == width
                 && mHeight == height
                 && leftPadding == mLeftPadding
-                && rightPadding == mRightPadding) {
+                && rightPadding == mRightPadding
+                && topPadding == mTopPadding) {
             return;
         }
 
@@ -935,10 +938,19 @@ public class StripLayoutHelper
         mHeight = height;
         mLeftPadding = leftPadding;
         mRightPadding = rightPadding;
+        boolean topPaddingChanged = topPadding != mTopPadding;
+        mTopPadding = topPadding;
 
         for (int i = 0; i < mStripViews.length; i++) {
             final StripLayoutView view = mStripViews[i];
+            if (topPaddingChanged) {
+                view.setTouchTargetInsets(null, mTopPadding, null, -mTopPadding);
+            }
             view.setHeight(mHeight);
+        }
+
+        if (topPaddingChanged) {
+            mNewTabButton.setTouchTargetInsets(null, mTopPadding, null, -mTopPadding);
         }
 
         updateMargins(recalculateTabWidth);
@@ -1837,29 +1849,26 @@ public class StripLayoutHelper
         // 1. Reset the button state.
         mNewTabButton.drag(x, y);
 
-        // 2. Enter reorder mode either if a. the view was initially clicked by a mouse or b. the
-        // view was long-pressed, but we suppressed reorder mode to instead show the view's context
-        // menu. For case 2.b., dismiss the aforementioned context menu.
+        // 2.a. Enter reorder mode either if the view was initially clicked by a mouse OR the view
+        // was long-pressed, but we suppressed reorder mode to instead show the view's context menu.
+        // In the second case, dismiss the aforementioned context menu.
         boolean shouldTriggerReorder =
-                !mReorderDelegate.getInReorderMode()
+                mDelayedReorderView != null
+                        && !mReorderDelegate.getInReorderMode()
                         && (Math.abs(x - mDelayedReorderInitialX) > INITIATE_REORDER_DRAG_THRESHOLD
                                 || !isViewContextMenuShowing());
-        if (mDelayedReorderView != null && shouldTriggerReorder) {
-            if (!(mDelayedReorderView instanceof StripLayoutGroupTitle)
-                    || ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_STRIP_GROUP_REORDER)) {
-                if (isViewContextMenuShowing()) mTabGroupContextMenuCoordinator.dismiss();
-                // Intentionally start the reorder at the initial long-press x. The difference from
-                // the current event (accumulatedDeltaX in step 3) will then "snap" the interacting
-                // view to its expected position.
-                startReorderMode(
-                        mDelayedReorderInitialX,
-                        y,
-                        mDelayedReorderView,
-                        ReorderType.START_DRAG_DROP);
-            }
-        }
-
-        if (mReorderDelegate.getInReorderMode()) {
+        boolean canReorderViewType =
+                !(mDelayedReorderView instanceof StripLayoutGroupTitle)
+                        || ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_STRIP_GROUP_REORDER);
+        if (shouldTriggerReorder && canReorderViewType) {
+            if (isViewContextMenuShowing()) mTabGroupContextMenuCoordinator.dismiss();
+            // Intentionally start the reorder at the initial long-press x. The difference from the
+            // current event (accumulatedDeltaX in step 3) will then "snap" the interacting view to
+            // its expected position.
+            startReorderMode(
+                    mDelayedReorderInitialX, y, mDelayedReorderView, ReorderType.START_DRAG_DROP);
+        } else if (mReorderDelegate.getInReorderMode()) {
+            // 2.b. If already reordering, instead update the in-progress reorder.
             mReorderDelegate.updateReorderPosition(
                     mStripViews,
                     mStripGroupTitles,
@@ -1868,7 +1877,7 @@ public class StripLayoutHelper
                     deltaX,
                     ReorderType.DRAG_WITHIN_STRIP);
         } else if (!isViewContextMenuShowing()) {
-            // 3.b. Handle scroll if the tab group context menu is not showing.
+            // 2.c. Otherwise, if the context menu is not showing, scroll the tab strip.
             if (!mIsStripScrollInProgress) {
                 mIsStripScrollInProgress = true;
                 RecordUserAction.record("MobileToolbarSlideTabs");
@@ -2362,7 +2371,8 @@ public class StripLayoutHelper
                 isSelectedTab(mLastHoveredTab.getTabId()),
                 mLastHoveredTab.getDrawX(),
                 mLastHoveredTab.getWidth(),
-                mHeight);
+                mHeight,
+                mTopPadding);
     }
 
     private void updateHoveredTabAttachedState(StripLayoutTab tab, boolean hovered) {
@@ -3125,6 +3135,7 @@ public class StripLayoutHelper
     private void pushPropertiesToGroupTitle(StripLayoutGroupTitle groupTitle) {
         groupTitle.setDrawY(0);
         groupTitle.setHeight(mHeight);
+        groupTitle.setTouchTargetInsets(null, mTopPadding, null, -mTopPadding);
     }
 
     @VisibleForTesting
@@ -3360,6 +3371,7 @@ public class StripLayoutHelper
         boolean shouldShowCloseButton = mCachedTabWidthSupplier.get() >= TAB_WIDTH_MEDIUM;
         tab.setCanShowCloseButton(shouldShowCloseButton, false);
         tab.setHeight(mHeight);
+        tab.setTouchTargetInsets(null, mTopPadding, null, -mTopPadding);
     }
 
     /**

@@ -4,6 +4,8 @@
 
 package org.chromium.components.browser_ui.settings;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
@@ -15,6 +17,8 @@ import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.preference.PreferenceGroup;
 import androidx.preference.PreferenceViewHolder;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.drawable.StateListDrawableBuilder;
 import org.chromium.ui.widget.CheckableImageView;
 
@@ -24,9 +28,10 @@ import org.chromium.ui.widget.CheckableImageView;
  * {@link #setExpanded} to toggle collapsed/expanded state. Please note that this preference group
  * won't modify the set of children preferences on expanded state change.
  */
+@NullMarked
 public class ExpandablePreferenceGroup extends PreferenceGroup {
     private boolean mExpanded = true;
-    private Drawable mDrawable;
+    private @Nullable Drawable mDrawable;
 
     public ExpandablePreferenceGroup(Context context, AttributeSet attrs) {
         super(context, attrs, R.attr.preferenceStyle);
@@ -61,7 +66,7 @@ public class ExpandablePreferenceGroup extends PreferenceGroup {
             mDrawable = createDrawable(getContext());
         }
         CheckableImageView imageView =
-                (CheckableImageView) holder.findViewById(R.id.checkable_image_view);
+                (CheckableImageView) assumeNonNull(holder.findViewById(R.id.checkable_image_view));
         imageView.setImageDrawable(mDrawable);
         imageView.setChecked(mExpanded);
 

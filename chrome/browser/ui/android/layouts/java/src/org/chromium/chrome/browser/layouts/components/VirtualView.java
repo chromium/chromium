@@ -5,10 +5,13 @@ package org.chromium.chrome.browser.layouts.components;
 
 import android.graphics.RectF;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * {@link VirtualView} is the minimal interface that provides information for
  * building accessibility events.
  */
+@NullMarked
 public interface VirtualView {
     /**
      * @return A string with a description of the object for accessibility events.

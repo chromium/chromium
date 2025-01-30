@@ -18,7 +18,8 @@ namespace content {
 BtmNavigationInfo::BtmNavigationInfo(NavigationHandle& navigation_handle)
     : was_user_initiated(!navigation_handle.IsRendererInitiated() ||
                          navigation_handle.HasUserGesture()),
-      was_renderer_initiated(navigation_handle.IsRendererInitiated()) {}
+      was_renderer_initiated(navigation_handle.IsRendererInitiated()),
+      page_transition(navigation_handle.GetPageTransition()) {}
 BtmNavigationInfo::BtmNavigationInfo(const BtmNavigationInfo&) = default;
 BtmNavigationInfo::BtmNavigationInfo(BtmNavigationInfo&&) = default;
 BtmNavigationInfo::~BtmNavigationInfo() = default;

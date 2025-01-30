@@ -136,6 +136,8 @@ std::u16string AutofillProgressDialogControllerImpl::GetCancelButtonLabel()
 std::u16string AutofillProgressDialogControllerImpl::GetLoadingMessage() const {
   switch (autofill_progress_dialog_type_) {
     case AutofillProgressDialogType::kVirtualCardUnmaskProgressDialog:
+    case AutofillProgressDialogType::
+        kCardInfoRetrievalEnrolledUnmaskProgressDialog:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_CARD_UNMASK_PROGRESS_BAR_MESSAGE);
     case AutofillProgressDialogType::kServerCardUnmaskProgressDialog:
@@ -147,10 +149,6 @@ std::u16string AutofillProgressDialogControllerImpl::GetLoadingMessage() const {
     case AutofillProgressDialogType::k3dsFetchVcnProgressDialog:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_3DS_FETCH_VCN_PROGRESS_DIALOG_LOADING_MESSAGE);
-    case AutofillProgressDialogType::
-        kCardInfoRetrievalEnrolledUnmaskProgressDialog:
-      return l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_CARD_INFO_RETRIEVAL_ENROLLED_CARD_UNMASK_PROGRESS_BAR_MESSAGE);
     case AutofillProgressDialogType::kUnspecified:
       NOTREACHED();
   }

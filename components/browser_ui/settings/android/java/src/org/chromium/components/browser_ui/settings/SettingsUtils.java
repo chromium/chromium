@@ -14,15 +14,17 @@ import android.view.ViewTreeObserver.OnScrollChangedListener;
 
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
-import androidx.annotation.Nullable;
 import androidx.annotation.XmlRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.Toolbar;
 import androidx.preference.PreferenceFragmentCompat;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.util.ToolbarUtils;
 
 /** A helper class for Settings. */
+@NullMarked
 public class SettingsUtils {
     /**
      * A helper that is used to load preferences from XML resources without causing a

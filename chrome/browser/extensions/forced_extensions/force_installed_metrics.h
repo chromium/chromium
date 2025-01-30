@@ -53,8 +53,9 @@ class ForceInstalledMetrics : public ForceInstalledTracker::Observer {
     // USER_TYPE_ARC_KIOSK_APP_DEPRECATED = 7,
     USER_TYPE_ACTIVE_DIRECTORY = 8,
     USER_TYPE_WEB_KIOSK_APP = 9,
+    USER_TYPE_KIOSK_IWA = 10,
     // Maximum histogram value.
-    kMaxValue = USER_TYPE_WEB_KIOSK_APP
+    kMaxValue = USER_TYPE_KIOSK_IWA
   };
 
   // ForceInstalledTracker::Observer overrides:

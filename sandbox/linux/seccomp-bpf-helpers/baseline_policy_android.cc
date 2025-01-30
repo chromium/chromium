@@ -49,6 +49,18 @@ namespace sandbox {
 #define SOCK_NONBLOCK O_NONBLOCK
 #endif
 
+#ifndef UFFDIO_MOVE
+#define _UFFDIO_MOVE (0x05)
+struct uffdio_move {
+  __u64 dst;
+  __u64 src;
+  __u64 len;
+  __u64 mode;
+  __s64 move;
+};
+#define UFFDIO_MOVE _IOWR(UFFDIO, _UFFDIO_MOVE, struct uffdio_move)
+#endif
+
 namespace {
 
 #if !defined(__i386__)
@@ -112,7 +124,9 @@ ResultExpr RestrictAndroidIoctl(bool allow_userfaultfd_ioctls) {
       .Cases(
           {// userfaultfd ART GC (https://crbug.com/1300653).
            UFFDIO_REGISTER, UFFDIO_UNREGISTER, UFFDIO_WAKE, UFFDIO_COPY,
-           UFFDIO_ZEROPAGE, UFFDIO_CONTINUE},
+           UFFDIO_ZEROPAGE, UFFDIO_CONTINUE,
+           // crbug.com/393204193
+           UFFDIO_MOVE},
           If(BoolConst(allow_userfaultfd_ioctls), Allow())
               .Else(RestrictIoctl()))
       .Cases(

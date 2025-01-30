@@ -683,32 +683,20 @@ public class AwContents implements SmartClipProvider {
         // All methods are called on the background thread.
 
         @Override
-        public WebResourceResponseInfo shouldInterceptRequest(
-                AwContentsClient.AwWebResourceRequest request) {
+        public void shouldInterceptRequest(
+                AwContentsClient.AwWebResourceRequest request, WebResponseCallback callback) {
             String url = request.url;
             WebResourceResponseInfo webResourceResponseInfo;
+            callback.setAwContentsClient(mContentsClient);
             // Return the response directly if the url is default video poster url.
             webResourceResponseInfo = mDefaultVideoPosterRequestHandler.shouldInterceptRequest(url);
-            if (webResourceResponseInfo != null) return webResourceResponseInfo;
+            if (webResourceResponseInfo != null) {
+                callback.intercept(webResourceResponseInfo, request);
+                return;
+            }
 
             webResourceResponseInfo = mContentsClient.shouldInterceptRequest(request);
-
-            if (webResourceResponseInfo == null) {
-                mContentsClient.getCallbackHelper().postOnLoadResource(url);
-            }
-
-            if (webResourceResponseInfo != null && webResourceResponseInfo.getData() == null) {
-                // In this case the intercepted URLRequest job will simulate an empty response
-                // which doesn't trigger the onReceivedError callback. For WebViewClassic
-                // compatibility we synthesize that callback.  http://crbug.com/180950
-                mContentsClient
-                        .getCallbackHelper()
-                        .postOnReceivedError(
-                                request,
-                                /* error description filled in by the glue layer */
-                                new AwContentsClient.AwWebResourceError());
-            }
-            return webResourceResponseInfo;
+            callback.intercept(webResourceResponseInfo, request);
         }
     }
 

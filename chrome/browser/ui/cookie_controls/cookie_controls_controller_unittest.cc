@@ -10,7 +10,6 @@
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
-#include "components/prefs/pref_service.h"
 #include "chrome/browser/fingerprinting_protection/chrome_fingerprinting_protection_web_contents_helper_factory.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -26,6 +25,7 @@
 #include "components/content_settings/core/common/tracking_protection_feature.h"
 #include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_web_contents_helper.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
+#include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/site_engagement/content/site_engagement_service.h"
@@ -1702,6 +1702,8 @@ class CookieControlsUserBypassIncognitoTest
             TrackingProtectionSettingsFactory::GetForProfile(
                 incognito_profile()),
             /*is_incognito_profile=*/true);
+
+    incognito_cookie_controls_->AddObserver(mock());
   }
 
   void TearDown() override {
@@ -1753,6 +1755,28 @@ TEST_F(CookieControlsUserBypassIncognitoTest,
   EXPECT_FALSE(
       tracking_protection_settings->HasTrackingProtectionException(GURL(kUrl)));
 
+  testing::Mock::VerifyAndClearExpectations(mock());
+}
+
+TEST_F(CookieControlsUserBypassIncognitoTest, ToggleUpdatesUi) {
+  incognito_cookie_controls()->Update(web_contents());
+  NavigateAndCommit(GURL(kUrl));
+
+  EXPECT_CALL(*mock(),
+              OnStatusChanged(
+                  /*controls_visible=*/true, /*protections_on=*/false,
+                  CookieControlsEnforcement::kNoEnforcement,
+                  CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration(),
+                  GetThirdPartyCookiesFeatureForEnforcement(
+                      CookieControlsEnforcement::kNoEnforcement,
+                      BlockingStatus::kAllowed)));
+
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
+                           /*icon_visible=*/true, /*protections_on=*/false,
+                           CookieBlocking3pcdStatus::kNotIn3pcd,
+                           /*should_highlight=*/false));
+
+  incognito_cookie_controls()->OnCookieBlockingEnabledForSite(false);
   testing::Mock::VerifyAndClearExpectations(mock());
 }
 

@@ -500,6 +500,13 @@ public class StripLayoutGroupTitle extends StripLayoutView {
     }
 
     /**
+     * @return The padding between title text end and bubble.
+     */
+    public float getBubblePadding() {
+        return NOTIFICATION_BUBBLE_PADDING_DP;
+    }
+
+    /**
      * @return Whether the group is shared.
      */
     public boolean isGroupSharedForTesting() {

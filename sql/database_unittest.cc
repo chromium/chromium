@@ -2371,10 +2371,12 @@ TEST_P(SQLDatabaseTest, OpenFails_WindowsExclusiveReadMode) {
                                 base::File::FLAG_WIN_EXCLUSIVE_READ);
   ASSERT_TRUE(file.IsValid());
 
+  base::HistogramTester tester;
   sql::test::ScopedErrorExpecter expecter;
   expecter.ExpectError(SQLITE_CANTOPEN);
   ASSERT_FALSE(db_->Open(db_path_));
   ASSERT_TRUE(expecter.SawExpectedErrors());
+  tester.ExpectTotalCount("Sql.Database.Open.FailureReason.Test", 1);
   db_->Close();
 
   file.Close();
@@ -2390,10 +2392,12 @@ TEST_P(SQLDatabaseTest, OpenFails_WindowsExclusiveWriteMode) {
                                 base::File::FLAG_WIN_EXCLUSIVE_WRITE);
   ASSERT_TRUE(file.IsValid());
 
+  base::HistogramTester tester;
   sql::test::ScopedErrorExpecter expecter;
   expecter.ExpectError(SQLITE_READONLY);
   ASSERT_FALSE(db_->Open(db_path_));
   ASSERT_TRUE(expecter.SawExpectedErrors());
+  tester.ExpectTotalCount("Sql.Database.Open.FailureReason.Test", 1);
   db_->Close();
 
   file.Close();
@@ -2409,10 +2413,12 @@ TEST_P(SQLDatabaseTest, OpenFails_ExclusiveLock) {
   ASSERT_EQ(base::File::FILE_OK, file.Lock(base::File::LockMode::kExclusive));
 
   {
+    base::HistogramTester tester;
     sql::test::ScopedErrorExpecter expecter;
     expecter.ExpectError(SQLITE_IOERR_READ);
     ASSERT_FALSE(db_->Open(db_path_));
     ASSERT_TRUE(expecter.SawExpectedErrors());
+    tester.ExpectTotalCount("Sql.Database.Open.FailureReason.Test", 1);
     db_->Close();
   }
 
@@ -2432,10 +2438,12 @@ TEST_P(SQLDatabaseTest, OpenFails_SharedLock) {
   ASSERT_EQ(base::File::FILE_OK, file.Lock(base::File::LockMode::kShared));
 
   {
+    base::HistogramTester tester;
     sql::test::ScopedErrorExpecter expecter;
     expecter.ExpectError(SQLITE_BUSY);
     ASSERT_FALSE(db_->Open(db_path_));
     ASSERT_TRUE(expecter.SawExpectedErrors());
+    tester.ExpectTotalCount("Sql.Database.Open.FailureReason.Test", 1);
     db_->Close();
   }
 

@@ -4,12 +4,12 @@
 
 package org.chromium.components.content_relationship_verification;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.net.Uri;
 import android.os.SystemClock;
 import android.text.TextUtils;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -22,6 +22,8 @@ import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.BrowserContextHandle;
@@ -46,6 +48,7 @@ import java.util.Set;
  * kept alive as it is serving requests, but destroyed once all requests are finished.
  *
  */
+@NullMarked
 public abstract class OriginVerifier {
     private static final String TAG = "OriginVerifier";
 
@@ -53,7 +56,7 @@ public abstract class OriginVerifier {
     public static final String HANDLE_ALL_URLS = "delegate_permission/common.handle_all_urls";
 
     public final String mPackageName;
-    public final List<String> mSignatureFingerprints;
+    public final @Nullable List<String> mSignatureFingerprints;
     public final String mRelation;
     public final Map<Origin, Set<OriginVerificationListener>> mListeners = new HashMap<>();
 
@@ -61,7 +64,7 @@ public abstract class OriginVerifier {
     private long mVerificationStartTime;
     private final VerificationResultStore mVerificationResultStore;
 
-    @Nullable public WebContents mWebContents;
+    public @Nullable WebContents mWebContents;
 
     public static enum VerifierResult {
         ONLINE_SUCCESS,
@@ -76,9 +79,9 @@ public abstract class OriginVerifier {
     public class VerifiedCallback implements Runnable {
         private final Origin mOrigin;
         private final boolean mResult;
-        private final Boolean mOnline;
+        private final @Nullable Boolean mOnline;
 
-        public VerifiedCallback(Origin origin, boolean result, Boolean online) {
+        public VerifiedCallback(Origin origin, boolean result, @Nullable Boolean online) {
             mOrigin = origin;
             mResult = result;
             mOnline = online;
@@ -112,7 +115,8 @@ public abstract class OriginVerifier {
          *               verification had already been attempted this Chrome lifetime and the
          *               result was cached or the origin was not https).
          */
-        void onOriginVerified(String packageName, Origin origin, boolean verified, Boolean online);
+        void onOriginVerified(
+                String packageName, Origin origin, boolean verified, @Nullable Boolean online);
     }
 
     /**
@@ -155,7 +159,7 @@ public abstract class OriginVerifier {
      * @param listener The listener who will get the verification result.
      * @param origin The postMessage origin the application is claiming to have. Can't be null.
      */
-    public void start(@NonNull OriginVerificationListener listener, @NonNull Origin origin) {
+    public void start(OriginVerificationListener listener, Origin origin) {
         ThreadUtils.assertOnUiThread();
         if (mListeners.containsKey(origin)) {
             // We already have an ongoing verification for that origin, just add the listener.
@@ -172,13 +176,13 @@ public abstract class OriginVerifier {
      * Performs the DAL-validation, do not call directly, call #start to register listeners for
      * receiving the results of the validation.
      */
-    public void validate(@NonNull Origin origin) {
+    public void validate(Origin origin) {
         assert mNativeOriginVerifier != 0
                 : "Either provide a browserContextHandle to "
                         + "OriginVerifier#ctor or call initNativeOriginVerifier.";
 
         String scheme = origin.uri().getScheme();
-        String host = origin.uri().getHost();
+        String host = assumeNonNull(origin.uri().getHost());
         if (TextUtils.isEmpty(scheme)
                 || (UrlConstants.HTTP_SCHEME.equals(scheme.toLowerCase(Locale.US))
                         && !UrlConstants.LOCALHOST.equals(host.toLowerCase(Locale.US)))) {
@@ -268,7 +272,7 @@ public abstract class OriginVerifier {
     }
 
     /** Deal with the result of an Origin check. Will be called on UI Thread. */
-    private void originVerified(Origin origin, boolean originVerified, Boolean online) {
+    private void originVerified(Origin origin, boolean originVerified, @Nullable Boolean online) {
         if (originVerified) {
             Log.d(TAG, "Adding: %s for %s", mPackageName, origin);
             mVerificationResultStore.addRelationship(
@@ -314,7 +318,7 @@ public abstract class OriginVerifier {
     }
 
     /** Checks for a previously saved verification result. */
-    public boolean checkForSavedResult(Origin origin) {
+    public boolean checkForSavedResult(@Nullable Origin origin) {
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
             return mVerificationResultStore.isRelationshipSaved(
                     new Relationship(mPackageName, mSignatureFingerprints, origin, mRelation));
@@ -371,7 +375,7 @@ public abstract class OriginVerifier {
                 long nativeOriginVerifier,
                 OriginVerifier caller,
                 String packageName,
-                String[] signatureFingerprint,
+                String @Nullable [] signatureFingerprint,
                 String origin,
                 String relationship,
                 @Nullable WebContents webContents);

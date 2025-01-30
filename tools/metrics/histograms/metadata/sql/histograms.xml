@@ -77,6 +77,17 @@ chromium-metrics-reviews@google.com.
   <variant name="Web" summary="Web"/>
 </variants>
 
+<histogram name="Sql.Database.Open.FailureReason.{DatabaseTag}"
+    enum="OpenDatabaseFailedReason" expires_after="2025-12-03">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
+  <summary>
+    Reports the fine-grained reason for a failure in Database::Open. Recorded
+    once per failure to open the {DatabaseTag} database.
+  </summary>
+  <token key="DatabaseTag" variants="DatabaseTag"/>
+</histogram>
+
 <histogram name="Sql.Database.Open.FirstAttempt.Error.{DatabaseTag}"
     enum="SqliteResultCode" expires_after="2025-12-03">
   <owner>anthonyvd@chromium.org</owner>

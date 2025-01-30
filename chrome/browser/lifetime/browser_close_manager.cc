@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <iterator>
+#include <ranges>
 #include <vector>
 
 #include "base/containers/contains.h"
@@ -43,9 +44,9 @@ namespace {
 // instance.
 class BrowserListIterator : public BrowserListObserver {
  public:
-  BrowserListIterator() {
-    std::ranges::copy(*BrowserList::GetInstance(),
-                      std::inserter(browsers_, browsers_.begin()));
+  BrowserListIterator()
+      : browsers_(BrowserList::GetInstance()->begin(),
+                  BrowserList::GetInstance()->end()) {
     BrowserList::GetInstance()->AddObserver(this);
   }
   BrowserListIterator(const BrowserListIterator&) = delete;
@@ -54,19 +55,26 @@ class BrowserListIterator : public BrowserListObserver {
     BrowserList::GetInstance()->RemoveObserver(this);
   }
 
-  void OnBrowserAdded(Browser* browser) override { browsers_.insert(browser); }
-  void OnBrowserRemoved(Browser* browser) override { browsers_.erase(browser); }
+  void OnBrowserAdded(Browser* browser) override {
+    browsers_.push_back(browser);
+  }
+  void OnBrowserRemoved(Browser* browser) override {
+    auto it = std::ranges::find(browsers_.begin(), browsers_.end(), browser);
+    if (it != browsers_.end()) {
+      browsers_.erase(it);
+    }
+  }
   bool IsEmpty() const { return browsers_.empty(); }
 
   Browser* Pop() {
-    Browser* browser = *browsers_.begin();
+    Browser* browser = browsers_.front();
     browsers_.erase(browsers_.begin());
     DCHECK(base::Contains(*BrowserList::GetInstance(), browser));
     return browser;
   }
 
  private:
-  std::set<Browser*> browsers_;
+  BrowserList::BrowserVector browsers_;
 };
 
 // Navigates a browser window for |profile|, creating one if necessary, to the

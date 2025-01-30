@@ -6,6 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/check.h"
 #import "base/logging.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
@@ -19,6 +20,9 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
+using optimization_guide::proto::BlingPrototypingRequest_ModelEnum;
+using optimization_guide::proto::BlingPrototypingRequest_ModelEnum_Name;
+
 @implementation AIPrototypingFreeformViewController {
   UIButton* _serverSideSubmitButton;
   UIButton* _onDeviceSubmitButton;
@@ -28,6 +32,8 @@
   UISlider* _temperatureSlider;
   UILabel* _temperatureLabel;
   UITextView* _responseContainer;
+  UIButton* _modelPickerButton;
+  BlingPrototypingRequest_ModelEnum _currentModelPicked;
 }
 
 // Synthesized from `AIPrototypingViewControllerProtocol`.
@@ -119,6 +125,18 @@
   temperatureContainer.spacing = kButtonStackViewSpacing;
   temperatureContainer.alignment = UIStackViewAlignmentCenter;
 
+  // Model picker button.
+  _modelPickerButton = [UIButton buttonWithType:UIButtonTypeSystem];
+  _modelPickerButton.layer.borderColor = [primaryColor CGColor];
+  _modelPickerButton.layer.borderWidth = kBorderWidth;
+  _modelPickerButton.layer.cornerRadius = kCornerRadius;
+  [_modelPickerButton
+      setTitle:l10n_util::GetNSString(IDS_IOS_AI_PROTOTYPING_MODEL_PICKER)
+      forState:UIControlStateNormal];
+  [_modelPickerButton setTitleColor:primaryColor forState:UIControlStateNormal];
+  _modelPickerButton.showsMenuAsPrimaryAction = YES;
+  _modelPickerButton.menu = [self createModelPickerButtonMenu];
+
   // Submit buttons.
   _serverSideSubmitButton = [UIButton buttonWithType:UIButtonTypeSystem];
   _serverSideSubmitButton.backgroundColor = [UIColor colorNamed:kBlueColor];
@@ -173,7 +191,8 @@
 
   UIStackView* stackView = [[UIStackView alloc] initWithArrangedSubviews:@[
     label, systemInstructionsFieldContainer, queryFieldContainer,
-    switchContainer, temperatureContainer, buttonStackView, _responseContainer
+    _modelPickerButton, switchContainer, temperatureContainer, buttonStackView,
+    _responseContainer
   ]];
   stackView.translatesAutoresizingMaskIntoConstraints = NO;
   stackView.axis = UILayoutConstraintAxisVertical;
@@ -221,7 +240,8 @@
   [self.mutator executeFreeformServerQuery:_queryField.text
                         systemInstructions:_systemInstructionsField.text
                         includePageContext:_includePageContextSwitch.isOn
-                               temperature:_temperatureSlider.value];
+                               temperature:_temperatureSlider.value
+                                     model:_currentModelPicked];
 }
 
 - (void)onDeviceSubmitButtonPressed:(UIButton*)button {
@@ -265,6 +285,58 @@
       [[UIColor colorNamed:kTextPrimaryColor] CGColor];
   container.layer.borderWidth = kBorderWidth;
   return container;
+}
+
+// Creates the menu for the model picker button.
+- (UIMenu*)createModelPickerButtonMenu {
+  NSMutableArray<UIAction*>* models = [NSMutableArray array];
+  __weak AIPrototypingFreeformViewController* weakSelf = self;
+
+  // Iterate over every model enum value, create the associated action and
+  // populate the menu with said actions.
+  for (int i = optimization_guide::proto::
+           BlingPrototypingRequest_ModelEnum_ModelEnum_MIN;
+       i <= optimization_guide::proto::
+                BlingPrototypingRequest_ModelEnum_ModelEnum_MAX;
+       ++i) {
+    CHECK(optimization_guide::proto::BlingPrototypingRequest_ModelEnum_IsValid(
+        i));
+
+    BlingPrototypingRequest_ModelEnum enum_value =
+        static_cast<BlingPrototypingRequest_ModelEnum>(i);
+    std::string enum_name = BlingPrototypingRequest_ModelEnum_Name(enum_value);
+
+    UIAction* menuAction = [UIAction
+        actionWithTitle:base::SysUTF8ToNSString(enum_name)
+                  image:nil
+             identifier:nil
+                handler:^(UIAction* action) {
+                  [weakSelf handleModelPickerMenuActionWithModel:enum_value];
+                }];
+
+    if (enum_value == _currentModelPicked) {
+      menuAction.state = UIMenuElementStateOn;
+    }
+
+    [models addObject:menuAction];
+  }
+
+  return [UIMenu
+      menuWithTitle:l10n_util::GetNSString(IDS_IOS_AI_PROTOTYPING_MODEL_PICKER)
+           children:models];
+}
+
+// Handle a model picker button action by setting the currently picked model and
+// updating the button menu.
+- (void)handleModelPickerMenuActionWithModel:
+    (BlingPrototypingRequest_ModelEnum)model {
+  _currentModelPicked = model;
+
+  [_modelPickerButton
+      setTitle:base::SysUTF8ToNSString(
+                   BlingPrototypingRequest_ModelEnum_Name(model))
+      forState:UIControlStateNormal];
+  _modelPickerButton.menu = [self createModelPickerButtonMenu];
 }
 
 @end

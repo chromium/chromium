@@ -45,6 +45,7 @@ struct CONTENT_EXPORT BtmNavigationInfo {
   std::vector<BtmServerRedirectInfo> server_redirects;
   bool was_user_initiated;
   bool was_renderer_initiated;
+  ui::PageTransition page_transition;
 };
 
 class CONTENT_EXPORT BtmPageVisitObserver : public WebContentsObserver {

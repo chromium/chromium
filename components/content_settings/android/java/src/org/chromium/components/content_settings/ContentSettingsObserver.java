@@ -8,6 +8,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.BrowserContextHandle;
 
 /**
@@ -15,6 +16,7 @@ import org.chromium.content_public.browser.BrowserContextHandle;
  * content settings provider when it is created.
  */
 @JNINamespace("content_settings")
+@NullMarked
 public abstract class ContentSettingsObserver {
     private final long mNativeAndroidObserver;
     private boolean mIsDestroyed;

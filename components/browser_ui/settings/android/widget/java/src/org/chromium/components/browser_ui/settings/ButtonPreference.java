@@ -4,6 +4,8 @@
 
 package org.chromium.components.browser_ui.settings;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
@@ -12,12 +14,15 @@ import android.widget.Button;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * A {@link Preference} that provides button functionality.
  *
  * Preference.getOnPreferenceClickListener().onPreferenceClick() is called when the button is
  * clicked.
  */
+@NullMarked
 public class ButtonPreference extends Preference {
     /** Constructor for inflating from XML */
     public ButtonPreference(Context context, AttributeSet attrs) {
@@ -39,6 +44,7 @@ public class ButtonPreference extends Preference {
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
         Button button = (Button) holder.findViewById(R.id.button_preference);
+        assumeNonNull(button);
         button.setText(getTitle());
         button.setOnClickListener(
                 v -> {

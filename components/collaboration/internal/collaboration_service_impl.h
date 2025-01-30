@@ -84,7 +84,13 @@ class CollaborationServiceImpl : public CollaborationService,
   SigninStatus GetSigninStatus();
   CollaborationStatus GetCollaborationStatus();
   void RefreshServiceStatus();
-  void ExitConflictingFlows();
+  void ExitConflictingFlows(base::OnceCallback<void()> finish_callback);
+  void StartJoinFlowInternal(
+      std::unique_ptr<CollaborationControllerDelegate> delegate,
+      const data_sharing::GroupToken& token);
+  void StartShareOrManageFlowInternal(
+      std::unique_ptr<CollaborationControllerDelegate> delegate,
+      const tab_groups::EitherGroupID& group_id);
 
   ServiceStatus current_status_;
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>

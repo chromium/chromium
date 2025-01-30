@@ -22,10 +22,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.ColorRes;
-import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.widget.ImageViewCompat;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.DualControlLayout;
 import org.chromium.components.browser_ui.widget.DualControlLayout.ButtonType;
 import org.chromium.ui.text.ChromeClickableSpan;
@@ -52,6 +53,7 @@ import java.util.List;
  * Logic for what happens when things are clicked should be implemented by the
  * InfoBarInteractionHandler.
  */
+@NullMarked
 public final class InfoBarLayout extends ViewGroup implements View.OnClickListener {
     /** Parameters used for laying out children. */
     private static class LayoutParams extends ViewGroup.LayoutParams {
@@ -84,14 +86,14 @@ public final class InfoBarLayout extends ViewGroup implements View.OnClickListen
     private final ImageButton mCloseButton;
     private final InfoBarControlLayout mMessageLayout;
     private final List<InfoBarControlLayout> mControlLayouts;
-    private ViewGroup mFooterViewGroup;
+    private @Nullable ViewGroup mFooterViewGroup;
 
     private TextView mMessageTextView;
-    private ImageView mIconView;
-    private DualControlLayout mButtonRowLayout;
+    private @Nullable ImageView mIconView;
+    private @Nullable DualControlLayout mButtonRowLayout;
 
     private CharSequence mMessageMainText;
-    private String mMessageLinkText;
+    private @Nullable String mMessageLinkText;
     private int mMessageInlineLinkRangeStart;
     private int mMessageInlineLinkRangeEnd;
 
@@ -250,7 +252,7 @@ public final class InfoBarLayout extends ViewGroup implements View.OnClickListen
      * @param alignment One of ALIGN_START, ALIGN_APART, or ALIGN_END from
      *                  {@link DualControlLayout}.
      */
-    public void setBottomViews(String primaryText, View secondaryView, int alignment) {
+    public void setBottomViews(String primaryText, @Nullable View secondaryView, int alignment) {
         assert !TextUtils.isEmpty(primaryText);
         Button primaryButton =
                 DualControlLayout.createButtonForLayout(
@@ -270,7 +272,7 @@ public final class InfoBarLayout extends ViewGroup implements View.OnClickListen
     }
 
     /** Returns the primary button, or null if it doesn't exist. */
-    public ButtonCompat getPrimaryButton() {
+    public @Nullable ButtonCompat getPrimaryButton() {
         return mButtonRowLayout == null
                 ? null
                 : (ButtonCompat) mButtonRowLayout.findViewById(R.id.button_primary);
@@ -282,7 +284,7 @@ public final class InfoBarLayout extends ViewGroup implements View.OnClickListen
     }
 
     /** Returns the icon, or null if it doesn't exist. */
-    public ImageView getIcon() {
+    public @Nullable ImageView getIcon() {
         return mIconView;
     }
 
@@ -441,14 +443,14 @@ public final class InfoBarLayout extends ViewGroup implements View.OnClickListen
                 resolveSize(layoutBottom, heightMeasureSpec));
     }
 
-    private static int getChildWidthWithMargins(View view) {
+    private static int getChildWidthWithMargins(@Nullable View view) {
         if (view == null) return 0;
         return view.getMeasuredWidth()
                 + getChildLayoutParams(view).startMargin
                 + getChildLayoutParams(view).endMargin;
     }
 
-    private static int getChildHeightWithMargins(View view) {
+    private static int getChildHeightWithMargins(@Nullable View view) {
         if (view == null) return 0;
         return view.getMeasuredHeight()
                 + getChildLayoutParams(view).topMargin
@@ -540,8 +542,7 @@ public final class InfoBarLayout extends ViewGroup implements View.OnClickListen
      * @param iconBitmap Bitmap for the icon to use, if the resource ID wasn't passed through.
      * @return {@link ImageButton} that represents the icon.
      */
-    @Nullable
-    public static ImageView createIconView(
+    public static @Nullable ImageView createIconView(
             Context context, int iconResourceId, @ColorRes int iconTintId, Bitmap iconBitmap) {
         if (iconResourceId == 0 && iconBitmap == null) return null;
 

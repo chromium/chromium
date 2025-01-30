@@ -149,15 +149,16 @@ struct SceneStateData {
     // web state will be observed via the WebStateList observer methods.
     if (activeMainWebState) {
       [self startObservingWebState:activeMainWebState];
+      [self updatePromoState];
     }
   } else {
     webStateList->RemoveObserver(_webStateListObserverBridge.get());
     if (activeMainWebState) {
       [self stopObservingWebState:activeMainWebState];
     }
-  }
 
-  [self updatePromoState];
+    [self updatePromoState];
+  }
 }
 
 // Makes sure the promo is shown and alerts observers if this causes a state
@@ -202,6 +203,14 @@ struct SceneStateData {
 
 // Updates the promo state based on the current active URLs.
 - (void)updatePromoState {
+  for (const auto& [webStateID, url] : _lastNavigatedURLs) {
+    // Tabs opened in new windows can start with a blank URL. Hold off on
+    // changing state until it gets filled in from a navigation
+    if (url == GURL()) {
+      return;
+    }
+  }
+
   if (!self.UICurrentlySupportsPromo) {
     [self ensurePromoHidden];
     return;

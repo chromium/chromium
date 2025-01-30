@@ -16,6 +16,12 @@
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "ui/gfx/mojom/native_handle_types.mojom-shared.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/scoped_hardware_buffer_handle.h"
+#include "mojo/public/cpp/platform/platform_handle.h"
+#include "mojo/public/cpp/system/message_pipe.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_OZONE)
 #include "ui/gfx/native_pixmap_handle.h"
 #endif
@@ -25,6 +31,21 @@
 #endif
 
 namespace mojo {
+
+#if BUILDFLAG(IS_ANDROID)
+template <>
+struct COMPONENT_EXPORT(GFX_NATIVE_HANDLE_TYPES_SHARED_MOJOM_TRAITS)
+    StructTraits<gfx::mojom::AHardwareBufferHandleDataView,
+                 ::base::android::ScopedHardwareBufferHandle> {
+  static PlatformHandle buffer_handle(
+      ::base::android::ScopedHardwareBufferHandle& handle);
+  static ScopedMessagePipeHandle tracking_pipe(
+      ::base::android::ScopedHardwareBufferHandle& handle);
+
+  static bool Read(gfx::mojom::AHardwareBufferHandleDataView data,
+                   ::base::android::ScopedHardwareBufferHandle* handle);
+};
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_OZONE)
 template <>

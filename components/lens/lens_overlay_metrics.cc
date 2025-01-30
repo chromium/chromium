@@ -400,4 +400,10 @@ void RecordSidePanelResultStatus(SidePanelResultStatus status) {
   base::UmaHistogramEnumeration("Lens.Overlay.SidePanelResultStatus", status);
 }
 
+void RecordSidePanelMenuOptionSelected(
+    lens::LensOverlaySidePanelMenuOption menu_option) {
+  base::UmaHistogramEnumeration(
+      "Lens.Overlay.SidePanel.SelectedMoreInfoMenuOption", menu_option);
+}
+
 }  // namespace lens

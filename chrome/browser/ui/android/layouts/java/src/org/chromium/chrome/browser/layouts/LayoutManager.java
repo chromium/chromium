@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.layouts;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -12,6 +13,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import java.util.Set;
 
 /** An interface for classes that manage the display of layouts and their components. */
+@NullMarked
 public interface LayoutManager extends LayoutStateProvider {
     /**
      * Add a {@link SceneOverlay} to be drawn on the composited layer of the active layout.

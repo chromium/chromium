@@ -385,6 +385,10 @@ class LensOverlayController : public LensSearchboxClient,
 
   // Sets whether the results frame should show its loading state.
   virtual void SetSidePanelIsLoadingResults(bool is_loading);
+
+  // Sets the URL to be used when opening the side panel in new tab.
+  void SetSidePanelNewTabUrl(const GURL& url);
+
   // Sets whether the side panel should show a full error page. This is only
   // done if the side panel is not already in the state provided by the
   // parameters or on its first load.
@@ -422,6 +426,12 @@ class LensOverlayController : public LensSearchboxClient,
 
   // Shows My Activity.
   void ActivityRequestedByEvent(int event_flags);
+
+  // Opens the side panel URL (with param modifications) in a new tab.
+  void OpenInNewTabRequestedByEvent(int event_flags);
+
+  // Returns whether opening the side panel URL in a new tab should be enabled.
+  bool ShouldEnableOpenInNewTab();
 
   // Queues a tutorial IPH to be shown if the given URL is eligible. Cancels any
   // queued IPH.
@@ -1070,6 +1080,9 @@ class LensOverlayController : public LensSearchboxClient,
   // A pending thumbnail URI to be loaded in the side panel. Needed when the
   // side panel is not bound at the time of a region request.
   std::optional<std::string> pending_thumbnail_uri_ = std::nullopt;
+
+  // URL to load when command to open side panel in a new tab is executed.
+  GURL side_panel_new_tab_url_;
 
   // Whether the side panel should show the error page.
   bool side_panel_should_show_error_page_ = false;

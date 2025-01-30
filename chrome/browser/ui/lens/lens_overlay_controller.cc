@@ -128,6 +128,9 @@ constexpr float kByteChangeTolerancePercent = 0.01;
 // The url query param key for the search query.
 inline constexpr char kTextQueryParameterKey[] = "q";
 
+// The url query param key for visual input type, used for contextual queries.
+inline constexpr char kVisualInputTypeQueryParameterKey[] = "vit";
+
 // Allows lookup of a LensOverlayController from a WebContents associated with a
 // tab.
 class LensOverlayControllerTabLookup
@@ -920,6 +923,10 @@ void LensOverlayController::SetSidePanelIsLoadingResults(bool is_loading) {
   if (side_panel_page_) {
     side_panel_page_->SetIsLoadingResults(is_loading);
   }
+}
+
+void LensOverlayController::SetSidePanelNewTabUrl(const GURL& url) {
+  side_panel_new_tab_url_ = lens::RemoveSidePanelURLParameters(url);
 }
 
 void LensOverlayController::MaybeSetSidePanelShowErrorPage(
@@ -1805,11 +1812,13 @@ void LensOverlayController::UpdatePageContextualization(
     SuppressGhostLoader();
   }
 
+#if BUILDFLAG(ENABLE_PDF)
   // If the new page is a PDF, fetch the text from the page to be used as early
   // suggest signals.
   if (content_type == lens::MimeType::kPdf) {
     FetchVisiblePageIndexAndGetPartialPdfText(page_count.value_or(0));
   }
+#endif
 
   lens_overlay_query_controller_->SendPageContentUpdateRequest(
       initialization_data_->page_content_bytes_,
@@ -1973,6 +1982,7 @@ void LensOverlayController::CloseUIPart2(
   pending_side_panel_url_.reset();
   pending_text_query_.reset();
   pending_thumbnail_uri_.reset();
+  side_panel_new_tab_url_ = GURL();
   selected_region_thumbnail_uri_.clear();
   pending_region_.reset();
   fullscreen_observation_.Reset();
@@ -2043,6 +2053,7 @@ void LensOverlayController::InitializeOverlay(
   InitializeOverlayUI(*initialization_data_);
   base::UmaHistogramBoolean("Lens.Overlay.Shown", true);
 
+#if BUILDFLAG(ENABLE_PDF)
   // If PDF content was extracted from the page, fetch the text from the PDF to
   // be used as early suggest signals.
   if (initialization_data_->page_content_type_ == lens::MimeType::kPdf &&
@@ -2051,6 +2062,7 @@ void LensOverlayController::InitializeOverlay(
     FetchVisiblePageIndexAndGetPartialPdfText(
         initialization_data_->pdf_page_count_.value());
   }
+#endif
 
   // If the StartQueryFlow optimization is enabled, the page contents will not
   // be sent with the initial image request, so we need to send it here.
@@ -2965,6 +2977,18 @@ void LensOverlayController::HandleThumbnailCreated(
   SetSearchboxThumbnail(selected_region_thumbnail_uri_);
 }
 
+void LensOverlayController::OpenInNewTabRequestedByEvent(int event_flags) {
+  if (side_panel_new_tab_url_.is_empty()) {
+    return;
+  }
+  content::OpenURLParams params(side_panel_new_tab_url_, content::Referrer(),
+                                WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                                ui::PAGE_TRANSITION_AUTO_BOOKMARK,
+                                /*is_renderer_initiated=*/false);
+  tab_->GetBrowserWindowInterface()->OpenURL(params,
+                                             /*navigation_handle_callback=*/{});
+}
+
 void LensOverlayController::SetSearchboxThumbnail(
     const std::string& thumbnail_uri) {
   if (side_panel_searchbox_handler_ &&
@@ -2975,6 +2999,17 @@ void LensOverlayController::SetSearchboxThumbnail(
     // thumbnail as pending to send it to the searchbox on bind.
     pending_thumbnail_uri_ = thumbnail_uri;
   }
+}
+
+bool LensOverlayController::ShouldEnableOpenInNewTab() {
+  if (side_panel_new_tab_url_.is_empty()) {
+    return false;
+  }
+  // Disable open in new tab for contextual queries.
+  std::string param_value = "";
+  net::GetValueForKeyInQuery(side_panel_new_tab_url_,
+                             kVisualInputTypeQueryParameterKey, &param_value);
+  return param_value.empty();
 }
 
 void LensOverlayController::RecordTimeToFirstInteraction(

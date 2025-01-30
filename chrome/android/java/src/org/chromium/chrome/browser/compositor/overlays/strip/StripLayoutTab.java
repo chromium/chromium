@@ -220,7 +220,8 @@ public class StripLayoutTab extends StripLayoutView {
                         /* width= */ 0,
                         /* height= */ 0,
                         clickHandler,
-                        R.drawable.btn_tab_close_normal);
+                        R.drawable.btn_tab_close_normal,
+                        0f);
         mCloseButton.setTintResources(
                 R.color.default_icon_color_tint_list,
                 R.color.default_icon_color_tint_list,
@@ -262,8 +263,7 @@ public class StripLayoutTab extends StripLayoutView {
                 apsBackgroundIncognitoPressedTint);
 
         mCloseButton.setIncognito(incognito);
-        mCloseButton.setBounds(getCloseRect());
-        mCloseButton.setClickSlop(0.f);
+        resetCloseRect();
     }
 
     /**
@@ -675,6 +675,13 @@ public class StripLayoutTab extends StripLayoutView {
     public void setHeight(float height) {
         super.setHeight(height);
         resetCloseRect();
+    }
+
+    @Override
+    public void setTouchTargetInsets(Float left, Float top, Float right, Float bottom) {
+        super.setTouchTargetInsets(left, top, right, bottom);
+        // The vertical insets of the close button should match that of the parent tab.
+        mCloseButton.setTouchTargetInsets(null, top, null, bottom);
     }
 
     /**

@@ -10,10 +10,13 @@ import android.view.MotionEvent;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** A class intended to process input events for non-android views. */
+@NullMarked
 public abstract class EventFilter {
     /** The type of input event that will be intercepted and handled by the filter. */
     @IntDef({EventType.UNKNOWN, EventType.TOUCH, EventType.HOVER})

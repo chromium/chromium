@@ -280,7 +280,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
-  'skia_revision': '284fd1df8b7cc36e13c1eb4e2037eb3faa6b17fc',
+  'skia_revision': 'a9af2a74c5ab43ec7cd7fd22ed6e7066484f8c87',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
@@ -492,7 +492,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling llvm-libc
   # and whatever else without interference from each other.
-  'llvm_libc_revision':    '0d8d089914eb6d1b8a893c20a696247ff52d2c01',
+  'llvm_libc_revision':    '4997b50ea0b0d0b863ca483fafa823efb1fb603b',
 
   # If you change this, also update the libc++ revision in
   # //buildtools/deps_revisions.gni.
@@ -1448,7 +1448,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    '68993e9964357e9e54640907e2b93d3713330f68',
+    'a731ef88b89502b4081d70a09590e4f0fa227c9b',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
@@ -2442,7 +2442,7 @@ deps = {
     Var('pdfium_git') + '/pdfium.git' + '@' +  Var('pdfium_revision'),
 
   'src/third_party/perfetto':
-    Var('android_git') + '/platform/external/perfetto.git' + '@' + '31475959e1b445a3bd3bdc7820b94cbb3ac2fc9c',
+    Var('android_git') + '/platform/external/perfetto.git' + '@' + '2f486145d997106d1bfa0f6d637795fe408ff945',
 
   'src/base/tracing/test/data': {
     'bucket': 'perfetto',
@@ -4377,7 +4377,7 @@ deps = {
   # grepping.
   'src/chrome/installer/mac/internal': {
       'url': Var('chrome_git') + '/chrome/installer/mac/internal.git' + '@' +
-        'a897caf7789a35ff29961f5bda42eee326b1bc61',
+        '85c282fe6f2763822964028cb89be7b808b07169',
       'condition': 'checkout_src_internal',
   },
 
@@ -4471,7 +4471,7 @@ deps = {
 
   'src/components/optimization_guide/internal': {
       'url': Var('chrome_git') + '/chrome/components/optimization_guide.git' + '@' +
-        '93a4245d85473f9a5a38b4198d7b26e7705f6231',
+        'd9c55d2d05061e2b35746dcb4dd8b84abdf8c704',
       'condition': 'checkout_src_internal',
   },
 

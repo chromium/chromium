@@ -22,6 +22,8 @@ import androidx.annotation.ColorRes;
 import androidx.annotation.StringRes;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.text.ChromeClickableSpan;
 
 /**
@@ -29,6 +31,7 @@ import org.chromium.ui.text.ChromeClickableSpan;
  * should only be used by the {@link InfoBar} class, and is created when the InfoBar subclass
  * declares itself to be using a compact layout via {@link InfoBar#usesCompactLayout}.
  */
+@NullMarked
 public class InfoBarCompactLayout extends LinearLayout implements View.OnClickListener {
     private final InfoBarInteractionHandler mInfoBar;
     private final int mCompactInfoBarSize;
@@ -126,8 +129,8 @@ public class InfoBarCompactLayout extends LinearLayout implements View.OnClickLi
      */
     public static class MessageBuilder {
         private final InfoBarCompactLayout mLayout;
-        private CharSequence mMessage;
-        private CharSequence mLink;
+        private @Nullable CharSequence mMessage;
+        private @Nullable CharSequence mLink;
 
         /** @param layout The layout we are building a message view for. */
         public MessageBuilder(InfoBarCompactLayout layout) {

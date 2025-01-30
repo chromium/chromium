@@ -71,6 +71,7 @@ using optimization_guide::proto::
   _groupingStrategyButton = [UIButton buttonWithType:UIButtonTypeSystem];
   _groupingStrategyButton.layer.borderColor = [primaryColor CGColor];
   _groupingStrategyButton.layer.borderWidth = kBorderWidth;
+  _groupingStrategyButton.layer.cornerRadius = kCornerRadius;
   [_groupingStrategyButton setTitleColor:primaryColor
                                 forState:UIControlStateNormal];
   _groupingStrategyButton.showsMenuAsPrimaryAction = YES;

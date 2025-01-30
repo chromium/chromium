@@ -71,9 +71,15 @@ public class StripTabHoverCardView extends FrameLayout {
      * @param tabX To compute hover card positioning.
      * @param tabWidth To compute hover card positioning.
      * @param height The height of the tab strip stack.
+     * @param topPadding The top padding applied to the tab strip, in dp.
      */
     public void show(
-            Tab hoveredTab, boolean isSelectedTab, float tabX, float tabWidth, float height) {
+            Tab hoveredTab,
+            boolean isSelectedTab,
+            float tabX,
+            float tabWidth,
+            float height,
+            float topPadding) {
         if (hoveredTab == null) return;
         mLastHoveredTabId = hoveredTab.getId();
         mIsShowing = true;
@@ -90,7 +96,7 @@ public class StripTabHoverCardView extends FrameLayout {
         }
         mUrlView.setText(url);
 
-        float[] position = getHoverCardPosition(isSelectedTab, tabX, tabWidth, height);
+        float[] position = getHoverCardPosition(isSelectedTab, tabX, tabWidth, height, topPadding);
         setX(position[0]);
         setY(position[1]);
 
@@ -157,10 +163,12 @@ public class StripTabHoverCardView extends FrameLayout {
      * @param tabX The tab x-position to compute hover card positioning.
      * @param tabWidth The tab width to compute hover card positioning.
      * @param height The height of the strip stack, to determine the y position of the card.
+     * @param topPadding The top padding applied to the tab strip, in dp.
      * @return A float array specifying the x (array[0]) and y (array[1]) coordinates of the
      *     position of the hover card, in px.
      */
-    float[] getHoverCardPosition(boolean isSelectedTab, float tabX, float tabWidth, float height) {
+    float[] getHoverCardPosition(
+            boolean isSelectedTab, float tabX, float tabWidth, float height, float topPadding) {
         // 1. Determine the window width.
         DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
         float displayDensity = displayMetrics.density;
@@ -220,7 +228,7 @@ public class StripTabHoverCardView extends FrameLayout {
         }
 
         // 4. Determine the vertical position of the hover card.
-        float hoverCardYDp = height;
+        float hoverCardYDp = height + topPadding;
 
         // On a low-end device adjust the card to account for the shadow length of the background
         // drawable.

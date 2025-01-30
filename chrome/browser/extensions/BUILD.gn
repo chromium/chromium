@@ -25,7 +25,7 @@ assert(!is_fuchsia, "Fuchsia shouldn't use anything in //chrome")
 
 source_set("extensions") {
   # TODO(https://crbug.com/356905053): When files support being built on
-  # desktop android, move them outside the if (enable_extensions) block.
+  # desktop android, move them here, outside the if (enable_extensions) block.
   sources = [
     "api/tabs/windows_util.cc",
     "api/tabs/windows_util.h",
@@ -43,6 +43,8 @@ source_set("extensions") {
     "extension_web_ui_override_registrar.h",
     "extension_webkit_preferences.cc",
     "extension_webkit_preferences.h",
+    "load_error_reporter.cc",
+    "load_error_reporter.h",
     "window_controller.cc",
     "window_controller.h",
     "window_controller_list.cc",
@@ -552,8 +554,6 @@ source_set("extensions") {
       "installed_loader.h",
       "launch_util.cc",
       "launch_util.h",
-      "load_error_reporter.cc",
-      "load_error_reporter.h",
       "manifest_v2_experiment_manager.cc",
       "manifest_v2_experiment_manager.h",
       "menu_icon_loader.h",

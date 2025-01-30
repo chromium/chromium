@@ -645,8 +645,8 @@ void View::SetVisible(bool visible) {
     visible_ = visible;
     // The visible state of a view can affect both its own focusability and that
     // of its descendants.
-    GetViewAccessibility().UpdateFocusableStateRecursive();
-    GetViewAccessibility().UpdateInvisibleState();
+    GetViewAccessibility().UpdateInvisibleByInheritanceRecursive(this,
+                                                                 !visible);
 
     AdvanceFocusIfNecessary();
 
@@ -1962,6 +1962,11 @@ void View::SetFocusBehavior(FocusBehavior focus_behavior) {
   // example, a container view may have a focus behavior of NEVER, but its
   // children may still be focusable.
   GetViewAccessibility().UpdateFocusableState();
+  // Even though the focusable state is not propagated down the hierarchy, the
+  // ignored state of the descendants does depend on the focusable state of the
+  // ancestor if it is set to be focusable.
+  GetViewAccessibility().SetHasFocusableAncestorRecursive(focus_behavior_ !=
+                                                          FocusBehavior::NEVER);
   AdvanceFocusIfNecessary();
 
   OnPropertyChanged(&focus_behavior_, kPropertyEffectsNone);
@@ -3015,7 +3020,7 @@ void View::AddChildViewAtImpl(View* view, size_t index) {
   // events from being fired until accessibility is fully initialized, and if we
   // need to update the accessible focusable state before the cache is fully
   // initialized. If so, let's merge these two functions.
-  view->GetViewAccessibility().UpdateStatesForViewAndDescendants();
+  view->GetViewAccessibility().OnViewHasNewAncestor(this);
 
   if (widget) {
     // There are scenarios where we might be reparenting a view from a widget

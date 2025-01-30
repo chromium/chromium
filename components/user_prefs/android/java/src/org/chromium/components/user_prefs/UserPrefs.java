@@ -4,12 +4,12 @@
 
 package org.chromium.components.user_prefs;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.content_public.browser.BrowserContextHandle;
 
@@ -18,6 +18,7 @@ import org.chromium.content_public.browser.BrowserContextHandle;
  * modeled after the C++ class of the same name.
  */
 @JNINamespace("user_prefs")
+@NullMarked
 public class UserPrefs {
     /** Returns the {@link PrefService} associated with the given {@link BrowserContextHandle}. */
     public static PrefService get(BrowserContextHandle browserContextHandle) {
@@ -27,6 +28,6 @@ public class UserPrefs {
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @NativeMethods
     public interface Natives {
-        PrefService get(@NonNull BrowserContextHandle browserContextHandle);
+        PrefService get(BrowserContextHandle browserContextHandle);
     }
 }

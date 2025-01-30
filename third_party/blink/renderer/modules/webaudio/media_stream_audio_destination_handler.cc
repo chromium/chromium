@@ -36,8 +36,10 @@ MediaStreamAudioDestinationHandler::MediaStreamAudioDestinationHandler(
                            GetDeferredTaskHandler().RenderQuantumFrames())) {
   AddInput();
   SendLogMessage(__func__, "");
-  source_.Lock()->SetAudioFormat(static_cast<int>(number_of_channels),
-                                 node.context()->sampleRate());
+  auto source = source_.Lock();
+  CHECK(source);
+  source->SetAudioFormat(static_cast<int>(number_of_channels),
+                         node.context()->sampleRate());
   SetInternalChannelCountMode(V8ChannelCountMode::Enum::kExplicit);
   Initialize();
 }
@@ -64,6 +66,9 @@ void MediaStreamAudioDestinationHandler::Process(uint32_t number_of_frames) {
   base::AutoTryLock try_locker(process_lock_);
 
   auto source = source_.Lock();
+  if (!source) {
+    return;
+  }
 
   // If we can get the lock, we can process normally by updating the
   // mix bus to a new channel count, if needed.  If not, just use the

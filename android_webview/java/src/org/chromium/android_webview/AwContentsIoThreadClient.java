@@ -6,6 +6,7 @@ package org.chromium.android_webview;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
 
 /**
  * Delegate for handling callbacks. All methods are called on the IO thread.
@@ -42,4 +43,10 @@ public abstract class AwContentsIoThreadClient {
 
     @CalledByNative
     public abstract AwContentsBackgroundThreadClient getBackgroundThreadClient();
+
+    @NativeMethods
+    interface Natives {
+        boolean finishShouldInterceptRequest(
+                int requestId, AwWebResourceInterceptResponse response);
+    }
 }

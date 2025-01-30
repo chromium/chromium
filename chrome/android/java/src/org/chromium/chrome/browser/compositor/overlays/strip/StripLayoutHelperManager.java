@@ -603,7 +603,8 @@ public class StripLayoutHelperManager
                         MODEL_SELECTOR_BUTTON_BACKGROUND_WIDTH_DP,
                         MODEL_SELECTOR_BUTTON_BACKGROUND_HEIGHT_DP,
                         selectorClickHandler,
-                        R.drawable.ic_incognito);
+                        R.drawable.ic_incognito,
+                        MODEL_SELECTOR_BUTTON_CLICK_SLOP_DP);
 
         // Tab strip redesign button bg size is 32 * 32.
         mModelSelectorButton.setBackgroundResourceId(R.drawable.bg_circle_tab_strip_button);
@@ -667,8 +668,6 @@ public class StripLayoutHelperManager
 
         mModelSelectorButton.setIncognito(false);
         mModelSelectorButton.setVisible(false);
-        // Pressed resources are the same as the unpressed resources.
-        mModelSelectorButton.setClickSlop(MODEL_SELECTOR_BUTTON_CLICK_SLOP_DP);
 
         mModelSelectorButton.setAccessibilityDescription(
                 context.getString(R.string.accessibility_tabstrip_btn_incognito_toggle_standard),
@@ -828,6 +827,7 @@ public class StripLayoutHelperManager
         }
         if (mModelSelectorButton != null) {
             mModelSelectorButton.setDrawY(MODEL_SELECTOR_BUTTON_BACKGROUND_Y_OFFSET_DP);
+            mModelSelectorButton.setTouchTargetInsets(null, mTopPadding, null, -mTopPadding);
             if (!LocalizationUtils.isLayoutRtl()) {
                 mModelSelectorButton.setDrawX(
                         mWidth - mRightPadding - getModelSelectorButtonWidthWithEndPadding());
@@ -845,14 +845,16 @@ public class StripLayoutHelperManager
                 orientationChanged,
                 LayoutManagerImpl.time(),
                 mLeftPadding,
-                mRightPadding);
+                mRightPadding,
+                mTopPadding);
         mIncognitoHelper.onSizeChanged(
                 mWidth,
                 mScrollableStripHeight,
                 orientationChanged,
                 LayoutManagerImpl.time(),
                 mLeftPadding,
-                mRightPadding);
+                mRightPadding,
+                mTopPadding);
 
         mStripFilterArea.set(
                 mLeftPadding,

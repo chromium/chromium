@@ -706,6 +706,23 @@ TEST_F(LensOverlayUrlBuilderTest, RemoveIgnoredSearchURLParameters) {
             GURL(expected_url));
 }
 
+TEST_F(LensOverlayUrlBuilderTest, RemoveSidePanelURLParameters) {
+  std::string text_query = "Apples";
+  std::string viewport_width = "400";
+  std::string viewport_height = "500";
+  std::string initial_url = base::StringPrintf(
+      "%s?q=%s&gsc=2&hl=%s&biw=%s&bih=%s&sec_act=1&sxsrf=token",
+      kResultsSearchBaseUrl, text_query.c_str(), kLanguage,
+      viewport_width.c_str(), viewport_height.c_str());
+  std::string expected_url =
+      base::StringPrintf("%s?q=%s&hl=%s&biw=%s&bih=%s&sec_act=1&sxsrf=token",
+                         kResultsSearchBaseUrl, text_query.c_str(), kLanguage,
+                         viewport_width.c_str(), viewport_height.c_str());
+
+  EXPECT_EQ(lens::RemoveSidePanelURLParameters(GURL(initial_url)),
+            GURL(expected_url));
+}
+
 TEST_F(LensOverlayUrlBuilderTest, GetSearchResultsUrlFromRedirectUrl) {
   std::string text_query = "Apples";
   std::string viewport_width = "400";

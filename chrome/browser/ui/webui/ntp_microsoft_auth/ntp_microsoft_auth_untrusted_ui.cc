@@ -89,9 +89,11 @@ void NtpMicrosoftAuthUntrustedUI::BindInterface(
 void NtpMicrosoftAuthUntrustedUI::CreatePageHandler(
     mojo::PendingReceiver<
         new_tab_page::mojom::MicrosoftAuthUntrustedPageHandler>
-        pending_page_handler) {
+        pending_page_handler,
+    mojo::PendingRemote<new_tab_page::mojom::MicrosoftAuthUntrustedDocument>
+        pending_document) {
   page_handler_ = std::make_unique<MicrosoftAuthUntrustedPageHandler>(
-      std::move(pending_page_handler), profile_);
+      std::move(pending_page_handler), std::move(pending_document), profile_);
 }
 
 void NtpMicrosoftAuthUntrustedUI::ConnectToParentDocument(

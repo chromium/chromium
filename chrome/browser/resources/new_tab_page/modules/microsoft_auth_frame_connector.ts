@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {NewTabPageProxy} from '../new_tab_page_proxy.js';
 import type {MicrosoftAuthUntrustedDocumentRemote} from '../ntp_microsoft_auth_shared_ui.mojom-webui.js';
 
 /**
@@ -31,11 +30,3 @@ export class ParentTrustedDocumentProxy {
     return this.childDocument_;
   }
 }
-
-// Set the instance of |ParentTrustedDocumentProxy| when the connection is
-// created.
-NewTabPageProxy.getInstance()
-    .callbackRouter.connectToParentDocument.addListener(
-        (childDocumentRemote: MicrosoftAuthUntrustedDocumentRemote) => {
-          ParentTrustedDocumentProxy.setInstance(childDocumentRemote);
-        });

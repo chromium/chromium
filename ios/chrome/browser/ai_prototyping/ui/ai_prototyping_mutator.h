@@ -11,6 +11,8 @@
 
 namespace optimization_guide::proto {
 class StringValue;
+
+enum BlingPrototypingRequest_ModelEnum : int;
 enum TabOrganizationRequest_TabOrganizationModelStrategy : int;
 }  // namespace optimization_guide::proto
 
@@ -30,7 +32,9 @@ enum TabOrganizationRequest_TabOrganizationModelStrategy : int;
 - (void)executeFreeformServerQuery:(NSString*)query
                 systemInstructions:(NSString*)systemInstructions
                 includePageContext:(BOOL)includePageContext
-                       temperature:(float)temperature;
+                       temperature:(float)temperature
+                             model:(optimization_guide::proto::
+                                        BlingPrototypingRequest_ModelEnum)model;
 
 // Executes a tab organization request with a given organization `strategy`.
 - (void)executeGroupTabsWithStrategy:

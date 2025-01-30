@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.modules.test_dummy;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.test_dummy.TestDummy;
 import org.chromium.components.module_installer.builder.ModuleInterface;
 
@@ -11,6 +12,7 @@ import org.chromium.components.module_installer.builder.ModuleInterface;
 @ModuleInterface(
         module = "test_dummy",
         impl = "org.chromium.chrome.modules.test_dummy.TestDummyProviderImpl")
+@NullMarked
 public interface TestDummyProvider {
     TestDummy getTestDummy();
 }

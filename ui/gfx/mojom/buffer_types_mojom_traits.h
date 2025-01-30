@@ -5,7 +5,6 @@
 #ifndef UI_GFX_MOJOM_BUFFER_TYPES_MOJOM_TRAITS_H_
 #define UI_GFX_MOJOM_BUFFER_TYPES_MOJOM_TRAITS_H_
 
-
 #include "base/component_export.h"
 #include "base/notreached.h"
 #include "build/build_config.h"

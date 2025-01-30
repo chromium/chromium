@@ -164,7 +164,7 @@ public final class DualControlLayout extends ViewGroup {
      *
      * See {@link ViewGroup} for parameter details.  attrs may be null if constructed dynamically.
      */
-    public DualControlLayout(Context context, AttributeSet attrs) {
+    public DualControlLayout(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
 
         // Cache dimensions.

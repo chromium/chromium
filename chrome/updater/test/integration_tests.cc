@@ -2470,9 +2470,18 @@ TEST_P(IntegrationTestDeviceManagement, AppInstall) {
 
   ASSERT_NO_FATAL_FAILURE(InstallAppViaService(kApp1.appid));
 
+  // Current policy cache has the new public key. Sign the policy response with
+  // the pinned key, and this leads to policy validation error and a policy
+  // cache reset.
   ExpectDeviceManagementPolicyFetchRequestFromDefaultPolicyAgent(
       test_server_.get(), kDMToken, omaha_settings);
   ExpectDeviceManagementPolicyValidationRequestFromDefaultPolicyAgent(
+      test_server_.get(), kDMToken, omaha_settings);
+  ASSERT_NO_FATAL_FAILURE(InstallAppViaService(kApp2.appid));
+
+  // Repeat App2 installation again, policy validation should pass after the
+  // policy cache reset.
+  ExpectDeviceManagementPolicyFetchRequestFromDefaultPolicyAgent(
       test_server_.get(), kDMToken, omaha_settings);
   ASSERT_NO_FATAL_FAILURE(InstallAppViaService(kApp2.appid));
 

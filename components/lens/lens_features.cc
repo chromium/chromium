@@ -55,6 +55,10 @@ BASE_FEATURE(kLensOverlaySurvey,
              "LensOverlaySurvey",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLensOverlaySidePanelOpenInNewTab,
+             "LensOverlaySidePanelOpenInNewTab",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<int> kLensOverlayMinRamMb{&kLensOverlay, "min_ram_mb",
                                                    /*default=value=*/-1};
 const base::FeatureParam<std::string> kActivityUrl{
@@ -728,6 +732,10 @@ int GetLensOverlayImageContextMenuActionsTextReceivedTimeout() {
 
 bool IsLensOverlayContextualSearchboxEnabled() {
   return base::FeatureList::IsEnabled(kLensOverlayContextualSearchbox);
+}
+
+bool IsLensOverlaySidePanelOpenInNewTabEnabled() {
+  return base::FeatureList::IsEnabled(kLensOverlaySidePanelOpenInNewTab);
 }
 
 bool IsLensOverlayClusterInfoOptimizationEnabled() {

@@ -280,7 +280,7 @@ public class CollaborationControllerDelegateImplUnitTest {
         savedGroup.syncId = syncId;
         savedGroup.collaborationId = collaborationId;
 
-        doReturn(savedGroup).when(mTabGroupSyncService).getGroup(syncId);
+        doReturn(savedGroup).when(mDataSharingTabManager).getSavedTabGroupForEitherId(syncId, null);
         mCollaborationControllerDelegateImpl.showManageDialog(syncId, null, resultCallback);
         ArgumentCaptor<Runnable> finishCallbackCaptor = ArgumentCaptor.forClass(Runnable.class);
         verify(mDataSharingTabManager)
@@ -307,7 +307,9 @@ public class CollaborationControllerDelegateImplUnitTest {
         savedGroup.collaborationId = collaborationId;
         savedGroup.title = title;
 
-        doReturn(savedGroup).when(mTabGroupSyncService).getGroup(localId);
+        doReturn(savedGroup)
+                .when(mDataSharingTabManager)
+                .getSavedTabGroupForEitherId(null, localId);
         mCollaborationControllerDelegateImpl.showShareDialog(null, localId, resultCallback);
         ArgumentCaptor<DataSharingCreateUiConfig.CreateCallback> createCallbackCaptor =
                 ArgumentCaptor.forClass(DataSharingCreateUiConfig.CreateCallback.class);

@@ -74,6 +74,12 @@ const char* WhatsNewTypeToString(WhatsNewType type) {
       return "PriceHistory";
     case WhatsNewType::kOtherBuyingOptions:
       return "OtherBuyingOptions";
+    case WhatsNewType::kLensSearchWhatYouSee:
+      return "LensSearchWhatYouSee";
+    case WhatsNewType::kLensTranslate:
+      return "LensTranslate";
+    case WhatsNewType::kLensQuestion:
+      return "LensQuestion";
     case WhatsNewType::kError:
       return nil;
   };

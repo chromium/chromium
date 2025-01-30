@@ -310,6 +310,7 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                             gt.getCornerRadius() * mDpToPx,
                             gt.getBottomIndicatorWidth() * mDpToPx,
                             gt.getBottomIndicatorHeight() * mDpToPx,
+                            gt.getBubblePadding() * mDpToPx,
                             gt.getBubbleSize() * mDpToPx,
                             layerTitleCache);
         }
@@ -457,6 +458,7 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                 float cornerRadius,
                 float bottomIndicatorWidth,
                 float bottomIndicatorHeight,
+                float bubblePadding,
                 float bubbleSize,
                 LayerTitleCache layerTitleCache);
 

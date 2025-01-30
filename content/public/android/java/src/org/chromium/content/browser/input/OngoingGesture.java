@@ -4,13 +4,12 @@
 
 package org.chromium.content.browser.input;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.blink.mojom.HandwritingGestureResult;
 import org.chromium.blink.mojom.StylusWritingGestureData;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.concurrent.Executor;
 import java.util.function.IntConsumer;

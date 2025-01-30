@@ -51,14 +51,15 @@ public class NotificationWrapperCompatBuilder implements NotificationWrapperBuil
     }
 
     @Override
-    public NotificationWrapperBuilder setContentIntent(PendingIntent contentIntent) {
+    public NotificationWrapperBuilder setContentIntent(@Nullable PendingIntent contentIntent) {
         mBuilder.setContentIntent(contentIntent);
         return this;
     }
 
     @Override
-    public NotificationWrapperBuilder setContentIntent(PendingIntentProvider contentIntent) {
-        mBuilder.setContentIntent(contentIntent.getPendingIntent());
+    public NotificationWrapperBuilder setContentIntent(
+            @Nullable PendingIntentProvider contentIntent) {
+        mBuilder.setContentIntent(contentIntent != null ? contentIntent.getPendingIntent() : null);
         return this;
     }
 

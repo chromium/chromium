@@ -4,6 +4,8 @@
 
 package org.chromium.components.infobars;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -21,12 +23,13 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.content.res.ResourcesCompat;
 
 import org.chromium.base.StrictModeContext;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.DualControlLayout;
 import org.chromium.components.browser_ui.widget.RadioButtonLayout;
 import org.chromium.ui.widget.ChromeImageView;
@@ -50,6 +53,7 @@ import java.util.List;
  *                    TextView has only one line.  This throws off vertical alignment.  Find a
  *                    solution that hopefully doesn't involve subclassing the TextView.
  */
+@NullMarked
 public final class InfoBarControlLayout extends ViewGroup {
     /**
      * ArrayAdapter that automatically determines what size make its Views to accommodate all of
@@ -57,7 +61,7 @@ public final class InfoBarControlLayout extends ViewGroup {
      * @param <T> Type of object that the ArrayAdapter stores.
      */
     public static final class InfoBarArrayAdapter<T> extends ArrayAdapter<T> {
-        private final String mLabel;
+        private final @Nullable String mLabel;
         private int mMinWidthRequiredForValues;
 
         public InfoBarArrayAdapter(Context context, String label) {
@@ -84,12 +88,13 @@ public final class InfoBarControlLayout extends ViewGroup {
                                         parent);
             }
 
-            view.setText(getItem(position).toString());
+            view.setText(assumeNonNull(getItem(position)).toString());
             return view;
         }
 
         @Override
-        public DualControlLayout getView(int position, View convertView, ViewGroup parent) {
+        public DualControlLayout getView(
+                int position, @Nullable View convertView, @Nullable ViewGroup parent) {
             DualControlLayout view;
             if (convertView instanceof DualControlLayout) {
                 view = (DualControlLayout) convertView;
@@ -110,7 +115,7 @@ public final class InfoBarControlLayout extends ViewGroup {
             // Enforcing a minimum width prevents the layout from doing so as the user swaps values,
             // preventing unwanted layout passes.
             TextView valueView = (TextView) view.getChildAt(1);
-            valueView.setText(getItem(position).toString());
+            valueView.setText(assumeNonNull(getItem(position)).toString());
             valueView.setMinimumWidth(mMinWidthRequiredForValues);
 
             return view;
@@ -127,7 +132,7 @@ public final class InfoBarControlLayout extends ViewGroup {
             Paint textPaint = container.getPaint();
             float longestLanguageWidth = 0;
             for (int i = 0; i < getCount(); i++) {
-                float width = textPaint.measureText(getItem(i).toString());
+                float width = textPaint.measureText(assumeNonNull(getItem(i)).toString());
                 longestLanguageWidth = Math.max(longestLanguageWidth, width);
             }
 
@@ -168,7 +173,7 @@ public final class InfoBarControlLayout extends ViewGroup {
         this(context, null);
     }
 
-    public InfoBarControlLayout(Context context, AttributeSet attrs) {
+    public InfoBarControlLayout(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
 
         Resources resources = context.getResources();
@@ -604,7 +609,7 @@ public final class InfoBarControlLayout extends ViewGroup {
         return (ControlLayoutParams) child.getLayoutParams();
     }
 
-    private static View inflateLayout(Context context, int layoutId, ViewGroup root) {
+    private static View inflateLayout(Context context, int layoutId, @Nullable ViewGroup root) {
         // LayoutInflater may trigger accessing the disk.
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
             return LayoutInflater.from(context).inflate(layoutId, root, false);

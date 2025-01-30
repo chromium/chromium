@@ -15,11 +15,12 @@ import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.LayoutRes;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.widget.Toast;
@@ -27,6 +28,7 @@ import org.chromium.ui.widget.Toast;
 import java.util.Locale;
 
 /** Utilities and common methods to handle settings managed by policies. */
+@NullMarked
 public class ManagedPreferencesUtils {
     private static Toast showToastWithResourceId(Context context, @StringRes int resId) {
         Toast toast = Toast.makeText(context, context.getString(resId), Toast.LENGTH_LONG);
@@ -81,7 +83,7 @@ public class ManagedPreferencesUtils {
      * @return The appropriate Drawable based on whether the preference is controlled by a policy or
      *         a custodian.
      */
-    public static Drawable getManagedIconDrawable(
+    public static @Nullable Drawable getManagedIconDrawable(
             @Nullable ManagedPreferenceDelegate delegate, Preference preference) {
         int resId = getManagedIconResId(delegate, preference);
         return resId == 0
@@ -277,7 +279,7 @@ public class ManagedPreferencesUtils {
      * @param attrs The attributes of the XML tag that is inflating the view.
      * @return Whether a custom layout was defined.
      */
-    public static boolean isCustomLayoutApplied(Context context, AttributeSet attrs) {
+    public static boolean isCustomLayoutApplied(Context context, @Nullable AttributeSet attrs) {
         final TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.Preference);
 
         // Take the custom layout defined via either {@code Preference_layout} or

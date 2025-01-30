@@ -13,6 +13,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/buildflags/buildflags.h"
@@ -232,6 +233,10 @@ void ExtensionPlatformBrowserTest::TearDownOnMainThread() {
   PlatformBrowserTest::TearDownOnMainThread();
 }
 
+ExtensionRegistry* ExtensionPlatformBrowserTest::extension_registry() {
+  return ExtensionRegistry::Get(profile());
+}
+
 base::FilePath ExtensionPlatformBrowserTest::GetTestResourcesParentDir() {
   // Don't use |test_data_dir_| here (even though it points to
   // chrome/test/data/extensions by default) because subclasses have the ability
@@ -297,7 +302,8 @@ void ExtensionPlatformBrowserTest::DisableExtension(
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
-content::WebContents* ExtensionPlatformBrowserTest::GetActiveWebContents() {
+content::WebContents* ExtensionPlatformBrowserTest::GetActiveWebContents()
+    const {
   return chrome_test_utils::GetActiveWebContents(this);
 }
 
@@ -334,8 +340,10 @@ content::WebContents* ExtensionPlatformBrowserTest::PlatformOpenURLOffTheRecord(
   tab_model_ = std::make_unique<TestTabModel>(incognito_profile);
   TabModelList::AddTabModel(tab_model_.get());
   content::WebContents* web_contents = tab_model_->GetActiveWebContents();
-  // This blocks until the navigation completes.
-  CHECK(content::NavigateToURL(web_contents, url));
+  // This blocks until the navigation completes. The return value is ignored
+  // because some tests intentionally navigate to blocked URLs which fail to
+  // load.
+  (void)content::NavigateToURL(web_contents, url);
   return web_contents;
 #endif
 }

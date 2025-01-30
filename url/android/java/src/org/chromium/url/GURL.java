@@ -86,7 +86,7 @@ public class GURL {
      *
      * @param uri The string URI representation to parse into a GURL.
      */
-    public GURL(String uri) {
+    public GURL(@Nullable String uri) {
         // Avoid a jni hop (and initializing the native library) for empty GURLs.
         if (TextUtils.isEmpty(uri)) {
             mSpec = "";

@@ -24,9 +24,9 @@ public interface NotificationWrapperBuilder {
     NotificationWrapperBuilder setAutoCancel(boolean autoCancel);
 
     @Deprecated
-    NotificationWrapperBuilder setContentIntent(PendingIntent contentIntent);
+    NotificationWrapperBuilder setContentIntent(@Nullable PendingIntent contentIntent);
 
-    NotificationWrapperBuilder setContentIntent(PendingIntentProvider contentIntent);
+    NotificationWrapperBuilder setContentIntent(@Nullable PendingIntentProvider contentIntent);
 
     NotificationWrapperBuilder setContentTitle(CharSequence title);
 

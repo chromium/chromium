@@ -38,7 +38,10 @@ enum class WhatsNewType {
   kPriceTracking = 22,
   kPriceHistory = 23,
   kOtherBuyingOptions = 24,
-  kMaxValue = kOtherBuyingOptions
+  kLensSearchWhatYouSee = 25,
+  kLensTranslate = 26,
+  kLensQuestion = 27,
+  kMaxValue = kLensQuestion
 };
 
 // An enum representing the different primary button actions for features in

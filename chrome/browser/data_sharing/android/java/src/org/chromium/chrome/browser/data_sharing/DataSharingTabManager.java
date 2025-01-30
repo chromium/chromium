@@ -693,9 +693,9 @@ public class DataSharingTabManager {
             boolean showUndoSnackBar = false;
             filter.createSingleTabGroup(tab, showUndoSnackBar);
         }
-        createGroupFlow(
+        createOrManageFlow(
                 activity,
-                TabGroupTitleUtils.getDisplayableTitle(activity, filter, tab.getRootId()),
+                /* syncId= */ null,
                 new LocalTabGroupId(tab.getTabGroupId()),
                 createGroupFinishedCallback);
     }
@@ -704,21 +704,19 @@ public class DataSharingTabManager {
      * Creates a collaboration group.
      *
      * @param activity The activity in which the group is to be created.
-     * @param tabGroupDisplayName The title or display name of the tab group.
+     * @param syncId The sync ID of the tab group.
      * @param localTabGroupId The tab group ID of the tab in the local tab group model.
      * @param createGroupFinishedCallback Callback invoked when the creation flow is finished.
      */
-    public void createGroupFlow(
+    public void createOrManageFlow(
             Activity activity,
-            String tabGroupDisplayName,
+            String syncId,
             LocalTabGroupId localTabGroupId,
             Callback<Boolean> createGroupFinishedCallback) {
         DataSharingMetrics.recordShareActionFlowState(
                 DataSharingMetrics.ShareActionStateAndroid.SHARE_TRIGGERED);
-        assert mProfile != null;
-        TabGroupSyncService tabGroupService = TabGroupSyncServiceFactory.getForProfile(mProfile);
 
-        SavedTabGroup existingGroup = tabGroupService.getGroup(localTabGroupId);
+        SavedTabGroup existingGroup = getSavedTabGroupForEitherId(syncId, localTabGroupId);
         assert existingGroup != null : "Group not found in TabGroupSyncService.";
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.COLLABORATION_FLOW_ANDROID)
@@ -739,6 +737,8 @@ public class DataSharingTabManager {
             return;
         }
 
+        assert mProfile != null;
+        TabGroupSyncService tabGroupService = TabGroupSyncServiceFactory.getForProfile(mProfile);
         DataSharingCreateUiConfig.CreateCallback createCallback =
                 new DataSharingCreateUiConfig.CreateCallback() {
                     @Override
@@ -777,7 +777,7 @@ public class DataSharingTabManager {
                         // TODO(haileywang) : Implement this.
                     }
                 };
-        showShareDialog(activity, tabGroupDisplayName, existingGroup, createCallback);
+        showShareDialog(activity, existingGroup.title, existingGroup, createCallback);
     }
 
     /**
@@ -1063,7 +1063,12 @@ public class DataSharingTabManager {
 
         // TODO(crbug.com/380962101): Extract manage sharing into a different interface.
         Runnable manageSharingCallback =
-                () -> showManageSharing(activity, collaborationId, /* finishRunnable= */ null);
+                () ->
+                        createOrManageFlow(
+                                activity,
+                                existingGroup.syncId,
+                                /* localTabGroupId= */ null,
+                                /* createGroupFinishedCallback= */ null);
         RecentActivityActionHandler recentActivityActionHandler =
                 new RecentActivityActionHandlerImpl(
                         tabGroupSyncService,
@@ -1081,6 +1086,30 @@ public class DataSharingTabManager {
                         avatarProvider,
                         recentActivityActionHandler);
         recentActivityListCoordinator.requestShowUI(collaborationId);
+    }
+
+    /**
+     * Gets the {@link SavedTabGroup} instance given either sync or local ID.
+     *
+     * @param syncId The associated sync ID.
+     * @param localId The associated local ID.
+     */
+    public SavedTabGroup getSavedTabGroupForEitherId(
+            @Nullable String syncId, @Nullable LocalTabGroupId localId) {
+        assert syncId != null || localId != null;
+        TabGroupSyncService tabGroupSyncService =
+                TabGroupSyncServiceFactory.getForProfile(mProfile);
+        assert tabGroupSyncService != null;
+
+        SavedTabGroup existingGroup = null;
+        if (syncId != null) {
+            existingGroup = tabGroupSyncService.getGroup(syncId);
+        } else {
+            existingGroup = tabGroupSyncService.getGroup(localId);
+        }
+        assert existingGroup != null;
+
+        return existingGroup;
     }
 
     protected BottomSheetContent showBottomSheet(
