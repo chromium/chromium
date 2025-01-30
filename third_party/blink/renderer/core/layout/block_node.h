@@ -131,11 +131,10 @@ class CORE_EXPORT BlockNode : public LayoutInputNode {
 
   bool IsInlineLevel() const;
   bool IsAtomicInlineLevel() const;
-  bool HasAspectRatio() const;
   bool IsInTopOrViewTransitionLayer() const;
 
   // Returns the aspect ratio of a replaced element.
-  LogicalSize GetAspectRatio() const;
+  LogicalSize GetReplacedAspectRatio() const;
 
   // Returns the transform to apply to a child (e.g. for scrollable-overflow).
   std::optional<gfx::Transform> GetTransformForChildFragment(

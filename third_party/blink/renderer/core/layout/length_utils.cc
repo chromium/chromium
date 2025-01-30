@@ -967,7 +967,7 @@ LogicalSize ComputeReplacedSizeInternal(const BlockNode& node,
 
   const ComputedStyle& style = node.Style();
   const EBoxSizing box_sizing = style.BoxSizingForAspectRatio();
-  const LogicalSize aspect_ratio = node.GetAspectRatio();
+  const LogicalSize aspect_ratio = node.GetReplacedAspectRatio();
   const std::optional<LogicalSize> natural_size = ComputeNormalizedNaturalSize(
       node, border_padding, box_sizing, aspect_ratio);
 

@@ -886,9 +886,10 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
       if (has_aspect_ratio && type == SizeType::kContent) {
         const LayoutUnit inline_size = InlineSizeFunc();
         if (inline_size != kIndefiniteSize) {
-          return BlockSizeFromAspectRatio(
-              border_padding_in_child_writing_mode, child.GetAspectRatio(),
-              child_style.BoxSizingForAspectRatio(), inline_size);
+          return BlockSizeFromAspectRatio(border_padding_in_child_writing_mode,
+                                          child_style.LogicalAspectRatio(),
+                                          child_style.BoxSizingForAspectRatio(),
+                                          inline_size);
         }
       }
 
@@ -1098,7 +1099,8 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
       if (child.IsReplaced()) {
         return false;
       }
-      return child.HasAspectRatio() && InlineSizeFunc() != kIndefiniteSize;
+      return !child_style.AspectRatio().IsAuto() &&
+             InlineSizeFunc() != kIndefiniteSize;
     };
 
     // For flex-items whose main-axis is the block-axis we treat the initial

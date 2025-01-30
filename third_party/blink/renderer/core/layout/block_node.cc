@@ -264,7 +264,7 @@ bool CanUseCachedIntrinsicInlineSizes(const ConstraintSpace& constraint_space,
       return false;
     }
     // Also consider transferred min/max sizes.
-    if (node.HasAspectRatio() &&
+    if (!style.AspectRatio().IsAuto() &&
         (style.LogicalMinHeight().HasPercentOrStretch() ||
          style.LogicalMaxHeight().HasPercentOrStretch())) {
       return false;
@@ -1501,28 +1501,11 @@ bool BlockNode::IsInTopOrViewTransitionLayer() const {
   return GetLayoutBox()->IsInTopOrViewTransitionLayer();
 }
 
-bool BlockNode::HasAspectRatio() const {
-  if (!Style().AspectRatio().IsAuto()) {
-    DCHECK(!GetAspectRatio().IsEmpty());
-    return true;
-  }
-  LayoutBox* layout_object = GetLayoutBox();
-  if (!layout_object->IsImage() && !IsA<LayoutVideo>(layout_object) &&
-      !layout_object->IsCanvas() && !layout_object->IsSVGRoot()) {
-    return false;
-  }
+LogicalSize BlockNode::GetReplacedAspectRatio() const {
+  DCHECK(IsReplaced());
 
-  // Retrieving this and throwing it away is wasteful. We could make this method
-  // return Optional<LogicalSize> that returns the aspect_ratio if there is one.
-  return !GetAspectRatio().IsEmpty();
-}
-
-LogicalSize BlockNode::GetAspectRatio() const {
-  // The CSS parser will ensure that this will only be set if the feature
-  // is enabled.
   const EAspectRatioType ar_type = Style().AspectRatio().GetType();
-  if (ar_type == EAspectRatioType::kRatio ||
-      (ar_type == EAspectRatioType::kAutoAndRatio && !IsReplaced())) {
+  if (ar_type == EAspectRatioType::kRatio) {
     return Style().LogicalAspectRatio();
   }
 
