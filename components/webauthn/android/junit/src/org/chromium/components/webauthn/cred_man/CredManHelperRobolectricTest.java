@@ -50,12 +50,12 @@ import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialDescriptor;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
 import org.chromium.blink.mojom.ResidentKeyRequirement;
+import org.chromium.components.payments.test_support.ShadowWebContentsStatics;
 import org.chromium.components.webauthn.AuthenticationContextProvider;
 import org.chromium.components.webauthn.Barrier;
 import org.chromium.components.webauthn.Fido2ApiTestHelper;
 import org.chromium.components.webauthn.GetAssertionOutcome;
 import org.chromium.components.webauthn.MakeCredentialOutcome;
-import org.chromium.components.webauthn.ShadowWebContentStatics;
 import org.chromium.components.webauthn.WebauthnBrowserBridge;
 import org.chromium.components.webauthn.WebauthnModeProvider;
 import org.chromium.components.webauthn.cred_man.CredManMetricsHelper.CredManCreateRequestEnum;
@@ -81,7 +81,7 @@ import org.chromium.content_public.browser.WebContents;
             ShadowGetCredentialRequest.ShadowBuilder.class,
             ShadowGetCredentialResponse.class,
             ShadowPrepareGetCredentialResponse.class,
-            ShadowWebContentStatics.class
+            ShadowWebContentsStatics.class
         })
 @MinAndroidSdkLevel(Build.VERSION_CODES.P)
 public class CredManHelperRobolectricTest {
