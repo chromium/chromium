@@ -49,10 +49,18 @@ void MockInputDispositionHandler::OnTouchEventAck(
   VLOG(1) << __FUNCTION__ << " called!";
   acked_touch_event_ = event;
   RecordAckCalled(event.event.GetType(), ack_result);
-  if (touch_followup_event_)
-    input_router_->SendTouchEvent(*touch_followup_event_);
-  if (gesture_followup_event_)
-    input_router_->SendGestureEvent(*gesture_followup_event_);
+  if (touch_followup_event_) {
+    input::ScopedDispatchToRendererCallback dispatch_callback(
+        base::DoNothing());
+    input_router_->SendTouchEvent(*touch_followup_event_,
+                                  dispatch_callback.callback);
+  }
+  if (gesture_followup_event_) {
+    input::ScopedDispatchToRendererCallback dispatch_callback(
+        base::DoNothing());
+    input_router_->SendGestureEvent(*gesture_followup_event_,
+                                    dispatch_callback.callback);
+  }
 }
 
 void MockInputDispositionHandler::OnGestureEventAck(

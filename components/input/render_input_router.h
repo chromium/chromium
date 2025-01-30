@@ -120,6 +120,7 @@ class COMPONENT_EXPORT(INPUT) RenderInputRouter
   void ForwardWheelEventWithLatencyInfo(
       const blink::WebMouseWheelEvent& wheel_event,
       const ui::LatencyInfo& latency_info) override;
+  DispatchToRendererCallback GetDispatchToRendererCallback() override;
 
   // InputDispositionHandler
   void OnWheelEventAck(const MouseWheelEventWithLatencyInfo& event,
@@ -157,7 +158,8 @@ class COMPONENT_EXPORT(INPUT) RenderInputRouter
                               const ui::mojom::MenuSourceType source_type);
 
   void SendGestureEventWithLatencyInfo(
-      const GestureEventWithLatencyInfo& gesture_with_latency);
+      const GestureEventWithLatencyInfo& gesture_with_latency,
+      DispatchToRendererCallback& dispatch_callback);
 
   // Signals if this host has forwarded a GestureScrollBegin without yet having
   // forwarded a matching GestureScrollEnd/GestureFlingStart.
@@ -197,12 +199,19 @@ class COMPONENT_EXPORT(INPUT) RenderInputRouter
 
   void SetInputTargetClientForTesting(
       mojo::Remote<viz::mojom::InputTargetClient> input_target_client);
+  void SetWidgetInputHandlerForTesting(
+      mojo::Remote<blink::mojom::WidgetInputHandler> widget_input_handler);
   FlingSchedulerBase* GetFlingSchedulerForTesting() {
     return fling_scheduler_.get();
   }
 
  private:
   friend content::MockRenderInputRouter;
+
+  // Called when an input event gets finally dispatched to renderer or ended up
+  // getting filtered.
+  void OnInputDispatchedToRendererResult(const blink::WebInputEvent& event,
+                                         DispatchToRendererResult result);
 
   bool is_currently_scrolling_viewport_ = false;
 

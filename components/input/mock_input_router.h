@@ -36,16 +36,18 @@ class MockInputRouter : public InputRouter {
 
   // InputRouter:
   void SendMouseEvent(const MouseEventWithLatencyInfo& mouse_event,
-                      MouseEventCallback event_result_callback) override;
-  void SendWheelEvent(
-      const MouseWheelEventWithLatencyInfo& wheel_event) override;
+                      MouseEventCallback event_result_callback,
+                      DispatchToRendererCallback& dispatch_callback) override;
+  void SendWheelEvent(const MouseWheelEventWithLatencyInfo& wheel_event,
+                      DispatchToRendererCallback& dispatch_callback) override;
   void SendKeyboardEvent(
       const NativeWebKeyboardEventWithLatencyInfo& key_event,
-      KeyboardEventCallback event_result_callback) override;
-  void SendGestureEvent(
-      const GestureEventWithLatencyInfo& gesture_event) override;
-  void SendTouchEvent(
-      const TouchEventWithLatencyInfo& touch_event) override;
+      KeyboardEventCallback event_result_callback,
+      DispatchToRendererCallback& dispatch_callback) override;
+  void SendGestureEvent(const GestureEventWithLatencyInfo& gesture_event,
+                        DispatchToRendererCallback& dispatch_callback) override;
+  void SendTouchEvent(const TouchEventWithLatencyInfo& touch_event,
+                      DispatchToRendererCallback& dispatch_callback) override;
   void NotifySiteIsMobileOptimized(bool is_mobile_optimized) override {}
   bool HasPendingEvents() const override;
   void SetDeviceScaleFactor(float device_scale_factor) override {}

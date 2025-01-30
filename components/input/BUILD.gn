@@ -16,6 +16,8 @@ component("input") {
     "child_frame_input_helper.h",
     "cursor_manager.cc",
     "cursor_manager.h",
+    "dispatch_to_renderer_callback.cc",
+    "dispatch_to_renderer_callback.h",
     "event_with_latency_info.h",
     "events_helper.cc",
     "events_helper.h",

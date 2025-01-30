@@ -2036,8 +2036,13 @@ TEST_F(RenderWidgetHostTest, RendererExitedResetsInputRouter) {
   EXPECT_FALSE(host_->input_router()->HasPendingEvents());
   blink::WebMouseWheelEvent event;
   event.phase = blink::WebMouseWheelEvent::kPhaseBegan;
-  host_->input_router()->SendWheelEvent(
-      input::MouseWheelEventWithLatencyInfo(event));
+  {
+    input::ScopedDispatchToRendererCallback dispatch_callback(
+        host_->GetRenderInputRouter()->GetDispatchToRendererCallback());
+    host_->input_router()->SendWheelEvent(
+        input::MouseWheelEventWithLatencyInfo(event),
+        dispatch_callback.callback);
+  }
   EXPECT_TRUE(host_->input_router()->HasPendingEvents());
 
   // RendererExited will delete the view.
@@ -2066,8 +2071,13 @@ TEST_F(RenderWidgetHostTest, DestroyingRenderWidgetResetsInputRouter) {
   EXPECT_FALSE(host_->input_router()->HasPendingEvents());
   blink::WebMouseWheelEvent event;
   event.phase = blink::WebMouseWheelEvent::kPhaseBegan;
-  host_->input_router()->SendWheelEvent(
-      input::MouseWheelEventWithLatencyInfo(event));
+  {
+    input::ScopedDispatchToRendererCallback dispatch_callback(
+        host_->GetRenderInputRouter()->GetDispatchToRendererCallback());
+    host_->input_router()->SendWheelEvent(
+        input::MouseWheelEventWithLatencyInfo(event),
+        dispatch_callback.callback);
+  }
   EXPECT_TRUE(host_->input_router()->HasPendingEvents());
 
   // The RenderWidget is destroyed in the renderer process as the main frame
@@ -2402,21 +2412,17 @@ TEST_F(RenderWidgetHostTest, AddAndRemoveInputEventObserver) {
   // Confirm OnInputEvent is triggered.
   input::NativeWebKeyboardEvent native_event =
       CreateNativeWebKeyboardEvent(WebInputEvent::Type::kChar);
-  ui::LatencyInfo latency_info = ui::LatencyInfo();
-  ui::EventLatencyMetadata event_latency_metadata;
   EXPECT_CALL(observer, OnInputEvent(_, _)).Times(1);
-  host_->GetRenderInputRouter()->DispatchInputEventWithLatencyInfo(
-      native_event, &latency_info, &event_latency_metadata);
+  std::move(host_->GetRenderInputRouter()->GetDispatchToRendererCallback())
+      .Run(native_event, input::DispatchToRendererResult::kNotDispatched);
 
   // Remove InputEventObserver.
   host_->RemoveInputEventObserver(&observer);
 
   // Confirm InputEventObserver is removed.
   EXPECT_CALL(observer, OnInputEvent(_, _)).Times(0);
-  latency_info = ui::LatencyInfo();
-  event_latency_metadata = ui::EventLatencyMetadata();
-  host_->GetRenderInputRouter()->DispatchInputEventWithLatencyInfo(
-      native_event, &latency_info, &event_latency_metadata);
+  std::move(host_->GetRenderInputRouter()->GetDispatchToRendererCallback())
+      .Run(native_event, input::DispatchToRendererResult::kNotDispatched);
 }
 
 TEST_F(RenderWidgetHostTest, ScopedObservationWithInputEventObserver) {
@@ -2433,21 +2439,17 @@ TEST_F(RenderWidgetHostTest, ScopedObservationWithInputEventObserver) {
   // Confirm OnInputEvent is triggered.
   input::NativeWebKeyboardEvent native_event =
       CreateNativeWebKeyboardEvent(WebInputEvent::Type::kChar);
-  ui::LatencyInfo latency_info = ui::LatencyInfo();
-  ui::EventLatencyMetadata event_latency_metadata;
   EXPECT_CALL(observer, OnInputEvent(_, _)).Times(1);
-  host_->GetRenderInputRouter()->DispatchInputEventWithLatencyInfo(
-      native_event, &latency_info, &event_latency_metadata);
+  std::move(host_->GetRenderInputRouter()->GetDispatchToRendererCallback())
+      .Run(native_event, input::DispatchToRendererResult::kNotDispatched);
 
   // Remove InputEventObserver.
   scoped_observation.Reset();
 
   // Confirm InputEventObserver is removed.
   EXPECT_CALL(observer, OnInputEvent(_, _)).Times(0);
-  latency_info = ui::LatencyInfo();
-  event_latency_metadata = ui::EventLatencyMetadata();
-  host_->GetRenderInputRouter()->DispatchInputEventWithLatencyInfo(
-      native_event, &latency_info, &event_latency_metadata);
+  std::move(host_->GetRenderInputRouter()->GetDispatchToRendererCallback())
+      .Run(native_event, input::DispatchToRendererResult::kNotDispatched);
 }
 
 #if BUILDFLAG(IS_ANDROID)

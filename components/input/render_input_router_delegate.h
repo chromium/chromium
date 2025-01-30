@@ -50,8 +50,8 @@ class COMPONENT_EXPORT(INPUT) RenderInputRouterDelegate {
 
   virtual bool PreHandleGestureEvent(const blink::WebGestureEvent& event) = 0;
 
-  virtual void NotifyObserversOfInputEvent(
-      const blink::WebInputEvent& event) = 0;
+  virtual void NotifyObserversOfInputEvent(const blink::WebInputEvent& event,
+                                           bool dispatched_to_renderer) = 0;
   virtual void NotifyObserversOfInputEventAcks(
       blink::mojom::InputEventResultSource ack_source,
       blink::mojom::InputEventResultState ack_result,

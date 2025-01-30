@@ -7,14 +7,15 @@
 
 #include <optional>
 
+#include "base/component_export.h"
 #include "base/functional/callback_forward.h"
 #include "base/task/sequenced_task_runner.h"
 #include "cc/input/touch_action.h"
+#include "components/input/dispatch_to_renderer_callback.h"
 #include "components/input/event_with_latency_info.h"
 #include "components/input/gesture_event_queue.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "components/input/passthrough_touch_event_queue.h"
-#include "base/component_export.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
@@ -46,10 +47,12 @@ class InputRouter {
                               blink::mojom::InputEventResultState ack_result)>;
   virtual void SendMouseEvent(
       const MouseEventWithLatencyInfo& mouse_event,
-      MouseEventCallback event_result_callback) = 0;
+      MouseEventCallback event_result_callback,
+      DispatchToRendererCallback& dispatch_callback) = 0;
 
   virtual void SendWheelEvent(
-      const MouseWheelEventWithLatencyInfo& wheel_event) = 0;
+      const MouseWheelEventWithLatencyInfo& wheel_event,
+      DispatchToRendererCallback& dispatch_callback) = 0;
 
   using KeyboardEventCallback = base::OnceCallback<void(
       const NativeWebKeyboardEventWithLatencyInfo& event,
@@ -57,13 +60,16 @@ class InputRouter {
       blink::mojom::InputEventResultState ack_result)>;
   virtual void SendKeyboardEvent(
       const NativeWebKeyboardEventWithLatencyInfo& key_event,
-      KeyboardEventCallback event_result_callback) = 0;
+      KeyboardEventCallback event_result_callback,
+      DispatchToRendererCallback& dispatch_callback) = 0;
 
   virtual void SendGestureEvent(
-      const GestureEventWithLatencyInfo& gesture_event) = 0;
+      const GestureEventWithLatencyInfo& gesture_event,
+      DispatchToRendererCallback& dispatch_callback) = 0;
 
   virtual void SendTouchEvent(
-      const TouchEventWithLatencyInfo& touch_event) = 0;
+      const TouchEventWithLatencyInfo& touch_event,
+      DispatchToRendererCallback& dispatch_callback) = 0;
 
   // Notify the router about whether the current page is mobile-optimized (i.e.,
   // the site has a mobile-friendly viewport).

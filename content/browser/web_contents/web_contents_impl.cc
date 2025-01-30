@@ -7172,7 +7172,8 @@ input::TouchEmulator* WebContentsImpl::GetTouchEmulator(
 
 void WebContentsImpl::NotifyObserversOfInputEvent(
     const viz::FrameSinkId& frame_sink_id,
-    std::unique_ptr<blink::WebCoalescedInputEvent> event) {
+    std::unique_ptr<blink::WebCoalescedInputEvent> event,
+    bool dispatched_to_renderer) {
   auto iter = created_widgets_.find(frame_sink_id);
   // This adds a safeguard against race condition where a RenderWidgetHostImpl
   // is being destroyed & removed from |created_widgets_|, but Viz may still
@@ -7180,7 +7181,8 @@ void WebContentsImpl::NotifyObserversOfInputEvent(
   if (iter == created_widgets_.end()) {
     return;
   }
-  iter->second->NotifyObserversOfInputEvent(event->Event());
+  iter->second->NotifyObserversOfInputEvent(event->Event(),
+                                            dispatched_to_renderer);
 }
 
 void WebContentsImpl::NotifyObserversOfInputEventAcks(

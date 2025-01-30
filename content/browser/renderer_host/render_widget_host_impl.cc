@@ -45,6 +45,7 @@
 #include "cc/input/browser_controls_offset_tags_info.h"
 #include "cc/trees/browser_controls_params.h"
 #include "cc/trees/render_frame_metadata.h"
+#include "components/input/dispatch_to_renderer_callback.h"
 #include "components/input/input_router_config_helper.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "components/input/render_input_router.mojom.h"
@@ -1568,9 +1569,15 @@ void RenderWidgetHostImpl::ForwardMouseEventWithLatencyInfo(
   GetRenderInputRouter()->DispatchInputEventWithLatencyInfo(
       mouse_with_latency.event, &mouse_with_latency.latency,
       &mouse_with_latency.event.GetModifiableEventLatencyMetadata());
-  input_router()->SendMouseEvent(
-      mouse_with_latency, base::BindOnce(&RenderWidgetHostImpl::OnMouseEventAck,
-                                         weak_factory_.GetWeakPtr()));
+  {
+    input::ScopedDispatchToRendererCallback dispatch_callback(
+        GetRenderInputRouter()->GetDispatchToRendererCallback());
+    input_router()->SendMouseEvent(
+        mouse_with_latency,
+        base::BindOnce(&RenderWidgetHostImpl::OnMouseEventAck,
+                       weak_factory_.GetWeakPtr()),
+        dispatch_callback.callback);
+  }
 }
 
 void RenderWidgetHostImpl::ForwardWheelEvent(
@@ -1598,7 +1605,13 @@ void RenderWidgetHostImpl::ForwardWheelEventWithLatencyInfo(
   GetRenderInputRouter()->DispatchInputEventWithLatencyInfo(
       wheel_with_latency.event, &wheel_with_latency.latency,
       &wheel_with_latency.event.GetModifiableEventLatencyMetadata());
-  input_router()->SendWheelEvent(wheel_with_latency);
+
+  {
+    input::ScopedDispatchToRendererCallback dispatch_callback(
+        GetRenderInputRouter()->GetDispatchToRendererCallback());
+    input_router()->SendWheelEvent(wheel_with_latency,
+                                   dispatch_callback.callback);
+  }
 }
 
 void RenderWidgetHostImpl::WaitForInputProcessed(
@@ -1744,10 +1757,15 @@ void RenderWidgetHostImpl::ForwardKeyboardEventWithCommands(
         std::move(commands));
   }
 
-  input_router()->SendKeyboardEvent(
-      key_event_with_latency,
-      base::BindOnce(&RenderWidgetHostImpl::OnKeyboardEventAck,
-                     weak_factory_.GetWeakPtr()));
+  {
+    input::ScopedDispatchToRendererCallback dispatch_callback(
+        GetRenderInputRouter()->GetDispatchToRendererCallback());
+    input_router()->SendKeyboardEvent(
+        key_event_with_latency,
+        base::BindOnce(&RenderWidgetHostImpl::OnKeyboardEventAck,
+                       weak_factory_.GetWeakPtr()),
+        dispatch_callback.callback);
+  }
 }
 
 void RenderWidgetHostImpl::CreateSyntheticGestureControllerIfNecessary() {
@@ -2564,9 +2582,13 @@ std::optional<bool> RenderWidgetHostImpl::IsDelegatedInkHovering() {
 }
 
 void RenderWidgetHostImpl::NotifyObserversOfInputEvent(
-    const WebInputEvent& event) {
+    const WebInputEvent& event,
+    bool dispatched_to_renderer) {
   for (auto& observer : input_event_observers_) {
     observer.OnInputEvent(*this, event);
+  }
+  if (dispatched_to_renderer) {
+    delegate_->DidReceiveInputEvent(this, event);
   }
 }
 
@@ -2606,7 +2628,6 @@ void RenderWidgetHostImpl::OnInputEventPreDispatch(
       event.GetType() == WebInputEvent::Type::kGestureTap) {
     delegate_->FocusOwningWebContents(this);
   }
-  delegate_->DidReceiveInputEvent(this, event);
 }
 
 void RenderWidgetHostImpl::OnInvalidInputEventSource() {

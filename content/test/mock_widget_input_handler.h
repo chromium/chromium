@@ -284,6 +284,8 @@ class MockWidgetInputHandler : public blink::mojom::WidgetInputHandler {
       const std::optional<cc::BrowserControlsOffsetTagsInfo>& offset_tags_info)
       override;
 
+  void FlushReceiverForTesting();
+
   using MessageVector = std::vector<std::unique_ptr<DispatchedMessage>>;
   MessageVector GetAndResetDispatchedMessages();
 

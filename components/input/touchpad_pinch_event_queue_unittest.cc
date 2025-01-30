@@ -39,7 +39,9 @@ class TouchpadPinchEventQueueTest : public testing::TestWithParam<bool>,
   ~TouchpadPinchEventQueueTest() = default;
 
   void QueueEvent(const blink::WebGestureEvent& event) {
-    queue_->QueueEvent(GestureEventWithLatencyInfo(event));
+    ScopedDispatchToRendererCallback dispatch_callback(base::DoNothing());
+    queue_->QueueEvent(GestureEventWithLatencyInfo(event),
+                       dispatch_callback.callback);
   }
 
   void QueuePinchBegin() {
@@ -104,8 +106,10 @@ class TouchpadPinchEventQueueTest : public testing::TestWithParam<bool>,
   }
 
   void SendMouseWheelEventForPinchImmediately(
+      const blink::WebGestureEvent& pinch_event,
       const MouseWheelEventWithLatencyInfo& event,
-      MouseWheelEventHandledCallback callback) override {
+      MouseWheelEventHandledCallback callback,
+      DispatchToRendererCallback& dispatch_callback) override {
     mock_client_.SendMouseWheelEventForPinchImmediately(event);
     callbacks_.emplace_back(base::BindOnce(
         [](MouseWheelEventHandledCallback callback,

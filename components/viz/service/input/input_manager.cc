@@ -357,9 +357,11 @@ InputManager::GetEmbeddedRenderInputRouters(const FrameSinkId& id) {
 void InputManager::NotifyObserversOfInputEvent(
     const FrameSinkId& frame_sink_id,
     const base::UnguessableToken& grouping_id,
-    std::unique_ptr<blink::WebCoalescedInputEvent> event) {
+    std::unique_ptr<blink::WebCoalescedInputEvent> event,
+    bool dispatched_to_renderer) {
   rir_delegate_remote_map_.at(grouping_id)
-      ->NotifyObserversOfInputEvent(frame_sink_id, std::move(event));
+      ->NotifyObserversOfInputEvent(frame_sink_id, std::move(event),
+                                    dispatched_to_renderer);
 }
 
 void InputManager::NotifyObserversOfInputEventAcks(

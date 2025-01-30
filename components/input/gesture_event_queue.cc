@@ -21,6 +21,20 @@ GestureEventQueue::GestureEventWithLatencyInfoAckState::
         const GestureEventWithLatencyInfo& event)
     : GestureEventWithLatencyInfo(event) {}
 
+GestureEventWithLatencyInfoAndCallback::GestureEventWithLatencyInfoAndCallback(
+    const GestureEventWithLatencyInfo& event,
+    DispatchToRendererCallback callback)
+    : GestureEventWithLatencyInfo(event),
+      dispatch_callback(std::move(callback)) {}
+
+GestureEventWithLatencyInfoAndCallback::GestureEventWithLatencyInfoAndCallback(
+    GestureEventWithLatencyInfoAndCallback&& event)
+    : GestureEventWithLatencyInfo(event.event, event.latency),
+      dispatch_callback(std::move(event.dispatch_callback)) {}
+
+GestureEventWithLatencyInfoAndCallback::
+    ~GestureEventWithLatencyInfoAndCallback() = default;
+
 GestureEventQueue::Config::Config() = default;
 
 GestureEventQueue::GestureEventQueue(
@@ -42,17 +56,18 @@ GestureEventQueue::GestureEventQueue(
 GestureEventQueue::~GestureEventQueue() = default;
 
 bool GestureEventQueue::DebounceOrForwardEvent(
-    const GestureEventWithLatencyInfo& gesture_event) {
+    const GestureEventWithLatencyInfo& gesture_event,
+    DispatchToRendererCallback& dispatch_callback) {
   // GFS and GFC should have been filtered in PassToFlingController.
   DCHECK_NE(gesture_event.event.GetType(),
             WebInputEvent::Type::kGestureFlingStart);
   DCHECK_NE(gesture_event.event.GetType(),
             WebInputEvent::Type::kGestureFlingCancel);
-  if (!ShouldForwardForBounceReduction(gesture_event)) {
+  if (!ShouldForwardForBounceReduction(gesture_event, dispatch_callback)) {
     return false;
   }
 
-  ForwardGestureEvent(gesture_event);
+  ForwardGestureEvent(gesture_event, dispatch_callback);
   return true;
 }
 
@@ -62,12 +77,15 @@ bool GestureEventQueue::PassToFlingController(
 }
 
 void GestureEventQueue::QueueDeferredEvents(
-    const GestureEventWithLatencyInfo& gesture_event) {
-  deferred_gesture_queue_.push_back(gesture_event);
+    const GestureEventWithLatencyInfo& gesture_event,
+    DispatchToRendererCallback& dispatch_callback) {
+  deferred_gesture_queue_.emplace_back(gesture_event,
+                                       std::move(dispatch_callback));
 }
 
-GestureEventQueue::GestureQueue GestureEventQueue::TakeDeferredEvents() {
-  GestureQueue deferred_gesture_events;
+GestureEventQueue::GestureWithCallbackQueue
+GestureEventQueue::TakeDeferredEvents() {
+  GestureWithCallbackQueue deferred_gesture_events;
   deferred_gesture_events.swap(deferred_gesture_queue_);
   return deferred_gesture_events;
 }
@@ -85,7 +103,8 @@ bool GestureEventQueue::FlingInProgressForTest() const {
 }
 
 bool GestureEventQueue::ShouldForwardForBounceReduction(
-    const GestureEventWithLatencyInfo& gesture_event) {
+    const GestureEventWithLatencyInfo& gesture_event,
+    DispatchToRendererCallback& dispatch_callback) {
   if (debounce_interval_ <= base::TimeDelta()) {
     return true;
   }
@@ -117,7 +136,8 @@ bool GestureEventQueue::ShouldForwardForBounceReduction(
       if (!scroll_end_filtered_by_deboucing_deferral_queue_) {
         return true;
       } else {
-        debouncing_deferral_queue_.push_back(gesture_event);
+        debouncing_deferral_queue_.emplace_back(gesture_event,
+                                                std::move(dispatch_callback));
         return false;
       }
     case WebInputEvent::Type::kGestureScrollEnd:
@@ -129,14 +149,16 @@ bool GestureEventQueue::ShouldForwardForBounceReduction(
         return true;
       }
       if (scrolling_in_progress_) {
-        debouncing_deferral_queue_.push_back(gesture_event);
+        debouncing_deferral_queue_.emplace_back(gesture_event,
+                                                std::move(dispatch_callback));
         scroll_end_filtered_by_deboucing_deferral_queue_ = true;
         return false;
       }
       return true;
     default:
       if (scrolling_in_progress_) {
-        debouncing_deferral_queue_.push_back(gesture_event);
+        debouncing_deferral_queue_.emplace_back(gesture_event,
+                                                std::move(dispatch_callback));
         return false;
       }
       return true;
@@ -144,7 +166,8 @@ bool GestureEventQueue::ShouldForwardForBounceReduction(
 }
 
 void GestureEventQueue::ForwardGestureEvent(
-    const GestureEventWithLatencyInfo& gesture_event) {
+    const GestureEventWithLatencyInfo& gesture_event,
+    DispatchToRendererCallback& dispatch_callback) {
   // GFS and GFC should have been filtered in PassToFlingController to get
   // handled by fling controller.
   DCHECK_NE(gesture_event.event.GetType(),
@@ -152,7 +175,10 @@ void GestureEventQueue::ForwardGestureEvent(
   DCHECK_NE(gesture_event.event.GetType(),
             WebInputEvent::Type::kGestureFlingCancel);
   sent_events_awaiting_ack_.push_back(gesture_event);
-  client_->SendGestureEventImmediately(gesture_event);
+  client_->SendGestureEventImmediately(gesture_event, dispatch_callback);
+  // `ForwardGestureEvent` could be called on enqueued events as well, DCHECK
+  // ensures the corresponding callback was run.
+  CHECK(!dispatch_callback);
 }
 
 void GestureEventQueue::ProcessGestureAck(
@@ -220,15 +246,21 @@ void GestureEventQueue::SendScrollEndingEventsNow() {
   if (debouncing_deferral_queue_.empty()) {
     return;
   }
-  GestureQueue debouncing_deferral_queue;
+  GestureWithCallbackQueue debouncing_deferral_queue;
   debouncing_deferral_queue.swap(debouncing_deferral_queue_);
-  for (GestureQueue::const_iterator it = debouncing_deferral_queue.begin();
-       it != debouncing_deferral_queue.end(); it++) {
-    if (!fling_controller_.ObserveAndMaybeConsumeGestureEvent(*it)) {
-      if (it->event.GetType() == WebInputEvent::Type::kGestureScrollEnd) {
+  for (auto& gesture_with_callback : debouncing_deferral_queue) {
+    if (!fling_controller_.ObserveAndMaybeConsumeGestureEvent(
+            gesture_with_callback)) {
+      if (gesture_with_callback.event.GetType() ==
+          WebInputEvent::Type::kGestureScrollEnd) {
         scroll_end_filtered_by_deboucing_deferral_queue_ = false;
       }
-      ForwardGestureEvent(*it);
+      ForwardGestureEvent(gesture_with_callback,
+                          gesture_with_callback.dispatch_callback);
+    } else {
+      std::move(gesture_with_callback.dispatch_callback)
+          .Run(gesture_with_callback.event,
+               DispatchToRendererResult::kNotDispatched);
     }
   }
 }

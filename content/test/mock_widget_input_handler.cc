@@ -144,6 +144,11 @@ void MockWidgetInputHandler::UpdateBrowserControlsState(
     bool animate,
     const std::optional<cc::BrowserControlsOffsetTagsInfo>& offset_tags_info) {}
 
+void MockWidgetInputHandler::FlushReceiverForTesting() {
+  DCHECK(receiver_.is_bound());
+  receiver_.FlushForTesting();
+}
+
 MockWidgetInputHandler::DispatchedMessage::DispatchedMessage(
     const std::string& name)
     : name_(name) {}
