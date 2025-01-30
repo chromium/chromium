@@ -24,17 +24,19 @@ export interface BasicStructMojoType {
 
 
 export type BasicStruct = BasicStructMojoType;
-mojo.internal.Struct(
+mojo.internal.Struct<BasicStructMojoType>(
     BasicStructSpec.$,
     'BasicStruct',
     [
-      mojo.internal.StructField(
+      mojo.internal.StructField<BasicStructMojoType, boolean>(
         'myBool', 0,
         0,
         mojo.internal.Bool,
         false,
         false /* nullable */,
         0,
+        undefined,
+        undefined,
     ),
     ],
     [[0, 16],]);

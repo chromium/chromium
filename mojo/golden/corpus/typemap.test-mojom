@@ -3,6 +3,10 @@
 // found in the LICENSE file.
 module golden;
 
-struct BasicStruct {
-  bool my_bool;
+struct Typemapped {
+  uint8 field;
+};
+
+interface IFaceWithTypemap {
+  Echo(Typemapped param) => (Typemapped out);
 };

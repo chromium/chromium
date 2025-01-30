@@ -3,6 +3,6 @@
 // found in the LICENSE file.
 module golden;
 
-struct BasicStruct {
-  bool my_bool;
+interface IFace {
+  Method(bool param) => (string result);
 };
