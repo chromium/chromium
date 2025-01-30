@@ -249,6 +249,35 @@ TEST_F(MediaStreamTrackImplTest, MutedStateUpdates) {
   EXPECT_EQ(track->muted(), false);
 }
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+TEST_F(MediaStreamTrackImplTest, ZoomStateUpdates) {
+  V8TestingScope v8_scope;
+  MediaStreamComponent* component;
+  MockMediaStreamVideoSource* platform_source_ptr;
+  std::tie(component, platform_source_ptr) =
+      MakeMockDisplayVideoCaptureComponent();
+
+  MediaStreamTrackImpl* track = MakeGarbageCollected<MediaStreamTrackImpl>(
+      v8_scope.GetExecutionContext(), component);
+
+  // Start the source.
+  platform_source_ptr->StartMockedSource();
+  MediaStreamSource* source = component->Source();
+
+  EXPECT_EQ(track->GetZoomLevelForTesting(), std::nullopt);
+  ASSERT_TRUE(track->device());
+  source->OnZoomLevelChange(*track->device(), 125);
+  EXPECT_EQ(track->GetZoomLevelForTesting(), 125);
+
+  // Stop the track.
+  track->stopTrack(v8_scope.GetExecutionContext());
+
+  // After the track stops, zoom_level of the device should not change.
+  source->OnZoomLevelChange(*track->device(), 150);
+  EXPECT_EQ(track->GetZoomLevelForTesting(), 125);
+}
+#endif
+
 TEST_F(MediaStreamTrackImplTest, MutedDoesntUpdateAfterEnding) {
   V8TestingScope v8_scope;
   std::unique_ptr<MockMediaStreamVideoSource> platform_source =

@@ -1569,6 +1569,14 @@ void UserMediaProcessor::OnDeviceChanged(const MediaStreamDevice& old_device,
 
   WebPlatformMediaStreamSource* const source_impl = source->GetPlatformSource();
   source_impl->ChangeSource(new_device);
+  source = FindLocalSource(new_device);
+  if (!source) {
+    return;
+  }
+  if (new_device.display_media_info) {
+    source->OnZoomLevelChange(
+        new_device, new_device.display_media_info->initial_zoom_level);
+  }
 }
 
 void UserMediaProcessor::OnDeviceRequestStateChange(

@@ -298,6 +298,10 @@ MediaStreamTrackImpl::MediaStreamTrackImpl(
   if (ready_state_ != MediaStreamSource::kReadyStateEnded) {
     EnsureFeatureHandleForScheduler();
   }
+  const std::optional<const MediaStreamDevice> source_device = device();
+  if (source_device && source_device->display_media_info) {
+    zoom_level_ = source_device->display_media_info->initial_zoom_level;
+  }
 }
 
 MediaStreamTrackImpl::~MediaStreamTrackImpl() = default;
@@ -925,6 +929,18 @@ void MediaStreamTrackImpl::SourceChangedCaptureHandle() {
 
   DispatchEvent(*Event::Create(event_type_names::kCapturehandlechange));
 }
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+void MediaStreamTrackImpl::SourceChangedZoomLevel(int zoom_level) {
+  DCHECK(IsMainThread());
+  if (Ended()) {
+    return;
+  }
+
+  zoom_level_ = zoom_level;
+  // TODO(383946052): Send an event to notify resolution change.
+}
+#endif
 
 void MediaStreamTrackImpl::PropagateTrackEnded() {
   CHECK(!is_iterating_registered_media_streams_);
