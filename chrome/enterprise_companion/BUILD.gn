@@ -50,6 +50,10 @@ process_version("branding_header") {
   output = "$target_gen_dir/enterprise_companion_branding.h"
 }
 
+source_set("flags") {
+  sources = [ "flags.h" ]
+}
+
 source_set("base") {
   sources = [
     "app/app.cc",
@@ -89,6 +93,7 @@ source_set("base") {
   deps = [
     ":branding_header",
     ":client",
+    ":flags",
     ":installer_paths",
     ":version_header",
     "mojom/",
@@ -150,6 +155,7 @@ executable("test_crashpad_embedder") {
     ":base",
     ":client",
     ":constants_test",
+    ":flags",
     "//base",
     "//chrome/updater:constants_test",
   ]
@@ -170,6 +176,7 @@ source_set("test_utils") {
     ":base",
     ":branding_header",
     ":client",
+    ":flags",
     ":installer_paths",
     ":version_header",
     "//base",
@@ -258,6 +265,7 @@ test("enterprise_companion_integration_tests") {
     ":branding_header",
     ":client",
     ":constants_test",
+    ":flags",
     ":installer_paths",
     ":test_utils",
     ":version_header",
@@ -302,6 +310,7 @@ static_library("client") {
   ]
   deps = [
     ":branding_header",
+    ":flags",
     ":installer_paths",
     "//components/named_mojo_ipc_server",
     "//components/policy/core/common:common_constants",

@@ -18,6 +18,7 @@
 #include "chrome/enterprise_companion/enterprise_companion.h"
 #include "chrome/enterprise_companion/enterprise_companion_branding.h"
 #include "chrome/enterprise_companion/enterprise_companion_version.h"
+#include "chrome/enterprise_companion/flags.h"
 #include "chrome/enterprise_companion/installer.h"
 #include "chrome/enterprise_companion/installer_paths.h"
 #include "chrome/enterprise_companion/test/test_utils.h"
