@@ -15,11 +15,17 @@ namespace collaboration::messaging {
 
 enum class DirtyType {
   kNone = 0,
-  kMessageOnly = 1 << 0,  // Used for showing instant message.
-  kDot = 1 << 1,          // Used for showing dot indicator.
-  kChip = 1 << 2,         // Used fow showing chip indicator (Desktop only).
+  kMessageOnly = 1 << 0,      // Used for showing instant message.
+  kDot = 1 << 1,              // Used for showing dot indicator.
+  kChip = 1 << 2,             // Used for showing chip indicator (Desktop only).
+  kTabGroupRemoved = 1 << 3,  // Used for showing tab group removed messages.
   kDotAndChip = kDot | kChip,  // Used for showing both dot and chip indicator.
-  kAll = kMessageOnly | kDot | kChip,  // Used for all dirty types.
+  kTabGroupRemovedAndInstantMessage =
+      kTabGroupRemoved |
+      kMessageOnly,  // Used for tracking both persistent and instant message
+                     // for tab group removed message.
+  kAll = kMessageOnly | kDot | kChip |
+         kTabGroupRemoved,  // Used for all dirty types.
 };
 
 class MessagingBackendStore {

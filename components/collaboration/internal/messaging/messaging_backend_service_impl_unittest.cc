@@ -644,7 +644,8 @@ TEST_F(MessagingBackendServiceImplTest, TestStoringTabGroupEventsFromRemote) {
                                            tab_groups::TriggerSource::REMOTE);
   VerifyGenericMessageData(message, collaboration_group_id.value(),
                            collaboration_pb::TAB_GROUP_REMOVED,
-                           DirtyType::kNone, now.ToTimeT());
+                           DirtyType::kTabGroupRemovedAndInstantMessage,
+                           now.ToTimeT());
   EXPECT_EQ(gaia2, GaiaId(message.triggering_user_gaia_id()));
 
   tg_notifier_observer_->OnTabGroupNameUpdated(
@@ -1765,6 +1766,9 @@ TEST_F(MessagingBackendServiceImplTest, TestTabGroupRemovedInstantMessage) {
   EXPECT_EQ(CollaborationEvent::TAB_GROUP_REMOVED, message.collaboration_event);
   EXPECT_EQ(tab_group.saved_guid(),
             message.attribution.tab_group_metadata->sync_tab_group_id);
+  EXPECT_TRUE(static_cast<int>(DirtyType::kTabGroupRemoved) &
+              db_message.dirty());
+  EXPECT_TRUE(static_cast<int>(DirtyType::kMessageOnly) & db_message.dirty());
 
   EXPECT_CALL(*unowned_messaging_backend_store_,
               ClearDirtyMessage(db_message_id, DirtyType::kMessageOnly))
