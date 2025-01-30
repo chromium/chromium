@@ -1361,6 +1361,53 @@ bool Element::InterestLost(Element& interest_target) {
   return true;
 }
 
+void Element::DefaultEventHandler(Event& event) {
+  if (Element* target = interestTargetElement()) {
+    CHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled());
+    if (auto* keyboard_event = DynamicTo<KeyboardEvent>(event);
+        keyboard_event && event.type() == event_type_names::kKeydown) {
+      const int modifiers =
+          keyboard_event->GetModifiers() & blink::WebInputEvent::kKeyModifiers;
+      if (keyboard_event->key() == keywords::kArrowUp &&
+          modifiers == WebInputEvent::kAltKey && !HasInterest()) {
+        bool should_trigger_interest = true;
+        if (Element* current_interest_element =
+                GetDocument().KeyboardInterestTargetElement();
+            current_interest_element && current_interest_element != this &&
+            current_interest_element->HasInterest()) {
+          // We are gaining interest in a different element, but we haven't lost
+          // interest in the old element yet. Do that now.
+          if (!GainOrLoseInterest(
+                  current_interest_element,
+                  current_interest_element->interestTargetElement(),
+                  /*interest_gained*/ false)) {
+            // The `loseinterest` event to the old target was cancelled.
+            should_trigger_interest = false;
+          } else if (target != interestTargetElement()) {
+            // The event handler above changed the target
+            should_trigger_interest = false;
+          }
+        }
+        if (should_trigger_interest) {
+          if (GainOrLoseInterest(this, target, /*interest_gained*/ true)) {
+            event.SetDefaultHandled();
+            GetDocument().SetKeyboardInterestTargetElement(this);
+            return;
+          }
+        }
+      } else if (keyboard_event->key() == keywords::kEscape && !modifiers &&
+                 HasInterest()) {
+        if (GainOrLoseInterest(this, target, /*interest_gained*/ false)) {
+          event.SetDefaultHandled();
+          GetDocument().SetKeyboardInterestTargetElement(nullptr);
+          return;
+        }
+      }
+    }
+  }
+  ContainerNode::DefaultEventHandler(event);
+}
+
 Element* Element::anchorElement() const {
   // TODO(crbug.com/1425215): Fix GetElementAttribute() for out-of-tree-scope
   // elements, so that we can remove the hack below.
@@ -10275,6 +10322,43 @@ bool Element::ChildStyleRecalcBlockedByDisplayLock() const {
   return context && !context->ShouldStyleChildren();
 }
 
+// static
+bool Element::GainOrLoseInterest(Element* invoker,
+                                 Element* target,
+                                 bool interest_gained) {
+  // Check pre-conditions. This function is called from posted tasks, so things
+  // may have changed since invoker and target were passed.
+  if (!invoker || !target || !invoker->IsInTreeScope() ||
+      !invoker->GetDocument().IsActive() ||
+      invoker->interestTargetElement() != target) {
+    return false;
+  }
+
+  // We've reached the point where interest has officially been
+  // gained or lost. Fire the event and run any default actions.
+  if (interest_gained) {
+    if (!invoker->InterestGained(*target)) {
+      return false;  // event was cancelled.
+    }
+    // This is now the target's interest invoker
+    target->EnsureElementRareData()
+        .EnsureInterestInvokerTargetData()
+        .setInterestInvoker(invoker);
+    invoker->PseudoStateChanged(CSSSelector::kPseudoHasInterest);
+  } else {
+    if (!invoker->InterestLost(*target)) {
+      return false;  // event was cancelled.
+    }
+    // If the target still thinks this invoker is its invoker, remove it.
+    if (auto* targets_invoker = target->GetInterestInvoker();
+        targets_invoker && targets_invoker == invoker) {
+      target->EnsureElementRareData().RemoveInterestInvokerTargetData();
+      invoker->PseudoStateChanged(CSSSelector::kPseudoHasInterest);
+    }
+  }
+  return true;
+}
+
 void Element::ScheduleInterestGainedTask() {
   // This should be called on an interest invoker only.
   auto* target = interestTargetElement();
@@ -10299,21 +10383,9 @@ void Element::ScheduleInterestGainedTask() {
       FROM_HERE,
       WTF::BindOnce(
           [](Element* invoker, Element* target) {
-            if (!invoker || !target || !invoker->IsInTreeScope() ||
-                !invoker->GetDocument().IsActive() ||
-                invoker->interestTargetElement() != target) {
-              return;
+            if (GainOrLoseInterest(invoker, target, /*interest_gained*/ true)) {
+              invoker->GetDocument().SetKeyboardInterestTargetElement(nullptr);
             }
-            // We've reached the point where interest has officially been
-            // "gained". Fire the event and run any default actions.
-            if (!invoker->InterestGained(*target)) {
-              return;  // event was cancelled.
-            }
-            // This is now the target's interest invoker
-            target->EnsureElementRareData()
-                .EnsureInterestInvokerTargetData()
-                .setInterestInvoker(invoker);
-            invoker->PseudoStateChanged(CSSSelector::kPseudoHasInterest);
           },
           WrapWeakPersistent(this), WrapWeakPersistent(target)),
       base::Seconds(show_delay_seconds)));
@@ -10343,23 +10415,7 @@ void Element::ScheduleInterestLostTask() {
       FROM_HERE,
       WTF::BindOnce(
           [](Element* invoker, Element* target) {
-            if (!invoker || !target || !invoker->IsInTreeScope() ||
-                !invoker->GetDocument().IsActive() ||
-                invoker->interestTargetElement() != target) {
-              return;
-            }
-            // We've reached the point where interest has officially been
-            // "lost". Fire the event and run any default actions.
-            if (!invoker->InterestLost(*target)) {
-              return;  // event was cancelled.
-            }
-            if (auto* targets_invoker = target->GetInterestInvoker();
-                targets_invoker && targets_invoker == invoker) {
-              target->EnsureElementRareData()
-                  .EnsureInterestInvokerTargetData()
-                  .setInterestInvoker(nullptr);
-              invoker->PseudoStateChanged(CSSSelector::kPseudoHasInterest);
-            }
+            GainOrLoseInterest(invoker, target, /*interest_gained*/ false);
           },
           WrapWeakPersistent(this), WrapWeakPersistent(target)),
       base::Seconds(hide_delay_seconds)));
@@ -10382,6 +10438,7 @@ Element* Element::GetInterestInvoker() const {
 }
 
 bool Element::HasInterest() {
+  CHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled());
   auto* target = interestTargetElement();
   if (!target) {
     return false;

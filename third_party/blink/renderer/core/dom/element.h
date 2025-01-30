@@ -1521,6 +1521,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   InterestInvokerTargetData& EnsureInterestInvokerTargetData();
   InterestInvokerTargetData* GetInterestInvokerTargetData() const;
 
+  void DefaultEventHandler(Event&) override;
+
   // Retrieves the element pointed to by this element's 'anchor' content
   // attribute, if that element exists.
   // TODO(crbug.com/40059176) If the HTMLAnchorAttribute feature is disabled,
@@ -2016,6 +2018,9 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // This returns the active interest invoker for which this element is the
   // target.
   Element* GetInterestInvoker() const;
+  static bool GainOrLoseInterest(Element* invoker,
+                                 Element* target,
+                                 bool interest_gained);
 
   // Highlight pseudos inherit all properties from the corresponding highlight
   // in the parent, but virtually all existing content uses universal rules

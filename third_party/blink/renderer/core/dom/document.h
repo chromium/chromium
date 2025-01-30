@@ -1662,6 +1662,11 @@ class CORE_EXPORT Document : public ContainerNode,
     return all_open_dialogs_;
   }
 
+  void SetKeyboardInterestTargetElement(Element*);
+  Member<Element> KeyboardInterestTargetElement() const {
+    return keyboard_interest_target_element_;
+  }
+
   // https://crbug.com/1453291
   // The DOM Parts API:
   // https://github.com/WICG/webcomponents/blob/gh-pages/proposals/DOM-Parts.md.
@@ -2757,6 +2762,11 @@ class CORE_EXPORT Document : public ContainerNode,
 
   // The ordered list of currently-open dialogs, in order they were opened.
   HeapLinkedHashSet<Member<HTMLDialogElement>> all_open_dialogs_;
+
+  // If there was a keyboard-activated element with the `interesttarget`
+  // attribute, it will be stored here, so that when other elements are shown
+  // interest, this element can first "lose interest".
+  Member<Element> keyboard_interest_target_element_;
 
   Member<DocumentPartRoot> document_part_root_;
 
