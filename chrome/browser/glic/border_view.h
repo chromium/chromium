@@ -12,6 +12,7 @@
 #include "ui/views/view.h"
 
 class Browser;
+class ThemeService;
 
 namespace gfx {
 class Canvas;
@@ -56,8 +57,11 @@ class BorderView : public views::View,
    public:
     virtual ~Tester() = default;
     virtual base::TimeTicks GetTestTimestamp() = 0;
+    virtual base::TimeTicks GetTestCreationTime() = 0;
   };
   void set_tester(Tester* tester) { tester_ = tester; }
+
+  int GetMillisecondsSinceCreationForTesting() const;
 
  private:
   // A value from 0 to 1 indicating how much the border is to be emphasized.
@@ -72,12 +76,17 @@ class BorderView : public views::View,
   // Sets the necessary bits to start ramping down the opacity once it's called.
   void StartRampingDown();
 
+  // Returns the number of milliseconds since construction; wraps after a day.
+  int GetMillisecondsSinceCreation() const;
+
+  // Returns the timestamp when the instance was created (but permits being
+  // adjusted by the Tester).
+  base::TimeTicks GetCreationTime() const;
+
   // A utility class that subscribe to `GlicKeyedService` for various browser UI
   // status change.
   class BorderViewUpdater;
   const std::unique_ptr<BorderViewUpdater> updater_;
-
-  raw_ptr<ui::Compositor> compositor_ = nullptr;
 
   // When it is true, the class directly presents a static border and when it is
   // false, it animates the border first.
@@ -86,13 +95,18 @@ class BorderView : public views::View,
   float opacity_ = 0.f;
   float emphasis_ = 0.f;
 
+  const base::TimeTicks creation_time_;
   base::TimeTicks first_frame_time_;
   base::TimeTicks first_emphasis_frame_;
+  base::TimeTicks last_animation_step_time_;
 
   bool record_first_ramp_down_frame_ = false;
   base::TimeTicks first_ramp_down_frame_;
 
   raw_ptr<Tester> tester_ = nullptr;
+  raw_ptr<ui::Compositor> compositor_ = nullptr;
+  raw_ptr<ThemeService> theme_service_ = nullptr;
+  raw_ptr<Browser> browser_ = nullptr;
 };
 
 BEGIN_VIEW_BUILDER(, BorderView, views::View)
