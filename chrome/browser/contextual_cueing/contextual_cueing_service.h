@@ -11,12 +11,18 @@
 #include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
 
+class GURL;
+
 namespace contextual_cueing {
 
 class ContextualCueingService : public KeyedService {
  public:
   ContextualCueingService();
   ~ContextualCueingService() override;
+
+  // Reports a page load happened to `url`, and is used to keep track of quiet
+  // page loads requirement after a cueing UI is shown.
+  void ReportPageLoad(const GURL& url);
 
   // Should be called when the cueing UI is shown.
   void CueingNudgeShown();
@@ -50,6 +56,11 @@ class ContextualCueingService : public KeyedService {
 
   // The last time the cueing nudge was dismissed.
   std::optional<base::Time> backoff_end_time_;
+
+  // A counter for how many subsequent page load events will be prevented from
+  // showing a nudge. This is to limit the frequency at which consecutive page
+  // loads can trigger nudges.
+  size_t remaining_quiet_loads_ = 0;
 };
 
 }  // namespace contextual_cueing

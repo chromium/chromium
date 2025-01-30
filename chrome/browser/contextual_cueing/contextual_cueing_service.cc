@@ -7,12 +7,21 @@
 #include <cmath>
 
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
+#include "url/gurl.h"
 
 namespace contextual_cueing {
 
 ContextualCueingService::ContextualCueingService() = default;
 
 ContextualCueingService::~ContextualCueingService() = default;
+
+void ContextualCueingService::ReportPageLoad(const GURL& url) {
+  // TODO: crbug.com/390480348 - Implement the per domain engagement
+  // restrictions.
+  if (remaining_quiet_loads_) {
+    remaining_quiet_loads_--;
+  }
+}
 
 void ContextualCueingService::CueingNudgeShown() {
   size_t max_queue_size = kNudgeCapCount.Get();
@@ -22,6 +31,7 @@ void ContextualCueingService::CueingNudgeShown() {
     recent_nudge_timestamps_.pop();
   }
   recent_nudge_timestamps_.push(base::Time::Now());
+  remaining_quiet_loads_ = kMinPageCountBetweenNudges.Get();
 }
 
 void ContextualCueingService::CueingNudgeDismissed() {
@@ -37,7 +47,8 @@ void ContextualCueingService::CueingNudgeClicked() {
 }
 
 bool ContextualCueingService::CanShowNudge() {
-  return !(IsNudgeBlockedByBackoffRule() || IsNudgeBlockedByNudgeCap());
+  return !(remaining_quiet_loads_ > 0 || IsNudgeBlockedByBackoffRule() ||
+           IsNudgeBlockedByNudgeCap());
 }
 
 bool ContextualCueingService::IsNudgeBlockedByBackoffRule() const {

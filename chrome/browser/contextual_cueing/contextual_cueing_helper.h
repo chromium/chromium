@@ -28,6 +28,8 @@ class ContextualCueingHelper
   ~ContextualCueingHelper() override;
 
   // content::WebContentsObserver:
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
   void DocumentOnLoadCompletedInPrimaryMainFrame() override;
 
   const std::string& last_navigation_cue_label() const {
@@ -48,11 +50,6 @@ class ContextualCueingHelper
 
   // Holds the cue label for the last navigation in `this`.
   std::string last_navigation_cue_label_;
-
-  // A counter for how many subsequent page load events will be prevented from
-  // showing a nudge. This is to limit the frequency at which consecutive page
-  // loads can trigger nudges.
-  int remaining_quiet_loads_ = 0;
 
   friend WebContentsUserData<ContextualCueingHelper>;
   WEB_CONTENTS_USER_DATA_KEY_DECL();
