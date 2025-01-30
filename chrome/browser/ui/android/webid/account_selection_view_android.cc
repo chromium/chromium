@@ -139,6 +139,26 @@ ScopedJavaLocalRef<jobject> ConvertToJavaIdentityProviderData(
       idp_data->has_login_status_mismatch);
 }
 
+ScopedJavaLocalRef<jobjectArray> ConvertToJavaIdentityProviderDataList(
+    JNIEnv* env,
+    const std::vector<IdentityProviderDataPtr>& identity_providers) {
+  ScopedJavaLocalRef<jclass> identity_provider_clazz = base::android::GetClass(
+      env,
+      "org/chromium/chrome/browser/ui/android/webid/data/IdentityProviderData");
+  ScopedJavaLocalRef<jobjectArray> array(
+      env, env->NewObjectArray(identity_providers.size(),
+                               identity_provider_clazz.obj(), nullptr));
+
+  base::android::CheckException(env);
+
+  for (size_t i = 0; i < identity_providers.size(); ++i) {
+    ScopedJavaLocalRef<jobject> item =
+        ConvertToJavaIdentityProviderData(env, identity_providers[i].get());
+    env->SetObjectArrayElement(array.obj(), i, item.obj());
+  }
+  return array;
+}
+
 IdentityRequestAccountPtr ConvertFieldsToAccount(
     JNIEnv* env,
     const std::vector<std::string>& string_fields,
@@ -233,15 +253,12 @@ bool AccountSelectionViewAndroid::Show(
   ScopedJavaLocalRef<jobjectArray> new_accounts_obj =
       ConvertToJavaAccounts(env, new_accounts, is_multi_idp);
 
-  // Multi IDP support does not currently work on mobile. Hence, we use the
-  // first index from the `idp_list` for the IDP-specific
-  // information.
-  ScopedJavaLocalRef<jobject> idp_obj =
-      ConvertToJavaIdentityProviderData(env, idp_list[0].get());
+  ScopedJavaLocalRef<jobjectArray> identity_providers_obj =
+      ConvertToJavaIdentityProviderDataList(env, idp_list);
 
   return Java_AccountSelectionBridge_showAccounts(
-      env, java_object_internal_, rp_for_display, idp_list[0]->idp_for_display,
-      accounts_obj, idp_obj, sign_in_mode == Account::SignInMode::kAuto,
+      env, java_object_internal_, rp_for_display, accounts_obj,
+      identity_providers_obj, sign_in_mode == Account::SignInMode::kAuto,
       new_accounts_obj);
 }
 

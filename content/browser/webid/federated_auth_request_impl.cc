@@ -1596,6 +1596,7 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
                        std::make_move_iterator(accounts_it->second.end()));
     }
   }
+  LOG(ERROR) << "\n" << accounts_.size() << "\n";
   idp_accounts_.clear();
   std::stable_sort(
       accounts_.begin(), accounts_.end(),

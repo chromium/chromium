@@ -102,9 +102,8 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
      * Shows the accounts in a bottom sheet UI allowing user to select one.
      *
      * @param rpForDisplay is the formatted RP URL to display in the FedCM prompt.
-     * @param idpForDisplay is the formatted IDP URL to display in the FedCM prompt.
      * @param accounts is the list of accounts to be shown.
-     * @param idpData is the data of the IDP.
+     * @param idpDataList is the list of IDP datas.
      * @param isAutoReauthn represents whether this is an auto re-authn flow.
      * @param newAccounts represents the newly logged in accounts.
      * @return whether the invocation is successful. If false is returned, the caller must assume
@@ -113,17 +112,15 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
     @CalledByNative
     private boolean showAccounts(
             @JniType("std::string") String rpForDisplay,
-            @JniType("std::string") String idpForDisplay,
             Account[] accounts,
-            IdentityProviderData idpData,
+            IdentityProviderData[] idpDataList,
             boolean isAutoReauthn,
             Account[] newAccounts) {
         assert accounts != null && accounts.length > 0;
         return mAccountSelectionComponent.showAccounts(
                 rpForDisplay,
-                idpForDisplay,
                 Arrays.asList(accounts),
-                idpData,
+                Arrays.asList(idpDataList),
                 isAutoReauthn,
                 Arrays.asList(newAccounts));
     }

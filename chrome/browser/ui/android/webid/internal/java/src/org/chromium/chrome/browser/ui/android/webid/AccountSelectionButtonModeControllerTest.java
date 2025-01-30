@@ -62,9 +62,8 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
             mIdpData.setRpContext(rpContext);
             mMediator.showAccounts(
                     mTestEtldPlusOne,
-                    mTestEtldPlusOne2,
                     Arrays.asList(mNewUserAccount),
-                    mIdpData,
+                    Arrays.asList(mIdpData),
                     /* isAutoReauthn= */ false,
                     /* newAccounts= */ Collections.EMPTY_LIST);
             mMediator.showVerifySheet(mAnaAccount);
@@ -87,9 +86,8 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
             // showVerifySheet is called in showAccounts when isAutoReauthn is true
             mMediator.showAccounts(
                     mTestEtldPlusOne,
-                    mTestEtldPlusOne2,
                     Arrays.asList(mAnaAccount),
-                    mIdpData,
+                    Arrays.asList(mIdpData),
                     /* isAutoReauthn= */ true,
                     /* newAccounts= */ Collections.EMPTY_LIST);
 
@@ -116,9 +114,8 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
         // Switching to accounts dialog should disable the spinner.
         mMediator.showAccounts(
                 mTestEtldPlusOne,
-                mTestEtldPlusOne2,
                 Arrays.asList(mAnaAccount, mBobAccount),
-                mIdpData,
+                Arrays.asList(mIdpData),
                 /* isAutoReauthn= */ false,
                 /* newAccounts= */ Collections.EMPTY_LIST);
         assertEquals(HeaderType.SIGN_IN, mModel.get(ItemProperties.HEADER).get(TYPE));
@@ -133,9 +130,8 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
         when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
         mMediator.showAccounts(
                 mTestEtldPlusOne,
-                mTestEtldPlusOne2,
                 Arrays.asList(mNewUserAccount),
-                mIdpData,
+                Arrays.asList(mIdpData),
                 /* isAutoReauthn= */ false,
                 /* newAccounts= */ Collections.EMPTY_LIST);
         mMediator.showRequestPermissionSheet(mNewUserAccount);
@@ -173,9 +169,8 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
 
         mMediator.showAccounts(
                 mTestEtldPlusOne,
-                mTestEtldPlusOne2,
                 Arrays.asList(mAnaAccount),
-                mIdpData,
+                Arrays.asList(mIdpData),
                 /* isAutoReauthn= */ false,
                 /* newAccounts= */ Collections.EMPTY_LIST);
 
@@ -199,9 +194,8 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
 
         mMediator.showAccounts(
                 mTestEtldPlusOne,
-                mTestEtldPlusOne2,
                 Arrays.asList(mAnaAccount),
-                mIdpData,
+                Arrays.asList(mIdpData),
                 /* isAutoReauthn= */ false,
                 /* newAccounts= */ Collections.EMPTY_LIST);
 
@@ -217,9 +211,8 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
         mMediator.showLoadingDialog(mTestEtldPlusOne, mTestEtldPlusOne2, RpContext.SIGN_IN);
         mMediator.showAccounts(
                 mTestEtldPlusOne,
-                mTestEtldPlusOne2,
                 Arrays.asList(),
-                mIdpData,
+                Arrays.asList(mIdpData),
                 /* isAutoReauthn= */ false,
                 mNewAccountsSingleNewAccount);
 
@@ -235,9 +228,8 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
         mIdpData.setDisclosureFields(new int[0]);
         mMediator.showAccounts(
                 mTestEtldPlusOne,
-                mTestEtldPlusOne2,
                 Arrays.asList(),
-                mIdpData,
+                Arrays.asList(mIdpData),
                 /* isAutoReauthn= */ false,
                 mNewAccountsSingleNewAccount);
 
@@ -254,9 +246,8 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
         mMediator.showLoadingDialog(mTestEtldPlusOne, mTestEtldPlusOne2, RpContext.SIGN_IN);
         mMediator.showAccounts(
                 mTestEtldPlusOne,
-                mTestEtldPlusOne2,
                 Arrays.asList(),
-                mIdpData,
+                Arrays.asList(mIdpData),
                 /* isAutoReauthn= */ false,
                 mNewAccountsSingleReturningAccount);
 
@@ -274,9 +265,8 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
         mMediator.showLoadingDialog(mTestEtldPlusOne, mTestEtldPlusOne2, RpContext.SIGN_IN);
         mMediator.showAccounts(
                 mTestEtldPlusOne,
-                mTestEtldPlusOne2,
                 Arrays.asList(),
-                mIdpData,
+                Arrays.asList(mIdpData),
                 /* isAutoReauthn= */ false,
                 mNewAccountsSingleReturningAccount);
         mMediator.showErrorDialog(
@@ -312,9 +302,8 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
         mMediator.showLoadingDialog(mTestEtldPlusOne, mTestEtldPlusOne1, RpContext.SIGN_IN);
         mMediator.showAccounts(
                 mTestEtldPlusOne,
-                mTestEtldPlusOne2,
                 Arrays.asList(),
-                mIdpData,
+                Arrays.asList(mIdpData),
                 /* isAutoReauthn= */ false,
                 mNewAccountsSingleReturningAccount);
         mMediator.showErrorDialog(

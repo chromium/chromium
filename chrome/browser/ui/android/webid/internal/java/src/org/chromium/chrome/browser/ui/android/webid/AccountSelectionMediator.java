@@ -720,11 +720,13 @@ class AccountSelectionMediator {
 
     boolean showAccounts(
             String rpForDisplay,
-            String idpForDisplay,
             List<Account> accounts,
-            IdentityProviderData idpData,
+            List<IdentityProviderData> idpDataList,
             boolean isAutoReauthn,
             List<Account> newAccounts) {
+        // TODO(crbug.com/392142580): use the full list on Android UI.
+        IdentityProviderData idpData = idpDataList.get(0);
+        String idpForDisplay = idpData.getIdpForDisplay();
         // On passive mode, show placeholder icon to preserve header text wrapping when icon is
         // fetched.
         if (mRpMode == RpMode.PASSIVE) {

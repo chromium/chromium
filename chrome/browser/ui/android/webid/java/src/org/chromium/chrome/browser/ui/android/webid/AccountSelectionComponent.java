@@ -65,9 +65,8 @@ public interface AccountSelectionComponent {
      * Displays the given accounts in a new bottom sheet.
      *
      * @param rpEtldPlusOne The {@link String} for the relying party.
-     * @param idpEtldPlusOne The {@link String} for the identity provider.
      * @param accounts A list of {@link Account}s that will be displayed.
-     * @param idpData The information about the identity provider.
+     * @param idpDataList The list with information about the identity providers.
      * @param isAutoReauthn A {@link boolean} that represents whether this is an auto re-authn flow.
      * @param newAccounts The newly logged in accounts.
      * @return whether the invocation is successful. If false is returned, the caller must assume
@@ -75,9 +74,8 @@ public interface AccountSelectionComponent {
      */
     boolean showAccounts(
             String rpEtldPlusOne,
-            String idpEtldPlusOne,
             List<Account> accounts,
-            IdentityProviderData idpData,
+            List<IdentityProviderData> idpDataList,
             boolean isAutoReauthn,
             List<Account> newAccounts);
 
