@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/signin/model/account_profile_mapper.h"
 
+#import <Foundation/Foundation.h>
+
 #import "base/check_is_test.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
@@ -20,8 +22,36 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager_observer.h"
+#import "net/base/backoff_entry.h"
 
 namespace {
+
+// Minimal number of profile fetches to try before deciding to call all fetches
+// a failure.
+const int kMinimalNumberOfRetry = 5;
+
+const net::BackoffEntry::Policy kBackoffPolicy = {
+    // Number of initial errors to ignore before applying
+    // exponential back-off rules.
+    /*num_errors_to_ignore=*/0,
+
+    // Initial delay is 1 second after the first error.
+    /*initial_delay_ms=*/1 * 1000,
+
+    // Factor by which the waiting time will be multiplied.
+    /*multiply_factor=*/2,
+
+    // Fuzzing percentage.
+    /*jitter_factor=*/0.1,
+
+    // No maximum delay.
+    /*maximum_backoff_ms=*/-1,
+
+    // After 10 minute without fetch, let’s reset.
+    /*entry_lifetime_ms=*/10 * 60 * 1000,
+
+    /*always_use_initial_delay=*/false,
+};
 
 // Name of the personal profile for tests.
 constexpr char kPersonalProfileNameForTesting[] =
@@ -179,11 +209,18 @@ class AccountProfileMapper::Assigner : public SystemIdentityManagerObserver {
   SystemIdentityManager::IteratorResult ProcessIdentityForAssignmentToProfile(
       std::set<GaiaId>& processed_gaia_ids,
       id<SystemIdentity> identity);
+  // Fetches the hosted domain for the last entry of
+  // system_identities_to_fetch_.
+  void FetchHostedDomainNow();
+  // Fetches the hosted domain for the last entry of system_identities_to_fetch_
+  // asynchronously according to the backoff policy.
+  void FetchHostedDomain();
   // Called when the hosted domain for `identity` has been fetched
   // asynchronously. Triggers the assignment to an appropriate profile.
-  void HostedDomainedFetched(id<SystemIdentity> identity,
-                             NSString* hosted_domain,
-                             NSError* error);
+  void HostedDomainedFetched(NSString* hosted_domain, NSError* error);
+  // Ensure that each identity is fetched at least twice, and
+  // kMinimalNumberOfRetry fetches are tried.
+  void ResetNumberOfFetchTries();
   // Assigns `identity` to a profile (or re-assigns it to a different profile)
   // if necessary, based on whether it's a managed account or not. Note that the
   // assignment may happen asynchronously in some cases.
@@ -221,6 +258,19 @@ class AccountProfileMapper::Assigner : public SystemIdentityManagerObserver {
   // nominally assigned to an empty profile name (just to detect changes to
   // the list - AccountProfileMapper won't do any filtering).
   ProfileNameToGaiaIds profile_to_gaia_ids_;
+
+  // The systems identities for wich the hosted domain must be fetched. Last
+  // identity of the array is fetched first. If an identity is currently being
+  // fetched, it’s the first one.
+  NSMutableArray<id<SystemIdentity>>* system_identities_to_fetch_ =
+      [NSMutableArray array];
+
+  // Number of time we try to fetch an identity’s hosted domain before stopping
+  // all tries.
+  int number_of_remaining_tries_ = 0;
+
+  // The back off entry deciding when to retry fetching an identity.
+  net::BackoffEntry backoff_entry_{&kBackoffPolicy};
 
   base::WeakPtrFactory<Assigner> weak_ptr_factory_{this};
 };
@@ -452,10 +502,22 @@ AccountProfileMapper::Assigner::ProcessIdentityForAssignmentToProfile(
   if (!hosted_domain) {
     // If the hosted domain is not in the cache yet, this identity can't be
     // assigned to a profile yet. Query it, and assign once available.
-    system_identity_manager_->GetHostedDomain(
-        identity,
-        base::BindOnce(&AccountProfileMapper::Assigner::HostedDomainedFetched,
-                       weak_ptr_factory_.GetWeakPtr(), identity));
+
+    if (![system_identities_to_fetch_ containsObject:identity]) {
+      // If we have not yet planned to fetch this identity, let’s add it to the
+      // list of identities to fetch and reset the total number of tries.
+      [system_identities_to_fetch_ addObject:identity];
+      ResetNumberOfFetchTries();
+      if ([system_identities_to_fetch_ count] == 1) {
+        // There was no other fetch planned, we need to plan it.
+        FetchHostedDomain();
+      }
+      // Otherwise, we use the exponential backoff and async call from the
+      // previous calls.
+    }
+    // Else: Fetching the hosted domain for this identity is already
+    // scheduled; nothing to be done here.
+
     return SystemIdentityManager::IteratorResult::kContinueIteration;
   }
 
@@ -465,23 +527,76 @@ AccountProfileMapper::Assigner::ProcessIdentityForAssignmentToProfile(
   return SystemIdentityManager::IteratorResult::kContinueIteration;
 }
 
+void AccountProfileMapper::Assigner::ResetNumberOfFetchTries() {
+  // Let’s retry at least twice for each identity, and at least
+  // kMinimalNumberOfRetry times.
+  int number_of_identities_to_fetch = [system_identities_to_fetch_ count];
+  number_of_remaining_tries_ =
+      (2 * number_of_identities_to_fetch > kMinimalNumberOfRetry)
+          ? number_of_identities_to_fetch * 2
+          : kMinimalNumberOfRetry;
+}
+
+void AccountProfileMapper::Assigner::FetchHostedDomainNow() {
+  id<SystemIdentity> identity = [system_identities_to_fetch_ lastObject];
+  // We must try to fetch the `identity`, the last identity of
+  // `system_identities_to_fetch_`. `identity` was either added recently and not
+  // yet fetched, or all other identities of the array have already failed to be
+  // fetched once since the last time we tried to fetch `identity`. Moving
+  // `identity` to the front of the array to note it’s the identity currently
+  // being fetched and, in case of failure, ensure it’s only fetched once all
+  // other identities are fetched. While inserting at index 0 in an array is
+  // inneficient, the array should be small enough that the lost computation
+  // time is negligeable compared to the time taken by the fetch request.
+  [system_identities_to_fetch_ removeLastObject];
+  [system_identities_to_fetch_ insertObject:identity atIndex:0];
+  system_identity_manager_->GetHostedDomain(
+      identity,
+      base::BindOnce(&AccountProfileMapper::Assigner::HostedDomainedFetched,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void AccountProfileMapper::Assigner::FetchHostedDomain() {
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&AccountProfileMapper::Assigner::FetchHostedDomainNow,
+                     weak_ptr_factory_.GetWeakPtr()),
+      backoff_entry_.GetTimeUntilRelease());
+}
+
 void AccountProfileMapper::Assigner::HostedDomainedFetched(
-    id<SystemIdentity> identity,
     NSString* hosted_domain,
     NSError* error) {
   CHECK(AreSeparateProfilesForManagedAccountsEnabled());
-
+  backoff_entry_.InformOfRequest(!error);
   if (error) {
-    // TODO(crbug.com/331783685): Need to retry.
-    // For now, assume an empty hosted domain, which means the identity will get
-    // assigned to the personal profile.
-    hosted_domain = @"";
+    if (--number_of_remaining_tries_ > 0) {
+      // Let’s try again.
+      FetchHostedDomain();
+      return;
+    }
+    // Each identity has failed to be fetched at least twice.
+    // We had kMinimalNumberOfRetry consecutive fetch failures.
+    // Let’s stop trying.
+    // TODO(crbug.com/331783685):
+    // For now, assume an empty hosted domain, which means all identities will
+    // get assigned to the personal profile.
+    for (id<SystemIdentity> identity : system_identities_to_fetch_) {
+      AssignIdentityToProfile(identity, /*is_managed_account=*/false);
+    }
+    [system_identities_to_fetch_ removeAllObjects];
   } else {
+    id<SystemIdentity> identity = [system_identities_to_fetch_ firstObject];
+    [system_identities_to_fetch_ removeObjectAtIndex:0];
+    ResetNumberOfFetchTries();
     CHECK(hosted_domain);
+    bool is_managed_account = hosted_domain.length > 0;
+    AssignIdentityToProfile(identity, is_managed_account);
+    if ([system_identities_to_fetch_ count] > 0) {
+      // More domains to fetch.
+      FetchHostedDomain();
+    }
   }
-  bool is_managed_account = hosted_domain.length > 0;
-  AssignIdentityToProfile(identity, is_managed_account);
-
   MaybeUpdateCachedMappingAndNotify();
 }
 

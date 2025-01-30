@@ -60,8 +60,7 @@ class BitmapRasterBufferImpl : public RasterBuffer {
     void* memory = mapping->GetMemoryForPlane(0).data();
     RasterBufferProvider::PlaybackToMemory(
         memory, format, resource_size_, stride, raster_source, raster_full_rect,
-        playback_rect, transform, color_space_,
-        /*gpu_compositing=*/false, playback_settings);
+        playback_rect, transform, color_space_, playback_settings);
   }
 
   bool SupportsBackgroundThreadPriority() const override { return true; }

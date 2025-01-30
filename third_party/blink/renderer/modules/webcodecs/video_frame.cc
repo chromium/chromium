@@ -1489,21 +1489,20 @@ bool VideoFrame::WouldTaintOrigin() const {
 gfx::SizeF VideoFrame::ElementSize(
     const gfx::SizeF& default_object_size,
     const RespectImageOrientationEnum respect_orientation) const {
-  // BitmapSourceSize() will always ignore orientation.
+  auto local_frame = handle_->frame();
+  if (!local_frame) {
+    return gfx::SizeF();
+  }
+  gfx::SizeF size(local_frame->natural_size());
   if (respect_orientation == kRespectImageOrientation) {
-    auto local_frame = handle_->frame();
-    if (!local_frame)
-      return gfx::SizeF();
-
     const auto orientation_enum = VideoTransformationToImageOrientation(
         local_frame->metadata().transformation.value_or(
             media::kNoTransformation));
-    auto orientation_adjusted_size = gfx::SizeF(local_frame->natural_size());
-    if (ImageOrientation(orientation_enum).UsesWidthAsHeight())
-      orientation_adjusted_size.Transpose();
-    return orientation_adjusted_size;
+    if (ImageOrientation(orientation_enum).UsesWidthAsHeight()) {
+      size.Transpose();
+    }
   }
-  return gfx::SizeF(BitmapSourceSize());
+  return size;
 }
 
 bool VideoFrame::IsVideoFrame() const {
@@ -1529,13 +1528,12 @@ void VideoFrame::ResetExternalMemory() {
   external_memory_accounter_.Clear(v8::Isolate::GetCurrent());
 }
 
-gfx::Size VideoFrame::BitmapSourceSize() const {
+ImageBitmapSourceStatus VideoFrame::CheckUsability() const {
   auto local_frame = handle_->frame();
-  if (!local_frame)
-    return gfx::Size();
-
-  // ImageBitmaps should always return the size w/o respecting orientation.
-  return local_frame->natural_size();
+  if (!local_frame) {
+    return base::unexpected(ImageBitmapSourceError::kInvalid);
+  }
+  return base::ok();
 }
 
 ScriptPromise<ImageBitmap> VideoFrame::CreateImageBitmap(

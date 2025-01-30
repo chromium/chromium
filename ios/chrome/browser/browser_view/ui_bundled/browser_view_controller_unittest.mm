@@ -388,7 +388,8 @@ class BrowserViewControllerTest : public BlockCleanupTest {
 
     block();
 
-    [mock_animation_view_class verify];
+    EXPECT_OCMOCK_VERIFY(mock_animation_view_class);
+    [mock_animation_view_class stopMocking];
   }
 
   // Used as an OCMArg to check that the argument's `contentView` matches the

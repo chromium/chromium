@@ -981,6 +981,7 @@ id<GREYMatcher> ManageUMALinkMatcher() {
   // TODO(crbug.com/41493423): We should log Signin is started. Maybe also that
   // it’s offered.
   expecteds.signinSigninCompletedAccessPoint = 1;
+  expecteds.signinSignInCompleted = 1;
   [SigninEarlGrey assertExpectedSigninHistograms:expecteds];
 }
 

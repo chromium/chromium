@@ -281,6 +281,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1925320505152357008">manj kot 1 min</translation>
 <translation id="1928739107511554905">Če želite prejeti posodobitev, uporabite zaslon na dotik, da znova zaženete Chromebook s priklopljeno tipkovnico.</translation>
 <translation id="1929331825127010451">Nazaj na vprašanje</translation>
+<translation id="1946615340060705561">Pritisnite »c«, če želite sprostiti</translation>
 <translation id="1948405482892809935">Preklop na naslednjega uporabnika</translation>
 <translation id="1951012854035635156">Pomočnik</translation>
 <translation id="1954252331066828794">Snemanje zaslona je dokončano</translation>
@@ -730,6 +731,7 @@ V nasprotnem primeru bo vgrajena sledilna ploščica znova omogočena čez <ph n
 <translation id="3522979239100719575">Iskanje razpoložljivih profilov. To lahko traja nekaj minut.</translation>
 <translation id="3526440770046466733">Odpiranje povezave na novem zavihku in zadržanje na trenutnem zavihku</translation>
 <translation id="353086728817903341">Vzpostavljena je povezava s toliko napravami: <ph name="NUM_DEVICES" /></translation>
+<translation id="3532247131850366052">Google Preglednice ni bilo mogoče ustvariti</translation>
 <translation id="3533126039236445965">Aplikacije na polici</translation>
 <translation id="3539957339480430241">Dostopna točka naprave <ph name="DEVICE_NAME" /></translation>
 <translation id="3540893133818942399">Opustitev nastavitve ogleda nedavnih fotografij in predstavnosti telefona</translation>
@@ -828,6 +830,7 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="380165613292957338">Živijo. Kako lahko pomagam?</translation>
 <translation id="3804737937830804242">Strni fotoaparat</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 emodži. Ni drugih rezultatov.}one{# emodži. Ni drugih rezultatov.}two{# emodžija. Ni drugih rezultatov.}few{# emodžiji. Ni drugih rezultatov.}other{# emodžijev. Ni drugih rezultatov.}}</translation>
+<translation id="3822403841174077928">Kopiranje z oblikovanjem ni bilo mogoče</translation>
 <translation id="3824784079442479685">To omogoča dostop do kamere za aplikacijo <ph name="APP_NAME" /> in vse aplikacije ter spletna mesta z dovoljenjem za kamero. Morda boste morali osvežiti spletno stran ali znova zagnati aplikacijo.</translation>
 <translation id="3826099427150913765">Preklopi na geslo</translation>
 <translation id="383058930331066723">Način varčevanja z energijo baterije je vklopljen</translation>
@@ -1214,6 +1217,7 @@ Nekatere funkcije so omejene za podaljšanje časa delovanja baterije.</translat
 <translation id="5043679421800073804">Klik ali dotik zadnje ikone na polici</translation>
 <translation id="504465286040788597">Prejšnji odstavek</translation>
 <translation id="5045550434625856497">Nepravilno geslo</translation>
+<translation id="5058794129231928255">Google Dokumenta ni bilo mogoče ustvariti</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Prejeli boste obvestilo, če govorite med izklopljenim zvokom. Zvok nikoli ne zapusti naprave.</translation>
 <translation id="5077416371682039027">Nastavitev ogleda nedavnih fotografij, predstavnosti, obvestil in aplikacij telefona</translation>
@@ -1647,6 +1651,7 @@ Nobena naprava ni povezana.</translation>
 <translation id="6468406072297048412">{0,plural, =1{Posodobite napravo na prejšnjo različico v 1 minuti}one{Posodobite napravo na prejšnjo različico v # minuti}two{Posodobite napravo na prejšnjo različico v # minutah}few{Posodobite napravo na prejšnjo različico v # minutah}other{Posodobite napravo na prejšnjo različico v # minutah}}</translation>
 <translation id="6469104339369989396">Preklop dostopne točke</translation>
 <translation id="6477681113376365978">Datoteke ni mogoče prenesti</translation>
+<translation id="648135757200234041">Stika ni bilo mogoče ustvariti</translation>
 <translation id="6482559668224714696">Celozaslonska lupa</translation>
 <translation id="6485086611007560630">Vreme (ni na voljo)</translation>
 <translation id="6490471652906364588">Naprava USB-C (desna vrata)</translation>
@@ -1976,6 +1981,7 @@ Nova namestitev</translation>
 <translation id="7611213136657090146">Fotoaparat je znova povezan.</translation>
 <translation id="7613620083300976559">Vklop kontrolnikov za igre</translation>
 <translation id="761736749114493194">Preklop kadriranja fotoaparata. <ph name="STATE_TEXT" /></translation>
+<translation id="7621008024906456933">Nastavitve hitrega deljenja</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
 <translation id="7627303771480696593">Postavite vprašanje</translation>
 <translation id="7634648064048557203">Fotoaparat je pripet v spodnji desni kot</translation>
@@ -2286,6 +2292,7 @@ Nova namestitev</translation>
 <translation id="8653151467777939995">Prikaz nastavitev obvestil. Obvestila so vklopljena.</translation>
 <translation id="8657066291275741003">male črke</translation>
 <translation id="8660331759611631213">Kvadratni koren števila 71</translation>
+<translation id="8662921061190671299">Ni bilo mogoče dodati v Koledar</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, moč signala je <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Pritisnite Enter, če želite zajeti delni posnetek zaslona</translation>
 <translation id="8676770494376880701">Priključen je nizkoenergijski polnilnik</translation>

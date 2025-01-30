@@ -14,27 +14,22 @@
 #include <presentation-time-client-protocol.h>
 #include <xdg-shell-client-protocol.h>
 
-#include <algorithm>
 #include <cstdint>
-#include <memory>
-#include <vector>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
-#include "base/task/current_thread.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/devices/keyboard_device.h"
 #include "ui/events/devices/touchscreen_device.h"
-#include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/ozone/common/features.h"
-#include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/fractional_scale_manager.h"
 #include "ui/ozone/platform/wayland/host/gtk_primary_selection_device_manager.h"
@@ -46,10 +41,12 @@
 #include "ui/ozone/platform/wayland/host/toplevel_icon_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_factory.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
+#include "ui/ozone/platform/wayland/host/wayland_clipboard.h"
 #include "ui/ozone/platform/wayland/host/wayland_cursor.h"
 #include "ui/ozone/platform/wayland/host/wayland_cursor_position.h"
 #include "ui/ozone/platform/wayland/host/wayland_cursor_shape.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_device_manager.h"
+#include "ui/ozone/platform/wayland/host/wayland_data_drag_controller.h"
 #include "ui/ozone/platform/wayland/host/wayland_drm.h"
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_input_method_context.h"
@@ -70,7 +67,6 @@
 #include "ui/ozone/platform/wayland/host/xdg_foreign_wrapper.h"
 #include "ui/ozone/platform/wayland/host/zwp_idle_inhibit_manager.h"
 #include "ui/ozone/platform/wayland/host/zwp_primary_selection_device_manager.h"
-#include "ui/ozone/public/ozone_switches.h"
 #include "ui/platform_window/common/platform_window_defaults.h"
 
 namespace ui {
@@ -492,6 +488,21 @@ void WaylandConnection::DumpState(std::ostream& out) const {
     output_manager_->DumpState(out);
     out << std::endl;
   }
+}
+
+bool WaylandConnection::UseImplicitSyncInterop() const {
+  return !SupportsExplicitSync() &&
+         WaylandBufferManagerHost::SupportsImplicitSyncInterop();
+}
+
+bool WaylandConnection::UsePerSurfaceScaling() const {
+  return base::FeatureList::IsEnabled(features::kWaylandPerSurfaceScale) &&
+         supports_viewporter_surface_scaling();
+}
+
+bool WaylandConnection::IsUiScaleEnabled() const {
+  return base::FeatureList::IsEnabled(features::kWaylandUiScale) &&
+         UsePerSurfaceScaling();
 }
 
 bool WaylandConnection::ShouldUseOverlayDelegation() const {

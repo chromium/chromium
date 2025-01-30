@@ -17,6 +17,7 @@
 #include "components/page_info/core/page_info_types.h"
 #include "components/page_info/core/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 
 PageInfoMerchantTrustController::PageInfoMerchantTrustController(
@@ -80,8 +81,23 @@ void PageInfoMerchantTrustController::HatsButtonPressed() {
   if (!hats_service) {
     return;
   }
-  hats_service->LaunchSurvey(kHatsSurveyTriggerMerchantTrustLearnSurvey);
-  // TODO(crbug.com/381405880): Set loading string to HaTS button.
+  hats_service->LaunchSurvey(
+      kHatsSurveyTriggerMerchantTrustLearnSurvey,
+      base::BindOnce(&PageInfoMerchantTrustController::OnSurveyLoaded,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&PageInfoMerchantTrustController::OnSurveyFailed,
+                     weak_ptr_factory_.GetWeakPtr()));
+  content_view_->SetHatsButtonTitleId(
+      IDS_PAGE_INFO_MERCHANT_TRUST_HATS_LOADING_BUTTON);
+}
+
+void PageInfoMerchantTrustController::OnSurveyLoaded() {
+  content_view_->GetWidget()->Close();
+}
+
+void PageInfoMerchantTrustController::OnSurveyFailed() {
+  content_view_->SetHatsButtonTitleId(
+      IDS_PAGE_INFO_MERCHANT_TRUST_HATS_FAILED_BUTTON);
 }
 
 void PageInfoMerchantTrustController::InitCallbacks() {

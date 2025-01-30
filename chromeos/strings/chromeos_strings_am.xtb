@@ -204,6 +204,7 @@
 <translation id="1823120442877418684">ገጸ ባህሪያት</translation>
 <translation id="1827738518074806965">የሥነ ጥበብ ማዕከል</translation>
 <translation id="183287940576828840">አጸያፊ/ደህንነቱ ያልተጠበቀ</translation>
+<translation id="1834032517784994783">ወደ ጽሑፍ ግልባጭ ቋንቋን ይምረጡ</translation>
 <translation id="1836553715834333258">የሥርዓት ቀለም</translation>
 <translation id="183675228220305365">እውነተኛ</translation>
 <translation id="1838374766361614909">ፍለጋን ያፅዱ</translation>
@@ -731,6 +732,7 @@
 <translation id="4483049906298469269">ነባሪ ያልሆነውን የአውታረ መረብ አግባቢ ፍኖት ፒንግ ማድረግ አልተሳካም</translation>
 <translation id="4483498983731992167">ጽሑፍ ግልባጭ መፍጠር አልተቻለም</translation>
 <translation id="4486524074141928967"><ph name="TIME" /> ላይ ዘግተው እንዲወጡ ይደረጋሉ</translation>
+<translation id="4487890678161807486">ወደ ጽሑፍ ግልባጭ ቋንቋ መራጭን ክፈት</translation>
 <translation id="4500722292849917410">አቋራጭ አይገኝም። የአሻሻይ ቁልፍ (ctrl, alt, shift, ወይም <ph name="META_KEY" />) በመጠቀም አዲስ አቋራጭ ይጫኑ።</translation>
 <translation id="4500966230243561393">የበይነገጽ ቀለም</translation>
 <translation id="4503223151711056411">የግራ ቀስት</translation>

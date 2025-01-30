@@ -61,6 +61,7 @@ ProfileCustomizationUI::ProfileCustomizationUI(content::WebUI* web_ui)
 
   // Localized strings.
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"controlledSettingPolicy", IDS_CONTROLLED_SETTING_POLICY},
       {"profileCustomizationDoneLabel",
        IDS_PROFILE_CUSTOMIZATION_DONE_BUTTON_LABEL},
       {"profileCustomizationSkipLabel",

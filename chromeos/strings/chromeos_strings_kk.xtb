@@ -204,6 +204,7 @@
 <translation id="1823120442877418684">Кейіпкерлер</translation>
 <translation id="1827738518074806965">Өнер галереясы</translation>
 <translation id="183287940576828840">Намысқа тиеді/қауіпті</translation>
+<translation id="1834032517784994783">Транскрипция тілін таңдау</translation>
 <translation id="1836553715834333258">Жүйе түсі</translation>
 <translation id="183675228220305365">реализм</translation>
 <translation id="1838374766361614909">Іздеуді тазарту</translation>
@@ -731,6 +732,7 @@
 <translation id="4483049906298469269">Әдепкі емес желі шлюзінің байланысы тексерілмеді.</translation>
 <translation id="4483498983731992167">Транскрипция жасалмады</translation>
 <translation id="4486524074141928967">Мына уақытта аккаунттан шығарыласыз: <ph name="TIME" /></translation>
+<translation id="4487890678161807486">Транскрипцияның тіл таңдағышын ашу</translation>
 <translation id="4500722292849917410">Пернелер тіркесімі қолжетімді емес. Өзгерткіш пернені (ctrl, alt, shift немесе <ph name="META_KEY" />) пайдаланып, жаңа тіркесімді басыңыз.</translation>
 <translation id="4500966230243561393">Интерфейс түсі</translation>
 <translation id="4503223151711056411">Сол бағыт пернесі</translation>

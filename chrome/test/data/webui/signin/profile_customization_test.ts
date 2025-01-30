@@ -92,6 +92,12 @@ suite('ProfileCustomizationTest', function() {
     const doneButton = app.$.doneButton;
     assertTrue(doneButton.disabled);
 
+    // No policy indicator is shown.
+    const policyIndicator =
+        nameInput.shadowRoot!.querySelector<HTMLElement>('#policyIcon');
+    assertEquals(policyIndicator, null);
+
+
     // Empty name.
     nameInput.value = '';
     await nameInput.updateComplete;
@@ -129,6 +135,9 @@ suite('ProfileCustomizationTest', function() {
     assertEquals('TestName', nameInput.value);
     assertFalse(nameInput.invalid);
     assertTrue(nameInput.disabled);
+    const policyIndicator =
+        nameInput.shadowRoot!.querySelector<HTMLElement>('#policyIcon');
+    assertFalse(!!policyIndicator && policyIndicator.hidden);
   });
 
   test('ProfileInfo', async function() {

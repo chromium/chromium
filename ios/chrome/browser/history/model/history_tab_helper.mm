@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/history/model/history_tab_helper.h"
 
 #import "base/memory/ptr_util.h"
+#import "base/metrics/histogram_macros.h"
 #import "components/history/core/browser/history_constants.h"
 #import "components/history/core/browser/history_service.h"
 #import "components/keyed_service/core/service_access_type.h"
@@ -223,6 +224,8 @@ void HistoryTabHelper::DidFinishNavigation(
 
   // Do not record failed navigation nor 404 to the history (to prevent them
   // from showing up as Most Visited tiles on NTP).
+  UMA_HISTOGRAM_BOOLEAN("History.IsErrorNavigation",
+                        navigation_context->GetError());
   if (navigation_context->GetError()) {
     return;
   }

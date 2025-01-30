@@ -34,6 +34,8 @@ class PageInfoMerchantTrustController : public content::WebContentsObserver {
   void LearnMoreLinkPressed(const ui::Event& event);
   void ViewReviewsPressed();
   void HatsButtonPressed();
+  void OnSurveyLoaded();
+  void OnSurveyFailed();
   void InitCallbacks();
   void RecordInteractionPref();
 

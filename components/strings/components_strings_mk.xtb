@@ -271,6 +271,7 @@
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1448166547804028941">Копчињата „<ph name="DATA_CONTROLS_FIRST_KEY_SET" />“ не може да се постават во истиот речник како копчињата „<ph name="DATA_CONTROLS_SECOND_KEY_SET" />“</translation>
 <translation id="1455413310270022028">Гума за бришење</translation>
+<translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{Прикажи 0 рецензии}=1{Прикажи 1 рецензија}one{Прикажи ги сите рецензии (#)}other{Прикажи ги сите рецензии (#)}}</translation>
 <translation id="1458059624921545588">Луѓе и општество</translation>
 <translation id="1458140305240870199">Долна облека</translation>
 <translation id="1459693405370120464">Време</translation>
@@ -961,6 +962,7 @@
 <translation id="2674170444375937751">Дали сигурно сакате да ги избришете страниците од историјата?</translation>
 <translation id="2674524144218093528">Молерисување и довршување куќи</translation>
 <translation id="2674804415323431591">Скриј ги предлозите</translation>
+<translation id="26774279487328902"><ph name="GROUP_COUNT" /> групи картички веќе не се достапни</translation>
 <translation id="2677748264148917807">Напушти</translation>
 <translation id="2683195745483370038">Најдени се други резултати</translation>
 <translation id="2686919536310834199">Испратете повратни информации за „Помогни ми да напишам“</translation>
@@ -1956,6 +1958,7 @@
 <translation id="4407758156081352648">За да се заштити, вашата организација не дозволува лозинките да се користат повторно во Chrome. Лозинките во Chrome се шифрирани за да ја заштитат приватноста на корисниците.</translation>
 <translation id="4408413947728134509">Колачиња <ph name="NUM_COOKIES" /></translation>
 <translation id="4412074349188076601">Конфигурацијава е означена дека може да се инсталира, но не е дадена слика за архитектурава и затоа не може да се инсталира.</translation>
+<translation id="4412377069090572315">Што велат луѓето</translation>
 <translation id="4414452699610169758">Користете Google Password Manager и автоматско пополнување на Chrome за да зачувувате и да пополнувате лозинки, начини на плаќање и адреси</translation>
 <translation id="4414515549596849729">колачиња и податоци за сајтот</translation>
 <translation id="4415156962929755728">Пластика (висок сјај)</translation>
@@ -2264,6 +2267,7 @@
 <translation id="5001526427543320409">Колачиња од трети страни</translation>
 <translation id="5002932099480077015">Ако е овозможено, Chrome ќе складира копија од картичката на уредот за побрзо пополнување формулари.</translation>
 <translation id="5007392906805964215">Прегледајте</translation>
+<translation id="500790844453430087">Групите картички „<ph name="GROUP_TITLE_1" />“ и „<ph name="GROUP_TITLE_2" />“ веќе не се достапни</translation>
 <translation id="5011561501798487822">Откриен јазик</translation>
 <translation id="5015510746216210676">Име на уредот:</translation>
 <translation id="5017554619425969104">Текстот што го копиравте</translation>
@@ -2371,6 +2375,7 @@
 <translation id="519422657042045905">Прибелешката не е достапна</translation>
 <translation id="5200063972779787617">Зачувајте адреса во сметката</translation>
 <translation id="5201306358585911203">Вметнатата страница во страницава вели</translation>
+<translation id="5205114269877707377"><ph name="OMNIBOX_ACTION_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете Tab за да ги прелистувате достапните дејства, па притиснете Enter за да го извршите избраното дејство.</translation>
 <translation id="5205222826937269299">Потребно е име</translation>
 <translation id="5206392433295093945">Спална соба</translation>
 <translation id="5209670883520018268">Фиока 20</translation>
@@ -2736,6 +2741,7 @@
 <translation id="5866898949289125849">Гледате страница со алатки за програмери</translation>
 <translation id="5869405914158311789">Не може да се пристапи до сајтот</translation>
 <translation id="5869522115854928033">Зачувани лозинки</translation>
+<translation id="5872215789867188990">Групата картички „<ph name="GROUP_TITLE" />“ веќе не е достапна</translation>
 <translation id="5872692522325383488">IBAN е зачуван</translation>
 <translation id="5873297634595728366">Возила на дизел</translation>
 <translation id="5877359070305966420">Човечки ресурси</translation>
@@ -2777,6 +2783,7 @@
 <translation id="5937560539988385583">Страницата е преведена</translation>
 <translation id="5938153366081463283">Додајте виртуелна картичка</translation>
 <translation id="5938793338444039872">Troy</translation>
+<translation id="5938866385061293322">Информацииве доаѓаат од независни веб-сајтови за рецензии како Trustpilot, ScamAdviser, Google и други. Резимеата се создаваат со AI.</translation>
 <translation id="5944297261866530437">Ткаенина (висок сјај)</translation>
 <translation id="5950901984834744590">Бричеви и машинки за бричење</translation>
 <translation id="5951495562196540101">Не може да се регистрирате со сметка на потрошувач (достапна е вклучена лиценца).</translation>
@@ -2921,7 +2928,7 @@
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="6184868291074982484">Chrome автоматски ги ограничува колачињата од трети страни</translation>
 <translation id="6188479691141473408">и уште <ph name="N_FIELDS" /> полиња</translation>
-<translation id="6190518157737269631">Отфрлете некои копчиња на тастатурата, како Esc</translation>
+<translation id="6190518157737269631">да отфрли некои копчиња на тастатурата, како Esc</translation>
 <translation id="6194209731893739467">Видете ги сите ваши следени производи тука</translation>
 <translation id="6195163219142236913">Колачињата од трети страни се ограничени</translation>
 <translation id="6195371403461054755">Геологија</translation>
@@ -3143,6 +3150,7 @@
 <translation id="6567832540451970450">Администраторот дозволува <ph name="PERMISSION" /> за сајтов</translation>
 <translation id="6568793038316600992">Копче за управување со начините на плаќање, активирајте го за да управувате со податоците за плаќањата и кредитната картичка во поставките за Chrome</translation>
 <translation id="6569060085658103619">Гледате страница со екстензии</translation>
+<translation id="6572867903637058088">Дали е ова корисно?</translation>
 <translation id="6573200754375280815">Две дупки десно</translation>
 <translation id="6574762126505704998">Пополни</translation>
 <translation id="6575408526598156416">Зачувајте во сметката</translation>
@@ -4319,9 +4327,11 @@
 <translation id="8672535691554698269">Компјутерски мрежи</translation>
 <translation id="8675446170353411473">Вашите датотеки се прикачуваат во <ph name="CLOUD_PROVIDER" /></translation>
 <translation id="8676424191133491403">Без одложување</translation>
+<translation id="8679727228072670864">{COUNT,plural, =1{Избришана е {COUNT} табела}one{Избришани се {COUNT} табела}other{Избришани се {COUNT} табели}}</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, одговор, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Веб-страницата на <ph name="PAGE" /> не може да се вчита бидејќи:</translation>
 <translation id="8682297334444610648">Игра Dino, допрете за да играте</translation>
+<translation id="8685225035093721011">Рецензии на продавницата</translation>
 <translation id="8686424632716064939">Компјутерска безбедност</translation>
 <translation id="8687278439622293018">Записот <ph name="ENTRY_VOICEOVER" /> е избришан</translation>
 <translation id="8687429322371626002"><ph name="MANAGER" /> управува со уредот и сметката.</translation>

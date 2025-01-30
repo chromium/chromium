@@ -349,21 +349,18 @@ void StyleEngine::RemoveInjectedSheet(const StyleSheetKey& key,
   }
 }
 
-CSSStyleSheet& StyleEngine::EnsureInspectorStyleSheet() {
-  if (inspector_style_sheet_) {
-    return *inspector_style_sheet_;
-  }
-
+CSSStyleSheet& StyleEngine::CreateInspectorStyleSheet() {
   auto* contents = MakeGarbageCollected<StyleSheetContents>(
       MakeGarbageCollected<CSSParserContext>(*document_));
-  inspector_style_sheet_ =
+  auto* inspector_style_sheet =
       MakeGarbageCollected<CSSStyleSheet>(contents, *document_);
+  inspector_style_sheet_list_.emplace_back(inspector_style_sheet);
   MarkDocumentDirty();
   // TODO(futhark@chromium.org): Making the active stylesheets up-to-date here
   // is required by some inspector tests, at least. I theory this should not be
   // necessary. Need to investigate to figure out if/why.
   UpdateActiveStyle();
-  return *inspector_style_sheet_;
+  return *inspector_style_sheet;
 }
 
 void StyleEngine::AddPendingBlockingSheet(Node& style_sheet_candidate_node,
@@ -980,6 +977,7 @@ void StyleEngine::DidDetach() {
   }
   environment_variables_ = nullptr;
   style_containment_scope_tree_ = nullptr;
+  inspector_style_sheet_list_.clear();
 }
 
 bool StyleEngine::ClearFontFaceCacheAndAddUserFonts(
@@ -4442,7 +4440,7 @@ void StyleEngine::Trace(Visitor* visitor) const {
   visitor->Trace(user_cascade_layer_map_);
   visitor->Trace(environment_variables_);
   visitor->Trace(initial_data_);
-  visitor->Trace(inspector_style_sheet_);
+  visitor->Trace(inspector_style_sheet_list_);
   visitor->Trace(document_style_sheet_collection_);
   visitor->Trace(style_sheet_collection_map_);
   visitor->Trace(dirty_tree_scopes_);

@@ -170,7 +170,6 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   // the |observed_form()|.
   bool ObservedFormHasField(int driver_id,
                             autofill::FieldRendererId field_id) const;
-
   // PasswordFormManagerForUI:
   const GURL& GetURL() const override;
   base::span<const PasswordForm> GetBestMatches() const override;

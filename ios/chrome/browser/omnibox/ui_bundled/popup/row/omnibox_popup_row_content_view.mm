@@ -6,7 +6,7 @@
 
 #import "base/check.h"
 #import "base/metrics/histogram_functions.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/omnibox_ui_features.h"
+#import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_icon_view.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_popup_accessibility_identifier_constants.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/row/omnibox_popup_row_delegate.h"

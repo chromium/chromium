@@ -12,10 +12,13 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/collaboration/test_support/mock_collaboration_service.h"
+#import "components/collaboration/test_support/mock_messaging_backend_service.h"
+#import "components/data_sharing/public/features.h"
 #import "components/saved_tab_groups/public/saved_tab_group.h"
 #import "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #import "components/saved_tab_groups/test_support/fake_tab_group_sync_service.h"
 #import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
+#import "ios/chrome/browser/collaboration/model/messaging/messaging_backend_service_bridge.h"
 #import "ios/chrome/browser/drag_and_drop/model/drag_item_util.h"
 #import "ios/chrome/browser/main/model/browser_web_state_list_delegate.h"
 #import "ios/chrome/browser/share_kit/model/test_share_kit_service.h"
@@ -32,6 +35,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_mediator_test.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_mode_holder.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_group_consumer.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_group_sync_service_observer_bridge.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/test/fake_tab_collection_consumer.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -40,8 +44,16 @@
 
 using tab_groups::SavedTabGroup;
 using tab_groups::SavedTabGroupTab;
+using testing::_;
+using testing::Return;
 
-using ::testing::Return;
+@interface TestTabGroupMediator
+    : TabGroupMediator <MessagingBackendServiceObserving,
+                        TabGroupSyncServiceObserverDelegate>
+@end
+
+@implementation TestTabGroupMediator
+@end
 
 namespace {
 
@@ -67,8 +79,10 @@ std::vector<SavedTabGroupTab> SavedTabGroupTabsFromTabs(
 class TabGroupMediatorTest : public GridMediatorTestClass {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures({kTabGroupsIPad, kModernTabStrip},
-                                          {});
+    scoped_feature_list_.InitWithFeatures(
+        {kTabGroupsIPad, kModernTabStrip, kTabGroupSync,
+         data_sharing::features::kDataSharingFeature},
+        {});
 
     GridMediatorTestClass::SetUp();
     WebStateList* web_state_list = browser_->GetWebStateList();
@@ -99,7 +113,7 @@ class TabGroupMediatorTest : public GridMediatorTestClass {
 
     EXPECT_CALL(*collaboration_service_, GetServiceStatus()).Times(1);
 
-    mediator_ = [[TabGroupMediator alloc]
+    mediator_ = [[TestTabGroupMediator alloc]
         initWithWebStateList:browser_->GetWebStateList()
          tabGroupSyncService:tab_group_sync_service_.get()
              shareKitService:share_kit_service_.get()
@@ -108,7 +122,7 @@ class TabGroupMediatorTest : public GridMediatorTestClass {
                     consumer:tab_group_consumer_
                 gridConsumer:consumer_
                   modeHolder:mode_holder_
-            messagingService:nil];
+            messagingService:&messaging_backend_];
     mediator_.browser = browser_.get();
   }
 
@@ -125,7 +139,7 @@ class TabGroupMediatorTest : public GridMediatorTestClass {
   }
 
  protected:
-  TabGroupMediator* mediator_;
+  TestTabGroupMediator* mediator_;
   id<TabGroupConsumer> tab_group_consumer_;
   raw_ptr<const TabGroup> tab_group_;
   std::unique_ptr<WebStateListBuilderFromDescription> builder_;
@@ -136,6 +150,7 @@ class TabGroupMediatorTest : public GridMediatorTestClass {
   base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;
   TabGridModeHolder* mode_holder_;
+  collaboration::messaging::MockMessagingBackendService messaging_backend_;
 };
 
 // Tests dropping a local tab (e.g. drag from same window) in the grid.
@@ -342,5 +357,86 @@ TEST_F(TabGroupMediatorTest, CollaborationIDChangedForGroupShared) {
       saved_group.local_group_id().value(), "collaboration",
       tab_groups::TabGroupSyncService::TabGroupSharingCallback());
 
+  EXPECT_OCMOCK_VERIFY((id)tab_group_consumer_);
+}
+
+// Tests that the text in the activity summary is updated when the messaging
+// backend service is initialized.
+TEST_F(TabGroupMediatorTest, UpdateActivitySummaryTextAfterStartup) {
+  OCMExpect([tab_group_consumer_ setActivitySummaryCellText:OCMOCK_ANY]);
+
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  web::WebState* web_state = web_state_list->GetWebStateAt(0);
+
+  // Create a fake message.
+  collaboration::messaging::PersistentMessage message;
+  collaboration::messaging::TabMessageMetadata metadata;
+  metadata.local_tab_id =
+      std::make_optional(web_state->GetUniqueIdentifier().identifier());
+  message.type =
+      collaboration::messaging::PersistentNotificationType::DIRTY_TAB;
+  message.attribution.tab_metadata = std::make_optional(metadata);
+
+  ON_CALL(messaging_backend_, IsInitialized).WillByDefault(Return(true));
+  ON_CALL(messaging_backend_, GetMessages(_))
+      .WillByDefault(Return(std::vector{message}));
+
+  // Fake the initialization of the service.
+  [mediator_ onMessagingBackendServiceInitialized];
+
+  // Expect that `-setActivitySummaryCellText:` is called to update the text in
+  // the activity summary.
+  EXPECT_OCMOCK_VERIFY((id)tab_group_consumer_);
+}
+
+// Tests that the text in the activity summary is updated when the API to
+// disaply the UI is called.
+TEST_F(TabGroupMediatorTest, UpdateActivitySummaryTextAfterDisplayAPICalled) {
+  OCMExpect([tab_group_consumer_ setActivitySummaryCellText:OCMOCK_ANY]);
+
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  web::WebState* web_state = web_state_list->GetWebStateAt(0);
+
+  // Create a fake message.
+  collaboration::messaging::PersistentMessage message;
+  collaboration::messaging::TabMessageMetadata metadata;
+  metadata.local_tab_id =
+      std::make_optional(web_state->GetUniqueIdentifier().identifier());
+  message.type =
+      collaboration::messaging::PersistentNotificationType::DIRTY_TAB;
+  message.attribution.tab_metadata = std::make_optional(metadata);
+
+  ON_CALL(messaging_backend_, IsInitialized).WillByDefault(Return(true));
+
+  // Fake the update of the service.
+  [mediator_ displayPersistentMessage:message];
+
+  // Expect that `-setActivitySummaryCellText:` is called to update the text in
+  // the activity summary.
+  EXPECT_OCMOCK_VERIFY((id)tab_group_consumer_);
+}
+
+// Tests that the text in the activity summary is NOT updated when the ID in the
+// message doesn't match with any displayed items.
+TEST_F(TabGroupMediatorTest, DoNotUpdateActivitySummaryTextWithUnmatchedID) {
+  OCMExpect([tab_group_consumer_ setActivitySummaryCellText:nil]);
+
+  // Create a fake message.
+  collaboration::messaging::PersistentMessage message;
+  collaboration::messaging::TabMessageMetadata metadata;
+  // Set a new unique ID so that it shouldn't match with any items.
+  metadata.local_tab_id =
+      std::make_optional(web::WebStateID::NewUnique().identifier());
+  message.type =
+      collaboration::messaging::PersistentNotificationType::DIRTY_TAB;
+  message.attribution.tab_metadata = std::make_optional(metadata);
+
+  ON_CALL(messaging_backend_, IsInitialized).WillByDefault(Return(true));
+
+  // Fake the update of the service.
+  [mediator_ displayPersistentMessage:message];
+
+  // Expect that `-setActivitySummaryCellText:` is called with `nil` because the
+  // ID in the message doesn't match with any items in the web state list.
   EXPECT_OCMOCK_VERIFY((id)tab_group_consumer_);
 }

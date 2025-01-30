@@ -271,6 +271,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1448166547804028941">Atslēgas “<ph name="DATA_CONTROLS_FIRST_KEY_SET" />” nevar iestatīt tajā pašā vārdnīcā, kurā ir atslēgas “<ph name="DATA_CONTROLS_SECOND_KEY_SET" />”.</translation>
 <translation id="1455413310270022028">Dzēšgumija</translation>
+<translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{Skatīt 0 atsauksmes}=1{Skatīt 1 atsauksmi}zero{Skatīt visas atsauksmes (#)}one{Skatīt visas atsauksmes (#)}other{Skatīt visas atsauksmes (#)}}</translation>
 <translation id="1458059624921545588">Cilvēki un sabiedrība</translation>
 <translation id="1458140305240870199">Apakšveļa</translation>
 <translation id="1459693405370120464">Laikapstākļi</translation>
@@ -961,6 +962,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2674170444375937751">Vai tiešām vēlaties dzēst šīs lapas no savas vēstures?</translation>
 <translation id="2674524144218093528">Mājas krāsošana un apdare</translation>
 <translation id="2674804415323431591">Paslēpt ieteikumus</translation>
+<translation id="26774279487328902">Vairākas ciļņu grupas (<ph name="GROUP_COUNT" />) vairs nav pieejamas.</translation>
 <translation id="2677748264148917807">Iziet</translation>
 <translation id="2683195745483370038">Citi atrastie rezultāti</translation>
 <translation id="2686919536310834199">Sūtiet atsauksmes par funkciju “Palīdzība rakstīšanā”.</translation>
@@ -1954,6 +1956,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4407758156081352648">Drošības nolūkos jūsu organizācija neļauj pārlūkā Chrome atkārtoti izmantot paroles. Lai aizsargātu lietotāju konfidencialitāti, pārlūkā Chrome paroles tiek šifrētas.</translation>
 <translation id="4408413947728134509">Sīkfaili <ph name="NUM_COOKIES" /></translation>
 <translation id="4412074349188076601">Šī konfigurācija ir atzīmēta kā instalējama, taču šai arhitektūrai nav attēla, tāpēc to nevar instalēt.</translation>
+<translation id="4412377069090572315">Lietotāju atsauksmes</translation>
 <translation id="4414452699610169758">Izmantojiet Google paroļu pārvaldnieku un Chrome automātiskās aizpildes pakalpojumu, lai saglabātu un aizpildītu paroles, maksājuma veidus un adreses.</translation>
 <translation id="4414515549596849729">sīkfaili un vietņu dati</translation>
 <translation id="4415156962929755728">Plastmasa (augsti glancēta)</translation>
@@ -2262,6 +2265,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5001526427543320409">Trešo pušu sīkfaili</translation>
 <translation id="5002932099480077015">Iespējojot šo opciju, Chrome saglabās jūsu kartes informāciju šajā ierīcē, lai jūs varētu ātrāk aizpildīt veidlapas.</translation>
 <translation id="5007392906805964215">Pārskatīt</translation>
+<translation id="500790844453430087">Ciļņu grupas “<ph name="GROUP_TITLE_1" />” un “<ph name="GROUP_TITLE_2" />” vairs nav pieejamas.</translation>
 <translation id="5011561501798487822">Noteiktā valoda</translation>
 <translation id="5015510746216210676">Ierīces nosaukums:</translation>
 <translation id="5017554619425969104">Kopētais teksts</translation>
@@ -2369,6 +2373,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="519422657042045905">Anotācija nav pieejama</translation>
 <translation id="5200063972779787617">Adreses saglabāšana kontā</translation>
 <translation id="5201306358585911203">Šajā lapā iegultā lapā ir rakstīts</translation>
+<translation id="5205114269877707377"><ph name="OMNIBOX_ACTION_FOCUSED_FRIENDLY_MATCH_TEXT" />. Lai pārlūkotu pieejamās darbības, nospiediet tabulēšanas taustiņu. Pēc tam nospiediet taustiņu Enter, lai izpildītu atlasīto darbību.</translation>
 <translation id="5205222826937269299">Jānorāda vārds vai nosaukums.</translation>
 <translation id="5206392433295093945">Guļamistaba</translation>
 <translation id="5209670883520018268">20. paplāte</translation>
@@ -2734,6 +2739,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5866898949289125849">Jūs skatāt izstrādātāja rīku lapu</translation>
 <translation id="5869405914158311789">Šī vietne nav sasniedzama</translation>
 <translation id="5869522115854928033">Saglabātās paroles</translation>
+<translation id="5872215789867188990">Ciļņu grupa “<ph name="GROUP_TITLE" />” vairs nav pieejama.</translation>
 <translation id="5872692522325383488">IBAN ir saglabāts</translation>
 <translation id="5873297634595728366">Dīzeļautomašīnas</translation>
 <translation id="5877359070305966420">Cilvēkresursi</translation>
@@ -2775,6 +2781,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5937560539988385583">Lapa pārtulkota</translation>
 <translation id="5938153366081463283">Pievienojiet virtuālu karti</translation>
 <translation id="5938793338444039872">Troy</translation>
+<translation id="5938866385061293322">Šī informācija ir iegūta no neatkarīgām atsauksmju vietnēm, piemēram, Trustpilot, ScamAdviser, Google u. c. Apkopojumi ir izveidoti, izmantojot MI.</translation>
 <translation id="5944297261866530437">Audums (augsti glancēts)</translation>
 <translation id="5950901984834744590">Skuvekļi</translation>
 <translation id="5951495562196540101">Neizdevās reģistrēt, izmantojot patērētāja kontu (pieejama komplektā iekļauta licence).</translation>
@@ -3141,6 +3148,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6567832540451970450">Jūsu administrators ļauj šajā vietnē izmantot atļauju “<ph name="PERMISSION" />”.</translation>
 <translation id="6568793038316600992">Poga “Pārvaldīt maksājumu veidus”. Aktivizējiet, lai Chrome iestatījumos pārvaldītu savus maksājumu un kredītkaršu informāciju.</translation>
 <translation id="6569060085658103619">Jūs skatāt paplašinājumu lapu.</translation>
+<translation id="6572867903637058088">Vai tas ir noderīgi?</translation>
 <translation id="6573200754375280815">Divi caurumi labajā pusē</translation>
 <translation id="6574762126505704998">Aizpildīt</translation>
 <translation id="6575408526598156416">Saglabāt kontā</translation>
@@ -4319,9 +4327,11 @@ Papildu informācija:
 <translation id="8672535691554698269">Tīklošana</translation>
 <translation id="8675446170353411473">Notiek failu augšupielāde pakalpojumā <ph name="CLOUD_PROVIDER" /></translation>
 <translation id="8676424191133491403">Bez aizkaves</translation>
+<translation id="8679727228072670864">{COUNT,plural, =1{Izdzēsta {COUNT} tabula.}zero{Izdzēstas {COUNT} tabulas.}one{Izdzēsta {COUNT} tabula.}other{Izdzēstas {COUNT} tabulas.}}</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, atbilde, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Tīmekļa lapu <ph name="PAGE" /> nevarēja ielādēt tālāk norādīto iemeslu dēļ.</translation>
 <translation id="8682297334444610648">Dinozaura spēle; pieskarieties, lai to spēlētu</translation>
+<translation id="8685225035093721011">Atsauksmes par veikalu</translation>
 <translation id="8686424632716064939">Datoru drošība</translation>
 <translation id="8687278439622293018">Ieraksts <ph name="ENTRY_VOICEOVER" /> ir izdzēsts.</translation>
 <translation id="8687429322371626002">Jūsu ierīci un kontu pārvalda <ph name="MANAGER" />.</translation>

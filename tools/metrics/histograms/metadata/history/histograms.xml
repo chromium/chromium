@@ -2596,6 +2596,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="History.IsErrorNavigation" enum="Boolean"
+    expires_after="2026-01-29">
+  <owner>kyraseevers@chromium.org</owner>
+  <owner>janiceliu@chromium.org</owner>
+  <summary>
+    Whether HistoryTabHelper::DidFinishNavigation() returned early due to a
+    navigation resulting in a 4XX - 5XX status code. This value is recorded in
+    both the chrome/ and ios/ code paths. This will help us determine the number
+    of error navigations that could potentially be added to the HistoryDB if the
+    early return is removed.
+  </summary>
+</histogram>
+
 <histogram name="History.MigrateFailureFromVersion" units="units"
     expires_after="2024-11-03">
   <owner>sky@chromium.org</owner>

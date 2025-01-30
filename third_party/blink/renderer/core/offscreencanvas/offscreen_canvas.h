@@ -39,7 +39,6 @@ class ScriptState;
 
 class CORE_EXPORT OffscreenCanvas final
     : public EventTarget,
-      public ImageBitmapSource,
       public CanvasRenderingContextHost,
       public CanvasResourceDispatcherClient {
   DEFINE_WRAPPERTYPEINFO();
@@ -164,7 +163,6 @@ class CORE_EXPORT OffscreenCanvas final
   }
 
   // ImageBitmapSource implementation
-  gfx::Size BitmapSourceSize() const final;
   ScriptPromise<ImageBitmap> CreateImageBitmap(ScriptState*,
                                                std::optional<gfx::Rect>,
                                                const ImageBitmapOptions*,

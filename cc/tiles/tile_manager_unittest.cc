@@ -1820,7 +1820,7 @@ class TestSoftwareRasterBufferProvider : public FakeRasterBufferProviderImpl {
       RasterBufferProvider::PlaybackToMemory(
           pixels_, kSharedImageFormat, size_, /*stride=*/0, raster_source,
           raster_full_rect, /*canvas_playback_rect=*/raster_full_rect,
-          transform, gfx::ColorSpace(), kIsGpuCompositing, playback_settings);
+          transform, gfx::ColorSpace(), playback_settings);
     }
 
     bool SupportsBackgroundThreadPriority() const override { return true; }

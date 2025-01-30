@@ -751,6 +751,19 @@ void ChromePasswordManagerClient::NotifyStorePasswordCalled() {
   was_store_ever_called_ = true;
 }
 
+bool ChromePasswordManagerClient::IsPasswordChangeOngoing() {
+  ChromePasswordChangeService* password_change_service =
+      PasswordChangeServiceFactory::GetForProfile(profile_);
+  if (password_change_service) {
+    auto* delegate =
+        password_change_service->GetPasswordChangeDelegate(web_contents());
+    if (delegate) {
+      return delegate->GetCurrentState() ==
+             PasswordChangeDelegate::State::kChangingPassword;
+    }
+  }
+  return false;
+}
 
 void ChromePasswordManagerClient::NotifyOnSuccessfulLogin(
     const std::u16string& submitted_username) {

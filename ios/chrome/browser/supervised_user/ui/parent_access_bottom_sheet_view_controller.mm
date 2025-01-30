@@ -16,7 +16,10 @@ NSString* const kCustomBottomSheetDetentIdentifier = @"customBottomSheetDetent";
 }  // namespace
 
 @implementation ParentAccessBottomSheetViewController {
+  // WebView containing the parent access widget.
   UIView* _webView;
+  // Whether the web view should be hidden.
+  BOOL _webViewHidden;
 }
 
 #pragma mark - UIViewController
@@ -45,8 +48,17 @@ NSString* const kCustomBottomSheetDetentIdentifier = @"customBottomSheetDetent";
     return;
   }
   _webView = view;
+  _webView.hidden = _webViewHidden;
   [self.view addSubview:_webView];
   AddSameConstraints(_webView, self.view);
+}
+
+- (void)setWebViewHidden:(BOOL)hidden {
+  if (_webViewHidden == hidden) {
+    return;
+  }
+  _webViewHidden = hidden;
+  _webView.hidden = hidden;
 }
 
 #pragma mark - Private

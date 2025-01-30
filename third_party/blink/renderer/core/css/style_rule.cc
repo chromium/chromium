@@ -32,6 +32,8 @@
 #include "third_party/blink/renderer/core/css/css_font_face_rule.h"
 #include "third_party/blink/renderer/core/css/css_font_feature_values_rule.h"
 #include "third_party/blink/renderer/core/css/css_font_palette_values_rule.h"
+#include "third_party/blink/renderer/core/css/css_function_declarations_rule.h"
+#include "third_party/blink/renderer/core/css/css_function_rule.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_import_rule.h"
 #include "third_party/blink/renderer/core/css/css_keyframes_rule.h"
@@ -62,6 +64,7 @@
 #include "third_party/blink/renderer/core/css/style_rule_counter_style.h"
 #include "third_party/blink/renderer/core/css/style_rule_font_feature_values.h"
 #include "third_party/blink/renderer/core/css/style_rule_font_palette_values.h"
+#include "third_party/blink/renderer/core/css/style_rule_function_declarations.h"
 #include "third_party/blink/renderer/core/css/style_rule_import.h"
 #include "third_party/blink/renderer/core/css/style_rule_keyframe.h"
 #include "third_party/blink/renderer/core/css/style_rule_namespace.h"
@@ -130,6 +133,9 @@ void StyleRuleBase::Trace(Visitor* visitor) const {
       return;
     case kNestedDeclarations:
       To<StyleRuleNestedDeclarations>(this)->TraceAfterDispatch(visitor);
+      return;
+    case kFunctionDeclarations:
+      To<StyleRuleFunctionDeclarations>(this)->TraceAfterDispatch(visitor);
       return;
     case kScope:
       To<StyleRuleScope>(this)->TraceAfterDispatch(visitor);
@@ -218,6 +224,9 @@ void StyleRuleBase::FinalizeGarbageCollectedObject() {
     case kNestedDeclarations:
       To<StyleRuleNestedDeclarations>(this)->~StyleRuleNestedDeclarations();
       return;
+    case kFunctionDeclarations:
+      To<StyleRuleFunctionDeclarations>(this)->~StyleRuleFunctionDeclarations();
+      return;
     case kScope:
       To<StyleRuleScope>(this)->~StyleRuleScope();
       return;
@@ -292,6 +301,8 @@ StyleRuleBase* StyleRuleBase::Copy() const {
       return To<StyleRuleMedia>(this)->Copy();
     case kNestedDeclarations:
       return To<StyleRuleNestedDeclarations>(this)->Copy();
+    case kFunctionDeclarations:
+      return To<StyleRuleFunctionDeclarations>(this)->Copy();
     case kScope:
       return To<StyleRuleScope>(this)->Copy();
     case kSupports:
@@ -374,6 +385,14 @@ CSSRule* StyleRuleBase::CreateCSSOMWrapper(wtf_size_t position_hint,
       rule = MakeGarbageCollected<CSSNestedDeclarationsRule>(
           To<StyleRuleNestedDeclarations>(self), parent_sheet);
       break;
+    case kFunctionDeclarations:
+      rule = MakeGarbageCollected<CSSFunctionDeclarationsRule>(
+          To<StyleRuleFunctionDeclarations>(self), parent_sheet);
+      break;
+    case kFunction:
+      rule = MakeGarbageCollected<CSSFunctionRule>(To<StyleRuleFunction>(self),
+                                                   parent_sheet);
+      break;
     case kScope:
       rule = MakeGarbageCollected<CSSScopeRule>(To<StyleRuleScope>(self),
                                                 parent_sheet);
@@ -425,7 +444,6 @@ CSSRule* StyleRuleBase::CreateCSSOMWrapper(wtf_size_t position_hint,
     case kFontFeature:
     case kKeyframe:
     case kCharset:
-    case kFunction:
     case kMixin:
     case kApplyMixin:
       NOTREACHED();
@@ -648,6 +666,10 @@ StyleRuleBase* StyleRuleBase::Renest(StyleRule* new_parent) {
       return MakeGarbageCollected<StyleRuleNestedDeclarations>(
           nested_declarations_rule->NestingType(), new_inner_rule);
     }
+    case kFunctionDeclarations:
+    case kFunction:
+      // Can not contain style rules.
+      return this;
     case kPageMargin:
     case kProperty:
     case kFontFace:
@@ -662,7 +684,6 @@ StyleRuleBase* StyleRuleBase::Renest(StyleRule* new_parent) {
     case kKeyframe:
     case kCharset:
     case kViewTransition:
-    case kFunction:
     case kPositionTry:
       // Cannot have any child rules.
       return this;

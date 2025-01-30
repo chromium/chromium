@@ -94,6 +94,7 @@ FakeSystemIdentity* const kPrimaryIdentity = [FakeSystemIdentity fakeIdentity1];
                               kPostDeviceRestoreSigninPromo];
   expecteds.signinSigninStartedAccessPoint = 1;
   expecteds.signinSignInStarted = 1;
+  expecteds.signinSignInCompleted = 1;
   // TODO(crbug.com/41493423): We should log that the signin was offered.
   [SigninEarlGrey assertExpectedSigninHistograms:expecteds];
 }

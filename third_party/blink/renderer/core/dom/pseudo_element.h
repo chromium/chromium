@@ -99,6 +99,8 @@ class CORE_EXPORT PseudoElement : public Element {
 
   virtual void Dispose();
 
+  static bool IsLayoutSiblingOfOriginatingElement(PseudoId pseudo_id);
+
  protected:
   void SetIsGeneratedName(bool generated) { is_generated_name_ = generated; }
 

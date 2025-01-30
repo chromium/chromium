@@ -40,6 +40,19 @@
   }, 'createImageBitmap from an SVG without natural width and height');
 
   promise_test(async (t) => {
+    const image = await loadImage(IMAGE_WITHOUT_NATURAL_SIZE);
+    return promise_rejects_dom(t, "InvalidStateError",
+                               createImageBitmap(image, 0, 0, 100, 100));
+  }, 'createImageBitmap from an SVG without natural width and height with crop rect');
+
+  promise_test(async () => {
+    const image = await loadImage(IMAGE_WITHOUT_NATURAL_SIZE);
+    const options = {resizeWidth: 50, resizeHeight: 50, resizeQuality: "high"};
+    const bitmap = await createImageBitmap(image, options);
+    checkImageBitmap(bitmap);
+  }, 'createImageBitmap from an SVG without natural width and height with resize');
+
+  promise_test(async (t) => {
     const image = await loadImage(IMAGE_WITH_ZERO_SIZE);
     return promise_rejects_dom(t, "InvalidStateError",
                                createImageBitmap(image));
@@ -47,13 +60,14 @@
 
   promise_test(async (t) => {
     const image = await loadImage(IMAGE_WITH_ZERO_SIZE);
-    const bitmap = await createImageBitmap(image, 0, 0, 100, 100);
-    checkImageBitmap(bitmap);
+    return promise_rejects_dom(t, "InvalidStateError",
+                               createImageBitmap(image, 0, 0, 100, 100));
   }, 'createImageBitmap from a zero size SVG with crop rect');
 
   promise_test(async (t) => {
     const image = await loadImage(IMAGE_WITH_ZERO_SIZE);
     const options = {resizeWidth: 50, resizeHeight: 50, resizeQuality: "high"};
-    return createImageBitmap(image, options);
+    return promise_rejects_dom(t, "InvalidStateError",
+                               createImageBitmap(image, options));
   }, 'createImageBitmap from a zero size SVG with resize');
 </script>

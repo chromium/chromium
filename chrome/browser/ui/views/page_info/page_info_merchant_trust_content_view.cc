@@ -96,6 +96,10 @@ void PageInfoMerchantTrustContentView::SetHatsButtonVisibility(bool visible) {
   hats_button_->SetVisible(visible);
 }
 
+void PageInfoMerchantTrustContentView::SetHatsButtonTitleId(int title_id) {
+  hats_button_->SetTitleText(l10n_util::GetStringUTF16(title_id));
+}
+
 std::unique_ptr<views::View>
 PageInfoMerchantTrustContentView::CreateDescriptionLabel() {
   auto description_label = std::make_unique<views::StyledLabel>();

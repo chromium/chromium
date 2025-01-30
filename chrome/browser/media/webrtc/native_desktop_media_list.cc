@@ -773,6 +773,7 @@ void NativeDesktopMediaList::Worker::ShowDelegatedList() {
 }
 
 void NativeDesktopMediaList::Worker::OnSelection() {
+  VLOG(1) << "NDMLW::OnSelection";
   delegated_source_list_has_selection_ = true;
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
@@ -781,6 +782,7 @@ void NativeDesktopMediaList::Worker::OnSelection() {
 }
 
 void NativeDesktopMediaList::Worker::OnCancelled() {
+  VLOG(1) << "NDMLW::OnCancelled";
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&NativeDesktopMediaList::OnDelegatedSourceListDismissed,
@@ -788,6 +790,7 @@ void NativeDesktopMediaList::Worker::OnCancelled() {
 }
 
 void NativeDesktopMediaList::Worker::OnError() {
+  VLOG(1) << "NDMLW::OnError";
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&NativeDesktopMediaList::OnDelegatedSourceListDismissed,

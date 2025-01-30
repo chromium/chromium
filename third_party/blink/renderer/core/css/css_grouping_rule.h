@@ -130,17 +130,20 @@ struct DowncastTraits<CSSGroupingRule> {
       case CSSRule::kSupportsRule:
       case CSSRule::kContainerRule:
       // CSSGroupingRule:
+      case CSSRule::kFunctionRule:
       case CSSRule::kLayerBlockRule:
       case CSSRule::kPageRule:
       case CSSRule::kScopeRule:
       case CSSRule::kStartingStyleRule:
         return true;
+      // go/keep-sorted start
       case CSSRule::kCharsetRule:
       case CSSRule::kCounterStyleRule:
       case CSSRule::kFontFaceRule:
       case CSSRule::kFontFeatureRule:
       case CSSRule::kFontFeatureValuesRule:
       case CSSRule::kFontPaletteValuesRule:
+      case CSSRule::kFunctionDeclarationsRule:
       case CSSRule::kImportRule:
       case CSSRule::kKeyframeRule:
       case CSSRule::kKeyframesRule:
@@ -152,6 +155,7 @@ struct DowncastTraits<CSSGroupingRule> {
       case CSSRule::kPropertyRule:
       case CSSRule::kStyleRule:
       case CSSRule::kViewTransitionRule:
+        // go/keep-sorted end
         return false;
     }
   }

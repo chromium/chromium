@@ -4,6 +4,7 @@
 
 #include "chrome/browser/media/webrtc/delegated_source_list_capturer.h"
 
+#include "base/logging.h"
 #include "base/task/bind_post_task.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/desktop_capture.h"
@@ -107,6 +108,7 @@ void DelegatedSourceListCapturer::OnPickerCreated(
 
 void DelegatedSourceListCapturer::OnSelected(Source source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  VLOG(1) << "DSLC::OnSelected: source_id = " << source.id;
   selected_source_ = source;
   if (delegated_source_list_observer_) {
     delegated_source_list_observer_->OnSelection();
@@ -115,6 +117,7 @@ void DelegatedSourceListCapturer::OnSelected(Source source) {
 
 void DelegatedSourceListCapturer::OnCancelled() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  VLOG(1) << "DSLC::OnCancelled";
   if (delegated_source_list_observer_) {
     delegated_source_list_observer_->OnCancelled();
   }
@@ -122,6 +125,7 @@ void DelegatedSourceListCapturer::OnCancelled() {
 
 void DelegatedSourceListCapturer::OnError() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  VLOG(1) << "DSLC::OnError";
   if (delegated_source_list_observer_) {
     delegated_source_list_observer_->OnError();
   }

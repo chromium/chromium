@@ -271,6 +271,7 @@
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1448166547804028941">"<ph name="DATA_CONTROLS_FIRST_KEY_SET" />" नामक कीहरूलाई "<ph name="DATA_CONTROLS_SECOND_KEY_SET" />" नामक कीहरू सेट गरिएकै डिक्सनरीमा सेट गर्न सकिँदैन</translation>
 <translation id="1455413310270022028">मेट्ने साधन</translation>
+<translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{० रिभ्यू हेर्नुहोस्}=1{एउटा रिभ्यू हेर्नुहोस्}other{सबै # वटा रिभ्यू हेर्नुहोस्}}</translation>
 <translation id="1458059624921545588">जनता तथा समाज</translation>
 <translation id="1458140305240870199">भित्री वस्त्रहरू</translation>
 <translation id="1459693405370120464">मौसम</translation>
@@ -961,6 +962,7 @@
 <translation id="2674170444375937751">तपाईं आफ्नो इतिहासबाट यी पृष्ठहरू मेटाउन चाहनुहुन्छ भन्ने कुरामा सुनिश्चित हुनुहुन्छ?</translation>
 <translation id="2674524144218093528">घरको पेन्टिङ तथा फिनिसिङ</translation>
 <translation id="2674804415323431591">सुझावहरू लुकाउनुहोस्</translation>
+<translation id="26774279487328902">अबदेखि <ph name="GROUP_COUNT" /> वटा ट्याब समूह उपलब्ध छैनन्</translation>
 <translation id="2677748264148917807">छोड्नुहोस्</translation>
 <translation id="2683195745483370038">अन्य परिणामहरू भेटिए</translation>
 <translation id="2686919536310834199">"मलाई लेख्न मद्दत गर्नुहोस्" सुविधाका सम्बन्धमा प्रतिक्रिया पठाउनुहोस्।</translation>
@@ -1954,6 +1956,7 @@
 <translation id="4407758156081352648">तपाईंको सङ्गठनले सुरक्षा कायम राख्नका निम्ति Chrome मा पासवर्डहरू पुनः प्रयोग गर्न दिँदैन। प्रयोगकर्ताको गोपनीयता सुरक्षित राख्न Chrome मा पासवर्डहरू इन्क्रिप्ट गरिन्छन्।</translation>
 <translation id="4408413947728134509"><ph name="NUM_COOKIES" /> कुकीहरू</translation>
 <translation id="4412074349188076601">यो कन्फिगुरेसनलाई "इन्स्टल गर्न मिल्ने" कन्फिगुरेसनका रूपमा चिन्ह लगाइएको छ तर यो आर्किटेक्चरको कुनै पनि इमेज उपलब्ध गराइएको छैन। त्यसैले यो कन्फिगुरेसन इन्स्टल गर्न मिल्दैन।</translation>
+<translation id="4412377069090572315">मान्छेहरू के भनिरहेका छन्</translation>
 <translation id="4414452699610169758">पासवर्ड, भुक्तानी विधिका विवरण र ठेगानाहरू सेभ गर्न तथा भर्न Google पासवर्ड म्यानेजर र Chrome को अटोफिल प्रयोग गर्नुहोस्</translation>
 <translation id="4414515549596849729">कुकीहरू र साइटका डाटा</translation>
 <translation id="4415156962929755728">प्लास्टिक (हाई ग्लस)</translation>
@@ -2262,6 +2265,7 @@
 <translation id="5001526427543320409">तेस्रो पक्षीय कुकीहरू</translation>
 <translation id="5002932099480077015">यदि सक्रिय भएको छ भने Chrome ले चाँडो फारम भर्नका लागि यो डिभाइसमा तपाईँको कार्डको प्रतिलिपि स्टोर गर्ने छ।</translation>
 <translation id="5007392906805964215">समीक्षा गर्नुहोस्</translation>
+<translation id="500790844453430087">अबदेखि "<ph name="GROUP_TITLE_1" />" र "<ph name="GROUP_TITLE_2" />" ट्याब समूहहरू उपलब्ध छैनन्</translation>
 <translation id="5011561501798487822">पत्ता लागेको भाषा</translation>
 <translation id="5015510746216210676">मेसिनको नाम:</translation>
 <translation id="5017554619425969104">तपाईंले प्रतिलिपि गर्नुभएको पाठ</translation>
@@ -2369,6 +2373,7 @@
 <translation id="519422657042045905">एनोटेसन उपलब्ध छैन</translation>
 <translation id="5200063972779787617">यो ठेगाना खातामा सेभ गर्नुहोस्</translation>
 <translation id="5201306358585911203">यो पृष्ठमा इम्बेड गरिएको पृष्ठले यसो भन्छ</translation>
+<translation id="5205114269877707377"><ph name="OMNIBOX_ACTION_FOCUSED_FRIENDLY_MATCH_TEXT" />, उपलब्ध कारबाहीहरू ब्राउज गर्न ट्याब थिच्नुहोस् अनि आफूले चयन गरेको कारबाही कार्यान्वयन गर्न इन्टर थिच्नुहोस्।</translation>
 <translation id="5205222826937269299">नाम आवश्यक छ</translation>
 <translation id="5206392433295093945">सुत्ने कोठा</translation>
 <translation id="5209670883520018268">ट्रे २०</translation>
@@ -2734,6 +2739,7 @@
 <translation id="5866898949289125849">तपाईं विकासकर्ताका उपकरणसम्बन्धी पृष्ठ हेर्दै हुनुहुन्छ</translation>
 <translation id="5869405914158311789">यो साइटमा पहुँच गर्न सकिँदैन</translation>
 <translation id="5869522115854928033">बचत गरिएका पासवर्डहरू</translation>
+<translation id="5872215789867188990">अबदेखि "<ph name="GROUP_TITLE" />" ट्याब समूह उपलब्ध छैन</translation>
 <translation id="5872692522325383488">IBAN सेभ गरिएको छ</translation>
 <translation id="5873297634595728366">डिजेलबाट चल्ने गाडी</translation>
 <translation id="5877359070305966420">मानव स्रोत</translation>
@@ -2775,6 +2781,7 @@
 <translation id="5937560539988385583">पेज अनुवाद गरिएको छ</translation>
 <translation id="5938153366081463283">भर्चुअल कार्ड लिंक गर्नुहोस्</translation>
 <translation id="5938793338444039872">Troy</translation>
+<translation id="5938866385061293322">यो जानकारी स्वतन्त्र रूपमा रिभ्यू पोस्ट गर्न सकिने Trustpilot, ScamAdviser, Google लगायतका वेबसाइटहरूबाट लिइएको हो। सारांशहरू AI प्रयोग गरी सिर्जना गरिन्छन्।</translation>
 <translation id="5944297261866530437">फेब्रिक (हाई-ग्लस)</translation>
 <translation id="5950901984834744590">दाह्री काट्ने तथा रौँ खौरने रेजर</translation>
 <translation id="5951495562196540101">उपभोक्ताको खातामार्फत दर्ता गर्न सकिँदैन (प्याकेजसहितको इजाजतपत्र उपलब्ध छ)।</translation>
@@ -3141,6 +3148,7 @@
 <translation id="6567832540451970450">तपाईंका एड्मिनले यो साइटलाई <ph name="PERMISSION" /> प्रयोग गर्ने अनुमति दिएका छन्</translation>
 <translation id="6568793038316600992">भुक्तानी विधिहरू व्यवस्थापन गर्ने बटन, Chrome का सेटिङमा गई आफ्ना भुक्तानीसम्बन्धी जानकारी तथा क्रेडिट कार्डसम्बन्धी जानकारी व्यवस्थापन गर्न यो बटन थिच्नुहोस्</translation>
 <translation id="6569060085658103619">तपाईं एउटा विस्तार सम्बन्धी पृष्ठ हेर्दै हुनुहुन्छ</translation>
+<translation id="6572867903637058088">यो उपयोगी लाग्यो?</translation>
 <translation id="6573200754375280815">दायाँपट्टि दुई प्वाल</translation>
 <translation id="6574762126505704998">भर्नुहोस्</translation>
 <translation id="6575408526598156416">खातामा सेभ गर्नुहोस्</translation>
@@ -3871,6 +3879,7 @@
 <translation id="784404208867107517">समूहबद्ध गरिएको इतिहास</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{कुनै पनि होइन}=1{१ एप (<ph name="EXAMPLE_APP_1" />)}=2{२ एपहरू (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# एपहरू (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">कुनै त्रुटि भयो। फेरि प्रयास गर्नुहोस्।</translation>
+<translation id="784623644169604270">हालसालै कुनै पनि क्रियाकलाप गरिएको छैन</translation>
 <translation id="785476343534277563">कलेज खेलकुद</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7860345425589240791"><ph name="SIDE_OF_CARD" /> रहेको म्याद सकिने नयाँ मिति र CVC हाल्नुहोस्</translation>
@@ -4317,9 +4326,11 @@
 <translation id="8672535691554698269">कम्प्युटर नेटवर्कहरू</translation>
 <translation id="8675446170353411473">तपाईंका फाइलहरू <ph name="CLOUD_PROVIDER" /> मा अपलोड गरिँदै छ</translation>
 <translation id="8676424191133491403">विलम्बरहित</translation>
+<translation id="8679727228072670864">{COUNT,plural, =1{{COUNT} तालिका मेटाइएको छ}other{{COUNT} वटा तालिका मेटाइएका छन्}}</translation>
 <translation id="8680536109547170164"><ph name="QUERY" /> , उत्तर, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054"><ph name="PAGE" /> मा भएको वेबपृष्ठ लोड गर्न सकिएन किनभने:</translation>
 <translation id="8682297334444610648">Dino गेम, यो गेम खेल्न ट्याप गर्नुहोस्</translation>
+<translation id="8685225035093721011">स्टोरका बारेमा गरिएका रिभ्यू</translation>
 <translation id="8686424632716064939">कम्प्युटरको सुरक्षा</translation>
 <translation id="8687278439622293018">इन्ट्री <ph name="ENTRY_VOICEOVER" /> मेटाइएको छ</translation>
 <translation id="8687429322371626002"><ph name="MANAGER" /> ले तपाईंको यन्त्र र खाता व्यवस्थापन गर्छ।</translation>

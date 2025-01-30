@@ -204,6 +204,7 @@
 <translation id="1823120442877418684">Figurer</translation>
 <translation id="1827738518074806965">Konstgalleri</translation>
 <translation id="183287940576828840">Stötande/osäkert</translation>
+<translation id="1834032517784994783">Välj transkriptionsspråk</translation>
 <translation id="1836553715834333258">Systemfärg</translation>
 <translation id="183675228220305365">realism</translation>
 <translation id="1838374766361614909">Rensa sökning</translation>
@@ -731,6 +732,7 @@
 <translation id="4483049906298469269">Det gick inte att pinga gateway för nätverket som inte är standard</translation>
 <translation id="4483498983731992167">Det gick inte att skapa en transkription</translation>
 <translation id="4486524074141928967">Du loggas ut kl. <ph name="TIME" /></translation>
+<translation id="4487890678161807486">Öppna språkväljaren för transkriptioner</translation>
 <translation id="4500722292849917410">Kortkommandot är inte tillgängligt. Tryck på ett nytt kortkommando med en specialtangent (Ctrl, Alt, Skift eller <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Gränssnittsfärg</translation>
 <translation id="4503223151711056411">Vänsterpiltangenten</translation>

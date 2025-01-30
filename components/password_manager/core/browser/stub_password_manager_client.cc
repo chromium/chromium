@@ -58,6 +58,10 @@ void StubPasswordManagerClient::NotifyUserCouldBeAutoSignedIn(
 void StubPasswordManagerClient::NotifySuccessfulLoginWithExistingPassword(
     std::unique_ptr<PasswordFormManagerForUI> submitted_manager) {}
 
+bool StubPasswordManagerClient::IsPasswordChangeOngoing() {
+  return false;
+}
+
 void StubPasswordManagerClient::NotifyStorePasswordCalled() {}
 
 void StubPasswordManagerClient::NotifyKeychainError() {}

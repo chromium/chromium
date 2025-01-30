@@ -729,6 +729,8 @@ static std::optional<CSSSelector> MaybeCreateImplicitDescendantAnchor(
         return CreateImplicitAnchor(nesting_type, parent_rule_for_nesting);
       }
       break;
+    case CSSNestingType::kFunction:
+      NOTREACHED();
   }
   return std::nullopt;
 }

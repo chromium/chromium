@@ -346,8 +346,7 @@ bool OneCopyRasterBufferProvider::PlaybackToStagingBuffer(
   RasterBufferProvider::PlaybackToMemory(
       mapping->GetMemoryForPlane(0).data(), format, staging_buffer->size,
       mapping->Stride(0), raster_source, raster_full_rect, playback_rect,
-      transform, dst_color_space,
-      /*gpu_compositing=*/true, playback_settings);
+      transform, dst_color_space, playback_settings);
 
   staging_buffer->content_id = new_content_id;
 

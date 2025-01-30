@@ -280,15 +280,15 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
-  'skia_revision': '404ee727e3bc9a2684d53d59645d2bccb53a1e66',
+  'skia_revision': '3694c4878ff9c45e2cc7cc01a57f83ed8f82c7af',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'v8_revision': '300d6e2c695ba69a78e172e7c615a3079e3a865d',
+  'v8_revision': '2b27430d4a7ecb56d50c457f2789dd272fa5dfa1',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
-  'angle_revision': 'df67137f246786f6953bc1fd2d4c2a139378c959',
+  'angle_revision': 'a870888a2e59e1f2cccc15adc3a35c31b707c3b2',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling SwiftShader
   # and whatever else without interference from each other.
@@ -352,11 +352,11 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling chromium_variations
   # and whatever else without interference from each other.
-  'chromium_variations_revision': 'f20ab69111d86b4232d746e789a5c6438bf8118b',
+  'chromium_variations_revision': 'f032ea33c24208ef727ed61e739a29aedd066970',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling CrossBench
   # and whatever else without interference from each other.
-  'crossbench_revision': '8495d88745d09cb4b9d414bdd1864a0eb09f6d3d',
+  'crossbench_revision': 'cebed28ad74141d441e17521c4d01e1d1a41503e',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libFuzzer
   # and whatever else without interference from each other.
@@ -372,7 +372,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': '773807c2b5ef43304b7faeb621692435e3184253',
+  'devtools_frontend_revision': '8793401793288848ac1ce05501e8a49be47aba30',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -1448,7 +1448,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    '69365577e44b7ea67662711994a5f188b66d0e69',
+    '316ad1fcc33afd1181aea37fd097e4ff9d22002c',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
@@ -2442,7 +2442,7 @@ deps = {
     Var('pdfium_git') + '/pdfium.git' + '@' +  Var('pdfium_revision'),
 
   'src/third_party/perfetto':
-    Var('android_git') + '/platform/external/perfetto.git' + '@' + '1711dd827706c91997fe5418a2f3994f4be3f628',
+    Var('android_git') + '/platform/external/perfetto.git' + '@' + '36939399ed1feffd9b2547361b3dd0d1e8aec109',
 
   'src/base/tracing/test/data': {
     'bucket': 'perfetto',
@@ -2624,7 +2624,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/r8',
-              'version': 'twmEo-SOTxF2yvzPBCZ6XnSnzi3RekGMhUHTIhc5ox8C',
+              'version': '-ksREVIoU_CBsrSenB5wAU_Tq0gG1fDRaQC7_MFT6BMC',
           },
       ],
       'condition': 'checkout_android and non_git_source',
@@ -2815,7 +2815,7 @@ deps = {
     Var('chromium_git') + '/webpagereplay.git' + '@' + Var('webpagereplay_revision'),
 
   'src/third_party/webrtc':
-    Var('webrtc_git') + '/src.git' + '@' + '4de5839c1117e5bb96148c8575a74a69bde02768',
+    Var('webrtc_git') + '/src.git' + '@' + 'd643be9fdce42d1a46a6445eb8c0253bd6025234',
 
   # Wuffs' canonical repository is at github.com/google/wuffs, but we use
   # Skia's mirror of Wuffs, the same as in upstream Skia's DEPS file.
@@ -4537,7 +4537,7 @@ deps = {
 
   'src/ios_internal':  {
       'url': Var('chrome_git') + '/chrome/ios_internal.git' + '@' +
-        '3632f887fba564ddb1de31a99e33f44cfee7aa4e',
+        '850349e608ceff20352522803115ca4f1be8d91c',
       'condition': 'checkout_ios and checkout_src_internal',
   },
 

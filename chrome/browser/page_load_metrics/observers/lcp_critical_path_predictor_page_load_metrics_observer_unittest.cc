@@ -325,3 +325,318 @@ TEST_F(LcpCriticalPathPredictorPageLoadMetricsObserverTest, UMAIsImageFalse) {
                        /*is_image_element=*/false);
   ExpectUniqueSample(internal::kHistogramLCPPActualLCPIsImage, false);
 }
+
+TEST(MaybeReportConfidenceUMAsTest, Empty) {
+  const auto kEmptyHistograms = {
+      internal::kHistogramLCPPImageLoadingPriorityFrequencyOfActualPositive,
+      internal::kHistogramLCPPImageLoadingPriorityFrequencyOfActualNegative,
+      internal::kHistogramLCPPImageLoadingPriorityConfidenceOfActualPositive,
+      internal::kHistogramLCPPImageLoadingPriorityConfidenceOfActualNegative,
+      internal::kHistogramLCPPSubresourceFrequencyOfActualPositive,
+      internal::kHistogramLCPPSubresourceFrequencyOfActualNegative,
+      internal::kHistogramLCPPSubresourceConfidenceOfActualPositive,
+      internal::kHistogramLCPPSubresourceConfidenceOfActualNegative,
+      internal::kHistogramLCPPSubresourceFrequencyOfActualPositiveSameSite,
+      internal::kHistogramLCPPSubresourceFrequencyOfActualNegativeSameSite,
+      internal::kHistogramLCPPSubresourceConfidenceOfActualPositiveSameSite,
+      internal::kHistogramLCPPSubresourceConfidenceOfActualNegativeSameSite,
+      internal::kHistogramLCPPSubresourceFrequencyOfActualPositiveCrossSite,
+      internal::kHistogramLCPPSubresourceFrequencyOfActualNegativeCrossSite,
+      internal::kHistogramLCPPSubresourceConfidenceOfActualPositiveCrossSite,
+      internal::kHistogramLCPPSubresourceConfidenceOfActualNegativeCrossSite,
+  };
+  const auto expect_empty = [&kEmptyHistograms](
+                                const base::HistogramTester& histogram_tester,
+                                const base::Location& location = FROM_HERE) {
+    for (const auto& name : kEmptyHistograms) {
+      histogram_tester.ExpectTotalCount(name, 0, location);
+    }
+  };
+  {
+    base::HistogramTester histogram_tester;
+    predictors::LcppDataInputs lcpp_data_inputs;
+    internal::MaybeReportConfidenceUMAsForTesting(GURL(), std::nullopt,
+                                                  lcpp_data_inputs);
+    expect_empty(histogram_tester);
+  }
+  {
+    base::HistogramTester histogram_tester;
+    predictors::LcppStat lcpp_stat_prelearn;
+    predictors::LcppDataInputs lcpp_data_inputs;
+    internal::MaybeReportConfidenceUMAsForTesting(GURL(), lcpp_stat_prelearn,
+                                                  lcpp_data_inputs);
+    expect_empty(histogram_tester);
+  }
+}
+
+TEST(MaybeReportConfidenceUMAsTest, ImageLoadingPriority) {
+  const auto kEmptyHistograms = {
+      internal::kHistogramLCPPSubresourceFrequencyOfActualPositive,
+      internal::kHistogramLCPPSubresourceFrequencyOfActualNegative,
+      internal::kHistogramLCPPSubresourceConfidenceOfActualPositive,
+      internal::kHistogramLCPPSubresourceConfidenceOfActualNegative,
+      internal::kHistogramLCPPSubresourceFrequencyOfActualPositiveSameSite,
+      internal::kHistogramLCPPSubresourceFrequencyOfActualNegativeSameSite,
+      internal::kHistogramLCPPSubresourceConfidenceOfActualPositiveSameSite,
+      internal::kHistogramLCPPSubresourceConfidenceOfActualNegativeSameSite,
+      internal::kHistogramLCPPSubresourceFrequencyOfActualPositiveCrossSite,
+      internal::kHistogramLCPPSubresourceFrequencyOfActualNegativeCrossSite,
+      internal::kHistogramLCPPSubresourceConfidenceOfActualPositiveCrossSite,
+      internal::kHistogramLCPPSubresourceConfidenceOfActualNegativeCrossSite,
+  };
+  const auto expect_empty = [&kEmptyHistograms](
+                                const base::HistogramTester& histogram_tester,
+                                const base::Location& location = FROM_HERE) {
+    for (const auto& name : kEmptyHistograms) {
+      histogram_tester.ExpectTotalCount(name, 0, location);
+    }
+  };
+
+  {
+    base::HistogramTester histogram_tester;
+    predictors::LcppStat lcpp_stat_prelearn;
+    {
+      auto& stat = *lcpp_stat_prelearn.mutable_lcp_element_locator_stat();
+      {
+        auto& bucket = *stat.add_lcp_element_locator_buckets();
+        bucket.set_lcp_element_locator("#a");
+        bucket.set_frequency(3);  // 30%
+      }
+      {
+        auto& bucket = *stat.add_lcp_element_locator_buckets();
+        bucket.set_lcp_element_locator("#b");
+        bucket.set_frequency(2);  // 20%
+      }
+      stat.set_other_bucket_frequency(5);  // 50%
+    }
+    predictors::LcppDataInputs lcpp_data_inputs;
+    lcpp_data_inputs.lcp_element_locator = "#a";
+    internal::MaybeReportConfidenceUMAsForTesting(
+        GURL("https://a.com"), lcpp_stat_prelearn, lcpp_data_inputs);
+    // "#a" will an actual positive sample.
+    int frequency_of_a = 3;
+    histogram_tester.ExpectUniqueSample(
+        internal::kHistogramLCPPImageLoadingPriorityFrequencyOfActualPositive,
+        frequency_of_a, /*expected_bucket_count=*/1);
+    int confidence_of_a = 100 * 3 / (3 + 2 + 5);
+    EXPECT_EQ(confidence_of_a, 30);
+    histogram_tester.ExpectUniqueSample(
+        internal::kHistogramLCPPImageLoadingPriorityConfidenceOfActualPositive,
+        confidence_of_a, /*expected_bucket_count=*/1);
+    // "#b" will be an actual negative sample.
+    int frequency_of_b = 2;
+    histogram_tester.ExpectUniqueSample(
+        internal::kHistogramLCPPImageLoadingPriorityFrequencyOfActualNegative,
+        frequency_of_b, /*expected_bucket_count=*/1);
+    int confidence_of_b = 100 * 2 / (3 + 2 + 5);
+    EXPECT_EQ(confidence_of_b, 20);
+    histogram_tester.ExpectUniqueSample(
+        internal::kHistogramLCPPImageLoadingPriorityConfidenceOfActualNegative,
+        confidence_of_b, /*expected_bucket_count=*/1);
+    expect_empty(histogram_tester);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    predictors::LcppStat lcpp_stat_prelearn;
+    {
+      auto& stat = *lcpp_stat_prelearn.mutable_lcp_element_locator_stat();
+      {
+        auto& bucket = *stat.add_lcp_element_locator_buckets();
+        bucket.set_lcp_element_locator("#a");
+        bucket.set_frequency(3);
+      }
+      {
+        auto& bucket = *stat.add_lcp_element_locator_buckets();
+        bucket.set_lcp_element_locator("#b");
+        bucket.set_frequency(2);
+      }
+      stat.set_other_bucket_frequency(5);
+    }
+    predictors::LcppDataInputs lcpp_data_inputs;
+    lcpp_data_inputs.lcp_element_locator = "#c";
+    internal::MaybeReportConfidenceUMAsForTesting(
+        GURL("https://a.com"), lcpp_stat_prelearn, lcpp_data_inputs);
+    // "#c" is an actual positive sample.
+    int frequency_of_c = 0;
+    histogram_tester.ExpectUniqueSample(
+        internal::kHistogramLCPPImageLoadingPriorityFrequencyOfActualPositive,
+        frequency_of_c, /*expected_bucket_count=*/1);
+    int confidence_of_c = 0;
+    histogram_tester.ExpectUniqueSample(
+        internal::kHistogramLCPPImageLoadingPriorityConfidenceOfActualPositive,
+        confidence_of_c, /*expected_bucket_count=*/1);
+    // "#a" and "#b" are the actual negative samples.
+    histogram_tester.ExpectTotalCount(
+        internal::kHistogramLCPPImageLoadingPriorityFrequencyOfActualNegative,
+        /*expected_count=*/2);
+    int frequency_of_a = 3;
+    histogram_tester.ExpectBucketCount(
+        internal::kHistogramLCPPImageLoadingPriorityFrequencyOfActualNegative,
+        frequency_of_a, /*expected_count=*/1);
+    int frequency_of_b = 2;
+    histogram_tester.ExpectBucketCount(
+        internal::kHistogramLCPPImageLoadingPriorityFrequencyOfActualNegative,
+        frequency_of_b, /*expected_count=*/1);
+    histogram_tester.ExpectTotalCount(
+        internal::kHistogramLCPPImageLoadingPriorityConfidenceOfActualNegative,
+        /*expected_count=*/2);
+    int confidence_of_a = 100 * 3 / (3 + 2 + 5);
+    EXPECT_EQ(confidence_of_a, 30);
+    histogram_tester.ExpectBucketCount(
+        internal::kHistogramLCPPImageLoadingPriorityConfidenceOfActualNegative,
+        confidence_of_a, /*expected_count=*/1);
+    int confidence_of_b = 100 * 2 / (3 + 2 + 5);
+    EXPECT_EQ(confidence_of_b, 20);
+    histogram_tester.ExpectBucketCount(
+        internal::kHistogramLCPPImageLoadingPriorityConfidenceOfActualNegative,
+        confidence_of_b, /*expected_count=*/1);
+    expect_empty(histogram_tester);
+  }
+}
+
+TEST(MaybeReportConfidenceUMAsTest, Subresource) {
+  const auto kEmptyHistograms = {
+      internal::kHistogramLCPPImageLoadingPriorityFrequencyOfActualPositive,
+      internal::kHistogramLCPPImageLoadingPriorityFrequencyOfActualNegative,
+      internal::kHistogramLCPPImageLoadingPriorityConfidenceOfActualPositive,
+      internal::kHistogramLCPPImageLoadingPriorityConfidenceOfActualNegative,
+  };
+  const auto expect_empty = [&kEmptyHistograms](
+                                const base::HistogramTester& histogram_tester,
+                                const base::Location& location = FROM_HERE) {
+    for (const auto& name : kEmptyHistograms) {
+      histogram_tester.ExpectTotalCount(name, 0, location);
+    }
+  };
+
+  {
+    base::HistogramTester histogram_tester;
+    predictors::LcppStat lcpp_stat_prelearn;
+    {
+      auto& stat = *lcpp_stat_prelearn.mutable_fetched_subresource_url_stat();
+      auto& buckets = *stat.mutable_main_buckets();
+      buckets.insert({"https://a.com", 5});  // 25%
+      buckets.insert({"https://b.com", 4});  // 20%
+      buckets.insert({"https://c.com", 3});  // 15%
+      buckets.insert({"https://d.com", 2});  // 10%
+      stat.set_other_bucket_frequency(6);    // 30%
+    }
+    predictors::LcppDataInputs lcpp_data_inputs;
+    lcpp_data_inputs.subresource_urls.emplace(
+        GURL("https://a.com"),
+        std::make_pair(base::Seconds(0),
+                       network::mojom::RequestDestination::kEmpty));
+    lcpp_data_inputs.subresource_urls.emplace(
+        GURL("https://e.com"),
+        std::make_pair(base::Seconds(0),
+                       network::mojom::RequestDestination::kEmpty));
+    internal::MaybeReportConfidenceUMAsForTesting(
+        GURL("https://a.com"), lcpp_stat_prelearn, lcpp_data_inputs);
+
+    // {a, e}.com are the actual positive samples.
+    histogram_tester.ExpectTotalCount(
+        internal::kHistogramLCPPSubresourceFrequencyOfActualPositive,
+        /*expected_count=*/2);
+    int frequency_of_a = 5;
+    histogram_tester.ExpectBucketCount(
+        internal::kHistogramLCPPSubresourceFrequencyOfActualPositive,
+        frequency_of_a, /*expected_count=*/1);
+    int frequency_of_e = 0;
+    histogram_tester.ExpectBucketCount(
+        internal::kHistogramLCPPSubresourceFrequencyOfActualPositive,
+        frequency_of_e, /*expected_count=*/1);
+    histogram_tester.ExpectTotalCount(
+        internal::kHistogramLCPPSubresourceConfidenceOfActualPositive,
+        /*expected_count=*/2);
+    int confidence_of_a = 100 * 5 / (5 + 4 + 3 + 2 + 6);
+    EXPECT_EQ(confidence_of_a, 25);
+    histogram_tester.ExpectBucketCount(
+        internal::kHistogramLCPPSubresourceConfidenceOfActualPositive,
+        confidence_of_a, /*expected_count=*/1);
+    int confidence_of_e = 0;
+    histogram_tester.ExpectBucketCount(
+        internal::kHistogramLCPPSubresourceConfidenceOfActualPositive,
+        confidence_of_e, /*expected_count=*/1);
+    histogram_tester.ExpectUniqueSample(
+        internal::kHistogramLCPPSubresourceFrequencyOfActualPositiveSameSite,
+        frequency_of_a, /*expected_bucket_count=*/1);
+    histogram_tester.ExpectUniqueSample(
+        internal::kHistogramLCPPSubresourceConfidenceOfActualPositiveSameSite,
+        confidence_of_a, /*expected_bucket_count=*/1);
+    int frequency_of_g = 0;
+    histogram_tester.ExpectUniqueSample(
+        internal::kHistogramLCPPSubresourceFrequencyOfActualPositiveCrossSite,
+        frequency_of_g, /*expected_bucket_count=*/1);
+    int confidence_of_g = 0;
+    histogram_tester.ExpectUniqueSample(
+        internal::kHistogramLCPPSubresourceConfidenceOfActualPositiveCrossSite,
+        confidence_of_g, /*expected_bucket_count=*/1);
+
+    // {b, c, d}.com  are the actual negative samples.
+    histogram_tester.ExpectTotalCount(
+        internal::kHistogramLCPPSubresourceFrequencyOfActualNegative,
+        /*expected_count=*/3);
+    int frequency_of_b = 4;
+    histogram_tester.ExpectBucketCount(
+        internal::kHistogramLCPPSubresourceFrequencyOfActualNegative,
+        frequency_of_b, /*expected_count=*/1);
+    int frequency_of_c = 3;
+    histogram_tester.ExpectBucketCount(
+        internal::kHistogramLCPPSubresourceFrequencyOfActualNegative,
+        frequency_of_c, /*expected_count=*/1);
+    int frequency_of_d = 2;
+    histogram_tester.ExpectBucketCount(
+        internal::kHistogramLCPPSubresourceFrequencyOfActualNegative,
+        frequency_of_d, /*expected_count=*/1);
+    histogram_tester.ExpectTotalCount(
+        internal::kHistogramLCPPSubresourceConfidenceOfActualNegative,
+        /*expected_count=*/3);
+    int confidence_of_b = 100 * 4 / (5 + 4 + 3 + 2 + 6);
+    EXPECT_EQ(confidence_of_b, 20);
+    histogram_tester.ExpectBucketCount(
+        internal::kHistogramLCPPSubresourceConfidenceOfActualNegative,
+        confidence_of_b, /*expected_count=*/1);
+    int confidence_of_c = 100 * 3 / (5 + 4 + 3 + 2 + 6);
+    EXPECT_EQ(confidence_of_c, 15);
+    histogram_tester.ExpectBucketCount(
+        internal::kHistogramLCPPSubresourceConfidenceOfActualNegative,
+        confidence_of_c, /*expected_count=*/1);
+    int confidence_of_d = 100 * 2 / (5 + 4 + 3 + 2 + 6);
+    EXPECT_EQ(confidence_of_d, 10);
+    histogram_tester.ExpectBucketCount(
+        internal::kHistogramLCPPSubresourceConfidenceOfActualNegative,
+        confidence_of_d, /*expected_count=*/1);
+    histogram_tester.ExpectTotalCount(
+        internal::kHistogramLCPPSubresourceFrequencyOfActualNegativeSameSite,
+        0);
+    histogram_tester.ExpectTotalCount(
+        internal::kHistogramLCPPSubresourceConfidenceOfActualNegativeSameSite,
+        0);
+    histogram_tester.ExpectTotalCount(
+        internal::kHistogramLCPPSubresourceFrequencyOfActualNegativeCrossSite,
+        /*expected_count=*/3);
+    histogram_tester.ExpectBucketCount(
+        internal::kHistogramLCPPSubresourceFrequencyOfActualNegativeCrossSite,
+        frequency_of_b, /*expected_count=*/1);
+    histogram_tester.ExpectBucketCount(
+        internal::kHistogramLCPPSubresourceFrequencyOfActualNegativeCrossSite,
+        frequency_of_c, /*expected_count=*/1);
+    histogram_tester.ExpectBucketCount(
+        internal::kHistogramLCPPSubresourceFrequencyOfActualNegativeCrossSite,
+        frequency_of_d, /*expected_count=*/1);
+    histogram_tester.ExpectTotalCount(
+        internal::kHistogramLCPPSubresourceConfidenceOfActualNegativeCrossSite,
+        /*expected_count=*/3);
+    histogram_tester.ExpectBucketCount(
+        internal::kHistogramLCPPSubresourceConfidenceOfActualNegativeCrossSite,
+        confidence_of_b, /*expected_count=*/1);
+    histogram_tester.ExpectBucketCount(
+        internal::kHistogramLCPPSubresourceConfidenceOfActualNegativeCrossSite,
+        confidence_of_c, /*expected_count=*/1);
+    histogram_tester.ExpectBucketCount(
+        internal::kHistogramLCPPSubresourceConfidenceOfActualNegativeCrossSite,
+        confidence_of_d, /*expected_count=*/1);
+    expect_empty(histogram_tester);
+  }
+}

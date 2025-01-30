@@ -124,7 +124,7 @@ class CORE_EXPORT ImageBitmap final : public ScriptWrappable,
   bool IsAccelerated() const override;
 
   // ImageBitmapSource implementation
-  gfx::Size BitmapSourceSize() const override { return Size(); }
+  ImageBitmapSourceStatus CheckUsability() const override;
   ScriptPromise<ImageBitmap> CreateImageBitmap(ScriptState*,
                                                std::optional<gfx::Rect>,
                                                const ImageBitmapOptions*,

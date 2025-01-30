@@ -204,6 +204,7 @@
 <translation id="1823120442877418684">Thèmes</translation>
 <translation id="1827738518074806965">Galerie d'art</translation>
 <translation id="183287940576828840">Choquant/Dangereux</translation>
+<translation id="1834032517784994783">Sélectionnez la langue de transcription</translation>
 <translation id="1836553715834333258">Couleur du système</translation>
 <translation id="183675228220305365">réaliste</translation>
 <translation id="1838374766361614909">Effacer les termes de recherche</translation>
@@ -731,6 +732,7 @@
 <translation id="4483049906298469269">Impossible d'effectuer un ping avec la passerelle réseau autre que celle par défaut</translation>
 <translation id="4483498983731992167">Impossible de créer une transcription</translation>
 <translation id="4486524074141928967">Vous serez déconnecté à <ph name="TIME" /></translation>
+<translation id="4487890678161807486">Ouvrir le sélecteur de langue de transcription</translation>
 <translation id="4500722292849917410">Raccourci non accessible. Appuyez sur un nouveau raccourci à l'aide d'une touche de modification (Ctrl, Alt, Majuscule ou <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Couleur de l'interface</translation>
 <translation id="4503223151711056411">Flèche vers la gauche</translation>

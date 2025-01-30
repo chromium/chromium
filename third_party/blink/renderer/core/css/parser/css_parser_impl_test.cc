@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/core/css/style_rule_font_feature_values.h"
 #include "third_party/blink/renderer/core/css/style_rule_font_palette_values.h"
+#include "third_party/blink/renderer/core/css/style_rule_function_declarations.h"
 #include "third_party/blink/renderer/core/css/style_rule_import.h"
 #include "third_party/blink/renderer/core/css/style_rule_nested_declarations.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
@@ -1173,11 +1174,11 @@ TEST(CSSParserImplTest, CSSFunction) {
   const HeapVector<Member<StyleRuleBase>>& child_rules = rule->ChildRules();
   ASSERT_EQ(1u, child_rules.size());
 
-  const auto* nested_declarations =
-      DynamicTo<StyleRuleNestedDeclarations>(child_rules.front().Get());
-  ASSERT_TRUE(nested_declarations);
+  const auto* function_declarations =
+      DynamicTo<StyleRuleFunctionDeclarations>(child_rules.front().Get());
+  ASSERT_TRUE(function_declarations);
 
-  const CSSPropertyValueSet& properties = nested_declarations->Properties();
+  const CSSPropertyValueSet& properties = function_declarations->Properties();
   ASSERT_EQ(2u, properties.PropertyCount());
 
   const auto* local = DynamicTo<CSSUnparsedDeclarationValue>(

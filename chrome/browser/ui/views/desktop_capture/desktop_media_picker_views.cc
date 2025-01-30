@@ -1021,6 +1021,7 @@ void DesktopMediaPickerDialogView::AcceptSource() {
 
 void DesktopMediaPickerDialogView::AcceptSpecificSource(
     const DesktopMediaID& source) {
+  VLOG(1) << "DMPDV::AcceptSpecificSource: source_id = " << source.id;
   accepted_source_ = std::optional<DesktopMediaID>(source);
   AcceptSource();
 }

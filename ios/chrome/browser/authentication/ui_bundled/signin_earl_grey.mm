@@ -229,6 +229,7 @@ using base::test::ios::WaitUntilConditionOrTimeout;
       {@"Signin.SigninStartedAccessPoint.NewAccountExistingAccount",
        expecteds.signinSignStartedAccessPointNewAccountExistingAccount},
 
+      {@"Signin.SignIn.Completed", expecteds.signinSignInCompleted},
       {@"Signin.SigninCompletedAccessPoint",
        expecteds.signinSigninCompletedAccessPoint},
       {@"Signin.SigninCompletedAccessPoint.WithDefault",

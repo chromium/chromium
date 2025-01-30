@@ -57,7 +57,7 @@
 #include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
-#include "third_party/blink/renderer/core/css/style_rule_nested_declarations.h"
+#include "third_party/blink/renderer/core/css/style_rule_function_declarations.h"
 #include "third_party/blink/renderer/core/css/try_value_flips.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
@@ -1623,13 +1623,13 @@ bool StyleCascade::ResolveFunctionInto(StringView function_name,
   if (child_rules.size() != 1u) {
     return false;
   }
-  const auto* nested_declartions =
-      DynamicTo<StyleRuleNestedDeclarations>(child_rules.front().Get());
-  if (!nested_declartions) {
+  const auto* function_declarations =
+      DynamicTo<StyleRuleFunctionDeclarations>(child_rules.front().Get());
+  if (!function_declarations) {
     return false;
   }
   const CSSPropertyValueSet& propety_value_set =
-      nested_declartions->Properties();
+      function_declarations->Properties();
 
   // Collect local variables. Any substitution functions found within relevant
   // locals will be substituted during the call to ResolveFunctionExpression

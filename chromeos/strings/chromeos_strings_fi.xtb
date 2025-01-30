@@ -204,6 +204,7 @@
 <translation id="1823120442877418684">Aiheet</translation>
 <translation id="1827738518074806965">Taidegalleria</translation>
 <translation id="183287940576828840">Loukkaava/epäluotettava</translation>
+<translation id="1834032517784994783">Valitse transkription kieli</translation>
 <translation id="1836553715834333258">Järjestelmän väri</translation>
 <translation id="183675228220305365">realismi</translation>
 <translation id="1838374766361614909">Tyhjennä haku</translation>
@@ -731,6 +732,7 @@
 <translation id="4483049906298469269">Muun kuin oletusarvoisen verkkoyhdyskäytävän ping epäonnistui</translation>
 <translation id="4483498983731992167">Transkriptiota ei voi luoda</translation>
 <translation id="4486524074141928967">Sinut kirjataan ulos klo <ph name="TIME" /></translation>
+<translation id="4487890678161807486">Avaa transkription kielivalitsin</translation>
 <translation id="4500722292849917410">Pikanäppäin ei ole käytettävissä. Käytä uutta pikanäppäintä muokkausnäppäimen avulla (ctrl, alt, vaihto, tai <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Käyttöliittymän väri</translation>
 <translation id="4503223151711056411">Vasen nuoli</translation>

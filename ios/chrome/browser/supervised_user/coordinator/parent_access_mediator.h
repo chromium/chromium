@@ -7,12 +7,14 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/supervised_user/ui/parent_access_consumer.h"
 #import "ios/web/public/web_state.h"
+
+@protocol ParentAccessConsumer;
 
 // Mediator for ParentAccessCoordinator.
 @interface ParentAccessMediator : NSObject
 
+// Consumer to reflect model changes in the UI.
 @property(nonatomic, weak) id<ParentAccessConsumer> consumer;
 
 - (instancetype)init NS_UNAVAILABLE;

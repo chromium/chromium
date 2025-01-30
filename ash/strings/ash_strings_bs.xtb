@@ -281,7 +281,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1925320505152357008">manje od 1 min</translation>
 <translation id="1928739107511554905">Da primate ažuriranja pomoću ekrana na dodir, ponovo pokrenite Chromebook dok je tastatura priključena.</translation>
 <translation id="1929331825127010451">Nazad na pitanje</translation>
-<translation id="1946615340060705561">Pritisnite "c" za otpuštanje</translation>
+<translation id="1946615340060705561">Pritisnite "c" da otpustite</translation>
 <translation id="1948405482892809935">Prebacite se na sljedećeg korisnika</translation>
 <translation id="1951012854035635156">Asistent</translation>
 <translation id="1954252331066828794">Snimanje ekrana je završeno</translation>
@@ -1977,6 +1977,7 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="7611213136657090146">Kamera je ponovo povezana.</translation>
 <translation id="7613620083300976559">Uključite kontrole za igre</translation>
 <translation id="761736749114493194">Uključite/isključite kadriranje kamere. <ph name="STATE_TEXT" /></translation>
+<translation id="7621008024906456933">Postavke brzog dijeljenja</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7627303771480696593">Postavite pitanje</translation>
 <translation id="7634648064048557203">Kamera se uklopila u donji desni ugao</translation>

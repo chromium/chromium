@@ -204,6 +204,7 @@
 <translation id="1823120442877418684">主題</translation>
 <translation id="1827738518074806965">畫廊</translation>
 <translation id="183287940576828840">令人反感/不安全</translation>
+<translation id="1834032517784994783">選取語音轉錄語言</translation>
 <translation id="1836553715834333258">系統顏色</translation>
 <translation id="183675228220305365">寫實主義派</translation>
 <translation id="1838374766361614909">清除搜尋</translation>
@@ -731,6 +732,7 @@
 <translation id="4483049906298469269">無法連線偵測非預設的網路閘道</translation>
 <translation id="4483498983731992167">無法建立轉錄稿</translation>
 <translation id="4486524074141928967">系統會在<ph name="TIME" /> 將你登出</translation>
+<translation id="4487890678161807486">開啟語音轉錄語言選單</translation>
 <translation id="4500722292849917410">這組快速鍵無法使用。按下新的快速鍵時，請使用輔助鍵 (Ctrl、Alt、Shift 或<ph name="META_KEY" />鍵)。</translation>
 <translation id="4500966230243561393">介面顏色</translation>
 <translation id="4503223151711056411">向左鍵</translation>
@@ -766,6 +768,7 @@
 <translation id="4654549501020883054">每天變更</translation>
 <translation id="4655868084888499342">圖片已設為桌布</translation>
 <translation id="4661249927038176904">超現實</translation>
+<translation id="4661392828086261436">這項更新由裝置製造商提供，但尚未經過 Google 驗證</translation>
 <translation id="4664651912255946953">毛皮</translation>
 <translation id="4665014895760275686">製造商</translation>
 <translation id="467510802200863975">密碼不相符</translation>
@@ -1025,6 +1028,7 @@
 <translation id="5904994456462260490">新增 APN</translation>
 <translation id="590746845088109442">貓</translation>
 <translation id="5907649332524363701">按鍵顏色</translation>
+<translation id="5908813850962688338">安裝這項更新需要幾分鐘的時間。下載更新時，請將裝置接上電源並保持開啟。裝置可能會自行重新啟動數次，並在過程中顯示黑色畫面。系統會提示你重新啟動裝置，以完成安裝作業。</translation>
 <translation id="5916084858004523819">禁止</translation>
 <translation id="5916664084637901428">開啟</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{檔案掃描完成，現已存放在「<ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />」資料夾。}other{檔案掃描完成，現已存放在「<ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />」資料夾。}}</translation>

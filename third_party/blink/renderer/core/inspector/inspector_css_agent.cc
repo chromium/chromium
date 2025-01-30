@@ -2669,6 +2669,7 @@ protocol::Response InspectorCSSAgent::setSupportsText(
 
 protocol::Response InspectorCSSAgent::createStyleSheet(
     const String& frame_id,
+    std::optional<bool> force,
     protocol::CSS::StyleSheetId* out_style_sheet_id) {
   LocalFrame* frame =
       IdentifiersFactory::FrameById(inspected_frames_, frame_id);
@@ -2679,7 +2680,8 @@ protocol::Response InspectorCSSAgent::createStyleSheet(
   if (!document)
     return protocol::Response::ServerError("Frame does not have a document");
 
-  InspectorStyleSheet* inspector_style_sheet = ViaInspectorStyleSheet(document);
+  InspectorStyleSheet* inspector_style_sheet =
+      CreateViaInspectorStyleSheet(document, force.value_or(false));
   if (!inspector_style_sheet)
     return protocol::Response::ServerError("No target stylesheet found");
 
@@ -3406,17 +3408,23 @@ InspectorStyleSheet* InspectorCSSAgent::InspectorStyleSheetForRule(
   return BindStyleSheet(rule->parentStyleSheet());
 }
 
-InspectorStyleSheet* InspectorCSSAgent::ViaInspectorStyleSheet(
-    Document* document) {
+InspectorStyleSheet* InspectorCSSAgent::CreateViaInspectorStyleSheet(
+    Document* document,
+    bool force) {
   if (!document)
     return nullptr;
 
   if (!IsA<HTMLDocument>(document) && !document->IsSVGDocument())
     return nullptr;
-
+  bool has_default_stylesheet =
+      default_inspector_stylesheets_.Contains(document);
   CSSStyleSheet& inspector_sheet =
-      document->GetStyleEngine().EnsureInspectorStyleSheet();
-
+      has_default_stylesheet && !force
+          ? *default_inspector_stylesheets_.at(document)
+          : document->GetStyleEngine().CreateInspectorStyleSheet();
+  if (!force) {
+    default_inspector_stylesheets_.Set(document, &inspector_sheet);
+  }
   FlushPendingProtocolNotifications();
 
   auto it = css_style_sheet_to_inspector_style_sheet_.find(&inspector_sheet);
@@ -3477,9 +3485,10 @@ protocol::CSS::StyleSheetOrigin InspectorCSSAgent::DetectOrigin(
 
   if (page_style_sheet->ownerNode() &&
       page_style_sheet->ownerNode()->IsDocumentNode()) {
-    if (page_style_sheet ==
-        owner_document->GetStyleEngine().InspectorStyleSheet())
+    if (owner_document->GetStyleEngine().InspectorStyleSheets().Contains(
+            page_style_sheet)) {
       return protocol::CSS::StyleSheetOriginEnum::Inspector;
+    }
     return protocol::CSS::StyleSheetOriginEnum::Injected;
   }
   return protocol::CSS::StyleSheetOriginEnum::Regular;
@@ -4340,6 +4349,7 @@ void InspectorCSSAgent::Trace(Visitor* visitor) const {
   visitor->Trace(user_agent_view_transition_style_sheet_);
   visitor->Trace(tracker_);
   visitor->Trace(weak_factory_);
+  visitor->Trace(default_inspector_stylesheets_);
   InspectorBaseAgent::Trace(visitor);
 }
 

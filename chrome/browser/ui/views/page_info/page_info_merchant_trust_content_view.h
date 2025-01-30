@@ -39,6 +39,7 @@ class PageInfoMerchantTrustContentView : public views::FlexLayoutView,
   void SetReviewsSummary(std::u16string summary);
   void SetRatingAndReviewCount(double rating, int count);
   void SetHatsButtonVisibility(bool visible);
+  void SetHatsButtonTitleId(int title_id);
 
   // views::View:
   gfx::Size CalculatePreferredSize(

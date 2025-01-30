@@ -224,6 +224,10 @@ void WebViewPasswordManagerClient::NotifySuccessfulLoginWithExistingPassword(
       std::move(submitted_manager));
 }
 
+bool WebViewPasswordManagerClient::IsPasswordChangeOngoing() {
+  return false;
+}
+
 void WebViewPasswordManagerClient::NotifyStorePasswordCalled() {
   helper_.NotifyStorePasswordCalled();
 }

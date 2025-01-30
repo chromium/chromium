@@ -1,0 +1,16 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("features") {
+  sources = [
+    "omnibox_ui_features.cc",
+    "omnibox_ui_features.h",
+  ]
+  public_deps = [ "//base" ]
+  deps = [
+    "//components/omnibox/common",
+    "//ios/chrome/browser/shared/public/features",
+    "//ui/base",
+  ]
+}

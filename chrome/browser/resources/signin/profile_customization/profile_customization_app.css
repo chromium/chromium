@@ -193,6 +193,13 @@ cr-profile-avatar-selector {
   padding-top: 12px;
 }
 
+#policyIcon {
+    position: absolute;
+    right:5%;
+    height: 15px;
+    width: 15px;
+  }
+
 .select-avatar-header {
   display: flex;
   height: 22px;

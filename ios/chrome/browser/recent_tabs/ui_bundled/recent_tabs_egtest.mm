@@ -308,6 +308,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   expecteds.signinSignInStarted = 1;
   expecteds.signinSigninStartedAccessPoint = 1;
   expecteds.signinSignStartedAccessPointNewAccountNoExistingAccount = 1;
+  expecteds.signinSignInCompleted = 1;
   [SigninEarlGrey assertExpectedSigninHistograms:expecteds];
 }
 

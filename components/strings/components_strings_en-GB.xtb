@@ -271,6 +271,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1448166547804028941">Keys '<ph name="DATA_CONTROLS_FIRST_KEY_SET" />' cannot be set in the same dictionary as the '<ph name="DATA_CONTROLS_SECOND_KEY_SET" />' keys</translation>
 <translation id="1455413310270022028">Eraser</translation>
+<translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{View 0 reviews}=1{View 1 review}other{View all # reviews}}</translation>
 <translation id="1458059624921545588">People and society</translation>
 <translation id="1458140305240870199">Undergarments</translation>
 <translation id="1459693405370120464">Weather</translation>
@@ -961,6 +962,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2674170444375937751">Are you sure that you want to delete these pages from your history?</translation>
 <translation id="2674524144218093528">House Painting and Finishing</translation>
 <translation id="2674804415323431591">Hide suggestions</translation>
+<translation id="26774279487328902"><ph name="GROUP_COUNT" /> tab groups no longer available</translation>
 <translation id="2677748264148917807">Leave</translation>
 <translation id="2683195745483370038">Other results found</translation>
 <translation id="2686919536310834199">Send feedback for Help me write.</translation>
@@ -1956,6 +1958,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4407758156081352648">To maintain security, your organisation doesn't allow passwords to be reused in Chrome. Passwords in Chrome are encrypted to protect user privacy.</translation>
 <translation id="4408413947728134509">Cookies <ph name="NUM_COOKIES" /></translation>
 <translation id="4412074349188076601">This configuration is marked as installable, but no image is provided for this architecture, so it cannot be installed.</translation>
+<translation id="4412377069090572315">What people are saying</translation>
 <translation id="4414452699610169758">Use Google Password Manager and Chrome autofill to save and fill passwords, payment methods and addresses</translation>
 <translation id="4414515549596849729">cookies and site data</translation>
 <translation id="4415156962929755728">Plastic (high gloss)</translation>
@@ -2264,6 +2267,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5001526427543320409">Third-party cookies</translation>
 <translation id="5002932099480077015">If enabled, Chrome will store a copy of your card on this device for faster form filling.</translation>
 <translation id="5007392906805964215">Review</translation>
+<translation id="500790844453430087">'<ph name="GROUP_TITLE_1" />' and '<ph name="GROUP_TITLE_2" />' tab groups no longer available</translation>
 <translation id="5011561501798487822">Detected language</translation>
 <translation id="5015510746216210676">Machine name:</translation>
 <translation id="5017554619425969104">Text that you copied</translation>
@@ -2371,6 +2375,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="519422657042045905">Annotation not available</translation>
 <translation id="5200063972779787617">Save address in account</translation>
 <translation id="5201306358585911203">An embedded page on this page says</translation>
+<translation id="5205114269877707377"><ph name="OMNIBOX_ACTION_FOCUSED_FRIENDLY_MATCH_TEXT" />, press Tab to browse available actions, then Enter to execute selected action.</translation>
 <translation id="5205222826937269299">Name required</translation>
 <translation id="5206392433295093945">Bedroom</translation>
 <translation id="5209670883520018268">Tray 20</translation>
@@ -2736,6 +2741,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5866898949289125849">You're viewing a developer tools page</translation>
 <translation id="5869405914158311789">This site can’t be reached</translation>
 <translation id="5869522115854928033">Saved passwords</translation>
+<translation id="5872215789867188990">'<ph name="GROUP_TITLE" />' tab group no longer available</translation>
 <translation id="5872692522325383488">IBAN saved</translation>
 <translation id="5873297634595728366">Diesel Vehicles</translation>
 <translation id="5877359070305966420">Human resources</translation>
@@ -2777,6 +2783,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5937560539988385583">Page translated</translation>
 <translation id="5938153366081463283">Add virtual card</translation>
 <translation id="5938793338444039872">Troy</translation>
+<translation id="5938866385061293322">This info comes from independent review websites like Trustpilot, ScamAdviser, Google and more. Summaries are created with AI.</translation>
 <translation id="5944297261866530437">Fabric (high gloss)</translation>
 <translation id="5950901984834744590">Razors and shavers</translation>
 <translation id="5951495562196540101">Can't enrol with consumer account (packaged licence available).</translation>
@@ -3143,6 +3150,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6567832540451970450">Your administrator allows <ph name="PERMISSION" /> for this site</translation>
 <translation id="6568793038316600992">Manage payment methods button, activate to manage your payments and credit card info in Chrome settings</translation>
 <translation id="6569060085658103619">You're viewing an extension page</translation>
+<translation id="6572867903637058088">Is this helpful?</translation>
 <translation id="6573200754375280815">Dual punch right</translation>
 <translation id="6574762126505704998">Fill</translation>
 <translation id="6575408526598156416">Save in account</translation>
@@ -3874,6 +3882,7 @@ Additional details:
 <translation id="784404208867107517">Grouped history</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{None}=1{1 app (<ph name="EXAMPLE_APP_1" />)}=2{2 apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">There was an error. Try again.</translation>
+<translation id="784623644169604270">No recent activity</translation>
 <translation id="785476343534277563">College sports</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7860345425589240791">Enter your new expiry date and CVC on the <ph name="SIDE_OF_CARD" /></translation>
@@ -4320,9 +4329,11 @@ Additional details:
 <translation id="8672535691554698269">Computer networks</translation>
 <translation id="8675446170353411473">Your files are being uploaded to <ph name="CLOUD_PROVIDER" /></translation>
 <translation id="8676424191133491403">No delay</translation>
+<translation id="8679727228072670864">{COUNT,plural, =1{{COUNT} table deleted}other{{COUNT} tables deleted}}</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, answer, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">The web page at <ph name="PAGE" /> could not be loaded because:</translation>
 <translation id="8682297334444610648">Dino game, tap to play</translation>
+<translation id="8685225035093721011">Shop reviews</translation>
 <translation id="8686424632716064939">Computer Security</translation>
 <translation id="8687278439622293018">Entry <ph name="ENTRY_VOICEOVER" /> has been deleted</translation>
 <translation id="8687429322371626002">Your device and account are managed by <ph name="MANAGER" />.</translation>

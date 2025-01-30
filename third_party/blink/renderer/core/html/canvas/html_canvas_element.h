@@ -89,7 +89,6 @@ class CORE_EXPORT HTMLCanvasElement final
       public PageVisibilityObserver,
       public CanvasRenderingContextHost,
       public WebSurfaceLayerBridgeObserver,
-      public ImageBitmapSource,
       public OffscreenCanvasPlaceholder {
   DEFINE_WRAPPERTYPEINFO();
   USING_PRE_FINALIZER(HTMLCanvasElement, Dispose);
@@ -241,7 +240,6 @@ class CORE_EXPORT HTMLCanvasElement final
   bool EnableAcceleration() final;
 
   // ImageBitmapSource implementation
-  gfx::Size BitmapSourceSize() const override;
   ScriptPromise<ImageBitmap> CreateImageBitmap(
       ScriptState*,
       std::optional<gfx::Rect> crop_rect,

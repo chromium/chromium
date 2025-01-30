@@ -1835,10 +1835,6 @@ gfx::SizeF HTMLCanvasElement::ElementSize(
   return gfx::SizeF(width(), height());
 }
 
-gfx::Size HTMLCanvasElement::BitmapSourceSize() const {
-  return Size();
-}
-
 ScriptPromise<ImageBitmap> HTMLCanvasElement::CreateImageBitmap(
     ScriptState* script_state,
     std::optional<gfx::Rect> crop_rect,

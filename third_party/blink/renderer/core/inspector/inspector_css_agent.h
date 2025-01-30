@@ -259,6 +259,7 @@ class CORE_EXPORT InspectorCSSAgent final
       const String& text,
       std::unique_ptr<protocol::CSS::CSSSupports>*) override;
   protocol::Response createStyleSheet(const String& frame_id,
+                                      std::optional<bool> force,
                                       String* style_sheet_id) override;
   protocol::Response addRule(
       const String& style_sheet_id,
@@ -407,7 +408,7 @@ class CORE_EXPORT InspectorCSSAgent final
   String UnbindStyleSheet(InspectorStyleSheet*);
   InspectorStyleSheet* InspectorStyleSheetForRule(CSSStyleRule*);
 
-  InspectorStyleSheet* ViaInspectorStyleSheet(Document*);
+  InspectorStyleSheet* CreateViaInspectorStyleSheet(Document*, bool);
 
   protocol::Response AssertEnabled();
   protocol::Response AssertInspectorStyleSheetForId(const String&,
@@ -521,6 +522,9 @@ class CORE_EXPORT InspectorCSSAgent final
   NodeIdToForcedPseudoState node_id_to_forced_pseudo_state_;
   NodeIdToNumberFocusedChildren node_id_to_number_focused_children_;
   NodeIdToForcedStartingStyle node_id_to_forced_starting_style_;
+
+  HeapHashMap<WeakMember<Document>, Member<CSSStyleSheet>>
+      default_inspector_stylesheets_;
 
   Member<StyleRuleUsageTracker> tracker_;
 

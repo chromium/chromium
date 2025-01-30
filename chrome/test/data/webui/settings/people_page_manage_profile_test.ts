@@ -152,6 +152,10 @@ suite('ManageProfileTests', function() {
     assertEquals('.*\\S.*', nameField.pattern);
 
     assertEquals('Initial Fake Name', nameField.value);
+    // No policy indicator is shown.
+    const policyIndicator =
+        nameField.shadowRoot!.querySelector<HTMLElement>('#policyIcon');
+    assertEquals(policyIndicator, null);
 
     nameField.value = 'New Name';
     nameField.dispatchEvent(
@@ -182,6 +186,11 @@ suite('ManageProfileTests', function() {
     const nameField = manageProfile.$.name;
     assertTrue(nameField.disabled);
     assertEquals('Initial Fake Name', nameField.value);
+
+    // The policy indicator is shown.
+    const policyIndicator =
+        nameField.shadowRoot!.querySelector<HTMLElement>('#policyIcon');
+    assertFalse(!!policyIndicator && policyIndicator.hidden);
   });
 
   // Tests that the theme selector is visible.
