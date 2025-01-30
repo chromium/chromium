@@ -91,7 +91,11 @@ void SendTabToSelfBubbleController::ShowBubble(bool show_back_button) {
   if (browser && base::FeatureList::IsEnabled(features::kToolbarPinning)) {
     send_tab_to_self_action_item_ = actions::ActionManager::Get().FindAction(
         kActionSendTabToSelf, browser->browser_actions()->root_action_item());
-    send_tab_to_self_action_item_->SetIsShowingBubble(true);
+    // The toolbar might not have this action button.
+    // See SendTabToSelfToolbarIconController::CanShowOnBrowser().
+    if (send_tab_to_self_action_item_) {
+      send_tab_to_self_action_item_->SetIsShowingBubble(true);
+    }
   }
 }
 
