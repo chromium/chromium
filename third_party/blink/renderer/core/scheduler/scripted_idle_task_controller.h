@@ -5,6 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SCHEDULER_SCRIPTED_IDLE_TASK_CONTROLLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCHEDULER_SCRIPTED_IDLE_TASK_CONTROLLER_H_
 
+#include "base/feature_list.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/delayed_task_handle.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -19,6 +22,8 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
+
+CORE_EXPORT BASE_DECLARE_FEATURE(kRemoveCancelledScriptedIdleTasks);
 
 class IdleRequestOptions;
 class ScriptedIdleTaskController;
@@ -63,6 +68,21 @@ class CORE_EXPORT ScriptedIdleTaskController
   USING_PRE_FINALIZER(ScriptedIdleTaskController, Dispose);
 
  public:
+  using RefCountedCounter = scoped_refptr<base::RefCountedData<size_t>>;
+
+  // A move-only type which decrements a ref-counted counter on deletion.
+  class DecrementOnDelete {
+   public:
+    explicit DecrementOnDelete(RefCountedCounter counter);
+    ~DecrementOnDelete();
+
+    DecrementOnDelete(DecrementOnDelete&&);
+    DecrementOnDelete& operator=(DecrementOnDelete&&);
+
+   private:
+    RefCountedCounter counter_;
+  };
+
   static const char kSupplementName[];
 
   static ScriptedIdleTaskController& From(ExecutionContext& context);
@@ -97,6 +117,7 @@ class CORE_EXPORT ScriptedIdleTaskController
   void PostSchedulerIdleTask(CallbackId id);
 
   void SchedulerIdleTask(CallbackId id,
+                         DecrementOnDelete decrement_on_delete,
                          base::TimeTicks deadline);
 
   void SchedulerTimeoutTask(CallbackId id);
@@ -134,6 +155,10 @@ class CORE_EXPORT ScriptedIdleTaskController
 
   // Whether the execution context is paused.
   bool paused_ = false;
+
+  // Number of outstanding scheduler idle tasks.
+  scoped_refptr<base::RefCountedData<size_t>> num_scheduler_idle_tasks_ =
+      base::MakeRefCounted<base::RefCountedData<size_t>>(0);
 
  public:
   // Type of SchedulerIdleTask(), used to define callback cancellation traits in

@@ -46,6 +46,7 @@ class SimpleMainThreadScheduler : public MainThreadScheduler {
                            Thread::IdleTask) override;
   void PostNonNestableIdleTask(const base::Location&,
                                Thread::IdleTask) override;
+  void RemoveCancelledIdleTasks() override;
 
   // Do nothing (the observer won't get notified).
   void AddRAILModeObserver(RAILModeObserver*) override;

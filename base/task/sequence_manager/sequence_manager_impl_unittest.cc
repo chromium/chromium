@@ -1807,10 +1807,9 @@ namespace {
 
 class RefCountedCallbackFactory {
  public:
-  OnceCallback<void()> WrapCallback(OnceCallback<void()> cb) {
-    return BindOnce(
-        [](OnceCallback<void()> cb, WeakPtr<bool>) { std::move(cb).Run(); },
-        std::move(cb), task_references_.GetWeakPtr());
+  OnceClosure WrapCallback(OnceClosure cb) {
+    return BindOnce([](OnceClosure cb, WeakPtr<bool>) { std::move(cb).Run(); },
+                    std::move(cb), task_references_.GetWeakPtr());
   }
 
   bool HasReferences() const { return task_references_.HasWeakPtrs(); }
@@ -2873,7 +2872,7 @@ class CancelableTask {
 
 class DestructionCallback {
  public:
-  explicit DestructionCallback(OnceCallback<void()> on_destroy)
+  explicit DestructionCallback(OnceClosure on_destroy)
       : on_destroy_(std::move(on_destroy)) {}
   ~DestructionCallback() {
     if (on_destroy_) {
@@ -2885,7 +2884,7 @@ class DestructionCallback {
   DestructionCallback(DestructionCallback&&) = default;
 
  private:
-  OnceCallback<void()> on_destroy_;
+  OnceClosure on_destroy_;
 };
 
 }  // namespace
@@ -3842,6 +3841,30 @@ TEST_P(SequenceManagerTest, GetPendingWakeUp_DelayedTaskReady) {
 
   LazyNow lazy_now(mock_tick_clock());
   EXPECT_EQ(WakeUp{}, sequence_manager()->GetPendingWakeUp(&lazy_now));
+}
+
+TEST_P(SequenceManagerTest, RemoveCancelledTasksFromQueue) {
+  auto queue = CreateTaskQueue();
+  bool did_destroy = false;
+  auto on_destroy = BindLambdaForTesting([&] {
+    // Post a task on destruction, to validate that this doesn't cause
+    // re-entrancy problems.
+    queue->task_runner()->PostDelayedTask(
+        FROM_HERE, BindLambdaForTesting([] {}), base::Seconds(1));
+    did_destroy = true;
+  });
+
+  DestructionCallback destruction_observer(std::move(on_destroy));
+  CancelableTask task(mock_tick_clock());
+  queue->task_runner()->PostTask(
+      FROM_HERE, BindOnce(&CancelableTask::FailTask<DestructionCallback>,
+                          task.weak_factory_.GetWeakPtr(),
+                          std::move(destruction_observer)));
+
+  task.weak_factory_.InvalidateWeakPtrs();
+  EXPECT_FALSE(did_destroy);
+  queue->RemoveCancelledTasks();
+  EXPECT_TRUE(did_destroy);
 }
 
 TEST_P(SequenceManagerTest, RemoveAllCanceledDelayedTasksFromFront) {
@@ -6028,7 +6051,7 @@ TEST(
   scoped_refptr<SingleThreadTaskRunner> expected_task_runner =
       SingleThreadTaskRunner::GetCurrentDefault();
 
-  StrictMock<MockCallback<base::OnceCallback<void()>>> cb;
+  StrictMock<MockCallback<base::OnceClosure>> cb;
   EXPECT_CALL(cb, Run).WillOnce(testing::Invoke([expected_task_runner] {
     EXPECT_EQ(SingleThreadTaskRunner::GetCurrentDefault(),
               expected_task_runner);

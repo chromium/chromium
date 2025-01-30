@@ -137,6 +137,8 @@ void CompositorThreadSchedulerImpl::PostDelayedIdleTask(
   IdleTaskRunner()->PostDelayedIdleTask(location, delay, std::move(task));
 }
 
+void CompositorThreadSchedulerImpl::RemoveCancelledIdleTasks() {}
+
 base::TimeTicks
 CompositorThreadSchedulerImpl::MonotonicallyIncreasingVirtualTime() {
   return NowTicks();

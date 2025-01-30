@@ -420,6 +420,12 @@ class BASE_EXPORT TaskQueue {
   // execution.
   virtual void SetTaskExecutionTraceLogger(TaskExecutionTraceLogger logger) = 0;
 
+  // Removes immediate cancelled tasks from the queue. Call this method when the
+  // queue is expected to contain a significant number of canceled tasks
+  // (>1000), making it worthwhile to traverse it to reclaim memory. Should only
+  // be called in a context where it's safe to call the destructor of tasks.
+  virtual void RemoveCancelledTasks() = 0;
+
  protected:
   TaskQueue() = default;
 };

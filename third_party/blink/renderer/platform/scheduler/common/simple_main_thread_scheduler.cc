@@ -32,6 +32,8 @@ void SimpleMainThreadScheduler::PostNonNestableIdleTask(
     const base::Location& location,
     Thread::IdleTask task) {}
 
+void SimpleMainThreadScheduler::RemoveCancelledIdleTasks() {}
+
 void SimpleMainThreadScheduler::AddRAILModeObserver(
     RAILModeObserver* observer) {}
 

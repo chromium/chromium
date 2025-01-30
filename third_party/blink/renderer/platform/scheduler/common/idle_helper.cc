@@ -68,6 +68,10 @@ void IdleHelper::Shutdown() {
   weak_factory_.InvalidateWeakPtrs();
 }
 
+void IdleHelper::RemoveCancelledIdleTasks() {
+  idle_queue_->RemoveCancelledTasks();
+}
+
 IdleHelper::Delegate::Delegate() = default;
 
 IdleHelper::Delegate::~Delegate() = default;

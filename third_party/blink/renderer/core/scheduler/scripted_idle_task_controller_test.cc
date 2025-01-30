@@ -7,6 +7,7 @@
 #include <deque>
 
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink.h"
@@ -33,28 +34,28 @@ class DelayedTaskHandleDelegateFacade
     : public base::DelayedTaskHandle::Delegate {
  public:
   explicit DelayedTaskHandleDelegateFacade(base::DelayedTaskHandle handle,
-                                           base::OnceClosure on_canceled)
-      : handle_(std::move(handle)), on_canceled_(std::move(on_canceled)) {}
+                                           base::OnceClosure on_cancelled)
+      : handle_(std::move(handle)), on_cancelled_(std::move(on_cancelled)) {}
   ~DelayedTaskHandleDelegateFacade() override = default;
 
   bool IsValid() const override { return handle_.IsValid(); }
 
   void CancelTask() override {
     if (IsValid()) {
-      std::move(on_canceled_).Run();
+      std::move(on_cancelled_).Run();
     }
     handle_.CancelTask();
   }
 
  private:
   base::DelayedTaskHandle handle_;
-  base::OnceClosure on_canceled_;
+  base::OnceClosure on_cancelled_;
 };
 
 // A variant of `FakeTaskRunner` that counts the number of cancelled tasks.
 class TestTaskRunner : public scheduler::FakeTaskRunner {
  public:
-  int GetTaskCanceledCount() const { return task_canceled_count_; }
+  int GetTaskCancelledCount() const { return task_cancelled_count_; }
 
  private:
   base::DelayedTaskHandle PostCancelableDelayedTask(
@@ -67,12 +68,12 @@ class TestTaskRunner : public scheduler::FakeTaskRunner {
     return base::DelayedTaskHandle(
         std::make_unique<DelayedTaskHandleDelegateFacade>(
             std::move(handle),
-            base::BindOnce(&TestTaskRunner::OnTaskCanceled, this)));
+            base::BindOnce(&TestTaskRunner::OnTaskCancelled, this)));
   }
 
-  void OnTaskCanceled() { ++task_canceled_count_; }
+  void OnTaskCancelled() { ++task_cancelled_count_; }
 
-  int task_canceled_count_ = 0;
+  int task_cancelled_count_ = 0;
 };
 class MockScriptedIdleTaskControllerScheduler final : public ThreadScheduler {
  public:
@@ -103,7 +104,15 @@ class MockScriptedIdleTaskControllerScheduler final : public ThreadScheduler {
     NOTIMPLEMENTED();
   }
   void PostNonNestableIdleTask(const base::Location&,
-                               Thread::IdleTask) override {}
+                               Thread::IdleTask) override {
+    NOTIMPLEMENTED();
+  }
+  void RemoveCancelledIdleTasks() override {
+    std::erase_if(idle_tasks_, [](const Thread::IdleTask& task) {
+      return task.IsCancelled();
+    });
+  }
+
   base::TimeTicks MonotonicallyIncreasingVirtualTime() override {
     return base::TimeTicks();
   }
@@ -121,11 +130,6 @@ class MockScriptedIdleTaskControllerScheduler final : public ThreadScheduler {
     auto idle_task = std::move(idle_tasks_.front());
     idle_tasks_.pop_front();
     return idle_task;
-  }
-  void RemoveCancelledIdleTasks() {
-    std::erase_if(idle_tasks_, [](const Thread::IdleTask& task) {
-      return task.IsCancelled();
-    });
   }
 
   scoped_refptr<TestTaskRunner> TaskRunner() { return task_runner_; }
@@ -320,7 +324,7 @@ TEST_F(ScriptedIdleTaskControllerTest, LongTimeoutShouldBeRemoveFromQueue) {
   options->setTimeout(1000000);
   int id = GetController()->RegisterCallback(idle_task, options);
   EXPECT_NE(id, 0);
-  EXPECT_EQ(scheduler_->TaskRunner()->GetTaskCanceledCount(), 0);
+  EXPECT_EQ(scheduler_->TaskRunner()->GetTaskCancelledCount(), 0);
 
   // Run the task.
   EXPECT_CALL(*idle_task, invoke(testing::_));
@@ -329,7 +333,7 @@ TEST_F(ScriptedIdleTaskControllerTest, LongTimeoutShouldBeRemoveFromQueue) {
 
   // The timeout task should be removed from the task queue.
   // Failure to do so is likely to result in OOM.
-  EXPECT_EQ(scheduler_->TaskRunner()->GetTaskCanceledCount(), 1);
+  EXPECT_EQ(scheduler_->TaskRunner()->GetTaskCancelledCount(), 1);
 }
 
 TEST_F(ScriptedIdleTaskControllerTest, RunAfterSchedulerWasDeleted) {
@@ -353,7 +357,7 @@ TEST_F(ScriptedIdleTaskControllerTest, RunAfterSchedulerWasDeleted) {
   std::move(thread_idle_task).Run(base::TimeTicks());
   testing::Mock::VerifyAndClearExpectations(idle_task);
 
-  EXPECT_EQ(task_runner->GetTaskCanceledCount(), 1);
+  EXPECT_EQ(task_runner->GetTaskCancelledCount(), 1);
 }
 
 TEST_F(ScriptedIdleTaskControllerTest, NoUnnecessaryRepostOnUnpause) {
@@ -387,12 +391,55 @@ TEST_F(ScriptedIdleTaskControllerTest,
   const int id = GetController()->RegisterCallback(idle_task, options);
   EXPECT_EQ(1u, scheduler_->GetNumIdleTasks());
   GetController()->CancelCallback(id);
-  EXPECT_EQ(scheduler_->TaskRunner()->GetTaskCanceledCount(), 1);
+  EXPECT_EQ(scheduler_->TaskRunner()->GetTaskCancelledCount(), 1);
 
   // Ask the scheduler to remove cancelled idle tasks. This should remove all
   // idle tasks.
   scheduler_->RemoveCancelledIdleTasks();
   EXPECT_EQ(0u, scheduler_->GetNumIdleTasks());
+}
+
+TEST_F(ScriptedIdleTaskControllerTest,
+       SchedulerTasksRemovedOnManyIdleTasksCancelled) {
+  base::test::ScopedFeatureList feature_list(kRemoveCancelledScriptedIdleTasks);
+
+  InitializeScheduler(ShouldYield(false));
+
+  // Register 1 idle task which will not be cancelled.
+  Persistent<MockIdleTask> idle_task_not_cancelled(
+      MakeGarbageCollected<MockIdleTask>());
+  GetController()->RegisterCallback(idle_task_not_cancelled,
+                                    IdleRequestOptions::Create());
+
+  // Register and cancel 1000 idle tasks.
+  for (int i = 0; i < 1000; ++i) {
+    Persistent<MockIdleTask> idle_task(MakeGarbageCollected<MockIdleTask>());
+    IdleRequestOptions* options = IdleRequestOptions::Create();
+    options->setTimeout(1);
+    const int id = GetController()->RegisterCallback(idle_task, options);
+    GetController()->CancelCallback(id);
+
+    // The scheduler idle task is not removed immediately.
+    EXPECT_EQ(i + 2, scheduler_->GetNumIdleTasks());
+
+    // The timeout task is removed immediately.
+    EXPECT_EQ(scheduler_->TaskRunner()->GetTaskCancelledCount(), i + 1);
+  }
+
+  // Register and cancel one more idle task.
+  Persistent<MockIdleTask> idle_task(MakeGarbageCollected<MockIdleTask>());
+  IdleRequestOptions* options = IdleRequestOptions::Create();
+  options->setTimeout(1);
+  const int id = GetController()->RegisterCallback(idle_task, options);
+  GetController()->CancelCallback(id);
+
+  // This should remove all cancelled scheduler idle tasks.
+  EXPECT_EQ(1, scheduler_->GetNumIdleTasks());
+  EXPECT_EQ(scheduler_->TaskRunner()->GetTaskCancelledCount(), 1001);
+
+  // The non-cancelled idle task should run.
+  EXPECT_CALL(*idle_task_not_cancelled, invoke(testing::_));
+  scheduler_->RunIdleTask();
 }
 
 }  // namespace blink
