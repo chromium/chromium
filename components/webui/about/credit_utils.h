@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ABOUT_UI_CREDIT_UTILS_H_
-#define COMPONENTS_ABOUT_UI_CREDIT_UTILS_H_
+#ifndef COMPONENTS_WEBUI_ABOUT_CREDIT_UTILS_H_
+#define COMPONENTS_WEBUI_ABOUT_CREDIT_UTILS_H_
 
 #include <string>
 
@@ -14,4 +14,4 @@ std::string GetCredits(bool include_scripts);
 
 }  // namespace about_ui
 
-#endif  // COMPONENTS_ABOUT_UI_CREDIT_UTILS_H_
+#endif  // COMPONENTS_WEBUI_ABOUT_CREDIT_UTILS_H_

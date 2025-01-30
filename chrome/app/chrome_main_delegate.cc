@@ -143,7 +143,7 @@
 #include <signal.h>
 
 #include "chrome/app/chrome_crash_reporter_client.h"
-#include "components/about_ui/credit_utils.h"
+#include "components/webui/about/credit_utils.h"
 #endif
 
 #if BUILDFLAG(ENABLE_NACL) && (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))

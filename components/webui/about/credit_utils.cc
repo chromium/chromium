@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/about_ui/credit_utils.h"
+#include "components/webui/about/credit_utils.h"
 
 #include <stdint.h>
 
@@ -16,8 +16,7 @@ std::string GetCredits(bool include_scripts) {
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
           IDR_ABOUT_UI_CREDITS_HTML);
   if (include_scripts) {
-    response +=
-        "<script src=\"chrome://credits/credits.js\"></script>\n";
+    response += "<script src=\"chrome://credits/credits.js\"></script>\n";
   }
   response += "</body>\n</html>";
   return response;

@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-static_library("about_ui") {
+static_library("about") {
   sources = [
     "credit_utils.cc",
     "credit_utils.h",
@@ -19,9 +19,9 @@ if (is_android) {
   static_library("about_ui_android") {
     sources = [ "credit_utils_android.cc" ]
     deps = [
-      ":about_ui",
+      ":about",
       "//base",
-      "//components/about_ui/android:about_ui_jni_headers",
+      "//components/webui/about/android:about_ui_jni_headers",
     ]
   }
 }

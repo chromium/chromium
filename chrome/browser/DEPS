@@ -42,7 +42,7 @@ include_rules = [
   "+chrome/updater/updater_scope.h",
   "+chrome/updater/update_service.h",
   "+chromeos",
-  "+components/about_ui",
+  "+components/webui/about",
   "+components/access_code_cast",
   "+components/account_id",
   "+components/account_manager_core",
