@@ -16,7 +16,6 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/debug/dump_without_crashing.h"
-#include "base/environment.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -65,8 +64,6 @@ namespace enterprise_companion {
 namespace {
 
 constexpr char kNoRateLimitSwitch[] = "no-rate-limit";
-constexpr char kUsageStatsEnabledEnvVar[] = "GOOGLE_USAGE_STATS_ENABLED";
-constexpr char kUsageStatsEnabledEnvVarValueEnabled[] = "1";
 
 #if BUILDFLAG(IS_MAC)
 constexpr char kResetCrashHandlerPortSwitch[] =
@@ -75,19 +72,8 @@ constexpr char kResetCrashHandlerPortSwitch[] =
 
 // Determines if crash dump uploading should be enabled.
 bool ShouldEnableCrashUploads() {
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          kEnableUsageStatsSwitch)) {
-    return true;
-  }
-
-  std::string env_usage_stats;
-  if (base::Environment::Create()->GetVar(kUsageStatsEnabledEnvVar,
-                                          &env_usage_stats) &&
-      env_usage_stats == kUsageStatsEnabledEnvVarValueEnabled) {
-    return true;
-  }
-
-  return false;
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      kEnableUsageStatsSwitch);
 }
 
 std::vector<std::string> MakeCrashHandlerArgs() {
