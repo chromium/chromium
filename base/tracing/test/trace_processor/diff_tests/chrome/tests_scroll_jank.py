@@ -745,14 +745,15 @@ class ChromeScrollJankStdlib(TestSuite):
         )
         SELECT
           (SELECT COUNT(*) FROM frames) AS frame_count,
-          -- crbug.com/380286381: EventLatencies with slice ids 14862, 14937, 14987
-          -- are presented at the same time as EventLatency 14768, but it's not handled
-          -- correctly yet.
+          -- crbug.com/380286381: EventLatencies with slice ids 14862, 14937,
+          -- 14987 are presented at the same time as EventLatency 14768 and
+          -- are filtered out since they are not coalesced and don't have
+          -- a frame_display_id.
           (SELECT COUNT(DISTINCT id) FROM frames) AS unique_frame_count
         """,
         out=Csv("""
         "frame_count","unique_frame_count"
-        262,259
+        259,259
         """))
 
 
