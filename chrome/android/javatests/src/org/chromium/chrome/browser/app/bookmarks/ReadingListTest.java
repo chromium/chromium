@@ -353,6 +353,7 @@ public class ReadingListTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/393441283")
     public void testReadingListFolderShown() throws Exception {
         SigninPromoCoordinator.disablePromoForTesting();
         BookmarkPromoHeader.forcePromoVisibilityForTesting(false);
