@@ -122,6 +122,8 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
     private static final String CHROMIUM_PREFS_NAME = "WebViewChromiumPrefs";
     private static final String VERSION_CODE_PREF = "lastVersionCodeUsed";
     private static final String WEBVIEW_CONTEXT_EXPERIMENT_PREF = "useWebViewResourceContext";
+    private static final String WEBVIEW_PARTITIONED_COOKIES_DEFAULT_STATE_PREF =
+            "defaultWebViewPartitionedCookiesState";
 
     private static final String SUPPORT_LIB_GLUE_AND_BOUNDARY_INTERFACE_PREFIX =
             "org.chromium.support_lib_";
@@ -133,6 +135,10 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
     // Stores the value of the cached SharedPref denoting whether we should use WebView's own
     // Context for querying resources.
     private static boolean sUseWebViewContext;
+
+    // Stores the value of the cached SharedPref denoting what the default enablement state of
+    // partitioned cookies is.
+    private static boolean sPartitionedCookiesDefaultState;
 
     /**
      * This holds objects of classes that are defined in P and above to ensure that run-time class
@@ -315,6 +321,17 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
         }
     }
 
+    void setWebViewDisableCHIPSExperimentValue(boolean isDisabled) {
+        if (isDisabled) {
+            mWebViewPrefs
+                    .edit()
+                    .putBoolean(WEBVIEW_PARTITIONED_COOKIES_DEFAULT_STATE_PREF, false)
+                    .apply();
+        } else {
+            mWebViewPrefs.edit().remove(WEBVIEW_PARTITIONED_COOKIES_DEFAULT_STATE_PREF).apply();
+        }
+    }
+
     @SuppressWarnings({"NoContextGetApplicationContext", "DiscouragedApi"})
     private void initialize(WebViewDelegate webViewDelegate) {
         mInitInfo.mStartTime = SystemClock.uptimeMillis();
@@ -367,6 +384,10 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                 // Read the experiment value and use it to determine which Context to use.
                 sUseWebViewContext =
                         mWebViewPrefs.getBoolean(WEBVIEW_CONTEXT_EXPERIMENT_PREF, false);
+                // The same is done for partitioned cookies.
+                sPartitionedCookiesDefaultState =
+                        mWebViewPrefs.getBoolean(
+                                WEBVIEW_PARTITIONED_COOKIES_DEFAULT_STATE_PREF, true);
             }
 
             if (shouldEnableContextExperiment(ctx)) {
@@ -526,11 +547,14 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                 deleteContentsOnPackageDowngrade(packageInfo);
             }
 
-            // TODO(crbug.com/389121692): Get the default behavior from shouldEnableChips
             boolean partitionedCookies =
                     androidXConfig.getPartitionedCookiesEnabled() == null
-                            ? true
+                            ? sPartitionedCookiesDefaultState
                             : androidXConfig.getPartitionedCookiesEnabled();
+            // We use this to report the state of our partitioned override experiment if set.
+            // Applying this after the override of the Android X API has potentially been set
+            // otherwise our metrics could be misleading.
+            AwBrowserMainParts.setPartitionedCookiesDefaultState(partitionedCookies);
             if (!partitionedCookies) {
                 CommandLine.getInstance().appendSwitch("disable-partitioned-cookies");
                 Log.d(TAG, "CHIPS Disabled");

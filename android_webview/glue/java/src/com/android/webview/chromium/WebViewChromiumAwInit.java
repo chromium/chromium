@@ -390,10 +390,13 @@ public class WebViewChromiumAwInit {
 
             PostTask.postTask(
                     TaskTraits.BEST_EFFORT,
-                    () ->
-                            mFactory.setWebViewContextExperimentValue(
-                                    AwFeatureMap.isEnabled(
-                                            AwFeatures.WEBVIEW_SEPARATE_RESOURCE_CONTEXT)));
+                    () -> {
+                        mFactory.setWebViewContextExperimentValue(
+                                AwFeatureMap.isEnabled(
+                                        AwFeatures.WEBVIEW_SEPARATE_RESOURCE_CONTEXT));
+                        mFactory.setWebViewDisableCHIPSExperimentValue(
+                                AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_DISABLE_CHIPS));
+                    });
 
             AwCrashyClassUtils.maybeCrashIfEnabled();
             // Must happen right after Chromium initialization is complete.

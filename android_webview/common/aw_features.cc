@@ -30,6 +30,12 @@ BASE_FEATURE(kWebViewDigitalAssetLinksLoadIncludes,
              "WebViewDigitalAssetLinksLoadIncludes",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Disables partitioned cookies by default on WebView. This can still be
+// overridden by our `setPartitionedCookiesEnabled` Android X API.
+BASE_FEATURE(kWebViewDisableCHIPS,
+             "WebViewDisableCHIPS",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Disables MSAA and default sharpening when rendering scaled elements. This is
 // often preferable when rendering images/video but can have adverse effects for
 // text on some displays.
