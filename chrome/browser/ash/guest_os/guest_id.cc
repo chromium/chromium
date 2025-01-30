@@ -110,8 +110,9 @@ std::optional<GuestId> Deserialize(std::string_view guest_id_string) {
     return {};
   }
 
-  if (std::any_of(string_tokens.begin(), string_tokens.end(),
-                  [](std::string v) { return v.empty(); })) {
+  // vm_type and vm_name should be present, but container name may be empty for
+  // containerless guests.
+  if (string_tokens[0].empty() || string_tokens[1].empty()) {
     return {};
   }
 
