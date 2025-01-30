@@ -60,7 +60,8 @@ scoped_refptr<StaticBitmapImage> MakeAccelerated(
 #endif  // BUILDFLAG(IS_LINUX)
   auto provider = CanvasResourceProvider::CreateSharedImageProvider(
       gfx::Size(source->Size().width(), source->Size().height()),
-      image_info.colorType(), image_info.alphaType(),
+      viz::SkColorTypeToSinglePlaneSharedImageFormat(image_info.colorType()),
+      image_info.alphaType(),
       SkColorSpaceToGfxColorSpace(image_info.refColorSpace()),
       CanvasResourceProvider::ShouldInitialize::kNo, context_provider_wrapper,
       RasterMode::kGPU, kSharedImageUsageFlags);

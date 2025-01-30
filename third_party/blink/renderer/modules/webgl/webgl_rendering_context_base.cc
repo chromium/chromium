@@ -832,7 +832,7 @@ scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage(
       CanvasResourceProvider::ShouldInitialize::kNo;
   std::unique_ptr<CanvasResourceProvider> resource_provider =
       CanvasResourceProvider::CreateSharedImageProvider(
-          size, GetSkColorType(), GetAlphaType(), GetColorSpace(),
+          size, GetSharedImageFormat(), GetAlphaType(), GetColorSpace(),
           kShouldInitialize, SharedGpuContext::ContextProviderWrapper(),
           RasterMode::kGPU, gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
   if (!resource_provider || !resource_provider->IsValid()) {

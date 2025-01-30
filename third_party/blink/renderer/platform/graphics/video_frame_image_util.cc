@@ -355,9 +355,9 @@ std::unique_ptr<CanvasResourceProvider> CreateResourceProviderForVideoFrame(
         size, format, alpha_type, color_space, kShouldInitialize);
   }
   return CanvasResourceProvider::CreateSharedImageProvider(
-      size, viz::ToClosestSkColorType(format), alpha_type, color_space,
-      kShouldInitialize, SharedGpuContext::ContextProviderWrapper(),
-      RasterMode::kGPU, gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
+      size, format, alpha_type, color_space, kShouldInitialize,
+      SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
 }
 
 }  // namespace blink
