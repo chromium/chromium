@@ -605,10 +605,10 @@ void BookmarkMenuDelegate::WillShowMenu(MenuItemView* menu) {
 
 void BookmarkMenuDelegate::BookmarkModelChanged() {}
 
-void BookmarkMenuDelegate::BookmarkNodeMoved(const BookmarkNode* old_parent,
-                                             size_t old_index,
-                                             const BookmarkNode* new_parent,
-                                             size_t new_index) {
+void BookmarkMenuDelegate::DoBookmarkNodeMoved(const BookmarkNode* old_parent,
+                                               size_t old_index,
+                                               const BookmarkNode* new_parent,
+                                               size_t new_index) {
   MenuItemView* old_parent_menu = nullptr;
   const BookmarkFolderOrURL moved_node =
       BookmarkFolderOrURL(new_parent->children()[new_index].get());

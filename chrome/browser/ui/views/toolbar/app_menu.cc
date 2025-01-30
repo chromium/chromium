@@ -1406,6 +1406,10 @@ void AppMenu::BookmarkNodeMoved(const bookmarks::BookmarkNode* old_parent,
   // Overriding the BookmarkNodeMoved method prevents the base class from
   // invoking `BookmarkModelChanged`, which would close the menu.
   CHECK(bookmark_menu_delegate_.get());
+
+  // TODO(crbug.com/393126961): This is a temporary solution to prevent
+  // some crashes, by ensuring the app menu closes when the bookmark moves.
+  root_->Cancel();
 }
 
 void AppMenu::OnGlobalErrorsChanged() {

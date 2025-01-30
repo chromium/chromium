@@ -223,6 +223,10 @@ void BookmarkMenuController::BookmarkNodeMoved(
   // Overriding the BookmarkNodeMoved method prevents the base class from
   // invoking `BookmarkModelChanged`, which would close the menu.
   CHECK(menu_delegate_.get());
+
+  // TODO(crbug.com/393126961): This is a temporary solution to prevent
+  // some crashes, by ensuring the bookmark menu closes when the bookmark moves.
+  menu()->Cancel();
 }
 
 bool BookmarkMenuController::ShouldTryPositioningBesideAnchor() const {

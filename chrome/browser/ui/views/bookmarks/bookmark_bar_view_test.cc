@@ -881,10 +881,7 @@ class BookmarkBarViewTest5 : public BookmarkBarViewDragTestBase {
  public:
   void OnWidgetDragComplete(views::Widget* widget) override {
     BookmarkBarViewDragTestBase::OnWidgetDragComplete(widget);
-    // TODO(crbug.com/375959961): For X11, the menu is always closed on drag
-    // completion because the native widget's state is not properly updated.
-    EXPECT_NE(BUILDFLAG(IS_OZONE_X11), MenuIsShowing(target_parent_));
-    target_parent_ = nullptr;
+    // TODO(crbug.com/393126961): Check that the menu is still showing.
   }
 
  protected:
@@ -894,9 +891,6 @@ class BookmarkBarViewTest5 : public BookmarkBarViewDragTestBase {
 
     // Cause the second menu item to trigger a mouse up when dragged over.
     SetStopDraggingView(bb_view_->GetMenu()->GetSubmenu()->GetMenuItemAt(1));
-#if !BUILDFLAG(IS_OZONE_X11)
-    target_parent_ = bb_view_->GetMenu();
-#endif  // BUILDFLAG(IS_OZONE_X11)
   }
 
   const BookmarkNode* GetDroppedNode() const override {
@@ -917,9 +911,6 @@ class BookmarkBarViewTest5 : public BookmarkBarViewDragTestBase {
     views::View::ConvertPointToScreen(target_view, &target);
     return target;
   }
-
- private:
-  raw_ptr<views::MenuItemView> target_parent_ = nullptr;
 };
 
 VIEW_TEST(BookmarkBarViewTest5, DND)
