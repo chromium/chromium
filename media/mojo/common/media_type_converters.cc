@@ -9,15 +9,15 @@
 
 #include "media/mojo/common/media_type_converters.h"
 
-#include <stddef.h>
-#include <stdint.h>
 #include <memory>
 
 #include "base/logging.h"
+#include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/decrypt_config.h"
+#include "media/base/sample_format.h"
 #include "media/base/subsample_entry.h"
 #include "mojo/public/cpp/system/buffer.h"
 
@@ -227,7 +227,7 @@ TypeConverter<scoped_refptr<media::AudioBuffer>, media::mojom::AudioBufferPtr>::
       static_cast<size_t>(input->channel_layout) > media::CHANNEL_LAYOUT_MAX ||
       ChannelLayoutToChannelCount(input->channel_layout) !=
           input->channel_count) {
-    LOG(ERROR) << "Receive an invalid audio buffer, replace it with EOS.";
+    DLOG(ERROR) << "Receive an invalid audio buffer, replace it with EOS.";
     return media::AudioBuffer::CreateEOSBuffer();
   }
 
@@ -239,13 +239,31 @@ TypeConverter<scoped_refptr<media::AudioBuffer>, media::mojom::AudioBufferPtr>::
         input->timestamp);
   }
 
+  // Safe to cast, since we already checked `sample_format` doesn't exceed
+  // media::kSampleFormatMax above.
+  const size_t bytes_per_channel = SampleFormatToBytesPerChannel(
+      static_cast<media::SampleFormat>(input->sample_format));
+
+  // `bytes_per_channel` could be 0 if we received a kUnknownFormat. In that
+  // case, and in the case of a overflow below, `min_data_size` will be 0,
+  // and we will return an EOS below.
+  const size_t min_data_size =
+      base::CheckMul(input->frame_count,
+                     base::CheckMul(input->channel_count, bytes_per_channel))
+          .ValueOrDefault(0u);
+  if (input->data.size() < min_data_size) {
+    DLOG(ERROR) << "Received invalid AudioBuffer, replace it with EOS.";
+    return media::AudioBuffer::CreateEOSBuffer();
+  }
+
   // Setup channel pointers.  AudioBuffer::CopyFrom() will only use the first
   // one in the case of interleaved data.
   std::vector<const uint8_t*> channel_ptrs(input->channel_count, nullptr);
   const size_t size_per_channel = input->data.size() / input->channel_count;
   DCHECK_EQ(0u, input->data.size() % input->channel_count);
-  for (int i = 0; i < input->channel_count; ++i)
+  for (int i = 0; i < input->channel_count; ++i) {
     channel_ptrs[i] = input->data.data() + i * size_per_channel;
+  }
 
   return media::AudioBuffer::CopyFrom(
       input->sample_format, input->channel_layout, input->channel_count,
