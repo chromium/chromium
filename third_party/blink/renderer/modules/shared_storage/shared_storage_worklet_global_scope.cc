@@ -240,7 +240,7 @@ class SelectURLResolutionSuccessCallback final
   void React(ScriptState* script_state, ScriptValue value) {
     ScriptState::Scope scope(script_state);
 
-    v8::Local<v8::Context> context = value.GetIsolate()->GetCurrentContext();
+    v8::Local<v8::Context> context = script_state->GetContext();
     v8::Local<v8::Value> v8_value = value.V8Value();
 
     v8::Local<v8::Uint32> v8_result_index;

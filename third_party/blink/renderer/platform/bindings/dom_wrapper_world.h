@@ -200,6 +200,8 @@ class PLATFORM_EXPORT DOMWrapperWorld final
   int GetWorldId() const { return world_id_; }
   DOMDataStore& DomDataStore() const { return *dom_data_store_; }
 
+  v8::Isolate* GetIsolate() const { return isolate_; }
+
   void Trace(Visitor*) const;
 
   // Methods iterate all worlds and invokes the clearing methods on
@@ -223,6 +225,12 @@ class PLATFORM_EXPORT DOMWrapperWorld final
   const WorldType world_type_;
   const int32_t world_id_;
   const Member<DOMDataStore> dom_data_store_;
+  // The pointer does not dangle in production configurations but only in unit
+  // tests. Specifically, for test that cycle through V8 isolates and reuse the
+  // same CppHeap, Oilpan objects are destroyed after isolate teardown which
+  // means that pointers dangle. The objects should be unreachable in the tests
+  // though.
+  const raw_ptr<v8::Isolate, base::RawPtrTraits::kMayDangle> isolate_;
 };
 
 }  // namespace blink

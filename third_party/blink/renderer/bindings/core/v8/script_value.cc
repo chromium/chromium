@@ -33,15 +33,13 @@
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value_factory.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 
 namespace blink {
-
+ASSERT_SIZE(ScriptValue, WorldSafeV8Reference<v8::Value>);
 v8::Local<v8::Value> ScriptValue::V8Value() const {
-  if (IsEmpty())
-    return v8::Local<v8::Value>();
-
-  DCHECK(GetIsolate()->InContext());
-  return value_.Get(ScriptState::ForCurrentRealm(isolate_));
+  return IsEmpty() ? v8::Local<v8::Value>()
+                   : value_.Get(ScriptState::ForCurrentRealm(GetIsolate()));
 }
 
 v8::Local<v8::Value> ScriptValue::V8ValueFor(
@@ -56,10 +54,11 @@ bool ScriptValue::ToString(String& result) const {
   if (IsEmpty())
     return false;
 
-  DCHECK(GetIsolate()->InContext());
+  auto* isolate = GetIsolate();
+  DCHECK(isolate->InContext());
   v8::Local<v8::String> string =
-      V8Value()->ToString(GetIsolate()->GetCurrentContext()).ToLocalChecked();
-  result = ToCoreString(GetIsolate(), string);
+      V8Value()->ToString(isolate->GetCurrentContext()).ToLocalChecked();
+  result = ToCoreString(isolate, string);
   return true;
 }
 
