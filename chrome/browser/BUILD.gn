@@ -4956,9 +4956,6 @@ static_library("browser") {
 
     deps += [
       "//ash",
-      "//ash/components/arc",
-      "//ash/components/arc:arc_base",
-      "//ash/components/arc:arc_base_utils",
       "//ash/constants",
       "//ash/webui/annotator",
       "//ash/webui/annotator/mojom:annotator_mojo_bindings",
@@ -5454,6 +5451,9 @@ static_library("browser") {
       "//chromeos/ash/components/system",
       "//chromeos/ash/components/timezone",
       "//chromeos/ash/components/tpm",
+      "//chromeos/ash/experiences/arc",
+      "//chromeos/ash/experiences/arc:arc_base",
+      "//chromeos/ash/experiences/arc:arc_base_utils",
       "//chromeos/ash/experiences/arc/intent_helper",
       "//chromeos/ash/experiences/arc/intent_helper:arc_intent_helper_constants",
       "//chromeos/ash/experiences/arc/mojom",

@@ -31,7 +31,6 @@ source_set("unit_tests") {
 
   deps = [
     "//ash",
-    "//ash/components/arc",
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/browser/ash/attestation:test_support",
@@ -62,6 +61,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/network:test_support",
     "//chromeos/ash/components/system",
+    "//chromeos/ash/experiences/arc",
     "//chromeos/ash/services/cros_healthd/public/cpp:fakes",
     "//chromeos/ash/services/cros_healthd/public/mojom",
     "//chromeos/ash/services/multidevice_setup/public/cpp",

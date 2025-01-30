@@ -133,7 +133,6 @@ source_set("impl") {
   if (is_chromeos) {
     deps += [
       "//ash",
-      "//ash/components/arc:prefs",
       "//chrome/browser/apps/app_discovery_service",
       "//chrome/browser/apps/app_preload_service",
       "//chrome/browser/apps/app_service",
@@ -230,6 +229,7 @@ source_set("impl") {
       "//chromeos/ash/components/report",
       "//chromeos/ash/components/scheduler_config",
       "//chromeos/ash/components/timezone",
+      "//chromeos/ash/experiences/arc:prefs",
       "//chromeos/ash/services/assistant/public/cpp",
       "//chromeos/ash/services/auth_factor_config",
       "//chromeos/ash/services/bluetooth_config",

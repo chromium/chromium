@@ -189,7 +189,6 @@ source_set("sync") {
       "wifi_configuration_sync_service_factory.h",
     ]
     deps += [
-      "//ash/components/arc:arc_base_utils",
       "//ash/constants",
       "//ash/public/cpp",
       "//chrome/browser/ash/app_list",
@@ -209,6 +208,7 @@ source_set("sync") {
       "//chromeos/ash/components/network",
       "//chromeos/ash/components/sync_wifi",
       "//chromeos/ash/components/tether",
+      "//chromeos/ash/experiences/arc:arc_base_utils",
       "//components/desks_storage",
       "//ui/events/ash",
     ]

@@ -83,7 +83,7 @@ source_set("link_capturing") {
   }
 
   if (is_chromeos_ash) {
-    deps += [ "//ash/components/arc:arc" ]
+    deps += [ "//chromeos/ash/experiences/arc:arc" ]
   }
 }
 

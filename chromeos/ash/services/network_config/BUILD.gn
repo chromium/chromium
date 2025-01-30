@@ -77,7 +77,6 @@ source_set("unit_tests") {
   deps = [
     ":network_config",
     ":test_support",
-    "//ash/components/arc:prefs",
     "//ash/constants",
     "//base",
     "//base/test:test_support",
@@ -87,6 +86,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/network:test_support",
     "//chromeos/ash/components/system",
+    "//chromeos/ash/experiences/arc:prefs",
     "//chromeos/ash/services/network_config/public/cpp:test_support",
     "//chromeos/components/onc",
     "//chromeos/services/network_config/public/mojom",

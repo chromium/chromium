@@ -30,8 +30,8 @@ source_set("unit_tests") {
   deps = [
     ":server",
     "//ash:test_support",
-    "//ash/components/arc",
     "//base/test:test_support",
+    "//chromeos/ash/experiences/arc",
     "//components/exo",
     "//components/exo:test_support",
     "//components/exo/wayland:test_support",

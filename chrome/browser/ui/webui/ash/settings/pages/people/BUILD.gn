@@ -44,7 +44,6 @@ static_library("people") {
   ]
 
   deps = [
-    "//ash/components/arc:arc_app_constants",
     "//ash/constants",
     "//ash/public/cpp",
     "//base:i18n",
@@ -70,6 +69,7 @@ static_library("people") {
     "//chromeos/ash/components/browser_context_helper:browser_context_helper",
     "//chromeos/ash/components/dbus/userdataauth",
     "//chromeos/ash/components/osauth/public",
+    "//chromeos/ash/experiences/arc:arc_app_constants",
     "//components/omnibox/common",
     "//components/services/app_service",
     "//components/signin/public/base",

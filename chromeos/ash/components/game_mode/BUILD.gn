@@ -12,10 +12,10 @@ static_library("game_mode") {
 
   deps = [
     "//ash",
-    "//ash/components/arc:arc_base_utils",
     "//base",
     "//chromeos/ash/components/borealis",
     "//chromeos/ash/components/dbus/resourced",
+    "//chromeos/ash/experiences/arc:arc_base_utils",
     "//dbus",
     "//ui/views",
   ]

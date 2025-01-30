@@ -426,7 +426,7 @@ component("cpp") {
   defines = [ "ASH_PUBLIC_IMPLEMENTATION" ]
 
   assert_no_deps = [
-    "//ash/components/arc",
+    "//chromeos/ash/experiences/arc",
     "//chromeos/ash/experiences/arc/intent_helper",
     "//chromeos/ash/experiences/arc/message_center",
     "//components/exo",

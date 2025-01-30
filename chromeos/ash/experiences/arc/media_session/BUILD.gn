@@ -11,7 +11,7 @@ static_library("media_session") {
   ]
 
   deps = [
-    "//ash/components/arc:arc_base",
+    "//chromeos/ash/experiences/arc:arc_base",
     "//components/keyed_service/content",
     "//content/public/browser",
     "//content/public/common",

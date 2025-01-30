@@ -981,13 +981,13 @@
                   '|chrome/browser/ui/webui/ash/login/enrollment_screen_handler.*'
     },
     'cros_commercial_policy': {
-      'filepath': 'ash/components/arc/enterprise/'\
-                  '|ash/policy/'\
+      'filepath': 'ash/policy/'\
                   '|chrome/browser/ash/arc/enterprise/'\
                   '|chrome/browser/ash/policy/'\
                   '|chrome/browser/policy/'\
                   '|chrome/test/enterprise'\
                   '|chromeos/ash/components/policy'\
+                  '|chromeos/ash/experiences/arc/enterprise/'\
                   '|components/policy/'\
                   '|docs/website/site/administrators/',
     },

@@ -1161,8 +1161,6 @@ source_set("extensions") {
 
       deps += [
         "//ash",
-        "//ash/components/arc",
-        "//ash/components/arc:arc_app_constants",
         "//ash/constants",
         "//ash/keyboard/ui:resources_grit_grit",
         "//ash/public/cpp",
@@ -1257,6 +1255,8 @@ source_set("extensions") {
         "//chromeos/ash/components/system",
         "//chromeos/ash/components/tether:tether",
         "//chromeos/ash/components/tpm",
+        "//chromeos/ash/experiences/arc",
+        "//chromeos/ash/experiences/arc:arc_app_constants",
         "//chromeos/ash/experiences/guest_os/virtual_machines",
         "//chromeos/ash/services/assistant/public/cpp",
         "//chromeos/ash/services/ime/public/mojom",

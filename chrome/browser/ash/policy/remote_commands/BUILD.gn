@@ -154,7 +154,6 @@ source_set("unit_tests") {
   ]
 
   deps = [
-    "//ash/components/arc:arc_test_support",
     "//ash/constants",
     "//base",
     "//base/test:test_support",
@@ -191,6 +190,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/network:test_support",
     "//chromeos/ash/components/settings",
     "//chromeos/ash/components/system",
+    "//chromeos/ash/experiences/arc:arc_test_support",
     "//chromeos/ash/experiences/arc/session",
     "//chromeos/ash/experiences/arc/session:connection_holder",
     "//chromeos/ash/services/cros_healthd/public/cpp:fakes",

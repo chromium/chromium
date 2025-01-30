@@ -17,7 +17,6 @@ static_library("exo") {
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
-    "//ash/components/arc",
     "//ash/public/cpp",
     "//base",
     "//chrome/browser/ash/arc:arc_util",
@@ -27,6 +26,7 @@ static_library("exo") {
     "//chrome/browser/ash/plugin_vm",
     "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/borealis",
+    "//chromeos/ash/experiences/arc",
     "//components/exo",
     "//content/public/common",
     "//ui/aura",

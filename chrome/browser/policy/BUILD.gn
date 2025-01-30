@@ -439,8 +439,6 @@ source_set("browser_tests") {
 
     deps += [
       ":system_features_disable_list",
-      "//ash/components/arc:arc_test_support",
-      "//ash/components/arc:prefs",
       "//chrome/browser/apps/app_service/app_icon",
       "//chrome/browser/ash/accessibility",
       "//chrome/browser/ash/arc/session",
@@ -458,6 +456,8 @@ source_set("browser_tests") {
       "//chromeos/ash/components/audio",
       "//chromeos/ash/components/cryptohome",
       "//chromeos/ash/components/dbus/userdataauth",
+      "//chromeos/ash/experiences/arc:arc_test_support",
+      "//chromeos/ash/experiences/arc:prefs",
       "//chromeos/ash/experiences/arc/session:session",
       "//chromeos/ash/services/assistant/public/cpp",
       "//chromeos/dbus/constants",

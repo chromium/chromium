@@ -19,7 +19,6 @@ static_library("session") {
   ]
 
   public_deps = [
-    "//ash/components/arc",
     "//base",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/base",
@@ -30,6 +29,7 @@ static_library("session") {
     "//chromeos/ash/components/login/auth",
     "//chromeos/ash/components/login/auth/public:authpublic",
     "//chromeos/ash/components/login/integrity",
+    "//chromeos/ash/experiences/arc",
     "//chromeos/dbus/tpm_manager:tpm_manager_proto",
     "//components/session_manager/core",
     "//components/user_manager",
@@ -39,9 +39,6 @@ static_library("session") {
 
   deps = [
     "//ash",
-    "//ash/components/arc:arc_base_utils",
-    "//ash/components/arc:arc_features",
-    "//ash/components/arc:prefs",
     "//ash/constants",
     "//ash/webui/shimless_rma",
     "//chrome/browser:browser_process",
@@ -95,6 +92,9 @@ static_library("session") {
     "//chromeos/ash/components/scalable_iph",
     "//chromeos/ash/components/settings",
     "//chromeos/ash/components/tpm",
+    "//chromeos/ash/experiences/arc:arc_base_utils",
+    "//chromeos/ash/experiences/arc:arc_features",
+    "//chromeos/ash/experiences/arc:prefs",
     "//chromeos/ash/experiences/arc/session:arc_base_enums",
     "//chromeos/ash/services/cros_safety",
     "//chromeos/constants",

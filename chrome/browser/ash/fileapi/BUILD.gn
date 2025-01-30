@@ -135,8 +135,6 @@ source_set("unit_tests") {
   ]
 
   deps = [
-    "//ash/components/arc:arc_test_support",
-    "//ash/components/arc:notification_test_support",
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
@@ -153,6 +151,8 @@ source_set("unit_tests") {
     "//chrome/browser/profiles:profile",
     "//chrome/test:test_support",
     "//chromeos/ash/components/dbus/cros_disks",
+    "//chromeos/ash/experiences/arc:arc_test_support",
+    "//chromeos/ash/experiences/arc:notification_test_support",
     "//chromeos/ash/experiences/arc/mojom",
     "//chromeos/ash/experiences/arc/session",
     "//components/drive",

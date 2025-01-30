@@ -7,7 +7,7 @@ tedchoc@chromium.org
 # For build configuration things and simple changes.
 thakis@chromium.org
 
-per-file arc_strings.grdp=file://ash/components/arc/OWNERS
+per-file arc_strings.grdp=file://chromeos/ash/experiences/arc/OWNERS
 per-file android_system_error_page_strings.grdp=file://components/android_system_error_page/OWNERS
 per-file autofill_payments_strings.grdp=file://components/autofill/core/browser/payments/OWNERS
 per-file autofill_strings.grdp=file://components/autofill/OWNERS

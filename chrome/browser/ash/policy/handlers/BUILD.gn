@@ -55,7 +55,6 @@ static_library("handlers") {
 
   deps = [
     "//ash",
-    "//ash/components/arc:prefs",
     "//ash/constants",
     "//ash/public/cpp",
     "//base",
@@ -86,6 +85,7 @@ static_library("handlers") {
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/settings",
     "//chromeos/ash/components/system",
+    "//chromeos/ash/experiences/arc:prefs",
     "//chromeos/components/onc",
     "//chromeos/dbus/power",
     "//chromeos/dbus/power:power_manager_proto",
@@ -165,9 +165,6 @@ source_set("unit_tests") {
   deps = [
     ":handlers",
     ":test_support",
-    "//ash/components/arc",
-    "//ash/components/arc:arc_test_support",
-    "//ash/components/arc:prefs",
     "//ash/constants",
     "//ash/public/cpp",
     "//base",
@@ -211,6 +208,9 @@ source_set("unit_tests") {
     "//chromeos/ash/components/network:test_support",
     "//chromeos/ash/components/settings",
     "//chromeos/ash/components/system",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc:arc_test_support",
+    "//chromeos/ash/experiences/arc:prefs",
     "//chromeos/ash/experiences/arc/session",
     "//chromeos/dbus/power",
     "//components/account_id",

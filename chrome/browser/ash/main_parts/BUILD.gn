@@ -21,7 +21,6 @@ static_library("main_parts") {
 
   deps = [
     "//ash",
-    "//ash/components/arc",
     "//ash/constants",
     "//ash/keyboard/ui",
     "//ash/public/cpp",
@@ -138,6 +137,7 @@ static_library("main_parts") {
     "//chromeos/ash/components/system",
     "//chromeos/ash/components/tpm",
     "//chromeos/ash/components/wifi_p2p",
+    "//chromeos/ash/experiences/arc",
     "//chromeos/ash/services/cros_healthd/private/cpp",
     "//chromeos/ash/services/cros_healthd/public/cpp",
     "//chromeos/components/sensors",

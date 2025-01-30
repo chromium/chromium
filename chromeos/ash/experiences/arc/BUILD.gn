@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
-# TODO(crbug.com/386148857): This file temporarily refer files under //ash/components/arc
+# TODO(crbug.com/386148857): This file temporarily refer files under //chromeos/ash/experiences/arc
 # and //chromeos/ash/experiences/arc for transition period.
 
 static_library("arc") {
@@ -240,7 +240,6 @@ static_library("arc_base_utils") {
   public_deps = [ ":arc_features" ]
   deps = [
     "//ash:ash",
-    "//ash/components/arc:prefs",
     "//ash/constants",
     "//ash/public/cpp",
     "//base",
@@ -250,6 +249,7 @@ static_library("arc_base_utils") {
     "//chromeos/ash/components/dbus/debug_daemon",
     "//chromeos/ash/components/dbus/session_manager",
     "//chromeos/ash/components/dbus/upstart:upstart",
+    "//chromeos/ash/experiences/arc:prefs",
     "//chromeos/ash/experiences/arc/session:arc_base_enums",
     "//chromeos/version",
     "//components/exo",
@@ -410,7 +410,7 @@ static_library("arc_test_support") {
 
   public_deps = [
     ":notification_test_support",
-    "//ash/components/arc:compat_mode_test_support",
+    "//chromeos/ash/experiences/arc:compat_mode_test_support",
     "//chromeos/ash/experiences/arc/intent_helper",
     "//chromeos/ash/experiences/arc/message_center:test_support",
   ]
@@ -502,7 +502,6 @@ source_set("unit_tests") {
   deps = [
     ":arc",
     "//ash:test_support",
-    "//ash/components/arc:arc_test_support",
     "//ash/constants",
     "//ash/keyboard/ui",
     "//ash/public/cpp",
@@ -525,6 +524,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/install_attributes:test_support",
     "//chromeos/ash/components/login/login_state",
     "//chromeos/ash/components/network:test_support",
+    "//chromeos/ash/experiences/arc:arc_test_support",
     "//chromeos/ash/experiences/arc/media_session",
     "//chromeos/ash/experiences/arc/message_center",
     "//chromeos/components/disks:prefs",

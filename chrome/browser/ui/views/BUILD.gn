@@ -50,7 +50,7 @@ component("views") {
   if (is_chromeos) {
     deps += [
       "//ash",
-      "//ash/components/arc",
+      "//chromeos/ash/experiences/arc",
       "//chromeos/ash/experiences/arc/intent_helper",
     ]
   }

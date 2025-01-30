@@ -38,7 +38,6 @@ static_library("privacy") {
   ]
 
   deps = [
-    "//ash/components/arc",
     "//ash/constants",
     "//ash/webui/projector_app/public/cpp",
     "//base:i18n",
@@ -65,6 +64,7 @@ static_library("privacy") {
     "//chromeos/ash/components/install_attributes",
     "//chromeos/ash/components/peripheral_notification",
     "//chromeos/ash/components/settings",
+    "//chromeos/ash/experiences/arc",
     "//components/google/core/common",
     "//components/sync/base:features",
     "//ui/base",

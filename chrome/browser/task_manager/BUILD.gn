@@ -217,11 +217,11 @@ source_set("impl") {
       "sampling/arc_shared_sampler.cc",
     ]
     deps += [
-      "//ash/components/arc:arc_base_utils",
       "//chrome/app/theme:chrome_unscaled_resources_grit",
       "//chrome/browser/ash/crostini",
       "//chrome/browser/ash/plugin_vm",
       "//chromeos/ash/components/dbus/concierge",
+      "//chromeos/ash/experiences/arc:arc_base_utils",
       "//chromeos/ash/experiences/arc/intent_helper",
       "//chromeos/ash/experiences/arc/process",
       "//chromeos/ash/experiences/arc/session",

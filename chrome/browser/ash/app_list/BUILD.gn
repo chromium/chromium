@@ -73,7 +73,6 @@ static_library("app_list") {
   deps = [
     "//ash",
     "//ash/app_list",
-    "//ash/components/arc:arc_app_constants",
     "//ash/resources/vector_icons",
     "//ash/webui/mall:app_id",
     "//ash/webui/projector_app/public/cpp",
@@ -92,6 +91,7 @@ static_library("app_list") {
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/file_manager:constants",
     "//chromeos/ash/components/scalable_iph",
+    "//chromeos/ash/experiences/arc:arc_app_constants",
     "//chromeos/ash/services/assistant/public/cpp",
     "//chromeos/constants",
     "//components/app_constants",
@@ -143,7 +143,6 @@ source_set("unit_tests") {
   deps = [
     ":app_list",
     "//ash/app_list/model:app_list_model",
-    "//ash/components/arc:arc_test_support",
     "//ash/constants",
     "//ash/public/cpp",
     "//base",
@@ -168,6 +167,7 @@ source_set("unit_tests") {
     "//chrome/common:constants",
     "//chrome/common:non_code_constants",
     "//chrome/test:test_support",
+    "//chromeos/ash/experiences/arc:arc_test_support",
     "//components/app_constants",
     "//components/crx_file",
     "//components/keyed_service/core",
