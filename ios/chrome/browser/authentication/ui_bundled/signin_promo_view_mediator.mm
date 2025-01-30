@@ -713,7 +713,7 @@ id<SystemIdentity> GetDisplayedIdentity(
       // by the mediator. We should not have no identity. This can be reproduced
       // with EGtests with bots. The identity notification might not have
       // received yet. Let's update the promo identity.
-      [self identityListChanged];
+      [self handleIdentityListChanged];
     }
     DCHECK(self.displayedIdentity)
         << base::SysNSStringToUTF8([self description]);

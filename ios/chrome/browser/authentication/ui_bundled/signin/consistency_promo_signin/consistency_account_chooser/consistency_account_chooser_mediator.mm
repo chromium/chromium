@@ -79,8 +79,8 @@
   }
   id<SystemIdentity> previousSelectedIdentity = _selectedIdentity;
   _selectedIdentity = identity;
-  [self identityUpdated:previousSelectedIdentity];
-  [self identityUpdated:_selectedIdentity];
+  [self handleIdentityUpdated:previousSelectedIdentity];
+  [self handleIdentityUpdated:_selectedIdentity];
 }
 
 #pragma mark - Private
