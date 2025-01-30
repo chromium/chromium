@@ -45,6 +45,9 @@ class DownloadToolbarUIController
       public BrowserListObserver,
       public DownloadBubbleRowListViewInfoObserver {
  public:
+  // Identifies the bubble dialog widget for testing.
+  static constexpr char kBubbleName[] = "DownloadBubbleDialog";
+
   explicit DownloadToolbarUIController(BrowserView* browser_view);
   DownloadToolbarUIController(const DownloadToolbarUIController&) = delete;
   DownloadToolbarUIController& operator=(const DownloadToolbarUIController&) =
