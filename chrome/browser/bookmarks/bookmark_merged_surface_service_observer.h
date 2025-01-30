@@ -20,6 +20,17 @@ class BookmarkMergedSurfaceServiceObserver : public base::CheckedObserver {
  public:
   ~BookmarkMergedSurfaceServiceObserver() override = default;
 
+  // Invoked when the service has finished loading.
+  virtual void BookmarkMergedSurfaceServiceLoaded() = 0;
+
+  // Invoked from the destructor of the `BookmarkMergedSurfaceService`.
+  virtual void BookmarkMergedSurfaceServiceBeingDeleted() {}
+
+  // Invoked when a node has been added. If the added node has any descendants,
+  // `BookmarkNodeAdded` will be invoked for all of the descendants.
+  virtual void BookmarkNodeAdded(const BookmarkParentFolder& parent,
+                                 size_t index) = 0;
+
   virtual void BookmarkNodesRemoved(
       const BookmarkParentFolder& parent,
       const base::flat_map<size_t, raw_ptr<const bookmarks::BookmarkNode>>&

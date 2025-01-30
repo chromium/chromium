@@ -185,7 +185,11 @@ BookmarkMergedSurfaceService::BookmarkMergedSurfaceService(
   model_observation_.Observe(model_);
 }
 
-BookmarkMergedSurfaceService::~BookmarkMergedSurfaceService() = default;
+BookmarkMergedSurfaceService::~BookmarkMergedSurfaceService() {
+  for (auto& observer : observers_) {
+    observer.BookmarkMergedSurfaceServiceBeingDeleted();
+  }
+}
 
 std::vector<const BookmarkNode*>
 BookmarkMergedSurfaceService::GetUnderlyingNodes(
@@ -391,7 +395,11 @@ size_t BookmarkMergedSurfaceService::GetIndexAcrossStorage(
 }
 
 void BookmarkMergedSurfaceService::BookmarkModelLoaded(bool ids_reassigned) {
-  // TODO(crbug.com/391785358): Notify observers.
+  // TODO(crbug.com/393047033): Wait for the custom ordering to be loaded from
+  // disk.
+  for (auto& observer : observers_) {
+    observer.BookmarkMergedSurfaceServiceLoaded();
+  }
 }
 
 void BookmarkMergedSurfaceService::OnWillMoveBookmarkNode(
@@ -434,7 +442,21 @@ void BookmarkMergedSurfaceService::BookmarkNodeAdded(
     const bookmarks::BookmarkNode* parent,
     size_t index,
     bool added_by_user) {
-  // TODO(crbug.com/391785358): Notify observers.
+  if (parent->is_root()) {
+    // Observers will be notified for the child nodes. Account nodes are
+    // invisible to merged surfaces, as they rely on the `BookmarkParentFolder`.
+    return;
+  }
+
+  // Trackers must have been updated already, because they are registered as
+  // observers before `this`.
+  const BookmarkParentFolder folder(
+      BookmarkParentFolder::FromFolderNode(parent));
+  size_t index_across_storage =
+      GetIndexAcrossStorage(parent->children()[index].get(), index);
+  for (auto& observer : observers_) {
+    observer.BookmarkNodeAdded(folder, index_across_storage);
+  }
 }
 
 void BookmarkMergedSurfaceService::OnWillRemoveBookmarks(
