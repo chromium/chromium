@@ -18,6 +18,7 @@
 #include "ui/views/controls/progress_bar.h"
 #include "ui/views/window/dialog_delegate.h"
 
+class PrefService;
 class Profile;
 
 namespace views {
@@ -42,9 +43,12 @@ class BruschettaInstallerView
   using InstallResultCallback =
       base::OnceCallback<void(bruschetta::BruschettaInstallResult)>;
 
-  static void Show(Profile* profile, const guest_os::GuestId& guest_id);
+  static void Show(Profile* profile,
+                   PrefService& local_state,
+                   const guest_os::GuestId& guest_id);
 
   explicit BruschettaInstallerView(Profile* profile,
+                                   PrefService& local_state,
                                    guest_os::GuestId guest_id);
 
   // Disallow copy and assign.

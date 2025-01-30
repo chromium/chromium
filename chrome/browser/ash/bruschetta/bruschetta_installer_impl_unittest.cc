@@ -22,6 +22,8 @@
 #include "chrome/browser/ash/bruschetta/bruschetta_service_factory.h"
 #include "chrome/browser/ash/guest_os/dbus_test_helper.h"
 #include "chrome/browser/profiles/profile_key.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/attestation/attestation_client.h"
 #include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
@@ -144,8 +146,9 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
     ash::disks::DiskMountManager::InitializeForTesting(&*disk_mount_manager_);
 
     installer_ = std::make_unique<BruschettaInstallerImpl>(
-        &profile_, base::BindOnce(&BruschettaInstallerTest::CloseCallback,
-                                  base::Unretained(this)));
+        &profile_, *local_state_.Get(),
+        base::BindOnce(&BruschettaInstallerTest::CloseCallback,
+                       base::Unretained(this)));
 
     installer_->AddObserver(&observer_);
     ConfigureDownloadFactory(base::FilePath(), "");
@@ -600,6 +603,8 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
 
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
+
   base::RunLoop run_loop_, run_loop_2_;
 
   base::Value::Dict prefs_installable_no_pflash_, prefs_installable_,
