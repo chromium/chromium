@@ -220,7 +220,8 @@ class MetricsSubSampler;
 // WARNING: This is not the generator you are looking for. This has significant
 // caveats:
 //   - It is non-cryptographic, so easy to misuse
-//   - It is neither fork() nor clone()-safe.
+//   - It is neither fork() nor clone()-safe because both RNG's after the
+//     fork/clone will have the same state and produce the same number stream.
 //   - Synchronization is up to the client.
 //
 // Always prefer base::Rand*() above, unless you have a use case where its
@@ -275,6 +276,13 @@ class BASE_EXPORT InsecureRandomGenerator {
   FRIEND_TEST_ALL_PREFIXES(RandUtilPerfTest, InsecureRandomRandUint64);
 };
 
+// Fast class to randomly sub-sample metrics that are logged in high frequency
+// code.
+//
+// WARNING: This uses InsecureRandomGenerator so all the caveats there apply.
+// In particular if a MetricsSubSampler object exists when fork()/clone() is
+// called, calls to ShouldSample() on both sides of the fork will return the
+// same values, possibly introducing metric bias.
 class BASE_EXPORT MetricsSubSampler {
  public:
   MetricsSubSampler();
