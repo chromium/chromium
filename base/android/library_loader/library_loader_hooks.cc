@@ -10,12 +10,12 @@
 #include "base/android/library_loader/anchor_functions_buildflags.h"
 #include "base/android/library_loader/library_prefetcher.h"
 #include "base/android/orderfile/orderfile_buildflags.h"
-#include "base/android/sys_utils.h"
 #include "base/at_exit.h"
 #include "base/base_switches.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/system/sys_info.h"
 #include "build/robolectric_buildflags.h"
 
 #if BUILDFLAG(IS_ROBOLECTRIC)
@@ -46,7 +46,7 @@ LibraryProcessType GetLibraryProcessType() {
 
 bool IsUsingOrderfileOptimization() {
 #if BUILDFLAG(SUPPORTS_CODE_ORDERING)
-  return SysUtils::IsLowEndDeviceFromJni();
+  return SysInfo::IsLowEndDevice();
 #else  //  !SUPPORTS_CODE_ORDERING
   return false;
 #endif

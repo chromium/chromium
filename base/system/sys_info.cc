@@ -187,10 +187,9 @@ bool SysInfo::IsLowEndDeviceOrPartialLowEndModeEnabled(
 #endif
 }
 
-#if !BUILDFLAG(IS_ANDROID)
-// The Android equivalent of this lives in `detectLowEndDevice()` at:
-// base/android/java/src/org/chromium/base/SysUtils.java
 bool DetectLowEndDevice() {
+  // Keep in sync with the Android implementation of this function.
+  // LINT.IfChange
   CommandLine* command_line = CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(switches::kEnableLowEndDeviceMode)) {
     return true;
@@ -202,6 +201,7 @@ bool DetectLowEndDevice() {
   int ram_size_mb = SysInfo::AmountOfPhysicalMemoryMB();
   return ram_size_mb > 0 &&
          static_cast<unsigned>(ram_size_mb) <= features::kLowMemoryDeviceThresholdMB.Get();
+  // LINT.ThenChange(//base/android/java/src/org/chromium/base/SysUtils.java)
 }
 
 // static
@@ -209,7 +209,6 @@ bool SysInfo::IsLowEndDeviceImpl() {
   static internal::LazySysInfoValue<bool, DetectLowEndDevice> instance;
   return instance.value();
 }
-#endif
 
 #if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_WIN) && \
     !BUILDFLAG(IS_CHROMEOS)

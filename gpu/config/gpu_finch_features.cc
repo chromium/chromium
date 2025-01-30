@@ -17,11 +17,11 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/android_image_reader_compat.h"
 #include "base/android/build_info.h"
-#include "base/android/sys_utils.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/system/sys_info.h"
 #include "ui/gfx/android/android_surface_control_compat.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -850,13 +850,13 @@ bool IncreaseBufferCountForHighFrameRate() {
   // of buffers. So these checks, espeically the RAM one, is to limit the impact
   // of more buffers to devices that can handle them.
   // 8GB of ram with large margin for error.
-  constexpr int RAM_8GB_CUTOFF = 7200 * 1024;
+  constexpr int RAM_8GB_CUTOFF = 7200;
   static bool increase =
       base::android::BuildInfo::GetInstance()->sdk_int() >=
           base::android::SdkVersion::SDK_VERSION_R &&
       IsAndroidSurfaceControlEnabled() &&
       base::android::EnableAndroidImageReader() &&
-      base::android::SysUtils::AmountOfPhysicalMemoryKB() > RAM_8GB_CUTOFF;
+      base::SysInfo::AmountOfPhysicalMemoryMB() > RAM_8GB_CUTOFF;
   return increase;
 }
 
