@@ -113,6 +113,19 @@ MATCHER_P(WasRendererInitiated,
                                      result_listener);
 }
 
+// Matches `BtmNavigationInfo::page_transition`. Param must be a
+// `ui::PageTransition`.
+MATCHER_P(PageTransitionCoreTypeIs,
+          matcher,
+          "has page_transition core type that " +
+              std::string(negation ? "is " : "isn't ") +
+              ui::PageTransitionGetCoreTransitionString(matcher)) {
+  return testing::ExplainMatchResult(
+      ui::PageTransitionGetCoreTransitionString(matcher),
+      ui::PageTransitionGetCoreTransitionString(arg.page_transition),
+      result_listener);
+}
+
 // Matches `BtmPageVisitInfo::had_qualifying_storage_access`.
 MATCHER_P(HadQualifyingStorageAccess,
           matcher,

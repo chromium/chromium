@@ -34,7 +34,9 @@ std::ostream& operator<<(std::ostream& out, const BtmNavigationInfo& nav) {
     out << nav.server_redirects[i];
   }
   out << "], was_user_initiated=" << nav.was_user_initiated
-      << ", was_renderer_initiated=" << nav.was_renderer_initiated << "}";
+      << ", was_renderer_initiated=" << nav.was_renderer_initiated
+      << ", page_transition="
+      << ui::PageTransitionGetCoreTransitionString(nav.page_transition) << "}";
   return out;
 }
 
