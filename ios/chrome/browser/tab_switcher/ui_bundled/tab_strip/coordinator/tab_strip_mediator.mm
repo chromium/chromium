@@ -299,7 +299,6 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
           std::make_unique<MessagingBackendServiceBridge>(self);
       _messagingService->AddPersistentMessageObserver(
           _messagingBackendServiceBridge.get());
-      [self fetchMessages];
     }
   }
   return self;
@@ -439,6 +438,10 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
 
     _webStateObserver = std::make_unique<web::WebStateObserverBridge>(self);
     [self addWebStateObservations];
+
+    // `fetchMessages` depends on the web state list to obtain a group that is
+    // corresponded to a message.
+    [self fetchMessages];
   }
 
   [self populateConsumerItems];
@@ -1689,7 +1692,8 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
 // Gets messages to indicate that a shared tab group and a tab in any shared tab
 // groups have been updated.
 - (void)fetchMessages {
-  if (!_messagingService || !_messagingService->IsInitialized()) {
+  if (!_messagingService || !_messagingService->IsInitialized() ||
+      !_webStateList) {
     return;
   }
 

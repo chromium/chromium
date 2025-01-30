@@ -717,9 +717,8 @@ constexpr CGFloat kActivityLabelAvatarSize = 16;
 // Updates the activity summary by setting a new text. Hides the summary if
 // there is no message to be displayed.
 - (void)updateActivitySummaryCell {
-  if (!_messagingService) {
-    return;
-  }
+  CHECK(_messagingService);
+  CHECK(_messagingService->IsInitialized());
 
   int numOfTabsAdded = 0;
   int numOfTabsRemoved = 0;
