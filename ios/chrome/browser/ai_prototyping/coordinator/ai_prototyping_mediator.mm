@@ -97,7 +97,10 @@
 - (void)executeFreeformServerQuery:(NSString*)query
                 systemInstructions:(NSString*)systemInstructions
                 includePageContext:(BOOL)includePageContext
-                       temperature:(float)temperature {
+                       temperature:(float)temperature
+                             model:
+                                 (optimization_guide::proto::
+                                      BlingPrototypingRequest_ModelEnum)model {
   optimization_guide::proto::BlingPrototypingRequest request;
 
   // Set the whitespace-trimmed query on the request.
@@ -117,6 +120,9 @@
 
   // Set the temperature on the request.
   request.set_temperature(temperature);
+
+  // Set the model on the request.
+  request.set_model_enum(model);
 
   __weak __typeof(self) weakSelf = self;
   base::OnceCallback<void(const std::string&)> handle_response_callback =

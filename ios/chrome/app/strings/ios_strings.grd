@@ -267,6 +267,9 @@
       <message name="IDS_IOS_AI_PROTOTYPING_HEADER" translateable="false" desc="Header for AI prototyping menu [Length: unlimited].">
         AI Prototyping
       </message>
+      <message name="IDS_IOS_AI_PROTOTYPING_MODEL_PICKER" translateable="false" desc="Model picker button text for the AI prototyping menu [Length: unlimited].">
+        Choose A Model (unspecified uses the default)
+      </message>
       <message name="IDS_IOS_AI_PROTOTYPING_ON_DEVICE_SUBMIT" translateable="false" desc="On device submit button text for AI prototyping menu [Length: unlimited].">
         On Device Submit
       </message>
@@ -300,7 +303,7 @@
       <message name="IDS_IOS_AI_PROTOTYPING_TAB_ORGANIZATION_HEADER" translateable="false" desc="Header for AI prototyping menu's tab organization page [Length: unlimited].">
         Tab Organization
       </message>
-      <message name="IDS_IOS_AI_PROTOTYPING_TEMPERATURE_SLIDER" translateable="false" desc="Label for the slider allowing the user to choose the temperature hyper parameter passed to the model, the word is truncated for length [Length: unlimited].">
+      <message name="IDS_IOS_AI_PROTOTYPING_TEMPERATURE_SLIDER" translateable="false" desc="Label for the slider allowing the user to choose the temperature hyper parameter passed to the model [Length: unlimited].">
         Temperature:
       </message>
       <message name="IDS_IOS_ALLOW_AUTOMATIC_PASSKEY_UPGRADES" desc="Title for the switch item in password manager settings that can be toggled allowing users to automatically upgrade their passwords to passkeys. Refer to Glossary for the meaning of 'passkey', do not translate it as 'password'. [iOS only]">
@@ -1099,8 +1102,8 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_CONTENT_CONTEXT_OPEN" desc="The iOS menu item for opening a link. Shorter than the desktop version [Length: 25em] [iOS only]">
         Open
       </message>
-      <message name="IDS_IOS_CONTENT_CONTEXT_OPENAIPROTOTYPE" desc="The iOS menu item for opening ai prototype menu.">
-        Open AI Prototype Menu
+      <message name="IDS_IOS_CONTENT_CONTEXT_OPENAIPROTOTYPE" desc="The iOS menu item for opening the AI prototyping menu.">
+        Open AI Prototyping Menu
       </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_OPENIMAGE" desc="The name of the Open Image command in the content area context menu">
         Open image
