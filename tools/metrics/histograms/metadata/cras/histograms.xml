@@ -994,7 +994,8 @@ This collects each top-level device metric type. For example,
   <summary>Record the errors happen when CRAS server creats a stream.</summary>
 </histogram>
 
-<histogram name="Cras.StreamEffects" units="value" expires_after="2025-09-22">
+<histogram name="Cras.StreamEffectsOnDestroy" units="value"
+    expires_after="2025-09-22">
 <!-- Name completed by histogram_suffixes
      name="Cras.Direction" and
      name="Cras.ClientType" -->
@@ -1003,7 +1004,7 @@ This collects each top-level device metric type. For example,
   <owner>chromeos-audio@google.com</owner>
   <summary>
     The bit map of effects to be enabled on this stream. This value is recorded
-    when the stream is created.
+    when the stream is destroyed and has a duration of at least 10 seconds.
   </summary>
 </histogram>
 

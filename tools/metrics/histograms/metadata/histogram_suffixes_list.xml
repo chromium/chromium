@@ -834,8 +834,8 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Cras.StreamCallbackThreshold.Output"/>
   <affected-histogram name="Cras.StreamChannelCount.Input"/>
   <affected-histogram name="Cras.StreamChannelCount.Output"/>
-  <affected-histogram name="Cras.StreamEffects.Input"/>
-  <affected-histogram name="Cras.StreamEffects.Output"/>
+  <affected-histogram name="Cras.StreamEffectsOnDestroy.Input"/>
+  <affected-histogram name="Cras.StreamEffectsOnDestroy.Output"/>
   <affected-histogram name="Cras.StreamFlags.Input"/>
   <affected-histogram name="Cras.StreamFlags.Output"/>
   <affected-histogram name="Cras.StreamOverrunCount"/>
@@ -853,7 +853,7 @@ chromium-metrics-reviews@google.com.
   <suffix name="Output" label="Playback"/>
   <affected-histogram name="Cras.StreamCallbackThreshold"/>
   <affected-histogram name="Cras.StreamChannelCount"/>
-  <affected-histogram name="Cras.StreamEffects"/>
+  <affected-histogram name="Cras.StreamEffectsOnDestroy"/>
   <affected-histogram name="Cras.StreamFlags"/>
   <affected-histogram name="Cras.StreamRuntime"/>
   <affected-histogram name="Cras.StreamSamplingFormat"/>
