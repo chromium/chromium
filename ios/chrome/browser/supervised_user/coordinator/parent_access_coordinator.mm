@@ -52,6 +52,8 @@
   _mediator =
       [[ParentAccessMediator alloc] initWithWebState:std::move(webState)];
   _viewController = [[ParentAccessBottomSheetViewController alloc] init];
+  // Do not use the bottom sheet default dismiss button.
+  _viewController.showDismissBarButton = NO;
   _viewController.presentationController.delegate = self;
   _mediator.consumer = _viewController;
 

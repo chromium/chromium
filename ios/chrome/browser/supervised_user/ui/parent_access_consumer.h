@@ -14,6 +14,9 @@
 // parent access UI.
 - (void)setWebView:(UIView*)view;
 
+// Sets the visibility of the web view.
+- (void)setWebViewHidden:(BOOL)hidden;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SUPERVISED_USER_UI_PARENT_ACCESS_CONSUMER_H_
