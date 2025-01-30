@@ -4884,21 +4884,6 @@
             ]
         }
     ],
-    "ChromeOSOobePersonalizedOnboarding": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "OobePersonalizedOnboarding"
-                    ]
-                }
-            ]
-        }
-    ],
     "ChromeOSOobeSplitModifierKeyboard": [
         {
             "platforms": [

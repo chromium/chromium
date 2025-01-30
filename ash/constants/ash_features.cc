@@ -1972,7 +1972,7 @@ BASE_FEATURE(kOobeDrivePinning,
 // will be shown if eligible during user onboarding flow.
 BASE_FEATURE(kOobePersonalizedOnboarding,
              "OobePersonalizedOnboarding",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, Pre-consent metrics functionality is enabled during OOBE.
 BASE_FEATURE(kOobePreConsentMetrics,
