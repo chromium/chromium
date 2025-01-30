@@ -9,6 +9,7 @@
 #include "base/containers/contains.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/collaboration/internal/messaging/storage/collaboration_message_util.h"
+#include "components/collaboration/internal/messaging/storage/messaging_backend_database_impl.h"
 
 namespace collaboration::messaging {
 
@@ -31,16 +32,19 @@ int ClearDirty(const collaboration_pb::Message& message, DirtyType dirty_type) {
 }  // namespace
 
 MessagesPerGroup::MessagesPerGroup() = default;
+
 MessagesPerGroup::~MessagesPerGroup() = default;
 
-MessagingBackendStoreImpl::MessagingBackendStoreImpl() = default;
+MessagingBackendStoreImpl::MessagingBackendStoreImpl(
+    std::unique_ptr<MessagingBackendDatabase> database)
+    : database_(std::move(database)) {}
 MessagingBackendStoreImpl::~MessagingBackendStoreImpl() = default;
 
 void MessagingBackendStoreImpl::Initialize(
     base::OnceCallback<void(bool)> on_initialized_callback) {
-  // TODO(crbug.com/379870772): Initialize database and load messages.
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(on_initialized_callback), true));
+  database_->Initialize(base::BindOnce(
+      &MessagingBackendStoreImpl::OnDatabaseLoaded,
+      weak_ptr_factory_.GetWeakPtr(), std::move(on_initialized_callback)));
 }
 
 bool MessagingBackendStoreImpl::HasAnyDirtyMessages(DirtyType dirty_type) {
@@ -75,6 +79,7 @@ void MessagingBackendStoreImpl::ClearDirtyMessageForTab(
     return;
   } else {
     it->second.set_dirty(ClearDirty(it->second, dirty_type));
+    database_->Update(it->second);
   }
 }
 
@@ -82,14 +87,16 @@ void MessagingBackendStoreImpl::ClearDirtyMessage(const base::Uuid uuid,
                                                   DirtyType dirty_type) {
   TraverseMessages(base::BindRepeating(
       [](const base::Uuid uuid, DirtyType dirty_type,
+         MessagingBackendDatabase* database,
          collaboration_pb::Message& message) {
         if (message.uuid() == uuid.AsLowercaseString()) {
           message.set_dirty(ClearDirty(message, dirty_type));
+          database->Update(message);
           return false;
         }
         return true;
       },
-      uuid, dirty_type));
+      uuid, dirty_type, database_.get()));
 }
 
 std::vector<collaboration_pb::Message>
@@ -107,6 +114,7 @@ MessagingBackendStoreImpl::ClearDirtyTabMessagesForGroup(
     if (IsDirty(message, DirtyType::kDotAndChip)) {
       message.set_dirty(ClearDirty(message, DirtyType::kDotAndChip));
       cleared_messages.emplace_back(message);
+      database_->Update(message);
     }
   }
 
@@ -238,6 +246,8 @@ void MessagingBackendStoreImpl::AddMessage(
   MessagesPerGroup* messages_per_group = messages_.at(collaboration_id).get();
 
   MessageCategory category = GetMessageCategory(message);
+  std::optional<collaboration_pb::Message> message_to_update = std::nullopt;
+  std::optional<std::string> message_id_to_delete = std::nullopt;
   if (category == MessageCategory::kTab) {
     CHECK(message.has_tab_data());
     // For tab messages, keep the latest per tab.
@@ -246,9 +256,12 @@ void MessagingBackendStoreImpl::AddMessage(
 
     auto it = messages_per_group->tab_messages.find(sync_tab_id);
     if (it == messages_per_group->tab_messages.end()) {
+      message_to_update = message;
       messages_per_group->tab_messages[sync_tab_id] = message;
     } else {
       if (IsMessageMoreRecent(message, it->second)) {
+        message_id_to_delete = it->second.uuid();
+        message_to_update = message;
         messages_per_group->tab_messages[sync_tab_id] = message;
       }
     }
@@ -257,15 +270,26 @@ void MessagingBackendStoreImpl::AddMessage(
     collaboration_pb::EventType event_type = message.event_type();
     auto it = messages_per_group->tab_group_messages.find(event_type);
     if (it == messages_per_group->tab_group_messages.end()) {
+      message_to_update = message;
       messages_per_group->tab_group_messages[event_type] = message;
     } else {
       if (IsMessageMoreRecent(message, it->second)) {
+        message_id_to_delete = it->second.uuid();
+        message_to_update = message;
         messages_per_group->tab_group_messages[event_type] = message;
       }
     }
   } else if (category == MessageCategory::kCollaboration) {
     // For collaboration messages, keep all the messages.
     messages_per_group->collaboration_messages.push_back(message);
+    message_to_update = message;
+  }
+
+  if (message_id_to_delete) {
+    database_->Delete({*message_id_to_delete});
+  }
+  if (message_to_update) {
+    database_->Update(*message_to_update);
   }
 }
 
@@ -337,6 +361,18 @@ void MessagingBackendStoreImpl::TraverseMessagesForGroup(
       return;
     }
   }
+}
+
+void MessagingBackendStoreImpl::OnDatabaseLoaded(
+    OnLoadCallback on_load_callback,
+    bool success,
+    const std::map<std::string, collaboration_pb::Message>& data) {
+  if (success) {
+    for (const auto& [key, message] : data) {
+      AddMessage(message);
+    }
+  }
+  std::move(on_load_callback).Run(success);
 }
 
 }  // namespace collaboration::messaging

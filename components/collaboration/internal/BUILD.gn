@@ -87,6 +87,12 @@ static_library("messaging_internal") {
     "messaging/messaging_backend_service_impl.h",
     "messaging/storage/collaboration_message_util.cc",
     "messaging/storage/collaboration_message_util.h",
+    "messaging/storage/empty_messaging_backend_database.cc",
+    "messaging/storage/empty_messaging_backend_database.h",
+    "messaging/storage/messaging_backend_database.cc",
+    "messaging/storage/messaging_backend_database.h",
+    "messaging/storage/messaging_backend_database_impl.cc",
+    "messaging/storage/messaging_backend_database_impl.h",
     "messaging/storage/messaging_backend_store.h",
     "messaging/storage/messaging_backend_store_impl.cc",
     "messaging/storage/messaging_backend_store_impl.h",
@@ -102,9 +108,11 @@ static_library("messaging_internal") {
     "//components/collaboration/public:messaging_public",
     "//components/data_sharing/public",
     "//components/saved_tab_groups/public",
+    "//components/sqlite_proto",
     "//components/strings",
     "//components/url_formatter",
     "//google_apis",
+    "//sql",
     "//ui/base",
   ]
 
@@ -165,6 +173,7 @@ source_set("messaging_unit_tests") {
   sources = [
     "messaging/data_sharing_change_notifier_impl_unittest.cc",
     "messaging/messaging_backend_service_impl_unittest.cc",
+    "messaging/storage/messaging_backend_database_impl_unittest.cc",
     "messaging/storage/messaging_backend_store_impl_unittest.cc",
     "messaging/tab_group_change_notifier_impl_unittest.cc",
   ]
