@@ -784,7 +784,8 @@ void MediaCodecVideoDecoder::OnCodecConfigured(
   codec_name_ = codec->GetName();
   MEDIA_LOG(INFO, media_log_)
       << "Created MediaCodec " << codec_name_
-      << ", is_software_codec=" << codec->IsSoftwareCodec();
+      << ", is_software_codec=" << codec->IsSoftwareCodec()
+      << ", use_block_model_=" << use_block_model_;
 
   // Since we can't get the coded size w/o rendering the frame, we try to guess
   // in cases where we are unable to render the frame (resolution changes). If
