@@ -5852,6 +5852,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5258" label="V8AILanguageDetector_Destroy_Method"/>
   <int value="5259" label="FetchLaterInvokeStatePending"/>
   <int value="5260" label="FetchLaterInvokeStateSent"/>
+  <int value="5261" label="CSPWithUnsafeHashes"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

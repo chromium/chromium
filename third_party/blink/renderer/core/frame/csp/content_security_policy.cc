@@ -211,6 +211,13 @@ static String StripURLForUseInReport(const SecurityOrigin* security_origin,
   return stripped_url.GetString();
 }
 
+bool HasScriptUnsafeHashes(
+    const network::mojom::blink::ContentSecurityPolicy& policy) {
+  CSPOperativeDirective directive = CSPDirectiveListOperativeDirective(
+      policy, network::mojom::CSPDirectiveName::ScriptSrc);
+  return directive.source_list && directive.source_list->allow_unsafe_hashes;
+}
+
 }  // namespace
 
 bool ContentSecurityPolicy::IsNonceableElement(const Element* element) {
@@ -334,6 +341,10 @@ void ContentSecurityPolicy::ReportUseCounters(
                                   ReportingDisposition::kSuppressReporting,
                                   kWillNotThrowException, g_empty_string)) {
       Count(WebFeature::kCSPWithUnsafeEval);
+    }
+
+    if (HasScriptUnsafeHashes(*policy)) {
+      Count(WebFeature::kCSPWithUnsafeHashes);
     }
 
     // We consider a policy to be "reasonably secure" if it:
