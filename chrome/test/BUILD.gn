@@ -17,7 +17,6 @@ import("//chrome/browser/page_load_metrics/integration_tests/jsdeps.gni")
 import("//chrome/browser/page_load_metrics/integration_tests/sources.gni")
 import("//chrome/browser/sync/test/integration/sync_integration_tests.gni")
 import("//chrome/common/features.gni")
-
 import("//chrome/services/speech/buildflags/buildflags.gni")
 import("//chrome/test/include_js_tests.gni")
 import("//chrome/version.gni")
@@ -2117,7 +2116,6 @@ if (!is_android) {
       "//chrome/browser/ui/omnibox",
       "//chrome/browser/ui/page_action:icon_type",
       "//chrome/browser/ui/page_info",
-      "//chrome/browser/ui/pdf",
       "//chrome/browser/ui/permission_bubble:browser_tests",
       "//chrome/browser/ui/prefs:browser_tests",
       "//chrome/browser/ui/promos:utils",
@@ -3648,6 +3646,7 @@ if (!is_android) {
       deps += [
         "../browser/pdf",
         "../browser/pdf:pdf_extension_test_utils",
+        "../browser/ui/pdf",
         "//components/pdf/browser",
         "//components/pdf/common:constants",
         "//components/pdf/common:util",
