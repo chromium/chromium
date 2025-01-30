@@ -2,7 +2,9 @@ file://chrome/android/java/src/org/chromium/chrome/browser/tasks/OWNERS
 
 per-file ...IncognitoReauth*=file://chrome/browser/incognito/OWNERS
 
+bjfong@google.com
 ckitagawa@chromium.org
 nemco@google.com
 skavuluru@google.com
 skym@chromium.org
+wylieb@chromium.org
