@@ -31,6 +31,7 @@ itertools = "0.11"
 lazy_static = "1"
 libc = "0.2"
 nom = "7.1.3"
+png = "0.17"
 proc-macro2 = "1"
 prost = "0.13.3"
 qr_code = "2"
@@ -55,9 +56,9 @@ version = "1"
 default-features = false
 features = ["serde", "std"]
 
-[dependencies.png]
-version = "0.17"
-features = ["unstable"]  # For `std::simd`.
+[dependencies.crc32fast]
+version = "1.4.2"
+features = ["nightly"]  # For optimized aarch64 implementation.
 
 [dependencies.tinyvec]
 version = "1.6.0"

@@ -101,6 +101,7 @@ dependencies = [
  "bytemuck",
  "bytes",
  "cfg-if",
+ "crc32fast",
  "cxx",
  "cxxbridge-cmd",
  "fend-core",
