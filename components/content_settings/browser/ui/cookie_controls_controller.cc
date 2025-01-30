@@ -346,19 +346,22 @@ void CookieControlsController::OnCookieBlockingEnabledForSite(
   should_reload_ = true;
   if (block_third_party_cookies) {
     base::RecordAction(UserMetricsAction("CookieControls.Bubble.TurnOn"));
-    cookie_settings_->ResetThirdPartyCookieSetting(url);
+    // Update TRACKING_PROTECTION content setting first since the COOKIES
+    // content setting observer updates the UI for both settings.
     if (ShouldUpdateTpContentSetting()) {
       tracking_protection_settings_->RemoveTrackingProtectionException(url);
     }
+    cookie_settings_->ResetThirdPartyCookieSetting(url);
+
     return;
   }
 
   CHECK(!block_third_party_cookies);
   base::RecordAction(UserMetricsAction("CookieControls.Bubble.TurnOff"));
-  cookie_settings_->SetCookieSettingForUserBypass(url);
   if (ShouldUpdateTpContentSetting()) {
     tracking_protection_settings_->AddTrackingProtectionException(url);
   }
+  cookie_settings_->SetCookieSettingForUserBypass(url);
   // Record expiration metadata for the newly created exception, and increased
   // the activation count.
   base::Value::Dict metadata = GetMetadata(settings_map_, url);
