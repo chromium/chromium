@@ -266,6 +266,8 @@ IN_PROC_BROWSER_TEST_F(NotificationContentDetectionBrowserTest,
   auto ukm_entries = test_ukm_recorder.GetEntriesByName(
       ukm::builders::PermissionUsage_NotificationShown::kEntryName);
   EXPECT_EQ(1u, ukm_entries.size());
+  test_ukm_recorder.ExpectEntryMetric(ukm_entries[0],
+                                      "DidUserAlwaysAllowNotifications", false);
   test_ukm_recorder.ExpectEntryMetric(ukm_entries[0], "IsAllowlisted", false);
   test_ukm_recorder.EntryHasMetric(ukm_entries[0], "SuspiciousScore");
 }
@@ -349,6 +351,8 @@ IN_PROC_BROWSER_TEST_F(
   auto ukm_entries = test_ukm_recorder.GetEntriesByName(
       ukm::builders::PermissionUsage_NotificationShown::kEntryName);
   EXPECT_EQ(1u, ukm_entries.size());
+  test_ukm_recorder.ExpectEntryMetric(ukm_entries[0],
+                                      "DidUserAlwaysAllowNotifications", false);
   test_ukm_recorder.ExpectEntryMetric(ukm_entries[0], "IsAllowlisted", true);
   test_ukm_recorder.EntryHasMetric(ukm_entries[0], "SuspiciousScore");
 
@@ -531,6 +535,7 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     NotificationContentDetectionShowWarningsEnabledBrowserTest,
     OriginalNotificationDisplayedWhenUserAllowlistsOrigin) {
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   // Set `ARE_SUSPICIOUS_NOTIFICATIONS_ALLOWLISTED_BY_USER` to true for
   // `kNonAllowlistedUrl`.
   HostContentSettingsMapFactory::GetForProfile(browser()->profile())
@@ -558,6 +563,14 @@ IN_PROC_BROWSER_TEST_P(
   // allowlisted the origin.
   EXPECT_FALSE(
       IsNotificationSuspicious(GetDisplayedPersistentNotifications()[0]));
+  // Check that we are recording the UKM with the correct metric values.
+  auto ukm_entries = test_ukm_recorder.GetEntriesByName(
+      ukm::builders::PermissionUsage_NotificationShown::kEntryName);
+  EXPECT_EQ(1u, ukm_entries.size());
+  test_ukm_recorder.ExpectEntryMetric(ukm_entries[0],
+                                      "DidUserAlwaysAllowNotifications", true);
+  test_ukm_recorder.ExpectEntryMetric(ukm_entries[0], "IsAllowlisted", false);
+  test_ukm_recorder.EntryHasMetric(ukm_entries[0], "SuspiciousScore");
 }
 
 IN_PROC_BROWSER_TEST_P(

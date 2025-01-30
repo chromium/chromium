@@ -742,6 +742,7 @@ class PermissionUmaUtil {
                                     const GURL& requesting_origin);
 
   static void RecordPermissionUsageNotificationShown(
+      bool did_user_always_allow_notifications,
       bool is_allowlisted,
       int suspicious_score,
       content::BrowserContext* browser_context,
