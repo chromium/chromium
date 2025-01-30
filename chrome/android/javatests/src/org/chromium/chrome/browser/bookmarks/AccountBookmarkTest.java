@@ -59,11 +59,13 @@ public class AccountBookmarkTest {
     public void setUp() throws Exception {
         // Auto form factors are very small, disable the promo to leave room for bookmarks.
         BookmarkPromoHeader.forcePromoVisibilityForTesting(false);
-        mBookmarkModel =
-                runOnUiThreadBlocking(
-                        () ->
-                                BookmarkModel.getForProfile(
-                                        ProfileManager.getLastUsedRegularProfile()));
+        runOnUiThreadBlocking(
+                () -> {
+                    mBookmarkModel =
+                            BookmarkModel.getForProfile(ProfileManager.getLastUsedRegularProfile());
+                    mBookmarkModel.setPartnerBookmarkIteratorSupplier(() -> null);
+                    mBookmarkModel.loadEmptyPartnerBookmarkShimForTesting();
+                });
         mSyncTestRule.setUpAccountAndSignInForTesting();
         mBookmarkManagerCoordinator =
                 mBookmarkTestRule.showBookmarkManager(mSyncTestRule.getActivity());
