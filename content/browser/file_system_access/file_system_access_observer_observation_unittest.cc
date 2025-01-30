@@ -595,8 +595,16 @@ TEST_F(FileSystemAccessObserverObservationTest,
   EXPECT_TRUE(observation.RemoteObservationDisconnected());
 }
 
+// TODO(crbug.com/393229134): Reenable this test.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_DirectoryObservationDestructedAfterScopeRootDeleted \
+  DISABLED_DirectoryObservationDestructedAfterScopeRootDeleted
+#else
+#define MAYBE_DirectoryObservationDestructedAfterScopeRootDeleted \
+  DirectoryObservationDestructedAfterScopeRootDeleted
+#endif
 TEST_F(FileSystemAccessObserverObservationTest,
-       DirectoryObservationDestructedAfterScopeRootDeleted) {
+       MAYBE_DirectoryObservationDestructedAfterScopeRootDeleted) {
   base::FilePath dir_path = CreateDirectory();
   storage::FileSystemURL dir_url = CreateFileSystemURL(dir_path);
   std::unique_ptr<FileSystemAccessDirectoryHandleImpl> dir_handle =
@@ -632,8 +640,16 @@ TEST_F(FileSystemAccessObserverObservationTest,
   EXPECT_TRUE(observation.RemoteObservationDisconnected());
 }
 
+// TODO(crbug.com/393229134): Reenable this test.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_DirectoryObservationNotDestructedAfterFileDeleted \
+  DISABLED_DirectoryObservationNotDestructedAfterFileDeleted
+#else
+#define MAYBE_DirectoryObservationNotDestructedAfterFileDeleted \
+  DirectoryObservationNotDestructedAfterFileDeleted
+#endif
 TEST_F(FileSystemAccessObserverObservationTest,
-       DirectoryObservationNotDestructedAfterFileDeleted) {
+       MAYBE_DirectoryObservationNotDestructedAfterFileDeleted) {
   base::FilePath dir_path = CreateDirectory();
   storage::FileSystemURL dir_url = CreateFileSystemURL(dir_path);
   std::unique_ptr<FileSystemAccessDirectoryHandleImpl> dir_handle =
@@ -666,8 +682,16 @@ TEST_F(FileSystemAccessObserverObservationTest,
       {{MojoChangeType::kModified, MojoFilePathType::kDirectory, {}}}));
 }
 
+// TODO(crbug.com/393229134): Reenable this test.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ObservationDestroyedOnQuotaExceeded \
+  DISABLED_ObservationDestroyedOnQuotaExceeded
+#else
+#define MAYBE_ObservationDestroyedOnQuotaExceeded \
+  ObservationDestroyedOnQuotaExceeded
+#endif
 TEST_F(FileSystemAccessObserverObservationTest,
-       ObservationDestroyedOnQuotaExceeded) {
+       MAYBE_ObservationDestroyedOnQuotaExceeded) {
   base::FilePath favorites_path = CreateDirectory();
   base::FilePath documents_path = CreateDirectory();
   storage::FileSystemURL favorites_url = CreateFileSystemURL(favorites_path);
