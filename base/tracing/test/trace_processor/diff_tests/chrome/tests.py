@@ -215,21 +215,6 @@ class ChromeStdlib(TestSuite):
         2
         """))
 
-  # CPU power ups
-  def test_cpu_powerups(self):
-    return DiffTestBlueprint(
-        trace=DataPath('cpu_powerups_1.pb'),
-        query="""
-        INCLUDE PERFETTO MODULE chrome.cpu_powerups;
-        SELECT * FROM chrome_cpu_power_first_toplevel_slice_after_powerup;
-        """,
-        out=Csv("""
-        "slice_id","previous_power_state"
-        424,2
-        703,2
-        708,2
-        """))
-
   def test_chrome_graphics_pipeline_surface_frame_steps(self):
     return DiffTestBlueprint(
         trace=DataPath('scroll_m131.pftrace'),
