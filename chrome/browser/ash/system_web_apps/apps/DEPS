@@ -28,7 +28,6 @@ include_rules = [
   # TODO(b/342514059): Allow help app to depend on child_accounts without
   # depending on chrome.
   "+chrome/browser/ash/child_accounts",
-  "+chrome/browser/ash/crosapi",
   "+chrome/browser/ash/crostini",
   "+chrome/browser/ash/drive",
   "+chrome/browser/ash/extensions/file_manager",
