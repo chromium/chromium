@@ -209,6 +209,104 @@ TEST_F(ClipPathPaintDefinitionTest, SimpleClipPathAnimationNotFallback) {
       animation);
 }
 
+// Test the case where there is a clip-path animation with two simple
+// keyframes that will not fall back to main.
+TEST_F(ClipPathPaintDefinitionTest, ReverseClipPathAnimationNoUpdates) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+        @keyframes clippath {
+            0% {
+                clip-path: circle(50% at 50% 50%);
+            }
+            100% {
+                clip-path: circle(30% at 30% 30%);
+            }
+        }
+        .animation {
+            animation: clippath 30s;
+        }
+    </style>
+    <div id ="target" style="width: 100px; height: 100px">
+    </div>
+  )HTML");
+
+  Element* element = GetElementById("target");
+  element->setAttribute(html_names::kClassAttr, AtomicString("animation"));
+
+  EnsureCCClipPathInvariantsHoldStyleAndLayout(
+      /* needs_repaint= */ true, CompositedPaintStatus::kComposited, element);
+
+  Animation* animation = GetFirstAnimation(element);
+
+  GetDocument().GetAnimationClock().UpdateTime(base::TimeTicks() +
+                                               base::Milliseconds(0));
+  animation->NotifyReady(ANIMATION_TIME_DELTA_FROM_MILLISECONDS(0));
+
+  EnsureCCClipPathInvariantsHoldThroughoutPainting(
+      /* needs_repaint= */ true, CompositedPaintStatus::kComposited, element,
+      animation);
+
+  GetDocument().GetAnimationClock().UpdateTime(base::TimeTicks() +
+                                               base::Milliseconds(15000));
+  animation->updatePlaybackRate(-1);
+
+  // Run lifecycle once more: animation should still be composited. Because it's
+  // the same animation, it shouldn't schedule an animation update
+  EnsureCCClipPathInvariantsHoldThroughoutLifecycle(
+      /* needs_repaint= */ true, CompositedPaintStatus::kComposited, element,
+      animation, false);
+
+  // Run lifecycle once more: repaints should be avoided even with negative
+  // playback rate
+  EnsureCCClipPathInvariantsHoldThroughoutLifecycle(
+      /* needs_repaint= */ false, CompositedPaintStatus::kComposited, element,
+      animation);
+}
+
+// Test the case where there is a clip-path animation with two simple
+// keyframes that will not fall back to main.
+TEST_F(ClipPathPaintDefinitionTest, SimpleClipPathAnimationFallback) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+        @keyframes clippath {
+            0% {
+                clip-path: initial;
+            }
+            100% {
+                clip-path: circle(30% at 30% 30%);
+            }
+        }
+        .animation {
+            animation: clippath 30s;
+        }
+    </style>
+    <div id ="target" style="width: 100px; height: 100px">
+    </div>
+  )HTML");
+
+  Element* element = GetElementById("target");
+  element->setAttribute(html_names::kClassAttr, AtomicString("animation"));
+
+  EnsureCCClipPathInvariantsHoldStyleAndLayout(
+      /* needs_repaint= */ true, CompositedPaintStatus::kNotComposited,
+      element);
+
+  Animation* animation = GetFirstAnimation(element);
+
+  GetDocument().GetAnimationClock().UpdateTime(base::TimeTicks() +
+                                               base::Milliseconds(0));
+  animation->NotifyReady(ANIMATION_TIME_DELTA_FROM_MILLISECONDS(0));
+
+  EnsureCCClipPathInvariantsHoldThroughoutPainting(
+      /* needs_repaint= */ true, CompositedPaintStatus::kNotComposited, element,
+      animation);
+
+  // Run lifecycle once more to ensure invariants hold post initial paint.
+  EnsureCCClipPathInvariantsHoldThroughoutLifecycle(
+      /* needs_repaint= */ false, CompositedPaintStatus::kNotComposited,
+      element, animation);
+}
+
 TEST_F(ClipPathPaintDefinitionTest, ClipPathAnimationCancel) {
   SetBodyInnerHTML(R"HTML(
     <style>
