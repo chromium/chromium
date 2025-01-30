@@ -204,6 +204,7 @@
 <translation id="1823120442877418684">Characters</translation>
 <translation id="1827738518074806965">Art gallery</translation>
 <translation id="183287940576828840">Offensive/Unsafe</translation>
+<translation id="1834032517784994783">Select transcription language</translation>
 <translation id="1836553715834333258">System colour</translation>
 <translation id="183675228220305365">realist</translation>
 <translation id="1838374766361614909">Clear search</translation>
@@ -731,6 +732,7 @@
 <translation id="4483049906298469269">Failed to ping the non-default network gateway</translation>
 <translation id="4483498983731992167">Can't create transcript</translation>
 <translation id="4486524074141928967">You will be signed out at <ph name="TIME" /></translation>
+<translation id="4487890678161807486">Open transcription language picker</translation>
 <translation id="4500722292849917410">Shortcut not available. Press a new shortcut using a modifier key (ctrl, alt, shift or <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Interface colour</translation>
 <translation id="4503223151711056411">Left arrow</translation>

@@ -962,6 +962,7 @@
 <translation id="2674170444375937751">Είστε βέβαιοι ότι θέλετε να διαγράψετε αυτές τις σελίδες από το ιστορικό σας;</translation>
 <translation id="2674524144218093528">Βάψιμο και φινίρισμα σπιτιού</translation>
 <translation id="2674804415323431591">Απόκρυψη προτάσεων</translation>
+<translation id="26774279487328902"><ph name="GROUP_COUNT" /> ομάδες καρτελών δεν είναι πλέον διαθέσιμες</translation>
 <translation id="2677748264148917807">Αποχώρηση</translation>
 <translation id="2683195745483370038">Βρέθηκαν άλλα αποτελέσματα</translation>
 <translation id="2686919536310834199">Αποστολή σχολίων για την επιλογή Βοήθησέ με να γράψω.</translation>
@@ -2267,6 +2268,7 @@
 <translation id="5001526427543320409">Cookie τρίτου μέρους</translation>
 <translation id="5002932099480077015">Εάν ενεργοποιηθεί, το Chrome θα αποθηκεύσει ένα αντίγραφο της κάρτας σας σε αυτήν τη συσκευή για ταχύτερη συμπλήρωση φορμών.</translation>
 <translation id="5007392906805964215">Έλεγχος</translation>
+<translation id="500790844453430087">Οι ομάδες καρτελών <ph name="GROUP_TITLE_1" /> και <ph name="GROUP_TITLE_2" /> δεν είναι πλέον διαθέσιμες</translation>
 <translation id="5011561501798487822">Εντοπίστηκε γλώσσα</translation>
 <translation id="5015510746216210676">Όνομα συσκευής:</translation>
 <translation id="5017554619425969104">Κείμενο που αντιγράψατε</translation>
@@ -2741,6 +2743,7 @@
 <translation id="5866898949289125849">Προβάλετε μια σελίδα εργαλείων προγραμματιστή.</translation>
 <translation id="5869405914158311789">Δεν είναι δυνατή η πρόσβαση σε αυτόν τον ιστότοπο</translation>
 <translation id="5869522115854928033">Αποθηκευμένοι κωδικοί πρόσβασης</translation>
+<translation id="5872215789867188990">Η ομάδα καρτελών <ph name="GROUP_TITLE" /> δεν είναι πλέον διαθέσιμη</translation>
 <translation id="5872692522325383488">Το IBAN αποθηκεύτηκε</translation>
 <translation id="5873297634595728366">Ντιζελοκίνητα οχήματα</translation>
 <translation id="5877359070305966420">Ανθρώπινο δυναμικό</translation>
@@ -3881,6 +3884,7 @@
 <translation id="784404208867107517">Ομαδοποιημένο ιστορικό</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Κανένα}=1{1 εφαρμογή (<ph name="EXAMPLE_APP_1" />)}=2{2 εφαρμογές (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# εφαρμογές (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Παρουσιάστηκε σφάλμα. Δοκιμάστε ξανά.</translation>
+<translation id="784623644169604270">Δεν υπάρχει πρόσφατη δραστηριότητα</translation>
 <translation id="785476343534277563">Κολεγιακά αθλήματα</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7860345425589240791">Εισαγάγετε τη νέα ημερομηνία λήξης και το CVC που εμφανίζεται στην <ph name="SIDE_OF_CARD" /></translation>

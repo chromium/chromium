@@ -271,6 +271,7 @@
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1448166547804028941">「<ph name="DATA_CONTROLS_SECOND_KEY_SET" />」鍵無法在相同的字典中設為「<ph name="DATA_CONTROLS_FIRST_KEY_SET" />」鍵</translation>
 <translation id="1455413310270022028">橡皮擦</translation>
+<translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{查看 0 則評論}=1{查看 1 則評論}other{查看全部 # 則評論}}</translation>
 <translation id="1458059624921545588">人文與社會</translation>
 <translation id="1458140305240870199">貼身衣物</translation>
 <translation id="1459693405370120464">天氣</translation>
@@ -960,6 +961,7 @@
 <translation id="2674170444375937751">確定要從你的記錄中刪除這些網頁嗎？</translation>
 <translation id="2674524144218093528">房屋粉刷與整修</translation>
 <translation id="2674804415323431591">隱藏建議項目</translation>
+<translation id="26774279487328902"><ph name="GROUP_COUNT" /> 個分頁群組已無法使用</translation>
 <translation id="2677748264148917807">離開</translation>
 <translation id="2683195745483370038">找到其他結果</translation>
 <translation id="2686919536310834199">提供你對「幫我寫」功能的意見。</translation>
@@ -1954,6 +1956,7 @@
 <translation id="4407758156081352648">為維護安全性，貴機構不允許在 Chrome 中重複使用密碼。Chrome 會將密碼加密處理，以保護使用者隱私。</translation>
 <translation id="4408413947728134509"><ph name="NUM_COOKIES" /> 個 Cookie</translation>
 <translation id="4412074349188076601">這項設定標示為可安裝，但沒有映像檔可供這個架構使用，因此無法安裝。</translation>
+<translation id="4412377069090572315">使用者評論</translation>
 <translation id="4414452699610169758">使用 Google 密碼管理工具和 Chrome 自動填入功能，儲存及填入密碼、付款方式和地址</translation>
 <translation id="4414515549596849729">Cookie 和網站資料</translation>
 <translation id="4415156962929755728">塑膠 (高光面)</translation>
@@ -2262,6 +2265,7 @@
 <translation id="5001526427543320409">第三方 Cookie</translation>
 <translation id="5002932099480077015">啟用後，Chrome 會將您的信用卡複本儲存在這個裝置上，以加快表單填寫速度。</translation>
 <translation id="5007392906805964215">查看</translation>
+<translation id="500790844453430087">「<ph name="GROUP_TITLE_1" />」和「<ph name="GROUP_TITLE_2" />」分頁群組已無法使用</translation>
 <translation id="5011561501798487822">偵測到的語言</translation>
 <translation id="5015510746216210676">裝置名稱：</translation>
 <translation id="5017554619425969104">你複製的文字</translation>
@@ -2369,6 +2373,7 @@
 <translation id="519422657042045905">無法使用註解模式</translation>
 <translation id="5200063972779787617">將地址儲存到帳戶</translation>
 <translation id="5201306358585911203">這個網頁上的嵌入式網頁顯示</translation>
+<translation id="5205114269877707377"><ph name="OMNIBOX_ACTION_FOCUSED_FRIENDLY_MATCH_TEXT" />，按下 Tab 鍵瀏覽可用動作，按下 Enter 鍵可執行所選動作。</translation>
 <translation id="5205222826937269299">請輸入名稱</translation>
 <translation id="5206392433295093945">臥室</translation>
 <translation id="5209670883520018268">紙匣 20</translation>
@@ -2401,6 +2406,7 @@
 <translation id="5254043433801397071">最佳化列印內容</translation>
 <translation id="5255583962255635076">工作資料夾套用的瀏覽器政策</translation>
 <translation id="5255690596502591079">仍要擷取</translation>
+<translation id="5255771248404149177">發卡機構想確認你的身分</translation>
 <translation id="5255833070095767006">350 x 460 公釐</translation>
 <translation id="5257739419779698609">{0,plural, =1{根據管理員政策，建議你不要將這個檔案複製到「<ph name="DESTINATION_NAME" />」}other{根據管理員政策，建議你不要將這些檔案複製到「<ph name="DESTINATION_NAME" />」}}</translation>
 <translation id="5263867360296733198">上傳檔案前請務必確認</translation>
@@ -2549,6 +2555,7 @@
 <translation id="5518352028556756716">大多數網站都無法使用第三方 Cookie 追蹤瀏覽網站的使用者，網站也無法在無痕模式下使用第三方 Cookie。</translation>
 <translation id="5519516356611866228">包含你所做的變更</translation>
 <translation id="5519696598216267194">紙 (打孔紙)</translation>
+<translation id="5520105693415771152">資料與現況不符嗎？請與發卡機構聯絡，以更新這筆資料。</translation>
 <translation id="5521782189689806907">櫥櫃與工作檯</translation>
 <translation id="5523118979700054094">政策名稱</translation>
 <translation id="5523588073846127669">商家不接受這張虛擬卡片</translation>
@@ -2734,6 +2741,7 @@
 <translation id="5866898949289125849">目前查看的是開發人員工具頁面</translation>
 <translation id="5869405914158311789">無法連上這個網站</translation>
 <translation id="5869522115854928033">已儲存的密碼</translation>
+<translation id="5872215789867188990">「<ph name="GROUP_TITLE" />」分頁群組已無法使用</translation>
 <translation id="5872692522325383488">已儲存 IBAN</translation>
 <translation id="5873297634595728366">柴油車</translation>
 <translation id="5877359070305966420">人力資源</translation>
@@ -2775,6 +2783,7 @@
 <translation id="5937560539988385583">已翻譯網頁</translation>
 <translation id="5938153366081463283">新增虛擬卡片</translation>
 <translation id="5938793338444039872">Troy</translation>
+<translation id="5938866385061293322">這些資訊來自 Trustpilot、ScamAdviser、Google 等獨立評論網站，並由 AI 技術生成摘要。</translation>
 <translation id="5944297261866530437">織品 (高光面)</translation>
 <translation id="5950901984834744590">剃刀與刮鬍刀</translation>
 <translation id="5951495562196540101">無法透過個人帳戶註冊 (有封裝授權)。</translation>
@@ -3141,6 +3150,7 @@
 <translation id="6567832540451970450">系統管理員允許這個網站使用<ph name="PERMISSION" /></translation>
 <translation id="6568793038316600992">「管理付款方式」按鈕，啟動後即可在 Chrome 設定中管理付款和信用卡資訊</translation>
 <translation id="6569060085658103619">目前顯示的是擴充功能頁面</translation>
+<translation id="6572867903637058088">這則評論對你有幫助嗎？</translation>
 <translation id="6573200754375280815">雙孔 (右側)</translation>
 <translation id="6574762126505704998">填滿</translation>
 <translation id="6575408526598156416">儲存到帳戶</translation>
@@ -3872,6 +3882,7 @@
 <translation id="784404208867107517">分類歷史記錄</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{無}=1{1 個應用程式：<ph name="EXAMPLE_APP_1" />}=2{2 個應用程式：<ph name="EXAMPLE_APP_1" />、<ph name="EXAMPLE_APP_2" />}other{# 個應用程式：<ph name="EXAMPLE_APP_1" />、<ph name="EXAMPLE_APP_2" />、<ph name="AND_MORE" />}}</translation>
 <translation id="7846161022626028328">發生錯誤，請再試一次。</translation>
+<translation id="784623644169604270">最近沒有活動</translation>
 <translation id="785476343534277563">大專院校運動</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7860345425589240791">請重新輸入<ph name="SIDE_OF_CARD" />的到期日和信用卡驗證碼</translation>
@@ -4318,9 +4329,11 @@
 <translation id="8672535691554698269">電腦網路</translation>
 <translation id="8675446170353411473">正在將檔案上傳到「<ph name="CLOUD_PROVIDER" />」</translation>
 <translation id="8676424191133491403">不延遲</translation>
+<translation id="8679727228072670864">{COUNT,plural, =1{已刪除 {COUNT} 個表格}other{已刪除 {COUNT} 個表格}}</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />，答案：<ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">無法載入位於 <ph name="PAGE" /> 的網頁，原因如下：</translation>
 <translation id="8682297334444610648">恐龍遊戲，輕觸即可遊玩</translation>
+<translation id="8685225035093721011">商店評論</translation>
 <translation id="8686424632716064939">電腦安全性</translation>
 <translation id="8687278439622293018">已刪除「<ph name="ENTRY_VOICEOVER" />」這項資料</translation>
 <translation id="8687429322371626002">你的裝置和帳戶是由 <ph name="MANAGER" /> 管理。</translation>

@@ -271,6 +271,7 @@
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1448166547804028941">Ключі "<ph name="DATA_CONTROLS_FIRST_KEY_SET" />" не можна додати в той самий словник, що й ключі "<ph name="DATA_CONTROLS_SECOND_KEY_SET" />"</translation>
 <translation id="1455413310270022028">Гумка</translation>
+<translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{Переглянути 0 відгуків}=1{Переглянути 1 відгук}one{Переглянути всі відгуки (#)}few{Переглянути всі # відгуки}many{Переглянути всі # відгуків}other{Переглянути всі # відгуку}}</translation>
 <translation id="1458059624921545588">Люди й суспільство</translation>
 <translation id="1458140305240870199">Спідня білизна</translation>
 <translation id="1459693405370120464">Погода</translation>
@@ -961,6 +962,7 @@
 <translation id="2674170444375937751">Ви дійсно бажаєте видалити ці сторінки зі своєї історії?</translation>
 <translation id="2674524144218093528">Малярні й оздоблювальні роботи</translation>
 <translation id="2674804415323431591">Сховати пропозиції</translation>
+<translation id="26774279487328902">Більше не доступно стільки груп вкладок: <ph name="GROUP_COUNT" /></translation>
 <translation id="2677748264148917807">Вийти</translation>
 <translation id="2683195745483370038">Знайдено інші результати</translation>
 <translation id="2686919536310834199">Надіслати відгук про функцію "Допомога з текстом".</translation>
@@ -1956,6 +1958,7 @@
 <translation id="4407758156081352648">За вимогами вашої організації щодо безпеки, у Chrome не можна повторно використовувати паролі. Паролі в Chrome шифруються, щоб захистити конфіденційність користувачів.</translation>
 <translation id="4408413947728134509">Файли cookie: <ph name="NUM_COOKIES" /></translation>
 <translation id="4412074349188076601">Цю конфігурацію позначено як встановлювану, однак оскільки для цієї архітектури не надано образ, її не можна встановити.</translation>
+<translation id="4412377069090572315">Відгуки користувачів</translation>
 <translation id="4414452699610169758">Зберігайте й заповнюйте паролі, способи оплати та адреси за допомогою Google Менеджера паролів і автозаповнення в Chrome</translation>
 <translation id="4414515549596849729">файли cookie та дані із сайтів</translation>
 <translation id="4415156962929755728">Пластик (високоглянцевий)</translation>
@@ -2264,6 +2267,7 @@
 <translation id="5001526427543320409">Сторонні файли cookie</translation>
 <translation id="5002932099480077015">Коли цю функцію ввімкнено, Chrome зберігає копію даних вашої картки на пристрої, щоб ви могли швидше заповнювати форми.</translation>
 <translation id="5007392906805964215">Переглянути</translation>
+<translation id="500790844453430087">Групи вкладок "<ph name="GROUP_TITLE_1" />" і "<ph name="GROUP_TITLE_2" />" більше не доступні</translation>
 <translation id="5011561501798487822">Визначена мова</translation>
 <translation id="5015510746216210676">Назва пристрою:</translation>
 <translation id="5017554619425969104">Скопійований текст</translation>
@@ -2371,6 +2375,7 @@
 <translation id="519422657042045905">Анотація недоступна</translation>
 <translation id="5200063972779787617">Зберегти адресу в обліковому записі</translation>
 <translation id="5201306358585911203">Повідомлення з вбудованої сторінки на цій сторінці</translation>
+<translation id="5205114269877707377"><ph name="OMNIBOX_ACTION_FOCUSED_FRIENDLY_MATCH_TEXT" />: натисніть Tab, щоб переглянути доступні дії, а потім – Enter, щоб виконати вибрану дію.</translation>
 <translation id="5205222826937269299">Укажіть ім’я</translation>
 <translation id="5206392433295093945">Спальня</translation>
 <translation id="5209670883520018268">Лоток 20</translation>
@@ -2736,6 +2741,7 @@
 <translation id="5866898949289125849">Ви переглядаєте сторінку Інструментів розробника</translation>
 <translation id="5869405914158311789">Немає зв’язку із сайтом</translation>
 <translation id="5869522115854928033">Збережені паролі</translation>
+<translation id="5872215789867188990">Група вкладок "<ph name="GROUP_TITLE" />" більше не доступна</translation>
 <translation id="5872692522325383488">Номер IBAN збережено</translation>
 <translation id="5873297634595728366">Дизельні автомобілі</translation>
 <translation id="5877359070305966420">Керування людськими ресурсами</translation>
@@ -2777,6 +2783,7 @@
 <translation id="5937560539988385583">Сторінку перекладено</translation>
 <translation id="5938153366081463283">Додайте віртуальну картку</translation>
 <translation id="5938793338444039872">Troy</translation>
+<translation id="5938866385061293322">Ці дані надходять із незалежних вебсайтів із відгуками, таких як Trustpilot, ScamAdviser, Google тощо. Короткі огляди створюються за допомогою ШІ.</translation>
 <translation id="5944297261866530437">Тканина (високоглянцева)</translation>
 <translation id="5950901984834744590">Станки для гоління й електробритви</translation>
 <translation id="5951495562196540101">Не вдається зареєструватися за допомогою особистого облікового запису користувача (ліцензію отримано в комплекті з пристроєм).</translation>
@@ -3143,6 +3150,7 @@
 <translation id="6567832540451970450">Ваш адміністратор дозволяє надавати цьому сайту такий дозвіл: <ph name="PERMISSION" /></translation>
 <translation id="6568793038316600992">Кнопка "Керувати способами оплати"; активуйте, щоб керувати платежами й даними кредитної картки в налаштуваннях Chrome</translation>
 <translation id="6569060085658103619">Ви переглядаєте сторінку розширень</translation>
+<translation id="6572867903637058088">Ця інформація корисна?</translation>
 <translation id="6573200754375280815">Пробити два отвори праворуч</translation>
 <translation id="6574762126505704998">Заповнення</translation>
 <translation id="6575408526598156416">Зберегти в обліковому записі</translation>
@@ -4321,9 +4329,11 @@
 <translation id="8672535691554698269">Комп’ютерні мережі</translation>
 <translation id="8675446170353411473">Ваші файли завантажуються в сервіс <ph name="CLOUD_PROVIDER" /></translation>
 <translation id="8676424191133491403">Без затримки</translation>
+<translation id="8679727228072670864">{COUNT,plural, =1{Видалено {COUNT} таблицю}one{Видалено {COUNT} таблицю}few{Видалено {COUNT} таблиці}many{Видалено {COUNT} таблиць}other{Видалено {COUNT} таблиці}}</translation>
 <translation id="8680536109547170164">"<ph name="QUERY" />", відповідь: "<ph name="ANSWER" />"</translation>
 <translation id="8681531050781943054">Не вдалося завантажити веб-сторінку <ph name="PAGE" />.</translation>
 <translation id="8682297334444610648">Гра Dino: натисніть, щоб грати</translation>
+<translation id="8685225035093721011">Відгуки про магазин</translation>
 <translation id="8686424632716064939">Комп’ютерна безпека</translation>
 <translation id="8687278439622293018">Запис "<ph name="ENTRY_VOICEOVER" />" видалено</translation>
 <translation id="8687429322371626002">Вашим пристроєм і обліковим записом керує <ph name="MANAGER" />.</translation>

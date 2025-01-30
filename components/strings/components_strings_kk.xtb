@@ -962,6 +962,7 @@
 <translation id="2674170444375937751">Тарихыңыздан осы беттерді шынымен жою қажет пе?</translation>
 <translation id="2674524144218093528">Үйді бояу және әрлеу</translation>
 <translation id="2674804415323431591">Ұсыныстарды жасыру</translation>
+<translation id="26774279487328902"><ph name="GROUP_COUNT" /> қойындылар тобы бұдан былай қолжетімді емес.</translation>
 <translation id="2677748264148917807">Шығу</translation>
 <translation id="2683195745483370038">Басқа нәтижелер табылды</translation>
 <translation id="2686919536310834199">"Жазуға көмек керек" функциясына қатысты пікір жіберіңіз.</translation>
@@ -2265,6 +2266,7 @@
 <translation id="5001526427543320409">Үшінші тарап cookie файлдары</translation>
 <translation id="5002932099480077015">Құсбелгі қойылса, Chrome нысанды жылдамырақ толтыру үшін картаңыздың көшірмесін осы құрылғыға сақтап қояды.</translation>
 <translation id="5007392906805964215">Көру</translation>
+<translation id="500790844453430087">"<ph name="GROUP_TITLE_1" />" және "<ph name="GROUP_TITLE_2" />" қойындылар топтары бұдан былай қолжетімді емес.</translation>
 <translation id="5011561501798487822">Анықталған тіл</translation>
 <translation id="5015510746216210676">Құрылғы атауы:</translation>
 <translation id="5017554619425969104">Көшірілген мәтін</translation>
@@ -2372,6 +2374,7 @@
 <translation id="519422657042045905">Аннотация жоқ</translation>
 <translation id="5200063972779787617">Мекенжайды аккаунтқа сақтау</translation>
 <translation id="5201306358585911203">Бұл веббетке ендірілген беттегі сұрау</translation>
+<translation id="5205114269877707377"><ph name="OMNIBOX_ACTION_FOCUSED_FRIENDLY_MATCH_TEXT" />, қолжетімді әрекеттерді шолу үшін Tab пернесін басып, таңдалған әрекетті орындау үшін Enter пернесін басыңыз.</translation>
 <translation id="5205222826937269299">Аты қажет</translation>
 <translation id="5206392433295093945">Жатын бөлме</translation>
 <translation id="5209670883520018268">20-науа</translation>
@@ -2737,6 +2740,7 @@
 <translation id="5866898949289125849">Әзірлеуші құралдары беті ашылды.</translation>
 <translation id="5869405914158311789">Бұл сайтқа кіру мүмкін емес</translation>
 <translation id="5869522115854928033">Сақталған құпия сөздер</translation>
+<translation id="5872215789867188990">"<ph name="GROUP_TITLE" />" қойындылар тобы бұдан былай қолжетімді емес.</translation>
 <translation id="5872692522325383488">IBAN сақталды</translation>
 <translation id="5873297634595728366">Дизельді көліктер</translation>
 <translation id="5877359070305966420">Еңбек ресурстары</translation>
@@ -3876,6 +3880,7 @@
 <translation id="784404208867107517">Топтастырылған тарих</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Жоқ}=1{1 қолданба (<ph name="EXAMPLE_APP_1" />)}=2{2 қолданба (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# қолданба (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Қате пайда болды. Қайталап көріңіз.</translation>
+<translation id="784623644169604270">Соңғы іс-әрекеттер жоқ.</translation>
 <translation id="785476343534277563">Студенттік спорт</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7860345425589240791"><ph name="SIDE_OF_CARD" /> жағындағы жаңа жарамдылық мерзімі мен CVC кодын енгізіңіз</translation>

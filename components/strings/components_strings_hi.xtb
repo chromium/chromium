@@ -963,6 +963,7 @@
 <translation id="2674170444375937751">क्या आप वाकई अपने इतिहास से इन पेजों को मिटाना चाहते हैं?</translation>
 <translation id="2674524144218093528">घर की पेंटिंग और फ़िनिशिंग का सामान</translation>
 <translation id="2674804415323431591">सुझाव छिपाएं</translation>
+<translation id="26774279487328902"><ph name="GROUP_COUNT" /> टैब ग्रुप अब मौजूद नहीं हैं</translation>
 <translation id="2677748264148917807">छोड़ें</translation>
 <translation id="2683195745483370038">अन्य नतीजे मिले</translation>
 <translation id="2686919536310834199">'लिखने में मेरी मदद करें' सुविधा के लिए सुझाव/राय भेजें या शिकायत करें.</translation>
@@ -2266,6 +2267,7 @@
 <translation id="5001526427543320409">तीसरे पक्ष की कुकी</translation>
 <translation id="5002932099480077015">अगर सक्षम किया हुआ हो, तो Chrome फ़ॉर्म को तेज़ी से भरने के लिए इस डिवाइस पर आपके कार्ड की एक प्रति संग्रहित करेगा.</translation>
 <translation id="5007392906805964215">समीक्षा करें</translation>
+<translation id="500790844453430087">"<ph name="GROUP_TITLE_1" />" और "<ph name="GROUP_TITLE_2" />" "टैब ग्रुप अब मौजूद नहीं हैं</translation>
 <translation id="5011561501798487822">पहचानी गई भाषा</translation>
 <translation id="5015510746216210676">मशीन का नाम:</translation>
 <translation id="5017554619425969104">आपका कॉपी किया हुआ टेक्स्ट</translation>
@@ -2373,6 +2375,7 @@
 <translation id="519422657042045905">व्याख्या की सुविधा उपलब्ध नहीं है</translation>
 <translation id="5200063972779787617">खाते में पता सेव करें</translation>
 <translation id="5201306358585911203">इस पेज पर एम्बेड किए गए पेज का कहना है कि</translation>
+<translation id="5205114269877707377"><ph name="OMNIBOX_ACTION_FOCUSED_FRIENDLY_MATCH_TEXT" />, उपलब्ध कार्रवाइयों को ब्राउज़ करने के लिए Tab दबाएं. इसके बाद, चुनी गई कार्रवाई करने के लिए, Enter दबाएं.</translation>
 <translation id="5205222826937269299">नाम ज़रूरी है</translation>
 <translation id="5206392433295093945">बेडरूम</translation>
 <translation id="5209670883520018268">ट्रे 20</translation>
@@ -2738,6 +2741,7 @@
 <translation id="5866898949289125849">डेवलपर के टूल वाला पेज देखा जा रहा है</translation>
 <translation id="5869405914158311789">इस साइट तक नहीं पहुंचा जा सकता</translation>
 <translation id="5869522115854928033">सेव किए गए पासवर्ड</translation>
+<translation id="5872215789867188990">"<ph name="GROUP_TITLE" />" टैब ग्रुप अब मौजूद नहीं है</translation>
 <translation id="5872692522325383488">IBAN सेव किया गया</translation>
 <translation id="5873297634595728366">डीज़ल वाहन</translation>
 <translation id="5877359070305966420">मानव संसाधन</translation>
@@ -2924,7 +2928,7 @@
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="6184868291074982484">Chrome, तीसरे पक्ष की कुकी को अपने-आप सीमित कर देता है</translation>
 <translation id="6188479691141473408">और <ph name="N_FIELDS" /> अन्य फ़ील्ड</translation>
-<translation id="6190518157737269631">अपने कीबोर्ड पर कुछ बटनों के इनपुट को बदलने की अनुमति दें, जैसे कि Esc</translation>
+<translation id="6190518157737269631">अपने कीबोर्ड पर Esc जैसे कुछ बटनों के इनपुट को बदलने की अनुमति दें</translation>
 <translation id="6194209731893739467">ट्रैक किए गए अपने सभी प्रॉडक्ट यहां देखें</translation>
 <translation id="6195163219142236913">तीसरे पक्ष की कुकी सीमित हैं</translation>
 <translation id="6195371403461054755">जियोलॉजी</translation>
@@ -4326,6 +4330,7 @@
 <translation id="8672535691554698269">कंप्यूटर नेटवर्क</translation>
 <translation id="8675446170353411473">आपकी फ़ाइलें <ph name="CLOUD_PROVIDER" /> में अपलोड की जा रही हैं</translation>
 <translation id="8676424191133491403">बिना देरी के</translation>
+<translation id="8679727228072670864">{COUNT,plural, =1{{COUNT} टेबल मिटाई गई}one{{COUNT} टेबल मिटाई गई}other{{COUNT} टेबल मिटाई गईं}}</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, उत्तर, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054"><ph name="PAGE" /> पर वेबपेज को लोड नहीं किया जा सका क्योंकि:</translation>
 <translation id="8682297334444610648">Dino गेम को खेलने के लिए टैप करें</translation>

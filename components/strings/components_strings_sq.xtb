@@ -271,6 +271,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1448166547804028941">Çelësat "<ph name="DATA_CONTROLS_FIRST_KEY_SET" />" nuk mund të caktohen në të njëjtin fjalor me çelësat "<ph name="DATA_CONTROLS_SECOND_KEY_SET" />"</translation>
 <translation id="1455413310270022028">Goma</translation>
+<translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{Shiko 0 komente}=1{Shiko 1 koment}other{Shiko të # komentet}}</translation>
 <translation id="1458059624921545588">Njerëzit dhe shoqëria</translation>
 <translation id="1458140305240870199">Veshje të brendshme</translation>
 <translation id="1459693405370120464">Moti</translation>
@@ -961,6 +962,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2674170444375937751">Je i sigurt se dëshiron t'i fshish këto faqe nga historiku?</translation>
 <translation id="2674524144218093528">Lyerje dhe finitura shtëpish</translation>
 <translation id="2674804415323431591">Fshih sugjerimet</translation>
+<translation id="26774279487328902"><ph name="GROUP_COUNT" /> grupe skedash nuk ofrohen më</translation>
 <translation id="2677748264148917807">Largohu</translation>
 <translation id="2683195745483370038">Rezultate të tjera të gjetura</translation>
 <translation id="2686919536310834199">Dërgo komente për "Më ndihmo të shkruaj".</translation>
@@ -1956,6 +1958,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4407758156081352648">Për mirëmbajtjen e sigurisë, organizata jote nuk lejon që fjalëkalimet të ripërdoren në Chrome. Fjalëkalimet në Chrome janë të enkriptuara për të mbrojtur privatësinë e përdoruesve.</translation>
 <translation id="4408413947728134509">Kukit <ph name="NUM_COOKIES" /></translation>
 <translation id="4412074349188076601">Ky konfigurim është shënuar si i instalueshëm, por për këtë arkitekturë nuk ofrohet asnjë imazh, prandaj ai nuk mund të instalohet.</translation>
+<translation id="4412377069090572315">Çfarë po thonë njerëzit</translation>
 <translation id="4414452699610169758">Përdor "Menaxherin e fjalëkalimeve të Google" dhe "Plotësimin automatik" të Chrome për të ruajtur dhe plotësuar fjalëkalimet, mënyrat e pagesës dhe adresat</translation>
 <translation id="4414515549596849729">kukit dhe të dhënat e faqes</translation>
 <translation id="4415156962929755728">Plastikë (me shkëlqim të lartë)</translation>
@@ -2264,6 +2267,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5001526427543320409">Kukit e palëve të treta</translation>
 <translation id="5002932099480077015">Nëse aktivizohet, Chrome do të ruajë një kopje të kartës tënde në këtë pajisje për plotësim më të shpejtë të formularit.</translation>
 <translation id="5007392906805964215">Rishiko</translation>
+<translation id="500790844453430087">Grupet e skedave "<ph name="GROUP_TITLE_1" />" dhe "<ph name="GROUP_TITLE_2" />" nuk ofrohen më</translation>
 <translation id="5011561501798487822">Gjuha e zbuluar</translation>
 <translation id="5015510746216210676">Emri i pajisjes:</translation>
 <translation id="5017554619425969104">Teksti që kopjove</translation>
@@ -2371,6 +2375,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="519422657042045905">Shënimi nuk ofrohet</translation>
 <translation id="5200063972779787617">Ruaje adresën te llogaria</translation>
 <translation id="5201306358585911203">Një faqe e integruar në këtë faqe thotë</translation>
+<translation id="5205114269877707377"><ph name="OMNIBOX_ACTION_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp tastin "Tab" për të shfletuar veprimet e disponueshme dhe më pas tastin "Enter" për të ekzekutuar veprimin e zgjedhur.</translation>
 <translation id="5205222826937269299">Emri është i detyrueshëm</translation>
 <translation id="5206392433295093945">Dhoma e gjumit</translation>
 <translation id="5209670883520018268">Tabakaja 20</translation>
@@ -2736,6 +2741,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5866898949289125849">Po shikon një faqe të veglave të zhvilluesit</translation>
 <translation id="5869405914158311789">Ky sajt është i paarritshëm</translation>
 <translation id="5869522115854928033">Fjalëkalimet e ruajtura</translation>
+<translation id="5872215789867188990">"<ph name="GROUP_TITLE" />" grup skedash nuk ofrohet më</translation>
 <translation id="5872692522325383488">Numri IBAN u ruajt</translation>
 <translation id="5873297634595728366">Automjete me naftë</translation>
 <translation id="5877359070305966420">Burimet njerëzore</translation>
@@ -2777,6 +2783,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5937560539988385583">Faqja u përkthye</translation>
 <translation id="5938153366081463283">Shto kartë virtuale</translation>
 <translation id="5938793338444039872">Troy</translation>
+<translation id="5938866385061293322">Këto informacione vijnë nga uebsajte të pavarura të komenteve, si p.sh. Trustpilot, ScamAdviser, Google etj. Përmbledhjet krijohen me IA-në.</translation>
 <translation id="5944297261866530437">Pëlhurë (me shumë shkëlqim)</translation>
 <translation id="5950901984834744590">Brisqe dhe makina rroje</translation>
 <translation id="5951495562196540101">Nuk mund të regjistrohesh me një llogari konsumatori (ofrohet një licencë paketë).</translation>
@@ -3142,6 +3149,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6567832540451970450">Administratori yt lejon <ph name="PERMISSION" /> për këtë sajt</translation>
 <translation id="6568793038316600992">Butoni "Menaxho mënyrat e pagesës". Aktivizoje për të menaxhuar informacionet e pagesave dhe të kartave të kreditit te cilësimet e Chrome</translation>
 <translation id="6569060085658103619">Po shikon një faqe të shtesës</translation>
+<translation id="6572867903637058088">A është e dobishme kjo?</translation>
 <translation id="6573200754375280815">Dy shpime djathtas</translation>
 <translation id="6574762126505704998">Mbush</translation>
 <translation id="6575408526598156416">Ruaje te llogaria</translation>
@@ -4318,9 +4326,11 @@ Detaje shtesë:
 <translation id="8672535691554698269">Rrjetet kompjuterike</translation>
 <translation id="8675446170353411473">Skedarët e tu po ngarkohen te "<ph name="CLOUD_PROVIDER" />"</translation>
 <translation id="8676424191133491403">Pa vonesë</translation>
+<translation id="8679727228072670864">{COUNT,plural, =1{{COUNT} tabelë u fshi}other{{COUNT} tabela u fshinë}}</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, përgjigjja, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Faqja e uebit në <ph name="PAGE" /> nuk mund të ngarkohej sepse:</translation>
 <translation id="8682297334444610648">Loja Dino, trokit për të luajtur</translation>
+<translation id="8685225035093721011">Komentet për dyqanin</translation>
 <translation id="8686424632716064939">Siguria kompjuterike</translation>
 <translation id="8687278439622293018">Hyrja <ph name="ENTRY_VOICEOVER" /> është fshirë</translation>
 <translation id="8687429322371626002">Pajisja dhe llogaria jote menaxhohen nga <ph name="MANAGER" />.</translation>

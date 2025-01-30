@@ -204,7 +204,7 @@
 <translation id="1823120442877418684">Likovi</translation>
 <translation id="1827738518074806965">Umjetnička galerija</translation>
 <translation id="183287940576828840">Uvredljivo/nesigurno</translation>
-<translation id="1834032517784994783">Odaberite jezik prijepisa</translation>
+<translation id="1834032517784994783">Odabir jezika za transkripciju</translation>
 <translation id="1836553715834333258">Boja sistema</translation>
 <translation id="183675228220305365">realizam</translation>
 <translation id="1838374766361614909">Obriši pretraživanje</translation>
@@ -732,7 +732,7 @@
 <translation id="4483049906298469269">Provjera pingom mrežnog pristupnika koji nije zadan nije uspjela</translation>
 <translation id="4483498983731992167">Nije moguće kreirati transkript</translation>
 <translation id="4486524074141928967">Odjavit ćete se u <ph name="TIME" /></translation>
-<translation id="4487890678161807486">Otvori alat za odabir jezika prijepisa</translation>
+<translation id="4487890678161807486">Otvaranje birača jezika za transkripciju</translation>
 <translation id="4500722292849917410">Prečica nije dostupna. Pritisnite novu prečicu koristeći modifikacijsku tipku (Ctrl, Alt, Shift ili tipku <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Boja interfejsa</translation>
 <translation id="4503223151711056411">Strelica ulijevo</translation>

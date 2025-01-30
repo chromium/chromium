@@ -204,6 +204,7 @@
 <translation id="1823120442877418684">Tegn</translation>
 <translation id="1827738518074806965">Kunstgalleri</translation>
 <translation id="183287940576828840">Støtende/farlig</translation>
+<translation id="1834032517784994783">Velg transkripsjonsspråk</translation>
 <translation id="1836553715834333258">Systemfarge</translation>
 <translation id="183675228220305365">realisme</translation>
 <translation id="1838374766361614909">Fjern søket</translation>
@@ -731,6 +732,7 @@
 <translation id="4483049906298469269">Kunne ikke pinge gatewayen for ikke-standardnettverket</translation>
 <translation id="4483498983731992167">Kan ikke opprette transkripsjon</translation>
 <translation id="4486524074141928967">Du blir logget av kl. <ph name="TIME" /></translation>
+<translation id="4487890678161807486">Åpne språkvelgeren for transkripsjoner</translation>
 <translation id="4500722292849917410">Hurtigtasten er ikke tilgjengelig. Trykk på en ny hurtigtast som inneholder en modifikatortast (Ctrl, Alt, Shift eller <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Grensesnittfarge</translation>
 <translation id="4503223151711056411">Venstrepil</translation>
@@ -1549,7 +1551,7 @@ Last ned transkripsjonsmodellen (opptil 100 MB) for å få disse transkripsjonen
 <translation id="8230672074305416752">Kunne ikke pinge gatewayen for standardnettverket</translation>
 <translation id="8238771987802558562">Velg et APN</translation>
 <translation id="8246209727385807362">Ukjent operatør</translation>
-<translation id="8250926778281121244">rust</translation>
+<translation id="8250926778281121244">rustrød</translation>
 <translation id="8257572018929862473">Åpne innstillingene for hurtiginfo</translation>
 <translation id="8261506727792406068">Slett</translation>
 <translation id="8262870577632766028">1 time</translation>

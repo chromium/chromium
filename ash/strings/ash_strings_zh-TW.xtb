@@ -281,6 +281,7 @@
 <translation id="1925320505152357008">還剩不到 1 分鐘</translation>
 <translation id="1928739107511554905">如要更新，請連接鍵盤並使用觸控螢幕重新啟動 Chromebook。</translation>
 <translation id="1929331825127010451">返回問題</translation>
+<translation id="1946615340060705561">按下「C」鍵即可放開滑鼠按鈕</translation>
 <translation id="1948405482892809935">切換到下一位使用者</translation>
 <translation id="1951012854035635156">小幫手</translation>
 <translation id="1954252331066828794">已結束錄製螢幕畫面</translation>
@@ -730,6 +731,7 @@
 <translation id="3522979239100719575">正在尋找可用的設定檔，請稍候片刻。</translation>
 <translation id="3526440770046466733">在新分頁中開啟連結並停留在目前的分頁中</translation>
 <translation id="353086728817903341">已連線至 <ph name="NUM_DEVICES" /> 部裝置</translation>
+<translation id="3532247131850366052">無法建立 Google 試算表</translation>
 <translation id="3533126039236445965">檔案櫃中的應用程式</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> 無線基地台</translation>
 <translation id="3540893133818942399">取消以下設定：查看手機上最近的相片和媒體</translation>
@@ -826,6 +828,7 @@
 <translation id="380165613292957338">你好，需要什麼協助嗎？</translation>
 <translation id="3804737937830804242">收合相機調整大小的按鈕</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 個表情符號圖示。沒有其他相符的結果。}other{# 個表情符號圖示。沒有其他相符的結果。}}</translation>
+<translation id="3822403841174077928">無法複製格式</translation>
 <translation id="3824784079442479685">這將允許「<ph name="APP_NAME" />」和具有攝影機權限的所有應用程式和網站存取攝影機。系統可能會要求你重新整理網頁或重新啟動應用程式。</translation>
 <translation id="3826099427150913765">切換為密碼</translation>
 <translation id="383058930331066723">省電模式已開啟</translation>
@@ -1211,6 +1214,7 @@
 <translation id="5043679421800073804">點選或輕觸檔案櫃中的最後一個圖示</translation>
 <translation id="504465286040788597">上一段</translation>
 <translation id="5045550434625856497">密碼不正確</translation>
+<translation id="5058794129231928255">無法建立 Google 文件</translation>
 <translation id="5062496344832867502">RAM</translation>
 <translation id="5068762093486106012">如果在靜音狀態下說話，系統會傳送通知給你。音訊資料只會儲存在裝置上。</translation>
 <translation id="5077416371682039027">配置以下設定：查看手機上最近的相片、媒體、通知和應用程式</translation>
@@ -1644,6 +1648,7 @@
 <translation id="6468406072297048412">{0,plural, =1{在 1 分鐘內將裝置復原為先前的版本}other{在 # 分鐘內將裝置復原為先前的版本}}</translation>
 <translation id="6469104339369989396">切換無線基地台</translation>
 <translation id="6477681113376365978">無法下載檔案</translation>
+<translation id="648135757200234041">無法建立聯絡人</translation>
 <translation id="6482559668224714696">全螢幕放大鏡</translation>
 <translation id="6485086611007560630">天氣 (無法取得資訊)</translation>
 <translation id="6490471652906364588">USB-C 裝置 (右側連接埠)</translation>
@@ -1972,6 +1977,7 @@
 <translation id="7611213136657090146">已重新連接攝影機。</translation>
 <translation id="7613620083300976559">開啟遊戲控制選項</translation>
 <translation id="761736749114493194">切換相機取景功能。<ph name="STATE_TEXT" /></translation>
+<translation id="7621008024906456933">「快速分享」設定</translation>
 <translation id="7624117708979618027">華氏 <ph name="TEMPERATURE_F" />°</translation>
 <translation id="7627303771480696593">提出問題</translation>
 <translation id="7634648064048557203">攝影機已對齊右下角</translation>
@@ -2282,6 +2288,7 @@
 <translation id="8653151467777939995">顯示通知設定。已開啟所有通知</translation>
 <translation id="8657066291275741003">小寫</translation>
 <translation id="8660331759611631213">71 的平方根</translation>
+<translation id="8662921061190671299">無法新增到 Google 日曆</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />，訊號強度 <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">按下 Enter 鍵以擷取部分螢幕截圖</translation>
 <translation id="8676770494376880701">已連接低功率充電器</translation>
