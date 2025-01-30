@@ -164,11 +164,6 @@ void ConvertAnchorData(
   }
 }
 
-void ConvertFormData(const blink::mojom::AIPageContentFormData& mojom_form_data,
-                     optimization_guide::proto::FormData* proto_form_data) {
-  // TODO(crbug.com/381879263): Add fields for form data.
-}
-
 void ConvertTableData(
     const blink::mojom::AIPageContentTableData& mojom_table_data,
     optimization_guide::proto::TableData* proto_table_data) {
@@ -242,8 +237,6 @@ bool ConvertAttributes(
         blink::mojom::AIPageContentAttributeType::kForm) {
       return false;
     }
-    ConvertFormData(*mojom_attributes.form_data,
-                    proto_attributes->mutable_form_data());
   } else if (mojom_attributes.table_data) {
     if (mojom_attributes.attribute_type !=
         blink::mojom::AIPageContentAttributeType::kTable) {
