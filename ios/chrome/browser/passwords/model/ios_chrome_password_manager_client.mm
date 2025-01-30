@@ -215,6 +215,10 @@ void IOSChromePasswordManagerClient::NotifySuccessfulLoginWithExistingPassword(
                                       SuccessfulLoginUsingExistingPassword];
 }
 
+bool IOSChromePasswordManagerClient::IsPasswordChangeOngoing() {
+  return false;
+}
+
 void IOSChromePasswordManagerClient::NotifyStorePasswordCalled() {
   helper_.NotifyStorePasswordCalled();
 }

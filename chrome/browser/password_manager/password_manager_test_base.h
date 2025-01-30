@@ -13,6 +13,7 @@
 #include "chrome/browser/ssl/cert_verifier_browser_test.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -183,10 +184,12 @@ class PasswordManagerBrowserTestBase : public CertVerifierBrowserTest {
   // Synchronoulsy adds the given host to the list of valid HSTS hosts.
   void AddHSTSHost(const std::string& host);
 
-  // Checks that |password_store| stores only one credential with |username| and
-  // |password|.
-  void CheckThatCredentialsStored(const std::string& username,
-                                  const std::string& password);
+  // Checks that |password_store| stores only one credential with |username|,
+  // |password| and |password_type| optionally.
+  void CheckThatCredentialsStored(
+      const std::string& username,
+      const std::string& password,
+      std::optional<password_manager::PasswordForm::Type> type = std::nullopt);
 
   // Accessors
   // Return the first created tab with a custom ManagePasswordsUIController.

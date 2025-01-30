@@ -70,6 +70,8 @@ std::string ToString(PasswordForm::Type type) {
       return "ReceivedViaSharing";
     case PasswordForm::Type::kImportedViaCredentialExchange:
       return "ImportedViaCredentialExchange";
+    case PasswordForm::Type::kChangeSubmission:
+      return "Saved with Change Submission";
   }
 
   // In old clients type might contain non-enum values and their mapping is

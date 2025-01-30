@@ -184,6 +184,7 @@ class ChromePasswordManagerClient
   void NotifySuccessfulLoginWithExistingPassword(
       std::unique_ptr<password_manager::PasswordFormManagerForUI>
           submitted_manager) override;
+  bool IsPasswordChangeOngoing() override;
   void NotifyStorePasswordCalled() override;
   void NotifyOnSuccessfulLogin(
       const std::u16string& submitted_username) override;

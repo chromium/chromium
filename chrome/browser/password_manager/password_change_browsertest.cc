@@ -365,7 +365,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
   EXPECT_EQ(base::UTF16ToUTF8(generated_password),
             GetElementValue(/*iframe_id=*/"null", "new_password_1"));
   CheckThatCredentialsStored(
-      /*username=*/"", base::UTF16ToUTF8(generated_password));
+      /*username=*/"", base::UTF16ToUTF8(generated_password),
+      password_manager::PasswordForm::Type::kChangeSubmission);
 }
 
 // Verify that after password change is stopped, password change delegate is not
@@ -418,7 +419,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, NewPasswordIsSaved) {
            PasswordChangeDelegate::State::kPasswordSuccessfullyChanged;
   }));
   CheckThatCredentialsStored(
-      /*username=*/"test", base::UTF16ToUTF8(delegate->GetGeneratedPassword()));
+      /*username=*/"test", base::UTF16ToUTF8(delegate->GetGeneratedPassword()),
+      password_manager::PasswordForm::Type::kChangeSubmission);
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, OldPasswordIsUpdated) {
@@ -465,7 +467,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, OldPasswordIsUpdated) {
   WaitForPasswordStore();
   CheckThatCredentialsStored(
       base::UTF16ToUTF8(form.username_value),
-      base::UTF16ToUTF8(delegate->GetGeneratedPassword()));
+      base::UTF16ToUTF8(delegate->GetGeneratedPassword()),
+      password_manager::PasswordForm::Type::kChangeSubmission);
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,

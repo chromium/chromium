@@ -287,6 +287,9 @@ class PasswordManagerClient {
   // deprecated.
   virtual void ResetSubmissionTrackingAfterTouchToFill() {}
 
+  // True if there is a Password Change ongoing in the tab.
+  virtual bool IsPasswordChangeOngoing() = 0;
+
   // Inform the embedder that the site called 'store()'.
   virtual void NotifyStorePasswordCalled() = 0;
 
