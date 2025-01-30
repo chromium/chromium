@@ -215,7 +215,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientOutgoingPasswordSharingInvitationTest,
   ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
   ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
-  ASSERT_TRUE(password_manager::features_util::IsOptedInForAccountStorage(
+  ASSERT_TRUE(password_manager::features_util::IsAccountStorageEnabled(
       GetProfile(0)->GetPrefs(), GetSyncService(0)));
 
   PasswordRecipient recipient = {

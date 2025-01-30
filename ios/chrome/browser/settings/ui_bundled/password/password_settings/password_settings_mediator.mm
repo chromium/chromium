@@ -414,7 +414,7 @@ bool IsCredentialLocalPassword(const CredentialUIEntry& credential) {
 - (void)updateShowBulkMovePasswordsToAccount {
   [self.consumer setLocalPasswordsCount:[self computeLocalPasswordsCount]
                     withUserEligibility:password_manager::features_util::
-                                            IsOptedInForAccountStorage(
+                                            IsAccountStorageEnabled(
                                                 _prefService, _syncService)];
 }
 

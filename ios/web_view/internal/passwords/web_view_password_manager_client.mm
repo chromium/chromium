@@ -106,7 +106,7 @@ bool WebViewPasswordManagerClient::PromptUserToSaveOrUpdatePassword(
   if (form_to_save->IsBlocklisted()) {
     return false;
   }
-  if (!password_feature_manager_.IsOptedInForAccountStorage()) {
+  if (!password_feature_manager_.IsAccountStorageEnabled()) {
     return false;
   }
 

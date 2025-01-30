@@ -63,9 +63,9 @@ std::u16string MoveToAccountStoreBubbleController::GetTitle() const {
 
 void MoveToAccountStoreBubbleController::AcceptMove() {
   dismissal_reason_ = metrics_util::CLICKED_ACCEPT;
-  if (!delegate_->GetPasswordFeatureManager()->IsOptedInForAccountStorage()) {
-    // The user opted out since the bubble was shown. This should be rare and
-    // ultimately harmless, just do nothing.
+  if (!delegate_->GetPasswordFeatureManager()->IsAccountStorageEnabled()) {
+    // Account storage was disabled since the bubble was shown. This should be
+    // rare and ultimately harmless, just do nothing.
     return;
   }
   return delegate_->MovePasswordToAccountStore();

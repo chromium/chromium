@@ -1402,20 +1402,20 @@ TEST_F(StoreMetricsReporterTest, MultiStoreMetrics) {
       CreateForm(kRealm2, "identicaluser1", "identicalpass1"));
 
   for (bool syncing : {false, true}) {
-    for (bool opted_in : {false, true}) {
+    for (bool account_storage_enabled : {false, true}) {
       test_sync_service()->SetSignedIn(syncing ? signin::ConsentLevel::kSync
                                                : signin::ConsentLevel::kSignin);
       ASSERT_EQ(test_sync_service()->IsSyncFeatureEnabled(), syncing);
-      if (opted_in) {
+      if (account_storage_enabled) {
         test_sync_service()->GetUserSettings()->SetSelectedTypes(
             /*sync_everything=*/true, syncer::UserSelectableTypeSet::All());
       } else {
         test_sync_service()->GetUserSettings()->SetSelectedTypes(
             /*sync_everything=*/false, syncer::UserSelectableTypeSet());
       }
-      ASSERT_EQ(features_util::IsOptedInForAccountStorage(pref_service(),
-                                                          sync_service()),
-                opted_in);
+      ASSERT_EQ(features_util::IsAccountStorageEnabled(pref_service(),
+                                                       sync_service()),
+                account_storage_enabled);
 
       // In every pass in the loop, StoreMetricsReporter uses the same pref
       // service. Set the kLastTimePasswordStoreMetricsReported to make sure
@@ -1434,7 +1434,7 @@ TEST_F(StoreMetricsReporterTest, MultiStoreMetrics) {
       // stores, i.e. to background task runners.
       RunUntilIdle();
 
-      if (opted_in) {
+      if (account_storage_enabled) {
         histogram_tester.ExpectUniqueSample(
             "PasswordManager.AccountStoreVsProfileStore4."
             "Additional",

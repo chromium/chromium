@@ -297,11 +297,11 @@ bool ManagePasswordsBubbleController::UsernameExists(
       });
 }
 
-bool ManagePasswordsBubbleController::IsOptedInForAccountStorage() const {
+bool ManagePasswordsBubbleController::IsAccountStorageEnabled() const {
   if (!delegate_) {
     return false;
   }
-  return delegate_->GetPasswordFeatureManager()->IsOptedInForAccountStorage();
+  return delegate_->GetPasswordFeatureManager()->IsAccountStorageEnabled();
 }
 
 void ManagePasswordsBubbleController::OnFaviconReady(

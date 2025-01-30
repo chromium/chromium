@@ -134,8 +134,8 @@ bool CanCreateAccountStore(const PrefService* pref_service) {
 #endif
 }
 
-bool IsOptedInForAccountStorage(const PrefService* pref_service,
-                                const syncer::SyncService* sync_service) {
+bool IsAccountStorageEnabled(const PrefService* pref_service,
+                             const syncer::SyncService* sync_service) {
   if (!internal::IsUserEligibleForAccountStorage(pref_service, sync_service)) {
     return false;
   }
@@ -149,7 +149,7 @@ bool IsOptedInForAccountStorage(const PrefService* pref_service,
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
   // From this point on, we want to check for encryption errors, which we can
   // only do when the engine is initialized. In that meantime, we give it the
-  // benefit of the doubt and say the user is opted in.
+  // benefit of the doubt and say account storage is enabled.
   if (!sync_service->IsEngineInitialized()) {
     return true;
   }
@@ -186,17 +186,13 @@ PasswordAccountStorageUserState ComputePasswordAccountStorageUserState(
 
   if (sync_service->HasDisableReason(
           syncer::SyncService::DisableReason::DISABLE_REASON_NOT_SIGNED_IN)) {
-    // Signed out.
     return PasswordAccountStorageUserState::kSignedOutUser;
   }
 
-  // Signed in. Check for account storage opt-in.
-  if (IsOptedInForAccountStorage(pref_service, sync_service)) {
-    // Signed in and opted in.
+  if (IsAccountStorageEnabled(pref_service, sync_service)) {
     return PasswordAccountStorageUserState::kSignedInAccountStoreUser;
   }
 
-  // Signed in but not opted in.
   return PasswordAccountStorageUserState::kSignedInUser;
 }
 

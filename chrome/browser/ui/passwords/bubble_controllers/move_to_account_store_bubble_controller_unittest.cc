@@ -85,8 +85,9 @@ TEST_F(MoveToAccountStoreBubbleControllerTest, CloseExplicitly) {
   controller()->OnBubbleClosing();
 }
 
-TEST_F(MoveToAccountStoreBubbleControllerTest, AcceptMoveIfOptedIn) {
-  ON_CALL(*password_feature_manager(), IsOptedInForAccountStorage)
+TEST_F(MoveToAccountStoreBubbleControllerTest,
+       AcceptMoveIfAccountStorageEnabled) {
+  ON_CALL(*password_feature_manager(), IsAccountStorageEnabled)
       .WillByDefault(Return(true));
   ON_CALL(*delegate(), GetState)
       .WillByDefault(

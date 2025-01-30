@@ -261,8 +261,8 @@ class PasswordManagerSyncTest : public SyncTest {
     SignIn(kTestUserEmail, explicit_signin);
 
     if (!explicit_signin) {
-      // Let the user opt in to the account-scoped password storage, and wait
-      // for it to become active.
+      // Enable the account-scoped password storage, and wait for it to become
+      // active.
       GetSyncService(0)->GetUserSettings()->SetSelectedType(
           syncer::UserSelectableType::kPasswords, true);
     }
@@ -827,7 +827,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 // TODO(b/327118794): Delete this test once implicit signin no longer exists.
-IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, OptInSurvivesSignout) {
+IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, EnabledSettingSurvivesSignout) {
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
   SignIn(kTestUserEmail, /*explicit_signin=*/false);
   ASSERT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PASSWORDS));
@@ -839,12 +839,13 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, OptInSurvivesSignout) {
   SignOut();
   PasswordSyncInactiveChecker(GetSyncService(0)).Wait();
 
-  // The opt-in should be remembered.
+  // The enabling should be remembered.
   SignIn(kTestUserEmail, /*explicit_signin=*/false);
   PasswordSyncActiveChecker(GetSyncService(0)).Wait();
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, OptOutSurvivesSignout) {
+IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
+                       DisabledSettingSurvivesSignout) {
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
   SignIn(kTestUserEmail);
   ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PASSWORDS));
@@ -855,13 +856,13 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, OptOutSurvivesSignout) {
 
   SignOut();
 
-  // The opt-out should be remembered.
+  // The disabling should be remembered.
   SignIn(kTestUserEmail);
   PasswordSyncInactiveChecker(GetSyncService(0)).Wait();
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
-                       KeepOptInAccountStorageSettingsOnlyForUsers) {
+                       KeepnAccountStorageEnabledSettingOnlyForUsers) {
   ASSERT_TRUE(SetupClients());
   SignIn("first@gmail.com", /*explicit_signin=*/false);
   GetSyncService(0)->GetUserSettings()->SetSelectedType(
@@ -878,16 +879,16 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
       {first_gaia_id_hash});
 
   SignIn("first@gmail.com", /*explicit_signin=*/false);
-  EXPECT_TRUE(password_manager::features_util::IsOptedInForAccountStorage(
+  EXPECT_TRUE(password_manager::features_util::IsAccountStorageEnabled(
       GetProfile(0)->GetPrefs(), GetSyncService(0)));
   SignOut();
   SignIn("second@gmail.com", /*explicit_signin=*/false);
-  EXPECT_FALSE(password_manager::features_util::IsOptedInForAccountStorage(
+  EXPECT_FALSE(password_manager::features_util::IsAccountStorageEnabled(
       GetProfile(0)->GetPrefs(), GetSyncService(0)));
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
-                       KeepOptOutAccountStorageSettingsOnlyForUsers) {
+                       KeepAccountStorageDisabledSettingOnlyForUsers) {
   ASSERT_TRUE(SetupClients());
   SignIn("first@gmail.com");
   GetSyncService(0)->GetUserSettings()->SetSelectedType(
@@ -904,11 +905,11 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
       {first_gaia_id_hash});
 
   SignIn("first@gmail.com");
-  EXPECT_FALSE(password_manager::features_util::IsOptedInForAccountStorage(
+  EXPECT_FALSE(password_manager::features_util::IsAccountStorageEnabled(
       GetProfile(0)->GetPrefs(), GetSyncService(0)));
   SignOut();
   SignIn("second@gmail.com");
-  EXPECT_TRUE(password_manager::features_util::IsOptedInForAccountStorage(
+  EXPECT_TRUE(password_manager::features_util::IsAccountStorageEnabled(
       GetProfile(0)->GetPrefs(), GetSyncService(0)));
 }
 
@@ -923,7 +924,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
   // Add credential to server.
   AddCredentialToFakeServer(CreateTestPasswordForm("user", "pass"));
 
-  // Do implicit sign-in, so the opt-in is false by default.
+  // Do implicit sign-in, so account storage is off by default.
   SetupSyncTransportWithPasswordAccountStorage(/*explicit_signin=*/false);
   password_manager::PasswordStoreInterface* account_store =
       passwords_helper::GetAccountPasswordStoreInterface(0);
@@ -932,7 +933,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
   ASSERT_EQ(passwords_helper::GetAllLogins(account_store).size(), 1u);
   ASSERT_EQ(fake_server_->GetSyncEntitiesByDataType(syncer::PASSWORDS).size(),
             1u);
-  EXPECT_TRUE(password_manager::features_util::IsOptedInForAccountStorage(
+  EXPECT_TRUE(password_manager::features_util::IsAccountStorageEnabled(
       GetProfile(0)->GetPrefs(), GetSyncService(0)));
 
   // Clear cookies and account passwords.
@@ -951,13 +952,13 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
   EXPECT_EQ(fake_server_->GetSyncEntitiesByDataType(syncer::PASSWORDS).size(),
             0u);
 
-  // The user is still opted in (because they are still signed in).
-  EXPECT_TRUE(password_manager::features_util::IsOptedInForAccountStorage(
+  // Account storage is still enabled (because the user is still signed in).
+  EXPECT_TRUE(password_manager::features_util::IsAccountStorageEnabled(
       GetProfile(0)->GetPrefs(), GetSyncService(0)));
 
   // The preference is reset as the account is removed from Chrome.
   SignOut();
-  EXPECT_FALSE(password_manager::features_util::IsOptedInForAccountStorage(
+  EXPECT_FALSE(password_manager::features_util::IsAccountStorageEnabled(
       GetProfile(0)->GetPrefs(), GetSyncService(0)));
 }
 
@@ -983,10 +984,10 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
 
 // TODO(b/327118794): Delete this test once implicit signin no longer exists.
 IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, ClearAccountStoreOnStartup) {
-  // Before setting up the client (aka profile), manually remove the opt-in pref
-  // from the profile's prefs file. This simulates the case where the user
-  // revoked their opt-in, but the account store was not cleared correctly, e.g.
-  // due to a poorly-timed crash.
+  // Before setting up the client (aka profile), manually set account storage to
+  // off in the profile's prefs file. This simulates the case where the user
+  // disabled account storage, but the account store was not cleared correctly,
+  // e.g. due to a poorly-timed crash.
   base::FilePath user_data_dir;
   base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
   base::FilePath profile_path = user_data_dir.Append(GetProfileBaseName(0));
@@ -1008,13 +1009,13 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, ClearAccountStoreOnStartup) {
 
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
 
-  // Since we mangled the prefs file, the opt-in should be gone.
-  ASSERT_FALSE(password_manager::features_util::IsOptedInForAccountStorage(
+  // Since we mangled the prefs file, account storage should be disabled.
+  ASSERT_FALSE(password_manager::features_util::IsAccountStorageEnabled(
       GetProfile(0)->GetPrefs(), GetSyncService(0)));
   ASSERT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PASSWORDS));
 
-  // Since there's no opt-in, the account-scoped store should have been cleared
-  // during startup, and the credential added by the PRE_ test should be gone.
+  // The account-scoped store should have been cleared during startup, and the
+  // credential added by the PRE_ test should be gone.
   EXPECT_THAT(GetAllLoginsFromAccountPasswordStore(), IsEmpty());
 
   // Just as a sanity check: The credential in the profile-scoped store should

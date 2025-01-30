@@ -241,7 +241,7 @@ void PasswordReceiverServiceImpl::ProcessIncomingSharingInvitation(
   // server. In case, `sync_service_` is null (e.g. due to a weird corner case
   // of destruction of sync service after delivering the invitation), both
   // checks below evaluate to false and hence the invitation will be ignored.
-  if (features_util::IsOptedInForAccountStorage(pref_service_, sync_service_)) {
+  if (features_util::IsAccountStorageEnabled(pref_service_, sync_service_)) {
     password_store = account_password_store_;
   } else if (sync_service_ && sync_service_->IsSyncFeatureEnabled()) {
     password_store = profile_password_store_;

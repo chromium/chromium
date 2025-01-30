@@ -353,7 +353,7 @@ TEST_P(PasswordReceiverServiceImplTest,
 }
 
 TEST_P(PasswordReceiverServiceImplTest,
-       ShouldAcceptInvitationForNonSyncingUserOptedInToAccountStore) {
+       ShouldAcceptInvitationForNonSyncingUserWithAccountStorageEnabled) {
   if (!GetEnableAccountStoreTestParam()) {
     return;
   }
@@ -364,8 +364,8 @@ TEST_P(PasswordReceiverServiceImplTest,
   // Set up an account store user (a non-syncing one, but that doesn't really
   // matter).
   sync_service().SetSignedIn(signin::ConsentLevel::kSignin);
-  ASSERT_TRUE(features_util::IsOptedInForAccountStorage(&pref_service(),
-                                                        &sync_service()));
+  ASSERT_TRUE(
+      features_util::IsAccountStorageEnabled(&pref_service(), &sync_service()));
 
   password_receiver_service()->ProcessIncomingSharingInvitation(
       CreateIncomingSharingInvitation());
@@ -377,7 +377,7 @@ TEST_P(PasswordReceiverServiceImplTest,
 }
 
 TEST_P(PasswordReceiverServiceImplTest,
-       ShouldNotAcceptInvitationForNonSyncingUserOptedOutOfAccountStore) {
+       ShouldNotAcceptInvitationForNonSyncingUserWithAccountStorageDisabled) {
   base::HistogramTester histogram_tester;
   if (!GetEnableAccountStoreTestParam()) {
     return;
@@ -386,12 +386,12 @@ TEST_P(PasswordReceiverServiceImplTest,
   ASSERT_TRUE(profile_password_store().stored_passwords().empty());
   ASSERT_TRUE(account_password_store().stored_passwords().empty());
 
-  // Setup a signed-in user that opted-out from using the account store:
+  // Setup a signed-in user that disabled account storage:
   sync_service().SetSignedIn(signin::ConsentLevel::kSignin);
   sync_service().GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kPasswords, false);
-  ASSERT_FALSE(features_util::IsOptedInForAccountStorage(&pref_service(),
-                                                         &sync_service()));
+  ASSERT_FALSE(
+      features_util::IsAccountStorageEnabled(&pref_service(), &sync_service()));
 
   password_receiver_service()->ProcessIncomingSharingInvitation(
       CreateIncomingSharingInvitation());

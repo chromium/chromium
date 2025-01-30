@@ -20,13 +20,11 @@ namespace password_manager::features_util {
 // Used for metrics. Always keep this enum in sync with the corresponding
 // histogram_suffixes in histograms.xml!
 enum class PasswordAccountStorageUserState {
-  // Signed-out user (and no account storage opt-in exists).
+  // Signed-out user (so account storage is disabled).
   kSignedOutUser,
-  // Signed-in non-syncing user, not opted in to the account storage (but may
-  // save passwords to the account storage by default).
+  // Signed-in non-syncing user, with account storage disabled.
   kSignedInUser,
-  // Signed-in non-syncing user, opted in to the account storage, and saving
-  // passwords to the account storage.
+  // Signed-in non-syncing user, with account storage enabled.
   kSignedInAccountStoreUser,
   // Syncing user.
   kSyncUser,
@@ -39,10 +37,9 @@ enum class PasswordAccountStorageUserState {
 // numeric values should never be reused.
 enum class PasswordAccountStorageUsageLevel {
   // The user is not using the account-scoped password storage. Either they're
-  // not signed in, or they haven't opted in to the account storage.
+  // not signed in, or account storage was disabled.
   kNotUsingAccountStorage = 0,
-  // The user is signed in (but not syncing) and has opted in to the account
-  // storage.
+  // The user is signed in (but not syncing) and has account storage enabled.
   kUsingAccountStorage = 1,
   // The user has enabled Sync.
   kSyncing = 2,
@@ -59,10 +56,7 @@ bool IsUserEligibleForAccountStorage(const PrefService* pref_service,
 // Whether to instantiate a second PasswordStore whose data is account-scoped.
 // This doesn't necessarily mean the store is being used, e.g. this predicate
 // can return true for a signed-out user. For whether the store can be used,
-// see IsOptedInForAccountStorage() instead.
-// TODO(b/324038136): Rename IsOptedInForAccountStorage() to
-// CanUseAccountStore() - there's no opt-in on mobile platforms anyway. Rename
-// CanAccountStorageBeEnabled() and IsUserEligibleForAccountStorage().
+// see IsAccountStorageEnabled() instead.
 bool CanCreateAccountStore(const PrefService* pref_service);
 
 // Whether the Google account storage for passwords is enabled for the current
@@ -73,9 +67,9 @@ bool CanCreateAccountStore(const PrefService* pref_service);
 // |pref_service| must not be null.
 // |sync_service| may be null (commonly the case in incognito mode), in which
 // case this will simply return false.
-// See PasswordFeatureManager::IsOptedInForAccountStorage.
-bool IsOptedInForAccountStorage(const PrefService* pref_service,
-                                const syncer::SyncService* sync_service);
+// See PasswordFeatureManager::IsAccountStorageEnabled.
+bool IsAccountStorageEnabled(const PrefService* pref_service,
+                             const syncer::SyncService* sync_service);
 
 // See definition of PasswordAccountStorageUserState.
 PasswordAccountStorageUserState ComputePasswordAccountStorageUserState(
@@ -96,12 +90,12 @@ bool ShouldShowAccountStorageSettingToggle(
     const PrefService* pref_service,
     const syncer::SyncService* sync_service);
 
-// Users opted into account storage used to have the choice of saving new
+// Users with account storage enabled used to have the choice of saving new
 // passwords only locally, while keeping existing account passwords available
 // for autofill. That was achieved by setting a certain "default store pref" to
 // the "profile store". This logic was removed in crbug.com/369341336.
-// MigrateDefaultProfileStorePref() migrates users in the legacy state to be
-// completely opted out of account storage instead, i.e. so they can't save nor
+// MigrateDefaultProfileStorePref() migrates users in the legacy state to have
+// account storage completely disabled instead, i.e. so they can't save nor
 // autofill account passwords. The migration affects both signed-in and
 // signed-out users (because account storage settings should survive sign-out).
 // kObsoleteAccountStorageDefaultStoreKey was part of the legacy pref's schema

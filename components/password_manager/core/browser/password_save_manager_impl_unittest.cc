@@ -314,7 +314,7 @@ class PasswordSaveManagerImplTestBase : public testing::Test {
         .WillByDefault(Return(&mock_autofill_crowdsourcing_manager_));
     ON_CALL(mock_autofill_crowdsourcing_manager_, StartUploadRequest)
         .WillByDefault(Return(true));
-    ON_CALL(*client_.GetPasswordFeatureManager(), IsOptedInForAccountStorage)
+    ON_CALL(*client_.GetPasswordFeatureManager(), IsAccountStorageEnabled)
         .WillByDefault(Return(false));
   }
   PasswordSaveManagerImplTestBase(const PasswordSaveManagerImplTestBase&) =
@@ -371,8 +371,7 @@ class PasswordSaveManagerImplTestBase : public testing::Test {
   }
 
   void SetAccountStoreEnabled(bool is_enabled) {
-    ON_CALL(*client()->GetPasswordFeatureManager(),
-            IsOptedInForAccountStorage())
+    ON_CALL(*client()->GetPasswordFeatureManager(), IsAccountStorageEnabled())
         .WillByDefault(Return(is_enabled));
     ON_CALL(*client()->GetPasswordFeatureManager(),
             ComputePasswordAccountStorageUsageLevel)
@@ -2112,8 +2111,8 @@ TEST_F(MultiStorePasswordSaveManagerTest, BlockMovingWhenExistsInBothStores) {
 }
 
 TEST_F(MultiStorePasswordSaveManagerTest,
-       PresaveGeneratedPasswordInAccountStoreIfOptedIn) {
-  ON_CALL(*client()->GetPasswordFeatureManager(), IsOptedInForAccountStorage)
+       PresaveGeneratedPasswordInAccountStoreIfAccountStorageEnabled) {
+  ON_CALL(*client()->GetPasswordFeatureManager(), IsAccountStorageEnabled)
       .WillByDefault(Return(true));
 
   EXPECT_CALL(*mock_profile_form_saver(), Save).Times(0);
@@ -2124,11 +2123,11 @@ TEST_F(MultiStorePasswordSaveManagerTest,
 }
 
 TEST_F(MultiStorePasswordSaveManagerTest,
-       PresaveGeneratedPasswordInProfileStoreIfOptedOutOfAccountStorage) {
-  // Generation is offered only to users who are either syncing or have opted-in
-  // for account store. Therefore, if the user isn't opted in, it is guaranteed
+       PresaveGeneratedPasswordInProfileStoreIfAccountStorageDisabled) {
+  // Generation is offered only to users who are either syncing or have account
+  // storage enabled. Therefore, if account storage is disabled, it's guaranteed
   // they are syncing and the password should be stored in the profile store.
-  ON_CALL(*client()->GetPasswordFeatureManager(), IsOptedInForAccountStorage)
+  ON_CALL(*client()->GetPasswordFeatureManager(), IsAccountStorageEnabled)
       .WillByDefault(Return(false));
 
   EXPECT_CALL(*mock_profile_form_saver(), Save);
