@@ -658,6 +658,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if !BUILDFLAG(IS_ANDROID)
+
 IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
                        ShouldCleanupAccountPreferencesFileOnDisable) {
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
@@ -686,14 +688,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
 
   // Verify file content, `kSyncablePrefForTesting` is present.
   std::optional<base::Value::Dict> file_content =
-#if BUILDFLAG(IS_ANDROID)
-      ReadValuesFromFile(
-          GetProfile(0)->GetPath().Append(chrome::kAccountPreferencesFilename));
-#else
       ReadValuesFromFile(
           GetProfile(0)->GetPath().Append(chrome::kPreferencesFilename),
           chrome_prefs::kAccountPreferencesPrefix);
-#endif
   ASSERT_TRUE(file_content.has_value());
 
   std::string* value =
@@ -714,14 +711,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
 
   // Account prefs have been removed from the file.
   file_content =
-#if BUILDFLAG(IS_ANDROID)
-      ReadValuesFromFile(
-          GetProfile(0)->GetPath().Append(chrome::kAccountPreferencesFilename));
-#else
       ReadValuesFromFile(
           GetProfile(0)->GetPath().Append(chrome::kPreferencesFilename),
           chrome_prefs::kAccountPreferencesPrefix);
-#endif
   ASSERT_TRUE(file_content.has_value());
   EXPECT_TRUE(file_content->empty());
 }
@@ -756,14 +748,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
 
   // Verify file content, `kSyncablePrefForTesting` is present.
   std::optional<base::Value::Dict> file_content =
-#if BUILDFLAG(IS_ANDROID)
-      ReadValuesFromFile(
-          GetProfile(0)->GetPath().Append(chrome::kAccountPreferencesFilename));
-#else
       ReadValuesFromFile(
           GetProfile(0)->GetPath().Append(chrome::kPreferencesFilename),
           chrome_prefs::kAccountPreferencesPrefix);
-#endif
   ASSERT_TRUE(file_content.has_value());
 
   std::string* value =
@@ -782,19 +769,15 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
 
   // Account prefs have been removed from the file.
   file_content =
-#if BUILDFLAG(IS_ANDROID)
-      ReadValuesFromFile(
-          GetProfile(0)->GetPath().Append(chrome::kAccountPreferencesFilename));
-#else
       ReadValuesFromFile(
           GetProfile(0)->GetPath().Append(chrome::kPreferencesFilename),
           chrome_prefs::kAccountPreferencesPrefix);
-#endif
   ASSERT_TRUE(file_content.has_value());
   EXPECT_TRUE(file_content->empty());
 }
 
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // TODO(crbug.com/40200835): PRE_ tests are not supported on Android.
 #if !BUILDFLAG(IS_ANDROID)
@@ -1159,6 +1142,156 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageMergeSyncTest,
 
 #if BUILDFLAG(IS_ANDROID)
 
+class SingleClientPreferencesWithMigrateAccountPrefsDisabledSyncTest
+    : public SingleClientPreferencesWithAccountStorageSyncTest {
+ public:
+  SingleClientPreferencesWithMigrateAccountPrefsDisabledSyncTest() {
+    feature_list_.InitAndDisableFeature(syncer::kMigrateAccountPrefs);
+  }
+
+  base::FilePath AccountPreferencesFilePath() const {
+    return GetProfile(0)->GetPath().Append(chrome::kAccountPreferencesFilename);
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    SingleClientPreferencesWithMigrateAccountPrefsDisabledSyncTest,
+    ShouldCreateAccountPrefsFile) {
+  ASSERT_TRUE(SetupClients());
+  // Register `sync_preferences::kSyncablePrefForTesting`.
+  GetRegistry(GetProfile(0))
+      ->RegisterStringPref(sync_preferences::kSyncablePrefForTesting, "",
+                           user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  ASSERT_FALSE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+
+  InjectPreferenceToFakeServer(syncer::PREFERENCES,
+                               sync_preferences::kSyncablePrefForTesting,
+                               base::Value("account value"));
+
+  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+
+  EXPECT_EQ(GetPrefs(0)->GetString(sync_preferences::kSyncablePrefForTesting),
+            "account value");
+
+  CommitToDiskAndWait();
+
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  EXPECT_TRUE(base::PathExists(AccountPreferencesFilePath()));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SingleClientPreferencesWithMigrateAccountPrefsDisabledSyncTest,
+    ShouldCleanupAccountPreferencesFileOnDisable) {
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  // Register `sync_preferences::kSyncablePrefForTesting`.
+  GetRegistry(GetProfile(0))
+      ->RegisterStringPref(sync_preferences::kSyncablePrefForTesting, "",
+                           user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  ASSERT_FALSE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+
+  preferences_helper::ChangeStringPref(
+      0, sync_preferences::kSyncablePrefForTesting, "local value");
+
+  InjectPreferenceToFakeServer(syncer::PREFERENCES,
+                               sync_preferences::kSyncablePrefForTesting,
+                               base::Value("account value"));
+
+  // Enable Sync.
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+  // Fake server value is synced to the account store and overrides local value.
+  ASSERT_EQ(GetPrefs(0)->GetString(sync_preferences::kSyncablePrefForTesting),
+            "account value");
+
+  CommitToDiskAndWait();
+
+  // Verify file content, `kSyncablePrefForTesting` is present.
+  std::optional<base::Value::Dict> file_content = ReadValuesFromFile(
+      GetProfile(0)->GetPath().Append(chrome::kAccountPreferencesFilename));
+  ASSERT_TRUE(file_content.has_value());
+
+  std::string* value =
+      file_content->FindString(sync_preferences::kSyncablePrefForTesting);
+  ASSERT_TRUE(value);
+  EXPECT_EQ(*value, "account value");
+
+  // Disable syncing preferences. This should lead to clearing of account prefs
+  // file.
+  ASSERT_TRUE(GetClient(0)->DisableSyncForType(
+      syncer::UserSelectableType::kPreferences));
+  ASSERT_FALSE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+  ASSERT_EQ(GetPrefs(0)->GetString(sync_preferences::kSyncablePrefForTesting),
+            "local value");
+
+  CommitToDiskAndWait();
+
+  // Account prefs have been removed from the file.
+  file_content = ReadValuesFromFile(
+      GetProfile(0)->GetPath().Append(chrome::kAccountPreferencesFilename));
+  ASSERT_TRUE(file_content.has_value());
+  EXPECT_TRUE(file_content->empty());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SingleClientPreferencesWithMigrateAccountPrefsDisabledSyncTest,
+    ShouldCleanupAccountPreferencesFileOnSignout) {
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  // Register `sync_preferences::kSyncablePrefForTesting`.
+  GetRegistry(GetProfile(0))
+      ->RegisterStringPref(sync_preferences::kSyncablePrefForTesting, "",
+                           user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  ASSERT_FALSE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+
+  preferences_helper::ChangeStringPref(
+      0, sync_preferences::kSyncablePrefForTesting, "local value");
+
+  InjectPreferenceToFakeServer(syncer::PREFERENCES,
+                               sync_preferences::kSyncablePrefForTesting,
+                               base::Value("account value"));
+
+  // Enable Sync.
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+  // Fake server value is synced to the account store and overrides local value.
+  ASSERT_EQ(GetPrefs(0)->GetString(sync_preferences::kSyncablePrefForTesting),
+            "account value");
+
+  CommitToDiskAndWait();
+
+  // Verify file content, `kSyncablePrefForTesting` is present.
+  std::optional<base::Value::Dict> file_content = ReadValuesFromFile(
+      GetProfile(0)->GetPath().Append(chrome::kAccountPreferencesFilename));
+  ASSERT_TRUE(file_content.has_value());
+
+  std::string* value =
+      file_content->FindString(sync_preferences::kSyncablePrefForTesting);
+  ASSERT_TRUE(value);
+  EXPECT_EQ(*value, "account value");
+
+  // Signout. This should lead to clearing of account prefs file.
+  GetClient(0)->SignOutPrimaryAccount();
+  ASSERT_FALSE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+  ASSERT_EQ(GetPrefs(0)->GetString(sync_preferences::kSyncablePrefForTesting),
+            "local value");
+
+  CommitToDiskAndWait();
+
+  // Account prefs have been removed from the file.
+  file_content = ReadValuesFromFile(
+      GetProfile(0)->GetPath().Append(chrome::kAccountPreferencesFilename));
+  ASSERT_TRUE(file_content.has_value());
+  EXPECT_TRUE(file_content->empty());
+}
+
 class SingleClientPreferencesWithMigrateAccountPrefsEnabledSyncTest
     : public SingleClientPreferencesWithAccountStorageSyncTest {
  public:
@@ -1245,6 +1378,118 @@ IN_PROC_BROWSER_TEST_F(
       chrome_prefs::kAccountPreferencesPrefix);
   ASSERT_TRUE(account_pref_values_on_disk.has_value());
   EXPECT_TRUE(account_pref_values_on_disk->empty());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SingleClientPreferencesWithMigrateAccountPrefsEnabledSyncTest,
+    ShouldCleanupAccountPreferencesFileOnDisable) {
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  // Register `sync_preferences::kSyncablePrefForTesting`.
+  GetRegistry(GetProfile(0))
+      ->RegisterStringPref(sync_preferences::kSyncablePrefForTesting, "",
+                           user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  ASSERT_FALSE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+
+  preferences_helper::ChangeStringPref(
+      0, sync_preferences::kSyncablePrefForTesting, "local value");
+
+  InjectPreferenceToFakeServer(syncer::PREFERENCES,
+                               sync_preferences::kSyncablePrefForTesting,
+                               base::Value("account value"));
+
+  // Enable Sync.
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+  // Fake server value is synced to the account store and overrides local value.
+  ASSERT_EQ(GetPrefs(0)->GetString(sync_preferences::kSyncablePrefForTesting),
+            "account value");
+
+  CommitToDiskAndWait();
+
+  // Verify file content, `kSyncablePrefForTesting` is present.
+  std::optional<base::Value::Dict> file_content = ReadValuesFromFile(
+      GetProfile(0)->GetPath().Append(chrome::kPreferencesFilename),
+      chrome_prefs::kAccountPreferencesPrefix);
+  ASSERT_TRUE(file_content.has_value());
+
+  std::string* value =
+      file_content->FindString(sync_preferences::kSyncablePrefForTesting);
+  ASSERT_TRUE(value);
+  EXPECT_EQ(*value, "account value");
+
+  // Disable syncing preferences. This should lead to clearing of account prefs
+  // file.
+  ASSERT_TRUE(GetClient(0)->DisableSyncForType(
+      syncer::UserSelectableType::kPreferences));
+  ASSERT_FALSE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+  ASSERT_EQ(GetPrefs(0)->GetString(sync_preferences::kSyncablePrefForTesting),
+            "local value");
+
+  CommitToDiskAndWait();
+
+  // Account prefs have been removed from the file.
+  file_content = ReadValuesFromFile(
+      GetProfile(0)->GetPath().Append(chrome::kPreferencesFilename),
+      chrome_prefs::kAccountPreferencesPrefix);
+  ASSERT_TRUE(file_content.has_value());
+  EXPECT_TRUE(file_content->empty());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SingleClientPreferencesWithMigrateAccountPrefsEnabledSyncTest,
+    ShouldCleanupAccountPreferencesFileOnSignout) {
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  // Register `sync_preferences::kSyncablePrefForTesting`.
+  GetRegistry(GetProfile(0))
+      ->RegisterStringPref(sync_preferences::kSyncablePrefForTesting, "",
+                           user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  ASSERT_FALSE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+
+  preferences_helper::ChangeStringPref(
+      0, sync_preferences::kSyncablePrefForTesting, "local value");
+
+  InjectPreferenceToFakeServer(syncer::PREFERENCES,
+                               sync_preferences::kSyncablePrefForTesting,
+                               base::Value("account value"));
+
+  // Enable Sync.
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+  // Fake server value is synced to the account store and overrides local value.
+  ASSERT_EQ(GetPrefs(0)->GetString(sync_preferences::kSyncablePrefForTesting),
+            "account value");
+
+  CommitToDiskAndWait();
+
+  // Verify file content, `kSyncablePrefForTesting` is present.
+  std::optional<base::Value::Dict> file_content = ReadValuesFromFile(
+      GetProfile(0)->GetPath().Append(chrome::kPreferencesFilename),
+      chrome_prefs::kAccountPreferencesPrefix);
+  ASSERT_TRUE(file_content.has_value());
+
+  std::string* value =
+      file_content->FindString(sync_preferences::kSyncablePrefForTesting);
+  ASSERT_TRUE(value);
+  EXPECT_EQ(*value, "account value");
+
+  // Signout. This should lead to clearing of account prefs file.
+  GetClient(0)->SignOutPrimaryAccount();
+  ASSERT_FALSE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+  ASSERT_EQ(GetPrefs(0)->GetString(sync_preferences::kSyncablePrefForTesting),
+            "local value");
+
+  CommitToDiskAndWait();
+
+  // Account prefs have been removed from the file.
+  file_content = ReadValuesFromFile(
+      GetProfile(0)->GetPath().Append(chrome::kPreferencesFilename),
+      chrome_prefs::kAccountPreferencesPrefix);
+  ASSERT_TRUE(file_content.has_value());
+  EXPECT_TRUE(file_content->empty());
 }
 
 // TODO(crbug.com/346508597): Add a test
