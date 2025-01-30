@@ -42,6 +42,7 @@ NSString* const kTextMenuFamilyLinkInfo = @"kTextMenuFamilyLinkInfo";
 NSString* const kToolsMenuFollow = @"kToolsMenuFollow";
 NSString* const kToolsMenuUnfollow = @"kToolsMenuUnfollow";
 NSString* const kToolsMenuClearBrowsingData = @"kToolsMenuClearBrowsingData";
+NSString* const kToolsMenuSetTabReminder = @"kToolsMenuSetTabReminder";
 NSString* const kToolsMenuShareChromeId = @"kToolsMenuShareChromeId";
 NSString* const kToolsMenuWhatsNewId = @"kToolsMenuWhatsNewId";
 NSString* const kToolsMenuPriceNotifications = @"kToolsMenuPriceNotifications";

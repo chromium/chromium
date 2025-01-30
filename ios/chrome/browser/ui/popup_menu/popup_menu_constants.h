@@ -78,6 +78,8 @@ extern NSString* const kToolsMenuFollow;
 extern NSString* const kToolsMenuUnfollow;
 // Clear Browsing Data item accessibility identifier.
 extern NSString* const kToolsMenuClearBrowsingData;
+// Set Tab Reminder item accessibility Identifier.
+extern NSString* const kToolsMenuSetTabReminder;
 // Share Chrome accessibility Identifier.
 extern NSString* const kToolsMenuShareChromeId;
 // WhatsNew item accessibility Identifier.
