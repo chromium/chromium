@@ -26,7 +26,7 @@ source_set("keyboard_assist") {
     "//ios/chrome/browser/lens/ui_bundled:lens_availability",
     "//ios/chrome/browser/lens/ui_bundled:lens_entrypoint",
     "//ios/chrome/browser/location_bar/ui_bundled:constants",
-    "//ios/chrome/browser/omnibox/ui_bundled:features",
+    "//ios/chrome/browser/omnibox/public:features",
     "//ios/chrome/browser/omnibox/ui_bundled:omnibox_internal",
     "//ios/chrome/browser/omnibox/ui_bundled/keyboard_assist/resources",
     "//ios/chrome/browser/search_engines/model",

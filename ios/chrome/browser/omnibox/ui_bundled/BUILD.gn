@@ -53,12 +53,12 @@ source_set("omnibox_util") {
     "omnibox_util.mm",
   ]
   deps = [
-    ":features",
     ":omnibox_suggestion_icon_util",
     "//base",
     "//components/omnibox/browser",
     "//components/safe_browsing/core/common:common",
     "//components/security_state/core",
+    "//ios/chrome/browser/omnibox/public:features",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
     "//third_party/omnibox_proto",
@@ -114,7 +114,6 @@ source_set("omnibox_internal") {
     "zero_suggest_prefetch_helper.mm",
   ]
   deps = [
-    ":features",
     ":omnibox_popup_shared",
     ":omnibox_suggestion_icon_util",
     ":omnibox_util",
@@ -146,6 +145,7 @@ source_set("omnibox_internal") {
     "//ios/chrome/browser/ntp/model",
     "//ios/chrome/browser/ntp/shared/metrics:home_metrics",
     "//ios/chrome/browser/omnibox/model",
+    "//ios/chrome/browser/omnibox/public:features",
     "//ios/chrome/browser/omnibox/ui_bundled/popup",
     "//ios/chrome/browser/omnibox/ui_bundled/popup:popup_ui_protocols",
     "//ios/chrome/browser/orchestrator/ui_bundled:ui_bundled",
@@ -226,7 +226,6 @@ source_set("unit_tests") {
     "zero_suggest_prefetch_helper_unittest.mm",
   ]
   deps = [
-    ":features",
     ":omnibox_internal",
     ":resources_unit_tests",
     ":test_support",
@@ -265,17 +264,4 @@ bundle_data("resources_unit_tests") {
   sources = [ "//ios/chrome/test/data/omnibox/selected_ranges.txt" ]
   outputs = [ "{{bundle_resources_dir}}/" +
               "ios/chrome/test/data/omnibox/{{source_file_part}}" ]
-}
-
-source_set("features") {
-  sources = [
-    "omnibox_ui_features.cc",
-    "omnibox_ui_features.h",
-  ]
-  public_deps = [ "//base" ]
-  deps = [
-    "//components/omnibox/common",
-    "//ios/chrome/browser/shared/public/features",
-    "//ui/base",
-  ]
 }

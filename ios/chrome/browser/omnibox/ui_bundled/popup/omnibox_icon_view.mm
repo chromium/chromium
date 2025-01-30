@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_icon_view.h"
 
 #import "ios/chrome/browser/net/model/crurl.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/omnibox_ui_features.h"
+#import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/favicon_retriever.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/image_retriever.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_icon.h"
