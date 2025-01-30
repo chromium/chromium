@@ -6,3 +6,8 @@
 
 # crbug.com/368117896
 -org.chromium.chrome.browser.commerce.coupons.DiscountsIntegrationTest.testRenderDiscountContextualPageActionIcon
+
+# crbug.com/393201693
+-org.chromium.chrome.browser.contextualsearch.ContextualSearchRelatedSearchesTest.testRelatedSearchesInBar
+-org.chromium.chrome.browser.contextualsearch.ContextualSearchRelatedSearchesTest.testRelatedSearchesInBarWithDefaultQuery_Ellipsize
+-org.chromium.chrome.browser.contextualsearch.ContextualSearchRelatedSearchesTest.testRelatedSearchesInBarForDefinitionCard
