@@ -4,6 +4,7 @@
 
 #include <cmath>
 #include <cstddef>
+#include <cstdint>
 #include <limits>
 #include <map>
 #include <memory>
@@ -14,12 +15,15 @@
 #include <vector>
 
 #include "base/barrier_closure.h"
+#include "base/check_op.h"
 #include "base/functional/overloaded.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/statistics_recorder.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -72,8 +76,10 @@
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
+#include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 
 namespace content {
@@ -1028,6 +1034,7 @@ class SharedStorageBrowserTestBase : public ContentBrowserTest {
       bool keep_alive_after_operation = true,
       std::optional<std::string> context_id = std::nullopt,
       std::optional<std::string> filtering_id_max_bytes = std::nullopt,
+      std::optional<std::string> max_contributions = std::nullopt,
       std::string* out_error = nullptr,
       bool wait_for_operation_finish = true) {
     DCHECK(out_module_script_url);
@@ -1068,7 +1075,8 @@ class SharedStorageBrowserTestBase : public ContentBrowserTest {
         JsReplace("window.keepWorklet = $1;", keep_alive_after_operation)));
 
     std::string private_aggregation_config_js = "";
-    if (context_id.has_value() || filtering_id_max_bytes.has_value()) {
+    if (context_id.has_value() || filtering_id_max_bytes.has_value() ||
+        max_contributions.has_value()) {
       private_aggregation_config_js = base::StrCat(
           {", privateAggregationConfig: {",
            context_id.has_value()
@@ -1077,6 +1085,10 @@ class SharedStorageBrowserTestBase : public ContentBrowserTest {
            filtering_id_max_bytes.has_value()
                ? base::StrCat({"filteringIdMaxBytes: ",
                                filtering_id_max_bytes.value(), ","})
+               : "",
+           max_contributions.has_value()
+               ? base::StrCat(
+                     {"maxContributions: ", max_contributions.value(), ","})
                : "",
            "}"});
     }
@@ -8041,6 +8053,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
                          /*keep_alive_after_operation=*/true,
                          /*context_id=*/"example_context_id",
                          /*filtering_id_max_bytes=*/std::nullopt,
+                         /*max_contributions=*/std::nullopt,
                          /*out_error=*/nullptr,
                          /*wait_for_operation_finish=*/false);
 
@@ -8169,8 +8182,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
     )",
                          &out_script_url, /*expected_total_host_count=*/1u,
                          /*keep_alive_after_operation=*/true,
-                         /*context_id=*/
-                         "");
+                         /*context_id=*/"");
 
   EXPECT_TRUE(console_observer.messages().empty());
 
@@ -8270,7 +8282,8 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
       /*keep_alive_after_operation=*/true,
       /*context_id=*/
       "this_is_an_example_of_a_context_id_that_is_too_long_to_be_allowed",
-      /*filtering_id_max_bytes=*/std::nullopt, &out_error);
+      /*filtering_id_max_bytes=*/std::nullopt,
+      /*max_contributions=*/std::nullopt, &out_error);
 
   EXPECT_THAT(
       out_error,
@@ -9043,7 +9056,8 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
                          /*expected_total_host_count=*/1u,
                          /*keep_alive_after_operation=*/true,
                          /*context_id=*/std::nullopt,
-                         /*filtering_id_max_bytes=*/"9", &out_error);
+                         /*filtering_id_max_bytes=*/"9",
+                         /*max_contributions=*/std::nullopt, &out_error);
 
   EXPECT_THAT(out_error,
               testing::HasSubstr("Error: filteringIdMaxBytes is too big"));
@@ -9090,7 +9104,8 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
                          /*expected_total_host_count=*/1u,
                          /*keep_alive_after_operation=*/true,
                          /*context_id=*/std::nullopt,
-                         /*filtering_id_max_bytes=*/"0", &out_error);
+                         /*filtering_id_max_bytes=*/"0",
+                         /*max_contributions=*/std::nullopt, &out_error);
 
   EXPECT_THAT(out_error, testing::HasSubstr(
                              "Error: filteringIdMaxBytes must be positive"));
@@ -9137,12 +9152,14 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
                          /*expected_total_host_count=*/1u,
                          /*keep_alive_after_operation=*/true,
                          /*context_id=*/std::nullopt,
-                         /*filtering_id_max_bytes=*/"-1", &out_error);
+                         /*filtering_id_max_bytes=*/"-1",
+                         /*max_contributions=*/std::nullopt, &out_error);
 
   EXPECT_THAT(out_error,
               testing::HasSubstr("Value is outside the 'unsigned long"
                                  " long' value range."));
 }
+
 IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
                        PrivateAggregationPermissionsPolicyNone) {
   GURL url = https_server()->GetURL(
@@ -9253,6 +9270,357 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
   // Ensures we saw exactly one report for the fast operation (and therefore two
   // for the slow operations).
   EXPECT_EQ(num_one_contribution_reports, 1);
+}
+
+class SharedStoragePrivateAggregationInvalidMaxContributionsBrowserTest
+    : public SharedStoragePrivateAggregationEnabledBrowserTest {
+ public:
+  SharedStoragePrivateAggregationInvalidMaxContributionsBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        blink::features::kPrivateAggregationApiMaxContributions);
+  }
+
+  void SetUpOnMainThread() override {
+    SharedStoragePrivateAggregationEnabledBrowserTest::SetUpOnMainThread();
+
+    EXPECT_CALL(mock_callback(), Run).Times(0);
+
+    EXPECT_CALL(browser_client(),
+                LogWebFeatureForCurrentPage(
+                    shell()->web_contents()->GetPrimaryMainFrame(),
+                    blink::mojom::WebFeature::kPrivateAggregationApiAll))
+        .Times(0);
+    EXPECT_CALL(
+        browser_client(),
+        LogWebFeatureForCurrentPage(
+            shell()->web_contents()->GetPrimaryMainFrame(),
+            blink::mojom::WebFeature::kPrivateAggregationApiEnableDebugMode))
+        .Times(0);
+    EXPECT_CALL(
+        browser_client(),
+        LogWebFeatureForCurrentPage(
+            shell()->web_contents()->GetPrimaryMainFrame(),
+            blink::mojom::WebFeature::kPrivateAggregationApiSharedStorage))
+        .Times(0);
+
+    EXPECT_CALL(
+        browser_client(),
+        LogWebFeatureForCurrentPage(
+            shell()->web_contents()->GetPrimaryMainFrame(),
+            blink::mojom::WebFeature::kPrivateAggregationApiFilteringIds))
+        .Times(0);
+    ON_CALL(browser_client(), IsPrivateAggregationAllowed)
+        .WillByDefault(testing::Return(true));
+    ON_CALL(browser_client(), IsPrivateAggregationDebugModeAllowed)
+        .WillByDefault(testing::Return(true));
+    ON_CALL(browser_client(), IsSharedStorageAllowed)
+        .WillByDefault(testing::Return(true));
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    SharedStoragePrivateAggregationInvalidMaxContributionsBrowserTest,
+    Zero) {
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  GURL out_script_url;
+  std::string out_error;
+  ExecuteScriptInWorklet(shell(), "", &out_script_url,
+                         /*expected_total_host_count=*/1u,
+                         /*keep_alive_after_operation=*/true,
+                         /*context_id=*/std::nullopt,
+                         /*filtering_id_max_bytes=*/std::nullopt,
+                         /*max_contributions=*/"0", &out_error);
+  EXPECT_THAT(out_error, testing::HasSubstr(
+                             "DataError: maxContributions must be positive"));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SharedStoragePrivateAggregationInvalidMaxContributionsBrowserTest,
+    TooBigForType) {
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  GURL out_script_url;
+  std::string out_error;
+  ExecuteScriptInWorklet(
+      shell(), "", &out_script_url,
+      /*expected_total_host_count=*/1u,
+      /*keep_alive_after_operation=*/true,
+      /*context_id=*/std::nullopt,
+      /*filtering_id_max_bytes=*/std::nullopt,
+      /*max_contributions=*/
+      base::NumberToString(std::numeric_limits<uint64_t>::max()) + "0",
+      &out_error);
+  EXPECT_THAT(out_error, testing::HasSubstr(
+                             "TypeError: Value is outside the 'unsigned long "
+                             "long' value range."));
+}
+
+// Describes a test case for the Private Aggregation config's `maxContributions`
+// field, i.e. per-context contribution limits.
+struct PrivateAggregationMaxContributionsTestCase {
+  PrivateAggregationMaxContributionsTestCase(
+      bool is_feature_enabled,
+      base::StrictNumeric<size_t> max_contributions,
+      base::StrictNumeric<size_t> num_contributions_to_make,
+      base::StrictNumeric<size_t> expected_num_contributions)
+      : is_feature_enabled(is_feature_enabled),
+        max_contributions(max_contributions),
+        num_contributions_to_make(num_contributions_to_make),
+        expected_num_contributions(expected_num_contributions) {}
+
+  // Generate a unique name for this test case. We can safely omit any
+  // expectations from the name because we already include each of the input
+  // fields (and there should be no two tests with the same inputs and different
+  // expectations). The returned string will contain only alphanumeric
+  // characters and underscores, as indicated by the googletest documentation
+  // for `INSTANTIATE_TEST_SUITE_P`.
+  std::string PrintToString() const {
+    return base::StrCat({is_feature_enabled ? "Enabled" : "Disabled", "Max",
+                         // Consider using `base::HexEncode(max_contributions)`
+                         // if `max_contributions` ever contains invalid
+                         // characters.
+                         base::NumberToString(max_contributions), "Num",
+                         base::NumberToString(num_contributions_to_make)});
+  }
+
+  // Determines whether the feature controlling `maxContributions` is enabled.
+  bool is_feature_enabled = false;
+  // The value of the worklet's `privateAggregationConfig.maxContributions`
+  // field. This is injected into a string that is evaluated as JavaScript.
+  size_t max_contributions = 0;
+  // The number of times the worklet should call `contributeToHistogram()`.
+  size_t num_contributions_to_make = 0;
+  // The number of contributions we expect in the `AggregatableReportRequest`.
+  size_t expected_num_contributions = 0;
+};
+
+std::string PrintToString(
+    const PrivateAggregationMaxContributionsTestCase& test_case) {
+  return test_case.PrintToString();
+}
+
+// Fixture for tests of Private Aggregation's `maxContributions` feature.
+class SharedStoragePrivateAggregationMaxContributionsBrowserTest
+    : public SharedStoragePrivateAggregationEnabledBrowserTest,
+      public testing::WithParamInterface<
+          PrivateAggregationMaxContributionsTestCase> {
+ public:
+  SharedStoragePrivateAggregationMaxContributionsBrowserTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        blink::features::kPrivateAggregationApiMaxContributions,
+        GetParam().is_feature_enabled);
+  }
+
+  // These constants must be kept in alignment with the constants used by
+  // `PrivateAggregationHost::GetEffectiveMaxContributions()`.
+  static constexpr size_t kDefaultMaxContributions = 20;
+  static constexpr size_t kMaximumMaxContributions = 1000;
+
+  static const std::vector<PrivateAggregationMaxContributionsTestCase>
+  GetTestCases() {
+    return {
+        // Test that behavior is the same when we request the default number of
+        // contributions regardless of whether the `maxContributions` feature is
+        // enabled. The field should be ignored when the feature is disabled.
+        PrivateAggregationMaxContributionsTestCase(
+            /*is_feature_enabled=*/true,
+            /*max_contributions=*/kDefaultMaxContributions,
+            /*num_contributions_to_make=*/kDefaultMaxContributions + 5u,
+            /*expected_num_contributions=*/kDefaultMaxContributions),
+        PrivateAggregationMaxContributionsTestCase(
+            /*is_feature_enabled=*/false,
+            /*max_contributions=*/kDefaultMaxContributions,
+            /*num_contributions_to_make=*/kDefaultMaxContributions + 5u,
+            /*expected_num_contributions=*/kDefaultMaxContributions),
+        PrivateAggregationMaxContributionsTestCase(
+            /*is_feature_enabled=*/true,
+            /*max_contributions=*/kDefaultMaxContributions,
+            /*num_contributions_to_make=*/kDefaultMaxContributions - 5u,
+            /*expected_num_contributions=*/kDefaultMaxContributions - 5u),
+        PrivateAggregationMaxContributionsTestCase(
+            /*is_feature_enabled=*/false,
+            /*max_contributions=*/kDefaultMaxContributions,
+            /*num_contributions_to_make=*/kDefaultMaxContributions - 5u,
+            /*expected_num_contributions=*/kDefaultMaxContributions - 5u),
+
+        // Test that the `maxContributions` field is used iff the feature is
+        // enabled. These test cases cover values of `maxContributions` between
+        // 1 and the default of 20 contributions for Shared Storage.
+        PrivateAggregationMaxContributionsTestCase(
+            /*is_feature_enabled=*/true,
+            /*max_contributions=*/1u,
+            /*num_contributions_to_make=*/kDefaultMaxContributions,
+            /*expected_num_contributions=*/1u),
+        PrivateAggregationMaxContributionsTestCase(
+            /*is_feature_enabled=*/false,
+            /*max_contributions=*/1u,
+            /*num_contributions_to_make=*/kDefaultMaxContributions,
+            /*expected_num_contributions=*/kDefaultMaxContributions),
+        PrivateAggregationMaxContributionsTestCase(
+            /*is_feature_enabled=*/true,
+            /*max_contributions=*/kDefaultMaxContributions - 1u,
+            /*num_contributions_to_make=*/kDefaultMaxContributions,
+            /*expected_num_contributions=*/kDefaultMaxContributions - 1u),
+        PrivateAggregationMaxContributionsTestCase(
+            /*is_feature_enabled=*/false,
+            /*max_contributions=*/kDefaultMaxContributions - 1u,
+            /*num_contributions_to_make=*/kDefaultMaxContributions,
+            /*expected_num_contributions=*/kDefaultMaxContributions),
+
+        // Test values of `maxContributions` that exceed the default, but are
+        // still in the accepted range.
+        PrivateAggregationMaxContributionsTestCase(
+            /*is_feature_enabled=*/true,
+            /*max_contributions=*/kDefaultMaxContributions * 10u,
+            /*num_contributions_to_make=*/kDefaultMaxContributions * 10u + 1u,
+            /*expected_num_contributions=*/kDefaultMaxContributions * 10u),
+        PrivateAggregationMaxContributionsTestCase(
+            /*is_feature_enabled=*/false,
+            /*max_contributions=*/kDefaultMaxContributions * 10u,
+            /*num_contributions_to_make=*/kDefaultMaxContributions * 10u + 1u,
+            /*expected_num_contributions=*/kDefaultMaxContributions),
+
+        PrivateAggregationMaxContributionsTestCase(
+            /*is_feature_enabled=*/true,
+            /*max_contributions=*/kMaximumMaxContributions,
+            /*num_contributions_to_make=*/kMaximumMaxContributions,
+            /*expected_num_contributions=*/kMaximumMaxContributions),
+        PrivateAggregationMaxContributionsTestCase(
+            /*is_feature_enabled=*/false,
+            /*max_contributions=*/kMaximumMaxContributions,
+            /*num_contributions_to_make=*/kMaximumMaxContributions,
+            /*expected_num_contributions=*/kDefaultMaxContributions),
+
+        // Test values of `maxContributions` that fit in `uint64_t`, but exceed
+        // the implementation-defined maximum. These values should be clamped
+        // rather than rejected.
+        PrivateAggregationMaxContributionsTestCase(
+            /*is_feature_enabled=*/true,
+            /*max_contributions=*/kMaximumMaxContributions,
+            /*num_contributions_to_make=*/kMaximumMaxContributions + 1u,
+            /*expected_num_contributions=*/kMaximumMaxContributions),
+        PrivateAggregationMaxContributionsTestCase(
+            /*is_feature_enabled=*/true,
+            /*max_contributions=*/kMaximumMaxContributions + 1u,
+            /*num_contributions_to_make=*/kMaximumMaxContributions + 1u,
+            /*expected_num_contributions=*/kMaximumMaxContributions),
+        PrivateAggregationMaxContributionsTestCase(
+            /*is_feature_enabled=*/true,
+            /*max_contributions=*/size_t{std::numeric_limits<uint16_t>::max()} +
+                1u,
+            /*num_contributions_to_make=*/kMaximumMaxContributions + 1u,
+            /*expected_num_contributions=*/kMaximumMaxContributions),
+    };
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SharedStoragePrivateAggregationMaxContributionsBrowserTest,
+    testing::ValuesIn(
+        SharedStoragePrivateAggregationMaxContributionsBrowserTest::
+            GetTestCases()),
+    testing::PrintToStringParamName());
+
+IN_PROC_BROWSER_TEST_P(
+    SharedStoragePrivateAggregationMaxContributionsBrowserTest,
+    MaxContributions) {
+  // If the default number of contributions per report ever changes, we must
+  // reevaluate the test cases.
+  ASSERT_EQ(PrivateAggregationHost::GetEffectiveMaxContributions(
+                PrivateAggregationCallerApi::kSharedStorage,
+                /*requested_max_contributions=*/std::nullopt),
+            kDefaultMaxContributions);
+
+  const std::string worklet_script = base::ReplaceStringPlaceholders(
+      R"(
+    for (let i=0; i < $1; ++i) {
+      privateAggregation.contributeToHistogram({bucket: BigInt(i), value: 42});
+    })",
+      {base::NumberToString(GetParam().num_contributions_to_make)},
+      /*offsets=*/nullptr);
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  base::RunLoop run_loop;
+
+  EXPECT_CALL(mock_callback(), Run)
+      .WillOnce(
+          [&](PrivateAggregationHost::ReportRequestGenerator generator,
+              std::vector<blink::mojom::AggregatableReportHistogramContribution>
+                  contributions,
+              PrivateAggregationBudgetKey budget_key,
+              PrivateAggregationHost::NullReportBehavior null_report_behavior) {
+            AggregatableReportRequest request =
+                std::move(generator).Run(contributions);
+
+            using testing::Field;
+            using Contribution =
+                blink::mojom::AggregatableReportHistogramContribution;
+
+            ASSERT_EQ(request.payload_contents().contributions.size(),
+                      GetParam().expected_num_contributions);
+
+            for (size_t i = 0;
+                 i < request.payload_contents().contributions.size(); ++i) {
+              EXPECT_THAT(request.payload_contents().contributions[i],
+                          testing::AllOf(
+                              Field("bucket", &Contribution::bucket, i),
+                              Field("value", &Contribution::value, 42),
+                              Field("filtering_id", &Contribution::filtering_id,
+                                    std::nullopt)));
+            }
+
+            EXPECT_EQ(request.shared_info().reporting_origin, a_test_origin_);
+            EXPECT_EQ(budget_key.origin(), a_test_origin_);
+            EXPECT_EQ(budget_key.caller_api(),
+                      PrivateAggregationCallerApi::kSharedStorage);
+            EXPECT_THAT(request.additional_fields(),
+                        testing::ElementsAre(
+                            testing::Pair("context_id", "example_context_id")));
+            EXPECT_EQ(
+                null_report_behavior,
+                PrivateAggregationHost::NullReportBehavior::kSendNullReport);
+
+            run_loop.Quit();
+          });
+
+  EXPECT_CALL(browser_client(),
+              LogWebFeatureForCurrentPage(
+                  shell()->web_contents()->GetPrimaryMainFrame(),
+                  blink::mojom::WebFeature::kPrivateAggregationApiAll));
+  EXPECT_CALL(
+      browser_client(),
+      LogWebFeatureForCurrentPage(
+          shell()->web_contents()->GetPrimaryMainFrame(),
+          blink::mojom::WebFeature::kPrivateAggregationApiSharedStorage));
+
+  ON_CALL(browser_client(), IsPrivateAggregationAllowed)
+      .WillByDefault(testing::Return(true));
+
+  ON_CALL(browser_client(), IsSharedStorageAllowed)
+      .WillByDefault(testing::Return(true));
+
+  // Suppress warnings about "uninteresting" function calls.
+  EXPECT_CALL(browser_client(), IsPrivateAggregationAllowed)
+      .Times(testing::AnyNumber());
+  EXPECT_CALL(browser_client(), IsSharedStorageAllowed)
+      .Times(testing::AnyNumber());
+
+  GURL out_script_url;
+  ExecuteScriptInWorklet(
+      shell(), worklet_script, &out_script_url,
+      /*expected_total_host_count=*/1u,
+      /*keep_alive_after_operation=*/true,
+      /*context_id=*/"example_context_id",
+      /*filtering_id_max_bytes=*/std::nullopt,
+      /*max_contributions=*/base::NumberToString(GetParam().max_contributions));
+  EXPECT_TRUE(console_observer.messages().empty());
+  run_loop.Run();
 }
 
 class SharedStorageSelectURLLimitBrowserTestBase
