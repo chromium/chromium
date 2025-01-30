@@ -349,8 +349,8 @@ TEST_F(HighlightStyleUtilsTest, CustomPropertyInheritance) {
       :root {
         --root-color: green;
       }
-      ::selection {
-        /* This rule should not apply */
+      :root::selection {
+        /* Should not affect div::selection */
         --selection-color: blue;
       }
       div::selection {

@@ -1402,10 +1402,10 @@ void StyleResolver::InitStyle(Element& element,
 
     // Highlight Pseudos may use var() references but those must be resolved
     // against the originating element. Share the variables from the originating
-    // style.
-    state.StyleBuilder().CopyInheritedVariablesFrom(
+    // style and remove any from the highlight chain.
+    state.StyleBuilder().SetInheritedVariablesFrom(
         state.OriginatingElementStyle());
-    state.StyleBuilder().CopyNonInheritedVariablesFrom(
+    state.StyleBuilder().SetNonInheritedVariablesFrom(
         state.OriginatingElementStyle());
   } else {
     state.CreateNewStyle(
