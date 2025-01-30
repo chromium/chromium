@@ -1818,17 +1818,8 @@ void LayerTreeHost::SetElementFilterMutated(ElementId element_id,
   if (list_type != ElementListType::ACTIVE)
     return;
 
-  if (IsUsingLayerLists()) {
-    // In BlinkGenPropertyTrees/CompositeAfterPaint we always have property
-    // tree nodes and can set the filter directly on the effect node.
-    property_trees()->effect_tree_mutable().OnFilterAnimated(element_id,
-                                                             filters);
-    return;
-  }
-
-  Layer* layer = LayerByElementId(element_id);
-  DCHECK(layer);
-  layer->OnFilterAnimated(filters);
+  property_tree_delegate_->OnElementFilterMutated(element_id, list_type,
+                                                  filters);
 }
 
 void LayerTreeHost::SetElementBackdropFilterMutated(

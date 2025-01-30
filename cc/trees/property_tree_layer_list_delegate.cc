@@ -119,4 +119,14 @@ bool PropertyTreeLayerListDelegate::IsElementInPropertyTrees(
          host()->property_trees()->HasElement(element_id);
 }
 
+void PropertyTreeLayerListDelegate::OnElementFilterMutated(
+    ElementId element_id,
+    ElementListType list_type,
+    const FilterOperations& filters) {
+  // In BlinkGenPropertyTrees/CompositeAfterPaint we always have property
+  // tree nodes and can set the filter directly on the effect node.
+  host()->property_trees()->effect_tree_mutable().OnFilterAnimated(element_id,
+                                                                   filters);
+}
+
 }  // namespace cc

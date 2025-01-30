@@ -67,4 +67,13 @@ bool PropertyTreeLayerTreeDelegate::IsElementInPropertyTrees(
          host_->LayerByElementId(element_id);
 }
 
+void PropertyTreeLayerTreeDelegate::OnElementFilterMutated(
+    ElementId element_id,
+    ElementListType list_type,
+    const FilterOperations& filters) {
+  Layer* layer = host()->LayerByElementId(element_id);
+  DCHECK(layer);
+  layer->OnFilterAnimated(filters);
+}
+
 }  // namespace cc

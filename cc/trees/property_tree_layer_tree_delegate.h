@@ -42,6 +42,9 @@ class CC_EXPORT PropertyTreeLayerTreeDelegate : public PropertyTreeDelegate {
   void OnUnregisterElement(ElementId id) override;
   bool IsElementInPropertyTrees(ElementId element_id,
                                 ElementListType list_type) const override;
+  void OnElementFilterMutated(ElementId element_id,
+                              ElementListType list_type,
+                              const FilterOperations& filters) override;
 
  private:
   raw_ptr<LayerTreeHost> host_ = nullptr;
