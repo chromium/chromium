@@ -28,20 +28,25 @@ public class EdgeToEdgeSystemBarColorHelper extends BaseSystemBarColorHelper {
     private final Callback<Boolean> mOnEdgeToEdgeChanged = this::onContentFitsWindowChanged;
 
     protected boolean mIsActivityEdgeToEdge;
+    protected boolean mCanColorStatusBarColor;
 
     /**
      * @param window Window from {@link android.app.Activity#getWindow()}.
      * @param doesContentFitWindowSupplier Supplier of whether the activity content fits the window
      *     insets.
      * @param delegateHelperSupplier Delegate helper that colors the bar when edge to edge.
+     * @param canColorStatusBarColor Value of the EdgeToEdgeEverywhere flag. Determines whether the
+     *     status bar color could be colored.
      */
     public EdgeToEdgeSystemBarColorHelper(
             Window window,
             ObservableSupplier<Boolean> doesContentFitWindowSupplier,
-            OneshotSupplier<SystemBarColorHelper> delegateHelperSupplier) {
+            OneshotSupplier<SystemBarColorHelper> delegateHelperSupplier,
+            boolean canColorStatusBarColor) {
         mDoesContentFitWindowSupplier = doesContentFitWindowSupplier;
         mEdgeToEdgeDelegateHelperSupplier = delegateHelperSupplier;
         mWindowColorHelper = new WindowSystemBarColorHelper(window);
+        mCanColorStatusBarColor = canColorStatusBarColor;
 
         // Initial values. By default, read the values from window.
         mIsActivityEdgeToEdge = Boolean.FALSE.equals(mDoesContentFitWindowSupplier.get());
@@ -105,6 +110,9 @@ public class EdgeToEdgeSystemBarColorHelper extends BaseSystemBarColorHelper {
     }
 
     private void updateStatusBarColor() {
+        if (!canSetStatusBarColor()) {
+            return;
+        }
         SystemBarColorHelper delegateHelper = mEdgeToEdgeDelegateHelperSupplier.get();
         // In ChromeTabbedActivity the delegate is null because native has not initialized. Prevents
         // setting the window status bar to transparent when the delegate is null.
@@ -126,5 +134,10 @@ public class EdgeToEdgeSystemBarColorHelper extends BaseSystemBarColorHelper {
 
     SystemBarColorHelper getEdgeToEdgeDelegateHelperForTesting() {
         return mEdgeToEdgeDelegateHelperSupplier.get();
+    }
+
+    @Override
+    public boolean canSetStatusBarColor() {
+        return mCanColorStatusBarColor;
     }
 }
