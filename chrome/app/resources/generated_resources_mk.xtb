@@ -4166,7 +4166,7 @@
 <translation id="3897298432557662720">{COUNT,plural, =1{слика}one{# слика}other{# слики}}</translation>
 <translation id="3897746662269329507">Вашиот уред <ph name="DEVICE_TYPE" /> е направен за играње игри. Апликацијата Explore ќе се отвори следно и во неа ќе имате пристап до стотици последни игри, ќе ви се прикажуваат понуди за играње игри и ќе ги откриете гејмерските функции што доаѓаат со вашиот уред.</translation>
 <translation id="3898233949376129212">Јазик на уредот</translation>
-<translation id="3898327728850887246"><ph name="SITE_NAME" /> сака да: <ph name="FIRST_PERMISSION" /> и <ph name="SECOND_PERMISSION" /></translation>
+<translation id="3898327728850887246"><ph name="SITE_NAME" /> сака: <ph name="FIRST_PERMISSION" /> и <ph name="SECOND_PERMISSION" /></translation>
 <translation id="3898498281932368596">Блокирај и напушти</translation>
 <translation id="3898743717925399322">Вашата лозинка за <ph name="WEBSITE" /> е зачувана на уредов и во сметката на Google. Од каде сакате да ја избришете?</translation>
 <translation id="3898768766145818464">Пуштајте или паузирајте видео</translation>
@@ -10750,7 +10750,7 @@
 <translation id="8647834505253004544">Неважечка веб-адреса</translation>
 <translation id="8648252583955599667"><ph name="GET_HELP_LINK" /> или <ph name="RE_SCAN_LINK" /></translation>
 <translation id="8648408795949963811">Температура на бојата на „Ноќното светло“</translation>
-<translation id="8648544143274677280"><ph name="SITE_NAME" /> сака да: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> и друго</translation>
+<translation id="8648544143274677280"><ph name="SITE_NAME" /> сака: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> и друго</translation>
 <translation id="8649026945479135076">Нормално е сајтовите што ги посетувате да ги помнат работите што ве интересираат за да го персонализираат вашето доживување. Сајтовите можат и да зачувуваат податоци со Chrome за вашите интереси.</translation>
 <translation id="8650543407998814195">Иако веќе не може да пристапувате до стариот профил, сѐ уште може да го отстраните.</translation>
 <translation id="8651585100578802546">Принуди повторно вчитување на страницата</translation>
@@ -10883,7 +10883,7 @@
 <translation id="8730621377337864115">Готово</translation>
 <translation id="8731029916209785242">Дозволи (<ph name="FORMATTED_ORIGIN" />)</translation>
 <translation id="8731268612289859741">Безбедносен код</translation>
-<translation id="8731629443331803108"><ph name="SITE_NAME" /> сака да: <ph name="PERMISSION" /></translation>
+<translation id="8731629443331803108"><ph name="SITE_NAME" /> сака: <ph name="PERMISSION" /></translation>
 <translation id="8731787661154643562">Број на порта</translation>
 <translation id="8732030010853991079">Користете ја наставката со кликнување на иконата.</translation>
 <translation id="8732212173949624846">Прочитајте ја и променете ја историјата на прелистувачот на сите најавени уреди</translation>
