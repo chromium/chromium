@@ -424,7 +424,7 @@ class CONTENT_EXPORT NavigationRequest
   const std::vector<std::string>& GetDnsAliases() override;
   bool IsSameProcess() override;
   NavigationEntry* GetNavigationEntry() const override;
-  int GetNavigationEntryOffset() override;
+  int GetNavigationEntryOffset() const override;
   void RegisterSubresourceOverride(
       blink::mojom::TransferrableURLLoaderPtr transferrable_loader) override;
   GlobalRenderFrameHostId GetPreviousRenderFrameHostId() override;

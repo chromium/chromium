@@ -217,7 +217,7 @@ class MockNavigationHandle : public NavigationHandle {
               (blink::mojom::TransferrableURLLoaderPtr));
   MOCK_METHOD(bool, IsSameProcess, ());
   MOCK_METHOD(NavigationEntry*, GetNavigationEntry, (), (const, override));
-  MOCK_METHOD(int, GetNavigationEntryOffset, ());
+  MOCK_METHOD(int, GetNavigationEntryOffset, (), (const, override));
   MOCK_METHOD(void,
               ForceEnableOriginTrials,
               (const std::vector<std::string>& trials));
