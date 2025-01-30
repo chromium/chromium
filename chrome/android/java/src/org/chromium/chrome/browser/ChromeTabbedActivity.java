@@ -1974,13 +1974,15 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                     }
                 } else {
                     TabModelUtils.setIndex(tabModel, tabIndex);
-                    LayoutManagerChrome layoutManager = getLayoutManager();
-                    // If the tab-switcher is displayed, hide it to show the tab.
-                    if (layoutManager != null
-                            && layoutManager.isLayoutVisible(LayoutType.TAB_SWITCHER)) {
-                        layoutManager.showLayout(LayoutType.BROWSING, /* animate= */ false);
-                    }
                 }
+
+                LayoutManagerChrome layoutManager = getLayoutManager();
+                // If the tab-switcher is displayed, hide it to show the tab.
+                if (layoutManager != null
+                        && layoutManager.isLayoutVisible(LayoutType.TAB_SWITCHER)) {
+                    layoutManager.showLayout(LayoutType.BROWSING, /* animate= */ false);
+                }
+
                 break;
             case TabOpenType.CLOBBER_CURRENT_TAB:
                 // The browser triggered the intent. This happens when clicking links which
