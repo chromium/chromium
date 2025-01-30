@@ -19,6 +19,7 @@
 #include "base/uuid.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_util.h"
+#include "components/optimization_guide/core/model_execution/multimodal_message.h"
 #include "components/optimization_guide/core/model_execution/on_device_execution.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_feature_adapter.h"
@@ -115,8 +116,7 @@ void SessionImpl::AddContext(
 
 SessionImpl::AddContextResult SessionImpl::AddContextImpl(
     const google::protobuf::MessageLite& request_metadata) {
-  context_.reset(request_metadata.New());
-  context_->CheckTypeAndMergeFrom(request_metadata);
+  context_ = MultimodalMessage(request_metadata);
   context_start_time_ = base::TimeTicks::Now();
 
   // Cancel any pending response.
@@ -129,7 +129,7 @@ SessionImpl::AddContextResult SessionImpl::AddContextImpl(
     return AddContextResult::kUsingServer;
   }
 
-  if (!on_device_context_->SetInput(*context_)) {
+  if (!on_device_context_->SetInput(context_.read())) {
     // Use server if can't construct input.
     DestroyOnDeviceState();
     return AddContextResult::kFailedConstructingInput;
@@ -172,13 +172,12 @@ void SessionImpl::ExecuteModel(
     context_start_time_ = base::TimeTicks();
   }
 
-  std::unique_ptr<google::protobuf::MessageLite> merged_request =
-      MergeContext(request_metadata);
+  auto merged_request = context_.Merge(request_metadata);
 
   if (!ShouldUseOnDeviceModel()) {
     DestroyOnDeviceState();
     execute_remote_fn_.Run(
-        feature_, *merged_request, std::nullopt,
+        feature_, merged_request.BuildProtoMessage(), std::nullopt,
         /*log_ai_data_request=*/nullptr,
         base::BindOnce(&InvokeStreamingCallbackWithRemoteResult,
                        std::move(callback)));
@@ -213,19 +212,6 @@ bool SessionImpl::ShouldUseOnDeviceModel() const {
 
 void SessionImpl::DestroyOnDeviceState() {
   on_device_context_.reset();
-}
-
-std::unique_ptr<google::protobuf::MessageLite> SessionImpl::MergeContext(
-    const google::protobuf::MessageLite& request) {
-  // Create a message of the correct type.
-  auto message = base::WrapUnique(request.New());
-  // First merge in the current context.
-  if (context_) {
-    message->CheckTypeAndMergeFrom(*context_);
-  }
-  // Then merge in the request.
-  message->CheckTypeAndMergeFrom(request);
-  return message;
 }
 
 void SessionImpl::GetSizeInTokens(
@@ -275,7 +261,7 @@ void SessionImpl::GetSizeInTokensInternal(
     return;
   }
   auto input = on_device_context_->opts().adapter->ConstructInputString(
-      request, want_input_context);
+      MultimodalMessageReadView(request), want_input_context);
   if (!input) {
     std::move(callback).Run(0);
     return;

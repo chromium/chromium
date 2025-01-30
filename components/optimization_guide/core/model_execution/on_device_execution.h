@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
+#include "components/optimization_guide/core/model_execution/multimodal_message.h"
 #include "components/optimization_guide/core/model_execution/on_device_context.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_feature_adapter.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
@@ -117,7 +118,7 @@ class OnDeviceExecution final
       ModelBasedCapabilityKey feature,
       OnDeviceOptions opts,
       ExecuteRemoteFn execute_remote_fn,
-      std::unique_ptr<google::protobuf::MessageLite> message,
+      MultimodalMessage message,
       std::unique_ptr<ResultLogger> logger,
       OptimizationGuideModelExecutionResultStreamingCallback callback,
       base::OnceCallback<void(bool)> cleanup_callback);
@@ -221,7 +222,7 @@ class OnDeviceExecution final
   mojo::Remote<on_device_model::mojom::Session> session_;
 
   // The request message.
-  std::unique_ptr<google::protobuf::MessageLite> last_message_;
+  MultimodalMessage last_message_;
   // Time ExecuteModel() was called.
   base::TimeTicks start_;
   // Used to log the result of ExecuteModel().
