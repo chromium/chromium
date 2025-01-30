@@ -227,10 +227,6 @@ class ProfileOAuth2TokenServiceDelegateChromeOSTest : public testing::Test {
     return account_manager::AccountKey::FromGaiaId(account_info_.gaia);
   }
 
-  account_manager::AccountKey ad_account_key() const {
-    return {"object-guid", account_manager::AccountType::kActiveDirectory};
-  }
-
   AccountInfo CreateAccountInfoTestFixture(const GaiaId& gaia_id,
                                            const std::string& email) {
     AccountInfo account_info;
@@ -295,40 +291,6 @@ class ProfileOAuth2TokenServiceDelegateChromeOSTest : public testing::Test {
         .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
     account_manager_.RemoveAccount(account_key);
     run_loop.Run();
-  }
-
-  void UpsertActiveDirectoryAccountAndWaitForCompletion(
-      const ::account_manager::AccountKey& account_key,
-      const std::string& raw_email,
-      const std::string& token) {
-    ASSERT_EQ(account_key.account_type(),
-              account_manager::AccountType::kActiveDirectory);
-    account_manager::MockAccountManagerFacadeObserver observer;
-    account_manager_facade_->AddObserver(&observer);
-
-    base::RunLoop run_loop;
-    EXPECT_CALL(observer, OnAccountUpserted(testing::_))
-        .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
-    account_manager_.UpsertAccount(account_key, raw_email, token);
-    run_loop.Run();
-
-    account_manager_facade_->RemoveObserver(&observer);
-  }
-
-  void RemoveActiveDirectoryAccountAndWaitForCompletion(
-      const ::account_manager::AccountKey& account_key) {
-    ASSERT_EQ(account_key.account_type(),
-              account_manager::AccountType::kActiveDirectory);
-    account_manager::MockAccountManagerFacadeObserver observer;
-    account_manager_facade_->AddObserver(&observer);
-
-    base::RunLoop run_loop;
-    EXPECT_CALL(observer, OnAccountRemoved(testing::_))
-        .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
-    account_manager_.RemoveAccount(account_key);
-    run_loop.Run();
-
-    account_manager_facade_->RemoveObserver(&observer);
   }
 
   std::unique_ptr<AccountManagerFacade> CreateAccountManagerFacade(
@@ -662,18 +624,6 @@ TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
 }
 
 TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
-       GetAccountsShouldNotReturnAdAccounts) {
-  EXPECT_TRUE(delegate_->GetAccounts().empty());
-
-  // Insert an Active Directory account into AccountManager.
-  UpsertActiveDirectoryAccountAndWaitForCompletion(
-      ad_account_key(), kUserEmail, AccountManager::kActiveDirectoryDummyToken);
-
-  // OAuth delegate should not return Active Directory accounts.
-  EXPECT_TRUE(delegate_->GetAccounts().empty());
-}
-
-TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
        GetAccountsReturnsGaiaAccounts) {
   EXPECT_TRUE(delegate_->GetAccounts().empty());
 
@@ -705,10 +655,9 @@ TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
       delegate_->load_credentials_state());
   EXPECT_TRUE(delegate_->GetAccounts().empty());
   const std::string kUserEmail2 = "random-email2@example.com";
-  const std::string kUserEmail3 = "random-email3@example.com";
 
-  // Insert 2 Gaia accounts and 1 Active Directory Account. Of the 2 Gaia
-  // accounts, 1 has a valid refresh token and 1 has a dummy token.
+  // Insert 2 Gaia accounts: 1 with a valid refresh token and 1 with a dummy
+  // token.
   UpsertAccountAndWaitForCompletion(gaia_account_key(), kUserEmail, kGaiaToken);
 
   account_manager::AccountKey gaia_account_key2 =
@@ -717,10 +666,6 @@ TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
       GaiaId(gaia_account_key2.id()), kUserEmail2));
   UpsertAccountAndWaitForCompletion(gaia_account_key2, kUserEmail2,
                                     AccountManager::kInvalidToken);
-
-  UpsertActiveDirectoryAccountAndWaitForCompletion(
-      ad_account_key(), kUserEmail3,
-      AccountManager::kActiveDirectoryDummyToken);
 
   // Verify.
   const std::vector<CoreAccountId> accounts = delegate_->GetAccounts();
