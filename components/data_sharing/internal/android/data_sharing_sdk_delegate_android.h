@@ -64,6 +64,8 @@ class DataSharingSDKDelegateAndroid : public DataSharingSDKDelegate {
   // DataSharingSDKDelegate implementation.
   void Initialize(
       DataSharingNetworkLoader* data_sharing_network_loader) override;
+  void ForceInitialize(
+      DataSharingNetworkLoader* data_sharing_network_loader) override;
   void CreateGroup(const data_sharing_pb::CreateGroupParams& params,
                    CreateGroupCallback callback) override;
   void ReadGroups(const data_sharing_pb::ReadGroupsParams& params,
