@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.browser_controls;
 
+import android.content.Context;
 import android.util.SparseArray;
 import android.util.SparseBooleanArray;
 import android.util.SparseIntArray;
@@ -12,9 +13,12 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.Log;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.cc.input.BrowserControlsOffsetTagsInfo;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.display.DisplayUtil;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -27,6 +31,7 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
     private static final String TAG = "BotControlsStacker";
     private static final int INVALID_HEIGHT = -1;
     private static boolean sDumpLayerUpdateForTesting;
+    private int mNumberOfVisibleLayers;
 
     /** Enums that defines the type and position for each bottom controls. */
     @Retention(RetentionPolicy.SOURCE)
@@ -141,16 +146,25 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
     // chrome after it has been closed.) It must be set to SHOWN to allow the browser to initialize
     // the UI models with the correct y offsets.
     private @BrowserControlsState int mBrowserControlsState = BrowserControlsState.SHOWN;
+    private final Context mContext;
+    private final WindowAndroid mWindowAndroid;
 
     /**
      * Construct the coordination class that's used to position different UIs into the bottom
      * controls.
      *
      * @param browserControlsSizer {@link BrowserControlsSizer} to request browser controls changes.
+     * @param context Context in which the stacker is operating.
+     * @param windowAndroid The window in which the bottom controls stack is displaying.
      */
-    public BottomControlsStacker(BrowserControlsSizer browserControlsSizer) {
+    public BottomControlsStacker(
+            BrowserControlsSizer browserControlsSizer,
+            Context context,
+            WindowAndroid windowAndroid) {
         mBrowserControlsSizer = browserControlsSizer;
         mBrowserControlsSizer.addObserver(this);
+        mContext = context;
+        mWindowAndroid = windowAndroid;
     }
 
     /**
@@ -291,6 +305,13 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
     public void notifyBackgroundColor(@ColorInt int color) {
         // TODO(crbug.com/345488108): Handle #notifyBackgroundColor in this class.
         mBrowserControlsSizer.notifyBackgroundColor(color);
+    }
+
+    /**
+     * Notifies that the active tab has completed a cross-document navigation in the main fraime.
+     */
+    public void notifyDidFinishNavigationInPrimaryMainFrame() {
+        recordLayerMetrics();
     }
 
     /** Destroy this instance and release the dependencies over the browser controls. */
@@ -603,6 +624,26 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
         }
     }
 
+    private void recordLayerMetrics() {
+        RecordHistogram.recordSparseHistogram(
+                "Android.BottomControlsStacker.NumberOfVisibleLayers", mNumberOfVisibleLayers);
+
+        int windowHeight =
+                DisplayUtil.dpToPx(
+                        mWindowAndroid.getDisplay(),
+                        mContext.getResources().getConfiguration().screenHeightDp);
+        if (windowHeight == 0) return;
+        int percentageOfScreenUsedByBottomControlsMaxHeight = (mTotalHeight / windowHeight) * 100;
+        int percentageOfScreenUsedByBottomControlsMinHeight =
+                (mTotalMinHeight / windowHeight) * 100;
+        RecordHistogram.recordPercentageHistogram(
+                "Android.BottomControlsStacker.PercentageOfWindowUsedByBottomControlsAtMaxHeight",
+                percentageOfScreenUsedByBottomControlsMaxHeight);
+        RecordHistogram.recordPercentageHistogram(
+                "Android.BottomControlsStacker.PercentageOfWindowUsedByBottomControlsAtMinHeight",
+                percentageOfScreenUsedByBottomControlsMinHeight);
+    }
+
     /**
      * The layer should scroll off if it is labeled as ALWAYS_SCROLL_OFF, or if it is labeled as
      * DEFAULT_SCROLL_OFF and isn't positioned under a NEVER_SCROLL_OFF layer.
@@ -632,6 +673,7 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
      */
     private void updateLayerVisibilities() {
         mLayerVisibilities.clear();
+        mNumberOfVisibleLayers = 0;
         boolean atLeastOneVisibleLayer = false;
         for (int type : STACK_ORDER) {
             BottomControlsLayer layer = mLayers.get(type);
@@ -648,13 +690,14 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
             if (layer == null) continue;
 
             @LayerVisibility int layerVisibility = layer.getLayerVisibility();
-            mLayerVisibilities.put(
-                    type,
+            boolean isLayerVisible =
                     layerVisibility == LayerVisibility.VISIBLE
                             || layer.getLayerVisibility() == LayerVisibility.SHOWING
                             || (atLeastOneVisibleLayer
                                     && layerVisibility
-                                            == LayerVisibility.VISIBLE_IF_OTHERS_VISIBLE));
+                                            == LayerVisibility.VISIBLE_IF_OTHERS_VISIBLE);
+            mLayerVisibilities.put(type, isLayerVisible);
+            if (isLayerVisible) ++mNumberOfVisibleLayers;
         }
     }
 

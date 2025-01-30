@@ -568,7 +568,8 @@ public class RootUiCoordinator
         mOverviewColorSupplier = overviewColorSupplier;
         mBaseChromeLayout = baseChromeLayout;
         mEdgeToEdgeManager = edgeToEdgeManager;
-        mBottomControlsStacker = new BottomControlsStacker(mBrowserControlsManager);
+        mBottomControlsStacker =
+                new BottomControlsStacker(mBrowserControlsManager, mActivity, mWindowAndroid);
     }
 
     // TODO(pnoland, crbug.com/865801): remove this in favor of wiring it directly.
