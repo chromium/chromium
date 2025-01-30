@@ -4,6 +4,8 @@
 
 package org.chromium.components.browser_ui.settings;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
@@ -16,10 +18,14 @@ import android.widget.TextView;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /** A preference that takes value from a specified list of objects, presented as a dropdown. */
+@NullMarked
 public class SpinnerPreference extends Preference {
-    private Spinner mSpinner;
-    private ArrayAdapter<Object> mAdapter;
+    private @Nullable Spinner mSpinner;
+    private @Nullable ArrayAdapter<Object> mAdapter;
     private int mSelectedIndex;
     private final boolean mSingleLine;
 
@@ -56,7 +62,7 @@ public class SpinnerPreference extends Preference {
     }
 
     /** Returns the Spinner instance for introspection during tests. */
-    public Spinner getSpinnerForTesting() {
+    public @Nullable Spinner getSpinnerForTesting() {
         return mSpinner;
     }
 
@@ -75,10 +81,10 @@ public class SpinnerPreference extends Preference {
     }
 
     /** @return The currently selected option. */
-    public Object getSelectedOption() {
+    public @Nullable Object getSelectedOption() {
         if (mSpinner == null) {
             // Use the adapter directly if the view hasn't been created yet.
-            return mAdapter.getItem(mSelectedIndex);
+            return assumeNonNull(mAdapter).getItem(mSelectedIndex);
         }
         return mSpinner.getSelectedItem();
     }
@@ -87,8 +93,8 @@ public class SpinnerPreference extends Preference {
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
 
-        ((TextView) holder.findViewById(R.id.title)).setText(getTitle());
-        mSpinner = (Spinner) holder.findViewById(R.id.spinner);
+        ((TextView) assumeNonNull(holder.findViewById(R.id.title))).setText(getTitle());
+        mSpinner = (Spinner) assumeNonNull(holder.findViewById(R.id.spinner));
         mSpinner.setOnItemSelectedListener(
                 new AdapterView.OnItemSelectedListener() {
                     @Override

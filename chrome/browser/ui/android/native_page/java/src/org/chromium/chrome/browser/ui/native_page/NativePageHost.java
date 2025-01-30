@@ -8,9 +8,11 @@ import android.content.Context;
 import android.graphics.Rect;
 
 import org.chromium.base.supplier.DestroyableObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.LoadUrlParams;
 
 /** This interface represents a view that is capable of hosting a NativePage. */
+@NullMarked
 public interface NativePageHost {
     /**
      * @return A context to use for inflating views and obtaining resources.

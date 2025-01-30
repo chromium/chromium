@@ -6,15 +6,17 @@ package org.chromium.components.browser_ui.device_lock;
 
 import android.content.Context;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.StringDef;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Allows for launching {@link DeviceLockActivity} in modularized code. */
+@NullMarked
 public interface DeviceLockActivityLauncher {
 
     /**

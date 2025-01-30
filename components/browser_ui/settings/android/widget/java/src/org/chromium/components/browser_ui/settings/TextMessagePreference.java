@@ -12,12 +12,16 @@ import android.widget.TextView;
 
 import androidx.preference.PreferenceViewHolder;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /** A preference that displays informational text, and a summary which can contain a link. */
+@NullMarked
 public class TextMessagePreference extends ChromeBasePreference {
-    private TextView mTitleView;
-    private TextView mSummaryView;
+    private @Nullable TextView mTitleView;
+    private @Nullable TextView mSummaryView;
     private MovementMethod mMovementMethod = LinkMovementMethod.getInstance();
-    private Integer mLiveRegionMode;
+    private @Nullable Integer mLiveRegionMode;
 
     /** Constructor for inflating from XML. */
     public TextMessagePreference(Context context, AttributeSet attrs) {

@@ -4,10 +4,13 @@
 
 package org.chromium.chrome.browser.layouts;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Exposes the current {@link Layout} state as well as a way to listen to {@link Layout} state
  * changes.
  */
+@NullMarked
 public interface LayoutStateProvider {
     /** An observer that is notified when the {@link Layout} state changes. */
     interface LayoutStateObserver {

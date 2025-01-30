@@ -11,11 +11,12 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 
-import androidx.annotation.Nullable;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * A preference that supports some Chrome-specific customizations:
@@ -29,18 +30,19 @@ import org.chromium.base.metrics.RecordUserAction;
  * <p>This preference can set an icon color in XML through app:iconTint. Note that if a
  * ColorStateList is set, only the default color will be used.
  */
+@NullMarked
 public class ChromeBasePreference extends Preference {
-    private ColorStateList mIconTint;
-    private ManagedPreferenceDelegate mManagedPrefDelegate;
+    private @Nullable ColorStateList mIconTint;
+    private @Nullable ManagedPreferenceDelegate mManagedPrefDelegate;
 
     /** Indicates if the preference uses a custom layout. */
     private final boolean mHasCustomLayout;
 
     /** When null, the default Preferences Support Library logic will be used to determine dividers. */
-    @Nullable private Boolean mDividerAllowedAbove;
+    private @Nullable Boolean mDividerAllowedAbove;
 
-    @Nullable private Boolean mDividerAllowedBelow;
-    @Nullable private String mUserAction;
+    private @Nullable Boolean mDividerAllowedBelow;
+    private @Nullable String mUserAction;
 
     /** Constructor for use in Java. */
     public ChromeBasePreference(Context context) {
@@ -48,7 +50,7 @@ public class ChromeBasePreference extends Preference {
     }
 
     /** Constructor for inflating from XML. */
-    public ChromeBasePreference(Context context, AttributeSet attrs) {
+    public ChromeBasePreference(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
 
         setSingleLineTitle(false);

@@ -9,6 +9,8 @@ import android.os.Bundle;
 import androidx.annotation.AnyThread;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.security.GeneralSecurityException;
 import java.security.Key;
@@ -45,6 +47,7 @@ import javax.crypto.spec.SecretKeySpec;
  * and needs to be migrated to another one. See https://crbug.com/1440828.
  */
 @AnyThread
+@NullMarked
 public class CipherFactory {
     private static final String TAG = "CipherFactory";
     static final int NUM_BYTES = 16;
@@ -67,7 +70,7 @@ public class CipherFactory {
     private final Object mDataLock = new Object();
 
     /** Holds data for cipher generation. */
-    private CipherData mData;
+    private @Nullable CipherData mData;
 
     /**
      * Constructor for a new {@link CipherFactory}. Each CipherFactory will use different encryption
@@ -81,7 +84,7 @@ public class CipherFactory {
      * @param opmode One of Cipher.{ENCRYPT,DECRYPT}_MODE.
      * @return A Cipher, or null if it is not possible to instantiate one.
      */
-    public Cipher getCipher(int opmode) {
+    public @Nullable Cipher getCipher(int opmode) {
         CipherData data = getCipherData(true);
 
         if (data != null) {
@@ -103,7 +106,7 @@ public class CipherFactory {
      * @param generateIfNeeded Generates data if needed.
      * @return Data to use for the Cipher, null if it couldn't be generated.
      */
-    CipherData getCipherData(boolean generateIfNeeded) {
+    @Nullable CipherData getCipherData(boolean generateIfNeeded) {
         synchronized (mDataLock) {
             if (mData == null && generateIfNeeded) {
                 // Poll random data to generate initialization parameters for the Cipher.

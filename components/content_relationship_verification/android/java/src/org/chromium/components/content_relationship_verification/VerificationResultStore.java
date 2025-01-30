@@ -7,6 +7,7 @@ package org.chromium.components.content_relationship_verification;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.embedder_support.util.Origin;
 
 import java.util.Arrays;
@@ -26,6 +27,7 @@ import java.util.Set;
  * instance to your classes where possible to make testing easier.
  * Thread safety: Methods can be called on any thread.
  */
+@NullMarked
 public abstract class VerificationResultStore {
     /**
      * A collection of Relationships (stored as Strings, with the signature set to an empty String)

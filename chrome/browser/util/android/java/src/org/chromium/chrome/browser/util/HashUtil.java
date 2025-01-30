@@ -29,7 +29,7 @@ public final class HashUtil {
             mText = text;
         }
 
-        public Params withSalt(String salt) {
+        public Params withSalt(@Nullable String salt) {
             mSalt = salt;
             return this;
         }

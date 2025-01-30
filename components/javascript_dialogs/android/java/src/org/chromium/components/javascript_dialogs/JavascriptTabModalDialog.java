@@ -4,12 +4,16 @@
 
 package org.chromium.components.javascript_dialogs;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -19,12 +23,13 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
  * dialog. This can be an alert dialog, a prompt dialog or a confirm dialog.
  */
 @JNINamespace("javascript_dialogs")
+@NullMarked
 public class JavascriptTabModalDialog extends JavascriptModalDialog {
     private long mNativeDialogPointer;
 
     /** Constructor for initializing contents to be shown on the dialog. */
     private JavascriptTabModalDialog(
-            String title, String message, String promptText, int negativeButtonTextId) {
+            String title, String message, @Nullable String promptText, int negativeButtonTextId) {
         super(title, message, promptText, false, R.string.ok, negativeButtonTextId);
     }
 
@@ -63,7 +68,7 @@ public class JavascriptTabModalDialog extends JavascriptModalDialog {
 
     @CalledByNative
     private String getUserInput() {
-        return mDialogCustomView.getPromptText();
+        return assumeNonNull(mDialogCustomView).getPromptText();
     }
 
     @CalledByNative

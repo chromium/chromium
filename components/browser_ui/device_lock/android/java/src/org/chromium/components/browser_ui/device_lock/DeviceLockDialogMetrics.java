@@ -8,11 +8,13 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Helper class for emitting metrics to the Android.Automotive.DeviceLockDialogAction histogram. */
+@NullMarked
 public class DeviceLockDialogMetrics {
 
     /**

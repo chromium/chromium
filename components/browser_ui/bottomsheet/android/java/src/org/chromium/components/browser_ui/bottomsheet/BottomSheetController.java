@@ -6,6 +6,7 @@ package org.chromium.components.browser_ui.bottomsheet;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -19,6 +20,7 @@ import java.lang.annotation.RetentionPolicy;
  * {@link #requestShowContent(BottomSheetContent, boolean)} which will return true if the content
  * was actually shown (see full doc on method).
  */
+@NullMarked
 public interface BottomSheetController {
     /** The different states that the bottom sheet can have. */
     @IntDef({

@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.layouts;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -22,6 +24,7 @@ import java.lang.annotation.RetentionPolicy;
     LayoutType.START_SURFACE
 })
 @Retention(RetentionPolicy.SOURCE)
+@NullMarked
 public @interface LayoutType {
     int NONE = 0;
     int BROWSING = 1;

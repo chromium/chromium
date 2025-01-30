@@ -7,10 +7,12 @@ package org.chromium.components.background_task_scheduler.internal;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
 import org.chromium.components.background_task_scheduler.TaskInfo;
 
 /** Invokes {@link BackgroundTaskScheduler} methods for the tasks scheduled through native interface. */
+@NullMarked
 public class NativeTaskScheduler {
     @CalledByNative
     private static boolean schedule(TaskInfo taskInfo) {

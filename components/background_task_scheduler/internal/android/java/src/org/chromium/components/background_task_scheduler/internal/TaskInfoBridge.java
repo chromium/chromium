@@ -8,9 +8,11 @@ import android.os.PersistableBundle;
 
 import org.jni_zero.CalledByNative;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.background_task_scheduler.TaskInfo;
 
 /** Converts native task info params to Java {@link TaskInfo}. */
+@NullMarked
 public class TaskInfoBridge {
     @CalledByNative
     private static TaskInfo.TimingInfo createPeriodicInfo(

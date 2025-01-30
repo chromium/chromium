@@ -17,7 +17,6 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -198,11 +197,11 @@ public class LocaleUtils {
      * @return The default country code set during install.
      */
     @CalledByNative
-    public static @Nullable @JniType("std::string") String getDefaultCountryCode() {
+    public static @JniType("std::string") String getDefaultCountryCode() {
         CommandLine commandLine = CommandLine.getInstance();
-        return commandLine.hasSwitch(BaseSwitches.DEFAULT_COUNTRY_CODE_AT_INSTALL)
-                ? commandLine.getSwitchValue(BaseSwitches.DEFAULT_COUNTRY_CODE_AT_INSTALL)
-                : Locale.getDefault().getCountry();
+        String commandLineSwitch =
+                commandLine.getSwitchValue(BaseSwitches.DEFAULT_COUNTRY_CODE_AT_INSTALL);
+        return commandLineSwitch != null ? commandLineSwitch : Locale.getDefault().getCountry();
     }
 
     /**

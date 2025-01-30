@@ -4,6 +4,8 @@
 
 package org.chromium.components.browser_ui.settings;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -13,12 +15,14 @@ import android.widget.ImageView;
 
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * A preference that supports some Chrome-specific customizations:
@@ -33,11 +37,12 @@ import androidx.preference.PreferenceViewHolder;
  * customizations, however a custom widget may also be included as long as there is an ImageView
  * with the image_view_widget ID.
  */
+@NullMarked
 public class ChromeImageViewPreference extends Preference {
-    @Nullable private ManagedPreferenceDelegate mManagedPrefDelegate;
+    private @Nullable ManagedPreferenceDelegate mManagedPrefDelegate;
 
     /** The onClick listener to handle click events for the ImageView widget. */
-    @Nullable private View.OnClickListener mListener;
+    private View.@Nullable OnClickListener mListener;
 
     /** The image resource ID to use for the ImageView widget source. */
     @DrawableRes private int mImageRes;
@@ -46,19 +51,19 @@ public class ChromeImageViewPreference extends Preference {
     @ColorRes private int mColorRes;
 
     /** The color resource ID for tinting of the view's background. */
-    @ColorRes private Integer mBackgroundColorRes;
+    @ColorRes private @Nullable Integer mBackgroundColorRes;
 
     /** The string to use for the ImageView widget content description. */
-    private CharSequence mContentDescription;
+    private @Nullable CharSequence mContentDescription;
 
     /** Whether the ImageView should be enabled. */
     private boolean mImageViewEnabled = true;
 
     /** The ImageView Button. */
-    private ImageView mButton;
+    private @Nullable ImageView mButton;
 
     /** The View for this preference. */
-    private View mView;
+    private @Nullable View mView;
 
     /** The ints to set the ImageView padding. */
     private int mImageViewLeftPadding;
@@ -78,7 +83,7 @@ public class ChromeImageViewPreference extends Preference {
     }
 
     /** Constructor for inflating from XML. */
-    public ChromeImageViewPreference(Context context, AttributeSet attrs) {
+    public ChromeImageViewPreference(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
 
         setWidgetLayoutResource(R.layout.preference_chrome_image_view);
@@ -100,7 +105,7 @@ public class ChromeImageViewPreference extends Preference {
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
 
-        mButton = (ImageView) holder.findViewById(R.id.image_view_widget);
+        mButton = (ImageView) assumeNonNull(holder.findViewById(R.id.image_view_widget));
         mButton.setBackgroundColor(Color.TRANSPARENT);
         mButton.setVisibility(View.VISIBLE);
 
@@ -123,8 +128,8 @@ public class ChromeImageViewPreference extends Preference {
      */
     public void setImageView(
             @DrawableRes int imageRes,
-            CharSequence contentDescription,
-            @Nullable View.OnClickListener listener) {
+            @Nullable CharSequence contentDescription,
+            View.@Nullable OnClickListener listener) {
         mImageRes = imageRes;
         mContentDescription = contentDescription;
         mListener = listener;
@@ -140,7 +145,7 @@ public class ChromeImageViewPreference extends Preference {
     public void setImageView(
             @DrawableRes int imageRes,
             @StringRes int contentDescriptionRes,
-            @Nullable View.OnClickListener listener) {
+            View.@Nullable OnClickListener listener) {
         setImageView(
                 imageRes,
                 (contentDescriptionRes != 0) ? getContext().getString(contentDescriptionRes) : null,
@@ -184,7 +189,7 @@ public class ChromeImageViewPreference extends Preference {
      * Zoom site setting.
      */
     public void setViewClickable(boolean enabled) {
-        mView.setClickable(enabled);
+        assumeNonNull(mView).setClickable(enabled);
     }
 
     /**
@@ -239,7 +244,7 @@ public class ChromeImageViewPreference extends Preference {
     }
 
     @VisibleForTesting
-    public ImageView getButton() {
+    public @Nullable ImageView getButton() {
         return mButton;
     }
 }

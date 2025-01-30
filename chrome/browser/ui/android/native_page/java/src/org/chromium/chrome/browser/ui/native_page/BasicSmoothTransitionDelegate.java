@@ -11,12 +11,14 @@ import android.view.View;
 
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.native_page.NativePage.SmoothTransitionDelegate;
 
 /**
  * A basic implementation of a smooth transition delegate. This will trigger a smooth transition
  * when page is navigated back from webpage to native page by gesture.
  */
+@NullMarked
 public class BasicSmoothTransitionDelegate implements SmoothTransitionDelegate {
     private static final int SMOOTH_TRANSITION_DURATION_MS = 100;
 

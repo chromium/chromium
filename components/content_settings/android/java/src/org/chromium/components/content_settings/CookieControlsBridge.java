@@ -4,12 +4,12 @@
 
 package org.chromium.components.content_settings;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.WebContents;
 
@@ -18,6 +18,7 @@ import java.util.List;
 
 /** Communicates between CookieControlsController (C++ backend) and PageInfoView (Java UI). */
 @JNINamespace("content_settings")
+@NullMarked
 public class CookieControlsBridge {
     private long mNativeCookieControlsBridge;
     private CookieControlsObserver mObserver;
@@ -168,7 +169,7 @@ public class CookieControlsBridge {
         long init(
                 CookieControlsBridge caller,
                 WebContents webContents,
-                BrowserContextHandle originalContextHandle,
+                @Nullable BrowserContextHandle originalContextHandle,
                 boolean isIncognitoBranded);
 
         void updateWebContents(

@@ -4,8 +4,9 @@
 
 package org.chromium.components.search_engines;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import androidx.annotation.MainThread;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
@@ -13,10 +14,13 @@ import org.chromium.base.Promise;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.time.Instant;
 
 /** Fake delegate that can be triggered in the app as a debug flag option, or used in tests. */
+@NullMarked
 public class FakeSearchEngineCountryDelegate extends SearchEngineCountryDelegate {
     private static final String TAG = "SearchEngineDelefake";
 
@@ -69,9 +73,8 @@ public class FakeSearchEngineCountryDelegate extends SearchEngineCountryDelegate
         return Promise.fulfilled(countryCode);
     }
 
-    @Nullable
     @Override
-    public Instant getDeviceBrowserSelectedTimestamp() {
+    public @Nullable Instant getDeviceBrowserSelectedTimestamp() {
         if (!SearchEnginesFeatures.isEnabled(SearchEnginesFeatures.CLAY_BLOCKING)) {
             return super.getDeviceBrowserSelectedTimestamp();
         }
@@ -167,7 +170,7 @@ public class FakeSearchEngineCountryDelegate extends SearchEngineCountryDelegate
                             if (mEnableLogging) {
                                 Log.i(TAG, "triggering the delayed supplier response.");
                             }
-                            mIsChoiceRequired.set(true);
+                            assumeNonNull(mIsChoiceRequired).set(true);
                         },
                         // Don't go beyond 3 seconds timeout, it doesn't help with testing and looks
                         // broken.

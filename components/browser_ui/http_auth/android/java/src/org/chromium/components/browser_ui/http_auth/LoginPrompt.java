@@ -4,6 +4,8 @@
 
 package org.chromium.components.browser_ui.http_auth;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Build;
@@ -15,6 +17,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.widget.text.AlertDialogEditText;
 import org.chromium.url.GURL;
 
@@ -23,6 +26,7 @@ import org.chromium.url.GURL;
  *
  * This borrows liberally from android.browser.HttpAuthenticationDialog.
  */
+@NullMarked
 public class LoginPrompt {
     private final Context mContext;
     private final String mMessageBody;
@@ -100,7 +104,8 @@ public class LoginPrompt {
         mDialog.getDelegate().setHandleNativeActionModesEnabled(false);
 
         // Make the IME appear when the dialog is displayed if applicable.
-        mDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+        assumeNonNull(mDialog.getWindow())
+                .setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
     }
 
     /** Shows the dialog. */
@@ -120,11 +125,11 @@ public class LoginPrompt {
     }
 
     private String getUsername() {
-        return mUsernameView.getText().toString();
+        return assumeNonNull(mUsernameView.getText()).toString();
     }
 
     private String getPassword() {
-        return mPasswordView.getText().toString();
+        return assumeNonNull(mPasswordView.getText()).toString();
     }
 
     public void onAutofillDataAvailable(String username, String password) {

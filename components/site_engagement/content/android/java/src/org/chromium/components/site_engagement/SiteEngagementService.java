@@ -9,6 +9,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.BrowserContextHandle;
 
 /**
@@ -18,6 +19,7 @@ import org.chromium.content_public.browser.BrowserContextHandle;
  * allows Java to retrieve and modify engagement scores for URLs.
  */
 @JNINamespace("site_engagement")
+@NullMarked
 public class SiteEngagementService {
     /** Pointer to the native side SiteEngagementServiceAndroid shim. */
     private long mNativePointer;

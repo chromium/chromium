@@ -9,10 +9,10 @@ import android.view.View;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
 import java.lang.annotation.Retention;
@@ -22,6 +22,7 @@ import java.lang.annotation.RetentionPolicy;
  * An interface defining content that can be displayed inside of the bottom sheet for Chrome
  * Home.
  */
+@NullMarked
 public interface BottomSheetContent {
     /** The different possible height modes for a given state. */
     @IntDef({HeightMode.DEFAULT, HeightMode.WRAP_CONTENT, HeightMode.DISABLED})
@@ -212,7 +213,6 @@ public interface BottomSheetContent {
      * feature/content that is showing. It can be a dynamic string. 'Swipe down to close.' will be
      * automatically appended after the content description.
      */
-    @NonNull
     String getSheetContentDescription(Context context);
 
     /**
