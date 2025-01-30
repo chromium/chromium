@@ -275,66 +275,6 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest, RemoveAfterConfirmation) {
 }
 
 TEST_F(AutofillKeyboardAccessoryControllerImplTest,
-       AcceptPwdSuggestionInvokesWarningAndroid) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsMigrationWarning);
-  ShowSuggestions(manager(), {SuggestionType::kPasswordEntry});
-
-  // Calls are accepted immediately.
-  EXPECT_CALL(manager().external_delegate(), DidAcceptSuggestion);
-  EXPECT_CALL(client().show_pwd_migration_warning_callback(),
-              Run(_, _,
-                  password_manager::metrics_util::
-                      PasswordMigrationWarningTriggers::kKeyboardAcessoryBar));
-  task_environment()->FastForwardBy(base::Milliseconds(500));
-  client().popup_controller(manager()).AcceptSuggestion(0);
-}
-
-TEST_F(AutofillKeyboardAccessoryControllerImplTest,
-       AcceptUsernameSuggestionInvokesWarningAndroid) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsMigrationWarning);
-  ShowSuggestions(manager(), {SuggestionType::kPasswordEntry});
-
-  // Calls are accepted immediately.
-  EXPECT_CALL(manager().external_delegate(), DidAcceptSuggestion);
-  EXPECT_CALL(client().show_pwd_migration_warning_callback(), Run);
-  task_environment()->FastForwardBy(base::Milliseconds(500));
-  client().popup_controller(manager()).AcceptSuggestion(0);
-}
-
-TEST_F(AutofillKeyboardAccessoryControllerImplTest,
-       AcceptPwdSuggestionNoWarningIfDisabledAndroid) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsMigrationWarning);
-  ShowSuggestions(manager(), {SuggestionType::kPasswordEntry});
-
-  // Calls are accepted immediately.
-  EXPECT_CALL(manager().external_delegate(), DidAcceptSuggestion);
-  EXPECT_CALL(client().show_pwd_migration_warning_callback(), Run).Times(0);
-  task_environment()->FastForwardBy(base::Milliseconds(500));
-  client().popup_controller(manager()).AcceptSuggestion(0);
-}
-
-TEST_F(AutofillKeyboardAccessoryControllerImplTest,
-       AcceptAddressNoPwdWarningAndroid) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsMigrationWarning);
-  ShowSuggestions(manager(), {SuggestionType::kAddressEntry});
-
-  // Calls are accepted immediately.
-  EXPECT_CALL(manager().external_delegate(), DidAcceptSuggestion);
-  EXPECT_CALL(client().show_pwd_migration_warning_callback(), Run).Times(0);
-  task_environment()->FastForwardBy(base::Milliseconds(500));
-  client().popup_controller(manager()).AcceptSuggestion(0);
-}
-
-TEST_F(AutofillKeyboardAccessoryControllerImplTest,
        AcceptPwdSuggestionInvokesAccessLossWarningAndroid) {
   base::test::ScopedFeatureList scoped_feature_list(
       password_manager::features::
