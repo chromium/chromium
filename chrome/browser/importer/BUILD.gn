@@ -47,6 +47,7 @@ source_set("impl") {
 
   deps = [
     ":importer",
+    "//chrome/browser:shell_integration",
     "//chrome/browser/favicon",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search_engines",

@@ -142,6 +142,15 @@ source_set("global_features") {
   public_deps = [ "//base" ]
 }
 
+source_set("shell_integration") {
+  sources = [ "shell_integration.h" ]
+  deps = [
+    "//base",
+    "//ui/gfx",
+    "//url",
+  ]
+}
+
 # Use a static library here because many test binaries depend on this but don't
 # require many files from it. This makes linking more efficient.
 static_library("browser") {
@@ -1397,7 +1406,6 @@ static_library("browser") {
     "sharing/sms/sms_remote_fetcher_metrics.cc",
     "sharing/sms/sms_remote_fetcher_metrics.h",
     "shell_integration.cc",
-    "shell_integration.h",
     "signin/about_signin_internals_factory.cc",
     "signin/about_signin_internals_factory.h",
     "signin/account_consistency_mode_manager.cc",
@@ -1818,6 +1826,7 @@ static_library("browser") {
     ":lcp_critical_path_predictor_proto",
     ":main_extra_parts",
     ":resource_prefetch_predictor_proto",
+    ":shell_integration",
     ":unexpire_flags",
     "//base",
     "//base:i18n",
