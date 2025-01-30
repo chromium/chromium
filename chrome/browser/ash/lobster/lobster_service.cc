@@ -17,9 +17,13 @@
 #include "chrome/browser/ash/lobster/lobster_image_fetcher.h"
 #include "chrome/browser/ash/lobster/lobster_image_provider_from_memory.h"
 #include "chrome/browser/ash/lobster/lobster_image_provider_from_snapper.h"
+#include "chrome/browser/ash/magic_boost/magic_boost_controller_ash.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
+#include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
+#include "chromeos/crosapi/mojom/magic_boost.mojom.h"
 #include "components/manta/snapper_provider.h"
+#include "ui/display/screen.h"
 
 LobsterService::LobsterService(
     std::unique_ptr<manta::SnapperProvider> snapper_provider,
@@ -68,6 +72,18 @@ void LobsterService::QueueInsertion(const std::string& image_bytes,
                                     StatusCallback insert_status_callback) {
   queued_insertion_ = std::make_unique<LobsterInsertion>(
       image_bytes, std::move(insert_status_callback));
+}
+
+void LobsterService::ShowDisclaimerUI() {
+  if (chromeos::MagicBoostState::Get()->IsMagicBoostAvailable()) {
+    ash::MagicBoostControllerAsh::Get()->ShowDisclaimerUi(
+        /*display_id=*/display::Screen::GetScreen()->GetPrimaryDisplay().id(),
+        /*action=*/
+        crosapi::mojom::MagicBoostController::TransitionAction::
+            kShowLobsterPanel,
+        /*opt_in_features=*/
+        crosapi::mojom::MagicBoostController::OptInFeatures::kOrcaAndHmr);
+  }
 }
 
 void LobsterService::LoadUI(std::optional<std::string> query,

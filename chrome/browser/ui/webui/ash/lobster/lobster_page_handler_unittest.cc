@@ -64,9 +64,12 @@ class FakeLobsterSession : public LobsterSession {
                       const std::string& description) override {
     return feedback_submission_status_;
   }
+  void ShowDisclaimerUIAndCacheQuery(
+      std::optional<std::string> query) override {}
   void LoadUI(std::optional<std::string> query,
               LobsterMode mode,
               const gfx::Rect& caret_bounds) override {}
+  void LoadUIFromCachedContext() override {}
   void ShowUI() override {}
   void CloseUI() override {}
   void RecordWebUIMetricEvent(LobsterMetricState metric_state) override {

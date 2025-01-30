@@ -49,6 +49,8 @@ class LobsterService : public KeyedService, public LobsterEventSink {
   void QueueInsertion(const std::string& image_bytes,
                       StatusCallback insert_status_callback);
 
+  void ShowDisclaimerUI();
+
   void LoadUI(std::optional<std::string> query,
               ash::LobsterMode mode,
               const gfx::Rect& caret_bounds);

@@ -279,10 +279,22 @@ void LobsterSessionImpl::OnRequestCandidates(RequestCandidatesCallback callback,
   std::move(callback).Run(result);
 }
 
+void LobsterSessionImpl::LoadUIFromCachedContext() {
+  // TODO: b:388964690 - uses the cached mode and anchor bounds.
+  client_->LoadUI(query_before_disclaimer_ui_, /*mode=*/LobsterMode::kDownload,
+                  /*anchor_bounds=*/gfx::Rect());
+}
+
 void LobsterSessionImpl::LoadUI(std::optional<std::string> query,
                                 LobsterMode mode,
                                 const gfx::Rect& caret_bounds) {
   client_->LoadUI(query, mode, caret_bounds);
+}
+
+void LobsterSessionImpl::ShowDisclaimerUIAndCacheQuery(
+    std::optional<std::string> query) {
+  client_->ShowDisclaimerUI();
+  query_before_disclaimer_ui_ = query;
 }
 
 void LobsterSessionImpl::ShowUI() {

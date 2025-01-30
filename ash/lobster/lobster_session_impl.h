@@ -54,9 +54,11 @@ class ASH_EXPORT LobsterSessionImpl : public LobsterSession {
                        LobsterPreviewFeedbackCallback) override;
   bool SubmitFeedback(int candidate_id,
                       const std::string& description) override;
+  void ShowDisclaimerUIAndCacheQuery(std::optional<std::string> query) override;
   void LoadUI(std::optional<std::string> query,
               LobsterMode mode,
               const gfx::Rect& caret_bounds) override;
+  void LoadUIFromCachedContext() override;
   void ShowUI() override;
   void CloseUI() override;
   void RecordWebUIMetricEvent(ash::LobsterMetricState metric_event) override;
@@ -70,6 +72,8 @@ class ASH_EXPORT LobsterSessionImpl : public LobsterSession {
   LobsterCandidateStore candidate_store_;
 
   LobsterEntryPoint entry_point_;
+
+  std::optional<std::string> query_before_disclaimer_ui_;
 
   base::WeakPtrFactory<LobsterSessionImpl> weak_ptr_factory_{this};
 };
