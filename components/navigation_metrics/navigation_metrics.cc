@@ -34,6 +34,8 @@ const char kMainFrameHasRTLDomain[] = "Navigation.MainFrameHasRTLDomain2";
 const char kMainFrameHasRTLDomainDifferentPage[] =
     "Navigation.MainFrameHasRTLDomainDifferentPage2";
 const char kMainFrameProfileType[] = "Navigation.MainFrameProfileType2";
+const char kMainFrameProfileTypeDifferentPage[] =
+    "Navigation.MainFrameProfileTypeDifferentPage2";
 
 namespace {
 
@@ -105,6 +107,9 @@ void RecordPrimaryMainFrameNavigation(
     }
   }
   UMA_HISTOGRAM_ENUMERATION(kMainFrameProfileType, profile_type);
+  if (!is_same_document) {
+    UMA_HISTOGRAM_ENUMERATION(kMainFrameProfileTypeDifferentPage, profile_type);
+  }
 }
 
 void RecordOmniboxURLNavigation(const GURL& url) {
