@@ -1572,6 +1572,18 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    public void test_comboboxItemVisibility() {
+        performHtmlTest("combobox-item-visibility.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_comboboxWithRedundantAriaRole() {
+        performHtmlTest("combobox-with-redundant-aria-role.html");
+    }
+
+    @Test
+    @SmallTest
     public void test_comboboxOptgroup() {
         performHtmlTest("combobox-optgroup.html");
     }
@@ -1610,6 +1622,18 @@ public class WebContentsAccessibilityTreeTest {
     @SmallTest
     public void test_customSelectOpen() {
         performHtmlTest("custom-select-open.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_customSelectLabelElement() {
+        performHtmlTest("custom-select-label-element.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_customSelectMixedOptions() {
+        performHtmlTest("custom-select-mixed-options.html");
     }
 
     @Test
@@ -2148,6 +2172,12 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    public void test_labelWithSelectedOption() {
+        performHtmlTest("label-with-selected-option.html");
+    }
+
+    @Test
+    @SmallTest
     @DisabledTest(message = "https://crbug.com/1258230")
     public void test_landmark() {
         performHtmlTest("landmark.html");
@@ -2294,6 +2324,12 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    public void test_optionInDatalist() {
+        performHtmlTest("option-in-datalist.html");
+    }
+
+    @Test
+    @SmallTest
     public void test_output() {
         performHtmlTest("output.html");
     }
@@ -2398,6 +2434,18 @@ public class WebContentsAccessibilityTreeTest {
     @SmallTest
     public void test_select() {
         performHtmlTest("select.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_selectInCanvas() {
+        performHtmlTest("select-in-canvas.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_selectOpen() {
+        performHtmlTest("select-open.html");
     }
 
     @Test

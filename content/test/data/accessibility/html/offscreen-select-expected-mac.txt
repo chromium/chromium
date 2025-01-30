@@ -1,0 +1,5 @@
+AXWebArea
+++AXPopUpButton AXValue='Onscreen 1'
+++++AXMenuItem AXValue='Onscreen 1'
+++AXPopUpButton AXValue='Offscreen 1'
+++++AXMenuItem AXValue='Offscreen 1'
