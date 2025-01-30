@@ -98,41 +98,30 @@ EmbeddedPermissionPromptAndroid::GetAnnotatedMessageText() const {
           IDS_MEDIA_CAPTURE_AUDIO_AND_VIDEO_INFOBAR_TEXT);
     }
     case Variant::kAdministratorGranted:
-      return GetDialogAnnotatedMessageTextWithOrigin(
-          IDS_EMBEDDED_PROMPT_ADMIN_ALLOWED);
-    case Variant::kPreviouslyGranted: {
-      std::vector<size_t> offsets;
-      auto requesting_origin_formatted_for_display =
-          url_formatter::FormatUrlForSecurityDisplay(
-              delegate()->GetRequestingOrigin(),
-              url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
-      std::u16string text =
+      return PermissionRequest::AnnotatedMessageText(
+          l10n_util::GetStringFUTF16(IDS_EMBEDDED_PROMPT_ADMIN_ALLOWED,
+                                     GetPermissionNameTextFragment()),
+          /*bolded_ranges=*/{});
+    case Variant::kPreviouslyGranted:
+      return PermissionRequest::AnnotatedMessageText(
           l10n_util::GetStringFUTF16(IDS_EMBEDDED_PROMPT_PREVIOUSLY_ALLOWED,
-                                     {GetPermissionNameTextFragment(),
-                                      requesting_origin_formatted_for_display},
-                                     &offsets);
-
-      std::vector<std::pair<size_t, size_t>> bolded_ranges;
-      for (auto offset : offsets) {
-        bolded_ranges.emplace_back(
-            offset, offset + requesting_origin_formatted_for_display.length());
-      }
-
-      return PermissionRequest::AnnotatedMessageText(text, bolded_ranges);
-    }
-
-    case Variant::kOsSystemSettings: {
+                                     GetPermissionNameTextFragment()),
+          /*bolded_ranges=*/{});
+    case Variant::kOsSystemSettings:
       return PermissionRequest::AnnotatedMessageText(
           l10n_util::GetStringFUTF16(IDS_PERMISSION_OFF_FOR_CHROME,
                                      GetPermissionNameTextFragment()),
           /*bolded_ranges=*/{});
-    }
     case Variant::kPreviouslyDenied:
-      return GetDialogAnnotatedMessageTextWithOrigin(
-          IDS_EMBEDDED_PROMPT_PREVIOUSLY_NOT_ALLOWED);
+      return PermissionRequest::AnnotatedMessageText(
+          l10n_util::GetStringFUTF16(IDS_EMBEDDED_PROMPT_PREVIOUSLY_NOT_ALLOWED,
+                                     GetPermissionNameTextFragment()),
+          /*bolded_ranges=*/{});
     case Variant::kAdministratorDenied:
-      return GetDialogAnnotatedMessageTextWithOrigin(
-          IDS_EMBEDDED_PROMPT_ADMIN_BLOCKED);
+      return PermissionRequest::AnnotatedMessageText(
+          l10n_util::GetStringFUTF16(IDS_EMBEDDED_PROMPT_ADMIN_BLOCKED,
+                                     GetPermissionNameTextFragment()),
+          /*bolded_ranges=*/{});
     case Variant::kOsPrompt:
       return PermissionRequest::AnnotatedMessageText(std::u16string(),
                                                      /*bolded_ranges=*/{});
@@ -226,6 +215,14 @@ bool EmbeddedPermissionPromptAndroid::ShouldUseRequestingOriginFavicon() const {
 const std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>&
 EmbeddedPermissionPromptAndroid::Requests() const {
   return prompt_model_->requests();
+}
+
+int EmbeddedPermissionPromptAndroid::GetIconId() const {
+  if (prompt_model_->prompt_variant() == Variant::kAdministratorDenied ||
+      prompt_model_->prompt_variant() == Variant::kAdministratorGranted) {
+    return IDR_BUSINESS;
+  }
+  return PermissionPromptAndroid::GetIconId();
 }
 
 void EmbeddedPermissionPromptAndroid::MaybeUpdateDialogWithNewScreenVariant() {

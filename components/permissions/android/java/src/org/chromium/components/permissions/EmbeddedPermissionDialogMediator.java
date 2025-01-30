@@ -239,4 +239,8 @@ public class EmbeddedPermissionDialogMediator extends PermissionDialogMediator
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         return intent;
     }
+
+    public PermissionDialogDelegate getDelegateForTest() {
+        return mDialogDelegate;
+    }
 }

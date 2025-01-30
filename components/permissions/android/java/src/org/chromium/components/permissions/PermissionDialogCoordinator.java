@@ -125,17 +125,21 @@ public class PermissionDialogCoordinator {
         Context context = getContext();
         // One time prompts don't share the same layout.
         View customView =
-                mDialogDelegate.canShowEphemeralOption()
-                        ? LayoutInflaterUtils.inflate(
-                                context, R.layout.permission_dialog_one_time_permission, null)
-                        : LayoutInflaterUtils.inflate(context, R.layout.permission_dialog, null);
+                LayoutInflaterUtils.inflate(
+                        context,
+                        (mDialogDelegate.isEmbeddedPromptVariant()
+                                        || mDialogDelegate.canShowEphemeralOption())
+                                ? R.layout.permission_dialog_one_time_permission
+                                : R.layout.permission_dialog,
+                        null);
 
         mCustomViewModel = PermissionDialogCustomViewModelFactory.getModel(mDialogDelegate);
         mCustomViewModelChangeProcessor =
                 PropertyModelChangeProcessor.create(
                         mCustomViewModel,
                         customView,
-                        mDialogDelegate.canShowEphemeralOption()
+                        (mDialogDelegate.isEmbeddedPromptVariant()
+                                        || mDialogDelegate.canShowEphemeralOption())
                                 ? PermissionOneTimeDialogCustomViewBinder::bind
                                 : PermissionDialogCustomViewBinder::bind);
         return customView;
