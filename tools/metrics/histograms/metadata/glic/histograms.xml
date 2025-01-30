@@ -32,6 +32,8 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="InputMode">
     <variant name="All"/>
+    <variant name="Audio"/>
+    <variant name="Text"/>
   </token>
 </histogram>
 
