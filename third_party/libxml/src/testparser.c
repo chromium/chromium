@@ -340,6 +340,36 @@ testHugeEncodedChunk(void) {
     xmlFreeParserCtxt(ctxt);
     xmlFree(chunk);
 
+    /*
+     * Test the push parser with
+     *
+     * - a single call to xmlParseChunk,
+     * - a non-UTF8 encoding,
+     * - a chunk larger then MINLEN (4000 bytes).
+     *
+     * This verifies that the whole buffer is processed in the initial
+     * charset conversion.
+     */
+    buf = xmlBufferCreate();
+    xmlBufferCat(buf,
+            BAD_CAST "<?xml version='1.0' encoding='ISO-8859-1'?>\n");
+    xmlBufferCat(buf, BAD_CAST "<doc>");
+    /* 20,000 characters */
+    for (i = 0; i < 2000; i++)
+        xmlBufferCat(buf, BAD_CAST "0123456789");
+    xmlBufferCat(buf, BAD_CAST "</doc>");
+    chunk = xmlBufferDetach(buf);
+    xmlBufferFree(buf);
+
+    ctxt = xmlCreatePushParserCtxt(NULL, NULL, NULL, 0, NULL);
+
+    xmlParseChunk(ctxt, (char *) chunk, xmlStrlen(chunk), 1);
+
+    err = ctxt->wellFormed ? 0 : 1;
+    xmlFreeDoc(ctxt->myDoc);
+    xmlFreeParserCtxt(ctxt);
+    xmlFree(chunk);
+
     return err;
 }
 #endif
