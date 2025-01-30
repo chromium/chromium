@@ -77,6 +77,7 @@ class MockCertProvisioningWorker : public CertProvisioningWorker {
               GetLastBackendServerError,
               (),
               (const override));
+  MOCK_METHOD(const std::string&, GetProcessId, (), (const override));
   MOCK_METHOD(const CertProfile&, GetCertProfile, (), (const override));
   MOCK_METHOD(const std::vector<uint8_t>&, GetPublicKey, (), (const override));
   MOCK_METHOD(CertProvisioningWorkerState, GetState, (), (const override));
@@ -89,6 +90,7 @@ class MockCertProvisioningWorker : public CertProvisioningWorker {
 
   void SetExpectations(testing::Cardinality do_step_times,
                        bool is_waiting,
+                       const std::string& process_id,
                        const CertProfile& cert_profile,
                        std::string failure_message);
   void ResetExpected();
@@ -96,6 +98,7 @@ class MockCertProvisioningWorker : public CertProvisioningWorker {
   // Storage fields for SetExpectations function. They are returned by
   // reference and without copying them there is a risk that the original
   // objects can be deleted before clearing the expectation.
+  std::string process_id_;
   CertProfile cert_profile_;
   std::string failure_message_;
 };

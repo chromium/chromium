@@ -92,6 +92,8 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_DETAILS},
       {"certificateProvisioningAdvancedSectionTitle",
        IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_ADVANCED},
+      {"certificateProvisioningProcessId",
+       IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_PROCESS_ID},
       {"certificateProvisioningProfileName",
        IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_CERTIFICATE_PROFILE_NAME},
       {"certificateProvisioningProfileId",

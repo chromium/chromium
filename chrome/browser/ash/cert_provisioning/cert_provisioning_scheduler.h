@@ -55,6 +55,9 @@ struct FailedWorkerInfo {
   ~FailedWorkerInfo();
   FailedWorkerInfo(const FailedWorkerInfo&);
   FailedWorkerInfo& operator=(const FailedWorkerInfo&);
+
+  // The ID of the certificate provisioning process.
+  std::string process_id;
   // The state the worker had prior to switching to the failed state
   // (CertProvisioningWorkerState::kFailed).
   CertProvisioningWorkerState state_before_failure =

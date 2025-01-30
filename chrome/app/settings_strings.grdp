@@ -935,6 +935,9 @@
       <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_STATUS_IMPORT_CERTIFICATE_INSTRUCTION_RECEIVED" desc="Status description of a certificate provisioning process that has received a Import Certificate instruction">
         <ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME">"Import Certificate"</ph> instruction received
       </message>
+      <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_PROCESS_ID" desc="Label of the field that displays the id of a certificate provisioning process">
+        Process ID
+      </message>
       <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_CERTIFICATE_PROFILE_NAME" desc="Label of the field that displays the human-readable client certificate profile name of a certificate provisioning process">
         Certificate Profile Name
       </message>
