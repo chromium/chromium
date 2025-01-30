@@ -192,6 +192,30 @@ std::string AsUTF8ForSQL(const base::FilePath& path) {
 #endif
 }
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(OpenDatabaseFailedReason)
+enum class OpenDatabaseFailedReason {
+  kAlreadyOpened = 0,
+  kIncorrectPath = 1,
+  kSqliteOpenFailed = 2,
+  kLockingModeFailed = 3,
+  kMetadataLoadingFailed = 4,
+  kPageSizeFailed = 5,
+  kPragmaSynchronousFailed = 6,
+  kPragmaJournalFailed = 7,
+  kMaxValue = kPragmaJournalFailed
+};
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/sql/enums.xml)
+// Reports the reason for a failure in Database::Open(...).
+void RecordOpenDatabaseFailureReason(const std::string& histogram_tag,
+                                     OpenDatabaseFailedReason reason) {
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Sql.Database.Open.FailureReason.", histogram_tag}),
+      reason);
+}
+
 }  // namespace
 
 // static
@@ -1936,6 +1960,8 @@ bool Database::OpenInternal(const std::string& db_file_path) {
 
   if (is_open()) {
     DLOG(FATAL) << "sql::Database is already open.";
+    RecordOpenDatabaseFailureReason(histogram_tag_,
+                                    OpenDatabaseFailedReason::kAlreadyOpened);
     return false;
   }
 
@@ -1969,6 +1995,8 @@ bool Database::OpenInternal(const std::string& db_file_path) {
     if (!in_memory) {
       // Do not allow query injection.
       if (base::Contains(db_file_path, '?')) {
+        RecordOpenDatabaseFailureReason(
+            histogram_tag_, OpenDatabaseFailedReason::kIncorrectPath);
         return false;
       }
       open_flags |= SQLITE_OPEN_URI;
@@ -2042,6 +2070,8 @@ bool Database::OpenInternal(const std::string& db_file_path) {
       sqlite3_close(db);
     }
 
+    RecordOpenDatabaseFailureReason(
+        histogram_tag_, OpenDatabaseFailedReason::kSqliteOpenFailed);
     MaybeReportErrorDuringOpen(sqlite_result_code);
     OnSqliteError(ToSqliteErrorCode(sqlite_result_code), nullptr,
                   "-- sqlite3_open_v2()");
@@ -2060,6 +2090,8 @@ bool Database::OpenInternal(const std::string& db_file_path) {
       "Chrome assumes SQLite is configured to default to EXCLUSIVE locking");
   if (!options_.exclusive_locking) {
     if (!Execute("PRAGMA locking_mode=NORMAL")) {
+      RecordOpenDatabaseFailureReason(
+          histogram_tag_, OpenDatabaseFailedReason::kLockingModeFailed);
       return false;
     }
   }
@@ -2090,6 +2122,8 @@ bool Database::OpenInternal(const std::string& db_file_path) {
     MaybeReportErrorDuringOpen(sqlite_result_code);
     OnSqliteError(ToSqliteErrorCode(sqlite_result_code), nullptr,
                   "-- sqlite3_table_column_metadata()");
+    RecordOpenDatabaseFailureReason(
+        histogram_tag_, OpenDatabaseFailedReason::kMetadataLoadingFailed);
     return false;
   }
 
@@ -2100,6 +2134,8 @@ bool Database::OpenInternal(const std::string& db_file_path) {
   const std::string page_size_sql =
       base::StringPrintf("PRAGMA page_size=%d", options_.page_size);
   if (!ExecuteWithTimeout(page_size_sql, kBusyTimeout)) {
+    RecordOpenDatabaseFailureReason(histogram_tag_,
+                                    OpenDatabaseFailedReason::kPageSizeFailed);
     return false;
   }
 
@@ -2122,12 +2158,16 @@ bool Database::OpenInternal(const std::string& db_file_path) {
     // TODO(shuagga@microsoft.com): Evaluate if this loss of durability is a
     // concern.
     if (!Execute("PRAGMA synchronous=NORMAL")) {
+      RecordOpenDatabaseFailureReason(
+          histogram_tag_, OpenDatabaseFailedReason::kPragmaSynchronousFailed);
       return false;
     }
 
     // Opening the db in WAL mode can fail (eg if the underlying VFS doesn't
     // support shared memory and we are not in exclusive locking mode).
     if (!Execute("PRAGMA journal_mode=WAL")) {
+      RecordOpenDatabaseFailureReason(
+          histogram_tag_, OpenDatabaseFailedReason::kPragmaJournalFailed);
       return false;
     }
   } else {
@@ -2150,6 +2190,8 @@ bool Database::OpenInternal(const std::string& db_file_path) {
     // [1]: https://crbug.com/493008
     // [2]: https://www.sqlite.org/pragma.html#pragma_journal_mode
     if (!Execute("PRAGMA journal_mode=TRUNCATE")) {
+      RecordOpenDatabaseFailureReason(
+          histogram_tag_, OpenDatabaseFailedReason::kPragmaJournalFailed);
       return false;
     }
   }
