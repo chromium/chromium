@@ -1357,7 +1357,16 @@ xmlInputSetEncodingHandler(xmlParserInputPtr input,
         input->consumed += processed;
         in->rawconsumed = processed;
 
-        nbchars = 4000 /* MINLEN */;
+        /*
+         * If we're push-parsing, we must convert the whole buffer.
+         *
+         * If we're pull-parsing, we could be parsing from a huge
+         * memory buffer which we don't want to convert completely.
+         */
+        if (input->flags & XML_INPUT_PROGRESSIVE)
+            nbchars = ((size_t) - 1);
+        else
+            nbchars = 4000 /* MINLEN */;
         res = xmlCharEncInput(in, &nbchars);
         if (res < 0)
             code = in->error;
