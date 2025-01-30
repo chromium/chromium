@@ -24,8 +24,14 @@ BtmNavigationInfo::BtmNavigationInfo(BtmNavigationInfo&&) = default;
 BtmNavigationInfo::~BtmNavigationInfo() = default;
 
 BtmPageVisitObserver::BtmPageVisitObserver(WebContents* web_contents,
-                                           VisitCallback callback)
-    : WebContentsObserver(web_contents), callback_(callback) {}
+                                           VisitCallback callback,
+                                           base::Clock* clock)
+    : WebContentsObserver(web_contents),
+      callback_(callback),
+      current_page_{
+          .url = web_contents->GetPrimaryMainFrame()->GetLastCommittedURL()},
+      clock_(CHECK_DEREF(clock)),
+      last_page_change_time_(clock_->Now()) {}
 
 BtmPageVisitObserver::~BtmPageVisitObserver() {
   // Flush any visits still pending. We won't be alive any longer to receive

@@ -59,7 +59,9 @@ class CONTENT_EXPORT BtmPageVisitObserver : public WebContentsObserver {
     GURL url;
   };
 
-  BtmPageVisitObserver(WebContents* web_contents, VisitCallback callback);
+  BtmPageVisitObserver(WebContents* web_contents,
+                       VisitCallback callback,
+                       base::Clock* clock = base::DefaultClock::GetInstance());
   ~BtmPageVisitObserver() override;
 
   // WebContentsObserver overrides:
@@ -73,8 +75,6 @@ class CONTENT_EXPORT BtmPageVisitObserver : public WebContentsObserver {
   void WebAuthnAssertionRequestSucceeded(
       RenderFrameHost* render_frame_host) override;
 
-  void SetClockForTesting(base::Clock* clock) { clock_ = CHECK_DEREF(clock); }
-
  private:
   // Execute the visit callback with a tuple from the pending queue.
   void ReportVisit();
@@ -83,11 +83,11 @@ class CONTENT_EXPORT BtmPageVisitObserver : public WebContentsObserver {
   VisitCallback callback_;
   // Metadata on the currently committed page.
   BtmPageVisitInfo current_page_;
+  raw_ref<base::Clock> clock_;
   std::optional<base::Time> last_page_change_time_;
   // Past page visits that we are still waiting to see if late cookie accesses
   // are reported for them.
   std::deque<VisitTuple> pending_visits_;
-  raw_ref<base::Clock> clock_{*base::DefaultClock::GetInstance()};
   base::WeakPtrFactory<BtmPageVisitObserver> weak_factory_{this};
 };
 

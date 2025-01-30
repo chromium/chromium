@@ -45,10 +45,12 @@ std::ostream& operator<<(std::ostream& out,
              << "}";
 }
 
-BtmPageVisitRecorder::BtmPageVisitRecorder(WebContents* web_contents)
+BtmPageVisitRecorder::BtmPageVisitRecorder(WebContents* web_contents,
+                                           base::Clock* clock)
     : observer_(web_contents,
                 base::BindRepeating(&BtmPageVisitRecorder::OnVisit,
-                                    base::Unretained(this))) {}
+                                    base::Unretained(this)),
+                clock) {}
 
 BtmPageVisitRecorder::~BtmPageVisitRecorder() = default;
 

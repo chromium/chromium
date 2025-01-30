@@ -27,7 +27,9 @@ class BtmPageVisitRecorder {
  public:
   using VisitTuple = BtmPageVisitObserver::VisitTuple;
 
-  explicit BtmPageVisitRecorder(WebContents* web_contents);
+  explicit BtmPageVisitRecorder(
+      WebContents* web_contents,
+      base::Clock* clock = base::DefaultClock::GetInstance());
   ~BtmPageVisitRecorder();
 
   // Returns all visits observed so far.
@@ -36,10 +38,6 @@ class BtmPageVisitRecorder {
   // Wait until `visits()` returns at least `n` elements. Returns `true` if
   // successful, or `false` if it times out.
   [[nodiscard]] bool WaitForSize(size_t n);
-
-  void SetObserverClockForTesting(base::Clock* clock) {
-    observer_.SetClockForTesting(clock);
-  }
 
  private:
   // The state needed to implement `WaitForSize()`.
