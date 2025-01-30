@@ -321,6 +321,14 @@ class PdfInkModule {
   // not.
   bool EraseHelper(const gfx::PointF& position, int page_index);
 
+  // Sets `using_stylus_instead_of_touch_` to true if `tool_type` is
+  // `ink::StrokeInput::ToolType::kStylus`. Otherwise do nothing.
+  void MaybeRecordPenInput(ink::StrokeInput::ToolType tool_type);
+
+  // Returns true if `using_stylus_instead_of_touch_` is set, and `tool_type` is
+  // `ink::StrokeInput::ToolType::kTouch`.
+  bool ShouldIgnoreTouchInput(ink::StrokeInput::ToolType tool_type);
+
   void HandleAnnotationRedoMessage(const base::Value::Dict& message);
   void HandleAnnotationUndoMessage(const base::Value::Dict& message);
   void HandleGetAnnotationBrushMessage(const base::Value::Dict& message);
@@ -387,6 +395,8 @@ class PdfInkModule {
   const raw_ref<PdfInkModuleClient> client_;
 
   bool enabled_ = false;
+
+  bool using_stylus_instead_of_touch_ = false;
 
   bool loaded_data_from_pdf_ = false;
 

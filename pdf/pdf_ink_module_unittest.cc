@@ -815,6 +815,15 @@ class PdfInkModuleStrokeTest : public PdfInkModuleTest {
         /*expect_touch_events_handled=*/true);
   }
 
+  void ApplyStrokeWithTouchAtPointsNotHandled(
+      base::span<const gfx::PointF> touch_start_points,
+      std::vector<base::span<const gfx::PointF>> all_touch_move_points,
+      base::span<const gfx::PointF> touch_end_points) {
+    ApplyStrokeWithTouchAtPointsMaybeHandled(
+        touch_start_points, all_touch_move_points, touch_end_points,
+        /*expect_touch_events_handled=*/false);
+  }
+
   // TODO(crbug.com/377733396): Consider refactoring to combine with
   // RunStrokeCheckTest().
   void RunStrokeTouchCheckTest(bool annotation_mode_enabled) {
@@ -1180,11 +1189,10 @@ TEST_F(PdfInkModuleStrokeTest, IgnoreTouchEventsAfterPenEvent) {
   EXPECT_EQ(3, ink_module().GetInputOfTypeCountForPageForTesting(
                    /*page_index=*/0, ink::StrokeInput::ToolType::kStylus));
 
-  ApplyStrokeWithTouchAtPoints(base::span_from_ref(kMouseDownPoint),
-                               all_move_points,
-                               base::span_from_ref(kMouseUpPoint));
-  // TODO(crbug.com/392650039): Ignore touch, so this should be 6 instead of 9.
-  EXPECT_EQ(9, ink_module().GetInputOfTypeCountForPageForTesting(
+  ApplyStrokeWithTouchAtPointsNotHandled(base::span_from_ref(kMouseDownPoint),
+                                         all_move_points,
+                                         base::span_from_ref(kMouseUpPoint));
+  EXPECT_EQ(6, ink_module().GetInputOfTypeCountForPageForTesting(
                    /*page_index=*/0, ink::StrokeInput::ToolType::kTouch));
   EXPECT_EQ(3, ink_module().GetInputOfTypeCountForPageForTesting(
                    /*page_index=*/0, ink::StrokeInput::ToolType::kStylus));
@@ -1192,20 +1200,18 @@ TEST_F(PdfInkModuleStrokeTest, IgnoreTouchEventsAfterPenEvent) {
   ApplyStrokeWithPenAtPoints(base::span_from_ref(kMouseDownPoint),
                              all_move_points,
                              base::span_from_ref(kMouseUpPoint));
-  // TODO(crbug.com/392650039): Ignore touch, so this should be 6 instead of 9.
-  EXPECT_EQ(9, ink_module().GetInputOfTypeCountForPageForTesting(
+  EXPECT_EQ(6, ink_module().GetInputOfTypeCountForPageForTesting(
                    /*page_index=*/0, ink::StrokeInput::ToolType::kTouch));
   EXPECT_EQ(6, ink_module().GetInputOfTypeCountForPageForTesting(
                    /*page_index=*/0, ink::StrokeInput::ToolType::kStylus));
 
-  ApplyStrokeWithTouchAtPoints(base::span_from_ref(kMouseDownPoint),
-                               all_move_points,
-                               base::span_from_ref(kMouseUpPoint));
+  ApplyStrokeWithTouchAtPointsNotHandled(base::span_from_ref(kMouseDownPoint),
+                                         all_move_points,
+                                         base::span_from_ref(kMouseUpPoint));
   EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
                    /*page_index=*/0, ink::StrokeInput::ToolType::kMouse));
-  // TODO(crbug.com/392650039): Ignore touch, so this should be 6 instead of 12.
-  EXPECT_EQ(12, ink_module().GetInputOfTypeCountForPageForTesting(
-                    /*page_index=*/0, ink::StrokeInput::ToolType::kTouch));
+  EXPECT_EQ(6, ink_module().GetInputOfTypeCountForPageForTesting(
+                   /*page_index=*/0, ink::StrokeInput::ToolType::kTouch));
   EXPECT_EQ(6, ink_module().GetInputOfTypeCountForPageForTesting(
                    /*page_index=*/0, ink::StrokeInput::ToolType::kStylus));
 }
