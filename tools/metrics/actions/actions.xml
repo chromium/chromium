@@ -12166,6 +12166,20 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="GlicResponse">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>Tracks a single input/response in glic.</description>
+</action>
+
+<action name="GlicSessionEnd">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>Tracks a session in glic is terminated.</description>
+</action>
+
 <action name="Go">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>

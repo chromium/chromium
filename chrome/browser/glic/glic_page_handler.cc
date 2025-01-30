@@ -13,6 +13,7 @@
 #include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_tab_data.h"
 #include "chrome/browser/glic/glic_web_client_access.h"
@@ -222,34 +223,24 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     glic_service_->SyncWebviewCookies(std::move(callback));
   }
 
-  void OnUserInputSubmitted(mojom::WebClientMode) override {
-    // TODO(crbug.com/391417447): implement
-    LOG(ERROR) << __func__;
-    NOTIMPLEMENTED();
+  void OnUserInputSubmitted(mojom::WebClientMode mode) override {
+    glic_service_->metrics()->OnUserInputSubmitted(mode);
   }
 
   void OnResponseStarted() override {
-    // TODO(crbug.com/391417447): implement
-    LOG(ERROR) << __func__;
-    NOTIMPLEMENTED();
+    glic_service_->metrics()->OnResponseStarted();
   }
 
   void OnResponseStopped() override {
-    // TODO(crbug.com/391417447): implement
-    LOG(ERROR) << __func__;
-    NOTIMPLEMENTED();
+    glic_service_->metrics()->OnResponseStopped();
   }
 
   void OnSessionTerminated() override {
-    // TODO(crbug.com/391417447): implement
-    LOG(ERROR) << __func__;
-    NOTIMPLEMENTED();
+    glic_service_->metrics()->OnSessionTerminated();
   }
 
   void OnResponseRated(bool positive) override {
-    // TODO(crbug.com/391417447): implement
-    LOG(ERROR) << __func__;
-    NOTIMPLEMENTED();
+    glic_service_->metrics()->OnResponseRated(positive);
   }
 
   // GlicWindowController::StateObserver implementation.

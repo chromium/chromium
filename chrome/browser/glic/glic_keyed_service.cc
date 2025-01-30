@@ -10,6 +10,7 @@
 #include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_focused_tab_manager.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/glic_page_context_fetcher.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/glic_settings_util.h"
@@ -38,6 +39,7 @@ GlicKeyedService::GlicKeyedService(content::BrowserContext* browser_context,
       profile_manager_(profile_manager) {
   CHECK(GlicEnabling::IsProfileEligible(
       Profile::FromBrowserContext(browser_context)));
+  metrics_ = std::make_unique<GlicMetrics>();
 }
 
 GlicKeyedService::~GlicKeyedService() = default;

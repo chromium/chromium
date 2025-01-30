@@ -30,6 +30,7 @@ class IdentityManager;
 
 namespace glic {
 class GlicFocusedTabManager;
+class GlicMetrics;
 class GlicProfileManager;
 class GlicWindowController;
 
@@ -55,6 +56,7 @@ class GlicKeyedService : public KeyedService {
   // If glic_button_view is non-null, attach the panel to that view's Browser.
   void ToggleUI(BrowserWindowInterface* bwi);
 
+  GlicMetrics* metrics() { return metrics_.get(); }
   GlicWindowController& window_controller() { return window_controller_; }
 
   // Called when a webview guest is created within a chrome://glic WebUI.
@@ -154,6 +156,7 @@ class GlicKeyedService : public KeyedService {
   GlicWindowController window_controller_;
   GlicFocusedTabManager focused_tab_manager_;
   GlicCookieSynchronizer cookie_synchronizer_;
+  std::unique_ptr<GlicMetrics> metrics_;
   // Unowned
   raw_ptr<GlicProfileManager> profile_manager_;
   base::OnceCallbackList<void()> web_client_created_callbacks_;

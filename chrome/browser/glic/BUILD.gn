@@ -57,6 +57,8 @@ source_set("impl") {
     "glic_focused_tab_manager.cc",
     "glic_keyed_service.cc",
     "glic_keyed_service_factory.cc",
+    "glic_metrics.cc",
+    "glic_metrics.h",
     "glic_page_context_fetcher.cc",
     "glic_page_handler.cc",
     "glic_profile_configuration.cc",
@@ -134,10 +136,12 @@ source_set("unit_tests") {
   sources = [
     "glic_cookie_synchronizer_unittest.cc",
     "glic_enabling_unittest.cc",
+    "glic_metrics_unittest.cc",
     "glic_profile_manager_unittest.cc",
   ]
   deps = [
     ":glic",
+    ":impl",
     "//base/test:test_support",
     "//chrome/browser/ui",
     "//chrome/common:chrome_features",
