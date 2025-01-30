@@ -162,15 +162,7 @@ public class ChromeTabModalPresenter extends TabModalPresenter
 
     @Override
     protected void showDialogContainer() {
-        if (mShouldUpdateContainerLayoutParams) {
-            MarginLayoutParams params = (MarginLayoutParams) getDialogContainer().getLayoutParams();
-            params.topMargin =
-                    getContainerTopMargin(
-                            mActivity.getResources(), mBrowserControlsVisibilityManager);
-            params.bottomMargin = mBottomControlsHeight;
-            getDialogContainer().setLayoutParams(params);
-            mShouldUpdateContainerLayoutParams = false;
-        }
+        maybeUpdateDialogLayout();
 
         // Don't show the dialog container before browser controls are guaranteed fully visible.
         if (BrowserControlsUtils.areBrowserControlsFullyVisible(
@@ -257,11 +249,13 @@ public class ChromeTabModalPresenter extends TabModalPresenter
             int bottomControlsHeight, int bottomControlsMinHeight) {
         mBottomControlsHeight = bottomControlsHeight;
         mShouldUpdateContainerLayoutParams = true;
+        maybeUpdateDialogLayout();
     }
 
     @Override
     public void onTopControlsHeightChanged(int topControlsHeight, int topControlsMinHeight) {
         mShouldUpdateContainerLayoutParams = true;
+        maybeUpdateDialogLayout();
     }
 
     @Override
@@ -337,6 +331,18 @@ public class ChromeTabModalPresenter extends TabModalPresenter
 
     private boolean areRendererInputEventsIgnored() {
         return mActiveTab.getWebContents().getMainFrame().areInputEventsIgnored();
+    }
+
+    private void maybeUpdateDialogLayout() {
+        if (mShouldUpdateContainerLayoutParams && getDialogContainer() != null) {
+            MarginLayoutParams params = (MarginLayoutParams) getDialogContainer().getLayoutParams();
+            params.topMargin =
+                    getContainerTopMargin(
+                            mActivity.getResources(), mBrowserControlsVisibilityManager);
+            params.bottomMargin = mBottomControlsHeight;
+            getDialogContainer().setLayoutParams(params);
+            mShouldUpdateContainerLayoutParams = false;
+        }
     }
 
     ViewGroup getContainerParentForTest() {

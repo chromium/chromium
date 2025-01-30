@@ -342,11 +342,7 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
         boolean runFadeTransition = isInDesktopWindow || mForceFadeInStrip;
 
         if (runHeightTransition) {
-            // The height transition should apply the strip scrim overlay only when its goal is to
-            // update the strip visibility. In a desktop window, the height transition runs solely
-            // to update the strip top padding and it is expected of the fade transition to
-            // control the strip visibility by updating the scrim in this case when applicable.
-            mHeightTransitionHandler.onTabStripSizeChanged(width, topPadding, !isInDesktopWindow);
+            mHeightTransitionHandler.onTabStripSizeChanged(width, topPadding, isInDesktopWindow);
         }
 
         if (runFadeTransition) {
