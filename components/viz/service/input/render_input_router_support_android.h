@@ -16,6 +16,8 @@
 
 namespace viz {
 
+class GpuServiceImpl;
+
 // Allow easy testing of code calling into RenderInputRouterSupport's
 // OnTouchEvent.
 class RenderInputRouterSupportAndroidInterface {
@@ -33,7 +35,8 @@ class VIZ_SERVICE_EXPORT RenderInputRouterSupportAndroid
   explicit RenderInputRouterSupportAndroid(
       input::RenderInputRouter* rir,
       RenderInputRouterSupportBase::Delegate* delegate,
-      const FrameSinkId& frame_sink_id);
+      const FrameSinkId& frame_sink_id,
+      GpuServiceImpl* gpu_service);
 
   RenderInputRouterSupportAndroid(const RenderInputRouterSupportAndroid&) =
       delete;
@@ -83,6 +86,12 @@ class VIZ_SERVICE_EXPORT RenderInputRouterSupportAndroid
   // Provides gesture synthesis given a stream of touch events (derived from
   // Android MotionEvent's) and touch event acks.
   ui::FilteredGestureProvider gesture_provider_;
+
+  // FrameSinkManager owns InputManager which in turn owns
+  // RenderInputRouterSupportAndroid. GpuServiceImpl is destroyed only after
+  // FrameSinkManager, `gpu_service_` will be valid for the lifecycle of
+  // RenderInputRouterSupportAndroid.
+  const raw_ptr<GpuServiceImpl> gpu_service_;
 
   base::WeakPtrFactory<RenderInputRouterSupportAndroid> weak_factory_{this};
 };
