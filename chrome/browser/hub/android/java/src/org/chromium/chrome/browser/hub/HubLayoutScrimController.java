@@ -72,7 +72,7 @@ public class HubLayoutScrimController implements ScrimController {
 
     /** Forces the current animation to finish. */
     public void forceAnimationToFinish() {
-        mScrimCoordinator.forceAnimationToFinish();
+        mScrimCoordinator.forceAnimationToFinish(mPropertyModel);
     }
 
     private void onIncognitoChange(Boolean ignored) {

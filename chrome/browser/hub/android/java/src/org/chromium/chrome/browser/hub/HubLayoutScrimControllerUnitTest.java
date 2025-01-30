@@ -122,7 +122,7 @@ public class HubLayoutScrimControllerUnitTest {
 
         // Force the animation to finish.
         mScrimController.forceAnimationToFinish();
-        verify(mScrimCoordinator).forceAnimationToFinish();
+        verify(mScrimCoordinator).forceAnimationToFinish(any());
 
         assertTrue(mScrimCoordinator.isShowingScrim());
 

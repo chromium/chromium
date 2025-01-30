@@ -176,7 +176,7 @@ public class ScrimTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mScrimCoordinator.hideScrim(model, /* animate= */ true);
-                    mScrimCoordinator.forceAnimationToFinish();
+                    mScrimCoordinator.forceAnimationToFinish(model);
                     assertEquals(
                             "Scrim should be completely invisible.",
                             0.0f,
@@ -545,7 +545,7 @@ public class ScrimTest {
                                 mScrimCoordinator.areAnimationsRunningForTesting());
                     }
 
-                    mScrimCoordinator.forceAnimationToFinish();
+                    mScrimCoordinator.forceAnimationToFinish(model);
                     assertFalse(mScrimCoordinator.areAnimationsRunningForTesting());
                     assertEquals(
                             "Scrim should be completely visible.",

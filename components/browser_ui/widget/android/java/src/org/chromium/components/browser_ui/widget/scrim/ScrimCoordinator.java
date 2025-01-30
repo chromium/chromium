@@ -181,8 +181,14 @@ public class ScrimCoordinator {
         }
     }
 
-    /** Forces the current scrim fade animation to complete if one is running. */
-    public void forceAnimationToFinish() {
+    /**
+     * Forces the current scrim fade animation to complete if one is running.
+     *
+     * @param model The model used to show/identify the current scrim. If this model does not
+     *     correspond to the current scrim, then this request will be ignored.
+     */
+    public void forceAnimationToFinish(PropertyModel model) {
+        if (model != mMediator.getModel()) return;
         mMediator.forceAnimationToFinish();
     }
 

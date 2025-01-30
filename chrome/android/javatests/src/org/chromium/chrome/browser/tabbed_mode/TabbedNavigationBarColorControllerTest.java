@@ -191,7 +191,7 @@ public class TabbedNavigationBarColorControllerTest {
                                             .with(ScrimProperties.AFFECTS_NAVIGATION_BAR, true)
                                             .build();
                             scrimCoordinator.showScrim(propertyModel);
-                            scrimCoordinator.forceAnimationToFinish();
+                            scrimCoordinator.forceAnimationToFinish(propertyModel);
                             return propertyModel;
                         });
 
