@@ -21,11 +21,17 @@
  *
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_TEXT_RUN_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_TEXT_RUN_H_
 
 #include "base/check_op.h"
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
@@ -33,6 +39,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/text/utf16.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/skia/include/core/SkRefCnt.h"
 
 namespace blink {
 
@@ -41,9 +48,29 @@ class PLATFORM_EXPORT TextRun final {
   DISALLOW_NEW();
 
  public:
-  explicit TextRun(base::span<const LChar> c) : TextRun(StringView(c)) {}
+  explicit TextRun(base::span<const LChar> c,
+                   TextDirection direction = TextDirection::kLtr,
+                   bool directional_override = false,
+                   bool normalize_space = false)
+      : len_(base::checked_cast<wtf_size_t>(c.size())),
+        is_8bit_(true),
+        direction_(static_cast<unsigned>(direction)),
+        directional_override_(directional_override),
+        normalize_space_(normalize_space) {
+    data_.characters8 = c.data();
+  }
 
-  explicit TextRun(base::span<const UChar> c) : TextRun(StringView(c)) {}
+  explicit TextRun(base::span<const UChar> c,
+                   TextDirection direction = TextDirection::kLtr,
+                   bool directional_override = false,
+                   bool normalize_space = false)
+      : len_(base::checked_cast<wtf_size_t>(c.size())),
+        is_8bit_(false),
+        direction_(static_cast<unsigned>(direction)),
+        directional_override_(directional_override),
+        normalize_space_(normalize_space) {
+    data_.characters16 = c.data();
+  }
 
   TextRun(const StringView& string)
       : TextRun(string, TextDirection::kLtr, false, false) {}
@@ -51,10 +78,21 @@ class PLATFORM_EXPORT TextRun final {
           TextDirection direction,
           bool directional_override = false,
           bool normalize_space = false)
-      : text_(string),
+      : len_(string.length()),
         direction_(static_cast<unsigned>(direction)),
         directional_override_(directional_override),
-        normalize_space_(normalize_space) {}
+        normalize_space_(normalize_space) {
+    if (!len_) {
+      is_8bit_ = true;
+      data_.characters8 = nullptr;
+    } else if (string.Is8Bit()) {
+      data_.characters8 = string.Characters8();
+      is_8bit_ = true;
+    } else {
+      data_.characters16 = string.Characters16();
+      is_8bit_ = false;
+    }
+  }
 
   // TextRun supports move construction, but supports neither copy construction,
   // copy assignment, nor move assignment.
@@ -70,30 +108,49 @@ class PLATFORM_EXPORT TextRun final {
   TextRun SubRun(unsigned start_offset,
                  unsigned length,
                  std::optional<TextDirection> direction = std::nullopt) const {
-    return TextRun(StringView(text_, start_offset, length),
-                   direction.value_or(Direction()), directional_override_,
-                   normalize_space_);
+    DCHECK_LT(start_offset, len_);
+
+    TextDirection new_direction = direction.value_or(Direction());
+    if (Is8Bit()) {
+      return TextRun(Span8().subspan(start_offset, length), new_direction,
+                     directional_override_, normalize_space_);
+    }
+    return TextRun(Span16().subspan(start_offset, length), new_direction,
+                   directional_override_, normalize_space_);
   }
 
   // Returns the start index of a sub run if it was created by |SubRun|.
   // std::numeric_limits<unsigned>::max() if not a sub run.
   unsigned IndexOfSubRun(const TextRun&) const;
 
-  UChar operator[](unsigned i) const { return text_[i]; }
+  UChar operator[](unsigned i) const {
+    SECURITY_DCHECK(i < len_);
+    return Is8Bit() ? data_.characters8[i] : data_.characters16[i];
+  }
 
-  base::span<const LChar> Span8() const { return text_.Span8(); }
-  base::span<const UChar> Span16() const { return text_.Span16(); }
+  // Prefer Span8() and Span16() to Characters8() and Characters16().
+  base::span<const LChar> Span8() const {
+    DCHECK(Is8Bit());
+    return {data_.characters8, len_};
+  }
+  base::span<const UChar> Span16() const {
+    DCHECK(!Is8Bit());
+    return {data_.characters16, len_};
+  }
 
-  const StringView& ToStringView() const { return text_; }
+  StringView ToStringView() const {
+    return Is8Bit() ? StringView(Span8()) : StringView(Span16());
+  }
 
   UChar32 CodepointAtAndNext(unsigned& i) const {
+    SECURITY_DCHECK(i < len_);
     if (Is8Bit())
-      return text_[i++];
+      return (*this)[i++];
     return CodePointAtAndNext(Span16(), i);
   }
 
-  bool Is8Bit() const { return text_.Is8Bit(); }
-  unsigned length() const { return text_.length(); }
+  bool Is8Bit() const { return is_8bit_; }
+  unsigned length() const { return len_; }
 
   bool NormalizeSpace() const { return normalize_space_; }
 
@@ -110,8 +167,15 @@ class PLATFORM_EXPORT TextRun final {
   String NormalizedUTF16() const;
 
  private:
-  const StringView text_;
+  union {
+    // RAW_PTR_EXCLUSION: #union
+    RAW_PTR_EXCLUSION const LChar* characters8;
+    RAW_PTR_EXCLUSION const UChar* characters16;
+    RAW_PTR_EXCLUSION const void* bytes_;
+  } data_;
+  const unsigned len_;
 
+  unsigned is_8bit_ : 1;
   const unsigned direction_ : 1;
   // Was this direction set by an override character.
   unsigned directional_override_ : 1;
