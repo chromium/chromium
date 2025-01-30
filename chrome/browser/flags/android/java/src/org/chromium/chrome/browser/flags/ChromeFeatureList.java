@@ -660,7 +660,10 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sCrossDeviceTabPaneAndroid =
             newCachedFlag(CROSS_DEVICE_TAB_PANE_ANDROID, false);
     public static final CachedFlag sDisableInstanceLimit =
-            newCachedFlag(DISABLE_INSTANCE_LIMIT, false);
+            newCachedFlag(
+                    DISABLE_INSTANCE_LIMIT,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sDisableListTabSwitcher =
             newCachedFlag(
                     DISABLE_LIST_TAB_SWITCHER,
