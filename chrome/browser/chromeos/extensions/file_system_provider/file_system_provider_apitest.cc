@@ -501,13 +501,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemProviderServiceWorkerApiTest, Unmount) {
       << message_;
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_Unresponsive_Extension DISABLED_Unresponsive_Extension
-#else
-#define MAYBE_Unresponsive_Extension Unresponsive_Extension
-#endif
 IN_PROC_BROWSER_TEST_F(FileSystemProviderServiceWorkerApiTest,
-                       MAYBE_Unresponsive_Extension) {
+                       DISABLED_Unresponsive_Extension) {
   AbortOnUnresponsivePerformer performer(browser()->profile());
   ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII(
       "file_system_provider/service_worker/unresponsive_extension/provider")));

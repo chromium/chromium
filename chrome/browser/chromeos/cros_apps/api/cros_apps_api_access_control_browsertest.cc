@@ -110,23 +110,7 @@ class CrosAppsApiAccessControlBrowsertestBase : public InProcessBrowserTest {
   void ExpectRendererCrashOnBindTestInterface(
       const content::ToRenderFrameHost& to_rfh,
       std::string_view expected_error) {
-// TOOD(b/320182347): Remove the #if condition when we have the a test interface
-// that's available in Ash.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    content::ScopedAllowRendererCrashes scoped_allow_renderer_crash(
-        to_rfh.render_frame_host());
-    content::RenderProcessHostBadMojoMessageWaiter crash_watcher(
-        to_rfh.render_frame_host()->GetProcess());
-
-    EXPECT_TRUE(content::ExecJs(
-        to_rfh, content::JsReplace(
-                    "const {handle0, handle1} = Mojo.createMessagePipe();"
-                    "Mojo.bindInterface($1, handle0);",
-                    kTestMojoInterfaceName)));
-    auto crash_message = crash_watcher.Wait();
-    EXPECT_TRUE(crash_message);
-    EXPECT_EQ(crash_message.value(), expected_error);
-#endif
+    // TOOD(crbug.com/320182347): Add assertions when we have a test interface.
   }
 
   static constexpr char kFooHost[] = "foo.com";

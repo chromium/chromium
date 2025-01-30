@@ -8,36 +8,26 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/queue.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/weak_ptr.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/hardware_info_delegate.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/util.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chromeos/extensions/chromeos_system_extension_info.h"
-#include "extensions/common/extension.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
-#include "base/functional/callback_helpers.h"
-#include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
-#include "components/account_id/account_id.h"  // nogncheck
+#include "components/account_id/account_id.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "chromeos/startup/browser_params_proxy.h"
-#include "components/policy/core/common/policy_loader_lacros.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "extensions/common/extension.h"
 
 namespace content {
 class BrowserContext;
@@ -164,7 +154,6 @@ void IsExpectedManufacturerForExtensionId(const std::string& extension_id,
       base::BindOnce(&OnGetManufacturer, extension_id, std::move(callback)));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 bool IsExtensionUsedByShimlessRMA(content::BrowserContext* context) {
   return ::ash::features::IsShimlessRMA3pDiagnosticsEnabled() &&
          ::ash::IsShimlessRmaAppBrowserContext(context);
@@ -189,28 +178,6 @@ void IsCurrentUserOwner(content::BrowserContext* context,
   user_manager::UserManager::Get()->GetOwnerAccountIdAsync(
       std::move(on_owner_fetched));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-bool IsExtensionUsedByShimlessRMA(content::BrowserContext* context) {
-  // TODO(b/292227137): Shimless RMA App is not enabled in LaCrOS before
-  // migrating Shimless RMA to LaCrOS.
-  return false;
-}
-
-bool IsCurrentUserAffiliated() {
-  return policy::PolicyLoaderLacros::IsMainUserAffiliated();
-}
-
-bool IsCurrentUserOwner(content::BrowserContext* context) {
-  // In order to determine device ownership in LaCrOS, we need to check
-  // whether the current Ash user is the device owner (stored in
-  // browser init params) and if the current profile is the same profile
-  // as the one logged into Ash.
-  return BrowserParamsProxy::Get()->IsCurrentUserDeviceOwner() &&
-         Profile::FromBrowserContext(context)->IsMainProfile();
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 class ApiGuardDelegateImpl : public ApiGuardDelegate {
  public:

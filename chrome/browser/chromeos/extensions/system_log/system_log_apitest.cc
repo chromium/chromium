@@ -4,33 +4,11 @@
 
 #include <string>
 
+#include "ash/constants/ash_switches.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
-#include "chrome/browser/extensions/chrome_test_extension_loader.h"
-#include "chrome/browser/extensions/mixin_based_extension_apitest.h"
-#include "chrome/browser/feedback/system_logs/log_sources/device_event_log_source.h"
-#include "chrome/browser/policy/extension_force_install_mixin.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/common/chrome_paths.h"
-#include "components/device_event_log/device_event_log.h"
-#include "components/feedback/system_logs/system_logs_source.h"
-#include "components/policy/core/browser/browser_policy_connector.h"
-#include "components/policy/core/common/cloud/cloud_policy_constants.h"
-#include "components/policy/core/common/cloud/test/policy_builder.h"
-#include "components/policy/core/common/mock_configuration_policy_provider.h"
-#include "components/policy/core/common/policy_map.h"
-#include "components/policy/core/common/policy_types.h"
-#include "components/policy/policy_constants.h"
-#include "content/public/test/browser_test.h"
-#include "extensions/browser/api/test/test_api.h"
-#include "extensions/common/extension_api.h"
-#include "extensions/common/switches.h"
-#include "extensions/test/result_catcher.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_switches.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/scoped_policy_update.h"
@@ -41,13 +19,30 @@
 #include "chrome/browser/ash/policy/test_support/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
+#include "chrome/browser/extensions/chrome_test_extension_loader.h"
+#include "chrome/browser/extensions/mixin_based_extension_apitest.h"
+#include "chrome/browser/feedback/system_logs/log_sources/device_event_log_source.h"
+#include "chrome/browser/policy/extension_force_install_mixin.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/common/chrome_paths.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/components/kiosk/kiosk_test_utils.h"
+#include "components/device_event_log/device_event_log.h"
+#include "components/feedback/system_logs/system_logs_source.h"
+#include "components/policy/core/browser/browser_policy_connector.h"
+#include "components/policy/core/common/cloud/cloud_policy_constants.h"
+#include "components/policy/core/common/cloud/test/policy_builder.h"
+#include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "components/policy/core/common/policy_map.h"
+#include "components/policy/core/common/policy_types.h"
+#include "components/policy/policy_constants.h"
 #include "components/user_manager/scoped_user_manager.h"
-#else  // BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/startup/browser_init_params.h"
-#endif
+#include "content/public/test/browser_test.h"
+#include "extensions/browser/api/test/test_api.h"
+#include "extensions/common/extension_api.h"
+#include "extensions/common/switches.h"
+#include "extensions/test/result_catcher.h"
 
 namespace extensions {
 
@@ -66,9 +61,7 @@ constexpr char kDeviceEventLogEntry[] = "device_event_log";
 constexpr char kSystemLogAvailableTestName[] = "SystemLogAvailable";
 constexpr char kSystemLogUndefinedTestName[] = "SystemLogUndefined";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kManagedAccountId[] = "managed-guest-account@test";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void VerifyDeviceEventLogLevel(const std::string& log_level,
                                bool on_signin_screen = false) {
@@ -105,7 +98,6 @@ bool AreLogsForwardedToFeedbackReport(bool on_signin_screen = false) {
 
 }  // namespace
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Verifies the systemLog API logs on the sign-in screen.
 class SystemLogSigninScreenApitest
     : public MixinBasedExtensionApiTest,
@@ -185,37 +177,24 @@ IN_PROC_BROWSER_TEST_P(SystemLogSigninScreenApitest, AddLogFromSignInScreen) {
 INSTANTIATE_TEST_SUITE_P(All,
                          SystemLogSigninScreenApitest,
                          /*system_logging_enabled=*/testing::Bool());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Verifies the systemLog API logs in managed guest sessions.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 class SystemLogManagedGuestSessionApitest
     : public policy::DevicePolicyCrosBrowserTest,
       public ::testing::WithParamInterface<bool> {
-#else  // BUILDFLAG(IS_CHROMEOS_LACROS)
-class SystemLogManagedGuestSessionApitest
-    : public MixinBasedExtensionApiTest,
-      public ::testing::WithParamInterface<bool> {
-#endif
-
  public:
   SystemLogManagedGuestSessionApitest()
       : log_level_(system_logging_enabled() ? "DEBUG" : "EVENT") {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     DevicePolicyCrosBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(ash::switches::kLoginManager);
     command_line->AppendSwitch(ash::switches::kForceLoginManagerInTests);
     command_line->AppendSwitch(ash::switches::kOobeSkipPostLogin);
-#else  // BUILDFLAG(IS_CHROMEOS_LACROS)
-    MixinBasedExtensionApiTest::SetUpCommandLine(command_line);
-#endif
     command_line->AppendSwitchASCII(switches::kAllowlistedExtensionID,
                                     kExtensionId);
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   void SetSystemLogPolicy() {
     SetDevicePolicies();
     ash::test::WaitForPrimaryUserSessionStart();
@@ -267,36 +246,6 @@ class SystemLogManagedGuestSessionApitest
     return Profile::FromBrowserContext(
         ash::BrowserContextHelper::Get()->GetBrowserContextByUser(active_user));
   }
-#else  // BUILDFLAG(IS_CHROMEOS_LACROS)
-  void SetUpInProcessBrowserTestFixture() override {
-    MixinBasedExtensionApiTest::SetUpInProcessBrowserTestFixture();
-
-    mock_policy_provider_.SetDefaultReturns(
-        /*is_initialization_complete_return=*/true,
-        /*is_first_policy_load_complete_return=*/true);
-    mock_policy_provider_.SetAutoRefresh();
-    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
-        &mock_policy_provider_);
-  }
-
-  void SetUpOnMainThread() override {
-    extension_force_install_mixin_.InitWithMockPolicyProvider(
-        profile(), &mock_policy_provider_);
-
-    MixinBasedExtensionApiTest::SetUpOnMainThread();
-  }
-
-  void SetSystemLogPolicy() {
-    auto params = chromeos::BrowserInitParams::GetForTests()->Clone();
-    params->session_type = crosapi::mojom::SessionType::kPublicSession;
-    params->device_settings = crosapi::mojom::DeviceSettings::New();
-    params->device_settings->device_extensions_system_log_enabled =
-        system_logging_enabled()
-            ? crosapi::mojom::DeviceSettings::OptionalBool::kTrue
-            : crosapi::mojom::DeviceSettings::OptionalBool::kFalse;
-    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(params));
-  }
-#endif
 
   bool system_logging_enabled() const { return GetParam(); }
 
@@ -318,13 +267,8 @@ class SystemLogManagedGuestSessionApitest
   const std::string log_level_;
 
  protected:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::EmbeddedPolicyTestServerMixin policy_test_server_mixin_{&mixin_host_};
   policy::UserPolicyBuilder user_policy_builder_;
-#else  // BUILDFLAG(IS_CHROMEOS_LACROS)
-  testing::NiceMock<policy::MockConfigurationPolicyProvider>
-      mock_policy_provider_;
-#endif
   base::Value::Dict config_;
   ExtensionForceInstallMixin extension_force_install_mixin_{&mixin_host_};
 };

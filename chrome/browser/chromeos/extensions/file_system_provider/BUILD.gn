@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
 assert(is_chromeos)
 
 static_library("file_system_provider") {
@@ -18,7 +16,6 @@ static_library("file_system_provider") {
 
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//chrome/browser/ash/guest_os",
     "//chrome/browser/profiles:profile",
     "//chrome/common",

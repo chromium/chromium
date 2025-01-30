@@ -18,18 +18,15 @@
 #include "chrome/browser/chromeos/app_mode/kiosk_policies.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_settings_navigation_throttle.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_troubleshooting_controller.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "kiosk_troubleshooting_controller_ash.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
-#include "kiosk_troubleshooting_controller_ash.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace chromeos {
 
@@ -79,20 +76,11 @@ KioskBrowserWindowHandler::KioskBrowserWindowHandler(
       shutdown_kiosk_browser_session_callback_(
           std::move(shutdown_kiosk_browser_session_callback)),
       kiosk_policies_(profile_->GetPrefs()) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   kiosk_troubleshooting_controller_ =
       std::make_unique<ash::KioskTroubleshootingControllerAsh>(
           profile_->GetPrefs(),
           base::BindOnce(&KioskBrowserWindowHandler::Shutdown,
                          weak_ptr_factory_.GetWeakPtr()));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  kiosk_troubleshooting_controller_ =
-      std::make_unique<KioskTroubleshootingController>(
-          profile_->GetPrefs(),
-          base::BindOnce(&KioskBrowserWindowHandler::Shutdown,
-                         weak_ptr_factory_.GetWeakPtr()));
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   CloseAllUnexpectedBrowserWindows();
 

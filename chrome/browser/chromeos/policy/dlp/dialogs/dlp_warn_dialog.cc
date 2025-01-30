@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/notreached.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/policy/dlp/dialogs/policy_dialog_base.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_contents.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"

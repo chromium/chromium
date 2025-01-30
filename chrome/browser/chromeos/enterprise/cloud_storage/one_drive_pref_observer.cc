@@ -190,12 +190,6 @@ OneDrivePrefObserverFactory::BuildServiceInstanceForBrowserContext(
   }
 
   Profile* profile = Profile::FromBrowserContext(context);
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (!profile->IsMainProfile()) {
-    return nullptr;
-  }
-#endif
-
   return OneDrivePrefObserver::Create(profile);
 }
 

@@ -48,9 +48,7 @@ class FakePublisher final : public apps::AppPublisher {
  public:
   FakePublisher(apps::AppServiceProxy* proxy, apps::AppType app_type)
       : AppPublisher(proxy) {
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
     RegisterPublisher(app_type);
-#endif
   }
 
   MOCK_METHOD4(Launch,
@@ -100,13 +98,11 @@ class KioskAppServiceLauncherTest : public BrowserWithTestWindowTest {
   }
 
  protected:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   void UpdateAppState(const char* app_id, apps::InstanceState state) {
     apps::InstanceParams params(app_id, /*window=*/nullptr);
     params.state = std::make_pair(state, base::Time::Now());
     app_service_->InstanceRegistry().CreateOrUpdateInstance(std::move(params));
   }
-#endif
 
   void UpdateAppReadiness(apps::Readiness readiness) {
     std::vector<apps::AppPtr> apps;
@@ -189,7 +185,6 @@ TEST_F(KioskAppServiceLauncherTest, ShouldLaunchIfAppReady) {
                                apps::Readiness::kReady, 1);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(KioskAppServiceLauncherTest, ShouldInvokeVisibleCallback) {
   base::MockOnceCallback<void()> visible_callback;
 
@@ -267,6 +262,5 @@ TEST_F(KioskAppServiceLauncherTest,
   UpdateAppState(kTestAppId, apps::InstanceState::kVisible);
   base::RunLoop().RunUntilIdle();
 }
-#endif
 
 }  // namespace chromeos

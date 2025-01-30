@@ -15,7 +15,6 @@
 #include "base/types/expected.h"
 #include "base/uuid.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/diagnostics/diagnostics_api_converters.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/diagnostics/diagnostics_api_metrics.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/diagnostics/remote_diagnostics_service_strategy.h"
@@ -27,11 +26,6 @@
 #include "chromeos/crosapi/mojom/telemetry_extension_exception.mojom.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/permissions/permissions_data.h"
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "base/strings/stringprintf.h"
-#include "chromeos/lacros/lacros_service.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace chromeos {
 
@@ -97,23 +91,6 @@ DiagnosticsApiFunctionBase::GetRemoteService() {
   DCHECK(remote_diagnostics_service_strategy_);
   return remote_diagnostics_service_strategy_->GetRemoteService();
 }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-bool DiagnosticsApiFunctionBase::IsCrosApiAvailable() {
-  return remote_diagnostics_service_strategy_ != nullptr;
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-// DiagnosticsApiFunctionBaseV2 ------------------------------------------------
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-bool DiagnosticsApiFunctionBaseV2::IsCrosApiAvailable() {
-  return LacrosService::Get() &&
-         LacrosService::Get()
-             ->IsAvailable<
-                 crosapi::mojom::TelemetryDiagnosticRoutinesService>();
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // OsDiagnosticsGetAvailableRoutinesFunction -----------------------------------
 

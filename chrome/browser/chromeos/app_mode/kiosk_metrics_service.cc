@@ -7,7 +7,9 @@
 #include <string>
 #include <vector>
 
+#include "ash/constants/ash_switches.h"
 #include "base/check.h"
+#include "base/command_line.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
@@ -19,17 +21,11 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_switches.h"
-#include "base/command_line.h"
 #include "components/user_manager/user_manager.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace chromeos {
 
@@ -44,7 +40,6 @@ const constexpr char* kCrashDirs[] = {
 };
 
 bool IsRestoredSession() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Return true for a kiosk session restored after crash.
   // The kiosk session gets restored to a state that was prior to crash:
   // * no --login-manager command line flag, since no login screen is shown
@@ -55,9 +50,6 @@ bool IsRestoredSession() {
              ash::switches::kLoginManager) &&
          base::CommandLine::ForCurrentProcess()->HasSwitch(
              ash::switches::kLoginUser);
-#else
-  return false;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 // Returns true if there is a new crash in `crash_dirs` after
@@ -92,11 +84,7 @@ void ClearMetricFromPrefs(const std::string& metric_name, PrefService* prefs) {
 }
 
 bool IsFirstSessionAfterReboot() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   return user_manager::UserManager::Get()->IsFirstExecAfterBoot();
-#else
-  return false;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 KioskSessionRestartReason RestartReasonWithRebootInfo(

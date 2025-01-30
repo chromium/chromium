@@ -4,6 +4,8 @@
 
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/util.h"
 
+#include "ash/constants/ash_features.h"
+#include "ash/webui/shimless_rma/backend/external_app_dialog.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -14,11 +16,6 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/manifest_handlers/externally_connectable.h"
 #include "extensions/common/url_pattern_set.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
-#include "ash/webui/shimless_rma/backend/external_app_dialog.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace content {
 class BrowserContext;
@@ -59,7 +56,6 @@ content::WebContents* FindTelemetryExtensionOpenAndSecureAppUi(
   const auto& pattern_set =
       extensions::ExternallyConnectableInfo::Get(extension)->matches;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (ash::features::IsShimlessRMA3pDiagnosticsEnabled()) {
     content::WebContents* contents =
         ash::shimless_rma::ExternalAppDialog::GetWebContents();
@@ -70,7 +66,6 @@ content::WebContents* FindTelemetryExtensionOpenAndSecureAppUi(
       return contents;
     }
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // A focused UI must be:
   // 1. In a browser that is front-most;

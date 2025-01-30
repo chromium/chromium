@@ -18,12 +18,13 @@
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
 #include "base/uuid.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/routines/diagnostic_routine.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/routines/fake_diagnostic_routines_service.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/routines/fake_diagnostic_routines_service_factory.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
+#include "chromeos/ash/components/telemetry_extension/routines/telemetry_diagnostic_routine_service_ash.h"
 #include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/ssl_status.h"
@@ -39,16 +40,6 @@
 #include "net/test/test_data_directory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/extensions/telemetry/api/routines/fake_diagnostic_routines_service_factory.h"
-#include "chromeos/ash/components/telemetry_extension/routines/telemetry_diagnostic_routine_service_ash.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_service.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace chromeos {
 
@@ -74,28 +65,16 @@ class TelemetryExtensionDiagnosticRoutinesManagerTest
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     fake_routines_service_impl_ = new FakeDiagnosticRoutinesService();
     fake_routines_service_factory_.SetCreateInstanceResponse(
         std::unique_ptr<FakeDiagnosticRoutinesService>(
             fake_routines_service_impl_.get()));
     ash::TelemetryDiagnosticsRoutineServiceAsh::Factory::SetForTesting(
         &fake_routines_service_factory_);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    fake_routines_service_impl_ =
-        std::make_unique<FakeDiagnosticRoutinesService>();
-    // Replace the production `TelemetryDiagnosticRoutinesService` with a fake
-    // for testing.
-    chromeos::LacrosService::Get()->InjectRemoteForTesting(
-        fake_routines_service_impl_->receiver().BindNewPipeAndPassRemote());
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   }
 
   void TearDown() override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     fake_routines_service_impl_ = nullptr;
-#endif
     BrowserWithTestWindowTest::TearDown();
   }
 
@@ -177,13 +156,8 @@ class TelemetryExtensionDiagnosticRoutinesManagerTest
   }
 
  private:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   raw_ptr<FakeDiagnosticRoutinesService> fake_routines_service_impl_;
   FakeDiagnosticRoutinesServiceFactory fake_routines_service_factory_;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  std::unique_ptr<FakeDiagnosticRoutinesService> fake_routines_service_impl_;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 };
 
 TEST_F(TelemetryExtensionDiagnosticRoutinesManagerTest,

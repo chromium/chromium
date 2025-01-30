@@ -13,20 +13,14 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/proxy_config/proxy_prefs.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_observer.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/ash/components/network/network_handler.h"
-#include "chromeos/ash/components/network/network_state_handler.h"
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/network_change.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
-#endif
 
 namespace chromeos {
 
@@ -126,15 +120,9 @@ class NetworkPortalSigninWindow::WindowObserver
   void RequestPortalDetection() {
     NET_LOG(EVENT) << "Request portal detection";
     controller_->portal_detection_requested_for_testing_++;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     ash::NetworkHandler::Get()
         ->network_state_handler()
         ->RequestPortalDetection();
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-    chromeos::LacrosService::Get()
-        ->GetRemote<crosapi::mojom::NetworkChange>()
-        ->RequestPortalDetection();
-#endif
   }
 
  private:

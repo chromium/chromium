@@ -7,19 +7,15 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
-#include "build/chromeos_buildflags.h"
-#include "chrome/browser/extensions/extension_api_unittest.h"
-#include "extensions/common/extension.h"
-#include "extensions/common/extension_builder.h"
-#include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/values.h"
+#include "chrome/browser/extensions/extension_api_unittest.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/session_manager/session_manager_types.h"
 #include "extensions/browser/api_test_utils.h"
-#endif
+#include "extensions/common/extension.h"
+#include "extensions/common/extension_builder.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 
@@ -56,7 +52,6 @@ TEST_F(LoginStateApiUnittest, GetProfileType_UserProfile) {
             RunFunctionAndReturnValue(function.get(), "[]")->GetString());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Test that |loginState.getProfileType()| returns |SIGNIN_PROFILE| for
 // extensions running in the signin profile.
 TEST_F(LoginStateApiUnittest, GetProfileType_SigninProfile) {
@@ -112,6 +107,5 @@ TEST_F(LoginStateApiAshUnittest, GetSessionState) {
     EXPECT_EQ(test.expected, result->GetString());
   }
 }
-#endif
 
 }  // namespace extensions

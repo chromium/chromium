@@ -5,14 +5,7 @@
 #ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_CONTROLLED_PREF_MAPPING_H_
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_CONTROLLED_PREF_MAPPING_H_
 
-#include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_pref_names.h"
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/common/pref_names.h"
-#endif
 
 namespace chromeos::prefs {
 
@@ -24,7 +17,6 @@ namespace chromeos::prefs {
 // FocusHighlight is special as the feature exists on several platforms.
 // However, extensions can only set the ash-value.
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 inline constexpr const char* kAccessibilityFocusHighlightEnabled =
     ash::prefs::kAccessibilityFocusHighlightEnabled;
 inline constexpr const char* kAccessibilityAutoclickEnabled =
@@ -53,36 +45,6 @@ inline constexpr const char* kAccessibilityVirtualKeyboardEnabled =
     ash::prefs::kAccessibilityVirtualKeyboardEnabled;
 inline constexpr const char* kDockedMagnifierEnabled =
     ash::prefs::kDockedMagnifierEnabled;
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-inline constexpr const char* kAccessibilityFocusHighlightEnabled =
-    ::prefs::kLacrosAccessibilityFocusHighlightEnabled;
-inline constexpr const char* kAccessibilityAutoclickEnabled =
-    ::prefs::kLacrosAccessibilityAutoclickEnabled;
-inline constexpr const char* kAccessibilityCaretHighlightEnabled =
-    ::prefs::kLacrosAccessibilityCaretHighlightEnabled;
-inline constexpr const char* kAccessibilityCursorHighlightEnabled =
-    ::prefs::kLacrosAccessibilityCursorHighlightEnabled;
-inline constexpr const char* kAccessibilityDictationEnabled =
-    ::prefs::kLacrosAccessibilityDictationEnabled;
-inline constexpr const char* kAccessibilityHighContrastEnabled =
-    ::prefs::kLacrosAccessibilityHighContrastEnabled;
-inline constexpr const char* kAccessibilityLargeCursorEnabled =
-    ::prefs::kLacrosAccessibilityLargeCursorEnabled;
-inline constexpr const char* kAccessibilityScreenMagnifierEnabled =
-    ::prefs::kLacrosAccessibilityScreenMagnifierEnabled;
-inline constexpr const char* kAccessibilitySelectToSpeakEnabled =
-    ::prefs::kLacrosAccessibilitySelectToSpeakEnabled;
-inline constexpr const char* kAccessibilitySpokenFeedbackEnabled =
-    ::prefs::kLacrosAccessibilitySpokenFeedbackEnabled;
-inline constexpr const char* kAccessibilityStickyKeysEnabled =
-    ::prefs::kLacrosAccessibilityStickyKeysEnabled;
-inline constexpr const char* kAccessibilitySwitchAccessEnabled =
-    ::prefs::kLacrosAccessibilitySwitchAccessEnabled;
-inline constexpr const char* kAccessibilityVirtualKeyboardEnabled =
-    ::prefs::kLacrosAccessibilityVirtualKeyboardEnabled;
-inline constexpr const char* kDockedMagnifierEnabled =
-    ::prefs::kLacrosDockedMagnifierEnabled;
-#endif
 
 }  // namespace chromeos::prefs
 

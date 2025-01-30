@@ -93,9 +93,7 @@ bool PrintViewManagerCros::PrintPreviewNow(content::RenderFrameHost* rfh,
 
   // TODO(b/339311234): Handle passing a print renderer remote from android.
   GetPrintRenderFrame(rfh)->InitiatePrintPreview(
-#if BUILDFLAG(IS_CHROMEOS_ASH)
       mojo::NullAssociatedRemote(),
-#endif
       has_selection);
   DCHECK(!render_frame_host_);
   render_frame_host_ = rfh;

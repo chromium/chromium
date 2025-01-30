@@ -1,4 +1,3 @@
-import("//build/config/chromeos/ui_mode.gni")
 import("//extensions/buildflags/buildflags.gni")
 
 assert(enable_extensions)
@@ -10,7 +9,6 @@ static_library("constants") {
   deps = [
     "//ash/constants",
     "//base",
-    "//build:chromeos_buildflags",
     "//chrome/common:constants",
     "//chromeos/crosapi/mojom",
   ]
