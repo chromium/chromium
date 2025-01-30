@@ -423,6 +423,31 @@ bool ShouldDelegatePaintingToViewTransition(const PhysicalBoxFragment& fragment,
   }
 }
 
+BoxSide BoxSideFromGridDirection(const ComputedStyle& style,
+                                 GridTrackSizingDirection direction) {
+  BoxSide box_side;
+
+  if (style.IsHorizontalWritingMode()) {
+    if (style.IsLeftToRightDirection()) {
+      box_side = direction == kForColumns ? BoxSide::kLeft : BoxSide::kTop;
+    } else {
+      box_side = direction == kForColumns ? BoxSide::kRight : BoxSide::kBottom;
+    }
+  } else {
+    // Vertical Writing Mode.
+    const auto writing_direction = style.GetWritingDirection();
+    if (writing_direction.InlineEnd() == PhysicalDirection::kDown) {
+      // Top to Bottom.
+      box_side = direction == kForColumns ? BoxSide::kTop : BoxSide::kLeft;
+    } else {
+      // Bottom to Top.
+      box_side = direction == kForColumns ? BoxSide::kBottom : BoxSide::kRight;
+    }
+  }
+
+  return box_side;
+}
+
 }  // anonymous namespace
 
 PhysicalRect BoxFragmentPainter::InkOverflowIncludingFilters() const {
@@ -1306,6 +1331,101 @@ void BoxFragmentPainter::PaintBoxDecorationBackgroundWithDecorationData(
   }
 }
 
+void BoxFragmentPainter::PaintGapDecorations(const PaintInfo& paint_info,
+                                             const PhysicalRect& paint_rect) {
+  // TODO(crbug.com/357648037): This will change when gap decorations for
+  // flexbox are implemented.
+  if (!GetPhysicalFragment().IsGrid()) {
+    return;
+  }
+  const GapFragmentData::GapGeometry* gap_geometry =
+      box_fragment_.GapGeometry();
+  CHECK(gap_geometry);
+
+  PaintGridGaps(kForRows, paint_info, paint_rect, gap_geometry->rows);
+  PaintGridGaps(kForColumns, paint_info, paint_rect, gap_geometry->columns);
+}
+
+void BoxFragmentPainter::PaintGridGaps(
+    GridTrackSizingDirection track_direction,
+    const PaintInfo& paint_info,
+    const PhysicalRect& paint_rect,
+    const GapFragmentData::GapBoundaries& gaps) {
+  const ComputedStyle& style = box_fragment_.Style();
+
+  WritingModeConverter converter(style.GetWritingDirection(),
+                                 box_fragment_.Size());
+  AutoDarkMode auto_dark_mode(
+      PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kBackground));
+  BoxSide box_side = BoxSideFromGridDirection(style, track_direction);
+
+  Color rule_color;
+  EBorderStyle rule_style;
+  LayoutUnit rule_thickness;
+  if (track_direction == kForColumns) {
+    // TODO(crbug.com/357648037): We are currently only painting gaps with a
+    // single color, but we should update this to paint with all values
+    // potentially set by the author.
+    rule_color =
+        LayoutObject::ResolveColor(style, GetCSSPropertyColumnRuleColor());
+    rule_style = ComputedStyle::CollapsedBorderStyle(
+        style.ColumnRuleStyle().GetLegacyValue());
+    rule_thickness = LayoutUnit(style.ColumnRuleWidth().GetLegacyValue());
+  } else {
+    // TODO(crbug.com/357648037): Using hard coded values. These values should
+    // be retrieved from the style engine once row rules are implemented.
+    rule_color = Color(0, 128, 0);
+    rule_style = EBorderStyle::kSolid;
+    rule_thickness = LayoutUnit();
+  }
+
+  const PhysicalRect local_rect = box_fragment_.LocalRect();
+  const LayoutUnit cross_track_offset = track_direction == kForColumns
+                                            ? local_rect.offset.top
+                                            : local_rect.offset.left;
+  const LayoutUnit cross_track_size = track_direction == kForColumns
+                                          ? local_rect.size.height
+                                          : local_rect.size.width;
+
+  for (const auto& gap : gaps) {
+    CHECK(gap.start_offset);
+    CHECK(gap.end_offset);
+
+    LayoutUnit inline_start;
+    LayoutUnit inline_size;
+    LayoutUnit block_start;
+    LayoutUnit block_size;
+
+    if (track_direction == kForColumns) {
+      // For columns, paint a vertical strip at the center of the gap.
+      const LayoutUnit center =
+          (gap.start_offset.value() + gap.end_offset.value()) / 2;
+      inline_start = center - (rule_thickness / 2);
+      inline_size = rule_thickness;
+      block_start = cross_track_offset;
+      block_size = cross_track_size;
+    } else {
+      // TODO(crbug.com/357648037): For rows, paint the "full gap". This paint
+      // logic does not take row fragmentation into account, hence we expect
+      // start and end offset for row gaps to be present. This logic will be
+      // updated once fragmentation bits are implemented.
+      inline_start = cross_track_offset;
+      inline_size = cross_track_size;
+      block_start = gap.start_offset.value();
+      block_size = gap.end_offset.value() - gap.start_offset.value();
+    }
+
+    const LogicalRect gap_logical(inline_start, block_start, inline_size,
+                                  block_size);
+    PhysicalRect gap_rect = converter.ToPhysical(gap_logical);
+    gap_rect.offset += paint_rect.offset;
+
+    BoxBorderPainter::DrawBoxSide(paint_info.context,
+                                  ToPixelSnappedRect(gap_rect), box_side,
+                                  rule_color, rule_style, auto_dark_mode);
+  }
+}
+
 // TODO(kojii): This logic is kept in sync with BoxPainter. Not much efforts to
 // eliminate LayoutObject dependency were done yet.
 void BoxFragmentPainter::PaintBoxDecorationBackgroundWithRectImpl(
@@ -1393,6 +1513,14 @@ void BoxFragmentPainter::PaintBoxDecorationBackgroundWithRectImpl(
                   box_decoration_data.GetBackgroundBleedAvoidance(),
                   box_fragment_.SidesToInclude());
     }
+  }
+
+  // TODO(crbug.com/357648037): Currently painting gap decorations after
+  // borders. This is likely to change following the resolution of the paint
+  // order issue for gap decorations.
+  if (RuntimeEnabledFeatures::CSSGapDecorationEnabled() &&
+      box_decoration_data.ShouldPaintGapDecorations()) {
+    PaintGapDecorations(paint_info, paint_rect);
   }
 
   if (needs_end_layer)

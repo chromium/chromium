@@ -973,7 +973,7 @@ class ComputedStyle final : public ComputedStyleBase {
   }
   bool ColumnRuleEquivalent(const ComputedStyle& other_style) const;
   bool HasColumnRule() const {
-    if (!SpecifiesColumns()) [[likely]] {
+    if (!SpecifiesColumns() && Display() != EDisplay::kGrid) [[likely]] {
       return false;
     }
     return ColumnRuleWidth().GetLegacyValue() && !ColumnRuleIsTransparent() &&

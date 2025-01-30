@@ -183,6 +183,11 @@ class CORE_EXPORT BoxFragmentPainter : public BoxPainterBase {
                            const PhysicalOffset& paint_offset);
   bool PaintOverflowControls(const PaintInfo&,
                              const PhysicalOffset& paint_offset);
+  void PaintGapDecorations(const PaintInfo&, const PhysicalRect& paint_rect);
+  void PaintGridGaps(GridTrackSizingDirection track_direction,
+                     const PaintInfo& paint_info,
+                     const PhysicalRect& paint_rect,
+                     const GapFragmentData::GapBoundaries& gaps);
 
   InlinePaintContext& EnsureInlineContext();
 
