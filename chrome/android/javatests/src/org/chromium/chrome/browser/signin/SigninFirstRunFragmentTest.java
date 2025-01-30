@@ -832,12 +832,18 @@ public class SigninFirstRunFragmentTest {
     @MediumTest
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_AUTO)
     public void testSignInDisabledOnAutomotive() {
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
         launchActivityWithFragment();
 
         ViewUtils.waitForVisibleView(withText(R.string.continue_button));
         onView(withId(R.id.signin_fre_continue_button))
                 .check(matches(withText(R.string.continue_button)));
         onView(withId(R.id.signin_fre_dismiss_button)).check(matches(not(isDisplayed())));
+
+        onView(allOf(withId(R.id.title), withText(R.string.fre_welcome)))
+                .check(matches(isDisplayed()));
+        onView(allOf(withId(R.id.subtitle))).check(matches(not(isDisplayed())));
+        onView(withText(TestAccounts.ACCOUNT1.getEmail())).check(doesNotExist());
     }
 
     @Test
