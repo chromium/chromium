@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.toolbar;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -75,11 +76,11 @@ public class LocationBarFocusScrimHandlerTest {
         verify(mScrimCoordinator).showScrim(any());
 
         mScrimHandler.onUrlFocusChange(false);
-        verify(mScrimCoordinator).hideScrim(true);
+        verify(mScrimCoordinator).hideScrim(any(), eq(true));
 
         // A second de-focus shouldn't trigger another hide.
         mScrimHandler.onUrlFocusChange(false);
-        verify(mScrimCoordinator, times(1)).hideScrim(true);
+        verify(mScrimCoordinator, times(1)).hideScrim(any(), eq(true));
     }
 
     @Test

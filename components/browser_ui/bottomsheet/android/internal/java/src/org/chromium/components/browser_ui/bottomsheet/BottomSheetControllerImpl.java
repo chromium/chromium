@@ -267,7 +267,9 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController, ScrimCo
                         // Hide the scrim if the current content doesn't have a custom scrim
                         // lifecycle.
                         if (mScrimShown) {
-                            mScrimCoordinatorSupplier.get().hideScrim(true);
+                            mScrimCoordinatorSupplier
+                                    .get()
+                                    .hideScrim(scrimProperties, /* animate= */ true);
                             mScrimShown = false;
                         }
 

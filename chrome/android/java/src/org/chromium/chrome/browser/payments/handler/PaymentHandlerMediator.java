@@ -67,6 +67,7 @@ import java.lang.annotation.RetentionPolicy;
     /** A token held while the payment sheet is obscuring all visible tabs. */
     private TabObscuringHandler.Token mTabObscuringToken;
 
+    private PropertyModel mScrimProperties;
     private boolean mIsDestroyed;
 
     @IntDef({
@@ -239,8 +240,8 @@ import java.lang.annotation.RetentionPolicy;
     private void showScrim() {
         ScrimCoordinator coordinator = mBottomSheetController.getScrimCoordinator();
         if (coordinator != null && !coordinator.isShowingScrim()) {
-            PropertyModel params = mBottomSheetController.createScrimParams();
-            coordinator.showScrim(params);
+            mScrimProperties = mBottomSheetController.createScrimParams();
+            coordinator.showScrim(mScrimProperties);
         }
         setObscureState(true);
     }
@@ -268,7 +269,8 @@ import java.lang.annotation.RetentionPolicy;
 
         ScrimCoordinator coordinator = mBottomSheetController.getScrimCoordinator();
         if (coordinator != null && coordinator.isShowingScrim()) {
-            coordinator.hideScrim(/* animate= */ true);
+            coordinator.hideScrim(mScrimProperties, /* animate= */ true);
+            mScrimProperties = null;
         }
     }
 

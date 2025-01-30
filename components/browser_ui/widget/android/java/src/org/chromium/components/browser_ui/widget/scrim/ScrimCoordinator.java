@@ -125,7 +125,7 @@ public class ScrimCoordinator {
         // Ensure the previous scrim is hidden before showing the new one. This logic should be in
         // the mediator, but it depends on the old view and binder being available which are
         // replaced prior to mediator#showScrim being called.
-        if (mMediator.isActive()) mMediator.hideScrim(false, ANIM_DURATION_MS);
+        if (mMediator.isActive()) mMediator.hideScrim(/* animate= */ false, ANIM_DURATION_MS);
 
         if (mChangeProcessor != null) mChangeProcessor.destroy();
 
@@ -138,21 +138,22 @@ public class ScrimCoordinator {
     }
 
     /**
-     * Hide the scrim.
-     *
+     * @param model The model used to show/identify the current scrim.
      * @param animate Whether the scrim should animate and fade out.
      */
-    public void hideScrim(boolean animate) {
-        hideScrim(animate, ANIM_DURATION_MS);
+    public void hideScrim(PropertyModel model, boolean animate) {
+        hideScrim(model, animate, ANIM_DURATION_MS);
     }
 
     /**
-     * Hide the scrim.
-     *
+     * @param model The model used to show/identify the current scrim. If this model does not
+     *     correspond to the current scrim, then this request will be ignored.
      * @param animate Whether the scrim should animate and fade out.
      * @param duration Duration for animation.
      */
-    public void hideScrim(boolean animate, int duration) {
+    public void hideScrim(PropertyModel model, boolean animate, int duration) {
+        if (model != mMediator.getModel()) return;
+
         boolean isShowingScrim = isShowingScrim();
         mMediator.hideScrim(animate, duration);
         if (isShowingScrim != isShowingScrim()) {
@@ -160,9 +161,7 @@ public class ScrimCoordinator {
         }
     }
 
-    /**
-     * @return Whether the scrim is being shown.
-     */
+    /** Returns whether the scrim is being shown. */
     public boolean isShowingScrim() {
         return mMediator.isActive();
     }
@@ -192,10 +191,12 @@ public class ScrimCoordinator {
      * not be called as part of animations as it cancels the currently running one.
      *
      * @param alpha The alpha in range [0, 1].
-     * @param propertyModel The model used to show/identify the current scrim.
+     * @param model The model used to show/identify the current scrim. If this model does not
+     *     correspond to the current scrim, then this request will be ignored.
      */
-    public void setAlpha(float alpha, PropertyModel propertyModel) {
-        mMediator.setAlpha(alpha, propertyModel);
+    public void setAlpha(float alpha, PropertyModel model) {
+        if (model != mMediator.getModel()) return;
+        mMediator.setAlpha(alpha);
     }
 
     /**
@@ -203,10 +204,12 @@ public class ScrimCoordinator {
      * be subject to the current alpha. Safe to call this during animations.
      *
      * @param scrimColor The color to set the scrim to.
-     * @param propertyModel The model used to show/identify the current scrim.
+     * @param model The model used to show/identify the current scrim. If this model does not
+     *     correspond to the current scrim, then this request will be ignored.
      */
-    public void setScrimColor(@ColorInt int scrimColor, PropertyModel propertyModel) {
-        mMediator.setScrimColor(scrimColor, propertyModel);
+    public void setScrimColor(@ColorInt int scrimColor, PropertyModel model) {
+        if (model != mMediator.getModel()) return;
+        mMediator.setScrimColor(scrimColor);
     }
 
     /** Clean up this coordinator. */
