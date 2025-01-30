@@ -44,11 +44,6 @@ class DataSharingSDKDelegate {
   virtual void Initialize(
       DataSharingNetworkLoader* data_sharing_network_loader) = 0;
 
-  // Implemented only for android. Normally initialize method will lazily intiialize the SDK to
-  // avoid overhead. This will force the loading of delegate.
-  virtual void ForceInitialize(
-      DataSharingNetworkLoader* data_sharing_network_loader) {}
-
   virtual void CreateGroup(
       const data_sharing_pb::CreateGroupParams& params,
       base::OnceCallback<

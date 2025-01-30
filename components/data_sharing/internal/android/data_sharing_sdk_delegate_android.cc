@@ -66,17 +66,8 @@ ScopedJavaLocalRef<jobject> DataSharingSDKDelegateAndroid::GetJavaObject() {
 
 void DataSharingSDKDelegateAndroid::Initialize(
     DataSharingNetworkLoader* data_sharing_network_loader) {
-  if (network_loader_) {
-    return;
-  }
   network_loader_ = std::make_unique<DataSharingNetworkLoaderAndroid>(
       data_sharing_network_loader);
-}
-
-void DataSharingSDKDelegateAndroid::ForceInitialize(
-    DataSharingNetworkLoader* data_sharing_network_loader) {
-  Initialize(data_sharing_network_loader);
-  LazyInitializeIfNeeded();
 }
 void DataSharingSDKDelegateAndroid::CreateGroup(
     const data_sharing_pb::CreateGroupParams& params,

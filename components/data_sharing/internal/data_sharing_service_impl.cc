@@ -642,9 +642,6 @@ void DataSharingServiceImpl::SetUIDelegate(
 }
 
 DataSharingUIDelegate* DataSharingServiceImpl::GetUiDelegate() {
-  if (sdk_delegate_) {
-    sdk_delegate_->ForceInitialize(data_sharing_network_loader_.get());
-  }
   return ui_delegate_.get();
 }
 
