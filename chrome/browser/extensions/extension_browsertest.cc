@@ -67,7 +67,6 @@
 #include "content/public/browser/url_data_source.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
-#include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/browser/extension_host.h"
@@ -716,30 +715,6 @@ ExtensionHost* ExtensionBrowserTest::FindHostWithPath(ProcessManager* manager,
   }
   EXPECT_EQ(expected_hosts, num_hosts);
   return result_host;
-}
-
-base::Value ExtensionBrowserTest::ExecuteScriptInBackgroundPage(
-    const extensions::ExtensionId& extension_id,
-    const std::string& script,
-    browsertest_util::ScriptUserActivation script_user_activation) {
-  return browsertest_util::ExecuteScriptInBackgroundPage(
-      profile(), extension_id, script, script_user_activation);
-}
-
-std::string ExtensionBrowserTest::ExecuteScriptInBackgroundPageDeprecated(
-    const extensions::ExtensionId& extension_id,
-    const std::string& script,
-    browsertest_util::ScriptUserActivation script_user_activation) {
-  return browsertest_util::ExecuteScriptInBackgroundPageDeprecated(
-      profile(), extension_id, script, script_user_activation);
-}
-
-bool ExtensionBrowserTest::ExecuteScriptInBackgroundPageNoWait(
-    const extensions::ExtensionId& extension_id,
-    const std::string& script,
-    browsertest_util::ScriptUserActivation script_user_activation) {
-  return browsertest_util::ExecuteScriptInBackgroundPageNoWait(
-      profile(), extension_id, script, script_user_activation);
 }
 
 content::ServiceWorkerContext* ExtensionBrowserTest::GetServiceWorkerContext() {

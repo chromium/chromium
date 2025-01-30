@@ -22,7 +22,6 @@
 #include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
 #include "content/public/browser/web_contents.h"
-#include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/extension_creator.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_protocols.h"
@@ -280,36 +279,6 @@ class ExtensionBrowserTest : public ExtensionPlatformBrowserTest,
   ExtensionHost* FindHostWithPath(ProcessManager* manager,
                                   const std::string& path,
                                   int expected_hosts);
-
-  // Waits until `script` calls "chrome.test.sendScriptResult(result)",
-  // where `result` is a serializable value, and returns `result`. Fails
-  // the test and returns an empty base::Value if `extension_id` isn't
-  // installed in the test's profile or doesn't have a background page, or
-  // if executing the script fails. The argument `script_user_activation`
-  // determines if the script should be executed after a user activation.
-  base::Value ExecuteScriptInBackgroundPage(
-      const extensions::ExtensionId& extension_id,
-      const std::string& script,
-      browsertest_util::ScriptUserActivation script_user_activation =
-          browsertest_util::ScriptUserActivation::kDontActivate);
-
-  // Waits until |script| calls "window.domAutomationController.send(result)",
-  // where |result| is a string, and returns |result|. Fails the test and
-  // returns an empty base::Value if |extension_id| isn't installed in test's
-  // profile or doesn't have a background page, or if executing the script
-  // fails. The argument |script_user_activation| determines if the script
-  // should be executed after a user activation.
-  std::string ExecuteScriptInBackgroundPageDeprecated(
-      const extensions::ExtensionId& extension_id,
-      const std::string& script,
-      browsertest_util::ScriptUserActivation script_user_activation =
-          browsertest_util::ScriptUserActivation::kDontActivate);
-
-  bool ExecuteScriptInBackgroundPageNoWait(
-      const extensions::ExtensionId& extension_id,
-      const std::string& script,
-      browsertest_util::ScriptUserActivation script_user_activation =
-          browsertest_util::ScriptUserActivation::kDontActivate);
 
   // Get the ServiceWorkerContext for the default browser's profile.
   content::ServiceWorkerContext* GetServiceWorkerContext();
