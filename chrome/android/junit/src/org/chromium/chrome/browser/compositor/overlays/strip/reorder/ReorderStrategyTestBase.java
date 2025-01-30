@@ -44,6 +44,7 @@ public class ReorderStrategyTestBase {
     private Activity mActivity;
     @Mock protected ActionConfirmationManager mActionConfirmationManager;
     @Mock protected ReorderStrategy mTabStrategy;
+    @Mock protected ReorderStrategy mGroupStrategy;
     @Mock protected StripUpdateDelegate mStripUpdateDelegate;
     @Mock protected ScrollDelegate mScrollDelegate;
     @Mock protected View mContainerView;
@@ -59,8 +60,9 @@ public class ReorderStrategyTestBase {
     protected StripLayoutTab[] mStripTabs = new StripLayoutTab[0];
     protected StripLayoutGroupTitle[] mGroupTitles = new StripLayoutGroupTitle[0];
     protected StripLayoutView[] mStripViews = new StripLayoutView[0];
-    protected StripLayoutTab mInteractingView;
-    protected StripLayoutGroupTitle mInteractingViewGroupTitle;
+    protected StripLayoutTab mInteractingTab;
+    protected StripLayoutGroupTitle mInteractingGroupTitle;
+    protected StripLayoutGroupTitle mInteractingTabGroupTitle;
     @Mock protected Tab mTabForInteractingView;
 
     protected void setup() {

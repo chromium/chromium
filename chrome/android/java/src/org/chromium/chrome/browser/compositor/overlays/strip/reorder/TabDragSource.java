@@ -221,6 +221,13 @@ public class TabDragSource implements View.OnDragListener {
         return res;
     }
 
+    /** Starts the group drag action by initiating the process by calling View.startDragAndDrop. */
+    public boolean startGroupDragAction() {
+        // TODO(crbug.com/384969886): Implement. Should largely mirror #startTabDragAction, but
+        //  with different global state.
+        return false;
+    }
+
     @VisibleForTesting
     void updateShadowView(
             @NonNull Tab tabBeingDragged, @NonNull View dragSourceView, int tabWidthPx) {

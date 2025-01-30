@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripTabModelActionListener.ActionType;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
@@ -163,19 +164,24 @@ public class ReorderDelegate {
 
     private ReorderStrategy getReorderStrategy(
             StripLayoutView interactingView, @ReorderType int reorderType) {
+        boolean instanceOfTab = interactingView instanceof StripLayoutTab;
+        boolean instanceOfGroup = interactingView instanceof StripLayoutGroupTitle;
+        boolean shouldDragDropGroup =
+                instanceOfGroup
+                        && ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.TAB_STRIP_GROUP_DRAG_DROP_ANDROID);
         if (mSourceViewDragDropReorderStrategy != null
-                && interactingView instanceof StripLayoutTab
+                && (instanceOfTab || shouldDragDropGroup)
                 && reorderType == ReorderType.START_DRAG_DROP) {
             return mSourceViewDragDropReorderStrategy;
-        } else if (interactingView instanceof StripLayoutTab
-                && reorderType == ReorderType.DRAG_ONTO_STRIP) {
+        } else if (instanceOfTab && reorderType == ReorderType.DRAG_ONTO_STRIP) {
             // Only external views can be dragged onto strip during startReorderMode.
             assert mExternalViewDragDropReorderStrategy != null;
             return mExternalViewDragDropReorderStrategy;
         } else {
-            if (interactingView instanceof StripLayoutTab) {
+            if (instanceOfTab) {
                 return mTabStrategy;
-            } else if (interactingView instanceof StripLayoutGroupTitle) {
+            } else if (instanceOfGroup) {
                 return mGroupStrategy;
             }
         }
@@ -259,7 +265,8 @@ public class ReorderDelegate {
                             mTabWidthSupplier,
                             tabDragSource,
                             actionConfirmationManager,
-                            mTabStrategy);
+                            mTabStrategy,
+                            mGroupStrategy);
             mExternalViewDragDropReorderStrategy =
                     new ExternalViewDragDropReorderStrategy(
                             /* reorderDelegate= */ this,
