@@ -12,8 +12,8 @@
 
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/internal_webui_config.h"
 #include "content/public/browser/web_ui_controller.h"
+#include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
 
 namespace base {
@@ -27,9 +27,10 @@ namespace content {
 class TracingUI;
 
 // WebUIConfig for the chrome://tracing page.
-class TracingUIConfig : public DefaultInternalWebUIConfig<TracingUI> {
+class TracingUIConfig : public DefaultWebUIConfig<TracingUI> {
  public:
-  TracingUIConfig() : DefaultInternalWebUIConfig(kChromeUITracingHost) {}
+  TracingUIConfig()
+      : DefaultWebUIConfig(kChromeUIScheme, kChromeUITracingHost) {}
 };
 
 // The C++ back-end for the chrome://tracing webui page.
