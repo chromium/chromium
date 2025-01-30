@@ -1773,6 +1773,7 @@ if (is_android) {
         "../browser/extensions/api/browsing_data/browsing_data_test.cc",
         "../browser/extensions/api/cookies/cookies_apitest.cc",
         "../browser/extensions/api/declarative_net_request/declarative_net_request_apitest.cc",
+        "../browser/extensions/api/declarative_net_request/declarative_net_request_browsertest.cc",
         "../browser/extensions/api/i18n/i18n_apitest.cc",
         "../browser/extensions/api/idle/idle_apitest.cc",
         "../browser/extensions/api/module/module_apitest.cc",
@@ -1808,6 +1809,7 @@ if (is_android) {
         "//components/web_package",
         "//components/web_package/test_support",
         "//extensions/common/api",
+        "//ui/webui:test_support",
       ]
 
       data += [

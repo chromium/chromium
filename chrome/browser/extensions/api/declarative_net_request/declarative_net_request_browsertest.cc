@@ -44,8 +44,6 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
-#include "chrome/browser/extensions/extension_browsertest.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/load_error_reporter.h"
@@ -57,13 +55,9 @@
 #include "chrome/browser/net/profile_network_context_service_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_tabstrip.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/scoped_privacy_sandbox_attestations.h"
@@ -102,6 +96,7 @@
 #include "extensions/browser/api/web_request/web_request_api.h"
 #include "extensions/browser/api/web_request/web_request_info.h"
 #include "extensions/browser/blocked_action_type.h"
+#include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_action_manager.h"
 #include "extensions/browser/extension_prefs.h"
@@ -147,6 +142,17 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/webui/untrusted_web_ui_browsertest_util.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/extensions/extension_platform_browsertest.h"
+#else
+#include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/test/base/ui_test_utils.h"
+#endif
 
 namespace extensions::declarative_net_request {
 namespace {
@@ -246,8 +252,14 @@ class RulesetLoaderThrottle {
   base::OnceClosure quit_closure_;
 };
 
+#if BUILDFLAG(IS_ANDROID)
+using ExtensionBrowserTestBase = ExtensionPlatformBrowserTest;
+#else
+using ExtensionBrowserTestBase = ExtensionBrowserTest;
+#endif
+
 class DeclarativeNetRequestBrowserTest
-    : public ExtensionBrowserTest,
+    : public ExtensionBrowserTestBase,
       public ::testing::WithParamInterface<
           ::testing::tuple<ExtensionLoadType, bool>> {
  public:
@@ -282,7 +294,7 @@ class DeclarativeNetRequestBrowserTest
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    ExtensionBrowserTest::SetUpCommandLine(command_line);
+    ExtensionBrowserTestBase::SetUpCommandLine(command_line);
 
     if (GetAllowChromeURLs()) {
       command_line->AppendSwitch(switches::kExtensionsOnChromeURLs);
@@ -293,7 +305,7 @@ class DeclarativeNetRequestBrowserTest
 
   // ExtensionBrowserTest overrides:
   void SetUpOnMainThread() override {
-    ExtensionBrowserTest::SetUpOnMainThread();
+    ExtensionBrowserTestBase::SetUpOnMainThread();
 
     embedded_test_server()->ServeFilesFromDirectory(GetHttpServerPath());
 
@@ -316,7 +328,7 @@ class DeclarativeNetRequestBrowserTest
     // Ensure |ruleset_manager_observer_| gets destructed on the UI thread.
     ruleset_manager_observer_.reset();
 
-    ExtensionBrowserTest::TearDownOnMainThread();
+    ExtensionBrowserTestBase::TearDownOnMainThread();
   }
 
   // Handler to monitor the requests which reach the EmbeddedTestServer. This
@@ -351,18 +363,16 @@ class DeclarativeNetRequestBrowserTest
     ruleset_manager_observer()->WaitForExtensionsWithRulesetsCount(count);
   }
 
+#if !BUILDFLAG(IS_ANDROID)
   content::WebContents* web_contents(Browser* browser) const {
     return browser->tab_strip_model()->GetActiveWebContents();
   }
+#endif
 
-  content::WebContents* web_contents() const { return web_contents(browser()); }
-
-  content::RenderFrameHost* GetPrimaryMainFrame(Browser* browser) const {
-    return web_contents(browser)->GetPrimaryMainFrame();
-  }
+  content::WebContents* web_contents() const { return GetActiveWebContents(); }
 
   content::RenderFrameHost* GetPrimaryMainFrame() const {
-    return GetPrimaryMainFrame(browser());
+    return GetActiveWebContents()->GetPrimaryMainFrame();
   }
 
   content::RenderFrameHost* GetFrameByName(const std::string& name) const {
@@ -371,11 +381,8 @@ class DeclarativeNetRequestBrowserTest
         base::BindRepeating(&content::FrameMatchesName, name));
   }
 
-  content::PageType GetPageType(Browser* browser) const {
-    return web_contents(browser)
-        ->GetController()
-        .GetLastCommittedEntry()
-        ->GetPageType();
+  content::PageType GetPageType(content::WebContents* web_contents) const {
+    return web_contents->GetController().GetLastCommittedEntry()->GetPageType();
   }
 
   RulesMonitorService* rules_monitor_service() {
@@ -391,7 +398,9 @@ class DeclarativeNetRequestBrowserTest
         last_loaded_extension_id());
   }
 
-  content::PageType GetPageType() const { return GetPageType(browser()); }
+  content::PageType GetPageType() const {
+    return GetPageType(GetActiveWebContents());
+  }
 
   std::string GetPageBody() const {
     const char* script = "document.body.innerText.trim()";
@@ -469,7 +478,13 @@ class DeclarativeNetRequestBrowserTest
 
   // Returns true if the navigation to given |url| is blocked.
   bool IsNavigationBlocked(const GURL& url) {
-    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    content::WebContents* web_contents = GetActiveWebContents();
+    // content::NavigateToURL() returns false if `url` failed to load.
+    bool loaded = content::NavigateToURL(web_contents, url);
+    if (!loaded && content::IsLastCommittedEntryOfPageType(
+                       web_contents, content::PageType::PAGE_TYPE_ERROR)) {
+      return true;
+    }
     return !WasFrameWithScriptLoaded(GetPrimaryMainFrame());
   }
 
@@ -487,8 +502,8 @@ class DeclarativeNetRequestBrowserTest
       const std::string& script,
       browsertest_util::ScriptUserActivation script_user_activation =
           browsertest_util::ScriptUserActivation::kActivate) {
-    base::Value result = ExecuteScriptInBackgroundPage(extension_id, script,
-                                                       script_user_activation);
+    base::Value result = browsertest_util::ExecuteScriptInBackgroundPage(
+        profile(), extension_id, script, script_user_activation);
     return result.is_string() ? result.GetString() : "";
   }
 
@@ -929,6 +944,9 @@ class DeclarativeNetRequestBrowserTest
     const Extension* extension = nullptr;
     switch (GetLoadType()) {
       case ExtensionLoadType::PACKED: {
+#if BUILDFLAG(IS_ANDROID)
+        FAIL() << "Android does not yet support packed extensions.";
+#else
         base::FilePath crx_dir =
             temp_dir_.GetPath().AppendASCII("crx").AppendASCII(directory);
         base::FilePath crx_path = crx_dir.AppendASCII("temp.crx");
@@ -972,6 +990,7 @@ class DeclarativeNetRequestBrowserTest
               crx_path, /*expected_change=*/1);
         }
         break;
+#endif  // BUILDFLAG(IS_ANDROID)
       }
       case ExtensionLoadType::UNPACKED:
         extension = LoadExtension(extension_dir);
@@ -1179,7 +1198,9 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
         embedded_test_server()->GetURL(test_case.hostname, test_case.path);
     SCOPED_TRACE(base::StringPrintf("Testing %s", url.spec().c_str()));
 
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    // content::NavigateToURL() returns false if the URL was not loaded.
+    EXPECT_EQ(content::NavigateToURL(GetActiveWebContents(), url),
+              test_case.expect_main_frame_loaded);
     EXPECT_EQ(test_case.expect_main_frame_loaded,
               WasFrameWithScriptLoaded(GetPrimaryMainFrame()));
 
@@ -1220,7 +1241,9 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
     GURL url = embedded_test_server()->GetURL("google.com", test_case.url_path);
     SCOPED_TRACE(base::StringPrintf("Testing %s", url.spec().c_str()));
 
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    // content::NavigateToURL() returns false if the URL was not loaded.
+    EXPECT_EQ(content::NavigateToURL(GetActiveWebContents(), url),
+              test_case.expect_main_frame_loaded);
     EXPECT_EQ(test_case.expect_main_frame_loaded,
               WasFrameWithScriptLoaded(GetPrimaryMainFrame()));
 
@@ -1241,11 +1264,13 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
 
   GURL url = embedded_test_server()->GetURL("google.com",
                                             "/pages_with_script/page2.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  // content::NavigateToURL() returns false if the URL was not loaded.
+  EXPECT_FALSE(content::NavigateToURL(GetActiveWebContents(), url));
   EXPECT_FALSE(WasFrameWithScriptLoaded(GetPrimaryMainFrame()));
   EXPECT_EQ(content::PAGE_TYPE_ERROR, GetPageType());
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 // Tests case sensitive url filters.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
                        BlockRequests_IsUrlFilterCaseSensitive) {
@@ -2197,12 +2222,15 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
     // In incognito context, the url should be blocked if the extension is
     // enabled in incognito mode.
     ASSERT_TRUE(ui_test_utils::NavigateToURL(incognito_browser, url));
+    // Get the web contents for the main tab in the incognito browser.
+    content::WebContents* tab =
+        incognito_browser->tab_strip_model()->GetActiveWebContents();
     EXPECT_EQ(!expected_enabled_in_incognito,
-              WasFrameWithScriptLoaded(GetPrimaryMainFrame(incognito_browser)));
+              WasFrameWithScriptLoaded(tab->GetPrimaryMainFrame()));
     content::PageType expected_page_type = expected_enabled_in_incognito
                                                ? content::PAGE_TYPE_ERROR
                                                : content::PAGE_TYPE_NORMAL;
-    EXPECT_EQ(expected_page_type, GetPageType(incognito_browser));
+    EXPECT_EQ(expected_page_type, GetPageType(tab));
   };
 
   {
@@ -8641,14 +8669,22 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestThrottledRulesetLoadBrowserTest,
   // Attempt to enable the ruleset from `extension` v2. It should still succeed.
   UpdateEnabledRulesets(kUpdateFlowExtensionId, {}, {"ruleset"});
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    DeclarativeNetRequestBrowserTest,
-    ::testing::Combine(::testing::Values(ExtensionLoadType::PACKED,
-                                         ExtensionLoadType::UNPACKED),
-                       ::testing::Values(false)));
+#if BUILDFLAG(IS_ANDROID)
+// Android currently only supports unpacked extensions.
+const auto kExtensionLoadTypes = ::testing::Values(ExtensionLoadType::UNPACKED);
+#else
+const auto kExtensionLoadTypes =
+    ::testing::Values(ExtensionLoadType::PACKED, ExtensionLoadType::UNPACKED);
+#endif
 
+INSTANTIATE_TEST_SUITE_P(All,
+                         DeclarativeNetRequestBrowserTest,
+                         ::testing::Combine(kExtensionLoadTypes,
+                                            ::testing::Values(false)));
+
+#if !BUILDFLAG(IS_ANDROID)
 INSTANTIATE_TEST_SUITE_P(
     All,
     DeclarativeNetRequestHostPermissionsBrowserTest,
@@ -8733,6 +8769,7 @@ INSTANTIATE_TEST_SUITE_P(
     DeclarativeNetRequestThrottledRulesetLoadBrowserTest,
     ::testing::Combine(::testing::Values(ExtensionLoadType::PACKED),
                        ::testing::Values(false)));
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 }  // namespace extensions::declarative_net_request

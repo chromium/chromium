@@ -22,6 +22,7 @@ class WebContents;
 
 namespace extensions {
 class Extension;
+class ExtensionRegistry;
 
 // A cross-platform base class for extensions-related browser tests.
 // `PlatformBrowserTest` inherits from different test suites based on the
@@ -46,6 +47,9 @@ class ExtensionPlatformBrowserTest : public PlatformBrowserTest {
   void TearDown() override;
   void TearDownOnMainThread() override;
 
+  // Lower-case to match ExtensionBrowserTest.
+  ExtensionRegistry* extension_registry();
+
   // Returns the path of the directory from which to serve resources when they
   // are prefixed with "_test_resources/".
   // The default is chrome/test/data/extensions/.
@@ -62,7 +66,7 @@ class ExtensionPlatformBrowserTest : public PlatformBrowserTest {
   // default tab's web_contents(). However, if the test creates new tabs and
   // switches the active tab, this will return the WebContents of the new active
   // tab.
-  content::WebContents* GetActiveWebContents();
+  content::WebContents* GetActiveWebContents() const;
 
   // Returns incognito profile. Creates the profile if it doesn't exist.
   Profile* GetOrCreateIncognitoProfile();
