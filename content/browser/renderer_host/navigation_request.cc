@@ -9146,7 +9146,7 @@ NavigationEntry* NavigationRequest::GetNavigationEntry() const {
       nav_entry_id_);
 }
 
-int NavigationRequest::GetNavigationEntryOffset() {
+int NavigationRequest::GetNavigationEntryOffset() const {
   return navigation_entry_offset_;
 }
 

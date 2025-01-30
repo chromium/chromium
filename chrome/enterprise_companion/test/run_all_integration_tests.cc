@@ -16,6 +16,7 @@
 #include "build/build_config.h"
 #include "chrome/enterprise_companion/enterprise_companion.h"
 #include "chrome/enterprise_companion/enterprise_companion_branding.h"
+#include "chrome/enterprise_companion/flags.h"
 
 #if BUILDFLAG(IS_POSIX)
 #include <unistd.h>

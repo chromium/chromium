@@ -10,7 +10,9 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/collaboration/public/collaboration_service.h"
 #import "components/collaboration/public/messaging/messaging_backend_service.h"
+#import "components/data_sharing/public/group_data.h"
 #import "components/saved_tab_groups/public/saved_tab_group.h"
+#import "components/saved_tab_groups/public/tab_group_sync_service.h"
 #import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
 #import "ios/chrome/browser/collaboration/model/ios_collaboration_controller_delegate.h"
 #import "ios/chrome/browser/collaboration/model/messaging/messaging_backend_service_factory.h"
@@ -378,7 +380,17 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
     return;
   }
 
-  messagingService->ClearDirtyTabMessagesForGroup(_tabGroup->tab_group_id());
+  tab_groups::TabGroupSyncService* tabGroupSyncService =
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
+          self.browser->GetProfile());
+  std::optional<tab_groups::SavedTabGroup> group =
+      tabGroupSyncService->GetGroup(_tabGroup->tab_group_id());
+  if (!group.has_value() || !group->collaboration_id().has_value()) {
+    return;
+  }
+
+  messagingService->ClearDirtyTabMessagesForGroup(
+      data_sharing::GroupId(group->collaboration_id().value().value()));
 }
 
 #pragma mark - TabGroupPresentationCommands

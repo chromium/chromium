@@ -7,6 +7,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test.pb.h"
 #include "base/test/test_future.h"
+#include "components/optimization_guide/core/model_execution/multimodal_message.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/compose.pb.h"
@@ -28,7 +29,8 @@ TEST(OnDeviceModelFeatureAdapterTest,
 
   proto::ComposeRequest request;
   request.mutable_generate_params()->set_user_input("whatever");
-  EXPECT_EQ(std::nullopt, adapter->ConstructTextSafetyRequest(request, "text"));
+  EXPECT_EQ(std::nullopt, adapter->ConstructTextSafetyRequest(
+                              MultimodalMessageReadView(request), "text"));
 }
 
 TEST(OnDeviceModelFeatureAdapterTest, ConstructTextSafetyRequestNoUrlField) {
@@ -39,7 +41,8 @@ TEST(OnDeviceModelFeatureAdapterTest, ConstructTextSafetyRequestNoUrlField) {
 
   proto::ComposeRequest request;
   request.mutable_generate_params()->set_user_input("whatever");
-  auto safety_request = adapter->ConstructTextSafetyRequest(request, "text");
+  auto safety_request = adapter->ConstructTextSafetyRequest(
+      MultimodalMessageReadView(request), "text");
 
   ASSERT_TRUE(safety_request);
   EXPECT_EQ("text", safety_request->text());
@@ -57,7 +60,8 @@ TEST(OnDeviceModelFeatureAdapterTest, ConstructTextSafetyRequestWithUrlField) {
 
   proto::ComposeRequest request;
   request.mutable_page_metadata()->set_page_url("url");
-  auto safety_request = adapter->ConstructTextSafetyRequest(request, "text");
+  auto safety_request = adapter->ConstructTextSafetyRequest(
+      MultimodalMessageReadView(request), "text");
 
   ASSERT_TRUE(safety_request);
   EXPECT_EQ("text", safety_request->text());
@@ -76,7 +80,8 @@ TEST(OnDeviceModelFeatureAdapterTest,
 
   proto::ComposeRequest request;
   request.mutable_page_metadata()->set_page_url("url");
-  EXPECT_EQ(std::nullopt, adapter->ConstructTextSafetyRequest(request, "text"));
+  EXPECT_EQ(std::nullopt, adapter->ConstructTextSafetyRequest(
+                              MultimodalMessageReadView(request), "text"));
 }
 
 TEST(OnDeviceModelFeatureAdapterTest, ConstructInputString_NoInputConfig) {
@@ -84,8 +89,10 @@ TEST(OnDeviceModelFeatureAdapterTest, ConstructInputString_NoInputConfig) {
   auto adapter =
       base::MakeRefCounted<OnDeviceModelFeatureAdapter>(std::move(config));
 
-  auto result = adapter->ConstructInputString(base::test::TestMessage(),
-                                              /*want_input_context=*/false);
+  base::test::TestMessage request;
+  auto result =
+      adapter->ConstructInputString(MultimodalMessageReadView(request),
+                                    /*want_input_context=*/false);
 
   EXPECT_FALSE(result);
 }
@@ -97,8 +104,10 @@ TEST(OnDeviceModelFeatureAdapterTest, ConstructInputString_MismatchRequest) {
   auto adapter =
       base::MakeRefCounted<OnDeviceModelFeatureAdapter>(std::move(config));
 
-  auto result = adapter->ConstructInputString(base::test::TestMessage(),
-                                              /*want_input_context=*/false);
+  base::test::TestMessage request;
+  auto result =
+      adapter->ConstructInputString(MultimodalMessageReadView(request),
+                                    /*want_input_context=*/false);
 
   EXPECT_FALSE(result);
 }
@@ -116,8 +125,10 @@ TEST(OnDeviceModelFeatureAdapterTest, ConstructInputString_ForInputContext) {
   auto adapter =
       base::MakeRefCounted<OnDeviceModelFeatureAdapter>(std::move(config));
 
-  auto result = adapter->ConstructInputString(base::test::TestMessage(),
-                                              /*want_input_context=*/true);
+  base::test::TestMessage request;
+  auto result =
+      adapter->ConstructInputString(MultimodalMessageReadView(request),
+                                    /*want_input_context=*/true);
 
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result->ToString(), "hello this is input context");
@@ -136,8 +147,10 @@ TEST(OnDeviceModelFeatureAdapterTest, ConstructInputString_ForExecution) {
   auto adapter =
       base::MakeRefCounted<OnDeviceModelFeatureAdapter>(std::move(config));
 
-  auto result = adapter->ConstructInputString(base::test::TestMessage(),
-                                              /*want_input_context=*/false);
+  base::test::TestMessage request;
+  auto result =
+      adapter->ConstructInputString(MultimodalMessageReadView(request),
+                                    /*want_input_context=*/false);
 
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result->ToString(), "hello this is execution");
@@ -150,8 +163,8 @@ TEST(OnDeviceModelFeatureAdapterTest, ConstructOutputMetadata_NoOutputConfig) {
       base::MakeRefCounted<OnDeviceModelFeatureAdapter>(std::move(config));
 
   ParseResponseFuture response_future;
-  adapter->ParseResponse(base::test::TestMessage(), "output", 0u,
-                         response_future.GetCallback());
+  MultimodalMessage request((base::test::TestMessage()));
+  adapter->ParseResponse(request, "output", 0u, response_future.GetCallback());
   auto maybe_metadata = response_future.Get();
 
   EXPECT_FALSE(maybe_metadata.has_value());
@@ -167,8 +180,8 @@ TEST(OnDeviceModelFeatureAdapterTest, ConstructOutputMetadata_DefaultSimple) {
       base::MakeRefCounted<OnDeviceModelFeatureAdapter>(std::move(config));
 
   ParseResponseFuture response_future;
-  adapter->ParseResponse(base::test::TestMessage(), "output", 0u,
-                         response_future.GetCallback());
+  MultimodalMessage request((base::test::TestMessage()));
+  adapter->ParseResponse(request, "output", 0u, response_future.GetCallback());
   auto maybe_metadata = response_future.Get();
 
   ASSERT_TRUE(maybe_metadata.has_value());
@@ -191,7 +204,8 @@ TEST(OnDeviceModelFeatureAdapterTest,
   // For `STREAMING_MODE_CHUNK_BY_CHUNK`, the response will start after the
   // `previous_response_pos`.
   ParseResponseFuture response_future;
-  adapter->ParseResponse(base::test::TestMessage(), "output",
+  MultimodalMessage request((base::test::TestMessage()));
+  adapter->ParseResponse(request, "output",
                          /*previous_response_pos=*/3u,
                          response_future.GetCallback());
   auto maybe_metadata = response_future.Get();
@@ -216,7 +230,8 @@ TEST(OnDeviceModelFeatureAdapterTest,
   // For `STREAMING_MODE_CURRENT_RESPONSE`, even if the `previous_response_pos`
   // is set, it will parse from the beginning.
   ParseResponseFuture response_future;
-  adapter->ParseResponse(base::test::TestMessage(), "output",
+  MultimodalMessage request((base::test::TestMessage()));
+  adapter->ParseResponse(request, "output",
                          /*previous_response_pos=*/3u,
                          response_future.GetCallback());
   auto maybe_metadata = response_future.Get();
@@ -238,7 +253,8 @@ TEST(OnDeviceModelFeatureAdapterTest, ConstructOutputMetadata_JSON) {
       base::MakeRefCounted<OnDeviceModelFeatureAdapter>(std::move(config));
 
   ParseResponseFuture response_future;
-  adapter->ParseResponse(base::test::TestMessage(), "{\"output\": \"abc\"}", 0u,
+  MultimodalMessage request((base::test::TestMessage()));
+  adapter->ParseResponse(request, "{\"output\": \"abc\"}", 0u,
                          response_future.GetCallback());
   auto maybe_metadata = response_future.Get();
 

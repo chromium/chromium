@@ -51,14 +51,20 @@ class TesterImpl : public BorderView::Tester {
 
   // `BorderView::Tester`:
   base::TimeTicks GetTestTimestamp() override { return next_time_tick_; }
+  base::TimeTicks GetTestCreationTime() override { return creation_time_; }
 
-  void set_next_time_tick(base::TimeTicks next_time_tick) {
+  void set_next_time_tick(const base::TimeTicks& next_time_tick) {
     next_time_tick_ = next_time_tick;
+  }
+
+  void set_creation_time(const base::TimeTicks& creation_time) {
+    creation_time_ = creation_time;
   }
 
  private:
   const raw_ptr<BorderView> border_;
   base::TimeTicks next_time_tick_;
+  base::TimeTicks creation_time_;
 };
 
 class GlicBorderViewUiTest : public InteractiveBrowserTest {
@@ -524,6 +530,37 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, RampingDownDuringStableState) {
   tester.set_next_time_tick(timestamp);
   border->OnAnimationStep(kDummyTimeStamp);
   EXPECT_FALSE(border->compositor_for_testing());
+}
+
+IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, EnsureTimeWraps) {
+  auto* border = browser()->window()->AsBrowserView()->glic_border();
+  ASSERT_TRUE(border);
+
+  base::TimeTicks timestamp = base::TimeTicks::Now();
+  TesterImpl tester(border, timestamp);
+  tester.set_creation_time(timestamp);
+  int milliseconds = border->GetMillisecondsSinceCreationForTesting();
+
+  timestamp += base::Days(0.5);
+  tester.set_next_time_tick(timestamp);
+  border->OnAnimationStep(kDummyTimeStamp);
+  int milliseconds_half_day = border->GetMillisecondsSinceCreationForTesting();
+
+  // Now the animation will have been cancelled at this point, so ticking again
+  // is unrealistic. We will need to start another animation here.
+  StartBorderAnimation(browser());
+
+  // Should not have wrapped.
+  EXPECT_LT(milliseconds, milliseconds_half_day);
+
+  timestamp += base::Days(0.5);
+  tester.set_next_time_tick(timestamp);
+  border->OnAnimationStep(kDummyTimeStamp);
+
+  // Now that more than a day has passed, we should have wrapped (and so the
+  // ms since creation should be lower than at the half-day mark).
+  EXPECT_GT(milliseconds_half_day,
+            border->GetMillisecondsSinceCreationForTesting());
 }
 
 namespace {

@@ -13,6 +13,10 @@ BASE_FEATURE(kCollaborationMessaging,
              "CollaborationMessaging",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kCollaborationMessagingDatabase,
+             "CollaborationMessagingDatabase",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kCollaborationFlowAndroid,
              "CollaborationFlowAndroid",
              base::FEATURE_DISABLED_BY_DEFAULT);

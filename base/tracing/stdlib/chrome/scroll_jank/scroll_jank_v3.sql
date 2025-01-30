@@ -4,6 +4,7 @@
 
 -- Hardware info is useful when using sql metrics for analysis
 -- in BTP.
+INCLUDE PERFETTO MODULE chrome.chrome_scrolls;
 INCLUDE PERFETTO MODULE chrome.metadata;
 INCLUDE PERFETTO MODULE chrome.scroll_jank.scroll_jank_v3_cause;
 INCLUDE PERFETTO MODULE chrome.scroll_jank.utils;
@@ -19,44 +20,6 @@ SELECT
   name
 FROM slice
 WHERE $id = id;
-
--- Grabs all gesture updates with respective scroll ids and start/end
--- timestamps, regardless of being presented.
-CREATE PERFETTO TABLE chrome_gesture_scroll_updates(
-  -- The start timestamp of the scroll.
-  ts TIMESTAMP,
-  -- The duration of the scroll.
-  dur DURATION,
-  -- Slice id for the scroll.
-  id LONG,
-  -- The id of the scroll update event.
-  scroll_update_id LONG,
-  -- The id of the scroll.
-  scroll_id LONG,
-  -- Whether this input event was presented.
-  is_presented BOOL,
-  -- Frame presentation timestamp aka the timestamp of the
-  -- SwapEndToPresentationCompositorFrame substage.
-  presentation_timestamp LONG,
-  -- EventLatency event type.
-  event_type STRING
-) AS
-SELECT
-  ts,
-  dur,
-  id,
-  scroll_update_id,
-  scroll_id,
-  is_presented,
-  presentation_timestamp,
-  event_type
-FROM chrome_gesture_scroll_events
-WHERE event_type IN (
-  'GESTURE_SCROLL_UPDATE',
-  'FIRST_GESTURE_SCROLL_UPDATE',
-  'INERTIAL_GESTURE_SCROLL_UPDATE',
-  'GESTURE_PINCH_UPDATE'
-);
 
 CREATE PERFETTO TABLE _presented_gesture_scrolls AS
 SELECT

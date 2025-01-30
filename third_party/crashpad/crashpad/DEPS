@@ -126,6 +126,16 @@ deps = {
     'condition': 'checkout_fuchsia and host_os == "linux"',
     'dep_type': 'cipd'
   },
+  'crashpad/third_party/windows/clang/windows-amd64': {
+    'packages': [
+      {
+        'package': 'fuchsia/third_party/clang/windows-amd64',
+        'version': 'XiBHLTa8HHj9lYwC-ArymS75s792s0_ANNvLOfsILqMC',
+      },
+    ],
+    'condition': 'checkout_win and host_os == "win"',
+    'dep_type': 'cipd'
+  },
   'crashpad/third_party/fuchsia-gn-sdk': {
     'packages': [
       {

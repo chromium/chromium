@@ -95,7 +95,7 @@ static_library("content") {
     ]
 
     deps += [
-      "//ash/components/arc",
+      "//chromeos/ash/experiences/arc",
       "//chromeos/components/payments/mojom",
     ]
   } else {
@@ -289,8 +289,8 @@ source_set("unit_tests") {
       "android_app_communication_test_support_chrome_os.h",
     ]
     deps += [
-      "//ash/components/arc",
-      "//ash/components/arc:arc_test_support",
+      "//chromeos/ash/experiences/arc",
+      "//chromeos/ash/experiences/arc:arc_test_support",
       "//chromeos/ash/experiences/arc/intent_helper",
       "//chromeos/ash/experiences/arc/mojom",
       "//chromeos/components/payments:test_support",

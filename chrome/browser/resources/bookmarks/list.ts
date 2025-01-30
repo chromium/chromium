@@ -88,7 +88,8 @@ export class BookmarksListElement extends BookmarksListElementBase {
   private searchTerm_: string;
   private selectedFolder_: string;
   private selectedItems_: Set<string>;
-  private boundOnHighlightItems_: (p1: CustomEvent) => void;
+
+  private focusTimeoutId_: number = -1;
 
   override ready() {
     super.ready();
@@ -143,6 +144,11 @@ export class BookmarksListElement extends BookmarksListElementBase {
    */
   private async onDisplayedIdsChanged_(
       newValue: string[], _oldValue: string[]) {
+    if (this.focusTimeoutId_ !== -1) {
+      clearTimeout(this.focusTimeoutId_);
+      this.focusTimeoutId_ = -1;
+    }
+
     const updatedList = newValue.map(id => ({id: id}));
     let skipFocus = false;
     let selectIndex = -1;
@@ -165,12 +171,10 @@ export class BookmarksListElement extends BookmarksListElementBase {
     // as blank entries. See https://crbug.com/848683
     this.$.list.dispatchEvent(
         new CustomEvent('iron-resize', {bubbles: true, composed: true}));
-    const label = await PluralStringProxyImpl.getInstance().getPluralString(
-        'listChanged', this.displayedList_.length);
-    getAnnouncerInstance().announce(label);
 
     if (!skipFocus && selectIndex > -1) {
-      setTimeout(() => {
+      this.focusTimeoutId_ = setTimeout(() => {
+        this.focusTimeoutId_ = -1;
         this.$.list.focusItem(selectIndex);
         // Focus menu button so 'Undo' is only one tab stop away on delete.
         const item = getDeepActiveElement();
@@ -179,6 +183,10 @@ export class BookmarksListElement extends BookmarksListElementBase {
         }
       });
     }
+
+    const label = await PluralStringProxyImpl.getInstance().getPluralString(
+        'listChanged', this.displayedList_.length);
+    getAnnouncerInstance().announce(label);
   }
 
   private onDisplayedListSourceChange_() {

@@ -28,7 +28,6 @@ static_library("search") {
   ]
 
   deps = [
-    "//ash/components/arc",
     "//ash/constants",
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_public_dependencies",
@@ -40,6 +39,7 @@ static_library("search") {
     "//chrome/browser/ui/webui/ash/assistant_optin",
     "//chrome/browser/ui/webui/ash/settings/search",
     "//chrome/common",
+    "//chromeos/ash/experiences/arc",
     "//chromeos/ash/experiences/arc/session",
     "//chromeos/ash/services/assistant/public/cpp",
     "//chromeos/components/mahi/public/cpp",

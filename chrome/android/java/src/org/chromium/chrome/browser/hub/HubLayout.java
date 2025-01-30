@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
 import org.chromium.chrome.browser.compositor.scene_layer.SolidColorSceneLayer;
 import org.chromium.chrome.browser.compositor.scene_layer.StaticTabSceneLayer;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.EventFilter;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
@@ -506,25 +507,37 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
         // animation originated from wherever on the Hub was clicked. This defaults to the top
         // left/right of the pane host view.
         boolean isRtl = LocalizationUtils.isLayoutRtl();
-        Rect initialRect = null;
-        int x = isRtl ? finalRect.right : finalRect.left;
-        int y = finalRect.top;
-        if (isRtl) {
-            initialRect = new Rect(x - 1, y, x, y + 1);
-        } else {
-            initialRect = new Rect(x, y, x + 1, y + 1);
-        }
+        Rect initialRect;
+        int cornerRadius;
+        if (ChromeFeatureList.sShowNewTabAnimations.isEnabled()) {
+            // Without this code, the upper corner shows a bit of blinking when running the
+            // animation. This ensures the {@link ShrinkExpandImageView} fully covers the upper
+            // corner.
+            if (isRtl) {
+                finalRect.right += 1;
+            } else {
+                finalRect.left -= 1;
+            }
+            finalRect.top -= 1;
 
+            initialRect = new Rect();
+            NewTabAnimationUtils.updateRects(initialRect, finalRect, isRtl);
+            cornerRadius = NewTabAnimationUtils.FOREGROUND_RADIUS;
+        } else {
+            cornerRadius = 0;
+            int y = finalRect.top;
+            int x;
+            if (isRtl) {
+                x = finalRect.right;
+                initialRect = new Rect(x - 1, y, x, y + 1);
+            } else {
+                x = finalRect.left;
+                initialRect = new Rect(x, y, x + 1, y + 1);
+            }
+        }
         animationDataSupplier.set(
-                new ShrinkExpandAnimationData(
-                        initialRect,
-                        finalRect,
-                        /* initialTopCornerRadius= */ 0,
-                        /* initialBottomCornerRadius= */ 0,
-                        /* finalTopCornerRadius= */ 0,
-                        /* finalBottomCornerRadius= */ 0,
-                        /* thumbnailSize= */ null,
-                        /* useFallbackAnimation= */ false));
+                ShrinkExpandAnimationData.createHubNewTabAnimationData(
+                        initialRect, finalRect, cornerRadius, /* useFallbackAnimation= */ false));
 
         assert mCurrentAnimationRunner == null;
         mCurrentAnimationRunner =

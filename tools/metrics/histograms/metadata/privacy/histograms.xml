@@ -1261,29 +1261,6 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 </histogram>
 
 <histogram
-    name="PrivacySandbox.CookieDeprecationFacilitatedTesting.ReasonForComputedEligibilityForProfile"
-    enum="CookieDeprecationFacilitatedTestingProfileEligibility"
-    expires_after="2024-10-25">
-  <owner>linnan@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Records a profile computed eligibility to cookie deprecation facilitated
-    testing.
-
-    Recorded each time a profile is first loaded in a browser session.
-
-    We define the computed eligibility as the actual eligibility of the profile
-    regardless of the profile's used/effective eligibility.
-
-    There might be a mismatches between the computed and used/effective
-    eligibility of a profile as all profiles on a client share a single
-    eligibility value.
-
-    For data on mismatches, see: Privacy.3pcd.ProfileEligibilityMismatch.
-  </summary>
-</histogram>
-
-<histogram
     name="PrivacySandbox.CookieDeprecationFacilitatedTesting.ReasonForEligibilityStoredInPrefs"
     enum="CookieDeprecationFacilitatedTestingProfileEligibility"
     expires_after="2025-06-29">

@@ -43,7 +43,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
-import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -56,7 +56,7 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
             @NonNull Activity activity,
             @NonNull ViewGroup parentView,
             @NonNull BrowserControlsStateProvider browserControlsStateProvider,
-            @NonNull ScrimCoordinator scrimCoordinator,
+            @NonNull ScrimManager scrimManager,
             @NonNull ObservableSupplier<Boolean> omniboxFocusStateSupplier,
             @NonNull BottomSheetController bottomSheetController,
             @NonNull DataSharingTabManager dataSharingTabManager,
@@ -70,7 +70,7 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
                 activity,
                 parentView,
                 browserControlsStateProvider,
-                scrimCoordinator,
+                scrimManager,
                 omniboxFocusStateSupplier,
                 bottomSheetController,
                 dataSharingTabManager,
@@ -92,7 +92,7 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
             @NonNull TabCreatorManager tabCreatorManager,
             @NonNull BrowserControlsStateProvider browserControlsStateProvider,
             @NonNull MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
-            @NonNull ScrimCoordinator rootUiScrimCoordinator,
+            @NonNull ScrimManager rootUiScrimManager,
             @NonNull SnackbarManager snackbarManager,
             @NonNull ModalDialogManager modalDialogManager,
             @NonNull BottomSheetController bottomSheetController,
@@ -118,7 +118,7 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
                         tabCreatorManager,
                         browserControlsStateProvider,
                         multiWindowModeStateDispatcher,
-                        rootUiScrimCoordinator,
+                        rootUiScrimManager,
                         snackbarManager,
                         modalDialogManager,
                         bottomSheetController,

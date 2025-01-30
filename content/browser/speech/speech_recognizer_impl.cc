@@ -251,11 +251,11 @@ void SpeechRecognizerImpl::StartRecognition(const std::string& device_id) {
 
 void SpeechRecognizerImpl::UpdateRecognitionContext(
     const media::SpeechRecognitionRecognitionContext& recognition_context) {
+  FSMEventArgs event_args(EVENT_UPDATE_RECOGNITION_CONTEXT);
+  event_args.recognition_context = recognition_context;
   GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&SpeechRecognizerImpl::DispatchEvent,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     FSMEventArgs(EVENT_UPDATE_RECOGNITION_CONTEXT)));
+      FROM_HERE, base::BindOnce(&SpeechRecognizerImpl::DispatchEvent,
+                                weak_ptr_factory_.GetWeakPtr(), event_args));
 }
 
 void SpeechRecognizerImpl::AbortRecognition() {

@@ -21,6 +21,7 @@ SpeechRecognizerFsm::FSMEventArgs::FSMEventArgs(const FSMEventArgs& other)
     : event(other.event),
       audio_data(other.audio_data ? other.audio_data->Clone() : nullptr),
       audio_chunk(other.audio_chunk),
+      recognition_context(other.recognition_context),
       engine_error(other.engine_error) {
   engine_results = mojo::Clone(other.engine_results);
 }

@@ -70,7 +70,7 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
-import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -198,25 +198,24 @@ public class ToolbarTest {
     public void testOmniboxScrim() {
         ChromeActivity activity = mActivityTestRule.getActivity();
         ToolbarManager toolbarManager = activity.getToolbarManager();
-        ScrimCoordinator scrimCoordinator =
-                activity.getRootUiCoordinatorForTesting().getScrimCoordinator();
-        scrimCoordinator.disableAnimationForTesting(true);
+        ScrimManager scrimManager = activity.getRootUiCoordinatorForTesting().getScrimManager();
+        scrimManager.disableAnimationForTesting(true);
 
-        assertNull("The scrim should be null.", scrimCoordinator.getViewForTesting());
+        assertNull("The scrim should be null.", scrimManager.getViewForTesting());
         assertFalse(
                 "All tabs should not currently be obscured.",
                 activity.getTabObscuringHandler().isTabContentObscured());
 
         ThreadUtils.runOnUiThreadBlocking(() -> toolbarManager.setUrlBarFocus(true, 0));
 
-        assertNotNull("The scrim should not be null.", scrimCoordinator.getViewForTesting());
+        assertNotNull("The scrim should not be null.", scrimManager.getViewForTesting());
         assertTrue(
                 "All tabs should currently be obscured.",
                 activity.getTabObscuringHandler().isTabContentObscured());
 
         ThreadUtils.runOnUiThreadBlocking(() -> toolbarManager.setUrlBarFocus(false, 0));
 
-        assertNull("The scrim should be null.", scrimCoordinator.getViewForTesting());
+        assertNull("The scrim should be null.", scrimManager.getViewForTesting());
         assertFalse(
                 "All tabs should not currently be obscured.",
                 activity.getTabObscuringHandler().isTabContentObscured());

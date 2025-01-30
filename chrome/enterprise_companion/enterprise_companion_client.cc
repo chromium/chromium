@@ -20,6 +20,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/enterprise_companion/enterprise_companion_branding.h"
+#include "chrome/enterprise_companion/flags.h"
 #include "chrome/enterprise_companion/installer_paths.h"
 #include "chrome/enterprise_companion/mojom/enterprise_companion.mojom.h"
 #include "components/named_mojo_ipc_server/named_mojo_ipc_server_client_util.h"
@@ -29,9 +30,6 @@
 #include "mojo/public/cpp/system/isolated_connection.h"
 
 namespace enterprise_companion {
-
-const char kEnableUsageStatsSwitch[] = "enable-usage-stats";
-const char kCohortIdSwitch[] = "cohort-id";
 
 namespace {
 

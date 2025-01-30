@@ -216,10 +216,6 @@ struct FencedFrameProperties {
 
   PotentiallyOpaqueSharedStorageBudgetMetadata? shared_storage_budget_metadata;
 
-  // Whether the fenced frame potentially has any fenced frame reporting
-  // information associated with it.
-  bool has_fenced_frame_reporting;
-
   DeprecatedFencedFrameMode mode;
 
   array<PermissionsPolicyFeature> effective_enabled_permissions;

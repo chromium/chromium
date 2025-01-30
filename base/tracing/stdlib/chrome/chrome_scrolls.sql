@@ -20,7 +20,8 @@ CREATE PERFETTO TABLE chrome_scroll_update_refs(
   -- Id of the frame pipeline (`Graphics.Pipeline`), pre-surface aggregation.
   surface_frame_id LONG,
   -- Id of the frame pipeline (`Graphics.Pipeline`), post-surface aggregation.
-  display_trace_id LONG)
+  display_trace_id LONG
+)
 AS
 SELECT
   scroll_update.latency_id AS scroll_update_latency_id,
@@ -57,8 +58,9 @@ SELECT
   refs.scroll_update_latency_id AS id,
   refs.presentation_latency_id AS presented_in_frame_id,
   -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-  chrome_event_latency.is_presented AS is_presented,
-  chrome_event_latency.is_janky_scrolled_frame AS is_janky,
+  chrome_event_latency.scroll_id,
+  chrome_event_latency.is_presented,
+  chrome_event_latency.is_janky,
   chrome_event_latency.event_type
     = 'INERTIAL_GESTURE_SCROLL_UPDATE' AS is_inertial,
   chrome_event_latency.event_type
@@ -94,7 +96,7 @@ SELECT
     AS compositor_coalesced_input_handled_end_ts
 FROM chrome_scroll_update_refs refs
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-LEFT JOIN chrome_event_latencies chrome_event_latency
+LEFT JOIN chrome_gesture_scroll_updates chrome_event_latency
   ON chrome_event_latency.scroll_update_id = refs.scroll_update_latency_id
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 LEFT JOIN chrome_input_pipeline_steps touch_move_received_step
@@ -137,6 +139,8 @@ LEFT JOIN chrome_input_pipeline_steps compositor_coalesced_input_handled_step
 CREATE PERFETTO TABLE chrome_scroll_update_input_pipeline(
   -- Id of the `LatencyInfo.Flow` slices corresponding to this scroll event.
   id LONG,
+  -- Id of the scroll this scroll update belongs to.
+  scroll_id LONG,
   -- Id of the frame that this input was presented in. Can be joined with
   -- `chrome_scroll_update_frame_pipeline.id`.
   presented_in_frame_id LONG,
@@ -203,6 +207,7 @@ WITH
 processed_timestamps_and_metadata AS (
   SELECT
     id,
+    scroll_id,
     presented_in_frame_id,
     is_presented,
     is_janky,
@@ -252,6 +257,7 @@ processed_timestamps_and_metadata AS (
 )
 SELECT
   id,
+  scroll_id,
   presented_in_frame_id,
   is_presented,
   is_janky,
@@ -691,47 +697,15 @@ CREATE PERFETTO TABLE chrome_scrolls(
   -- corresponding scroll id.
   gesture_scroll_end_ts TIMESTAMP
 ) AS
-WITH all_scrolls AS (
-  SELECT
-    event_type AS name,
-    ts,
-    dur,
-    scroll_id
-  FROM chrome_gesture_scroll_events
-),
-scroll_starts AS (
-  SELECT
-    scroll_id,
-    MIN(ts) AS gesture_scroll_begin_ts
-  FROM all_scrolls
-  WHERE name = 'GESTURE_SCROLL_BEGIN'
-  GROUP BY scroll_id
-),
-scroll_ends AS (
-  SELECT
-    scroll_id,
-    MAX(ts) AS gesture_scroll_end_ts
-  FROM all_scrolls
-  WHERE name IN (
-    'GESTURE_SCROLL_UPDATE',
-    'FIRST_GESTURE_SCROLL_UPDATE',
-    'INERTIAL_GESTURE_SCROLL_UPDATE',
-    'GESTURE_SCROLL_END'
-  )
-  GROUP BY scroll_id
-)
 SELECT
-  sa.scroll_id AS id,
+  scroll_id AS id,
   MIN(ts) AS ts,
   cast_int!(MAX(ts + dur) - MIN(ts)) AS dur,
-  ss.gesture_scroll_begin_ts AS gesture_scroll_begin_ts,
-  se.gesture_scroll_end_ts AS gesture_scroll_end_ts
-FROM all_scrolls sa
-  LEFT JOIN scroll_starts ss ON
-    sa.scroll_id = ss.scroll_id
-  LEFT JOIN scroll_ends se ON
-    sa.scroll_id = se.scroll_id
-GROUP BY sa.scroll_id;
+  -- TODO(b:389055670): Remove this once the UI doesn't rely on it.
+  NULL AS gesture_scroll_begin_ts,
+  NULL AS gesture_scroll_end_ts
+FROM chrome_gesture_scroll_updates
+GROUP BY scroll_id;
 
 -- Timestamps and durations for the critical path stages during scrolling.
 -- This table covers both the input-associated (before coalescing inputs into a

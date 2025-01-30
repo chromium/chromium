@@ -37,7 +37,6 @@ static_library("demo_mode") {
 
   deps = [
     "//ash",
-    "//ash/components/arc:arc_base_utils",
     "//ash/constants",
     "//ash/public/cpp",
     "//base:i18n",
@@ -58,6 +57,7 @@ static_library("demo_mode") {
     "//chromeos/ash/components/growth",
     "//chromeos/ash/components/install_attributes",
     "//chromeos/ash/components/system",
+    "//chromeos/ash/experiences/arc:arc_base_utils",
     "//chromeos/ash/experiences/idle_detector",
     "//chromeos/constants",
     "//components/language/core/browser",
@@ -158,7 +158,6 @@ source_set("browser_tests") {
   deps = [
     ":demo_mode",
     ":test_support",
-    "//ash/components/arc:arc_base_utils",
     "//ash/constants",
     "//ash/public/cpp",
     "//base",
@@ -187,6 +186,7 @@ source_set("browser_tests") {
     "//chromeos/ash/components/growth",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/system",
+    "//chromeos/ash/experiences/arc:arc_base_utils",
     "//chromeos/constants",
     "//chromeos/dbus/power",
     "//components/component_updater/ash:test_support",

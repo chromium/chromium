@@ -39,6 +39,7 @@ static_library("usb") {
     "//components/device_event_log",
     "//device/base",
     "//services/device:utility",
+    "//services/device/public/cpp:device_features",
     "//services/device/public/cpp/usb",
     "//services/device/public/mojom:usb",
   ]

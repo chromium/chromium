@@ -4,9 +4,10 @@
 
 package org.chromium.components.browser_ui.util;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.BrowserControlsState;
 
@@ -98,11 +99,10 @@ public class ComposedBrowserControlsVisibilityDelegate extends BrowserControlsVi
         super.set(value);
     }
 
-    @NullUnmarked
     private @BrowserControlsState int calculateVisibilityConstraints() {
         boolean shouldBeShown = false;
         for (int i = 0; i < mDelegates.size(); i++) {
-            @BrowserControlsState int delegateConstraints = mDelegates.get(i).get();
+            @BrowserControlsState int delegateConstraints = assumeNonNull(mDelegates.get(i).get());
             if (delegateConstraints == BrowserControlsState.HIDDEN) {
                 return BrowserControlsState.HIDDEN;
             }

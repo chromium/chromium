@@ -52,7 +52,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridDialogView.VisibilityListener;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
 import java.util.concurrent.TimeoutException;
@@ -105,9 +105,8 @@ public class TabGridDialogViewTest {
                     mAnimationCardView =
                             mTabGridDialogView.findViewById(R.id.dialog_animation_card_view);
                     mBackgroundFrameView = mTabGridDialogView.findViewById(R.id.dialog_frame);
-                    ScrimCoordinator scrimCoordinator =
-                            new ScrimCoordinator(sActivity, mTestParent);
-                    mTabGridDialogView.setupScrimCoordinator(scrimCoordinator);
+                    ScrimManager scrimManager = new ScrimManager(sActivity, mTestParent);
+                    mTabGridDialogView.setupScrimManager(scrimManager);
                     mTabGridDialogView.setScrimClickRunnable(() -> {});
 
                     mMinMargin =

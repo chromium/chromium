@@ -2386,11 +2386,11 @@ public class TabGridDialogTest {
                     View scrimView;
                     if (isTablet(cta)) {
                         TabGridDialogView dialogView = cta.findViewById(R.id.dialog_parent_view);
-                        scrimView = dialogView.getScrimCoordinatorForTesting().getViewForTesting();
+                        scrimView = dialogView.getScrimManagerForTesting().getViewForTesting();
                     } else {
                         scrimView =
                                 cta.getRootUiCoordinatorForTesting()
-                                        .getScrimCoordinator()
+                                        .getScrimManager()
                                         .getViewForTesting();
                     }
                     scrimView.performClick();

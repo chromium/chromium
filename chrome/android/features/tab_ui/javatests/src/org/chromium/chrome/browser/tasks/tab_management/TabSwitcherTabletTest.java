@@ -70,7 +70,7 @@ import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.TabStripUtils;
 import org.chromium.components.browser_ui.styles.ChromeColors;
-import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.DeviceFormFactor;
 
@@ -179,9 +179,8 @@ public class TabSwitcherTabletTest {
         prepareTabs(1, 1);
         TabUiTestHelper.enterTabSwitcher(cta);
 
-        ScrimCoordinator scrimCoordinator =
-                cta.getRootUiCoordinatorForTesting().getScrimCoordinator();
-        assertTrue(scrimCoordinator.isShowingScrim());
+        ScrimManager scrimManager = cta.getRootUiCoordinatorForTesting().getScrimManager();
+        assertTrue(scrimManager.isShowingScrim());
         assertEquals(
                 ChromeColors.getPrimaryBackgroundColor(cta, true),
                 cta.getRootUiCoordinatorForTesting()
@@ -189,7 +188,7 @@ public class TabSwitcherTabletTest {
                         .getScrimColorForTesting());
 
         exitSwitcherWithTabClick(0);
-        assertFalse(scrimCoordinator.isShowingScrim());
+        assertFalse(scrimManager.isShowingScrim());
     }
 
     @Test

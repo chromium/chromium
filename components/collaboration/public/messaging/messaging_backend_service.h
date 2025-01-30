@@ -92,7 +92,7 @@ class MessagingBackendService : public KeyedService,
   // from the activity card which when dismissed clears out all the individual
   // tab messages. Doesn't apply to instant messages.
   virtual void ClearDirtyTabMessagesForGroup(
-      tab_groups::EitherGroupID group_id) = 0;
+      const data_sharing::GroupId& collaboration_group_id) = 0;
 
   // Invoked to clear a given persistent message. This will clear the specified
   // dirty bit on the message entry of the database. If std::nullopt is passed,

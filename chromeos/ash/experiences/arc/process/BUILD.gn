@@ -15,8 +15,8 @@ static_library("process") {
   public_deps = [ "//chromeos/ash/components/process_snapshot" ]
 
   deps = [
-    "//ash/components/arc",
     "//base",
+    "//chromeos/ash/experiences/arc",
     "//chromeos/ash/experiences/arc/mojom",
     "//components/keyed_service/core",
     "//content/public/browser",
@@ -30,8 +30,8 @@ source_set("unit_tests") {
 
   deps = [
     ":process",
-    "//ash/components/arc",
     "//base/test:test_support",
+    "//chromeos/ash/experiences/arc",
     "//chromeos/ash/experiences/arc/mojom",
     "//testing/gtest",
   ]

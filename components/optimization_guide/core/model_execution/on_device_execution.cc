@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "components/optimization_guide/core/model_execution/model_execution_util.h"
+#include "components/optimization_guide/core/model_execution/multimodal_message.h"
 #include "components/optimization_guide/core/model_execution/repetition_checker.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 
@@ -116,7 +117,7 @@ OnDeviceExecution::OnDeviceExecution(
     ModelBasedCapabilityKey feature,
     OnDeviceOptions opts,
     ExecuteRemoteFn execute_remote_fn,
-    std::unique_ptr<google::protobuf::MessageLite> message,
+    MultimodalMessage message,
     std::unique_ptr<ResultLogger> logger,
     OptimizationGuideModelExecutionResultStreamingCallback callback,
     base::OnceCallback<void(bool)> cleanup_callback)
@@ -193,7 +194,7 @@ void OnDeviceExecution::Cancel() {
 void OnDeviceExecution::BeginExecution(OnDeviceContext& context,
                                        const SamplingParams& sampling_params) {
   auto input = opts_.adapter->ConstructInputString(
-      *last_message_, /*want_input_context=*/false);
+      last_message_.read(), /*want_input_context=*/false);
   if (!input) {
     FallbackToRemote(Result::kFailedConstructingMessage);
     return;
@@ -217,7 +218,7 @@ void OnDeviceExecution::BeginExecution(OnDeviceContext& context,
   options->temperature = sampling_params.temperature;
 
   opts_.safety_checker->RunRequestChecks(
-      *last_message_,
+      last_message_,
       base::BindOnce(&OnDeviceExecution::OnRequestSafetyResult,
                      weak_ptr_factory_.GetWeakPtr(), std::move(options)));
 }
@@ -396,7 +397,7 @@ void OnDeviceExecution::MaybeParseResponse(ResponseCompleteness completeness) {
   size_t previous_response_pos = latest_response_pos_;
   latest_response_pos_ = latest_safe_raw_output_.length;
   opts_.adapter->ParseResponse(
-      *last_message_, safe_response, previous_response_pos,
+      last_message_, safe_response, previous_response_pos,
       base::BindOnce(&OnDeviceExecution::OnParsedResponse,
                      weak_ptr_factory_.GetWeakPtr(), completeness));
 }
@@ -419,7 +420,7 @@ void OnDeviceExecution::OnParsedResponse(
     }
   }
   opts_.safety_checker->RunResponseChecks(
-      *last_message_, *output, completeness,
+      last_message_, *output, completeness,
       base::BindOnce(&OnDeviceExecution::OnResponseSafetyResult,
                      weak_ptr_factory_.GetWeakPtr(), completeness, *output));
 }
@@ -468,7 +469,7 @@ void OnDeviceExecution::FallbackToRemote(Result result) {
   }
   auto self = weak_ptr_factory_.GetWeakPtr();
   execute_remote_fn_.Run(
-      feature_, *last_message_, std::nullopt,
+      feature_, last_message_.BuildProtoMessage(), std::nullopt,
       std::make_unique<proto::LogAiDataRequest>(std::move(log_)),
       base::BindOnce(&InvokeStreamingCallbackWithRemoteResult,
                      std::move(callback_)));

@@ -1,20 +1,33 @@
 <style include="settings-shared cr-icons"></style>
-<settings-toggle-button
-    id="launcherToggle" pref="{{prefs.glic.launcher_enabled}}"
-    label="$i18n{glicOsWidgetToggle}">
-</settings-toggle-button>
+<!-- Glic Policy Disabled - show disabled controls -->
+<template is="dom-if"
+    if="[[!isEnabledByPolicy_(prefs.glic.settings_policy.value)]]" restamp>
+  <settings-toggle-button id="launcherToggle" pref="[[fakePref_]]" disabled
+      label="$i18n{glicOsWidgetToggle}">
+  </settings-toggle-button>
+</template>
 
-<cr-collapse opened="[[prefs.glic.launcher_enabled.value]]">
-  <div class="cr-row" id="keyboardShortcutSetting">
-    <div class="flex cr-padded-text">
-      <div id="keyboardShortcut" aria-hidden>$i18n{glicKeyboardShortcut}</div>
-      <div class="secondary">$i18n{glicKeyboardShortcutSublabel}</div>
+<!-- Glic Policy Enabled -->
+<template is="dom-if"
+    on-dom-change="onEnabledTemplateDomChange_"
+    if="[[isEnabledByPolicy_(prefs.glic.settings_policy.value)]]" restamp>
+  <settings-toggle-button
+      id="launcherToggle" pref="{{prefs.glic.launcher_enabled}}"
+      label="$i18n{glicOsWidgetToggle}"
+      checked="{{launcherToggleOn_}}">
+  </settings-toggle-button>
+  <cr-collapse opened="[[launcherToggleOn_]]">
+    <div class="cr-row" id="keyboardShortcutSetting">
+      <div class="flex cr-padded-text">
+        <div id="keyboardShortcut" aria-hidden>$i18n{glicKeyboardShortcut}</div>
+        <div class="secondary">$i18n{glicKeyboardShortcutSublabel}</div>
+      </div>
+      <cr-shortcut-input id="shortcutInput"
+          input-aria-label="$i18n{glicKeyboardShortcut}"
+          shortcut="[[registeredShortcut_]]"
+          on-input-capture-change="onInputCaptureChange_"
+          on-shortcut-updated="onShortcutUpdated_">
+      </cr-shortcut-input>
     </div>
-    <cr-shortcut-input id="shortcutInput"
-        input-aria-label="$i18n{glicKeyboardShortcut}"
-        shortcut="[[registeredShortcut_]]"
-        on-input-capture-change="onInputCaptureChange_"
-        on-shortcut-updated="onShortcutUpdated_">
-    </cr-shortcut-input>
-  </div>
-</cr-collapse>
+  </cr-collapse>
+</template>

@@ -4744,11 +4744,17 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_RECENT_TABS_SYNC_IN_PROGRESS" desc="Section header subtitle label while loading tabs in other devices. [Length: 30em] [iOS only]">
         Syncing…
       </message>
+      <message name="IDS_IOS_REMINDER_NOTIFICATIONS_HIDE_SET_A_REMINDER" desc="Text for the context menu item to hide the 'Set a Reminder' overflow menu action. [iOS only]">
+        Hide Set a Reminder
+      </message>
+      <message name="IDS_IOS_REMINDER_NOTIFICATIONS_SET_A_REMINDER" desc="Text for the 'Set a Reminder' overflow menu action. [iOS only]">
+        Set a Reminder
+      </message>
       <message name="IDS_IOS_REMOVE_ACCOUNT_ALERT_TITLE" desc="Title of the alert view when the remove account button is clicked.">
-      Remove account <ph name="USER_EMAIL">$1<ex>janedoe@google.com</ex></ph>?
+        Remove account <ph name="USER_EMAIL">$1<ex>janedoe@google.com</ex></ph>?
       </message>
       <message name="IDS_IOS_REMOVE_ACCOUNT_LABEL" desc="Button label for removing an account.">
-      Remove
+        Remove
       </message>
       <message name="IDS_IOS_REMOVE_ACTION_TITLE" desc="Title of the action used to remove a selected item. [iOS only]">
         Remove

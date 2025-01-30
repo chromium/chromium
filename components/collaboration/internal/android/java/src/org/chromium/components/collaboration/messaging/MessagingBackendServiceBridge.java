@@ -151,22 +151,14 @@ import java.util.Optional;
     }
 
     @Override
-    public void clearDirtyTabMessagesForGroup(EitherGroupId groupId) {
+    public void clearDirtyTabMessagesForGroup(String collaborationId) {
         if (mNativeMessagingBackendServiceBridge == 0) {
             return;
         }
 
-        LocalTabGroupId localGroupId;
-        if (groupId == null || !groupId.isLocalId()) {
-            localGroupId = null;
-        } else {
-            localGroupId = groupId.getLocalId();
-        }
-        String syncGroupId = getSyncId(groupId);
-
         MessagingBackendServiceBridgeJni.get()
                 .clearDirtyTabMessagesForGroup(
-                        mNativeMessagingBackendServiceBridge, this, localGroupId, syncGroupId);
+                        mNativeMessagingBackendServiceBridge, this, collaborationId);
     }
 
     @Override
@@ -269,8 +261,7 @@ import java.util.Optional;
         void clearDirtyTabMessagesForGroup(
                 long nativeMessagingBackendServiceBridge,
                 MessagingBackendServiceBridge caller,
-                LocalTabGroupId localGroupId,
-                String syncGroupId);
+                String collaborationId);
 
         void runInstantaneousMessageSuccessCallback(
                 long nativeMessagingBackendServiceBridge,

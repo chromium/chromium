@@ -29,7 +29,7 @@ import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /**
@@ -123,7 +123,7 @@ public class TabGroupUiOneshotSupplier extends OneshotSupplierImpl<TabGroupUi> {
      * @param parentView The parent view of this UI.
      * @param browserControlsStateProvider The {@link BrowserControlsStateProvider} of the top
      *     controls.
-     * @param scrimCoordinator The {@link ScrimCoordinator} to control scrim view.
+     * @param scrimManager The {@link ScrimManager} to control scrim view.
      * @param omniboxFocusStateSupplier Supplier to access the focus state of the omnibox.
      * @param bottomSheetController The {@link BottomSheetController} for the current activity.
      * @param dataSharingTabManager The {@link} DataSharingTabManager managing communication between
@@ -139,7 +139,7 @@ public class TabGroupUiOneshotSupplier extends OneshotSupplierImpl<TabGroupUi> {
             Activity activity,
             ViewGroup parentView,
             BrowserControlsStateProvider browserControlsStateProvider,
-            ScrimCoordinator scrimCoordinator,
+            ScrimManager scrimManager,
             ObservableSupplier<Boolean> omniboxFocusStateSupplier,
             BottomSheetController bottomSheetController,
             DataSharingTabManager dataSharingTabManager,
@@ -156,7 +156,7 @@ public class TabGroupUiOneshotSupplier extends OneshotSupplierImpl<TabGroupUi> {
                                             activity,
                                             parentView,
                                             browserControlsStateProvider,
-                                            scrimCoordinator,
+                                            scrimManager,
                                             omniboxFocusStateSupplier,
                                             bottomSheetController,
                                             dataSharingTabManager,

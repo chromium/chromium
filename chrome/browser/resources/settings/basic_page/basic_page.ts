@@ -7,6 +7,8 @@
  * 'settings-basic-page' is the settings page containing the actual settings.
  */
 import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
+import 'chrome://resources/cr_elements/cr_icons.css.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import '../ai_page/ai_page.js';
@@ -351,6 +353,10 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
   private showGlicPage_(visibility?: boolean): boolean {
     return loadTimeData.getBoolean('showGlicSettings') &&
         this.showPage_(visibility);
+  }
+
+  private isGlicPolicyDisabled_(): boolean {
+    return this.getPref<number>('glic.settings_policy').value === 1;
   }
   // </if>
 

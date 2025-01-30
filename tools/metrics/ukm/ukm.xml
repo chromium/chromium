@@ -18241,6 +18241,12 @@ be describing additional metrics about the same event.
     notification contents, which happens on a request to display a persistent
     notification.
   </summary>
+  <metric name="DidUserAlwaysAllowNotifications" enum="Boolean">
+    <summary>
+      A boolean signaling whether the user had previously decided to always
+      allow suspicious notifications from the URL.
+    </summary>
+  </metric>
   <metric name="IsAllowlisted" enum="Boolean">
     <summary>
       A boolean signaling whether the URL is on the high confidence allowlist or

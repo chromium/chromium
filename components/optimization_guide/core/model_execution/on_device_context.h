@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "components/optimization_guide/core/model_execution/multimodal_message.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_feature_adapter.h"
 #include "components/optimization_guide/core/model_execution/safety_checker.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
@@ -58,7 +59,7 @@ class OnDeviceContext : public on_device_model::mojom::ContextClient {
   ~OnDeviceContext() override;
 
   // Constructs the input context and begins processing it.
-  bool SetInput(const google::protobuf::MessageLite& request);
+  bool SetInput(MultimodalMessageReadView request);
 
   // Get the session that we've sent the input to, creating it if does not
   // exist (e.g. due to a disconnect.)

@@ -44,7 +44,7 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
 import org.chromium.chrome.tab_ui.R;
-import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -101,7 +101,7 @@ public class TabGridDialogView extends FrameLayout {
     private ImageView mHairline;
     private RelativeLayout mDialogContainerView;
     private PropertyModel mScrimPropertyModel;
-    private ScrimCoordinator mScrimCoordinator;
+    private ScrimManager mScrimManager;
     private FrameLayout.LayoutParams mContainerParams;
     private ViewTreeObserver.OnGlobalLayoutListener mParentGlobalLayoutListener;
     private VisibilityListener mVisibilityListener;
@@ -938,8 +938,8 @@ public class TabGridDialogView extends FrameLayout {
                         .build();
     }
 
-    void setupScrimCoordinator(ScrimCoordinator scrimCoordinator) {
-        mScrimCoordinator = scrimCoordinator;
+    void setupScrimManager(ScrimManager scrimManager) {
+        mScrimManager = scrimManager;
     }
 
     /**
@@ -963,8 +963,8 @@ public class TabGridDialogView extends FrameLayout {
             mCurrentDialogAnimator.end();
         }
         mCurrentDialogAnimator = mShowDialogAnimation;
-        assert mScrimCoordinator != null && mScrimPropertyModel != null;
-        mScrimCoordinator.showScrim(mScrimPropertyModel);
+        assert mScrimManager != null && mScrimPropertyModel != null;
+        mScrimManager.showScrim(mScrimPropertyModel);
         setVisibility(View.VISIBLE);
         mShowDialogAnimation.start();
     }
@@ -974,17 +974,17 @@ public class TabGridDialogView extends FrameLayout {
         // Skip the hideDialog call caused by initializing the dialog visibility as false.
         if (getVisibility() != VISIBLE) return;
 
-        assert mScrimCoordinator != null && mScrimPropertyModel != null;
+        assert mScrimManager != null && mScrimPropertyModel != null;
         if (mCurrentDialogAnimator != null && mCurrentDialogAnimator != mHideDialogAnimation) {
             mCurrentDialogAnimator.end();
         }
         mCurrentDialogAnimator = mHideDialogAnimation;
-        if (mScrimCoordinator.isShowingScrim()) {
+        if (mScrimManager.isShowingScrim()) {
             if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)) {
-                mScrimCoordinator.hideScrim(
+                mScrimManager.hideScrim(
                         mScrimPropertyModel, /* animate= */ true, SCRIM_FADE_DURATION_MS);
             } else {
-                mScrimCoordinator.hideScrim(mScrimPropertyModel, /* animate= */ true);
+                mScrimManager.hideScrim(mScrimPropertyModel, /* animate= */ true);
             }
         }
         mHideDialogAnimation.start();
@@ -1173,8 +1173,8 @@ public class TabGridDialogView extends FrameLayout {
         ResettersForTesting.register(() -> sSourceRectCallbackForTesting = null);
     }
 
-    ScrimCoordinator getScrimCoordinatorForTesting() {
-        return mScrimCoordinator;
+    ScrimManager getScrimManagerForTesting() {
+        return mScrimManager;
     }
 
     VisibilityListener getVisibilityListenerForTesting() {

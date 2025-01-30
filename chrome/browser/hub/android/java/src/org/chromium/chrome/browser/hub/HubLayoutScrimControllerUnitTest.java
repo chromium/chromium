@@ -35,7 +35,7 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.browser_ui.styles.ChromeColors;
-import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -53,7 +53,7 @@ public class HubLayoutScrimControllerUnitTest {
 
     private Activity mActivity;
     private View mAnchorView;
-    private ScrimCoordinator mScrimCoordinator;
+    private ScrimManager mScrimManager;
     private ObservableSupplierImpl<Boolean> mIsIncognitoSupplier;
     private HubLayoutScrimController mScrimController;
 
@@ -70,40 +70,40 @@ public class HubLayoutScrimControllerUnitTest {
         mAnchorView = new View(mActivity);
         rootView.addView(mAnchorView);
 
-        mScrimCoordinator = spy(new ScrimCoordinator(mActivity, rootView));
+        mScrimManager = spy(new ScrimManager(mActivity, rootView));
 
         mIsIncognitoSupplier = new ObservableSupplierImpl<>(false);
 
         mScrimController =
                 new HubLayoutScrimController(
-                        mScrimCoordinator, () -> mAnchorView, mIsIncognitoSupplier);
+                        mScrimManager, () -> mAnchorView, mIsIncognitoSupplier);
     }
 
     @After
     public void tearDown() {
-        mScrimCoordinator.destroy();
+        mScrimManager.destroy();
     }
 
     @Test
     @SmallTest
     public void testShowAndHide() {
-        assertFalse(mScrimCoordinator.isShowingScrim());
+        assertFalse(mScrimManager.isShowingScrim());
         mScrimController.startShowingScrim();
 
         // This is not an exhaustive test of properties impacts as the ScrimTest already covers
         // this.
-        assertTrue(mScrimCoordinator.isShowingScrim());
-        verify(mScrimCoordinator).showScrim(mPropertyModelArgumentCaptor.capture());
+        assertTrue(mScrimManager.isShowingScrim());
+        verify(mScrimManager).showScrim(mPropertyModelArgumentCaptor.capture());
         assertPropertyModel(mIsIncognitoSupplier.get());
 
         // Finish the animation.
         ShadowLooper.runUiThreadTasks();
 
         mScrimController.startHidingScrim();
-        verify(mScrimCoordinator).hideScrim(any(), eq(true), anyInt());
+        verify(mScrimManager).hideScrim(any(), eq(true), anyInt());
         ShadowLooper.runUiThreadTasks();
 
-        assertFalse(mScrimCoordinator.isShowingScrim());
+        assertFalse(mScrimManager.isShowingScrim());
 
         mIsIncognitoSupplier.set(true);
         assertPropertyModel(false);
@@ -113,18 +113,18 @@ public class HubLayoutScrimControllerUnitTest {
     @SmallTest
     public void testShowForceAnimationToFinish() {
         mIsIncognitoSupplier.set(true);
-        assertFalse(mScrimCoordinator.isShowingScrim());
+        assertFalse(mScrimManager.isShowingScrim());
 
         mScrimController.startShowingScrim();
-        assertTrue(mScrimCoordinator.isShowingScrim());
-        verify(mScrimCoordinator).showScrim(mPropertyModelArgumentCaptor.capture());
+        assertTrue(mScrimManager.isShowingScrim());
+        verify(mScrimManager).showScrim(mPropertyModelArgumentCaptor.capture());
         assertPropertyModel(mIsIncognitoSupplier.get());
 
         // Force the animation to finish.
         mScrimController.forceAnimationToFinish();
-        verify(mScrimCoordinator).forceAnimationToFinish();
+        verify(mScrimManager).forceAnimationToFinish(any());
 
-        assertTrue(mScrimCoordinator.isShowingScrim());
+        assertTrue(mScrimManager.isShowingScrim());
 
         mIsIncognitoSupplier.set(false);
         assertPropertyModel(mIsIncognitoSupplier.get());

@@ -32,7 +32,6 @@ static_library("holding_space") {
 
   deps = [
     "//ash",
-    "//ash/components/arc",
     "//ash/constants",
     "//ash/public/cpp",
     "//ash/resources/vector_icons",
@@ -55,6 +54,7 @@ static_library("holding_space") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/ash/clipboard",
     "//chrome/browser/ui/ash/thumbnail_loader",
+    "//chromeos/ash/experiences/arc",
     "//chromeos/dbus/power",
     "//components/drive",
     "//components/keyed_service/content",
@@ -85,7 +85,6 @@ source_set("unit_tests") {
   deps = [
     ":holding_space",
     ":test_support",
-    "//ash/components/arc",
     "//ash/constants",
     "//ash/public/cpp",
     "//base/test:test_support",
@@ -102,6 +101,7 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//chromeos/ash/components/disks",
     "//chromeos/ash/components/disks:test_support",
+    "//chromeos/ash/experiences/arc",
     "//chromeos/ui/base",
     "//components/account_id",
     "//components/pref_registry",

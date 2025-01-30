@@ -121,6 +121,8 @@ constexpr char kHatsSurveyTriggerWallpaperSearch[] = "wallpaper-search";
 #else   // BUILDFLAG(IS_ANDROID)
 constexpr char kHatsSurveyTriggerAndroidStartupSurvey[] = "startup_survey";
 constexpr char kHatsSurveyTriggerQuickDelete[] = "quick_delete_survey";
+constexpr char kHatsSurveyTriggerClearBrowsingData[] =
+    "clear_browsing_data_survey";
 constexpr char kHatsSurveyTriggerSafetyHubAndroid[] =
     "safety_hub_android_survey";
 constexpr char kHatsSurveyOrganicTriggerSafetyHubAndroid[] =
@@ -595,6 +597,9 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       &chrome::android::kQuickDeleteAndroidSurvey,
       kHatsSurveyTriggerQuickDelete,
       chrome::android::kQuickDeleteAndroidSurveyTriggerId.Get());
+
+  survey_configs.emplace_back(&chrome::android::kClearBrowsingDataAndroidSurvey,
+                              kHatsSurveyTriggerClearBrowsingData);
 
   std::vector<std::string> product_specific_bits_data_fields =
       std::vector<std::string>{"Tapped card", "Has visited"};

@@ -1979,11 +1979,6 @@ public class TabGridDialogMediatorUnitTest {
     private void verifyClearDirtyMessagesForGroup() {
         verify(mMessagingBackendService)
                 .clearDirtyTabMessagesForGroup(
-                        argThat(
-                                eitherGroupId ->
-                                        eitherGroupId
-                                                .getLocalId()
-                                                .tabGroupId
-                                                .equals(TAB_GROUP_ID)));
+                        argThat(collaborationId -> collaborationId.equals(COLLABORATION_ID1)));
     }
 }

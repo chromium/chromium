@@ -75,7 +75,9 @@ export class SettingsHistorySearchPageElement extends
                           'historySearchWithAnswersSettingSublabelV2') :
                       loadTimeData.getString(
                           'historySearchSettingSublabelV2')) +
-              loadTimeData.getString('sentenceEnd');
+              loadTimeData.getString('sentenceEnd') +
+              ' ';  // Whitespace is needed to separate the sub-label from the
+                    // following Learn More.
         },
       },
 

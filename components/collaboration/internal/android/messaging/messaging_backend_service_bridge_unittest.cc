@@ -350,40 +350,18 @@ TEST_F(MessagingBackendServiceBridgeTest, TestGetMessagesForGroup_SyncId) {
       PersistentMessagesToCollaborationEventArray(env, messages));
 }
 
-TEST_F(MessagingBackendServiceBridgeTest,
-       TestClearDirtyTabMessagesForGroup_LocalID) {
+TEST_F(MessagingBackendServiceBridgeTest, TestClearDirtyTabMessagesForGroup) {
   JNIEnv* env = base::android::AttachCurrentThread();
-
-  // Create a new random local tab group ID.
-  tab_groups::LocalTabGroupID local_tab_group_id = base::Token::CreateRandom();
-  auto j_local_tab_group_id =
-      tab_groups::TabGroupSyncConversionsBridge::ToJavaTabGroupId(
-          env, std::make_optional(local_tab_group_id));
+  auto collaboration_id = data_sharing::GroupId("collaboration1");
+  ScopedJavaLocalRef<jstring> j_collaboration_id =
+      base::android::ConvertUTF8ToJavaString(env, collaboration_id.value());
 
   // Invoke the method from Java. The call should arrive to the service.
-  tab_groups::EitherGroupID group_id(local_tab_group_id);
-  EXPECT_CALL(service(), ClearDirtyTabMessagesForGroup(group_id)).Times(1);
+  EXPECT_CALL(service(), ClearDirtyTabMessagesForGroup(collaboration_id))
+      .Times(1);
 
   Java_MessagingBackendServiceBridgeUnitTestCompanion_invokeClearDirtyTabMessagesForGroupAndVerify(
-      env, j_companion(), j_local_tab_group_id, ScopedJavaLocalRef<jstring>());
-}
-
-TEST_F(MessagingBackendServiceBridgeTest,
-       TestClearDirtyTabMessagesForGroup_SyncID) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-
-  // Create a random sync tab group ID.
-  base::Uuid sync_tab_group_id = base::Uuid::GenerateRandomV4();
-  ScopedJavaLocalRef<jstring> j_sync_tab_group_id =
-      base::android::ConvertUTF8ToJavaString(
-          env, sync_tab_group_id.AsLowercaseString());
-
-  // Invoke the method from Java. The call should arrive to the service.
-  tab_groups::EitherGroupID group_id(sync_tab_group_id);
-  EXPECT_CALL(service(), ClearDirtyTabMessagesForGroup(group_id)).Times(1);
-
-  Java_MessagingBackendServiceBridgeUnitTestCompanion_invokeClearDirtyTabMessagesForGroupAndVerify(
-      env, j_companion(), ScopedJavaLocalRef<jobject>(), j_sync_tab_group_id);
+      env, j_companion(), ScopedJavaLocalRef<jobject>(), j_collaboration_id);
 }
 
 TEST_F(MessagingBackendServiceBridgeTest, TestGetMessagesForTab_LocalID) {

@@ -164,6 +164,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".PopupBlocked"/>
   <variant name=".PromptHatsCameraCustomInvitation"/>
   <variant name=".PromptHatsCameraGenericInvitation"/>
+  <variant name=".PromptHatsClearBrowsingData"/>
   <variant name=".PromptHatsLocationCustomInvitation"/>
   <variant name=".PromptHatsLocationGenericInvitation"/>
   <variant name=".PromptHatsMicrophoneCustomInvitation"/>

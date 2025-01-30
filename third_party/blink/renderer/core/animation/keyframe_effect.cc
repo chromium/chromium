@@ -774,8 +774,17 @@ AnimationTimeDelta KeyframeEffect::CalculateTimeToEffectChange(
           return std::min(time_to_end, time_to_next_iteration);
         }
         return time_to_end;
+      } else {
+        const AnimationTimeDelta time_to_start =
+            std::max(local_time.value() - start_time, AnimationTimeDelta());
+        if (RequiresIterationEvents()) {
+          const AnimationTimeDelta reverse_time_to_next_iteration = std::max(
+              NormalizedTiming().iteration_duration - time_to_next_iteration,
+              AnimationTimeDelta());
+          return std::min(time_to_start, reverse_time_to_next_iteration);
+        }
+        return time_to_start;
       }
-      return {};
     case Timing::kPhaseAfter:
       DCHECK(TimingCalculations::GreaterThanOrEqualToWithinTimeTolerance(
           local_time.value(), after_time));
@@ -786,7 +795,7 @@ AnimationTimeDelta KeyframeEffect::CalculateTimeToEffectChange(
         return end_time > local_time ? end_time - local_time.value()
                                      : AnimationTimeDelta::Max();
       }
-      return local_time.value() - after_time;
+      return std::max(local_time.value() - after_time, AnimationTimeDelta());
     default:
       NOTREACHED();
   }

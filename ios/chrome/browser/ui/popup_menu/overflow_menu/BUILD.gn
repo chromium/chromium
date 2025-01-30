@@ -36,6 +36,7 @@ source_set("overflow_menu") {
     "//components/reading_list/core",
     "//components/reading_list/ios",
     "//components/search_engines",
+    "//components/send_tab_to_self",
     "//components/supervised_user/core/browser",
     "//components/supervised_user/core/common",
     "//components/sync/service",

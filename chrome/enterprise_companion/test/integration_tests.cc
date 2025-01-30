@@ -27,6 +27,7 @@
 #include "chrome/enterprise_companion/enterprise_companion.h"
 #include "chrome/enterprise_companion/enterprise_companion_client.h"
 #include "chrome/enterprise_companion/enterprise_companion_status.h"
+#include "chrome/enterprise_companion/flags.h"
 #include "chrome/enterprise_companion/global_constants.h"
 #include "chrome/enterprise_companion/installer_paths.h"
 #include "chrome/enterprise_companion/ipc_support.h"

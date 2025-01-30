@@ -361,7 +361,7 @@ TEST_F(KeyframeEffectTest, TimeToEffectChange) {
                             ASSERT_NO_EXCEPTION);
   EXPECT_TIMEDELTA(ANIMATION_TIME_DELTA_FROM_SECONDS(1),
                    keyframe_effect->TimeToForwardsEffectChange());
-  EXPECT_TIMEDELTA(AnimationTimeDelta(),
+  EXPECT_TIMEDELTA(ANIMATION_TIME_DELTA_FROM_SECONDS(99),
                    keyframe_effect->TimeToReverseEffectChange());
 
   // End of the active phase.

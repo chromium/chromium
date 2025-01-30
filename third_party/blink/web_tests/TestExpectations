@@ -53,6 +53,27 @@ external/wpt/infrastructure/reftest/reftest_ref_timeout.html [ Timeout ]
 external/wpt/infrastructure/reftest/reftest_timeout.html [ Timeout ]
 wpt_internal/infrastructure/fail-before-timeout.html [ Timeout ]
 
+# Graphite failures on Mac-ARM
+
+# YUV edge sampling bug
+crbug.com/329041548 [ Mac14-arm64 ] media/video-colorspace-yuv422.html [ Failure ]
+
+crbug.com/dawn/2456 [ Mac14-arm64 ] external/wpt/webcodecs/per-frame-qp-encoding.https.any.html?vp9_p2 [ Crash ]
+crbug.com/dawn/2456 [ Mac14-arm64 ] external/wpt/webcodecs/per-frame-qp-encoding.https.any.worker.html?vp9_p2 [ Crash ]
+
+[ Mac14-arm64 ] virtual/scalefactor200/external/wpt/css/filter-effects/drop-shadow-currentcolor-dynamic-003.html [ Failure ]  # Reftest image failure
+[ Mac14-arm64 ] external/wpt/css/filter-effects/backdrop-filter-backdrop-root-opacity.html [ Failure ]  # Reftest image failure
+[ Mac14-arm64 ] external/wpt/css/css-masking/mask-image/mask-opacity-1e.html [ Failure ]  # Reftest image failure
+[ Mac14-arm64 ] external/wpt/css/filter-effects/backdrop-filter-clip-rect-2.html [ Failure ]  # Reftest image failure
+[ Mac14-arm64 ] external/wpt/css/filter-effects/drop-shadow-currentcolor-dynamic-003.html [ Failure ]  # Reftest image failure
+[ Mac14-arm64 ] virtual/scalefactor200/external/wpt/css/filter-effects/backdrop-filter-clip-rect-2.html [ Failure ]  # Reftest image failure
+[ Mac14-arm64 ] virtual/gpu-rasterization/external/wpt/css/css-images/cross-fade-premultiplied-alpha.html [ Failure ]  # Reftest image failure
+[ Mac14-arm64 ] virtual/off-main-thread-css-paint/http/tests/csspaint/transform-with-page-zoom-003.html [ Failure ]  # Reftest image failure
+[ Mac14-arm64 ] virtual/scalefactor200/external/wpt/css/filter-effects/backdrop-filter-backdrop-root-opacity.html [ Failure ]  # Reftest image failure
+[ Mac14-arm64 ] external/wpt/css/filter-effects/backdrop-filter-transform.html [ Failure ]  # Reftest image failure
+[ Mac14-arm64 ] virtual/off-main-thread-css-paint/http/tests/csspaint/paint2d-zoom.html [ Failure ]  # Reftest image failure
+[ Mac14-arm64 ] virtual/scalefactor200/external/wpt/css/filter-effects/backdrop-filter-transform.html [ Failure ]  # Reftest image failure
+
 # We don't support extracting fuzzy information from .ini files, which these
 # WPT infrastructure tests rely on.
 crbug.com/997202 external/wpt/infrastructure/reftest/legacy/reftest_fuzzy_chain_ini.html [ Failure ]
@@ -2689,6 +2710,7 @@ crbug.com/383880384 [ Mac ] external/wpt/css/css-properties-values-api/registere
 crbug.com/383880384 [ Win ] external/wpt/css/css-properties-values-api/registered-property-change-style-002.html [ Failure Pass ]
 
 # ====== New tests from wpt-importer added here ======
+external/wpt/webrtc/simulcast/av1.https.html [ Skip Timeout ]
 crbug.com/392927699 external/wpt/css/css-lists/list-style-position-001.html [ Failure ]
 crbug.com/392927987 [ Mac15 ] external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-to-same-origin.https.html?5-6 [ Crash ]
 crbug.com/392944181 external/wpt/css/css-scoping/slotted-has-001.html [ Failure ]
@@ -3006,7 +3028,6 @@ crbug.com/390000672 [ Mac12-arm64 ] external/wpt/webcodecs/per-frame-qp-encoding
 crbug.com/378158966 crbug.com/390000672 [ Mac13 ] external/wpt/webcodecs/per-frame-qp-encoding.https.any.html?vp9_p2 [ Failure Timeout ]
 crbug.com/390000672 [ Mac13-arm64 ] external/wpt/webcodecs/per-frame-qp-encoding.https.any.html?vp9_p2 [ Failure ]
 crbug.com/378158966 crbug.com/390000672 [ Mac14 ] external/wpt/webcodecs/per-frame-qp-encoding.https.any.html?vp9_p2 [ Failure Timeout ]
-crbug.com/390000672 [ Mac14-arm64 ] external/wpt/webcodecs/per-frame-qp-encoding.https.any.html?vp9_p2 [ Failure ]
 crbug.com/378158966 crbug.com/390000672 [ Mac15 ] external/wpt/webcodecs/per-frame-qp-encoding.https.any.html?vp9_p2 [ Failure Timeout ]
 crbug.com/390000672 [ Mac11 ] external/wpt/webcodecs/per-frame-qp-encoding.https.any.worker.html?vp9_p2 [ Failure ]
 crbug.com/390000672 [ Mac11-arm64 ] external/wpt/webcodecs/per-frame-qp-encoding.https.any.worker.html?vp9_p2 [ Failure ]
@@ -3015,7 +3036,6 @@ crbug.com/390000672 [ Mac12-arm64 ] external/wpt/webcodecs/per-frame-qp-encoding
 crbug.com/378158966 crbug.com/390000672 [ Mac13 ] external/wpt/webcodecs/per-frame-qp-encoding.https.any.worker.html?vp9_p2 [ Failure Timeout ]
 crbug.com/390000672 [ Mac13-arm64 ] external/wpt/webcodecs/per-frame-qp-encoding.https.any.worker.html?vp9_p2 [ Failure ]
 crbug.com/378158966 crbug.com/390000672 [ Mac14 ] external/wpt/webcodecs/per-frame-qp-encoding.https.any.worker.html?vp9_p2 [ Failure Timeout ]
-crbug.com/390000672 [ Mac14-arm64 ] external/wpt/webcodecs/per-frame-qp-encoding.https.any.worker.html?vp9_p2 [ Failure ]
 crbug.com/378158966 crbug.com/390000672 [ Mac15 ] external/wpt/webcodecs/per-frame-qp-encoding.https.any.worker.html?vp9_p2 [ Failure Timeout ]
 crbug.com/377977965 [ Linux ] external/wpt/webdriver/tests/bidi/browser/get_client_windows/get_client_windows.py [ Failure ]
 crbug.com/377576485 [ Mac15 ] external/wpt/webrtc-extensions/RTCRtpParameters-adaptivePtime.html [ Timeout ]
@@ -6054,6 +6074,7 @@ crbug.com/1293714 external/wpt/css/selectors/invalidation/has-complexity.html [ 
 # Sheriff 2022-02-22
 crbug.com/1299948 [ Mac11 Release ] external/wpt/css/css-tables/crashtests/textarea-intrinsic-size-crash.html [ Pass Timeout ]
 crbug.com/1299948 [ Mac12 ] external/wpt/css/css-tables/crashtests/textarea-intrinsic-size-crash.html [ Pass Timeout ]
+crbug.com/393405144 [ Mac14 ] external/wpt/css/css-tables/crashtests/textarea-intrinsic-size-crash.html [ Pass Crash ]
 crbug.com/1299972 [ Linux ] screen_orientation/screenorientation-unsupported-no-crash.html [ Failure Pass Timeout ]
 
 # Disable flaky test for further investigation
@@ -6179,6 +6200,8 @@ crbug.com/40146374 virtual/select-parser-relaxation/external/wpt/html/semantics/
 crbug.com/40146374 virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-fallback-datalist-animations.tentative.html [ Failure ]
 crbug.com/40146374 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/customizable-select/border-rendering.tentative.html [ Failure ]
 crbug.com/40146374 virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/border-rendering.tentative.html [ Failure ]
+crbug.com/40146374 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/customizable-select/focus-ring-rendering.tentative.html [ Failure ]
+crbug.com/40146374 virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/focus-ring-rendering.tentative.html [ Failure ]
 crbug.com/40146374 virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-events.tentative.html [ Failure ]
 crbug.com/40146374 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-events.tentative.html [ Failure ]
 crbug.com/40146374 virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-events-2.tentative.html [ Failure ]

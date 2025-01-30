@@ -39,7 +39,7 @@ static_library("intent_helper") {
 
   public_deps = [
     ":intent_filter",
-    "//ash/components/arc:prefs",
+    "//chromeos/ash/experiences/arc:prefs",
     "//ui/aura",
     "//ui/views",
   ]
@@ -49,10 +49,10 @@ static_library("intent_helper") {
 
   deps = [
     ":arc_intent_helper_constants",
-    "//ash/components/arc",
-    "//ash/components/arc:arc_metrics_constants",
     "//ash/public/cpp",
     "//base",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc:arc_metrics_constants",
     "//chromeos/ash/experiences/arc/mojom",
     "//chromeos/ash/experiences/arc/session",
     "//components/exo",

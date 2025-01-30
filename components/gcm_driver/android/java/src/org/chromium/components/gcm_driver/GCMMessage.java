@@ -140,8 +140,7 @@ public class GCMMessage {
         return create(messageJSON, new JSONReader());
     }
 
-    // TODO: Re-enable this once bug is fixed.
-    @NullUnmarked
+    @NullUnmarked // https://github.com/uber/NullAway/issues/1138
     private static <T> @Nullable GCMMessage create(T in, Reader<T> reader) {
         // validate() checks that the fields are present, which is different to the checks below
         // that check if required fields are not null.

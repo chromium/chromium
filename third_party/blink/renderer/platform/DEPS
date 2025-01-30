@@ -43,6 +43,7 @@ include_rules = [
     "+base/time",
     "+base/timer",
     "+base/tracing",
+    "+base/types",
     "+base/unguessable_token.h",
     "+base/uuid.h",
     "+base/values.h",

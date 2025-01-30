@@ -4,14 +4,22 @@
 
 import 'chrome://settings/settings.js';
 
-import type {SettingsGlicDataPageElement, SettingsPrefsElement} from 'chrome://settings/settings.js';
+import type {CrCollapseElement} from 'chrome://settings/lazy_load.js';
+import type {SettingsGlicDataPageElement, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs, SettingsGlicDataPageFeaturePrefName as PrefName} from 'chrome://settings/settings.js';
-import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+
+const POLICY_ENABLED_VALUE = 0;
+const POLICY_DISABLED_VALUE = 1;
 
 suite('GlicDataPage', function() {
   let page: SettingsGlicDataPageElement;
   let settingsPrefs: SettingsPrefsElement;
+
+  function $<T extends HTMLElement = HTMLElement>(id: string): T|null {
+    return page.shadowRoot!.querySelector<T>(`#${id}`);
+  }
 
   suiteSetup(function() {
     settingsPrefs = document.createElement('settings-prefs');
@@ -23,25 +31,28 @@ suite('GlicDataPage', function() {
     page = document.createElement('settings-glic-data-page');
     page.prefs = settingsPrefs.prefs;
     document.body.appendChild(page);
+
+    page.setPrefValue(PrefName.SETTINGS_POLICY, POLICY_ENABLED_VALUE);
     return flushTasks();
   });
 
   test('GeolocationToggleEnabled', () => {
     page.setPrefValue(PrefName.GEOLOCATION_ENABLED, true);
 
-    assertTrue(page.$.geolocationToggle.checked);
+    assertTrue($<SettingsToggleButtonElement>('geolocationToggle')!.checked);
   });
 
   test('GeolocationToggleDisabled', () => {
     page.setPrefValue(PrefName.GEOLOCATION_ENABLED, false);
 
-    assertFalse(page.$.geolocationToggle.checked);
+    assertFalse($<SettingsToggleButtonElement>('geolocationToggle')!.checked);
   });
 
   test('GeolocationToggleChange', () => {
     page.setPrefValue(PrefName.GEOLOCATION_ENABLED, false);
 
-    const geolocationToggle = page.$.geolocationToggle;
+    const geolocationToggle =
+        $<SettingsToggleButtonElement>('geolocationToggle')!;
     assertTrue(!!geolocationToggle);
 
     geolocationToggle.click();
@@ -56,19 +67,20 @@ suite('GlicDataPage', function() {
   test('MicrophoneToggleEnabled', () => {
     page.setPrefValue(PrefName.MICROPHONE_ENABLED, true);
 
-    assertTrue(page.$.microphoneToggle.checked);
+    assertTrue($<SettingsToggleButtonElement>('microphoneToggle')!.checked);
   });
 
   test('MicrophoneToggleDisabled', () => {
     page.setPrefValue(PrefName.MICROPHONE_ENABLED, false);
 
-    assertFalse(page.$.microphoneToggle.checked);
+    assertFalse($<SettingsToggleButtonElement>('microphoneToggle')!.checked);
   });
 
   test('MicrophoneToggleChange', () => {
     page.setPrefValue(PrefName.MICROPHONE_ENABLED, false);
 
-    const microphoneToggle = page.$.microphoneToggle;
+    const microphoneToggle =
+        $<SettingsToggleButtonElement>('microphoneToggle')!;
     assertTrue(!!microphoneToggle);
 
     microphoneToggle.click();
@@ -83,19 +95,19 @@ suite('GlicDataPage', function() {
   test('TabContextToggleEnabled', () => {
     page.setPrefValue(PrefName.TAB_CONTEXT_ENABLED, true);
 
-    assertTrue(page.$.tabAccessToggle.checked);
+    assertTrue($<SettingsToggleButtonElement>('tabAccessToggle')!.checked);
   });
 
   test('TabContextToggleDisabled', () => {
     page.setPrefValue(PrefName.TAB_CONTEXT_ENABLED, false);
 
-    assertFalse(page.$.tabAccessToggle.checked);
+    assertFalse($<SettingsToggleButtonElement>('tabAccessToggle')!.checked);
   });
 
   test('TabContextToggleChange', () => {
     page.setPrefValue(PrefName.TAB_CONTEXT_ENABLED, false);
 
-    const tabAccessToggle = page.$.tabAccessToggle;
+    const tabAccessToggle = $<SettingsToggleButtonElement>('tabAccessToggle');
     assertTrue(!!tabAccessToggle);
 
     tabAccessToggle.click();
@@ -108,11 +120,12 @@ suite('GlicDataPage', function() {
   });
 
   test('TabContextExpand', async () => {
-    assertFalse(page.$.tabAccessInfoCollapse.opened);
+    const tabAccessToggle = $<SettingsToggleButtonElement>('tabAccessToggle')!;
+    const expandButton =
+        $<SettingsToggleButtonElement>('tabAccessExpandButton')!;
+    const infoCard = $<CrCollapseElement>('tabAccessInfoCollapse')!;
 
-    const tabAccessToggle = page.$.tabAccessToggle;
-    const expandButton = page.$.tabAccessExpandButton;
-    const infoCard = page.$.tabAccessInfoCollapse;
+    assertFalse(infoCard.opened);
 
     // Clicking the expand button opens the info card.
     expandButton.click();
@@ -156,5 +169,49 @@ suite('GlicDataPage', function() {
     await flushTasks();
     assertFalse(page.getPref(PrefName.TAB_CONTEXT_ENABLED).value);
     assertFalse(infoCard.opened);
+  });
+
+  // Ensure the page reacts appropriately to the enterprise policy pref being
+  // flipped off and back on.
+  test('DisabledByPolicy', async () => {
+    page.setPrefValue(PrefName.GEOLOCATION_ENABLED, true);
+    page.setPrefValue(PrefName.MICROPHONE_ENABLED, true);
+    page.setPrefValue(PrefName.TAB_CONTEXT_ENABLED, true);
+
+    // Page starts off with policy enabled. The info card and activity button
+    // are all present.
+    assertTrue(!!$('activityButton'));
+    assertTrue(!!$('tabAccessExpandButton'));
+    assertTrue(!!$('tabAccessInfoCollapse'));
+
+    // Toggles should all have values from the real pref and be enabled.
+    let toggles = page.shadowRoot!.querySelectorAll(
+        'settings-toggle-button[checked]:not([disabled])');
+    assertEquals(3, toggles.length);
+
+    page.setPrefValue(PrefName.SETTINGS_POLICY, POLICY_DISABLED_VALUE);
+    await flushTasks();
+
+    // Now that the policy is disabled, the info card expand and activity button
+    // should be removed. Toggles should all show "off" and be disabled.
+    assertFalse(!!$('activityButton'));
+    assertFalse(!!$('tabAccessExpandButton'));
+    assertFalse(!!$('tabAccessInfoCollapse'));
+
+    toggles = page.shadowRoot!.querySelectorAll(
+        'settings-toggle-button:not([checked])[disabled]');
+    assertEquals(3, toggles.length);
+
+    // Re-enable the policy, the page should go back to the initial state.
+    page.setPrefValue(PrefName.SETTINGS_POLICY, POLICY_ENABLED_VALUE);
+    await flushTasks();
+
+    assertTrue(!!$('activityButton'));
+    assertTrue(!!$('tabAccessExpandButton'));
+    assertTrue(!!$('tabAccessInfoCollapse'));
+
+    toggles = page.shadowRoot!.querySelectorAll(
+        'settings-toggle-button[checked]:not([disabled])');
+    assertEquals(3, toggles.length);
   });
 });

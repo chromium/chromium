@@ -165,7 +165,7 @@ import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateMa
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
-import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
@@ -304,7 +304,7 @@ public class ToolbarManager
 
     private int mCurrentOrientation;
 
-    private final ScrimCoordinator mScrimCoordinator;
+    private final ScrimManager mScrimManager;
 
     private OneshotSupplier<Boolean> mPromoShownOneshotSupplier;
     private OverlayPanelManagerObserver mOverlayPanelManagerObserver;
@@ -624,7 +624,7 @@ public class ToolbarManager
      * @param buttonDataProviders The list of button data providers for the optional toolbar button
      *     in the browsing mode toolbar, given in precedence order.
      * @param tabProvider The {@link ActivityTabProvider} for accessing current activity tab.
-     * @param scrimCoordinator A means of showing the scrim.
+     * @param scrimManager A means of showing the scrim.
      * @param toolbarActionModeCallback Callback that communicates changes in the conceptual mode of
      *     toolbar interaction.
      * @param findToolbarManager The manager for the find in page function.
@@ -673,7 +673,7 @@ public class ToolbarManager
             ObservableSupplier<ShareDelegate> shareDelegateSupplier,
             List<ButtonDataProvider> buttonDataProviders,
             ActivityTabProvider tabProvider,
-            ScrimCoordinator scrimCoordinator,
+            ScrimManager scrimManager,
             ToolbarActionModeCallback toolbarActionModeCallback,
             FindToolbarManager findToolbarManager,
             ObservableSupplier<Profile> profileSupplier,
@@ -718,7 +718,7 @@ public class ToolbarManager
                         activity.getSupportActionBar(),
                         controlContainer,
                         activity.findViewById(R.id.action_bar_black_background));
-        mScrimCoordinator = scrimCoordinator;
+        mScrimManager = scrimManager;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mOmniboxFocusStateSupplier = omniboxFocusStateSupplier;
         mPromoShownOneshotSupplier = promoShownOneshotSupplier;
@@ -1017,7 +1017,7 @@ public class ToolbarManager
         View scrimTarget = mCompositorViewHolder;
         mLocationBarFocusHandler =
                 new LocationBarFocusScrimHandler(
-                        scrimCoordinator,
+                        scrimManager,
                         new TabObscuringCallback(tabObscuringHandler),
                         /* context= */ activity,
                         mLocationBarModel,
@@ -1788,7 +1788,7 @@ public class ToolbarManager
                         mActivity,
                         root.findViewById(R.id.bottom_container_slot),
                         mBrowserControlsSizer,
-                        mScrimCoordinator,
+                        mScrimManager,
                         mOmniboxFocusStateSupplier,
                         mBottomSheetController,
                         mDataSharingTabManager,

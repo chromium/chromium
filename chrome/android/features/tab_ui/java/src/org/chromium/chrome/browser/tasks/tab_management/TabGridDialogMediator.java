@@ -1316,9 +1316,11 @@ public class TabGridDialogMediator
 
     private void dismissAllDirtyTabMessagesForCurrentGroup() {
         @Nullable Token tabGroupId = getCurrentTabGroupId();
-        if (mMessagingBackendService != null && tabGroupId != null) {
-            mMessagingBackendService.clearDirtyTabMessagesForGroup(
-                    EitherGroupId.createLocalId(new LocalTabGroupId(tabGroupId)));
+        @Nullable
+        String collaborationId =
+                TabShareUtils.getCollaborationIdOrNull(tabGroupId, mTabGroupSyncService);
+        if (mMessagingBackendService != null && collaborationId != null) {
+            mMessagingBackendService.clearDirtyTabMessagesForGroup(collaborationId);
         }
     }
 

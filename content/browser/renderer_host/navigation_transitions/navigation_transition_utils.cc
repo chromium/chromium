@@ -240,7 +240,7 @@ void RemoveScreenshotFromDestination(
 }
 
 bool ShouldSkipScreenshotWithMissReason(
-    NavigationRequest& navigation_request,
+    const NavigationRequest& navigation_request,
     std::optional<CacheHitOrMissReason>& reason) {
   if (gfx::Animation::PrefersReducedMotion()) {
     reason = CacheHitOrMissReason::kCacheMissPrefersReducedMotion;
@@ -575,7 +575,7 @@ int NavigationTransitionUtils::FindEntryIndexForNavigationTransitionID(
 }
 
 bool NavigationTransitionUtils::ShouldSkipScreenshot(
-    NavigationRequest& navigation_request) {
+    const NavigationRequest& navigation_request) {
   if (!base::FeatureList::IsEnabled(blink::features::kBackForwardTransitions)) {
     // Preserve existing behavior, where the renderer decides.
     return false;

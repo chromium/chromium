@@ -68,9 +68,7 @@ class CORE_EXPORT ScriptValue final {
   ScriptValue() = default;
 
   ScriptValue(v8::Isolate* isolate, v8::Local<v8::Value> value)
-      : isolate_(isolate), value_(isolate, value) {
-    DCHECK(isolate_);
-  }
+      : value_(isolate, value) {}
 
   ~ScriptValue() {
     // Reset() below eagerly cleans up Oilpan-internal book-keeping data
@@ -95,11 +93,10 @@ class CORE_EXPORT ScriptValue final {
 
   ScriptValue(const ScriptValue& value) = default;
 
-  // TODO(riakf): Use this GetIsolate() only when doing DCHECK inside
-  // ScriptValue.
+  // Prefer getting the Isolate from ScriptState or similar.
   v8::Isolate* GetIsolate() const {
-    DCHECK(isolate_);
-    return isolate_;
+    DCHECK(!IsEmpty());
+    return value_.GetIsolate();
   }
 
   ScriptValue& operator=(const ScriptValue& value) = default;
@@ -149,7 +146,6 @@ class CORE_EXPORT ScriptValue final {
   bool IsEmpty() const { return value_.IsEmpty(); }
 
   void Clear() {
-    isolate_ = nullptr;
     value_.Reset();
   }
 
@@ -167,7 +163,6 @@ class CORE_EXPORT ScriptValue final {
   void Trace(Visitor* visitor) const { visitor->Trace(value_); }
 
  private:
-  v8::Isolate* isolate_ = nullptr;
   WorldSafeV8Reference<v8::Value> value_;
 };
 

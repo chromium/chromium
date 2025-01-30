@@ -14,11 +14,11 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "tablet_sensitive_chrome_public_test_apk"
+            "chrome_public_test_apk_tablet"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "tablet_sensitive_chrome_public_test_apk",
+        "name": "chrome_public_test_apk_tablet",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
           "--gerrit-patchset=${patch_set}",

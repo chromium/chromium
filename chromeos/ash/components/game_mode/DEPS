@@ -1,10 +1,10 @@
 include_rules = [
-  "+ash/components/arc",
+  "+chromeos/ash/experiences/arc",
   "+ash/public/cpp",
   "+ash/display",
   "+ash/shell.h",
   "+ash/wm",
-  "+chromeos/ash/components/arc",
+  "+chromeos/chromeos/ash/experiences/arc",
   "+chromeos/ash/components/borealis",
   "+chromeos/ash/components/dbus/resourced",
   "+ui/aura",

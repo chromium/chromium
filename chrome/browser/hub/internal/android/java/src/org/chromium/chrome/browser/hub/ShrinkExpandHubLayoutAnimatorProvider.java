@@ -316,25 +316,14 @@ public class ShrinkExpandHubLayoutAnimatorProvider implements HubLayoutAnimatorP
             shrinkExpandAnimator.addUpdateListener(ignored -> mAnimationTracker.onUpdate());
         }
 
-        int initialTopRadius = Math.round(animationData.getInitialTopCornerRadius());
-        int initialBottomRadius = Math.round(animationData.getInitialBottomCornerRadius());
-        int initialRectWidth = initialRect.width();
-        int finalRectWidth = finalRect.width();
-        float scaleFactor = (float) initialRectWidth / finalRectWidth;
-        int finalTopRadius = Math.round(animationData.getFinalTopCornerRadius() * scaleFactor);
-        int finalBottomRadius =
-                Math.round(animationData.getFinalBottomCornerRadius() * scaleFactor);
-        int[] initialRoundedCorners =
-                new int[] {
-                    initialTopRadius, initialTopRadius, initialBottomRadius, initialBottomRadius
-                };
-        int[] finalRoundedCorners =
-                new int[] {finalTopRadius, finalTopRadius, finalBottomRadius, finalBottomRadius};
+        int[] initialRoundedCorners = animationData.getInitialCornerRadii();
+        int[] finalRoundedCorners = animationData.getFinalCornerRadii();
         mShrinkExpandImageView.setRoundedCorners(
                 initialRoundedCorners[0],
                 initialRoundedCorners[1],
                 initialRoundedCorners[2],
                 initialRoundedCorners[3]);
+
         ValueAnimator cornerAnimator =
                 RoundedCornerAnimatorUtil.createRoundedCornerAnimator(
                         mShrinkExpandImageView, initialRoundedCorners, finalRoundedCorners);

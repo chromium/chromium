@@ -10,6 +10,8 @@
 #import "components/collaboration/internal/messaging/data_sharing_change_notifier_impl.h"
 #import "components/collaboration/internal/messaging/empty_messaging_backend_service.h"
 #import "components/collaboration/internal/messaging/messaging_backend_service_impl.h"
+#import "components/collaboration/internal/messaging/storage/empty_messaging_backend_database.h"
+#import "components/collaboration/internal/messaging/storage/messaging_backend_database_impl.h"
 #import "components/collaboration/internal/messaging/storage/messaging_backend_store_impl.h"
 #import "components/collaboration/internal/messaging/tab_group_change_notifier_impl.h"
 #import "components/collaboration/public/features.h"
@@ -66,7 +68,19 @@ MessagingBackendServiceFactory::BuildServiceInstanceFor(
       std::make_unique<TabGroupChangeNotifierImpl>(tab_group_sync_service);
   auto data_sharing_change_notifier =
       std::make_unique<DataSharingChangeNotifierImpl>(data_sharing_service);
-  auto messaging_backend_store = std::make_unique<MessagingBackendStoreImpl>();
+
+  std::unique_ptr<MessagingBackendDatabase> messaging_backend_database;
+  if (base::FeatureList::IsEnabled(
+          collaboration::features::kCollaborationMessagingDatabase)) {
+    messaging_backend_database =
+        std::make_unique<MessagingBackendDatabaseImpl>(profile->GetStatePath());
+  } else {
+    messaging_backend_database =
+        std::make_unique<EmptyMessagingBackendDatabase>();
+  }
+
+  auto messaging_backend_store = std::make_unique<MessagingBackendStoreImpl>(
+      std::move(messaging_backend_database));
 
   // iOS does not need any specialized configuration.
   MessagingBackendConfiguration configuration;

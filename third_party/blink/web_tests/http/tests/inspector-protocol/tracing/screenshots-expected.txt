@@ -3,13 +3,16 @@ Recording started
 Tracing complete
 Object: {
 	args: {
+		expected_display_time: number
+		frame_sequence: number
 		snapshot: string
+		source_id: number
 	}
 	cat: string
-	id: string
 	name: string
 	ph: string
 	pid: number
+	s: string
 	tid: number
 	ts: number
 }

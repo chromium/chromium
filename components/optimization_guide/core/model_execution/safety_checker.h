@@ -10,6 +10,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "components/optimization_guide/core/model_execution/multimodal_message.h"
 #include "components/optimization_guide/core/model_execution/safety_config.h"
 #include "components/optimization_guide/core/model_execution/substitution.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
@@ -59,7 +60,7 @@ class SafetyChecker final {
   ~SafetyChecker();
 
   // Runs all of the configured request checks for a request.
-  void RunRequestChecks(const google::protobuf::MessageLite& request_metadata,
+  void RunRequestChecks(const MultimodalMessage& request_metadata,
                         ResultCallback callback);
 
   // Runs the configured check (if any) for evaluating raw output.
@@ -68,7 +69,7 @@ class SafetyChecker final {
                          ResultCallback callback);
 
   // Runs all of the configured checks for evaluating parsed responses.
-  void RunResponseChecks(const google::protobuf::MessageLite& request,
+  void RunResponseChecks(const MultimodalMessage& request,
                          const proto::Any& response,
                          ResponseCompleteness completeness,
                          ResultCallback callback);

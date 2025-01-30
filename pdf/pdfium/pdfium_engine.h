@@ -130,6 +130,7 @@ void InitializeSDK(bool enable_v8,
 void ShutdownSDK();
 
 using SendThumbnailCallback = base::OnceCallback<void(Thumbnail)>;
+using AddSearchResultCallback = base::RepeatingCallback<void(PDFiumRange)>;
 
 // This class implements a PDF rendering engine using the PDFium library.
 //
@@ -502,6 +503,18 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   virtual void HighlightTextFragments(
       base::span<const std::string> text_fragments);
 
+  // Searches for a text fragment within the text of the PDF.
+  void SearchForFragment(const std::u16string& term,
+                         int character_to_start_searching_from,
+                         int last_character_index_to_search,
+                         int page_to_search,
+                         AddSearchResultCallback add_result_callback);
+
+  // Returns all the pages in the PDF.
+  const std::vector<std::unique_ptr<PDFiumPage>>& pages() const {
+    return pages_;
+  }
+
  private:
   // This helper class is used to detect the difference in selection between
   // construction and destruction.  At destruction, it invalidates all the
@@ -687,7 +700,10 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
                       bool case_sensitive,
                       bool first_search,
                       int character_to_start_searching_from,
-                      int current_page);
+                      int last_character_index_to_search,
+                      int current_page,
+                      int last_page_to_search,
+                      AddSearchResultCallback add_result_callback);
 
   // Input event handlers.
   bool OnMouseDown(const blink::WebMouseEvent& event);

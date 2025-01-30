@@ -987,19 +987,19 @@ def GenerateCredits(file_template_file,
                                           extra_third_party_dirs)
 
   if not file_template_file:
-    file_template_file = os.path.join(_REPOSITORY_ROOT, 'components',
-                                      'about_ui', 'resources',
+    file_template_file = os.path.join(_REPOSITORY_ROOT, 'components', 'webui',
+                                      'about', 'resources',
                                       'about_credits.tmpl')
   if not entry_template_file:
-    entry_template_file = os.path.join(_REPOSITORY_ROOT, 'components',
-                                       'about_ui', 'resources',
+    entry_template_file = os.path.join(_REPOSITORY_ROOT, 'components', 'webui',
+                                       'about', 'resources',
                                        'about_credits_entry.tmpl')
 
   # Used to add a link at the top of credits for Chromium code to
   # satisfy the requirements for reciprocal license types.
   if not reciprocal_template_file:
     reciprocal_template_file = os.path.join(_REPOSITORY_ROOT, 'components',
-                                            'about_ui', 'resources',
+                                            'webui', 'about', 'resources',
                                             'about_credits_reciprocal.tmpl')
 
   entry_template = codecs.open(entry_template_file, encoding='utf-8').read()

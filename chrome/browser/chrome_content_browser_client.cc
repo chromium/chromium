@@ -843,10 +843,6 @@ BASE_FEATURE(kSkipPagehideInCommitForDSENavigation,
              "SkipPagehideInCommitForDSENavigation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kDisableJavascriptOptimizerByDefault,
-             "DisableJavascriptOptimizerByDefault",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // A small ChromeBrowserMainExtraParts that invokes a callback when threads are
 // ready. Used to initialize ChromeContentBrowserClient data that needs the UI
 // thread.
@@ -7879,14 +7875,6 @@ bool ChromeContentBrowserClient::AreV8OptimizationsDisabledForSite(
     return map->GetDefaultContentSetting(
                ContentSettingsType::JAVASCRIPT_OPTIMIZER, nullptr) ==
            CONTENT_SETTING_BLOCK;
-  }
-
-  // Activate experiment only for users who haven't explicitly disabled v8
-  // optimization by default so that most of the users in the "experiment
-  // off" branch have v8 optimization enabled.
-  if (base::FeatureList::GetInstance()->IsEnabled(
-          kDisableJavascriptOptimizerByDefault)) {
-    return true;
   }
 
   return (map &&

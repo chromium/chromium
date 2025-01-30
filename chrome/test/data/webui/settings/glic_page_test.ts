@@ -4,7 +4,8 @@
 
 import 'chrome://settings/settings.js';
 
-import type {SettingsGlicPageElement, SettingsPrefsElement} from 'chrome://settings/settings.js';
+import type {CrShortcutInputElement} from 'chrome://settings/lazy_load.js';
+import type {SettingsGlicPageElement, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs, GlicBrowserProxyImpl, SettingsGlicPageFeaturePrefName as PrefName} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
@@ -13,10 +14,17 @@ import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestGlicBrowserProxy} from './test_glic_browser_proxy.js';
 
+const POLICY_ENABLED_VALUE = 0;
+const POLICY_DISABLED_VALUE = 1;
+
 suite('GlicPage', function() {
   let page: SettingsGlicPageElement;
   let settingsPrefs: SettingsPrefsElement;
   let glicBrowserProxy: TestGlicBrowserProxy;
+
+  function $<T extends HTMLElement = HTMLElement>(id: string): T|null {
+    return page.shadowRoot!.querySelector<T>(`#${id}`);
+  }
 
   suiteSetup(function() {
     settingsPrefs = document.createElement('settings-prefs');
@@ -30,25 +38,27 @@ suite('GlicPage', function() {
     page = document.createElement('settings-glic-page');
     page.prefs = settingsPrefs.prefs;
     document.body.appendChild(page);
+
+    page.setPrefValue(PrefName.SETTINGS_POLICY, POLICY_ENABLED_VALUE);
     return flushTasks();
   });
 
   test('LauncherToggleEnabled', () => {
     page.setPrefValue(PrefName.LAUNCHER_ENABLED, true);
 
-    assertTrue(page.$.launcherToggle.checked);
+    assertTrue($<SettingsToggleButtonElement>('launcherToggle')!.checked);
   });
 
   test('LauncherToggleDisabled', () => {
     page.setPrefValue(PrefName.LAUNCHER_ENABLED, false);
 
-    assertFalse(page.$.launcherToggle.checked);
+    assertFalse($<SettingsToggleButtonElement>('launcherToggle')!.checked);
   });
 
   test('LauncherToggleChange', () => {
     page.setPrefValue(PrefName.LAUNCHER_ENABLED, false);
 
-    const launcherToggle = page.$.launcherToggle;
+    const launcherToggle = $<SettingsToggleButtonElement>('launcherToggle')!;
 
     launcherToggle.click();
     assertTrue(page.getPref(PrefName.LAUNCHER_ENABLED).value);
@@ -62,8 +72,8 @@ suite('GlicPage', function() {
   // Test that the keyboard shortcut is collapsed/invisible when the launcher
   // is disabled and shown when the launcher is enabled.
   test('KeyboardShortcutVisibility', async () => {
-    const launcherToggle = page.$.launcherToggle;
-    const keyboardShortcutSetting = page.$.keyboardShortcutSetting;
+    const launcherToggle = $<SettingsToggleButtonElement>('launcherToggle')!;
+    const keyboardShortcutSetting = $('keyboardShortcutSetting');
 
     // The pref starts off disabled, the keyboard shortcut row should be hidden.
     page.setPrefValue(PrefName.LAUNCHER_ENABLED, false);
@@ -88,7 +98,7 @@ suite('GlicPage', function() {
   });
 
   test('ShortcutInputSuspends', async () => {
-    const shortcutInput = page.$.shortcutInput;
+    const shortcutInput = $<CrShortcutInputElement>('shortcutInput')!;
 
     // Clicking on the edit button should suspend shortcuts because the input is
     // waiting for a new shortcut to save
@@ -106,7 +116,7 @@ suite('GlicPage', function() {
   });
 
   test('UpdateShortcut', async () => {
-    const shortcutInput = page.$.shortcutInput;
+    const shortcutInput = $<CrShortcutInputElement>('shortcutInput')!;
     const field = shortcutInput.$.input;
     await microtasksFinished();
     assertEquals(1, glicBrowserProxy.getCallCount('getGlicShortcut'));
@@ -128,5 +138,43 @@ suite('GlicPage', function() {
     keyDownOn(field, 65, ['ctrl']);
     arg = await glicBrowserProxy.whenCalled('setGlicShortcut');
     assertEquals('Ctrl+A', arg);
+  });
+
+  // Ensure the page reacts appropriately to the enterprise policy pref being
+  // flipped off and back on.
+  test('DisabledByPolicy', async () => {
+    page.setPrefValue(PrefName.LAUNCHER_ENABLED, true);
+
+    // Page starts with the policy enabled. The controls should be connected and
+    // visible.
+    assertTrue(!!$('launcherToggle'));
+    assertTrue(!!$('shortcutInput'));
+    assertTrue(isVisible($('shortcutInput')));
+
+    // The toggle should show the value from the real pref and be enabled.
+    let toggles = page.shadowRoot!.querySelectorAll(
+        'settings-toggle-button[checked]:not([disabled])');
+    assertEquals(1, toggles.length);
+
+    page.setPrefValue(PrefName.SETTINGS_POLICY, POLICY_DISABLED_VALUE);
+    await flushTasks();
+
+    // The shortcut input should be removed and launcher toggle off and
+    // disabled.
+    assertFalse(!!$('shortcutInput'));
+    toggles = page.shadowRoot!.querySelectorAll(
+        'settings-toggle-button:not([checked])[disabled]');
+    assertEquals(1, toggles.length);
+
+    // Re-enable the policy, the page should go back to the initial state.
+    page.setPrefValue(PrefName.SETTINGS_POLICY, POLICY_ENABLED_VALUE);
+    await flushTasks();
+
+    assertTrue(!!$('launcherToggle'));
+    assertTrue(!!$('shortcutInput'));
+    assertTrue(isVisible($('shortcutInput')));
+    toggles = page.shadowRoot!.querySelectorAll(
+        'settings-toggle-button[checked]:not([disabled])');
+    assertEquals(1, toggles.length);
   });
 });

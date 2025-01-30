@@ -15,8 +15,8 @@ static_library("tts") {
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
-    "//ash/components/arc",
     "//base",
+    "//chromeos/ash/experiences/arc",
     "//chromeos/ash/experiences/arc/mojom",
     "//components/keyed_service/core",
     "//content/public/browser",
@@ -30,11 +30,11 @@ source_set("unit_tests") {
 
   deps = [
     ":tts",
-    "//ash/components/arc",
-    "//ash/components/arc:arc_test_support",
     "//base",
     "//chrome/browser",
     "//chrome/test:test_support",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc:arc_test_support",
     "//components/keyed_service/core",
     "//content/public/browser",
     "//content/test:test_support",

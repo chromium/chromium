@@ -45,7 +45,6 @@ source_set("app_service") {
 
   if (is_chromeos_ash) {
     deps += [
-      "//ash/components/arc:arc_base",
       "//ash/public/cpp",
       "//ash/webui/projector_app/public/cpp",
       "//ash/webui/system_apps/public:system_web_app_type",
@@ -56,6 +55,7 @@ source_set("app_service") {
       "//chrome/browser/ash/login/demo_mode",
       "//chrome/browser/ash/system_web_apps",
       "//chromeos/ash/components/file_manager:constants",
+      "//chromeos/ash/experiences/arc:arc_base",
       "//chromeos/ash/experiences/system_web_apps/types",
       "//components/app_restore",
       "//components/services/app_service/public/cpp:instance_update",

@@ -4,6 +4,8 @@
 
 package org.chromium.components.browser_ui.widget.dragreorder;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.util.SparseArray;
@@ -16,7 +18,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.ObserverList;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.R;
@@ -115,11 +116,11 @@ public class DragReorderableRecyclerViewAdapter extends SimpleRecyclerViewAdapte
             return true;
         }
 
-        @NullUnmarked
         @Override
         public void onSelectedChanged(
                 RecyclerView.@Nullable ViewHolder viewHolder, int actionState) {
             super.onSelectedChanged(viewHolder, actionState);
+            assumeNonNull(viewHolder);
             // similar to getMovementFlags, this method may be called multiple times
             if (actionState == ItemTouchHelper.ACTION_STATE_DRAG && mBeingDragged != viewHolder) {
                 mBeingDragged = viewHolder;
@@ -335,20 +336,22 @@ public class DragReorderableRecyclerViewAdapter extends SimpleRecyclerViewAdapte
      * @param start The index of the ViewHolder that you want to drag.
      * @param end The index this ViewHolder should be dragged to and dropped at.
      */
-    @NullUnmarked
     public void simulateDragForTests(int start, int end) {
+        assumeNonNull(mRecyclerView);
         RecyclerView.ViewHolder viewHolder = mRecyclerView.findViewHolderForAdapterPosition(start);
+        assert viewHolder != null;
         mItemTouchHelper.startDrag(viewHolder);
         int increment = start < end ? 1 : -1;
         int i = start;
         while (i != end) {
             i += increment;
-            if (!mTouchHelperCallback.canDropOver(
-                    mRecyclerView, viewHolder, mRecyclerView.findViewHolderForAdapterPosition(i))) {
+            RecyclerView.ViewHolder nextViewHolder =
+                    mRecyclerView.findViewHolderForAdapterPosition(i);
+            assert nextViewHolder != null;
+            if (!mTouchHelperCallback.canDropOver(mRecyclerView, viewHolder, nextViewHolder)) {
                 break;
             }
-            mTouchHelperCallback.onMove(
-                    mRecyclerView, viewHolder, mRecyclerView.findViewHolderForAdapterPosition(i));
+            mTouchHelperCallback.onMove(mRecyclerView, viewHolder, nextViewHolder);
         }
         mTouchHelperCallback.onSelectedChanged(viewHolder, ItemTouchHelper.ACTION_STATE_IDLE);
         mTouchHelperCallback.clearView(mRecyclerView, viewHolder);

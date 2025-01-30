@@ -7565,4 +7565,25 @@ TEST_P(PaintPropertyTreeBuilderTest, PrintAnchorPositionInFrame) {
   GetFrame().EndPrinting();
 }
 
+TEST_P(PaintPropertyTreeBuilderTest,
+       Preserve3DUnderBackfaceHiddenWithout3DTransforms) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="parent" style="backface-visibility: hidden">
+      <div id="target" style="transform-style: preserve-3d"></div>
+    </div>
+  )HTML");
+
+  auto* parent_transform = PaintPropertiesForElement("parent")->Transform();
+  EXPECT_EQ(TransformPaintPropertyNode::BackfaceVisibility::kHidden,
+            parent_transform->GetBackfaceVisibilityForTesting());
+  EXPECT_EQ(0, parent_transform->RenderingContextId());
+
+  // Target should not inherit parent's backface-visibility because it creates
+  // a new rendering context.
+  auto* target_transform = PaintPropertiesForElement("target")->Transform();
+  EXPECT_EQ(TransformPaintPropertyNode::BackfaceVisibility::kVisible,
+            target_transform->GetBackfaceVisibilityForTesting());
+  EXPECT_NE(0, target_transform->RenderingContextId());
+}
+
 }  // namespace blink

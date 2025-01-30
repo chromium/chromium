@@ -8,10 +8,14 @@
 #include <map>
 #include <vector>
 
+#include "base/memory/weak_ptr.h"
+#include "components/collaboration/internal/messaging/storage/messaging_backend_database.h"
 #include "components/collaboration/internal/messaging/storage/messaging_backend_store.h"
 
 namespace collaboration::messaging {
 
+// TODO(crbug.com/379870772): store message uuid instead of message to avoid
+// data duplication. Query database with message uuid.
 struct MessagesPerGroup {
   MessagesPerGroup();
   ~MessagesPerGroup();
@@ -29,7 +33,9 @@ struct MessagesPerGroup {
 
 class MessagingBackendStoreImpl : public MessagingBackendStore {
  public:
-  MessagingBackendStoreImpl();
+  using OnLoadCallback = base::OnceCallback<void(bool)>;
+
+  MessagingBackendStoreImpl(std::unique_ptr<MessagingBackendDatabase> database);
   ~MessagingBackendStoreImpl() override;
 
   // MessagingBackendStore:
@@ -80,11 +86,20 @@ class MessagingBackendStoreImpl : public MessagingBackendStore {
       base::RepeatingCallback<bool(collaboration_pb::Message& message)>
           message_callback);
 
+  void OnDatabaseLoaded(
+      OnLoadCallback on_load_callback,
+      bool success,
+      const std::map<std::string, collaboration_pb::Message>& data);
+
   // Store all the messages group by collaboration group.
   std::map<data_sharing::GroupId, std::unique_ptr<MessagesPerGroup>> messages_;
 
+  std::unique_ptr<MessagingBackendDatabase> database_;
+
   // Max age of GetRecentMessages should return.
   base::TimeDelta recent_message_cutoff_duration_ = base::Days(31);
+
+  base::WeakPtrFactory<MessagingBackendStoreImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace collaboration::messaging

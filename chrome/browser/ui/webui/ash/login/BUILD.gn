@@ -234,7 +234,6 @@ static_library("login") {
 
   deps = [
     "//ash",
-    "//ash/components/arc",
     "//ash/constants",
     "//ash/public/cpp/resources:ash_public_unscaled_resources",
     "//ash/webui/common:trusted_types_util",
@@ -295,6 +294,7 @@ static_library("login") {
     "//chromeos/ash/components/login/login_state",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/settings",
+    "//chromeos/ash/experiences/arc",
     "//chromeos/ash/services/assistant/public/proto",
     "//chromeos/ash/services/auth_factor_config",
     "//chromeos/ash/services/multidevice_setup",

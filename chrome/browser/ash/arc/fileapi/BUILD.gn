@@ -63,7 +63,6 @@ static_library("fileapi") {
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
-    "//ash/components/arc",
     "//ash/constants",
     "//base",
     "//chrome/browser/ash/arc:arc_util",
@@ -78,6 +77,7 @@ static_library("fileapi") {
     "//chrome/common",
     "//chromeos/ash/components/dbus/concierge:concierge_proto",
     "//chromeos/ash/components/dbus/virtual_file_provider",
+    "//chromeos/ash/experiences/arc",
     "//content/public/browser",
     "//extensions/browser/api/file_handlers",
     "//mojo/public/cpp/bindings",
@@ -118,8 +118,6 @@ source_set("unit_tests") {
 
   deps = [
     ":fileapi",
-    "//ash/components/arc",
-    "//ash/components/arc:arc_test_support",
     "//base",
     "//base/test:test_support",
     "//chrome/browser/ash/file_system_provider",
@@ -131,6 +129,8 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//chromeos/ash/components/dbus/seneschal",
     "//chromeos/ash/components/dbus/virtual_file_provider",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc:arc_test_support",
     "//chromeos/ash/experiences/arc/mojom",
     "//components/keyed_service/core",
     "//content/test:test_support",

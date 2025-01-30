@@ -732,6 +732,7 @@ void AddDownloadsStrings(content::WebUIDataSource* html_source) {
 void AddGlicStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"glicPageTitle", IDS_SETTINGS_GLIC_PAGE_TITLE},
+      {"glicPolicyDisabledMessage", IDS_SETTINGS_GLIC_POLICY_DISABLED_MESSAGE},
       {"glicPreferencesSection", IDS_SETTINGS_GLIC_PREFERENCES_SECTION},
       {"glicDataSection", IDS_SETTINGS_GLIC_DATA_SECTION},
       {"glicOsWidgetToggle", IDS_SETTINGS_GLIC_OS_WIDGET_TOGGLE},

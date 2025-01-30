@@ -72,6 +72,8 @@ public class BookmarkOpenerTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mBookmarkModel = mActivityTestRule.getActivity().getBookmarkModelForTesting();
+                    mBookmarkModel.setPartnerBookmarkIteratorSupplier(() -> null);
+                    mBookmarkModel.loadEmptyPartnerBookmarkShimForTesting();
                 });
     }
 

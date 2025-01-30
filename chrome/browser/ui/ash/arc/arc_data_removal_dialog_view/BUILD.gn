@@ -10,10 +10,10 @@ static_library("arc_data_removal_dialog_view") {
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
-    "//ash/components/arc:arc_app_constants",
     "//chrome/browser/ash/app_list/app_service",
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/arc/session",
+    "//chromeos/ash/experiences/arc:arc_app_constants",
     "//components/constrained_window",
   ]
 }

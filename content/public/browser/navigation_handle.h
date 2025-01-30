@@ -559,7 +559,7 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // - History navigation to the page with subframes. The subframe
   //   navigations will return 1 here although they don't create a new
   //   navigation entry.
-  virtual int GetNavigationEntryOffset() = 0;
+  virtual int GetNavigationEntryOffset() const = 0;
 
   virtual void RegisterSubresourceOverride(
       blink::mojom::TransferrableURLLoaderPtr transferrable_loader) = 0;

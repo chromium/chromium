@@ -26,6 +26,7 @@
 #import "components/reading_list/core/reading_list_model.h"
 #import "components/reading_list/ios/reading_list_model_bridge_observer.h"
 #import "components/search_engines/template_url_service.h"
+#import "components/send_tab_to_self/features.h"
 #import "components/supervised_user/core/common/features.h"
 #import "components/supervised_user/core/common/supervised_user_constants.h"
 #import "components/sync/service/sync_service.h"
@@ -241,6 +242,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 @property(nonatomic, strong) OverflowMenuAction* lensOverlayAction;
 
 @property(nonatomic, strong) OverflowMenuAction* AIPrototypeAction;
+
+@property(nonatomic, strong) OverflowMenuAction* setTabReminderAction;
 
 @end
 
@@ -691,6 +694,11 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
     self.AIPrototypeAction = [self openAIPrototypeAction];
   }
 
+  if (send_tab_to_self::
+          IsSendTabIOSPushNotificationsEnabledWithTabReminders()) {
+    self.setTabReminderAction = [self newSetTabReminderAction];
+  }
+
   self.editActionsAction.automaticallyUnhighlight = NO;
   self.editActionsAction.useButtonStyling = YES;
 
@@ -805,6 +813,31 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
                                  handler:^{
                                    [weakSelf addToReadingList];
                                  }];
+}
+
+// Creates the "Set a Reminder" action for the overflow menu.
+// This action allows users to set a reminder for a tab.
+- (OverflowMenuAction*)newSetTabReminderAction {
+  CHECK(
+      send_tab_to_self::IsSendTabIOSPushNotificationsEnabledWithTabReminders());
+
+  NSString* hideItemText = l10n_util::GetNSString(
+      IDS_IOS_REMINDER_NOTIFICATIONS_HIDE_SET_A_REMINDER);
+
+  return
+      [self createOverflowMenuActionWithNameID:
+                IDS_IOS_REMINDER_NOTIFICATIONS_SET_A_REMINDER
+                                    actionType:overflow_menu::ActionType::
+                                                   SetTabReminder
+                                    symbolName:kBellBadgeSymbol
+                                  systemSymbol:YES
+                              monochromeSymbol:NO
+                               accessibilityID:kToolsMenuSetTabReminder
+                                  hideItemText:hideItemText
+                                       handler:^{
+                                           // TODO(crbug.com/389912106): Display
+                                           // the new 'Set a Reminder' UI.
+                                       }];
 }
 
 - (OverflowMenuAction*)newClearBrowsingDataAction {
@@ -1892,16 +1925,21 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 #pragma mark - OverflowMenuActionProvider
 
 - (ActionRanking)basePageActions {
-  ActionRanking actions = {
-      overflow_menu::ActionType::Follow,
-      overflow_menu::ActionType::Bookmark,
-      overflow_menu::ActionType::ReadingList,
-      overflow_menu::ActionType::ClearBrowsingData,
-      overflow_menu::ActionType::Translate,
-      overflow_menu::ActionType::DesktopSite,
-      overflow_menu::ActionType::FindInPage,
-      overflow_menu::ActionType::TextZoom,
-  };
+  ActionRanking actions;
+
+  if (send_tab_to_self::
+          IsSendTabIOSPushNotificationsEnabledWithTabReminders()) {
+    actions.push_back(overflow_menu::ActionType::SetTabReminder);
+  }
+
+  actions.push_back(overflow_menu::ActionType::Follow);
+  actions.push_back(overflow_menu::ActionType::Bookmark);
+  actions.push_back(overflow_menu::ActionType::ReadingList);
+  actions.push_back(overflow_menu::ActionType::ClearBrowsingData);
+  actions.push_back(overflow_menu::ActionType::Translate);
+  actions.push_back(overflow_menu::ActionType::DesktopSite);
+  actions.push_back(overflow_menu::ActionType::FindInPage);
+  actions.push_back(overflow_menu::ActionType::TextZoom);
 
   if (IsLensOverlayAvailable()) {
     actions.push_back(overflow_menu::ActionType::LensOverlay);
@@ -1978,6 +2016,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
       return self.lensOverlayAction;
     case overflow_menu::ActionType::AIPrototype:
       return self.AIPrototypeAction;
+    case overflow_menu::ActionType::SetTabReminder:
+      return self.setTabReminderAction;
   }
 }
 
@@ -2018,6 +2058,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
       return [self openLensOverlayAction];
     case overflow_menu::ActionType::AIPrototype:
       return [self openAIPrototypeAction];
+    case overflow_menu::ActionType::SetTabReminder:
+      return [self newSetTabReminderAction];
   }
 }
 

@@ -18,7 +18,7 @@ export function getHtml(this: ProductSpecificationsElement) {
         @see-all-click="${this.seeAllSets_}">
     </product-specifications-header>
 
-    <div id="managementContainer"
+    <div id="contentContainer"
         ?hidden="${this.appState_ === AppState.NO_CONTENT}">
       <div id="summaryContainer">
         <div id="tableDataUnavailable"

@@ -53,6 +53,15 @@ class PropertyTreeDelegate {
 
   virtual bool IsElementInPropertyTrees(ElementId element_id,
                                         ElementListType list_type) const = 0;
+
+  virtual void OnElementFilterMutated(ElementId element_id,
+                                      ElementListType list_type,
+                                      const FilterOperations& filters) = 0;
+
+  virtual void OnElementBackdropFilterMutated(
+      ElementId element_id,
+      ElementListType list_type,
+      const FilterOperations& backdrop_filters) = 0;
 };
 
 }  // namespace cc

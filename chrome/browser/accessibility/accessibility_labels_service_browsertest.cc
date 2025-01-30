@@ -117,6 +117,12 @@ IN_PROC_BROWSER_TEST_F(AccessibilityLabelsBrowserTest, NewWebContents) {
 
   chrome::NewTab(browser());
   web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  // Wait for ChromeVox to attach to the new tab if needed.
+  if (!web_contents->GetAccessibilityMode().has_mode(
+          ui::AXMode::kScreenReader)) {
+    content::AccessibilityNotificationWaiter waiter(web_contents);
+    ASSERT_TRUE(waiter.WaitForNotification());
+  }
   ax_mode = web_contents->GetAccessibilityMode();
   EXPECT_FALSE(ax_mode.has_mode(ui::AXMode::kLabelImages));
 }

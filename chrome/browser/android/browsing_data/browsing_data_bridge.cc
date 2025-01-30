@@ -299,13 +299,21 @@ static void JNI_BrowsingDataBridge_BuildBrowsingDataModelFromDisk(
 static void JNI_BrowsingDataBridge_TriggerHatsSurvey(
     JNIEnv* env,
     Profile* profile,
-    content::WebContents* web_contents) {
+    content::WebContents* web_contents,
+    jboolean quick_delete) {
   HatsService* hats_service =
       HatsServiceFactory::GetForProfile(profile, /*create_if_necessary=*/true);
 
+  std::string trigger = quick_delete ? kHatsSurveyTriggerQuickDelete
+                                     : kHatsSurveyTriggerClearBrowsingData;
+  messages::MessageIdentifier message_id =
+      quick_delete
+          ? messages::MessageIdentifier::PROMPT_HATS_QUICK_DELETE
+          : messages::MessageIdentifier::PROMPT_HATS_CLEAR_BROWSING_DATA;
+
   if (hats_service) {
     hats_service->LaunchDelayedSurveyForWebContents(
-        kHatsSurveyTriggerQuickDelete, web_contents,
+        trigger, web_contents,
         /*timeout_ms=*/5000,
         /*product_specific_bits_data=*/{},
         /*product_specific_string_data=*/{},
@@ -316,6 +324,6 @@ static void JNI_BrowsingDataBridge_TriggerHatsSurvey(
         HatsService::SurveyOptions(
             l10n_util::GetStringUTF16(
                 IDS_QUICK_DELETE_PROMPT_SURVEY_CUSTOM_INVITATION),
-            messages::MessageIdentifier::PROMPT_HATS_QUICK_DELETE));
+            message_id));
   }
 }

@@ -61,7 +61,7 @@ class NavigationTransitionUtils {
       NavigationControllerImpl* controller,
       NavigationTransitionData::UniqueId id);
 
-  static bool ShouldSkipScreenshot(NavigationRequest& navigation_request);
+  static bool ShouldSkipScreenshot(const NavigationRequest& navigation_request);
 
   // Used by tests to deterministically validate the memory budgeting / eviction
   // logic.

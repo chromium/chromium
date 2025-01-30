@@ -99,6 +99,7 @@ class MODULES_EXPORT SpeechRecognition final
   void start(MediaStreamTrack*, ExceptionState&);
   void stopFunction();
   void abort();
+  void updateContext(SpeechRecognitionContext*, ExceptionState&);
   ScriptPromise<IDLBoolean> onDeviceWebSpeechAvailable(ScriptState*,
                                                        const String& lang,
                                                        ExceptionState&);

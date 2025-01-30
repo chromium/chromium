@@ -16,10 +16,10 @@ test("ash_components_unittests") {
   sources = [ "test/run_all_unittests.cc" ]
 
   deps = [
-    "//ash/components/arc:unit_tests",
     "//base/test:test_support",
     "//chromeos/ash/components:test_support",
     "//chromeos/ash/components/chaps_util:unit_tests",
+    "//chromeos/ash/experiences/arc:unit_tests",
     "//chromeos/ash/experiences/arc/mojom:unit_tests",
     "//mojo/core/embedder",
 

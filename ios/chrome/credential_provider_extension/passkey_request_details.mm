@@ -185,14 +185,13 @@
 }
 
 - (BOOL)hasMatchingPassword:(NSArray<id<Credential>>*)credentials {
-  NSUInteger credentialIndex =
-      [credentials indexOfObjectPassingTest:^BOOL(id<Credential> credential,
-                                                  NSUInteger idx, BOOL* stop) {
-        return !credential.isPasskey &&
-               [credential.username isEqualToString:self.userName] &&
-               [credential.serviceIdentifier
-                   isEqualToString:self.relyingPartyIdentifier];
-      }];
+  NSUInteger credentialIndex = [credentials indexOfObjectPassingTest:^BOOL(
+                                                id<Credential> credential,
+                                                NSUInteger idx, BOOL* stop) {
+    return !credential.isPasskey &&
+           [credential.username isEqualToString:self.userName] &&
+           [credential.serviceName isEqualToString:self.relyingPartyIdentifier];
+  }];
   return credentialIndex != NSNotFound;
 }
 

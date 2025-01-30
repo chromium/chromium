@@ -29,6 +29,7 @@ source_set("glic") {
     "glic_window_controller.h",
     "glic_window_resize_animation.h",
     "guest_util.h",
+    "scoped_glic_button_indicator.h",
   ]
   public_deps = [
     ":mojo_bindings",
@@ -71,6 +72,7 @@ source_set("impl") {
     "glic_window_controller.cc",
     "glic_window_resize_animation.cc",
     "guest_util.cc",
+    "scoped_glic_button_indicator.cc",
     "webui_contents_container.cc",
     "webui_contents_container.h",
   ]
@@ -83,6 +85,7 @@ source_set("impl") {
     "//chrome/browser/media/webrtc",
     "//chrome/browser/profiles:profile_util",
     "//chrome/browser/resources/glic:resources",
+    "//chrome/browser/themes:themes",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui:browser_navigator_params_headers",

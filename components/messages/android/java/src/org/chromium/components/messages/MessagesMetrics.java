@@ -415,6 +415,8 @@ public class MessagesMetrics {
                 return "CollaborationRemoved";
             case MessageIdentifier.CCT_ACCOUNT_MISMATCH_NOTICE:
                 return "CctAccountMismatchNotice";
+            case MessageIdentifier.PROMPT_HATS_CLEAR_BROWSING_DATA:
+                return "PromptHatsClearBrowsingData";
             default:
                 return "Unknown";
         }

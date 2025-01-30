@@ -84,7 +84,7 @@ source_set("browser_tests") {
   }
 
   if (is_chromeos_ash) {
-    deps += [ "//ash/components/arc" ]
+    deps += [ "//chromeos/ash/experiences/arc" ]
   }
 }
 

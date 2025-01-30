@@ -26,9 +26,14 @@ class CORE_EXPORT ClipPathClipper {
   // Returns true if the given layout object a resolved clip path status
   static bool ClipPathStatusResolved(const LayoutObject& layout_object);
 
-  // Checks the composited paint status for a LO and checks whether it contains
-  // a composited clip path animation. Assumes ResolveClipPathStatus has been
-  // called, will fail otherwise.
+  // Gets the Animation object for an element with a compositable clip-path
+  // animation. Returns nullptr if the animation is not compositable.
+  static Animation* GetCompositableClipPathAnimation(
+      const LayoutObject& layout_object);
+
+  // Checks the composited paint status for a given Layout Object and checks
+  // whether it contains a composited clip path animation. Assumes
+  // ResolveClipPathStatus has been called, will fail otherwise.
   static bool HasCompositeClipPathAnimation(const LayoutObject& layout_object);
 
   // Resolves the composited clip path status for a layout object, running all

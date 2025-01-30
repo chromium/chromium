@@ -12,6 +12,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/scoped_accessibility_mode_override.h"
 #include "content/shell/browser/shell.h"
 #include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_node.h"
@@ -117,7 +118,7 @@ IN_PROC_BROWSER_TEST_F(
   content::WebContentsImpl* impl =
       static_cast<content::WebContentsImpl*>(shell()->web_contents());
   EXPECT_TRUE(impl->GetAccessibilityMode().is_mode_off());
-  impl->SetAccessibilityMode(ui::kAXModeComplete);
+  ScopedAccessibilityModeOverride override(impl, ui::kAXModeComplete);
   EXPECT_TRUE(impl->GetAccessibilityMode().is_mode_off());
 }
 

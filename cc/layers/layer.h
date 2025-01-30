@@ -33,6 +33,7 @@
 #include "cc/paint/paint_record.h"
 #include "cc/trees/effect_node.h"
 #include "cc/trees/property_tree.h"
+#include "cc/trees/property_tree_layer_tree_delegate.h"
 #include "cc/trees/target_property.h"
 #include "components/viz/common/surfaces/region_capture_bounds.h"
 #include "components/viz/common/surfaces/subtree_capture_id.h"
@@ -936,6 +937,7 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   friend class base::RefCounted<Layer>;
   friend class LayerTreeHostCommon;
   friend class LayerTreeHost;
+  friend class PropertyTreeLayerTreeDelegate;
 
   // For layer tree mode only.
   struct LayerTreeInputs;

@@ -155,6 +155,11 @@ const char kAriaElementReflectionDescription[] =
     "Enable setting ARIA relationship attributes that reference other elements "
     "directly without an IDREF";
 
+const char kAutomaticUsbDetachName[] =
+    "Automatically detach USB kernel drivers";
+const char kAutomaticUsbDetachDescription[] =
+    "Automatically detach kernel drivers when a USB interface is busy.";
+
 const char kAutomotiveFullscreenToolbarImprovementsName[] =
     "Enable automotive fullscreen toolbar improvements.";
 const char kAutomotiveFullscreenToolbarImprovementsDescription[] =

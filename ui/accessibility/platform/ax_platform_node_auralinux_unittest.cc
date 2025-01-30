@@ -1129,7 +1129,7 @@ TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkActionAriaAction) {
   action_name = atk_action_get_name(ATK_ACTION(root_obj), 3);
   action_localized_name =
       atk_action_get_localized_name(ATK_ACTION(root_obj), 3);
-  EXPECT_STREQ("custom#open-button", action_name);
+  EXPECT_STREQ("custom_open-button", action_name);
   EXPECT_STREQ("open", action_localized_name);
   EXPECT_TRUE(atk_action_do_action(ATK_ACTION(root_obj), 3));
   EXPECT_EQ(GetRoot()->GetChildAtIndex(1),

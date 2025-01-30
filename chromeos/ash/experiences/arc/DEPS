@@ -15,10 +15,6 @@ include_rules = [
   "+components/vector_icons",
   "+content/public/browser",
   "+mojo/core",
-
-  # TODO(crbug.com/386148857): For transition period, it is allowed to refer
-  # files between ash/components/arc and chromeos/ash/experiences/arc.
-  "+ash/components/arc",
 ]
 
 specific_include_rules = {

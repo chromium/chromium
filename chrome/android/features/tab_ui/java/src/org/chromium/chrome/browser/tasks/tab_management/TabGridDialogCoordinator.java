@@ -51,7 +51,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
-import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.ServiceStatus;
 import org.chromium.components.data_sharing.DataSharingService;
@@ -106,7 +106,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             @Nullable TabSwitcherResetHandler resetHandler,
             @Nullable GridCardOnClickListenerProvider gridCardOnClickListenerProvider,
             @Nullable AnimationSourceViewProvider animationSourceViewProvider,
-            ScrimCoordinator scrimCoordinator,
+            ScrimManager scrimManager,
             @Nullable ActionConfirmationManager actionConfirmationManager,
             @NonNull ModalDialogManager modalDialogManager,
             @Nullable DesktopWindowStateManager desktopWindowStateManager) {
@@ -144,7 +144,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                 dialogStub.inflate();
 
                 mDialogView = containerView.findViewById(R.id.dialog_parent_view);
-                mDialogView.setupScrimCoordinator(scrimCoordinator);
+                mDialogView.setupScrimManager(scrimManager);
             }
 
             if (!activity.isDestroyed() && !activity.isFinishing()) {

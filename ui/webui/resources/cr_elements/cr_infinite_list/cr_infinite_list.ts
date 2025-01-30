@@ -28,6 +28,7 @@ export class CrInfiniteListElement<T = object> extends CrLitElement {
     // Render items into light DOM using the client provided template
     render(
         html`<cr-lazy-list id="list" .scrollTarget="${this.scrollTarget}"
+          .chunkSize="${this.chunkSize}"
           .scrollOffset="${this.scrollOffset}"
           .listItemHost="${(this.getRootNode() as ShadowRoot).host}"
           .items="${this.items}" .itemSize="${this.itemSize}"
@@ -47,6 +48,7 @@ export class CrInfiniteListElement<T = object> extends CrLitElement {
 
   static override get properties() {
     return {
+      chunkSize: {type: Number},
       scrollOffset: {type: Number},
       scrollTarget: {type: Object},
       usingDefaultScrollTarget: {
@@ -61,6 +63,7 @@ export class CrInfiniteListElement<T = object> extends CrLitElement {
     };
   }
 
+  chunkSize: number = 0;
   scrollOffset: number = 0;
   scrollTarget: HTMLElement = this;
   usingDefaultScrollTarget: boolean = true;
@@ -101,15 +104,22 @@ export class CrInfiniteListElement<T = object> extends CrLitElement {
   }
 
   private updateFocusedItem_() {
-    this.focusedItem_ = this.focusedIndex === -1 ?
-        null :
-        this.querySelector<HTMLElement>(
-            `cr-lazy-list > *:nth-child(${this.focusedIndex + 1})`);
+    if (this.focusedIndex === -1) {
+      this.focusedItem_ = null;
+      return;
+    }
+
+    const list = this.querySelector('cr-lazy-list');
+    assert(list);
+    this.focusedItem_ =
+        (list.domItems()[this.focusedIndex + 1] as HTMLElement | undefined) ||
+        null;
   }
 
   private async onItemFocus_(e: Event) {
-    const renderedItems =
-        this.querySelectorAll<HTMLElement>('cr-lazy-list > *');
+    const list = this.querySelector('cr-lazy-list');
+    assert(list);
+    const renderedItems = list.domItems();
     const focusedIdx = Array.from(renderedItems).findIndex(item => {
       return item === e.target || item.shadowRoot?.activeElement === e.target;
     });

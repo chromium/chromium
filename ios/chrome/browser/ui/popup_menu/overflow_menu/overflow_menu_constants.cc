@@ -113,6 +113,8 @@ ActionType ActionTypeForStringName(std::string action) {
     return overflow_menu::ActionType::LensOverlay;
   } else if (action == "AIPrototype") {
     return overflow_menu::ActionType::AIPrototype;
+  } else if (action == "SetTabReminder") {
+    return overflow_menu::ActionType::SetTabReminder;
   } else {
     NOTREACHED();
   }
@@ -158,6 +160,8 @@ std::string StringNameForActionType(ActionType action) {
       return "LensOverlay";
     case overflow_menu::ActionType::AIPrototype:
       return "AIPrototype";
+    case overflow_menu::ActionType::SetTabReminder:
+      return "SetTabReminder";
   }
 }
 // LINT.ThenChange(/ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_constants.cc:stringToActionType)

@@ -42,7 +42,7 @@ include_rules = [
   "+chrome/updater/updater_scope.h",
   "+chrome/updater/update_service.h",
   "+chromeos",
-  "+components/about_ui",
+  "+components/webui/about",
   "+components/access_code_cast",
   "+components/account_id",
   "+components/account_manager_core",
@@ -519,7 +519,6 @@ include_rules = [
 
   # Code under //ash should be accessed via its public API. See //ash/README.md.
   "-ash",
-  "+ash/components/arc",
   "+ash/constants",
   "+ash/keyboard/ui/grit",
   "+ash/keyboard/ui/resources",

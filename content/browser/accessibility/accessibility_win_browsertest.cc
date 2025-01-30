@@ -5066,11 +5066,11 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
             std::wstring(action_name.Get(), action_name.Length()));
   action_name.Release();
   EXPECT_HRESULT_SUCCEEDED(div_action->get_name(2, action_name.Receive()));
-  EXPECT_EQ(L"custom#edit",
+  EXPECT_EQ(L"custom_edit",
             std::wstring(action_name.Get(), action_name.Length()));
   action_name.Release();
   EXPECT_HRESULT_SUCCEEDED(div_action->get_name(3, action_name.Receive()));
-  EXPECT_EQ(L"custom#open",
+  EXPECT_EQ(L"custom_open",
             std::wstring(action_name.Get(), action_name.Length()));
   action_name.Release();
   EXPECT_HRESULT_FAILED(div_action->get_name(4, action_name.Receive()));

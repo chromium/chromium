@@ -660,7 +660,10 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sCrossDeviceTabPaneAndroid =
             newCachedFlag(CROSS_DEVICE_TAB_PANE_ANDROID, false);
     public static final CachedFlag sDisableInstanceLimit =
-            newCachedFlag(DISABLE_INSTANCE_LIMIT, false);
+            newCachedFlag(
+                    DISABLE_INSTANCE_LIMIT,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sDisableListTabSwitcher =
             newCachedFlag(
                     DISABLE_LIST_TAB_SWITCHER,
@@ -1167,6 +1170,25 @@ public abstract class ChromeFeatureList {
                     DRAW_KEY_NATIVE_EDGE_TO_EDGE, "disable_incognito_ntp_e2e", false);
 
     /**
+     * Cached param whether we disable animations for color changes to the edge-to-edge bottom chin.
+     */
+    public static final BooleanCachedFeatureParam
+            sNavBarColorAnimationDisableBottomChinColorAnimation =
+                    newBooleanCachedFeatureParam(
+                            NAV_BAR_COLOR_ANIMATION, "disable_bottom_chin_color_animation", false);
+
+    /**
+     * Cached param whether we disable animations for color changes to the navigation bar for the
+     * edge-to-edge layout used in edge-to-edge-everywhere.
+     */
+    public static final BooleanCachedFeatureParam
+            sNavBarColorAnimationDisableEdgeToEdgeLayoutColorAnimation =
+                    newBooleanCachedFeatureParam(
+                            NAV_BAR_COLOR_ANIMATION,
+                            "disable_edge_to_edge_layout_color_animation",
+                            false);
+
+    /**
      * Param for the OEMs that need an exception for min versions. Its value should be a comma
      * separated list of integers, and its index should match {@link #sEdgeToEdgeBottomChinOemList}.
      */
@@ -1330,6 +1352,8 @@ public abstract class ChromeFeatureList {
                     mMostVisitedTilesReselectLaxRef,
                     mMostVisitedTilesReselectLaxQuery,
                     mMostVisitedTilesReselectLaxPath,
+                    sNavBarColorAnimationDisableBottomChinColorAnimation,
+                    sNavBarColorAnimationDisableEdgeToEdgeLayoutColorAnimation,
                     sNavBarColorMatchesTabBackgroundColorAnimationDisabled,
                     sNewTabSearchEngineUrlAndroidSwapOutNtp,
                     sNotificationTrampolineLongJobDurationMs,

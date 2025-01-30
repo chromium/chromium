@@ -5367,6 +5367,25 @@
             ]
         }
     ],
+    "ClearBrowsingDataAndroidSurvey": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "en_site_id": "TmqhVJ5cH0tK1KeaPYj0StW6qFe8",
+                        "probability": "0.0075"
+                    },
+                    "enable_features": [
+                        "ClearBrowsingDataAndroidSurvey"
+                    ]
+                }
+            ]
+        }
+    ],
     "ClearDeviceDataOnSignOutForManagedUsers": [
         {
             "platforms": [
@@ -8127,6 +8146,21 @@
                     "name": "Enabled",
                     "disable_features": [
                         "UseGles2ForOopR"
+                    ]
+                }
+            ]
+        }
+    ],
+    "DisableInstanceLimitDesktop": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DisableInstanceLimit"
                     ]
                 }
             ]
@@ -18225,6 +18259,23 @@
             ]
         }
     ],
+    "ProgressiveAccessibility": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ProgressiveAccessibility"
+                    ]
+                }
+            ]
+        }
+    ],
     "ProjectorUseDVSPlaybackEndpoint": [
         {
             "platforms": [
@@ -26070,6 +26121,21 @@
                     "name": "EnabledWithoutIncludes",
                     "enable_features": [
                         "WebViewAutoSAA"
+                    ]
+                }
+            ]
+        }
+    ],
+    "WebViewDisableCHIPS": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebViewDisableCHIPS"
                     ]
                 }
             ]

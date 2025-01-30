@@ -31,7 +31,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
-import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -53,7 +53,7 @@ public class SigninAccountPickerCoordinator implements AccountPickerDelegate {
     private final @SigninAccessPoint int mSigninAccessPoint;
     private final @Nullable CoreAccountId mSelectedCoreAccountId;
 
-    private ScrimCoordinator mScrimCoordinator;
+    private ScrimManager mScrimManager;
     private BottomSheetObserver mBottomSheetObserver;
     private BottomSheetController mBottomSheetController;
     private AccountPickerBottomSheetCoordinator mAccountPickerBottomSheetCoordinator;
@@ -121,12 +121,12 @@ public class SigninAccountPickerCoordinator implements AccountPickerDelegate {
         sheetContainer.setLayoutParams(
                 new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         mContainerView.addView(sheetContainer);
-        mScrimCoordinator = new ScrimCoordinator(mActivity, (ViewGroup) sheetContainer.getParent());
-        mScrimCoordinator.getStatusBarColorSupplier().addObserver(mDelegate::setScrimColor);
+        mScrimManager = new ScrimManager(mActivity, (ViewGroup) sheetContainer.getParent());
+        mScrimManager.getStatusBarColorSupplier().addObserver(mDelegate::setScrimColor);
 
         mBottomSheetController =
                 BottomSheetControllerFactory.createBottomSheetController(
-                        () -> mScrimCoordinator,
+                        () -> mScrimManager,
                         (sheet) -> {},
                         mActivity.getWindow(),
                         KeyboardVisibilityDelegate.getInstance(),

@@ -804,7 +804,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
         return new HubLayoutDependencyHolder(
                 mHubProvider.getHubManagerSupplier(),
                 rootViewSupplier,
-                mRootUiCoordinator.getScrimCoordinator(),
+                mRootUiCoordinator.getScrimManager(),
                 rootViewSupplier::get,
                 incognitoSupplier,
                 adaptOnToolbarAlphaChange());
@@ -976,7 +976,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                                 getTabCreatorManagerSupplier().get(),
                                 getBrowserControlsManager(),
                                 getMultiWindowModeStateDispatcher(),
-                                mRootUiCoordinator.getScrimCoordinator(),
+                                mRootUiCoordinator.getScrimManager(),
                                 getSnackbarManager(),
                                 getModalDialogManager(),
                                 mRootUiCoordinator.getBottomSheetController(),

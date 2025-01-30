@@ -1,5 +1,6 @@
 include_rules = [
   "+components/services/font/public/cpp",
+  "+components/shared_highlighting/core",
   "+skia/ext/font_utils.h",
   "+third_party/pdfium/public",
   "+third_party/re2/src/re2/re2.h",

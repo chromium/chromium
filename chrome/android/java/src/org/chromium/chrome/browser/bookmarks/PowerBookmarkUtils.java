@@ -125,6 +125,21 @@ public class PowerBookmarkUtils {
             Resources resources,
             Profile profile,
             Callback<Boolean> callback) {
+        // TODO(crbug.com/393186352): Fix nullable annotation for bookmarkId parameter.
+        // Early return when bookmarkId is null.
+        if (bookmarkId == null) {
+            Snackbar snackbar =
+                    Snackbar.make(
+                            resources.getString(R.string.price_tracking_error_snackbar),
+                            null,
+                            Snackbar.TYPE_NOTIFICATION,
+                            Snackbar.UMA_PRICE_TRACKING_FAILURE);
+            snackbar.setSingleLine(false);
+            snackbarManager.showSnackbar(snackbar);
+            callback.onResult(false);
+            return;
+        }
+
         // Action to retry the subscription request on failure.
         SnackbarManager.SnackbarController retrySnackbarControllerAction =
                 new SnackbarManager.SnackbarController() {

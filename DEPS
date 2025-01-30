@@ -280,11 +280,11 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
-  'skia_revision': '087e23289016026672376c02c8837ba4091c748b',
+  'skia_revision': '284fd1df8b7cc36e13c1eb4e2037eb3faa6b17fc',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'v8_revision': 'cd72e5887551f365b52e7cb152ab4ced3a21928a',
+  'v8_revision': 'd4d2ac6e7fcdd6fee12c5600ea9262bc9930df28',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
@@ -372,7 +372,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': '40a817dd17e5cd11dd946c939a700755158e5fa3',
+  'devtools_frontend_revision': '12820ef83006c9e0b224fe8aba635c388d7432c8',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -1448,7 +1448,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    '931e687d2baf14c4545dd192f1ffaa5240983f33',
+    '68993e9964357e9e54640907e2b93d3713330f68',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
@@ -2204,7 +2204,7 @@ deps = {
   },
 
   'src/third_party/leveldatabase/src':
-    Var('chromium_git') + '/external/leveldb.git' + '@' + '578eeb702ec0fbb6b9780f3d4147b1076630d633',
+    Var('chromium_git') + '/external/leveldb.git' + '@' + '4ee78d7ea98330f7d7599c42576ca99e3c6ff9c5',
 
   'src/third_party/libFuzzer/src':
     Var('chromium_git') + '/external/github.com/llvm/llvm-project/compiler-rt/lib/fuzzer.git' + '@' +  Var('libfuzzer_revision'),
@@ -2442,7 +2442,7 @@ deps = {
     Var('pdfium_git') + '/pdfium.git' + '@' +  Var('pdfium_revision'),
 
   'src/third_party/perfetto':
-    Var('android_git') + '/platform/external/perfetto.git' + '@' + 'a2f98364efbc365895bc1422d43d90d5d9cfd223',
+    Var('android_git') + '/platform/external/perfetto.git' + '@' + '31475959e1b445a3bd3bdc7820b94cbb3ac2fc9c',
 
   'src/base/tracing/test/data': {
     'bucket': 'perfetto',
@@ -2815,7 +2815,7 @@ deps = {
     Var('chromium_git') + '/webpagereplay.git' + '@' + Var('webpagereplay_revision'),
 
   'src/third_party/webrtc':
-    Var('webrtc_git') + '/src.git' + '@' + 'd643be9fdce42d1a46a6445eb8c0253bd6025234',
+    Var('webrtc_git') + '/src.git' + '@' + 'e20fbb00d0e0219b710da24664e81a10b12c703a',
 
   # Wuffs' canonical repository is at github.com/google/wuffs, but we use
   # Skia's mirror of Wuffs, the same as in upstream Skia's DEPS file.
@@ -4377,7 +4377,7 @@ deps = {
   # grepping.
   'src/chrome/installer/mac/internal': {
       'url': Var('chrome_git') + '/chrome/installer/mac/internal.git' + '@' +
-        '85c282fe6f2763822964028cb89be7b808b07169',
+        'a897caf7789a35ff29961f5bda42eee326b1bc61',
       'condition': 'checkout_src_internal',
   },
 
@@ -4853,12 +4853,10 @@ include_rules = [
   '-third_party/abseil-cpp/absl/base/nullability.h',
   '-third_party/abseil-cpp/absl/container/btree_map.h',
   '-third_party/abseil-cpp/absl/container/btree_set.h',
-  '-third_party/abseil-cpp/absl/crc',
   '-third_party/abseil-cpp/absl/flags',
   '-third_party/abseil-cpp/absl/functional/any_invocable.h',
   '-third_party/abseil-cpp/absl/functional/bind_front.h',
   '-third_party/abseil-cpp/absl/functional/function_ref.h',
-  '-third_party/abseil-cpp/absl/functional/overload.h',
   '-third_party/abseil-cpp/absl/hash',
   '-third_party/abseil-cpp/absl/log',
   '-third_party/abseil-cpp/absl/random',

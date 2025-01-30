@@ -30,6 +30,8 @@ chromium-metrics-reviews@google.com.
   <variant name="BackgroundRequestQueue" summary="BackgroundRequestQueue"/>
   <variant name="BrowsingTopics" summary="BrowsingTopics"/>
   <variant name="CdmStorage" summary="CdmStorage"/>
+  <variant name="CollaborationMessageStorage"
+      summary="CollaborationMessageStorage"/>
   <variant name="Conversions" summary="Conversions"/>
   <variant name="Cookie" summary="Cookie"/>
   <variant name="DatabaseTracker" summary="DatabaseTracker"/>

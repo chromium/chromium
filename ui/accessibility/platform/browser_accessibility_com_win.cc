@@ -869,7 +869,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_name(LONG action_index,
         ax::mojom::StringAttribute::kHtmlId);
     action_verb = html_id.empty()
                       ? AXPlatformNodeBase::kAriaActionsPrefix
-                      : AXPlatformNodeBase::kAriaActionsPrefix + "#" + html_id;
+                      : AXPlatformNodeBase::kAriaActionsPrefix + "_" + html_id;
   }
 
   if (action_verb.empty() || action_verb.compare("none") == 0) {

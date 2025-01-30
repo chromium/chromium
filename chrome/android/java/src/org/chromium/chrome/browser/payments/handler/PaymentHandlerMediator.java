@@ -22,7 +22,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
-import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.payments.SslValidityChecker;
 import org.chromium.components.payments.ui.InputProtector;
 import org.chromium.content_public.browser.LifecycleState;
@@ -238,7 +238,7 @@ import java.lang.annotation.RetentionPolicy;
     }
 
     private void showScrim() {
-        ScrimCoordinator coordinator = mBottomSheetController.getScrimCoordinator();
+        ScrimManager coordinator = mBottomSheetController.getScrimManager();
         if (coordinator != null && !coordinator.isShowingScrim()) {
             mScrimProperties = mBottomSheetController.createScrimParams();
             coordinator.showScrim(mScrimProperties);
@@ -267,7 +267,7 @@ import java.lang.annotation.RetentionPolicy;
     private void hideScrim() {
         setObscureState(false);
 
-        ScrimCoordinator coordinator = mBottomSheetController.getScrimCoordinator();
+        ScrimManager coordinator = mBottomSheetController.getScrimManager();
         if (coordinator != null && coordinator.isShowingScrim()) {
             coordinator.hideScrim(mScrimProperties, /* animate= */ true);
             mScrimProperties = null;

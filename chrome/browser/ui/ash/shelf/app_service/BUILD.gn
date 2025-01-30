@@ -32,8 +32,6 @@ static_library("app_service") {
 
   deps = [
     "//ash",
-    "//ash/components/arc",
-    "//ash/components/arc:arc_app_constants",
     "//ash/constants",
     "//ash/public/cpp",
     "//base",
@@ -60,6 +58,8 @@ static_library("app_service") {
     "//chrome/browser/ui/webui/ash/settings/app_management",
     "//chrome/browser/web_applications",
     "//chromeos/ash/components/borealis",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc:arc_app_constants",
     "//chromeos/ash/experiences/arc/video_accelerator:protected_native_pixmap_query_client",
     "//chromeos/crosapi/cpp:crosapi_constants",
     "//chromeos/ui/base",
@@ -91,8 +91,6 @@ source_set("browser_tests") {
   deps = [
     ":app_service",
     "//ash",
-    "//ash/components/arc",
-    "//ash/components/arc:arc_test_support",
     "//base/test:test_support",
     "//chrome/app/vector_icons",
     "//chrome/browser",
@@ -117,6 +115,8 @@ source_set("browser_tests") {
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/test:test_support",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc:arc_test_support",
     "//components/app_constants",
     "//components/exo",
     "//content/test:test_support",

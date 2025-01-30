@@ -91,7 +91,7 @@ import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
-import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.tile.TileView;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.policy.test.annotations.Policies;
@@ -212,17 +212,14 @@ public class NewTabPageTest {
     // Disable sign-in to suppress sync promo, as it's unrelated to this render test.
     @Policies.Add(@Policies.Item(key = "BrowserSignin", string = "0"))
     public void testRender_FocusFakeBox() throws Exception {
-        ScrimCoordinator scrimCoordinator =
-                mActivityTestRule
-                        .getActivity()
-                        .getRootUiCoordinatorForTesting()
-                        .getScrimCoordinator();
-        scrimCoordinator.disableAnimationForTesting(true);
+        ScrimManager scrimManager =
+                mActivityTestRule.getActivity().getRootUiCoordinatorForTesting().getScrimManager();
+        scrimManager.disableAnimationForTesting(true);
         onView(withId(R.id.search_box)).perform(click());
         View view = mNtp.getView().findViewById(R.id.search_box);
         ChromeRenderTestRule.sanitize(view);
         mRenderTestRule.render(view, "focus_fake_box");
-        scrimCoordinator.disableAnimationForTesting(false);
+        scrimManager.disableAnimationForTesting(false);
     }
 
     @Test

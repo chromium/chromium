@@ -66,7 +66,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabLi
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.CollaborationStatus;
 import org.chromium.components.collaboration.ServiceStatus;
@@ -111,7 +111,7 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
     @Mock private TabCreatorManager mTabCreatorManager;
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Mock private MultiWindowModeStateDispatcher mMultiWindowModeStateDispatcher;
-    @Mock private ScrimCoordinator mScrimCoordinator;
+    @Mock private ScrimManager mScrimManager;
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private TabSwitcherResetHandler mResetHandler;
@@ -189,7 +189,7 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
                         mTabCreatorManager,
                         mBrowserControlsStateProvider,
                         mMultiWindowModeStateDispatcher,
-                        mScrimCoordinator,
+                        mScrimManager,
                         mSnackbarManager,
                         mModalDialogManager,
                         mBottomSheetController,
@@ -324,8 +324,8 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
 
     @Test
     @SmallTest
-    public void testCreateScrimCoordinatorForTablet() {
-        assertNotNull(TabSwitcherPaneCoordinatorFactory.createScrimCoordinatorForTablet(mActivity));
+    public void testCreateScrimManagerForTablet() {
+        assertNotNull(TabSwitcherPaneCoordinatorFactory.createScrimManagerForTablet(mActivity));
     }
 
     @Test

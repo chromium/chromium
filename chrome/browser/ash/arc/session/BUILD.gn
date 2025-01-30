@@ -41,8 +41,6 @@ static_library("session") {
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
-    "//ash/components/arc",
-    "//ash/components/arc:arc_app_constants",
     "//ash/public/cpp",
     "//base",
     "//chrome/app/vector_icons",
@@ -113,6 +111,8 @@ static_library("session") {
     "//chromeos/ash/components/demo_mode",
     "//chromeos/ash/components/install_attributes",
     "//chromeos/ash/components/memory",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc:arc_app_constants",
     "//chromeos/ash/experiences/arc/intent_helper",
     "//chromeos/ash/experiences/arc/media_session",
     "//chromeos/ash/experiences/arc/oemcrypto",
@@ -171,8 +171,6 @@ source_set("unit_tests") {
 
   deps = [
     ":session",
-    "//ash/components/arc",
-    "//ash/components/arc:arc_test_support",
     "//base",
     "//base/test:test_support",
     "//chrome/app/vector_icons",
@@ -199,6 +197,8 @@ source_set("unit_tests") {
     "//chromeos/ash/components/dbus/upstart",
     "//chromeos/ash/components/memory",
     "//chromeos/ash/components/mojo_service_manager:fake_mojo_service_manager",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc:arc_test_support",
     "//chromeos/ash/services/cros_healthd/public/cpp:fakes",
     "//components/strings:components_strings_grit",
     "//content/test:test_support",
@@ -216,7 +216,6 @@ source_set("browser_tests") {
 
   deps = [
     ":session",
-    "//ash/components/arc:arc_test_support",
     "//base",
     "//chrome/browser",
     "//chrome/browser:browser_process",
@@ -228,6 +227,7 @@ source_set("browser_tests") {
     "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",
     "//chrome/test:test_support",
+    "//chromeos/ash/experiences/arc:arc_test_support",
     "//components/account_id",
     "//components/policy/core/common",
     "//components/policy/core/common:test_support",

@@ -216,6 +216,26 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
                               true, "Glic is active"));
 }
 
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, ApiDetach) {
+  RunTestSequence(
+      // Open attached.
+      OpenGlicWindow(GlicWindowMode::kAttached), CheckControllerHasWidget(true),
+      CheckControllerWidgetMode(GlicWindowMode::kAttached),
+
+      // Detach. State will temporarily be kDetaching but will again be kOpen
+      // after the animation runs.
+      // TODO(393203136): Observe state() without polling, then we can verify
+      // that we go to kDetaching and then kOpen.
+      ObserveState(test::internal::kGlicWindowControllerState,
+                   std::ref(window_controller())),
+      Do([this] { window_controller().Detach(); }),
+      WaitForState(test::internal::kGlicWindowControllerState,
+                   GlicWindowController::State::kOpen),
+      StopObservingState(test::internal::kGlicWindowControllerState),
+
+      CheckControllerWidgetMode(GlicWindowMode::kDetached));
+}
+
 class GlicWindowControllerWithMemoryPressureUiTest
     : public GlicWindowControllerUiTest {
  public:

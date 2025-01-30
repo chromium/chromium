@@ -10,32 +10,17 @@ import '../icons.html.js';
 import '../controls/settings_toggle_button.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
-import {CrSettingsPrefs} from '/shared/settings/prefs/prefs_types.js';
-import type {CrCollapseElement} from 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
-import type {CrExpandButtonElement} from 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
-
 import {getTemplate} from './glic_data_page.html.js';
 
 export enum SettingsGlicDataPageFeaturePrefName {
+  SETTINGS_POLICY = 'glic.settings_policy',
   GEOLOCATION_ENABLED = 'glic.geolocation_enabled',
   MICROPHONE_ENABLED = 'glic.microphone_enabled',
   TAB_CONTEXT_ENABLED = 'glic.tab_context_enabled',
 }
 
 const SettingsGlicDataPageElementBase = PrefsMixin(PolymerElement);
-
-export interface SettingsGlicDataPageElement {
-  $: {
-    geolocationToggle: SettingsToggleButtonElement,
-    microphoneToggle: SettingsToggleButtonElement,
-    tabAccessToggle: SettingsToggleButtonElement,
-    tabAccessExpandButton: CrExpandButtonElement,
-    tabAccessInfoCollapse: CrCollapseElement,
-  };
-}
 
 export class SettingsGlicDataPageElement extends
     SettingsGlicDataPageElementBase {
@@ -58,25 +43,32 @@ export class SettingsGlicDataPageElement extends
         type: Boolean,
         value: false,
       },
+
+      // When the policy is disabled, the controls need to all show "off" so we
+      // render a page with all the toggles bound to this fake pref rather than
+      // real pref which could be either value.
+      fakePref_: {
+        type: Object,
+        value: {
+          key: 'glic.fake_pref',
+          type: chrome.settingsPrivate.PrefType.BOOLEAN,
+          value: 0,
+        },
+      },
     };
   }
 
+  private fakePref_: chrome.settingsPrivate.PrefObject;
   private tabAccessToggleExpanded_: boolean;
 
-  override ready() {
-    super.ready();
-
-    CrSettingsPrefs.initialized.then(() => {
-      this.tabAccessToggleExpanded_ =
-          this.getPref<boolean>(
-                  SettingsGlicDataPageFeaturePrefName.TAB_CONTEXT_ENABLED)
-              .value;
-    });
+  private isEnabledByPolicy_(): boolean {
+    return this.getPref<number>(
+                   SettingsGlicDataPageFeaturePrefName.SETTINGS_POLICY)
+               .value === 0;
   }
 
-  private onTabAccessToggleChange_(e: Event) {
-    this.tabAccessToggleExpanded_ =
-        (e.target as SettingsToggleButtonElement).checked;
+  private onTabAccessToggleChange_(event: CustomEvent<{value: boolean}>) {
+    this.tabAccessToggleExpanded_ = event.detail.value;
   }
 }
 

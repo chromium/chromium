@@ -119,18 +119,9 @@ void OomInterventionImpl::Check(MemoryUsage usage) {
 
   bool oom_detected = false;
 
-  oom_detected |= detection_args_->blink_workload_threshold > 0 &&
-                  current_memory.current_blink_usage_kb * 1024 >
-                      detection_args_->blink_workload_threshold;
   oom_detected |= detection_args_->private_footprint_threshold > 0 &&
                   current_memory.current_private_footprint_kb * 1024 >
                       detection_args_->private_footprint_threshold;
-  oom_detected |=
-      detection_args_->swap_threshold > 0 &&
-      current_memory.current_swap_kb * 1024 > detection_args_->swap_threshold;
-  oom_detected |= detection_args_->virtual_memory_thresold > 0 &&
-                  current_memory.current_vm_size_kb * 1024 >
-                      detection_args_->virtual_memory_thresold;
 
   if (oom_detected) {
     base::debug::SetCrashKeyString(GetStateCrashKey(), "during");

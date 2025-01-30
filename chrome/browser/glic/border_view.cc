@@ -11,6 +11,8 @@
 #include "base/debug/dump_without_crashing.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -19,11 +21,11 @@
 #include "ui/compositor/layer.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/canvas.h"
+#include "ui/native_theme/native_theme.h"
 #include "ui/views/view_class_properties.h"
 
 namespace glic {
 namespace {
-constexpr static float kBorderWidth = 5.0f;
 
 // The amount of time for the opacity to go from 0 to 1.
 constexpr static base::TimeDelta kOpacityRampUpDuration =
@@ -37,9 +39,17 @@ constexpr static base::TimeDelta kEmphasisRampDuration =
     base::Milliseconds(500);
 // The amount of time for the border to stay emphasized.
 constexpr static base::TimeDelta kEmphasisDuration = base::Milliseconds(1500);
+// Time since creation will roll over after this time to prevent growing
+// indefinitely.
+constexpr static base::TimeDelta kMaxTime = base::Days(1);
 
-SkV4 SkRGBA4fToSkV4(SkRGBA4f<kPremul_SkAlphaType> color) {
-  return SkV4{color.fR, color.fG, color.fB, color.fA};
+bool UseDarkMode(ThemeService* theme_service) {
+  // Taken from lens_overlay_theme_utils.cc
+  ThemeService::BrowserColorScheme color_scheme =
+      theme_service->GetBrowserColorScheme();
+  return color_scheme == ThemeService::BrowserColorScheme::kSystem
+             ? ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()
+             : color_scheme == ThemeService::BrowserColorScheme::kDark;
 }
 
 float ClampAndInterpolate(gfx::Tween::Type type,
@@ -215,7 +225,10 @@ class BorderView::BorderViewUpdater {
 };
 
 BorderView::BorderView(Browser* browser)
-    : updater_(std::make_unique<BorderViewUpdater>(browser, this)) {
+    : updater_(std::make_unique<BorderViewUpdater>(browser, this)),
+      creation_time_(base::TimeTicks::Now()),
+      theme_service_(ThemeServiceFactory::GetForProfile(browser->GetProfile())),
+      browser_(browser) {
   auto* glic_service =
       GlicKeyedServiceFactory::GetGlicKeyedService(browser->GetProfile());
   // Post-initialization updates. Don't do the update in the updater's ctor
@@ -235,88 +248,82 @@ void BorderView::OnPaint(gfx::Canvas* canvas) {
   if (!compositor_) {
     return;
   }
-
-  SkColor4f border_color =
-      SkColor4f::FromColor(GetColorProvider()->GetColor(ui::kColorSysOutline));
-
-  // TODO(crbug.com/392656256): Include the rounded bottom corners for Mac.
   const std::string_view kDrawRect(R"(
-      const float4 transparent = vec4(0);
-      const float max_extent = 25.0;
-      uniform float u_emphasis;
-      uniform float u_opacity;
-      uniform float2 u_top_left;
-      uniform float2 u_btm_right;
-      uniform float4 u_border_color;
+      // These are taken from kColorSysOutline
+      const float4 dark_color = vec4(142.0, 145.0, 143.0, 255.0) / 255.0;
+      const float4 light_color = vec4(116.0, 119.0, 117.0, 255.0) / 255.0;
 
-      float BorderDistance(float2 coord) {
-        float left = coord.x - u_top_left.x;
-        float top = coord.y - u_top_left.y;
-        float right = u_btm_right.x - coord.x;
-        float bottom = u_btm_right.y - coord.y;
+      const float max_extent = 25.0;
+      const float border_width = 5.0;
+      const float half_pixel = 0.5;
+      uniform int u_time;
+      uniform int u_dark;
+      uniform float u_emphasis;
+      uniform float u_corner_radius;
+      uniform float2 u_resolution;
+
+      void BorderDistance(float2 coord, out float delta, out float aa) {
+        float2 tl = vec2(border_width);
+        float2 br = u_resolution - tl;
+        float2 dtl = coord - tl;
+        float2 dbr = br - coord;
 
         float extent = max_extent * u_emphasis;
-        if (top < extent && left < extent) {
-          return extent - distance(coord,
-              vec2(u_top_left.x + extent,
-                   u_top_left.y + extent));
-        } else if (top < extent && right < extent) {
-          return extent - distance(coord,
-              vec2(u_btm_right.x - extent,
-                   u_top_left.y + extent));
-        } else if (bottom < extent && left < extent) {
-          return extent - distance(coord,
-              vec2(u_top_left.x + extent,
-                   u_btm_right.y - extent));
-        } else if (bottom < extent && right < extent) {
-          return extent - distance(coord,
-              vec2(u_btm_right.x - extent,
-                   u_btm_right.y - extent));
+        float rounded_extent =
+            extent + u_corner_radius - border_width - half_pixel;
+        if (dtl.y < extent && dtl.x < extent) {
+          delta = extent - distance(coord, tl + vec2(extent));
+        } else if (dtl.y < extent && dbr.x < extent) {
+          delta = extent - distance(coord, vec2(br.x - extent, tl.y + extent));
+        } else if (dbr.y < rounded_extent && dtl.x < rounded_extent) {
+          delta = rounded_extent - distance(
+              coord, vec2(tl.x + rounded_extent, br.y - rounded_extent));
+          aa = half_pixel;
+        } else if (dbr.y < rounded_extent && dbr.x < rounded_extent) {
+          delta = rounded_extent - distance(coord, br - vec2(rounded_extent));
+          aa = half_pixel;
+        } else {
+          delta = min(min(min(dtl.x, dtl.y), dbr.x), dbr.y);
         }
-        return min(min(min(left, top), right), bottom);
       }
 
       vec4 main(float2 coord) {
-        // Apply the opacity.
-        float4 adjusted_color = u_border_color * u_opacity;
-        adjusted_color.w = u_opacity;
-
-        if (all(greaterThanEqual(coord, u_top_left)) &&
-            all(lessThan(coord, u_btm_right))) {
-          if (u_emphasis <= 0.0) {
-            return transparent;
-          } else {
-            float extent = max_extent * u_emphasis;
-            float delta = BorderDistance(coord);
-            float opacity = 1.0 - min(max(delta / extent, 0.0), 1.0);
-            opacity *= opacity;
-            return adjusted_color * opacity;
-          }
-        } else {
-          return adjusted_color;
+        float4 border_color = light_color;
+        if (u_dark > 0) {
+          border_color = dark_color;
         }
+        float extent = max_extent * u_emphasis;
+        float delta = 0.0;
+        float aa = 0.0;
+        BorderDistance(coord, delta, aa);
+        float opacity = 1.0 - min(max(delta / (extent + aa), 0.0), 1.0);
+        return border_color * (opacity * opacity);
       }
     )");
 
+  float corner_radius = 0.0f;
+#if BUILDFLAG(IS_MAC)
+  if (!browser_->window()->IsFullscreen()) {
+    corner_radius = 12.0f;
+  }
+#endif
   std::vector<cc::PaintShader::FloatUniform> float_uniforms = {
       {.name = SkString("u_emphasis"), .value = SkScalar(emphasis_)},
-      {.name = SkString("u_opacity"), .value = SkScalar(opacity_)}};
+      {.name = SkString("u_corner_radius"), .value = SkScalar(corner_radius)}};
   std::vector<cc::PaintShader::Float2Uniform> float2_uniforms = {
-      {.name = SkString("u_top_left"),
-       .value = SkV2{bounds().origin().x() + kBorderWidth,
-                     bounds().origin().y() + kBorderWidth}},
-      {.name = SkString("u_btm_right"),
-       .value = SkV2{bounds().bottom_right().x() - kBorderWidth,
-                     bounds().bottom_right().y() - kBorderWidth}}};
-  std::vector<cc::PaintShader::Float4Uniform> float4_uniforms = {
-      {.name = SkString("u_border_color"),
-       .value = SkRGBA4fToSkV4(border_color.premul())}};
+      {.name = SkString("u_resolution"),
+       .value = SkV2{static_cast<float>(bounds().width()),
+                     static_cast<float>(bounds().height())}}};
+  std::vector<cc::PaintShader::IntUniform> int_uniforms = {
+      {.name = SkString("u_time"), .value = GetMillisecondsSinceCreation()},
+      {.name = SkString("u_dark"),
+       .value = UseDarkMode(theme_service_) ? 1 : 0}};
 
   views::View::OnPaint(canvas);
   cc::PaintFlags flags;
   flags.setShader(cc::PaintShader::MakeSkSLCommand(
       kDrawRect, std::move(float_uniforms), std::move(float2_uniforms),
-      std::move(float4_uniforms), {}));
+      /*float4_uniforms=*/{}, std::move(int_uniforms)));
   canvas->DrawRect(gfx::RectF(bounds()), flags);
 }
 
@@ -324,6 +331,7 @@ void BorderView::OnAnimationStep(base::TimeTicks timestamp) {
   if (tester_) [[unlikely]] {
     timestamp = tester_->GetTestTimestamp();
   }
+  last_animation_step_time_ = timestamp;
   if (first_frame_time_.is_null()) {
     first_frame_time_ = timestamp;
   }
@@ -424,6 +432,10 @@ void BorderView::CancelAnimation() {
   SetVisible(false);
 }
 
+int BorderView::GetMillisecondsSinceCreationForTesting() const {
+  return GetMillisecondsSinceCreation();
+}
+
 float BorderView::GetEmphasis(base::TimeDelta delta) const {
   if (skip_animation_) {
     return 0.f;
@@ -490,6 +502,22 @@ void BorderView::StartRampingDown() {
   if (!compositor_->HasAnimationObserver(this)) {
     compositor_->AddAnimationObserver(this);
   }
+}
+
+int BorderView::GetMillisecondsSinceCreation() const {
+  if (last_animation_step_time_.is_null()) {
+    return 0;
+  }
+  auto time_since_creation = last_animation_step_time_ - GetCreationTime();
+  return static_cast<int>(time_since_creation.InMilliseconds() %
+                          kMaxTime.InMilliseconds());
+}
+
+base::TimeTicks BorderView::GetCreationTime() const {
+  if (tester_ && !tester_->GetTestCreationTime().is_null()) [[unlikely]] {
+    return tester_->GetTestCreationTime();
+  }
+  return creation_time_;
 }
 
 BEGIN_METADATA(BorderView)

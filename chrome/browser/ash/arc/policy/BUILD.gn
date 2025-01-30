@@ -23,8 +23,6 @@ static_library("policy") {
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
-    "//ash/components/arc",
-    "//ash/components/arc:prefs",
     "//ash/constants",
     "//base",
     "//chrome/browser:browser_process",
@@ -41,6 +39,8 @@ static_library("policy") {
     "//chrome/browser/profiles:profile",
     "//chrome/common:constants",
     "//chromeos/ash/components/system",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc:prefs",
     "//chromeos/ash/experiences/arc/mojom",
     "//chromeos/ash/experiences/arc/session",
     "//chromeos/ash/experiences/arc/session:connection_holder",
@@ -79,8 +79,6 @@ source_set("unit_tests") {
 
   deps = [
     ":policy",
-    "//ash/components/arc",
-    "//ash/components/arc:arc_test_support",
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
@@ -95,6 +93,8 @@ source_set("unit_tests") {
     "//chromeos/ash/components/dbus/concierge",
     "//chromeos/ash/components/dbus/upstart",
     "//chromeos/ash/components/system",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc:arc_test_support",
     "//components/account_id",
     "//components/keyed_service/core",
     "//components/session_manager/core",

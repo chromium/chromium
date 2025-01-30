@@ -11,7 +11,6 @@ config("network_config") {
 component("network") {
   configs += [ ":network_config" ]
   deps = [
-    "//ash/components/arc:prefs",
     "//ash/constants",
     "//base",
     "//chromeos/ash/components/cryptohome",
@@ -23,6 +22,7 @@ component("network") {
     "//chromeos/ash/components/network/metrics",
     "//chromeos/ash/components/network/onc",
     "//chromeos/ash/components/network/proxy",
+    "//chromeos/ash/experiences/arc:prefs",
     "//chromeos/ash/services/cellular_setup/public/mojom",
     "//chromeos/ash/services/hotspot_config/public/cpp",
     "//chromeos/ash/services/hotspot_config/public/mojom",
@@ -289,7 +289,6 @@ source_set("unit_tests") {
   deps = [
     ":network",
     ":test_support",
-    "//ash/components/arc:prefs",
     "//ash/constants",
     "//base",
     "//base:i18n",
@@ -304,6 +303,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/network/metrics:unit_tests",
     "//chromeos/ash/components/network/onc:unit_tests",
     "//chromeos/ash/components/network/proxy:unit_tests",
+    "//chromeos/ash/experiences/arc:prefs",
     "//chromeos/ash/services/cellular_setup/public/mojom",
     "//chromeos/ash/services/hotspot_config/public/cpp",
     "//chromeos/ash/services/hotspot_config/public/cpp:test_support",

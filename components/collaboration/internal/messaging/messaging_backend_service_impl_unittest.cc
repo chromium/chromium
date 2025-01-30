@@ -1378,6 +1378,9 @@ TEST_F(MessagingBackendServiceImplTest,
   EXPECT_CALL(*mock_tab_group_sync_service_,
               GetGroup(tab_groups::EitherGroupID(tab_group.saved_guid())))
       .WillRepeatedly(Return(tab_group));
+  std::vector<tab_groups::SavedTabGroup> all_groups = {tab_group};
+  EXPECT_CALL(*mock_tab_group_sync_service_, GetAllGroups())
+      .WillRepeatedly(Return(all_groups));
 
   // Query service for the messages of the group. It should have two persistent
   // messages for the tab (chip and dirty dot), and one for the tab group (dirty
@@ -1419,8 +1422,7 @@ TEST_F(MessagingBackendServiceImplTest,
       .WillOnce(SaveArg<0>(&message3));  // Capture the third message
 
   // Invoke the service API.
-  service_->ClearDirtyTabMessagesForGroup(
-      tab_groups::EitherGroupID(tab_group.saved_guid()));
+  service_->ClearDirtyTabMessagesForGroup(collaboration_group_id);
 
   // Verify the messages that were hidden.
   // Chip message of tab.

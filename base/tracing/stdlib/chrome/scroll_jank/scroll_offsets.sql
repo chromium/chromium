@@ -29,21 +29,87 @@
 -- various stages of input processing, and are unified by a single
 -- scroll_update_id value, recorded as scroll_deltas.trace_id in each event.
 
-INCLUDE PERFETTO MODULE chrome.chrome_scrolls;
+INCLUDE PERFETTO MODULE chrome.event_latency;
 INCLUDE PERFETTO MODULE chrome.scroll_jank.scroll_jank_v3;
 
--- All (coalesced and non-coalesced) vertical scrolling deltas and their
--- associated scroll ids. Delta values are recorded after being scaled to the
--- device's screen size in the TranslateAndScaleWebInputEvent trace event. In
--- this trace event, the deltas recorded represent the true (read "original")
--- values that the Browser receives from Android, and the only processing is
--- scaling and translation.
-CREATE PERFETTO TABLE _translate_and_scale_scroll_deltas AS
+-- The raw input deltas for all input events which were part of a scroll.
+CREATE PERFETTO TABLE chrome_scroll_input_deltas(
+  -- Scroll update id (aka LatencyInfo.ID) for this scroll update input
+  -- event.
+  scroll_update_id LONG,
+  -- The delta in pixels (scaled to the device's screen size) how much this
+  -- input event moved over the X axis vs previous, as reported by the OS.
+  delta_x DOUBLE,
+  -- The delta in pixels (scaled to the device's screen size) how much this
+  -- input event moved over the Y axis vs previous, as reported by the OS.
+  delta_y DOUBLE
+) AS
 SELECT
   EXTRACT_ARG(arg_set_id, 'scroll_deltas.trace_id') AS scroll_update_id,
+  EXTRACT_ARG(arg_set_id, 'scroll_deltas.original_delta_x') AS delta_x,
   EXTRACT_ARG(arg_set_id, 'scroll_deltas.original_delta_y') AS delta_y
 FROM slice
 WHERE slice.name = 'TranslateAndScaleWebInputEvent';
+
+-- The raw coordinates and pixel offsets for all input events which were part of
+-- a scroll.
+CREATE PERFETTO TABLE chrome_scroll_input_offsets(
+  -- An ID for this scroll update (aka LatencyInfo.ID).
+  scroll_update_id LONG,
+  -- An ID for the scroll this scroll update belongs to.
+  scroll_id LONG,
+  -- Timestamp the of the scroll input event.
+  ts TIMESTAMP,
+  -- The delta in raw coordinates between this scroll update event and the
+  -- previous.
+  delta_y DOUBLE,
+  -- The total delta of all scroll updates within the same as scroll up to and
+  -- including this scroll update.
+  relative_offset_y DOUBLE
+) AS
+SELECT
+  delta.scroll_update_id,
+  scroll_update.scroll_id,
+  ts,
+  delta_y,
+  SUM(delta_y) OVER (
+    PARTITION BY scroll_id
+    ORDER BY ts
+    ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+  ) AS relative_offset_y
+FROM chrome_scroll_input_deltas delta
+JOIN chrome_gesture_scroll_updates scroll_update USING (scroll_update_id);
+
+-- The page offset delta (by how much the page was scrolled vs previous frame)
+-- for each frame.
+-- This is the resulting delta that is shown to the user after the input has
+-- been processed. `chrome_scroll_input_deltas` tracks the underlying signal
+-- deltas between consecutive input events.
+CREATE PERFETTO TABLE chrome_scroll_presented_deltas(
+  -- Scroll update id (aka LatencyInfo.ID) for this scroll update input
+  -- event.
+  scroll_update_id LONG,
+  -- The delta in pixels (scaled to the device's screen size) how much this
+  -- input event moved over the X axis vs previous, as reported by the OS.
+  delta_x DOUBLE,
+  -- The delta in pixels (scaled to the device's screen size) how much this
+  -- input event moved over the Y axis vs previous, as reported by the OS.
+  delta_y DOUBLE,
+  -- The page offset in pixels (scaled to the device's screen size) along
+  -- the X axis.
+  offset_x LONG,
+  -- The page offset in pixels (scaled to the device's screen size) along
+  -- the Y axis.
+  offset_y LONG
+) AS
+SELECT
+  EXTRACT_ARG(arg_set_id, 'scroll_deltas.trace_id') AS scroll_update_id,
+  EXTRACT_ARG(arg_set_id, 'scroll_deltas.provided_to_compositor_delta_x') AS delta_x,
+  EXTRACT_ARG(arg_set_id, 'scroll_deltas.provided_to_compositor_delta_y') AS delta_y,
+  EXTRACT_ARG(arg_set_id, 'scroll_deltas.visual_offset_x') AS offset_x,
+  EXTRACT_ARG(arg_set_id, 'scroll_deltas.visual_offset_y') AS offset_y
+FROM slice
+WHERE slice.name = 'InputHandlerProxy::HandleGestureScrollUpdate_Result';
 
 -- Associate the gesture scroll update OS timestamp with the delta.
 CREATE PERFETTO TABLE _scroll_deltas_with_timestamp AS
@@ -52,7 +118,7 @@ SELECT
   slice.ts AS input_ts,
   data.scroll_update_id,
   data.delta_y
-FROM _translate_and_scale_scroll_deltas data
+FROM chrome_scroll_input_deltas data
   JOIN slice ON slice.name = 'EventLatency'
     AND data.scroll_update_id = EXTRACT_ARG(arg_set_id,
         'event_latency.event_latency_id');
@@ -83,50 +149,14 @@ SELECT
 FROM _scroll_deltas_with_scroll_id AS deltas
   LEFT JOIN chrome_frame_info_with_delay AS delay USING(scroll_update_id);
 
--- The raw coordinates and pixel offsets for all input events which were part of
--- a scroll.
-CREATE PERFETTO TABLE chrome_scroll_input_offsets(
-  -- An ID that ties all EventLatencies in a particular scroll. (implementation
-  -- note: This is the EventLatency TraceId of the GestureScrollbegin).
-  scroll_id LONG,
-  -- An ID for this particular EventLatency regardless of it being presented or
-  -- not.
-  event_latency_slice_id LONG,
-  -- An ID that ties this |event_latency_id| with the Trace Id (another
-  -- event_latency_id) that it was presented with.
-  scroll_update_id LONG,
-  -- Timestamp the of the scroll input event.
-  ts TIMESTAMP,
-  -- The delta in raw coordinates between this scroll update event and the
-  -- previous.
-  delta_y DOUBLE,
-  -- The pixel offset of this scroll update event compared to the initial one.
-  relative_offset_y DOUBLE
-) AS
-SELECT
-  scroll_id,
-  event_latency_slice_id,
-  scroll_update_id,
-  input_ts AS ts,
-  delta_y,
-  SUM(IFNULL(delta_y, 0)) OVER ( PARTITION BY scroll_id
-    ORDER BY scroll_update_id, input_ts
-    ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS relative_offset_y
-FROM _scroll_deltas_with_delays;
-
 -- The scrolling offsets for the actual (applied) scroll events. These are not
 -- necessarily inclusive of all user scroll events, rather those scroll events
 -- that are actually processed.
 CREATE PERFETTO TABLE chrome_presented_scroll_offsets(
-  -- An ID that ties all EventLatencies in a particular scroll. (implementation
-  -- note: This is the EventLatency TraceId of the GestureScrollbegin).
-  scroll_id LONG,
-  -- An ID for this particular EventLatency regardless of it being presented or
-  -- not.
-  event_latency_slice_id LONG,
-  -- An ID that ties this |event_latency_id| with the Trace Id (another
-  -- event_latency_id) that it was presented with.
+  -- An ID for this scroll update (aka LatencyInfo.ID).
   scroll_update_id LONG,
+  -- An ID for the scroll this scroll update belongs to.
+  scroll_id LONG,
   -- Presentation timestamp.
   ts TIMESTAMP,
   -- The delta in raw coordinates between this scroll update event and the
@@ -135,15 +165,32 @@ CREATE PERFETTO TABLE chrome_presented_scroll_offsets(
   -- The pixel offset of this scroll update event compared to the initial one.
   relative_offset_y DOUBLE
 ) AS
+WITH data AS (
+  SELECT
+    scroll_update_id,
+    scroll_id,
+    presentation_timestamp AS ts,
+    -- Aggregate the deltas for each presentation time.
+    SUM(delta_y) OVER (PARTITION BY presentation_timestamp) AS delta_y,
+    SUM(delta_y) OVER (
+      PARTITION BY scroll_id
+      ORDER BY presentation_timestamp
+      GROUPS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+    ) AS relative_offset_y,
+    -- For each presentation time, select the last scroll update as there can
+    -- be multiple EventLatencies with the same presentation time.
+    ROW_NUMBER() OVER (
+        PARTITION BY presentation_timestamp
+        ORDER BY scroll_update.ts
+    ) AS rank
+  FROM chrome_scroll_presented_deltas
+  JOIN chrome_gesture_scroll_updates scroll_update USING (scroll_update_id)
+)
 SELECT
-  scroll_id,
-  event_latency_slice_id,
   scroll_update_id,
-  presentation_timestamp AS ts,
-  total_delta AS delta_y,
-  SUM(IFNULL(total_delta, 0)) OVER ( PARTITION BY scroll_id
-    ORDER BY scroll_update_id, presentation_timestamp
-    ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS relative_offset_y
-FROM _scroll_deltas_with_delays
-WHERE presentation_timestamp IS NOT NULL
-;
+  scroll_id,
+  ts,
+  delta_y,
+  relative_offset_y
+FROM data
+WHERE rank = 1;

@@ -3602,7 +3602,7 @@ component("ash") {
   data_deps = [ ":dbus_service_files" ]
 
   assert_no_deps = [
-    "//ash/components/arc",
+    "//chromeos/ash/experiences/arc",
 
     # Ash should not depend upon content at all.
     "//content/public/browser",
@@ -4610,7 +4610,6 @@ test("ash_unittests") {
     "//ash/assistant/ui/colors:assistant_colors_views",
     "//ash/assistant/ui/test_support",
     "//ash/assistant/util",
-    "//ash/components/arc:notification_test_support",
     "//ash/constants",
     "//ash/dbus:privacy_screen_proto",
     "//ash/in_session_auth",
@@ -4684,6 +4683,7 @@ test("ash_unittests") {
     "//chromeos/ash/components/scalable_iph:constants",
     "//chromeos/ash/components/settings",
     "//chromeos/ash/components/system",
+    "//chromeos/ash/experiences/arc:notification_test_support",
     "//chromeos/ash/services/assistant:test_support",
     "//chromeos/ash/services/assistant/public/cpp",
     "//chromeos/ash/services/assistant/public/mojom",

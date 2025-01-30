@@ -63,8 +63,7 @@ def MaybeRunCommand(name, argv, stamp_file, use_build_server=False):
       raise e
 
     SendMessage(
-        sock,
-        json.dumps({
+        sock, {
             'name': name,
             'message_type': ADD_TASK,
             'cmd': argv,
@@ -72,7 +71,7 @@ def MaybeRunCommand(name, argv, stamp_file, use_build_server=False):
             'tty': autoninja_tty,
             'build_id': autoninja_build_id,
             'stamp_file': stamp_file,
-        }).encode('utf8'))
+        })
 
   # Siso needs the stamp file to be created in order for the build step to
   # complete. If the task fails when the build server runs it, the build server
@@ -91,12 +90,13 @@ def MaybeTouch(stamp_file):
   build_utils.Touch(stamp_file)
 
 
-def SendMessage(sock: socket.socket, message: bytes):
-  size_prefix = struct.pack('!i', len(message))
-  sock.sendall(size_prefix + message)
+def SendMessage(sock: socket.socket, message: dict):
+  data = json.dumps(message).encode('utf-8')
+  size_prefix = struct.pack('!i', len(data))
+  sock.sendall(size_prefix + data)
 
 
-def ReceiveMessage(sock: socket.socket):
+def ReceiveMessage(sock: socket.socket) -> dict:
   size_prefix = b''
   remaining = 4  # sizeof(int)
   while remaining > 0:
@@ -113,4 +113,6 @@ def ReceiveMessage(sock: socket.socket):
       break
     received.append(data)
     remaining -= len(data)
-  return b''.join(received)
+  if received:
+    return json.loads(b''.join(received))
+  return None

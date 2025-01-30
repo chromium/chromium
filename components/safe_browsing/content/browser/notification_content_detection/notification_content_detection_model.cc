@@ -102,7 +102,8 @@ void NotificationContentDetectionModel::PostprocessCategories(
       base::UmaHistogramPercentage(kSuspiciousScoreHistogram,
                                    100 * category.score);
       permissions::PermissionUmaUtil::RecordPermissionUsageNotificationShown(
-          did_match_allowlist, 100 * category.score, browser_context_, origin);
+          is_allowlisted_by_user, did_match_allowlist, 100 * category.score,
+          browser_context_, origin);
       bool is_suspicious =
           (100 * category.score >
            kShowWarningsForSuspiciousNotificationsScoreThreshold.Get()) &&

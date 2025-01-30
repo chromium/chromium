@@ -30,8 +30,6 @@ static_library("apps") {
   ]
 
   deps = [
-    "//ash/components/arc",
-    "//ash/components/arc:arc_app_constants",
     "//ash/constants",
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_public_dependencies",
@@ -47,6 +45,8 @@ static_library("apps") {
     "//chrome/browser/ui/webui/ash/settings/search",
     "//chrome/browser/web_applications",
     "//chrome/common",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc:arc_app_constants",
     "//components/strings:components_strings",
     "//content/public/browser",
     "//content/public/common",
@@ -68,8 +68,6 @@ source_set("browser_tests") {
 
   deps = [
     ":apps",
-    "//ash/components/arc:arc_test_support",
-    "//ash/components/arc:notification_test_support",
     "//ash/constants",
     "//base",
     "//base/test:test_support",
@@ -84,6 +82,8 @@ source_set("browser_tests") {
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/test:test_support_ui",
+    "//chromeos/ash/experiences/arc:arc_test_support",
+    "//chromeos/ash/experiences/arc:notification_test_support",
     "//chromeos/ash/experiences/arc/mojom",
     "//components/prefs",
     "//content/test:test_support",

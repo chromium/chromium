@@ -32,6 +32,7 @@ DECLARE_CUSTOM_ELEMENT_EVENT_TYPE(kGlicWidgetAttached);
 class GlicView;
 class WebUIContentsContainer;
 class GlicWindowResizeAnimation;
+class ScopedGlicButtonIndicator;
 
 // This class owns and manages the glic window. This class has the same lifetime
 // as the GlicKeyedService, so it exists if and only if the profile exists.
@@ -176,6 +177,7 @@ class GlicWindowController : public views::WidgetObserver {
     kOpenAnimation,
     kWaitingForGlicToLoad,
     kOpen,
+    kDetaching,
     kClosingToReopenDetached,
     kCloseAnimation,
   };
@@ -217,6 +219,9 @@ class GlicWindowController : public views::WidgetObserver {
   // Finishes closing off the widget after running the closing animation.
   void CloseFinish(bool reopen_detached);
 
+  // Called when the Detach() animation ends.
+  void DetachFinished();
+
   // Causes an immediate close (eg, for during shutdown).
   void ForceClose();
 
@@ -232,9 +237,17 @@ class GlicWindowController : public views::WidgetObserver {
   // Reparents the glic widget under 'browser'.
   void AttachToBrowser(Browser* browser);
 
-  // If `widget` is within attachment distance of a browser window's glic
+  // If glic is within attachment distance of a browser window's glic
   // button, attach the glic window to the button's position.
-  void HandleAttachmentToBrowserWindows(views::Widget* widget);
+  void HandleAttachmentToBrowserWindows();
+
+  // Finds a browser within attachment distance of glic to toggle the attachment
+  // indicator.
+  void HandleGlicButtonIndicator();
+
+  // Find and return a browser within attachment distance. Returns nullptr if no
+  // browsers are within attachment distance.
+  Browser* FindBrowserForAttachment();
 
   // Reparents the glic window to an empty holder Widget when in a detached
   // state. Initializes the holder widget if it hasn't been created yet.
@@ -341,6 +354,8 @@ class GlicWindowController : public views::WidgetObserver {
   base::TimeTicks show_start_time_;
   // Web client's operation modes.
   mojom::WebClientMode starting_mode_;
+
+  std::unique_ptr<ScopedGlicButtonIndicator> scoped_glic_button_indicator_;
 
   base::WeakPtrFactory<GlicWindowController> weak_ptr_factory_{this};
 };

@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "chrome/enterprise_companion/crash_client.h"
 #include "chrome/enterprise_companion/enterprise_companion.h"
+#include "chrome/enterprise_companion/flags.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>

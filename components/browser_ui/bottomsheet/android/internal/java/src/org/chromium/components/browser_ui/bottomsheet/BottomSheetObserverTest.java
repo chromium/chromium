@@ -31,7 +31,7 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
-import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
@@ -108,7 +108,7 @@ public class BottomSheetObserverTest {
     private TestSheetObserver mObserver;
     private TestBottomSheetContent mSheetContent;
     private BottomSheetControllerImpl mBottomSheetController;
-    private ScrimCoordinator mScrimCoordinator;
+    private ScrimManager mScrimManager;
     private BottomSheetTestSupport mTestSupport;
 
     @BeforeClass
@@ -125,9 +125,8 @@ public class BottomSheetObserverTest {
         mBottomSheetController =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
-                            mScrimCoordinator =
-                                    new ScrimCoordinator(sTestRule.getActivity(), rootView);
-                            Supplier<ScrimCoordinator> scrimSupplier = () -> mScrimCoordinator;
+                            mScrimManager = new ScrimManager(sTestRule.getActivity(), rootView);
+                            Supplier<ScrimManager> scrimSupplier = () -> mScrimManager;
                             Callback<View> initializedCallback = (v) -> {};
                             return new BottomSheetControllerImpl(
                                     scrimSupplier,
@@ -160,7 +159,7 @@ public class BottomSheetObserverTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mBottomSheetController.destroy();
-                    mScrimCoordinator.destroy();
+                    mScrimManager.destroy();
                 });
     }
 

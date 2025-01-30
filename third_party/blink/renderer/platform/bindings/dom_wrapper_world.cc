@@ -115,7 +115,8 @@ DOMWrapperWorld::DOMWrapperWorld(PassKey,
       world_id_(world_id),
       dom_data_store_(
           MakeGarbageCollected<DOMDataStore>(isolate,
-                                             is_default_world_of_isolate)) {
+                                             is_default_world_of_isolate)),
+      isolate_(isolate) {
   switch (world_type_) {
     case WorldType::kMain:
       // The main world is managed separately from worldMap(). See worldMap().

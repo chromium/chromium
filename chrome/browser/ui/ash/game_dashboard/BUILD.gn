@@ -14,7 +14,6 @@ static_library("game_dashboard") {
 
   deps = [
     "//ash",
-    "//ash/components/arc",
     "//ash/public/cpp",
     "//base",
     "//chrome/browser/apps/app_service",
@@ -24,6 +23,7 @@ static_library("game_dashboard") {
     "//chromeos/ash/components/growth",
     "//chromeos/ash/components/growth:utils",
     "//chromeos/ash/components/scalable_iph",
+    "//chromeos/ash/experiences/arc",
     "//components/user_manager",
   ]
 }

@@ -28,7 +28,6 @@ static_library("assistant_optin") {
 
   deps = [
     "//ash",
-    "//ash/components/arc",
     "//ash/constants",
     "//ash/webui/common:trusted_types_util",
     "//build:buildflag_header_h",
@@ -40,6 +39,7 @@ static_library("assistant_optin") {
     "//chrome/browser/ui/ash/login",
     "//chromeos/ash/components/assistant:buildflags",
     "//chromeos/ash/components/audio",
+    "//chromeos/ash/experiences/arc",
     "//chromeos/ash/services/assistant/public/cpp",
     "//components/consent_auditor",
     "//components/prefs",

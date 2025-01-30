@@ -412,7 +412,7 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
     public void setScrimColor(@ColorInt int scrimColor) {
         // Drag handle view is not part of CoordinatorLayout. As the root UI scrim changes, the
         // handle view color needs updating to match it. This is a better way than running PCCT's
-        // own scrim coordinator since it can apply shape-aware scrim to the handle view that has
+        // own scrim component since it can apply shape-aware scrim to the handle view that has
         // the rounded corner.
         getDragBarBackground().setColor(ColorUtils.overlayColor(mToolbarColor, scrimColor));
 

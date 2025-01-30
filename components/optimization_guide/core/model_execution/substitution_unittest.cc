@@ -10,6 +10,7 @@
 
 #include "base/logging.h"
 #include "base/test/test.pb.h"
+#include "components/optimization_guide/core/model_execution/multimodal_message.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_proto_descriptors.h"
 #include "components/optimization_guide/core/model_execution/test/feature_config_builder.h"
 #include "components/optimization_guide/proto/descriptors.pb.h"
@@ -185,7 +186,7 @@ TEST_F(SubstitutionTest, RawString) {
 
   base::test::TestMessage request;
   request.set_test("some test");
-  auto result = CreateSubstitutions(request, subs);
+  auto result = CreateSubstitutions(MultimodalMessageReadView(request), subs);
 
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result->ToString(), "hello this is a %test%");
@@ -207,7 +208,7 @@ TEST_F(SubstitutionTest, ControlTokens) {
 
   base::test::TestMessage request;
   request.set_test("some test");
-  auto result = CreateSubstitutions(request, subs);
+  auto result = CreateSubstitutions(MultimodalMessageReadView(request), subs);
 
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result->ToString(), "<system><model><user><end>");
@@ -222,7 +223,7 @@ TEST_F(SubstitutionTest, BadTemplate) {
 
   base::test::TestMessage request;
   request.set_test("some test");
-  auto result = CreateSubstitutions(request, subs);
+  auto result = CreateSubstitutions(MultimodalMessageReadView(request), subs);
 
   ASSERT_FALSE(result.has_value());
 }
@@ -240,7 +241,7 @@ TEST_F(SubstitutionTest, ProtoField) {
   proto::ComposeRequest request;
   request.mutable_page_metadata()->set_page_title("nested");
   request.mutable_generate_params()->set_user_input("inner type");
-  auto result = CreateSubstitutions(request, subs);
+  auto result = CreateSubstitutions(MultimodalMessageReadView(request), subs);
 
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result->ToString(), "hello this is a test: nested inner type");
@@ -257,7 +258,7 @@ TEST_F(SubstitutionTest, BadProtoField) {
   proto::ComposeRequest request;
   request.mutable_page_metadata()->set_page_title("nested");
 
-  auto result = CreateSubstitutions(request, subs);
+  auto result = CreateSubstitutions(MultimodalMessageReadView(request), subs);
 
   EXPECT_FALSE(result);
 }
@@ -305,7 +306,7 @@ TEST_F(SubstitutionTest, Conditions) {
   *kept_expr->mutable_conditions() =
       ConditionList(proto::CONDITION_EVALUATION_TYPE_AND, {length_is_2});
 
-  auto result = CreateSubstitutions(request, subs);
+  auto result = CreateSubstitutions(MultimodalMessageReadView(request), subs);
 
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result->ToString(),
@@ -359,7 +360,7 @@ TEST_F(SubstitutionTest, RepeatedRawField) {
     subs.Add()->MergeFrom(TabsExpr(expr));
   }
   proto::TabOrganizationRequest request = TwoTabRequest();
-  auto result = CreateSubstitutions(request, subs);
+  auto result = CreateSubstitutions(MultimodalMessageReadView(request), subs);
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result->ToString(), "Tabs: E,E,");
   EXPECT_FALSE(result->should_ignore_input_context);
@@ -373,7 +374,7 @@ TEST_F(SubstitutionTest, RepeatedProtoField) {
     subs.Add()->MergeFrom(TabsExpr(expr));
   }
   proto::TabOrganizationRequest request = TwoTabRequest();
-  auto result = CreateSubstitutions(request, subs);
+  auto result = CreateSubstitutions(MultimodalMessageReadView(request), subs);
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result->ToString(), "Tabs: tabA,tabB,");
   EXPECT_FALSE(result->should_ignore_input_context);
@@ -387,7 +388,7 @@ TEST_F(SubstitutionTest, RepeatedZeroBasedIndexField) {
     subs.Add()->MergeFrom(TabsExpr(expr));
   }
   proto::TabOrganizationRequest request = TwoTabRequest();
-  auto result = CreateSubstitutions(request, subs);
+  auto result = CreateSubstitutions(MultimodalMessageReadView(request), subs);
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result->ToString(), "Tabs: 0,1,");
   EXPECT_FALSE(result->should_ignore_input_context);
@@ -401,7 +402,7 @@ TEST_F(SubstitutionTest, RepeatedOneBasedIndexField) {
     subs.Add()->MergeFrom(TabsExpr(expr));
   }
   proto::TabOrganizationRequest request = TwoTabRequest();
-  auto result = CreateSubstitutions(request, subs);
+  auto result = CreateSubstitutions(MultimodalMessageReadView(request), subs);
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result->ToString(), "Tabs: 1,2,");
   EXPECT_FALSE(result->should_ignore_input_context);
@@ -423,7 +424,7 @@ TEST_F(SubstitutionTest, RepeatedCondition) {
     subs.Add()->MergeFrom(TabsExpr(expr));
   }
   proto::TabOrganizationRequest request = TwoTabRequest();
-  auto result = CreateSubstitutions(request, subs);
+  auto result = CreateSubstitutions(MultimodalMessageReadView(request), subs);
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result->ToString(), "Tabs: Ten,NotTen,");
   EXPECT_FALSE(result->should_ignore_input_context);
@@ -446,7 +447,8 @@ TEST_F(SubstitutionTest, PromptApiNShot) {
       RolePrompt(proto::PROMPT_API_ROLE_ASSISTANT, "👍, 🚢");
   *request.add_current_prompts() =
       RolePrompt(proto::PROMPT_API_ROLE_USER, "Back to the drawing board");
-  auto result = CreateSubstitutions(request, PromptApiConfig());
+  auto result = CreateSubstitutions(MultimodalMessageReadView(request),
+                                    PromptApiConfig());
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result->ToString(),
             "<system>Predict up to 5 emojis as a response to a comment. Output "
@@ -475,7 +477,8 @@ TEST_F(SubstitutionTest, PromptApiPersistence) {
       RolePrompt(proto::PROMPT_API_ROLE_USER,
                  "That sounds great, but oh no, it's actually going to rain! "
                  "New advice??");
-  auto result = CreateSubstitutions(request, PromptApiConfig());
+  auto result = CreateSubstitutions(MultimodalMessageReadView(request),
+                                    PromptApiConfig());
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result->ToString(),
             "<system>You are a friendly, helpful assistant specialized in "

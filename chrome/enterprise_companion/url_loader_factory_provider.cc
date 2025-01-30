@@ -25,6 +25,7 @@
 #include "chrome/enterprise_companion/device_management_storage/dm_storage.h"
 #include "chrome/enterprise_companion/enterprise_companion.h"
 #include "chrome/enterprise_companion/event_logger.h"
+#include "chrome/enterprise_companion/flags.h"
 #include "chrome/enterprise_companion/proxy_config_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

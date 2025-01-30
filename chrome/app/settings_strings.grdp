@@ -4536,7 +4536,7 @@
   <message name="IDS_SETTINGS_AI_SUBPAGE_SUBLABEL_LOGGING_MANAGED_DISABLED" desc="This is a bullet point in the ‘Things to consider’ column, which describes things users should consider about a feature. This string explains that AI features are actively developing, and that humans may review feature usage and corresponding data in order to further improve the feature. The tone should be informative.">
     Your content will not be used by human reviewers to improve AI. Your organization may change these settings at any time
   </message>
-  <message name="IDS_SETTINGS_AI_SUBPAGE_FEATURE_MANAGED_DISABLED_LABEL" translateable="false">
+  <message name="IDS_SETTINGS_AI_SUBPAGE_FEATURE_MANAGED_DISABLED_LABEL" desc="This is an indicator on the top of the AI feature settings subpage, which informs the user that this feature is not available because it was turned off by their organization. The tone should be informative.">
     This feature is disabled by your organization
   </message>
 
@@ -4585,7 +4585,7 @@
     You can use your comparison tables to keep track as you narrow down your options
   </message>
   <message name="IDS_SETTINGS_COMPARE_WHEN_ON_PRODUCT_REVIEWS" desc="This string is a bullet point in the ‘When used’ column, which describes the behavior of this feature. This string explains that this feature will pull in details from review websites and product-buying guides; however, only some products have this content available. The tone should be motivating.">
-    For some products, Chrome can gather reviews from around the web
+    For some products, comparison tables summarize reviews from around the web
   </message>
   <message name="IDS_SETTINGS_COMPARE_CONSIDER_DATA" desc="This is a bullet point in the ‘Things to consider’ column, which describes things users should consider about a feature. This string explains that AI features will send data to Google servers in order to provide the feature’s respective benefit. The tone should be informative.">
     When you compare products, the tab titles and URLs of the products are sent to Google
@@ -4620,6 +4620,9 @@
   <!-- Experimental Glic settings -->
   <message name="IDS_SETTINGS_GLIC_PAGE_TITLE" translateable="false" desc="Name of the Glic settings page.">
     Glic
+  </message>
+  <message name="IDS_SETTINGS_GLIC_POLICY_DISABLED_MESSAGE" translateable="false" desc="Message shown when Glic is disabled by enterprise policy.">
+    This feature is disabled by your organization
   </message>
   <message name="IDS_SETTINGS_GLIC_PREFERENCES_SECTION" translateable="false" desc="Name of the Glic settings section for general preferences.">
     Preferences

@@ -125,6 +125,7 @@
 #include "content/browser/tpcd_heuristics/opener_heuristic_tab_helper.h"
 #include "content/browser/tpcd_heuristics/redirect_heuristic_tab_helper.h"
 #include "content/browser/wake_lock/wake_lock_context_host.h"
+#include "content/browser/web_contents/accessibility_mode_policy.h"
 #include "content/browser/web_contents/java_script_dialog_commit_deferring_condition.h"
 #include "content/browser/web_contents/partitioned_popins_controller.h"
 #include "content/browser/web_contents/slow_web_preference_cache.h"
@@ -1270,9 +1271,6 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
       zoom_scroll_remainder_(0),
       force_disable_overscroll_content_(false),
       last_dialog_suppressed_(false),
-      accessibility_mode_(
-          BrowserAccessibilityState::GetInstance()
-              ->GetAccessibilityModeForBrowserContext(browser_context)),
       audio_stream_monitor_(this),
       media_web_contents_observer_(
           std::make_unique<MediaWebContentsObserver>(this)),
@@ -2027,7 +2025,29 @@ ui::ColorProviderKey::ColorMode WebContentsImpl::GetColorMode() const {
   return source->GetColorMode();
 }
 
-void WebContentsImpl::SetAccessibilityMode(ui::AXMode mode) {
+void WebContentsImpl::SetAccessibilityMode(ui::AXMode new_ax_mode) {
+  // Create the policy lazily so that the client is only enrolled into an arm
+  // of a trial if accessibility is enabled.
+  if (!accessibility_mode_policy_) {
+    // Exit early if the first call is a no-op, since creating the policy in
+    // this case would skew analysis of any trials.
+    if (new_ax_mode.is_mode_off()) {
+      return;
+    }
+    accessibility_mode_policy_ = AccessibilityModePolicy::Create(*this);
+  }
+  // Unretained is safe here because this owns the policy.
+  accessibility_mode_policy_->SetAccessibilityMode(base::BindRepeating(
+      [](WebContentsImpl* web_contents, ui::AXMode ax_mode, bool apply) {
+        if (web_contents) {
+          web_contents->SetAccessibilityModeImpl(apply ? ax_mode
+                                                       : ui::AXMode{});
+        }
+      },
+      base::Unretained(this), new_ax_mode));
+}
+
+void WebContentsImpl::SetAccessibilityModeImpl(ui::AXMode mode) {
   OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::SetAccessibilityMode",
                         "mode", mode.ToString(), "previous_mode",
                         accessibility_mode_.ToString());
@@ -3821,6 +3841,11 @@ void WebContentsImpl::Init(const WebContents::CreateParams& params,
   }
   CHECK(render_view_host_delegate_view_);
   CHECK(view_.get());
+
+  // Set the accessibility mode after the view is created.
+  SetAccessibilityMode(
+      BrowserAccessibilityState::GetInstance()
+          ->GetAccessibilityModeForBrowserContext(GetBrowserContext()));
 
   view_->CreateView(params.context);
 

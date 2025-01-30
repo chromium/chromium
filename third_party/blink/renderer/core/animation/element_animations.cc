@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 
+#include "base/debug/dump_without_crashing.h"
 #include "third_party/blink/renderer/core/css/css_property_equality.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
@@ -96,6 +97,14 @@ bool ElementAnimations::HasCompositedPaintWorkletAnimation() {
 void ElementAnimations::RecalcCompositedStatusForKeyframeChange(
     Element& element,
     Animation::NativePaintWorkletReasons properties) {
+  if ((element.GetDocument().Lifecycle().GetState() !=
+       DocumentLifecycle::kInStyleRecalc) &&
+      (element.GetDocument().Lifecycle().GetState() !=
+       DocumentLifecycle::kInPerformLayout)) {
+    DCHECK(false) << "RecalcCompositedStatusForKeyframeChange must not be "
+                  << "called outside of style/layout.";
+    base::debug::DumpWithoutCrashing();
+  }
   if (!element.GetLayoutObject()) {
     return;
   }
@@ -121,6 +130,18 @@ void ElementAnimations::RecalcCompositedStatusForKeyframeChange(
 }
 
 void ElementAnimations::RecalcCompositedStatus(Element* element) {
+  // Must not run during paint or pre-paint. Can be run post-paint via JS,
+  // during stop due to detach, and post-layout from the post style animation
+  // update.
+  if ((element->GetDocument().Lifecycle().GetState() ==
+       DocumentLifecycle::kInPrePaint) ||
+      (element->GetDocument().Lifecycle().GetState() ==
+       DocumentLifecycle::kInPaint)) {
+    DCHECK(false) << "Composited status must not be reset during "
+                  << "prepaint/paint";
+    base::debug::DumpWithoutCrashing();
+  }
+
   Animation::NativePaintWorkletReasons reasons = Animation::kNoPaintWorklet;
   for (auto& entry : Animations()) {
     if (entry.key->CalculateAnimationPlayState() ==

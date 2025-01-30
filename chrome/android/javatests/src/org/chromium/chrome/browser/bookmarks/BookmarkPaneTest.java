@@ -41,7 +41,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.transit.BlankCTATabInitialStatePublicTransitRule;
@@ -64,16 +63,28 @@ public class BookmarkPaneTest {
     public BlankCTATabInitialStatePublicTransitRule mInitialStateRule =
             new BlankCTATabInitialStatePublicTransitRule(sActivityTestRule);
 
+    private BookmarkModel mBookmarkModel;
+
     @Before
     public void setUp() {
         mInitialStateRule.startOnBlankPage();
+
+        runOnUiThreadBlocking(
+                () -> {
+                    mBookmarkModel =
+                            BookmarkModel.getForProfile(
+                                    sActivityTestRule
+                                            .getActivity()
+                                            .getProfileProviderSupplier()
+                                            .get()
+                                            .getOriginalProfile());
+                    mBookmarkModel.loadEmptyPartnerBookmarkShimForTesting();
+                });
     }
 
     @After
     public void tearDown() {
-        ChromeTabbedActivity cta = sActivityTestRule.getActivity();
-        runOnUiThreadBlocking(
-                () -> clearBookmarks(cta.getProfileProviderSupplier().get().getOriginalProfile()));
+        runOnUiThreadBlocking(() -> mBookmarkModel.removeAllUserBookmarks());
     }
 
     @Test
@@ -164,9 +175,5 @@ public class BookmarkPaneTest {
                                 isDescendantOfA(HUB_PANE_SWITCHER.getViewMatcher()),
                                 withContentDescription(containsString("Bookmarks"))))
                 .perform(click());
-    }
-
-    private void clearBookmarks(Profile profile) {
-        BookmarkModel.getForProfile(profile).removeAllUserBookmarks();
     }
 }

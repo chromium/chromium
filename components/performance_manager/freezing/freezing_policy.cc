@@ -4,6 +4,7 @@
 
 #include "components/performance_manager/freezing/freezing_policy.h"
 
+#include <algorithm>
 #include <set>
 #include <string>
 #include <vector>
@@ -896,6 +897,8 @@ void FreezingPolicy::UpdateFrozenStateOnCPUMeasurement(
     }
 
     BrowsingInstanceState& state = browsing_instance_it->second;
+    state.highest_cpu_current_interval = std::max(
+        state.highest_cpu_current_interval.value_or(0), cpu_proportion);
 
     if (!state.cannot_freeze_reasons_since_last_cpu_measurement.empty()) {
       // Ignore CPU measurement while having a `CannotFreezeReason` (it's
@@ -922,11 +925,14 @@ void FreezingPolicy::UpdateFrozenStateOnCPUMeasurement(
     }
   }
 
-  // Update `cannot_freeze_reasons_since_last_cpu_measurement` for all browsing
-  // instances.
-  for (auto& [_, browsing_instance_state] : browsing_instances_) {
-    browsing_instance_state.cannot_freeze_reasons_since_last_cpu_measurement =
-        GetCannotFreezeReasons(browsing_instance_state);
+  // Report UKM for all pages.
+  RecordFreezingEligibilityUKM();
+
+  // Reset state for the next interval for all browsing instances.
+  for (auto& [_, state] : browsing_instances_) {
+    state.cannot_freeze_reasons_since_last_cpu_measurement =
+        GetCannotFreezeReasons(state);
+    state.highest_cpu_current_interval.reset();
   }
 }
 
@@ -949,6 +955,78 @@ void FreezingPolicy::OnOptOutPolicyChanged(
                                  CannotFreezeReason::kOptedOut);
     }
   }
+}
+
+void FreezingPolicy::RecordFreezingEligibilityUKM() {
+  if (!base::FeatureList::IsEnabled(features::kRecordFreezingEligibilityUKM)) {
+    return;
+  }
+
+  // This function is about to potentially emit many UKM events (roughly 1 per
+  // existing page). If this is done too often, the UKM recorder system itself
+  // will start subsampling those UKM events. Thus, it's better to subsample the
+  // event emission code itself to increase the proportion of emitted events
+  // that are actually recorded.
+  if (!metrics_subsampler_.ShouldSample(0.01)) {
+    return;
+  }
+
+  base::flat_set<raw_ptr<const PageNode>> visited_pages;
+
+  for (auto* page : GetOwningGraph()->GetAllPageNodes()) {
+    if (visited_pages.contains(page)) {
+      // The page is part of a group of connected pages for which the UKM event
+      // was already emitted.
+      continue;
+    }
+
+    std::optional<double> highest_cpu_current_interval;
+    double highest_cpu_any_interval_without_cannot_freeze_reason = 0.0;
+    CannotFreezeReasonSet cannot_freeze_reasons;
+    const auto connected_pages = GetConnectedPages(page);
+
+    for (auto& connected_page : connected_pages) {
+      for (auto browsing_instance_id : GetBrowsingInstances(connected_page)) {
+        auto it = browsing_instances_.find(browsing_instance_id);
+        CHECK(it != browsing_instances_.end());
+        auto& state = it->second;
+
+        if (state.highest_cpu_current_interval.has_value()) {
+          highest_cpu_current_interval =
+              std::max(highest_cpu_current_interval.value_or(0),
+                       state.highest_cpu_current_interval.value());
+        }
+
+        highest_cpu_any_interval_without_cannot_freeze_reason = std::max(
+            highest_cpu_any_interval_without_cannot_freeze_reason,
+            state.highest_cpu_any_interval_without_cannot_freeze_reason);
+        cannot_freeze_reasons.PutAll(
+            state.cannot_freeze_reasons_since_last_cpu_measurement);
+      }
+    }
+
+    // Record the UKM event if there was a CPU measurement for this group of
+    // connected pages.
+    if (highest_cpu_current_interval.has_value()) {
+      for (auto& connected_page : connected_pages) {
+        RecordFreezingEligibilityUKMForPage(
+            connected_page->GetUkmSourceID(),
+            highest_cpu_current_interval.value(),
+            highest_cpu_any_interval_without_cannot_freeze_reason,
+            cannot_freeze_reasons);
+      }
+    }
+
+    visited_pages.insert(connected_pages.begin(), connected_pages.end());
+  }
+}
+
+void FreezingPolicy::RecordFreezingEligibilityUKMForPage(
+    ukm::SourceId source_id,
+    double highest_cpu_current_interval,
+    double highest_cpu_any_interval_without_cannot_freeze_reason,
+    CannotFreezeReasonSet cannot_freeze_reasons) {
+  // TODO(crbug.com/391646022): Implement once the UKM collection is approved.
 }
 
 }  // namespace performance_manager

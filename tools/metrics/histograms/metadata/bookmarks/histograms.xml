@@ -279,7 +279,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Bookmarks.EditLocation" enum="BookmarkLaunchLocation"
     expires_after="2025-07-13">
   <owner>dfried@chromium.org</owner>
-  <owner>mickeyburks@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
     Logs a UI location from which a bookmark is edited, after the user opts to
     edit or rename a bookmark or folder via a context menu, and immediately
@@ -504,9 +504,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.RemovedLocation" enum="BookmarkLaunchLocation"
-    expires_after="2025-03-09">
+    expires_after="2025-07-13">
   <owner>dfried@chromium.org</owner>
-  <owner>mickeyburks@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
     Logs a UI location from which one or more bookmarks are removed, after the
     user requests them to be removed via a menu and immediately before they are

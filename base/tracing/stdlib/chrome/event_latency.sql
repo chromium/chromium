@@ -140,51 +140,11 @@ SELECT
 FROM slice
 WHERE name = 'EventLatency';
 
--- All EventLatency slices that are relevant to scrolling, including presented
--- pinches. Materialized to reduce how many times we query slice.
-CREATE PERFETTO TABLE _gesture_scroll_events_no_scroll_id
-AS
-SELECT
-  name,
-  ts,
-  dur,
-  id,
-  scroll_update_id,
-  is_presented,
-  _get_presentation_timestamp(chrome_event_latencies.id)
-  AS presentation_timestamp,
-  event_type,
-  track_id
-FROM chrome_event_latencies
-WHERE (
-  event_type GLOB '*GESTURE_SCROLL*'
-  -- Pinches are only relevant if the frame was presented.
-  OR (event_type GLOB '*GESTURE_PINCH_UPDATE'
-    AND _has_descendant_slice_with_name(
-      id,
-      'SubmitCompositorFrameToPresentationCompositorFrame')
-  )
-);
-
--- Extracts scroll id for the EventLatency slice at `ts`.
-CREATE PERFETTO FUNCTION chrome_get_most_recent_scroll_begin_id(
-  -- Timestamp of the EventLatency slice to get the scroll id for.
-  ts TIMESTAMP)
--- The event_latency_id of the EventLatency slice with the type
--- GESTURE_SCROLL_BEGIN that is the closest to `ts`.
-RETURNS LONG AS
-SELECT scroll_update_id
-FROM _gesture_scroll_events_no_scroll_id
-WHERE event_type = 'GESTURE_SCROLL_BEGIN'
-AND ts<=$ts
-ORDER BY ts DESC
-LIMIT 1;
-
 -- All scroll-related events (frames) including gesture scroll updates, begins
 -- and ends with respective scroll ids and start/end timestamps, regardless of
 -- being presented. This includes pinches that were presented. See b/315761896
 -- for context on pinches.
-CREATE PERFETTO TABLE chrome_gesture_scroll_events(
+CREATE PERFETTO TABLE chrome_gesture_scroll_updates(
   -- Slice Id for the EventLatency scroll event.
   id LONG,
   -- Slice name.
@@ -195,29 +155,86 @@ CREATE PERFETTO TABLE chrome_gesture_scroll_events(
   dur DURATION,
   -- The id of the scroll update event.
   scroll_update_id LONG,
-  -- The id of the scroll.
-  scroll_id LONG,
   -- Whether this input event was presented.
   is_presented BOOL,
+  -- EventLatency event type.
+  event_type STRING,
+  -- Perfetto track this slice is found on.
+  track_id LONG,
+  -- Vsync interval (in milliseconds).
+  vsync_interval_ms DOUBLE,
+  -- Whether the corresponding frame is janky.
+  is_janky BOOL,
+  -- Timestamp of the BufferAvailableToBufferReady substage.
+  buffer_available_timestamp LONG,
+  -- Timestamp of the BufferReadyToLatch substage.
+  buffer_ready_timestamp LONG,
+  -- Timestamp of the LatchToSwapEnd substage (or LatchToPresentation as a
+  -- fallback).
+  latch_timestamp LONG,
+  -- Timestamp of the SwapEndToPresentationCompositorFrame substage.
+  swap_end_timestamp LONG,
   -- Frame presentation timestamp aka the timestamp of the
   -- SwapEndToPresentationCompositorFrame substage.
   -- TODO(b/341047059): temporarily use LatchToSwapEnd as a workaround if
   -- SwapEndToPresentationCompositorFrame is missing due to b/247542163.
   presentation_timestamp LONG,
-  -- EventLatency event type.
-  event_type STRING,
-  -- Perfetto track this slice is found on.
-  track_id LONG
+  -- The id of the scroll.
+  scroll_id LONG
 ) AS
+-- To compute scroll id, we first mark all of the FIRST_GESTURE_SCROLL_UPDATE events
+-- (or the first scroll update in the trace) as the points where scroll id should be
+-- incremented and then use the cumulative sum as the scroll id.
+WITH updates_without_scroll_ids AS (
+  SELECT
+    id,
+    name,
+    ts,
+    dur,
+    scroll_update_id,
+    is_presented,
+    event_type,
+    track_id,
+    vsync_interval_ms,
+    is_janky_scrolled_frame AS is_janky,
+    buffer_available_timestamp,
+    buffer_ready_timestamp,
+    latch_timestamp,
+    swap_end_timestamp,
+    presentation_timestamp,
+    (
+      event_type = 'FIRST_GESTURE_SCROLL_UPDATE' OR
+      ROW_NUMBER() OVER (ORDER BY ts) = 1
+    ) as is_first_update_in_scroll
+  FROM chrome_event_latencies
+  WHERE event_type IN (
+    'GESTURE_SCROLL_UPDATE',
+    'FIRST_GESTURE_SCROLL_UPDATE',
+    'INERTIAL_GESTURE_SCROLL_UPDATE'
+  ) OR (
+    -- Pinches are only relevant if the frame was presented.
+    event_type GLOB '*GESTURE_PINCH_UPDATE'
+    AND is_presented
+  )
+)
 SELECT
   id,
   name,
   ts,
   dur,
   scroll_update_id,
-  chrome_get_most_recent_scroll_begin_id(ts) AS scroll_id,
   is_presented,
-  presentation_timestamp,
   event_type,
-  track_id
-FROM _gesture_scroll_events_no_scroll_id;
+  track_id,
+  vsync_interval_ms,
+  is_janky,
+  buffer_available_timestamp,
+  buffer_ready_timestamp,
+  latch_timestamp,
+  swap_end_timestamp,
+  presentation_timestamp,
+  IFNULL(SUM(cast_int!(is_first_update_in_scroll)) OVER (
+    ORDER BY ts
+    ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+  ), 0) AS scroll_id
+FROM updates_without_scroll_ids;

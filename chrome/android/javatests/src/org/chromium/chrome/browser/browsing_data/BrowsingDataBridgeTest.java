@@ -11,6 +11,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
@@ -478,7 +479,7 @@ public class BrowsingDataBridgeTest {
     @CommandLineFlags.Add(ChromeSwitches.DISABLE_TAB_MERGING_FOR_TESTING)
     public void testHatsSurveyTriggeredOnNextPageLoad() {
         BrowsingDataBridgeJni.setInstanceForTesting(mBrowsingDataBridgeJniMock);
-        doNothing().when(mBrowsingDataBridgeJniMock).triggerHatsSurvey(any(), any());
+        doNothing().when(mBrowsingDataBridgeJniMock).triggerHatsSurvey(any(), any(), anyBoolean());
 
         final String url = mTestServer.getURL(TEST_FILE_PATH_1);
 
@@ -491,7 +492,7 @@ public class BrowsingDataBridgeTest {
                 () -> secondActivity.getTabModelSelector().isTabStateInitialized());
 
         // Request the survey and start the observers.
-        ThreadUtils.runOnUiThreadBlocking(() -> getBrowsingDataBridge().requestHatsSurvey());
+        ThreadUtils.runOnUiThreadBlocking(() -> getBrowsingDataBridge().requestHatsSurvey(false));
 
         // Create a new tab in the first activity's TabModel and load a URL.
         ChromeTabUtils.fullyLoadUrlInNewTab(
@@ -502,7 +503,8 @@ public class BrowsingDataBridgeTest {
 
         // Survey should be triggered on the first activity.
         WebContents firstWebContents = firstActivity.getCurrentWebContents();
-        verify(mBrowsingDataBridgeJniMock, times(1)).triggerHatsSurvey(any(), eq(firstWebContents));
+        verify(mBrowsingDataBridgeJniMock, times(1))
+                .triggerHatsSurvey(any(), eq(firstWebContents), eq(false));
 
         // Create a new tab in the second activity's TabModel and load a URL.
         ChromeTabUtils.fullyLoadUrlInNewTab(
@@ -512,7 +514,7 @@ public class BrowsingDataBridgeTest {
                 /* incognito= */ false);
 
         // No new Survey should be triggered on the second activity.
-        verify(mBrowsingDataBridgeJniMock, times(1)).triggerHatsSurvey(any(), any());
+        verify(mBrowsingDataBridgeJniMock, times(1)).triggerHatsSurvey(any(), any(), anyBoolean());
     }
 
     private List<String> getUrls(NavigationController controller) {

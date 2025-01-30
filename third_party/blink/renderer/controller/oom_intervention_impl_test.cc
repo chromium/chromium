@@ -34,10 +34,7 @@ namespace blink {
 
 namespace {
 
-const uint64_t kTestBlinkThreshold = 80 * 1024;
 const uint64_t kTestPMFThreshold = 160 * 1024;
-const uint64_t kTestSwapThreshold = 500 * 1024;
-const uint64_t kTestVmSizeThreshold = 1024 * 1024;
 
 class MockOomInterventionHost : public mojom::blink::OomInterventionHost {
  public:
@@ -112,10 +109,7 @@ class OomInterventionImplTest : public testing::Test {
         remote_host.InitWithNewPipeAndPassReceiver());
 
     mojom::blink::DetectionArgsPtr args(mojom::blink::DetectionArgs::New());
-    args->blink_workload_threshold = kTestBlinkThreshold;
     args->private_footprint_threshold = kTestPMFThreshold;
-    args->swap_threshold = kTestSwapThreshold;
-    args->virtual_memory_thresold = kTestVmSizeThreshold;
 
     intervention_->StartDetection(std::move(remote_host), std::move(args),
                                   renderer_pause_enabled, navigate_ads_enabled,
@@ -133,34 +127,16 @@ class OomInterventionImplTest : public testing::Test {
 TEST_F(OomInterventionImplTest, NoDetectionOnBelowThreshold) {
   MemoryUsage usage;
   // Set value less than the threshold to not trigger intervention.
-  usage.v8_bytes = kTestBlinkThreshold - 1024;
+  usage.v8_bytes = 0;
   usage.blink_gc_bytes = 0;
   usage.partition_alloc_bytes = 0;
   usage.private_footprint_bytes = kTestPMFThreshold - 1024;
-  usage.swap_bytes = kTestSwapThreshold - 1024;
-  usage.vm_size_bytes = kTestVmSizeThreshold - 1024;
-  intervention_->mock_memory_usage_monitor()->SetMockMemoryUsage(usage);
-
-  Page* page = DetectOnceOnBlankPage();
-
-  EXPECT_FALSE(page->Paused());
-}
-
-TEST_F(OomInterventionImplTest, BlinkThresholdDetection) {
-  MemoryUsage usage;
-  // Set value more than the threshold to trigger intervention.
-  usage.v8_bytes = kTestBlinkThreshold + 1024;
-  usage.blink_gc_bytes = 0;
-  usage.partition_alloc_bytes = 0;
-  usage.private_footprint_bytes = 0;
   usage.swap_bytes = 0;
   usage.vm_size_bytes = 0;
   intervention_->mock_memory_usage_monitor()->SetMockMemoryUsage(usage);
 
   Page* page = DetectOnceOnBlankPage();
 
-  EXPECT_TRUE(page->Paused());
-  intervention_.reset();
   EXPECT_FALSE(page->Paused());
 }
 
@@ -182,49 +158,13 @@ TEST_F(OomInterventionImplTest, PmfThresholdDetection) {
   EXPECT_FALSE(page->Paused());
 }
 
-TEST_F(OomInterventionImplTest, SwapThresholdDetection) {
-  MemoryUsage usage;
-  usage.v8_bytes = 0;
-  usage.blink_gc_bytes = 0;
-  usage.partition_alloc_bytes = 0;
-  usage.private_footprint_bytes = 0;
-  // Set value more than the threshold to trigger intervention.
-  usage.swap_bytes = kTestSwapThreshold + 1024;
-  usage.vm_size_bytes = 0;
-  intervention_->mock_memory_usage_monitor()->SetMockMemoryUsage(usage);
-
-  Page* page = DetectOnceOnBlankPage();
-
-  EXPECT_TRUE(page->Paused());
-  intervention_.reset();
-  EXPECT_FALSE(page->Paused());
-}
-
-TEST_F(OomInterventionImplTest, VmSizeThresholdDetection) {
-  MemoryUsage usage;
-  usage.v8_bytes = 0;
-  usage.blink_gc_bytes = 0;
-  usage.partition_alloc_bytes = 0;
-  usage.private_footprint_bytes = 0;
-  usage.swap_bytes = 0;
-  // Set value more than the threshold to trigger intervention.
-  usage.vm_size_bytes = kTestVmSizeThreshold + 1024;
-  intervention_->mock_memory_usage_monitor()->SetMockMemoryUsage(usage);
-
-  Page* page = DetectOnceOnBlankPage();
-
-  EXPECT_TRUE(page->Paused());
-  intervention_.reset();
-  EXPECT_FALSE(page->Paused());
-}
-
 TEST_F(OomInterventionImplTest, StopWatchingAfterDetection) {
   MemoryUsage usage;
   usage.v8_bytes = 0;
-  // Set value more than the threshold to trigger intervention.
-  usage.blink_gc_bytes = kTestBlinkThreshold + 1024;
+  usage.blink_gc_bytes = 0;
   usage.partition_alloc_bytes = 0;
-  usage.private_footprint_bytes = 0;
+  // Set value more than the threshold to trigger intervention.
+  usage.private_footprint_bytes = kTestPMFThreshold + 1024;
   usage.swap_bytes = 0;
   usage.vm_size_bytes = 0;
   intervention_->mock_memory_usage_monitor()->SetMockMemoryUsage(usage);
@@ -258,9 +198,9 @@ TEST_F(OomInterventionImplTest, V1DetectionAdsNavigation) {
   MemoryUsage usage;
   usage.v8_bytes = 0;
   usage.blink_gc_bytes = 0;
+  usage.partition_alloc_bytes = 0;
   // Set value more than the threshold to trigger intervention.
-  usage.partition_alloc_bytes = kTestBlinkThreshold + 1024;
-  usage.private_footprint_bytes = 0;
+  usage.private_footprint_bytes = kTestPMFThreshold + 1024;
   usage.swap_bytes = 0;
   usage.vm_size_bytes = 0;
   intervention_->mock_memory_usage_monitor()->SetMockMemoryUsage(usage);
@@ -315,10 +255,10 @@ TEST_F(OomInterventionImplTest, V2DetectionV8PurgeMemory) {
   usage.v8_bytes = 0;
   usage.blink_gc_bytes = 0;
   usage.partition_alloc_bytes = 0;
-  usage.private_footprint_bytes = 0;
-  usage.swap_bytes = 0;
   // Set value more than the threshold to trigger intervention.
-  usage.vm_size_bytes = kTestVmSizeThreshold + 1024;
+  usage.private_footprint_bytes = kTestPMFThreshold + 1024;
+  usage.swap_bytes = 0;
+  usage.vm_size_bytes = 0;
   intervention_->mock_memory_usage_monitor()->SetMockMemoryUsage(usage);
 
   WebViewImpl* web_view = web_view_helper_.InitializeAndLoad("about:blank");

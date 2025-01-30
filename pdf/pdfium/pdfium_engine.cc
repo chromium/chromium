@@ -58,6 +58,7 @@
 #include "pdf/pdfium/pdfium_document_metadata.h"
 #include "pdf/pdfium/pdfium_mem_buffer_file_write.h"
 #include "pdf/pdfium/pdfium_permissions.h"
+#include "pdf/pdfium/pdfium_text_fragment_finder.h"
 #include "pdf/pdfium/pdfium_unsupported_features.h"
 #include "printing/mojom/print.mojom-shared.h"
 #include "printing/units.h"
@@ -999,8 +1000,22 @@ void PDFiumEngine::SetFormHighlight(bool enable_form) {
 
 void PDFiumEngine::HighlightTextFragments(
     base::span<const std::string> text_fragments) {
-  // TODO(crbug.com/383575917): Implement parsing, searching, and rendering of
-  // text fragments.
+  // TODO(crbug.com/383575917): Add support for rendering text fragment
+  // highlights.
+  PDFiumTextFragmentFinder text_fragment_finder(this);
+  text_fragment_finder.FindTextFragments(text_fragments);
+}
+
+void PDFiumEngine::SearchForFragment(
+    const std::u16string& term,
+    int character_to_start_searching_from,
+    int last_character_index_to_search,
+    int page_to_search,
+    AddSearchResultCallback add_result_callback) {
+  SearchUsingICU(term, /*case_sensitive=*/false, /*first_search=*/false,
+                 character_to_start_searching_from,
+                 last_character_index_to_search, page_to_search, page_to_search,
+                 std::move(add_result_callback));
 }
 
 void PDFiumEngine::ClearTextSelection() {
@@ -1888,8 +1903,11 @@ void PDFiumEngine::StartFind(const std::u16string& text, bool case_sensitive) {
       SearchUsingPDFium(text, case_sensitive, first_search,
                         character_to_start_searching_from, current_page);
     } else {
-      SearchUsingICU(text, case_sensitive, first_search,
-                     character_to_start_searching_from, current_page);
+      SearchUsingICU(
+          text, case_sensitive, first_search, character_to_start_searching_from,
+          last_character_index_to_search_, current_page, last_page_to_search_,
+          base::BindRepeating(&PDFiumEngine::AddFindResult,
+                              weak_factory_.GetWeakPtr()));
     }
 
     if (!IsPageVisible(current_page))
@@ -1970,7 +1988,10 @@ void PDFiumEngine::SearchUsingICU(const std::u16string& term,
                                   bool case_sensitive,
                                   bool first_search,
                                   int character_to_start_searching_from,
-                                  int current_page) {
+                                  int last_character_index_to_search,
+                                  int current_page,
+                                  int last_page_to_search,
+                                  AddSearchResultCallback add_result_callback) {
   DCHECK(!term.empty());
 
   // Various types of quotions marks need to be converted to the simple ASCII
@@ -1983,9 +2004,9 @@ void PDFiumEngine::SearchUsingICU(const std::u16string& term,
   int text_length = original_text_length;
   if (character_to_start_searching_from) {
     text_length -= character_to_start_searching_from;
-  } else if (!first_search && last_character_index_to_search_ != -1 &&
-             current_page == last_page_to_search_) {
-    text_length = last_character_index_to_search_;
+  } else if (!first_search && last_character_index_to_search != -1 &&
+             current_page == last_page_to_search) {
+    text_length = last_character_index_to_search;
   }
   if (text_length <= 0)
     return;
@@ -2093,7 +2114,8 @@ void PDFiumEngine::SearchUsingICU(const std::u16string& term,
     DCHECK_LT(start, end);
     DCHECK_EQ(term.size() + term_removed_count,
               static_cast<size_t>(end - start));
-    AddFindResult(PDFiumRange(pages_[current_page].get(), start, end - start));
+    add_result_callback.Run(
+        PDFiumRange(pages_[current_page].get(), start, end - start));
   }
 }
 

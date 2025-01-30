@@ -751,7 +751,9 @@ FloatRoundedRect::Radii GetFocusRingCornerRadii(
     const PhysicalRect& reference_border_rect,
     const LayoutObject::OutlineInfo& info) {
   if (style.HasBorderRadius() &&
-      (!style.HasEffectiveAppearance() || style.HasAuthorBorderRadius())) {
+      ((style.HasEffectiveAppearance() &&
+        style.EffectiveAppearance() == AppearanceValue::kBaseSelect) ||
+       style.HasAuthorBorderRadius())) {
     auto radii = ComputeCornerRadii(style, reference_border_rect, info.offset);
     radii.SetMinimumRadius(DefaultFocusRingCornerRadius(style));
     return radii;

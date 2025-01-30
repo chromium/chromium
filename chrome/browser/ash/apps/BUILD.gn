@@ -56,8 +56,6 @@ source_set("browser_tests") {
 
   deps = [
     ":apps",
-    "//ash/components/arc:arc_test_support",
-    "//ash/components/arc:notification_test_support",
     "//ash/constants",
     "//ash/public/cpp",
     "//base",
@@ -76,6 +74,8 @@ source_set("browser_tests") {
     "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
+    "//chromeos/ash/experiences/arc:arc_test_support",
+    "//chromeos/ash/experiences/arc:notification_test_support",
     "//chromeos/ash/experiences/arc/mojom",
     "//components/keyed_service/content",
     "//components/services/app_service/public/cpp:app_types",
@@ -95,9 +95,9 @@ source_set("unit_tests") {
 
   deps = [
     ":apps",
-    "//ash/components/arc:arc_test_support",
     "//base",
     "//chrome/test:test_support",
+    "//chromeos/ash/experiences/arc:arc_test_support",
     "//components/webapps/browser:constants",
     "//components/webapps/common",
     "//services/data_decoder/public/cpp:test_support",

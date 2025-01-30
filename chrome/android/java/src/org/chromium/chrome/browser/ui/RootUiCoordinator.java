@@ -187,7 +187,7 @@ import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeManager;
 import org.chromium.components.browser_ui.util.ComposedBrowserControlsVisibilityDelegate;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
-import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.messages.DismissReason;
@@ -282,7 +282,7 @@ public class RootUiCoordinator
     private ManagedBottomSheetController mBottomSheetController;
     private SnackbarManager mBottomSheetSnackbarManager;
 
-    private ScrimCoordinator mScrimCoordinator;
+    private ScrimManager mScrimManager;
     private List<ButtonDataProvider> mButtonDataProviders;
     @Nullable private AdaptiveToolbarButtonController mAdaptiveToolbarButtonController;
     private ContextualPageActionController mContextualPageActionController;
@@ -702,8 +702,8 @@ public class RootUiCoordinator
             mButtonDataProviders = null;
         }
 
-        if (mScrimCoordinator != null) mScrimCoordinator.destroy();
-        mScrimCoordinator = null;
+        if (mScrimManager != null) mScrimManager.destroy();
+        mScrimManager = null;
 
         if (mCaptureController != null) {
             mCaptureController.destroy();
@@ -804,7 +804,7 @@ public class RootUiCoordinator
 
     @Override
     public void onInflationComplete() {
-        mScrimCoordinator = buildScrimWidget();
+        mScrimManager = buildScrimWidget();
 
         initFindToolbarManager();
         initializeToolbar();
@@ -988,7 +988,7 @@ public class RootUiCoordinator
                         mActivity,
                         profile,
                         this,
-                        mScrimCoordinator,
+                        mScrimManager,
                         mActivityTabProvider,
                         mFullscreenManager,
                         mBrowserControlsManager,
@@ -1642,7 +1642,7 @@ public class RootUiCoordinator
                             mShareDelegateSupplier,
                             mButtonDataProviders,
                             mActivityTabProvider,
-                            mScrimCoordinator,
+                            mScrimManager,
                             mActionModeControllerCallback,
                             mFindToolbarManager,
                             mProfileSupplier,
@@ -1698,16 +1698,16 @@ public class RootUiCoordinator
     }
 
     /**
-     * Constructs a {@link ScrimCoordinator} and sets up observers. Lifetime of all these objects
-     * should match.
+     * Constructs a {@link ScrimManager} and sets up observers. Lifetime of all these objects should
+     * match.
      */
-    protected ScrimCoordinator buildScrimWidget() {
+    protected ScrimManager buildScrimWidget() {
         ViewGroup coordinator = mActivity.findViewById(R.id.coordinator);
-        ScrimCoordinator scrimCoordinator = new ScrimCoordinator(mActivity, coordinator);
-        scrimCoordinator
+        ScrimManager scrimManager = new ScrimManager(mActivity, coordinator);
+        scrimManager
                 .getStatusBarColorSupplier()
                 .addObserver(RootUiCoordinator.this::onScrimColorChanged);
-        return scrimCoordinator;
+        return scrimManager;
     }
 
     protected void onScrimColorChanged(@ColorInt int scrimColor) {
@@ -1932,7 +1932,7 @@ public class RootUiCoordinator
         // suppliers.
         mBottomSheetController =
                 BottomSheetControllerFactory.createBottomSheetController(
-                        () -> mScrimCoordinator,
+                        () -> mScrimManager,
                         sheetInitializedCallback,
                         mActivity.getWindow(),
                         mWindowAndroid.getKeyboardDelegate(),
@@ -2054,11 +2054,9 @@ public class RootUiCoordinator
         return mBrowserControlsManager;
     }
 
-    /**
-     * @return The {@link ScrimCoordinator} to control activity's primary scrim.
-     */
-    public ScrimCoordinator getScrimCoordinator() {
-        return mScrimCoordinator;
+    /** Returns the {@link ScrimManager} to control scrims over the activity. */
+    public ScrimManager getScrimManager() {
+        return mScrimManager;
     }
 
     /** @return The {@link SnackbarManager} for the {@link BottomSheetController}. */

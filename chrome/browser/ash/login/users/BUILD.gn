@@ -35,7 +35,6 @@ static_library("users") {
   ]
 
   deps = [
-    "//ash/components/arc:arc_base_utils",
     "//ash/constants",
     "//ash/public/cpp",
     "//chrome/browser:browser_process",
@@ -62,6 +61,7 @@ static_library("users") {
     "//chromeos/ash/components/login/auth/public:authpublic",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/timezone",
+    "//chromeos/ash/experiences/arc:arc_base_utils",
     "//chromeos/components/onc",
     "//chromeos/dbus/common",
     "//components/crash/core/common",

@@ -71,10 +71,15 @@ ServerCertificateDatabaseServiceFactory::
               // Use the same service for incognito profiles.
               ProfileSelections::Builder()
                   .WithRegular(ProfileSelection::kRedirectedToOriginal)
-                  // For Guest and Ash internals, the need for these these are
-                  // based off of what ProfileNetworkContextService does.
+                  // For Guest the need for these these are based off of what
+                  // ProfileNetworkContextService does.
                   .WithGuest(ProfileSelection::kRedirectedToOriginal)
-                  .WithAshInternals(ProfileSelection::kRedirectedToOriginal)
+                  // Not needed for Ash internals as it's not a real user
+                  // profile and so there isn't a user to use the database.
+                  // This also matches the practical behavior of
+                  // NssServiceFactory which will end up crashing the browser
+                  // if attempted to use on an AshInternals profile.
+                  .WithAshInternals(ProfileSelection::kNone)
                   .Build()
               : ProfileSelections::BuildNoProfilesSelected()
 

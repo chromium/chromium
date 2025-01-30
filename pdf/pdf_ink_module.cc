@@ -64,15 +64,12 @@ constexpr ink::AffineTransform kIdentityTransform;
 
 ink::StrokeInput::ToolType GetToolTypeFromTouchEvent(
     const blink::WebTouchEvent& event) {
-  // TODO(crbug.com/377733396): Investigate how multiple touches and pens should
-  // behave. For now, if there is any pen touch, set the tool type to pen.
-  for (size_t i = 0; i < event.touches_length; ++i) {
-    if (event.touches[i].pointer_type ==
-        blink::WebPointerProperties::PointerType::kPen) {
-      return ink::StrokeInput::ToolType::kStylus;
-    }
-  }
-  return ink::StrokeInput::ToolType::kTouch;
+  // Assumes the caller already handled multi-touch events.
+  CHECK_EQ(event.touches_length, 1u);
+  return event.touches[0].pointer_type ==
+                 blink::WebPointerProperties::PointerType::kPen
+             ? ink::StrokeInput::ToolType::kStylus
+             : ink::StrokeInput::ToolType::kTouch;
 }
 
 PdfInkModule::StrokeInputPoints GetStrokePointsForTesting(  // IN-TEST
@@ -407,8 +404,13 @@ bool PdfInkModule::OnTouchStart(const blink::WebTouchEvent& event) {
     return false;
   }
 
-  gfx::PointF position = event.touches[0].PositionInWidget();
   ink::StrokeInput::ToolType tool_type = GetToolTypeFromTouchEvent(event);
+  MaybeRecordPenInput(tool_type);
+  if (ShouldIgnoreTouchInput(tool_type)) {
+    return false;
+  }
+
+  gfx::PointF position = event.touches[0].PositionInWidget();
   return is_drawing_stroke()
              ? StartStroke(position, event.TimeStamp(), tool_type)
              : StartEraseStroke(position, tool_type);
@@ -421,8 +423,13 @@ bool PdfInkModule::OnTouchEnd(const blink::WebTouchEvent& event) {
     return false;
   }
 
-  gfx::PointF position = event.touches[0].PositionInWidget();
   ink::StrokeInput::ToolType tool_type = GetToolTypeFromTouchEvent(event);
+  MaybeRecordPenInput(tool_type);
+  if (ShouldIgnoreTouchInput(tool_type)) {
+    return false;
+  }
+
+  gfx::PointF position = event.touches[0].PositionInWidget();
   return is_drawing_stroke()
              ? FinishStroke(position, event.TimeStamp(), tool_type)
              : FinishEraseStroke(position, tool_type);
@@ -435,8 +442,13 @@ bool PdfInkModule::OnTouchMove(const blink::WebTouchEvent& event) {
     return false;
   }
 
-  gfx::PointF position = event.touches[0].PositionInWidget();
   ink::StrokeInput::ToolType tool_type = GetToolTypeFromTouchEvent(event);
+  MaybeRecordPenInput(tool_type);
+  if (ShouldIgnoreTouchInput(tool_type)) {
+    return false;
+  }
+
+  gfx::PointF position = event.touches[0].PositionInWidget();
   return is_drawing_stroke()
              ? ContinueStroke(position, event.TimeStamp(), tool_type)
              : ContinueEraseStroke(position, tool_type);
@@ -775,6 +787,18 @@ bool PdfInkModule::EraseHelper(const gfx::PointF& position, int page_index) {
       invalidate_envelope, client_->GetOrientation(),
       client_->GetPageContentsRect(page_index), client_->GetZoom()));
   return true;
+}
+
+void PdfInkModule::MaybeRecordPenInput(ink::StrokeInput::ToolType tool_type) {
+  if (tool_type == ink::StrokeInput::ToolType::kStylus) {
+    using_stylus_instead_of_touch_ = true;
+  }
+}
+
+bool PdfInkModule::ShouldIgnoreTouchInput(
+    ink::StrokeInput::ToolType tool_type) {
+  return using_stylus_instead_of_touch_ &&
+         tool_type == ink::StrokeInput::ToolType::kTouch;
 }
 
 void PdfInkModule::HandleAnnotationRedoMessage(

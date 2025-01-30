@@ -59,9 +59,11 @@ class WorldSafeV8Reference final {
   WorldSafeV8Reference() = default;
 
   WorldSafeV8Reference(v8::Isolate* isolate, v8::Local<V8Type> value) {
-    if (value.IsEmpty())
+    if (value.IsEmpty()) {
       return;
+    }
 
+    DCHECK(isolate);
     v8_reference_.Reset(isolate, value);
     // Basically, |world_| is a world when this V8 reference is created.
     // However, when this V8 reference isn't created in context and value is
@@ -126,6 +128,11 @@ class WorldSafeV8Reference final {
   }
 
   bool IsEmpty() const { return v8_reference_.IsEmpty(); }
+
+  v8::Isolate* GetIsolate() const {
+    DCHECK(!IsEmpty());
+    return world_->GetIsolate();
+  }
 
   void Trace(Visitor* visitor) const {
     visitor->Trace(v8_reference_);

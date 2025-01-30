@@ -467,6 +467,8 @@ crbug.com/40277254 [ mac amd angle-opengl asan ] Pixel_WebGPUDisplayP3 [ Failure
 # Flaky timeout on Mac Retina Debug (AMD) pixel_skia_gold_metal_passthrough_graphite_test
 crbug.com/389654097 [ mac amd debug angle-metal graphite-enabled ] Pixel_CSSFilterEffects [ Failure ]
 
+# Flaky bad image
+crbug.com/393314286 [ mac amd debug ] Pixel_ViewTransitionsCapture [ RetryOnFailure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #

@@ -18,10 +18,10 @@ source_set("recommended_arc_apps") {
   deps = [
     ":device_configuration_proto",
     "//ash",
-    "//ash/components/arc",
     "//ash/constants",
     "//base",
     "//chrome/browser/profiles:profile",
+    "//chromeos/ash/experiences/arc",
     "//chromeos/crosapi/mojom",
     "//content/public/browser",
     "//extensions/browser",
@@ -64,9 +64,9 @@ source_set("unit_tests") {
   deps = [
     ":recommended_arc_apps",
     ":test_support",
-    "//ash/components/arc",
     "//base",
     "//chrome/test:test_support",
+    "//chromeos/ash/experiences/arc",
     "//chromeos/crosapi/mojom:mojom",
     "//components/user_manager",
     "//content/test:test_support",

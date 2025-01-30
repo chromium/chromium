@@ -48,6 +48,7 @@ enum class ActionType {
   EditActions,
   LensOverlay,
   AIPrototype,
+  SetTabReminder,
 };
 // LINT.ThenChange(overflow_menu_metrics.h:actionType)
 

@@ -136,8 +136,8 @@ void Fence::reportEventToDestinationEnum(const FenceEvent* event,
 
   const auto& properties =
       frame->GetDocument()->Loader()->FencedFrameProperties();
-  if (!properties.has_value() || !properties->has_fenced_frame_reporting()) {
-    AddConsoleMessage("This frame did not register reporting metadata.");
+  if (!properties.has_value()) {
+    AddConsoleMessage("This frame was not loaded with a FencedFrameConfig.");
     return;
   }
 
@@ -220,8 +220,8 @@ void Fence::reportEventToDestinationURL(const FenceEvent* event,
 
   const auto& properties =
       frame->GetDocument()->Loader()->FencedFrameProperties();
-  if (!properties.has_value() || !properties->has_fenced_frame_reporting()) {
-    AddConsoleMessage("This frame did not register reporting metadata.");
+  if (!properties.has_value()) {
+    AddConsoleMessage("This frame was not loaded with a FencedFrameConfig.");
     return;
   }
 
@@ -288,8 +288,8 @@ void Fence::setReportEventDataForAutomaticBeacons(
 
   const auto& properties =
       frame->GetDocument()->Loader()->FencedFrameProperties();
-  if (!properties.has_value() || !properties->has_fenced_frame_reporting()) {
-    AddConsoleMessage("This frame did not register reporting metadata.");
+  if (!properties.has_value()) {
+    AddConsoleMessage("This frame was not loaded with a FencedFrameConfig.");
     return;
   }
 
@@ -405,8 +405,8 @@ void Fence::reportPrivateAggregationEvent(const String& event,
 
   const auto& properties =
       frame->GetDocument()->Loader()->FencedFrameProperties();
-  if (!properties.has_value() || !properties->has_fenced_frame_reporting()) {
-    AddConsoleMessage("This frame did not register reporting metadata.");
+  if (!properties.has_value()) {
+    AddConsoleMessage("This frame was not loaded with a FencedFrameConfig.");
     return;
   }
 

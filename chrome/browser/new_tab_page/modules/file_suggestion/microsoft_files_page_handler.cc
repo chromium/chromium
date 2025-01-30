@@ -156,7 +156,7 @@ const char kNonInsightsRequestBody[] = R"({
   {
     "id": "recent",
     "method": "GET",
-    "url": "/me/drive/recent"
+    "url": "/me/drive/recent?orderby=fileSystemInfo/lastAccessedDateTime+desc"
   },
   {
     "id": "shared",
@@ -527,8 +527,6 @@ void MicrosoftFilesPageHandler::CreateTrendingFiles(GetFilesCallback callback,
   std::move(callback).Run(std::move(created_suggestions));
 }
 
-// TODO(376515309): Remove duplicates. There may be overlap in the response from
-// both endpoints.
 void MicrosoftFilesPageHandler::CreateRecentlyUsedAndSharedFiles(
     GetFilesCallback callback,
     base::Value::Dict result) {
@@ -538,7 +536,8 @@ void MicrosoftFilesPageHandler::CreateRecentlyUsedAndSharedFiles(
     return;
   }
 
-  std::vector<file_suggestion::mojom::FilePtr> created_suggestions;
+  std::vector<std::pair<base::Time, file_suggestion::mojom::FilePtr>>
+      unsorted_suggestions;
   // The response body should contain a value list for each request.
   for (const auto& response : *responses) {
     const auto& response_dict = response.GetDict();
@@ -549,8 +548,21 @@ void MicrosoftFilesPageHandler::CreateRecentlyUsedAndSharedFiles(
       std::move(callback).Run(std::vector<file_suggestion::mojom::FilePtr>());
       return;
     }
-
+    int num_recent_suggestions = 0;
     for (const auto& suggestion : *suggestions) {
+      // Only allow a couple suggestions from the recent endpoint as the
+      // response sends the files ordered by the
+      // `fileSystemInfo.lastAccessedTime` in descending order. All shared
+      // suggestions should be added because there isn't a great way to request
+      // for the files to be ordered by the shared date. The number of recent
+      // suggestions is limited to avoid having to sort more files than needed
+      // in `SortAndRemoveDuplicates`.
+      if (*response_id == "recent" &&
+          (num_recent_suggestions ==
+           ntp_features::kNtpMicrosoftFilesModuleMaxFilesParam.Get())) {
+        break;
+      }
+
       const auto& suggestion_dict = suggestion.GetDict();
       const std::string* id = suggestion_dict.FindString("id");
       const std::string* title = suggestion_dict.FindString("name");
@@ -574,14 +586,23 @@ void MicrosoftFilesPageHandler::CreateRecentlyUsedAndSharedFiles(
         continue;
       }
 
-      if (!id || !title || !item_url || !last_modified_time_str) {
-        std::move(callback).Run(std::vector<file_suggestion::mojom::FilePtr>());
-        return;
-      }
-      // `lastAccessedTime` should be available for suggestions from recent
-      // files. Shared files should not have null `shared` properties.
-      if ((*response_id == "recent" && !last_opened_time_str) ||
-          (*response_id == "shared" && (!shared_by || !shared_time_str))) {
+      // Time used to sort the file suggestions. Files with more recent time
+      // values will be ranked higher when displayed.
+      base::Time sort_time;
+
+      // `fileSystemInfo.lastAccessedTime` should be available for suggestions
+      // from recent files. Shared files should not have null `shared`
+      // properties.
+      bool suggestion_has_formatted_time =
+          *response_id == "recent"
+              ? last_opened_time_str &&
+                    base::Time::FromString(last_opened_time_str->c_str(),
+                                           &sort_time)
+              : shared_by && shared_time_str &&
+                    base::Time::FromString(shared_time_str->c_str(),
+                                           &sort_time);
+      if (!id || !title || !item_url || !last_modified_time_str ||
+          !suggestion_has_formatted_time) {
         std::move(callback).Run(std::vector<file_suggestion::mojom::FilePtr>());
         return;
       }
@@ -601,9 +622,50 @@ void MicrosoftFilesPageHandler::CreateRecentlyUsedAndSharedFiles(
       created_file->icon_url = GetFileIconUrl(file_extension);
       created_file->title = GetFileName(*title, file_extension);
       created_file->item_url = GURL(*item_url);
-      created_suggestions.push_back(std::move(created_file));
+      if (*response_id == "recent") {
+        num_recent_suggestions++;
+      }
+      unsorted_suggestions.emplace_back(sort_time, std::move(created_file));
     }
   }
 
-  std::move(callback).Run(std::move(created_suggestions));
+  std::vector<file_suggestion::mojom::FilePtr> sorted_suggestions =
+      SortAndRemoveDuplicates(std::move(unsorted_suggestions));
+
+  std::move(callback).Run(std::move(sorted_suggestions));
+}
+
+std::vector<file_suggestion::mojom::FilePtr>
+MicrosoftFilesPageHandler::SortAndRemoveDuplicates(
+    std::vector<std::pair<base::Time, file_suggestion::mojom::FilePtr>>
+        suggestions) {
+  // Sort the suggestions in descending order based on 1) for recent files - the
+  // last time the file was accessed by the user 2) for shared files - the time
+  // the file was shared with the user.
+  std::ranges::stable_sort(
+      suggestions, std::greater<base::Time>{},
+      [&](const auto& suggestion) { return suggestion.first; });
+
+  std::vector<file_suggestion::mojom::FilePtr> final_suggestions;
+
+  const size_t num_max_files =
+      ntp_features::kNtpMicrosoftFilesModuleMaxFilesParam.Get();
+  for (const auto& suggestion : suggestions) {
+    if (final_suggestions.size() == num_max_files) {
+      break;
+    }
+    // Ensure duplicates are not added to the final file list.
+    bool is_duplicate = false;
+    for (const auto& file : final_suggestions) {
+      if (suggestion.second->id == file->id) {
+        is_duplicate = true;
+        break;
+      }
+    }
+    if (!is_duplicate) {
+      file_suggestion::mojom::FilePtr file_copy = suggestion.second->Clone();
+      final_suggestions.push_back(std::move(file_copy));
+    }
+  }
+  return final_suggestions;
 }

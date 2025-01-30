@@ -80,6 +80,10 @@ void UpdateCertificateAsync(
   net::ServerCertificateDatabaseService* server_cert_service =
       net::ServerCertificateDatabaseServiceFactory::GetForBrowserContext(
           profile.get());
+  if (!server_cert_service) {
+    std::move(update_callback).Run(false);
+    return;
+  }
   std::vector<net::ServerCertificateDatabase::CertInformation> cert_infos;
   cert_infos.push_back(std::move(cert_info));
   server_cert_service->AddOrUpdateUserCertificates(
@@ -191,7 +195,8 @@ void UserCertSource::GetCertificateInfos(
       net::ServerCertificateDatabaseServiceFactory::GetForBrowserContext(
           profile_);
   if (!base::FeatureList::IsEnabled(
-          ::features::kEnableCertManagementUIV2Write)) {
+          ::features::kEnableCertManagementUIV2Write) ||
+      !server_cert_service) {
     std::vector<certificate_manager_v2::mojom::SummaryCertInfoPtr> cert_infos;
     std::move(callback).Run(std::move(cert_infos));
     return;
@@ -207,6 +212,9 @@ void UserCertSource::ViewCertificate(
   net::ServerCertificateDatabaseService* server_cert_service =
       net::ServerCertificateDatabaseServiceFactory::GetForBrowserContext(
           profile_);
+  if (!server_cert_service) {
+    return;
+  }
   server_cert_service->GetAllCertificates(base::BindOnce(
       &ViewCertificateAsync, sha256_hex_hash, trust_, web_contents,
       profile_->GetWeakPtr(), weak_ptr_factory_.GetWeakPtr()));
@@ -217,6 +225,9 @@ void UserCertSource::ExportCertificates(
   net::ServerCertificateDatabaseService* server_cert_service =
       net::ServerCertificateDatabaseServiceFactory::GetForBrowserContext(
           profile_);
+  if (!server_cert_service) {
+    return;
+  }
   server_cert_service->GetAllCertificates(base::BindOnce(
       &ExportCertificatesAsync, web_contents, trust_, export_file_name_));
 }
@@ -255,11 +266,13 @@ void UserCertSource::GotDeleteConfirmation(
     net::ServerCertificateDatabaseService* server_cert_service =
         net::ServerCertificateDatabaseServiceFactory::GetForBrowserContext(
             profile_.get());
-    server_cert_service->DeleteCertificate(
-        sha256hash_hex,
-        base::BindOnce(&UserCertSource::DeleteCertificateResultAsync,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-    return;
+    if (server_cert_service) {
+      server_cert_service->DeleteCertificate(
+          sha256hash_hex,
+          base::BindOnce(&UserCertSource::DeleteCertificateResultAsync,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+      return;
+    }
   }
   std::move(callback).Run(nullptr);
 }
@@ -369,6 +382,10 @@ void UserCertSource::FileRead(std::optional<std::vector<uint8_t>> file_bytes) {
   net::ServerCertificateDatabaseService* server_cert_service =
       net::ServerCertificateDatabaseServiceFactory::GetForBrowserContext(
           profile_);
+  if (!server_cert_service) {
+    std::move(import_callback_).Run(nullptr);
+    return;
+  }
 
   net::ServerCertificateDatabase::CertInformation cert_info(
       cert_to_import->cert_span());

@@ -690,7 +690,7 @@ const gchar* GetName(AtkAction* atk_action, gint index) {
   if (html_id.empty()) {
     ATK_AURALINUX_RETURN_STRING(AXPlatformNodeBase::kAriaActionsPrefix);
   }
-  ATK_AURALINUX_RETURN_STRING(AXPlatformNodeBase::kAriaActionsPrefix + "#" +
+  ATK_AURALINUX_RETURN_STRING(AXPlatformNodeBase::kAriaActionsPrefix + "_" +
                               html_id);
 }
 
