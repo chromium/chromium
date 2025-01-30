@@ -6073,6 +6073,7 @@ crbug.com/1293714 external/wpt/css/selectors/invalidation/has-complexity.html [ 
 # Sheriff 2022-02-22
 crbug.com/1299948 [ Mac11 Release ] external/wpt/css/css-tables/crashtests/textarea-intrinsic-size-crash.html [ Pass Timeout ]
 crbug.com/1299948 [ Mac12 ] external/wpt/css/css-tables/crashtests/textarea-intrinsic-size-crash.html [ Pass Timeout ]
+crbug.com/393405144 [ Mac14 ] external/wpt/css/css-tables/crashtests/textarea-intrinsic-size-crash.html [ Pass Crash ]
 crbug.com/1299972 [ Linux ] screen_orientation/screenorientation-unsupported-no-crash.html [ Failure Pass Timeout ]
 
 # Disable flaky test for further investigation
