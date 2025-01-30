@@ -101,6 +101,12 @@
     width: 100%;
   }
 
+  :host-context([dir='rtl']) input[dir='ltr'],
+  :host-context([dir='ltr']) input[dir='rtl'] {
+    padding-inline-end: calc(52px + var(--cr-searchbox-thumbnail-icon-offset, 0px));
+    padding-inline-start: calc(var(--cr-searchbox-voice-icon-offset) + var(--cr-searchbox-voice-search-button-width) + var(--cr-searchbox-inner-icon-margin));
+  }
+
   :host-context([is-back-arrow-visible]) input {
     padding-inline-start: calc(22px + var(--cr-searchbox-thumbnail-icon-offset, 0px));
   }
