@@ -7,6 +7,7 @@ found in the LICENSE file.
 <resources xmlns:tools="http://schemas.android.com/tools">
     <macro name="default_bg_color">?attr/colorSurface</macro>
     <macro name="default_bg_color_elev_0">?attr/colorSurface</macro>
+    <macro name="default_bg_color_inverse">?attr/colorSurfaceInverse</macro>
 
     <macro name="default_control_color_active">?attr/colorPrimary</macro>
     <macro name="default_control_color_normal">?attr/colorOnSurfaceVariant</macro>

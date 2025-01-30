@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.compositor.overlays.strip;
 import android.content.pm.ActivityInfo;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.FrameLayout;
 
 import androidx.test.filters.LargeTest;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -977,14 +978,14 @@ public class TabStripTest {
     }
 
     /**
-     * Tests hover enter/move/exit events associated with the tab strip (with the tab strip redesign
-     * folio treatment enabled, for maximum coverage).
+     * Tests hover enter/move/exit events associated with the tabs on the tab strip (with the tab
+     * strip redesign folio treatment enabled, for maximum coverage).
      */
     @Test
     @LargeTest
     @Feature({"TabStrip"})
     @Restriction(DeviceFormFactor.TABLET)
-    public void testHoverOnTabStrip() throws Exception {
+    public void testHoverOnTabStripTabs() throws Exception {
         // Open a few regular tabs.
         ChromeTabUtils.newTabsFromMenu(
                 InstrumentationRegistry.getInstrumentation(), sActivityTestRule.getActivity(), 4);
@@ -1204,6 +1205,115 @@ public class TabStripTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     sActivityTestRule.getActivity().onResumeWithNative();
+                });
+    }
+
+    /** Tests hover enter/move/exit events associated with the tab strip buttons. */
+    @Test
+    @LargeTest
+    @Feature({"TabStrip"})
+    @Restriction(DeviceFormFactor.TABLET)
+    public void testHoverOnTabStripButtons() throws Exception {
+        StripLayoutHelperManager stripLayoutHelperManager =
+                TabStripUtils.getStripLayoutHelperManager(sActivityTestRule.getActivity());
+
+        // Select NTB.
+        CompositorButton newTabButton = stripLayoutHelperManager.getNewTabButton();
+        Assert.assertNotNull(
+                "Tooltip ViewStub should not be inflated before first hover event.",
+                stripLayoutHelperManager.getTooltipViewStubForTesting().getParent());
+
+        // Simulate a hover into NTB.
+        float xEnter = newTabButton.getDrawX() + newTabButton.getWidth() / 2;
+        float yEnter = newTabButton.getDrawY() + newTabButton.getHeight() / 2;
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        stripLayoutHelperManager.simulateHoverEventForTesting(
+                                MotionEvent.ACTION_HOVER_ENTER, xEnter, yEnter));
+
+        // Verify that the tooltip is visible as expected.
+        FrameLayout tooltipView =
+                stripLayoutHelperManager.getTooltipManagerForTesting().getTooltipViewForTesting();
+        Assert.assertNotNull("Tooltip view should be set.", tooltipView);
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    Criteria.checkThat(
+                            "Tooltip should be visible.",
+                            tooltipView.getVisibility(),
+                            Matchers.is(View.VISIBLE));
+                });
+
+        // Enter incognito mode.
+        sActivityTestRule.newIncognitoTabFromMenu();
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        // Select MSB.
+        CompositorButton modelSelectorButton = stripLayoutHelperManager.getModelSelectorButton();
+        Assert.assertNotNull(
+                "The modelSelectorButton should be set in StripLayoutHelperManager instance",
+                modelSelectorButton);
+
+        // Simulate a subsequent hover into the MSB.
+        float xMove = modelSelectorButton.getDrawX() + modelSelectorButton.getWidth() / 3;
+        float yMove = modelSelectorButton.getDrawY() + modelSelectorButton.getHeight() / 3;
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        stripLayoutHelperManager.simulateHoverEventForTesting(
+                                MotionEvent.ACTION_HOVER_MOVE, xMove, yMove));
+        Assert.assertNotNull("Tooltip view should be set.", tooltipView);
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    Criteria.checkThat(
+                            "Tooltip should be visible.",
+                            tooltipView.getVisibility(),
+                            Matchers.is(View.VISIBLE));
+                });
+
+        // Simulate a subsequent hover outside the MSB.
+        float xExit = xMove + modelSelectorButton.getWidth();
+        float yExit = yMove + modelSelectorButton.getHeight();
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        stripLayoutHelperManager.simulateHoverEventForTesting(
+                                MotionEvent.ACTION_HOVER_EXIT, xExit, yExit));
+        Assert.assertNotNull("Tooltip view should be set.", tooltipView);
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    Criteria.checkThat(
+                            "Tooltip should be gone.",
+                            tooltipView.getVisibility(),
+                            Matchers.is(View.GONE));
+                });
+
+        // Exit incognito mode.
+        clickIncognitoToggleButton();
+
+        // Simulate a subsequent hover into the MSB outside of incognito mode.
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        stripLayoutHelperManager.simulateHoverEventForTesting(
+                                MotionEvent.ACTION_HOVER_MOVE, xMove, yMove));
+        Assert.assertNotNull("Tooltip view should be set.", tooltipView);
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    Criteria.checkThat(
+                            "Tooltip should be visible.",
+                            tooltipView.getVisibility(),
+                            Matchers.is(View.VISIBLE));
+                });
+
+        // Simulate the final hover outside the MSB.
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        stripLayoutHelperManager.simulateHoverEventForTesting(
+                                MotionEvent.ACTION_HOVER_EXIT, xExit, yExit));
+        Assert.assertNotNull("Tooltip view should be set.", tooltipView);
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    Criteria.checkThat(
+                            "Tooltip should be gone.",
+                            tooltipView.getVisibility(),
+                            Matchers.is(View.GONE));
                 });
     }
 
