@@ -2274,10 +2274,35 @@ Animation::CheckCanStartAnimationOnCompositorInternal() const {
 
   // An Animation that is not playing will not produce a visual, so there is no
   // reason to composite it.
-  if (!Playing())
+  if (!EffectivelyPlaying()) {
     reasons |= CompositorAnimations::kInvalidAnimationOrEffect;
+  }
 
   return reasons;
+}
+
+bool Animation::EffectivelyPlaying() const {
+  if (!Playing()) {
+    return false;
+  }
+
+  if (timeline_ && !timeline_->IsMonotonicallyIncreasing()) {
+    return content_ && content_->IsInPlay();
+  }
+
+  return true;
+}
+
+void Animation::OnActivePhaseStateChange(bool in_active_phase) {
+  if (!timeline_ || timeline_->IsMonotonicallyIncreasing()) {
+    return;
+  }
+
+  if (in_active_phase) {
+    SetCompositorPending(CompositorPendingReason::kPendingRestart);
+  } else {
+    SetCompositorPending(CompositorPendingReason::kPendingCancel);
+  }
 }
 
 base::TimeDelta Animation::ComputeCompositorTimeOffset() const {

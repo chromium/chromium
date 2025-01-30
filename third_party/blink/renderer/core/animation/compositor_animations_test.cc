@@ -63,6 +63,7 @@
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
@@ -2989,6 +2990,99 @@ TEST_P(AnimationCompositorAnimationsTest, BackgroundShorthand) {
                 GetDocument().View()->GetPaintArtifactCompositor()));
 
   EXPECT_TRUE(IsUseCounted(WebFeature::kStaticPropertyInAnimation));
+}
+
+TEST_P(AnimationCompositorAnimationsTest, ClipPathWithViewTimeline) {
+  std::unique_ptr<ScopedCompositeClipPathAnimationForTest>
+      scoped_composite_clip_path_animation =
+          std::make_unique<ScopedCompositeClipPathAnimationForTest>(true);
+
+  // Normally, we don't get image generators set up in a testing environment.
+  // Construct a fake one to allow us to test that we are making the correct
+  // compositing decision.
+  ScopedClipPathPaintImageGenerator image_generator(GetDocument().GetFrame());
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      .spacer {
+        height: 200vh;
+      }
+      .spacer.thin {
+        height: 16vh;
+      }
+      @keyframes clip {
+        0% { clip-path: circle(70% at 50% 50%); }
+        50% { clip-path: circle(30% at 50% 50%); }
+        100% { clip-path: circle(70% at 50% 50%); }
+      }
+      #target {
+        height: 100px;
+        width: 100px;
+        background-color: blue;
+        animation: clip auto linear;
+        animation-timeline: --t1;
+        view-timeline: --t1;
+        animation-range-start: contain 15%;
+        animation-range-end: contain 85%;
+      }
+    </style>
+    <div id="adjustable-spacer" class="spacer"></div>
+    <div id="target"></div>
+    <div class="spacer"></div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* element = GetElementById("target");
+  EXPECT_TRUE(element->GetElementAnimations());
+  EXPECT_EQ(element->GetElementAnimations()->Animations().size(), 1u);
+  // A scroll-driven animation that is outside the active phase is forced onto
+  // the main thread. No need to tick even on the compositor until scrolled.
+  EXPECT_EQ(element->GetElementAnimations()->CompositedClipPathStatus(),
+            ElementAnimations::CompositedPaintStatus::kNotComposited);
+  Animation* animation =
+      element->GetElementAnimations()->Animations().begin()->key;
+  EXPECT_FALSE(animation->HasActiveAnimationsOnCompositor());
+  EXPECT_EQ(CompositorAnimations::kInvalidAnimationOrEffect,
+            animation->CheckCanStartAnimationOnCompositor(
+                GetDocument().View()->GetPaintArtifactCompositor()) &
+                CompositorAnimations::kInvalidAnimationOrEffect);
+
+  // Shrinking the top spacer places the animated element onscreen and the
+  // animation enters the active phase. A new compositing decision is made.
+  GetElementById("adjustable-spacer")
+      ->classList()
+      .add({"thin"}, ASSERT_NO_EXCEPTION);
+
+  GetDocument().View()->UpdateLifecycleToCompositingInputsClean(
+      DocumentUpdateReason::kTest);
+
+  EXPECT_EQ(element->GetElementAnimations()->CompositedClipPathStatus(),
+            ElementAnimations::CompositedPaintStatus::kNeedsRepaint);
+
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(element->GetElementAnimations()->CompositedClipPathStatus(),
+            ElementAnimations::CompositedPaintStatus::kComposited);
+  EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
+
+  // Expanding the top spacer places the animated element off-screen and the
+  // animation enters the before phase. A new compositing decision is made.
+  GetElementById("adjustable-spacer")
+      ->classList()
+      .remove({"thin"}, ASSERT_NO_EXCEPTION);
+
+  GetDocument().View()->UpdateLifecycleToCompositingInputsClean(
+      DocumentUpdateReason::kTest);
+
+  EXPECT_EQ(element->GetElementAnimations()->CompositedClipPathStatus(),
+            ElementAnimations::CompositedPaintStatus::kNeedsRepaint);
+
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(element->GetElementAnimations()->CompositedClipPathStatus(),
+            ElementAnimations::CompositedPaintStatus::kNotComposited);
+  EXPECT_FALSE(animation->HasActiveAnimationsOnCompositor());
 }
 
 TEST_P(AnimationCompositorAnimationsTest,

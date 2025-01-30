@@ -182,6 +182,18 @@ class CORE_EXPORT Animation : public EventTarget,
            !Limited() && !is_paused_for_testing_;
   }
 
+  // Differs from Playing() in the case of a non-monotonic timeline outside the
+  // active range. A finished animation is not Playing since no update is
+  // required due to passage of time. This behavior also works for scroll-linked
+  // animations since until the animation exits the finished state, no updates
+  // are required.  When in the before phase, the normal passage of time will
+  // trigger an effect change; however, the same is not true for scroll-linked
+  // animations.
+  bool EffectivelyPlaying() const;
+
+  // Notification that the animation is entering or exiting the active phase.
+  void OnActivePhaseStateChange(bool in_active_phase);
+
   bool Limited() const { return Limited(CurrentTimeInternal()); }
   bool FinishedInternal() const { return finished_; }
 
