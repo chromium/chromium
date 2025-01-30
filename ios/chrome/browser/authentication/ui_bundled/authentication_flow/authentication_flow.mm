@@ -65,9 +65,9 @@ namespace {
 enum AuthenticationState {
   BEGIN,
   FETCH_MANAGED_STATUS,
-  FETCH_PROFILE_SEPARATION_POLICIES,
-  SHOW_MANAGED_CONFIRMATION,
-  CONVERT_PERSONAL_PROFILE_TO_MANAGED,
+  FETCH_PROFILE_SEPARATION_POLICIES_IF_NEEDED,
+  SHOW_MANAGED_CONFIRMATION_IF_NEEDED,
+  CONVERT_PERSONAL_PROFILE_TO_MANAGED_IF_NEEDED,
   SWITCH_PROFILE_IF_NEEDED,
   SIGN_OUT_IF_NEEDED,
   SIGN_IN,
@@ -231,9 +231,9 @@ enum class CancelationReason {
   switch (_state) {
     case BEGIN:
     case FETCH_MANAGED_STATUS:
-    case FETCH_PROFILE_SEPARATION_POLICIES:
-    case SHOW_MANAGED_CONFIRMATION:
-    case CONVERT_PERSONAL_PROFILE_TO_MANAGED:
+    case FETCH_PROFILE_SEPARATION_POLICIES_IF_NEEDED:
+    case SHOW_MANAGED_CONFIRMATION_IF_NEEDED:
+    case CONVERT_PERSONAL_PROFILE_TO_MANAGED_IF_NEEDED:
     case SWITCH_PROFILE_IF_NEEDED:
     case SIGN_OUT_IF_NEEDED:
     case SIGN_IN:
@@ -260,25 +260,12 @@ enum class CancelationReason {
     case BEGIN:
       return FETCH_MANAGED_STATUS;
     case FETCH_MANAGED_STATUS:
-      if (ShouldShowManagedConfirmationForHostedDomain(
-              _identityToSignInHostedDomain, _accessPoint,
-              _identityToSignIn.gaiaID, [self prefs])) {
-        return !AreSeparateProfilesForManagedAccountsEnabled() ||
-                       [self shouldSkipBrowsingDataMigration:_accessPoint
-                                                     gaia_id:_identityToSignIn
-                                                                 .gaiaID]
-                   ? SHOW_MANAGED_CONFIRMATION
-                   : FETCH_PROFILE_SEPARATION_POLICIES;
-      }
-      return SWITCH_PROFILE_IF_NEEDED;
-    case FETCH_PROFILE_SEPARATION_POLICIES:
-      return SHOW_MANAGED_CONFIRMATION;
-    case SHOW_MANAGED_CONFIRMATION:
-      if (_shouldConvertPersonalProfileToManaged) {
-        return CONVERT_PERSONAL_PROFILE_TO_MANAGED;
-      }
-      return SWITCH_PROFILE_IF_NEEDED;
-    case CONVERT_PERSONAL_PROFILE_TO_MANAGED:
+      return FETCH_PROFILE_SEPARATION_POLICIES_IF_NEEDED;
+    case FETCH_PROFILE_SEPARATION_POLICIES_IF_NEEDED:
+      return SHOW_MANAGED_CONFIRMATION_IF_NEEDED;
+    case SHOW_MANAGED_CONFIRMATION_IF_NEEDED:
+      return CONVERT_PERSONAL_PROFILE_TO_MANAGED_IF_NEEDED;
+    case CONVERT_PERSONAL_PROFILE_TO_MANAGED_IF_NEEDED:
       return SWITCH_PROFILE_IF_NEEDED;
     case SWITCH_PROFILE_IF_NEEDED:
       if (_didSwitchProfile) {
@@ -346,17 +333,16 @@ enum class CancelationReason {
       [_performer fetchManagedStatus:profile forIdentity:_identityToSignIn];
       return;
 
-    case FETCH_PROFILE_SEPARATION_POLICIES:
-      [_performer fetchProfileSeparationPolicies:profile
-                                     forIdentity:_identityToSignIn];
+    case FETCH_PROFILE_SEPARATION_POLICIES_IF_NEEDED:
+      [self fetchProfileSeparationPoliciesIfNeededStep];
       return;
 
-    case SHOW_MANAGED_CONFIRMATION:
-      [self showManagedConfirmationStep];
+    case SHOW_MANAGED_CONFIRMATION_IF_NEEDED:
+      [self showManagedConfirmationIfNeededStep];
       return;
 
-    case CONVERT_PERSONAL_PROFILE_TO_MANAGED:
-      [_performer makePersonalProfileManagedWithIdentity:_identityToSignIn];
+    case CONVERT_PERSONAL_PROFILE_TO_MANAGED_IF_NEEDED:
+      [self convertPersonalProfileToManagedIfNeededStep];
       return;
 
     case SWITCH_PROFILE_IF_NEEDED:
@@ -407,8 +393,37 @@ enum class CancelationReason {
   NOTREACHED();
 }
 
+// Fetches ManagedAccountsSigninRestriction policy, if needed.
+- (void)fetchProfileSeparationPoliciesIfNeededStep {
+  if (!ShouldShowManagedConfirmationForHostedDomain(
+          _identityToSignInHostedDomain, _accessPoint, _identityToSignIn.gaiaID,
+          [self prefs])) {
+    // The managed confirmation dialog can be skipped, therefore, there is no
+    // need to fetch the policy.
+    [self continueFlow];
+    return;
+  }
+  if (!AreSeparateProfilesForManagedAccountsEnabled() ||
+      [self shouldSkipBrowsingDataMigration:_accessPoint
+                                    gaia_id:_identityToSignIn.gaiaID]) {
+    // The profile-separation policy affects whether browsing-data-migration
+    // is offered, so it's only needed if the migration isn't skipped.
+    [self continueFlow];
+    return;
+  }
+  ProfileIOS* profile = [self originalProfile];
+  [_performer fetchProfileSeparationPolicies:profile
+                                 forIdentity:_identityToSignIn];
+}
+
 // Shows a confirmation dialog for signing in to an account managed.
-- (void)showManagedConfirmationStep {
+- (void)showManagedConfirmationIfNeededStep {
+  if (!ShouldShowManagedConfirmationForHostedDomain(
+          _identityToSignInHostedDomain, _accessPoint, _identityToSignIn.gaiaID,
+          [self prefs])) {
+    [self continueFlow];
+    return;
+  }
   // These value are not used if
   // `AreSeparateProfilesForManagedAccountsEnabled()` is false.
   BOOL skipBrowsingDataMigration = NO;
@@ -439,6 +454,15 @@ enum class CancelationReason {
                                      browser:_browser
                    skipBrowsingDataMigration:skipBrowsingDataMigration
                   mergeBrowsingDataByDefault:mergeBrowsingDataByDefault];
+}
+
+// Converts the personal profile to a managed profile, if needed.
+- (void)convertPersonalProfileToManagedIfNeededStep {
+  if (!_shouldConvertPersonalProfileToManaged) {
+    [self continueFlow];
+    return;
+  }
+  [_performer makePersonalProfileManagedWithIdentity:_identityToSignIn];
 }
 
 // Switches profile if `_identityToSignIn` is assigned to another profile.
