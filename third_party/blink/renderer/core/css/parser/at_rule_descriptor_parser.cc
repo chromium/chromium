@@ -302,6 +302,7 @@ CSSValue* ConsumeDescriptor(StyleRule::RuleType rule_type,
     case StyleRule::kLayerBlock:
     case StyleRule::kLayerStatement:
     case StyleRule::kNestedDeclarations:
+    case StyleRule::kFunctionDeclarations:
     case StyleRule::kNamespace:
     case StyleRule::kScope:
     case StyleRule::kSupports:

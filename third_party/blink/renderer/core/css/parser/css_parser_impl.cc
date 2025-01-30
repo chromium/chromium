@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/core/css/style_rule_counter_style.h"
 #include "third_party/blink/renderer/core/css/style_rule_font_feature_values.h"
 #include "third_party/blink/renderer/core/css/style_rule_font_palette_values.h"
+#include "third_party/blink/renderer/core/css/style_rule_function_declarations.h"
 #include "third_party/blink/renderer/core/css/style_rule_import.h"
 #include "third_party/blink/renderer/core/css/style_rule_keyframe.h"
 #include "third_party/blink/renderer/core/css/style_rule_namespace.h"
@@ -147,6 +148,8 @@ StyleRule::RuleType RuleTypeForMutableDeclaration(
       return StyleRule::kFontPaletteValues;
     case kCSSPositionTryRuleMode:
       return StyleRule::kPositionTry;
+    case kCSSFunctionDescriptorsMode:
+      return StyleRule::kFunction;
     default:
       return StyleRule::kStyle;
   }
@@ -1214,9 +1217,23 @@ HeapVector<CSSSelector> WhereScopeSelector() {
   return selectors;
 }
 
+// https://drafts.csswg.org/css-nesting-1/#nested-declarations-rule
+StyleRuleNestedDeclarations* CreateNestedDeclarationsRule(
+    CSSNestingType nesting_type,
+    const CSSParserContext& context,
+    HeapVector<CSSSelector> selectors,
+    HeapVector<CSSPropertyValue, 64>& declarations) {
+  return MakeGarbageCollected<StyleRuleNestedDeclarations>(
+      nesting_type,
+      StyleRule::Create(
+          base::span<CSSSelector>{selectors.begin(), selectors.size()},
+          CreateCSSPropertyValueSet(declarations, context.Mode(),
+                                    context.GetDocument())));
+}
+
 }  // namespace
 
-StyleRuleNestedDeclarations* CSSParserImpl::CreateNestedDeclarationsRule(
+StyleRuleBase* CSSParserImpl::CreateDeclarationsRule(
     CSSNestingType nesting_type,
     const CSSSelector* selector_list,
     wtf_size_t start_index,
@@ -1232,45 +1249,43 @@ StyleRuleNestedDeclarations* CSSParserImpl::CreateNestedDeclarationsRule(
 
   // Create the selector for StyleRuleNestedDeclarations's inner StyleRule.
 
-  HeapVector<CSSSelector> selectors;
-
   switch (nesting_type) {
     case CSSNestingType::kNone:
-      // We reach here when parsing the body of an @function rule. The selector
-      // is not use in this case; we just need a place to store the descriptors
-      // within the rule.
-      //
-      // TODO(crbug.com/325504770): Using CSSNestedDeclarations for
-      // the @function body is per spec at the time of writing,
-      // but isn't a perfect match due to the unnecessary inner style rule.
-      selectors.push_back(CSSSelector());
       break;
     case CSSNestingType::kNesting:
       // For regular nesting, the nested declarations rule should match
       // exactly what the parent rule matches, with top-level specificity
       // behavior. This means the selector list is copied rather than just
       // being referenced with '&'.
-      selectors = CSSSelectorList::Copy(selector_list);
-      break;
+      return blink::CreateNestedDeclarationsRule(
+          nesting_type, *context_,
+          /*selectors=*/CSSSelectorList::Copy(selector_list), declarations);
     case CSSNestingType::kScope:
       // For direct nesting within @scope
       // (e.g. .foo { @scope (...) { color:green } }),
       // the nested declarations rule should match like a :where(:scope) rule.
       //
       // https://github.com/w3c/csswg-drafts/issues/10431
-      selectors = WhereScopeSelector();
-      break;
+      return blink::CreateNestedDeclarationsRule(
+          nesting_type, *context_,
+          /*selectors=*/WhereScopeSelector(), declarations);
+    case CSSNestingType::kFunction:
+      // For descriptors within @function, e.g.:
+      //
+      //  @function --x() {
+      //    --local: 1px;
+      //    result: var(--local);
+      //  }
+      //
+      return MakeGarbageCollected<StyleRuleFunctionDeclarations>(
+          *CreateCSSPropertyValueSet(declarations, kCSSFunctionDescriptorsMode,
+                                     context_->GetDocument()));
   }
 
-  return MakeGarbageCollected<StyleRuleNestedDeclarations>(
-      nesting_type,
-      StyleRule::Create(
-          base::span<CSSSelector>{selectors.begin(), selectors.size()},
-          CreateCSSPropertyValueSet(declarations, context_->Mode(),
-                                    context_->GetDocument())));
+  NOTREACHED();
 }
 
-void CSSParserImpl::EmitNestedDeclarationsRuleIfNeeded(
+void CSSParserImpl::EmitDeclarationsRuleIfNeeded(
     StyleRule::RuleType rule_type,
     CSSNestingType nesting_type,
     StyleRule* parent_rule_for_nesting,
@@ -1294,12 +1309,11 @@ void CSSParserImpl::EmitNestedDeclarationsRuleIfNeeded(
     return;
   }
 
-  StyleRuleNestedDeclarations* nested_declarations_rule =
-      CreateNestedDeclarationsRule(
-          nesting_type,
-          parent_rule_for_nesting ? parent_rule_for_nesting->FirstSelector()
-                                  : nullptr,
-          start_index, end_index);
+  StyleRuleBase* nested_declarations_rule = CreateDeclarationsRule(
+      nesting_type,
+      parent_rule_for_nesting ? parent_rule_for_nesting->FirstSelector()
+                              : nullptr,
+      start_index, end_index);
   DCHECK(nested_declarations_rule);
   child_rules.push_back(nested_declarations_rule);
 
@@ -2256,6 +2270,8 @@ static std::optional<CSSSyntaxDefinition> ConsumeFunctionType(
 
 StyleRuleFunction* CSSParserImpl::ConsumeFunctionRule(
     CSSParserTokenStream& stream) {
+  wtf_size_t prelude_offset_start = stream.LookAheadOffset();
+
   // Parse the prelude; first a function token (the name), then parameters,
   // then return type.
   if (stream.Peek().GetType() != kFunctionToken) {
@@ -2290,6 +2306,7 @@ StyleRuleFunction* CSSParserImpl::ConsumeFunctionRule(
     return_type = CSSSyntaxDefinition::CreateUniversal();
   }
 
+  wtf_size_t prelude_offset_end = stream.LookAheadOffset();
   if (!ConsumeEndOfPreludeForAtRuleWithBlock(stream,
                                              CSSAtRuleID::kCSSAtRuleFunction)) {
     return nullptr;
@@ -2298,11 +2315,21 @@ StyleRuleFunction* CSSParserImpl::ConsumeFunctionRule(
   // Parse the actual block.
   CSSParserTokenStream::BlockGuard guard(stream);
 
+  if (observer_) {
+    observer_->StartRuleHeader(StyleRule::kFunction, prelude_offset_start);
+    observer_->EndRuleHeader(prelude_offset_end);
+    observer_->StartRuleBody(stream.Offset());
+  }
+
   HeapVector<Member<StyleRuleBase>, 4> child_rules;
-  ConsumeBlockContents(stream, StyleRule::kFunction, CSSNestingType::kNone,
+  ConsumeBlockContents(stream, StyleRule::kFunction, CSSNestingType::kFunction,
                        /*parent_rule_for_nesting=*/nullptr,
                        /*nested_declarations_start_index=*/0, &child_rules,
                        /*has_visited_pseudo=*/false);
+
+  if (observer_) {
+    observer_->EndRuleBody(stream.LookAheadOffset());
+  }
 
   return MakeGarbageCollected<StyleRuleFunction>(
       name, std::move(*parameters),
@@ -2652,7 +2679,7 @@ void CSSParserImpl::ConsumeBlockContents(
         // https://drafts.csswg.org/css-syntax/#consume-at-rule
         DCHECK(!invalid_rule_error_ignored);
         if (child && child_rules) {
-          EmitNestedDeclarationsRuleIfNeeded(
+          EmitDeclarationsRuleIfNeeded(
               rule_type, nesting_type, parent_rule_for_nesting,
               nested_declarations_start_index, *child_rules);
           nested_declarations_start_index = parsed_properties_.size();
@@ -2686,14 +2713,15 @@ void CSSParserImpl::ConsumeBlockContents(
         [[fallthrough]];
       }
       default:
-        if (nesting_type != CSSNestingType::kNone) {
+        if (nesting_type != CSSNestingType::kNone &&
+            nesting_type != CSSNestingType::kFunction) {
           bool invalid_rule_error = false;
           StyleRuleBase* child =
               ConsumeNestedRule(std::nullopt, rule_type, stream, nesting_type,
                                 parent_rule_for_nesting, invalid_rule_error);
           if (child) {
             if (child_rules) {
-              EmitNestedDeclarationsRuleIfNeeded(
+              EmitDeclarationsRuleIfNeeded(
                   rule_type, nesting_type, parent_rule_for_nesting,
                   nested_declarations_start_index, *child_rules);
               nested_declarations_start_index = parsed_properties_.size();
@@ -2727,14 +2755,14 @@ void CSSParserImpl::ConsumeBlockContents(
     }
   }
 
-  // We need a final call to EmitNestedDeclarationsRuleIfNeeded in case there
+  // We need a final call to EmitDeclarationsRuleIfNeeded in case there
   // are trailing bare declarations. If no child rule has been observed,
   // nested_declarations_start_index is still kNotFound (UINT_MAX),
-  // which causes EmitNestedDeclarationsRuleIfNeeded to have no effect.
+  // which causes EmitDeclarationsRuleIfNeeded to have no effect.
   if (child_rules) {
-    EmitNestedDeclarationsRuleIfNeeded(
-        rule_type, nesting_type, parent_rule_for_nesting,
-        nested_declarations_start_index, *child_rules);
+    EmitDeclarationsRuleIfNeeded(rule_type, nesting_type,
+                                 parent_rule_for_nesting,
+                                 nested_declarations_start_index, *child_rules);
   }
 }
 

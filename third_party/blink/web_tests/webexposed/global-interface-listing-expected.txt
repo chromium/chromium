@@ -761,6 +761,22 @@ interface CSSFontPaletteValuesRule : CSSRule
     getter name
     getter overrideColors
     method constructor
+interface CSSFunctionDeclarations : CSSRule
+    attribute @@toStringTag
+    getter style
+    method constructor
+    setter style
+interface CSSFunctionDescriptors : CSSStyleDeclaration
+    attribute @@toStringTag
+    getter result
+    method constructor
+    setter result
+interface CSSFunctionRule : CSSGroupingRule
+    attribute @@toStringTag
+    getter name
+    getter returnType
+    method constructor
+    method getParameters
 interface CSSGroupingRule : CSSRule
     attribute @@toStringTag
     getter cssRules

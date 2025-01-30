@@ -72,6 +72,7 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
     kLayerBlock,
     kLayerStatement,
     kNestedDeclarations,
+    kFunctionDeclarations,
     kNamespace,
     kContainer,
     kCounterStyle,
@@ -108,6 +109,9 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
   bool IsKeyframeRule() const { return GetType() == kKeyframe; }
   bool IsLayerBlockRule() const { return GetType() == kLayerBlock; }
   bool IsLayerStatementRule() const { return GetType() == kLayerStatement; }
+  bool IsFunctionDeclarationsRule() const {
+    return GetType() == kFunctionDeclarations;
+  }
   bool IsNestedDeclarationsRule() const {
     return GetType() == kNestedDeclarations;
   }

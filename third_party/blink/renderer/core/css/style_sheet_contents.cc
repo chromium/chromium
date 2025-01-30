@@ -660,6 +660,7 @@ static bool ChildRulesHaveFailedOrCanceledSubresources(
       case StyleRuleBase::kMixin:
         NOTREACHED();
       case StyleRuleBase::kNestedDeclarations:
+      case StyleRuleBase::kFunctionDeclarations:
       case StyleRuleBase::kPage:
       case StyleRuleBase::kPageMargin:
       case StyleRuleBase::kProperty:
