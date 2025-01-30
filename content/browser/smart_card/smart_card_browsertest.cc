@@ -56,6 +56,7 @@ using testing::InSequence;
 using testing::MatchesRegex;
 using testing::Return;
 using testing::StrictMock;
+using testing::WithArg;
 
 namespace content {
 
@@ -878,6 +879,34 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, GetStatusChange) {
        return `${statesOut[0].readerName}, {${eventStateString}}` +
          `, ${statesOut[0].eventCount}, {${atrString}}`;
      })())"));
+}
+
+IN_PROC_BROWSER_TEST_F(SmartCardTest, GetStatusChangeInterruptedByClose) {
+  std::optional<SmartCardContext::GetStatusChangeCallback> callback_holder;
+  MockSmartCardContextFactory& mock_context_factory =
+      GetFakeSmartCardDelegate().mock_context_factory;
+
+  EXPECT_CALL(mock_context_factory, GetStatusChange)
+      .WillOnce(
+          WithArg<2>([&callback_holder](
+                         SmartCardContext::GetStatusChangeCallback callback) {
+            callback_holder.emplace(std::move(callback));
+          }));
+
+  ASSERT_TRUE(NavigateToURL(shell(), GetIsolatedContextUrl()));
+
+  ASSERT_TRUE(ExecJs(shell(), R"((async () => {
+       let context = await navigator.smartCard.establishContext();
+
+       let readerStates = [{readerName: "Fake Reader",
+                            currentState: {empty: true},
+                            currentCount: 6 }];
+       let promise = context.getStatusChange(
+           readerStates,
+           {timeout: 4321});
+           })())"));
+  ASSERT_NO_FATAL_FAILURE(shell()->Reload());
+  content::WaitForLoadStop(shell()->web_contents());
 }
 
 IN_PROC_BROWSER_TEST_F(SmartCardTest, GetStatusChangeAborted) {

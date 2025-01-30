@@ -66,12 +66,12 @@ class CONTENT_EXPORT SmartCardService
   void OnListReadersResult(ListReadersCallback callback,
                            device::mojom::SmartCardListReadersResultPtr result);
 
-  // Receives SmartCardContext calls from blink
-  mojo::ReceiverSet<device::mojom::SmartCardContext> context_wrapper_receivers_;
-
   // Sends SmartCardContext calls to the platform's PC/SC stack.
   // Maps a wrapper context to its corresponding real context.
   std::map<mojo::ReceiverId, mojo::Remote<SmartCardContext>> context_remotes_;
+
+  // Receives SmartCardContext calls from blink
+  mojo::ReceiverSet<device::mojom::SmartCardContext> context_wrapper_receivers_;
 
   // Used to filter a reader name coming from an application, before
   // it can be shown to the user in a permission prompt.
