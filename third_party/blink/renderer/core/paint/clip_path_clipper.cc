@@ -275,6 +275,13 @@ bool ClipPathClipper::HasCompositeClipPathAnimation(
     return false;
   }
 
+  if (layout_object.GetDocument().Lifecycle().GetState() <
+      DocumentLifecycle::kInPrePaint) {
+    DCHECK(false) << "HasCompositeClipPathAnimation result not defined before"
+                  << " pre-paint.";
+    base::debug::DumpWithoutCrashing();
+  }
+
   CompositedPaintStatus status =
       CompositeClipPathStatus(layout_object.GetNode());
   switch (status) {
@@ -326,6 +333,14 @@ void ClipPathClipper::ResolveClipPathStatus(const LayoutObject& layout_object,
                                             bool is_in_block_fragmentation) {
   if (!RuntimeEnabledFeatures::CompositeClipPathAnimationEnabled()) {
     return;
+  }
+
+  // TODO(crbug.com/374656290): Replace this with CHECK_LE when this bug is
+  // known to be resolved.
+  if (layout_object.GetDocument().Lifecycle().GetState() >=
+      DocumentLifecycle::kInPaint) {
+    DCHECK(false) << "Clip-path status must not be resolved after pre-paint";
+    base::debug::DumpWithoutCrashing();
   }
 
   // If not all the fragments of this layout object have been populated yet, it
