@@ -52,6 +52,14 @@ TEST(HEVCAnalyzeAnnexBTest, ValidAnnexBConstructs) {
   }
 }
 
+TEST(HEVCAnalyzeAnnexBTest, EmptyBuffer) {
+  std::vector<SubsampleEntry> subsamples;
+  auto result = HEVC::AnalyzeAnnexB(nullptr, 0, subsamples);
+  EXPECT_TRUE(result.is_conformant);
+  EXPECT_TRUE(subsamples.empty());
+  EXPECT_FALSE(result.is_keyframe.has_value());
+}
+
 TEST(HEVCAnalyzeAnnexBTest, InvalidAnnexBConstructs) {
   struct TestCases {
     const char* case_string;

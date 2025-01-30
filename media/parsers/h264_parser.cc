@@ -283,7 +283,7 @@ void H264Parser::SetEncryptedStream(
     const uint8_t* stream,
     off_t stream_size,
     const std::vector<SubsampleEntry>& subsamples) {
-  DCHECK(stream);
+  CHECK(stream);
   DCHECK_GT(stream_size, 0);
 
   stream_ = stream;
