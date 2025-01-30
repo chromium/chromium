@@ -271,9 +271,9 @@ public final class BrowsingDataBridge implements Destroyable {
      * Attempt to trigger the HaTS survey 5 seconds after the next page load on any {@link
      * TabModelSelector}.
      *
-     * <p>TODO(crbug.com/40255099): Differentiate between Hats triggered from QD and CBD.
+     * @param quickDelete True if the survey was requested for Quick Delete.
      */
-    public void requestHatsSurvey() {
+    public void requestHatsSurvey(boolean quickDelete) {
         removeTabModelObservers();
 
         TabWindowManager tabWindowManager = TabWindowManagerSingleton.getInstance();
@@ -290,7 +290,8 @@ public final class BrowsingDataBridge implements Destroyable {
                                         WebContents webContents = tab.getWebContents();
                                         if (!tab.isOffTheRecord() && webContents != null) {
                                             BrowsingDataBridgeJni.get()
-                                                    .triggerHatsSurvey(mProfile, webContents);
+                                                    .triggerHatsSurvey(
+                                                            mProfile, webContents, quickDelete);
                                             removeTabModelObservers();
                                         }
                                     }
@@ -352,6 +353,7 @@ public final class BrowsingDataBridge implements Destroyable {
 
         void triggerHatsSurvey(
                 @JniType("Profile*") Profile profile,
-                @JniType("content::WebContents*") WebContents webContents);
+                @JniType("content::WebContents*") WebContents webContents,
+                boolean quickDelete);
     }
 }

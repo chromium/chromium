@@ -69,6 +69,7 @@ extern const char kHatsSurveyTriggerWhatsNew[];
 #else
 extern const char kHatsSurveyTriggerAndroidStartupSurvey[];
 extern const char kHatsSurveyTriggerQuickDelete[];
+extern const char kHatsSurveyTriggerClearBrowsingData[];
 extern const char kHatsSurveyTriggerSafetyHubAndroid[];
 extern const char kHatsSurveyOrganicTriggerSafetyHubAndroid[];
 #endif  // #if !BUILDFLAG(IS_ANDROID)

@@ -45,6 +45,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataCounterBridge.BrowsingDataCounterCallback;
 import org.chromium.chrome.browser.browsing_data.TimePeriodUtils.TimePeriodSpinnerOption;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.searchwidget.SearchActivity;
@@ -362,6 +363,11 @@ public class ClearBrowsingDataFragment extends ChromeBaseSettingsFragment
     /** Called when browsing data is about to be cleared. */
     private void onClearBrowsingData() {
         RecordUserAction.record("ClearBrowsingData_AdvancedTab");
+
+        if (ChromeFeatureList.sClearBrowsingDataAndroidSurvey.isEnabled()) {
+            BrowsingDataBridge.getForProfile(getProfile())
+                    .requestHatsSurvey(/* quickDelete= */ false);
+        }
     }
 
     /**

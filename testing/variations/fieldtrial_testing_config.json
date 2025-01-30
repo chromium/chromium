@@ -5367,6 +5367,25 @@
             ]
         }
     ],
+    "ClearBrowsingDataAndroidSurvey": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "en_site_id": "TmqhVJ5cH0tK1KeaPYj0StW6qFe8",
+                        "probability": "0.0075"
+                    },
+                    "enable_features": [
+                        "ClearBrowsingDataAndroidSurvey"
+                    ]
+                }
+            ]
+        }
+    ],
     "ClearDeviceDataOnSignOutForManagedUsers": [
         {
             "platforms": [

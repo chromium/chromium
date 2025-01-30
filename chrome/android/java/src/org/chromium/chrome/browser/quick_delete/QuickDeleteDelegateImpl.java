@@ -70,6 +70,6 @@ public class QuickDeleteDelegateImpl extends QuickDeleteDelegate {
     @Override
     void triggerHatsSurvey() {
         Profile profile = mProfileSupplier.get().getOriginalProfile();
-        BrowsingDataBridge.getForProfile(profile).requestHatsSurvey();
+        BrowsingDataBridge.getForProfile(profile).requestHatsSurvey(/* quickDelete= */ true);
     }
 }
