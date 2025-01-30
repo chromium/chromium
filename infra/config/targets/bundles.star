@@ -106,10 +106,10 @@ targets.bundle(
 targets.bundle(
     name = "android_12l_rel_cq_gtests",
     targets = [
-        "tablet_sensitive_chrome_public_test_apk",
+        "chrome_public_test_apk_tablet",
     ],
     per_test_modifications = {
-        "tablet_sensitive_chrome_public_test_apk": targets.mixin(
+        "chrome_public_test_apk_tablet": targets.mixin(
             swarming = targets.swarming(
                 shards = 2,
             ),

@@ -537,6 +537,28 @@ targets.tests.gtest_test(
 )
 
 targets.tests.gtest_test(
+    name = "chrome_public_test_apk_tablet",
+    mixins = [
+        "skia_gold_test",
+    ],
+    args = [
+        "--annotation=Restriction=Tablet,ImportantFormFactors=Tablet",
+    ],
+    binary = "chrome_public_test_apk",
+)
+
+targets.tests.gtest_test(
+    name = "chrome_public_test_apk_automotive",
+    mixins = [
+        "skia_gold_test",
+    ],
+    args = [
+        "--annotation=Restriction=Auto,ImportantFormFactors=Auto",
+    ],
+    binary = "chrome_public_test_apk",
+)
+
+targets.tests.gtest_test(
     name = "chrome_public_test_vr_apk",
 )
 
@@ -2340,17 +2362,6 @@ targets.tests.isolated_script_test(
 targets.tests.gtest_test(
     name = "tab_capture_end2end_tests",
     binary = "browser_tests",
-)
-
-targets.tests.gtest_test(
-    name = "tablet_sensitive_chrome_public_test_apk",
-    mixins = [
-        "skia_gold_test",
-    ],
-    args = [
-        "--annotation=Restriction=Tablet,ImportantFormFactors=Tablet",
-    ],
-    binary = "chrome_public_test_apk",
 )
 
 targets.tests.isolated_script_test(
