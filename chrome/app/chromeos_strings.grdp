@@ -6124,9 +6124,6 @@
   <message name="IDS_ACCOUNT_MANAGER_DIALOG_TITLE" desc="Title for the ChromeOS 'Add account' dialog.">
     Sign in to add a Google account
   </message>
-  <message name="IDS_ACCOUNT_MANAGER_DIALOG_NEXT_BUTTON" desc="Label for the 'Continue' button which takes user to the next screen in ChromeOS 'Add account' dialog.">
-    Continue
-  </message>
   <message name="IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_TITLE" desc="Title for the Welcome screen in ChromeOS 'Add account' dialog.">
     Add another Google Account for <ph name="USER_NAME">$1<ex>John</ex></ph>
   </message>
@@ -6140,15 +6137,6 @@
 You can use this account with Android apps. If you want to add an account for someone else, <ph name="LINK_BEGIN">&lt;a id="newPersonLink" href="$1<ex>https://google.com/</ex>"&gt;</ph>add a new person<ph name="LINK_END">&lt;/a&gt;</ph> to your <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph> instead.
 
 Permissions you've already given to apps may apply to this account. You can control permissions for Android apps in <ph name="APPS_LINK_BEGIN">&lt;a id="appsSettingsLink" href="$3<ex>https://google.com/</ex>"&gt;</ph>Apps Settings<ph name="APPS_LINK_END">&lt;/a&gt;</ph>.
-  </message>
-  <message name="IDS_ACCOUNT_MANAGER_DIALOG_ARC_TOGGLE_LABEL" desc="Toggle text for the Welcome screen in ChromeOS 'Add account' dialog. If user toggles it on, the account that will be added will be available in Android Apps. The default value for the toggle may be 'on' or 'off' depending on where the dialog is being opened from.">
-    Use this account with Android apps. You can control permissions for Android apps in <ph name="LINK_BEGIN">&lt;a id="appsSettingsLink" href="$1<ex>https://google.com/</ex>"&gt;</ph>Apps Settings<ph name="LINK_END">&lt;/a&gt;</ph>.
-  </message>
-  <message name="IDS_ACCOUNT_MANAGER_DIALOG_ARC_ACCOUNT_PICKER_TITLE" desc="Title for the Account picker screen in ChromeOS 'Add account' dialog. This screen shows user a list of accounts that are not available in ARC / Android apps, and allows to add one of the listed accounts to ARC / Android apps.">
-    Accounts available for Android apps
-  </message>
-  <message name="IDS_ACCOUNT_MANAGER_DIALOG_ARC_ACCOUNT_PICKER_BODY" desc="Text body for the Account picker screen in ChromeOS 'Add account' dialog. This screen shows user a list of accounts that are not available in ARC / Android apps, and allows to add one of the listed accounts to ARC / Android apps.">
-    These accounts aren't being used with Android apps right now. If you select an account to use with this Android app, the account can also be used with other Android apps. You can change Android app access in <ph name="LINK_BEGIN">&lt;a id="osSettingsLink" href="$1<ex>https://google.com/</ex>"&gt;</ph>Settings > Accounts<ph name="LINK_END">&lt;/a&gt;</ph>.
   </message>
   <message name="IDS_ACCOUNT_MANAGER_DIALOG_ADD_ACCOUNT_LABEL" desc="Label of the Add account button on Account picker screen.">
     Add Google Account

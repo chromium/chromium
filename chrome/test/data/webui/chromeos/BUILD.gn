@@ -36,7 +36,6 @@ if (include_js2gtest_tests) {
     # separate action so need to be separated out.
     sources = [
       "account_manager/account_manager_browsertest.js",
-      "arc_account_picker/arc_account_picker_browsertest.js",
       "ash_common/i18n_process_test.js",
       "ash_common/post_message_api/post_message_api_browsertest.js",
       "assertions.js",
@@ -148,7 +147,6 @@ build_webui_tests("build") {
     # subfolder targets.
     "account_manager/account_migration_welcome_test.js",
     "account_manager/test_account_manager_browser_proxy.js",
-    "arc_account_picker/arc_account_picker_test.js",
     "arc_account_picker/test_util.js",
     "bluetooth/bluetooth_base_page_test.ts",
     "bluetooth/bluetooth_battery_icon_percentage_test.ts",

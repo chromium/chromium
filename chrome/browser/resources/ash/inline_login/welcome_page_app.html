@@ -16,10 +16,6 @@
     margin: auto;
     margin-top: 40px;
   }
-  .arc-toggle-container {
-    display: flex;
-    justify-content: space-between;
-  }
 </style>
 
 <div class="main-container">
@@ -27,17 +23,9 @@
     <img class="google-full-logo"
             src="chrome://theme/IDR_LOGO_GOOGLE_COLOR_90" alt="">
   </if>
-  <h1>[[getWelcomeTitle_(isArcAccountRestrictionsEnabled_)]]</h1>
+  <h1>[[getWelcomeTitle_()]]</h1>
   <!-- Use inner-h-t-m-l because the body contains links -->
-  <p class="secondary" inner-h-t-m-l="[[getWelcomeBody_(
-      isArcAccountRestrictionsEnabled_, isArcFlow_)]]"></p>
-  <div class="arc-toggle-container" hidden$="[[!isArcToggleVisible_(
-        isArcAccountRestrictionsEnabled_, isArcFlow_)]]">
-    <span class="secondary" id="arcToggleLabel"
-        aria-hidden="true">$i18nRaw{accountManagerDialogArcToggleLabel}</span>
-    <cr-toggle checked="{{isAvailableInArc}}" aria-labelledby="arcToggleLabel">
-    </cr-toggle>
-  </div>
+  <p class="secondary" inner-h-t-m-l="[[getWelcomeBody_()]]"></p>
 
   <div class="image-container">
     <if expr="_google_chrome">
@@ -47,7 +35,7 @@
     </if>
   </div>
 
-  <div class="skip-checkbox" hidden$="[[isArcAccountRestrictionsEnabled_]]">
+  <div class="skip-checkbox">
     <cr-checkbox id="checkbox"
         aria-label="$i18n{accountManagerDialogWelcomeCheckbox}">
       <span class="secondary"

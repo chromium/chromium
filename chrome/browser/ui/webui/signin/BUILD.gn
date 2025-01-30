@@ -271,7 +271,6 @@ source_set("login_impl") {
         "//chrome/browser/ash/account_manager",
         "//chrome/browser/ash/profiles",
         "//chrome/browser/resources/ash/inline_login:resources",
-        "//chrome/browser/resources/chromeos/arc_account_picker:resources",
         "//chrome/browser/resources/chromeos/edu_coexistence:resources",
         "//chrome/browser/resources/chromeos/gaia_action_buttons:resources",
         "//chrome/browser/resources/chromeos/supervision:resources",
