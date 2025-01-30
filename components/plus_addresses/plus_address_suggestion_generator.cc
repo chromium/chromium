@@ -331,7 +331,7 @@ bool PlusAddressSuggestionGenerator::IsInlineGenerationEnabled() const {
       !setting_service_->GetHasAcceptedNotice()) {
     return false;
   }
-  return base::FeatureList::IsEnabled(features::kPlusAddressInlineCreation);
+  return true;
 #else
   return false;
 #endif

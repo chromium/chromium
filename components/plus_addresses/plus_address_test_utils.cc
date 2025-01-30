@@ -172,13 +172,17 @@ Matcher<std::vector<Suggestion>> IsSingleCreatePlusAddressSuggestion() {
         IDS_PLUS_ADDRESS_CREATE_SUGGESTION_SECONDARY_TEXT))}};
   }
   return ElementsAre(AllOf(
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+      EqualsSuggestion(SuggestionType::kCreateNewPlusAddressInline),
+#else
       EqualsSuggestion(SuggestionType::kCreateNewPlusAddress,
                        /*main_text=*/l10n_util::GetStringUTF16(
                            IDS_PLUS_ADDRESS_CREATE_SUGGESTION_MAIN_TEXT)),
-      Field(&Suggestion::icon, Suggestion::Icon::kPlusAddress),
       Field(&Suggestion::iph_metadata,
             Suggestion::IPHMetadata(
                 &feature_engagement::kIPHPlusAddressCreateSuggestionFeature)),
+#endif
+      Field(&Suggestion::icon, Suggestion::Icon::kPlusAddress),
 #if BUILDFLAG(IS_ANDROID)
       Field(&Suggestion::iph_description_text,
             l10n_util::GetStringUTF16(
