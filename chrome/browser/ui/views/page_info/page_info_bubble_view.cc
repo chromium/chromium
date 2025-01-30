@@ -224,7 +224,8 @@ views::BubbleDialogDelegateView* PageInfoBubbleView::CreatePageInfoBubble(
   }
   if (open_merchant_trust_page) {
     CHECK(!type);
-    bubble->OpenMerchantTrustPage();
+    bubble->OpenMerchantTrustPage(
+        page_info::MerchantBubbleOpenReferrer::kLocationBarChip);
   }
   return bubble;
 }
@@ -280,8 +281,8 @@ void PageInfoBubbleView::OpenCookiesPage() {
   AnnouncePageOpened(l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES));
 }
 
-void PageInfoBubbleView::OpenMerchantTrustPage() {
-  // TODO(crbug.com/378854730): Record open action.
+void PageInfoBubbleView::OpenMerchantTrustPage(
+    page_info::MerchantBubbleOpenReferrer referrer) {
   CHECK(merchant_trust_coordinator_);
   auto title = l10n_util::GetStringUTF16(IDS_PAGE_INFO_MERCHANT_TRUST_HEADER);
   auto page_content = merchant_trust_coordinator_->CreatePageContent();
@@ -294,6 +295,7 @@ void PageInfoBubbleView::OpenMerchantTrustPage() {
   page_view->SetID(PageInfoViewFactory::VIEW_ID_PAGE_INFO_CURRENT_VIEW);
   page_container_->SwitchToPage(std::move(page_view));
   AnnouncePageOpened(title);
+  merchant_trust_coordinator_->OnBubbleOpened(referrer);
 }
 
 void PageInfoBubbleView::CloseBubble() {

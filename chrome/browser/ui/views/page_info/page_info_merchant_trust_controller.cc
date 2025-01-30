@@ -50,6 +50,19 @@ PageInfoMerchantTrustController::PageInfoMerchantTrustController(
 
 PageInfoMerchantTrustController::~PageInfoMerchantTrustController() = default;
 
+void PageInfoMerchantTrustController::MerchantBubbleOpened(
+    page_info::MerchantBubbleOpenReferrer referrer) {
+  RecordInteraction(
+      referrer == page_info::MerchantBubbleOpenReferrer::kPageInfo
+          ? page_info::MerchantTrustInteraction::kBubbleOpenedFromPageInfo
+          : page_info::MerchantTrustInteraction::
+                kBubbleOpenedFromLocationBarChip);
+}
+
+void PageInfoMerchantTrustController::MerchantBubbleClosed() {
+  RecordInteraction(page_info::MerchantTrustInteraction::kBubbleClosed);
+}
+
 void PageInfoMerchantTrustController::OnMerchantTrustDataFetched(
     const GURL& url,
     std::optional<page_info::MerchantData> merchant_data) {
@@ -71,6 +84,7 @@ void PageInfoMerchantTrustController::LearnMoreLinkPressed(
 
 void PageInfoMerchantTrustController::ViewReviewsPressed() {
   ShowMerchantTrustSidePanel(web_contents(), merchant_data_.page_url);
+  RecordInteraction(page_info::MerchantTrustInteraction::kSidePanelOpened);
 }
 
 void PageInfoMerchantTrustController::HatsButtonPressed() {
@@ -122,4 +136,11 @@ void PageInfoMerchantTrustController::RecordInteractionPref() {
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   profile->GetPrefs()->SetTime(prefs::kMerchantTrustUiLastInteractionTime,
                                clock_->Now());
+}
+
+void PageInfoMerchantTrustController::RecordInteraction(
+    page_info::MerchantTrustInteraction interaction) {
+  service_->RecordMerchantTrustInteraction(
+      web_contents() != nullptr ? web_contents()->GetVisibleURL() : GURL(),
+      interaction);
 }

@@ -40,6 +40,14 @@ std::string GetUserActionString(
       return "BubbleClosed";
     case page_info::MerchantTrustInteraction::kSidePanelClosed:
       return "SidePanelClosed";
+    case page_info::MerchantTrustInteraction::kBubbleOpenedFromLocationBarChip:
+      return "BubbleOpenedFromLocationBarChip";
+    case page_info::MerchantTrustInteraction::
+        kSidePanelOpenedOnSameTabNavigation:
+      return "SidePanelOpenedOnSameTabNavigation";
+    case page_info::MerchantTrustInteraction::
+        kSidePanelClosedOnSameTabNavigation:
+      return "SidePanelClosedOnSameTabNavigation";
   }
 }
 
@@ -218,8 +226,8 @@ bool MerchantTrustService::CanShowEvaluationSurvey() {
 }
 
 void MerchantTrustService::RecordMerchantTrustInteraction(
-    GURL url,
-    MerchantTrustInteraction interaction) {
+    const GURL& url,
+    MerchantTrustInteraction interaction) const{
   MerchantFamiliarity merchant_familiarity =
       delegate_->GetSiteEngagementScore(url) >= kMerchantFamiliarityThreshold
           ? MerchantFamiliarity::kFamiliar

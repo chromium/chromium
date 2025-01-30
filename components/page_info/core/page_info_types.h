@@ -27,6 +27,9 @@ struct MerchantData {
 
 using MerchantDataCallback =
     base::OnceCallback<void(const GURL&, std::optional<MerchantData>)>;
+
+// The open referrer of the merchant trust bubble.
+enum class MerchantBubbleOpenReferrer { kPageInfo, kLocationBarChip };
 }  // namespace page_info
 
 #endif  // COMPONENTS_PAGE_INFO_CORE_PAGE_INFO_TYPES_H_

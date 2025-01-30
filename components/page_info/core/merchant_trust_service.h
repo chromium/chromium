@@ -48,7 +48,10 @@ enum class MerchantTrustInteraction {
   kSidePanelOpened = 2,
   kBubbleClosed = 3,
   kSidePanelClosed = 4,
-  kMaxValue = kSidePanelClosed
+  kBubbleOpenedFromLocationBarChip = 5,
+  kSidePanelOpenedOnSameTabNavigation = 6,
+  kSidePanelClosedOnSameTabNavigation = 7,
+  kMaxValue = kSidePanelClosedOnSameTabNavigation
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/security/enums.xml:MerchantTrustInteraction)
 
@@ -91,8 +94,9 @@ class MerchantTrustService : public KeyedService {
   // either a control or an experiment survey depending on the feature state.
   virtual void MaybeShowEvaluationSurvey();
 
-  void RecordMerchantTrustInteraction(GURL url,
-                                      MerchantTrustInteraction interaction);
+  virtual void RecordMerchantTrustInteraction(
+      const GURL& url,
+      MerchantTrustInteraction interaction) const;
 
   void SetClockForTesting(base::Clock* clock) { clock_ = clock; }
 

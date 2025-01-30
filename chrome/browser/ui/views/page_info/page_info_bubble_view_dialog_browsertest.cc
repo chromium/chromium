@@ -1172,7 +1172,8 @@ class PageInfoBubbleViewMerchantTrustDialogBrowserTest
     if (name == "MerchantTrustSubpage") {
       PageInfoBubbleView* bubble_view = static_cast<PageInfoBubbleView*>(
           PageInfoBubbleView::GetPageInfoBubbleForTesting());
-      bubble_view->OpenMerchantTrustPage();
+      bubble_view->OpenMerchantTrustPage(
+          page_info::MerchantBubbleOpenReferrer::kPageInfo);
     }
   }
 
@@ -1233,7 +1234,8 @@ class PageInfoBubbleViewMerchantTrustHatsDialogBrowserTest
 
     PageInfoBubbleView* bubble_view = static_cast<PageInfoBubbleView*>(
         PageInfoBubbleView::GetPageInfoBubbleForTesting());
-    bubble_view->OpenMerchantTrustPage();
+    bubble_view->OpenMerchantTrustPage(
+        page_info::MerchantBubbleOpenReferrer::kPageInfo);
   }
 
  protected:

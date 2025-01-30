@@ -334,6 +334,15 @@ void ChromePageInfoUiDelegate::RecordPageInfoWithMerchantTrustOpenTime() {
                                     clock_->Now());
 }
 
+void ChromePageInfoUiDelegate::RecordMerchantTrustButtonShown() {
+  if (auto* service =
+          MerchantTrustServiceFactory::GetForProfile(GetProfile())) {
+    service->RecordMerchantTrustInteraction(
+        web_contents_->GetVisibleURL(),
+        page_info::MerchantTrustInteraction::kPageInfoRowShown);
+  }
+}
+
 Profile* ChromePageInfoUiDelegate::GetProfile() const {
   return Profile::FromBrowserContext(web_contents_->GetBrowserContext());
 }
