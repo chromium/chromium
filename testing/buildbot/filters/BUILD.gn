@@ -21,6 +21,7 @@ source_set("android_browsertests_filters") {
 
   data = [
     "//testing/buildbot/filters/android.desktop.emulator_14.android_browsertests.filter",
+    "//testing/buildbot/filters/android.desktop.emulator_15.android_browsertests.filter",
     "//testing/buildbot/filters/android.emulator_10.android_browsertests.filter",
   ]
 }

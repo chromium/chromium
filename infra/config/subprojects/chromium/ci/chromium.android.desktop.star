@@ -320,6 +320,9 @@ ci.thin_tester(
         ],
         per_test_modifications = {
             "android_browsertests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.desktop.emulator_15.android_browsertests.filter",
+                ],
                 swarming = targets.swarming(
                     shards = 10,
                 ),
