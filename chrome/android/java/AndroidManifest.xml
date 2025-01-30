@@ -122,7 +122,7 @@ by a child template that "extends" this file.
     <uses-feature android:name="android.hardware.sensor.gyroscope" android:required="false"/>
     <uses-feature android:name="android.hardware.sensor.accelerometer" android:required="false"/>
 
-    <uses-permission-sdk-23 android:name="android.permission.SCENE_UNDERSTANDING" />
+    <uses-permission-sdk-23 android:name="android.permission.SCENE_UNDERSTANDING_FINE" />
     <uses-permission-sdk-23 android:name="android.permission.HAND_TRACKING" />
     {% endif %}
 
