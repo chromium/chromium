@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/public/cpp/external_arc/keyboard/arc_input_method_surface_manager.h"
+#include "chromeos/ash/experiences/arc/keyboard/arc_input_method_surface_manager.h"
+
 #include "components/exo/input_method_surface.h"
 
 namespace ash {
@@ -25,8 +26,9 @@ void ArcInputMethodSurfaceManager::RemoveSurface(
   DLOG_IF(ERROR, input_method_surface_ != surface)
       << "Can't remove not registered surface";
 
-  if (input_method_surface_ == surface)
+  if (input_method_surface_ == surface) {
     input_method_surface_ = nullptr;
+  }
 
   NotifyArcInputMethodBoundsChanged(gfx::Rect());
 }

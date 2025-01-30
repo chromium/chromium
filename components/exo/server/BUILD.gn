@@ -32,8 +32,8 @@ source_set("unit_tests") {
   deps = [
     ":server",
     "//ash:test_support",
+    "//ash/components/arc",
     "//ash/public/cpp",
-    "//ash/public/cpp/external_arc",
     "//base/test:test_support",
     "//components/exo",
     "//components/exo:test_support",

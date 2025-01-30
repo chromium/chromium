@@ -4,7 +4,7 @@
 
 #include <utility>
 
-#include "ash/public/cpp/external_arc/overlay/arc_overlay_manager.h"
+#include "chromeos/ash/experiences/arc/overlay/arc_overlay_manager.h"
 #include "chromeos/ash/experiences/arc/pay/arc_payment_app_bridge.h"
 #include "components/payments/content/android_app_communication.h"
 #include "components/payments/content/android_app_communication_helpers.h"

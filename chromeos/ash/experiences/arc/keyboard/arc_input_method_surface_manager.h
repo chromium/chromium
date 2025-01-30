@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_PUBLIC_CPP_EXTERNAL_ARC_KEYBOARD_ARC_INPUT_METHOD_SURFACE_MANAGER_H_
-#define ASH_PUBLIC_CPP_EXTERNAL_ARC_KEYBOARD_ARC_INPUT_METHOD_SURFACE_MANAGER_H_
+#ifndef CHROMEOS_ASH_EXPERIENCES_ARC_KEYBOARD_ARC_INPUT_METHOD_SURFACE_MANAGER_H_
+#define CHROMEOS_ASH_EXPERIENCES_ARC_KEYBOARD_ARC_INPUT_METHOD_SURFACE_MANAGER_H_
 
-#include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/keyboard/arc/arc_input_method_bounds_tracker.h"
 #include "base/memory/raw_ptr.h"
+#include "chromeos/ash/experiences/arc/arc_export.h"
 #include "components/exo/input_method_surface_manager.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace ash {
 
-class ASH_PUBLIC_EXPORT ArcInputMethodSurfaceManager
+class ARC_EXPORT ArcInputMethodSurfaceManager
     : public exo::InputMethodSurfaceManager,
       public ArcInputMethodBoundsTracker {
  public:
@@ -38,4 +38,4 @@ class ASH_PUBLIC_EXPORT ArcInputMethodSurfaceManager
 
 }  // namespace ash
 
-#endif  // ASH_PUBLIC_CPP_EXTERNAL_ARC_KEYBOARD_ARC_INPUT_METHOD_SURFACE_MANAGER_H_
+#endif  // CHROMEOS_ASH_EXPERIENCES_ARC_KEYBOARD_ARC_INPUT_METHOD_SURFACE_MANAGER_H_

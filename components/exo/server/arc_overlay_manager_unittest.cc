@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/public/cpp/external_arc/overlay/arc_overlay_manager.h"
+#include "chromeos/ash/experiences/arc/overlay/arc_overlay_manager.h"
+
 #include "components/exo/buffer.h"
 #include "components/exo/client_controlled_shell_surface.h"
 #include "components/exo/sub_surface.h"

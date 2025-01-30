@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/public/cpp/external_arc/overlay/arc_overlay_controller_impl.h"
+#include "chromeos/ash/experiences/arc/overlay/arc_overlay_controller_impl.h"
 
 #include "ash/wm/window_state.h"
 #include "components/exo/shell_surface_util.h"
@@ -71,8 +71,9 @@ ArcOverlayControllerImpl::~ArcOverlayControllerImpl() {
 }
 
 void ArcOverlayControllerImpl::AttachOverlay(aura::Window* overlay_window) {
-  if (!overlay_container_ || !host_window_)
+  if (!overlay_container_ || !host_window_) {
     return;
+  }
 
   DCHECK(overlay_window);
   DCHECK(!overlay_container_->native_view())
@@ -110,8 +111,9 @@ void ArcOverlayControllerImpl::OnWindowDestroying(aura::Window* window) {
     EnsureOverlayWindowClosed();
   }
 
-  if (overlay_window_observer_.IsObservingSource(window))
+  if (overlay_window_observer_.IsObservingSource(window)) {
     OnOverlayWindowClosed();
+  }
 }
 
 void ArcOverlayControllerImpl::OnViewIsDeleting(views::View* observed_view) {

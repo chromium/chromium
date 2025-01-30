@@ -2,24 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_PUBLIC_CPP_EXTERNAL_ARC_TOAST_ARC_TOAST_SURFACE_MANAGER_H_
-#define ASH_PUBLIC_CPP_EXTERNAL_ARC_TOAST_ARC_TOAST_SURFACE_MANAGER_H_
+#ifndef CHROMEOS_ASH_EXPERIENCES_ARC_TOAST_ARC_TOAST_SURFACE_MANAGER_H_
+#define CHROMEOS_ASH_EXPERIENCES_ARC_TOAST_ARC_TOAST_SURFACE_MANAGER_H_
 
 #include <vector>
 
-#include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/session/session_controller.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "chromeos/ash/experiences/arc/arc_export.h"
 #include "components/exo/toast_surface_manager.h"
 
 namespace ash {
 
-class ASH_PUBLIC_EXPORT ArcToastSurfaceManager
-    : public exo::ToastSurfaceManager,
-      public SessionObserver {
+class ARC_EXPORT ArcToastSurfaceManager : public exo::ToastSurfaceManager,
+                                          public SessionObserver {
  public:
   ArcToastSurfaceManager();
   ~ArcToastSurfaceManager() override;
@@ -50,4 +49,4 @@ class ASH_PUBLIC_EXPORT ArcToastSurfaceManager
 
 }  // namespace ash
 
-#endif  // ASH_PUBLIC_CPP_EXTERNAL_ARC_TOAST_ARC_TOAST_SURFACE_MANAGER_H_
+#endif  // CHROMEOS_ASH_EXPERIENCES_ARC_TOAST_ARC_TOAST_SURFACE_MANAGER_H_

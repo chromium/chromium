@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_PUBLIC_CPP_EXTERNAL_ARC_OVERLAY_ARC_OVERLAY_MANAGER_H_
-#define ASH_PUBLIC_CPP_EXTERNAL_ARC_OVERLAY_ARC_OVERLAY_MANAGER_H_
+#ifndef CHROMEOS_ASH_EXPERIENCES_ARC_OVERLAY_ARC_OVERLAY_MANAGER_H_
+#define CHROMEOS_ASH_EXPERIENCES_ARC_OVERLAY_ARC_OVERLAY_MANAGER_H_
 
-#include "ash/public/cpp/ash_public_export.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_helpers.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
+#include "chromeos/ash/experiences/arc/arc_export.h"
 #include "ui/aura/env.h"
 #include "ui/aura/env_observer.h"
 #include "ui/aura/window.h"
@@ -30,8 +30,8 @@ class ArcOverlayController;
 
 // Allows an exo::ShellSurface window to become an overlay on top of a different
 // Aura window.
-class ASH_PUBLIC_EXPORT ArcOverlayManager : public aura::EnvObserver,
-                                            public aura::WindowObserver {
+class ARC_EXPORT ArcOverlayManager : public aura::EnvObserver,
+                                     public aura::WindowObserver {
  public:
   // Returns the single ArcOverlayManager instance.
   static ArcOverlayManager* instance();
@@ -81,4 +81,4 @@ class ASH_PUBLIC_EXPORT ArcOverlayManager : public aura::EnvObserver,
 
 }  // namespace ash
 
-#endif  // ASH_PUBLIC_CPP_EXTERNAL_ARC_OVERLAY_ARC_OVERLAY_MANAGER_H_
+#endif  // CHROMEOS_ASH_EXPERIENCES_ARC_OVERLAY_ARC_OVERLAY_MANAGER_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/public/cpp/external_arc/toast/arc_toast_surface_manager.h"
+#include "chromeos/ash/experiences/arc/toast/arc_toast_surface_manager.h"
 
 #include "ash/public/cpp/session/session_controller.h"
 #include "ash/test/ash_test_base.h"

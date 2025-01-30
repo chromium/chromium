@@ -1,0 +1,5 @@
+specific_include_rules = {
+  "arc_overlay_manager_unittest\.cc": [
+    "+chromeos/ash/experiences/arc/overlay/arc_overlay_manager.h",
+  ]
+}

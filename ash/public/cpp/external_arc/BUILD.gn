@@ -8,8 +8,6 @@ assert(is_chromeos_ash)
 
 static_library("external_arc") {
   sources = [
-    "keyboard/arc_input_method_surface_manager.cc",
-    "keyboard/arc_input_method_surface_manager.h",
     "message_center/arc_notification_content_view.cc",
     "message_center/arc_notification_content_view.h",
     "message_center/arc_notification_delegate.cc",
@@ -32,14 +30,6 @@ static_library("external_arc") {
     "message_center/metadata_utils.h",
     "message_center/metrics_utils.cc",
     "message_center/metrics_utils.h",
-    "overlay/arc_overlay_controller.cc",
-    "overlay/arc_overlay_controller.h",
-    "overlay/arc_overlay_controller_impl.cc",
-    "overlay/arc_overlay_controller_impl.h",
-    "overlay/arc_overlay_manager.cc",
-    "overlay/arc_overlay_manager.h",
-    "toast/arc_toast_surface_manager.cc",
-    "toast/arc_toast_surface_manager.h",
   ]
   defines = [ "ASH_PUBLIC_IMPLEMENTATION" ]
   deps = [
@@ -68,15 +58,11 @@ static_library("external_arc") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "keyboard/arc_input_method_surface_manager_unittest.cc",
     "message_center/arc_notification_content_view_unittest.cc",
     "message_center/arc_notification_manager_unittest.cc",
     "message_center/arc_notification_surface_manager_impl_unittest.cc",
     "message_center/arc_notification_view_unittest.cc",
     "message_center/metadata_utils_unittest.cc",
-    "overlay/arc_overlay_controller_impl_unittest.cc",
-    "overlay/arc_overlay_manager_unittest.cc",
-    "toast/arc_toast_surface_manager_unittest.cc",
   ]
   public_deps = [ "//ash:test_support" ]
   deps = [
@@ -109,10 +95,6 @@ source_set("test_support") {
     "message_center/mock_arc_notification_item.h",
     "message_center/mock_arc_notification_surface.cc",
     "message_center/mock_arc_notification_surface.h",
-    "overlay/test/fake_arc_overlay_controller_impl.cc",
-    "overlay/test/fake_arc_overlay_controller_impl.h",
-    "overlay/test/test_arc_overlay_manager.cc",
-    "overlay/test/test_arc_overlay_manager.h",
   ]
   deps = [
     ":external_arc",

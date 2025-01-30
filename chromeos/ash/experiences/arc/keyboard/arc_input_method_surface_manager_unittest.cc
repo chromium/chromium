@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/public/cpp/external_arc/keyboard/arc_input_method_surface_manager.h"
+#include "chromeos/ash/experiences/arc/keyboard/arc_input_method_surface_manager.h"
 
 #include "ash/test/ash_test_base.h"
 #include "components/exo/input_method_surface.h"

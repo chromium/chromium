@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/public/cpp/external_arc/overlay/test/test_arc_overlay_manager.h"
+#include "chromeos/ash/experiences/arc/overlay/test/test_arc_overlay_manager.h"
 
-#include "ash/public/cpp/external_arc/overlay/test/fake_arc_overlay_controller_impl.h"
+#include "chromeos/ash/experiences/arc/overlay/test/fake_arc_overlay_controller_impl.h"
 
 namespace ash {
 

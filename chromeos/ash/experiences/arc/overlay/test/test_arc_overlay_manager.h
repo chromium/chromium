@@ -5,11 +5,12 @@
 #ifndef ASH_PUBLIC_CPP_EXTERNAL_ARC_OVERLAY_TEST_TEST_ARC_OVERLAY_MANAGER_H_
 #define ASH_PUBLIC_CPP_EXTERNAL_ARC_OVERLAY_TEST_TEST_ARC_OVERLAY_MANAGER_H_
 
-#include "ash/public/cpp/external_arc/overlay/arc_overlay_manager.h"
+#include "chromeos/ash/experiences/arc/arc_export.h"
+#include "chromeos/ash/experiences/arc/overlay/arc_overlay_manager.h"
 
 namespace ash {
 
-class ASH_PUBLIC_EXPORT TestArcOverlayManager : public ArcOverlayManager {
+class ARC_EXPORT TestArcOverlayManager : public ArcOverlayManager {
  public:
   TestArcOverlayManager();
   ~TestArcOverlayManager() override;

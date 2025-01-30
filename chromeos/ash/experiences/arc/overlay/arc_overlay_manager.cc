@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/public/cpp/external_arc/overlay/arc_overlay_manager.h"
+#include "chromeos/ash/experiences/arc/overlay/arc_overlay_manager.h"
 
 #include "ash/public/cpp/app_types_util.h"
-#include "ash/public/cpp/external_arc/overlay/arc_overlay_controller_impl.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "chromeos/ash/experiences/arc/overlay/arc_overlay_controller_impl.h"
 #include "components/exo/shell_surface_base.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
@@ -29,8 +29,9 @@ std::optional<std::string> GetOverlayTokenForArcWindow(aura::Window* window) {
   // If the client_surface_id doesn't have a particular prefix, it is not an
   // overlay candidate.
   std::string client_surface_id = shell_root_surface->GetClientSurfaceId();
-  if (!base::StartsWith(client_surface_id, kBillingIdPrefix))
+  if (!base::StartsWith(client_surface_id, kBillingIdPrefix)) {
     return {};
+  }
 
   return client_surface_id.substr(strlen(kBillingIdPrefix));
 }
@@ -77,22 +78,25 @@ base::ScopedClosureRunner ArcOverlayManager::RegisterHostWindow(
 void ArcOverlayManager::DeregisterHostWindow(const std::string& overlay_token) {
   auto it = token_to_controller_map_.find(overlay_token);
   DCHECK(it != token_to_controller_map_.end());
-  if (it == token_to_controller_map_.end())
+  if (it == token_to_controller_map_.end()) {
     return;
+  }
 
   token_to_controller_map_.erase(it);
 }
 
 void ArcOverlayManager::OnWindowInitialized(aura::Window* window) {
   // Ignore windows that are container (no delegate), or non arc window.
-  if (!window->delegate() || !ash::IsArcWindow(window))
+  if (!window->delegate() || !ash::IsArcWindow(window)) {
     return;
+  }
 
   // See if a potentially valid overlay token is set on the window, to confirm
   // that it is intended to be an overlay window.
   std::optional<std::string> token = GetOverlayTokenForArcWindow(window);
-  if (!token)
+  if (!token) {
     return;
+  }
 
   // Disable animations on overlay windows.
   window->SetProperty(aura::client::kAnimationsDisabledKey, true);
@@ -107,20 +111,23 @@ void ArcOverlayManager::OnWindowDestroying(aura::Window* window) {
 void ArcOverlayManager::OnWindowVisibilityChanged(aura::Window* window,
                                                   bool visible) {
   // We only care about windows that are now visible.
-  if (!visible)
+  if (!visible) {
     return;
+  }
 
   // |window| can be descendants or ancestors.
-  if (!window_observations_.IsObservingSource(window))
+  if (!window_observations_.IsObservingSource(window)) {
     return;
+  }
 
   // We do not need to keep observing the window.
   window_observations_.RemoveObservation(window);
 
   // Get the overlay token.
   std::optional<std::string> token = GetOverlayTokenForArcWindow(window);
-  if (!token)
+  if (!token) {
     return;
+  }
 
   // Find and attach the overlay to the host window.
   auto* shell_surface_base = exo::GetShellSurfaceBaseForWindow(window);

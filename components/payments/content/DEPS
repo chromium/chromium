@@ -1,6 +1,6 @@
 include_rules = [
   "-components/payments/content/android",
-  "+ash/public/cpp/external_arc/overlay",
+  "+chromeos/ash/experiences/arc/overlay",
   "+chromeos/ash/experiences/arc/pay",
   "+chromeos/components/payments",
   "+components/autofill",

@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_PUBLIC_CPP_EXTERNAL_ARC_OVERLAY_ARC_OVERLAY_CONTROLLER_IMPL_H_
-#define ASH_PUBLIC_CPP_EXTERNAL_ARC_OVERLAY_ARC_OVERLAY_CONTROLLER_IMPL_H_
+#ifndef CHROMEOS_ASH_EXPERIENCES_ARC_OVERLAY_ARC_OVERLAY_CONTROLLER_IMPL_H_
+#define CHROMEOS_ASH_EXPERIENCES_ARC_OVERLAY_ARC_OVERLAY_CONTROLLER_IMPL_H_
 
-#include "ash/public/cpp/external_arc/overlay/arc_overlay_controller.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "chromeos/ash/experiences/arc/arc_export.h"
+#include "chromeos/ash/experiences/arc/overlay/arc_overlay_controller.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/views/controls/native/native_view_host.h"
@@ -20,9 +21,9 @@ namespace ash {
 // An instance of this class is first constructed for the host window, which the
 // overlay window will appear on top of. The overlay window is then attached via
 // a call to |AttachOverlay| as it is expected to be created after the host.
-class ASH_PUBLIC_EXPORT ArcOverlayControllerImpl : public ArcOverlayController,
-                                                   public aura::WindowObserver,
-                                                   public views::ViewObserver {
+class ARC_EXPORT ArcOverlayControllerImpl : public ArcOverlayController,
+                                            public aura::WindowObserver,
+                                            public views::ViewObserver {
  public:
   explicit ArcOverlayControllerImpl(aura::Window* host_window);
   ~ArcOverlayControllerImpl() override;
@@ -78,4 +79,4 @@ class ASH_PUBLIC_EXPORT ArcOverlayControllerImpl : public ArcOverlayController,
 
 }  // namespace ash
 
-#endif  // ASH_PUBLIC_CPP_EXTERNAL_ARC_OVERLAY_ARC_OVERLAY_CONTROLLER_IMPL_H_
+#endif  // CHROMEOS_ASH_EXPERIENCES_ARC_OVERLAY_ARC_OVERLAY_CONTROLLER_IMPL_H_

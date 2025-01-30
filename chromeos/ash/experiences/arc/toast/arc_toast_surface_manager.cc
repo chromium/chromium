@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/public/cpp/external_arc/toast/arc_toast_surface_manager.h"
+#include "chromeos/ash/experiences/arc/toast/arc_toast_surface_manager.h"
 
 #include <algorithm>
 
@@ -27,19 +27,22 @@ void ArcToastSurfaceManager::RemoveSurface(exo::ToastSurface* surface) {
   DLOG_IF(ERROR, it == toast_surfaces_.end())
       << "Can't remove not registered surface";
 
-  if (it != toast_surfaces_.end())
+  if (it != toast_surfaces_.end()) {
     toast_surfaces_.erase(it);
+  }
 }
 
 void ArcToastSurfaceManager::UpdateVisibility() {
   for (exo::ToastSurface* surface : toast_surfaces_) {
-    if (!surface->GetWidget())
+    if (!surface->GetWidget()) {
       continue;
+    }
 
-    if (locked_)
+    if (locked_) {
       surface->GetWidget()->Hide();
-    else
+    } else {
       surface->GetWidget()->Show();
+    }
   }
 }
 
