@@ -68,6 +68,7 @@ buildflag_header("media_buildflags") {
     "USE_CRAS=$use_cras",
     "USE_PROPRIETARY_CODECS=$proprietary_codecs",
     "ENABLE_GPU_CHANNEL_MEDIA_CAPTURE=$enable_gpu_channel_media_capture",
+    "USE_OPENSLES=$media_use_opensles",
   ]
 
   if (enable_library_cdms) {
