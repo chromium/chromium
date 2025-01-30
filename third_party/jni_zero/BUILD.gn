@@ -25,6 +25,9 @@ generate_jar_jni("system_jni") {
     "java/util/Collection.class",
     "java/util/List.class",
     "java/util/Map.class",
+    "java/lang/Integer.class",
+    "java/lang/Long.class",
+    "java/lang/Boolean.class",
   ]
   visibility = [ ":*" ]
 }
