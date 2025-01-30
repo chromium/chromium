@@ -4536,7 +4536,7 @@
   <message name="IDS_SETTINGS_AI_SUBPAGE_SUBLABEL_LOGGING_MANAGED_DISABLED" desc="This is a bullet point in the ‘Things to consider’ column, which describes things users should consider about a feature. This string explains that AI features are actively developing, and that humans may review feature usage and corresponding data in order to further improve the feature. The tone should be informative.">
     Your content will not be used by human reviewers to improve AI. Your organization may change these settings at any time
   </message>
-  <message name="IDS_SETTINGS_AI_SUBPAGE_FEATURE_MANAGED_DISABLED_LABEL" translateable="false">
+  <message name="IDS_SETTINGS_AI_SUBPAGE_FEATURE_MANAGED_DISABLED_LABEL" desc="This is an indicator on the top of the AI feature settings subpage, which informs the user that this feature is not available because it was turned off by their organization. The tone should be informative.">
     This feature is disabled by your organization
   </message>
 
