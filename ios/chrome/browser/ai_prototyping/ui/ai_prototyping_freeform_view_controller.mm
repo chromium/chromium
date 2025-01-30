@@ -19,26 +19,16 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
-namespace {
-
-// Properties of UI elements in the debug menu.
-constexpr CGFloat kVerticalInset = 12;
-constexpr CGFloat kButtonStackViewSpacing = 10;
-
-}  // namespace
-
-@interface AIPrototypingFreeformViewController ()
-
-@property(nonatomic, strong) UIButton* serverSideSubmitButton;
-@property(nonatomic, strong) UIButton* onDeviceSubmitButton;
-@property(nonatomic, strong) UITextField* systemInstructionsField;
-@property(nonatomic, strong) UITextField* queryField;
-@property(nonatomic, strong) UISwitch* includePageContextSwitch;
-@property(nonatomic, strong) UITextView* responseContainer;
-
-@end
-
-@implementation AIPrototypingFreeformViewController
+@implementation AIPrototypingFreeformViewController {
+  UIButton* _serverSideSubmitButton;
+  UIButton* _onDeviceSubmitButton;
+  UITextField* _systemInstructionsField;
+  UITextField* _queryField;
+  UISwitch* _includePageContextSwitch;
+  UISlider* _temperatureSlider;
+  UILabel* _temperatureLabel;
+  UITextView* _responseContainer;
+}
 
 // Synthesized from `AIPrototypingViewControllerProtocol`.
 @synthesize mutator = _mutator;
@@ -60,6 +50,7 @@ constexpr CGFloat kButtonStackViewSpacing = 10;
     UISheetPresentationControllerDetent.largeDetent,
   ];
 
+  // Title/header.
   UILabel* label = [[UILabel alloc] init];
   label.translatesAutoresizingMaskIntoConstraints = NO;
   label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleTitle2];
@@ -67,6 +58,7 @@ constexpr CGFloat kButtonStackViewSpacing = 10;
 
   UIColor* primaryColor = [UIColor colorNamed:kTextPrimaryColor];
 
+  // User query.
   _queryField = [[UITextField alloc] init];
   _queryField.translatesAutoresizingMaskIntoConstraints = NO;
   _queryField.placeholder =
@@ -74,6 +66,7 @@ constexpr CGFloat kButtonStackViewSpacing = 10;
   UIView* queryFieldContainer = [self textFieldContainer];
   [queryFieldContainer addSubview:_queryField];
 
+  // System instructions.
   _systemInstructionsField = [[UITextField alloc] init];
   _systemInstructionsField.translatesAutoresizingMaskIntoConstraints = NO;
   _systemInstructionsField.placeholder = l10n_util::GetNSString(
@@ -81,6 +74,7 @@ constexpr CGFloat kButtonStackViewSpacing = 10;
   UIView* systemInstructionsFieldContainer = [self textFieldContainer];
   [systemInstructionsFieldContainer addSubview:_systemInstructionsField];
 
+  // Page context switch.
   _includePageContextSwitch = [[UISwitch alloc] init];
   _includePageContextSwitch.translatesAutoresizingMaskIntoConstraints = NO;
   _includePageContextSwitch.on = YES;
@@ -91,14 +85,41 @@ constexpr CGFloat kButtonStackViewSpacing = 10;
   switchLabel.text =
       l10n_util::GetNSString(IDS_IOS_AI_PROTOTYPING_PAGE_CONTEXT_SWITCH);
 
-  UIStackView* switchContainer = [[UIStackView alloc] init];
+  UIStackView* switchContainer = [[UIStackView alloc]
+      initWithArrangedSubviews:@[ _includePageContextSwitch, switchLabel ]];
   switchContainer.translatesAutoresizingMaskIntoConstraints = NO;
   switchContainer.axis = UILayoutConstraintAxisHorizontal;
   switchContainer.spacing = kButtonStackViewSpacing;
   switchContainer.alignment = UIStackViewAlignmentCenter;
-  [switchContainer addArrangedSubview:_includePageContextSwitch];
-  [switchContainer addArrangedSubview:switchLabel];
 
+  // Temperature slider.
+  _temperatureSlider = [[UISlider alloc] init];
+  _temperatureSlider.translatesAutoresizingMaskIntoConstraints = NO;
+  _temperatureSlider.minimumValue = 0.0;
+  _temperatureSlider.maximumValue = 1.0;
+  _temperatureSlider.value = kDefaultTemperature;
+  _temperatureSlider.continuous = YES;
+  [_temperatureSlider addTarget:self
+                         action:@selector(temperatureSliderValueChanged:)
+               forControlEvents:UIControlEventValueChanged];
+
+  _temperatureLabel = [[UILabel alloc] init];
+  _temperatureLabel.translatesAutoresizingMaskIntoConstraints = NO;
+  _temperatureLabel.numberOfLines = 1;
+  _temperatureLabel.text =
+      [NSString stringWithFormat:@"%@ %.01f",
+                                 l10n_util::GetNSString(
+                                     IDS_IOS_AI_PROTOTYPING_TEMPERATURE_SLIDER),
+                                 _temperatureSlider.value];
+
+  UIStackView* temperatureContainer = [[UIStackView alloc]
+      initWithArrangedSubviews:@[ _temperatureLabel, _temperatureSlider ]];
+  temperatureContainer.translatesAutoresizingMaskIntoConstraints = NO;
+  temperatureContainer.axis = UILayoutConstraintAxisHorizontal;
+  temperatureContainer.spacing = kButtonStackViewSpacing;
+  temperatureContainer.alignment = UIStackViewAlignmentCenter;
+
+  // Submit buttons.
   _serverSideSubmitButton = [UIButton buttonWithType:UIButtonTypeSystem];
   _serverSideSubmitButton.backgroundColor = [UIColor colorNamed:kBlueColor];
   _serverSideSubmitButton.layer.cornerRadius = kCornerRadius;
@@ -140,6 +161,7 @@ constexpr CGFloat kButtonStackViewSpacing = 10;
   buttonStackView.spacing = kButtonStackViewSpacing;
   buttonStackView.distribution = UIStackViewDistributionFillEqually;
 
+  // Model response container.
   _responseContainer = [UITextView textViewUsingTextLayoutManager:NO];
   _responseContainer.translatesAutoresizingMaskIntoConstraints = NO;
   _responseContainer.editable = NO;
@@ -151,7 +173,7 @@ constexpr CGFloat kButtonStackViewSpacing = 10;
 
   UIStackView* stackView = [[UIStackView alloc] initWithArrangedSubviews:@[
     label, systemInstructionsFieldContainer, queryFieldContainer,
-    switchContainer, buttonStackView, _responseContainer
+    switchContainer, temperatureContainer, buttonStackView, _responseContainer
   ]];
   stackView.translatesAutoresizingMaskIntoConstraints = NO;
   stackView.axis = UILayoutConstraintAxisVertical;
@@ -198,7 +220,8 @@ constexpr CGFloat kButtonStackViewSpacing = 10;
 - (void)serverSideSubmitButtonPressed:(UIButton*)button {
   [self.mutator executeFreeformServerQuery:_queryField.text
                         systemInstructions:_systemInstructionsField.text
-                        includePageContext:_includePageContextSwitch.isOn];
+                        includePageContext:_includePageContextSwitch.isOn
+                               temperature:_temperatureSlider.value];
 }
 
 - (void)onDeviceSubmitButtonPressed:(UIButton*)button {
@@ -209,6 +232,19 @@ constexpr CGFloat kButtonStackViewSpacing = 10;
   request.set_value(base::SysNSStringToUTF8(_queryField.text));
   [self.mutator executeFreeformOnDeviceQuery:request];
 #endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
+}
+
+- (void)temperatureSliderValueChanged:(UISlider*)slider {
+  // Round the slider value to the nearest step.
+  float multiplier = 1.0 / kTemperatureSliderSteps;
+  _temperatureSlider.value =
+      roundf(_temperatureSlider.value * multiplier) / multiplier;
+
+  _temperatureLabel.text =
+      [NSString stringWithFormat:@"%@ %.01f",
+                                 l10n_util::GetNSString(
+                                     IDS_IOS_AI_PROTOTYPING_TEMPERATURE_SLIDER),
+                                 _temperatureSlider.value];
 }
 
 #pragma mark - AIPrototypingViewControllerProtocol

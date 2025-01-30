@@ -300,6 +300,9 @@
       <message name="IDS_IOS_AI_PROTOTYPING_TAB_ORGANIZATION_HEADER" translateable="false" desc="Header for AI prototyping menu's tab organization page [Length: unlimited].">
         Tab Organization
       </message>
+      <message name="IDS_IOS_AI_PROTOTYPING_TEMPERATURE_SLIDER" translateable="false" desc="Label for the slider allowing the user to choose the temperature hyper parameter passed to the model, the word is truncated for length [Length: unlimited].">
+        Temperature:
+      </message>
       <message name="IDS_IOS_ALLOW_AUTOMATIC_PASSKEY_UPGRADES" desc="Title for the switch item in password manager settings that can be toggled allowing users to automatically upgrade their passwords to passkeys. Refer to Glossary for the meaning of 'passkey', do not translate it as 'password'. [iOS only]">
         Allow automatic passkey upgrades
       </message>
