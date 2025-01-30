@@ -95,6 +95,15 @@ public class EdgeToEdgeUtils {
     }
 
     /**
+     * Whether reporting the page's safe area constraint to the bottom chin. Required when {@link
+     * isEdgeToEdgeBottomChinEnabled}.
+     */
+    public static boolean isSafeAreaConstraintEnabled() {
+        return isEdgeToEdgeBottomChinEnabled()
+                && ChromeFeatureList.sEdgeToEdgeSafeAreaConstraint.isEnabled();
+    }
+
+    /**
      * Record if the current activity is eligible for edge to edge. If not, also record the reason
      * why it is ineligible.
      *
@@ -214,7 +223,7 @@ public class EdgeToEdgeUtils {
 
     /** Return whether there's any safe area constraint found for the given tab. */
     static boolean hasSafeAreaConstraintForTab(Tab tab) {
-        if (tab == null) return false;
+        if (tab == null || !isSafeAreaConstraintEnabled()) return false;
 
         SafeAreaInsetsTracker safeAreaInsetsTracker =
                 DisplayCutoutController.getSafeAreaInsetsTracker(tab);
