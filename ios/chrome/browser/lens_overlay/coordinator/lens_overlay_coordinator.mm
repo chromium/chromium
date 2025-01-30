@@ -158,12 +158,10 @@ const int kExpectedExitAnimationCount = 2;
 #pragma mark - Helpers
 
 // Returns whether the UI was created succesfully.
-- (BOOL)createUIWithSnapshot:(UIImage*)snapshot
-                  entrypoint:(LensOverlayEntrypoint)entrypoint {
+- (BOOL)createUIWithImageSource:(LensImageSource*)imageSource
+                     entrypoint:(LensOverlayEntrypoint)entrypoint {
   [self createContainerViewController];
-
-  [self createSelectionViewControllerWithSnapshot:snapshot
-                                       entrypoint:entrypoint];
+  [self createSelectionUIWithImageSource:imageSource entrypoint:entrypoint];
   if (!_selectionViewController) {
     return NO;
   }
@@ -188,9 +186,8 @@ const int kExpectedExitAnimationCount = 2;
   return YES;
 }
 
-- (void)createSelectionViewControllerWithSnapshot:(UIImage*)snapshot
-                                       entrypoint:
-                                           (LensOverlayEntrypoint)entrypoint {
+- (void)createSelectionUIWithImageSource:(LensImageSource*)imageSource
+                              entrypoint:(LensOverlayEntrypoint)entrypoint {
   if (_selectionViewController) {
     return;
   }
@@ -209,8 +206,10 @@ const int kExpectedExitAnimationCount = 2;
     [overflowMenuFactory learnMoreAction],
   ];
 
+  // Pass through the soon-to-be deprecated instantiation method until the new
+  // symbol is fully propagated in all repos.
   _selectionViewController = ios::provider::NewChromeLensOverlay(
-      snapshot, config, additionalMenuItems);
+      imageSource.snapshot, config, additionalMenuItems);
 }
 
 - (void)createContainerViewController {
@@ -270,6 +269,24 @@ const int kExpectedExitAnimationCount = 2;
 
 #pragma mark - LensOverlayCommands
 
+- (void)searchWithLensImageMetadata:(id<LensImageMetadata>)metadata
+                         entrypoint:(LensOverlayEntrypoint)entrypoint
+                         completion:(void (^)(BOOL))completion {
+  [self prepareOverlayWithEntrypoint:entrypoint];
+  // Even if the image is already prepared at this point, the snapshotting
+  // infrastructure still needs to be built to allow the restoration window to
+  // be displayed when exiting and re-entering the experience.
+  [self prepareSnapshotCapturingInfrastructure];
+  _shouldResetSelectionToInitialPositionOnExit =
+      (entrypoint == LensOverlayEntrypoint::kLVFCameraCapture);
+  LensImageSource* imageSource =
+      [[LensImageSource alloc] initWithImageMetadata:metadata];
+  [self handleOverlayImageSourceFound:imageSource
+                           entrypoint:entrypoint
+                             animated:YES
+                           completion:completion];
+}
+
 - (void)searchImageWithLens:(UIImage*)image
                  entrypoint:(LensOverlayEntrypoint)entrypoint
                  completion:(void (^)(BOOL))completion {
@@ -280,10 +297,12 @@ const int kExpectedExitAnimationCount = 2;
   [self prepareSnapshotCapturingInfrastructure];
   _shouldResetSelectionToInitialPositionOnExit =
       (entrypoint == LensOverlayEntrypoint::kLVFCameraCapture);
-  [self handleOverlayImageCaptured:image
-                        entrypoint:entrypoint
-                          animated:YES
-                        completion:completion];
+  LensImageSource* imageSource =
+      [[LensImageSource alloc] initWithSnapshot:image];
+  [self handleOverlayImageSourceFound:imageSource
+                           entrypoint:entrypoint
+                             animated:YES
+                           completion:completion];
 }
 
 - (void)createAndShowLensUI:(BOOL)animated
@@ -293,26 +312,29 @@ const int kExpectedExitAnimationCount = 2;
   _shouldResetSelectionToInitialPositionOnExit = YES;
   __weak __typeof(self) weakSelf = self;
   [self captureSnapshotWithCompletion:^(UIImage* snapshot) {
-    [weakSelf handleOverlayImageCaptured:snapshot
-                              entrypoint:entrypoint
-                                animated:animated
-                              completion:completion];
+    LensImageSource* imageSource =
+        [[LensImageSource alloc] initWithSnapshot:snapshot];
+    [weakSelf handleOverlayImageSourceFound:imageSource
+                                 entrypoint:entrypoint
+                                   animated:animated
+                                 completion:completion];
   }];
 }
 
 // Handles presenting the base image to be used in the overlay.
-- (void)handleOverlayImageCaptured:(UIImage*)snapshot
-                        entrypoint:(LensOverlayEntrypoint)entrypoint
-                          animated:(BOOL)animated
-                        completion:(void (^)(BOOL))completion {
-  if (!snapshot) {
+- (void)handleOverlayImageSourceFound:(LensImageSource*)imageSource
+                           entrypoint:(LensOverlayEntrypoint)entrypoint
+                             animated:(BOOL)animated
+                           completion:(void (^)(BOOL))completion {
+  if (!imageSource.isValid) {
     if (completion) {
       completion(NO);
     }
     return;
   }
 
-  BOOL success = [self createUIWithSnapshot:snapshot entrypoint:entrypoint];
+  BOOL success = [self createUIWithImageSource:imageSource
+                                    entrypoint:entrypoint];
   if (success) {
     [self showLensUI:animated completion:completion];
   } else {

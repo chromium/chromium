@@ -2,6 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("lens_api_model") {
+  sources = [
+    "lens_image_metadata.h",
+    "lens_image_source.h",
+    "lens_image_source.mm",
+  ]
+}
+
 source_set("lens_api") {
   sources = [
     "lens_api.h",
@@ -10,6 +18,7 @@ source_set("lens_api") {
     "lens_query.h",
     "lens_query.mm",
   ]
+  public_deps = [ ":lens_api_model" ]
   deps = [
     "//base",
     "//ios/web/public/navigation:navigation",
@@ -23,5 +32,6 @@ source_set("lens_overlay_api") {
     "lens_overlay_api.h",
     "lens_overlay_result.h",
   ]
+  public_deps = [ ":lens_api_model" ]
   deps = [ "//base" ]
 }

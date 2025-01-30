@@ -161,6 +161,26 @@ const CGFloat kBottomCornerRadius = 108.0;
 }
 
 - (void)lensController:(id<ChromeLensViewFinderController>)lensController
+    didSelectImageWithMetadata:(id<LensImageMetadata>)imageMetadata {
+  LensOverlayEntrypoint entrypoint =
+      imageMetadata.isCameraImage ? LensOverlayEntrypoint::kLVFCameraCapture
+                                  : LensOverlayEntrypoint::kLVFImagePicker;
+
+  id<LensOverlayCommands> _lensOverlayCommands = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), LensOverlayCommands);
+  __weak id<ChromeLensViewFinderController> weakLensViewController =
+      _lensViewController;
+
+  // Once post capture is presented, the live camera can be torn down.
+  [_lensOverlayCommands
+      searchWithLensImageMetadata:imageMetadata
+                       entrypoint:entrypoint
+                       completion:^(BOOL success) {
+                         [weakLensViewController tearDownCaptureInfrastructure];
+                       }];
+}
+
+- (void)lensController:(id<ChromeLensViewFinderController>)lensController
           didSelectURL:(GURL)url {
   // NO-OP
 }
