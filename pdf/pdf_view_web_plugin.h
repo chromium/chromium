@@ -24,6 +24,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "pdf/accessibility_structs.h"
 #include "pdf/buildflags.h"
+#include "pdf/loader/result_codes.h"
 #include "pdf/loader/url_loader.h"
 #include "pdf/mojom/pdf.mojom.h"
 #include "pdf/paint_manager.h"
@@ -487,7 +488,7 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
   // load the URL, and `result` is the result code for the load.
   using LoadUrlCallback =
       base::OnceCallback<void(std::unique_ptr<UrlLoader> loader,
-                              int32_t result)>;
+                              Result result)>;
 
   enum class AccessibilityState {
     kOff = 0,  // Off.
@@ -522,7 +523,7 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
   void SendSetSmoothScrolling();
 
   // Handles `LoadUrl()` result for the main document.
-  void DidOpen(std::unique_ptr<UrlLoader> loader, int32_t result);
+  void DidOpen(std::unique_ptr<UrlLoader> loader, Result result);
 
   // Updates the scroll position, which is in CSS pixels relative to the
   // top-left corner.
@@ -532,7 +533,7 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
   void LoadUrl(std::string_view url, LoadUrlCallback callback);
 
   // Handles `Open()` result for `form_loader_`.
-  void DidFormOpen(int32_t result);
+  void DidFormOpen(Result result);
 
   // Sends start/stop loading notifications to the plugin's render frame.
   void DidStartLoading();
@@ -669,7 +670,7 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
   void LoadAvailablePreviewPage();
 
   // Handles `LoadUrl()` result for a preview page.
-  void DidOpenPreview(std::unique_ptr<UrlLoader> loader, int32_t result);
+  void DidOpenPreview(std::unique_ptr<UrlLoader> loader, Result result);
 
   // Continues loading the next preview page.
   void LoadNextPreviewPage();

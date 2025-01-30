@@ -246,7 +246,7 @@ void URLLoaderWrapperImpl::ParseHeaders(const std::string& response_headers) {
 }
 
 void URLLoaderWrapperImpl::DidOpen(base::OnceCallback<void(bool)> callback,
-                                   int32_t result) {
+                                   Result result) {
   SetHeadersFromLoader();
   std::move(callback).Run(result == Result::kSuccess);
 }
