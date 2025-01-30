@@ -411,7 +411,7 @@ Things to consider:
         A custom feed made for you by Google. Including news, sports and weather.
       </message>
       <message name="IDS_IOS_HOME_CUSTOMIZATION_DISCOVER_SUBTITLE" desc="The subtitle of the Discover toggle in the Home Customization menu's main page.">
-        A custom feed made for you by Google.
+        A custom feed made for you by Google
       </message>
       <message name="IDS_IOS_IDENTITY_ERROR_INFOBAR_KEEP_USING_YOUR_CHROME_DATA_MESSAGE" desc="The error message in the identity error info bar related to keep using your Chromium data in your Google account. [iOS only]">
         Keep using the Chrome data in your Google Account
