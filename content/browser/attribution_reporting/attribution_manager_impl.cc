@@ -498,6 +498,10 @@ void LogMetricsOnReportSent(const AttributionReport& report,
           time_from_conversion_to_report_sent.InHours());
       RecordReportRetriesEventLevel(report.failed_send_attempts(),
                                     third_retry_enabled);
+      UMA_HISTOGRAM_BOOLEAN(
+          "Conversions."
+          "TimeFromTriggerToReportSentSuccessfullyExceeds30Days",
+          time_from_conversion_to_report_sent > base::Days(30));
       break;
     case AttributionReport::Type::kAggregatableAttribution:
       UMA_HISTOGRAM_CUSTOM_TIMES(
@@ -505,6 +509,11 @@ void LogMetricsOnReportSent(const AttributionReport& report,
           "TimeFromTriggerToReportSentSuccessfully",
           time_from_conversion_to_report_sent, base::Minutes(1), base::Days(24),
           50);
+
+      UMA_HISTOGRAM_BOOLEAN(
+          "Conversions.AggregatableReport."
+          "TimeFromTriggerToReportSentSuccessfullyExceeds30Days",
+          time_from_conversion_to_report_sent > base::Days(30));
 
       UMA_HISTOGRAM_CUSTOM_TIMES(
           "Conversions.AggregatableReport.ExtraReportDelayForSuccessfulSend",
