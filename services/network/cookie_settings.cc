@@ -49,14 +49,6 @@ bool ShouldApply3pcdRelatedReasons(const net::CanonicalCookie& cookie) {
          !cookie.IsPartitioned();
 }
 
-// Third-party cookies are considered restricted when they are blocked and could
-// be unblocked by mitigations.
-bool OverridesSimulateThirdPartyCookieRestriction(
-    net::CookieSettingOverrides overrides) {
-  return overrides.HasAll(
-      {net::CookieSettingOverride::kForceDisableThirdPartyCookies,
-       net::CookieSettingOverride::kForceEnableThirdPartyCookieMitigations});
-}
 
 bool IsValidType(ContentSettingsType type) {
   // ContentSettingsType::TPCD_METADATA_GRANTS settings are managed by the
@@ -397,9 +389,17 @@ bool CookieSettings::ShouldBlockThirdPartyCookies() const {
   return block_third_party_cookies_;
 }
 
-bool CookieSettings::IsThirdPartyPhaseoutEnabled() const {
+bool CookieSettings::IsThirdPartyPhaseoutEnabled(
+    base::optional_ref<const url::Origin> top_frame_origin,
+    net::CookieSettingOverrides overrides) const {
   return net::cookie_util::IsForceThirdPartyCookieBlockingEnabled() ||
-         tracking_protection_enabled_for_3pcd_;
+         tracking_protection_enabled_for_3pcd_ ||
+         (top_frame_origin &&
+          IsBlockedByTopLevel3pcdOriginTrial(top_frame_origin->GetURL())) ||
+         overrides.HasAll(
+             {net::CookieSettingOverride::kForceDisableThirdPartyCookies,
+              net::CookieSettingOverride::
+                  kForceEnableThirdPartyCookieMitigations});
 }
 
 bool CookieSettings::MitigationsEnabledFor3pcd() const {
@@ -413,19 +413,13 @@ void CookieSettings::AugmentInclusionStatus(
     const net::FirstPartySetMetadata& first_party_set_metadata,
     net::CookieSettingOverrides overrides,
     net::CookieInclusionStatus& out_status) const {
-  bool affected_by_3pcd_origin_trial =
-      top_frame_origin &&
-      IsBlockedByTopLevel3pcdOriginTrial(top_frame_origin->GetURL());
-  bool should_attach_3pcd_status =
-      OverridesSimulateThirdPartyCookieRestriction(overrides);
-
   if (IsCookieAllowed(cookie, setting_with_metadata)) {
     if (!setting_with_metadata.is_third_party_request() ||
         !ShouldApply3pcdRelatedReasons(cookie)) {
       return;
     }
-    if (ShouldBlockThirdPartyCookies() || affected_by_3pcd_origin_trial ||
-        should_attach_3pcd_status) {
+    if (ShouldBlockThirdPartyCookies() ||
+        IsThirdPartyPhaseoutEnabled(top_frame_origin, overrides)) {
       out_status.MaybeSetExemptionReason(GetExemptionReason(
           setting_with_metadata.third_party_cookie_allow_mechanism()));
       return;
@@ -442,25 +436,22 @@ void CookieSettings::AugmentInclusionStatus(
   // The cookie is blocked.
 
   if (setting_with_metadata.is_third_party_request() &&
-      setting_with_metadata.allow_partitioned_cookies()) {
-    if ((IsThirdPartyPhaseoutEnabled() || affected_by_3pcd_origin_trial ||
-         should_attach_3pcd_status) &&
-        !setting_with_metadata.is_explicit_setting()) {
-      // This cookie is blocked due to 3PCD.
-      if (!ShouldApply3pcdRelatedReasons(cookie)) {
-        return;
-      }
-      out_status.AddExclusionReason(
-          net::CookieInclusionStatus::ExclusionReason::
-              EXCLUDE_THIRD_PARTY_PHASEOUT);
-
-      if (first_party_set_metadata.AreSitesInSameFirstPartySet()) {
-        out_status.AddExclusionReason(
-            net::CookieInclusionStatus::ExclusionReason::
-                EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET);
-      }
+      setting_with_metadata.allow_partitioned_cookies() &&
+      IsThirdPartyPhaseoutEnabled(top_frame_origin, overrides) &&
+      !setting_with_metadata.is_explicit_setting()) {
+    // This cookie is blocked due to 3PCD.
+    if (!ShouldApply3pcdRelatedReasons(cookie)) {
       return;
     }
+    out_status.AddExclusionReason(net::CookieInclusionStatus::ExclusionReason::
+                                      EXCLUDE_THIRD_PARTY_PHASEOUT);
+
+    if (first_party_set_metadata.AreSitesInSameFirstPartySet()) {
+      out_status.AddExclusionReason(
+          net::CookieInclusionStatus::ExclusionReason::
+              EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET);
+    }
+    return;
   }
 
   // The cookie is blocked, but not by 3PCD.

@@ -1385,8 +1385,6 @@ TEST_P(CookieSettingsTestP, IsCookieAccessible_SameSiteNoneCookie) {
       *cookie, GURL(kURL), net::SiteForCookies(),
       url::Origin::Create(GURL(kOtherURL)), net::FirstPartySetMetadata(),
       GetCookieSettingOverrides(), &status));
-  EXPECT_TRUE(status.HasWarningReason(
-      net::CookieInclusionStatus::WarningReason::WARN_THIRD_PARTY_PHASEOUT));
 
   settings.set_block_third_party_cookies(true);
   if (IsTrackingProtectionEnabledFor3pcd()) {
@@ -2274,9 +2272,6 @@ TEST_P(
       *cookie, GURL(kRwsMemberURL), net::SiteForCookies(), top_frame_origin,
       net::FirstPartySetMetadata(frame_entry, top_frame_entry),
       GetCookieSettingOverrides(), &status));
-
-  EXPECT_TRUE(status.HasWarningReason(
-      net::CookieInclusionStatus::WarningReason::WARN_THIRD_PARTY_PHASEOUT));
 
   // Now we enable third-party-cookie-blocking, and verify that the right
   // exclusion reasons are still applied.
