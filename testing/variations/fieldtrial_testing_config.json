@@ -26126,6 +26126,21 @@
             ]
         }
     ],
+    "WebViewDisableCHIPS": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebViewDisableCHIPS"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebViewEnableADPFGpuMain": [
         {
             "platforms": [
