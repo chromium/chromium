@@ -878,6 +878,15 @@ VIEW_TEST(BookmarkBarViewTest4, MAYBE_ContextMenus)
 
 // Tests drag and drop within the same menu.
 class BookmarkBarViewTest5 : public BookmarkBarViewDragTestBase {
+ public:
+  void OnWidgetDragComplete(views::Widget* widget) override {
+    BookmarkBarViewDragTestBase::OnWidgetDragComplete(widget);
+    // TODO(crbug.com/375959961): For X11, the menu is always closed on drag
+    // completion because the native widget's state is not properly updated.
+    EXPECT_NE(BUILDFLAG(IS_OZONE_X11), MenuIsShowing(target_parent_));
+    target_parent_ = nullptr;
+  }
+
  protected:
   // BookmarkBarViewDragTestBase:
   void OnMenuOpened() override {
@@ -885,6 +894,9 @@ class BookmarkBarViewTest5 : public BookmarkBarViewDragTestBase {
 
     // Cause the second menu item to trigger a mouse up when dragged over.
     SetStopDraggingView(bb_view_->GetMenu()->GetSubmenu()->GetMenuItemAt(1));
+#if !BUILDFLAG(IS_OZONE_X11)
+    target_parent_ = bb_view_->GetMenu();
+#endif  // BUILDFLAG(IS_OZONE_X11)
   }
 
   const BookmarkNode* GetDroppedNode() const override {
@@ -905,6 +917,9 @@ class BookmarkBarViewTest5 : public BookmarkBarViewDragTestBase {
     views::View::ConvertPointToScreen(target_view, &target);
     return target;
   }
+
+ private:
+  raw_ptr<views::MenuItemView> target_parent_ = nullptr;
 };
 
 VIEW_TEST(BookmarkBarViewTest5, DND)
@@ -984,6 +999,7 @@ class BookmarkBarViewTest7 : public BookmarkBarViewDragTestBase {
               bb_view_->all_bookmarks_button()->GetState());
 
     BookmarkBarViewDragTestBase::OnWidgetDragComplete(widget);
+    EXPECT_FALSE(MenuIsShowing(bb_view_->GetMenu()));
   }
 
  protected:
@@ -1037,6 +1053,11 @@ class BookmarkBarViewTest8 : public BookmarkBarViewDragTestBase {
         FROM_HERE,
         base::BindOnce(base::IgnoreResult(&ui_controls::SendMouseMove),
                        target.x(), target.y(), ui_controls::kNoWindowHint));
+  }
+
+  void OnWidgetDragComplete(views::Widget* widget) override {
+    BookmarkBarViewDragTestBase::OnWidgetDragComplete(widget);
+    EXPECT_FALSE(MenuIsShowing(bb_view_->GetMenu()));
   }
 
  protected:

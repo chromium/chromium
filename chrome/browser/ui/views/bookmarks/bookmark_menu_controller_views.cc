@@ -160,6 +160,10 @@ int BookmarkMenuController::GetDragOperations(MenuItemView* sender) {
   return menu_delegate_->GetDragOperations(sender);
 }
 
+bool BookmarkMenuController::ShouldCloseOnDragComplete() {
+  return false;
+}
+
 void BookmarkMenuController::OnMenuClosed(views::MenuItemView* menu) {
   delete this;
 }
@@ -208,6 +212,17 @@ void BookmarkMenuController::BookmarkStartIndexChanged(
     const BookmarkParentFolder& folder,
     size_t new_start_index) {
   menu_delegate_->SetMenuStartIndex(folder, new_start_index);
+}
+
+void BookmarkMenuController::BookmarkNodeMoved(
+    const bookmarks::BookmarkNode* old_parent,
+    size_t old_index,
+    const bookmarks::BookmarkNode* new_parent,
+    size_t new_index) {
+  // The delegate is also an observer and will handle updating the menu.
+  // Overriding the BookmarkNodeMoved method prevents the base class from
+  // invoking `BookmarkModelChanged`, which would close the menu.
+  CHECK(menu_delegate_.get());
 }
 
 bool BookmarkMenuController::ShouldTryPositioningBesideAnchor() const {

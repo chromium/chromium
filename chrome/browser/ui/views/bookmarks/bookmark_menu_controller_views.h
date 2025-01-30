@@ -98,6 +98,7 @@ class BookmarkMenuController : public bookmarks::BaseBookmarkModelObserver,
   void WriteDragData(views::MenuItemView* sender,
                      ui::OSExchangeData* data) override;
   int GetDragOperations(views::MenuItemView* sender) override;
+  bool ShouldCloseOnDragComplete() override;
   void OnMenuClosed(views::MenuItemView* menu) override;
   views::MenuItemView* GetSiblingMenu(views::MenuItemView* menu,
                                       const gfx::Point& screen_point,
@@ -110,6 +111,10 @@ class BookmarkMenuController : public bookmarks::BaseBookmarkModelObserver,
 
   // bookmarks::BaseBookmarkModelObserver:
   void BookmarkModelChanged() override;
+  void BookmarkNodeMoved(const bookmarks::BookmarkNode* old_parent,
+                         size_t old_index,
+                         const bookmarks::BookmarkNode* new_parent,
+                         size_t new_index) override;
 
   void BookmarkStartIndexChanged(const BookmarkParentFolder& folder,
                                  size_t new_start_index);
