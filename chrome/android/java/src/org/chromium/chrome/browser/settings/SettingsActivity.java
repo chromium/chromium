@@ -101,7 +101,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
 
     private boolean mStandalone;
     private Profile mProfile;
-    private ScrimCoordinator mScrim;
+    private ScrimCoordinator mScrimCoordinator;
     private ManagedBottomSheetController mManagedBottomSheetController;
     private final OneshotSupplierImpl<BottomSheetController> mBottomSheetControllerSupplier =
             new OneshotSupplierImpl<>();
@@ -236,11 +236,11 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     private void initBottomSheet() {
         ViewGroup sheetContainer = findViewById(R.id.sheet_container);
         // TODO: Observe scrim changes if status bar needs to change color with the scrim.
-        mScrim = new ScrimCoordinator(this, (ViewGroup) sheetContainer.getParent());
+        mScrimCoordinator = new ScrimCoordinator(this, (ViewGroup) sheetContainer.getParent());
 
         mManagedBottomSheetController =
                 BottomSheetControllerFactory.createBottomSheetController(
-                        () -> mScrim,
+                        () -> mScrimCoordinator,
                         CallbackUtils.emptyCallback(),
                         getWindow(),
                         KeyboardVisibilityDelegate.getInstance(),
@@ -343,7 +343,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
 
     @Override
     protected void onDestroy() {
-        mScrim.destroy();
+        mScrimCoordinator.destroy();
         super.onDestroy();
     }
 

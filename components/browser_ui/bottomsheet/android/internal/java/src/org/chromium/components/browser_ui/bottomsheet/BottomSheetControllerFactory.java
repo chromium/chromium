@@ -21,7 +21,8 @@ import org.chromium.ui.base.WindowAndroid;
 /** A factory for producing a {@link BottomSheetController}. */
 public class BottomSheetControllerFactory {
     /**
-     * @param scrim A supplier of scrim to be shown behind the sheet.
+     * @param scrimCoordinatorSupplier A supplier of scrimCoordinatorSupplier to be shown behind the
+     *     sheet.
      * @param initializedCallback A callback for the sheet having been created.
      * @param window The activity's window.
      * @param keyboardDelegate A means of hiding the keyboard.
@@ -31,7 +32,7 @@ public class BottomSheetControllerFactory {
      * @return A new instance of the {@link BottomSheetController}.
      */
     public static ManagedBottomSheetController createBottomSheetController(
-            final Supplier<ScrimCoordinator> scrim,
+            final Supplier<ScrimCoordinator> scrimCoordinatorSupplier,
             Callback<View> initializedCallback,
             Window window,
             KeyboardVisibilityDelegate keyboardDelegate,
@@ -39,7 +40,7 @@ public class BottomSheetControllerFactory {
             @NonNull Supplier<Integer> edgeToEdgeBottomInsetSupplier,
             @Nullable DesktopWindowStateManager desktopWindowStateManager) {
         return new BottomSheetControllerImpl(
-                scrim,
+                scrimCoordinatorSupplier,
                 initializedCallback,
                 window,
                 keyboardDelegate,
@@ -52,7 +53,8 @@ public class BottomSheetControllerFactory {
     /**
      * Create {@link BottomSheetController} of full-width bottom sheets.
      *
-     * @param scrim A supplier of scrim to be shown behind the sheet.
+     * @param scrimCoordinatorSupplier A supplier of scrimCoordinatorSupplier to be shown behind the
+     *     sheet.
      * @param initializedCallback A callback for the sheet having been created.
      * @param window The activity's window.
      * @param keyboardDelegate A means of hiding the keyboard.
@@ -60,13 +62,13 @@ public class BottomSheetControllerFactory {
      * @return A new instance of the {@link BottomSheetController}.
      */
     public static ManagedBottomSheetController createFullWidthBottomSheetController(
-            final Supplier<ScrimCoordinator> scrim,
+            final Supplier<ScrimCoordinator> scrimCoordinatorSupplier,
             Callback<View> initializedCallback,
             Window window,
             KeyboardVisibilityDelegate keyboardDelegate,
             Supplier<ViewGroup> root) {
         return new BottomSheetControllerImpl(
-                scrim,
+                scrimCoordinatorSupplier,
                 initializedCallback,
                 window,
                 keyboardDelegate,

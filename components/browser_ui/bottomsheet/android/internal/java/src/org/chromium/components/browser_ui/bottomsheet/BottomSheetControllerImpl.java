@@ -114,7 +114,8 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController, ScrimCo
     /**
      * Build a new controller of the bottom sheet.
      *
-     * @param scrim A supplier of the scrim that shows when the bottom sheet is opened.
+     * @param scrimCoordinatorSupplier A supplier of the scrimCoordinatorSupplier that shows when
+     *     the bottom sheet is opened.
      * @param initializedCallback A callback for the sheet being created (as the sheet is not
      *     initialized until first use.
      * @param window A means of accessing the screen size.
@@ -125,7 +126,7 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController, ScrimCo
      * @param desktopWindowStateManager The {@link DesktopWindowStateManager} for the app header.
      */
     public BottomSheetControllerImpl(
-            final Supplier<ScrimCoordinator> scrim,
+            final Supplier<ScrimCoordinator> scrimCoordinatorSupplier,
             Callback<View> initializedCallback,
             Window window,
             KeyboardVisibilityDelegate keyboardDelegate,
@@ -133,7 +134,7 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController, ScrimCo
             boolean alwaysFullWidth,
             @NonNull Supplier<Integer> edgeToEdgeBottomInsetSupplier,
             @Nullable DesktopWindowStateManager desktopWindowStateManager) {
-        mScrimCoordinatorSupplier = scrim;
+        mScrimCoordinatorSupplier = scrimCoordinatorSupplier;
         mPendingSheetObservers = new ArrayList<>();
         mSuppressionTokens = new TokenHolder(this::onSuppressionTokensChanged);
         mAlwaysFullWidth = alwaysFullWidth;

@@ -81,7 +81,7 @@ public class PickerBitmapView extends SelectableItemViewBase<PickerBitmap> {
 
     // The little shader in the top left corner (provides backdrop for selection ring on
     // unfavorable image backgrounds).
-    private ImageView mScrim;
+    private ImageView mScrimView;
 
     // The control that signifies the image has been selected.
     private ImageView mSelectedView;
@@ -116,7 +116,7 @@ public class PickerBitmapView extends SelectableItemViewBase<PickerBitmap> {
 
     @SuppressWarnings("WrongViewCast") // Android lint gets confused: https://crbug.com/1315709
     private void assignScrim() {
-        mScrim = findViewById(R.id.scrim);
+        mScrimView = findViewById(R.id.scrim);
     }
 
     @Override
@@ -482,7 +482,7 @@ public class PickerBitmapView extends SelectableItemViewBase<PickerBitmap> {
         mVideoControlsSmall.setVisibility(View.GONE);
         mUnselectedView.setVisibility(View.GONE);
         mSelectedView.setVisibility(View.GONE);
-        mScrim.setVisibility(View.GONE);
+        mScrimView.setVisibility(View.GONE);
         mSpecialTile.setVisibility(View.GONE);
         mSpecialTileIcon.setVisibility(View.GONE);
         mSpecialTileLabel.setVisibility(View.GONE);
@@ -523,7 +523,7 @@ public class PickerBitmapView extends SelectableItemViewBase<PickerBitmap> {
                         && (anySelection || mCategoryView.isInMagnifyingMode())
                         && mCategoryView.isMultiSelectAllowed();
         mUnselectedView.setVisibility(showUnselectedToggle ? View.VISIBLE : View.GONE);
-        mScrim.setVisibility(showUnselectedToggle ? View.VISIBLE : View.GONE);
+        mScrimView.setVisibility(showUnselectedToggle ? View.VISIBLE : View.GONE);
 
         boolean showVideoControls =
                 mImageLoaded && mBitmapDetails.type() == PickerBitmap.TileTypes.VIDEO;
