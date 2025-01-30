@@ -140,6 +140,9 @@
   "chrome/browser/test_dummy/internal/android/resources/resources.grd": {
     "includes": [2520],
   },
+  "chrome/browser/glic/resources/browser_resources.grd": {
+    "includes": [2540],
+  },
   # END chrome/browser section.
 
   # START chrome/ WebUI resources section
