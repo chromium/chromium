@@ -25,7 +25,10 @@ class TabGroupSyncServiceFactoryTest : public PlatformTest {
             kModernTabStrip,
         },
         /*disable_features=*/{});
-    profile_ = TestProfileIOS::Builder().Build();
+    TestProfileIOS::Builder builder;
+    builder.AddTestingFactory(TabGroupSyncServiceFactory::GetInstance(),
+                              TabGroupSyncServiceFactory::GetDefaultFactory());
+    profile_ = std::move(builder).Build();
   }
 
  protected:

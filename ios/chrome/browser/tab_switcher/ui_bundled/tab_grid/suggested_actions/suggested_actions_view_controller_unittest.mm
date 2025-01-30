@@ -36,7 +36,11 @@ TEST_F(SuggestedActionsViewControllerTest, Initialization) {
   CheckController();
 
   ASSERT_EQ(1, NumberOfSections());
-  ASSERT_EQ(3, NumberOfItemsInSection(0));
+  if (IsTabGroupSyncEnabled()) {
+    ASSERT_EQ(2, NumberOfItemsInSection(0));
+  } else {
+    ASSERT_EQ(3, NumberOfItemsInSection(0));
+  }
 
   if (IsTabGroupSyncEnabled()) {
     // This is a static table it should have 2 items in that order:
@@ -84,6 +88,9 @@ TEST_F(SuggestedActionsViewControllerTest, SelectSearchWebSuggestedAction) {
 // delegate.
 TEST_F(SuggestedActionsViewControllerTest,
        SelectSearchRecentTabsSuggestedAction) {
+  if (IsTabGroupSyncEnabled()) {
+    return;
+  }
   CreateController();
   CheckController();
   OCMExpect(
@@ -101,7 +108,12 @@ TEST_F(SuggestedActionsViewControllerTest, SelectSearchHistorySuggestedAction) {
   CheckController();
   OCMExpect([delegate_ didSelectSearchHistoryInSuggestedActionsViewController:
                            (SuggestedActionsViewController*)controller()]);
-  [controller() tableView:controller().tableView
-      didSelectRowAtIndexPath:[NSIndexPath indexPathForRow:2 inSection:0]];
+  if (IsTabGroupSyncEnabled()) {
+    [controller() tableView:controller().tableView
+        didSelectRowAtIndexPath:[NSIndexPath indexPathForRow:1 inSection:0]];
+  } else {
+    [controller() tableView:controller().tableView
+        didSelectRowAtIndexPath:[NSIndexPath indexPathForRow:2 inSection:0]];
+  }
   EXPECT_OCMOCK_VERIFY(delegate_);
 }
