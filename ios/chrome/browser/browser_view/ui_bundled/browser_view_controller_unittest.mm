@@ -525,8 +525,6 @@ TEST_F(BrowserViewControllerTest, didInsertOffTheRecordWebState) {
 
 // Tests that when a webstate is inserted, the correct view is used during
 // the animation.
-// TODO(crbug.com/344849341): This test fails when run as part of the entire
-// test suite. Retries seem to pass.
 TEST_F(BrowserViewControllerTest, ViewOnInsert) {
   // The animation being tested only runs on the phone form factor.
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
