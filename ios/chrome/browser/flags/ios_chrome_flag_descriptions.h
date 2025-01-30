@@ -439,6 +439,11 @@ extern const char kFullscreenImprovementDescription[];
 extern const char kFullscreenPromosManagerSkipInternalLimitsName[];
 extern const char kFullscreenPromosManagerSkipInternalLimitsDescription[];
 
+// Title and description for the flag to change the fullscreen transition speed
+// and offset.
+extern const char kFullscreenTransitionName[];
+extern const char kFullscreenTransitionDescription[];
+
 // Title and description for the command line switch used to determine the
 // active fullscreen viewport adjustment mode.
 extern const char kFullscreenSmoothScrollingName[];

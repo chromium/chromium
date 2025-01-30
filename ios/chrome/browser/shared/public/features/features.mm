@@ -1243,3 +1243,30 @@ bool IOSPasskeysM2Enabled() {
   return syncer::IsWebauthnCredentialSyncEnabled() &&
          base::FeatureList::IsEnabled(kIOSPasskeysM2);
 }
+
+const char kFullscreenTransitionSlower[] = "SlowFullscreenTransitionSpeed";
+const char kFullscreenTransitionDefaultSpeed[] =
+    "MediumFullscreenTransitionSpeed";
+const char kFullscreenTransitionFaster[] = "FastFullscreenTransitionSpeed";
+const char kFullscreenTransitionSpeedParam[] = "FullscreenTransitionSpeed";
+const char kMediumFullscreenTransitionOffsetParam[] =
+    "MediumFullscreenTransitionOffset";
+
+bool IsFullscreenTransitionSet() {
+  return base::FeatureList::IsEnabled(kFullscreenTransition);
+}
+
+FullscreenTransitionSpeed FullscreenTransitionSpeedParam() {
+  return static_cast<FullscreenTransitionSpeed>(
+      base::GetFieldTrialParamByFeatureAsInt(
+          kFullscreenTransition, kFullscreenTransitionSpeedParam, 1));
+}
+
+bool IsFullscreenTransitionOffsetSet() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kFullscreenTransition, kMediumFullscreenTransitionOffsetParam, false);
+}
+
+BASE_FEATURE(kFullscreenTransition,
+             "FullscreenTransition",
+             base::FEATURE_DISABLED_BY_DEFAULT);

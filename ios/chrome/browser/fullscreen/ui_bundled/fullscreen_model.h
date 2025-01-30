@@ -52,7 +52,7 @@ class FullscreenModel : public ChromeBroadcastObserverInterface {
   CGFloat base_offset() const { return base_offset_; }
 
   // Returns the difference between the max and min toolbar heights.
-  CGFloat toolbar_height_delta() const {
+  CGFloat get_toolbar_height_delta() const {
     CGFloat top_delta =
         GetExpandedTopToolbarHeight() - GetCollapsedTopToolbarHeight();
     if (top_delta < FLT_EPSILON &&
@@ -67,7 +67,7 @@ class FullscreenModel : public ChromeBroadcastObserverInterface {
   // Returns whether the page content is tall enough for the toolbar to be
   // scrolled to an entirely collapsed position.
   bool can_collapse_toolbar() const {
-    return content_height_ > scroll_view_height_ + toolbar_height_delta();
+    return content_height_ > scroll_view_height_ + get_toolbar_height_delta();
   }
 
   // Whether the view is scrolled all the way to the top.
@@ -206,6 +206,23 @@ class FullscreenModel : public ChromeBroadcastObserverInterface {
     return fullscreen_scroll_direction_;
   }
 
+  // Helper for updating `progress_` accordingly to `distance_offset_`.
+  CGFloat UpdateProgressHelper(CGFloat progress_shift,
+                               CGFloat delta,
+                               CGFloat delta_shift,
+                               CGFloat toolbar_height);
+
+  // Helper for updating `scrolling_delay_delta_shift_down_to_up` and
+  // `scrolling_delay_delta_shift_up_to_down`.
+  CGFloat GetNewDeltaShift(CGFloat delta) const;
+
+  // Updates `speed_` of the fullscreen model accordingly to
+  // fullscreen flag `fullscreen transition experiment`.
+  void UpdateSpeed();
+
+  // Getter for the speed of fullscren transition.
+  CGFloat GetSpeed() { return speed_; }
+
  private:
   // Returns how a scroll to the current `y_content_offset_` from `from_offset`
   // should be handled.
@@ -295,6 +312,14 @@ class FullscreenModel : public ChromeBroadcastObserverInterface {
   // Current direction of scrolling initiated by the user.
   FullscreenModelScrollDirection fullscreen_scroll_direction_ =
       FullscreenModelScrollDirection::kNone;
+  // Distance in pixels before triggering fullscreen transition.
+  CGFloat distance_offset_ = 0.0;
+  // Speed of fullscreen transition.
+  CGFloat speed_ = 1.0;
+  CGFloat scrolling_delay_progress_shift_down_to_up_ = 0.0;
+  CGFloat scrolling_delay_delta_shift_down_to_up_ = 0.0;
+  CGFloat scrolling_delay_progress_shift_up_to_down_ = 1.0;
+  CGFloat scrolling_delay_delta_shift_up_to_down_ = 0.0;
 };
 
 #endif  // IOS_CHROME_BROWSER_FULLSCREEN_UI_BUNDLED_FULLSCREEN_MODEL_H_

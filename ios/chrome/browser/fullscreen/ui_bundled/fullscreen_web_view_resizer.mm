@@ -126,10 +126,11 @@
 
   CGFloat currentTopInset = webView.frame.origin.y;
   CGPoint newContentOffset = scrollViewProxy.contentOffset;
-  newContentOffset.y += insets.top - currentTopInset;
   // Update the content offset of the scroll view to match the padding
   // that will be included in the frame.
-  if (self.compensateFrameChangeByOffset) {
+  newContentOffset.y += (insets.top - currentTopInset) / self.model->GetSpeed();
+  if (self.compensateFrameChangeByOffset &&
+      !IsFullscreenTransitionOffsetSet()) {
     scrollViewProxy.contentOffset = newContentOffset;
   }
 
