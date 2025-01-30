@@ -7,11 +7,16 @@
 #include <memory>
 
 #include "chrome/browser/new_tab_page/microsoft_auth/microsoft_auth_service.h"
+#include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/profiles/profile.h"
 
 // static
 MicrosoftAuthService* MicrosoftAuthServiceFactory::GetForProfile(
     Profile* profile) {
+  if (!IsMicrosoftModuleEnabledForProfile(profile)) {
+    return nullptr;
+  }
+
   return static_cast<MicrosoftAuthService*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
 }

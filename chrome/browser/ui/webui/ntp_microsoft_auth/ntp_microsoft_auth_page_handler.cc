@@ -23,14 +23,20 @@ MicrosoftAuthUntrustedPageHandler::~MicrosoftAuthUntrustedPageHandler() =
     default;
 
 void MicrosoftAuthUntrustedPageHandler::ClearAuthData() {
-  auth_service_->ClearAuthData();
+  if (auth_service_) {
+    auth_service_->ClearAuthData();
+  }
 }
 
 void MicrosoftAuthUntrustedPageHandler::SetAccessToken(
     new_tab_page::mojom::AccessTokenPtr token) {
-  auth_service_->SetAccessToken(std::move(token));
+  if (auth_service_) {
+    auth_service_->SetAccessToken(std::move(token));
+  }
 }
 
 void MicrosoftAuthUntrustedPageHandler::SetAuthStateError() {
-  auth_service_->SetAuthStateError();
+  if (auth_service_) {
+    auth_service_->SetAuthStateError();
+  }
 }

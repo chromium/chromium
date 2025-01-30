@@ -531,13 +531,10 @@ NewTabPageHandler::NewTabPageHandler(
     }
   }
 
-  if (IsMicrosoftModuleEnabledForProfile(profile_)) {
-    microsoft_auth_service_ =
-        MicrosoftAuthServiceFactory::GetForProfile(profile);
-    if (microsoft_auth_service_) {
-      microsoft_auth_service_->AddObserver(this);
-      OnAuthStateUpdated();
-    }
+  microsoft_auth_service_ = MicrosoftAuthServiceFactory::GetForProfile(profile);
+  if (microsoft_auth_service_) {
+    microsoft_auth_service_->AddObserver(this);
+    OnAuthStateUpdated();
   }
 
   if (base::FeatureList::IsEnabled(
