@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/page/page_animator.h"
+#include "third_party/blink/renderer/core/paint/clip_path_clipper.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
@@ -97,7 +98,7 @@ class ClipPathPaintDefinitionTest : public PageTestBase {
       case CompositedPaintStatus::kNoAnimation:
       case CompositedPaintStatus::kNotComposited:
         // GetAnimationIfCompositable should return nothing in this circumstance
-        EXPECT_EQ(ClipPathPaintDefinition::GetAnimationIfCompositable(element),
+        EXPECT_EQ(ClipPathClipper::GetCompositableClipPathAnimation(*lo),
                   nullptr);
         // If a clip path is non-composited or non-existent, then the clip path
         // mask should not be set. If it is, it can cause a crash.
@@ -113,7 +114,7 @@ class ClipPathPaintDefinitionTest : public PageTestBase {
       case CompositedPaintStatus::kComposited:
         // GetAnimationIfCompositable should return the given animation, if it
         // is compositable
-        EXPECT_EQ(ClipPathPaintDefinition::GetAnimationIfCompositable(element),
+        EXPECT_EQ(ClipPathClipper::GetCompositableClipPathAnimation(*lo),
                   animation);
         // Composited clip-path animations depend on ClipPathMask() being set
         EXPECT_TRUE(lo->FirstFragment().PaintProperties()->ClipPathMask());
@@ -515,6 +516,63 @@ TEST_F(ClipPathPaintDefinitionTest, ShapeClipPathAnimationNotFallback) {
   EXPECT_EQ(element->GetElementAnimations()->Animations().size(), 1u);
   EXPECT_EQ(ClipPathPaintDefinition::GetAnimationIfCompositable(element),
             animation);
+}
+
+// Test the case where there is a clip-path animation with two simple
+// keyframes that will not fall back to main.
+TEST_F(ClipPathPaintDefinitionTest, WillChangeContents) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+        @keyframes clippath {
+            0% {
+                clip-path: circle(50% at 50% 50%);
+            }
+            100% {
+                clip-path: circle(30% at 30% 30%);
+            }
+        }
+        .animation {
+            animation: clippath 30s;
+        }
+
+        .willchangecontents {
+            will-change: contents;
+        }
+    </style>
+    <div id ="target" style="width: 100px; height: 100px">
+    </div>
+  )HTML");
+
+  Element* element = GetElementById("target");
+  element->setAttribute(html_names::kClassAttr, AtomicString("animation"));
+
+  EnsureCCClipPathInvariantsHoldStyleAndLayout(
+      /* needs_repaint= */ true, CompositedPaintStatus::kComposited, element);
+
+  Animation* animation = GetFirstAnimation(element);
+
+  GetDocument().GetAnimationClock().UpdateTime(base::TimeTicks() +
+                                               base::Milliseconds(0));
+  animation->NotifyReady(ANIMATION_TIME_DELTA_FROM_MILLISECONDS(0));
+
+  EnsureCCClipPathInvariantsHoldThroughoutPainting(
+      /* needs_repaint= */ true, CompositedPaintStatus::kComposited, element,
+      animation);
+
+  // Set will-change: contents. In this case, the paint status should switch to
+  // kNotComposited during pre-paint.
+
+  element->setAttribute(html_names::kClassAttr,
+                        AtomicString("animation willchangecontents"));
+
+  GetDocument().View()->UpdateLifecycleToCompositingInputsClean(
+      DocumentUpdateReason::kTest);
+  // Will-change: repaint updates paint properties
+  EXPECT_TRUE(element->GetLayoutObject()->NeedsPaintPropertyUpdate());
+
+  EnsureCCClipPathInvariantsHoldThroughoutPainting(
+      /* needs_repaint= */ false, CompositedPaintStatus::kNotComposited,
+      element, animation);
 }
 
 }  // namespace blink
