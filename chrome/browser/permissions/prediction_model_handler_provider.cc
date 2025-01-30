@@ -22,8 +22,9 @@ namespace permissions {
 PredictionModelHandlerProvider::PredictionModelHandlerProvider(
     OptimizationGuideKeyedService* optimization_guide)
     : genai_model_handler_(
-          std::make_unique<GenAiModelHandler>(optimization_guide)),
+          std::make_unique<GenAiModelHandler>(optimization_guide))
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+      ,
       notification_prediction_model_handler_(
           std::make_unique<PredictionModelHandler>(
               optimization_guide,
