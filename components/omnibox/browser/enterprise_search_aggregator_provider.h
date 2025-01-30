@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
@@ -22,6 +23,7 @@ class SimpleURLLoader;
 class AutocompleteProviderClient;
 class AutocompleteProviderDebouncer;
 class AutocompleteInput;
+class TemplateURL;
 
 class EnterpriseSearchAggregatorProvider : public AutocompleteProvider {
  public:
@@ -36,6 +38,13 @@ class EnterpriseSearchAggregatorProvider : public AutocompleteProvider {
   friend class FakeEnterpriseSearchAggregatorProvider;
 
   ~EnterpriseSearchAggregatorProvider() override;
+
+  // The types of suggestions provided by the response body.
+  enum class SuggestionType {
+    QUERY,
+    PEOPLE,
+    CONTENT,
+  };
 
   // Determines whether the profile/session/window meet the feature
   // prerequisites.
@@ -53,14 +62,61 @@ class EnterpriseSearchAggregatorProvider : public AutocompleteProvider {
                         const int response_code,
                         std::unique_ptr<std::string> response_body);
 
+  // The function updates `matches_` with data parsed from `json_data`.
+  // The update is not performed if `json_data` is invalid.
+  // Returns whether `matches_` changed.
+  bool UpdateResults(const std::string& json_data);
+
+  // Parses enterprise search aggregator response JSON.
+  void ParseEnterpriseSearchAggregatorSearchResults(
+      const base::Value& root_val);
+
+  // Helper method to parse query, people, and content suggestions.
+  // Example:
+  //   Given a response with one query suggestion:
+  //    {
+  //     "querySuggestions": [{
+  //       "suggestion": "hello",
+  //       "dataStore": [project/1]
+  //      }]
+  //     }.
+  // `matches` would contain one `match` with the following properties:
+  //  - `match.type` = `AutocompleteMatchType::SEARCH_SUGGEST`,
+  //  - `match.contents` = "hello",
+  //  - `match.description` = "",
+  //  - `match.destination_url` = `template_url->url()`,
+  //  - `match.fill_to_edit` = `template_url->url()`,
+  //  - `match.image_url` = `icon_url` from EnterpriseSearchAggregatorSettings
+  //  policy,
+  //  - `match.relevance` = 1001.
+  void ParseResultList(const base::Value::List* results,
+                       const TemplateURL* template_url,
+                       SuggestionType suggestion_type,
+                       bool is_navigation);
+
+  std::string GetUrl(const base::Value::Dict& result,
+                     const TemplateURLRef& url_ref,
+                     SuggestionType suggestion_type) const;
+
+  // Helper method to get `description` based on `suggestion_type` for
+  // `CreateMatch()`.
+  std::string GetMatchDescription(const base::Value::Dict& result,
+                                  SuggestionType suggestion_type) const;
+
+  // Helper method to get `contents` based on `suggestion_type` for
+  // `CreateMatch()`.
+  std::string GetMatchContents(const base::Value::Dict& result,
+                               SuggestionType suggestion_type) const;
+
   // Helper to create a match.
   AutocompleteMatch CreateMatch(const AutocompleteInput& input,
                                 const std::u16string& keyword,
+                                SuggestionType suggestion_type,
                                 bool is_navigation,
                                 int relevance,
-                                const std::string& url,
-                                const std::u16string& title,
-                                const std::u16string& additional_text);
+                                const std::string& destination_url,
+                                const std::u16string& description,
+                                const std::u16string& contents);
 
   // Owned by AutocompleteController.
   const raw_ptr<AutocompleteProviderClient> client_;
