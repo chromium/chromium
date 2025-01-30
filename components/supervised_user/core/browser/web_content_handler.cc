@@ -16,12 +16,6 @@ constexpr char kLocalWebApprovalDurationHistogramName[] =
 constexpr char kLocalWebApprovalResultHistogramName[] =
     "FamilyLinkUser.LocalWebApprovalResult";
 
-// Records the outcome of the local web approval flow.
-void RecordLocalWebApprovalResultMetric(
-    supervised_user::LocalApprovalResult result) {
-  base::UmaHistogramEnumeration(kLocalWebApprovalResultHistogramName, result);
-}
-
 // Records the duration of a complete local web approval flow.
 void RecordTimeToApprovalDurationMetric(base::TimeDelta durationMs) {
   base::UmaHistogramLongTimes(kLocalWebApprovalDurationHistogramName,
@@ -51,6 +45,11 @@ namespace supervised_user {
 WebContentHandler::WebContentHandler() = default;
 
 WebContentHandler::~WebContentHandler() = default;
+
+void WebContentHandler::RecordLocalWebApprovalResultMetric(
+    LocalApprovalResult result) {
+  base::UmaHistogramEnumeration(kLocalWebApprovalResultHistogramName, result);
+}
 
 void WebContentHandler::OnLocalApprovalRequestCompleted(
     supervised_user::SupervisedUserSettingsService& settings_service,

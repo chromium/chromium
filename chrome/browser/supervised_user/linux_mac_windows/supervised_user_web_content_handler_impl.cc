@@ -48,6 +48,16 @@ void SupervisedUserWebContentHandlerImpl::RequestLocalApproval(
   std::move(callback).Run(true);
 }
 
+void SupervisedUserWebContentHandlerImpl::MaybeCloseLocalApproval() {
+  // There is no local web approval instance open, do nothing.
+  if (!dialog_web_contents_observer_) {
+    return;
+  }
+  supervised_user::WebContentHandler::RecordLocalWebApprovalResultMetric(
+      supervised_user::LocalApprovalResult::kCanceled);
+  CloseDialog();
+}
+
 void SupervisedUserWebContentHandlerImpl::CreateObserverFromContents(
     base::TimeTicks start_time,
     const GURL& target_url,
@@ -78,8 +88,13 @@ void SupervisedUserWebContentHandlerImpl::CompleteUrlApprovalAndCloseDialog(
   supervised_user::WebContentHandler::OnLocalApprovalRequestCompleted(
       *settings_service, target_url, start_time, result);
 
-  CHECK(dialog_web_contents_observer_);
-  dialog_web_contents_observer_->StopObserving();
+  CloseDialog();
+}
+
+void SupervisedUserWebContentHandlerImpl::CloseDialog() {
+  if (dialog_web_contents_observer_) {
+    dialog_web_contents_observer_->StopObserving();
+  }
   // The `weak_parent_access_view_` might have been invalidated through an
   // accelerator.
   if (weak_parent_access_view_) {

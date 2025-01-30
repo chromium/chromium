@@ -86,6 +86,12 @@ void IOSWebContentHandlerImpl::GoBack() {
   }
 }
 
+void IOSWebContentHandlerImpl::MaybeCloseLocalApproval() {
+  // TODO(crbug.com/393287184): Record `LocalApprovalResult::kCancel` only
+  // if the bottom sheet is shown on-screen.
+  [commands_handler_ hideParentAccessBottomSheet];
+}
+
 void IOSWebContentHandlerImpl::Close() {
   CHECK(web_state_);
   web_state_->CloseWebState();

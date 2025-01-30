@@ -55,11 +55,17 @@ class WebContentHandler {
   // Returns the interstitial navigation id.
   virtual int64_t GetInterstitialNavigationId() const = 0;
 
+  // Closes the local approval widget if it is on-screen.
+  virtual void MaybeCloseLocalApproval() = 0;
+
   static const char* GetLocalApprovalDurationMillisecondsHistogram();
   static const char* GetLocalApprovalResultHistogram();
 
  protected:
   WebContentHandler();
+
+  // Records the outcome of the local web approval flow.
+  void RecordLocalWebApprovalResultMetric(LocalApprovalResult approval_result);
 
   // Processes the outcome of the local approval request.
   // Should be called by platform specific completion callback.
