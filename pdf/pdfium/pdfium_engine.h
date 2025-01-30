@@ -834,6 +834,14 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
                       const gfx::Rect& clip_rect,
                       SkBitmap& image_data);
 
+  // Draws the highlight for the provided `range` if visible.
+  void DrawHighlightOnPage(const PDFiumRange& range,
+                           const gfx::Rect& dirty_in_screen,
+                           const gfx::Rect& visible_rect,
+                           const RegionData& region,
+                           SkColor color,
+                           std::vector<gfx::Rect>& highlighted_rects) const;
+
   std::optional<RegionData> GetRegion(const gfx::Point& location,
                                       SkBitmap& image_data) const;
 
@@ -905,6 +913,10 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
 
   // Given `annot`, scroll the `annot` into view if not already in view.
   void ScrollAnnotationIntoView(FPDF_ANNOTATION annot, int page_index);
+
+  // Scrolls to the bounding rectangles that represent the `range` on the
+  // screen.
+  void ScrollToBoundingRects(const PDFiumRange& range);
 
   void OnFocusedAnnotationUpdated(FPDF_ANNOTATION annot, int page_index);
 
