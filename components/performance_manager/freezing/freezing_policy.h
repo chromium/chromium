@@ -15,6 +15,7 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/rand_util.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/performance_manager/freezing/cannot_freeze_reason.h"
@@ -94,6 +95,10 @@ class FreezingPolicy : public PageNodeObserver,
     // but may contain an unbounded amount of pages connected via opener
     // relationship).
     base::flat_set<const PageNode*> pages;
+    // Highest CPU measurement for a group of same-origin frames/workers
+    // associated with this browsing instance, over the last measurement period.
+    // (1.0 = 100% of 1 core)
+    std::optional<double> highest_cpu_current_interval;
     // Highest CPU measurement for a group of same-origin frames/workers
     // associated within this browsing instance, over any past measurement
     // period during which no `CannotFreezeReason` was applicable.
@@ -199,6 +204,16 @@ class FreezingPolicy : public PageNodeObserver,
   // `browser_context_id` changes.
   void OnOptOutPolicyChanged(std::string_view browser_context_id);
 
+  // Records freezing eligibility UKM for all pages.
+  void RecordFreezingEligibilityUKM();
+
+  // Records freezing eligibility UKM for a page. Virtual for testing.
+  virtual void RecordFreezingEligibilityUKMForPage(
+      ukm::SourceId source_id,
+      double highest_cpu_current_interval,
+      double highest_cpu_any_interval_without_cannot_freeze_reason,
+      CannotFreezeReasonSet cannot_freeze_reasons);
+
   // Used to freeze pages.
   std::unique_ptr<Freezer> freezer_;
 
@@ -229,6 +244,9 @@ class FreezingPolicy : public PageNodeObserver,
   // belong to the same [browsing instance, origin] over an interval, based on
   // cumulative measurements from `resource_usage_query_`.
   resource_attribution::CPUProportionTracker cpu_proportion_tracker_;
+
+  // Used to subsample the emission of UKM events.
+  base::MetricsSubSampler metrics_subsampler_;
 
   base::WeakPtrFactory<FreezingPolicy> weak_factory_{this};
 };

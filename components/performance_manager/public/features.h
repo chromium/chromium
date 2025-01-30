@@ -180,6 +180,9 @@ BASE_DECLARE_FEATURE(kFreezingOnBatterySaverForTesting);
 // tab discarding.
 BASE_DECLARE_FEATURE(kFreezingFollowsDiscardOptOut);
 
+// When enabled, the freezing eligibility UKM event may be recorded.
+BASE_DECLARE_FEATURE(kRecordFreezingEligibilityUKM);
+
 // When enabled, Resource Attribution measurements will include contexts for
 // individual origins.
 BASE_DECLARE_FEATURE(kResourceAttributionIncludeOrigins);
