@@ -176,6 +176,7 @@ class TabStripSceneLayer : public SceneLayer {
       jfloat corner_radius,
       jfloat bottom_indicator_width,
       jfloat bottom_indicator_height,
+      jfloat bubble_padding,
       jfloat bubble_size,
       const base::android::JavaParamRef<jobject>& jlayer_title_cache);
 

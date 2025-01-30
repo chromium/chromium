@@ -47,6 +47,7 @@ class GroupIndicatorLayer : public Layer {
                      float corner_radius,
                      float bottom_indicator_width,
                      float bottom_indicator_height,
+                     float bubble_padding,
                      float bubble_size,
                      float tab_strip_height);
   bool foreground();

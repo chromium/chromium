@@ -481,6 +481,7 @@ void TabStripSceneLayer::PutGroupIndicatorLayer(
     jfloat corner_radius,
     jfloat bottom_indicator_width,
     jfloat bottom_indicator_height,
+    jfloat bubble_padding,
     jfloat bubble_size,
     const JavaParamRef<jobject>& jlayer_title_cache) {
   LayerTitleCache* layer_title_cache =
@@ -499,12 +500,12 @@ void TabStripSceneLayer::PutGroupIndicatorLayer(
     }
   }
 
-  layer->SetProperties(id, tint, reorder_background_tint, bubble_tint,
-                       incognito, foreground, show_bubble,
-                       show_reorder_background, x, y, width, height,
-                       title_start_padding, title_end_padding, corner_radius,
-                       bottom_indicator_width, bottom_indicator_height,
-                       bubble_size, tab_strip_layer_->bounds().height());
+  layer->SetProperties(
+      id, tint, reorder_background_tint, bubble_tint, incognito, foreground,
+      show_bubble, show_reorder_background, x, y, width, height,
+      title_start_padding, title_end_padding, corner_radius,
+      bottom_indicator_width, bottom_indicator_height, bubble_padding,
+      bubble_size, tab_strip_layer_->bounds().height());
 }
 
 scoped_refptr<TabHandleLayer> TabStripSceneLayer::GetNextTabLayer(

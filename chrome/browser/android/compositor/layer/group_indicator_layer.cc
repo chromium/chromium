@@ -52,6 +52,7 @@ void GroupIndicatorLayer::SetProperties(int id,
                                         float corner_radius,
                                         float bottom_indicator_width,
                                         float bottom_indicator_height,
+                                        float bubble_padding,
                                         float bubble_size,
                                         float tab_strip_height) {
   // Update group indicator properties.
@@ -76,10 +77,16 @@ void GroupIndicatorLayer::SetProperties(int id,
     // any properties.
     title_layer->SetUIResourceIds();
 
+    float notification_bubble_width_with_padding =
+        show_bubble ? bubble_size + bubble_padding : 0.f;
     float title_y = (height - title_layer->size().height()) / 2.f;
-    float title_x = is_rtl ? title_end_padding : title_start_padding;
-    title_layer->setBounds(
-        gfx::Size(width - title_start_padding - title_end_padding, height));
+    float title_x =
+        is_rtl ? (title_end_padding + notification_bubble_width_with_padding)
+               : title_start_padding;
+    title_layer->setBounds(gfx::Size(width - title_start_padding -
+                                         title_end_padding -
+                                         notification_bubble_width_with_padding,
+                                     height));
     title_layer_ = title_layer->layer();
     title_layer_->SetPosition(gfx::PointF(title_x, title_y));
 
