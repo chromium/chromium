@@ -1523,63 +1523,44 @@ chromium-metrics-reviews@google.com.
   <token key="SafeSitesFilter" variants="SafeSitesFilterType"/>
 </histogram>
 
-<histogram name="PageLoad.Clients.LCPP.ImageLoadingPriority.ConfidenceOfLCP2"
+<histogram
+    name="PageLoad.Clients.LCPP.ImageLoadingPriority.ConfidenceOfActual{PositiveOrNegative}"
     units="%" expires_after="2025-08-01">
   <owner>chikamune@chromium.org</owner>
   <owner>
     src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
   </owner>
   <summary>
-    Records the confidence value of ElementLocator that became LCP actually.
+    Records the confidence value of ElementLocator that {PositiveOrNegative}
+    actually.
 
     The metric is emitted only for navigations that LCP Critical Path Predictor
     provided non-empty hint data and only when LCP is recorded.
   </summary>
+  <token key="PositiveOrNegative">
+    <variant name="Negative" summary="didn't become LCP"/>
+    <variant name="Positive" summary="became LCP"/>
+  </token>
 </histogram>
 
 <histogram
-    name="PageLoad.Clients.LCPP.ImageLoadingPriority.ConfidenceOfNonLCP2"
-    units="%" expires_after="2025-08-01">
-  <owner>chikamune@chromium.org</owner>
-  <owner>
-    src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
-  </owner>
-  <summary>
-    Records the confidence value of ElementLocator that didn't become LCP
-    actually.
-
-    The metric is emitted only for navigations that LCP Critical Path Predictor
-    provided non-empty hint data and only when LCP is recorded.
-  </summary>
-</histogram>
-
-<histogram name="PageLoad.Clients.LCPP.ImageLoadingPriority.FrequencyOfLCP"
+    name="PageLoad.Clients.LCPP.ImageLoadingPriority.FrequencyOfActual{PositiveOrNegative}"
     units="Count" expires_after="2025-08-01">
   <owner>chikamune@chromium.org</owner>
   <owner>
     src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
   </owner>
   <summary>
-    Records the frequency value of ElementLocator that became LCP actually.
-
-    The metric is emitted only for navigations that LCP Critical Path Predictor
-    provided non-empty hint data and only when LCP is recorded.
-  </summary>
-</histogram>
-
-<histogram name="PageLoad.Clients.LCPP.ImageLoadingPriority.FrequencyOfNonLCP"
-    units="Count" expires_after="2025-08-01">
-  <owner>chikamune@chromium.org</owner>
-  <owner>
-    src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
-  </owner>
-  <summary>
-    Records the frequency value of ElementLocator that didn't become LCP
+    Records the frequency value of ElementLocator that {PositiveOrNegative}
     actually.
 
     The metric is emitted only for navigations that LCP Critical Path Predictor
     provided non-empty hint data and only when LCP is recorded.
   </summary>
+  <token key="PositiveOrNegative">
+    <variant name="Negative" summary="didn't become LCP"/>
+    <variant name="Positive" summary="became LCP"/>
+  </token>
 </histogram>
 
 <histogram name="PageLoad.Clients.LCPP.PaintTiming.ActualLCPIndex2"
@@ -1683,6 +1664,31 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="PageLoad.Clients.LCPP.Subresource.ConfidenceOfActual{PositiveOrNegative}{Site}"
+    units="%" expires_after="2025-08-01">
+  <owner>chikamune@chromium.org</owner>
+  <owner>
+    src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
+  </owner>
+  <summary>
+    Records the confidence value of {Site} subresource url that
+    {PositiveOrNegative}.
+
+    The metric is emitted only for navigations that LCP Critical Path Predictor
+    provided non-empty hint data and only when LCP is recorded.
+  </summary>
+  <token key="PositiveOrNegative">
+    <variant name="Negative" summary="was not loaded"/>
+    <variant name="Positive" summary="was actually loaded"/>
+  </token>
+  <token key="Site">
+    <variant name="" summary="same-site and cross-site"/>
+    <variant name=".CrossSite" summary="cross-site"/>
+    <variant name=".SameSite" summary="same-site"/>
+  </token>
+</histogram>
+
 <histogram name="PageLoad.Clients.LCPP.Subresource.Count.Precision" units="%"
     expires_after="2025-07-13">
   <owner>yoichio@chromium.org</owner>
@@ -1749,6 +1755,31 @@ chromium-metrics-reviews@google.com.
     provided non-empty hint data and only once when the user navigates away from
     the page.
   </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.LCPP.Subresource.FrequencyOfActual{PositiveOrNegative}{Site}"
+    units="Count" expires_after="2025-08-01">
+  <owner>chikamune@chromium.org</owner>
+  <owner>
+    src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
+  </owner>
+  <summary>
+    Records the frequency value of {Site} subresource url that
+    {PositiveOrNegative}.
+
+    The metric is emitted only for navigations that LCP Critical Path Predictor
+    provided non-empty hint data and only when LCP is recorded.
+  </summary>
+  <token key="PositiveOrNegative">
+    <variant name="Negative" summary="was not loaded"/>
+    <variant name="Positive" summary="was actually loaded"/>
+  </token>
+  <token key="Site">
+    <variant name="" summary="same-site and cross-site"/>
+    <variant name=".CrossSite" summary="cross-site"/>
+    <variant name=".SameSite" summary="same-site"/>
+  </token>
 </histogram>
 
 <histogram name="PageLoad.Clients.LinkPreview.Usage" enum="LinkPreviewUsage"

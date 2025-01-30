@@ -36,21 +36,62 @@ const char kCreateProtoTableStatementTemplate[] =
 const char kPrefetchSubresourceDBBroken[] =
     "Blink.LCPP.PrefetchSubresource.DBBroken";
 
-// Convert `LcppStringFrequencyStatData` a vector of frequency and std::string.
-// The result is sorted with frequency (from high to low).
+// Convert `LcppStringFrequencyStatData` to a vector of frequency and
+// std::string. The result is sorted with frequency (from high to low).
 std::vector<std::pair<double, std::string>> ConvertToFrequencyStringPair(
     const LcppStringFrequencyStatData& data) {
   const auto& buckets = data.main_buckets();
   std::vector<std::pair<double, std::string>> frequency_and_string;
   frequency_and_string.reserve(buckets.size());
-  for (const auto& [script_url, frequency] : buckets) {
-    frequency_and_string.emplace_back(frequency, script_url);
+  for (const auto& [element, frequency] : buckets) {
+    frequency_and_string.emplace_back(frequency, element);
   }
 
   // Reverse sort `frequency_and_string`. i.e. higher frequency goes first.
   // That is why `rbegin` and `rend` instead of `begin` and `end`.
   std::sort(frequency_and_string.rbegin(), frequency_and_string.rend());
   return frequency_and_string;
+}
+
+// Convert `LcpElementLocatorStat` to a vector of frequency and std::string.
+// The result is sorted with frequency (from high to low).
+std::vector<std::pair<double, std::string>> ConvertToFrequencyStringPair(
+    const predictors::LcpElementLocatorStat& stat) {
+  const auto& buckets = stat.lcp_element_locator_buckets();
+  std::vector<std::pair<double, std::string>> frequency_and_string;
+  frequency_and_string.reserve(buckets.size());
+  for (const auto& bucket : buckets) {
+    frequency_and_string.emplace_back(bucket.frequency(),
+                                      bucket.lcp_element_locator());
+  }
+
+  // Reverse sort `frequency_and_string`. i.e. higher frequency goes first.
+  // That is why `rbegin` and `rend` instead of `begin` and `end`.
+  std::sort(frequency_and_string.rbegin(), frequency_and_string.rend());
+  return frequency_and_string;
+}
+
+// Convert `frequency_element_pairs` to a vector of confidence and std::string.
+// The result is sorted with confidence (from high to low).
+// `frequency_element_pairs` must be sorted by frequency (from high to low).
+std::vector<std::pair<double, std::string>> ConvertToConfidenceStringPairs(
+    const std::vector<std::pair<double, std::string>>& frequency_element_pairs,
+    double other_bucket_frequency) {
+  double sum_of_frequency = 0.0;
+  for (const auto& [frequency, element] : frequency_element_pairs) {
+    sum_of_frequency += frequency;
+  }
+  sum_of_frequency += other_bucket_frequency;
+  std::vector<std::pair<double, std::string>> confidence_element_pairs;
+  confidence_element_pairs.reserve(frequency_element_pairs.size());
+  for (const auto& [frequency, element] : frequency_element_pairs) {
+    confidence_element_pairs.emplace_back(
+        /*confidence=*/frequency / sum_of_frequency, element);
+  }
+  // The following result is sorted by confidence. Higher confidence element
+  // comes first since frequency_element_pairs is ordered by frequency (see:
+  // `ConvertToFrequencyStringPair`).
+  return confidence_element_pairs;
 }
 
 // Returns true if the given `url` is a valid URL to be used as a key
@@ -704,38 +745,25 @@ ConvertLcppStatToLCPCriticalPathPredictorNavigationTimeHint(
 }
 
 std::vector<std::pair<double, std::string>>
-ConvertLcpElementLocatorStatToLcpElementLocatorsWithConfidence(
+ConvertLcpElementLocatorStatToConfidenceStringPairs(
     const predictors::LcpElementLocatorStat& stat) {
-  const auto& buckets = stat.lcp_element_locator_buckets();
-  double sum_of_frequency = 0.0;
-  for (const auto& bucket : buckets) {
-    sum_of_frequency += bucket.frequency();
-  }
-  sum_of_frequency += stat.other_bucket_frequency();
-  std::vector<std::pair<double, std::string>>
-      lcp_element_locators_with_confidence;
-  lcp_element_locators_with_confidence.reserve(buckets.size());
-  for (const auto& bucket : buckets) {
-    lcp_element_locators_with_confidence.emplace_back(
-        /*confidence=*/bucket.frequency() / sum_of_frequency,
-        bucket.lcp_element_locator());
-  }
-  // Makes higher confidence goes first by `rbegin` and `rend`.
-  std::sort(lcp_element_locators_with_confidence.rbegin(),
-            lcp_element_locators_with_confidence.rend());
-  return lcp_element_locators_with_confidence;
+  return ConvertToConfidenceStringPairs(ConvertToFrequencyStringPair(stat),
+                                        stat.other_bucket_frequency());
+}
+
+std::vector<std::pair<double, std::string>>
+ConvertLcppStringFrequencyStatDataToConfidenceStringPairs(
+    const LcppStringFrequencyStatData& data) {
+  return ConvertToConfidenceStringPairs(ConvertToFrequencyStringPair(data),
+                                        data.other_bucket_frequency());
 }
 
 std::vector<std::string> PredictLcpElementLocators(
     const predictors::LcpElementLocatorStat& stat,
     const double confidence_threshold) {
-  // We do not use `ConvertToFrequencyStringPair` for the following code
-  // because the core part of the code is converting `std::map` to
-  // `std::vector<std::pair<double, std::string>>`, which we need the different
-  // logic due to the `bytes` protobuf type.
   std::vector<std::pair<double, std::string>>
       lcp_element_locators_with_confidence =
-          ConvertLcpElementLocatorStatToLcpElementLocatorsWithConfidence(stat);
+          ConvertLcpElementLocatorStatToConfidenceStringPairs(stat);
   std::vector<std::string> lcp_element_locators;
   lcp_element_locators.reserve(lcp_element_locators_with_confidence.size());
   for (auto& [confidence, lcp_element_locator] :

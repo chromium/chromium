@@ -27,6 +27,26 @@ extern const char kHistogramLCPPSubresourceCountPrecision[];
 extern const char kHistogramLCPPSubresourceCountRecall[];
 extern const char kHistogramLCPPSubresourceCountSameSiteRatio[];
 extern const char kHistogramLCPPSubresourceCountType[];
+extern const char kHistogramLCPPImageLoadingPriorityFrequencyOfActualPositive[];
+extern const char kHistogramLCPPImageLoadingPriorityFrequencyOfActualNegative[];
+extern const char
+    kHistogramLCPPImageLoadingPriorityConfidenceOfActualPositive[];
+extern const char
+    kHistogramLCPPImageLoadingPriorityConfidenceOfActualNegative[];
+extern const char kHistogramLCPPSubresourceFrequencyOfActualPositive[];
+extern const char kHistogramLCPPSubresourceFrequencyOfActualNegative[];
+extern const char kHistogramLCPPSubresourceConfidenceOfActualPositive[];
+extern const char kHistogramLCPPSubresourceConfidenceOfActualNegative[];
+extern const char kHistogramLCPPSubresourceFrequencyOfActualPositiveSameSite[];
+extern const char kHistogramLCPPSubresourceFrequencyOfActualNegativeSameSite[];
+extern const char kHistogramLCPPSubresourceConfidenceOfActualPositiveSameSite[];
+extern const char kHistogramLCPPSubresourceConfidenceOfActualNegativeSameSite[];
+extern const char kHistogramLCPPSubresourceFrequencyOfActualPositiveCrossSite[];
+extern const char kHistogramLCPPSubresourceFrequencyOfActualNegativeCrossSite[];
+extern const char
+    kHistogramLCPPSubresourceConfidenceOfActualPositiveCrossSite[];
+extern const char
+    kHistogramLCPPSubresourceConfidenceOfActualNegativeCrossSite[];
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -47,6 +67,12 @@ enum class LCPPPredictResult {
 // Since histogram counts only positive numbers but the indexes origin 0,
 // add 1 for offset.
 const int kLCPIndexHistogramOffset = 1;
+
+void MaybeReportConfidenceUMAsForTesting(
+    const GURL& commit_url,
+    const std::optional<predictors::LcppStat>& lcpp_stat_prelearn,
+    const predictors::LcppDataInputs& lcpp_data_inputs);
+
 }  // namespace internal
 
 // PageLoadMetricsObserver responsible for:
