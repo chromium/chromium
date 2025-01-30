@@ -333,6 +333,7 @@ using chrome_test_util::SettingsSignInRowMatcher;
   // TODO(crbug.com/41493423): We should log that the signin was offered.
   expecteds.signinSignInStarted = 1;
   expecteds.signinSigninStartedAccessPoint = 1;
+  expecteds.signinSignInCompleted = 1;
   [SigninEarlGrey assertExpectedSigninHistograms:expecteds];
 }
 
@@ -398,6 +399,7 @@ using chrome_test_util::SettingsSignInRowMatcher;
   // TODO(crbug.com/41493423): We should log that the signin was offered.
   expecteds.signinSignInStarted = 1;
   expecteds.signinSigninStartedAccessPoint = 1;
+  expecteds.signinSignInCompleted = 1;
   [SigninEarlGrey assertExpectedSigninHistograms:expecteds];
 }
 

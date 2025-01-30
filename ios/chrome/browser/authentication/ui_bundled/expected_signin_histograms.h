@@ -33,6 +33,7 @@ enum class AccessPoint : int;
 @property(nonatomic, assign)
     int signinSignStartedAccessPointNewAccountExistingAccount;
 
+@property(nonatomic, assign) int signinSignInCompleted;
 @property(nonatomic, assign) int signinSigninCompletedAccessPoint;
 @property(nonatomic, assign) int signinSigninCompletedAccessPointWithDefault;
 @property(nonatomic, assign) int signinSigninCompletedAccessPointNotDefault;
