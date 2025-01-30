@@ -140,7 +140,13 @@ void PageInfoMerchantTrustController::RecordInteractionPref() {
 
 void PageInfoMerchantTrustController::RecordInteraction(
     page_info::MerchantTrustInteraction interaction) {
-  service_->RecordMerchantTrustInteraction(
-      web_contents() != nullptr ? web_contents()->GetVisibleURL() : GURL(),
-      interaction);
+  auto url =
+      web_contents() != nullptr ? web_contents()->GetVisibleURL() : GURL();
+  service_->RecordMerchantTrustInteraction(url, interaction);
+
+  auto ukm_source_id =
+      web_contents() != nullptr
+          ? web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId()
+          : ukm::kInvalidSourceId;
+  service_->RecordMerchantTrustUkm(ukm_source_id, interaction);
 }

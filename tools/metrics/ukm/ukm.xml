@@ -20980,6 +20980,26 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Shopping.MerchantTrust.BubbleOpened">
+  <owner>tommasin@chromium.org</owner>
+  <owner>privacy-on-the-web@google.com</owner>
+  <summary>
+    Recorded when the merchant trust bubble is opened.
+  </summary>
+  <metric name="HasOccurred" enum="Boolean">
+    <summary>
+      A boolean signaling that the bubble is opened. Only records true values.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="Shopping.MerchantTrust.DataAvailable">
   <owner>zhiyuancai@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
@@ -21071,6 +21091,27 @@ be describing additional metrics about the same event.
   <metric name="HasOccurred" enum="Boolean">
     <summary>
       A boolean signaling that store info row is displayed. Only records true
+      values.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
+<event name="Shopping.MerchantTrust.SidePanelOpened">
+  <owner>tommasin@chromium.org</owner>
+  <owner>privacy-on-the-web@google.com</owner>
+  <summary>
+    Recorded when the merchant trust side panel is opened.
+  </summary>
+  <metric name="HasOccurred" enum="Boolean">
+    <summary>
+      A boolean signaling that the side panel is opened. Only records true
       values.
     </summary>
     <aggregation>
