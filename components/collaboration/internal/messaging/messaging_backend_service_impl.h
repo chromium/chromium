@@ -118,6 +118,10 @@ class MessagingBackendServiceImpl : public MessagingBackendService,
  private:
   void OnStoreInitialized(bool success);
 
+  void ClearDirtyTabMessagesForGroup(
+      const data_sharing::GroupId& collaboration_group_id,
+      const std::optional<tab_groups::SavedTabGroup>& tab_group);
+
   // We need to be able to find the currently selected tab on startup so we know
   // what changed in OnTabSelected.
   void SetCurrentlySelectedTabOnStartup();

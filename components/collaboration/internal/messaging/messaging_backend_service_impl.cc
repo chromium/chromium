@@ -506,20 +506,14 @@ std::vector<ActivityLogItem> MessagingBackendServiceImpl::GetActivityLog(
 }
 
 void MessagingBackendServiceImpl::ClearDirtyTabMessagesForGroup(
-    tab_groups::EitherGroupID group_id) {
-  std::optional<data_sharing::GroupId> collaboration_group_id =
-      GetCollaborationGroupId(group_id);
-  if (!collaboration_group_id) {
-    // Unable to find collaboration.
-    return;
-  }
-
-  std::optional<tab_groups::SavedTabGroup> tab_group =
-      tab_group_sync_service_->GetGroup(group_id);
-
+    const data_sharing::GroupId& collaboration_group_id,
+    const std::optional<tab_groups::SavedTabGroup>& tab_group) {
   // Clear the dirty bits from the storage.
   auto cleared_messages =
-      store_->ClearDirtyTabMessagesForGroup(*collaboration_group_id);
+      store_->ClearDirtyTabMessagesForGroup(collaboration_group_id);
+  if (!tab_group) {
+    return;
+  }
 
   // Since the dirty bits are cleared from DB, hide any dirty dots from the tabs
   // and tab groups if they are already showing.
@@ -538,10 +532,24 @@ void MessagingBackendServiceImpl::ClearDirtyTabMessagesForGroup(
       base::Uuid tab_group_id =
           persistent_message.attribution.tab_group_metadata->sync_tab_group_id
               .value();
-      DisplayOrHideTabGroupDirtyDotForTabGroup(*collaboration_group_id,
+      DisplayOrHideTabGroupDirtyDotForTabGroup(collaboration_group_id,
                                                tab_group_id);
     }
   }
+}
+
+void MessagingBackendServiceImpl::ClearDirtyTabMessagesForGroup(
+    tab_groups::EitherGroupID group_id) {
+  std::optional<data_sharing::GroupId> collaboration_group_id =
+      GetCollaborationGroupId(group_id);
+  if (!collaboration_group_id) {
+    // Unable to find collaboration.
+    return;
+  }
+
+  std::optional<tab_groups::SavedTabGroup> tab_group =
+      tab_group_sync_service_->GetGroup(group_id);
+  ClearDirtyTabMessagesForGroup(*collaboration_group_id, tab_group);
 }
 
 void MessagingBackendServiceImpl::OnStoreInitialized(bool success) {
@@ -626,9 +634,14 @@ void MessagingBackendServiceImpl::OnTabGroupRemoved(
     return;
   }
 
+  // We should clear all tab messages for the group if the group is removed.
+  // They should be removed from the DB, and the UI as well if already showing.
+  // Although this doesn't seem important as the tab group UI will be gone by
+  // then, tab switcher still pulls dirty dot information based on if there are
+  // dirty tabs. Hence it's important to issue HidePersistentMessage to the UI.
+  ClearDirtyTabMessagesForGroup(*collaboration_group_id, removed_group);
+
   if (source == tab_groups::TriggerSource::LOCAL) {
-    // We should clear all messages for the group if the group is removed.
-    store_->ClearDirtyTabMessagesForGroup(*collaboration_group_id);
     return;
   }
 

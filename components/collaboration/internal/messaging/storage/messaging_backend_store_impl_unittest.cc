@@ -149,20 +149,23 @@ TEST_F(MessagingBackendStoreTest, ClearDirtyTabMessagesForGroup) {
       CreateMessage(collaboration_pb::TAB_UPDATED, message1.collaboration_id());
 
   data_sharing::GroupId collaboration_id(message1.collaboration_id());
-  EXPECT_EQ(0u,
-            store_->GetDirtyMessagesForGroup(collaboration_id, DirtyType::kAll)
-                .size());
+  EXPECT_EQ(
+      0u,
+      store_->GetDirtyMessagesForGroup(collaboration_id, DirtyType::kDotAndChip)
+          .size());
   store_->AddMessage(message1);
   store_->AddMessage(message2);
-  EXPECT_EQ(2u,
-            store_->GetDirtyMessagesForGroup(collaboration_id, DirtyType::kAll)
-                .size());
+  EXPECT_EQ(
+      2u,
+      store_->GetDirtyMessagesForGroup(collaboration_id, DirtyType::kDotAndChip)
+          .size());
 
   auto cleared_messages =
       store_->ClearDirtyTabMessagesForGroup(collaboration_id);
-  EXPECT_EQ(0u,
-            store_->GetDirtyMessagesForGroup(collaboration_id, DirtyType::kAll)
-                .size());
+  EXPECT_EQ(
+      0u,
+      store_->GetDirtyMessagesForGroup(collaboration_id, DirtyType::kDotAndChip)
+          .size());
   EXPECT_EQ(2u, cleared_messages.size());
 }
 

@@ -101,6 +101,7 @@ class MessagingBackendService : public KeyedService,
       const base::Uuid& message_id,
       std::optional<PersistentNotificationType> type) = 0;
 
+  // Deprecated. Do not use. Use ClearPersistentMessage instead.
   // Invoked to remove a list of given messages from the backend storage.
   virtual void RemoveMessages(const std::vector<base::Uuid>& message_ids) = 0;
 
