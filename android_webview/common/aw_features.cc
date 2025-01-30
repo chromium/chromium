@@ -101,12 +101,6 @@ BASE_FEATURE(kWebViewRestrictSensitiveContent,
              "WebViewRestrictSensitiveContent",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable detection of loading mature sites (according to Google SafeSearch)
-// on WebViews running on supervised user accounts.
-BASE_FEATURE(kWebViewSupervisedUserSiteDetection,
-             "WebViewSupervisedUserSiteDetection",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enable blocking the loading of mature sites (according to Google SafeSearch)
 // on WebViews running on supervised user accounts.
 BASE_FEATURE(kWebViewSupervisedUserSiteBlock,
