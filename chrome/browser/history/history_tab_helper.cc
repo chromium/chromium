@@ -7,6 +7,7 @@
 #include <optional>
 #include <string>
 
+#include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/complex_tasks/task_tab_helper.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -376,6 +377,8 @@ void HistoryTabHelper::DidFinishNavigation(
 
   // Update history. Note that this needs to happen after the entry is complete,
   // which WillNavigate[Main,Sub]Frame will do before this function is called.
+  UMA_HISTOGRAM_BOOLEAN("History.IsErrorNavigation",
+                        navigation_handle->ShouldUpdateHistory());
   if (!navigation_handle->ShouldUpdateHistory())
     return;
 
