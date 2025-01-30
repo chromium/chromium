@@ -149,8 +149,9 @@ class SidePanelBorder : public views::Border {
     }
 
     // Paint the inner border around SidePanel content. Since half the stroke
-    // gets painted in the clipped area, make this twice as thick.
-    const float stroke_thickness = views::Separator::kThickness * 2;
+    // gets painted in the clipped area, make this twice as thick, and scale
+    // the thickness by device scale factor since we're working in pixels.
+    const float stroke_thickness = views::Separator::kThickness * 2 * dsf;
 
     cc::PaintFlags flags;
     flags.setStrokeWidth(stroke_thickness);
