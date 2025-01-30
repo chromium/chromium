@@ -995,8 +995,9 @@ TEST_F(TabStripMediatorTest, RenameGroup) {
   EXPECT_EQ(group, tab_strip_handler_.groupForTabGroupEdition);
 }
 
-// Tests that adding a new tab in a group works.
-TEST_F(TabStripMediatorTest, AddTabInGroup) {
+// Tests that adding a new tab in a group works while the active web state is
+// part of the group.
+TEST_F(TabStripMediatorTest, AddTabInGroupFromGroup) {
   AddWebState();
   AddWebState();
   const TabGroup* group =
@@ -1018,6 +1019,38 @@ TEST_F(TabStripMediatorTest, AddTabInGroup) {
   EXPECT_EQ(web_state_list_->GetWebStateAt(2)->GetUniqueIdentifier(),
             consumer_.selectedItem.identifier);
   EXPECT_EQ(group, web_state_list_->GetGroupOfWebStateAt(2));
+}
+
+// Tests that adding a new tab in a group works while the active web state is
+// not part of the group.
+TEST_F(TabStripMediatorTest, AddTabInGroupOutsideOfGroup) {
+  AddWebState();
+  AddWebState();
+  AddWebState();
+  const TabGroup* group =
+      web_state_list_->CreateGroup({0, 1}, {}, TabGroupId::GenerateNew());
+  TabGroupItem* groupItem =
+      [[TabGroupItem alloc] initWithTabGroup:group
+                                webStateList:web_state_list_];
+
+  InitializeMediator();
+
+  int active_index = web_state_list_->active_index();
+  web::WebState* original_web_state =
+      web_state_list_->GetWebStateAt(active_index);
+  ASSERT_EQ(2, active_index);
+  ASSERT_EQ(3, web_state_list_->count());
+
+  [mediator_ addNewTabInGroup:groupItem];
+
+  // Check model is updated.
+  EXPECT_EQ(2, web_state_list_->active_index());
+  EXPECT_EQ(4, web_state_list_->count());
+  EXPECT_EQ(web_state_list_->GetWebStateAt(2)->GetUniqueIdentifier(),
+            consumer_.selectedItem.identifier);
+  EXPECT_EQ(group, web_state_list_->GetGroupOfWebStateAt(2));
+  EXPECT_EQ(original_web_state, web_state_list_->GetWebStateAt(3));
+  EXPECT_EQ(nullptr, web_state_list_->GetGroupOfWebStateAt(3));
 }
 
 // Tests that ungrouping tabs in a group works.

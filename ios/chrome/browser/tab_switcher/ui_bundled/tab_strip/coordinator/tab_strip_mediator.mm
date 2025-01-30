@@ -743,8 +743,7 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   if (!self.webStateList || !self.profile) {
     return;
   }
-  const auto insertionParams = WebStateList::InsertionParams::Automatic();
-  [self insertAndActivateNewWebStateWithInsertionParams:insertionParams];
+  [self insertAndActivateNewWebStateInGroup:nullptr];
 }
 
 - (void)activateItem:(TabSwitcherItem*)item {
@@ -893,9 +892,7 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
     return;
   }
   base::RecordAction(base::UserMetricsAction("MobileTabStripNewTabInGroup"));
-  const auto insertionParams =
-      WebStateList::InsertionParams::Automatic().InGroup(tabGroupItem.tabGroup);
-  [self insertAndActivateNewWebStateWithInsertionParams:insertionParams];
+  [self insertAndActivateNewWebStateInGroup:tabGroupItem.tabGroup];
 }
 
 - (void)ungroupGroup:(TabGroupItem*)tabGroupItem
@@ -1395,33 +1392,18 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
                                    items:
                                        (NSArray<TabStripItemIdentifier*>*)items
                                      URL:(const GURL&)newTabURL {
-  TabStripItemIdentifier* previousItem =
-      destinationItemIndex > 0 ? items[destinationItemIndex - 1] : nil;
-  TabStripItemIdentifier* nextItem =
-      destinationItemIndex < items.count ? items[destinationItemIndex] : nil;
-  const TabGroup* destinationGroup =
-      [self groupForInsertionBetweenPreviousItem:previousItem
-                                        nextItem:nextItem];
-  int webStateListInsertionIndex = 0;
-  for (NSUInteger itemIndex = 0; itemIndex < destinationItemIndex;
-       itemIndex++) {
-    if (items[itemIndex].itemType == TabStripItemTypeTab) {
-      webStateListInsertionIndex++;
-      continue;
-    }
-    const TabGroup* group = items[itemIndex].tabGroupItem.tabGroup;
-    if (group->visual_data().is_collapsed()) {
-      webStateListInsertionIndex += group->range().count();
-    }
-  }
+  // The two params are the same, but in a different format. Reuse the code.
+  WebStateList::InsertionParams insertionParams =
+      [self insertionParamsForDestinationItemIndex:destinationItemIndex
+                                             items:items];
 
   UrlLoadParams params = UrlLoadParams::InNewTab(newTabURL);
   params.in_incognito = self.profile->IsOffTheRecord();
   params.append_to = OpenPosition::kSpecifiedIndex;
-  params.insertion_index = webStateListInsertionIndex;
-  if (destinationGroup) {
+  params.insertion_index = insertionParams.desired_index;
+  if (insertionParams.in_group) {
     params.load_in_group = true;
-    params.tab_group = destinationGroup->GetWeakPtr();
+    params.tab_group = insertionParams.in_group->GetWeakPtr();
   }
   return params;
 }
@@ -1595,14 +1577,12 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   }
 }
 
-// Inserts and activate a new WebState opened at `kChromeUINewTabURL` using
-// `insertionParams`.
-- (void)insertAndActivateNewWebStateWithInsertionParams:
-    (WebStateList::InsertionParams)insertionParams {
+// Inserts and activate a new WebState opened at `kChromeUINewTabURL` in `group`
+// (if there is one).
+- (void)insertAndActivateNewWebStateInGroup:(const TabGroup*)group {
   UrlLoadParams params = UrlLoadParams::InNewTab(GURL(kChromeUINewTabURL));
   params.in_incognito = self.profile->IsOffTheRecord();
-  const TabGroup* group = [self currentTabGroup];
-  if (group && !group->visual_data().is_collapsed()) {
+  if (group) {
     params.load_in_group = true;
     params.tab_group = group->GetWeakPtr();
   }
@@ -1643,8 +1623,7 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   }
   // If there is no WebState to activate on the right or on the left, insert
   // and activate a new WebState at the end of the WebStateList instead.
-  const auto insertionParams = WebStateList::InsertionParams::Automatic();
-  [self insertAndActivateNewWebStateWithInsertionParams:insertionParams];
+  [self insertAndActivateNewWebStateInGroup:nullptr];
 }
 
 // Returns the index of a non-collapsed WebState close to `index`. If all
@@ -1678,15 +1657,6 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   // If all WebStates in the WebStateList are collapsed, return
   // `WebStateList::kInvalidIndex`.
   return WebStateList::kInvalidIndex;
-}
-
-// Returns the current tab group.
-- (const TabGroup*)currentTabGroup {
-  if (!_webStateList ||
-      _webStateList->active_index() == WebStateList::kInvalidIndex) {
-    return nullptr;
-  }
-  return _webStateList->GetGroupOfWebStateAt(_webStateList->active_index());
 }
 
 // Gets messages to indicate that a shared tab group and a tab in any shared tab
