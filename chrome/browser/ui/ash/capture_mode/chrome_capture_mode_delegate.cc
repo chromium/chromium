@@ -15,6 +15,7 @@
 #include "ash/constants/web_app_id_constants.h"
 #include "ash/public/cpp/capture_mode/capture_mode_api.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "base/cancelable_callback.h"
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -515,11 +516,13 @@ void ChromeCaptureModeDelegate::DetectTextInImage(
   pending_ocr_request_callback_ = std::move(callback);
 
   if (!optical_character_recognizer_) {
+    ocr_service_initialized_callback_.Reset(
+        base::BindOnce(&ChromeCaptureModeDelegate::OnOcrServiceInitialized,
+                       weak_ptr_factory_.GetWeakPtr()));
     optical_character_recognizer_ =
         screen_ai::OpticalCharacterRecognizer::CreateWithStatusCallback(
             profile, screen_ai::mojom::OcrClientType::kScreenshotTextDetection,
-            base::BindOnce(&ChromeCaptureModeDelegate::OnOcrServiceInitialized,
-                           weak_ptr_factory_.GetWeakPtr()));
+            ocr_service_initialized_callback_.callback());
   }
 }
 
@@ -637,6 +640,7 @@ void ChromeCaptureModeDelegate::SetOdfsTempDir(base::ScopedTempDir temp_dir) {
 }
 
 void ChromeCaptureModeDelegate::OnOcrServiceInitialized(bool is_successful) {
+  CHECK(optical_character_recognizer_);
   if (is_successful) {
     PerformOcrOnPendingRequest();
   } else {
@@ -687,6 +691,7 @@ void ChromeCaptureModeDelegate::OnOcrPerformed(
 
 void ChromeCaptureModeDelegate::ResetOcr() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  ocr_service_initialized_callback_.Cancel();
   optical_character_recognizer_ = nullptr;
   pending_ocr_request_image_.reset();
   if (!pending_ocr_request_callback_.is_null()) {
