@@ -1516,7 +1516,7 @@ bool ui::IsNSRange(id value) {
     int msg_id =
         is_selected ? IDS_AX_OBJECT_SELECTED : IDS_AX_OBJECT_NOT_SELECTED;
     std::u16string name_with_selection = base::ReplaceStringPlaceholders(
-        _owner->GetLocalizedString(msg_id), {name}, nullptr);
+        _owner->GetLocalizedString(msg_id), name, nullptr);
     return base::SysUTF16ToNSString(name_with_selection);
   }
 

@@ -60,6 +60,8 @@ class GlicPageHandler : public glic::mojom::PageHandler {
 
   void IsProfileEnabled(IsProfileEnabledCallback callback) override;
 
+  void WebUiStateChanged(mojom::WebUiState new_state) override;
+
  private:
   GlicKeyedService* GetGlicService();
 

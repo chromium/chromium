@@ -1,5 +1,4 @@
 This is a testharness.js-based test.
-[FAIL] Permissions-Policy header digital-credentials-get=(self) disallows cross-origin iframes.
-  assert_false: Digital Credential API expected false got true
+[FAIL] Permissions-Policy header digital-credentials-get=(self) gets overridden by allow attribute.
+  assert_true: Digital Credential API expected true got false
 Harness: the test ran to completion.
-

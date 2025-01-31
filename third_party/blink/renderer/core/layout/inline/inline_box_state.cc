@@ -971,13 +971,13 @@ const LayoutResult* InlineLayoutStateStack::BoxData::CreateBoxFragment(
 
   if (is_opaque) [[unlikely]] {
     box.SetIsOpaque();
-    box.SetSidesToInclude({false, false, false, false});
+    box.SetSidesToInclude(LineLogicalBoxSides(false, false, false, false));
   } else {
     // Inline boxes have block start/end borders, even when its containing block
     // was fragmented. Fragmenting a line box in block direction is not
     // supported today.
-    box.SetSidesToInclude(
-        {true, has_line_right_edge, true, has_line_left_edge});
+    box.SetSidesToInclude(LineLogicalBoxSides(true, has_line_right_edge, true,
+                                              has_line_left_edge));
   }
 
   auto handle_box_child = [&](LogicalLineItem& child) {

@@ -548,7 +548,7 @@ void DbusAppmenu::TabRestoreServiceChanged(
         title = l10n_util::GetPluralStringFUTF16(IDS_RECENTLY_CLOSED_GROUP,
                                                  tabs.size());
         title = base::ReplaceStringPlaceholders(
-            title, {group->visual_data.title()}, nullptr);
+            title, group->visual_data.title(), nullptr);
       }
 
       AddEntryToHistoryMenu(group->id, title, index++, tabs);

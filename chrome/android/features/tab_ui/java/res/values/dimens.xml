@@ -112,6 +112,17 @@ found in the LICENSE file.
     <dimen name="tab_group_quarter_inner_radius">4dp</dimen>
     <dimen name="tab_group_quarter_outer_radius">12dp</dimen>
 
+    <!-- Dimens for Tab Group Share Bottom Sheet features -->
+    <dimen name="tab_group_share_notice_bottom_sheet_button_margin_vertical">22dp</dimen>
+    <dimen name="tab_group_share_notice_bottom_sheet_content_margin_top">2dp</dimen>
+    <dimen name="tab_group_share_notice_bottom_sheet_drag_handlebar_margin_top">12dp</dimen>
+    <dimen name="tab_group_share_notice_bottom_sheet_horizontal_padding">14dp</dimen>
+    <dimen name="tab_group_share_notice_bottom_sheet_illustration_margin_top">20dp</dimen>
+    <dimen name="tab_group_share_notice_bottom_sheet_illustration_icon_size">40dp</dimen>
+    <dimen name="tab_group_share_notice_bottom_sheet_illustration_size">80dp</dimen>
+    <dimen name="tab_group_share_notice_bottom_sheet_subtitle_margin_top">4dp</dimen>
+    <dimen name="tab_group_share_notice_bottom_sheet_title_margin_top">12dp</dimen>
+
     <!-- Dimens for TabGroupShare features-->
     <dimen name="tab_group_share_tiles_padding">14dp</dimen>
 

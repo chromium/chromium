@@ -2,9 +2,6 @@
 # tags: [ Release Debug ]
 # results: [ Timeout Crash Pass Failure Slow Skip ]
 
-# Isolated-sandboxed-iframe require site isolation to be effective.
-virtual/isolate-sandboxed-iframes/* [ Skip ]
-
 # crbug/1358670 run fewer tests for disable-site-isolation-trials.
 # Those tests are fairly independent of site isolation and unlikely to be affected by it.
 css1/* [ Skip ]

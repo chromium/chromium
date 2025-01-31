@@ -419,16 +419,15 @@ std::string ReplaceStringPlaceholders(std::string_view format_string,
   return std::move(replacement).value();
 }
 
-std::u16string ReplaceStringPlaceholders(const std::u16string& format_string,
-                                         const std::u16string& a,
+std::u16string ReplaceStringPlaceholders(std::u16string_view format_string,
+                                         std::u16string_view subst,
                                          size_t* offset) {
   std::vector<size_t> offsets;
   // ReplaceStringPlaceholders() is more efficient when `offsets` is not set.
   std::vector<size_t>* offsets_pointer = offset ? &offsets : nullptr;
   std::u16string result =
       internal::DoReplaceStringPlaceholders(
-          std::u16string_view(format_string),
-          base::span<const std::u16string_view>({a}),
+          format_string, span_from_ref(subst),
           /*placeholder_prefix*/ u'$',
           /*should_escape_multiple_placeholder_prefixes*/ true,
           /*is_strict_mode*/ false, offsets_pointer)

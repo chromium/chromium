@@ -6,6 +6,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/permissions/permission_manager.h"
 #include "components/permissions/permission_util.h"
@@ -140,6 +141,7 @@ class PermissionSubscriptionTest : public ChromeRenderViewHostTestHarness {
 
  private:
   void SetUp() override {
+    TestingBrowserProcess::GetGlobal()->CreateGlobalFeaturesForTesting();
     ChromeRenderViewHostTestHarness::SetUp();
     profile()->SetPermissionControllerDelegate(
         permissions::GetPermissionControllerDelegate(GetBrowserContext()));

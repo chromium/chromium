@@ -5,19 +5,41 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GEOMETRY_BOX_SIDES_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GEOMETRY_BOX_SIDES_H_
 
+#include <utility>
+
 #include "base/check_op.h"
-#include "third_party/blink/renderer/platform/text/writing_mode.h"
+#include "third_party/blink/renderer/platform/text/writing_direction_mode.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
-// Presence of box sides (e.g. borders) for a fragment, in the logical
-// coordinate space. Line and / or block fragmentation may cause a layout box to
-// be split into multiple lines, columns, etc., and, as long as
-// 'box-decoration-break' is 'slice' (i.e. the initial value), the leading
-// border should only be painted at the first fragment, and the trailing border
-// should only be painted at the last one.
+// Presence of something pertaining to box sides (e.g. borders, padding or
+// insets), in the logical coordinate space. Note that all sides are set to true
+// initially.
 struct LogicalBoxSides {
+  STACK_ALLOCATED();
+
+ public:
+  bool inline_start = true;
+  bool inline_end = true;
+  bool block_start = true;
+  bool block_end = true;
+
+  LogicalBoxSides() = default;
+  LogicalBoxSides(bool inline_start,
+                  bool inline_end,
+                  bool block_start,
+                  bool block_end)
+      : inline_start(inline_start),
+        inline_end(inline_end),
+        block_start(block_start),
+        block_end(block_end) {}
+};
+
+// Presence of something pertaining to box sides (e.g. borders, padding or
+// insets), in the line-logical coordinate space. Note that all sides are set to
+// true initially.
+struct LineLogicalBoxSides {
   STACK_ALLOCATED();
 
  public:
@@ -26,19 +48,30 @@ struct LogicalBoxSides {
   bool block_end = true;
   bool line_left = true;
 
-  LogicalBoxSides() = default;
-  LogicalBoxSides(bool block_start,
-                  bool line_right,
-                  bool block_end,
-                  bool line_left)
+  LineLogicalBoxSides() = default;
+  LineLogicalBoxSides(bool block_start,
+                      bool line_right,
+                      bool block_end,
+                      bool line_left)
       : block_start(block_start),
         line_right(line_right),
         block_end(block_end),
         line_left(line_left) {}
+
+  LineLogicalBoxSides(LogicalBoxSides sides, TextDirection dir)
+      : block_start(sides.block_start),
+        line_right(sides.inline_end),
+        block_end(sides.block_end),
+        line_left(sides.inline_start) {
+    if (IsRtl(dir)) {
+      std::swap(line_left, line_right);
+    }
+  }
 };
 
-// Presence of box sides (e.g. borders) for a fragment, in the physical
-// coordinate space.
+// Presence of something pertaining to box sides (e.g. borders, padding or
+// inset), in the physical coordinate space. Note that all sides are set to true
+// initially.
 struct PhysicalBoxSides {
   STACK_ALLOCATED();
 
@@ -51,7 +84,7 @@ struct PhysicalBoxSides {
   PhysicalBoxSides() = default;
   PhysicalBoxSides(bool top, bool right, bool bottom, bool left)
       : top(top), right(right), bottom(bottom), left(left) {}
-  PhysicalBoxSides(LogicalBoxSides logical, WritingMode writing_mode) {
+  PhysicalBoxSides(LineLogicalBoxSides logical, WritingMode writing_mode) {
     if (writing_mode == WritingMode::kHorizontalTb) {
       top = logical.block_start;
       right = logical.line_right;
@@ -75,6 +108,29 @@ struct PhysicalBoxSides {
         left = logical.block_start;
       }
     }
+  }
+
+  LogicalBoxSides ToLogical(WritingDirectionMode writing_direction) const {
+    LogicalBoxSides logical;
+    switch (writing_direction.GetWritingMode()) {
+      case WritingMode::kHorizontalTb:
+        logical = LogicalBoxSides(left, right, top, bottom);
+        break;
+      case WritingMode::kVerticalRl:
+      case WritingMode::kSidewaysRl:
+        logical = LogicalBoxSides(top, bottom, right, left);
+        break;
+      case WritingMode::kVerticalLr:
+        logical = LogicalBoxSides(top, bottom, left, right);
+        break;
+      case WritingMode::kSidewaysLr:
+        logical = LogicalBoxSides(bottom, top, left, right);
+        break;
+    }
+    if (writing_direction.IsRtl()) {
+      std::swap(logical.inline_start, logical.inline_end);
+    }
+    return logical;
   }
 
   bool IsEmpty() const { return !top && !right && !bottom && !left; }

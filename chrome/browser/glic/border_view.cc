@@ -97,12 +97,6 @@ class BorderView::BorderViewUpdater {
     if (contents && IsTabInCurrentWindow(contents)) {
       glic_focused_contents_in_current_window_ =
           const_cast<content::WebContents*>(contents)->GetWeakPtr();
-    } else if (!contents) {
-      if (!IsGlicWindowShowing() || !context_access_indicator_enabled_) {
-        // TODO(crbug.com/384517660): Focused tab is truly lost when glic window
-        // isn't showing or the context sharing is disabled.
-        glic_focused_contents_in_current_window_.reset();
-      }
     } else {
       glic_focused_contents_in_current_window_.reset();
     }
@@ -214,10 +208,6 @@ class BorderView::BorderViewUpdater {
   const raw_ptr<BrowserWindowInterface> browser_;
 
   // Tracked states and their subscriptions.
-  //
-  // NOTE: this tab remains valid if the user focuses on a non-Chrome window
-  // with glic window shown, meaning the animation will be playing in the
-  // non-focused Chrome window.
   base::WeakPtr<const content::WebContents>
       glic_focused_contents_in_current_window_;
   base::CallbackListSubscription focus_change_subscription_;

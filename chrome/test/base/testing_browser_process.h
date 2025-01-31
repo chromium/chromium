@@ -172,6 +172,7 @@ class TestingBrowserProcess : public BrowserProcess {
 
   BuildState* GetBuildState() override;
   GlobalFeatures* GetFeatures() override;
+  void CreateGlobalFeaturesForTesting() override;
 
   // Set the local state for tests. Consumer is responsible for cleaning it up
   // afterwards (using ScopedTestingLocalState, for example).

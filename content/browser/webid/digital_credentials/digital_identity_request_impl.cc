@@ -33,6 +33,7 @@ using RequestStatusForMetrics =
     content::DigitalIdentityProvider::RequestStatusForMetrics;
 using DigitalIdentityInterstitialAbortCallback =
     content::DigitalIdentityProvider::DigitalIdentityInterstitialAbortCallback;
+using blink::mojom::GetRequestFormat;
 
 namespace content {
 namespace {
@@ -289,13 +290,17 @@ void DigitalIdentityRequestImpl::CompleteRequestWithStatus(
                            base::OptionalFromExpected(response));
 }
 
-base::Value BuildGetRequest(blink::mojom::DigitalCredentialRequestPtr request) {
+base::Value BuildGetRequest(blink::mojom::DigitalCredentialRequestPtr request,
+                            GetRequestFormat format) {
   auto result = Value::Dict();
   result.Set("protocol", request->protocol);
-  result.Set("request", request->data);
 
-  base::Value::Dict out =
-      Value::Dict().Set("providers", Value::List().Append(std::move(result)));
+  result.Set(format == GetRequestFormat::kModern ? "data" : "request",
+             request->data);
+
+  base::Value::Dict out = Value::Dict().Set(
+      format == GetRequestFormat::kModern ? "requests" : "providers",
+      Value::List().Append(std::move(result)));
   return base::Value(std::move(out));
 }
 
@@ -310,6 +315,7 @@ base::Value BuildCreateRequest(
 void DigitalIdentityRequestImpl::Get(
     std::vector<blink::mojom::DigitalCredentialRequestPtr>
         digital_credential_requests,
+    GetRequestFormat format,
     GetCallback callback) {
   if (!IsWebIdentityDigitalCredentialsEnabled()) {
     std::move(callback).Run(RequestDigitalIdentityStatus::kError,
@@ -364,7 +370,7 @@ void DigitalIdentityRequestImpl::Get(
   std::string protocol = digital_credential_request->protocol;
   std::string request_json_string = digital_credential_request->data;
   base::Value request_to_send =
-      BuildGetRequest(std::move(digital_credential_request));
+      BuildGetRequest(std::move(digital_credential_request), format);
 
   data_decoder::DataDecoder::ParseJsonIsolated(
       request_json_string,

@@ -14,6 +14,15 @@ struct DigitalCredentialRequest {
   string data;
 };
 
+// Represents the format of the request that should be used when communicating
+// with the digital wallet via the Android platform. Renderer picks a format
+// based on the request that was provided by the website when invoking the
+// digital credential API.
+enum GetRequestFormat {
+  kLegacy,
+  kModern,
+};
+
 // Represents the fetch result from a digital identity request. It is
 // used to determine whether a JavaScript exception should be thrown, and what
 // the error message of such exception should say.
@@ -39,7 +48,7 @@ interface DigitalIdentityRequest {
   //
   // Does not support concurrent requests. Throws an error on a new request if
   // there is a pending request.
-  Get(array<DigitalCredentialRequest> digital_credential_requests) =>
+  Get(array<DigitalCredentialRequest> digital_credential_requests, GetRequestFormat format) =>
       (RequestDigitalIdentityStatus status,
       string? protocol,
       string? token);

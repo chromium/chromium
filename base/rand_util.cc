@@ -13,6 +13,7 @@
 #include <limits>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/time/time.h"
 
 namespace base {

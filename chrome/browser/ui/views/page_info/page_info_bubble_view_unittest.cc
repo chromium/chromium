@@ -430,6 +430,8 @@ class PageInfoBubbleViewTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
+    TestingBrowserProcess::GetGlobal()->CreateGlobalFeaturesForTesting();
+
     if (!web_contents_helper_) {
       web_contents_helper_ =
           std::make_unique<ScopedWebContentsTestHelper>(false);

@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/glic/launcher/glic_controller.h"
@@ -78,12 +80,14 @@ class GlicStatusIconTest : public testing::Test {
     return static_cast<MockStatusIcon*>(
         status_tray_.GetStatusIconsForTesting().back().icon.get());
   }
+  base::HistogramTester* histogram() { return &histogram_; }
 
  private:
   std::unique_ptr<GlicStatusIcon> glic_status_icon_;
   MockStatusTray status_tray_;
   MockGlicController glic_controller_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::HistogramTester histogram_;
 };
 
 TEST_F(GlicStatusIconTest, OnStatusIconClicked) {
@@ -93,8 +97,11 @@ TEST_F(GlicStatusIconTest, OnStatusIconClicked) {
 
 TEST_F(GlicStatusIconTest, ExecuteCommand) {
   EXPECT_CALL(*glic_controller(), Show).Times(1);
+  base::UserActionTester user_action_tester;
   auto* context_menu = status_icon()->GetContextMenuForTesting();
   context_menu->ExecuteCommand(IDC_GLIC_STATUS_ICON_MENU_SHOW, 0);
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "GlicOsEntrypoint.ContextMenuSelection.OpenGlic"));
 }
 
 TEST_F(GlicStatusIconTest, ContextMenu) {

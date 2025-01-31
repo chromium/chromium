@@ -55,6 +55,12 @@ class GlicWindowController : public views::WidgetObserver {
     virtual void PanelStateChanged(const mojom::PanelState& panel_state) = 0;
   };
 
+  // Observes the state of the WebUI hosted in the glic window.
+  class WebUiStateObserver : public base::CheckedObserver {
+   public:
+    virtual void WebUiStateChanged(mojom::WebUiState state) = 0;
+  };
+
   GlicWindowController(const GlicWindowController&) = delete;
   GlicWindowController& operator=(const GlicWindowController&) = delete;
 
@@ -113,6 +119,10 @@ class GlicWindowController : public views::WidgetObserver {
   const mojom::PanelState& GetPanelState() const { return panel_state_; }
   void AddStateObserver(StateObserver* observer);
   void RemoveStateObserver(StateObserver* observer);
+
+  const mojom::WebUiState& GetWebUiState() const { return webui_state_; }
+  void AddWebUiStateObserver(WebUiStateObserver* observer);
+  void RemoveWebUiStateObserver(WebUiStateObserver* observer);
 
   // Returns whether the views::Widget associated with the glic window is active
   // (e.g. will receive keyboard events).
@@ -184,6 +194,8 @@ class GlicWindowController : public views::WidgetObserver {
   State state() const { return state_; }
 
   void ShowDetachedForTesting();
+
+  void WebUiStateChanged(mojom::WebUiState new_state);
 
  private:
   gfx::Rect GetInitialDetachedBounds();
@@ -348,9 +360,13 @@ class GlicWindowController : public views::WidgetObserver {
 
   base::ObserverList<StateObserver> state_observers_;
 
+  mojom::WebUiState webui_state_ = mojom::WebUiState::kUninitialized;
+  base::ObserverList<WebUiStateObserver> webui_state_observers_;
+
   // The following two variables are used together for recording metrics and are
-  // reset together after the panel show is finished. The timestamp when the
-  // glic window starts to be shown.
+  // reset together after the panel show is finished.
+
+  // The timestamp when the glic window starts to be shown.
   base::TimeTicks show_start_time_;
   // Web client's operation modes.
   mojom::WebClientMode starting_mode_;

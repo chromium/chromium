@@ -369,7 +369,7 @@ bool HistoryMenuBridge::AddGroupEntryToMenu(sessions::tab_restore::Group* group,
     item->title = l10n_util::GetPluralStringFUTF16(IDS_RECENTLY_CLOSED_GROUP,
                                                    tabs.size());
     item->title = base::ReplaceStringPlaceholders(
-        item->title, {group->visual_data.title()}, nullptr);
+        item->title, group->visual_data.title(), nullptr);
   }
 
   // Set the icon of the group to the group color circle.

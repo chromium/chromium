@@ -315,6 +315,7 @@ GlicPageHandler::GlicPageHandler(
 }
 
 GlicPageHandler::~GlicPageHandler() {
+  WebUiStateChanged(mojom::WebUiState::kUninitialized);
   // `GlicWebClientHandler` holds a pointer back to us, so delete it first.
   web_client_handler_.reset();
   GetGlicService()->PageHandlerRemoved(this);
@@ -362,6 +363,10 @@ void GlicPageHandler::IsProfileEnabled(IsProfileEnabledCallback callback) {
   bool enabled = GlicEnabling::IsEnabledForProfile(
       Profile::FromBrowserContext(browser_context_));
   std::move(callback).Run(enabled);
+}
+
+void GlicPageHandler::WebUiStateChanged(mojom::WebUiState new_state) {
+  GetGlicService()->window_controller().WebUiStateChanged(new_state);
 }
 
 }  // namespace glic

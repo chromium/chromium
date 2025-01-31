@@ -745,6 +745,22 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHTabGroupShareNoticeFeature.name == feature->name) {
+    // Allows an IPH for showing the tab group share notice. This will only be
+    // shown once.
+    std::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(EQUAL, 0);
+    config->trigger =
+        EventConfig("tab_group_share_notice_iph_triggered",
+                    Comparator(LESS_THAN, 1), k10YearsInDays, k10YearsInDays);
+    config->used =
+        EventConfig("tab_group_share_notice_dismissed", Comparator(EQUAL, 0),
+                    k10YearsInDays, k10YearsInDays);
+    return config;
+  }
+
   if (kIPHTabGroupShareNotificationBubbleOnStripFeature.name == feature->name) {
     // A config to show IPH for TabGroupShare notification bubble when a shared
     // group is updated by a group member. This will only be shown the first

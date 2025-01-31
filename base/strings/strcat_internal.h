@@ -19,24 +19,24 @@ namespace base {
 
 namespace internal {
 
+// Default to regular `std::basic_string::resize()`.
+template <typename CharT>
+void Resize(std::basic_string<CharT>& str, size_t total_size) {
+  str.resize(total_size);
+}
+
 // Optimized version of `std::basic_string::resize()` that skips zero
 // initialization of appended characters. Reading from the newly allocated
 // characters results in undefined behavior if they are not explicitly
-// initialized afterwards. Currently proposed for standardization as
-// std::basic_string::resize_and_overwrite: https://wg21.link/P1072R6
+// initialized afterwards. Available in C++23 as
+// `std::basic_string::resize_and_overwrite()`:
+// https://en.cppreference.com/w/cpp/string/basic_string/resize_and_overwrite
 template <typename CharT>
   requires requires(std::basic_string<CharT>& str, size_t total_size) {
     { str.__resize_default_init(total_size) } -> std::same_as<void>;
   }
 auto Resize(std::basic_string<CharT>& str, size_t total_size) {
   str.__resize_default_init(total_size);
-}
-
-// Fallback to regular std::basic_string::resize() if invoking
-// __resize_default_init is ill-formed.
-template <typename CharT>
-void Resize(std::basic_string<CharT>& str, size_t total_size) {
-  str.resize(total_size);
 }
 
 // Appends `pieces` to `dest`. Instead of simply calling `dest.append()`

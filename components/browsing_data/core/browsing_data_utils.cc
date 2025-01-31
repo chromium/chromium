@@ -178,8 +178,8 @@ std::u16string GetCounterTextFromResult(
                   ? IDS_DEL_PASSWORDS_COUNTER_SYNCED
                   : IDS_DEL_PASSWORDS_COUNTER,
               profile_passwords),
-          {CreateDomainExamples(profile_passwords,
-                                password_result->domain_examples())},
+          CreateDomainExamples(profile_passwords,
+                               password_result->domain_examples()),
           nullptr));
     }
 
@@ -188,8 +188,8 @@ std::u16string GetCounterTextFromResult(
           l10n_util::GetPluralStringFUTF16(
               IDS_DEL_ACCOUNT_PASSWORDS_COUNTER,
               password_result->account_passwords()),
-          {CreateDomainExamples(password_result->account_passwords(),
-                                password_result->account_domain_examples())},
+          CreateDomainExamples(password_result->account_passwords(),
+                               password_result->account_domain_examples()),
           nullptr));
     }
 
