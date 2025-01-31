@@ -388,7 +388,7 @@ TEST_F(ShapeResultBloberizerTest, CommonAccentLeftToRightFillGlyphBuffer) {
 TEST_F(ShapeResultBloberizerTest, CommonAccentRightToLeftFillGlyphBuffer) {
   // "[] []" with an accent mark over the last square bracket.
   const UChar kStr[] = {0x5B, 0x5D, 0x20, 0x5B, 0x301, 0x5D};
-  TextRun text_run(base::span(kStr), TextDirection::kRtl);
+  TextRun text_run(StringView(base::span(kStr)), TextDirection::kRtl);
   TextRunPaintInfo run_info(text_run);
   run_info.from = 1;
 

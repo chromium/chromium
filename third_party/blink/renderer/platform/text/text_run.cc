@@ -30,24 +30,10 @@
 
 #include "third_party/blink/renderer/platform/text/text_run.h"
 
-#include "base/memory/raw_ptr_exclusion.h"
 #include "third_party/blink/renderer/platform/text/character.h"
-#include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 
 namespace blink {
-
-struct SameSizeAsTextRun {
-  DISALLOW_NEW();
-  union {
-    // RAW_PTR_EXCLUSION: #union
-    RAW_PTR_EXCLUSION const void* pointer;
-  };
-  int integer;
-  uint32_t bitfields : 4;
-};
-
-ASSERT_SIZE(TextRun, SameSizeAsTextRun);
 
 String TextRun::NormalizedUTF16() const {
   const UChar* source;
@@ -56,17 +42,18 @@ String TextRun::NormalizedUTF16() const {
     string_for8_bit_run = String::Make16BitFrom8BitSource(Span8());
     source = string_for8_bit_run.Characters16();
   } else {
-    source = data_.characters16;
+    source = Span16().data();
   }
 
-  StringBuffer<UChar> buffer(len_);
+  wtf_size_t len = length();
+  StringBuffer<UChar> buffer(len);
   unsigned result_length = 0;
 
   bool error = false;
   unsigned position = 0;
-  while (position < len_) {
+  while (position < len) {
     UChar32 character;
-    U16_NEXT(source, position, len_, character);
+    U16_NEXT(source, position, len, character);
     // Don't normalize tabs as they are not treated as spaces for word-end.
     if (NormalizeSpace() &&
         Character::IsNormalizedCanvasSpaceCharacter(character)) {
@@ -82,19 +69,18 @@ String TextRun::NormalizedUTF16() const {
       character = kZeroWidthSpaceCharacter;
     }
 
-    U16_APPEND(buffer.Characters(), result_length, len_, character, error);
+    U16_APPEND(buffer.Characters(), result_length, len, character, error);
     DCHECK(!error);
   }
 
-  DCHECK(result_length <= len_);
+  DCHECK(result_length <= len);
   return String::Adopt(buffer);
 }
 
 unsigned TextRun::IndexOfSubRun(const TextRun& sub_run) const {
-  if (Is8Bit() == sub_run.Is8Bit() && sub_run.data_.bytes_ >= data_.bytes_) {
-    size_t start_index = Is8Bit()
-                             ? sub_run.data_.characters8 - data_.characters8
-                             : sub_run.data_.characters16 - data_.characters16;
+  if (Is8Bit() == sub_run.Is8Bit() && sub_run.text_.Bytes() >= text_.Bytes()) {
+    size_t start_index = Is8Bit() ? sub_run.Span8().data() - Span8().data()
+                                  : sub_run.Span16().data() - Span16().data();
     if (start_index + sub_run.length() <= length())
       return static_cast<unsigned>(start_index);
   }
