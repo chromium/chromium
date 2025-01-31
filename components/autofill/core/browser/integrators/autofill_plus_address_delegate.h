@@ -80,6 +80,13 @@ class AutofillPlusAddressDelegate {
   // Returns whether plus address full form filling is supported.
   virtual bool IsPlusAddressFullFormFillingEnabled() const = 0;
 
+  // Returns whether plus address suggestions can be shown on `field`.
+  // Returns true if field's filling_product is `kAddress` or when the `field`
+  // had server prediction equal to either USERNAME or SINGLE_USERNAME, and an
+  // EMAIL_ADDRESS as a heuristic prediction.
+  virtual bool IsFieldEligibleForPlusAddress(
+      const AutofillField& field) const = 0;
+
   // Returns a list of plus addresses for the `origin` and all affiliated
   // domains.
   virtual void GetAffiliatedPlusAddresses(

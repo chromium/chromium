@@ -23,6 +23,8 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/autofill/core/browser/data_quality/validation.h"
+#include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
@@ -288,6 +290,22 @@ bool PlusAddressServiceImpl::IsPlusAddressFillingEnabled(
 
 bool PlusAddressServiceImpl::IsPlusAddressFullFormFillingEnabled() const {
   return base::FeatureList::IsEnabled(features::kPlusAddressFullFormFill);
+}
+
+bool PlusAddressServiceImpl::IsFieldEligibleForPlusAddress(
+    const autofill::AutofillField& field) const {
+  autofill::FillingProduct filling_product =
+      autofill::GetFillingProductFromFieldTypeGroup(field.Type().group());
+
+  if (filling_product == autofill::FillingProduct::kAddress) {
+    return true;
+  }
+
+  return base::FeatureList::IsEnabled(
+             features::kPlusAddressSuggestionsOnUsernameFields) &&
+         (field.server_type() == autofill::FieldType::USERNAME ||
+          field.server_type() == autofill::FieldType::SINGLE_USERNAME) &&
+         field.heuristic_type() == autofill::FieldType::EMAIL_ADDRESS;
 }
 
 void PlusAddressServiceImpl::GetAffiliatedPlusAddresses(

@@ -27,15 +27,20 @@
 #include "base/types/cxx23_to_underlying.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/affiliations/core/browser/mock_affiliation_service.h"
+#include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/integrators/autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/integrators/password_form_classification.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/suggestions/suggestion_test_helpers.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/html_field_types.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/plus_addresses/blocked_facets.pb.h"
 #include "components/plus_addresses/features.h"
@@ -290,6 +295,51 @@ TEST_F(PlusAddressServiceTest, ShouldShowManualFallbackNoServer) {
       kNoSubdomainOrigin, /*is_off_the_record=*/false));
   EXPECT_FALSE(service().ShouldShowManualFallback(kNoSubdomainOrigin,
                                                   /*is_off_the_record=*/false));
+}
+
+TEST_F(PlusAddressServiceTest, IsEligibleForPlusAddress) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kPlusAddressSuggestionsOnUsernameFields};
+  autofill::AutofillField field;
+  InitService();
+
+  // Address form with an email field is eligible.
+  field.set_heuristic_type(autofill::GetActiveHeuristicSource(),
+                           autofill::FieldType::EMAIL_ADDRESS);
+  EXPECT_TRUE(service().IsFieldEligibleForPlusAddress(field));
+
+  // Password forms with fields that have server predictions USERNAME,
+  // SINGLE_USERNAME and heuristic type EMAIL_ADDRESS, should be eligible for
+  // plus addresses.
+  field = autofill::AutofillField();
+  field.set_server_predictions(
+      {autofill::test::CreateFieldPrediction(autofill::FieldType::USERNAME)});
+  field.set_heuristic_type(autofill::GetActiveHeuristicSource(),
+                           autofill::FieldType::EMAIL_ADDRESS);
+  EXPECT_TRUE(service().IsFieldEligibleForPlusAddress(field));
+
+  field = autofill::AutofillField();
+  field.set_server_predictions({autofill::test::CreateFieldPrediction(
+      autofill::FieldType::SINGLE_USERNAME)});
+  field.set_heuristic_type(autofill::GetActiveHeuristicSource(),
+                           autofill::FieldType::EMAIL_ADDRESS);
+  EXPECT_TRUE(service().IsFieldEligibleForPlusAddress(field));
+
+  // SINGLE_USERNAME_FORGOT_PASSWORD fields are not supported.
+  field = autofill::AutofillField();
+  field.set_server_predictions({autofill::test::CreateFieldPrediction(
+      autofill::FieldType::SINGLE_USERNAME_FORGOT_PASSWORD)});
+  field.set_heuristic_type(autofill::GetActiveHeuristicSource(),
+                           autofill::FieldType::EMAIL_ADDRESS);
+  EXPECT_FALSE(service().IsFieldEligibleForPlusAddress(field));
+
+  // Heuristic type needs to be EMAIL_ADDRESS.
+  field = autofill::AutofillField();
+  field.set_server_predictions(
+      {autofill::test::CreateFieldPrediction(autofill::FieldType::USERNAME)});
+  field.set_heuristic_type(autofill::GetActiveHeuristicSource(),
+                           autofill::FieldType::USERNAME);
+  EXPECT_FALSE(service().IsFieldEligibleForPlusAddress(field));
 }
 
 TEST_F(PlusAddressServiceTest, NoAccountPlusAddressCreation) {
