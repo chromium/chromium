@@ -136,6 +136,7 @@ public class AccountSelectionButtonModeViewTest extends AccountSelectionJUnitTes
                             .with(HeaderProperties.RP_CONTEXT, rpContext.mValue)
                             .with(HeaderProperties.RP_MODE, RpMode.ACTIVE)
                             .with(HeaderProperties.IS_MULTIPLE_ACCOUNT_CHOOSER, true)
+                            .with(HeaderProperties.IS_MULTIPLE_IDPS, false)
                             .build());
             assertEquals(View.VISIBLE, mContentView.getVisibility());
             TextView subtitle = mContentView.findViewById(R.id.header_subtitle);

@@ -233,6 +233,9 @@ class AccountSelectionMediator {
     // All of the user's accounts.
     private List<Account> mAccounts;
 
+    // Whether the current state of the dialog involves multiple IDPs.
+    private boolean mIsMultipleIdps;
+
     // The account that the user has selected.
     private Account mSelectedAccount;
 
@@ -487,7 +490,8 @@ class AccountSelectionMediator {
             HeaderType headerType,
             String rpForDisplay,
             String idpForDisplay,
-            @RpContext.EnumType int rpContext) {
+            @RpContext.EnumType int rpContext,
+            Boolean isMultipleIdps) {
         Runnable closeOnClickRunnable =
                 () -> {
                     onDismissed(IdentityRequestDialogDismissReason.CLOSE_BUTTON);
@@ -514,6 +518,7 @@ class AccountSelectionMediator {
                         HeaderProperties.IS_MULTIPLE_ACCOUNT_CHOOSER,
                         mSelectedAccount == null && mAccounts != null && mAccounts.size() > 1)
                 .with(HeaderProperties.SET_FOCUS_VIEW_CALLBACK, this::setFocusView)
+                .with(HeaderProperties.IS_MULTIPLE_IDPS, isMultipleIdps)
                 .build();
     }
 
@@ -735,6 +740,7 @@ class AccountSelectionMediator {
         mRpForDisplay = rpForDisplay;
         mIdpForDisplay = idpForDisplay;
         mAccounts = accounts;
+        mIsMultipleIdps = idpDataList.size() > 1;
         mIdpMetadata = idpData.getIdpMetadata();
         mClientMetadata = idpData.getClientMetadata();
         mIsAutoReauthn = isAutoReauthn;
@@ -758,7 +764,9 @@ class AccountSelectionMediator {
             return true;
         }
 
-        fetchBrandIcon(mIdpMetadata.getBrandIconUrl(), bitmap -> updateIdpBrandIcon(bitmap));
+        if (!mIsMultipleIdps) {
+            fetchBrandIcon(mIdpMetadata.getBrandIconUrl(), bitmap -> updateIdpBrandIcon(bitmap));
+        }
         // RP brand icon is fetched here, but not shown until the request permission dialog.
         if (mRpMode == RpMode.ACTIVE) {
             fetchBrandIcon(mClientMetadata.getBrandIconUrl(), bitmap -> updateRpBrandIcon(bitmap));
@@ -781,6 +789,7 @@ class AccountSelectionMediator {
         mIdpForDisplay = idpForDisplay;
         mIdpMetadata = idpMetadata;
         mRpContext = rpContext;
+        mIsMultipleIdps = false;
         mHeaderType = HeaderProperties.HeaderType.SIGN_IN_TO_IDP_STATIC;
         if (!updateSheet(/* accounts= */ null, /* areAccountsClickable= */ false)) {
             return false;
@@ -801,6 +810,7 @@ class AccountSelectionMediator {
         mIdpMetadata = idpMetadata;
         mRpContext = rpContext;
         mError = error;
+        mIsMultipleIdps = false;
         mHeaderType = HeaderProperties.HeaderType.SIGN_IN_ERROR;
         setComponentShowTime(SystemClock.elapsedRealtime());
 
@@ -868,6 +878,7 @@ class AccountSelectionMediator {
         mRpForDisplay = rpForDisplay;
         mIdpForDisplay = idpForDisplay;
         mRpContext = rpContext;
+        mIsMultipleIdps = false;
         mHeaderType = HeaderProperties.HeaderType.LOADING;
         if (!updateSheet(/* accounts= */ null, /* areAccountsClickable= */ false)) {
             return false;
@@ -1114,7 +1125,8 @@ class AccountSelectionMediator {
 
     private void updateHeader() {
         PropertyModel headerModel =
-                createHeaderItem(mHeaderType, mRpForDisplay, mIdpForDisplay, mRpContext);
+                createHeaderItem(
+                        mHeaderType, mRpForDisplay, mIdpForDisplay, mRpContext, mIsMultipleIdps);
         mModel.set(ItemProperties.HEADER, headerModel);
     }
 
@@ -1230,6 +1242,12 @@ class AccountSelectionMediator {
         // FedCM.
         Account oldSelectedAccount = mSelectedAccount;
         mSelectedAccount = selectedAccount;
+        // If we were in multi IDP mode, we had not fetched the IDP brand icon yet. Fetch it now.
+        // TODO(crbug.com/390790111): fetch the correct IDP, not the first one.
+        if (mIsMultipleIdps) {
+            fetchBrandIcon(mIdpMetadata.getBrandIconUrl(), bitmap -> updateIdpBrandIcon(bitmap));
+        }
+        mIsMultipleIdps = false;
 
         // If the account is a returning user or if the account is selected from UI which shows the
         // disclosure text or if the browser doesn't need to request permission because the IDP
