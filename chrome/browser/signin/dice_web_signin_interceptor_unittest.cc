@@ -323,14 +323,15 @@ class DiceWebSigninInterceptorTest : public BrowserWithTestWindowTest {
 TEST_F(DiceWebSigninInterceptorTest, ShouldShowProfileSwitchBubble) {
   AccountInfo account_info =
       identity_test_env()->MakeAccountAvailable("bob@example.com");
+  const GaiaId& gaia = account_info.gaia;
   const std::string& email = account_info.email;
   EXPECT_FALSE(interceptor()->ShouldShowProfileSwitchBubble(
-      email, profile_attributes_storage()));
+      gaia, email, profile_attributes_storage()));
 
   // Add another profile with no account.
   CreateTestingProfile("Profile 1");
   EXPECT_FALSE(interceptor()->ShouldShowProfileSwitchBubble(
-      email, profile_attributes_storage()));
+      gaia, email, profile_attributes_storage()));
 
   // Add another profile with a different account.
   Profile* profile_2 = CreateTestingProfile("Profile 2");
@@ -339,19 +340,31 @@ TEST_F(DiceWebSigninInterceptorTest, ShouldShowProfileSwitchBubble) {
           profile_2->GetPath());
   ASSERT_NE(entry, nullptr);
   const GaiaId kOtherGaiaID("SomeOtherGaiaID");
-  ASSERT_NE(kOtherGaiaID, account_info.gaia);
+  ASSERT_NE(kOtherGaiaID, gaia);
   entry->SetAuthInfo(kOtherGaiaID, u"alice@gmail.com",
                      /*is_consented_primary_account=*/true);
   EXPECT_FALSE(interceptor()->ShouldShowProfileSwitchBubble(
-      email, profile_attributes_storage()));
+      gaia, email, profile_attributes_storage()));
 
-  // Change the account to match.
-  entry->SetAuthInfo(account_info.gaia, base::UTF8ToUTF16(email),
+  // Change email to match.
+  entry->SetAuthInfo(kOtherGaiaID, base::UTF8ToUTF16(email),
                      /*is_consented_primary_account=*/false);
-  const ProfileAttributesEntry* switch_to_entry =
-      interceptor()->ShouldShowProfileSwitchBubble(
-          email, profile_attributes_storage());
-  EXPECT_EQ(entry, switch_to_entry);
+  // With empty GaiaID, fall back to email: this is a match.
+  EXPECT_EQ(entry, interceptor()->ShouldShowProfileSwitchBubble(
+                       GaiaId(), email, profile_attributes_storage()));
+  // When passing the GaiaID, it does not match.
+  EXPECT_FALSE(interceptor()->ShouldShowProfileSwitchBubble(
+      gaia, email, profile_attributes_storage()));
+
+  // Change the gaia ID to match.
+  entry->SetAuthInfo(gaia, base::UTF8ToUTF16(email),
+                     /*is_consented_primary_account=*/false);
+  EXPECT_EQ(entry, interceptor()->ShouldShowProfileSwitchBubble(
+                       gaia, email, profile_attributes_storage()));
+  // Email is ignored when the GaiaId is here. This is a match even if the email
+  // is different.
+  EXPECT_EQ(entry, interceptor()->ShouldShowProfileSwitchBubble(
+                       gaia, "alice@gmail.com", profile_attributes_storage()));
 }
 
 TEST_F(DiceWebSigninInterceptorTest, NoBubbleWithSingleAccount) {
