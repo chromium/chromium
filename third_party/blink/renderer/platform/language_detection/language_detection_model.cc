@@ -42,6 +42,7 @@ void LanguageDetectionModel::LoadModelFile(
 void LanguageDetectionModel::Trace(Visitor* visitor) const {}
 
 void LanguageDetectionModel::DetectLanguage(
+    scoped_refptr<base::SequencedTaskRunner>& task_runner,
     const WTF::String& text,
     DetectLanguageCallback on_complete) {
   if (!language_detection_model_.IsAvailable()) {
@@ -49,6 +50,15 @@ void LanguageDetectionModel::DetectLanguage(
         .Run(base::unexpected(blink::DetectLanguageError::kUnavailable));
     return;
   }
+  task_runner->PostTask(
+      FROM_HERE,
+      WTF::BindOnce(&LanguageDetectionModel::DetectLanguageImpl,
+                    WrapPersistent(this), text, std::move(on_complete)));
+}
+
+void LanguageDetectionModel::DetectLanguageImpl(
+    const WTF::String& text,
+    DetectLanguageCallback on_complete) {
   WTF::String text_16 = text;
   text_16.Ensure16Bit();
   auto score_by_language = language_detection_model_.PredictWithScan(

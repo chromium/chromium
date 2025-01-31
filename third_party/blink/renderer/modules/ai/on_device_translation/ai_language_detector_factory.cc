@@ -51,14 +51,16 @@ void RejectModelNotAvailable(
 AILanguageDetectorFactory::AILanguageDetectorCreateTask::
     AILanguageDetectorCreateTask(
         ExecutionContext* execution_context,
-        scoped_refptr<base::SequencedTaskRunner> task_runner,
+        scoped_refptr<base::SequencedTaskRunner>& task_runner,
         ScriptPromiseResolver<AILanguageDetector>* resolver,
         LanguageDetectionModel* model,
         const AILanguageDetectorCreateOptions* options)
-    : resolver_(resolver), language_detection_model_(model) {
+    : task_runner_(task_runner),
+      resolver_(resolver),
+      language_detection_model_(model) {
   if (options->hasMonitor()) {
     monitor_ =
-        MakeGarbageCollected<AICreateMonitor>(execution_context, task_runner);
+        MakeGarbageCollected<AICreateMonitor>(execution_context, task_runner_);
     std::ignore = options->monitor()->Invoke(nullptr, monitor_);
   }
 }
@@ -90,7 +92,8 @@ void AILanguageDetectorFactory::AILanguageDetectorCreateTask::OnModelLoaded(
       monitor_->OnDownloadProgressUpdate(model->GetModelSize(),
                                          model->GetModelSize());
     }
-    resolver_->Resolve(MakeGarbageCollected<AILanguageDetector>(model));
+    resolver_->Resolve(
+        MakeGarbageCollected<AILanguageDetector>(model, task_runner_));
   } else {
     switch (maybe_model.error()) {
       case DetectLanguageError::kUnavailable:

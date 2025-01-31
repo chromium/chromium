@@ -9,8 +9,10 @@
 namespace blink {
 
 AILanguageDetector::AILanguageDetector(
-    LanguageDetectionModel* language_detection_model)
-    : language_detection_model_(language_detection_model) {}
+    LanguageDetectionModel* language_detection_model,
+    scoped_refptr<base::SequencedTaskRunner>& task_runner)
+    : task_runner_(task_runner),
+      language_detection_model_(language_detection_model) {}
 
 void AILanguageDetector::Trace(Visitor* visitor) const {
   visitor->Trace(language_detection_model_);
@@ -38,8 +40,9 @@ ScriptPromise<IDLSequence<LanguageDetectionResult>> AILanguageDetector::detect(
       script_state);
 
   language_detection_model_->DetectLanguage(
-      input, WTF::BindOnce(AILanguageDetector::OnDetectComplete,
-                           WrapPersistent(resolver)));
+      task_runner_, input,
+      WTF::BindOnce(AILanguageDetector::OnDetectComplete,
+                    WrapPersistent(resolver)));
   return resolver->Promise();
 }
 
