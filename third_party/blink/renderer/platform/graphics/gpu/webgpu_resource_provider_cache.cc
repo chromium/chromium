@@ -8,6 +8,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -47,7 +48,8 @@ WebGPURecyclableResourceCache::GetOrCreateCanvasResource(
       AcquireCachedProvider(info);
   if (!provider) {
     provider = CanvasResourceProvider::CreateWebGPUImageProvider(
-        gfx::Size(info.width(), info.height()), info.colorType(),
+        gfx::Size(info.width(), info.height()),
+        viz::SkColorTypeToSinglePlaneSharedImageFormat(info.colorType()),
         info.alphaType(), SkColorSpaceToGfxColorSpace(info.refColorSpace()));
     if (!provider)
       return nullptr;
