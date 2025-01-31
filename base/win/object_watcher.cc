@@ -13,6 +13,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/trace_event/base_tracing.h"
 
 namespace base {
 namespace win {
@@ -52,17 +53,22 @@ bool ObjectWatcher::StopWatching() {
   // INVALID_HANDLE_VALUE to wait on all callback functions seemlingly waits
   // on other callbacks in the threadpool; not just callbacks from
   // RegisterWaitForSingleObject.
-  WaitableEvent event;
-  if (!UnregisterWaitEx(wait_object_, event.handle())) {
-    // ERROR_IO_PENDING is not a fatal error; see
-    // https://learn.microsoft.com/en-us/windows/win32/sync/unregisterwaitex.
-    if (const auto error = ::GetLastError(); error != ERROR_IO_PENDING) {
-      DPLOG(FATAL) << "UnregisterWaitEx failed";
-      return false;
+  {
+    // Measure the total cost of calling UnregisterWaitEx, including creation of
+    // and waiting on the event.
+    TRACE_EVENT("base", "UnregisterWaitEx");
+    WaitableEvent event;
+    if (!UnregisterWaitEx(wait_object_, event.handle())) {
+      // ERROR_IO_PENDING is not a fatal error; see
+      // https://learn.microsoft.com/en-us/windows/win32/sync/unregisterwaitex.
+      if (const auto error = ::GetLastError(); error != ERROR_IO_PENDING) {
+        DPLOG(FATAL) << "UnregisterWaitEx failed";
+        return false;
+      }
     }
+    // Wait for unregistration to complete.
+    event.Wait();
   }
-  // Wait for unregistration to complete.
-  event.Wait();
   Reset();
   return true;
 }
@@ -121,6 +127,7 @@ bool ObjectWatcher::StartWatchingInternal(HANDLE object,
                             base::UnsafeDanglingUntriaged(delegate));
   object_ = object;
 
+  TRACE_EVENT("base", "RegisterWaitForSingleObject");
   if (!RegisterWaitForSingleObject(&wait_object_, object, DoneWaiting, this,
                                    INFINITE, wait_flags)) {
     DPLOG(FATAL) << "RegisterWaitForSingleObject failed";
