@@ -161,7 +161,7 @@ void ShareTabGroupAndOpenMenu(
 }
 
 // Joins a tab group and open the tab group indicator menu.
-void JoinTabGroupAndOpenMenu(net::test_server::EmbeddedTestServer* testServer) {
+void JoinTabGroupAndOpenMenu() {
   [TabGroupAppInterface mockSharedEntitiesPreview];
   GURL joinGroupURL = data_sharing::GetDataSharingUrl(data_sharing::GroupToken(
       data_sharing::GroupId("resources%2F3be"), "CggHBicxA_slvx"));
@@ -576,7 +576,7 @@ void JoinTabGroupAndOpenMenu(net::test_server::EmbeddedTestServer* testServer) {
     EARL_GREY_TEST_SKIPPED(@"On iPad, the tab group indicator is not displayed "
                            @"if the tab strip is visible.");
   }
-  JoinTabGroupAndOpenMenu(self.testServer);
+  JoinTabGroupAndOpenMenu();
 
   // Verify that the delete button is not available.
   [[EarlGrey selectElementWithMatcher:DeleteGroupButton()]
