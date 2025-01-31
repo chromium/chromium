@@ -18,6 +18,10 @@ BASE_DECLARE_FEATURE(kLocalWebApprovals);
 extern const base::FeatureParam<int> kLocalWebApprovalBottomSheetLoadTimeoutMs;
 #endif
 
+// Whether the Pacp widget can process a url payload as part of the local
+// approval request.
+BASE_DECLARE_FEATURE(kLocalWebApprovalsWidgetSupportsUrlPayload);
+
 // Applies the updated extension approval flow, which can skip parent-approvals
 // on extension installations.
 BASE_DECLARE_FEATURE(

@@ -11,7 +11,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "components/constrained_window/constrained_window_views.h"
-#include "components/supervised_user/core/common/supervised_user_constants.h"
+#include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/controls/webview/webview.h"
@@ -27,11 +27,8 @@ constexpr int kDialogWidth = 650;
 constexpr int kDialogHeight = 450;
 
 const GURL GetPacpUrl(const GURL& blocked_url) {
-  // TODO(crbug.com/383997522): Construct the url we need to
-  // invoke on the PACP-side. Include any arguments that need
-  // to added to the url such as the `blocked_url`.
   return supervised_user::GetParentAccessURLForDesktop(
-      g_browser_process->GetApplicationLocale());
+      g_browser_process->GetApplicationLocale(), blocked_url);
 }
 
 }  // namespace

@@ -14,7 +14,9 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/core/browser/family_link_user_log_record.h"
 #include "components/supervised_user/core/browser/proto/parent_access_callback.pb.h"
+#include "components/supervised_user/core/browser/proto/transaction_data.pb.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
+#include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/url_formatter/url_formatter.h"
@@ -32,6 +34,20 @@ constexpr char kParentAccessResultQueryParameter[] = "result";
 
 // Url that contains the approval result in PACP parent approval requests.
 constexpr char kPacpOriginUrlHost[] = "families.google.com";
+
+// Parent Access widget constants, used in the local web approval
+// flow.
+// URL hosting the Parent Access widget.
+constexpr char kParentAccessBaseURL[] =
+    "https://families.google.com/parentaccess";
+// URL to which the Parent Access widget redirects on approval.
+constexpr char kParentAccessContinueURL[] = "https://families.google.com";
+// Caller Ids for Desktop and iOS platforms.
+constexpr char kParentAccessIOSCallerID[] = "qSTnVRdQ";
+constexpr char kParentAccessDesktopCallerID[] = "clwAA5XJ";
+constexpr char kPacpUrlPayloadMessageType[] =
+    "type.googleapis.com/"
+    "kids.platform.parentaccess.ui.common.proto.LocalApprovalPayload";
 
 // A templated function to merge multiple values of the same type into either:
 // * An empty optional if none of the values are set
@@ -126,6 +142,40 @@ std::optional<ToggleState> GetExtensionsToggleStateForHistogram(
         record.GetExtensionsToggleStateForPrimaryAccount());
   }
   return GetMergedRecord(extensions_toggle_states, ToggleState::kMixed);
+}
+
+// Returns a base64-encoded `TransactionData` proto message that encapsulates
+// the blocked url so that PACP can consume it.
+std::string GetBase64EncodedInTransactionalDataForPayload(
+    const std::string blocked_url) {
+  CHECK(!blocked_url.empty());
+  kids::platform::parentaccess::proto::LocalApprovalPayload approval_url;
+  approval_url.set_url_approval_context(blocked_url);
+
+  kids::platform::parentaccess::proto::TransactionData transaction_data;
+  transaction_data.mutable_payload()->set_value(
+      approval_url.SerializeAsString());
+  transaction_data.mutable_payload()->set_type_url(kPacpUrlPayloadMessageType);
+  return base::Base64Encode(transaction_data.SerializeAsString());
+}
+
+// Returns the PACP widget url with the appropriate query parameters.
+GURL GetParentAccessURL(const std::string& caller_id,
+                        const std::string& locale,
+                        std::optional<GURL> blocked_url) {
+  GURL url(kParentAccessBaseURL);
+  GURL::Replacements replacements;
+  std::string query = base::StrCat({"callerid=", caller_id, "&hl=", locale,
+                                    "&continue=", kParentAccessContinueURL});
+  if (base::FeatureList::IsEnabled(
+          kLocalWebApprovalsWidgetSupportsUrlPayload) &&
+      blocked_url.has_value() && !blocked_url.value().host().empty()) {
+    query += base::StrCat(
+        {"&transaction-data=", GetBase64EncodedInTransactionalDataForPayload(
+                                   blocked_url.value().host())});
+  }
+  replacements.SetQueryStr(query);
+  return url.ReplaceComponents(replacements);
 }
 
 }  // namespace
@@ -301,6 +351,16 @@ GURL UrlFormatter::FormatUrl(const GURL& url) const {
 #else
   return target_url;
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+}
+
+GURL GetParentAccessURLForIOS(const std::string& locale) {
+  return GetParentAccessURL(kParentAccessIOSCallerID, locale,
+                            /*blocked_url=*/std::nullopt);
+}
+
+GURL GetParentAccessURLForDesktop(const std::string& locale,
+                                  const GURL& blocked_url) {
+  return GetParentAccessURL(kParentAccessDesktopCallerID, locale, blocked_url);
 }
 
 }  // namespace supervised_user

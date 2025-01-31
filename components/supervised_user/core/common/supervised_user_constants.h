@@ -214,15 +214,6 @@ extern const char kClassifyUrlThrottleStatusHistogramName[];
 
 // Histogram name to track the final throttle verdict.
 extern const char kClassifyUrlThrottleFinalStatusHistogramName[];
-
-// Returns the URL of the PACP widget for the iOS local web approval flow.
-// `locale` is the display language (go/bcp47).
-GURL GetParentAccessURLForIOS(const std::string& locale);
-
-// Returns the URL of the PACP widget for the Desktop local web approval flow.
-// `locale` is the display language (go/bcp47).
-GURL GetParentAccessURLForDesktop(const std::string& locale);
-
 }  // namespace supervised_user
 
 #endif  // COMPONENTS_SUPERVISED_USER_CORE_COMMON_SUPERVISED_USER_CONSTANTS_H_

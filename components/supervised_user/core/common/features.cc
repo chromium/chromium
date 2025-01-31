@@ -34,6 +34,10 @@ const base::FeatureParam<int> kLocalWebApprovalBottomSheetLoadTimeoutMs{
     kLocalWebApprovalBottomSheetLoadTimeoutDefaultValueMs};
 #endif
 
+BASE_FEATURE(kLocalWebApprovalsWidgetSupportsUrlPayload,
+             "PacpWidgetSupportsUrlPayload",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsGoogleBrandedBuild() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return true;

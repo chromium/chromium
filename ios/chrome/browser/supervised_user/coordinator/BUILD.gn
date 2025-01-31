@@ -12,6 +12,7 @@ source_set("coordinator") {
   ]
   deps = [
     "//base",
+    "//components/supervised_user/core/browser",
     "//components/supervised_user/core/common",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/application_context",
