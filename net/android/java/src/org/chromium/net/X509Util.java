@@ -16,8 +16,10 @@ import android.util.Pair;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -96,9 +98,21 @@ public class X509Util {
     }
 
     private static List<X509Certificate> checkServerTrustedIgnoringRuntimeException(
-            X509TrustManagerExtensions tm, X509Certificate[] chain, String authType, String host)
+            X509TrustManagerExtensions tm,
+            X509Certificate[] chain,
+            String authType,
+            String host,
+            byte @Nullable [] ocspResponse,
+            byte @Nullable [] sctList)
             throws CertificateException {
         try {
+            // TODO(crbug.com/366221093): use normal sdk check once the SDK is finalized.
+            AconfigFlaggedApiDelegate delegate =
+                    ServiceLoaderUtil.maybeCreate(AconfigFlaggedApiDelegate.class);
+            if (delegate != null && !(ocspResponse == null && sctList == null)) {
+                return delegate.checkServerTrusted(
+                        tm, chain, authType, host, ocspResponse, sctList);
+            }
             return tm.checkServerTrusted(chain, authType, host);
         } catch (RuntimeException e) {
             // https://crbug.com/937354: checkServerTrusted() can unexpectedly throw runtime
@@ -529,7 +543,11 @@ public class X509Util {
     }
 
     public static AndroidCertVerifyResult verifyServerCertificates(
-            byte[][] certChain, String authType, String host)
+            byte[][] certChain,
+            String authType,
+            String host,
+            byte @Nullable [] ocspResponse,
+            byte @Nullable [] sctList)
             throws KeyStoreException, NoSuchAlgorithmException {
         if (certChain == null || certChain.length == 0 || certChain[0] == null) {
             throw new IllegalArgumentException(
@@ -587,13 +605,23 @@ public class X509Util {
             try {
                 verifiedChain =
                         checkServerTrustedIgnoringRuntimeException(
-                                sDefaultTrustManager, serverCertificates, authType, host);
+                                sDefaultTrustManager,
+                                serverCertificates,
+                                authType,
+                                host,
+                                ocspResponse,
+                                sctList);
             } catch (CertificateException eDefaultManager) {
                 if (sTestTrustManager != null) {
                     try {
                         verifiedChain =
                                 checkServerTrustedIgnoringRuntimeException(
-                                        sTestTrustManager, serverCertificates, authType, host);
+                                        sTestTrustManager,
+                                        serverCertificates,
+                                        authType,
+                                        host,
+                                        ocspResponse,
+                                        sctList);
                     } catch (CertificateException eTestManager) {
                         // See following if block.
                     }
@@ -609,13 +637,11 @@ public class X509Util {
                     return new AndroidCertVerifyResult(CertVerifyStatusAndroid.NO_TRUSTED_ROOT);
                 }
             }
-
             boolean isIssuedByKnownRoot = false;
             if (verifiedChain.size() > 0) {
                 X509Certificate root = verifiedChain.get(verifiedChain.size() - 1);
                 isIssuedByKnownRoot = isKnownRoot(root);
             }
-
             return new AndroidCertVerifyResult(
                     CertVerifyStatusAndroid.OK, isIssuedByKnownRoot, verifiedChain);
         }

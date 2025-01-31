@@ -695,4 +695,10 @@ BASE_FEATURE(kReportingApiCorsOriginHeader,
              "ReportingApiCorsOriginHeader",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kUseCertTransparencyAwareApiForOsCertVerify,
+             "UseCertTransparencyAwareApiForOsCertVerify",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace net::features

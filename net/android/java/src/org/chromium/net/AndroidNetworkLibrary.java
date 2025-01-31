@@ -104,19 +104,27 @@ class AndroidNetworkLibrary {
     }
 
     /**
-     * Validate the server's certificate chain is trusted. Note that the caller
-     * must still verify the name matches that of the leaf certificate.
+     * Validate the server's certificate chain is trusted. Note that the caller must still verify
+     * the name matches that of the leaf certificate.
      *
      * @param certChain The ASN.1 DER encoded bytes for certificates.
      * @param authType The key exchange algorithm name (e.g. RSA).
      * @param host The hostname of the server.
+     * @param If not null, ocspResponse should contain an OCSP response obtained via OCSP stapling.
+     * @param If not null, sctList should contain a SignedCertificateTimestampList from the TLS
+     *     extension as described in RFC6962 section 3.3.1.
      * @return Android certificate verification result code.
      */
     @CalledByNative
     public static AndroidCertVerifyResult verifyServerCertificates(
-            byte[][] certChain, String authType, String host) {
+            byte[][] certChain,
+            String authType,
+            String host,
+            byte @Nullable [] ocspResponse,
+            byte @Nullable [] sctList) {
         try {
-            return X509Util.verifyServerCertificates(certChain, authType, host);
+            return X509Util.verifyServerCertificates(
+                    certChain, authType, host, ocspResponse, sctList);
         } catch (KeyStoreException e) {
             return new AndroidCertVerifyResult(CertVerifyStatusAndroid.FAILED);
         } catch (NoSuchAlgorithmException e) {
