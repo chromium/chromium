@@ -1068,6 +1068,16 @@ bool AXObject::CanHaveChildren(Element& element) {
     }
   }
 
+  if (IsA<HTMLBRElement>(element)) {
+    // Normally, a <br> is allowed to have a single inline text box child.
+    // However, a <br> element that has DOM children can occur only if a script
+    // adds the children, and Blink will not render those children. This is an
+    // obscure edge case that should only occur during fuzzing, but to maintain
+    // tree consistency and prevent DCHECKs, AXObjects for <br> elements are not
+    // allowed to have children if there are any DOM children at all.
+    return !element.hasChildren();
+  }
+
   if (IsA<HTMLHRElement>(element)) {
     return false;
   }

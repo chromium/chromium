@@ -3123,8 +3123,6 @@ data/accessibility/html/br-expected-uia-win.txt
 data/accessibility/html/br-expected-win.txt
 data/accessibility/html/br-with-child-expected-blink.txt
 data/accessibility/html/br-with-child.html
-data/accessibility/html/br-with-label-expected-blink.txt
-data/accessibility/html/br-with-label.html
 data/accessibility/html/br.html
 data/accessibility/html/bullet.png
 data/accessibility/html/button-alt-changed-expected-blink.txt
