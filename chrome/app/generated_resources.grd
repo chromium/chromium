@@ -7532,8 +7532,14 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_CONTEXTUAL" desc="The text displayed in the overlay contextual searchbox when it is empty. It is meant to invite the user to ask a question about their current page and inform them that this is a contextual searchbox.">
         Ask about this page
       </message>
+      <message name="IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_CONTEXTUAL_PDF" desc="The text displayed in the overlay contextual searchbox when it is empty over a PDF document. It is meant to invite the user to ask a question about their current PDF document and inform them that this is a contextual searchbox.">
+        Ask about this document
+      </message>
       <message name="IDS_GOOGLE_SEARCH_BOX_CONTEXTUAL_LOADING_HINT_PRIMARY" desc="The hint text displayed in the overlay contextual searchbox ghost loader. It is meant to inform the user that suggestions are still being generated.">
         Generating suggestions for this page…
+      </message>
+      <message name="IDS_GOOGLE_SEARCH_BOX_CONTEXTUAL_LOADING_HINT_PRIMARY_PDF" desc="The hint text displayed in the overlay contextual searchbox ghost loader when the user is viewing a PDF document. It is meant to inform the user that suggestions are still being generated about the PDF document they are on.">
+        Generating suggestions for this document…
       </message>
       <message name="IDS_GOOGLE_SEARCH_BOX_CONTEXTUAL_LOADING_HINT_SECONDARY" desc="The hint text displayed in the overlay contextual searchbox ghost loader. It is meant to inform the user that they can still ask questions about the page while suggestions are being generated.">
         You can also ask things like “summarize”

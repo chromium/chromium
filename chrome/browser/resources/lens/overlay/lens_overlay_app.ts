@@ -35,6 +35,7 @@ import type {OverlayTheme} from './lens.mojom-webui.js';
 import {UserAction} from './lens.mojom-webui.js';
 import {getTemplate} from './lens_overlay_app.html.js';
 import {recordLensOverlayInteraction, recordTimeToWebUIReady} from './metrics_utils.js';
+import {PageContentType} from './page_content_type.mojom-webui.js';
 import {PerformanceTracker} from './performance_tracker.js';
 import {handleEscapeSearchbox, onSearchboxKeydown} from './searchbox_utils.js';
 import type {SelectionOverlayElement} from './selection_overlay.js';
@@ -142,13 +143,16 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
       },
       showGhostLoader: {
         type: Boolean,
-        computed:
-            `computeShowGhostLoader(
+        computed: `computeShowGhostLoader(
                 isSearchboxFocused,
                 autocompleteRequestStarted,
                 showErrorState,
                 suppressGhostLoader)`,
         reflectToAttribute: true,
+      },
+      placeholderText: {
+        type: String,
+        computed: `computePlaceholderText(pageContentType)`,
       },
       showErrorState: {
         type: Boolean,
@@ -202,8 +206,12 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
   // Whether the contextual searchbox is visible to the user.
   private isLensOverlayContextualSearchboxVisible: boolean = false;
   private toastMessage: string = '';
+  // What the current page content type is.
+  private pageContentType: PageContentType = PageContentType.kUnknown;
   // Whether to show the ghost loader.
   private showGhostLoader: boolean;
+  // What the placeholder text should be.
+  private placeholderText: string;
   // Whether the translate language pickers are open.
   private areLanguagePickersOpen: boolean = false;
 
@@ -246,8 +254,10 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
         this.isClosing = true;
         this.performanceTracker.endSession();
       }),
-      this.browserProxy.callbackRouter.suppressGhostLoader.addListener(
+      callbackRouter.suppressGhostLoader.addListener(
           this.suppressGhostLoader_.bind(this)),
+      callbackRouter.pageContentTypeChanged.addListener(
+          this.onPageContentTypeChanged.bind(this)),
     ];
     this.eventTracker_.add(
         document, 'set-cursor-tooltip', (e: CustomEvent<CursorTooltipData>) => {
@@ -465,9 +475,19 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
         (this.autocompleteRequestStarted || this.showErrorState);
   }
 
+  private computePlaceholderText(): string {
+    return this.pageContentType === PageContentType.kPdf ?
+        this.i18n('searchBoxHintPdf') :
+        this.i18n('searchBoxHintDefault');
+  }
+
   private suppressGhostLoader_() {
     // If tab is foregrounded don't show ghost loader.
     this.suppressGhostLoader = true;
+  }
+
+  private onPageContentTypeChanged(newPageContentType: PageContentType) {
+    this.pageContentType = newPageContentType;
   }
 
   private onMoreOptionsButtonClick() {

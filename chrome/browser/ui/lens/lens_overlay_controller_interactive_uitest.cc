@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/lens/test_lens_overlay_query_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -30,6 +31,7 @@
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/lens/lens_overlay_permission_utils.h"
+#include "components/pdf/browser/pdf_document_helper.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/user_education/views/help_bubble_view.h"
@@ -51,6 +53,7 @@ constexpr char kTestSuggestSignals[] = "encoded_image_signals";
 constexpr char kDocumentWithNamedElement[] = "/select.html";
 constexpr char kDocumentWithImage[] = "/test_visual.html";
 constexpr char kDocumentWithVideo[] = "/media/bigbuck-player.html";
+constexpr char kPdfDocument[] = "/pdf/test.pdf";
 
 lens::Text CreateTestText(const std::vector<std::string>& words) {
   lens::Text text;
@@ -164,11 +167,14 @@ class LensOverlayControllerCUJTest : public InteractiveFeaturePromoTest {
   ~LensOverlayControllerCUJTest() override = default;
 
   void SetUp() override {
-    feature_list_.InitWithFeatures(
-        {lens::features::kLensOverlay,
-         lens::features::kLensOverlayTranslateButton,
-         media::kContextMenuSearchForVideoFrame},
-        {lens::features::kLensOverlayContextualSearchbox});
+    feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{{lens::features::kLensOverlay, {}},
+                              {lens::features::kLensOverlayTranslateButton, {}},
+                              {media::kContextMenuSearchForVideoFrame, {}},
+                              {lens::features::kLensOverlayContextualSearchbox,
+                               {{"use-pdfs-as-context", "true"},
+                                {"use-inner-html-as-context", "true"}}}},
+        /*disabled_features=*/{});
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
     InteractiveFeaturePromoTest::SetUp();
   }
@@ -186,6 +192,7 @@ class LensOverlayControllerCUJTest : public InteractiveFeaturePromoTest {
     // Permits sharing the page screenshot by default.
     PrefService* prefs = browser()->profile()->GetPrefs();
     prefs->SetBoolean(lens::prefs::kLensSharingPageScreenshotEnabled, true);
+    prefs->SetBoolean(lens::prefs::kLensSharingPageContentEnabled, true);
   }
 
   void TearDownOnMainThread() override {
@@ -732,6 +739,159 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest,
               LensOverlayController::kOverlaySidePanelWebViewId),
 
           EnsurePresent(kOverlaySidePanelWebViewId, kPathToResultsFrame))));
+}
+
+// This tests the following CUJ:
+//  (1) User navigates to a PDF.
+//  (2) User opens lens overlay.
+//  (3) The CSB should say "Ask about this document"
+//  (3) User make a query
+//  (4) This side panel opens
+//  (5) The CSB should say "Ask about this document"
+//  (6) The user navigates to a webpage.
+//  (7) The CSB should say "Ask about this page"
+// TODO(b/355224013): Disabled on mac because the mac interaction test
+// util implementation does not support setting the input (mouse / keyboard)
+// type for a context menu item selection.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_NavigationsUpdateCSB DISABLED_NavigationsUpdateCSB
+#else
+#define MAYBE_NavigationsUpdateCSB NavigationsUpdateCSB
+#endif
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest,
+                       MAYBE_NavigationsUpdateCSB) {
+  WaitForTemplateURLServiceToLoad();
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlaySidePanelWebViewId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kHintTextUpdatedEvent);
+
+  const GURL pdf_url = embedded_test_server()->GetURL(kPdfDocument);
+
+  // Paths to searchbox hint text.
+  const DeepQuery kPathToOverlaySearchboxInput{
+      "lens-overlay-app",
+      "cr-searchbox",
+      "input",
+  };
+  const DeepQuery kPathToSidePanelSearchboxInput{
+      "lens-side-panel-app",
+      "cr-searchbox",
+      "input",
+  };
+  const DeepQuery kPathToOverlayGhostLoaderText{
+      "lens-overlay-app", "cr-searchbox-ghost-loader", "#hint-text1"};
+  const DeepQuery kPathToSidePanelGhostLoaderText{
+      "lens-side-panel-app", "cr-searchbox-ghost-loader", "#hint-text1"};
+
+  // Helper function to check for specific text in an element.
+  auto CheckSearchboxHintText = [](ui::ElementIdentifier web_contents_id,
+                                   const DeepQuery& query,
+                                   const std::string& expected_text) {
+    return CheckJsResultAt(web_contents_id, query,
+                           base::StringPrintf("el => el.placeholder === '%s'",
+                                              expected_text.c_str()));
+  };
+  auto CheckGhostLoaderText = [](ui::ElementIdentifier web_contents_id,
+                                 const DeepQuery& query,
+                                 const std::string& expected_text) {
+    return CheckJsResultAt(
+        web_contents_id, query,
+        base::StringPrintf("el => el.innerText.trim() === '%s'",
+                           expected_text.c_str()));
+  };
+
+  // State change to wait for the hint text to update.
+  StateChange hint_text_updated;
+  hint_text_updated.event = kHintTextUpdatedEvent;
+  hint_text_updated.type = StateChange::Type::kExistsAndConditionTrue;
+  hint_text_updated.where = kPathToSidePanelSearchboxInput;
+  hint_text_updated.test_function =
+      "el => el.placeholder === 'Ask about this document'";
+
+  RunTestSequence(
+      // TODO(crbug.com/355224013): Ideally, this opens with a PDF to start,
+      // but the right click menu item is not accessible in the UI test on PDF.
+      // Once these tests can open without the rigth click menu, this should be
+      // updated to open a PDF.
+      OpenLensOverlay(),
+
+      // The overlay controller is an independent floating widget associated
+      // with a tab rather than a browser window, so by convention gets its own
+      // element context.
+      InAnyContext(Steps(
+          InstrumentNonTabWebView(kOverlayId,
+                                  LensOverlayController::kOverlayId),
+          WaitForWebContentsReady(
+              kOverlayId, GURL(chrome::kChromeUILensOverlayUntrustedURL)))),
+
+      // The CSB should be in the overlay with the text "Ask about this
+      // document".
+      InSameContext(
+          Steps(WaitForShow(LensOverlayController::kOverlayId),
+                WaitForScreenshotRendered(kOverlayId),
+                CheckSearchboxHintText(kOverlayId, kPathToOverlaySearchboxInput,
+                                       "Ask about this page"),
+                CheckGhostLoaderText(kOverlayId, kPathToOverlayGhostLoaderText,
+                                     "Generating suggestions for this page…"))),
+
+      // The use makes a query in the searchbox and the side panel opens.
+      InSameContext(Steps(
+          // Focus the overlay to receive input events.
+          FocusWebContents(kOverlayId),
+
+          // Focus the searchbox.
+          ExecuteJsAt(kOverlayId, kPathToOverlaySearchboxInput,
+                      "(el) => { el.focus(); }",
+                      ExecuteJsMode::kWaitForCompletion),
+
+          // Emulate focus into the searchbox.
+          ExecuteJsAt(
+              kOverlayId, kPathToOverlaySearchboxInput,
+              base::StringPrintf(
+                  "(el) => { el.value = '%s'; el.dispatchEvent(new "
+                  "Event('input', { bubbles: true })); el.dispatchEvent(new "
+                  "Event('change', { bubbles: true }));}",
+                  "test query"),
+              ExecuteJsMode::kWaitForCompletion),
+
+          // Simulate the enter key being pressed.
+          ExecuteJsAt(
+              kOverlayId, kPathToOverlaySearchboxInput,
+              base::StringPrintf(
+                  "(el) => { el.dispatchEvent(new KeyboardEvent('keydown', { "
+                  "key:'%s', bubbles: true }));}",
+                  "Enter"),
+              ExecuteJsMode::kFireAndForget))),
+
+      // Side panel should open.
+      InAnyContext(Steps(InstrumentNonTabWebView(
+                             kOverlaySidePanelWebViewId,
+                             LensOverlayController::kOverlaySidePanelWebViewId),
+                         WaitForWebContentsReady(kOverlaySidePanelWebViewId))),
+
+      // The CSB in the side panel should say "Ask about this document"
+      InSameContext(
+          Steps(CheckSearchboxHintText(kOverlaySidePanelWebViewId,
+                                       kPathToSidePanelSearchboxInput,
+                                       "Ask about this page"),
+                CheckGhostLoaderText(kOverlaySidePanelWebViewId,
+                                     kPathToSidePanelGhostLoaderText,
+                                     "Generating suggestions for this page…"))),
+
+      // The user navigates to a webpage.
+      InAnyContext(Steps(InstrumentTab(kActiveTab),
+                         NavigateWebContents(kActiveTab, pdf_url))),
+
+      // The CSB in the overlay should eventually say "Ask about this page"
+      InAnyContext(Steps(
+          WaitForStateChange(kOverlaySidePanelWebViewId, hint_text_updated),
+          CheckSearchboxHintText(kOverlaySidePanelWebViewId,
+                                 kPathToSidePanelSearchboxInput,
+                                 "Ask about this document"),
+          CheckGhostLoaderText(kOverlaySidePanelWebViewId,
+                               kPathToSidePanelGhostLoaderText,
+                               "Generating suggestions for this document…"))));
 }
 
 class LensOverlayControllerPromoTest : public LensOverlayControllerCUJTest {

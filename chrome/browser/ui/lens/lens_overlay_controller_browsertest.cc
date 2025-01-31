@@ -31,6 +31,7 @@
 #include "chrome/browser/lens/core/mojom/lens.mojom.h"
 #include "chrome/browser/lens/core/mojom/lens_side_panel.mojom.h"
 #include "chrome/browser/lens/core/mojom/overlay_object.mojom.h"
+#include "chrome/browser/lens/core/mojom/page_content_type.mojom.h"
 #include "chrome/browser/lens/core/mojom/polygon.mojom.h"
 #include "chrome/browser/lens/core/mojom/text.mojom-forward.h"
 #include "chrome/browser/lens/core/mojom/text.mojom.h"
@@ -399,6 +400,9 @@ class LensOverlayPageFake : public lens::mojom::LensPage {
   void TriggerCopyText() override { did_trigger_copy = true; }
 
   void SuppressGhostLoader() override {}
+
+  void PageContentTypeChanged(
+      lens::mojom::PageContentType new_page_content_type) override {}
 
   void Reset() {
     last_received_screenshot_.reset();

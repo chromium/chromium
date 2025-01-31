@@ -252,6 +252,16 @@ lens::MimeType StringMimeTypeToDocumentType(const std::string& mime_type) {
   return lens::MimeType::kUnknown;
 }
 
+lens::mojom::PageContentType StringMimeTypeToMojoPageContentType(
+    const std::string& mime_type) {
+  if (mime_type == "application/pdf") {
+    return lens::mojom::PageContentType::kPdf;
+  } else if (mime_type == "text/html") {
+    return lens::mojom::PageContentType::kHtml;
+  }
+  return lens::mojom::PageContentType::kUnknown;
+}
+
 }  // namespace
 
 LensOverlayController::LensOverlayController(
@@ -600,6 +610,10 @@ void LensOverlayController::BindSidePanel(
   if (side_panel_should_show_error_page_) {
     RecordAndShowSidePanelErrorPage();
   }
+
+  // Send the document type to the side panel when it is rendered for the first
+  // time.
+  NotifyPageContentUpdated();
 }
 
 void LensOverlayController::BindSidePanelGhostLoader(
@@ -1381,6 +1395,7 @@ class LensOverlayController::UnderlyingWebContentsObserver
     }
     if (lens_overlay_controller_->state() == State::kLivePageAndResults) {
       lens_overlay_controller_->UpdateNavigationTime();
+      lens_overlay_controller_->NotifyPageContentUpdated();
       return;
     }
     lens_overlay_controller_->CloseUISync(
@@ -2144,6 +2159,9 @@ void LensOverlayController::InitializeOverlayUI(
   initial_document_type_ =
       StringMimeTypeToDocumentType(tab_->GetContents()->GetContentsMimeType());
   page_->ShouldShowContextualSearchBox(contextual_searchbox_shown_in_session_);
+
+  // Send the initial document type to the overlay web UI.
+  NotifyPageContentUpdated();
 
   page_->ScreenshotDataReceived(init_data.current_rgb_screenshot_);
   if (!init_data.objects_.empty()) {
@@ -3208,5 +3226,16 @@ void LensOverlayController::NotifyUserEducationAboutOverlayUsed() {
     user_ed->NotifyFeaturePromoFeatureUsed(
         feature_engagement::kIPHLensOverlayFeature,
         FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+  }
+}
+
+void LensOverlayController::NotifyPageContentUpdated() {
+  auto page_content_type = StringMimeTypeToMojoPageContentType(
+      tab_->GetContents()->GetContentsMimeType());
+  if (page_) {
+    page_->PageContentTypeChanged(page_content_type);
+  }
+  if (side_panel_page_) {
+    side_panel_page_->PageContentTypeChanged(page_content_type);
   }
 }

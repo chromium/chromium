@@ -276,6 +276,7 @@ source_set("interactive_ui_tests") {
     "//components/feature_engagement/public",
     "//components/lens:enterprise_policy",
     "//components/lens:features",
+    "//components/pdf/browser:browser",
     "//components/prefs",
     "//components/search_engines",
     "//components/user_education/views",

@@ -21,6 +21,7 @@
 #include "chrome/browser/lens/core/mojom/lens_ghost_loader.mojom.h"
 #include "chrome/browser/lens/core/mojom/lens_side_panel.mojom.h"
 #include "chrome/browser/lens/core/mojom/overlay_object.mojom.h"
+#include "chrome/browser/lens/core/mojom/page_content_type.mojom.h"
 #include "chrome/browser/lens/core/mojom/text.mojom.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
@@ -1047,6 +1048,9 @@ class LensOverlayController : public LensSearchboxClient,
 
   // Notifies the user education service that the overlay has been used.
   void NotifyUserEducationAboutOverlayUsed();
+
+  // Notifies the overlay or side panel that the page content type has changed.
+  void NotifyPageContentUpdated();
 
   // Owns this class.
   raw_ptr<tabs::TabInterface> tab_;
