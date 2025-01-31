@@ -116,6 +116,48 @@ private boolean isParamNonNull(@Nullable String foo) {
 }
 ```
 
+### "assert", "assumeNonNull()", and "requireNonNull()"
+
+```java
+// Always use "import static" for assumeNonNull.
+import static org.chromium.build.NullUtil.assumeNonNull;
+
+public String void example() {
+    // Prefer its statement form.
+    // It won't change git blame, and reads like a precondition.
+    assumeNonNull(mNullableThing);
+
+    // It supports nested fields.
+    assumeNonNull(mNullableThing.nullableField);
+
+    // Use its expression form when it is more readable to do so.
+    someHelper(assumeNonNull(Foo.getInstance()));
+
+    String ret = mNullableThing.getNullableString();
+    if (willJustCrashLaterAnyways) {
+        // Use "assert" when not locally dereferencing the object.
+        assert ret != null;
+    } else {
+        // Use "requireNonNull()" when returning null might lead to bad things.
+        // Asserts are enabled only on Canary and are set as "dump without crashing".
+        Objects.requireNonNull(ret);
+    }
+    return ret;
+}
+
+// Use "assert false" + "assumeNonNull(null)" for unreachable code.
+public String describe(@MyIntDef int validity) {
+    return switch (validity) {
+        case MyIntDef.VALID -> "okay";
+        case MyIntDef.INVALID -> "not okay";
+        default -> {
+            assert false;
+            yield assumeNonNull(null);
+        }
+    };
+}
+```
+
 ### Object Construction and Destruction
 
 **Construction:**
