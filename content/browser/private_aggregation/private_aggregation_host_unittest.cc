@@ -11,37 +11,34 @@
 #include <limits>
 #include <memory>
 #include <optional>
+#include <string>
 #include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/check_op.h"
 #include "base/command_line.h"
-#include "base/feature_list.h"
-#include "base/functional/bind.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/aggregation_service/aggregation_coordinator_utils.h"
-#include "components/aggregation_service/features.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
-#include "content/browser/private_aggregation/private_aggregation_budgeter.h"
 #include "content/browser/private_aggregation/private_aggregation_caller_api.h"
 #include "content/browser/private_aggregation/private_aggregation_features.h"
+#include "content/browser/private_aggregation/private_aggregation_manager.h"
 #include "content/browser/private_aggregation/private_aggregation_test_utils.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_utils.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -907,87 +904,17 @@ TEST_F(PrivateAggregationHostTest, InvalidRequest_Rejected) {
 
 constexpr struct {
   std::string_view label;
-  bool should_enable_per_calling_api_sizing;
   bool should_enable_per_context_sizing;
   PrivateAggregationCallerApi caller_api;
   std::optional<size_t> requested_max_contributions;
   std::optional<base::TimeDelta> timeout;
   size_t expected_num_contributions;
 } kMaxNumContributionsTestCases[]{
-    // Test behavior of per-caller-API sizing when per-context sizing is
-    // disabled.
-    {
-        "Shared Storage gets legacy number of contributions when "
-        "per-caller-API report sizing is disabled",
-        /*should_enable_per_calling_api_sizing=*/false,
-        /*should_enable_per_context_sizing=*/false,
-        /*caller_api=*/PrivateAggregationCallerApi::kSharedStorage,
-        /*requested_max_contributions=*/std::nullopt,
-        /*timeout=*/std::nullopt,
-        /*expected_num_contributions=*/20,
-    },
-    {
-        "Protected Audience gets legacy number of contributions when "
-        "per-caller-API report sizing is disabled",
-        /*should_enable_per_calling_api_sizing=*/false,
-        /*should_enable_per_context_sizing=*/false,
-        /*caller_api=*/PrivateAggregationCallerApi::kProtectedAudience,
-        /*requested_max_contributions=*/std::nullopt,
-        /*timeout=*/std::nullopt,
-        /*expected_num_contributions=*/20,
-    },
-    {
-        "Shared Storage is unaffected when per-caller-API report sizing is "
-        "enabled",
-        /*should_enable_per_calling_api_sizing=*/true,
-        /*should_enable_per_context_sizing=*/false,
-        /*caller_api=*/PrivateAggregationCallerApi::kSharedStorage,
-        /*requested_max_contributions=*/std::nullopt,
-        /*timeout=*/std::nullopt,
-        /*expected_num_contributions=*/20,
-    },
-    {
-        "Protected Audience gets more contributions when per-caller-API "
-        "report sizing is enabled",
-        /*should_enable_per_calling_api_sizing=*/true,
-        /*should_enable_per_context_sizing=*/false,
-        /*caller_api=*/PrivateAggregationCallerApi::kProtectedAudience,
-        /*requested_max_contributions=*/std::nullopt,
-        /*timeout=*/std::nullopt,
-        /*expected_num_contributions=*/100,
-    },
-
-    // Test that per-caller-API sizing can be disabled independently of
-    // per-context sizing.
-    {
-        "Shared Storage gets legacy number of contributions when "
-        "per-caller-API report sizing is disabled and per-context sizing is "
-        "enabled",
-        /*should_enable_per_calling_api_sizing=*/false,
-        /*should_enable_per_context_sizing=*/true,
-        /*caller_api=*/PrivateAggregationCallerApi::kSharedStorage,
-        /*requested_max_contributions=*/std::nullopt,
-        /*timeout=*/std::nullopt,
-        /*expected_num_contributions=*/20,
-    },
-    {
-        "Protected Audience gets legacy number of contributions when "
-        "per-caller-API report sizing is disabled and per-context sizing is "
-        "enabled",
-        /*should_enable_per_calling_api_sizing=*/false,
-        /*should_enable_per_context_sizing=*/true,
-        /*caller_api=*/PrivateAggregationCallerApi::kProtectedAudience,
-        /*requested_max_contributions=*/std::nullopt,
-        /*timeout=*/std::nullopt,
-        /*expected_num_contributions=*/20,
-    },
-
     // Simulate callers that omit `maxContributions` when per-context sizing is
     // enabled.
     {
         "Shared Storage gets default number of contributions when per-context "
         "sizing is enabled",
-        /*should_enable_per_calling_api_sizing=*/true,
         /*should_enable_per_context_sizing=*/true,
         /*caller_api=*/PrivateAggregationCallerApi::kSharedStorage,
         /*requested_max_contributions=*/std::nullopt,
@@ -997,7 +924,6 @@ constexpr struct {
     {
         "Protected Audience gets default number of contributions when "
         "per-context sizing is enabled",
-        /*should_enable_per_calling_api_sizing=*/true,
         /*should_enable_per_context_sizing=*/true,
         /*caller_api=*/PrivateAggregationCallerApi::kProtectedAudience,
         /*requested_max_contributions=*/std::nullopt,
@@ -1009,7 +935,6 @@ constexpr struct {
     // enabled.
     {
         "Shared Storage gets 10 contributions upon request",
-        /*should_enable_per_calling_api_sizing=*/true,
         /*should_enable_per_context_sizing=*/true,
         /*caller_api=*/PrivateAggregationCallerApi::kSharedStorage,
         /*requested_max_contributions=*/10,
@@ -1018,7 +943,6 @@ constexpr struct {
     },
     {
         "Protected Audience gets 10 contributions upon request",
-        /*should_enable_per_calling_api_sizing=*/true,
         /*should_enable_per_context_sizing=*/true,
         /*caller_api=*/PrivateAggregationCallerApi::kProtectedAudience,
         /*requested_max_contributions=*/10,
@@ -1027,7 +951,6 @@ constexpr struct {
     },
     {
         "Shared Storage gets 1000 contributions upon request",
-        /*should_enable_per_calling_api_sizing=*/true,
         /*should_enable_per_context_sizing=*/true,
         /*caller_api=*/PrivateAggregationCallerApi::kSharedStorage,
         /*requested_max_contributions=*/1000,
@@ -1036,7 +959,6 @@ constexpr struct {
     },
     {
         "Protected Audience gets 1000 contributions upon request",
-        /*should_enable_per_calling_api_sizing=*/true,
         /*should_enable_per_context_sizing=*/true,
         /*caller_api=*/PrivateAggregationCallerApi::kProtectedAudience,
         /*requested_max_contributions=*/1000,
@@ -1045,7 +967,6 @@ constexpr struct {
     },
     {
         "Shared Storage gets no more than 1000 contributions",
-        /*should_enable_per_calling_api_sizing=*/true,
         /*should_enable_per_context_sizing=*/true,
         /*caller_api=*/PrivateAggregationCallerApi::kSharedStorage,
         /*requested_max_contributions=*/1001,
@@ -1054,7 +975,6 @@ constexpr struct {
     },
     {
         "Protected Audience gets no more than 1000 contributions",
-        /*should_enable_per_calling_api_sizing=*/true,
         /*should_enable_per_context_sizing=*/true,
         /*caller_api=*/PrivateAggregationCallerApi::kProtectedAudience,
         /*requested_max_contributions=*/1001,
@@ -1068,13 +988,9 @@ TEST_F(PrivateAggregationHostTest, TooManyContributions_Truncated) {
     SCOPED_TRACE(testing::Message() << test_case.label);
 
     base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitWithFeatureStates(base::flat_map<
-                                              base::test::FeatureRef, bool>({
-        {content::kPrivateAggregationApi100ContributionsForProtectedAudience,
-         test_case.should_enable_per_calling_api_sizing},
-        {blink::features::kPrivateAggregationApiMaxContributions,
-         test_case.should_enable_per_context_sizing},
-    }));
+    scoped_feature_list.InitWithFeatureState(
+        blink::features::kPrivateAggregationApiMaxContributions,
+        test_case.should_enable_per_context_sizing);
 
     const url::Origin kExampleOrigin =
         url::Origin::Create(GURL("https://example.com"));
@@ -1194,13 +1110,9 @@ TEST_F(PrivateAggregationHostTest,
     SCOPED_TRACE(testing::Message() << test_case.label);
 
     base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitWithFeatureStates(base::flat_map<
-                                              base::test::FeatureRef, bool>({
-        {content::kPrivateAggregationApi100ContributionsForProtectedAudience,
-         test_case.should_enable_per_calling_api_sizing},
-        {blink::features::kPrivateAggregationApiMaxContributions,
-         test_case.should_enable_per_context_sizing},
-    }));
+    scoped_feature_list.InitWithFeatureState(
+        blink::features::kPrivateAggregationApiMaxContributions,
+        test_case.should_enable_per_context_sizing);
 
     const url::Origin kExampleOrigin =
         url::Origin::Create(GURL("https://example.com"));
@@ -1262,13 +1174,9 @@ TEST_F(PrivateAggregationHostTest,
     SCOPED_TRACE(testing::Message() << test_case.label);
 
     base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitWithFeatureStates(base::flat_map<
-                                              base::test::FeatureRef, bool>({
-        {content::kPrivateAggregationApi100ContributionsForProtectedAudience,
-         test_case.should_enable_per_calling_api_sizing},
-        {blink::features::kPrivateAggregationApiMaxContributions,
-         test_case.should_enable_per_context_sizing},
-    }));
+    scoped_feature_list.InitWithFeatureState(
+        blink::features::kPrivateAggregationApiMaxContributions,
+        test_case.should_enable_per_context_sizing);
 
     const url::Origin kExampleOrigin =
         url::Origin::Create(GURL("https://example.com"));
@@ -2685,11 +2593,8 @@ TEST_F(PrivateAggregationHostTest,
 TEST_F(PrivateAggregationHostTest,
        GetEffectiveMaxContributionsFeatureDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/
-      {content::kPrivateAggregationApi100ContributionsForProtectedAudience},
-      /*disabled_features=*/{
-          blink::features::kPrivateAggregationApiMaxContributions});
+  scoped_feature_list.InitAndDisableFeature(
+      blink::features::kPrivateAggregationApiMaxContributions);
 
   EXPECT_EQ(PrivateAggregationHost::GetEffectiveMaxContributions(
                 PrivateAggregationCallerApi::kSharedStorage, std::nullopt),
@@ -2710,11 +2615,8 @@ TEST_F(PrivateAggregationHostTest,
 
 TEST_F(PrivateAggregationHostTest, GetEffectiveMaxContributionsCrashOnZero) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/
-      {content::kPrivateAggregationApi100ContributionsForProtectedAudience,
-       blink::features::kPrivateAggregationApiMaxContributions},
-      /*disabled_features=*/{});
+  scoped_feature_list.InitAndEnableFeature(
+      blink::features::kPrivateAggregationApiMaxContributions);
 
   EXPECT_DEATH_IF_SUPPORTED(
       PrivateAggregationHost::GetEffectiveMaxContributions(
@@ -2734,13 +2636,8 @@ TEST_F(PrivateAggregationHostTest, GetEffectiveMaxContributions) {
   using enum PrivateAggregationCallerApi;
 
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/
-      {
-          blink::features::kPrivateAggregationApiMaxContributions,
-          content::kPrivateAggregationApi100ContributionsForProtectedAudience,
-      },
-      /*disabled_features=*/{});
+  scoped_feature_list.InitAndEnableFeature(
+      blink::features::kPrivateAggregationApiMaxContributions);
 
   struct TestCase {
     PrivateAggregationCallerApi caller_api;
