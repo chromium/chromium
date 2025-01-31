@@ -209,6 +209,15 @@ class LoginPasswordView::LoginTextfield : public views::Textfield {
     views::Textfield::OnFocus();
   }
 
+  // views::Textfield:
+  void ShowContextMenuForViewImpl(
+      View* source,
+      const gfx::Point& point,
+      ui::mojom::MenuSourceType source_type) override {
+    // Prevent context menu on password input fields.
+    return;
+  }
+
   void AboutToRequestFocusFromTabTraversal(bool reverse) override {
     if (!GetText().empty()) {
       SelectAll(/*reversed=*/false);
