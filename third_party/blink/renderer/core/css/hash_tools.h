@@ -25,10 +25,15 @@
 
 namespace blink {
 
+static constexpr int kNotKnownExposedPropertyBit = 0x8000U;
+
 struct Property {
   DISALLOW_NEW();
   int name_offset;
-  int id;
+  // NOTE: kNotKnownExposedPropertyBit is set unless property is known to
+  // be web-exposed. There is an assert in make_css_property_names.py
+  // that verifies that no property IDs actually have this bit already.
+  int id_and_exposed_bit;
 };
 
 struct Value {

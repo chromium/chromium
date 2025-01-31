@@ -76,7 +76,8 @@ static AtRuleDescriptorID AsAtRuleDescriptorID(
   if (!hash_table_entry) {
     return AtRuleDescriptorID::Invalid;
   }
-  return static_cast<AtRuleDescriptorID>(hash_table_entry->id);
+  return static_cast<AtRuleDescriptorID>(
+      hash_table_entry->id_and_exposed_bit & ~kNotKnownExposedPropertyBit);
 }
 
 }  // namespace

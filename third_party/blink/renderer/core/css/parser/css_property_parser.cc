@@ -358,17 +358,20 @@ static CSSPropertyID UnresolvedCSSPropertyID(
     return CSSPropertyID::kInvalid;
   }
 
-  CSSPropertyID property_id = static_cast<CSSPropertyID>(hash_table_entry->id);
-  if (kKnownExposedProperties.Has(property_id)) {
+  int id_and_exposed_bit = hash_table_entry->id_and_exposed_bit;
+  if (id_and_exposed_bit & kNotKnownExposedPropertyBit) {
+    // The property is behind a runtime flag, so we need to go ahead
+    // and actually do the resolution to see if that flag is on or not.
+    // This should happen only occasionally.
+    CSSPropertyID property_id = static_cast<CSSPropertyID>(
+        id_and_exposed_bit & ~kNotKnownExposedPropertyBit);
+    return ExposedProperty(property_id, execution_context, mode);
+  } else {
+    CSSPropertyID property_id = static_cast<CSSPropertyID>(id_and_exposed_bit);
     DCHECK_EQ(property_id,
               ExposedProperty(property_id, execution_context, mode));
     return property_id;
   }
-
-  // The property is behind a runtime flag, so we need to go ahead
-  // and actually do the resolution to see if that flag is on or not.
-  // This should happen only occasionally.
-  return ExposedProperty(property_id, execution_context, mode);
 }
 
 CSSPropertyID UnresolvedCSSPropertyID(const ExecutionContext* execution_context,
