@@ -120,19 +120,14 @@ class CORE_EXPORT HTMLOptionElement final : public HTMLElement {
 
   void FinishParsingChildren() override;
 
-  // These methods mutate the shadowroot to switch between rendering all
-  // children or only text content. SetTextOnlyRendering is used for
-  // appearance:base-select. The mechanism by which these methods render all
-  // children or only text content is that the UA shadowroot has a manually
-  // updated text node for text-only mode or a slot element which just slots all
-  // nodes into it for the render everything mode. SetTextOnlyRendering switches
-  // the ShadowRoot state based on the provided argument.
-  void SetTextOnlyRendering(bool);
-
   // Callback for OptionTextObserver.
   void DidChangeTextContent();
 
   bool IsRichlyEditableForAccessibility() const override { return false; }
+
+  // This method returns true if the provided element is the label_container_ of
+  // an HTMLOptionElement.
+  static bool IsLabelContainerElement(const Element& element);
 
  private:
   FocusableState SupportsFocus(UpdateBehavior update_behavior) const override;
@@ -166,6 +161,11 @@ class CORE_EXPORT HTMLOptionElement final : public HTMLElement {
   // instead of a node traversal. That would probably also require changing
   // HTMLOptionsCollection to support flat tree traversals as well.
   Member<HTMLSelectElement> nearest_ancestor_select_;
+
+  // label_container_ contains the text content of DisplayLabel(). Based on UA
+  // style rules, it is rendered when this option is not inside of a select
+  // element with appearance:base-select.
+  Member<HTMLElement> label_container_;
 
   // Represents 'selectedness'.
   // https://html.spec.whatwg.org/C/#concept-option-selectedness

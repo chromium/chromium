@@ -86,11 +86,25 @@ instead of "initial value".
 |   <option>
 |     "initial value"
 |     <shadow:root>
+|       <span>
+|         aria-hidden="true"
+|         pseudo="-internal-option-label-container"
+|         shadow:pseudoId="-internal-option-label-container"
+|         "initial value"
 |       <slot>
+|         pseudo="-internal-option-slot"
+|         shadow:pseudoId="-internal-option-slot"
 |   <option>
 |     "inserted value"
 |     <shadow:root>
+|       <span>
+|         aria-hidden="true"
+|         pseudo="-internal-option-label-container"
+|         shadow:pseudoId="-internal-option-label-container"
+|         "inserted value"
 |       <slot>
+|         pseudo="-internal-option-slot"
+|         shadow:pseudoId="-internal-option-slot"
 |   <shadow:root>
 |     <div>
 |       aria-hidden="true"

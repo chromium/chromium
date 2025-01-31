@@ -1829,4 +1829,36 @@ dialog:where(:modal) {
     padding-inline: -internal-auto-base(2px, 0.5em);
     min-block-size: -internal-auto-base(initial, 1lh);
   }
+
+  /* These style rules switch whether <option> elements render their label text
+   * via ::-internal-option-label-container or all of their children via a
+   * <slot> called ::-internal-option-slot. Using the <slot> for rendering is
+   * only supported for customizable select when the option does not have a
+   * label attribute. In all other cases, just the label text is rendered via
+   * ::-internal-option-label-container. */
+  /* TODO(crbug.com/393500003): Some :-internal-list-box and multiple checks
+   * here could be removed if we make -internal-auto-base() work better. */
+  option::-internal-option-label-container {
+    display: contents;
+  }
+  option::-internal-option-slot {
+    display: none;
+  }
+  select:not(:-internal-list-box):not([multiple]) option::-internal-option-label-container {
+    display: none;
+  }
+  select:not(:-internal-list-box):not([multiple]) option::-internal-option-slot {
+    display: contents;
+  }
+  /* Render the label attribute when it is set. This should be kept in sync
+   * with the logic in HTMLOptionElement::DisplayLabel once an interoperable
+   * decision has been made here: https://github.com/whatwg/html/issues/10955 */
+  select:not(:-internal-list-box):not([multiple])
+  option[label]:not([label=""])::-internal-option-label-container {
+    display: contents;
+  }
+  select:not(:-internal-list-box):not([multiple])
+  option[label]:not([label=""])::-internal-option-slot {
+    display: none;
+  }
 }

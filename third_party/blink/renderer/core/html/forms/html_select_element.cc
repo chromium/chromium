@@ -1960,14 +1960,6 @@ void HTMLSelectElement::ChangeRendering() {
   if (UsesMenuList() != old_uses_menu_list) {
     select_type_->WillBeDestroyed();
     select_type_ = SelectType::Create(*this);
-
-    if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
-      // Make <option>s render all child content when in MenuList mode in order
-      // to support appearance:base-select.
-      for (auto& option : GetOptionList()) {
-        option.SetTextOnlyRendering(!UsesMenuList());
-      }
-    }
   }
   if (!InActiveDocument())
     return;

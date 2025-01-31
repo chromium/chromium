@@ -166,5 +166,13 @@
       name: "-internal-optgroup-label",
       Symbol: "kIdOptGroupLabel",
     },
+    {
+      name: "-internal-option-label-container",
+      Symbol: "kOptionLabelContainer",
+    },
+    {
+      name: "-internal-option-slot",
+      Symbol: "kOptionSlot",
+    },
   ],
 }

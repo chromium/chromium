@@ -89,11 +89,9 @@ TEST_F(PositionTest, LastPositionInOrAfterNodeNotInFlatTree) {
   EXPECT_EQ(PositionInFlatTree::LastPositionInNode(document_element),
             PositionInFlatTree::LastPositionInOrAfterNode(document_element));
 
-  // Note: <select> isn't appeared in flat tree, because <option> doesn't
-  // take it as valid child node.
   EXPECT_EQ(Position::AfterNode(select),
             Position::LastPositionInOrAfterNode(select));
-  EXPECT_EQ(PositionInFlatTree::LastPositionInNode(select),
+  EXPECT_NE(PositionInFlatTree::LastPositionInNode(select),
             PositionInFlatTree::LastPositionInOrAfterNode(select));
 }
 
