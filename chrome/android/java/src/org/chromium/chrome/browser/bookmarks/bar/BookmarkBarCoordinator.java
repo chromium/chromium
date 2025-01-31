@@ -5,21 +5,27 @@
 package org.chromium.chrome.browser.bookmarks.bar;
 
 import android.app.Activity;
+import android.view.LayoutInflater;
+import android.view.ViewGroup;
 import android.view.ViewStub;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 /** Coordinator for the bookmark bar which provides users with bookmark access from top chrome. */
 public class BookmarkBarCoordinator {
 
+    private final SimpleRecyclerViewAdapter mItemsAdapter;
     private final BookmarkBarMediator mMediator;
     private final BookmarkBar mView;
 
@@ -48,6 +54,21 @@ public class BookmarkBarCoordinator {
                 mView.findViewById(R.id.bookmark_bar_all_bookmarks_button),
                 BookmarkBarButtonViewBinder::bind);
 
+        // Bind adapter/model and initialize view for bookmark bar items.
+        final var itemsModel = new ModelList();
+        mItemsAdapter = new SimpleRecyclerViewAdapter(itemsModel);
+        mItemsAdapter.registerType(
+                BookmarkBarUtils.ViewType.ITEM,
+                this::inflateBookmarkBarButton,
+                BookmarkBarButtonViewBinder::bind);
+        final RecyclerView itemsContainer = mView.findViewById(R.id.bookmark_bar_items_container);
+        itemsContainer.setAdapter(mItemsAdapter);
+        itemsContainer.setLayoutManager(new BookmarkBarItemsLayoutManager(activity));
+
+        // NOTE: Scrolling isn't supported and items rarely change so item view caching is disabled.
+        itemsContainer.getRecycledViewPool().setMaxRecycledViews(BookmarkBarUtils.ViewType.ITEM, 0);
+        itemsContainer.setItemViewCacheSize(0);
+
         // Bind view/model for bookmark bar and instantiate mediator.
         final var model = new PropertyModel.Builder(BookmarkBarProperties.ALL_KEYS).build();
         mMediator =
@@ -56,6 +77,7 @@ public class BookmarkBarCoordinator {
                         allBookmarksButtonModel,
                         browserControlsManager,
                         heightChangeCallback,
+                        itemsModel,
                         model,
                         profileSupplier);
         PropertyModelChangeProcessor.create(model, mView, BookmarkBarViewBinder::bind);
@@ -63,6 +85,7 @@ public class BookmarkBarCoordinator {
 
     /** Destroys the bookmark bar coordinator. */
     public void destroy() {
+        mItemsAdapter.destroy();
         mMediator.destroy();
         mView.destroy();
     }
@@ -72,5 +95,11 @@ public class BookmarkBarCoordinator {
      */
     public ObservableSupplier<Integer> getHeightSupplier() {
         return mMediator.getHeightSupplier();
+    }
+
+    private @NonNull BookmarkBarButton inflateBookmarkBarButton(@NonNull ViewGroup parent) {
+        return (BookmarkBarButton)
+                LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.bookmark_bar_button, parent, false);
     }
 }

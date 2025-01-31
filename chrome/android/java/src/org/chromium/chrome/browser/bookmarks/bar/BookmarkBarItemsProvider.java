@@ -58,6 +58,16 @@ class BookmarkBarItemsProvider extends BookmarkModelObserver
          * @param count the count of top-level bookmark bar items that were removed.
          */
         public void onBookmarkItemsRemoved(@ObservationId int observationId, int index, int count);
+
+        /**
+         * NOTE: {@link #onBookmarkItemsChanged()} events are never propagated and so this method
+         * should not be overridden. Instead, users should implement {@link #onBookmarkItemsAdded()}
+         * and {@link #onBookmarkItemsRemoved()} respectively which are propagated from items
+         * changed events.
+         */
+        @Override
+        public default void onBookmarkItemsChanged(
+                @ObservationId int observationId, @NonNull List<BookmarkItem> items) {}
     }
 
     private final ScopedBookmarkModelObservation mLocalFolderObservation;

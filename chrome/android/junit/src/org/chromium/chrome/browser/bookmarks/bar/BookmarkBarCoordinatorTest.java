@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.bookmarks.bar;
 
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.verify;
@@ -13,10 +16,13 @@ import static org.mockito.Mockito.when;
 import android.app.Activity;
 import android.graphics.Rect;
 import android.view.View;
+import android.view.ViewGroup.LayoutParams;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.view.ViewStub;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.core.app.ActivityScenario.ActivityAction;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.filters.SmallTest;
@@ -29,17 +35,25 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.bookmarks.BookmarkModel;
+import org.chromium.chrome.browser.bookmarks.FakeBookmarkModel;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.widget.CoordinatorLayoutForPointer;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.url.GURL;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /** Unit tests for {@link BookmarkBarCoordinator}. */
@@ -55,22 +69,49 @@ public class BookmarkBarCoordinatorTest {
     @Mock private BrowserControlsManager mBrowserControlsManager;
     @Mock private Callback<Integer> mHeightChangeCallback;
     @Mock private Callback<Integer> mHeightSupplierObserver;
+    @Mock private Profile mProfile;
 
     private BookmarkBarCoordinator mCoordinator;
+    private BookmarkId mDesktopFolderId;
+    private RecyclerView mItemsContainer;
+    private FakeBookmarkModel mModel;
+    private ObservableSupplierImpl<Profile> mProfileSupplier;
     private BookmarkBar mView;
 
     @Before
     public void setUp() {
+        mModel = FakeBookmarkModel.createModel();
+        mDesktopFolderId = mModel.getDesktopFolderId();
+        mProfileSupplier = new ObservableSupplierImpl<>(mProfile);
+        BookmarkModel.setInstanceForTesting(mModel);
         onActivity(this::createCoordinator);
     }
 
+    private @NonNull BookmarkId addItemToDesktopFolder(@NonNull String title) {
+        final int index = mModel.getChildCount(mDesktopFolderId);
+        return mModel.addBookmark(mDesktopFolderId, index, title, GURL.emptyGURL());
+    }
+
+    private void assertItemRenderedAtIndex(@NonNull BookmarkId itemId, int index) {
+        final var item = mModel.getBookmarkById(itemId);
+        assertNotNull(item);
+
+        final var renderedItem = (BookmarkBarButton) mItemsContainer.getChildAt(index);
+        assertNotNull(renderedItem);
+        assertEquals(item.getTitle(), renderedItem.getTitleForTesting());
+    }
+
+    private void assertItemsRenderedCount(int count) {
+        assertEquals(count, mItemsContainer.getChildCount());
+    }
+
     private void createCoordinator(@NonNull Activity activity) {
+        final var contentView = new CoordinatorLayoutForPointer(activity, /* attrs= */ null);
+        activity.setContentView(contentView);
+
         final var viewStub = new ViewStub(activity, R.layout.bookmark_bar);
         viewStub.setOnInflateListener((stub, view) -> mView = (BookmarkBar) view);
-
-        // NOTE: `viewStub` must be attached to a `viewGroup` in order to inflate.
-        final var viewGroup = new CoordinatorLayoutForPointer(activity, /* attrs= */ null);
-        viewGroup.addView(viewStub);
+        contentView.addView(viewStub, new LayoutParams(MATCH_PARENT, WRAP_CONTENT));
 
         // NOTE: `viewStub` inflation occurs during coordinator construction.
         mView = null;
@@ -79,9 +120,34 @@ public class BookmarkBarCoordinatorTest {
                         activity,
                         mBrowserControlsManager,
                         mHeightChangeCallback,
-                        /* profileSupplier= */ new ObservableSupplierImpl<>(),
+                        mProfileSupplier,
                         viewStub);
         assertNotNull("Verify view stub inflation during construction.", mView);
+
+        mItemsContainer = mView.findViewById(R.id.bookmark_bar_items_container);
+        assertNotNull("Verify items container existence.", mItemsContainer);
+    }
+
+    private void moveItemToDesktopFolderAtIndex(@NonNull BookmarkId itemId, int index) {
+        mModel.moveBookmark(itemId, mDesktopFolderId, index);
+    }
+
+    private void removeItem(@NonNull BookmarkId itemId) {
+        mModel.deleteBookmark(itemId);
+    }
+
+    private void setItemTitle(@NonNull BookmarkId itemId, @Nullable String title) {
+        mModel.setBookmarkTitle(itemId, title);
+    }
+
+    private @NonNull List<BookmarkId> setItemsWithinDesktopFolder(@NonNull List<String> titles) {
+        final List<BookmarkId> itemIds = new ArrayList<>();
+        mModel.performExtensiveBookmarkChanges(
+                () -> {
+                    mModel.getChildIds(mDesktopFolderId).stream().forEach(this::removeItem);
+                    titles.stream().map(this::addItemToDesktopFolder).forEach(itemIds::add);
+                });
+        return itemIds;
     }
 
     private void onActivity(@NonNull ActivityAction<TestActivity> callback) {
@@ -131,7 +197,7 @@ public class BookmarkBarCoordinatorTest {
         // during `mCoordinator` construction and notified of initial height via posted task.
         onActivity(
                 activity -> {
-                    verify(mHeightChangeCallback).onResult(0);
+                    verify(mHeightChangeCallback).onResult(mView.getHeight());
                     verifyNoMoreInteractions(mHeightSupplierObserver);
                 });
 
@@ -161,6 +227,130 @@ public class BookmarkBarCoordinatorTest {
 
         // Clean up.
         heightSupplier.removeObserver(mHeightSupplierObserver);
+    }
+
+    @Test
+    @SmallTest
+    public void testOnBookmarkBarItemAdded() {
+        onActivity(
+                activity -> {
+                    assertItemsRenderedCount(0);
+                    final var itemId = addItemToDesktopFolder("Item 1");
+                    Robolectric.flushForegroundThreadScheduler();
+                    assertItemsRenderedCount(1);
+                    assertItemRenderedAtIndex(itemId, 0);
+                });
+    }
+
+    @Test
+    @SmallTest
+    public void testOnBookmarkBarItemMoved() {
+        onActivity(
+                activity -> {
+                    // Set up.
+                    final var itemIds = setItemsWithinDesktopFolder(List.of("Item 1", "Item 2"));
+                    Robolectric.flushForegroundThreadScheduler();
+                    assertItemsRenderedCount(2);
+                    assertItemRenderedAtIndex(itemIds.get(0), 0);
+                    assertItemRenderedAtIndex(itemIds.get(1), 1);
+
+                    // Test case.
+                    moveItemToDesktopFolderAtIndex(itemIds.get(1), 0);
+                    Robolectric.flushForegroundThreadScheduler();
+                    assertItemsRenderedCount(2);
+                    assertItemRenderedAtIndex(itemIds.get(1), 0);
+                    assertItemRenderedAtIndex(itemIds.get(0), 1);
+                });
+    }
+
+    @Test
+    @SmallTest
+    public void testOnBookmarkBarItemRemoved() {
+        onActivity(
+                activity -> {
+                    // Set up.
+                    final var itemIds = setItemsWithinDesktopFolder(List.of("Item 1", "Item 2"));
+                    Robolectric.flushForegroundThreadScheduler();
+                    assertItemsRenderedCount(2);
+                    assertItemRenderedAtIndex(itemIds.get(0), 0);
+                    assertItemRenderedAtIndex(itemIds.get(1), 1);
+
+                    // Test case.
+                    removeItem(itemIds.get(0));
+                    Robolectric.flushForegroundThreadScheduler();
+                    assertItemsRenderedCount(1);
+                    assertItemRenderedAtIndex(itemIds.get(1), 0);
+                });
+    }
+
+    @Test
+    @SmallTest
+    public void testOnBookmarkBarItemUpdated() {
+        onActivity(
+                activity -> {
+                    // Set up.
+                    assertItemsRenderedCount(0);
+                    final var itemId = addItemToDesktopFolder("Item 1");
+                    Robolectric.flushForegroundThreadScheduler();
+                    assertItemsRenderedCount(1);
+                    assertItemRenderedAtIndex(itemId, 0);
+
+                    // Test case.
+                    setItemTitle(itemId, "Item 1 (Updated)");
+                    Robolectric.flushForegroundThreadScheduler();
+                    assertItemsRenderedCount(1);
+                    assertItemRenderedAtIndex(itemId, 0);
+                });
+    }
+
+    @Test
+    @SmallTest
+    public void testOnBookmarkBarItemsChanged() {
+        onActivity(
+                activity -> {
+                    // Set up.
+                    var itemIds = setItemsWithinDesktopFolder(List.of("Item 1", "Item 2"));
+                    Robolectric.flushForegroundThreadScheduler();
+                    assertItemsRenderedCount(2);
+                    assertItemRenderedAtIndex(itemIds.get(0), 0);
+                    assertItemRenderedAtIndex(itemIds.get(1), 1);
+
+                    // Test case.
+                    itemIds = setItemsWithinDesktopFolder(List.of("Item 3", "Item 4"));
+                    Robolectric.flushForegroundThreadScheduler();
+                    assertItemsRenderedCount(2);
+                    assertItemRenderedAtIndex(itemIds.get(0), 0);
+                    assertItemRenderedAtIndex(itemIds.get(1), 1);
+                });
+    }
+
+    @Test
+    @SmallTest
+    public void testOnProfileChanged() {
+        onActivity(
+                activity -> {
+                    // Set up.
+                    var itemIds = setItemsWithinDesktopFolder(List.of("Item 1", "Item 2"));
+                    Robolectric.flushForegroundThreadScheduler();
+                    assertItemsRenderedCount(2);
+                    assertItemRenderedAtIndex(itemIds.get(0), 0);
+                    assertItemRenderedAtIndex(itemIds.get(1), 1);
+
+                    // Test case: `null` profile.
+                    BookmarkModel.setInstanceForTesting(null);
+                    mProfileSupplier.set(null);
+                    Robolectric.flushForegroundThreadScheduler();
+                    assertItemsRenderedCount(0);
+
+                    // Test case: profile w/ populated model.
+                    itemIds = setItemsWithinDesktopFolder(List.of("Item 3", "Item 4"));
+                    BookmarkModel.setInstanceForTesting(mModel);
+                    mProfileSupplier.set(mProfile);
+                    Robolectric.flushForegroundThreadScheduler();
+                    assertItemsRenderedCount(2);
+                    assertItemRenderedAtIndex(itemIds.get(0), 0);
+                    assertItemRenderedAtIndex(itemIds.get(1), 1);
+                });
     }
 
     @Test

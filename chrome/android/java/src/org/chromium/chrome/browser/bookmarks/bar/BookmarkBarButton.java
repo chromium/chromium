@@ -58,4 +58,12 @@ class BookmarkBarButton extends LinearLayout {
     public void setTitle(@Nullable String title) {
         mTitle.setText(title);
     }
+
+    /**
+     * @return the title which is rendered in the bookmark bar button.
+     */
+    @Nullable
+    CharSequence getTitleForTesting() {
+        return mTitle.getText();
+    }
 }
