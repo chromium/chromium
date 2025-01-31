@@ -71,6 +71,14 @@ source_set("context") {
   deps = [ "//components/data_sharing/public" ]
 }
 
+source_set("observer_bridge") {
+  sources = [
+    "data_sharing_service_observer_bridge.h",
+    "data_sharing_service_observer_bridge.mm",
+  ]
+  deps = [ "//components/data_sharing/public" ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [ "data_sharing_service_factory_unittest.mm" ]
