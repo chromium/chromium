@@ -27,7 +27,7 @@ objects, [AccessibilityEvent](https://developer.android.com/reference/android/vi
 The main Java class that implements the accessibility protocol in Chrome is
 [WebContentsAccessibilityImpl.java](https://cs.chromium.org/chromium/src/content/public/android/java/src/org/chromium/content/browser/accessibility/WebContentsAccessibilityImpl.java). This
 class acts as the AccessibilityNodeProvider (see above) for a given tab, and will
-provide the virtual tree hierarchy, preform actions on the user's behalf, and
+provide the virtual tree hierarchy, perform actions on the user's behalf, and
 send events to downstream services for changes in the web contents.
 
 This class differs in a few key ways from other platforms. First, it represents
@@ -67,7 +67,7 @@ The first time that `getAccessibilityNodeProvider` is called by the Android syst
 the WebContentsAccessibilityImpl will be initialized. This is why we consider it
 "lazy" and "on demand", because although it has technically been constructed and
 instantiated, it does not perform any actions until AT triggered its initialization.
-See [WebContentsAccessibilityImpl#getAccessibilityNodeProvider](https://source.chromium.org/chromium/chromium/src/+/main:content/public/android/java/src/org/chromium/content/browser/accessibility/WebContentsAccessibilityImpl.java?q=%22public%20AccessibilityNodeProvider%20getAccessibilityNodeProvider%22) and the
+See [WebContentsAccessibilityImpl#getAccessibilityNodeProvider](https://source.chromium.org/chromium/chromium/src/+/main:content/public/android/java/src/org/chromium/content/browser/accessibility/WebContentsAccessibilityImpl.java?q=%22AccessibilityNodeProvider%20getAccessibilityNodeProvider%22) and the
 associated [onNativeInit](https://source.chromium.org/chromium/chromium/src/+/main:content/public/android/java/src/org/chromium/content/browser/accessibility/WebContentsAccessibilityImpl.java?q=%22protected%20void%20onNativeInit%22) methods. The getAccessibilityNodeProvider method
 will only be called when an accessibility service is enabled, and so by lazily
 constructing only after this call, we ensure that the accessibility code is not
@@ -116,7 +116,7 @@ BrowserAccessibilityAndroid classes, as expected, but there is also an additiona
 This class is what allows us to connect the Java-side WebContentsAccessibilityImpl
 with the C++ side manager, through the Java Native Interface (JNI).
 
-When [WebContentsAccessibilityImpl#createAccessibilityNodeInfo](https://source.chromium.org/chromium/chromium/src/+/main:content/public/android/java/src/org/chromium/content/browser/accessibility/WebContentsAccessibilityImpl.java?q=%22public%20AccessibilityNodeInfoCompat%20createAccessibilityNodeInfo%22) is called for
+When [WebContentsAccessibilityImpl#createAccessibilityNodeInfo](https://source.chromium.org/chromium/chromium/src/+/main:content/public/android/java/src/org/chromium/content/browser/accessibility/WebContentsAccessibilityImpl.java?q=%22AccessibilityNodeInfoCompat%20createAccessibilityNodeInfo%22) is called for
 a given virtual view (web node), the WebContentsAccessibilityImpl object calls into the native
 C++ code through JNI, connecting to `web_contents_accessibility_android.cc`. The
 web\_contents\_accessibility\_android object in turn compiles information about the
@@ -204,15 +204,15 @@ a rating of how likely an object is to be clickable. The boolean "offscreen" is
 used to denote if an element is "visible" to the user, but off screen (see more below).
 We include unclipped bounds to give the true bounding boxes of a node if we were
 not clipping them to be only onscreen. The full list can be seen in the
-[list of constants](https://source.chromium.org/chromium/chromium/src/+/main:content/public/android/java/src/org/chromium/content/browser/accessibility/WebContentsAccessibilityImpl.java?q=%22Constants%20defined%20for%20AccessibilityNodeInfo%20Bundle%20extras%20keys%22)
-at the top of WebContentsAccessibilityImpl.java.
+[list of constants](https://source.chromium.org/chromium/chromium/src/+/main:content/public/android/java/src/org/chromium/content/browser/accessibility/AccessibilityNodeInfoBuilder.java?q=%22Constants%20defined%20for%20AccessibilityNodeInfo%20Bundle%20extras%20keys%22)
+at the top of AccessibilityNodeInfoBuilder.java.
 
 ### Asynchronously adding "heavy" data
 
 Sometimes apps and downstream services will request we add additional information
 to the AccessibilityNodeInfo objects that is too computationally heavy to compute
 and include for every node. For these cases, the Android API has a method that
-can be called by AT, [addExtraDataToAccessibilityNodeInfo](https://developer.android.com/reference/android/view/accessibility/AccessibilityNodeProvider#addExtraDataToAccessibilityNodeInfo\(int,%20android.view.accessibility.AccessibilityNodeInfo,%20java.lang.String,%20android.os.Bundle\)). The method is
+can be called by AT, [addExtraDataToAccessibilityNodeInfo](https://developer.android.com/reference/android/view/accessibility/AccessibilityNodeProvider#addExtraDataToAccessibilityNodeInfo(int,%20android.view.accessibility.AccessibilityNodeInfo,%20java.lang.String,%20android.os.Bundle)). The method is
 part of the AccessibilityNodeProvider, and so WebContentsAccessibilityImpl has
 its [own implementation](https://source.chromium.org/chromium/chromium/src/+/main:content/public/android/java/src/org/chromium/content/browser/accessibility/WebContentsAccessibilityImpl.java?q=%22public%20void%20addExtraDataToAccessibilityNodeInfo%22) of this for Chrome. When called with valid arguments,
 this will start an asynchronous process to add this extra data to the given
@@ -247,7 +247,7 @@ AT is aware of any changes to the web contents state.
 ### performAction
 
 One of the most important methods in WebContentsAccessibilityImpl is the
-implementation of [performAction](https://developer.android.com/reference/android/view/accessibility/AccessibilityNodeProvider#performAction\(int,%20int,%20android.os.Bundle\)).
+implementation of [performAction](https://developer.android.com/reference/android/view/accessibility/AccessibilityNodeProvider#performAction(int,%20int,%20android.os.Bundle)).
 This method is called by the Android framework on behalf of downstream AT for
 any user actions, such as focus changes, clicks, scrolls, etc. For most actions,
 we call through the JNI to web\_contents\_accessibility\_android, which will call a
@@ -400,8 +400,8 @@ Android framework.
       the field is less than [kMinimumCharacterCountForInvalid](https://source.chromium.org/chromium/chromium/src/+/main:content/browser/accessibility/browser_accessibility_android.cc?q=kMinimumCharacterCountForInvalid), currently set to 7. This is done at the BrowserAccessibilityAndroid level.
     - The WebContentsAccessibilityImpl includes a further workaround. contentInvalid
       will only be reported for a currently focused node, and it will be reported
-      at most once every [CONTENT\_INVALID\_THROTTLE\_DELAY](https://source.chromium.org/chromium/chromium/src/+/main:content/public/android/java/src/org/chromium/content/browser/accessibility/WebContentsAccessibilityImpl.java?q=CONTENT_INVALID_THROTTLE_DELAY) seconds, currently set to 4.5s.
-      See the [setAccessibilityNodeInfoBooleanAttributes](https://source.chromium.org/chromium/chromium/src/+/main:content/public/android/java/src/org/chromium/content/browser/accessibility/WebContentsAccessibilityImpl.java?q=setAccessibilityNodeInfoBooleanAttributes)
+      at most once every [CONTENT\_INVALID\_THROTTLE\_DELAY](https://source.chromium.org/chromium/chromium/src/+/main:content/public/android/java/src/org/chromium/content/browser/accessibility/AccessibilityNodeInfoBuilder.java;l=134?q=CONTENT_INVALID_THROTTLE_DELAY&sq=) seconds, currently set to 4.5s.
+      See the [setAccessibilityNodeInfoBooleanAttributes](https://source.chromium.org/chromium/chromium/src/+/main:content/public/android/java/src/org/chromium/content/browser/accessibility/AccessibilityNodeInfoBuilder.java;l=182?q=setAccessibilityNodeInfoBooleanAttributes&sq=)
       method for the full implementation.
 
 - isVisibleToUser vs. "offscreen"
@@ -456,18 +456,6 @@ Android framework.
     see it is a link. For this reason we always expose the entire child structure
     of links.
 
-- Refocusing a node Java-side
-
-    There is a strange bug in Android where objects that are accessibility focused
-    sometimes do not visually update their outline. This does not really block any
-    user flows per se, but we would ideally have the outlines drawn by AT like TalkBack
-    to reflect the correct bounds of the node. There is a simple way to get around
-    this bug, which is to remove focus from the node and refocus it again, which
-    triggers the underlying Android code necessary to update the bounds. In
-    WebContentsAccessibilityImpl we have a method
-    [moveAccessibilityFocusToIdAndRefocusIfNeeded](https://source.chromium.org/chromium/chromium/src/+/main:content/public/android/java/src/org/chromium/content/browser/accessibility/WebContentsAccessibilityImpl.java?q=%22void%20moveAccessibilityFocusToIdAndRefocusIfNeeded%22)
-    which handles this.
-
 - liveRegions and forced announcements
 
     There is a boolean for liveRegion in the AccessibilityNodeInfo object that the
@@ -481,7 +469,7 @@ Android framework.
 
     In the Android framework, there are two methods for sending AccessibiltiyEvents,
     [sendAccessibilityEvent](https://developer.android.com/reference/android/view/View#sendAccessibilityEvent\(int\)) and
-    [requestSendAccessibilityEvent](https://developer.android.com/reference/android/view/ViewParent#requestSendAccessibilityEvent\(android.view.View,%20android.view.accessibility.AccessibilityEvent\)).
+    [requestSendAccessibilityEvent](https://developer.android.com/reference/android/view/ViewParent#requestSendAccessibilityEvent(android.view.View,%20android.view.accessibility.AccessibilityEvent)).
     Technically speaking, requestSendAccessibilityEvent will ask the system to
     send an event, but it doesn't have to send it. For all intents and purposes,
     we assume that it is always sent, but as a small detail to keep in mind, this
