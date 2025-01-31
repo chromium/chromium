@@ -12203,6 +12203,42 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="GlicOsEntrypoint.ContextMenuSelection.OpenGlic">
+  <owner>agale@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>
+    Tracks clicks on the open glic option from the glic os launcher context
+    menu.
+  </description>
+</action>
+
+<action name="GlicOsEntrypoint.ContextMenuSelection.OpenHotkeySettings">
+  <owner>agale@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>
+    Tracks clicks on the open hotkey settings option from the glic os launcher
+    context menu.
+  </description>
+</action>
+
+<action name="GlicOsEntrypoint.ContextMenuSelection.OpenSettings">
+  <owner>agale@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>
+    Tracks clicks on the open glic settings option from the glic os launcher
+    context menu.
+  </description>
+</action>
+
+<action name="GlicOsEntrypoint.ContextMenuSelection.RemoveIcon">
+  <owner>agale@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>
+    Tracks clicks on the remove glic icon option from the glic os launcher
+    context menu.
+  </description>
+</action>
+
 <action name="GlicResponse">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
