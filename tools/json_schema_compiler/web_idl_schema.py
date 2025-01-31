@@ -7,7 +7,8 @@ import json
 import os.path
 import sys
 import linecache
-from typing import List, Optional
+from abc import ABC, abstractmethod
+from typing import Dict, List, Optional, Union
 from json_parse import OrderedDict
 
 # This file is a peer to json_schema.py and idl_schema.py. Each of these files
@@ -41,6 +42,10 @@ class SchemaCompilerError(Exception):
   def __init__(self, message: str, node: IDLNode):
     super().__init__(
         node.GetLogLine(f'Error processing node {node}: {message}'))
+
+
+class UndefinedType:
+  """Represents a type with no value, similar to void or undefined in IDL."""
 
 
 def GetChildWithName(node: IDLNode, name: str) -> Optional[IDLNode]:
@@ -162,97 +167,167 @@ def GetNodeDescription(node: IDLNode) -> str:
   return add_paragraphs(description.strip()).replace('\n', '')
 
 
-class Type:
-  """Represents an IDL type and maps it to the corresponding python type.
+class Type():
+  """Given an IDL node of class Type, extracts core type information.
 
-  Given an IDLNode, looks for a Type node on it representing the type of a
-  dictionary member, function parameter or return and converts it into a Python
-  dictionary the JSON schema compiler expects.
+  This class is used to extract core type information from an IDL Type node,
+  creating a base dictionary object that other classes then add more properties
+  to for their specific case (as things like 'name' and 'optional' differ in how
+  they are determined for different kinds of typed properties).
 
   Attributes:
-    node: The IDLNode that represents this type.
-    name: The name of the node this type was on.
-    description: The description defined for this node by the preceding comment,
-    used for documentation purposes.
-    optional: If the value this type is for is considered optional.
+    type_node: The IDLNode for the Type to be processed.
   """
 
-  def __init__(self, node: IDLNode) -> None:
-    type_node = node.GetOneOf('Type')
-    assert type_node is not None, type_node.GetLogLine(
-        'Could not find Type node on IDLNode named: %s.' % (node.GetName()))
-    self.node = type_node
-    self.name = node.GetName()
-    self.description = GetNodeDescription(node)
-    self.optional = node.GetProperty('OPTIONAL')
+  def __init__(self, type_node: IDLNode) -> None:
+    assert type_node.GetClass() == 'Type'
+    self.type_node = type_node
 
-  def process(self) -> dict:
+  def Process(self) -> dict:
+    """Returns a dict with the core information for the type.
+
+    For custom types this will have '$ref' key set to the name of the custom
+    type. Other basic types instead use the 'type' key set to the name of the
+    corresponding type the schema compiler expects to see. Promise types will
+    also have a 'parameters' key for the underlying type they will resolve with.
+    """
+
     properties = OrderedDict()
-    # TODO(crbug.com/340297705): Add support for extended attributes on types.
-    # TODO(crbug.com/340297705): Add processing of comments to descriptions on
-    #                            types for function arguments.
-    properties['name'] = self.name
-    # We consider both nullable properties on types or arguments marked as
-    # optional as being "optional" in the schema compiler's logic.
-    if self.node.GetProperty('NULLABLE') or self.optional:
-      properties['optional'] = True
-
-    if self.description:
-      properties['description'] = self.description
-
     # The Type node will have a single child, where the class and name
     # determines the underlying type it represents. This may be a fundamental
     # type or a custom type.
     # TODO(crbug.com/340297705): Add support for more types.
-    type_details = self.node.GetChildren()[0]
-    if type_details.IsA('PrimitiveType', 'StringType'):
-      # For fundamental types we translate the name of the node into the
-      # corresponding python type.
-      type_name = type_details.GetName()
-      if type_name == 'void':
-        # If it's a void return, we bail early.
-        return None
+    type_details = self.type_node.GetChildren()[0]
 
-      if type_name == 'boolean':
-        properties['type'] = 'boolean'
-      elif type_name == 'double':
-        properties['type'] = 'number'
-      elif type_name == 'long':
-        properties['type'] = 'integer'
-      elif type_name == 'DOMString':
-        properties['type'] = 'string'
-      else:
-        raise SchemaCompilerError(
-            'Unsupported basic type found when processing type.', type_details)
+    if type_details.IsA('PrimitiveType', 'StringType'):
+      properties['type'] = self._TranslatePrimitiveType(type_details)
     elif type_details.IsA('Typeref'):
-      # For custom types the name indicates the underlying referenced
-      # type.
+      # For custom types the name indicates the underlying referenced type.
       # TODO(crbug.com/340297705): We should verify this ref name is actually a
       # custom type we have parsed from the IDL.
       properties['$ref'] = type_details.GetName()
     elif type_details.IsA('Undefined'):
-      # Similar to void types, we just return None for 'undefined' and let the
-      # caller handle that.
-      return None
+      properties['type'] = UndefinedType
     elif type_details.IsA('Promise'):
       properties['type'] = 'promise'
       # Promise types also have an associated type they resolve with. We
       # represent this similar to how we represent arguments for Operations,
-      # with 'parameters' list that has a single entry for the type.
-      promise_type = Type(type_details).process()
-      if promise_type is None:
-        # Promise type was 'undefined', which we represent as an empty list.
-        properties['parameters'] = []
-      else:
-        # The node name for Promise type nodes is always "Promise", so we just
-        # remove it.
-        del promise_type['name']
-        properties['parameters'] = [promise_type]
+      # with 'parameters' list that has a single element for the type.
+      properties['parameters'] = self._ExtractParametersFromPromiseType(
+          type_details)
     else:
       raise SchemaCompilerError('Unsupported type class when processing type.',
                                 type_details)
-
     return properties
+
+  def _TranslatePrimitiveType(
+      self, type_details: IDLNode) -> Union[str, UndefinedType]:
+    """Translates an IDL primitive type into the corresponding python type"""
+    type_name = type_details.GetName()
+    # For fundamental types we translate the name of the node into the
+    # corresponding python type.
+    if type_name == 'void':
+      # TODO(crbug.com/340297705): Change this to throw a SchemaCompilerError
+      # and change all uses of void to Undefined, as per the webIDL spec
+      # recommendations.
+      return UndefinedType
+    if type_name == 'boolean':
+      return 'boolean'
+    if type_name == 'double':
+      return 'number'
+    if type_name == 'long':
+      return 'integer'
+    if type_name == 'DOMString':
+      return 'string'
+
+    raise SchemaCompilerError(
+        'Unsupported basic type found when processing type.', type_details)
+
+  def _ExtractParametersFromPromiseType(self,
+                                        type_details: IDLNode) -> List[dict]:
+    """Extracts details for the type a promise will resolve to."""
+    promise_type = PromiseType(type_details).Process()
+    if 'type' in promise_type and promise_type['type'] is UndefinedType:
+      # If the promise type was 'Undefined' we represent it as an empty list.
+      return []
+    return [promise_type]
+
+
+class TypedProperty(ABC):
+  """Abstract base class for properties that have type information.
+
+  This base class is responsible for extracting the base type information that
+  is common to several different kinds of properties. Subclasses then override
+  the Process method to add other properties such as the name and description.
+
+  Attributes:
+    node: The IDLNode that represents this property.
+    type_node: The specific IDLNode of class Type which contains type details.
+    properties: The dictionary for the final processed representation of this
+      typed property which will be returned when calling Process.
+  """
+
+  def __init__(self, node: IDLNode) -> None:
+    self.node = node
+    self.type_node = node.GetOneOf('Type')
+    assert self.type_node is not None, self.type_node.GetLogLine(
+        'Could not find Type node on IDLNode named: %s.' % (node.GetName()))
+    self.properties = Type(self.type_node).Process()
+
+  @abstractmethod
+  def Process(self) -> dict:
+    """Processes the property and returns a dict representing it."""
+
+
+class FunctionArgument(TypedProperty):
+  """Handles processing for function arguments."""
+
+  def Process(self) -> dict:
+    # TODO(crbug.com/340297705): Add processing of comments to descriptions on
+    # function argument types.
+    self.properties['name'] = self.node.GetName()
+    if self.node.GetProperty('OPTIONAL'):
+      self.properties['optional'] = True
+    return self.properties
+
+
+class FunctionReturn(TypedProperty):
+  """Handles processing for function return values."""
+
+  def Process(self) -> dict:
+    if 'type' in self.properties and self.properties['type'] == 'promise':
+      # For legacy reasons, promise returns always get named "callback".
+      self.properties['name'] = 'callback'
+    else:
+      self.properties['name'] = self.node.GetName()
+    return self.properties
+
+
+class PromiseType(TypedProperty):
+  """Handles processing for the type a promise will resolve with."""
+
+  def Process(self) -> dict:
+    if self.type_node.GetProperty('NULLABLE'):
+      self.properties['optional'] = True
+    return self.properties
+
+
+class DictionaryMember(TypedProperty):
+  """Handles processing for members of custom types (dictionaries)."""
+
+  def Process(self) -> dict:
+    # TODO(crbug.com/340297705): Add support for extended attributes on custom
+    # type members.
+    self.properties['name'] = self.node.GetName()
+    # We consider nullable properties on custom types as being "optional" in the
+    # schema compiler's logic.
+    if self.type_node.GetProperty('NULLABLE'):
+      self.properties['optional'] = True
+
+    description = GetNodeDescription(self.node)
+    if description:
+      self.properties['description'] = description
+    return self.properties
 
 
 class Operation:
@@ -276,19 +351,22 @@ class Operation:
     parameters = []
     arguments_node = self.node.GetOneOf('Arguments')
     for argument in arguments_node.GetListOf('Argument'):
-      parameters.append(Type(argument).process())
+      parameters.append(FunctionArgument(argument).Process())
     properties['parameters'] = parameters
 
     # Return type processing.
-    return_type = Type(self.node).process()
-    if return_type is not None:
-      if 'type' in return_type and return_type['type'] == 'promise':
-        # For legacy reasons Promise based returns are represented on a
-        # "returns_async" property and are always named "callback".
-        return_type['name'] = 'callback'
-        properties['returns_async'] = return_type
-      else:
-        properties['returns'] = return_type
+    return_type = FunctionReturn(self.node).Process()
+    if 'type' in return_type and return_type['type'] is UndefinedType:
+      # This is an Undefined return, so we don't add anything.
+      pass
+    elif 'type' in return_type and return_type['type'] == 'promise':
+      # For legacy reasons Promise based returns are represented on a
+      # "returns_async" property.
+      properties['returns_async'] = return_type
+    else:
+      # Otherwise this is a typed return using either the 'type' key or '$ref'
+      # key to reference the underlying type.
+      properties['returns'] = return_type
 
     return properties
 
@@ -309,7 +387,8 @@ class Dictionary:
   def process(self) -> dict:
     properties = OrderedDict()
     for property_node in self.node.GetListOf('Key'):
-      properties[property_node.GetName()] = Type(property_node).process()
+      properties[property_node.GetName()] = DictionaryMember(
+          property_node).Process()
 
     result = {
         'id': self.node.GetName(),

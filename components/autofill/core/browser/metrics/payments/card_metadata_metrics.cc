@@ -75,6 +75,8 @@ std::string_view GetCardIssuerIdOrNetworkSuffix(
     return kAmericanExpress;
   } else if (card_issuer_id_or_network == kAnzCardIssuerId) {
     return kAnz;
+  } else if (card_issuer_id_or_network == kBmoCardIssuerId) {
+    return kBmo;
   } else if (card_issuer_id_or_network == kCapitalOneCardIssuerId) {
     return kCapitalOne;
   } else if (card_issuer_id_or_network == kChaseCardIssuerId) {

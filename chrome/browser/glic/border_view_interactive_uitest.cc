@@ -52,6 +52,28 @@ class TesterImpl : public BorderView::Tester {
   // `BorderView::Tester`:
   base::TimeTicks GetTestTimestamp() override { return next_time_tick_; }
   base::TimeTicks GetTestCreationTime() override { return creation_time_; }
+  void AnimationStarted() override {
+    animation_started_ = true;
+    wait_for_animation_started_.Quit();
+  }
+  void EmphasisRestarted() override {
+    emphasis_restarted_ = true;
+    wait_for_emphasis_restarted_.Quit();
+  }
+
+  void WaitForAnimationStart() {
+    if (animation_started_) {
+      return;
+    }
+    wait_for_animation_started_.Run();
+  }
+
+  void WaitForEmphasisRestarted() {
+    if (emphasis_restarted_) {
+      return;
+    }
+    wait_for_emphasis_restarted_.Run();
+  }
 
   void set_next_time_tick(const base::TimeTicks& next_time_tick) {
     next_time_tick_ = next_time_tick;
@@ -65,6 +87,12 @@ class TesterImpl : public BorderView::Tester {
   const raw_ptr<BorderView> border_;
   base::TimeTicks next_time_tick_;
   base::TimeTicks creation_time_;
+
+  bool animation_started_ = false;
+  base::RunLoop wait_for_animation_started_;
+
+  bool emphasis_restarted_ = false;
+  base::RunLoop wait_for_emphasis_restarted_;
 };
 
 class GlicBorderViewUiTest : public InteractiveBrowserTest {
@@ -134,13 +162,15 @@ class GlicBorderViewUiTest : public InteractiveBrowserTest {
 
 // Exercise that, the border is resized correctly whenever the browser's size
 // changes.
-IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, DISABLED_BorderResize) {
+IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, BorderResize) {
   // TODO(crbug.com/385828490): We should exercise the proper closing flow.
   // Currently the BookmarkModel has a dangling observer during destruction, if
   // the glic UI is toggled.
   auto* border = browser()->window()->AsBrowserView()->glic_border();
   ASSERT_TRUE(border);
+  TesterImpl tester(border, base::TimeTicks::Now());
   StartBorderAnimation(browser());
+  tester.WaitForAnimationStart();
   auto* contents_web_view = browser()->GetBrowserView().contents_web_view();
   EXPECT_EQ(border->GetVisibleBounds(), contents_web_view->GetVisibleBounds());
 
@@ -165,12 +195,14 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, DISABLED_BorderResize) {
 // Regression test for https://crbug.com/387458471: The border shouldn't be
 // visible before StartAnimation is called, and shouldn't be visible after
 // CancelAnimation is called.
-IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, DISABLED_Visibility) {
+IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, Visibility) {
   auto* border = browser()->window()->AsBrowserView()->glic_border();
   ASSERT_TRUE(border);
   EXPECT_FALSE(border->GetVisible());
 
+  TesterImpl tester(border, base::TimeTicks::Now());
   StartBorderAnimation(browser());
+  tester.WaitForAnimationStart();
   EXPECT_TRUE(border->compositor_for_testing());
   EXPECT_TRUE(border->GetVisible());
   border->CancelAnimation();
@@ -179,13 +211,14 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, DISABLED_Visibility) {
 
 // Exercise the default user journey: toggles the border animation and wait for
 // it to finish.
-IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, DISABLED_SmokeTest) {
+IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, SmokeTest) {
   auto* border = browser()->window()->AsBrowserView()->glic_border();
   ASSERT_TRUE(border);
   base::TimeTicks timestamp = base::TimeTicks::Now();
   TesterImpl tester(border, timestamp);
 
   StartBorderAnimation(browser());
+  tester.WaitForAnimationStart();
   EXPECT_TRUE(border->compositor_for_testing());
 
   // Manually stepping the animation code to mimic the behavior of the
@@ -230,11 +263,13 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, DISABLED_SmokeTest) {
 
 // Ensures that the border animation state is reset after canceling the
 // animation.
-IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, DISABLED_AnimationStateReset) {
+IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, AnimationStateReset) {
   auto* border = browser()->window()->AsBrowserView()->glic_border();
   ASSERT_TRUE(border);
 
+  TesterImpl tester(border, base::TimeTicks::Now());
   StartBorderAnimation(browser());
+  tester.WaitForAnimationStart();
   EXPECT_TRUE(border->compositor_for_testing());
   border->OnAnimationStep(base::TimeTicks::Now());
   border->CancelAnimation();
@@ -245,13 +280,14 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, DISABLED_AnimationStateReset) {
 }
 
 // Ensures that the border animation is restarted when tab focus changes.
-IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, DISABLED_FocusedTabChange) {
+IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, FocusedTabChange) {
   auto* border = browser()->window()->AsBrowserView()->glic_border();
   ASSERT_TRUE(border);
   base::TimeTicks timestamp = base::TimeTicks::Now();
   TesterImpl tester(border, timestamp);
 
   StartBorderAnimation(browser());
+  tester.WaitForAnimationStart();
   EXPECT_TRUE(border->compositor_for_testing());
 
   // T=0s.
@@ -268,6 +304,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, DISABLED_FocusedTabChange) {
   chrome::AddTabAt(browser(), GURL(chrome::kChromeUINewTabURL),
                    /*index=*/-1, /*foreground=*/true);
   ASSERT_EQ(browser()->tab_strip_model()->active_index(), 1);
+  tester.WaitForEmphasisRestarted();
 
   // Since the active tab has changed, only the emphasis animation should
   // restart. This `OnAnimationStep()` resets the timeline of the emphasis
@@ -298,13 +335,14 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, DISABLED_FocusedTabChange) {
   EXPECT_FALSE(border->compositor_for_testing());
 }
 
-IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, DISABLED_FocusedWindowChange) {
+IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, FocusedWindowChange) {
   auto* border = browser()->window()->AsBrowserView()->glic_border();
   ASSERT_TRUE(border);
   base::TimeTicks timestamp = base::TimeTicks::Now();
   auto tester = std::make_unique<TesterImpl>(border, timestamp);
 
   StartBorderAnimation(browser());
+  tester->WaitForAnimationStart();
   EXPECT_TRUE(border->compositor_for_testing());
 
   // T=0s.
@@ -328,6 +366,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, DISABLED_FocusedWindowChange) {
     new_tester = std::make_unique<TesterImpl>(new_border, new_timestamp);
     views::test::WaitForWidgetActive(new_browser->GetBrowserView().GetWidget(),
                                      /*active=*/true);
+    new_tester->WaitForAnimationStart();
   }
   ASSERT_TRUE(new_border);
   EXPECT_TRUE(new_border->compositor_for_testing());
@@ -363,14 +402,14 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, DISABLED_FocusedWindowChange) {
 
 // Ensures that the border fades out before disappearing entirely during
 // emphasis ramp up.
-IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest,
-                       DISABLED_RampingDownDuringEmphasisRampUp) {
+IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, RampingDownDuringEmphasisRampUp) {
   auto* border = browser()->window()->AsBrowserView()->glic_border();
   ASSERT_TRUE(border);
   base::TimeTicks timestamp = base::TimeTicks::Now();
   TesterImpl tester(border, timestamp);
 
   StartBorderAnimation(browser());
+  tester.WaitForAnimationStart();
   EXPECT_TRUE(border->compositor_for_testing());
 
   // T=0s.
@@ -420,14 +459,14 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest,
 
 // Ensures that the border fades out before disappearing entirely during opacity
 // ramp up.
-IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest,
-                       DISABLED_RampingDownDuringOpacityRampUp) {
+IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, RampingDownDuringOpacityRampUp) {
   auto* border = browser()->window()->AsBrowserView()->glic_border();
   ASSERT_TRUE(border);
   base::TimeTicks timestamp = base::TimeTicks::Now();
   TesterImpl tester(border, timestamp);
 
   StartBorderAnimation(browser());
+  tester.WaitForAnimationStart();
   EXPECT_TRUE(border->compositor_for_testing());
 
   // T=0s.
@@ -481,14 +520,14 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest,
 
 // Ensures that the border fades out before disappearing entirely during stable
 // state.
-IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest,
-                       DISABLED_RampingDownDuringStableState) {
+IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, RampingDownDuringStableState) {
   auto* border = browser()->window()->AsBrowserView()->glic_border();
   ASSERT_TRUE(border);
   base::TimeTicks timestamp = base::TimeTicks::Now();
   TesterImpl tester(border, timestamp);
 
   StartBorderAnimation(browser());
+  tester.WaitForAnimationStart();
   EXPECT_TRUE(border->compositor_for_testing());
 
   // T=0s.
@@ -535,12 +574,14 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest,
   EXPECT_FALSE(border->compositor_for_testing());
 }
 
-IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, DISABLED_EnsureTimeWraps) {
+IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, EnsureTimeWraps) {
   auto* border = browser()->window()->AsBrowserView()->glic_border();
   ASSERT_TRUE(border);
 
   base::TimeTicks timestamp = base::TimeTicks::Now();
   TesterImpl tester(border, timestamp);
+  StartBorderAnimation(browser());
+  tester.WaitForAnimationStart();
   tester.set_creation_time(timestamp);
   int milliseconds = border->GetMillisecondsSinceCreationForTesting();
 
@@ -548,10 +589,6 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, DISABLED_EnsureTimeWraps) {
   tester.set_next_time_tick(timestamp);
   border->OnAnimationStep(kDummyTimeStamp);
   int milliseconds_half_day = border->GetMillisecondsSinceCreationForTesting();
-
-  // Now the animation will have been cancelled at this point, so ticking again
-  // is unrealistic. We will need to start another animation here.
-  StartBorderAnimation(browser());
 
   // Should not have wrapped.
   EXPECT_LT(milliseconds, milliseconds_half_day);
@@ -600,7 +637,7 @@ class GlicBorderViewPrefersReducedMotionUiTest : public GlicBorderViewUiTest {
 // Ensures that in prefers-reduced-motion cases, we should immediately show the
 // static border without any animations.
 IN_PROC_BROWSER_TEST_F(GlicBorderViewPrefersReducedMotionUiTest,
-                       DISABLED_PrefersReducedMotion) {
+                       PrefersReducedMotion) {
   ASSERT_TRUE(gfx::Animation::PrefersReducedMotion());
   auto* border = browser()->window()->AsBrowserView()->glic_border();
   ASSERT_TRUE(border);
@@ -608,6 +645,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewPrefersReducedMotionUiTest,
   TesterImpl tester(border, timestamp);
 
   StartBorderAnimation(browser());
+  tester.WaitForAnimationStart();
   EXPECT_TRUE(border->compositor_for_testing());
 
   border->OnAnimationStep(kDummyTimeStamp);

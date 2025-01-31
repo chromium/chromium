@@ -679,6 +679,8 @@ class CardBenefitFormEventMetricsTest
         /*feature_states=*/
         {{features::kAutofillEnableCardBenefitsSync, true},
          {features::kAutofillEnableCardBenefitsForAmericanExpress,
+          card_benefits_are_enabled()},
+         {features::kAutofillEnableCardBenefitsForBmo,
           card_benefits_are_enabled()}});
   }
 

@@ -67,6 +67,7 @@ chromium-metrics-reviews@google.com.
 <variants name="Autofill.CreditCardIssuerId">
   <variant name="Amex" summary="card issued by American Express"/>
   <variant name="Anz" summary="card issued by ANZ"/>
+  <variant name="Bmo" summary="card issued by BMO"/>
   <variant name="CapitalOne" summary="card issued by Capital One"/>
   <variant name="Chase" summary="card issued by JP Morgan Chase"/>
   <variant name="Citi" summary="card issued by Citibank"/>

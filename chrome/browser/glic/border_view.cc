@@ -361,6 +361,10 @@ void BorderView::StartAnimation() {
   compositor_ = compositor;
   compositor_->AddAnimationObserver(this);
   compositor_->AddObserver(this);
+
+  if (tester_) [[unlikely]] {
+    tester_->AnimationStarted();
+  }
 }
 
 void BorderView::CancelAnimation() {
@@ -410,6 +414,9 @@ void BorderView::ResetEmphasisAndReplay() {
   }
   first_emphasis_frame_ = base::TimeTicks{};
   SchedulePaint();
+  if (tester_) [[unlikely]] {
+    tester_->EmphasisRestarted();
+  }
 }
 
 float BorderView::GetOpacity(base::TimeTicks timestamp) const {

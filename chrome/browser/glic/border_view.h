@@ -58,6 +58,8 @@ class BorderView : public views::View,
     virtual ~Tester() = default;
     virtual base::TimeTicks GetTestTimestamp() = 0;
     virtual base::TimeTicks GetTestCreationTime() = 0;
+    virtual void AnimationStarted() = 0;
+    virtual void EmphasisRestarted() = 0;
   };
   void set_tester(Tester* tester) { tester_ = tester; }
 
