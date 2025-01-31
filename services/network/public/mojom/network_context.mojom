@@ -352,14 +352,6 @@ struct NetworkContextParams {
   // If true, cookies will be stored encrypted.
   bool enable_encrypted_cookies = true;
 
-  // On Windows, whether or not the cookie database should be opened with
-  // the sqlite3 flag `exclusive=true` which asks the sqlite VFS to open them
-  // without file sharing enabled. This has the consequence that other processes
-  // should not be able to open the cookie database file. If left unspecified
-  // then a feature-determined default value will be used.
-  [EnableIf=is_win]
-  bool? enable_locking_cookie_database;
-
   // If the cookie file is given, this controls whether previously written
   // session cookies are restored. Otherwise it should be false.
   bool restore_old_session_cookies = false;

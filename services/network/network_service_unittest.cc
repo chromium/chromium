@@ -1157,7 +1157,7 @@ TEST_P(NetworkServiceCookieTest, CookieEncryptionProvider) {
 #if BUILDFLAG(IS_WIN)
   // TODO(crbug.com/377940976): Remove this once the background sequence runner
   // can be fully drained of tasks during network context shutdown.
-  params->enable_locking_cookie_database = false;
+  service()->disable_exclusive_cookie_database_locking_for_testing();
 #endif  // BUILDFLAG(IS_WIN)
 
   mojo::Remote<mojom::NetworkContext> network_context;
