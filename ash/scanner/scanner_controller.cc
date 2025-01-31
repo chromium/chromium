@@ -70,6 +70,29 @@ constexpr size_t kUserFacingStringDepthLimit = 20;
 constexpr size_t kUserFacingStringOutputLimit =
     std::numeric_limits<size_t>::max();
 
+std::u16string GetToastMessageForActionSuccess(
+    manta::proto::ScannerAction::ActionCase action_case) {
+  switch (action_case) {
+    case manta::proto::ScannerAction::kNewEvent:
+      return l10n_util::GetStringUTF16(
+          IDS_ASH_SCANNER_ACTION_SUCCESS_TOAST_CREATE_EVENT);
+    case manta::proto::ScannerAction::kNewContact:
+      return l10n_util::GetStringUTF16(
+          IDS_ASH_SCANNER_ACTION_SUCCESS_TOAST_CREATE_CONTACT);
+    case manta::proto::ScannerAction::kNewGoogleDoc:
+      return l10n_util::GetStringUTF16(
+          IDS_ASH_SCANNER_ACTION_SUCCESS_TOAST_CREATE_DOC);
+    case manta::proto::ScannerAction::kNewGoogleSheet:
+      return l10n_util::GetStringUTF16(
+          IDS_ASH_SCANNER_ACTION_SUCCESS_TOAST_CREATE_SHEET);
+    case manta::proto::ScannerAction::kCopyToClipboard:
+      return l10n_util::GetStringUTF16(
+          IDS_ASH_SCANNER_ACTION_SUCCESS_TOAST_COPY_TEXT_AND_FORMAT);
+    case manta::proto::ScannerAction::ACTION_NOT_SET:
+      NOTREACHED();
+  }
+}
+
 std::u16string GetToastMessageForActionFailure(
     manta::proto::ScannerAction::ActionCase action_case) {
   switch (action_case) {
@@ -455,13 +478,9 @@ void ScannerController::OnActionFinished(
       /*by_user=*/false);
 
   if (success) {
-    // TODO: crbug.com/375967525 - Finalize the action toast strings.
-    std::u16string toast_text =
-        action_case == manta::proto::ScannerAction::kCopyToClipboard
-            ? u"Text copied to clipboard"
-            : u"Action succeeded";
     ToastData toast_data(kScannerActionSuccessToastId,
-                         ToastCatalogName::kScannerActionSuccess, toast_text);
+                         ToastCatalogName::kScannerActionSuccess,
+                         GetToastMessageForActionSuccess(action_case));
 
     // TODO: b/367882164 - Pass in the account ID to this method to ensure that
     // the feedback form is shown for the same account that performed the
@@ -472,7 +491,8 @@ void ScannerController::OnActionFinished(
 
     if (prefs && prefs->GetBoolean(prefs::kScannerFeedbackEnabled)) {
       toast_data.button_type = ToastData::ButtonType::kIconButton;
-      toast_data.button_text = u"Send feedback";
+      toast_data.button_text = l10n_util::GetStringUTF16(
+          IDS_ASH_SCANNER_ACTION_TOAST_FEEDBACK_ICON_ACCESSIBLE_NAME);
       toast_data.button_icon = &kFeedbackIcon;
       // TODO: b/259100049 - Change this to be `BindOnce` once
       // `ToastData::button_callback` is migrated to be a `OnceClosure`.
