@@ -47,7 +47,8 @@ interface BlobURLStore {
   // refer to, even after the URL is revoked.
   // As long as the token is alive, the resolved blob will also be kept alive.
   ResolveForNavigation(url.mojom.Url url,
-                       pending_receiver<BlobURLToken> token) => (
+                       pending_receiver<BlobURLToken> token,
+                       bool is_top_level_navigation) => (
     // TODO(https://crbug.com/1224926): Remove this once experiment is over.
     mojo_base.mojom.UnguessableToken? unsafe_agent_cluster_id);
 

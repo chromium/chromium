@@ -1,5 +1,3 @@
 This is a testharness.js-based test.
-[FAIL] Blob URL should partition subframe navigation.
-  promise_test: Unhandled rejection with value: "Blob URL subframe navigation succeeded in not-same-top-level-site iframe."
 Harness: the test ran to completion.
 
