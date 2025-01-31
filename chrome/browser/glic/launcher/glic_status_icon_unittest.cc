@@ -9,11 +9,21 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_file_util.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/glic/launcher/glic_controller.h"
+#include "chrome/browser/glic/launcher/glic_launcher_configuration.h"
+#include "chrome/browser/global_features.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/status_icons/status_icon.h"
 #include "chrome/browser/status_icons/status_tray.h"
+#include "chrome/browser/ui/webui/whats_new/whats_new_ui.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/test/base/fake_profile_manager.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "components/prefs/testing_pref_service.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event_constants.h"
@@ -68,11 +78,32 @@ class GlicStatusIconTest : public testing::Test {
   ~GlicStatusIconTest() override = default;
 
   void SetUp() override {
+    // Pref registrations needed for GlobalFeatures or GlicStatusIcon
+    GlicLauncherConfiguration::RegisterLocalStatePrefs(local_state_.registry());
+    WhatsNewUI::RegisterLocalStatePrefs(local_state_.registry());
+    profiles::RegisterPrefs(local_state_.registry());
+    ProfileAttributesStorage::RegisterPrefs(local_state_.registry());
+
+    TestingBrowserProcess::GetGlobal()->SetLocalState(&local_state_);
+
+    auto profile_manager_unique = std::make_unique<FakeProfileManager>(
+        base::CreateUniqueTempDirectoryScopedToTest());
+    TestingBrowserProcess::GetGlobal()->SetProfileManager(
+        std::move(profile_manager_unique));
+
+    TestingBrowserProcess::GetGlobal()->CreateGlobalFeaturesForTesting();
+
     glic_status_icon_ =
         std::make_unique<GlicStatusIcon>(&glic_controller_, &status_tray_);
   }
 
-  void TearDown() override { glic_status_icon_.reset(); }
+  void TearDown() override {
+    glic_status_icon_.reset();
+
+    TestingBrowserProcess::GetGlobal()->GetFeatures()->Shutdown();
+    TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
+    TestingBrowserProcess::GetGlobal()->SetProfileManager(nullptr);
+  }
 
   GlicStatusIcon* glic_status_icon() { return glic_status_icon_.get(); }
   MockGlicController* glic_controller() { return &glic_controller_; }
@@ -80,9 +111,11 @@ class GlicStatusIconTest : public testing::Test {
     return static_cast<MockStatusIcon*>(
         status_tray_.GetStatusIconsForTesting().back().icon.get());
   }
-  base::HistogramTester* histogram() { return &histogram_; }
 
  private:
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::MainThreadType::UI};
+  TestingPrefServiceSimple local_state_;
   std::unique_ptr<GlicStatusIcon> glic_status_icon_;
   MockStatusTray status_tray_;
   MockGlicController glic_controller_;
