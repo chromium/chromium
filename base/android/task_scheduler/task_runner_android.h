@@ -32,10 +32,7 @@ class BASE_EXPORT TaskRunnerAndroid {
 
   void Destroy(JNIEnv* env);
 
-  void PostDelayedTask(JNIEnv* env,
-                       const base::android::JavaRef<jobject>& task,
-                       jlong delay,
-                       std::string& runnable_class_name);
+  void PostDelayedTask(JNIEnv* env, jlong delay, jint taskIndex);
 
   bool BelongsToCurrentThread(JNIEnv* env);
 

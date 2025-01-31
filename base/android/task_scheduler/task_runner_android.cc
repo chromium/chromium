@@ -36,15 +36,8 @@ TaskRunnerAndroid::UiThreadTaskRunnerCallback& GetUiThreadTaskRunnerCallback() {
   return *callback;
 }
 
-void RunJavaTask(base::android::ScopedJavaGlobalRef<jobject> task,
-                 const std::string& runnable_class_name) {
-  TRACE_EVENT("toplevel", nullptr, [&](::perfetto::EventContext& ctx) {
-    std::string event_name =
-        base::StrCat({"JniPostTask: ", runnable_class_name});
-    ctx.event()->set_name(event_name.c_str());
-  });
-  JNIEnv* env = jni_zero::AttachCurrentThread();
-  JNI_Runnable::Java_Runnable_run(env, task);
+void RunJavaTask(jint task_index) {
+  Java_TaskRunnerImpl_runTask(jni_zero::AttachCurrentThread(), task_index);
 }
 
 }  // namespace
@@ -68,19 +61,13 @@ void TaskRunnerAndroid::Destroy(JNIEnv* env) {
   delete this;
 }
 
-void TaskRunnerAndroid::PostDelayedTask(
-    JNIEnv* env,
-    const base::android::JavaRef<jobject>& task,
-    jlong delay,
-    std::string& runnable_class_name) {
+void TaskRunnerAndroid::PostDelayedTask(JNIEnv* env,
+                                        jlong delay,
+                                        jint task_index) {
   // This could be run on any java thread, so we can't cache |env| in the
   // BindOnce because JNIEnv is thread specific.
   task_runner_->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&RunJavaTask,
-                     base::android::ScopedJavaGlobalRef<jobject>(task),
-                     runnable_class_name),
-      Milliseconds(delay));
+      FROM_HERE, base::BindOnce(&RunJavaTask, task_index), Milliseconds(delay));
 }
 
 // static
