@@ -62,6 +62,28 @@ class NET_EXPORT CookieMonster : public CookieStore {
  public:
   class PersistentCookieStore;
 
+  // Provides an interface to interact with persistent preferences storage
+  // implemented by the embedder KnownLegacyScopeDomainsPrefDelegate.
+  // This pref delegate is used to store known legacy scope domains.
+  class PrefDelegate {
+   public:
+    virtual ~PrefDelegate() = default;
+
+    // Returns a dict of all domains under legacy mode.
+    virtual const base::Value::Dict& GetLegacyDomains() const = 0;
+
+    // Sets a dict of domain names under legacy scope mode.
+    virtual void SetLegacyDomains(base::Value::Dict dict) = 0;
+
+    // Starts listening for prefs to be loaded. If prefs are already loaded,
+    // `pref_loaded_callback` will be invoked asynchronously. Callback will be
+    // invoked even if prefs fail to load.
+    virtual void WaitForPrefLoad(base::OnceClosure pref_loaded_callback) = 0;
+
+    // Will return true if the pref system is ready to be used.
+    virtual bool IsPrefReady() = 0;
+  };
+
   // Terminology:
   //    * The 'top level domain' (TLD) of an internet domain name is
   //      the terminal "." free substring (e.g. "com" for google.com
