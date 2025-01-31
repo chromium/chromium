@@ -30,6 +30,26 @@ void HideNativeWindow(gfx::NativeWindow native_window) {
   [window orderOut:nil];
 }
 
+void HandleMissingKeyWindow() {
+  if ([NSApp keyWindow]) {
+    return;
+  }
+
+  for (NSWindow* window in [NSApp orderedWindows]) {
+    if (![[window delegate]
+            respondsToSelector:@selector(windowDidBecomeKey:)]) {
+      continue;
+    }
+
+    NSNotification* notification =
+        [NSNotification notificationWithName:NSWindowDidBecomeKeyNotification
+                                      object:window];
+    [[window delegate] windowDidBecomeKey:notification];
+
+    break;
+  }
+}
+
 bool ShowAndFocusNativeWindow(gfx::NativeWindow native_window) {
   NSWindow* window = native_window.GetNativeNSWindow();
   // Make sure an unbundled program can get the input focus.
