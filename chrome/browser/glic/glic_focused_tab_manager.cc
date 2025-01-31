@@ -65,11 +65,18 @@ void GlicFocusedTabManager::OnBrowserSetLastActive(Browser* browser) {
     }
   }
 
-  MaybeUpdateFocusedTab();
+  // We need to force-notify because even if the focused tab doesn't change, it
+  // can be in a different browser window (i.e., the user drag-n-drop the
+  // focused tab into a new window). Let the subscribers to decide what to do in
+  // this case.
+  //
+  // TODO(crbug.com/393578218): We should have dedicated subscription lists for
+  // different types of notifications.
+  MaybeUpdateFocusedTab(/*force_notify=*/true);
 }
 
 void GlicFocusedTabManager::OnBrowserNoLongerActive(Browser* browser) {
-  MaybeUpdateFocusedTab();
+  MaybeUpdateFocusedTab(/*force_notify=*/true);
 }
 
 void GlicFocusedTabManager::OnGlicWindowActivationChanged(bool active) {
