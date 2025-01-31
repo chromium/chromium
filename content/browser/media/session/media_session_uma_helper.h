@@ -44,12 +44,16 @@ class CONTENT_EXPORT MediaSessionUmaHelper {
   void OnSessionActive();
   void OnSessionSuspended();
   void OnSessionInactive();
+  void OnServiceDestroyed();
+  void OnMediaPictureInPictureChanged(bool is_picture_in_picture);
 
   void SetClockForTest(const base::TickClock* testing_clock);
 
  private:
   base::TimeDelta total_active_time_;
   base::TimeTicks current_active_time_;
+  std::optional<base::TimeTicks> current_enter_pip_time_ = std::nullopt;
+  std::optional<base::TimeDelta> total_pip_time_for_session_ = std::nullopt;
   raw_ptr<const base::TickClock> clock_;
 };
 

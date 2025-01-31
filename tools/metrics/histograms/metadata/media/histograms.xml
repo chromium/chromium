@@ -5341,6 +5341,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.Session.PictureInPicture.TotalTimeForSession" units="ms"
+    expires_after="2025-07-13">
+  <owner>bkeen@google.com</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Time during which Picture in Picture windows have been open during a
+    MediaSession. The time spent is accumulated every time a Picture in Picture
+    window is opened using MediaSession and subsequently closed; The total time
+    is recorded when the MediaSession is destroyed. This metric is recorded
+    regardless of the Picture in Picture window type (document vs video), and of
+    the reason for closing the window (UI interaction, returning back to opener
+    tab, etc.).
+  </summary>
+</histogram>
+
 <histogram name="Media.Session.Play" enum="MediaSessionActionSource"
     expires_after="2024-05-05">
   <owner>steimel@chromium.org</owner>

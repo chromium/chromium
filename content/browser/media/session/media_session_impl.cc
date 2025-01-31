@@ -387,6 +387,7 @@ void MediaSessionImpl::MediaPictureInPictureChanged(
     bool is_picture_in_picture) {
   RebuildAndNotifyMediaSessionInfoChanged();
   RebuildAndNotifyActionsChanged();
+  uma_helper_.OnMediaPictureInPictureChanged(is_picture_in_picture);
 }
 
 void MediaSessionImpl::RenderFrameHostStateChanged(
@@ -1566,6 +1567,7 @@ void MediaSessionImpl::OnServiceCreated(MediaSessionServiceImpl* service) {
 }
 
 void MediaSessionImpl::OnServiceDestroyed(MediaSessionServiceImpl* service) {
+  uma_helper_.OnServiceDestroyed();
   services_.erase(service->GetRenderFrameHostId());
 
   if (routed_service_ == service)
