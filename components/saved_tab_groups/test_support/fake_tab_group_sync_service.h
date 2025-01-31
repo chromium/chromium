@@ -103,11 +103,6 @@ class FakeTabGroupSyncService : public TabGroupSyncService {
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
 
-  // For testing.
-  void PrepareFakeSavedTabGroups();
-  void RemoveGroupAtIndex(unsigned int index);
-  void ClearGroups();
-
  private:
   // Helpers.
   std::optional<int> GetIndexOf(const base::Uuid& guid) const;
