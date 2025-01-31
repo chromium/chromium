@@ -480,6 +480,9 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   PDFiumOnDemandSearchifier* GetSearchifierForTesting() {
     return searchifier_.get();
   }
+
+  // Tells if the page is in `progressive_paints_`
+  bool IsPageScheduledForPaint(int page_index) const;
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
   void UnsupportedFeature(const std::string& feature);

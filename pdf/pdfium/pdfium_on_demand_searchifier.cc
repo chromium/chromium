@@ -164,7 +164,21 @@ void PDFiumOnDemandSearchifier::SearchifyNextImage() {
                               !current_page_ocr_results_.empty());
   }
 
+  CommitResultsToPage();
+}
+
+void PDFiumOnDemandSearchifier::CommitResultsToPage() {
   if (!current_page_ocr_results_.empty()) {
+    // If the page is being painted, wait for paint to finish.
+    if (engine_->IsPageScheduledForPaint(current_page_->index())) {
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(&PDFiumOnDemandSearchifier::CommitResultsToPage,
+                         weak_factory_.GetWeakPtr()),
+          kSearchifyPageDelay);
+      return;
+    }
+
     // It is expected that the page would be still loaded.
     FPDF_PAGE page = current_page_->page();
     CHECK(page);

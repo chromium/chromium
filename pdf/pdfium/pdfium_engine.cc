@@ -4384,6 +4384,15 @@ void PDFiumEngine::OnHasSearchifyText() {
     client_->OnHasSearchifyText();
   }
 }
+
+bool PDFiumEngine::IsPageScheduledForPaint(int page_index) const {
+  for (const auto& progressive_paint : progressive_paints_) {
+    if (progressive_paint.page_index() == page_index) {
+      return true;
+    }
+  }
+  return false;
+}
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 void PDFiumEngine::UpdateLinkUnderCursor(const std::string& target_url) {
