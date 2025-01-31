@@ -838,6 +838,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "automatic-usb-detach",
+    "owners": ["ovn@google.com", "cros-web-apps-team@google.com"],
+    "expiry_milestone": 160
+  },
+  {
     "name": "auxiliary-search-donation",
     "owners": [ "gangwu@chromium.org", "chrome-mobile-search@google.com" ],
     "expiry_milestone": 160
