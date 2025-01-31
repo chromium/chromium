@@ -19,6 +19,7 @@ class TextCombinePainter final : public TextPainter {
  public:
   TextCombinePainter(GraphicsContext& context,
                      const SvgContextPaints* svg_context_paints,
+                     std::optional<AffineTransform> rotation,
                      const gfx::Rect& visual_rect,
                      const ComputedStyle& style,
                      const LineRelativeOffset& text_origin);

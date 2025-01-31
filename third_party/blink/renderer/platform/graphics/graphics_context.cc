@@ -251,15 +251,22 @@ void GraphicsContext::BeginLayer(sk_sp<cc::ColorFilter> color_filter,
   BeginLayer(flags);
 }
 
-void GraphicsContext::BeginLayer(sk_sp<PaintFilter> image_filter) {
+void GraphicsContext::BeginLayer(sk_sp<PaintFilter> image_filter,
+                                 const gfx::RectF* bounds) {
   cc::PaintFlags flags;
   flags.setImageFilter(std::move(image_filter));
-  BeginLayer(flags);
+  BeginLayer(flags, bounds);
 }
 
-void GraphicsContext::BeginLayer(const cc::PaintFlags& flags) {
+void GraphicsContext::BeginLayer(const cc::PaintFlags& flags,
+                                 const gfx::RectF* bounds) {
   DCHECK(canvas_);
-  canvas_->saveLayer(flags);
+  if (bounds) {
+    const SkRect sk_bounds = gfx::RectFToSkRect(*bounds);
+    canvas_->saveLayer(sk_bounds, flags);
+  } else {
+    canvas_->saveLayer(flags);
+  }
 
 #if DCHECK_IS_ON()
   ++layer_count_;

@@ -423,7 +423,7 @@ class PLATFORM_EXPORT GraphicsContext {
   void BeginLayer(float opacity = 1.0f);
   void BeginLayer(SkBlendMode);
   void BeginLayer(sk_sp<cc::ColorFilter>, const SkBlendMode* = nullptr);
-  void BeginLayer(sk_sp<PaintFilter>);
+  void BeginLayer(sk_sp<PaintFilter>, const gfx::RectF* bounds = nullptr);
   void EndLayer();
 
   // Instead of being dispatched to the active canvas, draw commands following
@@ -522,7 +522,7 @@ class PLATFORM_EXPORT GraphicsContext {
   template <typename DrawTextFunc>
   void DrawTextPasses(const DrawTextFunc&);
 
-  void BeginLayer(const cc::PaintFlags&);
+  void BeginLayer(const cc::PaintFlags&, const gfx::RectF* bounds = nullptr);
 
   // SkCanvas wrappers.
   void ClipRRect(const SkRRect&,

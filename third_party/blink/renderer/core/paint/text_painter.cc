@@ -269,6 +269,14 @@ void DrawPaintOrderPasses(const OrderedPaints& ordered_paints,
 
 }  // namespace
 
+gfx::RectF TextPainter::VisualRectInLocalSpace() const {
+  gfx::RectF float_visual_rect(visual_rect_);
+  if (rotation_) {
+    float_visual_rect = rotation_->Inverse().MapRect(float_visual_rect);
+  }
+  return float_visual_rect;
+}
+
 void TextPainter::Paint(const TextFragmentPaintInfo& fragment_paint_info,
                         const TextPaintStyle& text_style,
                         DOMNodeId node_id,
@@ -322,7 +330,8 @@ void TextPainter::Paint(const TextFragmentPaintInfo& fragment_paint_info,
               auto_dark_mode);
         }
       },
-      graphics_context_, text_style, horizontal_, shadow_mode);
+      graphics_context_, text_style, VisualRectInLocalSpace(), horizontal_,
+      shadow_mode);
 
   // TODO(sohom): SubstringContainsOnlyWhitespaceOrEmpty() does not check
   // for all whitespace characters as defined in the spec definition of

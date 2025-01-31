@@ -20,12 +20,14 @@ namespace blink {
 TextCombinePainter::TextCombinePainter(
     GraphicsContext& context,
     const SvgContextPaints* svg_context_paints,
+    std::optional<AffineTransform> rotation,
     const gfx::Rect& visual_rect,
     const ComputedStyle& style,
     const LineRelativeOffset& text_origin)
     : TextPainter(context,
                   svg_context_paints,
                   style.GetFont(),
+                  rotation,
                   visual_rect,
                   text_origin,
                   /* horizontal */ false),
@@ -65,14 +67,20 @@ void TextCombinePainter::Paint(const PaintInfo& paint_info,
   const LineRelativeRect& text_frame_rect =
       text_combine.ComputeTextFrameRect(paint_offset);
 
-  // To match the logical direction
+  std::optional<AffineTransform> rotation;
+  const WritingMode writing_mode = style.GetWritingMode();
+  const bool is_horizontal = IsHorizontalWritingMode(writing_mode);
+
   GraphicsContextStateSaver state_saver(paint_info.context);
-  paint_info.context.ConcatCTM(
-      text_frame_rect.ComputeRelativeToPhysicalTransform(
-          style.GetWritingMode()));
+  // To match the logical direction
+  if (!is_horizontal) {
+    rotation.emplace(
+        text_frame_rect.ComputeRelativeToPhysicalTransform(writing_mode));
+    paint_info.context.ConcatCTM(*rotation);
+  }
 
   TextCombinePainter text_painter(paint_info.context,
-                                  paint_info.GetSvgContextPaints(),
+                                  paint_info.GetSvgContextPaints(), rotation,
                                   text_combine.VisualRectForPaint(paint_offset),
                                   style, text_frame_rect.offset);
   const TextPaintStyle text_style = TextPainter::TextPaintingStyle(

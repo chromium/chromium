@@ -9,6 +9,7 @@
 #include "base/containers/heap_array.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/core/style/shadow_list.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -72,6 +73,7 @@ sk_sp<PaintFilter> MakeTextShadowFilter(const TextPaintStyle& text_style,
 
 void ScopedTextShadowPainter::ApplyShadowList(GraphicsContext& context,
                                               const TextPaintStyle& text_style,
+                                              const gfx::RectF& bounds,
                                               const bool is_horizontal) {
   sk_sp<PaintFilter> shadow_filter =
       MakeTextShadowFilter(text_style, is_horizontal);
@@ -79,7 +81,13 @@ void ScopedTextShadowPainter::ApplyShadowList(GraphicsContext& context,
     return;
   }
   context_ = &context;
-  context_->BeginLayer(std::move(shadow_filter));
+  const gfx::RectF* layer_bounds = nullptr;
+  if (RuntimeEnabledFeatures::TextShadowPaintingOptimizationEnabled()) {
+    // We assume that the bounds already include the contribution from the
+    // shadows. (This is true for ink overflow.)
+    layer_bounds = &bounds;
+  }
+  context_->BeginLayer(std::move(shadow_filter), layer_bounds);
 }
 
 }  // namespace blink
