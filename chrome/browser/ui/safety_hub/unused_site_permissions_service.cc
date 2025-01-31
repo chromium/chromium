@@ -27,7 +27,6 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_prefs.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_util.h"
@@ -58,6 +57,10 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "chrome/browser/safe_browsing/safe_browsing_service.h"
+#endif
 
 constexpr base::TimeDelta kRevocationThresholdNoDelayForTesting = base::Days(0);
 constexpr base::TimeDelta kRevocationThresholdWithDelayForTesting =
@@ -370,9 +373,13 @@ UnusedSitePermissionsService::UnusedSitePermissionsService(
           safe_browsing::kSafetyHubAbusiveNotificationRevocation)) {
     abusive_notification_manager_ =
         std::make_unique<AbusiveNotificationPermissionsManager>(
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
             g_browser_process->safe_browsing_service()
                 ? g_browser_process->safe_browsing_service()->database_manager()
                 : nullptr,
+#else
+            nullptr,
+#endif
             hcsm());
 
     pref_change_registrar_->Add(

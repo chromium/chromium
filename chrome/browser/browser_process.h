@@ -30,6 +30,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/buildflags.h"
+#include "components/safe_browsing/buildflags.h"
 #include "media/media_buildflags.h"
 
 class BackgroundModeManager;
@@ -66,9 +67,11 @@ class NetworkQualityTracker;
 class SharedURLLoaderFactory;
 }
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 namespace safe_browsing {
 class SafeBrowsingService;
 }
+#endif
 
 namespace signin {
 class ActivePrimaryAccountsMetricsRecorder;
@@ -233,8 +236,10 @@ class BrowserProcess {
   // on this platform (or this is a unit test).
   virtual StatusTray* status_tray() = 0;
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   // Returns the SafeBrowsing service.
   virtual safe_browsing::SafeBrowsingService* safe_browsing_service() = 0;
+#endif
 
   // Returns the service providing versioned storage for rules used by the Safe
   // Browsing subresource filter.

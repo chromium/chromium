@@ -11,7 +11,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/engagement/site_engagement_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
-#include "chrome/browser/safe_browsing/safe_browsing_service.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/site_protection/site_familiarity_heuristic_name.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
@@ -23,6 +23,10 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "chrome/browser/safe_browsing/safe_browsing_service.h"
+#endif
 
 namespace site_protection {
 namespace {
@@ -200,6 +204,7 @@ void SiteProtectionMetricsObserver::OnKnowIfAnyVisitOlderThanADayAgo(
         SiteFamiliarityHistoryHeuristicName::kNoVisitsToAnySiteMoreThanADayAgo;
   }
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   if (g_browser_process->safe_browsing_service()) {
     if (auto database_manager =
             g_browser_process->safe_browsing_service()->database_manager()) {
@@ -212,6 +217,7 @@ void SiteProtectionMetricsObserver::OnKnowIfAnyVisitOlderThanADayAgo(
       return;
     }
   }
+#endif
 
   OnGotHighConfidenceAllowlistResult(
       std::move(metrics_data),

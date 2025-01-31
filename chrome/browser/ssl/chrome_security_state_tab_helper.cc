@@ -16,7 +16,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lookalikes/safety_tip_web_contents_observer.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/ssl/https_only_mode_tab_helper.h"
 #include "chrome/browser/ssl/known_interception_disclosure_infobar_delegate.h"
 #include "chrome/common/chrome_features.h"
@@ -52,6 +51,10 @@
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
+#endif
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #endif
 
 using password_manager::metrics_util::PasswordType;
@@ -162,6 +165,7 @@ void ChromeSecurityStateTabHelper::PrimaryPageChanged(content::Page& page) {
 
 security_state::MaliciousContentStatus
 ChromeSecurityStateTabHelper::GetMaliciousContentStatus() const {
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   using enum safe_browsing::SBThreatType;
 
   content::NavigationEntry* entry =
@@ -249,5 +253,6 @@ ChromeSecurityStateTabHelper::GetMaliciousContentStatus() const {
         NOTREACHED();
     }
   }
+#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   return security_state::MALICIOUS_CONTENT_STATUS_NONE;
 }

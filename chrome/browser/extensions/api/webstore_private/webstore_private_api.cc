@@ -40,7 +40,6 @@
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
-#include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/browser/ui/extensions/extensions_dialogs.h"
@@ -73,6 +72,10 @@
 #include "net/base/load_flags.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "chrome/browser/safe_browsing/safe_browsing_service.h"
+#endif
 
 using safe_browsing::SafeBrowsingNavigationObserverManager;
 
@@ -208,8 +211,10 @@ const char kIncognitoError[] =
 const char kParentBlockedExtensionInstallError[] =
     "Parent has blocked extension/app installation";
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 // The number of user gestures to trace back for the referrer chain.
 const int kExtensionReferrerUserGestureLimit = 2;
+#endif
 
 WebstorePrivateApi::Delegate* test_delegate = nullptr;
 
@@ -1205,6 +1210,7 @@ WebstorePrivateGetReferrerChainFunction::
 
 ExtensionFunction::ResponseAction
 WebstorePrivateGetReferrerChainFunction::Run() {
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   Profile* profile = Profile::FromBrowserContext(browser_context());
   if (!SafeBrowsingNavigationObserverManager::IsEnabledAndReady(
           profile->GetPrefs(), g_browser_process->safe_browsing_service()))
@@ -1253,6 +1259,10 @@ WebstorePrivateGetReferrerChainFunction::Run() {
   return RespondNow(
       ArgumentList(api::webstore_private::GetReferrerChain::Results::Create(
           base::Base64Encode(request.SerializeAsString()))));
+#else
+  return RespondNow(ArgumentList(
+      api::webstore_private::GetReferrerChain::Results::Create("")));
+#endif
 }
 
 WebstorePrivateGetExtensionStatusFunction::
