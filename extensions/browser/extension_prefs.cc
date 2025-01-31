@@ -1003,16 +1003,14 @@ bool ExtensionPrefs::HasDisableReason(
 void ExtensionPrefs::AddDisableReason(
     const ExtensionId& extension_id,
     disable_reason::DisableReason disable_reason) {
-  AddDisableReasons(extension_id, disable_reason);
+  AddDisableReasons(extension_id, {disable_reason});
 }
 
-void ExtensionPrefs::AddDisableReasons(const ExtensionId& extension_id,
-                                       int disable_reasons) {
-  const base::flat_set<int> incoming_reasons_set =
-      BitflagToIntegerSet(disable_reasons);
-
+void ExtensionPrefs::AddDisableReasons(
+    const ExtensionId& extension_id,
+    const DisableReasonSet& disable_reasons) {
   auto passkey = DisableReasonRawManipulationPasskey();
-  AddDisableReasons(passkey, extension_id, incoming_reasons_set);
+  AddDisableReasons(passkey, extension_id, disable_reasons);
 }
 
 void ExtensionPrefs::AddDisableReasons(
