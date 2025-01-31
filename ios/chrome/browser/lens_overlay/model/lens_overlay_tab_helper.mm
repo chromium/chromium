@@ -38,12 +38,17 @@ LensOverlayTabHelper::~LensOverlayTabHelper() {
 void LensOverlayTabHelper::SetLensOverlayUIAttachedAndAlive(
     bool is_ui_attached_and_alive) {
   is_ui_attached_and_alive_ = is_ui_attached_and_alive;
+  invokation_navigation_id_ = 0;
+
   if (IsLensOverlaySameTabNavigationEnabled() && is_ui_attached_and_alive &&
       web_state_) {
-    invokation_navigation_id_ =
-        web_state_->GetNavigationManager()->GetVisibleItem()->GetUniqueID();
-  } else {
-    invokation_navigation_id_ = 0;
+    const web::NavigationManager* navigation_manager =
+        web_state_->GetNavigationManager();
+
+    if (navigation_manager && navigation_manager->GetVisibleItem()) {
+      invokation_navigation_id_ =
+          navigation_manager->GetVisibleItem()->GetUniqueID();
+    }
   }
 }
 
