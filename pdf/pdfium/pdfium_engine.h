@@ -510,11 +510,6 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
                          int page_to_search,
                          AddSearchResultCallback add_result_callback);
 
-  // Returns all the pages in the PDF.
-  const std::vector<std::unique_ptr<PDFiumPage>>& pages() const {
-    return pages_;
-  }
-
  private:
   // This helper class is used to detect the difference in selection between
   // construction and destruction.  At destruction, it invalidates all the
