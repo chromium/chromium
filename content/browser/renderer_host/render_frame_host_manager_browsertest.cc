@@ -4399,7 +4399,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
       EXPECT_TRUE(success_site_instance->IsRelatedSiteInstance(
           error_site_instance.get()));
     }
-    EXPECT_NE(success_site_instance->GetOrCreateProcess()->GetDeprecatedID(),
+    EXPECT_NE(success_site_instance->GetProcess()->GetDeprecatedID(),
               error_site_instance->GetProcess()->GetDeprecatedID());
     EXPECT_TRUE(HasErrorPageSiteInfo(error_site_instance.get()));
 
@@ -4438,7 +4438,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
       EXPECT_TRUE(success_site_instance->IsRelatedSiteInstance(
           error_site_instance.get()));
     }
-    EXPECT_NE(success_site_instance->GetOrCreateProcess()->GetDeprecatedID(),
+    EXPECT_NE(success_site_instance->GetProcess()->GetDeprecatedID(),
               error_site_instance->GetProcess()->GetDeprecatedID());
     EXPECT_TRUE(HasErrorPageSiteInfo(error_site_instance.get()));
 

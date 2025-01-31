@@ -10799,7 +10799,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessNoSharingBrowserTest,
   EXPECT_FALSE(bar_instance->IsRelatedSiteInstance(new_instance));
   EXPECT_FALSE(foo_instance->IsRelatedSiteInstance(new_instance));
   EXPECT_NE(new_instance->GetProcess(), foo_instance->GetProcess());
-  EXPECT_NE(new_instance->GetProcess(), bar_instance->GetOrCreateProcess());
+  EXPECT_NE(new_instance->GetProcess(), bar_instance->GetProcess());
 }
 
 namespace {

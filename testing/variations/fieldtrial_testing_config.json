@@ -23770,37 +23770,6 @@
             ]
         }
     ],
-    "TraceSiteInstanceGetProcessCreation": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledAndCrash",
-                    "params": {
-                        "crash_on_creation": "true"
-                    },
-                    "enable_features": [
-                        "TraceSiteInstanceGetProcessCreation"
-                    ]
-                },
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "crash_on_creation": "false"
-                    },
-                    "enable_features": [
-                        "TraceSiteInstanceGetProcessCreation"
-                    ]
-                }
-            ]
-        }
-    ],
     "TrackingProtection3pcd": [
         {
             "platforms": [
