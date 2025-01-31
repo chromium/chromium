@@ -65,7 +65,7 @@ namespace {
 
 // Converts the |image| to a Windows icon and returns the corresponding HICON
 // handle. |image| is resized to desired |width| and |height| if needed.
-base::win::ScopedHICON CreateHICONFromSkBitmapSizedTo(
+base::win::ScopedGDIObject<HICON> CreateHICONFromSkBitmapSizedTo(
     const gfx::ImageSkia& image,
     int width,
     int height) {
@@ -852,8 +852,8 @@ void BrowserFrameViewWin::StopThrobber() {
   if (throbber_running_) {
     throbber_running_ = false;
 
-    base::win::ScopedHICON previous_small_icon;
-    base::win::ScopedHICON previous_big_icon;
+    base::win::ScopedGDIObject<HICON> previous_small_icon;
+    base::win::ScopedGDIObject<HICON> previous_big_icon;
     HICON small_icon = nullptr;
     HICON big_icon = nullptr;
 

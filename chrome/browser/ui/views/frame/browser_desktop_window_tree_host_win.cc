@@ -601,7 +601,7 @@ SkBitmap GetBadgedIconBitmapForProfile(Profile* profile) {
 void BrowserDesktopWindowTreeHostWin::SetWindowIcon(bool badged) {
   // Hold onto the previous icon so that the currently displayed
   // icon is valid until replaced with the new icon.
-  base::win::ScopedHICON previous_icon = std::move(icon_handle_);
+  base::win::ScopedGDIObject<HICON> previous_icon = std::move(icon_handle_);
   if (badged) {
     icon_handle_ = IconUtil::CreateHICONFromSkBitmap(
         GetBadgedIconBitmapForProfile(browser_view_->browser()->profile()));

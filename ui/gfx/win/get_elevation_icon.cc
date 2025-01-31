@@ -28,7 +28,7 @@ SkBitmap GetElevationIcon() {
                                   &icon_info))) {
     return {};
   }
-  base::win::ScopedHICON shield_icon(icon_info.hIcon);
+  base::win::ScopedGDIObject<HICON> shield_icon(icon_info.hIcon);
 
   return IconUtil::CreateSkBitmapFromHICON(
       shield_icon.get(), gfx::Size(::GetSystemMetrics(SM_CXSMICON),

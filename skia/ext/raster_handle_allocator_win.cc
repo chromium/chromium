@@ -51,7 +51,7 @@ static bool Create(int width,
                    bool do_clear,
                    SkRasterHandleAllocator::Rec* rec) {
   void* pixels;
-  base::win::ScopedBitmap new_bitmap =
+  base::win::ScopedGDIObject<HBITMAP> new_bitmap =
       skia::CreateHBitmapXRGB8888(width, height, shared_section, &pixels);
   if (!new_bitmap.is_valid()) {
     LOG(ERROR) << "CreateHBitmap failed";

@@ -94,7 +94,7 @@ CreateHGlobalForByteArray(const std::vector<unsigned char>& byte_array);
 // unused in each pixel), with dimensions and the RGBC pixel data from the
 // SkBitmap. Any alpha channel values are copied into the HBITMAP but are not
 // used. Can return a null HBITMAP on any failure to create the HBITMAP.
-SK_API base::win::ScopedBitmap CreateHBitmapFromN32SkBitmap(
+SK_API base::win::ScopedGDIObject<HBITMAP> CreateHBitmapFromN32SkBitmap(
     const SkBitmap& bitmap);
 
 // Creates an image in the DIBV5 format. On success this function returns a
@@ -115,7 +115,7 @@ SK_API void CreateBitmapHeaderForXRGB888(int width,
 
 // Creates an HBITMAP backed by 32-bits-per-pixel RGB data (the high bits are
 // unused in each pixel).
-SK_API base::win::ScopedBitmap CreateHBitmapXRGB8888(
+SK_API base::win::ScopedGDIObject<HBITMAP> CreateHBitmapXRGB8888(
     int width,
     int height,
     HANDLE shared_section = nullptr,

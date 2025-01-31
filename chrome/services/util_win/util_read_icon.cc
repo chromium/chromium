@@ -43,7 +43,7 @@ gfx::ImageSkia LoadIcon(base::File file, int size, float scale) {
       },
       reinterpret_cast<LONG_PTR>(&id));
 
-  base::win::ScopedHICON icon(static_cast<HICON>(
+  base::win::ScopedGDIObject<HICON> icon(static_cast<HICON>(
       ::LoadImage(library, id, IMAGE_ICON, size, size, LR_DEFAULTCOLOR)));
   if (!IS_INTRESOURCE(id))
     free(id);

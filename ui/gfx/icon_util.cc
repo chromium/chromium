@@ -169,13 +169,13 @@ const int IconUtil::kIconDimensions[] = {
 const size_t IconUtil::kNumIconDimensions = std::size(kIconDimensions);
 const size_t IconUtil::kNumIconDimensionsUpToMediumSize = 9;
 
-base::win::ScopedHICON IconUtil::CreateHICONFromSkBitmap(
+base::win::ScopedGDIObject<HICON> IconUtil::CreateHICONFromSkBitmap(
     const SkBitmap& bitmap) {
   // Only 32 bit ARGB bitmaps are supported. We also try to perform as many
   // validations as we can on the bitmap.
   if ((bitmap.colorType() != kN32_SkColorType) || (bitmap.width() <= 0) ||
       (bitmap.height() <= 0) || (bitmap.getPixels() == nullptr))
-    return base::win::ScopedHICON();
+    return base::win::ScopedGDIObject<HICON>();
 
   // We start by creating a DIB which we'll use later on in order to create
   // the HICON. We use BITMAPV5HEADER since the bitmap we are about to convert
@@ -185,15 +185,15 @@ base::win::ScopedHICON IconUtil::CreateHICONFromSkBitmap(
   InitializeBitmapHeader(&bitmap_header, bitmap.width(), bitmap.height());
 
   void* bits = nullptr;
-  base::win::ScopedBitmap dib;
+  base::win::ScopedGDIObject<HBITMAP> dib;
   {
     base::win::ScopedGetDC hdc(nullptr);
-    dib = base::win::ScopedBitmap(
+    dib = base::win::ScopedGDIObject<HBITMAP>(
         ::CreateDIBSection(hdc, reinterpret_cast<BITMAPINFO*>(&bitmap_header),
                            DIB_RGB_COLORS, &bits, nullptr, 0));
   }
   if (!dib.is_valid() || !bits)
-    return base::win::ScopedHICON();
+    return base::win::ScopedGDIObject<HICON>();
 
   memcpy(bits, bitmap.getPixels(), bitmap.width() * bitmap.height() * 4);
 
@@ -220,7 +220,7 @@ base::win::ScopedHICON IconUtil::CreateHICONFromSkBitmap(
     std::ranges::fill(mask_bits.as_span(), 0xFF);
   }
 
-  base::win::ScopedBitmap mono_bitmap(
+  base::win::ScopedGDIObject<HBITMAP> mono_bitmap(
       ::CreateBitmap(bitmap.width(), bitmap.height(), 1, 1, mask_bits.data()));
   DCHECK(mono_bitmap.is_valid());
 
@@ -230,7 +230,7 @@ base::win::ScopedHICON IconUtil::CreateHICONFromSkBitmap(
   icon_info.yHotspot = 0;
   icon_info.hbmMask = mono_bitmap.get();
   icon_info.hbmColor = dib.get();
-  base::win::ScopedHICON icon(CreateIconIndirect(&icon_info));
+  base::win::ScopedGDIObject<HICON> icon(CreateIconIndirect(&icon_info));
   return icon;
 }
 
@@ -272,9 +272,10 @@ std::unique_ptr<gfx::ImageFamily> IconUtil::CreateImageFamilyFromIconResource(
         continue;
 
       // For everything except the Vista+ 256x256 icons, use |LoadImage()|.
-      base::win::ScopedHICON icon_handle(static_cast<HICON>(LoadImage(
-          module, MAKEINTRESOURCE(resource_id), IMAGE_ICON, entry->bWidth,
-          entry->bHeight, LR_DEFAULTCOLOR | LR_DEFAULTSIZE)));
+      base::win::ScopedGDIObject<HICON> icon_handle(
+          static_cast<HICON>(LoadImage(
+              module, MAKEINTRESOURCE(resource_id), IMAGE_ICON, entry->bWidth,
+              entry->bHeight, LR_DEFAULTCOLOR | LR_DEFAULTSIZE)));
       result->Add(gfx::Image::CreateFrom1xBitmap(
           IconUtil::CreateSkBitmapFromHICON(icon_handle.get())));
     } else {
@@ -319,16 +320,16 @@ SkBitmap IconUtil::CreateSkBitmapFromHICON(HICON icon) {
   return CreateSkBitmapFromHICONHelper(icon, icon_size);
 }
 
-base::win::ScopedHICON IconUtil::CreateCursorFromSkBitmap(
+base::win::ScopedGDIObject<HICON> IconUtil::CreateCursorFromSkBitmap(
     const SkBitmap& bitmap,
     const gfx::Point& hotspot) {
   if (bitmap.empty())
-    return base::win::ScopedHICON();
+    return base::win::ScopedGDIObject<HICON>();
 
   // Only 32 bit ARGB bitmaps are supported.
   if (bitmap.colorType() != kN32_SkColorType) {
     NOTIMPLEMENTED() << " unsupported color type: " << bitmap.colorType();
-    return base::win::ScopedHICON();
+    return base::win::ScopedGDIObject<HICON>();
   }
 
   BITMAPINFO icon_bitmap_info = {};
@@ -336,11 +337,11 @@ base::win::ScopedHICON IconUtil::CreateCursorFromSkBitmap(
       bitmap, reinterpret_cast<BITMAPINFOHEADER*>(&icon_bitmap_info));
 
   base::win::ScopedCreateDC working_dc;
-  base::win::ScopedBitmap bitmap_handle;
+  base::win::ScopedGDIObject<HBITMAP> bitmap_handle;
   {
     base::win::ScopedGetDC dc(nullptr);
     working_dc = base::win::ScopedCreateDC(CreateCompatibleDC(dc));
-    bitmap_handle = base::win::ScopedBitmap(
+    bitmap_handle = base::win::ScopedGDIObject<HBITMAP>(
         CreateDIBSection(dc, &icon_bitmap_info, DIB_RGB_COLORS, 0, 0, 0));
   }
   SetDIBits(0, bitmap_handle.get(), 0, bitmap.height(), bitmap.getPixels(),
@@ -351,7 +352,7 @@ base::win::ScopedHICON IconUtil::CreateCursorFromSkBitmap(
   SetBkMode(working_dc.Get(), TRANSPARENT);
   SelectObject(working_dc.Get(), old_bitmap);
 
-  base::win::ScopedBitmap mask(
+  base::win::ScopedGDIObject<HBITMAP> mask(
       CreateBitmap(bitmap.width(), bitmap.height(), 1, 1, nullptr));
   ICONINFO ii = {0};
   ii.fIcon = FALSE;
@@ -360,7 +361,7 @@ base::win::ScopedHICON IconUtil::CreateCursorFromSkBitmap(
   ii.hbmMask = mask.get();
   ii.hbmColor = bitmap_handle.get();
 
-  return base::win::ScopedHICON(CreateIconIndirect(&ii));
+  return base::win::ScopedGDIObject<HICON>(CreateIconIndirect(&ii));
 }
 
 gfx::Point IconUtil::GetHotSpotFromHICON(HICON icon) {
@@ -389,11 +390,11 @@ SkBitmap IconUtil::CreateSkBitmapFromHICONHelper(HICON icon,
   BITMAPV5HEADER h;
   InitializeBitmapHeader(&h, s.width(), s.height());
   void* bits;
-  base::win::ScopedBitmap dib;
+  base::win::ScopedGDIObject<HBITMAP> dib;
   base::win::ScopedCreateDC dib_dc;
   {
     base::win::ScopedGetDC hdc(nullptr);
-    dib = base::win::ScopedBitmap(
+    dib = base::win::ScopedGDIObject<HBITMAP>(
         ::CreateDIBSection(hdc, reinterpret_cast<BITMAPINFO*>(&h),
                            DIB_RGB_COLORS, &bits, nullptr, 0));
     dib_dc = base::win::ScopedCreateDC(CreateCompatibleDC(hdc));

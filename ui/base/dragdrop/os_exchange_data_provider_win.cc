@@ -793,7 +793,7 @@ void OSExchangeDataProviderWin::SetDragImage(
   if (!SUCCEEDED(rv))
     return;
 
-  base::win::ScopedBitmap hbitmap =
+  base::win::ScopedGDIObject<HBITMAP> hbitmap =
       skia::CreateHBitmapFromN32SkBitmap(unpremul_bitmap);
   if (!hbitmap.is_valid())
     return;

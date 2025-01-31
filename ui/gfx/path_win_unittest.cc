@@ -87,7 +87,7 @@ TEST(CreateHRGNFromSkPathTest, RoundCornerTest) {
   SkRRect rrect;
   rrect.setRectXY(SkRect::MakeWH(50, 50), 20, 20);
   path.addRRect(rrect);
-  base::win::ScopedRegion region(CreateHRGNFromSkPath(path));
+  base::win::ScopedGDIObject<HRGN> region(CreateHRGNFromSkPath(path));
   const std::vector<SkIRect>& region_rects = GetRectsFromHRGN(region.get());
   EXPECT_EQ(std::size(rects), region_rects.size());
   for (size_t i = 0; i < std::size(rects) && i < region_rects.size(); ++i)
@@ -106,7 +106,7 @@ TEST(CreateHRGNFromSkPathTest, NonContiguousPath) {
   for (const SkIRect& rect : rects) {
     path.addRect(SkRect::Make(rect));
   }
-  base::win::ScopedRegion region(CreateHRGNFromSkPath(path));
+  base::win::ScopedGDIObject<HRGN> region(CreateHRGNFromSkPath(path));
   const std::vector<SkIRect>& region_rects = GetRectsFromHRGN(region.get());
   ASSERT_EQ(std::size(rects), region_rects.size());
   for (size_t i = 0; i < std::size(rects); ++i)
@@ -116,8 +116,8 @@ TEST(CreateHRGNFromSkPathTest, NonContiguousPath) {
 // Check that empty region is returned for empty path.
 TEST(CreateHRGNFromSkPathTest, EmptyPath) {
   SkPath path;
-  base::win::ScopedRegion empty_region(::CreateRectRgn(0, 0, 0, 0));
-  base::win::ScopedRegion region(CreateHRGNFromSkPath(path));
+  base::win::ScopedGDIObject<HRGN> empty_region(::CreateRectRgn(0, 0, 0, 0));
+  base::win::ScopedGDIObject<HRGN> region(CreateHRGNFromSkPath(path));
   EXPECT_TRUE(::EqualRgn(empty_region.get(), region.get()));
 }
 

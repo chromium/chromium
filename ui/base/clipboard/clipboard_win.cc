@@ -945,7 +945,7 @@ SkBitmap ClipboardWin::ReadBitmapInternal(ClipboardBuffer buffer) const {
 
   void* dst_bits;
   // dst_hbitmap is freed by the release_proc in skia_bitmap (below)
-  base::win::ScopedBitmap dst_hbitmap = skia::CreateHBitmapXRGB8888(
+  base::win::ScopedGDIObject<HBITMAP> dst_hbitmap = skia::CreateHBitmapXRGB8888(
       bitmap->bmiHeader.biWidth, bitmap->bmiHeader.biHeight, 0, &dst_bits);
 
   {
