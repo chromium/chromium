@@ -2468,6 +2468,11 @@ const char kLensOverlayImageContextMenuActionsName[] =
 const char kLensOverlayImageContextMenuActionsDescription[] =
     "Enables image context menu actions in the Lens overlay.";
 
+const char kLensOverlaySidePanelOpenInNewTabName[] =
+    "Lens overlay side panel open in new tab";
+const char kLensOverlaySidePanelOpenInNewTabDescription[] =
+    "Enables open in new tab in the Lens overlay side panel.";
+
 const char kLensOverlayTranslateButtonName[] = "Lens overlay translate button";
 const char kLensOverlayTranslateButtonDescription[] =
     "Enables translate button via the Lens overlay.";
