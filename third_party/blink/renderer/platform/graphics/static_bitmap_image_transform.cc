@@ -271,6 +271,9 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyWithBlit(
           kShouldInitialize);
     }
   }
+  if (!resource_provider) {
+    return nullptr;
+  }
 
   // Perform the blit and return the drawn resource.
   cc::PaintFlags paint;
