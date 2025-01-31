@@ -120,10 +120,6 @@ GL_EXPORT gfx::mojom::DXGIInfoPtr GetDirectCompositionHDRMonitorDXGIInfo();
 // Returns true if there is support for |IDCompositionTexture|.
 GL_EXPORT bool DirectCompositionTextureSupported();
 
-// Set direct composition swap chain failure so that direct composition is
-// marked as unsupported from now on.
-GL_EXPORT void SetDirectCompositionSwapChainFailed();
-
 struct DirectCompositionOverlayWorkarounds {
   // Whether software video overlays i.e. swap chains used without hardware
   // overlay/MPO support are used or not.

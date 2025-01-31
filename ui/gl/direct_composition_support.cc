@@ -129,8 +129,6 @@ std::set<HMONITOR>* GetHDRMonitors() {
 IDCompositionDevice3* g_dcomp_device = nullptr;
 // Global d3d11 device used by direct composition.
 ID3D11Device* g_d3d11_device = nullptr;
-// Whether swap chain present failed and direct composition should be disabled.
-bool g_direct_composition_swap_chain_failed = false;
 
 // Preferred overlay format set when detecting overlay support during
 // initialization.  Set to NV12 by default so that it's used when enabling
@@ -758,7 +756,7 @@ ID3D11Device* GetDirectCompositionD3D11Device() {
 }
 
 bool DirectCompositionSupported() {
-  return g_dcomp_device && !g_direct_composition_swap_chain_failed;
+  return g_dcomp_device;
 }
 
 bool DirectCompositionOverlaysSupported() {
@@ -1083,14 +1081,6 @@ void SetDirectCompositionOverlayWorkarounds(
   g_force_rgb10a2_overlay_support = workarounds.force_rgb10a2_overlay_support;
   g_check_ycbcr_studio_g22_left_p709_for_nv12_support =
       workarounds.check_ycbcr_studio_g22_left_p709_for_nv12_support;
-}
-
-void SetDirectCompositionSwapChainFailed() {
-  if (!g_direct_composition_swap_chain_failed) {
-    g_direct_composition_swap_chain_failed = true;
-    DirectCompositionOverlayCapsMonitor::GetInstance()
-        ->NotifyOverlayCapsChanged();
-  }
 }
 
 void SetDirectCompositionMonitorInfoForTesting(

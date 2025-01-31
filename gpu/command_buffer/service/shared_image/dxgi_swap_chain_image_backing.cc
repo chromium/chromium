@@ -103,9 +103,6 @@ std::unique_ptr<DXGISwapChainImageBacking> DXGISwapChainImageBacking::Create(
   if (FAILED(hr)) {
     DLOG(ERROR) << "CreateSwapChainForComposition failed: "
                 << logging::SystemErrorCodeToString(hr);
-    // Disable direct composition because SwapChain creation might fail again
-    // next time.
-    gl::SetDirectCompositionSwapChainFailed();
     return nullptr;
   }
 
