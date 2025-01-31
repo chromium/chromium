@@ -12,6 +12,7 @@
 #include "base/debug/gdi_debug_util_win.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/win/scoped_gdi_object.h"
 #include "base/win/win_util.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "skia/ext/platform_canvas.h"
@@ -34,12 +35,9 @@ static void DeleteHDCCallback(void*, void* context) {
 
   // Must select back in the old bitmap before we delete the hdc, and so we can
   // recover the new_bitmap that we allocated, so we can delete it.
-  HBITMAP new_bitmap =
-      static_cast<HBITMAP>(SelectObject(rec->hdc_, rec->prev_bitmap_));
-  bool success = DeleteObject(new_bitmap);
-  DCHECK(success);
-  success = DeleteDC(rec->hdc_);
-  DCHECK(success);
+  DeleteObject(
+      static_cast<HBITMAP>(SelectObject(rec->hdc_, rec->prev_bitmap_)));
+  DeleteDC(rec->hdc_);
   delete rec;
 }
 
@@ -101,11 +99,9 @@ class GDIAllocator : public SkRasterHandleAllocator {
     HDC hdc = static_cast<HDC>(handle);
     skia::LoadTransformToDC(hdc, ctm);
 
-    HRGN hrgn = CreateRectRgnIndirect(&skia::SkIRectToRECT(clip_bounds));
-    int result = SelectClipRgn(hdc, hrgn);
-    DCHECK(result != ERROR);
-    result = DeleteObject(hrgn);
-    DCHECK(result != 0);
+    base::win::ScopedGDIObject<HRGN> hrgn(
+        CreateRectRgnIndirect(&skia::SkIRectToRECT(clip_bounds)));
+    SelectClipRgn(hdc, hrgn.get());
   }
 };
 
