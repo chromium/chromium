@@ -4,9 +4,13 @@
 
 #include "media/cast/encoding/vpx_quantizer_parser.h"
 
+#include <array>
+#include <optional>
+
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_span.h"
+#include "base/types/cxx23_to_underlying.h"
 
 namespace media::cast {
 namespace {
@@ -30,10 +34,15 @@ class VpxBitReader {
   VpxBitReader(VpxBitReader&&) = delete;
   VpxBitReader& operator=(VpxBitReader&&) = delete;
 
-  // Decode one bit. The output is 0 or 1.
-  unsigned int DecodeBit();
+  enum class BitResult : int {
+    kError = -1,
+    kZero = 0,
+    kOne = 1,
+  };
+  BitResult DecodeBit();
+
   // Decode a value with |num_bits|. The decoding order is MSB first.
-  unsigned int DecodeValue(unsigned int num_bits);
+  std::optional<unsigned int> DecodeValue(unsigned int num_bits);
 
  private:
   // Read new bytes from the encoded data buffer until |bit_count_| > 0.
@@ -85,14 +94,18 @@ void VpxBitReader::VpxDecoderReadBytes() {
   }
 }
 
-unsigned int VpxBitReader::DecodeBit() {
+VpxBitReader::BitResult VpxBitReader::DecodeBit() {
   unsigned int decoded_bit = 0;
   unsigned int split = 1 + (((range_ - 1) * 128) >> 8);
   if (bit_count_ < 0) {
     VpxDecoderReadBytes();
   }
-  DCHECK_GE(bit_count_, 0);
-  unsigned int shifted_split = split << 8;
+
+  // We ran out of data unexpectedly. Input data is improperly formatted.
+  if (bit_count_ < 0) {
+    return BitResult::kError;
+  }
+  const unsigned int shifted_split = split << 8;
   if (value_ >= shifted_split) {
     range_ -= split;
     value_ -= shifted_split;
@@ -106,44 +119,76 @@ unsigned int VpxBitReader::DecodeBit() {
     value_ <<= shift;
     bit_count_ -= shift;
   }
-  return decoded_bit;
+  return decoded_bit ? BitResult::kOne : BitResult::kZero;
 }
 
-unsigned int VpxBitReader::DecodeValue(unsigned int num_bits) {
+std::optional<unsigned int> VpxBitReader::DecodeValue(unsigned int num_bits) {
   unsigned int decoded_value = 0;
   for (int i = static_cast<int>(num_bits) - 1; i >= 0; i--) {
-    decoded_value |= (DecodeBit() << i);
+    switch (DecodeBit()) {
+      case BitResult::kError:
+        return std::nullopt;
+
+      case BitResult::kOne:
+        decoded_value |= 1 << i;
+        break;
+
+      case BitResult::kZero:
+        break;
+    }
   }
   return decoded_value;
 }
 
+// Returns whether or not the consumption of bits was successful.
+bool ConsumeBits(VpxBitReader* bit_reader, int bits) {
+  switch (bit_reader->DecodeBit()) {
+    case VpxBitReader::BitResult::kError:
+      return false;
+    case VpxBitReader::BitResult::kZero:
+      return true;
+    case VpxBitReader::BitResult::kOne:
+      return bit_reader->DecodeValue(bits).has_value();
+  }
+}
+
 // Parse the Segment Header part in the first partition.
 void ParseSegmentHeader(VpxBitReader* bit_reader) {
-  const bool segmentation_enabled = (bit_reader->DecodeBit() != 0);
-  DVLOG(2) << "segmentation_enabled:" << segmentation_enabled;
-  if (segmentation_enabled) {
-    const bool update_mb_segmentation_map = (bit_reader->DecodeBit() != 0);
-    const bool update_mb_segmentation_data = (bit_reader->DecodeBit() != 0);
-    DVLOG(2) << "update_mb_segmentation_data:" << update_mb_segmentation_data;
-    if (update_mb_segmentation_data) {
+  if (bit_reader->DecodeBit() != VpxBitReader::BitResult::kOne) {
+    return;
+  }
+  DVLOG(2) << "segmentation_enabled.";
+  const VpxBitReader::BitResult update_mb_segmentation_map =
       bit_reader->DecodeBit();
-      for (int i = 0; i < 4; ++i) {
-        if (bit_reader->DecodeBit()) {
-          bit_reader->DecodeValue(7 + 1);  // Parse 7 bits value + 1 sign bit.
-        }
-      }
-      for (int i = 0; i < 4; ++i) {
-        if (bit_reader->DecodeBit()) {
-          bit_reader->DecodeValue(6 + 1);  // Parse 6 bits value + 1 sign bit.
-        }
+  const VpxBitReader::BitResult update_mb_segmentation_data =
+      bit_reader->DecodeBit();
+  DVLOG(2) << "update_mb_segmentation_data:"
+           << base::to_underlying(update_mb_segmentation_data);
+  if (update_mb_segmentation_map == VpxBitReader::BitResult::kError ||
+      update_mb_segmentation_data == VpxBitReader::BitResult::kError) {
+    return;
+  }
+  if (update_mb_segmentation_data == VpxBitReader::BitResult::kOne) {
+    bit_reader->DecodeBit();
+    for (int i = 0; i < 4; ++i) {
+      // Parse 7 bits value + 1 sign bit.
+      if (!ConsumeBits(bit_reader, 7 + 1)) {
+        return;
       }
     }
+    for (int i = 0; i < 4; ++i) {
+      // Parse 6 bits value + 1 sign bit.
+      if (!ConsumeBits(bit_reader, 6 + 1)) {
+        return;
+      }
+    }
+  }
 
-    if (update_mb_segmentation_map) {
-      for (int i = 0; i < 3; ++i) {
-        if (bit_reader->DecodeBit()) {
-          bit_reader->DecodeValue(8);
-        }
+  if (update_mb_segmentation_map == VpxBitReader::BitResult::kOne) {
+    for (int i = 0; i < 3; ++i) {
+      // Consume an entire byte.
+      if (!ConsumeBits(bit_reader, 8)) {
+        return;
       }
     }
   }
@@ -154,26 +199,24 @@ void ParseFilterHeader(VpxBitReader* bit_reader) {
   // Parse 1 bit filter_type + 6 bits loop_filter_level + 3 bits
   // sharpness_level.
   bit_reader->DecodeValue(1 + 6 + 3);
-  if (bit_reader->DecodeBit()) {
-    if (bit_reader->DecodeBit()) {
-      for (int i = 0; i < 4; ++i) {
-        if (bit_reader->DecodeBit()) {
-          bit_reader->DecodeValue(6 + 1);  // Parse 6 bits value + 1 sign bit.
-        }
-      }
-      for (int i = 0; i < 4; ++i) {
-        if (bit_reader->DecodeBit()) {
-          bit_reader->DecodeValue(6 + 1);  // Parse 6 bits value + 1 sign bit.
-        }
-      }
+  if (bit_reader->DecodeBit() != VpxBitReader::BitResult::kOne) {
+    return;
+  }
+  if (bit_reader->DecodeBit() != VpxBitReader::BitResult::kOne) {
+    return;
+  }
+  for (int i = 0; i < 8; ++i) {
+    // Parse 6 bits value + 1 sign bit.
+    if (!ConsumeBits(bit_reader, 6 + 1)) {
+      return;
     }
   }
 }
 }  // unnamed namespace
 
-int ParseVpxHeaderQuantizer(base::span<const uint8_t> data) {
+std::optional<int> ParseVpxHeaderQuantizer(base::span<const uint8_t> data) {
   if (data.size() <= 3) {
-    return -1;
+    return std::nullopt;
   }
   const bool is_key = !(data[0] & 1);
   const unsigned int header_3bytes = data[0] | (data[1] << 8) | (data[2] << 16);
@@ -184,31 +227,36 @@ int ParseVpxHeaderQuantizer(base::span<const uint8_t> data) {
 
   if (is_key) {
     if (data.size() <= 7) {
-      return -1;
+      return std::nullopt;
     }
     data = data.subspan<7>();
   }
   if (data.size() < partition_size) {
-    return -1;
+    return std::nullopt;
   }
 
   VpxBitReader bit_reader(data.first(partition_size));
   if (is_key) {
-    bit_reader.DecodeValue(1 + 1);  // Parse two bits: color_space + clamp_type.
+    // Parse two bits: color_space + clamp_type.
+    if (!bit_reader.DecodeValue(1 + 1).has_value()) {
+      return std::nullopt;
+    }
   }
 
   ParseSegmentHeader(&bit_reader);
   ParseFilterHeader(&bit_reader);
 
   // Parse the number of coefficient data partitions.
-  bit_reader.DecodeValue(2);
+  if (!bit_reader.DecodeValue(2).has_value()) {
+    return std::nullopt;
+  }
 
   // Parse the base q_index.
-  const auto q_index = static_cast<uint8_t>(bit_reader.DecodeValue(7));
-  if (q_index > 127) {
-    return 63;
+  const std::optional<unsigned int> q_result = bit_reader.DecodeValue(7);
+  if (!q_result.has_value()) {
+    return std::nullopt;
   }
-  return kVpxQuantizerLookup[q_index];
+  return q_result.value() > 127 ? 63 : kVpxQuantizerLookup[q_result.value()];
 }
 
 }  //  namespace media::cast

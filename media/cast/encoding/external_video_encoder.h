@@ -125,7 +125,6 @@ class SizeAdaptableExternalVideoEncoder final
 // value is related to the complexity of the content of the frame.
 class QuantizerEstimator {
  public:
-  static constexpr int NO_RESULT = -1;
   static constexpr int MIN_VPX_QUANTIZER = 4;
   static constexpr int MAX_VPX_QUANTIZER = 63;
 
@@ -142,9 +141,9 @@ class QuantizerEstimator {
   // Examine |frame| and estimate and return the quantizer value the software
   // VP8 encoder would have used when encoding the frame, in the range
   // [4.0,63.0].  If |frame| is not in planar YUV format, or its size is empty,
-  // this returns |NO_RESULT|.
-  double EstimateForKeyFrame(const VideoFrame& frame);
-  double EstimateForDeltaFrame(const VideoFrame& frame);
+  // this returns std::nullopt.
+  std::optional<double> EstimateForKeyFrame(const VideoFrame& frame);
+  std::optional<double> EstimateForDeltaFrame(const VideoFrame& frame);
 
  private:
   // Returns true if the frame is in planar YUV format.

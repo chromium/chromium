@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <cstdlib>
+#include <limits>
 #include <memory>
 
 #include "base/time/time.h"
@@ -81,7 +82,8 @@ class VpxQuantizerParserTest : public ::testing::Test {
   void RecreateVp8Encoder() {
     vp8_encoder_ = std::make_unique<VpxEncoder>(
         video_config_,
-        std::make_unique<media::MockVideoEncoderMetricsProvider>());
+        std::make_unique<
+            testing::NiceMock<media::MockVideoEncoderMetricsProvider>>());
     vp8_encoder_->Initialize();
   }
 
@@ -90,57 +92,64 @@ class VpxQuantizerParserTest : public ::testing::Test {
   std::unique_ptr<VpxEncoder> vp8_encoder_;
 };
 
+// NOTE: inspired by fuzzer test case: issuetracker.google.com/392643246.
+TEST_F(VpxQuantizerParserTest, ZeroBitCount) {
+  for (uint8_t i = 0u; i < std::numeric_limits<uint8_t>::max(); ++i) {
+    EXPECT_FALSE(ParseVpxHeaderQuantizer({{i, 0, 0, 0}}));
+  }
+}
+
 // Encode 3 frames to test the cases with insufficient data input.
 TEST_F(VpxQuantizerParserTest, InsufficientData) {
   for (int i = 0; i < 3; ++i) {
     auto frame = std::make_unique<SenderEncodedFrame>();
 
     // Null input.
-    EXPECT_EQ(-1, ParseVpxHeaderQuantizer(frame->data));
+    EXPECT_FALSE(ParseVpxHeaderQuantizer(frame->data));
     EncodeOneFrame(frame.get());
 
     // Zero bytes should not be enough to decode the quantizer value.
-    EXPECT_EQ(-1, ParseVpxHeaderQuantizer(frame->data.first(0)));
+    EXPECT_FALSE(ParseVpxHeaderQuantizer(frame->data.first(0)));
 
     // Three bytes should not be enough to decode the quantizer value..
-    EXPECT_EQ(-1, ParseVpxHeaderQuantizer(frame->data.first(3)));
+    EXPECT_FALSE(ParseVpxHeaderQuantizer(frame->data.first(3)));
 
     const unsigned int first_partition_size =
         (frame->data[0] | (frame->data[1] << 8) | (frame->data[2] << 16)) >> 5;
     if (frame->is_key_frame) {
       // Ten bytes should not be enough to decode the quantizer value
       // for a Key frame.
-      EXPECT_EQ(-1, ParseVpxHeaderQuantizer(frame->data.first(10)));
+      EXPECT_FALSE(ParseVpxHeaderQuantizer(frame->data.first(10)));
 
       // One byte less than needed to decode the quantizer value.
-      EXPECT_EQ(-1, ParseVpxHeaderQuantizer(
-                        frame->data.first(10 + first_partition_size - 1)));
+      EXPECT_FALSE(ParseVpxHeaderQuantizer(
+          frame->data.first(10 + first_partition_size - 1)));
 
       // Minimum number of bytes to decode the quantizer value.
       EXPECT_EQ(kQp, ParseVpxHeaderQuantizer(
-                         frame->data.first(10 + first_partition_size)));
+                         frame->data.first(10 + first_partition_size))
+                         .value());
     } else {
       // One byte less than needed to decode the quantizer value.
-      EXPECT_EQ(-1, ParseVpxHeaderQuantizer(
-                        frame->data.first(3 + first_partition_size - 1)));
+      EXPECT_FALSE(ParseVpxHeaderQuantizer(
+          frame->data.first(3 + first_partition_size - 1)));
 
       // Minimum number of bytes to decode the quantizer value.
       EXPECT_EQ(kQp, ParseVpxHeaderQuantizer(
-                         frame->data.first(3 + first_partition_size)));
+                         frame->data.first(3 + first_partition_size))
+                         .value());
     }
   }
 }
 
 // Encode 3 fames for every quantizer value in the range of [4,63].
 TEST_F(VpxQuantizerParserTest, VariedQuantizer) {
-  int decoded_quantizer = -1;
   for (int qp = 4; qp <= 63; qp += 10) {
     UpdateQuantizer(qp);
     for (int i = 0; i < 3; ++i) {
       auto frame = std::make_unique<SenderEncodedFrame>();
       EncodeOneFrame(frame.get());
-      decoded_quantizer = ParseVpxHeaderQuantizer(frame->data);
-      EXPECT_EQ(qp, decoded_quantizer);
+      EXPECT_EQ(qp, ParseVpxHeaderQuantizer(frame->data).value());
     }
   }
 }
