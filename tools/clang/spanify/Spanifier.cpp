@@ -740,10 +740,6 @@ std::pair<std::string, std::string> maybeGetUnnamedAndDefinition(
     const clang::VarDecl* array_variable,
     const std::string& array_variable_as_string,
     const clang::ASTContext& ast_context) {
-  if (!element_type->hasUnnamedOrLocalType()) {
-    return std::make_pair("", "");
-  }
-
   std::string new_class_name_string;
   std::string class_definition;
   // Structs/classes can be defined alongside an option list of variable
