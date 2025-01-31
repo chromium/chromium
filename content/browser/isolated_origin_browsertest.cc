@@ -3461,7 +3461,8 @@ IN_PROC_BROWSER_TEST_F(StrictOriginIsolationTest,
   // https://crbug.com/961386, we didn't swap processes for the second
   // navigation, leading to renderer kills.
   EXPECT_NE(foo_site_instance.get(), bar_site_instance.get());
-  EXPECT_NE(foo_site_instance->GetProcess(), bar_site_instance->GetProcess());
+  EXPECT_NE(foo_site_instance->GetOrCreateProcess(),
+            bar_site_instance->GetProcess());
 
   // Navigate to another site, then repeat this test with a redirect from
   // foo.com to bar.com.  The navigation should throw away the speculative RFH
@@ -6045,7 +6046,8 @@ IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest, ForceBrowsingInstanceSwap) {
       root->current_frame_host()->GetSiteInstance();
   EXPECT_NE(first_instance, second_instance);
   EXPECT_FALSE(first_instance->IsRelatedSiteInstance(second_instance.get()));
-  EXPECT_NE(first_instance->GetProcess(), second_instance->GetProcess());
+  EXPECT_NE(first_instance->GetOrCreateProcess(),
+            second_instance->GetProcess());
   EXPECT_EQ(ProcessLockFromUrl("http://foo.com"),
             second_instance->GetProcess()->GetProcessLock());
 
@@ -6097,7 +6099,8 @@ IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest,
       root->current_frame_host()->GetSiteInstance();
   EXPECT_NE(first_instance, second_instance);
   EXPECT_FALSE(first_instance->IsRelatedSiteInstance(second_instance.get()));
-  EXPECT_NE(first_instance->GetProcess(), second_instance->GetProcess());
+  EXPECT_NE(first_instance->GetOrCreateProcess(),
+            second_instance->GetProcess());
   EXPECT_EQ(ProcessLockFromUrl("http://foo.com"),
             second_instance->GetProcess()->GetProcessLock());
 

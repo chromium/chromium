@@ -159,7 +159,7 @@ class ExtensionRegistrarTest : public ExtensionsTest {
     SCOPED_TRACE("AddDisabledExtension");
     ExtensionPrefs::Get(browser_context())
         ->SetExtensionDisabled(extension_->id(),
-                               disable_reason::DISABLE_USER_ACTION);
+                               {disable_reason::DISABLE_USER_ACTION});
     registrar_->AddExtension(extension_);
     ExpectInSet(ExtensionRegistry::DISABLED);
     EXPECT_FALSE(IsExtensionReady());

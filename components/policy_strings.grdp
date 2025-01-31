@@ -76,9 +76,6 @@
   <message name="IDS_POLICY_DM_STATUS_ENTERPRISE_ACCOUNT_IS_NOT_ELIGIBLE_TO_ENROLL" desc="Message to show when the user tries to enroll a device with an ineligible enterprise account.">
     Can't enroll with enterprise account (enterprise account is not eligible).
   </message>
-  <message name="IDS_POLICY_DOWNLOAD_STATUS_BLOCKED_ORGANIZATION" desc="Status text for a download item that was blocked by the organization.">
-    Blocked by your organization
-  </message>
   <message name="IDS_POLICY_ACTION_BLOCKED_BY_ORGANIZATION" desc="Text to be shown to the user to inform them that an action they initiated was blocked by the organization.">
     Blocked by your organization
   </message>

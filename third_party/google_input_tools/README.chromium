@@ -43,3 +43,5 @@ Removed iframe handling in chrome/os/inputview/hwt_util.js.
 
 Removed unused i18n.input.common.dom.getSameDomainDocuments and
 getSameDomainFrameDoc in chrome/os/inputview/dom.js.
+
+Removed unused third_party/closure_library/closure/goog/uri/utils.js

@@ -374,7 +374,8 @@ void InstalledLoader::Load(const ExtensionInfo& info, bool write_to_prefs) {
     // remain so.
     disable_reason::DisableReason disable_reason = disable_reason::DISABLE_NONE;
     if (policy->MustRemainDisabled(extension.get(), &disable_reason)) {
-      extension_prefs_->SetExtensionDisabled(extension->id(), disable_reason);
+      DCHECK(disable_reason != disable_reason::DISABLE_NONE);
+      extension_prefs_->SetExtensionDisabled(extension->id(), {disable_reason});
     }
   }
 

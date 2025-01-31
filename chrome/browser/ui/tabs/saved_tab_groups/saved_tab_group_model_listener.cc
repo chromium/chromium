@@ -286,16 +286,6 @@ void SavedTabGroupModelListener::DisconnectLocalTabGroup(
 void SavedTabGroupModelListener::RemoveLocalGroupFromSync(
     tab_groups::TabGroupId local_group_id) {
   if (!base::Contains(local_tab_group_listeners_, local_group_id)) {
-    // This can happen in cases where a shared tab group was deleted.
-    // TODO(crbug.com/392174867): Find a better way to fix this.
-    Browser* const browser =
-        SavedTabGroupUtils::GetBrowserWithTabGroupId(local_group_id);
-    CHECK(browser);
-    CHECK(browser->tab_strip_model());
-    CHECK(browser->tab_strip_model()->SupportsTabGroups());
-
-    // Close the tab group to avoid crashes / id conflicts later on.
-    browser->tab_strip_model()->CloseAllTabsInGroup(local_group_id);
     return;
   }
 

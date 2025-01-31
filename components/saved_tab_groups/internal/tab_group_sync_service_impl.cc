@@ -818,8 +818,9 @@ void TabGroupSyncServiceImpl::ConnectLocalTabGroup(
     UpdateLocalTabGroupMapping(sync_id, local_id, opening_source);
     coordinator_->ConnectLocalTabGroup(sync_id, local_id);
   } else {
-    // This can happen in cases where a shared group was deleted remotely.
-    // TODO(crbug.com/392174867): Find a better way to fix this.
+    // This can happen in cases where a group was deleted remotely before
+    // startup.
+    // See crbug.com/392174867 for more details.
     coordinator_->OnTabGroupRemoved(local_id, TriggerSource::REMOTE);
   }
 }

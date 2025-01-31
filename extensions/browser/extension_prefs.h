@@ -171,6 +171,7 @@ class ExtensionPrefs : public KeyedService {
     friend class ExtensionPrefs;
     friend class ExtensionRegistrar;
     friend class ExtensionService;
+    friend class UpdateDataProviderTest;
     FRIEND_TEST_ALL_PREFIXES(ExtensionPrefsSimpleTest,
                              DisableReasonsRawManipulation);
   };
@@ -401,7 +402,7 @@ class ExtensionPrefs : public KeyedService {
   // However, if the current state is EXTERNAL_EXTENSION_UNINSTALLED then that
   // is preserved (but the disable reasons are still set).
   void SetExtensionDisabled(const ExtensionId& extension_id,
-                            int disable_reasons);
+                            const DisableReasonSet& disable_reasons);
 
   // Getters and setters for disabled reason.
   // Note that you should rarely need to modify disable reasons directly -
@@ -413,7 +414,8 @@ class ExtensionPrefs : public KeyedService {
                         disable_reason::DisableReason disable_reason) const;
   void AddDisableReason(const ExtensionId& extension_id,
                         disable_reason::DisableReason disable_reason);
-  void AddDisableReasons(const ExtensionId& extension_id, int disable_reasons);
+  void AddDisableReasons(const ExtensionId& extension_id,
+                         const DisableReasonSet& disable_reasons);
   void RemoveDisableReason(const ExtensionId& extension_id,
                            disable_reason::DisableReason disable_reason);
   void ReplaceDisableReasons(const ExtensionId& extension_id,

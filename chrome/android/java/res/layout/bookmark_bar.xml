@@ -13,6 +13,12 @@ found in the LICENSE file.
     android:gravity="center_vertical|end"
     android:orientation="horizontal">
 
+  <androidx.recyclerview.widget.RecyclerView
+      android:id="@+id/bookmark_bar_items_container"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_weight="1" />
+
   <View
       android:layout_width="@dimen/bookmark_bar_divider_width"
       android:layout_height="@dimen/bookmark_bar_divider_height"

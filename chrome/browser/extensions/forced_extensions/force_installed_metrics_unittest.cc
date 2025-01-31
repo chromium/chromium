@@ -457,8 +457,8 @@ TEST_F(ForceInstalledMetricsTest,
   registry()->AddDisabled(ext1.get());
   ExtensionPrefs::Get(profile())->AddDisableReasons(
       kExtensionId1,
-      disable_reason::DisableReason::DISABLE_NOT_VERIFIED |
-          disable_reason::DisableReason::DISABLE_UNSUPPORTED_REQUIREMENT);
+      {disable_reason::DisableReason::DISABLE_NOT_VERIFIED,
+       disable_reason::DisableReason::DISABLE_UNSUPPORTED_REQUIREMENT});
   scoped_refptr<const Extension> ext2 = CreateNewExtension(
       kExtensionName2, kExtensionId2, ExtensionStatus::kLoaded);
   // ForceInstalledMetrics should still keep running as kExtensionId1 is

@@ -62,6 +62,34 @@ promise_test(async () => {
   assert_equals(writer.length, 'long');
 }, 'Creating a AIWriter with "long" length');
 
+promise_test(async () => {
+  const writer = await ai.writer.create({
+    expectedInputLanguages: ['en']
+  });
+  assert_array_equals(writer.expectedInputLanguages, ['en']);
+}, 'Creating a AIWriter with expectedInputLanguages');
+
+promise_test(async () => {
+  const writer = await ai.writer.create({
+    expectedContextLanguages: ['en']
+  });
+  assert_array_equals(writer.expectedContextLanguages, ['en']);
+}, 'Creating a AIWriter with expectedContextLanguages');
+
+promise_test(async () => {
+  const writer = await ai.writer.create({
+    outputLanguage: 'en'
+  });
+  assert_equals(writer.outputLanguage, 'en');
+}, 'Creating a AIWriter with outputLanguage');
+
+promise_test(async () => {
+  const writer = await ai.writer.create({});
+  assert_equals(writer.expectedInputLanguages, null);
+  assert_equals(writer.expectedContextLanguages, null);
+  assert_equals(writer.outputLanguage, null);
+}, 'Creating a AIWriter without optional attributes');
+
 promise_test(async (t) => {
   const writer = await ai.writer.create();
   writer.destroy();

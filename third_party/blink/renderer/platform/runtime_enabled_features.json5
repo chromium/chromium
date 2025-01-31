@@ -3579,6 +3579,11 @@
       status: "stable",
     },
     {
+      // See https://issues.chromium.org/issues/41474791
+      name: "RemoveSelectionCanonicalizationInMoveParagraph",
+      status: "stable",
+    },
+    {
       // See https://issues.chromium.org/issues/41311101
       name: "RemoveVisibleSelectionInDOMSelection",
       status: "test",

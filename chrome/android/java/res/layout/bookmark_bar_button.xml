@@ -28,6 +28,8 @@ found in the LICENSE file.
       android:id="@+id/bookmark_bar_button_title"
       style="@style/TextAppearance.TextMedium.Primary.Baseline"
       android:layout_width="wrap_content"
-      android:layout_height="wrap_content" />
+      android:layout_height="wrap_content"
+      android:ellipsize="end"
+      android:maxLines="1" />
 
 </org.chromium.chrome.browser.bookmarks.bar.BookmarkBarButton>

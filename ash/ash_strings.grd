@@ -6862,6 +6862,21 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_SCANNER_ACTION_COPY_TEXT_AND_FORMAT" desc="The label on a button that can be clicked to copy text with formatting from the contents of a screenshot." translateable="false">
         Copy text and format
       </message>
+      <message name="IDS_ASH_SCANNER_ACTION_SUCCESS_TOAST_CREATE_EVENT" desc="The message shown on a toast to indicate that event details were created from the contents of a screenshot." translateable="false">
+        Created event
+      </message>
+      <message name="IDS_ASH_SCANNER_ACTION_SUCCESS_TOAST_CREATE_CONTACT" desc="The message shown on a toast to indicate a new contact was created from the contents of a screenshot." translateable="false">
+        Created contact
+      </message>
+      <message name="IDS_ASH_SCANNER_ACTION_SUCCESS_TOAST_CREATE_DOC" desc="The message shown on a toast to indicate a new Google Doc was created from the contents of a screenshot." translateable="false">
+        Created Google Doc
+      </message>
+      <message name="IDS_ASH_SCANNER_ACTION_SUCCESS_TOAST_CREATE_SHEET" desc="The message shown on a toast to indicate a new Google Sheet was created from the contents of a screenshot." translateable="false">
+        Created Google Sheet
+      </message>
+      <message name="IDS_ASH_SCANNER_ACTION_SUCCESS_TOAST_COPY_TEXT_AND_FORMAT" desc="The message shown on a toast to indicate text with formatting was copied to the user's clipboard from the contents of a screenshot." translateable="false">
+        Text copied to Clipboard
+      </message>
       <message name="IDS_ASH_SCANNER_ACTION_FAILURE_TOAST_CREATE_EVENT" desc="The message shown on a toast to indicate an error occurred when trying to add an event to the user's calendar from the contents of a screenshot.">
         Couldn't add to Calendar
       </message>
@@ -6876,6 +6891,9 @@ Here are some things you can try to get started.
       </message>
       <message name="IDS_ASH_SCANNER_ACTION_FAILURE_TOAST_COPY_TEXT_AND_FORMAT" desc="The message shown on a toast to indicate an error occurred when trying to copy text with formatting from the contents of a screenshot.">
         Couldn’t copy with formatting
+      </message>
+      <message name="IDS_ASH_SCANNER_ACTION_TOAST_FEEDBACK_ICON_ACCESSIBLE_NAME" desc="The accessible name of the feedback icon button on a toast shown when an action has been completed. Clicking the feedback icon button opens a dialog for users to report feedback.">
+        Send feedback
       </message>
       <message name="IDS_ASH_SCANNER_ERROR_TRY_AGAIN_LINK_TEXT" desc="The text on a try again link shown next to an error message indicating that something went wrong. The link can be pressed to try the action again.">
         Try again

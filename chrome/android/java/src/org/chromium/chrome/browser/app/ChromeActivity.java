@@ -1725,19 +1725,6 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         return dialogManager;
     }
 
-    @Override
-    protected boolean shouldDrawEdgeToEdgeOnCreate() {
-        return EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled()
-                && !EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled();
-    }
-
-    @Override
-    protected boolean wrapContentWithEdgeToEdgeLayout() {
-        return EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled()
-                && !EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled()
-                && !EdgeToEdgeUtils.isEdgeToEdgeWebOptInEnabled();
-    }
-
     /**
      * Whether tab modal dialog is supported. If not, a dialog will be shown as a App modal dialog.
      *

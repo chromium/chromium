@@ -271,7 +271,7 @@ TEST_F(WebstorePrivateGetExtensionStatusTest,
 TEST_F(WebstorePrivateGetExtensionStatusTest, ExtensionCorrupted) {
   ExtensionRegistry::Get(profile())->AddDisabled(CreateExtension(kExtensionId));
   ExtensionPrefs::Get(profile())->SetExtensionDisabled(
-      kExtensionId, disable_reason::DISABLE_CORRUPTED);
+      kExtensionId, {disable_reason::DISABLE_CORRUPTED});
   auto function =
       base::MakeRefCounted<WebstorePrivateGetExtensionStatusFunction>();
   std::optional<base::Value> response = RunFunctionAndReturnValue(
@@ -307,7 +307,7 @@ TEST_F(SupervisedUserWebstorePrivateGetExtensionStatusTest,
 
   ExtensionRegistry::Get(profile())->AddDisabled(CreateExtension(kExtensionId));
   ExtensionPrefs::Get(profile())->SetExtensionDisabled(
-      kExtensionId, disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED);
+      kExtensionId, {disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED});
   auto function =
       base::MakeRefCounted<WebstorePrivateGetExtensionStatusFunction>();
   std::optional<base::Value> response =

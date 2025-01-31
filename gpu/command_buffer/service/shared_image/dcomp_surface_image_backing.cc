@@ -204,10 +204,6 @@ std::unique_ptr<DCompSurfaceImageBacking> DCompSurfaceImageBacking::Create(
   if (FAILED(hr)) {
     DLOG(ERROR) << "CreateSurface failed: "
                 << logging::SystemErrorCodeToString(hr);
-
-    // Disable direct composition because CreateSurface might fail again next
-    // time.
-    gl::SetDirectCompositionSwapChainFailed();
     return nullptr;
   }
 

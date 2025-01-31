@@ -32,17 +32,12 @@ class AndroidDataControlsDialog : public DataControlsDialog,
                             content::WebContents* web_contents,
                             base::OnceCallback<void(bool bypassed)> callback);
 
-  // TODO (crbug.com/385163723) Replace with
-  // DataControlsDialog::OnDialogButtonClicked
-  void OnButtonClicked(bool bypassed);
-
   // Creates the dialog model corresponding to the action that triggered the
   // data controls.
-  std::unique_ptr<ui::DialogModel> CreateDialogModel();
+  std::unique_ptr<ui::DialogModel> CreateDialogModel(
+      base::OnceClosure on_destructed);
   std::u16string GetDialogTitle() const;
   std::u16string GetDialogLabel() const;
-
-  base::OnceClosure on_destructed_;
 };
 
 }  // namespace data_controls

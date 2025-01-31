@@ -4,6 +4,7 @@ Version: N/A
 Revision: ea8fdb780400dc42decc1e62d69db461e4a2f206
 CPEPrefix: cpe:/a:webmproject:libvpx:1.15.0
 License: BSD-3-Clause, Patent
+License Android Compatible: yes
 License File: source/libvpx/LICENSE, source/libvpx/PATENTS
 Security Critical: yes
 Shipped: yes
