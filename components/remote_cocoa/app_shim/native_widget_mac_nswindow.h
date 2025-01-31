@@ -70,6 +70,8 @@ REMOTE_COCOA_APP_SHIM_EXPORT
 //   were possible on NSWindows.
 - (void)setActivationIndependence:(BOOL)independence;
 
+- (bool)activationIndependence;
+
 // Order the window to the front (space switch if necessary), and ensure that
 // the window maintains its key state. A space switch will normally activate a
 // window, so this function prevents that if the window is currently inactive.

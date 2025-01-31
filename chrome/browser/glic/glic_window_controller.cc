@@ -413,13 +413,7 @@ void GlicWindowController::OpenDetached() {
 
   // Be sure to reparent the widget and set its state first before showing it.
   MaybeCreateHolderWindowAndReparent();
-#if BUILDFLAG(IS_MAC)
-  // Be careful to not activate, so that in case Chromium isn't the front-most
-  // app it's not brought to the front.
-  GetGlicWidget()->ShowInactive();
-#else
   GetGlicWidget()->Show();
-#endif
 
   gfx::Rect target_bounds = glic_widget_->GetWindowBoundsInScreen();
   target_bounds.set_y(initial_bounds.y() + kInitialDetachedYPosition);
