@@ -101,7 +101,7 @@ void UpdateIFrameContainerPolicyWithDelegationSupportForClientHints(
   // To avoid the following section from being consistently O(n^2) we need to
   // break the container_policy vector into a map. We keep only the first policy
   // seen for each feature per PermissionsPolicy::InheritedValueForFeature.
-  std::map<mojom::blink::PermissionsPolicyFeature,
+  std::map<network::mojom::PermissionsPolicyFeature,
            ParsedPermissionsPolicyDeclaration>
       feature_to_container_policy;
   for (const auto& candidate_policy : container_policy) {

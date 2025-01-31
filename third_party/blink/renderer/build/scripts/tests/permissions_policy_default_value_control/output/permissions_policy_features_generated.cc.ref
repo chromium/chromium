@@ -8,17 +8,17 @@
 #include "base/no_destructor.h"
 #include "base/feature_list.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 
 namespace blink {
 
 // Applies new defaults based on flags.
 void UpdatePermissionsPolicyFeatureListFlagDefaults(PermissionsPolicyFeatureList& mutable_feature_list) {
   if (base::FeatureList::IsEnabled(features::kTestFlag)) {
-    mutable_feature_list.find(mojom::PermissionsPolicyFeature::kAccelerometer)->second =
+    mutable_feature_list.find(network::mojom::PermissionsPolicyFeature::kAccelerometer)->second =
       PermissionsPolicyFeatureDefault::EnableForSelf;
   } else {
-    mutable_feature_list.find(mojom::PermissionsPolicyFeature::kAccelerometer)->second =
+    mutable_feature_list.find(network::mojom::PermissionsPolicyFeature::kAccelerometer)->second =
       PermissionsPolicyFeatureDefault::EnableForAll;
   }
 
@@ -27,7 +27,7 @@ void UpdatePermissionsPolicyFeatureListFlagDefaults(PermissionsPolicyFeatureList
 // The base list with no flags or special cases.
 PermissionsPolicyFeatureList GetBasePermissionsPolicyFeatureList() {
   static const base::NoDestructor<PermissionsPolicyFeatureList> feature_list({        {
-          mojom::PermissionsPolicyFeature::kAccelerometer,
+          network::mojom::PermissionsPolicyFeature::kAccelerometer,
           PermissionsPolicyFeatureDefault::EnableForAll
         },    });
   return *feature_list;

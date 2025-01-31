@@ -732,7 +732,7 @@ bool UserMediaRequest::IsSecureContextUse(String& error_message) {
     // Permissions policy deprecation messages.
     if (Audio()) {
       if (!window->IsFeatureEnabled(
-              mojom::blink::PermissionsPolicyFeature::kMicrophone,
+              network::mojom::PermissionsPolicyFeature::kMicrophone,
               ReportOptions::kReportOnFailure)) {
         UseCounter::Count(
             window, WebFeature::kMicrophoneDisabledByFeaturePolicyEstimate);
@@ -741,7 +741,7 @@ bool UserMediaRequest::IsSecureContextUse(String& error_message) {
     if (Video() &&
         VideoMediaStreamType() != MediaStreamType::DISPLAY_VIDEO_CAPTURE_SET) {
       if (!window->IsFeatureEnabled(
-              mojom::blink::PermissionsPolicyFeature::kCamera,
+              network::mojom::PermissionsPolicyFeature::kCamera,
               ReportOptions::kReportOnFailure)) {
         UseCounter::Count(window,
                           WebFeature::kCameraDisabledByFeaturePolicyEstimate);

@@ -29,6 +29,7 @@
 #include "net/cookies/cookie_setting_override.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-forward.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy_declaration.h"
@@ -41,7 +42,6 @@
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-forward.h"
 #include "third_party/blink/public/mojom/opengraph/metadata.mojom-forward.h"
 #include "third_party/blink/public/mojom/page/page_visibility_state.mojom-forward.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/gfx/geometry/rect.h"
@@ -89,7 +89,7 @@ namespace network {
 namespace mojom {
 class URLLoaderFactory;
 class URLResponseHead;
-}
+}  // namespace mojom
 }  // namespace network
 
 namespace perfetto::protos::pbzero {
@@ -881,7 +881,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // Returns true if the queried PermissionsPolicyFeature is allowed by
   // permissions policy.
   virtual bool IsFeatureEnabled(
-      blink::mojom::PermissionsPolicyFeature feature) = 0;
+      network::mojom::PermissionsPolicyFeature feature) = 0;
 
   // Opens view-source tab for the document last committed in this
   // RenderFrameHost.

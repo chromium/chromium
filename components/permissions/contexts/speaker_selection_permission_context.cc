@@ -14,4 +14,4 @@ SpeakerSelectionPermissionContext::SpeakerSelectionPermissionContext(
     : PermissionContextBase(
           browser_context,
           ContentSettingsType::SPEAKER_SELECTION,
-          blink::mojom::PermissionsPolicyFeature::kSpeakerSelection) {}
+          network::mojom::PermissionsPolicyFeature::kSpeakerSelection) {}

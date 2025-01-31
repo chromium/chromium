@@ -616,7 +616,7 @@
 #include "components/lens/lens_features.h"
 #include "components/password_manager/content/common/web_ui_constants.h"
 #include "components/password_manager/core/common/password_manager_features.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #endif  //  !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -1013,7 +1013,7 @@ blink::mojom::AutoplayPolicy GetAutoplayPolicyForWebContents(
                  ? blink::mojom::AutoplayPolicy::kDocumentUserActivationRequired
                  : blink::mojom::AutoplayPolicy::kNoUserGestureRequired;
   } else if (web_contents->GetPrimaryMainFrame()->IsFeatureEnabled(
-                 blink::mojom::PermissionsPolicyFeature::kAutoplay) &&
+                 network::mojom::PermissionsPolicyFeature::kAutoplay) &&
              IsAutoplayAllowedByPolicy(web_contents->GetOuterWebContents(),
                                        prefs)) {
     // If the domain policy allows autoplay and has delegated that to an iframe,

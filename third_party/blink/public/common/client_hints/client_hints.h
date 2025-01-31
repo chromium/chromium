@@ -12,9 +12,9 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "services/network/public/mojom/web_client_hints_types.mojom-shared.h"
 #include "third_party/blink/public/common/common_export.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 
 class GURL;
 
@@ -24,10 +24,10 @@ class PermissionsPolicy;
 
 using ClientHintToPolicyFeatureMap =
     base::flat_map<network::mojom::WebClientHintsType,
-                   mojom::PermissionsPolicyFeature>;
+                   network::mojom::PermissionsPolicyFeature>;
 
 using PolicyFeatureToClientHintMap =
-    base::flat_map<mojom::PermissionsPolicyFeature,
+    base::flat_map<network::mojom::PermissionsPolicyFeature,
                    std::set<network::mojom::WebClientHintsType>>;
 
 // Mapping from WebClientHintsType to the corresponding Permissions-Policy (e.g.

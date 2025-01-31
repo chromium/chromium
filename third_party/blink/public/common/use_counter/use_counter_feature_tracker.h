@@ -9,9 +9,9 @@
 #include <bitset>
 #include <vector>
 
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/use_counter/use_counter_feature.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom-shared.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom-shared.h"
@@ -42,15 +42,16 @@ class BLINK_COMMON_EXPORT UseCounterFeatureTracker {
       css_properties_;
   std::bitset<static_cast<size_t>(mojom::CSSSampleId::kMaxValue) + 1>
       animated_css_properties_;
-  std::bitset<static_cast<size_t>(mojom::PermissionsPolicyFeature::kMaxValue) +
+  std::bitset<static_cast<size_t>(
+                  network::mojom::PermissionsPolicyFeature::kMaxValue) +
               1>
       violated_permissions_policy_features_;
   std::bitset<static_cast<size_t>(
-                  blink::mojom::PermissionsPolicyFeature::kMaxValue) +
+                  network::mojom::PermissionsPolicyFeature::kMaxValue) +
               1>
       iframe_permissions_policy_features_;
   std::bitset<static_cast<size_t>(
-                  blink::mojom::PermissionsPolicyFeature::kMaxValue) +
+                  network::mojom::PermissionsPolicyFeature::kMaxValue) +
               1>
       header_permissions_policy_features_;
 };

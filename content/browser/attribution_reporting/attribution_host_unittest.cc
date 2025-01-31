@@ -129,7 +129,7 @@ class AttributionHostTest : public RenderViewHostTestHarness {
         static_cast<RenderFrameHostImpl*>(fenced_frame)->frame_tree_node();
     FencedFrameConfig new_config = FencedFrameConfig(GURL("about:blank"));
     new_config.AddEffectiveEnabledPermissionForTesting(
-        blink::mojom::PermissionsPolicyFeature::kAttributionReporting);
+        network::mojom::PermissionsPolicyFeature::kAttributionReporting);
     FencedFrameProperties new_props = FencedFrameProperties(new_config);
     fenced_frame_node->set_fenced_frame_properties(new_props);
   }
@@ -137,7 +137,7 @@ class AttributionHostTest : public RenderViewHostTestHarness {
   blink::ParsedPermissionsPolicy RestrictivePermissionsPolicy(
       const url::Origin& allowed_origin) {
     return {blink::ParsedPermissionsPolicyDeclaration(
-        blink::mojom::PermissionsPolicyFeature::kAttributionReporting,
+        network::mojom::PermissionsPolicyFeature::kAttributionReporting,
         /*allowed_origins=*/
         {*blink::OriginWithPossibleWildcards::FromOrigin(allowed_origin)},
         /*self_if_matches=*/std::nullopt,

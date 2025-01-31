@@ -439,7 +439,7 @@ void FrameFetchContext::PrepareRequest(
     request.SetSharedStorageWritableEligible(
         policy &&
         request.IsFeatureEnabledForSubresourceRequestAssumingOptIn(
-            policy, mojom::blink::PermissionsPolicyFeature::kSharedStorage,
+            policy, network::mojom::PermissionsPolicyFeature::kSharedStorage,
             SecurityOrigin::Create(request.Url())->ToUrlOrigin()));
   }
 

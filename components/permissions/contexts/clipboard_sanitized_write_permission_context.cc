@@ -17,7 +17,7 @@ ClipboardSanitizedWritePermissionContext::
     : PermissionContextBase(
           browser_context,
           ContentSettingsType::CLIPBOARD_SANITIZED_WRITE,
-          blink::mojom::PermissionsPolicyFeature::kClipboardWrite) {}
+          network::mojom::PermissionsPolicyFeature::kClipboardWrite) {}
 
 ClipboardSanitizedWritePermissionContext::
     ~ClipboardSanitizedWritePermissionContext() = default;

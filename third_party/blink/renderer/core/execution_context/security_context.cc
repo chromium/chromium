@@ -167,7 +167,7 @@ void SecurityContext::SetReportOnlyDocumentPolicy(
 }
 
 SecurityContext::FeatureStatus SecurityContext::IsFeatureEnabled(
-    mojom::blink::PermissionsPolicyFeature feature) const {
+    network::mojom::PermissionsPolicyFeature feature) const {
   DCHECK(permissions_policy_);
   bool permissions_policy_result =
       permissions_policy_->IsFeatureEnabled(feature);

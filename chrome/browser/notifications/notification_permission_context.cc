@@ -20,7 +20,7 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_request_id.h"
 #include "content/public/browser/browser_thread.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -63,10 +63,10 @@ void NotificationPermissionContext::UpdatePermission(
 
 NotificationPermissionContext::NotificationPermissionContext(
     content::BrowserContext* browser_context)
-    : PermissionContextBase(browser_context,
-                            ContentSettingsType::NOTIFICATIONS,
-                            blink::mojom::PermissionsPolicyFeature::kNotFound) {
-}
+    : PermissionContextBase(
+          browser_context,
+          ContentSettingsType::NOTIFICATIONS,
+          network::mojom::PermissionsPolicyFeature::kNotFound) {}
 
 NotificationPermissionContext::~NotificationPermissionContext() = default;
 

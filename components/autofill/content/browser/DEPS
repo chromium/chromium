@@ -8,6 +8,7 @@ include_rules = [
   "+crypto/random.h",
   "+gpu/config/gpu_info.h",
   "+services/device/public",
+  "+services/network/public/mojom/permissions_policy",
   "+services/service_manager/public/mojom",
   "+third_party/blink/public/common",
   "+third_party/blink/public/mojom/permissions_policy",

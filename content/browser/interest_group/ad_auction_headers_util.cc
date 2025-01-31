@@ -32,10 +32,10 @@
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "url/origin.h"
 
 namespace content {
@@ -126,7 +126,7 @@ bool IsAdAuctionHeadersEligible(
   const blink::PermissionsPolicy* permissions_policy =
       initiator_rfh.GetPermissionsPolicy();
   if (!permissions_policy->IsFeatureEnabledForSubresourceRequest(
-          blink::mojom::PermissionsPolicyFeature::kRunAdAuction,
+          network::mojom::PermissionsPolicyFeature::kRunAdAuction,
           url::Origin::Create(resource_request.url), resource_request)) {
     base::UmaHistogramEnumeration(
         "Ads.InterestGroup.NetHeaderResponse.StartRequestOutcome",
@@ -162,7 +162,7 @@ bool IsAdAuctionHeadersEligibleForNavigation(
       frame.GetParentOrOuterDocument()->GetPermissionsPolicy();
   DCHECK(parent_policy);
   if (!parent_policy->IsFeatureEnabledForOrigin(
-          blink::mojom::PermissionsPolicyFeature::kRunAdAuction,
+          network::mojom::PermissionsPolicyFeature::kRunAdAuction,
           navigation_request_origin)) {
     return false;
   }

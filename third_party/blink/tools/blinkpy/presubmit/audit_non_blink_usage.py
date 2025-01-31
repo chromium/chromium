@@ -2420,6 +2420,33 @@ _CONFIG = [
             'media::.+',
         ]
     },
+    {
+        'paths': [
+            'third_party/blink/common/client_hints/',
+            'third_party/blink/common/permissions/',
+            'third_party/blink/common/permissions_policy/',
+            'third_party/blink/common/use_counter/',
+            'third_party/blink/public/common/client_hints/',
+            'third_party/blink/public/common/fenced_frame/',
+            'third_party/blink/public/common/frame/',
+            'third_party/blink/public/common/permissions/',
+            'third_party/blink/public/common/permissions_policy/',
+            'third_party/blink/public/common/use_counter/',
+            'third_party/blink/public/web/',
+        ],
+        'allowed': [
+            'network::mojom::PermissionsPolicyFeature',
+        ]
+    },
+    {
+        'paths': [
+            'third_party/blink/public/common/client_hints/client_hints.h',
+            'third_party/blink/public/common/permissions_policy/policy_helper_public.h',
+        ],
+        'allowed': [
+            'base::flat_map',
+        ]
+    },
 ]
 
 

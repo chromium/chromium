@@ -336,7 +336,7 @@ bool ChromeUsbDelegate::HasDevicePermission(
     is_usb_unrestricted =
         frame &&
         frame->IsFeatureEnabled(
-            blink::mojom::PermissionsPolicyFeature::kUsbUnrestricted) &&
+            network::mojom::PermissionsPolicyFeature::kUsbUnrestricted) &&
         content::HasIsolatedContextCapability(frame);
   }
 

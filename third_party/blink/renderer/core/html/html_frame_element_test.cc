@@ -39,7 +39,7 @@ TEST_F(HTMLFrameElementTest, DefaultContainerPolicy) {
       frame_element->GetFramePolicy().container_policy;
   EXPECT_EQ(2UL, container_policy.size());
   // Fullscreen should be disabled in this frame
-  EXPECT_EQ(mojom::blink::PermissionsPolicyFeature::kFullscreen,
+  EXPECT_EQ(network::mojom::PermissionsPolicyFeature::kFullscreen,
             container_policy[0].feature);
   EXPECT_TRUE(container_policy[0].allowed_origins.empty());
   EXPECT_GE(false, container_policy[0].matches_all_origins);

@@ -7,8 +7,8 @@
 
 #include <map>
 
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 #include "third_party/blink/public/common/common_export.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 #include "url/origin.h"
 
 namespace blink {
@@ -45,7 +45,8 @@ enum class PermissionsPolicyFeatureDefault {
 };
 
 using PermissionsPolicyFeatureList =
-    std::map<mojom::PermissionsPolicyFeature, PermissionsPolicyFeatureDefault>;
+    std::map<network::mojom::PermissionsPolicyFeature,
+             PermissionsPolicyFeatureDefault>;
 
 // `origin` is used, in combination with flags, to decide whether the "unload"
 // feature will be enabled or disabled by default.
@@ -65,7 +66,7 @@ BLINK_COMMON_EXPORT void UpdatePermissionsPolicyFeatureListForTesting();
 // TODO(iclelland): Generate, instead of this map, a set of bool flags, one
 // for each feature, as all features are supposed to be represented here.
 using PermissionsPolicyFeatureState =
-    std::map<mojom::PermissionsPolicyFeature, bool>;
+    std::map<network::mojom::PermissionsPolicyFeature, bool>;
 
 }  // namespace blink
 

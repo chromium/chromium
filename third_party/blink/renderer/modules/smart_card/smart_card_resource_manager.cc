@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/modules/smart_card/smart_card_resource_manager.h"
 
 #include "services/device/public/mojom/smart_card.mojom-blink.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "third_party/blink/public/mojom/smart_card/smart_card.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/navigator_base.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
@@ -31,11 +31,12 @@ bool ShouldBlockSmartCardServiceCall(ExecutionContext* context,
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       kContextGone);
   } else if (!context->IsIsolatedContext() ||
-             !context->IsFeatureEnabled(mojom::blink::PermissionsPolicyFeature::
-                                            kCrossOriginIsolated)) {
+             !context->IsFeatureEnabled(
+                 network::mojom::PermissionsPolicyFeature::
+                     kCrossOriginIsolated)) {
     exception_state.ThrowSecurityError(kNotSufficientlyIsolated);
   } else if (!context->IsFeatureEnabled(
-                 mojom::blink::PermissionsPolicyFeature::kSmartCard,
+                 network::mojom::PermissionsPolicyFeature::kSmartCard,
                  ReportOptions::kReportOnFailure)) {
     exception_state.ThrowSecurityError(kFeaturePolicyBlocked);
   }

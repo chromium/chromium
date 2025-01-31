@@ -166,7 +166,7 @@ The canonical enum for client hint tokens is [network::mojom::WebClientHintsType
 *   Map the hint to the web feature in `MakeClientHintToWebFeatureMap` in [/third_party/blink/renderer/core/loader/frame_client_hints_preferences_context.cc].
 *   Update the `static_assert` for `network::mojom::WebClientHintsType::kMaxValue` in [/content/browser/client_hints/client_hints.cc], leaving a TODO for your implementation.
 *   Add a permissions policy in [/third_party/blink/renderer/core/permissions_policy/permissions_policy_features.json5]. Note that the entries in this file are in lexical order by name.
-*   Add an entry to the end of [/third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom] and run [/tools/metrics/histograms/update_permissions_policy_enum.py] to update [tools/metrics/histograms/enums.xml].
+*   Add an entry to the end of [/services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom] and run [/tools/metrics/histograms/update_permissions_policy_enum.py] to update [tools/metrics/histograms/enums.xml].
 *   Map the hint to the permissions policy in `MakeClientHintToPolicyFeatureMap` in [/third_party/blink/common/client_hints/client_hints.cc].
 *   Add the permissions policy name to:
     * `third_party/blink/public/devtools_protocol/browser_protocol.pdl`
@@ -230,7 +230,7 @@ Devtools frontend source code is in a different branch [devtools/devtools-fronte
 [/third_party/blink/common/features.cc]: /third_party/blink/common/features.cc
 [/third_party/blink/public/common/features.h]: /third_party/blink/public/common/features.h
 [/third_party/blink/public/devtools_protocol/browser_protocol.pdl]: /third_party/blink/public/devtools_protocol/browser_protocol.pdl
-[/third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom]: /third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom
+[/services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom]: /services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom
 [/third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom]: /third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom
 [/third_party/blink/renderer/core/inspector/inspector_emulation_agent.cc]: /third_party/blink/renderer/core/inspector/inspector_emulation_agent.cc
 [/third_party/blink/renderer/core/inspector/inspector_emulation_agent.h]: /third_party/blink/renderer/core/inspector/inspector_emulation_agent.h

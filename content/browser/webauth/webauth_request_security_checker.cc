@@ -24,8 +24,8 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -281,13 +281,13 @@ WebAuthRequestSecurityChecker::ValidateAncestorOrigins(
   // policy and for SPC requests.
   if (type == RequestType::kMakeCredential &&
       render_frame_host_->IsFeatureEnabled(
-          blink::mojom::PermissionsPolicyFeature::
+          network::mojom::PermissionsPolicyFeature::
               kPublicKeyCredentialsCreate)) {
     return blink::mojom::AuthenticatorStatus::SUCCESS;
   }
   if (type == RequestType::kGetAssertion &&
       render_frame_host_->IsFeatureEnabled(
-          blink::mojom::PermissionsPolicyFeature::kPublicKeyCredentialsGet)) {
+          network::mojom::PermissionsPolicyFeature::kPublicKeyCredentialsGet)) {
     return blink::mojom::AuthenticatorStatus::SUCCESS;
   }
   // For credential creation, SPC credentials (i.e., credentials with the
@@ -295,17 +295,17 @@ WebAuthRequestSecurityChecker::ValidateAncestorOrigins(
   // 'payment' permissions policy.
   if (type == RequestType::kMakePaymentCredential) {
     if (render_frame_host_->IsFeatureEnabled(
-            blink::mojom::PermissionsPolicyFeature::
+            network::mojom::PermissionsPolicyFeature::
                 kPublicKeyCredentialsCreate) ||
         render_frame_host_->IsFeatureEnabled(
-            blink::mojom::PermissionsPolicyFeature::kPayment)) {
+            network::mojom::PermissionsPolicyFeature::kPayment)) {
       return blink::mojom::AuthenticatorStatus::SUCCESS;
     }
   }
 
   if (type == RequestType::kGetPaymentCredentialAssertion &&
       render_frame_host_->IsFeatureEnabled(
-          blink::mojom::PermissionsPolicyFeature::kPayment)) {
+          network::mojom::PermissionsPolicyFeature::kPayment)) {
     return blink::mojom::AuthenticatorStatus::SUCCESS;
   }
   // TODO(crbug.com/347727501): Add a permissions policy for report.

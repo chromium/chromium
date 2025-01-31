@@ -908,9 +908,9 @@ TopicsHeaderValueResult GetTopicsHeaderValueForNavigationRequest(
   DCHECK(parent_policy);
 
   if (!parent_policy->IsFeatureEnabledForOrigin(
-          blink::mojom::PermissionsPolicyFeature::kBrowsingTopics, origin) ||
+          network::mojom::PermissionsPolicyFeature::kBrowsingTopics, origin) ||
       !parent_policy->IsFeatureEnabledForOrigin(
-          blink::mojom::PermissionsPolicyFeature::
+          network::mojom::PermissionsPolicyFeature::
               kBrowsingTopicsBackwardCompatible,
           origin)) {
     return {};
@@ -1017,7 +1017,7 @@ bool IsSharedStorageWritableEligibleForNavigationRequest(
 
   DCHECK(parent_policy);
   return parent_policy->IsFeatureEnabledForOrigin(
-      blink::mojom::PermissionsPolicyFeature::kSharedStorage, origin);
+      network::mojom::PermissionsPolicyFeature::kSharedStorage, origin);
 }
 
 std::optional<base::SafeRef<RenderFrameHostImpl>>
@@ -9463,7 +9463,7 @@ bool NavigationRequest::CoopCoepSanityCheck() {
 
 bool NavigationRequest::IsFencedFrameRequiredPolicyFeatureAllowed(
     const url::Origin& origin,
-    const blink::mojom::PermissionsPolicyFeature feature) {
+    const network::mojom::PermissionsPolicyFeature feature) {
   const blink::PermissionsPolicyFeatureList& feature_list =
       blink::GetPermissionsPolicyFeatureList(origin);
 
@@ -9518,7 +9518,7 @@ bool NavigationRequest::CheckPermissionsPoliciesForFencedFrames(
   // eventually only use the required policies without policy inheritance, so
   // extra policies defined in the outer document/"allow" attribute won't have
   // any effect.
-  for (const blink::mojom::PermissionsPolicyFeature feature :
+  for (const network::mojom::PermissionsPolicyFeature feature :
        computed_fenced_frame_properties->effective_enabled_permissions()) {
     if (!IsFencedFrameRequiredPolicyFeatureAllowed(origin, feature)) {
       const blink::PermissionsPolicyFeatureToNameMap& feature_to_name_map =

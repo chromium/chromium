@@ -164,13 +164,14 @@ class DeferredFetchPolicyTestBase : public SimTest {
   }
 
   static void CheckFrameEnableDeferredFetchMinimal(Frame* frame) {
-    CHECK(frame->GetSecurityContext()
-              ->GetPermissionsPolicy()
-              ->IsFeatureEnabledForOrigin(
-                  mojom::blink::PermissionsPolicyFeature::kDeferredFetchMinimal,
-                  frame->GetSecurityContext()
-                      ->GetSecurityOrigin()
-                      ->ToUrlOrigin()));
+    CHECK(
+        frame->GetSecurityContext()
+            ->GetPermissionsPolicy()
+            ->IsFeatureEnabledForOrigin(
+                network::mojom::PermissionsPolicyFeature::kDeferredFetchMinimal,
+                frame->GetSecurityContext()
+                    ->GetSecurityOrigin()
+                    ->ToUrlOrigin()));
   }
 
   LocalFrame* GetMainFrame() { return GetDocument().GetFrame(); }
