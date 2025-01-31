@@ -6,7 +6,7 @@
 #include "third_party/blink/renderer/core/permissions_policy/policy_helper.h"
 
 #include "third_party/blink/public/mojom/permissions_policy/document_policy_feature.mojom-blink.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/inspector/protocol/page.h"
@@ -44,12 +44,12 @@ const FeatureNameMap GetDefaultFeatureNameMap(bool is_isolated_context) {
   {% if feature.visibility == "All" %}
   default_feature_name_map.Set(
       k{{feature.name}}PolicyName,
-      mojom::PermissionsPolicyFeature::k{{feature.name}});
+      network::mojom::PermissionsPolicyFeature::k{{feature.name}});
   {% elif feature.visibility == "IsolatedContext" %}
   if (is_isolated_context) {
     default_feature_name_map.Set(
         k{{feature.name}}PolicyName,
-        mojom::PermissionsPolicyFeature::k{{feature.name}});
+        network::mojom::PermissionsPolicyFeature::k{{feature.name}});
   }
   {% endif %}
   {% endif %}
@@ -59,12 +59,12 @@ const FeatureNameMap GetDefaultFeatureNameMap(bool is_isolated_context) {
     {% for feature in dependent_features %}
     {% if name_to_permissions_policy_map[feature].visibility == "All" %}
     default_feature_name_map.Set(k{{feature}}PolicyName,
-                                 mojom::PermissionsPolicyFeature::k{{feature}});
+                                 network::mojom::PermissionsPolicyFeature::k{{feature}});
     {% elif name_to_permissions_policy_map[feature].visibility == "IsolatedContext" %}
     if (is_isolated_context) {
       default_feature_name_map.Set(
           k{{feature}}PolicyName,
-          mojom::PermissionsPolicyFeature::k{{feature}});
+          network::mojom::PermissionsPolicyFeature::k{{feature}});
     }
     {% endif %}
     {% endfor %}
@@ -145,12 +145,12 @@ bool DisabledByOriginTrial(mojom::blink::DocumentPolicyFeature feature,
   return false;
 }
 
-String PermissionsPolicyFeatureToProtocol(mojom::blink::PermissionsPolicyFeature feature, ExecutionContext* execution_context) {
+String PermissionsPolicyFeatureToProtocol(network::mojom::PermissionsPolicyFeature feature, ExecutionContext* execution_context) {
   if (execution_context && execution_context->IsIsolatedContext()) {
     switch (feature) {
       {% for feature in permissions_policy_features %}
       {% if feature.visibility == "IsolatedContext" %}
-      case mojom::blink::PermissionsPolicyFeature::k{{feature.name}}:
+      case network::mojom::PermissionsPolicyFeature::k{{feature.name}}:
         return protocol::Page::PermissionsPolicyFeatureEnum::{{feature.devtools_enum_name}};
       {% endif %}
       {% endfor %}
@@ -161,13 +161,13 @@ String PermissionsPolicyFeatureToProtocol(mojom::blink::PermissionsPolicyFeature
   switch (feature) {
     {% for feature in permissions_policy_features %}
     {% if feature.visibility == "All" %}
-    case mojom::blink::PermissionsPolicyFeature::k{{feature.name}}:
+    case network::mojom::PermissionsPolicyFeature::k{{feature.name}}:
       return protocol::Page::PermissionsPolicyFeatureEnum::{{feature.devtools_enum_name}};
     {% endif %}
     {% endfor %}
     default:
       // This default case also handles the mojom entry for
-      // mojom::blink::PermissionsPolicyFeature::kNotFound.
+      // network::mojom::PermissionsPolicyFeature::kNotFound.
       NOTREACHED();
   }
 }

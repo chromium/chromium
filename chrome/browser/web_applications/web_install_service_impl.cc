@@ -104,7 +104,7 @@ void WebInstallServiceImpl::Install(blink::mojom::InstallOptionsPtr options,
 
   // Verify that the calling app has the Web Install permissions policy set.
   if (!rfh->IsFeatureEnabled(
-          blink::mojom::PermissionsPolicyFeature::kWebAppInstallation)) {
+          network::mojom::PermissionsPolicyFeature::kWebAppInstallation)) {
     std::move(callback).Run(blink::mojom::WebInstallServiceResult::kAbortError,
                             GURL());
     return;

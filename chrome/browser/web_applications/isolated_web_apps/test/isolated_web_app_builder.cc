@@ -201,7 +201,7 @@ ManifestBuilder::PermissionsPolicy::~PermissionsPolicy() = default;
 ManifestBuilder::ManifestBuilder()
     : name_("Test App"), version_("0.0.1"), start_url_("/") {
   AddPermissionsPolicy(
-      blink::mojom::PermissionsPolicyFeature::kCrossOriginIsolated,
+      network::mojom::PermissionsPolicyFeature::kCrossOriginIsolated,
       /*self=*/true, /*origins=*/{});
 }
 
@@ -244,7 +244,7 @@ ManifestBuilder& ManifestBuilder::AddIcon(std::string_view resource_path,
 }
 
 ManifestBuilder& ManifestBuilder::AddPermissionsPolicyWildcard(
-    blink::mojom::PermissionsPolicyFeature feature) {
+    network::mojom::PermissionsPolicyFeature feature) {
   permissions_policy_.insert_or_assign(
       feature,
       ManifestBuilder::PermissionsPolicy(/*wildcard=*/true, /*self=*/false,
@@ -253,7 +253,7 @@ ManifestBuilder& ManifestBuilder::AddPermissionsPolicyWildcard(
 }
 
 ManifestBuilder& ManifestBuilder::AddPermissionsPolicy(
-    blink::mojom::PermissionsPolicyFeature feature,
+    network::mojom::PermissionsPolicyFeature feature,
     bool self,
     std::vector<url::Origin> origins) {
   permissions_policy_.insert_or_assign(

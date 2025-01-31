@@ -15,10 +15,10 @@ namespace permissions {
 
 SensorPermissionContext::SensorPermissionContext(
     content::BrowserContext* browser_context)
-    : PermissionContextBase(browser_context,
-                            ContentSettingsType::SENSORS,
-                            blink::mojom::PermissionsPolicyFeature::kNotFound) {
-}
+    : PermissionContextBase(
+          browser_context,
+          ContentSettingsType::SENSORS,
+          network::mojom::PermissionsPolicyFeature::kNotFound) {}
 
 SensorPermissionContext::~SensorPermissionContext() = default;
 

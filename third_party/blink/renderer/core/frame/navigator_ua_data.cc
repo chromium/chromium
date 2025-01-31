@@ -202,7 +202,7 @@ bool AllowedToCollectHighEntropyValues(ExecutionContext* execution_context) {
   // 2. If Permissions Policy is enabled, return the policy for
   // "ch-ua-high-entropy-values" feature.
   return execution_context->IsFeatureEnabled(
-      mojom::blink::PermissionsPolicyFeature::kClientHintUAHighEntropyValues,
+      network::mojom::PermissionsPolicyFeature::kClientHintUAHighEntropyValues,
       ReportOptions::kReportOnFailure,
       "Collection of high-entropy user-agent client hints is disabled for "
       "this document.");

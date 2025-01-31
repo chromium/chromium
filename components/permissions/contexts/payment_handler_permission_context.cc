@@ -15,10 +15,10 @@ namespace payments {
 
 PaymentHandlerPermissionContext::PaymentHandlerPermissionContext(
     content::BrowserContext* browser_context)
-    : PermissionContextBase(browser_context,
-                            ContentSettingsType::PAYMENT_HANDLER,
-                            blink::mojom::PermissionsPolicyFeature::kNotFound) {
-}
+    : PermissionContextBase(
+          browser_context,
+          ContentSettingsType::PAYMENT_HANDLER,
+          network::mojom::PermissionsPolicyFeature::kNotFound) {}
 
 PaymentHandlerPermissionContext::~PaymentHandlerPermissionContext() = default;
 

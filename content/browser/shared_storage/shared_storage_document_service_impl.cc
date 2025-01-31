@@ -182,7 +182,8 @@ void SharedStorageDocumentServiceImpl::SharedStorageGet(
   }
 
   if (!render_frame_host().GetPermissionsPolicy()->IsFeatureEnabled(
-      blink::mojom::PermissionsPolicyFeature::kFencedUnpartitionedStorageRead)) {
+          network::mojom::PermissionsPolicyFeature::
+              kFencedUnpartitionedStorageRead)) {
     // We already check for this permissions policy in the renderer.
     receiver_.ReportBadMessage("Attempted to call get() in a fenced frame "
         "with the fenced-unpartitioned-storage-read permissions policy "

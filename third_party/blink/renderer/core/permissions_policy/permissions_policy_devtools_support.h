@@ -7,7 +7,7 @@
 
 #include <optional>
 
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -39,7 +39,8 @@ struct PermissionsPolicyBlockLocator {
 // Traces the root reason for a feature to be disabled in a frame.
 // Returns std::nullopt when the feature is enabled in the frame.
 CORE_EXPORT std::optional<PermissionsPolicyBlockLocator>
-TracePermissionsPolicyBlockSource(Frame*, mojom::PermissionsPolicyFeature);
+TracePermissionsPolicyBlockSource(Frame*,
+                                  network::mojom::PermissionsPolicyFeature);
 
 }  // namespace blink
 

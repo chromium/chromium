@@ -70,7 +70,8 @@ class SubAppsAdminPolicyTest : public IsolatedWebAppBrowserTestHarness {
     std::unique_ptr<ScopedBundledIsolatedWebApp> app =
         IsolatedWebAppBuilder(
             ManifestBuilder().AddPermissionsPolicy(
-                blink::mojom::PermissionsPolicyFeature::kSubApps, /*self=*/true,
+                network::mojom::PermissionsPolicyFeature::kSubApps,
+                /*self=*/true,
                 /*origins=*/{}))
             .AddFolderFromDisk("/", "web_apps/subapps_isolated_app")
             .BuildBundle();

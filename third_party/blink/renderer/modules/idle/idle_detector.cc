@@ -140,7 +140,7 @@ ScriptPromise<IDLUndefined> IdleDetector::start(
   DCHECK(context->IsContextThread());
 
   if (!context->IsFeatureEnabled(
-          mojom::blink::PermissionsPolicyFeature::kIdleDetection,
+          network::mojom::PermissionsPolicyFeature::kIdleDetection,
           ReportOptions::kReportOnFailure)) {
     exception_state.ThrowSecurityError(kFeaturePolicyBlocked);
     return EmptyPromise();

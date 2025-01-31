@@ -4,7 +4,7 @@
 
 #include "third_party/blink/common/use_counter/use_counter_feature_mojom_traits.h"
 
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom-shared.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom-shared.h"
@@ -34,7 +34,7 @@ bool IsReservedFeature(const blink::UseCounterFeature& feature) {
     case blink::mojom::UseCounterFeatureType::kPermissionsPolicyIframeAttribute:
       return feature.value() ==
              static_cast<blink::UseCounterFeature::EnumValue>(
-                 blink::mojom::PermissionsPolicyFeature::kNotFound);
+                 network::mojom::PermissionsPolicyFeature::kNotFound);
   }
 }
 }  // namespace

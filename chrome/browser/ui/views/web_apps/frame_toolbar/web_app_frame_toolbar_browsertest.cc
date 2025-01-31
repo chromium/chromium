@@ -500,7 +500,7 @@ class BorderlessIsolatedWebAppBrowserTest
                       .SetDisplayModeOverride(
                           {blink::mojom::DisplayMode::kBorderless})
                       .AddPermissionsPolicy(
-                          blink::mojom::PermissionsPolicyFeature::
+                          network::mojom::PermissionsPolicyFeature::
                               kWindowManagement,
                           true, {})
                       .SetStartUrl("/index.html"))

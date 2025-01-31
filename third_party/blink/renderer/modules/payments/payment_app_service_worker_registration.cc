@@ -26,7 +26,7 @@ bool AllowedToUsePaymentFeatures(ScriptState* script_state) {
 
   return execution_context->GetSecurityContext()
       .GetPermissionsPolicy()
-      ->IsFeatureEnabled(mojom::blink::PermissionsPolicyFeature::kPayment);
+      ->IsFeatureEnabled(network::mojom::PermissionsPolicyFeature::kPayment);
 }
 
 }  // namespace

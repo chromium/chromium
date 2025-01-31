@@ -155,10 +155,10 @@ void BrowsingTopicsURLLoaderInterceptor::PopulateRequestOrRedirectHeaders(
       request_initiator_frame->GetPermissionsPolicy();
 
   if (!permissions_policy->IsFeatureEnabledForSubresourceRequest(
-          blink::mojom::PermissionsPolicyFeature::kBrowsingTopics, origin,
+          network::mojom::PermissionsPolicyFeature::kBrowsingTopics, origin,
           *resource_request_) ||
       !permissions_policy->IsFeatureEnabledForSubresourceRequest(
-          blink::mojom::PermissionsPolicyFeature::
+          network::mojom::PermissionsPolicyFeature::
               kBrowsingTopicsBackwardCompatible,
           origin, *resource_request_)) {
     RecordFetchRequestResultUma(BrowsingTopicsFetchRequestOrRedirectResult::

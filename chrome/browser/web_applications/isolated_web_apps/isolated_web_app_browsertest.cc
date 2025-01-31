@@ -689,7 +689,7 @@ class IsolatedWebAppApiAccessBrowserTest : public IsolatedWebAppBrowserTest {
     std::unique_ptr<ScopedBundledIsolatedWebApp> app =
         IsolatedWebAppBuilder(
             ManifestBuilder().AddPermissionsPolicy(
-                blink::mojom::PermissionsPolicyFeature::kDirectSockets,
+                network::mojom::PermissionsPolicyFeature::kDirectSockets,
                 /*self=*/true, {}))
             .AddJs("/csp_violation_handler.js", R"(
               console.log('In bundled script');

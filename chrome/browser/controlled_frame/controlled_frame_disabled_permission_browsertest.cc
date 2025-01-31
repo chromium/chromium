@@ -30,7 +30,7 @@
 #include "services/device/public/cpp/test/fake_serial_port_manager.h"
 #include "services/device/public/cpp/test/fake_usb_device_manager.h"
 #include "services/device/public/mojom/serial.mojom.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 
 namespace {
@@ -110,7 +110,7 @@ IN_PROC_BROWSER_TEST_P(ControlledFrameDisabledPermissionUsbTest, WebUSB) {
   )",
                                                 kFailResult);
   test_case.policy_features.insert(
-      blink::mojom::PermissionsPolicyFeature::kUsb);
+      network::mojom::PermissionsPolicyFeature::kUsb);
   test_case.success_result = kFakeUsbDeviceSerialNumber;
   test_case.failure_result = kFailResult;
 
@@ -175,7 +175,7 @@ IN_PROC_BROWSER_TEST_P(ControlledFrameDisabledPermissionSerialTest, WebSerial) {
                                                 kFailResult);
 
   test_case.policy_features.insert(
-      blink::mojom::PermissionsPolicyFeature::kSerial);
+      network::mojom::PermissionsPolicyFeature::kSerial);
   test_case.success_result = kExpectedPortsLength;
   test_case.failure_result = kFailResult;
 
@@ -270,7 +270,7 @@ IN_PROC_BROWSER_TEST_P(ControlledFrameDisabledPermissionWebBluetoothTest,
   )",
                                                 kFailResult);
   test_case.policy_features.insert(
-      blink::mojom::PermissionsPolicyFeature::kBluetooth);
+      network::mojom::PermissionsPolicyFeature::kBluetooth);
   test_case.success_result = kFakeBluetoothDeviceName;
   test_case.failure_result = kFailResult;
 

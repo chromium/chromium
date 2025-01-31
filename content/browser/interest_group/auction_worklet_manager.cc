@@ -71,10 +71,10 @@ GetAuctionWorkletPermissionsPolicyState(RenderFrameHostImpl* auction_runner_rfh,
 
   return auction_worklet::mojom::AuctionWorkletPermissionsPolicyState::New(
       permissions_policy->IsFeatureEnabledForOrigin(
-          blink::mojom::PermissionsPolicyFeature::kPrivateAggregation,
+          network::mojom::PermissionsPolicyFeature::kPrivateAggregation,
           worklet_origin),
       permissions_policy->IsFeatureEnabledForOrigin(
-          blink::mojom::PermissionsPolicyFeature::kSharedStorage,
+          network::mojom::PermissionsPolicyFeature::kSharedStorage,
           worklet_origin));
 }
 
@@ -1156,7 +1156,7 @@ AuctionWorkletManager::MaybeBindAuctionSharedStorageHost(
 
   if (auction_shared_storage_host_ &&
       permissions_policy->IsFeatureEnabledForOrigin(
-          blink::mojom::PermissionsPolicyFeature::kSharedStorage,
+          network::mojom::PermissionsPolicyFeature::kSharedStorage,
           worklet_origin)) {
     auction_shared_storage_host_->BindNewReceiver(
         auction_runner_rfh, worklet_origin,

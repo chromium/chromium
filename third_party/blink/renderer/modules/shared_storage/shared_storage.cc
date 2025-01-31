@@ -704,8 +704,8 @@ ScriptPromise<IDLString> SharedStorage::get(ScriptState* script_state,
     }
 
     if (!execution_context->IsFeatureEnabled(
-        mojom::blink::PermissionsPolicyFeature::
-            kFencedUnpartitionedStorageRead)) {
+            network::mojom::PermissionsPolicyFeature::
+                kFencedUnpartitionedStorageRead)) {
       resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
           script_state->GetIsolate(), DOMExceptionCode::kOperationError,
           "Cannot call get() in a fenced frame without the "

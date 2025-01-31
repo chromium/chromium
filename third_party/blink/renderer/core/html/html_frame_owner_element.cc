@@ -877,7 +877,7 @@ ParsedPermissionsPolicy HTMLFrameOwnerElement::GetLegacyFramePolicies() {
     //  context is unable to use the API, regardless of origin.
     // https://fullscreen.spec.whatwg.org/#model
     ParsedPermissionsPolicyDeclaration allowlist(
-        mojom::blink::PermissionsPolicyFeature::kFullscreen);
+        network::mojom::PermissionsPolicyFeature::kFullscreen);
     container_policy.push_back(allowlist);
   }
   {
@@ -888,8 +888,8 @@ ParsedPermissionsPolicy HTMLFrameOwnerElement::GetLegacyFramePolicies() {
     // frame for the origin.
     // https://fergald.github.io/docs/explainers/permissions-policy-deprecate-unload.html
     ParsedPermissionsPolicyDeclaration allowlist(
-        mojom::blink::PermissionsPolicyFeature::kUnload, {}, std::nullopt,
-        /*allowed_by_default=*/true, /*matches_all_origins=*/true);
+        network::mojom::PermissionsPolicyFeature::kUnload, {}, std::nullopt,
+        /*matches_all_origins=*/true, /*matches_opaque_src=*/true);
     container_policy.push_back(allowlist);
   }
   return container_policy;

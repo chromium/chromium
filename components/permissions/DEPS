@@ -27,6 +27,7 @@ include_rules = [
   "+media/base/android/media_drm_bridge.h",
   "+printing/buildflags/buildflags.h",
   "+services/metrics/public/cpp",
+  "+services/network/public/mojom/permissions_policy",
   "+sql",
   "+services/network/public/cpp/is_potentially_trustworthy.h",
   "+third_party/blink/public/common/bluetooth/web_bluetooth_device_id.h",

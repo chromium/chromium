@@ -26,10 +26,10 @@
 #include "extensions/browser/guest_view/web_view/web_view_constants.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "ppapi/buildflags/buildflags.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy_features.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -49,7 +49,7 @@ void CallbackWrapper(base::OnceCallback<void(bool)> callback,
 // for both the requesting origin and the embedder's origin.
 bool IsFeatureEnabledByEmbedderPermissionsPolicy(
     WebViewGuest* web_view_guest,
-    blink::mojom::PermissionsPolicyFeature feature,
+    network::mojom::PermissionsPolicyFeature feature,
     const url::Origin& requesting_origin) {
   content::RenderFrameHost* embedder_rfh = web_view_guest->embedder_rfh();
   CHECK(embedder_rfh);
@@ -191,14 +191,14 @@ void ChromeWebViewPermissionHelperDelegate::
             blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE &&
         !IsFeatureEnabledByEmbedderPermissionsPolicy(
             web_view_guest(),
-            blink::mojom::PermissionsPolicyFeature::kMicrophone,
+            network::mojom::PermissionsPolicyFeature::kMicrophone,
             request.url_origin);
 
     bool video_denied =
         request.video_type ==
             blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE &&
         !IsFeatureEnabledByEmbedderPermissionsPolicy(
-            web_view_guest(), blink::mojom::PermissionsPolicyFeature::kCamera,
+            web_view_guest(), network::mojom::PermissionsPolicyFeature::kCamera,
             request.url_origin);
 
     if (audio_denied || video_denied) {
@@ -315,7 +315,7 @@ void ChromeWebViewPermissionHelperDelegate::RequestGeolocationPermission(
       web_view_guest()->IsOwnedByControlledFrameEmbedder() &&
       !IsFeatureEnabledByEmbedderPermissionsPolicy(
           web_view_guest(),
-          blink::mojom::PermissionsPolicyFeature::kGeolocation,
+          network::mojom::PermissionsPolicyFeature::kGeolocation,
           url::Origin::Create(requesting_frame))) {
     std::move(callback).Run(false);
     return;
@@ -369,7 +369,7 @@ void ChromeWebViewPermissionHelperDelegate::RequestHidPermission(
   if (web_view_guest()->attached() &&
       web_view_guest()->IsOwnedByControlledFrameEmbedder() &&
       !IsFeatureEnabledByEmbedderPermissionsPolicy(
-          web_view_guest(), blink::mojom::PermissionsPolicyFeature::kHid,
+          web_view_guest(), network::mojom::PermissionsPolicyFeature::kHid,
           url::Origin::Create(requesting_frame_url))) {
     std::move(callback).Run(false);
     return;
@@ -422,7 +422,8 @@ void ChromeWebViewPermissionHelperDelegate::RequestFullscreenPermission(
   if (web_view_guest()->attached() &&
       web_view_guest()->IsOwnedByControlledFrameEmbedder() &&
       !IsFeatureEnabledByEmbedderPermissionsPolicy(
-          web_view_guest(), blink::mojom::PermissionsPolicyFeature::kFullscreen,
+          web_view_guest(),
+          network::mojom::PermissionsPolicyFeature::kFullscreen,
           requesting_origin)) {
     std::move(callback).Run(/*allow=*/false, /*user_input=*/"");
     return;

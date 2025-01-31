@@ -51,7 +51,7 @@ void SmartCardService::Create(
   }
 
   if (!render_frame_host->IsFeatureEnabled(
-          blink::mojom::PermissionsPolicyFeature::kSmartCard)) {
+          network::mojom::PermissionsPolicyFeature::kSmartCard)) {
     mojo::ReportBadMessage(
         "Access to the feature \"smart-card\" is disallowed by permissions "
         "policy.");

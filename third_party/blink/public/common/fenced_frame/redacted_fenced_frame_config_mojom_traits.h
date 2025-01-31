@@ -256,7 +256,7 @@ struct BLINK_COMMON_EXPORT
     return config.mode_;
   }
 
-  static const std::vector<blink::mojom::PermissionsPolicyFeature>&
+  static const std::vector<network::mojom::PermissionsPolicyFeature>&
   effective_enabled_permissions(
       const blink::FencedFrame::RedactedFencedFrameConfig& config) {
     return config.effective_enabled_permissions_;
@@ -311,7 +311,7 @@ struct BLINK_COMMON_EXPORT
     return properties.mode_;
   }
 
-  static const std::vector<blink::mojom::PermissionsPolicyFeature>&
+  static const std::vector<network::mojom::PermissionsPolicyFeature>&
   effective_enabled_permissions(
       const blink::FencedFrame::RedactedFencedFrameProperties& properties) {
     return properties.effective_enabled_permissions_;

@@ -30,10 +30,10 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "build/build_config.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/common/permissions_policy/document_policy_features.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/policy_disposition.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/policy_value.mojom-blink.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
@@ -572,7 +572,7 @@ bool ExecutionContext::FeatureEnabled(
 }
 
 bool ExecutionContext::IsFeatureEnabled(
-    mojom::blink::PermissionsPolicyFeature feature,
+    network::mojom::PermissionsPolicyFeature feature,
     ReportOptions report_option,
     const String& message) {
   SecurityContext::FeatureStatus status =
@@ -591,7 +591,7 @@ bool ExecutionContext::IsFeatureEnabled(
 }
 
 bool ExecutionContext::IsFeatureEnabled(
-    mojom::blink::PermissionsPolicyFeature feature) const {
+    network::mojom::PermissionsPolicyFeature feature) const {
   return security_context_.IsFeatureEnabled(feature).enabled;
 }
 

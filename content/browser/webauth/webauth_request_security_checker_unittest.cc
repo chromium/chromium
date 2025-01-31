@@ -30,7 +30,7 @@ namespace {
 
 blink::ParsedPermissionsPolicy CreatePolicyToAllowWebAuthn() {
   return {blink::ParsedPermissionsPolicyDeclaration(
-      blink::mojom::PermissionsPolicyFeature::kPublicKeyCredentialsGet,
+      network::mojom::PermissionsPolicyFeature::kPublicKeyCredentialsGet,
       /*allowed_origins=*/{}, /*self_if_matches=*/std::nullopt,
       /*matches_all_origins=*/true,
       /*matches_opaque_src=*/false)};
@@ -40,7 +40,7 @@ blink::ParsedPermissionsPolicy CreatePolicyToAllowWebAuthn() {
 // with value 'none'.
 blink::ParsedPermissionsPolicy CreatePolicyToDenyWebAuthn() {
   return {blink::ParsedPermissionsPolicyDeclaration(
-      blink::mojom::PermissionsPolicyFeature::kPublicKeyCredentialsGet,
+      network::mojom::PermissionsPolicyFeature::kPublicKeyCredentialsGet,
       /*allowed_origins=*/{}, /*self_if_matches=*/std::nullopt,
       /*matches_all_origins=*/false,
       /*matches_opaque_src=*/false)};
@@ -48,7 +48,8 @@ blink::ParsedPermissionsPolicy CreatePolicyToDenyWebAuthn() {
 
 blink::ParsedPermissionsPolicy CreatePolicyToAllowWebPayments() {
   return {blink::ParsedPermissionsPolicyDeclaration(
-      blink::mojom::PermissionsPolicyFeature::kPayment, /*allowed_origins=*/{},
+      network::mojom::PermissionsPolicyFeature::kPayment,
+      /*allowed_origins=*/{},
       /*self_if_matches=*/std::nullopt,
       /*matches_all_origins=*/true, /*matches_opaque_src=*/false)};
 }

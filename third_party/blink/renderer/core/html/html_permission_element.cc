@@ -218,15 +218,15 @@ uint16_t GetUntranslatedMessageIDMultiplePermissions(bool granted) {
 }
 
 // Helper to get `PermissionsPolicyFeature` from permission name
-mojom::blink::PermissionsPolicyFeature PermissionNameToPermissionsPolicyFeature(
-    PermissionName permission_name) {
+network::mojom::PermissionsPolicyFeature
+PermissionNameToPermissionsPolicyFeature(PermissionName permission_name) {
   switch (permission_name) {
     case PermissionName::AUDIO_CAPTURE:
-      return mojom::blink::PermissionsPolicyFeature::kMicrophone;
+      return network::mojom::PermissionsPolicyFeature::kMicrophone;
     case PermissionName::VIDEO_CAPTURE:
-      return mojom::blink::PermissionsPolicyFeature::kCamera;
+      return network::mojom::PermissionsPolicyFeature::kCamera;
     case PermissionName::GEOLOCATION:
-      return mojom::blink::PermissionsPolicyFeature::kGeolocation;
+      return network::mojom::PermissionsPolicyFeature::kGeolocation;
     default:
       NOTREACHED() << "Not supported permission " << permission_name;
   }

@@ -307,12 +307,12 @@ SharedStorageHeaderObserver::DoPermissionsPolicyDoubleCheck(
       // Create a dummy `network::ResourceRequest` so that we can signal to
       // `permissions_policy` that the actual request was opted-in to shared
       // storage and hence that
-      // `blink::mojom::PermissionsPolicyFeature::kSharedStorage` should be
+      // `network::mojom::PermissionsPolicyFeature::kSharedStorage` should be
       // treated as an assumed opt-in feature during the permissions check.
       network::ResourceRequest dummy_request;
       dummy_request.shared_storage_writable_eligible = true;
       return permissions_policy->IsFeatureEnabledForSubresourceRequest(
-                 blink::mojom::PermissionsPolicyFeature::kSharedStorage,
+                 network::mojom::PermissionsPolicyFeature::kSharedStorage,
                  request_origin, dummy_request)
                  ? PermissionsPolicyDoubleCheckStatus::kEnabled
                  : PermissionsPolicyDoubleCheckStatus::kDisabled;
@@ -330,7 +330,7 @@ SharedStorageHeaderObserver::DoPermissionsPolicyDoubleCheck(
         return PermissionsPolicyDoubleCheckStatus::kNavigationSourceNoPolicy;
       }
       return parent_policy->IsFeatureEnabledForOrigin(
-                 blink::mojom::PermissionsPolicyFeature::kSharedStorage,
+                 network::mojom::PermissionsPolicyFeature::kSharedStorage,
                  request_origin)
                  ? PermissionsPolicyDoubleCheckStatus::kEnabled
                  : PermissionsPolicyDoubleCheckStatus::kDisabled;

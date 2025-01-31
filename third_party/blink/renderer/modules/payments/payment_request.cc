@@ -786,7 +786,7 @@ bool AllowedToUsePaymentRequest(ExecutionContext* execution_context) {
   // 2. If Permissions Policy is enabled, return the policy for "payment"
   // feature.
   return execution_context->IsFeatureEnabled(
-      mojom::blink::PermissionsPolicyFeature::kPayment,
+      network::mojom::PermissionsPolicyFeature::kPayment,
       ReportOptions::kReportOnFailure);
 }
 

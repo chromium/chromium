@@ -1600,7 +1600,7 @@ void HTMLMediaElement::StartPlayerLoad() {
           MediaPlaybackWhileNotVisiblePermissionPolicyEnabled()) {
     web_media_player_->SetShouldPauseWhenFrameIsHidden(
         !GetDocument().GetExecutionContext()->IsFeatureEnabled(
-            mojom::blink::PermissionsPolicyFeature::
+            network::mojom::PermissionsPolicyFeature::
                 kMediaPlaybackWhileNotVisible,
             ReportOptions::kDoNotReport));
   }

@@ -9,7 +9,7 @@
 
 #include "third_party/blink/renderer/modules/wake_lock/wake_lock.h"
 
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -93,7 +93,7 @@ ScriptPromise<WakeLockSentinel> WakeLock::request(
   // but we can perform FP checks in workers in Blink]
   if (type == V8WakeLockType::Enum::kScreen &&
       !context->IsFeatureEnabled(
-          mojom::blink::PermissionsPolicyFeature::kScreenWakeLock,
+          network::mojom::PermissionsPolicyFeature::kScreenWakeLock,
           ReportOptions::kReportOnFailure)) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
                                       "Access to Screen Wake Lock features is "
