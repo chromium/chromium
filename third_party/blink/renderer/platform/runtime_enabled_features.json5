@@ -309,7 +309,7 @@
       name: "AIPromptAPI",
       public: true,
       status: "test",
-      implied_by: ["AIPromptAPIForWebPlatform"]
+      implied_by: ["AIPromptAPIForWebPlatform", "AIPromptAPIMultimodalInput"],
     },
     {
       name: "AIPromptAPIForExtension",
@@ -321,6 +321,11 @@
     },
     {
       name: "AIPromptAPIForWebPlatform",
+      public: true,
+      status: "test",
+    },
+    {
+      name: "AIPromptAPIMultimodalInput",
       public: true,
       status: "test",
     },

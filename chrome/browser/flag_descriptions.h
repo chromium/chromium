@@ -2429,6 +2429,9 @@ extern const char kPromptAPIForGeminiNanoName[];
 extern const char kPromptAPIForGeminiNanoDescription[];
 extern const char* const kAIAPIsForGeminiNanoLinks[2];
 
+extern const char kPromptAPIForGeminiNanoMultimodalInputName[];
+extern const char kPromptAPIForGeminiNanoMultimodalInputDescription[];
+
 extern const char kSummarizationAPIForGeminiNanoName[];
 extern const char kSummarizationAPIForGeminiNanoDescription[];
 
