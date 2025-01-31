@@ -6,6 +6,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {getRequiredElement} from 'chrome://resources/js/util.js';
 
 import type {BrowserProxyImpl} from './browser_proxy.js';
+import {WebUiState} from './glic.mojom-webui.js';
 import {GlicApiHost} from './glic_api_impl/glic_api_host.js';
 
 const transitionDuration = {
@@ -39,35 +40,10 @@ const $: PageElementTypes = new Proxy({}, {
 type PanelId =
     'loadingPanel'|'guestPanel'|'offlinePanel'|'errorPanel'|'unavailablePanel';
 
-type State =
-    // Web client begins loading; no visible UI.
-    'begin-load'|
-    // Loading panel is displayed. This state, combined with the `hold-loading`
-    // state, will be held for `kMinHoldLoadingTimeMs` if entered.
-    'show-loading'|
-    // Loading panel is still displayed, but the web client is ready. This
-    // state will be held for the remainder of `kMinHoldLoadingTimeMs`.
-    'hold-loading'|
-    // Loading panel is displayed until web client is ready, or until
-    // `kMaxWaitTimeMs` timeout is reached.
-    'finish-loading'|
-    // "Something went wrong" error panel is displayed.
-    'error'|
-    // Connection offline panel is displayed.
-    'offline'|
-    // Glic is not available for profile; "Unavailable" panel is displayed.
-    'unavailable'|
-    // Web view is displayed.
-    'ready';
-
 interface StateDescriptor {
   onEnter?: () => void;
   onExit?: () => void;
 }
-
-type StateList = {
-  [key in State]: StateDescriptor;
-};
 
 export class GlicAppController {
   loadingTimer: number|undefined;
@@ -86,7 +62,7 @@ export class GlicAppController {
   // with an empty <webview>.
   webview: chrome.webviewTag.WebView;
 
-  state: State|undefined;
+  state: WebUiState|undefined;
 
   // When entering loading state, this represents the earliest timestamp at
   // which the UI can transition to the ready state. This ensures that the
@@ -111,9 +87,9 @@ export class GlicAppController {
     });
 
     if (navigator.onLine && !this.simulateNoConnection) {
-      this.setState('begin-load');
+      this.setState(WebUiState.kBeginLoad);
     } else {
-      this.setState('offline');
+      this.setState(WebUiState.kOffline);
     }
   }
 
@@ -131,50 +107,71 @@ export class GlicAppController {
     }
   }
 
-  setState(newState: State): void {
+  setState(newState: WebUiState): void {
     if (this.state === newState) {
       return;
     }
     if (this.state) {
-      this.states[this.state].onExit?.call(this);
+      this.states.get(this.state)!.onExit?.call(this);
     }
     this.state = newState;
-    this.states[this.state].onEnter?.call(this);
+    this.states.get(this.state)!.onEnter?.call(this);
+    this.browserProxy.handler.webUiStateChanged(this.state);
   }
 
-  states: StateList = {
-    'begin-load': {onEnter: this.beginLoad, onExit: this.cancelTimeout},
-    'show-loading': {onEnter: this.showLoading, onExit: this.cancelTimeout},
-    'hold-loading': {onEnter: this.holdLoading, onExit: this.cancelTimeout},
-    'finish-loading': {onEnter: this.finishLoading, onExit: this.cancelTimeout},
-    'error': {
-      onEnter:
-          () => {
-            this.destroyWebview();
-            this.showPanel('errorPanel');
-          },
-    },
-    'offline': {
-      onEnter:
-          () => {
-            this.destroyWebview();
-            this.showPanel('offlinePanel');
-          },
-    },
-    'unavailable': {
-      onEnter:
-          () => {
-            this.destroyWebview();
-            this.showPanel('unavailablePanel');
-          },
-    },
-    'ready': {
-      onEnter:
-          () => {
-            this.showPanel('guestPanel');
-          },
-    },
-  };
+  readonly states: Map<WebUiState, StateDescriptor> = new Map([
+    [
+      WebUiState.kBeginLoad,
+      {onEnter: this.beginLoad, onExit: this.cancelTimeout},
+    ],
+    [
+      WebUiState.kShowLoading,
+      {onEnter: this.showLoading, onExit: this.cancelTimeout},
+    ],
+    [
+      WebUiState.kHoldLoading,
+      {onEnter: this.holdLoading, onExit: this.cancelTimeout},
+    ],
+    [
+      WebUiState.kFinishLoading,
+      {onEnter: this.finishLoading, onExit: this.cancelTimeout},
+    ],
+    [
+      WebUiState.kError,
+      {
+        onEnter: () => {
+          this.destroyWebview();
+          this.showPanel('errorPanel');
+        },
+      },
+    ],
+    [
+      WebUiState.kOffline,
+      {
+        onEnter: () => {
+          this.destroyWebview();
+          this.showPanel('offlinePanel');
+        },
+      },
+    ],
+    [
+      WebUiState.kUnavailable,
+      {
+        onEnter: () => {
+          this.destroyWebview();
+          this.showPanel('unavailablePanel');
+        },
+      },
+    ],
+    [
+      WebUiState.kReady,
+      {
+        onEnter: () => {
+          this.showPanel('guestPanel');
+        },
+      },
+    ],
+  ]);
 
   cancelTimeout(): void {
     if (this.loadingTimer) {
@@ -199,14 +196,14 @@ export class GlicAppController {
     this.browserProxy.handler.syncWebviewCookies().then(async () => {
       const isEnabled = (await enabledCheck).enabled;
       if (!isEnabled) {
-        this.setState('unavailable');
+        this.setState(WebUiState.kUnavailable);
         return;
       }
 
       // Load the web client only after cookie sync is complete.
       this.webview!.src = loadTimeData.getString('glicGuestURL');
       this.loadingTimer = setTimeout(() => {
-        this.setState('show-loading');
+        this.setState(WebUiState.kShowLoading);
       }, Math.max(0, showLoadingTime - performance.now()));
     });
   }
@@ -217,7 +214,7 @@ export class GlicAppController {
     // that we do not transition from show-loading to ready before the timeout.
     this.earliestLoadingDismissTime = performance.now() + kMinHoldLoadingTimeMs;
     this.loadingTimer = setTimeout(() => {
-      this.setState('finish-loading');
+      this.setState(WebUiState.kFinishLoading);
     }, kMinHoldLoadingTimeMs);
   }
 
@@ -226,7 +223,7 @@ export class GlicAppController {
     // `kMinHoldLoadingTimeMs` before showing it, to allow the loading animation
     // to complete once.
     this.loadingTimer = setTimeout(() => {
-      this.setState('ready');
+      this.setState(WebUiState.kReady);
     }, Math.max(0, this.earliestLoadingDismissTime! - performance.now()));
   }
 
@@ -235,14 +232,14 @@ export class GlicAppController {
     // `kMaxWaitTimeMs`. Switch to error state at that time unless interrupted
     // by `webClientReady`.
     this.loadingTimer = setTimeout(() => {
-      this.setState('error');
+      this.setState(WebUiState.kError);
     }, kMaxWaitTimeMs - kMinHoldLoadingTimeMs);
   }
 
   reload(): void {
     this.destroyWebview();
     // TODO: Allow the timeout on this load to be longer than the initial load.
-    this.setState('begin-load');
+    this.setState(WebUiState.kBeginLoad);
   }
 
   createWebView(): chrome.webviewTag.WebView {
@@ -291,7 +288,7 @@ export class GlicAppController {
         url.startsWith('https://accounts.google.com/')) {
       this.lastWidth = 400;
       this.lastHeight = 800;
-      this.setState('ready');
+      this.setState(WebUiState.kReady);
     }
   }
 
@@ -343,16 +340,20 @@ export class GlicAppController {
     if (this.simulateNoConnection) {
       return;
     }
-    if (this.state !== 'offline') {
+    if (this.state !== WebUiState.kOffline) {
       return;
     }
-    this.setState('begin-load');
+    this.setState(WebUiState.kBeginLoad);
   }
 
   offline(): void {
-    const allowedStates = ['begin-load', 'show-loading', 'finish-loading'];
+    const allowedStates = [
+      WebUiState.kBeginLoad,
+      WebUiState.kShowLoading,
+      WebUiState.kFinishLoading,
+    ];
     if (allowedStates.includes(this.state!)) {
-      this.setState('offline');
+      this.setState(WebUiState.kOffline);
     }
   }
 
@@ -369,18 +370,19 @@ export class GlicAppController {
   // Called when the notifyPanelWillOpen promise resolves to open the panel
   // when triggered from the browser.
   webClientReady(): void {
-    if (this.state === 'begin-load' || this.state === 'finish-loading') {
-      this.setState('ready');
-    } else if (this.state === 'show-loading') {
-      this.setState('hold-loading');
+    if (this.state === WebUiState.kBeginLoad ||
+        this.state === WebUiState.kFinishLoading) {
+      this.setState(WebUiState.kReady);
+    } else if (this.state === WebUiState.kShowLoading) {
+      this.setState(WebUiState.kHoldLoading);
     }
   }
 
   // This may also be called when the panel is re-opened by webui after being
   // hidden, such as when an error panel is shown.
-  // This will do nothing if the app is not in 'ready' state.
+  // This will do nothing if the app is not in kReady state.
   showGuest(): void {
-    if (this.state === 'ready') {
+    if (this.state === WebUiState.kReady) {
       this.showPanel('guestPanel');
     }
   }

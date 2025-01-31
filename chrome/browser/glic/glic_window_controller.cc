@@ -304,6 +304,15 @@ void GlicWindowController::ShowDetachedForTesting() {
   Show(nullptr);
 }
 
+void GlicWindowController::WebUiStateChanged(mojom::WebUiState new_state) {
+  if (webui_state_ != new_state) {
+    // UI State has changed
+    webui_state_ = new_state;
+    webui_state_observers_.Notify(&WebUiStateObserver::WebUiStateChanged,
+                                  webui_state_);
+  }
+}
+
 void GlicWindowController::Show(Browser* browser) {
   // At this point State must be kClosed, and all glic window state must be
   // unset.
@@ -995,6 +1004,15 @@ void GlicWindowController::AddStateObserver(StateObserver* observer) {
 
 void GlicWindowController::RemoveStateObserver(StateObserver* observer) {
   state_observers_.RemoveObserver(observer);
+}
+
+void GlicWindowController::AddWebUiStateObserver(WebUiStateObserver* observer) {
+  webui_state_observers_.AddObserver(observer);
+}
+
+void GlicWindowController::RemoveWebUiStateObserver(
+    WebUiStateObserver* observer) {
+  webui_state_observers_.RemoveObserver(observer);
 }
 
 void GlicWindowController::NotifyIfPanelStateChanged() {

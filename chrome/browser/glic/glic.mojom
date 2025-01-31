@@ -18,6 +18,30 @@ interface PageHandlerFactory {
   CreatePageHandler(pending_receiver<PageHandler> receiver);
 };
 
+enum WebUiState {
+  // Glic app controller not started.
+  kUninitialized,
+  // Web client begins loading; no visible UI.
+  kBeginLoad,
+  // Loading panel is displayed. This state, combined with the `hold-loading`
+  // state, will be held for `kMinHoldLoadingTimeMs` if entered.
+  kShowLoading,
+  // Loading panel is still displayed, but the web client is ready. This
+  // state will be held for the remainder of `kMinHoldLoadingTimeMs`.
+  kHoldLoading,
+  // Loading panel is displayed until web client is ready, or until
+  // `kMaxWaitTimeMs` timeout is reached.
+  kFinishLoading,
+  // "Something went wrong" error panel is displayed.
+  kError,
+  // Connection offline panel is displayed.
+  kOffline,
+  // Glic is not available for profile; "Unavailable" panel is displayed.
+  kUnavailable,
+  // Web view is displayed.
+  kReady,
+};
+
 // Page handler for the glic WebUI.
 interface PageHandler {
   // Creates a WebClientHandler, for use by a single web client instance.
@@ -40,6 +64,9 @@ interface PageHandler {
   // Returns true if the profile associated with this Glic page is enabled by
   // policy.
   IsProfileEnabled() => (bool enabled);
+
+  // Notifies the PageHandler that the state of the WebUI has changed.
+  WebUiStateChanged(WebUiState new_state);
 };
 
 // Reason why getting tab context failed.
