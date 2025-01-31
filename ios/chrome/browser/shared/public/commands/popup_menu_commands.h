@@ -22,6 +22,9 @@
 - (void)notifyIPHBubblePresenting;
 // Returns whether overflow menu button (e.g tools menu button) has blue dot.
 - (BOOL)hasBlueDotForOverflowMenu;
+// Displays an IPH bubble on the tools menu button to guide users in scheduling
+// reminder notifications for the current tab.
+- (void)displayPopupMenuTabRemindersIPH;
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_POPUP_MENU_COMMANDS_H_

@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/active_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
+#import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/web/public/navigation/navigation_context.h"
@@ -123,8 +124,7 @@ void TabBasedIPHBrowserAgent::BookmarkNodeAdded(
     // The bookmark was manually added by the user and not via syncing or
     // duplicating the bookmark.
 
-    // TODO(crbug.com/389911609): Fire a UI command to display the relevant
-    // Reminder Notifications Bubble IPH.
+    [PopupMenuHandler() displayPopupMenuTabRemindersIPH];
   }
 }
 
@@ -183,9 +183,7 @@ void TabBasedIPHBrowserAgent::ReadingListDidAddEntry(
 
   if (source == reading_list::EntrySource::ADDED_VIA_CURRENT_APP) {
     // A reading list entry was manually added by the user.
-
-    // TODO(crbug.com/389911609): Fire a UI command to display the relevant
-    // Reminder Notifications Bubble IPH.
+    [PopupMenuHandler() displayPopupMenuTabRemindersIPH];
   }
 }
 
@@ -326,6 +324,10 @@ void TabBasedIPHBrowserAgent::ResetFeatureStatesAndRemoveIPHViews() {
 
 id<HelpCommands> TabBasedIPHBrowserAgent::HelpHandler() {
   return HandlerForProtocol(command_dispatcher_, HelpCommands);
+}
+
+id<PopupMenuCommands> TabBasedIPHBrowserAgent::PopupMenuHandler() {
+  return HandlerForProtocol(command_dispatcher_, PopupMenuCommands);
 }
 
 BROWSER_USER_DATA_KEY_IMPL(TabBasedIPHBrowserAgent)

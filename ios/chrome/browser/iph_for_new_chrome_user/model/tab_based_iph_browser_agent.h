@@ -26,6 +26,7 @@ enum EntrySource;
 class Browser;
 @class CommandDispatcher;
 @protocol HelpCommands;
+@protocol PopupMenuCommands;
 class ReadingListModel;
 class UrlLoadingNotifierBrowserAgent;
 class WebStateList;
@@ -135,6 +136,9 @@ class TabBasedIPHBrowserAgent : public bookmarks::BaseBookmarkModelObserver,
 
   // Command handler for help commands.
   id<HelpCommands> HelpHandler();
+
+  // Command handler for popup menu commands.
+  id<PopupMenuCommands> PopupMenuHandler();
 
   // Observer for the browser's web state list and the active web state.
   raw_ptr<WebStateList> web_state_list_;
