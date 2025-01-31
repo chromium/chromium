@@ -214,12 +214,12 @@
 // Starts the sign in process.
 - (void)startSignIn {
   DCHECK(self.mediator.selectedIdentity);
-  AuthenticationFlow* authenticationFlow = [[AuthenticationFlow alloc]
-               initWithBrowser:self.browser
-                      identity:self.mediator.selectedIdentity
-                   accessPoint:_accessPoint
-             postSignInActions:PostSignInActionSet({PostSignInAction::kNone})
-      presentingViewController:self.viewController];
+  AuthenticationFlow* authenticationFlow =
+      [[AuthenticationFlow alloc] initWithBrowser:self.browser
+                                         identity:self.mediator.selectedIdentity
+                                      accessPoint:_accessPoint
+                                postSignInActions:PostSignInActionSet()
+                         presentingViewController:self.viewController];
   authenticationFlow.precedingHistorySync = YES;
   __weak __typeof(self) weakSelf = self;
   ProceduralBlock completion = ^() {

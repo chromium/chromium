@@ -168,8 +168,7 @@ class AuthenticationFlowTest : public PlatformTest {
     // Can't use a RunLoop multiple times, create a new one.
     run_loop_ = std::make_unique<base::RunLoop>();
 
-    CreateAuthenticationFlow(PostSignInActionSet({PostSignInAction::kNone}),
-                             identity, access_point);
+    CreateAuthenticationFlow(PostSignInActionSet(), identity, access_point);
 
     [[[performer_ expect] andDo:^(NSInvocation*) {
       [authentication_flow_ didFetchManagedStatus:hosted_domain];
@@ -267,8 +266,8 @@ TEST_F(AuthenticationFlowTest, TestSignInSimple) {
 
 // Tests the fetch managed status failure case.
 TEST_F(AuthenticationFlowTest, TestFailFetchManagedStatus) {
-  CreateAuthenticationFlow(PostSignInActionSet({PostSignInAction::kNone}),
-                           identity1_, signin_metrics::AccessPoint::kStartPage);
+  CreateAuthenticationFlow(PostSignInActionSet(), identity1_,
+                           signin_metrics::AccessPoint::kStartPage);
 
   NSError* error = [NSError errorWithDomain:@"foo" code:0 userInfo:nil];
   [[[performer_ expect] andDo:^(NSInvocation*) {
