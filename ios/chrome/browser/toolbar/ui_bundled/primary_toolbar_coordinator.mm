@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/adaptive_toolbar_coordinator+subclassing.h"
@@ -55,14 +56,16 @@
     return;
   }
 
+  CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
+
   BOOL isOffTheRecord = self.browser->GetProfile()->IsOffTheRecord();
 
   self.viewController = [[PrimaryToolbarViewController alloc] init];
   self.viewController.shouldHideOmniboxOnNTP = !isOffTheRecord;
   self.viewController.omniboxCommandsHandler =
-      HandlerForProtocol(self.browser->GetCommandDispatcher(), OmniboxCommands);
-  self.viewController.popupMenuCommandsHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), PopupMenuCommands);
+      HandlerForProtocol(dispatcher, OmniboxCommands);
+  self.viewController.popupMenuCommandsHandler =
+      HandlerForProtocol(dispatcher, PopupMenuCommands);
   CHECK(self.viewControllerDelegate);
   self.viewController.delegate = self.viewControllerDelegate;
   self.viewController.toolbarHeightDelegate = self.toolbarHeightDelegate;
@@ -80,10 +83,13 @@
             agentFromApp:self.browser->GetSceneState().profileState.appState];
     _mediator = [[PrimaryToolbarMediator alloc]
         initWithDefaultBrowserBannerPromoAppAgent:agent];
+    _mediator.settingsHandler =
+        HandlerForProtocol(dispatcher, SettingsCommands);
 
     agent.UICurrentlySupportsPromo = [self viewControllerSupportsBannerPromo];
 
     _mediator.consumer = self.viewController;
+    self.viewController.bannerPromoDelegate = _mediator;
   }
 
   [super start];

@@ -38,6 +38,12 @@
 - (void)addObserver:(id<DefaultBrowserBannerAppAgentObserver>)observer;
 - (void)removeObserver:(id<DefaultBrowserBannerAppAgentObserver>)observer;
 
+// Alerts the app agent that the promo was tapped.
+- (void)promoTapped;
+
+// Alerts the app agent that the promo's close button was tapped.
+- (void)promoCloseButtonTapped;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_BANNER_PROMO_MODEL_DEFAULT_BROWSER_BANNER_PROMO_APP_AGENT_H_

@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/toolbar/ui_bundled/adaptive_toolbar_view_controller.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/primary_toolbar_consumer.h"
 
+@protocol BannerPromoViewDelegate;
 @protocol PrimaryToolbarViewControllerDelegate;
 @class TabGroupIndicatorView;
 @protocol ToolbarHeightDelegate;
@@ -34,6 +35,9 @@
 
 // Pan gesture handler for the toolbar.
 @property(nonatomic, weak) ViewRevealingVerticalPanHandler* panGestureHandler;
+
+// Delegate for banner promo interactions.
+@property(nonatomic, weak) id<BannerPromoViewDelegate> bannerPromoDelegate;
 
 // Sets the tabgroupIndicatorView.
 - (void)setTabGroupIndicatorView:(TabGroupIndicatorView*)view;

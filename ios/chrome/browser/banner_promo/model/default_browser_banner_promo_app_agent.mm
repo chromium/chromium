@@ -98,6 +98,14 @@ struct SceneStateData {
   [self updatePromoState];
 }
 
+- (void)promoTapped {
+  [self endPromoSession];
+}
+
+- (void)promoCloseButtonTapped {
+  [self endPromoSession];
+}
+
 #pragma mark - Private
 
 - (BOOL)navigationOccuredInWebState:(web::WebState*)webState
@@ -186,6 +194,12 @@ struct SceneStateData {
   }
 }
 
+// Ends any inprogress promo session and makes sure the promo UI is hidden.
+- (void)endPromoSession {
+  _sessionDisplayCount = 0;
+  [self ensurePromoHidden];
+}
+
 // Checks if the promo can be displayed on all currently active pages.
 - (BOOL)promoIsSuppressedOnCurrentURLs {
   // There must be at least one active URL to have a promo.
@@ -222,8 +236,7 @@ struct SceneStateData {
         [self promoIsSuppressedOnCurrentURLs] ||
         _sessionDisplayCount >=
             kDefaultBrowserBannerPromoImpressionLimit.Get()) {
-      _sessionDisplayCount = 0;
-      [self ensurePromoHidden];
+      [self endPromoSession];
       return;
     }
     _sessionDisplayCount += 1;
@@ -231,7 +244,7 @@ struct SceneStateData {
     // Check if promo can show.
     if (IsChromeLikelyDefaultBrowser() ||
         [self promoIsSuppressedOnCurrentURLs]) {
-      _sessionDisplayCount = 0;
+      [self endPromoSession];
       return;
     }
 

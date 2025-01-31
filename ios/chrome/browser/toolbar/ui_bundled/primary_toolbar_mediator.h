@@ -7,14 +7,20 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/toolbar/ui_bundled/banner_promo_view.h"
+
 @class DefaultBrowserBannerPromoAppAgent;
 @protocol PrimaryToolbarConsumer;
+@protocol SettingsCommands;
 
 // Mediator providing state information to PrimaryToolbarViewController.
-@interface PrimaryToolbarMediator : NSObject
+@interface PrimaryToolbarMediator : NSObject <BannerPromoViewDelegate>
 
 // Consumer to alert of UI changes.
 @property(nonatomic, weak) id<PrimaryToolbarConsumer> consumer;
+
+// Handler for any settings commands.
+@property(nonatomic, weak) id<SettingsCommands> settingsHandler;
 
 - (instancetype)initWithDefaultBrowserBannerPromoAppAgent:
     (DefaultBrowserBannerPromoAppAgent*)defaultBrowserBannerAppAgent
