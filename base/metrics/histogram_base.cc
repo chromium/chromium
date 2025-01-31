@@ -262,12 +262,15 @@ char const* HistogramBase::GetPermanentName(std::string_view name) {
   // A set of histogram names that provides the "permanent" lifetime required
   // by histogram objects for those strings that are not already code constants
   // or held in persistent memory.
-  static base::NoDestructor<std::set<std::string>> permanent_names;
+  static base::NoDestructor<std::set<std::string, std::less<>>> permanent_names;
   static base::NoDestructor<Lock> permanent_names_lock;
 
   AutoLock lock(*permanent_names_lock);
-  auto result = permanent_names->insert(std::string(name));
-  return result.first->c_str();
+  auto it = permanent_names->lower_bound(name);
+  if (it == permanent_names->end() || *it != name) {
+    it = permanent_names->emplace_hint(it, name);
+  }
+  return it->c_str();
 }
 
 }  // namespace base
