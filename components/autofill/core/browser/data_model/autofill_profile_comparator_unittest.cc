@@ -939,6 +939,23 @@ TEST_F(AutofillProfileComparatorTest, MergeNames) {
   MergeNamesAndExpect(p5, p5, synthesized);  // We flesh out missing data.
 }
 
+// Regression test for crbug.com/324006880
+TEST_F(AutofillProfileComparatorTest, MergeNamesWithWhitespaceDifferences) {
+  AutofillProfile old_profile(
+      i18n_model_definition::kLegacyHierarchyCountryCode);
+  old_profile.SetRawInfo(NAME_FULL, u"Rafael de Paula");
+  old_profile.FinalizeAfterImport();
+
+  AutofillProfile new_profile(
+      i18n_model_definition::kLegacyHierarchyCountryCode);
+  new_profile.SetRawInfo(NAME_FULL, u"Rafael dePaula");
+  new_profile.FinalizeAfterImport();
+
+  MergeNamesAndExpect(
+      new_profile, old_profile,
+      CreateNameInfo(u"Rafael", u"", u"de Paula", u"Rafael de Paula"));
+}
+
 TEST_F(AutofillProfileComparatorTest, MergeCJKNames) {
   base::test::ScopedFeatureList scoped_feature_list{
       features::kAutofillSupportPhoneticNameForJP};

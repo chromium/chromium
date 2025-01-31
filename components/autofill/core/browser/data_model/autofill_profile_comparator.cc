@@ -950,16 +950,17 @@ void AutofillProfileComparator::MergeNamesImpl(
     return;
   }
   // If the name in `old_profile` is a variant of `new_profile` use the one in
-  // `new_profile`.
+  // `new_profile`. Otherwise, either `new_profile` is a variant of
+  // `old_profile` or the two compare equal. In either case, choose
+  // `old_profile`.
   if (IsNameVariantOf(NormalizeForComparison(full_name_1),
                       NormalizeForComparison(full_name_2))) {
     name_component.CopyFrom(
         *new_profile.GetNameInfo().GetNodeForType(name_type));
-    return;
+  } else {
+    name_component.CopyFrom(
+        *old_profile.GetNameInfo().GetNodeForType(name_type));
   }
-  // The only left case is that `new_profile` is a variant of `old_profile`.
-  DCHECK(IsNameVariantOf(NormalizeForComparison(full_name_2),
-                         NormalizeForComparison(full_name_1)));
 }
 
 }  // namespace autofill
