@@ -46,7 +46,6 @@
 #include "content/browser/renderer_host/render_frame_metadata_provider_impl.h"
 #include "content/browser/renderer_host/render_widget_host_delegate.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
-#include "content/browser/scheduler/browser_ui_thread_scheduler.h"
 #include "content/common/content_export.h"
 #include "content/common/frame.mojom-forward.h"
 #include "content/common/input/synthetic_gesture.h"
@@ -384,8 +383,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   bool IsInitializedAndNotDead() override;
   void OnInputEventPreDispatch(const blink::WebInputEvent& event) override;
   void OnInvalidInputEventSource() override;
-  void NotifyUISchedulerOfGestureEventUpdate(
-      blink::WebInputEvent::Type gesture_event) override;
   void OnInputIgnored(const blink::WebInputEvent& event) override;
   void IncrementInFlightEventCount() override;
   void DecrementInFlightEventCount(
@@ -1462,8 +1459,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // These need to be destroyed after RenderInputRouter to avoid UAF bugs which
   // can arise when handling acks.
   base::OneShotTimer input_event_ack_timeout_;
-  std::optional<BrowserUIThreadScheduler::UserInputActiveHandle>
-      user_input_active_handle_;
 
   // The View associated with the RenderWidgetHost. The lifetime of this object
   // is associated with the lifetime of the Render process. If the Renderer

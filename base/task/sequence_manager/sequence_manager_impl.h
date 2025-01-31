@@ -128,7 +128,6 @@ class BASE_EXPORT SequenceManagerImpl
   size_t GetPendingTaskCountForTesting() const override;
   TaskQueue::Handle CreateTaskQueue(const TaskQueue::Spec& spec) override;
   std::string DescribeAllPendingTasks() const override;
-  void PrioritizeYieldingToNative(base::TimeTicks prioritize_until) override;
   void AddTaskObserver(TaskObserver* task_observer) override;
   void RemoveTaskObserver(TaskObserver* task_observer) override;
   std::optional<WakeUp> GetNextDelayedWakeUp() const override;

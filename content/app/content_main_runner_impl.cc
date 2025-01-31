@@ -1223,8 +1223,6 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams main_params,
     // The FeatureList needs to be created before starting the ThreadPool.
     StartBrowserThreadPool();
 
-    BrowserTaskExecutor::PostFeatureListSetup();
-
     tracing::PerfettoTracedProcess::Get().SetAllowSystemTracingConsumerCallback(
         base::BindRepeating(&ShouldAllowSystemTracingConsumer));
     tracing::InitTracingPostThreadPoolStartAndFeatureList(

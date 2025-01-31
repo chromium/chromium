@@ -83,11 +83,6 @@ class COMPONENT_EXPORT(INPUT) RenderInputRouterDelegate {
   // Called when an invalid input event source is sent from the renderer.
   virtual void OnInvalidInputEventSource() = 0;
 
-  // TODO(b/345483526): Cleanup BrowserPrioritizeNativeWork,
-  // BrowserDeferUIThreadTasks experiments.
-  virtual void NotifyUISchedulerOfGestureEventUpdate(
-      blink::WebInputEvent::Type gesture_event) = 0;
-
   // Notifies when an input event is ignored, see `IsIgnoringWebInputEvents`
   // above.
   virtual void OnInputIgnored(const blink::WebInputEvent& event) = 0;

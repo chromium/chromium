@@ -455,15 +455,6 @@ void MessagePumpAndroid::DoNonDelayedLooperWork(bool do_idle_work) {
 
     next_work_info = delegate_->DoWork();
 
-    // If we are prioritizing native, and the next work would normally run
-    // immediately, skip the next work and let the native work items have a
-    // chance to run. This is useful when user input is waiting for native to
-    // have a chance to run.
-    if (next_work_info.is_immediate() && next_work_info.yield_to_native) {
-      ScheduleWork();
-      return;
-    }
-
     // As an optimization, yield to the Looper when input events are waiting to
     // be handled. In some cases input events can remain undetected. Such "input
     // hint false negatives" happen, for example, during initialization, in

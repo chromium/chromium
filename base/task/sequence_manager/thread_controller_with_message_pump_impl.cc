@@ -329,20 +329,6 @@ ThreadControllerWithMessagePumpImpl::DoWork() {
   LazyNow continuation_lazy_now(time_source_);
   std::optional<WakeUp> next_wake_up = DoWorkImpl(&continuation_lazy_now);
 
-  // If we are yielding after DoWorkImpl (a work batch) set the flag boolean.
-  // This will inform the MessagePump to schedule a new continuation based on
-  // the information below, but even if its immediate let the native sequence
-  // have a chance to run.
-  // When we have |g_run_tasks_by_batches| active we want to always set the flag
-  // to true to have a similar behavior on Android as on the desktop platforms
-  // for this experiment.
-  if (RunsTasksByBatches() ||
-      (!main_thread_only().yield_to_native_after_batch.is_null() &&
-       continuation_lazy_now.Now() <
-           main_thread_only().yield_to_native_after_batch)) {
-    next_work_info.yield_to_native = true;
-  }
-
   do_work_needed_before_wait_ = false;
 
   // Schedule a continuation.
@@ -724,11 +710,6 @@ bool ThreadControllerWithMessagePumpImpl::IsTaskExecutionAllowed() const {
 
 MessagePump* ThreadControllerWithMessagePumpImpl::GetBoundMessagePump() const {
   return pump_.get();
-}
-
-void ThreadControllerWithMessagePumpImpl::PrioritizeYieldingToNative(
-    base::TimeTicks prioritize_until) {
-  main_thread_only().yield_to_native_after_batch = prioritize_until;
 }
 
 #if BUILDFLAG(IS_IOS)

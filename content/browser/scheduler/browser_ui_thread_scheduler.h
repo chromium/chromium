@@ -26,26 +26,6 @@ class BrowserTaskExecutor;
 // implement scheduling policy. This class is never deleted in production.
 class CONTENT_EXPORT BrowserUIThreadScheduler {
  public:
-  class UserInputActiveHandle {
-   public:
-    explicit UserInputActiveHandle(BrowserUIThreadScheduler* scheduler);
-    ~UserInputActiveHandle();
-
-    // This is a move only type.
-    UserInputActiveHandle(const UserInputActiveHandle&) = delete;
-    UserInputActiveHandle& operator=(const UserInputActiveHandle&) = delete;
-    UserInputActiveHandle& operator=(UserInputActiveHandle&&);
-    UserInputActiveHandle(UserInputActiveHandle&& other);
-
-   private:
-    void MoveFrom(UserInputActiveHandle* other);
-    // Only this constructor actually creates a UserInputActiveHandle that will
-    // inform scheduling decisions.
-    raw_ptr<BrowserUIThreadScheduler> scheduler_ = nullptr;
-  };
-
-  enum ScrollState { kGestureScrollActive, kFlingActive, kNone };
-
   using Handle = BrowserTaskQueues::Handle;
 
   BrowserUIThreadScheduler();
@@ -64,7 +44,6 @@ class CONTENT_EXPORT BrowserUIThreadScheduler {
   using QueueType = BrowserTaskQueues::QueueType;
 
   scoped_refptr<Handle> GetHandle() const { return handle_; }
-  void OnScrollStateUpdate(ScrollState scroll_state);
 
  private:
   friend class BrowserTaskExecutor;
@@ -78,21 +57,6 @@ class CONTENT_EXPORT BrowserUIThreadScheduler {
   void CommonSequenceManagerSetup(
       base::sequence_manager::SequenceManager* sequence_manager);
 
-  // Called after the feature list is ready and we can set up any policy
-  // experiments.
-  void PostFeatureListSetup();
-  void EnableBrowserPrioritizesNativeWork();
-
-  // Used in the BrowserPrioritizeNativeWork experiment, when we want to
-  // prioritize yielding to java when user input starts and for a short period
-  // after it ends.
-  BrowserUIThreadScheduler::UserInputActiveHandle OnUserInputStart();
-  void DidStartUserInput();
-  void DidEndUserInput();
-  // After user input has ended CancelNativePriority will be called to inform
-  // the SequenceManager to stop prioritizing yielding to native tasks.
-  void CancelNativePriority();
-
   // In production the BrowserUIThreadScheduler will own its SequenceManager,
   // but in tests it may not.
   std::unique_ptr<base::sequence_manager::SequenceManager>
@@ -101,14 +65,6 @@ class CONTENT_EXPORT BrowserUIThreadScheduler {
   BrowserTaskQueues task_queues_;
 
   scoped_refptr<Handle> handle_;
-
-  // These three variables are used in the BrowserPrioritizeNativeWork finch
-  // experiment. False ensures this feature is disabled by default.
-  int user_input_active_handle_count = 0;
-  bool browser_prioritize_native_work_ = false;
-  base::TimeDelta browser_prioritize_native_work_after_input_end_ms_;
-
-  ScrollState scroll_state_;
 };
 
 }  // namespace content

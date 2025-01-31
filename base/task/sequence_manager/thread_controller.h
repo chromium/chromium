@@ -157,14 +157,6 @@ class BASE_EXPORT ThreadController {
       const char* thread_name,
       bool wall_time_based_metrics_enabled_for_testing);
 
-  // Currently only overridden on ThreadControllerWithMessagePumpImpl.
-  //
-  // While Now() is less than |prioritize_until| we will alternate between
-  // |work_batch_size| tasks before setting |yield_to_native| on the
-  // NextWorkInfo and yielding to the underlying sequence (e.g. the message
-  // pump).
-  virtual void PrioritizeYieldingToNative(base::TimeTicks prioritize_until) = 0;
-
   // Sets the SingleThreadTaskRunner that will be returned by
   // SingleThreadTaskRunner::GetCurrentDefault on the thread controlled by this
   // ThreadController.
