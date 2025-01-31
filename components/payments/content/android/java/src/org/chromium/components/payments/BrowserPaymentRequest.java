@@ -230,4 +230,11 @@ public interface BrowserPaymentRequest {
 
     /** @return A dialog controller for displaying informational or warning messages. */
     DialogController getDialogController();
+
+    /**
+     * @return The site certificate chain of the web contents where PaymentRequest API was invoked.
+     *     Can return null when ANDROID_PAYMENT_INTENTS_OMIT_DEPRECATED_PARAMETERS is enabled or
+     *     when the page is localhost or is a file.
+     */
+    @Nullable byte[][] getCertificateChain();
 }

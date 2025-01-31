@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.autofill.EditableOption;
+import org.chromium.components.page_info.CertificateChainHelper;
 import org.chromium.components.payments.AbortReason;
 import org.chromium.components.payments.BrowserPaymentRequest;
 import org.chromium.components.payments.DialogController;
@@ -28,6 +29,7 @@ import org.chromium.components.payments.JourneyLogger;
 import org.chromium.components.payments.MethodStrings;
 import org.chromium.components.payments.PaymentApp;
 import org.chromium.components.payments.PaymentAppType;
+import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.components.payments.PaymentHandlerHost;
 import org.chromium.components.payments.PaymentOptionsUtils;
 import org.chromium.components.payments.PaymentRequestParams;
@@ -82,6 +84,8 @@ public class ChromePaymentRequestService
 
     private PaymentRequestSpec mSpec;
     private PaymentHandlerHost mPaymentHandlerHost;
+
+    @Nullable private byte[][] mCertificateChain;
 
     /**
      * True if the browser has skipped showing the app selector UI (PaymentRequest UI).
@@ -679,6 +683,19 @@ public class ChromePaymentRequestService
     @Override
     public DialogController getDialogController() {
         return mDialogController;
+    }
+
+    // Implements BrowserPaymentRequest:
+    @Override
+    @Nullable
+    public byte[][] getCertificateChain() {
+        if (mCertificateChain == null
+                && !PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
+                        PaymentFeatureList.ANDROID_PAYMENT_INTENTS_OMIT_DEPRECATED_PARAMETERS)) {
+            mCertificateChain = CertificateChainHelper.getCertificateChain(mWebContents);
+        }
+
+        return mCertificateChain;
     }
 
     // Implement PaymentUiService.Delegate:
