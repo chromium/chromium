@@ -16,6 +16,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/run_until.h"
 #include "base/test/test_future.h"
@@ -57,6 +58,7 @@
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/ui/web_applications/web_app_menu_model.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/scope_extension_info.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -491,11 +493,24 @@ class BorderlessIsolatedWebAppBrowserTest
   }
 
   void InstallAndLaunchIsolatedWebApp(bool uses_borderless) {
-    isolated_web_app_dev_server_ = CreateAndStartServer(
-        FILE_PATH_LITERAL(uses_borderless ? "web_apps/borderless_isolated_app"
-                                          : "web_apps/simple_isolated_app"));
-    web_app::IsolatedWebAppUrlInfo url_info = InstallDevModeProxyIsolatedWebApp(
-        isolated_web_app_dev_server().GetOrigin());
+    std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app =
+        uses_borderless
+            ? web_app::IsolatedWebAppBuilder(
+                  web_app::ManifestBuilder()
+                      .SetDisplayModeOverride(
+                          {blink::mojom::DisplayMode::kBorderless})
+                      .AddPermissionsPolicy(
+                          blink::mojom::PermissionsPolicyFeature::
+                              kWindowManagement,
+                          true, {})
+                      .SetStartUrl("/index.html"))
+                  .AddFolderFromDisk("/", "web_apps/borderless_isolated_app")
+                  .BuildBundle()
+            : web_app::IsolatedWebAppBuilder(web_app::ManifestBuilder())
+                  .BuildBundle();
+
+    web_app::IsolatedWebAppUrlInfo url_info = app->InstallChecked(profile());
+
     browser_ = GetBrowserFromFrame(OpenApp(url_info.app_id()));
     browser_view_ = BrowserView::GetBrowserViewForBrowser(browser_);
 
@@ -543,10 +558,6 @@ class BorderlessIsolatedWebAppBrowserTest
   }
 
   BrowserNonClientFrameView* frame_view() { return frame_view_; }
-
-  const net::EmbeddedTestServer& isolated_web_app_dev_server() {
-    return *isolated_web_app_dev_server_.get();
-  }
 
   // Opens a new popup window from `browser_` by running
   // `window_open_script` and returns the `BrowserView` of the popup it opened.
@@ -606,7 +617,6 @@ class BorderlessIsolatedWebAppBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
-  std::unique_ptr<net::EmbeddedTestServer> isolated_web_app_dev_server_;
   raw_ptr<Browser, AcrossTasksDanglingUntriaged> browser_;
   raw_ptr<BrowserView, AcrossTasksDanglingUntriaged> browser_view_;
   raw_ptr<BrowserNonClientFrameView, AcrossTasksDanglingUntriaged> frame_view_;

@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -591,17 +592,19 @@ class PageSpecificSiteDataDialogIsolatedWebAppInteractiveUiTest
 
  protected:
   void SetUpFeatureList() override {
-    feature_list_.InitWithFeatures(
-        {features::kIsolatedWebApps, features::kIsolatedWebAppDevMode}, {});
+    feature_list_.InitAndEnableFeature(features::kIsolatedWebApps);
   }
 
   Browser* InstallAndLaunchIsolatedWebApp() {
     Profile* profile = browser()->profile();
-    auto iwa_dev_server = web_app::CreateAndStartDevServer(
-        FILE_PATH_LITERAL("web_apps/simple_isolated_app"));
-    auto iwa_url_info = web_app::InstallDevModeProxyIsolatedWebApp(
-        profile, iwa_dev_server->GetOrigin());
+
+    std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app =
+        web_app::IsolatedWebAppBuilder(
+            web_app::ManifestBuilder().SetName("Test App"))
+            .BuildBundle();
+    web_app::IsolatedWebAppUrlInfo iwa_url_info = app->InstallChecked(profile);
     app_id_ = iwa_url_info.app_id();
+
     content::RenderFrameHost* iwa_frame =
         web_app::OpenIsolatedWebApp(profile, app_id_);
 
@@ -669,7 +672,7 @@ IN_PROC_BROWSER_TEST_F(
       InAnyContext(
           EnsureNotPresent(kPageSpecificSiteDataDialogEmptyStateLabel)),
       // Verify the hostname label.
-      CheckHostnameLabel(kFirstPartyAllowedRow, u"Simple Isolated App"));
+      CheckHostnameLabel(kFirstPartyAllowedRow, u"Test App"));
 }
 
 class PageSpecificSiteDataDialogPrivacySandboxInteractiveUiTest

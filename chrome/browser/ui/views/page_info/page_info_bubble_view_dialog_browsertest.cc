@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/common/chrome_features.h"
@@ -944,16 +945,17 @@ class PageInfoBubbleViewIsolatedWebAppBrowserTest : public DialogBrowserTest {
  public:
   PageInfoBubbleViewIsolatedWebAppBrowserTest() {
     feature_list_.InitWithFeatures(
-        {features::kIsolatedWebApps, features::kIsolatedWebAppDevMode},
+        {features::kIsolatedWebApps},
         {content_settings::features::kTrackingProtection3pcd});
   }
 
   void SetUpOnMainThread() override {
-    auto dev_server = web_app::CreateAndStartDevServer(
-        FILE_PATH_LITERAL("web_apps/simple_isolated_app"));
-
-    auto url_info = web_app::InstallDevModeProxyIsolatedWebApp(
-        browser()->profile(), dev_server->GetOrigin());
+    std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app =
+        web_app::IsolatedWebAppBuilder(
+            web_app::ManifestBuilder().SetName("Test App"))
+            .BuildBundle();
+    web_app::IsolatedWebAppUrlInfo url_info =
+        app->InstallChecked(browser()->profile());
 
     start_url_ = url_info.origin().GetURL();
     app_id_ = url_info.app_id();
@@ -974,9 +976,10 @@ class PageInfoBubbleViewIsolatedWebAppBrowserTest : public DialogBrowserTest {
     auto* bubble_view = static_cast<PageInfoBubbleView*>(
         PageInfoBubbleView::GetPageInfoBubbleForTesting());
     bubble_view->presenter_for_testing()->UpdateSecurityState();
+
     // For Isolated Web Apps, normal site name gets overridden by app name.
     EXPECT_EQ(bubble_view->presenter_for_testing()->GetSubjectNameForDisplay(),
-              u"Simple Isolated App");
+              u"Test App");
 
     EXPECT_EQ(bubble_view->presenter_for_testing()->site_identity_status(),
               PageInfo::SITE_IDENTITY_STATUS_ISOLATED_WEB_APP);
@@ -986,7 +989,6 @@ class PageInfoBubbleViewIsolatedWebAppBrowserTest : public DialogBrowserTest {
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
   GURL start_url_;
   webapps::AppId app_id_;
 

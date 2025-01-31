@@ -99,6 +99,12 @@ class ManifestBuilder {
   ManifestBuilder& SetVersion(std::string_view version);
   ManifestBuilder& SetStartUrl(std::string_view start_url);
   ManifestBuilder& SetDisplayMode(blink::mojom::DisplayMode display_mode);
+
+  // Sets the display mode fallback chain. If overridden display modes are
+  // blocked, it falls back to the mode set through SetDisplayMode; see:
+  // https://github.com/WICG/display-override/blob/main/explainer.md#part-1-display_override
+  ManifestBuilder& SetDisplayModeOverride(
+      std::vector<blink::mojom::DisplayMode> display_mode_override);
   ManifestBuilder& AddIcon(std::string_view resource_path,
                            gfx::Size size,
                            std::string_view content_type);
@@ -130,6 +136,7 @@ class ManifestBuilder {
   std::string start_url_;
   blink::mojom::DisplayMode display_mode_ =
       blink::mojom::DisplayMode::kStandalone;
+  std::vector<blink::mojom::DisplayMode> display_mode_override_;
   std::vector<IconMetadata> icons_;
   std::map<blink::mojom::PermissionsPolicyFeature, PermissionsPolicy>
       permissions_policy_;

@@ -10,6 +10,7 @@
 #include <string_view>
 
 #include "base/base_paths.h"
+#include "base/containers/to_value_list.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_file.h"
@@ -228,6 +229,12 @@ ManifestBuilder& ManifestBuilder::SetDisplayMode(
   return *this;
 }
 
+ManifestBuilder& ManifestBuilder::SetDisplayModeOverride(
+    std::vector<blink::mojom::DisplayMode> display_mode_override) {
+  display_mode_override_ = std::move(display_mode_override);
+  return *this;
+}
+
 ManifestBuilder& ManifestBuilder::AddIcon(std::string_view resource_path,
                                           gfx::Size size,
                                           std::string_view content_type) {
@@ -290,7 +297,10 @@ std::string ManifestBuilder::ToJson() const {
                   .Set("id", "/")
                   .Set("scope", "/")
                   .Set("start_url", start_url_)
-                  .Set("display", blink::DisplayModeToString(display_mode_));
+                  .Set("display", blink::DisplayModeToString(display_mode_))
+                  .Set("display_override",
+                       base::ToValueList(display_mode_override_,
+                                         &blink::DisplayModeToString));
 
   base::Value::Dict policies;
   for (const auto& policy : permissions_policy_) {
@@ -360,6 +370,7 @@ blink::mojom::ManifestPtr ManifestBuilder::ToBlinkManifest(
   manifest->scope = base_url;
   manifest->start_url = base_url.Resolve(start_url_);
   manifest->display = display_mode_;
+  manifest->display_override = display_mode_override_;
 
   for (const auto& icon : icons_) {
     blink::Manifest::ImageResource blink_icon;
