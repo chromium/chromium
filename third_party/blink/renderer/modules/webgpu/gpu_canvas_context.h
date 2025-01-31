@@ -64,6 +64,7 @@ class GPUCanvasContext : public CanvasRenderingContext,
   V8OffscreenRenderingContext* AsV8OffscreenRenderingContext() final;
   SkAlphaType GetAlphaType() const override;
   SkColorType GetSkColorType() const override;
+  viz::SharedImageFormat GetSharedImageFormat() const override;
   gfx::ColorSpace GetColorSpace() const override;
   // Produces a snapshot of the current contents of the swap chain if possible.
   // If that texture has already been sent to the compositor, will produce a
