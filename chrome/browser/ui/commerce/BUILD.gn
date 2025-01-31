@@ -14,6 +14,7 @@ source_set("commerce") {
     "price_tracking_page_action_controller.h",
     "product_specifications_entry_point_controller.h",
     "product_specifications_page_action_controller.h",
+    "ui_utils.h",
   ]
   public_deps = [
     "//base",
@@ -44,6 +45,7 @@ source_set("impl") {
     "price_tracking_page_action_controller.cc",
     "product_specifications_entry_point_controller.cc",
     "product_specifications_page_action_controller.cc",
+    "ui_utils.cc",
   ]
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
