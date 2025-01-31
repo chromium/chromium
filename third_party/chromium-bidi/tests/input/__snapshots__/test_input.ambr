@@ -951,6 +951,82 @@
     'type': 'success',
   })
 # ---
+# name: test_input_performActionsEmitsDblClicks
+  dict({
+    'result': dict({
+      'type': 'array',
+      'value': list([
+        dict({
+          'type': 'object',
+          'value': list([
+            list([
+              'event',
+              dict({
+                'type': 'string',
+                'value': 'dblclick',
+              }),
+            ]),
+            list([
+              'button',
+              dict({
+                'type': 'number',
+                'value': 0,
+              }),
+            ]),
+            list([
+              'buttons',
+              dict({
+                'type': 'number',
+                'value': 0,
+              }),
+            ]),
+            list([
+              'clickCount',
+              dict({
+                'type': 'number',
+                'value': 2,
+              }),
+            ]),
+          ]),
+        }),
+        dict({
+          'type': 'object',
+          'value': list([
+            list([
+              'event',
+              dict({
+                'type': 'string',
+                'value': 'dblclick',
+              }),
+            ]),
+            list([
+              'button',
+              dict({
+                'type': 'number',
+                'value': 0,
+              }),
+            ]),
+            list([
+              'buttons',
+              dict({
+                'type': 'number',
+                'value': 0,
+              }),
+            ]),
+            list([
+              'clickCount',
+              dict({
+                'type': 'number',
+                'value': 2,
+              }),
+            ]),
+          ]),
+        }),
+      ]),
+    }),
+    'type': 'success',
+  })
+# ---
 # name: test_input_performActionsEmitsDragging
   dict({
     'result': dict({

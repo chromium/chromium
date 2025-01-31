@@ -263,6 +263,8 @@ export class InputProcessor {
               `Expected input source ${action.id} to be ${source.subtype}; got ${action.parameters.pointerType}.`,
             );
           }
+          // https://github.com/GoogleChromeLabs/chromium-bidi/issues/3043
+          source.resetClickCount();
           break;
         }
         default:

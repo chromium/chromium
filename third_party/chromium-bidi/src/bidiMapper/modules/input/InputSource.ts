@@ -165,6 +165,18 @@ export class PointerSource {
   getClickCount(button: number) {
     return this.#clickContexts.get(button)?.count ?? 0;
   }
+
+  /**
+   * Resets click count. Resets consequent click counter. Prevents grouping clicks in
+   * different `performActions` calls, so that they are not grouped as double, triple etc
+   * clicks. Required for https://github.com/GoogleChromeLabs/chromium-bidi/issues/3043.
+   */
+  resetClickCount(): void {
+    this.#clickContexts = new Map<
+      number,
+      InstanceType<typeof PointerSource.ClickContext>
+    >();
+  }
   // --- Platform-specific state ends here ---
 }
 

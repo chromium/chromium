@@ -91,6 +91,21 @@ SCRIPT = """
 </script>
 """
 
+DBL_CLICK_SCRIPT = """
+<div style="height: 2000px; width: 10px"></div>
+<script>
+    var allEvents = [];
+    window.addEventListener("dblclick", (event) => {
+        allEvents.push({
+          event: "dblclick",
+          button: event.button,
+          buttons: event.buttons,
+          clickCount: event.detail,
+      });
+    });
+</script>
+"""
+
 DRAG_SCRIPT = """
 <div
   style="height: 100px; width: 100px; background-color: red"
@@ -200,6 +215,87 @@ async def test_input_performActionsEmitsKeyboardEvents(websocket, context_id,
                     }, {
                         "type": "keyUp",
                         "value": "a",
+                    }]
+                }]
+            }
+        })
+
+    result = await get_events(websocket, context_id)
+
+    assert result == snapshot(exclude=props("realm"))
+
+
+@pytest.mark.asyncio
+async def test_input_performActionsEmitsDblClicks(websocket, context_id, html,
+                                                  activate_main_tab,
+                                                  query_selector, snapshot):
+    await goto_url(websocket, context_id, html(DBL_CLICK_SCRIPT))
+    await activate_main_tab()
+    await reset_mouse(websocket, context_id)
+
+    target_element = await query_selector('div')
+
+    await execute_command(
+        websocket, {
+            "method": "input.performActions",
+            "params": {
+                "context": context_id,
+                "actions": [{
+                    "type": "pointer",
+                    "id": "__puppeteer_mouse",
+                    "actions": [{
+                        "type": "pointerMove",
+                        "x": 0,
+                        "y": 0,
+                        "origin": {
+                            "type": "element",
+                            "element": target_element
+                        }
+                    }, {
+                        "type": "pointerDown",
+                        "button": 0
+                    }, {
+                        "type": "pointerUp",
+                        "button": 0
+                    }, {
+                        "type": "pointerDown",
+                        "button": 0
+                    }, {
+                        "type": "pointerUp",
+                        "button": 0
+                    }]
+                }]
+            }
+        })
+
+    await execute_command(
+        websocket, {
+            "method": "input.performActions",
+            "params": {
+                "context": context_id,
+                "actions": [{
+                    "type": "pointer",
+                    "id": "__puppeteer_mouse",
+                    "actions": [{
+                        "type": "pointerMove",
+                        "x": 0,
+                        "y": 0,
+                        "origin": {
+                            "type": "element",
+                            "element": target_element
+                        }
+                    }, {
+                        "type": "pointerDown",
+                        "button": 0
+                    }, {
+                        "type": "pointerUp",
+                        "button": 0
+                    }, {
+                        "type": "pointerDown",
+                        "button": 0
+                    }, {
+                        "type": "pointerUp",
+                        "button": 0
                     }]
                 }]
             }
