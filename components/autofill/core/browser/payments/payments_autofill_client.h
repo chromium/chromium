@@ -173,6 +173,11 @@ class PaymentsAutofillClient : public RiskDataLoader {
       return *this;
     }
 
+    SaveCreditCardOptions& with_num_strikes(const int strikes) {
+      num_strikes = strikes;
+      return *this;
+    }
+
     SaveCreditCardOptions& with_card_save_type(CardSaveType b) {
       card_save_type = b;
       return *this;
@@ -184,6 +189,7 @@ class PaymentsAutofillClient : public RiskDataLoader {
     bool has_multiple_legal_lines = false;
     bool has_same_last_four_as_server_card_but_different_expiration_date =
         false;
+    std::optional<int> num_strikes;
     CardSaveType card_save_type = CardSaveType::kCardSaveOnly;
   };
 
