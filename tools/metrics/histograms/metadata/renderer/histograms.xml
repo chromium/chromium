@@ -598,6 +598,21 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="RendererScheduler.RendererMainThreadLoad6" units="%"
+    expires_after="2025-06-08">
+  <owner>lizeb@chromium.org</owner>
+  <owner>altimin@chromium.org</owner>
+  <summary>
+    Renderer main thread load (percentage of time spent in tasks), reported in
+    one second chunks.
+
+    See http://bit.ly/chromium-renderer-main-thread-load-metric for details.
+
+    This metric is emitted when the renderer main thread task is completed, at
+    most once per second per renderer amortized.
+  </summary>
+</histogram>
+
 <histogram name="RendererSyncIPC.ElapsedTime" units="ms" expires_after="M85">
   <owner>ppi@chromium.org</owner>
   <summary>

@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_metrics_helper.h"
 
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
@@ -136,6 +137,9 @@ void MainThreadMetricsHelper::RecordMainThreadTaskLoad(base::TimeTicks time,
   DCHECK_LE(load_percentage, 100);
 
   ReportLowThreadLoadForPageAlmostIdleSignal(load_percentage);
+
+  base::UmaHistogramPercentage("RendererScheduler.RendererMainThreadLoad6",
+                               load_percentage);
 }
 
 void MainThreadMetricsHelper::ReportLowThreadLoadForPageAlmostIdleSignal(
