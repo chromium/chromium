@@ -1528,6 +1528,67 @@ IN_PROC_BROWSER_TEST_F(FencedFrameMPArchBrowserTest,
   EXPECT_FALSE(response.has_received_request());
 }
 
+// Verify that if a main frame navigation is initiated from a fenced frame
+// whose untrusted network is revoked, it should be blocked.
+// NOTE: Normally a main frame navigation cannot be initiated from a network
+// revoked fenced frame. In case there are main frame navigation initiation
+// entry points that are not properly disabled, the network status check during
+// the creation of network request should catch these.
+IN_PROC_BROWSER_TEST_F(FencedFrameMPArchBrowserTest,
+                       MainFrameNavigationBlockedIfNetworkRevoked) {
+  ASSERT_TRUE(https_server()->Start());
+
+  // Navigate to a page that contains a fenced frame.
+  const GURL main_url = https_server()->GetURL(
+      "a.test", "/cross_site_iframe_factory.html?a.test(a.test{fenced})");
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // Get fenced frame render frame host.
+  RenderFrameHostImpl* fenced_frame_rfh =
+      primary_main_frame_host()->GetFencedFrames().at(0)->GetInnerRoot();
+  FrameTreeNode* fenced_frame_root_node = fenced_frame_rfh->frame_tree_node();
+
+  GURL current_url = fenced_frame_rfh->GetLastCommittedURL();
+  GURL target_url =
+      https_server()->GetURL("a.test", "/fenced_frames/title0.html");
+
+  OpenURLParams params(
+      target_url, content::Referrer(), fenced_frame_rfh->GetFrameTreeNodeId(),
+      WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_LINK,
+      /*is_renderer_initiated=*/false);
+
+  params.source_render_process_id =
+      fenced_frame_rfh->GetProcess()->GetDeprecatedID();
+  params.source_render_frame_id = fenced_frame_rfh->GetRoutingID();
+  params.initiator_frame_token = fenced_frame_rfh->GetFrameToken();
+  params.initiator_process_id =
+      fenced_frame_rfh->GetProcess()->GetDeprecatedID();
+  params.initiator_origin = fenced_frame_rfh->GetLastCommittedOrigin();
+  params.source_site_instance = fenced_frame_rfh->GetSiteInstance();
+
+  EXPECT_TRUE(ExecJs(fenced_frame_rfh, R"(
+    (async () => {
+      return window.fence.disableUntrustedNetwork();
+    })();
+  )"));
+
+  WebContentsConsoleObserver console_observer(web_contents());
+  console_observer.SetPattern(
+      "Navigations cannot be initiated from a fenced frame after its network "
+      "has been disabled.");
+
+  // Initiate a main frame navigation with the fenced frame as the initiator.
+  auto* new_web_contents = shell()->web_contents()->OpenURL(
+      params, /*navigation_handle_callback=*/{});
+
+  // Main frame navigation fails with an error message.
+  EXPECT_NE(nullptr, new_web_contents);
+  ASSERT_TRUE(console_observer.Wait());
+  EXPECT_EQ(fenced_frame_root_node->current_frame_host()->GetLastCommittedURL(),
+            current_url);
+  EXPECT_EQ(console_observer.messages().size(), 1u);
+}
+
 class FencedFrameWithSiteIsolationDisabledBrowserTest
     : public FencedFrameMPArchBrowserTest,
       public testing::WithParamInterface<std::tuple<bool, bool>> {
