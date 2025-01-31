@@ -39,7 +39,7 @@ namespace {
 
 constexpr int kDefaultAttempts = KcerTokenImpl::kDefaultAttempts;
 
-// Base64 encoded RSA modulus for client_1.key.
+// Base64 encoded RSA modulus for client_1_old.key.
 constexpr char kFakeRsaModulusBase64[] =
     "2vg6u00xUsNQMUZGn7awjPLbj22B+"
     "zU8S3R4pdBdsuBvj765ajdKgeN7UWiiT0BGIRvkZ6aV3jpOvwG4DhVwUAj6FSVjo8cDF93mt60"
@@ -761,7 +761,7 @@ TEST_F(KcerTokenImplTest, ImportKeyRsaSuccess) {
                 RunOnceCallback<2>(ObjectHandle(2), chromeos::PKCS11_CKR_OK)));
 
   std::optional<std::vector<uint8_t>> key = ReadPemFileReturnDer(
-      net::GetTestCertsDirectory().AppendASCII("client_1.key"));
+      net::GetTestCertsDirectory().AppendASCII("client_1_old.key"));
   ASSERT_TRUE(key.has_value() && (key->size() > 0));
 
   base::test::TestFuture<base::expected<PublicKey, Error>> import_key_waiter;
@@ -786,7 +786,7 @@ TEST_F(KcerTokenImplTest, ImportKeyRsaSuccess) {
   // At the moment of writing these key components were printed from the code
   // under test, i.e. not guaranteed to be correct. The code was also tested
   // against the real Chaps and was able to correctly sign using the imported
-  // key client_1.key, so most likely they are correct. Long term this is a
+  // key client_1_old.key, so most likely they are correct. Long term this is a
   // regression test.
   std::vector<uint8_t> private_exponent =
       base::Base64Decode(
@@ -919,7 +919,7 @@ TEST_F(KcerTokenImplTest, ImportKeyRsaAlreadyExists) {
   EXPECT_CALL(chaps_client_, CreateObject).Times(0);
 
   std::optional<std::vector<uint8_t>> key = ReadPemFileReturnDer(
-      net::GetTestCertsDirectory().AppendASCII("client_1.key"));
+      net::GetTestCertsDirectory().AppendASCII("client_1_old.key"));
   ASSERT_TRUE(key.has_value() && (key->size() > 0));
 
   base::test::TestFuture<base::expected<PublicKey, Error>> import_key_waiter;
@@ -945,7 +945,7 @@ TEST_F(KcerTokenImplTest, ImportKeyRsaFailToSearchExistingKey) {
   EXPECT_CALL(chaps_client_, CreateObject).Times(0);
 
   std::optional<std::vector<uint8_t>> key = ReadPemFileReturnDer(
-      net::GetTestCertsDirectory().AppendASCII("client_1.key"));
+      net::GetTestCertsDirectory().AppendASCII("client_1_old.key"));
   ASSERT_TRUE(key.has_value() && (key->size() > 0));
 
   base::test::TestFuture<base::expected<PublicKey, Error>> import_key_waiter;
@@ -969,7 +969,7 @@ TEST_F(KcerTokenImplTest, ImportKeyRsaRetryToSearchExistingKey) {
   EXPECT_CALL(chaps_client_, CreateObject).Times(0);
 
   std::optional<std::vector<uint8_t>> key = ReadPemFileReturnDer(
-      net::GetTestCertsDirectory().AppendASCII("client_1.key"));
+      net::GetTestCertsDirectory().AppendASCII("client_1_old.key"));
   ASSERT_TRUE(key.has_value() && (key->size() > 0));
 
   base::test::TestFuture<base::expected<PublicKey, Error>> import_key_waiter;
@@ -993,7 +993,7 @@ TEST_F(KcerTokenImplTest, ImportKeyRsaFailToCreatePrivKey) {
                                    chromeos::PKCS11_CKR_GENERAL_ERROR));
 
   std::optional<std::vector<uint8_t>> key = ReadPemFileReturnDer(
-      net::GetTestCertsDirectory().AppendASCII("client_1.key"));
+      net::GetTestCertsDirectory().AppendASCII("client_1_old.key"));
   ASSERT_TRUE(key.has_value() && (key->size() > 0));
 
   base::test::TestFuture<base::expected<PublicKey, Error>> import_key_waiter;
@@ -1019,7 +1019,7 @@ TEST_F(KcerTokenImplTest, ImportKeyRsaRetryToCreatePrivKey) {
           ObjectHandle(0), chromeos::PKCS11_CKR_SESSION_CLOSED));
 
   std::optional<std::vector<uint8_t>> key = ReadPemFileReturnDer(
-      net::GetTestCertsDirectory().AppendASCII("client_1.key"));
+      net::GetTestCertsDirectory().AppendASCII("client_1_old.key"));
   ASSERT_TRUE(key.has_value() && (key->size() > 0));
 
   base::test::TestFuture<base::expected<PublicKey, Error>> import_key_waiter;
@@ -1051,7 +1051,7 @@ TEST_F(KcerTokenImplTest, ImportKeyRsaFailToCreatePubKey) {
       .WillOnce(RunOnceCallback<2>(chromeos::PKCS11_CKR_OK));
 
   std::optional<std::vector<uint8_t>> key = ReadPemFileReturnDer(
-      net::GetTestCertsDirectory().AppendASCII("client_1.key"));
+      net::GetTestCertsDirectory().AppendASCII("client_1_old.key"));
   ASSERT_TRUE(key.has_value() && (key->size() > 0));
 
   base::test::TestFuture<base::expected<PublicKey, Error>> import_key_waiter;
@@ -1091,7 +1091,7 @@ TEST_F(KcerTokenImplTest, ImportKeyRsaRetryToCreatePubKey) {
       .WillRepeatedly(Invoke(fake_create_objects));
 
   std::optional<std::vector<uint8_t>> key = ReadPemFileReturnDer(
-      net::GetTestCertsDirectory().AppendASCII("client_1.key"));
+      net::GetTestCertsDirectory().AppendASCII("client_1_old.key"));
   ASSERT_TRUE(key.has_value() && (key->size() > 0));
 
   base::test::TestFuture<base::expected<PublicKey, Error>> import_key_waiter;
@@ -1410,7 +1410,7 @@ TEST_F(KcerTokenImplTest, ImportCertFromBytesSuccess) {
   token_.InitializeWithoutNss(pkcs11_slot_id_);
 
   std::optional<std::vector<uint8_t>> cert = ReadPemFileReturnDer(
-      net::GetTestCertsDirectory().AppendASCII("client_1.pem"));
+      net::GetTestCertsDirectory().AppendASCII("client_1_old.pem"));
   ASSERT_TRUE(cert.has_value() && (cert->size() > 0));
 
   std::vector<ObjectHandle> result_handles{ObjectHandle(10)};
@@ -1436,7 +1436,7 @@ TEST_F(KcerTokenImplTest, ImportCertFromBytesSuccess) {
       chromeos::PKCS11_CKO_CERTIFICATE;
   chromeos::PKCS11_CK_CERTIFICATE_TYPE cert_type = chromeos::PKCS11_CKC_X_509;
   chromeos::PKCS11_CK_BBOOL kTrue = chromeos::PKCS11_CK_TRUE;
-  // The label comes from the client_1.pem file, see the generating script
+  // The label comes from the client_1_old.pem file, see the generating script
   // //net/data/ssl/scripts/generate-client-certificates.sh for details.
   const std::string kExpectedLabel = "Client Cert A";
 
@@ -1476,7 +1476,7 @@ TEST_F(KcerTokenImplTest, ImportCertFromBytesKeyNotFound) {
   token_.InitializeWithoutNss(pkcs11_slot_id_);
 
   std::optional<std::vector<uint8_t>> cert = ReadPemFileReturnDer(
-      net::GetTestCertsDirectory().AppendASCII("client_1.pem"));
+      net::GetTestCertsDirectory().AppendASCII("client_1_old.pem"));
   ASSERT_TRUE(cert.has_value() && (cert->size() > 0));
 
   EXPECT_CALL(chaps_client_, FindObjects(pkcs11_slot_id_, _, _))
@@ -1500,7 +1500,7 @@ TEST_F(KcerTokenImplTest, ImportCertFromBytesAlreadyExists) {
   token_.InitializeWithoutNss(pkcs11_slot_id_);
 
   std::optional<std::vector<uint8_t>> cert = ReadPemFileReturnDer(
-      net::GetTestCertsDirectory().AppendASCII("client_1.pem"));
+      net::GetTestCertsDirectory().AppendASCII("client_1_old.pem"));
   ASSERT_TRUE(cert.has_value() && (cert->size() > 0));
 
   // Return some handles to simulate that an existing cert was found.
@@ -1519,7 +1519,7 @@ TEST_F(KcerTokenImplTest, ImportCertFromBytesBadCert) {
   token_.InitializeWithoutNss(pkcs11_slot_id_);
 
   std::optional<std::vector<uint8_t>> cert = ReadPemFileReturnDer(
-      net::GetTestCertsDirectory().AppendASCII("client_1.pem"));
+      net::GetTestCertsDirectory().AppendASCII("client_1_old.pem"));
   ASSERT_TRUE(cert.has_value() && (cert->size() > 0));
   // Corrupt the data.
   cert.value().pop_back();
@@ -1545,7 +1545,7 @@ TEST_F(KcerTokenImplTest, ImportCertFromBytesFailToSearchForCert) {
   token_.InitializeWithoutNss(pkcs11_slot_id_);
 
   std::optional<std::vector<uint8_t>> cert = ReadPemFileReturnDer(
-      net::GetTestCertsDirectory().AppendASCII("client_1.pem"));
+      net::GetTestCertsDirectory().AppendASCII("client_1_old.pem"));
   ASSERT_TRUE(cert.has_value() && (cert->size() > 0));
 
   EXPECT_CALL(chaps_client_, FindObjects(pkcs11_slot_id_, _, _))
@@ -1565,7 +1565,7 @@ TEST_F(KcerTokenImplTest, ImportCertFromBytesFailToSearchForKey) {
   token_.InitializeWithoutNss(pkcs11_slot_id_);
 
   std::optional<std::vector<uint8_t>> cert = ReadPemFileReturnDer(
-      net::GetTestCertsDirectory().AppendASCII("client_1.pem"));
+      net::GetTestCertsDirectory().AppendASCII("client_1_old.pem"));
   ASSERT_TRUE(cert.has_value() && (cert->size() > 0));
 
   // Return some handles to simulate that an existing cert was found.
@@ -1591,7 +1591,7 @@ TEST_F(KcerTokenImplTest, ImportCertFromBytesFailToCreate) {
   token_.InitializeWithoutNss(pkcs11_slot_id_);
 
   std::optional<std::vector<uint8_t>> cert = ReadPemFileReturnDer(
-      net::GetTestCertsDirectory().AppendASCII("client_1.pem"));
+      net::GetTestCertsDirectory().AppendASCII("client_1_old.pem"));
   ASSERT_TRUE(cert.has_value() && (cert->size() > 0));
 
   std::vector<ObjectHandle> result_handles{ObjectHandle(10)};
@@ -1619,7 +1619,7 @@ TEST_F(KcerTokenImplTest, ImportCertFromBytesRetryToSearchForCert) {
   token_.InitializeWithoutNss(pkcs11_slot_id_);
 
   std::optional<std::vector<uint8_t>> cert = ReadPemFileReturnDer(
-      net::GetTestCertsDirectory().AppendASCII("client_1.pem"));
+      net::GetTestCertsDirectory().AppendASCII("client_1_old.pem"));
   ASSERT_TRUE(cert.has_value() && (cert->size() > 0));
 
   EXPECT_CALL(chaps_client_, FindObjects(pkcs11_slot_id_, _, _))
@@ -1640,7 +1640,7 @@ TEST_F(KcerTokenImplTest, ImportCertFromBytesRetryToSearchForKey) {
   token_.InitializeWithoutNss(pkcs11_slot_id_);
 
   std::optional<std::vector<uint8_t>> cert = ReadPemFileReturnDer(
-      net::GetTestCertsDirectory().AppendASCII("client_1.pem"));
+      net::GetTestCertsDirectory().AppendASCII("client_1_old.pem"));
   ASSERT_TRUE(cert.has_value() && (cert->size() > 0));
 
   // Alternates between replying with OK and SESSION_CLOSED to handle
@@ -1674,7 +1674,7 @@ TEST_F(KcerTokenImplTest, ImportCertFromBytesRetryToCreateCert) {
   token_.InitializeWithoutNss(pkcs11_slot_id_);
 
   std::optional<std::vector<uint8_t>> cert = ReadPemFileReturnDer(
-      net::GetTestCertsDirectory().AppendASCII("client_1.pem"));
+      net::GetTestCertsDirectory().AppendASCII("client_1_old.pem"));
   ASSERT_TRUE(cert.has_value() && (cert->size() > 0));
 
   // Alternates between replying with empty and non-empty handles to process

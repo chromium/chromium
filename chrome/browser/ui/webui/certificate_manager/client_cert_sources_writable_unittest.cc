@@ -28,8 +28,10 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "crypto/nss_util_internal.h"
+#include "crypto/sha2.h"
 #include "net/cert/nss_cert_database.h"
 #include "net/cert/x509_util_nss.h"
+#include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -56,16 +58,7 @@ namespace {
 
 #if BUILDFLAG(IS_CHROMEOS)
 constexpr char kUsername[] = "test@example.com";
-
-// The SHA256 hash of the certificate in client_with_ec_key.p12, as a hex
-// string.
-constexpr char kTestEcClientCertHashHex[] =
-    "e3ba2f8302c0a82f933f216d999eb3e85a4d709a3166333015f09903be0e6273";
 #endif
-
-// The SHA256 hash of the certificate in client.p12, as a hex string.
-constexpr char kTestClientCertHashHex[] =
-    "c72ab9295a0e056fc4390032fe15170a7bdc8aceb920a7254060780b3973fba7";
 
 bool SlotContainsCertWithHash(PK11SlotInfo* slot, std::string_view hash_hex) {
   if (!slot) {
@@ -86,6 +79,10 @@ bool SlotContainsCertWithHash(PK11SlotInfo* slot, std::string_view hash_hex) {
     }
   }
   return false;
+}
+
+std::string HexHash(base::span<const uint8_t> data) {
+  return base::ToLowerASCII(base::HexEncode(crypto::SHA256Hash(data)));
 }
 
 class FakeCertificateManagerPage
@@ -251,11 +248,25 @@ class ClientCertSourceWritableUnitTest
     return GetCertificateInfosForCertHash(hash_hex).has_value();
   }
 
+  // Returns the hex-encoded SHA-256 hash of the client cert that was imported
+  // or empty string on error.
+  std::string GetTestCertHash(base::FilePath file_path) {
+    scoped_refptr<net::X509Certificate> cert =
+        net::ImportCertFromFile(file_path);
+    if (!cert) {
+      ADD_FAILURE() << "error reading " << file_path.AsUTF8Unsafe();
+      return {};
+    }
+
+    return HexHash(cert->cert_span());
+  }
+
   // Imports a client certificate directly, without going through the UI or
-  // checking the management allowed policy.
-  testing::AssertionResult ImportForTesting(base::FilePath file_path,
-                                            std::string_view password,
-                                            bool import_to_system_slot) {
+  // checking the management allowed policy. Returns the hex-encoded SHA-256
+  // hash of the client cert that was imported or empty string on error.
+  std::string ImportForTesting(base::FilePath p12_file_path,
+                               std::string_view password,
+                               bool import_to_system_slot) {
     base::test::TestFuture<net::NSSCertDatabase*> nss_waiter;
     NssServiceFactory::GetForContext(profile())
         ->UnsafelyGetNSSCertDatabaseForTesting(nss_waiter.GetCallback());
@@ -275,32 +286,38 @@ class ClientCertSourceWritableUnitTest
         PK11_ReferenceSlot(nss_service_->GetPublicSlot()));
 #endif
 
-    std::string file_data;
-    if (!base::ReadFileToString(file_path, &file_data)) {
-      return testing::AssertionFailure()
-             << "error reading " << file_path.AsUTF8Unsafe();
+    std::string p12_file_data;
+    if (!base::ReadFileToString(p12_file_path, &p12_file_data)) {
+      ADD_FAILURE() << "error reading " << p12_file_path.AsUTF8Unsafe();
+      return {};
     }
 
-    int r = nss_db->ImportFromPKCS12(slot.get(), std::move(file_data),
+    net::ScopedCERTCertificateList imported_certs;
+    int r = nss_db->ImportFromPKCS12(slot.get(), std::move(p12_file_data),
                                      base::UTF8ToUTF16(password),
-                                     /*is_extractable=*/true, nullptr);
+                                     /*is_extractable=*/true, &imported_certs);
     if (r != net::OK) {
-      return testing::AssertionFailure() << "NSS import result " << r;
+      ADD_FAILURE() << "NSS import result " << r;
+      return {};
+    }
+    if (imported_certs.size() != 1) {
+      ADD_FAILURE() << "NSS imported " << imported_certs.size()
+                    << " certs, expected 1";
+      return {};
     }
 
-    return testing::AssertionSuccess();
+    return HexHash(
+        net::x509_util::CERTCertificateAsSpan(imported_certs[0].get()));
   }
 
-  testing::AssertionResult ImportToUserSlotForTesting(
-      base::FilePath file_path,
-      std::string_view password) {
+  std::string ImportToUserSlotForTesting(base::FilePath file_path,
+                                         std::string_view password) {
     return ImportForTesting(file_path, password,
                             /*import_to_system_slot=*/false);
   }
 
-  testing::AssertionResult ImportToSystemSlotForTesting(
-      base::FilePath file_path,
-      std::string_view password) {
+  std::string ImportToSystemSlotForTesting(base::FilePath file_path,
+                                           std::string_view password) {
     return ImportForTesting(file_path, password,
                             /*import_to_system_slot=*/true);
   }
@@ -349,12 +366,15 @@ TEST_P(ClientCertSourceWritableUnitTest,
   ui::FakeSelectFileDialog::Factory* factory =
       ui::FakeSelectFileDialog::RegisterFactory();
 
-  EXPECT_FALSE(NSSContainsCertWithHash(kTestClientCertHashHex));
-  EXPECT_FALSE(GetCertificateInfosContainsCertWithHash(kTestClientCertHashHex));
+  std::string client_1_hash_hex =
+      GetTestCertHash(net::GetTestCertsDirectory().AppendASCII("client_1.pem"));
+  ASSERT_FALSE(client_1_hash_hex.empty());
+  EXPECT_FALSE(NSSContainsCertWithHash(client_1_hash_hex));
+  EXPECT_FALSE(GetCertificateInfosContainsCertWithHash(client_1_hash_hex));
 
   {
-    // The correct password for the client.p12 file.
-    fake_page_->set_mocked_import_password("12345");
+    // The correct password for the client_1.p12 file.
+    fake_page_->set_mocked_import_password("chrome");
 
     base::test::TestFuture<void> select_file_dialog_opened_waiter;
     factory->SetOpenCallback(
@@ -368,7 +388,7 @@ TEST_P(ClientCertSourceWritableUnitTest,
         factory->GetLastDialog();
     ASSERT_TRUE(fake_file_select_dialog);
     ASSERT_TRUE(fake_file_select_dialog->CallFileSelected(
-        net::GetTestCertsDirectory().AppendASCII("client.p12"), "p12"));
+        net::GetTestCertsDirectory().AppendASCII("client_1.p12"), "p12"));
 
     certificate_manager_v2::mojom::ActionResultPtr import_result =
         import_waiter.Take();
@@ -385,9 +405,9 @@ TEST_P(ClientCertSourceWritableUnitTest,
       dual_write_enabled() && !use_hardware_backed());
 #endif
 
-  EXPECT_TRUE(NSSContainsCertWithHash(kTestClientCertHashHex));
-  EXPECT_TRUE(GetCertificateInfosContainsCertWithHash(kTestClientCertHashHex));
-  EXPECT_TRUE(GetCertificateInfosIsCertDeletable(kTestClientCertHashHex));
+  EXPECT_TRUE(NSSContainsCertWithHash(client_1_hash_hex));
+  EXPECT_TRUE(GetCertificateInfosContainsCertWithHash(client_1_hash_hex));
+  EXPECT_TRUE(GetCertificateInfosIsCertDeletable(client_1_hash_hex));
 
   // Now delete the imported certificate, and verify that it is no longer
   // present.
@@ -395,7 +415,7 @@ TEST_P(ClientCertSourceWritableUnitTest,
     fake_page_->set_mocked_confirmation_result(true);
     base::test::TestFuture<certificate_manager_v2::mojom::ActionResultPtr>
         delete_waiter;
-    cert_source_->DeleteCertificate("", kTestClientCertHashHex,
+    cert_source_->DeleteCertificate("", client_1_hash_hex,
                                     delete_waiter.GetCallback());
 
     certificate_manager_v2::mojom::ActionResultPtr delete_result =
@@ -404,36 +424,35 @@ TEST_P(ClientCertSourceWritableUnitTest,
     ASSERT_TRUE(delete_result->is_success());
   }
 
-  EXPECT_FALSE(NSSContainsCertWithHash(kTestClientCertHashHex));
-  EXPECT_FALSE(GetCertificateInfosContainsCertWithHash(kTestClientCertHashHex));
+  EXPECT_FALSE(NSSContainsCertWithHash(client_1_hash_hex));
+  EXPECT_FALSE(GetCertificateInfosContainsCertWithHash(client_1_hash_hex));
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
 
-// TODO(crbug.com/376923227): enable once test certificate has regenerated.
-TEST_P(ClientCertSourceWritableUnitTest, DISABLED_PolicyAllAllowsDeletion) {
-  ASSERT_TRUE(ImportToUserSlotForTesting(
-      net::GetTestCertsDirectory().AppendASCII("client.p12"), "12345"));
-  ASSERT_TRUE(ImportToSystemSlotForTesting(
-      net::GetTestCertsDirectory().AppendASCII("client_with_ec_key.p12"),
-      "123456"));
+TEST_P(ClientCertSourceWritableUnitTest, PolicyAllAllowsDeletion) {
+  std::string client_1_hash_hex = ImportToUserSlotForTesting(
+      net::GetTestCertsDirectory().AppendASCII("client_1.p12"), "chrome");
+  ASSERT_FALSE(client_1_hash_hex.empty());
+  std::string client_4_hash_hex = ImportToSystemSlotForTesting(
+      net::GetTestCertsDirectory().AppendASCII("client_4.p12"), "chrome");
+  ASSERT_FALSE(client_4_hash_hex.empty());
 
   profile()->GetPrefs()->SetInteger(
       prefs::kClientCertificateManagementAllowed,
       static_cast<int>(ClientCertificateManagementPermission::kAll));
 
-  EXPECT_TRUE(GetCertificateInfosContainsCertWithHash(kTestClientCertHashHex));
-  EXPECT_TRUE(GetCertificateInfosIsCertDeletable(kTestClientCertHashHex));
+  EXPECT_TRUE(GetCertificateInfosContainsCertWithHash(client_1_hash_hex));
+  EXPECT_TRUE(GetCertificateInfosIsCertDeletable(client_1_hash_hex));
 
-  EXPECT_TRUE(
-      GetCertificateInfosContainsCertWithHash(kTestEcClientCertHashHex));
-  EXPECT_TRUE(GetCertificateInfosIsCertDeletable(kTestEcClientCertHashHex));
+  EXPECT_TRUE(GetCertificateInfosContainsCertWithHash(client_4_hash_hex));
+  EXPECT_TRUE(GetCertificateInfosIsCertDeletable(client_4_hash_hex));
 
   {
     fake_page_->set_mocked_confirmation_result(true);
     base::test::TestFuture<certificate_manager_v2::mojom::ActionResultPtr>
         delete_waiter;
-    cert_source_->DeleteCertificate("", kTestClientCertHashHex,
+    cert_source_->DeleteCertificate("", client_1_hash_hex,
                                     delete_waiter.GetCallback());
 
     certificate_manager_v2::mojom::ActionResultPtr delete_result =
@@ -441,13 +460,13 @@ TEST_P(ClientCertSourceWritableUnitTest, DISABLED_PolicyAllAllowsDeletion) {
     ASSERT_TRUE(delete_result);
     ASSERT_TRUE(delete_result->is_success());
   }
-  EXPECT_FALSE(GetCertificateInfosContainsCertWithHash(kTestClientCertHashHex));
+  EXPECT_FALSE(GetCertificateInfosContainsCertWithHash(client_1_hash_hex));
 
   {
     fake_page_->set_mocked_confirmation_result(true);
     base::test::TestFuture<certificate_manager_v2::mojom::ActionResultPtr>
         delete_waiter;
-    cert_source_->DeleteCertificate("", kTestEcClientCertHashHex,
+    cert_source_->DeleteCertificate("", client_4_hash_hex,
                                     delete_waiter.GetCallback());
 
     certificate_manager_v2::mojom::ActionResultPtr delete_result =
@@ -455,46 +474,44 @@ TEST_P(ClientCertSourceWritableUnitTest, DISABLED_PolicyAllAllowsDeletion) {
     ASSERT_TRUE(delete_result);
     ASSERT_TRUE(delete_result->is_success());
   }
-  EXPECT_FALSE(
-      GetCertificateInfosContainsCertWithHash(kTestEcClientCertHashHex));
+  EXPECT_FALSE(GetCertificateInfosContainsCertWithHash(client_4_hash_hex));
 }
 
-// TODO(crbug.com/376923227): enable once test certificate has regenerated.
 TEST_P(ClientCertSourceWritableUnitTest,
-       DISABLED_PolicyUserOnlyAllowsDeletionOfUserCertsOnly) {
-  ASSERT_TRUE(ImportToUserSlotForTesting(
-      net::GetTestCertsDirectory().AppendASCII("client.p12"), "12345"));
-  ASSERT_TRUE(ImportToSystemSlotForTesting(
-      net::GetTestCertsDirectory().AppendASCII("client_with_ec_key.p12"),
-      "123456"));
+       PolicyUserOnlyAllowsDeletionOfUserCertsOnly) {
+  std::string client_1_hash_hex = ImportToUserSlotForTesting(
+      net::GetTestCertsDirectory().AppendASCII("client_1.p12"), "chrome");
+  ASSERT_FALSE(client_1_hash_hex.empty());
+  std::string client_4_hash_hex = ImportToSystemSlotForTesting(
+      net::GetTestCertsDirectory().AppendASCII("client_4.p12"), "chrome");
+  ASSERT_FALSE(client_4_hash_hex.empty());
 
   profile()->GetPrefs()->SetInteger(
       prefs::kClientCertificateManagementAllowed,
       static_cast<int>(ClientCertificateManagementPermission::kUserOnly));
 
   // A client certificate in the user slot should be deletable.
-  EXPECT_TRUE(GetCertificateInfosContainsCertWithHash(kTestClientCertHashHex));
-  EXPECT_TRUE(GetCertificateInfosIsCertDeletable(kTestClientCertHashHex));
+  EXPECT_TRUE(GetCertificateInfosContainsCertWithHash(client_1_hash_hex));
+  EXPECT_TRUE(GetCertificateInfosIsCertDeletable(client_1_hash_hex));
 
   // A client certificate in the system slot should not be deletable.
-  EXPECT_TRUE(
-      GetCertificateInfosContainsCertWithHash(kTestEcClientCertHashHex));
+  EXPECT_TRUE(GetCertificateInfosContainsCertWithHash(client_4_hash_hex));
   if (kcer_enabled()) {
-    EXPECT_FALSE(GetCertificateInfosIsCertDeletable(kTestEcClientCertHashHex));
+    EXPECT_FALSE(GetCertificateInfosIsCertDeletable(client_4_hash_hex));
   } else {
     // TODO(crbug.com/40928765): the delete button visibility is not set
     // properly when kcer is disabled, for system certs with
     // ClientCertificateManagementAllowed policy set to UserOnly. The policy
     // should still be enforced correctly when actually attempting to delete
     // the certificate below.
-    EXPECT_TRUE(GetCertificateInfosIsCertDeletable(kTestEcClientCertHashHex));
+    EXPECT_TRUE(GetCertificateInfosIsCertDeletable(client_4_hash_hex));
   }
 
   {
     fake_page_->set_mocked_confirmation_result(true);
     base::test::TestFuture<certificate_manager_v2::mojom::ActionResultPtr>
         delete_waiter;
-    cert_source_->DeleteCertificate("", kTestClientCertHashHex,
+    cert_source_->DeleteCertificate("", client_1_hash_hex,
                                     delete_waiter.GetCallback());
 
     certificate_manager_v2::mojom::ActionResultPtr delete_result =
@@ -502,13 +519,13 @@ TEST_P(ClientCertSourceWritableUnitTest,
     ASSERT_TRUE(delete_result);
     ASSERT_TRUE(delete_result->is_success());
   }
-  EXPECT_FALSE(GetCertificateInfosContainsCertWithHash(kTestClientCertHashHex));
+  EXPECT_FALSE(GetCertificateInfosContainsCertWithHash(client_1_hash_hex));
 
   {
     fake_page_->set_mocked_confirmation_result(true);
     base::test::TestFuture<certificate_manager_v2::mojom::ActionResultPtr>
         delete_waiter;
-    cert_source_->DeleteCertificate("", kTestEcClientCertHashHex,
+    cert_source_->DeleteCertificate("", client_4_hash_hex,
                                     delete_waiter.GetCallback());
 
     certificate_manager_v2::mojom::ActionResultPtr delete_result =
@@ -519,35 +536,32 @@ TEST_P(ClientCertSourceWritableUnitTest,
               l10n_util::GetStringUTF8(
                   IDS_SETTINGS_CERTIFICATE_MANAGER_V2_DELETE_ERROR));
   }
-  EXPECT_TRUE(
-      GetCertificateInfosContainsCertWithHash(kTestEcClientCertHashHex));
+  EXPECT_TRUE(GetCertificateInfosContainsCertWithHash(client_4_hash_hex));
 }
 
-// TODO(crbug.com/376923227): enable once test certificate has regenerated.
-TEST_P(ClientCertSourceWritableUnitTest,
-       DISABLED_PolicyNoneDoesNotAllowDeletion) {
-  ASSERT_TRUE(ImportToUserSlotForTesting(
-      net::GetTestCertsDirectory().AppendASCII("client.p12"), "12345"));
-  ASSERT_TRUE(ImportToSystemSlotForTesting(
-      net::GetTestCertsDirectory().AppendASCII("client_with_ec_key.p12"),
-      "123456"));
+TEST_P(ClientCertSourceWritableUnitTest, PolicyNoneDoesNotAllowDeletion) {
+  std::string client_1_hash_hex = ImportToUserSlotForTesting(
+      net::GetTestCertsDirectory().AppendASCII("client_1.p12"), "chrome");
+  ASSERT_FALSE(client_1_hash_hex.empty());
+  std::string client_4_hash_hex = ImportToSystemSlotForTesting(
+      net::GetTestCertsDirectory().AppendASCII("client_4.p12"), "chrome");
+  ASSERT_FALSE(client_4_hash_hex.empty());
 
   profile()->GetPrefs()->SetInteger(
       prefs::kClientCertificateManagementAllowed,
       static_cast<int>(ClientCertificateManagementPermission::kNone));
 
-  EXPECT_TRUE(GetCertificateInfosContainsCertWithHash(kTestClientCertHashHex));
-  EXPECT_FALSE(GetCertificateInfosIsCertDeletable(kTestClientCertHashHex));
+  EXPECT_TRUE(GetCertificateInfosContainsCertWithHash(client_1_hash_hex));
+  EXPECT_FALSE(GetCertificateInfosIsCertDeletable(client_1_hash_hex));
 
-  EXPECT_TRUE(
-      GetCertificateInfosContainsCertWithHash(kTestEcClientCertHashHex));
-  EXPECT_FALSE(GetCertificateInfosIsCertDeletable(kTestEcClientCertHashHex));
+  EXPECT_TRUE(GetCertificateInfosContainsCertWithHash(client_4_hash_hex));
+  EXPECT_FALSE(GetCertificateInfosIsCertDeletable(client_4_hash_hex));
 
   {
     fake_page_->set_mocked_confirmation_result(true);
     base::test::TestFuture<certificate_manager_v2::mojom::ActionResultPtr>
         delete_waiter;
-    cert_source_->DeleteCertificate("", kTestClientCertHashHex,
+    cert_source_->DeleteCertificate("", client_1_hash_hex,
                                     delete_waiter.GetCallback());
 
     certificate_manager_v2::mojom::ActionResultPtr delete_result =
@@ -558,13 +572,13 @@ TEST_P(ClientCertSourceWritableUnitTest,
               l10n_util::GetStringUTF8(
                   IDS_SETTINGS_CERTIFICATE_MANAGER_V2_DELETE_ERROR));
   }
-  EXPECT_TRUE(GetCertificateInfosContainsCertWithHash(kTestClientCertHashHex));
+  EXPECT_TRUE(GetCertificateInfosContainsCertWithHash(client_1_hash_hex));
 
   {
     fake_page_->set_mocked_confirmation_result(true);
     base::test::TestFuture<certificate_manager_v2::mojom::ActionResultPtr>
         delete_waiter;
-    cert_source_->DeleteCertificate("", kTestEcClientCertHashHex,
+    cert_source_->DeleteCertificate("", client_4_hash_hex,
                                     delete_waiter.GetCallback());
 
     certificate_manager_v2::mojom::ActionResultPtr delete_result =
@@ -575,8 +589,7 @@ TEST_P(ClientCertSourceWritableUnitTest,
               l10n_util::GetStringUTF8(
                   IDS_SETTINGS_CERTIFICATE_MANAGER_V2_DELETE_ERROR));
   }
-  EXPECT_TRUE(
-      GetCertificateInfosContainsCertWithHash(kTestEcClientCertHashHex));
+  EXPECT_TRUE(GetCertificateInfosContainsCertWithHash(client_4_hash_hex));
 }
 
 TEST_P(ClientCertSourceWritableUnitTest, ImportPkcs12NotAllowedByPolicy) {
@@ -598,7 +611,7 @@ TEST_P(ClientCertSourceWritableUnitTest, ImportPkcs12PasswordWrong) {
   ui::FakeSelectFileDialog::Factory* factory =
       ui::FakeSelectFileDialog::RegisterFactory();
 
-  // Wrong password for the client.p12 file.
+  // Wrong password for the client_1.p12 file.
   fake_page_->set_mocked_import_password("wrong");
 
   base::test::TestFuture<void> select_file_dialog_opened_waiter;
@@ -612,7 +625,7 @@ TEST_P(ClientCertSourceWritableUnitTest, ImportPkcs12PasswordWrong) {
   ui::FakeSelectFileDialog* fake_file_select_dialog = factory->GetLastDialog();
   ASSERT_TRUE(fake_file_select_dialog);
   ASSERT_TRUE(fake_file_select_dialog->CallFileSelected(
-      net::GetTestCertsDirectory().AppendASCII("client.p12"), "p12"));
+      net::GetTestCertsDirectory().AppendASCII("client_1.p12"), "p12"));
 
   certificate_manager_v2::mojom::ActionResultPtr import_result =
       import_waiter.Take();
@@ -642,7 +655,7 @@ TEST_P(ClientCertSourceWritableUnitTest, ImportPkcs12PasswordEntryCancelled) {
   ui::FakeSelectFileDialog* fake_file_select_dialog = factory->GetLastDialog();
   ASSERT_TRUE(fake_file_select_dialog);
   ASSERT_TRUE(fake_file_select_dialog->CallFileSelected(
-      net::GetTestCertsDirectory().AppendASCII("client.p12"), "p12"));
+      net::GetTestCertsDirectory().AppendASCII("client_1.p12"), "p12"));
 
   certificate_manager_v2::mojom::ActionResultPtr import_result =
       import_waiter.Take();
@@ -704,8 +717,8 @@ TEST_P(ClientCertSourceWritableUnitTest,
     ui::FakeSelectFileDialog::Factory* factory =
         ui::FakeSelectFileDialog::RegisterFactory();
 
-    // The correct password for the client.p12 file.
-    fake_page_->set_mocked_import_password("12345");
+    // The correct password for the client_1.p12 file.
+    fake_page_->set_mocked_import_password("chrome");
 
     base::test::TestFuture<void> select_file_dialog_opened_waiter;
     factory->SetOpenCallback(
@@ -719,7 +732,7 @@ TEST_P(ClientCertSourceWritableUnitTest,
         factory->GetLastDialog();
     ASSERT_TRUE(fake_file_select_dialog);
     ASSERT_TRUE(fake_file_select_dialog->CallFileSelected(
-        net::GetTestCertsDirectory().AppendASCII("client.p12"), "p12"));
+        net::GetTestCertsDirectory().AppendASCII("client_1.p12"), "p12"));
 
     certificate_manager_v2::mojom::ActionResultPtr import_result =
         import_waiter.Take();
@@ -727,11 +740,15 @@ TEST_P(ClientCertSourceWritableUnitTest,
     EXPECT_TRUE(import_result->is_success());
   }
 
+  std::string client_1_hash_hex =
+      GetTestCertHash(net::GetTestCertsDirectory().AppendASCII("client_1.pem"));
+  ASSERT_FALSE(client_1_hash_hex.empty());
+
   // Mock the user cancelling out of the deletion confirmation dialog.
   fake_page_->set_mocked_confirmation_result(false);
   base::test::TestFuture<certificate_manager_v2::mojom::ActionResultPtr>
       delete_waiter;
-  cert_source_->DeleteCertificate("", kTestClientCertHashHex,
+  cert_source_->DeleteCertificate("", client_1_hash_hex,
                                   delete_waiter.GetCallback());
 
   certificate_manager_v2::mojom::ActionResultPtr delete_result =
