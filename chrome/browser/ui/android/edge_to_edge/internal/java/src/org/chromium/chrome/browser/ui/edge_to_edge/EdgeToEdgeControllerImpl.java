@@ -80,7 +80,9 @@ public class EdgeToEdgeControllerImpl
     /** Multiplier to convert from pixels to DPs. */
     private final float mPxToDp;
 
-    private @NonNull EdgeToEdgeOSWrapper mEdgeToEdgeOsWrapper;
+    private final boolean mDisablePaddingRootView;
+
+    private final @Nullable EdgeToEdgeOSWrapper mEdgeToEdgeOsWrapper;
     private @Nullable LayoutManager mLayoutManager;
 
     private Tab mCurrentTab;
@@ -109,7 +111,7 @@ public class EdgeToEdgeControllerImpl
 
     private InsetObserver mInsetObserver;
     private @NonNull Insets mSystemInsets;
-    private Insets mAppliedContentViewPadding;
+    private Insets mAppliedContentViewPadding = Insets.NONE;
     private @Nullable Insets mKeyboardInsets;
     private @Nullable WindowInsetsConsumer mWindowInsetsConsumer;
     private boolean mBottomControlsAreVisible;
@@ -143,10 +145,13 @@ public class EdgeToEdgeControllerImpl
             @NonNull FullscreenManager fullscreenManager) {
         mActivity = activity;
         mWindowAndroid = windowAndroid;
-        mEdgeToEdgeOsWrapper =
-                edgeToEdgeOsWrapper == null ? new EdgeToEdgeOSWrapperImpl() : edgeToEdgeOsWrapper;
         mEdgeToEdgeManager = edgeToEdgeManager;
         mPxToDp = 1.f / mActivity.getResources().getDisplayMetrics().density;
+        mDisablePaddingRootView = EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled();
+        mEdgeToEdgeOsWrapper =
+                edgeToEdgeOsWrapper == null && !mDisablePaddingRootView
+                        ? new EdgeToEdgeOSWrapperImpl()
+                        : edgeToEdgeOsWrapper;
         mTabSupplierObserver =
                 new TabSupplierObserver(tabObservableSupplier) {
                     @Override
@@ -455,11 +460,18 @@ public class EdgeToEdgeControllerImpl
             drawToEdge(mIsPageOptedIntoEdgeToEdge, /* changedWindowState= */ true);
         }
 
-        // Always consume the insets, as e2e controller applies the padding to the content view.
-        return new WindowInsetsCompat.Builder(windowInsets)
-                .setInsets(WindowInsetsCompat.Type.systemBars(), Insets.NONE)
-                .setInsets(WindowInsetsCompat.Type.ime(), Insets.NONE)
-                .build();
+        var builder = new WindowInsetsCompat.Builder(windowInsets);
+
+        // Consume top insets only when in fullscreen, where we are forcing 0 as the top padding.
+        if (mAppliedContentViewPadding.top == 0) {
+            builder.setInsets(WindowInsetsCompat.Type.statusBars(), Insets.NONE);
+            builder.setInsets(WindowInsetsCompat.Type.captionBar(), Insets.NONE);
+        }
+        if (mAppliedContentViewPadding.bottom == 0) {
+            builder.setInsets(WindowInsetsCompat.Type.navigationBars(), Insets.NONE);
+            builder.setInsets(WindowInsetsCompat.Type.ime(), Insets.NONE);
+        }
+        return builder.build();
     }
 
     private boolean updateVisibilityRects(View rootView) {
@@ -544,8 +556,9 @@ public class EdgeToEdgeControllerImpl
         // Use Insets to store the paddings as it is immutable.
         Insets newPaddings =
                 Insets.of(mSystemInsets.left, topPadding, mSystemInsets.right, bottomPadding);
-        if (!newPaddings.equals(mAppliedContentViewPadding)) {
-            mAppliedContentViewPadding = newPaddings;
+        boolean paddingChanged = !newPaddings.equals(mAppliedContentViewPadding);
+        mAppliedContentViewPadding = newPaddings;
+        if (paddingChanged && !mDisablePaddingRootView && mEdgeToEdgeOsWrapper != null) {
             mEdgeToEdgeOsWrapper.setPadding(
                     contentView,
                     newPaddings.left,
@@ -603,10 +616,6 @@ public class EdgeToEdgeControllerImpl
         mEdgeToEdgeStateProvider.releaseSetDecorFitsSystemWindowToken(mEdgeToEdgeToken);
     }
 
-    public void setOsWrapperForTesting(EdgeToEdgeOSWrapper testOsWrapper) {
-        mEdgeToEdgeOsWrapper = testOsWrapper;
-    }
-
     @VisibleForTesting
     @Nullable
     WebContentsObserver getWebContentsObserver() {
@@ -639,6 +648,10 @@ public class EdgeToEdgeControllerImpl
 
     public boolean getHasSafeAreaConstraintForTesting() {
         return mHasSafeAreaConstraint;
+    }
+
+    public Insets getAppliedContentViewPaddingForTesting() {
+        return mAppliedContentViewPadding;
     }
 
     private static Insets getSystemInsets(@NonNull WindowInsetsCompat windowInsets) {

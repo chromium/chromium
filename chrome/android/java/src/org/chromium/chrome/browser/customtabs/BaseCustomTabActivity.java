@@ -253,6 +253,12 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
     }
 
     @Override
+    protected boolean wrapContentWithEdgeToEdgeLayout() {
+        // TODO(crbug.com/392774038): Enable for e2e everywhere for PCCT.
+        return super.wrapContentWithEdgeToEdgeLayout() && !mIntentDataProvider.isPartialCustomTab();
+    }
+
+    @Override
     public void onNewIntent(Intent intent) {
         // Drop the cleaner intent since it's created in order to clear up the OS share sheet.
         if (ShareHelper.isCleanerIntent(intent)) {
