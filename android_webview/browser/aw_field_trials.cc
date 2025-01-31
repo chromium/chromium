@@ -233,6 +233,10 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   aw_feature_overrides.DisableFeature(
       ::features::kFocusRenderWidgetHostViewAndroidOnActionDown);
 
+  // Disabling the permission element as it needs embedder support in order to
+  // function and the webview permission manager cannot support it.
+  aw_feature_overrides.DisableFeature(blink::features::kPermissionElement);
+
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kDebugBsa)) {
     // Feature parameters can only be set via a field trial.
     const char kTrialName[] = "StudyDebugBsa";

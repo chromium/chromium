@@ -3299,8 +3299,8 @@
       // Tracking bug for the implementation: https://crbug.com/1462930
       name: "PermissionElement",
       origin_trial_feature_name: "PermissionElement",
-      origin_trial_os: ["win", "mac", "linux", "fuchsia", "chromeos"],
-      status: {"Android": "", "default": "experimental"},
+      origin_trial_os: ["win", "mac", "linux", "fuchsia", "chromeos", "android"],
+      status: "experimental",
       public: true,
       base_feature_status: "enabled",
       copied_from_base_feature_if: "overridden",
