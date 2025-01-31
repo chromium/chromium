@@ -134,10 +134,14 @@ class BookmarkMenuDelegate : public bookmarks::BaseBookmarkModelObserver,
   // BookmarkModelObserver methods.
   void BookmarkModelChanged() override;
   void BookmarkNodeFaviconChanged(const bookmarks::BookmarkNode* node) override;
-  void BookmarkNodeMoved(const bookmarks::BookmarkNode* old_parent,
-                         size_t old_index,
-                         const bookmarks::BookmarkNode* new_parent,
-                         size_t new_index) override;
+
+  // TODO(crbug.com/393126961): Update this to override the base
+  // BookmarkNodeMoved method, once the crashes are resolved.
+  // Until then, this method won't be invoked.
+  void DoBookmarkNodeMoved(const bookmarks::BookmarkNode* old_parent,
+                           size_t old_index,
+                           const bookmarks::BookmarkNode* new_parent,
+                           size_t new_index);
 
   // BookmarkContextMenuObserver methods.
   void WillRemoveBookmarks(
