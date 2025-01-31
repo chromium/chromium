@@ -731,6 +731,7 @@
 <translation id="3522979239100719575">उपलब्ध प्रोफाइल शोधत आहे. यासाठी काही मिनिटे लागू शकतात.</translation>
 <translation id="3526440770046466733">नवीन टॅबमध्ये लिंक उघडा आणि सध्याच्या टॅबमध्ये रहा</translation>
 <translation id="353086728817903341"><ph name="NUM_DEVICES" /> डिव्हाइसशी कनेक्ट केले</translation>
+<translation id="3532247131850366052">Google Sheet तयार करता आली नाही</translation>
 <translation id="3533126039236445965">शेल्फमधील अ‍ॅप्स</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> हॉटस्पॉट</translation>
 <translation id="3540893133818942399">तुमच्या फोनमधील अलीकडील फोटो आणि मीडिया पाहण्याचे सेट करणे डिसमिस करा</translation>
@@ -829,6 +830,7 @@
 <translation id="380165613292957338">हाय, मला तुमची कशी मदत करता येईल?</translation>
 <translation id="3804737937830804242">कॅमेरा कोलॅप्स करा</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{१ इमोजी. इतर कोणतेही परिणाम नाहीत.}other{# इमोजी. इतर कोणतेही परिणाम नाहीत.}}</translation>
+<translation id="3822403841174077928">फॉरमॅटिंगसह कॉपी करता आला नाही</translation>
 <translation id="3824784079442479685">हे कॅमेरा वापरण्याची परवानगी असलेल्या <ph name="APP_NAME" /> आणि सर्व अ‍ॅप्स व वेबसाइटना कॅमेराच्या अ‍ॅक्सेसची अनुमती देते. तुम्हाला वेब पेज रिफ्रेश करावे लागू शकते किंवा ॲप रीस्टार्ट करावे लागू शकते.</translation>
 <translation id="3826099427150913765">पासवर्ड वर स्विच करा</translation>
 <translation id="383058930331066723">बॅटरी सेव्हर मोड सुरू आहे</translation>
@@ -1215,6 +1217,7 @@
 <translation id="5043679421800073804">शेल्फवरील शेवटच्या आयकनवर क्लिक किंवा टॅप करा</translation>
 <translation id="504465286040788597">मागील परिच्छेद</translation>
 <translation id="5045550434625856497">चुकीचा पासवर्ड</translation>
+<translation id="5058794129231928255">Google दस्तऐवज तयार करता आला नाही</translation>
 <translation id="5062496344832867502">RAM</translation>
 <translation id="5068762093486106012">म्यूट केलेले असताना तुम्ही बोलल्यास, तुम्हाला सूचित केले जाईल. ऑडिओ तुमच्या डिव्हाइसमध्ये कायम राहतो.</translation>
 <translation id="5077416371682039027">तुमच्या फोनमधील अलीकडील फोटो, मीडिया, सूचना आणि ॲप्स पाहणे सेट करा</translation>
@@ -1478,7 +1481,6 @@
 <translation id="589817443623831496">पॉइंट स्कॅनिंग</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">पिवळा</translation>
-<translation id="5911231045062997865">Lacros विंडोना सध्या सपोर्ट नाही. इतर ॲप्स सेव्ह केली जातील.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916646100036936191">नवीन सूचना, एकूण <ph name="NOTIFICATION_COUNT" /></translation>
 <translation id="5916664084637901428">सुरू</translation>
@@ -1648,6 +1650,7 @@
 <translation id="6468406072297048412">{0,plural, =1{१ मिनिटामध्ये मागील आवृत्तीवर डिव्हाइस अपडेट करा}other{# मिनिटांमध्ये मागील आवृत्तीवर डिव्हाइस अपडेट करा}}</translation>
 <translation id="6469104339369989396">हॉटस्पॉट टॉगल करा</translation>
 <translation id="6477681113376365978">फाइल डाउनलोड करू शकत नाही</translation>
+<translation id="648135757200234041">संपर्क तयार करता आला नाही</translation>
 <translation id="6482559668224714696">फुल-स्क्रीन मॅग्निफायर</translation>
 <translation id="6485086611007560630">हवामान (उपलब्ध नाही)</translation>
 <translation id="6490471652906364588">USB-C डिव्‍हाइस (उजवे पोर्ट)</translation>
@@ -1977,6 +1980,7 @@
 <translation id="7611213136657090146">कॅमेरा पुन्हा कनेक्ट केला.</translation>
 <translation id="7613620083300976559">गेम नियंत्रणे सुरू करा</translation>
 <translation id="761736749114493194">कॅमेरा फ्रेमिंग टॉगल करा. <ph name="STATE_TEXT" /></translation>
+<translation id="7621008024906456933">क्विक शेअर सेटिंग्ज</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° फॅ</translation>
 <translation id="7627303771480696593">प्रश्न विचारा</translation>
 <translation id="7634648064048557203">कॅमेरा सर्वात खालच्या उजव्या कोपऱ्यात स्नॅप केला आहे</translation>
@@ -2287,6 +2291,7 @@
 <translation id="8653151467777939995">सूचना सेटिंग्ज दाखवा. सूचना सुरू आहेत</translation>
 <translation id="8657066291275741003">लोअरकेस</translation>
 <translation id="8660331759611631213">७१ चे वर्गमूळ</translation>
+<translation id="8662921061190671299">Calendar मध्ये जोडता आला नाही</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">आंशिक स्क्रीनशॉट कॅप्चर करण्यासाठी एंटर प्रेस करा</translation>
 <translation id="8676770494376880701">निम्न-उर्जेचे चार्जर कनेक्ट केले</translation>

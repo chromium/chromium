@@ -731,6 +731,7 @@ Jika tidak, touchpad bawaan akan diaktifkan kembali dalam <ph name="TIMEOUT_SECO
 <translation id="3522979239100719575">Mencari profil yang tersedia. Proses ini mungkin perlu waktu beberapa menit.</translation>
 <translation id="3526440770046466733">Buka link di tab baru dan tetap di tab saat ini</translation>
 <translation id="353086728817903341">Terhubung ke <ph name="NUM_DEVICES" /> perangkat</translation>
+<translation id="3532247131850366052">Tidak dapat membuat Spreadsheet Google</translation>
 <translation id="3533126039236445965">Aplikasi di rak</translation>
 <translation id="3539957339480430241">Hotspot <ph name="DEVICE_NAME" /></translation>
 <translation id="3540893133818942399">Tutup penyiapan untuk melihat foto dan media terbaru ponsel Anda</translation>
@@ -829,6 +830,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="380165613292957338">Hai, ada yang bisa dibantu?</translation>
 <translation id="3804737937830804242">Ciutkan kamera</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 emoji. Tidak ada hasil lainnya.}other{# emoji. Tidak ada hasil lainnya.}}</translation>
+<translation id="3822403841174077928">Tidak dapat menyalin dengan pemformatan</translation>
 <translation id="3824784079442479685">Tindakan ini akan mengizinkan akses kamera untuk <ph name="APP_NAME" /> dan semua aplikasi serta situs yang memiliki izin kamera. Anda mungkin perlu memuat ulang halaman web atau memulai ulang aplikasi.</translation>
 <translation id="3826099427150913765">Ganti ke sandi</translation>
 <translation id="383058930331066723">Mode penghemat baterai aktif</translation>
@@ -1215,6 +1217,7 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="5043679421800073804">Klik atau ketuk ikon terakhir di rak</translation>
 <translation id="504465286040788597">Paragraf sebelumnya</translation>
 <translation id="5045550434625856497">Sandi salah</translation>
+<translation id="5058794129231928255">Tidak dapat membuat Dokumen Google</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Anda akan mendapatkan notifikasi jika berbicara saat mikrofon dibisukan. Audio tidak pernah dikirim keluar perangkat.</translation>
 <translation id="5077416371682039027">Siapkan untuk melihat foto, media, notifikasi, dan aplikasi terbaru ponsel Anda</translation>
@@ -1478,7 +1481,6 @@ Tidak ada perangkat yang terhubung.</translation>
 <translation id="589817443623831496">Pemindaian titik</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">Kuning</translation>
-<translation id="5911231045062997865">Jendela Lacros saat ini tidak didukung. Aplikasi lainnya akan disimpan.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916646100036936191">Notifikasi baru, total <ph name="NOTIFICATION_COUNT" /></translation>
 <translation id="5916664084637901428">Aktif</translation>
@@ -1648,6 +1650,7 @@ Tidak ada perangkat yang terhubung.</translation>
 <translation id="6468406072297048412">{0,plural, =1{Ubah perangkat ke versi sebelumnya dalam 1 menit}other{Ubah perangkat ke versi sebelumnya dalam # menit}}</translation>
 <translation id="6469104339369989396">Aktifkan/nonaktifkan hotspot</translation>
 <translation id="6477681113376365978">Tidak dapat mendownload file</translation>
+<translation id="648135757200234041">Tidak dapat membuat kontak</translation>
 <translation id="6482559668224714696">Kaca pembesar layar penuh</translation>
 <translation id="6485086611007560630">Cuaca (tidak tersedia)</translation>
 <translation id="6490471652906364588">Perangkat USB-C (port sebelah kanan)</translation>
@@ -2288,6 +2291,7 @@ Untuk mematikan perangkat, tekan lama tombol daya di perangkat lagi.</translatio
 <translation id="8653151467777939995">Tampilkan setelan notifikasi. Notifikasi aktif.</translation>
 <translation id="8657066291275741003">huruf kecil</translation>
 <translation id="8660331759611631213">Akar pangkat dua dari 71</translation>
+<translation id="8662921061190671299">Tidak dapat menambahkan ke Kalender</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Tekan Enter untuk mengambil screenshot sebagian</translation>
 <translation id="8676770494376880701">Pengisi daya rendah terpasang</translation>

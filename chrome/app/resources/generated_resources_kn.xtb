@@ -126,7 +126,6 @@
 <translation id="1076766328672150609">ಸಾಧನವನ್ನು ಅನ್‌ಲಾಕ್ ಮಾಡಲು ನಿಮ್ಮ ಮಗುವು ಪಿನ್ ಬಳಸಬಹುದು.</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216"><ph name="LANGUAGE" /> ಗಾಗಿ ಕಾಗುಣಿತ ಪರೀಕ್ಷೆ ನಿಘಂಟನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
-<translation id="1078029726086090536">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ದೃಢೀಕರಿಸಿ</translation>
 <translation id="1078037449555275327">ChromeVox ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="1079242569060319448">ಪಿನ್ ಮರೆತಿದ್ದೀರಾ?</translation>
 <translation id="1079285777677001938">ಕೆಲವು ಸೈಟ್‌ಗಳಲ್ಲಿ ಫೀಚರ್‌ಗಳು ಕಾರ್ಯನಿರ್ವಹಿಸದೇ ಇರಬಹುದು.</translation>
@@ -370,6 +369,7 @@
 <translation id="1241066500170667906"><ph name="EXPERIMENT_NAME" /> ಗಾಗಿ ಪ್ರಯೋಗದ ಸ್ಥಿತಿಯನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="124116460088058876">ಹೆಚ್ಚಿನ ಭಾಷೆಗಳು</translation>
 <translation id="1241381048229838873">ಎಲ್ಲ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ತೋರಿಸು</translation>
+<translation id="1242044645101871359">ಪುನಃ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" /> ನಿಮ್ಮ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಮರುಹೊಂದಿಸಲು ಬಯಸುತ್ತದೆ.</translation>
 <translation id="1243002225871118300">ಡಿಸ್‌ಪ್ಲೇ ಮತ್ತು ಪಠ್ಯ ಗಾತ್ರವನ್ನು ಬದಲಾಯಿಸಿ</translation>
 <translation id="1243314992276662751">ಅಪ್‌ಲೋಡ್</translation>
@@ -1620,7 +1620,6 @@
 <translation id="2113921862428609753">ಅಧಿಕಾರ ಮಾಹಿತಿ ಆ್ಯಕ್ಸೆಸ್</translation>
 <translation id="2114145607116268663">ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ, ರೀಬೂಟ್ ಮಾಡುವ ಅಗತ್ಯವಿದೆ. ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್ ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸಿ ಹಾಗೂ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ. ದೋಷ ಕೋಡ್ <ph name="ERROR" /> ಆಗಿದೆ.</translation>
 <translation id="2114326799768592691">ರೀಲೋಡ್ &amp;ಫ್ರೇಮ್</translation>
-<translation id="2114413269775311385">Android ಆ್ಯಪ್‌ಗಳ ಮೂಲಕ ಈ ಖಾತೆಯನ್ನು ಬಳಸಿ. ನೀವು <ph name="LINK_BEGIN" />ಆ್ಯಪ್‌ಗಳ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ<ph name="LINK_END" /> Android ಅಪ್ಲಿಕೇಶನ್‌ಗಳ ಅನುಮತಿಗಳನ್ನು ನಿಯಂತ್ರಿಸಬಹುದು.</translation>
 <translation id="2114995631896158695">ಯಾವುದೇ ಸಿಮ್ ಕಾರ್ಡ್ ಸೇರಿಸಿಲ್ಲ</translation>
 <translation id="2116619964159595185">ಕಡಿಮೆ-ಶಕ್ತಿಯ ಬೀಕನ್, ಆರೋಗ್ಯ ಅಥವಾ ಫಿಟ್‌ನೆಸ್ ಟ್ರ್ಯಾಕರ್ ಅಥವಾ ಸ್ಮಾರ್ಟ್ ಲೈಟ್ ಬಲ್ಬ್ ಅನ್ನು ಸೆಟಪ್ ಮಾಡುವ ಅಥವಾ ಸಿಂಕ್ ಮಾಡುವಂತಹ ಫೀಚರ್‌ಗಳಿಗಾಗಿ, ಸೈಟ್‌ಗಳು ಸಾಮಾನ್ಯವಾಗಿ ಬ್ಲೂಟೂತ್ ಸಾಧನಗಳಿಗೆ ಕನೆಕ್ಟ್ ಆಗುತ್ತವೆ</translation>
 <translation id="2117655453726830283">ಮುಂದಿನ ಸ್ಲೈಡ್</translation>
@@ -4639,6 +4638,7 @@
 <translation id="4242533952199664413">ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆ</translation>
 <translation id="4242577469625748426">ಸಾಧನದಲ್ಲಿ ನೀತಿಯ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385"><ph name="DOMAIN" /> ನಿಮ್ಮ <ph name="BEGIN_LINK" />ಬ್ರೌಸರ್ ಮತ್ತು ಪ್ರೊಫೈಲ್ ಅನ್ನು ನಿರ್ವಹಿಸುತ್ತಿದೆ<ph name="END_LINK" /></translation>
+<translation id="424315890655130736">ಪಾಸ್‌ಫ್ರೇಸ್ ನಮೂದಿಸಿ</translation>
 <translation id="4243504193894350135">ಪ್ರಿಂಟರ್ ಅನ್ನು ವಿರಾಮಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="4243624244759495699"><ph name="LOCALE" />, ಗ್ರೇಡ್‌ <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">ಇನ್ನಷ್ಟು ಸ್ಟೈಲಸ್ ಅಪ್ಲಿಕೇಶನ್‌‌ಗಳನ್ನು ಹುಡುಕಿ</translation>
@@ -5361,7 +5361,6 @@
 <translation id="4766598565665644999">ಎಲ್ಲಾ ಎಕ್ಸ್‌ಟೆನ್ಷನ್‌‌ಗಳು <ph name="HOST" /> ಅನ್ನು ಓದಬಹುದು ಮತ್ತು ಬದಲಾಯಿಸಬಹುದು</translation>
 <translation id="4767427586072640478">ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾದ ವಿಸ್ತರಣೆಗಳ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ.</translation>
 <translation id="4768332406694066911">ನಿಮ್ಮನ್ನು ಗುರುತಿಸುವ ಈ ಸಂಸ್ಥೆಗಳ ಪ್ರಮಾಣಪತ್ರಗಳನ್ನು ನೀವು ಹೊಂದಿರುವಿರಿ</translation>
-<translation id="4768945955870840220">ಕೆಲವು ಉತ್ಪನ್ನಗಳಿಗೆ, Chrome ವೆಬ್‌ನಾದ್ಯಂತ ವಿಮರ್ಶೆಗಳನ್ನು ಸಂಗ್ರಹಿಸಬಹುದು</translation>
 <translation id="4769632191812288342">ನೀವು ಪ್ರಮಾಣಿತ ಸುರಕ್ಷತೆಯನ್ನು ಪಡೆದುಕೊಳ್ಳುತ್ತಿದ್ದೀರಿ</translation>
 <translation id="4770119228883592393">ಅನುಮತಿಯನ್ನು ವಿನಂತಿಸಲಾಗಿದೆ, ಪ್ರತಿಕ್ರಿಯಿಸಲು ⌘ + ಆಯ್ಕೆ + ಡೌನ್ ಆ್ಯರೋ ಒತ್ತಿರಿ</translation>
 <translation id="4770755495532014179">ನಿಮ್ಮ iPhone ನಲ್ಲಿ ಈ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಬಳಸಿ</translation>
@@ -5503,6 +5502,7 @@
 <translation id="4862642413395066333">OCSP ಪ್ರತಿಕ್ರಿಯೆಗಳಿಗೆ ಸೈನ್ ಇನ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="4863702650881330715">ಹೊಂದಾಣಿಕೆಯನ್ನು ವಿಸ್ತರಿಸಿ</translation>
 <translation id="4863769717153320198"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (ಡಿಫಾಲ್ಟ್‌‌) ನಂತೆ ತೋರುತ್ತಿದೆ</translation>
+<translation id="4864334716800138793">ನಿಮ್ಮ ಸಂಸ್ಥೆಯು ಉದ್ಯೋಗ ಪ್ರೊಫೈಲ್‌ ಸೆಟಪ್ ಅನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿದೆ</translation>
 <translation id="4864369630010738180">ಸೈನ್ ಇನ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="4864805589453749318">ಶಾಲಾ ಖಾತೆಯನ್ನು ಸೇರಿಸಲು ಅನುಮತಿ ಒದಗಿಸುತ್ತಿರುವ ಪೋಷಕರನ್ನು ಆಯ್ಕೆ ಮಾಡಿ.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ)</translation>
@@ -6463,6 +6463,7 @@
 <translation id="5559768063688681413">ಸೇವ್ ಮಾಡಿದ ಯಾವುದೇ ಪ್ರಿಂಟರ್‌ಗಳಿಲ್ಲ</translation>
 <translation id="55601339223879446">ಡಿಸ್‌ಪ್ಲೇ ಒಳಗೆ ನಿಮ್ಮ ಡೆಸ್ಕ್‌ಟಾಪ್‌ನ ಎಲ್ಲೆಗಳನ್ನು ಸರಿಹೊಂದಿಸಿ</translation>
 <translation id="5561162485081632007">ಆಪಾಯಕಾರಿ ಘಟನೆಗಳು ಸಂಭವಿಸಿದಾಗ, ಅವುಗಳನ್ನು ಪತ್ತೆಹಚ್ಚುತ್ತದೆ ಮತ್ತು ನಿಮಗೆ ಎಚ್ಚರಿಕೆ ನೀಡುತ್ತದೆ</translation>
+<translation id="5562588178647493983">ಹೆಚ್ಚಿನ ಮಾಹಿತಿಗಾಗಿ ನಿಮ್ಮ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಿ</translation>
 <translation id="556321030400250233">ಸ್ಥಳೀಯ ಅಥವಾ ಹಂಚಿದ ಫೈಲ್</translation>
 <translation id="5563234215388768762">Google ನಲ್ಲಿ ಹುಡುಕಿ ಅಥವಾ URL ಟೈಪ್‌ ಮಾಡಿ</translation>
 <translation id="5563824734298958390">ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ತೊರೆಯಬೇಕೇ?</translation>
@@ -8761,7 +8762,6 @@
 <translation id="7243092385765551741">ಪಾಸ್‌ಕೀಯನ್ನು ಅಳಿಸಬೇಕೇ?</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (ಅತ್ಯುತ್ತಮ)</translation>
 <translation id="7246230585855757313">ನಿಮ್ಮ ಭದ್ರತೆ ಕೀ ಅನ್ನು ಮರುಸೇರ್ಪಡಿಸಿ ಮತ್ತು ಪುನಃ ಪ್ರಯತ್ನಿಸಿ</translation>
-<translation id="724835896049478274">Android ಆ್ಯಪ್‌ಗಳಿಗೆ ಖಾತೆಗಳು ಲಭ್ಯವಿದೆ</translation>
 <translation id="7248802599439396696">ಟ್ಯಾಬ್‌ಗಳನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="7249197363678284330">ವಿಳಾಸ ಪಟ್ಟಿಯಲ್ಲಿ ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ಬದಲಾಯಿಸಿ.</translation>
 <translation id="7249764475759804559">ಫೈಲ್‌ಗಳನ್ನು ತೆರೆಯುವಾಗ ಈ ಆ್ಯಪ್ ಅನ್ನು ಆಯ್ಕೆಯಾಗಿ ಸೇರಿಸಿ</translation>
@@ -9796,6 +9796,7 @@
 <translation id="7968833647796919681">ಕಾರ್ಯಕ್ಷಮತೆಯ ಡೇಟಾ ಸಂಗ್ರಹವನ್ನು ಸಕ್ರಿಯಗೊಳಿಸು</translation>
 <translation id="7968982339740310781">ವಿವರಗಳನ್ನು ವೀಕ್ಷಿಸಿ</translation>
 <translation id="7969046989155602842">ಕಮಾಂಡ್</translation>
+<translation id="7969144945436590933">ಇನ್ನಷ್ಟು ವಿವರಗಳನ್ನು ಪಡೆದುಕೊಳ್ಳಿ</translation>
 <translation id="7970673414865679092">ಇಥರ್ನೆಟ್ ವಿವರಗಳು</translation>
 <translation id="7972714317346275248">RSA ಎನ್‌ಕ್ರಿಪ್ಶನ್‌ನೊಂದಿಗೆ PKCS #1 SHA-384</translation>
 <translation id="7973149423217802477">ನೀವು ಇದನ್ನು ಇಷ್ಟಪಡುವುದಿಲ್ಲ ಎಂಬ ಫೀಡ್‌ಬ್ಯಾಕ್ ಅನ್ನು ಥಂಬ್ಸ್ ಡೌನ್ ಸಲ್ಲಿಸುತ್ತದೆ.</translation>
@@ -10705,7 +10706,6 @@
 <translation id="8625124982056504555">ChromeOS ಸಾಧನ ಮತ್ತು ಕಾಂಪೊನೆಂಟ್ ಕ್ರಮ ಸಂಖ್ಯೆಗಳನ್ನು ಓದಿ</translation>
 <translation id="862542460444371744">&amp;ವಿಸ್ತರಣೆಗಳು</translation>
 <translation id="8625663000550647058">ನಿಮ್ಮ ಮೈಕ್ರೊಫೋನ್ ಬಳಸಲು ಈ ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ</translation>
-<translation id="8625679025395572221">ನಿಮ್ಮ ಖಾತೆಯು ಇನ್ನೂ ಅಪಾಯದಲ್ಲಿದೆ.</translation>
 <translation id="8625916342247441948">HID ಸಾಧನಗಳಿಗೆ ಸೈಟ್‌ಗಳು ಕನೆಕ್ಟ್ ಆಗುವುದಕ್ಕೆ ಅನುಮತಿಸಬೇಡಿ</translation>
 <translation id="862727964348362408">ತಡೆಹಿಡಿಯಲಾಗಿದೆ</translation>
 <translation id="862750493060684461">CSS ಕ್ಯಾಷ್</translation>
@@ -11589,7 +11589,6 @@
 <translation id="936801553271523408">ಸಿಸ್ಟಂ ವಿಶ್ಲೇಷಣಾತ್ಮಕ ಡೇಟಾ</translation>
 <translation id="93766956588638423">ವಿಸ್ತರಣೆ ದುರಸ್ತಿಪಡಿಸಿ</translation>
 <translation id="938623846785894166">ಅಸಾಮಾನ್ಯ ಫೈಲ್</translation>
-<translation id="939401694733344652">ಈ ಖಾತೆಗಳನ್ನು ಈಗ Android ಆ್ಯಪ್‌ಗಳ ಜೊತೆ ಬಳಸಲಾಗುತ್ತಿಲ್ಲ. ಈ Android ಆ್ಯಪ್‌ಗಳ ಜೊತೆ ಬಳಸಲು ನೀವು ಖಾತೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿದರೆ, ಖಾತೆಯನ್ನು ಇತರ Android ಆ್ಯಪ್‌ಗಳ ಜೊತೆಗೂ ಸಹ ಬಳಸಬಹುದು. ನೀವು <ph name="LINK_BEGIN" />ಸೆಟ್ಟಿಂಗ್‌ಗಳು &gt; ಖಾತೆಗಳು<ph name="LINK_END" /> ಎಂಬಲ್ಲಿ Android ಆ್ಯಪ್‌ಗಳ ಪ್ರವೇಶವನ್ನು ಬದಲಾಯಿಸಬಹುದು.</translation>
 <translation id="939598580284253335">ಪಾಸ್‌ಫ್ರೇಸ್ ಅನ್ನು ನಮೂದಿಸಿ</translation>
 <translation id="939736085109172342">ಹೊಸ ಫೋಲ್ಡರ್</translation>
 <translation id="940212040923880623">&amp;ಹುಡುಕಿ ಹಾಗೂ ಎಡಿಟ್ ಮಾಡಿ</translation>

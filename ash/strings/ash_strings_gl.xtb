@@ -1479,7 +1479,6 @@ Non hai ningún dispositivo conectado.</translation>
 <translation id="589817443623831496">Exploración por punto</translation>
 <translation id="5901316534475909376">Maiúsculas+Esc</translation>
 <translation id="5901630391730855834">Amarelo</translation>
-<translation id="5911231045062997865">Actualmente non se admiten ventás de Lacros. Gardaranse outras aplicacións.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916646100036936191">Nova notificación, <ph name="NOTIFICATION_COUNT" /> en total</translation>
 <translation id="5916664084637901428">Si</translation>
@@ -1978,6 +1977,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="7611213136657090146">Reconectouse a cámara.</translation>
 <translation id="7613620083300976559">Activar os controis de xogo</translation>
 <translation id="761736749114493194">Activar/desactivar zoom automático. <ph name="STATE_TEXT" /></translation>
+<translation id="7621008024906456933">Configuración de Quick Share</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
 <translation id="7627303771480696593">Fai unha pregunta</translation>
 <translation id="7634648064048557203">Cámara axustada á esquina inferior dereita</translation>

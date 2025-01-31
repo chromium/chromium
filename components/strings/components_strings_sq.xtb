@@ -674,7 +674,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2157640075051554492">Njoftimet e monitorimit të çmimeve</translation>
 <translation id="21613918653299710">Galeritë e imazheve online</translation>
 <translation id="2161656808144014275">Teksti</translation>
-<translation id="2162510787844374618">Po kontaktohet banka...</translation>
 <translation id="2162620598375156287">Tani <ph name="CURRENT_PRICE" /> te <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Kontrollo nëse ka ndonjë gabim drejtshkrimor në <ph name="HOST_NAME" />.</translation>
 <translation id="2166049586286450108">Qasja e plotë e administratorit</translation>
@@ -2428,7 +2427,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5288108484102287882">Vërtetimi i vlerave të politikës ka ngritur shqetësime</translation>
 <translation id="5289384342738547352">Menaxhimi i shumë dokumenteve</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{Kërkohet përditësimi sot}=2{Kërkohet përditësimi deri nesër}other{Kërkohet përditësimi brenda # ditëve}}</translation>
-<translation id="5292714443869769806">Shko te cilësimet e <ph name="OPERATING_SYSTEM" /></translation>
 <translation id="5293919335876685914">Kupetë</translation>
 <translation id="5298618990685278995">një draft të parë</translation>
 <translation id="5299298092464848405">Gabim gjatë analizimit të politikës</translation>
@@ -3649,6 +3647,7 @@ Detaje shtesë:
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Kamionë mallrash dhe rimorkio</translation>
 <translation id="7461924472993315131">Gozhdoje</translation>
+<translation id="746329643760972486">MacOS</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> do të mësojë që ke vizituar <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7465963048299965912">10 x 13 inç</translation>
 <translation id="7469935732330206581">Formulari nuk është i sigurt</translation>
@@ -3880,6 +3879,7 @@ Detaje shtesë:
 <translation id="784404208867107517">Historiku i grupimit</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Asnjë}=1{1 aplikacion (<ph name="EXAMPLE_APP_1" />)}=2{2 aplikacione (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# aplikacione (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Ndodhi një gabim. Provo përsëri.</translation>
+<translation id="784623644169604270">Asnjë aktivitet së fundi</translation>
 <translation id="785476343534277563">Sporte universitare</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7860345425589240791">Fut datën e re të skadimit dhe kodin CVC në <ph name="SIDE_OF_CARD" /></translation>
@@ -3918,7 +3918,6 @@ Detaje shtesë:
 <translation id="7942349550061667556">E kuqe</translation>
 <translation id="7943397946612013052">Shkarkimi u bllokua</translation>
 <translation id="7943893128817522649">Mund të kërkojë të shkarkojë automatikisht shumë skedarë</translation>
-<translation id="794567586469801724">macOS</translation>
 <translation id="7947285636476623132">Kontrollo vitin e skadimit dhe provo përsëri</translation>
 <translation id="7947310711271925113">Muzikë pop</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp Tab pastaj Enter për të mësuar për veçoritë e Chrome</translation>
@@ -4670,7 +4669,6 @@ Detaje shtesë:
 <translation id="984275831282074731">Mënyrat e pagesës</translation>
 <translation id="985199708454569384">&lt;p&gt;Këtë gabim do ta shohësh nëse data dhe ora e kompjuterit ose e pajisjes celulare janë të pasakta.&lt;/p&gt;
     &lt;p&gt;Për të rregulluar gabimin, hap orën e pajisjes. Sigurohu që ora dhe data të jenë të sakta.&lt;/p&gt;</translation>
-<translation id="986257639512122511">Ke lejuar një leje (<ph name="PERMISSION" />) në <ph name="ORIGIN" /></translation>
 <translation id="987264212798334818">Të përgjithshme</translation>
 <translation id="988159990683914416">Ndërtimi i zhvilluesit</translation>
 <translation id="989988560359834682">Redakto adresën</translation>

@@ -674,7 +674,6 @@
 <translation id="2157640075051554492">Notifications de suivi de prix</translation>
 <translation id="21613918653299710">Galeries d'images en ligne</translation>
 <translation id="2161656808144014275">Texte</translation>
-<translation id="2162510787844374618">Nous communiquons avec votre banque…</translation>
 <translation id="2162620598375156287">Maintenant <ph name="CURRENT_PRICE" /> sur <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Vérifiez si <ph name="HOST_NAME" /> est écrit correctement.</translation>
 <translation id="2166049586286450108">Accès administrateur complet</translation>
@@ -2408,6 +2407,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="5254043433801397071">Optimiser le contenu d'impression</translation>
 <translation id="5255583962255635076">Les politiques de navigateur appliquées dans votre profil professionnel</translation>
 <translation id="5255690596502591079">Prendre une capture d'écran quand même</translation>
+<translation id="5255771248404149177">Votre fournisseur de carte veut s'assurer qu'il s'agit bien de vous</translation>
 <translation id="5255833070095767006">350 mm x 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{La politique de l'administrateur ne recommande pas de transférer ce fichier vers <ph name="DESTINATION_NAME" />}one{La politique de l'administrateur ne recommande pas de transférer ce fichier vers <ph name="DESTINATION_NAME" />}other{La politique de l'administrateur ne recommande pas de transférer ces fichiers vers <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5263867360296733198">Examen requis avant le téléversement</translation>
@@ -2428,7 +2428,6 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="5288108484102287882">La validation des valeurs de politique a déclenché des avertissements</translation>
 <translation id="5289384342738547352">Gestion de plusieurs documents</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{Mise à jour requise aujourd'hui}=2{Mise à jour requise d'ici demain}one{Mise à jour requise dans # jour}other{Mise à jour requise dans # jours}}</translation>
-<translation id="5292714443869769806">Accéder aux paramètres de <ph name="OPERATING_SYSTEM" /></translation>
 <translation id="5293919335876685914">Coupés</translation>
 <translation id="5298618990685278995">Un premier brouillon</translation>
 <translation id="5299298092464848405">Erreur d'analyse de politique</translation>
@@ -2556,6 +2555,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="5518352028556756716">La plupart des sites ne peuvent pas utiliser de témoins tiers pour vous suivre pendant votre navigation, et les sites ne peuvent pas utiliser de témoins tiers en mode Navigation privée.</translation>
 <translation id="5519516356611866228">Avec vos modifications</translation>
 <translation id="5519696598216267194">Papier (préperforé)</translation>
+<translation id="5520105693415771152">Vous ne voyez pas vos renseignements actuels? Communiquez avec votre fournisseur pour les mettre à jour.</translation>
 <translation id="5521782189689806907">Armoires</translation>
 <translation id="5523118979700054094">Nom de la règle</translation>
 <translation id="5523588073846127669">Le marchand n'accepte pas cette carte virtuelle</translation>
@@ -3650,6 +3650,7 @@ Détails supplémentaires :
 <translation id="745640750744109667">A0 x 3</translation>
 <translation id="7457071735008326060">Camions de transport et remorques</translation>
 <translation id="7461924472993315131">NIP</translation>
+<translation id="746329643760972486">macOS</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> saura que vous avez visité <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7465963048299965912">10 po x 13 po</translation>
 <translation id="7469935732330206581">Le formulaire n'est pas sécurisé</translation>
@@ -3920,7 +3921,6 @@ Détails supplémentaires :
 <translation id="7942349550061667556">Rouge</translation>
 <translation id="7943397946612013052">Téléchargement bloqué</translation>
 <translation id="7943893128817522649">Les sites peuvent demander à télécharger automatiquement plusieurs fichiers</translation>
-<translation id="794567586469801724">macOS</translation>
 <translation id="7947285636476623132">Vérifiez l'année d'expiration et réessayez</translation>
 <translation id="7947310711271925113">Musique pop</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation, puis sur Entrée pour en savoir plus sur les fonctionnalités de Chrome</translation>
@@ -4671,7 +4671,6 @@ Détails supplémentaires :
 <translation id="984275831282074731">Modes de paiement</translation>
 <translation id="985199708454569384">&lt;p&gt;Cette erreur s'affiche si la date et l'heure de votre ordinateur ou de votre appareil mobile sont inexactes.&lt;/p&gt;
     &lt;p&gt;Pour corriger l'erreur, ouvrez l'horloge de votre appareil. Assurez-vous que la date et l'heure sont correctes.&lt;/p&gt;</translation>
-<translation id="986257639512122511">Vous avez autorisé <ph name="PERMISSION" /> sur <ph name="ORIGIN" /></translation>
 <translation id="987264212798334818">Généralités</translation>
 <translation id="988159990683914416">Version de développeur</translation>
 <translation id="989988560359834682">Modifier l'adresse</translation>

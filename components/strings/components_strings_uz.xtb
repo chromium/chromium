@@ -673,7 +673,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2157640075051554492">Narxlarni kuzatish bildirishnomalari</translation>
 <translation id="21613918653299710">Onlayn rasm galereyalari</translation>
 <translation id="2161656808144014275">Matn</translation>
-<translation id="2162510787844374618">Bank bilan aloqa qilinmoqda...</translation>
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> saytidagi joriy narxi: <ph name="CURRENT_PRICE" /></translation>
 <translation id="2164510882479075877"><ph name="HOST_NAME" /> xatosiz kiritilganini tekshiring.</translation>
 <translation id="2166049586286450108">Administratorning barcha ma’lumotlarga to‘liq ruxsati</translation>
@@ -2423,7 +2422,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5288108484102287882">Parametr qiymatlari tekshiruvida ogohlantiruvlar aniqlandi</translation>
 <translation id="5289384342738547352">Bir nechta hujjat qayta ishlanishi</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{Bugun yangilanishi kerak}=2{Ertaga yangilanishi kerak}other{# kun ichida yangilanishi kerak}}</translation>
-<translation id="5292714443869769806"><ph name="OPERATING_SYSTEM" /> sozlamalarini ochish</translation>
 <translation id="5293919335876685914">Kupe</translation>
 <translation id="5298618990685278995">dastlabki qoralama</translation>
 <translation id="5299298092464848405">Siyosatni analiz qilishda xatolik yuz berdi</translation>
@@ -3644,6 +3642,7 @@ Batafsil axborot:
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Yuk mashinalari va treylerlar</translation>
 <translation id="7461924472993315131">Qadab qo‘yish</translation>
+<translation id="746329643760972486">MacOS</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> sayti <ph name="TOP_LEVEL_URL" /> ochilgani haqida biladi.</translation>
 <translation id="7465963048299965912">10 x 13 in</translation>
 <translation id="7469935732330206581">Shakl xavfsiz emas</translation>
@@ -3914,7 +3913,6 @@ Batafsil axborot:
 <translation id="7942349550061667556">Qizil</translation>
 <translation id="7943397946612013052">Yuklab olish bloklandi</translation>
 <translation id="7943893128817522649">Birdaniga bir nechta fayl yuklab olish uchun ruxsat soʻrashi mumkin</translation>
-<translation id="794567586469801724">macOS</translation>
 <translation id="7947285636476623132">Kartangiz muddatining tugash yilini tekshiring va yana urinib ko‘ring</translation>
 <translation id="7947310711271925113">Pop musiqa</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome funksiyalari bilan tanishish uchun avval Tab, keyin Enter tugmasini bosing</translation>
@@ -4666,7 +4664,6 @@ Batafsil axborot:
 <translation id="984275831282074731">To‘lov usullari</translation>
 <translation id="985199708454569384">&lt;p&gt;Kompyuter yoki mobil qurilmangizning soati xato bo‘lsa, bu xabar sizga bildiriladi.&lt;/p&gt;
     &lt;p&gt;Buni hal qilish uchun qurilmangiz soatidan vaqt va sanani tuzating.&lt;/p&gt;</translation>
-<translation id="986257639512122511"><ph name="ORIGIN" /> da <ph name="PERMISSION" /> ruxsatini bergansiz</translation>
 <translation id="987264212798334818">Umumiy</translation>
 <translation id="988159990683914416">Dasturchilar yig‘masi</translation>
 <translation id="989988560359834682">Manzilni o‘zgartirish</translation>

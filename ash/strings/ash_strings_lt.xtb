@@ -731,6 +731,7 @@ Kitu atveju įtaisytoji jutiklinė dalis bus vėl įjungta po <ph name="TIMEOUT_
 <translation id="3522979239100719575">Ieškoma pasiekiamų profilių. Tai gali užtrukti kelias minutes.</translation>
 <translation id="3526440770046466733">Atidaryti nuorodą naujame skirtuke ir likti dabartiniame skirtuke</translation>
 <translation id="353086728817903341">Prisijungta prie įrenginių: <ph name="NUM_DEVICES" /></translation>
+<translation id="3532247131850366052">Nepavyko sukurti „Google“ skaičiuoklės</translation>
 <translation id="3533126039236445965">Lentynoje esančios programos</translation>
 <translation id="3539957339480430241">„<ph name="DEVICE_NAME" />“ viešosios interneto prieigos taškas</translation>
 <translation id="3540893133818942399">Atsisakykite nustatyti naujausių telefono nuotraukų ir medijos peržiūrą</translation>
@@ -829,6 +830,7 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="380165613292957338">Sveiki, kuo galiu padėti?</translation>
 <translation id="3804737937830804242">Sutraukti fotoaparatą</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{Vienas jaustukas. Kitų rezultatų nėra.}one{# jaustukas. Kitų rezultatų nėra.}few{# jaustukai. Kitų rezultatų nėra.}many{# jaustuko. Kitų rezultatų nėra.}other{# jaustukų. Kitų rezultatų nėra.}}</translation>
+<translation id="3822403841174077928">Nepavyko nukopijuoti su formatavimu</translation>
 <translation id="3824784079442479685">Tai leis pasiekti fotoaparatą „<ph name="APP_NAME" />“ ir visoms programoms bei svetainėms, turinčioms fotoaparato leidimą. Gali reikėti atnaujinti tinklalapį arba paleisti programą iš naujo.</translation>
 <translation id="3826099427150913765">Perjungti į slaptažodį</translation>
 <translation id="383058930331066723">Akumuliatoriaus tausojimo priemonės režimas įjungtas</translation>
@@ -1215,6 +1217,7 @@ Prijungtas vienas įrenginys.</translation>
 <translation id="5043679421800073804">Spustelėti arba paliesti paskutinę piktogramą lentynoje</translation>
 <translation id="504465286040788597">Ankstesnė pastraipa</translation>
 <translation id="5045550434625856497">Neteisingas slaptažodis</translation>
+<translation id="5058794129231928255">Nepavyko sukurti „Google“ dokumento</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Gausite pranešimą, jei kalbėsite nutildę. Garso įrašas visada lieka jūsų įrenginyje.</translation>
 <translation id="5077416371682039027">Nustatyti naujausių telefono nuotraukų, medijos, pranešimų ir programų peržiūrą</translation>
@@ -1478,7 +1481,6 @@ Nėra jokių prijungtų įrenginių.</translation>
 <translation id="589817443623831496">Taškų nuskaitymas</translation>
 <translation id="5901316534475909376">„Shift“ + „Esc“</translation>
 <translation id="5901630391730855834">Geltona</translation>
-<translation id="5911231045062997865">„Lacros“ langai šiuo metu nepalaikomi. Kitos programos bus išsaugotos.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916646100036936191">Naujas pranešimas, iš viso <ph name="NOTIFICATION_COUNT" /></translation>
 <translation id="5916664084637901428">Įjungta</translation>
@@ -1648,6 +1650,7 @@ Nėra jokių prijungtų įrenginių.</translation>
 <translation id="6468406072297048412">{0,plural, =1{Grąžinkite ankstesnę įrenginio versiją per minutę}one{Grąžinkite ankstesnę įrenginio versiją per # minutę}few{Grąžinkite ankstesnę įrenginio versiją per # minutes}many{Grąžinkite ankstesnę įrenginio versiją per # minutės}other{Grąžinkite ankstesnę įrenginio versiją per # minučių}}</translation>
 <translation id="6469104339369989396">Perjungti viešosios interneto prieigos tašką</translation>
 <translation id="6477681113376365978">Neįmanoma atsiųsti failo</translation>
+<translation id="648135757200234041">Nepavyko sukurti kontakto</translation>
 <translation id="6482559668224714696">Viso ekrano didintuvas</translation>
 <translation id="6485086611007560630">Orų prognozė (nepasiekiama)</translation>
 <translation id="6490471652906364588">USB-C įrenginys (prievadas dešinėje)</translation>
@@ -2288,6 +2291,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="8653151467777939995">Rodyti pranešimų nustatymus. Pranešimai įjungti</translation>
 <translation id="8657066291275741003">mažosios raidės</translation>
 <translation id="8660331759611631213">Kvadratinė šaknis iš 71</translation>
+<translation id="8662921061190671299">Nepavyko pridėti prie Kalendoriaus</translation>
 <translation id="8663756353922886599">„<ph name="CONNECTION_STATUS" />“, signalo stiprumas <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Paspauskite „Enter“, kad užfiksuotumėte dalinę ekrano kopiją</translation>
 <translation id="8676770494376880701">Prijungtas mažos galios įkroviklis</translation>

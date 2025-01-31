@@ -674,7 +674,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2157640075051554492">Notifications de suivi des prix</translation>
 <translation id="21613918653299710">Galeries d'images en ligne</translation>
 <translation id="2161656808144014275">Texte</translation>
-<translation id="2162510787844374618">Nous contactons votre banque…</translation>
 <translation id="2162620598375156287">Actuellement à <ph name="CURRENT_PRICE" /> sur <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Vérifiez si l'adresse <ph name="HOST_NAME" /> est correcte.</translation>
 <translation id="2166049586286450108">Accès administrateur complet</translation>
@@ -2428,7 +2427,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5288108484102287882">La validation des valeurs de règle a renvoyé des avertissements</translation>
 <translation id="5289384342738547352">Gestion de documents multiples</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{Mise à jour requise aujourd'hui}=2{Mise à jour requise d'ici demain}one{Mise à jour requise d'ici # jour}other{Mise à jour requise d'ici # jours}}</translation>
-<translation id="5292714443869769806">Accéder aux paramètres <ph name="OPERATING_SYSTEM" /></translation>
 <translation id="5293919335876685914">Coupés</translation>
 <translation id="5298618990685278995">Une première suggestion</translation>
 <translation id="5299298092464848405">Erreur d'analyse de la règle.</translation>
@@ -3652,6 +3650,7 @@ Informations supplémentaires :
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Camions et remorques de fret</translation>
 <translation id="7461924472993315131">Épingler</translation>
+<translation id="746329643760972486">macOS</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> saura que vous avez consulté <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7465963048299965912">10 x 13 pouces</translation>
 <translation id="7469935732330206581">Formulaire non sécurisé</translation>
@@ -3883,6 +3882,7 @@ Informations supplémentaires :
 <translation id="784404208867107517">Historique par groupe</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Aucune}=1{1 application (<ph name="EXAMPLE_APP_1" />)}=2{2 applications (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# application (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# applications (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Une erreur s'est produite. Réessayez.</translation>
+<translation id="784623644169604270">Aucune activité récente</translation>
 <translation id="785476343534277563">Sports universitaires</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> : <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="7860345425589240791">Saisissez la nouvelle date d'expiration et le nouveau code CVC au <ph name="SIDE_OF_CARD" /></translation>
@@ -3921,7 +3921,6 @@ Informations supplémentaires :
 <translation id="7942349550061667556">Rouge</translation>
 <translation id="7943397946612013052">Téléchargement bloqué</translation>
 <translation id="7943893128817522649">Peut demander à télécharger automatiquement plusieurs fichiers</translation>
-<translation id="794567586469801724">macOS</translation>
 <translation id="7947285636476623132">Veuillez vérifier l'année d'expiration, puis réessayer</translation>
 <translation id="7947310711271925113">Pop</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation, puis sur Entrée pour en savoir plus sur les fonctionnalités de Chrome</translation>
@@ -4672,7 +4671,6 @@ Informations supplémentaires :
 <translation id="984275831282074731">Modes de paiement</translation>
 <translation id="985199708454569384">&lt;p&gt;Ce message s'affiche si la date et l'heure de votre ordinateur ou de votre appareil mobile sont incorrectes.&lt;/p&gt;
     &lt;p&gt;Pour corriger cette erreur, ouvrez l'horloge de votre appareil et assurez-vous que l'heure et la date sont correctes.&lt;/p&gt;</translation>
-<translation id="986257639512122511">Vous avez accordé l'autorisation <ph name="PERMISSION" /> sur <ph name="ORIGIN" /></translation>
 <translation id="987264212798334818">Général</translation>
 <translation id="988159990683914416">Build de développement</translation>
 <translation id="989988560359834682">Modifier l'adresse</translation>

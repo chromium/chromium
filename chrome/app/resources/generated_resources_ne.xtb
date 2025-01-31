@@ -124,7 +124,6 @@
 <translation id="1076766328672150609">तपाईंका बच्चा PIN प्रयोग गरेर यो डिभाइस अनलक गर्न सक्छन्।</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216"><ph name="LANGUAGE" /> भाषाको हिज्जे जाँच गर्न प्रयोग गरिने शब्दकोश डाउनलोड गर्न सकिएन। फेरि प्रयास गर्नुहोस्।</translation>
-<translation id="1078029726086090536">आफ्नो पासवर्ड पुष्टि गर्नुहोस्</translation>
 <translation id="1078037449555275327">ChromeVox का सेटिङ</translation>
 <translation id="1079242569060319448">PIN बिर्सनुभयो?</translation>
 <translation id="1079285777677001938">केही साइटका सुविधाहरूले काम नगर्न सक्छन्।</translation>
@@ -367,6 +366,7 @@
 <translation id="1241066500170667906"><ph name="EXPERIMENT_NAME" /> को परीक्षणको स्थिति चयन गर्नुहोस्</translation>
 <translation id="124116460088058876">थप भाषाहरू</translation>
 <translation id="1241381048229838873">सबै पुस्तक चिन्हहरू देखाउनुहोस्</translation>
+<translation id="1242044645101871359">फेरि साइन इन गर्नुहोस्</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" /> तपाईँका सेटिङहरू रिसेट गर्न चाहन्छ।</translation>
 <translation id="1243002225871118300">डिस्प्ले र टेक्स्टको साइज बदल्नुहोस्</translation>
 <translation id="1243314992276662751">अपलोड गर्नुहोस्</translation>
@@ -1614,7 +1614,6 @@
 <translation id="2113921862428609753">अख्यतियार जानकारी पहुँच</translation>
 <translation id="2114145607116268663">इन्स्टल गर्न सकिएन। कम्प्युटर रिबुट गर्नु पर्ने हुन्छ। कृपया आफ्नो कम्प्युटर रिस्टार्ट गर्नुहोस् र फेरि प्रयास गर्नुहोस्। त्रुटिको कोड <ph name="ERROR" /> हो।</translation>
 <translation id="2114326799768592691">&amp;Frame पुन: लोड गर्नुहोस्</translation>
-<translation id="2114413269775311385">यो खाता Android एपहरूमा प्रयोग गर्नुहोस्। तपाईं <ph name="LINK_BEGIN" />एपका सेटिङ<ph name="LINK_END" />मा गई Android एपहरूलाई दिइएको अनुमति नियन्त्रण सक्नुहुन्छ।</translation>
 <translation id="2114995631896158695">SIM कार्ड हालिएको छैन</translation>
 <translation id="2116619964159595185">साइटहरूले लो-इनर्जी बिकन, हेल्थ वा फिटनेस ट्र्याकर वा स्मार्ट चिम सेटअप वा सिंक गर्ने जस्ता सुविधाहरू प्रदान गर्न सामान्यतया ब्लुटुथ चल्ने यन्त्रमा कनेक्ट गर्छन्</translation>
 <translation id="2117655453726830283">अर्को स्लाइड</translation>
@@ -4629,6 +4628,7 @@
 <translation id="4242533952199664413">सेटिङहरू खोल्नुहोस्</translation>
 <translation id="4242577469625748426">यन्त्रमा नीति सेटिङहरू स्थापना गर्न असफल भयो। <ph name="VALIDATION_ERROR" />।</translation>
 <translation id="4242825475818569385"><ph name="DOMAIN" /> ले तपाईंका <ph name="BEGIN_LINK" />ब्राउजर र प्रोफाइल व्यवस्थापन गर्छ<ph name="END_LINK" /></translation>
+<translation id="424315890655130736">पासफ्रेज प्रविष्टि गर्नुहोस्</translation>
 <translation id="4243504193894350135">प्रिन्टर केही समयका लागि रोकिएको छ</translation>
 <translation id="4243624244759495699"><ph name="LOCALE" />, ग्रेड <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">स्टाइलस सम्बन्धी थप एपहरू भेट्टाउनुहोस्</translation>
@@ -5351,7 +5351,6 @@
 <translation id="4766598565665644999">सबै एक्स्टेन्सनहरू <ph name="HOST" /> रिड गर्न तथा बदल्न सक्छन्</translation>
 <translation id="4767427586072640478">अफ गरिएका एक्स्टेन्सनहरूका बारेमा थप जान्नुहोस्।</translation>
 <translation id="4768332406694066911">तपाईँसँग यी संगठनहरूका तपाईँको पहिचान गर्ने प्रमाणपत्रहरू छन्</translation>
-<translation id="4768945955870840220">Chrome ले केही उत्पादनहरूका हकमा इन्टरनेटमा उपलब्ध समीक्षाहरू सङ्कलन गर्न सक्छ</translation>
 <translation id="4769632191812288342">तपाईंले मानक सुरक्षा प्राप्त गरिरहनुभएको छ</translation>
 <translation id="4770119228883592393">अनुमति मागियो, यस सम्बन्धमा कारबाही गर्न ⌘ + Option + डाउन एरो थिच्नुहोस्</translation>
 <translation id="4770755495532014179">यो पासवर्ड आफ्नो iPhone मा प्रयोग गर्नुहोस्</translation>
@@ -8748,7 +8747,6 @@
 <translation id="7243092385765551741">पासकी मेटाउने हो?</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> गुणा <ph name="HEIGHT" /> (उत्कृष्ट)</translation>
 <translation id="7246230585855757313">आफ्नो सुरक्षा साँचो पुनः प्रविष्टि गरी फेरि प्रयास गर्नुहोस्</translation>
-<translation id="724835896049478274">Android एपहरूका लागि उपलब्ध खाताहरू</translation>
 <translation id="7248802599439396696">ट्याबहरू निष्क्रिय बनाउनुहोस्</translation>
 <translation id="7249197363678284330">एड्रेस बारमा गई यो सेटिङ बदल्नुहोस्।</translation>
 <translation id="7249764475759804559">फाइलहरू खोल्दा यो एप विकल्पका रूपमा समावेश गर्नुहोस्</translation>
@@ -10697,7 +10695,6 @@
 <translation id="8625124982056504555">ChromeOS चल्ने डिभाइस र त्यसका कम्पोनेन्टका क्रम सङ्ख्या रिड गर्ने</translation>
 <translation id="862542460444371744">&amp;विस्तारहरू</translation>
 <translation id="8625663000550647058">तपाईंको माइक्रोफोन प्रयोग गर्ने अनुमति नदिइएका साइटहरू</translation>
-<translation id="8625679025395572221">तपाईंको खाता अझै पनि जोखिममा हुन सक्छ।</translation>
 <translation id="8625916342247441948">साइटहरूलाई HID डिभाइसमा कनेक्ट गर्ने अनुमति नदिनुहोस्</translation>
 <translation id="862727964348362408">निलम्बित</translation>
 <translation id="862750493060684461">CSS क्यास</translation>
@@ -11579,7 +11576,6 @@
 <translation id="936801553271523408">प्रणाली विकर्ण लगत</translation>
 <translation id="93766956588638423">विस्तार मर्मत गर्नुहोस्</translation>
 <translation id="938623846785894166">असामान्य फाइल</translation>
-<translation id="939401694733344652">यी खाताहरू अहिले Android एपहरूमा प्रयोग गरिएका छैनन्। तपाईंले यो Android एपमा प्रयोग गर्नका लागि कुनै खाता चयन गर्नुभयो भने उक्त खाता अन्य Android एपहरूमा पनि प्रयोग गरिन सक्छ। तपाईं <ph name="LINK_BEGIN" />सेटिङ &gt; खाताहरू<ph name="LINK_END" /> मा गई Android एपहरूलाई दिइएको अनुमति बदल्न सक्नुहुन्छ।</translation>
 <translation id="939598580284253335">पासफ्रेज प्रविष्टि गर्नुहोस्</translation>
 <translation id="939736085109172342">नयाँ फोल्डर</translation>
 <translation id="940212040923880623">&amp;भेट्टाउनुहोस् र सम्पादन गर्नुहोस्</translation>

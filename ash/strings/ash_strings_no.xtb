@@ -731,6 +731,7 @@ Ellers blir den innebygde styreflaten slått på igjen om <ph name="TIMEOUT_SECO
 <translation id="3522979239100719575">Ser etter tilgjengelige profiler. Dette kan ta noen minutter.</translation>
 <translation id="3526440770046466733">Åpne link i en ny fane, og bli værende på den gjeldende fanen</translation>
 <translation id="353086728817903341">Koblet til <ph name="NUM_DEVICES" /> enheter</translation>
+<translation id="3532247131850366052">Kunne ikke opprette Google-regneark</translation>
 <translation id="3533126039236445965">Apper på hyllen</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" />-wifi-sone</translation>
 <translation id="3540893133818942399">Lukk konfigurering av visning av nylige bilder og medier fra telefonen din</translation>
@@ -829,6 +830,7 @@ Koble enheten til strøm.</translation>
 <translation id="380165613292957338">Hei! Hva kan jeg hjelpe deg med?</translation>
 <translation id="3804737937830804242">Skjul kameraet</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 emoji. Ingen andre resultater.}other{# emojier. Ingen andre resultater.}}</translation>
+<translation id="3822403841174077928">Kunne ikke kopiere med formatering</translation>
 <translation id="3824784079442479685">Dette gir <ph name="APP_NAME" /> og alle apper og nettsteder som har kameratillatelsen, tilgang til kameraet. Det kan hende du må laste inn nettsiden på nytt eller starte appen på nytt.</translation>
 <translation id="3826099427150913765">Bytt til passord</translation>
 <translation id="383058930331066723">Batterisparing er på</translation>
@@ -1215,6 +1217,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="5043679421800073804">Klikk eller trykk på det siste ikonet på hyllen</translation>
 <translation id="504465286040788597">Forrige avsnitt</translation>
 <translation id="5045550434625856497">Feil passord</translation>
+<translation id="5058794129231928255">Kunne ikke opprette Google-dokument</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Du blir varslet hvis du snakker mens mikrofonen er avslått. Lyden forlater aldri enheten.</translation>
 <translation id="5077416371682039027">Konfigurer visning av nylige bilder, medier, varsler og apper fra telefonen din</translation>
@@ -1478,7 +1481,6 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="589817443623831496">Punktskanning</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">Gul</translation>
-<translation id="5911231045062997865">Lacros-vinduer støttes ikke for øyeblikket. Andre apper blir lagret.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916646100036936191">Nytt varsel, <ph name="NOTIFICATION_COUNT" /> totalt</translation>
 <translation id="5916664084637901428">På</translation>
@@ -1648,6 +1650,7 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="6468406072297048412">{0,plural, =1{Oppdater enheten til en tidligere versjon innen 1 minutt}other{Oppdater enheten til en tidligere versjon innen # minutter}}</translation>
 <translation id="6469104339369989396">Slå av/på wifi-sonen</translation>
 <translation id="6477681113376365978">Kan ikke laste ned filen</translation>
+<translation id="648135757200234041">Kunne ikke opprette kontakt</translation>
 <translation id="6482559668224714696">Lupe for hele skjermen</translation>
 <translation id="6485086611007560630">Været (ikke tilgjengelig)</translation>
 <translation id="6490471652906364588">USB-C-enhet (porten på høyre side)</translation>
@@ -2288,6 +2291,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8653151467777939995">Vis innstillinger for varsler. Varsler er på</translation>
 <translation id="8657066291275741003">små bokstaver</translation>
 <translation id="8660331759611631213">Kvadratroten av 71</translation>
+<translation id="8662921061190671299">Kunne ikke legge til i Kalender</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Trykk på Enter for å ta et delvis skjermbilde</translation>
 <translation id="8676770494376880701">Laveffektslader er tilkoblet</translation>

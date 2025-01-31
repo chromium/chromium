@@ -678,7 +678,6 @@
 <translation id="2157640075051554492">Գների հետագծման մասին ծանուցումներ</translation>
 <translation id="21613918653299710">Առցանց պատկերասրահներ</translation>
 <translation id="2161656808144014275">Տեքստ</translation>
-<translation id="2162510787844374618">Կապի հաստատում ձեր բանկի հետ…</translation>
 <translation id="2162620598375156287">Այժմ <ph name="CURRENT_PRICE" />՝ <ph name="SOURCE_WEBSITE" /> կայքում</translation>
 <translation id="2164510882479075877">Համոզվեք, որ <ph name="HOST_NAME" /> անվան մեջ տառասխալներ չկան։</translation>
 <translation id="2166049586286450108">Ադմինիստրատորի ամբողջական թույլտվություն</translation>
@@ -2435,7 +2434,6 @@
 <translation id="5288108484102287882">Կանոնի արժեքների ստուգման ընթացքում առաջացել են ոչ վճռորոշ սխալներ</translation>
 <translation id="5289384342738547352">Մի քանի փաստաթղթերի մշակում</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{Պահանջվում է թարմացում հենց այսօր}=2{Պահանջվում է թարմացում մինչև վաղը}one{Պահանջվում է թարմացում # օրվա ընթացքում}other{Պահանջվում է թարմացում # օրվա ընթացքում}}</translation>
-<translation id="5292714443869769806">Բացել <ph name="OPERATING_SYSTEM" />-ի կարգավորումները</translation>
 <translation id="5293919335876685914">Կուպե ավտոմեքենաներ</translation>
 <translation id="5298618990685278995">առաջին սևագիր</translation>
 <translation id="5299298092464848405">Կանոնը վերլուծելիս սխալ տեղի ունեցավ</translation>
@@ -3659,6 +3657,7 @@
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Բեռնատարներ և կցասայլեր</translation>
 <translation id="7461924472993315131">Ամրացնել</translation>
+<translation id="746329643760972486">MacOS</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" />-ը կիմանա, որ դուք այցելել եք <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7465963048299965912">10 x 13 դյույմ</translation>
 <translation id="7469935732330206581">Ձևն ապահով չէ</translation>
@@ -3890,6 +3889,7 @@
 <translation id="784404208867107517">Խմբավորված պատմություն</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Չկա}=1{1 հավելված (<ph name="EXAMPLE_APP_1" />)}=2{2 հավելված (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# հավելված (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# հավելված (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Սխալ առաջացավ։ Նորից փորձեք։</translation>
+<translation id="784623644169604270">Նոր գործողություններ չկան</translation>
 <translation id="785476343534277563">Համալսարանական սպորտ</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7860345425589240791">Մուտքագրեք <ph name="SIDE_OF_CARD" /> նշված վավերականության նոր ժամկետը և CVC կոդը</translation>
@@ -3928,7 +3928,6 @@
 <translation id="7942349550061667556">Կարմիր</translation>
 <translation id="7943397946612013052">Ներբեռնումն արգելափակված է</translation>
 <translation id="7943893128817522649">Կարող է հայցել մի քանի ֆայլ ավտոմատ ներբեռնելու թույլտվություն</translation>
-<translation id="794567586469801724">MacOS</translation>
 <translation id="7947285636476623132">Ստուգեք սպառման տարին և նորից փորձեք</translation>
 <translation id="7947310711271925113">Փոփ երաժշտություն</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Chrome-ի գործառույթների մասին տեղեկանալու համար սեղմեք Tab, ապա՝ Enter։</translation>
@@ -4679,7 +4678,6 @@
 <translation id="984275831282074731">Վճարման եղանակներ</translation>
 <translation id="985199708454569384">&lt;p&gt;Այս սխալը ցուցադրվում է, երբ ձեր համակարգչի/շարժական սարքի ամսաթիվը և ժամը ճիշտ չեն։&lt;/p&gt;
     &lt;p&gt;Սխալը շտկելու համար բացեք սարքի ժամացույցը։ Համոզվեք, որ ժամն ու ամսաթիվը ճիշտ են։&lt;/p&gt;</translation>
-<translation id="986257639512122511">Ձեզ տրվել է <ph name="PERMISSION" />ն օգտագործելու թույլտվություն <ph name="ORIGIN" /> կայքում</translation>
 <translation id="987264212798334818">Ընդհանուր</translation>
 <translation id="988159990683914416">Մշակողների տարբերակ</translation>
 <translation id="989988560359834682">Փոխել հասցեն</translation>

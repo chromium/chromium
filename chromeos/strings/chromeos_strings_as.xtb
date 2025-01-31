@@ -768,6 +768,7 @@
 <translation id="4654549501020883054">দৈনিক সলনি কৰক</translation>
 <translation id="4655868084888499342">প্ৰতিচ্ছবিখন পটভূমি হিচাপে ছেট কৰা হৈছে</translation>
 <translation id="4661249927038176904">অধিৱাস্তৱ</translation>
+<translation id="4661392828086261436">এই আপডে’টটো ডিভাইচৰ নিৰ্মাতাই প্ৰদান কৰিছে আৰু সেয়া Googleএ সত্যাপন কৰা নাই</translation>
 <translation id="4664651912255946953">নোম</translation>
 <translation id="4665014895760275686">উৎপাদনকাৰী</translation>
 <translation id="467510802200863975">পাছৱৰ্ডসমূহ মিলা নাই</translation>
@@ -1027,6 +1028,7 @@
 <translation id="5904994456462260490">এটা নতুন APN যোগ দিয়ক</translation>
 <translation id="590746845088109442">মেকুৰী</translation>
 <translation id="5907649332524363701">কীৰ ৰং</translation>
+<translation id="5908813850962688338">এই আপডে’টটো ইনষ্টল হওঁতে কেইমিনিটমান সময় লাগিব। আপডে’টটো ডাউনল’ড হৈ থকাৰ সময়ত আপোনাৰ ডিভাইচটো প্লাগ ইন কৰি আৰু পাৱাৰ অন কৰি ৰাখক। আপোনাৰ ডিভাইচটো নিজে নিজে বহুবাৰ ৰিবুট হ’ব পাৰে আৰু এই প্ৰক্ৰিয়াটো চলি থকাৰ সময়ত তাত এখন ক’লা স্ক্ৰীন ওলাব পাৰে। ইনষ্টল কৰাটো সম্পূৰ্ণ কৰিবলৈ আপোনাক নিজৰ ডিভাইচটো ৰিষ্টাৰ্ট কৰিবলৈ প্ৰ’ম্পট্‌ কৰা হ’ব।</translation>
 <translation id="5916084858004523819">নিষিদ্ধ</translation>
 <translation id="5916664084637901428">অন আছে</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{আপোনাৰ ফাইলটো সফলভাৱে স্কেন আৰু <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />ত ছেভ কৰা হৈছে।}one{আপোনাৰ ফাইলসমূহ সফলভাৱে স্কেন আৰু <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />ত ছেভ কৰা হৈছে।}other{আপোনাৰ ফাইলসমূহ সফলভাৱে স্কেন আৰু <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />ত ছেভ কৰা হৈছে।}}</translation>

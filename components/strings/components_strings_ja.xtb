@@ -674,7 +674,6 @@
 <translation id="2157640075051554492">価格トラッキングの通知</translation>
 <translation id="21613918653299710">オンライン画像集</translation>
 <translation id="2161656808144014275">テキスト</translation>
-<translation id="2162510787844374618">カード発行会社に問い合わせています...</translation>
 <translation id="2162620598375156287">現在の価格は <ph name="SOURCE_WEBSITE" /> で <ph name="CURRENT_PRICE" /></translation>
 <translation id="2164510882479075877"><ph name="HOST_NAME" /> にタイプミスがないか確認してください。</translation>
 <translation id="2166049586286450108">すべてのデータへの管理者アクセス</translation>
@@ -2408,6 +2407,7 @@
 <translation id="5254043433801397071">印刷コンテンツの最適化</translation>
 <translation id="5255583962255635076">仕事用プロファイルに適用されているブラウザ ポリシー</translation>
 <translation id="5255690596502591079">このままキャプチャする</translation>
+<translation id="5255771248404149177">カード発行会社が本人確認を求めています</translation>
 <translation id="5255833070095767006">350x460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{管理者のポリシーでは、このファイルを <ph name="DESTINATION_NAME" /> にコピーすることは推奨されていません}other{管理者のポリシーでは、これらのファイルを <ph name="DESTINATION_NAME" /> にコピーすることは推奨されていません}}</translation>
 <translation id="5263867360296733198">アップロードする前に確認が必要です</translation>
@@ -2428,7 +2428,6 @@
 <translation id="5288108484102287882">ポリシー値の検証で警告が返されました</translation>
 <translation id="5289384342738547352">複数ドキュメントの処理</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{今日中に更新が必要です}=2{明日までに更新が必要です}other{# 日以内に更新が必要です}}</translation>
-<translation id="5292714443869769806"><ph name="OPERATING_SYSTEM" /> の設定に移動</translation>
 <translation id="5293919335876685914">クーペ</translation>
 <translation id="5298618990685278995">最初の下書き</translation>
 <translation id="5299298092464848405">ポリシーの解析中にエラーが発生しました</translation>
@@ -2556,6 +2555,7 @@
 <translation id="5518352028556756716">ほとんどのサイトは、サードパーティ Cookie を使用してブラウジング中のユーザーをトラッキングできません。またシークレット モードでは、サイトはサードパーティ Cookie を使用できません。</translation>
 <translation id="5519516356611866228">変更後のバージョン</translation>
 <translation id="5519696598216267194">紙（穴開き）</translation>
+<translation id="5520105693415771152">現在の情報が表示されていない場合は、カード発行会社に連絡して更新してください。</translation>
 <translation id="5521782189689806907">キャビネット</translation>
 <translation id="5523118979700054094">ポリシー名</translation>
 <translation id="5523588073846127669">販売者がこの仮想カードに対応していません</translation>
@@ -3651,6 +3651,7 @@
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">貨物トラック、トレーラー</translation>
 <translation id="7461924472993315131">固定</translation>
+<translation id="746329643760972486">MacOS</translation>
 <translation id="7465036432780054056">あなたが <ph name="TOP_LEVEL_URL" /> にアクセスしたことが <ph name="EMBEDDED_URL" /> で認識されます</translation>
 <translation id="7465963048299965912">10x13 インチ</translation>
 <translation id="7469935732330206581">安全でないフォーム</translation>
@@ -3922,7 +3923,6 @@
 <translation id="7942349550061667556">赤</translation>
 <translation id="7943397946612013052">ダウンロードがブロックされました</translation>
 <translation id="7943893128817522649">複数のファイルの自動ダウンロードを要求できる</translation>
-<translation id="794567586469801724">macOS</translation>
 <translation id="7947285636476623132">有効期限の「年」を確認してもう一度お試しください</translation>
 <translation id="7947310711271925113">ポップ ミュージック</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押して、Chrome の機能を確認します</translation>
@@ -4674,7 +4674,6 @@
 <translation id="984275831282074731">お支払い方法</translation>
 <translation id="985199708454569384">&lt;p&gt;このエラーは、パソコンまたはモバイル デバイスの日付と時刻が正確でない場合に表示されます。&lt;/p&gt;
     &lt;p&gt;エラーを解決するには、デバイスの時計を開き、日付と時刻が正しいことを確認します。&lt;/p&gt;</translation>
-<translation id="986257639512122511"><ph name="ORIGIN" /> で<ph name="PERMISSION" />を許可しました</translation>
 <translation id="987264212798334818">全般</translation>
 <translation id="988159990683914416">Developer Build</translation>
 <translation id="989988560359834682">住所の編集</translation>

@@ -126,7 +126,6 @@
 <translation id="1076766328672150609">Votre enfant peut utiliser un NIP pour déverrouiller l'appareil.</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216">Impossible de télécharger le dictionnaire du correcteur orthographique pour la langue suivante : <ph name="LANGUAGE" />. Réessayez.</translation>
-<translation id="1078029726086090536">Confirmer votre mot de passe</translation>
 <translation id="1078037449555275327">Paramètres ChromeVox</translation>
 <translation id="1079242569060319448">Vous avez oublié votre NIP?</translation>
 <translation id="1079285777677001938">Les fonctionnalités de certains sites pourraient ne pas fonctionner.</translation>
@@ -370,6 +369,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1241066500170667906">Sélectionner l'état des tests pour <ph name="EXPERIMENT_NAME" /></translation>
 <translation id="124116460088058876">Plus de langues</translation>
 <translation id="1241381048229838873">Afficher tous les favoris</translation>
+<translation id="1242044645101871359">Reconnectez-vous</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" /> souhaite que vous réinitialisiez vos paramètres.</translation>
 <translation id="1243002225871118300">Modifier l'affichage et la taille du texte</translation>
 <translation id="1243314992276662751">Téléverser</translation>
@@ -1618,7 +1618,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2113921862428609753">Accès à l'information de l'autorité</translation>
 <translation id="2114145607116268663">Installation impossible, un redémarrage est requis. Veuillez redémarrer votre ordinateur et réessayer. Le code d'erreur est <ph name="ERROR" />.</translation>
 <translation id="2114326799768592691">Actualiser le &amp;cadre</translation>
-<translation id="2114413269775311385">Utilisez ce compte avec des applications Android. Vous pouvez définir les autorisations pour les applications Android dans <ph name="LINK_BEGIN" />Paramètres des applications<ph name="LINK_END" />.</translation>
 <translation id="2114995631896158695">Aucune carte SIM dans l'appareil</translation>
 <translation id="2116619964159595185">Les sites se connectent généralement aux appareils Bluetooth pour proposer des fonctionnalités comme la configuration ou la synchronisation d'une balise à faible consommation d'énergie, d'un moniteur de santé ou d'activité physique, ou d'une ampoule intelligente</translation>
 <translation id="2117655453726830283">Diapositive suivante</translation>
@@ -2797,6 +2796,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="2926620265753325858">L'appareil <ph name="DEVICE_NAME" /> n'est pas pris en charge.</translation>
 <translation id="2926708162326352948">Thème mis à jour avec l'image téléversée</translation>
 <translation id="2927017729816812676">Stockage du cache</translation>
+<translation id="2928030851119977280">Choix enregistré. Votre choix s'appliquera lorsque vous vous connecterez à d'autres services Google.</translation>
 <translation id="2928795416630981206">Autorisés à suivre la position de votre caméra</translation>
 <translation id="2929345818093040583">{NUM_SITES,plural, =1{Chrome a retiré les autorisations de 1 site}one{Chrome a retiré les autorisations de {NUM_SITES} site}other{Chrome a retiré les autorisations de {NUM_SITES} sites}}</translation>
 <translation id="2931157624143513983">Ajuster à la zone imprimable</translation>
@@ -4637,6 +4637,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="4242533952199664413">Ouvrir les paramètres</translation>
 <translation id="4242577469625748426">Échec de l'installation des paramètres des règles sur l'appareil : <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385">Votre <ph name="BEGIN_LINK" />navigateur et votre profil sont gérés<ph name="END_LINK" /> par <ph name="DOMAIN" /></translation>
+<translation id="424315890655130736">Entrer la phrase de passe</translation>
 <translation id="4243504193894350135">L'imprimante est interrompue</translation>
 <translation id="4243624244759495699"><ph name="LOCALE" />, niveau <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">Rechercher d'autres applications de stylet</translation>
@@ -5359,7 +5360,6 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="4766598565665644999">Toutes les extensions peuvent lire et modifier <ph name="HOST" /></translation>
 <translation id="4767427586072640478">Apprenez-en plus sur les extensions désactivées.</translation>
 <translation id="4768332406694066911">Vous avez des certificats provenant de ces organisations qui vous identifient</translation>
-<translation id="4768945955870840220">Pour certains produits, Chrome peut recueillir des avis sur le Web.</translation>
 <translation id="4769632191812288342">Vous profitez de la protection standard</translation>
 <translation id="4770119228883592393">Autorisation demandée, appuyez sur ⌘+Option+flèche vers le bas pour répondre</translation>
 <translation id="4770755495532014179">Utilisez ce mot de passe sur votre iPhone</translation>
@@ -7409,6 +7409,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6253801023880399036">Les mots de passe sont enregistrés dans le <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="6254503684448816922">Clé compromise</translation>
 <translation id="6254892857036829079">Parfaite</translation>
+<translation id="6257131917452817589">modification automatique du mot de passe</translation>
 <translation id="6257602895346497974">Activer la synchronisation…</translation>
 <translation id="6257614441619555296"><ph name="KEY" /> : <ph name="VALUE" /></translation>
 <translation id="625827534921607067">Ce réseau sera préféré si plusieurs réseaux configurés ou auxquels vous vous êtes connectés précédemment sont accessibles</translation>
@@ -8757,7 +8758,6 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7243092385765551741">Supprimer la clé d'accès?</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (Meilleure résolution)</translation>
 <translation id="7246230585855757313">Réinsérez votre clé de sécurité, puis réessayez</translation>
-<translation id="724835896049478274">Comptes accessibles aux applications Android</translation>
 <translation id="7248802599439396696">Rendre les onglets inactifs</translation>
 <translation id="7249197363678284330">Modifiez ce paramètre dans la barre d'adresse.</translation>
 <translation id="7249764475759804559">Inclure cette application comme option lors de l'ouverture de fichiers</translation>
@@ -9121,6 +9121,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7502528909759062987">Suspendre l'onglet de diffusion sur <ph name="DEVICE_NAME" /></translation>
 <translation id="7502804472671406749">Il est possible de faire défiler et de zoomer les onglets partagés</translation>
 <translation id="7503191893372251637">Type de certificat Netscape</translation>
+<translation id="7503259455663961898">Le modifier pour moi</translation>
 <translation id="7503985202154027481">Une trace de votre visite sur ce site sera enregistrée sur votre clé de sécurité.</translation>
 <translation id="7504145862399276792">L'audio de cet onglet est désactivé</translation>
 <translation id="750509436279396091">Ouvrir le dossier des téléchargements</translation>
@@ -9183,6 +9184,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7551059576287086432">Échec du téléchargement de <ph name="FILE_NAME" /></translation>
 <translation id="7551643184018910560">Épingler sur l'étagère</translation>
 <translation id="7552191410769096467">Pour partager ou rejoindre des groupes d'onglets, vous devez vous connecter et activer la synchronisation</translation>
+<translation id="7552196109089297786">Se déconnecter de Microsoft</translation>
 <translation id="7552846755917812628">Essayez les conseils suivants :</translation>
 <translation id="7553012839257224005">Vérification du conteneur Linux en cours…</translation>
 <translation id="7553242001898162573">Entrez votre mot de passe</translation>
@@ -10311,6 +10313,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8330617762701840933">La liste des sites Web qui s'ouvrent dans un navigateur secondaire.</translation>
 <translation id="8330689128072902965">Les contacts à proximité peuvent partager du contenu avec vous. Cliquez pour modifier.</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{Type de fichier pris en charge : <ph name="FILE_TYPE1" />}=2{Types de fichiers pris en charge : <ph name="FILE_TYPE1" /> et <ph name="FILE_TYPE2" />}=3{Types de fichiers pris en charge : <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" /> et <ph name="FILE_TYPE3" />}=4{Types de fichiers pris en charge : <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" /> et <ph name="FILE_TYPE4" />}one{Types de fichiers pris en charge : <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" /> et <ph name="FILE_TYPE4" />(<ph name="LINK" />et {OVERFLOW_COUNT} autre<ph name="END_LINK" />)}other{Types de fichiers pris en charge : <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" /> et <ph name="FILE_TYPE4" />(<ph name="LINK" />et {OVERFLOW_COUNT} autres<ph name="END_LINK" />)}}</translation>
+<translation id="8331578454993293727">Ce mot de passe a été découvert dans un cas de violation de données</translation>
 <translation id="8331822764922665615">Nommez votre groupe, choisissez une couleur, puis appuyez sur Échapp.</translation>
 <translation id="833256022891467078">Dossiers partagés Crostini</translation>
 <translation id="833262891116910667">Surligner</translation>
@@ -10392,6 +10395,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
     <ph name="BEGIN_PARAGRAPH2" />Pour obtenir de l'aide supplémentaire, consultez la page g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8383614331548401927">Récap de bienvenue</translation>
 <translation id="8386091599636877289">Politique introuvable.</translation>
+<translation id="8387087863179559896">Chrome peut mettre à jour votre compte pour ce site avec un mot de passe fort. Vous n'aurez pas besoin de mémoriser le mot de passe, car il sera enregistré pour vous dans le gestionnaire de mots de passe Google pour <ph name="EMAIL" />. Apprenez-en plus sur la <ph name="PASSWORD_CHANGE" />.</translation>
 <translation id="8387361103813440603">Non autorisés à consulter votre position</translation>
 <translation id="8387617938027387193">Confirmer votre identité</translation>
 <translation id="8388770971141403598">Les profils secondaires ne sont pas pris en charge</translation>
@@ -10706,7 +10710,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8625124982056504555">Lire les numéros de série de l'appareil et des composantes ChromeOS</translation>
 <translation id="862542460444371744">&amp;Extensions</translation>
 <translation id="8625663000550647058">Non autorisés à utiliser votre microphone</translation>
-<translation id="8625679025395572221">Il se peut que votre compte soit encore menacé.</translation>
 <translation id="8625916342247441948">Ne pas autoriser les sites à se connecter à des appareils HID</translation>
 <translation id="862727964348362408">Suspendu</translation>
 <translation id="862750493060684461">Cache CSS</translation>
@@ -11588,7 +11591,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="936801553271523408">Données de diagnostic système</translation>
 <translation id="93766956588638423">Réparer l'extension</translation>
 <translation id="938623846785894166">Fichier inhabituel</translation>
-<translation id="939401694733344652">Ces comptes ne sont pas actuellement utilisés avec des applications Android. Si vous sélectionnez un compte à utiliser avec cette application Android, celui-ci peut également être utilisé avec d'autres applications Android. Vous pouvez modifier l'accès à l'application Android dans <ph name="LINK_BEGIN" />Paramètres &gt; Comptes<ph name="LINK_END" />.</translation>
 <translation id="939598580284253335">Entrer la phrase de passe</translation>
 <translation id="939736085109172342">Nouveau dossier</translation>
 <translation id="940212040923880623">et Rechercher et modifier</translation>

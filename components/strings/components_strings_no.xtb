@@ -674,7 +674,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2157640075051554492">Varsler om prissporing</translation>
 <translation id="21613918653299710">Bildegallerier på internett</translation>
 <translation id="2161656808144014275">Tekst</translation>
-<translation id="2162510787844374618">Kontakter banken din …</translation>
 <translation id="2162620598375156287">Nå <ph name="CURRENT_PRICE" /> på <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Sjekk om det er en skrivefeil i <ph name="HOST_NAME" />.</translation>
 <translation id="2166049586286450108">Full administratortilgang</translation>
@@ -2408,6 +2407,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5254043433801397071">Optimaliser utskriftsinnhold</translation>
 <translation id="5255583962255635076">Gjeldende nettleserregler i jobbprofilen din</translation>
 <translation id="5255690596502591079">Ta opp likevel</translation>
+<translation id="5255771248404149177">Kortutstederen vil bekrefte at det er deg</translation>
 <translation id="5255833070095767006">350 x 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{Administratorreglene anbefaler ikke at du kopierer denne filen til <ph name="DESTINATION_NAME" />}other{Administratorreglene anbefaler ikke at du kopierer disse filene til <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5263867360296733198">Filene må gjennomgås før de kan lastes opp</translation>
@@ -2428,7 +2428,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5288108484102287882">Det har oppstått advarsler under validering av regelverdier</translation>
 <translation id="5289384342738547352">Håndtering av flere dokumenter</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{Må oppdateres i dag}=2{Må oppdateres innen i morgen}other{Må oppdateres innen # dager}}</translation>
-<translation id="5292714443869769806">Gå til <ph name="OPERATING_SYSTEM" />-innstillingene</translation>
 <translation id="5293919335876685914">Kupeer</translation>
 <translation id="5298618990685278995">et førsteutkast</translation>
 <translation id="5299298092464848405">Feil under analysen av enhetsinnstillingene</translation>
@@ -2556,6 +2555,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5518352028556756716">De fleste nettsteder kan ikke bruke informasjonskapsler fra tredjeparter til å spore deg mens du surfer, og nettsteder kan ikke bruke informasjonskapsler fra tredjeparter i inkognitomodus.</translation>
 <translation id="5519516356611866228">Med endringene dine</translation>
 <translation id="5519696598216267194">Papir (hullpapir)</translation>
+<translation id="5520105693415771152">Er ikke informasjonen oppdatert? Kontakt banken din for å oppdatere den.</translation>
 <translation id="5521782189689806907">Skapmøbler</translation>
 <translation id="5523118979700054094">Navn på retningslinje</translation>
 <translation id="5523588073846127669">Selgeren godtar ikke dette virtuelle kortet</translation>
@@ -3650,6 +3650,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Lastebiler og trailere</translation>
 <translation id="7461924472993315131">Fest</translation>
+<translation id="746329643760972486">macOS</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> får vite at du har besøkt <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7465963048299965912">10 x 13 tommer</translation>
 <translation id="7469935732330206581">Skjemaet er ikke sikkert</translation>
@@ -3920,7 +3921,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7942349550061667556">Rød</translation>
 <translation id="7943397946612013052">Blokkert nedlasting</translation>
 <translation id="7943893128817522649">Kan be om å få laste ned flere filer automatisk</translation>
-<translation id="794567586469801724">macOS</translation>
 <translation id="7947285636476623132">Kontroller utløpsdatoen, og prøv igjen</translation>
 <translation id="7947310711271925113">Popmusikk</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å lære om Chrome-funksjoner</translation>
@@ -4672,7 +4672,6 @@ Mer informasjon:
 <translation id="984275831282074731">Betalingsmåter</translation>
 <translation id="985199708454569384">&lt;p&gt;Du ser denne feilen hvis du har feil dato eller klokkeslett på datamaskinen eller mobilenheten din.&lt;/p&gt;
     &lt;p&gt;For å fikse feilen, åpne klokken på enheten, og sørg for at klokkeslettet og datoen er riktig.&lt;/p&gt;</translation>
-<translation id="986257639512122511">Du har tillatt <ph name="PERMISSION" /> på <ph name="ORIGIN" /></translation>
 <translation id="987264212798334818">Generelt</translation>
 <translation id="988159990683914416">Utviklerversjon</translation>
 <translation id="989988560359834682">Rediger adresse</translation>

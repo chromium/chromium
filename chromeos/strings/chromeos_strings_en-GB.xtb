@@ -768,6 +768,7 @@
 <translation id="4654549501020883054">Change daily</translation>
 <translation id="4655868084888499342">Image set as wallpaper</translation>
 <translation id="4661249927038176904">Surreal</translation>
+<translation id="4661392828086261436">This update is provided by the device manufacturer and has not been verified by Google</translation>
 <translation id="4664651912255946953">fur</translation>
 <translation id="4665014895760275686">Manufacturer</translation>
 <translation id="467510802200863975">Passwords do not match</translation>
@@ -1027,6 +1028,7 @@
 <translation id="5904994456462260490">Add a new APN</translation>
 <translation id="590746845088109442">cats</translation>
 <translation id="5907649332524363701">key colour</translation>
+<translation id="5908813850962688338">Installing this update will take a few minutes. Keep your device plugged in and powered on when the update is being downloaded. Your device may reboot itself several times and show a black screen during this process. You will be prompted to restart your device to complete installation.</translation>
 <translation id="5916084858004523819">Prohibited</translation>
 <translation id="5916664084637901428">On</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Your file has been successfully scanned and saved to <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Your files have been successfully scanned and saved to <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>

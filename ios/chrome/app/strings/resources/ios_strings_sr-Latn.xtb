@@ -263,7 +263,6 @@
 <translation id="2074131957428911366">Uvek možete da odaberete šta ćete sinhronizovati u <ph name="BEGIN_LINK" />podešavanjima<ph name="END_LINK" />.</translation>
 <translation id="2078437078822043850">Možete da skrolujete udesno da biste pregledali u režimu bez arhiviranja.</translation>
 <translation id="2079545284768500474">Opozovi</translation>
-<translation id="2082906935540894275">Najrelevantnije funkcije za vas u različitim periodima.</translation>
 <translation id="2085876078937250610">Sačuvaj…</translation>
 <translation id="2096239473850415494">Preuzimanje nije uspelo</translation>
 <translation id="2096716221239095980">Izbriši sve podatke</translation>
@@ -548,7 +547,6 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="344589138074534176">Saznajte više o Google objektivu</translation>
 <translation id="3447332786336558089">Kada se odjavite, kartice će biti zatvorene, a nesačuvani podaci naloga će biti izbrisani sa ovog uređaja. To može da obuhvata lozinke, istoriju i drugo.</translation>
-<translation id="3449016921756175697">Korisni predlozi koji čine pregledanje boljim i lakšim.</translation>
 <translation id="345348365500626747">Adresa je pronađena</translation>
 <translation id="3464194322481586217">Praćenje cene nije uspelo.</translation>
 <translation id="3469117812148449995">Opcije za čuvanje lozinke</translation>
@@ -718,6 +716,7 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="422477017457571619">Zaštita u realnom vremenu koju omogućava veštačka inteligencija od opasnih sajtova, preuzimanja i dodataka koja se zasniva na podacima pregledanja koji se šalju Google-u</translation>
 <translation id="4231395118547300571">Obaveštenja Provere bezbednosti su uključena</translation>
 <translation id="4237377247299956313">Dodirnite <ph name="BEGIN_BOLD" />Podrazumevana aplikacija za pregledanje<ph name="END_BOLD" /></translation>
+<translation id="4241893428331130998">Nema sačuvanih lozinki ni pristupnih ključeva</translation>
 <translation id="4242533952199664413">Otvori podešavanja</translation>
 <translation id="4250432749243022864">{count,plural, =0{Otvori {count} kartica}=1{Otvori {count} karticu}one{Otvori {count} karticu}few{Otvori {count} kartice}other{Otvori {count} kartica}}</translation>
 <translation id="4250680216510889253">Ne</translation>
@@ -922,7 +921,6 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="5127538504377457572">Poslednja aktivnost: pre <ph name="DAYS" /> dan/a</translation>
 <translation id="5128788795241319992">Istražite novi meni</translation>
 <translation id="5132942445612118989">Sinhronizujte lozinke, istoriju i drugi sadržaj na svim uređajima</translation>
-<translation id="5137526732000415202">Poslednja otvorena kartica na svim uređajima.</translation>
 <translation id="5145331760738811130">Izađite iz prebacivača kartica</translation>
 <translation id="5157638238828697074">Došlo je do greške. Otvaranje aplikacije nije uspelo.</translation>
 <translation id="5163417375525818870">PDF fajlovi</translation>
@@ -1023,7 +1021,6 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="559567008082979829">Podesite da se preuzimanja brišu posle jednog meseca.</translation>
 <translation id="5596627076506792578">Još opcija</translation>
 <translation id="560322036295180549">Isključila je organizacija</translation>
-<translation id="5611107723541161735">Prečice do sajtova koje ste nedavno posetili na ovom uređaju.</translation>
 <translation id="5611398002774823980">Sačuvaj na nalogu</translation>
 <translation id="5613297089029360427">Sortiraj prema najnovijem</translation>
 <translation id="5614553682702429503">Želite li da sačuvate lozinku?</translation>
@@ -1487,7 +1484,6 @@ Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi
 <translation id="7512075701202892785">Pregledač koji volite sada i na iPad-u</translation>
 <translation id="7512909159512473473">Unesi pristupnu frazu…</translation>
 <translation id="7514365320538308">Preuzmi</translation>
-<translation id="7521117365186708026">Saveti za podešavanje koji vam pomažu da iskoristite Chrome na najbolji način.</translation>
 <translation id="7524055474074101597">Pristupajte lozinkama i drugim stavkama u aplikacijama.</translation>
 <translation id="75362970626182391">Nova grupa kartica</translation>
 <translation id="7537586195939242955">Žao nam je, pristupna reč sada ne može da se instalira u Passbook.</translation>
@@ -1600,6 +1596,7 @@ Sajtovi mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na
 <translation id="7982789257301363584">Mreža</translation>
 <translation id="7987685713885608670">Radi dodatne zaštite šifrujte lozinke na uređaju pre nego što se sačuvaju u Google menadžeru lozinki.</translation>
 <translation id="798991908416757345">Grupe kartica nisu dostupne</translation>
+<translation id="7993170188789685695">Dvaput dodirnite da biste zatvorili ovo obaveštenje.</translation>
 <translation id="7993619969781047893">Funkcije na nekim sajtovima mogu da prestanu sa radom</translation>
 <translation id="7996239959906074962">Podesite…</translation>
 <translation id="800361585186029508">Otvara unete URL-ove u Google Chrome-u.</translation>
@@ -1706,7 +1703,6 @@ Sajtovi mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na
 <translation id="8439758443371991593">Sakrij opciju Dodaj na listu za čitanje</translation>
 <translation id="8449869326050867919">Lozinka se deli</translation>
 <translation id="8453847087068411809">Nikada ne otkrivaj pakete automatski</translation>
-<translation id="846158969830690371">Saznajte da li imate najbezbednija podešavanja ili treba nešto da pregledate.</translation>
 <translation id="8473863474539038330">Adrese i drugo</translation>
 <translation id="8474378002946546633">Dozvoli obaveštenja</translation>
 <translation id="8477178913400731244">Izbriši podatke</translation>

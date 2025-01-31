@@ -126,7 +126,6 @@
 <translation id="1076766328672150609">يمكن لطفلك استخدام رقم تعريف شخصي لفتح قفل الجهاز.</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216">تعذَّر تنزيل قاموس التدقيق الإملائي للغة <ph name="LANGUAGE" />. يُرجى إعادة المحاولة.</translation>
-<translation id="1078029726086090536">تأكيد كلمة المرور</translation>
 <translation id="1078037449555275327">‏إعدادات قارئ الشاشة ChromeVox</translation>
 <translation id="1079242569060319448">هل نسيت رقم التعريف الشخصي؟</translation>
 <translation id="1079285777677001938">قد لا تعمل الميزات على بعض المواقع الإلكترونية.</translation>
@@ -373,6 +372,7 @@
 <translation id="1241066500170667906">اختَر حالة ميزة "<ph name="EXPERIMENT_NAME" />" التجريبية.</translation>
 <translation id="124116460088058876">مزيد من اللغات</translation>
 <translation id="1241381048229838873">عرض كل الإشارات المرجعية</translation>
+<translation id="1242044645101871359">تسجيل الدخول مرة أخرى</translation>
 <translation id="1242633766021457174">يريد <ph name="THIRD_PARTY_TOOL_NAME" /> إعادة ضبط إعداداتك.</translation>
 <translation id="1243002225871118300">تغيير حجم العرض والنص</translation>
 <translation id="1243314992276662751">تحميل</translation>
@@ -1622,7 +1622,6 @@
 <translation id="2113921862428609753">الدخول إلى معلومات الصلاحية</translation>
 <translation id="2114145607116268663">يتعذّر التثبيت. يُرجى إعادة تشغيل الجهاز والمحاولة مجددًا. رمز الخطأ هو <ph name="ERROR" />.</translation>
 <translation id="2114326799768592691">تحديث الإطار</translation>
-<translation id="2114413269775311385">‏بإمكانك استخدام هذا الحساب مع تطبيقات Android. ويمكنك التحكّم في أذونات تطبيقات Android من خلال <ph name="LINK_BEGIN" />إعدادات التطبيقات<ph name="LINK_END" />.</translation>
 <translation id="2114995631896158695">‏لم يتم إدخال أي شريحة SIM.</translation>
 <translation id="2116619964159595185">تتّصل المواقع الإلكترونية عادةً بأجهزة تتضمّن بلوتوث لتتيح ميزات مثل إعداد جهاز مرشد منخفض الطاقة أو جهاز تتبُّع للحالة الصحية أو مستوى اللياقة البدنية أو مصباح ذكي أو مزامنة بيانات تلك الأجهزة.</translation>
 <translation id="2117655453726830283">الشريحة التالية</translation>
@@ -2799,6 +2798,7 @@
 <translation id="2926620265753325858">الجهاز <ph name="DEVICE_NAME" /> غير متوافق.</translation>
 <translation id="2926708162326352948">تم تغيير المظهر إلى الصورة التي تم تحميلها</translation>
 <translation id="2927017729816812676">مساحة التخزين لذاكرة التخزين المؤقت</translation>
+<translation id="2928030851119977280">‏تم حفظ الاختيار. سيتم تطبيق خيارك عند تسجيل الدخول إلى خدمات Google الأخرى.</translation>
 <translation id="2928795416630981206">المواقع الإلكترونية التي يُسمح لها بتتبّع موضع الكاميرا</translation>
 <translation id="2929345818093040583">{NUM_SITES,plural, =1{‏أزال Chrome الأذونات من موقع إلكتروني واحد}zero{‏أزال Chrome الأذونات من {NUM_SITES} موقع إلكتروني}two{‏أزال Chrome الأذونات من موقعَين إلكترونيَين ({NUM_SITES})}few{‏أزال Chrome الأذونات من {NUM_SITES} مواقع إلكترونية}many{‏أزال Chrome الأذونات من {NUM_SITES} موقعًا إلكترونيًا}other{‏أزال Chrome الأذونات من {NUM_SITES} موقع إلكتروني}}</translation>
 <translation id="2931157624143513983">ملاءمة المنطقة القابلة للطباعة</translation>
@@ -4637,6 +4637,7 @@
 <translation id="4242533952199664413">فتح الإعدادات</translation>
 <translation id="4242577469625748426">تعذّر تثبيت إعدادات السياسة على الجهاز: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385"><ph name="BEGIN_LINK" />تتم إدارة متصفِّحك وملفك الشخصي<ph name="END_LINK" /> من خلال <ph name="DOMAIN" />.</translation>
+<translation id="424315890655130736">إدخال عبارة المرور</translation>
 <translation id="4243504193894350135">الطابعة متوقفة مؤقتًا</translation>
 <translation id="4243624244759495699"><ph name="LOCALE" />، الدرجة <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">العثور على المزيد من تطبيقات قلم الشاشة</translation>
@@ -5359,7 +5360,6 @@
 <translation id="4766598565665644999">يمكن لجميع الإضافات قراءة محتوى الموقع الإلكتروني <ph name="HOST" /> وتغييره.</translation>
 <translation id="4767427586072640478">تعرَّف على مزيد من المعلومات حول الإضافات غير المفعّلة.</translation>
 <translation id="4768332406694066911">لديك شهادات تحدد هويتك من هذه المؤسسات</translation>
-<translation id="4768945955870840220">‏يمكن أن يجمع Chrome مراجعات من المواقع الإلكترونية عن بعض المنتجات</translation>
 <translation id="4769632191812288342">يتم توفير الحماية العادية حاليًا</translation>
 <translation id="4770119228883592393">‏تم طلب الإذن، اضغط على ⌘ + Option + السهم المتجه للأسفل للاستجابة للطلب</translation>
 <translation id="4770755495532014179">‏استخدام كلمة المرور هذه على هاتف iPhone</translation>
@@ -7411,6 +7411,7 @@
 <translation id="6253801023880399036">يتم حفظ كلمات المرور في <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="6254503684448816922">اختراق المفتاح</translation>
 <translation id="6254892857036829079">ممتاز</translation>
+<translation id="6257131917452817589">تغيير كلمة المرور تلقائيًا</translation>
 <translation id="6257602895346497974">تفعيل المزامنة...</translation>
 <translation id="6257614441619555296"><ph name="KEY" />: <ph name="VALUE" /></translation>
 <translation id="625827534921607067">سيتم تفضيل هذه الشبكة في حال توفُّر أكثر من شبكة تم إعدادها أو ربطها سابقًا.</translation>
@@ -8767,7 +8768,6 @@
 <translation id="7243092385765551741">هل تريد حذف مفتاح المرور؟</translation>
 <translation id="7245628041916450754">‏<ph name="WIDTH" /> x <ph name="HEIGHT" /> (الأفضل)</translation>
 <translation id="7246230585855757313">أعِد إدخال مفتاح الأمان وحاول مجددًا</translation>
-<translation id="724835896049478274">‏الحسابات المتاحة لتطبيقات Android</translation>
 <translation id="7248802599439396696">إيقاف علامات التبويب</translation>
 <translation id="7249197363678284330">يمكنك تغيير هذا الإعداد في شريط العناوين.</translation>
 <translation id="7249764475759804559">إضافة هذا التطبيق كخيار لفتح الملفات</translation>
@@ -9130,6 +9130,7 @@
 <translation id="7502528909759062987">إيقاف بث علامة التبويب مؤقتًا على "<ph name="DEVICE_NAME" />"</translation>
 <translation id="7502804472671406749">يمكن الانتقال للأعلى أو للأسفل في محتوى علامات التبويب التي تمّت مشاركتها وتكبيره أو تصغيره</translation>
 <translation id="7503191893372251637">‏نوع شهادات Netscape</translation>
+<translation id="7503259455663961898">تغيير كلمة المرور نيابةً عني</translation>
 <translation id="7503985202154027481">سيتم حفظ سجلّ زيارتك لهذا الموقع الإلكتروني في مفتاح الأمان.</translation>
 <translation id="7504145862399276792">تم كتم صوت علامة التبويب هذه.</translation>
 <translation id="750509436279396091">فتح مجلد "المحتوى الذي تم تنزيله"</translation>
@@ -9192,6 +9193,7 @@
 <translation id="7551059576287086432">لم يتم تحميل <ph name="FILE_NAME" /> بنجاح</translation>
 <translation id="7551643184018910560">تثبيت في الرف</translation>
 <translation id="7552191410769096467">لمشاركة مجموعات علامات التبويب أو الانضمام إليها، يحب تسجيل الدخول وتفعيل المزامنة</translation>
+<translation id="7552196109089297786">‏تسجيل الخروج من Microsoft</translation>
 <translation id="7552846755917812628">جرّب النصائح التالية:</translation>
 <translation id="7553012839257224005">‏جارٍ التحقُّق من حاوية نظام التشغيل Linux</translation>
 <translation id="7553242001898162573">إدخال كلمة المرور</translation>
@@ -10322,6 +10324,7 @@
 <translation id="8330617762701840933">قائمة المواقع الإلكترونية التي تتم إعادة توجيهها إلى المتصفِّح البديل</translation>
 <translation id="8330689128072902965">يمكن لجهات الاتصال القريبة مشاركة المحتوى معك. انقر لتغيير هذه الإعدادات.</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{نوع الملف المتوافق: <ph name="FILE_TYPE1" />}=2{نوعا الملفات المتوافقان: <ph name="FILE_TYPE1" /> و<ph name="FILE_TYPE2" />}=3{أنواع الملفات المتوافقة: <ph name="FILE_TYPE1" /> و<ph name="FILE_TYPE2" /> و<ph name="FILE_TYPE3" />}=4{أنواع الملفات المتوافقة: <ph name="FILE_TYPE1" /> و<ph name="FILE_TYPE2" /> و<ph name="FILE_TYPE3" /> و<ph name="FILE_TYPE4" />}zero{أنواع الملفات المتوافقة: <ph name="FILE_TYPE1" /> و<ph name="FILE_TYPE2" /> و<ph name="FILE_TYPE3" /> و<ph name="FILE_TYPE4" /> (<ph name="LINK" />و{OVERFLOW_COUNT} نوع آخر<ph name="END_LINK" />)}few{أنواع الملفات المتوافقة: <ph name="FILE_TYPE1" /> و<ph name="FILE_TYPE2" /> و<ph name="FILE_TYPE3" /> و<ph name="FILE_TYPE4" /> (<ph name="LINK" />و{OVERFLOW_COUNT} أنواع أخرى<ph name="END_LINK" />)}many{أنواع الملفات المتوافقة: <ph name="FILE_TYPE1" /> و<ph name="FILE_TYPE2" /> و<ph name="FILE_TYPE3" /> و<ph name="FILE_TYPE4" /> (<ph name="LINK" />و{OVERFLOW_COUNT} نوعًا آخر<ph name="END_LINK" />)}other{أنواع الملفات المتوافقة: <ph name="FILE_TYPE1" /> و<ph name="FILE_TYPE2" /> و<ph name="FILE_TYPE3" /> و<ph name="FILE_TYPE4" /> (<ph name="LINK" />و{OVERFLOW_COUNT} نوع آخر<ph name="END_LINK" />)}}</translation>
+<translation id="8331578454993293727">لقد استُخدمَت كلمة مرورك في عملية اختراق للبيانات</translation>
 <translation id="8331822764922665615">‏ضع اسمًا للمجموعة واختَر لونًا ثم اضغط على مفتاح الخروج (Esc).</translation>
 <translation id="833256022891467078">‏مجلدات نظام التشغيل Crostini التي تمت مشاركتها</translation>
 <translation id="833262891116910667">تمييز</translation>
@@ -10403,6 +10406,7 @@
     <ph name="BEGIN_PARAGRAPH2" />للحصول على مزيد من المساعدة، يُرجى الانتقال إلى g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8383614331548401927">الملخّص الترحيبي</translation>
 <translation id="8386091599636877289">تعذَّر العثور على السياسة.</translation>
+<translation id="8387087863179559896">‏يمكن أن يستبدل Chrome كلمة مرور حسابك على هذا الموقع الإلكتروني بكلمة مرور أخرى قوية، ولن يتطلّب الأمر تذكُّرها لأنّه سيتم حفظها في "مدير كلمات المرور في Google" ضِمن الحساب <ph name="EMAIL" />. مزيد من المعلومات حول <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="8387361103813440603">المواقع الإلكترونية التي لا يُسمح لها بالاطّلاع على موقعك الجغرافي</translation>
 <translation id="8387617938027387193">إثبات هويتك</translation>
 <translation id="8388770971141403598">لا يمكن استخدام الملفات الشخصية الثانوية.</translation>
@@ -10717,7 +10721,6 @@
 <translation id="8625124982056504555">‏الاطّلاع على الأرقام التسلسلية لمكوِّنات وأجهزة ChromeOS</translation>
 <translation id="862542460444371744">&amp;الإضافات</translation>
 <translation id="8625663000550647058">المواقع الإلكترونية التي لا يُسمح لها باستخدام الميكروفون</translation>
-<translation id="8625679025395572221">ما زال حسابك معرضًا للخطر.</translation>
 <translation id="8625916342247441948">‏عدم السماح للمواقع الإلكترونية بالاتصال بأجهزة HID</translation>
 <translation id="862727964348362408">معلقة</translation>
 <translation id="862750493060684461">‏ذاكرة التخزين المؤقت للغة CSS</translation>
@@ -11603,7 +11606,6 @@
 <translation id="936801553271523408">بيانات تشخيص النظام</translation>
 <translation id="93766956588638423">إصلاح الإضافة</translation>
 <translation id="938623846785894166">هذا الملف غير شائع.</translation>
-<translation id="939401694733344652">‏لا يتم استخدام هذه الحسابات مع تطبيقات Android في الوقت الحالي. إذا اخترت حسابًا لاستخدامه مع تطبيق Android هذا، يمكن أيضًا استخدام الحساب مع تطبيقات Android الأخرى. ويمكنك تغيير الحساب المستخدَم للدخول إلى تطبيق Android من خلال <ph name="LINK_BEGIN" />الإعدادات &gt; الحسابات<ph name="LINK_END" />.</translation>
 <translation id="939598580284253335">إدخال عبارة المرور</translation>
 <translation id="939736085109172342">مجلد جديد</translation>
 <translation id="940212040923880623">بحث وتعديل</translation>

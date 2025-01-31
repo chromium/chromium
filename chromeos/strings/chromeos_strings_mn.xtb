@@ -768,6 +768,7 @@
 <translation id="4654549501020883054">Өдөр бүр өөрчлөх</translation>
 <translation id="4655868084888499342">Зургийг дэлгэцийн зургаар тохируулсан</translation>
 <translation id="4661249927038176904">Сюрреал</translation>
+<translation id="4661392828086261436">Энэ шинэчлэлтийг төхөөрөмж үйлдвэрлэгчээс олгосон бөгөөд Google-с баталгаажуулаагүй</translation>
 <translation id="4664651912255946953">үс</translation>
 <translation id="4665014895760275686">Үйлдвэрлэгч</translation>
 <translation id="467510802200863975">Нууц үг таарахгүй байна</translation>
@@ -1027,6 +1028,7 @@
 <translation id="5904994456462260490">Шинэ APN нэмэх</translation>
 <translation id="590746845088109442">муурууд</translation>
 <translation id="5907649332524363701">товчны өнгө</translation>
+<translation id="5908813850962688338">Энэ шинэчлэлтийг суулгахад хэдэн минут зарцуулна. Шинэчлэлт татаж байхад төхөөрөмжөө залгаатай бөгөөд асаалттай байлгаарай. Энэ явцын үеэр таны төхөөрөмж автоматаар хэд хэдэн удаа дахин асаж, хар дэлгэц харуулж болзошгүй. Суулгаж дуусгахын тулд таныг төхөөрөмжөө дахин эхлүүлэхийг сануулна.</translation>
 <translation id="5916084858004523819">Хориглосон</translation>
 <translation id="5916664084637901428">Асаах</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Таны файлыг амжилттай скан хийсэн бөгөөд <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />-д хадгалсан.}other{Таны файлуудыг амжилттай скан хийсэн бөгөөд <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />-д хадгалсан.}}</translation>

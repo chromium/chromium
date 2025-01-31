@@ -3341,17 +3341,6 @@ Jika disetel ke Nonaktif, fitur penulisan prediktif tidak akan diizinkan di keyb
 <translation id="3387211681524224831">Jika kebijakan disetel ke Aktif, histori penjelajahan tidak akan disimpan, sinkronisasi tab akan dinonaktifkan, dan pengguna tidak dapat mengubah setelan ini.
 
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, histori penjelajahan akan disimpan.</translation>
-<translation id="3387875422525138489">Menyetel kebijakan ini akan menentukan daftar aplikasi web terisolasi (IWA) yang diinstal secara otomatis.
-      IWA adalah aplikasi yang memiliki properti keamanan yang berguna dan tidak tersedia untuk halaman web normal. Aplikasi tersebut dikemas dalam Paket Web Bertanda Tangan. Kunci publik Paket Web Bertanda Tangan digunakan untuk membuat ID Paket Web yang mengidentifikasi IWA.
-      Sejauh ini, kebijakan ini hanya berfungsi untuk Sesi Tamu Terkelola.
-
-      Setiap item daftar kebijakan merupakan objek yang memiliki dua kolom wajib: <ph name="URL_LABEL" /> manifes update dan ID Paket Web Aplikasi Web Terisolasi.
-
-      Setiap item juga dapat menyertakan kolom opsional berikut:
-
-        * <ph name="UPDATE_CHANNEL_OPTION" />: Nama saluran update/rilis IWA. Jika tidak disetel, "default" akan digunakan.
-        * <ph name="PINNED_VERSION_OPTION" />: Versi tertentu yang akan diinstal. Sistem akan mencoba menginstal versi ini jika tersedia di saluran update yang ditentukan. Secara default, menyematkan IWA ke versi tertentu mencegahnya diupdate ke versi yang lebih tinggi dari versi tersebut. Untuk membatalkan penyematan, hapus kolom ini.
-        * <ph name="ALLOW_DOWNGRADES_OPTION" />: Mengaktifkan penginstalan versi IWA yang lebih lama. Tindakan ini mengharuskan kolom `pinned_version` disetel. Jika tidak disediakan atau disetel ke <ph name="FALSE" />, downgrade dinonaktifkan untuk IWA tersebut.</translation>
 <translation id="3387999258705169775">Perilaku default untuk penguncian bertingkat fungsi setTimeout().</translation>
 <translation id="3388628790024977864">Jangan izinkan alur <ph name="CLOUD_UPLOAD_NAME" /> untuk <ph name="GOOGLE_DRIVE_NAME" /> dan <ph name="GOOGLE_WORKSPACE_NAME" /></translation>
 <translation id="3389088527709746815">Aktifkan autentikasi gnubby untuk host akses jarak jauh</translation>

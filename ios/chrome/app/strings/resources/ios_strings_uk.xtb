@@ -263,7 +263,6 @@
 <translation id="2074131957428911366">Ви можете будь-коли вибрати дані для синхронізації в <ph name="BEGIN_LINK" />налаштуваннях<ph name="END_LINK" />.</translation>
 <translation id="2078437078822043850">Щоб переглядати вебсторінки в анонімному режимі, прокрутіть екран управо.</translation>
 <translation id="2079545284768500474">Відмінити</translation>
-<translation id="2082906935540894275">Швидкий доступ до найважливіших функцій.</translation>
 <translation id="2085876078937250610">Зберегти…</translation>
 <translation id="2096239473850415494">Не вдалося завантажити</translation>
 <translation id="2096716221239095980">Видалити всі дані</translation>
@@ -548,7 +547,6 @@
 <translation id="3445288400492335833"><ph name="MINUTES" /> хв</translation>
 <translation id="344589138074534176">Докладніше про Google Об’єктив</translation>
 <translation id="3447332786336558089">Коли ви вийдете, вкладки буде закрито, а незбережені дані облікового запису – видалено із цього пристрою. Це можуть бути паролі, історія тощо.</translation>
-<translation id="3449016921756175697">Корисні підказки, які полегшують і покращують вебперегляд.</translation>
 <translation id="345348365500626747">Адресу знайдено</translation>
 <translation id="3464194322481586217">Не вдалося підписатися на відстеження ціни.</translation>
 <translation id="3469117812148449995">Опції для зберігання паролів</translation>
@@ -922,7 +920,6 @@
 <translation id="5127538504377457572">Остання активність: <ph name="DAYS" /> дн. тому</translation>
 <translation id="5128788795241319992">Огляд нового меню</translation>
 <translation id="5132942445612118989">Синхронізуйте свої паролі, історію тощо на всіх пристроях</translation>
-<translation id="5137526732000415202">Остання вкладка, відкрита на всіх пристроях.</translation>
 <translation id="5145331760738811130">Закрити перемикач вкладок</translation>
 <translation id="5157638238828697074">Сталася помилка. Не вдалося відкрити додаток.</translation>
 <translation id="5163417375525818870">PDF-файли</translation>
@@ -1023,7 +1020,6 @@
 <translation id="559567008082979829">Налаштуйте автоматичне видалення завантажених файлів через місяць.</translation>
 <translation id="5596627076506792578">Інші опції</translation>
 <translation id="560322036295180549">Вимкнено адміністратором організації</translation>
-<translation id="5611107723541161735">Ярлики сайтів, які ви нещодавно відвідували на цьому пристрої.</translation>
 <translation id="5611398002774823980">Зберегти в обліковому записі</translation>
 <translation id="5613297089029360427">Сортувати за категорією "Останні"</translation>
 <translation id="5614553682702429503">Зберегти пароль?</translation>
@@ -1487,7 +1483,6 @@
 <translation id="7512075701202892785">Ваш улюблений вебпереглядач на iPad</translation>
 <translation id="7512909159512473473">Ввести парольну фразу…</translation>
 <translation id="7514365320538308">Завантажити</translation>
-<translation id="7521117365186708026">Корисні підказки, які допоможуть використовувати Chrome якомога ефективніше.</translation>
 <translation id="7524055474074101597">Отримуйте доступ до паролів тощо в додатках.</translation>
 <translation id="75362970626182391">Нова група вкладок</translation>
 <translation id="7537586195939242955">Не вдалося внести дані в Passbook.</translation>
@@ -1605,6 +1600,7 @@
 <translation id="800361585186029508">Відкриває введені URL-адреси в Google Chrome.</translation>
 <translation id="8005666035647241369">У Менеджері паролів Google на цьому пристрої</translation>
 <translation id="8011489434346330032">Web Inspector</translation>
+<translation id="8017015647846870183">З Google Менеджера паролів, зокрема паролі й ключі доступу</translation>
 <translation id="802154636333426148">Не вдалося завантажити</translation>
 <translation id="8023170444051056234">Ви відразу втратите доступ до групи вкладок "<ph name="GROUP_NAME" />", і її буде видалено з усіх ваших пристроїв</translation>
 <translation id="8023878949384262191">Розгортає розділ.</translation>
@@ -1705,7 +1701,6 @@
 <translation id="8439758443371991593">Сховати опцію "Додати в список читання"</translation>
 <translation id="8449869326050867919">Пароль надіслано</translation>
 <translation id="8453847087068411809">Ніколи не визначати відправлення автоматично</translation>
-<translation id="846158969830690371">Перевірка надійності налаштувань і рекомендації щодо захисту пристрою.</translation>
 <translation id="8473863474539038330">Адреси й інше</translation>
 <translation id="8474378002946546633">Дозволити сповіщення</translation>
 <translation id="8477178913400731244">Видалити дані</translation>

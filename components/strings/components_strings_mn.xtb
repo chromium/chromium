@@ -674,7 +674,6 @@
 <translation id="2157640075051554492">Үнэ хяналтын мэдэгдэл</translation>
 <translation id="21613918653299710">Онлайн зургийн цомгууд</translation>
 <translation id="2161656808144014275">Текст</translation>
-<translation id="2162510787844374618">Таны банктай холбогдож байна…</translation>
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> дээр одоо <ph name="CURRENT_PRICE" /> байна</translation>
 <translation id="2164510882479075877"><ph name="HOST_NAME" /> үг үсгийн алдаатай бичигдсэн эсэхийг шалгана уу.</translation>
 <translation id="2166049586286450108">Админы бүрэн хандалт</translation>
@@ -2409,6 +2408,7 @@
 <translation id="5254043433801397071">Хэвлэлийн контентыг оновчлох</translation>
 <translation id="5255583962255635076">Таны ажлын профайлд хэрэгжүүлсэн хөтчийн бодлого</translation>
 <translation id="5255690596502591079">Ямартай ч зургийг нь авах</translation>
+<translation id="5255771248404149177">Таны карт олгогч таныг мөн эсэхийг нягтлахыг хүсэж байна</translation>
 <translation id="5255833070095767006">350 x 460 мм</translation>
 <translation id="5257739419779698609">{0,plural, =1{Администраторын бодлого нь энэ файлыг <ph name="DESTINATION_NAME" /> руу хуулахыг санал болгодоггүй}other{Администраторын бодлого нь эдгээр файлыг <ph name="DESTINATION_NAME" /> руу хуулахыг санал болгодоггүй}}</translation>
 <translation id="5263867360296733198">Байршуулахаас өмнө шалгах шаардлагатай</translation>
@@ -2429,7 +2429,6 @@
 <translation id="5288108484102287882">Удирдамжийн утгыг баталгаажуулсан хэдий ч анхааруулга гарч ирлээ</translation>
 <translation id="5289384342738547352">Олон документын удирдлага</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{Өнөөдөр шинэчлэх шаардлагатай}=2{Маргааш гэхэд шинэчлэх шаардлагатай}other{# хоногийн дотор шинэчлэх шаардлагатай}}</translation>
-<translation id="5292714443869769806"><ph name="OPERATING_SYSTEM" />-н тохиргоо руу очих</translation>
 <translation id="5293919335876685914">Хоёр хаалгатай машин</translation>
 <translation id="5298618990685278995">эхний ноорог</translation>
 <translation id="5299298092464848405">Алдааны шинжлэх журам</translation>
@@ -2557,6 +2556,7 @@
 <translation id="5518352028556756716">Ихэнх сайт гуравдагч талын күүкинүүдийг таныг үзэх үед хянахад ашиглах боломжгүй бөгөөд сайтууд гуравдагч талын күүкинүүдийг Нууцлалын горимд ашиглах боломжгүй.</translation>
 <translation id="5519516356611866228">Таны өөрчилснөөр</translation>
 <translation id="5519696598216267194">Цаас (урьдчилж цоолсон)</translation>
+<translation id="5520105693415771152">Одоогийн мэдээллээ харахгүй байна уу? Үүнийг шинэчлэхийн тулд карт олгогчтойгоо холбогдоно уу.</translation>
 <translation id="5521782189689806907">Нарийн мужаан</translation>
 <translation id="5523118979700054094">Тохиргооны нэр</translation>
 <translation id="5523588073846127669">Худалдаачин энэ виртуал картыг зөвшөөрдөггүй</translation>
@@ -3650,6 +3650,7 @@
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Ачааны машин, чиргүүлүүд</translation>
 <translation id="7461924472993315131">Pin</translation>
+<translation id="746329643760972486">MacOS</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> таныг <ph name="TOP_LEVEL_URL" />-д зочилсон болохыг мэднэ</translation>
 <translation id="7465963048299965912">10 x 13 инч</translation>
 <translation id="7469935732330206581">Маягт аюултай байна.</translation>
@@ -3920,7 +3921,6 @@
 <translation id="7942349550061667556">Улаан</translation>
 <translation id="7943397946612013052">Татахыг блоклосон</translation>
 <translation id="7943893128817522649">Олон файлыг автоматаар татахыг хүсэх боломжтой</translation>
-<translation id="794567586469801724">macOS</translation>
 <translation id="7947285636476623132">Хүчингүй болох жилийг шалгаад дахин оролдоно уу</translation>
 <translation id="7947310711271925113">Поп хөгжим</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome-н онцлогуудын талаар мэдэж авахын тулд эхлээд Tab, дараа нь Enter дээр дарна уу</translation>
@@ -4672,7 +4672,6 @@
 <translation id="984275831282074731">Төлбөрийн хэрэгсэл</translation>
 <translation id="985199708454569384">&lt;p&gt;Хэрэв таны компьютер эсвэл хөдөлгөөнт төхөөрөмжийн огноо болон цаг буруу байвал та тус алдааг харах болно.&lt;/p&gt;
     &lt;p&gt;Алдааг засахын тулд төхөөрөмжийнхөө цагийг нээнэ үү. Огноо болон цаг зөв эсэхийг шалгана уу.&lt;/p&gt;</translation>
-<translation id="986257639512122511">Та <ph name="ORIGIN" />-д <ph name="PERMISSION" />-г зөвшөөрсөн</translation>
 <translation id="987264212798334818">Ерөнхий</translation>
 <translation id="988159990683914416">Хөгжүүлэгчийн хөгжүүлэх хэсэг</translation>
 <translation id="989988560359834682">Хаягийг засварлах</translation>

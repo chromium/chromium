@@ -674,7 +674,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2157640075051554492">Upozornenia sledovania cien</translation>
 <translation id="21613918653299710">Online galérie obrázkov</translation>
 <translation id="2161656808144014275">Text</translation>
-<translation id="2162510787844374618">Kontaktuje sa vaša banka…</translation>
 <translation id="2162620598375156287">Teraz <ph name="CURRENT_PRICE" /> na <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Skontrolujte, či nie je v názve <ph name="HOST_NAME" /> preklep.</translation>
 <translation id="2166049586286450108">Úplný správcovský prístup</translation>
@@ -2424,7 +2423,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="5288108484102287882">Overenie hodnôt pravidiel vygenerovalo upozornenia</translation>
 <translation id="5289384342738547352">Spracúvanie viacerých dokumentov</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{Dnes je potrebné vykonať aktualizáciu}=2{Do zajtra je potrebné vykonať aktualizáciu}few{Do # dní je potrebné vykonať aktualizáciu}many{Do # dňa je potrebné vykonať aktualizáciu}other{Do # dní je potrebné vykonať aktualizáciu}}</translation>
-<translation id="5292714443869769806">Prejsť do nastavení systému <ph name="OPERATING_SYSTEM" /></translation>
 <translation id="5293919335876685914">Kupé</translation>
 <translation id="5298618990685278995">prvý koncept.</translation>
 <translation id="5299298092464848405">Pri analýze pravidla sa vyskytla chyba</translation>
@@ -3646,6 +3644,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="745640750744109667">A0×3</translation>
 <translation id="7457071735008326060">Nákladné vozidlá a prívesy</translation>
 <translation id="7461924472993315131">Pripnúť</translation>
+<translation id="746329643760972486">macOS</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> bude vedieť, že ste navštívili <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7465963048299965912">10 × 13 palcov</translation>
 <translation id="7469935732330206581">Formulár nie je zabezpečený</translation>
@@ -3877,6 +3876,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="784404208867107517">Zoskupená história</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Žiadne}=1{1 aplikácia (<ph name="EXAMPLE_APP_1" />)}=2{2 aplikácie (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}few{# aplikácie (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}many{# apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# aplikácií (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Vyskytla sa chyba. Skúste to znova.</translation>
+<translation id="784623644169604270">Žiadna nedávna aktivita</translation>
 <translation id="785476343534277563">Školské športy</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="7860345425589240791">Zadajte nový dátum vypršania a overovací kód karty (<ph name="SIDE_OF_CARD" />)</translation>
@@ -3915,7 +3915,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7942349550061667556">Červená</translation>
 <translation id="7943397946612013052">Blokované sťahovanie</translation>
 <translation id="7943893128817522649">Môže žiadať o povolenie automaticky sťahovať viacero súborov</translation>
-<translation id="794567586469801724">macOS</translation>
 <translation id="7947285636476623132">Skontrolujte rok vypršania platnosti a skúste to znova</translation>
 <translation id="7947310711271925113">Popová hudba</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, postupným stlačením klávesov Tab a Enter zistíte viac o funkciách Chromu</translation>
@@ -4667,7 +4666,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="984275831282074731">Spôsoby platby</translation>
 <translation id="985199708454569384">&lt;p&gt;Táto chyba sa zobrazí, keď máte v počítači alebo mobilnom zariadení nesprávny dátum a čas.&lt;/p&gt;
     &lt;p&gt;Ak chcete túto chybu odstrániť, otvorte v zariadení hodiny a nastavte správny dátum a čas.&lt;/p&gt;</translation>
-<translation id="986257639512122511">Na webe <ph name="ORIGIN" /> ste udelili povolenie <ph name="PERMISSION" /></translation>
 <translation id="987264212798334818">Všeobecné</translation>
 <translation id="988159990683914416">Zostavenie pre vývojárov</translation>
 <translation id="989988560359834682">Úprava adresy</translation>

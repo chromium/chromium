@@ -731,6 +731,7 @@ Kung hindi naman, ie-enable ulit ang naka-built in na touchpad sa loob ng <ph na
 <translation id="3522979239100719575">Naghahanap ng mga available na profile. Puwede itong tumagal nang ilang minuto.</translation>
 <translation id="3526440770046466733">Buksan ang link sa bagong tab at manatili sa kasalukuyang tab</translation>
 <translation id="353086728817903341">Nakakonekta sa <ph name="NUM_DEVICES" /> (na) device</translation>
+<translation id="3532247131850366052">Hindi magawa ang Google Sheet</translation>
 <translation id="3533126039236445965">Mga app sa shelf</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> hotspot</translation>
 <translation id="3540893133818942399">I-dismiss ang pag-set up sa pagtingin sa mga kamakailang larawan at media ng iyong telepono</translation>
@@ -829,6 +830,7 @@ Isaksak ang iyong device.</translation>
 <translation id="380165613292957338">Kumusta, ano ang maitutulong ko?</translation>
 <translation id="3804737937830804242">I-collapse ang camera</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 emoji. Walang ibang resulta.}one{# emoji. Walang ibang resulta.}other{# na emoji. Walang ibang resulta.}}</translation>
+<translation id="3822403841174077928">Hindi makopya kasama ang formatting</translation>
 <translation id="3824784079442479685">Pinapayagan nito ang access sa camera para sa <ph name="APP_NAME" /> at lahat ng app at website na may pahintulot sa camera. Posibleng kailanganin mong i-refresh ang web page o i-restart ang app.</translation>
 <translation id="3826099427150913765">Lumipat sa password</translation>
 <translation id="383058930331066723">Naka-on ang battery saver mode</translation>
@@ -1215,6 +1217,7 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="5043679421800073804">I-click o i-tap ang huling icon sa shelf</translation>
 <translation id="504465286040788597">Nakaraang talata</translation>
 <translation id="5045550434625856497">Hindi wastong password</translation>
+<translation id="5058794129231928255">Hindi magawa ang Google Doc</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Aabisuhan ka kung nagsasalita ka habang naka-mute. Hindi naipapadala ang audio mula sa iyong device.</translation>
 <translation id="5077416371682039027">I-set up ang pagtingin sa mga kamakailang larawan, media, notification, at app ng iyong telepono</translation>
@@ -1478,7 +1481,6 @@ Walang nakakonektang device.</translation>
 <translation id="589817443623831496">Pag-point scan</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">Dilaw</translation>
-<translation id="5911231045062997865">Kasalukuyang hindi sinusuportahan ang mga Lacros window. Mase-save ang iba pang app.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916646100036936191">Bagong notification, <ph name="NOTIFICATION_COUNT" /> sa kabuuan</translation>
 <translation id="5916664084637901428">Naka-on</translation>
@@ -1648,6 +1650,7 @@ Walang nakakonektang device.</translation>
 <translation id="6468406072297048412">{0,plural, =1{I-update sa nakaraang bersyon ang device sa loob ng 1 minuto}one{I-update sa nakaraang bersyon ang device sa loob ng # minuto}other{I-update sa nakaraang bersyon ang device sa loob ng # na minuto}}</translation>
 <translation id="6469104339369989396">I-toggle ang hotspot</translation>
 <translation id="6477681113376365978">Hindi makapag-download ng file</translation>
+<translation id="648135757200234041">Hindi magawa ang contact</translation>
 <translation id="6482559668224714696">Full-screen magnifier</translation>
 <translation id="6485086611007560630">Lagay ng panahon (hindi available)</translation>
 <translation id="6490471652906364588">USB-C device (port sa kanan)</translation>
@@ -1976,6 +1979,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="7611213136657090146">Nakakonekta ulit ang camera.</translation>
 <translation id="7613620083300976559">I-on ang mga kontrol ng laro</translation>
 <translation id="761736749114493194">I-toggle ang camera framing. <ph name="STATE_TEXT" /></translation>
+<translation id="7621008024906456933">Mga setting ng Quick Share</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7627303771480696593">Magtanong</translation>
 <translation id="7634648064048557203">Nag-snap ang camera sa kanang sulok sa ibaba</translation>
@@ -2286,6 +2290,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="8653151467777939995">Ipakita ang mga setting ng notification. Naka-on ang mga notification</translation>
 <translation id="8657066291275741003">lowercase</translation>
 <translation id="8660331759611631213">Square root ng 71</translation>
+<translation id="8662921061190671299">Hindi maidagdag sa Calendar</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Pindutin ang enter para mag-capture ng bahagyang screenshot</translation>
 <translation id="8676770494376880701">Nakakabit ang low-power charger</translation>

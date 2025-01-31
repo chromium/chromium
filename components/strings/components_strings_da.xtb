@@ -674,7 +674,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2157640075051554492">Notifikationer om prissporing</translation>
 <translation id="21613918653299710">Online billedgallerier</translation>
 <translation id="2161656808144014275">Tekst</translation>
-<translation id="2162510787844374618">Kontakter din bank…</translation>
 <translation id="2162620598375156287">Fås nu til <ph name="CURRENT_PRICE" /> på <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Tjek, om der er en stavefejl i <ph name="HOST_NAME" />.</translation>
 <translation id="2166049586286450108">Fuld administratoradgang</translation>
@@ -2428,7 +2427,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5288108484102287882">Validering af politikværdier har genereret advarsler</translation>
 <translation id="5289384342738547352">Håndtering af flere dokumenter</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{Du skal opdatere i dag}=2{Du skal opdatere senest i morgen}one{Du skal opdatere inden for # dag}other{Du skal opdatere inden for # dage}}</translation>
-<translation id="5292714443869769806">Gå til <ph name="OPERATING_SYSTEM" />-indstillingerne</translation>
 <translation id="5293919335876685914">Coupémodeller</translation>
 <translation id="5298618990685278995">et første udkast</translation>
 <translation id="5299298092464848405">Der opstod en fejl ved parsing af politik</translation>
@@ -3651,6 +3649,7 @@ Yderligere oplysninger:
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Lastbiler og anhængere</translation>
 <translation id="7461924472993315131">Fastgør</translation>
+<translation id="746329643760972486">MacOS</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> vil vide, at du har besøgt <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7465963048299965912">10 x 13 tommer</translation>
 <translation id="7469935732330206581">Formularen er ikke sikker</translation>
@@ -3921,7 +3920,6 @@ Yderligere oplysninger:
 <translation id="7942349550061667556">Rød</translation>
 <translation id="7943397946612013052">Blokering af download</translation>
 <translation id="7943893128817522649">Websitet kan anmode om tilladelse til automatisk at downloade flere filer</translation>
-<translation id="794567586469801724">macOS</translation>
 <translation id="7947285636476623132">Kontrollér, om udløbsåret er korrekt, og prøv igen.</translation>
 <translation id="7947310711271925113">Popmusik</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, tryk på Tab-tasten efterfulgt af Enter for at få flere oplysninger om Chrome-funktioner</translation>
@@ -4674,7 +4672,6 @@ Yderligere oplysninger:
 <translation id="984275831282074731">Betalingsmetoder</translation>
 <translation id="985199708454569384">&lt;p&gt;Denne fejlmeddelelse vises, hvis dato og klokkeslæt på din computer eller mobilenhed er forkerte.&lt;/p&gt;
     &lt;p&gt;Ret fejlen ved at åbne uret på din enhed. Sørg for, at dato og klokkeslæt er indstillet korrekt.&lt;/p&gt;</translation>
-<translation id="986257639512122511">Du har tilladt <ph name="PERMISSION" /> på <ph name="ORIGIN" /></translation>
 <translation id="987264212798334818">Generelt</translation>
 <translation id="988159990683914416">Udviklerversion</translation>
 <translation id="989988560359834682">Rediger adresse</translation>

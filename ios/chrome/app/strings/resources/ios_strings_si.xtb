@@ -263,7 +263,6 @@
 <translation id="2074131957428911366">ඔබට සැමවිටම <ph name="BEGIN_LINK" />සැකසීම්<ph name="END_LINK" /> තුළ සමමුහු කළ යුතු දෙය තෝරා ගත හැක.</translation>
 <translation id="2078437078822043850">ඔබට අප්‍රසිද්ධව බ්‍රවුස් කිරීමට දකුණට අනුචලන කළ හැක.</translation>
 <translation id="2079545284768500474">පසුගමනය</translation>
-<translation id="2082906935540894275">විවිධ කාලවල දී ඔබට වඩාත් ම අදාළ විශේෂාංග.</translation>
 <translation id="2085876078937250610">සුරකින්න…</translation>
 <translation id="2096239473850415494">බාගැනීමට නොහැකි විය</translation>
 <translation id="2096716221239095980">සියලු දත්ත මකන්න</translation>
@@ -548,7 +547,6 @@
 <translation id="3445288400492335833">මිනි <ph name="MINUTES" /></translation>
 <translation id="344589138074534176">Google Lens පිළිබඳව තව දැන ගන්න</translation>
 <translation id="3447332786336558089">ඔබ වැරීමෙන් පසුව, පටිති වසා දමනු ඇති අතර මෙම උපාංගයෙන් නොසුරකින ගිණුම් දත්ත මකනු ඇත. මෙයට මුරපද, ඉතිහාසය, සහ තවත් දේ ඇතුළත් විය හැක.</translation>
-<translation id="3449016921756175697">බ්‍රවුස් කිරීම වඩා හොඳ සහ පහසු කරන ප්‍රයෝජනවත් යෝජනා.</translation>
 <translation id="345348365500626747">ලිපිනය සොයා ගන්නා ලදි</translation>
 <translation id="3464194322481586217">මිල හඹා යාමට නොහැකි විය.</translation>
 <translation id="3469117812148449995">මුරපදය සුරැකීමට විකල්ප</translation>
@@ -922,7 +920,6 @@
 <translation id="5127538504377457572">දින <ph name="DAYS" /> කට පෙර ක්‍රියාත්මකයි</translation>
 <translation id="5128788795241319992">නව මෙනුව ගවේෂණය කරන්න</translation>
 <translation id="5132942445612118989">ඔබේ මුරපද, ඉතිහාසය සහ තවත් දෑ සියලුම උපාංගවල සමමුහු කරන්න</translation>
-<translation id="5137526732000415202">ඔබේ සියලු උපාංග හරහා ඔබේ අවසන් විවෘත පටිත්ත.</translation>
 <translation id="5145331760738811130">පටිති මාරුකරවනය වෙතින් ඉවත් වන්න</translation>
 <translation id="5157638238828697074">යමක් වැරදිණි. යෙදුම විවෘත කළ නොහැකි විය.</translation>
 <translation id="5163417375525818870">PDFs</translation>
@@ -1023,7 +1020,6 @@
 <translation id="559567008082979829">මාසයකට පසු ඔබේ බාගැනීම් මකා දැමීමට සකසන්න.</translation>
 <translation id="5596627076506792578">තවත් විකල්ප</translation>
 <translation id="560322036295180549">ඔබගේ සංවිධානය විසින් ක්‍රියාවිරහිත කරන ලදි</translation>
-<translation id="5611107723541161735">මෙම උපාංගයේ ඔබ මෑතක දී පිවිසි අඩවි වෙත කෙටිමං.</translation>
 <translation id="5611398002774823980">ගිණුමේ සුරකින්න</translation>
 <translation id="5613297089029360427">නවතම අනුව පිළිවෙලට සකසන්න</translation>
 <translation id="5614553682702429503">මුරපදය සුරකින්න ද?</translation>
@@ -1487,7 +1483,6 @@
 <translation id="7512075701202892785">iPad හි ඔබ දැන් ආදරය කරන බ්‍රව්සරය</translation>
 <translation id="7512909159512473473">මුර-වැකිකඩ ඇතුළු කරන්න…</translation>
 <translation id="7514365320538308">බාගන්න</translation>
-<translation id="7521117365186708026">ඔබට Chrome වෙතින් උපරිම ප්‍රයෝජන ලබා ගැනීමට උපකාර වන ඉඟි සකසන්න.</translation>
 <translation id="7524055474074101597">යෙදුම් හරහා ඔබේ මුරපද සහ තවත් දේ වෙත ප්‍රවේශ වන්න.</translation>
 <translation id="75362970626182391">නව පටිති සමූහය</translation>
 <translation id="7537586195939242955">කනගාටුයි, ඔබේ අවසර පත මේ අවස්ථාවේදී අවසර පොත වෙතට ස්ථාපනය කළ නොහැකිය.</translation>
@@ -1605,6 +1600,7 @@
 <translation id="800361585186029508">ආදාන කළ URL ටික Google Chrome තුළින් විවෘත කරයි.</translation>
 <translation id="8005666035647241369">මෙම උපාංගයෙහි Google මුරපද කළමනාකරු වෙත</translation>
 <translation id="8011489434346330032">වෙබ් පරීක්ෂක</translation>
+<translation id="8017015647846870183">මුරපද සහ මුරයතුරු ඇතුළුව, Google මුරපද කළමනාකරු වෙතින්</translation>
 <translation id="802154636333426148">බාගැනීම අසමත් විය</translation>
 <translation id="8023170444051056234">ඔබට වහාම “<ph name="GROUP_NAME" />" පටිති සමූහයට ප්‍රවේශය අහිමි වනු ඇති අතර, එය ඔබේ සියලු උපාංගවලින් මකනු ඇත</translation>
 <translation id="8023878949384262191">මෙම කොටස විහිදුවයි.</translation>
@@ -1705,7 +1701,6 @@
 <translation id="8439758443371991593">කියවීම් ලැයිස්තුවට එක් කිරීම සඟවන්න</translation>
 <translation id="8449869326050867919">මුරපදය බෙදා ගන්නා ලදි</translation>
 <translation id="8453847087068411809">කිසි විටෙකත් පැකේජ ස්වයංව හඳුනා නොගන්න</translation>
-<translation id="846158969830690371">ඔබට ආරක්ෂිත ම සැකසීම් තිබේ ද නැතහොත් කිසිවක් සමාලෝචනය කිරීමට අවශ්‍ය දැයි දැන ගන්න.</translation>
 <translation id="8473863474539038330">ලිපින සහ තව</translation>
 <translation id="8474378002946546633">දැනුම්දීම්වලට ඉඩ දෙන්න</translation>
 <translation id="8477178913400731244">දත්ත මකන්න</translation>

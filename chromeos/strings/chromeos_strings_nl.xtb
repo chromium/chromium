@@ -768,6 +768,7 @@
 <translation id="4654549501020883054">Dagelijks wijzigen</translation>
 <translation id="4655868084888499342">Afbeelding ingesteld als achtergrond</translation>
 <translation id="4661249927038176904">Surrealistisch</translation>
+<translation id="4661392828086261436">Deze update wordt geleverd door de fabrikant van het apparaat en is niet geverifieerd door Google</translation>
 <translation id="4664651912255946953">bont</translation>
 <translation id="4665014895760275686">Fabrikant</translation>
 <translation id="467510802200863975">De wachtwoorden komen niet overeen</translation>
@@ -1027,6 +1028,7 @@
 <translation id="5904994456462260490">Een nieuwe APN toevoegen</translation>
 <translation id="590746845088109442">katten</translation>
 <translation id="5907649332524363701">toetskleur</translation>
+<translation id="5908813850962688338">De installatie van deze update duurt een paar minuten. Houd je apparaat aangesloten en aan terwijl de update wordt gedownload. Je apparaat start misschien een paar keer opnieuw op en toont een zwart scherm tijdens dit proces. Je wordt gevraagd je apparaat opnieuw op te starten om de installatie af te ronden.</translation>
 <translation id="5916084858004523819">Verboden</translation>
 <translation id="5916664084637901428">Aan</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Je bestand is gescand en opgeslagen in <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Je bestanden zijn gescand en opgeslagen in <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>

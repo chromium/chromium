@@ -731,6 +731,7 @@ Ellers genaktiveres den indbyggede touchplade om <ph name="TIMEOUT_SECONDS" />.<
 <translation id="3522979239100719575">Søger efter tilgængelige profiler. Dette kan tage et par minutter.</translation>
 <translation id="3526440770046466733">Åbn linket på ny fane, og bliv i den aktuelle fane</translation>
 <translation id="353086728817903341">Forbundet til <ph name="NUM_DEVICES" /> enheder</translation>
+<translation id="3532247131850366052">Google-regnearket kunne ikke oprettes</translation>
 <translation id="3533126039236445965">Apps på hylden</translation>
 <translation id="3539957339480430241">Hotspot på <ph name="DEVICE_NAME" /></translation>
 <translation id="3540893133818942399">Afvis konfiguration af visning af din telefons seneste billeder og medier</translation>
@@ -829,6 +830,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="380165613292957338">Hej, hvad kan jeg hjælpe med?</translation>
 <translation id="3804737937830804242">Minimer kameraet</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 emoji. Der er ingen andre resultater.}one{# emoji. Der er ingen andre resultater.}other{# emojis. Der er ingen andre resultater.}}</translation>
+<translation id="3822403841174077928">Teksten kunne ikke kopieres med formateringen</translation>
 <translation id="3824784079442479685">Dette giver <ph name="APP_NAME" /> og alle apps og websites, der har kameratilladelsen, adgang til kameraet. Du skal muligvis opdatere websiden eller genstarte appen.</translation>
 <translation id="3826099427150913765">Skift til adgangskode</translation>
 <translation id="383058930331066723">Tilstanden Batterisparefunktion er aktiveret</translation>
@@ -1215,6 +1217,7 @@ Nogle funktioner er begrænset for at forlænge batteritiden.</translation>
 <translation id="5043679421800073804">Klik eller tryk på det sidste ikon på hylden</translation>
 <translation id="504465286040788597">Forrige afsnit</translation>
 <translation id="5045550434625856497">Ugyldig adgangskode</translation>
+<translation id="5058794129231928255">Google-dokumentet kunne ikke oprettes</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Du får besked, hvis du taler, mens mikrofonen er slået fra. Lyden forlader aldrig din enhed.</translation>
 <translation id="5077416371682039027">Konfigurer visning af din telefons seneste billeder, medier, notifikationer og apps</translation>
@@ -1478,7 +1481,6 @@ Ingen enheder er forbundet.</translation>
 <translation id="589817443623831496">Elementscanning</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">Gul</translation>
-<translation id="5911231045062997865">Lacros-vinduer understøttes ikke i øjeblikket. Andre apps gemmes.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916646100036936191">Ny notifikation, <ph name="NOTIFICATION_COUNT" /> i alt</translation>
 <translation id="5916664084637901428">Til</translation>
@@ -1648,6 +1650,7 @@ Ingen enheder er forbundet.</translation>
 <translation id="6468406072297048412">{0,plural, =1{Opdater enheden til en tidligere version inden for 1 minut}one{Opdater enheden til en tidligere version inden for # minut}other{Opdater enheden til en tidligere version inden for # minutter}}</translation>
 <translation id="6469104339369989396">Slå hotspot til/fra</translation>
 <translation id="6477681113376365978">Filen kan ikke downloades</translation>
+<translation id="648135757200234041">Kontakten kunne ikke oprettes</translation>
 <translation id="6482559668224714696">Forstørrelse af fuld skærm</translation>
 <translation id="6485086611007560630">Vejr (ikke tilgængelige)</translation>
 <translation id="6490471652906364588">USB-C-enhed (højre port)</translation>
@@ -2288,6 +2291,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="8653151467777939995">Vis indstillinger for notifikationer. Notifikationer er slået til</translation>
 <translation id="8657066291275741003">små bogstaver</translation>
 <translation id="8660331759611631213">Kvadratroden af 71</translation>
+<translation id="8662921061190671299">Begivenheden kunne ikke føjes til Kalender</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, signalstyrke <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Tryk på Enter for at tage et delvist screenshot</translation>
 <translation id="8676770494376880701">Oplader med lav kraft er tilsluttet</translation>

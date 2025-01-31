@@ -126,7 +126,6 @@
 <translation id="1076766328672150609">บุตรหลานจะใช้ PIN เพื่อปลดล็อกอุปกรณ์ได้</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216">ดาวน์โหลดพจนานุกรมตรวจตัวสะกดสำหรับภาษา<ph name="LANGUAGE" />ไม่ได้ ลองใหม่</translation>
-<translation id="1078029726086090536">ยืนยันรหัสผ่าน</translation>
 <translation id="1078037449555275327">การตั้งค่า ChromeVox</translation>
 <translation id="1079242569060319448">หากลืม PIN</translation>
 <translation id="1079285777677001938">ฟีเจอร์ในบางเว็บไซต์อาจใช้งานไม่ได้</translation>
@@ -369,6 +368,7 @@
 <translation id="1241066500170667906">เลือกสถานะการทดสอบสำหรับ<ph name="EXPERIMENT_NAME" /></translation>
 <translation id="124116460088058876">ภาษาเพิ่มเติม</translation>
 <translation id="1241381048229838873">แสดงบุ๊กมาร์กทั้งหมด</translation>
+<translation id="1242044645101871359">ลงชื่อเข้าใช้อีกครั้ง</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" /> ต้องการรีเซ็ตการตั้งค่าของคุณ</translation>
 <translation id="1243002225871118300">เปลี่ยนขนาดการแสดงผลและข้อความ</translation>
 <translation id="1243314992276662751">อัปโหลด</translation>
@@ -1617,7 +1617,6 @@
 <translation id="2113921862428609753">การเข้าถึงข้อมูลผู้ออกใบรับรอง</translation>
 <translation id="2114145607116268663">ติดตั้งไม่ได้ ต้องรีบูต โปรดรีสตาร์ทคอมพิวเตอร์แล้วลองอีกครั้ง รหัสข้อผิดพลาดคือ <ph name="ERROR" /></translation>
 <translation id="2114326799768592691">โหลดเ&amp;ฟรมซ้ำ</translation>
-<translation id="2114413269775311385">ใช้บัญชีนี้กับแอป Android คุณควบคุมสิทธิ์สำหรับแอป Android ใน<ph name="LINK_BEGIN" />การตั้งค่าแอป<ph name="LINK_END" />ได้</translation>
 <translation id="2114995631896158695">ไม่ได้ใส่ซิมการ์ด</translation>
 <translation id="2116619964159595185">โดยปกติเว็บไซต์จะเชื่อมต่ออุปกรณ์บลูทูธเพื่อดำเนินการตามฟีเจอร์อย่างการตั้งค่าหรือซิงค์บีคอนที่ใช้พลังงานต่ำ ตัวติดตามสุขภาพและการออกกำลังกาย หรือหลอดไฟอัจฉริยะ</translation>
 <translation id="2117655453726830283">สไลด์ถัดไป</translation>
@@ -2794,6 +2793,7 @@
 <translation id="2926620265753325858">ไม่รองรับ <ph name="DEVICE_NAME" /></translation>
 <translation id="2926708162326352948">อัปเดตธีมเป็นรูปภาพที่อัปโหลดแล้ว</translation>
 <translation id="2927017729816812676">พื้นที่เก็บข้อมูลแคช</translation>
+<translation id="2928030851119977280">บันทึกการตั้งค่าที่เลือกแล้ว การตั้งค่าจะมีผลเมื่อคุณลงชื่อเข้าใช้บริการอื่นๆ ของ Google</translation>
 <translation id="2928795416630981206">ได้รับอนุญาตให้ติดตามตำแหน่งของกล้อง</translation>
 <translation id="2929345818093040583">{NUM_SITES,plural, =1{Chrome นำสิทธิ์ออกจากเว็บไซต์แล้ว 1 เว็บ}other{Chrome นำสิทธิ์ออกจากเว็บไซต์แล้ว {NUM_SITES} เว็บ}}</translation>
 <translation id="2931157624143513983">พอดีกับพื้นที่ที่พิมพ์ได้</translation>
@@ -4632,6 +4632,7 @@
 <translation id="4242533952199664413">เปิดการตั้งค่า</translation>
 <translation id="4242577469625748426">ไม่สามารถติดตั้งการตั้งค่านโยบายบนอุปกรณ์: <ph name="VALIDATION_ERROR" /></translation>
 <translation id="4242825475818569385"><ph name="BEGIN_LINK" />เบราว์เซอร์และโปรไฟล์ของคุณได้รับการจัดการ<ph name="END_LINK" />โดย <ph name="DOMAIN" /></translation>
+<translation id="424315890655130736">ป้อนรหัสผ่าน</translation>
 <translation id="4243504193894350135">เครื่องพิมพ์หยุดชั่วคราว</translation>
 <translation id="4243624244759495699"><ph name="LOCALE" /> ระดับ <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">ค้นหาแอปสไตลัสเพิ่มเติม</translation>
@@ -5354,7 +5355,6 @@
 <translation id="4766598565665644999">ส่วนขยายทั้งหมดอ่านและเปลี่ยนแปลง <ph name="HOST" /> ได้</translation>
 <translation id="4767427586072640478">ดูข้อมูลเพิ่มเติมเกี่ยวกับส่วนขยายที่ปิดใช้</translation>
 <translation id="4768332406694066911">คุณมีใบรับรองจากองค์กรเหล่านี้ซึ่งระบุถึงตัวคุณ</translation>
-<translation id="4768945955870840220">สำหรับผลิตภัณฑ์บางรายการ Chrome สามารถรวบรวมรีวิวจากทั่วทั้งเว็บได้</translation>
 <translation id="4769632191812288342">คุณกำลังได้รับการปกป้องแบบมาตรฐาน</translation>
 <translation id="4770119228883592393">ขอสิทธิ์ กด ⌘ + Option + ลูกศรลงเพื่อตอบกลับ</translation>
 <translation id="4770755495532014179">ใช้รหัสผ่านนี้ใน iPhone</translation>
@@ -7401,6 +7401,7 @@
 <translation id="6253801023880399036">รหัสผ่านจะบันทึกไว้ใน <ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
 <translation id="6254503684448816922">คีย์ไม่สมบูรณ์</translation>
 <translation id="6254892857036829079">ยอดเยี่ยม</translation>
+<translation id="6257131917452817589">การเปลี่ยนรหัสผ่านอัตโนมัติ</translation>
 <translation id="6257602895346497974">เปิดการซิงค์...</translation>
 <translation id="6257614441619555296"><ph name="KEY" />: <ph name="VALUE" /></translation>
 <translation id="625827534921607067">ระบบจะเลือกเครือข่ายนี้หากมีมากกว่า 1 เครือข่ายที่เชื่อมต่อหรือกำหนดค่าไว้ก่อนหน้านี้</translation>
@@ -8748,7 +8749,6 @@
 <translation id="7243092385765551741">ลบพาสคีย์ไหม</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (ดีที่สุด)</translation>
 <translation id="7246230585855757313">เสียบคีย์ความปลอดภัยใหม่แล้วลองอีกครั้ง</translation>
-<translation id="724835896049478274">บัญชีที่พร้อมใช้งานกับแอป Android</translation>
 <translation id="7248802599439396696">ทำให้แท็บไม่ทำงาน</translation>
 <translation id="7249197363678284330">เปลี่ยนการตั้งค่านี้ในแถบที่อยู่</translation>
 <translation id="7249764475759804559">รวมแอปนี้เป็นตัวเลือกเมื่อเปิดไฟล์</translation>
@@ -9111,6 +9111,7 @@
 <translation id="7502528909759062987">หยุดแคสต์แท็บไปยัง <ph name="DEVICE_NAME" /> ชั่วคราว</translation>
 <translation id="7502804472671406749">สามารถเลื่อนและซูมแท็บที่แชร์</translation>
 <translation id="7503191893372251637">ประเภทใบรับรองของ Netscape </translation>
+<translation id="7503259455663961898">เปลี่ยนรหัสผ่านให้ฉัน</translation>
 <translation id="7503985202154027481">ระบบจะเก็บบันทึกการเข้าชมเว็บไซต์นี้ไว้ในคีย์ความปลอดภัย</translation>
 <translation id="7504145862399276792">ปิดเสียงของแท็บนี้อยู่</translation>
 <translation id="750509436279396091">เปิดโฟลเดอร์ดาวน์โหลด</translation>
@@ -9173,6 +9174,7 @@
 <translation id="7551059576287086432">ดาวน์โหลด <ph name="FILE_NAME" /> สำเร็จแล้ว</translation>
 <translation id="7551643184018910560">ปักหมุดที่ชั้นวาง</translation>
 <translation id="7552191410769096467">หากต้องการแชร์หรือเข้าร่วมกลุ่มแท็บ คุณต้องลงชื่อเข้าใช้และเปิดการซิงค์</translation>
+<translation id="7552196109089297786">ออกจากระบบ Microsoft</translation>
 <translation id="7552846755917812628">ลองทำตามเคล็ดลับต่อไปนี้:</translation>
 <translation id="7553012839257224005">กำลังตรวจสอบคอนเทนเนอร์ Linux</translation>
 <translation id="7553242001898162573">ป้อนรหัสผ่าน</translation>
@@ -10302,6 +10304,7 @@
 <translation id="8330617762701840933">รายการเว็บไซต์ที่เปลี่ยนเส้นทางไปยังเบราว์เซอร์สำรองได้</translation>
 <translation id="8330689128072902965">ผู้ติดต่อใกล้เคียงจะแชร์กับคุณได้ คลิกเพื่อเปลี่ยน</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{ประเภทไฟล์ที่รองรับ ได้แก่ <ph name="FILE_TYPE1" />}=2{ประเภทไฟล์ที่รองรับ ได้แก่ <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />}=3{ประเภทไฟล์ที่รองรับ ได้แก่ <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />}=4{ประเภทไฟล์ที่รองรับ ได้แก่ <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" />}other{ประเภทไฟล์ที่รองรับ ได้แก่ <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />และอีก {OVERFLOW_COUNT} ประเภท<ph name="END_LINK" />)}}</translation>
+<translation id="8331578454993293727">ระบบพบว่ารหัสผ่านของคุณมีการรั่วไหลจากการละเมิดข้อมูล</translation>
 <translation id="8331822764922665615">ตั้งชื่อกลุ่ม เลือกสี แล้วกด Esc</translation>
 <translation id="833256022891467078">โฟลเดอร์ที่แชร์ใน Crostini</translation>
 <translation id="833262891116910667">ไฮไลต์</translation>
@@ -10383,6 +10386,7 @@
     <ph name="BEGIN_PARAGRAPH2" />ดูความช่วยเหลือเพิ่มเติมได้ที่ g.co/flex/InstallErrors<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8383614331548401927">สรุปจากการใช้ครั้งล่าสุด</translation>
 <translation id="8386091599636877289">ไม่พบนโยบาย</translation>
+<translation id="8387087863179559896">Chrome สามารถอัปเดตรหัสผ่านของบัญชีคุณให้รัดกุมยิ่งขึ้นสำหรับเว็บไซต์นี้ได้ โดยคุณไม่ต้องจำรหัสผ่านเนื่องจากระบบจะบันทึกไว้ให้ในเครื่องมือจัดการรหัสผ่านบน Google สำหรับ <ph name="EMAIL" /> ดูเพิ่มเติมเกี่ยวกับ<ph name="PASSWORD_CHANGE" /></translation>
 <translation id="8387361103813440603">ไม่ได้รับอนุญาตให้ดูตำแหน่งของคุณ</translation>
 <translation id="8387617938027387193">ยืนยันว่าเป็นคุณ</translation>
 <translation id="8388770971141403598">ไม่รองรับโปรไฟล์รอง</translation>
@@ -10697,7 +10701,6 @@
 <translation id="8625124982056504555">อ่านหมายเลขซีเรียลของอุปกรณ์และคอมโพเนนต์ ChromeOS</translation>
 <translation id="862542460444371744">&amp;ส่วนขยาย</translation>
 <translation id="8625663000550647058">ไม่ได้รับอนุญาตให้ใช้ไมโครโฟน</translation>
-<translation id="8625679025395572221">บัญชีของคุณอาจยังมีความเสี่ยง</translation>
 <translation id="8625916342247441948">ไม่อนุญาตให้เว็บไซต์เชื่อมต่ออุปกรณ์ HID</translation>
 <translation id="862727964348362408">ระงับไว้ชั่วคราว</translation>
 <translation id="862750493060684461">แคช CSS</translation>
@@ -11579,7 +11582,6 @@
 <translation id="936801553271523408">ข้อมูลวินิจฉัยระบบ</translation>
 <translation id="93766956588638423">ซ่อมส่วนขยาย</translation>
 <translation id="938623846785894166">ไฟล์ที่ไม่แพร่หลาย</translation>
-<translation id="939401694733344652">บัญชีเหล่านี้ไม่ได้ใช้กับแอป Android อยู่ในขณะนี้ หากคุณเลือกบัญชีที่จะใช้แอป Android นี้ บัญชีดังกล่าวจะใช้กับแอป Android อื่นๆ ด้วย คุณเปลี่ยนแปลงสิทธิ์เข้าถึงของแอป Android ได้ใน<ph name="LINK_BEGIN" />การตั้งค่า &gt; บัญชี<ph name="LINK_END" /></translation>
 <translation id="939598580284253335">ป้อนข้อความรหัสผ่าน</translation>
 <translation id="939736085109172342">โฟลเดอร์ใหม่</translation>
 <translation id="940212040923880623">ค้นหาและแก้ไข</translation>

@@ -674,7 +674,6 @@
 <translation id="2157640075051554492">ମୂଲ୍ୟ ଟ୍ରାକିଂ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକ</translation>
 <translation id="21613918653299710">ଅନଲାଇନ ଇମେଜ ଗ୍ୟାଲେରୀଗୁଡ଼ିକ</translation>
 <translation id="2161656808144014275">ଟେକ୍ସଟ୍</translation>
-<translation id="2162510787844374618">ଆପଣଙ୍କ ବ୍ୟାଙ୍କ ସହ ଯୋଗାଯୋଗ କରାଯାଉଛି...</translation>
 <translation id="2162620598375156287">ବର୍ତ୍ତମାନ <ph name="SOURCE_WEBSITE" />ରେ <ph name="CURRENT_PRICE" /></translation>
 <translation id="2164510882479075877"><ph name="HOST_NAME" />ରେ ଟାଇପିଂ ତ୍ରୁଟି ଅଛି କି ନାହିଁ ଯାଞ୍ଚ କରନ୍ତୁ।</translation>
 <translation id="2166049586286450108">ସମ୍ପୂର୍ଣ୍ଣ ବ୍ୟବସ୍ଥାପକ ଆକ୍ସେସ୍</translation>
@@ -2425,7 +2424,6 @@
 <translation id="5288108484102287882">ନୀତି ମୂଲ୍ୟର ମାନ୍ୟତା ଚେତାବନୀ ଦେଇଛନ୍ତି</translation>
 <translation id="5289384342738547352">ଏକାଧିକ ଡକ୍ୟୁମେଣ୍ଟର ପରିଚାଳନା</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{ଆଜି ଅପଡେଟ ଆବଶ୍ୟକ}=2{ଆସନ୍ତାକାଲି ସୁଦ୍ଧା ଅପଡେଟ ଆବଶ୍ୟକ}other{# ଦିନ ମଧ୍ୟରେ ଅପଡେଟ ଆବଶ୍ୟକ}}</translation>
-<translation id="5292714443869769806"><ph name="OPERATING_SYSTEM" /> ସେଟିଂସକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="5293919335876685914">କୁପେଗୁଡ଼ିକ</translation>
 <translation id="5298618990685278995">ଏକ ପ୍ରଥମ ଡ୍ରାଫ୍ଟ</translation>
 <translation id="5299298092464848405">ନୀତି ପାର୍ସ କରିବାରେ ତ୍ରୁଟି</translation>
@@ -3646,6 +3644,7 @@
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">ମାଲବାହୀ ଟ୍ରକ ଏବଂ ଟ୍ରେଲରଗୁଡ଼ିକ</translation>
 <translation id="7461924472993315131">ପିନ୍‍</translation>
+<translation id="746329643760972486">MacOS</translation>
 <translation id="7465036432780054056">ଆପଣ <ph name="TOP_LEVEL_URL" />କୁ ଭିଜିଟ କରିଥିବା <ph name="EMBEDDED_URL" /> ଜାଣିବ</translation>
 <translation id="7465963048299965912">10 x 13 ଇଞ୍ଚ</translation>
 <translation id="7469935732330206581">ଫର୍ମ ସୁରକ୍ଷିତ ନୁହେଁ</translation>
@@ -3877,6 +3876,7 @@
 <translation id="784404208867107517">ଗୋଷ୍ଠୀଭୁକ୍ତ ଇତିହାସ</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{କିଛିନାହିଁ}=1{1ଟି ଆପ୍ (<ph name="EXAMPLE_APP_1" />)}=2{2ଟି ଆପ୍‌ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{#ଟି ଆପ୍‌ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">ଏକ ତ୍ରୁଟି ହୋଇଛି। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
+<translation id="784623644169604270">କୌଣସି ବର୍ତ୍ତମାନର କାର୍ଯ୍ୟକଳାପ ନାହିଁ</translation>
 <translation id="785476343534277563">କଲେଜ ସ୍ପୋର୍ଟ୍ସ</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7860345425589240791"><ph name="SIDE_OF_CARD" />ରେ ଥିବା ଆପଣଙ୍କ ନୂଆ ମିଆଦ ଶେଷ ହେବାର ତାରିଖ ଏବଂ CVC ଲେଖନ୍ତୁ</translation>
@@ -3915,7 +3915,6 @@
 <translation id="7942349550061667556">ନାଲି</translation>
 <translation id="7943397946612013052">ଡାଉନଲୋଡ କରିବା ବ୍ଲକ କରାଯାଇଛି</translation>
 <translation id="7943893128817522649">ଏକାଧିକ ଫାଇଲକୁ ସ୍ୱଚାଳିତ ଭାବେ ଡାଉନଲୋଡ୍ କରିବାକୁ ସାଇଟ୍ ପଚାରିପାରେ</translation>
-<translation id="794567586469801724">macOS</translation>
 <translation id="7947285636476623132">ଆପଣଙ୍କ କ୍ରେଡିଟ୍‍ କାର୍ଡ ଅବଧି ସମାପ୍ତିର ବର୍ଷ ଦେଖନ୍ତୁ ଏବଂ ପୁଣି ବ୍ୟବହାର କରି ଦେଖନ୍ତୁ</translation>
 <translation id="7947310711271925113">ପପ ମ୍ୟୁଜିକ</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chromeର ଫିଚରଗୁଡ଼ିକ ବିଷୟରେ ଜାଣିବା ପାଇଁ Tab କରି Enter ଦବାନ୍ତୁ</translation>
@@ -4666,7 +4665,6 @@
 <translation id="984275831282074731">ପେମେଣ୍ଟ ପଦ୍ଧତି</translation>
 <translation id="985199708454569384">&lt;p&gt;ଯଦି ଆପଣଙ୍କର କମ୍ପ୍ୟୁଟର୍ କିମ୍ୱା ମୋବାଇଲ୍ ଡିଭାଇସ୍‌ର ତାରିଖ ଓ ସମୟ ଭୁଲ ଥିବ, ତେବେ ଆପଣ ଏହି ତ୍ରୁଟି ଦେଖିବେ।&lt;/p&gt;
     &lt;p&gt;ଏହି ତ୍ରୁଟି ଠିକ୍ କରିବା ପାଇଁ ନିଜ ଡିଭାଇସ୍‌ର ଘଣ୍ଟା ଖୋଲନ୍ତୁ। ଏହା ସୁନିଶ୍ଚିତ କରନ୍ତୁ ଯେ ସମୟ ଓ ତାରିଖ ଠିକ୍ ଅଛି।&lt;/p&gt;</translation>
-<translation id="986257639512122511">ଆପଣ <ph name="ORIGIN" />ରେ <ph name="PERMISSION" /> ଅନୁମତି ଦେଇଛନ୍ତି</translation>
 <translation id="987264212798334818">ସାଧାରଣ</translation>
 <translation id="988159990683914416">ଡେଭେଲପର୍ ବିଲ୍ଡ</translation>
 <translation id="989988560359834682">ଠିକଣା ଏଡିଟ୍ କରନ୍ତୁ</translation>

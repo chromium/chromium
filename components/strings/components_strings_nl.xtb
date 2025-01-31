@@ -674,7 +674,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2157640075051554492">Meldingen voor prijstracking</translation>
 <translation id="21613918653299710">Online fotogalerijen</translation>
 <translation id="2161656808144014275">Tekst</translation>
-<translation id="2162510787844374618">Contact opnemen met je bank...</translation>
 <translation id="2162620598375156287">Nu <ph name="CURRENT_PRICE" /> op <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Check of <ph name="HOST_NAME" /> een typfout bevat.</translation>
 <translation id="2166049586286450108">Volledige beheerderstoegang</translation>
@@ -2402,6 +2401,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5254043433801397071">Afdrukcontent optimaliseren</translation>
 <translation id="5255583962255635076">Toegepast browserbeleid in je werkprofiel</translation>
 <translation id="5255690596502591079">Toch vastleggen</translation>
+<translation id="5255771248404149177">Je kaartaanbieder wil zeker weten dat jij het bent</translation>
 <translation id="5255833070095767006">350 x 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{Op basis van het beheerdersbeleid wordt afgeraden dit bestand te kopiëren naar <ph name="DESTINATION_NAME" />}other{Op basis van het beheerdersbeleid wordt afgeraden deze bestanden te kopiëren naar <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5263867360296733198">Check bestanden voordat je ze uploadt</translation>
@@ -2422,7 +2422,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5288108484102287882">Tijdens de validatie van de beleidswaarden zijn er waarschuwingen geconstateerd</translation>
 <translation id="5289384342738547352">Verwerking van meerdere documenten</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{Update vandaag vereist}=2{Update uiterlijk morgen vereist}other{Update binnen # dagen vereist}}</translation>
-<translation id="5292714443869769806">Naar instellingen van <ph name="OPERATING_SYSTEM" /></translation>
 <translation id="5293919335876685914">Coupés</translation>
 <translation id="5298618990685278995">een eerste concept</translation>
 <translation id="5299298092464848405">Fout bij het parseren van het beleid</translation>
@@ -2550,6 +2549,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5518352028556756716">De meeste sites kunnen geen cookies van derden gebruiken om je te volgen terwijl je browst. Sites kunnen geen cookies van derden gebruiken in de incognitomodus.</translation>
 <translation id="5519516356611866228">Met jouw wijzigingen</translation>
 <translation id="5519696598216267194">Papier (voorgestanst)</translation>
+<translation id="5520105693415771152">Zijn je gegevens niet actueel? Neem contact op met je aanbieder om ze te updaten.</translation>
 <translation id="5521782189689806907">Meubelmakerij</translation>
 <translation id="5523118979700054094">Beleidsnaam</translation>
 <translation id="5523588073846127669">De verkoper accepteert deze virtuele kaart niet</translation>
@@ -3644,6 +3644,7 @@ Aanvullende informatie:
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Vrachtwagens en opleggers</translation>
 <translation id="7461924472993315131">Vastzetten</translation>
+<translation id="746329643760972486">macOS</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> weet dat je <ph name="TOP_LEVEL_URL" /> hebt bezocht</translation>
 <translation id="7465963048299965912">10 x 13 inch</translation>
 <translation id="7469935732330206581">Formulier is niet beveiligd</translation>
@@ -3914,7 +3915,6 @@ Aanvullende informatie:
 <translation id="7942349550061667556">Rood</translation>
 <translation id="7943397946612013052">Download geblokkeerd</translation>
 <translation id="7943893128817522649">Kan vragen of deze site automatisch meerdere bestanden mag downloaden</translation>
-<translation id="794567586469801724">macOS</translation>
 <translation id="7947285636476623132">Controleer het vervaljaar en probeer het opnieuw</translation>
 <translation id="7947310711271925113">Pop</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter voor meer informatie over Chrome-functies</translation>
@@ -4665,7 +4665,6 @@ Aanvullende informatie:
 <translation id="984275831282074731">Betaalmethoden</translation>
 <translation id="985199708454569384">&lt;p&gt;Je ziet deze fout als de datum en tijd van je computer of mobiele apparaat niet goed zijn ingesteld.&lt;/p&gt;
     &lt;p&gt;Open de klok van het apparaat om deze fout op te lossen. Zorg dat de tijd en datum juist zijn.&lt;/p&gt;</translation>
-<translation id="986257639512122511">Je hebt <ph name="PERMISSION" /> toegestaan op <ph name="ORIGIN" /></translation>
 <translation id="987264212798334818">Algemeen</translation>
 <translation id="988159990683914416">Ontwikkelaarsbuild</translation>
 <translation id="989988560359834682">Adres bewerken</translation>

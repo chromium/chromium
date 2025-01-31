@@ -674,7 +674,6 @@
 <translation id="2157640075051554492">Бааларга көз салуу боюнча билдирмелер</translation>
 <translation id="21613918653299710">Онлайн сүрөттөрдүн галереясы</translation>
 <translation id="2161656808144014275">Текст</translation>
-<translation id="2162510787844374618">Банк менен байланышууда…</translation>
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> сайтында эми <ph name="CURRENT_PRICE" /></translation>
 <translation id="2164510882479075877"><ph name="HOST_NAME" /> туура жазылганын текшериңиз.</translation>
 <translation id="2166049586286450108">Толугу менен администратордун уруксаты</translation>
@@ -2427,7 +2426,6 @@
 <translation id="5288108484102287882">Саясатта коюлган маанилерди ырастоодо эскертүүлөр берилди</translation>
 <translation id="5289384342738547352">Бир нече документти тейлөө</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{Бүгүн жаңыртуу талап кылынат}=2{Эртең жаңыртуу талап кылынат}other{# күндүн ичинде жаңыртуу талап кылынат}}</translation>
-<translation id="5292714443869769806"><ph name="OPERATING_SYSTEM" /> параметрлерине өтүү</translation>
 <translation id="5293919335876685914">Купе</translation>
 <translation id="5298618990685278995">биринчи долбоор</translation>
 <translation id="5299298092464848405">Эрежени талдоо катасы</translation>
@@ -3649,6 +3647,7 @@
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Жүк ташуучу унаалар</translation>
 <translation id="7461924472993315131">Кадап коюу</translation>
+<translation id="746329643760972486">MacOS</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> сайтына <ph name="TOP_LEVEL_URL" /> барагын ачканыңыз жөнүндө маалымат жөнөтүлөт</translation>
 <translation id="7465963048299965912">10 x 13 дюйм</translation>
 <translation id="7469935732330206581">Форма кооптуу</translation>
@@ -3919,7 +3918,6 @@
 <translation id="7942349550061667556">Кызыл</translation>
 <translation id="7943397946612013052">Жүктөп алуу бөгөттөлгөн</translation>
 <translation id="7943893128817522649">Бир нече файлды автоматтык түрдө жүктөп алууга уруксат сурай алат</translation>
-<translation id="794567586469801724">macOS</translation>
 <translation id="7947285636476623132">Мөөнөтү аяктоочу жылды текшерип, кайталап көрүңүз</translation>
 <translation id="7947310711271925113">Поп-музыка</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome'догу функциялар жөнүндө толук маалымат алуу үчүн Tab, андан кийин Enter баскычтарын басыңыз</translation>
@@ -4671,7 +4669,6 @@
 <translation id="984275831282074731">Төлөм ыкмалары</translation>
 <translation id="985199708454569384">&lt;p&gt;Бул катаны компьютериңиз же мобилдик түзмөгүңүздүн күнү жана убакыты туура эмес болсо көрөсүз.&lt;/p&gt;
     &lt;p&gt;Бул катаны оңдоо үчүн түзмөгүңүздүн саатын ачыңыз. Күнү жана убакытынын тууралыгын текшериңиз.&lt;/p&gt;</translation>
-<translation id="986257639512122511"><ph name="ORIGIN" /> сайтында <ph name="PERMISSION" /> колдонууга уруксат бердиңиз</translation>
 <translation id="987264212798334818">Жалпы</translation>
 <translation id="988159990683914416">Иштеп чыгуучунун курамасы</translation>
 <translation id="989988560359834682">Даректи өзгөртүү</translation>

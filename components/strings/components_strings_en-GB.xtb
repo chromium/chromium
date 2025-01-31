@@ -674,7 +674,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2157640075051554492">Price tracking notifications</translation>
 <translation id="21613918653299710">Online image galleries</translation>
 <translation id="2161656808144014275">Text</translation>
-<translation id="2162510787844374618">Contacting your bank…</translation>
 <translation id="2162620598375156287">Now <ph name="CURRENT_PRICE" /> on <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Check if there is a typo in <ph name="HOST_NAME" />.</translation>
 <translation id="2166049586286450108">Full Admin Access</translation>
@@ -2408,6 +2407,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5254043433801397071">Optimise print content</translation>
 <translation id="5255583962255635076">Applied browser policies in your work profile</translation>
 <translation id="5255690596502591079">Capture anyway</translation>
+<translation id="5255771248404149177">Your card provider wants to make sure that it's you</translation>
 <translation id="5255833070095767006">350 mm x 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{Administrator policy doesn’t recommend copying this file to <ph name="DESTINATION_NAME" />}other{Administrator policy doesn’t recommend copying these files to <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5263867360296733198">Review is required before uploading</translation>
@@ -2428,7 +2428,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5288108484102287882">Validation of policy values has raised warnings</translation>
 <translation id="5289384342738547352">Multiple documents handling</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{Update required today}=2{Update required by tomorrow}other{Update required within # days}}</translation>
-<translation id="5292714443869769806">Go to <ph name="OPERATING_SYSTEM" /> settings</translation>
 <translation id="5293919335876685914">Coupés</translation>
 <translation id="5298618990685278995">a first draft</translation>
 <translation id="5299298092464848405">Error parsing policy</translation>
@@ -2556,6 +2555,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5518352028556756716">Most sites can’t use third-party cookies to track you as you browse and sites can’t use third-party cookies in Incognito mode.</translation>
 <translation id="5519516356611866228">With your changes</translation>
 <translation id="5519696598216267194">Paper (prepunched)</translation>
+<translation id="5520105693415771152">Not seeing your current info? Contact your provider to update it.</translation>
 <translation id="5521782189689806907">Cabinetry</translation>
 <translation id="5523118979700054094">Policy name</translation>
 <translation id="5523588073846127669">Merchant doesn't accept this virtual card</translation>
@@ -3651,6 +3651,7 @@ Additional details:
 <translation id="745640750744109667">A0 x 3</translation>
 <translation id="7457071735008326060">Cargo trucks and trailers</translation>
 <translation id="7461924472993315131">Pin</translation>
+<translation id="746329643760972486">MacOS</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> will know that you visited <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7465963048299965912">10 in x 13 in</translation>
 <translation id="7469935732330206581">Form is not secure</translation>
@@ -3921,7 +3922,6 @@ Additional details:
 <translation id="7942349550061667556">Red</translation>
 <translation id="7943397946612013052">Blocked download</translation>
 <translation id="7943893128817522649">Can ask to automatically download multiple files</translation>
-<translation id="794567586469801724">macOS</translation>
 <translation id="7947285636476623132">Check your expiry year and try again</translation>
 <translation id="7947310711271925113">Pop music</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />: press Tab then Enter to learn about Chrome features</translation>
@@ -4673,7 +4673,6 @@ Additional details:
 <translation id="984275831282074731">Payment methods</translation>
 <translation id="985199708454569384">&lt;p&gt;You'll see this error if your computer or mobile device's date and time are inaccurate.&lt;/p&gt;
     &lt;p&gt;To fix the error, open your device's clock. Make sure that the time and date are correct.&lt;/p&gt;</translation>
-<translation id="986257639512122511">You have allowed <ph name="PERMISSION" /> on <ph name="ORIGIN" /></translation>
 <translation id="987264212798334818">General</translation>
 <translation id="988159990683914416">Developer Build</translation>
 <translation id="989988560359834682">Edit Address</translation>

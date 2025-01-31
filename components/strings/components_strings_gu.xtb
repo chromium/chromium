@@ -674,7 +674,6 @@
 <translation id="2157640075051554492">કિંમત ટ્રૅક કરવા વિશેના નોટિફિકેશન</translation>
 <translation id="21613918653299710">ઑનલાઇન છબીની ગૅલરી</translation>
 <translation id="2161656808144014275">ટેક્સ્ટ</translation>
-<translation id="2162510787844374618">તમારી બેંકનો સંપર્ક કરી રહ્યાં છીએ…</translation>
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> પર હવે <ph name="CURRENT_PRICE" /> કિંમત છે</translation>
 <translation id="2164510882479075877">ચેક કરો કે <ph name="HOST_NAME" />માં કોઈ ટાઇપિંગ ભૂલ તો નથી ને.</translation>
 <translation id="2166049586286450108">સંપૂર્ણ વ્યવસ્થાપક ઍક્સેસ</translation>
@@ -2428,7 +2427,6 @@
 <translation id="5288108484102287882">પૉલિસી મૂલ્યોની માન્યતા ચેતવણીઓનું કારણ બની છે</translation>
 <translation id="5289384342738547352">એકથી વધુ દસ્તાવેજો હૅન્ડલ કરવા</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{આજે અપડેટ જરૂરી છે}=2{આવતીકાલ સુધીમાં અપડેટ જરૂરી છે}one{# દિવસની અંદર અપડેટ જરૂરી છે}other{# દિવસની અંદર અપડેટ જરૂરી છે}}</translation>
-<translation id="5292714443869769806"><ph name="OPERATING_SYSTEM" /> સેટિંગ પર જાઓ</translation>
 <translation id="5293919335876685914">કૂપ</translation>
 <translation id="5298618990685278995">એક પ્રથમ ડ્રાફ્ટ</translation>
 <translation id="5299298092464848405">ભૂલ વિશ્લેષણ પૉલિસી</translation>
@@ -3651,6 +3649,7 @@
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">કાર્ગો ટ્રક અને ટ્રેલર</translation>
 <translation id="7461924472993315131">પિન કરો</translation>
+<translation id="746329643760972486">MacOS</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" />ને જાણ થશે કે તમે <ph name="TOP_LEVEL_URL" />ની મુલાકાત લીધી</translation>
 <translation id="7465963048299965912">10 x 13 ઇંચ</translation>
 <translation id="7469935732330206581">ફોર્મ સુરક્ષિત નથી</translation>
@@ -3882,6 +3881,7 @@
 <translation id="784404208867107517">ગ્રૂપ કરેલો ઇતિહાસ</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{કોઈ નહીં}=1{1 ઍપ (<ph name="EXAMPLE_APP_1" />)}=2{2 ઍપ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# ઍપ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# ઍપ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">કોઈ ભૂલ આવી હતી. ફરી પ્રયાસ કરો.</translation>
+<translation id="784623644169604270">તાજેતરની કોઈ ઍક્ટિવિટી નથી</translation>
 <translation id="785476343534277563">કૉલેજની રમતો</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7860345425589240791"><ph name="SIDE_OF_CARD" /> પર તમારી નવી સમાપ્તિ તારીખ અને CVC દાખલ કરો</translation>
@@ -3920,7 +3920,6 @@
 <translation id="7942349550061667556">લાલ</translation>
 <translation id="7943397946612013052">ડાઉનલોડ કરવાનું બ્લૉક કરેલું છે</translation>
 <translation id="7943893128817522649">એકથી વધારે ફાઇલોને ઑટોમૅટિક રીતે ડાઉનલોડ કરવાનું પૂછી શકે છે</translation>
-<translation id="794567586469801724">macOS</translation>
 <translation id="7947285636476623132">તમારું સમાપ્તિ વર્ષ તપાસો અને ફરી પ્રયાસ કરો</translation>
 <translation id="7947310711271925113">પૉપ મ્યુઝિક</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chromeની સુવિધાઓ વિશે જાણવા માટે, પહેલાં Tab અને પછી Enter કી દબાવો</translation>
@@ -4672,7 +4671,6 @@
 <translation id="984275831282074731">ચુકવણી પદ્ધતિઓ</translation>
 <translation id="985199708454569384">&lt;p&gt;જો તમારા કમ્પ્યુટર અથવા મોબાઇલ ઉપકરણની તારીખ અને સમય સચોટ નહીં હોય, તો તમને આ ભૂલ દેખાશે.&lt;/p&gt;
     &lt;p&gt;આ ભૂલ સુધારવા માટે, તમારા ઉપકરણની ઘડિયાળ ખોલો. ખાતરી કરો કે સમય અને તારીખ સાચાં છે.&lt;/p&gt;</translation>
-<translation id="986257639512122511">તમે <ph name="ORIGIN" /> પર <ph name="PERMISSION" />ને મંજૂરી આપેલી છે</translation>
 <translation id="987264212798334818">સામાન્ય</translation>
 <translation id="988159990683914416">વિકાસકર્તા બિલ્ડ</translation>
 <translation id="989988560359834682">ઍડ્રેસમાં ફેરફાર કરો</translation>

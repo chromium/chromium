@@ -263,7 +263,6 @@
 <translation id="2074131957428911366">W <ph name="BEGIN_LINK" />ustawieniach<ph name="END_LINK" /> możesz wybrać, co chcesz synchronizować.</translation>
 <translation id="2078437078822043850">Aby przeglądać treści w trybie incognito, możesz przewijać w prawo.</translation>
 <translation id="2079545284768500474">Cofnij</translation>
-<translation id="2082906935540894275">Najbardziej przydatne funkcje w różnych momentach.</translation>
 <translation id="2085876078937250610">Zapisz…</translation>
 <translation id="2096239473850415494">Nie udało się pobrać</translation>
 <translation id="2096716221239095980">Usuń wszystkie dane</translation>
@@ -548,7 +547,6 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="344589138074534176">Więcej informacji o Obiektywie Google</translation>
 <translation id="3447332786336558089">Po wylogowaniu karty zostaną zamknięte, a niezapisane dane konta zostaną usunięte z tego urządzenia. Może to obejmować m.in. hasła i historię.</translation>
-<translation id="3449016921756175697">Przydatne sugestie, dzięki którym przeglądanie jest przyjemniejsze i łatwiejsze.</translation>
 <translation id="345348365500626747">Adres znaleziony</translation>
 <translation id="3464194322481586217">Wystąpił błąd monitorowania ceny.</translation>
 <translation id="3469117812148449995">Opcje zapisania hasła</translation>
@@ -718,6 +716,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="422477017457571619">Oparta na AI ochrona przed niebezpiecznymi stronami, pobieranymi plikami i rozszerzeniami, realizowana w czasie rzeczywistym dzięki wysyłaniu Twoich danych przeglądania do Google</translation>
 <translation id="4231395118547300571">Powiadomienia o kontroli zabezpieczeń są włączone</translation>
 <translation id="4237377247299956313">Kliknij <ph name="BEGIN_BOLD" />Domyślna przeglądarka<ph name="END_BOLD" /></translation>
+<translation id="4241893428331130998">Brak zapisanych haseł lub kluczy dostępu</translation>
 <translation id="4242533952199664413">Otwórz ustawienia</translation>
 <translation id="4250432749243022864">{count,plural, =0{Otwórz {count} kartę}=1{Otwórz {count} kartę}few{Otwórz {count} karty}many{Otwórz {count} kart}other{Otwórz {count} karty}}</translation>
 <translation id="4250680216510889253">Nie</translation>
@@ -922,7 +921,6 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="5127538504377457572">Aktywność: <ph name="DAYS" /> dni temu</translation>
 <translation id="5128788795241319992">Poznaj nowe menu</translation>
 <translation id="5132942445612118989">Synchronizuj swoje hasła, historię i inne dane na wszystkich swoich urządzeniach</translation>
-<translation id="5137526732000415202">Ostatnia otwarta karta na wszystkich Twoich urządzeniach.</translation>
 <translation id="5145331760738811130">Zamknij przełącznik kart</translation>
 <translation id="5157638238828697074">Coś poszło nie tak. Nie udało się otworzyć aplikacji.</translation>
 <translation id="5163417375525818870">Pliki PDF</translation>
@@ -1023,7 +1021,6 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="559567008082979829">Ustaw pobierane pliki tak, aby były usuwane po miesiącu.</translation>
 <translation id="5596627076506792578">Więcej opcji</translation>
 <translation id="560322036295180549">Wyłączone przez organizację</translation>
-<translation id="5611107723541161735">Skróty do witryn, które ostatnio odwiedziłeś(-aś) na tym urządzeniu.</translation>
 <translation id="5611398002774823980">Zapisz na koncie</translation>
 <translation id="5613297089029360427">Sortuj od najnowszego</translation>
 <translation id="5614553682702429503">Zapisać hasło?</translation>
@@ -1487,7 +1484,6 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="7512075701202892785">Twoja ulubiona przeglądarka teraz na iPadzie</translation>
 <translation id="7512909159512473473">Wpisz hasło wielowyrazowe…</translation>
 <translation id="7514365320538308">Pobierz</translation>
-<translation id="7521117365186708026">Wskazówki dotyczące konfiguracji, które pomogą Ci w pełni wykorzystać możliwości Chrome.</translation>
 <translation id="7524055474074101597">Uzyskaj dostęp do haseł i innych danych w aplikacjach.</translation>
 <translation id="75362970626182391">Nowa grupa kart</translation>
 <translation id="7537586195939242955">Twojego hasła nie można teraz umieścić w Passbooku.</translation>
@@ -1600,11 +1596,13 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="7982789257301363584">Sieć</translation>
 <translation id="7987685713885608670">Zanim zapiszesz hasła w menedżerze haseł Google, zaszyfruj je na urządzeniu, aby zwiększyć ich bezpieczeństwo.</translation>
 <translation id="798991908416757345">Grupy kart są niedostępne</translation>
+<translation id="7993170188789685695">Aby zamknąć to powiadomienie, kliknij dwukrotnie.</translation>
 <translation id="7993619969781047893">Funkcje niektórych stron mogą nie działać prawidłowo</translation>
 <translation id="7996239959906074962">Skonfiguruj…</translation>
 <translation id="800361585186029508">Otwiera wpisane adresy URL w Google Chrome.</translation>
 <translation id="8005666035647241369">W menedżerze haseł Google w przypadku tego urządzenia</translation>
 <translation id="8011489434346330032">Inspektor sieci</translation>
+<translation id="8017015647846870183">Usuwa dane z Menedżera haseł Google, w tym hasła i klucze dostępu</translation>
 <translation id="802154636333426148">Nie udało się pobrać</translation>
 <translation id="8023170444051056234">Natychmiast utracisz dostęp do grupy kart „<ph name="GROUP_NAME" />” i zostanie ona usunięta ze wszystkich Twoich urządzeń</translation>
 <translation id="8023878949384262191">Rozwija sekcję.</translation>
@@ -1705,7 +1703,6 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8439758443371991593">Ukryj opcję Dodaj do listy Do przeczytania</translation>
 <translation id="8449869326050867919">Hasło udostępnione</translation>
 <translation id="8453847087068411809">Nigdy nie wykrywaj automatycznie przesyłek</translation>
-<translation id="846158969830690371">Dowiedz się, czy masz najbezpieczniejsze ustawienia czy może musisz coś sprawdzić.</translation>
 <translation id="8473863474539038330">Adresy i ustawienia</translation>
 <translation id="8474378002946546633">Zezwalaj na powiadomienia.</translation>
 <translation id="8477178913400731244">Usuń dane</translation>

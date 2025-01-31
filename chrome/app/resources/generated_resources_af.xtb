@@ -126,7 +126,6 @@
 <translation id="1076766328672150609">Jou kind kan 'n PIN gebruik om die toestel te ontsluit.</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216">Kon nie speltoetswoordeboek aflaai vir <ph name="LANGUAGE" /> nie. Probeer weer.</translation>
-<translation id="1078029726086090536">Verifieer jou wagwoord</translation>
 <translation id="1078037449555275327">ChromeVox-instellings</translation>
 <translation id="1079242569060319448">PIN vergeet?</translation>
 <translation id="1079285777677001938">Kenmerke op sommige werwe sal dalk nie werk nie.</translation>
@@ -369,6 +368,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1241066500170667906">Kies eksperimentstatus vir <ph name="EXPERIMENT_NAME" /></translation>
 <translation id="124116460088058876">Meer tale</translation>
 <translation id="1241381048229838873">Wys alle boekmerke</translation>
+<translation id="1242044645101871359">Meld weer aan</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" /> wil jou instellings terugstel.</translation>
 <translation id="1243002225871118300">Verander skerm- en teksgrootte</translation>
 <translation id="1243314992276662751">Laai op</translation>
@@ -1627,7 +1627,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2113921862428609753">Toegang tot outoriteitinligting</translation>
 <translation id="2114145607116268663">Kan nie installeer nie; herselflaai is nodig. Herbegin jou rekenaar en probeer weer. Foutkode is <ph name="ERROR" />.</translation>
 <translation id="2114326799768592691">Herlaai raam</translation>
-<translation id="2114413269775311385">Gebruik hierdie rekening saam met Android-programme. Jy kan toestemmings vir Android-programme in <ph name="LINK_BEGIN" />Programinstellings<ph name="LINK_END" /> beheer.</translation>
 <translation id="2114995631896158695">Geen SIM-kaart ingesit nie</translation>
 <translation id="2116619964159595185">Werwe koppel gewoonlik aan Bluetooth-toestelle vir kenmerke soos om 'n lae-energiebaken, 'n gesondheid- of fiksheidnaspoorder, of 'n slimgloeilamp op te stel of te sinkroniseer</translation>
 <translation id="2117655453726830283">Volgende skyfie</translation>
@@ -4647,6 +4646,7 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier en die toes
 <translation id="4242533952199664413">Maak instellings oop</translation>
 <translation id="4242577469625748426">Kon nie beleidinstellings op die toestel installeer nie: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385">Jou <ph name="BEGIN_LINK" />blaaier en profiel word bestuur<ph name="END_LINK" /> deur <ph name="DOMAIN" /></translation>
+<translation id="424315890655130736">Voer wagfrase in</translation>
 <translation id="4243504193894350135">Drukker is onderbreek</translation>
 <translation id="4243624244759495699"><ph name="LOCALE" />, Graad <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">Vind meer stilusprogramme</translation>
@@ -5369,7 +5369,6 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="4766598565665644999">Alle uitbreidings kan <ph name="HOST" /> lees en verander</translation>
 <translation id="4767427586072640478">Kom meer te wete oor gedeaktiveerde uitbreidings.</translation>
 <translation id="4768332406694066911">Jy het sertifikate van hierdie organisasies af wat jou identifiseer</translation>
-<translation id="4768945955870840220">Chrome kan vir sommige produkte resensies van oral op die web insamel</translation>
 <translation id="4769632191812288342">Jy kry tans standaardbeskerming</translation>
 <translation id="4770119228883592393">Toestemming is versoek; druk ⌘ + Option + afpyl om te antwoord</translation>
 <translation id="4770755495532014179">Gebruik hierdie wagwoord op jou iPhone</translation>
@@ -5511,6 +5510,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="4862642413395066333">Onderteken tans OCSP-reaksies</translation>
 <translation id="4863702650881330715">Brei versoenbaarheid uit</translation>
 <translation id="4863769717153320198">Lyk soos <ph name="WIDTH" /> x <ph name="HEIGHT" /> (Verstek)</translation>
+<translation id="4864334716800138793">Werkprofielopstelling is deur jou organisasie gedeaktiveer</translation>
 <translation id="4864369630010738180">Meld tans aan …</translation>
 <translation id="4864805589453749318">Kies die ouer wat toestemming gee om 'n skoolrekening by te voeg.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (geblokkeer)</translation>
@@ -6472,6 +6472,7 @@ Jy kan veelvuldige skakelaars vir hierdie handeling toewys.</translation>
 <translation id="5559768063688681413">Geen gestoorde drukkers nie</translation>
 <translation id="55601339223879446">Verstel die grense van jou werkskerm binne die skerm</translation>
 <translation id="5561162485081632007">Bespeur en waarsku jou oor gevaarlike gevalle wanneer hulle plaasvind</translation>
+<translation id="5562588178647493983">Kontak jou administrateur vir meer inligting</translation>
 <translation id="556321030400250233">plaaslike of gedeelde lêer</translation>
 <translation id="5563234215388768762">Deursoek Google of voer 'n URL in</translation>
 <translation id="5563824734298958390">Verlaat oortjiegroep?</translation>
@@ -8766,7 +8767,6 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7243092385765551741">Vee toegangsleutel uit?</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (beste)</translation>
 <translation id="7246230585855757313">Sit jou sekuriteitsleutel weer in en probeer weer</translation>
-<translation id="724835896049478274">Rekeninge beskikbaar vir Android-programme</translation>
 <translation id="7248802599439396696">Maak oortjies onaktief</translation>
 <translation id="7249197363678284330">Verander hierdie instelling in die adresbalk.</translation>
 <translation id="7249764475759804559">Sluit hierdie program in as ’n opsie wanneer jy lêers oopmaak</translation>
@@ -9803,6 +9803,7 @@ Druk 'n toegewese skakelaar of sleutel om toewysing te verwyder.</translation>
 <translation id="7968833647796919681">Aktiveer prestasiedataversameling</translation>
 <translation id="7968982339740310781">Bekyk details</translation>
 <translation id="7969046989155602842">Command</translation>
+<translation id="7969144945436590933">Kry nog besonderhede</translation>
 <translation id="7970673414865679092">Ethernet-besonderhede</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 met RSA-enkripsie</translation>
 <translation id="7973149423217802477">Afduim stuur terugvoer dat jy nie hiervan hou nie.</translation>
@@ -10714,7 +10715,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8625124982056504555">Lees Chrome-toestel- en komponentreeksnommers</translation>
 <translation id="862542460444371744">Uitbreidings</translation>
 <translation id="8625663000550647058">Mag nie jou mikrofoon gebruik nie</translation>
-<translation id="8625679025395572221">Jou rekening is dalk steeds in gevaar.</translation>
 <translation id="8625916342247441948">Moenie werwe toelaat om aan HID-toestelle te koppel nie</translation>
 <translation id="862727964348362408">Opgeskort</translation>
 <translation id="862750493060684461">CSS-kas</translation>
@@ -11596,7 +11596,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="936801553271523408">Stelsel se diagnostiese data</translation>
 <translation id="93766956588638423">Herstel uitbreiding</translation>
 <translation id="938623846785894166">Ongewone lêer</translation>
-<translation id="939401694733344652">Hierdie rekeninge word nie op die oomblik saam met Android-programme gebruik nie. As jy ’n rekening kies om saam met hierdie Android-program te gebruik, kan die rekening ook saam met ander Android-programme gebruik word. Jy kan Android-apptoegang in <ph name="LINK_BEGIN" />Instellings &gt; Rekeninge<ph name="LINK_END" /> verander.</translation>
 <translation id="939598580284253335">Tik wagfrase in</translation>
 <translation id="939736085109172342">Nuwe vouer</translation>
 <translation id="940212040923880623">&amp;Soek en wysig</translation>

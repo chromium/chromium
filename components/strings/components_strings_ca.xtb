@@ -674,7 +674,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2157640075051554492">Notificacions de seguiment de preus</translation>
 <translation id="21613918653299710">Galeries d'imatges en línia</translation>
 <translation id="2161656808144014275">Text</translation>
-<translation id="2162510787844374618">S'està contactant amb el banc...</translation>
 <translation id="2162620598375156287">Ara costa <ph name="CURRENT_PRICE" /> a <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Comprova si <ph name="HOST_NAME" /> està ben escrit.</translation>
 <translation id="2166049586286450108">Accés administratiu complet</translation>
@@ -2429,7 +2428,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5288108484102287882">La validació dels valors de la política ha generat advertiments</translation>
 <translation id="5289384342738547352">Gestió de diversos documents</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{Cal fer una actualització avui}=2{Cal fer una actualització demà}other{Cal fer una actualització en un termini de # dies}}</translation>
-<translation id="5292714443869769806">Ves a la configuració de <ph name="OPERATING_SYSTEM" /></translation>
 <translation id="5293919335876685914">Cupès</translation>
 <translation id="5298618990685278995">Un primer esborrany</translation>
 <translation id="5299298092464848405">Hi ha hagut un error en analitzar la política</translation>
@@ -3653,6 +3651,7 @@ Detalls addicionals:
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Tràilers i camions de càrrega</translation>
 <translation id="7461924472993315131">Fixa</translation>
+<translation id="746329643760972486">macOS</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> sabrà que has visitat <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7465963048299965912">10 x 13 polzades</translation>
 <translation id="7469935732330206581">El formulari no és segur</translation>
@@ -3923,7 +3922,6 @@ Detalls addicionals:
 <translation id="7942349550061667556">Vermell</translation>
 <translation id="7943397946612013052">Baixada bloquejada</translation>
 <translation id="7943893128817522649">Pot demanar permís per baixar automàticament diversos fitxers</translation>
-<translation id="794567586469801724">macOS</translation>
 <translation id="7947285636476623132">Comprova l'any de caducitat i torna-ho a provar</translation>
 <translation id="7947310711271925113">Música pop</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />: prem Tab i després Retorn per obtenir informació sobre les funcions de Chrome</translation>
@@ -4674,7 +4672,6 @@ Detalls addicionals:
 <translation id="984275831282074731">Formes de pagament</translation>
 <translation id="985199708454569384">&lt;p&gt;Aquest error es mostra si la data i l'hora de l'ordinador o del dispositiu mòbil són incorrectes.&lt;/p&gt;
     &lt;p&gt;Per solucionar l'error, obriu el rellotge del dispositiu i comproveu que la data i l'hora siguin correctes.&lt;/p&gt;</translation>
-<translation id="986257639512122511">Has permès <ph name="PERMISSION" /> a <ph name="ORIGIN" /></translation>
 <translation id="987264212798334818">General</translation>
 <translation id="988159990683914416">Muntatge del desenvolupador</translation>
 <translation id="989988560359834682">Edita l'adreça</translation>

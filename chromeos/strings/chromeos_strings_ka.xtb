@@ -768,6 +768,7 @@
 <translation id="4654549501020883054">ყოველდღიურად შეცვლა</translation>
 <translation id="4655868084888499342">სურათი დაყენდა ფონად</translation>
 <translation id="4661249927038176904">სიურრეალისტური</translation>
+<translation id="4661392828086261436">ამ განახლებას უზრუნველყოფს მოწყობილობის მწარმოებელი და ის Google-ს არ შეუმოწმებია</translation>
 <translation id="4664651912255946953">ბეწვი</translation>
 <translation id="4665014895760275686">მწარმოებელი</translation>
 <translation id="467510802200863975">პაროლები არ ემთხვევა</translation>
@@ -1027,6 +1028,7 @@
 <translation id="5904994456462260490">ახალი APN-ის დამატება</translation>
 <translation id="590746845088109442">კატები</translation>
 <translation id="5907649332524363701">კლავიშების ფერი</translation>
+<translation id="5908813850962688338">ამ განახლების ინსტალაციას რამდენიმე წუთი დასჭირდება. დატოვეთ მოწყობილობა ელკვების წყაროსთან მიერთებული და ჩართეთ, როცა განახლება ჩამოიტვირთება. თქვენი მოწყობილობა შეიძლება რამდენიმეჯერ თავისით გადაიტვირთოს და პროცესში შავი ეკრანი აჩვენოს. ინსტალაციის დასრულებისას მოგეთხოვებათ მოწყობილობის გადატვირთვა.</translation>
 <translation id="5916084858004523819">აკრძალული</translation>
 <translation id="5916664084637901428">ჩართვა</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{თქვენი ფაილი წარმატებით დასკანირდა და შეინახა საქაღალდეში <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{თქვენი ფაილები წარმატებით დასკანირდა და შეინახა საქაღალდეში <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>

@@ -126,7 +126,6 @@
 <translation id="1076766328672150609">お子様は PIN を使用してデバイスのロックを解除できます。</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216"><ph name="LANGUAGE" /> のスペルチェック辞書をダウンロードできませんでした。もう一度お試しください。</translation>
-<translation id="1078029726086090536">パスワードを確認</translation>
 <translation id="1078037449555275327">ChromeVox の設定</translation>
 <translation id="1079242569060319448">PIN をお忘れの場合</translation>
 <translation id="1079285777677001938">一部のサイトで機能を使用できなくなる可能性があります。</translation>
@@ -369,6 +368,7 @@
 <translation id="1241066500170667906"><ph name="EXPERIMENT_NAME" /> の試験運用機能の状態を選択</translation>
 <translation id="124116460088058876">その他の言語</translation>
 <translation id="1241381048229838873">すべてのブックマークを表示</translation>
+<translation id="1242044645101871359">もう一度ログインしてください</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" /> が設定のリセットを求めています。</translation>
 <translation id="1243002225871118300">ディスプレイとテキストのサイズを変更する</translation>
 <translation id="1243314992276662751">アップロード</translation>
@@ -1614,7 +1614,6 @@
 <translation id="2113921862428609753">認証局アクセス情報</translation>
 <translation id="2114145607116268663">インストールできません。再起動が必要です。パソコンを再起動して、もう一度お試しください。エラーコード: <ph name="ERROR" />。</translation>
 <translation id="2114326799768592691">フレームを再読み込み(&amp;F)</translation>
-<translation id="2114413269775311385">このアカウントを Android アプリで使用します。[<ph name="LINK_BEGIN" />アプリの設定<ph name="LINK_END" />] で Android アプリの権限を管理できます。</translation>
 <translation id="2114995631896158695">SIM カードが挿入されていません</translation>
 <translation id="2116619964159595185">Bluetooth Low Energy ビーコン、ヘルス トラッカー、フィットネス トラッカー、スマート電球の設定や同期などの機能に対応するために、多くのサイトは Bluetooth デバイスに接続します</translation>
 <translation id="2117655453726830283">次のスライド</translation>
@@ -2788,6 +2787,7 @@
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> はサポートされていません。</translation>
 <translation id="2926708162326352948">アップロードした画像に合わせてテーマが更新されました</translation>
 <translation id="2927017729816812676">キャッシュ ストレージ</translation>
+<translation id="2928030851119977280">選択内容を保存しました。選択した設定は、他の Google サービスにログインしたときに適用されます。</translation>
 <translation id="2928795416630981206">カメラ位置の追跡を許可するサイト</translation>
 <translation id="2929345818093040583">{NUM_SITES,plural, =1{Chrome で 1 件のサイトの権限を削除しました}other{Chrome で {NUM_SITES} 件のサイトの権限を削除しました}}</translation>
 <translation id="2931157624143513983">印刷可能領域に合わせる</translation>
@@ -4624,6 +4624,7 @@
 <translation id="4242533952199664413">設定を開く</translation>
 <translation id="4242577469625748426">デバイスにポリシー設定をインストールできませんでした: <ph name="VALIDATION_ERROR" />。</translation>
 <translation id="4242825475818569385">お使いの<ph name="BEGIN_LINK" />ブラウザとプロフィールは <ph name="DOMAIN" /> によって管理<ph name="END_LINK" />されています</translation>
+<translation id="424315890655130736">パスフレーズの入力</translation>
 <translation id="4243504193894350135">プリンタは一時停止中です</translation>
 <translation id="4243624244759495699"><ph name="LOCALE" />、グレード <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">他のタッチペン アプリを探す</translation>
@@ -5345,7 +5346,6 @@
 <translation id="4766598565665644999">すべての拡張機能が <ph name="HOST" /> の読み取りと変更を行えます</translation>
 <translation id="4767427586072640478">無効になっている拡張機能の詳細。</translation>
 <translation id="4768332406694066911">次の機関から発行された、あなたを識別する証明書があります</translation>
-<translation id="4768945955870840220">一部の商品については、ウェブから収集したレビューが表示されます</translation>
 <translation id="4769632191812288342">標準保護機能が適用されています</translation>
 <translation id="4770119228883592393">権限がリクエストされました。対応するには、⌘+option+下矢印キーを押してください</translation>
 <translation id="4770755495532014179">このパスワードを iPhone で使用する</translation>
@@ -7392,6 +7392,7 @@
 <translation id="6253801023880399036">パスワードは <ph name="GOOGLE_PASSWORD_MANAGER" /> に保存されています。</translation>
 <translation id="6254503684448816922">キーが侵害された</translation>
 <translation id="6254892857036829079">非常に良い</translation>
+<translation id="6257131917452817589">自動パスワード変更</translation>
 <translation id="6257602895346497974">同期を有効にする...</translation>
 <translation id="6257614441619555296"><ph name="KEY" />: <ph name="VALUE" /></translation>
 <translation id="625827534921607067">これまでに接続または設定したネットワークが複数ある場合は、このネットワークが優先されます</translation>
@@ -8737,7 +8738,6 @@
 <translation id="7243092385765551741">パスキーを削除しますか？</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" />x<ph name="HEIGHT" />（最適）</translation>
 <translation id="7246230585855757313">セキュリティ キーを挿入し直して、もう一度お試しください</translation>
-<translation id="724835896049478274">Android アプリで使用できるアカウント</translation>
 <translation id="7248802599439396696">タブを非アクティブにする</translation>
 <translation id="7249197363678284330">アドレスバーでこの設定を変更できます。</translation>
 <translation id="7249764475759804559">ファイルを開く際にオプションとしてこのアプリを含める</translation>
@@ -9101,6 +9101,7 @@
 <translation id="7502528909759062987"><ph name="DEVICE_NAME" /> へのタブのキャストを一時停止する</translation>
 <translation id="7502804472671406749">共有タブのスクロールとズームが許可されています</translation>
 <translation id="7503191893372251637">Netscape 証明書タイプ</translation>
+<translation id="7503259455663961898">自動で変更</translation>
 <translation id="7503985202154027481">このサイトへのアクセスの記録がセキュリティ キーに保存されます。</translation>
 <translation id="7504145862399276792">このタブの音声はミュートされています</translation>
 <translation id="750509436279396091">ダウンロード フォルダを開く</translation>
@@ -9163,6 +9164,7 @@
 <translation id="7551059576287086432"><ph name="FILE_NAME" /> をダウンロードできませんでした</translation>
 <translation id="7551643184018910560">シェルフに固定</translation>
 <translation id="7552191410769096467">タブグループを共有するか、タブグループに参加するには、ログインして同期をオンにする必要があります</translation>
+<translation id="7552196109089297786">Microsoft からログアウト</translation>
 <translation id="7552846755917812628">次のことをお試しください。</translation>
 <translation id="7553012839257224005">Linux コンテナを確認しています</translation>
 <translation id="7553242001898162573">パスワードを入力してください</translation>
@@ -10291,6 +10293,7 @@
 <translation id="8330617762701840933">代替ブラウザにリダイレクトされるウェブサイトのリストです。</translation>
 <translation id="8330689128072902965">近くにいる連絡先が共有できます。クリックすると変更できます。</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{サポートされているファイル形式: <ph name="FILE_TYPE1" />}=2{サポートされているファイル形式: <ph name="FILE_TYPE1" />、<ph name="FILE_TYPE2" />}=3{サポートされているファイル形式: <ph name="FILE_TYPE1" />、<ph name="FILE_TYPE2" />、<ph name="FILE_TYPE3" />}=4{サポートされているファイル形式: <ph name="FILE_TYPE1" />、<ph name="FILE_TYPE2" />、<ph name="FILE_TYPE3" />、<ph name="FILE_TYPE4" />}other{サポートされているファイル形式: <ph name="FILE_TYPE1" />、<ph name="FILE_TYPE2" />、<ph name="FILE_TYPE3" />、<ph name="FILE_TYPE4" />（<ph name="LINK" />他 {OVERFLOW_COUNT} 種類<ph name="END_LINK" />）}}</translation>
+<translation id="8331578454993293727">データ侵害でパスワードが検出されました</translation>
 <translation id="8331822764922665615">グループに名前を付けて、色を選択し、Esc キーを押します</translation>
 <translation id="833256022891467078">Crostini の共有フォルダ</translation>
 <translation id="833262891116910667">ハイライト表示</translation>
@@ -10372,6 +10375,7 @@
     <ph name="BEGIN_PARAGRAPH2" />詳しくは、g.co/flex/InstallErrors をご覧ください。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8383614331548401927">おかえりなさい</translation>
 <translation id="8386091599636877289">ポリシーが見つかりません。</translation>
+<translation id="8387087863179559896">Chrome で安全なパスワードを使用してこのサイトのアカウントを更新できます。このパスワードは <ph name="EMAIL" /> の Google パスワード マネージャーに保存されるため、覚えておく必要はありません。<ph name="PASSWORD_CHANGE" /> の詳細。</translation>
 <translation id="8387361103813440603">位置情報の取得を許可しないサイト</translation>
 <translation id="8387617938027387193">本人確認</translation>
 <translation id="8388770971141403598">セカンダリ プロファイルはサポートされていません</translation>
@@ -10686,7 +10690,6 @@
 <translation id="8625124982056504555">ChromeOS デバイスとコンポーネントのシリアル番号を読み取る</translation>
 <translation id="862542460444371744">拡張機能(&amp;E)</translation>
 <translation id="8625663000550647058">マイクの使用を許可しないサイト</translation>
-<translation id="8625679025395572221">アカウントは引き続き危険な可能性があります。</translation>
 <translation id="8625916342247441948">サイトに HID デバイスへの接続を許可しない</translation>
 <translation id="862727964348362408">停止中</translation>
 <translation id="862750493060684461">CSS キャッシュ</translation>
@@ -11568,7 +11571,6 @@
 <translation id="936801553271523408">システム診断データ</translation>
 <translation id="93766956588638423">拡張機能を修復</translation>
 <translation id="938623846785894166">一般的ではないファイル</translation>
-<translation id="939401694733344652">これらのアカウントは現在、Android アプリで使用されていません。この Android アプリで使用するアカウントを選択した場合、そのアカウントは他の Android アプリでも使用できるようになります。Android アプリのアクセス権限は、<ph name="LINK_BEGIN" />[設定] &gt; [アカウント]<ph name="LINK_END" /> で変更できます。</translation>
 <translation id="939598580284253335">パスフレーズを入力</translation>
 <translation id="939736085109172342">新しいフォルダ</translation>
 <translation id="940212040923880623">検索と編集(&amp;F)</translation>

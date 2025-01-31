@@ -1478,7 +1478,6 @@
 <translation id="589817443623831496">Кропкавае сканіраванне</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">Жоўты</translation>
-<translation id="5911231045062997865">Вокны Lacros цяпер не падтрымліваюцца. Іншыя праграмы будуць захаваны.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916646100036936191">Новае апавяшчэнне, усяго <ph name="NOTIFICATION_COUNT" /></translation>
 <translation id="5916664084637901428">Уключана</translation>
@@ -1977,6 +1976,7 @@
 <translation id="7611213136657090146">Камера зноў падключана.</translation>
 <translation id="7613620083300976559">Уключыць гульнявы кантролер</translation>
 <translation id="761736749114493194">Уключыць/выключыць кадраванне. <ph name="STATE_TEXT" /></translation>
+<translation id="7621008024906456933">Налады Хуткага абагульвання</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
 <translation id="7627303771480696593">Задаць пытанне</translation>
 <translation id="7634648064048557203">Акно перадпрагляду камеры прывязана да правага ніжняга вугла</translation>

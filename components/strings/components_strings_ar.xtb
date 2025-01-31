@@ -674,7 +674,6 @@
 <translation id="2157640075051554492">إشعارات تتبُّع الأسعار</translation>
 <translation id="21613918653299710">معارض صور على الإنترنت</translation>
 <translation id="2161656808144014275">نص</translation>
-<translation id="2162510787844374618">جارٍ التواصل مع المصرف…</translation>
 <translation id="2162620598375156287">السعر الحالي هو <ph name="CURRENT_PRICE" /> على <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">تحقَّق ما إذا ورد خطأ إملائي في <ph name="HOST_NAME" />.</translation>
 <translation id="2166049586286450108">الوصول الكامل للمشرف</translation>
@@ -2410,6 +2409,7 @@
 <translation id="5254043433801397071">أدوات تحسين أداء محتوى الطباعة</translation>
 <translation id="5255583962255635076">سياسات المتصفّح المطبَّقة في ملف العمل</translation>
 <translation id="5255690596502591079">التقاط على أي حال</translation>
+<translation id="5255771248404149177">يريد مقدِّم بطاقتك التأكّد من هويتك</translation>
 <translation id="5255833070095767006">350 × 460 ملم</translation>
 <translation id="5257739419779698609">{0,plural, =1{لا تنصح سياسة المشرف بنسخ هذا الملف إلى <ph name="DESTINATION_NAME" />.}zero{لا تنصح سياسة المشرف بنسخ هذه الملفات إلى <ph name="DESTINATION_NAME" />.}two{لا تنصح سياسة المشرف بنسخ هذين الملفين إلى <ph name="DESTINATION_NAME" />.}few{لا تنصح سياسة المشرف بنسخ هذه الملفات إلى <ph name="DESTINATION_NAME" />.}many{لا تنصح سياسة المشرف بنسخ هذه الملفات إلى <ph name="DESTINATION_NAME" />.}other{لا تنصح سياسة المشرف بنسخ هذه الملفات إلى <ph name="DESTINATION_NAME" />.}}</translation>
 <translation id="5263867360296733198">يجب مراجعة الملفات قبل تحميلها</translation>
@@ -2430,7 +2430,6 @@
 <translation id="5288108484102287882">لقد أدى التحقُّق من قيم السياسة إلى ظهور تحذيرات.</translation>
 <translation id="5289384342738547352">معالجة المستندات المتعددة</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{يجب إجراء التحديث اليوم.}=2{يجب إجراء التحديث بحلول الغد.}zero{يجب إجراء التحديث في غضون # يوم.}few{يجب إجراء التحديث في غضون # أيام.}many{يجب إجراء التحديث في غضون # يومًا.}other{يجب إجراء التحديث في غضون # يوم.}}</translation>
-<translation id="5292714443869769806">الانتقال إلى إعدادات <ph name="OPERATING_SYSTEM" /></translation>
 <translation id="5293919335876685914">سيارات كوبيه</translation>
 <translation id="5298618990685278995">مسودّة أولية</translation>
 <translation id="5299298092464848405">خطأ في تحليل السياسة</translation>
@@ -2558,6 +2557,7 @@
 <translation id="5518352028556756716">لا يمكن لمعظم المواقع الإلكترونية استخدام ملفات تعريف الارتباط التابعة لجهات خارجية لتتبُّع نشاطك أثناء التصفُّح، ولا يمكن للمواقع الإلكترونية استخدام تلك الملفات في وضع التصفُّح المتخفي.</translation>
 <translation id="5519516356611866228">مع التغييرات التي أجريتها</translation>
 <translation id="5519696598216267194">ورق (مثقوب مسبقًا)</translation>
+<translation id="5520105693415771152">ألا تظهر معلوماتك المُحدَّثة؟ يُرجى التواصل مع مقدِّم الخدمة لتعديلها.</translation>
 <translation id="5521782189689806907">حرفة صناعة أثاث</translation>
 <translation id="5523118979700054094">اسم السياسة</translation>
 <translation id="5523588073846127669">لا يقبل التاجر هذه البطاقة الافتراضية</translation>
@@ -3653,6 +3653,7 @@
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">شاحنات نقل ومقطورات</translation>
 <translation id="7461924472993315131">تثبيت</translation>
+<translation id="746329643760972486">MacOS</translation>
 <translation id="7465036432780054056">سيتم إعلام <ph name="EMBEDDED_URL" /> بأنّك زرت <ph name="TOP_LEVEL_URL" />.</translation>
 <translation id="7465963048299965912">10 × 13 بوصة</translation>
 <translation id="7469935732330206581">النموذج غير آمن</translation>
@@ -3923,7 +3924,6 @@
 <translation id="7942349550061667556">أحمر</translation>
 <translation id="7943397946612013052">تنزيل الملفات محظور</translation>
 <translation id="7943893128817522649">السماح للموقع الإلكتروني بطلب تنزيل ملفات متعدّدة تلقائيًا</translation>
-<translation id="794567586469801724">‏نظام التشغيل macOS</translation>
 <translation id="7947285636476623132">تحقق من عام انتهاء الصلاحية وأعِد المحاولة مرة أخرى</translation>
 <translation id="7947310711271925113">موسيقى "بوب"</translation>
 <translation id="7947813448670013867">‏<ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />: اضغط على مفتاح التبويب (Tab) ثم Enter للتعرّف على ميزات Chrome.</translation>
@@ -4678,7 +4678,6 @@
 <translation id="984275831282074731">طرق الدفع</translation>
 <translation id="985199708454569384">‏&lt;p&gt;سيظهر هذا الخطأ إذا كان التاريخ والوقت غير دقيقَيْن في جهاز الكمبيوتر أو الجهاز الجوّال.&lt;/p&gt;
     &lt;p&gt;لإصلاح الخطأ، افتح ساعة الجهاز وتأكد من صحة التاريخ والوقت.&lt;/p&gt;</translation>
-<translation id="986257639512122511">لقد منحْت <ph name="ORIGIN" /> إذن الوصول إلى <ph name="PERMISSION" />.</translation>
 <translation id="987264212798334818">عام</translation>
 <translation id="988159990683914416">بنية المطوِّر</translation>
 <translation id="989988560359834682">تعديل العنوان</translation>

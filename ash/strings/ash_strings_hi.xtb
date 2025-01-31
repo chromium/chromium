@@ -731,6 +731,7 @@
 <translation id="3522979239100719575">उपलब्ध प्रोफ़ाइलें खोजी जा रही हैं. इसमें कुछ मिनट लग सकते हैं.</translation>
 <translation id="3526440770046466733">लिंक को नए टैब में खोलें और मौजूदा टैब पर बने रहें</translation>
 <translation id="353086728817903341"><ph name="NUM_DEVICES" /> ब्लूटूथ डिवाइसों से कनेक्ट किया गया है</translation>
+<translation id="3532247131850366052">Google शीट नहीं बनाई जा सकी</translation>
 <translation id="3533126039236445965">शेल्फ़ में मौजूद ऐप्लिकेशन</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> हॉटस्पॉट</translation>
 <translation id="3540893133818942399">अपने फ़ोन में मौजूद हाल ही की फ़ोटो और कॉन्टेंट को देखने की सुविधा सेट अप करने की प्रक्रिया रद्द करें</translation>
@@ -830,6 +831,7 @@
 <translation id="380165613292957338">नमस्ते, मैं आपके लिए क्या कर सकती हूं?</translation>
 <translation id="3804737937830804242">कैमरा छोटा करें</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 इमोजी. कोई और नतीजा नहीं मिला.}one{# इमोजी. कोई और नतीजा नहीं मिला.}other{# इमोजी. कोई और नतीजा नहीं मिला.}}</translation>
+<translation id="3822403841174077928">टेक्स्ट को फ़ॉर्मैटिंग के साथ कॉपी नहीं किया जा सका</translation>
 <translation id="3824784079442479685">इससे <ph name="APP_NAME" /> और ऐसे सभी ऐप्लिकेशन और वेबसाइटों को कैमरे का ऐक्सेस मिलेगा जिनके पास कैमरा इस्तेमाल करने की अनुमति है. आपको वेब पेज को रीफ़्रेश या ऐप्लिकेशन को रीस्टार्ट करना पड़ सकता है.</translation>
 <translation id="3826099427150913765">पासवर्ड पर स्विच करें</translation>
 <translation id="383058930331066723">बैटरी सेवर मोड चालू है</translation>
@@ -1216,6 +1218,7 @@
 <translation id="5043679421800073804">शेल्फ़ पर आखिरी आइकॉन पर क्लिक या टैप करने के लिए</translation>
 <translation id="504465286040788597">पिछले पैराग्राफ़ पर जाएं</translation>
 <translation id="5045550434625856497">ग़लत पासवर्ड</translation>
+<translation id="5058794129231928255">Google दस्तावेज़ नहीं बनाया जा सका</translation>
 <translation id="5062496344832867502">रैम</translation>
 <translation id="5068762093486106012">माइक के म्यूट रहते हुए बात करने पर, आपको इसकी सूचना दी जाएगी. माइक के म्यूट होने पर, आपकी बातचीत किसी को सुनाई नहीं देती.</translation>
 <translation id="5077416371682039027">अपने फ़ोन में मौजूद हाल ही की फ़ोटो, कॉन्टेंट, सूचनाओं, और ऐप्लिकेशन को देखने की सुविधा सेट अप करें</translation>
@@ -1479,7 +1482,6 @@
 <translation id="589817443623831496">पॉइंट स्कैनिंग</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">पीला</translation>
-<translation id="5911231045062997865">फ़िलहाल, Lacros विंडो का इस्तेमाल नहीं किया जा सकता. अन्य ऐप्लिकेशन सेव हो जाएंगे.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916646100036936191">नई सूचना, कुल <ph name="NOTIFICATION_COUNT" /></translation>
 <translation id="5916664084637901428">चालू है</translation>
@@ -1649,6 +1651,7 @@
 <translation id="6468406072297048412">{0,plural, =1{डिवाइस को 1 मिनट के अंदर पिछले वर्शन पर अपडेट करें}one{डिवाइस को # मिनट के अंदर पिछले वर्शन पर अपडेट करें}other{डिवाइस को # मिनट के अंदर पिछले वर्शन पर अपडेट करें}}</translation>
 <translation id="6469104339369989396">हॉटस्पॉट टॉगल</translation>
 <translation id="6477681113376365978">फ़ाइल डाउनलोड नहीं की जा सकी</translation>
+<translation id="648135757200234041">संपर्क नहीं बनाया जा सका</translation>
 <translation id="6482559668224714696">फ़ुल-स्क्रीन पर सामग्री को बड़ा दिखाने वाला</translation>
 <translation id="6485086611007560630">मौसम से जुड़े सुझाव (उपलब्ध नहीं हैं)</translation>
 <translation id="6490471652906364588">USB-C डिवाइस (दायां पोर्ट)</translation>
@@ -2289,6 +2292,7 @@
 <translation id="8653151467777939995">सूचना सेटिंग दिखाएं. सूचनाएं चालू हैं</translation>
 <translation id="8657066291275741003">लोअरकेस</translation>
 <translation id="8660331759611631213">71 का वर्गमूल बताओ</translation>
+<translation id="8662921061190671299">Calendar में नहीं जोड़ा जा सका</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">स्क्रीन के किसी खास हिस्से का स्क्रीनशॉट लेने के लिए, Enter दबाएं</translation>
 <translation id="8676770494376880701">कम-शक्ति वाला चार्जर</translation>

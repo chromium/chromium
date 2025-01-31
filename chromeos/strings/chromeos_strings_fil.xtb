@@ -768,6 +768,7 @@
 <translation id="4654549501020883054">Baguhin Araw-araw</translation>
 <translation id="4655868084888499342">Itinakda ang larawan bilang wallpaper</translation>
 <translation id="4661249927038176904">Surreal</translation>
+<translation id="4661392828086261436">Ang update na ito ay galing sa manufacturer ng device at hindi pa nave-verify ng Google</translation>
 <translation id="4664651912255946953">balahibo</translation>
 <translation id="4665014895760275686">Manufacturer</translation>
 <translation id="467510802200863975">Hindi nagtutugma ang mga password</translation>
@@ -1027,6 +1028,7 @@
 <translation id="5904994456462260490">Magdagdag ng bagong APN</translation>
 <translation id="590746845088109442">mga pusa</translation>
 <translation id="5907649332524363701">kulay ng key</translation>
+<translation id="5908813850962688338">Aabutin nang ilang minuto ang pag-install ng update na ito. Panatilihing nakasaksak at naka-on ang iyong device habang dina-download ang update. Posibleng kusang mag-reboot nang ilang beses ang iyong device at magpakita ito ng itim na screen sa prosesong ito. Ipo-prompt kang i-restart ang iyong device para makumpleto ang pag-install.</translation>
 <translation id="5916084858004523819">Ipinagbabawal</translation>
 <translation id="5916664084637901428">Naka-on</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Na-scan at na-save na ang iyong file sa <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Na-scan at na-save na ang iyong mga file sa <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Na-scan at na-save na ang iyong mga file sa <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>

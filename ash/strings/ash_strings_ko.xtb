@@ -731,6 +731,7 @@
 <translation id="3522979239100719575">사용 가능한 프로필을 찾는 중입니다. 몇 분 정도 소요될 수 있습니다</translation>
 <translation id="3526440770046466733">새 탭에서 링크 열기 및 현재 탭 유지</translation>
 <translation id="353086728817903341">기기 <ph name="NUM_DEVICES" />대에 연결됨</translation>
+<translation id="3532247131850366052">Google 시트를 만들 수 없음</translation>
 <translation id="3533126039236445965">앱 표시줄의 앱</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> 핫스팟</translation>
 <translation id="3540893133818942399">휴대전화의 최근 사진 및 미디어 보기 설정 닫기</translation>
@@ -829,6 +830,7 @@
 <translation id="380165613292957338">안녕하세요, 무엇을 도와드릴까요?</translation>
 <translation id="3804737937830804242">카메라 접기</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{그림 이모티콘 1개. 다른 결과는 없습니다.}other{그림 이모티콘 #개. 다른 결과는 없습니다.}}</translation>
+<translation id="3822403841174077928">서식을 포함하여 복사할 수 없음</translation>
 <translation id="3824784079442479685">카메라 액세스 권한이 있는 <ph name="APP_NAME" /> 앱을 포함한 모든 앱과 웹사이트에서 카메라에 액세스할 수 있게 됩니다. 웹페이지를 새로고침하거나 앱을 다시 시작해야 할 수도 있습니다.</translation>
 <translation id="3826099427150913765">비밀번호로 전환</translation>
 <translation id="383058930331066723">절전 모드 사용</translation>
@@ -1215,6 +1217,7 @@
 <translation id="5043679421800073804">앱 표시줄의 마지막 아이콘 클릭 또는 탭</translation>
 <translation id="504465286040788597">이전 단락</translation>
 <translation id="5045550434625856497">비밀번호가 잘못되었습니다.</translation>
+<translation id="5058794129231928255">Google 문서를 만들 수 없음</translation>
 <translation id="5062496344832867502">RAM</translation>
 <translation id="5068762093486106012">음소거 상태에서 말하면 알림을 받습니다. 오디오는 기기 외부로 유출되지 않습니다.</translation>
 <translation id="5077416371682039027">휴대전화의 최근 사진, 미디어, 알림, 앱 보기 설정</translation>
@@ -1478,7 +1481,6 @@
 <translation id="589817443623831496">지점 스캔</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">노란색</translation>
-<translation id="5911231045062997865">Lacros 창은 현재 지원되지 않습니다. 다른 앱은 저장됩니다.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" />(<ph name="MAIL" />)</translation>
 <translation id="5916646100036936191">새 알림, 총 <ph name="NOTIFICATION_COUNT" />개</translation>
 <translation id="5916664084637901428">사용</translation>
@@ -1648,6 +1650,7 @@
 <translation id="6468406072297048412">{0,plural, =1{1분 이내에 기기를 이전 버전으로 업데이트하세요}other{#분 이내에 기기를 이전 버전으로 업데이트하세요}}</translation>
 <translation id="6469104339369989396">핫스팟을 전환합니다.</translation>
 <translation id="6477681113376365978">파일을 다운로드할 수 없음</translation>
+<translation id="648135757200234041">연락처를 만들 수 없음</translation>
 <translation id="6482559668224714696">전체 화면 돋보기</translation>
 <translation id="6485086611007560630">날씨(사용 불가)</translation>
 <translation id="6490471652906364588">USB-C 기기(오른쪽 포트)</translation>
@@ -2288,6 +2291,7 @@
 <translation id="8653151467777939995">알림 설정을 표시합니다. 알림이 사용 설정되어 있습니다.</translation>
 <translation id="8657066291275741003">소문자</translation>
 <translation id="8660331759611631213">71의 제곱근</translation>
+<translation id="8662921061190671299">Calendar에 추가할 수 없음</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">부분 스크린샷을 캡처하려면 Enter를 누르세요</translation>
 <translation id="8676770494376880701">저출력 충전기 연결됨</translation>

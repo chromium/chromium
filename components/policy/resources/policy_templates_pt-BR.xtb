@@ -3330,17 +3330,6 @@ Se esta política for definida como desativada, o recurso de escrita preditiva n
 <translation id="3387211681524224831">Se a política for definida como "Ativada" o histórico de navegação não será salvo, a sincronização de guias será desativada e os usuários não poderão mudar essa configuração.
 
       Se a política for definida como "Desativada" ou não for definida, o histórico de navegação será salvo.</translation>
-<translation id="3387875422525138489">A definição da política especifica uma lista de Apps Isolados da Web (AIWs) que são instalados sem interação do usuário.
-      AIWs são aplicativos que têm propriedades de segurança úteis indisponíveis para páginas da Web normais. Eles são incluídos em um Pacote assinado da Web. A chave pública do Pacote assinado da Web é usada para criar o ID do pacote que identifica o AIW.
-      Até agora, essa política funciona apenas para a Sessão de visitante gerenciada.
-
-      Cada item da lista da política é um objeto com dois campos obrigatórios: o manifesto de atualização <ph name="URL_LABEL" /> e o ID do pacote do App Isolado da Web.
-
-      Cada item também pode incluir estes campos opcionais:
-
-        * <ph name="UPDATE_CHANNEL_OPTION" />: o nome do canal de atualização/lançamento do AIW. Se a política for deixada sem definição, "default" (padrão) será usado.
-        * <ph name="PINNED_VERSION_OPTION" />:  uma versão específica a ser instalada. O sistema tentará instalar essa versão se ela estiver disponível no canal de atualização especificado. Por padrão, fixar um AIW em uma versão específica impede a atualização para versões mais recentes. Para liberar a versão, remova este campo.
-        * <ph name="ALLOW_DOWNGRADES_OPTION" />: permite a instalação de versões mais antigas do AIW. Para isso, o campo "pinned_version" precisa ser definido. Se ele não for informado ou for definido como <ph name="FALSE" />, o downgrade será desativado para esse AIW.</translation>
 <translation id="3387999258705169775">Comportamento padrão do ajuste aninhado da função setTimeout().</translation>
 <translation id="3388628790024977864">Não permitir o fluxo de <ph name="CLOUD_UPLOAD_NAME" /> para <ph name="GOOGLE_DRIVE_NAME" /> e <ph name="GOOGLE_WORKSPACE_NAME" /></translation>
 <translation id="3389088527709746815">Ativar a autenticação gnubby para o host de acesso remoto</translation>

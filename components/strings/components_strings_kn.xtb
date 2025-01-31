@@ -673,7 +673,6 @@
 <translation id="2157640075051554492">ಬೆಲೆ ಟ್ರ್ಯಾಕಿಂಗ್ ಅಧಿಸೂಚನೆಗಳು</translation>
 <translation id="21613918653299710">ಆನ್‌ಲೈನ್ ಚಿತ್ರದ ಗ್ಯಾಲರಿಗಳು</translation>
 <translation id="2161656808144014275">ಪಠ್ಯ</translation>
-<translation id="2162510787844374618">ನಿಮ್ಮ ಬ್ಯಾಂಕ್ ಅನ್ನು ಸಂಪರ್ಕಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="2162620598375156287">ಇದೀಗ <ph name="CURRENT_PRICE" /><ph name="SOURCE_WEBSITE" /> ನಲ್ಲಿ</translation>
 <translation id="2164510882479075877"><ph name="HOST_NAME" /> ನ ಕಾಗುಣಿತ ತಪ್ಪಾಗಿದೆಯೇ ಎಂದು ಪರಿಶೀಲಿಸಿ.</translation>
 <translation id="2166049586286450108">ಪೂರ್ಣ ನಿರ್ವಾಹಕ ಆ್ಯಕ್ಸೆಸ್</translation>
@@ -2425,7 +2424,6 @@
 <translation id="5288108484102287882">ಕಾರ್ಯನೀತಿ ಮೌಲ್ಯಗಳ ಮೌಲ್ಯೀಕರಣ ಪ್ರಕ್ರಿಯೆಯು ಎಚ್ಚರಿಕೆಯ ಸಂದೇಶಗಳನ್ನು ತೋರಿಸುತ್ತಿದೆ</translation>
 <translation id="5289384342738547352">ಹಲವಾರು ಡಾಕ್ಯುಮೆಂಟ್‌ಗಳ ನಿರ್ವಹಣೆ</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{ಇಂದೇ ಅಪ್‌ಡೇಟ್‌ ಮಾಡುವ ಅಗತ್ಯವಿದೆ}=2{ನಾಳೆ ಅಪ್‌ಡೇಟ್‌ ಮಾಡುವ ಅಗತ್ಯವಿದೆ}one{# ದಿನಗಳಲ್ಲಿ ಅಪ್‌ಡೇಟ್‌ ಮಾಡುವ ಅಗತ್ಯವಿದೆ}other{# ದಿನಗಳಲ್ಲಿ ಅಪ್‌ಡೇಟ್‌ ಮಾಡುವ ಅಗತ್ಯವಿದೆ}}</translation>
-<translation id="5292714443869769806"><ph name="OPERATING_SYSTEM" /> ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಹೋಗಿ</translation>
 <translation id="5293919335876685914">ಕೂಪ್‌ಗಳು</translation>
 <translation id="5298618990685278995">ಮೊದಲ ಡ್ರಾಫ್ಟ್</translation>
 <translation id="5299298092464848405">ನೀತಿಯ ಪಾರ್ಸಿಂಗ್‌ನಲ್ಲಿ ದೋಷ</translation>
@@ -3647,6 +3645,7 @@
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">ಕಾರ್ಗೋ ಟ್ರಕ್‌ಗಳು ಮತ್ತು ಟ್ರೇಲರ್‌ಗಳು</translation>
 <translation id="7461924472993315131">ಪಿನ್</translation>
+<translation id="746329643760972486">MacOS</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> ಗೆ ನೀವು <ph name="TOP_LEVEL_URL" /> ಗೆ ಭೇಟಿ ನೀಡಿದ್ದೀರಿ ಎಂದು ತಿಳಿಯುತ್ತದೆ</translation>
 <translation id="7465963048299965912">10 x 13 ಇಂಚು</translation>
 <translation id="7469935732330206581">ಫಾರ್ಮ್ ಸುರಕ್ಷಿತವಾಗಿಲ್ಲ</translation>
@@ -3878,6 +3877,7 @@
 <translation id="784404208867107517">ಗುಂಪು ಮಾಡಿದ ಇತಿಹಾಸ</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{ಒಂದೂ ಇಲ್ಲ}=1{1 ಆ್ಯಪ್ (<ph name="EXAMPLE_APP_1" />)}=2{2 ಆ್ಯಪ್‌ಗಳು (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# ಆ್ಯಪ್‌ಗಳು (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# ಆ್ಯಪ್‌ಗಳು (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">ದೋಷ ಎದುರಾಗಿದೆ. ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
+<translation id="784623644169604270">ಯಾವುದೇ ಇತ್ತೀಚಿನ ಚಟುವಟಿಕೆ ಇಲ್ಲ</translation>
 <translation id="785476343534277563">ಕಾಲೇಜು ಕ್ರೀಡೆ</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7860345425589240791"><ph name="SIDE_OF_CARD" /> ನಲ್ಲಿನ ನಿಮ್ಮ ಹೊಸ ಅವಧಿ ಮುಗಿಯುವ ದಿನಾಂಕ ಮತ್ತು CVC ಅನ್ನು ನಮೂದಿಸಿ</translation>
@@ -3916,7 +3916,6 @@
 <translation id="7942349550061667556">ಕೆಂಪು</translation>
 <translation id="7943397946612013052">ಡೌನ್‌ಲೋಡ್ ಮಾಡುವುದನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="7943893128817522649">ಹಲವಾರು ಫೈಲ್‌ಗಳನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ಕೇಳಬಹುದು</translation>
-<translation id="794567586469801724">macOS</translation>
 <translation id="7947285636476623132">ನಿಮ್ಮ ಮುಕ್ತಾಯ ವರ್ಷವನ್ನು ಪರಿಶೀಲಿಸಿ ಮತ್ತು ಪುನಃ ಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="7947310711271925113">ಪಾಪ್ ಸಂಗೀತ</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ಫೀಚರ್‌ಗಳ ಕುರಿತು ತಿಳಿಯಲು Tab ಒತ್ತಿ, ನಂತರ Enter ಒತ್ತಿ</translation>
@@ -4667,7 +4666,6 @@
 <translation id="984101218975906499">ಔಷಧಿಗಳು ಮತ್ತು ಬಯೊಟೆಕ್</translation>
 <translation id="984275831282074731">ಪಾವತಿ ವಿಧಾನಗಳು</translation>
 <translation id="985199708454569384">&lt;p&gt;ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್ ಅಥವಾ ಮೊಬೈಲ್ ಸಾಧನದ ದಿನಾಂಕ ಮತ್ತು ಸಮಯ ನಿಖರವಾಗಿರದಿದ್ದರೆ, ನೀವು ಈ ದೋಷವನ್ನು ನೋಡುವಿರಿ&lt;/p&gt; &lt;p&gt;ದೋಷವನ್ನು ಪರಿಹರಿಸಲು, ನಿಮ್ಮ ಸಾಧನದ ಗಡಿಯಾರವನ್ನು ತೆರೆಯಿರಿ. ದಿನಾಂಕ ಮತ್ತು ಸಮಯ ಸರಿಯಾಗಿರುವುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.&lt;/p&gt;</translation>
-<translation id="986257639512122511">ನೀವು <ph name="ORIGIN" /> ನಲ್ಲಿ <ph name="PERMISSION" /> ಅನ್ನು ಅನುಮತಿಸಿದ್ದೀರಿ</translation>
 <translation id="987264212798334818">ಸಾಮಾನ್ಯ</translation>
 <translation id="988159990683914416">ಡೆವಲಪರ್ ಬಿಲ್ಡ್</translation>
 <translation id="989988560359834682">ವಿಳಾಸವನ್ನು ಎಡಿಟ್ ಮಾಡಿ</translation>

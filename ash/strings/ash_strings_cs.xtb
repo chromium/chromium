@@ -1478,7 +1478,6 @@ Nejsou připojena žádná zařízení.</translation>
 <translation id="589817443623831496">Zaměření místa</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">Žlutá</translation>
-<translation id="5911231045062997865">Okna Lacros v současné době nejsou podporována Ostatní aplikace budou uloženy.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> <ph name="MAIL" /></translation>
 <translation id="5916646100036936191">Nové oznámení, celkem <ph name="NOTIFICATION_COUNT" /></translation>
 <translation id="5916664084637901428">Zapnuto</translation>
@@ -1976,6 +1975,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="7611213136657090146">Kamera byla znovu připojena.</translation>
 <translation id="7613620083300976559">Zapnout herní ovládací prvky</translation>
 <translation id="761736749114493194">Přepnout automatické zabírání. <ph name="STATE_TEXT" /></translation>
+<translation id="7621008024906456933">Nastavení funkce Quick Share</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
 <translation id="7627303771480696593">Zeptejte se</translation>
 <translation id="7634648064048557203">Kamera byl připnuta do pravého dolního rohu</translation>

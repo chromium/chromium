@@ -731,6 +731,7 @@
 <translation id="3522979239100719575">উপলব্ধ প্ৰ’ফাইল বিচাৰি থকা হৈছে। এই কামত কেইমিনিটমান সময় লাগিব পাৰে।</translation>
 <translation id="3526440770046466733">নতুন টেবত লিংক খোলক আৰু বৰ্তমানৰ টেবটোত থাকক</translation>
 <translation id="353086728817903341"><ph name="NUM_DEVICES" /> টা ডিভাইচৰ সৈতে সংযুক্ত হৈ আছে</translation>
+<translation id="3532247131850366052">Google Sheet সৃষ্টি কৰিব পৰা নগ’ল</translation>
 <translation id="3533126039236445965">শ্বেল্ফত থকা এপ্‌</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" />ৰ হ’টস্প’ট</translation>
 <translation id="3540893133818942399">আপোনাৰ ফ’নৰ শেহতীয়া ফট’ আৰু মিডিয়া চোৱাৰ সুবিধা ছেট আপ কৰাটো বাতিল কৰক</translation>
@@ -829,6 +830,7 @@
 <translation id="380165613292957338">নমস্কাৰ, মই আপোনাক কেনেদৰে সহায় কৰিব পাৰোঁ?</translation>
 <translation id="3804737937830804242">কেমেৰা সংকোচন কৰক</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{১ টা ইম’জি। কোনো অন্য ফলাফল নাই।}one{# টা ইম’জি। কোনো অন্য ফলাফল নাই।}other{# টা ইম’জি। কোনো অন্য ফলাফল নাই।}}</translation>
+<translation id="3822403841174077928">ফৰ্মেটিঙৰ প্ৰতিলিপি কৰিব পৰা নগ’ল</translation>
 <translation id="3824784079442479685">এইটোৱে <ph name="APP_NAME" /> আৰু কেমেৰাৰ অনুমতি থকা আটাইবোৰ এপ্‌ আৰু ৱেবছাইটৰ বাবে কেমেৰা এক্সেছ কৰাৰ অনুমতি দিয়ে। আপুনি ৱেবপৃষ্ঠাখন ৰিফ্ৰেশ্ব কৰিব লাগিব পাৰে বা এপ্‌টো পুনৰাৰম্ভ কৰিব লাগিব পাৰে।</translation>
 <translation id="3826099427150913765">পাছৱৰ্ডলৈ সলনি কৰক</translation>
 <translation id="383058930331066723">বেটাৰী সঞ্চয়কাৰী মোড অন কৰা আছে</translation>
@@ -1215,6 +1217,7 @@
 <translation id="5043679421800073804">শ্বেল্ফত থকা অন্তিম চিহ্নটোত ক্লিক কৰক অথবা টিপক</translation>
 <translation id="504465286040788597">পূৰ্বৱৰ্তী দফা</translation>
 <translation id="5045550434625856497">ভুল পাছৱৰ্ড</translation>
+<translation id="5058794129231928255">Google Doc সৃষ্টি কৰিব পৰা নগ’ল</translation>
 <translation id="5062496344832867502">ৰেম</translation>
 <translation id="5068762093486106012">আপুনি মিউট হৈ থাকোঁতে কথা ক’লে জাননী পাব। আপোনাৰ ডিভাইচৰ পৰা অডিঅ’ কেতিয়াও স্থানান্তৰ কৰা নহয়।</translation>
 <translation id="5077416371682039027">আপোনাৰ ফ’নৰ শেহতীয়া ফট’, মিডিয়া, জাননী আৰু এপ্‌সমূহ চোৱাৰ সুবিধা ছেট আপ কৰক</translation>
@@ -1478,7 +1481,6 @@
 <translation id="589817443623831496">পইণ্ট স্কেনিং</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">হালধীয়া</translation>
-<translation id="5911231045062997865">বৰ্তমান Lacros ৱিণ্ড’সমূহ সমৰ্থন নকৰে। অন্য এপ্ ছেভ কৰা হ’ব।</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916646100036936191">নতুন জাননী, মুঠ <ph name="NOTIFICATION_COUNT" /> খন</translation>
 <translation id="5916664084637901428">অন আছে</translation>
@@ -1648,6 +1650,7 @@
 <translation id="6468406072297048412">{0,plural, =1{১ মিনিটৰ ভিতৰত ডিভাইচটো পূৰ্বৱৰ্তী সংস্কৰণলৈ আপডে’ট কৰক}one{# মিনিটৰ ভিতৰত ডিভাইচটো পূৰ্বৱৰ্তী সংস্কৰণলৈ আপডে’ট কৰক}other{# মিনিটৰ ভিতৰত ডিভাইচটো পূৰ্বৱৰ্তী সংস্কৰণলৈ আপডে’ট কৰক}}</translation>
 <translation id="6469104339369989396">হ’টস্প’ট ট’গল কৰক</translation>
 <translation id="6477681113376365978">ফাইল ডাউনল’ড কৰিব নোৱাৰি</translation>
+<translation id="648135757200234041">সম্পৰ্ক সৃষ্টি কৰিব পৰা নগ’ল</translation>
 <translation id="6482559668224714696">সম্পূর্ণ স্ক্ৰীনৰ বিৱৰ্ধক</translation>
 <translation id="6485086611007560630">বতৰ (উপলব্ধ নহয়)</translation>
 <translation id="6490471652906364588">USB-C ডিভাইচ (সোঁফালৰ পর্ট)</translation>
@@ -1977,6 +1980,7 @@
 <translation id="7611213136657090146">কেমেৰা পুনৰ সংযুক্ত হৈছে।</translation>
 <translation id="7613620083300976559">গে’মৰ নিয়ন্ত্ৰণসমূহ অন কৰক</translation>
 <translation id="761736749114493194">কেমেৰা ফ্ৰে’মিং ট’গল কৰক। <ph name="STATE_TEXT" /></translation>
+<translation id="7621008024906456933">Quick Shareৰ ছেটিং</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7627303771480696593">প্ৰশ্ন সোধক</translation>
 <translation id="7634648064048557203">কেমেৰা তলৰ সোঁফালৰ কোণলৈ স্নেপ কৰা হৈছে</translation>
@@ -2287,6 +2291,7 @@
 <translation id="8653151467777939995">জাননীৰ ছেটিংসমূহ দেখুৱাওক। জাননী অন কৰা আছে</translation>
 <translation id="8657066291275741003">সৰুফলা</translation>
 <translation id="8660331759611631213">৭১ৰ বৰ্গমূল</translation>
+<translation id="8662921061190671299">Calendarত যোগ দিব পৰা নগ’ল</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">আংশিক স্ক্ৰীনশ্বট ল’বলৈ এণ্টাৰ টিপক</translation>
 <translation id="8676770494376880701">কম শক্তিযুক্ত চ্চাৰ্জাৰ সংযোগ কৰা হৈছে</translation>

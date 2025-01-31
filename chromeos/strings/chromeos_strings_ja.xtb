@@ -768,6 +768,7 @@
 <translation id="4654549501020883054">毎日変更</translation>
 <translation id="4655868084888499342">壁紙に設定した画像</translation>
 <translation id="4661249927038176904">シュール</translation>
+<translation id="4661392828086261436">このアップデートはデバイス メーカーから提供されたもので、Google で確認は行っていません</translation>
 <translation id="4664651912255946953">毛皮</translation>
 <translation id="4665014895760275686">メーカー</translation>
 <translation id="467510802200863975">パスワードが一致しません</translation>
@@ -1027,6 +1028,7 @@
 <translation id="5904994456462260490">新しい APN の追加</translation>
 <translation id="590746845088109442">ネコ</translation>
 <translation id="5907649332524363701">キーの色</translation>
+<translation id="5908813850962688338">このアップデートのインストールには数分かかります。アップデートのダウンロード中は、デバイスをコンセントにつなぎ、電源を入れたままにしてください。このプロセスの実行中、デバイスが数回再起動して黒い画面が表示されることがあります。デバイスを再起動するよう求められたら、手順に沿ってインストールを完了してください。</translation>
 <translation id="5916084858004523819">禁止</translation>
 <translation id="5916664084637901428">オン</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{ファイルは正常にスキャンされ、<ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> に保存されました。}other{ファイルは正常にスキャンされ、<ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> に保存されました。}}</translation>

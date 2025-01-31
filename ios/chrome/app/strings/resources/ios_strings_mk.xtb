@@ -263,7 +263,6 @@
 <translation id="2074131957428911366">Секогаш може да изберете што да синхронизирате во <ph name="BEGIN_LINK" />Поставки<ph name="END_LINK" />.</translation>
 <translation id="2078437078822043850">Може да лизгате надесно за да прелистувате во „Инкогнито“.</translation>
 <translation id="2079545284768500474">Врати</translation>
-<translation id="2082906935540894275">Најрелевантните функции за вас во различни времиња.</translation>
 <translation id="2085876078937250610">Зачувај…</translation>
 <translation id="2096239473850415494">Не можеше да се преземе</translation>
 <translation id="2096716221239095980">Избриши ги сите податоци</translation>
@@ -548,7 +547,6 @@
 <translation id="3445288400492335833"><ph name="MINUTES" /> мин.</translation>
 <translation id="344589138074534176">Дознајте повеќе за Google Lens</translation>
 <translation id="3447332786336558089">Откако ќе се одјавите, картичките ќе се затворат, а незачуваните податоци во сметката ќе се избришат од уредов. Ова може да опфаќа лозинки, историја и друго.</translation>
-<translation id="3449016921756175697">Корисни предлози што го подобруваат и олеснуваат прелистувањето.</translation>
 <translation id="345348365500626747">Адресата е најдена</translation>
 <translation id="3464194322481586217">Цената не можеше да се следи.</translation>
 <translation id="3469117812148449995">Опции за зачувување лозинка</translation>
@@ -922,7 +920,6 @@
 <translation id="5127538504377457572">Активно: пред <ph name="DAYS" /> дена</translation>
 <translation id="5128788795241319992">Истражете го новото мени</translation>
 <translation id="5132942445612118989">Синхронизирајте ги лозинките, историјата и друго на сите уреди</translation>
-<translation id="5137526732000415202">Вашата последна отворена картичка на сите ваши уреди.</translation>
 <translation id="5145331760738811130">Излези од „Менувачот на картички“</translation>
 <translation id="5157638238828697074">Нешто тргна наопаку. Апликацијата не можеше да се отвори.</translation>
 <translation id="5163417375525818870">PDF-датотеки</translation>
@@ -1023,7 +1020,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="559567008082979829">Поставете преземањата да се бришат по еден месец.</translation>
 <translation id="5596627076506792578">Повеќе опции</translation>
 <translation id="560322036295180549">Исклучено од вашата организација</translation>
-<translation id="5611107723541161735">Кратенки до сајтовите што сте ги отвориле неодамна на уредов.</translation>
 <translation id="5611398002774823980">Зачувај на сметката</translation>
 <translation id="5613297089029360427">Подреди според најнови</translation>
 <translation id="5614553682702429503">Дали да се зачува лозинката?</translation>
@@ -1487,7 +1483,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7512075701202892785">Прелистувачот што го обожавате, отсега на iPad</translation>
 <translation id="7512909159512473473">Внесете лозинка…</translation>
 <translation id="7514365320538308">Преземи</translation>
-<translation id="7521117365186708026">Поставување совети што ќе ви помогнат да извлечете максимум од Chrome.</translation>
 <translation id="7524055474074101597">Пристапувајте до вашите лозинки и друго на апликациите.</translation>
 <translation id="75362970626182391">Нова група картички</translation>
 <translation id="7537586195939242955">Pass не може да се инсталира во Passbook во моментов.</translation>
@@ -1605,6 +1600,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="800361585186029508">Ги отвора внесените URL-адреси во Google Chrome.</translation>
 <translation id="8005666035647241369">До „Управникот со лозинки на Google“ на уредов</translation>
 <translation id="8011489434346330032">Web Inspector</translation>
+<translation id="8017015647846870183">Од Google Password Manager, вклучувајќи лозинки и криптографски клучеви</translation>
 <translation id="802154636333426148">Неуспешно преземање</translation>
 <translation id="8023170444051056234">Веднаш ќе го изгубите пристапот до групата картички „<ph name="GROUP_NAME" />“, а групата картички ќе се избрише од сите ваши уреди</translation>
 <translation id="8023878949384262191">Го проширува делот.</translation>
@@ -1705,7 +1701,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8439758443371991593">Скриј „Додај во список за читање“</translation>
 <translation id="8449869326050867919">Лозинката е споделена</translation>
 <translation id="8453847087068411809">Никогаш не откривај пакети автоматски</translation>
-<translation id="846158969830690371">Проверка дали ги имате најбезбедните поставки или дали треба да прегледате нешто.</translation>
 <translation id="8473863474539038330">Адреси и друго</translation>
 <translation id="8474378002946546633">Дозволете известувања</translation>
 <translation id="8477178913400731244">Избришете ги податоците</translation>

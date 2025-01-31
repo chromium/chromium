@@ -768,6 +768,7 @@
 <translation id="4654549501020883054">Dnevno spreminjanje</translation>
 <translation id="4655868084888499342">Slika je nastavljena kot zaslonsko ozadje</translation>
 <translation id="4661249927038176904">Nadrealistično</translation>
+<translation id="4661392828086261436">To posodobitev zagotavlja proizvajalec naprave in je Google ni preveril</translation>
 <translation id="4664651912255946953">krzno</translation>
 <translation id="4665014895760275686">Proizvajalec</translation>
 <translation id="467510802200863975">Gesli se ne ujemata</translation>
@@ -1027,6 +1028,7 @@
 <translation id="5904994456462260490">Dodajte nov APN</translation>
 <translation id="590746845088109442">mačke</translation>
 <translation id="5907649332524363701">barva tipk</translation>
+<translation id="5908813850962688338">Nameščanje te posodobitve bo trajalo nekaj minut. Med prenosom posodobitve naj bo naprava priklopljena in vklopljena. Med tem postopkom se bo naprava morda sama večkrat znova zagnala in prikazan bo črn zaslon. Za dokončanje namestitve boste pozvani, da znova zaženete napravo.</translation>
 <translation id="5916084858004523819">Onemogočeno</translation>
 <translation id="5916664084637901428">Vklopljeno</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Vaša datoteka je bila uspešno pregledana in je shranjena v mapo <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Vaše datoteke so bile uspešno pregledane in so shranjene v mapo <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}two{Vaše datoteke so bile uspešno pregledane in so shranjene v mapo <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Vaše datoteke so bile uspešno pregledane in so shranjene v mapo <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Vaše datoteke so bile uspešno pregledane in so shranjene v mapo <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>

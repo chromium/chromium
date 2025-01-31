@@ -674,7 +674,6 @@
 <translation id="2157640075051554492">შეტყობინებები ფასებისთვის თვალის მიდევნების შესახებ</translation>
 <translation id="21613918653299710">სურათების ონლაინგალერეები</translation>
 <translation id="2161656808144014275">ტექსტი</translation>
-<translation id="2162510787844374618">მიმდინარეობს თქვენს ბანკთან დაკავშირება...</translation>
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" />-ზე ახლა <ph name="CURRENT_PRICE" /> ღირს</translation>
 <translation id="2164510882479075877">შეამოწმეთ, სწორად არის თუ არა აკრეფილი <ph name="HOST_NAME" />.</translation>
 <translation id="2166049586286450108">ადმინისტრატორის სრული წვდომა</translation>
@@ -2408,6 +2407,7 @@
 <translation id="5254043433801397071">საბეჭდი კონტენტის ოპტიმიზაცია</translation>
 <translation id="5255583962255635076">ბრაუზერის გამოყენებული წესები თქვენს სამსახურის პროფილში</translation>
 <translation id="5255690596502591079">მაინც აღბეჭდვა</translation>
+<translation id="5255771248404149177">თქვენი ბარათის პროვაიდერს სურს თქვენი ვინაობის დადასტურება</translation>
 <translation id="5255833070095767006">350 x 460 მმ</translation>
 <translation id="5257739419779698609">{0,plural, =1{ადმინისტრატორის წესების მიხედვით, ამ ფაილის <ph name="DESTINATION_NAME" />-ში კოპირება რეკომენდებული არ არის}other{ადმინისტრატორის წესების მიხედვით, ამ ფაილების <ph name="DESTINATION_NAME" />-ში კოპირება რეკომენდებული არ არის}}</translation>
 <translation id="5263867360296733198">ატვირთვამდე საჭიროა შემოწმება</translation>
@@ -2428,7 +2428,6 @@
 <translation id="5288108484102287882">წესების მნიშვნელობების დადასტურებამ გამოავლინა გაფრთხილებები</translation>
 <translation id="5289384342738547352">მრავალი დოკუმენტის დამუშავება</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{საჭიროა დღეს განახლება}=2{საჭიროა ხვალამდე განახლება}other{საჭიროა # დღეში განახლება}}</translation>
-<translation id="5292714443869769806"><ph name="OPERATING_SYSTEM" />-ის პარამეტრებზე გადასვლა</translation>
 <translation id="5293919335876685914">კუპეები</translation>
 <translation id="5298618990685278995">პირველი მონახაზი</translation>
 <translation id="5299298092464848405">შეცდომის ანალიზის წესი</translation>
@@ -2556,6 +2555,7 @@
 <translation id="5518352028556756716">საიტების უმეტესობა ვერ გამოიყენებს მესამე მხარის ქუქი-ჩანაწერებს ვების დათვალიერებისას თქვენთვის თვალის მიდევნების მიზნით. ამასთან, საიტებს არ შეუძლია მესამე მხარის ქუქი-ჩანაწერების გამოყენება ინკოგნიტო რეჟიმში.</translation>
 <translation id="5519516356611866228">თქვენი ცვლილებებით</translation>
 <translation id="5519696598216267194">ქაღალდი (პერფორირებული)</translation>
+<translation id="5520105693415771152">თქვენი ამჟამინდელი ინფორმაცია არ ჩანს? ინფორმაციის განახლებისთვის დაუკავშირდით თქვენს პროვაიდერს.</translation>
 <translation id="5521782189689806907">სადურგლო ნაკეთობები</translation>
 <translation id="5523118979700054094">წესის სახელი</translation>
 <translation id="5523588073846127669">მოვაჭრე არ იღებს ამ ვირტუალურ ბარათს</translation>
@@ -3650,6 +3650,7 @@
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">სატვირთო ავტომობილები და ტრაილერები</translation>
 <translation id="7461924472993315131">პინი</translation>
+<translation id="746329643760972486">MacOS</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" />-ს ეცოდინება, <ph name="TOP_LEVEL_URL" /> რომ მოინახულეთ</translation>
 <translation id="7465963048299965912">10 x 13 დუიმი</translation>
 <translation id="7469935732330206581">ფორმა არ არის დაცული</translation>
@@ -3920,7 +3921,6 @@
 <translation id="7942349550061667556">წითელი</translation>
 <translation id="7943397946612013052">ჩამოტვირთვა დაბლოკილია</translation>
 <translation id="7943893128817522649">შეუძლია რამდენიმე ფაილის ავტომატურად ჩამოტვირთვის თხოვნა</translation>
-<translation id="794567586469801724">macOS</translation>
 <translation id="7947285636476623132">შეამოწმეთ ვადის გასვლის წელი და ხელახლა ცადეთ</translation>
 <translation id="7947310711271925113">პოპ-მუსიკა</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome-ის ფუნქციების შესახებ ინფორმაციისთვის დააჭირეთ კლავიშს Tab, შემდეგ კი Enter-ს</translation>
@@ -4672,7 +4672,6 @@
 <translation id="984275831282074731">გადახდის მეთოდები</translation>
 <translation id="985199708454569384">&lt;p&gt;ამ ტიპის შეცდომის შესახებ შეტყობინებას დაინახავთ იმ შემთხვევაში, თუ თქვენი კომპიუტერის ან მობილური მოწყობილობის დრო და თარიღი არასწორია.&lt;/p&gt;
     &lt;p&gt;ამ პრობლემის მოსაგვარებლად გახსენით თქვენი მოწყობილობის საათი. დარწმუნდით, რომ დრო და თარიღი სწორია.&lt;/p&gt;</translation>
-<translation id="986257639512122511">თქვენ დაუშვით <ph name="PERMISSION" /> <ph name="ORIGIN" />-ზე</translation>
 <translation id="987264212798334818">ზოგადი</translation>
 <translation id="988159990683914416">დეველოპერის კონსტრუქცია</translation>
 <translation id="989988560359834682">მისამართის რედაქტირება</translation>

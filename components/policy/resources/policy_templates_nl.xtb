@@ -3201,17 +3201,6 @@ Als je dit beleid niet toepast, is de functie voor voorspellend schrijven op het
 <translation id="3387211681524224831">Als je het beleid toepast, wordt browsegeschiedenis niet opgeslagen en tabbladsynchronisatie uitgezet. Gebruikers kunnen deze instelling niet wijzigen.
 
       Als je het beleid niet toepast of niet instelt, wordt browsegeschiedenis opgeslagen.</translation>
-<translation id="3387875422525138489">Als je het beleid instelt, geef je een lijst aan met geïsoleerde web-apps (GWA's) die op de achtergrond worden geïnstalleerd.
-      GWA's zijn apps met nuttige beveiligingseigenschappen die niet beschikbaar zijn op normale webpagina's. Ze worden verpakt in een ondertekende webbundel. De openbare sleutel van de ondertekende webbundel wordt gebruikt om de webbundel-ID te maken waarmee de GWA wordt geïdentificeerd.
-      Dit beleid werkt tot nu toe alleen voor beheerde gastsessies.
-
-      Elk lijstitem van het beleid is een object met 2 verplichte velden: het updatemanifest <ph name="URL_LABEL" /> en de webbundel-ID van de geïsoleerde web-app.
-
-Elk item kan ook deze optionele velden bevatten:
-
-* <ph name="UPDATE_CHANNEL_OPTION" />: De naam van het release-/updatekanaal van de GWA. Als je dit beleid niet instelt, wordt 'default' gebruikt.
-        * <ph name="PINNED_VERSION_OPTION" />: Een specifieke versie om te installeren. Het systeem probeert deze versie te installeren als die beschikbaar is op het aangegeven updatekanaal. Als je een GWA vastzet op een specifieke versie, wordt standaard voorkomen dat deze wordt geüpdatet naar een hogere versie dan die versie. Verwijder dit veld om de versie los te maken.
-        * <ph name="ALLOW_DOWNGRADES_OPTION" />: Hiermee kun je oudere versies van de GWA installeren. Hiervoor moet het veld 'pinned_version' worden ingesteld. Als je dit beleid niet instelt of instelt op <ph name="FALSE" />, is downgraden voor die GWA niet mogelijk.</translation>
 <translation id="3387999258705169775">Standaardgedrag voor genest vastzetten voor de functie setTimeout().</translation>
 <translation id="3388628790024977864">Het <ph name="CLOUD_UPLOAD_NAME" />-proces niet toestaan voor <ph name="GOOGLE_DRIVE_NAME" /> en <ph name="GOOGLE_WORKSPACE_NAME" /></translation>
 <translation id="3389088527709746815">Gnubby-verificatie aanzetten voor de host voor externe toegang</translation>

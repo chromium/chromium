@@ -126,7 +126,6 @@
 <translation id="1076766328672150609">你的孩子可以使用 PIN 碼來解鎖裝置。</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216">無法下載<ph name="LANGUAGE" />的拼字檢查字典，請再試一次。</translation>
-<translation id="1078029726086090536">驗證密碼</translation>
 <translation id="1078037449555275327">ChromeVox 設定</translation>
 <translation id="1079242569060319448">忘記 PIN 碼？</translation>
 <translation id="1079285777677001938">某些網站的功能可能無法運作。</translation>
@@ -369,6 +368,7 @@
 <translation id="1241066500170667906">選取「<ph name="EXPERIMENT_NAME" />」的實驗狀態</translation>
 <translation id="124116460088058876">更多語言</translation>
 <translation id="1241381048229838873">顯示所有書籤</translation>
+<translation id="1242044645101871359">重新登入</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" /> 要求重設您的設定。</translation>
 <translation id="1243002225871118300">變更顯示和文字大小</translation>
 <translation id="1243314992276662751">上傳</translation>
@@ -1617,7 +1617,6 @@
 <translation id="2113921862428609753">授權單位資訊存取</translation>
 <translation id="2114145607116268663">無法安裝，必須重新啟動。請重新啟動電腦，然後再試一次。錯誤代碼：<ph name="ERROR" />。</translation>
 <translation id="2114326799768592691">重新載入頁框(&amp;F)</translation>
-<translation id="2114413269775311385">透過這個帳戶使用 Android 應用程式。你也可以前往「<ph name="LINK_BEGIN" />應用程式設定<ph name="LINK_END" />」控管 Android 應用程式的權限。</translation>
 <translation id="2114995631896158695">未插入 SIM 卡</translation>
 <translation id="2116619964159595185">網站通常會連線至藍牙裝置，是因為要提供以下功能：設定或同步處理低功耗信標、健康與健身狀況追蹤器或智慧燈泡</translation>
 <translation id="2117655453726830283">下一張投影片</translation>
@@ -4631,6 +4630,7 @@
 <translation id="4242533952199664413">開啟設定</translation>
 <translation id="4242577469625748426">無法在裝置上安裝政策設定：<ph name="VALIDATION_ERROR" />。</translation>
 <translation id="4242825475818569385">你的<ph name="BEGIN_LINK" />瀏覽器和設定檔<ph name="END_LINK" />是由 <ph name="DOMAIN" /> 管理</translation>
+<translation id="424315890655130736">輸入通關密語</translation>
 <translation id="4243504193894350135">印表機已暫停運作</translation>
 <translation id="4243624244759495699"><ph name="LOCALE" />，第 <ph name="GRADE" /> 級</translation>
 <translation id="4244238649050961491">尋找其他觸控筆應用程式</translation>
@@ -5353,7 +5353,6 @@
 <translation id="4766598565665644999">所有擴充功能都可以讀取及變更 <ph name="HOST" /></translation>
 <translation id="4767427586072640478">進一步瞭解已停用的擴充功能。</translation>
 <translation id="4768332406694066911">您有這些機構核發給您的憑證</translation>
-<translation id="4768945955870840220">Chrome 可以收集網路上對某些產品的評論</translation>
 <translation id="4769632191812288342">目前採用標準防護機制</translation>
 <translation id="4770119228883592393">已要求權限，按下 ⌘ + Option + 向下鍵即可回覆</translation>
 <translation id="4770755495532014179">在 iPhone 上使用這組密碼</translation>
@@ -8746,7 +8745,6 @@
 <translation id="7243092385765551741">要刪除密碼金鑰嗎？</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (最佳)</translation>
 <translation id="7246230585855757313">請重新插入安全金鑰，然後再試一次</translation>
-<translation id="724835896049478274">可用於 Android 應用程式的帳戶</translation>
 <translation id="7248802599439396696">設為閒置分頁</translation>
 <translation id="7249197363678284330">前往網址列變更這項設定。</translation>
 <translation id="7249764475759804559">開啟檔案時，將這個應用程式列為選項</translation>
@@ -10700,7 +10698,6 @@
 <translation id="8625124982056504555">讀取 ChromeOS 裝置序號和元件序號</translation>
 <translation id="862542460444371744">擴充功能(&amp;E)</translation>
 <translation id="8625663000550647058">不得使用麥克風</translation>
-<translation id="8625679025395572221">你的帳戶可能仍面臨風險。</translation>
 <translation id="8625916342247441948">禁止網站連線至 HID 裝置</translation>
 <translation id="862727964348362408">已暫停</translation>
 <translation id="862750493060684461">CSS 快取</translation>
@@ -11582,7 +11579,6 @@
 <translation id="936801553271523408">系統診斷資料</translation>
 <translation id="93766956588638423">修復擴充功能</translation>
 <translation id="938623846785894166">不常見的檔案</translation>
-<translation id="939401694733344652">目前這些帳戶並未用於 Android 應用程式。如果你選擇將某個帳戶用於此 Android 應用程式，該帳戶也將能用於其他 Android 應用程式。如要變更 Android 應用程式存取權，請依序前往<ph name="LINK_BEGIN" />「設定」&gt;「帳戶」<ph name="LINK_END" />。</translation>
 <translation id="939598580284253335">請輸入通關密語</translation>
 <translation id="939736085109172342">新增資料夾</translation>
 <translation id="940212040923880623">尋找並編輯(&amp;F)</translation>

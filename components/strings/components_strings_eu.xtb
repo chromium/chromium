@@ -674,7 +674,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2157640075051554492">Prezioen jarraipenari buruzko jakinarazpenak</translation>
 <translation id="21613918653299710">Sareko irudien galeriak</translation>
 <translation id="2161656808144014275">testua</translation>
-<translation id="2162510787844374618">Bankuarekin harremanetan jartzen…</translation>
 <translation id="2162620598375156287">Orain, <ph name="CURRENT_PRICE" /> balio du <ph name="SOURCE_WEBSITE" /> webgunean</translation>
 <translation id="2164510882479075877">Egiaztatu behar bezala idatzita dagoela <ph name="HOST_NAME" />.</translation>
 <translation id="2166049586286450108">Administratzailearen sarbide osoa</translation>
@@ -2424,7 +2423,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5288108484102287882">Gidalerroetako balioen baliozkotzeak abisu batzuk sortu ditu</translation>
 <translation id="5289384342738547352">Dokumentu bat baino gehiago kudeatzea</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{Gaur eguneratu behar da}=2{Bihar baino lehen eguneratu behar da}other{# eguneko epean eguneratu behar da}}</translation>
-<translation id="5292714443869769806">Joan <ph name="OPERATING_SYSTEM" /> sistema eragilearen ezarpenetara</translation>
 <translation id="5293919335876685914">Coupéak</translation>
 <translation id="5298618990685278995">lehenengo zirriborroa</translation>
 <translation id="5299298092464848405">Errore bat gertatu da gidalerroak analizatzean</translation>
@@ -3645,6 +3643,7 @@ Xehetasun gehiago:
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Zama-kamioiak eta trailerrak</translation>
 <translation id="7461924472993315131">Ainguratu</translation>
+<translation id="746329643760972486">MacOS</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> webguneak <ph name="TOP_LEVEL_URL" /> bisitatu duzula jakingo du</translation>
 <translation id="7465963048299965912">25,4 × 33,02 cm (10 × 13 in)</translation>
 <translation id="7469935732330206581">Inprimakia ez da segurua</translation>
@@ -3915,7 +3914,6 @@ Xehetasun gehiago:
 <translation id="7942349550061667556">Gorria</translation>
 <translation id="7943397946612013052">Deskargatzeko aukera blokeatuta dago</translation>
 <translation id="7943893128817522649">Fitxategi bat baino gehiago automatikoki deskargatzea eska dezake</translation>
-<translation id="794567586469801724">macOS</translation>
 <translation id="7947285636476623132">Egiaztatu iraungitze-urtea eta saiatu berriro</translation>
 <translation id="7947310711271925113">Popa</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />: sakatu tabuladorea eta, ondoren, "Sartu" Chrome-ren eginbideei buruzko informazioa lortzeko</translation>
@@ -4666,7 +4664,6 @@ Xehetasun gehiago:
 <translation id="984275831282074731">Ordainketa-metodoak</translation>
 <translation id="985199708454569384">&lt;p&gt;Ordenagailuko edo gailu mugikorreko data eta ordua okerrak badira ikusiko duzu errore hori.&lt;/p&gt;
     &lt;p&gt;Errorea konpontzeko, ireki gailuaren erlojua. Ziurtatu ordua eta data zuzenak direla.&lt;/p&gt;</translation>
-<translation id="986257639512122511"><ph name="ORIGIN" /> webguneari <ph name="PERMISSION" /> erabiltzeko baimena eman diozu</translation>
 <translation id="987264212798334818">Orokorra</translation>
 <translation id="988159990683914416">Garatzailearen konpilazioa</translation>
 <translation id="989988560359834682">Editatu helbidea</translation>

@@ -126,7 +126,6 @@
 <translation id="1076766328672150609">ડિવાઇસ અનલૉક કરવા માટે, તમારું બાળક કોઈ પિનનો ઉપયોગ કરી શકે છે.</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216"><ph name="LANGUAGE" /> માટે જોડણીની તપાસનો શબ્દકોશ ડાઉનલોડ ન કરી શક્યાં. ફરી પ્રયાસ કરો.</translation>
-<translation id="1078029726086090536">તમારો પાસવર્ડ ચકાસો</translation>
 <translation id="1078037449555275327">ChromeVoxના સેટિંગ</translation>
 <translation id="1079242569060319448">શું પિન ભૂલી ગયા છો?</translation>
 <translation id="1079285777677001938">સુવિધાઓ કેટલીક સાઇટ પર કાર્ય ન કરે એવું બની શકે છે.</translation>
@@ -370,6 +369,7 @@
 <translation id="1241066500170667906"><ph name="EXPERIMENT_NAME" /> માટે પ્રયોગની સ્થિતિ પસંદ કરો</translation>
 <translation id="124116460088058876">વધુ ભાષાઓ</translation>
 <translation id="1241381048229838873">બધા બુકમાર્ક બતાવો</translation>
+<translation id="1242044645101871359">ફરીથી સાઇન ઇન કરો</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" />, તમારા સેટિંગને રીસેટ કરવા માગે છે.</translation>
 <translation id="1243002225871118300">ડિસ્પ્લે અને ટેક્સ્ટ કદ બદલાવો</translation>
 <translation id="1243314992276662751">અપલોડ કરો</translation>
@@ -1614,7 +1614,6 @@
 <translation id="2113921862428609753">અધિકારી માહિતી ઍક્સેસ</translation>
 <translation id="2114145607116268663">ઇન્સ્ટૉલ કરી શકતા નથી, રીબૂટ કરવાની જરૂર છે. કૃપા કરીને તમારું કમ્પ્યૂટર ફરી શરૂ કરો અને ફરી પ્રયાસ કરો. ભૂલનો કોડ <ph name="ERROR" /> છે.</translation>
 <translation id="2114326799768592691">&amp;ફ્રેમ ફરીથી લોડ કરો</translation>
-<translation id="2114413269775311385">Android ઍપ સાથે આ એકાઉન્ટનો ઉપયોગ કરો. તમે <ph name="LINK_BEGIN" />ઍપ સેટિંગ<ph name="LINK_END" />માં જઈને Android ઍપની પરવાનગીઓને નિયંત્રિત કરી શકો છો.</translation>
 <translation id="2114995631896158695">કોઈ સિમ કાર્ડ શામેલ નથી</translation>
 <translation id="2116619964159595185">ઓછી-ઊર્જાવાળું બીકન, સ્વાસ્થ્ય કે ફિટનેસ ટ્રૅકર અથવા સ્માર્ટ લાઇટ બલ્બનું સેટઅપ કરવા કે તેને સિંક કરવા જેવી સુવિધાઓ માટે, સાઇટ સામાન્ય રીતે બ્લૂટૂથ ડિવાઇસ સાથે કનેક્ટ કરે છે</translation>
 <translation id="2117655453726830283">આગલી સ્લાઇડ</translation>
@@ -4632,6 +4631,7 @@
 <translation id="4242533952199664413">સેટિંગ ખોલો</translation>
 <translation id="4242577469625748426">આ ડિવાઇસ પર પૉલિસી સેટિંગ ઇન્સ્ટોલ કરવામાં નિષ્ફળ ગયું: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385"><ph name="DOMAIN" /> દ્વારા તમારા <ph name="BEGIN_LINK" />બ્રાઉઝર તેમજ પ્રોફાઇલ મેનેજ<ph name="END_LINK" /> કરવામાં આવે છે</translation>
+<translation id="424315890655130736">પાસફ્રેઝ દાખલ કરો</translation>
 <translation id="4243504193894350135">પ્રિન્ટર થોભાવેલું છે</translation>
 <translation id="4243624244759495699"><ph name="LOCALE" />, ગ્રેડ <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">વધુ સ્ટાઇલસ ઍપ મેમરીનો શોધો</translation>
@@ -5354,7 +5354,6 @@
 <translation id="4766598565665644999">તમામ એક્સ્ટેન્શન <ph name="HOST" /> પર વાંચી અને તેમાં ફેરફાર કરી શકે છે</translation>
 <translation id="4767427586072640478">બંધ કરેલા એક્સ્ટેન્શન વિશે વધુ જાણો.</translation>
 <translation id="4768332406694066911">તમારી પાસે આ સંસ્થાઓના પ્રમાણપત્ર છે કે જે તમને ઓળખે છે</translation>
-<translation id="4768945955870840220">અમુક પ્રોડક્ટ માટે, Chrome સમગ્ર વેબ પરથી રિવ્યૂ મેળવી શકે છે</translation>
 <translation id="4769632191812288342">તમે માનક સંરક્ષણ મેળવી રહ્યાં છો</translation>
 <translation id="4770119228883592393">પરવાનગીની વિનંતી કરવામાં આવી, જવાબ આપવા માટે ⌘ + Option + નીચેનો ઍરો દબાવો</translation>
 <translation id="4770755495532014179">તમારા iPhone પર આ પાસવર્ડનો ઉપયોગ કરો</translation>
@@ -5496,6 +5495,7 @@
 <translation id="4862642413395066333">OCSP પ્રતિસાદોને સાઇન ઇન કરે છે</translation>
 <translation id="4863702650881330715">સુસંગતતામાં વધારો કરો</translation>
 <translation id="4863769717153320198"><ph name="WIDTH" /> x <ph name="HEIGHT" /> જેવું લાગે છે (ડિફૉલ્ટ)</translation>
+<translation id="4864334716800138793">તમારી સંસ્થા દ્વારા ઑફિસની પ્રોફાઇલનું સેટઅપ બંધ કરવામાં આવ્યું છે</translation>
 <translation id="4864369630010738180">સાઇન ઇન થઈ રહ્યું છે...</translation>
 <translation id="4864805589453749318">સ્કૂલ એકાઉન્ટ ઉમેરવાની પરવાનગી આપી રહ્યાં છે તે માતાપિતાને પસંદ કરો.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (બ્લૉક કરેલો છે)</translation>
@@ -6457,6 +6457,7 @@
 <translation id="5559768063688681413">કોઈ સાચવેલા પ્રિન્ટર નથી</translation>
 <translation id="55601339223879446">ડિસ્પ્લેની અંદર તમારા ડેસ્કટૉપની સીમાઓ ગોઠવો</translation>
 <translation id="5561162485081632007">જોખમકારક ઇવેન્ટ થતી હોય ત્યારે તેની ભાળ મેળવીને તેના વિશે તમને ચેતવણી આપે છે</translation>
+<translation id="5562588178647493983">વધુ માહિતી માટે તમારા ઍડમિનિસ્ટ્રેટરનો સંપર્ક કરો</translation>
 <translation id="556321030400250233">સ્થાનિક અથવા શેર કરેલી ફાઇલો</translation>
 <translation id="5563234215388768762">Google પર શોધો અથવા URL લખો</translation>
 <translation id="5563824734298958390">ટૅબનું ગ્રૂપ છોડી દઈએ?</translation>
@@ -8755,7 +8756,6 @@ USB ડિવાઇસ</translation>
 <translation id="7243092385765551741">પાસકી ડિલીટ કરીએ?</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (શ્રેષ્ઠ)</translation>
 <translation id="7246230585855757313">તમારો સુરક્ષા કોડ ફરી શામેલ કરીને ફરી પ્રયાસ કરો</translation>
-<translation id="724835896049478274">Android ઍપ માટે ઉપલબ્ધ એકાઉન્ટ</translation>
 <translation id="7248802599439396696">ટૅબ નિષ્ક્રિય કરો</translation>
 <translation id="7249197363678284330">ઍડ્રેસ બારમાં જઈને આ સેટિંગમાં ફેરફાર કરો.</translation>
 <translation id="7249764475759804559">ફાઇલો ખોલતી વખતે આ ઍપને કોઈ વિકલ્પ તરીકે શામેલ કરો</translation>
@@ -9791,6 +9791,7 @@ USB ડિવાઇસ</translation>
 <translation id="7968833647796919681">પ્રદર્શન ડેટા સંગ્રહ ચાલુ કરો</translation>
 <translation id="7968982339740310781">વિગતો જુઓ</translation>
 <translation id="7969046989155602842">આદેશ</translation>
+<translation id="7969144945436590933">વધુ વિગતો મેળવો</translation>
 <translation id="7970673414865679092">ઇથરનેટની વિગતો</translation>
 <translation id="7972714317346275248">RSA એન્ક્રિપ્શનવાળું PKCS #1 SHA-384</translation>
 <translation id="7973149423217802477">થમ્બ્સ ડાઉન એ પ્રતિસાદ સબમિટ કરે છે કે તમને આ નાપસંદ છે.</translation>
@@ -10698,7 +10699,6 @@ USB ડિવાઇસ</translation>
 <translation id="8625124982056504555">ChromeOS ડિવાઇસ અને કમ્પોનન્ટના અનુક્રમ નંબર વાંચો</translation>
 <translation id="862542460444371744">&amp;એક્સ્ટેન્શન્સ</translation>
 <translation id="8625663000550647058">તમારા માઇક્રોફોનનો ઉપયોગ કરવાની મંજૂરી નથી</translation>
-<translation id="8625679025395572221">તમારું એકાઉન્ટ હજી પણ જોખમમાં હોઈ શકે છે.</translation>
 <translation id="8625916342247441948">સાઇટને HID ડિવાઇસ સાથે કનેક્ટ કરવાની મંજૂરી આપશો નહીં</translation>
 <translation id="862727964348362408">સસ્પેન્ડેડ</translation>
 <translation id="862750493060684461">CSS કૅશ મેમરી</translation>
@@ -11581,7 +11581,6 @@ USB ડિવાઇસ</translation>
 <translation id="936801553271523408">સિસ્ટમ ડાયગ્નોસ્ટિક ડેટા</translation>
 <translation id="93766956588638423">એક્સ્ટેન્શન સુધારો</translation>
 <translation id="938623846785894166">અસામાન્ય ફાઇલ</translation>
-<translation id="939401694733344652">હાલમાં આ એકાઉન્ટનો ઉપયોગ Android ઍપ સાથે કરવામાં આવી રહ્યો નથી. જો તમે આ Android ઍપ સાથે કોઈ એકાઉન્ટનો ઉપયોગ કરવાનું પસંદ કરો, તો તે એકાઉન્ટનો ઉપયોગ અન્ય Android ઍપ સાથે પણ કરી શકાય છે. તમે <ph name="LINK_BEGIN" />સેટિંગ &gt; એકાઉન્ટ<ph name="LINK_END" />માં જઈને Android ઍપના ઍક્સેસમાં ફેરફાર કરી શકો છો.</translation>
 <translation id="939598580284253335">પાસફ્રેઝ દાખલ કરો</translation>
 <translation id="939736085109172342">નવું ફોલ્ડર</translation>
 <translation id="940212040923880623">&amp;શોધો અને ફેરફાર કરો</translation>

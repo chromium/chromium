@@ -731,6 +731,7 @@ Fel arall bydd y pad cyffwrdd integredig yn cael ei ail-alluogi mewn <ph name="T
 <translation id="3522979239100719575">Wrthi'n chwilio am broffiliau sydd ar gael. Gallai hyn gymryd ychydig funudau.</translation>
 <translation id="3526440770046466733">Agor y ddolen yn y tab newydd ac aros yn y tab presennol</translation>
 <translation id="353086728817903341">Wedi'i gysylltu â <ph name="NUM_DEVICES" /> o ddyfeisiau</translation>
+<translation id="3532247131850366052">Methu â chreu Dalen Google</translation>
 <translation id="3533126039236445965">Apiau yn y silff</translation>
 <translation id="3539957339480430241">Poethfan <ph name="DEVICE_NAME" /></translation>
 <translation id="3540893133818942399">Diystyru gosod gweld lluniau a chyfryngau diweddar eich ffôn</translation>
@@ -829,6 +830,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="380165613292957338">Shw'mae, sut alla i helpu?</translation>
 <translation id="3804737937830804242">Crebachu'r camera</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 emoji. Dim canlyniadau eraill.}zero{# emoji. Dim canlyniadau eraill.}two{# emoji. Dim canlyniadau eraill.}few{# emoji. Dim canlyniadau eraill.}many{# emoji. Dim canlyniadau eraill.}other{# emoji. Dim canlyniadau eraill.}}</translation>
+<translation id="3822403841174077928">Methu â chopïo gyda'r fformatio</translation>
 <translation id="3824784079442479685">Mae hyn yn caniatáu mynediad camera ar gyfer <ph name="APP_NAME" />, a phob ap a gwefan sydd â'r caniatâd camera. Mae'n bosib y bydd angen i chi ail-lwytho'r dudalen gwe neu ailddechrau'r ap.</translation>
 <translation id="3826099427150913765">Newid i gyfrinair</translation>
 <translation id="383058930331066723">Mae'r modd arbed pŵer y batri wedi'i droi ymlaen</translation>
@@ -1215,6 +1217,7 @@ Mae 1 ddyfais yn gysylltiedig.</translation>
 <translation id="5043679421800073804">Clicio neu dapio'r eicon olaf ar y silff</translation>
 <translation id="504465286040788597">Paragraff blaenorol</translation>
 <translation id="5045550434625856497">Cyfrinair anghywir</translation>
+<translation id="5058794129231928255">Methu â chreu Dogfen Google</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Byddwch yn cael gwybod os byddwch yn siarad tra byddwch wedi'ch distewi. Nid yw sain byth yn gadael eich dyfais.</translation>
 <translation id="5077416371682039027">Gosod gweld lluniau, cyfryngau, hysbysiadau ac apiau diweddar eich ffôn</translation>
@@ -1478,7 +1481,6 @@ Dim dyfeisiau yn gysylltiedig.</translation>
 <translation id="589817443623831496">Sganio pwynt</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">Melyn</translation>
-<translation id="5911231045062997865">Nid yw ffenestri Lacros yn cael eu cefnogi ar hyn o bryd. Bydd apiau eraill yn cael eu cadw.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916646100036936191">Hysbysiad newydd, <ph name="NOTIFICATION_COUNT" /> i gyd</translation>
 <translation id="5916664084637901428">Ymlaen</translation>
@@ -1648,6 +1650,7 @@ Dim dyfeisiau yn gysylltiedig.</translation>
 <translation id="6468406072297048412">{0,plural, =1{Diweddaru dyfais i'r fersiwn flaenorol o fewn 1 funud}zero{Diweddaru dyfais i'r fersiwn flaenorol o fewn # munud}two{Diweddaru dyfais i'r fersiwn flaenorol o fewn # funud}few{Diweddaru dyfais i'r fersiwn flaenorol o fewn # munud}many{Diweddaru dyfais i'r fersiwn flaenorol o fewn # munud}other{Diweddaru dyfais i'r fersiwn flaenorol o fewn # munud}}</translation>
 <translation id="6469104339369989396">Toglo'r boethfan</translation>
 <translation id="6477681113376365978">Methu â lawrlwytho'r ffeil</translation>
+<translation id="648135757200234041">Methu â chreu cyswllt</translation>
 <translation id="6482559668224714696">Chwyddwr sgrîn lawn</translation>
 <translation id="6485086611007560630">Tywydd (ddim ar gael)</translation>
 <translation id="6490471652906364588">Dyfais USB-C (porth de)</translation>
@@ -2288,6 +2291,7 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="8653151467777939995">Dangos gosodiadau hysbysiadau. Mae hysbysiadau wedi'u troi ymlaen</translation>
 <translation id="8657066291275741003">llythrennau bach</translation>
 <translation id="8660331759611631213">Isradd 71</translation>
+<translation id="8662921061190671299">Methu ag ychwanegu at Calendar</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, Cryfder Signal <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Pwyswch Enter i dynnu sgrinlun rhannol</translation>
 <translation id="8676770494376880701">Mae gwefrydd pŵer isel wedi'i gysylltu</translation>

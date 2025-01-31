@@ -768,6 +768,7 @@
 <translation id="4654549501020883054">每日更换一次</translation>
 <translation id="4655868084888499342">已将图片设为壁纸</translation>
 <translation id="4661249927038176904">超现实</translation>
+<translation id="4661392828086261436">此更新由设备制造商提供，并且未经 Google 验证。</translation>
 <translation id="4664651912255946953">毛皮</translation>
 <translation id="4665014895760275686">制造商</translation>
 <translation id="467510802200863975">输入的两个密码不相同</translation>
@@ -1027,6 +1028,7 @@
 <translation id="5904994456462260490">添加新的 APN</translation>
 <translation id="590746845088109442">猫</translation>
 <translation id="5907649332524363701">按键颜色</translation>
+<translation id="5908813850962688338">安装此更新需要几分钟时间。下载更新期间，请将设备接通电源并保持开机状态。在此过程中，设备可能会多次重启并显示黑屏。系统会提示您重启设备以完成安装。</translation>
 <translation id="5916084858004523819">已禁止</translation>
 <translation id="5916664084637901428">已启用</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{系统已成功扫描完您的文件并已将扫描版保存至<ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />。}other{系统已成功扫描完您的文件并已将扫描版保存至<ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />。}}</translation>

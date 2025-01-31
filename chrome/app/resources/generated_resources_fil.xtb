@@ -126,7 +126,6 @@
 <translation id="1076766328672150609">Puwedeng gumamit ng PIN ang iyong anak para i-unlock ang device.</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216">Hindi ma-download ang diksyunaryo ng pang-check ng pagbabaybay para sa <ph name="LANGUAGE" />. Subukan ulit.</translation>
-<translation id="1078029726086090536">I-verify ang iyong password</translation>
 <translation id="1078037449555275327">Mga setting ng ChromeVox</translation>
 <translation id="1079242569060319448">Nakalimutan ang PIN?</translation>
 <translation id="1079285777677001938">Posibleng hindi gumana ang mga feature sa ilang site.</translation>
@@ -370,6 +369,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1241066500170667906">Pumili ng status ng eksperimento para sa <ph name="EXPERIMENT_NAME" /></translation>
 <translation id="124116460088058876">Higit pang wika</translation>
 <translation id="1241381048229838873">Ipakita ang lahat ng mga bookmark</translation>
+<translation id="1242044645101871359">Mag-sign In Ulit</translation>
 <translation id="1242633766021457174">Gustong i-reset ng <ph name="THIRD_PARTY_TOOL_NAME" /> ang iyong mga setting.</translation>
 <translation id="1243002225871118300">Baguhin ang laki ng display at text</translation>
 <translation id="1243314992276662751">I-upload</translation>
@@ -1628,7 +1628,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2113921862428609753">Access sa Impormasyon ng Awtoridad</translation>
 <translation id="2114145607116268663">Hindi ma-install, nire-require ang pag-reboot. Paki-restart ang iyong computer at subukan ulit. Ang code ng error ay <ph name="ERROR" />.</translation>
 <translation id="2114326799768592691">I-reload ang &amp;Frame</translation>
-<translation id="2114413269775311385">Gamitin ang account na ito sa mga Android app. Puwede mong kontrolin ang mga pahintulot para sa mga Android app sa <ph name="LINK_BEGIN" />Mga Setting ng App<ph name="LINK_END" />.</translation>
 <translation id="2114995631896158695">Walang nakalagay na SIM card</translation>
 <translation id="2116619964159595185">Karaniwang kumokonekta ang mga site sa mga Bluetooth device para sa mga feature na tulad ng pag-set up o pag-sync ng low-energy beacon, tracker ng kalusugan o fitness, o smart light bulb</translation>
 <translation id="2117655453726830283">Susunod na slide</translation>
@@ -2808,6 +2807,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="2926620265753325858">Hindi sinusuportahan ang <ph name="DEVICE_NAME" />.</translation>
 <translation id="2926708162326352948">In-update ang tema sa in-upload na larawan</translation>
 <translation id="2927017729816812676">Storage ng Cache</translation>
+<translation id="2928030851119977280">Na-save ang pinili. Maa-apply ang iyong pinili kapag nag-sign in ka sa iba pang serbisyo ng Google.</translation>
 <translation id="2928795416630981206">Pinapayagang i-track ang posisyon ng iyong camera</translation>
 <translation id="2929345818093040583">{NUM_SITES,plural, =1{Inalis ng Chrome ang mga pahintulot sa 1 site}one{Inalis ng Chrome ang mga pahintulot sa {NUM_SITES} site}other{Inalis ng Chrome ang mga pahintulot sa {NUM_SITES} na site}}</translation>
 <translation id="2931157624143513983">Pagkasyahin sa napi-print na bahagi</translation>
@@ -4648,6 +4648,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="4242533952199664413">Buksan ang mga setting</translation>
 <translation id="4242577469625748426">Nabigong i-install ang mga setting ng patakaran sa device: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385">Ang iyong <ph name="BEGIN_LINK" />browser at profile ay pinapamahalaan<ph name="END_LINK" /> ng <ph name="DOMAIN" /></translation>
+<translation id="424315890655130736">Ilagay ang Passphrase</translation>
 <translation id="4243504193894350135">Naka-pause ang printer</translation>
 <translation id="4243624244759495699"><ph name="LOCALE" />, Baitang <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">Maghanap ng higit pang app ng stylus</translation>
@@ -5370,7 +5371,6 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="4766598565665644999">Puwedeng basahin at baguhin ng lahat ng extension ang <ph name="HOST" /></translation>
 <translation id="4767427586072640478">Matuto pa tungkol sa mga naka-disable na extension.</translation>
 <translation id="4768332406694066911">Mayroon kang mga certificate mula sa mga organisasyong ito na tutukoy sa iyo</translation>
-<translation id="4768945955870840220">Para sa ilang produkto, puwedeng mangalap ang Chrome ng mga review mula sa buong web</translation>
 <translation id="4769632191812288342">Nakakakuha ka ng karaniwang proteksyon</translation>
 <translation id="4770119228883592393">Humiling ng pahintulot, pindutin ang ⌘ + Option + Pababang arrow para tumugon</translation>
 <translation id="4770755495532014179">Gamitin ang password na ito sa iyong iPhone</translation>
@@ -5512,6 +5512,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="4862642413395066333">Paglagda sa Mga Pagtugon sa OCSP</translation>
 <translation id="4863702650881330715">Palawakin ang compatibility</translation>
 <translation id="4863769717153320198">Mukhang <ph name="WIDTH" /> x <ph name="HEIGHT" /> (Default)</translation>
+<translation id="4864334716800138793">Na-disable ng iyong organisasyon ang pag-set up ng profile sa trabaho</translation>
 <translation id="4864369630010738180">Nagsa-sign in...</translation>
 <translation id="4864805589453749318">Piliin ang magulang na nagbibigay ng pahintulot na magdagdag ng pampaaralang account.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (naka-block)</translation>
@@ -6473,6 +6474,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="5559768063688681413">Walang naka-save na printer</translation>
 <translation id="55601339223879446">Isaayos ang mga hangganan ng iyong desktop sa display</translation>
 <translation id="5561162485081632007">Nagde-detect ng mga mapanganib na event at nagbibigay sa iyo ng babala tungkol sa mga ito kapag nangyari ang mga ito</translation>
+<translation id="5562588178647493983">Makipag-ugnayan sa iyong administrator para sa higit pang impormasyon</translation>
 <translation id="556321030400250233">lokal o nakabahaging file</translation>
 <translation id="5563234215388768762">Maghanap sa Google o mag-type ng URL</translation>
 <translation id="5563824734298958390">Umalis sa Grupo ng Tab?</translation>
@@ -7420,6 +7422,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="6253801023880399036">Sine-save ang mga password sa <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="6254503684448816922">Kompromisong Key</translation>
 <translation id="6254892857036829079">Perfect</translation>
+<translation id="6257131917452817589">naka-automate na pagpapalit ng password</translation>
 <translation id="6257602895346497974">I-on ang pag-sync...</translation>
 <translation id="6257614441619555296"><ph name="KEY" />: <ph name="VALUE" /></translation>
 <translation id="625827534921607067">Pipiliin ang network na ito kung mahigit sa isang dati nang nakonektahan o na-configure na network ang available</translation>
@@ -8769,7 +8772,6 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7243092385765551741">I-delete ang passkey?</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (Pinakamainam)</translation>
 <translation id="7246230585855757313">Muling ipasok ang iyong security key at subukan ulit</translation>
-<translation id="724835896049478274">Mga account na available para sa mga Android app</translation>
 <translation id="7248802599439396696">Gawing hindi aktibo ang mga tab</translation>
 <translation id="7249197363678284330">Baguhin ang setting na ito sa address bar.</translation>
 <translation id="7249764475759804559">Isama ang app na ito bilang opsyon kapag nagbubukas ng mga file</translation>
@@ -9133,6 +9135,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7502528909759062987">I-pause ang pag-cast ng tab sa <ph name="DEVICE_NAME" /></translation>
 <translation id="7502804472671406749">Puwedeng ma-scroll at ma-zoom ang mga naka-share na tab</translation>
 <translation id="7503191893372251637">Uri ng Netscape Certificate</translation>
+<translation id="7503259455663961898">Palitan ito para sa akin</translation>
 <translation id="7503985202154027481">Itatabi sa iyong security key ang tala ng pagbisita mo sa site na ito.</translation>
 <translation id="7504145862399276792">Naka-mute ang audio sa tab na ito</translation>
 <translation id="750509436279396091">Buksan ang folder ng mga download</translation>
@@ -9195,6 +9198,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7551059576287086432">Hindi matagumpay ang pag-download ng <ph name="FILE_NAME" /></translation>
 <translation id="7551643184018910560">I-pin sa shelf</translation>
 <translation id="7552191410769096467">Para mag-share ng o sumali sa mga grupo ng tab, kailangan mong mag-sign in at i-on ang pag-sync</translation>
+<translation id="7552196109089297786">Mag-sign out sa Microsoft</translation>
 <translation id="7552846755917812628">Subukan ang mga sumusunod na tip:</translation>
 <translation id="7553012839257224005">Sinusuri ang Linux container</translation>
 <translation id="7553242001898162573">Ilagay ang iyong password</translation>
@@ -9806,6 +9810,7 @@ Pumindot ng nakatalagang switch o key para alisin ang pagtatalaga.</translation>
 <translation id="7968833647796919681">I-enable ang pagkolekta ng data ng pagganap</translation>
 <translation id="7968982339740310781">Tingnan ang mga detalye</translation>
 <translation id="7969046989155602842">Command</translation>
+<translation id="7969144945436590933">Kumuha pa ng detalye</translation>
 <translation id="7970673414865679092">Mga detalye ng ethernet</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 na May RSA Encryption</translation>
 <translation id="7973149423217802477">Nagsusumite ang thumbs down ng feedback na hindi mo ito gusto.</translation>
@@ -10323,6 +10328,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8330617762701840933">Ang listahan ng mga website na nagre-redirect sa alternatibong browser.</translation>
 <translation id="8330689128072902965">Makakapagbahagi sa iyo ang mga kalapit na contact. I-click para baguhin.</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{Sinusuportahang uri ng file: <ph name="FILE_TYPE1" />}=2{Mga sinusuportahang uri ng file: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />}=3{Mga sinusuportahang uri ng file: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />}=4{Mga sinusuportahang uri ng file: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" />}one{Mga sinusuportahang uri ng file: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />at {OVERFLOW_COUNT} pa <ph name="END_LINK" />)}other{Mga sinusuportahang uri ng file: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />at {OVERFLOW_COUNT} pa <ph name="END_LINK" />)}}</translation>
+<translation id="8331578454993293727">Nakita sa isang breach sa data ang iyong password</translation>
 <translation id="8331822764922665615">Pangalanan ang iyong grupo, pumili ng kulay, at pagkatapos ay pindutin ang Esc</translation>
 <translation id="833256022891467078">Mga nakabahaging folder ng Crostini</translation>
 <translation id="833262891116910667">I-highlight</translation>
@@ -10404,6 +10410,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
     <ph name="BEGIN_PARAGRAPH2" />Para sa higit pang tulong, bisitahin ang: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8383614331548401927">Welcome Recap</translation>
 <translation id="8386091599636877289">Hindi nakita ang patakaran.</translation>
+<translation id="8387087863179559896">Puwedeng i-update ng Chrome ang iyong account para sa site na ito para magkaroon ng malakas na password. Hindi mo kailangang tandaan ang password dahil naka-save ito para sa iyo sa Google Password Manager ng <ph name="EMAIL" />. Higit pa tungkol sa <ph name="PASSWORD_CHANGE" />.</translation>
 <translation id="8387361103813440603">Hindi pinapayagang makita ang iyong lokasyon</translation>
 <translation id="8387617938027387193">I-verify na ikaw ito</translation>
 <translation id="8388770971141403598">Hindi sinusuportahan ang mga pangalawang profile</translation>
@@ -10719,7 +10726,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8625124982056504555">Basahin ang mga serial number ng ChromeOS device at bahagi</translation>
 <translation id="862542460444371744">&amp;Mga Extension</translation>
 <translation id="8625663000550647058">Hindi pinapayagang gamitin ang iyong mikropono</translation>
-<translation id="8625679025395572221">Posibleng nasa panganib pa rin ang iyong account.</translation>
 <translation id="8625916342247441948">Huwag payagan ang mga site na kumonekta sa mga HID device</translation>
 <translation id="862727964348362408">Sinuspinde</translation>
 <translation id="862750493060684461">CSS cache</translation>
@@ -11603,7 +11609,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="936801553271523408">Diagnostic data ng system</translation>
 <translation id="93766956588638423">Ayusin ang extension</translation>
 <translation id="938623846785894166">Hindi karaniwang file</translation>
-<translation id="939401694733344652">Hindi ginagamit sa mga Android app ang mga account na ito sa ngayon. Kung pipili ka ng account na gagamitin sa Android app na ito, puwede ring gamitin ang account sa iba pang Android app. Puwede mong baguhin ang access ng Android app sa <ph name="LINK_BEGIN" />Mga Setting &gt; Mga Account<ph name="LINK_END" />.</translation>
 <translation id="939598580284253335">Ilagay ang passphrase</translation>
 <translation id="939736085109172342">Bagong folder</translation>
 <translation id="940212040923880623">&amp;Hanapin at I-edit</translation>

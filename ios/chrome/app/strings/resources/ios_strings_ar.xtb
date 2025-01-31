@@ -263,7 +263,6 @@
 <translation id="2074131957428911366">يمكنك دائمًا اختيار ما تريد مزامنته في <ph name="BEGIN_LINK" />الإعدادات<ph name="END_LINK" />.</translation>
 <translation id="2078437078822043850">يمكنك الانتقال لليسار للتصفُّح في "وضع التصفّح المتخفي".</translation>
 <translation id="2079545284768500474">تراجع</translation>
-<translation id="2082906935540894275">استكشِف الميزات الأكثر صلة باهتماماتك في أوقات مختلفة.</translation>
 <translation id="2085876078937250610">حفظ…</translation>
 <translation id="2096239473850415494">تعذَّر التنزيل</translation>
 <translation id="2096716221239095980">حذف كل البيانات</translation>
@@ -548,7 +547,6 @@
 <translation id="3445288400492335833"><ph name="MINUTES" /> دقيقة</translation>
 <translation id="344589138074534176">‏مزيد من المعلومات حول "عدسة Google"</translation>
 <translation id="3447332786336558089">بعد تسجيل الخروج، سيتم إغلاق علامات التبويب وسيتم حذف بيانات الحساب غير المحفوظة من هذا الجهاز. ويمكن أن يشمل ذلك كلمات المرور والسجلّ وغيرها.</translation>
-<translation id="3449016921756175697">اقتراحات مفيدة تسهِّل وتحسِّن تجربة التصفّح</translation>
 <translation id="345348365500626747">تمّ العثور على العنوان</translation>
 <translation id="3464194322481586217">تعذَّر تتبُّع السعر.</translation>
 <translation id="3469117812148449995">خيارات حفظ كلمة المرور</translation>
@@ -718,6 +716,7 @@
 <translation id="422477017457571619">‏يوفِّر هذا الوضع حمايةً فورية مستندة إلى الذكاء الاصطناعي (AI) من المواقع الإلكترونية وعمليات التنزيل والإضافات الخطيرة استنادًا إلى بيانات تصفُّحك التي يتم إرسالها إلى Google</translation>
 <translation id="4231395118547300571">تم تفعيل إشعارات ميزة "التحقّق من الأمان"</translation>
 <translation id="4237377247299956313">‏النقر على  <ph name="BEGIN_BOLD" />تطبيق المتصفِّح التلقائي (Default Browser App) <ph name="END_BOLD" /></translation>
+<translation id="4241893428331130998">ما مِن كلمات مرور أو مفاتيح مرور محفوظة</translation>
 <translation id="4242533952199664413">فتح الإعدادات</translation>
 <translation id="4250432749243022864">{count,plural, =0{فتح {count} علامة تبويب}=1{فتح علامة تبويب واحدة ({count})}two{فتح علامتَي تبويب ({count})}few{فتح {count} علامات تبويب}many{فتح {count} علامة تبويب}other{فتح {count} علامة تبويب}}</translation>
 <translation id="4250680216510889253">لا</translation>
@@ -922,7 +921,6 @@
 <translation id="5127538504377457572">نشِط قبل <ph name="DAYS" /> يوم</translation>
 <translation id="5128788795241319992">الاطّلاع على القائمة الجديدة</translation>
 <translation id="5132942445612118989">يمكنك مزامنة كلمات المرور والسجلّ وغير ذلك على جميع الأجهزة.</translation>
-<translation id="5137526732000415202">افتح آخر علامة تبويب مفتوحة على جميع أجهزتك.</translation>
 <translation id="5145331760738811130">الخروج من "أداة التبديل بين علامات التبويب"</translation>
 <translation id="5157638238828697074">حدث خطأ. تعذَّر فتح التطبيق.</translation>
 <translation id="5163417375525818870">‏ملفات PDF</translation>
@@ -1021,7 +1019,6 @@
 <translation id="559567008082979829">يمكنك ضبط عمليات التنزيل بحيث يتم حذفها بعد شهر واحد.</translation>
 <translation id="5596627076506792578">خيارات إضافية</translation>
 <translation id="560322036295180549">أوقفت مؤسستك هذا الخيار.</translation>
-<translation id="5611107723541161735">احصل على اختصارات للمواقع الإلكترونية التي انتقلت إليها مؤخرًا على هذا الجهاز.</translation>
 <translation id="5611398002774823980">الحفظ في الحساب</translation>
 <translation id="5613297089029360427">الترتيب حسب الأحدث</translation>
 <translation id="5614553682702429503">هل تريد حفظ كلمة المرور؟</translation>
@@ -1485,7 +1482,6 @@
 <translation id="7512075701202892785">‏المتصفِّح المفضّل لك متوفّر الآن على جهاز iPad</translation>
 <translation id="7512909159512473473">إدخال عبارة المرور…</translation>
 <translation id="7514365320538308">تنزيل</translation>
-<translation id="7521117365186708026">‏احصل على نصائح بشأن عملية إعداد Chrome للاستفادة إلى أقصى حدّ منه.</translation>
 <translation id="7524055474074101597">يمكنك الوصول إلى كلمات المرور وغيرها على مختلف التطبيقات.</translation>
 <translation id="75362970626182391">مجموعة علامات تبويب جديدة</translation>
 <translation id="7537586195939242955">‏عذرًا، لا يمكن أن تكون بطاقتك مثبتة على Passbook في الوقت الحالي.</translation>
@@ -1598,6 +1594,7 @@
 <translation id="7982789257301363584">الشبكة</translation>
 <translation id="7987685713885608670">‏لتوفير مزيد من الأمان، يتم تشفير كلمات المرور على جهازك قبل حفظها في "مدير كلمات المرور" من Google.</translation>
 <translation id="798991908416757345">مجموعات علامات التبويب غير متاحة</translation>
+<translation id="7993170188789685695">انقر مرّتين لإغلاق هذا الإشعار.</translation>
 <translation id="7993619969781047893">قد تتوقف الميزات عن العمل في بعض المواقع الإلكترونية.</translation>
 <translation id="7996239959906074962">إعداد…</translation>
 <translation id="800361585186029508">‏فتح عناوين URL التي تم إدخالها في Google Chrome</translation>
@@ -1705,7 +1702,6 @@
 <translation id="8439758443371991593">إخفاء خيار "الإضافة إلى قائمة القراءة"</translation>
 <translation id="8449869326050867919">تمت مشاركة كلمة المرور</translation>
 <translation id="8453847087068411809">عدم الرصد التلقائي للطرود مطلقًا</translation>
-<translation id="846158969830690371">تأكَّد من أنّك تستخدم الإعدادات الأكثر أمانًا أو تعرَّف على الإجراءات المطلوبة لتعزيز الأمان.</translation>
 <translation id="8473863474539038330">العناوين والمزيد</translation>
 <translation id="8474378002946546633">السماح بالإشعارات</translation>
 <translation id="8477178913400731244">حذف البيانات</translation>

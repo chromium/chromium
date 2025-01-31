@@ -263,7 +263,6 @@
 <translation id="2074131957428911366">Sempre pots anar a la <ph name="BEGIN_LINK" />configuració<ph name="END_LINK" /> per decidir què vols sincronitzar.</translation>
 <translation id="2078437078822043850">Pots desplaçar-te cap a la dreta per navegar d'incògnit.</translation>
 <translation id="2079545284768500474">Desfés</translation>
-<translation id="2082906935540894275">Les funcions més rellevants per a tu en diferents moments.</translation>
 <translation id="2085876078937250610">Desa…</translation>
 <translation id="2096239473850415494">No s'ha pogut baixar</translation>
 <translation id="2096716221239095980">Suprimeix totes les dades</translation>
@@ -548,7 +547,6 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="344589138074534176">Més informació sobre Google Lens</translation>
 <translation id="3447332786336558089">Quan tanquis la sessió, les pestanyes es tancaran i les dades del compte no desades se suprimiran d'aquest dispositiu. Això pot incloure contrasenyes, l'historial i més.</translation>
-<translation id="3449016921756175697">Suggeriments útils que milloren i faciliten la navegació.</translation>
 <translation id="345348365500626747">S'ha trobat l'adreça</translation>
 <translation id="3464194322481586217">No s'ha pogut fer el seguiment del preu.</translation>
 <translation id="3469117812148449995">Opcions per desar la contrasenya</translation>
@@ -923,7 +921,6 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="5127538504377457572">Actiu fa <ph name="DAYS" /> dies</translation>
 <translation id="5128788795241319992">Explora el menú nou</translation>
 <translation id="5132942445612118989">Sincronitza les contrasenyes, l'historial i altres elements en tots els dispositius</translation>
-<translation id="5137526732000415202">La darrera pestanya oberta en tots els teus dispositius.</translation>
 <translation id="5145331760738811130">Surt del selector de pestanyes</translation>
 <translation id="5157638238828697074">S'ha produït un error. No s'ha pogut obrir l'aplicació.</translation>
 <translation id="5163417375525818870">PDF</translation>
@@ -1024,7 +1021,6 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="559567008082979829">Configura les baixades perquè se suprimeixin al cap d'un mes.</translation>
 <translation id="5596627076506792578">Més opcions</translation>
 <translation id="560322036295180549">Desactivat per l'organització</translation>
-<translation id="5611107723541161735">Dreceres a llocs web que has visitat darrerament en aquest dispositiu.</translation>
 <translation id="5611398002774823980">Desa al compte</translation>
 <translation id="5613297089029360427">Ordena per més recents</translation>
 <translation id="5614553682702429503">Vols desar la contrasenya?</translation>
@@ -1488,7 +1484,6 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="7512075701202892785">El navegador que tant t'agrada, ara a l'iPad</translation>
 <translation id="7512909159512473473">Introdueix la frase de contrasenya…</translation>
 <translation id="7514365320538308">Baixa</translation>
-<translation id="7521117365186708026">Consells de configuració que t'ajuden a treure el màxim partit de Chrome.</translation>
 <translation id="7524055474074101597">Accedeix a les teves contrasenyes i a altres elements en totes les aplicacions.</translation>
 <translation id="75362970626182391">Grup de pestanyes nou</translation>
 <translation id="7537586195939242955">No es pot instal·lar el passi a Passbook en aquest moment.</translation>
@@ -1708,7 +1703,6 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="8439758443371991593">Amaga l'opció Afegeix a la llista de lectura</translation>
 <translation id="8449869326050867919">S'ha compartit la contrasenya</translation>
 <translation id="8453847087068411809">No detectis mai paquets automàticament</translation>
-<translation id="846158969830690371">Esbrina si tens la configuració més segura o si has de revisar alguna cosa.</translation>
 <translation id="8473863474539038330">Adreces i més</translation>
 <translation id="8474378002946546633">Permet les notificacions</translation>
 <translation id="8477178913400731244">Suprimeix les dades</translation>

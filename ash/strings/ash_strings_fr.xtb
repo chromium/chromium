@@ -731,6 +731,7 @@ Sinon, le pavé tactile intégré sera réactivé dans <ph name="TIMEOUT_SECONDS
 <translation id="3522979239100719575">Recherche des profils disponibles… Cela peut prendre quelques minutes.</translation>
 <translation id="3526440770046466733">Ouvrir le lien dans un nouvel onglet et rester dans l'onglet actif</translation>
 <translation id="353086728817903341">Connecté à <ph name="NUM_DEVICES" /> appareils</translation>
+<translation id="3532247131850366052">Impossible de créer la feuille de calcul Google Sheets</translation>
 <translation id="3533126039236445965">Applis sur l'étagère</translation>
 <translation id="3539957339480430241">Point d'accès <ph name="DEVICE_NAME" /></translation>
 <translation id="3540893133818942399">Ignorer la configuration concernant l'affichage des photos et contenus multimédias récents de votre téléphone</translation>
@@ -829,6 +830,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="380165613292957338">Bonjour, comment puis-je vous aider ?</translation>
 <translation id="3804737937830804242">Réduire la caméra</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 emoji. Aucun autre résultat.}one{# emoji. Aucun autre résultat.}other{# emoji. Aucun autre résultat.}}</translation>
+<translation id="3822403841174077928">Impossible de copier avec la mise en forme</translation>
 <translation id="3824784079442479685">L'accès à l'appareil photo est accordé à <ph name="APP_NAME" />, ainsi qu'à l'ensemble des applis et sites Web ayant l'autorisation d'y accéder. Vous devrez peut-être actualiser la page Web ou redémarrer l'appli.</translation>
 <translation id="3826099427150913765">Authentification par mot de passe</translation>
 <translation id="383058930331066723">Économiseur de batterie activé</translation>
@@ -846,7 +848,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="3870197372373144624">Essayez d'éteindre votre appareil.</translation>
 <translation id="3886872229787704059">Ouvert aujourd'hui</translation>
 <translation id="3891340733213178823">Appuyez deux fois sur Ctrl + Maj + Q pour vous déconnecter.</translation>
-<translation id="3893630138897523026">ChromeVox (commentaires audio)</translation>
+<translation id="3893630138897523026">ChromeVox (lecture vocale)</translation>
 <translation id="3897533311200664389">Soumettre une requête textuelle</translation>
 <translation id="3898464793473355515">Faire pivoter l'écran de 90 degrés dans le sens des aiguilles d'une montre</translation>
 <translation id="3899995891769452915">Saisie vocale</translation>
@@ -1215,6 +1217,7 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="5043679421800073804">Cliquer ou appuyer sur la dernière icône de l'étagère</translation>
 <translation id="504465286040788597">Paragraphe précédent</translation>
 <translation id="5045550434625856497">Mot de passe incorrect</translation>
+<translation id="5058794129231928255">Impossible de créer le document Google Docs</translation>
 <translation id="5062496344832867502">RAM</translation>
 <translation id="5068762093486106012">Vous recevrez une notification si vous parlez lorsque le son est coupé. Les données audio ne quittent jamais votre appareil.</translation>
 <translation id="5077416371682039027">Configurer l'affichage des photos, notifications, applis et contenus multimédias récents de votre téléphone</translation>
@@ -1385,7 +1388,7 @@ Aucun appareil connecté.</translation>
 <translation id="5596627076506792578">Plus d'options</translation>
 <translation id="5599242528220103262">Le raccourci clavier est désactivé</translation>
 <translation id="5600415762228455511">Le mode Sans distractions est activé pour la tâche <ph name="TASK_NAME" />. Il reste <ph name="REMAINING_TIME" />.</translation>
-<translation id="5600837773213129531">Appuyez sur Ctrl+Alt+Z pour désactiver les commentaires audio.</translation>
+<translation id="5600837773213129531">Appuyez sur Ctrl+Alt+Z pour désactiver la lecture vocale.</translation>
 <translation id="5601503069213153581">Code d'accès</translation>
 <translation id="5618148318840095371">Nous vous avons connecté à un meilleur réseau</translation>
 <translation id="5619862035903135339">Une règle définie par l'administrateur a désactivé la capture d'écran</translation>
@@ -1478,7 +1481,6 @@ Aucun appareil connecté.</translation>
 <translation id="589817443623831496">Exploration par position</translation>
 <translation id="5901316534475909376">Maj+Échap</translation>
 <translation id="5901630391730855834">Jaune</translation>
-<translation id="5911231045062997865">Les fenêtres Lacros ne sont pas prises en charge pour le moment. Les autres applis seront enregistrées.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916646100036936191">Nouvelle notification, <ph name="NOTIFICATION_COUNT" /> au total</translation>
 <translation id="5916664084637901428">Activé</translation>
@@ -1648,6 +1650,7 @@ Aucun appareil connecté.</translation>
 <translation id="6468406072297048412">{0,plural, =1{Rétablir une version antérieure de l'appareil d'ici 1 minute}one{Rétablir une version antérieure de l'appareil d'ici # minute}other{Rétablir une version antérieure de l'appareil d'ici # minutes}}</translation>
 <translation id="6469104339369989396">Activer/Désactiver le point d'accès</translation>
 <translation id="6477681113376365978">Impossible de télécharger le fichier</translation>
+<translation id="648135757200234041">Impossible de créer le contact</translation>
 <translation id="6482559668224714696">Loupe plein écran</translation>
 <translation id="6485086611007560630">Météo (non disponible)</translation>
 <translation id="6490471652906364588">Appareil USB de type C (port situé sur la droite de l'appareil)</translation>
@@ -1978,6 +1981,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="7611213136657090146">Appareil photo reconnecté.</translation>
 <translation id="7613620083300976559">Activer les commandes de jeu</translation>
 <translation id="761736749114493194">Activer/Désactiver le cadrage de la caméra. <ph name="STATE_TEXT" /></translation>
+<translation id="7621008024906456933">Paramètres de Quick Share</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
 <translation id="7627303771480696593">Poser une question</translation>
 <translation id="7634648064048557203">Appareil photo aligné sur l'angle inférieur droit</translation>
@@ -2288,6 +2292,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="8653151467777939995">Afficher les paramètres de notification. Les notifications sont activées</translation>
 <translation id="8657066291275741003">minuscules</translation>
 <translation id="8660331759611631213">Racine carrée de 71</translation>
+<translation id="8662921061190671299">Impossible d'ajouter à Agenda</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Appuyez sur Entrée pour faire une capture d'écran partielle</translation>
 <translation id="8676770494376880701">Chargeur de faible puissance connecté</translation>

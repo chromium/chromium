@@ -674,7 +674,6 @@
 <translation id="2157640075051554492">התראות על מעקב אחר מחירים</translation>
 <translation id="21613918653299710">גלריות תמונות אונליין</translation>
 <translation id="2161656808144014275">טקסט</translation>
-<translation id="2162510787844374618">אנחנו יוצרים קשר עם הבנק…</translation>
 <translation id="2162620598375156287">עכשיו במחיר <ph name="CURRENT_PRICE" /> ב-<ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">יש לבדוק אם יש שגיאה בהקלדה ב-<ph name="HOST_NAME" />.</translation>
 <translation id="2166049586286450108">גישה מלאה של מנהל המערכת</translation>
@@ -2432,7 +2431,6 @@ Del</translation>
 <translation id="5288108484102287882">בעקבות אימות ערכי המדיניות הופיעו אזהרות</translation>
 <translation id="5289384342738547352">טיפול במסמכים מרובים</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{נדרש עדכון היום}=2{נדרש עדכון עד מחר}one{נדרש עדכון תוך # ימים}other{נדרש עדכון תוך # ימים}}</translation>
-<translation id="5292714443869769806">להגדרות של <ph name="OPERATING_SYSTEM" /></translation>
 <translation id="5293919335876685914">מכוניות קוּפּה</translation>
 <translation id="5298618990685278995">טיוטה ראשונה</translation>
 <translation id="5299298092464848405">שגיאה בניתוח המדיניות</translation>
@@ -3656,6 +3654,7 @@ Del</translation>
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">משאיות ונגררים</translation>
 <translation id="7461924472993315131">הצמדה</translation>
+<translation id="746329643760972486">MacOS</translation>
 <translation id="7465036432780054056">הביקור שלך בכתובת <ph name="TOP_LEVEL_URL" /> יהיה ידוע ל-<ph name="EMBEDDED_URL" /></translation>
 <translation id="7465963048299965912">‏10x13 אינץ'</translation>
 <translation id="7469935732330206581">הטופס הזה לא מאובטח</translation>
@@ -3887,6 +3886,7 @@ Del</translation>
 <translation id="784404208867107517">הצגת ההיסטוריה באופן מקובץ</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{ללא}=1{אפליקציה אחת (<ph name="EXAMPLE_APP_1" />)}=2{2 אפליקציות (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# אפליקציות (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}other{# אפליקציות (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">אירעה שגיאה. אפשר לנסות שוב.</translation>
+<translation id="784623644169604270">אין פעילות מהתקופה האחרונה</translation>
 <translation id="785476343534277563">ספורט אוניברסיטאי</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7860345425589240791">‏יש להזין את תאריך התפוגה הנכון ואת קוד האימות (CVC) שמופיע ב<ph name="SIDE_OF_CARD" /></translation>
@@ -3925,7 +3925,6 @@ Del</translation>
 <translation id="7942349550061667556">אדום</translation>
 <translation id="7943397946612013052">ההורדה נחסמה</translation>
 <translation id="7943893128817522649">האתר יכול לבקש הרשאה להוריד מספר קבצים באופן אוטומטי</translation>
-<translation id="794567586469801724">macOS</translation>
 <translation id="7947285636476623132">יש לבדוק את שנת התפוגה ולנסות שוב</translation>
 <translation id="7947310711271925113">מוזיקת פופ</translation>
 <translation id="7947813448670013867">‏<ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, מקישים על Tab ואז על Enter כדי לקבל מידע על התכונות של Chrome</translation>
@@ -4677,7 +4676,6 @@ Del</translation>
 <translation id="984275831282074731">אמצעי תשלום</translation>
 <translation id="985199708454569384">‏&lt;p&gt;השגיאה הזו תוצג אם התאריך והשעה במחשב או בנייד אינם מדויקים.&lt;/p&gt;
     &lt;p&gt;כדי לפתור את השגיאה, פותחים את השעון של המכשיר. מוודאים שהשעה והתאריך נכונים&lt;/p&gt;</translation>
-<translation id="986257639512122511">הענקת גישה ל<ph name="PERMISSION" /> באתר <ph name="ORIGIN" /></translation>
 <translation id="987264212798334818">כללי</translation>
 <translation id="988159990683914416">גרסת מפתחים</translation>
 <translation id="989988560359834682">עריכת כתובת</translation>

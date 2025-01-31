@@ -1479,7 +1479,6 @@
 <translation id="589817443623831496">Скенирање по точки</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">Жолта боја</translation>
-<translation id="5911231045062997865">Прозорци Lacros не се поддржани во моментов. Другите апликации ќе се зачуваат.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916646100036936191">Ново известување, вкупно: <ph name="NOTIFICATION_COUNT" /></translation>
 <translation id="5916664084637901428">Вклучено</translation>
@@ -1978,6 +1977,7 @@
 <translation id="7611213136657090146">Камерата е поврзана повторно.</translation>
 <translation id="7613620083300976559">Вклучете ги контролите за игри</translation>
 <translation id="761736749114493194">Вклучете врамување на камера. <ph name="STATE_TEXT" /></translation>
+<translation id="7621008024906456933">Поставки за „Брзо споделување“</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7627303771480696593">Поставете прашање</translation>
 <translation id="7634648064048557203">Камерата е поставена во долниот десен агол</translation>

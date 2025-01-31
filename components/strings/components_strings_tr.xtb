@@ -674,7 +674,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2157640075051554492">Fiyat takibi bildirimleri</translation>
 <translation id="21613918653299710">Çevrimiçi Resim Galerileri</translation>
 <translation id="2161656808144014275">Metin</translation>
-<translation id="2162510787844374618">Bankanızla iletişim kuruluyor...</translation>
 <translation id="2162620598375156287">Şimdi <ph name="SOURCE_WEBSITE" /> sitesinde <ph name="CURRENT_PRICE" /></translation>
 <translation id="2164510882479075877"><ph name="HOST_NAME" /> yazımında hata olup olmadığını kontrol edin.</translation>
 <translation id="2166049586286450108">Tam Yönetici Erişimi</translation>
@@ -2428,7 +2427,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5288108484102287882">Politika değerlerini doğrulama işlemi uyarılarla sonuçlandı</translation>
 <translation id="5289384342738547352">Birden çok doküman işleme</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{Bugün güncellenmesi gerekiyor}=2{Yarın güncellenmesi gerekiyor}other{# gün içinde güncellenmesi gerekiyor}}</translation>
-<translation id="5292714443869769806"><ph name="OPERATING_SYSTEM" /> ayarlarına git</translation>
 <translation id="5293919335876685914">Coupe araçlar</translation>
 <translation id="5298618990685278995">İlk taslak</translation>
 <translation id="5299298092464848405">Politika ayrıştırma hatası</translation>
@@ -3651,6 +3649,7 @@ Ek ayrıntılar:
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Yük Kamyonları ve Treylerler</translation>
 <translation id="7461924472993315131">Sabitle</translation>
+<translation id="746329643760972486">MacOS</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" />, <ph name="TOP_LEVEL_URL" /> sitesini ziyaret ettiğinizi bilecek</translation>
 <translation id="7465963048299965912">10 x 13 inç</translation>
 <translation id="7469935732330206581">Form güvenli değil</translation>
@@ -3882,6 +3881,7 @@ Ek ayrıntılar:
 <translation id="784404208867107517">Gruplandırılmış geçmiş</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Yok}=1{1 uygulama (<ph name="EXAMPLE_APP_1" />)}=2{2 uygulama (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# uygulama (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Hata oluştu. Tekrar deneyin.</translation>
+<translation id="784623644169604270">Yeni etkinlik yok</translation>
 <translation id="785476343534277563">Üniversite Sporları</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7860345425589240791"><ph name="SIDE_OF_CARD" /> yer alan yeni son kullanma tarihini ve CVC'yi girin</translation>
@@ -3920,7 +3920,6 @@ Ek ayrıntılar:
 <translation id="7942349550061667556">Kırmızı</translation>
 <translation id="7943397946612013052">İndirme işlemi engellendi</translation>
 <translation id="7943893128817522649">Birden fazla dosyayı otomatik olarak indirmek isteyebilir</translation>
-<translation id="794567586469801724">macOS</translation>
 <translation id="7947285636476623132">Son kullanma tarihinin yılını kontrol edip tekrar deneyin</translation>
 <translation id="7947310711271925113">Pop Müzik</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome özellikleri hakkında bilgi edinmek için Sekme'ye, ardından Enter'a basın</translation>
@@ -4672,7 +4671,6 @@ Ek ayrıntılar:
 <translation id="984275831282074731">Ödeme yöntemleri</translation>
 <translation id="985199708454569384">&lt;p&gt;Bilgisayarınızın veya mobil cihazınızın tarihi ve saati doğru değilse bu hatayı görürsünüz.&lt;/p&gt;
     &lt;p&gt;Hatayı gidermek için cihazınızın saatini açın. Saat ve tarih ayarının doğru olduğundan emin olun.&lt;/p&gt;</translation>
-<translation id="986257639512122511"><ph name="ORIGIN" /> sitesinde <ph name="PERMISSION" /> iznini verdiniz</translation>
 <translation id="987264212798334818">Genel</translation>
 <translation id="988159990683914416">Geliştirici Derlemesi</translation>
 <translation id="989988560359834682">Adresi Düzenle</translation>

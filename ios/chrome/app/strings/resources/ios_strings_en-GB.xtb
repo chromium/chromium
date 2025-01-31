@@ -263,7 +263,6 @@
 <translation id="2074131957428911366">You can always choose what to sync in <ph name="BEGIN_LINK" />settings<ph name="END_LINK" />.</translation>
 <translation id="2078437078822043850">You can scroll right to browse in Incognito.</translation>
 <translation id="2079545284768500474">Undo</translation>
-<translation id="2082906935540894275">The most relevant features for you at different times.</translation>
 <translation id="2085876078937250610">Save…</translation>
 <translation id="2096239473850415494">Couldn't download</translation>
 <translation id="2096716221239095980">Delete all data</translation>
@@ -548,7 +547,6 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="344589138074534176">Learn more about Google Lens</translation>
 <translation id="3447332786336558089">After you sign out, tabs will be closed and unsaved account data will be deleted from this device. This could include passwords, history and more.</translation>
-<translation id="3449016921756175697">Helpful suggestions that make browsing better and easier.</translation>
 <translation id="345348365500626747">Address found</translation>
 <translation id="3464194322481586217">Couldn't track the price.</translation>
 <translation id="3469117812148449995">Options to save password</translation>
@@ -718,6 +716,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="422477017457571619">Real-time, AI-powered protection against dangerous sites, downloads and extensions that's based on your browsing data getting sent to Google</translation>
 <translation id="4231395118547300571">Safety Check notifications turned on</translation>
 <translation id="4237377247299956313">Tap <ph name="BEGIN_BOLD" />Default browser app<ph name="END_BOLD" /></translation>
+<translation id="4241893428331130998">No saved passwords or passkeys</translation>
 <translation id="4242533952199664413">Open settings</translation>
 <translation id="4250432749243022864">{count,plural, =0{Open {count} tab}=1{Open {count} tab}other{Open {count} tabs}}</translation>
 <translation id="4250680216510889253">No</translation>
@@ -922,7 +921,6 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="5127538504377457572">Active <ph name="DAYS" /> days ago</translation>
 <translation id="5128788795241319992">Explore the new menu</translation>
 <translation id="5132942445612118989">Sync your passwords, history and more on all devices</translation>
-<translation id="5137526732000415202">Your last open tab across all your devices.</translation>
 <translation id="5145331760738811130">Leave Tab Switcher</translation>
 <translation id="5157638238828697074">Something went wrong. The application couldn’t be opened.</translation>
 <translation id="5163417375525818870">PDFs</translation>
@@ -1023,7 +1021,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="559567008082979829">Set your downloads to be deleted after one month.</translation>
 <translation id="5596627076506792578">More options</translation>
 <translation id="560322036295180549">Turned off by your organisation</translation>
-<translation id="5611107723541161735">Shortcuts to sites that you've visited lately on this device.</translation>
 <translation id="5611398002774823980">Save in account</translation>
 <translation id="5613297089029360427">Sort by latest</translation>
 <translation id="5614553682702429503">Save password?</translation>
@@ -1487,7 +1484,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7512075701202892785">The browser that you love, now on iPad</translation>
 <translation id="7512909159512473473">Enter passphrase…</translation>
 <translation id="7514365320538308">Download</translation>
-<translation id="7521117365186708026">Set up tips that help you get the most out of Chrome.</translation>
 <translation id="7524055474074101597">Access your passwords and more across apps.</translation>
 <translation id="75362970626182391">New tab group</translation>
 <translation id="7537586195939242955">Sorry, your Pass cannot be installed to Passbook at this time.</translation>
@@ -1600,6 +1596,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="7982789257301363584">Network</translation>
 <translation id="7987685713885608670">For added safety, encrypt passwords on your device before they’re saved to Google Password Manager.</translation>
 <translation id="798991908416757345">Tab groups are unavailable</translation>
+<translation id="7993170188789685695">Double-tap to close this notification.</translation>
 <translation id="7993619969781047893">Features on some sites may break</translation>
 <translation id="7996239959906074962">Set up…</translation>
 <translation id="800361585186029508">Opens the inputted URLs in Google Chrome.</translation>
@@ -1706,7 +1703,6 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8439758443371991593">Hide Add to reading list</translation>
 <translation id="8449869326050867919">Password shared</translation>
 <translation id="8453847087068411809">Never auto-detect parcels</translation>
-<translation id="846158969830690371">Know if you have the safest settings or need to review anything.</translation>
 <translation id="8473863474539038330">Addresses and more</translation>
 <translation id="8474378002946546633">Allow notifications</translation>
 <translation id="8477178913400731244">Delete data</translation>

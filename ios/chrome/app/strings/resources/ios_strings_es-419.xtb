@@ -263,7 +263,6 @@
 <translation id="2074131957428911366">En la <ph name="BEGIN_LINK" />configuración<ph name="END_LINK" />, puedes elegir los datos para sincronizar en cualquier momento.</translation>
 <translation id="2078437078822043850">Puedes desplazar el dedo hacia la derecha para navegar en modo Incógnito.</translation>
 <translation id="2079545284768500474">Deshacer</translation>
-<translation id="2082906935540894275">Las funciones más pertinentes para ti en diferentes momentos.</translation>
 <translation id="2085876078937250610">Guardar…</translation>
 <translation id="2096239473850415494">No se pudo descargar</translation>
 <translation id="2096716221239095980">Borrar todos los datos</translation>
@@ -548,7 +547,6 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="344589138074534176">Más información sobre Google Lens</translation>
 <translation id="3447332786336558089">Cuando salgas, se cerrarán las pestañas y se borrarán los datos de la cuenta no guardados de este dispositivo. Esto puede incluir contraseñas, historial y más.</translation>
-<translation id="3449016921756175697">Sugerencias útiles que mejoran y facilitan la navegación.</translation>
 <translation id="345348365500626747">Se encontró una dirección</translation>
 <translation id="3464194322481586217">No se pudo realizar el seguimiento del precio.</translation>
 <translation id="3469117812148449995">Opciones para guardar contraseñas</translation>
@@ -922,7 +920,6 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="5127538504377457572">Activo hace <ph name="DAYS" /> días</translation>
 <translation id="5128788795241319992">Explora el nuevo menú</translation>
 <translation id="5132942445612118989">Sincroniza tus contraseñas, historial y más en todos los dispositivos</translation>
-<translation id="5137526732000415202">La última pestaña que abriste en todos tus dispositivos.</translation>
 <translation id="5145331760738811130">Salir del alternador de pestañas</translation>
 <translation id="5157638238828697074">Se produjo un error. No se pudo abrir la aplicación.</translation>
 <translation id="5163417375525818870">PDFs</translation>
@@ -1023,7 +1020,6 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="559567008082979829">Configura tus descargas para que se borren después de un mes.</translation>
 <translation id="5596627076506792578">Más opciones</translation>
 <translation id="560322036295180549">Tu organización desactivó la opción.</translation>
-<translation id="5611107723541161735">Accesos directos a sitios que visitaste recientemente en este dispositivo.</translation>
 <translation id="5611398002774823980">Guardar en la cuenta</translation>
 <translation id="5613297089029360427">Ordenar por más recientes</translation>
 <translation id="5614553682702429503">¿Quieres guardar la contraseña?</translation>
@@ -1487,7 +1483,6 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="7512075701202892785">El navegador que te encanta, ahora en iPad</translation>
 <translation id="7512909159512473473">Ingresar la frase de contraseña…</translation>
 <translation id="7514365320538308">Descargar</translation>
-<translation id="7521117365186708026">Sugerencias de configuración que te ayudan a aprovechar Chrome al máximo.</translation>
 <translation id="7524055474074101597">Accede a tus contraseñas y más en diferentes apps.</translation>
 <translation id="75362970626182391">Nuevo grupo de pestañas</translation>
 <translation id="7537586195939242955">Tu pase no se puede instalar en Passbook en este momento.</translation>
@@ -1706,7 +1701,6 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8439758443371991593">Ocultar la opción Agregar a la Lista de lectura</translation>
 <translation id="8449869326050867919">Se compartió la contraseña</translation>
 <translation id="8453847087068411809">Nunca detectar paquetes automáticamente</translation>
-<translation id="846158969830690371">Descubre si tienes la configuración más segura o si necesitas revisar algo.</translation>
 <translation id="8473863474539038330">Direcciones y más</translation>
 <translation id="8474378002946546633">Permitir notificaciones</translation>
 <translation id="8477178913400731244">Borrar datos</translation>

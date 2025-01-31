@@ -263,7 +263,6 @@
 <translation id="2074131957428911366">V <ph name="BEGIN_LINK" />nastavitvah<ph name="END_LINK" /> lahko kadar koli izberete, kaj želite sinhronizirati.</translation>
 <translation id="2078437078822043850">Za brskanje v anonimnem načinu lahko povlečete desno.</translation>
 <translation id="2079545284768500474">Razveljavi</translation>
-<translation id="2082906935540894275">Najustreznejše funkcije za vas ob različnih časih.</translation>
 <translation id="2085876078937250610">Shrani …</translation>
 <translation id="2096239473850415494">Ni bilo mogoče prenesti</translation>
 <translation id="2096716221239095980">Izbriši vse podatke</translation>
@@ -548,7 +547,6 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="344589138074534176">Preberite več o Googlu Lens</translation>
 <translation id="3447332786336558089">Po odjavi bodo zavihki zaprti, neshranjeni podatki računa pa bodo izbrisani iz te naprave. To lahko vključuje gesla, zgodovino in drugo.</translation>
-<translation id="3449016921756175697">Koristni predlogi, ki izboljšajo in olajšajo brskanje.</translation>
 <translation id="345348365500626747">Naslov je bil najden</translation>
 <translation id="3464194322481586217">Cene ni bilo mogoče spremljati.</translation>
 <translation id="3469117812148449995">Možnosti shranjevanja gesel</translation>
@@ -718,6 +716,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="422477017457571619">Sprotna zaščita z uporabo umetne inteligence pred nevarnimi spletnimi mesti, prenosi in razširitvami, ki temelji na podatkih brskanja, poslanih Googlu</translation>
 <translation id="4231395118547300571">Obvestila varnostnega preverjanja so vklopljena</translation>
 <translation id="4237377247299956313">Dotaknite se možnosti za <ph name="BEGIN_BOLD" />privzeto aplikacijo za brskanje<ph name="END_BOLD" />.</translation>
+<translation id="4241893428331130998">Ni shranjenih gesel ali ključev za dostop</translation>
 <translation id="4242533952199664413">Odpri nastavitve</translation>
 <translation id="4250432749243022864">{count,plural, =0{Odpri {count} zavihkov}=1{Odpri {count} zavihek}one{Odpri {count} zavihek}two{Odpri {count} zavihka}few{Odpri {count} zavihke}other{Odpri {count} zavihkov}}</translation>
 <translation id="4250680216510889253">Ne</translation>
@@ -922,7 +921,6 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="5127538504377457572">Aktivna pred toliko dnevi: <ph name="DAYS" /></translation>
 <translation id="5128788795241319992">Raziščite novi meni</translation>
 <translation id="5132942445612118989">Sinhronizirajte gesla, zgodovino in drugo v vseh napravah</translation>
-<translation id="5137526732000415202">Zadnji odprti zavihek v vseh napravah.</translation>
 <translation id="5145331760738811130">Zapusti preklop med zavihki</translation>
 <translation id="5157638238828697074">Prišlo je do napake. Aplikacije ni bilo mogoče odpreti.</translation>
 <translation id="5163417375525818870">Datoteke PDF</translation>
@@ -1023,7 +1021,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="559567008082979829">Nastavite, če želite, da se prenosi izbrišejo po enem mesecu.</translation>
 <translation id="5596627076506792578">Več možnosti</translation>
 <translation id="560322036295180549">Izklopila organizacija.</translation>
-<translation id="5611107723541161735">Bližnjice do spletnih mest, ki ste jih nedavno obiskali v tej napravi.</translation>
 <translation id="5611398002774823980">Shrani v račun</translation>
 <translation id="5613297089029360427">Razvrsti glede na najnovejše</translation>
 <translation id="5614553682702429503">Želite shraniti geslo?</translation>
@@ -1487,7 +1484,6 @@ Ko uporabljate anonimni način, spletna mesta ne smejo uporabljati piškotkov za
 <translation id="7512075701202892785">Brskalnik, ki vam je všeč – odslej v iPadu</translation>
 <translation id="7512909159512473473">Vnesite geslo …</translation>
 <translation id="7514365320538308">Prenos</translation>
-<translation id="7521117365186708026">Nastavite nasvete, s katerimi boste lahko najbolje izkoristili Chrome.</translation>
 <translation id="7524055474074101597">Dostopajte do gesel in drugega v aplikacijah.</translation>
 <translation id="75362970626182391">Nova skupina zavihkov</translation>
 <translation id="7537586195939242955">Elementa trenutno ni mogoče namesiti v Passbook.</translation>
@@ -1600,6 +1596,7 @@ Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na razli�
 <translation id="7982789257301363584">Omrežje</translation>
 <translation id="7987685713885608670">Zaradi dodatne varnosti šifrirajte gesla v napravi, preden se shranijo v Google Upravitelju gesel.</translation>
 <translation id="798991908416757345">Skupine zavihkov niso na voljo</translation>
+<translation id="7993170188789685695">Dvakrat se dotaknite, če želite zapreti to obvestilo.</translation>
 <translation id="7993619969781047893">Funkcije na nekaterih spletnih mestih morda ne bodo delovale</translation>
 <translation id="7996239959906074962">Nastavitev …</translation>
 <translation id="800361585186029508">Odpre vnesene URL-je v Google Chromu.</translation>
@@ -1706,7 +1703,6 @@ Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na razli�
 <translation id="8439758443371991593">Skrij Dodaj na bralni seznam</translation>
 <translation id="8449869326050867919">Geslo je deljeno</translation>
 <translation id="8453847087068411809">Nikoli ne zaznaj samodejno paketov</translation>
-<translation id="846158969830690371">Ugotovite, ali imate najvarnejše nastavitve ali morate kaj pregledati.</translation>
 <translation id="8473863474539038330">Naslovi in drugo</translation>
 <translation id="8474378002946546633">Omogoči obvestila</translation>
 <translation id="8477178913400731244">Izbriši podatke</translation>

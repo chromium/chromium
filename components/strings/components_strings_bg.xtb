@@ -674,7 +674,6 @@
 <translation id="2157640075051554492">Известия за следене на цени</translation>
 <translation id="21613918653299710">Онлайн фотогалерии</translation>
 <translation id="2161656808144014275">Текст</translation>
-<translation id="2162510787844374618">Установява се връзка с банката ви...</translation>
 <translation id="2162620598375156287">Сега цената е <ph name="CURRENT_PRICE" /> в(ъв) <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Проверете дали <ph name="HOST_NAME" /> е изписано правилно.</translation>
 <translation id="2166049586286450108">Пълен администраторски достъп</translation>
@@ -2428,7 +2427,6 @@
 <translation id="5288108484102287882">При проверката на стойностите на правилата възникнаха предупреждения</translation>
 <translation id="5289384342738547352">Обработване на няколко документа</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{Изисква се актуализация днес}=2{Изисква се актуализация до утре}other{Изисква се актуализация в рамките на # дни}}</translation>
-<translation id="5292714443869769806">Към настройките на <ph name="OPERATING_SYSTEM" /></translation>
 <translation id="5293919335876685914">Купета</translation>
 <translation id="5298618990685278995">първоначална чернова;</translation>
 <translation id="5299298092464848405">Грешка при синтактичния анализ на правилото</translation>
@@ -3651,6 +3649,7 @@
 <translation id="745640750744109667">A0 x 3</translation>
 <translation id="7457071735008326060">Камиони и ремаркета</translation>
 <translation id="7461924472993315131">Фиксиране</translation>
+<translation id="746329643760972486">macOS</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> ще знае, че сте посетили <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7465963048299965912">10 x 13 инча</translation>
 <translation id="7469935732330206581">Формулярът не е защитен</translation>
@@ -3921,7 +3920,6 @@
 <translation id="7942349550061667556">Червено</translation>
 <translation id="7943397946612013052">Изтеглянето е блокирано</translation>
 <translation id="7943893128817522649">Може да поиска разрешение да изтегли автоматично няколко файла</translation>
-<translation id="794567586469801724">macOS</translation>
 <translation id="7947285636476623132">Проверете годината на валидност и опитайте отново</translation>
 <translation id="7947310711271925113">Поп музика</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да научите повече за функциите на Chrome</translation>
@@ -4673,7 +4671,6 @@
 <translation id="984275831282074731">Начини на плащане</translation>
 <translation id="985199708454569384">&lt;p&gt;Ще виждате това съобщение за грешка, ако датата и часът на компютъра или мобилното ви устройство не са верни.&lt;/p&gt;
 &lt;p&gt;За да отстраните грешката, отворете часовника на устройството си и сверете датата и часа.&lt;/p&gt;</translation>
-<translation id="986257639512122511">Разрешихте достъпа до <ph name="PERMISSION" /> на <ph name="ORIGIN" /></translation>
 <translation id="987264212798334818">Общи</translation>
 <translation id="988159990683914416">Компилирана програма за програмисти</translation>
 <translation id="989988560359834682">Редактиране на адреса</translation>

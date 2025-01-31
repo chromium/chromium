@@ -768,6 +768,7 @@
 <translation id="4654549501020883054">Endre daglig</translation>
 <translation id="4655868084888499342">Bildet er angitt som bakgrunn</translation>
 <translation id="4661249927038176904">Surrealistisk</translation>
+<translation id="4661392828086261436">Denne oppdateringen leveres av enhetsprodusenten og er ikke bekreftet av Google</translation>
 <translation id="4664651912255946953">pels</translation>
 <translation id="4665014895760275686">Produsent</translation>
 <translation id="467510802200863975">Passordene er ikke like</translation>
@@ -1027,6 +1028,7 @@
 <translation id="5904994456462260490">Legg til et nytt APN</translation>
 <translation id="590746845088109442">katter</translation>
 <translation id="5907649332524363701">tastefarge</translation>
+<translation id="5908813850962688338">Det tar noen minutter å installere denne oppdateringen. Hold enheten koblet til strøm og påslått mens oppdateringen lastes ned. Enheten kan starte på nytt flere ganger og vise en svart skjerm under denne prosessen. Du blir bedt om å starte enheten på nytt for å fullføre installasjonen.</translation>
 <translation id="5916084858004523819">Forbudt</translation>
 <translation id="5916664084637901428">På</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Filen er skannet og lagret i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Filene er skannet og lagret i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>

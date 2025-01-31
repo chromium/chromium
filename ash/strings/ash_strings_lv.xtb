@@ -1478,7 +1478,6 @@ Nav pievienota neviena ierīce.</translation>
 <translation id="589817443623831496">Punktu pārlūkošana</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">Dzeltena</translation>
-<translation id="5911231045062997865">Lacros logi pašlaik netiek atbalstīti. Citas lietotnes tiks saglabātas.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916646100036936191">Jauns paziņojums, kopā <ph name="NOTIFICATION_COUNT" /></translation>
 <translation id="5916664084637901428">Iesl.</translation>
@@ -1977,6 +1976,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="7611213136657090146">Kamera atkal pievienota.</translation>
 <translation id="7613620083300976559">Ieslēgt spēļu vadīklas</translation>
 <translation id="761736749114493194">Pārslēgt kameras kadrēšanu. <ph name="STATE_TEXT" /></translation>
+<translation id="7621008024906456933">Funkcijas “Ātrā kopīgošana” iestatījumi</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7627303771480696593">Uzdodiet jautājumu</translation>
 <translation id="7634648064048557203">Kamera pārnesta uz labo apakšējo stūri</translation>

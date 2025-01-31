@@ -263,7 +263,6 @@
 <translation id="2074131957428911366">Du kan når som helst velge hva du vil synkronisere, i <ph name="BEGIN_LINK" />innstillingene<ph name="END_LINK" />.</translation>
 <translation id="2078437078822043850">Du kan rulle til høyre for å surfe i inkognitomodus.</translation>
 <translation id="2079545284768500474">Angre</translation>
-<translation id="2082906935540894275">Funksjonene som er mest relevante for deg til forskjellige tider.</translation>
 <translation id="2085876078937250610">Lagre …</translation>
 <translation id="2096239473850415494">Kunne ikke laste ned</translation>
 <translation id="2096716221239095980">Slett alle data</translation>
@@ -548,7 +547,6 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="344589138074534176">Finn ut mer om Google Lens</translation>
 <translation id="3447332786336558089">Når du logger av, lukkes fanene, og kontodata som ikke er lagret, slettes fra denne enheten. Dette kan blant annet inkludere passord og logg.</translation>
-<translation id="3449016921756175697">Nyttige forslag som gjør det enklere å surfe.</translation>
 <translation id="345348365500626747">Fant adressen</translation>
 <translation id="3464194322481586217">Kunne ikke spore prisen.</translation>
 <translation id="3469117812148449995">Alternativer for lagring av passord</translation>
@@ -718,6 +716,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="422477017457571619">AI-basert sanntidsbeskyttelse mot farlige nettsteder, nedlastinger og utvidelser, som fungerer ved at nettlesingsdataene dine sendes til Google</translation>
 <translation id="4231395118547300571">Varsler fra sikkerhetssjekk er slått på</translation>
 <translation id="4237377247299956313">Trykk på <ph name="BEGIN_BOLD" />Standard nettleserapp<ph name="END_BOLD" /></translation>
+<translation id="4241893428331130998">Ingen lagrede passord eller passnøkler</translation>
 <translation id="4242533952199664413">Åpne innstillingene</translation>
 <translation id="4250432749243022864">{count,plural, =0{Åpne {count} fane}=1{Åpne {count} fane}other{Åpne {count} faner}}</translation>
 <translation id="4250680216510889253">Nei</translation>
@@ -922,7 +921,6 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="5127538504377457572">Aktiv for <ph name="DAYS" /> dager siden</translation>
 <translation id="5128788795241319992">Utforsk den nye menyen</translation>
 <translation id="5132942445612118989">Synkroniser passordene dine, loggen din med mer på alle enheter</translation>
-<translation id="5137526732000415202">Den siste åpne fanen på alle enhetene dine.</translation>
 <translation id="5145331760738811130">Gå ut av fanevelgeren</translation>
 <translation id="5157638238828697074">Noe gikk galt. Kunne ikke åpne appen.</translation>
 <translation id="5163417375525818870">PDF-filer</translation>
@@ -1023,7 +1021,6 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="559567008082979829">Angi at nedlastingene dine skal slettes etter én måned.</translation>
 <translation id="5596627076506792578">Flere alternativer</translation>
 <translation id="560322036295180549">Organisasjonen din har slått av denne funksjonen</translation>
-<translation id="5611107723541161735">Snarveier til nettsteder du nylig har besøkt på denne enheten.</translation>
 <translation id="5611398002774823980">Lagre i kontoen</translation>
 <translation id="5613297089029360427">Sorter etter nyeste</translation>
 <translation id="5614553682702429503">Vil du lagre passordet?</translation>
@@ -1487,7 +1484,6 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="7512075701202892785">En kjent og kjær nettleser – nå på iPad</translation>
 <translation id="7512909159512473473">Angi en passordfrase…</translation>
 <translation id="7514365320538308">Last ned</translation>
-<translation id="7521117365186708026">Konfigurer tips som hjelper deg med å få mest mulig ut av Chrome.</translation>
 <translation id="7524055474074101597">Få tilgang til passordene dine med mer på tvers av apper.</translation>
 <translation id="75362970626182391">Ny fanegruppe</translation>
 <translation id="7537586195939242955">Tillatelsen din kan for øyeblikket ikke installeres i Passbook.</translation>
@@ -1600,6 +1596,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="7982789257301363584">Nettverk</translation>
 <translation id="7987685713885608670">For ekstra trygghet kan du kryptere passord på enheten før de lagres i Google Passordlagring.</translation>
 <translation id="798991908416757345">Fanegrupper er ikke tilgjengelige</translation>
+<translation id="7993170188789685695">Dobbelttrykk for å lukke dette varselet.</translation>
 <translation id="7993619969781047893">Det kan hende at funksjoner på enkelte nettsteder slutter å fungere</translation>
 <translation id="7996239959906074962">Konfigurer…</translation>
 <translation id="800361585186029508">Åpner de oppgitte nettadressene i Google Chrome.</translation>
@@ -1706,7 +1703,6 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8439758443371991593">Skjul Legg til på leselisten</translation>
 <translation id="8449869326050867919">Passordet er delt</translation>
 <translation id="8453847087068411809">Registrer aldri pakker automatisk</translation>
-<translation id="846158969830690371">Finn ut om du har de sikreste innstillingene, eller om du må gjennomgå noe.</translation>
 <translation id="8473863474539038330">Adresser med mer</translation>
 <translation id="8474378002946546633">Tillat varsler</translation>
 <translation id="8477178913400731244">Slett data</translation>

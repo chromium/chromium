@@ -1478,7 +1478,6 @@ Nuk ka pajisje të lidhura.</translation>
 <translation id="589817443623831496">Skanimi me pika</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">E verdhë</translation>
-<translation id="5911231045062997865">Dritaret e Lacros nuk mbështeten aktualisht. Aplikacionet e tjera do të ruhen.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916646100036936191">Njoftim i ri, <ph name="NOTIFICATION_COUNT" /> në total</translation>
 <translation id="5916664084637901428">Aktiv</translation>
@@ -1977,6 +1976,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="7611213136657090146">Kamera u rilidh.</translation>
 <translation id="7613620083300976559">Aktivizo kontrollet e lojës</translation>
 <translation id="761736749114493194">Aktivizo/çaktivizo inkuadrimin e kamerës. <ph name="STATE_TEXT" /></translation>
+<translation id="7621008024906456933">Cilësimet e "Ndarjes së shpejtë"</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7627303771480696593">Bëj një pyetje</translation>
 <translation id="7634648064048557203">Pamja paraprake e kamerës ka kaluar në këndin e poshtëm djathtas</translation>

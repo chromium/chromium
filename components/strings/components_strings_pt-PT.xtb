@@ -674,7 +674,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2157640075051554492">Notificações de monitorização de preços</translation>
 <translation id="21613918653299710">Galerias de imagens online</translation>
 <translation id="2161656808144014275">Texto</translation>
-<translation id="2162510787844374618">A contactar o banco…</translation>
 <translation id="2162620598375156287">Agora a <ph name="CURRENT_PRICE" /> em <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Verifique se existe algum erro ortográfico em <ph name="HOST_NAME" />.</translation>
 <translation id="2166049586286450108">Acesso de gestor total</translation>
@@ -2408,6 +2407,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5254043433801397071">Otimizar conteúdo para impressão</translation>
 <translation id="5255583962255635076">Políticas do navegador aplicadas no seu perfil de trabalho</translation>
 <translation id="5255690596502591079">Capturar mesmo assim</translation>
+<translation id="5255771248404149177">O fornecedor do cartão quer confirmar a sua identidade</translation>
 <translation id="5255833070095767006">350 x 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{A política do administrador não recomenda copiar este ficheiro para <ph name="DESTINATION_NAME" />}other{A política do administrador não recomenda copiar estes ficheiros para <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5263867360296733198">É necessária uma revisão antes de carregar</translation>
@@ -2428,7 +2428,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5288108484102287882">A validação dos valores da política gerou avisos.</translation>
 <translation id="5289384342738547352">Processamento de vários documentos</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{Atualização necessária hoje}=2{Atualização necessária até amanhã}other{Atualização necessária dentro de # dias}}</translation>
-<translation id="5292714443869769806">Aceder às definições do <ph name="OPERATING_SYSTEM" /></translation>
 <translation id="5293919335876685914">Carros coupé</translation>
 <translation id="5298618990685278995">Um primeiro rascunho</translation>
 <translation id="5299298092464848405">Erro ao analisar a política</translation>
@@ -2556,6 +2555,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5518352028556756716">A maioria dos sites não pode usar cookies de terceiros para acompanhar o seu perfil enquanto navega, e os sites não podem usar cookies de terceiros no Modo de navegação anónima.</translation>
 <translation id="5519516356611866228">Com as suas alterações</translation>
 <translation id="5519696598216267194">Papel (perfurado)</translation>
+<translation id="5520105693415771152">Não vê as suas informações atuais? Contacte o fornecedor para as atualizar.</translation>
 <translation id="5521782189689806907">Marcenaria</translation>
 <translation id="5523118979700054094">Nome da política</translation>
 <translation id="5523588073846127669">O comerciante não aceita este cartão virtual</translation>
@@ -3650,6 +3650,7 @@ Detalhes adicionais:
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Camiões e reboques para carga</translation>
 <translation id="7461924472993315131">Fixar</translation>
+<translation id="746329643760972486">MacOS</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> vai saber que visitou <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7465963048299965912">10 x 13 pol.</translation>
 <translation id="7469935732330206581">O formulário não é seguro</translation>
@@ -3920,7 +3921,6 @@ Detalhes adicionais:
 <translation id="7942349550061667556">Vermelho</translation>
 <translation id="7943397946612013052">Transferência bloqueada</translation>
 <translation id="7943893128817522649">Pode solicitar a transferência automática de vários ficheiros</translation>
-<translation id="794567586469801724">macOS</translation>
 <translation id="7947285636476623132">Verifique o ano de validade e tente novamente</translation>
 <translation id="7947310711271925113">Música pop</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para saber mais acerca das funcionalidades do Chrome</translation>
@@ -4673,7 +4673,6 @@ Detalhes adicionais:
 <translation id="984275831282074731">Métodos de pagamento</translation>
 <translation id="985199708454569384">&lt;p&gt;Este erro é apresentado se a data e a hora do computador ou do dispositivo móvel estiverem erradas.&lt;/p&gt;
     &lt;p&gt;Para corrigir o erro, aceda ao relógio do dispositivo. Certifique-se de que a data e a hora estão corretas.&lt;/p&gt;</translation>
-<translation id="986257639512122511">Permitiu <ph name="PERMISSION" /> em <ph name="ORIGIN" /></translation>
 <translation id="987264212798334818">Geral</translation>
 <translation id="988159990683914416">Compilação de programador</translation>
 <translation id="989988560359834682">Editar endereço</translation>

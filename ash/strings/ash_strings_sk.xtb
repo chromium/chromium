@@ -1478,7 +1478,6 @@ Nie sú pripojené žiadne zariadenia.</translation>
 <translation id="589817443623831496">Bodové prehľadávanie</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">Žltá</translation>
-<translation id="5911231045062997865">Okná Lacros momentálne nie sú podporované. Ostatné aplikácie budú uložené.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916646100036936191">Nové upozornenie, celkove <ph name="NOTIFICATION_COUNT" /></translation>
 <translation id="5916664084637901428">Zapnuté</translation>
@@ -1977,6 +1976,7 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="7611213136657090146">Kamera bola odpojená</translation>
 <translation id="7613620083300976559">Zapnúť ovládanie hry</translation>
 <translation id="761736749114493194">Prepnúť centrovanie kamery. <ph name="STATE_TEXT" /></translation>
+<translation id="7621008024906456933">Nastavenia funkcie Quick Share</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7627303771480696593">Položiť otázku</translation>
 <translation id="7634648064048557203">Kamera bola prichytená do pravého dolného rohu</translation>

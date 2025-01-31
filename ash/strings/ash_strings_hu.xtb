@@ -1479,7 +1479,6 @@ Nincsenek csatlakoztatott eszközök.</translation>
 <translation id="589817443623831496">Pontkeresés</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">Sárga</translation>
-<translation id="5911231045062997865">A Lacros-ablakok jelenleg nem támogatottak. Az egyéb alkalmazásokat menti a rendszer.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916646100036936191">Új értesítés, <ph name="NOTIFICATION_COUNT" /> összesen</translation>
 <translation id="5916664084637901428">Be</translation>
@@ -1978,6 +1977,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="7611213136657090146">Helyreállt a kapcsolat a kamerával.</translation>
 <translation id="7613620083300976559">Játékvezérlők bekapcsolása</translation>
 <translation id="761736749114493194">A keretezés be- vagy kikapcsolása. <ph name="STATE_TEXT" /></translation>
+<translation id="7621008024906456933">A Quick Share beállításai</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />°F</translation>
 <translation id="7627303771480696593">Kérdés feltevése</translation>
 <translation id="7634648064048557203">Kamera a jobb alsó sarokhoz igazítva</translation>

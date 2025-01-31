@@ -675,7 +675,6 @@
 <translation id="2157640075051554492">कीमत ट्रैक करने से जुड़ी सूचनाएं</translation>
 <translation id="21613918653299710">ऑनलाइन इमेज गैलरी</translation>
 <translation id="2161656808144014275">लेख संदेश</translation>
-<translation id="2162510787844374618">आपके बैंक से संपर्क किया जा रहा है...</translation>
 <translation id="2162620598375156287">अब <ph name="SOURCE_WEBSITE" /> पर कीमत <ph name="CURRENT_PRICE" /> है</translation>
 <translation id="2164510882479075877">देखें कि <ph name="HOST_NAME" /> की स्पेलिंग गलत तो नहीं है.</translation>
 <translation id="2166049586286450108">पूरा एडमिन एक्सेस</translation>
@@ -2428,7 +2427,6 @@
 <translation id="5288108484102287882">नीति मानों की पुष्टि से चेतावनियां मिली हैं</translation>
 <translation id="5289384342738547352">कई दस्तावेज़ों को हैंडल करना</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{आज अपडेट करना ज़रूरी है}=2{कल अपडेट करना ज़रूरी है}one{# दिन के अंदर अपडेट करना ज़रूरी है}other{# दिनों के अंदर अपडेट करना ज़रूरी है}}</translation>
-<translation id="5292714443869769806"><ph name="OPERATING_SYSTEM" /> की सेटिंग पर जाएं</translation>
 <translation id="5293919335876685914">कूप</translation>
 <translation id="5298618990685278995">पहला ड्राफ़्ट</translation>
 <translation id="5299298092464848405">नीति पार्स करने में गड़बड़ी</translation>
@@ -3651,6 +3649,7 @@
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">कार्गो ट्रक और ट्रेलर</translation>
 <translation id="7461924472993315131">पिन करें</translation>
+<translation id="746329643760972486">MacOS</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> को पता चल जाएगा कि आपने <ph name="TOP_LEVEL_URL" /> पर विज़िट किया है</translation>
 <translation id="7465963048299965912">10 x 13 इंच</translation>
 <translation id="7469935732330206581">यह फ़ॉर्म सुरक्षित नहीं है</translation>
@@ -3921,7 +3920,6 @@
 <translation id="7942349550061667556">लाल</translation>
 <translation id="7943397946612013052">फ़ाइल को डाउनलोड करने की अनुमति नहीं है</translation>
 <translation id="7943893128817522649">साइट, कई फ़ाइलों को अपने-आप डाउनलोड करने की अनुमति मांग सकती है</translation>
-<translation id="794567586469801724">macOS</translation>
 <translation id="7947285636476623132">अपने क्रेडिट कार्ड की समय सीमा खत्म होने का साल जांचें और फिर से कोशिश करें</translation>
 <translation id="7947310711271925113">पॉप म्यूज़िक</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome की सुविधाओं के बारे में जानने के लिए, पहले Tab दबाएं और फिर Enter दबाएं</translation>
@@ -4674,7 +4672,6 @@
 <translation id="984275831282074731">पेमेंट के तरीके</translation>
 <translation id="985199708454569384">&lt;p&gt;अगर आपके कंप्यूटर या मोबाइल डिवाइस की तारीख और समय गलत है, तो आपको यह गड़बड़ी दिखाई देगी.&lt;/p&gt;
     &lt;p&gt;इस गड़बड़ी को ठीक करने के लिए, अपने डिवाइस की घड़ी खोलें. पक्का करें कि समय और तारीख सही हों.&lt;/p&gt;</translation>
-<translation id="986257639512122511">आपने <ph name="ORIGIN" /> पर <ph name="PERMISSION" /> ऐक्सेस करने की अनुमति दी है</translation>
 <translation id="987264212798334818">सामान्य</translation>
 <translation id="988159990683914416">डेवलपर बिल्ड</translation>
 <translation id="989988560359834682">पते में बदलाव करें</translation>

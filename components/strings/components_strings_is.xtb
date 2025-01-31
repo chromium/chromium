@@ -674,7 +674,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2157640075051554492">Verðvöktunartilkynningar</translation>
 <translation id="21613918653299710">Myndasöfn á netinu</translation>
 <translation id="2161656808144014275">Texti</translation>
-<translation id="2162510787844374618">Hefur samband við bankann…</translation>
 <translation id="2162620598375156287">Núna <ph name="CURRENT_PRICE" /> á <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Kannaðu hvort innsláttarvillu sé að finna í <ph name="HOST_NAME" />.</translation>
 <translation id="2166049586286450108">Fullt stjórnandaaðgengi</translation>
@@ -2408,6 +2407,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="5254043433801397071">Fínstilla prentefni</translation>
 <translation id="5255583962255635076">Gildandi vafrareglur á vinnusniðinu þínu</translation>
 <translation id="5255690596502591079">Taka samt mynd</translation>
+<translation id="5255771248404149177">Kortaútgefandinn þinn vill tryggja að þetta sért þú</translation>
 <translation id="5255833070095767006">350 x 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{Regla kerfisstjóra mælir ekki með að afrita þessa skrá á <ph name="DESTINATION_NAME" />}one{Regla kerfisstjóra mælir ekki með að afrita þessar skrár á <ph name="DESTINATION_NAME" />}other{Regla kerfisstjóra mælir ekki með að afrita þessar skrár á <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5263867360296733198">Yfirferðar er krafist fyrir upphleðslu</translation>
@@ -2428,7 +2428,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="5288108484102287882">Prófun á reglugildum skilaði viðvörunum</translation>
 <translation id="5289384342738547352">Meðhöndlun margra skjala</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{Uppfærslu krafist í dag}=2{Uppfærslu krafist í síðasta lagi á morgun}one{Uppfærslu krafist innan # dags}other{Uppfærslu krafist innan # daga}}</translation>
-<translation id="5292714443869769806">Opna stillingar <ph name="OPERATING_SYSTEM" /></translation>
 <translation id="5293919335876685914">Tveggja dyra bílar</translation>
 <translation id="5298618990685278995">fyrstu drög</translation>
 <translation id="5299298092464848405">Villa við þáttun stefnu</translation>
@@ -2556,6 +2555,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="5518352028556756716">Flest vefsvæði geta ekki notað fótspor þriðju aðila til að fylgjast með ferðum þínum um vefinn og vefsvæði geta ekki notað fótspor þriðju aðila í huliðsstillingu.</translation>
 <translation id="5519516356611866228">Með breytingunum þínum</translation>
 <translation id="5519696598216267194">Pappír (forþrykktur)</translation>
+<translation id="5520105693415771152">Sérðu ekki núverandi upplýsingar? Hafðu samband við þjónustuveitanda til að uppfæra þær.</translation>
 <translation id="5521782189689806907">Skápar</translation>
 <translation id="5523118979700054094">Heiti reglu</translation>
 <translation id="5523588073846127669">Söluaðili samþykkir ekki þetta sýndarkort</translation>
@@ -3650,6 +3650,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Vöru- og húsbílar</translation>
 <translation id="7461924472993315131">Festa</translation>
+<translation id="746329643760972486">MacOS</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> mun vita að þú heimsóttir <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7465963048299965912">10 x 13 to.</translation>
 <translation id="7469935732330206581">Eyðublaðið er ekki öruggt</translation>
@@ -3920,7 +3921,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="7942349550061667556">Rauður</translation>
 <translation id="7943397946612013052">Lokað fyrir niðurhal</translation>
 <translation id="7943893128817522649">Getur beðið um að fá að hlaða sjálfkrafa niður mörgum skrám</translation>
-<translation id="794567586469801724">macOS</translation>
 <translation id="7947285636476623132">Athugaðu ár gildistímans og reyndu aftur</translation>
 <translation id="7947310711271925113">Popptónlist</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ýttu á Tab og svo Enter til að fá frekari upplýsingar um eiginleika Chrome</translation>
@@ -4672,7 +4672,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="984275831282074731">Greiðslumátar</translation>
 <translation id="985199708454569384">&lt;p&gt;Þessi villa birtist ef dagsetning og tími tölvunnar eða tækisins eru stillt rangt.&lt;/p&gt;
     &lt;p&gt;Leystu úr þessu með því að opna klukku tölvunnar eða tækisins og stilla rétta dagsetningu og tíma.&lt;/p&gt;</translation>
-<translation id="986257639512122511">Þú hefur heimilað <ph name="PERMISSION" /> á <ph name="ORIGIN" /></translation>
 <translation id="987264212798334818">Almennt</translation>
 <translation id="988159990683914416">Forritarasmíði</translation>
 <translation id="989988560359834682">Breyta heimilisfangi</translation>

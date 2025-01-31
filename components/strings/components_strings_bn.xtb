@@ -675,7 +675,6 @@
 <translation id="2157640075051554492">দাম ট্র্যাক করার বিজ্ঞপ্তি</translation>
 <translation id="21613918653299710">অনলাইন ছবি সংক্রান্ত গ্যালারি</translation>
 <translation id="2161656808144014275">পাঠ্য</translation>
-<translation id="2162510787844374618">আপনার ব্যাঙ্কের সাথে যোগাযোগ করা হচ্ছে…</translation>
 <translation id="2162620598375156287">এখন <ph name="SOURCE_WEBSITE" />-এ <ph name="CURRENT_PRICE" /></translation>
 <translation id="2164510882479075877"><ph name="HOST_NAME" />-এ কোনও বানান ভুল লেখা হয়েছে কিনা তা চেক করে দেখুন।</translation>
 <translation id="2166049586286450108">পূর্ণ প্রশাসক অ্যাক্সেস</translation>
@@ -2429,7 +2428,6 @@
 <translation id="5288108484102287882">নীতির মূল্য যাচাইকরণ থেকে সতর্কতা পাওয়া গেছে</translation>
 <translation id="5289384342738547352">মাল্টিপল ডকুমেন্ট ম্যানেজ করা</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{আজ আপডেট করতে হবে}=2{আগামীকালের মধ্যে আপডেট করতে হবে}one{# দিনের মধ্যে আপডেট করতে হবে}other{# দিনের মধ্যে আপডেট করতে হবে}}</translation>
-<translation id="5292714443869769806"><ph name="OPERATING_SYSTEM" /> সেটিংস দেখুন</translation>
 <translation id="5293919335876685914">কুপে</translation>
 <translation id="5298618990685278995">প্রথম ড্রাফ্ট</translation>
 <translation id="5299298092464848405">নীতি বিশ্লেষণ করার সময় ত্রুটি</translation>
@@ -3651,6 +3649,7 @@
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">কার্গো ট্রাক ও ট্রেলার</translation>
 <translation id="7461924472993315131">পিন</translation>
+<translation id="746329643760972486">MacOS</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> জানবে যে আপনি <ph name="TOP_LEVEL_URL" /> ভিজিট করেছেন</translation>
 <translation id="7465963048299965912">১০ x ১৩ ইঞ্চি</translation>
 <translation id="7469935732330206581">ফর্ম নিরাপদ নয়</translation>
@@ -3882,6 +3881,7 @@
 <translation id="784404208867107517">গ্রুপ করা ইতিহাস</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{একটিও নয়}=1{১টি অ্যাপ (<ph name="EXAMPLE_APP_1" />)}=2{২টি অ্যাপ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{#টি অ্যাপ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}other{#টি অ্যাপ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">কোনও সমস্যা হয়েছে। আবার চেষ্টা করুন।</translation>
+<translation id="784623644169604270">কোনও সাম্প্রতিক অ্যাক্টিভিটি নেই</translation>
 <translation id="785476343534277563">কলেজের খেলাধূলা</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7860345425589240791"><ph name="SIDE_OF_CARD" />-এ মেয়াদ শেষের নতুন তারিখ এবং CVC লিখুন</translation>
@@ -3920,7 +3920,6 @@
 <translation id="7942349550061667556">লাল</translation>
 <translation id="7943397946612013052">ব্লক করা ডাউনলোড</translation>
 <translation id="7943893128817522649">একাধিক ফাইল অটোমেটিক ডাউনলোড করতে অনুমতি চাইতে পারে</translation>
-<translation id="794567586469801724">macOS</translation>
 <translation id="7947285636476623132">আপনার মেয়াদ শেষের বছর পরীক্ষা করে আবার চেষ্টা করুন</translation>
 <translation id="7947310711271925113">পপ মিউজিক</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome-এর ফিচার সম্পর্কে জানতে প্রথমে Tab, তারপরে Enter প্রেস করুন</translation>
@@ -4672,7 +4671,6 @@
 <translation id="984275831282074731">পেমেন্ট পদ্ধতি</translation>
 <translation id="985199708454569384">&lt;p&gt;আপনার কম্পিউটার অথবা মোবাইল ডিভাইসে সঠিক তারিখ এবং সময় সেট করা না থাকলে এই সমস্যাটি হতে পারে।&lt;/p&gt;
     &lt;p&gt;এই সমস্যার সমাধান করতে, ডিভাইসের ঘড়িতে যান। সঠিক তারিখ এবং সময় সেট করুন।&lt;/p&gt;</translation>
-<translation id="986257639512122511"><ph name="ORIGIN" />-এ আপনি <ph name="PERMISSION" />-এ অনুমতি দিয়েছেন</translation>
 <translation id="987264212798334818">সাধারণ</translation>
 <translation id="988159990683914416">ডেভেলপার বিল্ড</translation>
 <translation id="989988560359834682">ঠিকানা সম্পাদনা করুন</translation>

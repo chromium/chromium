@@ -263,7 +263,6 @@
 <translation id="2074131957428911366">คุณเลือกสิ่งที่ต้องการซิงค์ได้เสมอใน<ph name="BEGIN_LINK" />การตั้งค่า<ph name="END_LINK" /></translation>
 <translation id="2078437078822043850">คุณสามารถเลื่อนไปทางขวาเพื่อท่องเว็บในโหมดไม่ระบุตัวตน</translation>
 <translation id="2079545284768500474">เลิกทำ</translation>
-<translation id="2082906935540894275">ฟีเจอร์ที่เกี่ยวข้องกับคุณมากที่สุดในช่วงเวลาต่างๆ</translation>
 <translation id="2085876078937250610">บันทึก…</translation>
 <translation id="2096239473850415494">ดาวน์โหลดไม่ได้</translation>
 <translation id="2096716221239095980">ลบข้อมูลทั้งหมด</translation>
@@ -548,7 +547,6 @@
 <translation id="3445288400492335833"><ph name="MINUTES" /> นาที</translation>
 <translation id="344589138074534176">ดูข้อมูลเพิ่มเติมเกี่ยวกับ Google Lens</translation>
 <translation id="3447332786336558089">เมื่อออกจากระบบแล้ว ระบบจะปิดแท็บและลบข้อมูลบัญชีที่ไม่ได้บันทึกออกจากอุปกรณ์เครื่องนี้ ซึ่งอาจรวมถึงรหัสผ่าน ประวัติการเข้าชม และอื่นๆ</translation>
-<translation id="3449016921756175697">คำแนะนำที่เป็นประโยชน์ซึ่งทำให้การท่องเว็บดีขึ้นและง่ายขึ้น</translation>
 <translation id="345348365500626747">พบที่อยู่</translation>
 <translation id="3464194322481586217">ติดตามราคาไม่ได้</translation>
 <translation id="3469117812148449995">ตัวเลือกในการบันทึกรหัสผ่าน</translation>
@@ -718,6 +716,7 @@
 <translation id="422477017457571619">การปกป้องที่ทำงานด้วยระบบ AI แบบเรียลไทม์ช่วยปกป้องคุณจากเว็บไซต์ ไฟล์ที่ดาวน์โหลด และส่วนขยายที่เป็นอันตราย ซึ่งอิงตามข้อมูลการท่องเว็บของคุณที่ส่งไปยัง Google</translation>
 <translation id="4231395118547300571">เปิดการแจ้งเตือนการตรวจสอบความปลอดภัยแล้ว</translation>
 <translation id="4237377247299956313">แตะ<ph name="BEGIN_BOLD" />แอปเบราว์เซอร์เริ่มต้น<ph name="END_BOLD" /></translation>
+<translation id="4241893428331130998">ไม่มีรหัสผ่านหรือพาสคีย์ที่บันทึกไว้</translation>
 <translation id="4242533952199664413">เปิดการตั้งค่า</translation>
 <translation id="4250432749243022864">{count,plural, =0{เปิด {count} แท็บ}=1{เปิด {count} แท็บ}other{เปิด {count} แท็บ}}</translation>
 <translation id="4250680216510889253">ไม่</translation>
@@ -922,7 +921,6 @@
 <translation id="5127538504377457572">ใช้งานเมื่อ <ph name="DAYS" /> วันที่ผ่านมา</translation>
 <translation id="5128788795241319992">สํารวจเมนูใหม่</translation>
 <translation id="5132942445612118989">ซิงค์รหัสผ่าน ประวัติการเข้าชม และอื่นๆ ในอุปกรณ์ทุกเครื่อง</translation>
-<translation id="5137526732000415202">แท็บที่เปิดล่าสุดในอุปกรณ์ทั้งหมดของคุณ</translation>
 <translation id="5145331760738811130">ออกจากตัวสลับแท็บ</translation>
 <translation id="5157638238828697074">เกิดข้อผิดพลาด เปิดแอปพลิเคชันไม่ได้</translation>
 <translation id="5163417375525818870">PDF</translation>
@@ -1023,7 +1021,6 @@
 <translation id="559567008082979829">ตั้งค่าให้ระบบลบการดาวน์โหลดของคุณหลังจากผ่านไป 1 เดือน</translation>
 <translation id="5596627076506792578">ตัวเลือกเพิ่มเติม</translation>
 <translation id="560322036295180549">ปิดโดยองค์กรของคุณ</translation>
-<translation id="5611107723541161735">ทางลัดไปยังเว็บไซต์ที่คุณเข้าชมเมื่อเร็วๆ นี้ในอุปกรณ์เครื่องนี้</translation>
 <translation id="5611398002774823980">บันทึกในบัญชี</translation>
 <translation id="5613297089029360427">จัดเรียงตามล่าสุด</translation>
 <translation id="5614553682702429503">บันทึกรหัสผ่านไหม</translation>
@@ -1487,7 +1484,6 @@
 <translation id="7512075701202892785">เบราว์เซอร์ที่คุณชื่นชอบพร้อมให้ใช้งานใน iPad แล้ว</translation>
 <translation id="7512909159512473473">ป้อนรหัสผ่าน…</translation>
 <translation id="7514365320538308">ดาวน์โหลด</translation>
-<translation id="7521117365186708026">เคล็ดลับการตั้งค่าที่จะช่วยให้คุณได้รับประโยชน์สูงสุดจาก Chrome</translation>
 <translation id="7524055474074101597">เข้าถึงรหัสผ่านและข้อมูลอื่นๆ ได้ในแอปต่างๆ</translation>
 <translation id="75362970626182391">กลุ่มแท็บใหม่</translation>
 <translation id="7537586195939242955">ขออภัย ไม่สามารถติดตั้ง Pass ของคุณใน Passbook ในขณะนี้</translation>
@@ -1600,6 +1596,7 @@
 <translation id="7982789257301363584">เครือข่าย</translation>
 <translation id="7987685713885608670">เข้ารหัสให้แก่รหัสผ่านในอุปกรณ์ก่อนบันทึกลงในเครื่องมือจัดการรหัสผ่านบน Google เพื่อเพิ่มความปลอดภัย</translation>
 <translation id="798991908416757345">กลุ่มแท็บไม่พร้อมใช้งาน</translation>
+<translation id="7993170188789685695">แตะสองครั้งเพื่อปิดการแจ้งเตือนนี้</translation>
 <translation id="7993619969781047893">ฟีเจอร์ในบางเว็บไซต์อาจใช้งานไม่ได้</translation>
 <translation id="7996239959906074962">ตั้งค่า…</translation>
 <translation id="800361585186029508">เปิด URL ที่ป้อนใน Google Chrome</translation>
@@ -1706,7 +1703,6 @@
 <translation id="8439758443371991593">ซ่อน "เพิ่มไปยังเรื่องรออ่าน"</translation>
 <translation id="8449869326050867919">แชร์รหัสผ่านแล้ว</translation>
 <translation id="8453847087068411809">ไม่ต้องตรวจหาพัสดุอัตโนมัติ</translation>
-<translation id="846158969830690371">แจ้งให้คุณทราบว่ามีการตั้งค่าที่ปลอดภัยที่สุดหรือไม่ หรือต้องตรวจสอบอะไรบ้าง</translation>
 <translation id="8473863474539038330">ที่อยู่และอื่นๆ</translation>
 <translation id="8474378002946546633">อนุญาตการแจ้งเตือน</translation>
 <translation id="8477178913400731244">ลบข้อมูล</translation>

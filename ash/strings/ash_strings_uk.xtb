@@ -1478,7 +1478,6 @@
 <translation id="589817443623831496">Точкове сканування</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">Жовтий</translation>
-<translation id="5911231045062997865">Вікна Lacros наразі не підтримуються. Інші додатки буде збережено.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916646100036936191">Нове сповіщення (усього <ph name="NOTIFICATION_COUNT" />)</translation>
 <translation id="5916664084637901428">Увімкнено</translation>
@@ -1977,6 +1976,7 @@
 <translation id="7611213136657090146">Камеру знову підключено.</translation>
 <translation id="7613620083300976559">Увімкнути елементи керування іграми</translation>
 <translation id="761736749114493194">Увімкнути або вимкнути режим слідкування. <ph name="STATE_TEXT" /></translation>
+<translation id="7621008024906456933">Налаштування швидкого обміну</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7627303771480696593">Поставте запитання</translation>
 <translation id="7634648064048557203">Зображення з камери закріплено в нижньому правому куті</translation>

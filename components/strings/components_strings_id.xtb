@@ -675,7 +675,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2157640075051554492">Notifikasi pemantauan harga</translation>
 <translation id="21613918653299710">Galeri Gambar Online</translation>
 <translation id="2161656808144014275">Teks</translation>
-<translation id="2162510787844374618">Menghubungi bank Anda ...</translation>
 <translation id="2162620598375156287">Sekarang <ph name="CURRENT_PRICE" /> di <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Periksa apakah ada kesalahan ketik di <ph name="HOST_NAME" />.</translation>
 <translation id="2166049586286450108">Akses Penuh Admin</translation>
@@ -2408,6 +2407,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="5254043433801397071">Optimalkan konten cetak</translation>
 <translation id="5255583962255635076">Kebijakan browser yang diterapkan di profil kerja Anda</translation>
 <translation id="5255690596502591079">Tetap ambil screenshot</translation>
+<translation id="5255771248404149177">Penyedia kartu Anda ingin memastikan bahwa ini memang Anda</translation>
 <translation id="5255833070095767006">350 x 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{Kebijakan administrator tidak merekomendasikan untuk menyalin file ini ke <ph name="DESTINATION_NAME" />}other{Kebijakan administrator tidak merekomendasikan untuk menyalin file ini ke <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5263867360296733198">Peninjauan diperlukan sebelum mengupload</translation>
@@ -2428,7 +2428,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="5288108484102287882">Validasi nilai kebijakan telah memunculkan peringatan</translation>
 <translation id="5289384342738547352">Penanganan beberapa dokumen</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{Perlu diupdate hari ini}=2{Perlu diupdate paling lambat besok}other{Perlu diupdate dalam # hari}}</translation>
-<translation id="5292714443869769806">Buka setelan <ph name="OPERATING_SYSTEM" /></translation>
 <translation id="5293919335876685914">Coupe</translation>
 <translation id="5298618990685278995">draf pertama</translation>
 <translation id="5299298092464848405">Kebijakan kesalahan penguraian</translation>
@@ -2556,6 +2555,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="5518352028556756716">Sebagian besar situs tidak dapat menggunakan cookie pihak ketiga untuk melacak Anda saat Anda menjelajah, dan situs tidak dapat menggunakan cookie pihak ketiga dalam mode Samaran.</translation>
 <translation id="5519516356611866228">Dengan perubahan dari Anda</translation>
 <translation id="5519696598216267194">Kertas (Berlubang)</translation>
+<translation id="5520105693415771152">Info Anda yang ditampilkan bukan yang terbaru? Hubungi penyedia untuk memperbaruinya.</translation>
 <translation id="5521782189689806907">Lemari</translation>
 <translation id="5523118979700054094">Nama kebijakan</translation>
 <translation id="5523588073846127669">Penjual tidak menerima kartu virtual ini</translation>
@@ -3649,6 +3649,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Truk &amp; Trailer Kargo</translation>
 <translation id="7461924472993315131">Sematkan</translation>
+<translation id="746329643760972486">MacOS</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> akan mengetahui bahwa Anda mengunjungi <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7465963048299965912">10 x 13 inci (25 x 33 cm)</translation>
 <translation id="7469935732330206581">Formulir tidak aman</translation>
@@ -3919,7 +3920,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="7942349550061667556">Merah</translation>
 <translation id="7943397946612013052">Download yang diblokir</translation>
 <translation id="7943893128817522649">Dapat meminta untuk otomatis mendownload beberapa file</translation>
-<translation id="794567586469801724">macOS</translation>
 <translation id="7947285636476623132">Periksa tahun kedaluwarsa dan coba lagi</translation>
 <translation id="7947310711271925113">Musik Pop</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab lalu Enter untuk mempelajari fitur-fitur Chrome</translation>
@@ -4669,7 +4669,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="984275831282074731">Metode pembayaran</translation>
 <translation id="985199708454569384">&lt;p&gt;Anda akan melihat error ini jika tanggal dan waktu di komputer atau perangkat seluler Anda tidak akurat.&lt;/p&gt;
     &lt;p&gt;Untuk memperbaiki error, buka jam perangkat. Pastikan waktu dan tanggal sudah tepat.&lt;/p&gt;</translation>
-<translation id="986257639512122511">Anda telah mengizinkan <ph name="PERMISSION" /> di <ph name="ORIGIN" /></translation>
 <translation id="987264212798334818">Umum</translation>
 <translation id="988159990683914416">Buatan Pengembang</translation>
 <translation id="989988560359834682">Edit Alamat</translation>

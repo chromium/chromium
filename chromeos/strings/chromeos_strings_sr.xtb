@@ -768,6 +768,7 @@
 <translation id="4654549501020883054">Мењај сваког дана</translation>
 <translation id="4655868084888499342">Слика је подешена као позадина</translation>
 <translation id="4661249927038176904">Надреално</translation>
+<translation id="4661392828086261436">Ово ажурирање пружа произвођач уређаја и Google га није верификовао</translation>
 <translation id="4664651912255946953">крзна</translation>
 <translation id="4665014895760275686">Произвођач</translation>
 <translation id="467510802200863975">Лозинке се не подударају</translation>
@@ -1027,6 +1028,7 @@
 <translation id="5904994456462260490">Додајте нови назив приступне тачке</translation>
 <translation id="590746845088109442">мачке</translation>
 <translation id="5907649332524363701">боја кључа</translation>
+<translation id="5908813850962688338">Инсталирање овог ажурирања ће потрајати неколико минута. Нека уређај остане прикључен на напајање и укључен док се ажурирање преузима. Током овог процеса уређај може да се рестартује неколико пута и да се прикаже црни екран. Затражиће се да рестартујете уређај да бисте довршили инсталацију.</translation>
 <translation id="5916084858004523819">Забрањено</translation>
 <translation id="5916664084637901428">Укључено</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Фајл је скениран и сачуван у фолдеру <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Фајлови су скенирани и сачувани у фолдеру <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Фајлови су скенирани и сачувани у фолдеру <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Фајлови су скенирани и сачувани у фолдеру <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>

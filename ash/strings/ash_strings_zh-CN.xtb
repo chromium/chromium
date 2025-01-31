@@ -731,6 +731,7 @@
 <translation id="3522979239100719575">正在查找可用的配置文件。这可能需要几分钟的时间。</translation>
 <translation id="3526440770046466733">在新标签页中打开链接，同时留在当前标签页中</translation>
 <translation id="353086728817903341">已连接到 <ph name="NUM_DEVICES" /> 部设备</translation>
+<translation id="3532247131850366052">无法创建 Google 表格</translation>
 <translation id="3533126039236445965">任务栏中的应用</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> 热点</translation>
 <translation id="3540893133818942399">取消设置查看手机中的近期照片和媒体内容</translation>
@@ -829,6 +830,7 @@
 <translation id="380165613292957338">嗨，有什么我可以帮你的吗？</translation>
 <translation id="3804737937830804242">收起相机</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 个表情符号。没有其他结果。}other{# 个表情符号。没有其他结果。}}</translation>
+<translation id="3822403841174077928">无法复制带格式的文本</translation>
 <translation id="3824784079442479685">这将允许“<ph name="APP_NAME" />”以及所有具有摄像头使用权限的应用和网站使用摄像头。您可能需要刷新网页或重启应用。</translation>
 <translation id="3826099427150913765">切换到密码</translation>
 <translation id="383058930331066723">省电模式已开启</translation>
@@ -1214,6 +1216,7 @@
 <translation id="5043679421800073804">点击或点按任务栏上的最后一个图标</translation>
 <translation id="504465286040788597">上一个段落</translation>
 <translation id="5045550434625856497">密码不正确</translation>
+<translation id="5058794129231928255">无法创建 Google 文档</translation>
 <translation id="5062496344832867502">RAM</translation>
 <translation id="5068762093486106012">如果您在静音状态下说话，会收到通知。音频只会留存在您的设备上。</translation>
 <translation id="5077416371682039027">设置查看手机中的近期照片、媒体内容、通知和应用</translation>
@@ -1476,7 +1479,6 @@
 <translation id="589817443623831496">点扫描</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">黄色</translation>
-<translation id="5911231045062997865">目前不支持 Lacros 窗口。其他应用会被保存。</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916646100036936191">新通知，共 <ph name="NOTIFICATION_COUNT" /> 条</translation>
 <translation id="5916664084637901428">已启用</translation>
@@ -1646,6 +1648,7 @@
 <translation id="6468406072297048412">{0,plural, =1{在 1 分钟内将设备回滚为上一个版本}other{在 # 分钟内将设备回滚为上一个版本}}</translation>
 <translation id="6469104339369989396">开启/关闭热点</translation>
 <translation id="6477681113376365978">无法下载文件</translation>
+<translation id="648135757200234041">无法创建联系人</translation>
 <translation id="6482559668224714696">全屏放大镜</translation>
 <translation id="6485086611007560630">天气信息（无法获取）</translation>
 <translation id="6490471652906364588">USB-C 设备（右侧端口）</translation>
@@ -2286,6 +2289,7 @@
 <translation id="8653151467777939995">显示通知设置。通知已开启</translation>
 <translation id="8657066291275741003">小写</translation>
 <translation id="8660331759611631213">71 的平方根</translation>
+<translation id="8662921061190671299">无法添加到日历</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">按 Enter 键即可截取局部屏幕</translation>
 <translation id="8676770494376880701">已连接低功率充电器</translation>

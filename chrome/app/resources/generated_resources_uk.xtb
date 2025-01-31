@@ -126,7 +126,6 @@
 <translation id="1076766328672150609">Ваша дитина може розблоковувати пристрій за допомогою PIN-коду.</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216">Не вдалося завантажити словник для перевірки орфографії для такої мови: <ph name="LANGUAGE" />. Повторіть спробу.</translation>
-<translation id="1078029726086090536">Підтвердити пароль</translation>
 <translation id="1078037449555275327">Налаштування ChromeVox</translation>
 <translation id="1079242569060319448">Забули PIN-код?</translation>
 <translation id="1079285777677001938">Функції на деяких сайтах можуть не працювати.</translation>
@@ -372,6 +371,7 @@
 <translation id="1241066500170667906">Виберіть стан експерименту "<ph name="EXPERIMENT_NAME" />"</translation>
 <translation id="124116460088058876">Інші мови</translation>
 <translation id="1241381048229838873">Показати всі закладки</translation>
+<translation id="1242044645101871359">Увійти знову</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" /> хоче скинути ваші налаштування.</translation>
 <translation id="1243002225871118300">Змінити розмір тексту й масштаб</translation>
 <translation id="1243314992276662751">Завантажити</translation>
@@ -1630,7 +1630,6 @@
 <translation id="2113921862428609753">Доступ до відомостей про центри сертифікації</translation>
 <translation id="2114145607116268663">Не вдалося встановити. Перезапустіть комп’ютер і повторіть спробу. Код помилки: <ph name="ERROR" />.</translation>
 <translation id="2114326799768592691">Перезавантажити фрейм</translation>
-<translation id="2114413269775311385">Використовувати цей обліковий запис у додатках для Android. Дозволами для них можна керувати в <ph name="LINK_BEGIN" />налаштуваннях додатків<ph name="LINK_END" />.</translation>
 <translation id="2114995631896158695">SIM-карту не вставлено</translation>
 <translation id="2116619964159595185">Сайти зазвичай підключаються до пристроїв із Bluetooth для роботи таких функцій, як налаштування або синхронізація маяків із низьким енергоспоживанням, пристроїв для відстеження здоров'я або фізичної активності, розумних лампочок</translation>
 <translation id="2117655453726830283">Наступний слайд</translation>
@@ -4650,6 +4649,7 @@
 <translation id="4242533952199664413">Відкрити налаштування</translation>
 <translation id="4242577469625748426">Помилка встановлення налаштувань правил на пристрої: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385">Вашим <ph name="BEGIN_LINK" />веб-переглядачем і профілем керує<ph name="END_LINK" /> <ph name="DOMAIN" /></translation>
+<translation id="424315890655130736">Ввести парольну фразу</translation>
 <translation id="4243504193894350135">Принтер призупинено</translation>
 <translation id="4243624244759495699"><ph name="LOCALE" />, ступінь <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">Більше додатків із використанням стилуса</translation>
@@ -5372,7 +5372,6 @@
 <translation id="4766598565665644999">Усі розширення можуть переглядати й редагувати сайт <ph name="HOST" /></translation>
 <translation id="4767427586072640478">Докладніше про вимкнені розширення.</translation>
 <translation id="4768332406694066911">Вас ідентифікують сертифікати від цих організацій</translation>
-<translation id="4768945955870840220">Chrome може збирати відгуки про деякі товари з Інтернету</translation>
 <translation id="4769632191812288342">Ви отримуєте стандартний захист</translation>
 <translation id="4770119228883592393">Потрібен дозвіл. Натисніть клавіші ⌘ + Option + стрілку вниз, щоб відповісти</translation>
 <translation id="4770755495532014179">Використовуйте цей пароль на пристрої iPhone</translation>
@@ -5513,6 +5512,7 @@
 <translation id="4862642413395066333">Підписування відповідей OCSP</translation>
 <translation id="4863702650881330715">Розширити сумісність</translation>
 <translation id="4863769717153320198"><ph name="WIDTH" />x<ph name="HEIGHT" /> (за умовчанням)</translation>
+<translation id="4864334716800138793">Адміністратор вашої організації вимкнув налаштування робочого профілю</translation>
 <translation id="4864369630010738180">Вхід…</translation>
 <translation id="4864805589453749318">Вибери, хто з батьків дозволяє додати обліковий запис навчального закладу.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (заблоковано)</translation>
@@ -6473,6 +6473,7 @@
 <translation id="5559768063688681413">Немає збережених принтерів</translation>
 <translation id="55601339223879446">Налаштуйте межі робочого столу на дисплеї</translation>
 <translation id="5561162485081632007">Виявляє небезпечні події та повідомляє про них</translation>
+<translation id="5562588178647493983">Щоб дізнатися більше, зверніться до свого адміністратора</translation>
 <translation id="556321030400250233">локальний або спільний файл</translation>
 <translation id="5563234215388768762">Шукайте в Google або введіть URL-адресу</translation>
 <translation id="5563824734298958390">Вийти з групи вкладок?</translation>
@@ -8770,7 +8771,6 @@
 <translation id="7243092385765551741">Видалити ключ доступу?</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" />x<ph name="HEIGHT" /> (найвища)</translation>
 <translation id="7246230585855757313">Знову вставте ключ безпеки та повторіть спробу</translation>
-<translation id="724835896049478274">Облікові записи, доступні для додатків для Android</translation>
 <translation id="7248802599439396696">Зробити вкладки неактивними</translation>
 <translation id="7249197363678284330">Змініть це налаштування в адресному рядку.</translation>
 <translation id="7249764475759804559">Включити цей додаток як опцію для відкривання файлів</translation>
@@ -9806,6 +9806,7 @@
 <translation id="7968833647796919681">Увімкнути збір даних про ефективність</translation>
 <translation id="7968982339740310781">Переглянути деталі</translation>
 <translation id="7969046989155602842">Клавіша Command</translation>
+<translation id="7969144945436590933">Докладніше</translation>
 <translation id="7970673414865679092">Дані про мережу Ethernet</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 із шифруванням RSA</translation>
 <translation id="7973149423217802477">За допомогою позначки "Не подобається" можна надіслати негативний відгук про цю функцію.</translation>
@@ -10718,7 +10719,6 @@
 <translation id="8625124982056504555">Переглядати серійні номери пристрою з ChromeOS і компонентів</translation>
 <translation id="862542460444371744">&amp;Розширення</translation>
 <translation id="8625663000550647058">Заборонено використовувати мікрофон</translation>
-<translation id="8625679025395572221">Ваш обліковий запис усе ще може бути в небезпеці.</translation>
 <translation id="8625916342247441948">Заборонити сайтам підключатися до пристроїв HID</translation>
 <translation id="862727964348362408">Призупинено</translation>
 <translation id="862750493060684461">Кеш CSS</translation>
@@ -11603,7 +11603,6 @@
 <translation id="936801553271523408">Дані діагностики системи</translation>
 <translation id="93766956588638423">Полагодити розширення</translation>
 <translation id="938623846785894166">Незвичний файл</translation>
-<translation id="939401694733344652">Ці облікові записи зараз не використовуються в додатках для Android. Якщо ви виберете обліковий запис для цього додатка для Android, він може також використовуватися в інших. Доступ до додатка для Android можна змінити в меню <ph name="LINK_BEGIN" />Налаштування &gt; Облікові записи<ph name="LINK_END" />.</translation>
 <translation id="939598580284253335">Ввести парольну фразу</translation>
 <translation id="939736085109172342">Нова папка</translation>
 <translation id="940212040923880623">&amp;Знайти й змінити</translation>

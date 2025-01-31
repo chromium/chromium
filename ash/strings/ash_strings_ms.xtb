@@ -731,6 +731,7 @@ Jika tidak, pad sentuh terbina dalam akan didayakan semula selepas <ph name="TIM
 <translation id="3522979239100719575">Mencari profil yang tersedia. Proses ini mungkin mengambil masa beberapa minit.</translation>
 <translation id="3526440770046466733">Buka pautan dalam tab baharu dan kekal pada tab semasa</translation>
 <translation id="353086728817903341">Disambungkan kepada <ph name="NUM_DEVICES" /> peranti</translation>
+<translation id="3532247131850366052">Tidak dapat membuat Helaian Google</translation>
 <translation id="3533126039236445965">Apl dalam rak</translation>
 <translation id="3539957339480430241">tempat liputan <ph name="DEVICE_NAME" /></translation>
 <translation id="3540893133818942399">Tolak penyediaan pemaparan foto dan media terbaharu telefon anda</translation>
@@ -830,6 +831,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="380165613292957338">Hai, bagaimanakah saya boleh membantu?</translation>
 <translation id="3804737937830804242">Kuncupkan kamera</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 emoji. Tiada hasil carian lain.}other{# emoji. Tiada hasil carian lain.}}</translation>
+<translation id="3822403841174077928">Tidak dapat menyalin teks dengan pemformatan</translation>
 <translation id="3824784079442479685">Tindakan ini akan membenarkan akses kamera untuk <ph name="APP_NAME" /> dan semua apl serta laman web dengan kebenaran kamera. Anda mungkin perlu menyegarkan semula halaman web atau memulakan semula apl.</translation>
 <translation id="3826099427150913765">Tukar kepada kata laluan</translation>
 <translation id="383058930331066723">Mod penjimat bateri dihidupkan</translation>
@@ -1215,6 +1217,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="5043679421800073804">Klik atau ketik ikon terakhir pada rak</translation>
 <translation id="504465286040788597">Perenggan sebelumnya</translation>
 <translation id="5045550434625856497">Kata laluan tidak sah</translation>
+<translation id="5058794129231928255">Tidak dapat membuat Dokumen Google</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Anda akan diberitahu jika anda bercakap semasa diredam. Peranti anda tidak menghasilkan audio.</translation>
 <translation id="5077416371682039027">Menyediakan pemaparan foto, media, pemberitahuan dan apl terbaharu telefon anda</translation>
@@ -1478,7 +1481,6 @@ Tiada peranti disambungkan.</translation>
 <translation id="589817443623831496">Pengimbasan titik</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">Kuning</translation>
-<translation id="5911231045062997865">Tetingkap Lacros tidak disokong pada masa ini. Apl lain akan disimpan.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916646100036936191">Pemberitahuan baharu, jumlah <ph name="NOTIFICATION_COUNT" /></translation>
 <translation id="5916664084637901428">Hidupkan</translation>
@@ -1648,6 +1650,7 @@ Tiada peranti disambungkan.</translation>
 <translation id="6468406072297048412">{0,plural, =1{Kemas kinikan peranti kepada versi terdahulu dalam masa 1 minit}other{Kemas kinikan peranti kepada versi terdahulu dalam masa # minit}}</translation>
 <translation id="6469104339369989396">Togol tempat liputan</translation>
 <translation id="6477681113376365978">Tidak dapat memuat turun fail</translation>
+<translation id="648135757200234041">Tidak dapat membuat kenalan</translation>
 <translation id="6482559668224714696">Penggadang skrin penuh</translation>
 <translation id="6485086611007560630">Cuaca (tidak tersedia)</translation>
 <translation id="6490471652906364588">Peranti USB-C (port kanan)</translation>
@@ -1977,6 +1980,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="7611213136657090146">Kamera disambung semula.</translation>
 <translation id="7613620083300976559">Hidupkan kawalan permainan</translation>
 <translation id="761736749114493194">Togol pembingkaian kamera. <ph name="STATE_TEXT" /></translation>
+<translation id="7621008024906456933">Tetapan Quick Share</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7627303771480696593">Tanya soalan</translation>
 <translation id="7634648064048557203">Kamera diautojajar ke penjuru kanan sebelah bawah</translation>
@@ -2287,6 +2291,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8653151467777939995">Tunjukkan tetapan pemberitahuan. Pemberitahuan dihidupkan</translation>
 <translation id="8657066291275741003">huruf kecil</translation>
 <translation id="8660331759611631213">Punca kuasa dua bagi 71</translation>
+<translation id="8662921061190671299">Tidak dapat ditambahkan pada Calendar</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, Kekuatan Isyarat <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Tekan kekunci enter untuk menangkap tangkapan skrin separa</translation>
 <translation id="8676770494376880701">Pengecas berkuasa rendah disambungkan</translation>

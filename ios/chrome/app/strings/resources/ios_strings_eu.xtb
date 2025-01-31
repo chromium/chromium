@@ -263,7 +263,6 @@
 <translation id="2074131957428911366">Zer sinkronizatu nahi duzun aukeratzeko, joan <ph name="BEGIN_LINK" />Ezarpenak<ph name="END_LINK" /> atalera.</translation>
 <translation id="2078437078822043850">Ezkutuko moduan arakatzeko, hatza eskuinera pasa dezakezu.</translation>
 <translation id="2079545284768500474">Desegin</translation>
-<translation id="2082906935540894275">Zuretzat ordu ezberdinetan egokienak diren eginbideak.</translation>
 <translation id="2085876078937250610">Gorde…</translation>
 <translation id="2096239473850415494">Ezin izan da deskargatu</translation>
 <translation id="2096716221239095980">Ezabatu datu guztiak</translation>
@@ -548,7 +547,6 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="344589138074534176">Lortu Google Lens-i buruzko informazio gehiago</translation>
 <translation id="3447332786336558089">Saioa amaitu eta gero, fitxak itxi, eta kontuko gorde gabeko datuak ezabatu egingo dira gailutik. Baliteke pasahitzak eta historia ezabatzea, besteak beste.</translation>
-<translation id="3449016921756175697">Arakatzeko modua hobetzen eta errazten duten iradokizun lagungarriak.</translation>
 <translation id="345348365500626747">Helbidea aurkitu da</translation>
 <translation id="3464194322481586217">Ezin izan da egin prezioaren jarraipena.</translation>
 <translation id="3469117812148449995">Pasahitza gordetzeko aukerak</translation>
@@ -922,7 +920,6 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="5127538504377457572">Aktibo duela <ph name="DAYS" /> egun</translation>
 <translation id="5128788795241319992">Arakatu menu berria</translation>
 <translation id="5132942445612118989">Sinkronizatu pasahitzak, historia eta beste gauza asko gailu guztietan</translation>
-<translation id="5137526732000415202">Gailu guztien artean azkenekoz ireki duzun fitxa.</translation>
 <translation id="5145331760738811130">Irten fitxa-aldatzailetik</translation>
 <translation id="5157638238828697074">Arazoren bat izan da. Ezin izan da ireki aplikazioa.</translation>
 <translation id="5163417375525818870">PDFak</translation>
@@ -1023,7 +1020,6 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="559567008082979829">Konfiguratu deskargak hilabeteren buruan ezabatzeko.</translation>
 <translation id="5596627076506792578">Aukera gehiago</translation>
 <translation id="560322036295180549">Erakundeak desaktibatu du</translation>
-<translation id="5611107723541161735">Azkenaldian gailu honetan bisitatu dituzun webguneetarako lasterbideak.</translation>
 <translation id="5611398002774823980">Gorde kontuan</translation>
 <translation id="5613297089029360427">Ordenatu berrienetatik zaharrenetara</translation>
 <translation id="5614553682702429503">Pasahitza gorde nahi duzu?</translation>
@@ -1487,7 +1483,6 @@ Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webgune
 <translation id="7512075701202892785">Gogoko duzun arakatzailea, orain iPad-erako</translation>
 <translation id="7512909159512473473">Idatzi pasaesaldia…</translation>
 <translation id="7514365320538308">Deskargatu</translation>
-<translation id="7521117365186708026">Chrome-ri etekinik handiena ateratzen laguntzen dizuten konfigurazio-aholkuak.</translation>
 <translation id="7524055474074101597">Erabili pasahitzak eta gainerako informazioa aplikazioetan.</translation>
 <translation id="75362970626182391">Fitxa talde berria</translation>
 <translation id="7537586195939242955">Dokumentua ezin izan da instalatu Passbook-en.</translation>
@@ -1706,7 +1701,6 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="8439758443371991593">Ezkutatu "Gehitu irakurketa-zerrendan"</translation>
 <translation id="8449869326050867919">Partekatu da pasahitza</translation>
 <translation id="8453847087068411809">Ez hauteman inoiz paketeak automatikoki</translation>
-<translation id="846158969830690371">Jakin ezarpen seguruenak dituzun edo zerbait berrikusi behar duzun.</translation>
 <translation id="8473863474539038330">Helbideak eta beste</translation>
 <translation id="8474378002946546633">Eman jakinarazpenak bidaltzeko baimena</translation>
 <translation id="8477178913400731244">Ezabatu datuak</translation>

@@ -674,7 +674,6 @@
 <translation id="2157640075051554492">මිල නිරීක්ෂණ දැනුම්දීම්</translation>
 <translation id="21613918653299710">සබැඳි රූප ගැලරි</translation>
 <translation id="2161656808144014275">පාඨය</translation>
-<translation id="2162510787844374618">ඔබේ බැංකුව සම්බන්ධ කර ගනිමින්...</translation>
 <translation id="2162620598375156287">දැන් <ph name="SOURCE_WEBSITE" /> හි <ph name="CURRENT_PRICE" /></translation>
 <translation id="2164510882479075877"><ph name="HOST_NAME" /> හි ටයිප් කිරීමේ වරදක් තිබේදැයි බලන්න.</translation>
 <translation id="2166049586286450108">පූර්ණ පරිපාලක ප්‍රවේශය</translation>
@@ -2428,7 +2427,6 @@
 <translation id="5288108484102287882">ප්‍රතිපත්ති අගයන් වලංගු කිරීමේදී අනතුරු ඇඟවීම් ඇතිවන ලදි</translation>
 <translation id="5289384342738547352">බහුවිධ ලේඛන පරිහරණය</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{අද යාවත්කාලීන කිරීම අවශ්‍යයි}=2{හෙට වන විට යාවත්කාලීන කිරීම අවශ්‍ය වේ}one{දින #ක් ඇතුළත යාවත්කාලීන කිරීම අවශ්‍යයි}other{දින #ක් ඇතුළත යාවත්කාලීන කිරීම අවශ්‍යයි}}</translation>
-<translation id="5292714443869769806"><ph name="OPERATING_SYSTEM" /> සැකසීම් වෙත යන්න</translation>
 <translation id="5293919335876685914">කූප්ස්</translation>
 <translation id="5298618990685278995">පළමු කෙටුම්පතක්</translation>
 <translation id="5299298092464848405">ප්‍රතිපත්ති විග්‍රහ කිරීමේ දෝශය</translation>
@@ -3650,6 +3648,7 @@
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">භාණ්ඩ ට්‍රක් රථ සහ ට්‍රේලර</translation>
 <translation id="7461924472993315131">පින්</translation>
+<translation id="746329643760972486">MacOS</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> ඔබ <ph name="TOP_LEVEL_URL" /> වෙත පැමිණි බව දැන ගනු ඇත</translation>
 <translation id="7465963048299965912">අඟ 10 x 13</translation>
 <translation id="7469935732330206581">පෝරමය ආරක්ෂිත නැත</translation>
@@ -3881,6 +3880,7 @@
 <translation id="784404208867107517">සමූහගත ඉතිහාසය</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{කිසිවක් නැත}=1{1 යෙදුමක් (<ph name="EXAMPLE_APP_1" />)}=2{යෙදුම් 2ක් (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{යෙදුම් #ක් (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{යෙදුම් #ක් (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">දෝෂයක් සිදු විය. නැවත උත්සාහ කරන්න.</translation>
+<translation id="784623644169604270">මෑතකාලීන ක්‍රියාකාරකම් නැත</translation>
 <translation id="785476343534277563">පාසල් ක්‍රීඩා</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7860345425589240791"><ph name="SIDE_OF_CARD" /> මත ඔබේ නව කල් ඉකුත් වන දිනය සහ CVC ඇතුළු කරන්න</translation>
@@ -3919,7 +3919,6 @@
 <translation id="7942349550061667556">රතු</translation>
 <translation id="7943397946612013052">බාගැනීම අවහිරයි</translation>
 <translation id="7943893128817522649">ස්වයංක්‍රියව ගොනු කිහිපයක් බාගැනීමට ඉල්ලිය හැකිය</translation>
-<translation id="794567586469801724">macOS</translation>
 <translation id="7947285636476623132">ඔබේ කල් ඉකුත් වීමේ වසර පරික්ෂා කර නැවත උත්සාහ කරන්න</translation>
 <translation id="7947310711271925113">පොප් සංගීතය</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome විශේෂාංග ගැන දැන ගැනීමට Tab ඔබා අනතුරුව Enter ඔබන්න</translation>
@@ -4670,7 +4669,6 @@
 <translation id="984275831282074731">ගෙවීමේ ක්‍රම</translation>
 <translation id="985199708454569384">&lt;p&gt;ඔබේ පරිගණකයේ හෝ ජංගම උපාංගයේ දිනය සහ වේලාව වැරදි සහිත නම් ඔබ මෙම දෝෂය දකිනු ඇත.&lt;/p&gt;
     &lt;p&gt;දෝෂය නිරාකරණය කිරීම සඳහා, ඔබේ උපාංගයේ ඔරලෝසුව විවෘත කරන්න. දිනය සහ වේලාව නිවැරදි බවට වග බලා ගන්න.&lt;/p&gt;</translation>
-<translation id="986257639512122511">ඔබ <ph name="ORIGIN" /> හි <ph name="PERMISSION" /> හට ඉඩ දී ඇත</translation>
 <translation id="987264212798334818">සාමාන්‍ය</translation>
 <translation id="988159990683914416">සංවර්ධක නිකුතුව</translation>
 <translation id="989988560359834682">ලිපිනය සංස්කරණය කරන්න</translation>

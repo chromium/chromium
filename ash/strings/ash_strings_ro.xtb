@@ -1478,7 +1478,6 @@ Niciun dispozitiv conectat.</translation>
 <translation id="589817443623831496">Scanare punctuală</translation>
 <translation id="5901316534475909376">Shift + Esc</translation>
 <translation id="5901630391730855834">Galben</translation>
-<translation id="5911231045062997865">Ferestrele Lacros nu sunt acceptate momentan. Alte aplicații se vor salva.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916646100036936191">Notificare nouă, <ph name="NOTIFICATION_COUNT" /> în total</translation>
 <translation id="5916664084637901428">Activat</translation>
@@ -1977,6 +1976,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="7611213136657090146">Camera foto a fost reconectată.</translation>
 <translation id="7613620083300976559">Activează comenzile jocului</translation>
 <translation id="761736749114493194">Comută încadrarea camerei. <ph name="STATE_TEXT" /></translation>
+<translation id="7621008024906456933">Setările Quick Share</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7627303771480696593">Pune o întrebare</translation>
 <translation id="7634648064048557203">Camera foto este aliniată cu colțul din dreapta jos</translation>

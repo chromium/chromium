@@ -126,7 +126,6 @@
 <translation id="1076766328672150609">Dit barn kan bruge en pinkode til at låse enheden op.</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216">Ordbogen til stavekontrollen for <ph name="LANGUAGE" /> kunne ikke downloades. Prøv igen.</translation>
-<translation id="1078029726086090536">Verificer din adgangskode</translation>
 <translation id="1078037449555275327">Indstillinger for ChromeVox</translation>
 <translation id="1079242569060319448">Har du glemt pinkoden?</translation>
 <translation id="1079285777677001938">Funktionerne på visse websites virker muligvis ikke.</translation>
@@ -370,6 +369,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1241066500170667906">Vælg eksperimenttilstand for <ph name="EXPERIMENT_NAME" /></translation>
 <translation id="124116460088058876">Flere sprog</translation>
 <translation id="1241381048229838873">Vis alle bogmærker</translation>
+<translation id="1242044645101871359">Log ind igen</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" /> vil gerne nulstille dine indstillinger.</translation>
 <translation id="1243002225871118300">Skift skærm- og tekststørrelse</translation>
 <translation id="1243314992276662751">Upload</translation>
@@ -1628,7 +1628,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2113921862428609753">Adgang til autoritetsoplysninger</translation>
 <translation id="2114145607116268663">Installationen mislykkedes. Du skal genstarte. Genstart din computer, og prøv igen Fejlkoden er <ph name="ERROR" />.</translation>
 <translation id="2114326799768592691">Genindlæs &amp;ramme</translation>
-<translation id="2114413269775311385">Brug denne konto med Android-apps. Du kan styre tilladelser for Android-apps under <ph name="LINK_BEGIN" />Appindstillinger<ph name="LINK_END" />.</translation>
 <translation id="2114995631896158695">Der er ikke indsat et SIM-kort</translation>
 <translation id="2116619964159595185">Websites opretter normalt forbindelse til Bluetooth-enheder i forbindelse med funktioner som f.eks. konfiguration eller synkronisering af en lavenergibeacon, en sundheds- eller motionstracker eller en smartpære</translation>
 <translation id="2117655453726830283">Næste dias</translation>
@@ -4648,6 +4647,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4242533952199664413">Åbn Indstillinger</translation>
 <translation id="4242577469625748426">Det lykkedes ikke at installere politikindstillinger på enheden: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385">Din <ph name="BEGIN_LINK" />browser og profil administreres<ph name="END_LINK" /> af <ph name="DOMAIN" /></translation>
+<translation id="424315890655130736">Angiv adgangssætning</translation>
 <translation id="4243504193894350135">Printeren er sat på pause</translation>
 <translation id="4243624244759495699"><ph name="LOCALE" />, grade <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">Find flere apps til styluspenne</translation>
@@ -5370,7 +5370,6 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="4766598565665644999">Alle udvidelser kan læse og ændre <ph name="HOST" /></translation>
 <translation id="4767427586072640478">Få flere oplysninger om deaktiverede udvidelser.</translation>
 <translation id="4768332406694066911">Du har certifikater fra disse organisationer, der identificerer dig</translation>
-<translation id="4768945955870840220">Chrome kan indsamle anmeldelser fra nettet af visse produkter</translation>
 <translation id="4769632191812288342">Du har Standardbeskyttelse</translation>
 <translation id="4770119228883592393">Der er anmodet om tilladelse. Tryk på ⌘ + Option + pil ned for at svare</translation>
 <translation id="4770755495532014179">Brug denne adgangskode på din iPhone</translation>
@@ -8771,7 +8770,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7243092385765551741">Vil du slette adgangsnøglen?</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (Bedste)</translation>
 <translation id="7246230585855757313">Indsæt nøglen igen, og prøv igen.</translation>
-<translation id="724835896049478274">Tilgængelige konti for Android-apps</translation>
 <translation id="7248802599439396696">Gør faner inaktive</translation>
 <translation id="7249197363678284330">Skift denne indstilling i adresselinjen.</translation>
 <translation id="7249764475759804559">Inkluder denne app som en mulighed ved åbning af filer</translation>
@@ -10720,7 +10718,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8625124982056504555">Læs serienumre for ChromeOS-enheder og komponenter</translation>
 <translation id="862542460444371744">&amp;Udvidelser</translation>
 <translation id="8625663000550647058">Har ikke tilladelse til at bruge din mikrofon</translation>
-<translation id="8625679025395572221">Din konto er muligvis stadig i fare.</translation>
 <translation id="8625916342247441948">Tillad ikke, at websites opretter forbindelse til HID-enheder</translation>
 <translation id="862727964348362408">På pause</translation>
 <translation id="862750493060684461">CSS-cache</translation>
@@ -11604,7 +11601,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="936801553271523408">Data til systemdiagnosticering</translation>
 <translation id="93766956588638423">Reparer udvidelsen</translation>
 <translation id="938623846785894166">Usædvanlig fil</translation>
-<translation id="939401694733344652">Disse konti bruges ikke sammen til Android-apps i øjeblikket. Hvis du vælger en konto, der skal bruges til denne Android-app, kan kontoen også bruges til andre Android-apps. Du kan ændre adgangen for Android-apps under <ph name="LINK_BEGIN" />Indstillinger &gt; Konti<ph name="LINK_END" />.</translation>
 <translation id="939598580284253335">Angiv adgangssætning</translation>
 <translation id="939736085109172342">Ny mappe</translation>
 <translation id="940212040923880623">&amp;Find og rediger</translation>

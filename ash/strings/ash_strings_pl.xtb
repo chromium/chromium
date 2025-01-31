@@ -731,6 +731,7 @@ W przeciwnym razie za <ph name="TIMEOUT_SECONDS" /> touchpad znowu się włącz
 <translation id="3522979239100719575">Szukam dostępnych profili. Może to potrwać kilka minut.</translation>
 <translation id="3526440770046466733">Otwórz link na nowej karcie, pozostając na bieżącej</translation>
 <translation id="353086728817903341">Połączono z <ph name="NUM_DEVICES" /> urządzeniami</translation>
+<translation id="3532247131850366052">Nie udało się utworzyć arkusza Google</translation>
 <translation id="3533126039236445965">Aplikacje na półce</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> – hotspot</translation>
 <translation id="3540893133818942399">Zamknij konfigurację wyświetlania najnowszych zdjęć i plików multimedialnych z telefonu</translation>
@@ -829,6 +830,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="380165613292957338">Cześć, w czym mogę pomóc?</translation>
 <translation id="3804737937830804242">Zamknij aparat</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 emotikon. Brak innych wyników.}few{# emotikony. Brak innych wyników.}many{# emotikonów. Brak innych wyników.}other{# emotikonu. Brak innych wyników.}}</translation>
+<translation id="3822403841174077928">Nie udało się skopiować z formatowaniem</translation>
 <translation id="3824784079442479685">Zezwala na dostęp do kamery aplikacji <ph name="APP_NAME" /> oraz wszystkim aplikacjom i stronom internetowym, które mają uprawnienia do korzystania z kamery. Konieczne może być odświeżenie strony lub ponowne uruchomienie aplikacji.</translation>
 <translation id="3826099427150913765">Zmień na hasło</translation>
 <translation id="383058930331066723">Włączone jest oszczędzanie baterii.</translation>
@@ -1215,6 +1217,7 @@ Połączono 1 urządzenie.</translation>
 <translation id="5043679421800073804">Kliknij ostatnią ikonę na półce</translation>
 <translation id="504465286040788597">Poprzedni akapit</translation>
 <translation id="5045550434625856497">Nieprawidłowe hasło</translation>
+<translation id="5058794129231928255">Nie udało się utworzyć pliku w Dokumentach Google</translation>
 <translation id="5062496344832867502">RAM</translation>
 <translation id="5068762093486106012">Powiadomimy Cię, gdy będziesz mówić, a mikrofon będzie wyciszony. Dźwięk nigdy nie jest wysyłany poza Twoje urządzenie.</translation>
 <translation id="5077416371682039027">Skonfiguruj wyświetlanie najnowszych zdjęć, plików multimedialnych, powiadomień i aplikacji z telefonu</translation>
@@ -1478,7 +1481,6 @@ Brak połączonych urządzeń.</translation>
 <translation id="589817443623831496">Skanowanie punktowe</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">Żółty</translation>
-<translation id="5911231045062997865">Okna Lacros nie są obecnie obsługiwane. Inne aplikacje zostaną zapisane.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916646100036936191">Nowe powiadomienie, łącznie <ph name="NOTIFICATION_COUNT" /></translation>
 <translation id="5916664084637901428">Włączone</translation>
@@ -1648,6 +1650,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="6468406072297048412">{0,plural, =1{Zaktualizuj urządzenie do poprzedniej wersji systemu operacyjnego w ciągu 1 minuty}few{Zaktualizuj urządzenie do poprzedniej wersji systemu operacyjnego w ciągu # minut}many{Zaktualizuj urządzenie do poprzedniej wersji systemu operacyjnego w ciągu # minut}other{Zaktualizuj urządzenie do poprzedniej wersji systemu operacyjnego w ciągu # minuty}}</translation>
 <translation id="6469104339369989396">Przełącz hotspota</translation>
 <translation id="6477681113376365978">Nie można pobrać pliku</translation>
+<translation id="648135757200234041">Nie udało się utworzyć kontaktu</translation>
 <translation id="6482559668224714696">Lupa pełnoekranowa</translation>
 <translation id="6485086611007560630">Informacje o pogodzie (niedostępne)</translation>
 <translation id="6490471652906364588">Urządzenie USB-C (prawy port)</translation>
@@ -1976,6 +1979,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="7611213136657090146">Kamera została ponownie połączona.</translation>
 <translation id="7613620083300976559">Włącz sterowanie grą</translation>
 <translation id="761736749114493194">Przełącz kadrowanie. <ph name="STATE_TEXT" /></translation>
+<translation id="7621008024906456933">Ustawienia szybkiego udostępniania</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7627303771480696593">Zadaj pytanie</translation>
 <translation id="7634648064048557203">Podgląd z kamery został przyciągnięty do prawego dolnego rogu</translation>
@@ -2286,6 +2290,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8653151467777939995">Pokaż ustawienia powiadomień. Powiadomienia są włączone</translation>
 <translation id="8657066291275741003">małe litery</translation>
 <translation id="8660331759611631213">Pierwiastek kwadratowy z 71</translation>
+<translation id="8662921061190671299">Nie udało się dodać do Kalendarza</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, siła sygnału: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Aby zrobić częściowy zrzut ekranu, naciśnij Enter</translation>
 <translation id="8676770494376880701">Podłączono ładowarkę o małej mocy</translation>

@@ -126,7 +126,6 @@
 <translation id="1076766328672150609">Haurrak PIN bat erabil dezake gailua desblokeatzeko.</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216">Ezin izan da deskargatu <ph name="LANGUAGE" /> hizkuntzaren ortografia-zuzentzailea. Saiatu berriro.</translation>
-<translation id="1078029726086090536">Egiaztatu pasahitza</translation>
 <translation id="1078037449555275327">ChromeVox-en ezarpenak</translation>
 <translation id="1079242569060319448">PINa ahaztu zaizu?</translation>
 <translation id="1079285777677001938">Baliteke webgune batzuetako eginbideek ez funtzionatzea.</translation>
@@ -369,6 +368,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="1241066500170667906">Hautatu <ph name="EXPERIMENT_NAME" /> probaren egoera</translation>
 <translation id="124116460088058876">Hizkuntza gehiago</translation>
 <translation id="1241381048229838873">Erakutsi laster-marka guztiak</translation>
+<translation id="1242044645101871359">Hasi saioa berriro</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" /> tresnak ezarpenak berrezarri nahi ditu.</translation>
 <translation id="1243002225871118300">Aldatu pantailaren eta testuaren tamaina</translation>
 <translation id="1243314992276662751">Kargatu</translation>
@@ -1617,7 +1617,6 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2113921862428609753">Autoritatearen informaziorako sarbidea</translation>
 <translation id="2114145607116268663">Ezin da instalatu; berrabiarazi egin behar da. Berrabiarazi ordenagailua eta saiatu berriro. Errore-kodea <ph name="ERROR" /> da.</translation>
 <translation id="2114326799768592691">&amp;Kargatu markoa berriro</translation>
-<translation id="2114413269775311385">Erabili kontu hau Android-erako aplikazioekin. <ph name="LINK_BEGIN" />Aplikazioen ezarpenak<ph name="LINK_END" /> atalean kontrola ditzakezu Android-erako aplikazioen baimenak.</translation>
 <translation id="2114995631896158695">Ez da sartu SIM txartelik</translation>
 <translation id="2116619964159595185">Webguneak Bluetooth bidezko gailuetara konektatu ohi dira kontsumo txikiko kokapen-adierazle bat, osasunaren edo fitnessaren jarraipen-gailu bat, edo bonbilla adimendun bat konfiguratzeko edo sinkronizatzeko, eta antzeko eginbideak eskaintzeko</translation>
 <translation id="2117655453726830283">Hurrengo diapositiba</translation>
@@ -4632,6 +4631,7 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari eta sistem
 <translation id="4242533952199664413">Ireki ezarpenak</translation>
 <translation id="4242577469625748426">Ezin izan dira instalatu gidalerroaren ezarpenak gailuan: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385"><ph name="DOMAIN" /> domeinuak <ph name="BEGIN_LINK" />kudeatzen ditu zure arakatzailea eta profila<ph name="END_LINK" /></translation>
+<translation id="424315890655130736">Idatzi pasaesaldia</translation>
 <translation id="4243504193894350135">Pausatuta dago inprimagailua</translation>
 <translation id="4243624244759495699"><ph name="LOCALE" />, <ph name="GRADE" /> mota</translation>
 <translation id="4244238649050961491">Bilatu arkatzak erabiltzeko aplikazio gehiago</translation>
@@ -5354,7 +5354,6 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="4766598565665644999">Luzapen guztiek irakur eta alda dezakete <ph name="HOST" /> ostalariko edukia</translation>
 <translation id="4767427586072640478">Lortu desgaitutako luzapenei buruzko informazio gehiago.</translation>
 <translation id="4768332406694066911">Identifikatzen zaituzten erakunde hauen ziurtagiriak dituzu</translation>
-<translation id="4768945955870840220">Zenbait produkturen kasuan, Chrome-k sare osoko iritziak bil ditzake.</translation>
 <translation id="4769632191812288342">Babes estandarra ari zara jasotzen</translation>
 <translation id="4770119228883592393">Baimena eskatu da. Erantzuteko, sakatu ⌘, Aukera eta behera egiteko gezi-tekla.</translation>
 <translation id="4770755495532014179">Erabili pasahitz hau iPhone-an</translation>
@@ -8747,7 +8746,6 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7243092385765551741">Sarbide-gakoa ezabatu nahi duzu?</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> × <ph name="HEIGHT" /> (onena)</translation>
 <translation id="7246230585855757313">Sartu segurtasun-giltza eta saiatu berriro</translation>
-<translation id="724835896049478274">Android-erako aplikazioetan erabil daitezkeen kontuak</translation>
 <translation id="7248802599439396696">Ezarri fitxak inaktibo</translation>
 <translation id="7249197363678284330">Aldatu ezarpena helbide-barran.</translation>
 <translation id="7249764475759804559">Gehitu aplikazio hau fitxategiak irekitzeko aukera gisa</translation>
@@ -10695,7 +10693,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8625124982056504555">ChromeOS-eko gailuaren eta osagaien serie-zenbakiak irakurri.</translation>
 <translation id="862542460444371744">&amp;Luzapenak</translation>
 <translation id="8625663000550647058">Ezin dute erabili mikrofonoa</translation>
-<translation id="8625679025395572221">Oraindik ere arriskuan egon liteke kontua.</translation>
 <translation id="8625916342247441948">Ez eman HID gailuetara konektatzeko baimena webguneei</translation>
 <translation id="862727964348362408">Aldi baterako etenda</translation>
 <translation id="862750493060684461">CSS cachea</translation>
@@ -11577,7 +11574,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="936801553271523408">Sistemaren diagnostikoaren datuak</translation>
 <translation id="93766956588638423">Konpondu luzapena</translation>
 <translation id="938623846785894166">Ezohiko fitxategia</translation>
-<translation id="939401694733344652">Kontu hauek ez dira erabiltzen ari Android-erako aplikazioekin. Kontu bat hautatzen baduzu Android-erako aplikazio honekin erabiltzeko, Android-erako beste aplikazio batzuekin ere erabili ahalko duzu. Android-erako aplikazioetarako sarbidea aldatzeko, joan <ph name="LINK_BEGIN" />Ezarpenak &gt; Kontuak<ph name="LINK_END" /> atalera.</translation>
 <translation id="939598580284253335">Idatzi pasaesaldia</translation>
 <translation id="939736085109172342">Karpeta berria</translation>
 <translation id="940212040923880623">&amp;Aurkitu eta editatu</translation>

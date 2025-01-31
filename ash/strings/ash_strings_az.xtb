@@ -1478,7 +1478,6 @@ Cihaz qoşulmayıb.</translation>
 <translation id="589817443623831496">Nöqtə skanlama</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">Sarı</translation>
-<translation id="5911231045062997865">Lacros pəncərələri hazırda dəstəklənmir. Digər tətbiqlər yadda saxlanılacaq.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916646100036936191">Yeni bildiriş, cəmi <ph name="NOTIFICATION_COUNT" /></translation>
 <translation id="5916664084637901428">Aktiv</translation>
@@ -1977,6 +1976,7 @@ Cihazı söndürmək üçün cihazda enerji düyməsinə yenidən basıb saxlay�
 <translation id="7611213136657090146">Kamera yenidən qoşuldu.</translation>
 <translation id="7613620083300976559">Oyun nizamlayıcılarını aktiv edin</translation>
 <translation id="761736749114493194">Kamera çərçivəsini keçirin. <ph name="STATE_TEXT" /></translation>
+<translation id="7621008024906456933">Cəld Paylaşım ayarları</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7627303771480696593">Sual verin</translation>
 <translation id="7634648064048557203">Kamera aşağı sağ küncə çəkildi</translation>

@@ -731,6 +731,7 @@ In caso contrario, il touchpad integrato verrà riattivato dopo <ph name="TIMEOU
 <translation id="3522979239100719575">È in corso la ricerca dei profili disponibili. Questa operazione può richiedere alcuni minuti.</translation>
 <translation id="3526440770046466733">Apri il link in una nuova scheda e rimani nella scheda corrente</translation>
 <translation id="353086728817903341">Connessione stabilita con <ph name="NUM_DEVICES" /> dispositivi</translation>
+<translation id="3532247131850366052">Impossibile creare il foglio Google</translation>
 <translation id="3533126039236445965">App nella barra delle app</translation>
 <translation id="3539957339480430241">Hotspot <ph name="DEVICE_NAME" /></translation>
 <translation id="3540893133818942399">Chiudi la configurazione della visualizzazione di contenuti multimediali e foto recenti dello smartphone</translation>
@@ -826,6 +827,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="380165613292957338">Ciao, come posso aiutarti?</translation>
 <translation id="3804737937830804242">Comprimi fotocamera</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 emoji. Nessun altro risultato.}other{# emoji. Nessun altro risultato.}}</translation>
+<translation id="3822403841174077928">Impossibile copiare la formattazione</translation>
 <translation id="3824784079442479685">Consente l'accesso alla fotocamera per <ph name="APP_NAME" />, tutte le app e tutti i siti web che hanno l'autorizzazione di accesso alla fotocamera. Potresti dover aggiornare la pagina web o riavviare l'app.</translation>
 <translation id="3826099427150913765">Passa alla password</translation>
 <translation id="383058930331066723">La modalità Risparmio energetico è attiva</translation>
@@ -1212,6 +1214,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="5043679421800073804">Tocca o fai clic sull'ultima icona nella barra delle app</translation>
 <translation id="504465286040788597">Paragrafo precedente</translation>
 <translation id="5045550434625856497">Password non corretta</translation>
+<translation id="5058794129231928255">Impossibile creare il documento Google</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Se parli mentre l'audio è disattivato, riceverai una notifica. I dati audio non vengono mai inoltrati dal tuo dispositivo.</translation>
 <translation id="5077416371682039027">Configura la visualizzazione di app, notifiche, contenuti multimediali e foto recenti dello smartphone</translation>
@@ -1475,7 +1478,6 @@ Nessun dispositivo connesso.</translation>
 <translation id="589817443623831496">Scansione per punto</translation>
 <translation id="5901316534475909376">MAIUSC+ESC</translation>
 <translation id="5901630391730855834">Giallo</translation>
-<translation id="5911231045062997865">Al momento le finestre Lacros non sono supportate. Le altre app verranno salvate.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916646100036936191">Nuova notifica, <ph name="NOTIFICATION_COUNT" /> in totale</translation>
 <translation id="5916664084637901428">On</translation>
@@ -1645,6 +1647,7 @@ Nessun dispositivo connesso.</translation>
 <translation id="6468406072297048412">{0,plural, =1{Esegui il rollback del dispositivo alla versione precedente entro 1 minuto}other{Esegui il rollback del dispositivo alla versione precedente entro # minuti}}</translation>
 <translation id="6469104339369989396">Attiva/disattiva l'hotspot.</translation>
 <translation id="6477681113376365978">Impossibile scaricare il file</translation>
+<translation id="648135757200234041">Impossibile creare il contatto</translation>
 <translation id="6482559668224714696">Lente d'ingrandimento a schermo intero</translation>
 <translation id="6485086611007560630">Informazioni meteo (non disponibili)</translation>
 <translation id="6490471652906364588">Dispositivo USB-C (porta a destra)</translation>
@@ -1974,6 +1977,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="7611213136657090146">Fotocamera riconnessa.</translation>
 <translation id="7613620083300976559">Attiva i controlli di gioco</translation>
 <translation id="761736749114493194">Attiva/disattiva Zoom automatico. <ph name="STATE_TEXT" /></translation>
+<translation id="7621008024906456933">Impostazioni di Quick Share</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
 <translation id="7627303771480696593">Fai una domanda</translation>
 <translation id="7634648064048557203">Fotocamera allineata all'angolo in basso a destra</translation>
@@ -2284,6 +2288,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8653151467777939995">Mostra impostazioni di notifica. Le notifiche sono attive</translation>
 <translation id="8657066291275741003">lettere minuscole</translation>
 <translation id="8660331759611631213">Radice quadrata di 71</translation>
+<translation id="8662921061190671299">Impossibile aggiungere a Calendar</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, intensità del segnale <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Premi invio per acquisire uno screenshot parziale</translation>
 <translation id="8676770494376880701">Caricabatterie a basso consumo collegato</translation>

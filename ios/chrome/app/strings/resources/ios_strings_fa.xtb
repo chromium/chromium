@@ -263,7 +263,6 @@
 <translation id="2074131957428911366">هرزمان خواستید می‌توانید مواردی را که می‌خواهید همگام‌سازی شود در <ph name="BEGIN_LINK" />تنظیمات<ph name="END_LINK" /> انتخاب کنید.</translation>
 <translation id="2078437078822043850">برای مرور در «حالت ناشناس»، می‌توانید به راست پیمایش کنید.</translation>
 <translation id="2079545284768500474">لغو</translation>
-<translation id="2082906935540894275">مربوط‌ترین ویژگی‌ها برای شما در زمان‌های مختلف.</translation>
 <translation id="2085876078937250610">ذخیره کردن…</translation>
 <translation id="2096239473850415494">بارگیری نشد</translation>
 <translation id="2096716221239095980">حذف همه داده‌ها</translation>
@@ -548,7 +547,6 @@
 <translation id="3445288400492335833"><ph name="MINUTES" /> دقیقه</translation>
 <translation id="344589138074534176">‏درباره «لنز Google» بیشتر بدانید</translation>
 <translation id="3447332786336558089">پس‌از خارج شدن از سیستم، برگه‌ها بسته خواهند شد و داده‌های ذخیره‌نشده حساب از این دستگاه حذف خواهند شد. این داده‌ها می‌تواند شامل گذرواژه، سابقه، و موارد دیگر باشد.</translation>
-<translation id="3449016921756175697">پیشنهادهای مفیدی که مرور را بهتر و آسان‌تر می‌کند.</translation>
 <translation id="345348365500626747">نشانی پیدا شد</translation>
 <translation id="3464194322481586217">قیمت پیگیری نشد.</translation>
 <translation id="3469117812148449995">گزینه‌های ذخیره کردن گذرواژه</translation>
@@ -718,6 +716,7 @@
 <translation id="422477017457571619">‏محافظت هم‌زمان با بهره‌گیری از هوش مصنوعی دربرابر سایت‌ها، بارگیری‌ها، و افزونه‌های خطرناک که براساس داده‌های مرور ارسالی به Google است</translation>
 <translation id="4231395118547300571">اعلان‌های «بررسی ایمنی» روشن شد</translation>
 <translation id="4237377247299956313">روی <ph name="BEGIN_BOLD" />برنامه مرور پیش‌فرض<ph name="END_BOLD" /> تک‌ضرب بزنید</translation>
+<translation id="4241893428331130998">هیچ گذرواژه یا گذرکلید ذخیره‌شده‌ای وجود ندارد</translation>
 <translation id="4242533952199664413">باز کردن تنظیمات</translation>
 <translation id="4250432749243022864">{count,plural, =0{باز کردن {count} برگه}=1{باز کردن {count} برگه}one{باز کردن {count} برگه}other{باز کردن {count} برگه}}</translation>
 <translation id="4250680216510889253">نه</translation>
@@ -922,7 +921,6 @@
 <translation id="5127538504377457572">‫<ph name="DAYS" /> روز قبل فعال بوده است</translation>
 <translation id="5128788795241319992">کاوش کردن منو جدید</translation>
 <translation id="5132942445612118989">همگام‌سازی گذرواژه‌ها، سابقه و موارد دیگر در همه دستگاه‌ها</translation>
-<translation id="5137526732000415202">آخرین برگه باز شما در دستگاه‌های مختلف.</translation>
 <translation id="5145331760738811130">ترک کردن «تعویض‌کننده برگه»</translation>
 <translation id="5157638238828697074">مشکلی پیش آمد. برنامه باز نشد.</translation>
 <translation id="5163417375525818870">PDF</translation>
@@ -1023,7 +1021,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="559567008082979829">درصورت فعال شدن، بارگیری‌ها پس‌از یک ماه حذف می‌شوند.</translation>
 <translation id="5596627076506792578">گزینه‌های بیشتر</translation>
 <translation id="560322036295180549">سازمانتان آن را خاموش کرده است.</translation>
-<translation id="5611107723541161735">میان‌برهای سایت‌هایی که اخیراً در این دستگاه بازدید کرده‌اید.</translation>
 <translation id="5611398002774823980">ذخیره در حساب</translation>
 <translation id="5613297089029360427">مرتب کردن براساس جدیدترین</translation>
 <translation id="5614553682702429503">گذرواژه ذخیره شود؟</translation>
@@ -1487,7 +1484,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7512075701202892785">‏مرورگری که دوست دارید اکنون به iPad آمده است</translation>
 <translation id="7512909159512473473">وارد کردن گذرعبارت…</translation>
 <translation id="7514365320538308">بارگیری</translation>
-<translation id="7521117365186708026">‏نکاتی درباره راه‌اندازی که به شما کمک می‌کند بیشترین بهره را از Chrome ببرید.</translation>
 <translation id="7524055474074101597">به گذرواژه‌ها و موارد دیگر در برنامه‌ها دسترسی داشته باشید.</translation>
 <translation id="75362970626182391">گروه برگه جدید</translation>
 <translation id="7537586195939242955">‏متأسفانه نصب «جواز» در Passbook فعلاً امکان‌پذیر نیست.</translation>
@@ -1600,6 +1596,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7982789257301363584">شبکه</translation>
 <translation id="7987685713885608670">‏برای افزایش ایمنی، گذرواژه‌ها را قبل‌از ذخیره شدن در «مدیر گذرواژه Google» در دستگاهتان رمزگذاری می‌کند.</translation>
 <translation id="798991908416757345">گروه‌های برگه دردسترس نیست</translation>
+<translation id="7993170188789685695">برای بستن این اعلان، دو تک‌ضرب بزنید.</translation>
 <translation id="7993619969781047893">ویژگی‌های بعضی از سایت‌ها ممکن است درست کار نکنند</translation>
 <translation id="7996239959906074962">راه‌اندازی کردن…</translation>
 <translation id="800361585186029508">‏نشانی‌های وب وارد‌شده در Google Chrome را باز می‌کند.</translation>
@@ -1706,7 +1703,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8439758443371991593">پنهان کردن «افزودن به فهرست خواندن»</translation>
 <translation id="8449869326050867919">گذرواژه هم‌رسانی شد</translation>
 <translation id="8453847087068411809">بسته‌ها هرگز به‌طور خودکار پیگیری نشود</translation>
-<translation id="846158969830690371">ببینید آیا از ایمن‌ترین تنظیمات استفاده می‌کنید یا چیزی نیاز به بررسی دارد.</translation>
 <translation id="8473863474539038330">نشانی‌ها و موارد دیگر</translation>
 <translation id="8474378002946546633">مجاز بودن اعلان‌ها</translation>
 <translation id="8477178913400731244">حذف داده‌ها</translation>

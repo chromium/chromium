@@ -674,7 +674,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2157640075051554492">Obaveštenja o praćenju cena</translation>
 <translation id="21613918653299710">Onlajn galerije slika</translation>
 <translation id="2161656808144014275">Tekst</translation>
-<translation id="2162510787844374618">Kontaktira se sa bankom…</translation>
 <translation id="2162620598375156287">Cena je sada <ph name="CURRENT_PRICE" /> na <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Uverite se da <ph name="HOST_NAME" /> ne sadrži slovne greške.</translation>
 <translation id="2166049586286450108">Potpuni administratorski pristup</translation>
@@ -2408,6 +2407,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5254043433801397071">Optimizujte sadržaj za štampanje</translation>
 <translation id="5255583962255635076">Primenjene smernice za pregledač na poslovnom profilu</translation>
 <translation id="5255690596502591079">Ipak snimi</translation>
+<translation id="5255771248404149177">Dobavljač kartice želi da se uveri da ste to vi</translation>
 <translation id="5255833070095767006">350×460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{Smernice administratora ne preporučuju kopiranje ovog fajla na <ph name="DESTINATION_NAME" />}one{Smernice administratora ne preporučuju kopiranje ovih fajlova na <ph name="DESTINATION_NAME" />}few{Smernice administratora ne preporučuju kopiranje ovih fajlova na <ph name="DESTINATION_NAME" />}other{Smernice administratora ne preporučuju kopiranje ovih fajlova na <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5263867360296733198">Potreban je pregled pre otpremanja</translation>
@@ -2428,7 +2428,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5288108484102287882">Validacija vrednosti smernica je aktivirala upozorenja</translation>
 <translation id="5289384342738547352">Obrada više dokumenata</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{Ažuriranje mora da se obavi danas}=2{Ažuriranje mora da se obavi do sutra}one{Ažuriranje mora da se obavi u roku od # dana}few{Ažuriranje mora da se obavi u roku od # dana}other{Ažuriranje mora da se obavi u roku od # dana}}</translation>
-<translation id="5292714443869769806">Idi u podešavanja sistema <ph name="OPERATING_SYSTEM" /></translation>
 <translation id="5293919335876685914">Kupei</translation>
 <translation id="5298618990685278995">prva radna verzija</translation>
 <translation id="5299298092464848405">Greška pri raščlanjivanju smernica</translation>
@@ -2556,6 +2555,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5518352028556756716">Većina sajtova ne može da koristi kolačiće treće strane da bi vas pratila dok pregledate i sajtovi ne mogu da koriste kolačiće treće strane u režimu bez arhiviranja.</translation>
 <translation id="5519516356611866228">Sa promenama</translation>
 <translation id="5519696598216267194">Papir (pripremljen)</translation>
+<translation id="5520105693415771152">Ne vidite aktuelne podatke? Obratite se banci da biste ih ažurirali.</translation>
 <translation id="5521782189689806907">Ormarići</translation>
 <translation id="5523118979700054094">Naziv smernica</translation>
 <translation id="5523588073846127669">Prodavac ne prihvata ovu virtuelnu karticu</translation>
@@ -3650,6 +3650,7 @@ Dodatni detalji:
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Teretni kamioni i prikolice</translation>
 <translation id="7461924472993315131">Zakači</translation>
+<translation id="746329643760972486">MacOS</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> će znati da ste posetili <ph name="TOP_LEVEL_URL" />.</translation>
 <translation id="7465963048299965912">10×13 in</translation>
 <translation id="7469935732330206581">Obrazac nije bezbedan</translation>
@@ -3920,7 +3921,6 @@ Dodatni detalji:
 <translation id="7942349550061667556">Crvena</translation>
 <translation id="7943397946612013052">Preuzimanje je blokirano</translation>
 <translation id="7943893128817522649">Može da traži da automatski preuzima više fajlova</translation>
-<translation id="794567586469801724">macOS</translation>
 <translation id="7947285636476623132">Proverite godinu isteka i probajte ponovo</translation>
 <translation id="7947310711271925113">Pop muzika</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, pa Enter da biste saznali više o Chrome funkcijama</translation>
@@ -4673,7 +4673,6 @@ Dodatni detalji:
 <translation id="984275831282074731">Načini plaćanja</translation>
 <translation id="985199708454569384">&lt;p&gt;Ova greška se prikazuje ako datum i vreme na računaru ili mobilnom uređaju nisu tačni.&lt;/p&gt;
     &lt;p&gt;Da biste otklonili grešku, otvorite sat na uređaju. Uverite se da su vreme i datum tačni.&lt;/p&gt;</translation>
-<translation id="986257639512122511">Dali ste dozvolu za stavku <ph name="PERMISSION" /> na <ph name="ORIGIN" /></translation>
 <translation id="987264212798334818">Opšte</translation>
 <translation id="988159990683914416">Verzija za programere</translation>
 <translation id="989988560359834682">Izmena adrese</translation>

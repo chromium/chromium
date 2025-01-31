@@ -674,7 +674,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2157640075051554492">Pemberitahuan penjejakan harga</translation>
 <translation id="21613918653299710">Galeri Imej Dalam Talian</translation>
 <translation id="2161656808144014275">Teks</translation>
-<translation id="2162510787844374618">Menghubungi bank anda...</translation>
 <translation id="2162620598375156287">Sekarang <ph name="CURRENT_PRICE" /> pada <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Semak jika terdapat kesilapan ejaan dalam <ph name="HOST_NAME" />.</translation>
 <translation id="2166049586286450108">Akses Penuh Pentadbir</translation>
@@ -2409,6 +2408,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5254043433801397071">Optimumkan kandungan cetak</translation>
 <translation id="5255583962255635076">Dasar penyemak imbas yang digunakan dalam profil kerja anda</translation>
 <translation id="5255690596502591079">Tangkap juga</translation>
+<translation id="5255771248404149177">Penyedia kad anda mahu memastikan identiti anda</translation>
 <translation id="5255833070095767006">350 x 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{Dasar pentadbir tidak mengesyorkan anda menyalin fail ini ke <ph name="DESTINATION_NAME" />}other{Dasar pentadbir tidak mengesyorkan anda menyalin fail ini ke <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5263867360296733198">Semakan diperlukan sebelum memuat naik</translation>
@@ -2429,7 +2429,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5288108484102287882">Pengesahan nilai dasar telah menimbulkan amaran</translation>
 <translation id="5289384342738547352">Pengendalian berbilang dokumen</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{Kemaskinian diperlukan hari ini}=2{Kemaskinian diperlukan menjelang esok}other{Kemaskinian diperlukan dalam masa # hari}}</translation>
-<translation id="5292714443869769806">Akses tetapan <ph name="OPERATING_SYSTEM" /></translation>
 <translation id="5293919335876685914">Kereta coupe</translation>
 <translation id="5298618990685278995">draf pertama</translation>
 <translation id="5299298092464848405">Ralat semasa menghuraikan dasar</translation>
@@ -2557,6 +2556,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5518352028556756716">Kebanyakan laman tidak boleh menggunakan kuki pihak ketiga untuk menjejaki anda semasa menyemak imbas dan laman tidak boleh menggunakan kuki pihak ketiga dalam mod Inkognito.</translation>
 <translation id="5519516356611866228">Dengan perubahan anda</translation>
 <translation id="5519696598216267194">Kertas (Dipratebuk)</translation>
+<translation id="5520105693415771152">Maklumat yang dipaparkan telah lapuk? Hubungi penyedia anda untuk mengemaskinikan maklumat.</translation>
 <translation id="5521782189689806907">Kerja kabinet</translation>
 <translation id="5523118979700054094">Nama dasar</translation>
 <translation id="5523588073846127669">Pedagang tidak menerima kad maya ini</translation>
@@ -3652,6 +3652,7 @@ Butiran tambahan:
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Trak &amp; Treler Kargo</translation>
 <translation id="7461924472993315131">Pin</translation>
+<translation id="746329643760972486">MacOS</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> akan mengetahui bahawa anda melawati <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7465963048299965912">10 x 13 in</translation>
 <translation id="7469935732330206581">Borang tidak selamat</translation>
@@ -3883,6 +3884,7 @@ Butiran tambahan:
 <translation id="784404208867107517">Sejarah kumpulan</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Tiada}=1{1 apl (<ph name="EXAMPLE_APP_1" />)}=2{2 apl (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# apl (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Terdapat ralat. Cuba lagi.</translation>
+<translation id="784623644169604270">Tiada aktiviti terbaharu</translation>
 <translation id="785476343534277563">Sukan Kolej</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7860345425589240791">Masukkan tarikh tamat tempoh dan CVC baharu anda pada <ph name="SIDE_OF_CARD" /></translation>
@@ -3921,7 +3923,6 @@ Butiran tambahan:
 <translation id="7942349550061667556">Merah</translation>
 <translation id="7943397946612013052">Pemuatan turun disekat</translation>
 <translation id="7943893128817522649">Boleh meminta untuk memuat turun berbilang fail secara automatik</translation>
-<translation id="794567586469801724">macOS</translation>
 <translation id="7947285636476623132">Semak tahun tamat tempoh anda dan cuba lagi</translation>
 <translation id="7947310711271925113">Muzik Pop</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan kekunci Tab kemudian Enter untuk mengetahui tentang ciri Chrome</translation>
@@ -4674,7 +4675,6 @@ Butiran tambahan:
 <translation id="984275831282074731">Kaedah pembayaran</translation>
 <translation id="985199708454569384">&lt;p&gt;Anda akan melihat ralat ini jika tarikh dan masa komputer atau peranti mudah alih anda tidak tepat.&lt;/p&gt;
     &lt;p&gt;Untuk membetulkan ralat ini, buka jam peranti anda. Pastikan masa dan tarikh adalah betul.&lt;/p&gt;</translation>
-<translation id="986257639512122511">Anda telah membenarkan <ph name="PERMISSION" /> pada <ph name="ORIGIN" /></translation>
 <translation id="987264212798334818">Umum</translation>
 <translation id="988159990683914416">Binaan Pemaju</translation>
 <translation id="989988560359834682">Edit Alamat</translation>

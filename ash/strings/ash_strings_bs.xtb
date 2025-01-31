@@ -731,6 +731,7 @@ U suprotnom će se ugrađena dodirna podloga ponovo omogućiti za <ph name="TIME
 <translation id="3522979239100719575">Traženje dostupnih profila. Ovo može potrajati nekoliko minuta.</translation>
 <translation id="3526440770046466733">Otvaranje linka u novoj kartici i ostanak na trenutnoj kartici</translation>
 <translation id="353086728817903341">Povezano je sa sljedećim brojem uređaja: <ph name="NUM_DEVICES" /></translation>
+<translation id="3532247131850366052">Izrada Google tablice nije uspjela</translation>
 <translation id="3533126039236445965">Aplikacije na polici</translation>
 <translation id="3539957339480430241">Pristupna tačka za <ph name="DEVICE_NAME" /></translation>
 <translation id="3540893133818942399">Odbacivanje postavljanja pregledanja nedavnih fotografija i medijskih fajlova telefona</translation>
@@ -829,6 +830,7 @@ Povežite uređaj na napajanje.</translation>
 <translation id="380165613292957338">Zdravo, kako vam mogu pomoći?</translation>
 <translation id="3804737937830804242">Skupite kameru</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 emodži. Nema drugih rezultata.}one{# emodži. Nema drugih rezultata.}few{# emodžija. Nema drugih rezultata.}other{# emodžija. Nema drugih rezultata.}}</translation>
+<translation id="3822403841174077928">Kopiranje s formatiranjem nije uspjelo</translation>
 <translation id="3824784079442479685">Ovo dozvoljava pristup kameri za aplikaciju <ph name="APP_NAME" /> i sve aplikacije i web lokacije s odobrenjem za nju. Možda ćete morati osvježiti web stranicu ili ponovo pokrenuti aplikaciju.</translation>
 <translation id="3826099427150913765">Prebaci na lozinku</translation>
 <translation id="383058930331066723">Način rada uštede baterije je uključen</translation>
@@ -1215,6 +1217,7 @@ Povezan je 1 uređaj.</translation>
 <translation id="5043679421800073804">Kliknite ili dodirnite posljednju ikonu na polici</translation>
 <translation id="504465286040788597">Prethodni pasus</translation>
 <translation id="5045550434625856497">Pogrešna lozinka</translation>
+<translation id="5058794129231928255">Google dokument nije izrađen</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Dobit ćete obavještenje ako govorite dok je zvuk isključen. Zvuk ne napušta vaš uređaj.</translation>
 <translation id="5077416371682039027">Postavljanje pregledanja nedavnih fotografija, medijskih fajlova, obavještenja i aplikacija telefona</translation>
@@ -1478,7 +1481,6 @@ Nije povezan nijedan uređaj.</translation>
 <translation id="589817443623831496">Pregledanje po tačkama</translation>
 <translation id="5901316534475909376">Shift + Esc</translation>
 <translation id="5901630391730855834">Žuta</translation>
-<translation id="5911231045062997865">Lacros prozori trenutno nisu podržani. Druge aplikacije će se sačuvati.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916646100036936191">Novo obavještenje, ukupno <ph name="NOTIFICATION_COUNT" /></translation>
 <translation id="5916664084637901428">Uključeno</translation>
@@ -1648,6 +1650,7 @@ Nije povezan nijedan uređaj.</translation>
 <translation id="6468406072297048412">{0,plural, =1{Ažurirajte uređaj na prethodnu verziju u roku od 1 minute}one{Ažurirajte uređaj na prethodnu verziju u roku od # minute}few{Ažurirajte uređaj na prethodnu verziju u roku od # minute}other{Ažurirajte uređaj na prethodnu verziju u roku od # minuta}}</translation>
 <translation id="6469104339369989396">Uključivanje/isključivanje pristupne tačke</translation>
 <translation id="6477681113376365978">Nije moguće preuzeti datoteku</translation>
+<translation id="648135757200234041">Izrada kontakta nije uspjela</translation>
 <translation id="6482559668224714696">Povećalo za cijeli ekran</translation>
 <translation id="6485086611007560630">Vrijeme (nije dostupno)</translation>
 <translation id="6490471652906364588">USB-C uređaj (desni priključak)</translation>
@@ -1977,7 +1980,7 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="7611213136657090146">Kamera je ponovo povezana.</translation>
 <translation id="7613620083300976559">Uključite kontrole za igre</translation>
 <translation id="761736749114493194">Uključite/isključite kadriranje kamere. <ph name="STATE_TEXT" /></translation>
-<translation id="7621008024906456933">Postavke brzog dijeljenja</translation>
+<translation id="7621008024906456933">Postavke Quick Sharea</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7627303771480696593">Postavite pitanje</translation>
 <translation id="7634648064048557203">Kamera se uklopila u donji desni ugao</translation>
@@ -2288,6 +2291,7 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="8653151467777939995">Prikaz postavki obavještenja. Obavještenja su uključena</translation>
 <translation id="8657066291275741003">mala slova</translation>
 <translation id="8660331759611631213">Kvadratni korijen od 71</translation>
+<translation id="8662921061190671299">Dodavanje u Kalendar nije uspjelo</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Pritisnite Enter da snimite dio ekrana</translation>
 <translation id="8676770494376880701">Povezan je punjač male snage</translation>

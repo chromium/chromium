@@ -768,6 +768,7 @@
 <translation id="4654549501020883054">Alterar diariamente</translation>
 <translation id="4655868084888499342">Imagem definida como imagem de fundo</translation>
 <translation id="4661249927038176904">surrealista</translation>
+<translation id="4661392828086261436">Esta atualização é fornecida pelo fabricante do dispositivo e não foi validada pela Google</translation>
 <translation id="4664651912255946953">pelo</translation>
 <translation id="4665014895760275686">Fabricante</translation>
 <translation id="467510802200863975">As palavras-passe não correspondem.</translation>
@@ -1027,6 +1028,7 @@
 <translation id="5904994456462260490">Adicione um novo APN (Nome do Ponto de Acesso)</translation>
 <translation id="590746845088109442">gatos</translation>
 <translation id="5907649332524363701">cor das teclas</translation>
+<translation id="5908813850962688338">A instalação desta atualização vai demorar alguns minutos. Mantenha o dispositivo ligado e a receber alimentação quando a atualização estiver a ser transferida. O dispositivo pode ser reiniciado várias vezes e apresentar um ecrã preto durante este processo. Vai ser-lhe pedido que reinicie o dispositivo para concluir a instalação.</translation>
 <translation id="5916084858004523819">Proibido</translation>
 <translation id="5916664084637901428">Ativado</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{O seu ficheiro foi digitalizado com êxito e guardado em <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Os seus ficheiros foram digitalizados com êxito e guardados em <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>

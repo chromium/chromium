@@ -731,6 +731,7 @@
 <translation id="3522979239100719575">ရနိုင်သောပရိုဖိုင်များ ရှာနေသည်။ မိနစ်အနည်းငယ် ကြာနိုင်ပါသည်။</translation>
 <translation id="3526440770046466733">လင့်ခ်ကို တဘ်အသစ်တွင် ဖွင့်ပြီး လက်ရှိတဘ်တွင် နေရန်</translation>
 <translation id="353086728817903341">စက် <ph name="NUM_DEVICES" /> ခုသို့ ချိတ်ဆက်ထားသည်</translation>
+<translation id="3532247131850366052">Google Sheet ပြုလုပ်၍မရလိုက်ပါ</translation>
 <translation id="3533126039236445965">စင်ရှိအက်ပ်များ</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> ဟော့စပေါ့</translation>
 <translation id="3540893133818942399">သင့်ဖုန်းရှိ မကြာသေးမီက ဓာတ်ပုံနှင့် မီဒီယာများ ကြည့်ရှုမှုအတွက် စနစ်ထည့်သွင်းခြင်းကို ပယ်ရန်</translation>
@@ -829,6 +830,7 @@
 <translation id="380165613292957338">မင်္ဂလာပါ၊ ဘာကူညီပေးရပါမလဲ။</translation>
 <translation id="3804737937830804242">ကင်မရာခလုတ် လျှော့ပြရန်</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{အီမိုဂျီ ၁ ခု။ အခြားရလဒ် မရှိပါ။}other{အီမိုဂျီ # ခု။ အခြားရလဒ် မရှိပါ။}}</translation>
+<translation id="3822403841174077928">ဖော်မက်လုပ်ခြင်းဖြင့် မိတ္တူကူး၍မရလိုက်ပါ</translation>
 <translation id="3824784079442479685">၎င်းက <ph name="APP_NAME" /> နှင့် ကင်မရာခွင့်ပြုချက်တောင်းသည့် အက်ပ်နှင့် ဝဘ်ဆိုက်အားလုံးကို ကင်မရာသုံးခွင့်ပြုသည်။ အင်တာနက်စာမျက်နှာကို ပြန်လည်စတင်ရမည် (သို့) အက်ပ်ကို ပြန်စရမည်။</translation>
 <translation id="3826099427150913765">စကားဝှက်သို့ ပြောင်းရန်</translation>
 <translation id="383058930331066723">ဘက်ထရီအားထိန်းမုဒ် ဖွင့်ထားသည်</translation>
@@ -1215,6 +1217,7 @@
 <translation id="5043679421800073804">စင်ပေါ်ရှိ နောက်ဆုံးသင်္ကေတကို နှိပ်ရန် (သို့) တို့ရန်</translation>
 <translation id="504465286040788597">ယခင်စာပိုဒ်</translation>
 <translation id="5045550434625856497">စကားဝှက် မမှန်ပါ</translation>
+<translation id="5058794129231928255">Google Doc ပြုလုပ်၍မရလိုက်ပါ</translation>
 <translation id="5062496344832867502">RAM</translation>
 <translation id="5068762093486106012">အသံပိတ်ထားစဉ် စကားပြောဆိုပါက သင့်ကိုအကြောင်းကြားပါမည်။ စက်မှ သင့်အသံထွက်မည်မဟုတ်ပါ။</translation>
 <translation id="5077416371682039027">သင့်ဖုန်းရှိ မကြာသေးမီက ဓာတ်ပုံ၊ မီဒီယာ၊ အကြောင်းကြားချက်နှင့် အက်ပ်များ ကြည့်ရှုမှုအတွက် စနစ်ထည့်သွင်းရန်</translation>
@@ -1478,7 +1481,6 @@
 <translation id="589817443623831496">အတိအကျ ရှာဖွေခြင်း</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">အၐါရောင်</translation>
-<translation id="5911231045062997865">Lacros ဝင်းဒိုးများကို လောလောဆယ် မပံ့ပိုးပါ။ အခြားအက်ပ်များကို သိမ်းပါမည်။</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916646100036936191">အကြောင်းကြားချက်အသစ်၊ စုစုပေါင်း <ph name="NOTIFICATION_COUNT" /> ခု</translation>
 <translation id="5916664084637901428">ဖွင့်ရန်</translation>
@@ -1648,6 +1650,7 @@
 <translation id="6468406072297048412">{0,plural, =1{စက်ကို ယခင်ဗားရှင်းသို့ ၁ မိနစ်အတွင်း အပ်ဒိတ်လုပ်ပါ}other{စက်ကို ယခင်ဗားရှင်းသို့ # မိနစ်အတွင်း အပ်ဒိတ်လုပ်ပါ}}</translation>
 <translation id="6469104339369989396">ဟော့စပေါ့ ဖွင့်/ပိတ်လုပ်ရန်</translation>
 <translation id="6477681113376365978">ဖိုင်ကို ဒေါင်းလုဒ်လုပ်၍မရပါ</translation>
+<translation id="648135757200234041">အဆက်အသွယ် ပြုလုပ်၍မရလိုက်ပါ</translation>
 <translation id="6482559668224714696">မျက်နှာပြင်အပြည့် မှန်ဘီလူး</translation>
 <translation id="6485086611007560630">မိုးလေဝသ (မရနိုင်ပါ)</translation>
 <translation id="6490471652906364588">USB-C ကိရိယာ (ညာ ပို့တ်)</translation>
@@ -1977,6 +1980,7 @@
 <translation id="7611213136657090146">ကင်မရာကို ပြန်လည်ချိတ်ဆက်ထားသည်။</translation>
 <translation id="7613620083300976559">ဂိမ်းထိန်းချုပ်ကိရိယာများ ဖွင့်ရန်</translation>
 <translation id="761736749114493194">ကင်မရာဘောင်ချိန် ခလုတ်။ <ph name="STATE_TEXT" /></translation>
+<translation id="7621008024906456933">‘အမြန် မျှဝေပါ’ ဆက်တင်များ</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7627303771480696593">မေးခွန်းမေးရန်</translation>
 <translation id="7634648064048557203">ကင်မရာကို အောက်ညာဘက်ထောင့်သို့ ကပ်ထားသည်</translation>
@@ -2287,6 +2291,7 @@
 <translation id="8653151467777939995">အကြောင်းကြားချက်ဆက်တင်များကို ပြရန်။ အကြောင်းကြားချက်များကို ဖွင့်ထားသည်</translation>
 <translation id="8657066291275741003">စာလုံးအသေး</translation>
 <translation id="8660331759611631213">၇၁ ၏ နှစ်ထပ်ကိန်းရင်း</translation>
+<translation id="8662921061190671299">ပြက္ခဒိန်တွင် ထည့်၍မရလိုက်ပါ</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">ဖန်သားပြင်ဓာတ်ပုံ တစ်စိတ်တစ်ပိုင်းကို ရိုက်ကူးရန် Enter နှိပ်ပါ</translation>
 <translation id="8676770494376880701">ပါဝါနှိမ့် အားသွင်းကိရိယာ ချိတ်ဆက်ထားသည်</translation>

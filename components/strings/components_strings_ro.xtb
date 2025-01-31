@@ -674,7 +674,6 @@
 <translation id="2157640075051554492">Notificări privind urmărirea prețurilor</translation>
 <translation id="21613918653299710">Galerii de imagini online</translation>
 <translation id="2161656808144014275">Text</translation>
-<translation id="2162510787844374618">Contactăm banca...</translation>
 <translation id="2162620598375156287">Acum la <ph name="CURRENT_PRICE" /> pe <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Verifică dacă există vreo greșeală de scriere în <ph name="HOST_NAME" />.</translation>
 <translation id="2166049586286450108">Acces complet de administrare</translation>
@@ -2408,6 +2407,7 @@
 <translation id="5254043433801397071">Optimizează conținutul printării</translation>
 <translation id="5255583962255635076">politicile aplicate privind browserul în profilul tău de serviciu.</translation>
 <translation id="5255690596502591079">Capturează oricum</translation>
+<translation id="5255771248404149177">Furnizorul cardului dorește să-ți confirme identitatea</translation>
 <translation id="5255833070095767006">350 x 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{Politica implementată de administrator nu recomandă să copiezi acest fișier în <ph name="DESTINATION_NAME" />}few{Politica implementată de administrator nu recomandă să copiezi aceste fișiere în <ph name="DESTINATION_NAME" />}other{Politica implementată de administrator nu recomandă să copiezi aceste fișiere în <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5263867360296733198">Examinarea este obligatorie înainte de încărcare</translation>
@@ -2428,7 +2428,6 @@
 <translation id="5288108484102287882">Validarea valorilor de politică a returnat avertismente</translation>
 <translation id="5289384342738547352">Gestionarea mai multor documente</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{Actualizarea este necesară astăzi}=2{Actualizarea este necesară până mâine}few{Actualizarea este necesară în termen de # zile}other{Actualizarea este necesară în termen de # de zile}}</translation>
-<translation id="5292714443869769806">Accesează setările pentru <ph name="OPERATING_SYSTEM" /></translation>
 <translation id="5293919335876685914">Vehicule coupe</translation>
 <translation id="5298618990685278995">o primă schiță.</translation>
 <translation id="5299298092464848405">Eroare la analizarea politicii</translation>
@@ -2556,6 +2555,7 @@
 <translation id="5518352028556756716">Majoritatea site-urilor nu pot folosi cookie-uri terță parte pentru a te urmări în timp ce navighezi și site-urile nu pot folosi cookie-uri terță parte în modul incognito.</translation>
 <translation id="5519516356611866228">Cu modificări</translation>
 <translation id="5519696598216267194">Hârtie (preperforată)</translation>
+<translation id="5520105693415771152">Nu apar informațiile actuale? Contactează banca pentru a le actualiza.</translation>
 <translation id="5521782189689806907">Dulapuri</translation>
 <translation id="5523118979700054094">Numele politicii</translation>
 <translation id="5523588073846127669">Comerciantul nu acceptă acest card virtual</translation>
@@ -3651,6 +3651,7 @@ Detalii suplimentare:
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Autocamioane și remorci</translation>
 <translation id="7461924472993315131">Fixează</translation>
+<translation id="746329643760972486">macOS</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> va ști că ai accesat <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7465963048299965912">10 x 13 in</translation>
 <translation id="7469935732330206581">Formularul nu este sigur</translation>
@@ -3882,6 +3883,7 @@ Detalii suplimentare:
 <translation id="784404208867107517">Istoric grupat</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Niciuna}=1{O aplicație (<ph name="EXAMPLE_APP_1" />)}=2{Două aplicații (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}few{# aplicații (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# de aplicații (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">A apărut o eroare. Încearcă din nou.</translation>
+<translation id="784623644169604270">Nicio activitate recentă</translation>
 <translation id="785476343534277563">Sporturi universitare</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="7860345425589240791">Introdu noua dată de expirare și codul CVC pe <ph name="SIDE_OF_CARD" /></translation>
@@ -3920,7 +3922,6 @@ Detalii suplimentare:
 <translation id="7942349550061667556">Roșu</translation>
 <translation id="7943397946612013052">Descărcare blocată</translation>
 <translation id="7943893128817522649">Poate solicita permisiunea de a descărca automat mai multe fișiere</translation>
-<translation id="794567586469801724">macOS</translation>
 <translation id="7947285636476623132">Verifică anul în care expiră și încearcă din nou</translation>
 <translation id="7947310711271925113">Muzică pop</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a afla despre funcțiile Chrome</translation>
@@ -4673,7 +4674,6 @@ Detalii suplimentare:
 <translation id="984275831282074731">Metode de plată</translation>
 <translation id="985199708454569384">&lt;p&gt;Această eroare se va afișa dacă data și ora de pe computer sau de pe dispozitivul mobil sunt inexacte.&lt;/p&gt;
     &lt;p&gt;Pentru a remedia eroarea, deschide ceasul dispozitivului. Asigură-te că data și ora sunt corecte.&lt;/p&gt;</translation>
-<translation id="986257639512122511">Ai acordat permisiunea pentru <ph name="PERMISSION" /> pentru <ph name="ORIGIN" /></translation>
 <translation id="987264212798334818">General</translation>
 <translation id="988159990683914416">Versiune de programare</translation>
 <translation id="989988560359834682">Editați adresa</translation>

@@ -126,7 +126,6 @@
 <translation id="1076766328672150609">Dein Kind kann das Gerät mit einer PIN entsperren.</translation>
 <translation id="1076818208934827215">Internet Explorer</translation>
 <translation id="1076882167394279216">Das Wörterbuch für die Rechtschreibprüfung für <ph name="LANGUAGE" /> konnte nicht heruntergeladen werden. Versuche es noch einmal.</translation>
-<translation id="1078029726086090536">Passwort bestätigen</translation>
 <translation id="1078037449555275327">ChromeVox-Einstellungen</translation>
 <translation id="1079242569060319448">PIN vergessen?</translation>
 <translation id="1079285777677001938">Einige Websites funktionieren dann möglicherweise nicht mehr richtig.</translation>
@@ -369,6 +368,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1241066500170667906">Wähle den Teststatus für „<ph name="EXPERIMENT_NAME" />“ aus</translation>
 <translation id="124116460088058876">Weitere Sprachen</translation>
 <translation id="1241381048229838873">Alle Lesezeichen anzeigen</translation>
+<translation id="1242044645101871359">Noch einmal anmelden</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" /> möchte deine Einstellungen zurücksetzen.</translation>
 <translation id="1243002225871118300">Anzeige- und Textgröße ändern</translation>
 <translation id="1243314992276662751">Hochladen</translation>
@@ -1614,7 +1614,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2113921862428609753">Zugriff auf Zertifizierungsstelleninformationen</translation>
 <translation id="2114145607116268663">Installation nicht möglich, Neustart erforderlich. Starte deinen Computer neu und versuch es noch einmal. Fehlercode: <ph name="ERROR" />.</translation>
 <translation id="2114326799768592691">&amp;Frame neu laden</translation>
-<translation id="2114413269775311385">Dieses Konto mit Android-Apps verwenden. Berechtigungen für Android-Apps lassen sich in den <ph name="LINK_BEGIN" />App-Einstellungen<ph name="LINK_END" /> verwalten.</translation>
 <translation id="2114995631896158695">Keine SIM-Karte eingelegt</translation>
 <translation id="2116619964159595185">Websites verwenden Bluetooth-Geräte normalerweise für Funktionen wie das Einrichten oder Synchronisieren eines LE-Beacons, eines Gesundheits- oder Fitnesstrackers oder einer intelligenten Lampe</translation>
 <translation id="2117655453726830283">Nächste Folie</translation>
@@ -4629,6 +4628,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4242533952199664413">Einstellungen öffnen</translation>
 <translation id="4242577469625748426">Fehler beim Installieren der Richtlinieneinstellungen auf dem Gerät: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385">Dein <ph name="BEGIN_LINK" />Browser und Profil werden verwaltet<ph name="END_LINK" /> von <ph name="DOMAIN" /></translation>
+<translation id="424315890655130736">Passphrase eingeben</translation>
 <translation id="4243504193894350135">Drucker pausiert</translation>
 <translation id="4243624244759495699"><ph name="LOCALE" />, Grad <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">Mehr Eingabestift-Apps suchen</translation>
@@ -5351,7 +5351,6 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4766598565665644999">Alle Erweiterungen können <ph name="HOST" /> lesen und ändern</translation>
 <translation id="4767427586072640478">Weitere Informationen zu deaktivierten Erweiterungen.</translation>
 <translation id="4768332406694066911">Deine Zertifikate dieser Organisationen identifizieren dich</translation>
-<translation id="4768945955870840220">Für einige Produkte kann Chrome Rezensionen im Web suchen und zusammenstellen</translation>
 <translation id="4769632191812288342">Du nutzt den Standardschutz</translation>
 <translation id="4770119228883592393">Berechtigung angefordert. Drücke „⌘ + Option + Abwärtspfeil“, um zu reagieren.</translation>
 <translation id="4770755495532014179">Dieses Passwort auf deinem iPhone verwenden</translation>
@@ -8745,7 +8744,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7243092385765551741">Passkey löschen?</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (höchste Qualität)</translation>
 <translation id="7246230585855757313">Stecke den Sicherheitsschlüssel wieder ein und versuche es noch einmal</translation>
-<translation id="724835896049478274">Für Android-Apps verfügbare Konten</translation>
 <translation id="7248802599439396696">Tabs deaktivieren</translation>
 <translation id="7249197363678284330">Du kannst diese Einstellung in der Adressleiste ändern.</translation>
 <translation id="7249764475759804559">Diese App beim Öffnen von Dateien als Option anbieten</translation>
@@ -10695,7 +10693,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8625124982056504555">Seriennummern von ChromeOS-Geräten und -Komponenten lesen</translation>
 <translation id="862542460444371744">&amp;Erweiterungen</translation>
 <translation id="8625663000550647058">Dürfen mein Mikrofon nicht verwenden</translation>
-<translation id="8625679025395572221">Dein Konto ist eventuell immer noch gefährdet.</translation>
 <translation id="8625916342247441948">Websites dürfen keine Verbindung mit HID-Geräten herstellen</translation>
 <translation id="862727964348362408">Ausgesetzt</translation>
 <translation id="862750493060684461">CSS-Cache</translation>
@@ -11577,7 +11574,6 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="936801553271523408">Fehlerberichte des Systems</translation>
 <translation id="93766956588638423">Erweiterung reparieren</translation>
 <translation id="938623846785894166">Ungewöhnliche Datei</translation>
-<translation id="939401694733344652">Diese Konten werden momentan nicht mit Android-Apps verwendet. Wenn du ein Konto für die Verwendung mit dieser Android-App auswählst, kann es auch mit anderen Android-Apps verwendet werden. Du kannst den Zugriff auf Android-Apps unter <ph name="LINK_BEGIN" />„Einstellungen“ &gt; „Konten“<ph name="LINK_END" /> anpassen.</translation>
 <translation id="939598580284253335">Passphrase eingeben</translation>
 <translation id="939736085109172342">Neuer Ordner</translation>
 <translation id="940212040923880623">&amp;Suchen und bearbeiten</translation>

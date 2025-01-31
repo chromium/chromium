@@ -768,7 +768,7 @@
 <translation id="4654549501020883054">每日變更</translation>
 <translation id="4655868084888499342">圖片已經設定成桌布</translation>
 <translation id="4661249927038176904">超現實</translation>
-<translation id="4661392828086261436">這項更新由裝置製造商提供，但尚未經過 Google 驗證</translation>
+<translation id="4661392828086261436">此更新由裝置製造商提供，尚未經 Google 驗證</translation>
 <translation id="4664651912255946953">毛皮</translation>
 <translation id="4665014895760275686">製造商</translation>
 <translation id="467510802200863975">密碼不相符</translation>
@@ -1028,7 +1028,7 @@
 <translation id="5904994456462260490">新增 VPN</translation>
 <translation id="590746845088109442">貓</translation>
 <translation id="5907649332524363701">按鍵顏色</translation>
-<translation id="5908813850962688338">安裝這項更新需要幾分鐘的時間。下載更新時，請將裝置接上電源並保持開啟。裝置可能會自行重新啟動數次，並在過程中顯示黑色畫面。系統會提示你重新啟動裝置，以完成安裝作業。</translation>
+<translation id="5908813850962688338">安裝此更新需時幾分鐘。下載更新期間，請將裝置接上電源並保持開機狀態。裝置可能會多次自行重新開機，並在過程中顯示黑色畫面。系統會提示你重新啟動裝置，以完成安裝程序。</translation>
 <translation id="5916084858004523819">禁止</translation>
 <translation id="5916664084637901428">開啟</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{您的檔案已成功掃瞄，並儲存至「<ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />」資料夾。}other{您的檔案已成功掃瞄，並儲存至「<ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />」資料夾。}}</translation>

@@ -731,6 +731,7 @@ Annars aktiveras den inbyggda styrplattan igen om <ph name="TIMEOUT_SECONDS" />.
 <translation id="3522979239100719575">Söker efter tillgängliga profiler. Det kan ta några minuter.</translation>
 <translation id="3526440770046466733">Öppna länken i en ny flik och stanna kvar på den aktuella fliken</translation>
 <translation id="353086728817903341">Ansluten till <ph name="NUM_DEVICES" /> enheter</translation>
+<translation id="3532247131850366052">Det gick inte att skapa ett Google-kalkylark</translation>
 <translation id="3533126039236445965">Appar på hyllan</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" />-surfzon</translation>
 <translation id="3540893133818942399">Ignorera att ställa in visning av de senaste bilderna och mediefilerna på telefonen</translation>
@@ -829,6 +830,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="380165613292957338">Hej. Hur kan jag hjälpa dig?</translation>
 <translation id="3804737937830804242">Komprimera kameran</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 emoji. Inga andra resultat.}other{# emojis. Inga andra resultat.}}</translation>
+<translation id="3822403841174077928">Det gick inte att kopiera med formatering</translation>
 <translation id="3824784079442479685">Detta ger kameraåtkomst för <ph name="APP_NAME" /> och alla appar och webbplatser med kamerabehörighet. Du kan behöva uppdatera webbsidan eller starta om appen.</translation>
 <translation id="3826099427150913765">Byt till lösenord</translation>
 <translation id="383058930331066723">Batterisparläget är aktiverat</translation>
@@ -1215,6 +1217,7 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="5043679421800073804">Klicka eller tryck på den sista ikonen på hyllan</translation>
 <translation id="504465286040788597">Föregående stycke</translation>
 <translation id="5045550434625856497">Felaktigt lösenord</translation>
+<translation id="5058794129231928255">Det gick inte att skapa ett Google-dokument</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Du får en avisering om du pratar när ljudet är av. Ljudet lämnar aldrig enheten.</translation>
 <translation id="5077416371682039027">Ställ in visning av de senaste bilderna, mediefilerna, aviseringarna och apparna på telefonen</translation>
@@ -1478,7 +1481,6 @@ Inga enheter är anslutna.</translation>
 <translation id="589817443623831496">Punktgenomsökning</translation>
 <translation id="5901316534475909376">Skift+Escape</translation>
 <translation id="5901630391730855834">Gul</translation>
-<translation id="5911231045062997865">För närvarande stöds inte Lacros-fönster. Andra appar sparas.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916646100036936191">Ny avisering, <ph name="NOTIFICATION_COUNT" /> totalt</translation>
 <translation id="5916664084637901428">På</translation>
@@ -1648,6 +1650,7 @@ Inga enheter är anslutna.</translation>
 <translation id="6468406072297048412">{0,plural, =1{Uppdatera till en tidigare version av enheten inom en minut}other{Uppdatera till en tidigare version av enheten inom # minuter}}</translation>
 <translation id="6469104339369989396">Aktivera och inaktivera surfzon</translation>
 <translation id="6477681113376365978">Det går inte att ladda ned filen</translation>
+<translation id="648135757200234041">Det gick inte att skapa kontakt</translation>
 <translation id="6482559668224714696">Helskärmsförstoring</translation>
 <translation id="6485086611007560630">Vädret (inte tillgängligt)</translation>
 <translation id="6490471652906364588">USB-C-enhet (höger port)</translation>
@@ -1977,6 +1980,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="7611213136657090146">Kameran har återanslutits.</translation>
 <translation id="7613620083300976559">Aktivera spelkontroll</translation>
 <translation id="761736749114493194">Aktivera och inaktivera kamerainramning. <ph name="STATE_TEXT" /></translation>
+<translation id="7621008024906456933">Inställningar för Snabbdelning</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
 <translation id="7627303771480696593">Ställ en fråga</translation>
 <translation id="7634648064048557203">Kameran har fästs i det nedre högra hörnet</translation>
@@ -2287,6 +2291,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="8653151467777939995">Visa aviseringsinställningar. Aviseringar har aktiverats</translation>
 <translation id="8657066291275741003">gemener</translation>
 <translation id="8660331759611631213">Kvadratroten ur 71</translation>
+<translation id="8662921061190671299">Det gick inte att lägga till i Kalender</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, signalstyrka <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Tryck på retur för att ta en skärmbild av en del av skärmen</translation>
 <translation id="8676770494376880701">Laddare med låg effekt ansluten</translation>

@@ -675,7 +675,6 @@
 <translation id="2157640075051554492">ဈေးနှုန်းစောင့်ကြည့်မှု အကြောင်းကြားချက်များ</translation>
 <translation id="21613918653299710">အွန်လိုင်းပုံပြခန်း</translation>
 <translation id="2161656808144014275">စာသား</translation>
-<translation id="2162510787844374618">သင့်ဘဏ်ကို ဆက်သွယ်နေသည်…</translation>
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> တွင်ယခု <ph name="CURRENT_PRICE" /> ဖြစ်သည်</translation>
 <translation id="2164510882479075877"><ph name="HOST_NAME" /> တွင် စာလုံးပေါင်းအမှား ရှိမရှိ စစ်ဆေးရန်။</translation>
 <translation id="2166049586286450108">စီမံသူအပြည့်အဝ အသုံးပြုခွင့်</translation>
@@ -2429,7 +2428,6 @@
 <translation id="5288108484102287882">မူဝါဒတန်ဖိုးများကို အတည်ပြုရာတွင် သတိပေးချက်များ ရှိနေပါသည်</translation>
 <translation id="5289384342738547352">စာရွက်စာတမ်း အမျိုးစုံ ဆောင်ရွက်ခြင်း</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{ယနေ့ အပ်ဒိတ်လိုအပ်သည်}=2{မနက်ဖြန် အပ်ဒိတ်လိုအပ်သည်}other{# ရက်အတွင်း အပ်ဒိတ်လိုအပ်သည်}}</translation>
-<translation id="5292714443869769806"><ph name="OPERATING_SYSTEM" /> ဆက်တင်များသို့ သွားရန်</translation>
 <translation id="5293919335876685914">တံခါးနှစ်ပေါက်ကားများ</translation>
 <translation id="5298618990685278995">ပထမဆုံးမူကြမ်း</translation>
 <translation id="5299298092464848405">မူဝါဒ ဆန်းစစ်မှု အမှား</translation>
@@ -3651,6 +3649,7 @@
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">ကုန်တင်ယာဉ်၊ နောက်တွဲယာဉ်</translation>
 <translation id="7461924472993315131">ပင်နံပါတ်</translation>
+<translation id="746329643760972486">MacOS</translation>
 <translation id="7465036432780054056"><ph name="TOP_LEVEL_URL" /> သို့ သင်ဝင်ကြည့်ကြောင်း <ph name="EMBEDDED_URL" /> က သိပါမည်</translation>
 <translation id="7465963048299965912">၁၀ x ၁၃ လက်မ</translation>
 <translation id="7469935732330206581">ဖောင်က မလုံခြုံပါ</translation>
@@ -3882,6 +3881,7 @@
 <translation id="784404208867107517">ဖွဲ့ထားသောမှတ်တမ်း</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{မရှိ}=1{အက်ပ် ၁ ခု (<ph name="EXAMPLE_APP_1" />)}=2{အက်ပ် ၂ ခု (<ph name="EXAMPLE_APP_1" />၊ <ph name="EXAMPLE_APP_2" />)}other{အက်ပ် # ခု (<ph name="EXAMPLE_APP_1" />၊ <ph name="EXAMPLE_APP_2" />၊ <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">အမှားတစ်ခု ဖြစ်သွားသည်။ ထပ်စမ်းကြည့်ပါ။</translation>
+<translation id="784623644169604270">မကြာသေးမီက လုပ်ဆောင်ချက် မရှိပါ</translation>
 <translation id="785476343534277563">ကောလိပ်အားကစား</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7860345425589240791">သက်တမ်းကုန်ဆုံးရက်သစ်နှင့် <ph name="SIDE_OF_CARD" /> ရှိ CVC နံပါတ်တို့ကို ထည့်ပါ</translation>
@@ -3920,7 +3920,6 @@
 <translation id="7942349550061667556">အနီရောင်</translation>
 <translation id="7943397946612013052">ဒေါင်းလုဒ်လုပ်ခြင်း ပိတ်ထားသည်</translation>
 <translation id="7943893128817522649">ဖိုင်အများအပြားကို အလိုအလျောက်ဒေါင်းလုဒ်လုပ်ရန် ခွင့်တောင်းနိုင်သည်</translation>
-<translation id="794567586469801724">macOS</translation>
 <translation id="7947285636476623132">သင့်ကုန်ဆုံးမည့်နှစ်ကို ကြည့်ပြီး ပြန်စမ်းကြည့်ပါ</translation>
 <translation id="7947310711271925113">ပေါ့ပ်တေးဂီတ</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ Chrome ဝန်ဆောင်မှုများအကြောင်း လေ့လာရန် ‘တဘ်’ နှိပ်ပြီးနောက် Enter ခလုတ် နှိပ်ပါ</translation>
@@ -4673,7 +4672,6 @@
 <translation id="984275831282074731">ငွေပေးချေ နည်းလမ်းများ</translation>
 <translation id="985199708454569384">&lt;p&gt;သင့်ကွန်ပျူတာ သို့မဟုတ် မိုဘိုင်းစက်၏ ရက်စွဲနှင့် အချိန်တို့ မမှန်ကန်လျှင် ဤအမှားကို တွေ့ရပါမည်။&lt;/p&gt;
     &lt;p&gt;ဤအမှားကို ပြုပြင်ရန် သင့်စက်၏ နာရီကို ဖွင့်ပါ။ ရက်စွဲနှင့် အချိန်တို့ မှန်မမှန် စစ်ဆေးပါ။&lt;/p&gt;</translation>
-<translation id="986257639512122511"><ph name="PERMISSION" /> ကို <ph name="ORIGIN" /> တွင် ခွင့်ပြုထားသည်</translation>
 <translation id="987264212798334818">အထွေထွေ</translation>
 <translation id="988159990683914416">ပြုစုသူ၏ တည်ဆောက်မှု</translation>
 <translation id="989988560359834682">လိပ်စာ တည်းဖြတ်ရန်</translation>

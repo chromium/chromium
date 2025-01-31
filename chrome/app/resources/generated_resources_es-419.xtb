@@ -126,7 +126,6 @@
 <translation id="1076766328672150609">Tu hijo puede usar un PIN para desbloquear el dispositivo.</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216">No se pudo descargar el diccionario del corrector ortográfico de <ph name="LANGUAGE" />. Vuelve a intentarlo.</translation>
-<translation id="1078029726086090536">Verificar contraseña</translation>
 <translation id="1078037449555275327">Configuración de ChromeVox</translation>
 <translation id="1079242569060319448">¿Olvidaste el PIN?</translation>
 <translation id="1079285777677001938">Es posible que algunas funciones no puedan utilizarse en algunos sitios.</translation>
@@ -369,6 +368,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1241066500170667906">Seleccionar el estado del experimento para <ph name="EXPERIMENT_NAME" /></translation>
 <translation id="124116460088058876">Más idiomas</translation>
 <translation id="1241381048229838873">Mostrar todos los favoritos</translation>
+<translation id="1242044645101871359">Volver a acceder</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" /> quiere restablecer la configuración.</translation>
 <translation id="1243002225871118300">Cambia el tamaño de la pantalla y el texto</translation>
 <translation id="1243314992276662751">Cargar</translation>
@@ -1614,7 +1614,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2113921862428609753">Acceso a la información de la autoridad</translation>
 <translation id="2114145607116268663">No se puede instalar. Debes reiniciar el dispositivo. Reinicia la computadora y vuelve a intentarlo. El código de error es <ph name="ERROR" />.</translation>
 <translation id="2114326799768592691">Volver a cargar &amp;marco</translation>
-<translation id="2114413269775311385">Usar esta cuenta en las apps para Android Puedes controlar los permisos de las apps para Android en <ph name="LINK_BEGIN" />Configuración de apps<ph name="LINK_END" />.</translation>
 <translation id="2114995631896158695">No se insertó ninguna tarjeta SIM</translation>
 <translation id="2116619964159595185">Por lo general, los sitios se conectan a dispositivos Bluetooth para usarlos en funciones, como configurar o sincronizar una baliza electrónica, un monitor de actividad física o de salud, o una lámpara inteligente.</translation>
 <translation id="2117655453726830283">Siguiente diapositiva</translation>
@@ -4631,6 +4630,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4242533952199664413">Abrir la configuración</translation>
 <translation id="4242577469625748426">Se produjo un error al instalar la configuración de la política en el dispositivo: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385"><ph name="DOMAIN" /> administra tu <ph name="BEGIN_LINK" />navegador y tu perfil<ph name="END_LINK" /></translation>
+<translation id="424315890655130736">Ingresar frase de contraseña</translation>
 <translation id="4243504193894350135">Se pausó la impresora</translation>
 <translation id="4243624244759495699"><ph name="LOCALE" />, grado <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">Encontrar más apps para la pluma stylus</translation>
@@ -5353,7 +5353,6 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="4766598565665644999">Todas las extensiones pueden leer y modificar <ph name="HOST" /></translation>
 <translation id="4767427586072640478">Obtén más información sobre las extensiones inhabilitadas.</translation>
 <translation id="4768332406694066911">Tienes certificados de esas organizaciones que te identifican</translation>
-<translation id="4768945955870840220">Para algunos productos, Chrome puede recopilar opiniones de toda la Web.</translation>
 <translation id="4769632191812288342">Recibes protección estándar</translation>
 <translation id="4770119228883592393">Se solicitó un permiso; para responder, presiona ⌘ + Opción + flecha hacia abajo</translation>
 <translation id="4770755495532014179">Usa esta contraseña en tu iPhone</translation>
@@ -8752,7 +8751,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7243092385765551741">¿Quieres borrar la llave de acceso?</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> × <ph name="HEIGHT" /> (la mejor resolución)</translation>
 <translation id="7246230585855757313">Reinserta tu llave de seguridad y vuelve a intentarlo</translation>
-<translation id="724835896049478274">Cuentas disponibles para apps para Android</translation>
 <translation id="7248802599439396696">Desactivar pestañas</translation>
 <translation id="7249197363678284330">Puedes cambiar este parámetro de configuración desde la barra de direcciones.</translation>
 <translation id="7249764475759804559">Incluir esta app como opción cuando abres archivos</translation>
@@ -10702,7 +10700,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8625124982056504555">Leer los números de serie del componente y del dispositivo ChromeOS</translation>
 <translation id="862542460444371744">&amp;Extensiones</translation>
 <translation id="8625663000550647058">No puede usar el micrófono</translation>
-<translation id="8625679025395572221">Es posible que tu cuenta siga estando en peligro.</translation>
 <translation id="8625916342247441948">No permitir que los sitios se conecten a dispositivos HID</translation>
 <translation id="862727964348362408">En suspensión</translation>
 <translation id="862750493060684461">Caché CSS</translation>
@@ -11584,7 +11581,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="936801553271523408">Datos de diagnóstico del sistema</translation>
 <translation id="93766956588638423">Reparar extensión</translation>
 <translation id="938623846785894166">Archivo desconocido.</translation>
-<translation id="939401694733344652">En este momento, estas cuentas no se usan con apps para Android. Si eliges una cuenta para usar con esta app para Android, también la puedes usar con otras apps para Android. Puedes cambiar el acceso de las apps para Android en <ph name="LINK_BEGIN" />Configuración &gt; Cuentas<ph name="LINK_END" />.</translation>
 <translation id="939598580284253335">Ingresar frase de contraseña</translation>
 <translation id="939736085109172342">Nueva carpeta</translation>
 <translation id="940212040923880623">&amp;Buscar y editar</translation>

@@ -126,7 +126,6 @@
 <translation id="1076766328672150609">您的孩子可以使用 PIN 码解锁此设备。</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216">无法下载<ph name="LANGUAGE" />拼写检查字典。请重试。</translation>
-<translation id="1078029726086090536">验证密码</translation>
 <translation id="1078037449555275327">ChromeVox 设置</translation>
 <translation id="1079242569060319448">忘记了 PIN 码？</translation>
 <translation id="1079285777677001938">某些网站上的功能可能会无法正常运行。</translation>
@@ -369,6 +368,7 @@
 <translation id="1241066500170667906">为实验“<ph name="EXPERIMENT_NAME" />”选择实验状态</translation>
 <translation id="124116460088058876">更多语言</translation>
 <translation id="1241381048229838873">显示所有书签</translation>
+<translation id="1242044645101871359">重新登录</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" />要重置您的设置。</translation>
 <translation id="1243002225871118300">更改显示大小和文字大小</translation>
 <translation id="1243314992276662751">上传</translation>
@@ -1610,7 +1610,6 @@
 <translation id="2113921862428609753">授权中心信息访问权限</translation>
 <translation id="2114145607116268663">无法安装，需要重新启动。请重启计算机，然后重试。错误代码为 <ph name="ERROR" />。</translation>
 <translation id="2114326799768592691">重新加载框架(&amp;F)</translation>
-<translation id="2114413269775311385">使用此账号登录 Android 应用。您可在<ph name="LINK_BEGIN" />应用设置<ph name="LINK_END" />中控制向 Android 应用授予的权限。</translation>
 <translation id="2114995631896158695">未插入任何 SIM 卡</translation>
 <translation id="2116619964159595185">网站通常会连接到蓝牙设备以实现某些功能（例如设置或同步低功耗信标、健康或健身跟踪器，或智能灯泡）</translation>
 <translation id="2117655453726830283">下一张幻灯片</translation>
@@ -2786,6 +2785,7 @@
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" />不受支持。</translation>
 <translation id="2926708162326352948">主题已更新为上传的图片</translation>
 <translation id="2927017729816812676">缓存空间</translation>
+<translation id="2928030851119977280">已保存选择，您的选择将在您登录其他 Google 服务时生效。</translation>
 <translation id="2928795416630981206">允许跟踪您的摄像头位置</translation>
 <translation id="2929345818093040583">{NUM_SITES,plural, =1{Chrome 撤消了 1 个网站的权限}other{Chrome 撤消了 {NUM_SITES} 个网站的权限}}</translation>
 <translation id="2931157624143513983">适合可打印区域</translation>
@@ -4623,6 +4623,7 @@
 <translation id="4242533952199664413">打开“设置”</translation>
 <translation id="4242577469625748426">无法在设备上安装策略设置：<ph name="VALIDATION_ERROR" />。</translation>
 <translation id="4242825475818569385">您的<ph name="BEGIN_LINK" />浏览器和个人资料<ph name="END_LINK" />由 <ph name="DOMAIN" /> 管理</translation>
+<translation id="424315890655130736">请输入密码</translation>
 <translation id="4243504193894350135">打印机已暂停运行</translation>
 <translation id="4243624244759495699"><ph name="LOCALE" />，<ph name="GRADE" />级</translation>
 <translation id="4244238649050961491">查找更多触控笔应用</translation>
@@ -5345,7 +5346,6 @@
 <translation id="4766598565665644999">所有扩展程序都可以读取和更改 <ph name="HOST" /></translation>
 <translation id="4767427586072640478">详细了解已停用的扩展程序。</translation>
 <translation id="4768332406694066911">您有以下组织发给您的身份证书</translation>
-<translation id="4768945955870840220">对于某些商品，Chrome 可以收集来自网络的评价</translation>
 <translation id="4769632191812288342">您已获享标准保护</translation>
 <translation id="4770119228883592393">收到了权限请求，按 ⌘ + Option + 向下键即可回复</translation>
 <translation id="4770755495532014179">在 iPhone 上使用此密码</translation>
@@ -7392,6 +7392,7 @@
 <translation id="6253801023880399036">系统会将密码保存到 <ph name="GOOGLE_PASSWORD_MANAGER" />中。</translation>
 <translation id="6254503684448816922">密钥泄漏</translation>
 <translation id="6254892857036829079">完美</translation>
+<translation id="6257131917452817589">自动更改密码</translation>
 <translation id="6257602895346497974">开启同步功能…</translation>
 <translation id="6257614441619555296"><ph name="KEY" />：<ph name="VALUE" /></translation>
 <translation id="625827534921607067">如果有多个之前已连接或配置好的网络可用，系统会优先选择此网络</translation>
@@ -8739,7 +8740,6 @@
 <translation id="7243092385765551741">要删除通行密钥吗？</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" />（最佳）</translation>
 <translation id="7246230585855757313">请重新插入您的安全密钥，然后再试一次</translation>
-<translation id="724835896049478274">可用于 Android 应用的账号</translation>
 <translation id="7248802599439396696">将标签页设为非活跃状态</translation>
 <translation id="7249197363678284330">在地址栏中更改此设置。</translation>
 <translation id="7249764475759804559">将此应用添加为文件打开方式选项</translation>
@@ -9103,6 +9103,7 @@
 <translation id="7502528909759062987">暂停将标签页投放到“<ph name="DEVICE_NAME" />”</translation>
 <translation id="7502804472671406749">分享的标签页可以滚动和缩放</translation>
 <translation id="7503191893372251637">Netscape 证书类型</translation>
+<translation id="7503259455663961898">帮我更改</translation>
 <translation id="7503985202154027481">您对该网站的访问记录将保留在安全密钥上。</translation>
 <translation id="7504145862399276792">此标签页已设为静音</translation>
 <translation id="750509436279396091">打开下载内容文件夹</translation>
@@ -9165,6 +9166,7 @@
 <translation id="7551059576287086432"><ph name="FILE_NAME" /> 下载失败</translation>
 <translation id="7551643184018910560">固定到任务栏</translation>
 <translation id="7552191410769096467">如需分享或加入标签页分组，您需要登录并开启同步功能</translation>
+<translation id="7552196109089297786">退出 Microsoft</translation>
 <translation id="7552846755917812628">请尝试按以下提示操作：</translation>
 <translation id="7553012839257224005">正在检查 Linux 容器</translation>
 <translation id="7553242001898162573">输入您的密码</translation>
@@ -10294,6 +10296,7 @@
 <translation id="8330617762701840933">会重定向到备用浏览器的网站的列表。</translation>
 <translation id="8330689128072902965">附近的联系人可与您分享内容。点击即可更改。</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{支持的文件类型：<ph name="FILE_TYPE1" />}=2{支持的文件类型：<ph name="FILE_TYPE1" />、<ph name="FILE_TYPE2" />}=3{支持的文件类型：<ph name="FILE_TYPE1" />、<ph name="FILE_TYPE2" />、<ph name="FILE_TYPE3" />}=4{支持的文件类型：<ph name="FILE_TYPE1" />、<ph name="FILE_TYPE2" />、<ph name="FILE_TYPE3" />、<ph name="FILE_TYPE4" />}other{支持的文件类型：<ph name="FILE_TYPE1" />、<ph name="FILE_TYPE2" />、<ph name="FILE_TYPE3" />、<ph name="FILE_TYPE4" />（<ph name="LINK" />以及另外 {OVERFLOW_COUNT} 种<ph name="END_LINK" />）}}</translation>
+<translation id="8331578454993293727">此密码遭遇了数据泄露</translation>
 <translation id="8331822764922665615">为您的分组命名，选择一种颜色，然后按 Esc 键</translation>
 <translation id="833256022891467078">Crostini 共享文件夹</translation>
 <translation id="833262891116910667">突出显示</translation>
@@ -10375,6 +10378,7 @@
     <ph name="BEGIN_PARAGRAPH2" />如需更多帮助，请访问：g.co/flex/InstallErrors。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8383614331548401927">欢迎来到 Recap</translation>
 <translation id="8386091599636877289">找不到此政策。</translation>
+<translation id="8387087863179559896">Chrome 可以使用安全系数高的密码为您更新此网站的账号。您不需要记住此密码，因为系统会将它保存到 <ph name="EMAIL" /> 的 Google 密码管理工具中。详细了解<ph name="PASSWORD_CHANGE" />。</translation>
 <translation id="8387361103813440603">不允许查看您的位置信息</translation>
 <translation id="8387617938027387193">请验证是您本人在操作</translation>
 <translation id="8388770971141403598">次级个人资料不受支持</translation>
@@ -10689,7 +10693,6 @@
 <translation id="8625124982056504555">读取 ChromeOS 设备序列号和组件序列号</translation>
 <translation id="862542460444371744">扩展程序(&amp;E)</translation>
 <translation id="8625663000550647058">不允许使用您的麦克风</translation>
-<translation id="8625679025395572221">您的账号可能仍处于危险状态。</translation>
 <translation id="8625916342247441948">不允许网站连接到 HID 设备</translation>
 <translation id="862727964348362408">已暂停</translation>
 <translation id="862750493060684461">CSS 缓存</translation>
@@ -11571,7 +11574,6 @@
 <translation id="936801553271523408">系统诊断数据</translation>
 <translation id="93766956588638423">修复扩展程序</translation>
 <translation id="938623846785894166">不常用的文件</translation>
-<translation id="939401694733344652">目前这些账号并未用于 Android 应用。如果您选择了一个账号用于该 Android 应用，那么此账号也可用于其他 Android 应用。您可在<ph name="LINK_BEGIN" />设置 &gt; 账号<ph name="LINK_END" />部分中更改 Android 应用的权限。</translation>
 <translation id="939598580284253335">请输入密码</translation>
 <translation id="939736085109172342">新建文件夹</translation>
 <translation id="940212040923880623">查找和修改(&amp;F)</translation>

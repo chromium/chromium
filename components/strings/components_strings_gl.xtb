@@ -674,7 +674,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2157640075051554492">Notificacións de seguimento de prezos</translation>
 <translation id="21613918653299710">Galerías de imaxes en liña</translation>
 <translation id="2161656808144014275">Texto</translation>
-<translation id="2162510787844374618">Contactando co banco…</translation>
 <translation id="2162620598375156287">Agora <ph name="CURRENT_PRICE" /> en <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Comproba que <ph name="HOST_NAME" /> estea ben escrito.</translation>
 <translation id="2166049586286450108">Acceso de administrador completo</translation>
@@ -2428,7 +2427,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5288108484102287882">A validación dos valores da política xerou advertencias</translation>
 <translation id="5289384342738547352">Manipulación de varios documentos</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{Cómpre facer unha actualización hoxe}=2{Cómpre facer unha actualización mañá}other{Cómpre facer unha actualización dentro de # días}}</translation>
-<translation id="5292714443869769806">Ir á configuración de <ph name="OPERATING_SYSTEM" /></translation>
 <translation id="5293919335876685914">Coupés</translation>
 <translation id="5298618990685278995">un primeiro borrador</translation>
 <translation id="5299298092464848405">Erro ao analizar a política</translation>
@@ -3650,6 +3648,7 @@ Detalles adicionais:
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Camións e tráilers</translation>
 <translation id="7461924472993315131">Marcar cun alfinete</translation>
+<translation id="746329643760972486">macOS</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> saberá que visitaches <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7465963048299965912">10 x 13 polgadas</translation>
 <translation id="7469935732330206581">O formulario non é seguro</translation>
@@ -3881,6 +3880,7 @@ Detalles adicionais:
 <translation id="784404208867107517">Historial agrupado</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Ningunha}=1{1 aplicación (<ph name="EXAMPLE_APP_1" />)}=2{2 aplicacións (<ph name="EXAMPLE_APP_1" /> e <ph name="EXAMPLE_APP_2" />)}other{# aplicacións (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> e <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Produciuse un erro. Téntao de novo.</translation>
+<translation id="784623644169604270">Ningunha actividade recente</translation>
 <translation id="785476343534277563">Deportes universitarios</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" />: <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="7860345425589240791">Introduce a nova data de vencemento e o CVC do <ph name="SIDE_OF_CARD" /></translation>
@@ -3919,7 +3919,6 @@ Detalles adicionais:
 <translation id="7942349550061667556">Vermello</translation>
 <translation id="7943397946612013052">Bloqueouse a descarga</translation>
 <translation id="7943893128817522649">Pode pedirche permiso para descargar automaticamente varios ficheiros</translation>
-<translation id="794567586469801724">macOS</translation>
 <translation id="7947285636476623132">Comproba o ano de caducidade e téntao de novo</translation>
 <translation id="7947310711271925113">Música pop</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Preme Tabulador e, a continuación, Introducir para obter máis información sobre as funcións de Chrome</translation>
@@ -4671,7 +4670,6 @@ Detalles adicionais:
 <translation id="984275831282074731">Métodos de pago</translation>
 <translation id="985199708454569384">&lt;p&gt;Verás este erro se a data e a hora do ordenador ou do dispositivo móbil son incorrectas.&lt;/p&gt;
     &lt;p&gt;Para solucionalo, abre o reloxo do dispositivo e define a hora e a data correctas.&lt;/p&gt;</translation>
-<translation id="986257639512122511">Permitiches o acceso a <ph name="PERMISSION" /> en <ph name="ORIGIN" /></translation>
 <translation id="987264212798334818">Xeral</translation>
 <translation id="988159990683914416">Compilación para programadores</translation>
 <translation id="989988560359834682">Editar enderezo</translation>

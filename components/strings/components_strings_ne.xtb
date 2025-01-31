@@ -674,7 +674,6 @@
 <translation id="2157640075051554492">मूल्य ट्र्याक गर्ने सुविधासम्बन्धी सूचनाहरू</translation>
 <translation id="21613918653299710">अनलाइन फोटो ग्यालरीहरू</translation>
 <translation id="2161656808144014275">पाठ</translation>
-<translation id="2162510787844374618">तपाईंको बैंकमा सम्पर्क गरिँदै छ...</translation>
 <translation id="2162620598375156287">अहिले <ph name="SOURCE_WEBSITE" /> मा <ph name="CURRENT_PRICE" /> मा उपलब्ध छ</translation>
 <translation id="2164510882479075877"><ph name="HOST_NAME" /> मा कुनै हिज्जे गलत छ कि छैन भन्ने कुरा जाँच्नुहोस्।</translation>
 <translation id="2166049586286450108">पूर्ण प्रशासक पहुँच</translation>
@@ -2426,7 +2425,6 @@
 <translation id="5288108484102287882">नीतिका मानहरू प्रमाणित गर्ने कार्यले चेतावनी दिएको छ</translation>
 <translation id="5289384342738547352">एकभन्दा बढी कागजातहरूको व्यवस्थापन</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{आजै अपडेट गर्नु पर्ने हुन्छ}=2{भोलिसम्ममा अपडेट गर्नु पर्ने हुन्छ}other{# दिनभित्र अपडेट गर्नु पर्ने हुन्छ}}</translation>
-<translation id="5292714443869769806"><ph name="OPERATING_SYSTEM" /> सम्बन्धी सेटिङमा जानुहोस्</translation>
 <translation id="5293919335876685914">कुप कारहरू</translation>
 <translation id="5298618990685278995">पहिलो ड्राफ्ट</translation>
 <translation id="5299298092464848405">त्रुटि पार्सिङ नीति</translation>
@@ -3648,6 +3646,7 @@
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">कार्गो ट्रक तथा ट्रेलरहरू</translation>
 <translation id="7461924472993315131">पिन</translation>
+<translation id="746329643760972486">MacOS</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> लाई तपाईं <ph name="TOP_LEVEL_URL" /> मा जानुभएको कुरा थाहा हुने छ</translation>
 <translation id="7465963048299965912">१० x १३ इन्च</translation>
 <translation id="7469935732330206581">यो फारम सुरक्षित छैन</translation>
@@ -3918,7 +3917,6 @@
 <translation id="7942349550061667556">रातो</translation>
 <translation id="7943397946612013052">फाइल डाउनलोड गर्न पाइँदैन</translation>
 <translation id="7943893128817522649">एकभन्दा बढी फाइल स्वतः डाउनलोड गर्ने अनुमति माग्न सक्छ</translation>
-<translation id="794567586469801724">macOS</translation>
 <translation id="7947285636476623132">आफ्नो म्याद सकिने वर्षको जाँच गरी फेरि प्रयास गर्नुहोस्</translation>
 <translation id="7947310711271925113">पप सङ्गीत</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome का सुविधाहरूका बारेमा जान्न Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
@@ -4670,7 +4668,6 @@
 <translation id="984275831282074731">भुक्तानी विधिहरू</translation>
 <translation id="985199708454569384">&lt;p&gt;तपाईंको कम्प्युटर वा मोबाइल यन्त्रको मिति र समय नमिलेको बेला तपाईंले यो त्रुटि देख्नुहुन्छ।&lt;/p&gt;
     &lt;p&gt;यो त्रुटिको समाधान गर्न आफ्नो यन्त्रको घडी खोल्नुहोस्‌। समय र मिति सही छ भनेर सुनिश्चित गर्नुहोस्।&lt;/p&gt;</translation>
-<translation id="986257639512122511">तपाईंले <ph name="ORIGIN" /> मा <ph name="PERMISSION" /> प्रयोग गर्ने अनुमति दिनुभएको छ</translation>
 <translation id="987264212798334818">सामान्य</translation>
 <translation id="988159990683914416">विकासकर्ताद्वारा निर्मित</translation>
 <translation id="989988560359834682">इमेल ठेगाना</translation>

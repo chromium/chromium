@@ -126,7 +126,6 @@
 <translation id="1076766328672150609">သင့်ကလေးသည် ဤစက်ကိုဖွင့်ရန် ပင်နံပါတ် သုံးနိုင်သည်။</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216"><ph name="LANGUAGE" /> အတွက် စာလုံးပေါင်းစစ်ဆေးသော အဘိဓာန်ကို ဒေါင်းလုဒ်လုပ်၍မရပါ။ ထပ်စမ်းကြည့်ပါ။</translation>
-<translation id="1078029726086090536">စကားဝှက်ကို အတည်ပြုရန်</translation>
 <translation id="1078037449555275327">ChromeVox ဆက်တင်များ</translation>
 <translation id="1079242569060319448">ပင်နံပါတ် မေ့နေသလား။</translation>
 <translation id="1079285777677001938">ဝဘ်ဆိုက်အချို့ရှိ အင်္ဂါရပ်များ အလုပ်မလုပ်နိုင်ပါ။</translation>
@@ -369,6 +368,7 @@
 <translation id="1241066500170667906"><ph name="EXPERIMENT_NAME" /> အတွက် စမ်းသပ်မှုအခြေအနေကို ရွေးရန်</translation>
 <translation id="124116460088058876">နောက်ထပ် ဘာသာစကားများ</translation>
 <translation id="1241381048229838873">စာညှပ်များအားလုံးပြပါ</translation>
+<translation id="1242044645101871359">ထပ်၍လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" />က သင်၏ ဆက်တင်များကို ပြန်ညှိလိုသည်။</translation>
 <translation id="1243002225871118300">ပြသမှုနှင့် စာသားအရွယ်အစား ပြောင်းခြင်း</translation>
 <translation id="1243314992276662751">အာပ်လုဒ် လုပ်ရန်</translation>
@@ -1625,7 +1625,6 @@
 <translation id="2113921862428609753">လုပ်ပိုင်ခွင့် အချက်အလက်များကို ရယူခြင်း</translation>
 <translation id="2114145607116268663">ထည့်သွင်း၍မရလိုက်ပါ။ ပြန်လည်စတင်ရမည်။ သင့်ကွန်ပျူတာကို ပြန်စပြီး ထပ်စမ်းကြည့်ပါ။ အမှားကုဒ်မှာ <ph name="ERROR" /> ဖြစ်သည်။</translation>
 <translation id="2114326799768592691">ပြန်ဖွင့်ပါ &amp;Frame</translation>
-<translation id="2114413269775311385">ဤအကောင့်ကို Android အက်ပ်များနှင့် သုံးရန်။ <ph name="LINK_BEGIN" />အက်ပ်ဆက်တင်များ<ph name="LINK_END" /> တွင် Android အက်ပ်များအတွက် ခွင့်ပြုချက်များကို ထိန်းချုပ်နိုင်သည်။</translation>
 <translation id="2114995631896158695">ဆင်းမ်ကတ် ထည့်မထားပါ</translation>
 <translation id="2116619964159595185">စွမ်းအင်နိမ့်အချက်ပြမီး၊ ကျန်းမာရေး (သို့) ကြံ့ခိုင်ရေး ခြေရာခံစက် (သို့) အဆင့်မြင့်မီးလုံး စနစ်ထည့်သွင်းခြင်း (သို့) စင့်ခ်လုပ်ခြင်းကဲ့သို့ ဝန်ဆောင်မှုများအတွက် ဘလူးတုသ်သုံးစက်များနှင့် ဝဘ်ဆိုက်များက ချိတ်ဆက်လေ့ရှိသည်</translation>
 <translation id="2117655453726830283">လာမည့်ဆလိုက်</translation>
@@ -4645,6 +4644,7 @@
 <translation id="4242533952199664413">ဆက်တင်များကို ဖွင့်ရန်</translation>
 <translation id="4242577469625748426">စက်ပစ္စည်းပေါ်တွင် ပေါ်လစီကြိုတင်ချိန်ညှိချက်များ ထည့်သွင်းခြင်း မအောင်မြင်ပါ: <ph name="VALIDATION_ERROR" />။</translation>
 <translation id="4242825475818569385"><ph name="DOMAIN" /> က သင့် <ph name="BEGIN_LINK" />ဘရောင်ဇာနှင့် ပရိုဖိုင်တို့ကို စီမံသည်<ph name="END_LINK" /></translation>
+<translation id="424315890655130736">စကားဝှက်ကိုထည့်ပါ</translation>
 <translation id="4243504193894350135">ပရင်တာကို ခဏရပ်ထားသည်</translation>
 <translation id="4243624244759495699"><ph name="LOCALE" />, အဆင့် <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">နောက်ထပ် စတိုင်လပ်စ်အက်ပ်များကို ရှာဖွေရန်</translation>
@@ -5367,7 +5367,6 @@
 <translation id="4766598565665644999">နောက်ဆက်တွဲအားလုံးက <ph name="HOST" /> ကို ဖတ်ပြီးပြောင်းနိုင်သည်</translation>
 <translation id="4767427586072640478">ပိတ်ထားသော နောက်ဆက်တွဲများအကြောင်း ပိုမိုလေ့လာနိုင်သည်။</translation>
 <translation id="4768332406694066911">ဤအဖွဲ့အစည်းများမှနေ၍ သင်၏ အထောက်အထား အသိအမှတ်ပြုလက်မှတ်များ သင့်ထံတွင်ရှိပါသည်</translation>
-<translation id="4768945955870840220">ထုတ်ကုန်အချို့အတွက် Chrome သည် ဝဘ်ပေါ်မှ သုံးသပ်ချက်များ စုစည်းနိုင်သည်</translation>
 <translation id="4769632191812288342">ပုံမှန်ကာကွယ်မှုကို ရရှိပါမည်</translation>
 <translation id="4770119228883592393">ခွင့်ပြုချက်တောင်းထားသည်၊ တုံ့ပြန်ရန် ⌘ + Option + 'အောက်ညွှန်မြား' နှိပ်ပါ</translation>
 <translation id="4770755495532014179">ဤစကားဝှက်ကို သင့် iPhone တွင်သုံးပါ</translation>
@@ -5509,6 +5508,7 @@
 <translation id="4862642413395066333">OCSP တုံ့ပြန်မှုများကို လက်မှတ်ထိုးနေ</translation>
 <translation id="4863702650881330715">တွဲဖက်သုံးနိုင်မှုကို တိုးရန်</translation>
 <translation id="4863769717153320198"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (မူရင်း) ဟု ယူဆရသည်</translation>
+<translation id="4864334716800138793">အလုပ်ပရိုဖိုင် သတ်မှတ်ခြင်းကို သင့်အဖွဲ့အစည်းက ပိတ်ထားသည်</translation>
 <translation id="4864369630010738180">လက်မှတ်ထိုးဝင်နေသည်...</translation>
 <translation id="4864805589453749318">ကျောင်းအကောင့်ထည့်ရန် ခွင့်ပြုချက်ပေးသည့် မိဘကို ရွေးပါ။</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (ပိတ်ထားသည်)</translation>
@@ -6470,6 +6470,7 @@
 <translation id="5559768063688681413">သိမ်းထားသည့် ပုံနှိပ်ထုတ်စက်မရှိပါ</translation>
 <translation id="55601339223879446">မျက်နှာပြင် ဖော်ပြမှုအတွင်း သင့်ဒက်စ်တော့ ဘောင်များကို ချိန်ညှိပါ</translation>
 <translation id="5561162485081632007">အန္တရာယ်ရှိသည့် ဖြစ်ရပ်များ ဖြစ်ပွားလာသည့်အခါ သိရှိပြီး သင့်အား သတိပေးသည်</translation>
+<translation id="5562588178647493983">ပိုမိုသိရှိရန် သင်၏စီမံခန့်ခွဲသူထံ ဆက်သွယ်ပါ</translation>
 <translation id="556321030400250233">စက်အတွင်း သို့မဟုတ် မျှဝေထားသောဖိုင်</translation>
 <translation id="5563234215388768762">Google တွင်ရှာပါ သို့မဟုတ် URL ကိုထည့်ပါ</translation>
 <translation id="5563824734298958390">တဘ်အုပ်စုမှ ထွက်မလား။</translation>
@@ -8761,7 +8762,6 @@
 <translation id="7243092385765551741">လျှို့ဝှက်ကီး ဖျက်မလား။</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (အကောင်းဆုံး)</translation>
 <translation id="7246230585855757313">သင့်လုံခြုံရေးကီးကို ပြန်ထည့်ပြီး ထပ်စမ်းကြည့်ပါ</translation>
-<translation id="724835896049478274">Android အက်ပ်များအတွက် ရနိုင်သော အကောင့်များ</translation>
 <translation id="7248802599439396696">တဘ်များကို ပိတ်ရန်</translation>
 <translation id="7249197363678284330">လိပ်စာ ဘားတွင် ဤဆက်တင်ကို ပြောင်းနိုင်သည်။</translation>
 <translation id="7249764475759804559">ဖိုင်များဖွင့်သောအခါ ရွေးစရာအဖြစ် ဤအက်ပ်ကိုထည့်ရန်</translation>
@@ -9798,6 +9798,7 @@
 <translation id="7968833647796919681">စွမ်းဆောင်ချက် အချက်လက်စုစည်းမှု ဖွင့်ရန်</translation>
 <translation id="7968982339740310781">အသေးစိတ်များ ကြည့်ရှုရန်</translation>
 <translation id="7969046989155602842">ကွန်မန်း</translation>
+<translation id="7969144945436590933">အသေးစိတ်ပိုမိုသိရှိရန်</translation>
 <translation id="7970673414865679092">အီသာနက် အသေးစိတ်</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 RSA လျှို့ဝှက်ကုဒ် သွင်းမှုဖြင့်</translation>
 <translation id="7973149423217802477">‘လက်မအောက်စိုက်’ ပေးပို့ပြီး ၎င်းကို သင်မနှစ်သက်ကြောင်း တုံ့ပြန်နိုင်သည်။</translation>
@@ -10709,7 +10710,6 @@
 <translation id="8625124982056504555">ChromeOS စက်ပစ္စည်းနှင့် အစိတ်အပိုင်း နံပါတ်စဉ်များကို ဖတ်နိုင်သည်</translation>
 <translation id="862542460444371744">&amp;တိုးချဲ့မှုများ</translation>
 <translation id="8625663000550647058">သင့်မိုက်ကရိုဖုန်းကို သုံးရန် ခွင့်ပြုမထားပါ</translation>
-<translation id="8625679025395572221">သင့်အကောင့်သည် အန္တရာယ်ရှိနေနိုင်ပါသည်။</translation>
 <translation id="8625916342247441948">HID ကိရိယာများနှင့် ချိတ်ဆက်ရန် ဝဘ်ဆိုက်များကို ခွင့်မပြုပါနှင့်</translation>
 <translation id="862727964348362408">ဆိုင်းငံ့ထား</translation>
 <translation id="862750493060684461">CSS ကက်ရှ</translation>
@@ -11591,7 +11591,6 @@
 <translation id="936801553271523408">စနစ် ချွတ်ယွင်းချက် စူးစမ်းမှု ဒေတာ</translation>
 <translation id="93766956588638423">ပရိုဂရမ်အဆက်အား ပြင်ဆင်ရန်</translation>
 <translation id="938623846785894166">တွေ့နေကျမဟုတ်သော ဖိုင်</translation>
-<translation id="939401694733344652">ဤအကောင့်များကို Android အက်ပ်များနှင့် လောလောဆယ်သုံးမနေပါ။ ဤ Android အက်ပ်နှင့်သုံးရန် အကောင့်ရွေးပါက အကောင့်ကို အခြား Android အက်ပ်များနှင့်လည်း သုံးနိုင်သည်။ <ph name="LINK_BEGIN" />ဆက်တင်များ &gt; အကောင့်များ<ph name="LINK_END" /> တွင် Android အက်ပ်သုံးခွင့်ကို ပြောင်းနိုင်သည်။</translation>
 <translation id="939598580284253335">စကားစုဝှက်ကို ရိုက်ထည့်ရန်</translation>
 <translation id="939736085109172342">ဖိုင်တွဲအသစ်</translation>
 <translation id="940212040923880623">&amp;ရှာရန်နှင့် ပြင်ရန်</translation>

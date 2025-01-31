@@ -1478,7 +1478,6 @@
 <translation id="589817443623831496">পয়েন্ট স্ক্যানিং</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">হলুদ</translation>
-<translation id="5911231045062997865">বর্তমানে Lacros উইন্ডো ব্যবহারের সুবিধা নেই। অন্যান্য অ্যাপ সেভ করা হবে।</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916646100036936191">নতুন বিজ্ঞপ্তি, মোট <ph name="NOTIFICATION_COUNT" />টি</translation>
 <translation id="5916664084637901428">চালু</translation>
@@ -1978,6 +1977,7 @@
 <translation id="7611213136657090146">ক্যামেরা আবার কানেক্ট করা হয়েছে।</translation>
 <translation id="7613620083300976559">গেম কন্ট্রোল চালু করুন</translation>
 <translation id="761736749114493194">ক্যামেরা ফ্রেমিং টগল করুন। <ph name="STATE_TEXT" /></translation>
+<translation id="7621008024906456933">দ্রুত শেয়ার সেটিংস</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° ফারেনহাইট</translation>
 <translation id="7627303771480696593">কোনও প্রশ্ন জিজ্ঞাসা করুন</translation>
 <translation id="7634648064048557203">ক্যামেরাটি নিচে ডানদিকের কোণে স্ন্যাপ করা হয়েছে</translation>

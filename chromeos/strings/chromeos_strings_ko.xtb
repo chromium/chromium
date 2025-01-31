@@ -768,6 +768,7 @@
 <translation id="4654549501020883054">매일 변경</translation>
 <translation id="4655868084888499342">이미지를 배경화면으로 설정</translation>
 <translation id="4661249927038176904">초현실적</translation>
+<translation id="4661392828086261436">이 업데이트는 기기 제조업체에서 제공하며 Google의 확인을 거치지 않았습니다.</translation>
 <translation id="4664651912255946953">모피</translation>
 <translation id="4665014895760275686">제조업체</translation>
 <translation id="467510802200863975">비밀번호가 일치하지 않습니다.</translation>
@@ -1027,6 +1028,7 @@
 <translation id="5904994456462260490">새 APN 추가</translation>
 <translation id="590746845088109442">고양이</translation>
 <translation id="5907649332524363701">키 색상</translation>
+<translation id="5908813850962688338">업데이트 설치에는 몇 분 정도 걸립니다. 업데이트를 다운로드하는 동안에는 기기를 전원에 연결하고 전원을 켜 두세요. 이 과정에서 기기가 여러 번 재부팅되고 검은색 화면이 표시될 수 있습니다. 설치를 완료하려면 기기를 다시 시작해야 합니다.</translation>
 <translation id="5916084858004523819">금지됨</translation>
 <translation id="5916664084637901428">사용</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{파일 스캔이 완료되어 <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />에 저장되었습니다.}other{파일 스캔이 완료되어 <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />에 저장되었습니다.}}</translation>

@@ -126,7 +126,6 @@
 <translation id="1076766328672150609">Ձեր երեխան կարող է ապակողպել սարքը PIN կոդի միջոցով։</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216">Չհաջողվեց ներբեռնել ուղղագրիչի բառարանը <ph name="LANGUAGE" /> լեզվի համար։ Նորից փորձեք։</translation>
-<translation id="1078029726086090536">Հաստատել գաղտնաբառը</translation>
 <translation id="1078037449555275327">ChromeVox-ի կարգավորումներ</translation>
 <translation id="1079242569060319448">Մոռացե՞լ եք PIN կոդը</translation>
 <translation id="1079285777677001938">Որոշ կայքերում գործառույթները կարող են չաշխատել։</translation>
@@ -371,6 +370,7 @@
 <translation id="1241066500170667906">Ընտրեք «<ph name="EXPERIMENT_NAME" />» փորձարկման կարգավիճակը</translation>
 <translation id="124116460088058876">Այլ լեզուներ</translation>
 <translation id="1241381048229838873">Ցուցադրել բոլոր էջանիշները</translation>
+<translation id="1242044645101871359">Նորից մուտք գործեք</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" />-ը ցանկանում է վերակայել ձեր կարգավորումները:</translation>
 <translation id="1243002225871118300">Էկրանի և տեքստի չափսի փոփոխություն</translation>
 <translation id="1243314992276662751">Վերբեռնել</translation>
@@ -1619,7 +1619,6 @@
 <translation id="2113921862428609753">Լիազորությունների մասին տեղեկություններ</translation>
 <translation id="2114145607116268663">Հնարավոր չէ տեղադրել։ Պահանջվում է վերագործարկում։ Վերագործարկեք համակարգիչը և նորից փորձեք։ Սխալի կոդ՝ <ph name="ERROR" />։</translation>
 <translation id="2114326799768592691">Վերաբեռնել &amp;շրջանակը</translation>
-<translation id="2114413269775311385">Օգտագործեք այս հաշիվը Android-ի համար նախատեսված հավելվածների հետ։ Դուք կարող եք վերահսկել այդ հավելվածների թույլտվությունները <ph name="LINK_BEGIN" />Հավելվածների կարգավորումներում<ph name="LINK_END" />։</translation>
 <translation id="2114995631896158695">SIM քարտ տեղադրված չէ</translation>
 <translation id="2116619964159595185">Կայքերը սովորաբար միանում են Bluetooth սարքերին՝ առողջության հետագծիչ, էներգախնայող փարոս, խելացի լամպ կարգավորելու/համաժամացնելու և նման այլ գործառույթների համար</translation>
 <translation id="2117655453726830283">Հաջորդ սլայդը</translation>
@@ -4632,6 +4631,7 @@
 <translation id="4242533952199664413">Բացել կարգավորումները</translation>
 <translation id="4242577469625748426">Չհաջողվեց քաղաքականության կարգավորումները կիրառել սարքի նկատմամբ՝ <ph name="VALIDATION_ERROR" />:</translation>
 <translation id="4242825475818569385">Ձեր <ph name="BEGIN_LINK" />դիտարկիչն ու պրոֆիլը<ph name="END_LINK" /> կառավարվում են <ph name="DOMAIN" /> տիրույթի կողմից</translation>
+<translation id="424315890655130736">Մուտքագրեք անցաբառը</translation>
 <translation id="4243504193894350135">Տպիչի աշխատանքը դադարեցված է</translation>
 <translation id="4243624244759495699"><ph name="LOCALE" />, մակարդակ <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">Որոնել ստիլուսի համար այլ հավելվածներ</translation>
@@ -5354,7 +5354,6 @@
 <translation id="4766598565665644999">Բոլոր ընդլայնումները կարող են դիտել և փոխել <ph name="HOST" /> կայքը</translation>
 <translation id="4767427586072640478">Իմանալ ավելին անջատված ընդլայնումների մասին։</translation>
 <translation id="4768332406694066911">Դուք այս կազմակերպություններից այնպիսի հավաստագրեր ունեք, որոնք ձեզ կարող են նույնականացնել</translation>
-<translation id="4768945955870840220">Որոշ պրոդուկտների համար Chrome-ը կարող է կարծիքներ հավաքել ամբողջ համացանցից</translation>
 <translation id="4769632191812288342">Դուք ստանում եք ստանդարտ պաշտպանություն</translation>
 <translation id="4770119228883592393">Պահանջվում է թույլտվություն։ Արձագանքելու համար սեղմեք ⌘ + Option + վար սլաք։</translation>
 <translation id="4770755495532014179">Օգտագործեք այս գաղտնաբառը ձեր iPhone-ում</translation>
@@ -5495,6 +5494,7 @@
 <translation id="4862642413395066333">OCSP պատասխանների ստորագրում</translation>
 <translation id="4863702650881330715">Ընդլայնված համատեղելիություն</translation>
 <translation id="4863769717153320198"><ph name="WIDTH" />x<ph name="HEIGHT" /> (կանխադրված)</translation>
+<translation id="4864334716800138793">Աշխատանքային պրոֆիլի կարգավորումն անջատվել է ձեր կազմակերպության կողմից</translation>
 <translation id="4864369630010738180">Մուտք...</translation>
 <translation id="4864805589453749318">Ընտրեք ծնողին, որը ուսումնական հաշիվ ավելացնելու թույլտվություն է տալիս։</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (արգելափակված է)</translation>
@@ -6456,6 +6456,7 @@
 <translation id="5559768063688681413">Պահված տպիչներ չկան</translation>
 <translation id="55601339223879446">Կարգավորեք աշխատասեղանի սահմանագծերը տվյալ էկրանում</translation>
 <translation id="5561162485081632007">Հայտնաբերում է վտանգավոր իրադարձություններն ու զգուշացնում դրանց մասին</translation>
+<translation id="5562588178647493983">Լրացուցիչ տեղեկությունների համար դիմեք ձեր ադմինիստրատորին</translation>
 <translation id="556321030400250233">տեղային կամ ընդհանուր ֆայլ</translation>
 <translation id="5563234215388768762">Որոնեք Google-ում կամ մուտքագրեք URL</translation>
 <translation id="5563824734298958390">Լքե՞լ ներդիրների խումբը</translation>
@@ -8748,7 +8749,6 @@
 <translation id="7243092385765551741">Ջնջե՞լ մուտքի բանալին</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (լավագույն)</translation>
 <translation id="7246230585855757313">Նորից տեղադրեք անվտանգության բանալին ու կրկնեք փորձը։</translation>
-<translation id="724835896049478274">Հաշիվներ, որոնք հասանելի են Android-ի համար նախատեսված հավելվածների համար</translation>
 <translation id="7248802599439396696">Ապակտիվացնել ներդիրները</translation>
 <translation id="7249197363678284330">Փոխեք այս կարգավորումը հասցեագոտում։</translation>
 <translation id="7249764475759804559">Ներառել այս հավելվածը ֆայլերը բացելու տարբերակներում</translation>
@@ -9784,6 +9784,7 @@
 <translation id="7968833647796919681">Միացնել կատարողականության տվյալների հավաքումը</translation>
 <translation id="7968982339740310781">Դիտել մանրամասները</translation>
 <translation id="7969046989155602842">Command</translation>
+<translation id="7969144945436590933">Այլ մանրամասներ</translation>
 <translation id="7970673414865679092">Տեղեկություններ Ethernet-ի մասին</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384՝ RSA գաղտնագրումով</translation>
 <translation id="7973149423217802477">«Վատն է» կոճակի սեղմումը բացասական կարծիք է ուղարկում այս գործառույթի մասին։</translation>
@@ -10695,7 +10696,6 @@
 <translation id="8625124982056504555">Կարդալ ChromeOS սարքի և բաղադրիչների սերիական համարները</translation>
 <translation id="862542460444371744">&amp;Ընդլայնումներ</translation>
 <translation id="8625663000550647058">Չի թույլատրվում օգտագործել ձեր խոսափողը</translation>
-<translation id="8625679025395572221">Ձեր հաշիվը կարող է դեռ վտանգված լինել</translation>
 <translation id="8625916342247441948">Թույլ չտալ կայքերին միանալ HID սարքերին</translation>
 <translation id="862727964348362408">Ընդհատված է</translation>
 <translation id="862750493060684461">CSS-ի քեշ</translation>
@@ -11578,7 +11578,6 @@
 <translation id="936801553271523408">Համակարգի դիագնոստիկ տվյալներ</translation>
 <translation id="93766956588638423">Ընդլայնման վերանորոգում</translation>
 <translation id="938623846785894166">Անսովոր ֆայլ</translation>
-<translation id="939401694733344652">Այս հաշիվները ներկայումս չեն օգտագործվում Android-ի համար նախատեսված հավելվածներում։ Android-ի համար նախատեսված այս հավելվածում հաշիվ մտնելուց հետո վերջինս կարող եք օգտագործել նաև այլ այդպիսի հավելվածներում։ Android-ի համար նախատեսված հավելվածների մուտքի պարամետրերը փոխելու համար անցեք <ph name="LINK_BEGIN" />Կարգավորումներ &gt; Հաշիվներ<ph name="LINK_END" />։</translation>
 <translation id="939598580284253335">Մուտքագրեք անցաբառը</translation>
 <translation id="939736085109172342">Նոր պանակ</translation>
 <translation id="940212040923880623">&amp;Գտնել և փոփոխել</translation>

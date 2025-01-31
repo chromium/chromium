@@ -126,7 +126,6 @@
 <translation id="1076766328672150609">Dítě může používat k odemykání zařízení kód PIN.</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216">Slovník kontroly pravopisu pro jazyk <ph name="LANGUAGE" /> se nepodařilo stáhnout. Zkuste to znovu.</translation>
-<translation id="1078029726086090536">Ověřit heslo</translation>
 <translation id="1078037449555275327">Nastavení čtečky ChromeVox</translation>
 <translation id="1079242569060319448">Zapomněli jste PIN?</translation>
 <translation id="1079285777677001938">Některé weby mohou přestat fungovat.</translation>
@@ -371,6 +370,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1241066500170667906">Vyberte stav pro experiment <ph name="EXPERIMENT_NAME" /></translation>
 <translation id="124116460088058876">Další jazyky</translation>
 <translation id="1241381048229838873">Zobrazit všechny záložky</translation>
+<translation id="1242044645101871359">Znovu se přihlaste</translation>
 <translation id="1242633766021457174">Nástroj <ph name="THIRD_PARTY_TOOL_NAME" /> chce resetovat vaše nastavení.</translation>
 <translation id="1243002225871118300">Změna velikosti zobrazení a textu</translation>
 <translation id="1243314992276662751">Nahrát</translation>
@@ -1619,7 +1619,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2113921862428609753">Přístup k informacím autority</translation>
 <translation id="2114145607116268663">Nelze nainstalovat, je vyžadován restart. Restartujte počítač a zkuste to znovu. Kód chyby je <ph name="ERROR" />.</translation>
 <translation id="2114326799768592691">Znovu načíst &amp;rámec</translation>
-<translation id="2114413269775311385">Používat tento účet s aplikacemi pro Android. Oprávnění aplikací pro Android můžete ovládat v sekci <ph name="LINK_BEGIN" />Nastavení aplikací<ph name="LINK_END" />.</translation>
 <translation id="2114995631896158695">Není vložena žádná SIM karta</translation>
 <translation id="2116619964159595185">Weby se k zařízením Bluetooth obvykle připojují kvůli funkcím, jako je nastavení nebo synchronizace nízkoenergetických lokátorů, zařízení ke sledování kondice a zdraví nebo chytrých žárovek</translation>
 <translation id="2117655453726830283">Další snímek</translation>
@@ -4633,6 +4632,7 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="4242533952199664413">Otevřít Nastavení</translation>
 <translation id="4242577469625748426">Instalace nastavení zásady v zařízení se nezdařila: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385">Váš <ph name="BEGIN_LINK" />prohlížeč a profil spravuje<ph name="END_LINK" /> doména <ph name="DOMAIN" /></translation>
+<translation id="424315890655130736">Zadání heslové fráze</translation>
 <translation id="4243504193894350135">Tiskárna je pozastavena</translation>
 <translation id="4243624244759495699"><ph name="LOCALE" />, podoba: <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">Najít další aplikace pro dotyková pera</translation>
@@ -5355,7 +5355,6 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="4766598565665644999">Všechna rozšíření mohou číst web <ph name="HOST" /> a provádět na něm změny</translation>
 <translation id="4767427586072640478">Další informace o deaktivovaných rozšířeních.</translation>
 <translation id="4768332406694066911">Od následujících organizací máte certifikáty, které vás identifikují</translation>
-<translation id="4768945955870840220">U některých produktů může Chrome shromažďovat recenze z celého webu</translation>
 <translation id="4769632191812288342">Používáte standardní ochranu</translation>
 <translation id="4770119228883592393">Odpovězte na žádost o oprávnění stisknutím kláves ⌘ + Option + šipka dolů</translation>
 <translation id="4770755495532014179">Používejte tohle heslo na svém iPhonu</translation>
@@ -5496,6 +5495,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="4862642413395066333">Podepisování odpovědí OCSP</translation>
 <translation id="4863702650881330715">Rozšířit kompatibilitu</translation>
 <translation id="4863769717153320198">Vypadá jako <ph name="WIDTH" /> × <ph name="HEIGHT" /> (výchozí)</translation>
+<translation id="4864334716800138793">Vše organizace nastavení pracovního profilu zakázala</translation>
 <translation id="4864369630010738180">Přihlašování...</translation>
 <translation id="4864805589453749318">Vyberte, který rodič uděluje oprávnění k přidání školního účtu.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (blokováno)</translation>
@@ -6456,6 +6456,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="5559768063688681413">Žádné uložené tiskárny</translation>
 <translation id="55601339223879446">Úprava ohraničení plochy v rámci obrazovky</translation>
 <translation id="5561162485081632007">Rozpoznává nebezpečné události a upozorňuje vás na ně, když k nim dojde.</translation>
+<translation id="5562588178647493983">Další informace získáte u svého administrátora</translation>
 <translation id="556321030400250233">místní nebo sdílený soubor</translation>
 <translation id="5563234215388768762">Hledejte na Googlu nebo zadejte adresu URL</translation>
 <translation id="5563824734298958390">Opustit skupinu karet?</translation>
@@ -8751,7 +8752,6 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7243092385765551741">Smazat přístupový klíč?</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> × <ph name="HEIGHT" /> (nejlepší)</translation>
 <translation id="7246230585855757313">Opět bezpečnostní klíč vložte a zkuste to znovu</translation>
-<translation id="724835896049478274">Účty dostupné aplikacím pro Android</translation>
 <translation id="7248802599439396696">Deaktivovat karty</translation>
 <translation id="7249197363678284330">Toto nastavení můžete změnit na adresním řádku.</translation>
 <translation id="7249764475759804559">Zahrnout tuto aplikaci jako možnost při otevírání souborů</translation>
@@ -9787,6 +9787,7 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="7968833647796919681">Aktivovat shromažďování údajů o výkonu</translation>
 <translation id="7968982339740310781">Zobrazit podrobnosti</translation>
 <translation id="7969046989155602842">Command</translation>
+<translation id="7969144945436590933">Další podrobnosti</translation>
 <translation id="7970673414865679092">Podrobnosti o ethernetu</translation>
 <translation id="7972714317346275248">Šifrování PKCS #1 SHA-384 s RSA</translation>
 <translation id="7973149423217802477">Palec dolů odešle zpětnou vazbu, že se vám toto nelíbí.</translation>
@@ -10699,7 +10700,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8625124982056504555">Číst sériová čísla zařízení se systémem ChromeOS a komponent</translation>
 <translation id="862542460444371744">Rozšíř&amp;ení</translation>
 <translation id="8625663000550647058">Zákaz používat mikrofon</translation>
-<translation id="8625679025395572221">Váš účet může být pořád ohrožen.</translation>
 <translation id="8625916342247441948">Nepovolovat webům připojení k zařízením HID</translation>
 <translation id="862727964348362408">Pozastaveno</translation>
 <translation id="862750493060684461">Mezipaměť CSS</translation>
@@ -11582,7 +11582,6 @@ Informace o tom, jaká data Google shromažďuje a proč je shromažďuje, naj
 <translation id="936801553271523408">Diagnostická data o systému</translation>
 <translation id="93766956588638423">Opravit rozšíření</translation>
 <translation id="938623846785894166">Neobvyklý soubor</translation>
-<translation id="939401694733344652">Tyto účty se momentálně nepoužívají s aplikacemi pro Android. Pokud vyberete účet k použití s touto aplikací pro Android, bude ho možné používat také s jinými aplikacemi pro Android. Přístup aplikací pro Android můžete změnit v <ph name="LINK_BEGIN" />Nastavení &gt; Účty<ph name="LINK_END" />.</translation>
 <translation id="939598580284253335">Zadat heslovou frázi</translation>
 <translation id="939736085109172342">Nová složka</translation>
 <translation id="940212040923880623">&amp;Najít a upravit</translation>

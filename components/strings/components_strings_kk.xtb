@@ -674,7 +674,6 @@
 <translation id="2157640075051554492">Бағаны қадағалау хабарландырулары</translation>
 <translation id="21613918653299710">Онлайн сурет галереялары</translation>
 <translation id="2161656808144014275">Мәтін</translation>
-<translation id="2162510787844374618">Банкпен байланыс орнатылуда…</translation>
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> сайтындағы қазіргі бағасы – <ph name="CURRENT_PRICE" />.</translation>
 <translation id="2164510882479075877"><ph name="HOST_NAME" /> қатесіз енгізілгенін тексеріңіз.</translation>
 <translation id="2166049586286450108">Әкімшінің бүкіл дерекке кіру рұқсаты</translation>
@@ -2427,7 +2426,6 @@
 <translation id="5288108484102287882">Саясат мәндерін тексеру кезінде бірнеше ескерту жасалды</translation>
 <translation id="5289384342738547352">Бірнеше құжатты өңдеу</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{Бүгін жаңарту қажет}=2{Ертең жаңарту қажет}other{# күн ішінде жаңарту қажет}}</translation>
-<translation id="5292714443869769806"><ph name="OPERATING_SYSTEM" /> параметрлеріне өту</translation>
 <translation id="5293919335876685914">Купе</translation>
 <translation id="5298618990685278995">бірінші нобай;</translation>
 <translation id="5299298092464848405">Саясатты талдау қатесі</translation>
@@ -3649,6 +3647,7 @@
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Жүк көліктері мен трейлерлер</translation>
 <translation id="7461924472993315131">Бекіту</translation>
+<translation id="746329643760972486">MacOS</translation>
 <translation id="7465036432780054056"><ph name="TOP_LEVEL_URL" /> сайтына кірсеңіз, <ph name="EMBEDDED_URL" /> біліп отырады.</translation>
 <translation id="7465963048299965912">10 x 13 дюйм</translation>
 <translation id="7469935732330206581">Үлгі қорғалмаған</translation>
@@ -3919,7 +3918,6 @@
 <translation id="7942349550061667556">Қызыл</translation>
 <translation id="7943397946612013052">Жүктеп алуға тыйым салды</translation>
 <translation id="7943893128817522649">Автоматты түрде бірнеше файл жүктеп алуға рұқсат сұрай алады</translation>
-<translation id="794567586469801724">macOS</translation>
 <translation id="7947285636476623132">Жарамдылық мерзімі бітетін жылды тексеріп, әрекетті қайталаңыз</translation>
 <translation id="7947310711271925113">Поп-музыка</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome функциялары туралы білу үшін Tab, содан кейін Enter пернесін басыңыз.</translation>
@@ -4670,7 +4668,6 @@
 <translation id="984275831282074731">Төлеу әдістері</translation>
 <translation id="985199708454569384">&lt;p&gt;Компьютеріңіз немесе мобильді құрылғыңызда белгіленген күн мен уақыт дұрыс болмаса, осы қате шығады.&lt;/p&gt;
     &lt;p&gt;Қатені түзету үшін құрылғыңыздың сағатын ашыңыз. Уақыт пен күннің дұрыс екеніне көз жеткізіңіз&lt;/p&gt;</translation>
-<translation id="986257639512122511"><ph name="ORIGIN" /> сайтында <ph name="PERMISSION" /> пайдалануға рұқсат бердіңіз.</translation>
 <translation id="987264212798334818">Жалпы</translation>
 <translation id="988159990683914416">Әзірлеуші жасақтамасы</translation>
 <translation id="989988560359834682">Мекенжайды өзгерту</translation>

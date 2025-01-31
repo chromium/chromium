@@ -263,7 +263,6 @@
 <translation id="2074131957428911366">Du kan altid vælge, hvad der skal synkroniseres, i <ph name="BEGIN_LINK" />indstillingerne<ph name="END_LINK" />.</translation>
 <translation id="2078437078822043850">Du kan rulle til højre for at browse i inkognito.</translation>
 <translation id="2079545284768500474">Fortryd</translation>
-<translation id="2082906935540894275">De mest relevante funktioner til dig på forskellige tidspunkter.</translation>
 <translation id="2085876078937250610">Gem…</translation>
 <translation id="2096239473850415494">Download mislykkedes</translation>
 <translation id="2096716221239095980">Slet alle data</translation>
@@ -548,7 +547,6 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="3445288400492335833"><ph name="MINUTES" /> min.</translation>
 <translation id="344589138074534176">Få flere oplysninger om Google Lens</translation>
 <translation id="3447332786336558089">Når du logger ud, lukkes fanerne, og data, der ikke er gemt, slettes fra denne enhed. Disse data kan omfatte adgangskoder, historik m.m.</translation>
-<translation id="3449016921756175697">Nyttige forslag, der gør det nemmere at surfe på nettet.</translation>
 <translation id="345348365500626747">Adressen blev fundet</translation>
 <translation id="3464194322481586217">Prissporing mislykkedes.</translation>
 <translation id="3469117812148449995">Valgmuligheder for at gemme adgangskode</translation>
@@ -922,7 +920,6 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="5127538504377457572">Aktiv for <ph name="DAYS" /> dage siden</translation>
 <translation id="5128788795241319992">Se den nye menu</translation>
 <translation id="5132942445612118989">Synkroniser dine adgangskoder, din historik og meget mere på alle enheder</translation>
-<translation id="5137526732000415202">Din seneste åbne fane på tværs af alle dine enheder.</translation>
 <translation id="5145331760738811130">Luk Faneskift</translation>
 <translation id="5157638238828697074">Noget gik galt. Appen kunne ikke åbnes.</translation>
 <translation id="5163417375525818870">PDF'er</translation>
@@ -1023,7 +1020,6 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="559567008082979829">Angiv, at dine downloads skal slettes efter én måned.</translation>
 <translation id="5596627076506792578">Flere valgmuligheder</translation>
 <translation id="560322036295180549">Deaktiveret af din organisation</translation>
-<translation id="5611107723541161735">Genveje til de websites, du har besøgt for nylig, på denne enhed.</translation>
 <translation id="5611398002774823980">Gem på konto</translation>
 <translation id="5613297089029360427">Sortér efter seneste</translation>
 <translation id="5614553682702429503">Vil du gemme adgangskoden?</translation>
@@ -1487,7 +1483,6 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="7512075701202892785">Din yndlingsbrowser er nu tilgængelig på iPad</translation>
 <translation id="7512909159512473473">Angiv adgangssætning…</translation>
 <translation id="7514365320538308">Download</translation>
-<translation id="7521117365186708026">Konfigurer tip, der hjælper dig med at få mest muligt ud af Chrome.</translation>
 <translation id="7524055474074101597">Få adgang til dine adgangskoder og meget mere i apps.</translation>
 <translation id="75362970626182391">Ny fanegruppe</translation>
 <translation id="7537586195939242955">Din adgangssætning kan ikke installeres på Passbook lige nu.</translation>
@@ -1706,7 +1701,6 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8439758443371991593">Skjul Føj til læseliste</translation>
 <translation id="8449869326050867919">Adgangskoden er delt</translation>
 <translation id="8453847087068411809">Registrer aldrig pakker automatisk</translation>
-<translation id="846158969830690371">Se, om du har de sikreste indstillinger eller har brug for at gennemgå noget.</translation>
 <translation id="8473863474539038330">Adresser m.m.</translation>
 <translation id="8474378002946546633">Tillad notifikationer</translation>
 <translation id="8477178913400731244">Slet data</translation>
