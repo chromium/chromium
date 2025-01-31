@@ -61,9 +61,15 @@ TEST_F(GlicLauncherConfigurationTest, GetGlobalHotkey_Default) {
   const ui::Accelerator accelerator =
       GlicLauncherConfiguration::GetGlobalHotkey();
   EXPECT_EQ(accelerator.key_code(), ui::VKEY_G);
+#if BUILDFLAG(IS_MAC)
   EXPECT_TRUE(accelerator.IsCtrlDown());
+  EXPECT_FALSE(accelerator.IsAltDown());
+  EXPECT_FALSE(accelerator.IsCmdDown());
+#else
+  EXPECT_FALSE(accelerator.IsCtrlDown());
   EXPECT_TRUE(accelerator.IsAltDown());
   EXPECT_FALSE(accelerator.IsCmdDown());
+#endif
 }
 
 TEST_F(GlicLauncherConfigurationTest, GetGlobalHotkey_Invalid) {
