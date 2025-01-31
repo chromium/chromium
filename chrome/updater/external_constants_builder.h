@@ -81,9 +81,6 @@ class ExternalConstantsBuilder {
       std::optional<bool> is_managed_device);
   ExternalConstantsBuilder& ClearMachineManaged();
 
-  ExternalConstantsBuilder& SetEnableDiffUpdates(bool enable_diffs);
-  ExternalConstantsBuilder& ClearEnableDiffUpdates();
-
   ExternalConstantsBuilder& SetCecaConnectionTimeout(
       base::TimeDelta ceca_connection_timeout);
   ExternalConstantsBuilder& ClearCecaConnectionTimeout();

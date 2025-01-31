@@ -78,7 +78,6 @@ TEST_F(ExternalConstantsBuilderTests, TestOverridingEverything) {
       .SetOverinstallTimeout(base::Seconds(3))
       .SetIdleCheckPeriod(base::Seconds(4))
       .SetMachineManaged(std::make_optional(true))
-      .SetEnableDiffUpdates(true)
       .SetCecaConnectionTimeout(base::Seconds(7));
   EXPECT_TRUE(builder.Overwrite());
 
@@ -102,7 +101,6 @@ TEST_F(ExternalConstantsBuilderTests, TestOverridingEverything) {
   EXPECT_EQ(verifier->IdleCheckPeriod(), base::Seconds(4));
   EXPECT_TRUE(verifier->IsMachineManaged().has_value());
   EXPECT_TRUE(verifier->IsMachineManaged().value());
-  EXPECT_TRUE(verifier->EnableDiffUpdates());
   EXPECT_EQ(verifier->CecaConnectionTimeout(), base::Seconds(7));
 }
 
@@ -143,7 +141,6 @@ TEST_F(ExternalConstantsBuilderTests, TestClearedEverything) {
                   .SetAppLogoURL("https://localhost/1/applogo/")
                   .SetUseCUP(false)
                   .SetInitialDelay(base::Seconds(123.4))
-                  .SetEnableDiffUpdates(true)
                   .ClearUpdateURL()
                   .ClearCrashUploadURL()
                   .ClearDeviceManagementURL()
@@ -155,7 +152,6 @@ TEST_F(ExternalConstantsBuilderTests, TestClearedEverything) {
                   .ClearOverinstallTimeout()
                   .ClearIdleCheckPeriod()
                   .ClearMachineManaged()
-                  .ClearEnableDiffUpdates()
                   .ClearCecaConnectionTimeout()
                   .Overwrite());
 
@@ -176,7 +172,6 @@ TEST_F(ExternalConstantsBuilderTests, TestClearedEverything) {
   EXPECT_EQ(verifier->ServerKeepAliveTime(), kServerKeepAliveTime);
   EXPECT_EQ(verifier->DictPolicies().size(), 0U);
   EXPECT_FALSE(verifier->IsMachineManaged().has_value());
-  EXPECT_FALSE(verifier->EnableDiffUpdates());
   EXPECT_EQ(verifier->CecaConnectionTimeout(), kCecaConnectionTimeout);
 }
 
@@ -195,7 +190,6 @@ TEST_F(ExternalConstantsBuilderTests, TestOverSet) {
           .SetServerKeepAliveTime(base::Seconds(2))
           .SetMachineManaged(std::make_optional(true))
           .SetDictPolicies(dict_policies)
-          .SetEnableDiffUpdates(false)
           .SetUpdateURL(std::vector<std::string>{"https://localhost/1/www"})
           .SetCrashUploadURL("https://localhost/1/crash")
           .SetDeviceManagementURL("https://localhost/1/dm")
@@ -204,7 +198,6 @@ TEST_F(ExternalConstantsBuilderTests, TestOverSet) {
           .SetInitialDelay(base::Seconds(937.6))
           .SetServerKeepAliveTime(base::Seconds(3))
           .SetMachineManaged(std::make_optional(false))
-          .SetEnableDiffUpdates(true)
           .SetCecaConnectionTimeout(base::Seconds(38))
           .Overwrite());
 
@@ -226,7 +219,6 @@ TEST_F(ExternalConstantsBuilderTests, TestOverSet) {
   EXPECT_EQ(verifier->DictPolicies().size(), 1U);
   EXPECT_TRUE(verifier->IsMachineManaged().has_value());
   EXPECT_FALSE(verifier->IsMachineManaged().value());
-  EXPECT_TRUE(verifier->EnableDiffUpdates());
   EXPECT_EQ(verifier->CecaConnectionTimeout(), base::Seconds(38));
 }
 
@@ -248,7 +240,6 @@ TEST_F(ExternalConstantsBuilderTests, TestReuseBuilder) {
           .SetUpdateURL(std::vector<std::string>{"https://localhost/1/www"})
           .SetDictPolicies(dict_policies)
           .SetMachineManaged(std::make_optional(true))
-          .SetEnableDiffUpdates(true)
           .SetCecaConnectionTimeout(base::Seconds(5))
           .Overwrite());
 
@@ -270,7 +261,6 @@ TEST_F(ExternalConstantsBuilderTests, TestReuseBuilder) {
   EXPECT_EQ(verifier->DictPolicies().size(), 2U);
   EXPECT_TRUE(verifier->IsMachineManaged().has_value());
   EXPECT_TRUE(verifier->IsMachineManaged().value());
-  EXPECT_TRUE(verifier->EnableDiffUpdates());
   EXPECT_EQ(verifier->CecaConnectionTimeout(), base::Seconds(5));
 
   base::Value::Dict dict_policies2;
@@ -285,7 +275,6 @@ TEST_F(ExternalConstantsBuilderTests, TestReuseBuilder) {
                   .ClearAppLogoURL()
                   .SetDictPolicies(dict_policies2)
                   .ClearMachineManaged()
-                  .SetEnableDiffUpdates(false)
                   .ClearCecaConnectionTimeout()
                   .Overwrite());
 
@@ -309,7 +298,6 @@ TEST_F(ExternalConstantsBuilderTests, TestReuseBuilder) {
   EXPECT_EQ(verifier2->ServerKeepAliveTime(), base::Seconds(4));
   EXPECT_EQ(verifier2->DictPolicies().size(), 1U);
   EXPECT_FALSE(verifier2->IsMachineManaged().has_value());
-  EXPECT_FALSE(verifier2->EnableDiffUpdates());
   EXPECT_EQ(verifier2->CecaConnectionTimeout(), kCecaConnectionTimeout);
 }
 
@@ -334,7 +322,6 @@ TEST_F(ExternalConstantsBuilderTests, TestModify) {
           .SetAppLogoURL("https://localhost/1/applogo/")
           .SetDictPolicies(dict_policies)
           .SetMachineManaged(std::make_optional(false))
-          .SetEnableDiffUpdates(true)
           .SetCecaConnectionTimeout(base::Seconds(55))
           .Overwrite());
 
@@ -356,7 +343,6 @@ TEST_F(ExternalConstantsBuilderTests, TestModify) {
   EXPECT_EQ(verifier->DictPolicies().size(), 2U);
   EXPECT_TRUE(verifier->IsMachineManaged().has_value());
   EXPECT_FALSE(verifier->IsMachineManaged().value());
-  EXPECT_TRUE(verifier->EnableDiffUpdates());
   EXPECT_EQ(verifier->CecaConnectionTimeout(), base::Seconds(55));
 
   // Now we use a new builder to modify just the group policies.
@@ -387,7 +373,6 @@ TEST_F(ExternalConstantsBuilderTests, TestModify) {
   EXPECT_EQ(verifier2->ServerKeepAliveTime(), base::Seconds(3));
   EXPECT_TRUE(verifier2->IsMachineManaged().has_value());
   EXPECT_FALSE(verifier2->IsMachineManaged().value());
-  EXPECT_TRUE(verifier2->EnableDiffUpdates());
   EXPECT_EQ(verifier2->CecaConnectionTimeout(), base::Seconds(55));
 }
 

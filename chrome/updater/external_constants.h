@@ -70,9 +70,6 @@ class ExternalConstants : public base::RefCountedThreadSafe<ExternalConstants> {
   // Overrides machine management state.
   virtual std::optional<bool> IsMachineManaged() const = 0;
 
-  // True if the updater should request and apply diff updates.
-  virtual bool EnableDiffUpdates() const = 0;
-
   // The maximum time allowed to establish a connection to CECA.
   virtual base::TimeDelta CecaConnectionTimeout() const = 0;
 

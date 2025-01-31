@@ -60,8 +60,6 @@ class DefaultExternalConstants : public ExternalConstants {
 
   std::optional<bool> IsMachineManaged() const override { return std::nullopt; }
 
-  bool EnableDiffUpdates() const override { return false; }
-
   base::TimeDelta CecaConnectionTimeout() const override {
     return kCecaConnectionTimeout;
   }
