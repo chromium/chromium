@@ -89,6 +89,24 @@ enum class CancelationReason {
   kFailed,
 };
 
+// Returns `true` if any of the following holds:
+// * we are at the FRE step,
+// * there is already a profile that has been fully initialized for gaia_id, or
+// * a policy forces the browsing data to stay separated.
+bool ShouldSkipBrowsingDataMigration(signin_metrics::AccessPoint access_point,
+                                     NSString* gaia_id,
+                                     PrefService* pref_service) {
+  bool always_separate_browsing_data_per_policy =
+      pref_service->GetInteger(
+          prefs::kProfileSeparationDataMigrationSettings) ==
+      policy::ALWAYS_SEPARATE;
+  return always_separate_browsing_data_per_policy ||
+         access_point == signin_metrics::AccessPoint::kStartPage ||
+         GetApplicationContext()
+             ->GetAccountProfileMapper()
+             ->IsProfileForGaiaIDFullyInitialized(GaiaId(gaia_id));
+}
+
 }  // namespace
 
 @interface AuthenticationFlow ()
@@ -404,8 +422,8 @@ enum class CancelationReason {
     return;
   }
   if (!AreSeparateProfilesForManagedAccountsEnabled() ||
-      [self shouldSkipBrowsingDataMigration:_accessPoint
-                                    gaia_id:_identityToSignIn.gaiaID]) {
+      ShouldSkipBrowsingDataMigration(_accessPoint, _identityToSignIn.gaiaID,
+                                      [self prefs])) {
     // The profile-separation policy affects whether browsing-data-migration
     // is offered, so it's only needed if the migration isn't skipped.
     [self continueFlow];
@@ -432,18 +450,18 @@ enum class CancelationReason {
     // Skip browsing data migration if we are at the first run screen or if
     // there is already a profile that exists with the account we are trying
     // to signin with.
+    PrefService* prefService = [self prefs];
     skipBrowsingDataMigration =
         _profileSeparationDataMigrationSettings == policy::ALWAYS_SEPARATE ||
-        [self shouldSkipBrowsingDataMigration:_accessPoint
-                                      gaia_id:_identityToSignIn.gaiaID];
+        ShouldSkipBrowsingDataMigration(_accessPoint, _identityToSignIn.gaiaID,
+                                        prefService);
 
-    auto* pref_service = [self prefs];
     // Merge browsing data by default if the data migration screen is shown to
     // the user and if a policy was set by the admin to merge the browsing data
     // by default.
     mergeBrowsingDataByDefault =
         !skipBrowsingDataMigration &&
-        pref_service->GetInteger(
+        prefService->GetInteger(
             prefs::kProfileSeparationDataMigrationSettings) ==
             policy::USER_OPT_OUT;
   }
@@ -813,25 +831,6 @@ enum class CancelationReason {
   _signInCompletion = nil;
   _didSwitchProfile = YES;
   [self continueFlow];
-}
-
-// Returns true if any of the following holds:
-// * we are at the FRE step,
-// * there is already a profile that has been fully initialized for gaia_id, or
-// * a policy forces the browsing data to stay separated.
-- (BOOL)shouldSkipBrowsingDataMigration:
-            (signin_metrics::AccessPoint)access_point
-                                gaia_id:(NSString*)gaia_id {
-  auto* pref_service = [self prefs];
-  bool always_separate_browsing_data_per_policy =
-      pref_service->GetInteger(
-          prefs::kProfileSeparationDataMigrationSettings) ==
-      policy::ALWAYS_SEPARATE;
-  return always_separate_browsing_data_per_policy ||
-         access_point == signin_metrics::AccessPoint::kStartPage ||
-         GetApplicationContext()
-             ->GetAccountProfileMapper()
-             ->IsProfileForGaiaIDFullyInitialized(GaiaId(gaia_id));
 }
 
 #pragma mark - Used for testing
