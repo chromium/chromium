@@ -915,6 +915,14 @@ public class StripLayoutHelperManager
                 : "Fade transition is requested when height transition to update the scrim is in"
                         + " progress.";
         boolean showStrip = newOpacity == 0f;
+
+        // Update the status bar color to ensure that it reflects the current strip visibility state
+        // and to override any stale value impacted by visibility set during a previous height
+        // transition.
+        mStatusBarColorController.setTabStripHiddenOnTablet(!showStrip);
+        mStatusBarColorController.setTabStripColorOverlay(
+                getStripTransitionScrimColor(), newOpacity);
+
         if (mFadeTransitionAnimator != null && mFadeTransitionAnimator.isRunning()) {
             mFadeTransitionAnimator.cancel();
         }
