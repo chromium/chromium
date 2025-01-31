@@ -460,7 +460,7 @@ crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/t
 crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/texture-srgb-upload.html [ Failure ]
 crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/texture-video-transparent.html [ Failure ]
 crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/tex-video-using-tex-unit-non-zero.html [ Failure ]
-crbug.com/1490427 [ angle-vulkan arm fuchsia web-engine-shell ] conformance/canvas/drawingbuffer-static-canvas-test.html [ Failure ]
+crbug.com/1490427 [ angle-vulkan arm fuchsia fuchsia-board-nelson web-engine-shell ] conformance/canvas/drawingbuffer-static-canvas-test.html [ Failure ]
 crbug.com/1490427 [ angle-vulkan arm fuchsia web-engine-shell ] conformance/rendering/rendering-stencil-large-viewport.html [ Failure ]
 
 # flaky and worth retrying.
@@ -502,13 +502,7 @@ crbug.com/1362937 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/uniforms
 
 ## Vulkan / Win / NVIDIA / Passthrough command decoder ##
 
-crbug.com/1209189 [ win nvidia angle-vulkan passthrough ] conformance/glsl/constructors/glsl-construct-vec-mat-index.html [ Failure ]
-crbug.com/1242454 [ win nvidia angle-vulkan passthrough ] conformance/glsl/bugs/pow-with-constant-exponent-should-not-crash.html [ Failure ]
-crbug.com/1259977 [ win nvidia-0x2184 angle-vulkan passthrough ] conformance/glsl/functions/glsl-function-abs.html [ Failure ]
-crbug.com/1259977 [ win nvidia-0x2184 angle-vulkan passthrough ] conformance/glsl/functions/glsl-function-ceil.html [ Failure ]
-crbug.com/1259977 [ win nvidia-0x2184 angle-vulkan passthrough ] conformance/glsl/functions/glsl-function-faceforward.html [ Failure ]
 
-crbug.com/1291276 [ win nvidia angle-vulkan passthrough ] conformance/ogles/GL/mod/mod_001_to_008.html [ Failure ]
 
 
 ## Win / Adreno 690 / D3D11
