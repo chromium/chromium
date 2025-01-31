@@ -6,6 +6,7 @@ import("//chrome/common/features.gni")
 
 source_set("contextual_cueing") {
   sources = [
+    "contextual_cueing_enums.h",
     "contextual_cueing_features.h",
     "contextual_cueing_helper.h",
     "contextual_cueing_service.h",

@@ -1799,8 +1799,7 @@ class SoftwareTextureLayerLoseFrameSinkTest : public SoftwareTextureLayerTest {
         // The frame sink is lost. The host will make a new one and submit
         // another frame, with the id being registered again.
         layer_tree_host()->SetVisible(false);
-        first_frame_sink_ =
-            layer_tree_host()->ReleaseLayerTreeFrameSink().get();
+        layer_tree_host()->ReleaseLayerTreeFrameSink();
         layer_tree_host()->SetVisible(true);
         texture_layer_->SetNeedsDisplay();
         EXPECT_FALSE(released_);
@@ -1845,9 +1844,6 @@ class SoftwareTextureLayerLoseFrameSinkTest : public SoftwareTextureLayerTest {
   int verified_frames_ = 0;
   int source_frame_number_ = 0;
   bool released_ = false;
-  // Keeps a pointer value of the first frame sink, which will be removed
-  // from the host and destroyed.
-  raw_ptr<void, AcrossTasksDanglingUntriaged> first_frame_sink_;
 };
 
 SINGLE_AND_MULTI_THREAD_TEST_F(SoftwareTextureLayerLoseFrameSinkTest);

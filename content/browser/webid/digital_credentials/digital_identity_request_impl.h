@@ -44,7 +44,7 @@ class CONTENT_EXPORT DigitalIdentityRequestImpl
   static std::optional<DigitalIdentityInterstitialType> ComputeInterstitialType(
       const url::Origin& rp_origin,
       const DigitalIdentityProvider* provider,
-      const std::optional<std::string>& protocol,
+      const std::string& protocol,
       const data_decoder::DataDecoder::ValueOrError& request_data);
 
   DigitalIdentityRequestImpl(const DigitalIdentityRequestImpl&) = delete;

@@ -1914,17 +1914,16 @@ TEST_F(AccessibilityTest, PositionInInvalidMapLayout) {
   const AXObject* ax_br = GetAXObjectByElementId("br");
   ASSERT_NE(nullptr, ax_br);
 
-  // Positions are handled as if the map was not appended to the child.
   const auto ax_position_before =
-      AXPosition::CreatePositionBeforeObject(*ax_br);
+      AXPosition::CreateFirstPositionInObject(*ax_br);
   const auto position_before = ax_position_before.ToPositionWithAffinity();
-  EXPECT_EQ(GetDocument().body(), position_before.AnchorNode());
-  EXPECT_EQ(1, position_before.GetPosition().OffsetInContainerNode());
+  EXPECT_EQ(br, position_before.AnchorNode());
+  EXPECT_EQ(0, position_before.GetPosition().OffsetInContainerNode());
 
-  const auto ax_position_after = AXPosition::CreatePositionAfterObject(*ax_br);
+  const auto ax_position_after = AXPosition::CreateLastPositionInObject(*ax_br);
   const auto position_after = ax_position_after.ToPositionWithAffinity();
-  EXPECT_EQ(GetDocument().body(), position_after.AnchorNode());
-  EXPECT_EQ(2, position_after.GetPosition().OffsetInContainerNode());
+  EXPECT_EQ(br, position_after.AnchorNode());
+  EXPECT_EQ(0, position_after.GetPosition().OffsetInContainerNode());
 }
 
 TEST_F(AccessibilityTest, ToPositionWithAffinityWithMultipleInlineTextBoxes) {

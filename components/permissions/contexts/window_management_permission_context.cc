@@ -19,7 +19,7 @@ WindowManagementPermissionContext::WindowManagementPermissionContext(
     : PermissionContextBase(
           browser_context,
           ContentSettingsType::WINDOW_MANAGEMENT,
-          blink::mojom::PermissionsPolicyFeature::kWindowManagement) {}
+          network::mojom::PermissionsPolicyFeature::kWindowManagement) {}
 
 WindowManagementPermissionContext::~WindowManagementPermissionContext() =
     default;

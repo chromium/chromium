@@ -2307,7 +2307,7 @@
     },
     {
       name: "HighlightInheritance",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "HighlightPointerEvents",
@@ -3415,10 +3415,10 @@
     },
     {
       // Controls whether Private Aggregation's "maxContributions" field is
-      // enabled. Equivalent fields are specified by Shared Storage and
-      // Protected Audience. If disabled, the field will be ignored.
+      // enabled for Shared Storage callers. If disabled, the field will be
+      // ignored. https://chromestatus.com/feature/5189366316793856
       name: "PrivateAggregationApiMaxContributions",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "PrivateNetworkAccessNonSecureContextsAllowed",

@@ -34,6 +34,10 @@ BASE_FEATURE(kAdSamplerTriggerFeature,
 BASE_FEATURE(kAddReferringAppInfoToProtegoPings,
              "AddReferringAppInfoToProtegoPings",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAddReferringWebApkToProtegoPings,
+             "AddReferringWebApkToProtegoPings",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 BASE_FEATURE(kAddWarningShownTSToClientSafeBrowsingReport,

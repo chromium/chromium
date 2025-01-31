@@ -43,6 +43,7 @@ class VirtualCardEnrollmentManager;
 namespace payments {
 
 class PaymentsWindowManager;
+class BnplManager;
 
 // This class is for easier writing of tests. It is owned by TestAutofillClient.
 class TestPaymentsAutofillClient : public PaymentsAutofillClient {
@@ -105,6 +106,7 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
       base::OnceClosure accept_mandatory_reauth_callback,
       base::OnceClosure cancel_mandatory_reauth_callback,
       base::RepeatingClosure close_mandatory_reauth_callback) override;
+  BnplManager* GetPaymentsBnplManager() override;
   MockIbanManager* GetIbanManager() override;
   MockIbanAccessManager* GetIbanAccessManager() override;
   void ShowMandatoryReauthOptInConfirmation() override;
@@ -249,6 +251,8 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
   // `payments_network_interface_` in `virtual_card_enrollment_manager_`.
   std::unique_ptr<VirtualCardEnrollmentManager>
       virtual_card_enrollment_manager_;
+
+  std::unique_ptr<BnplManager> bnpl_manager_;
 
   std::unique_ptr<CreditCardCvcAuthenticator> cvc_authenticator_;
 

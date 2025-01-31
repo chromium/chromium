@@ -153,7 +153,7 @@ bool ShouldBlockUsbServiceCall(LocalDOMWindow* window,
     return true;
   }
 
-  if (!context->IsFeatureEnabled(mojom::blink::PermissionsPolicyFeature::kUsb,
+  if (!context->IsFeatureEnabled(network::mojom::PermissionsPolicyFeature::kUsb,
                                  ReportOptions::kReportOnFailure)) {
     if (exception_state) {
       exception_state->ThrowSecurityError(kFeaturePolicyBlocked);
@@ -433,7 +433,7 @@ void USB::EnsureServiceConnection() {
 
 bool USB::IsFeatureEnabled(ReportOptions report_options) const {
   return GetExecutionContext()->IsFeatureEnabled(
-      mojom::blink::PermissionsPolicyFeature::kUsb, report_options);
+      network::mojom::PermissionsPolicyFeature::kUsb, report_options);
 }
 
 void USB::Trace(Visitor* visitor) const {

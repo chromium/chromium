@@ -104,6 +104,9 @@ class ExtensionAllowlistUnitTest : public ExtensionAllowlistUnitTestBase {
          extensions_features::kSafeBrowsingCrxAllowlistAutoDisable},
         {});
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(ExtensionAllowlistUnitTest, AllowlistEnforcement) {
@@ -713,6 +716,9 @@ class ExtensionAllowlistWithFeatureDisabledUnitTest
         {extensions_features::kSafeBrowsingCrxAllowlistShowWarnings},
         {extensions_features::kSafeBrowsingCrxAllowlistAutoDisable});
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(ExtensionAllowlistWithFeatureDisabledUnitTest,

@@ -381,10 +381,10 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         if (mButtonGroup.getChildCount() > 0) {
             mButtonGroup.removeAllViews();
         }
-        mButtonGroup.setVisibility(View.VISIBLE);
-        int numButtons = buttonSpecList.length;
+        int numButtons = buttonSpecList != null ? buttonSpecList.length : 0;
+        mButtonGroup.setVisibility(numButtons > 0 ? View.VISIBLE : View.GONE);
 
-        for (int i = 0; i < buttonSpecList.length; i++) {
+        for (int i = 0; i < numButtons; i++) {
             ModalDialogProperties.ModalDialogButtonSpec spec = buttonSpecList[i];
             // We can get rid of the button by just leaving the text blank.
             if (TextUtils.isEmpty(spec.getText())) {

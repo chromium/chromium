@@ -83,6 +83,10 @@ const base::flat_map<ui::DomCode, MouseKeysController::MouseKey> kNumPadKeys({
     {ui::DomCode::NUMPAD_MULTIPLY, MouseKeysController::kKeySelectBothButtons},
 });
 
+bool ShouldEndDragOperation(ui::MouseEvent* event) {
+  return event->type() == ui::EventType::kMousePressed && event->IsAnyButton();
+}
+
 }  // namespace
 
 MouseKeysController::MouseKeysController()
@@ -183,6 +187,11 @@ void MouseKeysController::set_enabled(bool enabled) {
 }
 
 void MouseKeysController::OnMouseEvent(ui::MouseEvent* event) {
+  if (ShouldEndDragOperation(event)) {
+    EndDragOperation();
+    return;
+  }
+
   if (event->type() != ui::EventType::kMouseMoved) {
     return;
   }
@@ -194,6 +203,17 @@ void MouseKeysController::OnMouseEvent(ui::MouseEvent* event) {
     bubble_position.Offset(16, 16);
     mouse_keys_bubble_controller_->UpdateMouseKeysBubblePosition(
         bubble_position);
+  }
+}
+
+void MouseKeysController::EndDragOperation() {
+  if (dragging_) {
+    drag_event_rewriter_->SetEnabled(false);
+    SendMouseEventToLocation(ui::EventType::kMouseReleased,
+                             last_mouse_position_dips_);
+    dragging_ = false;
+    UpdateMouseKeysBubble(false, MouseKeysBubbleIconType::kMouseDrag,
+                          IDS_ASH_MOUSE_KEYS_PERIOD_RELEASE);
   }
 }
 
@@ -313,14 +333,7 @@ void MouseKeysController::PressKey(MouseKey key) {
       }
       break;
     case kKeyDragStop:
-      if (dragging_) {
-        drag_event_rewriter_->SetEnabled(false);
-        SendMouseEventToLocation(ui::EventType::kMouseReleased,
-                                 last_mouse_position_dips_);
-        dragging_ = false;
-        UpdateMouseKeysBubble(false, MouseKeysBubbleIconType::kMouseDrag,
-                              drag_resource);
-      }
+      EndDragOperation();
       break;
     case kKeyDoubleClick:
       if (current_mouse_button_ == kLeft) {

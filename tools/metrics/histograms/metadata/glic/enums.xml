@@ -26,6 +26,12 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<enum name="GlicWebClientMode">
+  <int value="0" label="Text"/>
+  <int value="1" label="Audio"/>
+  <int value="2" label="Unknown"/>
+</enum>
+
 <enum name="PdfRequestStates">
   <int value="0" label="PDF main doc; PDF found"/>
   <int value="1" label="PDF main doc; PDF not found"/>

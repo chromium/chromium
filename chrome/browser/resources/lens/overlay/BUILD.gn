@@ -107,6 +107,7 @@ build_webui("build_overlay") {
     "$root_gen_dir/chrome/browser/lens/core/mojom/polygon.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/lens/core/mojom/text.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/lens/core/mojom/translate.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/lens/core/mojom/page_content_type.mojom-webui.ts",
   ]
 
   ts_path_mappings =

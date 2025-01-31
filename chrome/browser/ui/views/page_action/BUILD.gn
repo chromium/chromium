@@ -52,6 +52,7 @@ source_set("unit_tests") {
     "page_action_container_view_unittest.cc",
     "page_action_controller_unittest.cc",
     "page_action_icon_view_unittest.cc",
+    "page_action_model_unittest.cc",
     "page_action_observer_unittest.cc",
     "page_action_view_unittest.cc",
   ]

@@ -1,0 +1,60 @@
+<style include="print-preview-shared cr-input-style">
+  :host {
+    display: flex;
+    --cr-input-error-display: none;
+  }
+
+  cr-input::part(row-container) {
+    min-height: 32px;
+  }
+
+  #icon,
+  #clearSearch {
+    margin-inline-end: 0;
+    margin-inline-start: 0;
+  }
+
+  #icon {
+    height: var(--search-icon-size);
+    width: var(--search-icon-size);
+  }
+
+  #clearSearch {
+    --clear-icon-size: 28px;
+    --cr-icon-button-size: var(--clear-icon-size);
+    --cr-icon-button-icon-size: 20px;
+    height: var(--clear-icon-size);
+    position: absolute;
+    right: 0;
+    width: var(--clear-icon-size);
+    /* Necessary to be above the '#hover-layer' in cr-input. */
+    z-index: 1;
+  }
+
+  :host-context([dir=rtl]) #clearSearch {
+    left: 0;
+    right: auto;
+  }
+
+  :host([has-search-text]) cr-input {
+    --cr-input-padding-end: 24px;
+  }
+
+  .search-box-input {
+    width: 100%;
+  }
+
+  .search-box-input::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+  }
+</style>
+<cr-input type="search" id="searchInput" class="search-box-input"
+    on-search="onSearchTermSearch" on-input="onSearchTermInput"
+    aria-label$="[[label]]" placeholder="[[label]]"
+    autofocus="[[autofocus]]" spellcheck="false">
+  <div slot="inline-prefix" id="icon" class="cr-icon icon-search" alt=""></div>
+  <cr-icon-button id="clearSearch" class="icon-cancel"
+      hidden$="[[!hasSearchText]]" slot="suffix" on-click="onClearClick_"
+      title="$i18n{clearSearch}">
+  </cr-icon-button>
+</cr-input>

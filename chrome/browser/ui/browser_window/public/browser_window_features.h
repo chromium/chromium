@@ -10,6 +10,12 @@
 #include "base/functional/callback.h"
 #include "chrome/common/buildflags.h"
 
+#if BUILDFLAG(ENABLE_GLIC)
+namespace glic {
+class GlicIphController;
+}
+#endif
+
 class Browser;
 class BrowserView;
 class BrowserWindowInterface;
@@ -51,6 +57,7 @@ class CastBrowserController;
 
 namespace tab_groups {
 class SessionServiceTabGroupSyncObserver;
+class MostRecentUpdateStore;
 }  // namespace tab_groups
 
 namespace send_tab_to_self {
@@ -164,6 +171,10 @@ class BrowserWindowFeatures {
     return download_toolbar_ui_controller_.get();
   }
 
+  tab_groups::MostRecentUpdateStore* most_recent_update_store() {
+    return most_recent_update_store_.get();
+  }
+
  protected:
   BrowserWindowFeatures();
 
@@ -217,6 +228,12 @@ class BrowserWindowFeatures {
   std::unique_ptr<DownloadToolbarUIController> download_toolbar_ui_controller_;
 
   std::unique_ptr<tabs::GlicNudgeController> glic_nudge_controller_;
+
+#if BUILDFLAG(ENABLE_GLIC)
+  std::unique_ptr<glic::GlicIphController> glic_iph_controller_;
+#endif
+
+  std::unique_ptr<tab_groups::MostRecentUpdateStore> most_recent_update_store_;
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_BROWSER_WINDOW_FEATURES_H_

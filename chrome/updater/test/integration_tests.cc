@@ -5541,8 +5541,8 @@ TEST_F(IntegrationTestDeviceManagementBase, NamedProxy) {
   ASSERT_TRUE(WaitForUpdaterExit());
 
   // Redirect network traffic to remote hosts to engage the proxy.
-  const GURL update_check_url = GURL("http://update.server.not_exist/update");
-  const GURL dm_server_url = GURL("http://dm.server.not_exist/dmapi");
+  const GURL update_check_url = GURL("http://not_exist/update");
+  const GURL dm_server_url = GURL("http://not_exist/dmapi");
   EnterTestMode(update_check_url, test_server_->crash_upload_url(),
                 dm_server_url, {}, base::Minutes(5));
   ExpectDeviceManagementPolicyFetchRequest(test_server_.get(), kDMToken,
@@ -5583,8 +5583,8 @@ TEST_F(IntegrationTestDeviceManagementBase, PacScript) {
   // Redirect network traffic to remote hosts to engage the proxy.
   // Note the test server won't receive additional PAC script download requests
   // because Windows caches it.
-  const GURL update_check_url = GURL("http://update.server.not_exist/update");
-  const GURL dm_server_url = GURL("http://dm.server.not_exist2/dmapi");
+  const GURL update_check_url = GURL("http://not_exist/update");
+  const GURL dm_server_url = GURL("http://not_exist/dmapi");
   EnterTestMode(update_check_url, test_server_->crash_upload_url(),
                 dm_server_url, {}, base::Minutes(5));
   ExpectDeviceManagementPolicyFetchRequest(test_server_.get(), kDMToken,

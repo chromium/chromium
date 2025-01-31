@@ -6296,4 +6296,60 @@ TEST_F(ScreenshotWidgetTest, CallsNativeWidget) {
 
 #endif  // BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_MAC)
 
+namespace {
+
+class WidgetModalVisibilityObserver : public WidgetObserver {
+ public:
+  MOCK_METHOD(void,
+              OnWidgetWindowModalVisibilityChanged,
+              (Widget*, bool),
+              (override));
+};
+
+}  // namespace
+
+TEST_F(WidgetTest, ChildWidgetNotifiesModalVisibilityChanged) {
+  std::unique_ptr<Widget> widget = base::WrapUnique(
+      CreateTopLevelPlatformWidget(Widget::InitParams::CLIENT_OWNS_WIDGET));
+  testing::NiceMock<WidgetModalVisibilityObserver> observer;
+  base::ScopedObservation<Widget, WidgetObserver> observation(&observer);
+  observation.Observe(widget.get());
+  widget->Show();
+
+  auto child_widget_delegate = std::make_unique<WidgetDelegate>();
+  auto child_widget = std::make_unique<Widget>();
+  child_widget_delegate->SetModalType(ui::mojom::ModalType::kWindow);
+  Widget::InitParams params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
+  params.delegate = child_widget_delegate.get();
+  params.parent = widget->GetNativeView();
+  child_widget->Init(std::move(params));
+
+  // Sequence: show -> hide -> show -> destroy.
+  testing::InSequence seq;
+  EXPECT_CALL(observer,
+              OnWidgetWindowModalVisibilityChanged(widget.get(), true));
+  EXPECT_CALL(observer,
+              OnWidgetWindowModalVisibilityChanged(widget.get(), false));
+  EXPECT_CALL(observer,
+              OnWidgetWindowModalVisibilityChanged(widget.get(), true));
+  EXPECT_CALL(observer,
+              OnWidgetWindowModalVisibilityChanged(widget.get(), false));
+
+  WidgetVisibleWaiter waiter(child_widget.get());
+  child_widget->Show();
+  waiter.Wait();
+  child_widget->Hide();
+  waiter.WaitUntilInvisible();
+  child_widget->Show();
+  waiter.Wait();
+  // Destroy the child widget, the parent should be notified about child modal
+  // visibility change.
+  child_widget.reset();
+  // No need to wait for visibility change because the widget is already
+  // destroyed.
+
+  widget->RemoveObserver(&observer);
+}
+
 }  // namespace views::test

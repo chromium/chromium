@@ -314,7 +314,7 @@ bool AllowedToUseFullscreen(const Document& document,
   // 2. If Permissions Policy is enabled, return the policy for "fullscreen"
   // feature.
   return document.GetExecutionContext()->IsFeatureEnabled(
-      mojom::blink::PermissionsPolicyFeature::kFullscreen, report_on_failure);
+      network::mojom::PermissionsPolicyFeature::kFullscreen, report_on_failure);
 }
 
 // https://fullscreen.spec.whatwg.org/#fullscreen-is-supported

@@ -92,8 +92,6 @@ PredictorDatabaseInternal::PredictorDatabaseInternal(
     : db_path_(profile->GetPath().Append(kPredictorDatabaseName)),
       db_(std::make_unique<sql::Database>(
           sql::DatabaseOptions{
-              .page_size = 4096,
-              .cache_size = 500,
               // TODO(pwnall): Add a meta table and remove this option.
               .mmap_alt_status_discouraged = true,
               .enable_views_discouraged = true,  // Required by mmap_alt_status.

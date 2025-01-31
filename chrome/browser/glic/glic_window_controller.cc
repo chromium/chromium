@@ -5,8 +5,12 @@
 #include "chrome/browser/glic/glic_window_controller.h"
 
 #include "base/check.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic.mojom.h"
 #include "chrome/browser/glic/glic_enabling.h"
+#include "chrome/browser/glic/glic_fre_controller.h"
+#include "chrome/browser/glic/glic_fre_dialog_view.h"
+#include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_view.h"
 #include "chrome/browser/glic/glic_window_resize_animation.h"
 #include "chrome/browser/glic/scoped_glic_button_indicator.h"
@@ -16,6 +20,9 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/views/chrome_widget_sublevel.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
@@ -134,7 +141,8 @@ class GlicWindowController::WindowEventObserver : public ui::EventObserver {
 };
 
 GlicWindowController::GlicWindowController(Profile* profile)
-    : profile_(profile) {}
+    : profile_(profile),
+      fre_controller_(std::make_unique<GlicFreController>()) {}
 
 GlicWindowController::~GlicWindowController() = default;
 
@@ -225,6 +233,15 @@ void GlicWindowController::Toggle(BrowserWindowInterface* bwi) {
   // hotkey or other OS-level entrypoint.
   Browser* new_attached_browser =
       bwi ? bwi->GetBrowserForMigrationOnly() : nullptr;
+
+  // Show the FRE if not yet completed, and if we have a browser to use.
+  if (fre_controller_->ShouldShowFreDialog(profile_)) {
+    if (!fre_controller_->CanShowFreDialog(new_attached_browser)) {
+      return;
+    }
+    fre_controller_->ShowFreDialog(profile_, new_attached_browser);
+    return;
+  }
 
   // In the case where the user invokes the hotkey, and the most recently used
   // window for the glic profile is active, treat this as if the user clicked
@@ -526,12 +543,22 @@ gfx::Point GlicWindowController::GetTopRightPositionForAttachedGlicWindow(
 }
 
 gfx::Point GlicWindowController::GetTopRightPositionForDetachedGlicWindow() {
-  // Position determined by screen bounds. Returns the top right point of the
-  // screen.
-  display::Screen* screen = display::Screen::GetScreen();
-  gfx::Point top_right_bounds =
-      screen->GetPrimaryDisplay().work_area().top_right();
-
+  // Use the top right corner of the display of the most recently
+  // active browser. If there was no recently active browser, use the primary
+  // display.
+  Browser* last_active_browser = BrowserList::GetInstance()->GetLastActive();
+  std::optional<display::Display> display_to_use;
+  if (last_active_browser) {
+    std::optional<display::Display> widget_display =
+        last_active_browser->GetBrowserView().GetWidget()->GetNearestDisplay();
+    if (widget_display) {
+      display_to_use = widget_display.value();
+    }
+  }
+  if (!display_to_use) {
+    display_to_use = display::Screen::GetScreen()->GetPrimaryDisplay();
+  }
+  gfx::Point top_right_bounds = display_to_use->work_area().top_right();
   return top_right_bounds;
 }
 
@@ -607,6 +634,7 @@ void GlicWindowController::AttachToBrowser(Browser* browser) {
   GetGlicWidget()->SetZOrderLevel(ui::ZOrderLevel::kNormal);
 #if BUILDFLAG(IS_MAC)
   GetGlicWidget()->SetActivationIndependence(false);
+  GetGlicWidget()->SetVisibleOnAllWorkspaces(false);
 #endif
 
   browser_close_subscription_ = browser->RegisterBrowserDidClose(
@@ -909,15 +937,16 @@ void GlicWindowController::MovePositionToBrowserGlicButton(Browser* browser,
     return;
   }
 
-
-  TabStripActionContainer* tab_strip_action_container = browser->window()
-                                ->AsBrowserView()
-                                ->tab_strip_region_view()
-                                ->GetTabStripActionContainer();
+  TabStripActionContainer* tab_strip_action_container =
+      browser->window()
+          ->AsBrowserView()
+          ->tab_strip_region_view()
+          ->GetTabStripActionContainer();
   CHECK(tab_strip_action_container);
 
   // TODO(andreaxg): Fix exact attachment position.
-  gfx::Rect tab_strip_container_rect = tab_strip_action_container->GetBoundsInScreen();
+  gfx::Rect tab_strip_container_rect =
+      tab_strip_action_container->GetBoundsInScreen();
   gfx::Point top_right = tab_strip_container_rect.top_right();
   int tab_strip_padding = GetLayoutConstant(TAB_STRIP_PADDING);
 
@@ -947,7 +976,6 @@ void GlicWindowController::MaybeCreateHolderWindowAndReparent() {
   attached_browser_widget_observation_.Reset();
   browser_close_subscription_.reset();
 
-  gfx::Rect bounds = glic_widget_->GetWindowBoundsInScreen();
 
   if (!holder_widget_) {
     holder_widget_ = std::make_unique<views::Widget>();
@@ -958,12 +986,10 @@ void GlicWindowController::MaybeCreateHolderWindowAndReparent() {
     params.accept_events = false;
     // Widget name is specified for debug purposes.
     params.name = "HolderWindow";
-    params.bounds = bounds;
+    params.bounds = glic_widget_->GetWindowBoundsInScreen();
     params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
     holder_widget_->Init(std::move(params));
     holder_widget_->ShowInactive();
-  } else {
-    holder_widget_->SetBounds(bounds);
   }
 
   glic_widget_->Reparent(holder_widget_.get());
@@ -975,6 +1001,8 @@ void GlicWindowController::MaybeCreateHolderWindowAndReparent() {
   GetGlicWidget()->SetZOrderLevel(ui::ZOrderLevel::kFloatingWindow);
 #if BUILDFLAG(IS_MAC)
   GetGlicWidget()->SetActivationIndependence(true);
+  holder_widget_->SetVisibleOnAllWorkspaces(true);
+  GetGlicWidget()->SetVisibleOnAllWorkspaces(true);
 #endif
 }
 
@@ -1066,6 +1094,7 @@ void GlicWindowController::Shutdown() {
   // Hide first, then clean up (but do not animate).
   ForceClose();
   contents_.reset();
+  fre_controller_.reset();
 }
 
 void GlicWindowController::ResetPresentationTimingState() {

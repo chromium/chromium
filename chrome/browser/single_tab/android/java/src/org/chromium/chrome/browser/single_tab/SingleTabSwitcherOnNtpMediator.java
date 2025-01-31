@@ -236,9 +236,8 @@ public class SingleTabSwitcherOnNtpMediator {
     /** Update the favicon of the single tab switcher. */
     private void updateFavicon() {
         assert mTabListFaviconProvider.isInitialized();
-        mTabListFaviconProvider.getFaviconDrawableForUrlAsync(
-                mMostRecentTab.getUrl(),
-                false,
+        mTabListFaviconProvider.getFaviconDrawableForTabAsync(
+                mMostRecentTab,
                 (Drawable favicon) -> {
                     mPropertyModel.set(FAVICON, favicon);
                 });

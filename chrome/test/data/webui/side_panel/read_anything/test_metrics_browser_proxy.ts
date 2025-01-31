@@ -15,6 +15,7 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
       'incrementMetricCount',
       'recordHighlightOff',
       'recordHighlightOn',
+      'recordHighlightGranularity',
       'recordLanguage',
       'recordNewPage',
       'recordNewPageWithSpeech',
@@ -46,6 +47,10 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
 
   recordHighlightOff() {
     this.methodCalled('recordHighlightOff');
+  }
+
+  recordHighlightGranularity(highlight: number) {
+    this.methodCalled('recordHighlightGranularity', highlight);
   }
 
   recordVoiceType(voiceType: ReadAnythingVoiceType) {

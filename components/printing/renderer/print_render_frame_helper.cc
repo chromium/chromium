@@ -16,7 +16,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/auto_reset.h"
 #include "base/check_is_test.h"
 #include "base/debug/alias.h"
 #include "base/functional/bind.h"

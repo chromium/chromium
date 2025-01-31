@@ -24,6 +24,7 @@
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
+#include "components/autofill/core/browser/data_model/bnpl_issuer.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_benefit.h"
 #include "components/autofill/core/browser/data_model/iban.h"
@@ -66,6 +67,8 @@ namespace {
 constexpr FieldTypeSet kCvcFieldTypes = {
     FieldType::CREDIT_CARD_VERIFICATION_CODE,
     FieldType::CREDIT_CARD_STANDALONE_VERIFICATION_CODE};
+
+constexpr uint64_t kCentsPerDollar = 100;
 
 Suggestion CreateSeparator() {
   Suggestion suggestion;
@@ -885,10 +888,51 @@ Suggestion CreateCreditCardSuggestion(
   return suggestion;
 }
 
+// Returns the lowest eligible price in all `bnpl_issuers`.
+std::u16string GetBnplPriceLowerBound(
+    const std::vector<BnplIssuer>& bnpl_issuers) {
+  uint64_t lower_bound = UINT64_MAX;
+
+  // Get the lowest eligible price in USD as it's the only supported currency
+  // for now.
+  for (const BnplIssuer& bnpl_issuer : bnpl_issuers) {
+    const base::optional_ref<const BnplIssuer::EligiblePriceRange>
+        eligible_price_range =
+            bnpl_issuer.GetEligiblePriceRangeForCurrency("USD");
+    if (eligible_price_range.has_value()) {
+      lower_bound =
+          std::min(lower_bound, eligible_price_range.value().price_lower_bound);
+    }
+  }
+
+  // Suggestion update shouldn't be triggered if there is no matching
+  // `eligible_price_range`.
+  CHECK(lower_bound != UINT64_MAX);
+
+  // Round the lower_bound to the nearest higher cents.
+  if (uint64_t remainder = lower_bound % (kMicrosPerDollar / kCentsPerDollar);
+      remainder != 0) {
+    lower_bound = lower_bound - remainder + kMicrosPerDollar / kCentsPerDollar;
+  }
+
+  // Convert the `lower_bound` to dollars and cents format.
+  // TODO(crbug.com/391699709): Add multi-currency formatter.
+  int dollars = lower_bound / kMicrosPerDollar;
+  int cents =
+      lower_bound % kMicrosPerDollar * kCentsPerDollar / kMicrosPerDollar;
+  if (cents == 0) {
+    return base::StrCat({u"$", base::NumberToString16(dollars)});
+  } else {
+    std::u16string divider = cents < 10 ? u".0" : u".";
+    return base::StrCat({u"$", base::NumberToString16(dollars), divider,
+                         base::NumberToString16(cents)});
+  }
+}
+
 // Creates a suggestion for the BNPL issuer selection.
 // The suggestion text shows the minimum eligible value of all available
 // BNPL issuers.
-Suggestion CreateBnplSuggestion() {
+Suggestion CreateBnplSuggestion(const std::vector<BnplIssuer>& bnpl_issuers) {
   Suggestion bnpl_suggestion;
 
   bnpl_suggestion.icon = Suggestion::Icon::kBnpl;
@@ -898,11 +942,9 @@ Suggestion CreateBnplSuggestion() {
       Suggestion::Text(l10n_util::GetStringUTF16(
                            IDS_AUTOFILL_BNPL_CREDIT_CARD_SUGGESTION_MAIN_TEXT),
                        Suggestion::Text::IsPrimary(true));
-  // TODO(crbug.com/362515469): Replace hardcoded BNPL minimum range with
-  // dynamic values retrieved from BNPL issuer data.
-  bnpl_suggestion.labels = {{Suggestion::Text(l10n_util::GetStringFUTF16(
-      IDS_AUTOFILL_BNPL_CREDIT_CARD_SUGGESTION_LABEL,
-      base::StrCat({u"$", base::NumberToString16(35)})))}};
+  bnpl_suggestion.labels = {{Suggestion::Text(
+      l10n_util::GetStringFUTF16(IDS_AUTOFILL_BNPL_CREDIT_CARD_SUGGESTION_LABEL,
+                                 GetBnplPriceLowerBound(bnpl_issuers)))}};
 
   return bnpl_suggestion;
 }
@@ -930,6 +972,19 @@ bool ShouldShowCreditCardSaveAndFill(const AutofillClient& client,
 std::optional<bool> credit_card_upload_enabled_test_;
 
 }  // namespace
+
+BnplSuggestionUpdateResult::BnplSuggestionUpdateResult() = default;
+BnplSuggestionUpdateResult::BnplSuggestionUpdateResult(
+    const BnplSuggestionUpdateResult&) = default;
+BnplSuggestionUpdateResult::BnplSuggestionUpdateResult(
+    BnplSuggestionUpdateResult&&) = default;
+
+BnplSuggestionUpdateResult& BnplSuggestionUpdateResult::operator=(
+    const BnplSuggestionUpdateResult&) = default;
+BnplSuggestionUpdateResult& BnplSuggestionUpdateResult::operator=(
+    BnplSuggestionUpdateResult&&) = default;
+
+BnplSuggestionUpdateResult::~BnplSuggestionUpdateResult() = default;
 
 std::vector<Suggestion> GetSuggestionsForCreditCards(
     const AutofillClient& client,
@@ -1161,34 +1216,40 @@ std::vector<Suggestion> GetVirtualCardStandaloneCvcFieldSuggestions(
   return suggestions;
 }
 
-std::vector<Suggestion> MaybeCreateNewSuggestionsWithBnpl(
-    const base::span<const Suggestion>& current_suggestions) {
+BnplSuggestionUpdateResult MaybeUpdateSuggestionsWithBnpl(
+    const base::span<const Suggestion>& current_suggestions,
+    const std::vector<BnplIssuer>& bnpl_issuers) {
   // No need to add BNPL suggestion if the current suggestion list is empty.
   if (current_suggestions.empty()) {
-    return {};
+    return BnplSuggestionUpdateResult();
   }
 
-  std::vector<Suggestion> updated_suggestions;
-  updated_suggestions.reserve(current_suggestions.size() + 1);
+  BnplSuggestionUpdateResult suggestion_update_result;
+  suggestion_update_result.suggestions.reserve(current_suggestions.size() + 1);
   // Insert BNPL suggestion before the first footer item.
   for (size_t index = 0; index < current_suggestions.size(); index++) {
     // No need to add new BNPL suggestion if there is already one.
     if (current_suggestions[index].type == SuggestionType::kBnplEntry) {
-      return {};
+      return BnplSuggestionUpdateResult();
     }
 
     if (IsCreditCardFooterSuggestion(current_suggestions, index)) {
-      updated_suggestions.push_back(CreateBnplSuggestion());
-      updated_suggestions.insert(updated_suggestions.end(),
-                                 current_suggestions.begin() + index,
-                                 current_suggestions.end());
-      break;
+      suggestion_update_result.suggestions.push_back(
+          CreateBnplSuggestion(bnpl_issuers));
+      suggestion_update_result.suggestions.insert(
+          suggestion_update_result.suggestions.end(),
+          current_suggestions.begin() + index, current_suggestions.end());
+      suggestion_update_result.is_bnpl_suggestion_added = true;
+      return suggestion_update_result;
     }
 
-    updated_suggestions.push_back(current_suggestions[index]);
+    suggestion_update_result.suggestions.push_back(current_suggestions[index]);
   }
 
-  return updated_suggestions;
+  // For the use cases of the BNPL flow, the `current_suggestions` should
+  // always include at least one footer item if not empty.
+  // Therefore, the end of the loop should never be reached.
+  NOTREACHED();
 }
 
 std::vector<CreditCard> GetTouchToFillCardsToSuggest(
@@ -1548,6 +1609,11 @@ std::vector<Suggestion> GetCreditCardFooterSuggestionsForTest(
   return GetCreditCardFooterSuggestions(should_show_scan_credit_card,
                                         should_show_cards_from_account,
                                         is_autofilled, with_gpay_logo);
+}
+
+std::u16string GetBnplPriceLowerBoundForTest(
+    const std::vector<BnplIssuer>& bnpl_issuers) {
+  return GetBnplPriceLowerBound(bnpl_issuers);
 }
 
 void SetCreditCardUploadEnabledForTest(bool credit_card_upload_enabled) {

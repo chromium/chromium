@@ -285,7 +285,7 @@ TEST_F(PressureServiceForFrameTest, PermissionsPolicyBlock) {
       static_cast<RenderFrameHost*>(contents()->GetPrimaryMainFrame());
   blink::ParsedPermissionsPolicy permissions_policy(1);
   permissions_policy[0].feature =
-      blink::mojom::PermissionsPolicyFeature::kComputePressure;
+      network::mojom::PermissionsPolicyFeature::kComputePressure;
   auto navigation_simulator = NavigationSimulator::CreateRendererInitiated(
       rfh->GetLastCommittedURL(), rfh);
   navigation_simulator->SetPermissionsPolicyHeader(permissions_policy);

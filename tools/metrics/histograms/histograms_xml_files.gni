@@ -57,6 +57,8 @@ histograms_xml_files = [
   "//tools/metrics/histograms/metadata/content/enums.xml",
   "//tools/metrics/histograms/metadata/content/histograms.xml",
   "//tools/metrics/histograms/metadata/content_extraction/histograms.xml",
+  "//tools/metrics/histograms/metadata/contextual_cueing/enums.xml",
+  "//tools/metrics/histograms/metadata/contextual_cueing/histograms.xml",
   "//tools/metrics/histograms/metadata/cookie/enums.xml",
   "//tools/metrics/histograms/metadata/cookie/histograms.xml",
   "//tools/metrics/histograms/metadata/cras/enums.xml",

@@ -33,6 +33,7 @@
 #include "net/cert/x509_util_nss.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/shell_dialogs/fake_select_file_dialog.h"
@@ -53,6 +54,8 @@
 #if BUILDFLAG(IS_LINUX)
 #include "chrome/browser/net/fake_nss_service.h"
 #endif
+
+using testing::ElementsAre;
 
 namespace {
 
@@ -104,9 +107,20 @@ class FakeCertificateManagerPage
     std::move(callback).Run(ask_for_confirmation_result_);
   }
 
+  void set_trigger_reload_callback(
+      base::OnceCallback<
+          void(std::vector<certificate_manager_v2::mojom::CertificateSource>)>
+          callback) {
+    reload_callback_ = std::move(callback);
+  }
+
   void TriggerReload(
       const std::vector<certificate_manager_v2::mojom::CertificateSource>&
-          sources) override {}
+          sources) override {
+    if (reload_callback_) {
+      std::move(reload_callback_).Run(std::move(sources));
+    }
+  }
 
   void TriggerMetadataUpdate() override {}
 
@@ -123,6 +137,9 @@ class FakeCertificateManagerPage
   bool ask_for_confirmation_result_ = false;
   mojo::Receiver<certificate_manager_v2::mojom::CertificateManagerPage>
       receiver_;
+  base::OnceCallback<void(
+      std::vector<certificate_manager_v2::mojom::CertificateSource>)>
+      reload_callback_;
 };
 
 }  // namespace
@@ -353,6 +370,26 @@ class ClientCertSourceWritableUnitTest
   std::unique_ptr<FakeCertificateManagerPage> fake_page_;
   std::unique_ptr<CertificateManagerPageHandler::CertSource> cert_source_;
 };
+
+#if BUILDFLAG(IS_CHROMEOS)
+TEST_P(ClientCertSourceWritableUnitTest, TriggerReloadOnKcerDbChange) {
+  if (!kcer_enabled()) {
+    return;
+  }
+  base::test::TestFuture<
+      std::vector<certificate_manager_v2::mojom::CertificateSource>>
+      reload_future;
+
+  fake_page_->set_trigger_reload_callback(reload_future.GetCallback());
+  std::string client_1_hash_hex = ImportToUserSlotForTesting(
+      net::GetTestCertsDirectory().AppendASCII("client_1.p12"), "chrome");
+  ASSERT_FALSE(client_1_hash_hex.empty());
+
+  EXPECT_THAT(reload_future.Get(),
+              ElementsAre(certificate_manager_v2::mojom::CertificateSource::
+                              kPlatformClientCert));
+}
+#endif
 
 // Test importing from a PKCS #12 file and then deleting the imported cert,
 // with no policy set.

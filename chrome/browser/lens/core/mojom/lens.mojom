@@ -6,6 +6,7 @@ module lens.mojom;
 
 import "chrome/browser/lens/core/mojom/geometry.mojom";
 import "chrome/browser/lens/core/mojom/overlay_object.mojom";
+import "chrome/browser/lens/core/mojom/page_content_type.mojom";
 import "chrome/browser/lens/core/mojom/text.mojom";
 import "chrome/browser/lens/core/mojom/translate.mojom";
 import "mojo/public/mojom/base/big_string.mojom";
@@ -130,9 +131,10 @@ interface LensPageHandler {
   // browser; when the user traverses history, the indices may be passed back to
   // the WebUI. The function also passed an `is_translate` boolean for logging
   // purposes but it does not change any functionality.
-  IssueTextSelectionRequest(
-      string query, int32 selection_start_index, int32 selection_end_index,
-      bool is_translate);
+  IssueTextSelectionRequest(string query,
+                            int32 selection_start_index,
+                            int32 selection_end_index,
+                            bool is_translate);
 
   // Similar to IssueTextSelectionRequest(), but requests that the selected
   // text be translated.
@@ -142,9 +144,10 @@ interface LensPageHandler {
                                  int32 selection_end_index);
 
   // Similar to IssueTextSelectionRequest(), but adds a math formula.
-  IssueMathSelectionRequest(string query, string formula,
-                                 int32 selection_start_index,
-                                 int32 selection_end_index);
+  IssueMathSelectionRequest(string query,
+                            string formula,
+                            int32 selection_start_index,
+                            int32 selection_end_index);
 
   // When this method is called, the C++ coordinator issues another full image
   // request with appropriate parameters to return a response with text on the
@@ -189,7 +192,8 @@ interface LensPageHandler {
 
   // Requests to show a feature promo on the translate button. This is a no-op
   // if the promo show fails for reasons listed out at
-  // //components/user_education/common/feature_promo/feature_promo_result.h. The most common
+  // //components/user_education/common/feature_promo/feature_promo_result.h.
+  // The most common
   // failures are due to the anchor not being visible or it has already been
   // shown and dismissed.
   MaybeShowTranslateFeaturePromo();
@@ -235,6 +239,10 @@ interface LensPage {
   // Sets whether the contextual searchbox should be shown to the user.
   ShouldShowContextualSearchBox(bool should_show);
 
+  // Notifies the contextual searchbox that the page content type has changed.
+  // `new_page_content_type` is the new type of the page.
+  PageContentTypeChanged(PageContentType new_page_content_type);
+
   // Sets a post selection region to be rendered as selected on the page.
   SetPostRegionSelection(CenterRotatedBox region);
 
@@ -242,8 +250,7 @@ interface LensPage {
   SetTextSelection(int32 selection_start_index, int32 selection_end_index);
 
   // Sets the overlay to translate mode with the specified languages.
-  SetTranslateMode(
-      string source_language, string target_language);
+  SetTranslateMode(string source_language, string target_language);
 
   // Clears any post region selection on the page. No-op if none selected.
   ClearRegionSelection();
@@ -262,4 +269,3 @@ interface LensPage {
   // Suppress the ghost loader when tab is foregrounded.
   SuppressGhostLoader();
 };
-

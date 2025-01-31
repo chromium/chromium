@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/types/optional_ref.h"
 #include "components/autofill/core/browser/data_model/payment_instrument.h"
 
 namespace autofill {
@@ -86,6 +87,15 @@ class BnplIssuer {
     eligible_price_ranges_ = std::move(eligible_price_ranges);
   }
 
+  // Returns the eligible price range in `currency`.
+  base::optional_ref<const EligiblePriceRange> GetEligiblePriceRangeForCurrency(
+      const std::string& currency) const;
+
+  // Returns true if the given `amount_in_micros` is supported by this issuer in
+  // the given `currency`.
+  bool IsEligibleAmount(uint64_t amount_in_micros,
+                        const std::string& currency) const;
+
  private:
   // Unique identifier for the BNPL partner.
   std::string issuer_id_;
@@ -97,6 +107,7 @@ class BnplIssuer {
 
   // Vector of eligible price ranges for this BnplIssuer. Contains per-currency
   // eligible price ranges for BNPL, for all supported currencies.
+  // TODO(crbug.com/393549948): Save eligible price ranges in map.
   std::vector<EligiblePriceRange> eligible_price_ranges_;
 };
 

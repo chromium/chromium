@@ -158,6 +158,11 @@ BASE_DECLARE_FEATURE(kWebAuthnNoAccountTimeout);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kSyncSecurityDomainBeforePINRenewal);
 
+// Feature flag for the
+// `WebAuthenticationRemoteDesktopAllowedOrigins` enterprise policy.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnRemoteDesktopAllowedOriginsPolicy);
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FEATURES_H_

@@ -9,7 +9,6 @@
 
 #include "third_party/blink/renderer/core/input/pointer_event_manager.h"
 
-#include "base/auto_reset.h"
 #include "base/metrics/field_trial_params.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"

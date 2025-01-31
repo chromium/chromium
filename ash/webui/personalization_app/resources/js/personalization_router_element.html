@@ -45,6 +45,19 @@
     position: absolute;
     width: 100%;
   }
+
+  /**
+   * Visibly hide the wallpaper-selected element, but keep it in the dom so that it can announce
+   * when the wallpaper changes.
+   */
+  sea-pen-router .wallpaperSelectedHidden {
+    height: 1px;
+    left: -2px;
+    overflow: hidden;
+    position: fixed;
+    top: -2px;
+    width: 1px;
+  }
 </style>
 <div id="container">
   <!-- dwell-time is set to 200ms to populate history state more quickly while
@@ -80,9 +93,8 @@
   </template>
   <template is="dom-if" if="[[shouldShowSeaPen_(path_)]]" restamp>
     <sea-pen-router base-path="[[seaPenBasePath_]]" class="always-show-top">
-      <template is="dom-if" if="[[shouldShowWallpaperSelected_(path_)]]" restamp>
-        <wallpaper-selected id="wallpaperSelected"></wallpaper-selected>
-      </template>
+      <wallpaper-selected id="wallpaperSelected" class$="[[getWallpaperSelectedClass_(path_)]]">
+      </wallpaper-selected>
     </sea-pen-router>
   </template>
   <personalization-toast></personalization-toast>

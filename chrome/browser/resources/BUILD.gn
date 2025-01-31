@@ -144,7 +144,11 @@ group("resources") {
   }
 
   if (enable_print_preview) {
-    public_deps += [ "print_preview:resources" ]
+    if (is_chromeos) {
+      public_deps += [ "ash/print_preview:resources" ]
+    } else {
+      public_deps += [ "print_preview:resources" ]
+    }
   }
 
   if (enable_webui_certificate_viewer) {

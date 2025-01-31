@@ -17,7 +17,6 @@
 #include "chrome/browser/picture_in_picture/auto_pip_setting_helper.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
@@ -26,6 +25,10 @@
 #include "media/base/media_switches.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/frame/user_activation_state.h"
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "chrome/browser/safe_browsing/safe_browsing_service.h"
+#endif
 
 AutoPictureInPictureTabHelper::AutoPictureInPictureTabHelper(
     content::WebContents* web_contents)
@@ -416,6 +419,7 @@ void AutoPictureInPictureTabHelper::OnUrlSafetyResult(bool has_safe_url) {
 }
 
 void AutoPictureInPictureTabHelper::ScheduleUrlSafetyCheck() {
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   CHECK(!is_in_picture_in_picture_);
   CHECK(g_browser_process);
   CHECK(g_browser_process->safe_browsing_service());
@@ -438,6 +442,9 @@ void AutoPictureInPictureTabHelper::ScheduleUrlSafetyCheck() {
 
   safe_browsing_checker_client_->CheckUrlSafety(
       rfh.value()->GetLastCommittedURL());
+#else
+  OnUrlSafetyResult(/*has_safe_url=*/true);
+#endif
 }
 
 void AutoPictureInPictureTabHelper::EnsureAutoPipSettingHelper() {

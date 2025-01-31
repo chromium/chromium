@@ -61,6 +61,13 @@ class IpProtectionIssuerTokenDirectFetcher
 
   void TryGetIssuerTokens(TryGetIssuerTokensCallback callback) override;
 
+  void AccountStatusChanged(bool account_available);
+
+  // Timeout for failures from TryGetIssuerTokens. This is doubled for each
+  // subsequent failure.
+  static constexpr base::TimeDelta kGetIssuerTokensFailureTimeout =
+      base::Minutes(1);
+
  private:
   void OnGetIssuerTokenCompleted(
       TryGetIssuerTokensCallback callback,
@@ -69,7 +76,16 @@ class IpProtectionIssuerTokenDirectFetcher
   TryGetIssuerTokensStatus ValidateIssuerTokenResponse(
       const GetIssuerTokenResponse& response);
 
+  // Reset the backoff settings to their default (no-error) state.
+  void ClearBackoffTimer();
+
   Retriever retriever_;
+
+  // The time before the retriever's RetrieveIssuerToken should not be called,
+  // and the exponential backoff to be applied next time such a call fails.
+  base::Time no_get_issuer_tokens_until_;
+  base::TimeDelta next_get_issuer_tokens_backoff_ =
+      kGetIssuerTokensFailureTimeout;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

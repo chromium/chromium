@@ -1,0 +1,14 @@
+<style include="print-preview-shared">
+  :host print-preview-settings-select {
+    margin: 0 calc(var(--print-preview-sidebar-margin) - 2px);
+  }
+</style>
+<print-preview-settings-section>
+  <span id="dpi-label" slot="title">$i18n{dpiLabel}</span>
+  <div slot="controls">
+    <print-preview-settings-select aria-label="$i18n{dpiLabel}"
+        capability="[[capabilityWithLabels_]]" setting-name="dpi"
+        settings="{{settings}}" disabled="[[disabled]]">
+    </print-preview-settings-select>
+  </div>
+</print-preview-settings-section>

@@ -118,9 +118,13 @@ public class RuntimePermissionTestUtils {
         }
     }
 
-    public static void setupGeolocationSystemMock() {
-        LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
+    public static void setupGeolocationSystemMock(boolean enabled) {
+        LocationSettingsTestUtil.setSystemLocationSettingEnabled(enabled);
         LocationProviderOverrider.setLocationProviderImpl(new MockLocationProvider());
+    }
+
+    public static void setupGeolocationSystemMock() {
+        setupGeolocationSystemMock(true);
     }
 
     private static void waitUntilDifferentDialogIsShowing(

@@ -9,7 +9,7 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "linux-oi-rel",
+              "builder": "Linux Builder",
               "project": "chromium"
             },
             "builder_spec": {
@@ -26,13 +26,56 @@
                 "target_platform": "linux"
               },
               "legacy_gclient_config": {
+                "apply_configs": [
+                  "use_clang_coverage",
+                  "chromium_with_telemetry_dependencies"
+                ],
                 "config": "chromium"
+              }
+            }
+          },
+          {
+            "builder_id": {
+              "bucket": "ci",
+              "builder": "linux-oi-rel",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "build_gs_bucket": "chromium-linux-archive",
+              "builder_group": "chromium.linux",
+              "execution_mode": "TEST",
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
+                "build_config": "Release",
+                "config": "chromium",
+                "target_bits": 64,
+                "target_platform": "linux"
+              },
+              "legacy_gclient_config": {
+                "apply_configs": [
+                  "use_clang_coverage"
+                ],
+                "config": "chromium"
+              },
+              "parent": {
+                "bucket": "ci",
+                "builder": "Linux Builder",
+                "project": "chromium"
               }
             }
           }
         ]
       },
       "builder_ids": [
+        {
+          "bucket": "ci",
+          "builder": "Linux Builder",
+          "project": "chromium"
+        }
+      ],
+      "builder_ids_in_scope_for_testing": [
         {
           "bucket": "ci",
           "builder": "linux-oi-rel",

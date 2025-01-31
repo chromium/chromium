@@ -436,7 +436,7 @@ public class TabListMediatorUnitTest {
         doReturn(2).when(mIncognitoTabModel).getCount();
         doNothing()
                 .when(mTabListFaviconProvider)
-                .getFaviconForUrlAsync(any(GURL.class), anyBoolean(), mCallbackCaptor.capture());
+                .getFaviconForTabAsync(any(Tab.class), mCallbackCaptor.capture());
         doReturn(mFavicon)
                 .when(mTabListFaviconProvider)
                 .getFaviconFromBitmap(any(Bitmap.class), any(GURL.class));
@@ -446,7 +446,7 @@ public class TabListMediatorUnitTest {
                 .getDefaultFaviconFetcher(anyBoolean());
         doReturn(mTabFaviconFetcher)
                 .when(mTabListFaviconProvider)
-                .getFaviconForUrlFetcher(any(GURL.class), anyBoolean());
+                .getFaviconForTabFetcher(any(Tab.class));
         doReturn(mTabFaviconFetcher)
                 .when(mTabListFaviconProvider)
                 .getFaviconFromBitmapFetcher(any(Bitmap.class), any(GURL.class));

@@ -9,6 +9,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/metrics/histogram_functions.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webid/account_selection_view.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-shared.h"
@@ -46,11 +47,18 @@ ScopedJavaLocalRef<jobject> ConvertToJavaAccount(
     decoded_picture =
         gfx::ConvertToJavaBitmap(*account->decoded_picture.ToSkBitmap());
   }
+  std::string display_name = account->given_name;
+  // We do this check here instead of in the Java code because checking flags
+  // is easier in C++.
+  if (display_name.empty() &&
+      !base::FeatureList::IsEnabled(features::kFedCmContinueWithoutName)) {
+    display_name = account->name;
+  }
   return Java_Account_Constructor(
       env, ConvertUTF8ToJavaString(env, account->id),
       ConvertUTF8ToJavaString(env, account->email),
       ConvertUTF8ToJavaString(env, account->name),
-      ConvertUTF8ToJavaString(env, account->given_name),
+      ConvertUTF8ToJavaString(env, display_name),
       is_multi_idp ? std::make_optional<std::string>(
                          account->identity_provider->idp_for_display)
                    : std::nullopt,

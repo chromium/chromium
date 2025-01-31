@@ -11,7 +11,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
@@ -162,8 +161,7 @@ public class SingleTabSwitcherOnNtpMediatorUnitTest {
         Size thumbnailSize = new Size(width, height);
 
         verify(mTabListFaviconProvider)
-                .getFaviconDrawableForUrlAsync(
-                        eq(mUrl), eq(false), mFaviconCallbackCaptor.capture());
+                .getFaviconDrawableForTabAsync(eq(mTab), mFaviconCallbackCaptor.capture());
         verify(mTabContentManager)
                 .getTabThumbnailWithCallback(eq(mTabId), eq(thumbnailSize), any());
         assertEquals(mTitle, mPropertyModel.get(TITLE));
@@ -208,8 +206,7 @@ public class SingleTabSwitcherOnNtpMediatorUnitTest {
         mediator.setVisibility(true);
 
         assertNull(mPropertyModel.get(TITLE));
-        verify(mTabListFaviconProvider, never())
-                .getFaviconDrawableForUrlAsync(any(), anyBoolean(), any());
+        verify(mTabListFaviconProvider, never()).getFaviconDrawableForTabAsync(any(), any());
         assertFalse(mPropertyModel.get(IS_VISIBLE));
     }
 
@@ -242,16 +239,14 @@ public class SingleTabSwitcherOnNtpMediatorUnitTest {
         mediator.setVisibility(true);
 
         verify(mTabListFaviconProvider)
-                .getFaviconDrawableForUrlAsync(
-                        eq(mUrl), eq(false), mFaviconCallbackCaptor.capture());
+                .getFaviconDrawableForTabAsync(eq(mTab), mFaviconCallbackCaptor.capture());
         assertEquals(mTitle, mPropertyModel.get(TITLE));
         assertTrue(mediator.getInitialized());
 
         mediator.setMostRecentTab(mTab2);
         mediator.setVisibility(true);
 
-        verify(mTabListFaviconProvider, times(1))
-                .getFaviconDrawableForUrlAsync(any(), anyBoolean(), any());
+        verify(mTabListFaviconProvider, times(1)).getFaviconDrawableForTabAsync(any(), any());
         assertEquals(mTitle, mPropertyModel.get(TITLE));
         assertNotEquals(mPropertyModel.get(TITLE), mTitle2);
     }

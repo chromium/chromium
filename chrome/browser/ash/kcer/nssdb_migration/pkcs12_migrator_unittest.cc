@@ -105,17 +105,17 @@ class KcerPkcs12MigratorTest : public testing::Test {
     std::vector<uint8_t> pkcs12_bytes = ReadTestFile(file_name);
     std::string pkcs12_str(pkcs12_bytes.begin(), pkcs12_bytes.end());
 
-    PK11SlotInfo* slot_info = nullptr;
+    crypto::ScopedPK11Slot slot_info;
     switch (slot) {
       case NssSlot::kPublic:
-        slot_info = nss_db->GetPublicSlot().get();
+        slot_info = nss_db->GetPublicSlot();
         break;
       case NssSlot::kPrivate:
-        slot_info = nss_db->GetPrivateSlot().get();
+        slot_info = nss_db->GetPrivateSlot();
         break;
     }
 
-    nss_db->ImportFromPKCS12(slot_info, std::move(pkcs12_str),
+    nss_db->ImportFromPKCS12(slot_info.get(), std::move(pkcs12_str),
                              GetPassword(file_name), true, nullptr);
   }
 

@@ -6,9 +6,11 @@
 #include "build/build_config.h"
 #include "chrome/browser/glic/glic_tab_indicator_helper.h"
 #include "chrome/browser/glic/interactive_glic_test.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/tabs/tab_close_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "content/public/test/browser_test.h"
@@ -131,6 +133,41 @@ IN_PROC_BROWSER_TEST_F(GlicTabIndicatorHelperUiTest, SwitchAlertedTabs) {
       WaitForState(kTab1AlertState, IsNotAccessing()));
 }
 
+IN_PROC_BROWSER_TEST_F(GlicTabIndicatorHelperUiTest, AlertChangesOnTabRemoval) {
+  static constexpr char kTabCloseButton[] = "tab_close_button";
+  RunTestSequence(
+      LoadStartingPage(), ObserveState(kTab1AlertState, browser(), 0),
+      ObserveState(kTab2AlertState, browser(), 1), AddNewCandidateTab(),
+      SelectTab(kTabStripElementId, 1),
+      OpenGlicWindow(GlicWindowMode::kAttached),
+      ClickMockGlicElement(kMockGlicContextAccessButton),
+      WaitForState(kTab2AlertState, IsAccessing()),
+      NameViewRelative(kTabStripElementId, kTabCloseButton,
+                       [](TabStrip* tab_strip) {
+                         return tab_strip->tab_at(1)->close_button().get();
+                       }),
+      PressButton(kTabCloseButton),
+      WaitForState(kTab1AlertState, IsAccessing()));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicTabIndicatorHelperUiTest,
+                       AlertDoesNotChangeOnTabRemoval) {
+  static constexpr char kTabCloseButton[] = "tab_close_button";
+  RunTestSequence(
+      LoadStartingPage(), ObserveState(kTab1AlertState, browser(), 0),
+      ObserveState(kTab2AlertState, browser(), 1), AddNewCandidateTab(),
+      SelectTab(kTabStripElementId, 0),
+      OpenGlicWindow(GlicWindowMode::kAttached),
+      ClickMockGlicElement(kMockGlicContextAccessButton),
+      WaitForState(kTab1AlertState, IsAccessing()),
+      NameViewRelative(kTabStripElementId, kTabCloseButton,
+                       [](TabStrip* tab_strip) {
+                         return tab_strip->tab_at(1)->close_button().get();
+                       }),
+      PressButton(kTabCloseButton),
+      WaitForState(kTab1AlertState, IsAccessing()));
+}
+
 IN_PROC_BROWSER_TEST_F(GlicTabIndicatorHelperUiTest, ActiveBrowserAlerted) {
 #if BUILDFLAG(IS_LINUX)
   if (views::test::InteractionTestUtilSimulatorViews::IsWayland()) {
@@ -152,6 +189,36 @@ IN_PROC_BROWSER_TEST_F(GlicTabIndicatorHelperUiTest, ActiveBrowserAlerted) {
                   WaitForState(kTab1AlertState, IsNotAccessing()),
                   WaitForState(kTab2AlertState, IsAccessing()),
                   WaitForState(kTab3AlertState, IsNotAccessing()));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicTabIndicatorHelperUiTest,
+                       AlertChangesOnTabMovedBetweenBrowsers) {
+#if BUILDFLAG(IS_LINUX)
+  if (views::test::InteractionTestUtilSimulatorViews::IsWayland()) {
+    GTEST_SKIP()
+        << "Programmatic window activation is not supported in the Weston "
+           "reference implementation of Wayland used by test bots.";
+  }
+#endif
+
+  Browser* const browser2 = CreateBrowser(browser()->profile());
+  RunTestSequence(LoadStartingPage(), OpenGlicWindow(GlicWindowMode::kDetached),
+                  ActivateSurface(kBrowserViewElementId),
+                  ObserveState(kTab1AlertState, browser(), 1),
+                  ObserveState(kTab2AlertState, browser2, 0),
+                  ObserveState(kTab3AlertState, browser2, 1),
+                  AddNewCandidateTab(), SelectTab(kTabStripElementId, 1),
+                  ClickMockGlicElement(kMockGlicContextAccessButton),
+                  WaitForState(kTab1AlertState, IsAccessing()),
+                  // This implicitly activates the second browser.
+                  Do([this, browser2]() {
+                    chrome::MoveTabsToExistingWindow(browser(), browser2, {1});
+                  }),
+                  WaitForState(kTab3AlertState, IsAccessing()),
+                  WaitForState(kTab1AlertState, IsNotAccessing()),
+                  InContext(browser2->window()->GetElementContext(),
+                            SelectTab(kTabStripElementId, 0)),
+                  WaitForState(kTab2AlertState, IsAccessing()));
 }
 
 }  // namespace glic

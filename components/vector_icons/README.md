@@ -18,6 +18,8 @@ It handles only a small subset of SVG (paths, circles, etc.) and it's finicky ab
 
 Some SVGs are already pretty minimal, like the ones at [the Material Design Icon repository](https://material.io/icons/) so they don't require much if any adjustment, but some SVG editing tools like Sketch leave a lot of random cruft so SVGOMG helps a lot. Take the output and insert into a `.icon` file.
 
+**Note:** If you are a Google employee, please consider using [go/chrome-gm3-icons](https://docs.google.com/document/d/1FVUVLk156S-PgKlXlTsKdnAoyOlFIfbDTWuTYFmOR0Q/edit?usp=sharing) for standardize icon weights and sizes.
+
 ### Troubleshooting icon generation
 
 + **My colors are inverted!** There is probably a surplus square path encompassing your icon. For example, `<path d="M0 0h16v16H0z"/>`. Delete this and try again.

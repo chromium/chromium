@@ -182,16 +182,14 @@ HRESULT MediaFoundationVideoProcessorAccelerator::Convert(
       frame.get(), dxgi_device_manager_.get(), true, nullptr, 0, &sample);
   RETURN_ON_HR_FAILURE(hr, L"Couldn't generate MF sample from VideoFrame", hr);
 
-  hr = AdjustInputSizeIfNeeded(sample.Get());
-  RETURN_ON_HR_FAILURE(hr, L"Couldn't adjust input size for new frame", hr);
-
   // The video processor will internally acquire the keyed mutex for the
   // underlying texture when it is needed.  No need to synchronize here.
-  return Convert(sample.Get(), sample_out);
+  return Convert(sample.Get(), frame->format(), sample_out);
 }
 
 HRESULT MediaFoundationVideoProcessorAccelerator::Convert(
     IMFSample* sample,
+    VideoPixelFormat input_format,
     IMFSample** sample_out) {
   // This approach of feeding an input to the MFT and expecting an output
   // only works if frame rate conversion is off (MF_XVP_DISABLE_FRC).  If this
@@ -199,7 +197,11 @@ HRESULT MediaFoundationVideoProcessorAccelerator::Convert(
   // to be reworked to allow for multiple input samples before an output
   // is generated.
   DCHECK(video_processor_ != nullptr);
-  HRESULT hr = video_processor_->ProcessInput(0, sample, 0);
+
+  HRESULT hr = AdjustInputTypeIfNeeded(sample, input_format);
+  RETURN_ON_HR_FAILURE(hr, L"Couldn't adjust input type for new frame", hr);
+
+  hr = video_processor_->ProcessInput(0, sample, 0);
   RETURN_ON_HR_FAILURE(hr, L"Failed ProcessInput for video processing", hr);
 
   MFT_OUTPUT_STREAM_INFO stream_info;
@@ -244,10 +246,22 @@ HRESULT MediaFoundationVideoProcessorAccelerator::Convert(
   return S_OK;
 }
 
-HRESULT MediaFoundationVideoProcessorAccelerator::AdjustInputSizeIfNeeded(
-    IMFSample* sample) {
+HRESULT MediaFoundationVideoProcessorAccelerator::AdjustInputTypeIfNeeded(
+    IMFSample* sample,
+    VideoPixelFormat input_format) {
+  bool update_format = false;
+  GUID new_subtype = VideoPixelFormatToMFSubtype(input_format);
+  GUID current_subtype;
+  HRESULT hr = input_media_type_->GetGUID(MF_MT_SUBTYPE, &current_subtype);
+  RETURN_ON_HR_FAILURE(hr, "Coulnd't get input subtype", hr);
+  if (new_subtype != current_subtype) {
+    update_format = true;
+  }
+
+  UINT32 new_width = 0;
+  UINT32 new_height = 0;
   ComMFMediaBuffer buffer;
-  HRESULT hr = sample->GetBufferByIndex(0, &buffer);
+  hr = sample->GetBufferByIndex(0, &buffer);
   RETURN_ON_HR_FAILURE(hr, "Couldn't get sample buffer", hr);
   Microsoft::WRL::ComPtr<IMFDXGIBuffer> dxgi_buffer;
   hr = buffer.As(&dxgi_buffer);
@@ -263,19 +277,29 @@ HRESULT MediaFoundationVideoProcessorAccelerator::AdjustInputSizeIfNeeded(
     (void)MFGetAttributeSize(input_media_type_.Get(), MF_MT_FRAME_SIZE,
                              &mt_width, &mt_height);
     if (input_desc.Width != mt_width || input_desc.Height != mt_height) {
-      ComMFMediaType new_input_media_type;
-      hr = MFCreateMediaType(&new_input_media_type);
-      RETURN_ON_HR_FAILURE(hr, "Couldn't create new input media type", hr);
-      hr = input_media_type_->CopyAllItems(new_input_media_type.Get());
-      RETURN_ON_HR_FAILURE(hr, "Couldn't clone input media type", hr);
-      hr = MFSetAttributeSize(new_input_media_type.Get(), MF_MT_FRAME_SIZE,
-                              input_desc.Width, input_desc.Height);
-      RETURN_ON_HR_FAILURE(hr, "Couldn't set new frame size", hr);
-      hr = video_processor_->SetInputType(0, new_input_media_type.Get(), 0);
-      RETURN_ON_HR_FAILURE(hr, "Couldn't set new input type on video processor",
-                           hr);
-      input_media_type_ = new_input_media_type;
+      update_format = true;
+      new_width = input_desc.Width;
+      new_height = input_desc.Height;
     }
+  }
+
+  if (update_format) {
+    ComMFMediaType new_input_media_type;
+    hr = MFCreateMediaType(&new_input_media_type);
+    RETURN_ON_HR_FAILURE(hr, "Couldn't create new input media type", hr);
+    hr = input_media_type_->CopyAllItems(new_input_media_type.Get());
+    RETURN_ON_HR_FAILURE(hr, "Couldn't clone input media type", hr);
+    hr = new_input_media_type->SetGUID(MF_MT_SUBTYPE, new_subtype);
+    RETURN_ON_HR_FAILURE(hr, "Couldn't set new subtype", hr);
+    if (new_width != 0) {
+      hr = MFSetAttributeSize(new_input_media_type.Get(), MF_MT_FRAME_SIZE,
+                              new_width, new_height);
+    }
+    RETURN_ON_HR_FAILURE(hr, "Couldn't set new frame size", hr);
+    hr = video_processor_->SetInputType(0, new_input_media_type.Get(), 0);
+    RETURN_ON_HR_FAILURE(hr, "Couldn't set new input type on video processor",
+                         hr);
+    input_media_type_ = new_input_media_type;
   }
 
   return S_OK;

@@ -1,0 +1,167 @@
+    <style include="cr-shared-style cr-hidden-style">
+      :host(:not([error-message-allowed])) cr-input {
+        --cr-input-error-display: none;
+      }
+
+      :host([opened_]) cr-input {
+        --cr-input-border-radius: 4px 4px 0 0;
+      }
+
+      iron-dropdown,
+      cr-input {
+        /* 472px is the max width of the input field for a dialog. */
+        width: var(--cr-searchable-drop-down-width, 472px);
+      }
+
+      cr-input {
+        --cr-input-padding-start: 8px;
+
+        /* cr-inputs are by default isolated into their own stacking contexts
+         * but cr-searchable-drop-down requires a fixed overlay that floats over
+         * and covers other content outside their parent cr-input's stacking
+         * contexts.
+         */
+        isolation: auto;
+      }
+
+      iron-dropdown {
+        max-height: 270px;
+      }
+
+      iron-dropdown [slot='dropdown-content'] {
+        background-color: var(--cr-searchable-drop-down-bg-color, white);
+        border-radius: 0 0 4px 4px;
+        box-shadow: var(--cr-searchable-drop-down-shadow,
+          0 2px 6px #9e9e9e);  /* --paper-grey-500 */
+        min-width: 128px;
+        padding: 8px 0;
+      }
+
+      #input-overlay {
+        border-radius: 4px;
+        height: 100%;
+        left: 0;
+        overflow: hidden;
+        pointer-events: none;
+        position: absolute;
+        top: 0;
+        width: 100%;
+      }
+
+      #dropdown-icon {
+        --iron-icon-height: 20px;
+        --iron-icon-width: 20px;
+        margin-top: -10px;
+        padding-inline-end: 6px;
+        position: absolute;
+        right: 0;
+        top: 50%;
+      }
+
+      :host-context([dir='rtl']) #dropdown-icon {
+        left: 0;
+        right: unset;
+      }
+
+      cr-input:focus-within #dropdown-icon {
+        --iron-icon-fill-color: var(--cr-searchable-drop-down-icon-color-focus,
+          var(--google-blue-600));
+      }
+
+      #input-box {
+        height: 100%;
+        left: 0;
+        pointer-events: none;
+        top: 0;
+        width: 100%;
+      }
+
+      #dropdown-box {
+        pointer-events: initial;
+        width: 100%;
+      }
+
+      #loading-box {
+        align-items: center;
+        box-sizing: border-box;
+        display: flex;
+        height: 32px;
+        padding: 0 8px;
+        text-align: start;
+        width: 100%;
+      }
+
+      #loading-box div {
+        font-size: 12px;
+        padding: 0 16px;
+      }
+
+      #loading-box paper-spinner-lite {
+        --paper-spinner-color: var(--cr-searchable-drop-down-spinner-color,
+          var(--google-blue-600));
+        --paper-spinner-stroke-width: 2px;
+        height: 16px;
+        width: 16px;
+      }
+
+      .list-item {
+        background: none;
+        border: none;
+        box-sizing: border-box;
+        color: var(--cr-searchable-drop-down-list-item-color,
+          #212121);  /* --paper-grey-900 */;
+        font: inherit;
+        min-height: 32px;
+        padding: 0 8px;
+        text-align: start;
+        width: 100%;
+      }
+
+      .list-item[selected_] {
+        background-color:
+          var(--cr-searchable-drop-down-list-bg-color-selected,
+            rgba(0, 0, 0, .04));
+        outline: none;
+      }
+
+      .list-item:active {
+        background-color:
+          var(--cr-searchable-drop-down-list-bg-color-active,
+            rgba(0, 0, 0, .12));
+        outline: none;
+      }
+    </style>
+    <!-- |value| is one-way binding on purpose so that it doesn't change
+      immediately as the user types unless the update-value-on-input flag is
+      explicitly used. -->
+    <cr-input part="input" label="[[label]]" on-focus="onFocus_" on-keydown="onKeyDown_"
+        value="[[value]]"
+        on-input="onInput_" id="search" autofocus="[[autofocus]]"
+        placeholder="[[placeholder]]" readonly="[[readonly]]"
+        error-message="[[getErrorMessage_(errorMessage, errorMessageAllowed)]]"
+        invalid="[[shouldShowErrorMessage_(errorMessage, errorMessageAllowed)]]"
+        on-blur="onBlur_">
+      <div id="input-overlay" slot="suffix">
+        <div id="input-box">
+          <cr-icon id="dropdown-icon" icon="cr:arrow-drop-down"></cr-icon>
+        </div>
+        <div id="dropdown-box">
+          <iron-dropdown id="dropdown" horizontal-align="left"
+              vertical-align="top" vertical-offset="0"
+              no-cancel-on-outside-click no-cancel-on-esc-key>
+            <div slot="dropdown-content">
+              <div id="loading-box" hidden="[[!showLoading]]">
+                <paper-spinner-lite active></paper-spinner-lite>
+                <div class="cr-secondary-text">[[loadingMessage]]</div>
+              </div>
+              <template is="dom-repeat" items="[[items]]"
+                  filter="[[filterItems_(searchTerm_)]]">
+                <button class="list-item" on-click="onSelect_" tabindex="-1">
+                  [[item]]
+                </button>
+              </template>
+            </div>
+          </iron-dropdown>
+        </div>
+      </div>
+    </cr-input>

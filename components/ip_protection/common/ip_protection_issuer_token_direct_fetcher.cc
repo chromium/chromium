@@ -138,6 +138,15 @@ IpProtectionIssuerTokenDirectFetcher::~IpProtectionIssuerTokenDirectFetcher() =
 
 void IpProtectionIssuerTokenDirectFetcher::TryGetIssuerTokens(
     TryGetIssuerTokensCallback callback) {
+  // If we are not able to call `RetrieveIssuerToken` yet, return early.
+  if (no_get_issuer_tokens_until_ > base::Time::Now()) {
+    std::move(callback).Run(
+        std::nullopt,
+        TryGetIssuerTokensResult{TryGetIssuerTokensStatus::kRequestBackedOff,
+                                 net::OK, no_get_issuer_tokens_until_});
+    return;
+  }
+
   retriever_.RetrieveIssuerToken(base::BindOnce(
       &IpProtectionIssuerTokenDirectFetcher::OnGetIssuerTokenCompleted,
       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
@@ -204,11 +213,18 @@ void IpProtectionIssuerTokenDirectFetcher::OnGetIssuerTokenCompleted(
     base::expected<std::optional<std::string>, int> response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (!response.has_value() || !response.value().has_value()) {
+    // Apply exponential backoff to these sorts of failures.
+    no_get_issuer_tokens_until_ =
+        base::Time::Now() + next_get_issuer_tokens_backoff_;
+    next_get_issuer_tokens_backoff_ *= 2;
+  }
+
   if (!response.has_value()) {
     std::move(callback).Run(
-        std::nullopt,
-        TryGetIssuerTokensResult{TryGetIssuerTokensStatus::kNetNotOk,
-                                 response.error()});
+        std::nullopt, TryGetIssuerTokensResult{
+                          TryGetIssuerTokensStatus::kNetNotOk, response.error(),
+                          no_get_issuer_tokens_until_});
     // TODO(crbug.com/391358904): add failure metrics using response.error()
     // before returning.
     return;
@@ -218,7 +234,7 @@ void IpProtectionIssuerTokenDirectFetcher::OnGetIssuerTokenCompleted(
     std::move(callback).Run(
         std::nullopt,
         TryGetIssuerTokensResult{TryGetIssuerTokensStatus::kNetOkNullResponse,
-                                 net::OK});
+                                 net::OK, no_get_issuer_tokens_until_});
     // TODO(crbug.com/391358904): add failure metrics using response.error()
     // before returning.
     return;
@@ -241,6 +257,9 @@ void IpProtectionIssuerTokenDirectFetcher::OnGetIssuerTokenCompleted(
                             TryGetIssuerTokensResult{status, net::OK});
     return;
   }
+
+  // Cancel any backoff on success.
+  ClearBackoffTimer();
 
   // TODO(crbug.com/391358904): add success metrics before returning.
   TryGetIssuerTokensOutcome outcome;
@@ -295,6 +314,18 @@ IpProtectionIssuerTokenDirectFetcher::ValidateIssuerTokenResponse(
     }
   }
   return TryGetIssuerTokensStatus::kSuccess;
+}
+
+void IpProtectionIssuerTokenDirectFetcher::AccountStatusChanged(
+    bool account_available) {
+  if (account_available) {
+    ClearBackoffTimer();
+  }
+}
+
+void IpProtectionIssuerTokenDirectFetcher::ClearBackoffTimer() {
+  no_get_issuer_tokens_until_ = base::Time();
+  next_get_issuer_tokens_backoff_ = kGetIssuerTokensFailureTimeout;
 }
 
 }  // namespace ip_protection

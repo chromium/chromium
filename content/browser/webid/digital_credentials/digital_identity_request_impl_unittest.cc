@@ -64,7 +64,7 @@ base::Value ParseJsonAndCheck(const std::string& json) {
   return parsed.has_value() ? std::move(*parsed) : base::Value();
 }
 
-base::Value GenerateOnlyAgeOpenid4VpRequest() {
+base::Value GenerateOnlyAgeOpenid4VpRequestWithPresentationDefinition() {
   constexpr char kJson[] = R"({
     "client_id": "digital-credentials.dev",
     "client_id_scheme": "web-origin",
@@ -97,6 +97,34 @@ base::Value GenerateOnlyAgeOpenid4VpRequest() {
       ]
     }
   })";
+
+  return ParseJsonAndCheck(kJson);
+}
+
+base::Value GenerateOnlyAgeOpenid4VpRequestWithDCQL() {
+  constexpr char kJson[] = R"({
+  "response_type": "vp_token",
+  "response_mode": "w3c_dc_api",
+  "client_id": "web-origin:https://www.digital-credentials.dev",
+  "nonce": "d_xvsQ_PF1oPVZbjAfWu_xgwh3dJf_W5zgWB3U2xWw8",
+  "dcql_query": {
+    "credentials": [
+      {
+        "id": "cred1",
+        "format": "mso_mdoc",
+        "meta": {
+          "doctype_value": "org.iso.18013.5.1.mDL"
+        },
+        "claims": [
+          {
+            "namespace": "org.iso.18013.5.1",
+            "claim_name": "age_over_21"
+          }
+        ]
+      }
+    ]
+  }
+})";
 
   return ParseJsonAndCheck(kJson);
 }
@@ -169,7 +197,7 @@ void RemoveDictKey(base::Value::Dict& dict, const std::string& find_key) {
   }
 }
 
-// Used to modify an Openid4VpRequest on the fly.
+// Used to modify an Openid4VpRequest with Presentation Definition on the fly.
 bool SetPathItem(base::Value& to_modify, const std::string& path_item) {
   base::Value* paths = FindValueWithKey(to_modify, "path");
   if (HasNoListElements(paths)) {
@@ -178,6 +206,17 @@ bool SetPathItem(base::Value& to_modify, const std::string& path_item) {
   paths->GetList().resize(0);
   paths->GetList().Append(path_item);
   return true;
+}
+
+// Used to modify an Openid4VpRequest with DCQL on the fly.
+bool SetClaimedNameValue(base::Value& to_modify,
+                         const std::string& field_name_value) {
+  base::Value* claim_name = FindValueWithKey(to_modify, "claim_name");
+  if (claim_name && claim_name->GetIfString()) {
+    claim_name->GetString().assign(field_name_value);
+    return true;
+  }
+  return false;
 }
 
 // Used to modify a Preview on the fly.
@@ -213,52 +252,63 @@ class DigitalIdentityRequestImplInterstitialTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(DigitalIdentityRequestImplInterstitialTest,
-       Openid4VpProtocol_ComputeInterstitialType_OnlyAgeOver) {
+TEST_F(
+    DigitalIdentityRequestImplInterstitialTest,
+    Openid4VpProtocolPresentationDefinition_ComputeInterstitialType_OnlyAgeOver) {
   EXPECT_EQ(std::nullopt,
-            ComputeInterstitialType(kOpenid4vpProtocol,
-                                    GenerateOnlyAgeOpenid4VpRequest()));
+            ComputeInterstitialType(
+                kOpenid4vpProtocol,
+                GenerateOnlyAgeOpenid4VpRequestWithPresentationDefinition()));
 }
 
-TEST_F(DigitalIdentityRequestImplInterstitialTest,
-       Openid4VpProtocol_ComputeInterstitialType_OnlyAgeInYears) {
-  base::Value request = GenerateOnlyAgeOpenid4VpRequest();
+TEST_F(
+    DigitalIdentityRequestImplInterstitialTest,
+    Openid4VpProtocolPresentationDefinition_ComputeInterstitialType_OnlyAgeInYears) {
+  base::Value request =
+      GenerateOnlyAgeOpenid4VpRequestWithPresentationDefinition();
   ASSERT_TRUE(SetPathItem(request, "$['org.iso.18013.5.1']['age_in_years']"));
   EXPECT_EQ(std::nullopt,
             ComputeInterstitialType(kOpenid4vpProtocol, std::move(request)));
 }
 
-TEST_F(DigitalIdentityRequestImplInterstitialTest,
-       Openid4VpProtocol_ComputeIntersitialType_OnlyAgeBirthYear) {
-  base::Value request = GenerateOnlyAgeOpenid4VpRequest();
+TEST_F(
+    DigitalIdentityRequestImplInterstitialTest,
+    Openid4VpProtocolPresentationDefinition_ComputeIntersitialType_OnlyAgeBirthYear) {
+  base::Value request =
+      GenerateOnlyAgeOpenid4VpRequestWithPresentationDefinition();
   ASSERT_TRUE(SetPathItem(request, "$['org.iso.18013.5.1']['age_birth_year']"));
   EXPECT_EQ(std::nullopt,
             ComputeInterstitialType(kOpenid4vpProtocol, std::move(request)));
 }
 
-TEST_F(DigitalIdentityRequestImplInterstitialTest,
-       Openid4VpProtocol_ComputeIntersitialType_OnlyBirthDate) {
-  base::Value request = GenerateOnlyAgeOpenid4VpRequest();
+TEST_F(
+    DigitalIdentityRequestImplInterstitialTest,
+    Openid4VpProtocolPresentationDefinition_ComputeIntersitialType_OnlyBirthDate) {
+  base::Value request =
+      GenerateOnlyAgeOpenid4VpRequestWithPresentationDefinition();
   ASSERT_TRUE(SetPathItem(request, "$['org.iso.18013.5.1']['birth_date']"));
   EXPECT_EQ(std::nullopt,
             ComputeInterstitialType(kOpenid4vpProtocol, std::move(request)));
 }
 
 base::Value GenerateNonAgeOpenid4VpRequest() {
-  base::Value request = GenerateOnlyAgeOpenid4VpRequest();
+  base::Value request =
+      GenerateOnlyAgeOpenid4VpRequestWithPresentationDefinition();
   CHECK(SetPathItem(request, "$['org.iso.18013.5.1']['given_name']"));
   return request;
 }
 
-TEST_F(DigitalIdentityRequestImplInterstitialTest,
-       Openid4VpProtocol_ComputeIntersitialType_OnlyNonAgeDataElement) {
+TEST_F(
+    DigitalIdentityRequestImplInterstitialTest,
+    Openid4VpProtocolPresentationDefinition_ComputeIntersitialType_OnlyNonAgeDataElement) {
   EXPECT_EQ(InterstitialType::kLowRisk,
             ComputeInterstitialType(kOpenid4vpProtocol,
                                     GenerateNonAgeOpenid4VpRequest()));
 }
 
-TEST_F(DigitalIdentityRequestImplInterstitialTest,
-       Openid4VpProtocol_LowRiskOriginTakesPrecedenceOverRequestType) {
+TEST_F(
+    DigitalIdentityRequestImplInterstitialTest,
+    Openid4VpProtocolPresentationDefinition_LowRiskOriginTakesPrecedenceOverRequestType) {
   auto provider = std::make_unique<TestDigitalIdentityProviderWithCustomRisk>(
       /*are_origins_low_risk=*/true);
   EXPECT_EQ(std::nullopt, DigitalIdentityRequestImpl::ComputeInterstitialType(
@@ -266,9 +316,11 @@ TEST_F(DigitalIdentityRequestImplInterstitialTest,
                               GenerateNonAgeOpenid4VpRequest()));
 }
 
-TEST_F(DigitalIdentityRequestImplInterstitialTest,
-       Openid4VpProtocol_ComputeInterstitialType_EmptyPathList) {
-  base::Value request = GenerateOnlyAgeOpenid4VpRequest();
+TEST_F(
+    DigitalIdentityRequestImplInterstitialTest,
+    Openid4VpProtocolPresentationDefinition_ComputeInterstitialType_EmptyPathList) {
+  base::Value request =
+      GenerateOnlyAgeOpenid4VpRequestWithPresentationDefinition();
   base::Value* paths = FindValueWithKey(request, "path");
   ASSERT_TRUE(IsNonEmptyList(paths));
   paths->GetList().resize(0);
@@ -277,9 +329,11 @@ TEST_F(DigitalIdentityRequestImplInterstitialTest,
             ComputeInterstitialType(kOpenid4vpProtocol, std::move(request)));
 }
 
-TEST_F(DigitalIdentityRequestImplInterstitialTest,
-       Openid4VpProtocol_ComputeInterstitialType_RequestMultiplePaths) {
-  base::Value request = GenerateOnlyAgeOpenid4VpRequest();
+TEST_F(
+    DigitalIdentityRequestImplInterstitialTest,
+    Openid4VpProtocolPresentationDefinition_ComputeInterstitialType_RequestMultiplePaths) {
+  base::Value request =
+      GenerateOnlyAgeOpenid4VpRequestWithPresentationDefinition();
   base::Value* paths = FindValueWithKey(request, "path");
   ASSERT_TRUE(IsNonEmptyList(paths));
 
@@ -291,8 +345,9 @@ TEST_F(DigitalIdentityRequestImplInterstitialTest,
 }
 
 TEST_F(DigitalIdentityRequestImplInterstitialTest,
-       Openid4VpProtocol_ComputeInterstitialType_NoPath) {
-  base::Value request = GenerateOnlyAgeOpenid4VpRequest();
+       Openid4VpProtocolPresentationDefinition_ComputeInterstitialType_NoPath) {
+  base::Value request =
+      GenerateOnlyAgeOpenid4VpRequestWithPresentationDefinition();
   base::Value* fields = FindValueWithKey(request, "fields");
   ASSERT_TRUE(IsNonEmptyList(fields));
   RemoveDictKey(fields->GetList().front().GetDict(), "path");
@@ -301,9 +356,11 @@ TEST_F(DigitalIdentityRequestImplInterstitialTest,
             ComputeInterstitialType(kOpenid4vpProtocol, std::move(request)));
 }
 
-TEST_F(DigitalIdentityRequestImplInterstitialTest,
-       Openid4VpProtocol_ComputeInterstitialType_EmptyFieldsList) {
-  base::Value request = GenerateOnlyAgeOpenid4VpRequest();
+TEST_F(
+    DigitalIdentityRequestImplInterstitialTest,
+    Openid4VpProtocolPresentationDefinition_ComputeInterstitialType_EmptyFieldsList) {
+  base::Value request =
+      GenerateOnlyAgeOpenid4VpRequestWithPresentationDefinition();
   base::Value* fields = FindValueWithKey(request, "fields");
   ASSERT_TRUE(IsNonEmptyList(fields));
   fields->GetList().resize(0);
@@ -312,9 +369,11 @@ TEST_F(DigitalIdentityRequestImplInterstitialTest,
             ComputeInterstitialType(kOpenid4vpProtocol, std::move(request)));
 }
 
-TEST_F(DigitalIdentityRequestImplInterstitialTest,
-       Openid4VpProtocol_ComputeInterstitialType_RequestMultipleAgeAssertions) {
-  base::Value request = GenerateOnlyAgeOpenid4VpRequest();
+TEST_F(
+    DigitalIdentityRequestImplInterstitialTest,
+    Openid4VpProtocolPresentationDefinition_ComputeInterstitialType_RequestMultipleAgeAssertions) {
+  base::Value request =
+      GenerateOnlyAgeOpenid4VpRequestWithPresentationDefinition();
   base::Value* fields = FindValueWithKey(request, "fields");
   ASSERT_TRUE(IsNonEmptyList(fields));
 
@@ -329,9 +388,11 @@ TEST_F(DigitalIdentityRequestImplInterstitialTest,
             ComputeInterstitialType(kOpenid4vpProtocol, std::move(request)));
 }
 
-TEST_F(DigitalIdentityRequestImplInterstitialTest,
-       Openid4VpProtocol_ComputeInterstitialType_RequestMultipleFields) {
-  base::Value request = GenerateOnlyAgeOpenid4VpRequest();
+TEST_F(
+    DigitalIdentityRequestImplInterstitialTest,
+    Openid4VpProtocolPresentationDefinition_ComputeInterstitialType_RequestMultipleFields) {
+  base::Value request =
+      GenerateOnlyAgeOpenid4VpRequestWithPresentationDefinition();
   base::Value* fields = FindValueWithKey(request, "fields");
   ASSERT_TRUE(IsNonEmptyList(fields));
 
@@ -346,9 +407,11 @@ TEST_F(DigitalIdentityRequestImplInterstitialTest,
             ComputeInterstitialType(kOpenid4vpProtocol, std::move(request)));
 }
 
-TEST_F(DigitalIdentityRequestImplInterstitialTest,
-       Openid4VpProtocol_ComputeInterstitialType_NoConstraints) {
-  base::Value request = GenerateOnlyAgeOpenid4VpRequest();
+TEST_F(
+    DigitalIdentityRequestImplInterstitialTest,
+    Openid4VpProtocolPresentationDefinition_ComputeInterstitialType_NoConstraints) {
+  base::Value request =
+      GenerateOnlyAgeOpenid4VpRequestWithPresentationDefinition();
   base::Value* input_descriptors =
       FindValueWithKey(request, "input_descriptors");
   ASSERT_TRUE(IsNonEmptyList(input_descriptors));
@@ -358,9 +421,11 @@ TEST_F(DigitalIdentityRequestImplInterstitialTest,
             ComputeInterstitialType(kOpenid4vpProtocol, std::move(request)));
 }
 
-TEST_F(DigitalIdentityRequestImplInterstitialTest,
-       Openid4VpProtocol_ComputeInterstitialType_EmptyInputDescriptorList) {
-  base::Value request = GenerateOnlyAgeOpenid4VpRequest();
+TEST_F(
+    DigitalIdentityRequestImplInterstitialTest,
+    Openid4VpProtocolPresentationDefinition_ComputeInterstitialType_EmptyInputDescriptorList) {
+  base::Value request =
+      GenerateOnlyAgeOpenid4VpRequestWithPresentationDefinition();
   base::Value* input_descriptors =
       FindValueWithKey(request, "input_descriptors");
   ASSERT_TRUE(IsNonEmptyList(input_descriptors));
@@ -370,9 +435,11 @@ TEST_F(DigitalIdentityRequestImplInterstitialTest,
             ComputeInterstitialType(kOpenid4vpProtocol, std::move(request)));
 }
 
-TEST_F(DigitalIdentityRequestImplInterstitialTest,
-       Openid4VpProtocol_ComputeInterstitialType_RequestMultipleDocuments) {
-  base::Value request = GenerateOnlyAgeOpenid4VpRequest();
+TEST_F(
+    DigitalIdentityRequestImplInterstitialTest,
+    Openid4VpProtocolPresentationDefinition_ComputeInterstitialType_RequestMultipleDocuments) {
+  base::Value request =
+      GenerateOnlyAgeOpenid4VpRequestWithPresentationDefinition();
   base::Value* input_descriptors =
       FindValueWithKey(request, "input_descriptors");
   ASSERT_TRUE(IsNonEmptyList(input_descriptors));
@@ -384,9 +451,11 @@ TEST_F(DigitalIdentityRequestImplInterstitialTest,
             ComputeInterstitialType(kOpenid4vpProtocol, std::move(request)));
 }
 
-TEST_F(DigitalIdentityRequestImplInterstitialTest,
-       Openid4VpProtocol_ComputeInterstitialType_NonMdlInputDescriptorId) {
-  base::Value request = GenerateOnlyAgeOpenid4VpRequest();
+TEST_F(
+    DigitalIdentityRequestImplInterstitialTest,
+    Openid4VpProtocolPresentationDefinition_ComputeInterstitialType_NonMdlInputDescriptorId) {
+  base::Value request =
+      GenerateOnlyAgeOpenid4VpRequestWithPresentationDefinition();
   base::Value* input_descriptors =
       FindValueWithKey(request, "input_descriptors");
   ASSERT_TRUE(IsNonEmptyList(input_descriptors));
@@ -399,9 +468,11 @@ TEST_F(DigitalIdentityRequestImplInterstitialTest,
             ComputeInterstitialType(kOpenid4vpProtocol, std::move(request)));
 }
 
-TEST_F(DigitalIdentityRequestImplInterstitialTest,
-       Openid4VpProtocol_ComputeInterstitialType_NoPresentationDefinition) {
-  base::Value request = GenerateOnlyAgeOpenid4VpRequest();
+TEST_F(
+    DigitalIdentityRequestImplInterstitialTest,
+    Openid4VpProtocolPresentationDefinition_ComputeInterstitialType_NoPresentationDefinition) {
+  base::Value request =
+      GenerateOnlyAgeOpenid4VpRequestWithPresentationDefinition();
   RemoveDictKey(request.GetDict(), "presentation_definition");
 
   EXPECT_EQ(InterstitialType::kLowRisk,
@@ -445,6 +516,100 @@ TEST_F(DigitalIdentityRequestImplInterstitialTest,
   ASSERT_TRUE(SetFieldNameValue(request, "given_name"));
   EXPECT_EQ(InterstitialType::kLowRisk,
             ComputeInterstitialType(kPreviewProtocol, std::move(request)));
+}
+
+TEST_F(DigitalIdentityRequestImplInterstitialTest,
+       Openid4VpProtocolDCQL_ComputeInterstitialType_OnlyAgeOver) {
+  EXPECT_EQ(std::nullopt,
+            ComputeInterstitialType(kOpenid4vpProtocol,
+                                    GenerateOnlyAgeOpenid4VpRequestWithDCQL()));
+}
+
+TEST_F(DigitalIdentityRequestImplInterstitialTest,
+       Openid4VpProtocolDCQL_ComputeIntersitialType_OnlyAgeBirthYear) {
+  base::Value request = GenerateOnlyAgeOpenid4VpRequestWithDCQL();
+  ASSERT_TRUE(SetClaimedNameValue(request, "age_birth_year"));
+  EXPECT_EQ(std::nullopt,
+            ComputeInterstitialType(kOpenid4vpProtocol, std::move(request)));
+}
+
+TEST_F(DigitalIdentityRequestImplInterstitialTest,
+       Openid4VpProtocolDCQL_ComputeIntersitialType_OnlyBirthDate) {
+  base::Value request = GenerateOnlyAgeOpenid4VpRequestWithDCQL();
+  ASSERT_TRUE(SetClaimedNameValue(request, "birth_date"));
+  EXPECT_EQ(std::nullopt,
+            ComputeInterstitialType(kOpenid4vpProtocol, std::move(request)));
+}
+
+TEST_F(DigitalIdentityRequestImplInterstitialTest,
+       Openid4VpProtocolDCQL_ComputeIntersitialType_GivenName) {
+  base::Value request = GenerateOnlyAgeOpenid4VpRequestWithDCQL();
+  ASSERT_TRUE(SetClaimedNameValue(request, "given_name"));
+  EXPECT_EQ(InterstitialType::kLowRisk,
+            ComputeInterstitialType(kOpenid4vpProtocol, std::move(request)));
+}
+
+TEST_F(DigitalIdentityRequestImplInterstitialTest,
+       Openid4VpProtocolDCQL_ComputeIntersitialType_GivenNameAndAgeOver) {
+  base::Value request = ParseJsonAndCheck(R"({
+  "response_type": "vp_token",
+  "response_mode": "w3c_dc_api",
+  "client_id": "web-origin:https://www.digital-credentials.dev",
+  "nonce": "CL0BDiED_T5qDttEddJASo8Ft5yR9C0wmLy6WFtHsCQ",
+  "dcql_query": {
+    "credentials": [
+      {
+        "id": "cred1",
+        "format": "mso_mdoc",
+        "meta": {
+          "doctype_value": "org.iso.18013.5.1.mDL"
+        },
+        "claims": [
+          {
+            "namespace": "org.iso.18013.5.1",
+            "claim_name": "given_name"
+          },
+          {
+            "namespace": "org.iso.18013.5.1",
+            "claim_name": "age_over_21"
+          }
+        ]
+      }
+    ]
+  }
+})");
+  EXPECT_EQ(InterstitialType::kLowRisk,
+            ComputeInterstitialType(kOpenid4vpProtocol, std::move(request)));
+}
+
+TEST_F(DigitalIdentityRequestImplInterstitialTest,
+       Openid4VpProtocolDCQL_ComputeIntersitialType_MalformedRequest) {
+  // Malformed request that's missing the claim_name entry.
+  base::Value malformed_request = ParseJsonAndCheck(R"({
+  "response_type": "vp_token",
+  "response_mode": "w3c_dc_api",
+  "client_id": "web-origin:https://www.digital-credentials.dev",
+  "nonce": "CL0BDiED_T5qDttEddJASo8Ft5yR9C0wmLy6WFtHsCQ",
+  "dcql_query": {
+    "credentials": [
+      {
+        "id": "cred1",
+        "format": "mso_mdoc",
+        "meta": {
+          "doctype_value": "org.iso.18013.5.1.mDL"
+        },
+        "claims": [
+          {
+            "namespace": "org.iso.18013.5.1",
+          },
+        ]
+      }
+    ]
+  }
+})");
+  EXPECT_EQ(InterstitialType::kLowRisk,
+            ComputeInterstitialType(kOpenid4vpProtocol,
+                                    std::move(malformed_request)));
 }
 
 class DigitalIdentityRequestImplWithCreationEnabledTest

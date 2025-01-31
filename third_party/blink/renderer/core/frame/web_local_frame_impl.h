@@ -412,7 +412,7 @@ class CORE_EXPORT WebLocalFrameImpl final
       const mojom::LCPCriticalPathPredictorNavigationTimeHintPtr&) override;
 
   bool IsFeatureEnabled(
-      const mojom::blink::PermissionsPolicyFeature&) const override;
+      const network::mojom::PermissionsPolicyFeature&) const override;
 
   void InitializeCoreFrame(
       Page&,

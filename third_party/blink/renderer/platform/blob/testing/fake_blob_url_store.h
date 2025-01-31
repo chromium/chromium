@@ -35,6 +35,7 @@ class FakeBlobURLStore : public mojom::blink::BlobURLStore {
       ResolveAsURLLoaderFactoryCallback) override;
   void ResolveForNavigation(const KURL&,
                             mojo::PendingReceiver<mojom::blink::BlobURLToken>,
+                            bool is_top_level_navigation,
                             ResolveForNavigationCallback) override;
   void ResolveForWorkerScriptFetch(
       const KURL& url,

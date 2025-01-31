@@ -22,6 +22,7 @@
 #include "cc/base/devtools_instrumentation.h"
 #include "cc/base/features.h"
 #include "cc/benchmarks/benchmark_instrumentation.h"
+#include "cc/debug/rendering_stats_instrumentation.h"
 #include "cc/input/browser_controls_offset_tags_info.h"
 #include "cc/paint/paint_worklet_layer_painter.h"
 #include "cc/resources/ui_resource_manager.h"

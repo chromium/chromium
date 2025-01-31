@@ -86,6 +86,10 @@ class VIEWS_EXPORT WidgetObserver : public base::CheckedObserver {
   // `child` is destroying.
   virtual void OnWidgetChildRemoved(Widget* widget, Widget* child) {}
 
+  // Called when a window-modal child widget's visibility changes.
+  virtual void OnWidgetWindowModalVisibilityChanged(Widget* widget,
+                                                    bool visible) {}
+
  protected:
   ~WidgetObserver() override = default;
 };

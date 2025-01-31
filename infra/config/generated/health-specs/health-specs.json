@@ -12344,6 +12344,27 @@
           }
         ]
       },
+      "win-arm64-updater-builder-rel": {
+        "contact_team_email": "omaha@google.com",
+        "problem_specs": [
+          {
+            "name": "Unhealthy",
+            "period_days": 7,
+            "score": 5,
+            "thresholds": {
+              "_default": "_default"
+            }
+          },
+          {
+            "name": "Low Value",
+            "period_days": 90,
+            "score": 1,
+            "thresholds": {
+              "_default": "_default"
+            }
+          }
+        ]
+      },
       "win-asan": {
         "contact_team_email": "chrome-sanitizer-builder-owners@google.com",
         "problem_specs": [

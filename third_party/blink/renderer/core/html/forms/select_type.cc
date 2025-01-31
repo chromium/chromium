@@ -80,7 +80,17 @@ class PopupUpdater;
 namespace {
 
 HTMLOptionElement* EventTargetOption(const Event& event) {
-  return DynamicTo<HTMLOptionElement>(event.target()->ToNode());
+  auto* element = DynamicTo<Element>(event.target()->ToNode());
+  if (!element) {
+    return nullptr;
+  }
+  if (auto* option = DynamicTo<HTMLOptionElement>(element)) {
+    return option;
+  }
+  if (auto* option = DynamicTo<HTMLOptionElement>(element->OwnerShadowHost())) {
+    return option;
+  }
+  return nullptr;
 }
 
 bool CanAssignToSelectSlot(const Node& node) {

@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_element.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/adaptive_toolbar_view.h"
 
+@class BannerPromoView;
 @class TabGroupIndicatorView;
 @class ToolbarButtonFactory;
 
@@ -67,6 +68,9 @@
 
 // View that contains tab group information.
 @property(nonatomic, weak) TabGroupIndicatorView* tabGroupIndicatorView;
+
+// View that shows a banner promo.
+@property(nonatomic, strong) BannerPromoView* bannerPromo;
 
 // Sets all the subviews and constraints of the view. The `topSafeAnchor` needs
 // to be set before calling this.

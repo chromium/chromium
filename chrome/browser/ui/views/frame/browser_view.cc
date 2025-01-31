@@ -11,7 +11,6 @@
 #include <set>
 #include <utility>
 
-#include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
@@ -1096,6 +1095,8 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   // bar widget.
   find_bar_host_view_ = AddChildView(std::make_unique<View>());
 
+  window_scrim_view_ = AddChildView(std::make_unique<ScrimView>());
+
   UpgradeNotificationController::CreateForBrowser(browser_.get());
 
 #if BUILDFLAG(IS_WIN)
@@ -1177,6 +1178,7 @@ BrowserView::~BrowserView() {
   contents_web_view_ = nullptr;
   devtools_web_view_ = nullptr;
   contents_scrim_view_ = nullptr;
+  window_scrim_view_ = nullptr;
   watermark_view_ = nullptr;
   glic_border_ = nullptr;
   contents_container_ = nullptr;
@@ -2920,6 +2922,19 @@ void BrowserView::NotifyWidgetSizeConstraintsChanged() {
 void BrowserView::OnWidgetShowStateChanged(views::Widget* widget) {
   // `display-state` @media feature value in renderer needs to be updated.
   SynchronizeRenderWidgetHostVisualPropertiesForMainFrame();
+}
+
+void BrowserView::OnWidgetWindowModalVisibilityChanged(views::Widget* widget,
+                                                       bool visible) {
+  if (!base::FeatureList::IsEnabled(features::kScrimForBrowserWindowModal)) {
+    return;
+  }
+
+#if !BUILDFLAG(IS_MAC)
+  // MacOS does not need views window scrim. We use sheets to show window modals
+  // (-[NSWindow beginSheet:]), which natively draw a scrim since macOS 11.
+  window_scrim_view_->SetVisible(visible);
+#endif
 }
 
 void BrowserView::DidFirstVisuallyNonEmptyPaint() {
@@ -4752,12 +4767,12 @@ void BrowserView::AddedToWidget() {
   // Widget and move to the constructor.
   SetLayoutManager(std::make_unique<BrowserViewLayout>(
       std::make_unique<BrowserViewLayoutDelegateImpl>(this), this,
-      top_container_, web_app_frame_toolbar_, web_app_window_title_,
-      tab_strip_region_view_, tabstrip_, toolbar_, infobar_container_,
-      contents_container_, left_aligned_side_panel_separator_,
-      unified_side_panel_, right_aligned_side_panel_separator_,
-      side_panel_rounded_corner_, immersive_mode_controller_.get(),
-      contents_separator_));
+      window_scrim_view_, top_container_, web_app_frame_toolbar_,
+      web_app_window_title_, tab_strip_region_view_, tabstrip_, toolbar_,
+      infobar_container_, contents_container_,
+      left_aligned_side_panel_separator_, unified_side_panel_,
+      right_aligned_side_panel_separator_, side_panel_rounded_corner_,
+      immersive_mode_controller_.get(), contents_separator_));
 
   EnsureFocusOrder();
 

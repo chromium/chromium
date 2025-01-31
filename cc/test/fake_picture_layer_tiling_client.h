@@ -24,6 +24,8 @@ class RasterContextProvider;
 
 namespace cc {
 
+class PictureLayerTilingSet;
+
 class FakePictureLayerTilingClient : public PictureLayerTilingClient {
  public:
   FakePictureLayerTilingClient();

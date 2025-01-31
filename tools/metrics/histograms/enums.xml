@@ -15330,6 +15330,7 @@ from previous Chrome versions.
   <int value="480544447" label="NonValidatingReloadOnRefreshContentV2:enabled"/>
   <int value="480594286" label="CCTEphemeralMediaViewerExperiment:disabled"/>
   <int value="480677983" label="WebXRARDOMOverlay:disabled"/>
+  <int value="481422857" label="LensOverlaySidePanelOpenInNewTab:disabled"/>
   <int value="481506759" label="ServiceWorkerScriptStreaming:enabled"/>
   <int value="482232604" label="PercentBasedScrolling:enabled"/>
   <int value="483155358" label="GlobalMediaControlsForChromeOS:disabled"/>
@@ -18555,6 +18556,7 @@ from previous Chrome versions.
   <int value="1750824169" label="OmniboxOnDeviceTailModel:disabled"/>
   <int value="1751127292" label="EncryptedClientHello:enabled"/>
   <int value="1752168018" label="enable-stale-while-revalidate"/>
+  <int value="1753043593" label="LensOverlaySidePanelOpenInNewTab:enabled"/>
   <int value="1753542809" label="OmniboxKeywordModeRefresh:enabled"/>
   <int value="1753732236" label="SignInProfileCreationEnterprise:enabled"/>
   <int value="1753735712"

@@ -10,10 +10,10 @@
 
 BackgroundSyncPermissionContext::BackgroundSyncPermissionContext(
     content::BrowserContext* browser_context)
-    : PermissionContextBase(browser_context,
-                            ContentSettingsType::BACKGROUND_SYNC,
-                            blink::mojom::PermissionsPolicyFeature::kNotFound) {
-}
+    : PermissionContextBase(
+          browser_context,
+          ContentSettingsType::BACKGROUND_SYNC,
+          network::mojom::PermissionsPolicyFeature::kNotFound) {}
 
 void BackgroundSyncPermissionContext::DecidePermission(
     permissions::PermissionRequestData request_Data,

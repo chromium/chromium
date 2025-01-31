@@ -1361,14 +1361,6 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
     network_context_params->file_paths->cookie_database_name =
         base::FilePath(chrome::kCookieFilename);
 
-#if BUILDFLAG(IS_WIN)
-    // The cookie database used by this profile will be locked for exclusive
-    // access by sqlite3 implementation in the network service.
-    //
-    // TODO(crbug.com/377642763): See if we can remove this flag.
-    network_context_params->enable_locking_cookie_database = true;
-#endif  // BUILDFLAG(IS_WIN)
-
     g_browser_process->system_network_context_manager()
         ->AddCookieEncryptionManagerToNetworkContextParams(
             network_context_params);

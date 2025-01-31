@@ -1010,6 +1010,7 @@ TEST_F(ProfileAttributesStorageTest, ConcatenateGaiaNameAndProfileName) {
 
   // We should only append the profile name to the GAIA name if:
   // - The user has chosen a profile name on purpose.
+  // - The user is managed and has an enterprise label.
   // - Two profiles has the sama GAIA name and we need to show it to
   //   clear ambiguity.
   // If one of the two conditions hold, we will show the profile name in this
@@ -1031,6 +1032,11 @@ TEST_F(ProfileAttributesStorageTest, ConcatenateGaiaNameAndProfileName) {
   // Set a custom profile name.
   entry_1->SetLocalProfileName(u"Work", false);
   EXPECT_EQ(u"Patt (Work)", entry_1->GetName());
+
+  // Set an enterprise label, which takes priority over custom profile name.
+  entry_1->SetEnterpriseProfileLabel(u"Google");
+  EXPECT_EQ(u"Patt (Google)", entry_1->GetName());
+  entry_1->SetEnterpriseProfileLabel(u"");
 
   // Set the profile name to be equal to GAIA name.
   entry_1->SetLocalProfileName(u"patt", false);
@@ -1058,10 +1064,23 @@ TEST_F(ProfileAttributesStorageTest, ConcatenateGaiaNameAndProfileName) {
   EXPECT_EQ(u"Patt (Work)", entry_1->GetName());
   EXPECT_EQ(u"Olly", entry_2->GetName());
 
+  // Enterprise label still takes priority for the first profile if set.
+  entry_1->SetEnterpriseProfileLabel(u"Google");
+  EXPECT_EQ(u"Patt (Google)", entry_1->GetName());
+  entry_1->SetEnterpriseProfileLabel(u"");
+
   // Mark profile name as default.
   entry_1->SetLocalProfileName(u"Person 1", true);
   EXPECT_EQ(u"Patt", entry_1->GetName());
   EXPECT_EQ(u"Olly", entry_2->GetName());
+
+  // Enterprise label will still show if set.
+  entry_1->SetEnterpriseProfileLabel(u"Google1");
+  EXPECT_EQ(u"Patt (Google1)", entry_1->GetName());
+  entry_2->SetEnterpriseProfileLabel(u"Google2");
+  EXPECT_EQ(u"Olly (Google2)", entry_2->GetName());
+  entry_1->SetEnterpriseProfileLabel(u"");
+  entry_2->SetEnterpriseProfileLabel(u"");
 
   // Add a third profile with the same GAIA name as the first.
   // The two profiles are marked as using default profile names.

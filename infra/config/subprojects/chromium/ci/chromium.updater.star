@@ -856,6 +856,48 @@ ci.builder(
 )
 
 ci.builder(
+    name = "win-arm64-updater-builder-rel",
+    description_html = _UPDATER_LINK + " Windows arm64 release builder.",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
+        ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "updater",
+            "release_builder",
+            "remoteexec",
+            "win",
+            "arm64",
+        ],
+    ),
+    targets = targets.bundle(
+        additional_compile_targets = [
+            "chrome/updater:all",
+        ],
+    ),
+    builderless = True,
+    os = os.WINDOWS_DEFAULT,
+    console_view_entry = consoles.console_view_entry(
+        category = "release|win (arm64)",
+        short_name = "bld",
+    ),
+    contact_team_email = "omaha@google.com",
+    execution_timeout = 6 * time.hour,
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CI,
+)
+
+ci.builder(
     name = "win-updater-builder-dbg",
     description_html = _UPDATER_LINK + " Windows x64 debug builder.",
     builder_spec = builder_config.builder_spec(

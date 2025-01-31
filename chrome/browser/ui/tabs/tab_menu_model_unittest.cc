@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/commerce/product_specifications/product_specifications_service_factory.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/feed/web_feed_tab_helper.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -23,6 +24,7 @@
 #include "components/commerce/core/feature_utils.h"
 #include "components/commerce/core/mock_account_checker.h"
 #include "components/commerce/core/mock_shopping_service.h"
+#include "components/commerce/core/product_specifications/mock_product_specifications_service.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/commerce/core/test_utils.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
@@ -499,5 +501,196 @@ TEST_F(TabMenuModelCommerceProductSpecsTest,
   EXPECT_FALSE(model
                    .GetIndexOfCommandId(
                        TabStripModel::CommandCommerceProductSpecifications)
+                   .has_value());
+}
+
+class TabMenuModelComparisonTableTest : public TabMenuModelTest {
+ public:
+  void SetUp() override {
+    TabMenuModelTest::SetUp();
+
+    feature_list.InitWithFeatures({commerce::kProductSpecifications,
+                                   commerce::kCompareManagementInterface},
+                                  {});
+  }
+
+  TestingProfile::TestingFactories GetTestingFactories() override {
+    return IdentityTestEnvironmentProfileAdaptor::
+        GetIdentityTestEnvironmentFactoriesWithAppendedFactories(
+            {TestingProfile::TestingFactory{
+                commerce::ProductSpecificationsServiceFactory::GetInstance(),
+                base::BindRepeating([](content::BrowserContext* context) {
+                  return commerce::MockProductSpecificationsService::Build();
+                })}});
+  }
+
+ protected:
+  TabStripModel* tab_strip() { return browser()->tab_strip_model(); }
+
+  void AddAndSelectTab(Browser* browser, const GURL& url) {
+    AddTab(browser, url);
+    browser->tab_strip_model()->ToggleSelectionAt(0);
+  }
+
+  void SelectAllTabs() {
+    tab_strip()->AddSelectionFromAnchorTo(tab_strip()->count() - 1);
+  }
+
+  void SetProductSpecs(
+      const std::vector<commerce::ProductSpecificationsSet>& sets) {
+    auto* product_specs_service =
+        static_cast<commerce::MockProductSpecificationsService*>(
+            commerce::ProductSpecificationsServiceFactory::GetForBrowserContext(
+                browser()->profile()));
+    ON_CALL(*product_specs_service, GetAllProductSpecifications())
+        .WillByDefault(testing::Return(sets));
+  }
+
+  base::test::ScopedFeatureList feature_list;
+};
+
+TEST_F(TabMenuModelComparisonTableTest, MenuNotShownWhenFeatureDisabled) {
+  feature_list.Reset();
+  feature_list.InitWithFeatures({}, {commerce::kProductSpecifications,
+                                     commerce::kCompareManagementInterface});
+
+  AddAndSelectTab(browser(), GURL("https://example.com"));
+
+  TabMenuModel model(&delegate_, browser()->tab_menu_model_delegate(),
+                     tab_strip(), 0);
+  EXPECT_FALSE(
+      model.GetIndexOfCommandId(TabStripModel::CommandAddToNewComparisonTable)
+          .has_value());
+  EXPECT_FALSE(model
+                   .GetIndexOfCommandId(
+                       TabStripModel::CommandAddToExistingComparisonTable)
+                   .has_value());
+}
+
+TEST_F(TabMenuModelComparisonTableTest, MenuShownForNormalWindow) {
+  AddAndSelectTab(browser(), GURL("https://example.com"));
+
+  TabMenuModel model(&delegate_, browser()->tab_menu_model_delegate(),
+                     tab_strip(), 0);
+
+  // No existing tables, so only the option for adding to a new table should be
+  // visible.
+  auto index =
+      model.GetIndexOfCommandId(TabStripModel::CommandAddToNewComparisonTable);
+  EXPECT_TRUE(index.has_value());
+  EXPECT_TRUE(model.IsEnabledAt(index.value()));
+  EXPECT_FALSE(model
+                   .GetIndexOfCommandId(
+                       TabStripModel::CommandAddToExistingComparisonTable)
+                   .has_value());
+}
+
+TEST_F(TabMenuModelComparisonTableTest, MenuNotShownForIncognitoWindow) {
+  TestingProfile::Builder incognito_profile_builder;
+  auto* incognito_profile = incognito_profile_builder.BuildIncognito(profile());
+
+  Browser::CreateParams native_params(incognito_profile, true);
+  native_params.initial_show_state = ui::mojom::WindowShowState::kDefault;
+  std::unique_ptr<Browser> browser =
+      CreateBrowserWithTestWindowForParams(native_params);
+  Browser* incognito_browser = browser.get();
+
+  AddAndSelectTab(incognito_browser, GURL("https://example.com"));
+
+  TabMenuModel model(&delegate_, incognito_browser->tab_menu_model_delegate(),
+                     incognito_browser->tab_strip_model(), 0);
+  EXPECT_FALSE(
+      model.GetIndexOfCommandId(TabStripModel::CommandAddToNewComparisonTable)
+          .has_value());
+  EXPECT_FALSE(model
+                   .GetIndexOfCommandId(
+                       TabStripModel::CommandAddToExistingComparisonTable)
+                   .has_value());
+
+  // All tabs must be closed before the object is destroyed.
+  incognito_browser->tab_strip_model()->CloseAllTabs();
+}
+
+TEST_F(TabMenuModelComparisonTableTest, MenuNotShownWhenMultipleTabsSelected) {
+  AddTab(browser(), GURL("https://example.com"));
+  AddTab(browser(), GURL("https://sample.com"));
+  SelectAllTabs();
+
+  TabMenuModel model(&delegate_, browser()->tab_menu_model_delegate(),
+                     tab_strip(), 0);
+
+  EXPECT_FALSE(
+      model.GetIndexOfCommandId(TabStripModel::CommandAddToNewComparisonTable)
+          .has_value());
+  EXPECT_FALSE(model
+                   .GetIndexOfCommandId(
+                       TabStripModel::CommandAddToExistingComparisonTable)
+                   .has_value());
+}
+
+TEST_F(TabMenuModelComparisonTableTest,
+       MenuShownForExistingTables_SetsDoNotContainUrl) {
+  const std::vector<commerce::ProductSpecificationsSet> sets = {
+      commerce::ProductSpecificationsSet(
+          base::Uuid::GenerateRandomV4().AsLowercaseString(), 0, 0,
+          {
+              GURL("https://example1.com"),
+          },
+          "Set 1"),
+      commerce::ProductSpecificationsSet(
+          base::Uuid::GenerateRandomV4().AsLowercaseString(), 0, 0,
+          {
+              GURL("https://example2.com"),
+          },
+          "Set 2")};
+  SetProductSpecs(sets);
+
+  AddAndSelectTab(browser(), GURL("https://example.com"));
+
+  TabMenuModel model(&delegate_, browser()->tab_menu_model_delegate(),
+                     tab_strip(), 0);
+
+  // There are existing tables, so the submenu for adding to an existing table
+  // should be visible.
+  EXPECT_FALSE(
+      model.GetIndexOfCommandId(TabStripModel::CommandAddToNewComparisonTable)
+          .has_value());
+  auto index = model.GetIndexOfCommandId(
+      TabStripModel::CommandAddToExistingComparisonTable);
+  EXPECT_TRUE(index.has_value());
+  EXPECT_TRUE(model.IsEnabledAt(index.value()));
+}
+
+TEST_F(TabMenuModelComparisonTableTest,
+       MenuShownForExistingTables_SetsContainUrl) {
+  const std::vector<commerce::ProductSpecificationsSet> sets = {
+      commerce::ProductSpecificationsSet(
+          base::Uuid::GenerateRandomV4().AsLowercaseString(), 0, 0,
+          {
+              GURL("https://example.com"),
+          },
+          "Set 1"),
+      commerce::ProductSpecificationsSet(
+          base::Uuid::GenerateRandomV4().AsLowercaseString(), 0, 0,
+          {
+              GURL("https://example.com"),
+          },
+          "Set 2")};
+  SetProductSpecs(sets);
+
+  AddAndSelectTab(browser(), GURL("https://example.com"));
+
+  TabMenuModel model(&delegate_, browser()->tab_menu_model_delegate(),
+                     tab_strip(), 0);
+
+  // All existing tables contain the URL, so only the option for adding to a new
+  // table should be visible.
+  auto index =
+      model.GetIndexOfCommandId(TabStripModel::CommandAddToNewComparisonTable);
+  EXPECT_TRUE(index.has_value());
+  EXPECT_TRUE(model.IsEnabledAt(index.value()));
+  EXPECT_FALSE(model
+                   .GetIndexOfCommandId(
+                       TabStripModel::CommandAddToExistingComparisonTable)
                    .has_value());
 }

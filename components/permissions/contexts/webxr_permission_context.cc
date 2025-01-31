@@ -27,7 +27,7 @@ WebXrPermissionContext::WebXrPermissionContext(
     ContentSettingsType content_settings_type)
     : PermissionContextBase(browser_context,
                             content_settings_type,
-                            blink::mojom::PermissionsPolicyFeature::kWebXr),
+                            network::mojom::PermissionsPolicyFeature::kWebXr),
       content_settings_type_(content_settings_type) {
   DCHECK(content_settings_type_ == ContentSettingsType::VR ||
          content_settings_type_ == ContentSettingsType::AR ||

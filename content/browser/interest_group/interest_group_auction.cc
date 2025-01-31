@@ -5553,14 +5553,6 @@ void InterestGroupAuction::ScoreBid(std::unique_ptr<Bid> bid) {
 
   ++bids_being_scored_;
 
-  // We only pass the buyerAndSellerReportingId if there is a
-  // selectedBuyerAndSellerReportingId.
-  std::optional<std::string> maybe_buyer_and_seller_reporting_id;
-  if (bid->selected_buyer_and_seller_reporting_id.has_value()) {
-    maybe_buyer_and_seller_reporting_id =
-        bid->bid_ad->buyer_and_seller_reporting_id;
-  }
-
   mojo::PendingReceiver<auction_worklet::mojom::ScoreAdClient>
       score_ad_receiver;
   DCHECK_EQ(0, config_->NumPromises());
@@ -5615,7 +5607,8 @@ void InterestGroupAuction::ScoreBid(std::unique_ptr<Bid> bid) {
       parent_ ? PerBuyerCurrency(config_->seller, *parent_->config_)
               : std::nullopt,
       bid->interest_group->owner, bid->selected_buyer_and_seller_reporting_id,
-      maybe_buyer_and_seller_reporting_id, bid->bid_duration.InMilliseconds(),
+      bid->bid_ad->buyer_and_seller_reporting_id,
+      bid->bid_duration.InMilliseconds(),
       IsOriginInDebugReportCooldownOrLockout(
           config_->seller, debug_report_lockout_and_cooldowns_,
           base::Time::Now()),

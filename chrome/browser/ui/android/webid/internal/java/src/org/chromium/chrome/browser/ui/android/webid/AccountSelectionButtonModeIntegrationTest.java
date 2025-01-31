@@ -181,8 +181,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
         assertEquals(
                 HeaderType.REQUEST_PERMISSION_MODAL,
                 mAccountSelection.getMediator().getHeaderType());
-        onView(withId(R.id.account_selection_continue_btn))
-                .check(matches(withText("Continue as Bob")));
+        onView(withId(R.id.account_selection_continue_btn)).check(matches(withText("Continue")));
         onView(withId(R.id.user_data_sharing_consent))
                 .check(
                         matches(
@@ -299,8 +298,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
 
         // Sheet should still be open.
         assertNotEquals(BottomSheetController.SheetState.HIDDEN, getBottomSheetState());
-        onView(withId(R.id.account_selection_continue_btn))
-                .check(matches(withText("Continue as Bob")));
+        onView(withId(R.id.account_selection_continue_btn)).check(matches(withText("Continue")));
 
         // Make sure we now show the disclosure text.
         TextView consent = contentView.findViewById(R.id.user_data_sharing_consent);

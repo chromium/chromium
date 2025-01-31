@@ -24,6 +24,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/common/url_constants.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
 namespace glic {

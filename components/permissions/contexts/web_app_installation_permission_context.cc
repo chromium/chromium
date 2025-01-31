@@ -16,6 +16,6 @@ WebAppInstallationPermissionContext::WebAppInstallationPermissionContext(
     : PermissionContextBase(
           browser_context,
           ContentSettingsType::WEB_APP_INSTALLATION,
-          blink::mojom::PermissionsPolicyFeature::kWebAppInstallation) {}
+          network::mojom::PermissionsPolicyFeature::kWebAppInstallation) {}
 
 }  // namespace permissions

@@ -5,8 +5,6 @@
 #ifndef BASE_SEQUENCE_TOKEN_H_
 #define BASE_SEQUENCE_TOKEN_H_
 
-// TODO: Remove this unused include once no other file indirectly depends on it.
-#include "base/auto_reset.h"
 #include "base/base_export.h"
 
 namespace base {

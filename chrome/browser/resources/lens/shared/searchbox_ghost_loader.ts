@@ -11,6 +11,7 @@ import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {PageContentType} from './page_content_type.mojom-webui.js';
 import {getTemplate} from './searchbox_ghost_loader.html.js';
 import {BrowserProxyImpl} from './searchbox_ghost_loader_browser_proxy.js';
 import type {BrowserProxy} from './searchbox_ghost_loader_browser_proxy.js';
@@ -43,6 +44,14 @@ export class SearchboxGhostLoaderElement extends
             loadTimeData.getBoolean('showContextualSearchboxLoadingState'),
         reflectToAttribute: true,
       },
+      pageContentType: {
+        type: String,
+        value: PageContentType.kUnknown,
+      },
+      ghostLoaderPrimaryMessage: {
+        type: String,
+        computed: `computeGhostLoaderPrimaryMessage(pageContentType)`,
+      },
     };
   }
 
@@ -50,6 +59,8 @@ export class SearchboxGhostLoaderElement extends
   // hide the ghost loader. We also show the error text in this case.
   private showErrorState: boolean;
   private showContextualSearchboxLoadingState: boolean;
+  // What the current page content type is.
+  private pageContentType: PageContentType;
   private browserProxy: BrowserProxy = BrowserProxyImpl.getInstance();
   private listenerIds: number[];
 
@@ -81,12 +92,18 @@ export class SearchboxGhostLoaderElement extends
       return this.i18n('searchboxGhostLoaderErrorText');
     }
 
-    return this.i18n('searchboxGhostLoaderHintTextPrimary');
+    return this.computeGhostLoaderPrimaryMessage();
   }
   // LINT.ThenChange(//chrome/browser/resources/lens/shared/searchbox_ghost_loader.html:GhostLoaderText)
 
   showErrorStateForTesting() {
     this.showErrorState = true;
+  }
+
+  private computeGhostLoaderPrimaryMessage(): string {
+    return this.pageContentType === PageContentType.kPdf ?
+        this.i18n('searchboxGhostLoaderHintTextPrimaryPdf') :
+        this.i18n('searchboxGhostLoaderHintTextPrimaryDefault');
   }
 }
 

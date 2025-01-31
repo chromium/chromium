@@ -35,10 +35,10 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features_generated.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -597,7 +597,7 @@ class IsolatedWebAppApiTest : public web_app::IsolatedWebAppBrowserTestHarness {
  public:
   content::RenderFrameHost* InstallAndOpenIsolatedWebApp(
       bool with_pna = false) {
-    using PermissionsPolicyFeature = blink::mojom::PermissionsPolicyFeature;
+    using PermissionsPolicyFeature = network::mojom::PermissionsPolicyFeature;
 
     auto manifest_builder =
         web_app::ManifestBuilder().AddPermissionsPolicyWildcard(

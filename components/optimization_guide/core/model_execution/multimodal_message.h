@@ -11,7 +11,9 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_MULTIMODAL_MESSAGE_H_
 
 #include <cstddef>
+#include <map>
 #include <optional>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"

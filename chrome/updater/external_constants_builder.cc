@@ -194,17 +194,6 @@ ExternalConstantsBuilder& ExternalConstantsBuilder::ClearMachineManaged() {
   return *this;
 }
 
-ExternalConstantsBuilder& ExternalConstantsBuilder::SetEnableDiffUpdates(
-    bool enable_diffs) {
-  overrides_.Set(kDevOverrideKeyEnableDiffUpdates, enable_diffs);
-  return *this;
-}
-
-ExternalConstantsBuilder& ExternalConstantsBuilder::ClearEnableDiffUpdates() {
-  overrides_.Remove(kDevOverrideKeyEnableDiffUpdates);
-  return *this;
-}
-
 ExternalConstantsBuilder& ExternalConstantsBuilder::SetCecaConnectionTimeout(
     base::TimeDelta ceca_connection_timeout) {
   overrides_.Set(kDevOverrideKeyCecaConnectionTimeout,
@@ -279,9 +268,6 @@ bool ExternalConstantsBuilder::Modify() {
   }
   if (!overrides_.contains(kDevOverrideKeyManagedDevice)) {
     SetMachineManaged(verifier->IsMachineManaged());
-  }
-  if (!overrides_.contains(kDevOverrideKeyEnableDiffUpdates)) {
-    SetEnableDiffUpdates(verifier->EnableDiffUpdates());
   }
   if (!overrides_.contains(kDevOverrideKeyCecaConnectionTimeout)) {
     SetCecaConnectionTimeout(verifier->CecaConnectionTimeout());

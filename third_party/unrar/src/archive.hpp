@@ -47,6 +47,7 @@ class Archive:public File
     bool DummyCmd;
     CommandData *Cmd;
 
+    int RecoveryPercent;
 
     RarTime LatestTime;
     int LastReadBlock;
@@ -72,6 +73,7 @@ class Archive:public File
     size_t SearchBlock(HEADER_TYPE HeaderType);
     size_t SearchSubBlock(const wchar *Type);
     size_t SearchRR();
+    int GetRecoveryPercent() {return RecoveryPercent;}
     size_t ReadHeader();
     void CheckArc(bool EnableBroken);
     void CheckOpen(const std::wstring &Name);

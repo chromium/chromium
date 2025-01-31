@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.chrome.browser.tab.TabFavicon;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
@@ -122,7 +123,10 @@ public class TabGroupListCoordinator {
         Profile profile = profileProvider.getOriginalProfile();
         mTabListFaviconProvider =
                 new TabListFaviconProvider(
-                        context, /* isTabStrip= */ false, R.dimen.default_favicon_corner_radius);
+                        context,
+                        /* isTabStrip= */ false,
+                        R.dimen.default_favicon_corner_radius,
+                        TabFavicon::getBitmap);
         FaviconResolver faviconResolver =
                 buildFaviconResolver(context, profile, mTabListFaviconProvider);
         @Nullable TabGroupSyncService tabGroupSyncService = null;

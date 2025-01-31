@@ -336,7 +336,7 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, ExecuteScript) {
   std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app =
       web_app::IsolatedWebAppBuilder(
           web_app::ManifestBuilder().AddPermissionsPolicy(
-              blink::mojom::PermissionsPolicyFeature::kControlledFrame,
+              network::mojom::PermissionsPolicyFeature::kControlledFrame,
               /*self=*/true,
               /*origins=*/{}))
           .AddHtml("/execute_script.input.js",
@@ -898,7 +898,7 @@ IN_PROC_BROWSER_TEST_P(ControlledFramePromiseApiTest, PromiseAPIs) {
   std::unique_ptr<web_app::ScopedProxyIsolatedWebApp> app =
       web_app::IsolatedWebAppBuilder(
           web_app::ManifestBuilder().AddPermissionsPolicy(
-              blink::mojom::PermissionsPolicyFeature::kControlledFrame,
+              network::mojom::PermissionsPolicyFeature::kControlledFrame,
               /*self=*/true,
               /*origins=*/{}))
           .AddFolderFromDisk("/", "web_apps/simple_isolated_app")

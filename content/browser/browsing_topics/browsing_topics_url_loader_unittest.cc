@@ -173,7 +173,7 @@ class BrowsingTopicsURLLoaderTest : public RenderViewHostTestHarness {
 
     blink::ParsedPermissionsPolicy policy;
     policy.emplace_back(
-        blink::mojom::PermissionsPolicyFeature::kBrowsingTopics,
+        network::mojom::PermissionsPolicyFeature::kBrowsingTopics,
         /*allowed_origins=*/
         std::vector{*blink::OriginWithPossibleWildcards::FromOrigin(
                         url::Origin::Create(GURL("https://google.com"))),

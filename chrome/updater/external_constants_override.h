@@ -59,7 +59,6 @@ class ExternalConstantsOverrider : public ExternalConstants {
   base::TimeDelta OverinstallTimeout() const override;
   base::TimeDelta IdleCheckPeriod() const override;
   std::optional<bool> IsMachineManaged() const override;
-  bool EnableDiffUpdates() const override;
   base::TimeDelta CecaConnectionTimeout() const override;
 
  private:

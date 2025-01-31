@@ -27,8 +27,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_USE_COUNTER_IMPL_H_
 
 #include <bitset>
+
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink-forward.h"
 #include "third_party/blink/public/common/use_counter/use_counter_feature_tracker.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_mode.h"
@@ -115,7 +116,7 @@ class CORE_EXPORT UseCounterImpl final {
   void Count(CSSPropertyID, CSSPropertyType, const LocalFrame*);
   void Count(WebFeature, const LocalFrame*);
   void CountWebDXFeature(WebDXFeature, const LocalFrame*);
-  void CountPermissionsPolicyUsage(mojom::blink::PermissionsPolicyFeature,
+  void CountPermissionsPolicyUsage(network::mojom::PermissionsPolicyFeature,
                                    PermissionsPolicyUsageType,
                                    const LocalFrame&);
 

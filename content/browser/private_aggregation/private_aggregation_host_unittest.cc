@@ -34,6 +34,7 @@
 #include "content/browser/private_aggregation/private_aggregation_caller_api.h"
 #include "content/browser/private_aggregation/private_aggregation_features.h"
 #include "content/browser/private_aggregation/private_aggregation_manager.h"
+#include "content/browser/private_aggregation/private_aggregation_pending_contributions.h"
 #include "content/browser/private_aggregation/private_aggregation_test_utils.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
@@ -61,13 +62,12 @@ using testing::Property;
 
 auto GenerateAndSaveReportRequest(
     std::optional<AggregatableReportRequest>* out) {
-  return
-      [out](PrivateAggregationHost::ReportRequestGenerator generator,
-            std::vector<blink::mojom::AggregatableReportHistogramContribution>
-                contributions,
-            auto&&...) {
-        *out = std::move(generator).Run(std::move(contributions));
-      };
+  return [out](PrivateAggregationHost::ReportRequestGenerator generator,
+               PrivateAggregationPendingContributions::Wrapper contributions,
+               auto&&...) {
+    *out = std::move(generator).Run(
+        std::move(contributions.GetContributionsVector()));
+  };
 }
 
 constexpr std::string_view kPipeResultHistogram =
@@ -135,7 +135,7 @@ class PrivateAggregationHostTest : public testing::Test {
  protected:
   base::MockRepeatingCallback<void(
       PrivateAggregationHost::ReportRequestGenerator,
-      std::vector<blink::mojom::AggregatableReportHistogramContribution>,
+      PrivateAggregationPendingContributions::Wrapper,
       PrivateAggregationBudgetKey,
       NullReportBehavior)>
       mock_callback_;
@@ -431,15 +431,14 @@ TEST_F(PrivateAggregationHostTest,
       .WillOnce(Invoke(
           [&kExampleOriginB](
               PrivateAggregationHost::ReportRequestGenerator generator,
-              std::vector<blink::mojom::AggregatableReportHistogramContribution>
-                  contributions,
+              PrivateAggregationPendingContributions::Wrapper contributions,
               PrivateAggregationBudgetKey budget_key,
               PrivateAggregationHost::NullReportBehavior) {
-            ASSERT_EQ(contributions.size(), 1u);
-            EXPECT_EQ(contributions[0].bucket, 1);
+            ASSERT_EQ(contributions.GetContributionsVector().size(), 1u);
+            EXPECT_EQ(contributions.GetContributionsVector()[0].bucket, 1);
             EXPECT_EQ(budget_key.origin(), kExampleOriginB);
-            AggregatableReportRequest request =
-                std::move(generator).Run(std::move(contributions));
+            AggregatableReportRequest request = std::move(generator).Run(
+                std::move(contributions.GetContributionsVector()));
             EXPECT_EQ(request.shared_info().reporting_origin, kExampleOriginB);
           }));
 
@@ -451,14 +450,13 @@ TEST_F(PrivateAggregationHostTest,
       .WillOnce(Invoke(
           [&kExampleOriginA](
               PrivateAggregationHost::ReportRequestGenerator generator,
-              std::vector<blink::mojom::AggregatableReportHistogramContribution>
-                  contributions,
+              PrivateAggregationPendingContributions::Wrapper contributions,
               PrivateAggregationBudgetKey budget_key,
               PrivateAggregationHost::NullReportBehavior) {
-            ASSERT_EQ(contributions.size(), 1u);
-            EXPECT_EQ(contributions[0].bucket, 2);
-            AggregatableReportRequest request =
-                std::move(generator).Run(std::move(contributions));
+            ASSERT_EQ(contributions.GetContributionsVector().size(), 1u);
+            EXPECT_EQ(contributions.GetContributionsVector()[0].bucket, 2);
+            AggregatableReportRequest request = std::move(generator).Run(
+                std::move(contributions.GetContributionsVector()));
             EXPECT_EQ(request.shared_info().reporting_origin, kExampleOriginA);
             EXPECT_EQ(budget_key.origin(), kExampleOriginA);
           }));
@@ -2097,12 +2095,11 @@ TEST_F(PrivateAggregationHostTest, TimeoutBeforeDisconnect) {
   EXPECT_CALL(mock_callback_, Run)
       .WillOnce(Invoke(
           [&](PrivateAggregationHost::ReportRequestGenerator generator,
-              std::vector<blink::mojom::AggregatableReportHistogramContribution>
-                  contributions,
+              PrivateAggregationPendingContributions::Wrapper contributions,
               PrivateAggregationBudgetKey budget_key,
               PrivateAggregationHost::NullReportBehavior null_report_behavior) {
-            AggregatableReportRequest request =
-                std::move(generator).Run(contributions);
+            AggregatableReportRequest request = std::move(generator).Run(
+                std::move(contributions.GetContributionsVector()));
             received_request = true;
 
             EXPECT_THAT(request.additional_fields(),
@@ -2166,12 +2163,11 @@ TEST_F(PrivateAggregationHostTest, TimeoutAfterDisconnect) {
   EXPECT_CALL(mock_callback_, Run)
       .WillOnce(Invoke(
           [&](PrivateAggregationHost::ReportRequestGenerator generator,
-              std::vector<blink::mojom::AggregatableReportHistogramContribution>
-                  contributions,
+              PrivateAggregationPendingContributions::Wrapper contributions,
               PrivateAggregationBudgetKey budget_key,
               PrivateAggregationHost::NullReportBehavior null_report_behavior) {
-            AggregatableReportRequest request =
-                std::move(generator).Run(contributions);
+            AggregatableReportRequest request = std::move(generator).Run(
+                std::move(contributions.GetContributionsVector()));
             received_request = true;
 
             EXPECT_THAT(request.additional_fields(),
@@ -2249,12 +2245,11 @@ TEST_F(PrivateAggregationHostTest,
   EXPECT_CALL(mock_callback_, Run)
       .WillOnce(Invoke(
           [&](PrivateAggregationHost::ReportRequestGenerator generator,
-              std::vector<blink::mojom::AggregatableReportHistogramContribution>
-                  contributions,
+              PrivateAggregationPendingContributions::Wrapper contributions,
               PrivateAggregationBudgetKey budget_key,
               PrivateAggregationHost::NullReportBehavior null_report_behavior) {
-            AggregatableReportRequest request =
-                std::move(generator).Run(contributions);
+            AggregatableReportRequest request = std::move(generator).Run(
+                std::move(contributions.GetContributionsVector()));
             received_request = true;
 
             EXPECT_THAT(request.additional_fields(),

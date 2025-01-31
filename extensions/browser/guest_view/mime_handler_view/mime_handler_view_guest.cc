@@ -556,8 +556,8 @@ void MimeHandlerViewGuest::DidFinishNavigation(
     if (stream_->extension_id() == extension_misc::kPdfExtensionId) {
       // Host zoom level should match the override set in `CreateInnerPage()`.
       if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
-        // TODO(crbug.com/376084060): Add an equivalent CHECK under MPArch.
-        NOTIMPLEMENTED();
+        CHECK_EQ(0, content::HostZoomMap::GetZoomLevel(
+                        web_contents(), GetGuestMainFrame()->GetGlobalId()));
       } else {
         DCHECK_EQ(0, content::HostZoomMap::GetZoomLevel(web_contents()));
       }

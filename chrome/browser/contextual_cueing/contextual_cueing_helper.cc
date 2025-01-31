@@ -5,6 +5,8 @@
 #include "chrome/browser/contextual_cueing/contextual_cueing_helper.h"
 
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
+#include "chrome/browser/contextual_cueing/contextual_cueing_enums.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
@@ -15,6 +17,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/glic_nudge_controller.h"
+#include "components/optimization_guide/core/hints_processing_util.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features_controller.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_metadata.h"
@@ -50,6 +53,29 @@ bool DidMatchCueingConditions(
   return true;
 }
 
+class ScopedNudgeDecisionRecorder {
+ public:
+  ScopedNudgeDecisionRecorder(
+      optimization_guide::proto::OptimizationType optimization_type)
+      : optimization_type_(optimization_type) {}
+  ~ScopedNudgeDecisionRecorder() {
+    CHECK_NE(nudge_decision_, NudgeDecision::kUnknown);
+    base::UmaHistogramEnumeration(
+        "ContextualCueing.NudgeDecision." +
+            optimization_guide::GetStringNameForOptimizationType(
+                optimization_type_),
+        nudge_decision_);
+  }
+
+  void set_nudge_decision(NudgeDecision nudge_decision) {
+    nudge_decision_ = nudge_decision;
+  }
+
+ private:
+  optimization_guide::proto::OptimizationType optimization_type_;
+  NudgeDecision nudge_decision_ = NudgeDecision::kUnknown;
+};
+
 }  // namespace
 
 ContextualCueingHelper::ContextualCueingHelper(
@@ -60,8 +86,10 @@ ContextualCueingHelper::ContextualCueingHelper(
       content::WebContentsUserData<ContextualCueingHelper>(*web_contents),
       optimization_guide_keyed_service_(ogks),
       contextual_cueing_service_(ccs) {
+  // LINT.IfChange(OptType)
   optimization_guide_keyed_service_->RegisterOptimizationTypes(
       {optimization_guide::proto::GLIC_CONTEXTUAL_CUEING});
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_cueing/histograms.xml:OptType)
 }
 
 ContextualCueingHelper::~ContextualCueingHelper() = default;
@@ -95,6 +123,8 @@ void ContextualCueingHelper::DocumentOnLoadCompletedInPrimaryMainFrame() {
     return;
   }
 
+  ScopedNudgeDecisionRecorder recorder(
+      optimization_guide::proto::GLIC_CONTEXTUAL_CUEING);
   optimization_guide::OptimizationMetadata metadata;
   auto decision = optimization_guide_keyed_service_->CanApplyOptimization(
       web_contents()->GetLastCommittedURL(),
@@ -103,17 +133,27 @@ void ContextualCueingHelper::DocumentOnLoadCompletedInPrimaryMainFrame() {
       !metadata.empty()) {
     auto parsed = metadata.ParsedMetadata<
         optimization_guide::proto::GlicContextualCueingMetadata>();
+    if (parsed) {
+      for (const auto& config : parsed->cueing_configurations()) {
+        if (!config.has_cue_label()) {
+          continue;
+        }
 
-    for (const auto& config : parsed->cueing_configurations()) {
-      if (!config.has_cue_label()) {
-        continue;
+        if (DidMatchCueingConditions(config)) {
+          last_navigation_cue_label_ = config.cue_label();
+          break;
+        }
       }
-      if (DidMatchCueingConditions(config)) {
-        last_navigation_cue_label_ = config.cue_label();
-      }
+
+      recorder.set_nudge_decision(last_navigation_cue_label_.empty()
+                                      ? NudgeDecision::kClientConditionsUnmet
+                                      : NudgeDecision::kSuccess);
+    } else {
+      recorder.set_nudge_decision(NudgeDecision::kServerDataMalformed);
     }
+  } else {
+    recorder.set_nudge_decision(NudgeDecision::kServerDataUnavailable);
   }
-
   glic_nudge_controller->UpdateNudgeLabel(web_contents(),
                                           last_navigation_cue_label_);
 }

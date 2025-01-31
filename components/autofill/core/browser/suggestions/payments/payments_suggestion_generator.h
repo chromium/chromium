@@ -51,6 +51,21 @@ struct CreditCardSuggestionSummary {
   autofill_metrics::SuggestionRankingContext ranking_context;
 };
 
+// Holds the result of `MaybeUpdateSuggestionsWithBnpl`.
+struct BnplSuggestionUpdateResult {
+  BnplSuggestionUpdateResult();
+
+  BnplSuggestionUpdateResult(const BnplSuggestionUpdateResult&);
+  BnplSuggestionUpdateResult& operator=(const BnplSuggestionUpdateResult&);
+  BnplSuggestionUpdateResult(BnplSuggestionUpdateResult&&);
+  BnplSuggestionUpdateResult& operator=(BnplSuggestionUpdateResult&&);
+
+  ~BnplSuggestionUpdateResult();
+
+  std::vector<Suggestion> suggestions;
+  bool is_bnpl_suggestion_added = false;
+};
+
 // Generates suggestions for all available credit cards based on the
 // `trigger_field_type`, `trigger_field` and `four_digit_combinations_in_dom`.
 // `summary` contains metadata about the returned suggestions.
@@ -105,10 +120,11 @@ std::vector<CreditCard> GetTouchToFillCardsToSuggest(
     FieldType trigger_field_type);
 
 // Returns a suggestion list with a BNPL suggestion added at the end (but
-// before footer items) of the given suggestion list `current_suggestions`.
-// If no BNPL chip can be added, an empty list will be returned.
-std::vector<Suggestion> MaybeCreateNewSuggestionsWithBnpl(
-    const base::span<const Suggestion>& current_suggestions);
+// before footer items) of the given suggestion list `current_suggestions`,
+// and true if a BNPL suggestion is inserted successfully.
+BnplSuggestionUpdateResult MaybeUpdateSuggestionsWithBnpl(
+    const base::span<const Suggestion>& current_suggestions,
+    const std::vector<BnplIssuer>& bnpl_issuers);
 
 // Generates touch-to-fill suggestions for all available credit cards to be
 // used in the bottom sheet. Benefits information, containing instrument IDs and
@@ -195,6 +211,10 @@ std::vector<Suggestion> GetCreditCardFooterSuggestionsForTest(
     bool should_show_cards_from_account,
     bool is_autofilled,
     bool with_gpay_logo);
+
+// Exposes `GetBnplPriceLowerBound` in tests.
+std::u16string GetBnplPriceLowerBoundForTest(
+    const std::vector<BnplIssuer>& bnpl_issuers);
 
 void SetCreditCardUploadEnabledForTest(bool credit_card_upload_enabled);
 

@@ -113,8 +113,10 @@ void DriveMetricsProvider::FillDriveMetrics(
                        response.has_seek_penalty);
   RecordTriStateMetric("UMA.SeekPenaltyResult.Base",
                        response.has_seek_penalty_base);
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   RecordTriStateMetric("UMA.DriveIsRemovableResult", response.is_removable);
+#endif
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   RecordTriStateMetric("UMA.DriveIsUSBResult", response.is_usb);
 #endif
 }

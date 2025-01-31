@@ -4507,7 +4507,6 @@ if (is_android) {
       ":base_switches_java",
       ":callback_java",
       ":command_line_java",
-      ":flagged_apis_java",
       ":jank_tracker_java",
       ":library_loader_java",
       ":lifetime_java",

@@ -20,12 +20,9 @@ namespace base {
 class TimeDelta;
 }  // namespace base
 
-namespace gpu {
-struct Capabilities;
-namespace raster {
+namespace gpu::raster {
 class RasterInterface;
-}  // namespace raster
-}  // namespace gpu
+}  // namespace gpu::raster
 
 namespace libyuv {
 struct YuvConstants;
@@ -177,7 +174,6 @@ MEDIA_EXPORT void ConvertToMemoryMappedFrameAsync(
 MEDIA_EXPORT scoped_refptr<VideoFrame> ReadbackTextureBackedFrameToMemorySync(
     VideoFrame& txt_frame,
     gpu::raster::RasterInterface* ri,
-    const gpu::Capabilities& caps,
     VideoFramePool* pool = nullptr);
 
 // Synchronously reads a single plane. |src_rect| is relative to the plane,
@@ -188,8 +184,7 @@ MEDIA_EXPORT bool ReadbackTexturePlaneToMemorySync(
     gfx::Rect& src_rect,
     uint8_t* dest_pixels,
     size_t dest_stride,
-    gpu::raster::RasterInterface* ri,
-    const gpu::Capabilities& caps);
+    gpu::raster::RasterInterface* ri);
 
 // Converts a frame with I420A format into I420 by dropping alpha channel.
 MEDIA_EXPORT scoped_refptr<VideoFrame> WrapAsI420VideoFrame(

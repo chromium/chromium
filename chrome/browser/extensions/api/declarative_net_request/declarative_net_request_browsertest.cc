@@ -486,6 +486,8 @@ class DeclarativeNetRequestBrowserTest
                        web_contents, content::PageType::PAGE_TYPE_ERROR)) {
       return true;
     }
+    // Mimic ui_test_utils::NavigateToURL().
+    content::WaitForLoadStop(web_contents);
     return !WasFrameWithScriptLoaded(GetPrimaryMainFrame());
   }
 
@@ -652,9 +654,12 @@ class DeclarativeNetRequestBrowserTest
   // Navigates to `url` in the active tab. Blocks until the navigation
   // completes. The navigation may result in an error page.
   void NavigateToURL(const GURL& url) {
+    content::WebContents* web_contents = GetActiveWebContents();
     content::NavigateToURLBlockUntilNavigationsComplete(
-        GetActiveWebContents(), url, /*number_of_navigations=*/1,
+        web_contents, url, /*number_of_navigations=*/1,
         /*ignore_uncommitted_navigations=*/false);
+    // Mimic ui_test_utils::NavigateToURL().
+    content::WaitForLoadStop(web_contents);
   }
 
   // Navigates frame with name |frame_name| to |url|.
@@ -5809,6 +5814,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestHostPermissionsBrowserTest,
 #if !BUILDFLAG(IS_ANDROID)
 // Fixture to test the "resourceTypes" and "excludedResourceTypes" fields of a
 // declarative rule condition.
+// TODO(crbug.com/393191910): Port to desktop Android. These tests fail with
+// no logging and no stack.
 class DeclarativeNetRequestResourceTypeBrowserTest
     : public DeclarativeNetRequestBrowserTest {
  public:
@@ -5967,21 +5974,21 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestResourceTypeBrowserTest, Test2) {
             {"block_all_but_xhr_and_script.com", kAll & ~kXHR & ~kScript},
             {"block_none.com", kNone}});
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 class DeclarativeNetRequestSubresourceWebBundlesBrowserTest
     : public DeclarativeNetRequestBrowserTest {
  public:
   DeclarativeNetRequestSubresourceWebBundlesBrowserTest() = default;
   void SetUpOnMainThread() override {
-    ExtensionBrowserTest::SetUpOnMainThread();
+    ExtensionBrowserTestBase::SetUpOnMainThread();
     CreateTempDir();
     InitializeRulesetManagerObserver();
   }
 
  protected:
   bool TryLoadScript(const std::string& script_src) {
-    content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+    content::WebContents* web_contents = GetActiveWebContents();
     std::string script = base::StringPrintf(R"(
       (() => {
         const script = document.createElement('script');
@@ -6002,8 +6009,7 @@ class DeclarativeNetRequestSubresourceWebBundlesBrowserTest
   }
 
   bool TryLoadBundle(const std::string& href, const std::string& resources) {
-    content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+    content::WebContents* web_contents = GetActiveWebContents();
     std::string script = base::StringPrintf(R"(
           (() => {
             const script = document.createElement('script');
@@ -6152,9 +6158,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestSubresourceWebBundlesBrowserTest,
   web_bundle = std::string(bundle.begin(), bundle.end());
 
   GURL page_url = embedded_test_server()->GetURL("/test.html");
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
+  content::WebContents* web_contents = GetActiveWebContents();
+  NavigateToURL(page_url);
   EXPECT_EQ(page_url, web_contents->GetLastCommittedURL());
 
   std::u16string expected_title = u"success";
@@ -6218,9 +6223,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestSubresourceWebBundlesBrowserTest,
   web_bundle = std::string(bundle.begin(), bundle.end());
 
   GURL page_url = embedded_test_server()->GetURL("/test.html");
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
+  content::WebContents* web_contents = GetActiveWebContents();
+  NavigateToURL(page_url);
   EXPECT_EQ(page_url, web_contents->GetLastCommittedURL());
 
   std::u16string expected_title = u"script loaded";
@@ -6290,9 +6294,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestSubresourceWebBundlesBrowserTest,
   web_bundle = std::string(bundle.begin(), bundle.end());
 
   GURL page_url = embedded_test_server()->GetURL("/test.html");
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
+  content::WebContents* web_contents = GetActiveWebContents();
+  NavigateToURL(page_url);
   EXPECT_EQ(page_url, web_contents->GetLastCommittedURL());
 
   std::u16string expected_title = u"script loaded";
@@ -6406,9 +6409,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestSubresourceWebBundlesBrowserTest,
       rules, "test_extension", {URLPattern::kAllUrlsPattern}));
 
   GURL page_url = embedded_test_server()->GetURL("/test.html");
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
+  content::WebContents* web_contents = GetActiveWebContents();
+  NavigateToURL(page_url);
   EXPECT_EQ(page_url, web_contents->GetLastCommittedURL());
   {
     std::u16string expected_title = u"redirected";
@@ -6463,8 +6465,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestSubresourceWebBundlesBrowserTest,
   ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules(
       rules, "test_extension", {URLPattern::kAllUrlsPattern}));
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/empty.html")));
+  NavigateToURL(embedded_test_server()->GetURL("/empty.html"));
 
   // In the current implementation, extensions can't redirect requests to
   // Subresource WebBundles.
@@ -6474,6 +6475,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestSubresourceWebBundlesBrowserTest,
   EXPECT_TRUE(TryLoadBundle("redirected.wbn", js_url_str));
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 class DeclarativeNetRequestGlobalRulesBrowserTest
     : public DeclarativeNetRequestBrowserTest {
  public:
@@ -6517,6 +6519,8 @@ using DeclarativeNetRequestGlobalRulesBrowserTest_Packed =
 
 // Test that extensions with allocated global rules keep their allocations after
 // the browser restarts.
+// TODO(crbug.com/391924202): Port to desktop Android once packed extensions
+// are supported.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestGlobalRulesBrowserTest_Packed,
                        PRE_GlobalRulesBrowserRestart) {
   // This is not tested for unpacked extensions since the unpacked extension
@@ -6562,6 +6566,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestGlobalRulesBrowserTest_Packed,
   VerifyExtensionAllocationInPrefs(third_extension->id(), std::nullopt);
 }
 
+// TODO(crbug.com/391924202): Port to desktop Android once packed extensions
+// are supported.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestGlobalRulesBrowserTest_Packed,
                        GlobalRulesBrowserRestart) {
   // This is not tested for unpacked extensions since the unpacked extension
@@ -6601,6 +6607,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestGlobalRulesBrowserTest_Packed,
 
 // Test that an extension will not have its allocation reclaimed on load if it
 // is the first load after a packed update.
+// TODO(crbug.com/391924202): Port to desktop Android once packed extensions
+// are supported.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestGlobalRulesBrowserTest_Packed,
                        PackedUpdateAndReload) {
   // This is not tested for unpacked extensions since the unpacked extension
@@ -6655,6 +6663,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestGlobalRulesBrowserTest_Packed,
 
 // Tests that excess allocation is no longer kept after an update once the
 // current allocation exceeds the allocation from before the update.
+// TODO(crbug.com/391924202): Port to desktop Android once packed extensions
+// are supported.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestGlobalRulesBrowserTest_Packed,
                        UpdateEnabledRulesetsAfterPackedUpdate) {
   // This is not tested for unpacked extensions since the unpacked extension
@@ -6733,6 +6743,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestGlobalRulesBrowserTest_Packed,
 // Test that GetAvailableStaticRuleCount includes the excess unused allocation
 // after an extension update.
 // TODO(crbug.com/40883375): Deflake and re-enable.
+// TODO(crbug.com/391924202): Port to desktop Android once packed extensions
+// are supported.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestGlobalRulesBrowserTest_Packed,
                        DISABLED_GetAvailableStaticRuleCountAfterPackedUpdate) {
   // This is not tested for unpacked extensions since the unpacked extension
@@ -6792,6 +6804,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestGlobalRulesBrowserTest_Packed,
   VerifyExtensionAllocationInPrefs(last_loaded_extension_id(), 2);
   EXPECT_EQ("3", GetAvailableStaticRuleCount(last_loaded_extension_id()));
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Tests the "requestMethods" and "excludedRequestMethods" property of a
 // declarative rule condition.
@@ -6848,7 +6861,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
   )";
 
   GURL url = embedded_test_server()->GetURL("abc.com", "/empty.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  NavigateToURL(url);
   content::RenderFrameHost* main_frame = GetPrimaryMainFrame();
 
   for (const auto& test_case : test_cases) {
@@ -6861,8 +6874,11 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
   }
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 // Tests that the "requestMethods" and "excludedRequestMethods" properties of a
 // rule condition are considered properly for WebSocket requests.
+// TODO(crbug.com/371298229): Port to desktop Android. The RemoteTestServer
+// fails to start with an assertion about `spawner_url_base_` being empty.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
                        BlockRequests_WebSocket) {
   // Load an extension with some DNR rules that have different request method
@@ -6941,6 +6957,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
                                                      websocket_url.c_str())));
 }
 
+// TODO(crbug.com/393191910): Port to desktop Android. These tests fail with
+// no logging and no stack.
 class DeclarativeNetRequestWebTransportTest
     : public DeclarativeNetRequestBrowserTest {
  public:
@@ -6981,8 +6999,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestWebTransportTest, BlockRequests) {
 
   ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules(rules));
 
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), https_server()->GetURL("/echo")));
+  NavigateToURL(https_server()->GetURL("/echo"));
 
   static constexpr char kOpenWebTransportScript[] = R"((
     async () =>
@@ -7017,6 +7034,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestWebTransportTest, BlockRequests) {
                                 kOpenWebTransportScript,
                                 webtransport_server_.server_address().port())));
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Tests that FLEDGE requests can be blocked by the declarativeNetRequest API,
 // and that if they try to redirect requests, the request is blocked, instead of
@@ -7037,8 +7055,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, FledgeAuctionScripts) {
   PrivacySandboxSettingsFactory::GetForProfile(profile())
       ->SetAllPrivacySandboxAllowedForTesting();
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), https_server()->GetURL("/interest_group/fenced_frame.html")));
+  NavigateToURL(https_server()->GetURL("/interest_group/fenced_frame.html"));
 
   GURL bidding_logic_url =
       https_server()->GetURL("/interest_group/bidding_logic.js");
@@ -7174,6 +7191,9 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, FledgeAuctionScripts) {
   EXPECT_EQ(nullptr, content::EvalJs(web_contents(), run_auction_command));
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/393191910): Port to desktop Android. These tests fail with
+// no logging and no stack.
 class DeclarativeNetRequestBackForwardCacheBrowserTest
     : public DeclarativeNetRequestBrowserTest {
  public:
@@ -7304,6 +7324,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBackForwardCacheBrowserTest,
   bfcache_render_frame_host_delete_observer->WaitUntilDeleted();
 }
 
+// TODO(crbug.com/393191910): Port to desktop Android. These tests fail with
+// no logging and no stack.
 class DeclarativeNetRequestControllableResponseTest
     : public DeclarativeNetRequestBrowserTest {
  public:
@@ -7382,6 +7404,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestControllableResponseTest,
   ASSERT_TRUE(content::WaitForLoadStop(web_contents));
   EXPECT_FALSE(extension_service()->IsExtensionEnabled(extension_id));
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 class DNRMatchResponseHeadersBrowserTest
     : public DeclarativeNetRequestBrowserTest {
@@ -7459,7 +7482,7 @@ IN_PROC_BROWSER_TEST_P(DNRMatchResponseHeadersBrowserTest, BlockRequests) {
     SCOPED_TRACE(base::StringPrintf("Testing %s", url.spec().c_str()));
 
     content::TestNavigationObserver nav_observer(web_contents());
-    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    NavigateToURL(url);
     content::PageType expected_page_type = test_case.expect_main_frame_loaded
                                                ? content::PAGE_TYPE_NORMAL
                                                : content::PAGE_TYPE_ERROR;
@@ -7477,8 +7500,7 @@ IN_PROC_BROWSER_TEST_P(DNRMatchResponseHeadersBrowserTest, BlockRequests) {
 IN_PROC_BROWSER_TEST_P(DNRMatchResponseHeadersBrowserTest, ImageCollapsed) {
   // Loads a page with an image and returns whether the image was collapsed.
   auto is_image_collapsed = [this](const std::string& host_name) {
-    EXPECT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), embedded_test_server()->GetURL(host_name, "/image.html")));
+    NavigateToURL(embedded_test_server()->GetURL(host_name, "/image.html"));
     EXPECT_EQ(content::PAGE_TYPE_NORMAL, GetPageType());
     const std::string script = "!!window.imageCollapsed;";
     return content::EvalJs(web_contents(), script).ExtractBool();
@@ -7604,7 +7626,7 @@ IN_PROC_BROWSER_TEST_P(DNRMatchResponseHeadersBrowserTest, RedirectAndUpgrade) {
         embedded_test_server()->GetURL(test_case.hostname, test_case.path);
     SCOPED_TRACE(base::StringPrintf("Testing %s", url.spec().c_str()));
 
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    NavigateToURL(url);
 
     EXPECT_EQ(content::PAGE_TYPE_NORMAL, GetPageType());
 
@@ -7750,7 +7772,7 @@ IN_PROC_BROWSER_TEST_P(DNRMatchResponseHeadersBrowserTest,
         embedded_test_server()->GetURL(test_case.hostname, test_case.path);
     SCOPED_TRACE(base::StringPrintf("Testing %s", url.spec().c_str()));
 
-    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    NavigateToURL(url);
     content::PageType expected_page_type = test_case.expect_main_frame_loaded
                                                ? content::PAGE_TYPE_NORMAL
                                                : content::PAGE_TYPE_ERROR;
@@ -7760,9 +7782,12 @@ IN_PROC_BROWSER_TEST_P(DNRMatchResponseHeadersBrowserTest,
   }
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 // Test that frames where response header matched allowAllRequests rules will
 // prevent lower priority matched rules from taking action on requests made
 // under these frames.
+// TODO(crbug.com/393191910): Port to desktop Android. This test fails with
+// no logging and no stack.
 IN_PROC_BROWSER_TEST_P(DNRMatchResponseHeadersBrowserTest, AllowAllRequests) {
   std::vector<TestHeaderCondition> blank_header_condition =
       std::vector<TestHeaderCondition>(
@@ -7825,7 +7850,7 @@ IN_PROC_BROWSER_TEST_P(DNRMatchResponseHeadersBrowserTest, AllowAllRequests) {
   // Navigate to a page with two sub frames.
   GURL page_url = embedded_test_server()->GetURL("example.com",
                                                  "/page_with_two_frames.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
+  NavigateToURL(page_url);
 
   // Attempts to add an image element for the image denoted by `image_path` to
   // the specified `frame`. Returns true if the image was successfully added and
@@ -7879,6 +7904,7 @@ IN_PROC_BROWSER_TEST_P(DNRMatchResponseHeadersBrowserTest, AllowAllRequests) {
   EXPECT_TRUE(test_image_added(frame_2, "subresources/image_2.png"));
   EXPECT_TRUE(test_image_added(frame_2, "subresources/image_3.png"));
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Test that an onBeforeRequest block rule for a frame will still override an
 // onHeadersReceived allowAllRequests rule with a higher priority.
@@ -7911,7 +7937,7 @@ IN_PROC_BROWSER_TEST_P(DNRMatchResponseHeadersBrowserTest,
 
   const GURL page_url = embedded_test_server()->GetURL(
       "example.com", "/page_with_two_frames.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
+  NavigateToURL(page_url);
 
   const std::string kFrameName1 = "frame1";
   const std::string kFrameName2 = "frame2";
@@ -7935,8 +7961,15 @@ IN_PROC_BROWSER_TEST_P(DNRMatchResponseHeadersBrowserTest,
 
 // Verify that getMatchedRules returns the correct rule matches for rules which
 // match on response headers.
+// TODO(crbug.com/crbug.com/371298229): Flaky on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_GetMatchedRules_SingleExtension \
+  DISABLED_GetMatchedRules_SingleExtension
+#else
+#define MAYBE_GetMatchedRules_SingleExtension GetMatchedRules_SingleExtension
+#endif
 IN_PROC_BROWSER_TEST_P(DNRMatchResponseHeadersBrowserTest,
-                       GetMatchedRules_SingleExtension) {
+                       MAYBE_GetMatchedRules_SingleExtension) {
   set_config_flags(ConfigFlag::kConfig_HasBackgroundScript |
                    ConfigFlag::kConfig_HasFeedbackPermission);
 
@@ -8082,7 +8115,7 @@ IN_PROC_BROWSER_TEST_P(DNRMatchResponseHeadersBrowserTest,
                                               "/pages_with_script/index.html");
     SCOPED_TRACE(base::StringPrintf("Testing %s", url.spec().c_str()));
 
-    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    NavigateToURL(url);
     // Get the rule ids matched for the navigation request sent above.
     std::string actual_rules_matched =
         GetRuleIdsMatched(last_loaded_extension_id(), start_time);
@@ -8093,8 +8126,16 @@ IN_PROC_BROWSER_TEST_P(DNRMatchResponseHeadersBrowserTest,
 
 // Verify that getMatchedRules returns the correct rule matches for rules which
 // match on response headers between different extensions.
+// TODO(crbug.com/crbug.com/371298229): Flaky on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_GetMatchedRules_MultipleExtensions \
+  DISABLED_GetMatchedRules_MultipleExtensions
+#else
+#define MAYBE_GetMatchedRules_MultipleExtensions \
+  GetMatchedRules_MultipleExtensions
+#endif
 IN_PROC_BROWSER_TEST_P(DNRMatchResponseHeadersBrowserTest,
-                       GetMatchedRules_MultipleExtensions) {
+                       MAYBE_GetMatchedRules_MultipleExtensions) {
   set_config_flags(ConfigFlag::kConfig_HasBackgroundScript |
                    ConfigFlag::kConfig_HasFeedbackPermission);
 
@@ -8160,7 +8201,7 @@ IN_PROC_BROWSER_TEST_P(DNRMatchResponseHeadersBrowserTest,
                                               "/pages_with_script/index.html");
     SCOPED_TRACE(base::StringPrintf("Testing %s", url.spec().c_str()));
 
-    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    NavigateToURL(url);
 
     // Get the rule ids matched for both extensions for the navigation request
     // sent above.
@@ -8174,8 +8215,11 @@ IN_PROC_BROWSER_TEST_P(DNRMatchResponseHeadersBrowserTest,
   }
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 // Test that modifyHeaders rules matched in both onBeforeRequest and
 // onHeadersReceived phases will perform the correct action(s) on the request.
+// TODO(crbug.com/393191910): Port to desktop Android. This test fails with
+// no logging and no stack.
 IN_PROC_BROWSER_TEST_P(DNRMatchResponseHeadersBrowserTest,
                        ModifyHeaders_SingleExtension) {
   std::vector<TestHeaderCondition> blank_header_condition =
@@ -8304,7 +8348,7 @@ IN_PROC_BROWSER_TEST_P(DNRMatchResponseHeadersBrowserTest,
     SCOPED_TRACE(
         base::StringPrintf("Testing %s", set_cookie_url.spec().c_str()));
 
-    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), set_cookie_url));
+    NavigateToURL(set_cookie_url);
 
     // Get the rule ids matched for the navigation request sent above.
     std::string actual_rules_matched =
@@ -8318,6 +8362,8 @@ IN_PROC_BROWSER_TEST_P(DNRMatchResponseHeadersBrowserTest,
 
 // Test inter-extension interactions for modifyHeaders rules matched in both
 // onBeforeRequest and onHeadersReceived phases.
+// TODO(crbug.com/393191910): Port to desktop Android. This test fails with
+// no logging and no stack.
 IN_PROC_BROWSER_TEST_P(DNRMatchResponseHeadersBrowserTest,
                        ModifyHeaders_MultipleExtensions) {
   set_config_flags(ConfigFlag::kConfig_HasBackgroundScript |
@@ -8397,7 +8443,7 @@ IN_PROC_BROWSER_TEST_P(DNRMatchResponseHeadersBrowserTest,
     SCOPED_TRACE(
         base::StringPrintf("Testing %s", set_cookie_url.spec().c_str()));
 
-    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), set_cookie_url));
+    NavigateToURL(set_cookie_url);
 
     // Get the rule ids matched for both extensions for the navigation request
     // sent above.
@@ -8413,6 +8459,7 @@ IN_PROC_BROWSER_TEST_P(DNRMatchResponseHeadersBrowserTest,
     EXPECT_EQ(test_case.expected_set_cookie_value, GetPageCookie());
   }
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Fixture for use by tests that care about the --extensions-on-chrome-urls
 // switch.
@@ -8463,22 +8510,16 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestAllowChromeURLsBrowserTest,
                              {URLPattern::kAllUrlsPattern}));
   const Extension* extension_1 = last_loaded_extension();
 
-  content::RenderFrameHost* extension_1_sandbox =
-      ui_test_utils::NavigateToURLWithDisposition(
-          browser(), extension_1->GetResourceURL(kManifestSandboxPageFilepath),
-          WindowOpenDisposition::NEW_FOREGROUND_TAB,
-          ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  content::RenderFrameHost* extension_1_sandbox = NavigateToURLInNewTab(
+      extension_1->GetResourceURL(kManifestSandboxPageFilepath));
 
   // Extension 2 - Doesn't block any requests.
   ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules(
       {}, "test_extension_2", {URLPattern::kAllUrlsPattern}));
   const Extension* extension_2 = last_loaded_extension();
 
-  content::RenderFrameHost* extension_2_sandbox =
-      ui_test_utils::NavigateToURLWithDisposition(
-          browser(), extension_2->GetResourceURL(kManifestSandboxPageFilepath),
-          WindowOpenDisposition::NEW_FOREGROUND_TAB,
-          ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  content::RenderFrameHost* extension_2_sandbox = NavigateToURLInNewTab(
+      extension_2->GetResourceURL(kManifestSandboxPageFilepath));
 
   struct {
     std::string hostname;
@@ -8541,9 +8582,12 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestAllowChromeURLsBrowserTest,
   }
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 // Ensure that extensions can block main_frame navigation requests that other
 // extensions initiated, but not sub_frame requests unless the
 // --extensions-on-chrome-urls switch is used.
+// TODO(crbug.com/393191910): Port to desktop Android. This test fails with
+// no logging and no stack.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestAllowChromeURLsBrowserTest,
                        CrossExtensionNavigationRequestBlocking) {
   set_config_flags(ConfigFlag::kConfig_HasBackgroundScript |
@@ -8578,7 +8622,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestAllowChromeURLsBrowserTest,
   GURL sub_frame_url =
       embedded_test_server()->GetURL("example.com", "/child_frame.html");
 
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), extension_page_url));
+  NavigateToURL(extension_page_url);
   content::RenderFrameHost* extension_page = GetPrimaryMainFrame();
 
   content::TestNavigationObserver navigation_observer(main_frame_url);
@@ -8628,6 +8672,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestAllowChromeURLsBrowserTest,
 
 // A derivative of DeclarativeNetRequestBrowserTest which allows the test to
 // wait for ruleset loads to start, and throttle/resume them as needed.
+// TODO(crbug.com/391924202): Port to desktop Android once it supports packed
+// extensions.
 class DeclarativeNetRequestThrottledRulesetLoadBrowserTest
     : public DeclarativeNetRequestBrowserTest {
  public:
@@ -8744,7 +8790,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestThrottledRulesetLoadBrowserTest,
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
-// Android currently only supports unpacked extensions.
+// TODO(crbug.com/391924202): Add packed extensions once supported on Android.
 const auto kExtensionLoadTypes = ::testing::Values(ExtensionLoadType::UNPACKED);
 #else
 const auto kExtensionLoadTypes =
@@ -8768,13 +8814,14 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Combine(::testing::Values(ExtensionLoadType::PACKED,
                                          ExtensionLoadType::UNPACKED),
                        ::testing::Values(false)));
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    DeclarativeNetRequestSubresourceWebBundlesBrowserTest,
-    ::testing::Combine(::testing::Values(ExtensionLoadType::PACKED,
-                                         ExtensionLoadType::UNPACKED),
-                       ::testing::Values(false)));
+#endif
 
+INSTANTIATE_TEST_SUITE_P(All,
+                         DeclarativeNetRequestSubresourceWebBundlesBrowserTest,
+                         ::testing::Combine(kExtensionLoadTypes,
+                                            ::testing::Values(false)));
+
+#if !BUILDFLAG(IS_ANDROID)
 INSTANTIATE_TEST_SUITE_P(
     All,
     DeclarativeNetRequestBrowserTest_Packed,
@@ -8822,21 +8869,19 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Combine(::testing::Values(ExtensionLoadType::PACKED,
                                          ExtensionLoadType::UNPACKED),
                        ::testing::Values(false)));
+#endif
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    DNRMatchResponseHeadersBrowserTest,
-    ::testing::Combine(::testing::Values(ExtensionLoadType::PACKED,
-                                         ExtensionLoadType::UNPACKED),
-                       ::testing::Values(false)));
+INSTANTIATE_TEST_SUITE_P(All,
+                         DNRMatchResponseHeadersBrowserTest,
+                         ::testing::Combine(kExtensionLoadTypes,
+                                            ::testing::Values(false)));
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    DeclarativeNetRequestAllowChromeURLsBrowserTest,
-    ::testing::Combine(::testing::Values(ExtensionLoadType::PACKED,
-                                         ExtensionLoadType::UNPACKED),
-                       ::testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(All,
+                         DeclarativeNetRequestAllowChromeURLsBrowserTest,
+                         ::testing::Combine(kExtensionLoadTypes,
+                                            ::testing::Bool()));
 
+#if !BUILDFLAG(IS_ANDROID)
 INSTANTIATE_TEST_SUITE_P(
     All,
     DeclarativeNetRequestThrottledRulesetLoadBrowserTest,

@@ -1397,6 +1397,9 @@ extern const char kLensOverlayContextualSearchboxDescription[];
 extern const char kLensOverlayImageContextMenuActionsName[];
 extern const char kLensOverlayImageContextMenuActionsDescription[];
 
+extern const char kLensOverlaySidePanelOpenInNewTabName[];
+extern const char kLensOverlaySidePanelOpenInNewTabDescription[];
+
 extern const char kLensOverlayTranslateButtonName[];
 extern const char kLensOverlayTranslateButtonDescription[];
 

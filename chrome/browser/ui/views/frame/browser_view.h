@@ -299,6 +299,8 @@ class BrowserView : public BrowserWindow,
   glic::BorderView* glic_border() const { return glic_border_; }
 #endif
 
+  ScrimView* window_scrim_view_for_testing() { return window_scrim_view_; }
+
   base::WeakPtr<BrowserView> GetAsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
@@ -746,6 +748,8 @@ class BrowserView : public BrowserWindow,
                              const gfx::Rect& new_bounds) override;
   void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
   void OnWidgetShowStateChanged(views::Widget* widget) override;
+  void OnWidgetWindowModalVisibilityChanged(views::Widget* widget,
+                                            bool visible) override;
 
   // content::WebContentsObserver:
   void DidFirstVisuallyNonEmptyPaint() override;
@@ -1269,6 +1273,12 @@ class BrowserView : public BrowserWindow,
 
   // The Status information bubble that appears at the bottom of the window.
   std::unique_ptr<StatusBubbleViews> status_bubble_;
+
+  // The scrim view that covers the browser window when a window-modal dialog is
+  // showing.
+  // This is currently not used on macOS where the platform draws a native
+  // scrim for window modals (NSWindow sheet).
+  raw_ptr<ScrimView> window_scrim_view_ = nullptr;
 
   // A mapping between accelerators and command IDs.
   std::map<ui::Accelerator, int> accelerator_table_;

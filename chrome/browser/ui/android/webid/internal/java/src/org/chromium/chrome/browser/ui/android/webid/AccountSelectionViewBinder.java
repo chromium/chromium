@@ -567,19 +567,19 @@ class AccountSelectionViewBinder {
             String btnText;
             HeaderProperties.HeaderType headerType = properties.mHeaderType;
             if (headerType == HeaderProperties.HeaderType.SIGN_IN_TO_IDP_STATIC) {
-                btnText = context.getString(R.string.idp_signin_status_mismatch_dialog_continue);
+                btnText = context.getString(R.string.signin_continue);
             } else if (headerType == HeaderProperties.HeaderType.SIGN_IN_ERROR) {
                 btnText = context.getString(R.string.signin_error_dialog_got_it_button);
             } else {
-                // Prefers to use given name if it is provided otherwise falls back to using the
-                // name.
                 String givenName = account.getGivenName();
-                String displayedName =
-                        givenName != null && !givenName.isEmpty() ? givenName : account.getName();
-                btnText =
-                        String.format(
-                                context.getString(R.string.account_selection_continue),
-                                displayedName);
+                if (givenName.isEmpty()) {
+                    btnText = context.getString(R.string.signin_continue);
+                } else {
+                    btnText =
+                            String.format(
+                                    context.getString(R.string.account_selection_continue),
+                                    givenName);
+                }
                 button.setContentDescription(btnText + ", " + account.getEmail());
             }
 

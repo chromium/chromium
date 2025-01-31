@@ -4,7 +4,6 @@
 
 #include "chrome/browser/webapps/webapps_client_desktop.h"
 
-#include "base/auto_reset.h"
 #include "base/check_is_test.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"

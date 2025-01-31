@@ -108,9 +108,6 @@ const CGFloat kBannerPromoVerticalSpacing = 8;
   // Background and container for the banner promo.
   UIView* _bannerPromoBackground;
 
-  // The actual banner promo view.
-  BannerPromoView* _bannerPromo;
-
   // Whether or not the banner promo is currently displayed. This cannot just
   // be `view.hidden` because during animations, calculations should assume the
   // banner is hidden despite the view being visible.
@@ -531,9 +528,9 @@ const CGFloat kBannerPromoVerticalSpacing = 8;
   _bannerPromoBackground.clipsToBounds = YES;
   [self addSubview:_bannerPromoBackground];
 
-  _bannerPromo = [[BannerPromoView alloc] init];
-  _bannerPromo.translatesAutoresizingMaskIntoConstraints = NO;
-  [_bannerPromoBackground addSubview:_bannerPromo];
+  self.bannerPromo = [[BannerPromoView alloc] init];
+  self.bannerPromo.translatesAutoresizingMaskIntoConstraints = NO;
+  [_bannerPromoBackground addSubview:self.bannerPromo];
   _bannerPromoDisplayed = NO;
 }
 
@@ -614,7 +611,7 @@ const CGFloat kBannerPromoVerticalSpacing = 8;
         constraintEqualToAnchor:self.topAnchor];
     _bannerPromoBackgroundSplitToolbarConstraints = @[
       _bannerPromoBackgroundTopConstraint,
-      [_bannerPromo.topAnchor
+      [self.bannerPromo.topAnchor
           constraintEqualToAnchor:self.safeAreaLayoutGuide.topAnchor],
       locationBarContainerLayoutGuideBottomConstraint,
     ];
@@ -623,7 +620,7 @@ const CGFloat kBannerPromoVerticalSpacing = 8;
         [_bannerPromoBackground.heightAnchor
             constraintLessThanOrEqualToConstant:0];
     _bannerPromoBackgroundNonSplitToolbarConstraints = @[
-      [_bannerPromo.topAnchor
+      [self.bannerPromo.topAnchor
           constraintEqualToAnchor:_bannerPromoBackground.topAnchor],
       [_locationBarContainerBottomLayoutGuide.bottomAnchor
           constraintEqualToAnchor:_bannerPromoBackground.topAnchor],
@@ -650,11 +647,11 @@ const CGFloat kBannerPromoVerticalSpacing = 8;
       [_bannerPromoBackground.trailingAnchor
           constraintEqualToAnchor:self.trailingAnchor],
 
-      [_bannerPromo.leadingAnchor
+      [self.bannerPromo.leadingAnchor
           constraintEqualToAnchor:_bannerPromoBackground.leadingAnchor],
-      [_bannerPromo.trailingAnchor
+      [self.bannerPromo.trailingAnchor
           constraintEqualToAnchor:_bannerPromoBackground.trailingAnchor],
-      [_bannerPromo.bottomAnchor
+      [self.bannerPromo.bottomAnchor
           constraintEqualToAnchor:_bannerPromoBackground.bottomAnchor],
     ]];
   }

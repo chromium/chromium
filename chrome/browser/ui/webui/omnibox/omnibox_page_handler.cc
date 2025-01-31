@@ -10,7 +10,6 @@
 #include <string>
 #include <utility>
 
-#include "base/auto_reset.h"
 #include "base/base64.h"
 #include "base/check.h"
 #include "base/functional/bind.h"

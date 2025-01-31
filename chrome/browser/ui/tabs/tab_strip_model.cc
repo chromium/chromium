@@ -51,6 +51,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/commerce/ui_utils.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/features.h"
@@ -1492,7 +1493,8 @@ bool TabStripModel::IsContextMenuCommandEnabled(
 
     case CommandAddToNewComparisonTable:
     case CommandAddToExistingComparisonTable:
-      return false;
+      return commerce::IsUrlEligibleForProductSpecs(
+          GetWebContentsAt(context_index)->GetLastCommittedURL());
 
     case CommandCopyURL:
       DCHECK(delegate()->IsForWebApp());
@@ -1793,7 +1795,10 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
     }
 
     case CommandAddToNewComparisonTable: {
-      // TODO(390669584) - Implement adding to a new table.
+      const auto& tab_url =
+          GetWebContentsAt(context_index)->GetLastCommittedURL();
+      commerce::OpenProductSpecsTabForUrls({tab_url}, this, context_index);
+
       break;
     }
 

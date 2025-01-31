@@ -4,6 +4,7 @@
 
 #import "ios/web/web_state/ui/crw_context_menu_controller.h"
 
+#import "base/auto_reset.h"
 #import "base/values.h"
 #import "ios/web/common/crw_viewport_adjustment.h"
 #import "ios/web/common/crw_viewport_adjustment_container.h"

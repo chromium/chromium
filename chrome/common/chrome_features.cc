@@ -320,6 +320,15 @@ BASE_FEATURE(kGlicURLConfig,
 const base::FeatureParam<std::string> kGlicGuestURL{&kGlicURLConfig,
                                                     "glic-guest-url", ""};
 
+BASE_FEATURE(kGlicFreURLConfig,
+             "GlicFreURLConfig",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(std::string,
+                   kGlicFreURL,
+                   &kGlicFreURLConfig,
+                   "glic-fre-url",
+                   "");
+
 BASE_FEATURE(kGlicCSPConfig,
              "GlicCSPConfig",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -335,7 +335,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppsUninstallDialogViewBrowserTest,
   std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app =
       web_app::IsolatedWebAppBuilder(
           web_app::ManifestBuilder().AddPermissionsPolicyWildcard(
-              blink::mojom::PermissionsPolicyFeature::kSubApps))
+              network::mojom::PermissionsPolicyFeature::kSubApps))
           .BuildBundle();
 
   ASSERT_OK_AND_ASSIGN(web_app::IsolatedWebAppUrlInfo parent_app,
@@ -395,7 +395,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppsUninstallDialogViewBrowserTest,
   std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app =
       web_app::IsolatedWebAppBuilder(
           web_app::ManifestBuilder().AddPermissionsPolicyWildcard(
-              blink::mojom::PermissionsPolicyFeature::kSubApps))
+              network::mojom::PermissionsPolicyFeature::kSubApps))
           .BuildBundle();
 
   ASSERT_OK_AND_ASSIGN(web_app::IsolatedWebAppUrlInfo parent_app,

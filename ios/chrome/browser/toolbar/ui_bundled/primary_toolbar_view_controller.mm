@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/adaptive_toolbar_view_controller+subclassing.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/banner_promo_view.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/buttons/toolbar_button.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/buttons/toolbar_button_factory.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/buttons/toolbar_configuration.h"
@@ -159,6 +160,8 @@ BASE_FEATURE(kPrimaryToolbarViewDidLoadUpdateViews,
   // This method cannot be called from the init as the topSafeAnchor can only be
   // set to topLayoutGuide after the view creation on iOS 10.
   [self.view setUp];
+
+  self.view.bannerPromo.delegate = self.bannerPromoDelegate;
 
   // Reference the location bar container as the top omnibox layout guide.
   // Force the synchronous layout update, as this fixes the screen rotation

@@ -94,7 +94,7 @@ source_set("browser_tests") {
     sources += [ "tab_strip/tab_strip_browsertest.cc" ]
   }
 
-  if (enable_print_preview) {
+  if (enable_print_preview && !is_chromeos) {
     sources += [ "print_preview/print_preview_browsertest.cc" ]
   }
 
@@ -128,6 +128,7 @@ source_set("browser_tests") {
       "chromeos/personalization_app/personalization_app_browsertest.cc",
       "chromeos/personalization_app/personalization_app_sea_pen_browsertest.cc",
       "chromeos/print_management/print_management_browsertest.cc",
+      "chromeos/print_preview/print_preview_browsertest.cc",
       "chromeos/print_preview_cros/print_preview_cros_browsertest.cc",
       "chromeos/sanitize_ui/sanitize_ui_browsertest.cc",
       "chromeos/scanning/scanning_app_browsertest.cc",
@@ -272,7 +273,7 @@ source_set("interactive_ui_tests") {
     sources += [ "extensions/extensions_focus_test.cc" ]
   }
 
-  if (enable_print_preview) {
+  if (enable_print_preview && !is_chromeos) {
     sources += [ "print_preview/print_preview_focus_test.cc" ]
   }
 
@@ -283,6 +284,7 @@ source_set("interactive_ui_tests") {
   if (is_chromeos) {
     sources += [
       "chromeos/ash_common/cr_elements/ash_common_cr_elements_focus_test.cc",
+      "chromeos/print_preview/print_preview_focus_test.cc",
       "chromeos/settings/os_settings_focus_test.cc",
     ]
   }
@@ -540,7 +542,7 @@ generate_grd("build_grd") {
     grdp_files += [ "$target_gen_dir/extensions/resources.grdp" ]
   }
 
-  if (enable_print_preview) {
+  if (enable_print_preview && !is_chromeos) {
     deps += [ "print_preview:build_grdp" ]
     grdp_files += [ "$target_gen_dir/print_preview/resources.grdp" ]
   }
@@ -620,6 +622,7 @@ generate_grd("build_grd") {
       "chromeos/parent_access:build_grdp",
       "chromeos/personalization_app:build_grdp",
       "chromeos/print_management:build_grdp",
+      "chromeos/print_preview:build_grdp",
       "chromeos/print_preview_cros:build_grdp",
       "chromeos/sanitize_ui:build_grdp",
       "chromeos/scanning:build_grdp",
@@ -654,6 +657,7 @@ generate_grd("build_grd") {
       "$target_gen_dir/chromeos/parent_access/resources.grdp",
       "$target_gen_dir/chromeos/personalization_app/resources.grdp",
       "$target_gen_dir/chromeos/print_management/resources.grdp",
+      "$target_gen_dir/chromeos/print_preview/resources.grdp",
       "$target_gen_dir/chromeos/print_preview_cros/resources.grdp",
       "$target_gen_dir/chromeos/resources.grdp",
       "$target_gen_dir/chromeos/vc_background_ui/resources.grdp",

@@ -87,6 +87,10 @@ export class ReadAnythingLogger {
                   this.metrics.recordHighlightOff();
   }
 
+  logHighlightGranularity(highlight: number) {
+    this.metrics.recordHighlightGranularity(highlight);
+  }
+
   private logVoiceTypeUsedForReading_(voice: SpeechSynthesisVoice|undefined) {
     if (!voice) {
       return;

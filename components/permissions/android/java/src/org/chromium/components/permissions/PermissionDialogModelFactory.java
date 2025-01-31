@@ -53,11 +53,17 @@ class PermissionDialogModelFactory {
                     .with(
                             ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
                             delegate.getNegativeButtonText());
-            if (delegate.getEmbeddedPromptVariant() == EmbeddedPromptVariant.OS_SYSTEM_SETTINGS) {
-                builder.with(
-                        ModalDialogProperties.BUTTON_STYLES,
-                        ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE);
-            }
+        }
+        if (delegate.isEmbeddedPromptVariant()) {
+            // We always begin with BUTTON_STYLES. This means we have @style/TextButton and
+            // @style/FilledButton applied to two buttons negative-positive, respectively. That's
+            // fine for OS_SYSTEM_SETTING. Later, for the ADMINISTRATOR screen, when we only have
+            // one button, we can still choose one of them (in this case switch the button to
+            // negative).
+            builder.with(
+                            ModalDialogProperties.BUTTON_STYLES,
+                            ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE)
+                    .with(ModalDialogProperties.CHANGE_CUSTOM_VIEW_OR_BUTTONS, true);
         }
         return builder.build();
     }

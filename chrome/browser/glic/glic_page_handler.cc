@@ -6,6 +6,7 @@
 
 #include "base/callback_list.h"
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/version_info/version_info.h"
 #include "chrome/browser/browser_process.h"
@@ -167,7 +168,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
       SetPanelDraggableAreasCallback callback) override {
     if (!draggable_areas.empty()) {
       glic_service_->SetPanelDraggableAreas(draggable_areas);
-
     } else {
       // Default to the top bar area of the panel.
       // TODO(cuianthony): Define panel dimensions constants in shared location.
@@ -256,7 +256,15 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 
   void PanelWillOpen(const mojom::PanelState& panel_state,
                      PanelWillOpenCallback done) override {
-    web_client_->NotifyPanelWillOpen(panel_state.Clone(), std::move(done));
+    web_client_->NotifyPanelWillOpen(
+        panel_state.Clone(),
+        base::BindOnce(
+            [](PanelWillOpenCallback done, mojom::WebClientMode mode) {
+              base::UmaHistogramEnumeration("Glic.Api.NotifyPanelWillOpen",
+                                            mode);
+              std::move(done).Run(mode);
+            },
+            std::move(done)));
   }
 
   void PanelWasClosed(base::OnceClosure done) override {

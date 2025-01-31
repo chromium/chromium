@@ -72,7 +72,7 @@ class InterceptingContentBrowserClient : public ContentBrowserClient {
 blink::ParsedPermissionsPolicy CreatePermissivePolicy() {
   blink::ParsedPermissionsPolicy policy;
   policy.emplace_back(
-      blink::mojom::PermissionsPolicyFeature::kRunAdAuction,
+      network::mojom::PermissionsPolicyFeature::kRunAdAuction,
       /*allowed_origins=*/
       std::vector{*blink::OriginWithPossibleWildcards::FromOrigin(
                       url::Origin::Create(GURL("https://google.com"))),
@@ -87,7 +87,7 @@ blink::ParsedPermissionsPolicy CreatePermissivePolicy() {
 blink::ParsedPermissionsPolicy CreateRestrictivePolicy() {
   blink::ParsedPermissionsPolicy policy;
   policy.emplace_back(
-      blink::mojom::PermissionsPolicyFeature::kRunAdAuction,
+      network::mojom::PermissionsPolicyFeature::kRunAdAuction,
       /*allowed_origins=*/std::vector<blink::OriginWithPossibleWildcards>(),
       /*self_if_matches=*/std::nullopt,
       /*matches_all_origins=*/false,

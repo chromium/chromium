@@ -11,6 +11,7 @@ mojom("mojo_bindings") {
     "lens_ghost_loader.mojom",
     "lens_side_panel.mojom",
     "overlay_object.mojom",
+    "page_content_type.mojom",
     "polygon.mojom",
     "text.mojom",
     "translate.mojom",

@@ -18,6 +18,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/buildflags/buildflags.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/extension_paths.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -289,7 +290,12 @@ const Extension* ExtensionPlatformBrowserTest::LoadExtension(
 }
 
 void ExtensionPlatformBrowserTest::DisableExtension(
-    const std::string& extension_id,
+    const ExtensionId& extension_id) {
+  DisableExtension(extension_id, disable_reason::DISABLE_USER_ACTION);
+}
+
+void ExtensionPlatformBrowserTest::DisableExtension(
+    const ExtensionId& extension_id,
     int disable_reasons) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   ExtensionSystem::Get(profile())->extension_service()->DisableExtension(

@@ -72,9 +72,10 @@ public class SingleTabSwitcherCoordinator implements ModuleProvider {
         mTabListFaviconProvider =
                 new TabListFaviconProvider(
                         activity,
-                        false,
+                        /* isTabStrip= */ false,
                         org.chromium.chrome.browser.tab_ui.R.dimen
-                                .favicon_corner_radius_for_single_tab_switcher);
+                                .favicon_corner_radius_for_single_tab_switcher,
+                        /* tabWebContentsFaviconDelegate= */ null);
         mMediatorOnNtp =
                 new SingleTabSwitcherOnNtpMediator(
                         activity,

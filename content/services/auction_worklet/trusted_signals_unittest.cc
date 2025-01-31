@@ -1400,7 +1400,8 @@ TEST_F(TrustedSignalsTest, BuildTrustedScoringSignalsURL) {
                                 blink::AdSize::LengthUnit::kScreenHeight))),
           /*creative_scanning_metadata=*/"scan1",
           /*interest_group_owner=*/
-          std::optional(url::Origin::Create(GURL("https://bidder1.test")))},
+          std::optional(url::Origin::Create(GURL("https://bidder1.test"))),
+          /*buyer_and_seller_reporting_id=*/"chair"},
          {/*ad_descriptor=*/blink::AdDescriptor(
               GURL("https://creative1.test"),
               std::optional(
@@ -1408,7 +1409,8 @@ TEST_F(TrustedSignalsTest, BuildTrustedScoringSignalsURL) {
                                 blink::AdSize::LengthUnit::kScreenHeight))),
           /*creative_scanning_metadata=*/"scan1b",
           /*interest_group_owner=*/
-          std::optional(url::Origin::Create(GURL("https://bidder1.test")))},
+          std::optional(url::Origin::Create(GURL("https://bidder1.test"))),
+          /*buyer_and_seller_reporting_id=*/"sofa"},
          {/*ad_descriptor=*/blink::AdDescriptor(
               GURL("https://creative1.test"),
               std::optional(
@@ -1416,7 +1418,8 @@ TEST_F(TrustedSignalsTest, BuildTrustedScoringSignalsURL) {
                                 blink::AdSize::LengthUnit::kScreenHeight))),
           /*creative_scanning_metadata=*/"scan1/2",
           /*interest_group_owner=*/
-          std::optional(url::Origin::Create(GURL("https://bidder2.test")))},
+          std::optional(url::Origin::Create(GURL("https://bidder2.test"))),
+          /*buyer_and_seller_reporting_id=*/"stool"},
          {/*ad_descriptor=*/blink::AdDescriptor(
               GURL("https://creative2.test"),
               std::optional(
@@ -1424,7 +1427,8 @@ TEST_F(TrustedSignalsTest, BuildTrustedScoringSignalsURL) {
                                 blink::AdSize::LengthUnit::kScreenHeight))),
           /*creative_scanning_metadata=*/"scan2",
           /*interest_group_owner=*/
-          std::optional(url::Origin::Create(GURL("https://bidder2.test")))},
+          std::optional(url::Origin::Create(GURL("https://bidder2.test"))),
+          /*buyer_and_seller_reporting_id=*/"stool"},
          {// Same thing at different size.
           /*ad_descriptor=*/blink::AdDescriptor(
               GURL("https://creative2.test"),
@@ -1433,7 +1437,8 @@ TEST_F(TrustedSignalsTest, BuildTrustedScoringSignalsURL) {
                                 blink::AdSize::LengthUnit::kScreenHeight))),
           /*creative_scanning_metadata=*/"scan2",
           /*interest_group_owner=*/
-          std::optional(url::Origin::Create(GURL("https://bidder2.test")))}});
+          std::optional(url::Origin::Create(GURL("https://bidder2.test"))),
+          /*buyer_and_seller_reporting_id=*/"stool"}});
 
     std::set<TrustedSignals::CreativeInfo> creative_set;
     for (auto& input : test_data) {
@@ -1441,6 +1446,7 @@ TEST_F(TrustedSignalsTest, BuildTrustedScoringSignalsURL) {
         input.ad_descriptor.size = std::nullopt;
         input.creative_scanning_metadata.clear();
         input.interest_group_owner = std::nullopt;
+        input.buyer_and_seller_reporting_id.clear();
       }
       creative_set.insert(std::move(input));
     }
@@ -1453,6 +1459,7 @@ TEST_F(TrustedSignalsTest, BuildTrustedScoringSignalsURL) {
     if (send_creative_scanning_metadata) {
       single_ad.interest_group_owner =
           url::Origin::Create(GURL("https://bidder0.test"));
+      single_ad.buyer_and_seller_reporting_id = "throne";
     }
     single_ad_set.insert(std::move(single_ad));
 
@@ -1485,7 +1492,8 @@ TEST_F(TrustedSignalsTest, BuildTrustedScoringSignalsURL) {
           "https%3A%2F%2Fbidder2.test,"
           "https%3A%2F%2Fbidder1.test,"
           "https%3A%2F%2Fbidder2.test,"
-          "https%3A%2F%2Fbidder2.test",
+          "https%3A%2F%2Fbidder2.test"
+          "&adBuyerAndSellerReportingIds=chair,stool,sofa,stool,stool",
           ads_result);
       EXPECT_EQ(
           "https://kv.test/?hostname=https%3A%2F%2Fpublisher.test%2F"
@@ -1506,7 +1514,8 @@ TEST_F(TrustedSignalsTest, BuildTrustedScoringSignalsURL) {
           "https%3A%2F%2Fbidder2.test,"
           "https%3A%2F%2Fbidder1.test,"
           "https%3A%2F%2Fbidder2.test,"
-          "https%3A%2F%2Fbidder2.test",
+          "https%3A%2F%2Fbidder2.test"
+          "&adBuyerAndSellerReportingIds=throne",
           component_ads_result);
     } else {
       EXPECT_EQ(
@@ -1534,7 +1543,8 @@ TEST_F(TrustedSignalsTest, BuildTrustedScoringSignalsURLNoSize) {
         /*ad_descriptor=*/blink::AdDescriptor(GURL("https://c1.test"),
                                               /*size=*/std::nullopt),
         /*creative_scanning_metadata=*/"s1",
-        /*interest_group_owner=*/url::Origin::Create(GURL("https://b1.test"))));
+        /*interest_group_owner=*/url::Origin::Create(GURL("https://b1.test")),
+        /*buyer_and_seller_reporting_id=*/"stool"));
 
     input.insert(TrustedSignals::CreativeInfo(
         /*ad_descriptor=*/blink::AdDescriptor(
@@ -1545,7 +1555,8 @@ TEST_F(TrustedSignalsTest, BuildTrustedScoringSignalsURLNoSize) {
                       blink::AdSize(100, blink::AdSize::LengthUnit::kPixels, 50,
                                     blink::AdSize::LengthUnit::kPixels))),
         /*creative_scanning_metadata=*/"s2",
-        /*interest_group_owner=*/url::Origin::Create(GURL("https://b2.test"))));
+        /*interest_group_owner=*/url::Origin::Create(GURL("https://b2.test")),
+        /*buyer_and_seller_reporting_id=*/"chair"));
 
     GURL result = TrustedSignals::BuildTrustedScoringSignalsURL(
         /*send_creative_scanning_metadata=*/true,
@@ -1561,7 +1572,8 @@ TEST_F(TrustedSignalsTest, BuildTrustedScoringSignalsURLNoSize) {
           "&renderUrls=https%3A%2F%2Fc1.test%2F,https%3A%2F%2Fc2.test%2F"
           "&adCreativeScanningMetadata=s1,s2"
           "&adSizes=,,,"
-          "&adBuyer=https%3A%2F%2Fb1.test,https%3A%2F%2Fb2.test",
+          "&adBuyer=https%3A%2F%2Fb1.test,https%3A%2F%2Fb2.test"
+          "&adBuyerAndSellerReportingIds=stool,chair",
           result);
     } else {
       EXPECT_EQ(
@@ -1569,7 +1581,8 @@ TEST_F(TrustedSignalsTest, BuildTrustedScoringSignalsURLNoSize) {
           "&renderUrls=https%3A%2F%2Fc1.test%2F,https%3A%2F%2Fc2.test%2F"
           "&adCreativeScanningMetadata=s1,s2"
           "&adSizes=,,100px,50px"
-          "&adBuyer=https%3A%2F%2Fb1.test,https%3A%2F%2Fb2.test",
+          "&adBuyer=https%3A%2F%2Fb1.test,https%3A%2F%2Fb2.test"
+          "&adBuyerAndSellerReportingIds=stool,chair",
           result);
     }
   }
@@ -1585,7 +1598,8 @@ TEST_F(TrustedSignalsTest,
           blink::AdSize(100, blink::AdSize::LengthUnit::kPixels, 50,
                         blink::AdSize::LengthUnit::kPixels)),
       /*creative_scanning_metadata=*/std::string(),
-      /*interest_group_owner=*/url::Origin::Create(GURL("https://b1.test"))));
+      /*interest_group_owner=*/url::Origin::Create(GURL("https://b1.test")),
+      /*buyer_and_seller_reporting_id=*/"stool"));
 
   input.insert(TrustedSignals::CreativeInfo(
       /*ad_descriptor=*/blink::AdDescriptor(
@@ -1593,7 +1607,8 @@ TEST_F(TrustedSignalsTest,
           blink::AdSize(100, blink::AdSize::LengthUnit::kPixels, 50,
                         blink::AdSize::LengthUnit::kPixels)),
       /*creative_scanning_metadata=*/"s2",
-      /*interest_group_owner=*/url::Origin::Create(GURL("https://b2.test"))));
+      /*interest_group_owner=*/url::Origin::Create(GURL("https://b2.test")),
+      /*buyer_and_seller_reporting_id=*/"recliner"));
 
   GURL result = TrustedSignals::BuildTrustedScoringSignalsURL(
       /*send_creative_scanning_metadata=*/true,
@@ -1608,7 +1623,8 @@ TEST_F(TrustedSignalsTest,
       "&renderUrls=https%3A%2F%2Fc1.test%2F,https%3A%2F%2Fc2.test%2F"
       "&adCreativeScanningMetadata=,s2"
       "&adSizes=100px,50px,100px,50px"
-      "&adBuyer=https%3A%2F%2Fb1.test,https%3A%2F%2Fb2.test",
+      "&adBuyer=https%3A%2F%2Fb1.test,https%3A%2F%2Fb2.test"
+      "&adBuyerAndSellerReportingIds=stool,recliner",
       result);
 }
 
@@ -1620,7 +1636,8 @@ TEST_F(TrustedSignalsTest, ScoringSignalsCreativeScanning) {
           blink::AdSize(100, blink::AdSize::LengthUnit::kPixels, 50,
                         blink::AdSize::LengthUnit::kPixels)),
       /*creative_scanning_metadata=*/"s1",
-      /*interest_group_owner=*/url::Origin::Create(GURL("https://b1.test"))));
+      /*interest_group_owner=*/url::Origin::Create(GURL("https://b1.test")),
+      /*buyer_and_seller_reporting_id=*/"stool"));
 
   ads.insert(TrustedSignals::CreativeInfo(
       /*ad_descriptor=*/blink::AdDescriptor(
@@ -1628,12 +1645,14 @@ TEST_F(TrustedSignalsTest, ScoringSignalsCreativeScanning) {
           blink::AdSize(100, blink::AdSize::LengthUnit::kPixels, 50,
                         blink::AdSize::LengthUnit::kPixels)),
       /*creative_scanning_metadata=*/"s2",
-      /*interest_group_owner=*/url::Origin::Create(GURL("https://b2.test"))));
+      /*interest_group_owner=*/url::Origin::Create(GURL("https://b2.test")),
+      /*buyer_and_seller_reporting_id=*/"sofa"));
 
   ads.insert(TrustedSignals::CreativeInfo(
       /*ad_descriptor=*/blink::AdDescriptor(GURL("https://bar.test")),
       /*creative_scanning_metadata=*/"s3",
-      /*interest_group_owner=*/url::Origin::Create(GURL("https://b2.test"))));
+      /*interest_group_owner=*/url::Origin::Create(GURL("https://b2.test")),
+      /*buyer_and_seller_reporting_id=*/"chair"));
 
   std::set<TrustedSignals::CreativeInfo> ad_components;
   ad_components.insert(TrustedSignals::CreativeInfo(
@@ -1642,7 +1661,8 @@ TEST_F(TrustedSignalsTest, ScoringSignalsCreativeScanning) {
           blink::AdSize(30, blink::AdSize::LengthUnit::kPixels, 16,
                         blink::AdSize::LengthUnit::kPixels)),
       /*creative_scanning_metadata=*/"c1",
-      /*interest_group_owner=*/url::Origin::Create(GURL("https://b1.test"))));
+      /*interest_group_owner=*/url::Origin::Create(GURL("https://b1.test")),
+      /*buyer_and_seller_reporting_id=*/std::string()));
 
   ad_components.insert(TrustedSignals::CreativeInfo(
       /*ad_descriptor=*/blink::AdDescriptor(
@@ -1650,7 +1670,8 @@ TEST_F(TrustedSignalsTest, ScoringSignalsCreativeScanning) {
           blink::AdSize(60, blink::AdSize::LengthUnit::kPixels, 32,
                         blink::AdSize::LengthUnit::kPixels)),
       /*creative_scanning_metadata=*/"c2",
-      /*interest_group_owner=*/url::Origin::Create(GURL("https://b2.test"))));
+      /*interest_group_owner=*/url::Origin::Create(GURL("https://b2.test")),
+      /*buyer_and_seller_reporting_id=*/std::string()));
 
   GURL response_url(
       "https://url.test/?hostname=publisher&"
@@ -1664,7 +1685,8 @@ TEST_F(TrustedSignalsTest, ScoringSignalsCreativeScanning) {
       "&adComponentSizes=60px,32px,30px,16px"
       "&adBuyer=https%3A%2F%2Fb2.test,https%3A%2F%2Fb1.test,"
       "https%3A%2F%2Fb2.test"
-      "&adComponentBuyer=https%3A%2F%2Fb2.test,https%3A%2F%2Fb1.test");
+      "&adComponentBuyer=https%3A%2F%2Fb2.test,https%3A%2F%2Fb1.test"
+      "&adBuyerAndSellerReportingIds=chair,stool,sofa");
 
   AddJsonResponse(&url_loader_factory_, response_url, kBaseScoringJson);
 

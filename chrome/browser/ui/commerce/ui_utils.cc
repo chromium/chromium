@@ -4,13 +4,31 @@
 
 #include "chrome/browser/ui/commerce/ui_utils.h"
 
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/commerce_utils.h"
 
 namespace commerce {
+
+void OpenProductSpecsTabForUrls(const std::vector<GURL>& urls,
+                                TabStripModel* tab_strip_model,
+                                int index) {
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(tab_strip_model->profile()));
+
+  web_contents->GetController().LoadURL(commerce::GetProductSpecsTabUrl(urls),
+                                        content::Referrer(),
+                                        ui::PAGE_TRANSITION_LINK, "");
+
+  tab_strip_model->AddWebContents(std::move(web_contents), index,
+                                  ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
+                                  ADD_ACTIVE);
+}
 
 void ShowProductSpecsConfirmationToast(std::u16string set_name,
                                        Browser* browser) {

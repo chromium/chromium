@@ -460,6 +460,39 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, ScrimForTabModal) {
                            /*add_to_history=*/false);
 }
 
+// MacOS does not need views window scrim. We use sheet to show window modals
+// (-[NSWindow beginSheet:]), which natively draws a scrim since macOS 11.
+// TODO(crbug.com/393558961): re-enable on ChromeOS. CLIENT_OWNS_WIDGET
+// currently causes issues during widget destruction.
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(BrowserViewTest, ScrimForBrowserWindowModal) {
+  if (!base::FeatureList::IsEnabled(features::kScrimForBrowserWindowModal)) {
+    GTEST_SKIP();
+  }
+
+  auto child_widget_delegate = std::make_unique<views::WidgetDelegate>();
+  auto child_widget = std::make_unique<views::Widget>();
+  child_widget_delegate->SetModalType(ui::mojom::ModalType::kWindow);
+  views::Widget::InitParams params(
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW);
+  params.delegate = child_widget_delegate.get();
+  params.parent = browser_view()->GetWidget()->GetNativeView();
+  child_widget->Init(std::move(params));
+
+  child_widget->Show();
+  EXPECT_TRUE(browser_view()->window_scrim_view_for_testing()->GetVisible());
+  child_widget->Hide();
+  EXPECT_FALSE(browser_view()->window_scrim_view_for_testing()->GetVisible());
+  child_widget->Show();
+  EXPECT_TRUE(browser_view()->window_scrim_view_for_testing()->GetVisible());
+  // Destroy the child widget, the parent should be notified about child modal
+  // visibility change.
+  child_widget.reset();
+  EXPECT_FALSE(browser_view()->window_scrim_view_for_testing()->GetVisible());
+}
+#endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS)
+
 namespace {
 
 class FakeRealTimeUrlLookupService

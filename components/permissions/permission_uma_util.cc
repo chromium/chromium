@@ -37,9 +37,9 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -289,7 +289,7 @@ bool IsCrossOriginWithAnyParent(content::RenderFrameHost* render_frame_host) {
 // frame.
 PermissionHeaderPolicyForUMA GetTopLevelPermissionHeaderPolicyForUMA(
     content::RenderFrameHost* render_frame_host,
-    blink::mojom::PermissionsPolicyFeature feature) {
+    network::mojom::PermissionsPolicyFeature feature) {
   const auto& parsed_permission_policy_header =
       render_frame_host->GetMainFrame()->GetPermissionsPolicyHeader();
   if (parsed_permission_policy_header.empty()) {

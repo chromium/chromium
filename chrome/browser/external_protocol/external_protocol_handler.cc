@@ -26,7 +26,6 @@
 #include "chrome/browser/external_protocol/constants.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -53,6 +52,10 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/url_formatter/elide_url.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
+#endif
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #endif
 
 namespace {
@@ -173,8 +176,10 @@ void LaunchUrlWithoutSecurityCheckWithDelegate(
     return;
   }
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   g_browser_process->safe_browsing_service()->ReportExternalAppRedirect(
       web_contents, url.scheme(), url.possibly_invalid_spec());
+#endif
 
   // |web_contents| is only passed in to find browser context. Do not assume
   // that the external protocol request came from the main frame.

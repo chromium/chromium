@@ -37,7 +37,7 @@ TEST(BnplIssuerTest, SetAndGetPaymentInstrument) {
 // model.
 TEST(BnplIssuerTest, SetAndGetPriceLowerBound) {
   BnplIssuer issuer = test::GetTestLinkedBnplIssuer();
-  uint64_t price_lower_bound = 20000000;
+  uint64_t price_lower_bound = 20'000'000;
   ASSERT_NE(issuer.eligible_price_ranges()[0].price_lower_bound,
             price_lower_bound);
   BnplIssuer::EligiblePriceRange price_range(
@@ -52,7 +52,7 @@ TEST(BnplIssuerTest, SetAndGetPriceLowerBound) {
 // model.
 TEST(BnplIssuerTest, SetAndGetPriceUpperBound) {
   BnplIssuer issuer = test::GetTestLinkedBnplIssuer();
-  uint64_t price_upper_bound = 300000000;
+  uint64_t price_upper_bound = 300'000'000;
   ASSERT_NE(issuer.eligible_price_ranges()[0].price_upper_bound,
             price_upper_bound);
   BnplIssuer::EligiblePriceRange price_range(
@@ -61,6 +61,63 @@ TEST(BnplIssuerTest, SetAndGetPriceUpperBound) {
   issuer.set_eligible_price_ranges({price_range});
   EXPECT_EQ(issuer.eligible_price_ranges()[0].price_upper_bound,
             price_upper_bound);
+}
+
+// Test for getting price range in given currency, and getting `std::nullopt`
+// if the issuer doesn't have a price range in the currency.
+TEST(BnplIssuerTest, GetEligiblePriceRangeForCurrency_WithRangeInUsd) {
+  BnplIssuer issuer = test::GetTestLinkedBnplIssuer();
+  BnplIssuer::EligiblePriceRange price_range(
+      /*currency=*/"USD", /*price_lower_bound=*/50'000'000,
+      /*price_upper_bound=*/200'000'000);
+  issuer.set_eligible_price_ranges({price_range});
+  const base::optional_ref<const BnplIssuer::EligiblePriceRange> usd_range =
+      issuer.GetEligiblePriceRangeForCurrency("USD");
+  ASSERT_TRUE(usd_range.has_value());
+  EXPECT_EQ("USD", usd_range.value().currency);
+  EXPECT_EQ(issuer.eligible_price_ranges()[0].price_upper_bound,
+            usd_range.value().price_upper_bound);
+  EXPECT_EQ(issuer.eligible_price_ranges()[0].price_lower_bound,
+            usd_range.value().price_lower_bound);
+
+  EXPECT_FALSE(issuer.GetEligiblePriceRangeForCurrency("GBP").has_value());
+}
+
+// Test that 'IsEligibleAmount' returns false if the given amount is not in
+// supported range.
+TEST(BnplIssuerTest, IsEligibleAmount_NotSupportedAmount) {
+  BnplIssuer issuer = test::GetTestLinkedBnplIssuer();
+  BnplIssuer::EligiblePriceRange price_range(
+      /*currency=*/"USD", /*price_lower_bound=*/50'000'000,
+      /*price_upper_bound=*/200'000'000);
+  issuer.set_eligible_price_ranges({price_range});
+  EXPECT_FALSE(issuer.IsEligibleAmount(/*amount_in_micros=*/30'000'000,
+                                       /*currency=*/"USD"));
+  EXPECT_FALSE(issuer.IsEligibleAmount(/*amount_in_micros=*/300'000'000,
+                                       /*currency=*/"USD"));
+}
+
+// Test that 'IsEligibleAmount' returns false if the given currency is not in
+// supported.
+TEST(BnplIssuerTest, IsEligibleAmount_NotSupportedCurrency) {
+  BnplIssuer issuer = test::GetTestLinkedBnplIssuer();
+  BnplIssuer::EligiblePriceRange price_range(
+      /*currency=*/"USD", /*price_lower_bound=*/50'000'000,
+      /*price_upper_bound=*/200'000'000);
+  issuer.set_eligible_price_ranges({price_range});
+  EXPECT_FALSE(issuer.IsEligibleAmount(/*amount_in_micros=*/60'000'000,
+                                       /*currency=*/"GBP"));
+}
+
+// Test that 'IsEligibleAmount' returns true for eligible currency and amount.
+TEST(BnplIssuerTest, IsEligibleAmount) {
+  BnplIssuer issuer = test::GetTestLinkedBnplIssuer();
+  BnplIssuer::EligiblePriceRange price_range(
+      /*currency=*/"USD", /*price_lower_bound=*/50'000'000,
+      /*price_upper_bound=*/200'000'000);
+  issuer.set_eligible_price_ranges({price_range});
+  EXPECT_TRUE(issuer.IsEligibleAmount(/*amount_in_micros=*/60'000'000,
+                                      /*currency=*/"USD"));
 }
 
 // Test for the equality operator for the BNPL issuer data model.
@@ -84,7 +141,7 @@ TEST(BnplIssuerTest, EqualityOperator) {
 
   issuer2 = test::GetTestLinkedBnplIssuer();
   BnplIssuer::EligiblePriceRange price_range(
-      /*currency=*/"USD", /*price_lower_bound=*/100000000,
+      /*currency=*/"USD", /*price_lower_bound=*/100'000'000,
       /*price_upper_bound=*/
       issuer2.eligible_price_ranges()[0].price_upper_bound);
   issuer2.set_eligible_price_ranges({price_range});
@@ -93,7 +150,7 @@ TEST(BnplIssuerTest, EqualityOperator) {
   issuer2 = test::GetTestLinkedBnplIssuer();
   price_range.price_lower_bound =
       issuer2.eligible_price_ranges()[0].price_lower_bound;
-  price_range.price_upper_bound = 10000000000;
+  price_range.price_upper_bound = 10'000'000'000;
   issuer2.set_eligible_price_ranges({price_range});
   EXPECT_FALSE(issuer1 == issuer2);
 }

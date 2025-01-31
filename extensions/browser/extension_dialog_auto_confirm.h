@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/auto_reset.h"
 
 namespace extensions {
 

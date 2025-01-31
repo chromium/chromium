@@ -198,7 +198,7 @@ void SharedStorageWorklet::AddModuleHelper(
   const PermissionsPolicy* policy =
       execution_context->GetSecurityContext().GetPermissionsPolicy();
   if (!policy || !policy->IsFeatureEnabledForOrigin(
-                     mojom::blink::PermissionsPolicyFeature::kSharedStorage,
+                     network::mojom::PermissionsPolicyFeature::kSharedStorage,
                      shared_storage_origin)) {
     resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
         script_state->GetIsolate(), DOMExceptionCode::kInvalidAccessError,
@@ -340,11 +340,11 @@ ScriptPromise<V8SharedStorageResponse> SharedStorageWorklet::selectURL(
       execution_context->GetSecurityContext().GetPermissionsPolicy();
   CHECK(policy);
   CHECK(policy->IsFeatureEnabledForOrigin(
-      mojom::blink::PermissionsPolicyFeature::kSharedStorage,
+      network::mojom::PermissionsPolicyFeature::kSharedStorage,
       shared_storage_origin_));
 
   if (!policy->IsFeatureEnabledForOrigin(
-          mojom::blink::PermissionsPolicyFeature::kSharedStorageSelectUrl,
+          network::mojom::PermissionsPolicyFeature::kSharedStorageSelectUrl,
           shared_storage_origin_)) {
     resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
         script_state->GetIsolate(), DOMExceptionCode::kInvalidAccessError,
@@ -623,7 +623,7 @@ ScriptPromise<IDLAny> SharedStorageWorklet::run(
       execution_context->GetSecurityContext().GetPermissionsPolicy();
   CHECK(policy);
   CHECK(policy->IsFeatureEnabledForOrigin(
-      mojom::blink::PermissionsPolicyFeature::kSharedStorage,
+      network::mojom::PermissionsPolicyFeature::kSharedStorage,
       shared_storage_origin_));
 
   if (!keep_alive_after_operation_) {

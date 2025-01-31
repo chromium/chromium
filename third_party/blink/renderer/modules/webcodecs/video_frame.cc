@@ -507,8 +507,7 @@ bool CopyTexturablePlanes(media::VideoFrame& src_frame,
   if (!wrapper)
     return false;
 
-  auto& provider = wrapper->ContextProvider();
-  auto* ri = provider.RasterInterface();
+  auto* ri = wrapper->ContextProvider().RasterInterface();
   if (!ri)
     return false;
 
@@ -517,9 +516,9 @@ bool CopyTexturablePlanes(media::VideoFrame& src_frame,
         media::VideoFrame::SampleSize(dest_layout.Format(), i);
     gfx::Rect plane_src_rect = PlaneRect(src_rect, sample_size);
     uint8_t* dest_pixels = dest_buffer.data() + dest_layout.Offset(i);
-    if (!media::ReadbackTexturePlaneToMemorySync(
-            src_frame, i, plane_src_rect, dest_pixels, dest_layout.Stride(i),
-            ri, provider.GetCapabilities())) {
+    if (!media::ReadbackTexturePlaneToMemorySync(src_frame, i, plane_src_rect,
+                                                 dest_pixels,
+                                                 dest_layout.Stride(i), ri)) {
       // It's possible to fail after copying some but not all planes, leaving
       // the output buffer in a corrupt state D:
       return false;

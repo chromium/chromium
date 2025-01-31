@@ -97,11 +97,7 @@ void SqlStoreBase::Initialize(base::OnceClosure pending_command) {
 
   // This is how we reset a pointer and provide deleter. This is necessary to
   // ensure that we can close the store more than once.
-  db_ = DatabaseUniquePtr(new sql::Database(
-                              {// These values are default.
-                               .page_size = 4096,
-                               .cache_size = 500},
-                              histogram_tag_),
+  db_ = DatabaseUniquePtr(new sql::Database(histogram_tag_),
                           base::OnTaskRunnerDeleter(background_task_runner_));
 
   background_task_runner_->PostTaskAndReplyWithResult(

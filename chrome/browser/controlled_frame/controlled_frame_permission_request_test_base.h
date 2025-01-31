@@ -12,8 +12,8 @@
 #include "base/functional/callback.h"
 #include "chrome/browser/controlled_frame/controlled_frame_test_base.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 
 namespace base {
 class CommandLine;
@@ -35,7 +35,7 @@ struct PermissionRequestTestCase {
   // The name of the permission in the event.
   std::string permission_name;
   // Policy features the permission depends on.
-  std::set<blink::mojom::PermissionsPolicyFeature> policy_features;
+  std::set<network::mojom::PermissionsPolicyFeature> policy_features;
   // Corresponding ContentSettingsType(s) of the permission.
   std::set<ContentSettingsType> content_settings_type;
 };
@@ -68,7 +68,7 @@ struct DisabledPermissionTestCase {
   // Script to request the permission.
   std::string request_script;
   // Policy features the permission depends on.
-  std::set<blink::mojom::PermissionsPolicyFeature> policy_features;
+  std::set<network::mojom::PermissionsPolicyFeature> policy_features;
   std::string success_result;
   std::string failure_result;
 };

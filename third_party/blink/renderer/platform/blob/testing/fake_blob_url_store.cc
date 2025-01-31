@@ -35,6 +35,7 @@ void FakeBlobURLStore::ResolveAsURLLoaderFactory(
 void FakeBlobURLStore::ResolveForNavigation(
     const KURL&,
     mojo::PendingReceiver<mojom::blink::BlobURLToken>,
+    bool is_top_level_navigation,
     ResolveForNavigationCallback callback) {
   NOTREACHED();
 }

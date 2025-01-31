@@ -48,11 +48,12 @@
 #include "cc/scheduler/begin_frame_tracker.h"
 #include "cc/scheduler/commit_earlyout_reason.h"
 #include "cc/scheduler/draw_result.h"
-#include "cc/scheduler/scheduler.h"
 #include "cc/scheduler/video_frame_controller.h"
 #include "cc/tiles/tile_manager.h"
+#include "cc/tiles/tile_manager_client.h"
 #include "cc/trees/animated_paint_worklet_tracker.h"
 #include "cc/trees/frame_rate_estimator.h"
+#include "cc/trees/image_animation_controller.h"
 #include "cc/trees/layer_tree_frame_sink_client.h"
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/layer_tree_mutator.h"
@@ -64,7 +65,6 @@
 #include "cc/trees/render_frame_metadata.h"
 #include "cc/trees/task_runner_provider.h"
 #include "cc/trees/throttle_decider.h"
-#include "components/viz/client/client_resource_provider.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/gpu/context_cache_controller.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
@@ -84,6 +84,10 @@ namespace ukm {
 class UkmRecorder;
 }
 
+namespace viz {
+class ClientResourceProvider;
+}
+
 namespace cc {
 
 class BrowserControlsOffsetManager;
@@ -98,6 +102,7 @@ class LatencyInfoSwapPromiseMonitor;
 class LayerContext;
 class LayerImpl;
 class LayerTreeFrameSink;
+class LayerTreeHostImplClient;
 class LayerTreeImpl;
 class PaintWorkletLayerPainter;
 class MemoryHistory;
@@ -115,89 +120,6 @@ class SynchronousTaskGraphRunner;
 class TaskGraphRunner;
 class UIResourceBitmap;
 class Viewport;
-
-// LayerTreeHost->Proxy callback interface.
-class LayerTreeHostImplClient {
- public:
-  virtual void DidLoseLayerTreeFrameSinkOnImplThread() = 0;
-  virtual void SetBeginFrameSource(viz::BeginFrameSource* source) = 0;
-  virtual void DidReceiveCompositorFrameAckOnImplThread() = 0;
-  virtual void OnCanDrawStateChanged(bool can_draw) = 0;
-  virtual void NotifyReadyToActivate() = 0;
-  virtual bool IsReadyToActivate() = 0;
-  virtual void NotifyReadyToDraw() = 0;
-  // Please call these 2 functions through
-  // LayerTreeHostImpl's SetNeedsRedraw() and SetNeedsOneBeginImplFrame().
-  virtual void SetNeedsRedrawOnImplThread() = 0;
-  virtual void SetNeedsOneBeginImplFrameOnImplThread() = 0;
-  virtual void SetNeedsCommitOnImplThread(bool urgent = false) = 0;
-  virtual void SetNeedsPrepareTilesOnImplThread() = 0;
-  virtual void SetVideoNeedsBeginFrames(bool needs_begin_frames) = 0;
-  virtual void SetDeferBeginMainFrameFromImpl(bool defer_begin_main_frame) = 0;
-  virtual bool IsInsideDraw() = 0;
-  virtual void RenewTreePriority() = 0;
-  virtual void PostDelayedAnimationTaskOnImplThread(base::OnceClosure task,
-                                                    base::TimeDelta delay) = 0;
-  virtual void DidActivateSyncTree() = 0;
-  virtual void DidPrepareTiles() = 0;
-
-  // Called when page scale animation has completed on the impl thread.
-  virtual void DidCompletePageScaleAnimationOnImplThread() = 0;
-
-  // Called when output surface asks for a draw.
-  virtual void OnDrawForLayerTreeFrameSink(bool resourceless_software_draw,
-                                           bool skip_draw) = 0;
-
-  virtual void SetNeedsImplSideInvalidation(
-      bool needs_first_draw_on_activation) = 0;
-
-  virtual void NotifyImageDecodeRequestFinished(int request_id,
-                                                bool decode_succeeded) = 0;
-  virtual void NotifyTransitionRequestFinished(
-      uint32_t sequence_id,
-      const viz::ViewTransitionElementResourceRects&) = 0;
-
-  // Called when a presentation time is requested. |frame_token| identifies
-  // the frame that was presented. |callbacks| holds both impl side and main
-  // side callbacks to be called.
-  virtual void DidPresentCompositorFrameOnImplThread(
-      uint32_t frame_token,
-      PresentationTimeCallbackBuffer::PendingCallbacks callbacks,
-      const viz::FrameTimingDetails& details) = 0;
-
-  virtual void NotifyAnimationWorkletStateChange(
-      AnimationWorkletMutationState state,
-      ElementListType tree_type) = 0;
-
-  virtual void NotifyPaintWorkletStateChange(
-      Scheduler::PaintWorkletState state) = 0;
-
-  virtual void NotifyCompositorMetricsTrackerResults(
-      CustomTrackerResults results) = 0;
-
-  virtual void DidObserveFirstScrollDelay(
-      int source_frame_number,
-      base::TimeDelta first_scroll_delay,
-      base::TimeTicks first_scroll_timestamp) = 0;
-
-  // Returns true if the client is currently compositing synchronously. This is
-  // only true in tests, but some behavior needs to be synchronized in non-test
-  // code as a result.
-  virtual bool IsInSynchronousComposite() const = 0;
-
-  virtual void FrameSinksToThrottleUpdated(
-      const base::flat_set<viz::FrameSinkId>& ids) = 0;
-
-  virtual void ClearHistory() = 0;
-
-  virtual void SetHasActiveThreadedScroll(bool is_scrolling) = 0;
-  virtual void SetWaitingForScrollEvent(bool waiting_for_scroll_event) = 0;
-
-  virtual size_t CommitDurationSampleCountForTesting() const = 0;
-
- protected:
-  virtual ~LayerTreeHostImplClient() = default;
-};
 
 // LayerTreeHostImpl owns the LayerImpl trees as well as associated rendering
 // state.
@@ -868,7 +790,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
     return frame_trackers_.FrameSequenceTrackerActiveTypes();
   }
 
-  void RenewTreePriorityForTesting() { client_->RenewTreePriority(); }
+  void RenewTreePriorityForTesting();
 
   void SetRenderFrameObserver(
       std::unique_ptr<RenderFrameMetadataObserver> observer);
@@ -909,9 +831,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   }
 
   // Returns true if the client is currently compositing synchronously.
-  bool IsInSynchronousComposite() const {
-    return client_->IsInSynchronousComposite();
-  }
+  bool IsInSynchronousComposite() const;
 
   RasterQueryQueue* GetRasterQueryQueueForTesting() const {
     return pending_raster_queries_.get();

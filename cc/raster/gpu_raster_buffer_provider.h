@@ -6,17 +6,21 @@
 #define CC_RASTER_GPU_RASTER_BUFFER_PROVIDER_H_
 
 #include <stdint.h>
+
 #include <memory>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
 #include "base/time/time.h"
+#include "cc/raster/raster_buffer.h"
 #include "cc/raster/raster_buffer_provider.h"
 #include "cc/raster/raster_query_queue.h"
 #include "cc/trees/raster_capabilities.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/common/sync_token.h"
+
+class GURL;
 
 namespace gpu {
 namespace raster {

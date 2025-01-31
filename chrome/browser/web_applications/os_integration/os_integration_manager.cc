@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/atomic_ref_count.h"
-#include "base/auto_reset.h"
 #include "base/barrier_callback.h"
 #include "base/barrier_closure.h"
 #include "base/feature_list.h"

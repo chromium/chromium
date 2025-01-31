@@ -4,6 +4,7 @@
 
 module lens.mojom;
 
+import "chrome/browser/lens/core/mojom/page_content_type.mojom";
 import "url/mojom/url.mojom";
 
 // Factory method for creating a new WebUI page handler for lens side panel.
@@ -47,4 +48,8 @@ interface LensSidePanelPage {
 
   // Suppress the ghost loader when no bytes are returned for the page.
   SuppressGhostLoader();
+
+  // Notifies the side panel that the page content type has changed.
+  // `new_page_content_type` is the new type of the page.
+  PageContentTypeChanged(PageContentType new_page_content_type);
 };

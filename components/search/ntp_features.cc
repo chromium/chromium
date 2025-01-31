@@ -179,7 +179,7 @@ BASE_FEATURE(kNtpOneGoogleBar,
 // If enabled, outlook calendar module will be shown.
 BASE_FEATURE(kNtpOutlookCalendarModule,
              "NtpOutlookCalendarModule",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, Google Photos module will be shown.
 BASE_FEATURE(kNtpPhotosModule,
@@ -220,7 +220,7 @@ BASE_FEATURE(kNtpSafeBrowsingModule,
 // If enabled, sharepoint module will be shown.
 BASE_FEATURE(kNtpSharepointModule,
              "NtpSharepointModule",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, shortcuts will be shown.
 // This is a kill switch. Keep indefinitely.
@@ -281,7 +281,7 @@ BASE_FEATURE(kNtpMobilePromo,
 // If enabled, the Microsoft Authentication module will be shown.
 BASE_FEATURE(kNtpMicrosoftAuthenticationModule,
              "NtpMicrosoftAuthenticationModule",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, the OGB loader will request for the async bar parts payload type.
 BASE_FEATURE(kNtpOneGoogleBarAsyncBarParts,

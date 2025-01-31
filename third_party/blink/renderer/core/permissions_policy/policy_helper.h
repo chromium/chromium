@@ -6,11 +6,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PERMISSIONS_POLICY_POLICY_HELPER_H_
 
 #include "base/memory/stack_allocated.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink-forward.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/document_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink-forward.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
@@ -85,7 +85,8 @@ struct FeatureNameMapCacheKey {
     return !(*this == other);
   }
 };
-using FeatureNameMap = HashMap<String, mojom::blink::PermissionsPolicyFeature>;
+using FeatureNameMap =
+    HashMap<String, network::mojom::PermissionsPolicyFeature>;
 using FeatureNameMapCache = HashMap<FeatureNameMapCacheKey, FeatureNameMap>;
 
 using DocumentPolicyFeatureSet = HashSet<mojom::blink::DocumentPolicyFeature>;
@@ -120,10 +121,10 @@ bool DisabledByOriginTrial(const String&, FeatureContext*);
 bool DisabledByOriginTrial(mojom::blink::DocumentPolicyFeature,
                            FeatureContext*);
 
-// Converts |mojom::blink::PermissionsPolicyFeature| to enum used in devtools
+// Converts |network::mojom::PermissionsPolicyFeature| to enum used in devtools
 // protocol.
 String PermissionsPolicyFeatureToProtocol(
-    mojom::blink::PermissionsPolicyFeature,
+    network::mojom::PermissionsPolicyFeature,
     ExecutionContext*);
 
 }  // namespace blink

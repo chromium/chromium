@@ -508,11 +508,8 @@ BASE_FEATURE(kTabGroupsIPad,
 
 bool IsTabGroupInGridEnabled() {
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    if (@available(iOS 17, *)) {
-      return base::FeatureList::IsEnabled(kTabGroupsIPad) &&
-             base::FeatureList::IsEnabled(kModernTabStrip);
-    }
-    return false;
+    return base::FeatureList::IsEnabled(kTabGroupsIPad) &&
+           base::FeatureList::IsEnabled(kModernTabStrip);
   }
   return true;
 }
@@ -1111,7 +1108,7 @@ BASE_FEATURE(kEnableTraitCollectionRegistration,
 
 BASE_FEATURE(kBlueDotOnToolsMenuButton,
              "BlueDotOnToolsMenuButton",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsBlueDotOnToolsMenuButtoneEnabled() {
   return base::FeatureList::IsEnabled(kBlueDotOnToolsMenuButton);

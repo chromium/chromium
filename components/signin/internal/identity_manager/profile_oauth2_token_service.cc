@@ -4,7 +4,6 @@
 
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 
-#include "base/auto_reset.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/task/bind_post_task.h"

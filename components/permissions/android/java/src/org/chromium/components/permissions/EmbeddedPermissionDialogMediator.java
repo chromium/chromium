@@ -58,10 +58,24 @@ public class EmbeddedPermissionDialogMediator extends PermissionDialogMediator
             requestAndroidPermissionsIfNecessary();
         } else {
             mState = State.PROMPT_OPEN;
+            if (PermissionDialogModelFactory.shouldUseVerticalButtons(mDialogDelegate)) {
+                mDialogModel.set(ModalDialogProperties.WRAP_CUSTOM_VIEW_IN_SCROLLABLE, true);
+                mDialogModel.set(ModalDialogProperties.POSITIVE_BUTTON_TEXT, new String());
+                mDialogModel.set(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, new String());
+                mDialogModel.set(
+                        ModalDialogProperties.BUTTON_GROUP_BUTTON_SPEC_LIST,
+                        PermissionDialogModelFactory.getButtonSpecs(mDialogDelegate));
+            } else {
+                mDialogModel.set(ModalDialogProperties.WRAP_CUSTOM_VIEW_IN_SCROLLABLE, false);
+                mDialogModel.set(ModalDialogProperties.BUTTON_GROUP_BUTTON_SPEC_LIST, null);
+                mDialogModel.set(
+                        ModalDialogProperties.POSITIVE_BUTTON_TEXT,
+                        mDialogDelegate.getPositiveButtonText());
+                mDialogModel.set(
+                        ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
+                        mDialogDelegate.getNegativeButtonText());
+            }
             mDialogModel.set(ModalDialogProperties.CUSTOM_VIEW, customView);
-            mDialogModel.set(
-                    ModalDialogProperties.BUTTON_GROUP_BUTTON_SPEC_LIST,
-                    PermissionDialogModelFactory.getButtonSpecs(mDialogDelegate));
         }
     }
 

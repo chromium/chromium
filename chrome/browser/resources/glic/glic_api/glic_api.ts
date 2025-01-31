@@ -17,8 +17,9 @@
 //   failures should will be documented only if they are expected.
 // - The browser provided tab and window IDs are not stable between Chrome
 //   restarts, and should not be saved to persisted storage for later reuse.
-// - All URLs sent or received through this API will be silently made empty if
-//   exceeding the length limit imposed by Mojo's URL implementation. See:
+// - URLs can be arbitrarily long but any URL sent or received through this API
+//   will be silently made empty if exceeding the 2 MiB length limit imposed by
+//   Mojo's URL implementation. See:
 //   https://source.chromium.org/chromium/chromium/src/+/main:url/mojom/url.mojom
 
 /** Allows the Glic web client to register with the host WebUI. */
@@ -58,7 +59,7 @@ export declare interface GlicWebClient {
 
   /**
    * @todo Remove void promise value once the web client returns OpenPanelInfo.
-   *       https://crbug.com/390176911
+   *       https://crbug.com/391946150
    *
    * @todo The browser is currently storing the previous panel size, but the web
    *       client should be updated to set the panel size when handling this
@@ -68,12 +69,8 @@ export declare interface GlicWebClient {
    * always called no matter how the panel opening is initiated.
    *
    * The web client should use the handling of this call to execute any
-   * preparations needed to become user-visible. Especially, these actions are
-   * expected from the web client:
-   * - Set the correct size of the panel.
-   *
-   * The fulfilled promise should return an OpenPanelInfo containing relevant
-   * information from the web client.
+   * preparations needed to become user-visible, and return a fully populated
+   * OpenPanelInfo.
    *
    * Important: The panel is only made user-visible once the returned promise is
    * resolved or failed (failures are ignored and the panel is still shown).
@@ -128,13 +125,8 @@ export declare interface GlicBrowserHost {
    * the animation finishes, is interrupted, or immediately if the window
    * doesn't exist yet, in which case the size will be used as the initial size
    * when the widget is eventually created. Size values are in DIPs.
-   *
-   * If `options.durationMs` is provided, its value will be used as the total
-   * duration of the resize animation in milliseconds. If not provided, defaults
-   * to 0 (instant resizing). The promise will fail in case `durationMs` is not
-   * finite.
    */
-  resizeWindow(width: number, height: number, options?: {durationMs?: number}):
+  resizeWindow(width: number, height: number, options?: ResizeWindowOptions):
       Promise<void>;
 
   /**
@@ -173,24 +165,23 @@ export declare interface GlicBrowserHost {
    *       https://crbug.com/393391681
    *
    * Creates a tab and navigates to a URL. It is made the active tab by default
-   * but that can be changed using the openInBackground option.
+   * but that can be changed using `options.openInBackground`.
    *
-   * Only HTTP and HTTPS schemes are accepted. Other schemes
+   * Only HTTP and HTTPS schemes are accepted.
    *
-   * The tab is created in the currently active window by default. If windowId
-   * is specified, it is created within the respective window.
+   * The tab is created in the currently active window by default. If
+   * `options.windowId` is specified, it is created within the respective
+   * window.
    *
    * The promise returns information about the newly created tab. The promise
    * may be rejected in case of errors that prevented the tab from being
-   * created.
+   * created. An invalid scheme or `options.windowId` will cause a promise
+   * failure.
    *
    * Note: This function does not return loading information for the newly
    * created tab. If that's needed, we can add another function that does it.
    */
-  createTab?(
-      url: string,
-      options: {openInBackground?: boolean, windowId?: string},
-      ): Promise<TabData>;
+  createTab?(url: string, options: CreateTabOptions): Promise<TabData>;
 
   /** Opens a new tab to the glic settings page. */
   openGlicSettingsPage?(): void;
@@ -297,6 +288,25 @@ export declare interface GlicBrowserHost {
 
   /** Returns an object that holds metrics-related functionality. */
   getMetrics?(): GlicBrowserHostMetrics;
+}
+
+/** Holds optional parameters for `GlicBrowserHost#resizeWindow`. */
+export declare interface ResizeWindowOptions {
+  /**
+   * If provided, `durationMs` will be used as the total duration of the resize
+   * animation, in milliseconds. If not provided, the duration defaults to 0
+   * (instant resizing). The promise will fail in case `durationMs` is not
+   * finite.
+   */
+  durationMs?: number;
+}
+
+/** Holds optional parameters for `GlicBrowserHost#createTab`. */
+export declare interface CreateTabOptions {
+  /** Determines if the new tab should be created in the background or not. */
+  openInBackground?: boolean;
+  /** The windowId of the window where the new tab should be created at. */
+  windowId?: string;
 }
 
 /**

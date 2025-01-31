@@ -1710,6 +1710,48 @@ IN_PROC_BROWSER_TEST_F(MediaFoundationEncryptedMediaTest,
                    fallback_expected_title, /*http=*/true);
 }
 
+IN_PROC_BROWSER_TEST_F(MediaFoundationEncryptedMediaTest,
+                       ProtectedContentIdSettingAllowed) {
+  if (!IsMediaFoundationEncryptedPlaybackSupported()) {
+    GTEST_SKIP() << "MediaFoundationEncryptedPlayback not supported on device.";
+  }
+
+  PrefService* prefs = browser()->profile()->GetPrefs();
+  ASSERT_TRUE(prefs);
+
+  const std::string kProtectedContentIdPrefPath =
+      "profile.default_content_setting_values.protected_media_identifier";
+  const int kAllowProtectedContentId = 1;
+
+  prefs->SetInteger(kProtectedContentIdPrefPath, kAllowProtectedContentId);
+
+  RunEncryptedMediaTest(kDefaultEmePlayer, "bear-640x360-v_frag-cbcs.mp4",
+                        media::kMediaFoundationClearKeyKeySystem, SrcType::MSE,
+                        kNoSessionToLoad, false, PlayCount::ONCE,
+                        media::kEndedTitle);
+}
+
+IN_PROC_BROWSER_TEST_F(MediaFoundationEncryptedMediaTest,
+                       ProtectedContentIdSettingDisallowed) {
+  if (!IsMediaFoundationEncryptedPlaybackSupported()) {
+    GTEST_SKIP() << "MediaFoundationEncryptedPlayback not supported on device.";
+  }
+
+  PrefService* prefs = browser()->profile()->GetPrefs();
+  ASSERT_TRUE(prefs);
+
+  const std::string kProtectedContentIdPrefPath =
+      "profile.default_content_setting_values.protected_media_identifier";
+  const int kDisallowProtectedContentId = 2;
+
+  prefs->SetInteger(kProtectedContentIdPrefPath, kDisallowProtectedContentId);
+
+  RunEncryptedMediaTest(kDefaultEmePlayer, "bear-640x360-v_frag-cbcs.mp4",
+                        media::kMediaFoundationClearKeyKeySystem, SrcType::MSE,
+                        kNoSessionToLoad, false, PlayCount::ONCE,
+                        kEmeNotSupportedError);
+}
+
 #if BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION)
 IN_PROC_BROWSER_TEST_F(MediaFoundationEncryptedMediaTest,
                        Playback_DolbyVisionProfile5CencVideo_Success) {

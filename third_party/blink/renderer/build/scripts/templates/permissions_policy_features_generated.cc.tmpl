@@ -8,7 +8,7 @@
 #include "base/no_destructor.h"
 #include "base/feature_list.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 
 namespace blink {
 
@@ -19,12 +19,12 @@ void UpdatePermissionsPolicyFeatureListFlagDefaults(PermissionsPolicyFeatureList
     {%- for flag, default_value in feature.default_value_behind_flag %}
       {%- if not loop.first %} else {% endif %}
   if (base::FeatureList::IsEnabled(features::k{{flag}})) {
-    mutable_feature_list.find(mojom::PermissionsPolicyFeature::k{{feature.name}})->second =
+    mutable_feature_list.find(network::mojom::PermissionsPolicyFeature::k{{feature.name}})->second =
       PermissionsPolicyFeatureDefault::{{default_value}};
   }
     {%- endfor %}
  else {
-    mutable_feature_list.find(mojom::PermissionsPolicyFeature::k{{feature.name}})->second =
+    mutable_feature_list.find(network::mojom::PermissionsPolicyFeature::k{{feature.name}})->second =
       PermissionsPolicyFeatureDefault::{{feature.feature_default}};
   }
 
@@ -37,7 +37,7 @@ PermissionsPolicyFeatureList GetBasePermissionsPolicyFeatureList() {
   static const base::NoDestructor<PermissionsPolicyFeatureList> feature_list({
       {%- for feature in features %}
         {
-          mojom::PermissionsPolicyFeature::k{{feature.name}},
+          network::mojom::PermissionsPolicyFeature::k{{feature.name}},
           PermissionsPolicyFeatureDefault::{{feature.feature_default}}
         },
       {%- endfor %}
@@ -54,7 +54,7 @@ PermissionsPolicyFeatureList& GetPermissionsPolicyFeatureListUnloadNone() {
 {# Apply special case for unload if present. #}
 {% for feature in features %}
   {% if feature.name.original is equalto "Unload" %}
-    map.find(mojom::PermissionsPolicyFeature::kUnload)->second =
+    map.find(network::mojom::PermissionsPolicyFeature::kUnload)->second =
         PermissionsPolicyFeatureDefault::EnableForNone;
   {% endif %}
 {% endfor %}
@@ -73,7 +73,7 @@ PermissionsPolicyFeatureList& GetPermissionsPolicyFeatureListUnloadAll() {
 {# Apply special case for unload if present. #}
 {% for feature in features %}
   {% if feature.name.original is equalto "Unload" %}
-    map.find(mojom::PermissionsPolicyFeature::kUnload)->second =
+    map.find(network::mojom::PermissionsPolicyFeature::kUnload)->second =
         PermissionsPolicyFeatureDefault::EnableForAll;
   {% endif %}
 {% endfor %}

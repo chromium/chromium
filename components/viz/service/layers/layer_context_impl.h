@@ -14,7 +14,7 @@
 #include "cc/animation/animation_host.h"
 #include "cc/layers/tile_display_layer_impl.h"
 #include "cc/trees/layer_tree_frame_sink.h"
-#include "cc/trees/layer_tree_host_impl.h"
+#include "cc/trees/layer_tree_host_impl_client.h"
 #include "components/viz/common/resources/returned_resource.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -22,7 +22,9 @@
 #include "services/viz/public/mojom/compositing/layer_context.mojom.h"
 
 namespace cc {
+class LayerTreeHostImpl;
 class RenderingStatsInstrumentation;
+class TaskRunnerProvider;
 }  // namespace cc
 
 namespace viz {

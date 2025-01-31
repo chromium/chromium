@@ -2593,7 +2593,7 @@
     'blink_animation': ['alexis.menard@intel.com',
                         'gerchiko@microsoft.com',
                         'blink-reviews-animation@chromium.org'],
-    'blink_audio': ['hongchan@chromium.org', 'mjwilson@chromium.org', 'sinafirooz@chromium.org'],
+    'blink_audio': ['hongchan@chromium.org', 'mjwilson@chromium.org'],
     'blink_battery_status': [],
     'blink_bindings': ['blink-reviews-bindings@chromium.org',
                        'haraken@chromium.org',

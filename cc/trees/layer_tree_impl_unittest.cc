@@ -12,6 +12,7 @@
 #include "cc/base/features.h"
 #include "cc/layers/append_quads_data.h"
 #include "cc/layers/heads_up_display_layer_impl.h"
+#include "cc/layers/picture_layer_impl.h"
 #include "cc/test/fake_layer_tree_host_impl.h"
 #include "cc/test/fake_raster_source.h"
 #include "cc/test/layer_tree_impl_test_base.h"

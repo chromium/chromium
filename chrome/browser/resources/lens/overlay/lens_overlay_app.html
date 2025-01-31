@@ -351,10 +351,14 @@
     <cr-searchbox
       id="searchbox"
       on-focusin="handleSearchboxFocused"
+      placeholder-text="{{placeholderText}}"
       searchbox-aria-description="[[getSearchboxAriaDescription(showErrorState, showGhostLoader)]]">
     </cr-searchbox>
-    <cr-searchbox-ghost-loader id="searchboxGhostLoader" tabindex="-1"
-      show-error-state="{{showErrorState}}">
+    <cr-searchbox-ghost-loader
+      id="searchboxGhostLoader"
+      tabindex="-1"
+      show-error-state="{{showErrorState}}"
+      page-content-type="[[pageContentType]]">
     </cr-searchbox-ghost-loader>
   </div>
   <div id="translateButtonContainer" class="button-container">

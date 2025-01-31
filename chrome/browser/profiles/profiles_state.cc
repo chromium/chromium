@@ -279,11 +279,13 @@ void UpdateGaiaProfileInfoIfNeeded(Profile* profile) {
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 void RemoveBrowsingDataForProfile(const base::FilePath& profile_path) {
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   // The BrowsingDataRemover relies on many objects that aren't created in unit
   // tests. Previously this code would depend on content::ResourceDispatcherHost
   // but that's gone, so do a similar hack for now.
   if (!g_browser_process->safe_browsing_service())
     return;
+#endif
 
   Profile* profile =
       g_browser_process->profile_manager()->GetProfileByPath(profile_path);

@@ -14,6 +14,7 @@ build_webui("build") {
     "glic.css",
     "glic.html",
     "glic_logo.svg",
+    "glic_fre/fre.html",
   ]
 
   non_web_component_files = [
@@ -27,6 +28,7 @@ build_webui("build") {
     "glic_app_controller.ts",
     "icons.html.ts",
     "main.ts",
+    "glic_fre/fre.ts",
   ]
 
   webui_context_type = "trusted"

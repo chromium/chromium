@@ -53,6 +53,7 @@ class BrowserViewLayout : public views::LayoutManager {
   // |browser_view| may be null in tests.
   BrowserViewLayout(std::unique_ptr<BrowserViewLayoutDelegate> delegate,
                     BrowserView* browser_view,
+                    views::View* window_scrim,
                     views::View* top_container,
                     WebAppFrameToolbarView* web_app_frame_toolbar,
                     views::Label* web_app_window_title,
@@ -180,6 +181,9 @@ class BrowserViewLayout : public views::LayoutManager {
   // Child views that the layout manager manages.
   // NOTE: If you add a view, try to add it as a views::View, which makes
   // testing much easier.
+  // TODO(crbug.com/393551539): reset the pointers at appropriate time and
+  // remove the DanglingUntriaged tag.
+  const raw_ptr<views::View, AcrossTasksDanglingUntriaged> window_scrim_;
   const raw_ptr<views::View, AcrossTasksDanglingUntriaged> top_container_;
   const raw_ptr<WebAppFrameToolbarView, DanglingUntriaged>
       web_app_frame_toolbar_;

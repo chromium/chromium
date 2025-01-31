@@ -9,7 +9,6 @@
 
 #include "services/network/web_transport.h"
 
-#include "base/auto_reset.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"

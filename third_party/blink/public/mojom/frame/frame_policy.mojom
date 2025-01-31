@@ -8,7 +8,6 @@ import "services/network/public/mojom/web_sandbox_flags.mojom";
 import "third_party/blink/public/mojom/frame/deferred_fetch_policy.mojom";
 import "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom";
 import "third_party/blink/public/mojom/permissions_policy/document_policy_feature.mojom";
-import "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom";
 import "third_party/blink/public/mojom/permissions_policy/policy_value.mojom";
 
 // This struct holds frame policy value that needs to be passed from browser

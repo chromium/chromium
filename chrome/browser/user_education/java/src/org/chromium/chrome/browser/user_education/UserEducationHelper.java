@@ -183,6 +183,12 @@ public class UserEducationHelper {
                                     },
                                     ViewHighlighter.IPH_MIN_DELAY_BETWEEN_TWO_HIGHLIGHTS));
             mTextBubble.setAutoDismissTimeout(iphCommand.autoDismissTimeout);
+            if (iphCommand.dismissOnTouchTimeout != TextBubble.NO_TIMEOUT) {
+                TextBubble textBubbleForLambda = mTextBubble;
+                mHandler.postDelayed(
+                        () -> textBubbleForLambda.setDismissOnTouchInteraction(true),
+                        iphCommand.dismissOnTouchTimeout);
+            }
 
             mTextBubble.show();
         }
@@ -203,5 +209,9 @@ public class UserEducationHelper {
         if (mTextBubble != null) {
             mTextBubble.dismiss();
         }
+    }
+
+    public TextBubble getTextBubbleForTesting() {
+        return mTextBubble;
     }
 }

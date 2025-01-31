@@ -5200,6 +5200,24 @@
             ]
         }
     ],
+    "ChromnientSidePanelOpenInNewTab": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "LensOverlaySidePanelOpenInNewTab"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromnientSurvey": [
         {
             "platforms": [
@@ -11590,21 +11608,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "DefaultBrowserTriggerCriteriaExperiment"
-                    ]
-                }
-            ]
-        }
-    ],
-    "IOSDefaultBrowserBlueDotOnToolsMenuButton": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "BlueDotOnToolsMenuButton"
                     ]
                 }
             ]
@@ -21372,6 +21375,24 @@
             ]
         }
     ],
+    "ScrimForBrowserWindowModal": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ScrimForBrowserWindowModal"
+                    ]
+                }
+            ]
+        }
+    ],
     "ScrimForTabModal": [
         {
             "platforms": [
@@ -23762,37 +23783,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "TraceBinderIpc"
-                    ]
-                }
-            ]
-        }
-    ],
-    "TraceSiteInstanceGetProcessCreation": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledAndCrash",
-                    "params": {
-                        "crash_on_creation": "true"
-                    },
-                    "enable_features": [
-                        "TraceSiteInstanceGetProcessCreation"
-                    ]
-                },
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "crash_on_creation": "false"
-                    },
-                    "enable_features": [
-                        "TraceSiteInstanceGetProcessCreation"
                     ]
                 }
             ]

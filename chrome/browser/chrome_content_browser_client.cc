@@ -374,6 +374,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_utils.h"
 #include "content/public/common/window_container_type.mojom-shared.h"
+#include "device/fido/features.h"
 #include "device/vr/buildflags/buildflags.h"
 #include "extensions/browser/browser_frame_context_data.h"
 #include "extensions/buildflags/buildflags.h"
@@ -616,7 +617,7 @@
 #include "components/lens/lens_features.h"
 #include "components/password_manager/content/common/web_ui_constants.h"
 #include "components/password_manager/core/common/password_manager_features.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #endif  //  !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -1013,7 +1014,7 @@ blink::mojom::AutoplayPolicy GetAutoplayPolicyForWebContents(
                  ? blink::mojom::AutoplayPolicy::kDocumentUserActivationRequired
                  : blink::mojom::AutoplayPolicy::kNoUserGestureRequired;
   } else if (web_contents->GetPrimaryMainFrame()->IsFeatureEnabled(
-                 blink::mojom::PermissionsPolicyFeature::kAutoplay) &&
+                 network::mojom::PermissionsPolicyFeature::kAutoplay) &&
              IsAutoplayAllowedByPolicy(web_contents->GetOuterWebContents(),
                                        prefs)) {
     // If the domain policy allows autoplay and has delegated that to an iframe,
@@ -2901,11 +2902,16 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
-      // Make the WebAuthenticationRemoteProxiedRequestsAllowed policy enable
-      // the experimental WebAuthenticationRemoteDesktopSupport Blink runtime
+      // Make the {WebAuthenticationRemoteProxiedRequestsAllowed or
+      // WebAuthenticationRemoteDesktopAllowedOrigins} policy enable the
+      // experimental WebAuthenticationRemoteDesktopSupport Blink runtime
       // feature.
       if (prefs->GetBoolean(
-              webauthn::pref_names::kRemoteProxiedRequestsAllowed)) {
+              webauthn::pref_names::kRemoteProxiedRequestsAllowed) ||
+          (base::FeatureList::IsEnabled(
+               device::kWebAuthnRemoteDesktopAllowedOriginsPolicy) &&
+           !prefs->GetList(webauthn::pref_names::kRemoteDesktopAllowedOrigins)
+                .empty())) {
         command_line->AppendSwitch(switches::kWebAuthRemoteDesktopSupport);
       }
 #endif
@@ -5899,11 +5905,14 @@ ChromeContentBrowserClient::MaybeCreateSafeBrowsingURLLoaderThrottle(
   if (safe_browsing::IsEnhancedProtectionEnabled(*profile->GetPrefs()) &&
       base::FeatureList::IsEnabled(
           safe_browsing::kAddReferringAppInfoToProtegoPings)) {
+    bool get_webapk_info = base::FeatureList::IsEnabled(
+        safe_browsing::kAddReferringWebApkToProtegoPings);
     WebContents* web_contents = wc_getter.Run();
     if (web_contents) {
       referring_app_info =
           std::make_optional<safe_browsing::internal::ReferringAppInfo>(
-              safe_browsing::GetReferringAppInfo(web_contents));
+              safe_browsing::GetReferringAppInfo(web_contents,
+                                                 get_webapk_info));
     }
   }
 #endif

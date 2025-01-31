@@ -12,7 +12,7 @@ DisplayCapturePermissionContext::DisplayCapturePermissionContext(
     : PermissionContextBase(
           browser_context,
           ContentSettingsType::DISPLAY_CAPTURE,
-          blink::mojom::PermissionsPolicyFeature::kDisplayCapture) {}
+          network::mojom::PermissionsPolicyFeature::kDisplayCapture) {}
 
 ContentSetting DisplayCapturePermissionContext::GetPermissionStatusInternal(
     content::RenderFrameHost* render_frame_host,

@@ -21,6 +21,7 @@
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 #include "content/browser/private_aggregation/private_aggregation_budgeter.h"
 #include "content/browser/private_aggregation/private_aggregation_caller_api.h"
+#include "content/browser/private_aggregation/private_aggregation_pending_contributions.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -126,11 +127,11 @@ class CONTENT_EXPORT PrivateAggregationHost
   // `on_report_request_details_received` and `browser_context` must be
   // non-null.
   PrivateAggregationHost(
-      base::RepeatingCallback<void(
-          ReportRequestGenerator,
-          std::vector<blink::mojom::AggregatableReportHistogramContribution>,
-          PrivateAggregationBudgetKey,
-          NullReportBehavior)> on_report_request_details_received,
+      base::RepeatingCallback<
+          void(ReportRequestGenerator,
+               PrivateAggregationPendingContributions::Wrapper,
+               PrivateAggregationBudgetKey,
+               NullReportBehavior)> on_report_request_details_received,
       BrowserContext* browser_context);
   PrivateAggregationHost(const PrivateAggregationHost&) = delete;
   PrivateAggregationHost& operator=(const PrivateAggregationHost&) = delete;
@@ -192,11 +193,10 @@ class CONTENT_EXPORT PrivateAggregationHost
   // Set iff the private aggregation developer mode is set.
   bool should_not_delay_reports_;
 
-  base::RepeatingCallback<void(
-      ReportRequestGenerator,
-      std::vector<blink::mojom::AggregatableReportHistogramContribution>,
-      PrivateAggregationBudgetKey,
-      NullReportBehavior)>
+  base::RepeatingCallback<void(ReportRequestGenerator,
+                               PrivateAggregationPendingContributions::Wrapper,
+                               PrivateAggregationBudgetKey,
+                               NullReportBehavior)>
       on_report_request_details_received_;
 
   mojo::ReceiverSet<blink::mojom::PrivateAggregationHost, ReceiverContext>

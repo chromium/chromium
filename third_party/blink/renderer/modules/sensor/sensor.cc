@@ -28,9 +28,9 @@ const double kWaitingIntervalThreshold = 0.01;
 
 bool AreFeaturesEnabled(
     ExecutionContext* context,
-    const Vector<mojom::blink::PermissionsPolicyFeature>& features) {
+    const Vector<network::mojom::PermissionsPolicyFeature>& features) {
   return std::ranges::all_of(
-      features, [context](mojom::blink::PermissionsPolicyFeature feature) {
+      features, [context](network::mojom::PermissionsPolicyFeature feature) {
         return context->IsFeatureEnabled(feature,
                                          ReportOptions::kReportOnFailure);
       });
@@ -42,7 +42,7 @@ Sensor::Sensor(ExecutionContext* execution_context,
                const SensorOptions* sensor_options,
                ExceptionState& exception_state,
                device::mojom::blink::SensorType type,
-               const Vector<mojom::blink::PermissionsPolicyFeature>& features)
+               const Vector<network::mojom::PermissionsPolicyFeature>& features)
     : ActiveScriptWrappable<Sensor>({}),
       ExecutionContextLifecycleObserver(execution_context),
       frequency_(0.0),
@@ -81,7 +81,7 @@ Sensor::Sensor(ExecutionContext* execution_context,
                const SpatialSensorOptions* options,
                ExceptionState& exception_state,
                device::mojom::blink::SensorType sensor_type,
-               const Vector<mojom::blink::PermissionsPolicyFeature>& features)
+               const Vector<network::mojom::PermissionsPolicyFeature>& features)
     : Sensor(execution_context,
              static_cast<const SensorOptions*>(options),
              exception_state,

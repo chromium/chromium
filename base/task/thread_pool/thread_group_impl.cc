@@ -7,7 +7,6 @@
 #include <optional>
 #include <string_view>
 
-#include "base/auto_reset.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/profiler/thread_group_profiler.h"
 #include "base/sequence_token.h"

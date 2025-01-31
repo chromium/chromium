@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/shared_memory_mapping.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/optional_ref.h"
@@ -17,18 +18,34 @@
 #include "cc/base/delayed_unique_notifier.h"
 #include "cc/input/browser_controls_offset_tags_info.h"
 #include "cc/input/browser_controls_state.h"
+#include "cc/paint/draw_image.h"
 #include "cc/scheduler/scheduler.h"
-#include "cc/trees/layer_tree_host_impl.h"
+#include "cc/trees/layer_tree_host_impl_client.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
+
+class GURL;
 
 namespace viz {
 struct FrameTimingDetails;
 }
 
 namespace cc {
+
+struct CommitState;
+struct CommitTimestamps;
+class LayerTreeFrameSink;
 class LayerTreeHost;
+class LayerTreeHostImpl;
+class LayerTreeMutator;
+class LayerTreeSettings;
+class PaintWorkletLayerPainter;
 class ProxyMain;
 class RenderFrameMetadataObserver;
+class RenderingStatsInstrumentation;
 class ScopedCommitCompletionEvent;
+class SwapPromise;
+class TaskRunnerProvider;
+struct ThreadUnsafeCommitState;
 
 // This class aggregates all the interactions that the main side of the
 // compositor needs to have with the impl side.

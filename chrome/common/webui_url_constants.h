@@ -127,6 +127,7 @@ inline constexpr char16_t kChromeUIFlagsURL16[] = u"chrome://flags/";
 inline constexpr char kChromeUIGCMInternalsHost[] = "gcm-internals";
 inline constexpr char kChromeUIGlicHost[] = "glic";
 inline constexpr char kChromeUIGlicURL[] = "chrome://glic/";
+inline constexpr char kChromeUIGlicFreURL[] = "chrome://glic/glic_fre/fre.html";
 inline constexpr char kChromeUIHangUIHost[] = "uithreadhang";
 inline constexpr char kChromeUIHelpHost[] = "help";
 inline constexpr char kChromeUIHelpURL[] = "chrome://help/";
@@ -272,6 +273,8 @@ inline constexpr char kChromeUIUntrustedDataSharingURL[] =
     "chrome-untrusted://data-sharing/";
 inline constexpr char kChromeUIUntrustedDataSharingAPIURL[] =
     "chrome-untrusted://data-sharing/data_sharing_api.html";
+inline constexpr char kChromeUIUntrustedFavicon2URL[] =
+    "chrome-untrusted://favicon2/";
 inline constexpr char kChromeUIUntrustedImageEditorURL[] =
     "chrome-untrusted://image-editor/";
 inline constexpr char kChromeUIUntrustedPrintURL[] =

@@ -4659,6 +4659,8 @@ enum WebFeature {
   kV8AIWriter_ExpectedInputLanguages_AttributeGetter = 5273,
   kV8AIWriter_ExpectedContextLanguages_AttributeGetter = 5274,
   kV8AIWriter_OutputLanguage_AttributeGetter = 5275,
+  kGridAutoFlowColumnDense = 5276,
+  kGridAutoFlowRowDense = 5277,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

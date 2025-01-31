@@ -246,14 +246,14 @@ bool HasRequiredPermissionsPolicy(ExecutionContext* context,
     case device::mojom::XRSessionFeature::FRONT_FACING:
     case device::mojom::XRSessionFeature::WEBGPU:
       return context->IsFeatureEnabled(
-          mojom::blink::PermissionsPolicyFeature::kWebXr,
+          network::mojom::PermissionsPolicyFeature::kWebXr,
           ReportOptions::kReportOnFailure);
     case device::mojom::XRSessionFeature::CAMERA_ACCESS:
       return context->IsFeatureEnabled(
-                 mojom::blink::PermissionsPolicyFeature::kWebXr,
+                 network::mojom::PermissionsPolicyFeature::kWebXr,
                  ReportOptions::kReportOnFailure) &&
              context->IsFeatureEnabled(
-                 mojom::blink::PermissionsPolicyFeature::kCamera,
+                 network::mojom::PermissionsPolicyFeature::kCamera,
                  ReportOptions::kReportOnFailure);
   }
 }
@@ -977,7 +977,7 @@ void XRSystem::InternalIsSessionSupported(ScriptPromiseResolverBase* resolver,
   }
 
   if (!GetExecutionContext()->IsFeatureEnabled(
-          mojom::blink::PermissionsPolicyFeature::kWebXr,
+          network::mojom::PermissionsPolicyFeature::kWebXr,
           ReportOptions::kReportOnFailure)) {
     // Only allow the call to be made if the appropriate permissions policy is
     // in place.
@@ -1380,7 +1380,7 @@ ScriptPromise<XRSession> XRSystem::requestSession(
 void XRSystem::MakeXrCompatibleAsync(
     device::mojom::blink::VRService::MakeXrCompatibleCallback callback) {
   if (!GetExecutionContext()->IsFeatureEnabled(
-          mojom::blink::PermissionsPolicyFeature::kWebXr)) {
+          network::mojom::PermissionsPolicyFeature::kWebXr)) {
     std::move(callback).Run(
         device::mojom::XrCompatibleResult::kWebXrFeaturePolicyBlocked);
     return;
@@ -1398,7 +1398,7 @@ void XRSystem::MakeXrCompatibleAsync(
 void XRSystem::MakeXrCompatibleSync(
     device::mojom::XrCompatibleResult* xr_compatible_result) {
   if (!GetExecutionContext()->IsFeatureEnabled(
-          mojom::blink::PermissionsPolicyFeature::kWebXr)) {
+          network::mojom::PermissionsPolicyFeature::kWebXr)) {
     *xr_compatible_result =
         device::mojom::XrCompatibleResult::kWebXrFeaturePolicyBlocked;
     return;
@@ -1422,7 +1422,7 @@ void XRSystem::OnSessionEnded(XRSession* session) {
 void XRSystem::OnDeviceChanged() {
   ExecutionContext* context = GetExecutionContext();
   if (context && context->IsFeatureEnabled(
-                     mojom::blink::PermissionsPolicyFeature::kWebXr)) {
+                     network::mojom::PermissionsPolicyFeature::kWebXr)) {
     DispatchEvent(*blink::Event::Create(event_type_names::kDevicechange));
   }
 }

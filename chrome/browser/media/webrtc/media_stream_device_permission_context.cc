@@ -28,13 +28,13 @@
 
 namespace {
 
-blink::mojom::PermissionsPolicyFeature GetPermissionsPolicyFeature(
+network::mojom::PermissionsPolicyFeature GetPermissionsPolicyFeature(
     ContentSettingsType type) {
   if (type == ContentSettingsType::MEDIASTREAM_MIC)
-    return blink::mojom::PermissionsPolicyFeature::kMicrophone;
+    return network::mojom::PermissionsPolicyFeature::kMicrophone;
 
   DCHECK_EQ(ContentSettingsType::MEDIASTREAM_CAMERA, type);
-  return blink::mojom::PermissionsPolicyFeature::kCamera;
+  return network::mojom::PermissionsPolicyFeature::kCamera;
 }
 
 }  // namespace

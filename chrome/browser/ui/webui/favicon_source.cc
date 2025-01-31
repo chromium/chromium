@@ -64,8 +64,11 @@ bool IsHistoryUiOrigin(const GURL& url) {
 }  // namespace
 
 FaviconSource::FaviconSource(Profile* profile,
-                             chrome::FaviconUrlFormat url_format)
-    : profile_(profile->GetOriginalProfile()), url_format_(url_format) {}
+                             chrome::FaviconUrlFormat url_format,
+                             bool serve_untrusted)
+    : profile_(profile->GetOriginalProfile()),
+      url_format_(url_format),
+      serve_untrusted_(serve_untrusted) {}
 
 FaviconSource::~FaviconSource() = default;
 
@@ -74,8 +77,10 @@ std::string FaviconSource::GetSource() {
     case chrome::FaviconUrlFormat::kFaviconLegacy:
       return chrome::kChromeUIFaviconHost;
     case chrome::FaviconUrlFormat::kFavicon2:
-      return chrome::kChromeUIFavicon2Host;
+      return serve_untrusted_ ? chrome::kChromeUIUntrustedFavicon2URL
+                              : chrome::kChromeUIFavicon2Host;
   }
+
   NOTREACHED();
 }
 

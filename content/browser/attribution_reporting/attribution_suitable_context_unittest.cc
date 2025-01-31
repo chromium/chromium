@@ -61,7 +61,7 @@ class AttributionSuitableContextTest : public RenderViewHostTestHarness {
         url::Origin::Create(allowed_url));
     CHECK(origin.has_value());
     return {blink::ParsedPermissionsPolicyDeclaration(
-        blink::mojom::PermissionsPolicyFeature::kAttributionReporting,
+        network::mojom::PermissionsPolicyFeature::kAttributionReporting,
         /*allowed_origins=*/{origin.value()},
         /*self_if_matches=*/std::nullopt,
         /*matches_all_origins=*/false, /*matches_opaque_src=*/false)};

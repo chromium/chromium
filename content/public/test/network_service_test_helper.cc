@@ -792,6 +792,16 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
     std::move(callback).Run(allow_gssapi_library_load);
   }
 
+#if BUILDFLAG(IS_WIN)
+  void DisableExclusiveCookieDatabaseLockingForTesting(
+      DisableExclusiveCookieDatabaseLockingForTestingCallback callback)
+      override {
+    network::NetworkService::GetNetworkServiceForTesting()
+        ->disable_exclusive_cookie_database_locking_for_testing();
+    std::move(callback).Run();
+  }
+#endif  // BUILDFLAG(IS_WIN)
+
  private:
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {

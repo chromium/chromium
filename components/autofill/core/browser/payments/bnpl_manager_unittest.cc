@@ -4,9 +4,12 @@
 
 #include "components/autofill/core/browser/payments/bnpl_manager.h"
 
+#include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/payments/bnpl_manager_test_api.h"
+#include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_request_details.h"
@@ -45,6 +48,13 @@ class BnplManagerTest : public Test {
 
   void SetUp() override {
     autofill_client_ = std::make_unique<TestAutofillClient>();
+    autofill_client_->SetPrefs(test::PrefServiceForTesting());
+    autofill_client_->SetAutofillPaymentMethodsEnabled(true);
+    autofill_client_->GetPersonalDataManager()
+        .payments_data_manager()
+        .SetSyncingForTest(true);
+    autofill_client_->GetPersonalDataManager().SetPrefService(
+        autofill_client_->GetPrefs());
 
     std::unique_ptr<PaymentsNetworkInterfaceMock> payments_network_interface =
         std::make_unique<PaymentsNetworkInterfaceMock>();
@@ -55,6 +65,34 @@ class BnplManagerTest : public Test {
 
     bnpl_manager_ = std::make_unique<BnplManager>(
         autofill_client_->GetPaymentsAutofillClient());
+  }
+
+  // Sets up the PersonalDataManager with a unlinked bnpl issuer.
+  void SetUpUnlinkedBnplIssuer(uint64_t price_lower_bound,
+                               uint64_t price_higher_bound,
+                               const std::string& issuer_id) {
+    std::vector<BnplIssuer::EligiblePriceRange> eligible_price_ranges;
+    eligible_price_ranges.emplace_back(/*currency=*/"USD",
+                                       price_lower_bound * kMicrosPerDollar,
+                                       price_higher_bound * kMicrosPerDollar);
+    test_api(autofill_client_->GetPersonalDataManager().payments_data_manager())
+        .AddBnplIssuer(BnplIssuer(std::nullopt, issuer_id,
+                                  std::move(eligible_price_ranges)));
+  }
+
+  // Sets up the PersonalDataManager with a linked bnpl issuer.
+  void SetUpLinkedBnplIssuer(uint64_t price_lower_bound,
+                             uint64_t price_higher_bound,
+                             const std::string& issuer_id,
+                             const int64_t instrument_id) {
+    std::vector<BnplIssuer::EligiblePriceRange> eligible_price_ranges;
+    eligible_price_ranges.emplace_back(/*currency=*/"USD",
+                                       price_lower_bound * kMicrosPerDollar,
+                                       price_higher_bound * kMicrosPerDollar);
+
+    test_api(autofill_client_->GetPersonalDataManager().payments_data_manager())
+        .AddBnplIssuer(BnplIssuer(instrument_id, issuer_id,
+                                  std::move(eligible_price_ranges)));
   }
 
  protected:
@@ -212,6 +250,210 @@ TEST_F(BnplManagerTest, FetchVcnDetails_CallsGetBnplPaymentInstrument) {
                            BnplFetchVcnResponseDetails());
 
   EXPECT_EQ(test_api(*bnpl_manager_).GetOngoingFlowState(), nullptr);
+}
+
+// Tests that update suggestions callback is called when suggestions are shown
+// before amount extraction completion.
+TEST_F(BnplManagerTest,
+       AddBnplSuggestion_SuggestionShownFirstThenAmountExtractionReturned) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableBuyNowPayLaterForAffirm,
+                            features::kAutofillEnableBuyNowPayLaterForZip},
+      /*disabled_features=*/{});
+
+  // Add one linked issuer and one unlinked issuer to payments data manager.
+  SetUpLinkedBnplIssuer(40, 1000, std::string(kBnplAffirmIssuerId), 1234);
+  SetUpUnlinkedBnplIssuer(1000, 2000, std::string(kBnplZipIssuerId));
+
+  base::MockCallback<UpdateSuggestionsCallback> callback;
+  std::vector<Suggestion> suggestions = {
+      Suggestion(SuggestionType::kCreditCardEntry),
+      Suggestion(SuggestionType::kManageCreditCard)};
+  EXPECT_CALL(callback, Run).Times(1);
+
+  bnpl_manager_->NotifyOfSuggestionGeneration(
+      AutofillSuggestionTriggerSource::kUnspecified);
+  bnpl_manager_->OnSuggestionsShown(suggestions, callback.Get());
+  bnpl_manager_->OnAmountExtractionReturned("$1,234.56");
+}
+
+// Tests that update suggestions callback is called when suggestions are shown
+// after amount extraction completion.
+TEST_F(BnplManagerTest,
+       AddBnplSuggestion_AmountExtractionReturnedFirstThenSuggestionShown) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableBuyNowPayLaterForAffirm,
+                            features::kAutofillEnableBuyNowPayLaterForZip},
+      /*disabled_features=*/{});
+
+  // Add one linked issuer and one unlinked issuer to payments data manager.
+  SetUpLinkedBnplIssuer(40, 1000, std::string(kBnplAffirmIssuerId), 1234);
+  SetUpUnlinkedBnplIssuer(1000, 2000, std::string(kBnplZipIssuerId));
+
+  std::vector<Suggestion> suggestions = {
+      Suggestion(SuggestionType::kCreditCardEntry),
+      Suggestion(SuggestionType::kManageCreditCard)};
+  base::MockCallback<UpdateSuggestionsCallback> callback;
+  EXPECT_CALL(callback, Run).Times(1);
+
+  bnpl_manager_->NotifyOfSuggestionGeneration(
+      AutofillSuggestionTriggerSource::kUnspecified);
+  bnpl_manager_->OnAmountExtractionReturned("$1,234.56");
+  bnpl_manager_->OnSuggestionsShown(suggestions, callback.Get());
+}
+
+// Tests that update suggestions callback will not be called if the extracted
+// amount is not supported by available BNPL issuers.
+TEST_F(BnplManagerTest, AddBnplSuggestion_AmountNotSupported) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableBuyNowPayLaterForAffirm,
+                            features::kAutofillEnableBuyNowPayLaterForZip},
+      /*disabled_features=*/{});
+
+  // Add one linked issuer and one unlinked issuer to payments data manager.
+  SetUpLinkedBnplIssuer(40, 1000, std::string(kBnplAffirmIssuerId), 1234);
+  SetUpUnlinkedBnplIssuer(1000, 2000, std::string(kBnplZipIssuerId));
+
+  std::vector<Suggestion> suggestions = {
+      Suggestion(SuggestionType::kCreditCardEntry),
+      Suggestion(SuggestionType::kManageCreditCard)};
+  base::MockCallback<UpdateSuggestionsCallback> callback;
+  EXPECT_CALL(callback, Run).Times(0);
+
+  bnpl_manager_->NotifyOfSuggestionGeneration(
+      AutofillSuggestionTriggerSource::kUnspecified);
+  bnpl_manager_->OnAmountExtractionReturned("$30.00");
+  bnpl_manager_->OnSuggestionsShown(suggestions, callback.Get());
+}
+
+// Tests that update suggestions callback will not be called if the BNPL
+// features are disabled.
+TEST_F(BnplManagerTest, AddBnplSuggestion_FeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{features::kAutofillEnableBuyNowPayLaterForAffirm,
+                             features::kAutofillEnableBuyNowPayLaterForZip});
+
+  // Add one linked issuer and one unlinked issuer to payments data manager.
+  SetUpLinkedBnplIssuer(40, 1000, std::string(kBnplAffirmIssuerId), 1234);
+  SetUpUnlinkedBnplIssuer(1000, 2000, std::string(kBnplZipIssuerId));
+
+  std::vector<Suggestion> suggestions = {
+      Suggestion(SuggestionType::kCreditCardEntry),
+      Suggestion(SuggestionType::kManageCreditCard)};
+  base::MockCallback<UpdateSuggestionsCallback> callback;
+  EXPECT_CALL(callback, Run).Times(0);
+
+  bnpl_manager_->NotifyOfSuggestionGeneration(
+      AutofillSuggestionTriggerSource::kUnspecified);
+  bnpl_manager_->OnAmountExtractionReturned("$1,234.56");
+  bnpl_manager_->OnSuggestionsShown(suggestions, callback.Get());
+}
+
+// Tests that update suggestions callback will not be called if the extracted
+// amount is only supported by Affirm, but the feature flag for Affirm is not
+// enabled.
+TEST_F(BnplManagerTest,
+       AddBnplSuggestion_AffirmDisabledZipEnabled_AmountSupportedByAffirm) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableBuyNowPayLaterForZip},
+      /*disabled_features=*/{features::kAutofillEnableBuyNowPayLaterForAffirm});
+
+  // Add one linked issuer and one unlinked issuer to payments data manager.
+  SetUpLinkedBnplIssuer(40, 1000, std::string(kBnplAffirmIssuerId), 1234);
+  SetUpUnlinkedBnplIssuer(1000, 2000, std::string(kBnplZipIssuerId));
+
+  std::vector<Suggestion> suggestions = {
+      Suggestion(SuggestionType::kCreditCardEntry),
+      Suggestion(SuggestionType::kManageCreditCard)};
+  base::MockCallback<UpdateSuggestionsCallback> callback;
+  EXPECT_CALL(callback, Run).Times(0);
+
+  bnpl_manager_->NotifyOfSuggestionGeneration(
+      AutofillSuggestionTriggerSource::kUnspecified);
+  bnpl_manager_->OnAmountExtractionReturned("$50.00");
+  bnpl_manager_->OnSuggestionsShown(suggestions, callback.Get());
+}
+
+// Tests that update suggestions callback will be called if the extracted
+// amount is only supported by Affirm, and the feature flag for Affirm is
+// enabled.
+TEST_F(BnplManagerTest,
+       AddBnplSuggestion_AffirmEnabledZipDisabled_AmountSupportedByAffirm) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableBuyNowPayLaterForAffirm},
+      /*disabled_features=*/{features::kAutofillEnableBuyNowPayLaterForZip});
+
+  // Add one linked issuer and one unlinked issuer to payments data manager.
+  SetUpLinkedBnplIssuer(40, 1000, std::string(kBnplAffirmIssuerId), 1234);
+  SetUpUnlinkedBnplIssuer(1000, 2000, std::string(kBnplZipIssuerId));
+
+  std::vector<Suggestion> suggestions = {
+      Suggestion(SuggestionType::kCreditCardEntry),
+      Suggestion(SuggestionType::kManageCreditCard)};
+  base::MockCallback<UpdateSuggestionsCallback> callback;
+  EXPECT_CALL(callback, Run).Times(1);
+
+  bnpl_manager_->NotifyOfSuggestionGeneration(
+      AutofillSuggestionTriggerSource::kUnspecified);
+  bnpl_manager_->OnAmountExtractionReturned("$50.00");
+  bnpl_manager_->OnSuggestionsShown(suggestions, callback.Get());
+}
+
+// Tests that update suggestions callback will not be called if the extracted
+// amount is only supported by Zip, but the feature flag for Zip is not enabled.
+TEST_F(BnplManagerTest,
+       AddBnplSuggestion_ZipDisabledAffirmEnabled_AmountSupportedByZip) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableBuyNowPayLaterForAffirm},
+      /*disabled_features=*/{features::kAutofillEnableBuyNowPayLaterForZip});
+
+  // Add one linked issuer and one unlinked issuer to payments data manager.
+  SetUpLinkedBnplIssuer(40, 1000, std::string(kBnplAffirmIssuerId), 1234);
+  SetUpUnlinkedBnplIssuer(1000, 2000, std::string(kBnplZipIssuerId));
+
+  std::vector<Suggestion> suggestions = {
+      Suggestion(SuggestionType::kCreditCardEntry),
+      Suggestion(SuggestionType::kManageCreditCard)};
+  base::MockCallback<UpdateSuggestionsCallback> callback;
+  EXPECT_CALL(callback, Run).Times(0);
+
+  bnpl_manager_->NotifyOfSuggestionGeneration(
+      AutofillSuggestionTriggerSource::kUnspecified);
+  bnpl_manager_->OnAmountExtractionReturned("$1,234.56");
+  bnpl_manager_->OnSuggestionsShown(suggestions, callback.Get());
+}
+
+// Tests that update suggestions callback will be called if the extracted
+// amount is only supported by Zip, and the feature flag for Zip is enabled.
+TEST_F(BnplManagerTest,
+       AddBnplSuggestion_ZipEnabledAffirmDisabled_AmountSupportedByZip) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableBuyNowPayLaterForZip},
+      /*disabled_features=*/{features::kAutofillEnableBuyNowPayLaterForAffirm});
+
+  // Add one linked issuer and one unlinked issuer to payments data manager.
+  SetUpLinkedBnplIssuer(40, 1000, std::string(kBnplAffirmIssuerId), 1234);
+  SetUpUnlinkedBnplIssuer(1000, 2000, std::string(kBnplZipIssuerId));
+
+  std::vector<Suggestion> suggestions = {
+      Suggestion(SuggestionType::kCreditCardEntry),
+      Suggestion(SuggestionType::kManageCreditCard)};
+  base::MockCallback<UpdateSuggestionsCallback> callback;
+  EXPECT_CALL(callback, Run).Times(1);
+
+  bnpl_manager_->NotifyOfSuggestionGeneration(
+      AutofillSuggestionTriggerSource::kUnspecified);
+  bnpl_manager_->OnAmountExtractionReturned("$1,234.56");
+  bnpl_manager_->OnSuggestionsShown(suggestions, callback.Get());
 }
 
 }  // namespace autofill::payments

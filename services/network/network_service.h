@@ -358,6 +358,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   // interaction with TaskEnvironment::FastForward*() methods with long delays.
   void ResetMetricsUpdaterForTesting();
 
+  void disable_exclusive_cookie_database_locking_for_testing() {
+    exclusive_cookie_database_locking_ = false;
+  }
+
+  bool exclusive_cookie_database_locking() const {
+    return exclusive_cookie_database_locking_;
+  }
+
   static NetworkService* GetNetworkServiceForTesting();
 
  private:
@@ -506,6 +514,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
 #endif  // BUILDFLAG(IS_LINUX)
 
   std::unique_ptr<network::tpcd::metadata::Manager> tpcd_metadata_manager_;
+
+  bool exclusive_cookie_database_locking_ = true;
 
   base::WeakPtrFactory<NetworkService> weak_factory_{this};
 };

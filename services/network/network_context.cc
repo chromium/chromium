@@ -3008,12 +3008,11 @@ NetworkContext::MakeSessionCleanupCookieStore() const {
 
 #if BUILDFLAG(IS_WIN)
   const bool enable_exclusive_access =
-      params_->enable_locking_cookie_database.value_or(
-          base::FeatureList::IsEnabled(
-              features::kEnableLockCookieDatabaseByDefault));
+      network_service()->exclusive_cookie_database_locking();
 #else
   const bool enable_exclusive_access = false;
 #endif  // BUILDFLAG(IS_WIN)
+
   scoped_refptr<net::SQLitePersistentCookieStore> sqlite_store(
       new net::SQLitePersistentCookieStore(
           cookie_path, client_task_runner, background_task_runner,

@@ -52,6 +52,7 @@
 #include "media/gpu/h264_rate_controller.h"
 #include "media/gpu/h264_ratectrl_rtc.h"
 #include "media/gpu/windows/av1_video_rate_control_wrapper.h"
+#include "media/gpu/windows/format_utils.h"
 #include "media/gpu/windows/h264_video_rate_control_wrapper.h"
 #include "media/gpu/windows/mf_video_encoder_shared_state.h"
 #include "media/gpu/windows/mf_video_encoder_switches.h"
@@ -287,7 +288,8 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(
   if (base::FeatureList::IsEnabled(kMediaFoundationD3DVideoProcessing)) {
     is_supported_format =
         std::ranges::find(kSupportedPixelFormatsD3DVideoProcessing,
-                          config.input_format) != kSupportedPixelFormats.end();
+                          config.input_format) !=
+        kSupportedPixelFormatsD3DVideoProcessing.end();
   } else {
     is_supported_format =
         std::ranges::find(kSupportedPixelFormats, config.input_format) !=
@@ -589,33 +591,12 @@ bool MediaFoundationVideoEncodeAccelerator::InitializeMFT(
   encoder_needs_input_counter_ = 0;
 
   if (!base::FeatureList::IsEnabled(kMediaFoundationD3DVideoProcessing) ||
-      input_format_ == PIXEL_FORMAT_NV12) {
+      input_format_ == PIXEL_FORMAT_NV12 ||
+      input_format_ == PIXEL_FORMAT_I420) {
     return true;
   }
 
-  mf_video_processor_ =
-      std::make_unique<MediaFoundationVideoProcessorAccelerator>(
-          gpu_preferences_, workarounds_);
-  MediaFoundationVideoProcessorAccelerator::Config vp_config;
-  vp_config.input_format = input_format_;
-  vp_config.input_visible_size = input_visible_size_;
-  // Primaries information is provided per frame and will be
-  // attached to the corresponding IMFSample.  This color
-  // space information now serves as a default if frame
-  // primaries are unknown.
-  vp_config.input_color_space = gfx::ColorSpace::CreateREC709();
-  vp_config.output_format = VideoPixelFormat::PIXEL_FORMAT_NV12;
-  vp_config.output_visible_size = input_visible_size_;
-  vp_config.output_color_space = gfx::ColorSpace::CreateREC709();
-  if (dxgi_resource_mapping_required_) {
-    hr = mf_video_processor_->Initialize(vp_config, nullptr,
-                                         media_log_->Clone());
-  } else {
-    hr = mf_video_processor_->Initialize(vp_config, dxgi_device_manager_,
-                                         media_log_->Clone());
-  }
-
-  if (FAILED(hr)) {
+  if (!InitMFVideoProcessor()) {
     NotifyErrorStatus({EncoderStatus::Codes::kEncoderInitializationError,
                        "Couldn't initialize MF video processor for color "
                        "format conversion"});
@@ -624,7 +605,7 @@ bool MediaFoundationVideoEncodeAccelerator::InitializeMFT(
 
   MEDIA_LOG(INFO, media_log_)
       << "Using video processor to convert from " << input_format_
-      << " to encoder accepted " << vp_config.output_format;
+      << " to encoder accepted PIXEL_FORMAT_NV12";
 
   return true;
 }
@@ -1818,6 +1799,21 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBuffer(
     return MF_E_INVALID_STREAM_DATA;
   }
 
+  if (base::FeatureList::IsEnabled(kMediaFoundationD3DVideoProcessing) &&
+      frame->format() != input_format_) {
+    input_format_ = frame->format();
+    if (frame->format() == PIXEL_FORMAT_NV12 ||
+        frame->format() == PIXEL_FORMAT_I420) {
+      mf_video_processor_ = nullptr;
+    } else if (!mf_video_processor_) {
+      if (!InitMFVideoProcessor()) {
+        LOG(ERROR)
+            << "Failed to initialize video processor for color conversion";
+        return MF_E_INVALID_STREAM_DATA;
+      }
+    }
+  }
+
   auto hr = input_sample->SetSampleTime(frame->timestamp().InMicroseconds() *
                                         kOneMicrosecondInMFSampleTimeUnits);
   RETURN_ON_HR_FAILURE(hr, "SetSampleTime() failed", hr);
@@ -1909,6 +1905,61 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBuffer(
                << static_cast<uint32_t>(status.code());
     return E_FAIL;
   }
+
+  if (!base::FeatureList::IsEnabled(kMediaFoundationSharedImageEncode)) {
+    return S_OK;
+  }
+
+  // Input may be mixed shared image textures and CPU frames.  Encoder
+  // MFTs generally expect consistency, either all CPU frames or
+  // all textures.  Create a texture for CPU frames so that if
+  // textures are supplied as input later, the encoder does not fail.
+  // The MFT will do this internally anyway for CPU frames, so this
+  // does not add any additional work.
+  if (dxgi_device_manager_ && !dxgi_resource_mapping_required_) {
+    D3D11_TEXTURE2D_DESC input_desc = {
+        .Width = static_cast<UINT>(input_visible_size_.width()),
+        .Height = static_cast<UINT>(input_visible_size_.height()),
+        .MipLevels = 1,
+        .ArraySize = 1,
+        .Format = VideoPixelFormatToDxgiFormat(kTargetPixelFormat),
+        .SampleDesc = {1, 0},
+        .Usage = D3D11_USAGE_DEFAULT,
+        .BindFlags = D3D11_BIND_VIDEO_ENCODER,
+        .CPUAccessFlags = 0,
+        .MiscFlags = 0};
+    D3D11_SUBRESOURCE_DATA init_data = {
+        .pSysMem = scoped_buffer.get(),
+        .SysMemPitch = static_cast<UINT>(dst_y_stride),
+        .SysMemSlicePitch = 0};
+    ComD3D11Texture2D input_texture;
+    hr = dxgi_device_manager_->GetDevice()->CreateTexture2D(
+        &input_desc, &init_data, &input_texture);
+    RETURN_ON_HR_FAILURE(hr, "Failed to create input texture for frame", hr);
+    if (vendor_ == DriverVendor::kNvidia) {
+      // When passing an initialized texture to the Nvidia MFT, it may not
+      // "see" the data unless the device is flushed.
+      ComD3D11DeviceContext device_context;
+      dxgi_device_manager_->GetDevice()->GetImmediateContext(&device_context);
+      device_context->Flush();
+    }
+    ComMFMediaBuffer input_texture_buffer;
+    hr = MFCreateDXGISurfaceBuffer(__uuidof(ID3D11Texture2D),
+                                   input_texture.Get(), 0, FALSE,
+                                   &input_texture_buffer);
+    RETURN_ON_HR_FAILURE(hr, "Failed to create DXGI surface buffer for frame",
+                         hr);
+    DWORD buffer_length = 0;
+    hr = input_texture_buffer->GetMaxLength(&buffer_length);
+    RETURN_ON_HR_FAILURE(hr, "Failed to get max buffer length", hr);
+    hr = input_texture_buffer->SetCurrentLength(buffer_length);
+    RETURN_ON_HR_FAILURE(hr, "Failed to set current buffer length", hr);
+    hr = input_sample->RemoveAllBuffers();
+    RETURN_ON_HR_FAILURE(hr, "Failed to remove buffers from sample", hr);
+    hr = input_sample->AddBuffer(input_texture_buffer.Get());
+    RETURN_ON_HR_FAILURE(hr, "Failed to add buffer to sample", hr);
+  }
+
   return S_OK;
 }
 
@@ -2007,7 +2058,8 @@ HRESULT MediaFoundationVideoEncodeAccelerator::CopyInputSampleBufferFromGpu(
   if (mf_video_processor_) {
     // This sample needs color space conversion
     ComMFSample vp_input_sample = std::move(input_sample);
-    hr = mf_video_processor_->Convert(vp_input_sample.Get(), &input_sample);
+    hr = mf_video_processor_->Convert(vp_input_sample.Get(), frame->format(),
+                                      &input_sample);
     RETURN_ON_HR_FAILURE(hr, "Failed to convert input frame", hr);
   }
 
@@ -2032,7 +2084,8 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBufferGpu(
     HRESULT hr;
     if (frame->HasSharedImage()) {
       ComMFSample vp_input_sample = std::move(input_sample);
-      hr = mf_video_processor_->Convert(vp_input_sample.Get(), &input_sample);
+      hr = mf_video_processor_->Convert(vp_input_sample.Get(), frame->format(),
+                                        &input_sample);
     } else {
       input_sample = nullptr;
       hr = mf_video_processor_->Convert(frame, &input_sample);
@@ -2738,6 +2791,32 @@ void MediaFoundationVideoEncodeAccelerator::OnSharedImageSampleAvailable(
   if (encoder_needs_input_counter_ > 0) {
     FeedInputs();
   }
+}
+
+bool MediaFoundationVideoEncodeAccelerator::InitMFVideoProcessor() {
+  mf_video_processor_ =
+      std::make_unique<MediaFoundationVideoProcessorAccelerator>(
+          gpu_preferences_, workarounds_);
+  bool initialized = false;
+  MediaFoundationVideoProcessorAccelerator::Config vp_config;
+  vp_config.input_format = input_format_;
+  vp_config.input_visible_size = input_visible_size_;
+  // Primaries information is provided per frame and will be
+  // attached to the corresponding IMFSample.  This color
+  // space information now serves as a default if frame
+  // primaries are unknown.
+  vp_config.input_color_space = gfx::ColorSpace::CreateREC709();
+  vp_config.output_format = VideoPixelFormat::PIXEL_FORMAT_NV12;
+  vp_config.output_visible_size = input_visible_size_;
+  vp_config.output_color_space = gfx::ColorSpace::CreateREC709();
+  if (dxgi_resource_mapping_required_) {
+    initialized = mf_video_processor_->Initialize(vp_config, nullptr,
+                                                  media_log_->Clone());
+  } else {
+    initialized = mf_video_processor_->Initialize(
+        vp_config, dxgi_device_manager_, media_log_->Clone());
+  }
+  return initialized;
 }
 
 HRESULT MediaFoundationVideoEncodeAccelerator::GetParameters(DWORD* pdwFlags,

@@ -500,7 +500,7 @@ TEST_F(WebUsbServiceImplFrameTest, RejectOpaqueOriginEmbeddedFrame) {
       RenderFrameHostTester::For(web_contents->GetPrimaryMainFrame())
           ->AppendChildWithPolicy(
               "embedded_frame",
-              {{blink::mojom::PermissionsPolicyFeature::kUsb,
+              {{network::mojom::PermissionsPolicyFeature::kUsb,
                 /*allowed_origins=*/{},
                 /*self_if_matches=*/url::Origin::Create(kEmbeddedUrl),
                 /*matches_all_origins=*/false, /*matches_opaque_src=*/true}});

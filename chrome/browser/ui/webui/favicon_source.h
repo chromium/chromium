@@ -38,8 +38,13 @@ class NativeTheme;
 // favicon_url_parser.h.
 class FaviconSource : public content::URLDataSource {
  public:
-  // |type| is the type of icon this FaviconSource will provide.
-  explicit FaviconSource(Profile* profile, chrome::FaviconUrlFormat format);
+  // By default, favicons are served via a chrome trusted URL (chrome://). If
+  // |serve_untrusted| is set to true, favicons will be served via
+  // chrome-untrusted://. Note that chrome-untrusted:// only supports the
+  // favicon2 URL format and does not support the legacy URL format.
+  explicit FaviconSource(Profile* profile,
+                         chrome::FaviconUrlFormat format,
+                         bool serve_untrusted = false);
 
   FaviconSource(const FaviconSource&) = delete;
   FaviconSource& operator=(const FaviconSource&) = delete;
@@ -100,6 +105,8 @@ class FaviconSource : public content::URLDataSource {
   chrome::FaviconUrlFormat url_format_;
 
   base::CancelableTaskTracker cancelable_task_tracker_;
+
+  bool serve_untrusted_;
 
   base::WeakPtrFactory<FaviconSource> weak_ptr_factory_{this};
 };

@@ -54,4 +54,23 @@ BnplIssuer& BnplIssuer::operator=(BnplIssuer&&) = default;
 
 BnplIssuer::~BnplIssuer() = default;
 
+base::optional_ref<const BnplIssuer::EligiblePriceRange>
+BnplIssuer::GetEligiblePriceRangeForCurrency(
+    const std::string& currency) const {
+  for (const EligiblePriceRange& range : eligible_price_ranges_) {
+    if (range.currency == currency) {
+      return range;
+    }
+  }
+  return std::nullopt;
+}
+
+bool BnplIssuer::IsEligibleAmount(uint64_t amount_in_micros,
+                                  const std::string& currency) const {
+  base::optional_ref<const EligiblePriceRange> range =
+      GetEligiblePriceRangeForCurrency(currency);
+  return range.has_value() && amount_in_micros >= range->price_lower_bound &&
+         amount_in_micros <= range->price_upper_bound;
+}
+
 }  // namespace autofill

@@ -20,6 +20,7 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 import type {SearchboxGhostLoaderElement} from '/lens/shared/searchbox_ghost_loader.js';
 
 import type {LensSidePanelPageHandlerInterface} from '../lens_side_panel.mojom-webui.js';
+import {PageContentType} from '../page_content_type.mojom-webui.js';
 import {handleEscapeSearchbox, onSearchboxKeydown} from '../searchbox_utils.js';
 
 import {getTemplate} from './side_panel_app.html.js';
@@ -100,8 +101,7 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
       },
       showGhostLoader: {
         type: Boolean,
-        computed:
-            `computeShowGhostLoader(
+        computed: `computeShowGhostLoader(
                 isSearchboxFocused,
                 autocompleteRequestStarted,
                 showErrorState,
@@ -119,7 +119,8 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
        * panel WebUI constructor insteading of passing it to the searchbox. */
       placeholderText: {
         type: String,
-        computed: `computePlaceholderText(isContextualSearchbox)`,
+        computed:
+            `computePlaceholderText(isContextualSearchbox, pageContentType)`,
       },
     };
   }
@@ -134,6 +135,8 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
   suppressGhostLoader: boolean;
   // Whether the ghost loader should show its error state.
   showErrorState: boolean;
+  // The placeholder text to show in the searchbox.
+  private pageContentType: PageContentType = PageContentType.kUnknown;
   // Whether this is an in flight request to autocomplete.
   private autocompleteRequestStarted: boolean = false;
   private isErrorPageVisible: boolean;
@@ -188,6 +191,8 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
           this.setShowErrorPage.bind(this)),
       this.browserProxy.callbackRouter.suppressGhostLoader.addListener(
           this.suppressGhostLoader_.bind(this)),
+      this.browserProxy.callbackRouter.pageContentTypeChanged.addListener(
+          this.pageContentTypeChanged.bind(this)),
     ];
     this.eventTracker_.add(this.$.searchbox, 'mousedown', () => {
       this.suppressGhostLoader = false;
@@ -297,8 +302,12 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
   }
 
   private computePlaceholderText(): string {
-    return this.isContextualSearchbox ? this.i18n('searchBoxHintContextual') :
-                                        '';
+    if (!this.isContextualSearchbox) {
+      return '';
+    }
+    return this.pageContentType === PageContentType.kPdf ?
+        this.i18n('searchBoxHintContextualPdf') :
+        this.i18n('searchBoxHintContextualDefault');
   }
 
   private getSearchboxAriaDescription(): string {
@@ -311,6 +320,10 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
     // If page bytes weren't successfully uploaded, ghost loader shouldn't be
     // visible.
     this.suppressGhostLoader = true;
+  }
+
+  private pageContentTypeChanged(newPageContentType: PageContentType) {
+    this.pageContentType = newPageContentType;
   }
 
   makeGhostLoaderVisibleForTesting() {

@@ -8,7 +8,7 @@
 #include <memory>
 #include <vector>
 
-#include "cc/tiles/tile_manager.h"
+#include "cc/tiles/tile_manager_client.h"
 
 namespace cc {
 

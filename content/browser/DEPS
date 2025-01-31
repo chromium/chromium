@@ -165,6 +165,9 @@ specific_include_rules = {
     "+services/network/url_loader.h",
     "+services/network/url_request_context_owner.h",
   ],
+  "network_service_browsertest\.cc": [
+    "+services/network/network_service.h",
+  ],
   "network_service_instance_impl\.cc": [
     # Used to instantiate a CertVerifierServiceFactory in the browser process.
     "+services/cert_verifier/cert_verifier_service_factory.h",

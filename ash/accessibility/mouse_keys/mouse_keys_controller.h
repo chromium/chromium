@@ -132,6 +132,7 @@ class ASH_EXPORT MouseKeysController : public ui::EventHandler {
                              MouseKeysBubbleIconType icon,
                              const int name_resource_id);
   void UpdateState();
+  void EndDragOperation();
 
   bool enabled_ = false;
   bool paused_ = false;

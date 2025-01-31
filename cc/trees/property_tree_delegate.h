@@ -62,6 +62,10 @@ class PropertyTreeDelegate {
       ElementId element_id,
       ElementListType list_type,
       const FilterOperations& backdrop_filters) = 0;
+
+  virtual void OnElementOpacityMutated(ElementId element_id,
+                                       ElementListType list_type,
+                                       float opacity) = 0;
 };
 
 }  // namespace cc

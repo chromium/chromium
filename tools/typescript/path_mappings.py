@@ -141,19 +141,20 @@ def _is_browser_only_dep(dep):
 
 
 def _is_dependency_allowed(is_ash_target, raw_dep, target_path):
+  # TODO: Update Ash Print Preview to use ash cr_elements.
+  exceptions = [
+      'chrome/browser/resources/ash/print_preview',
+      'chrome/test/data/webui/chromeos/print_preview',
+  ]
   if is_ash_target and _is_browser_only_dep(raw_dep):
-    return False
+    return target_path in exceptions
 
   is_ash_dep = isInAshFolder(raw_dep[2:])
   if not is_ash_dep or is_ash_target:
     return True
 
-  exceptions = [
-      # TODO(crbug.com/40946949): Remove this incorrect dependency
-      'chrome/browser/resources/settings',
-  ]
-
-  return target_path in exceptions
+  # TODO(crbug.com/40946949): Remove ChromeOS dependency from browser settings
+  return target_path == "chrome/browser/resources/settings"
 
 
 def _write_path_mappings_file(path_mappings, output_suffix, out_dir,

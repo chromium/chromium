@@ -1,4 +1,35 @@
 {
+  "Linux Builder": {
+    "additional_compile_targets": [
+      "all"
+    ],
+    "scripts": [
+      {
+        "name": "check_network_annotations",
+        "script": "check_network_annotations.py"
+      },
+      {
+        "name": "check_static_initializers",
+        "script": "check_static_initializers.py"
+      },
+      {
+        "name": "checkdeps",
+        "script": "checkdeps.py"
+      },
+      {
+        "name": "checkperms",
+        "script": "checkperms.py"
+      },
+      {
+        "name": "metrics_python_tests",
+        "script": "metrics_python_tests.py"
+      },
+      {
+        "name": "webkit_lint",
+        "script": "blink_lint_expectations.py"
+      }
+    ]
+  },
   "linux-oi-rel": {
     "gtest_tests": [
       {

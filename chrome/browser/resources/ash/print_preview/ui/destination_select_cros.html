@@ -1,0 +1,80 @@
+<style include="print-preview-shared throbber destination-select-style cr-hidden-style">
+  :host([is-current-destination-cros-local_]) #statusText {
+    color: var(--google-red-600);
+    font-size: calc(10 / 13 * 1em);
+    overflow: hidden;
+    padding: 0;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  :host([is-current-destination-cros-local_]) #statusText.status-orange {
+    color: var(--error-status-warning);
+  }
+
+  :host([is-current-destination-cros-local_]) #statusText.status-red {
+    color: var(--error-status-alert);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :host([is-current-destination-cros-local_]) #statusText {
+      color: var(--google-red-300);
+    }
+  }
+
+  a[href] {
+    color: var(--google-blue-600);
+    text-decoration: none;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    a[href] {
+      color: var(--cr-link-color);
+    }
+  }
+</style>
+<iron-media-query query="(prefers-color-scheme: dark)"
+    query-matches="{{isDarkModeActive_}}">
+</iron-media-query>
+<print-preview-settings-section>
+  <span slot="title">$i18n{destinationLabel}</span>
+  <div slot="controls">
+    <div class="throbber-container" hidden$="[[loaded]]">
+      <div class="throbber"></div>
+    </div>
+    <print-preview-destination-dropdown-cros id="dropdown"
+        value="[[destination]]" hidden$="[[!loaded]]"
+        item-list="[[recentDestinationList]]"
+        pdf-destination-key="[[pdfDestinationKey_]]"
+        drive-destination-key="[[driveDestinationKey]]"
+        no-destinations="[[noDestinations]]"
+        pdf-printer-disabled="[[pdfPrinterDisabled]]"
+        destination-icon="[[destinationIcon_]]" disabled="[[disabled]]"
+        on-dropdown-value-selected="onDropdownValueSelected_"
+        destination-status-text="[[statusText_]]">
+    </print-preview-destination-dropdown-cros>
+  </div>
+</print-preview-settings-section>
+<print-preview-settings-section class="destination-additional-info"
+    hidden$="[[hideDestinationAdditionalInfo_(statusText_)]]">
+  <div slot="title"></div>
+  <div slot="controls">
+    <div id="statusText"
+        class$="[[computeStatusClass_(destination.printerStatusReason)]]"
+        title="[[statusText_]]"
+        aria-hidden="[[isCurrentDestinationCrosLocal_]]"
+        inner-h-t-m-l="[[statusText_]]">
+    </div>
+  </div>
+</print-preview-settings-section>
+<print-preview-settings-section class="destination-additional-info"
+    id="destinationEulaWrapper"
+    hidden$="[[!destination.eulaUrl]]">
+  <div slot="title"></div>
+  <div slot="controls">
+    <a class="destination-status" href="[[destination.eulaUrl]]"
+        target="_blank">
+     $i18n{printerEulaURL}
+    </a>
+  </div>
+</print-preview-settings-section>
