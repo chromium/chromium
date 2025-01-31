@@ -5,6 +5,9 @@
 #ifndef COMPONENTS_COLLABORATION_INTERNAL_MESSAGING_STORAGE_MESSAGING_BACKEND_DATABASE_H_
 #define COMPONENTS_COLLABORATION_INTERNAL_MESSAGING_STORAGE_MESSAGING_BACKEND_DATABASE_H_
 
+#include <map>
+#include <vector>
+
 #include "base/functional/callback.h"
 #include "components/collaboration/internal/messaging/storage/protocol/message.pb.h"
 
