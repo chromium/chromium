@@ -422,12 +422,28 @@ bool DrmGpuDisplayManager::TakeDisplayControl() {
 }
 
 void DrmGpuDisplayManager::RelinquishDisplayControl() {
+  const bool detach_planes_before_dropping =
+      display::features::IsFastDrmMasterDropEnabled();
+  if (detach_planes_before_dropping &&
+      !screen_manager_->DetachPlanesFromAllControllers()) {
+    LOG(ERROR) << __func__
+               << ": unable to detach planes from all enabled controllers.";
+    return;
+  }
+
   const DrmDeviceVector& devices = drm_device_manager_->GetDrmDevices();
   for (const auto& drm : devices) {
     if (!drm->DropMaster()) {
       LOG(ERROR) << __func__ << "Drm drop master failed for: "  // nocheck
                  << drm->device_path().value();
     }
+  }
+
+  // Dissociate controllers from windows so that subsequent pageflips fail
+  // early. The only way to re-establish the mapping is to re-take DRM master
+  // and do a new configuration.
+  if (detach_planes_before_dropping) {
+    screen_manager_->UpdateControllerToWindowMapping();
   }
 }
 
