@@ -146,7 +146,7 @@
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_APPLE)
-typedef const struct __CFString* CFStringRef;
+using CFStringRef = const struct __CFString*;
 #endif
 
 namespace base {
@@ -162,16 +162,19 @@ class BASE_EXPORT FilePath {
 #if BUILDFLAG(IS_WIN)
   // On Windows, for Unicode-aware applications, native pathnames are wchar_t
   // arrays encoded in UTF-16.
-  typedef std::wstring StringType;
+  using StringType = std::wstring;
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   // On most platforms, native pathnames are char arrays, and the encoding
   // may or may not be specified.  On Mac OS X, native pathnames are encoded
   // in UTF-8.
-  typedef std::string StringType;
+  using StringType = std::string;
 #endif  // BUILDFLAG(IS_WIN)
 
-  typedef StringType::value_type CharType;
-  typedef std::basic_string_view<CharType> StringPieceType;
+  using CharType = StringType::value_type;
+  using StringViewType = std::basic_string_view<CharType>;
+  // DEPRECATED. Use `StringViewType` in new code.
+  // TODO(thestig): Remove.
+  using StringPieceType = StringViewType;
 
   // Null-terminated array of separators used to separate components in paths.
   // Each character in this array is a valid separator, but kSeparators[0] is
@@ -198,7 +201,7 @@ class BASE_EXPORT FilePath {
 
   FilePath();
   FilePath(const FilePath& that);
-  explicit FilePath(StringPieceType path);
+  explicit FilePath(StringViewType path);
   ~FilePath();
   FilePath& operator=(const FilePath& that);
 
@@ -325,13 +328,13 @@ class BASE_EXPORT FilePath {
   // path == "jojo.jpg"         suffix == " (1)", returns "jojo (1).jpg"
   // path == "C:\pics\jojo"     suffix == " (1)", returns "C:\pics\jojo (1)"
   // path == "C:\pics.old\jojo" suffix == " (1)", returns "C:\pics.old\jojo (1)"
-  [[nodiscard]] FilePath InsertBeforeExtension(StringPieceType suffix) const;
+  [[nodiscard]] FilePath InsertBeforeExtension(StringViewType suffix) const;
   [[nodiscard]] FilePath InsertBeforeExtensionASCII(
       std::string_view suffix) const;
 
   // Adds |extension| to |file_name|. Returns the current FilePath if
   // |extension| is empty. Returns "" if BaseName() == "." or "..".
-  [[nodiscard]] FilePath AddExtension(StringPieceType extension) const;
+  [[nodiscard]] FilePath AddExtension(StringViewType extension) const;
 
   // Like above, but takes the extension as an ASCII string. See AppendASCII for
   // details on how this is handled.
@@ -341,15 +344,15 @@ class BASE_EXPORT FilePath {
   // does not have an extension, then |extension| is added.  If |extension| is
   // empty, then the extension is removed from |file_name|.
   // Returns "" if BaseName() == "." or "..".
-  [[nodiscard]] FilePath ReplaceExtension(StringPieceType extension) const;
+  [[nodiscard]] FilePath ReplaceExtension(StringViewType extension) const;
 
   // Returns true if file path's Extension() matches `extension`. The test is
   // case insensitive. Don't forget the leading period if appropriate.
-  bool MatchesExtension(StringPieceType extension) const;
+  bool MatchesExtension(StringViewType extension) const;
 
   // Returns true if file path's FinalExtension() matches `extension`. The
   // test is case insensitive. Don't forget the leading period if appropriate.
-  bool MatchesFinalExtension(StringPieceType extension) const;
+  bool MatchesFinalExtension(StringViewType extension) const;
 
   // Returns a FilePath by appending a separator and the supplied path
   // component to this object's path.  Append takes care to avoid adding
@@ -357,7 +360,7 @@ class BASE_EXPORT FilePath {
   // If this object's path is kCurrentDirectory ('.'), a new FilePath
   // corresponding only to |component| is returned.  |component| must be a
   // relative path; it is an error to pass an absolute path.
-  [[nodiscard]] FilePath Append(StringPieceType component) const;
+  [[nodiscard]] FilePath Append(StringViewType component) const;
   [[nodiscard]] FilePath Append(const FilePath& component) const;
   [[nodiscard]] FilePath Append(const SafeBaseName& component) const;
 
@@ -458,14 +461,13 @@ class BASE_EXPORT FilePath {
   // on parts of a file path, e.g., just the extension.
   // CompareIgnoreCase() returns -1, 0 or 1 for less-than, equal-to and
   // greater-than respectively.
-  static int CompareIgnoreCase(StringPieceType string1,
-                               StringPieceType string2);
-  static bool CompareEqualIgnoreCase(StringPieceType string1,
-                                     StringPieceType string2) {
+  static int CompareIgnoreCase(StringViewType string1, StringViewType string2);
+  static bool CompareEqualIgnoreCase(StringViewType string1,
+                                     StringViewType string2) {
     return CompareIgnoreCase(string1, string2) == 0;
   }
-  static bool CompareLessIgnoreCase(StringPieceType string1,
-                                    StringPieceType string2) {
+  static bool CompareLessIgnoreCase(StringViewType string1,
+                                    StringViewType string2) {
     return CompareIgnoreCase(string1, string2) < 0;
   }
 
@@ -478,15 +480,15 @@ class BASE_EXPORT FilePath {
   // http://developer.apple.com/mac/library/technotes/tn/tn1150.html#UnicodeSubtleties
   // for further comments.
   // Returns the empty string if the conversion failed.
-  static StringType GetHFSDecomposedForm(StringPieceType string);
+  static StringType GetHFSDecomposedForm(StringViewType string);
   static StringType GetHFSDecomposedForm(CFStringRef cfstring);
 
   // Special UTF-8 version of FastUnicodeCompare. Cf:
   // http://developer.apple.com/mac/library/technotes/tn/tn1150.html#StringComparisonAlgorithm
   // IMPORTANT: The input strings must be in the special HFS decomposed form!
   // (cf. above GetHFSDecomposedForm method)
-  static int HFSFastUnicodeCompare(StringPieceType string1,
-                                   StringPieceType string2);
+  static int HFSFastUnicodeCompare(StringViewType string1,
+                                   StringViewType string2);
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

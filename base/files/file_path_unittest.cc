@@ -43,38 +43,38 @@
 namespace base {
 
 struct UnaryTestData {
-  FilePath::StringPieceType input;
-  FilePath::StringPieceType expected;
+  FilePath::StringViewType input;
+  FilePath::StringViewType expected;
 };
 
 struct UnaryBooleanTestData {
-  FilePath::StringPieceType input;
+  FilePath::StringViewType input;
   bool expected;
 };
 
 struct BinaryTestData {
-  FilePath::StringPieceType inputs[2];
-  FilePath::StringPieceType expected;
+  FilePath::StringViewType inputs[2];
+  FilePath::StringViewType expected;
 };
 
 struct BinaryBooleanTestData {
-  FilePath::StringPieceType inputs[2];
+  FilePath::StringViewType inputs[2];
   bool expected;
 };
 
 struct BinaryIntTestData {
-  FilePath::StringPieceType inputs[2];
+  FilePath::StringViewType inputs[2];
   int expected;
 };
 
 struct UTF8TestData {
-  FilePath::StringPieceType native;
+  FilePath::StringViewType native;
   std::string_view utf8;
 };
 
 // file_util winds up using autoreleased objects on the Mac, so this needs
 // to be a PlatformTest
-typedef PlatformTest FilePathTest;
+using FilePathTest = PlatformTest;
 
 TEST_F(FilePathTest, DirName) {
   const auto cases = std::to_array<UnaryTestData>({
@@ -418,7 +418,7 @@ TEST_F(FilePathTest, StripTrailingSeparators) {
 
 TEST_F(FilePathTest, IsAbsoluteOrNetwork) {
   struct Cases {
-    FilePath::StringPieceType input;
+    FilePath::StringViewType input;
     bool expected_is_absolute;
     bool expected_is_network;
   };
@@ -936,7 +936,7 @@ TEST_F(FilePathTest, RemoveExtension) {
         << "i: " << i << ", path: " << path.value();
   }
 
-  const FilePath::StringPieceType tarballs[] = {
+  const FilePath::StringViewType tarballs[] = {
       FPL("foo.tar.gz"), FPL("foo.tar.xz"), FPL("foo.tar.bz2"),
       FPL("foo.tar.Z"), FPL("foo.tar.bz")};
   for (size_t i = 0; i < std::size(tarballs); ++i) {
