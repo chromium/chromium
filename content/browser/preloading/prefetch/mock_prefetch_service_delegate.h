@@ -47,6 +47,7 @@ class MockPrefetchServiceDelegate : public PrefetchServiceDelegate {
   MOCK_METHOD(bool, IsDomainInPrefetchAllowList, (const GURL&), (override));
   MOCK_METHOD(bool, IsContaminationExempt, (const GURL&), (override));
   MOCK_METHOD(void, OnPrefetchLikely, (WebContents*), (override));
+  MOCK_METHOD(void, SetAcceptLanguageHeader, (std::string), (override));
 };
 
 }  // namespace content

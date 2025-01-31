@@ -49,6 +49,7 @@ class ChromePrefetchServiceDelegate : public content::PrefetchServiceDelegate {
   bool IsDomainInPrefetchAllowList(const GURL& referring_url) override;
   bool IsContaminationExempt(const GURL& referring_url) override;
   void OnPrefetchLikely(content::WebContents* web_contents) override;
+  void SetAcceptLanguageHeader(std::string accept_language_header) override;
 
  private:
   // The profile that |this| is associated with.
