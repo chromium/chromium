@@ -188,8 +188,7 @@ constexpr auto kTransferMap =
         {ZCR_COLOR_MANAGER_V1_EOTF_NAMES_BT2087,
          TransferFnVersion(gamma24, kDefaultSinceVersion)},
         {ZCR_COLOR_MANAGER_V1_EOTF_NAMES_ADOBERGB,
-         TransferFnVersion(SkNamedTransferFnExt::kA98RGB,
-                           kDefaultSinceVersion)},
+         TransferFnVersion(SkNamedTransferFn::kA98RGB, kDefaultSinceVersion)},
     });
 
 // A map from the HDR zcr_color_manager_v1 eotf_names enum values

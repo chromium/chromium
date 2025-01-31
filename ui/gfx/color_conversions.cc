@@ -75,7 +75,7 @@ const skcms_Matrix3x3* getXYZD65tosRGBLinearMatrix() {
 
 const skcms_Matrix3x3* getProPhotoRGBtoXYZD50Matrix() {
   static skcms_Matrix3x3 lin_proPhoto_to_XYZ_D50;
-  SkNamedPrimariesExt::kProPhotoRGB.toXYZD50(&lin_proPhoto_to_XYZ_D50);
+  SkNamedPrimaries::kProPhotoRGB.toXYZD50(&lin_proPhoto_to_XYZ_D50);
   return &lin_proPhoto_to_XYZ_D50;
 }
 
@@ -183,10 +183,9 @@ std::tuple<float, float, float> ApplyTransferFnsRGB(float r, float g, float b) {
 std::tuple<float, float, float> ApplyTransferFnProPhoto(float r,
                                                         float g,
                                                         float b) {
-  return std::make_tuple(
-      skcmsTrFnEvalExt(&SkNamedTransferFnExt::kProPhotoRGB, r),
-      skcmsTrFnEvalExt(&SkNamedTransferFnExt::kProPhotoRGB, g),
-      skcmsTrFnEvalExt(&SkNamedTransferFnExt::kProPhotoRGB, b));
+  return std::make_tuple(skcmsTrFnEvalExt(&SkNamedTransferFn::kProPhotoRGB, r),
+                         skcmsTrFnEvalExt(&SkNamedTransferFn::kProPhotoRGB, g),
+                         skcmsTrFnEvalExt(&SkNamedTransferFn::kProPhotoRGB, b));
 }
 
 std::tuple<float, float, float> ApplyTransferFnAdobeRGB(float r,
@@ -199,7 +198,7 @@ std::tuple<float, float, float> ApplyTransferFnAdobeRGB(float r,
 
 skcms_TransferFunction* getProPhotoInverseTransferFunction() {
   static skcms_TransferFunction ProPhoto_inverse;
-  skcms_TransferFunction_invert(&SkNamedTransferFnExt::kProPhotoRGB,
+  skcms_TransferFunction_invert(&SkNamedTransferFn::kProPhotoRGB,
                                 &ProPhoto_inverse);
   return &ProPhoto_inverse;
 }
