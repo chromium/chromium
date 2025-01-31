@@ -8,6 +8,7 @@
 #include "crypto/scoped_mock_unexportable_key_provider.h"
 #include "net/device_bound_sessions/mock_session_store.h"
 #include "net/device_bound_sessions/session_store.h"
+#include "net/device_bound_sessions/test_support.h"
 #include "net/device_bound_sessions/unexportable_key_service_factory.h"
 #include "net/log/test_net_log.h"
 #include "net/test/test_with_task_environment.h"
@@ -46,80 +47,6 @@ const std::string kChallenge = "challenge";
 auto ExpectId(std::string_view id) {
   return testing::Field(&SessionKey::id, Session::Id(std::string(id)));
 }
-
-std::optional<RegistrationFetcher::RegistrationCompleteParams> TestFetcher(
-    std::string session_id,
-    std::string url_string,
-    std::string origin) {
-  std::vector<SessionParams::Credential> cookie_credentials;
-  cookie_credentials.push_back(
-      SessionParams::Credential{"test_cookie", "secure"});
-  SessionParams::Scope scope;
-  scope.include_site = true;
-  scope.origin = origin;
-  SessionParams session_params(std::move(session_id), url_string,
-                               std::move(scope), std::move(cookie_credentials));
-  unexportable_keys::UnexportableKeyId key_id;
-  return std::make_optional<RegistrationFetcher::RegistrationCompleteParams>(
-      std::move(session_params), std::move(key_id), GURL(url_string));
-}
-
-std::optional<RegistrationFetcher::RegistrationCompleteParams> NullFetcher() {
-  return std::nullopt;
-}
-
-std::optional<RegistrationFetcher::RegistrationCompleteParams>
-ContinueFalseFetcher() {
-  unexportable_keys::UnexportableKeyId key_id;
-  return std::make_optional<RegistrationFetcher::RegistrationCompleteParams>(
-      SessionTerminationParams{kSessionId}, std::move(key_id), kTestUrl);
-}
-
-RegistrationFetcher::FetcherType TestFetcherFactory(std::string session_id,
-                                                    std::string url_string,
-                                                    std::string origin) {
-  static std::string g_session_id;
-  static std::string g_url_string;
-  static std::string g_origin;
-  g_session_id = std::move(session_id);
-  g_url_string = std::move(url_string);
-  g_origin = std::move(origin);
-
-  return []() { return TestFetcher(g_session_id, g_url_string, g_origin); };
-}
-
-class ScopedTestFetcher {
- public:
-  ScopedTestFetcher(std::string session_id,
-                    std::string url_string,
-                    std::string origin) {
-    // Reset the testing fetch function.
-    RegistrationFetcher::SetFetcherForTesting(nullptr);
-    RegistrationFetcher::SetFetcherForTesting(TestFetcherFactory(
-        std::move(session_id), std::move(url_string), std::move(origin)));
-  }
-
-  ~ScopedTestFetcher() { RegistrationFetcher::SetFetcherForTesting(nullptr); }
-};
-
-class ScopedNullFetcher {
- public:
-  ScopedNullFetcher() {
-    RegistrationFetcher::SetFetcherForTesting(NullFetcher);
-  }
-  ~ScopedNullFetcher() { RegistrationFetcher::SetFetcherForTesting(nullptr); }
-};
-
-class ScopedContinueFalseFetcher {
- public:
-  ScopedContinueFalseFetcher() {
-    RegistrationFetcher::SetFetcherForTesting(ContinueFalseFetcher);
-  }
-
-  ~ScopedContinueFalseFetcher() {
-    RegistrationFetcher::SetFetcherForTesting(nullptr);
-  }
-};
 
 class TestDeferCompletion {
  public:
@@ -189,7 +116,8 @@ class SessionServiceImplTest : public TestWithTaskEnvironment {
       std::vector<std::tuple<std::string, std::string, std::string>>
           id_url_origin_list) {
     for (const auto& [id, url_str, origin] : id_url_origin_list) {
-      ScopedTestFetcher scoped_test_fetcher(id, url_str, origin);
+      auto scoped_test_fetcher =
+          ScopedTestRegistrationFetcher::CreateWithSuccess(id, url_str, origin);
       auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
           GURL(url_str),
           {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
@@ -240,7 +168,7 @@ TEST_F(SessionServiceImplTest, RegisterNoId) {
 }
 
 TEST_F(SessionServiceImplTest, RegisterNullFetcher) {
-  ScopedNullFetcher scopedNullFetcher;
+  auto scoped_null_fetcher = ScopedTestRegistrationFetcher::CreateWithFailure();
   auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
       kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
       kChallenge,
@@ -312,7 +240,8 @@ TEST_F(SessionServiceImplTest, ExpiryExtendedOnUser) {
 }
 
 TEST_F(SessionServiceImplTest, NullAccessObserver) {
-  ScopedTestFetcher scoped_test_fetcher(kSessionId, kUrlString, kOrigin);
+  auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithSuccess(
+      kSessionId, kUrlString, kOrigin);
 
   auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
       kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
@@ -326,7 +255,8 @@ TEST_F(SessionServiceImplTest, NullAccessObserver) {
 }
 
 TEST_F(SessionServiceImplTest, AccessObserverCalledOnRegistration) {
-  ScopedTestFetcher scoped_test_fetcher(kSessionId, kUrlString, kOrigin);
+  auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithSuccess(
+      kSessionId, kUrlString, kOrigin);
 
   auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
       kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
@@ -499,7 +429,8 @@ TEST_F(SessionServiceImplTest, TestDeferWithRequestRestart) {
       future.GetCallback<TestDeferCompletion::CallbackType>());
 
   // Set up the fetcher for a successful refresh.
-  ScopedTestFetcher scoped_test_fetcher(kSessionId, kUrlString, kOrigin);
+  auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithSuccess(
+      kSessionId, kUrlString, kOrigin);
   service().DeferRequestForRefresh(request.get(), Session::Id(kSessionId),
                                    defer_completion.GetRestartCb(),
                                    defer_completion.GetContinueCb());
@@ -546,7 +477,7 @@ TEST_F(SessionServiceImplTest, TestDeferWithRequestContinue) {
       future_2.GetCallback<TestDeferCompletion::CallbackType>());
 
   // Set up a null fetcher for failure refresh.
-  ScopedNullFetcher scoped_null_fetcher;
+  auto scoped_null_fetcher = ScopedTestRegistrationFetcher::CreateWithFailure();
   service().DeferRequestForRefresh(request.get(), Session::Id(kSessionId),
                                    defer_completion.GetRestartCb(),
                                    defer_completion.GetContinueCb());
@@ -596,7 +527,8 @@ TEST_F(SessionServiceImplTest, TestDeferRequestArbitrary) {
       future_3.GetCallback<TestDeferCompletion::CallbackType>());
 
   // Set up a successful fetcher.
-  ScopedTestFetcher scoped_test_fetcher_2(kSessionId2, kUrlString2, kOrigin2);
+  auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithSuccess(
+      kSessionId2, kUrlString2, kOrigin2);
   service().DeferRequestForRefresh(request.get(), Session::Id(kSessionId2),
                                    defer_completion.GetRestartCb(),
                                    defer_completion.GetContinueCb());
@@ -637,7 +569,8 @@ TEST_F(SessionServiceImplTest, RefreshWithNewSessionId) {
 
   // Set up the fetcher for a successful refresh with a new session ID
   // which doesn't equal to the refreshing one.
-  ScopedTestFetcher scoped_test_fetcher(kSessionId2, kUrlString, kOrigin);
+  auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithSuccess(
+      kSessionId2, kUrlString, kOrigin);
   service().DeferRequestForRefresh(request.get(), Session::Id(kSessionId),
                                    defer_completion.GetRestartCb(),
                                    defer_completion.GetContinueCb());
@@ -666,7 +599,8 @@ TEST_F(SessionServiceImplTest, SessionTerminationFromContinueFalse) {
       service().GetSession(SchemefulSite(kTestUrl), Session::Id(kSessionId)));
 
   {
-    ScopedContinueFalseFetcher scoped_fetcher;
+    auto scoped_fetcher = ScopedTestRegistrationFetcher::CreateWithTermination(
+        kSessionId, kUrlString);
     auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
         kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
         "challenge", /*authorization=*/std::nullopt);
@@ -683,7 +617,8 @@ TEST_F(SessionServiceImplTest, SessionTerminationFromContinueFalse) {
 TEST_F(SessionServiceImplTest, NetLogRegistration) {
   RecordingNetLogObserver observer;
 
-  ScopedTestFetcher scoped_test_fetcher(kSessionId, kUrlString, kOrigin);
+  auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithSuccess(
+      kSessionId, kUrlString, kOrigin);
   auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
       kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
       "challenge", /*authorization=*/std::nullopt);
@@ -714,7 +649,8 @@ TEST_F(SessionServiceImplTest, NetLogRefresh) {
       future.GetCallback<TestDeferCompletion::CallbackType>());
 
   RecordingNetLogObserver observer;
-  ScopedTestFetcher scoped_test_fetcher(kSessionId, kUrlString, kOrigin);
+  auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithSuccess(
+      kSessionId, kUrlString, kOrigin);
   service().DeferRequestForRefresh(request.get(), Session::Id(kSessionId),
                                    defer_completion.GetRestartCb(),
                                    defer_completion.GetContinueCb());
@@ -772,7 +708,8 @@ TEST_F(SessionServiceImplWithStoreTest, UsesSessionStore) {
   // Will invoke the store's load session method.
   service().LoadSessionsAsync();
 
-  ScopedTestFetcher scoped_test_fetcher(kSessionId, kUrlString, kOrigin);
+  auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithSuccess(
+      kSessionId, kUrlString, kOrigin);
   auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
       kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
       "challenge", /*authorization=*/std::nullopt);

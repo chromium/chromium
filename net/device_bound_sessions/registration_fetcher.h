@@ -56,7 +56,8 @@ class NET_EXPORT RegistrationFetcher {
   using RegistrationCompleteCallback =
       base::OnceCallback<void(std::optional<RegistrationCompleteParams>)>;
 
-  using FetcherType = std::optional<RegistrationCompleteParams> (*)();
+  using FetcherType =
+      base::RepeatingCallback<std::optional<RegistrationCompleteParams>()>;
 
   // TODO(kristianm): Add more parameters when the returned JSON is parsed.
   struct NET_EXPORT RegistrationTokenResult {
@@ -106,7 +107,7 @@ class NET_EXPORT RegistrationFetcher {
           void(std::optional<RegistrationFetcher::RegistrationTokenResult>)>
           callback);
 
-  static void SetFetcherForTesting(FetcherType);
+  static void SetFetcherForTesting(FetcherType* fetcher);
 };
 
 }  // namespace net::device_bound_sessions

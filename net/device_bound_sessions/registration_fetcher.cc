@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/functional/callback_helpers.h"
 #include "components/unexportable_keys/background_task_priority.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
 #include "net/base/io_buffer.h"
@@ -395,7 +396,7 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
   size_t number_of_challenges_ = 0;
 };
 
-RegistrationFetcher::FetcherType g_mock_fetcher = nullptr;
+RegistrationFetcher::FetcherType* g_mock_fetcher = nullptr;
 
 }  // namespace
 
@@ -427,7 +428,7 @@ void RegistrationFetcher::StartCreateTokenAndFetch(
     RegistrationCompleteCallback callback) {
   // Using mock fetcher for testing
   if (g_mock_fetcher) {
-    std::move(callback).Run(g_mock_fetcher());
+    std::move(callback).Run(g_mock_fetcher->Run());
     return;
   }
 
@@ -457,7 +458,7 @@ void RegistrationFetcher::StartFetchWithExistingKey(
         key_id) {
   // Using mock fetcher for testing.
   if (g_mock_fetcher) {
-    std::move(callback).Run(g_mock_fetcher());
+    std::move(callback).Run(g_mock_fetcher->Run());
     return;
   }
 
@@ -477,13 +478,9 @@ void RegistrationFetcher::StartFetchWithExistingKey(
                  request_params.TakeAuthorization());
 }
 
-void RegistrationFetcher::SetFetcherForTesting(FetcherType func) {
-  if (g_mock_fetcher) {
-    CHECK(!func);
-    g_mock_fetcher = nullptr;
-  } else {
-    g_mock_fetcher = func;
-  }
+void RegistrationFetcher::SetFetcherForTesting(FetcherType* func) {
+  CHECK(!g_mock_fetcher || !func);
+  g_mock_fetcher = func;
 }
 
 void RegistrationFetcher::CreateTokenAsyncForTesting(
