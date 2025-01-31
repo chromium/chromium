@@ -517,8 +517,11 @@ bool IsTabGroupInGridEnabled() {
 BASE_FEATURE(kTabGroupSync, "TabGroupSync", base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsTabGroupSyncEnabled() {
-  return IsTabGroupInGridEnabled() &&
-         base::FeatureList::IsEnabled(kTabGroupSync);
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    return IsTabGroupInGridEnabled() &&
+           base::FeatureList::IsEnabled(kTabGroupSync);
+  }
+  return true;
 }
 
 BASE_FEATURE(kTabGroupIndicator,
