@@ -24,7 +24,7 @@ namespace {
 constexpr char kTestAccount[] = "test_account1";
 constexpr char kTestWebBundleId[] =
     "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
-constexpr char kTestUpdateUrl[] = "https://example.com/update.json";
+constexpr char kTestUpdateUrl[] = "https://iwa.com/path/update.json";
 
 std::string GetTestUserId() {
   return policy::GenerateDeviceLocalAccountUserId(
@@ -94,8 +94,7 @@ TEST_F(KioskIwaDataTest, CreateSuccess) {
       chrome::kIsolatedAppScheme, kTestWebBundleId, 0);
   const auto kExpectedWebAppId =
       web_app::GenerateAppId("", kExpectedOrigin.GetURL());
-  const auto kExpectedDefaultName =
-      GURL(kTestUpdateUrl).GetWithoutFilename().spec();
+  const std::string kExpectedDefaultName = "iwa.com/path/";
 
   auto iwa_data = KioskIwaData::Create(GetTestUserId(), kTestWebBundleId,
                                        GURL(kTestUpdateUrl), delegate_);
