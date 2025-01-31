@@ -27,10 +27,9 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.chrome.browser.bookmarks.BookmarkDelegate;
 import org.chromium.chrome.browser.bookmarks.BookmarkManagerCoordinator;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
-import org.chromium.chrome.browser.bookmarks.BookmarkToolbar;
+import org.chromium.chrome.browser.bookmarks.BookmarkPage;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -38,7 +37,6 @@ import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.util.BookmarkTestRule;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.TabStripUtils;
@@ -56,13 +54,9 @@ public class BookmarkTabletTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
-    @Rule public BookmarkTestRule mBookmarkTestRule = new BookmarkTestRule();
-
     private BookmarkManagerCoordinator mBookmarkManagerCoordinator;
     private BookmarkModel mBookmarkModel;
     private RecyclerView mItemsContainer;
-    private BookmarkToolbar mToolbar;
-    private BookmarkDelegate mDelegate;
 
     @Before
     public void setUp() {
@@ -75,11 +69,15 @@ public class BookmarkTabletTest {
     }
 
     private void openBookmarkManager() throws InterruptedException {
+        BookmarkTestUtil.waitForBookmarkModelLoaded();
+
+        mActivityTestRule.loadUrl(UrlConstants.BOOKMARKS_URL);
+        mItemsContainer =
+                mActivityTestRule.getActivity().findViewById(R.id.selectable_list_recycler_view);
+        mItemsContainer.setItemAnimator(null); // Disable animation to reduce flakiness.
         mBookmarkManagerCoordinator =
-                mBookmarkTestRule.showBookmarkManager(mActivityTestRule.getActivity());
-        mItemsContainer = mBookmarkManagerCoordinator.getRecyclerViewForTesting();
-        mDelegate = mBookmarkManagerCoordinator.getBookmarkDelegateForTesting();
-        mToolbar = mBookmarkManagerCoordinator.getToolbarForTesting();
+                ((BookmarkPage) mActivityTestRule.getActivity().getActivityTab().getNativePage())
+                        .getManagerForTesting();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(false));
@@ -112,7 +110,10 @@ public class BookmarkTabletTest {
     public void switchBetweenTabs_editVisibility() throws Exception {
         Tab bookmarksTab = mActivityTestRule.getActivity().getActivityTab();
         openBookmarkManager();
-        mBookmarkTestRule.openFolder(mBookmarkTestRule.getMobileFolder());
+        BookmarkTestUtil.openMobileBookmarks(
+                mItemsContainer,
+                mBookmarkManagerCoordinator.getBookmarkDelegateForTesting(),
+                mBookmarkModel);
 
         mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL);
         selectTab(false, bookmarksTab.getId());

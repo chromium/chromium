@@ -2262,6 +2262,8 @@ void RenderWidgetHostViewAndroid::GestureEventAck(
 blink::mojom::InputEventResultState
 RenderWidgetHostViewAndroid::FilterInputEvent(
     const blink::WebInputEvent& input_event) {
+  // TODO(365985685): Refactor OverscrollController to make it an input
+  // observer.
   if (overscroll_controller_ &&
       blink::WebInputEvent::IsGestureEventType(input_event.GetType())) {
     blink::WebGestureEvent gesture_event =

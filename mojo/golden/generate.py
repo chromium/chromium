@@ -56,6 +56,8 @@ def generate_bindings(input_dir, output_dir):
         subprocess.run([
             'python3', _GENERATOR_SCRIPT, '-o', tmp_bindings_dir, 'generate',
             '--bytecode_path', tmp_bytecode_dir, '--generators', 'typescript',
+            # typemap is hardcoded for now.
+            '--typemap', f'{input_dir}/typemap.json',
             *mojom_modules
         ],
                        check=True)

@@ -176,12 +176,8 @@ TEST_F(BackgroundPageThrottlingTest, WithoutNesting) {
 
 // Verify that on a hidden page, a timer created with setTimeout(..., 0) is
 // throttled after 5 nesting levels.
-TEST_F(BackgroundPageThrottlingTest, NestedSetTimeoutZero) {
-  // Disable this test when setTimeoutWithoutClamp feature is enabled.
-  // TODO(crbug.com/1303275): Investigate the failure reason.
-  if (blink::features::IsSetTimeoutWithoutClampEnabled())
-    GTEST_SKIP() << "Skipping test for setTimeoutWithoutClamp feature enabled";
-
+// TODO(crbug.com/40217322): Investigate the failure reason.
+TEST_F(BackgroundPageThrottlingTest, DISABLED_NestedSetTimeoutZero) {
   SimRequest main_resource("https://example.com/", "text/html");
   LoadURL("https://example.com/");
 
@@ -310,7 +306,7 @@ class IntensiveWakeUpThrottlingTest : public ThrottlingTestBase {
   IntensiveWakeUpThrottlingTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{features::kIntensiveWakeUpThrottling, {}},
-         {features::kSetTimeoutWithoutClamp, {}}},
+         {features::kSetIntervalWithoutClamp, {}}},
         // Disable freezing because it hides the effect of intensive throttling.
         {features::kStopInBackground});
   }

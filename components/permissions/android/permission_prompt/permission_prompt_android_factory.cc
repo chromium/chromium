@@ -9,6 +9,7 @@
 #include "components/permissions/android/permission_prompt/permission_message.h"
 #include "components/permissions/android/permission_prompt/permission_prompt_infobar.h"
 #include "components/permissions/permission_prompt.h"
+#include "components/permissions/permission_util.h"
 #include "content/public/browser/web_contents.h"
 
 namespace permissions {
@@ -16,6 +17,11 @@ namespace permissions {
 std::unique_ptr<PermissionPrompt> PermissionPrompt::Create(
     content::WebContents* web_contents,
     Delegate* delegate) {
+  if (permissions::PermissionUtil::
+          ShouldCurrentRequestUsePermissionElementSecondaryUI(delegate)) {
+    return std::make_unique<EmbeddedPermissionPromptAndroid>(web_contents,
+                                                             delegate);
+  }
   // Quiet UI (non-modal, less intrusive) is preferred over loud one, if
   // necessary conditions are met. The message UI is preferred over the infobar
   // UI.
@@ -29,7 +35,6 @@ std::unique_ptr<PermissionPrompt> PermissionPrompt::Create(
     return infobar;
   }
 
-  // TODO(crbug.com/377264239): enable PEPC prompt here.
   return std::make_unique<PermissionDialog>(web_contents, delegate);
 }
 

@@ -281,6 +281,7 @@ public class PermissionDialogDelegate {
         mContentSettingsTypes = contentSettingsTypes;
         mMessageText = message;
         mDrawableId = iconId;
+        mBoldedRanges.clear();
         for (int i = 0; i + 1 < boldedRanges.length; i += 2) {
             mBoldedRanges.add(new Pair(boldedRanges[i], boldedRanges[i + 1]));
         }

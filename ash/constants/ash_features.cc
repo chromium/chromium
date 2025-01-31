@@ -1705,6 +1705,15 @@ BASE_FEATURE(kFeatureManagementLocalImageSearch,
 // Enables lobster feature.
 BASE_FEATURE(kLobster, "Lobster", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enabling this testing flag will force the Lobster disclaimer screen to be
+// shown every time Lobster is triggered, even if users have previously approved
+// the Lobster consent. If users have declined the Lobster consent, the feature
+// This flag should solely be enabled for convenient testing. Do not turn it on
+// unless the feature is under testing.
+BASE_FEATURE(kLobsterAlwaysShowDisclaimerForTesting,
+             "LobsterAlwaysShowDisclaimerForTesting",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables lobster dogfood.
 BASE_FEATURE(kLobsterDogfood,
              "LobsterDogfood",
@@ -3916,6 +3925,10 @@ bool IsLobsterEnabled() {
   return base::FeatureList::IsEnabled(kLobsterDogfood) ||
          (base::FeatureList::IsEnabled(kLobster) &&
           base::FeatureList::IsEnabled(kFeatureManagementLobster));
+}
+
+bool IsLobsterAlwaysShowDisclaimerForTesting() {
+  return base::FeatureList::IsEnabled(kLobsterAlwaysShowDisclaimerForTesting);
 }
 
 bool IsLockScreenHideSensitiveNotificationsSupported() {

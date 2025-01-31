@@ -11,6 +11,7 @@ import("//extensions/buildflags/buildflags.gni")
 extensions_api_schema_files_ = [
   "alarms.idl",
   "declarative_net_request.idl",
+  "extension_types.json",
   "i18n.json",
   "idle.json",
   "offscreen.idl",
@@ -57,7 +58,6 @@ if (enable_extensions) {
     "dns.idl",
     "events.json",
     "extension_options_internal.idl",
-    "extension_types.json",
     "feedback_private.idl",
     "file_handlers.idl",
     "file_system.idl",
@@ -106,7 +106,6 @@ if (enable_desktop_android_extensions) {
   extensions_types_only_schema_files_ += [
     "scripts_internal.idl",
     "types.json",
-    "extension_types.json",
     "usb.idl",
     "system_display.idl",
     "clipboard.idl",

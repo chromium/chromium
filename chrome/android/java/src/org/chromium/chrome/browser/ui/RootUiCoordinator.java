@@ -1015,7 +1015,8 @@ public class RootUiCoordinator
                 mToolbarManager,
                 canContextualSearchPromoteToNewTab(),
                 mIntentRequestTracker,
-                getDesktopWindowStateManager());
+                getDesktopWindowStateManager(),
+                mBottomControlsStacker);
     }
 
     public ObservableSupplier<ContextualSearchManager> getContextualSearchManagerSupplier() {

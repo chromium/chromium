@@ -29,7 +29,9 @@ import java.lang.annotation.RetentionPolicy;
  */
 public class BottomControlsStacker implements BrowserControlsStateProvider.Observer {
     private static final String TAG = "BotControlsStacker";
-    private static final int INVALID_HEIGHT = -1;
+
+    public static final int INVALID_HEIGHT = -1;
+
     private static boolean sDumpLayerUpdateForTesting;
     private int mNumberOfVisibleLayers;
 
@@ -608,6 +610,38 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
         mTotalMinHeight = minHeight;
 
         recalculateLayerRestingOffsets();
+    }
+
+    /**
+     * Calculates the total height of the UI from the specified layer to the bottom.
+     *
+     * <p>This method computes the cumulative height of all visible layers starting from the given
+     * layer **(inclusive)**, down the stack to the bottom-most layer
+     *
+     * <p><b>Warning:</b> The height returned might not be accurate during {@link
+     * #recalculateLayerSizes()}, so it should not be used to determine a layer's attribute.
+     *
+     * @param startLayer the layer in the stack order to start from.
+     * @return the total height of the visible UI from the specified layer to the bottom, or {@link
+     *     #INVALID_HEIGHT} if the layer type is invalid.
+     */
+    public int getHeightFromLayerToBottom(@LayerType int startLayer) {
+        if (mLayers.get(startLayer) == null) {
+            return INVALID_HEIGHT;
+        }
+
+        int height = 0;
+        for (int i = 0; i < STACK_ORDER.length; i++) {
+            int type = STACK_ORDER[i];
+            if (type < startLayer) continue;
+
+            BottomControlsLayer layer = mLayers.get(type);
+            if (layer == null || !mLayerVisibilities.get(type)) continue;
+
+            height += layer.getHeight();
+        }
+
+        return height;
     }
 
     private void recalculateLayerRestingOffsets() {

@@ -1656,6 +1656,92 @@ public class BottomControlsStackerUnitTest {
         histogramWatcher.assertExpected();
     }
 
+    @Test
+    public void testCalculateHeightFromLayer() {
+        TestLayer top =
+                new TestLayer(
+                        TOP_LAYER,
+                        1000,
+                        LayerScrollBehavior.ALWAYS_SCROLL_OFF,
+                        LayerVisibility.VISIBLE);
+        TestLayer mid =
+                new TestLayer(
+                        MID_LAYER,
+                        100,
+                        LayerScrollBehavior.ALWAYS_SCROLL_OFF,
+                        LayerVisibility.VISIBLE);
+        TestLayer bottom =
+                new TestLayer(
+                        BOTTOM_LAYER,
+                        10,
+                        LayerScrollBehavior.ALWAYS_SCROLL_OFF,
+                        LayerVisibility.VISIBLE);
+        mBottomControlsStacker.addLayer(top);
+        mBottomControlsStacker.addLayer(mid);
+        mBottomControlsStacker.addLayer(bottom);
+        mBottomControlsStacker.updateLayerVisibilitiesAndSizes();
+
+        assertEquals(
+                "top, mid and bottom layers should be counted",
+                1110,
+                mBottomControlsStacker.getHeightFromLayerToBottom(TOP_LAYER));
+        assertEquals(
+                "Only mid and bottom layers should be counted",
+                110,
+                mBottomControlsStacker.getHeightFromLayerToBottom(MID_LAYER));
+        assertEquals(
+                "Only bottom layer should be counted",
+                10,
+                mBottomControlsStacker.getHeightFromLayerToBottom(BOTTOM_LAYER));
+        assertEquals(
+                "invalid layer shoud return INVALID_HEIGHT",
+                BottomControlsStacker.INVALID_HEIGHT,
+                mBottomControlsStacker.getHeightFromLayerToBottom(-1));
+    }
+
+    @Test
+    public void testCalculateHeightFromLayer_oneLayerIsHiding() {
+        TestLayer top =
+                new TestLayer(
+                        TOP_LAYER,
+                        1000,
+                        LayerScrollBehavior.ALWAYS_SCROLL_OFF,
+                        LayerVisibility.VISIBLE);
+        TestLayer mid =
+                new TestLayer(
+                        MID_LAYER,
+                        100,
+                        LayerScrollBehavior.ALWAYS_SCROLL_OFF,
+                        LayerVisibility.VISIBLE);
+        TestLayer bottom =
+                new TestLayer(
+                        BOTTOM_LAYER,
+                        10,
+                        LayerScrollBehavior.ALWAYS_SCROLL_OFF,
+                        LayerVisibility.HIDING);
+        mBottomControlsStacker.addLayer(top);
+        mBottomControlsStacker.addLayer(mid);
+        mBottomControlsStacker.addLayer(bottom);
+        mBottomControlsStacker.updateLayerVisibilitiesAndSizes();
+
+        assertEquals(
+                "Only top and mid layers should be counted since bottom layer is hided.",
+                1100,
+                mBottomControlsStacker.getHeightFromLayerToBottom(TOP_LAYER));
+        assertEquals(
+                "Only mid layer should be counted since bottom layer is hided.",
+                100,
+                mBottomControlsStacker.getHeightFromLayerToBottom(MID_LAYER));
+        assertEquals(
+                "No layers should be counted",
+                0,
+                mBottomControlsStacker.getHeightFromLayerToBottom(BOTTOM_LAYER));
+        assertEquals(
+                "invalid layer shoud return INVALID_HEIGHT",
+                BottomControlsStacker.INVALID_HEIGHT,
+                mBottomControlsStacker.getHeightFromLayerToBottom(-1));
+    }
+
     // Test helpers
 
     private void onBottomControlsOffsetChanged(

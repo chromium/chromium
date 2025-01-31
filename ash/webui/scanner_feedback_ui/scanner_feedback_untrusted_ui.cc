@@ -94,7 +94,12 @@ bool ShouldHandleRequest(base::WeakPtr<content::BrowserContext> browser_context,
   ScannerFeedbackInfo* feedback_info =
       GetScannerFeedbackInfoForBrowserContext(*browser_context, *id);
 
-  return feedback_info != nullptr;
+  if (feedback_info == nullptr) {
+    return false;
+  }
+
+  // Do not handle requests for feedback info without a screenshot.
+  return feedback_info->screenshot != nullptr;
 }
 
 // Handles the given request and returns the screenshot to the

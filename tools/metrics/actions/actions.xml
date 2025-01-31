@@ -9505,19 +9505,28 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="DemoMode.ExitFromShelf">
-  <owner>michaelpg@chromium.org</owner>
-  <owner>wzang@chromium.org</owner>
+  <owner>wanghaifan@google.com</owner>
+  <owner>cros-demo-mode-eng@google.com</owner>
   <description>
-    Recorded when user exits Demo Mode from the logout button on the shelf.
+    Recorded when the user exits Demo Mode from the logout button on the shelf.
   </description>
 </action>
 
 <action name="DemoMode.ExitFromSystemTray">
-  <owner>michaelpg@chromium.org</owner>
-  <owner>wzang@chromium.org</owner>
+  <owner>wanghaifan@google.com</owner>
+  <owner>cros-demo-mode-eng@google.com</owner>
   <description>
     Recorded when user exits Demo Mode from the logout button in the system
     tray.
+  </description>
+</action>
+
+<action name="DemoMode.ExitFromSystemTrayPowerButton">
+  <owner>wanghaifan@google.com</owner>
+  <owner>cros-demo-mode-eng@google.com</owner>
+  <description>
+    Recorded when the user exits Demo Mode from the power button in the system
+    tray. It can be either &quot;Sign out&quot; or &quot;Restart&quot;.
   </description>
 </action>
 
@@ -9527,6 +9536,34 @@ should be able to be added at any place in this file.
   <description>
     Recorded when the retry button during the demo mode setup process is
     clicked. The retry button appears when there is a setup failure.
+  </description>
+</action>
+
+<action name="DemoMode.SignedIn.ExitFromShelf">
+  <owner>wanghaifan@google.com</owner>
+  <owner>cros-demo-mode-eng@google.com</owner>
+  <description>
+    Recorded when the user exits signed-in Demo Mode from the logout button on
+    the shelf.
+  </description>
+</action>
+
+<action name="DemoMode.SignedIn.ExitFromSystemTray">
+  <owner>wanghaifan@google.com</owner>
+  <owner>cros-demo-mode-eng@google.com</owner>
+  <description>
+    Recorded when the user exits signed-in Demo Mode from the logout button in
+    the system tray.
+  </description>
+</action>
+
+<action name="DemoMode.SignedIn.ExitFromSystemTrayPowerButton">
+  <owner>wanghaifan@google.com</owner>
+  <owner>cros-demo-mode-eng@google.com</owner>
+  <description>
+    Recorded when the user exits signed-in Demo Mode from the power button in
+    the system tray. It can be either &quot;Sign out&quot; or
+    &quot;Restart&quot;.
   </description>
 </action>
 

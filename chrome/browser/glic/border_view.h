@@ -88,6 +88,8 @@ class BorderView : public views::View,
   class BorderViewUpdater;
   const std::unique_ptr<BorderViewUpdater> updater_;
 
+  std::string shader_;
+
   // When it is true, the class directly presents a static border and when it is
   // false, it animates the border first.
   bool skip_animation_ = false;

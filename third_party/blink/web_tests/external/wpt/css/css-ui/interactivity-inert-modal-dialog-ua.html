@@ -24,8 +24,8 @@
     t.add_cleanup(() => { t2.close(); });
     assert_equals(getComputedStyle(t2).interactivity, "inert", "before showModal");
     t2.showModal();
-    assert_equals(getComputedStyle(t2).interactivity, "auto", "after showModal");
-  }, "UA dialog:modal inert rule wins over [inert] rule");
+    assert_equals(getComputedStyle(t2).interactivity, "inert", "after showModal");
+  }, "UA [inert] rule wins over UA dialog:modal inert rule");
 
   test((t) => {
     t.add_cleanup(() => { t3.close(); });

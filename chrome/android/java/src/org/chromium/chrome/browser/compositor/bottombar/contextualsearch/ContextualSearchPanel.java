@@ -19,6 +19,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ActivityState;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
@@ -144,6 +145,8 @@ public class ContextualSearchPanel extends OverlayPanel {
      * @param currentTabSupplier Supplies the current activity tab.
      * @param edgeToEdgeControllerSupplier Controller for edge-to-edge drawing.
      * @param desktopWindowStateManager Manager to get desktop window and app header state.
+     * @param bottomControlsStacker The {@link BottomControlsStacker} for observing and changing
+     *     browser controls heights.
      */
     public ContextualSearchPanel(
             @NonNull Context context,
@@ -158,7 +161,8 @@ public class ContextualSearchPanel extends OverlayPanel {
             boolean canPromoteToNewTab,
             @NonNull Supplier<Tab> currentTabSupplier,
             @NonNull Supplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
-            @Nullable DesktopWindowStateManager desktopWindowStateManager) {
+            @Nullable DesktopWindowStateManager desktopWindowStateManager,
+            @NonNull BottomControlsStacker bottomControlsStacker) {
         super(
                 context,
                 layoutManager,
@@ -169,7 +173,8 @@ public class ContextualSearchPanel extends OverlayPanel {
                 compositorViewHolder,
                 toolbarHeightDp,
                 currentTabSupplier,
-                desktopWindowStateManager);
+                desktopWindowStateManager,
+                bottomControlsStacker);
         mSceneLayer = createNewContextualSearchSceneLayer();
         mPanelMetrics = new ContextualSearchPanelMetrics();
         mToolbarManager = toolbarManager;

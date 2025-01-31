@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/command_line.h"
-#include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_page_handler.h"
 #include "chrome/browser/glic/guest_util.h"
@@ -98,8 +97,6 @@ GlicUI::GlicUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
       hasCSPOverride
           ? command_line->GetSwitchValueASCII(::switches::kCSPOverride)
           : features::kGlicWebUICSPOverride.Get());
-
-  extensions::TabHelper::CreateForWebContents(web_ui->GetWebContents());
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(GlicUI)

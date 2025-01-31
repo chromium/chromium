@@ -15,7 +15,6 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_restrictions.h"
 #include "chromeos/components/cdm_factory_daemon/cdm_storage_adapter.h"
 #include "chromeos/components/cdm_factory_daemon/content_decryption_module_adapter.h"
 #include "chromeos/components/cdm_factory_daemon/mojom/content_decryption_module.mojom.h"
@@ -24,6 +23,7 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
+#include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 
 namespace chromeos {
 
@@ -408,7 +408,7 @@ void ChromeOsCdmFactory::CreateCdm(
   {
     // TODO (crbug.com/368792274): Refactor the GetCdmOrigin mojo call to not be
     // a sync call.
-    base::ScopedAllowBaseSyncPrimitives allow_sync_mojo_call;
+    mojo::SyncCallRestrictions::ScopedAllowSyncCall allow_sync_mojo_call;
     frame_interfaces_->GetCdmOrigin(&cdm_origin);
   }
 

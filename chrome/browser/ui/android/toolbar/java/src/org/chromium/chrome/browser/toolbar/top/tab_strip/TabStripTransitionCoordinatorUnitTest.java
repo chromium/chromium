@@ -840,6 +840,33 @@ public class TabStripTransitionCoordinatorUnitTest {
     }
 
     @Test
+    public void smallFullscreenWindowToSmallDesktopWindow_TokenInUse() {
+        doTestDesktopWindowModeChanged(
+                /* enterDesktopWindow= */ true,
+                /* smallSourceWindow= */ true,
+                /* smallDestinationWindow= */ true,
+                /* tokenInUse= */ true);
+    }
+
+    @Test
+    public void smallFullscreenWindowToLargeDesktopWindow_TokenInUse() {
+        doTestDesktopWindowModeChanged(
+                /* enterDesktopWindow= */ true,
+                /* smallSourceWindow= */ true,
+                /* smallDestinationWindow= */ false,
+                /* tokenInUse= */ true);
+    }
+
+    @Test
+    public void largeFullscreenWindowToSmallDesktopWindow_TokenInUse() {
+        doTestDesktopWindowModeChanged(
+                /* enterDesktopWindow= */ true,
+                /* smallSourceWindow= */ false,
+                /* smallDestinationWindow= */ true,
+                /* tokenInUse= */ true);
+    }
+
+    @Test
     public void largeFullscreenWindowToLargeDesktopWindow_TokenInUse() {
         doTestDesktopWindowModeChanged(
                 /* enterDesktopWindow= */ true,
@@ -927,7 +954,9 @@ public class TabStripTransitionCoordinatorUnitTest {
         boolean expectedApplyScrimOverlay = false;
         if (enterDesktopWindow) {
             expectedHeightAfterTokenRelease = TEST_TAB_STRIP_HEIGHT + mReservedTopPadding;
-            expectedHeight = tokenInUse ? NOTHING_OBSERVED : expectedHeightAfterTokenRelease;
+            // Height should be force-updated in a desktop window since its goal is to only update
+            // strip top padding and not visibility.
+            expectedHeight = expectedHeightAfterTokenRelease;
         } else {
             // Height will not be updated while exiting desktop windowing mode if the transition is
             // blocked.

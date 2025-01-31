@@ -61,6 +61,7 @@ class EmbeddedPermissionPromptAndroid : public PermissionPromptAndroid {
   const std::vector<
       raw_ptr<permissions::PermissionRequest, VectorExperimental>>&
   Requests() const override;
+  int GetIconId() const override;
 
  private:
   // Decide to destroy the current dialog or update the dialog with new screen

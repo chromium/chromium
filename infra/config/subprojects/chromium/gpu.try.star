@@ -319,7 +319,10 @@ def gpu_mac_builder(*, name, **kwargs):
         builderless = True,
         cores = None,
         os = os.MAC_ANY,
+        pool = "luci.chromium.gpu.try",
+        max_concurrent_builds = 1,
         ssd = None,
+        siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
         **kwargs
     )
 
@@ -330,7 +333,6 @@ gpu_mac_builder(
         "ci/Mac Pro FYI Release (AMD)",
     ],
     gn_args = "ci/GPU FYI Mac Builder",
-    pool = "luci.chromium.gpu.mac.pro.amd.try",
 )
 
 gpu_mac_builder(
@@ -340,7 +342,6 @@ gpu_mac_builder(
         "ci/Mac FYI Retina ASAN (AMD)",
     ],
     gn_args = "ci/GPU FYI Mac Builder (asan)",
-    pool = "luci.chromium.gpu.mac.retina.amd.try",
 )
 
 gpu_mac_builder(
@@ -350,7 +351,6 @@ gpu_mac_builder(
         "ci/Mac FYI Retina Debug (AMD)",
     ],
     gn_args = "ci/GPU FYI Mac Builder (dbg)",
-    pool = "luci.chromium.gpu.mac.retina.amd.try",
 )
 
 gpu_mac_builder(
@@ -360,7 +360,6 @@ gpu_mac_builder(
         "ci/Mac FYI Experimental Retina Release (AMD)",
     ],
     gn_args = "ci/GPU FYI Mac Builder",
-    pool = "luci.chromium.gpu.mac.retina.amd.try",
 )
 
 gpu_mac_builder(
@@ -370,7 +369,6 @@ gpu_mac_builder(
         "ci/Mac FYI Retina Release (AMD)",
     ],
     gn_args = "ci/GPU FYI Mac Builder",
-    pool = "luci.chromium.gpu.mac.retina.amd.try",
 )
 
 gpu_mac_builder(
@@ -380,9 +378,6 @@ gpu_mac_builder(
         "ci/Mac FYI Experimental Release (Apple M1)",
     ],
     gn_args = "ci/GPU FYI Mac arm64 Builder",
-    pool = "luci.chromium.gpu.mac.arm64.apple.m1.try",
-    cpu = cpu.ARM64,
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
 
 gpu_mac_builder(
@@ -392,8 +387,6 @@ gpu_mac_builder(
         "ci/Mac FYI Release (Apple M1)",
     ],
     gn_args = "ci/GPU FYI Mac arm64 Builder",
-    pool = "luci.chromium.gpu.mac.arm64.apple.m1.try",
-    cpu = cpu.ARM64,
 )
 
 gpu_mac_builder(
@@ -404,8 +397,6 @@ gpu_mac_builder(
         "ci/Mac FYI Experimental Retina Release (Apple M2)",
     ],
     gn_args = "ci/GPU FYI Mac arm64 Builder",
-    pool = "luci.chromium.gpu.mac.arm64.apple.m2.try",
-    cpu = cpu.ARM64,
 )
 
 gpu_mac_builder(
@@ -415,8 +406,6 @@ gpu_mac_builder(
         "ci/Mac FYI Retina Release (Apple M2)",
     ],
     gn_args = "ci/GPU FYI Mac arm64 Builder",
-    pool = "luci.chromium.gpu.mac.arm64.apple.m2.try",
-    cpu = cpu.ARM64,
 )
 
 gpu_mac_builder(
@@ -426,7 +415,6 @@ gpu_mac_builder(
         "ci/Mac FYI ASAN (Intel)",
     ],
     gn_args = "ci/GPU FYI Mac Builder (asan)",
-    pool = "luci.chromium.gpu.mac.mini.intel.try",
 )
 
 gpu_mac_builder(
@@ -436,7 +424,6 @@ gpu_mac_builder(
         "ci/Mac FYI Debug (Intel)",
     ],
     gn_args = "ci/GPU FYI Mac Builder (dbg)",
-    pool = "luci.chromium.gpu.mac.mini.intel.try",
 )
 
 gpu_mac_builder(
@@ -446,7 +433,6 @@ gpu_mac_builder(
         "ci/Mac FYI Experimental Release (Intel)",
     ],
     gn_args = "ci/GPU FYI Mac Builder",
-    pool = "luci.chromium.gpu.mac.mini.intel.try",
 )
 
 gpu_mac_builder(
@@ -456,7 +442,6 @@ gpu_mac_builder(
         "ci/Mac FYI Release (Intel)",
     ],
     gn_args = "ci/GPU FYI Mac Builder",
-    pool = "luci.chromium.gpu.mac.mini.intel.try",
 )
 
 gpu_mac_builder(
@@ -466,7 +451,6 @@ gpu_mac_builder(
         "ci/Mac FYI Experimental Retina Release (NVIDIA)",
     ],
     gn_args = "ci/GPU FYI Mac Builder",
-    pool = "luci.chromium.gpu.mac.retina.nvidia.try",
     # This bot has one machine backing its tests at the moment.
     # If it gets more, the modified execution_timeout should be removed.
     execution_timeout = 12 * time.hour,
@@ -479,7 +463,6 @@ gpu_mac_builder(
         "ci/Mac FYI Retina Release (NVIDIA)",
     ],
     gn_args = "ci/GPU FYI Mac Builder",
-    pool = "luci.chromium.gpu.mac.retina.nvidia.try",
 )
 
 gpu_mac_builder(
@@ -489,7 +472,6 @@ gpu_mac_builder(
         "ci/Mac Retina Debug (AMD)",
     ],
     gn_args = "ci/GPU Mac Builder (dbg)",
-    pool = "luci.chromium.gpu.mac.retina.amd.try",
 )
 
 gpu_mac_builder(
@@ -499,8 +481,6 @@ gpu_mac_builder(
         "ci/Mac Debug (Intel)",
     ],
     gn_args = "ci/GPU Mac Builder (dbg)",
-    pool = "luci.chromium.gpu.mac.mini.intel.try",
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
 
 def gpu_win_builder(*, name, **kwargs):

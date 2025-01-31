@@ -401,8 +401,7 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
       "microphone", {ContentSettingsType::MEDIASTREAM_MIC},
       std::vector<std::u16string>(
           {u"a.test:" + base::UTF8ToUTF16(GetOrigin().port()) + u" wants to",
-           u"You have allowed microphone on a.test:" +
-               base::UTF8ToUTF16(GetOrigin().port()),
+           u"You have allowed microphone for this site",
            u"You previously didn't allow microphone for this site"}),
       std::vector<std::u16string>({u"Use your microphones"}));
 }
@@ -413,8 +412,7 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
       "camera", {ContentSettingsType::MEDIASTREAM_CAMERA},
       std::vector<std::u16string>(
           {u"a.test:" + base::UTF8ToUTF16(GetOrigin().port()) + u" wants to",
-           u"You have allowed camera on a.test:" +
-               base::UTF8ToUTF16(GetOrigin().port()),
+           u"You have allowed camera for this site",
            u"You previously didn't allow camera for this site"}),
       std::vector<std::u16string>({u"Use your cameras"}));
 }
@@ -425,8 +423,7 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
       "geolocation", {ContentSettingsType::GEOLOCATION},
       std::vector<std::u16string>(
           {u"a.test:" + base::UTF8ToUTF16(GetOrigin().port()) + u" wants to",
-           u"You have allowed location on a.test:" +
-               base::UTF8ToUTF16(GetOrigin().port()),
+           u"You have allowed location for this site",
            u"You previously didn't allow location for this site"}),
       std::vector<std::u16string>({u"Know your location"}));
 }
@@ -439,8 +436,7 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
        ContentSettingsType::MEDIASTREAM_MIC},
       std::vector<std::u16string>(
           {u"a.test:" + base::UTF8ToUTF16(GetOrigin().port()) + u" wants to",
-           u"You have allowed camera and microphone on a.test:" +
-               base::UTF8ToUTF16(GetOrigin().port()),
+           u"You have allowed camera and microphone for this site",
            u"You previously didn't allow camera and microphone for this site"}),
       std::vector<std::u16string>({u"Use your cameras"}),
       std::vector<std::u16string>({u"Use your microphones"}));
@@ -499,11 +495,11 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
   std::u16string open_settings_label;
 
 #if BUILDFLAG(IS_MAC)
-  open_settings_label = u"Go to macOS settings";
+  open_settings_label = u"MacOS settings";
 #elif BUILDFLAG(IS_WIN)
-  open_settings_label = u"Go to Windows settings";
+  open_settings_label = u"Windows settings";
 #elif BUILDFLAG(IS_CHROMEOS)
-  open_settings_label = u"Go to ChromeOS settings";
+  open_settings_label = u"ChromeOS settings";
 #endif
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)

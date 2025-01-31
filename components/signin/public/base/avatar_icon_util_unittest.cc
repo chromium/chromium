@@ -121,13 +121,37 @@ TEST(AvatarIconUtilTest,
   EXPECT_EQ(result, expected);
 }
 
+TEST(
+    AvatarIconUtilTest,
+    GetAvatarImageURLWithOptionsSizeReplaceCircleCropAndPreservesPngExplicit_LegacyURL) {
+  GURL in(
+      "http://example.com/-A/AAAAAAAAAAI/AAAAAAAAACQ/B/s64-cc-rp-ns/photo.jpg");
+  GURL result = signin::GetAvatarImageURLWithOptions(
+      in, 128, false /* no_silhouette */, signin::AvatarCropType::kSquare);
+  GURL expected(
+      "http://example.com/-A/AAAAAAAAAAI/AAAAAAAAACQ/B/rp-s128-c/photo.jpg");
+  EXPECT_EQ(result, expected);
+}
+
 TEST(AvatarIconUtilTest,
      GetAvatarImageURLWithOptionsSizeReplaceSquareCrop_LegacyURL) {
   GURL in("http://example.com/-A/AAAAAAAAAAI/AAAAAAAAACQ/B/s64-c-ns/photo.jpg");
   GURL result = signin::GetAvatarImageURLWithOptions(
       in, 128, false /* no_silhouette */, signin::AvatarCropType::kCircle);
   GURL expected(
-      "http://example.com/-A/AAAAAAAAAAI/AAAAAAAAACQ/B/s128-cc/photo.jpg");
+      "http://example.com/-A/AAAAAAAAAAI/AAAAAAAAACQ/B/s128-cc-rp/photo.jpg");
+  EXPECT_EQ(result, expected);
+}
+
+TEST(
+    AvatarIconUtilTest,
+    GetAvatarImageURLWithOptionsSizeReplaceSquareCropAndPreservesPng_LegacyURL) {
+  GURL in(
+      "http://example.com/-A/AAAAAAAAAAI/AAAAAAAAACQ/B/s64-c-rp-ns/photo.jpg");
+  GURL result = signin::GetAvatarImageURLWithOptions(
+      in, 128, false /* no_silhouette */, signin::AvatarCropType::kCircle);
+  GURL expected(
+      "http://example.com/-A/AAAAAAAAAAI/AAAAAAAAACQ/B/s128-cc-rp/photo.jpg");
   EXPECT_EQ(result, expected);
 }
 
@@ -138,7 +162,7 @@ TEST(AvatarIconUtilTest,
   GURL result = signin::GetAvatarImageURLWithOptions(
       in, 128, false /* no_silhouette */, signin::AvatarCropType::kCircle);
   GURL expected(
-      "http://example.com/-A/AAAAAAAAAAI/AAAAAAAAACQ/B/s128-cc/photo.jpg");
+      "http://example.com/-A/AAAAAAAAAAI/AAAAAAAAACQ/B/s128-cc-rp/photo.jpg");
   EXPECT_EQ(result, expected);
 }
 
@@ -175,11 +199,31 @@ TEST(AvatarIconUtilTest,
   EXPECT_EQ(result, expected);
 }
 
+TEST(
+    AvatarIconUtilTest,
+    GetAvatarImageURLReplacesCircleCropOptionAndPreservesPngOptionExplicit_ContentURL) {
+  GURL in("http://example.com/-A/ABcdefghijk1l2mN3=cc-rp");
+  GURL result = signin::GetAvatarImageURLWithOptions(
+      in, 128, true /* no_silhouette */, signin::AvatarCropType::kSquare);
+  GURL expected("http://example.com/-A/ABcdefghijk1l2mN3=rp-s128-c-ns");
+  EXPECT_EQ(result, expected);
+}
+
 TEST(AvatarIconUtilTest, GetAvatarImageURLReplacesSquareCropOption_ContentURL) {
   GURL in("http://example.com/-A/ABcdefghijk1l2mN3=c");
   GURL result = signin::GetAvatarImageURLWithOptions(
       in, 128, true /* no_silhouette */, signin::AvatarCropType::kCircle);
-  GURL expected("http://example.com/-A/ABcdefghijk1l2mN3=s128-cc-ns");
+  GURL expected("http://example.com/-A/ABcdefghijk1l2mN3=s128-cc-rp-ns");
+  EXPECT_EQ(result, expected);
+}
+
+TEST(
+    AvatarIconUtilTest,
+    GetAvatarImageURLReplacesSquareCropOptionAndPreservesPngOption_ContentURL) {
+  GURL in("http://example.com/-A/ABcdefghijk1l2mN3=c-rp");
+  GURL result = signin::GetAvatarImageURLWithOptions(
+      in, 128, true /* no_silhouette */, signin::AvatarCropType::kCircle);
+  GURL expected("http://example.com/-A/ABcdefghijk1l2mN3=s128-cc-rp-ns");
   EXPECT_EQ(result, expected);
 }
 
@@ -188,7 +232,7 @@ TEST(AvatarIconUtilTest,
   GURL in("http://example.com/-A/ABcdefghijk1l2mN3=cc");
   GURL result = signin::GetAvatarImageURLWithOptions(
       in, 128, true /* no_silhouette */, signin::AvatarCropType::kCircle);
-  GURL expected("http://example.com/-A/ABcdefghijk1l2mN3=s128-cc-ns");
+  GURL expected("http://example.com/-A/ABcdefghijk1l2mN3=s128-cc-rp-ns");
   EXPECT_EQ(result, expected);
 }
 

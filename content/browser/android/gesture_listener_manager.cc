@@ -69,6 +69,13 @@ int ToGestureEventType(WebInputEvent::Type type) {
   }
 }
 
+bool IsUserInteractionInputType(WebInputEvent::Type event_type) {
+  return event_type == WebInputEvent::Type::kGestureTap ||
+         event_type == WebInputEvent::Type::kGestureLongTap ||
+         event_type == WebInputEvent::Type::kGestureLongPress ||
+         event_type == WebInputEvent::Type::kMouseDown;
+}
+
 }  // namespace
 
 // Reset scroll, hide popups on navigation finish/render process gone event.
@@ -180,6 +187,11 @@ void GestureListenerManager::RenderFrameHostChanged(RenderFrameHost* old_host,
 void GestureListenerManager::OnInputEvent(const RenderWidgetHost& widget,
                                           const blink::WebInputEvent& event) {
   const blink::mojom::EventType event_type = event.GetType();
+
+  if (IsUserInteractionInputType(event_type)) {
+    web_contents_->GetNativeView()->RequestFocus();
+  }
+
   if (WebInputEvent::IsTouchEventType(event_type)) {
     if (event_type == blink::mojom::EventType::kTouchStart) {
       active_pointers_++;
@@ -257,18 +269,14 @@ void GestureListenerManager::DidStopFlinging() {
 }
 
 bool GestureListenerManager::FilterInputEvent(const WebInputEvent& event) {
-  if (event.GetType() != WebInputEvent::Type::kGestureTap &&
-      event.GetType() != WebInputEvent::Type::kGestureLongTap &&
-      event.GetType() != WebInputEvent::Type::kGestureLongPress &&
-      event.GetType() != WebInputEvent::Type::kMouseDown)
+  if (!IsUserInteractionInputType(event.GetType())) {
     return false;
+  }
 
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> j_obj = java_ref_.get(env);
   if (j_obj.is_null())
     return false;
-
-  web_contents_->GetNativeView()->RequestFocus();
 
   if (event.GetType() == WebInputEvent::Type::kMouseDown)
     return false;

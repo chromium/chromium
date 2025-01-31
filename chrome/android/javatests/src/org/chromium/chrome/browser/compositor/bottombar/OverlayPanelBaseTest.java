@@ -34,6 +34,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.PanelState;
@@ -75,6 +76,7 @@ public class OverlayPanelBaseTest {
     @Mock private Tab mTab;
     @Mock private InsetObserver mInsetObserver;
     @Mock private DesktopWindowStateManager mDesktopWindowStateManager;
+    @Mock private BottomControlsStacker mBottomControlsStacker;
 
     Activity mActivity;
     ActivityWindowAndroid mWindowAndroid;
@@ -92,7 +94,8 @@ public class OverlayPanelBaseTest {
                 Profile profile,
                 ViewGroup compositorViewHolder,
                 Tab tab,
-                DesktopWindowStateManager desktopWindowStateManager) {
+                DesktopWindowStateManager desktopWindowStateManager,
+                BottomControlsStacker bottomControlsStacker) {
             super(
                     context,
                     layoutManager,
@@ -103,7 +106,8 @@ public class OverlayPanelBaseTest {
                     compositorViewHolder,
                     MOCK_TOOLBAR_HEIGHT,
                     () -> tab,
-                    desktopWindowStateManager);
+                    desktopWindowStateManager,
+                    bottomControlsStacker);
         }
 
         /** Expose protected super method as public. */
@@ -149,7 +153,8 @@ public class OverlayPanelBaseTest {
                     profile,
                     compositorViewHolder,
                     tab,
-                    /* desktopWindowStateManager= */ null);
+                    /* desktopWindowStateManager= */ null,
+                    /* bottomControlsStacker= */ null);
         }
 
         @Override
@@ -186,7 +191,8 @@ public class OverlayPanelBaseTest {
                                     mProfile,
                                     mCompositorViewHolder,
                                     mTab,
-                                    mDesktopWindowStateManager);
+                                    mDesktopWindowStateManager,
+                                    mBottomControlsStacker);
                     mNoExpandPanel =
                             new NoExpandMockOverlayPanel(
                                     mActivity,
@@ -434,15 +440,19 @@ public class OverlayPanelBaseTest {
                 .thenReturn(ControlsPosition.BOTTOM);
         when(mBrowserControlsStateProvider.getBottomControlsHeight())
                 .thenReturn(MOCK_TOOLBAR_HEIGHT);
-        Assert.assertTrue(
-                "Panel should be shown above the bottom toolbar",
-                tabHeight - overlayHeight > mNoExpandPanel.calculateOverlayPanelY());
+        Assert.assertEquals(
+                "Panel should be shown right above the bottom toolbar",
+                tabHeight - overlayHeight,
+                mNoExpandPanel.calculateOverlayPanelY(),
+                /*delta*/ 0.1);
 
         // Toolbar partially hidden
         when(mBrowserControlsStateProvider.getBrowserControlHiddenRatio()).thenReturn(0.4f);
-        Assert.assertTrue(
-                "Panel should be shown above the bottom toolbar",
-                tabHeight - overlayHeight > mNoExpandPanel.calculateOverlayPanelY());
+        Assert.assertEquals(
+                "Panel should be shown right above the bottom toolbar",
+                tabHeight - overlayHeight,
+                mNoExpandPanel.calculateOverlayPanelY(),
+                /*delta*/ 0.1);
 
         // Hide toolbar
         when(mBrowserControlsStateProvider.getBrowserControlHiddenRatio()).thenReturn(1.f);

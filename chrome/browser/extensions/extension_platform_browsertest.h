@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/extensions/extension_browser_test_util.h"
 #include "chrome/test/base/platform_browser_test.h"
+#include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/extension_protocols.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
@@ -82,6 +83,39 @@ class ExtensionPlatformBrowserTest : public PlatformBrowserTest {
 
   // Returns the number of tabs in the current window.
   int GetTabCount();
+
+  // Returns whether the tab at `index` is selected.
+  bool IsTabSelected(int index);
+
+  // Waits until `script` calls "chrome.test.sendScriptResult(result)",
+  // where `result` is a serializable value, and returns `result`. Fails
+  // the test and returns an empty base::Value if `extension_id` isn't
+  // installed in the test's profile or doesn't have a background page, or
+  // if executing the script fails. The argument `script_user_activation`
+  // determines if the script should be executed after a user activation.
+  base::Value ExecuteScriptInBackgroundPage(
+      const extensions::ExtensionId& extension_id,
+      const std::string& script,
+      browsertest_util::ScriptUserActivation script_user_activation =
+          browsertest_util::ScriptUserActivation::kDontActivate);
+
+  // Waits until |script| calls "window.domAutomationController.send(result)",
+  // where |result| is a string, and returns |result|. Fails the test and
+  // returns an empty base::Value if |extension_id| isn't installed in test's
+  // profile or doesn't have a background page, or if executing the script
+  // fails. The argument |script_user_activation| determines if the script
+  // should be executed after a user activation.
+  std::string ExecuteScriptInBackgroundPageDeprecated(
+      const extensions::ExtensionId& extension_id,
+      const std::string& script,
+      browsertest_util::ScriptUserActivation script_user_activation =
+          browsertest_util::ScriptUserActivation::kDontActivate);
+
+  bool ExecuteScriptInBackgroundPageNoWait(
+      const extensions::ExtensionId& extension_id,
+      const std::string& script,
+      browsertest_util::ScriptUserActivation script_user_activation =
+          browsertest_util::ScriptUserActivation::kDontActivate);
 
   // Sets up `test_protocol_handler_` so that
   // chrome-extensions://<extension_id>/_test_resources/foo maps to

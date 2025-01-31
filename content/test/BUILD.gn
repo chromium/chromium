@@ -1136,13 +1136,13 @@ mojom("web_ui_ts_test_other_mojo_bindings") {
 
   ts_typemaps = [
     {
+      source = "data/web_ui_mojo_ts_test_other_converter.ts"
       types = [
         {
           mojom = "content.mojom.MappedDict"
           ts = "MappedDictType"
           ts_import = "./web_ui_mojo_ts_test_other_mapped_types.js"
           converter = "MappedDictConverter"
-          import = "web_ui_mojo_ts_test_converters.js"
         },
       ]
     },
@@ -1165,26 +1165,29 @@ mojom("web_ui_ts_test_mojo_bindings") {
 
   ts_typemaps = [
     {
+      source = "data/web_ui_mojo_ts_test_simple_converter.ts"
       types = [
         {
           mojom = "content.mojom.SimpleMappedType"
           ts = "string"
           converter = "SimpleTypeConverter"
-          import = "web_ui_mojo_ts_test_converters.js"
         },
+      ]
+    },
+    {
+      source = "data/web_ui_mojo_ts_test_converters.ts"
+      types = [
         {
           mojom = "content.mojom.NestedMappedType"
           ts = "TestNode"
           ts_import = "./web_ui_mojo_ts_test_mapped_types.js"
           converter = "NestedTypeConverter"
-          import = "web_ui_mojo_ts_test_converters.js"
         },
         {
           mojom = "content.mojom.StringDict"
           ts = "StringDictType"
           ts_import = "./web_ui_mojo_ts_test_mapped_types.js"
           converter = "StringDictConverter"
-          import = "web_ui_mojo_ts_test_converters.js"
         },
       ]
     },
@@ -1197,7 +1200,6 @@ preprocess_if_expr("preprocess_mojo_webui_test") {
   in_files = [
     "web_ui_mojo_conformance_test.ts",
     "web_ui_mojo_ts_test.ts",
-    "web_ui_mojo_ts_test_converters.ts",
     "web_ui_mojo_ts_test_mapped_types.ts",
     "web_ui_mojo_ts_test_other_mapped_types.ts",
     "web_ui_managed_interface_test.ts",
@@ -1220,7 +1222,9 @@ webui_ts_library("web_ui_mojo_test_build_ts") {
     "validation_test_interfaces.test-mojom-webui.ts",
     "web_ui_mojo_conformance_test.ts",
     "web_ui_mojo_ts_test.ts",
+    "web_ui_mojo_ts_test_simple_converter.ts",
     "web_ui_mojo_ts_test_converters.ts",
+    "web_ui_mojo_ts_test_other_converter.ts",
     "web_ui_mojo_ts_test_mapped_types.ts",
     "web_ui_mojo_ts_test_other_mapped_types.ts",
     "web_ui_ts_test.test-mojom-converters.ts",
@@ -1236,7 +1240,9 @@ webui_ts_library("web_ui_mojo_test_build_ts") {
     ":preprocess_mojo_webui_test",
     ":preprocess_mojo_webui_test_deps",
     ":web_ui_managed_interface_tests_bindings_ts__generator",
+    ":web_ui_ts_test_mojo_bindings_ts__copy_converters",
     ":web_ui_ts_test_mojo_bindings_ts__generator",
+    ":web_ui_ts_test_other_mojo_bindings_ts__copy_converters",
     ":web_ui_ts_test_other_mojo_bindings_ts__generator",
   ]
 }

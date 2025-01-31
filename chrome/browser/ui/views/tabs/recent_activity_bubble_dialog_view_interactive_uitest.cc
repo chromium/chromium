@@ -41,7 +41,7 @@ using data_sharing::MemberRole;
 namespace {
 
 const int kAvatarSize = 32;
-constexpr char kAvatarUrl[] = "/avatar=s32-cc-ns";
+constexpr char kAvatarUrl[] = "/avatar=s32-cc-rp-ns";
 constexpr char kSkipPixelTestsReason[] = "Should only run in pixel_tests.";
 
 // Create mock gfx::Image and convert to a string.

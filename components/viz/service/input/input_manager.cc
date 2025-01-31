@@ -499,8 +499,8 @@ InputManager::MakeRenderInputRouterSupport(input::RenderInputRouter* rir,
       frame_sink_manager_->GetOldestParentByChildFrameId(frame_sink_id);
   if (frame_sink_manager_->IsFrameSinkIdInRootSinkMap(parent_id)) {
 #if BUILDFLAG(IS_ANDROID)
-    return std::make_unique<RenderInputRouterSupportAndroid>(rir, this,
-                                                             frame_sink_id);
+    return std::make_unique<RenderInputRouterSupportAndroid>(
+        rir, this, frame_sink_id, GetGpuService());
 #else
     // InputVizard only supports Android currently.
     NOTREACHED();

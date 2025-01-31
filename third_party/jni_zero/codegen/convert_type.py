@@ -6,6 +6,7 @@
 from codegen import header_common
 import common
 import java_types
+import common
 
 
 def to_jni_expression(sb: common.StringBuilder,
@@ -22,8 +23,8 @@ def to_jni_expression(sb: common.StringBuilder,
   T = java_type.converted_type
   assert T
   if java_type.is_primitive():
-    sb(f'jni_zero::internal::PrimitiveConvert<{T}, {java_type.to_cpp()}>::ToJniType'
-       )
+    sb('jni_zero::internal::PrimitiveConvert'
+       f'<{T}, {java_type.to_cpp()}>::ToJniType')
     sb.param_list(['env', rvalue])
     return
 
@@ -80,8 +81,8 @@ def from_jni_expression(sb: common.StringBuilder,
   T = java_type.converted_type
   assert T
   if java_type.is_primitive():
-    sb(f'jni_zero::internal::PrimitiveConvert<{T}, {java_type.to_cpp()}>::FromJniType'
-       )
+    sb('jni_zero::internal::PrimitiveConvert'
+       f'<{T}, {java_type.to_cpp()}>::FromJniType')
     sb.param_list(['env', rvalue])
     return
 

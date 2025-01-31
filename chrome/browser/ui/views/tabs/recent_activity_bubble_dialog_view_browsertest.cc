@@ -49,7 +49,7 @@ namespace tab_groups {
 namespace {
 
 const int kAvatarSize = 32;
-constexpr char kAvatarUrl[] = "/avatar=s32-cc-ns";
+constexpr char kAvatarUrl[] = "/avatar=s32-cc-rp-ns";
 
 // Create mock gfx::Image and convert to a string.
 std::string CreateSerializedAvatar() {

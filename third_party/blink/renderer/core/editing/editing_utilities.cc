@@ -213,20 +213,6 @@ static bool HasEditableLevel(const Node& node, EditableLevel editable_level) {
   for (const Node& ancestor : NodeTraversal::InclusiveAncestorsOf(node)) {
     if (!(ancestor.IsHTMLElement() || ancestor.IsDocumentNode()))
       continue;
-    // An inert subtree should not contain any content or controls which are
-    // critical to understanding or using aspects of the page which are not in
-    // the inert state. Content in an inert subtree will not be perceivable by
-    // all users, or interactive. See
-    // https://html.spec.whatwg.org/multipage/interaction.html#the-inert-attribute.
-    // To prevent the invisible inert element being overlooked, the
-    // inert attribute of the element is initially assessed. See
-    // https://issues.chromium.org/issues/41490809.
-    if (RuntimeEnabledFeatures::InertElementNonEditableEnabled()) {
-      const Element* element = DynamicTo<Element>(ancestor);
-      if (element && element->IsInertRoot()) {
-        return false;
-      }
-    }
     if (const ComputedStyle* style =
             GetComputedStyleForElementOrLayoutObject(ancestor)) {
       switch (style->UsedUserModify()) {
@@ -236,6 +222,20 @@ static bool HasEditableLevel(const Node& node, EditableLevel editable_level) {
           return true;
         case EUserModify::kReadWritePlaintextOnly:
           return editable_level != kRichlyEditable;
+      }
+    }
+    // An inert subtree should not contain any content or controls which are
+    // critical to understanding or using aspects of the page which are not in
+    // the inert state. Content in an inert subtree will not be perceivable by
+    // all users, or interactive. See
+    // https://html.spec.whatwg.org/multipage/interaction.html#the-inert-attribute.
+    // To prevent the invisible inert element being overlooked, the
+    // inert attribute of the element is considered when style is not present.
+    // See https://issues.chromium.org/issues/41490809.
+    if (RuntimeEnabledFeatures::InertElementNonEditableEnabled()) {
+      const Element* element = DynamicTo<Element>(ancestor);
+      if (element && element->IsInertRoot()) {
+        return false;
       }
     }
   }

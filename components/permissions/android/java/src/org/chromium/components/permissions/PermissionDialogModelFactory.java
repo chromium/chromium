@@ -23,7 +23,7 @@ class PermissionDialogModelFactory {
         assert context != null;
 
         String messageText = delegate.getMessageText();
-        assert !TextUtils.isEmpty(messageText);
+        assert !TextUtils.isEmpty(messageText) || delegate.isEmbeddedPromptVariant();
 
         PropertyModel.Builder builder =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
@@ -41,8 +41,7 @@ class PermissionDialogModelFactory {
                                 PermissionsAndroidFeatureMap.isEnabled(
                                         PermissionsAndroidFeatureList
                                                 .ANDROID_CANCEL_PERMISSION_PROMPT_ON_TOUCH_OUTSIDE));
-        // TODO(crbug.com/388407665): we might change this when creating new UI.
-        if (delegate.canShowEphemeralOption() || delegate.isEmbeddedPromptVariant()) {
+        if (shouldUseVerticalButtons(delegate)) {
             builder.with(ModalDialogProperties.WRAP_CUSTOM_VIEW_IN_SCROLLABLE, true)
                     .with(
                             ModalDialogProperties.BUTTON_GROUP_BUTTON_SPEC_LIST,
@@ -54,6 +53,11 @@ class PermissionDialogModelFactory {
                     .with(
                             ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
                             delegate.getNegativeButtonText());
+            if (delegate.getEmbeddedPromptVariant() == EmbeddedPromptVariant.OS_SYSTEM_SETTINGS) {
+                builder.with(
+                        ModalDialogProperties.BUTTON_STYLES,
+                        ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE);
+            }
         }
         return builder.build();
     }
@@ -79,5 +83,25 @@ class PermissionDialogModelFactory {
                 : new ModalDialogProperties.ModalDialogButtonSpec[] {
                     positiveEphemeralButtonSpec, positiveButtonSpec, negativeButtonSpec
                 };
+    }
+
+    public static boolean shouldUseVerticalButtons(PermissionDialogDelegate delegate) {
+        switch (delegate.getEmbeddedPromptVariant()) {
+            case EmbeddedPromptVariant.UNINITIALIZED:
+                return delegate.canShowEphemeralOption();
+            case EmbeddedPromptVariant.ASK:
+            case EmbeddedPromptVariant.PREVIOUSLY_GRANTED:
+            case EmbeddedPromptVariant.PREVIOUSLY_DENIED:
+                return true;
+            case EmbeddedPromptVariant.ADMINISTRATOR_DENIED:
+            case EmbeddedPromptVariant.ADMINISTRATOR_GRANTED:
+            case EmbeddedPromptVariant.OS_SYSTEM_SETTINGS:
+                return false;
+            case EmbeddedPromptVariant.OS_PROMPT:
+                // We should never build a OS prompt view.
+                assert false;
+        }
+
+        return false;
     }
 }

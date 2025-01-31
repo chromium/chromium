@@ -10,6 +10,7 @@
 
 #include "base/debug/dump_without_crashing.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -226,9 +227,12 @@ class BorderView::BorderViewUpdater {
 
 BorderView::BorderView(Browser* browser)
     : updater_(std::make_unique<BorderViewUpdater>(browser, this)),
+      shader_(ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+          IDR_GLIC_BORDER_SHADER)),
       creation_time_(base::TimeTicks::Now()),
       theme_service_(ThemeServiceFactory::GetForProfile(browser->GetProfile())),
       browser_(browser) {
+  CHECK(!shader_.empty()) << "Shader not initialized.";
   auto* glic_service =
       GlicKeyedServiceFactory::GetGlicKeyedService(browser->GetProfile());
   // Post-initialization updates. Don't do the update in the updater's ctor
@@ -248,59 +252,6 @@ void BorderView::OnPaint(gfx::Canvas* canvas) {
   if (!compositor_) {
     return;
   }
-  const std::string_view kDrawRect(R"(
-      // These are taken from kColorSysOutline
-      const float4 dark_color = vec4(142.0, 145.0, 143.0, 255.0) / 255.0;
-      const float4 light_color = vec4(116.0, 119.0, 117.0, 255.0) / 255.0;
-
-      const float max_extent = 25.0;
-      const float border_width = 5.0;
-      const float half_pixel = 0.5;
-      uniform int u_time;
-      uniform int u_dark;
-      uniform float u_emphasis;
-      uniform float u_corner_radius;
-      uniform float2 u_resolution;
-
-      void BorderDistance(float2 coord, out float delta, out float aa) {
-        float2 tl = vec2(border_width);
-        float2 br = u_resolution - tl;
-        float2 dtl = coord - tl;
-        float2 dbr = br - coord;
-
-        float extent = max_extent * u_emphasis;
-        float rounded_extent =
-            extent + u_corner_radius - border_width - half_pixel;
-        if (dtl.y < extent && dtl.x < extent) {
-          delta = extent - distance(coord, tl + vec2(extent));
-        } else if (dtl.y < extent && dbr.x < extent) {
-          delta = extent - distance(coord, vec2(br.x - extent, tl.y + extent));
-        } else if (dbr.y < rounded_extent && dtl.x < rounded_extent) {
-          delta = rounded_extent - distance(
-              coord, vec2(tl.x + rounded_extent, br.y - rounded_extent));
-          aa = half_pixel;
-        } else if (dbr.y < rounded_extent && dbr.x < rounded_extent) {
-          delta = rounded_extent - distance(coord, br - vec2(rounded_extent));
-          aa = half_pixel;
-        } else {
-          delta = min(min(min(dtl.x, dtl.y), dbr.x), dbr.y);
-        }
-      }
-
-      vec4 main(float2 coord) {
-        float4 border_color = light_color;
-        if (u_dark > 0) {
-          border_color = dark_color;
-        }
-        float extent = max_extent * u_emphasis;
-        float delta = 0.0;
-        float aa = 0.0;
-        BorderDistance(coord, delta, aa);
-        float opacity = 1.0 - min(max(delta / (extent + aa), 0.0), 1.0);
-        return border_color * (opacity * opacity);
-      }
-    )");
-
   float corner_radius = 0.0f;
 #if BUILDFLAG(IS_MAC)
   if (!browser_->window()->IsFullscreen()) {
@@ -322,7 +273,7 @@ void BorderView::OnPaint(gfx::Canvas* canvas) {
   views::View::OnPaint(canvas);
   cc::PaintFlags flags;
   flags.setShader(cc::PaintShader::MakeSkSLCommand(
-      kDrawRect, std::move(float_uniforms), std::move(float2_uniforms),
+      shader_, std::move(float_uniforms), std::move(float2_uniforms),
       /*float4_uniforms=*/{}, std::move(int_uniforms)));
   canvas->DrawRect(gfx::RectF(bounds()), flags);
 }

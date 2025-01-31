@@ -82,6 +82,7 @@ source_set("impl") {
     "//chrome/browser:browser_process",
     "//chrome/browser:global_features",
     "//chrome/browser/glic/launcher",
+    "//chrome/browser/glic/resources:browser_resources",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/profiles:profile_util",
     "//chrome/browser/resources/glic:resources",

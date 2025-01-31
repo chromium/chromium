@@ -4,15 +4,12 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
-import static org.junit.Assert.assertEquals;
-
 import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,11 +17,10 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.BookmarkTestRule;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
@@ -41,7 +37,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /** Tests for {@link BookmarkModel}, the data layer of bookmarks. */
 @RunWith(BaseJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 public class BookmarkModelTest {
     public static final GURL A_COM = new GURL("http://a.com");
@@ -49,43 +44,35 @@ public class BookmarkModelTest {
     public static final GURL C_COM = new GURL("http://c.com");
     public static final GURL AA_COM = new GURL("http://aa.com");
 
+    @Rule public final ChromeBrowserTestRule mChromeBrowserTestRule = new ChromeBrowserTestRule();
+
     private static final int TIMEOUT_MS = 5000;
-
-    @ClassRule
-    public static ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
-    @Rule public BookmarkTestRule mBookmarkTestRule = new BookmarkTestRule();
-
     private BookmarkModel mBookmarkModel;
     private BookmarkId mMobileNode;
     private BookmarkId mOtherNode;
     private BookmarkId mDesktopNode;
 
-    @BeforeClass
-    public static void setUpBeforeClass() throws Exception {
-        sActivityTestRule.startMainActivityOnBlankPage();
-    }
-
     @Before
     public void setUp() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mBookmarkModel =
-                            BookmarkModel.getForProfile(
-                                    sActivityTestRule.getProfile(/* incognito= */ false));
-                    mBookmarkModel.setPartnerBookmarkIteratorSupplier(() -> null);
+                    Profile profile = ProfileManager.getLastUsedRegularProfile();
+                    mBookmarkModel = BookmarkModel.getForProfile(profile);
                     mBookmarkModel.loadEmptyPartnerBookmarkShimForTesting();
                 });
 
         BookmarkTestUtil.waitForBookmarkModelLoaded();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mBookmarkModel.removeAllUserBookmarks();
                     mMobileNode = mBookmarkModel.getMobileFolderId();
                     mDesktopNode = mBookmarkModel.getDesktopFolderId();
                     mOtherNode = mBookmarkModel.getOtherFolderId();
                 });
+    }
+
+    @After
+    public void tearDown() {
+        ThreadUtils.runOnUiThreadBlocking(() -> mBookmarkModel.removeAllUserBookmarks());
     }
 
     @Test
@@ -293,26 +280,6 @@ public class BookmarkModelTest {
 
         BookmarkId folderAA = mBookmarkModel.addFolder(folderA, 0, "faa");
         verifyBookmark(folderAA, "faa", null, true, folderA);
-    }
-
-    @Test
-    @SmallTest
-    public void testUrlComposition() {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    BookmarkId mobileId = mBookmarkModel.getMobileFolderId();
-                    BookmarkId bookmarkBarId = mBookmarkModel.getDesktopFolderId();
-                    BookmarkId otherId = mBookmarkModel.getOtherFolderId();
-                    assertEquals(
-                            "chrome-native://bookmarks/folder/" + mobileId,
-                            BookmarkUiState.createFolderUrl(mobileId).toString());
-                    assertEquals(
-                            "chrome-native://bookmarks/folder/" + bookmarkBarId,
-                            BookmarkUiState.createFolderUrl(bookmarkBarId).toString());
-                    assertEquals(
-                            "chrome-native://bookmarks/folder/" + otherId,
-                            BookmarkUiState.createFolderUrl(otherId).toString());
-                });
     }
 
     private BookmarkId addBookmark(

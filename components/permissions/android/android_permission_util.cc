@@ -152,7 +152,7 @@ bool HasSystemPermission(ContentSettingsType type,
   DCHECK(window_android);
   if (type == ContentSettingsType::GEOLOCATION) {
     LocationSettingsImpl location_settings;
-    if (location_settings.IsSystemLocationSettingEnabled()) {
+    if (!location_settings.IsSystemLocationSettingEnabled()) {
       return false;
     }
   }

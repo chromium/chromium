@@ -16,7 +16,7 @@ struct FeedbackInfo {
   // A `chrome-untrusted://scanner-feedback/screenshots/UNGUESSABLETOKEN.png`
   // URL which, when accessed, will display the screenshot.
   // The contents are a (possibly resized) screen capture from Ash.
-  url.mojom.Url screenshot_url;
+  url.mojom.Url? screenshot_url;
 };
 
 // Handles communication from `chrome-untrusted://scanner-feedback` to the

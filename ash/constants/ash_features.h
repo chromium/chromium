@@ -590,6 +590,8 @@ BASE_DECLARE_FEATURE(kLobsterQuickInsertZeroState);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kLobsterFeedback);
 COMPONENT_EXPORT(ASH_CONSTANTS)
+BASE_DECLARE_FEATURE(kLobsterAlwaysShowDisclaimerForTesting);
+COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kLobsterRightClickMenu);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kFeatureManagementLobster);
@@ -1211,6 +1213,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLauncherSearchControlEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLinkCrossDeviceDogfoodFeedbackEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLinkCrossDeviceInternalsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLobsterEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLobsterAlwaysShowDisclaimerForTesting();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsLockScreenHideSensitiveNotificationsSupported();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLockScreenNotificationsEnabled();

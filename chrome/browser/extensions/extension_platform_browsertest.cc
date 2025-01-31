@@ -13,6 +13,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
@@ -358,7 +359,10 @@ content::RenderFrameHost* ExtensionPlatformBrowserTest::NavigateToURLInNewTab(
   // Navigate and block until navigation finishes.
   android_ui_test_utils::OpenUrlInNewTab(profile(), GetActiveWebContents(),
                                          url);
-  return content::ConvertToRenderFrameHost(GetActiveWebContents());
+  content::WebContents* new_web_contents = GetActiveWebContents();
+  // Mimic BROWSER_TEST_WAIT_FOR_LOAD_STOP like above.
+  content::WaitForLoadStop(new_web_contents);
+  return content::ConvertToRenderFrameHost(new_web_contents);
 #endif
 }
 
@@ -370,6 +374,41 @@ int ExtensionPlatformBrowserTest::GetTabCount() {
       TabModelList::GetTabModelForWebContents(GetActiveWebContents());
   return tab_model->GetTabCount();
 #endif
+}
+
+bool ExtensionPlatformBrowserTest::IsTabSelected(int index) {
+#if !BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+  return browser()->tab_strip_model()->IsTabSelected(index);
+#else
+  TabModel* tab_model =
+      TabModelList::GetTabModelForWebContents(GetActiveWebContents());
+  return tab_model->GetActiveIndex() == index;
+#endif
+}
+
+base::Value ExtensionPlatformBrowserTest::ExecuteScriptInBackgroundPage(
+    const extensions::ExtensionId& extension_id,
+    const std::string& script,
+    browsertest_util::ScriptUserActivation script_user_activation) {
+  return browsertest_util::ExecuteScriptInBackgroundPage(
+      profile(), extension_id, script, script_user_activation);
+}
+
+std::string
+ExtensionPlatformBrowserTest::ExecuteScriptInBackgroundPageDeprecated(
+    const extensions::ExtensionId& extension_id,
+    const std::string& script,
+    browsertest_util::ScriptUserActivation script_user_activation) {
+  return browsertest_util::ExecuteScriptInBackgroundPageDeprecated(
+      profile(), extension_id, script, script_user_activation);
+}
+
+bool ExtensionPlatformBrowserTest::ExecuteScriptInBackgroundPageNoWait(
+    const extensions::ExtensionId& extension_id,
+    const std::string& script,
+    browsertest_util::ScriptUserActivation script_user_activation) {
+  return browsertest_util::ExecuteScriptInBackgroundPageNoWait(
+      profile(), extension_id, script, script_user_activation);
 }
 
 void ExtensionPlatformBrowserTest::SetUpTestProtocolHandler() {

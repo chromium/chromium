@@ -104,10 +104,11 @@ def LoadTsTypemapConfig(path):
     for config in json.load(f):
       for entry in config['types']:
         configs[entry['mojom']] = {
+            'converter': entry['converter'],
+            # note that the source is per-config, not per-type.
+            'converter_import': config['source'],
             'typename': entry['ts'],
             'type_import': entry.get('ts_import', None),
-            'converter_import': entry['import'],
-            'converter': entry['converter'],
         }
   return configs
 

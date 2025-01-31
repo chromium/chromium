@@ -38,6 +38,8 @@ public class EdgeToEdgeUtils {
     private static final String ELIGIBLE_HISTOGRAM = "Android.EdgeToEdge.Eligible";
     private static final String INELIGIBLE_REASON_HISTOGRAM =
             "Android.EdgeToEdge.IneligibilityReason";
+    private static final String PARAM_SAFE_AREA_CONSTRAINT_SCROLLABLE_WHEN_STACKING =
+            "scrollable_when_stacking";
 
     /** The reason of why the current session is not eligible for edge to edge. */
     @IntDef({
@@ -105,6 +107,15 @@ public class EdgeToEdgeUtils {
     public static boolean isSafeAreaConstraintEnabled() {
         return isEdgeToEdgeBottomChinEnabled()
                 && ChromeFeatureList.sEdgeToEdgeSafeAreaConstraint.isEnabled();
+    }
+
+    /** Whether the bottom chin should ignore the constraint when stacking with other layers. */
+    public static boolean isConstraintBottomChinScrollableWhenStacking() {
+        return isSafeAreaConstraintEnabled()
+                && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                        ChromeFeatureList.EDGE_TO_EDGE_SAFE_AREA_CONSTRAINT,
+                        PARAM_SAFE_AREA_CONSTRAINT_SCROLLABLE_WHEN_STACKING,
+                        false);
     }
 
     /**

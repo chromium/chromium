@@ -70,8 +70,10 @@ AndroidDataControlsDialog::CreateDialogModel() {
           base::BindOnce(&AndroidDataControlsDialog::OnButtonClicked,
                          base::Unretained(this),
                          /*bypassed=*/false),
-          ui::DialogModel::Button::Params().SetLabel(l10n_util::GetStringUTF16(
-              IDS_DATA_CONTROLS_PASTE_WARN_CANCEL_BUTTON)));
+          ui::DialogModel::Button::Params()
+              .SetLabel(l10n_util::GetStringUTF16(
+                  IDS_DATA_CONTROLS_PASTE_WARN_CANCEL_BUTTON))
+              .SetStyle(ui::ButtonStyle::kProminent));
       break;
 
     case Type::kClipboardCopyWarn:
@@ -85,8 +87,10 @@ AndroidDataControlsDialog::CreateDialogModel() {
           base::BindOnce(&AndroidDataControlsDialog::OnButtonClicked,
                          base::Unretained(this),
                          /*bypassed=*/false),
-          ui::DialogModel::Button::Params().SetLabel(l10n_util::GetStringUTF16(
-              IDS_DATA_CONTROLS_COPY_WARN_CANCEL_BUTTON)));
+          ui::DialogModel::Button::Params()
+              .SetLabel(l10n_util::GetStringUTF16(
+                  IDS_DATA_CONTROLS_COPY_WARN_CANCEL_BUTTON))
+              .SetStyle(ui::ButtonStyle::kProminent));
       break;
   }
 

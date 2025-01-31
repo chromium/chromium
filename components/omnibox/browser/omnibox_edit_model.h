@@ -610,6 +610,11 @@ class OmniboxEditModel {
   // data source, this should not be called when there's no view.
   std::u16string GetText() const;
 
+  // Lookup the bitmap for `match` based on keyword. Returns nullptr if not
+  // found.
+  const SkBitmap* GetPopupRichSuggestionBitmap(
+      const std::u16string& keyword) const;
+
   // Owns this.
   raw_ptr<OmniboxController> controller_;
 

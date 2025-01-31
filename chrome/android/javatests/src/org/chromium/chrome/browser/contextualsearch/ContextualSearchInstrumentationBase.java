@@ -105,7 +105,8 @@ public class ContextualSearchInstrumentationBase {
                     true,
                     null,
                     sActivityTestRule.getActivity().getEdgeToEdgeControllerSupplierForTesting(),
-                    /* desktopWindowStateManager= */ null);
+                    /* desktopWindowStateManager= */ null,
+                    /* bottomControlsStacker= */ null);
         }
 
         @Override

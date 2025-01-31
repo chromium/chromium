@@ -1396,6 +1396,7 @@ if (current_toolchain == default_toolchain) {
       "//content/test/data/android/installedapp.html",
       "//content/test/data/android/media_permissions.html",
       "//content/test/data/android/midi_permissions.html",
+      "//content/test/data/android/permission_element.html",
       "//content/test/data/android/permission_navigation.html",
       "//content/test/data/android/webshare.html",
       "//content/test/data/android/webshare-apk.html",
