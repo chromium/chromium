@@ -304,8 +304,7 @@ DOMTimer::DOMTimer(ExecutionContext& context,
   MoveToNewTaskRunner(context.GetTaskRunner(task_type));
 
   // Clamping up to 1ms for historical reasons crbug.com/402694.
-  // Removing clamp for single_shot behind a feature flag.
-  if (!single_shot || !blink::features::IsSetTimeoutWithoutClampEnabled()) {
+  if (!single_shot && !blink::features::IsSetIntervalWithoutClampEnabled()) {
     timeout = std::max(timeout, base::Milliseconds(1));
   }
 

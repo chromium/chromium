@@ -101,9 +101,6 @@ const char* const kSetTimeout0ScriptText =
 TEST_F(DOMTimerTest, setTimeout_ZeroIsNotClampedToOne) {
   v8::HandleScope scope(GetPage().GetAgentGroupScheduler().Isolate());
 
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kSetTimeoutWithoutClamp);
-
   ExecuteScriptAndWaitUntilIdle(kSetTimeout0ScriptText);
 
   double time = ToDoubleValue(EvalExpression("elapsed"), scope);
@@ -111,13 +108,37 @@ TEST_F(DOMTimerTest, setTimeout_ZeroIsNotClampedToOne) {
   EXPECT_THAT(time, DoubleNear(0., kThreshold));
 }
 
-TEST_F(DOMTimerTest, setTimeout_ZeroIsClampedToOne) {
+const char* const kSetInterval0ScriptText =
+    "var last = performance.now();"
+    "var elapsed;"
+    "var interval;"
+    "function setIntervalCallback() {"
+    "  var current = performance.now();"
+    "  elapsed = current - last;"
+    "  clearInterval(interval);"
+    "}"
+    "interval = setInterval(setIntervalCallback, 0);";
+
+TEST_F(DOMTimerTest, setInterval_ZeroIsNotClampedToOne) {
   v8::HandleScope scope(GetPage().GetAgentGroupScheduler().Isolate());
 
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kSetTimeoutWithoutClamp);
+  feature_list.InitAndEnableFeature(features::kSetIntervalWithoutClamp);
 
-  ExecuteScriptAndWaitUntilIdle(kSetTimeout0ScriptText);
+  ExecuteScriptAndWaitUntilIdle(kSetInterval0ScriptText);
+
+  double time = ToDoubleValue(EvalExpression("elapsed"), scope);
+
+  EXPECT_THAT(time, DoubleNear(0., kThreshold));
+}
+
+TEST_F(DOMTimerTest, setInterval_ZeroIsClampedToOne) {
+  v8::HandleScope scope(GetPage().GetAgentGroupScheduler().Isolate());
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kSetIntervalWithoutClamp);
+
+  ExecuteScriptAndWaitUntilIdle(kSetInterval0ScriptText);
 
   double time = ToDoubleValue(EvalExpression("elapsed"), scope);
 

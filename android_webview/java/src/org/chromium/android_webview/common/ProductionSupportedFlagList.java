@@ -379,8 +379,8 @@ public final class ProductionSupportedFlagList {
                 AndroidMetricsFeatures.ANDROID_METRICS_ASYNC_METRIC_LOGGING,
                 "Initiate metric uploading on a background thread."),
         Flag.baseFeature(
-                BlinkFeatures.SET_TIMEOUT_WITHOUT_CLAMP,
-                "Enables faster setTimeout(,0) by removing the 1 ms clamping."),
+                BlinkFeatures.SET_INTERVAL_WITHOUT_CLAMP,
+                "Enables faster setInterval(,0) by removing the 1 ms clamping."),
         Flag.baseFeature(
                 BlinkFeatures.PAINT_HOLDING_FOR_IFRAMES,
                 "Show stale paint from old Document until new Document is ready for subframe"

@@ -2325,11 +2325,11 @@ BASE_FEATURE(kSetLowPriorityForBeacon,
              "SetLowPriorityForBeacon",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, the setTimeout(..., 0) will not clamp to 1ms.
+// If enabled, calling setInterval(..., 0) will not clamp to 1ms.
 // Tracking bug: https://crbug.com/402694.
-BASE_FEATURE(kSetTimeoutWithoutClamp,
-             "SetTimeoutWithoutClamp",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kSetIntervalWithoutClamp,
+             "SetIntervalWithoutClamp",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enable the shared storage API. Note that enabling this feature does not
 // automatically expose this API to the web, it only allows the element to be
@@ -2857,8 +2857,8 @@ bool IsParkableImagesToDiskEnabled() {
   return base::FeatureList::IsEnabled(kParkableImagesToDisk);
 }
 
-bool IsSetTimeoutWithoutClampEnabled() {
-  return base::FeatureList::IsEnabled(features::kSetTimeoutWithoutClamp);
+bool IsSetIntervalWithoutClampEnabled() {
+  return base::FeatureList::IsEnabled(features::kSetIntervalWithoutClamp);
 }
 
 bool IsUnloadBlocklisted() {
