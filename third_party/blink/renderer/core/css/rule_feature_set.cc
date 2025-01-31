@@ -33,7 +33,6 @@
 #include <algorithm>
 #include <bitset>
 
-#include "base/auto_reset.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/core/css/css_selector_list.h"

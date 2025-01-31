@@ -6,7 +6,6 @@
 
 #include <optional>
 
-#include "base/auto_reset.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/ui_base_types.h"

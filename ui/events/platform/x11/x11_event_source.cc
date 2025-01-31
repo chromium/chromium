@@ -6,7 +6,6 @@
 #include <memory>
 #include <type_traits>
 
-#include "base/auto_reset.h"
 #include "base/logging.h"
 #include "base/memory/free_deleter.h"
 #include "base/memory/ref_counted_memory.h"

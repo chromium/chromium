@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/auto_reset.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"

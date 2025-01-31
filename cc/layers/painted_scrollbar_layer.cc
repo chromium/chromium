@@ -8,7 +8,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/auto_reset.h"
 #include "cc/layers/painted_scrollbar_layer_impl.h"
 #include "cc/paint/skia_paint_canvas.h"
 #include "cc/trees/draw_property_utils.h"

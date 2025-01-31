@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/paint/cull_rect_updater.h"
 
-#include "base/auto_reset.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_WEBAPPS_WEBAPPS_CLIENT_DESKTOP_H_
 #define CHROME_BROWSER_WEBAPPS_WEBAPPS_CLIENT_DESKTOP_H_
 
-#include "base/auto_reset.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "chrome/browser/webapps/chrome_webapps_client.h"

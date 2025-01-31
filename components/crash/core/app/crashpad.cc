@@ -18,7 +18,6 @@
 #include <string_view>
 #include <vector>
 
-#include "base/auto_reset.h"
 #include "base/base_paths.h"
 #include "base/check.h"
 #include "base/command_line.h"

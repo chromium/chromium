@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_APPS_LINK_CAPTURING_CHROMEOS_REIMPL_NAVIGATION_CAPTURING_THROTTLE_H_
 #define CHROME_BROWSER_APPS_LINK_CAPTURING_CHROMEOS_REIMPL_NAVIGATION_CAPTURING_THROTTLE_H_
 
+#include "base/auto_reset.h"
 #include "content/public/browser/navigation_throttle.h"
 
 class Profile;
