@@ -1,20 +1,12 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<!--
-This file contains definition of resources that will be translated for each
-locale.  The variables is_win, is_macosx, is_linux, is_ios and is_posix are
-available for making strings OS specific.  Other platform defines such as
-use_titlecase are declared in build/common.gypi.
-
-The strings in this file are specific to iOS, thus is_ios will be true and
-all other OS specific variables will be false.
--->
-
-<grit base_dir="." latest_public_release="0" current_release="1"
-      source_lang_id="en" enc_check="möl">
+<?xml version='1.0' encoding='UTF-8'?>
+<grit base_dir="." latest_public_release="0" current_release="1" source_lang_id="en" enc_check="möl">
+  <!--
+  This file contains definition of resources that will be translated for each
+  locale.  The strings in this file are specific to iOS.
+  -->
   <outputs>
     <output filename="grit/ios_content_widget_extension_branded_strings.h" type="rc_header">
-      <emit emit_type="prepend"></emit>
+      <emit emit_type="prepend" />
     </output>
     <output filename="ios_content_widget_extension_branded_strings_af.pak" type="data_package" lang="af" />
     <output filename="ios_content_widget_extension_branded_strings_am.pak" type="data_package" lang="am" />
