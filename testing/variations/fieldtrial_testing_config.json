@@ -3063,7 +3063,9 @@
                     },
                     "enable_features": [
                         "BackForwardTransitions",
-                        "MirrorBackForwardGesturesInRTL"
+                        "CompressBitmapAtBackgroundPriority",
+                        "MirrorBackForwardGesturesInRTL",
+                        "NativePageTransitionHardwareCapture"
                     ],
                     "disable_features": [
                         "IPH_RtlGestureNavigation"
@@ -3076,7 +3078,9 @@
                     ],
                     "disable_features": [
                         "BackForwardTransitions",
-                        "IPH_RtlGestureNavigation"
+                        "CompressBitmapAtBackgroundPriority",
+                        "IPH_RtlGestureNavigation",
+                        "NativePageTransitionHardwareCapture"
                     ]
                 },
                 {
@@ -3091,8 +3095,10 @@
                     },
                     "enable_features": [
                         "BackForwardTransitions",
+                        "CompressBitmapAtBackgroundPriority",
                         "IPH_RtlGestureNavigation",
-                        "MirrorBackForwardGesturesInRTL"
+                        "MirrorBackForwardGesturesInRTL",
+                        "NativePageTransitionHardwareCapture"
                     ]
                 },
                 {
@@ -3107,8 +3113,10 @@
                     },
                     "enable_features": [
                         "BackForwardTransitions",
+                        "CompressBitmapAtBackgroundPriority",
                         "IPH_RtlGestureNavigation",
-                        "MirrorBackForwardGesturesInRTL"
+                        "MirrorBackForwardGesturesInRTL",
+                        "NativePageTransitionHardwareCapture"
                     ]
                 }
             ]
