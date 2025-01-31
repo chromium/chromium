@@ -2798,16 +2798,6 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.PasswordMigrationWarning.Trigger"
-    enum="PasswordMigrationWarningTriggers" expires_after="2025-04-13">
-  <owner>izuzic@google.com</owner>
-  <owner>ioanap@chromium.org</owner>
-  <summary>
-    This histogram logs the UI surface that led to showing the local passwords
-    migration warning. Recorded when the warning sheet is shown. Android only.
-  </summary>
-</histogram>
-
 <histogram name="PasswordManager.PasswordMigrationWarning.UserAction"
     enum="PasswordMigrationWarningUserActions" expires_after="2025-04-13">
   <owner>izuzic@google.com</owner>
