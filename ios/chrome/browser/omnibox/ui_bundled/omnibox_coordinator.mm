@@ -132,11 +132,6 @@
   _toolbarHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), ToolbarCommands);
 
-  _omniboxAutocompleteController = [[OmniboxAutocompleteController alloc] init];
-  _omniboxPopupController = [[OmniboxPopupController alloc] init];
-  _omniboxAutocompleteController.omniboxPopupController =
-      _omniboxPopupController;
-
   self.viewController =
       [[OmniboxViewController alloc] initWithIsLensOverlay:_isLensOverlay];
   self.viewController.defaultLeadingImage =
@@ -206,11 +201,21 @@
                   controller:_editView->controller()];
   }
 
+  _omniboxAutocompleteController = [[OmniboxAutocompleteController alloc]
+      initWithOmniboxController:_editView->controller()];
+  _omniboxPopupController = [[OmniboxPopupController alloc] init];
+  _omniboxAutocompleteController.omniboxPopupController =
+      _omniboxPopupController;
+
   self.popupCoordinator = [self createPopupCoordinator:self.presenterDelegate];
   [self.popupCoordinator start];
 }
 
 - (void)stop {
+  [_omniboxAutocompleteController disconnect];
+  _omniboxAutocompleteController = nil;
+  _omniboxPopupController = nil;
+
   [self.popupCoordinator stop];
   self.popupCoordinator = nil;
 
@@ -230,9 +235,6 @@
   self.returnDelegate = nil;
   [self.zeroSuggestPrefetchHelper disconnect];
   self.zeroSuggestPrefetchHelper = nil;
-
-  _omniboxPopupController = nil;
-  _omniboxAutocompleteController = nil;
 
   [NSNotificationCenter.defaultCenter removeObserver:self];
 }
