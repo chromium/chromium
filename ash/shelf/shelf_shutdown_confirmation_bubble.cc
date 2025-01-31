@@ -4,6 +4,7 @@
 
 #include "ash/shelf/shelf_shutdown_confirmation_bubble.h"
 
+#include "ash/public/cpp/shelf_config.h"
 #include "ash/shelf/login_shelf_button.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
@@ -188,6 +189,7 @@ void ShelfShutdownConfirmationBubble::OnThemeChanged() {
       AshColorProvider::ContentLayerType::kButtonLabelColor);
   cancel_->SetEnabledTextColors(button_color);
   confirm_->SetEnabledTextColors(button_color);
+  set_color(ShelfConfig::Get()->GetDefaultShelfColor(GetWidget()));
 }
 
 std::u16string ShelfShutdownConfirmationBubble::GetAccessibleWindowTitle()
