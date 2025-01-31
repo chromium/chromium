@@ -21375,6 +21375,24 @@
             ]
         }
     ],
+    "ScrimForBrowserWindowModal": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ScrimForBrowserWindowModal"
+                    ]
+                }
+            ]
+        }
+    ],
     "ScrimForTabModal": [
         {
             "platforms": [

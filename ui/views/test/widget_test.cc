@@ -271,7 +271,15 @@ WidgetVisibleWaiter::WidgetVisibleWaiter(Widget* widget) {
 WidgetVisibleWaiter::~WidgetVisibleWaiter() = default;
 
 void WidgetVisibleWaiter::Wait() {
+  expecting_visible_ = true;
   if (!widget_observation_.GetSource()->IsVisible()) {
+    run_loop_.Run();
+  }
+}
+
+void WidgetVisibleWaiter::WaitUntilInvisible() {
+  expecting_visible_ = false;
+  if (widget_observation_.GetSource()->IsVisible()) {
     run_loop_.Run();
   }
 }
@@ -281,7 +289,7 @@ void WidgetVisibleWaiter::OnWidgetVisibilityChanged(Widget* widget,
   if (!run_loop_.running()) {
     return;
   }
-  if (visible) {
+  if (visible == expecting_visible_) {
     DCHECK(widget_observation_.IsObservingSource(widget));
     run_loop_.Quit();
   }

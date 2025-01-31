@@ -1459,6 +1459,11 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // If a descendent of |root_view_| is focused, then clear the focus.
   void ClearFocusFromWidget();
 
+  // Notifies the parent that a window-modal child's visibility changed.
+  // This function is a no-op if the parent does not exist or if this widget is
+  // not a window modal.
+  void MaybeNotifyWindowModalVisibilityChanged(bool visible);
+
   // This holds logic that needs to called synchronously after showing, before
   // the native widget asynchronously invokes OnNativeWidgetVisibilityChanged().
   void HandleShowRequested();

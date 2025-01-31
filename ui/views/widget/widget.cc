@@ -1887,6 +1887,7 @@ void Widget::OnNativeWidgetVisibilityChanged(bool visible) {
   if (GetCompositor() && root && root->layer()) {
     root->layer()->SetVisible(visible);
   }
+  MaybeNotifyWindowModalVisibilityChanged(visible);
 }
 
 void Widget::OnNativeWidgetCreated() {
@@ -2616,6 +2617,24 @@ void Widget::ClearFocusFromWidget() {
   }
 }
 
+void Widget::MaybeNotifyWindowModalVisibilityChanged(bool visible) {
+  if (!widget_delegate()) {
+    return;
+  }
+
+  if (widget_delegate()->GetModalType() != ui::mojom::ModalType::kWindow) {
+    return;
+  }
+
+  if (!parent_) {
+    return;
+  }
+
+  parent_->observers_.Notify(
+      &WidgetObserver::OnWidgetWindowModalVisibilityChanged, parent_.get(),
+      visible);
+}
+
 void Widget::HandleShowRequested() {
   sublevel_manager_->EnsureOwnerSublevel();
   internal::AnyWidgetObserverSingleton::GetInstance()->OnAnyWidgetShown(this);
@@ -2643,6 +2662,13 @@ void Widget::HandleWidgetDestroying() {
 void Widget::HandleWidgetDestroyed() {
   if (native_widget_destroyed_) {
     return;
+  }
+
+  // The widget can still be visible. This happens on macOS when
+  // the client destroys a CLIENT_OWNS_WIDGET widget. The OS has no
+  // chance to send us a visibility change event.
+  if (IsVisible()) {
+    MaybeNotifyWindowModalVisibilityChanged(false);
   }
 
   ax_mode_observation_.Reset();

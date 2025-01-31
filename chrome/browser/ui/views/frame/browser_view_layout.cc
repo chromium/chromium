@@ -45,6 +45,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/webview/webview.h"
+#include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
@@ -183,6 +184,7 @@ class BrowserViewLayout::WebContentsModalDialogHostViews
 BrowserViewLayout::BrowserViewLayout(
     std::unique_ptr<BrowserViewLayoutDelegate> delegate,
     BrowserView* browser_view,
+    views::View* window_scrim,
     views::View* top_container,
     WebAppFrameToolbarView* web_app_frame_toolbar,
     views::Label* web_app_window_title,
@@ -199,6 +201,7 @@ BrowserViewLayout::BrowserViewLayout(
     views::View* contents_separator)
     : delegate_(std::move(delegate)),
       browser_view_(browser_view),
+      window_scrim_(window_scrim),
       top_container_(top_container),
       web_app_frame_toolbar_(web_app_frame_toolbar),
       web_app_window_title_(web_app_window_title),
@@ -425,6 +428,11 @@ int BrowserViewLayout::NonClientHitTest(const gfx::Point& point) {
 void BrowserViewLayout::Layout(views::View* browser_view) {
   TRACE_EVENT0("ui", "BrowserViewLayout::Layout");
   vertical_layout_rect_ = browser_view->GetLocalBounds();
+  // The window scrim covers the entire browser view.
+  if (window_scrim_) {
+    window_scrim_->SetBoundsRect(vertical_layout_rect_);
+  }
+
   int top_inset = delegate_->GetTopInsetInBrowserView();
   int top = LayoutTitleBarForWebApp(top_inset);
   if (delegate_->ShouldLayoutTabStrip()) {
