@@ -195,6 +195,9 @@ void StreamingSearchPrefetchURLLoader::ResponseReader::OnDataHandleReady(
     // result, in which case we do not want to do anything.
     return;
   }
+  TRACE_EVENT0(
+      "loading",
+      "StreamingSearchPrefetchURLLoader::ResponseReader::OnDataHandleReady");
   if (result != MOJO_RESULT_OK) {
     status_ = ResponseDataReaderStatus::kServingError;
     OnForwardingDisconnection();
