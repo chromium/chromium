@@ -124,6 +124,9 @@ class FindTabHelper : public content::WebContentsUserData<FindTabHelper> {
 
   void set_delegate(Delegate* delegate) { delegate_ = delegate; }
 
+  // Used to determine if the find session is active for this WebContents.
+  bool is_find_session_active() const { return is_find_session_active_; }
+
  private:
   explicit FindTabHelper(content::WebContents* web_contents);
   friend class content::WebContentsUserData<FindTabHelper>;
@@ -182,6 +185,10 @@ class FindTabHelper : public content::WebContentsUserData<FindTabHelper> {
   // The value of the |find_match| option for the active search, or false if
   // there is no active search.
   bool should_find_match_ = false;
+
+  // Keep track of find session for this webcontents.
+  // |true| if find session is active otherwise |false|.
+  bool is_find_session_active_ = false;
 
   // The optional delegate that remembers recent search text state.
   raw_ptr<Delegate> delegate_ = nullptr;
