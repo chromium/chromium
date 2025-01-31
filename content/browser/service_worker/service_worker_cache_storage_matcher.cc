@@ -92,6 +92,7 @@ void ServiceWorkerCacheStorageMatcher::Run() {
   }
   control->AddReceiver(
       *coep, version_->embedded_worker()->GetCoepReporter(), *dip,
+      version_->embedded_worker()->GetDipReporter(),
       storage::BucketLocator::ForDefaultBucket(version_->key()),
       storage::mojom::CacheStorageOwner::kCacheAPI,
       remote_.BindNewPipeAndPassReceiver());

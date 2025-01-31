@@ -3251,6 +3251,7 @@ ServiceWorkerVersion::GetRemoteCacheStorage() {
 
   mojo::PendingRemote<blink::mojom::CacheStorage> remote;
   control->AddReceiver(*coep, embedded_worker()->GetCoepReporter(), *dip,
+                       embedded_worker()->GetDipReporter(),
                        storage::BucketLocator::ForDefaultBucket(key()),
                        storage::mojom::CacheStorageOwner::kCacheAPI,
                        remote.InitWithNewPipeAndPassReceiver());
