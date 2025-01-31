@@ -19,6 +19,10 @@ namespace chromecast {
 class CastCdmOriginProvider;
 }  // namespace chromecast
 
+namespace chromeos {
+class ChromeOsCdmFactory;
+}  // namespace chromeos
+
 namespace content {
 class AndroidOverlaySyncHelper;
 class StreamTextureFactory;
@@ -116,6 +120,10 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) SyncCallRestrictions {
   // For preventing frame swaps of wrong size during resize on Windows.
   // (https://crbug.com/811945)
   friend class ui::Compositor;
+  // For calling sync mojo API to get cdm origin in the ChromeOS GPU process.
+  // Migrating to async is non-trivial and has not been prioritized.
+  // (http://crbug.com/368792274)
+  friend class chromeos::ChromeOsCdmFactory;
   // For calling sync mojo API to get cdm origin. The service and the client are
   // running in the same process, so it won't block anything.
   // TODO(159346933) Remove once the origin isolation logic is moved outside of
