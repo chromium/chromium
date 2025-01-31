@@ -92,6 +92,7 @@ void ExpectModalTimeSample(
 
   // To prevent any flakiness.
   [PlusAddressAppInterface clearState];
+  [PlusAddressAppInterface setUserHasAcceptedNotice];
   [PlusAddressAppInterface setPlusAddressFillingEnabled:YES];
 
   [self loadPlusAddressEligiblePage];

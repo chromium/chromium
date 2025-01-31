@@ -9,7 +9,9 @@
 #import "components/plus_addresses/fake_plus_address_service.h"
 #import "components/plus_addresses/plus_address_test_utils.h"
 #import "components/plus_addresses/plus_address_types.h"
+#import "components/plus_addresses/settings/plus_address_setting_service.h"
 #import "ios/chrome/browser/plus_addresses/model/plus_address_service_factory.h"
+#import "ios/chrome/browser/plus_addresses/model/plus_address_setting_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 
@@ -21,6 +23,12 @@ plus_addresses::FakePlusAddressService* GetFakePlusAddressService() {
       PlusAddressServiceFactory::GetForProfile(profile));
 }
 
+plus_addresses::PlusAddressSettingService* GetPlusAddressSettingService() {
+  ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
+  return static_cast<plus_addresses::PlusAddressSettingService*>(
+      PlusAddressSettingServiceFactory::GetForProfile(profile));
+}
+
 }  // namespace
 
 @implementation PlusAddressAppInterface
@@ -28,6 +36,10 @@ plus_addresses::FakePlusAddressService* GetFakePlusAddressService() {
 + (void)setShouldOfferPlusAddressCreation:(BOOL)shouldOfferPlusAddressCreation {
   GetFakePlusAddressService()->set_should_offer_plus_address_creation(
       shouldOfferPlusAddressCreation);
+}
+
++ (void)setUserHasAcceptedNotice {
+  GetPlusAddressSettingService()->SetHasAcceptedNotice();
 }
 
 + (void)setShouldReturnNoAffiliatedPlusProfiles:
