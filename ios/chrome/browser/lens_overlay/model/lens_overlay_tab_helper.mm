@@ -101,6 +101,26 @@ void LensOverlayTabHelper::DidStartNavigation(
   }
 }
 
+void LensOverlayTabHelper::DidFinishNavigation(
+    web::WebState* web_state,
+    web::NavigationContext* navigation_context) {
+  const web::NavigationManager* navigation_manager =
+      web_state_->GetNavigationManager();
+  const web::NavigationItem* navigation_item =
+      navigation_manager ? navigation_manager->GetVisibleItem() : nullptr;
+
+  // Fallback if invokation failed during startNavigation (e.g GetPendingItem
+  // returns null)
+  if (IsLensOverlaySameTabNavigationEnabled() && is_ui_attached_and_alive_ &&
+      navigation_item) {
+    if (invokation_navigation_id_ == navigation_item->GetUniqueID()) {
+      [commands_handler_ showLensUI:NO];
+    } else {
+      [commands_handler_ hideLensUI:NO completion:nil];
+    }
+  }
+}
+
 void LensOverlayTabHelper::WasShown(web::WebState* web_state) {
   CHECK_EQ(web_state, web_state_, kLensOverlayNotFatalUntil);
 
