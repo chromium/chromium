@@ -1008,16 +1008,24 @@
       status: "stable",
     },
     {
+      // https://github.com/w3c/csswg-drafts/issues/8942
+      name: "CSSAnimationTrigger",
+      status: "test",
+    },
+    {
       name: "CSSAnimationTriggerRange",
       status: "test",
+      implied_by: ["CSSAnimationTrigger"],
     },
     {
       name: "CSSAnimationTriggerTimeline",
       status: "test",
+      implied_by: ["CSSAnimationTrigger"],
     },
     {
       name: "CSSAnimationTriggerType",
       status: "test",
+      implied_by: ["CSSAnimationTrigger"],
     },
     {
       // Support for <string> syntax in @property

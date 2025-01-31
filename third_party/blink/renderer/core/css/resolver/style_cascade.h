@@ -462,6 +462,13 @@ class CORE_EXPORT StyleCascade {
                            const CSSParserContext& context,
                            const FunctionContext* function_context,
                            TokenSequence& out);
+  bool ResolveArgumentOrLocalInto(const CSSValue& value,
+                                  CSSParserTokenStream& stream,
+                                  CascadeResolver& resolver,
+                                  const CSSParserContext& context,
+                                  const FunctionContext* function_context,
+                                  const TokenSequence* fallback,
+                                  TokenSequence& out);
 
   const CSSValue* ResolveFunctionExpression(
       StringView expr,

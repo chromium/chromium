@@ -1284,6 +1284,7 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kAnimationRange:
     case CSSPropertyID::kAnimationRangeEnd:
     case CSSPropertyID::kAnimationRangeStart:
+    case CSSPropertyID::kAnimationTrigger:
     case CSSPropertyID::kAnimationTriggerRange:
     case CSSPropertyID::kAnimationTriggerExitRange:
     case CSSPropertyID::kAnimationTriggerRangeStart:

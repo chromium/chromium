@@ -24,6 +24,7 @@ animationRangeEnd
 animationRangeStart
 animationTimeline
 animationTimingFunction
+animationTrigger
 animationTriggerExitRange
 animationTriggerExitRangeEnd
 animationTriggerExitRangeStart

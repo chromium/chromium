@@ -906,6 +906,21 @@ bool ConsumeSlashIncludingWhitespace(CSSParserTokenStream& stream) {
   return true;
 }
 
+CSSValue* GetImpliedRangeEnd(const CSSValue* start_range) {
+  // The form 'name X' must expand to 'name X name 100%'.
+  //
+  // https://github.com/w3c/csswg-drafts/issues/8438
+  if (start_range && start_range->IsValueList()) {
+    CSSValueList* implied_end = CSSValueList::CreateSpaceSeparated();
+    const CSSValue& name = To<CSSValueList>(start_range)->First();
+    if (name.IsIdentifierValue()) {
+      implied_end->Append(name);
+      return implied_end;
+    }
+  }
+  return nullptr;
+}
+
 namespace {
 
 bool ConsumeAnyComponentValue(CSSParserTokenStream& stream) {
@@ -4369,6 +4384,112 @@ const CSSValue* GetSingleValueOrMakeList(
     return values.front().Get();
   }
   return MakeGarbageCollected<CSSValueList>(list_separator, std::move(values));
+}
+
+CSSValue* ConsumeAnimationTriggerValue(CSSPropertyID property,
+                                       CSSParserTokenStream& stream,
+                                       const CSSParserContext& context) {
+  switch (property) {
+    case CSSPropertyID::kAnimationTriggerType:
+      return css_parsing_utils::ConsumeIdent<
+          CSSValueID::kOnce, CSSValueID::kRepeat, CSSValueID::kAlternate,
+          CSSValueID::kState>(stream);
+    case CSSPropertyID::kAnimationTriggerTimeline:
+      return css_parsing_utils::ConsumeAnimationTimeline(stream, context);
+    case CSSPropertyID::kAnimationTriggerRangeStart:
+    case CSSPropertyID::kAnimationTriggerExitRangeStart:
+      return css_parsing_utils::ConsumeAnimationRange(stream, context, 0.0);
+    case CSSPropertyID::kAnimationTriggerRangeEnd:
+    case CSSPropertyID::kAnimationTriggerExitRangeEnd:
+      return css_parsing_utils::ConsumeAnimationRange(stream, context, 100.0);
+    default:
+      NOTREACHED();
+  }
+}
+
+bool ConsumeAnimationTriggerShorthand(
+    const StylePropertyShorthand& shorthand,
+    HeapVector<Member<CSSValueList>, kMaxNumAnimationTriggerLonghands>& longhands,
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context) {
+  const unsigned longhand_count = shorthand.length();
+  DCHECK_LE(longhand_count, kMaxNumAnimationTriggerLonghands);
+
+  for (unsigned i = 0; i < longhand_count; ++i) {
+    longhands[i] = CSSValueList::CreateCommaSeparated();
+  }
+
+  do {
+    std::array<bool, kMaxNumAnimationTriggerLonghands> parsed_longhand = {
+        false};
+    bool found_any = false;
+    CSSValue* trigger_exit_range_start = nullptr;
+    CSSValue* trigger_range_start = nullptr;
+    do {
+      bool found_property = false;
+      for (unsigned i = 0; i < longhand_count; ++i) {
+        if (parsed_longhand[i]) {
+          continue;
+        }
+
+        CSSValue* value = ConsumeAnimationTriggerValue(
+            shorthand.properties()[i]->PropertyID(), stream, context);
+        if (value) {
+          parsed_longhand[i] = true;
+          found_property = true;
+          found_any = true;
+          longhands[i]->Append(*value);
+          // If we don't get a trigger{-exit}-range-end, we'll need to infer
+          // based on the trigger{-exit}-range-start.
+          if (shorthand.properties()[i]->PropertyID() ==
+              CSSPropertyID::kAnimationTriggerExitRangeStart) {
+            trigger_exit_range_start = value;
+          } else if (shorthand.properties()[i]->PropertyID() ==
+                     CSSPropertyID::kAnimationTriggerRangeStart) {
+            trigger_range_start = value;
+          }
+          break;
+        }
+      }
+      if (!found_property) {
+        break;
+      }
+    } while (!stream.AtEnd() && stream.Peek().GetType() != kCommaToken);
+
+    if (!found_any) {
+      return false;
+    }
+
+    for (unsigned i = 0; i < longhand_count; ++i) {
+      const Longhand& longhand = *To<Longhand>(shorthand.properties()[i]);
+      if (!parsed_longhand[i]) {
+        CSSPropertyID property_id = longhand.PropertyID();
+        CSSValue* longhand_value = nullptr;
+
+        // If we didn't get a trigger{-exit}-range-end, try to infer it from
+        // trigger{-exit}-range-start if we got one.
+        if (property_id == CSSPropertyID::kAnimationTriggerExitRangeEnd) {
+          longhand_value =
+              css_parsing_utils::GetImpliedRangeEnd(trigger_exit_range_start);
+        } else if (property_id == CSSPropertyID::kAnimationTriggerRangeEnd) {
+          longhand_value =
+              css_parsing_utils::GetImpliedRangeEnd(trigger_range_start);
+        }
+
+        if (longhand_value) {
+          longhands[i]->Append(*longhand_value);
+        } else {
+          longhands[i]->Append(*longhand.InitialValue());
+        }
+      }
+      parsed_longhand[i] = false;
+    }
+
+    trigger_range_start = nullptr;
+    trigger_exit_range_start = nullptr;
+  } while (ConsumeCommaIncludingWhitespace(stream));
+
+  return true;
 }
 
 CSSValue* ConsumeBackgroundAttachment(CSSParserTokenStream& stream) {

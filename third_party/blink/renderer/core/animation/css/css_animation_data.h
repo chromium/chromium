@@ -73,10 +73,10 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
   }
   const Vector<std::optional<TimelineOffset>>& TriggerExitRangeStartList()
       const {
-    return trigger_range_start_list_;
+    return trigger_exit_range_start_list_;
   }
   const Vector<std::optional<TimelineOffset>>& TriggerExitRangeEndList() const {
-    return trigger_range_end_list_;
+    return trigger_exit_range_end_list_;
   }
 
   EffectModel::CompositeOperation GetComposition(size_t animation_index) const {
@@ -117,10 +117,10 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
     return trigger_range_end_list_;
   }
   Vector<std::optional<TimelineOffset>>& TriggerExitRangeStartList() {
-    return trigger_range_start_list_;
+    return trigger_exit_range_start_list_;
   }
   Vector<std::optional<TimelineOffset>>& TriggerExitRangeEndList() {
-    return trigger_range_end_list_;
+    return trigger_exit_range_end_list_;
   }
 
   bool HasSingleInitialTimeline() const {

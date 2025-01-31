@@ -488,6 +488,13 @@ All changes to this list should go through Blink's feature review process: http:
     animation-range
         animation-range-end
         animation-range-start
+    animation-trigger
+        animation-trigger-exit-range-end
+        animation-trigger-exit-range-start
+        animation-trigger-range-end
+        animation-trigger-range-start
+        animation-trigger-timeline
+        animation-trigger-type
     animation-trigger-exit-range
         animation-trigger-exit-range-end
         animation-trigger-exit-range-start

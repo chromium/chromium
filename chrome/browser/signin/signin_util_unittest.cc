@@ -401,42 +401,16 @@ TEST(SignedInStatesTest, SignedInStates) {
   // In incognito mode, there would be no identity manager.
   EXPECT_EQ(SignedInState::kSignedOut, signin_util::GetSignedInState(nullptr));
 
-  // `kExplicitBrowserSigninUIOnDesktop` enabled
-  {
-    base::test::ScopedFeatureList scoped_feature_list{
-        switches::kExplicitBrowserSigninUIOnDesktop};
+  // Signed in.
+  info = identity_test_env.MakePrimaryAccountAvailable(
+      "test@email.com", signin::ConsentLevel::kSignin);
+  EXPECT_EQ(SignedInState::kSignedIn,
+            signin_util::GetSignedInState(identity_manager));
 
-    // Signed in.
-    info = identity_test_env.MakePrimaryAccountAvailable(
-        "test@email.com", signin::ConsentLevel::kSignin);
-    EXPECT_EQ(SignedInState::kSignedIn,
-              signin_util::GetSignedInState(identity_manager));
-
-    // When explicit browser signin is enabled, being signed in with an invalid
-    // refresh token is equivalent to the sign in pending state.
-    identity_test_env.SetInvalidRefreshTokenForPrimaryAccount();
-    EXPECT_EQ(SignedInState::kSignInPending,
-              signin_util::GetSignedInState(identity_manager));
-  }
-
-  // `kExplicitBrowserSigninUIOnDesktop` disabled
-  {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndDisableFeature(
-        switches::kExplicitBrowserSigninUIOnDesktop);
-
-    // Signed in.
-    identity_test_env.ClearPrimaryAccount();
-    info = identity_test_env.MakePrimaryAccountAvailable(
-        "test@email.com", signin::ConsentLevel::kSignin);
-    EXPECT_EQ(SignedInState::kSignedIn,
-              signin_util::GetSignedInState(identity_manager));
-
-    // We expect the user to be signed in, and additional checks would be
-    // necessary to determine that the refresh token is in error.
-    identity_test_env.SetInvalidRefreshTokenForPrimaryAccount();
-    EXPECT_EQ(SignedInState::kSignedIn,
-              signin_util::GetSignedInState(identity_manager));
-  }
+  // When explicit browser signin is enabled, being signed in with an invalid
+  // refresh token is equivalent to the sign in pending state.
+  identity_test_env.SetInvalidRefreshTokenForPrimaryAccount();
+  EXPECT_EQ(SignedInState::kSignInPending,
+            signin_util::GetSignedInState(identity_manager));
 }
 #endif  // !BUILDFLAG(ENABLE_DICE_SUPPORT)

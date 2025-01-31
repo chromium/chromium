@@ -1451,30 +1451,32 @@ bool StyleCascade::ResolveVarInto(CSSParserTokenStream& stream,
 
     // Locals shadow arguments, which shadow custom properties
     // from the element.
-    const CSSValue* sub_value = FindOrNull(function_context->locals, var_name);
-    if (!sub_value) {
-      sub_value = FindOrNull(function_context->arguments, var_name);
+    //
+    // Note that for arguments, there's nothing to actually resolve within
+    // the value; substitution functions were already eliminated at the
+    // call site by ResolveFunctionInto. We're still using ResolveTokensInto,
+    // since it's the most convenient way to "paste" the value into `out`.
+    //
+    // TODO(crbug.com/325504770): Avoid tokenization/ResolveTokensInto
+    // for arguments.
+    //
+    // For locals, we do need to resolve var() (etc) here, but we should
+    // probably find a way to not repeat work for multiple references to
+    // the same substitution. E.g. for --c:var(--a);--b:var(--a)--a:<stuff>,
+    // we should resolve <stuff> only once.
+    //
+    // TODO(crbug.com/325504770): Cache local resolves, as described above.
+    if (const CSSValue* local_variable =
+            FindOrNull(function_context->locals, var_name)) {
+      return ResolveArgumentOrLocalInto(
+          *local_variable, stream, resolver, context, function_context,
+          (has_fallback ? &fallback : nullptr), out);
     }
-    if (sub_value) {
-      // Note that for arguments, there's nothing to actually resolve within
-      // `sub_value`; substitution functions were already eliminated at the
-      // call-site by ResolveFunctionInto. We're still using ResolveTokensInto,
-      // since it's the most convenient way to "paste" `sub_value` into `out`.
-      //
-      // TODO(crbug.com/325504770): Avoid tokenization/ResolveTokensInto
-      // for arguments.
-      //
-      // For locals, we do need to resolve var() (etc) here, but we should
-      // probably find a way to not repeat work for multiple references to
-      // the same substitution. E.g. for --c:var(--a);--b:var(--a)--a:<stuff>,
-      // we should resolve <stuff> only once.
-      //
-      // TODO(crbug.com/325504770): Cache local resolves, as described above.
-      String sub_value_str = sub_value->CssText();
-      CSSParserTokenStream sub_value_stream(sub_value_str);
-      return ResolveTokensInto(sub_value_stream, resolver, context,
-                               function_context,
-                               /* stop_type */ kEOFToken, out);
+    if (const CSSValue* argument =
+            FindOrNull(function_context->arguments, var_name)) {
+      return ResolveArgumentOrLocalInto(
+          *argument, stream, resolver, context, function_context,
+          (has_fallback ? &fallback : nullptr), out);
     }
   }
 
@@ -1663,6 +1665,27 @@ bool StyleCascade::ResolveFunctionInto(StringView function_name,
   return ResolveTokensInto(ret_value_stream, resolver, context,
                            /* function_context */ nullptr,
                            /* stop_type */ kEOFToken, out);
+}
+
+bool StyleCascade::ResolveArgumentOrLocalInto(
+    const CSSValue& value,
+    CSSParserTokenStream& stream,
+    CascadeResolver& resolver,
+    const CSSParserContext& context,
+    const FunctionContext* function_context,
+    const TokenSequence* fallback,
+    TokenSequence& out) {
+  String value_str = value.CssText();
+  CSSParserTokenStream value_stream(value_str);
+  bool success =
+      ResolveTokensInto(value_stream, resolver, context, function_context,
+                        /* stop_type */ kEOFToken, out);
+  if (!success && fallback) {
+    success = out.AppendFallback(*fallback,
+                                 !fallback->GetAttrTaintedRanges()->empty(),
+                                 CSSVariableData::kMaxVariableBytes);
+  }
+  return success;
 }
 
 // Resolves an expression within a function; in practice, either a function
