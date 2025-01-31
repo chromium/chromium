@@ -78,8 +78,8 @@ class CreateWriterClient : public GarbageCollected<CreateWriterClient>,
             ToMojoAIWriterTone(options->tone()),
             ToMojoAIWriterFormat(options->format()),
             ToMojoAIWriterLength(options->length()),
-            options->expectedInputLanguages(),
-            options->expectedContextLanguages(),
+            options->getExpectedInputLanguagesOr({}),
+            options->getExpectedContextLanguagesOr({}),
             options->getOutputLanguageOr(g_empty_string)));
   }
   ~CreateWriterClient() override = default;
@@ -155,8 +155,8 @@ ScriptPromise<V8AICapabilityAvailability> AIWriterFactory::availability(
           ToMojoAIWriterTone(options->tone()),
           ToMojoAIWriterFormat(options->format()),
           ToMojoAIWriterLength(options->length()),
-          options->expectedInputLanguages(),
-          options->expectedContextLanguages(),
+          options->getExpectedInputLanguagesOr({}),
+          options->getExpectedContextLanguagesOr({}),
           options->getOutputLanguageOr(g_empty_string)),
       WTF::BindOnce(
           [](ScriptPromiseResolver<V8AICapabilityAvailability>* resolver,

@@ -83,8 +83,8 @@ class CreateRewriterClient : public GarbageCollected<CreateRewriterClient>,
             ToMojoAIRewriterTone(options->tone()),
             ToMojoAIRewriterFormat(options->format()),
             ToMojoAIRewriterLength(options->length()),
-            options->expectedInputLanguages(),
-            options->expectedContextLanguages(),
+            options->getExpectedInputLanguagesOr({}),
+            options->getExpectedContextLanguagesOr({}),
             options->getOutputLanguageOr(g_empty_string)));
   }
   ~CreateRewriterClient() override = default;
@@ -161,8 +161,8 @@ ScriptPromise<V8AICapabilityAvailability> AIRewriterFactory::availability(
           ToMojoAIRewriterTone(options->tone()),
           ToMojoAIRewriterFormat(options->format()),
           ToMojoAIRewriterLength(options->length()),
-          options->expectedInputLanguages(),
-          options->expectedContextLanguages(),
+          options->getExpectedInputLanguagesOr({}),
+          options->getExpectedContextLanguagesOr({}),
           options->getOutputLanguageOr(g_empty_string)),
       WTF::BindOnce(
           [](ScriptPromiseResolver<V8AICapabilityAvailability>* resolver,

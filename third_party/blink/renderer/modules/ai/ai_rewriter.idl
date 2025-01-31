@@ -41,8 +41,18 @@ interface AIRewriter {
   ]
   void destroy();
 
+  [Measure]
   readonly attribute DOMString sharedContext;
+  [Measure]
   readonly attribute AIRewriterTone tone;
+  [Measure]
   readonly attribute AIRewriterFormat format;
+  [Measure]
   readonly attribute AIRewriterLength length;
+  [Measure]
+  readonly attribute FrozenArray<DOMString>? expectedInputLanguages;
+  [Measure]
+  readonly attribute FrozenArray<DOMString>? expectedContextLanguages;
+  [Measure]
+  readonly attribute DOMString? outputLanguage;
 };

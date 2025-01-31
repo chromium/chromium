@@ -5853,6 +5853,23 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5259" label="FetchLaterInvokeStatePending"/>
   <int value="5260" label="FetchLaterInvokeStateSent"/>
   <int value="5261" label="CSPWithUnsafeHashes"/>
+  <int value="5262" label="V8AIRewriter_SharedContext_AttributeGetter"/>
+  <int value="5263" label="V8AIRewriter_Tone_AttributeGetter"/>
+  <int value="5264" label="V8AIRewriter_Format_AttributeGetter"/>
+  <int value="5265" label="V8AIRewriter_Length_AttributeGetter"/>
+  <int value="5266"
+      label="V8AIRewriter_ExpectedInputLanguages_AttributeGetter"/>
+  <int value="5267"
+      label="V8AIRewriter_ExpectedContextLanguages_AttributeGetter"/>
+  <int value="5268" label="V8AIRewriter_OutputLanguage_AttributeGetter"/>
+  <int value="5269" label="V8AIWriter_SharedContext_AttributeGetter"/>
+  <int value="5270" label="V8AIWriter_Tone_AttributeGetter"/>
+  <int value="5271" label="V8AIWriter_Format_AttributeGetter"/>
+  <int value="5272" label="V8AIWriter_Length_AttributeGetter"/>
+  <int value="5273" label="V8AIWriter_ExpectedInputLanguages_AttributeGetter"/>
+  <int value="5274"
+      label="V8AIWriter_ExpectedContextLanguages_AttributeGetter"/>
+  <int value="5275" label="V8AIWriter_OutputLanguage_AttributeGetter"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

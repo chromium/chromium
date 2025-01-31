@@ -4645,6 +4645,20 @@ enum WebFeature {
   kFetchLaterInvokeStatePending = 5259,
   kFetchLaterInvokeStateSent = 5260,
   kCSPWithUnsafeHashes = 5261,
+  kV8AIRewriter_SharedContext_AttributeGetter = 5262,
+  kV8AIRewriter_Tone_AttributeGetter = 5263,
+  kV8AIRewriter_Format_AttributeGetter = 5264,
+  kV8AIRewriter_Length_AttributeGetter = 5265,
+  kV8AIRewriter_ExpectedInputLanguages_AttributeGetter = 5266,
+  kV8AIRewriter_ExpectedContextLanguages_AttributeGetter = 5267,
+  kV8AIRewriter_OutputLanguage_AttributeGetter = 5268,
+  kV8AIWriter_SharedContext_AttributeGetter = 5269,
+  kV8AIWriter_Tone_AttributeGetter = 5270,
+  kV8AIWriter_Format_AttributeGetter = 5271,
+  kV8AIWriter_Length_AttributeGetter = 5272,
+  kV8AIWriter_ExpectedInputLanguages_AttributeGetter = 5273,
+  kV8AIWriter_ExpectedContextLanguages_AttributeGetter = 5274,
+  kV8AIWriter_OutputLanguage_AttributeGetter = 5275,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

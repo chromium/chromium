@@ -50,6 +50,21 @@ class AIWriter final : public ScriptWrappable, public ExecutionContextClient {
   V8AIWriterTone tone() const { return options_->tone(); }
   V8AIWriterFormat format() const { return options_->format(); }
   V8AIWriterLength length() const { return options_->length(); }
+  std::optional<Vector<String>> expectedInputLanguages() const {
+    if (options_->hasExpectedInputLanguages()) {
+      return options_->expectedInputLanguages();
+    }
+    return std::nullopt;
+  }
+  std::optional<Vector<String>> expectedContextLanguages() const {
+    if (options_->hasExpectedContextLanguages()) {
+      return options_->expectedContextLanguages();
+    }
+    return std::nullopt;
+  }
+  String outputLanguage() const {
+    return options_->getOutputLanguageOr(String());
+  }
 
  private:
   scoped_refptr<base::SequencedTaskRunner> task_runner_;

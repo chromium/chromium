@@ -60,6 +60,34 @@ promise_test(async () => {
   assert_equals(rewriter.length, 'longer');
 }, 'Creating a AIRewriter with "longer" length');
 
+promise_test(async () => {
+  const rewriter = await ai.rewriter.create({
+    expectedInputLanguages: ['en']
+  });
+  assert_array_equals(rewriter.expectedInputLanguages, ['en']);
+}, 'Creating a AIRewriter with expectedInputLanguages');
+
+promise_test(async () => {
+  const rewriter = await ai.rewriter.create({
+    expectedContextLanguages: ['en']
+  });
+  assert_array_equals(rewriter.expectedContextLanguages, ['en']);
+}, 'Creating a AIRewriter with expectedContextLanguages');
+
+promise_test(async () => {
+  const rewriter = await ai.rewriter.create({
+    outputLanguage: 'en'
+  });
+  assert_equals(rewriter.outputLanguage, 'en');
+}, 'Creating a AIRewriter with outputLanguage');
+
+promise_test(async () => {
+  const rewriter = await ai.rewriter.create({});
+  assert_equals(rewriter.expectedInputLanguages, null);
+  assert_equals(rewriter.expectedContextLanguages, null);
+  assert_equals(rewriter.outputLanguage, null);
+}, 'Creating a AIRewriter without optional attributes');
+
 promise_test(async (t) => {
   const rewriter = await ai.rewriter.create();
   rewriter.destroy();
