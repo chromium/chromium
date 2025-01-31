@@ -1,8 +1,8 @@
 diff --git a/third_party/unrar/src/archive.cpp b/third_party/unrar/src/archive.cpp
-index f90b6199b1787..e6d77d228b3b0 100644
+index 4fc2a893478d6..e922295a7e29d 100644
 --- a/third_party/unrar/src/archive.cpp
 +++ b/third_party/unrar/src/archive.cpp
-@@ -357,3 +357,13 @@ uint64 Archive::GetWinSize(uint64 Size,uint &Flags)
+@@ -359,3 +359,13 @@ uint64 Archive::GetWinSize(uint64 Size,uint &Flags)
    Flags+=(uint)Fraction*FCI_DICT_FRACT0;
    return Pow2+Fraction*(Pow2/32);
  }
@@ -17,10 +17,10 @@ index f90b6199b1787..e6d77d228b3b0 100644
 +}
 +#endif
 diff --git a/third_party/unrar/src/archive.hpp b/third_party/unrar/src/archive.hpp
-index 895f853b57680..dc5dfee08b646 100644
+index db1cb533823bf..d2cd23173c37c 100644
 --- a/third_party/unrar/src/archive.hpp
 +++ b/third_party/unrar/src/archive.hpp
-@@ -57,6 +57,13 @@ class Archive:public File
+@@ -58,6 +58,13 @@ class Archive:public File
      QuickOpen QOpen;
      bool ProhibitQOpen;
  #endif
@@ -34,7 +34,7 @@ index 895f853b57680..dc5dfee08b646 100644
    public:
      Archive(CommandData *InitCmd=nullptr);
      ~Archive();
-@@ -92,6 +99,10 @@ class Archive:public File
+@@ -94,6 +101,10 @@ class Archive:public File
      int64 Tell() override;
      void QOpenUnload() {QOpen.Unload();}
      void SetProhibitQOpen(bool Mode) {ProhibitQOpen=Mode;}
@@ -144,7 +144,7 @@ index 065350f94af55..5c539faf0d82a 100644
  
  
 diff --git a/third_party/unrar/src/extract.cpp b/third_party/unrar/src/extract.cpp
-index d9f37c418063b..6331c35a3f690 100644
+index c433fb8963e8a..80ce16530d0d8 100644
 --- a/third_party/unrar/src/extract.cpp
 +++ b/third_party/unrar/src/extract.cpp
 @@ -665,6 +665,11 @@ bool CmdExtract::ExtractCurrentFile(Archive &Arc,size_t HeaderSize,bool &Repeat)
@@ -503,10 +503,10 @@ index 8d8f298609a76..a32ea40e3ac25 100644
    if (GlobalCryptLoader.pCryptProtectMemory==NULL)
      GlobalCryptLoader.Load();
 diff --git a/third_party/unrar/src/strfn.cpp b/third_party/unrar/src/strfn.cpp
-index 3fdaca59b1504..61d3e200e6158 100644
+index 6ad51c8fec1d6..4c69c906c6467 100644
 --- a/third_party/unrar/src/strfn.cpp
 +++ b/third_party/unrar/src/strfn.cpp
-@@ -41,6 +41,27 @@ void ArcCharToWide(const char *Src,std::wstring &Dest,ACTW_ENCODING Encoding)
+@@ -42,6 +42,27 @@ void ArcCharToWide(const char *Src,std::wstring &Dest,ACTW_ENCODING Encoding)
      UtfToWide(Src,Dest);
    else
    {
@@ -534,7 +534,7 @@ index 3fdaca59b1504..61d3e200e6158 100644
      std::string NameA;
      if (Encoding==ACTW_OEM)
      {
-@@ -48,6 +69,7 @@ void ArcCharToWide(const char *Src,std::wstring &Dest,ACTW_ENCODING Encoding)
+@@ -49,6 +70,7 @@ void ArcCharToWide(const char *Src,std::wstring &Dest,ACTW_ENCODING Encoding)
        Src=NameA.data();
      }
      CharToWide(Src,Dest);
@@ -542,7 +542,7 @@ index 3fdaca59b1504..61d3e200e6158 100644
    }
  #else // RAR for Unix.
    if (Encoding==ACTW_UTF8)
-@@ -387,7 +409,7 @@ void fmtitoa(int64 n,wchar *Str,size_t MaxSize)
+@@ -388,7 +410,7 @@ void fmtitoa(int64 n,wchar *Str,size_t MaxSize)
    static wchar ThSep=0; // Thousands separator.
  #ifdef _WIN_ALL
    wchar Info[10];
@@ -677,7 +677,7 @@ index 2d867b3aefef0..81cf99e380896 100644
  #else
  #define charnext(s) ((s)+1)
 diff --git a/third_party/unrar/src/unpack.cpp b/third_party/unrar/src/unpack.cpp
-index 1b132937e8925..79a9a0c80d63a 100644
+index a5950ea1ac4e2..f7e2e01abb943 100644
 --- a/third_party/unrar/src/unpack.cpp
 +++ b/third_party/unrar/src/unpack.cpp
 @@ -1,3 +1,9 @@
@@ -703,7 +703,7 @@ index 1b132937e8925..79a9a0c80d63a 100644
  Unpack::Unpack(ComprDataIO *DataIO)
  :Inp(true),VMCodeInp(true)
  {
-@@ -88,7 +100,7 @@ void Unpack::Init(uint64 WinSize,bool Solid)
+@@ -87,7 +99,7 @@ void Unpack::Init(uint64 WinSize,bool Solid)
      WinSize=MinAllocSize;
  
    if (WinSize>Min(0x10000000000ULL,UNPACK_MAX_DICT)) // Window size must not exceed 1 TB.
@@ -712,7 +712,7 @@ index 1b132937e8925..79a9a0c80d63a 100644
  
    // 32-bit build can't unpack dictionaries exceeding 32-bit even in theory.
    // Also we've not verified if WrapUp and WrapDown work properly in 32-bit
-@@ -96,7 +108,7 @@ void Unpack::Init(uint64 WinSize,bool Solid)
+@@ -95,7 +107,7 @@ void Unpack::Init(uint64 WinSize,bool Solid)
    // distances. Since such version is unlikely to allocate >2GB anyway,
    // we prohibit >2GB dictionaries for 32-bit build here.
    if (WinSize>0x80000000 && sizeof(size_t)<=4)
@@ -721,7 +721,7 @@ index 1b132937e8925..79a9a0c80d63a 100644
  
    // Solid block shall use the same window size for all files.
    // But if Window isn't initialized when Solid is set, it means that
-@@ -121,23 +133,27 @@ void Unpack::Init(uint64 WinSize,bool Solid)
+@@ -120,23 +132,27 @@ void Unpack::Init(uint64 WinSize,bool Solid)
    // or increasing the size of non-solid window. So we could safely reject
    // current window data without copying them to a new window.
    if (Solid && (Window!=NULL || Fragmented && WinSize>FragWindow.GetWinSize()))

@@ -1615,8 +1615,10 @@ void CmdExtract::AnalyzeArchive(const std::wstring &ArcName,bool Volume,bool New
 
         if (!Arc.FileHead.SplitBefore)
         {
-          if (!MatchFound && !Arc.FileHead.Solid) // Can start extraction from here.
+          if (!MatchFound && !Arc.FileHead.Solid && !Arc.FileHead.Dir &&
+              Arc.FileHead.RedirType==FSREDIR_NONE && Arc.FileHead.Method!=0)
           {
+            // Can start extraction from here.
             // We would gain nothing and unnecessarily complicate extraction
             // if we set StartName for first volume or StartPos for first
             // archived file.
