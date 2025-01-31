@@ -627,18 +627,6 @@ AutofillProfileComparator::NonMergeableSettingVisibleTypes(
   }
   FieldTypeSet setting_visible_types = a.GetUserVisibleTypes();
   FieldTypeSet non_mergeable_types;
-  // If one the fields have too long value, do not merge this profile.
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillLogDeduplicationMetrics) &&
-      std::ranges::any_of(setting_visible_types, [&](FieldType t) {
-        return std::max(a.GetRawInfo(t).size(), b.GetRawInfo(t).size()) >
-               features::
-                   kAutofillLogDeduplicationMetricsMaxFieldLengthForMergingParam
-                       .Get();
-      })) {
-    return std::nullopt;
-  }
-
   auto maybe_add_type = [&](FieldType type, bool is_mergeable) {
     // Ensure that `type` is actually a setting-visible type.
     CHECK_EQ(setting_visible_types.erase(type), 1u);

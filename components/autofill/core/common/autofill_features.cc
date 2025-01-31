@@ -623,21 +623,6 @@ const base::FeatureParam<int>
     kAutofillEnableCacheForRegexMatchingCacheSizeParam{
         &kAutofillEnableCacheForRegexMatching, "cache_size", 1000};
 
-// When enabled, various deduplication related metrics are logged on startup
-// and on import.
-// TODO(crbug.com/325452461): Remove once rolled out.
-BASE_FEATURE(kAutofillLogDeduplicationMetrics,
-             "AutofillLogDeduplicationMetrics",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<size_t>
-    kAutofillLogDeduplicationMetricsMaxProfilesSizeParam{
-        &kAutofillLogDeduplicationMetrics, "max_profiles_size",
-        100};
-const base::FeatureParam<size_t>
-    kAutofillLogDeduplicationMetricsMaxFieldLengthForMergingParam{
-        &kAutofillLogDeduplicationMetrics, "max_field_value_length_for_merging",
-        100};
-
 BASE_FEATURE(kAutofillUKMExperimentalFields,
              "AutofillUKMExperimentalFields",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -2331,26 +2331,6 @@
             ]
         }
     ],
-    "AutofillLogDeduplicationMetrics": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillLogDeduplicationMetrics"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillLogUKMEventsWithSampleRate": [
         {
             "platforms": [
