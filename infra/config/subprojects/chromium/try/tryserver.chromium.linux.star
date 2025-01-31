@@ -197,9 +197,14 @@ try_.builder(
 try_.builder(
     name = "linux-oi-rel",
     mirrors = [
+        "ci/Linux Builder",
         "ci/linux-oi-rel",
     ],
-    gn_args = "ci/linux-oi-rel",
+    gn_args = gn_args.config(
+        configs = [
+            "ci/Linux Builder",
+        ],
+    ),
     contact_team_email = "chrome-security-architecture@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )

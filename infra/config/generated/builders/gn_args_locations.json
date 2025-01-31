@@ -392,7 +392,6 @@
     "linux-extended-tracing-rel": "ci/linux-extended-tracing-rel/gn-args.json",
     "linux-gcc-rel": "ci/linux-gcc-rel/gn-args.json",
     "linux-modules-compile-fyi-rel": "ci/linux-modules-compile-fyi-rel/gn-args.json",
-    "linux-oi-rel": "ci/linux-oi-rel/gn-args.json",
     "linux-v4l2-codec-rel": "ci/linux-v4l2-codec-rel/gn-args.json"
   },
   "chromium.mac": {

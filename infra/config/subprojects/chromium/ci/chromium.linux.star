@@ -785,10 +785,13 @@ ci.builder(
 ci.builder(
     name = "linux-oi-rel",
     description_html = "This builder runs key test suites with OriginKeyedProcessesByDefault (OriginIsolation) enabled, to provide test coverage with the feature enabled.",
+    triggered_by = ["ci/Linux Builder"],
     builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
             config = "chromium",
             apply_configs = [
+                "use_clang_coverage",
             ],
         ),
         chromium_config = builder_config.chromium_config(
@@ -801,15 +804,6 @@ ci.builder(
             target_platform = builder_config.target_platform.LINUX,
         ),
         build_gs_bucket = "chromium-linux-archive",
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "release_builder",
-            "chrome_with_codecs",
-            "remoteexec",
-            "linux",
-            "x64",
-        ],
     ),
     targets = targets.bundle(
         name = "linux_oi_tests",
