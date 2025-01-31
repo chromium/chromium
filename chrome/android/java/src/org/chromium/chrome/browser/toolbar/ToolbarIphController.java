@@ -19,6 +19,10 @@ import org.chromium.components.feature_engagement.FeatureConstants;
 
 /** Controller manage when an IPH bubble for Toolbar is shown. */
 public class ToolbarIphController {
+
+    // 2 seconds.
+    private static final long MIN_DELAY_BEFORE_TOUCH_DISMISS_MS = 2000;
+
     private final Context mContext;
     private final UserEducationHelper mEducationHelper;
 
@@ -35,8 +39,6 @@ public class ToolbarIphController {
 
     @VisibleForTesting
     public void showBottomToolbarIph(View anchorView) {
-        HighlightParams params = new HighlightParams(HighlightShape.CIRCLE);
-        params.setBoundsRespectPadding(true);
         int yInset = mContext.getResources().getDimensionPixelOffset(R.dimen.toolbar_iph_y_inset);
         mEducationHelper.requestShowIph(
                 new IphCommandBuilder(
@@ -44,10 +46,9 @@ public class ToolbarIphController {
                                 FeatureConstants.BOTTOM_TOOLBAR_FEATURE,
                                 R.string.toolbar_long_press_options_iph,
                                 R.string.toolbar_long_press_options_iph)
-                        .setInsetRect(new Rect(0, 0, 0, -yInset))
+                        .setInsetRect(new Rect(0, 0, 0, yInset))
                         .setAnchorView(anchorView)
-                        .setHighlightParams(params)
-                        .setDismissOnTouch(true)
+                        .setDelayedDismissOnTouch(MIN_DELAY_BEFORE_TOUCH_DISMISS_MS)
                         .build());
     }
 }

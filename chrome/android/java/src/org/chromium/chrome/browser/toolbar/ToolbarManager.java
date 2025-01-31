@@ -2594,7 +2594,9 @@ public class ToolbarManager
 
     private void maybeShowBottomToolbarIph() {
         if (!ToolbarPositionController.isToolbarPositionCustomizationEnabled(
-                mActivity, mIsCustomTab)) {
+                        mActivity, mIsCustomTab)
+                || mLocationBarModel.getCurrentGurl().isEmpty()
+                || UrlUtilities.isNtpUrl(mLocationBarModel.getCurrentGurl())) {
             return;
         }
 

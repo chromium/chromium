@@ -4196,7 +4196,7 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
         Toolbar shortcut
       </message>
       <message name="IDS_TOOLBAR_LONG_PRESS_OPTIONS_IPH" desc="The in-product-help message shown to inform the user they can change placement of the address bar from a long-press menu.">
-        Touch and hold the address bar to change its position.
+        You can touch and hold to move the address bar to the bottom
       </message>
       <message name="IDS_ADAPTIVE_TOOLBAR_BUTTON_NEW_TAB_IPH" desc="An in-product-help message for the new tab button.">
         Quickly open a new tab. To edit this shortcut, touch and hold.
