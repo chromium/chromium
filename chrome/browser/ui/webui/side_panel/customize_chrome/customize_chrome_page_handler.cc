@@ -34,6 +34,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/search/ntp_features.h"
@@ -124,6 +125,10 @@ CustomizeChromePageHandler::CustomizeChromePageHandler(
       base::BindRepeating(
           &CustomizeChromePageHandler::UpdateMostVisitedSettings,
           base::Unretained(this)));
+  pref_change_registrar_.Add(
+      prefs::kNtpCustomizeChromeHiddenModules,
+      base::BindRepeating(&CustomizeChromePageHandler::UpdateModulesSettings,
+                          base::Unretained(this)));
 
   ntp_custom_background_service_observation_.Observe(
       ntp_custom_background_service_.get());
@@ -479,6 +484,12 @@ void CustomizeChromePageHandler::UpdateModulesSettings() {
     disabled_module_ids.push_back(id.GetString());
   }
 
+  std::vector<std::string> hidden_module_ids;
+  for (const auto& id :
+       profile_->GetPrefs()->GetList(prefs::kNtpCustomizeChromeHiddenModules)) {
+    hidden_module_ids.push_back(id.GetString());
+  }
+
   std::vector<side_panel::mojom::ModuleSettingsPtr> modules_settings;
   for (const auto& module_id_detail : module_id_details_) {
     auto module_settings = side_panel::mojom::ModuleSettings::New();
@@ -492,6 +503,8 @@ void CustomizeChromePageHandler::UpdateModulesSettings() {
     }
     module_settings->enabled =
         !base::Contains(disabled_module_ids, module_settings->id);
+    module_settings->visible =
+        !base::Contains(hidden_module_ids, module_settings->id);
     modules_settings.push_back(std::move(module_settings));
   }
   page_->SetModulesSettings(
