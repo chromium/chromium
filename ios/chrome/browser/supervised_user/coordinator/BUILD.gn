@@ -8,6 +8,7 @@ source_set("coordinator") {
     "parent_access_coordinator.mm",
     "parent_access_mediator.h",
     "parent_access_mediator.mm",
+    "parent_access_mediator_delegate.h",
   ]
   deps = [
     "//base",

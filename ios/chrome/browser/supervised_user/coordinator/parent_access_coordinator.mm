@@ -11,12 +11,14 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/parent_access_commands.h"
 #import "ios/chrome/browser/supervised_user/coordinator/parent_access_mediator.h"
+#import "ios/chrome/browser/supervised_user/coordinator/parent_access_mediator_delegate.h"
 #import "ios/chrome/browser/supervised_user/model/parent_access_tab_helper.h"
 #import "ios/chrome/browser/supervised_user/model/parent_access_tab_helper_delegate.h"
 #import "ios/chrome/browser/supervised_user/ui/parent_access_bottom_sheet_view_controller.h"
 #import "ios/web/public/web_state.h"
 
 @interface ParentAccessCoordinator () <UIAdaptivePresentationControllerDelegate,
+                                       ParentAccessMediatorDelegate,
                                        ParentAccessTabHelperDelegate>
 @end
 
@@ -51,6 +53,7 @@
 
   _mediator =
       [[ParentAccessMediator alloc] initWithWebState:std::move(webState)];
+  _mediator.delegate = self;
   _viewController = [[ParentAccessBottomSheetViewController alloc] init];
   // Do not use the bottom sheet default dismiss button.
   _viewController.showDismissBarButton = NO;
@@ -80,6 +83,13 @@
   if (_callback) {
     std::move(_callback).Run(result);
   }
+}
+
+#pragma mark - ParentAccessMediatorDelegate
+
+- (void)hideParentAccessBottomSheetOnTimeout {
+  [self hideParentAccessBottomSheetWithResult:
+            supervised_user::LocalApprovalResult::kCanceled];
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate

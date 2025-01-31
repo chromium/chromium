@@ -14,6 +14,10 @@ namespace supervised_user {
 
 BASE_DECLARE_FEATURE(kLocalWebApprovals);
 
+#if BUILDFLAG(IS_IOS)
+extern const base::FeatureParam<int> kLocalWebApprovalBottomSheetLoadTimeoutMs;
+#endif
+
 // Applies the updated extension approval flow, which can skip parent-approvals
 // on extension installations.
 BASE_DECLARE_FEATURE(
