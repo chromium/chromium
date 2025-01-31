@@ -236,7 +236,7 @@ const char DriveService::kLastDismissedTimePrefName[] =
     "NewTabPage.Drive.LastDimissedTime";
 
 // static
-const base::TimeDelta DriveService::kDismissDuration = base::Days(14);
+const base::TimeDelta DriveService::kDismissDuration = base::Hours(12);
 
 DriveService::~DriveService() = default;
 

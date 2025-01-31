@@ -8465,9 +8465,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_MODULES_DRIVE_DISABLE_BUTTON_TEXT_V2" desc="Text shown on the disable button of a NTP Drive module v2.">
        Don't show Drive
       </message>
-      <message name="IDS_NTP_MODULES_DRIVE_DISMISS_BUTTON_TEXT" desc="Text shown on the disable button of a NTP Drive module v2.">
-       Hide these files
-      </message>
       <message name="IDS_NTP_MODULES_DRIVE_NAME" desc="Name of the Drive module in sentence case shown in various UIs.">
         Google Drive
       </message>

@@ -55,7 +55,9 @@ export class DriveModuleElement extends DriveModuleElementBase {
         {
           action: 'dismiss',
           icon: 'modules:visibility_off',
-          text: this.i18n('modulesDriveDismissButtonText'),
+          text: this.i18nRecursive(
+              '', 'modulesDismissForHoursButtonText',
+              'fileSuggestionDismissHours'),
         },
         {
           action: 'disable',
