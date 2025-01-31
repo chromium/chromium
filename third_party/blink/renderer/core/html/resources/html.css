@@ -1633,11 +1633,14 @@ img:is([sizes="auto" i], [sizes^="auto," i]) {
 }
 
 /* https://drafts.csswg.org/css-ui-4/#inertness */
+/* Reducing specificity with :where since [inert] needs to override. Also
+   explicitly use 'dialog' to avoid adding universal bucket rule. Separate rule
+   added for :fullscreen in fullscreen.css. */
+dialog:where(:modal) {
+  interactivity: auto;
+}
 [inert] {
   interactivity: inert;
-}
-dialog:modal {
-  interactivity: auto;
 }
 
 /* noscript is handled internally, as it depends on settings. */
@@ -1695,6 +1698,7 @@ dialog:modal {
   select:not(:-internal-list-box):not([multiple]) > button:first-child {
     all: unset;
     display: contents;
+    interactivity: inert;
   }
 
   select:not(:-internal-list-box):not([multiple]):enabled:hover {
