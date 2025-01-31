@@ -167,17 +167,16 @@ bool CanRequestCredentialBypassInterstitialForPreviewProtocol(
 
 // Returns whether an interstitial should be shown based on the assertions being
 // requested.
-bool CanRequestCredentialBypassInterstitial(
-    const std::optional<std::string>& protocol,
-    const base::Value& request) {
-  if (!request.is_dict() || !protocol.has_value()) {
+bool CanRequestCredentialBypassInterstitial(const std::string& protocol,
+                                            const base::Value& request) {
+  if (!request.is_dict()) {
     return false;
   }
 
-  if (*protocol == kOpenid4vpProtocol) {
+  if (protocol == kOpenid4vpProtocol) {
     return CanRequestCredentialBypassInterstitialForOpenid4vpProtocol(request);
   }
-  return *protocol == kPreviewProtocol &&
+  return protocol == kPreviewProtocol &&
          CanRequestCredentialBypassInterstitialForPreviewProtocol(request);
 }
 
@@ -222,7 +221,7 @@ std::optional<InterstitialType>
 DigitalIdentityRequestImpl::ComputeInterstitialType(
     const url::Origin& rp_origin,
     const DigitalIdentityProvider* provider,
-    const std::optional<std::string>& protocol,
+    const std::string& protocol,
     const data_decoder::DataDecoder::ValueOrError& request_data) {
   std::string dialog_param_value = base::GetFieldTrialParamValueByFeature(
       features::kWebIdentityDigitalCredentials, kDigitalIdentityDialogParam);
