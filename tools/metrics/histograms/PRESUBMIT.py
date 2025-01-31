@@ -277,13 +277,12 @@ def ExecuteCheckWebViewHistogramsAllowlistOnUpload(input_api, output_api,
 
   xml_files = [open(f, encoding='utf-8') for f in xml_files_paths]
 
-  # src_path should point to chromium/src
+  from histograms_allowlist_check import check_histograms_allowlist
+  from histograms_allowlist_check import WellKnownAllowlistPath
   src_path = os.path.join(input_api.PresubmitLocalPath(), '..', '..', '..')
-  histograms_allowlist_check_path = os.path.join(src_path, 'android_webview',
-                                                 'java', 'res', 'raw')
-  sys.path.append(histograms_allowlist_check_path)
-  from histograms_allowlist_check import CheckWebViewHistogramsAllowlist
-  result = CheckWebViewHistogramsAllowlist(src_path, output_api, xml_files)
+  allowlist_path = os.path.join(
+      src_path, WellKnownAllowlistPath.ANDROID_WEBVIEW.relative_path())
+  result = check_histograms_allowlist(output_api, allowlist_path, xml_files)
   for f in xml_files:
     f.close()
   return result
