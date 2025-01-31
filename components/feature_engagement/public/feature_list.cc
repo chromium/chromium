@@ -84,6 +84,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHShoppingListSaveFlowFeature,
     &kIPHTabGroupCreationDialogSyncTextFeature,
     &kIPHTabGroupsDragAndDropFeature,
+    &kIPHTabGroupShareNoticeFeature,
     &kIPHTabGroupShareNotificationBubbleOnStripFeature,
     &kIPHTabGroupsRemoteGroupFeature,
     &kIPHTabGroupsSurfaceFeature,
