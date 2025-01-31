@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 (async function(testRunner) {
-  const {session, dp} = await testRunner.startBlank('Tests window ' +
-      'bounds are properly adjusted upon Browser.setWindowSize.');
+  const {dp} = await testRunner.startBlank(
+      'Tests window bounds are properly adjusted upon Browser.setWindowSize.');
 
   const {windowId} = (await dp.Browser.getWindowForTarget()).result;
   dp.Browser.setWindowBounds({
@@ -16,13 +16,7 @@
   });
 
   const bounds = (await dp.Browser.getWindowBounds({windowId})).result;
-
-  // TODO(378531862): fix top/left on MacOS.
-  if (navigator.platform.startsWith('Mac')) {
-    bounds.bounds.left = 100;
-    bounds.bounds.top = 200;
-  }
-
   testRunner.log(bounds, 'Window bounds: ');
+
   testRunner.completeTest();
 })
