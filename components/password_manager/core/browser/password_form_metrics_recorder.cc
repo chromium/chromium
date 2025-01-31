@@ -72,6 +72,7 @@ PasswordFormMetricsRecorder::BubbleDismissalReason GetBubbleDismissalReason(
     case metrics_util::AUTO_SIGNIN_TOAST_CLICKED_OBSOLETE:
     case metrics_util::CLICKED_BRAND_NAME_OBSOLETE:
     case metrics_util::NUM_UI_RESPONSES:
+    case metrics_util::CLICKED_ABOUT_PASSWORD_CHANGE:
       NOTREACHED();
   }
   return BubbleDismissalReason::kUnknown;

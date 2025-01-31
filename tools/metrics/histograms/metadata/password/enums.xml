@@ -1301,6 +1301,11 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="Clicked the link passwords.google.com"/>
   <int value="13"
       label="Clicked 'Manage Password' in password details bubble."/>
+  <int value="14"
+      label="Clicked 'Got it' in passkey deleted confirmation bubble."/>
+  <int value="15"
+      label="Clicked 'About password change' link in the password change
+             bubble."/>
 </enum>
 
 <enum name="PasswordMigrationWarningSheetStateAtClosing">
