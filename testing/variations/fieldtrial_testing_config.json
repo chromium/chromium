@@ -11613,21 +11613,6 @@
             ]
         }
     ],
-    "IOSDefaultBrowserBlueDotOnToolsMenuButton": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "BlueDotOnToolsMenuButton"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSDefaultBrowserRemindMeLater": [
         {
             "platforms": [
