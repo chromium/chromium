@@ -11,8 +11,7 @@ source_set("page_action") {
     "action_ids.h",
     "page_action_container_view.h",
     "page_action_controller.h",
-    "page_action_model.h",
-    "page_action_model_observer.h",
+    "page_action_observer.h",
     "page_action_triggers.h",
     "page_action_view.h",
     "pwa_install.h",
@@ -23,6 +22,9 @@ source_set("page_action") {
     "page_action_container_view.cc",
     "page_action_controller.cc",
     "page_action_model.cc",
+    "page_action_model.h",
+    "page_action_model_observer.h",
+    "page_action_observer.cc",
     "page_action_triggers.cc",
     "page_action_view.cc",
     "pwa_install.cc",
@@ -50,6 +52,7 @@ source_set("unit_tests") {
     "page_action_container_view_unittest.cc",
     "page_action_controller_unittest.cc",
     "page_action_icon_view_unittest.cc",
+    "page_action_observer_unittest.cc",
     "page_action_view_unittest.cc",
   ]
 
