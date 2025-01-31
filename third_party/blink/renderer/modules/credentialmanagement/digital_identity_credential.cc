@@ -116,9 +116,9 @@ void OnCompleteRequest(ScriptPromiseResolver<IDLNullable<Credential>>* resolver,
       }
       return;
     }
-    case RequestDigitalIdentityStatus::kErrorNoProviders:
+    case RequestDigitalIdentityStatus::kErrorNoRequests:
       resolver->RejectWithTypeError(
-          "Digital identity API needs at least one provider.");
+          "Digital identity API needs at least one request.");
       return;
     case RequestDigitalIdentityStatus::kErrorInvalidJson:
       resolver->RejectWithTypeError(
@@ -182,7 +182,7 @@ void DiscoverDigitalIdentityCredentialFromExternalSource(
     return;
   }
 
-  Vector<blink::mojom::blink::DigitalCredentialProviderPtr> providers;
+  Vector<blink::mojom::blink::DigitalCredentialRequestPtr> requests;
   for (const auto& provider : options.digital()->providers()) {
     V8UnionObjectOrString* request_object_or_string = provider->request();
 
@@ -197,12 +197,12 @@ void DiscoverDigitalIdentityCredentialFromExternalSource(
       }
     }
 
-    blink::mojom::blink::DigitalCredentialProviderPtr
-        digital_credential_provider =
-            blink::mojom::blink::DigitalCredentialProvider::New();
-    digital_credential_provider->protocol = provider->protocol();
-    digital_credential_provider->request = stringified_request;
-    providers.push_back(std::move(digital_credential_provider));
+    blink::mojom::blink::DigitalCredentialRequestPtr
+        digital_credential_request =
+            blink::mojom::blink::DigitalCredentialRequest::New();
+    digital_credential_request->protocol = provider->protocol();
+    digital_credential_request->data = stringified_request;
+    requests.push_back(std::move(digital_credential_request));
   }
 
   UseCounter::Count(resolver->GetExecutionContext(),
@@ -216,10 +216,9 @@ void DiscoverDigitalIdentityCredentialFromExternalSource(
     scoped_abort_state = std::make_unique<ScopedAbortState>(signal, handle);
   }
 
-
   auto* request =
       CredentialManagerProxy::From(script_state)->DigitalIdentityRequest();
-  request->Get(std::move(providers),
+  request->Get(std::move(requests),
                WTF::BindOnce(&OnCompleteRequest, WrapPersistent(resolver),
                              std::move(scoped_abort_state)));
 }

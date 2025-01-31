@@ -185,11 +185,11 @@ bool SetFieldNameValue(base::Value& to_modify,
 
 std::optional<InterstitialType> ComputeInterstitialType(
     const std::string& protocol,
-    base::Value request) {
+    base::Value request_data) {
   auto provider = std::make_unique<TestDigitalIdentityProviderWithCustomRisk>(
       /*are_origins_low_risk=*/false);
   return DigitalIdentityRequestImpl::ComputeInterstitialType(
-      url::Origin(), provider.get(), protocol, std::move(request));
+      url::Origin(), provider.get(), protocol, std::move(request_data));
 }
 
 }  // anonymous namespace
@@ -480,7 +480,7 @@ TEST_F(DigitalIdentityRequestImplWithCreationEnabledTest,
   DigitalCredentialRequestPtr digital_credential_request;
 
   EXPECT_CALL(callback,
-              Run(RequestDigitalIdentityStatus::kErrorNoProviders, _, _));
+              Run(RequestDigitalIdentityStatus::kErrorNoRequests, _, _));
   digital_identity_request_impl()->Create(std::move(digital_credential_request),
                                           callback.Get());
 }

@@ -45,7 +45,7 @@ class CONTENT_EXPORT DigitalIdentityRequestImpl
       const url::Origin& rp_origin,
       const DigitalIdentityProvider* provider,
       const std::optional<std::string>& protocol,
-      const data_decoder::DataDecoder::ValueOrError& request);
+      const data_decoder::DataDecoder::ValueOrError& request_data);
 
   DigitalIdentityRequestImpl(const DigitalIdentityRequestImpl&) = delete;
   DigitalIdentityRequestImpl& operator=(const DigitalIdentityRequestImpl&) =
@@ -54,8 +54,8 @@ class CONTENT_EXPORT DigitalIdentityRequestImpl
   ~DigitalIdentityRequestImpl() override;
 
   // blink::mojom::DigitalIdentityRequest:
-  void Get(std::vector<blink::mojom::DigitalCredentialProviderPtr>
-               digital_credential_providers,
+  void Get(std::vector<blink::mojom::DigitalCredentialRequestPtr>
+               digital_credential_requests,
            GetCallback) override;
 
   void Create(
