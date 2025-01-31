@@ -723,6 +723,7 @@ blink_core_tests_layout = [
   "forms/layout_text_control_test.cc",
   "fragmentation_test.cc",
   "geometry/axis_test.cc",
+  "geometry/box_sides_test.cc",
   "geometry/box_strut_test.cc",
   "geometry/logical_rect_test.cc",
   "geometry/physical_rect_test.cc",
