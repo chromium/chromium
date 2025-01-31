@@ -144,7 +144,7 @@ class CONTENT_EXPORT CdmStorageManager : public media::mojom::CdmStorage,
   // Keep track of all media::mojom::CdmFile receivers, as each CdmFileImpl
   // object keeps a reference to `this`. If `this` goes away unexpectedly,
   // all remaining CdmFile receivers will be closed.
-  std::map<CdmFileIdTwo, std::unique_ptr<CdmFileImpl>> cdm_files_
+  std::map<CdmFileId, std::unique_ptr<CdmFileImpl>> cdm_files_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::WeakPtrFactory<CdmStorageManager> weak_factory_{this};
