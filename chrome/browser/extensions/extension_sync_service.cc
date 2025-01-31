@@ -410,7 +410,6 @@ void ExtensionSyncService::ApplySyncData(
 
   // Extension from sync was uninstalled by the user as an external extension.
   // Honor user choice and skip installation/enabling.
-  // TODO(treib): Should we still apply pref changes?
   ExtensionPrefs* extension_prefs = ExtensionPrefs::Get(profile_);
   if (extension_prefs->IsExternalExtensionUninstalled(id)) {
     LOG(WARNING) << "Extension with id " << id
