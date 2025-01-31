@@ -8,9 +8,64 @@ for more details on the presubmit API built into depot_tools.
 
 PRESUBMIT_VERSION = '2.0.0'
 
+from enum import Enum
 import os
 from pathlib import Path
 import sys
+import tempfile
+from typing import Any, Callable, List, Type
+
+
+# Cannot be called CheckType because by convention PRESUBMIT will try to call
+# anything with a Check prefix as a function.
+class HistogramsPresubmitCheckType(Enum):
+  """Unique identifiers for the checks in this files.
+
+  As this file contains multiple checks, we need to have unique identifiers for
+  each of them to identify proper result set in the cache. This enum defines
+  all the unique identifiers for the checks in this file.
+  """
+  BOOLS_ARE_ENUMS = 1
+  ALL_ALLOWLIST_HISTOGRAMS_PRESENT = 2
+  FORMATTING_VALIDATION = 3
+
+
+_CACHE_FILE_PATH = os.path.join(tempfile.gettempdir(),
+                                'histograms_presubmit_cache.json')
+
+
+def _RunCheckWithCache(check_method: Callable[[Type, Type, Any], List[Any]],
+                       check_id: int, input_api: type, output_api: type,
+                       cache_file_path: str, *args, **kwargs):
+  """Runs a check method with caching support.
+
+  Args:
+    check_method: The method that executes actual checks, must accept input_api
+      and output_api as first two arguments and will get past the rest generic
+      arguments (args, kwargs).
+    check_id: Unique identifier for the check used as a key for the cache. The
+      same type of check must always use the same id.
+    input_api: The input api type, generally provided by the PRESUBMIT system.
+    output_api: The output api type, generally provided by the PRESUBMIT system.
+    cache_file_path: The path of the cache file to be used.
+    *args: The extra args to pass to the check method (see: check_method).
+    **kwargs: The extra kwargs to pass to the check method (see: check_method).
+  """
+  # As the path for import is relative to InputApi importing is done within
+  # the function that already has a reference to the InputApi.
+  sys.path.append(input_api.PresubmitLocalPath())
+  import presubmit_caching_support
+  cache = presubmit_caching_support.PresubmitCache(
+      cache_file_path, input_api.PresubmitLocalPath())
+  cached_result = cache.RetrieveResultFromCache(check_id)
+
+  if cached_result is not None:
+    sys.stdout.write(f'Using cached result for {check_id}\n')
+    return cached_result
+
+  new_result = check_method(input_api, output_api, *args, **kwargs)
+  cache.StoreResultInCache(check_id, new_result)
+  return new_result
 
 
 def GetPrettyPrintErrors(input_api, output_api, cwd, rel_path, results):
@@ -117,7 +172,29 @@ def ValidateSingleFile(input_api, output_api, file_obj, cwd, results,
   return False
 
 
-def CheckHistogramFormatting(input_api, output_api, allow_test_paths=False):
+def CheckHistogramFormatting(input_api,
+                             output_api,
+                             cache_file_override_path=None,
+                             allow_test_paths=False):
+  """Checks that histograms.xml is pretty-printed and well-formatted.
+
+  This function is a wrapper around
+  ExecuteCheckHistogramFormatting that adds caching support.
+  """
+  cache_file_path = _CACHE_FILE_PATH
+  if cache_file_override_path is not None:
+    cache_file_path = cache_file_override_path
+  return _RunCheckWithCache(ExecuteCheckHistogramFormatting,
+                            HistogramsPresubmitCheckType.FORMATTING_VALIDATION,
+                            input_api, output_api, cache_file_path,
+                            allow_test_paths)
+
+
+# Note: Execute convention in this file comes from the fact that PRESUBMIT
+# will try to call anything with a Check prefix as a function. As we want to
+# avoid this and at the same we want to add a caching support, we are using
+# Execute prefix for executing the checks on cache miss.
+def ExecuteCheckHistogramFormatting(input_api, output_api, allow_test_paths):
   """Checks that histograms.xml is pretty-printed and well-formatted.
 
   This is a method that is called by the PRESUBMIT system and those it
@@ -143,11 +220,30 @@ def CheckHistogramFormatting(input_api, output_api, allow_test_paths=False):
   return results
 
 
-def CheckWebViewHistogramsAllowlistOnUpload(
-    input_api,
-    output_api,
-    xml_paths_override=None,
-):
+def CheckWebViewHistogramsAllowlistOnUpload(input_api,
+                                            output_api,
+                                            cache_file_override_path=None,
+                                            xml_paths_override=None):
+  """Checks that histograms_allowlist.txt contains valid histograms.
+
+  This function is a wrapper around
+  ExecuteCheckWebViewHistogramsAllowlistOnUpload that adds caching support.
+  """
+  cache_file_path = _CACHE_FILE_PATH
+  if cache_file_override_path is not None:
+    cache_file_path = cache_file_override_path
+  return _RunCheckWithCache(
+      ExecuteCheckWebViewHistogramsAllowlistOnUpload,
+      HistogramsPresubmitCheckType.ALL_ALLOWLIST_HISTOGRAMS_PRESENT, input_api,
+      output_api, cache_file_path, xml_paths_override)
+
+
+# Note: Execute convention in this file comes from the fact that PRESUBMIT
+# will try to call anything with a Check prefix as a function. As we want to
+# avoid this and at the same we want to add a caching support, we are using
+# Execute prefix for executing the checks on cache miss.
+def ExecuteCheckWebViewHistogramsAllowlistOnUpload(input_api, output_api,
+                                                   xml_paths_override):
   """Checks that histograms_allowlist.txt contains valid histograms."""
   xml_filter = lambda f: Path(f.LocalPath()).suffix == '.xml'
   xml_files = input_api.AffectedFiles(file_filter=xml_filter)
@@ -175,7 +271,25 @@ def CheckWebViewHistogramsAllowlistOnUpload(
   return result
 
 
-def CheckBooleansAreEnums(input_api, output_api):
+def CheckBooleansAreEnums(input_api, output_api, cache_file_override_path=None):
+  """Checks that histograms that use Booleans do not use units.
+
+  This function is a wrapper around ExecuteCheckBooleansAreEnums that adds
+  caching support.
+  """
+  cache_file_path = _CACHE_FILE_PATH
+  if cache_file_override_path is not None:
+    cache_file_path = cache_file_override_path
+  return _RunCheckWithCache(ExecuteCheckBooleansAreEnums,
+                            HistogramsPresubmitCheckType.BOOLS_ARE_ENUMS,
+                            input_api, output_api, cache_file_path)
+
+
+# Note: Execute convention in this file comes from the fact that PRESUBMIT
+# will try to call anything with a Check prefix as a function. As we want to
+# avoid this and at the same we want to add a caching support, we are using
+# Execute prefix for executing the checks on cache miss.
+def ExecuteCheckBooleansAreEnums(input_api, output_api):
   """Checks that histograms that use Booleans do not use units."""
   results = []
   cwd = input_api.PresubmitLocalPath()
