@@ -1586,3 +1586,35 @@ INSTANTIATE_TEST_SUITE_P(/*empty*/,
                          [](const auto& info) {
                            return info.param ? "Encryption" : "NoEncryption";
                          });
+
+// Tests migration of a keywords table with an empty url, which is invalid. The
+// entry should not be migrated, and the test should not crash. The dropping of
+// the invalid entry takes place upon the first GetKeywords call, and this is
+// tested elsewhere in KeywordTableTest.KeywordBadUrl.
+TEST_F(WebDatabaseMigrationTest, MigrateVersion136ToCurrentBadUrl) {
+  // The feature is tested elsewhere, force enable to make sure expectations
+  // match.
+  base::test::ScopedFeatureList enable_verification(
+      features::kKeywordTableHashVerification);
+
+  ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_136.sql")));
+  const TemplateURLID kTestId = 99;
+  {
+    sql::Database connection(sql::test::kTestTag);
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    EXPECT_EQ(136, VersionFromConnection(&connection));
+    EXPECT_FALSE(connection.DoesColumnExist("keywords", "url_hash"));
+
+    // Insert a keyword to test that it is migrated correctly.
+    ASSERT_TRUE(connection.ExecuteScriptForTesting(base::StrCat(
+        {"INSERT INTO keywords VALUES(", base::NumberToString(kTestId),
+         ",'Test','@test','','", /*url=*/"",
+         "',1,'',0,0,'','',0,0,0,'','[]','','','','','',0,0,1,2,0,0);"})));
+  }
+  {
+    base::HistogramTester histograms;
+    DoMigration();
+    histograms.ExpectUniqueSample("Search.KeywordTable.MigrationSuccess.V137",
+                                  false, 1);
+  }
+}

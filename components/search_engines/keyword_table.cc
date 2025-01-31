@@ -541,7 +541,17 @@ bool KeywordTable::MigrateToVersion137AddHashColumn() {
   while (query_statement.Step()) {
     TemplateURLData data;
     data.id = query_statement.ColumnInt64(0);
-    data.SetURL(query_statement.ColumnString(1));
+    const auto maybe_url = query_statement.ColumnString(1);
+
+    // Due to past bugs, there might be persisted entries with empty URLs. Avoid
+    // reading these out. GetKeywords() will delete these entries when they are
+    // read after migration.
+    if (maybe_url.empty()) {
+      all_rows_migrated = false;
+      continue;
+    }
+
+    data.SetURL(maybe_url);
     const auto url_hash = data.GenerateHash();
     const auto encrypted_hash = encryptor()->EncryptString(
         std::string(url_hash.begin(), url_hash.end()));

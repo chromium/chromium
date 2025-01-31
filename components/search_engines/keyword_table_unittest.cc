@@ -410,3 +410,25 @@ TEST_F(KeywordTableTest, KeywordBadCrypto) {
                                   1);
   }
 }
+
+TEST_F(KeywordTableTest, KeywordBadUrl) {
+  base::test::ScopedFeatureList enable_verification(
+      features::kKeywordTableHashVerification);
+
+  TemplateURLData keyword(CreateAndAddKeyword());
+  {
+    KeywordTable::Keywords keywords(GetKeywords());
+    EXPECT_EQ(1U, keywords.size());
+  }
+  CloseDatabase();
+  {
+    sql::Database db(sql::test::kTestTag);
+    ASSERT_TRUE(db.Open(file_));
+    EXPECT_TRUE(db.Execute("UPDATE keywords SET url='' WHERE id=1"));
+  }
+  InitDatabase();
+  KeywordTable::Keywords keywords(GetKeywords());
+
+  // Invalid keyword with empty url should have been dropped.
+  EXPECT_TRUE(keywords.empty());
+}
