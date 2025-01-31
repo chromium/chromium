@@ -31,6 +31,12 @@ class MockDeviceBoundSessionManager : public mojom::DeviceBoundSessionManager {
                network::mojom::ClearDataFilterPtr filter,
                base::OnceClosure completion_callback),
               (override));
+  MOCK_METHOD(
+      void,
+      AddObserver,
+      (const GURL& url,
+       mojo::PendingRemote<mojom::DeviceBoundSessionAccessObserver> observer),
+      (override));
 };
 
 }  // namespace network

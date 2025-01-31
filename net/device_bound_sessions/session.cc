@@ -182,8 +182,7 @@ proto::Session Session::ToProto() const {
 }
 
 bool Session::ShouldDeferRequest(URLRequest* request) const {
-  if (inclusion_rules_.EvaluateRequestUrl(request->url()) ==
-      SessionInclusionRules::kExclude) {
+  if (!IncludesUrl(request->url())) {
     // Request is not in scope for this session.
     return false;
   }
@@ -322,6 +321,11 @@ bool Session::IsEqualForTesting(const Session& other) const {
 
 void Session::RecordAccess() {
   expiry_date_ = base::Time::Now() + kSessionTtl;
+}
+
+bool Session::IncludesUrl(const GURL& url) const {
+  return inclusion_rules_.EvaluateRequestUrl(url) ==
+         SessionInclusionRules::kInclude;
 }
 
 }  // namespace net::device_bound_sessions

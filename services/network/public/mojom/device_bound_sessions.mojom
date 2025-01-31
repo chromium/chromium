@@ -56,6 +56,10 @@ interface DeviceBoundSessionManager {
   DeleteAllSessions(mojo_base.mojom.Time? created_after_time,
                     mojo_base.mojom.Time? created_before_time,
                     ClearDataFilter? filter) => ();
+
+  // Add an observer for accesses to sessions including `url`.
+  AddObserver(url.mojom.Url url,
+              pending_remote<DeviceBoundSessionAccessObserver> observer);
 };
 
 // Observer that is notified on use of a device bound session.

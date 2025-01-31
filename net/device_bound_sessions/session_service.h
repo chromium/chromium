@@ -8,11 +8,13 @@
 #include <memory>
 
 #include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "net/base/net_export.h"
 #include "net/device_bound_sessions/registration_fetcher_param.h"
 #include "net/device_bound_sessions/session.h"
 #include "net/device_bound_sessions/session_access.h"
 #include "net/device_bound_sessions/session_challenge_param.h"
+#include "net/device_bound_sessions/session_key.h"
 #include "net/log/net_log_with_source.h"
 
 namespace net {
@@ -106,6 +108,13 @@ class NET_EXPORT SessionService {
       std::optional<base::Time> created_before_time,
       base::RepeatingCallback<bool(const net::SchemefulSite&)> site_matcher,
       base::OnceClosure completion_callback) = 0;
+
+  // Add an observer for session changes that include `url`. `callback`
+  // will only be notified until the destruction of the returned
+  // `ScopedClosureRunner`.
+  virtual base::ScopedClosureRunner AddObserver(
+      const GURL& url,
+      base::RepeatingCallback<void(const SessionAccess&)> callback) = 0;
 
  protected:
   SessionService() = default;
