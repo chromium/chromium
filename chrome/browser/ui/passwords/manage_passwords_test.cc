@@ -12,6 +12,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/password_manager/chrome_password_change_service.h"
 #include "chrome/browser/password_manager/password_change_service_factory.h"
 #include "chrome/browser/password_manager/password_manager_test_base.h"
@@ -70,6 +73,8 @@ ManagePasswordsTest::~ManagePasswordsTest() = default;
 
 void ManagePasswordsTest::SetUpOnMainThread() {
   InteractiveBrowserTest::SetUpOnMainThread();
+  mock_optimization_service_ =
+      std::make_unique<testing::NiceMock<MockOptimizationGuideKeyedService>>();
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL test_url = embedded_test_server()->GetURL("/empty.html");
 
@@ -78,8 +83,12 @@ void ManagePasswordsTest::SetUpOnMainThread() {
   password_form_.username_value = kTestUsername;
   password_form_.password_value = u"test_password";
   password_form_.match_type = password_manager::PasswordForm::MatchType::kExact;
-
   ASSERT_TRUE(AddTabAtIndex(0, test_url, ui::PAGE_TRANSITION_TYPED));
+}
+
+void ManagePasswordsTest::TearDownOnMainThread() {
+  mock_optimization_service_ = nullptr;
+  InteractiveBrowserTest::TearDownOnMainThread();
 }
 
 void ManagePasswordsTest::SetUpInProcessBrowserTestFixture() {
@@ -140,11 +149,12 @@ void ManagePasswordsTest::SetupPasswordChange() {
   PasswordChangeServiceFactory::GetInstance()->SetTestingFactory(
       browser()->profile(),
       base::BindLambdaForTesting(
-          [&mock_affiliation_service](content::BrowserContext* context)
+          [this, &mock_affiliation_service](content::BrowserContext* context)
               -> std::unique_ptr<KeyedService> {
             return std::make_unique<ChromePasswordChangeService>(
-                &mock_affiliation_service);
+                &mock_affiliation_service, mock_optimization_service_.get());
           }));
+  mock_optimization_service_.reset();
 
   const GURL kUrl = GURL("https://example.com/");
   ON_CALL(mock_affiliation_service, GetChangePasswordURL(kUrl))

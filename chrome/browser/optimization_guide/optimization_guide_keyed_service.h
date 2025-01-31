@@ -165,7 +165,7 @@ class OptimizationGuideKeyedService
 
   // Returns true if signed-in user is allowed to execute models, disregarding
   // the `allow_unsigned_user` switch.
-  bool ShouldFeatureAllowModelExecutionForSignedInUser(
+  virtual bool ShouldFeatureAllowModelExecutionForSignedInUser(
       optimization_guide::UserVisibleFeatureKey feature) const;
 
   // Returns whether the `feature` should be currently allowed for showing the

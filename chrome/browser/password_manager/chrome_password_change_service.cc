@@ -5,6 +5,8 @@
 #include "chrome/browser/password_manager/chrome_password_change_service.h"
 
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/password_manager/password_change_delegate.h"
 #include "chrome/browser/password_manager/password_change_delegate_impl.h"
 #include "components/affiliations/core/browser/affiliation_service.h"
@@ -28,8 +30,10 @@ content::WebContents* OpenNewTab(const GURL& url,
 }  // namespace
 
 ChromePasswordChangeService::ChromePasswordChangeService(
-    affiliations::AffiliationService* affiliation_service)
+    affiliations::AffiliationService* affiliation_service,
+    OptimizationGuideKeyedService* optimization_keyed_service)
     : affiliation_service_(affiliation_service),
+      optimization_keyed_service_(optimization_keyed_service),
       new_tab_callback_(base::BindRepeating(&OpenNewTab)) {}
 
 ChromePasswordChangeService::~ChromePasswordChangeService() {
@@ -41,8 +45,15 @@ bool ChromePasswordChangeService::IsPasswordChangeSupported(const GURL& url) {
           password_manager::features::kImprovedPasswordChangeService)) {
     return false;
   }
-
-  return affiliation_service_->GetChangePasswordURL(url).is_valid();
+  const bool is_user_allowed =
+      optimization_keyed_service_ &&
+      optimization_keyed_service_
+          ->ShouldFeatureAllowModelExecutionForSignedInUser(
+              optimization_guide::UserVisibleFeatureKey::
+                  kPasswordChangeSubmission);
+  const bool is_url_supported =
+      affiliation_service_->GetChangePasswordURL(url).is_valid();
+  return is_url_supported && is_user_allowed;
 }
 
 void ChromePasswordChangeService::OfferPasswordChangeUi(

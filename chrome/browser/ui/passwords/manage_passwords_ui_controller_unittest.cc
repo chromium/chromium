@@ -20,6 +20,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/password_manager/chrome_password_change_service.h"
 #include "chrome/browser/password_manager/password_change_service_factory.h"
 #include "chrome/browser/ui/hats/mock_trust_safety_sentiment_service.h"
@@ -1922,13 +1923,16 @@ TEST_F(ManagePasswordsUIControllerTest, OpenPasskeyNotAcceptedBubble) {
 TEST_F(ManagePasswordsUIControllerTest, PasswordChangeOngoing) {
   testing::StrictMock<affiliations::MockAffiliationService>
       mock_affiliation_service;
+  testing::StrictMock<MockOptimizationGuideKeyedService>
+      mock_optimization_service;
   PasswordChangeServiceFactory::GetInstance()->SetTestingFactory(
       profile(),
       base::BindLambdaForTesting(
-          [&mock_affiliation_service](content::BrowserContext* context)
+          [&mock_affiliation_service,
+           &mock_optimization_service](content::BrowserContext* context)
               -> std::unique_ptr<KeyedService> {
             return std::make_unique<ChromePasswordChangeService>(
-                &mock_affiliation_service);
+                &mock_affiliation_service, &mock_optimization_service);
           }));
 
   const GURL kUrl = GURL("https://example.com/");

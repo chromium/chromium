@@ -146,6 +146,9 @@ class ModelQualityLogsUploaderServiceTest : public testing::Test {
         break;
       case UserVisibleFeatureKey::kHistorySearch:
         // TODO(crbug.com/345308285): Add user feedback for history searches.
+      case UserVisibleFeatureKey::kPasswordChangeSubmission:
+        // TODO(crbug.com/375569995): Add user feedback for password change
+        // submission.
         break;
     }
 

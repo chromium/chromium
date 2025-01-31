@@ -42,6 +42,9 @@ const char kAutofillPredictionImprovementsEnterprisePolicyAllowed[] =
     "optimization_guide.model_execution.autofill_prediction_improvements_"
     "enterprise_policy_allowed";
 
+const char kPasswordChangeSubmissionEnterprisePolicyAllowed[] =
+    "optimization_guide.model_execution.password_change_submission_"
+    "enterprise_policy_allowed";
 }  // namespace prefs
 
 namespace features {
@@ -186,6 +189,18 @@ void RegisterHistorySearch() {
   SettingsUiRegistry::GetInstance().Register(std::move(ui_metadata));
 }
 
+void RegisterPasswordChangeSubmission() {
+  EnterprisePolicyPref enterprise_policy =
+      EnterprisePolicyRegistry::GetInstance().Register(
+          prefs::kPasswordChangeSubmissionEnterprisePolicyAllowed);
+
+  auto ui_metadata = std::make_unique<SettingsUiMetadata>(
+      "PasswordChangeSubmission",
+      UserVisibleFeatureKey::kPasswordChangeSubmission,
+      std::move(enterprise_policy));
+  SettingsUiRegistry::GetInstance().Register(std::move(ui_metadata));
+}
+
 void RegisterProductSpecifications() {
   EnterprisePolicyPref enterprise_policy =
       EnterprisePolicyRegistry::GetInstance().Register(
@@ -245,6 +260,7 @@ void RegisterGenAiFeatures(PrefRegistrySimple* pref_registry) {
     RegisterHistorySearch();
     RegisterProductSpecifications();
     RegisterAutofillPredictions();
+    RegisterPasswordChangeSubmission();
     features_registered = true;
   }
   EnterprisePolicyRegistry::GetInstance().RegisterProfilePrefs(pref_registry);
