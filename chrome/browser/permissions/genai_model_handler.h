@@ -61,7 +61,7 @@ class GenAiModelHandler
   // It is set to true when the on-device model is not readily available, but
   // it's expected to be ready soon. See `kWaitableReasons` for more details.
   bool observing_on_device_model_availability_ = false;
-  bool on_device_model_available_ = false;
+  bool is_on_device_model_available_ = false;
 
   // Model downloading has begun at this point in time.
   base::TimeTicks on_device_download_start_time_;
