@@ -543,9 +543,9 @@ void CloseGroupAtIndex(int group_cell_index) {
       waitForUIElementToDisappearWithMatcher:DeleteGroupConfirmationButton()];
 
   // Verify that the group with `kGroup1Name` still exists.
-  [[EarlGrey
-      selectElementWithMatcher:TabGroupsPanelCellWithName(kGroup1Name, 1)]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:TabGroupsPanelCellWithName(
+                                              kGroup1Name, 1)];
   GREYAssertEqual(1, [TabGroupEarlGrey countOfSavedTabGroups],
                   @"The number of saved tab groups should be 1.");
 
