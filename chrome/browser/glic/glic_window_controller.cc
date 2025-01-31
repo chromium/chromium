@@ -976,7 +976,6 @@ void GlicWindowController::MaybeCreateHolderWindowAndReparent() {
   attached_browser_widget_observation_.Reset();
   browser_close_subscription_.reset();
 
-  gfx::Rect bounds = glic_widget_->GetWindowBoundsInScreen();
 
   if (!holder_widget_) {
     holder_widget_ = std::make_unique<views::Widget>();
@@ -987,12 +986,10 @@ void GlicWindowController::MaybeCreateHolderWindowAndReparent() {
     params.accept_events = false;
     // Widget name is specified for debug purposes.
     params.name = "HolderWindow";
-    params.bounds = bounds;
+    params.bounds = glic_widget_->GetWindowBoundsInScreen();
     params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
     holder_widget_->Init(std::move(params));
     holder_widget_->ShowInactive();
-  } else {
-    holder_widget_->SetBounds(bounds);
   }
 
   glic_widget_->Reparent(holder_widget_.get());
