@@ -720,10 +720,13 @@ public class WebViewChromiumAwInit {
             throw new IllegalStateException(
                     "startUpWebView should not be called on the Android main looper");
         }
-        if (!shouldRunUiThreadStartUpTasks || isChromiumInitialized()) {
+        if (!shouldRunUiThreadStartUpTasks) {
             callback.onSuccess(mWebViewStartUpDiagnostics);
             return;
         }
+
+        // TODO(crbug.com/389871700): We should also early out if the diagnostics information has
+        // been set.
         mWebViewStartUpCallbackRunQueue.addTask(
                 () -> callback.onSuccess(mWebViewStartUpDiagnostics));
         triggerChromiumStartupAndReturnTrueIfStartupIsFinished(
