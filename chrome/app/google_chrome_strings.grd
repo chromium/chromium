@@ -1204,9 +1204,6 @@ Google Chrome is unable to recover your settings.
       <message name="IDS_PROFILE_MENU_SIGNIN_PROMO_BUTTON" desc="Text for the button in the sign-in promo in the profile menu when the used is signed out.">
         Sign in to Chrome
       </message>
-      <message name="IDS_PROFILE_MENU_BROWSER_MANAGED_HEADER" desc="Disclaimer indicating that Chrome is managed">
-        Chrome is managed
-      </message>
       <message name="IDS_PROFILE_MENU_PLACEHOLDER_PROFILE_NAME" desc="Placeholder profile name, used when the user did not enter a name for their profile.">
         Your Chrome
       </message>
