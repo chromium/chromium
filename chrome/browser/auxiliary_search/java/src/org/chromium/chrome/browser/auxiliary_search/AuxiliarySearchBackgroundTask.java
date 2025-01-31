@@ -19,6 +19,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.StreamUtil;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.task.AsyncTask;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchEntry;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -238,6 +240,11 @@ public class AuxiliarySearchBackgroundTask extends NativeBackgroundTask {
 
     @VisibleForTesting
     public void onTaskFinished(TaskFinishedCallback taskFinishedCallback) {
+        PostTask.runOrPostTask(TaskTraits.UI_TRAITS_START, () -> destroy());
+        taskFinishedCallback.taskFinished(/* needsReschedule= */ false);
+    }
+
+    private void destroy() {
         if (mAuxiliarySearchController != null) {
             mAuxiliarySearchController.destroy();
             mAuxiliarySearchController = null;
@@ -245,6 +252,5 @@ public class AuxiliarySearchBackgroundTask extends NativeBackgroundTask {
         if (mFaviconHelper != null) {
             mFaviconHelper.destroy();
         }
-        taskFinishedCallback.taskFinished(/* needsReschedule= */ false);
     }
 }
