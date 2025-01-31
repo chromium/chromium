@@ -1940,8 +1940,14 @@ void LockContentsView::LayoutAuth(LoginBigUserView* to_update,
           to_update_auth |= LoginAuthUserView::AUTH_PIN;
         }
         if (!state->show_password && !state->show_pin) {
-          CHECK(IsTimeInFuture(state->pin_available_at))
+          CHECK(state->pin_available_at.has_value())
               << "Password or pin factor must be present, if pin is not locked";
+          if (IsTimeInPast(state->pin_available_at)) {
+            LOG(WARNING)
+                << "User PIN factor should have been enabled by cryptohome at "
+                << ToString(state->pin_available_at)
+                << ". Waiting for OnPinUnlock call.";
+          }
           to_update_auth =
               screen_type_ == LockScreen::ScreenType::kLogin
                   ? LoginAuthUserView::AUTH_PIN_LOCKED_SHOW_RECOVERY
