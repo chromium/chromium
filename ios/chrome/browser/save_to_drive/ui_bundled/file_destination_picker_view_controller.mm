@@ -205,7 +205,7 @@ void SetUnhighlightedBackgroundColorForCell(UITableViewCell* cell) {
     cell.userInteractionEnabled = NO;
     cell.textLabel.enabled = NO;
     cell.detailTextLabel.text =
-        l10n_util::GetNSString(IDS_POLICY_DOWNLOAD_STATUS_BLOCKED_ORGANIZATION);
+        l10n_util::GetNSString(IDS_POLICY_ACTION_BLOCKED_BY_ORGANIZATION);
     cell.detailTextLabel.enabled = NO;
   }
 

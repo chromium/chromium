@@ -735,7 +735,7 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
               policy::policy_prefs::kDownloadRestrictions));
   if (download_restriction == policy::DownloadRestriction::ALL_FILES) {
     saveImage.subtitle =
-        l10n_util::GetNSString(IDS_POLICY_DOWNLOAD_STATUS_BLOCKED_ORGANIZATION);
+        l10n_util::GetNSString(IDS_POLICY_ACTION_BLOCKED_BY_ORGANIZATION);
     saveImage.attributes = UIMenuElementAttributesDisabled;
   }
 

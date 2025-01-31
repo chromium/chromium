@@ -337,7 +337,7 @@ TEST_F(ContextMenuConfigurationProviderTest,
   // Test that the element has the expected subtitle.
   EXPECT_TRUE([foundMenuElement.subtitle
       isEqualToString:l10n_util::GetNSString(
-                          IDS_POLICY_DOWNLOAD_STATUS_BLOCKED_ORGANIZATION)]);
+                          IDS_POLICY_ACTION_BLOCKED_BY_ORGANIZATION)]);
 
   // Test that the element is disabled.
   EXPECT_EQ(base::apple::ObjCCast<UIAction>(foundMenuElement).attributes,
