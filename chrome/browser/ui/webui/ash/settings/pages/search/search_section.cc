@@ -440,10 +440,16 @@ void SearchSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
   const bool is_assistant_allowed = IsAssistantAllowed();
   html_source->AddBoolean("isAssistantAllowed", is_assistant_allowed);
-  html_source->AddLocalizedString("osSearchPageTitle",
-                                  is_assistant_allowed
-                                      ? IDS_SETTINGS_SEARCH_AND_ASSISTANT
-                                      : IDS_SETTINGS_SEARCH);
+
+  if (assistant::features::IsNewEntryPointEnabled()) {
+    html_source->AddLocalizedString(
+        "osSearchPageTitle", IDS_OS_SETTINGS_SEARCH_AND_SUGGESTIONS_TITLE);
+  } else {
+    html_source->AddLocalizedString(
+        "osSearchPageTitle", is_assistant_allowed
+                                 ? IDS_SETTINGS_SEARCH_AND_ASSISTANT
+                                 : IDS_SETTINGS_SEARCH);
+  }
   html_source->AddString("osSearchEngineDescription",
                          ui::SubstituteChromeOSDeviceType(
                              IDS_OS_SETTINGS_SEARCH_ENGINE_DESCRIPTION));
@@ -459,6 +465,10 @@ void SearchSection::AddHandlers(content::WebUI* web_ui) {
 }
 
 int SearchSection::GetSectionNameMessageId() const {
+  if (assistant::features::IsNewEntryPointEnabled()) {
+    return IDS_OS_SETTINGS_SEARCH_AND_SUGGESTIONS_TITLE;
+  }
+
   return IsAssistantAllowed() ? IDS_SETTINGS_SEARCH_AND_ASSISTANT
                               : IDS_SETTINGS_SEARCH;
 }
