@@ -16,16 +16,27 @@ class WebContents;
 
 namespace glic {
 
-// Tracks the glic focus and ensures that tab indicators are updated when focus
-// changes.
+// This class is partially responsible for updating tab indicators for glic
+// focus. TODO(crbug.com/393557651): Simplify TabRendererData design, at which
+// point this class can be fully responsible.
+//
+// Tab UI reflects feature state (such as the glic focused tab), but is stored
+// on a per-index basis rather than a per-tab basis. This means that the UI
+// needs to be updated either when the feature state changes, OR when the tab is
+// moved around (either in the same tabstrip, or into a new tabstrip). The
+// latter is currently handled by
+// BrowserTabStripController::OnTabStripModelChanged. This class is only
+// responsible for propagating glic focus changes for a fixed TabInterface,
+// without handling moving.
 class GlicTabIndicatorHelper {
  public:
   explicit GlicTabIndicatorHelper(tabs::TabInterface* tab);
   ~GlicTabIndicatorHelper();
 
  private:
-  // Updates the given tab if it is in the current tabstrip.
-  void MaybeUpdateTab(const content::WebContents* contents);
+  // Updates the Tab UI. This only needs to be called when the tab gains/loses
+  // focus, or when the indicator status changes.
+  void UpdateTab();
 
   // Called when the focused tab changes.
   void OnFocusedTabChanged(const content::WebContents* contents);
@@ -41,9 +52,8 @@ class GlicTabIndicatorHelper {
   void OnTabDidInsert(tabs::TabInterface* tab);
 
   raw_ptr<tabs::TabInterface> tab_;
-  bool context_access_indicator_enabled_ = false;
+  bool tab_is_focused_ = false;
   bool is_detached_ = false;
-  base::WeakPtr<const content::WebContents> last_focused_tab_;
   base::CallbackListSubscription focus_change_subscription_;
   base::CallbackListSubscription indicator_change_subscription_;
   base::CallbackListSubscription will_detach_subscription_;

@@ -29,6 +29,8 @@ GlicTabIndicatorHelper::GlicTabIndicatorHelper(tabs::TabInterface* tab)
       service->AddContextAccessIndicatorStatusChangedCallback(
           base::BindRepeating(&GlicTabIndicatorHelper::OnIndicatorStatusChanged,
                               base::Unretained(this)));
+
+  // TODO(crbug.com/393525654): This code should not be necessary.
   will_detach_subscription_ = tab_->RegisterWillDetach(base::BindRepeating(
       &GlicTabIndicatorHelper::OnTabWillDetach, base::Unretained(this)));
   did_insert_subscription_ = tab_->RegisterDidInsert(base::BindRepeating(
@@ -37,46 +39,34 @@ GlicTabIndicatorHelper::GlicTabIndicatorHelper(tabs::TabInterface* tab)
 
 GlicTabIndicatorHelper::~GlicTabIndicatorHelper() = default;
 
-void GlicTabIndicatorHelper::MaybeUpdateTab(
-    const content::WebContents* contents) {
-  if (!contents) {
+void GlicTabIndicatorHelper::UpdateTab() {
+  if (is_detached_) {
     return;
   }
   auto* const model = tab_->GetBrowserWindowInterface()->GetTabStripModel();
-  CHECK(model);
-  const int index = model->GetIndexOfWebContents(contents);
-  if (index == TabStripModel::kNoTab) {
-    return;
-  }
+  const int index = model->GetIndexOfTab(tab_);
   model->UpdateWebContentsStateAt(index, TabChangeType::kAll);
 }
 
 void GlicTabIndicatorHelper::OnFocusedTabChanged(
     const content::WebContents* contents) {
-  if (is_detached_) {
+  if (tab_is_focused_ && contents != tab_->GetContents()) {
+    tab_is_focused_ = false;
+    UpdateTab();
     return;
   }
 
-  // TODO(crbug.com/388595318): Simplify this once focus manager changes are
-  // finalized.
-  MaybeUpdateTab(last_focused_tab_.get());
-  MaybeUpdateTab(contents);
-  if (contents) {
-    // GetWeakPtr() isn't const, but we store a const pointer, so this is
-    // safe.
-    last_focused_tab_ =
-        const_cast<content::WebContents*>(contents)->GetWeakPtr();
-  } else {
-    last_focused_tab_.reset();
+  if (!tab_is_focused_ && contents == tab_->GetContents()) {
+    tab_is_focused_ = true;
+    UpdateTab();
+    return;
   }
 }
 
 void GlicTabIndicatorHelper::OnIndicatorStatusChanged(bool enabled) {
-  if (context_access_indicator_enabled_ == enabled) {
-    return;
+  if (tab_is_focused_) {
+    UpdateTab();
   }
-  context_access_indicator_enabled_ = enabled;
-  MaybeUpdateTab(last_focused_tab_.get());
 }
 
 void GlicTabIndicatorHelper::OnTabWillDetach(
