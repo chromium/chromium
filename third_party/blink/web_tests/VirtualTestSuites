@@ -1693,17 +1693,6 @@
     "expires": "Dec 5, 2024"
   },
   {
-    "prefix": "isolate-sandboxed-iframes",
-    "owners": ["wjmaclean@chromium.org", "creis@chromium.org", "alexmos@chromium.org"],
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [
-      "external/wpt/html/infrastructure/urls/terminology-0/",
-      "external/wpt/cookie-store/cookieStore_opaque_origin.https.html"
-    ],
-    "args": ["--enable-features=IsolateSandboxedIframes"],
-    "expires": "Jan 1, 2025"
-  },
-  {
     "prefix": "coop-restrict-properties",
     "owners": ["clamy@chromium.org", "arichiv@chromium.org"],
     "platforms": ["Linux", "Mac", "Win"],
