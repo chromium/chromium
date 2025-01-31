@@ -126,10 +126,10 @@ def _gen_boringssl() -> int:
   return cronet_utils.run(cmd, shell=True)
 
 
-def _run_copybara_to_aosp(
-    config: str = _COPYBARA_CONFIG_PATH,
-    copybara_binary: str = _COPYBARA_PATH,
-    git_url_and_branch: Optional[Tuple[str, str]] = None) -> int:
+def _run_copybara_to_aosp(config: str = _COPYBARA_CONFIG_PATH,
+                          copybara_binary: str = _COPYBARA_PATH,
+                          git_url_and_branch: Optional[Tuple[str, str]] = None,
+                          regenerate_consistency_file: bool = False) -> int:
   """Run Copybara CLI to generate an AOSP Gerrit CL with the generated files.
   Get the commit hash of AOSP `external/cronet` tip of tree to merge into.
   It will print the generated Gerrit url to stdout.
@@ -148,14 +148,24 @@ def _run_copybara_to_aosp(
     change_id = f'I{hashlib.sha1(msg.encode()).hexdigest()}'
     print(f'Generated {change_id=}')
   return cronet_utils.run([
-      _JAVA_PATH, '-jar', copybara_binary, config,
-      "import_cronet_to_aosp_gerrit" if git_url_and_branch is None else
-      "import_cronet_to_git_branch", REPOSITORY_ROOT, '--ignore-noop',
+      _JAVA_PATH,
+      '-jar',
+      copybara_binary,
+      config,
+      "import_cronet_to_aosp_gerrit"
+      if git_url_and_branch is None else "import_cronet_to_git_branch",
+      REPOSITORY_ROOT,
+      '--ignore-noop',
       *(('--change-request-parent', parent_commit, '--git-push-option',
          'nokeycheck', '--git-push-option', 'uploadvalidator~skip',
          '--gerrit-change-id', change_id) if git_url_and_branch is None else
         ('--git-destination-url', git_url_and_branch[0],
-         '--git-destination-push', git_url_and_branch[1]))
+         '--git-destination-push', git_url_and_branch[1])),
+      # We can't use the copybara `regenerate` subcommand because it doesn't
+      # support folder origins. See https://crbug.com/391331930.
+      *(('--disable-consistency-merge-import', 'true',
+         '--baseline-for-merge-import',
+         REPOSITORY_ROOT) if regenerate_consistency_file else ())
   ])
 
 
@@ -195,6 +205,15 @@ def main():
                       action='store_true',
                       help=("Don't clean up temporary files. Useful for "
                             "troubleshooting."))
+  parser.add_argument('--regenerate-consistency-file',
+                      action='store_true',
+                      help=("Ask copybara to ignore the existing merge import "
+                            "consistency file and generate a new one. Note for "
+                            "this to work the script must be run from the same "
+                            "origin as the one that was used for the last "
+                            "import into the destination; in other words, you "
+                            "must re-import the exact same Cronet version that "
+                            "is currently in the destination."))
   args = parser.parse_args()
   run_copybara = not args.skip_copybara
   delete_temporary_files = not args.keep_temporary_files
@@ -239,7 +258,8 @@ def main():
       res_copybara = _run_copybara_to_aosp(
           config=args.config,
           copybara_binary=args.copybara,
-          git_url_and_branch=args.git_url_and_branch)
+          git_url_and_branch=args.git_url_and_branch,
+          regenerate_consistency_file=args.regenerate_consistency_file)
 
   finally:
     for file in arch_to_temp_desc_file.values():
