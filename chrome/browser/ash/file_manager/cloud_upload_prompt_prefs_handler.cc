@@ -215,9 +215,6 @@ CloudUploadPromptPrefsHandler::CloudUploadPromptPrefsHandler(Profile* profile)
 
 void CloudUploadPromptPrefsHandler::OnOfficeFilesAlwaysMoveChanged(
     const char* local_pref) {
-  if (!IsProfileEnterpriseManaged(profile_)) {
-    return;
-  }
   auto it = kAlwaysMoveToCloudPrefMap.find(local_pref);
   DCHECK(it != kAlwaysMoveToCloudPrefMap.end());
   bool always_move = profile_->GetPrefs()->GetBoolean(local_pref);
@@ -226,9 +223,6 @@ void CloudUploadPromptPrefsHandler::OnOfficeFilesAlwaysMoveChanged(
 
 void CloudUploadPromptPrefsHandler::OnOfficeFilesAlwaysMoveSyncableChanged(
     const char* local_pref) {
-  if (!IsProfileEnterpriseManaged(profile_)) {
-    return;
-  }
   auto it = kAlwaysMoveToCloudPrefMap.find(local_pref);
   DCHECK(it != kAlwaysMoveToCloudPrefMap.end());
   if (it->second.second == ash::cloud_upload::CloudProvider::kGoogleDrive &&
@@ -247,9 +241,6 @@ void CloudUploadPromptPrefsHandler::OnOfficeFilesAlwaysMoveSyncableChanged(
 
 void CloudUploadPromptPrefsHandler::OnOfficeMoveConfirmationShownChanged(
     const char* local_pref) {
-  if (!IsProfileEnterpriseManaged(profile_)) {
-    return;
-  }
   auto it = kMoveConfirmationShownPrefMap.find(local_pref);
   DCHECK(it != kMoveConfirmationShownPrefMap.end());
   bool move_confirmation_shown = profile_->GetPrefs()->GetBoolean(local_pref);
@@ -258,9 +249,6 @@ void CloudUploadPromptPrefsHandler::OnOfficeMoveConfirmationShownChanged(
 
 void CloudUploadPromptPrefsHandler::
     OnOfficeMoveConfirmationShownSyncableChanged(const char* local_pref) {
-  if (!IsProfileEnterpriseManaged(profile_)) {
-    return;
-  }
   auto it = kMoveConfirmationShownPrefMap.find(local_pref);
   DCHECK(it != kMoveConfirmationShownPrefMap.end());
   if (it->second.second == ash::cloud_upload::CloudProvider::kGoogleDrive &&
@@ -278,8 +266,6 @@ void CloudUploadPromptPrefsHandler::
 }
 
 void CloudUploadPromptPrefsHandler::OnCloudUploadPrefChanged() {
-  DCHECK(IsProfileEnterpriseManaged(profile_));
-
   const bool google_workspace_automated =
       IsGoogleWorkspaceCloudUploadAutomated(profile_);
   const bool microsoft_office_automated =
@@ -330,6 +316,9 @@ void CloudUploadPromptPrefsHandlerFactory::RegisterProfilePrefs(
 std::unique_ptr<KeyedService>
 CloudUploadPromptPrefsHandlerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
+  if (!IsProfileEnterpriseManaged(Profile::FromBrowserContext(context))) {
+    return nullptr;
+  }
   CHECK(features::IsUploadOfficeToCloudForEnterpriseEnabled() &&
         features::IsUploadOfficeToCloudSyncEnabled());
   return CloudUploadPromptPrefsHandler::Create(
