@@ -330,7 +330,7 @@ ChromeAccountManagerService::GetAllIdentitiesOnDevice(
                                           SkipRestricted{restriction_});
 }
 
-void ChromeAccountManagerService::OnIdentityListChanged() {
+void ChromeAccountManagerService::OnIdentitiesInProfileChanged() {
   for (auto& observer : observer_list_) {
     observer.OnIdentityListChanged();
   }
@@ -342,7 +342,7 @@ void ChromeAccountManagerService::OnIdentitiesOnDeviceChanged() {
   }
 }
 
-void ChromeAccountManagerService::OnIdentityUpdated(
+void ChromeAccountManagerService::OnIdentityInProfileUpdated(
     id<SystemIdentity> identity) {
   if (!this->IsValidIdentity(identity)) {
     return;
@@ -382,7 +382,7 @@ void ChromeAccountManagerService::OnIdentityAccessTokenRefreshFailed(
 
 void ChromeAccountManagerService::UpdateRestriction() {
   restriction_ = PatternAccountRestrictionFromPreference(local_state_);
-  OnIdentityListChanged();
+  OnIdentitiesInProfileChanged();
 }
 
 ResizedAvatarCache*

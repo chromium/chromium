@@ -175,11 +175,11 @@ TEST_F(ChromeAccountManagerServiceTest, TestFilterIdentityUpdate) {
   EXPECT_EQ(observer.on_access_token_refresh_failed_called_count, 0);
 
   // Google identity is filtered out, an update doesn't call the observer.
-  account_manager_->OnIdentityUpdated(google_identity);
+  account_manager_->OnIdentityInProfileUpdated(google_identity);
   EXPECT_EQ(observer.on_identity_updated_called_count, 0);
   EXPECT_EQ(observer.on_access_token_refresh_failed_called_count, 0);
   // Chromium identity is not filtered out, an update calls the observer.
-  account_manager_->OnIdentityUpdated(chromium_identity1);
+  account_manager_->OnIdentityInProfileUpdated(chromium_identity1);
   EXPECT_EQ(observer.on_identity_updated_called_count, 1);
   EXPECT_EQ(observer.on_access_token_refresh_failed_called_count, 0);
 

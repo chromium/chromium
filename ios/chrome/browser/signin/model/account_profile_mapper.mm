@@ -927,14 +927,14 @@ void AccountProfileMapper::NotifyIdentityListChanged(
         continue;
       }
       for (Observer& observer : it->second) {
-        observer.OnIdentityListChanged();
+        observer.OnIdentitiesInProfileChanged();
       }
     }
   } else {
     // If the feature flag is not enabled, notify all profiles.
     for (const auto& [name, observer_list] : observer_lists_per_profile_name_) {
       for (Observer& observer : observer_list) {
-        observer.OnIdentityListChanged();
+        observer.OnIdentitiesInProfileChanged();
       }
     }
   }
@@ -963,13 +963,13 @@ void AccountProfileMapper::NotifyIdentityUpdated(
       return;
     }
     for (Observer& observer : it->second) {
-      observer.OnIdentityUpdated(identity);
+      observer.OnIdentityInProfileUpdated(identity);
     }
   } else {
     // If the feature flag is not enabled, notify all profiles.
     for (const auto& [name, observer_list] : observer_lists_per_profile_name_) {
       for (Observer& observer : observer_list) {
-        observer.OnIdentityUpdated(identity);
+        observer.OnIdentityInProfileUpdated(identity);
       }
     }
   }
