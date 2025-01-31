@@ -24,11 +24,20 @@ inline constexpr std::string_view kMarqetaCardIssuerId = "marqeta";
 inline constexpr std::string_view kNabCardIssuerId = "nab";
 inline constexpr std::string_view kNatwestCardIssuerId = "natwest";
 
+// Bnpl issuer ids. These are server-generated values that must be
+// consistent between server and client.
+inline constexpr std::string_view kBnplAffirmIssuerId = "affirm";
+inline constexpr std::string_view kBnplZipIssuerId = "zip";
+
 // The urls to the static card art images used by Capital One cards.
 inline constexpr std::string_view kCapitalOneCardArtUrl =
     "https://www.gstatic.com/autofill/virtualcard/icon/capitalone.png";
 inline constexpr std::string_view kCapitalOneLargeCardArtUrl =
     "https://www.gstatic.com/autofill/virtualcard/icon/capitalone_40_24.png";
+
+// The conversion multiplier to go from standard currency units to
+// micro-currency units.
+inline constexpr uint64_t kMicrosPerDollar = 1e6;
 
 }  // namespace autofill
 

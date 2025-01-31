@@ -14,6 +14,7 @@
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/integrators/touch_to_fill_delegate.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
+#include "components/autofill/core/browser/payments/bnpl_manager.h"
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
 #include "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
@@ -195,6 +196,14 @@ void TestPaymentsAutofillClient::ShowMandatoryReauthOptInPrompt(
     base::OnceClosure cancel_mandatory_reauth_callback,
     base::RepeatingClosure close_mandatory_reauth_callback) {
   mandatory_reauth_opt_in_prompt_was_shown_ = true;
+}
+
+BnplManager* TestPaymentsAutofillClient::GetPaymentsBnplManager() {
+  if (!bnpl_manager_) {
+    bnpl_manager_ = std::make_unique<BnplManager>(this);
+  }
+
+  return bnpl_manager_.get();
 }
 
 MockIbanManager* TestPaymentsAutofillClient::GetIbanManager() {

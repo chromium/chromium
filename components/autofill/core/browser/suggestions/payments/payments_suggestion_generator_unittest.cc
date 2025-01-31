@@ -1297,7 +1297,7 @@ TEST_F(PaymentsSuggestionGeneratorTest, IsCreditCardFooterSuggestion) {
 
 // Ensures that the pay over time option is generated with expected content
 // and inserted as the last entry before the footer suggestions.
-TEST_F(PaymentsSuggestionGeneratorTest, MaybeCreateNewSuggestionsWithBnpl) {
+TEST_F(PaymentsSuggestionGeneratorTest, MaybeUpdateSuggestionsWithBnpl) {
   // Add a server card with vcn enrolled.
   payments_data().AddServerCreditCard(
       test::GetMaskedServerCardEnrolledIntoVirtualCardNumber());
@@ -1305,6 +1305,18 @@ TEST_F(PaymentsSuggestionGeneratorTest, MaybeCreateNewSuggestionsWithBnpl) {
   payments_data().AddServerCreditCard(test::GetMaskedServerCardAmex());
   // Add a local card.
   payments_data().AddCreditCard(test::GetCreditCard());
+
+  // Add BNPL issuers.
+  payments_data().AddBnplIssuer(BnplIssuer(
+      /*instrument_id=*/1234, /*issuer_id=*/"zip",
+      {BnplIssuer::EligiblePriceRange("USD",
+                                      /*price_lower_bound=*/50'000'000,
+                                      /*price_upper_bound=*/200'000'000)}));
+  payments_data().AddBnplIssuer(BnplIssuer(
+      /*instrument_id=*/5678, /*issuer_id=*/"dummy",
+      {BnplIssuer::EligiblePriceRange("USD",
+                                      /*price_lower_bound=*/34'000'000,
+                                      /*price_upper_bound=*/200'000'000)}));
 
   std::vector<CreditCard> ordered_cards_for_suggestions =
       GetOrderedCardsToSuggestForTest(
@@ -1318,17 +1330,21 @@ TEST_F(PaymentsSuggestionGeneratorTest, MaybeCreateNewSuggestionsWithBnpl) {
   std::vector<Suggestion> suggestions = GetCreditCardOrCvcFieldSuggestions(
       *autofill_client(), FormFieldData(),
       /*four_digit_combinations_in_dom=*/{},
-      /*autofilled_last_four_digits_in_form_for_suggestion_filtering=*/
+      /*autofilled_last_four_digits_in_form_for_filtering=*/
       {}, CREDIT_CARD_NUMBER,
       /*should_show_scan_credit_card=*/false,
       /*should_show_cards_from_account=*/false, summary);
 
-  std::vector<Suggestion> updated_suggestions =
-      MaybeCreateNewSuggestionsWithBnpl(suggestions);
+  BnplSuggestionUpdateResult update_suggestions_result =
+      MaybeUpdateSuggestionsWithBnpl(suggestions,
+                                     payments_data().GetBnplIssuers());
 
   // `updated_suggesions` should contains 7 suggestions which are 4 credit
   // card suggestions, 1 BNPL suggestion, 1 separator, and 1 manage card
   // footer.
+  ASSERT_TRUE(update_suggestions_result.is_bnpl_suggestion_added);
+  std::vector<Suggestion>& updated_suggestions =
+      update_suggestions_result.suggestions;
   ASSERT_EQ(updated_suggestions.size(), 7U);
   size_t current_suggestion_index = 0;
   // Checks card suggestions stayed in the same order after the insertion.
@@ -1350,7 +1366,7 @@ TEST_F(PaymentsSuggestionGeneratorTest, MaybeCreateNewSuggestionsWithBnpl) {
               IDS_AUTOFILL_BNPL_CREDIT_CARD_SUGGESTION_MAIN_TEXT),
           Suggestion::Icon::kBnpl,
           {{Suggestion::Text(l10n_util::GetStringFUTF16(
-              IDS_AUTOFILL_BNPL_CREDIT_CARD_SUGGESTION_LABEL, u"$35"))}}));
+              IDS_AUTOFILL_BNPL_CREDIT_CARD_SUGGESTION_LABEL, u"$34"))}}));
 
   // Checks the footer suggestions stayed in the same order after the insertion.
   EXPECT_THAT(updated_suggestions[current_suggestion_index++],
@@ -1360,37 +1376,159 @@ TEST_F(PaymentsSuggestionGeneratorTest, MaybeCreateNewSuggestionsWithBnpl) {
   EXPECT_EQ(current_suggestion_index, updated_suggestions.size());
 }
 
+// Ensures that `GetBnplPriceLowerBound()` returns the minimum lower price
+// bound among all given issuers.
+TEST_F(PaymentsSuggestionGeneratorTest,
+       GetBnplPriceLowerBound_ReturnLowerAmount) {
+  std::vector<BnplIssuer> bnpl_issuers = {
+      BnplIssuer(
+          /*instrument_id=*/5678, /*issuer_id=*/"dummy",
+          {BnplIssuer::EligiblePriceRange("USD",
+                                          /*price_lower_bound=*/34'666'666,
+                                          /*price_upper_bound=*/200'000'000)}),
+      BnplIssuer(
+          /*instrument_id=*/5678, /*issuer_id=*/"dummy2",
+          {BnplIssuer::EligiblePriceRange("USD",
+                                          /*price_lower_bound=*/34'000'000,
+                                          /*price_upper_bound=*/200'000'000)}),
+      BnplIssuer(
+          /*instrument_id=*/5678, /*issuer_id=*/"dummy3",
+          {BnplIssuer::EligiblePriceRange("USD",
+                                          /*price_lower_bound=*/22'000'000,
+                                          /*price_upper_bound=*/200'000'000)})};
+
+  EXPECT_EQ(GetBnplPriceLowerBoundForTest(bnpl_issuers), u"$22");
+}
+
+// Ensures that `GetBnplPriceLowerBound()` returns the minimum lower price
+// bound in USD among all given issuers.
+TEST_F(PaymentsSuggestionGeneratorTest,
+       GetBnplPriceLowerBound_ReturnLowerAmountInUsd) {
+  std::vector<BnplIssuer> bnpl_issuers = {
+      BnplIssuer(
+          /*instrument_id=*/5678, /*issuer_id=*/"dummy",
+          {BnplIssuer::EligiblePriceRange("USD",
+                                          /*price_lower_bound=*/34'000'000,
+                                          /*price_upper_bound=*/200'000'000),
+           BnplIssuer::EligiblePriceRange("GBP",
+                                          /*price_lower_bound=*/20'000'000,
+                                          /*price_upper_bound=*/200'000'000)}),
+      BnplIssuer(
+          /*instrument_id=*/5678, /*issuer_id=*/"dummy2",
+          {BnplIssuer::EligiblePriceRange("USD",
+                                          /*price_lower_bound=*/22'000'000,
+                                          /*price_upper_bound=*/200'000'000)})};
+
+  EXPECT_EQ(GetBnplPriceLowerBoundForTest(bnpl_issuers), u"$22");
+}
+
+// Ensures that `GetBnplPriceLowerBound()` returns the minimum lower price bound
+// that is in whole currency unit in integer format.
+TEST_F(PaymentsSuggestionGeneratorTest,
+       GetBnplPriceLowerBound_AmountInInteger) {
+  std::vector<BnplIssuer> bnpl_issuers = {BnplIssuer(
+      /*instrument_id=*/5678, /*issuer_id=*/"dummy2",
+      {BnplIssuer::EligiblePriceRange("USD",
+                                      /*price_lower_bound=*/34'000'000,
+                                      /*price_upper_bound=*/200'000'000)})};
+
+  EXPECT_EQ(GetBnplPriceLowerBoundForTest(bnpl_issuers), u"$34");
+}
+
+#if defined(GTEST_HAS_DEATH_TEST)
+// Ensures that the CHECK in `GetBnplPriceLowerBound()` catches the case when
+// no BNPL issuer has eligible price range in USD.
+TEST_F(PaymentsSuggestionGeneratorTest,
+       GetBnplPriceLowerBound_NoMatchingPriceRange) {
+  std::vector<BnplIssuer> bnpl_issuers = {BnplIssuer(
+      /*instrument_id=*/5678, /*issuer_id=*/"dummy2",
+      {BnplIssuer::EligiblePriceRange("GBP",
+                                      /*price_lower_bound=*/34'000'000,
+                                      /*price_upper_bound=*/200'000'000)})};
+
+  EXPECT_DEATH(GetBnplPriceLowerBoundForTest(bnpl_issuers), "");
+}
+#endif  // defined(GTEST_HAS_DEATH_TEST)
+
+// Ensures that `GetBnplPriceLowerBound` returns the minimum lower price bound
+// that has more than 2 decimal points with proper rounding.
+TEST_F(PaymentsSuggestionGeneratorTest,
+       GetBnplPriceLowerBound_AmountWithMoreThanTwoDecimal) {
+  std::vector<BnplIssuer> bnpl_issuers = {BnplIssuer(
+      /*instrument_id=*/5678, /*issuer_id=*/"dummy",
+      {BnplIssuer::EligiblePriceRange("USD",
+                                      /*price_lower_bound=*/34'666'666,
+                                      /*price_upper_bound=*/200'000'000)})};
+
+  EXPECT_EQ(GetBnplPriceLowerBoundForTest(bnpl_issuers), u"$34.67");
+}
+
+// Ensures that `GetBnplPriceLowerBound` returns the minimum lower price bound
+// that has single digit cents value with 0 after the decimal point.
+TEST_F(PaymentsSuggestionGeneratorTest,
+       GetBnplPriceLowerBound_AmountWithSingleDigitCents) {
+  std::vector<BnplIssuer> bnpl_issuers = {BnplIssuer(
+      /*instrument_id=*/5678, /*issuer_id=*/"dummy2",
+      {BnplIssuer::EligiblePriceRange("USD",
+                                      /*price_lower_bound=*/34'070'000,
+                                      /*price_upper_bound=*/200'000'000)})};
+
+  EXPECT_EQ(GetBnplPriceLowerBoundForTest(bnpl_issuers), u"$34.07");
+}
+
+// Ensures that `GetBnplPriceLowerBound` returns the rounded up minimum lower
+// price bound if the amount has cents value higher than 99.
+TEST_F(PaymentsSuggestionGeneratorTest,
+       GetBnplPriceLowerBound_AmountWithMoreThanNintyNineCents) {
+  std::vector<BnplIssuer> bnpl_issuers = {BnplIssuer(
+      /*instrument_id=*/5678, /*issuer_id=*/"dummy",
+      {BnplIssuer::EligiblePriceRange("USD",
+                                      /*price_lower_bound=*/34'996'666,
+                                      /*price_upper_bound=*/200'000'000)})};
+
+  EXPECT_EQ(GetBnplPriceLowerBoundForTest(bnpl_issuers), u"$35");
+}
+
 // Ensures that the pay over time option is not added if the suggestion list
 // is empty.
 TEST_F(PaymentsSuggestionGeneratorTest,
-       MaybeCreateNewSuggestionsWithBnpl_EmptySuggestionList) {
-  EXPECT_TRUE(MaybeCreateNewSuggestionsWithBnpl({}).empty());
+       MaybeUpdateSuggestionsWithBnpl_EmptySuggestionList) {
+  payments_data().AddBnplIssuer(test::GetTestLinkedBnplIssuer());
+
+  EXPECT_FALSE(
+      MaybeUpdateSuggestionsWithBnpl({}, payments_data().GetBnplIssuers())
+          .is_bnpl_suggestion_added);
 }
 
 // Ensures that the pay over time option is not added if the suggestion list
 // already contains a BNPL suggestion.
 TEST_F(PaymentsSuggestionGeneratorTest,
-       MaybeCreateNewSuggestionsWithBnpl_SuggestionListWithBnplInserted) {
+       MaybeUpdateSuggestionsWithBnpl_SuggestionListWithBnplInserted) {
   payments_data().AddServerCreditCard(test::GetMaskedServerCard2());
+  payments_data().AddBnplIssuer(test::GetTestLinkedBnplIssuer());
 
   // Add suggestions with BNPL suggestion inserted to client.
   CreditCardSuggestionSummary summary;
   std::vector<Suggestion> suggestions = GetCreditCardOrCvcFieldSuggestions(
       *autofill_client(), FormFieldData(),
       /*four_digit_combinations_in_dom=*/{},
-      /*autofilled_last_four_digits_in_form_for_suggestion_filtering=*/
+      /*autofilled_last_four_digits_in_form_for_filtering=*/
       {}, CREDIT_CARD_NUMBER,
       /*should_show_scan_credit_card=*/false,
       /*should_show_cards_from_account=*/false, summary);
-  std::vector<Suggestion> updated_suggestions =
-      MaybeCreateNewSuggestionsWithBnpl(suggestions);
+  BnplSuggestionUpdateResult update_suggestions_result =
+      MaybeUpdateSuggestionsWithBnpl(suggestions,
+                                     payments_data().GetBnplIssuers());
 
-  ASSERT_THAT(updated_suggestions,
+  ASSERT_THAT(update_suggestions_result.suggestions,
               ElementsAre(EqualsSuggestion(SuggestionType::kCreditCardEntry),
                           EqualsSuggestion(SuggestionType::kBnplEntry),
                           EqualsSuggestion(SuggestionType::kSeparator),
                           EqualsSuggestion(SuggestionType::kManageCreditCard)));
-  EXPECT_TRUE(MaybeCreateNewSuggestionsWithBnpl(updated_suggestions).empty());
+  EXPECT_FALSE(
+      MaybeUpdateSuggestionsWithBnpl(update_suggestions_result.suggestions,
+                                     payments_data().GetBnplIssuers())
+          .is_bnpl_suggestion_added);
 }
 
 // Test that the virtual card option is shown when the autofill optimization

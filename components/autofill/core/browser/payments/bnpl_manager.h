@@ -12,8 +12,17 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
 
-namespace autofill::payments {
+namespace autofill {
+
+class BnplIssuer;
+
+namespace payments {
+
+using UpdateSuggestionsCallback =
+    base::RepeatingCallback<void(std::vector<Suggestion>,
+                                 AutofillSuggestionTriggerSource)>;
 
 struct BnplFetchVcnResponseDetails;
 
@@ -50,8 +59,32 @@ class BnplManager {
   std::optional<uint64_t> MaybeParseAmountToMonetaryMicroUnits(
       const std::string& amount);
 
+  // Notifies the BNPL manager that suggestion generation has been requested
+  // with the given `trigger_source`. This must be called before
+  // `OnSuggestionsShown()` and `OnAmountExtractionReturned()`, so that the
+  // manager can update suggestions for buy-now-pay-later.
+  void NotifyOfSuggestionGeneration(
+      const AutofillSuggestionTriggerSource trigger_source);
+
+  // Runs after credit card suggestions are shown and collects the current
+  // shown suggestions and a callback for updating the suggestions. This must
+  // be called after `NotifyOfSuggestionGeneration()`, so that the manager can
+  // update suggestions for buy-now-pay-later.
+  void OnSuggestionsShown(
+      base::span<const Suggestion> suggestions,
+      UpdateSuggestionsCallback update_suggestions_callback);
+
+  // Runs after amount extraction completion and collects the amount extraction
+  // result. This must be called after `NotifyOfSuggestionGeneration()`, so
+  // that the manager can update suggestions for buy-now-pay-later.
+  void OnAmountExtractionReturned(const std::string& extracted_amount);
+
  private:
   friend class BnplManagerTestApi;
+  friend class BnplManagerTest;
+
+  using SuggestionsShownResponse =
+      std::tuple<std::vector<Suggestion>, UpdateSuggestionsCallback>;
 
   // A collection of information that represents the state of an ongoing BNPL
   // flow.
@@ -99,6 +132,13 @@ class BnplManager {
   void OnVcnDetailsFetched(PaymentsAutofillClient::PaymentsRpcResult result,
                            const BnplFetchVcnResponseDetails& response_details);
 
+  // Combines `responses` from suggestion shown event and amount extraction,
+  // and try to show card suggestions with buy-now-pay-later suggestion.
+  void MaybeUpdateSuggestionsWithBnpl(
+      const AutofillSuggestionTriggerSource trigger_source,
+      std::vector<std::variant<SuggestionsShownResponse, std::string>>
+          responses);
+
   // The associated payments autofill client.
   const raw_ref<PaymentsAutofillClient> payments_autofill_client_;
 
@@ -106,9 +146,16 @@ class BnplManager {
   // ongoing. Set when a flow is initiated, and reset upon flow completion.
   std::unique_ptr<OngoingFlowState> ongoing_flow_state_;
 
+  // Callback to collect the current shown suggestion list and checkout
+  // amount, and insert BNPL suggestion if the amount is eligible.
+  std::optional<base::RepeatingCallback<void(
+      std::variant<SuggestionsShownResponse, std::string>)>>
+      update_suggestions_barrier_callback_;
+
   base::WeakPtrFactory<BnplManager> weak_factory_{this};
 };
 
-}  // namespace autofill::payments
+}  // namespace payments
+}  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_BNPL_MANAGER_H_
