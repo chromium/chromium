@@ -54,7 +54,7 @@ void GnubbyNotification::CreateNotification() {
       new message_center::HandleNotificationClickDelegate(
           base::BindRepeating(&GnubbyNotification::DismissNotification,
                               weak_ptr_factory_.GetWeakPtr())),
-      gfx::VectorIcon(), colorType);
+      gfx::VectorIcon::EmptyIcon(), colorType);
 }
 
 void GnubbyNotification::ShowNotification() {

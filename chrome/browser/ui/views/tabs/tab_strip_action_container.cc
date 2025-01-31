@@ -45,8 +45,6 @@
 #endif  // BUILDFLAG(ENABLE_GLIC)
 namespace {
 
-const gfx::VectorIcon kEmptyIcon;
-
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class TriggerOutcome {
@@ -299,7 +297,7 @@ TabStripActionContainer::CreateTabDeclutterButton(
       features::IsTabstripDedupeEnabled()
           ? l10n_util::GetStringUTF16(IDS_TAB_DECLUTTER)
           : l10n_util::GetStringUTF16(IDS_TAB_DECLUTTER_NO_DEDUPE),
-      kTabDeclutterButtonElementId, Edge::kNone, kEmptyIcon);
+      kTabDeclutterButtonElementId, Edge::kNone, gfx::VectorIcon::EmptyIcon());
 
   button->SetTooltipText(
       features::IsTabstripDedupeEnabled()
@@ -326,7 +324,7 @@ TabStripActionContainer::CreateAutoTabGroupButton(
           &TabStripActionContainer::OnAutoTabGroupButtonDismissed,
           base::Unretained(this)),
       l10n_util::GetStringUTF16(IDS_TAB_ORGANIZE), kAutoTabGroupButtonElementId,
-      Edge::kNone, kEmptyIcon);
+      Edge::kNone, gfx::VectorIcon::EmptyIcon());
   button->SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_TAB_ORGANIZE));
   button->GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_ACCNAME_TAB_ORGANIZE));

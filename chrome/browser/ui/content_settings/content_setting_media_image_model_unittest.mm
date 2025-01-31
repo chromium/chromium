@@ -94,16 +94,17 @@ TEST_F(ContentSettingMediaImageModelTest, MediaUpdate) {
         kTestOrigin, {PageSpecificContentSettings::kCameraAccessed});
     auth_wrapper.SetMockMediaPermissionStatus(AVAuthorizationStatusAuthorized);
     content_setting_image_model->Update(web_contents());
-    ExpectImageModelState(
-        *content_setting_image_model, /*is_visible=*/true, /*has_icon=*/true,
-        l10n_util::GetStringUTF16(IDS_CAMERA_ACCESSED), 0, &gfx::kNoneIcon);
+    ExpectImageModelState(*content_setting_image_model, /*is_visible=*/true,
+                          /*has_icon=*/true,
+                          l10n_util::GetStringUTF16(IDS_CAMERA_ACCESSED), 0,
+                          &gfx::VectorIcon::EmptyIcon());
     auth_wrapper.SetMockMediaPermissionStatus(AVAuthorizationStatusDenied);
     content_setting_image_model->Update(web_contents());
     ExpectImageModelState(
         *content_setting_image_model, /*is_visible=*/true,
         /*has_icon=*/true,
         l10n_util::GetStringUTF16(IDS_CAMERA_TURNED_OFF_IN_MACOS),
-        IDS_CAMERA_TURNED_OFF, &gfx::kNoneIcon);
+        IDS_CAMERA_TURNED_OFF, &gfx::VectorIcon::EmptyIcon());
     auth_wrapper.SetMockMediaPermissionStatus(
         AVAuthorizationStatusNotDetermined);
     content_setting_image_model->Update(web_contents());
@@ -116,16 +117,17 @@ TEST_F(ContentSettingMediaImageModelTest, MediaUpdate) {
         kTestOrigin, {PageSpecificContentSettings::kMicrophoneAccessed});
     auth_wrapper.SetMockMediaPermissionStatus(AVAuthorizationStatusAuthorized);
     content_setting_image_model->Update(web_contents());
-    ExpectImageModelState(
-        *content_setting_image_model, /*is_visible=*/true, /*has_icon=*/true,
-        l10n_util::GetStringUTF16(IDS_MICROPHONE_ACCESSED), 0, &gfx::kNoneIcon);
+    ExpectImageModelState(*content_setting_image_model, /*is_visible=*/true,
+                          /*has_icon=*/true,
+                          l10n_util::GetStringUTF16(IDS_MICROPHONE_ACCESSED), 0,
+                          &gfx::VectorIcon::EmptyIcon());
     auth_wrapper.SetMockMediaPermissionStatus(AVAuthorizationStatusDenied);
     content_setting_image_model->Update(web_contents());
     ExpectImageModelState(
         *content_setting_image_model, /*is_visible=*/true,
         /*has_icon=*/true,
         l10n_util::GetStringUTF16(IDS_MIC_TURNED_OFF_IN_MACOS),
-        IDS_MIC_TURNED_OFF, &gfx::kNoneIcon);
+        IDS_MIC_TURNED_OFF, &gfx::VectorIcon::EmptyIcon());
     auth_wrapper.SetMockMediaPermissionStatus(
         AVAuthorizationStatusNotDetermined);
     content_setting_image_model->Update(web_contents());
@@ -143,14 +145,14 @@ TEST_F(ContentSettingMediaImageModelTest, MediaUpdate) {
     ExpectImageModelState(
         *content_setting_image_model, /*is_visible=*/true, /*has_icon=*/true,
         l10n_util::GetStringUTF16(IDS_MICROPHONE_CAMERA_ALLOWED), 0,
-        &gfx::kNoneIcon);
+        &gfx::VectorIcon::EmptyIcon());
     auth_wrapper.SetMockMediaPermissionStatus(AVAuthorizationStatusDenied);
     auth_wrapper.SetMockMediaPermissionStatus(AVAuthorizationStatusDenied);
     content_setting_image_model->Update(web_contents());
     ExpectImageModelState(
         *content_setting_image_model, /*is_visible=*/true, /*has_icon=*/true,
         l10n_util::GetStringUTF16(IDS_CAMERA_MIC_TURNED_OFF_IN_MACOS),
-        IDS_CAMERA_TURNED_OFF, &gfx::kNoneIcon);
+        IDS_CAMERA_TURNED_OFF, &gfx::VectorIcon::EmptyIcon());
     auth_wrapper.SetMockMediaPermissionStatus(
         AVAuthorizationStatusNotDetermined);
     auth_wrapper.SetMockMediaPermissionStatus(
@@ -177,7 +179,7 @@ TEST_F(ContentSettingMediaImageModelTest, MediaUpdate) {
                             /*is_visible=*/true,
                             /*has_icon=*/true,
                             l10n_util::GetStringUTF16(IDS_CAMERA_BLOCKED), 0,
-                            &gfx::kNoneIcon);
+                            &gfx::VectorIcon::EmptyIcon());
     }
 
     // Microphone blocked per site.
@@ -190,7 +192,7 @@ TEST_F(ContentSettingMediaImageModelTest, MediaUpdate) {
                             /*is_visible=*/true,
                             /*has_icon=*/true,
                             l10n_util::GetStringUTF16(IDS_MICROPHONE_BLOCKED),
-                            0, &gfx::kNoneIcon);
+                            0, &gfx::VectorIcon::EmptyIcon());
     }
 
     // Microphone & camera blocked per site
@@ -205,7 +207,7 @@ TEST_F(ContentSettingMediaImageModelTest, MediaUpdate) {
           *content_setting_image_model, /*is_visible=*/true,
           /*has_icon=*/true,
           l10n_util::GetStringUTF16(IDS_MICROPHONE_CAMERA_BLOCKED), 0,
-          &gfx::kNoneIcon);
+          &gfx::VectorIcon::EmptyIcon());
     }
   }
 }

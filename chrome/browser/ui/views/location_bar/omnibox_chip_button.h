@@ -97,7 +97,7 @@ class OmniboxChipButton : public views::MdTextButton {
   // without text.
   bool fully_collapsed_ = false;
 
-  raw_ptr<const gfx::VectorIcon> icon_ = &gfx::kNoneIcon;
+  raw_ptr<const gfx::VectorIcon> icon_ = &gfx::VectorIcon::EmptyIcon();
 
   base::ObserverList<Observer> observers_;
 };

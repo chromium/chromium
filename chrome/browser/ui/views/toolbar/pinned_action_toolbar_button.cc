@@ -39,10 +39,6 @@
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 
-namespace {
-const gfx::VectorIcon kEmptyIcon;
-}  // namespace
-
 DEFINE_UI_CLASS_PROPERTY_TYPE(PinnedToolbarActionFlexPriority)
 DEFINE_UI_CLASS_PROPERTY_KEY(
     std::underlying_type_t<PinnedToolbarActionFlexPriority>,
@@ -457,7 +453,7 @@ void PinnedActionToolbarButtonActionViewInterface::OnViewChangedImpl(
   if (image_model.IsVectorIcon()) {
     action_view_->SetVectorIcon(action_view_->IsIconVisible()
                                     ? *image_model.GetVectorIcon().vector_icon()
-                                    : kEmptyIcon);
+                                    : gfx::VectorIcon::EmptyIcon());
   } else {
     action_view_->SetImageModel(
         views::Button::STATE_NORMAL,

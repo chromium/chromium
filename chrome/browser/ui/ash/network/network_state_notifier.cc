@@ -30,6 +30,7 @@
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/chromeos/shill_error.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/message_center/public/cpp/notification.h"
 
 namespace ash {
@@ -657,7 +658,8 @@ void NetworkStateNotifier::ShowCarrierUnlockNotification() {
       new message_center::HandleNotificationClickDelegate(
           base::BindRepeating(&NetworkStateNotifier::ShowMobileDataSubpage,
                               weak_ptr_factory_.GetWeakPtr())),
-      gfx::kNoneIcon, message_center::SystemNotificationWarningLevel::NORMAL);
+      gfx::VectorIcon::EmptyIcon(),
+      message_center::SystemNotificationWarningLevel::NORMAL);
   SystemNotificationHelper::GetInstance()->Display(notification);
 }
 
