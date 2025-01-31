@@ -72,7 +72,7 @@ class WorkerInspectorController final
   WorkerInspectorController& operator=(const WorkerInspectorController&) =
       delete;
   ~WorkerInspectorController() override;
-  void Trace(Visitor*) const;
+  void Trace(Visitor*) const override;
 
   CoreProbeSink* GetProbeSink() const { return probe_sink_.Get(); }
   DevToolsAgent* GetDevToolsAgent() const { return agent_.Get(); }
