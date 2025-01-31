@@ -28,7 +28,6 @@
 #include "chromeos/ash/components/boca/babelorca/transcript_receiver.h"
 #include "chromeos/ash/components/boca/session_api/constants.h"
 #include "chromeos/ash/services/boca/babelorca/mojom/tachyon_parsing_service.mojom.h"
-#include "components/live_caption/pref_names.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -157,6 +156,7 @@ void BabelOrcaConsumer::OnSessionCaptionConfigUpdated(
   }
   session_captions_enabled_ = session_captions_enabled;
   session_translations_enabled_ = translations_enabled;
+  caption_controller_->SetLiveTranslateEnabled(session_translations_enabled_);
   if (!session_captions_enabled_) {
     StopReceiving();
     return;
@@ -282,8 +282,7 @@ void BabelOrcaConsumer::OnTranscriptReceived(
         transcript,
         base::BindOnce(&BabelOrcaConsumer::DispatchTranscription,
                        weak_ptr_factory_.GetWeakPtr()),
-        language,
-        pref_service_->GetString(prefs::kLiveTranslateTargetLanguageCode));
+        language, caption_controller_->GetLiveTranslateTargetLanguageCode());
     return;
   }
 

@@ -6,6 +6,7 @@ assert(is_chromeos, "Non-Chrome-OS builds must not depend on //chromeos/ash")
 
 static_library("babelorca") {
   sources = [
+    "babel_orca_caption_bubble_settings.h",
     "babel_orca_caption_translator.cc",
     "babel_orca_caption_translator.h",
     "babel_orca_consumer.cc",

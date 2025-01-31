@@ -15,11 +15,13 @@
 #include "base/test/repeating_test_future.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/boca/babelorca/caption_controller.h"
+#include "chromeos/ash/components/boca/babelorca/consumer_caption_bubble_settings.h"
 #include "chromeos/ash/components/boca/babelorca/fakes/fake_caption_controller_delegate.h"
 #include "chromeos/ash/components/boca/babelorca/fakes/fake_tachyon_authed_client.h"
 #include "chromeos/ash/components/boca/babelorca/fakes/fake_tachyon_request_data_provider.h"
 #include "chromeos/ash/components/boca/babelorca/fakes/fake_token_manager.h"
 #include "chromeos/ash/components/boca/babelorca/fakes/fake_translation_dispatcher.h"
+#include "chromeos/ash/components/boca/babelorca/pref_names.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_authed_client.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_streaming_client.h"
 #include "chromeos/ash/components/boca/session_api/constants.h"
@@ -58,24 +60,25 @@ constexpr int kCaptionsBackgroundOpacity = 30;
 
 void RegisterPrefs(TestingPrefServiceSimple* pref_service) {
   pref_service->registry()->RegisterStringPref(
-      prefs::kAccessibilityCaptionsTextSize, kCaptionsTextSize);
+      ::prefs::kAccessibilityCaptionsTextSize, kCaptionsTextSize);
   pref_service->registry()->RegisterStringPref(
-      prefs::kAccessibilityCaptionsTextFont, kCaptionsTextFont);
+      ::prefs::kAccessibilityCaptionsTextFont, kCaptionsTextFont);
   pref_service->registry()->RegisterStringPref(
-      prefs::kAccessibilityCaptionsTextColor, kCaptionsTextColor);
+      ::prefs::kAccessibilityCaptionsTextColor, kCaptionsTextColor);
   pref_service->registry()->RegisterIntegerPref(
-      prefs::kAccessibilityCaptionsTextOpacity, kCaptionsTextOpacity);
+      ::prefs::kAccessibilityCaptionsTextOpacity, kCaptionsTextOpacity);
   pref_service->registry()->RegisterStringPref(
-      prefs::kAccessibilityCaptionsBackgroundColor, kCaptionsBackgroundColor);
+      ::prefs::kAccessibilityCaptionsBackgroundColor, kCaptionsBackgroundColor);
   pref_service->registry()->RegisterStringPref(
-      prefs::kAccessibilityCaptionsTextShadow, kCaptionsTextShadow);
+      ::prefs::kAccessibilityCaptionsTextShadow, kCaptionsTextShadow);
   pref_service->registry()->RegisterIntegerPref(
-      prefs::kAccessibilityCaptionsBackgroundOpacity,
+      ::prefs::kAccessibilityCaptionsBackgroundOpacity,
       kCaptionsBackgroundOpacity);
   pref_service->registry()->RegisterStringPref(
-      prefs::kUserMicrophoneCaptionLanguageCode, kApplicationLocale);
+      ::prefs::kUserMicrophoneCaptionLanguageCode, kApplicationLocale);
   pref_service->registry()->RegisterStringPref(
-      prefs::kLiveTranslateTargetLanguageCode, kTranslationTargetLocale);
+      ash::babelorca::prefs::kTranslateTargetLanguageCode,
+      kTranslationTargetLocale);
 }
 
 class BabelOrcaConsumerTest : public testing::Test {
@@ -93,8 +96,14 @@ class BabelOrcaConsumerTest : public testing::Test {
     auto caption_controller_delegate =
         std::make_unique<FakeCaptionControllerDelegate>();
     caption_controller_delegate_ = caption_controller_delegate.get();
+    auto caption_bubble_settings =
+        std::make_unique<ConsumerCaptionBubbleSettings>(&pref_service_,
+                                                        kApplicationLocale);
+    caption_bubble_settings_ = caption_bubble_settings.get();
     auto caption_controller = std::make_unique<CaptionController>(
-        /*caption_bubble_context=*/nullptr, &pref_service_, kApplicationLocale,
+        /*caption_bubble_context=*/
+        nullptr, &pref_service_, kApplicationLocale,
+        std::move(caption_bubble_settings),
         std::move(caption_controller_delegate));
     auto fake_translation_dispatcher =
         std::make_unique<FakeBabelOrcaTranslationDispatcher>();
@@ -152,6 +161,7 @@ class BabelOrcaConsumerTest : public testing::Test {
   TachyonStreamingClient::OnMessageCallback on_message_cb_;
   std::unique_ptr<BabelOrcaConsumer> consumer_;
   base::test::RepeatingTestFuture<void> streaming_client_waiter_;
+  raw_ptr<ConsumerCaptionBubbleSettings> caption_bubble_settings_;
   raw_ptr<FakeCaptionControllerDelegate> caption_controller_delegate_;
   base::WeakPtr<FakeBabelOrcaTranslationDispatcher>
       fake_translation_dispatcher_;
@@ -375,6 +385,8 @@ TEST_F(BabelOrcaConsumerTest, EnableTranslations) {
   EXPECT_EQ(caption_controller_delegate_->GetTranscriptions().at(0),
             transcript);
   EXPECT_EQ(fake_translation_dispatcher_->GetNumGetTranslationCalls(), 1);
+  EXPECT_TRUE(caption_bubble_settings_->IsLiveTranslateFeatureEnabled());
+  EXPECT_TRUE(caption_bubble_settings_->GetLiveTranslateEnabled());
 }
 
 }  // namespace

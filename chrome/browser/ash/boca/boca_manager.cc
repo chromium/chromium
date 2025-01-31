@@ -21,7 +21,6 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chromeos/ash/components/boca/babelorca/babel_orca_manager.h"
 #include "chromeos/ash/components/boca/babelorca/babel_orca_translation_dispatcher_impl.h"
-#include "chromeos/ash/components/boca/babelorca/caption_controller.h"
 #include "chromeos/ash/components/boca/boca_metrics_manager.h"
 #include "chromeos/ash/components/boca/boca_role_util.h"
 #include "chromeos/ash/components/boca/boca_session_manager.h"
@@ -61,12 +60,9 @@ std::unique_ptr<boca::BabelOrcaManager> CreateBabelOrcaManager(
                                       ->GetAccountId();
     return boca::BabelOrcaManager::CreateAsConsumer(
         IdentityManagerFactory::GetForProfile(profile),
-        profile->GetURLLoaderFactory(),
-        std::make_unique<babelorca::CaptionController>(
-            std::move(caption_bubble_context), profile->GetPrefs(),
-            application_locale),
+        profile->GetURLLoaderFactory(), std::move(caption_bubble_context),
         account_id.GetGaiaId(), std::move(babel_orca_translator),
-        profile->GetPrefs());
+        profile->GetPrefs(), application_locale);
   }
   // Producer
   if (!base::FeatureList::IsEnabled(
