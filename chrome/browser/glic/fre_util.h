@@ -7,8 +7,11 @@
 
 #include <string>
 
+class GURL;
+
 namespace glic {
 
+GURL GetFreURL();
 std::string GetHotkeyString();
 
 }  // namespace glic

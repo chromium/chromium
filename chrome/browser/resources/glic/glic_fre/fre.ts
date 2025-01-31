@@ -51,5 +51,5 @@ function getWebviewSrc() {
       glicHotkeyString ? '?hotkey=' + glicHotkeyString : '';
   // TODO(cuianthony): For now, borrow the configuration of the glic guest URL,
   // to be replaced with the correct configuration set up for the FRE.
-  return loadTimeData.getString('glicGuestURL') + hotkeyQueryParamString;
+  return loadTimeData.getString('glicFreURL') + hotkeyQueryParamString;
 }

@@ -7,11 +7,23 @@
 #include <algorithm>
 #include <cstddef>
 
+#include "base/command_line.h"
 #include "base/strings/string_split.h"
 #include "chrome/browser/glic/launcher/glic_launcher_configuration.h"
+#include "chrome/common/chrome_features.h"
+#include "chrome/common/chrome_switches.h"
 #include "ui/base/accelerators/command.h"
+#include "url/gurl.h"
 
 namespace glic {
+
+GURL GetFreURL() {
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  bool hasGlicFreURL = command_line->HasSwitch(::switches::kGlicFreURL);
+  return GURL(hasGlicFreURL
+                  ? command_line->GetSwitchValueASCII(::switches::kGlicFreURL)
+                  : features::kGlicFreURL.Get());
+}
 
 std::string GetHotkeyString() {
   // If the hotkey is unset, return an empty string as its representation.

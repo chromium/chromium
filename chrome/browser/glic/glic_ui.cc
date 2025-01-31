@@ -78,6 +78,9 @@ GlicUI::GlicUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   // Add current global hotkey configuration.
   source->AddString("glicHotkeyString", GetHotkeyString());
 
+  // Set up FRE URL via cli flag, or default to the finch param value.
+  source->AddString("glicFreURL", GetFreURL().spec());
+
   // Set up loading notice timeout values.
   source->AddInteger("preLoadingTimeMs", features::kGlicPreLoadingTimeMs.Get());
   source->AddInteger("minLoadingTimeMs", features::kGlicMinLoadingTimeMs.Get());
