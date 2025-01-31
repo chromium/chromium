@@ -253,6 +253,7 @@ import org.chromium.chrome.browser.usage_stats.UsageStatsService;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.edge_to_edge.SystemBarColorHelper;
+import org.chromium.components.browser_ui.edge_to_edge.TabbedSystemBarColorHelper;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
 import org.chromium.components.browser_ui.util.ComposedBrowserControlsVisibilityDelegate;
@@ -524,6 +525,9 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
             new SearchActivityClientImpl(this, IntentOrigin.LAUNCHER);
     private SearchActivityClient mHubSearchClient =
             new SearchActivityClientImpl(this, IntentOrigin.HUB);
+
+    private OneshotSupplierImpl<SystemBarColorHelper> mBottomChinSupplier =
+            new OneshotSupplierImpl<>();
 
     /**
      * This class is used to warm up the chrome split ClassLoader. See SplitChromeApplication for
@@ -2260,7 +2264,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                 getTabContentManagerSupplier(),
                 this::getSnackbarManager,
                 mEdgeToEdgeControllerSupplier,
-                mSystemBarColorHelperSupplier,
+                mBottomChinSupplier,
                 getActivityType(),
                 this::isInOverviewMode,
                 /* appMenuDelegate= */ this,
@@ -2284,9 +2288,10 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
 
     @Override
     protected OneshotSupplier<SystemBarColorHelper> createSystemBarColorHelperSupplier() {
-        // Do not create the SystemBarColorHelper here when using the bottom chin. It will be
-        // created by TabbedRootUiCoordinator later in the activity lifecycle.
-        if (EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled()) {
+        if (EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled()) {
+            mSystemBarColorHelperSupplier.set(
+                    new TabbedSystemBarColorHelper(
+                            ensureEdgeToEdgeLayoutCoordinator(), mBottomChinSupplier));
             return mSystemBarColorHelperSupplier;
         }
         return super.createSystemBarColorHelperSupplier();
