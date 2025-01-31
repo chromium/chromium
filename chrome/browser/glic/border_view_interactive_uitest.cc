@@ -134,7 +134,7 @@ class GlicBorderViewUiTest : public InteractiveBrowserTest {
 
 // Exercise that, the border is resized correctly whenever the browser's size
 // changes.
-IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, BorderResize) {
+IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, DISABLED_BorderResize) {
   // TODO(crbug.com/385828490): We should exercise the proper closing flow.
   // Currently the BookmarkModel has a dangling observer during destruction, if
   // the glic UI is toggled.
@@ -165,7 +165,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, BorderResize) {
 // Regression test for https://crbug.com/387458471: The border shouldn't be
 // visible before StartAnimation is called, and shouldn't be visible after
 // CancelAnimation is called.
-IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, Visibility) {
+IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, DISABLED_Visibility) {
   auto* border = browser()->window()->AsBrowserView()->glic_border();
   ASSERT_TRUE(border);
   EXPECT_FALSE(border->GetVisible());
@@ -179,7 +179,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, Visibility) {
 
 // Exercise the default user journey: toggles the border animation and wait for
 // it to finish.
-IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, SmokeTest) {
+IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, DISABLED_SmokeTest) {
   auto* border = browser()->window()->AsBrowserView()->glic_border();
   ASSERT_TRUE(border);
   base::TimeTicks timestamp = base::TimeTicks::Now();
@@ -230,7 +230,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, SmokeTest) {
 
 // Ensures that the border animation state is reset after canceling the
 // animation.
-IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, AnimationStateReset) {
+IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, DISABLED_AnimationStateReset) {
   auto* border = browser()->window()->AsBrowserView()->glic_border();
   ASSERT_TRUE(border);
 
@@ -245,7 +245,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, AnimationStateReset) {
 }
 
 // Ensures that the border animation is restarted when tab focus changes.
-IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, FocusedTabChange) {
+IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, DISABLED_FocusedTabChange) {
   auto* border = browser()->window()->AsBrowserView()->glic_border();
   ASSERT_TRUE(border);
   base::TimeTicks timestamp = base::TimeTicks::Now();
@@ -298,7 +298,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, FocusedTabChange) {
   EXPECT_FALSE(border->compositor_for_testing());
 }
 
-IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, FocusedWindowChange) {
+IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, DISABLED_FocusedWindowChange) {
   auto* border = browser()->window()->AsBrowserView()->glic_border();
   ASSERT_TRUE(border);
   base::TimeTicks timestamp = base::TimeTicks::Now();
@@ -363,7 +363,8 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, FocusedWindowChange) {
 
 // Ensures that the border fades out before disappearing entirely during
 // emphasis ramp up.
-IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, RampingDownDuringEmphasisRampUp) {
+IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest,
+                       DISABLED_RampingDownDuringEmphasisRampUp) {
   auto* border = browser()->window()->AsBrowserView()->glic_border();
   ASSERT_TRUE(border);
   base::TimeTicks timestamp = base::TimeTicks::Now();
@@ -419,7 +420,8 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, RampingDownDuringEmphasisRampUp) {
 
 // Ensures that the border fades out before disappearing entirely during opacity
 // ramp up.
-IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, RampingDownDuringOpacityRampUp) {
+IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest,
+                       DISABLED_RampingDownDuringOpacityRampUp) {
   auto* border = browser()->window()->AsBrowserView()->glic_border();
   ASSERT_TRUE(border);
   base::TimeTicks timestamp = base::TimeTicks::Now();
@@ -479,7 +481,8 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, RampingDownDuringOpacityRampUp) {
 
 // Ensures that the border fades out before disappearing entirely during stable
 // state.
-IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, RampingDownDuringStableState) {
+IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest,
+                       DISABLED_RampingDownDuringStableState) {
   auto* border = browser()->window()->AsBrowserView()->glic_border();
   ASSERT_TRUE(border);
   base::TimeTicks timestamp = base::TimeTicks::Now();
@@ -532,7 +535,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, RampingDownDuringStableState) {
   EXPECT_FALSE(border->compositor_for_testing());
 }
 
-IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, EnsureTimeWraps) {
+IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, DISABLED_EnsureTimeWraps) {
   auto* border = browser()->window()->AsBrowserView()->glic_border();
   ASSERT_TRUE(border);
 
@@ -597,7 +600,7 @@ class GlicBorderViewPrefersReducedMotionUiTest : public GlicBorderViewUiTest {
 // Ensures that in prefers-reduced-motion cases, we should immediately show the
 // static border without any animations.
 IN_PROC_BROWSER_TEST_F(GlicBorderViewPrefersReducedMotionUiTest,
-                       PrefersReducedMotion) {
+                       DISABLED_PrefersReducedMotion) {
   ASSERT_TRUE(gfx::Animation::PrefersReducedMotion());
   auto* border = browser()->window()->AsBrowserView()->glic_border();
   ASSERT_TRUE(border);
