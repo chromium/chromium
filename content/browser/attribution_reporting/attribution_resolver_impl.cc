@@ -1102,6 +1102,7 @@ std::vector<StoredSource> AttributionResolverImpl::GetActiveSourcesWithLimit(
 std::set<AttributionDataModel::DataKey>
 AttributionResolverImpl::GetAllDataKeys() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  SCOPED_UMA_HISTOGRAM_TIMER("Conversions.GetAllDataKeysTime");
   return storage_.GetAllDataKeys();
 }
 

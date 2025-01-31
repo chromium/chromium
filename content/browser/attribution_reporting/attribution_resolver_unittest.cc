@@ -2949,6 +2949,8 @@ TEST_F(AttributionResolverTest, GetAttributionReportsExceedLimit_Shuffles) {
 }
 
 TEST_F(AttributionResolverTest, GetAttributionDataKeysSet) {
+  base::HistogramTester histograms;
+
   auto expected_1 = AttributionDataModel::DataKey(
       url::Origin::Create(GURL("https://a.r.test")));
   auto expected_2 = AttributionDataModel::DataKey(
@@ -2990,6 +2992,8 @@ TEST_F(AttributionResolverTest, GetAttributionDataKeysSet) {
 
   EXPECT_THAT(storage()->GetAllDataKeys(),
               ElementsAre(expected_1, expected_2, expected_3));
+
+  histograms.ExpectTotalCount("Conversions.GetAllDataKeysTime", 1);
 }
 
 TEST_F(AttributionResolverTest, SourceDebugKey_RoundTrips) {
