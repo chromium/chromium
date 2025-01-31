@@ -49,6 +49,8 @@ class UnscopedExtensionProviderDelegateImpl
              bool minimal_changes,
              std::set<std::string> unscoped_mode_extension_ids) override;
   void Stop(bool clear_cached_results) override;
+  void DeleteSuggestion(const TemplateURL* template_url,
+                        const std::u16string& suggestion_text) override;
 
   // OmniboxInputWatcher::Observer:
   void OnOmniboxInputEntered() override;

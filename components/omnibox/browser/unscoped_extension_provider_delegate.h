@@ -29,6 +29,11 @@ class UnscopedExtensionProviderDelegate {
   // later with a stale request ID. if `clear_cached_results` is true, it also
   // clears the current list of cached matches and suggestion group information.
   virtual void Stop(bool clear_cached_results) = 0;
+
+  // Called when the user asks to delete a match an extension previously marked
+  // deletable.
+  virtual void DeleteSuggestion(const TemplateURL* template_url,
+                                const std::u16string& suggestion_text) = 0;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_UNSCOPED_EXTENSION_PROVIDER_DELEGATE_H_

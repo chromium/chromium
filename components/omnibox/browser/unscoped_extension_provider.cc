@@ -79,6 +79,23 @@ void UnscopedExtensionProvider::Stop(bool clear_cached_results,
   }
 }
 
+void UnscopedExtensionProvider::DeleteMatch(const AutocompleteMatch& match) {
+  const std::u16string& suggestion_text = match.contents;
+  std::erase_if(matches_, [&match](const AutocompleteMatch& i) {
+    return i.keyword == match.keyword &&
+           i.fill_into_edit == match.fill_into_edit;
+  });
+
+  const TemplateURL* const template_url =
+      GetTemplateURLService()->GetTemplateURLForKeyword(match.keyword);
+
+  // TODO(393578172):check if the extension is enabled.
+  if ((template_url->type() == TemplateURL::OMNIBOX_API_EXTENSION) &&
+      delegate_) {
+    delegate_->DeleteSuggestion(template_url, suggestion_text);
+  }
+}
+
 TemplateURLService* UnscopedExtensionProvider::GetTemplateURLService() const {
   // Make sure the model is loaded. This is cheap and quickly bails out if
   // the model is already loaded.
