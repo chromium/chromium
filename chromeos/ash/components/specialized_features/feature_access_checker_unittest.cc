@@ -505,8 +505,9 @@ TEST_F(FeatureAccessCheckerTest, KioskModeCheckPassIfNotInKioskMode) {
 TEST_F(FeatureAccessCheckerTest, KioskModeCheckFailIfInKioskMode) {
   FeatureAccessConfig config;
   config.disabled_in_kiosk_mode = true;
+  user_manager::UserManager::RegisterPrefs(pref_service_.registry());
   user_manager::ScopedUserManager scoped_user_manager(
-      std::make_unique<user_manager::FakeUserManager>());
+      std::make_unique<user_manager::FakeUserManager>(&pref_service_));
 
   chromeos::SetUpFakeKioskSession();
 

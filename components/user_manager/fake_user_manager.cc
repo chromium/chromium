@@ -34,13 +34,6 @@ std::string FakeUserManager::GetFakeUsernameHash(const AccountId& account_id) {
   return account_id.GetUserEmail() + "-hash";
 }
 
-User* FakeUserManager::AddKioskAppUser(const AccountId& account_id) {
-  User* user = User::CreateKioskAppUser(account_id);
-  user_storage_.emplace_back(user);
-  users_.push_back(user);
-  return user;
-}
-
 void FakeUserManager::UserLoggedIn(const AccountId& account_id,
                                    const std::string& username_hash,
                                    bool browser_restart,

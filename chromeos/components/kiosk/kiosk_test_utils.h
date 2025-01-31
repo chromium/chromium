@@ -5,7 +5,7 @@
 #ifndef CHROMEOS_COMPONENTS_KIOSK_KIOSK_TEST_UTILS_H_
 #define CHROMEOS_COMPONENTS_KIOSK_KIOSK_TEST_UTILS_H_
 
-#include <string>
+#include <string_view>
 
 namespace chromeos {
 
@@ -15,7 +15,7 @@ namespace chromeos {
 // TODO(b/40286020): remove the default parameter. That is only for transition
 // purpose.
 extern void SetUpFakeKioskSession(
-    const std::string& email = "example@example.com");
+    std::string_view email = "example@kiosk-apps.device-local.localhost");
 
 }  // namespace chromeos
 

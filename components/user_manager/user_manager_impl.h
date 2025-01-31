@@ -257,13 +257,6 @@ class USER_MANAGER_EXPORT UserManagerImpl : public UserManager {
 
   void Initialize() override;
 
-  // Creates and adds a kiosk user for testing with a given `account_id`
-  // and `username_hash` to identify homedir mount point.
-  // Returns a pointer to the user.
-  // Note: call `UserLoggedIn` if the user needs to be logged-in.
-  const User* AddKioskAppUserForTesting(const AccountId& account_id,
-                                        const std::string& username_hash);
-
   // Helper function that converts users from |users_list| to |users_vector| and
   // |users_set|. Duplicates and users already present in |existing_users| are
   // skipped.

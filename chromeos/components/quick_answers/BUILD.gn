@@ -159,6 +159,7 @@ source_set("quick_answers_state_unittest") {
     "//chromeos/components/quick_answers/public/cpp:cpp",
     "//chromeos/components/quick_answers/public/cpp:prefs",
     "//chromeos/constants:constants",
+    "//components/prefs:test_support",
     "//components/user_manager:test_support",
     "//testing/gmock",
     "//testing/gtest",

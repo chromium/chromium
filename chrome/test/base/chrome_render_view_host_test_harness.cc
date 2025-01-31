@@ -12,7 +12,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/signin/signin_error_controller_factory.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/shell.h"
 #endif
 
@@ -27,7 +27,7 @@ TestingProfile* ChromeRenderViewHostTestHarness::profile() {
 
 void ChromeRenderViewHostTestHarness::TearDown() {
   RenderViewHostTestHarness::TearDown();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::Shell::DeleteInstance();
 #endif
 }
@@ -38,26 +38,13 @@ ChromeRenderViewHostTestHarness::GetTestingFactories() const {
 }
 
 std::unique_ptr<TestingProfile>
-ChromeRenderViewHostTestHarness::CreateTestingProfile(
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    bool is_main_profile
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-) {
+ChromeRenderViewHostTestHarness::CreateTestingProfile() {
   TestingProfile::Builder builder;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  builder.SetIsMainProfile(is_main_profile);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
   builder.AddTestingFactories(GetTestingFactories());
-
   return builder.Build();
 }
 
 std::unique_ptr<content::BrowserContext>
 ChromeRenderViewHostTestHarness::CreateBrowserContext() {
-  return CreateTestingProfile(
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      /*is_main_profile=*/true
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-  );
+  return CreateTestingProfile();
 }

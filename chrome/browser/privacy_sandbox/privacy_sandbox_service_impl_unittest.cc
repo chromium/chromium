@@ -32,6 +32,7 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/fake_profile_manager.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -343,7 +344,7 @@ class PrivacySandboxServiceTest : public testing::Test {
 
   void CreateDefaultProfile() {
     default_profile_manager_ = std::make_unique<TestingProfileManager>(
-        TestingBrowserProcess::GetGlobal());
+        TestingBrowserProcess::GetGlobal(), &local_state_);
     ASSERT_TRUE(default_profile_manager_->SetUp());
 
     default_profile_ = default_profile_manager_->CreateTestingProfile(
@@ -474,6 +475,7 @@ class PrivacySandboxServiceTest : public testing::Test {
         managed_provider_raw, TestCase(test_state, test_input, test_output));
   }
 
+  PrefService* local_state() { return local_state_.Get(); }
   TestingProfile* profile() { return default_profile_; }
   PrivacySandboxServiceImpl* privacy_sandbox_service() {
     return privacy_sandbox_service_.get();
@@ -532,6 +534,12 @@ class PrivacySandboxServiceTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment browser_task_environment_;
+
+  // In production, ProfileManager is created much earlier than Profile
+  // creation. Some of the tests using this fixture needs local_state,
+  // so instead of let TestingProfileManager generate it, we instantiate
+  // it independently.
+  ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
   std::unique_ptr<TestingProfileManager> default_profile_manager_;
   raw_ptr<TestingProfile> default_profile_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
@@ -3270,7 +3278,7 @@ TEST_F(PrivacySandboxServiceM1PromptTest, DeviceLocalAccountUser) {
   privacy_sandbox_service()->ForceChromeBuildForTests(true);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   user_manager::ScopedUserManager user_manager(
-      std::make_unique<user_manager::FakeUserManager>());
+      std::make_unique<user_manager::FakeUserManager>(local_state()));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // No prompt should be shown for a public session account.

@@ -32,6 +32,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -340,8 +341,8 @@ TEST_F(ArcUtilTest, IsArcAllowedForUser) {
       fake_user_manager->AddPublicAccountUser(AccountId::FromUserEmailGaiaId(
           "user3@test.com", GaiaId("1234567890-3")))));
   EXPECT_FALSE(IsArcAllowedForUser(
-      fake_user_manager->AddKioskAppUser(AccountId::FromUserEmailGaiaId(
-          "user4@test.com", GaiaId("1234567890-4")))));
+      user_manager::TestHelper(*fake_user_manager)
+          .AddKioskAppUser("user4@kiosk-apps.device-local.localhost")));
   EXPECT_TRUE(IsArcAllowedForUser(fake_user_manager->AddGaiaUser(
       AccountId::FromUserEmailGaiaId("user5@test.com", GaiaId("1234567890-5")),
       user_manager::UserType::kChild)));

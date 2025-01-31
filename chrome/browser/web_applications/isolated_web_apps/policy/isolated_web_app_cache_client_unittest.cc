@@ -16,13 +16,14 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/version.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/components/kiosk/kiosk_test_utils.h"
+#include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -53,7 +54,8 @@ class IwaCacheClientTest : public ::testing::TestWithParam<SessionType> {
   ~IwaCacheClientTest() override = default;
 
   void SetUp() override {
-    user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
+    user_manager_.Reset(
+        std::make_unique<user_manager::FakeUserManager>(local_state_.Get()));
 
     switch (GetSessionType()) {
       case kMgs:
@@ -110,17 +112,18 @@ class IwaCacheClientTest : public ::testing::TestWithParam<SessionType> {
  private:
   SessionType GetSessionType() { return GetParam(); }
 
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kIsolatedWebAppBundleCache};
+
+  ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
-      user_manager_;
+  user_manager::ScopedUserManager user_manager_;
 
   // This is set only for MGS session.
   std::unique_ptr<profiles::testing::ScopedTestManagedGuestSession>
       test_managed_guest_session_;
 
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kIsolatedWebAppBundleCache};
   web_package::SignedWebBundleId web_bundle_id_ =
       test::GetDefaultEd25519WebBundleId();
   base::ScopedTempDir temp_dir_;
@@ -231,13 +234,19 @@ struct IwaCacheClientDeathTestParam {
 class IwaCacheClientDeathTest
     : public ::testing::TestWithParam<IwaCacheClientDeathTestParam> {
  public:
-  IwaCacheClientDeathTest() = default;
+  IwaCacheClientDeathTest() {
+    if (GetParam().feature_enabled) {
+      scoped_feature_list_.InitAndEnableFeature(
+          {features::kIsolatedWebAppBundleCache});
+    }
+  }
   IwaCacheClientDeathTest(const IwaCacheClientDeathTest&) = delete;
   IwaCacheClientDeathTest& operator=(const IwaCacheClientDeathTest&) = delete;
   ~IwaCacheClientDeathTest() override = default;
 
   void SetUp() override {
-    user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
+    user_manager_.Reset(
+        std::make_unique<user_manager::FakeUserManager>(local_state_.Get()));
 
     switch (GetParam().session_type) {
       case kMgs:
@@ -250,21 +259,18 @@ class IwaCacheClientDeathTest
       case kUser:
         break;
     }
-
-    if (GetParam().feature_enabled) {
-      scoped_feature_list_.InitAndEnableFeature(
-          {features::kIsolatedWebAppBundleCache});
-    }
   }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+
+  ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
+  user_manager::ScopedUserManager user_manager_;
+
   // This is set only for MGS session.
   std::unique_ptr<profiles::testing::ScopedTestManagedGuestSession>
       test_managed_guest_session_;
 
-  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
-      user_manager_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_P(IwaCacheClientDeathTest, CreateClient) {

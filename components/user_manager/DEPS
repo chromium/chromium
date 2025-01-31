@@ -17,3 +17,9 @@ include_rules = [
   "+ui/gfx/image",
   "+url",
 ]
+
+specific_include_rules = {
+  "test_helper.cc": [
+    "+components/policy/core/common",
+  ]
+}

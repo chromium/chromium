@@ -103,6 +103,7 @@ if (is_chromeos) {
 
     deps = [
       "//chromeos/ash/components/settings",
+      "//components/policy/core/common",
       "//components/prefs",
     ]
   }

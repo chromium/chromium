@@ -16,6 +16,7 @@
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
 #include "chromeos/components/quick_answers/test/fake_quick_answers_state.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -161,8 +162,10 @@ TEST_F(QuickAnswersStateWithMagicBoostTest, MagicBoostStateEligibilityChanged) {
 }
 
 TEST(QuickAnswersStateTest, EnabledButKiosk) {
+  TestingPrefServiceSimple local_state;
+  user_manager::UserManager::RegisterPrefs(local_state.registry());
   user_manager::ScopedUserManager scoped_user_manager(
-      std::make_unique<user_manager::FakeUserManager>());
+      std::make_unique<user_manager::FakeUserManager>(&local_state));
   chromeos::SetUpFakeKioskSession();
 
   FakeQuickAnswersState quick_answers_state;

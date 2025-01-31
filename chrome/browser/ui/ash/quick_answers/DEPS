@@ -15,8 +15,9 @@ include_rules = [
 specific_include_rules = {
   ".*test.*": [
     "+chrome/browser/ash/accessibility",
-    "+chrome/browser/notifications",
     "+chrome/browser/ash/login/users",
+    "+chrome/browser/ash/profiles",
+    "+chrome/browser/notifications",
   ],
   ".*pixeltest\.cc": [
     "+chrome/browser/ui/browser.h",

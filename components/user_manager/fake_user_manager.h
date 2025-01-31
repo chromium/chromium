@@ -15,8 +15,6 @@ class PrefService;
 
 namespace user_manager {
 
-class User;
-
 // Fake user manager with a barebones implementation. Users can be added
 // and set as logged in, and those users can be returned.
 class USER_MANAGER_EXPORT FakeUserManager : public UserManagerImpl {
@@ -31,9 +29,6 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerImpl {
   // Returns the fake username hash for testing.
   // Valid AccountId must be used, otherwise DCHECKed.
   static std::string GetFakeUsernameHash(const AccountId& account_id);
-
-  // Creates and adds a new Kiosk user.
-  User* AddKioskAppUser(const AccountId& account_id);
 
   // UserManager overrides.
   void UserLoggedIn(const AccountId& account_id,

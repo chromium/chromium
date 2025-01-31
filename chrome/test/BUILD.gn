@@ -10159,6 +10159,7 @@ static_library("test_support_unit") {
       "//chrome/browser/ash/login/users:test_support",
       "//chrome/browser/ui/ash/quick_answers",
       "//chrome/browser/ui/ash/read_write_cards",
+      "//chromeos/ash/components/browser_context_helper",
       "//chromeos/components/quick_answers:test_support",
       "//ui/base/mojom:ui_base_types",
     ]
