@@ -145,43 +145,6 @@ void LaunchWebApp(apps::AppLaunchParams params,
                   WithAppResources& app_resources,
                   LaunchWebAppDebugValueCallback callback);
 
-// Returns the effective client mode for the given app, taking into account the
-// app's effective display mode as well as what windows and tabs are currently
-// open.
-//
-// If an applicable browser and tab for the given app was found, `browser` and
-// `tab_index` will be populated even if the effective client mode is
-// `kNavigateNew`. On the other hand, the returned client mode will never be
-// `kFocusExisting` or `kNavigateExisting` if no existing tab was found.
-//
-// Searches all browsers and tabs to find an applicable browser for the given
-// `app_id` and its effective display mode, specifically for use with navigation
-// capturing. The tabs in each browser are searched for one that matches the
-// given `app_id`. This is the priority order of returned items:
-// - If a tab is found for `app_id` in a browser that matches the
-//   display mode, then that is returned.
-// - If the display mode is for a standalone PWA:
-//   - Fall back to look for the first normal browser with a tab matching
-//     `app_id`, unless `ignore_browser_tabs_for_standalone_apps` is set.
-//   - Otherwise set `browser` to `nullptr`.
-// - If the display mode is `kBrowser`:
-//   - Fall back to returning `navigate_params_requested_browser` or the first
-//     normal browser window, and `nullopt` for the tab.
-//   - Otherwise set `browser` to `nullptr`.
-// - Set `browser` to `nullptr` for all other cases.
-struct ClientModeAndBrowser {
-  LaunchHandler::ClientMode effective_client_mode =
-      LaunchHandler::ClientMode::kNavigateNew;
-  raw_ptr<Browser> browser = nullptr;
-  std::optional<int> tab_index;
-};
-ClientModeAndBrowser GetEffectiveClientModeAndBrowserForCapturing(
-    Profile& profile,
-    const webapps::AppId& app_id,
-    const std::optional<webapps::AppId> source_tab_app_id_from_navigation,
-    bool ignore_browser_tabs_for_standalone_apps,
-    Browser* navigate_params_requested_browser);
-
 // Will enqueue the given url in the launch params for this web contents. Does
 // not check if the url is within scope of the app.
 void EnqueueLaunchParams(content::WebContents* contents,

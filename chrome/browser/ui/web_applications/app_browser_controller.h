@@ -12,8 +12,10 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "components/url_formatter/url_formatter.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/common/web_app_id.h"
@@ -72,6 +74,19 @@ class AppBrowserController : public ui::ColorProviderKey::InitializerSupplier,
   // order of last browser activation. Ignores pop-up Browsers.
   static Browser* FindForWebApp(const Profile& profile,
                                 const webapps::AppId& app_id);
+
+  // Returns the `browser` and `tab_index` for a tab for the given `app_id` in
+  // the given `profile`, where the tab does not have an opener, and the browser
+  // is of the specified `browser_type`. Prefers more recently activated
+  // windows and tabs over less recently used ones.
+  struct BrowserAndTabIndex {
+    raw_ptr<Browser> browser = nullptr;
+    int tab_index = -1;
+  };
+  static std::optional<BrowserAndTabIndex> FindTopLevelBrowsingContextForWebApp(
+      const Profile& profile,
+      const webapps::AppId& app_id,
+      BrowserWindowInterface::Type browser_type);
 
   // Renders |url|'s origin as Unicode.
   static std::u16string FormatUrlOrigin(

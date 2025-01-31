@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/memory/values_equivalent.h"
 #include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -104,14 +105,11 @@ bool AppBrowserController::IsForWebApp(const Browser* browser,
 // static
 Browser* AppBrowserController::FindForWebApp(const Profile& profile,
                                              const webapps::AppId& app_id) {
-  const BrowserList* browser_list = BrowserList::GetInstance();
-  for (auto it = browser_list->begin_browsers_ordered_by_activation();
-       it != browser_list->end_browsers_ordered_by_activation(); ++it) {
-    Browser* browser = *it;
+  for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
     if (browser->IsAttemptingToCloseBrowser() || browser->IsBrowserClosing()) {
       continue;
     }
-    if (browser->type() == Browser::TYPE_POPUP) {
+    if (!browser->is_type_app()) {
       continue;
     }
     if (browser->profile() != &profile) {
@@ -123,6 +121,49 @@ Browser* AppBrowserController::FindForWebApp(const Profile& profile,
     return browser;
   }
   return nullptr;
+}
+
+// static
+std::optional<AppBrowserController::BrowserAndTabIndex>
+AppBrowserController::FindTopLevelBrowsingContextForWebApp(
+    const Profile& profile,
+    const webapps::AppId& app_id,
+    Browser::Type browser_type) {
+  for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
+    if (browser->IsAttemptingToCloseBrowser() || browser->IsBrowserClosing()) {
+      continue;
+    }
+    if (browser->type() != browser_type) {
+      continue;
+    }
+    if (browser->profile() != &profile) {
+      continue;
+    }
+    if (IsWebApp(browser) && !IsForWebApp(browser, app_id)) {
+      continue;
+    }
+    // The active web contents should have preference if it is in scope.
+    content::WebContents* active_contents =
+        browser->tab_strip_model()->GetActiveWebContents();
+    if (browser->tab_strip_model()->active_index() != TabStripModel::kNoTab) {
+      if (base::ValuesEquivalent(&app_id,
+                                 WebAppTabHelper::GetAppId(active_contents)) &&
+          !active_contents->HasOpener()) {
+        return {{browser, browser->tab_strip_model()->active_index()}};
+      }
+    }
+    // Otherwise, use the first one for the app.
+    for (int i = 0; i < browser->tab_strip_model()->count(); ++i) {
+      content::WebContents* contents =
+          browser->tab_strip_model()->GetWebContentsAt(i);
+      if (base::ValuesEquivalent(&app_id,
+                                 WebAppTabHelper::GetAppId(contents)) &&
+          !contents->HasOpener()) {
+        return {{browser, i}};
+      }
+    }
+  }
+  return std::nullopt;
 }
 
 // static
