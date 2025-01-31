@@ -117,7 +117,9 @@ void GlicKeyedService::CreateTab(
   // callback.
   NavigateParams params(Profile::FromBrowserContext(browser_context_), url,
                         ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
-  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  params.disposition = open_in_background
+                           ? WindowOpenDisposition::NEW_BACKGROUND_TAB
+                           : WindowOpenDisposition::NEW_FOREGROUND_TAB;
   Navigate(&params);
   std::move(callback).Run(glic::mojom::TabData::New());
 }

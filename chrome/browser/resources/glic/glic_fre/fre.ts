@@ -17,6 +17,7 @@ const webview =
 webview.src = loadTimeData.getString('glicGuestURL');
 
 webview.addEventListener('loadcommit', onLoadCommit);
+webview.addEventListener('newwindow', onNewWindow);
 
 function onLoadCommit(e: any) {
   if (!e.isTopLevel) {
@@ -34,4 +35,12 @@ function onLoadCommit(e: any) {
   } else if (urlHash === '#noThanks') {
     browserProxy.freHandler.dismissFre();
   }
+}
+
+function onNewWindow(e: any) {
+  e.preventDefault();
+  browserProxy.freHandler.validateAndOpenLinkInNewTab({
+    url: e.targetUrl,
+  });
+  e.stopPropagation();
 }

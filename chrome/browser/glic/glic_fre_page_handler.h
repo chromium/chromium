@@ -10,6 +10,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
+class GURL;
 namespace content {
 class BrowserContext;
 class WebContents;
@@ -33,6 +34,7 @@ class GlicFrePageHandler : public glic::mojom::FrePageHandler {
   // glic::mojom::FrePageHandler implementation.
   void AcceptFre() override;
   void DismissFre() override;
+  void ValidateAndOpenLinkInNewTab(const GURL& url) override;
 
  private:
   content::BrowserContext* browser_context() const;

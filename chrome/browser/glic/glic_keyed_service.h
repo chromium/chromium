@@ -70,6 +70,9 @@ class GlicKeyedService : public KeyedService {
   void PageHandlerRemoved(GlicPageHandler* page_handler);
 
   // Private API for the glic WebUI.
+
+  // CreateTab is used by both the FRE page and the glic web client to open a
+  // URL in a new tab.
   void CreateTab(const ::GURL& url,
                  bool open_in_background,
                  const std::optional<int32_t>& window_id,

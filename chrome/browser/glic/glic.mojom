@@ -80,6 +80,9 @@ interface FrePageHandler {
   AcceptFre();
   // Closes the glic FRE modal dialog.
   DismissFre();
+  // Opens `url` in a new backgrounded tab when a link is clicked in the FRE
+  // modal dialog if `url` uses the Google domain.
+  ValidateAndOpenLinkInNewTab(url.mojom.Url url);
 };
 
 // Reason why getting tab context failed.
