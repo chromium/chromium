@@ -5,6 +5,7 @@ Version: N/A
 Revision: d8ec0d2e5c7ea986291575341eb1fcdc4bc42eab
 CPEPrefix: cpe:/a:aomedia:aomedia:3.11.0
 License: BSD-2-Clause, Patent
+License Android Compatible: yes
 License File: source/libaom/LICENSE, source/libaom/PATENTS
 Security Critical: yes
 Shipped: yes
