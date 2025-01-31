@@ -75,7 +75,7 @@ import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.transit.BlankCTATabInitialStatePublicTransitRule;
+import org.chromium.chrome.test.transit.ChromeTabbedActivityPublicTransitEntryPoints;
 import org.chromium.chrome.test.transit.hub.IncognitoTabSwitcherStation;
 import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
@@ -131,9 +131,8 @@ public class SensitiveContentTest {
     public final ChromeTabbedActivityTestRule mActivityTestRule =
             new ChromeTabbedActivityTestRule();
 
-    @Rule
-    public final BlankCTATabInitialStatePublicTransitRule mInitialStateRule =
-            new BlankCTATabInitialStatePublicTransitRule(mActivityTestRule);
+    private final ChromeTabbedActivityPublicTransitEntryPoints mEntryPoints =
+            new ChromeTabbedActivityPublicTransitEntryPoints(mActivityTestRule);
 
     @Mock private HubLayoutDependencyHolder mHubLayoutDependencyHolder;
     @Mock private TopUiThemeColorProvider mTopUiThemeColorProvider;
@@ -146,7 +145,7 @@ public class SensitiveContentTest {
 
     @Before
     public void setUp() throws Exception {
-        mPage = mInitialStateRule.startOnBlankPage();
+        mPage = mEntryPoints.startOnBlankPageNonBatched();
         mTestServer = mActivityTestRule.getTestServer();
     }
 
