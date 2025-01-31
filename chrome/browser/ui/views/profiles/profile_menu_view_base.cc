@@ -695,7 +695,6 @@ void ProfileMenuViewBase::SetProfileIdentityWithCallToAction(
   constexpr int kIdentityContainerHorizontalPadding = 24;
   constexpr int kAvatarTopMargin = 24;
   constexpr int kTitleTopMargin = 8;
-  constexpr int kTitleBottomMargin = 4;
   constexpr int kBottomMarginWhenNoButton = 24;
   constexpr int kSubtitleBottomMarginWithButton = 12;
   constexpr int kButtonBottomMargin = 28;
@@ -710,7 +709,6 @@ void ProfileMenuViewBase::SetProfileIdentityWithCallToAction(
   // Image: Avatar (size: kIdentityInfoImageSize)
   // [kTitleTopMargin]
   // Label: Title
-  // [kTitleBottomMargin] (or [kBottomMarginWhenNoButton] if there is no button)
   // Optional:
   //     Label: Subtitle (optional)
   //     [kSubtitleBottomMarginWithButton] (or [kBottomMarginWhenNoButton])
@@ -792,8 +790,7 @@ void ProfileMenuViewBase::SetProfileIdentityWithCallToAction(
   // Title.
   const bool has_subtitle = !params.subtitle.empty();
   const bool has_button = !params.button_text.empty();
-  const int title_bottom_margin =
-      has_subtitle ? kTitleBottomMargin : kBottomMarginWhenNoButton;
+  const int title_bottom_margin = has_subtitle ? 0 : kBottomMarginWhenNoButton;
   identity_info_container_->AddChildView(
       views::Builder<views::Label>()
           .SetText(params.title)
