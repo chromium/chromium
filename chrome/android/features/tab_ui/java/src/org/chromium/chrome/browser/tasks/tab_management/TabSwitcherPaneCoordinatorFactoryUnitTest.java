@@ -324,12 +324,6 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
 
     @Test
     @SmallTest
-    public void testCreateScrimManagerForTablet() {
-        assertNotNull(TabSwitcherPaneCoordinatorFactory.createScrimManagerForTablet(mActivity));
-    }
-
-    @Test
-    @SmallTest
     public void testCreateTabGroupModelFilterSupplier_AlreadyCreated() {
         when(mTabModelSelector.getModels()).thenReturn(List.of(mTabModel));
 

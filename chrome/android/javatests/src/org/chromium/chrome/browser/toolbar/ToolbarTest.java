@@ -209,12 +209,15 @@ public class ToolbarTest {
         ThreadUtils.runOnUiThreadBlocking(() -> toolbarManager.setUrlBarFocus(true, 0));
 
         assertNotNull("The scrim should not be null.", scrimManager.getViewForTesting());
-        assertTrue(
-                "All tabs should currently be obscured.",
-                activity.getTabObscuringHandler().isTabContentObscured());
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    Criteria.checkThat(
+                            "All tabs should currently be obscured.",
+                            activity.getTabObscuringHandler().isTabContentObscured(),
+                            Matchers.is(true));
+                });
 
         ThreadUtils.runOnUiThreadBlocking(() -> toolbarManager.setUrlBarFocus(false, 0));
-
         assertNull("The scrim should be null.", scrimManager.getViewForTesting());
         assertFalse(
                 "All tabs should not currently be obscured.",

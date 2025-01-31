@@ -35,7 +35,6 @@ import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.util.TokenHolder;
 
@@ -108,10 +107,7 @@ public class TabSwitcherPaneCoordinatorFactory {
         mTabCreatorManager = tabCreatorManager;
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mMultiWindowModeStateDispatcher = multiWindowModeStateDispatcher;
-        mScrimManager =
-                DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity)
-                        ? createScrimManagerForTablet(activity)
-                        : rootUiScrimManager;
+        mScrimManager = rootUiScrimManager;
         mSnackbarManager = snackbarManager;
         mModalDialogManager = modalDialogManager;
         mBottomSheetController = bottomSheetController;
@@ -184,16 +180,6 @@ public class TabSwitcherPaneCoordinatorFactory {
         // low-end and is not subject to change. Certain behaviors are limited to LIST vs GRID
         // mode and this information may be required even if a coordinator does not exist.
         return mMode;
-    }
-
-    /** Returns a scrim component to use for tab grid dialog on LFF devices. */
-    @VisibleForTesting
-    static ScrimManager createScrimManagerForTablet(Activity activity) {
-        ViewGroup coordinator = activity.findViewById(R.id.coordinator);
-        // TODO(crbug.com/40067282): Because the show/hide animation already uses the
-        // RootUiCoordinator's ScrimManager, a separate instance is needed. However, the way
-        // this is implemented the status bar color is not updated. This should be fixed.
-        return new ScrimManager(activity, coordinator);
     }
 
     @VisibleForTesting

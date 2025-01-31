@@ -611,17 +611,20 @@ public class BottomSheetControllerTest {
 
     @Test
     @MediumTest
-    public void testScrim() throws ExecutionException {
+    public void testScrim() {
         requestContentInSheet(mLowPriorityContent, true);
 
         assertNull("There should currently be no scrim.", mScrimManager.getViewForTesting());
 
         expandSheet();
 
-        assertEquals(
-                "The scrim should be visible.",
-                View.VISIBLE,
-                ((View) mScrimManager.getViewForTesting()).getVisibility());
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    Criteria.checkThat(
+                            "The scrim should be visible.",
+                            mScrimManager.getViewForTesting().getVisibility(),
+                            Matchers.is(View.VISIBLE));
+                });
 
         ThreadUtils.runOnUiThreadBlocking(() -> mSheetController.collapseSheet(false));
 

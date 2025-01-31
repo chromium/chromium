@@ -21,6 +21,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
+import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator.TouchEventDelegate;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
@@ -28,7 +29,7 @@ import org.chromium.ui.util.ColorUtils;
 
 /** This class holds the animation and related business logic for the scrim. */
 @NullMarked
-class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
+class ScrimMediator implements TouchEventDelegate {
     private static final String TAG = "ScrimMediator";
 
     /** A callback that is run when the scrim has completely hidden. */

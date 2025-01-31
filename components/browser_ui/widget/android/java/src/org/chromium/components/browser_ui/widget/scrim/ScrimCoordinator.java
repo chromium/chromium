@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import androidx.annotation.ColorInt;
 import androidx.core.content.ContextCompat;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
@@ -22,22 +23,16 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /**
- * The coordinator for the scrim widget used to bring focus to certain elements on screen.
- *
- * <p>To use the scrim, {@link #showScrim(PropertyModel)} must be called to set the params for how
- * the scrim will behave:
- *
- * <p>PropertyModel model = new PropertyModel.Builder(ScrimProperties.ALL_KEYS)...
- *
- * <p>After that, users can either allow the default animation to run or change the view's alpha
- * manually using {@link #setAlpha(float)}. Once the scrim is done being used, {@link
- * #hideScrim(boolean)} should be called.
+ * The coordinator for the scrim components. Creating and owning the mediator and view, and scoped
+ * to a single model. Outside clients however should typically not directly interact with the
+ * coordinator, instead they should go through the {@link ScrimManager} to facilitate stacking
+ * scrims.
  */
 @NullMarked
 public class ScrimCoordinator {
 
     /** The duration for the scrim animation. */
-    private static final int ANIM_DURATION_MS = 300;
+    /* package */ static final int ANIM_DURATION_MS = 300;
 
     /** A mechanism for delegating motion events out to the mediator. */
     interface TouchEventDelegate {
@@ -48,8 +43,14 @@ public class ScrimCoordinator {
         boolean onTouchEvent(MotionEvent event);
     }
 
-    public interface Observer {
+    public interface Observer extends Callback<Boolean> {
         void scrimVisibilityChanged(boolean scrimVisible);
+
+        @Deprecated
+        @Override
+        default void onResult(Boolean result) {
+            scrimVisibilityChanged(result);
+        }
     }
 
     private final ObserverList<Observer> mScrimVisibilityObservers = new ObserverList<>();
@@ -76,7 +77,7 @@ public class ScrimCoordinator {
      * @param context An Android {@link Context} for creating the view.
      * @param parent The {@link ViewGroup} the scrim should exist in.
      */
-    public ScrimCoordinator(Context context, ViewGroup parent) {
+    /* package */ ScrimCoordinator(Context context, ViewGroup parent) {
         @ColorInt
         int defaultScrimColor = ContextCompat.getColor(context, R.color.default_scrim_color);
         mMediator =
@@ -86,6 +87,7 @@ public class ScrimCoordinator {
                             if (mView != null) UiUtils.removeViewFromParent(mView);
                             mView = null;
                             mChangeProcessor = null;
+                            notifyVisibilityObservers();
                         },
                         defaultScrimColor);
         mScrimViewBuilder =
@@ -138,22 +140,17 @@ public class ScrimCoordinator {
     }
 
     /**
-     * @param model The model used to show/identify the current scrim.
      * @param animate Whether the scrim should animate and fade out.
      */
-    public void hideScrim(PropertyModel model, boolean animate) {
-        hideScrim(model, animate, ANIM_DURATION_MS);
+    public void hideScrim(boolean animate) {
+        hideScrim(animate, ANIM_DURATION_MS);
     }
 
     /**
-     * @param model The model used to show/identify the current scrim. If this model does not
-     *     correspond to the current scrim, then this request will be ignored.
      * @param animate Whether the scrim should animate and fade out.
      * @param duration Duration for animation.
      */
-    public void hideScrim(PropertyModel model, boolean animate, int duration) {
-        if (model != mMediator.getModel()) return;
-
+    public void hideScrim(boolean animate, int duration) {
         boolean isShowingScrim = isShowingScrim();
         mMediator.hideScrim(animate, duration);
         if (isShowingScrim != isShowingScrim()) {
@@ -181,14 +178,8 @@ public class ScrimCoordinator {
         }
     }
 
-    /**
-     * Forces the current scrim fade animation to complete if one is running.
-     *
-     * @param model The model used to show/identify the current scrim. If this model does not
-     *     correspond to the current scrim, then this request will be ignored.
-     */
-    public void forceAnimationToFinish(PropertyModel model) {
-        if (model != mMediator.getModel()) return;
+    /** Forces the current scrim fade animation to complete if one is running. */
+    public void forceAnimationToFinish() {
         mMediator.forceAnimationToFinish();
     }
 
@@ -197,11 +188,8 @@ public class ScrimCoordinator {
      * not be called as part of animations as it cancels the currently running one.
      *
      * @param alpha The alpha in range [0, 1].
-     * @param model The model used to show/identify the current scrim. If this model does not
-     *     correspond to the current scrim, then this request will be ignored.
      */
-    public void setAlpha(float alpha, PropertyModel model) {
-        if (model != mMediator.getModel()) return;
+    public void setAlpha(float alpha) {
         mMediator.setAlpha(alpha);
     }
 
@@ -210,17 +198,22 @@ public class ScrimCoordinator {
      * be subject to the current alpha. Safe to call this during animations.
      *
      * @param scrimColor The color to set the scrim to.
-     * @param model The model used to show/identify the current scrim. If this model does not
-     *     correspond to the current scrim, then this request will be ignored.
      */
-    public void setScrimColor(@ColorInt int scrimColor, PropertyModel model) {
-        if (model != mMediator.getModel()) return;
+    public void setScrimColor(@ColorInt int scrimColor) {
         mMediator.setScrimColor(scrimColor);
     }
 
     /** Clean up this coordinator. */
     public void destroy() {
         mMediator.destroy();
+    }
+
+    /* package */ int getIndexInParent() {
+        if (mView == null || mView.getParent() == null) {
+            return -1;
+        } else {
+            return ((ViewGroup) mView.getParent()).indexOfChild(mView);
+        }
     }
 
     public void disableAnimationForTesting(boolean disable) {

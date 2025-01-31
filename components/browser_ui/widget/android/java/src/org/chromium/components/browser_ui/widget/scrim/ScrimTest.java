@@ -6,7 +6,6 @@ package org.chromium.components.browser_ui.widget.scrim;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -33,6 +32,7 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
+import androidx.core.graphics.ColorUtils;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
@@ -428,77 +428,85 @@ public class ScrimTest {
     @Test
     @SmallTest
     @Feature({"Scrim"})
-    public void testOldScrimHidden() throws TimeoutException {
+    public void testScrimVisibilityObserver() throws TimeoutException {
+        class TestScrimVisibilityObserver implements Observer {
+            private boolean mCurrentVisible;
+
+            @Override
+            public void scrimVisibilityChanged(boolean scrimVisible) {
+                mCurrentVisible = scrimVisible;
+            }
+
+            public void assertVisibility(boolean expectedVisible) {
+                assertEquals(expectedVisible, mCurrentVisible);
+            }
+        }
+        TestScrimVisibilityObserver o1 = new TestScrimVisibilityObserver();
+
+        ThreadUtils.runOnUiThreadBlocking(() -> mScrimManager.addObserver(o1));
         PropertyModel firstModel = buildModel(false, true, Color.RED);
         showScrim(firstModel, /* animate= */ false);
-
-        assertScrimVisibility(true);
-
-        View oldScrim = mScrimManager.getViewForTesting();
+        o1.assertVisibility(true);
 
         PropertyModel secondModel = buildModel(false, true, Color.BLUE);
         showScrim(secondModel, /* animate= */ false);
-        assertScrimColor(Color.BLUE);
+        o1.assertVisibility(true);
 
-        View newScrim = mScrimManager.getViewForTesting();
-
-        assertNotEquals("The view should have changed.", oldScrim, newScrim);
-        assertEquals("The old scrim should be gone.", View.GONE, oldScrim.getVisibility());
-
-        ThreadUtils.runOnUiThreadBlocking(() -> firstModel.set(BACKGROUND_COLOR, Color.MAGENTA));
-        assertScrimColor(Color.BLUE);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mScrimManager.hideScrim(firstModel, /* animate= */ false));
+        // Above hideScrim should no-op, wrong model.
+        o1.assertVisibility(true);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> mScrimManager.hideScrim(secondModel, /* animate= */ false));
-        ThreadUtils.runOnUiThreadBlocking(() -> firstModel.set(BACKGROUND_COLOR, Color.GREEN));
+        o1.assertVisibility(false);
+
+        showScrim(buildModel(false, true, Color.BLUE), /* animate= */ false);
+        o1.assertVisibility(true);
     }
 
     @Test
     @SmallTest
     @Feature({"Scrim"})
-    public void testScrimVisibilityObserver() throws TimeoutException {
-        class TestScrimVisibilityObserver implements Observer {
-            public boolean mVisible;
+    public void testStackedScrims() {
+        mScrimManager.disableAnimationForTesting(true);
 
-            @Override
-            public void scrimVisibilityChanged(boolean scrimVisible) {
-                mVisible = scrimVisible;
-            }
-        }
-        TestScrimVisibilityObserver o1 = new TestScrimVisibilityObserver();
-        TestScrimVisibilityObserver o2 = new TestScrimVisibilityObserver();
+        PropertyModel model1 =
+                buildModel(
+                        /* affectsStatusBar= */ true, /* showInFrontOfAnchor= */ false, Color.RED);
+        PropertyModel model2 =
+                buildModel(
+                        /* affectsStatusBar= */ true, /* showInFrontOfAnchor= */ false, Color.BLUE);
+        PropertyModel model3 =
+                buildModel(
+                        /* affectsStatusBar= */ true,
+                        /* showInFrontOfAnchor= */ false,
+                        Color.GREEN);
+        @ColorInt int color4 = ColorUtils.setAlphaComponent(Color.GREEN, 128);
+        PropertyModel model4 =
+                buildModel(/* affectsStatusBar= */ true, /* showInFrontOfAnchor= */ false, color4);
 
-        ThreadUtils.runOnUiThreadBlocking(() -> mScrimManager.addObserver(o1));
-        PropertyModel firstModel = buildModel(false, true, Color.RED);
-        showScrim(firstModel, /* animate= */ false);
+        assertStatusBarColor(Color.TRANSPARENT);
 
-        assertTrue(o1.mVisible);
-        assertFalse(o2.mVisible);
+        ThreadUtils.runOnUiThreadBlocking(() -> mScrimManager.showScrim(model1));
+        assertStatusBarColor(Color.RED);
 
-        ThreadUtils.runOnUiThreadBlocking(() -> mScrimManager.addObserver(o2));
+        ThreadUtils.runOnUiThreadBlocking(() -> mScrimManager.showScrim(model2));
+        assertStatusBarColor(Color.BLUE);
 
-        PropertyModel secondModel = buildModel(false, true, Color.BLUE);
-        showScrim(secondModel, /* animate= */ false);
-
-        assertTrue(o1.mVisible);
-        // No update for o2 yet since the visibility hasn't changed.
-        assertFalse(o2.mVisible);
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> mScrimManager.hideScrim(firstModel, /* animate= */ false));
-        // Above hideScrim should no-op, wrong model.
-        assertTrue(o1.mVisible);
-        assertFalse(o2.mVisible);
+        ThreadUtils.runOnUiThreadBlocking(() -> mScrimManager.showScrim(model3));
+        assertStatusBarColor(Color.GREEN);
 
         ThreadUtils.runOnUiThreadBlocking(
-                () -> mScrimManager.hideScrim(secondModel, /* animate= */ false));
-        assertFalse(o1.mVisible);
-        assertFalse(o2.mVisible);
+                () -> mScrimManager.hideScrim(model2, /* animate= */ false));
+        assertStatusBarColor(Color.GREEN);
 
-        showScrim(buildModel(false, true, Color.BLUE), /* animate= */ false);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mScrimManager.hideScrim(model3, /* animate= */ false));
+        assertStatusBarColor(Color.RED);
 
-        assertTrue(o1.mVisible);
-        assertTrue(o2.mVisible);
+        ThreadUtils.runOnUiThreadBlocking(() -> mScrimManager.showScrim(model4));
+        assertStatusBarColor(ColorUtils.compositeColors(color4, Color.RED));
     }
 
     /**
@@ -564,6 +572,16 @@ public class ScrimTest {
                 "Scrim color was incorrect.",
                 color,
                 ((ColorDrawable) mScrimManager.getViewForTesting().getBackground()).getColor());
+    }
+
+    /** Assert that the scrim background is a specific color. */
+    private void assertStatusBarColor(@ColorInt int color) {
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    Criteria.checkThat(
+                            mScrimManager.getStatusBarColorSupplier().get().intValue(),
+                            Matchers.is(color));
+                });
     }
 
     /**
