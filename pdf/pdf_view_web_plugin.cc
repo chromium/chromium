@@ -2886,10 +2886,13 @@ void PdfViewWebPlugin::PrepareAndSetAccessibilityViewportInfo() {
       static_cast<int32_t>(engine_->GetCurrentOrientation());
   viewport_info.focus_info = {FocusObjectType::kNone, 0, 0};
 
-  engine_->GetSelection(&viewport_info.selection_start_page_index,
-                        &viewport_info.selection_start_char_index,
-                        &viewport_info.selection_end_page_index,
-                        &viewport_info.selection_end_char_index);
+  std::optional<Selection> selection = engine_->GetSelection();
+  if (selection.has_value()) {
+    viewport_info.selection_start_page_index = selection->start.page_index;
+    viewport_info.selection_start_char_index = selection->start.char_index;
+    viewport_info.selection_end_page_index = selection->end.page_index;
+    viewport_info.selection_end_char_index = selection->end.char_index;
+  }
 
   pdf_accessibility_data_handler_->SetAccessibilityViewportInfo(
       std::move(viewport_info));

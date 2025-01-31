@@ -640,33 +640,26 @@ TEST_P(AccessibilityTest, GetAccessibilityTextFieldInfo) {
 }
 
 TEST_P(AccessibilityTest, SelectionActionHandling) {
-  struct Selection {
-    uint32_t start_page_index;
-    uint32_t start_char_index;
-    uint32_t end_page_index;
-    uint32_t end_char_index;
-  };
-
   struct TestCase {
     Selection action;
     Selection expected_result;
   };
 
   static constexpr TestCase kTestCases[] = {
-      {{0, 0, 0, 0}, {0, 0, 0, 0}},
-      {{0, 0, 1, 5}, {0, 0, 1, 5}},
+      {{{0, 0}, {0, 0}}, {{0, 0}, {0, 0}}},
+      {{{0, 0}, {1, 5}}, {{0, 0}, {1, 5}}},
       // Selection action data with invalid char index.
       // GetSelection() should return the previous selection in this case.
-      {{0, 0, 0, 50}, {0, 0, 1, 5}},
+      {{{0, 0}, {0, 50}}, {{0, 0}, {1, 5}}},
       // Selection action data for reverse selection where start selection
       // index is greater than end selection index. GetSelection() should
       // return the sanitized selection value where start selection index
       // is less than end selection index.
-      {{1, 10, 0, 5}, {0, 5, 1, 10}},
-      {{0, 10, 0, 4}, {0, 4, 0, 10}},
+      {{{1, 10}, {0, 5}}, {{0, 5}, {1, 10}}},
+      {{{0, 10}, {0, 4}}, {{0, 4}, {0, 10}}},
       // Selection action data with invalid page index.
       // GetSelection() should return the previous selection in this case.
-      {{0, 10, 2, 4}, {0, 4, 0, 10}},
+      {{{0, 10}, {2, 4}}, {{0, 4}, {0, 10}}},
   };
 
   TestClient client;
@@ -674,43 +667,35 @@ TEST_P(AccessibilityTest, SelectionActionHandling) {
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
 
+  // `GetSelection()` should return empty when nothing is selected.
+  EXPECT_FALSE(engine->GetSelection().has_value());
+
   for (const auto& test_case : kTestCases) {
     AccessibilityActionData action_data;
     action_data.action = AccessibilityAction::kSetSelection;
     const Selection& sel_action = test_case.action;
-    action_data.selection_start_index.page_index = sel_action.start_page_index;
-    action_data.selection_start_index.char_index = sel_action.start_char_index;
-    action_data.selection_end_index.page_index = sel_action.end_page_index;
-    action_data.selection_end_index.char_index = sel_action.end_char_index;
+    action_data.selection_start_index = sel_action.start;
+    action_data.selection_end_index = sel_action.end;
     action_data.target_rect = {{0, 0}, {0, 0}};
 
     engine->HandleAccessibilityAction(action_data);
-    Selection actual_selection;
-    engine->GetSelection(
-        &actual_selection.start_page_index, &actual_selection.start_char_index,
-        &actual_selection.end_page_index, &actual_selection.end_char_index);
+    std::optional<Selection> actual_selection = engine->GetSelection();
+    ASSERT_TRUE(actual_selection.has_value());
     const Selection& expected_selection = test_case.expected_result;
-    EXPECT_EQ(actual_selection.start_page_index,
-              expected_selection.start_page_index);
-    EXPECT_EQ(actual_selection.start_char_index,
-              expected_selection.start_char_index);
-    EXPECT_EQ(actual_selection.end_page_index,
-              expected_selection.end_page_index);
-    EXPECT_EQ(actual_selection.end_char_index,
-              expected_selection.end_char_index);
+    EXPECT_EQ(actual_selection->start.page_index,
+              expected_selection.start.page_index);
+    EXPECT_EQ(actual_selection->start.char_index,
+              expected_selection.start.char_index);
+    EXPECT_EQ(actual_selection->end.page_index,
+              expected_selection.end.page_index);
+    EXPECT_EQ(actual_selection->end.char_index,
+              expected_selection.end.char_index);
   }
 }
 
 // Tests if PP_PDF_SET_SELECTION updates scroll offsets if the selection is not
 // in the current visible rect.
 TEST_P(AccessibilityTest, SetSelectionAndScroll) {
-  struct Selection {
-    uint32_t start_page_index;
-    uint32_t start_char_index;
-    uint32_t end_page_index;
-    uint32_t end_char_index;
-  };
-
   struct TestCase {
     Selection action;
     Selection expected_result;
@@ -718,8 +703,8 @@ TEST_P(AccessibilityTest, SetSelectionAndScroll) {
   };
 
   static constexpr TestCase kTestCases[] = {
-      {{0, 15, 0, 15}, {0, 15, 0, 15}, {0, 0}},
-      {{1, 15, 1, 15}, {1, 15, 1, 15}, {28, 517}},
+      {{{0, 15}, {0, 15}}, {{0, 15}, {0, 15}}, {0, 0}},
+      {{{1, 15}, {1, 15}}, {{1, 15}, {1, 15}}, {28, 517}},
   };
 
   ScrollEnabledTestClient client;
@@ -733,32 +718,28 @@ TEST_P(AccessibilityTest, SetSelectionAndScroll) {
     AccessibilityActionData action_data;
     action_data.action = AccessibilityAction::kSetSelection;
     const Selection& sel_action = test_case.action;
-    action_data.selection_start_index.page_index = sel_action.start_page_index;
-    action_data.selection_start_index.char_index = sel_action.start_char_index;
-    action_data.selection_end_index.page_index = sel_action.end_page_index;
-    action_data.selection_end_index.char_index = sel_action.end_char_index;
+    action_data.selection_start_index = sel_action.start;
+    action_data.selection_end_index = sel_action.end;
 
     PDFiumPage& page =
-        GetPDFiumPageForTest(*engine, sel_action.start_page_index);
+        GetPDFiumPageForTest(*engine, sel_action.start.page_index);
     gfx::Rect char_bounds =
-        gfx::ToEnclosingRect(page.GetCharBounds(sel_action.start_char_index));
+        gfx::ToEnclosingRect(page.GetCharBounds(sel_action.start.char_index));
     action_data.target_rect = {{char_bounds.x(), char_bounds.y() + 400 * index},
                                char_bounds.size()};
 
     engine->HandleAccessibilityAction(action_data);
-    Selection actual_selection;
-    engine->GetSelection(
-        &actual_selection.start_page_index, &actual_selection.start_char_index,
-        &actual_selection.end_page_index, &actual_selection.end_char_index);
+    std::optional<Selection> actual_selection = engine->GetSelection();
+    ASSERT_TRUE(actual_selection.has_value());
     const Selection& expected_selection = test_case.expected_result;
-    EXPECT_EQ(actual_selection.start_page_index,
-              expected_selection.start_page_index);
-    EXPECT_EQ(actual_selection.start_char_index,
-              expected_selection.start_char_index);
-    EXPECT_EQ(actual_selection.end_page_index,
-              expected_selection.end_page_index);
-    EXPECT_EQ(actual_selection.end_char_index,
-              expected_selection.end_char_index);
+    EXPECT_EQ(actual_selection->start.page_index,
+              expected_selection.start.page_index);
+    EXPECT_EQ(actual_selection->start.char_index,
+              expected_selection.start.char_index);
+    EXPECT_EQ(actual_selection->end.page_index,
+              expected_selection.end.page_index);
+    EXPECT_EQ(actual_selection->end.char_index,
+              expected_selection.end.char_index);
     EXPECT_EQ(test_case.scroll_offset, client.GetScrollRequestDelta());
     index++;
   }

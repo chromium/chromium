@@ -4119,33 +4119,28 @@ void PDFiumEngine::SetSelectionBounds(const gfx::Point& base,
                                    : RangeSelectionDirection::Right;
 }
 
-void PDFiumEngine::GetSelection(uint32_t* selection_start_page_index,
-                                uint32_t* selection_start_char_index,
-                                uint32_t* selection_end_page_index,
-                                uint32_t* selection_end_char_index) {
+std::optional<Selection> PDFiumEngine::GetSelection() const {
   size_t len = selection_.size();
   if (len == 0) {
-    *selection_start_page_index = 0;
-    *selection_start_char_index = 0;
-    *selection_end_page_index = 0;
-    *selection_end_char_index = 0;
-    return;
+    return std::nullopt;
   }
 
-  *selection_start_page_index = selection_[0].page_index();
-  *selection_start_char_index = selection_[0].char_index();
-  *selection_end_page_index = selection_[len - 1].page_index();
+  Selection selection;
+  selection.start.page_index = selection_[0].page_index();
+  selection.start.char_index = selection_[0].char_index();
+  selection.end.page_index = selection_[len - 1].page_index();
 
   // If the selection is all within one page, the end index is the
   // start index plus the char count. But if the selection spans
   // multiple pages, the selection starts at the beginning of the
   // last page in `selection_` and goes to the char count.
   if (len == 1) {
-    *selection_end_char_index =
+    selection.end.char_index =
         selection_[0].char_index() + selection_[0].char_count();
   } else {
-    *selection_end_char_index = selection_[len - 1].char_count();
+    selection.end.char_index = selection_[len - 1].char_count();
   }
+  return selection;
 }
 
 void PDFiumEngine::LoadDocumentAttachmentInfoList() {

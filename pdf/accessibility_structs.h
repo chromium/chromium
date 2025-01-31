@@ -438,6 +438,11 @@ struct PageCharacterIndex {
   uint32_t char_index = 0;
 };
 
+struct Selection {
+  PageCharacterIndex start;
+  PageCharacterIndex end;
+};
+
 struct AccessibilityActionData {
   AccessibilityActionData();
   AccessibilityActionData(

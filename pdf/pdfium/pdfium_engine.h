@@ -26,6 +26,7 @@
 #include "base/timer/timer.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "pdf/accessibility_structs.h"
 #include "pdf/buildflags.h"
 #include "pdf/document_attachment_info.h"
 #include "pdf/document_layout.h"
@@ -347,10 +348,7 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
 
   void SetSelectionBounds(const gfx::Point& base, const gfx::Point& extent);
 
-  void GetSelection(uint32_t* selection_start_page_index,
-                    uint32_t* selection_start_char_index,
-                    uint32_t* selection_end_page_index,
-                    uint32_t* selection_end_char_index);
+  std::optional<Selection> GetSelection() const;
 
   // Remove focus from form widgets, consolidating the user input.
   void KillFormFocus();
