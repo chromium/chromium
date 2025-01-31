@@ -126,7 +126,6 @@
 <translation id="1076766328672150609">Farzandingiz PIN kod yordamida qurilma qulfini ochishi mumkin.</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216"><ph name="LANGUAGE" /> tili uchun imloni tekshirish lugʻati yuklab olinmadi Qayta urining.</translation>
-<translation id="1078029726086090536">Parolingizni tasdiqlang</translation>
 <translation id="1078037449555275327">ChromeVox sozlamalari</translation>
 <translation id="1079242569060319448">PIN kodni unutdingizmi?</translation>
 <translation id="1079285777677001938">Ayrim saytlardagi funksiyalar ishlamay qolishi mumkin.</translation>
@@ -369,6 +368,7 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="1241066500170667906"><ph name="EXPERIMENT_NAME" /> tajribaviy funksiyasi holatini tanlang</translation>
 <translation id="124116460088058876">Boshqa tillar</translation>
 <translation id="1241381048229838873">Barcha xatcho‘plarni ko‘rish</translation>
+<translation id="1242044645101871359">Qaytadan kiring</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" /> brauzerning dastlabki sozlamalarini tiklamoqchi.</translation>
 <translation id="1243002225871118300">Ekran va matn oʻlchamini moslash</translation>
 <translation id="1243314992276662751">Yuklash</translation>
@@ -1616,7 +1616,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2113921862428609753">Vakolat ma’lumotlariga ruxsat</translation>
 <translation id="2114145607116268663">Oʻrnatilmadi, qayta ishga tushirish zarur. Kompyuterni qayta ishga tushirib, yana urining. Xatolik kodi: <ph name="ERROR" /></translation>
 <translation id="2114326799768592691">&amp;Freymni qayta yuklash</translation>
-<translation id="2114413269775311385">Android ilovalarida shu hisob ishlatiladi. Android ilovalari uchun ruxsatlarni <ph name="LINK_BEGIN" />Ilovalar sozlamalari<ph name="LINK_END" /> orqali boshqarish mumkin.</translation>
 <translation id="2114995631896158695">SIM karta joylanmagan</translation>
 <translation id="2116619964159595185">Saytlar odatda kam quvvatli mayoqlar, salomatlik yoki fitnes trekerlari, smart chiroq lampalarini sozlash yoki ularni sinxronlash uchun Bluetooth qurilmalarga ulanadi.</translation>
 <translation id="2117655453726830283">Keyingi slayd</translation>
@@ -4634,6 +4633,7 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer va qurilmadagi operatsion 
 <translation id="4242533952199664413">Sozlamalarni ochish</translation>
 <translation id="4242577469625748426">Qurilmaga tartib-qoida sozlamalarini o‘rnatib bo‘lmadi: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385">Brauzer va profilingiz <ph name="DOMAIN" /> domenida <ph name="BEGIN_LINK" />boshqariladi<ph name="END_LINK" /></translation>
+<translation id="424315890655130736">Kodli iborani kiriting</translation>
 <translation id="4243504193894350135">Printer pauza qilindi</translation>
 <translation id="4243624244759495699"><ph name="LOCALE" />, <ph name="GRADE" />-daraja</translation>
 <translation id="4244238649050961491">Stilus bilan ishlovchi boshqa ilovalar</translation>
@@ -5356,7 +5356,6 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4766598565665644999"><ph name="HOST" /> saytida barcha kengaytmalar oʻqishi va yozishi mumkin</translation>
 <translation id="4767427586072640478">Nofaol kengaytmalar haqida batafsil.</translation>
 <translation id="4768332406694066911">Sizda haqiqiyligingizni tasdiqlovchi quyidagi tashkilotlar sertifikatlari mavjud</translation>
-<translation id="4768945955870840220">Ayrim mahsulotlar uchun Chrome internet orqali sharhlarni yigʻishi mumkin</translation>
 <translation id="4769632191812288342">Standart himoya ostidasiz</translation>
 <translation id="4770119228883592393">Ruxsat talabi keldi, javob berish uchun ⌘ + Option + Pastga strelka tugmalarini bosing</translation>
 <translation id="4770755495532014179">Bu paroldan iPhoneda foydalaning</translation>
@@ -8753,7 +8752,6 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7243092385765551741">Kalit oʻchirilsinmi?</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (eng yaxshi)</translation>
 <translation id="7246230585855757313">Elektron kalitni yana suqing va qaytadan urining</translation>
-<translation id="724835896049478274">Hisoblardan Android ilovalari uchun foydalanish mumkin</translation>
 <translation id="7248802599439396696">Varaqlarni nofaol qilish</translation>
 <translation id="7249197363678284330">Bu sozlamani manzil qatori orqali oʻzgartiring.</translation>
 <translation id="7249764475759804559">Fayllarni ochishda bu ilovani tanlov sifatida qoʻshing</translation>
@@ -10701,7 +10699,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8625124982056504555">ChromeOS qurilmasi va komponenti seriya raqamlarini oʻqish</translation>
 <translation id="862542460444371744">&amp;Kengaytmalar</translation>
 <translation id="8625663000550647058">Mikrofondan foydalanish taqiqlangan</translation>
-<translation id="8625679025395572221">Hisobingiz hali ham xavf ostida boʻlishi mumkin</translation>
 <translation id="8625916342247441948">Saytlarga HID qurilmalarga ulanishni taqiqlash</translation>
 <translation id="862727964348362408">To‘xtatib qo‘yildi</translation>
 <translation id="862750493060684461">CSS kesh</translation>
@@ -11583,7 +11580,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="936801553271523408">Tizim diagnostik ma’lumotlari</translation>
 <translation id="93766956588638423">Kengaytmani ta’mirlash</translation>
 <translation id="938623846785894166">Shubhali fayl</translation>
-<translation id="939401694733344652">Hozirda bur hisoblardan Android ilovalarida foydalanish imkonsiz. Bu Android ilovasidan foydalanish uchun hisob tanlasangiz, undan boshqa Android ilovalarida ham foydalanish mumkin. Android ilovasiga ruxsatni <ph name="LINK_BEGIN" />Sozlamalar &gt; Hisoblar<ph name="LINK_END" /> orqali oʻzgartirish mumkin.</translation>
 <translation id="939598580284253335">Kodli iborani kiriting</translation>
 <translation id="939736085109172342">Yangi jild</translation>
 <translation id="940212040923880623">&amp;Topish va tahrirlash</translation>

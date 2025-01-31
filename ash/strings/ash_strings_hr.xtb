@@ -731,6 +731,7 @@ U suprotnom će se ugrađena dodirna podloga ponovno omogućiti za <ph name="TIM
 <translation id="3522979239100719575">Tražimo dostupne profile. To može potrajati nekoliko minuta.</translation>
 <translation id="3526440770046466733">Otvaranje veze u novoj kartici i zadržavanje na toj kartici</translation>
 <translation id="353086728817903341">Povezano s ovoliko uređaja: <ph name="NUM_DEVICES" />.</translation>
+<translation id="3532247131850366052">Izrada Google tablice nije uspjela</translation>
 <translation id="3533126039236445965">Aplikacije na polici</translation>
 <translation id="3539957339480430241">Žarišna točka uređaja <ph name="DEVICE_NAME" /></translation>
 <translation id="3540893133818942399">Odbacite postavljanje prikaza nedavnih fotografija i medijskih sadržaja telefona</translation>
@@ -829,6 +830,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="380165613292957338">Pozdrav, kako mogu pomoći?</translation>
 <translation id="3804737937830804242">Zažmi fotoaparat</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 emoji. Nema drugih rezultata.}one{# emoji. Nema drugih rezultata.}few{# emojija. Nema drugih rezultata.}other{# emojija. Nema drugih rezultata.}}</translation>
+<translation id="3822403841174077928">Kopiranje s formatiranjem nije uspjelo</translation>
 <translation id="3824784079442479685">To omogućuje pristup kameri za aplikaciju <ph name="APP_NAME" /> te sve aplikacije i web-lokacije s dopuštenjem za kameru. Možda ćete morati osvježiti web-stranicu ili ponovo pokrenuti aplikaciju.</translation>
 <translation id="3826099427150913765">Prelazak na zaporku</translation>
 <translation id="383058930331066723">Uključen je način štednje baterije</translation>
@@ -1215,6 +1217,7 @@ Jedan uređaj je povezan.</translation>
 <translation id="5043679421800073804">Klikanje ili dodirivanje posljednje ikone na traci</translation>
 <translation id="504465286040788597">Prethodni odlomak</translation>
 <translation id="5045550434625856497">Pogrešna zaporka</translation>
+<translation id="5058794129231928255">Google dokument nije izrađen</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Primit ćete obavijest ako govorite, a zvuk je isključen. Zvuk se nikad ne šalje s uređaja.</translation>
 <translation id="5077416371682039027">Postavite prikaz nedavnih fotografija, medijskih sadržaja, obavijesti i aplikacija telefona</translation>
@@ -1478,7 +1481,6 @@ Nije povezan nijedan uređaj.</translation>
 <translation id="589817443623831496">Traženje po točkama</translation>
 <translation id="5901316534475909376">Shift + Esc</translation>
 <translation id="5901630391730855834">Žuta</translation>
-<translation id="5911231045062997865">Prozori Lacrosa trenutačno nisu podržani. Ostale će se aplikacije spremiti.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916646100036936191">Nova obavijest, ukupno <ph name="NOTIFICATION_COUNT" /></translation>
 <translation id="5916664084637901428">Uključi</translation>
@@ -1648,6 +1650,7 @@ Nije povezan nijedan uređaj.</translation>
 <translation id="6468406072297048412">{0,plural, =1{Ažurirajte uređaj na prethodnu verziju u roku od 1 min}one{Ažurirajte uređaj na prethodnu verziju u roku od # min}few{Ažurirajte uređaj na prethodnu verziju u roku od # min}other{Ažurirajte uređaj na prethodnu verziju u roku od # min}}</translation>
 <translation id="6469104339369989396">Uključite/isključite žarišnu točku</translation>
 <translation id="6477681113376365978">Datoteku nije moguće preuzeti</translation>
+<translation id="648135757200234041">Izrada kontakta nije uspjela</translation>
 <translation id="6482559668224714696">Povećalo za cijeli zaslon</translation>
 <translation id="6485086611007560630">Vrijeme (nije dostupno)</translation>
 <translation id="6490471652906364588">USB-C uređaj (desni priključak)</translation>
@@ -2288,6 +2291,7 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
 <translation id="8653151467777939995">Prikaz postavki obavijesti. Obavijesti su uključene</translation>
 <translation id="8657066291275741003">mala slova</translation>
 <translation id="8660331759611631213">Kvadratni korijen od 71</translation>
+<translation id="8662921061190671299">Dodavanje u Kalendar nije uspjelo</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Pritisnite Enter za snimanje djelomične snimke zaslona</translation>
 <translation id="8676770494376880701">Priključen je punjač male snage</translation>

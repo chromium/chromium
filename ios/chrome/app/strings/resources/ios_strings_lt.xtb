@@ -263,7 +263,6 @@
 <translation id="2074131957428911366">Bet kada galite pasirinkti, ką norite sinchronizuoti, skiltyje <ph name="BEGIN_LINK" />„Nustatymai“<ph name="END_LINK" />.</translation>
 <translation id="2078437078822043850">Naršydami inkognito režimu galite perbraukti dešinėn.</translation>
 <translation id="2079545284768500474">Anuliuoti</translation>
-<translation id="2082906935540894275">Jums aktualiausios funkcijos skirtingu laiku.</translation>
 <translation id="2085876078937250610">Išsaugoti…</translation>
 <translation id="2096239473850415494">Nepavyko atsisiųsti</translation>
 <translation id="2096716221239095980">Ištrinti visus duomenis</translation>
@@ -548,7 +547,6 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="3445288400492335833"><ph name="MINUTES" /> min.</translation>
 <translation id="344589138074534176">Sužinokite daugiau apie „Google Lens“</translation>
 <translation id="3447332786336558089">Atsijungus skirtukai bus uždaryti, o neišsaugoti paskyros duomenys bus ištrinti iš šio įrenginio. Tai gali būti slaptažodžiai, istorija ir kt.</translation>
-<translation id="3449016921756175697">Naudingi pasiūlymai, kurie pagerina ir palengvina naršymą.</translation>
 <translation id="345348365500626747">Rastas adresas</translation>
 <translation id="3464194322481586217">Nepavyko stebėti kainos.</translation>
 <translation id="3469117812148449995">Slaptažodžio išsaugojimo parinktys</translation>
@@ -923,7 +921,6 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="5127538504377457572">Aktyvus prieš <ph name="DAYS" /> d.</translation>
 <translation id="5128788795241319992">Naujo meniu naršymas</translation>
 <translation id="5132942445612118989">Sinchronizuokite slaptažodžius, istoriją ir daugiau visuose įrenginiuose</translation>
-<translation id="5137526732000415202">Pastarasis atidarytas skirtukas visuose įrenginiuose.</translation>
 <translation id="5145331760738811130">Išjungti skirtukų perjungiklį</translation>
 <translation id="5157638238828697074">Kažkas nepavyko. Nepavyko atidaryti programos.</translation>
 <translation id="5163417375525818870">PDF failai</translation>
@@ -1024,7 +1021,6 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="559567008082979829">Nustatykite, kad atsisiuntimai būtų ištrinti po vieno mėnesio.</translation>
 <translation id="5596627076506792578">Daugiau parinkčių</translation>
 <translation id="560322036295180549">Išjungė jūsų organizacija</translation>
-<translation id="5611107723541161735">Šiame įrenginyje neseniai aplankytų svetainių šaukiniai.</translation>
 <translation id="5611398002774823980">Išsaugoti paskyroje</translation>
 <translation id="5613297089029360427">Rūšiuoti pagal naujausią</translation>
 <translation id="5614553682702429503">Išsaugoti slaptažodį?</translation>
@@ -1488,7 +1484,6 @@ Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos 
 <translation id="7512075701202892785">Dabar mėgstama naršyklė „iPad“</translation>
 <translation id="7512909159512473473">Įvesti slaptafrazę…</translation>
 <translation id="7514365320538308">Atsisiųsti</translation>
-<translation id="7521117365186708026">Sąrankos patarimai, padėsiantys išnaudoti visas „Chrome“ galimybes.</translation>
 <translation id="7524055474074101597">Pasiekite slaptažodžius ir kitas funkcijas programose.</translation>
 <translation id="75362970626182391">Nauja skirtukų grupė</translation>
 <translation id="7537586195939242955">Deja, šiuo metu negalima įdiegti „Pass“ į „Passbook“.</translation>
@@ -1708,7 +1703,6 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="8439758443371991593">Slėpti parinktį „Pridėti prie skaitymo sąrašo“</translation>
 <translation id="8449869326050867919">Slaptažodis bendrinamas</translation>
 <translation id="8453847087068411809">Niekada automatiškai neaptikti siuntinių</translation>
-<translation id="846158969830690371">Sužinokite, ar turite saugiausius nustatymus, ar reikia ką nors peržiūrėti.</translation>
 <translation id="8473863474539038330">Adresai ir dar daugiau</translation>
 <translation id="8474378002946546633">Leisti pranešimus</translation>
 <translation id="8477178913400731244">Ištrinti duomenis</translation>

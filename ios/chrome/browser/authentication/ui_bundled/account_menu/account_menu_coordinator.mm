@@ -362,7 +362,7 @@ void ChangeProfileSignInContinuation(id<SystemIdentity> identity,
                initWithBrowser:self.browser
                       identity:identity
                    accessPoint:signin_metrics::AccessPoint::kAccountMenu
-             postSignInActions:PostSignInActionSet({PostSignInAction::kNone})
+             postSignInActions:PostSignInActionSet()
       presentingViewController:_navigationController];
 
   [authenticationFlow

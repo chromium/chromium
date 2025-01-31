@@ -22,16 +22,22 @@ class SessionManager;
 }  // namespace protocol
 
 class LoggingServiceClient;
+class OAuthTokenGetter;
 
 // A class that reports host status changes to the corp logging service. This is
 // not used for external users. For internal details, see go/crd-corp-logging.
 class CorpHostStatusLogger final : public protocol::SessionObserver {
  public:
-  CorpHostStatusLogger(
+  static std::unique_ptr<CorpHostStatusLogger> CreateForRemoteAccess(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const LocalSessionPoliciesProvider* local_session_policies_provider,
       const std::string& service_account_email,
       const std::string& refresh_token);
+  static std::unique_ptr<CorpHostStatusLogger> CreateForRemoteSupport(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      const LocalSessionPoliciesProvider* local_session_policies_provider,
+      base::WeakPtr<OAuthTokenGetter> oauth_token_getter);
+
   CorpHostStatusLogger(
       std::unique_ptr<LoggingServiceClient> service_client,
       const LocalSessionPoliciesProvider* local_session_policies_provider);

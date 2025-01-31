@@ -221,9 +221,9 @@ update
 ### Optional: Add a permission policy
 If you need to add a permission policy:
 
-1. In [permissions_policy_feature.mojom](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom)
+1. In [permissions_policy_feature.mojom](https://source.chromium.org/chromium/chromium/src/+/main:services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom)
 update enum
-[PermissionsPolicyFeature](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom;l=16;drc=272becfe736870f18b79355d73475a5eb86c93b1)
+[PermissionsPolicyFeature](https://source.chromium.org/chromium/chromium/src/+/main:services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom;l=16)
 2. In [permissions_policy_features.json5](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/permissions_policy/permissions_policy_features.json5)
 update `data` array with the new policy.
 5. Update [feature-policy-features-expected.txt](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/web_tests/webexposed/feature-policy-features-expected.txt)

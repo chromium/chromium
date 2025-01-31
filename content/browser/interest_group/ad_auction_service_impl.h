@@ -32,12 +32,12 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "third_party/blink/public/common/interest_group/auction_config.h"
 #include "third_party/blink/public/mojom/interest_group/ad_auction_service.mojom.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-forward.h"
 #include "third_party/blink/public/mojom/parakeet/ad_request.mojom.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -160,7 +160,7 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
   // feature across cross-origin frames were switched to disabled instead of
   // enabled.
   bool IsPermissionPolicyEnabledAndWarnIfNeeded(
-      blink::mojom::PermissionsPolicyFeature feature,
+      network::mojom::PermissionsPolicyFeature feature,
       const char* method);
 
   // Returns true if `origin` is allowed to perform the specified
@@ -280,7 +280,7 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
   // True if a feature is currently enabled, but would be disabled if the
   // default policy for the feature were switched to EnableForSelf. Lazily
   // populated.
-  std::map<blink::mojom::PermissionsPolicyFeature, bool>
+  std::map<network::mojom::PermissionsPolicyFeature, bool>
       should_warn_about_feature_;
 
   base::WeakPtrFactory<AdAuctionServiceImpl> weak_ptr_factory_{this};

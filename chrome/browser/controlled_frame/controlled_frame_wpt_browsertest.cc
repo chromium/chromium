@@ -21,7 +21,6 @@
 #include "services/device/public/cpp/test/scoped_geolocation_overrider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/permissions_policy/policy_helper_public.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 
 namespace controlled_frame {
 

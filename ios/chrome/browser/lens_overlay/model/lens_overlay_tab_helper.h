@@ -114,6 +114,8 @@ class LensOverlayTabHelper : public LensOverlaySnapshotControllerDelegate,
   void WasHidden(web::WebState* web_state) override;
   void DidStartNavigation(web::WebState* web_state,
                           web::NavigationContext* navigation_context) override;
+  void DidFinishNavigation(web::WebState* web_state,
+                           web::NavigationContext* navigation_context) override;
 
  private:
   explicit LensOverlayTabHelper(web::WebState* web_state);

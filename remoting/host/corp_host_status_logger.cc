@@ -10,7 +10,9 @@
 #include "base/logging.h"
 #include "remoting/base/corp_auth_util.h"
 #include "remoting/base/corp_logging_service_client.h"
+#include "remoting/base/internal_headers.h"
 #include "remoting/base/logging.h"
+#include "remoting/base/oauth_token_getter_proxy.h"
 #include "remoting/base/protobuf_http_status.h"
 #include "remoting/base/session_policies.h"
 #include "remoting/protocol/authenticator.h"
@@ -22,17 +24,35 @@
 
 namespace remoting {
 
-CorpHostStatusLogger::CorpHostStatusLogger(
+// static
+std::unique_ptr<CorpHostStatusLogger>
+CorpHostStatusLogger::CreateForRemoteAccess(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const LocalSessionPoliciesProvider* local_session_policies_provider,
     const std::string& service_account_email,
-    const std::string& refresh_token)
-    : CorpHostStatusLogger(std::make_unique<CorpLoggingServiceClient>(
-                               url_loader_factory,
-                               CreateCorpTokenGetter(url_loader_factory,
-                                                     service_account_email,
-                                                     refresh_token)),
-                           local_session_policies_provider) {}
+    const std::string& refresh_token) {
+  return std::make_unique<CorpHostStatusLogger>(
+      std::make_unique<CorpLoggingServiceClient>(
+          url_loader_factory,
+          CreateCorpTokenGetter(url_loader_factory, service_account_email,
+                                refresh_token),
+          internal::GetRemoteAccessLoggingPath()),
+      local_session_policies_provider);
+}
+
+// static
+std::unique_ptr<CorpHostStatusLogger>
+CorpHostStatusLogger::CreateForRemoteSupport(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    const LocalSessionPoliciesProvider* local_session_policies_provider,
+    base::WeakPtr<OAuthTokenGetter> oauth_token_getter) {
+  return std::make_unique<CorpHostStatusLogger>(
+      std::make_unique<CorpLoggingServiceClient>(
+          url_loader_factory,
+          std::make_unique<OAuthTokenGetterProxy>(oauth_token_getter),
+          internal::GetRemoteSupportLoggingPath()),
+      local_session_policies_provider);
+}
 
 CorpHostStatusLogger::CorpHostStatusLogger(
     std::unique_ptr<LoggingServiceClient> service_client,

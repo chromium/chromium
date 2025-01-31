@@ -126,7 +126,6 @@
 <translation id="1076766328672150609">Детето може да користи PIN за отклучување на уредот.</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216">Не може да се преземе речникот со проверка на правописот за <ph name="LANGUAGE" />. Обидете се повторно.</translation>
-<translation id="1078029726086090536">Потврдете ја лозинката</translation>
 <translation id="1078037449555275327">Поставки за ChromeVox</translation>
 <translation id="1079242569060319448">Го заборавивте PIN-кодот?</translation>
 <translation id="1079285777677001938">Функциите на некои сајтови може да не функционираат.</translation>
@@ -370,6 +369,7 @@
 <translation id="1241066500170667906">Изберете состојба на експериментот за <ph name="EXPERIMENT_NAME" /></translation>
 <translation id="124116460088058876">Повеќе јазици</translation>
 <translation id="1241381048229838873">Прикажи ги сите обележувачи</translation>
+<translation id="1242044645101871359">Најавете се повторно</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" /> сака да ги ресетира вашите поставки.</translation>
 <translation id="1243002225871118300">Променување големина на екран и текст</translation>
 <translation id="1243314992276662751">Постави</translation>
@@ -1628,7 +1628,6 @@
 <translation id="2113921862428609753">Пристап до информации на орган</translation>
 <translation id="2114145607116268663">Не можеше да се инсталира. Треба да се рестартира. Рестартирајте го компјутерот, па обидете се повторно. Кодот за грешка е <ph name="ERROR" />.</translation>
 <translation id="2114326799768592691">Повторно вчитај ја &amp;рамката</translation>
-<translation id="2114413269775311385">Користете ја сметкава со апликации на Android. Може да ги контролирате дозволите за апликациите на Android во <ph name="LINK_BEGIN" />Поставките за апликации<ph name="LINK_END" />.</translation>
 <translation id="2114995631896158695">Не е вметната SIM-картичка</translation>
 <translation id="2116619964159595185">Сајтовите обично се поврзуваат со уреди со Bluetooth за функции како поставување или синхронизирање ознаки со ниска потрошувачка на енергија, следач на здравје/фитнес или паметна светилка</translation>
 <translation id="2117655453726830283">Следен слајд</translation>
@@ -4648,6 +4647,7 @@
 <translation id="4242533952199664413">Отвори ги поставките</translation>
 <translation id="4242577469625748426">Не успеа да инсталира поставки за правило на уредот: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385"><ph name="BEGIN_LINK" />Со вашите прелистувач и профил управува<ph name="END_LINK" /> <ph name="DOMAIN" /></translation>
+<translation id="424315890655130736">Внесете лозинка</translation>
 <translation id="4243504193894350135">Печатачот е паузиран</translation>
 <translation id="4243624244759495699"><ph name="LOCALE" />, степен <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">Најди други апликации за пенкало</translation>
@@ -5370,7 +5370,6 @@
 <translation id="4766598565665644999">Сите екстензии можат да читаат и менуваат <ph name="HOST" /></translation>
 <translation id="4767427586072640478">Дознајте повеќе за оневозможените екстензии.</translation>
 <translation id="4768332406694066911">Имате сертификати од овие организации што ве идентификуваат</translation>
-<translation id="4768945955870840220">За некои производи, Chrome може да прибира рецензии од интернет</translation>
 <translation id="4769632191812288342">Ќе добиете стандардна заштита</translation>
 <translation id="4770119228883592393">Побарана е дозвола. Притиснете ⌘ + „Опција“ + „Стрелка надолу“ за да одговорите</translation>
 <translation id="4770755495532014179">Користете ја лозинкава на вашиот iPhone</translation>
@@ -5512,6 +5511,7 @@
 <translation id="4862642413395066333">Најавување на одговори на OCSP</translation>
 <translation id="4863702650881330715">Прошири компатибилност</translation>
 <translation id="4863769717153320198">Изгледа како <ph name="WIDTH" /> x <ph name="HEIGHT" /> (стандардна)</translation>
+<translation id="4864334716800138793">Вашата организација го оневозможила поставувањето работен профил</translation>
 <translation id="4864369630010738180">Се најавува…</translation>
 <translation id="4864805589453749318">Изберете го родителот што дава дозвола за да додадете училишна сметка.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (блокирано)</translation>
@@ -6473,6 +6473,7 @@
 <translation id="5559768063688681413">Нема зачувани печатачи</translation>
 <translation id="55601339223879446">Приспособете ги границите на работната површина во рамките на екранот</translation>
 <translation id="5561162485081632007">Открива опасни настани и ве предупредува кога ќе се случат</translation>
+<translation id="5562588178647493983">Контактирајте со администраторот за повеќе информации</translation>
 <translation id="556321030400250233">локална или споделена датотека</translation>
 <translation id="5563234215388768762">Пребарајте на Google или напишете URL</translation>
 <translation id="5563824734298958390">Да се напушти групата картички?</translation>
@@ -8768,7 +8769,6 @@
 <translation id="7243092385765551741">Да се избрише криптографскиот клуч?</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (најдобра)</translation>
 <translation id="7246230585855757313">Вметнете го безбедносниот клуч пак и обидете се повторно</translation>
-<translation id="724835896049478274">Сметки достапни за апликации на Android</translation>
 <translation id="7248802599439396696">Деактивирај ги картичките</translation>
 <translation id="7249197363678284330">Променете ја поставкава во лентата за адреси.</translation>
 <translation id="7249764475759804559">Вклучете ја апликацијава како опција кога отворате датотеки</translation>
@@ -9805,6 +9805,7 @@
 <translation id="7968833647796919681">Овозможи собирање податоци за учинок</translation>
 <translation id="7968982339740310781">Погледнете детали</translation>
 <translation id="7969046989155602842">Наредба</translation>
+<translation id="7969144945436590933">Добијте повеќе детали</translation>
 <translation id="7970673414865679092">Детали за етернет</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 со шифрирање RSA</translation>
 <translation id="7973149423217802477">„Не ми се допаѓа“ испраќа повратни информации дека не ви се допаѓа ова.</translation>
@@ -10719,7 +10720,6 @@
 <translation id="8625124982056504555">да чита сериски броеви на уред со Chrome OS и на компоненти</translation>
 <translation id="862542460444371744">&amp;Наставки</translation>
 <translation id="8625663000550647058">Не им е дозволено да го користат микрофонот</translation>
-<translation id="8625679025395572221">Можно е вашата сметка сѐ уште да е изложена на ризик.</translation>
 <translation id="8625916342247441948">Не им дозволувај на сајтовите да се поврзуваат со HID-уреди</translation>
 <translation id="862727964348362408">Суспендирано</translation>
 <translation id="862750493060684461">CSS кеш</translation>
@@ -11602,7 +11602,6 @@
 <translation id="936801553271523408">Дијагностички податоци на системот</translation>
 <translation id="93766956588638423">Поправи ја екстензијата</translation>
 <translation id="938623846785894166">Невообичаена датотека</translation>
-<translation id="939401694733344652">Сметкиве не се користат со апликации на Android во моментов. Ако изберете сметка што ќе ја користите со апликацијава на Android, ќе може да се користи и со други апликации на Android. Може да го промените пристапот на апликација на Android во <ph name="LINK_BEGIN" />Поставки &gt; Сметки<ph name="LINK_END" />.</translation>
 <translation id="939598580284253335">Внеси пристапна фраза</translation>
 <translation id="939736085109172342">Нова папка</translation>
 <translation id="940212040923880623">&amp;Најдете и изменете</translation>

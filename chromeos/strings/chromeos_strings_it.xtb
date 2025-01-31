@@ -768,6 +768,7 @@
 <translation id="4654549501020883054">Cambia ogni giorno</translation>
 <translation id="4655868084888499342">Immagine impostata come sfondo</translation>
 <translation id="4661249927038176904">Surreale</translation>
+<translation id="4661392828086261436">Questo aggiornamento è fornito dal produttore del dispositivo e non è stato verificato da Google</translation>
 <translation id="4664651912255946953">pelliccia</translation>
 <translation id="4665014895760275686">Produttore</translation>
 <translation id="467510802200863975">Le password non corrispondono</translation>
@@ -1027,6 +1028,7 @@
 <translation id="5904994456462260490">Aggiungi un nuovo APN</translation>
 <translation id="590746845088109442">gatti</translation>
 <translation id="5907649332524363701">colore tasti</translation>
+<translation id="5908813850962688338">L'installazione di questo aggiornamento richiederà alcuni minuti. Tieni il dispositivo collegato alla corrente e acceso durante il download dell'aggiornamento. Il dispositivo potrebbe riavviarsi più volte e mostrare una schermata nera durante questa procedura. Per completare l'installazione, ti verrà chiesto di riavviare il dispositivo.</translation>
 <translation id="5916084858004523819">Non consentito</translation>
 <translation id="5916664084637901428">On</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Il file è stato scansionato correttamente e salvato in <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{I file sono stati scansionati correttamente e salvati in <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>

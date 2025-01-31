@@ -25,7 +25,6 @@
 #include "components/history_clusters/core/features.h"
 #include "components/history_clusters/core/history_clusters_service.h"
 #include "components/prefs/pref_service.h"
-#include "components/user_notes/user_notes_features.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/actions/actions.h"
 

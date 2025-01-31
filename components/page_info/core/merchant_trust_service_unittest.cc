@@ -354,15 +354,18 @@ TEST_F(MerchantTrustServiceTest, RecordMerchantTrustInteractionFamiliarSite) {
   base::UserActionTester user_action_tester;
 
   EXPECT_CALL(*delegate(), GetSiteEngagementScore(_))
-      .WillOnce(Return(kMerchantFamiliarityThreshold));
+      .WillRepeatedly(Return(kMerchantFamiliarityThreshold));
   service()->RecordMerchantTrustInteraction(
       GURL("https://foo.com"), MerchantTrustInteraction::kPageInfoRowShown);
 
   EXPECT_EQ(1, user_action_tester.GetActionCount(
-      "MerchantTrust.PageInfoRowSeen.FamiliarSite"));
+                   "MerchantTrust.PageInfoRowSeen.FamiliarSite"));
   t.ExpectUniqueSample(
       "Security.PageInfo.MerchantTrustInteraction.FamiliarSite",
       MerchantTrustInteraction::kPageInfoRowShown, 1);
+  t.ExpectBucketCount(
+      "Security.PageInfo.MerchantTrustEngagement.PageInfoRowShown",
+      kMerchantFamiliarityThreshold, 1);
 }
 
 TEST_F(MerchantTrustServiceTest, RecordMerchantTrustInteractionUnfamiliarSite) {
@@ -370,16 +373,18 @@ TEST_F(MerchantTrustServiceTest, RecordMerchantTrustInteractionUnfamiliarSite) {
   base::UserActionTester user_action_tester;
 
   EXPECT_CALL(*delegate(), GetSiteEngagementScore(_))
-      .WillOnce(Return(kMerchantFamiliarityThreshold - 0.1));
+      .WillRepeatedly(Return(kMerchantFamiliarityThreshold - 0.1));
   service()->RecordMerchantTrustInteraction(
       GURL("https://foo.com"),
       MerchantTrustInteraction::kBubbleOpenedFromPageInfo);
 
   EXPECT_EQ(1, user_action_tester.GetActionCount(
-      "MerchantTrust.BubbleOpenedFromPageInfo.UnfamiliarSite"));
+                   "MerchantTrust.BubbleOpenedFromPageInfo.UnfamiliarSite"));
   t.ExpectUniqueSample(
       "Security.PageInfo.MerchantTrustInteraction.UnfamiliarSite",
       MerchantTrustInteraction::kBubbleOpenedFromPageInfo, 1);
+  t.ExpectBucketCount("Security.PageInfo.MerchantTrustEngagement.BubbleOpened",
+                      kMerchantFamiliarityThreshold - 1, 1);
 }
 
 }  // namespace page_info

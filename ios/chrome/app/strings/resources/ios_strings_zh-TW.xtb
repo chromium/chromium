@@ -263,7 +263,6 @@
 <translation id="2074131957428911366">你隨時可以在<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />中選擇要同步處理的資料。</translation>
 <translation id="2078437078822043850">向右捲動即可使用無痕模式瀏覽。</translation>
 <translation id="2079545284768500474">復原</translation>
-<translation id="2082906935540894275">在不同時間提供你最需要的功能。</translation>
 <translation id="2085876078937250610">儲存…</translation>
 <translation id="2096239473850415494">無法下載</translation>
 <translation id="2096716221239095980">刪除所有資料</translation>
@@ -548,7 +547,6 @@
 <translation id="3445288400492335833"><ph name="MINUTES" /> 分鐘</translation>
 <translation id="344589138074534176">進一步瞭解 Google 智慧鏡頭</translation>
 <translation id="3447332786336558089">登出後，系統會關閉分頁，並刪除這部裝置尚未儲存的帳戶資料。其中可能包含密碼、歷史記錄和其他資料。</translation>
-<translation id="3449016921756175697">提供實用建議，輕鬆提升瀏覽體驗。</translation>
 <translation id="345348365500626747">找到地址</translation>
 <translation id="3464194322481586217">無法追蹤價格。</translation>
 <translation id="3469117812148449995">密碼儲存選項</translation>
@@ -923,7 +921,6 @@
 <translation id="5127538504377457572">上次使用時間：<ph name="DAYS" /> 天前</translation>
 <translation id="5128788795241319992">瀏覽新選單</translation>
 <translation id="5132942445612118989">同步處理你所有裝置上的密碼、歷史記錄和其他設定</translation>
-<translation id="5137526732000415202">你在所有裝置上最後開啟的分頁。</translation>
 <translation id="5145331760738811130">退出分頁切換工具</translation>
 <translation id="5157638238828697074">發生錯誤，無法開啟應用程式。</translation>
 <translation id="5163417375525818870">PDF</translation>
@@ -1024,7 +1021,6 @@
 <translation id="559567008082979829">設定內容在下載的一個月後刪除。</translation>
 <translation id="5596627076506792578">更多選項</translation>
 <translation id="560322036295180549">已由貴機構停用</translation>
-<translation id="5611107723541161735">根據這部裝置上最近造訪的網站顯示網站捷徑。</translation>
 <translation id="5611398002774823980">儲存到帳戶</translation>
 <translation id="5613297089029360427">由新到舊排序</translation>
 <translation id="5614553682702429503">要儲存密碼嗎？</translation>
@@ -1488,7 +1484,6 @@
 <translation id="7512075701202892785">現在可將最愛的瀏覽器設為 iPad 預設瀏覽器</translation>
 <translation id="7512909159512473473">輸入通關密語…</translation>
 <translation id="7514365320538308">下載</translation>
-<translation id="7521117365186708026">顯示設定提示，協助你充分運用 Chrome。</translation>
 <translation id="7524055474074101597">在多款應用程式中使用你的密碼和其他資訊。</translation>
 <translation id="75362970626182391">新增分頁群組</translation>
 <translation id="7537586195939242955">很抱歉，目前無法將您的通行票證加到 Passbook。</translation>
@@ -1708,7 +1703,6 @@
 <translation id="8439758443371991593">隱藏「加入閱讀清單」</translation>
 <translation id="8449869326050867919">已分享密碼</translation>
 <translation id="8453847087068411809">一律不自動偵測包裹</translation>
-<translation id="846158969830690371">確認設定是否安全無虞，或有任何項目需要檢查。</translation>
 <translation id="8473863474539038330">地址和其他資訊</translation>
 <translation id="8474378002946546633">允許通知</translation>
 <translation id="8477178913400731244">刪除資料</translation>

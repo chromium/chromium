@@ -17,7 +17,7 @@ CapturedSurfaceControlPermissionContext::
     : PermissionContextBase(
           browser_context,
           ContentSettingsType::CAPTURED_SURFACE_CONTROL,
-          blink::mojom::PermissionsPolicyFeature::kCapturedSurfaceControl),
+          network::mojom::PermissionsPolicyFeature::kCapturedSurfaceControl),
       sticky_permissions_(base::FeatureList::IsEnabled(
           features::kCapturedSurfaceControlStickyPermissions)) {}
 

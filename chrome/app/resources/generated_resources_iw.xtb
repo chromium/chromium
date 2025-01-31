@@ -126,7 +126,6 @@
 <translation id="1076766328672150609">לילד או לילדה שלך יש אפשרות להשתמש בקוד אימות כדי לבטל את נעילת המכשיר הזה.</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216">לא ניתן היה להוריד מילון בדיקת איות ב<ph name="LANGUAGE" />. יש לנסות שוב.</translation>
-<translation id="1078029726086090536">אימות הסיסמה</translation>
 <translation id="1078037449555275327">‏הגדרות ChromeVox</translation>
 <translation id="1079242569060319448">שכחת את קוד האימות?</translation>
 <translation id="1079285777677001938">יכול להיות שתכונות באתרים מסוימים לא יפעלו.</translation>
@@ -371,6 +370,7 @@
 <translation id="1241066500170667906">בחירת מצב הניסוי של <ph name="EXPERIMENT_NAME" /></translation>
 <translation id="124116460088058876">שפות נוספות</translation>
 <translation id="1241381048229838873">הצגת כל הסימניות</translation>
+<translation id="1242044645101871359">כניסה חוזרת</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" /> רוצה לאפס את ההגדרות שלך.</translation>
 <translation id="1243002225871118300">שינוי גודל הטקסט והתצוגה</translation>
 <translation id="1243314992276662751">העלאה</translation>
@@ -1626,7 +1626,6 @@
 <translation id="2113921862428609753">גישה לפרטי רשות</translation>
 <translation id="2114145607116268663">לא ניתן להתקין. נדרשת הפעלה מחדש. צריך להפעיל את המחשב מחדש ולנסות שוב. קוד השגיאה הוא <ph name="ERROR" />.</translation>
 <translation id="2114326799768592691">טעינה מחדש של ה&amp;מסגרת</translation>
-<translation id="2114413269775311385">‏יש להשתמש בחשבון הזה עם אפליקציות ל-Android. אפשר לקבוע את ההרשאות לאפליקציות ל-Android ב<ph name="LINK_BEGIN" />הגדרות האפליקציות<ph name="LINK_END" />.</translation>
 <translation id="2114995631896158695">‏אין כרטיס SIM</translation>
 <translation id="2116619964159595185">‏בדרך כלל, אתרים מתחברים למכשירי Bluetooth כדי לתמוך בתכונות כמו הגדרת איתות Bluetooth בעל מתח נמוך או סנכרון עם איתות כזה, מכשיר מעקב אחר נתוני בריאות או כושר או נורה חכמה</translation>
 <translation id="2117655453726830283">לשקף הבא</translation>
@@ -4646,6 +4645,7 @@
 <translation id="4242533952199664413">פתיחת ההגדרות</translation>
 <translation id="4242577469625748426">התקנת הגדרות המדיניות במכשיר: <ph name="VALIDATION_ERROR" /> נכשלה.</translation>
 <translation id="4242825475818569385"><ph name="BEGIN_LINK" />הדפדפן והפרופיל שלך מנוהלים<ph name="END_LINK" /> על ידי <ph name="DOMAIN" /></translation>
+<translation id="424315890655130736">הזנת ביטוי סיסמה</translation>
 <translation id="4243504193894350135">המדפסת מושהית</translation>
 <translation id="4243624244759495699"><ph name="LOCALE" />, רמה <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">חיפוש עוד אפליקציות לשימוש בסטיילוס</translation>
@@ -5369,7 +5369,6 @@
 <translation id="4766598565665644999">כל התוספים יכולים לקרוא ולשנות את <ph name="HOST" /></translation>
 <translation id="4767427586072640478">מידע נוסף על תוספים מושבתים.</translation>
 <translation id="4768332406694066911">יש לך אישורים מארגונים אלה שמזהים אותך</translation>
-<translation id="4768945955870840220">‏בחלק מהמוצרים, Chrome יכול לאסוף ביקורות מרחבי האינטרנט</translation>
 <translation id="4769632191812288342">יש לך רמת הגנה רגילה</translation>
 <translation id="4770119228883592393">נשלחה בקשה להרשאה, יש ללחוץ על ⌘ + אפשרות + חץ למטה כדי להשיב</translation>
 <translation id="4770755495532014179">אפשר להשתמש בסיסמה הזו באייפון</translation>
@@ -5511,6 +5510,7 @@
 <translation id="4862642413395066333">‏חתימה על תגובות OCSP</translation>
 <translation id="4863702650881330715">הגדלת התאימות</translation>
 <translation id="4863769717153320198">‏נראה כמו <ph name="WIDTH" /> x <ph name="HEIGHT" /> (ברירת מחדל)</translation>
+<translation id="4864334716800138793">הארגון שלך השבית את הגדרת פרופיל העבודה</translation>
 <translation id="4864369630010738180">מתבצעת כניסה...</translation>
 <translation id="4864805589453749318">יש לבחור את ההורה שאישר את ההוספה של חשבון בית ספרי</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (הגישה חסומה)</translation>
@@ -6472,6 +6472,7 @@
 <translation id="5559768063688681413">אין מדפסות שמורות</translation>
 <translation id="55601339223879446">שינוי גבולות שולחן העבודה שלך בצג</translation>
 <translation id="5561162485081632007">מזהה אירועים מסוכנים כשהם מתרחשים ומזהיר אותך על כך</translation>
+<translation id="5562588178647493983">למידע נוסף, צריך ליצור קשר עם האדמין</translation>
 <translation id="556321030400250233">קובץ מקומי או משותף</translation>
 <translation id="5563234215388768762">‏אפשר לחפש ב-Google או להקליד כתובת אתר</translation>
 <translation id="5563824734298958390">לצאת מקבוצת הכרטיסיות?</translation>
@@ -8770,7 +8771,6 @@
 <translation id="7243092385765551741">למחוק את מפתח הגישה?</translation>
 <translation id="7245628041916450754">‏<ph name="WIDTH" /> ‏x ‏<ph name="HEIGHT" /> (הטובה ביותר)</translation>
 <translation id="7246230585855757313">יש להכניס מחדש את מפתח האבטחה ולנסות שוב</translation>
-<translation id="724835896049478274">‏חשבונות זמינים לאפליקציות ל-Android</translation>
 <translation id="7248802599439396696">השבתת הכרטיסיות</translation>
 <translation id="7249197363678284330">יש לך אפשרות לשנות את ההגדרה הזו בסרגל הכתובות.</translation>
 <translation id="7249764475759804559">הכללת האפליקציה הזו באפשרויות לפתיחת קבצים</translation>
@@ -9806,6 +9806,7 @@
 <translation id="7968833647796919681">הפעלת איסוף של נתוני ביצועים</translation>
 <translation id="7968982339740310781">הצגת פרטים</translation>
 <translation id="7969046989155602842">פקודה</translation>
+<translation id="7969144945436590933">קבלת פרטים נוספים</translation>
 <translation id="7970673414865679092">פרטים על אתרנט</translation>
 <translation id="7972714317346275248">‏PKCS #1 SHA-384 עם הצפנת RSA</translation>
 <translation id="7973149423217802477">בסימון דיסלייק, נשלח משוב שלא אהבת את התכונה הזו.</translation>
@@ -10720,7 +10721,6 @@
 <translation id="8625124982056504555">‏קריאת מספרים סידוריים של מכשירי ChromeOS והרכיבים</translation>
 <translation id="862542460444371744">&amp;תוספים</translation>
 <translation id="8625663000550647058">לא מורשים להשתמש במיקרופון</translation>
-<translation id="8625679025395572221">החשבון שלך עדיין עלול להיות בסיכון.</translation>
 <translation id="8625916342247441948">‏לא לאפשר לאתרים להתחבר למכשירי HID</translation>
 <translation id="862727964348362408">מושעה</translation>
 <translation id="862750493060684461">‏מטמון של CSS</translation>
@@ -11604,7 +11604,6 @@
 <translation id="936801553271523408">נתוני אבחון של מערכת</translation>
 <translation id="93766956588638423">תיקון התוסף</translation>
 <translation id="938623846785894166">קובץ לא נפוץ</translation>
-<translation id="939401694733344652">‏בחשבונות האלה לא נעשה שימוש באפליקציות ל-Android בשלב הזה. אם נבחר חשבון לשימוש עם האפליקציה הזאת ל-Android, ניתן להשתמש בחשבון גם עם אפליקציות אחרות ל-Android. ניתן לשנות את אפשרות הגישה לאפליקציה ל-Android ב<ph name="LINK_BEGIN" />הגדרות &gt; חשבונות<ph name="LINK_END" />.</translation>
 <translation id="939598580284253335">הזנת ביטוי סיסמה</translation>
 <translation id="939736085109172342">תיקייה חדשה</translation>
 <translation id="940212040923880623">&amp;חיפוש ועריכה</translation>

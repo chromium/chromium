@@ -22,6 +22,7 @@
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "components/prefs/pref_service.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/download/model/confirm_download_closing_overlay.h"
 #import "ios/chrome/browser/download/model/confirm_download_replacing_overlay.h"
@@ -45,12 +46,15 @@
 #import "ios/chrome/browser/presenters/ui_bundled/contained_presenter.h"
 #import "ios/chrome/browser/presenters/ui_bundled/contained_presenter_delegate.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/auto_deletion_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
@@ -469,6 +473,7 @@
   } else {
     base::RecordAction(base::UserMetricsAction("IOSDownloadStartDownload"));
     _unopenedDownloads.Add(_downloadTask);
+    [self maybePresentAutoDeletionActionSheet];
   }
   _mediator.StartDownloading();
 }
@@ -527,6 +532,21 @@
       registerForInstallationNotifications:self
                               withSelector:@selector(didInstallGoogleDriveApp)
                                  forScheme:kGoogleDriveAppURLScheme];
+}
+
+// Presents the Download auto-deletion action sheet if the feature flag is
+// enabled and the user has the enabled in settings.
+- (void)maybePresentAutoDeletionActionSheet {
+  PrefService* localState = GetApplicationContext()->GetLocalState();
+  if (!IsDownloadAutoDeletionFeatureEnabled() ||
+      !localState->GetBoolean(prefs::kDownloadAutoDeletionEnabled)) {
+    return;
+  }
+
+  id<AutoDeletionCommands> autoDeletionHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), AutoDeletionCommands);
+  [autoDeletionHandler
+      presentAutoDeletionActionSheetWithDownloadTask:_downloadTask];
 }
 
 #pragma mark - Notification callback

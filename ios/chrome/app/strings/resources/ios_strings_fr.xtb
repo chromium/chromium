@@ -263,7 +263,6 @@
 <translation id="2074131957428911366">Vous avez toujours la possibilité de sélectionner les éléments à synchroniser dans les <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />.</translation>
 <translation id="2078437078822043850">Vous pouvez faire défiler l'écran vers la droite pour utiliser la navigation privée.</translation>
 <translation id="2079545284768500474">Annuler</translation>
-<translation id="2082906935540894275">Les fonctionnalités les plus pertinentes pour vous à différents moments.</translation>
 <translation id="2085876078937250610">Enregistrer…</translation>
 <translation id="2096239473850415494">Téléchargement impossible</translation>
 <translation id="2096716221239095980">Supprimer toutes les données</translation>
@@ -548,7 +547,6 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="344589138074534176">En savoir plus sur Google Lens</translation>
 <translation id="3447332786336558089">Lorsque vous vous déconnecterez, les onglets seront fermés et les données de compte non enregistrées seront supprimées de cet appareil. Il peut s'agir de mots de passe, de l'historique, etc.</translation>
-<translation id="3449016921756175697">Des suggestions utiles pour une navigation plus simple et plus agréable.</translation>
 <translation id="345348365500626747">Adresse trouvée</translation>
 <translation id="3464194322481586217">Impossible de suivre le prix.</translation>
 <translation id="3469117812148449995">Options d'enregistrement de mot de passe</translation>
@@ -922,7 +920,6 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="5127538504377457572">Actif il y a <ph name="DAYS" /> jours</translation>
 <translation id="5128788795241319992">Découvrez le nouveau menu</translation>
 <translation id="5132942445612118989">Synchronisez vos mots de passe, votre historique et plus encore sur tous les appareils</translation>
-<translation id="5137526732000415202">Le dernier onglet ouvert sur tous vos appareils.</translation>
 <translation id="5145331760738811130">Quitter le sélecteur d'onglets</translation>
 <translation id="5157638238828697074">Un problème est survenu. Impossible d'ouvrir l'appli.</translation>
 <translation id="5163417375525818870">PDF</translation>
@@ -1023,7 +1020,6 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="559567008082979829">Activer la suppression de vos téléchargements au bout d'un mois.</translation>
 <translation id="5596627076506792578">Plus d'options</translation>
 <translation id="560322036295180549">Désactivé par votre organisation</translation>
-<translation id="5611107723541161735">Raccourcis vers les sites que vous avez consultés récemment sur cet appareil.</translation>
 <translation id="5611398002774823980">Enregistrer dans le compte</translation>
 <translation id="5613297089029360427">Trier par "Les plus récents"</translation>
 <translation id="5614553682702429503">Enregistrer le mot de passe ?</translation>
@@ -1487,7 +1483,6 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="7512075701202892785">Le navigateur que vous aimez désormais sur iPad</translation>
 <translation id="7512909159512473473">Saisir la phrase secrète…</translation>
 <translation id="7514365320538308">Télécharger</translation>
-<translation id="7521117365186708026">Des conseils de configuration qui vous aideront à exploiter tout le potentiel de Chrome.</translation>
 <translation id="7524055474074101597">Accédez à vos mots de passe et plus encore depuis vos différentes applis.</translation>
 <translation id="75362970626182391">Nouveau groupe d'onglets</translation>
 <translation id="7537586195939242955">Impossible d'installer votre Pass dans Passbook actuellement.</translation>
@@ -1605,6 +1600,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="800361585186029508">Ouvre les URL saisies dans Google Chrome.</translation>
 <translation id="8005666035647241369">Dans le Gestionnaire de mots de passe Google sur cet appareil</translation>
 <translation id="8011489434346330032">Inspecteur Web</translation>
+<translation id="8017015647846870183">Données du Gestionnaire de mots de passe de Google, y compris les mots de passe et les clés d'accès</translation>
 <translation id="802154636333426148">Échec du téléchargement</translation>
 <translation id="8023170444051056234">Vous perdrez immédiatement l'accès au groupe d'onglets "<ph name="GROUP_NAME" />", qui sera supprimé de tous vos appareils</translation>
 <translation id="8023878949384262191">Développe la section.</translation>
@@ -1705,7 +1701,6 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8439758443371991593">Masquer "Ajouter à la liste de lecture"</translation>
 <translation id="8449869326050867919">Mot de passe partagé</translation>
 <translation id="8453847087068411809">Ne jamais détecter automatiquement les colis</translation>
-<translation id="846158969830690371">Vérifiez si vous avez les paramètres les plus sûrs ou si vous devez examiner quoi que ce soit.</translation>
 <translation id="8473863474539038330">Adresses et autres</translation>
 <translation id="8474378002946546633">Autoriser les notifications</translation>
 <translation id="8477178913400731244">Supprimer les données</translation>

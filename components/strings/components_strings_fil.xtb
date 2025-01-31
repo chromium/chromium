@@ -674,7 +674,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2157640075051554492">Mga notification sa pag-track ng presyo</translation>
 <translation id="21613918653299710">Mga Online na Gallery ng Larawan</translation>
 <translation id="2161656808144014275">Text</translation>
-<translation id="2162510787844374618">Nakikipag-ugnayan sa iyong bangko...</translation>
 <translation id="2162620598375156287"><ph name="CURRENT_PRICE" /> ngayon sa <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Tingnan kung may typo sa <ph name="HOST_NAME" />.</translation>
 <translation id="2166049586286450108">Ganap na Access ng Admin</translation>
@@ -2408,6 +2407,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5254043433801397071">I-optimize ang content ng print</translation>
 <translation id="5255583962255635076">Mga nalalapat na patakaran sa iyong profile sa trabaho</translation>
 <translation id="5255690596502591079">I-capture pa rin</translation>
+<translation id="5255771248404149177">Gustong tiyakin ng iyong provider ng card na ikaw ito</translation>
 <translation id="5255833070095767006">350 x 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{Hindi inirerekomenda ng patakaran ng administrator na kopyahin ang file na ito sa <ph name="DESTINATION_NAME" />}one{Hindi inirerekomenda ng patakaran ng administrator na kopyahin ang mga file na ito sa <ph name="DESTINATION_NAME" />}other{Hindi inirerekomenda ng patakaran ng administrator na kopyahin ang mga file na ito sa <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5263867360296733198">Kinakailangan ang pagsusuri bago i-upload</translation>
@@ -2428,7 +2428,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5288108484102287882">Na-validate ang mga value ng patakaran at nagkaroon ng mga babala</translation>
 <translation id="5289384342738547352">Pangangasiwa sa maraming dokumento</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{Nire-require ang pag-update ngayon}=2{Nire-require ang pag-update bukas}one{Nire-require ang pag-update sa loob ng # araw}other{Nire-require ang pag-update sa loob ng # na araw}}</translation>
-<translation id="5292714443869769806">Pumunta sa mga setting ng <ph name="OPERATING_SYSTEM" /></translation>
 <translation id="5293919335876685914">Mga coupe</translation>
 <translation id="5298618990685278995">unang draft</translation>
 <translation id="5299298092464848405">Error sa pag-parse ng patakaran</translation>
@@ -2556,6 +2555,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5518352028556756716">Hindi makakagamit ang karamihan ng mga site ng third-party na cookies para ma-track ka habang nagba-browse ka, at hindi makakagamit ang mga site ng third-party na cookies sa Incognito mode.</translation>
 <translation id="5519516356611866228">Kasama ang iyong mga pagbabago</translation>
 <translation id="5519696598216267194">Papel (Naka-prepunch)</translation>
+<translation id="5520105693415771152">Hindi nakikita ang iyong kasalukuyang impormasyon? Makipag-ugnayan sa iyong provider para ma-update ito.</translation>
 <translation id="5521782189689806907">Cabinetry</translation>
 <translation id="5523118979700054094">Pangalan ng patakaran</translation>
 <translation id="5523588073846127669">Hindi tinatanggap ng merchant ang virtual card na ito</translation>
@@ -3651,6 +3651,7 @@ Mga karagdagang detalye:
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Mga Cargo Truck at Trailer</translation>
 <translation id="7461924472993315131">I-pin</translation>
+<translation id="746329643760972486">MacOS</translation>
 <translation id="7465036432780054056">Malalaman ng <ph name="EMBEDDED_URL" /> na binisita mo ang <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7465963048299965912">10 x 13 in</translation>
 <translation id="7469935732330206581">Hindi secure ang form</translation>
@@ -3882,6 +3883,7 @@ Mga karagdagang detalye:
 <translation id="784404208867107517">Nakagrupong history</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Wala}=1{1 app (<ph name="EXAMPLE_APP_1" />)}=2{2 app (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# (na) app (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# (na) app (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Nagka-error. Subukan ulit.</translation>
+<translation id="784623644169604270">Walang kamakailang aktibidad</translation>
 <translation id="785476343534277563">Mga College Sport</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7860345425589240791">Ilagay ang iyong bagong petsa ng pag-expire at CVC sa <ph name="SIDE_OF_CARD" /></translation>
@@ -3920,7 +3922,6 @@ Mga karagdagang detalye:
 <translation id="7942349550061667556">Pula</translation>
 <translation id="7943397946612013052">Na-block na pag-download</translation>
 <translation id="7943893128817522649">Puwedeng hilinging awtomatikong mag-download ng maraming file</translation>
-<translation id="794567586469801724">macOS</translation>
 <translation id="7947285636476623132">Tingnan ang iyong taon ng pag-expire at subukan ulit</translation>
 <translation id="7947310711271925113">Pop Music</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, pindutin ang Tab at pagkatapos ay ang Enter para matuto pa tungkol sa mga feature ng Chrome</translation>
@@ -4672,7 +4673,6 @@ Mga karagdagang detalye:
 <translation id="984275831282074731">Mga paraan ng pagbabayad</translation>
 <translation id="985199708454569384">&lt;p&gt;Makikita mo ang error na ito kung hindi tumpak ang petsa at oras ng iyong computer o mobile device.&lt;/p&gt;
     &lt;p&gt;Para maayos ang error, buksan ang orasan ng iyong device. Tiyaking tama ang oras at petsa.&lt;/p&gt;</translation>
-<translation id="986257639512122511">Pinayagan mo ang <ph name="PERMISSION" /> sa <ph name="ORIGIN" /></translation>
 <translation id="987264212798334818">Pangkalahatan</translation>
 <translation id="988159990683914416">Bumuo ang Developer</translation>
 <translation id="989988560359834682">I-edit ang Address</translation>

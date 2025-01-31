@@ -126,7 +126,6 @@
 <translation id="1076766328672150609">Twoje dziecko może odblokowywać urządzenie za pomocą kodu PIN.</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216">Nie udało się pobrać słownika do sprawdzania pisowni w tym języku: <ph name="LANGUAGE" />. Spróbuj ponownie.</translation>
-<translation id="1078029726086090536">Zweryfikuj hasło</translation>
 <translation id="1078037449555275327">Ustawienia ChromeVoksa</translation>
 <translation id="1079242569060319448">Nie pamiętasz kodu PIN?</translation>
 <translation id="1079285777677001938">W niektórych witrynach mogą nie działać funkcje.</translation>
@@ -371,6 +370,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1241066500170667906">Wybierz stan eksperymentu <ph name="EXPERIMENT_NAME" /></translation>
 <translation id="124116460088058876">Więcej języków</translation>
 <translation id="1241381048229838873">Pokaż wszystkie zakładki</translation>
+<translation id="1242044645101871359">Zaloguj się ponownie</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" /> chce zresetować Twoje ustawienia.</translation>
 <translation id="1243002225871118300">Zmienianie rozmiaru wyświetlacza i tekstu</translation>
 <translation id="1243314992276662751">Prześlij</translation>
@@ -1618,7 +1618,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2113921862428609753">Dostęp do informacji o urzędzie</translation>
 <translation id="2114145607116268663">Nie można zainstalować. Wymagane jest ponowne uruchomienie. Uruchom komputer ponownie i spróbuj jeszcze raz. Kod błędu: <ph name="ERROR" />.</translation>
 <translation id="2114326799768592691">Załaduj ponownie &amp;ramkę</translation>
-<translation id="2114413269775311385">Używaj tego konta z aplikacjami na Androida. Uprawnieniami aplikacji na Androida możesz zarządzać w <ph name="LINK_BEGIN" />Ustawieniach aplikacji<ph name="LINK_END" />.</translation>
 <translation id="2114995631896158695">Brak karty SIM</translation>
 <translation id="2116619964159595185">Witryny łączą się z urządzeniami Bluetooth na przykład po to, żeby skonfigurować lub zsynchronizować niskoenergetyczne moduły beacon, inteligentne żarówki albo monitory stanu zdrowia lub aktywności fizycznej</translation>
 <translation id="2117655453726830283">Następny slajd</translation>
@@ -2782,6 +2781,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="2926620265753325858">Urządzenie <ph name="DEVICE_NAME" /> nie jest obsługiwane</translation>
 <translation id="2926708162326352948">Motyw został zaktualizowany do przesłanego obrazu</translation>
 <translation id="2927017729816812676">Pamięć podręczna</translation>
+<translation id="2928030851119977280">Wybór został zapisany. Twój wybór będzie obowiązywał, gdy zalogujesz się w innych usługach Google.</translation>
 <translation id="2928795416630981206">Zezwolono na śledzenie pozycji kamery</translation>
 <translation id="2929345818093040583">{NUM_SITES,plural, =1{Przeglądarka Chrome usunęła uprawnienia z 1 witryny}few{Przeglądarka Chrome usunęła uprawnienia z {NUM_SITES} witryn}many{Przeglądarka Chrome usunęła uprawnienia z {NUM_SITES} witryn}other{Przeglądarka Chrome usunęła uprawnienia z {NUM_SITES} witryny}}</translation>
 <translation id="2931157624143513983">Dopasuj do możliwego do zadrukowania obszaru</translation>
@@ -4618,6 +4618,7 @@ Mogą to być informacje o zainstalowanym oprogramowaniu, plikach, przeglądarc
 <translation id="4242533952199664413">Otwórz ustawienia</translation>
 <translation id="4242577469625748426">Instalacja ustawień zasad na urządzeniu nie powiodła się: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385">Twoją <ph name="BEGIN_LINK" />przeglądarką i profilem zarządza<ph name="END_LINK" /> <ph name="DOMAIN" /></translation>
+<translation id="424315890655130736">Wpisz hasło wielowyrazowe</translation>
 <translation id="4243504193894350135">Drukarka została wstrzymana</translation>
 <translation id="4243624244759495699"><ph name="LOCALE" />, klasa <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">Znajdź więcej aplikacji dla rysika</translation>
@@ -5340,7 +5341,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4766598565665644999">Wszystkie rozszerzenia mogą odczytywać i zmieniać dane w witrynie <ph name="HOST" /></translation>
 <translation id="4767427586072640478">Więcej informacji o wyłączonych rozszerzeniach.</translation>
 <translation id="4768332406694066911">Masz certyfikaty od tych organizacji potwierdzające Twoją tożsamość</translation>
-<translation id="4768945955870840220">W przypadku niektórych produktów Chrome może zbierać opinie z całego internetu</translation>
 <translation id="4769632191812288342">Otrzymujesz standardową ochronę</translation>
 <translation id="4770119228883592393">Zgłoszono prośbę o uprawnienia. Aby odpowiedzieć, naciśnij ⌘ + Option + strzałka w dół.</translation>
 <translation id="4770755495532014179">Użyj tego hasła na iPhonie</translation>
@@ -5481,6 +5481,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4862642413395066333">Podpisywanie odpowiedzi protokołu OCSP</translation>
 <translation id="4863702650881330715">Zwiększ zgodność</translation>
 <translation id="4863769717153320198">Wygląda na <ph name="WIDTH" /> × <ph name="HEIGHT" /> (domyślna)</translation>
+<translation id="4864334716800138793">Twoja organizacja wyłączyła konfigurowanie profilu służbowego</translation>
 <translation id="4864369630010738180">Loguję...</translation>
 <translation id="4864805589453749318">Wybierz rodzica, który zezwala na dodanie konta szkolnego.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (zablokowano)</translation>
@@ -6440,6 +6441,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5559768063688681413">Brak zapisanych drukarek</translation>
 <translation id="55601339223879446">Przesuń krawędzie pulpitu na ekranie</translation>
 <translation id="5561162485081632007">Wykrywa niebezpieczne zdarzenia i natychmiast Cię o nich ostrzega</translation>
+<translation id="5562588178647493983">Aby dowiedzieć się więcej, skontaktuj się z administratorem</translation>
 <translation id="556321030400250233">plik lokalny lub udostępniony</translation>
 <translation id="5563234215388768762">Wyszukaj w Google lub wpisz URL</translation>
 <translation id="5563824734298958390">Opuścić grupę kart?</translation>
@@ -7387,6 +7389,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="6253801023880399036">Hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="6254503684448816922">Złamanie klucza</translation>
 <translation id="6254892857036829079">Idealna</translation>
+<translation id="6257131917452817589">automatycznym zmienianiu hasła</translation>
 <translation id="6257602895346497974">Włącz synchronizację…</translation>
 <translation id="6257614441619555296"><ph name="KEY" />: <ph name="VALUE" /></translation>
 <translation id="625827534921607067">Ta sieć będzie preferowana, jeśli będzie dostępna więcej niż 1 wcześniej podłączona lub skonfigurowana sieć</translation>
@@ -8736,7 +8739,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7243092385765551741">Usunąć klucz dostępu?</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (najlepsza)</translation>
 <translation id="7246230585855757313">Ponownie włóż klucz bezpieczeństwa i spróbuj jeszcze raz</translation>
-<translation id="724835896049478274">Konta dostępne w przypadku aplikacji na Androida</translation>
 <translation id="7248802599439396696">Dezaktywuj karty</translation>
 <translation id="7249197363678284330">Sprawdź to ustawienie w pasku adresu.</translation>
 <translation id="7249764475759804559">Uwzględniaj tę aplikację jako jedną z opcji otwierania plików</translation>
@@ -9099,6 +9101,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7502528909759062987">Wstrzymaj przesyłanie karty na urządzenie <ph name="DEVICE_NAME" /></translation>
 <translation id="7502804472671406749">Udostępnione karty można przewijać i powiększać</translation>
 <translation id="7503191893372251637">Typ certyfikatu firmy Netscape</translation>
+<translation id="7503259455663961898">Zmień za mnie</translation>
 <translation id="7503985202154027481">Wizyta na tej stronie zostanie zarejestrowana na Twoim kluczu bezpieczeństwa.</translation>
 <translation id="7504145862399276792">Dźwięk z tej karty został wyciszony</translation>
 <translation id="750509436279396091">Otwórz folder pobierania</translation>
@@ -9161,6 +9164,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7551059576287086432">Nie udało się pobrać pliku <ph name="FILE_NAME" /></translation>
 <translation id="7551643184018910560">Przypnij do półki</translation>
 <translation id="7552191410769096467">Aby udostępniać grupy kart lub do nich dołączać, musisz się zalogować i włączyć synchronizację</translation>
+<translation id="7552196109089297786">Wyloguj się z konta Microsoft</translation>
 <translation id="7552846755917812628">Skorzystaj z tych wskazówek:</translation>
 <translation id="7553012839257224005">Sprawdzam kontener Linuksa</translation>
 <translation id="7553242001898162573">Wpisz hasło</translation>
@@ -9772,6 +9776,7 @@ Aby usunąć przypisanie, naciśnij przypisany przełącznik lub klawisz.</trans
 <translation id="7968833647796919681">Włącz zbieranie danych o wydajności</translation>
 <translation id="7968982339740310781">Wyświetl szczegóły</translation>
 <translation id="7969046989155602842">Command</translation>
+<translation id="7969144945436590933">Zobacz więcej szczegółów</translation>
 <translation id="7970673414865679092">Szczegóły sieci Ethernet</translation>
 <translation id="7972714317346275248">PKCS #1, SHA-384 z szyfrowaniem RSA</translation>
 <translation id="7973149423217802477">Opcja Nie lubię powoduje przesłanie opinii negatywnej.</translation>
@@ -10289,6 +10294,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8330617762701840933">Lista witryn przekierowywanych do alternatywnej przeglądarki.</translation>
 <translation id="8330689128072902965">Kontakty w pobliżu mogą Ci udostępniać dane. Kliknij, aby to zmienić.</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{Obsługiwany typ pliku: <ph name="FILE_TYPE1" />}=2{Obsługiwane typy plików: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />}=3{Obsługiwane typy plików: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />}=4{Obsługiwane typy plików: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" />}few{Obsługiwane typy plików: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />i jeszcze {OVERFLOW_COUNT}<ph name="END_LINK" />)}many{Obsługiwane typy plików: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />i jeszcze {OVERFLOW_COUNT}<ph name="END_LINK" />)}other{Obsługiwane typy plików: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />i jeszcze {OVERFLOW_COUNT}<ph name="END_LINK" />)}}</translation>
+<translation id="8331578454993293727">Znaleźliśmy Twoje hasło wśród ujawnionych w wyniku naruszenia bezpieczeństwa danych</translation>
 <translation id="8331822764922665615">Nazwij grupę, wybierz kolor i naciśnij Esc</translation>
 <translation id="833256022891467078">Foldery udostępnione Crostini</translation>
 <translation id="833262891116910667">Podświetlenie</translation>
@@ -10370,6 +10376,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
     <ph name="BEGIN_PARAGRAPH2" />Dodatkową pomoc znajdziesz na: g.co/flex/InstallErrors<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8383614331548401927">Podsumowanie ostatnich działań</translation>
 <translation id="8386091599636877289">Nie znaleziono zasady.</translation>
+<translation id="8387087863179559896">Chrome może zaktualizować Twoje konto w tej witrynie, używając silnego hasła. Nie musisz pamiętać hasła, bo zapisze je za Ciebie Menedżer haseł Google na koncie <ph name="EMAIL" />. Więcej informacji: <ph name="PASSWORD_CHANGE" />.</translation>
 <translation id="8387361103813440603">Nie zezwolono na sprawdzanie lokalizacji</translation>
 <translation id="8387617938027387193">Potwierdź, że to Ty</translation>
 <translation id="8388770971141403598">Profile dodatkowe nie są obsługiwane</translation>
@@ -10684,7 +10691,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8625124982056504555">Odczytywanie numerów seryjnych urządzeń z ChromeOS i komponentów</translation>
 <translation id="862542460444371744">&amp;Rozszerzenia</translation>
 <translation id="8625663000550647058">Nie zezwolono na używanie mikrofonu</translation>
-<translation id="8625679025395572221">Twoje konto może być zagrożone.</translation>
 <translation id="8625916342247441948">Nie zezwalaj witrynom na łączenie się z urządzeniami HID</translation>
 <translation id="862727964348362408">Zawieszona</translation>
 <translation id="862750493060684461">Pamięć podręczna CSS</translation>
@@ -11563,7 +11569,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="936801553271523408">Systemowe dane diagnostyczne</translation>
 <translation id="93766956588638423">Napraw rozszerzenie</translation>
 <translation id="938623846785894166">Nietypowy plik</translation>
-<translation id="939401694733344652">Te konta nie są obecnie używane z aplikacjami na Androida. Jeśli wybierzesz konto do używania z tą aplikacją na Androida, będzie go też można używać z innymi aplikacjami tego typu. Dostęp do aplikacji na Androida możesz zmienić, klikając <ph name="LINK_BEGIN" />Ustawienia &gt; Konta<ph name="LINK_END" />.</translation>
 <translation id="939598580284253335">Wpisz hasło wielowyrazowe</translation>
 <translation id="939736085109172342">Nowy folder</translation>
 <translation id="940212040923880623">&amp;Znajdź i edytuj</translation>

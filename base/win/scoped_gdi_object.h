@@ -10,6 +10,25 @@
 #include "base/types/always_false.h"
 #include "base/win/win_handle_types.h"
 
+// Defines `ScopedGDIObject`, an RAII helper for GDI objects. Use like
+// ```
+//   ScopedGDIObject<HBITMAP> scoped_bitmap(ReturnsHBITMAP(...));
+//   DoSomething(scoped_bitmap.get());
+//   // At end of scope, scoper auto-calls ::DeleteObject().
+// ```
+//
+// For full API documentation, see the docs for ScopedGeneric.
+//
+// This is specialized for the following types:
+//   HBITMAP
+//   HBRUSH
+//   HFONT
+//   HICON - Calls ::DestroyIcon() instead of ::DeleteObject()
+//   HPEN
+//   HRGN
+// To add more types, add to the DECLARE_TRAIT_SPECIALIZATIONs below and the
+// corresponding DEFINE_TRAIT_SPECIALIZATIONs in the .cc file.
+
 namespace base::win {
 
 namespace internal {
@@ -38,15 +57,8 @@ DECLARE_TRAIT_SPECIALIZATION(HRGN)
 
 }  // namespace internal
 
-// Like ScopedHandle but for GDI objects.
 template <class T>
 using ScopedGDIObject = ScopedGeneric<T, internal::ScopedGDIObjectTraits<T>>;
-
-// Typedefs for some common use cases.
-typedef ScopedGDIObject<HBITMAP> ScopedBitmap;
-typedef ScopedGDIObject<HRGN> ScopedRegion;
-typedef ScopedGDIObject<HFONT> ScopedHFONT;
-typedef ScopedGDIObject<HICON> ScopedHICON;
 
 }  // namespace base::win
 

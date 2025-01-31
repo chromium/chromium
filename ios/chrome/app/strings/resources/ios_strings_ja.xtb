@@ -263,7 +263,6 @@
 <translation id="2074131957428911366">同期する項目はいつでも [<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />] で選択できます。</translation>
 <translation id="2078437078822043850">右にスクロールすると、シークレット モードでブラウジングできます。</translation>
 <translation id="2079545284768500474">元に戻す</translation>
-<translation id="2082906935540894275">その時々で最も関連性が高い機能を表示。</translation>
 <translation id="2085876078937250610">保存…</translation>
 <translation id="2096239473850415494">ダウンロードできませんでした</translation>
 <translation id="2096716221239095980">すべてのデータを削除</translation>
@@ -548,7 +547,6 @@
 <translation id="3445288400492335833"><ph name="MINUTES" />分</translation>
 <translation id="344589138074534176">Google レンズの詳細</translation>
 <translation id="3447332786336558089">ログアウトすると、タブが閉じられ、保存されていないアカウント データはこのデバイスから削除されます。これにはパスワード、履歴などが含まれます。</translation>
-<translation id="3449016921756175697">ブラウジングの改善と効率化に役立つ提案を確認できます。</translation>
 <translation id="345348365500626747">住所が見つかりました</translation>
 <translation id="3464194322481586217">価格をトラッキングできませんでした。</translation>
 <translation id="3469117812148449995">パスワードの保存オプション</translation>
@@ -718,6 +716,7 @@
 <translation id="422477017457571619">Google に送信される閲覧データに基づき、危険なサイト、ダウンロード、拡張機能からリアルタイムで AI を活用して保護します</translation>
 <translation id="4231395118547300571">安全チェックの通知がオンになっています</translation>
 <translation id="4237377247299956313">[<ph name="BEGIN_BOLD" />デフォルトのブラウザアプリ<ph name="END_BOLD" />] をタップする</translation>
+<translation id="4241893428331130998">保存されているパスワードやパスキーはありません</translation>
 <translation id="4242533952199664413">設定を開く</translation>
 <translation id="4250432749243022864">{count,plural, =0{{count} 個のタブを開く}=1{{count} 個のタブを開く}other{{count} 個のタブを開く}}</translation>
 <translation id="4250680216510889253">いいえ</translation>
@@ -922,7 +921,6 @@
 <translation id="5127538504377457572">アクティブ: <ph name="DAYS" /> 日前</translation>
 <translation id="5128788795241319992">新しいメニューを確認する</translation>
 <translation id="5132942445612118989">すべてのデバイスでパスワード、履歴、その他の設定を同期する</translation>
-<translation id="5137526732000415202">すべてのデバイスで最後に開いたタブ。</translation>
 <translation id="5145331760738811130">タブ切り替え機能を終了</translation>
 <translation id="5157638238828697074">エラーが発生しました。アプリケーションを開けませんでした。</translation>
 <translation id="5163417375525818870">PDF</translation>
@@ -1023,7 +1021,6 @@
 <translation id="559567008082979829">ダウンロードを 1 か月後に削除するよう設定します。</translation>
 <translation id="5596627076506792578">その他のオプション</translation>
 <translation id="560322036295180549">組織によって無効にされています</translation>
-<translation id="5611107723541161735">このデバイスで最近アクセスしたサイトのショートカット。</translation>
 <translation id="5611398002774823980">アカウントに保存</translation>
 <translation id="5613297089029360427">最新で並べ替え</translation>
 <translation id="5614553682702429503">パスワードを保存しますか？</translation>
@@ -1487,7 +1484,6 @@
 <translation id="7512075701202892785">お気に入りのブラウザを iPad で</translation>
 <translation id="7512909159512473473">パスフレーズを入力…</translation>
 <translation id="7514365320538308">ダウンロード</translation>
-<translation id="7521117365186708026">Chrome を最大限に活用するための設定のヒント。</translation>
 <translation id="7524055474074101597">アプリからパスワードなどにアクセスできます。</translation>
 <translation id="75362970626182391">新しいタブグループ</translation>
 <translation id="7537586195939242955">現在、Passbookにパスをインストールできません。</translation>
@@ -1600,6 +1596,7 @@
 <translation id="7982789257301363584">ネットワーク</translation>
 <translation id="7987685713885608670">セキュリティ強化のため、Google パスワード マネージャーに保存する前にデバイス上でパスワードを暗号化します。</translation>
 <translation id="798991908416757345">タブグループは使用できません</translation>
+<translation id="7993170188789685695">この通知を閉じるにはダブルタップします。</translation>
 <translation id="7993619969781047893">一部のサイトで機能を使用できなくなる可能性があります</translation>
 <translation id="7996239959906074962">設定…</translation>
 <translation id="800361585186029508">入力された URL を Google Chrome で開きます。</translation>
@@ -1706,7 +1703,6 @@
 <translation id="8439758443371991593">[リーディング リストに追加] を非表示</translation>
 <translation id="8449869326050867919">パスワードを共有しました</translation>
 <translation id="8453847087068411809">荷物を自動検出しない</translation>
-<translation id="846158969830690371">安全な設定になっているか、または確認が必要な項目があるかを表示。</translation>
 <translation id="8473863474539038330">住所やその他の情報</translation>
 <translation id="8474378002946546633">通知を許可する</translation>
 <translation id="8477178913400731244">データを削除</translation>

@@ -289,10 +289,10 @@ BASE_FEATURE(kUploadOfficeToCloudForEnterprise,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables syncing of user's Office files upload workflow preferences for
-// enterprise users, such whether to ask before moving files to the cloud.
+// enterprise users, such as whether to ask before moving files to the cloud.
 BASE_FEATURE(kUploadOfficeToCloudSync,
              "UploadOfficeToCloudSync",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls the use of scope extensions for the Microsoft 365 PWA from finch as
 // a fallback.

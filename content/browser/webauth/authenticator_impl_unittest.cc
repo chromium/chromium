@@ -1123,7 +1123,7 @@ TEST_F(AuthenticatorImplTest,
        GetClientCapabilities_HybridTransport_BluetoothDisabled) {
   blink::ParsedPermissionsPolicy permissions_policy(1);
   permissions_policy[0].feature =
-      blink::mojom::PermissionsPolicyFeature::kBluetooth;
+      network::mojom::PermissionsPolicyFeature::kBluetooth;
   // Simulate navigating to a page with this Permissions Policy.
   auto navigation_simulator = NavigationSimulator::CreateRendererInitiated(
       GURL(kTestOrigin1), main_rfh());

@@ -270,7 +270,7 @@ class CONTENT_EXPORT FencedFrameConfig {
   // TODO(crbug.com/40233168): Refactor and expand use of test utils so there is
   // a consistent way to do this properly everywhere.
   void AddEffectiveEnabledPermissionForTesting(
-      blink::mojom::PermissionsPolicyFeature feature) {
+      network::mojom::PermissionsPolicyFeature feature) {
     effective_enabled_permissions_.push_back(feature);
   }
 
@@ -363,7 +363,7 @@ class CONTENT_EXPORT FencedFrameConfig {
   // permissions will be the only ones enabled in the fenced frame once it
   // navigates. See entry in spec:
   // https://wicg.github.io/fenced-frame/#fenced-frame-config-effective-enabled-permissions
-  std::vector<blink::mojom::PermissionsPolicyFeature>
+  std::vector<network::mojom::PermissionsPolicyFeature>
       effective_enabled_permissions_;
 
   // Fenced frames with flexible permissions are allowed to inherit certain
@@ -504,7 +504,7 @@ class CONTENT_EXPORT FencedFrameProperties {
 
   bool is_ad_component() const { return is_ad_component_; }
 
-  const std::vector<blink::mojom::PermissionsPolicyFeature>&
+  const std::vector<network::mojom::PermissionsPolicyFeature>&
   effective_enabled_permissions() const {
     return effective_enabled_permissions_;
   }
@@ -645,7 +645,7 @@ class CONTENT_EXPORT FencedFrameProperties {
   // permissions will be the only ones enabled in the fenced frame once it
   // navigates. See entry in spec:
   // https://wicg.github.io/fenced-frame/#fenced-frame-config-effective-enabled-permissions
-  std::vector<blink::mojom::PermissionsPolicyFeature>
+  std::vector<network::mojom::PermissionsPolicyFeature>
       effective_enabled_permissions_;
 
   // Fenced frames with flexible permissions are allowed to inherit certain

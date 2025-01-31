@@ -263,7 +263,6 @@
 <translation id="2074131957428911366">Вы всегда можете выбрать, что синхронизировать, в <ph name="BEGIN_LINK" />настройках<ph name="END_LINK" />.</translation>
 <translation id="2078437078822043850">Чтобы перейти в режим инкогнито, прокрутите экран вправо</translation>
 <translation id="2079545284768500474">Отмена</translation>
-<translation id="2082906935540894275">Быстрый доступ к самым важным функциям</translation>
 <translation id="2085876078937250610">Сохранить</translation>
 <translation id="2096239473850415494">Не удалось скачать</translation>
 <translation id="2096716221239095980">Удалить все данные</translation>
@@ -548,7 +547,6 @@
 <translation id="3445288400492335833"><ph name="MINUTES" /> мин.</translation>
 <translation id="344589138074534176">Подробнее о Google Объективе…</translation>
 <translation id="3447332786336558089">После выхода из аккаунта вкладки будут закрыты, а несохраненные данные аккаунта будут удалены с этого устройства. К ним могут относиться пароли, история браузера и не только.</translation>
-<translation id="3449016921756175697">Подсказки по навигации в браузере</translation>
 <translation id="345348365500626747">Адрес найден</translation>
 <translation id="3464194322481586217">Не удалось отследить цену.</translation>
 <translation id="3469117812148449995">Параметры сохранения пароля</translation>
@@ -718,6 +716,7 @@
 <translation id="422477017457571619">ИИ-защита в реальном времени от опасных сайтов, расширений и скачиваемых файлов, для которой ваши данные о работе в браузере пересылаются в Google</translation>
 <translation id="4231395118547300571">Уведомления проверки безопасности включены</translation>
 <translation id="4237377247299956313">Нажмите <ph name="BEGIN_BOLD" />Приложение браузера по умолчанию<ph name="END_BOLD" />.</translation>
+<translation id="4241893428331130998">Нет сохраненных паролей или ключей доступа</translation>
 <translation id="4242533952199664413">Открыть настройки</translation>
 <translation id="4250432749243022864">{count,plural, =0{Открыть {count} вкладок}=1{Открыть {count} вкладку}one{Открыть {count} вкладку}few{Открыть {count} вкладки}many{Открыть {count} вкладок}other{Открыть {count} вкладки}}</translation>
 <translation id="4250680216510889253">Нет</translation>
@@ -922,7 +921,6 @@
 <translation id="5127538504377457572">Последние действия: <ph name="DAYS" /> дн. назад</translation>
 <translation id="5128788795241319992">Узнайте больше о возможностях нового меню</translation>
 <translation id="5132942445612118989">Синхронизируйте пароли, историю и другие данные на всех ваших устройствах</translation>
-<translation id="5137526732000415202">Последняя открытая вкладка с любых ваших устройств</translation>
 <translation id="5145331760738811130">Закрыть переключатель вкладок</translation>
 <translation id="5157638238828697074">Что-то пошло не так. Не удалось открыть приложение.</translation>
 <translation id="5163417375525818870">PDF-файлы</translation>
@@ -1023,7 +1021,6 @@
 <translation id="559567008082979829">Удалять файлы, скачанные более одного месяца назад</translation>
 <translation id="5596627076506792578">Ещё</translation>
 <translation id="560322036295180549">Функция отключена вашей организацией</translation>
-<translation id="5611107723541161735">Ярлыки сайтов, которые вы недавно посещали на этом устройстве</translation>
 <translation id="5611398002774823980">Сохранить в аккаунте</translation>
 <translation id="5613297089029360427">Сортировать по дате</translation>
 <translation id="5614553682702429503">Сохранить пароль?</translation>
@@ -1487,7 +1484,6 @@
 <translation id="7512075701202892785">Ваш любимый браузер теперь на iPad</translation>
 <translation id="7512909159512473473">Ввести кодовую фразу</translation>
 <translation id="7514365320538308">Скачать</translation>
-<translation id="7521117365186708026">Подсказки, как использовать все возможности Chrome</translation>
 <translation id="7524055474074101597">Получайте доступ к паролям и другим данным в приложениях.</translation>
 <translation id="75362970626182391">Новая группа вкладок</translation>
 <translation id="7537586195939242955">Не удалось внести данные в Passbook.</translation>
@@ -1600,6 +1596,7 @@
 <translation id="7982789257301363584">Сеть</translation>
 <translation id="7987685713885608670">Чтобы надежнее защитить пароли, включите их шифрование на устройстве перед сохранением в Google Менеджере паролей.</translation>
 <translation id="798991908416757345">Группы вкладок недоступны</translation>
+<translation id="7993170188789685695">Чтобы закрыть уведомление, нажмите дважды.</translation>
 <translation id="7993619969781047893">Некоторые функции на сайтах могут работать некорректно</translation>
 <translation id="7996239959906074962">Настройка</translation>
 <translation id="800361585186029508">Введенные URL будут открываться в Google Chrome.</translation>
@@ -1706,7 +1703,6 @@
 <translation id="8439758443371991593">Скрыть действие "Добавить в список для чтения"</translation>
 <translation id="8449869326050867919">Доступ к паролю предоставлен</translation>
 <translation id="8453847087068411809">Не определять посылки автоматически</translation>
-<translation id="846158969830690371">Текущие настройки безопасности и рекомендации, как ее повысить</translation>
 <translation id="8473863474539038330">Адреса и другие данные</translation>
 <translation id="8474378002946546633">Разрешить оповещения</translation>
 <translation id="8477178913400731244">Удалить данные</translation>

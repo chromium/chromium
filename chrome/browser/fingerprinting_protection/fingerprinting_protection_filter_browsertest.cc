@@ -50,10 +50,8 @@ GURL GetURLWithFragment(const GURL& url, std::string_view fragment) {
 IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
                        MainFrameActivation) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  // TODO(crbug.com/386089639): Use GetTestUrl() when it accounts for localhost
-  // requests which are ignored.
-  GURL url = embedded_test_server()->GetURL("a.example",
-                                            "/frame_with_included_script.html");
+
+  GURL url(GetTestUrl("/frame_with_included_script.html"));
 
   ASSERT_NO_FATAL_FAILURE(SetRulesetToDisallowURLsWithPathSuffix(
       "suffix-that-does-not-match-anything"));

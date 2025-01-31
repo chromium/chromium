@@ -246,7 +246,7 @@ bool NativeWindowOcclusionTrackerWin::IsWindowVisibleAndFullyOpaque(
   }
 
   // Filter out windows that do not have a simple rectangular region.
-  base::win::ScopedRegion region(CreateRectRgn(0, 0, 0, 0));
+  base::win::ScopedGDIObject<HRGN> region(CreateRectRgn(0, 0, 0, 0));
   if (GetWindowRgn(hwnd, region.get()) == COMPLEXREGION)
     return false;
 

@@ -126,7 +126,6 @@
 <translation id="1076766328672150609">Vaše dieťa môže toto zariadenie odomykať kódom PIN.</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216">Slovník na kontrolu pravopisu v jazyku <ph name="LANGUAGE" /> sa nepodarilo stiahnuť. Skúste to znova.</translation>
-<translation id="1078029726086090536">Overiť heslo</translation>
 <translation id="1078037449555275327">Nastavenia čítačky ChromeVox</translation>
 <translation id="1079242569060319448">Zabudli ste PIN?</translation>
 <translation id="1079285777677001938">Funkcie na niektorých weboch nemusia fungovať.</translation>
@@ -371,6 +370,7 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1241066500170667906">Vybrať stav experimentu pre <ph name="EXPERIMENT_NAME" /></translation>
 <translation id="124116460088058876">Ďalšie jazyky</translation>
 <translation id="1241381048229838873">Zobraziť všetky záložky</translation>
+<translation id="1242044645101871359">Prihláste sa znova</translation>
 <translation id="1242633766021457174">Nástroj <ph name="THIRD_PARTY_TOOL_NAME" /> chce resetovať vaše nastavenia.</translation>
 <translation id="1243002225871118300">Zmena veľkosti zobrazenia a textu</translation>
 <translation id="1243314992276662751">Nahrať</translation>
@@ -1619,7 +1619,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2113921862428609753">Prístup k informáciám certifikačnej autority</translation>
 <translation id="2114145607116268663">Nedá sa nainštalovať, vyžaduje sa reštart. Reštartujte počítač a skúste to znova. Kód chyby je <ph name="ERROR" />.</translation>
 <translation id="2114326799768592691">Znova načítať prvok &amp;Frame</translation>
-<translation id="2114413269775311385">Používať tento účet s aplikáciami pre Android Povolenia pre aplikácie pre Android môžete ovládať v <ph name="LINK_BEGIN" />Nastaveniach aplikácií<ph name="LINK_END" />.</translation>
 <translation id="2114995631896158695">Nie je vložená SIM karta</translation>
 <translation id="2116619964159595185">Weby sa zvyčajne pripájajú k zariadeniam s rozhraním Bluetooth, aby mohli poskytovať funkcie, ktoré napríklad umožňujú nastavovať alebo synchronizovať majáčiky s nízkou spotrebou energie, nástroje na sledovanie zdravia či kondície alebo žiarovky inteligentného svetla</translation>
 <translation id="2117655453726830283">Nasledujúca snímka</translation>
@@ -4636,6 +4635,7 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="4242533952199664413">Otvoriť nastavenia</translation>
 <translation id="4242577469625748426">Nastavenia pravidla sa nepodarilo nainštalovať na zariadenie: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385">Váš <ph name="BEGIN_LINK" />prehliadač aj profil sú spravované<ph name="END_LINK" /> doménou <ph name="DOMAIN" /></translation>
+<translation id="424315890655130736">Zadajte prístupovú frázu</translation>
 <translation id="4243504193894350135">Tlačiareň je pozastavená</translation>
 <translation id="4243624244759495699"><ph name="LOCALE" />, stupeň <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">Nájsť ďalšie aplikácie pre dotykové pero</translation>
@@ -5358,7 +5358,6 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="4766598565665644999">Všetky rozšírenia môžu čítať a meniť web <ph name="HOST" /></translation>
 <translation id="4767427586072640478">Ďalšie informácie o deaktivovaných rozšíreniach</translation>
 <translation id="4768332406694066911">Máte certifikáty z týchto organizácií, ktoré vás identifikujú</translation>
-<translation id="4768945955870840220">V prípade niektorých výrobkov dokáže Chrome zhromažďovať recenzie z celého internetu</translation>
 <translation id="4769632191812288342">Máte štandardnú ochranu</translation>
 <translation id="4770119228883592393">Vyžaduje sa povolenie, reagujte stlačením klávesov ⌘ + Option + šípka nadol</translation>
 <translation id="4770755495532014179">Používajte toto heslo v iPhone</translation>
@@ -5499,6 +5498,7 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="4862642413395066333">Podpisovanie odpovedí protokolu OCSP</translation>
 <translation id="4863702650881330715">Rozšíriť kompatibilitu</translation>
 <translation id="4863769717153320198">Vyzerá ako <ph name="WIDTH" /> x <ph name="HEIGHT" /> (predvolené)</translation>
+<translation id="4864334716800138793">Nastavenie pracovného profilu je deaktivované vašou organizáciou</translation>
 <translation id="4864369630010738180">Prebieha prihlasovanie...</translation>
 <translation id="4864805589453749318">Vyberte rodiča, ktorý udeľuje povolenie pridať školský účet.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (blokované)</translation>
@@ -6459,6 +6459,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5559768063688681413">Žiadne uložené tlačiarne</translation>
 <translation id="55601339223879446">Úprava ohraničenia pracovnej plochy obrazovky</translation>
 <translation id="5561162485081632007">Zisťuje nebezpečné udalosti a upozorní vás, keď k nim dôjde</translation>
+<translation id="5562588178647493983">Ak chcete získať ďalšie informácie, kontaktujte svojho správcu</translation>
 <translation id="556321030400250233">miestny alebo zdieľaný súbor</translation>
 <translation id="5563234215388768762">Vyhľadajte na Googli alebo zadajte webovú adresu</translation>
 <translation id="5563824734298958390">Chcete skupinu kariet opustiť?</translation>
@@ -8757,7 +8758,6 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7243092385765551741">Chcete prístupový kľúč odstrániť?</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="7246230585855757313">Bezpečnostný kľúč opäť vložte a skúste to znova</translation>
-<translation id="724835896049478274">Účty dostupné pre aplikácie pre Android</translation>
 <translation id="7248802599439396696">Deaktivovať karty</translation>
 <translation id="7249197363678284330">Toto nastavenie môžete zmeniť na paneli s adresou.</translation>
 <translation id="7249764475759804559">Zahŕňať túto aplikáciu ako možnosť pri otváraní súborov</translation>
@@ -9793,6 +9793,7 @@ Odstráňte ju stlačením prideleného prepínača alebo klávesa.</translation
 <translation id="7968833647796919681">Povoliť zhromažďovanie údajov o výkonnosti</translation>
 <translation id="7968982339740310781">Zobraziť podrobnosti</translation>
 <translation id="7969046989155602842">Príkaz</translation>
+<translation id="7969144945436590933">Získať ďalšie podrobnosti</translation>
 <translation id="7970673414865679092">Podrobnosti o ethernete</translation>
 <translation id="7972714317346275248">Štandard PKCS #1 SHA-384 so šifrovaním RSA</translation>
 <translation id="7973149423217802477">Označením palcom dole odošlete spätnú väzbu, že sa vám toto nepáčilo.</translation>
@@ -10705,7 +10706,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8625124982056504555">Čítať sériové čísla zariadení ChromeOS a komponentov</translation>
 <translation id="862542460444371744">&amp;Rozšírenia</translation>
 <translation id="8625663000550647058">Nemôže používať váš mikrofón</translation>
-<translation id="8625679025395572221">Váš účet môže byť stále ohrozený.</translation>
 <translation id="8625916342247441948">Nepovoliť webom pripájať sa k zariadeniam HID</translation>
 <translation id="862727964348362408">Pozastavené</translation>
 <translation id="862750493060684461">Vyrovnávacia pamäť CSS</translation>
@@ -11589,7 +11589,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="936801553271523408">Údaje o diagnostike systému</translation>
 <translation id="93766956588638423">Opraviť rozšírenie</translation>
 <translation id="938623846785894166">Nezvyčajný súbor</translation>
-<translation id="939401694733344652">Tieto účty sa momentálne s aplikáciami pre Android nepoužívajú. Ak vyberiete účet na používanie s touto aplikáciou pre Android, bude sa dať používať aj s inými aplikáciami pre Android. Prístup do aplikácie pre Android môžete zmeniť v sekcii <ph name="LINK_BEGIN" />Nastavenia &gt; Účty<ph name="LINK_END" />.</translation>
 <translation id="939598580284253335">Zadať prístupovú frázu</translation>
 <translation id="939736085109172342">Nový priečinok</translation>
 <translation id="940212040923880623">&amp;Nájsť a upraviť</translation>

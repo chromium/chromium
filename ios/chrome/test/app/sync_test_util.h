@@ -166,7 +166,7 @@ void AddTabToFakeServer(const tab_groups::SavedTabGroupTab& tab);
 void DeleteTabOrGroupFromFakeServer(const base::Uuid& uuid);
 
 // Adds the `collaboration_id` on the server.
-void AddColloaborationGroupToFakeServer(const std::string& collaboration_id);
+void AddCollaborationGroupToFakeServer(const std::string& collaboration_id);
 
 // Deletes the shared group with `uuid` on the server.
 void DeleteSharedGroupFromFakeServer(const base::Uuid& uuid);

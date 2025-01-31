@@ -126,7 +126,6 @@
 <translation id="1076766328672150609">इस डिवाइस को अनलॉक करने के लिए, आपका बच्चा पिन का इस्तेमाल कर सकता है.</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216"><ph name="LANGUAGE" /> के लिए, स्पेलिंग जांच से जुड़े शब्दकोश को डाउनलोड नहीं किया जा सका. फिर से कोशिश करें.</translation>
-<translation id="1078029726086090536">अपने पासवर्ड की पुष्टि करें</translation>
 <translation id="1078037449555275327">ChromeVox की सेटिंग</translation>
 <translation id="1079242569060319448">क्या आपको पिन याद नहीं है?</translation>
 <translation id="1079285777677001938">यह मुमकिन है कि कुछ साइटों पर सुविधाएं काम न करें.</translation>
@@ -370,6 +369,7 @@
 <translation id="1241066500170667906"><ph name="EXPERIMENT_NAME" /> के लिए एक्सपेरिमेंट की स्थिति चुनें</translation>
 <translation id="124116460088058876">ज़्यादा भाषाएं</translation>
 <translation id="1241381048229838873">सभी बुकमार्क दिखाएं</translation>
+<translation id="1242044645101871359">फिर से साइन इन करें</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" /> आपकी सेटिंग को रीसेट करना चाहता है.</translation>
 <translation id="1243002225871118300">डिसप्ले और टेक्स्ट का साइज़ बदलना</translation>
 <translation id="1243314992276662751">अपलोड करें</translation>
@@ -1628,7 +1628,6 @@
 <translation id="2113921862428609753">अथॉरिटी इनफार्मेशन एक्सेस</translation>
 <translation id="2114145607116268663">इंस्टॉल नहीं किया जा सका. कंप्यूटर को फिर से चालू करना ज़रूरी है. कृपया अपने कंप्यूटर को रीस्टार्ट करें और फिर से कोशिश करें. गड़बड़ी का कोड <ph name="ERROR" /> है.</translation>
 <translation id="2114326799768592691">फ़्रेम को फिर से लोड करें</translation>
-<translation id="2114413269775311385">Android ऐप्लिकेशन के साथ इस खाते का इस्तेमाल करें. <ph name="LINK_BEGIN" />ऐप्लिकेशन की सेटिंग<ph name="LINK_END" /> में जाकर, Android ऐप्लिकेशन के लिए अनुमतियों को कंट्रोल किया जा सकता है.</translation>
 <translation id="2114995631896158695">कोई सिम कार्ड नहीं डाला गया</translation>
 <translation id="2116619964159595185">आम तौर पर साइटें, कम ऊर्जा वाले बीकन, हेल्थ या फ़िटनेस ट्रैकर या स्मार्ट लाइट बल्ब को सेट अप या सिंक करने जैसी सुविधाओं के लिए ब्लूटूथ डिवाइसों से कनेक्ट करती हैं</translation>
 <translation id="2117655453726830283">अगली स्लाइड</translation>
@@ -4647,6 +4646,7 @@
 <translation id="4242533952199664413">सेटिंग खोलें</translation>
 <translation id="4242577469625748426">डिवाइस पर नीति सेटिंग इंस्टॉल करने में विफल रहा: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385"><ph name="DOMAIN" /> आपके <ph name="BEGIN_LINK" />ब्राउज़र और प्रोफ़ाइल को मैनेज करता है<ph name="END_LINK" /></translation>
+<translation id="424315890655130736">पासफ़्रेज़ डालें</translation>
 <translation id="4243504193894350135">किसी गड़बड़ी की वजह से प्रिंटर रुक गया है</translation>
 <translation id="4243624244759495699"><ph name="LOCALE" />, ग्रेड <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">और ज़्यादा स्टाइलस ऐप ढूंढें</translation>
@@ -5369,7 +5369,6 @@
 <translation id="4766598565665644999">सभी एक्सटेंशन, <ph name="HOST" /> को पढ़ सकते हैं और उसमें बदलाव कर सकते हैं</translation>
 <translation id="4767427586072640478">बंद किए गए एक्सटेंशन के बारे में ज़्यादा जानें.</translation>
 <translation id="4768332406694066911">आपके पास इन संगठनों के प्रमाणपत्र हैं जो आपकी पहचान करते हैं</translation>
-<translation id="4768945955870840220">कुछ प्रॉडक्ट के लिए Chrome, वेब पर मौजूद समीक्षाएं इकट्ठा कर सकता है</translation>
 <translation id="4769632191812288342">आपके खाते के लिए स्टैंडर्ड सुरक्षा मोड को सेट किया गया है</translation>
 <translation id="4770119228883592393">अनुमति मांगी गई है, जवाब देने के लिए ⌘ + Option + डाउन ऐरो बटन दबाएं</translation>
 <translation id="4770755495532014179">अपने iPhone पर इस पासवर्ड का इस्तेमाल करें</translation>
@@ -8768,7 +8767,6 @@
 <translation id="7243092385765551741">क्या पासकी को मिटाना है?</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (श्रेष्ठ)</translation>
 <translation id="7246230585855757313">अपनी सुरक्षा कुंजी फिर से लगाएं और दोबारा कोशिश करें</translation>
-<translation id="724835896049478274">Android ऐप्लिकेशन के साथ इस्तेमाल करने के लिए उपलब्ध खाते</translation>
 <translation id="7248802599439396696">टैब बंद करें</translation>
 <translation id="7249197363678284330">इस सेटिंग को पता बार में जाकर बदलें.</translation>
 <translation id="7249764475759804559">फ़ाइलें खोलते समय, इस ऐप्लिकेशन को भी विकल्प के तौर पर दिखाएं</translation>
@@ -10716,7 +10714,6 @@
 <translation id="8625124982056504555">ChromeOS वाले डिवाइस और उसके कॉम्पोनेंट के सीरियल नंबर पढ़ता है</translation>
 <translation id="862542460444371744">&amp;एक्‍सटेंशन</translation>
 <translation id="8625663000550647058">आपका माइक्रोफ़ोन इस्तेमाल करने की अनुमति नहीं है</translation>
-<translation id="8625679025395572221">आपके खाते की सुरक्षा अब भी खतरे में हो सकती है.</translation>
 <translation id="8625916342247441948">साइटों को एचआईडी डिवाइसों से कनेक्ट करने की अनुमति न दें</translation>
 <translation id="862727964348362408">निलंबित</translation>
 <translation id="862750493060684461">CSS कैश मेमोरी</translation>
@@ -11599,7 +11596,6 @@
 <translation id="936801553271523408">सिस्टम का गड़बड़ी संबंधी डेटा</translation>
 <translation id="93766956588638423">एक्‍सटेंशन को ठीक करें</translation>
 <translation id="938623846785894166">फ़ाइल का कॉन्टेंट असामान्य है</translation>
-<translation id="939401694733344652">फ़िलहाल, इन खातों का इस्तेमाल Android ऐप्लिकेशन के साथ नहीं किया जा रहा है. अगर किसी खाते को इस Android ऐप्लिकेशन के साथ इस्तेमाल करने के लिए चुना जाता है, तो उस खाते का इस्तेमाल दूसरे Android ऐप्लिकेशन के साथ भी किया जा सकता है. <ph name="LINK_BEGIN" />सेटिंग &gt; खाते<ph name="LINK_END" /> में जाकर तय किया जा सकता है कि Android ऐप्लिकेशन किसी खाते का इस्तेमाल करे या नहीं.</translation>
 <translation id="939598580284253335">'पासफ़्रेज़' दर्ज करें</translation>
 <translation id="939736085109172342">नया फ़ोल्डर</translation>
 <translation id="940212040923880623">&amp;ढूंढें और बदलाव करें</translation>

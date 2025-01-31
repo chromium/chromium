@@ -37,7 +37,6 @@ include_rules = [
   "+components/user_education/common",
   "+components/user_education/test",
   "+components/user_education/webui",
-  "+components/user_notes",
   "+components/web_package",
   "+services/content/public",
   "+services/device/public/mojom",

@@ -126,7 +126,6 @@
 <translation id="1076766328672150609">আপনার সন্তান ডিভাইস আনলক করতে পিন ব্যবহার করতে পারে।</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216"><ph name="LANGUAGE" /> ভাষার বানান পরীক্ষা করার অভিধান ডাউনলোড করা যায়নি। আবার চেষ্টা করুন।</translation>
-<translation id="1078029726086090536">আপনার পাসওয়ার্ড যাচাই করুন</translation>
 <translation id="1078037449555275327">ChromeVox সেটিংস</translation>
 <translation id="1079242569060319448">পিন ভুলে গেছেন?</translation>
 <translation id="1079285777677001938">কিছু সাইটের ফিচার কাজ নাও করতে পারে।</translation>
@@ -370,6 +369,7 @@
 <translation id="1241066500170667906"><ph name="EXPERIMENT_NAME" />-এর জন্য পরীক্ষা করে দেখার স্ট্যাটাস বেছে নিন</translation>
 <translation id="124116460088058876">আরও ভাষা</translation>
 <translation id="1241381048229838873">সব বুকমার্কগুলি দেখান</translation>
+<translation id="1242044645101871359">আবার সাইন-ইন করুন</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" /> আপনার সেটিংস রিসেট করতে চায়।</translation>
 <translation id="1243002225871118300">ডিসপ্লে ও টেক্সটের সাইজ পরিবর্তন করুন</translation>
 <translation id="1243314992276662751">আপলোড</translation>
@@ -1628,7 +1628,6 @@
 <translation id="2113921862428609753">কর্তৃপক্ষ তথ্য অ্যাক্সেস</translation>
 <translation id="2114145607116268663">ইনস্টল করা যাচ্ছে না, রিবুট করতে হবে। আপনার কম্পিউটার রিস্টার্ট করে আবার চেষ্টা করুন। সমস্যার কোড হল <ph name="ERROR" />।</translation>
 <translation id="2114326799768592691">রিলোড ও ফ্রেম করুন</translation>
-<translation id="2114413269775311385">Android অ্যাপের সাথে এই অ্যাকাউন্ট ব্যবহার করুন। আপনি <ph name="LINK_BEGIN" />অ্যাপ সেটিংস<ph name="LINK_END" /> থেকে Android অ্যাপের অনুমতি নিয়ন্ত্রণ করতে পারবেন।</translation>
 <translation id="2114995631896158695">কোনও সিম কার্ড যোগ করা হয়নি</translation>
 <translation id="2116619964159595185">সাইটগুলি সাধারণত লো-এনার্জি বিকন, স্বাস্থ্য বা ফিটনেস ট্র্যাকার অথবা স্মার্ট আলোর বাল্বের মতো ফিচার সেট আপ অথবা সিঙ্ক করতে ব্লুটুথ ডিভাইস কানেক্ট করে</translation>
 <translation id="2117655453726830283">পরবর্তী স্লাইড</translation>
@@ -4648,6 +4647,7 @@
 <translation id="4242533952199664413">সেটিংস খুলুন</translation>
 <translation id="4242577469625748426">ডিভাইসে নীতি সেটিংস ইনস্টল করা যায়নি: <ph name="VALIDATION_ERROR" />৷</translation>
 <translation id="4242825475818569385"><ph name="DOMAIN" /> আপনার <ph name="BEGIN_LINK" />ব্রাউজার ও প্রোফাইল ম্যানেজ করে<ph name="END_LINK" /></translation>
+<translation id="424315890655130736">পাসফ্রেজ লিখুন</translation>
 <translation id="4243504193894350135">প্রিন্টার পজ করা আছে</translation>
 <translation id="4243624244759495699"><ph name="LOCALE" />, গ্রেড <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">আরও স্টাইলাস স্টাইলাস অ্যাপ খুঁজুন</translation>
@@ -5370,7 +5370,6 @@
 <translation id="4766598565665644999">সব এক্সটেনশন <ph name="HOST" /> পড়তে ও পরিবর্তন করতে পারবে</translation>
 <translation id="4767427586072640478">এক্সটেনশন বন্ধ সম্পর্কে আরও জানুন।</translation>
 <translation id="4768332406694066911">আপনার পরিচয় শনাক্ত করে এমন সংস্থাগুলি থেকে শংসাপত্র আপনার কাছে আছে</translation>
-<translation id="4768945955870840220">কিছু প্রোডাক্টের জন্য, Chrome ওয়েবের বিভিন্ন জায়গা থেকে রিভিউ সংগ্রহ করতে পারে</translation>
 <translation id="4769632191812288342">আপনি স্ট্যান্ডার্ড সুরক্ষা পাচ্ছেন</translation>
 <translation id="4770119228883592393">অনুমতি চাওয়া হয়েছে, উত্তর দিতে ⌘ + 'বিকল্প' বোতাম + 'নিম্নমুখী তীরচিহ্ন' বোতাম প্রেস করুন</translation>
 <translation id="4770755495532014179">আপনার iPhone-এ এই পাসওয়ার্ড ব্যবহার করুন</translation>
@@ -5512,6 +5511,7 @@
 <translation id="4862642413395066333">OCSP টি প্রতিক্রিয়া স্বাক্ষরিত হচ্ছে</translation>
 <translation id="4863702650881330715">কম্প্যাটিবিলিটি প্রসারিত করুন</translation>
 <translation id="4863769717153320198">মনে হচ্ছে <ph name="WIDTH" /> x <ph name="HEIGHT" /> (সাধারণ)</translation>
+<translation id="4864334716800138793">আপনার সংস্থা অফিস প্রোফাইল সেটআপ বন্ধ করে দিয়েছে</translation>
 <translation id="4864369630010738180">প্রবেশ করা হচ্ছে...</translation>
 <translation id="4864805589453749318">সেই অভিভাবককে বেছে নিন যিনি স্কুল অ্যাকাউন্ট যোগ করার জন্য অনুমতি দিয়েছেন।</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (ব্লক করা হয়েছে)</translation>
@@ -6473,6 +6473,7 @@
 <translation id="5559768063688681413">সেভ করা কোনও প্রিন্টার নেই</translation>
 <translation id="55601339223879446">প্রদর্শনের মধ্যে আপনার ডেস্কটপ সীমানার সামঞ্জস্যবিধান করুন</translation>
 <translation id="5561162485081632007">ব্রাউজ করার সময় কোনও ঝুঁকিপূর্ণ ঘটনা ঘটলে সেটি শনাক্ত করে আপনাকে সতর্ক করা হয়</translation>
+<translation id="5562588178647493983">আরও তথ্যের জন্য আপনার অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন</translation>
 <translation id="556321030400250233">স্থানীয় বা শেয়ার করা ফাইল</translation>
 <translation id="5563234215388768762">Google-এ সার্চ করুন অথবা URL টাইপ করুন</translation>
 <translation id="5563824734298958390">ট্যাব গ্রুপ ছেড়ে বেরিয়ে যেতে চান?</translation>
@@ -8770,7 +8771,6 @@
 <translation id="7243092385765551741">পাসকী মুছে দেবেন?</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (সর্বোত্তম)</translation>
 <translation id="7246230585855757313">আপনার নিরাপত্তা কী আবার লিখুন এবং আবার চেষ্টা করুন</translation>
-<translation id="724835896049478274">Android অ্যাপের জন্য উপলভ্য অ্যাকাউন্ট</translation>
 <translation id="7248802599439396696">ট্যাব বন্ধ করুন</translation>
 <translation id="7249197363678284330">অ্যাড্রেস বার থেকে এই সেটিং পরিবর্তন করুন।</translation>
 <translation id="7249764475759804559">ফাইল খোলার সময় একটি বিকল্প হিসেবে এই অ্যাপ অন্তর্ভুক্ত করুন</translation>
@@ -9806,6 +9806,7 @@
 <translation id="7968833647796919681">কার্য-সম্পাদনা ডেটা সংগ্রহ সক্ষম করুন</translation>
 <translation id="7968982339740310781">বিশদ বিবরণ দেখুন</translation>
 <translation id="7969046989155602842">কমান্ড</translation>
+<translation id="7969144945436590933">আরও বিবরণ দেখুন</translation>
 <translation id="7970673414865679092">ইথারনেট নেটওয়ার্কের বিবরণ</translation>
 <translation id="7972714317346275248">RSA এনক্রিপশানের সাথে PKCS #1 SHA-384</translation>
 <translation id="7973149423217802477">আপনি যে এটি পছন্দ করেন না, 'থাম্বস-ডাউন' আইকন সেই মতামত জমা দেয়।</translation>
@@ -10718,7 +10719,6 @@
 <translation id="8625124982056504555">ChromeOS ডিভাইস ও কম্পোনেন্ট সিরিয়াল নম্বর পড়ুন</translation>
 <translation id="862542460444371744">&amp;এক্সটেনশনস</translation>
 <translation id="8625663000550647058">আপনার মাইক্রোফোন ব্যবহার করার অনুমতি দেওয়া হয়নি</translation>
-<translation id="8625679025395572221">আপনার অ্যাকাউন্টে এখনও নিরাপত্তার ঝুঁকি থাকতে পারে।</translation>
 <translation id="8625916342247441948">সাইটগুলিকে HID ডিভাইস কানেক্ট করতে দেয় না</translation>
 <translation id="862727964348362408">সাসপেন্ড</translation>
 <translation id="862750493060684461">CSS ক্যাশে</translation>
@@ -11601,7 +11601,6 @@
 <translation id="936801553271523408">সিস্টেম ডায়াগনোস্টিক ডেটা</translation>
 <translation id="93766956588638423">এক্সটেনশন মেরামত করুন</translation>
 <translation id="938623846785894166">যে ফাইলটি বেশি ব্যবহার করা হয়না</translation>
-<translation id="939401694733344652">এই মুহূর্তে এইসব অ্যাকাউন্ট Android অ্যাপের সাথে ব্যবহার করা হচ্ছে না। এই Android অ্যাপের সাথে ব্যবহারের জন্য কোনও অ্যাকাউন্ট বেছে নিলে, সেটি অন্যান্য Android অ্যাপের ক্ষেত্রেও ব্যবহার করা যাবে। আপনি <ph name="LINK_BEGIN" />সেটিংস &gt; অ্যাকাউন্ট<ph name="LINK_END" /> বিকল্প থেকে Android অ্যাপের অ্যাক্সেস পরিবর্তন করতে পারবেন।</translation>
 <translation id="939598580284253335">পাসফ্রেজ প্রবেশ করান</translation>
 <translation id="939736085109172342">নতুন ফোল্ডার</translation>
 <translation id="940212040923880623">&amp;খুঁজুন ও এডিট করুন</translation>

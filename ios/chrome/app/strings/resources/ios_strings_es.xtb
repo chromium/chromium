@@ -263,7 +263,6 @@
 <translation id="2074131957428911366">Siempre puedes seleccionar qué contenido quieres sincronizar en los <ph name="BEGIN_LINK" />ajustes<ph name="END_LINK" />.</translation>
 <translation id="2078437078822043850">Puedes deslizar hacia la derecha para navegar en Incógnito.</translation>
 <translation id="2079545284768500474">Deshacer</translation>
-<translation id="2082906935540894275">Las funciones más relevantes para ti en diferentes momentos.</translation>
 <translation id="2085876078937250610">Guardar…</translation>
 <translation id="2096239473850415494">No se ha podido descargar</translation>
 <translation id="2096716221239095980">Eliminar todos los datos</translation>
@@ -548,7 +547,6 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="344589138074534176">Más información sobre Google Lens</translation>
 <translation id="3447332786336558089">Después de cerrar sesión, las pestañas se cerrarán y los datos de la cuenta no guardados se eliminarán de este dispositivo. Esto podría incluir las contraseñas, el historial y más.</translation>
-<translation id="3449016921756175697">Sugerencias útiles que hacen que la navegación sea mejor y más fácil.</translation>
 <translation id="345348365500626747">Dirección encontrada</translation>
 <translation id="3464194322481586217">No se ha podido hacer un seguimiento del precio.</translation>
 <translation id="3469117812148449995">Opciones para guardar contraseña</translation>
@@ -718,6 +716,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="422477017457571619">Protección basada en IA en tiempo real contra descargas, extensiones y sitios peligrosos, que se basa en el envío de tus datos de navegación a Google.</translation>
 <translation id="4231395118547300571">Notificaciones de Comprobación de tu estado activadas</translation>
 <translation id="4237377247299956313">Toca <ph name="BEGIN_BOLD" />App del navegador por omisión<ph name="END_BOLD" /></translation>
+<translation id="4241893428331130998">No hay contraseñas ni llaves de acceso guardadas</translation>
 <translation id="4242533952199664413">Abrir Configuración</translation>
 <translation id="4250432749243022864">{count,plural, =0{Abrir {count} pestañas}=1{Abrir {count} pestaña}other{Abrir {count} pestañas}}</translation>
 <translation id="4250680216510889253">No</translation>
@@ -922,7 +921,6 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="5127538504377457572">Activo hace <ph name="DAYS" /> días</translation>
 <translation id="5128788795241319992">Explora el nuevo menú</translation>
 <translation id="5132942445612118989">Sincroniza tus contraseñas, tu historial y más en todos tus dispositivos</translation>
-<translation id="5137526732000415202">La última pestaña abierta en todos tus dispositivos.</translation>
 <translation id="5145331760738811130">Salir de la función de cambio de pestaña</translation>
 <translation id="5157638238828697074">Se ha producido un error. No se ha podido abrir la aplicación.</translation>
 <translation id="5163417375525818870">PDF</translation>
@@ -1023,7 +1021,6 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="559567008082979829">Configura tus descargas para que se eliminen al cabo de un mes.</translation>
 <translation id="5596627076506792578">Más opciones</translation>
 <translation id="560322036295180549">Desactivado por tu organización</translation>
-<translation id="5611107723541161735">Accesos directos a sitios que has visitado recientemente en este dispositivo.</translation>
 <translation id="5611398002774823980">Guardar en la cuenta</translation>
 <translation id="5613297089029360427">Ordenar por más recientes</translation>
 <translation id="5614553682702429503">¿Guardar la contraseña?</translation>
@@ -1487,7 +1484,6 @@ Mientras estás en modo Incógnito, los sitios no pueden usar tus cookies para v
 <translation id="7512075701202892785">Tu navegador favorito, ahora en iPad</translation>
 <translation id="7512909159512473473">Introducir frase de contraseña…</translation>
 <translation id="7514365320538308">Descargar</translation>
-<translation id="7521117365186708026">Configura consejos que te ayuden a sacar el máximo partido de Chrome.</translation>
 <translation id="7524055474074101597">Accede a tus contraseñas y más en tus aplicaciones.</translation>
 <translation id="75362970626182391">Nuevo grupo de pestañas</translation>
 <translation id="7537586195939242955">No se puede instalar tu tarjeta en Passbook en este momento.</translation>
@@ -1600,6 +1596,7 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="7982789257301363584">Red</translation>
 <translation id="7987685713885608670">Para una mayor seguridad, cifra las contraseñas en tu dispositivo antes de que se guarden en el Gestor de contraseñas de Google.</translation>
 <translation id="798991908416757345">Los grupos de pestañas no están disponibles</translation>
+<translation id="7993170188789685695">Toca dos veces para cerrar esta notificación.</translation>
 <translation id="7993619969781047893">Es posible que las funciones de algunos sitios no funcionen correctamente</translation>
 <translation id="7996239959906074962">Configurar…</translation>
 <translation id="800361585186029508">Abre las URL introducidas en Google Chrome.</translation>
@@ -1706,7 +1703,6 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="8439758443371991593">Ocultar Añadir a lista de lectura</translation>
 <translation id="8449869326050867919">Contraseña compartida</translation>
 <translation id="8453847087068411809">No detectar nunca paquetes automáticamente</translation>
-<translation id="846158969830690371">Descubre si tienes la configuración más segura o si necesitas revisar algo.</translation>
 <translation id="8473863474539038330">Direcciones y más</translation>
 <translation id="8474378002946546633">Permitir notificaciones</translation>
 <translation id="8477178913400731244">Eliminar datos</translation>

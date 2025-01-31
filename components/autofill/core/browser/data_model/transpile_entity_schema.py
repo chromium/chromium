@@ -16,10 +16,11 @@ import json
 import re
 import sys
 
-# For 'foo bar' returns 'kFooBar', which is the conventional format of C++
+# For 'foo-bar' returns 'kFooBar', which is the conventional format of C++
 # constants.
 def name_to_constant(str):
-  return 'k' + ''.join([s.capitalize() for s in str.split(' ')])
+  return 'k' + ''.join(
+    re.sub('[^\w\s]', '', s.capitalize()) for s in str.split())
 
 # The enum constant's name of an entity type.
 def entity_name(entity, qualified = True):

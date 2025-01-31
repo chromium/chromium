@@ -98,9 +98,16 @@ void StorageAccessHandle::BindCaches(
     host.coep_reporter()->Clone(
         coep_reporter_remote.InitWithNewPipeAndPassReceiver());
   }
+  mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>
+      dip_reporter_remote;
+  if (host.dip_reporter()) {
+    host.dip_reporter()->Clone(
+        dip_reporter_remote.InitWithNewPipeAndPassReceiver());
+  }
   host.GetProcess()->BindCacheStorage(
       host.cross_origin_embedder_policy(), std::move(coep_reporter_remote),
       host.policy_container_host()->policies().document_isolation_policy,
+      std::move(dip_reporter_remote),
       storage::BucketLocator::ForDefaultBucket(
           blink::StorageKey::CreateFirstParty(host.GetStorageKey().origin())),
       std::move(receiver));

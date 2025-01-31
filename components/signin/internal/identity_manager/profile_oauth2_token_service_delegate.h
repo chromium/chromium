@@ -293,6 +293,7 @@ class ProfileOAuth2TokenServiceDelegate {
                             const GoogleServiceAuthError& error);
 #if BUILDFLAG(IS_IOS)
   void FireAccountsOnDeviceChanged();
+  void FireAccountOnDeviceUpdated(const AccountInfo& account_info);
 #endif
 
   // Helper class to scope batch changes.

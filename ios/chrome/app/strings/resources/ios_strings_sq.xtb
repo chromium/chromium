@@ -263,7 +263,6 @@
 <translation id="2074131957428911366">Mund të zgjedhësh gjithmonë se çfarë do të sinkronizosh te <ph name="BEGIN_LINK" />cilësimet<ph name="END_LINK" />.</translation>
 <translation id="2078437078822043850">Mund të lëvizësh djathtas për të shfletuar në modalitetin "I fshehtë".</translation>
 <translation id="2079545284768500474">Zhbëj</translation>
-<translation id="2082906935540894275">Veçoritë më të përshtatshme për ty në kohë të ndryshme.</translation>
 <translation id="2085876078937250610">Ruaj…</translation>
 <translation id="2096239473850415494">Nuk mund të shkarkohej</translation>
 <translation id="2096716221239095980">Fshi të gjitha të dhënat</translation>
@@ -548,7 +547,6 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="344589138074534176">Mëso më shumë rreth "Lentes së Google"</translation>
 <translation id="3447332786336558089">Pasi të dalësh nga llogaria, skedat do të mbyllen dhe të dhënat e paruajtura të llogarisë do të fshihen nga kjo pajisje. Kjo mund të përfshijë fjalëkalimet, historikun etj.</translation>
-<translation id="3449016921756175697">Sugjerime të dobishme që e bëjnë shfletimin më të mirë dhe më të lehtë.</translation>
 <translation id="345348365500626747">Adresa u gjet</translation>
 <translation id="3464194322481586217">Çmimi nuk mund të monitorohej.</translation>
 <translation id="3469117812148449995">Opsionet për të ruajtur fjalëkalimin</translation>
@@ -922,7 +920,6 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="5127538504377457572">Aktive <ph name="DAYS" /> ditë më parë</translation>
 <translation id="5128788795241319992">Eksploro menynë e re</translation>
 <translation id="5132942445612118989">Sinkronizo fjalëkalimet, historikun etj. në të gjitha pajisjet</translation>
-<translation id="5137526732000415202">Skeda e fundit e hapur nëpër të gjitha pajisjet e tua.</translation>
 <translation id="5145331760738811130">Largohu nga "Ndërruesi i skedave"</translation>
 <translation id="5157638238828697074">Ndodhi një gabim. Aplikacioni nuk mund të hapej.</translation>
 <translation id="5163417375525818870">Skedarët PDF</translation>
@@ -1023,7 +1020,6 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="559567008082979829">Cakto që shkarkimet e tua të fshihen pas një muaji</translation>
 <translation id="5596627076506792578">Më shumë opsione</translation>
 <translation id="560322036295180549">Çaktivizuar nga organizata jote</translation>
-<translation id="5611107723541161735">Shkurtoret për te sajtet që ke vizituar së fundi në këtë pajisje.</translation>
 <translation id="5611398002774823980">Ruaje te llogaria</translation>
 <translation id="5613297089029360427">Rendit sipas "Më të fundit"</translation>
 <translation id="5614553682702429503">Të ruhet fjalëkalimi?</translation>
@@ -1487,7 +1483,6 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <translation id="7512075701202892785">Shfletuesi që të pëlqen tani në iPad</translation>
 <translation id="7512909159512473473">Fut frazën e kalimit…</translation>
 <translation id="7514365320538308">Shkarko</translation>
-<translation id="7521117365186708026">Konfiguro këshilla që të ndihmojnë të përfitosh sa më shumë nga Chrome.</translation>
 <translation id="7524055474074101597">Qasu te fjalëkalimet e tua etj. nëpër aplikacione.</translation>
 <translation id="75362970626182391">Grupi i ri i skedave</translation>
 <translation id="7537586195939242955">Na vjen keq, "Pass" nuk mund të instalohet te "Passbook" në këtë moment.</translation>
@@ -1605,6 +1600,7 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="800361585186029508">Hap URL-të e futura në Google Chrome.</translation>
 <translation id="8005666035647241369">Te "Menaxheri i fjalëkalimeve të Google" në këtë pajisje</translation>
 <translation id="8011489434346330032">Web Inspector</translation>
+<translation id="8017015647846870183">Nga "Menaxheri i fjalëkalimeve i Google", duke përfshirë fjalëkalimet dhe çelësat e kalimit</translation>
 <translation id="802154636333426148">Shkarkimi dështoi</translation>
 <translation id="8023170444051056234">Do të humbasësh menjëherë qasjen te grupi i skedave "<ph name="GROUP_NAME" />" dhe ai do të fshihet nga të gjitha pajisjet e tua</translation>
 <translation id="8023878949384262191">Zgjeron seksionin.</translation>
@@ -1705,7 +1701,6 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="8439758443371991593">Fshih "Shto te 'Lista e leximit'"</translation>
 <translation id="8449869326050867919">Fjalëkalimi u nda</translation>
 <translation id="8453847087068411809">Mos zbulo asnjëherë automatikisht pakot</translation>
-<translation id="846158969830690371">Mëso nëse ke cilësimet më të sigurta ose duhet të rishikosh ndonjë gjë.</translation>
 <translation id="8473863474539038330">Adresat dhe të tjera</translation>
 <translation id="8474378002946546633">Lejo njoftimet</translation>
 <translation id="8477178913400731244">Fshi të dhënat</translation>

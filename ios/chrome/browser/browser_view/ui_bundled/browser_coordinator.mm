@@ -82,6 +82,7 @@
 #import "ios/chrome/browser/download/model/external_app_util.h"
 #import "ios/chrome/browser/download/model/pass_kit_tab_helper.h"
 #import "ios/chrome/browser/download/ui_bundled/ar_quick_look_coordinator.h"
+#import "ios/chrome/browser/download/ui_bundled/auto_deletion/auto_deletion_coordinator.h"
 #import "ios/chrome/browser/download/ui_bundled/download_manager_coordinator.h"
 #import "ios/chrome/browser/download/ui_bundled/features.h"
 #import "ios/chrome/browser/download/ui_bundled/pass_kit_coordinator.h"
@@ -178,6 +179,7 @@
 #import "ios/chrome/browser/shared/public/commands/activity_service_share_url_command.h"
 #import "ios/chrome/browser/shared/public/commands/add_contacts_commands.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/auto_deletion_commands.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -310,6 +312,7 @@ enum class ToolbarKind {
     ActivityServiceCommands,
     AddContactsCommands,
     AppLauncherTabHelperBrowserPresentationProvider,
+    AutoDeletionCommands,
     AutofillAddCreditCardCoordinatorDelegate,
     BrowserCoordinatorCommands,
     BrowserViewVisibilityConsumer,
@@ -629,6 +632,7 @@ enum class ToolbarKind {
   QuickDeleteCoordinator* _quickDeleteCoordinator;
   LensPromoCoordinator* _lensPromoCoordinator;
   EnhancedSafeBrowsingPromoCoordinator* _enhancedSafeBrowsingPromoCoordinator;
+  AutoDeletionCoordinator* _autoDeletionCoordiantor;
 }
 
 #pragma mark - ChromeCoordinator
@@ -827,6 +831,7 @@ enum class ToolbarKind {
   [self dismissEnhancedSafeBrowsingPromo];
 
   [self dismissAccountMenu];
+  [self dismissAutoDeletionActionSheet];
 
   [self.viewController clearPresentedStateWithCompletion:completion
                                           dismissOmnibox:dismissOmnibox];
@@ -977,6 +982,7 @@ enum class ToolbarKind {
   // handlers.
   NSArray<Protocol*>* protocols = @[
     @protocol(ActivityServiceCommands),
+    @protocol(AutoDeletionCommands),
     @protocol(AutofillCommands),
     @protocol(BrowserCoordinatorCommands),
     @protocol(ContextualPanelEntrypointIPHCommands),
@@ -1584,6 +1590,7 @@ enum class ToolbarKind {
   [self dismissEditAddressBottomSheet];
   [self dismissLensPromo];
   [self dismissEnhancedSafeBrowsingPromo];
+  [self dismissAutoDeletionActionSheet];
 }
 
 // Starts independent mediators owned by this coordinator.
@@ -1801,6 +1808,27 @@ enum class ToolbarKind {
                                                   originRect:command.sourceRect
                                                       anchor:nil];
   [self.sharingCoordinator start];
+}
+
+#pragma mark - AutoDeletionCommands
+
+- (void)presentAutoDeletionActionSheetWithDownloadTask:
+    (web::DownloadTask*)task {
+  // Do not present the action sheet if it is already being presented.
+  if (_autoDeletionCoordiantor) {
+    return;
+  }
+
+  _autoDeletionCoordiantor = [[AutoDeletionCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser
+                    downloadTask:task];
+  [_autoDeletionCoordiantor start];
+}
+
+- (void)dismissAutoDeletionActionSheet {
+  [_autoDeletionCoordiantor stop];
+  _autoDeletionCoordiantor = nil;
 }
 
 #pragma mark - AutofillBottomSheetCommands

@@ -8,7 +8,7 @@ import type {ModuleIdName, PageRemote} from 'chrome://new-tab-page/new_tab_page.
 import {PageCallbackRouter, PageHandlerRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
-import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -144,6 +144,59 @@ suite('NewTabPageModulesModuleRegistryTest', () => {
     assertEquals(1, modules.length);
     assertEquals('bar', modules[0]!.descriptor.id);
     assertDeepEquals(barElement, modules[0]!.elements[0]);
+  });
+
+  suite('initializes module by id', () => {
+    test(
+        'returns module if valid descriptor and instantiated element',
+        async () => {
+          // Arrange.
+          const fooModule = createElement();
+          const fooDescriptor =
+              new ModuleDescriptor('foo', () => Promise.resolve(fooModule));
+          const moduleRegistry = new ModuleRegistry([fooDescriptor]);
+
+          // Act.
+          const modulesPromise =
+              moduleRegistry.initializeModuleById(fooDescriptor.id, 0);
+
+          // Assert.
+          const module = await modulesPromise;
+          assertTrue(!!module);
+          assertEquals('foo', module.descriptor.id);
+          assertDeepEquals(fooModule, module.elements[0]);
+        });
+
+    test('returns null if missing descriptor', async () => {
+      // Arrange.
+      const fooModule = createElement();
+      const fooDescriptor =
+          new ModuleDescriptor('foo', () => Promise.resolve(fooModule));
+      const moduleRegistry = new ModuleRegistry([fooDescriptor]);
+
+      // Act.
+      const barDescriptor = new ModuleDescriptor('bar', initNullModule);
+      const modulesPromise =
+          moduleRegistry.initializeModuleById(barDescriptor.id, 0);
+
+      // Assert.
+      const module = await modulesPromise;
+      assertFalse(!!module);
+    });
+
+    test('returns null if uninstantiated element', async () => {
+      // Arrange.
+      const fooDescriptor = new ModuleDescriptor('foo', initNullModule);
+      const moduleRegistry = new ModuleRegistry([fooDescriptor]);
+
+      // Act.
+      const modulesPromise =
+          moduleRegistry.initializeModuleById(fooDescriptor.id, 0);
+
+      // Assert.
+      const module = await modulesPromise;
+      assertFalse(!!module);
+    });
   });
 
   suite('reorder', () => {

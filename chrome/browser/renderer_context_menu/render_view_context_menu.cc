@@ -175,7 +175,6 @@
 #include "components/translate/core/browser/translate_prefs.h"
 #include "components/translate/core/common/translate_util.h"
 #include "components/url_formatter/url_formatter.h"
-#include "components/user_notes/user_notes_features.h"
 #include "components/user_prefs/user_prefs.h"
 #include "components/vector_icons/vector_icons.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"

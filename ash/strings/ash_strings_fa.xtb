@@ -731,6 +731,7 @@
 <translation id="3522979239100719575">درحال جستجوی نمایه‌های دردسترس. ممکن است چند دقیقه طول بکشد.</translation>
 <translation id="3526440770046466733">باز کردن پیوند در برگه جدید و ماندن در برگه کنونی</translation>
 <translation id="353086728817903341">به <ph name="NUM_DEVICES" /> دستگاه متصل است</translation>
+<translation id="3532247131850366052">‏«کاربرگ‌نگار Google» ایجاد نشد</translation>
 <translation id="3533126039236445965">برنامه‌های موجود در قفسه</translation>
 <translation id="3539957339480430241">نقطه اتصال <ph name="DEVICE_NAME" /></translation>
 <translation id="3540893133818942399">بستن راه‌اندازی مشاهده عکس‌ها و رسانه‌های جدید تلفن</translation>
@@ -829,6 +830,7 @@
 <translation id="380165613292957338">سلام، چه کمکی می‌توانم بکنم؟</translation>
 <translation id="3804737937830804242">جمع کردن دوربین</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{‫۱ اموجی. نتیجه دیگری وجود ندارد.}one{‫# اموجی. نتیجه دیگری وجود ندارد.}other{‫# اموجی. نتیجه دیگری وجود ندارد.}}</translation>
+<translation id="3822403841174077928">با قالب‌بندی کپی نشد</translation>
 <translation id="3824784079442479685">با این کار، دسترسی به دوربین برای <ph name="APP_NAME" /> و همه برنامه‌ها و وب‌سایت‌های دارای اجازه دوربین مجاز می‌شود. ممکن است لازم باشد صفحه وب را بازآوری کنید یا برنامه را دوباره راه‌اندازی کنید.</translation>
 <translation id="3826099427150913765">رفتن به گذرواژه</translation>
 <translation id="383058930331066723">حالت «بهینه‌سازی باتری» روشن است</translation>
@@ -1215,6 +1217,7 @@
 <translation id="5043679421800073804">کلیک کردن یا ضربه زدن روی آخرین نماد در قفسه</translation>
 <translation id="504465286040788597">پاراگراف قبلی</translation>
 <translation id="5045550434625856497">گذرواژه نادرست</translation>
+<translation id="5058794129231928255">‏«سندنگار Google» ایجاد نشد</translation>
 <translation id="5062496344832867502">RAM</translation>
 <translation id="5068762093486106012">اگر هنگام بی‌صدا بودن صحبت کنید به شما اطلاع داده می‌شود. صدا هرگز از دستگاهتان خارج نمی‌شود.</translation>
 <translation id="5077416371682039027">راه‌اندازی مشاهده عکس‌ها، رسانه‌ها، اعلان‌ها، و برنامه‌های جدید تلفن</translation>
@@ -1478,7 +1481,6 @@
 <translation id="589817443623831496">اسکن نقطه‌ای</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">زرد</translation>
-<translation id="5911231045062997865">‏درحال‌حاضر، از پنجره‌های Lacros پشتیبانی نمی‌شود. برنامه‌های دیگر ذخیره خواهد شد.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916646100036936191">اعلان جدید، <ph name="NOTIFICATION_COUNT" /> مورد در مجموع</translation>
 <translation id="5916664084637901428">روشن</translation>
@@ -1648,6 +1650,7 @@
 <translation id="6468406072297048412">{0,plural, =1{تا ۱ دقیقه دیگر دستگاه را به نسخه قبلی به‌روزرسانی کنید}one{تا # دقیقه دیگر دستگاه را به نسخه قبلی به‌روزرسانی کنید}other{تا # دقیقه دیگر دستگاه را به نسخه قبلی به‌روزرسانی کنید}}</translation>
 <translation id="6469104339369989396">روشن/خاموش کردن نقطه اتصال</translation>
 <translation id="6477681113376365978">فایل بارگیری نشد</translation>
+<translation id="648135757200234041">مخاطب ایجاد نشد</translation>
 <translation id="6482559668224714696">ذره‌بین تمام‌صفحه</translation>
 <translation id="6485086611007560630">آب‌وهوا (دردسترس نیست)</translation>
 <translation id="6490471652906364588">‏دستگاه USB-C (درگاه سمت راست)</translation>
@@ -2288,6 +2291,7 @@
 <translation id="8653151467777939995">نمایش تنظیمات اعلان. اعلان‌ها روشن است</translation>
 <translation id="8657066291275741003">حروف کوچک</translation>
 <translation id="8660331759611631213">‏Square root of 71 (جذر ۷۱)</translation>
+<translation id="8662921061190671299">به «تقویم» اضافه نشد</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">برای ضبط نماگرفت از یک بخش صفحه، کلید «ورود» را فشار دهید</translation>
 <translation id="8676770494376880701">شارژر برق متصل شده ضعیف است</translation>

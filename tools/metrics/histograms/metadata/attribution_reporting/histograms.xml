@@ -636,6 +636,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Conversions.GetAllDataKeysTime" units="ms"
+    expires_after="2025-07-29">
+  <owner>linnan@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Attribution Reporting API considers reporting origins as data keys for the
+    browsing data model. Records the time it takes to get all data keys from
+    storage. Logged any time the data keys are requested in Chrome.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.GetMeasurementStatusTime" units="ms"
     expires_after="2025-03-30">
   <owner>linnan@chromium.org</owner>

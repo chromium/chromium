@@ -263,7 +263,6 @@
 <translation id="2074131957428911366">Sempre podes escoller na <ph name="BEGIN_LINK" />configuración<ph name="END_LINK" /> o contido que queres sincronizar.</translation>
 <translation id="2078437078822043850">Podes desprazarte cara á dereita para navegar no modo de incógnito.</translation>
 <translation id="2079545284768500474">Desfacer</translation>
-<translation id="2082906935540894275">As funcións máis relevantes para ti segundo o momento.</translation>
 <translation id="2085876078937250610">Gardar…</translation>
 <translation id="2096239473850415494">Non se puido descargar</translation>
 <translation id="2096716221239095980">Eliminar todos os datos</translation>
@@ -548,7 +547,6 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="344589138074534176">Máis información sobre Google Lens</translation>
 <translation id="3447332786336558089">Despois de pechar sesión, as pestanas pecharanse e os datos das contas que non estean gardados eliminaranse deste dispositivo. Esta información pode incluír contrasinais ou datos do historial, entre outras cousas.</translation>
-<translation id="3449016921756175697">Suxestións útiles que facilitan e melloran a navegación.</translation>
 <translation id="345348365500626747">Enderezo atopado</translation>
 <translation id="3464194322481586217">Non se puido facer un seguimento do prezo.</translation>
 <translation id="3469117812148449995">Opcións para gardar un contrasinal</translation>
@@ -922,7 +920,6 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="5127538504377457572">Dispositivo activo hai <ph name="DAYS" /> días</translation>
 <translation id="5128788795241319992">Explora o novo menú</translation>
 <translation id="5132942445612118989">Sincroniza os teus contrasinais, o historial e moito máis en todos os dispositivos</translation>
-<translation id="5137526732000415202">A última pestana que abrises en todos os teus dispositivos.</translation>
 <translation id="5145331760738811130">Saír do selector de pestanas</translation>
 <translation id="5157638238828697074">Produciuse un erro. Non se puido abrir a aplicación.</translation>
 <translation id="5163417375525818870">PDF</translation>
@@ -1023,7 +1020,6 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="559567008082979829">Configura as descargas para que se eliminen ao cabo dun mes.</translation>
 <translation id="5596627076506792578">Máis opcións</translation>
 <translation id="560322036295180549">Opción desactivada pola túa organización</translation>
-<translation id="5611107723541161735">Os atallos aos sitios que visitases recentemente neste dispositivo.</translation>
 <translation id="5611398002774823980">Gardar na conta</translation>
 <translation id="5613297089029360427">Ordenar por máis recente</translation>
 <translation id="5614553682702429503">Queres gardar o contrasinal?</translation>
@@ -1487,7 +1483,6 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7512075701202892785">Goza en iPad do navegador que tanto che gusta</translation>
 <translation id="7512909159512473473">Poñer frase de acceso…</translation>
 <translation id="7514365320538308">Descargar</translation>
-<translation id="7521117365186708026">Consellos de configuración para tirar o máximo proveito de Chrome.</translation>
 <translation id="7524055474074101597">Accede aos teus contrasinais e moito máis en todas as aplicacións.</translation>
 <translation id="75362970626182391">Novo grupo de pestanas</translation>
 <translation id="7537586195939242955">Non se pode instalar o teu pase en Passbook neste momento.</translation>
@@ -1605,6 +1600,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="800361585186029508">Abre os URL introducidos en Google Chrome.</translation>
 <translation id="8005666035647241369">No xestor de contrasinais de Google neste dispositivo</translation>
 <translation id="8011489434346330032">Web Inspector</translation>
+<translation id="8017015647846870183">Do xestor de contrasinais de Google, incluídos os contrasinais e as claves de acceso</translation>
 <translation id="802154636333426148">Produciuse un erro na descarga</translation>
 <translation id="8023170444051056234">Perderás inmediatamente o acceso ao grupo de pestanas "<ph name="GROUP_NAME" />", que se eliminará de todos os dispositivos</translation>
 <translation id="8023878949384262191">Amplía a sección.</translation>
@@ -1705,7 +1701,6 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8439758443371991593">Ocultar Engadir á lista de lectura</translation>
 <translation id="8449869326050867919">Compartiuse o contrasinal</translation>
 <translation id="8453847087068411809">Non detectar nunca paquetes automaticamente</translation>
-<translation id="846158969830690371">Descubre se a configuración que tes é a máis segura ou se necesitas revisar algo.</translation>
 <translation id="8473863474539038330">Enderezos e moito máis</translation>
 <translation id="8474378002946546633">Permitir notificacións</translation>
 <translation id="8477178913400731244">Eliminar datos</translation>

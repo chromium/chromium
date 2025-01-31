@@ -12340,7 +12340,7 @@
             ]
         }
     ],
-    "IOSTabGroupSynciPhone": [
+    "IOSTabGroupSynciPad": [
         {
             "platforms": [
                 "ios"
@@ -17161,7 +17161,6 @@
                         "PlusAddressFallbackFromContextMenu",
                         "PlusAddressGlobalToggle",
                         "PlusAddressPreallocation",
-                        "PlusAddressUserOnboardingEnabled",
                         "PlusAddressesEnabled"
                     ]
                 }

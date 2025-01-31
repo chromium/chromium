@@ -674,7 +674,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2157640075051554492">Hinna jälgimise märguanded</translation>
 <translation id="21613918653299710">Veebipõhised pildigaleriid</translation>
 <translation id="2161656808144014275">Tekst</translation>
-<translation id="2162510787844374618">Pangaga ühenduse võtmine …</translation>
 <translation id="2162620598375156287">Nüüd <ph name="CURRENT_PRICE" /> veebisaidil <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Kontrollige, kas nimes <ph name="HOST_NAME" /> on kirjaviga.</translation>
 <translation id="2166049586286450108">Täielik administraatorijuurdepääs</translation>
@@ -2408,6 +2407,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5254043433801397071">Prindi sisu optimeerimine</translation>
 <translation id="5255583962255635076">tööprofiili rakendatud brauseri eeskirjad.</translation>
 <translation id="5255690596502591079">Jäädvusta ikkagi</translation>
+<translation id="5255771248404149177">Teie kaardi teenusepakkuja soovib veenduda, et see olete teie</translation>
 <translation id="5255833070095767006">350 × 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{Administraatori reegel ei soovita seda faili sihtkohta <ph name="DESTINATION_NAME" /> kopeerida}other{Administraatori reegel ei soovita neid faile sihtkohta <ph name="DESTINATION_NAME" /> kopeerida}}</translation>
 <translation id="5263867360296733198">Enne üleslaadimist on ülevaatus nõutav</translation>
@@ -2428,7 +2428,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5288108484102287882">Reegli väärtuste valideerimisel ilmnesid hoiatused</translation>
 <translation id="5289384342738547352">Mitme dokumendi käsitlemine</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{Täna värskendamine on kohustuslik}=2{Värskendamine on kohustuslik homme}other{Värskendamine on kohustuslik # päeva pärast}}</translation>
-<translation id="5292714443869769806">Ava operatsioonisüsteemi <ph name="OPERATING_SYSTEM" /> seaded</translation>
 <translation id="5293919335876685914">Kupeeautod</translation>
 <translation id="5298618990685278995">esmase mustandi.</translation>
 <translation id="5299298092464848405">Reegli sõelumisel ilmnes viga</translation>
@@ -2556,6 +2555,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5518352028556756716">Enamik saite ei saa kasutada kolmanda osapoole küpsisefaile teie sirvimise ajal jälgimiseks ja saidid ei saa inkognito režiimis kasutada kolmanda osapoole küpsisefaile.</translation>
 <translation id="5519516356611866228">Koos teie tehtud muudatustega</translation>
 <translation id="5519696598216267194">Paber (augustatud)</translation>
+<translation id="5520105693415771152">Kas kuvatav teave ei ole ajakohane? Võtke selle värskendamiseks ühendust teenusepakkujaga.</translation>
 <translation id="5521782189689806907">Kapid</translation>
 <translation id="5523118979700054094">Reegli nimi</translation>
 <translation id="5523588073846127669">Kaupmees ei aktsepteeri seda virtuaalkaarti</translation>
@@ -3651,6 +3651,7 @@ Lisateave:
 <translation id="745640750744109667">A0 × 3</translation>
 <translation id="7457071735008326060">Kaubaveokid ja haagised</translation>
 <translation id="7461924472993315131">Kinnita</translation>
+<translation id="746329643760972486">MacOS</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> saab teada, et külastasite URL-i <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7465963048299965912">10 × 13 tolli</translation>
 <translation id="7469935732330206581">Vorm ei ole turvaline</translation>
@@ -3882,6 +3883,7 @@ Lisateave:
 <translation id="784404208867107517">Rühmitatud ajalugu</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Puudub}=1{1 rakendus (<ph name="EXAMPLE_APP_1" />)}=2{2 rakendust (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# rakendust (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Ilmnes viga. Proovige uuesti.</translation>
+<translation id="784623644169604270">Hiljutisi tehinguid ei ole</translation>
 <translation id="785476343534277563">Koolisport</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7860345425589240791">Sisestage uus aegumiskuupäev ja kaardi <ph name="SIDE_OF_CARD" /> olev CVC</translation>
@@ -3920,7 +3922,6 @@ Lisateave:
 <translation id="7942349550061667556">Punane</translation>
 <translation id="7943397946612013052">Blokeeritud allalaadimine</translation>
 <translation id="7943893128817522649">Saab küsida luba automaatselt mitu faili alla laadida</translation>
-<translation id="794567586469801724">macOS</translation>
 <translation id="7947285636476623132">Kontrollige aegumisaastat ja proovige uuesti</translation>
 <translation id="7947310711271925113">Popmuusika</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome'i funktsioonide kohta lisateabe saamiseks vajutage tabulaatorit ja seejärel sisestusklahvi</translation>
@@ -4672,7 +4673,6 @@ Lisateave:
 <translation id="984275831282074731">Makseviisid</translation>
 <translation id="985199708454569384">&lt;p&gt;Seda viga näete juhul, kui teie arvuti või mobiilseadme kuupäev ja kellaaeg pole õiged.&lt;/p&gt;
     &lt;p&gt;Vea parandamiseks avage seadme kell ning veenduge, et kellaaeg ja kuupäev oleksid õiged.&lt;/p&gt;</translation>
-<translation id="986257639512122511">Olete lubanud <ph name="PERMISSION" /> saidil <ph name="ORIGIN" /></translation>
 <translation id="987264212798334818">Üldine</translation>
 <translation id="988159990683914416">Arendaja järk</translation>
 <translation id="989988560359834682">Aadressi muutmine</translation>

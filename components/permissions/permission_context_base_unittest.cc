@@ -62,7 +62,7 @@ class TestPermissionContext : public PermissionContextBase {
       : PermissionContextBase(
             browser_context,
             content_settings_type,
-            blink::mojom::PermissionsPolicyFeature::kNotFound),
+            network::mojom::PermissionsPolicyFeature::kNotFound),
         tab_context_updated_(false) {}
 
   TestPermissionContext(const TestPermissionContext&) = delete;

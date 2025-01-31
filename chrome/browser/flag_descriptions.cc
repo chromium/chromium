@@ -3817,11 +3817,6 @@ const char kTrackingProtection3pcdDescription[] =
     "Enables the tracking protection UI + prefs that will be used for the 3PCD "
     "1%.";
 
-const char kUserNotesSidePanelName[] = "User notes side panel";
-const char kUserNotesSidePanelDescription[] =
-    "Enables the user notes feature in the side panel. "
-    "Only works if Power bookmark backend is also enabled.";
-
 const char kUsernameFirstFlowWithIntermediateValuesPredictionsName[] =
     "Predictions on Username first flow with intermediate values";
 const char kUsernameFirstFlowWithIntermediateValuesPredictionsDescription[] =

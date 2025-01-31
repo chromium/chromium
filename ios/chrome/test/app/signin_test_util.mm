@@ -161,7 +161,7 @@ void SignInWithoutSync(id<SystemIdentity> identity) {
                initWithBrowser:browser
                       identity:identity
                    accessPoint:signin_metrics::AccessPoint::kUnknown
-             postSignInActions:PostSignInActionSet({PostSignInAction::kNone})
+             postSignInActions:PostSignInActionSet()
       presentingViewController:viewController];
   [authenticationFlow
       startSignInWithCompletion:^(SigninCoordinatorResult result) {

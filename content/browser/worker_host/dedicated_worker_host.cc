@@ -584,13 +584,13 @@ DedicatedWorkerHost::CreateNetworkFactoryForSubresources(
           worker_client_security_state_->Clone(), std::move(coep_reporter),
           std::move(dip_reporter), worker_process_host_,
           ancestor_render_frame_host->IsFeatureEnabled(
-              blink::mojom::PermissionsPolicyFeature::
+              network::mojom::PermissionsPolicyFeature::
                   kPrivateStateTokenIssuance)
               ? network::mojom::TrustTokenOperationPolicyVerdict::
                     kPotentiallyPermit
               : network::mojom::TrustTokenOperationPolicyVerdict::kForbid,
           ancestor_render_frame_host->IsFeatureEnabled(
-              blink::mojom::PermissionsPolicyFeature::kTrustTokenRedemption)
+              network::mojom::PermissionsPolicyFeature::kTrustTokenRedemption)
               ? network::mojom::TrustTokenOperationPolicyVerdict::
                     kPotentiallyPermit
               : network::mojom::TrustTokenOperationPolicyVerdict::kForbid,
@@ -912,7 +912,7 @@ void DedicatedWorkerHost::BindPressureService(
   }
 
   if (!ancestor_render_frame_host->IsFeatureEnabled(
-          blink::mojom::PermissionsPolicyFeature::kComputePressure)) {
+          network::mojom::PermissionsPolicyFeature::kComputePressure)) {
     ancestor_render_frame_host->AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kWarning,
         "This frame is connected to a Dedicated Worker that has requested "
@@ -1175,10 +1175,15 @@ void DedicatedWorkerHost::BindCacheStorageInternal(
     GetWorkerCoepReporter()->Clone(
         coep_reporter.InitWithNewPipeAndPassReceiver());
   }
+  mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>
+      dip_reporter;
+  if (dip_reporter_) {
+    dip_reporter_->Clone(dip_reporter.InitWithNewPipeAndPassReceiver());
+  }
   worker_process_host_->BindCacheStorage(
       cross_origin_embedder_policy(), std::move(coep_reporter),
-      worker_client_security_state_->document_isolation_policy, bucket_locator,
-      std::move(receiver));
+      worker_client_security_state_->document_isolation_policy,
+      std::move(dip_reporter), bucket_locator, std::move(receiver));
 }
 
 void DedicatedWorkerHost::GetSandboxedFileSystemForBucket(

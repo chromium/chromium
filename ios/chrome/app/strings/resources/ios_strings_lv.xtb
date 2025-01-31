@@ -263,7 +263,6 @@
 <translation id="2074131957428911366">Jūs jebkurā laikā <ph name="BEGIN_LINK" />iestatījumos<ph name="END_LINK" /> varat izvēlēties, ko sinhronizēt.</translation>
 <translation id="2078437078822043850">Varat ritināt pa labi, lai pārlūkotu inkognito režīmā.</translation>
 <translation id="2079545284768500474">Atsaukt</translation>
-<translation id="2082906935540894275">Jums dažādos brīžos visatbilstošākās funkcijas.</translation>
 <translation id="2085876078937250610">Saglabāt…</translation>
 <translation id="2096239473850415494">Nevarēja lejupielādēt</translation>
 <translation id="2096716221239095980">Dzēst visus datus</translation>
@@ -548,7 +547,6 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="344589138074534176">Uzzināt vairāk par Google Lens</translation>
 <translation id="3447332786336558089">Pēc izrakstīšanās cilnes tiks aizvērtas, un nesaglabātie konta dati tiks dzēsti no šīs ierīces. Tie var ietvert paroles, vēsturi un citus datus.</translation>
-<translation id="3449016921756175697">Noderīgi ieteikumi, kas uzlabo pārlūkošanu un padara to ērtāku.</translation>
 <translation id="345348365500626747">Adrese atrasta</translation>
 <translation id="3464194322481586217">Nevarēja izsekot cenai.</translation>
 <translation id="3469117812148449995">Paroles saglabāšanas iespējas</translation>
@@ -922,7 +920,6 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="5127538504377457572">Aktīvs pirms <ph name="DAYS" /> dienām</translation>
 <translation id="5128788795241319992">Izpētiet jauno izvēlni</translation>
 <translation id="5132942445612118989">Sinhronizējiet paroles, vēsturi un citu saturu visās ierīcēs</translation>
-<translation id="5137526732000415202">Pēdējā atvērtā cilne visās jūsu ierīcēs.</translation>
 <translation id="5145331760738811130">Aizvērt ciļņu pārslēdzēju</translation>
 <translation id="5157638238828697074">Radās problēma. Lietojumprogrammu nevarēja atvērt.</translation>
 <translation id="5163417375525818870">PDF faili</translation>
@@ -1023,7 +1020,6 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="559567008082979829">Iestatiet, lai lejupielādes tiktu dzēstas pēc viena mēneša.</translation>
 <translation id="5596627076506792578">Citas opcijas</translation>
 <translation id="560322036295180549">Funkciju izslēdza jūsu organizācija.</translation>
-<translation id="5611107723541161735">Saīsnes uz šajā ierīcē nesen apmeklētajām vietnēm.</translation>
 <translation id="5611398002774823980">Saglabāt kontā</translation>
 <translation id="5613297089029360427">Kārtot, sākot ar jaunāko saturu</translation>
 <translation id="5614553682702429503">Vai saglabāt paroli?</translation>
@@ -1487,7 +1483,6 @@ Inkognito režīmā vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu p�
 <translation id="7512075701202892785">Jūsu iecienītais pārlūks tagad ir pieejams arī iPad planšetdatoros</translation>
 <translation id="7512909159512473473">Ievadīt ieejas frāzi…</translation>
 <translation id="7514365320538308">Lejupielādēt</translation>
-<translation id="7521117365186708026">Padomi iestatīšanai, kas palīdzēs pilnvērtīgi izmantot pārlūku Chrome.</translation>
 <translation id="7524055474074101597">Varat piekļūt lietotnēm un citai informācijai dažādās lietotnēs.</translation>
 <translation id="75362970626182391">Jauna ciļņu grupa</translation>
 <translation id="7537586195939242955">Diemžēl pašlaik jūsu atļauju nevar instalēt lietotnē Passbook.</translation>
@@ -1605,6 +1600,7 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="800361585186029508">Ievadītie vietrāži URL tiek atvērti pārlūkā Google Chrome.</translation>
 <translation id="8005666035647241369">Google paroļu pārvaldniekā šajā ierīcē</translation>
 <translation id="8011489434346330032">Tīmekļa inspektors</translation>
+<translation id="8017015647846870183">No Google paroļu pārvaldnieka, tostarp paroles un piekļuves atslēgas</translation>
 <translation id="802154636333426148">Lejupielāde neizdevās</translation>
 <translation id="8023170444051056234">Jūs uzreiz zaudēsiet piekļuvi ciļņu grupai “<ph name="GROUP_NAME" />”, un tā tiks izdzēsta no visām jūsu ierīcēm.</translation>
 <translation id="8023878949384262191">Izvērš sadaļu.</translation>
@@ -1705,7 +1701,6 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="8439758443371991593">Paslēpt vienumu “Pievienot lasīšanas sarakstam”</translation>
 <translation id="8449869326050867919">Parole ir kopīgota</translation>
 <translation id="8453847087068411809">Nekad nenoteikt pakas automātiski</translation>
-<translation id="846158969830690371">Uzziniet, vai izmantojat visdrošākos iestatījumus vai jums kaut kas jāpārskata.</translation>
 <translation id="8473863474539038330">Adreses un citi dati</translation>
 <translation id="8474378002946546633">Atļaut paziņojumus</translation>
 <translation id="8477178913400731244">Dzēst datus</translation>

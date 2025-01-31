@@ -768,6 +768,7 @@
 <translation id="4654549501020883054">Менять ежедневно</translation>
 <translation id="4655868084888499342">Выбранные обои</translation>
 <translation id="4661249927038176904">Сюрреалистичный пейзаж</translation>
+<translation id="4661392828086261436">Это обновление предоставлено производителем устройства и не проверено Google.</translation>
 <translation id="4664651912255946953">мех</translation>
 <translation id="4665014895760275686">Производитель</translation>
 <translation id="467510802200863975">Пароли не совпадают.</translation>
@@ -1027,6 +1028,7 @@
 <translation id="5904994456462260490">Добавление точки доступа</translation>
 <translation id="590746845088109442">кошки</translation>
 <translation id="5907649332524363701">цвет клавиш</translation>
+<translation id="5908813850962688338">Установка обновления займет несколько минут. В это время устройство должно быть подключено к источнику питания и работать. Оно может перезагружаться несколько раз, а экран – гаснуть. Чтобы завершить установку, вам будет предложено перезапустить устройство.</translation>
 <translation id="5916084858004523819">Запрещено</translation>
 <translation id="5916664084637901428">ВКЛ</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Файл отсканирован и сохранен в папке <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Файлы отсканированы и сохранены в папке <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Файлы отсканированы и сохранены в папке <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}many{Файлы отсканированы и сохранены в папке <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Файлы отсканированы и сохранены в папке <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>

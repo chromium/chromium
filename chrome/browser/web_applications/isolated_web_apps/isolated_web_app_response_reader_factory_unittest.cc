@@ -7,13 +7,14 @@
 #include <memory>
 #include <optional>
 
+#include "base/auto_reset.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_helpers.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/repeating_test_future.h"
@@ -45,6 +46,7 @@ namespace {
 
 using base::test::ErrorIs;
 using base::test::HasValue;
+using base::test::RunOnceCallback;
 using testing::ElementsAre;
 using testing::Eq;
 using testing::IsFalse;
@@ -135,13 +137,7 @@ class IsolatedWebAppResponseReaderFactoryTest : public WebAppTest {
         web_package::test::GetAttributesForSignedWebBundleId(kWebBundleId.id());
 
     factory_ = std::make_unique<IsolatedWebAppResponseReaderFactory>(
-        *profile(), std::make_unique<FakeIsolatedWebAppValidator>(base::ok()),
-        base::BindRepeating(
-            []() -> std::unique_ptr<
-                     web_package::SignedWebBundleSignatureVerifier> {
-              return std::make_unique<web_package::test::FakeSignatureVerifier>(
-                  std::nullopt);
-            }));
+        *profile(), std::make_unique<FakeIsolatedWebAppValidator>(base::ok()));
 
     CHECK(temp_dir_.CreateUniqueTempDir());
     CHECK(CreateTemporaryFileInDir(temp_dir_.GetPath(), &web_bundle_path_));
@@ -194,12 +190,18 @@ class IsolatedWebAppResponseReaderFactoryTest : public WebAppTest {
   web_package::mojom::BundleIntegrityBlockPtr integrity_block_;
   web_package::mojom::BundleMetadataPtr metadata_;
   web_package::mojom::BundleResponsePtr response_;
+
+  testing::StrictMock<web_package::test::MockSignatureVerifier>
+      signature_verifier_;
+  base::AutoReset<web_package::SignedWebBundleSignatureVerifier*>
+      reset_signature_verifier_ =
+          web_app::SignedWebBundleReader::SetSignatureVerifierForTesting(
+              &signature_verifier_);
 };
 
 using ReaderResult =
     base::expected<std::unique_ptr<IsolatedWebAppResponseReader>,
                    UnusableSwbnFileError>;
-
 class IsolatedWebAppResponseReaderFactoryIntegrityBlockParserErrorTest
     : public IsolatedWebAppResponseReaderFactoryTest,
       public ::testing::WithParamInterface<
@@ -245,15 +247,8 @@ TEST_F(IsolatedWebAppResponseReaderFactoryTest,
   base::HistogramTester histogram_tester;
 
   factory_ = std::make_unique<IsolatedWebAppResponseReaderFactory>(
-      *profile(),
-      std::make_unique<FakeIsolatedWebAppValidator>(
-          base::unexpected("test error")),
-      base::BindRepeating(
-          []() -> std::unique_ptr<
-                   web_package::SignedWebBundleSignatureVerifier> {
-            return std::make_unique<web_package::test::FakeSignatureVerifier>(
-                std::nullopt);
-          }));
+      *profile(), std::make_unique<FakeIsolatedWebAppValidator>(
+                      base::unexpected("test error")));
 
   base::test::TestFuture<ReaderResult> reader_future;
   factory_->CreateResponseReader(web_bundle_path_, kWebBundleId,
@@ -289,20 +284,15 @@ TEST_P(IsolatedWebAppResponseReaderFactorySignatureVerificationErrorTest,
   base::HistogramTester histogram_tester;
 
   factory_ = std::make_unique<IsolatedWebAppResponseReaderFactory>(
-      *profile(), std::make_unique<FakeIsolatedWebAppValidator>(base::ok()),
-      base::BindRepeating(
-          [](VerifierError error)
-              -> std::unique_ptr<
-                  web_package::SignedWebBundleSignatureVerifier> {
-            return std::make_unique<web_package::test::FakeSignatureVerifier>(
-                error);
-          },
-          error_));
+      *profile(), std::make_unique<FakeIsolatedWebAppValidator>(base::ok()));
 
   IsolatedWebAppResponseReaderFactory::Flags flags;
   if (skip_signature_verification_) {
     flags.Put(
         IsolatedWebAppResponseReaderFactory::Flag::kSkipSignatureVerification);
+  } else {
+    EXPECT_CALL(signature_verifier_, VerifySignatures)
+        .WillOnce(RunOnceCallback<2>(base::unexpected(error_)));
   }
   base::test::TestFuture<ReaderResult> reader_future;
   factory_->CreateResponseReader(web_bundle_path_, kWebBundleId, flags,
@@ -349,6 +339,8 @@ class IsolatedWebAppResponseReaderFactoryMetadataParserErrorTest
 
 TEST_P(IsolatedWebAppResponseReaderFactoryMetadataParserErrorTest,
        TestMetadataParserError) {
+  EXPECT_CALL(signature_verifier_, VerifySignatures)
+      .WillOnce(RunOnceCallback<2>(base::ok()));
   base::HistogramTester histogram_tester;
 
   base::test::TestFuture<ReaderResult> reader_future;
@@ -384,6 +376,8 @@ INSTANTIATE_TEST_SUITE_P(
             UnusableSwbnFileError::Error::kMetadataParserFormatError)));
 
 TEST_F(IsolatedWebAppResponseReaderFactoryTest, TestInvalidMetadataPrimaryUrl) {
+  EXPECT_CALL(signature_verifier_, VerifySignatures)
+      .WillOnce(RunOnceCallback<2>(base::ok()));
   base::HistogramTester histogram_tester;
 
   base::test::TestFuture<ReaderResult> reader_future;
@@ -407,6 +401,8 @@ TEST_F(IsolatedWebAppResponseReaderFactoryTest, TestInvalidMetadataPrimaryUrl) {
 
 TEST_F(IsolatedWebAppResponseReaderFactoryTest,
        TestInvalidMetadataInvalidExchange) {
+  EXPECT_CALL(signature_verifier_, VerifySignatures)
+      .WillOnce(RunOnceCallback<2>(base::ok()));
   base::test::TestFuture<ReaderResult> reader_future;
   factory_->CreateResponseReader(web_bundle_path_, kWebBundleId,
                                  /*flags=*/{}, reader_future.GetCallback());

@@ -18,6 +18,7 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/process/process.h"
+#include "base/win/scoped_gdi_object.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
@@ -355,11 +356,10 @@ NOINLINE void CrashIfCannotAllocateSmallBitmap(BITMAPINFOHEADER* header,
   base::debug::Alias(&small_data);
   header->biWidth = 5;
   header->biHeight = -5;
-  HBITMAP small_bitmap =
+  base::win::ScopedGDIObject<HBITMAP> small_bitmap(
       CreateDIBSection(nullptr, reinterpret_cast<BITMAPINFO*>(&header), 0,
-                       &small_data, shared_section, 0);
-  CHECK(small_bitmap != nullptr);
-  DeleteObject(small_bitmap);
+                       &small_data, shared_section, 0));
+  CHECK(small_bitmap.is_valid());
 }
 
 NOINLINE void GetProcessMemoryInfo(PROCESS_MEMORY_COUNTERS_EX* pmc) {

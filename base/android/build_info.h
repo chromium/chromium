@@ -40,13 +40,9 @@ enum SdkVersion {
   SDK_VERSION_V = 35,
 };
 
-// DEPRECATED: Please use AndroidInfo, DeviceInfo or ApkInfo as an
-// alternative.
-//
 // BuildInfo is a singleton class that stores android build and device
 // information. It will be called from Android specific code and gets used
 // primarily in crash reporting.
-
 class BASE_EXPORT BuildInfo {
  public:
   BuildInfo(const BuildInfo&) = delete;
@@ -76,7 +72,7 @@ class BASE_EXPORT BuildInfo {
 
   const char* android_build_fp() const { return android_build_fp_; }
 
-  const char* gms_version_code() const;
+  const char* gms_version_code() const { return gms_version_code_; }
 
   void set_gms_version_code_for_test(const std::string& gms_version_code);
 
@@ -162,7 +158,7 @@ class BASE_EXPORT BuildInfo {
  private:
   friend struct BuildInfoSingletonTraits;
 
-  explicit BuildInfo();
+  explicit BuildInfo(const std::vector<std::string>& params);
 
   // Const char* is used instead of std::strings because these values must be
   // available even if the process is in a crash state. Sadly
@@ -183,6 +179,8 @@ class BASE_EXPORT BuildInfo {
   const char* const package_version_code_;
   const char* const package_version_name_;
   const char* const android_build_fp_;
+  // Can be overridden in tests.
+  const char* gms_version_code_ = nullptr;
   const char* const installer_package_name_;
   const char* const abi_name_;
   const char* const custom_themes_;

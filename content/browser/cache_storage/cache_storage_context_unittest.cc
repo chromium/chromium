@@ -66,7 +66,7 @@ class CacheStorageContextTest : public testing::Test {
     network::DocumentIsolationPolicy document_isolation_policy;
     cache_storage_context_->AddReceiver(
         cross_origin_embedder_policy, mojo::NullRemote(),
-        document_isolation_policy,
+        document_isolation_policy, mojo::NullRemote(),
         storage::BucketLocator::ForDefaultBucket(storage_key),
         storage::mojom::CacheStorageOwner::kCacheAPI,
         std::move(cache_storage_receiver));

@@ -338,6 +338,8 @@ source_set("fuzztest_internal") {
 
 source_set("common") {
   sources = [
+    "src/common/bazel.cc",
+    "src/common/bazel.h",
     "src/common/blob_file.cc",
     "src/common/blob_file.h",
     "src/common/defs.h",

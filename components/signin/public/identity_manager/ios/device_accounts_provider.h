@@ -54,6 +54,8 @@ class DeviceAccountsProvider {
     ~Observer() override = default;
 
     virtual void OnAccountsOnDeviceChanged() {}
+    virtual void OnAccountOnDeviceUpdated(
+        const DeviceAccountsProvider::AccountInfo& device_account) {}
   };
 
   // Result of GetAccessToken() passed to the callback. Contains either

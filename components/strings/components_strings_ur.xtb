@@ -674,7 +674,6 @@
 <translation id="2157640075051554492">قیمت کو ٹریک کرنے کی اطلاعات</translation>
 <translation id="21613918653299710">آن لائن تصویری گیلریاں</translation>
 <translation id="2161656808144014275">متن</translation>
-<translation id="2162510787844374618">آپ کے بینک سے رابطہ کیا جا رہا ہے...</translation>
 <translation id="2162620598375156287">اب <ph name="CURRENT_PRICE" /><ph name="SOURCE_WEBSITE" /> پر</translation>
 <translation id="2164510882479075877">چیک کریں کہ آیا <ph name="HOST_NAME" /> میں کوئی ہجوں کی کوئی غلطی تو نہیں۔</translation>
 <translation id="2166049586286450108">منتظم کیلئے مکمل رسائی</translation>
@@ -2429,7 +2428,6 @@
 <translation id="5288108484102287882">پالیسی کی اقدار کی تصدیق نے واننگز ظاہر کی ہیں</translation>
 <translation id="5289384342738547352">متعدد دستاویزات کو ہینڈل کرنا</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{آج اپ ڈیٹ درکار ہے}=2{کل تک اپ ڈیٹ درکار ہے}other{# دن کے اندر اپ ڈیٹ درکار ہے}}</translation>
-<translation id="5292714443869769806"><ph name="OPERATING_SYSTEM" /> کی ترتیبات پر جائیں</translation>
 <translation id="5293919335876685914">کوپس</translation>
 <translation id="5298618990685278995">پہلا مسودہ</translation>
 <translation id="5299298092464848405">پالیسی کو پارس کرنے میں خرابی</translation>
@@ -3652,6 +3650,7 @@
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">کارگو ٹرکس اور ٹریلرز</translation>
 <translation id="7461924472993315131">پن کریں</translation>
+<translation id="746329643760972486">MacOS</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> کو معلوم ہو جائے گا کہ آپ نے <ph name="TOP_LEVEL_URL" /> ملاحظہ کیا ہے</translation>
 <translation id="7465963048299965912">‏‎10 x 13 انچ</translation>
 <translation id="7469935732330206581">فارم محفوظ نہیں ہے</translation>
@@ -3922,7 +3921,6 @@
 <translation id="7942349550061667556">سرخ</translation>
 <translation id="7943397946612013052">ڈاؤن لوڈ کرنا مسدود ہے</translation>
 <translation id="7943893128817522649">سائٹ خودکار طور پر متعدد فائلز ڈاؤن لوڈ کرنے کیلئے پوچھ سکتی ہے</translation>
-<translation id="794567586469801724">macOS</translation>
 <translation id="7947285636476623132">اپنا اختتامی سال چیک کریں اور دوبارہ کوشش کریں</translation>
 <translation id="7947310711271925113">پاپ موسیقی</translation>
 <translation id="7947813448670013867">‏<ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />، Chrome کی خصوصیات کے بارے میں جاننے کیلئے Tab، پھر Enter دبائیں</translation>
@@ -4674,7 +4672,6 @@
 <translation id="984275831282074731">ادائیگی کے طریقے</translation>
 <translation id="985199708454569384">‏&lt;p&gt;اگر آپ کے کمپیوٹر یا موبائل آلے کی تاریخ اور وقت غلط ہے، تو آپ کو یہ خرابی دکھائی دے گی۔&lt;/p&gt;
     &lt;p&gt;خرابی ٹھیک کرنے کیلئے، اپنے آلے کا کلاک کھولیں۔ یقینی بنائیں کہ وقت اور تاریخ درست ہے۔&lt;/p&gt;</translation>
-<translation id="986257639512122511">آپ نے <ph name="ORIGIN" /> پر <ph name="PERMISSION" /> کی اجازت دی ہے</translation>
 <translation id="987264212798334818">عمومی</translation>
 <translation id="988159990683914416">ڈویلپر بلڈ</translation>
 <translation id="989988560359834682">پتہ میں ترمیم کریں</translation>

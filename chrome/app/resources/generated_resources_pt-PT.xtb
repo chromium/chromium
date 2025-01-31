@@ -126,7 +126,6 @@
 <translation id="1076766328672150609">A criança pode utilizar um PIN para desbloquear o dispositivo.</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216">Não foi possível transferir o dicionário de verificação ortográfica de <ph name="LANGUAGE" />. Tente novamente.</translation>
-<translation id="1078029726086090536">Validar palavra-passe</translation>
 <translation id="1078037449555275327">Definições do ChromeVox</translation>
 <translation id="1079242569060319448">Esqueceu-se do PIN?</translation>
 <translation id="1079285777677001938">As funcionalidades em alguns sites podem não funcionar.</translation>
@@ -369,6 +368,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1241066500170667906">Selecione o estado da experiência de <ph name="EXPERIMENT_NAME" /></translation>
 <translation id="124116460088058876">Mais idiomas</translation>
 <translation id="1241381048229838873">Mostrar todos os marcadores</translation>
+<translation id="1242044645101871359">Inicie sessão novamente</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" /> quer repor as suas definições.</translation>
 <translation id="1243002225871118300">Altere o tamanho da visualização e do texto</translation>
 <translation id="1243314992276662751">Carregar</translation>
@@ -1617,7 +1617,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2113921862428609753">Acesso a informações sobre autoridade</translation>
 <translation id="2114145607116268663">Não é possível instalar. É necessário reiniciar. Reinicie o computador e tente novamente. O código de erro é <ph name="ERROR" />.</translation>
 <translation id="2114326799768592691">Atualizar &amp;frame</translation>
-<translation id="2114413269775311385">Utilize esta conta com as apps Android. Pode controlar as autorizações das apps Android nas <ph name="LINK_BEGIN" />Definições de apps<ph name="LINK_END" />.</translation>
 <translation id="2114995631896158695">Nenhum cartão SIM inserido</translation>
 <translation id="2116619964159595185">Normalmente, os sites estabelecem ligação a dispositivos Bluetooth para funcionalidades como configurar ou sincronizar um beacon Bluetooth Low Energy, uma lâmpada inteligente ou um monitorizador de saúde ou fitness</translation>
 <translation id="2117655453726830283">Diapositivo seguinte</translation>
@@ -2794,6 +2793,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> não é suportado.</translation>
 <translation id="2926708162326352948">Tema atualizado para a imagem carregada</translation>
 <translation id="2927017729816812676">Armazenamento de cache</translation>
+<translation id="2928030851119977280">Escolha guardada. A sua escolha vai ser aplicada quando iniciar sessão noutros serviços Google.</translation>
 <translation id="2928795416630981206">Com autorização para monitorizar a posição da câmara</translation>
 <translation id="2929345818093040583">{NUM_SITES,plural, =1{O Chrome removeu as autorizações de 1 site}other{O Chrome removeu as autorizações de {NUM_SITES} sites}}</translation>
 <translation id="2931157624143513983">Ajustar à área de impressão</translation>
@@ -4635,6 +4635,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4242533952199664413">Abrir definições</translation>
 <translation id="4242577469625748426">Falha ao instalar as definições da política no dispositivo: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385">O <ph name="BEGIN_LINK" />navegador e o perfil são geridos<ph name="END_LINK" /> por <ph name="DOMAIN" /></translation>
+<translation id="424315890655130736">Introduzir frase de acesso</translation>
 <translation id="4243504193894350135">A impressora está em pausa.</translation>
 <translation id="4243624244759495699"><ph name="LOCALE" />, grau <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">Encontrar mais aplicações para a caneta stylus</translation>
@@ -5357,7 +5358,6 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4766598565665644999">Todas as extensões podem ler e alterar <ph name="HOST" /></translation>
 <translation id="4767427586072640478">Saiba mais sobre as extensões desativadas.</translation>
 <translation id="4768332406694066911">Tem certificados destas entidades que o identificam</translation>
-<translation id="4768945955870840220">Para alguns produtos, o Chrome pode recolher críticas de toda a Web</translation>
 <translation id="4769632191812288342">Tem a Proteção padrão</translation>
 <translation id="4770119228883592393">Autorização solicitada, prima ⌘ + Opção + seta para baixo para responder.</translation>
 <translation id="4770755495532014179">Use esta palavra-passe no seu iPhone</translation>
@@ -7410,6 +7410,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6253801023880399036">As palavras-passe são guardadas no <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="6254503684448816922">Chave violada</translation>
 <translation id="6254892857036829079">Perfeita</translation>
+<translation id="6257131917452817589">alteração automática de palavras-passe</translation>
 <translation id="6257602895346497974">Ativar a sincronização</translation>
 <translation id="6257614441619555296"><ph name="KEY" />: <ph name="VALUE" /></translation>
 <translation id="625827534921607067">Esta rede é a preferida se estiver disponível mais do que uma rede ligada ou configurada anteriormente</translation>
@@ -8757,7 +8758,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7243092385765551741">Eliminar a chave de acesso?</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (a melhor)</translation>
 <translation id="7246230585855757313">Volte a inserir a chave de segurança e tente novamente.</translation>
-<translation id="724835896049478274">Contas disponíveis para apps Android</translation>
 <translation id="7248802599439396696">Tornar separadores inativos</translation>
 <translation id="7249197363678284330">Altere esta definição na barra de endereço.</translation>
 <translation id="7249764475759804559">Incluir esta app como opção ao abrir ficheiros</translation>
@@ -9121,6 +9121,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7502528909759062987">Pausar transmissão do separador para <ph name="DEVICE_NAME" /></translation>
 <translation id="7502804472671406749">É possível deslocar e fazer zoom nos separadores partilhados</translation>
 <translation id="7503191893372251637">Tipo de certificado Netscape</translation>
+<translation id="7503259455663961898">Alterar</translation>
 <translation id="7503985202154027481">É mantido um registo da sua visita a este site na sua chave de segurança.</translation>
 <translation id="7504145862399276792">O áudio deste separador foi desativado</translation>
 <translation id="750509436279396091">Abrir a pasta de transferências</translation>
@@ -9183,6 +9184,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7551059576287086432">A transferência de <ph name="FILE_NAME" /> falhou</translation>
 <translation id="7551643184018910560">Fixar na prateleira</translation>
 <translation id="7552191410769096467">Para partilhar ou aderir a grupos de separadores, tem de iniciar sessão e ativar a sincronização</translation>
+<translation id="7552196109089297786">Terminar sessão na Microsoft</translation>
 <translation id="7552846755917812628">Experimente as sugestões seguintes:</translation>
 <translation id="7553012839257224005">A verificar o contentor do Linux…</translation>
 <translation id="7553242001898162573">Introduza a palavra-passe</translation>
@@ -10312,6 +10314,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8330617762701840933">A lista de Websites que redirecionam para um navegador alternativo.</translation>
 <translation id="8330689128072902965">Os contactos próximos podem partilhar consigo. Clique para mudar.</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{Tipo de ficheiro suportado: <ph name="FILE_TYPE1" />}=2{Tipos de ficheiros suportados: <ph name="FILE_TYPE1" /> e <ph name="FILE_TYPE2" />}=3{Tipos de ficheiros suportados: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" /> e <ph name="FILE_TYPE3" />}=4{Tipos de ficheiros suportados: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" /> e <ph name="FILE_TYPE4" />}other{Tipos de ficheiros suportados: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />e mais {OVERFLOW_COUNT}<ph name="END_LINK" />)}}</translation>
+<translation id="8331578454993293727">Esta palavra-passe foi encontrada numa violação de dados</translation>
 <translation id="8331822764922665615">Dê um nome ao grupo, escolha uma cor e, em seguida, prima Escape</translation>
 <translation id="833256022891467078">Pastas partilhadas do Crostini</translation>
 <translation id="833262891116910667">Realçar</translation>
@@ -10393,6 +10396,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
     <ph name="BEGIN_PARAGRAPH2" />Para obter mais ajuda, visite: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8383614331548401927">Recapitulação de boas-vindas</translation>
 <translation id="8386091599636877289">A política não foi encontrada.</translation>
+<translation id="8387087863179559896">O Chrome pode atualizar a sua conta para este site com uma palavra-passe forte. Não precisa de memorizar a palavra-passe porque está guardada no Gestor de Palavras-passe da Google de <ph name="EMAIL" />. Mais sobre a <ph name="PASSWORD_CHANGE" />.</translation>
 <translation id="8387361103813440603">Sem autorização para ver a sua localização</translation>
 <translation id="8387617938027387193">Valide a sua identidade</translation>
 <translation id="8388770971141403598">Os perfis secundários não são suportados</translation>
@@ -10707,7 +10711,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8625124982056504555">Ler números de série de componentes e dispositivos com ChromeOS</translation>
 <translation id="862542460444371744">&amp;Extensões</translation>
 <translation id="8625663000550647058">Sem autorização para utilizar o seu microfone</translation>
-<translation id="8625679025395572221">A sua conta ainda pode estar em risco.</translation>
 <translation id="8625916342247441948">Não permitir que os sites estabeleçam ligação a dispositivos HID</translation>
 <translation id="862727964348362408">Suspenso</translation>
 <translation id="862750493060684461">Cache CSS</translation>
@@ -11589,7 +11592,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="936801553271523408">Dados de diagnóstico do sistema</translation>
 <translation id="93766956588638423">Reparar extensão</translation>
 <translation id="938623846785894166">Ficheiro invulgar</translation>
-<translation id="939401694733344652">Estas contas não estão a ser utilizadas com apps Android neste momento. Se selecionar uma conta para utilizar com esta app Android, a conta também poderá ser utilizada com outras apps Android. Pode alterar o acesso das apps Android em <ph name="LINK_BEGIN" />Definições &gt; Contas<ph name="LINK_END" />.</translation>
 <translation id="939598580284253335">Introduzir frase de acesso</translation>
 <translation id="939736085109172342">Nova pasta</translation>
 <translation id="940212040923880623">&amp;Localizar e editar</translation>

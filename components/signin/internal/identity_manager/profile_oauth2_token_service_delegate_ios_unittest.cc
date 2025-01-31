@@ -85,6 +85,10 @@ class ProfileOAuth2TokenServiceIOSDelegateTest
     ++accounts_on_device_changed_count_;
   }
 
+  void OnAccountOnDeviceUpdated(const AccountInfo& account_info) override {
+    ++account_on_device_updated_count_;
+  }
+
   void ResetObserverCounts() {
     token_available_count_ = 0;
     token_revoked_count_ = 0;
@@ -93,6 +97,7 @@ class ProfileOAuth2TokenServiceIOSDelegateTest
     access_token_failure_ = 0;
     auth_error_changed_count_ = 0;
     accounts_on_device_changed_count_ = 0;
+    account_on_device_updated_count_ = 0;
   }
 
   CoreAccountId GetAccountId(const ProviderAccount& provider_account) {
@@ -115,6 +120,7 @@ class ProfileOAuth2TokenServiceIOSDelegateTest
   int access_token_failure_ = 0;
   int auth_error_changed_count_ = 0;
   int accounts_on_device_changed_count_ = 0;
+  int account_on_device_updated_count_ = 0;
   GoogleServiceAuthError last_access_token_error_;
   base::ScopedObservation<ProfileOAuth2TokenServiceIOSDelegate,
                           ProfileOAuth2TokenServiceObserver>
@@ -230,6 +236,7 @@ TEST_F(ProfileOAuth2TokenServiceIOSDelegateTest, ReloadAllAccountsFromSystem) {
       fake_provider_->AddAccount(GaiaId("gaia_4"), "email_4@x");
   oauth2_delegate_->ReloadAllAccountsFromSystemWithPrimaryAccount(
       GetAccountId(account1));
+  fake_provider_->UpdateAccount(account4.gaia, "email_4_new@x");
 
   EXPECT_EQ(1, token_available_count_);
   EXPECT_EQ(0, tokens_loaded_count_);
@@ -238,6 +245,8 @@ TEST_F(ProfileOAuth2TokenServiceIOSDelegateTest, ReloadAllAccountsFromSystem) {
   // One notification should come from `ClearAccounts` and two from `AddAccount`
   // calls.
   EXPECT_EQ(3, accounts_on_device_changed_count_);
+  // One notification should come from `UpdateAccount`.
+  EXPECT_EQ(1, account_on_device_updated_count_);
 
   EXPECT_EQ(2U, oauth2_delegate_->GetAccounts().size());
   EXPECT_TRUE(

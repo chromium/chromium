@@ -124,7 +124,6 @@
 <translation id="1076766328672150609">Övladınız cihazı kiliddən çıxarmaq üçün PİN kod istifadə edə bilər.</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216"><ph name="LANGUAGE" /> üçün orfoqrafiya yoxlayan lüğət endirilə bilmədi Yenidən cəhd edin.</translation>
-<translation id="1078029726086090536">Parolunuzu doğrulayın</translation>
 <translation id="1078037449555275327">ChromeVox ayarları</translation>
 <translation id="1079242569060319448">PIN-i unutmusunuz?</translation>
 <translation id="1079285777677001938">Bəzi saytlardakı funksiyalar işləməyə bilər.</translation>
@@ -367,6 +366,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1241066500170667906"><ph name="EXPERIMENT_NAME" /> üçün eksperiment vəziyyəti seçin</translation>
 <translation id="124116460088058876">Digər dillər</translation>
 <translation id="1241381048229838873">Bütün əlfəcinləri göstərin</translation>
+<translation id="1242044645101871359">Yenidən daxil olun</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" /> ayarlarınızı sıfırlamaq istəyir.</translation>
 <translation id="1243002225871118300">Displey və mətn ölçüsünü dəyişin</translation>
 <translation id="1243314992276662751">Yükləyin</translation>
@@ -1613,7 +1613,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2113921862428609753">İcazə Məlumatı Girişi</translation>
 <translation id="2114145607116268663">Quraşdırmaq olmur, yenidən başlatma tələb edilir. Kompüteri yenidən başladın və təkrar cəhd edin. Xəta kodu: <ph name="ERROR" />.</translation>
 <translation id="2114326799768592691">Çərçivəni Yenidən Yükləyin</translation>
-<translation id="2114413269775311385">Bu hesabı Android tətbiqləri ilə istifadə edin. Android tətbiqləri üçün icazələrə <ph name="LINK_BEGIN" />Tətbiq Ayarlarında<ph name="LINK_END" /> nəzarət edə bilərsiniz.</translation>
 <translation id="2114995631896158695">SİM kart daxil edilməyib</translation>
 <translation id="2116619964159595185">Saytlar, adətən, aşağı enerji mayakını, sağlamlıq və ya fitnes izləyicisini, yaxud smart işıq lampasını qurmaq və ya sinxronlaşdırmaq kimi xüsusiyyətlər üçün Bluetooth cihazlarına qoşulur</translation>
 <translation id="2117655453726830283">Növbəti slayd</translation>
@@ -4631,6 +4630,7 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="4242533952199664413">Ayarları açın</translation>
 <translation id="4242577469625748426">Cihazda siyasət ayarlarını quraşdırmaq uğursuz oldu: <ph name="VALIDATION_ERROR" /> .</translation>
 <translation id="4242825475818569385"><ph name="BEGIN_LINK" />Brauzer və profili<ph name="END_LINK" /> <ph name="DOMAIN" /> idarə edir</translation>
+<translation id="424315890655130736">Parol sözü daxil edin</translation>
 <translation id="4243504193894350135">Printer durdurulub</translation>
 <translation id="4243624244759495699"><ph name="LOCALE" />, Dərəcə <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">Daha çox stiloqraf tətbiqləri axtarın</translation>
@@ -5353,7 +5353,6 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="4766598565665644999">Bu artırmalar <ph name="HOST" /> domenini oxuya və dəyişə bilər</translation>
 <translation id="4767427586072640478">Deaktiv artırmalar haqqında ətraflı məlumat.</translation>
 <translation id="4768332406694066911">Bu təşkilatlardan Sizi tanıdacaq sertifikatlarınız var</translation>
-<translation id="4768945955870840220">Bəzi məhsullar üçün Chrome internetdən rəylər toplaya bilər</translation>
 <translation id="4769632191812288342">Standart qoruma var</translation>
 <translation id="4770119228883592393">İcazə tələb edilib, cavablandırmaq üçün ⌘ + Seçim + Aşağı ox düyməsini basın</translation>
 <translation id="4770755495532014179">iPhone-da bu paroldan istifadə edin</translation>
@@ -5495,6 +5494,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="4862642413395066333">OCSP Cavabları imzalanır</translation>
 <translation id="4863702650881330715">Uyğunluğu artırın</translation>
 <translation id="4863769717153320198"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (Defolt)</translation>
+<translation id="4864334716800138793">İş profilinin ayarlanması təşkilatınız tərəfindən deaktiv edilib</translation>
 <translation id="4864369630010738180">Daxil olunur...</translation>
 <translation id="4864805589453749318">Məktəb hesabı əlavə etmək üçün icazəni verən valideyni seçin.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (bloklanıb)</translation>
@@ -6456,6 +6456,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5559768063688681413">Yadda saxlanmış printer yoxdur</translation>
 <translation id="55601339223879446">Ekran daxilində masaüstü sərhədlərini nizamlayın</translation>
 <translation id="5561162485081632007">Təhlükəli hadisələr baş verdikdə onları aşkarlayır və sizə xəbərdarlıq edir</translation>
+<translation id="5562588178647493983">Ətraflı məlumat üçün administratorunuz ilə əlaqə saxlayın</translation>
 <translation id="556321030400250233">yerli və ya paylaşılmış fayl</translation>
 <translation id="5563234215388768762">Google'da axtarın və ya link yazın</translation>
 <translation id="5563824734298958390">Tab qrupundan çıxılsın?</translation>
@@ -8747,7 +8748,6 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7243092385765551741">Giriş açarı silinsin?</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (Ən yaxşı)</translation>
 <translation id="7246230585855757313">Güvənlik açarını yenidən daxil edib cəhd edin</translation>
-<translation id="724835896049478274">Android tətbiqləri üçün əlçatan hesablar</translation>
 <translation id="7248802599439396696">Tabları deaktiv edin</translation>
 <translation id="7249197363678284330">Bu ayarı ünvan panelində dəyişdirin.</translation>
 <translation id="7249764475759804559">Faylları açarkən bu tətbiqi seçim kimi daxil edin</translation>
@@ -9784,6 +9784,7 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="7968833647796919681">Performans haqqında məlumat toplanmasına icazə verin</translation>
 <translation id="7968982339740310781">Detallara baxın</translation>
 <translation id="7969046989155602842">Command</translation>
+<translation id="7969144945436590933">Ətraflı məlumat əldə edin</translation>
 <translation id="7970673414865679092">Ethernet detalları</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 RSA Şifrələmə ilə</translation>
 <translation id="7973149423217802477">"Baş barmaq aşağı" bunu bəyənmədiyinizi göstərir.</translation>
@@ -10695,7 +10696,6 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8625124982056504555">ChromeOS cihazı və komponentinin seriya nömrələrini oxumaq</translation>
 <translation id="862542460444371744">Artırmalar</translation>
 <translation id="8625663000550647058">Mikrofonunuzdan istifadə etmək icazəsi verilməyib</translation>
-<translation id="8625679025395572221">Hesabınız hələ də təhlükə altında ola bilər.</translation>
 <translation id="8625916342247441948">Saytlara HID cihazlarına qoşulmaq icazəsi verməyin</translation>
 <translation id="862727964348362408">Ləğv edilib</translation>
 <translation id="862750493060684461">CSS keşi</translation>
@@ -11575,7 +11575,6 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="936801553271523408">Sistem diaqnostika datası</translation>
 <translation id="93766956588638423">Artırmanı bərpa edin</translation>
 <translation id="938623846785894166">Qeyri-adi fayl</translation>
-<translation id="939401694733344652">Bu hesablar hazırda Android tətbiqləri ilə istifadə edilmir. Bu Android tətbiqi ilə istifadə ediləcək hesabı seçsəniz, hesab digər Android tətbiqləri ilə də istifadə edilə bilər. Android tətbiqinə girişi <ph name="LINK_BEGIN" />Ayarlar &gt; Hesablar<ph name="LINK_END" /> bölməsində dəyişə bilərsiniz.</translation>
 <translation id="939598580284253335">Parol daxil edin</translation>
 <translation id="939736085109172342">Yeni qovluq</translation>
 <translation id="940212040923880623">&amp;Tapın və redaktə edin</translation>

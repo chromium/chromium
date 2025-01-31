@@ -94,6 +94,6 @@ extern const base::FeatureParam<int> kPlusAddressPreallocationMinimumSize(
 // extended feature description and usage notice.
 BASE_FEATURE(kPlusAddressUserOnboardingEnabled,
              "PlusAddressUserOnboardingEnabled",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace plus_addresses::features

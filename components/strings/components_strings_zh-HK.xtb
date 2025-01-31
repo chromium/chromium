@@ -674,7 +674,6 @@
 <translation id="2157640075051554492">價格追蹤通知</translation>
 <translation id="21613918653299710">網上圖片庫</translation>
 <translation id="2161656808144014275">文字</translation>
-<translation id="2162510787844374618">正在與銀行連線…</translation>
 <translation id="2162620598375156287">在 <ph name="SOURCE_WEBSITE" /> 上現售 <ph name="CURRENT_PRICE" /></translation>
 <translation id="2164510882479075877">請檢查 <ph name="HOST_NAME" /> 中是否有錯字。</translation>
 <translation id="2166049586286450108">完整管理存取權</translation>
@@ -2428,7 +2427,6 @@
 <translation id="5288108484102287882">政策值驗證出現警告訊息</translation>
 <translation id="5289384342738547352">多份文件處理</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{請在今天內更新}=2{最遲請在明天完成更新}other{請在 # 天內更新}}</translation>
-<translation id="5292714443869769806">前往 <ph name="OPERATING_SYSTEM" /> 設定</translation>
 <translation id="5293919335876685914">雙門房車</translation>
 <translation id="5298618990685278995">撰寫第一份草稿</translation>
 <translation id="5299298092464848405">解析政策時發生錯誤</translation>
@@ -2556,7 +2554,7 @@
 <translation id="5518352028556756716">大部份網站都無法使用第三方 Cookie 追蹤你的瀏覽活動，網站亦無法在無痕模式下使用第三方 Cookie。</translation>
 <translation id="5519516356611866228">包括您所作的變更</translation>
 <translation id="5519696598216267194">紙 (打孔紙)</translation>
-<translation id="5520105693415771152">資料與現況不符嗎？請與發卡機構聯絡，以更新這筆資料。</translation>
+<translation id="5520105693415771152">目前的資料不正確嗎？請通知發卡機構更新。</translation>
 <translation id="5521782189689806907">櫥櫃</translation>
 <translation id="5523118979700054094">政策名稱</translation>
 <translation id="5523588073846127669">商家不接受此虛擬卡</translation>
@@ -3652,6 +3650,7 @@
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">貨車和拖車</translation>
 <translation id="7461924472993315131">Pin</translation>
+<translation id="746329643760972486">MacOS</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> 將得知你曾瀏覽 <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7465963048299965912">10 x 13 吋</translation>
 <translation id="7469935732330206581">表格不安全</translation>
@@ -3922,7 +3921,6 @@
 <translation id="7942349550061667556">紅色</translation>
 <translation id="7943397946612013052">已禁止下載</translation>
 <translation id="7943893128817522649">可要求自動下載多個檔案</translation>
-<translation id="794567586469801724">macOS</translation>
 <translation id="7947285636476623132">請檢查您的到期年份，然後再試一次</translation>
 <translation id="7947310711271925113">流行音樂</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以了解 Chrome 嘅功能</translation>
@@ -4673,7 +4671,6 @@
 <translation id="984275831282074731">付款方法</translation>
 <translation id="985199708454569384">&lt;p&gt;如果電腦或流動裝置的日期和時間不正確，您便會看到此錯誤訊息。&lt;/p&gt;
     &lt;p&gt;如要修正錯誤，請開啟裝置的時鐘，並確定時間和日期正確無誤。&lt;/p&gt;</translation>
-<translation id="986257639512122511">你已允許 <ph name="ORIGIN" /> 存取<ph name="PERMISSION" /></translation>
 <translation id="987264212798334818">一般</translation>
 <translation id="988159990683914416">開發人員版本</translation>
 <translation id="989988560359834682">編輯地址</translation>

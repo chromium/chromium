@@ -694,14 +694,15 @@ DetermineWhetherToForbidTrustTokenOperation(
     case network::mojom::TrustTokenOperationType::kRedemption:
     case network::mojom::TrustTokenOperationType::kSigning:
       if (subframe_policy->IsFeatureEnabled(
-              blink::mojom::PermissionsPolicyFeature::kTrustTokenRedemption)) {
+              network::mojom::PermissionsPolicyFeature::
+                  kTrustTokenRedemption)) {
         return network::mojom::TrustTokenOperationPolicyVerdict::
             kPotentiallyPermit;
       }
       return network::mojom::TrustTokenOperationPolicyVerdict::kForbid;
     case network::mojom::TrustTokenOperationType::kIssuance:
       if (subframe_policy->IsFeatureEnabled(
-              blink::mojom::PermissionsPolicyFeature::
+              network::mojom::PermissionsPolicyFeature::
                   kPrivateStateTokenIssuance)) {
         return network::mojom::TrustTokenOperationPolicyVerdict::
             kPotentiallyPermit;
@@ -725,14 +726,14 @@ DetermineAfterCommitWhetherToForbidTrustTokenOperation(
   switch (operation) {
     case network::mojom::TrustTokenOperationType::kRedemption:
     case network::mojom::TrustTokenOperationType::kSigning:
-      if (impl.IsFeatureEnabled(
-              blink::mojom::PermissionsPolicyFeature::kTrustTokenRedemption)) {
+      if (impl.IsFeatureEnabled(network::mojom::PermissionsPolicyFeature::
+                                    kTrustTokenRedemption)) {
         return network::mojom::TrustTokenOperationPolicyVerdict::
             kPotentiallyPermit;
       }
       return network::mojom::TrustTokenOperationPolicyVerdict::kForbid;
     case network::mojom::TrustTokenOperationType::kIssuance:
-      if (impl.IsFeatureEnabled(blink::mojom::PermissionsPolicyFeature::
+      if (impl.IsFeatureEnabled(network::mojom::PermissionsPolicyFeature::
                                     kPrivateStateTokenIssuance)) {
         return network::mojom::TrustTokenOperationPolicyVerdict::
             kPotentiallyPermit;
@@ -2978,7 +2979,7 @@ WebExposedIsolationLevel RenderFrameHostImpl::GetWebExposedIsolationLevel() {
   // a PermissionPolicy. In this case, the document should be considered as not
   // isolated.
   if (!IsFeatureEnabled(
-          blink::mojom::PermissionsPolicyFeature::kCrossOriginIsolated)) {
+          network::mojom::PermissionsPolicyFeature::kCrossOriginIsolated)) {
     level = WebExposedIsolationLevel::kNotIsolated;
   }
 
@@ -7429,7 +7430,7 @@ void RenderFrameHostImpl::DetachForTesting() {
 }
 
 bool RenderFrameHostImpl::IsFeatureEnabled(
-    blink::mojom::PermissionsPolicyFeature feature) {
+    network::mojom::PermissionsPolicyFeature feature) {
   return permissions_policy_ && permissions_policy_->IsFeatureEnabledForOrigin(
                                     feature, GetLastCommittedOrigin());
 }
@@ -10680,11 +10681,12 @@ void RenderFrameHostImpl::BeginNavigation(
       case network::mojom::TrustTokenOperationType::kRedemption:
       case network::mojom::TrustTokenOperationType::kSigning:
         is_right_operation_policy_enabled = parent->IsFeatureEnabled(
-            blink::mojom::PermissionsPolicyFeature::kTrustTokenRedemption);
+            network::mojom::PermissionsPolicyFeature::kTrustTokenRedemption);
         break;
       case network::mojom::TrustTokenOperationType::kIssuance:
-        is_right_operation_policy_enabled = parent->IsFeatureEnabled(
-            blink::mojom::PermissionsPolicyFeature::kPrivateStateTokenIssuance);
+        is_right_operation_policy_enabled =
+            parent->IsFeatureEnabled(network::mojom::PermissionsPolicyFeature::
+                                         kPrivateStateTokenIssuance);
         break;
     }
 
@@ -13257,7 +13259,7 @@ void RenderFrameHostImpl::CopyAXTreeUpdate(const ui::AXTreeUpdate& snapshot,
 
 void RenderFrameHostImpl::CreatePaymentManager(
     mojo::PendingReceiver<payments::mojom::PaymentManager> receiver) {
-  if (!IsFeatureEnabled(blink::mojom::PermissionsPolicyFeature::kPayment)) {
+  if (!IsFeatureEnabled(network::mojom::PermissionsPolicyFeature::kPayment)) {
     mojo::ReportBadMessage("Permissions policy blocks Payment");
     return;
   }
@@ -13285,7 +13287,7 @@ void RenderFrameHostImpl::CreateWebUsbService(
   if (!base::FeatureList::IsEnabled(features::kWebUsb)) {
     return;
   }
-  if (!IsFeatureEnabled(blink::mojom::PermissionsPolicyFeature::kUsb)) {
+  if (!IsFeatureEnabled(network::mojom::PermissionsPolicyFeature::kUsb)) {
     mojo::ReportBadMessage("Permissions policy blocks access to USB.");
     return;
   }
@@ -13660,7 +13662,7 @@ void RenderFrameHostImpl::BindNFCReceiver(
 #if !BUILDFLAG(IS_ANDROID)
 void RenderFrameHostImpl::BindSerialService(
     mojo::PendingReceiver<blink::mojom::SerialService> receiver) {
-  if (!IsFeatureEnabled(blink::mojom::PermissionsPolicyFeature::kSerial)) {
+  if (!IsFeatureEnabled(network::mojom::PermissionsPolicyFeature::kSerial)) {
     mojo::ReportBadMessage("Permissions policy blocks access to Serial.");
     return;
   }
@@ -13706,7 +13708,7 @@ IdleManagerImpl* RenderFrameHostImpl::GetIdleManager() {
 void RenderFrameHostImpl::BindIdleManager(
     mojo::PendingReceiver<blink::mojom::IdleManager> receiver) {
   if (!IsFeatureEnabled(
-          blink::mojom::PermissionsPolicyFeature::kIdleDetection)) {
+          network::mojom::PermissionsPolicyFeature::kIdleDetection)) {
     mojo::ReportBadMessage(
         "Permissions policy blocks access to IdleDetection.");
     return;
@@ -13761,10 +13763,15 @@ void RenderFrameHostImpl::BindCacheStorageInternal(
     coep_reporter_->Clone(
         coep_reporter_remote.InitWithNewPipeAndPassReceiver());
   }
+  mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>
+      dip_reporter_remote;
+  if (dip_reporter_) {
+    dip_reporter_->Clone(dip_reporter_remote.InitWithNewPipeAndPassReceiver());
+  }
   GetProcess()->BindCacheStorage(
       cross_origin_embedder_policy(), std::move(coep_reporter_remote),
-      policy_container_host_->document_isolation_policy(), bucket_locator,
-      std::move(receiver));
+      policy_container_host_->document_isolation_policy(),
+      std::move(dip_reporter_remote), bucket_locator, std::move(receiver));
 }
 
 void RenderFrameHostImpl::BindInputInjectorReceiver(

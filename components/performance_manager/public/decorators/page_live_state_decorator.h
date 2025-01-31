@@ -13,7 +13,6 @@
 #include "components/performance_manager/public/graph/node_data_describer.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "ui/accessibility/ax_mode.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -75,9 +74,6 @@ class PageLiveStateDecorator : public GraphOwnedDefaultImpl,
   static void SetIsDevToolsOpen(content::WebContents* contents,
                                 bool is_dev_tools_open);
 
-  static void SetAccessibilityMode(content::WebContents* contents,
-                                   ui::AXMode accessibility_mode);
-
  private:
   friend class PageLiveStateDecoratorTest;
 
@@ -121,7 +117,6 @@ class PageLiveStateDecorator::Data {
   virtual bool IsActiveTab() const = 0;
   virtual bool IsPinnedTab() const = 0;
   virtual bool IsDevToolsOpen() const = 0;
-  virtual ui::AXMode GetAccessibilityMode() const = 0;
 
   // TODO(crbug.com/40894717): Add a notifier for this to
   // PageLiveStateObserver.
@@ -144,7 +139,6 @@ class PageLiveStateDecorator::Data {
   virtual void SetIsActiveTabForTesting(bool value) = 0;
   virtual void SetIsPinnedTabForTesting(bool value) = 0;
   virtual void SetIsDevToolsOpenForTesting(bool value) = 0;
-  virtual void SetAccessibilityModeForTesting(ui::AXMode value) = 0;
   virtual void SetUpdatedTitleOrFaviconInBackgroundForTesting(bool value) = 0;
 
  protected:
@@ -175,7 +169,6 @@ class PageLiveStateObserver : public base::CheckedObserver {
   virtual void OnIsActiveTabChanged(const PageNode* page_node) = 0;
   virtual void OnIsPinnedTabChanged(const PageNode* page_node) = 0;
   virtual void OnIsDevToolsOpenChanged(const PageNode* page_node) = 0;
-  virtual void OnAccessibilityModeChanged(const PageNode* page_node) = 0;
 };
 
 class PageLiveStateObserverDefaultImpl : public PageLiveStateObserver {
@@ -202,7 +195,6 @@ class PageLiveStateObserverDefaultImpl : public PageLiveStateObserver {
   void OnIsActiveTabChanged(const PageNode* page_node) override {}
   void OnIsPinnedTabChanged(const PageNode* page_node) override {}
   void OnIsDevToolsOpenChanged(const PageNode* page_node) override {}
-  void OnAccessibilityModeChanged(const PageNode* page_node) override {}
 };
 
 }  // namespace performance_manager

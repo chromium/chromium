@@ -768,6 +768,7 @@
 <translation id="4654549501020883054">Changer tous les jours</translation>
 <translation id="4655868084888499342">Image définie comme fond d'écran</translation>
 <translation id="4661249927038176904">Surréaliste</translation>
+<translation id="4661392828086261436">Cette mise à jour est fournie par le fabricant de l'appareil et n'a pas été vérifiée par Google</translation>
 <translation id="4664651912255946953">fourrure</translation>
 <translation id="4665014895760275686">Fabricant</translation>
 <translation id="467510802200863975">Les mots de passe ne correspondent pas</translation>
@@ -1027,6 +1028,7 @@
 <translation id="5904994456462260490">Ajouter un nouveau nom de point d'accès</translation>
 <translation id="590746845088109442">chats</translation>
 <translation id="5907649332524363701">couleur de touche</translation>
+<translation id="5908813850962688338">L'installation de cette mise à jour prendra quelques minutes. Gardez votre appareil branché et allumé lorsque la mise à jour est en cours de téléchargement. Votre appareil peut redémarrer plusieurs fois et afficher un écran noir pendant ce processus. Vous serez invité à redémarrer votre appareil pour terminer l'installation.</translation>
 <translation id="5916084858004523819">Interdit</translation>
 <translation id="5916664084637901428">Activé</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Votre fichier a été numérisé et enregistré dans le dossier <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Votre fichier a été numérisé et enregistré dans le dossier <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Vos fichiers ont été numérisés et enregistrés dans le dossier <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>

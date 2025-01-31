@@ -90,7 +90,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/site_engagement/core/mojom/site_engagement_details.mojom.h"
 #include "components/translate/content/common/translate.mojom.h"
-#include "components/user_notes/user_notes_features.h"
 #include "components/webui/chrome_urls/features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"

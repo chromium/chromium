@@ -47,22 +47,20 @@ class ChromePasswordChangeServiceTest : public testing::Test {
                                               &mock_optimization_service_};
 };
 
-TEST_F(ChromePasswordChangeServiceTest, PasswordChangeSupported) {
+TEST_F(ChromePasswordChangeServiceTest, PasswordChangeSupportedForURL) {
   GURL url("https://test.com/");
   EXPECT_CALL(affiliation_service(), GetChangePasswordURL(url))
       .WillOnce(testing::Return(GURL("https://test.com/password/")));
-  EXPECT_CALL(mock_optimization_service(),
-              ShouldFeatureAllowModelExecutionForSignedInUser)
+  EXPECT_CALL(mock_optimization_service(), ShouldModelExecutionBeAllowedForUser)
       .WillOnce(testing::Return(true));
   EXPECT_TRUE(change_service()->IsPasswordChangeSupported(url));
 }
 
-TEST_F(ChromePasswordChangeServiceTest, PasswordChangeNotSupportedNoUrl) {
+TEST_F(ChromePasswordChangeServiceTest, PasswordChangeNotSupportedForUrl) {
   GURL url("https://test.com/");
   EXPECT_CALL(affiliation_service(), GetChangePasswordURL(url))
       .WillOnce(testing::Return(GURL()));
-  EXPECT_CALL(mock_optimization_service(),
-              ShouldFeatureAllowModelExecutionForSignedInUser)
+  EXPECT_CALL(mock_optimization_service(), ShouldModelExecutionBeAllowedForUser)
       .WillOnce(testing::Return(true));
   EXPECT_FALSE(change_service()->IsPasswordChangeSupported(url));
 }
@@ -70,12 +68,8 @@ TEST_F(ChromePasswordChangeServiceTest, PasswordChangeNotSupportedNoUrl) {
 TEST_F(ChromePasswordChangeServiceTest,
        PasswordChangeNotSupportedSettingNotVisible) {
   GURL url("https://test.com/");
-  EXPECT_CALL(affiliation_service(), GetChangePasswordURL(url))
-      .WillOnce(testing::Return(GURL("https://test.com/password/")));
-  EXPECT_CALL(
-      mock_optimization_service(),
-      ShouldFeatureAllowModelExecutionForSignedInUser(
-          optimization_guide::UserVisibleFeatureKey::kPasswordChangeSubmission))
+  EXPECT_CALL(affiliation_service(), GetChangePasswordURL).Times(0);
+  EXPECT_CALL(mock_optimization_service(), ShouldModelExecutionBeAllowedForUser)
       .WillOnce(testing::Return(false));
   EXPECT_FALSE(change_service()->IsPasswordChangeSupported(url));
 }

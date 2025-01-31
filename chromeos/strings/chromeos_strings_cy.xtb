@@ -768,6 +768,7 @@
 <translation id="4654549501020883054">Newid yn Ddyddiol</translation>
 <translation id="4655868084888499342">Llun wedi'i osod fel papur wal</translation>
 <translation id="4661249927038176904">Swreal</translation>
+<translation id="4661392828086261436">Darperir y diweddariad hwn gan wneuthurwr y ddyfais ac nid yw wedi'i ddilysu gan Google</translation>
 <translation id="4664651912255946953">blew</translation>
 <translation id="4665014895760275686">Gwneuthurwr</translation>
 <translation id="467510802200863975">Nid yw'r cyfrineiriau'n cyfateb</translation>
@@ -1027,6 +1028,7 @@
 <translation id="5904994456462260490">Ychwanegu APN newydd</translation>
 <translation id="590746845088109442">cathod</translation>
 <translation id="5907649332524363701">lliw bysell</translation>
+<translation id="5908813850962688338">Bydd gosod y diweddariad hwn yn cymryd ychydig funudau. Cadwch eich dyfais wedi'i phlygio i mewn a'i phweru pan fydd y diweddariad yn cael ei lawrlwytho. Mae'n bosib y bydd eich dyfais yn ailgychwyn ei hun sawl gwaith ac yn dangos sgrin ddu yn ystod y broses hon. Byddwch yn cael eich annog i ailgychwyn eich dyfais i gwblhau'r gosodiad.</translation>
 <translation id="5916084858004523819">Gwaharddedig</translation>
 <translation id="5916664084637901428">Ymlaen</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Mae eich ffeil wedi'i sganio a'i chadw i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}zero{Mae eich ffeiliau wedi'u sganio a'u cadw i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}two{Mae eich ffeiliau wedi'u sganio a'u cadw i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Mae eich ffeiliau wedi'u sganio a'u cadw i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}many{Mae eich ffeiliau wedi'u sganio a'u cadw i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Mae eich ffeiliau wedi'u sganio a'u cadw i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>

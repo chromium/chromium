@@ -38,6 +38,9 @@ class FakeDeviceAccountsProvider : public DeviceAccountsProvider {
 
   // Methods to configure this fake provider.
   AccountInfo AddAccount(const GaiaId& gaia, const std::string& email);
+  // An account with this `gaia` must have previously been added via
+  // `AddAccount`.
+  AccountInfo UpdateAccount(const GaiaId& gaia, const std::string& email);
   void ClearAccounts();
 
   // Issues access token responses.
@@ -48,6 +51,7 @@ class FakeDeviceAccountsProvider : public DeviceAccountsProvider {
   using AccessTokenRequest = std::pair<GaiaId, AccessTokenCallback>;
 
   void FireOnAccountsOnDeviceChanged();
+  void FireAccountOnDeviceUpdated(const AccountInfo& account);
 
   base::ObserverList<Observer, true> observer_list_;
   std::vector<AccountInfo> accounts_;

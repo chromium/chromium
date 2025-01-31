@@ -93,6 +93,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/download/model",
     "//ios/chrome/browser/download/ui_bundled",
     "//ios/chrome/browser/download/ui_bundled:features",
+    "//ios/chrome/browser/download/ui_bundled/auto_deletion",
     "//ios/chrome/browser/drive_file_picker/coordinator",
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/feature_engagement/model",

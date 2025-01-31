@@ -2560,7 +2560,7 @@ class CacheStorageSideDataSizeChecker
     network::DocumentIsolationPolicy document_isolation_policy;
     cache_storage_control->AddReceiver(
         cross_origin_embedder_policy, mojo::NullRemote(),
-        document_isolation_policy,
+        document_isolation_policy, mojo::NullRemote(),
         storage::BucketLocator::ForDefaultBucket(
             blink::StorageKey::CreateFirstParty(url::Origin::Create(origin))),
         storage::mojom::CacheStorageOwner::kCacheAPI,
@@ -2798,6 +2798,8 @@ class CacheStorageControlForBadOrigin
       mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
           coep_reporter_remote,
       const network::DocumentIsolationPolicy& document_isolation_policy,
+      mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>
+          dip_reporter_remote,
       const storage::BucketLocator& bucket,
       storage::mojom::CacheStorageOwner owner,
       mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) override {
@@ -6698,7 +6700,7 @@ class CacheStorageDataChecker
     network::DocumentIsolationPolicy document_isolation_policy;
     cache_storage_control->AddReceiver(
         cross_origin_embedder_policy, mojo::NullRemote(),
-        document_isolation_policy,
+        document_isolation_policy, mojo::NullRemote(),
         storage::BucketLocator::ForDefaultBucket(
             blink::StorageKey::CreateFirstParty(url::Origin::Create(origin))),
         storage::mojom::CacheStorageOwner::kCacheAPI,

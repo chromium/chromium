@@ -126,7 +126,6 @@
 <translation id="1076766328672150609">നിങ്ങളുടെ കുട്ടിക്ക് ഒരു പിൻ ഉപയോഗിച്ച് ഈ ഉപകരണം അൺലോക്ക് ചെയ്യാനാകും.</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216"><ph name="LANGUAGE" /> ഭാഷയ്‌ക്ക് സ്പെൽ ചെക്ക് നിഘണ്ടു ഡൗൺലോഡ് ചെയ്യാനായില്ല. വീണ്ടും ശ്രമിക്കുക.</translation>
-<translation id="1078029726086090536">നിങ്ങളുടെ പാസ്‌വേഡ് പരിശോധിച്ചുറപ്പിക്കുക</translation>
 <translation id="1078037449555275327">ChromeVox ക്രമീകരണം</translation>
 <translation id="1079242569060319448">പിൻ മറന്നോ?</translation>
 <translation id="1079285777677001938">ചില സൈറ്റുകളിലെ ഫീച്ചറുകൾ പ്രവർത്തിച്ചേക്കില്ല.</translation>
@@ -369,6 +368,7 @@
 <translation id="1241066500170667906"><ph name="EXPERIMENT_NAME" /> എന്നതിനുള്ള പരീക്ഷണ നില തിരഞ്ഞെടുക്കുക</translation>
 <translation id="124116460088058876">കൂടുതൽ ഭാഷകൾ</translation>
 <translation id="1241381048229838873">എല്ലാ ബുക്ക്‌മാർക്കുകളും കാണിക്കുക</translation>
+<translation id="1242044645101871359">വീണ്ടും സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" />, നിങ്ങളുടെ ക്രമീകരണം റീസെറ്റ് ചെയ്യാൻ താൽപ്പര്യപ്പെടുന്നു.</translation>
 <translation id="1243002225871118300">ഡിസ്പ്ലേ, ടെക്സ്റ്റ് വലുപ്പം മാറ്റുക</translation>
 <translation id="1243314992276662751">അപ്‌ലോഡ് ചെയ്യുക</translation>
@@ -1614,7 +1614,6 @@
 <translation id="2113921862428609753">അതോറിറ്റി വിവരങ്ങളുടെ ആക്‌സസ്</translation>
 <translation id="2114145607116268663">ഇൻസ്റ്റാൾ ചെയ്യാനാകുന്നില്ല, റീബൂട്ട് ആവശ്യമാണ്. നിങ്ങളുടെ കമ്പ്യൂട്ടർ റീസ്റ്റാർട്ട് ചെയ്ത ശേഷം വീണ്ടും ശ്രമിക്കുക. പിശക് കോഡ് <ph name="ERROR" /> ആണ്.</translation>
 <translation id="2114326799768592691">റീലോഡും ഫ്രെയിമും</translation>
-<translation id="2114413269775311385">Android ആപ്പുകളിൽ ഈ അക്കൗണ്ട് ഉപയോഗിക്കുക. <ph name="LINK_BEGIN" />ആപ്പ് ക്രമീകരണത്തിൽ<ph name="LINK_END" /> നിങ്ങൾക്ക് Android ആപ്പുകൾക്കുള്ള അനുമതികൾ നിയന്ത്രിക്കാനാകും.</translation>
 <translation id="2114995631896158695">സിം കാർഡ് ഇട്ടിട്ടില്ല</translation>
 <translation id="2116619964159595185">ലോ എനർജി ബീക്കൺ, ആരോഗ്യ ഫിറ്റ്നസ് ട്രാക്കർ അല്ലെങ്കിൽ സ്‌മാർട്ട് ലൈറ്റ് ബൾബ് സജ്ജീകരിക്കുന്നതോ സമന്വയിപ്പിക്കുന്നതോ പോലുള്ള ഫീച്ചറുകൾക്ക്, സൈറ്റുകൾ സാധാരണയായി Bluetooth ഉപകരണങ്ങളിലേക്ക് കണക്‌റ്റ് ചെയ്യാറുണ്ട്</translation>
 <translation id="2117655453726830283">അടുത്ത സ്ലൈഡ്</translation>
@@ -2791,6 +2790,7 @@
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> എന്നതിന് പിന്തുണയില്ല.</translation>
 <translation id="2926708162326352948">അപ്‌ലോഡ് ചെയ്ത ചിത്രത്തിലേക്ക് തീം അപ്ഡേറ്റ് ചെയ്തു</translation>
 <translation id="2927017729816812676">കാഷെ സ്‌റ്റോറേജ്</translation>
+<translation id="2928030851119977280">ചോയ്‌സ് സംരക്ഷിച്ചു. നിങ്ങൾ മറ്റ് Google സേവനങ്ങളിലേക്ക് സൈൻ ഇൻ ചെയ്യുമ്പോൾ നിങ്ങളുടെ ചോയ്‌സ് ബാധകമാകും.</translation>
 <translation id="2928795416630981206">നിങ്ങളുടെ ക്യാമറയുടെ സ്ഥാനം ട്രാക്ക് ചെയ്യാൻ അനുവദിച്ചിരിക്കുന്നു</translation>
 <translation id="2929345818093040583">{NUM_SITES,plural, =1{ഒരു സൈറ്റിൽ നിന്ന് Chrome, അനുമതികൾ നീക്കം ചെയ്തു}other{{NUM_SITES} സൈറ്റുകളിൽ നിന്ന് Chrome, അനുമതികൾ നീക്കം ചെയ്തു}}</translation>
 <translation id="2931157624143513983">പ്രിന്റ് ചെയ്യാനുള്ള സ്ഥലത്തിന് അനുയോജ്യമാക്കുക</translation>
@@ -4630,6 +4630,7 @@
 <translation id="4242533952199664413">ക്രമീകരണം തുറക്കുക</translation>
 <translation id="4242577469625748426">ഉപകരണത്തിൽ നയ ക്രമീകരണങ്ങൾ ഇൻസ്റ്റാൾ ചെയ്യുന്നതിൽ പരാജയപ്പെട്ടു: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385">നിങ്ങളുടെ <ph name="BEGIN_LINK" />ബ്രൗസറും പ്രൊഫൈലും മാനേജ് ചെയ്യുന്നത്<ph name="END_LINK" /> <ph name="DOMAIN" /> ആണ്</translation>
+<translation id="424315890655130736">പാസ്‌ഫ്രെയ്‌സ് നൽകുക</translation>
 <translation id="4243504193894350135">പ്രിന്റർ താൽക്കാലികമായി നിർത്തിയിരിക്കുന്നു</translation>
 <translation id="4243624244759495699"><ph name="LOCALE" />, ഗ്രേഡ് <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">കൂടുതൽ സ്‌റ്റൈലസ് ആപ്പുകൾ കാണുക</translation>
@@ -5352,7 +5353,6 @@
 <translation id="4766598565665644999">എല്ലാ വിപുലീകരണങ്ങൾക്കും <ph name="HOST" /> വായിക്കാനും മാറ്റാനും കഴിയും</translation>
 <translation id="4767427586072640478">പ്രവർത്തനരഹിതമാക്കിയ വിപുലീകരണങ്ങളെ കുറിച്ച് കൂടുതലറിയുക.</translation>
 <translation id="4768332406694066911">നിങ്ങള്‍‌ക്ക് ഈ ഓര്‍‌ഗനൈസേഷനുകളില്‍‌ നിന്ന് നിങ്ങളെ തിരിച്ചറിയുന്ന സര്‍‌ട്ടിഫിക്കറ്റുകളുണ്ട്</translation>
-<translation id="4768945955870840220">ചില ഉൽപ്പന്നങ്ങൾക്കായി, Chrome-ന് വെബിൽ എല്ലായിടത്ത് നിന്നും റിവ്യൂകൾ ശേഖരിക്കാനാകും</translation>
 <translation id="4769632191812288342">നിങ്ങൾക്ക് സ്റ്റാൻഡേർഡ് പരിരക്ഷയാണ് ലഭിക്കുന്നത്</translation>
 <translation id="4770119228883592393">അനുമതി അഭ്യർത്ഥിച്ചു, പ്രതികരിക്കാൻ ⌘ + Option + താഴേക്കുള്ള അമ്പടയാളം അമർത്തുക</translation>
 <translation id="4770755495532014179">ഈ പാസ്‌വേഡ് നിങ്ങളുടെ iPhone-ൽ ഉപയോഗിക്കൂ</translation>
@@ -7404,6 +7404,7 @@
 <translation id="6253801023880399036">പാസ്‌വേഡുകൾ <ph name="GOOGLE_PASSWORD_MANAGER" /> എന്നതിൽ സംരക്ഷിക്കുന്നു.</translation>
 <translation id="6254503684448816922">കീ കോംപ്രമൈസ്</translation>
 <translation id="6254892857036829079">മികച്ചത്</translation>
+<translation id="6257131917452817589">സ്വയമേവയുള്ള പാസ്‌വേഡ് മാറ്റം</translation>
 <translation id="6257602895346497974">സമന്വയിപ്പിക്കൽ ഓണാക്കുക...</translation>
 <translation id="6257614441619555296"><ph name="KEY" />: <ph name="VALUE" /></translation>
 <translation id="625827534921607067">മുമ്പ് കണക്റ്റ് ചെയ്‌തതോ കോൺഫിഗർ ചെയ്‌തതോ ആയ ഒന്നിലധികം നെറ്റ്‌വർക്ക് ലഭ്യമാണെങ്കിൽ ഈ നെറ്റ്‌വർക്കിന് മുൻഗണന നൽകും</translation>
@@ -8751,7 +8752,6 @@
 <translation id="7243092385765551741">പാസ്‌കീ ഇല്ലാതാക്കണോ?</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (മികച്ചത്)</translation>
 <translation id="7246230585855757313">സുരക്ഷാ കീ വീണ്ടും ബന്ധിപ്പിച്ച് വീണ്ടും ശ്രമിക്കുക</translation>
-<translation id="724835896049478274">Android ആപ്പുകൾക്കുള്ള അക്കൗണ്ടുകൾ ലഭ്യമാണ്</translation>
 <translation id="7248802599439396696">ടാബുകൾ നിഷ്ക്രിയമാക്കുക</translation>
 <translation id="7249197363678284330">വിലാസ ബാറിൽ ഈ ക്രമീകരണം മാറ്റാം.</translation>
 <translation id="7249764475759804559">ഫയലുകൾ തുറക്കുമ്പോൾ ഈ ആപ്പ് ഒരു ഓപ്ഷനായി ഉൾപ്പെടുത്തുക</translation>
@@ -9114,6 +9114,7 @@
 <translation id="7502528909759062987"><ph name="DEVICE_NAME" /> എന്നതിലേക്ക് ടാബ് കാസ്‌റ്റ് ചെയ്യുന്നത് താൽക്കാലികമായി നിർത്തുക</translation>
 <translation id="7502804472671406749">പങ്കിട്ട ടാബുകൾ സ്ക്രോൾ ചെയ്യാനും സൂം ചെയ്യാനും കഴിയും</translation>
 <translation id="7503191893372251637">നെറ്റ്‌സ്‌കേപ്പ് സര്‍‌ട്ടിഫിക്കറ്റ് തരം</translation>
+<translation id="7503259455663961898">എനിക്കായി ഇത് മാറ്റുക</translation>
 <translation id="7503985202154027481">നിങ്ങൾ ഈ സൈറ്റ് സന്ദർശിച്ചതിൻ്റെ റെക്കോർഡ് നിങ്ങളുടെ സുരക്ഷാ കീയിൽ സൂക്ഷിക്കും.</translation>
 <translation id="7504145862399276792">ഈ ടാബിന്റെ ഓഡിയോ മ്യൂട്ട് ചെയ്‌തു</translation>
 <translation id="750509436279396091">ഡൗൺലോഡുകൾ ഫോൾഡർ തുറക്കുക</translation>
@@ -9176,6 +9177,7 @@
 <translation id="7551059576287086432"><ph name="FILE_NAME" /> ഡൗൺലോഡ് പരാജയപ്പെട്ടു</translation>
 <translation id="7551643184018910560">ഷെൽഫിലേക്ക് പിൻ ചെയ്യുക</translation>
 <translation id="7552191410769096467">ടാബ് ഗ്രൂപ്പുകൾ പങ്കിടാൻ അല്ലെങ്കിൽ അവയിൽ ചേരാൻ, നിങ്ങൾ സൈൻ ഇൻ ചെയ്ത ശേഷം സമന്വയിപ്പിക്കൽ ഓണാക്കേണ്ടതുണ്ട്</translation>
+<translation id="7552196109089297786">Microsoft-ൽ നിന്ന് സൈൻ ഔട്ട് ചെയ്യുക</translation>
 <translation id="7552846755917812628">ഇനിപ്പറയുന്ന നുറുങ്ങുകൾ പരീക്ഷിക്കൂ:</translation>
 <translation id="7553012839257224005">Linux കണ്ടെയ്‌നർ പരിശോധിക്കുന്നു</translation>
 <translation id="7553242001898162573">നിങ്ങളുടെ പാസ്‌വേഡ് നല്‍‌കുക</translation>
@@ -10305,6 +10307,7 @@
 <translation id="8330617762701840933">രണ്ടാം ബ്രൗസറിലേക്ക് റീഡയറക്റ്റ് ചെയ്യുന്ന വെബ്‌സൈറ്റുകളുടെ ലിസ്റ്റ്.</translation>
 <translation id="8330689128072902965">സമീപമുള്ള കോൺടാക്റ്റുകൾക്ക് നിങ്ങളുമായി പങ്കിടാം. മാറ്റാൻ ക്ലിക്ക് ചെയ്യുക.</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{പിന്തുണയ്ക്കുന്ന ഫയല്‍ തരം: <ph name="FILE_TYPE1" />}=2{പിന്തുണയ്ക്കുന്ന ഫയല്‍ തരങ്ങൾ: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />}=3{പിന്തുണയ്ക്കുന്ന ഫയല്‍ തരങ്ങൾ: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />}=4{പിന്തുണയ്ക്കുന്ന ഫയല്‍ തരങ്ങൾ: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" />}other{പിന്തുണയ്ക്കുന്ന ഫയല്‍ തരങ്ങൾ: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" /> എന്നതും മറ്റ് {OVERFLOW_COUNT} എണ്ണവും കൂടി<ph name="END_LINK" />)}}</translation>
+<translation id="8331578454993293727">നിങ്ങളുടെ പാസ്‌വേഡ് ഡാറ്റാ ലംഘനത്തിൽ കണ്ടെത്തിയിരിക്കുന്നു</translation>
 <translation id="8331822764922665615">നിങ്ങളുടെ ഗ്രൂപ്പിന് പേര് നൽകുക, ഒരു നിറം തിരഞ്ഞെടുക്കുക, തുടർന്ന് Esc അമർത്തുക</translation>
 <translation id="833256022891467078">Crostini-യിൽ നിന്ന് പങ്കിട്ട ഫോൾഡറുകൾ</translation>
 <translation id="833262891116910667">ഹൈലൈറ്റ് ചെയ്യുക</translation>
@@ -10386,6 +10389,7 @@
     <ph name="BEGIN_PARAGRAPH2" />കൂടുതൽ സഹായത്തിന് സന്ദർശിക്കുക: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8383614331548401927">സ്വാഗത റീക്യാപ്പ്</translation>
 <translation id="8386091599636877289">നയം കണ്ടെത്തിയില്ല.</translation>
+<translation id="8387087863179559896">ശക്തമായ പാസ്‌വേഡ് ഉപയോഗിച്ച് ഈ സൈറ്റിനായി നിങ്ങളുടെ അക്കൗണ്ട് അപ്‌ഡേറ്റ് ചെയ്യാൻ Chrome-ന് കഴിയും. <ph name="EMAIL" /> എന്നതിനുള്ള Google Password Manager-ൽ നിങ്ങൾക്കായി പാസ്‌വേഡ് സംരക്ഷിച്ചിരിക്കുന്നതിനാൽ നിങ്ങൾ പാസ്‌വേഡ് ഓർത്തിരിക്കേണ്ട ആവശ്യമില്ല. <ph name="PASSWORD_CHANGE" /> എന്നതിനെ കുറിച്ചുള്ള കൂടുതൽ വിവരങ്ങൾ.</translation>
 <translation id="8387361103813440603">നിങ്ങളുടെ ലൊക്കേഷൻ കാണാൻ അനുവാദമില്ല</translation>
 <translation id="8387617938027387193">ഇത് നിങ്ങളാണെന്ന് പരിശോധിച്ചുറപ്പിക്കുക</translation>
 <translation id="8388770971141403598">സെക്കൻഡറി പ്രൊഫൈലുകൾക്ക് പിന്തുണയില്ല</translation>
@@ -10700,7 +10704,6 @@
 <translation id="8625124982056504555">ChromeOS ഉപകരണവും കമ്പോണന്റ് സീരിയൽ നമ്പറുകളും റീഡ് ചെയ്യുക</translation>
 <translation id="862542460444371744">&amp;വിപുലീകരണങ്ങള്‍</translation>
 <translation id="8625663000550647058">നിങ്ങളുടെ മൈക്രോഫോൺ ഉപയോഗിക്കാൻ അനുവാദമില്ല</translation>
-<translation id="8625679025395572221">നിങ്ങളുടെ അക്കൗണ്ട് ഇപ്പോഴും അപകടത്തിലായിരിക്കാം.</translation>
 <translation id="8625916342247441948">HID ഉപകരണങ്ങളിലേക്ക് കണക്റ്റ് ചെയ്യാൻ സൈറ്റുകളെ അനുവദിക്കരുത്</translation>
 <translation id="862727964348362408">താൽക്കാലികമായി നിർത്തി</translation>
 <translation id="862750493060684461">CSS കാഷേ</translation>
@@ -11581,7 +11584,6 @@
 <translation id="936801553271523408">സിസ്റ്റം ഡയഗണോസ്റ്റിക് ഡാറ്റ</translation>
 <translation id="93766956588638423">വിപുലീകരണം റിപ്പയർ ചെയ്യുക</translation>
 <translation id="938623846785894166">സാധാരണ ഉപയോഗിക്കാത്ത ഫയൽ</translation>
-<translation id="939401694733344652">Android ആപ്പുകളിൽ ഇപ്പോൾ ഈ അക്കൗണ്ടുകൾ ഉപയോഗിക്കുന്നില്ല. ഈ Android ആപ്പിൽ ഉപയോഗിക്കേണ്ട അക്കൗണ്ട് തിരഞ്ഞെടുക്കുകയാണെങ്കിൽ, ആ അക്കൗണ്ട് മറ്റ് Android ആപ്പുകളിലും ഉപയോഗിക്കാം. <ph name="LINK_BEGIN" />ക്രമീകരണം &gt; അക്കൗണ്ടുകൾ<ph name="LINK_END" /> എന്നതിൽ Android ആപ്പുകളുടെ ആക്‌സസ് മാറ്റാനും കഴിയും.</translation>
 <translation id="939598580284253335">പാസ്ഫ്രെയ്‍സ് നല്‍കുക</translation>
 <translation id="939736085109172342">പുതിയ ഫോള്‍ഡര്‍</translation>
 <translation id="940212040923880623">&amp;കണ്ടെത്തി എഡിറ്റ് ചെയ്യുക</translation>

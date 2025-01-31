@@ -25,7 +25,7 @@
 #include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/site_for_cookies.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -34,10 +34,10 @@ using PermissionStatus = blink::mojom::PermissionStatus;
 
 DurableStoragePermissionContext::DurableStoragePermissionContext(
     content::BrowserContext* browser_context)
-    : PermissionContextBase(browser_context,
-                            ContentSettingsType::DURABLE_STORAGE,
-                            blink::mojom::PermissionsPolicyFeature::kNotFound) {
-}
+    : PermissionContextBase(
+          browser_context,
+          ContentSettingsType::DURABLE_STORAGE,
+          network::mojom::PermissionsPolicyFeature::kNotFound) {}
 
 void DurableStoragePermissionContext::DecidePermission(
     permissions::PermissionRequestData request_data,

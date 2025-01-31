@@ -29,7 +29,7 @@ TEST_F(PermissionsPolicyDevtoolsSupportSimTest, DetectIframeAttributeBlockage) {
   std::optional<PermissionsPolicyBlockLocator> locator =
       TracePermissionsPolicyBlockSource(
           MainFrame().GetFrame()->FirstChild(),
-          mojom::blink::PermissionsPolicyFeature::kFullscreen);
+          network::mojom::PermissionsPolicyFeature::kFullscreen);
 
   ASSERT_NE(locator, std::nullopt);
   EXPECT_EQ(locator->frame_id,
@@ -55,7 +55,7 @@ TEST_F(PermissionsPolicyDevtoolsSupportSimTest,
   std::optional<PermissionsPolicyBlockLocator> locator =
       TracePermissionsPolicyBlockSource(
           MainFrame().GetFrame()->FirstChild()->FirstChild(),
-          mojom::blink::PermissionsPolicyFeature::kFullscreen);
+          network::mojom::PermissionsPolicyFeature::kFullscreen);
 
   ASSERT_NE(locator, std::nullopt);
   EXPECT_EQ(locator->frame_id,
@@ -76,7 +76,7 @@ TEST_F(PermissionsPolicyDevtoolsSupportSimTest, DetectHeaderBlockage) {
   std::optional<PermissionsPolicyBlockLocator> locator =
       TracePermissionsPolicyBlockSource(
           MainFrame().GetFrame(),
-          mojom::blink::PermissionsPolicyFeature::kFullscreen);
+          network::mojom::PermissionsPolicyFeature::kFullscreen);
 
   ASSERT_NE(locator, std::nullopt);
   EXPECT_EQ(locator->frame_id,
@@ -102,7 +102,7 @@ TEST_F(PermissionsPolicyDevtoolsSupportSimTest, DetectNestedHeaderBlockage) {
   std::optional<PermissionsPolicyBlockLocator> locator =
       TracePermissionsPolicyBlockSource(
           MainFrame().GetFrame()->FirstChild(),
-          mojom::blink::PermissionsPolicyFeature::kFullscreen);
+          network::mojom::PermissionsPolicyFeature::kFullscreen);
 
   ASSERT_NE(locator, std::nullopt);
   EXPECT_EQ(locator->frame_id,
@@ -135,7 +135,7 @@ TEST_F(PermissionsPolicyDevtoolsSupportSimTest, DetectRootHeaderBlockage) {
   std::optional<PermissionsPolicyBlockLocator> locator =
       TracePermissionsPolicyBlockSource(
           MainFrame().GetFrame()->FirstChild(),
-          mojom::blink::PermissionsPolicyFeature::kFullscreen);
+          network::mojom::PermissionsPolicyFeature::kFullscreen);
 
   ASSERT_NE(locator, std::nullopt);
   EXPECT_EQ(locator->frame_id,
@@ -166,7 +166,7 @@ TEST_F(PermissionsPolicyDevtoolsSupportSimTest,
   std::optional<PermissionsPolicyBlockLocator> locator =
       TracePermissionsPolicyBlockSource(
           MainFrame().GetFrame()->FirstChild(),
-          mojom::blink::PermissionsPolicyFeature::kFullscreen);
+          network::mojom::PermissionsPolicyFeature::kFullscreen);
 
   ASSERT_NE(locator, std::nullopt);
   EXPECT_EQ(locator->frame_id,
@@ -188,7 +188,7 @@ TEST_F(PermissionsPolicyDevtoolsSupportSimTest,
   std::optional<PermissionsPolicyBlockLocator> locator =
       TracePermissionsPolicyBlockSource(
           MainFrame().GetFrame()->FirstChild(),
-          mojom::blink::PermissionsPolicyFeature::kFullscreen);
+          network::mojom::PermissionsPolicyFeature::kFullscreen);
 
   ASSERT_NE(locator, std::nullopt);
   EXPECT_EQ(locator->frame_id,
@@ -219,7 +219,7 @@ TEST_F(PermissionsPolicyDevtoolsSupportSimTest,
   std::optional<PermissionsPolicyBlockLocator> locator =
       TracePermissionsPolicyBlockSource(
           MainFrame().GetFrame()->FirstChild(),
-          mojom::blink::PermissionsPolicyFeature::kFullscreen);
+          network::mojom::PermissionsPolicyFeature::kFullscreen);
 
   ASSERT_NE(locator, std::nullopt);
   EXPECT_EQ(locator->frame_id,
@@ -259,11 +259,11 @@ TEST_F(PermissionsPolicyDevtoolsSupportSimTest,
   std::optional<PermissionsPolicyBlockLocator> locator =
       TracePermissionsPolicyBlockSource(
           MainFrame().GetFrame()->FirstChild()->FirstChild(),
-          mojom::blink::PermissionsPolicyFeature::kFullscreen);
+          network::mojom::PermissionsPolicyFeature::kFullscreen);
 
   SecurityContext::FeatureStatus status =
       MainFrame().GetFrame()->GetSecurityContext()->IsFeatureEnabled(
-          mojom::blink::PermissionsPolicyFeature::kFullscreen);
+          network::mojom::PermissionsPolicyFeature::kFullscreen);
   EXPECT_TRUE(status.enabled);
   EXPECT_FALSE(status.should_report);
   EXPECT_EQ(status.reporting_endpoint, std::nullopt);
@@ -273,7 +273,7 @@ TEST_F(PermissionsPolicyDevtoolsSupportSimTest,
                ->FirstChild()
                ->GetSecurityContext()
                ->IsFeatureEnabled(
-                   mojom::blink::PermissionsPolicyFeature::kFullscreen);
+                   network::mojom::PermissionsPolicyFeature::kFullscreen);
   EXPECT_TRUE(status.enabled);
   EXPECT_FALSE(status.should_report);
   EXPECT_EQ(status.reporting_endpoint, std::nullopt);
@@ -284,7 +284,7 @@ TEST_F(PermissionsPolicyDevtoolsSupportSimTest,
                ->FirstChild()
                ->GetSecurityContext()
                ->IsFeatureEnabled(
-                   mojom::blink::PermissionsPolicyFeature::kFullscreen);
+                   network::mojom::PermissionsPolicyFeature::kFullscreen);
   EXPECT_TRUE(status.enabled);
   EXPECT_FALSE(status.should_report);
   EXPECT_EQ(status.reporting_endpoint, std::nullopt);
@@ -305,7 +305,7 @@ TEST_F(PermissionsPolicyDevtoolsSupportSimTest, DetectNoBlockage) {
   std::optional<PermissionsPolicyBlockLocator> locator =
       TracePermissionsPolicyBlockSource(
           MainFrame().GetFrame(),
-          mojom::blink::PermissionsPolicyFeature::kFullscreen);
+          network::mojom::PermissionsPolicyFeature::kFullscreen);
 
   EXPECT_EQ(locator, std::nullopt);
 }

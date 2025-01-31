@@ -62,6 +62,8 @@ class ProfileOAuth2TokenServiceIOSDelegate
 
   // DeviceAccountsProvider::Observer:
   void OnAccountsOnDeviceChanged() override;
+  void OnAccountOnDeviceUpdated(
+      const DeviceAccountsProvider::AccountInfo& device_account) override;
 
  protected:
   // Removes |account_id| from |accounts_|. Fires |OnRefreshTokenRevoked|

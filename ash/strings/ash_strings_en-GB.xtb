@@ -731,6 +731,7 @@ Otherwise, the built-in touchpad will be re-enabled in <ph name="TIMEOUT_SECONDS
 <translation id="3522979239100719575">Looking for available profiles. This may take a few minutes.</translation>
 <translation id="3526440770046466733">Open link in new tab and stay in current tab</translation>
 <translation id="353086728817903341">Connected to <ph name="NUM_DEVICES" /> devices</translation>
+<translation id="3532247131850366052">Couldn't create Google Sheet</translation>
 <translation id="3533126039236445965">Apps in shelf</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> hotspot</translation>
 <translation id="3540893133818942399">Dismiss setting up viewing your phone's recent photos and media</translation>
@@ -829,6 +830,7 @@ Connect your device to power.</translation>
 <translation id="380165613292957338">Hi, how can I help?</translation>
 <translation id="3804737937830804242">Collapse camera</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 emoji. No other results.}other{# emojis. No other results.}}</translation>
+<translation id="3822403841174077928">Couldn't copy with formatting</translation>
 <translation id="3824784079442479685">This allows camera access for <ph name="APP_NAME" /> and all apps and websites with the camera permission. You may need to refresh the web page or restart the app.</translation>
 <translation id="3826099427150913765">Switch to password</translation>
 <translation id="383058930331066723">Battery saver mode is on</translation>
@@ -1215,6 +1217,7 @@ One device connected.</translation>
 <translation id="5043679421800073804">Click or tap last icon on shelf</translation>
 <translation id="504465286040788597">Previous paragraph</translation>
 <translation id="5045550434625856497">Incorrect password</translation>
+<translation id="5058794129231928255">Couldn't create Google Doc</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">You'll get notified if you talk while muted. Audio never leaves your device.</translation>
 <translation id="5077416371682039027">Set up viewing your phone's recent photos, media, notifications and apps</translation>
@@ -1478,7 +1481,6 @@ No devices connected.</translation>
 <translation id="589817443623831496">Point scanning</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">Yellow</translation>
-<translation id="5911231045062997865">Lacros windows aren't currently supported. Other apps will be saved.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916646100036936191">New notification, <ph name="NOTIFICATION_COUNT" /> total</translation>
 <translation id="5916664084637901428">On</translation>
@@ -1648,6 +1650,7 @@ No devices connected.</translation>
 <translation id="6468406072297048412">{0,plural, =1{Update device to previous version within 1 minute}other{Update device to previous version within # minutes}}</translation>
 <translation id="6469104339369989396">Toggle hotspot.</translation>
 <translation id="6477681113376365978">Can’t download file</translation>
+<translation id="648135757200234041">Couldn't create contact</translation>
 <translation id="6482559668224714696">Full-screen magnifier</translation>
 <translation id="6485086611007560630">Weather (not available)</translation>
 <translation id="6490471652906364588">USB-C device (right port)</translation>
@@ -2288,6 +2291,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8653151467777939995">Show notification settings. Notifications are on</translation>
 <translation id="8657066291275741003">Lower case</translation>
 <translation id="8660331759611631213">Square root of 71</translation>
+<translation id="8662921061190671299">Couldn't add to Calendar</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Press enter to capture partial screenshot</translation>
 <translation id="8676770494376880701">Low-power charger connected</translation>

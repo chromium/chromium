@@ -674,7 +674,6 @@
 <translation id="2157640075051554492">Известувања за следење на цените</translation>
 <translation id="21613918653299710">Онлајн галерии за слики</translation>
 <translation id="2161656808144014275">Текст</translation>
-<translation id="2162510787844374618">Контактираме со вашата банка…</translation>
 <translation id="2162620598375156287">Сега <ph name="CURRENT_PRICE" /> на <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Проверете дали има печатна грешка во <ph name="HOST_NAME" />.</translation>
 <translation id="2166049586286450108">Целосен пристап на администраторот</translation>
@@ -2428,7 +2427,6 @@
 <translation id="5288108484102287882">Проверката на вредностите на правилото покажа предупредувања</translation>
 <translation id="5289384342738547352">Постапување со повеќе документи</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{Треба да се ажурира денес}=2{Треба да се ажурира до утре}one{Треба да се ажурира во рок од # ден}other{Треба да се ажурира во рок од # дена}}</translation>
-<translation id="5292714443869769806">Одете во поставките за <ph name="OPERATING_SYSTEM" /></translation>
 <translation id="5293919335876685914">Купе-автомобили</translation>
 <translation id="5298618990685278995">првичен нацрт</translation>
 <translation id="5299298092464848405">Грешка при разложување на правилото</translation>
@@ -3650,6 +3648,7 @@
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Товарни камиони и приколки</translation>
 <translation id="7461924472993315131">Закачи</translation>
+<translation id="746329643760972486">MacOS</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> ќе знае дека сте го отвориле сајтот <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7465963048299965912">10 x 13 инчи</translation>
 <translation id="7469935732330206581">Формуларот не е безбеден</translation>
@@ -3881,6 +3880,7 @@
 <translation id="784404208867107517">Групирана историја</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Ништо}=1{1 апликација (<ph name="EXAMPLE_APP_1" />)}=2{2 апликации (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# апликација (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# апликации (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Се јави грешка. Обидете се повторно.</translation>
+<translation id="784623644169604270">Нема неодамнешна активност</translation>
 <translation id="785476343534277563">Академски спортови</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="7860345425589240791">Внесете ги новиот датум на истекување и CVC на <ph name="SIDE_OF_CARD" /></translation>
@@ -3919,7 +3919,6 @@
 <translation id="7942349550061667556">Црвена</translation>
 <translation id="7943397946612013052">Блокирано преземање</translation>
 <translation id="7943893128817522649">Може да прашува за да презема повеќе датотеки автоматски</translation>
-<translation id="794567586469801724">macOS</translation>
 <translation id="7947285636476623132">Проверете ја годината на истекување и обидете се повторно</translation>
 <translation id="7947310711271925113">Поп-музика</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете го копчето Tab, а потоа копчето Enter за да дознаете за функциите на Chrome</translation>
@@ -4671,7 +4670,6 @@
 <translation id="984275831282074731">Начини на плаќање</translation>
 <translation id="985199708454569384">&lt;p&gt;Грешкава ќе ја видите ако датумот и времето на компјутерот или мобилниот уред не се точни.&lt;/p&gt;
     &lt;p&gt;За да ја поправите грешката, отворете го часовникот на уредот. Уверете се дека времето и датумот се точни.&lt;/p&gt;</translation>
-<translation id="986257639512122511">Сте дале дозвола за <ph name="PERMISSION" /> на <ph name="ORIGIN" /></translation>
 <translation id="987264212798334818">Општо</translation>
 <translation id="988159990683914416">Верзија за програмер</translation>
 <translation id="989988560359834682">Измени адреса</translation>

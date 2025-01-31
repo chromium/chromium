@@ -126,7 +126,6 @@
 <translation id="1076766328672150609">పరికరాన్ని అన్‌లాక్ చేయడానికి మీ చిన్నారి PINను ఉపయోగించవచ్చు.</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216"><ph name="LANGUAGE" />కు స్పెల్ చెక్ నిఘంటువును డౌన్‌లోడ్ చేయడం సాధ్యపడలేదు. మళ్లీ ట్రై చేయండి.</translation>
-<translation id="1078029726086090536">మీ పాస్‌వర్డ్‌ను వెరిఫై చేయండి</translation>
 <translation id="1078037449555275327">ChromeVox సెట్టింగ్‌లు</translation>
 <translation id="1079242569060319448">PIN మర్చిపోయారా?</translation>
 <translation id="1079285777677001938">కొన్ని సైట్‌లలోని ఫీచర్‌లు పని చేయకపోవచ్చు.</translation>
@@ -369,6 +368,7 @@
 <translation id="1241066500170667906"><ph name="EXPERIMENT_NAME" />కు ప్రయోగ స్థితిని ఎంచుకోండి</translation>
 <translation id="124116460088058876">మరిన్ని భాషలు</translation>
 <translation id="1241381048229838873">అన్ని బుక్‌మార్క్‌లను చూపు</translation>
+<translation id="1242044645101871359">మళ్ళీ సైన్ ఇన్ చేయండి</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" /> మీ సెట్టింగ్‌లను రీసెట్ చేయాలనుకుంటోంది.</translation>
 <translation id="1243002225871118300">డిస్‌ప్లే, టెక్స్ట్ సైజ్‌ను మార్చండి</translation>
 <translation id="1243314992276662751">అప్‌లోడ్ చేయి</translation>
@@ -1625,7 +1625,6 @@
 <translation id="2113921862428609753">అధికార సమాచార యాక్సెస్‌</translation>
 <translation id="2114145607116268663">ఇన్‌స్టాల్ చేయడం సాధ్యపడలేదు, రీబూట్ చేయడం అవసరం. దయచేసి మీ పరికరాన్ని రీస్టార్ట్ చేసి, మళ్లీ ట్రై చేయండి. ఎర్రర్ కోడ్ <ph name="ERROR" />.</translation>
 <translation id="2114326799768592691">&amp;ఫ్రేమ్‌ను మళ్లీ లోడ్ చేయి</translation>
-<translation id="2114413269775311385">Android యాప్‌లతో ఈ ఖాతాను ఉపయోగించండి. మీరు Android యాప్‌లకు అనుమతులను <ph name="LINK_BEGIN" />యాప్‌ల సెట్టింగ్‌లు<ph name="LINK_END" /> లింక్‌లో కంట్రోల్ చేయవచ్చు.</translation>
 <translation id="2114995631896158695">ఎలాంటి SIM కార్డ్ ఇన్‌సర్ట్ చేయబడలేదు</translation>
 <translation id="2116619964159595185">తక్కువ శక్తి గల బీకాన్, ఆరోగ్యం లేదా ఫిట్‌నెస్ ట్రాకర్, లేదా స్మార్ట్ లైట్ బల్బ్‌లను సెటప్ చేయడం లేదా సింక్ చేయడం వంటి ఫీచర్‌ల కోసం సైట్‌లు సాధారణంగా బ్లూటూత్ పరికరాలకు కనెక్ట్ అవుతాయి</translation>
 <translation id="2117655453726830283">తర్వాతి స్లయిడ్</translation>
@@ -4645,6 +4644,7 @@
 <translation id="4242533952199664413">సెట్టింగ్‌లను తెరువు</translation>
 <translation id="4242577469625748426">పరికరంలో విధాన సెట్టింగ్‌లను ఇన్‌స్టాల్ చేయడంలో విఫలమైంది: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385">మీ <ph name="BEGIN_LINK" />బ్రౌజర్, ప్రొఫైల్ మేనేజ్‌మెంట్<ph name="END_LINK" /> <ph name="DOMAIN" /> ద్వారా జరుగుతోంది</translation>
+<translation id="424315890655130736">రహస్య పదబంధాన్ని నమోదు చేయండి</translation>
 <translation id="4243504193894350135">ప్రింటర్ పాజ్ చేయబడింది</translation>
 <translation id="4243624244759495699"><ph name="LOCALE" />, <ph name="GRADE" />వ గ్రేడ్</translation>
 <translation id="4244238649050961491">మరిన్ని స్టయిలస్ యాప్‌లను కనుగొనండి</translation>
@@ -5367,7 +5367,6 @@
 <translation id="4766598565665644999">అన్ని ఎక్స్‌టెన్షన్‌లు <ph name="HOST" />ను చదవవచ్చు, మార్చవచ్చు</translation>
 <translation id="4767427586072640478">డిజేబుల్ చేయబడిన ఎక్స్‌టెన్షన్‌ల గురించి మరింత తెలుసుకోండి.</translation>
 <translation id="4768332406694066911">మిమ్మల్ని గుర్తించే ఈ సంస్థల నుండి మీకు ప్రమాణపత్రాలు ఉన్నాయి</translation>
-<translation id="4768945955870840220">Chrome, కొన్ని ప్రోడక్ట్‌ల కోసం, వెబ్ నుండి రివ్యూలను సేకరించవచ్చు</translation>
 <translation id="4769632191812288342">మీరు స్టాండర్డ్ రక్షణను పొందుతున్నారు</translation>
 <translation id="4770119228883592393">అనుమతి కోసం రిక్వెస్ట్ చేశారు, ప్రతిస్పందించడానికి ⌘ + ఆప్షన్ + కింది వైపు బాణం గుర్తును నొక్కండి</translation>
 <translation id="4770755495532014179">మీ iPhoneలో ఈ పాస్‌వర్డ్‌ను ఉపయోగించండి</translation>
@@ -8765,7 +8764,6 @@
 <translation id="7243092385765551741">పాస్-కీని తొలగించాలా?</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (ఉత్తమం)</translation>
 <translation id="7246230585855757313">మీ సెక్యూరిటీ కీని తీసివేసి, మళ్లీ ఇన్‌సర్ట్ చేసి, ఆపై మరొకసారి ప్రయత్నించండి</translation>
-<translation id="724835896049478274">Android యాప్‌లకు అందుబాటులో ఉన్న ఖాతాలు</translation>
 <translation id="7248802599439396696">ట్యాబ్‌లను ఇన్‌యాక్టివ్‌గా ఉంచండి</translation>
 <translation id="7249197363678284330">అడ్రస్ బార్‌లో ఈ సెట్టింగ్‌ను మార్చండి.</translation>
 <translation id="7249764475759804559">ఫైళ్లను తెరిచేటప్పుడు ఈ యాప్‌ను ఆప్షన్‌గా చేర్చండి</translation>
@@ -10711,7 +10709,6 @@
 <translation id="8625124982056504555">ChromeOS పరికరం, అలాగే కాంపోనెంట్ సీరియల్ నంబర్‌లను చదవండి</translation>
 <translation id="862542460444371744">&amp;పొడిగింపులు</translation>
 <translation id="8625663000550647058">మీ మైక్రోఫోన్ ఉపయోగించడానికి అనుమతించబడలేదు</translation>
-<translation id="8625679025395572221">మీ ఖాతా ఇప్పటికీ ప్రమాదంలో ఉండవచ్చు.</translation>
 <translation id="8625916342247441948">HID పరికరాలను కనెక్ట్ చేయడానికి సైట్‌లను అనుమతించకండి</translation>
 <translation id="862727964348362408">తాత్కాలికంగా రద్దు చేయబడింది</translation>
 <translation id="862750493060684461">CSS కాష్</translation>
@@ -11593,7 +11590,6 @@
 <translation id="936801553271523408">సిస్టమ్ విశ్లేషణ డేటా</translation>
 <translation id="93766956588638423">ఎక్స్‌టెన్షన్‌ను సరి చేయి</translation>
 <translation id="938623846785894166">అసాధారణమైన ఫైల్</translation>
-<translation id="939401694733344652">Android యాప్‌లతో ఈ ఖాతాలను ప్రస్తుతం ఉపయోగించడం లేదు. ఈ Android యాప్‌తో ఉపయోగించడానికి మీరు ఒక ఖాతాను ఎంచుకుంటే, ఆ ఖాతాను ఇతర Android యాప్‌లతో కూడా ఉపయోగించవచ్చు. మీరు Android యాప్ యాక్సెస్‌ను <ph name="LINK_BEGIN" />సెట్టింగ్‌లు &gt; ఖాతాలు<ph name="LINK_END" /> లింక్‌లో మార్చవచ్చు.</translation>
 <translation id="939598580284253335">రహస్య పదబంధాన్ని నమోదు చేయండి</translation>
 <translation id="939736085109172342">కొత్త  ఫోల్డర్</translation>
 <translation id="940212040923880623">&amp;కనుగొని, ఎడిట్ చేయండి</translation>

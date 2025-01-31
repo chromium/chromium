@@ -263,7 +263,6 @@
 <translation id="2074131957428911366">Du kan alltid välja vad som ska synkroniseras i <ph name="BEGIN_LINK" />inställningarna<ph name="END_LINK" />.</translation>
 <translation id="2078437078822043850">Du kan scrolla åt höger för att surfa inkognito.</translation>
 <translation id="2079545284768500474">Ångra</translation>
-<translation id="2082906935540894275">Funktionerna som är mest relevanta för dig vid olika tidpunkter.</translation>
 <translation id="2085876078937250610">Spara …</translation>
 <translation id="2096239473850415494">Det gick inte att ladda ned</translation>
 <translation id="2096716221239095980">Radera all data</translation>
@@ -548,7 +547,6 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="344589138074534176">Läs mer om Google Lens</translation>
 <translation id="3447332786336558089">När du har loggat ut stängs flikarna och kontodata som inte har sparats raderas från enheten. Detta kan omfatta lösenord, historik med mera.</translation>
-<translation id="3449016921756175697">Användbara förslag som gör surfandet bättre och enklare.</translation>
 <translation id="345348365500626747">Adress hittades</translation>
 <translation id="3464194322481586217">Det gick inte att bevaka priset.</translation>
 <translation id="3469117812148449995">Alternativ för att spara lösenord</translation>
@@ -922,7 +920,6 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="5127538504377457572">Aktiv för <ph name="DAYS" /> dagar sedan</translation>
 <translation id="5128788795241319992">Utforska den nya menyn</translation>
 <translation id="5132942445612118989">Synkronisera lösenord, historik med mera på alla dina enheter</translation>
-<translation id="5137526732000415202">Din senast öppna flik på alla dina enheter.</translation>
 <translation id="5145331760738811130">Stäng Flikbyte</translation>
 <translation id="5157638238828697074">Något gick fel. Det gick inte att öppna appen.</translation>
 <translation id="5163417375525818870">PDF-filer</translation>
@@ -1023,7 +1020,6 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="559567008082979829">Ställ in att dina nedladdningar ska raderas efter en månad.</translation>
 <translation id="5596627076506792578">Fler alternativ</translation>
 <translation id="560322036295180549">Inaktiverat av organisationen</translation>
-<translation id="5611107723541161735">Genvägar till webbplatser som du har besökt nyligen på den här enheten.</translation>
 <translation id="5611398002774823980">Spara i kontot</translation>
 <translation id="5613297089029360427">Sortera efter senaste</translation>
 <translation id="5614553682702429503">Vill du spara lösenordet?</translation>
@@ -1487,7 +1483,6 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="7512075701202892785">Din favoritwebbläsare finns nu på iPad</translation>
 <translation id="7512909159512473473">Ange lösenfras …</translation>
 <translation id="7514365320538308">Ladda ned</translation>
-<translation id="7521117365186708026">Tips som hjälper dig att få ut mesta möjliga av Chrome.</translation>
 <translation id="7524055474074101597">Få tillgång till dina lösenord m.m. i appar.</translation>
 <translation id="75362970626182391">Ny flikgrupp</translation>
 <translation id="7537586195939242955">Det går tyvärr inte att installera det här objektet i Passbook just nu.</translation>
@@ -1605,6 +1600,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="800361585186029508">Öppnar de angivna webbadresserna i Google Chrome.</translation>
 <translation id="8005666035647241369">I Google Lösenordshantering på den här enheten</translation>
 <translation id="8011489434346330032">Webbinspektör</translation>
+<translation id="8017015647846870183">Från Google Lösenordshantering, inklusive lösenord och nycklar</translation>
 <translation id="802154636333426148">Nedladdningen misslyckades</translation>
 <translation id="8023170444051056234">Du förlorar omedelbart åtkomst till flikgruppen <ph name="GROUP_NAME" /> och den raderas från alla dina enheter</translation>
 <translation id="8023878949384262191">Expanderar avsnittet.</translation>
@@ -1705,7 +1701,6 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8439758443371991593">Dölj Lägg till i läslistan</translation>
 <translation id="8449869326050867919">Lösenordet har delats</translation>
 <translation id="8453847087068411809">Identifiera aldrig paket automatiskt</translation>
-<translation id="846158969830690371">Ta reda på om du har de säkraste inställningarna eller om du behöver granska något.</translation>
 <translation id="8473863474539038330">Adresser och annat</translation>
 <translation id="8474378002946546633">Tillåt meddelanden</translation>
 <translation id="8477178913400731244">Ta bort data</translation>

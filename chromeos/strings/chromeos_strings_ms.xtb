@@ -768,6 +768,7 @@
 <translation id="4654549501020883054">Tukar Setiap Hari</translation>
 <translation id="4655868084888499342">Imej ditetapkan sebagai hiasan latar</translation>
 <translation id="4661249927038176904">Di luar alam nyata</translation>
+<translation id="4661392828086261436">Kemaskinian ini disediakan oleh pengilang peranti dan belum disahkan oleh Google</translation>
 <translation id="4664651912255946953">bulu</translation>
 <translation id="4665014895760275686">Pengeluar</translation>
 <translation id="467510802200863975">Kata laluan tidak sepadan</translation>
@@ -1027,6 +1028,7 @@
 <translation id="5904994456462260490">Tambah APN baharu</translation>
 <translation id="590746845088109442">kucing</translation>
 <translation id="5907649332524363701">warna utama</translation>
+<translation id="5908813850962688338">Pemasangan kemaskinian ini akan mengambil masa beberapa minit. Biarkan peranti anda dipalamkan dan dihidupkan semasa kemaskinian dimuat turun. Peranti anda mungkin akan mengebut semula sendiri beberapa kali dan memaparkan skrin hitam semasa proses ini. Anda akan digesa untuk memulakan semula peranti anda untuk melengkapkan pemasangan.</translation>
 <translation id="5916084858004523819">Dilarang</translation>
 <translation id="5916664084637901428">Hidupkan</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Fail anda telah berjaya diimbas dan disimpan pada <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Fail anda telah berjaya diimbas dan disimpan pada <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>

@@ -3270,17 +3270,6 @@ Se viene disattivato, la funzionalità di scrittura predittiva sulla tastiera fi
 <translation id="3387211681524224831">Se il criterio viene impostato su Attivato, la cronologia di navigazione non viene salvata, la sincronizzazione delle schede viene disattivata e gli utenti non possono modificare questa impostazione.
 
       Se il criterio viene impostato su Disattivato o se non viene configurato, la cronologia di navigazione viene salvata.</translation>
-<translation id="3387875422525138489">La configurazione del criterio consente di specificare un elenco di app web isolate (IWA) che vengono installate automaticamente.
-      Le IWA sono applicazioni che presentano proprietà di sicurezza utili non disponibili per le normali pagine web, che vengono pacchettizzati in un bundle web firmato. La chiave pubblica del bundle web firmato viene utilizzata per creare l'ID pacchetto web che identifica l'IWA.
-      Finora questo criterio funziona solo per la sessione Ospite gestita.
-
-      Ogni elemento nell'elenco del criterio è un oggetto con due campi obbligatori: il manifest di aggiornamento <ph name="URL_LABEL" /> e l'ID pacchetto web dell'app web isolata.
-
-      Ogni elemento può anche includere questi campi facoltativi:
-
-        * <ph name="UPDATE_CHANNEL_OPTION" />: il nome del canale di rilascio/aggiornamento dell'IWA. Se questo criterio non viene impostato, viene utilizzata la modalità "predefinita".
-        * <ph name="PINNED_VERSION_OPTION" />:  una versione specifica da installare. Il sistema tenterà di installare questa versione, se disponibile sul canale di aggiornamento specificato. Per impostazione predefinita, se blocchi un'IWA a una versione specifica, impedirà l'aggiornamento oltre quella versione. Per sbloccare la versione, rimuovi questo campo.
-        * <ph name="ALLOW_DOWNGRADES_OPTION" />:: consente di installare versioni precedenti dell'IWA. Per farlo, è necessario impostare il campo "pinned_version". Se il criterio non viene specificato o se viene impostato su <ph name="FALSE" />, il downgrade è disabilitato per l'IWA.</translation>
 <translation id="3387999258705169775">Comportamento predefinito per il blocco nidificato della funzione setTimeout().</translation>
 <translation id="3388628790024977864">Non consentire il flusso <ph name="CLOUD_UPLOAD_NAME" /> per <ph name="GOOGLE_DRIVE_NAME" /> e <ph name="GOOGLE_WORKSPACE_NAME" /></translation>
 <translation id="3389088527709746815">Attiva l'autenticazione Gnubby per l'host di accesso remoto</translation>

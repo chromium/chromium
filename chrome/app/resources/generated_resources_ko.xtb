@@ -126,7 +126,6 @@
 <translation id="1076766328672150609">자녀가 PIN을 사용해 기기를 잠금 해제할 수 있습니다</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216"><ph name="LANGUAGE" /> 맞춤법 검사 사전을 다운로드할 수 없습니다. 다시 시도해 보세요.</translation>
-<translation id="1078029726086090536">비밀번호 확인</translation>
 <translation id="1078037449555275327">ChromeVox 설정</translation>
 <translation id="1079242569060319448">PIN 찾기</translation>
 <translation id="1079285777677001938">일부 사이트에서는 기능이 작동하지 않을 수 있습니다.</translation>
@@ -369,6 +368,7 @@
 <translation id="1241066500170667906"><ph name="EXPERIMENT_NAME" />의 실험 상태 선택</translation>
 <translation id="124116460088058876">다른 언어</translation>
 <translation id="1241381048229838873">모든 북마크 표시</translation>
+<translation id="1242044645101871359">다시 로그인</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" />에서 설정을 재설정하려 합니다.</translation>
 <translation id="1243002225871118300">디스플레이 및 텍스트 크기 변경</translation>
 <translation id="1243314992276662751">업로드</translation>
@@ -1628,7 +1628,6 @@
 <translation id="2113921862428609753">기관 정보 액세스</translation>
 <translation id="2114145607116268663">설치할 수 없습니다. 재부팅이 필요합니다. 컴퓨터를 재시작한 후 다시 시도해 주세요. 오류 코드는 <ph name="ERROR" />입니다.</translation>
 <translation id="2114326799768592691">프레임 새로고침(&amp;F)</translation>
-<translation id="2114413269775311385">Android 앱에서 계정을 사용합니다. <ph name="LINK_BEGIN" />앱 설정<ph name="LINK_END" />에서 Android 앱에 대한 권한을 제어할 수 있습니다.</translation>
 <translation id="2114995631896158695">삽입된 SIM 카드 없음</translation>
 <translation id="2116619964159595185">사이트에서는 주로 저전력 비콘, 건강 또는 피트니스 추적기, 스마트 조명 전구를 설정 또는 동기화하는 기능을 지원하기 위해 블루투스 기기에 연결합니다.</translation>
 <translation id="2117655453726830283">다음 슬라이드</translation>
@@ -2809,6 +2808,7 @@
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> 기기는 지원되지 않습니다.</translation>
 <translation id="2926708162326352948">테마가 업로드된 이미지로 업데이트됨</translation>
 <translation id="2927017729816812676">캐시 저장공간</translation>
+<translation id="2928030851119977280">선택사항이 저장되었습니다. 선택한 옵션은 다른 Google 서비스에 로그인할 때 적용됩니다.</translation>
 <translation id="2928795416630981206">카메라 위치 추적 허용</translation>
 <translation id="2929345818093040583">{NUM_SITES,plural, =1{Chrome에서 사이트 1개의 권한을 삭제함}other{Chrome에서 사이트 {NUM_SITES}개의 권한을 삭제함}}</translation>
 <translation id="2931157624143513983">인쇄 가능 영역에 맞춤</translation>
@@ -4647,6 +4647,7 @@
 <translation id="4242533952199664413">설정 열기</translation>
 <translation id="4242577469625748426">기기에 정책 설정을 설치하지 못함: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385"><ph name="DOMAIN" />에서 <ph name="BEGIN_LINK" />브라우저와 프로필을 관리<ph name="END_LINK" />합니다.</translation>
+<translation id="424315890655130736">암호 입력</translation>
 <translation id="4243504193894350135">프린터 일시중지됨</translation>
 <translation id="4243624244759495699"><ph name="LOCALE" />, <ph name="GRADE" />등급</translation>
 <translation id="4244238649050961491">스타일러스 앱 더보기</translation>
@@ -5370,7 +5371,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4766598565665644999">모든 확장 프로그램이 <ph name="HOST" />을 읽고 변경할 수 있습니다.</translation>
 <translation id="4767427586072640478">사용 중지된 확장 프로그램에 관해 자세히 알아봅니다.</translation>
 <translation id="4768332406694066911">다음 기관에 사용자의 신원을 확인하는 인증서가 있습니다.</translation>
-<translation id="4768945955870840220">일부 제품의 경우 Chrome은 웹에서 리뷰를 수집할 수 있습니다.</translation>
 <translation id="4769632191812288342">표준 보호 모드를 사용 중입니다</translation>
 <translation id="4770119228883592393">권한 요청됨, ⌘ 키와 Option 키와 아래쪽 화살표 키를 눌러 응답</translation>
 <translation id="4770755495532014179">iPhone에서 이 비밀번호 사용</translation>
@@ -7422,6 +7422,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6253801023880399036">비밀번호가 <ph name="GOOGLE_PASSWORD_MANAGER" />에 저장됩니다.</translation>
 <translation id="6254503684448816922">키 손상</translation>
 <translation id="6254892857036829079">완벽함</translation>
+<translation id="6257131917452817589">비밀번호 자동 변경</translation>
 <translation id="6257602895346497974">동기화 사용...</translation>
 <translation id="6257614441619555296"><ph name="KEY" />: <ph name="VALUE" /></translation>
 <translation id="625827534921607067">이전에 연결되었거나 구성된 네트워크를 2개 이상 사용할 수 있는 경우 이 네트워크가 우선 사용됩니다</translation>
@@ -8769,7 +8770,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7243092385765551741">패스키를 삭제하시겠습니까?</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" />x<ph name="HEIGHT" />(최고)</translation>
 <translation id="7246230585855757313">보안 키를 다시 삽입하고 한번 더 시도해 보세요.</translation>
-<translation id="724835896049478274">Android 앱에서 사용할 수 있는 계정</translation>
 <translation id="7248802599439396696">탭 비활성화</translation>
 <translation id="7249197363678284330">주소 표시줄에서 이 설정을 변경하세요.</translation>
 <translation id="7249764475759804559">파일을 열 때 이 앱을 연결 프로그램 옵션으로 포함합니다.</translation>
@@ -9132,6 +9132,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7502528909759062987"><ph name="DEVICE_NAME" /> 기기로의 탭 전송 일시중지</translation>
 <translation id="7502804472671406749">공유한 탭을 스크롤 및 확대/축소할 수 있음</translation>
 <translation id="7503191893372251637">Netscape Certificate Type</translation>
+<translation id="7503259455663961898">변경</translation>
 <translation id="7503985202154027481">이 사이트를 방문한 기록이 보안 키에 보관됩니다.</translation>
 <translation id="7504145862399276792">이 탭의 오디오가 음소거됩니다</translation>
 <translation id="750509436279396091">다운로드 폴더 열기</translation>
@@ -9194,6 +9195,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7551059576287086432"><ph name="FILE_NAME" />을(를) 다운로드하지 못함</translation>
 <translation id="7551643184018910560">앱 표시줄에 고정</translation>
 <translation id="7552191410769096467">탭 그룹을 공유하거나 탭 그룹에 참여하려면 로그인한 다음 동기화를 사용 설정해야 합니다.</translation>
+<translation id="7552196109089297786">Microsoft에서 로그아웃</translation>
 <translation id="7552846755917812628">다음 도움말을 확인해 보세요.</translation>
 <translation id="7553012839257224005">Linux 컨테이너 확인 중</translation>
 <translation id="7553242001898162573">비밀번호를 입력해 주세요.</translation>
@@ -10324,6 +10326,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8330617762701840933">대체 브라우저로 리디렉션되는 웹사이트의 목록입니다.</translation>
 <translation id="8330689128072902965">주변 연락처가 나와 파일을 공유할 수 있습니다. 변경하려면 클릭하세요.</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{지원되는 파일 형식: <ph name="FILE_TYPE1" />}=2{지원되는 파일 형식: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />}=3{지원되는 파일 형식: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />}=4{지원되는 파일 형식 <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" />}other{지원되는 파일 형식: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" />(<ph name="LINK" />이외의 {OVERFLOW_COUNT}개 더보기<ph name="END_LINK" />)}}</translation>
+<translation id="8331578454993293727">정보 유출로 인해 비밀번호가 노출되었습니다</translation>
 <translation id="8331822764922665615">그룹 이름을 지정하고 색상을 선택한 후 Esc 키를 누르세요.</translation>
 <translation id="833256022891467078">Crostini 공유 폴더</translation>
 <translation id="833262891116910667">강조표시</translation>
@@ -10405,6 +10408,7 @@ https://support.google.com/chromebook/?p=sm</translation>
     <ph name="BEGIN_PARAGRAPH2" />도움이 필요하면 다음 페이지를 참고하세요. g.co/flex/InstallErrors<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8383614331548401927">시작 요약</translation>
 <translation id="8386091599636877289">정책을 찾을 수 없습니다.</translation>
+<translation id="8387087863179559896">Chrome에서 이 사이트의 계정을 안전한 비밀번호로 업데이트할 수 있습니다. 비밀번호를 기억하지 않아도 됩니다. <ph name="EMAIL" />의 Google 비밀번호 관리자에 저장되기 때문입니다. <ph name="PASSWORD_CHANGE" />에 관해 자세히 알아보기</translation>
 <translation id="8387361103813440603">사용자 위치 확인이 허용되지 않음</translation>
 <translation id="8387617938027387193">본인 인증</translation>
 <translation id="8388770971141403598">보조 프로필은 지원되지 않습니다.</translation>
@@ -10719,7 +10723,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8625124982056504555">ChromeOS 기기와 구성요소 일련번호를 읽을 수 있습니다.</translation>
 <translation id="862542460444371744">확장 프로그램(&amp;E)</translation>
 <translation id="8625663000550647058">마이크 사용이 허용되지 않음</translation>
-<translation id="8625679025395572221">계정에 여전히 보안 위험이 있을 수 있습니다.</translation>
 <translation id="8625916342247441948">사이트에서 HID 기기에 연결하도록 허용하지 않음</translation>
 <translation id="862727964348362408">일시중지됨</translation>
 <translation id="862750493060684461">CSS 캐시</translation>
@@ -11601,7 +11604,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="936801553271523408">시스템 진단 데이터</translation>
 <translation id="93766956588638423">확장 프로그램 복구</translation>
 <translation id="938623846785894166">일반적이지 않은 파일</translation>
-<translation id="939401694733344652">이 계정은 현재 Android 앱에서 사용되지 않습니다. 이 Android 앱에서 사용할 계정을 선택하면 다른 Android 앱에서도 같은 계정을 사용할 수 있습니다. <ph name="LINK_BEGIN" />설정 &gt; 계정<ph name="LINK_END" />에서 Android 앱 액세스를 변경할 수 있습니다.</translation>
 <translation id="939598580284253335">암호 입력</translation>
 <translation id="939736085109172342">새 폴더</translation>
 <translation id="940212040923880623">찾기 및 수정하기(&amp;F)</translation>

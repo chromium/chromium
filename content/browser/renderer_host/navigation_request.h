@@ -1896,7 +1896,7 @@ class CONTENT_EXPORT NavigationRequest
   // feature is properly enabled for a given origin to be committed.
   bool IsFencedFrameRequiredPolicyFeatureAllowed(
       const url::Origin&,
-      const blink::mojom::PermissionsPolicyFeature feature);
+      const network::mojom::PermissionsPolicyFeature feature);
 
   // Returns the user-agent override, or an empty string if one isn't set.
   std::string GetUserAgentOverride();

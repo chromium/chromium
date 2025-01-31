@@ -674,7 +674,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2157640075051554492">Powiadomienia ze śledzenia cen</translation>
 <translation id="21613918653299710">Galerie obrazów online</translation>
 <translation id="2161656808144014275">Tekstowe</translation>
-<translation id="2162510787844374618">Łączę z bankiem…</translation>
 <translation id="2162620598375156287">Teraz za <ph name="CURRENT_PRICE" /> na <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Sprawdź, czy w adresie <ph name="HOST_NAME" /> nie ma błędu.</translation>
 <translation id="2166049586286450108">Pełny dostęp administratora</translation>
@@ -2408,6 +2407,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5254043433801397071">Optymalizuj zawartość wydruku</translation>
 <translation id="5255583962255635076">zasady przeglądarki zastosowane w profilu służbowym.</translation>
 <translation id="5255690596502591079">Wykonaj mimo to</translation>
+<translation id="5255771248404149177">Twój dostawca karty chce potwierdzić Twoją tożsamość</translation>
 <translation id="5255833070095767006">350 x 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{Zgodnie z zasadą administratora nie zaleca się kopiowania tego pliku, jeśli miejscem docelowym jest <ph name="DESTINATION_NAME" />}few{Zgodnie z zasadą administratora nie zaleca się kopiowania tych plików, jeśli miejscem docelowym jest <ph name="DESTINATION_NAME" />}many{Zgodnie z zasadą administratora nie zaleca się kopiowania tych plików, jeśli miejscem docelowym jest <ph name="DESTINATION_NAME" />}other{Zgodnie z zasadą administratora nie zaleca się kopiowania tych plików, jeśli miejscem docelowym jest <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5263867360296733198">Wymagane jest sprawdzenie plików przed przesłaniem</translation>
@@ -2428,7 +2428,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5288108484102287882">Weryfikacja wartości zasad zakończyła się z ostrzeżeniami</translation>
 <translation id="5289384342738547352">Obsługa wielu dokumentów</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{Wymagana jest aktualizacja dzisiaj}=2{Wymagana jest aktualizacja do jutra}few{Wymagana jest aktualizacja w ciągu # dni}many{Wymagana jest aktualizacja w ciągu # dni}other{Wymagana jest aktualizacja w ciągu # dnia}}</translation>
-<translation id="5292714443869769806">Otwórz ustawienia urządzenia <ph name="OPERATING_SYSTEM" /></translation>
 <translation id="5293919335876685914">Samochody coupé</translation>
 <translation id="5298618990685278995">pierwszą wersję roboczą,</translation>
 <translation id="5299298092464848405">Podczas przetwarzania zasady wystąpił błąd</translation>
@@ -2556,6 +2555,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5518352028556756716">Większość witryn nie może używać plików cookie innych firm do uzyskiwania informacji na temat przeglądania przez Ciebie internetu. Witryny nie mogą też używać takich plików cookie w trybie incognito.</translation>
 <translation id="5519516356611866228">Z Twoimi zmianami</translation>
 <translation id="5519696598216267194">Papier (dziurkowany)</translation>
+<translation id="5520105693415771152">Nie widzisz aktualnych informacji? Skontaktuj się z usługodawcą, aby je zaktualizować.</translation>
 <translation id="5521782189689806907">Szafki</translation>
 <translation id="5523118979700054094">Nazwa zasady</translation>
 <translation id="5523588073846127669">Sprzedawca nie akceptuje tej karty wirtualnej</translation>
@@ -3651,6 +3651,7 @@ Dodatkowe informacje:
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Samochody ciężarowe i przyczepy</translation>
 <translation id="7461924472993315131">Przypnij</translation>
+<translation id="746329643760972486">macOS</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> dowie się o Twojej wizycie na <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7465963048299965912">10 x 13 cali</translation>
 <translation id="7469935732330206581">Formularz nie jest bezpieczny</translation>
@@ -3882,6 +3883,7 @@ Dodatkowe informacje:
 <translation id="784404208867107517">Historia zgrupowana</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Brak}=1{Jedna aplikacja (<ph name="EXAMPLE_APP_1" />)}=2{Dwie aplikacje (<ph name="EXAMPLE_APP_1" /> i <ph name="EXAMPLE_APP_2" />)}few{# aplikacje (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}many{# aplikacji (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}other{# aplikacji (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Wystąpił błąd. Spróbuj ponownie.</translation>
+<translation id="784623644169604270">Brak ostatniej aktywności</translation>
 <translation id="785476343534277563">Sporty studenckie</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" />: <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="7860345425589240791">Wpisz nową datę ważności i kod CVC, znajdujące się z <ph name="SIDE_OF_CARD" /></translation>
@@ -3920,7 +3922,6 @@ Dodatkowe informacje:
 <translation id="7942349550061667556">Czerwony</translation>
 <translation id="7943397946612013052">Pobieranie jest zablokowane</translation>
 <translation id="7943893128817522649">Może prosić o zgodę na automatyczne pobieranie wielu plików</translation>
-<translation id="794567586469801724">macOS</translation>
 <translation id="7947285636476623132">Sprawdź rok ważności i spróbuj ponownie</translation>
 <translation id="7947310711271925113">Muzyka pop</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />; naciśnij Tab, a potem Enter, aby poznać funkcje Chrome</translation>
@@ -4671,7 +4672,6 @@ Dodatkowe informacje:
 <translation id="984275831282074731">Formy płatności</translation>
 <translation id="985199708454569384">&lt;p&gt;Ten błąd występuje, jeśli data i godzina na komputerze lub urządzeniu mobilnym są niedokładne.&lt;/p&gt;
     &lt;p&gt;Aby naprawić błąd, otwórz ustawienia zegara na urządzeniu i zmień datę oraz godzinę na prawidłowe.&lt;/p&gt;</translation>
-<translation id="986257639512122511">Witryna <ph name="ORIGIN" /> otrzymała od Ciebie uprawnienia: <ph name="PERMISSION" /></translation>
 <translation id="987264212798334818">Ogólne</translation>
 <translation id="988159990683914416">Build</translation>
 <translation id="989988560359834682">Edytuj adres</translation>

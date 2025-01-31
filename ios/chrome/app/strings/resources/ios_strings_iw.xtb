@@ -263,7 +263,6 @@
 <translation id="2074131957428911366">אפשר לבחור מה לסנכרן בכל שלב דרך <ph name="BEGIN_LINK" />ההגדרות<ph name="END_LINK" />.</translation>
 <translation id="2078437078822043850">כדי לגלוש במצב פרטי, אפשר לגלול ימינה.</translation>
 <translation id="2079545284768500474">ביטול הפעולה</translation>
-<translation id="2082906935540894275">התכונות הכי רלוונטיות בשבילך בזמנים שונים.</translation>
 <translation id="2085876078937250610">שמירה…</translation>
 <translation id="2096239473850415494">לא ניתן לבצע את ההורדה</translation>
 <translation id="2096716221239095980">מחיקת כל הנתונים</translation>
@@ -548,7 +547,6 @@
 <translation id="3445288400492335833"><ph name="MINUTES" /> דק'</translation>
 <translation id="344589138074534176">‏מידע נוסף על Google Lens</translation>
 <translation id="3447332786336558089">אחרי היציאה מהחשבון, הכרטיסיות ייסגרו והנתונים בחשבון שלא נשמרו יימחקו מהמכשיר הזה. בין הנתונים שיימחקו: סיסמאות, היסטוריה ועוד.</translation>
-<translation id="3449016921756175697">הצעות מועילות שמשפרות את חוויית הגלישה ומקלות עליה.</translation>
 <translation id="345348365500626747">הכתובת נמצאה</translation>
 <translation id="3464194322481586217">לא ניתן היה לעקוב אחר המחיר.</translation>
 <translation id="3469117812148449995">אפשרויות לשמירת סיסמה</translation>
@@ -922,7 +920,6 @@
 <translation id="5127538504377457572">פעילות אחרונה: לפני <ph name="DAYS" /> ימים</translation>
 <translation id="5128788795241319992">האפשרויות בתפריט החדש</translation>
 <translation id="5132942445612118989">סנכרון הסיסמאות, ההיסטוריה ונתונים נוספים בכל המכשירים</translation>
-<translation id="5137526732000415202">הכרטיסייה האחרונה שפתחת בכל המכשירים.</translation>
 <translation id="5145331760738811130">יציאה מהכלי למעבר בין כרטיסיות</translation>
 <translation id="5157638238828697074">משהו השתבש. לא ניתן לפתוח את האפליקציה.</translation>
 <translation id="5163417375525818870">‏קובצי PDF</translation>
@@ -1023,7 +1020,6 @@
 <translation id="559567008082979829">אפשר להגדיר שההורדות יימחקו אחרי חודש.</translation>
 <translation id="5596627076506792578">אפשרויות נוספות</translation>
 <translation id="560322036295180549">האפשרות הושבתה על ידי הארגון שלך</translation>
-<translation id="5611107723541161735">קיצורי דרך לאתרים שביקרת בהם לאחרונה במכשיר הזה.</translation>
 <translation id="5611398002774823980">שמירה בחשבון</translation>
 <translation id="5613297089029360427">מיון לפי הישן ביותר</translation>
 <translation id="5614553682702429503">לשמור את הסיסמה?</translation>
@@ -1487,7 +1483,6 @@
 <translation id="7512075701202892785">הדפדפן האהוב זמין עכשיו באייפד</translation>
 <translation id="7512909159512473473">הזנת ביטוי סיסמה…</translation>
 <translation id="7514365320538308">הורדה</translation>
-<translation id="7521117365186708026">‏קבלת טיפים להגדרה שיעזרו לך להפיק את המירב מ-Chrome.</translation>
 <translation id="7524055474074101597">גישה לסיסמאות ולעוד אפשרויות מאפליקציות.</translation>
 <translation id="75362970626182391">קבוצת כרטיסיות חדשה</translation>
 <translation id="7537586195939242955">‏מצטערים, לא ניתן להתקין את ה-Pass שלך ב-Passbook בשלב הזה.</translation>
@@ -1605,6 +1600,7 @@
 <translation id="800361585186029508">‏פתיחת כתובות ה-URL שהוזנו ב-Google Chrome.</translation>
 <translation id="8005666035647241369">‏נשמרה במנהל הסיסמאות של Google במכשיר הזה</translation>
 <translation id="8011489434346330032">סוקר האינטרנט</translation>
+<translation id="8017015647846870183">‏ממנהל הסיסמאות של Google, כולל סיסמאות ומפתחות גישה</translation>
 <translation id="802154636333426148">ההורדה נכשלה</translation>
 <translation id="8023170444051056234">הגישה שלך לקבוצת הכרטיסיות "<ph name="GROUP_NAME" />" תאבד באופן מיידי, והיא תימחק מכל המכשירים שלך</translation>
 <translation id="8023878949384262191">מרחיב את הקטע.</translation>
@@ -1705,7 +1701,6 @@
 <translation id="8439758443371991593">הסתרה של 'הוספה לרשימת הקריאה'</translation>
 <translation id="8449869326050867919">הסיסמה שותפה</translation>
 <translation id="8453847087068411809">ללא זיהוי אוטומטי של חבילות</translation>
-<translation id="846158969830690371">הבדיקה מאפשרת לך לבדוק אם הפעלת את ההגדרות הכי בטוחות או אם צריך לבדוק משהו.</translation>
 <translation id="8473863474539038330">כתובות ועוד</translation>
 <translation id="8474378002946546633">אפשר התראות</translation>
 <translation id="8477178913400731244">מחיקת נתונים</translation>

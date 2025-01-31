@@ -731,6 +731,7 @@ Anders wordt de ingebouwde touchpad over <ph name="TIMEOUT_SECONDS" /> weer aang
 <translation id="3522979239100719575">Zoeken naar beschikbare profielen. Dit kan een paar minuten duren.</translation>
 <translation id="3526440770046466733">Link openen in een nieuw tabblad en op het huidige tabblad blijven</translation>
 <translation id="353086728817903341">Verbonden met <ph name="NUM_DEVICES" /> apparaten</translation>
+<translation id="3532247131850366052">Kan Google-spreadsheet niet maken</translation>
 <translation id="3533126039236445965">Apps op plank</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" />-hotspot</translation>
 <translation id="3540893133818942399">Instellen van de weergave van recente foto's en media van je telefoon sluiten</translation>
@@ -829,6 +830,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="380165613292957338">Hoi, wat kan ik voor je doen?</translation>
 <translation id="3804737937830804242">Camera samenvouwen</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 emoji. Geen andere resultaten.}other{# emoji's. Geen andere resultaten.}}</translation>
+<translation id="3822403841174077928">Kan niet kopiëren met opmaak</translation>
 <translation id="3824784079442479685">Hiermee geef je <ph name="APP_NAME" /> en alle apps en websites met camerarechten toegang tot de camera. Je moet misschien de webpagina vernieuwen of de app opnieuw starten.</translation>
 <translation id="3826099427150913765">Overschakelen naar wachtwoord</translation>
 <translation id="383058930331066723">Batterijbesparing staat aan</translation>
@@ -1215,6 +1217,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="5043679421800073804">Op het laatste icoon op de plank klikken of tikken</translation>
 <translation id="504465286040788597">Vorige alinea</translation>
 <translation id="5045550434625856497">Onjuist wachtwoord</translation>
+<translation id="5058794129231928255">Kan Google-document niet maken</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Je krijgt een melding als je praat terwijl het geluid uitstaat. De audio verlaat je apparaat nooit.</translation>
 <translation id="5077416371682039027">De weergave van recente foto's, media, meldingen en apps van je telefoon instellen</translation>
@@ -1478,7 +1481,6 @@ Geen apparaten verbonden.</translation>
 <translation id="589817443623831496">Puntscannen</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">Geel</translation>
-<translation id="5911231045062997865">Lacros-vensters worden momenteel niet ondersteund. Andere apps worden opgeslagen.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916646100036936191">Nieuwe melding, <ph name="NOTIFICATION_COUNT" /> in totaal</translation>
 <translation id="5916664084637901428">Aan</translation>
@@ -1648,6 +1650,7 @@ Geen apparaten verbonden.</translation>
 <translation id="6468406072297048412">{0,plural, =1{Update het apparaat binnen 1 minuut naar een eerdere versie}other{Update het apparaat binnen # minuten naar een eerdere versie}}</translation>
 <translation id="6469104339369989396">Hotspot aan-/uitzetten</translation>
 <translation id="6477681113376365978">Kan bestand niet downloaden</translation>
+<translation id="648135757200234041">Kan contact niet maken</translation>
 <translation id="6482559668224714696">Volledig scherm vergroten</translation>
 <translation id="6485086611007560630">Weer (niet beschikbaar)</translation>
 <translation id="6490471652906364588">USB-C-apparaat (poort aan rechterkant)</translation>
@@ -2288,6 +2291,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8653151467777939995">Instellingen voor meldingen tonen. Meldingen staan aan</translation>
 <translation id="8657066291275741003">kleine letters</translation>
 <translation id="8660331759611631213">Vierkantswortel van 71</translation>
+<translation id="8662921061190671299">Kan niet toevoegen aan Agenda</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Druk op Enter om een gedeeltelijk screenshot te maken</translation>
 <translation id="8676770494376880701">Laag-vermogen-lader aangesloten</translation>

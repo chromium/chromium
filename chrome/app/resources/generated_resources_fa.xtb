@@ -126,7 +126,6 @@
 <translation id="1076766328672150609">فرزندتان می‌تواند برای باز کردن قفل دستگاه از پین استفاده کند.</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216">واژه‌نامه غلط‌گیر املای زبان <ph name="LANGUAGE" /> بارگیری نشد. دوباره امتحان کنید.</translation>
-<translation id="1078029726086090536">درستی‌سنجی کردن گذرواژه</translation>
 <translation id="1078037449555275327">‏تنظیمات ChromeVox</translation>
 <translation id="1079242569060319448">پین را فراموش کرده‌اید؟</translation>
 <translation id="1079285777677001938">ممکن است ویژگی‌های برخی‌از سایت‌ها کار نکند.</translation>
@@ -370,6 +369,7 @@
 <translation id="1241066500170667906">وضعیت آزمایش را برای <ph name="EXPERIMENT_NAME" /> انتخاب کنید</translation>
 <translation id="124116460088058876">زبان‌های بیشتر</translation>
 <translation id="1241381048229838873">نمایش همه نشانک‌ها</translation>
+<translation id="1242044645101871359">دوباره به سیستم وارد شوید</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" /> می‌خواهد تنظیمات شما را بازنشانی کند.</translation>
 <translation id="1243002225871118300">تغییر اندازه نوشتار و نمایش</translation>
 <translation id="1243314992276662751">بارگذاری</translation>
@@ -1624,7 +1624,6 @@
 <translation id="2113921862428609753">دسترسی به اطلاعات اعتبار</translation>
 <translation id="2114145607116268663">نصب نشد، بازراه‌اندازی ضروری است. لطفاً رایانه را بازراه‌اندازی و دوباره امتحان کنید. کد خطا <ph name="ERROR" /> است.</translation>
 <translation id="2114326799768592691">بار کردن مجدد قاب</translation>
-<translation id="2114413269775311385">‏از این حساب در برنامه‌های Android استفاده شود. می‌توانید اجازه‌های برنامه‌های Android را در <ph name="LINK_BEGIN" />تنظیمات برنامه‌ها<ph name="LINK_END" /> کنترل کنید.</translation>
 <translation id="2114995631896158695">سیم کارتی وارد نشده است</translation>
 <translation id="2116619964159595185">سایت‌ها معمولاً برای ارائه ویژگی‌هایی مثل راه‌اندازی یا همگام‌سازی نشان‌فرست کم‌مصرف، ردیاب سلامت یا تناسب اندام، یا چراغ حبابی هوشمند، به دستگاه‌های بلوتوث متصل می‌شوند</translation>
 <translation id="2117655453726830283">اسلاید بعدی</translation>
@@ -2804,6 +2803,7 @@
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> پشتیبانی نمی‌شود.</translation>
 <translation id="2926708162326352948">زمینه به تصویر بارگذاری‌شده تغییر کرد</translation>
 <translation id="2927017729816812676">فضای حافظه پنهان</translation>
+<translation id="2928030851119977280">‏انتخاب ذخیره شد. انتخاب شما زمانی اعمال می‌شود که به سیستم دیگر سرویس‌های Google وارد شوید.</translation>
 <translation id="2928795416630981206">اجازه دارد موقعیت دوربین را ردیابی کنند</translation>
 <translation id="2929345818093040583">{NUM_SITES,plural, =1{‏‫Chrome اجازه‌های ۱ سایت را برداشت}one{‏‫Chrome اجازه‌های {NUM_SITES} سایت را برداشت}other{‏‫Chrome اجازه‌های {NUM_SITES} سایت را برداشت}}</translation>
 <translation id="2931157624143513983">متناسب با ناحیه قابل‌چاپ</translation>
@@ -4644,6 +4644,7 @@
 <translation id="4242533952199664413">باز کردن تنظیمات</translation>
 <translation id="4242577469625748426">تنظیمات خط‌مشی روی دستگاه نصب نشد: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385"><ph name="BEGIN_LINK" />مرورگر و نمایه‌تان تحت مدیریت<ph name="END_LINK" /> <ph name="DOMAIN" /> هستند</translation>
+<translation id="424315890655130736">گذرعبارت را وارد کنید</translation>
 <translation id="4243504193894350135">چاپگر موقتاً متوقف شده است</translation>
 <translation id="4243624244759495699"><ph name="LOCALE" />، درجه <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">پیدا کردن برنامه‌های قلم بیشتر</translation>
@@ -5366,7 +5367,6 @@
 <translation id="4766598565665644999">همه افزونه‌ها می‌توانند <ph name="HOST" /> را بخوانند و تغییر دهند</translation>
 <translation id="4767427586072640478">درباره افزونه‌های غیرفعال بیشتر بدانید.</translation>
 <translation id="4768332406694066911">گواهی‌هایی از این سازمان‌ها دارید که هویت شما را شناسایی می‌کنند</translation>
-<translation id="4768945955870840220">‏برای برخی‌از محصولات، Chrome می‌تواند مرورها را از سراسر وب جمع‌آوری کند</translation>
 <translation id="4769632191812288342">محافظت استاندارد را دریافت می‌کنید</translation>
 <translation id="4770119228883592393">درخواست اجازه ارائه شده است؛ برای پاسخ دادن، کلید «⌘ + گزینه + پیکان روبه‌پایین» را فشار دهید</translation>
 <translation id="4770755495532014179">‏از این گذرواژه در iPhone استفاده کنید</translation>
@@ -7418,6 +7418,7 @@
 <translation id="6253801023880399036">گذرواژه‌ها در <ph name="GOOGLE_PASSWORD_MANAGER" /> ذخیره می‌شود.</translation>
 <translation id="6254503684448816922">بی اعتبار شدن کلید</translation>
 <translation id="6254892857036829079">عالی</translation>
+<translation id="6257131917452817589">تغییر خودکار گذرواژه</translation>
 <translation id="6257602895346497974">روشن کردن همگام‌سازی…</translation>
 <translation id="6257614441619555296">‫<ph name="KEY" />:‎ <ph name="VALUE" /></translation>
 <translation id="625827534921607067">اگر بیش‌از یک شبکه قبلاً متصل‌شده یا پیکربندی‌شده دردسترس باشد، این شبکه در اولویت خواهد بود</translation>
@@ -8767,7 +8768,6 @@
 <translation id="7243092385765551741">گذرکلید حذف شود؟</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> × <ph name="HEIGHT" /> (بهترین)</translation>
 <translation id="7246230585855757313">کلید ایمنی را مجدداً وارد کنید و دوباره امتحان کنید</translation>
-<translation id="724835896049478274">‏حساب‌های دردسترس برای برنامه‌های Android</translation>
 <translation id="7248802599439396696">غیرفعال کردن برگه‌ها</translation>
 <translation id="7249197363678284330">این تنظیم را در نوار نشانی تغییر دهید.</translation>
 <translation id="7249764475759804559">هنگام باز کردن فایل‌ها این برنامه به‌عنوان یکی از گزینه‌ها ارائه شود</translation>
@@ -9131,6 +9131,7 @@
 <translation id="7502528909759062987">توقف موقت پخش محتوای برگه در <ph name="DEVICE_NAME" /></translation>
 <translation id="7502804472671406749">می‌توان برگه‌های هم‌رسانی‌شده را پیمایش و بزرگ‌نمایی کرد</translation>
 <translation id="7503191893372251637">‏نوع گواهی Netscape</translation>
+<translation id="7503259455663961898">تغییر دادن</translation>
 <translation id="7503985202154027481">سابقه بازدیدتان از این سایت در کلید امنیتی‌تان نگه‌داری می‌شود.</translation>
 <translation id="7504145862399276792">این برگه بی‌صدا شده است</translation>
 <translation id="750509436279396091">باز کردن پوشه بارگیری‌ها</translation>
@@ -9193,6 +9194,7 @@
 <translation id="7551059576287086432"><ph name="FILE_NAME" /> بارگیری نشد</translation>
 <translation id="7551643184018910560">سنجاق کردن به فقسه</translation>
 <translation id="7552191410769096467">برای هم‌رسانی کردن گروه‌های برگه یا پیوستن به آن‌ها، باید به سیستم وارد شوید و همگام‌سازی را روشن کنید</translation>
+<translation id="7552196109089297786">‏خروج از سیستم Microsoft</translation>
 <translation id="7552846755917812628">نکته‌های زیر را امتحان کنید:</translation>
 <translation id="7553012839257224005">‏درحال بررسی محتوی Linux</translation>
 <translation id="7553242001898162573">گذرواژه‌تان را وارد کنید</translation>
@@ -10321,6 +10323,7 @@
 <translation id="8330617762701840933">فهرست وب‌سایت‌هایی که به مرورگر جایگزین هدایت می‌شوند.</translation>
 <translation id="8330689128072902965">مخاطبین اطراف می‌توانند با شما هم‌رسانی کنند. برای تغییر دادن، کلیک کنید.</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{نوع فایل پشتیبانی‌شده: <ph name="FILE_TYPE1" />}=2{انواع فایل‌های پشتیبانی‌شده:<ph name="FILE_TYPE1" />، <ph name="FILE_TYPE2" />}=3{انواع فایل‌های پشتیبانی‌شده: <ph name="FILE_TYPE1" />، <ph name="FILE_TYPE2" />، <ph name="FILE_TYPE3" />}=4{انواع فایل‌های پشتیبانی‌شده: <ph name="FILE_TYPE1" />، <ph name="FILE_TYPE2" />، <ph name="FILE_TYPE3" />، <ph name="FILE_TYPE4" />}one{انواع فایل‌های پشتیبانی‌شده: <ph name="FILE_TYPE1" />، <ph name="FILE_TYPE2" />، <ph name="FILE_TYPE3" />، <ph name="FILE_TYPE4" /> (<ph name="LINK" />و {OVERFLOW_COUNT} نوع دیگر<ph name="END_LINK" />)}other{انواع فایل‌های پشتیبانی‌شده: <ph name="FILE_TYPE1" />، <ph name="FILE_TYPE2" />، <ph name="FILE_TYPE3" />، <ph name="FILE_TYPE4" /> (<ph name="LINK" />و {OVERFLOW_COUNT} نوع دیگر<ph name="END_LINK" />)}}</translation>
+<translation id="8331578454993293727">گذرواژه شما در سرقت اطلاعات شبکه پیدا شده است</translation>
 <translation id="8331822764922665615">گروه را نام‌گذاری کنید، رنگی را انتخاب کنید، سپس کلید «گریز» را فشار دهید</translation>
 <translation id="833256022891467078">‏پوشه‌های هم‌رسانی‌شده Crostini</translation>
 <translation id="833262891116910667">برجسته‌سازی</translation>
@@ -10402,6 +10405,7 @@
     <ph name="BEGIN_PARAGRAPH2" />برای راهنمایی بیشتر، از g.co/flex/InstallErrors بازدید کنید.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8383614331548401927">‏به Recap خوش آمدید</translation>
 <translation id="8386091599636877289">خط‌مشی یافت نشد.</translation>
+<translation id="8387087863179559896">‏‫Chrome می‌تواند حسابتان در این سایت را با گذرواژه‌ای قوی به‌روز کند. لازم نیست این گذرواژه را به‌خاطر بسپارید، زیرا برای شما در «مدیر گذرواژه Google» حساب <ph name="EMAIL" /> ذخیره می‌شود. اطلاعات بیشتر درباره <ph name="PASSWORD_CHANGE" />.</translation>
 <translation id="8387361103813440603">اجازه ندارد مکانتان را ببیند</translation>
 <translation id="8387617938027387193">تأیید کنید این شمایید</translation>
 <translation id="8388770971141403598">نمایه‌های ثانویه پشتیبانی نمی‌شود</translation>
@@ -10716,7 +10720,6 @@
 <translation id="8625124982056504555">‏خواندن شماره‌های سریال عنصر و دستگاه ChromeOS</translation>
 <translation id="862542460444371744">&amp;برنامه های افزودنی</translation>
 <translation id="8625663000550647058">اجازه ندارد از میکروفون استفاده کند</translation>
-<translation id="8625679025395572221">ممکن است حسابتان هنوز درمعرض خطر باشد.</translation>
 <translation id="8625916342247441948">‏به سایت‌ها اجازه داده نشود به دستگاه‌های HID متصل شوند</translation>
 <translation id="862727964348362408">معلق شد</translation>
 <translation id="862750493060684461">‏حافظه نهان CSS</translation>
@@ -11599,7 +11602,6 @@
 <translation id="936801553271523408">داده‌های تشخیص خطای سیستم</translation>
 <translation id="93766956588638423">تعمیر افزونه</translation>
 <translation id="938623846785894166">فایل غیرعادی</translation>
-<translation id="939401694733344652">‏درحال‌حاضر از این حساب‌ها در برنامه‌های Android استفاده نمی‌شود. اگر حسابی را برای استفاده در این برنامه Android انتخاب کنید، می‌توانید از آن حساب در برنامه‌های Android دیگر نیز استفاده کنید. می‌توانید دسترسی برنامه Android را در بخش <ph name="LINK_BEGIN" />تنظیمات &gt; حساب‌ها<ph name="LINK_END" /> تغییر دهید.</translation>
 <translation id="939598580284253335">گذرعبارت را وارد کنید</translation>
 <translation id="939736085109172342">پوشهٔ جدید</translation>
 <translation id="940212040923880623">جستجو و ویرایش</translation>

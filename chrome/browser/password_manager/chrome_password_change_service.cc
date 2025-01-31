@@ -30,25 +30,31 @@ content::WebContents* OpenNewTab(const GURL& url,
       base::DoNothing());
 }
 
-bool HasURLFromCommandArgs(const GURL& url) {
-  auto* command_line = base::CommandLine::ForCurrentProcess();
-  if (!command_line->HasSwitch(switches::kPasswordChangeUrl)) {
+// Returns whether chrome switch for change password URLs is used.
+bool HasChangePasswordUrlOverride() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kPasswordChangeUrl);
+}
+
+// Return overridden change password URL passed to chrome switch.
+GURL GetUrlFromCommandArgs() {
+  return GURL(base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+      switches::kPasswordChangeUrl));
+}
+
+// Returns whether overridden change password URL matches with `url`.
+bool IsUrlMatchingOverride(const GURL& url) {
+  if (!HasChangePasswordUrlOverride()) {
     return false;
   }
-  GURL change_password_url =
-      GURL(command_line->GetSwitchValueASCII(switches::kPasswordChangeUrl));
 
-  if (!change_password_url.is_valid()) {
+  GURL change_password_url = GetUrlFromCommandArgs();
+  if (!url.is_valid() || !change_password_url.is_valid()) {
     return false;
   }
 
   return affiliations::IsExtendedPublicSuffixDomainMatch(
       url, change_password_url, {});
-}
-
-GURL GetURLFromCommandArgs(const GURL& url) {
-  auto* command_line = base::CommandLine::ForCurrentProcess();
-  return GURL(command_line->GetSwitchValueASCII(switches::kPasswordChangeUrl));
 }
 
 }  // namespace
@@ -64,25 +70,32 @@ ChromePasswordChangeService::~ChromePasswordChangeService() {
   CHECK(password_change_delegates_.empty());
 }
 
-bool ChromePasswordChangeService::IsPasswordChangeSupported(const GURL& url) {
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::kImprovedPasswordChangeService)) {
-    return false;
-  }
-
-  if (HasURLFromCommandArgs(url)) {
+bool ChromePasswordChangeService::IsPasswordChangeAvailable() {
+  if (HasChangePasswordUrlOverride()) {
     return true;
   }
 
-  const bool is_user_allowed =
-      optimization_keyed_service_ &&
-      optimization_keyed_service_
-          ->ShouldFeatureAllowModelExecutionForSignedInUser(
-              optimization_guide::UserVisibleFeatureKey::
-                  kPasswordChangeSubmission);
-  const bool is_url_supported =
-      affiliation_service_->GetChangePasswordURL(url).is_valid();
-  return is_url_supported && is_user_allowed;
+  if (!optimization_keyed_service_) {
+    return false;
+  }
+  if (!optimization_keyed_service_->ShouldModelExecutionBeAllowedForUser()) {
+    return false;
+  }
+
+  return base::FeatureList::IsEnabled(
+      password_manager::features::kImprovedPasswordChangeService);
+}
+
+bool ChromePasswordChangeService::IsPasswordChangeSupported(const GURL& url) {
+  if (!IsPasswordChangeAvailable()) {
+    return false;
+  }
+
+  if (IsUrlMatchingOverride(url)) {
+    return true;
+  }
+
+  return affiliation_service_->GetChangePasswordURL(url).is_valid();
 }
 
 void ChromePasswordChangeService::OfferPasswordChangeUi(
@@ -90,8 +103,8 @@ void ChromePasswordChangeService::OfferPasswordChangeUi(
     const std::u16string& username,
     const std::u16string& password,
     content::WebContents* web_contents) {
-  GURL change_pwd_url = HasURLFromCommandArgs(url)
-                            ? GetURLFromCommandArgs(url)
+  GURL change_pwd_url = IsUrlMatchingOverride(url)
+                            ? GetUrlFromCommandArgs()
                             : affiliation_service_->GetChangePasswordURL(url);
   CHECK(change_pwd_url.is_valid());
 

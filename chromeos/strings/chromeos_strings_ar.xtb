@@ -768,6 +768,7 @@
 <translation id="4654549501020883054">التغيير يوميًا</translation>
 <translation id="4655868084888499342">تم ضبط الصورة كخلفية</translation>
 <translation id="4661249927038176904">سريالي</translation>
+<translation id="4661392828086261436">‏هذا التحديث مقدَّم من الشركة المصنّعة للجهاز ولم تتحقّق Google منه</translation>
 <translation id="4664651912255946953">الفَرْو</translation>
 <translation id="4665014895760275686">جهة التصنيع</translation>
 <translation id="467510802200863975">كلمتا المرور غير متطابقتين.</translation>
@@ -1027,6 +1028,7 @@
 <translation id="5904994456462260490">‏إضافة اسم نقطة وصول (APN) جديد</translation>
 <translation id="590746845088109442">قطط</translation>
 <translation id="5907649332524363701">لون المفتاح</translation>
+<translation id="5908813850962688338">سيستغرق تثبيت هذا التحديث بضع دقائق. يُرجى إبقاء الجهاز متصلاً بمقبس الكهرباء وقيد التشغيل أثناء تنزيل التحديث. وقد تتم إعادة تشغيل جهازك عدة مرات أو قد تظهر شاشة سوداء أثناء هذه العملية. سُيطلب منك إعادة تشغيل جهازك لإكمال عملية التثبيت.</translation>
 <translation id="5916084858004523819">محظورة</translation>
 <translation id="5916664084637901428">مفعّل</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{تم بنجاح مسح الملف ضوئيًا وحفظه في <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}zero{تم بنجاح مسح الملفات ضوئيًا وحفظها في <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}two{تم بنجاح مسح الملفين ضوئيًا وحفظهما في <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{تم بنجاح مسح الملفات ضوئيًا وحفظها في <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}many{تم بنجاح مسح الملفات ضوئيًا وحفظها في <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{تم بنجاح مسح الملفات ضوئيًا وحفظها في <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>

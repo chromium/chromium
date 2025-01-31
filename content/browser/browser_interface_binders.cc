@@ -672,7 +672,7 @@ void BindPressureManager(
   }
 
   if (!host->IsFeatureEnabled(
-          blink::mojom::PermissionsPolicyFeature::kComputePressure)) {
+          network::mojom::PermissionsPolicyFeature::kComputePressure)) {
     bad_message::ReceivedBadMessage(
         host->GetProcess(),
         bad_message::BadMessageReason::

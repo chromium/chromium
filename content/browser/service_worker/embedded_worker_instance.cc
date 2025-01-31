@@ -1177,12 +1177,20 @@ void EmbeddedWorkerInstance::BindCacheStorageInternal() {
           coep_reporter_remote.InitWithNewPipeAndPassReceiver());
     }
 
+    mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>
+        dip_reporter_remote;
+    if (dip_reporter_) {
+      dip_reporter_->Clone(
+          dip_reporter_remote.InitWithNewPipeAndPassReceiver());
+    }
+
     auto* rph = RenderProcessHost::FromID(process_id());
     if (!rph)
       return;
 
     rph->BindCacheStorage(*coep, std::move(coep_reporter_remote), *dip,
-                          request.bucket, std::move(request.receiver));
+                          std::move(dip_reporter_remote), request.bucket,
+                          std::move(request.receiver));
   }
   pending_cache_storage_requests_.clear();
 }

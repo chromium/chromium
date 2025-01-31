@@ -421,7 +421,7 @@ TEST_F(NameInfoTest, MergeStructuredAlternativeName) {
   NameInfo stored_profile;
   test::SetFormGroupValues(
       stored_profile,
-      {{.type = ALTERNATIVE_FAMILY_NAME, .value = "やまもとあおい"},
+      {{.type = ALTERNATIVE_FAMILY_NAME, .value = "やまもと"},
        {.type = ALTERNATIVE_FULL_NAME, .value = "やまもと あおい"}});
 
   NameInfo submitted_data;

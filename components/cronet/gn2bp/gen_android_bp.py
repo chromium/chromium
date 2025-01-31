@@ -2451,6 +2451,18 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
         elif dep_module.type == "rust_bindgen":
           module.srcs.add(":" + dep_module.name)
           if module_target.type == "cc_library_static":
+            # This is a bindgen _static_fns GN target. We need to translate that
+            # to the Soong rust_bindgen "static inline library" concept.
+
+            # AOSP Rust team wants every bindgen static inline library module to
+            # have a "lib" prefix. Due to the way Chromium //build/rust bindgen
+            # generator rules work, we know the _static_fns target is only
+            # referenced by its corresponding bindgen target and nothing else;
+            # therefore, we can safely assume we are only going to enter this
+            # path once, so there is no need to protect against the prefix being
+            # added multiple times - nor is there a need to go back and fix
+            # previous references.
+            module.name = "lib" + module.name
             # rust_bindgen generates a .c / .cc file which has include
             # defined from the root of the android tree.
             module_target.include_dirs.append(".")

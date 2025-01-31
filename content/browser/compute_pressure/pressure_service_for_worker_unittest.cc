@@ -230,7 +230,7 @@ TEST_F(PressureServiceForDedicatedWorkerTest, PermissionsPolicyBlock) {
   // made once on page load, so we refresh the page to simulate that.
   blink::ParsedPermissionsPolicy permissions_policy(1);
   permissions_policy[0].feature =
-      blink::mojom::PermissionsPolicyFeature::kComputePressure;
+      network::mojom::PermissionsPolicyFeature::kComputePressure;
   auto navigation_simulator =
       NavigationSimulator::CreateRendererInitiated(kTestUrl, main_rfh());
   navigation_simulator->SetPermissionsPolicyHeader(permissions_policy);
@@ -354,7 +354,7 @@ TEST_F(PressureServiceForSharedWorkerTest, PermissionsPolicyBlock) {
   // made once on page load, so we refresh the page to simulate that.
   blink::ParsedPermissionsPolicy permissions_policy(1);
   permissions_policy[0].feature =
-      blink::mojom::PermissionsPolicyFeature::kComputePressure;
+      network::mojom::PermissionsPolicyFeature::kComputePressure;
   auto navigation_simulator =
       NavigationSimulator::CreateRendererInitiated(kTestUrl, main_rfh());
   navigation_simulator->SetPermissionsPolicyHeader(permissions_policy);
@@ -374,7 +374,7 @@ TEST_F(PressureServiceForSharedWorkerTest,
   auto* rfh = web_contents->GetPrimaryMainFrame();
   blink::ParsedPermissionsPolicy permissions_policy(1);
   permissions_policy[0].feature =
-      blink::mojom::PermissionsPolicyFeature::kComputePressure;
+      network::mojom::PermissionsPolicyFeature::kComputePressure;
   auto navigation_simulator =
       NavigationSimulator::CreateRendererInitiated(kTestUrl, rfh);
   navigation_simulator->SetPermissionsPolicyHeader(permissions_policy);

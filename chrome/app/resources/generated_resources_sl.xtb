@@ -126,7 +126,6 @@
 <translation id="1076766328672150609">Otrok lahko s kodo PIN odklene napravo.</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216">Slovarja za preverjanje črkovanja za jezik <ph name="LANGUAGE" /> ni bilo mogoče prenesti. Poskusite znova.</translation>
-<translation id="1078029726086090536">Preverite geslo</translation>
 <translation id="1078037449555275327">Nastavitve ChromeVoxa</translation>
 <translation id="1079242569060319448">Ste pozabili kodo PIN?</translation>
 <translation id="1079285777677001938">Funkcije na nekaterih spletnih mestih morda ne bodo delovale.</translation>
@@ -372,6 +371,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="1241066500170667906">Izberite stanje preizkusa za preizkus <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="124116460088058876">Več jezikov</translation>
 <translation id="1241381048229838873">Pokaži vse zaznamke</translation>
+<translation id="1242044645101871359">Prijavite se znova</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" /> želi ponastaviti nastavitve.</translation>
 <translation id="1243002225871118300">Spreminjanje velikosti prikaza in besedila</translation>
 <translation id="1243314992276662751">Prenesi</translation>
@@ -1630,7 +1630,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2113921862428609753">Dostop do informacij urada</translation>
 <translation id="2114145607116268663">Namestitev ni mogoča. Potreben je vnovični zagon. Znova zaženite računalnik in poskusite znova. Koda napake je <ph name="ERROR" />.</translation>
 <translation id="2114326799768592691">Znova naloži &amp;okvir</translation>
-<translation id="2114413269775311385">Uporabljaj ta račun z aplikacijami za Android. Dovoljenja za aplikacije Android lahko nadzirate v <ph name="LINK_BEGIN" />nastavitvah aplikacij<ph name="LINK_END" />.</translation>
 <translation id="2114995631896158695">Kartica SIM ni vstavljena.</translation>
 <translation id="2116619964159595185">Spletna mesta običajno vzpostavijo povezavo z napravami Bluetooth zaradi funkcij, kot sta nastavitev ali sinhroniziranje nizkoenergijskega svetilnika, naprave za spremljanje zdravja oziroma telesne pripravljenosti ali pametne sijalke.</translation>
 <translation id="2117655453726830283">Naslednji diapozitiv</translation>
@@ -2810,6 +2809,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="2926620265753325858">Naprava <ph name="DEVICE_NAME" /> ni podprta.</translation>
 <translation id="2926708162326352948">Tema je posodobljena na naloženo sliko</translation>
 <translation id="2927017729816812676">Shramba predpomnilnika</translation>
+<translation id="2928030851119977280">Izbira je shranjena. Uporabljena bo, ko se prijavite v druge Googlove storitve.</translation>
 <translation id="2928795416630981206">Dovoljeno je spremljanje položaja kamere</translation>
 <translation id="2929345818093040583">{NUM_SITES,plural, =1{Chrome je odstranil dovoljenja z 1 spletnega mesta}one{Chrome je odstranil dovoljenja s/z {NUM_SITES} spletnega mesta}two{Chrome je odstranil dovoljenja s/z {NUM_SITES} spletnih mest}few{Chrome je odstranil dovoljenja s/z {NUM_SITES} spletnih mest}other{Chrome je odstranil dovoljenja s/z {NUM_SITES} spletnih mest}}</translation>
 <translation id="2931157624143513983">Ustrezanje velikosti območja, ki omogoča tiskanje</translation>
@@ -4650,6 +4650,7 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 <translation id="4242533952199664413">Odpri nastavitve</translation>
 <translation id="4242577469625748426">Namestitev nastavitev pravilnika v napravi ni uspela: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385">Vaš <ph name="BEGIN_LINK" />brskalnik in profil upravlja<ph name="END_LINK" /> domena <ph name="DOMAIN" /></translation>
+<translation id="424315890655130736">Vnos gesla</translation>
 <translation id="4243504193894350135">Tiskalnik je začasno zaustavljen</translation>
 <translation id="4243624244759495699"><ph name="LOCALE" />, <ph name="GRADE" />. raven</translation>
 <translation id="4244238649050961491">Iskanje več aplikacij za pisalo</translation>
@@ -5372,7 +5373,6 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="4766598565665644999">Vse razširitve lahko berejo in spreminjajo spletno mesto <ph name="HOST" />.</translation>
 <translation id="4767427586072640478">Preberite več o onemogočenih razširitvah.</translation>
 <translation id="4768332406694066911">Imate potrdila teh organizacij, ki vas identificirajo</translation>
-<translation id="4768945955870840220">Chrome lahko za nekatere izdelke zbere mnenja iz spleta</translation>
 <translation id="4769632191812288342">Imate standardno zaščito</translation>
 <translation id="4770119228883592393">Zahtevano je dovoljenje; pritisnite ⌘ + Option + puščico dol, če se želite odzvati.</translation>
 <translation id="4770755495532014179">Uporabite to geslo v iPhonu</translation>
@@ -7426,6 +7426,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6253801023880399036">Gesla se shranjujejo v storitvi <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="6254503684448816922">Ključ ni več varen</translation>
 <translation id="6254892857036829079">Odlično</translation>
+<translation id="6257131917452817589">samodejni spremembi gesla</translation>
 <translation id="6257602895346497974">Vklopi sinhronizacijo …</translation>
 <translation id="6257614441619555296"><ph name="KEY" />: <ph name="VALUE" /></translation>
 <translation id="625827534921607067">To omrežje bo prednostno, če je na voljo več kot eno predhodno povezano ali konfigurirano omrežje.</translation>
@@ -8779,7 +8780,6 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7243092385765551741">Želite izbrisati geslo?</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (najboljša)</translation>
 <translation id="7246230585855757313">Znova vstavite varnostni ključ in poskusite znova</translation>
-<translation id="724835896049478274">Računi, na voljo za aplikacije za Android</translation>
 <translation id="7248802599439396696">Zavihke spremeni v neaktivne</translation>
 <translation id="7249197363678284330">To nastavitev spremenite v naslovni vrstici.</translation>
 <translation id="7249764475759804559">Vključi to aplikacijo kot možnost pri odpiranju datotek</translation>
@@ -9143,6 +9143,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7502528909759062987">Začasno zaustavi predvajanje zavihka v napravi <ph name="DEVICE_NAME" /></translation>
 <translation id="7502804472671406749">Po deljenih zavihkih se je mogoče pomikati in jih povečati/pomanjšati</translation>
 <translation id="7503191893372251637">Vrsta Netscapeovega potrdila</translation>
+<translation id="7503259455663961898">Spremeni zame</translation>
 <translation id="7503985202154027481">Na varnostnem ključu se bo zabeležil obisk tega spletnega mesta.</translation>
 <translation id="7504145862399276792">Zvok tega zavihka je izklopljen</translation>
 <translation id="750509436279396091">Odpiranje mape s prenosi</translation>
@@ -9205,6 +9206,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7551059576287086432">Prenos datoteke <ph name="FILE_NAME" /> ni uspel</translation>
 <translation id="7551643184018910560">Pripenjanje na polico</translation>
 <translation id="7552191410769096467">Če želite deliti ali se pridružiti skupinam zavihkov, se morate prijaviti in vklopiti sinhronizacijo</translation>
+<translation id="7552196109089297786">Odjava iz Microsofta</translation>
 <translation id="7552846755917812628">Poskusite te nasvete:</translation>
 <translation id="7553012839257224005">Preverjanje vsebnika za Linux</translation>
 <translation id="7553242001898162573">Vnesite geslo</translation>
@@ -10334,6 +10336,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8330617762701840933">Seznam spletnih mest, ki preusmerijo v nadomestni brskalnik.</translation>
 <translation id="8330689128072902965">Stiki v bližini lahko delijo z vami. Kliknite za zamenjavo.</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{Podprta vrsta datoteke: <ph name="FILE_TYPE1" />}=2{Podprti vrsti datotek: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />}=3{Podprte vrste datotek: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />}=4{Podprte vrste datotek: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" />}one{Podprte vrste datotek: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />in še {OVERFLOW_COUNT}<ph name="END_LINK" />)}two{Podprte vrste datotek: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />in še {OVERFLOW_COUNT}<ph name="END_LINK" />)}few{Podprte vrste datotek: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />in še {OVERFLOW_COUNT}<ph name="END_LINK" />)}other{Podprte vrste datotek: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />in še {OVERFLOW_COUNT}<ph name="END_LINK" />)}}</translation>
+<translation id="8331578454993293727">Vaše geslo je bilo najdeno v podatkovni kršitvi</translation>
 <translation id="8331822764922665615">Poimenujte skupino, izberite barvo, nato pritisnite tipko Esc.</translation>
 <translation id="833256022891467078">Mape Crostini, deljene z drugimi</translation>
 <translation id="833262891116910667">Označevanje</translation>
@@ -10415,6 +10418,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
     <ph name="BEGIN_PARAGRAPH2" />Če potrebujete dodatno pomoč, obiščite g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8383614331548401927">Pozdravni povzetek</translation>
 <translation id="8386091599636877289">Pravilnika ni mogoče najti.</translation>
+<translation id="8387087863179559896">Chrome lahko vaš račun za to spletno mesto posodobi z močnim geslom. Gesla si ni treba zapomniti, saj je shranjeno v Googlovem upravitelju gesel za uporabnika <ph name="EMAIL" />. Več o <ph name="PASSWORD_CHANGE" />.</translation>
 <translation id="8387361103813440603">Ni dovoljen ogled lokacije</translation>
 <translation id="8387617938027387193">Potrdite, da ste res vi</translation>
 <translation id="8388770971141403598">Sekundarni profili niso podprti.</translation>
@@ -10729,7 +10733,6 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8625124982056504555">Branje serijskih številk naprav in komponent s sistemom ChromeOS.</translation>
 <translation id="862542460444371744">&amp;Razširitve</translation>
 <translation id="8625663000550647058">Ni dovoljena uporaba mikrofona</translation>
-<translation id="8625679025395572221">Vaš račun je morda še vedno ogrožen.</translation>
 <translation id="8625916342247441948">Spletnim mestom ni dovoljeno povezovanje z napravami HID.</translation>
 <translation id="862727964348362408">Onemogočeno</translation>
 <translation id="862750493060684461">Predpomnilnik CSS</translation>
@@ -11614,7 +11617,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="936801553271523408">Sistemski diagnostični podatki</translation>
 <translation id="93766956588638423">Popravi razširitev</translation>
 <translation id="938623846785894166">Neobičajna datoteka</translation>
-<translation id="939401694733344652">Ti računi se trenutno ne uporabljajo z aplikacijami za Android. Če izberete račun, ki ga želite uporabljati s to aplikacijo za Android, se lahko račun uporablja tudi z drugimi aplikacijami za Android. Dostop do aplikacije za Android lahko spremenite v <ph name="LINK_BEGIN" />Nastavitve &gt; Računi<ph name="LINK_END" />.</translation>
 <translation id="939598580284253335">Vnesite geslo</translation>
 <translation id="939736085109172342">Nova mapa</translation>
 <translation id="940212040923880623">&amp;Iskanje in urejanje</translation>

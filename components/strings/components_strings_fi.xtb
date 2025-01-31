@@ -674,7 +674,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2157640075051554492">Hintaseurannan ilmoitukset</translation>
 <translation id="21613918653299710">Kuvagalleriat verkossa</translation>
 <translation id="2161656808144014275">Teksti</translation>
-<translation id="2162510787844374618">Tarkistus pankista…</translation>
 <translation id="2162620598375156287">Nyt <ph name="CURRENT_PRICE" /> osoitteessa <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Tarkista, sisältääkö <ph name="HOST_NAME" /> kirjoitusvirheitä.</translation>
 <translation id="2166049586286450108">Järjestelmänvalvojan täydet käyttöoikeudet</translation>
@@ -2409,6 +2408,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5254043433801397071">Optimoi tulostussisältö</translation>
 <translation id="5255583962255635076">Työprofiiliin sovelletut selainkäytännöt</translation>
 <translation id="5255690596502591079">Ota kuvakaappaus silti</translation>
+<translation id="5255771248404149177">Kortin myöntäjä haluaa varmistaa henkilöllisyytesi</translation>
 <translation id="5255833070095767006">350 x 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{Järjestelmänvalvojakäytännössä ei suositella tiedoston kopioimista tänne: <ph name="DESTINATION_NAME" />}other{Järjestelmänvalvojakäytännössä ei suositella tiedostojen kopioimista tänne: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5263867360296733198">Tarkasta tiedostot ennen lataamista</translation>
@@ -2429,7 +2429,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5288108484102287882">Käytäntöarvojen vahvistus aiheutti varoituksia</translation>
 <translation id="5289384342738547352">Useiden dokumenttien käsittely</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{Päivitettävä tänään}=2{Päivitettävä huomenna}other{Päivitettävä # päivän kuluessa}}</translation>
-<translation id="5292714443869769806">Avaa asetukset: <ph name="OPERATING_SYSTEM" /></translation>
 <translation id="5293919335876685914">Coupe-autot</translation>
 <translation id="5298618990685278995">ensimmäinen luonnos</translation>
 <translation id="5299298092464848405">Virhe jäsennettäessä käytäntöä</translation>
@@ -2557,6 +2556,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5518352028556756716">Useimmat sivustot eivät voi seurata sinua selaamisen aikana kolmansien osapuolten evästeiden avulla, eivätkä sivustot voi käyttää kolmannen osapuolen evästeitä incognito-tilassa.</translation>
 <translation id="5519516356611866228">Muutosten kanssa</translation>
 <translation id="5519696598216267194">Paperi (rei'itetty)</translation>
+<translation id="5520105693415771152">Eivätkö tietosi ole ajan tasalla? Ota yhteyttä palveluntarjoajaan ja päivitä ne.</translation>
 <translation id="5521782189689806907">Kaapistot</translation>
 <translation id="5523118979700054094">Käytännön nimi</translation>
 <translation id="5523588073846127669">Kauppias ei hyväksy tätä virtuaalikorttia</translation>
@@ -3652,6 +3652,7 @@ Lisätietoja:
 <translation id="745640750744109667">A0 x 3</translation>
 <translation id="7457071735008326060">Kuorma-autot ja perävaunut</translation>
 <translation id="7461924472993315131">Kiinnitä</translation>
+<translation id="746329643760972486">MacOS</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> saa tietää, että kävit täällä: <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7465963048299965912">10 x 13 tuumaa</translation>
 <translation id="7469935732330206581">Lomake ei ole suojattu</translation>
@@ -3922,7 +3923,6 @@ Lisätietoja:
 <translation id="7942349550061667556">Punainen</translation>
 <translation id="7943397946612013052">Lataus estetty</translation>
 <translation id="7943893128817522649">Saa pyytää lupaa ladata useita tiedostoja automaattisesti</translation>
-<translation id="794567586469801724">MacOS</translation>
 <translation id="7947285636476623132">Tarkista vanhentumisvuosi ja yritä uudelleen.</translation>
 <translation id="7947310711271925113">Popmusiikki</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, katso lisätietoja Chromen ominaisuuksista painamalla sarkainta ja sitten Enter</translation>
@@ -4675,7 +4675,6 @@ Lisätietoja:
 <translation id="984275831282074731">Maksutavat</translation>
 <translation id="985199708454569384">&lt;p&gt;Näet tämän virheen, jos tietokoneen tai mobiililaitteen päivämäärä ja aika ovat virheellisiä.&lt;/p&gt;
     &lt;p&gt;Korjaa ongelma avaamalla laitteen kello ja varmistamalla, että päivämäärä ja aika ovat oikein.&lt;/p&gt;</translation>
-<translation id="986257639512122511"><ph name="PERMISSION" /> on sallittu: <ph name="ORIGIN" /></translation>
 <translation id="987264212798334818">Yleistä</translation>
 <translation id="988159990683914416">Kehittäjän koontiversio</translation>
 <translation id="989988560359834682">Osoitteen muokkaus</translation>

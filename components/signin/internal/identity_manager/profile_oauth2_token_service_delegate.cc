@@ -228,6 +228,13 @@ void ProfileOAuth2TokenServiceDelegate::FireAccountsOnDeviceChanged() {
     observer.OnAccountsOnDeviceChanged();
   }
 }
+
+void ProfileOAuth2TokenServiceDelegate::FireAccountOnDeviceUpdated(
+    const AccountInfo& account_info) {
+  for (auto& observer : observer_list_) {
+    observer.OnAccountOnDeviceUpdated(account_info);
+  }
+}
 #endif
 
 std::string ProfileOAuth2TokenServiceDelegate::GetTokenForMultilogin(

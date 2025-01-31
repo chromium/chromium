@@ -126,7 +126,6 @@
 <translation id="1076766328672150609">Tu hijo/a puede usar un PIN para desbloquear el dispositivo.</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216">No se ha podido descargar el diccionario de revisión ortográfica de <ph name="LANGUAGE" />. Vuelve a intentarlo.</translation>
-<translation id="1078029726086090536">Verificar tu contraseña</translation>
 <translation id="1078037449555275327">Configuración de ChromeVox</translation>
 <translation id="1079242569060319448">¿Has olvidado tu PIN?</translation>
 <translation id="1079285777677001938">Es posible que ciertas funciones de algunos sitios no estén operativas.</translation>
@@ -369,6 +368,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1241066500170667906">Selecciona el estado del experimento de <ph name="EXPERIMENT_NAME" /></translation>
 <translation id="124116460088058876">Más idiomas</translation>
 <translation id="1241381048229838873">Mostrar todos los marcadores</translation>
+<translation id="1242044645101871359">Vuelve a iniciar sesión</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" /> quiere restablecer la configuración.</translation>
 <translation id="1243002225871118300">Cambiar el tamaño de visualización y del texto</translation>
 <translation id="1243314992276662751">Subir</translation>
@@ -1617,7 +1617,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2113921862428609753">Acceso a la información de la entidad emisora</translation>
 <translation id="2114145607116268663">No se puede realizar la instalación. Es necesario reiniciar el ordenador. Hazlo y vuelve a intentarlo. El código de error es <ph name="ERROR" />.</translation>
 <translation id="2114326799768592691">Volver a cargar &amp;marco</translation>
-<translation id="2114413269775311385">Usar esta cuenta con aplicaciones Android. Puedes controlar los permisos de aplicaciones Android en <ph name="LINK_BEGIN" />Configuración de aplicaciones<ph name="LINK_END" />.</translation>
 <translation id="2114995631896158695">No hay ninguna tarjeta SIM insertada.</translation>
 <translation id="2116619964159595185">Los sitios se suelen conectar a dispositivos Bluetooth para usarlos en funciones como configurar o sincronizar una baliza electrónica, un monitor de actividad física o de salud, o una bombilla inteligente</translation>
 <translation id="2117655453726830283">Diapositiva siguiente</translation>
@@ -2795,6 +2794,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2926620265753325858">No se admite el dispositivo <ph name="DEVICE_NAME" />.</translation>
 <translation id="2926708162326352948">Tema actualizado al de la imagen subida</translation>
 <translation id="2927017729816812676">Almacenamiento en caché</translation>
+<translation id="2928030851119977280">Opción guardada. Tu elección se aplicará cuando inicies sesión en otros servicios de Google.</translation>
 <translation id="2928795416630981206">Puede monitorizar la posición de la cámara</translation>
 <translation id="2929345818093040583">{NUM_SITES,plural, =1{Chrome ha quitado los permisos de 1 sitio}other{Chrome ha quitado los permisos de {NUM_SITES} sitios}}</translation>
 <translation id="2931157624143513983">Ajustar al área de impresión</translation>
@@ -4634,6 +4634,7 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="4242533952199664413">Abrir Configuración</translation>
 <translation id="4242577469625748426">Se ha producido un error al instalar la configuración de política en el dispositivo (<ph name="VALIDATION_ERROR" />).</translation>
 <translation id="4242825475818569385"><ph name="BEGIN_LINK" />Tu navegador y tu perfil los gestiona<ph name="END_LINK" /> <ph name="DOMAIN" /></translation>
+<translation id="424315890655130736">Introduce tu frase de contraseña</translation>
 <translation id="4243504193894350135">La impresora está en pausa</translation>
 <translation id="4243624244759495699"><ph name="LOCALE" />, grado <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">Buscar más aplicaciones para el lápiz óptico</translation>
@@ -5356,7 +5357,6 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="4766598565665644999">Todas las extensiones pueden leer y modificar <ph name="HOST" /></translation>
 <translation id="4767427586072640478">Más información sobre las extensiones inhabilitadas</translation>
 <translation id="4768332406694066911">Tienes certificados de estas organizaciones que te identifican</translation>
-<translation id="4768945955870840220">En el caso de algunos productos, Chrome puede recopilar reseñas de la Web</translation>
 <translation id="4769632191812288342">Estás usando la protección estándar</translation>
 <translation id="4770119228883592393">Permiso solicitado, pulsa ⌘ + Opción + flecha hacia abajo para responder</translation>
 <translation id="4770755495532014179">Usa esta contraseña en tu iPhone</translation>
@@ -7406,6 +7406,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6253801023880399036">Las contraseñas se guardan en el <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="6254503684448816922">Compromiso de clave</translation>
 <translation id="6254892857036829079">Perfecta</translation>
+<translation id="6257131917452817589">el cambio de contraseña automatizado</translation>
 <translation id="6257602895346497974">Activar sincronización...</translation>
 <translation id="6257614441619555296"><ph name="KEY" />: <ph name="VALUE" /></translation>
 <translation id="625827534921607067">Esta red tendrá preferencia si hay disponible más de una red ya configurada o a la que te hayas conectado anteriormente</translation>
@@ -8753,7 +8754,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7243092385765551741">¿Eliminar llave de acceso?</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (recomendado)</translation>
 <translation id="7246230585855757313">Vuelve a introducir la llave de seguridad e inténtalo de nuevo.</translation>
-<translation id="724835896049478274">Cuentas disponibles para aplicaciones Android</translation>
 <translation id="7248802599439396696">Inactivar pestañas</translation>
 <translation id="7249197363678284330">Cambia este ajuste en la barra de direcciones.</translation>
 <translation id="7249764475759804559">Incluir esta aplicación como opción al abrir archivos</translation>
@@ -9117,6 +9117,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7502528909759062987">Pausar envío de pestaña a <ph name="DEVICE_NAME" /></translation>
 <translation id="7502804472671406749">Es posible desplazarse por las pestañas compartidas y ampliarlas</translation>
 <translation id="7503191893372251637">Tipo de certificado de Netscape</translation>
+<translation id="7503259455663961898">Cambiar por mí</translation>
 <translation id="7503985202154027481">Se guardará un registro de tu visita a este sitio web en tu llave de seguridad.</translation>
 <translation id="7504145862399276792">El audio de esta pestaña se está silenciando</translation>
 <translation id="750509436279396091">Abrir carpeta de descargas</translation>
@@ -9179,6 +9180,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7551059576287086432"><ph name="FILE_NAME" /> descargado correctamente</translation>
 <translation id="7551643184018910560">Fijar en la estantería</translation>
 <translation id="7552191410769096467">Para compartir o unirte a grupos de pestañas, debes iniciar sesión y activar la sincronización</translation>
+<translation id="7552196109089297786">Cerrar sesión en Microsoft</translation>
 <translation id="7552846755917812628">Prueba los siguientes consejos:</translation>
 <translation id="7553012839257224005">Comprobando el contenedor de Linux</translation>
 <translation id="7553242001898162573">Introduce tu contraseña</translation>
@@ -10308,6 +10310,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8330617762701840933">La lista de sitios web que redirigen al navegador alternativo.</translation>
 <translation id="8330689128072902965">Los contactos cerca de ti pueden compartir contenido contigo. Haz clic para cambiar este ajuste.</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{Tipo de archivo compatible: <ph name="FILE_TYPE1" />}=2{Tipos de archivos compatibles: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />}=3{Tipos de archivos compatibles: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />}=4{Tipos de archivos compatibles: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" />}other{Tipos de archivos compatibles: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />y{OVERFLOW_COUNT} más<ph name="END_LINK" />)}}</translation>
+<translation id="8331578454993293727">Tu contraseña se ha encontrado en una brecha de seguridad de datos</translation>
 <translation id="8331822764922665615">Ponle un nombre a tu grupo, elige un color y pulsa Esc</translation>
 <translation id="833256022891467078">Carpetas compartidas de Crostini</translation>
 <translation id="833262891116910667">Resaltar</translation>
@@ -10389,6 +10392,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
     <ph name="BEGIN_PARAGRAPH2" />Para obtener más ayuda, visita g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8383614331548401927">Hola de nuevo</translation>
 <translation id="8386091599636877289">No se ha encontrado la política.</translation>
+<translation id="8387087863179559896">Chrome puede actualizar tu cuenta en este sitio con una contraseña segura. No tendrás que recordar la contraseña porque se guarda en el Gestor de contraseñas de Google de <ph name="EMAIL" />. Más información sobre <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="8387361103813440603">No puede ver tu ubicación</translation>
 <translation id="8387617938027387193">Verifica que eres tú</translation>
 <translation id="8388770971141403598">No se admiten perfiles secundarios</translation>
@@ -10703,7 +10707,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8625124982056504555">Leer los números de serie del dispositivo ChromeOS y de los componentes</translation>
 <translation id="862542460444371744">&amp;Extensiones</translation>
 <translation id="8625663000550647058">No puede usar tu micrófono</translation>
-<translation id="8625679025395572221">Tu cuenta podría seguir en peligro.</translation>
 <translation id="8625916342247441948">No permitir que los sitios se conecten a dispositivos HID</translation>
 <translation id="862727964348362408">En suspensión</translation>
 <translation id="862750493060684461">Caché de CSS</translation>
@@ -11585,7 +11588,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="936801553271523408">Datos de diagnóstico del sistema</translation>
 <translation id="93766956588638423">Reparar extensión</translation>
 <translation id="938623846785894166">Archivo poco común</translation>
-<translation id="939401694733344652">Estas cuentas no se están usando con aplicaciones Android en estos momentos. Si eliges una cuenta para usar con esta aplicación Android, la cuenta también podrá usarse con otras aplicaciones Android. Puedes cambiar el acceso a aplicaciones Android en <ph name="LINK_BEGIN" />Ajustes &gt; Cuentas<ph name="LINK_END" />.</translation>
 <translation id="939598580284253335">Introducir frase de contraseña</translation>
 <translation id="939736085109172342">Nueva carpeta</translation>
 <translation id="940212040923880623">&amp;Buscar y editar</translation>

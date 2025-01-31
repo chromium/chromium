@@ -263,7 +263,6 @@
 <translation id="2074131957428911366">Þú getur alltaf valið hvað á að samstilla í <ph name="BEGIN_LINK" />stillingunum<ph name="END_LINK" />.</translation>
 <translation id="2078437078822043850">Þú getur skoðað í huliðsstillingu með því að strjúka til hægri.</translation>
 <translation id="2079545284768500474">Afturkalla</translation>
-<translation id="2082906935540894275">Eiginleikarnir sem eiga best við fyrir þig á ólíkum tímum.</translation>
 <translation id="2085876078937250610">Vista…</translation>
 <translation id="2096239473850415494">Ekki hægt að sækja</translation>
 <translation id="2096716221239095980">Eyða öllum gögnum</translation>
@@ -548,7 +547,6 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="3445288400492335833"><ph name="MINUTES" /> mín.</translation>
 <translation id="344589138074534176">Nánar um Google-linsu</translation>
 <translation id="3447332786336558089">Flipum verður lokað og óvistuðum reikningsgögnum verður eytt úr þessu tæki eftir að þú skráir þig út. Slík gögn gætu t.d. verið aðgangsorð, ferill og fleira.</translation>
-<translation id="3449016921756175697">Gagnlegar tillögur sem gera það betra og auðveldara að skoða.</translation>
 <translation id="345348365500626747">Heimilisfang fannst</translation>
 <translation id="3464194322481586217">Ekki tókst að vakta verð.</translation>
 <translation id="3469117812148449995">Val um vistun aðgangsorðs</translation>
@@ -718,6 +716,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="422477017457571619">Vörn í rauntíma, knúin af gervigreind, gegn hættulegum vefsvæðum, niðurhali og viðbótum sem byggir á vefskoðunargögnunum þínum sem eru send til Google</translation>
 <translation id="4231395118547300571">Kveikt er á tilkynningum fyrir öryggisathugun</translation>
 <translation id="4237377247299956313">Ýttu á <ph name="BEGIN_BOLD" />Sjálfgefið vafraforrit<ph name="END_BOLD" /></translation>
+<translation id="4241893428331130998">Engin aðgangsorð eða aðgangslyklar eru vistaðir</translation>
 <translation id="4242533952199664413">Opna stillingar</translation>
 <translation id="4250432749243022864">{count,plural, =0{Opna {count} flipa}=1{Opna {count} flipa}one{Opna {count} flipa}other{Opna {count} flipa}}</translation>
 <translation id="4250680216510889253">Nei</translation>
@@ -922,7 +921,6 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="5127538504377457572">Virkt fyrir <ph name="DAYS" /> dögum</translation>
 <translation id="5128788795241319992">Skoðaðu nýju valmyndina</translation>
 <translation id="5132942445612118989">Samstilltu aðgangsorðin, ferilinn og fleira í öllum tækjum</translation>
-<translation id="5137526732000415202">Flipinn sem var síðast opinn í öllum tækjunum þínum.</translation>
 <translation id="5145331760738811130">Loka flipavali</translation>
 <translation id="5157638238828697074">Eitthvað fór úrskeiðis. Ekki tókst að opna forritið.</translation>
 <translation id="5163417375525818870">PDF-skrár</translation>
@@ -1023,7 +1021,6 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="559567008082979829">Stilla niðurhal á eyðingu eftir einn mánuð.</translation>
 <translation id="5596627076506792578">Fleiri valkostir</translation>
 <translation id="560322036295180549">Fyrirtækið þitt slökkti á þessu</translation>
-<translation id="5611107723541161735">Flýtileiðir á vefsvæði sem þú hefur heimsótt nýlega í þessu tæki.</translation>
 <translation id="5611398002774823980">Vista á reikningi</translation>
 <translation id="5613297089029360427">Raða eftir nýjasta</translation>
 <translation id="5614553682702429503">Vista aðgangsorð?</translation>
@@ -1487,7 +1484,6 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="7512075701202892785">Vafrinn sem þú elskar er nú í iPad</translation>
 <translation id="7512909159512473473">Slá inn aðgangsorð…</translation>
 <translation id="7514365320538308">Sækja</translation>
-<translation id="7521117365186708026">Uppsetningarráð sem hjálpa þér að fá sem mest út úr Chrome.</translation>
 <translation id="7524055474074101597">Fáðu aðgang að aðgangsorðum og fleiru á milli forrita.</translation>
 <translation id="75362970626182391">Nýr flipahópur</translation>
 <translation id="7537586195939242955">Því miður var ekki hægt að vista miðann í Passbook á þessari stundu.</translation>
@@ -1600,6 +1596,7 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="7982789257301363584">Net</translation>
 <translation id="7987685713885608670">Dulkóðaðu aðgangsorðin þín í tækinu áður en þau eru vistuð í aðgangsorðastjórnun Google til að auka öryggið.</translation>
 <translation id="798991908416757345">Flipahópar eru ekki í boði</translation>
+<translation id="7993170188789685695">Ýttu tvisvar til að loka þessari tilkynningu.</translation>
 <translation id="7993619969781047893">Ekki er víst að allir eiginleikar á öllum vefsvæðum virki</translation>
 <translation id="7996239959906074962">Setja upp…</translation>
 <translation id="800361585186029508">Opnar innslegnar vefslóðir í Google Chrome.</translation>
@@ -1706,7 +1703,6 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="8439758443371991593">Fela „Bæta við leslista“</translation>
 <translation id="8449869326050867919">Aðgangsorði deilt</translation>
 <translation id="8453847087068411809">Aldrei greina pakka sjálfkrafa</translation>
-<translation id="846158969830690371">Fáðu að vita hvort þú sért með öruggustu stillingarnar eða þarft að yfirfara eitthvað.</translation>
 <translation id="8473863474539038330">Heimilisföng og fleira</translation>
 <translation id="8474378002946546633">Leyfa tilkynningar</translation>
 <translation id="8477178913400731244">Eyða gögnum</translation>

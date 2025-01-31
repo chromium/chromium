@@ -105,6 +105,7 @@ class DiskCacheEntryTest : public DiskCacheTestWithCache {
   void TruncateBackwards();
   void ZeroWriteBackwards();
   void SparseOffset64Bit();
+  void SparseReadLength0();
 };
 
 // This part of the test runs on the background thread.
@@ -5475,6 +5476,48 @@ TEST_F(DiskCacheEntryTest, BlockFileSparsePendingAfterDtor) {
   // Create a new instance as a way of flushing the thread.
   InitCache();
   FlushQueueForTest();
+}
+
+void DiskCacheEntryTest::SparseReadLength0() {
+  InitCache();
+
+  static constexpr char kKey[] = "a key";
+
+  disk_cache::Entry* entry = nullptr;
+  ASSERT_THAT(CreateEntry(kKey, &entry), IsOk());
+  ASSERT_TRUE(entry != nullptr);
+
+  static constexpr int kWriteSize = 1024;
+  static constexpr int64_t kOffset = 22;
+
+  auto write_buffer = base::MakeRefCounted<net::IOBufferWithSize>(kWriteSize);
+  CacheTestFillBuffer(write_buffer->span(), /*no_nulls=*/false);
+
+  EXPECT_EQ(kWriteSize,
+            WriteSparseData(entry, kOffset, write_buffer.get(), kWriteSize));
+
+  auto read_buffer = base::MakeRefCounted<net::IOBufferWithSize>(0);
+  EXPECT_EQ(0, ReadSparseData(entry, kOffset + 11, read_buffer.get(), 0));
+
+  entry->Close();
+}
+
+TEST_F(DiskCacheEntryTest, SparseReadLength0) {
+  InitCache();
+  SparseReadLength0();
+}
+
+TEST_F(DiskCacheEntryTest, SimpleSparseReadLength0) {
+  // https://crbug.com/392690731
+  SetSimpleCacheMode();
+  InitCache();
+  SparseReadLength0();
+}
+
+TEST_F(DiskCacheEntryTest, MemoryOnlySparseReadLength0) {
+  SetMemoryOnlyMode();
+  InitCache();
+  SparseReadLength0();
 }
 
 class DiskCacheSimplePrefetchTest : public DiskCacheEntryTest {

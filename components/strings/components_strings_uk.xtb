@@ -674,7 +674,6 @@
 <translation id="2157640075051554492">Сповіщення про відстеження цін</translation>
 <translation id="21613918653299710">Галереї зображень в Інтернеті</translation>
 <translation id="2161656808144014275">Текст</translation>
-<translation id="2162510787844374618">З’єднання з банком…</translation>
 <translation id="2162620598375156287">Поточна ціна на сайті <ph name="SOURCE_WEBSITE" /> – <ph name="CURRENT_PRICE" /></translation>
 <translation id="2164510882479075877">Перевірте, чи немає описки в імені хосту <ph name="HOST_NAME" />.</translation>
 <translation id="2166049586286450108">Повний адміністративний доступ</translation>
@@ -2428,7 +2427,6 @@
 <translation id="5288108484102287882">Під час перевірки значень правила виявлено застереження</translation>
 <translation id="5289384342738547352">Обробка кількох документів</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{Потрібно оновити сьогодні}=2{Потрібно оновити до завтра}one{Потрібно оновити протягом # дня}few{Потрібно оновити протягом # днів}many{Потрібно оновити протягом # днів}other{Потрібно оновити протягом # дня}}</translation>
-<translation id="5292714443869769806">Перейти до налаштувань <ph name="OPERATING_SYSTEM" /></translation>
 <translation id="5293919335876685914">Автомобілі-купе</translation>
 <translation id="5298618990685278995">першу чернетку тексту</translation>
 <translation id="5299298092464848405">Помилка аналізу правила</translation>
@@ -3651,6 +3649,7 @@
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Вантажні автомобілі й причепи</translation>
 <translation id="7461924472993315131">Закріпити</translation>
+<translation id="746329643760972486">macOS</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> дізнається, що ви відвідали сайт <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7465963048299965912">10 x 13 дюйм.</translation>
 <translation id="7469935732330206581">Форма незахищена</translation>
@@ -3882,6 +3881,7 @@
 <translation id="784404208867107517">Історія, упорядкована за групами</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Немає}=1{1 додаток (<ph name="EXAMPLE_APP_1" />)}=2{2 додатки (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# додаток (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}few{# додатки (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}many{# додатків (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}other{# додатка (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Сталася помилка. Повторіть спробу.</translation>
+<translation id="784623644169604270">Немає останніх дій</translation>
 <translation id="785476343534277563">Спорт у коледжі</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" />: <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="7860345425589240791">Введіть нову дату закінчення строку дії і код CVC, указаний на <ph name="SIDE_OF_CARD" /></translation>
@@ -3920,7 +3920,6 @@
 <translation id="7942349550061667556">Червоний</translation>
 <translation id="7943397946612013052">Завантаження заборонено</translation>
 <translation id="7943893128817522649">Може просити дозвіл автоматично завантажувати кілька файлів</translation>
-<translation id="794567586469801724">macOS</translation>
 <translation id="7947285636476623132">Перевірте рік закінчення терміну дії та повторіть спробу</translation>
 <translation id="7947310711271925113">Попмузика</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб дізнатися про функції Chrome</translation>
@@ -4673,7 +4672,6 @@
 <translation id="984275831282074731">Способи оплати</translation>
 <translation id="985199708454569384">&lt;p&gt;Це повідомлення про помилку з’являється, якщо дата й час на комп’ютері або мобільному пристрої неправильні.&lt;/p&gt;
     &lt;p&gt;Щоб виправити цю помилку, відкрийте годинник на пристрої та переконайтеся, що дата й час правильні.&lt;/p&gt;</translation>
-<translation id="986257639512122511">Ви надали веб-сайту <ph name="ORIGIN" /> такий дозвіл: <ph name="PERMISSION" /></translation>
 <translation id="987264212798334818">Загальне</translation>
 <translation id="988159990683914416">Конструкція розробника</translation>
 <translation id="989988560359834682">Редагувати адресу</translation>

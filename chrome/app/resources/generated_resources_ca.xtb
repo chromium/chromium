@@ -126,7 +126,6 @@
 <translation id="1076766328672150609">El teu fill pot utilitzar un PIN per desbloquejar el dispositiu.</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216">No s'ha pogut baixar el diccionari del corrector ortogràfic per a <ph name="LANGUAGE" />. Torna-ho a provar.</translation>
-<translation id="1078029726086090536">Verifica la contrasenya</translation>
 <translation id="1078037449555275327">Configuració de ChromeVox</translation>
 <translation id="1079242569060319448">Has oblidat el PIN?</translation>
 <translation id="1079285777677001938">És possible que les funcions d'alguns llocs web no estiguin operatives.</translation>
@@ -369,6 +368,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1241066500170667906">Selecciona l'estat de l'experiment per a <ph name="EXPERIMENT_NAME" /></translation>
 <translation id="124116460088058876">Més idiomes</translation>
 <translation id="1241381048229838873">Mostra totes les adreces d'interès</translation>
+<translation id="1242044645101871359">Torna a iniciar la sessió</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" /> vol restablir la vostra configuració.</translation>
 <translation id="1243002225871118300">Canvia la mida de la pantalla i del text</translation>
 <translation id="1243314992276662751">Penja</translation>
@@ -1617,7 +1617,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2113921862428609753">Accés a la informació d'entitats</translation>
 <translation id="2114145607116268663">No es pot instal·lar; cal reiniciar. Reinicia l'ordinador i torna-ho a provar. El codi d'error és <ph name="ERROR" />.</translation>
 <translation id="2114326799768592691">Torna a carregar el &amp;marc</translation>
-<translation id="2114413269775311385">Utilitza aquest compte amb les aplicacions d'Android. Pots controlar els permisos de les aplicacions d'Android a <ph name="LINK_BEGIN" />Configuració de l'aplicació<ph name="LINK_END" />.</translation>
 <translation id="2114995631896158695">No hi ha cap targeta SIM inserida</translation>
 <translation id="2116619964159595185">Els llocs web solen connectar-se a dispositius Bluetooth per a funcions com ara configurar o sincronitzar una balisa de baix consum, una aplicació de seguiment de fitnes o salut, o una bombeta intel·ligent</translation>
 <translation id="2117655453726830283">Diapositiva següent</translation>
@@ -4632,6 +4631,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="4242533952199664413">Obre la configuració</translation>
 <translation id="4242577469625748426">No s'ha pogut instal·lar la configuració de la política al dispositiu: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385"><ph name="DOMAIN" /> <ph name="BEGIN_LINK" />gestiona el navegador i el perfil<ph name="END_LINK" /></translation>
+<translation id="424315890655130736">Introduïu la frase de contrasenya</translation>
 <translation id="4243504193894350135">La impressora s'ha posat en pausa</translation>
 <translation id="4243624244759495699"><ph name="LOCALE" />, grau <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">Cerca més aplicacions de llapis òptic</translation>
@@ -5354,7 +5354,6 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4766598565665644999">Totes les extensions poden llegir i canviar <ph name="HOST" /></translation>
 <translation id="4767427586072640478">Obtén més informació sobre les extensions desactivades.</translation>
 <translation id="4768332406694066911">Tens certificats d'aquestes organitzacions que t'identifiquen</translation>
-<translation id="4768945955870840220">Per a alguns productes, Chrome pot recollir ressenyes de tot el web</translation>
 <translation id="4769632191812288342">Tens una protecció estàndard</translation>
 <translation id="4770119228883592393">S'ha sol·licitat permís, prem ⌘+Opció+fletxa avall per respondre</translation>
 <translation id="4770755495532014179">Utilitza aquesta contrasenya a l'iPhone</translation>
@@ -8751,7 +8750,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7243092385765551741">Vols suprimir la clau d'accés?</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (millor resolució)</translation>
 <translation id="7246230585855757313">Torna a inserir la clau de seguretat i torna-ho a provar</translation>
-<translation id="724835896049478274">Comptes disponibles per a les aplicacions d'Android</translation>
 <translation id="7248802599439396696">Desactiva les pestanyes</translation>
 <translation id="7249197363678284330">Canvia aquesta configuració a la barra d'adreces.</translation>
 <translation id="7249764475759804559">Inclou aquesta aplicació com a opció a l'hora d'obrir fitxers</translation>
@@ -10706,7 +10704,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8625124982056504555">Llegir els números de sèrie del component i del dispositiu ChromeOS</translation>
 <translation id="862542460444371744">&amp;Extensions</translation>
 <translation id="8625663000550647058">Sense permís per utilitzar el micròfon</translation>
-<translation id="8625679025395572221">El teu compte encara pot estar en perill.</translation>
 <translation id="8625916342247441948">No permetis que els llocs web es connectin a dispositius HID</translation>
 <translation id="862727964348362408">Suspesa</translation>
 <translation id="862750493060684461">Memòria cau CSS</translation>
@@ -11588,7 +11585,6 @@ Obtén informació sobre les dades que Google recull i sobre el motiu pel qual h
 <translation id="936801553271523408">Dades de diagnòstic del sistema</translation>
 <translation id="93766956588638423">Repara l'extensió</translation>
 <translation id="938623846785894166">Fitxer poc habitual</translation>
-<translation id="939401694733344652">Ara mateix, aquests comptes no s'utilitzen amb aplicacions d'Android. Si selecciones un compte per fer-lo servir amb aquesta aplicació d'Android, també es pot utilitzar amb altres aplicacions d'Android. Per canviar l'accés a les aplicacions d'Android, ves a <ph name="LINK_BEGIN" />Configuració &gt; Comptes<ph name="LINK_END" />.</translation>
 <translation id="939598580284253335">Introduïu la frase de contrasenya</translation>
 <translation id="939736085109172342">Carpeta nova</translation>
 <translation id="940212040923880623">&amp;Cerca i edita</translation>

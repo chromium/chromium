@@ -676,7 +676,6 @@
 <translation id="2157640075051554492">ការជូនដំណឹង​អំពី​ការតាមដាន​តម្លៃ</translation>
 <translation id="21613918653299710">សាល​រូបភាព​លើអ៊ីនធឺណិត</translation>
 <translation id="2161656808144014275">អត្ថបទ</translation>
-<translation id="2162510787844374618">កំពុងទាក់ទងធនាគាររបស់អ្នក...</translation>
 <translation id="2162620598375156287">ឥឡូវនេះ <ph name="CURRENT_PRICE" /> នៅលើ <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">សូមពិនិត្យមើល​ថាតើ <ph name="HOST_NAME" /> មានកំហុស​អក្ខរាវិរុទ្ធឬអត់។</translation>
 <translation id="2166049586286450108">ការចូលប្រើពេញលេញដោយអ្នកគ្រប់គ្រង</translation>
@@ -2412,6 +2411,7 @@
 <translation id="5254043433801397071">បង្កើនប្រសិទ្ធភាព​ខ្លឹមសារបោះពុម្ព</translation>
 <translation id="5255583962255635076">គោលការណ៍របស់កម្មវិធីរុករកតាមអ៊ីនធឺណិតដែលបានអនុវត្តនៅក្នុងកម្រងព័ត៌មានការងាររបស់អ្នក</translation>
 <translation id="5255690596502591079">មិនអីទេ ថតចុះ</translation>
+<translation id="5255771248404149177">ស្ថាប័នចេញកាតរបស់អ្នកចង់ធ្វើឱ្យប្រាកដថាពិតជាអ្នក</translation>
 <translation id="5255833070095767006">350 x 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{គោលការណ៍​អ្នកគ្រប់គ្រង​មិន​ណែនាំ​ឱ្យ​ចម្លង​ឯកសារ​នេះ​ទៅ​ក្នុង <ph name="DESTINATION_NAME" /> ទេ}other{គោលការណ៍​អ្នកគ្រប់គ្រង​មិន​ណែនាំ​ឱ្យ​​ចម្លង​ឯកសារ​ទាំង​នេះ​ទៅក្នុង <ph name="DESTINATION_NAME" /> ទេ}}</translation>
 <translation id="5263867360296733198">តម្រូវឱ្យ​ពិនិត្យមើល មុនពេល​បង្ហោះ</translation>
@@ -2432,7 +2432,6 @@
 <translation id="5288108484102287882">ការបញ្ជាក់​តម្លៃត្រឹមត្រូវ​សម្រាប់​គោលការណ៍​បានបង្ហាញពី​ការព្រមាន</translation>
 <translation id="5289384342738547352">ការគ្រប់គ្រង​ឯកសារច្រើន</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{តម្រូវឱ្យដំឡើងកំណែនៅថ្ងៃនេះ}=2{តម្រូវឱ្យដំឡើងកំណែត្រឹមថ្ងៃស្អែក}other{តម្រូវឱ្យដំឡើងកំណែក្នុងរយៈពេល # ថ្ងៃ}}</translation>
-<translation id="5292714443869769806">ចូលទៅកាន់ការកំណត់ <ph name="OPERATING_SYSTEM" /></translation>
 <translation id="5293919335876685914">រថយន្ត​ប្រភេទ Coupe</translation>
 <translation id="5298618990685278995">សេចក្ដីព្រាង​ដំបូង</translation>
 <translation id="5299298092464848405">កំហុសឆ្គងគោលការណ៍ការវិភាគ</translation>
@@ -2560,6 +2559,7 @@
 <translation id="5518352028556756716">គេហទំព័រ​ភាគច្រើន​មិនអាច​ប្រើខូគី​ភាគីទីបី ដើម្បី​តាមដាន​អ្នក នៅពេល​ដែលអ្នក​រុករក​បានទេ ហើយ​គេហទំព័រ​មិនអាចប្រើ​ខូគី​ភាគីទីបី​នៅក្នុង​មុខងារ​ឯកជន​បានឡើយ។</translation>
 <translation id="5519516356611866228">ជាមួយការផ្លាស់ប្ដូររបស់អ្នក</translation>
 <translation id="5519696598216267194">ក្រដាស (ចោះរន្ធស្រាប់)</translation>
+<translation id="5520105693415771152">មិនឃើញព័ត៌មាន​បច្ចុប្បន្ន​របស់អ្នកឬ? សូមទាក់ទងទៅ​ស្ថាប័នចេញកាតរបស់អ្នក ដើម្បីធ្វើបច្ចុប្បន្នភាព​ព័ត៌មាននេះ។</translation>
 <translation id="5521782189689806907">ការធ្វើទូ</translation>
 <translation id="5523118979700054094">ឈ្មោះគោលការណ៍</translation>
 <translation id="5523588073846127669">ឈ្មួញមិនទទួលយកកាតនិម្មិតនេះទេ</translation>
@@ -3654,6 +3654,7 @@
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">រថយន្ត​ដឹក​ទំនិញ និង​រថយន្ត​សណ្ដោង</translation>
 <translation id="7461924472993315131">លេខសម្គាល់</translation>
+<translation id="746329643760972486">MacOS</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> នឹងដឹងថា​អ្នកបាន​ចូលទៅកាន់ <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7465963048299965912">10 x 13 in</translation>
 <translation id="7469935732330206581">ទម្រង់មិនមាន​សុវត្ថិភាពទេ</translation>
@@ -3925,7 +3926,6 @@
 <translation id="7942349550061667556">ក្រហម</translation>
 <translation id="7943397946612013052">បានទប់ស្កាត់​ការទាញយក</translation>
 <translation id="7943893128817522649">អាច​ស្នើសុំទាញយក​ឯកសារច្រើន​ដោយស្វ័យប្រវត្តិ</translation>
-<translation id="794567586469801724">macOS</translation>
 <translation id="7947285636476623132">ពិនិត្យមើល​ឆ្នាំផុត​កំណត់​របស់អ្នក​ រួច​ព្យាយាម​ម្តង​ទៀត​</translation>
 <translation id="7947310711271925113">តន្ត្រី​ប៉ុប</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ចុច Tab រួចចុច Enter ដើម្បី​ស្វែងយល់អំពី​មុខងារ Chrome</translation>
@@ -4677,7 +4677,6 @@
 <translation id="984275831282074731">វិធី​បង់ប្រាក់</translation>
 <translation id="985199708454569384">&lt;p&gt;អ្នកនឹង​មើលឃើញ​បញ្ហានេះ ប្រសិនបើ​ម៉ោង និង​កាលបរិច្ឆេទ​របស់ឧបករណ៍​ចល័ត ឬ​កុំព្យូទ័រ​របស់អ្នក​មិនត្រឹមត្រូវ។&lt;/p&gt;
     &lt;p&gt;ដើម្បី​ដោះស្រាយ​បញ្ហានេះ សូមបើក​នាឡិកា​ឧបករណ៍​របស់អ្នក។ សូមប្រាកដ​ថា ម៉ោង និង​កាលបរិច្ឆេទ​មានភាព​ត្រឹមត្រូវ។&lt;/p&gt;</translation>
-<translation id="986257639512122511">អ្នកបានអនុញ្ញាត<ph name="PERMISSION" />នៅលើ <ph name="ORIGIN" /></translation>
 <translation id="987264212798334818">ទូទៅ</translation>
 <translation id="988159990683914416">លេខកំណែអ្នកអភិវឌ្ឍន៍</translation>
 <translation id="989988560359834682">កែអាសយដ្ឋាន</translation>

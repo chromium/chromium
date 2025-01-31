@@ -768,6 +768,7 @@
 <translation id="4654549501020883054">تغییر روزانه</translation>
 <translation id="4655868084888499342">تصویر به‌عنوان کاغذدیواری تنظیم شد</translation>
 <translation id="4661249927038176904">فراواقعی</translation>
+<translation id="4661392828086261436">‏این به‌روزرسانی را سازنده دستگاه ارائه داده است و Google آن را تأیید نکرده است</translation>
 <translation id="4664651912255946953">خز</translation>
 <translation id="4665014895760275686">سازنده</translation>
 <translation id="467510802200863975">گذرواژه‌ها با هم مطابقت ندارند</translation>
@@ -1027,6 +1028,7 @@
 <translation id="5904994456462260490">‏افزودن APN جدید</translation>
 <translation id="590746845088109442">گربه</translation>
 <translation id="5907649332524363701">رنگ کلید</translation>
+<translation id="5908813850962688338">نصب این به‌روزرسانی چند دقیقه طول خواهد کشید. هنگامی که به‌روزرسانی درحال بارگیری است، دستگاهتان را از برق جدا نکنید و آن را روشن نگه دارید. ممکن است در طول این روند، دستگاهتان چندین بار بازراه‌اندازی شود و صفحه سیاهی نمایش داده شود. از شما خواسته می‌شود که دستگاهتان را بازراه‌اندازی کنید تا نصب کامل شود.</translation>
 <translation id="5916084858004523819">ممنوع</translation>
 <translation id="5916664084637901428">روشن</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{فایل شما باموفقیت اسکن شد و در <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ذخیره شد.}one{فایل شما باموفقیت اسکن شد و در <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ذخیره شد.}other{فایل‌های شما باموفقیت اسکن شد و در <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ذخیره شد.}}</translation>

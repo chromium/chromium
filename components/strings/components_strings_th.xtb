@@ -674,7 +674,6 @@
 <translation id="2157640075051554492">การแจ้งเตือนการติดตามราคา</translation>
 <translation id="21613918653299710">แกลเลอรีภาพออนไลน์</translation>
 <translation id="2161656808144014275">ข้อความ</translation>
-<translation id="2162510787844374618">กำลังติดต่อธนาคาร...</translation>
 <translation id="2162620598375156287">ตอนนี้ราคา <ph name="CURRENT_PRICE" /> ใน <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">ตรวจสอบว่ามีการพิมพ์ผิดใน <ph name="HOST_NAME" /> ไหม</translation>
 <translation id="2166049586286450108">การเข้าถึงระดับผู้ดูแลระบบโดยสมบูรณ์</translation>
@@ -2407,6 +2406,7 @@
 <translation id="5254043433801397071">เพิ่มประสิทธิภาพเนื้อหาที่พิมพ์</translation>
 <translation id="5255583962255635076">ใช้นโยบายเบราว์เซอร์ในโปรไฟล์งานแล้ว</translation>
 <translation id="5255690596502591079">จับภาพเลย</translation>
+<translation id="5255771248404149177">ผู้ให้บริการบัตรต้องการยืนยันว่าเป็นคุณ</translation>
 <translation id="5255833070095767006">350 x 460 มม.</translation>
 <translation id="5257739419779698609">{0,plural, =1{นโยบายของผู้ดูแลระบบไม่แนะนำให้คัดลอกไฟล์นี้ไปยัง <ph name="DESTINATION_NAME" />}other{นโยบายของผู้ดูแลระบบไม่แนะนำให้คัดลอกไฟล์เหล่านี้ไปยัง <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5263867360296733198">ต้องตรวจสอบก่อนอัปโหลด</translation>
@@ -2427,7 +2427,6 @@
 <translation id="5288108484102287882">มีคำเตือนจากการตรวจสอบความถูกต้องของค่านโยบาย</translation>
 <translation id="5289384342738547352">การจัดการเอกสารหลายรายการ</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{ต้องอัปเดตวันนี้}=2{ต้องอัปเดตภายในวันพรุ่งนี้}other{ต้องอัปเดตภายใน # วัน}}</translation>
-<translation id="5292714443869769806">ไปที่การตั้งค่า <ph name="OPERATING_SYSTEM" /></translation>
 <translation id="5293919335876685914">รถคูเป้</translation>
 <translation id="5298618990685278995">ร่างข้อความแรก</translation>
 <translation id="5299298092464848405">ข้อผิดพลาดในการแยกวิเคราะห์นโยบาย</translation>
@@ -2555,6 +2554,7 @@
 <translation id="5518352028556756716">เว็บไซต์ส่วนใหญ่จะใช้คุกกี้ของบุคคลที่สามในการติดตามคุณขณะที่ท่องเว็บไม่ได้ และเว็บไซต์จะใช้คุกกี้ของบุคคลที่สามในโหมดไม่ระบุตัวตนไม่ได้</translation>
 <translation id="5519516356611866228">แบบมีการเปลี่ยนแปลงที่ทำ</translation>
 <translation id="5519696598216267194">กระดาษ (เจาะล่วงหน้า)</translation>
+<translation id="5520105693415771152">หากไม่เห็นข้อมูลปัจจุบัน โปรดติดต่อผู้ให้บริการเพื่อขอให้อัปเดต</translation>
 <translation id="5521782189689806907">การออกแบบและติดตั้งตู้</translation>
 <translation id="5523118979700054094">ชื่อนโยบาย</translation>
 <translation id="5523588073846127669">ผู้ขายไม่ยอมรับบัตรเสมือน (Virtual Card) นี้</translation>
@@ -3650,6 +3650,7 @@
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">รถบรรทุกและรถพ่วง</translation>
 <translation id="7461924472993315131">ปักหมุด</translation>
+<translation id="746329643760972486">MacOS</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> จะรู้ว่าคุณไปที่ <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7465963048299965912">10 x 13 นิ้ว</translation>
 <translation id="7469935732330206581">ฟอร์มไม่ปลอดภัย</translation>
@@ -3920,7 +3921,6 @@
 <translation id="7942349550061667556">สีแดง</translation>
 <translation id="7943397946612013052">การดาวน์โหลดถูกบล็อก</translation>
 <translation id="7943893128817522649">สามารถขอดาวน์โหลดไฟล์หลายไฟล์โดยอัตโนมัติได้</translation>
-<translation id="794567586469801724">macOS</translation>
 <translation id="7947285636476623132">ตรวจสอบปีหมดอายุแล้วลองอีกครั้ง</translation>
 <translation id="7947310711271925113">เพลงป๊อป</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อดูข้อมูลเกี่ยวกับฟีเจอร์ของ Chrome</translation>
@@ -4672,7 +4672,6 @@
 <translation id="984275831282074731">วิธีการชำระเงิน</translation>
 <translation id="985199708454569384">&lt;p&gt;คุณจะเห็นข้อผิดพลาดนี้หากวันที่และเวลาของคอมพิวเตอร์หรืออุปกรณ์เคลื่อนที่ไม่ถูกต้อง&lt;/p&gt;
     &lt;p&gt;ในการแก้ไขข้อผิดพลาด ให้เปิดนาฬิกาของอุปกรณ์ ตรวจสอบให้แน่ใจว่าเวลาและวันที่ถูกต้องแล้ว&lt;/p&gt;</translation>
-<translation id="986257639512122511">คุณอนุญาต <ph name="PERMISSION" /> ใน <ph name="ORIGIN" /> แล้ว</translation>
 <translation id="987264212798334818">ทั่วไป</translation>
 <translation id="988159990683914416">รุ่นนักพัฒนา</translation>
 <translation id="989988560359834682">แก้ไขที่อยู่</translation>

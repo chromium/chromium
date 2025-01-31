@@ -674,7 +674,6 @@
 <translation id="2157640075051554492">Апавяшчэнні пра змяненне цэн</translation>
 <translation id="21613918653299710">Вэб-галерэі відарысаў</translation>
 <translation id="2161656808144014275">Тэкст</translation>
-<translation id="2162510787844374618">Звяртаемся ў ваш банк...</translation>
 <translation id="2162620598375156287">Цяперашняя цана на сайце <ph name="SOURCE_WEBSITE" /> – <ph name="CURRENT_PRICE" /></translation>
 <translation id="2164510882479075877">Праверце, ці няма памылкі ў напісанні: <ph name="HOST_NAME" />.</translation>
 <translation id="2166049586286450108">Поўны доступ адміністратара</translation>
@@ -2427,7 +2426,6 @@
 <translation id="5288108484102287882">Ёсць папярэджанні пасля праверкі значэнняў палітыкі</translation>
 <translation id="5289384342738547352">Апрацоўка некалькіх дакументаў</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{Неабходна абнавіцца сёння}=2{Неабходна абнавіцца да заўтра}one{Неабходна абнавіцца на працягу # дня}few{Неабходна абнавіцца на працягу # дзён}many{Неабходна абнавіцца на працягу # дзён}other{Неабходна абнавіцца на працягу # дня}}</translation>
-<translation id="5292714443869769806">Перайсці да налад <ph name="OPERATING_SYSTEM" /></translation>
 <translation id="5293919335876685914">Аўтамабілі з кузавам "купэ"</translation>
 <translation id="5298618990685278995">першую версію чарнавіка;</translation>
 <translation id="5299298092464848405">Не ўдалося прааналізаваць правіла</translation>
@@ -3650,6 +3648,7 @@
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Грузавыя аўтамабілі і прычэпы</translation>
 <translation id="7461924472993315131">Замацаваць</translation>
+<translation id="746329643760972486">MacOS</translation>
 <translation id="7465036432780054056">Сайт <ph name="EMBEDDED_URL" /> атрымае інфармацыю, што вы наведвалі старонку <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7465963048299965912">10 x 13 цаляў</translation>
 <translation id="7469935732330206581">Форма не з’яўляецца бяспечнай.</translation>
@@ -3881,6 +3880,7 @@
 <translation id="784404208867107517">Згрупаваная гісторыя</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Няма}=1{1 праграма (<ph name="EXAMPLE_APP_1" />)}=2{2 праграмы (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# праграма (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}few{# праграмы (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}many{# праграм (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# праграмы (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Узнікла памылка. Паўтарыце спробу.</translation>
+<translation id="784623644169604270">Няма нядаўніх дзеянняў</translation>
 <translation id="785476343534277563">Студэнцкі спорт</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="7860345425589240791">Укажыце новы тэрмін дзеяння і код CVC, які знаходзіцца на <ph name="SIDE_OF_CARD" /></translation>
@@ -3919,7 +3919,6 @@
 <translation id="7942349550061667556">Чырвоны</translation>
 <translation id="7943397946612013052">Спампоўванне забаронена</translation>
 <translation id="7943893128817522649">Сайт можа запытваць дазвол на аўтаматычнае спампоўванне некалькіх файлаў</translation>
-<translation id="794567586469801724">macOS</translation>
 <translation id="7947285636476623132">Праверце год тэрміну дзеяння і паўтарыце спробу</translation>
 <translation id="7947310711271925113">Поп-музыка</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб даведацца пра функцыі браўзера Chrome, націсніце Tab, затым Enter</translation>
@@ -4671,7 +4670,6 @@
 <translation id="984275831282074731">Спосабы аплаты</translation>
 <translation id="985199708454569384">&lt;p&gt;Гэта памылка ўзнікае, калі на камп’ютары ці мабільнай прыладзе няправільна вызначаны дата і час.&lt;/p&gt;
     &lt;p&gt;Каб вырашыць праблему, адкрыйце адпаведныя налады на прыладзе. Задайце правільныя значэнні даты і часу.&lt;/p&gt;</translation>
-<translation id="986257639512122511">Вы далі дазвол "<ph name="PERMISSION" />" для сайта <ph name="ORIGIN" /></translation>
 <translation id="987264212798334818">Агульныя</translation>
 <translation id="988159990683914416">Зборка для распрацоўшчыкаў</translation>
 <translation id="989988560359834682">Рэдагаваць адрас</translation>

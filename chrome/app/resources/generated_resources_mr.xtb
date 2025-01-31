@@ -126,7 +126,6 @@
 <translation id="1076766328672150609">हे डिव्हाइस अनलॉक करण्यासाठी, तुमचे लहान मूल पिन वापरू शकते.</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216"><ph name="LANGUAGE" /> साठी स्पेल चेक शब्दकोश डाउनलोड करता आला नाही. पुन्हा प्रयत्न करा.</translation>
-<translation id="1078029726086090536">तुमच्या पासवर्डची पडताळणी करा</translation>
 <translation id="1078037449555275327">ChromeVox सेटिंग्ज</translation>
 <translation id="1079242569060319448">पिन विसरला आहात का?</translation>
 <translation id="1079285777677001938">काही साइटवरील वैशिष्ट्ये कदाचित काम करणार नाहीत.</translation>
@@ -369,6 +368,7 @@
 <translation id="1241066500170667906"><ph name="EXPERIMENT_NAME" /> साठी प्रयोगाची स्थिती निवडा</translation>
 <translation id="124116460088058876">आणखी भाषा...</translation>
 <translation id="1241381048229838873">सर्व बुकमार्क दर्शवा</translation>
+<translation id="1242044645101871359">पुन्हा साइन इन करा</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" /> आपल्या सेटिंग्ज रीसेट करू इच्छिते.</translation>
 <translation id="1243002225871118300">डिस्प्ले आणि मजकुराचा आकार बदला</translation>
 <translation id="1243314992276662751">अपलोड करा</translation>
@@ -1626,7 +1626,6 @@
 <translation id="2113921862428609753">अधिकृतता माहिती ॲक्सेस</translation>
 <translation id="2114145607116268663">इंस्टॉल करता आले नाही, रीबूट करणे आवश्यक आहे. कृपया तुमचा कॉंप्युटर रीस्टार्ट करा आणि पुन्हा प्रयत्न करा. <ph name="ERROR" /> हा एरर कोड आहे.</translation>
 <translation id="2114326799768592691">रीलोड आणि फ्रेम करा</translation>
-<translation id="2114413269775311385">Android अ‍ॅप्ससोबत हे खाते वापरा. तुम्ही <ph name="LINK_BEGIN" />अ‍ॅप्स सेटिंग्ज<ph name="LINK_END" /> मध्ये Android अ‍ॅप्ससाठी परवानग्या नियंत्रित करू शकता.</translation>
 <translation id="2114995631896158695">सिम कार्ड घातलेले नाही.</translation>
 <translation id="2116619964159595185">कमी ऊर्जेचे बीकन, आरोग्य किंवा फिटनेस ट्रॅकर अथवा स्मार्ट लाइट बल्ब सेट करणे किंवा सिंक करणे यांसारख्या वैशिष्ट्यांसाठी साइट सामान्यपणे ब्लूटूथ डिव्‍हाइसशी कनेक्ट करतात</translation>
 <translation id="2117655453726830283">पुढील स्लाइड</translation>
@@ -4644,6 +4643,7 @@
 <translation id="4242533952199664413">सेटिंग्ज उघडा</translation>
 <translation id="4242577469625748426">डिव्हाइसवर धोरण सेटिंग्ज इंस्टॉल करण्यात अयशस्वी: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385"><ph name="DOMAIN" /> तुमचा <ph name="BEGIN_LINK" />ब्राउझर आणि प्रोफाइल व्यवस्थापित करणे<ph name="END_LINK" /> हे करते</translation>
+<translation id="424315890655130736">सांकेतिक पासफ्रेझ एंटर करा</translation>
 <translation id="4243504193894350135">प्रिंटर थांबवला आहे</translation>
 <translation id="4243624244759495699"><ph name="LOCALE" /> , ग्रेड <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">अधिक स्टायलस अ‍ॅप्स शोधा</translation>
@@ -5366,7 +5366,6 @@
 <translation id="4766598565665644999">सर्व एक्स्टेंशन <ph name="HOST" /> रीड करू शकतात आणि बदलू शकतात</translation>
 <translation id="4767427586072640478">बंद केलेल्या एक्स्टेंशनबद्दल अधिक जाणून घ्या.</translation>
 <translation id="4768332406694066911">आपल्‍याकडे या संस्थांकडील प्रमाणपत्रे आहेत जी आपल्‍याला ओळखतात</translation>
-<translation id="4768945955870840220">काही उत्पादनांसाठी Chrome संपूर्ण वेबवरून पुनरावलोकने गोळा करू शकते</translation>
 <translation id="4769632191812288342">तुम्हाला साधारण संरक्षण मिळत आहे</translation>
 <translation id="4770119228883592393">परवानगीची विनंती केली आहे, प्रतिसाद देण्यासाठी ⌘ + Option + डाउन अ‍ॅरो प्रेस करा</translation>
 <translation id="4770755495532014179">हा पासवर्ड तुमच्या iPhone वर वापरा</translation>
@@ -5508,6 +5507,7 @@
 <translation id="4862642413395066333">OCSP प्रतिसाद साइन करत आहे</translation>
 <translation id="4863702650881330715">कंपॅटिबिलिटी वाढवा</translation>
 <translation id="4863769717153320198"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (डीफॉल्ट) सारखे दिसते</translation>
+<translation id="4864334716800138793">तुमच्या संस्थेने कार्य प्रोफाइल सेटअप बंद केला आहे</translation>
 <translation id="4864369630010738180">साइन इन करत आहे...</translation>
 <translation id="4864805589453749318">शाळा खाते जोडण्याची परवानगी देणार असलेले पालक निवडा.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (ब्लॉक केलेले)</translation>
@@ -6469,6 +6469,7 @@
 <translation id="5559768063688681413">सेव्ह केलेले कोणतेही प्रिंटर नाहीत</translation>
 <translation id="55601339223879446">डिस्प्लेामध्ये तुमच्या डेस्कटॉपच्या सीमा समायोजित करा</translation>
 <translation id="5561162485081632007">धोकादायक घटना ओळखते आणि त्या घडल्यावर तुम्हाला चेतावणी देते</translation>
+<translation id="5562588178647493983">अधिक माहितीसाठी तुमच्या अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा</translation>
 <translation id="556321030400250233">स्थानिक किंवा शेअर केलेली फाइल</translation>
 <translation id="5563234215388768762">Google वर शोधा किंवा URL टाइप करा</translation>
 <translation id="5563824734298958390">टॅब गटामधून बाहेर पडायचे आहे का?</translation>
@@ -8766,7 +8767,6 @@ I feel - विटांची इमारत</translation>
 <translation id="7243092385765551741">पासकी हटवायची आहे का?</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (उत्कृष्‍ट)</translation>
 <translation id="7246230585855757313">तुमची सिक्युरिटी की पुन्हा घाला आणि पुन्हा प्रयत्न करा</translation>
-<translation id="724835896049478274">Android अ‍ॅप्ससाठी उपलब्ध खाती</translation>
 <translation id="7248802599439396696">टॅब इनॅक्टिव्ह करा</translation>
 <translation id="7249197363678284330">अ‍ॅड्रेस बारमध्ये हे सेटिंग बदला.</translation>
 <translation id="7249764475759804559">फाइल उघडताना या अ‍ॅपचा पर्याय म्हणून समावेश करा</translation>
@@ -9801,6 +9801,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7968833647796919681">कामप्रदर्शन डेटा संकलन सुरू करा</translation>
 <translation id="7968982339740310781">तपशील पहा</translation>
 <translation id="7969046989155602842">कमांड</translation>
+<translation id="7969144945436590933">आणखी तपशील मिळवा</translation>
 <translation id="7970673414865679092">इथरनेटचे तपशील</translation>
 <translation id="7972714317346275248">PKCS #1 RSA एंक्रिप्शनसह SHA-384</translation>
 <translation id="7973149423217802477">थंब्स डाउनवर क्लिक केल्यावर तुम्हाला हे आवडले नाही असा फीडबॅक सबमिट केला जातो.</translation>
@@ -10713,7 +10714,6 @@ I feel - विटांची इमारत</translation>
 <translation id="8625124982056504555">ChromeOS डिव्हाइस आणि घटकाचे सिरीअल नंबर वाचू शकेल</translation>
 <translation id="862542460444371744">&amp;विस्तार</translation>
 <translation id="8625663000550647058">मायक्रोफोन वापरण्याची अनुमती नाही</translation>
-<translation id="8625679025395572221">तुमच्या खात्याला तरीही धोका असू शकतो.</translation>
 <translation id="8625916342247441948">साइटना HID डिव्हाइसशी कनेक्ट करण्याची अनुमती देऊ नका</translation>
 <translation id="862727964348362408">निलंबित</translation>
 <translation id="862750493060684461">CSS कॅशे </translation>
@@ -11596,7 +11596,6 @@ I feel - विटांची इमारत</translation>
 <translation id="936801553271523408">सिस्टम निदान डेटा</translation>
 <translation id="93766956588638423">एक्स्टेंशन दुरुस्त करा</translation>
 <translation id="938623846785894166">असामान्य फाइल</translation>
-<translation id="939401694733344652">ही खाती सध्या Android अ‍ॅप्ससह वापरली जात नाहीत. तुम्ही या Android अ‍ॅपसह वापरण्यासाठी खाते निवडल्यास, ते खाते इतर Android अ‍ॅप्ससहदेखील वापरले जाऊ शकते. तुम्ही <ph name="LINK_BEGIN" />सेटिंग्ज &gt; खाती<ph name="LINK_END" /> मध्ये Android अ‍ॅपचा अ‍ॅक्सेस बदलू शकता.</translation>
 <translation id="939598580284253335">सांकेतिक पासफ्रेझ एंटर करा</translation>
 <translation id="939736085109172342">नवीन फोल्‍डर</translation>
 <translation id="940212040923880623">&amp;शोधा आणि संपादित करा</translation>

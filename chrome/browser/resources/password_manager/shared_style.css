@@ -117,3 +117,8 @@ cr-input.password-input::part(input) {
   margin-inline-start: 16px;
   padding: 3px 16px;
 }
+
+.back-button {
+  --cr-icon-button-margin-end: 6px;
+  --cr-icon-button-margin-start: 0px;
+}

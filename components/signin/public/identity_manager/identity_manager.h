@@ -668,6 +668,7 @@ class IdentityManager : public KeyedService,
                               token_operation_source) override;
 #if BUILDFLAG(IS_IOS)
   void OnAccountsOnDeviceChanged() override;
+  void OnAccountOnDeviceUpdated(const AccountInfo& account_info) override;
 #endif
 
   // GaiaCookieManagerService callbacks:

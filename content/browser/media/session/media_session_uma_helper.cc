@@ -51,6 +51,39 @@ void MediaSessionUmaHelper::OnSessionInactive() {
   total_active_time_ = base::TimeDelta();
 }
 
+void MediaSessionUmaHelper::OnServiceDestroyed() {
+  if (!total_pip_time_for_session_) {
+    return;
+  }
+
+  UMA_HISTOGRAM_LONG_TIMES("Media.Session.PictureInPicture.TotalTimeForSession",
+                           total_pip_time_for_session_.value());
+
+  total_pip_time_for_session_ = std::nullopt;
+}
+
+void MediaSessionUmaHelper::OnMediaPictureInPictureChanged(
+    bool is_picture_in_picture) {
+  if (is_picture_in_picture) {
+    current_enter_pip_time_ = clock_->NowTicks();
+    return;
+  }
+
+  if (!current_enter_pip_time_) {
+    return;
+  }
+
+  const base::TimeDelta total_pip_time =
+      clock_->NowTicks() - current_enter_pip_time_.value();
+  current_enter_pip_time_ = std::nullopt;
+
+  if (!total_pip_time_for_session_) {
+    total_pip_time_for_session_ = total_pip_time;
+  } else {
+    total_pip_time_for_session_.value() += total_pip_time;
+  }
+}
+
 void MediaSessionUmaHelper::SetClockForTest(
     const base::TickClock* testing_clock) {
   clock_ = testing_clock;

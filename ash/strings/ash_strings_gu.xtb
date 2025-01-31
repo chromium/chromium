@@ -731,6 +731,7 @@
 <translation id="3522979239100719575">ઉપલબ્ધ પ્રોફાઇલ શોધી રહ્યાં છીએ. આમાં થોડો સમય લાગી શકે છે.</translation>
 <translation id="3526440770046466733">લિંકને નવા ટૅબમાં ખોલો અને વર્તમાન ટૅબમાં રહો</translation>
 <translation id="353086728817903341"><ph name="NUM_DEVICES" /> ડિવાઇસ સાથે કનેક્ટેડ</translation>
+<translation id="3532247131850366052">Google Sheetsમાં બનાવવામાં આવતી શીટ બનાવી શક્યા નથી</translation>
 <translation id="3533126039236445965">શેલ્ફમાં ઉપલબ્ધ ઍપ</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> હૉટસ્પૉટ</translation>
 <translation id="3540893133818942399">તમારા ફોનના તાજેતરના ફોટા અને મીડિયા જોવાની સુવિધા સેટઅપ કરવાની પ્રક્રિયા છોડી દો</translation>
@@ -829,6 +830,7 @@
 <translation id="380165613292957338">નમસ્કાર, હું કેવી રીતે સહાય કરી શકું?</translation>
 <translation id="3804737937830804242">કૅમેરાને નાનો કરો</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 ઇમોજી. અન્ય કોઈ પરિણામ નથી.}one{# ઇમોજી. અન્ય કોઈ પરિણામ નથી.}other{# ઇમોજી. અન્ય કોઈ પરિણામ નથી.}}</translation>
+<translation id="3822403841174077928">ફૉર્મેટિંગ સાથે કૉપિ કરી શક્યા નથી</translation>
 <translation id="3824784079442479685">આમ કરવાથી કૅમેરાની પરવાનગી ધરાવતી <ph name="APP_NAME" /> તથા બધી ઍપ અને વેબસાઇટ માટે, કૅમેરાના ઍક્સેસની મંજૂરી આપવામાં આવે છે. તમારે વેેબપેજ રિફ્રેશ કરવાની અથવા ઍપ ફરી શરૂ કરવાની જરૂર પડી શકે છે.</translation>
 <translation id="3826099427150913765">પાસવર્ડ પર સ્વિચ કરો</translation>
 <translation id="383058930331066723">બૅટરી સેવર મોડ ચાલુ છે</translation>
@@ -1215,6 +1217,7 @@
 <translation id="5043679421800073804">શેલ્ફ પર છેલ્લા આઇકન પર ક્લિક અથવા ટૅપ કરો</translation>
 <translation id="504465286040788597">પહેલાંનો ફકરો</translation>
 <translation id="5045550434625856497">ખોટો પાસવર્ડ</translation>
+<translation id="5058794129231928255">Google Docમાં બનાવવામાં આવતો દસ્તાવેજ બનાવી શક્યા નથી</translation>
 <translation id="5062496344832867502">RAM</translation>
 <translation id="5068762093486106012">મ્યૂટ કરેલું હોય ત્યારે જો તમે વાત કરો તો તમને સૂચિત કરવામાં આવશે. ઑડિયો તમારા ડિવાઇસમાં જ રહે છે.</translation>
 <translation id="5077416371682039027">તમારા ફોનના તાજેતરના ફોટા, મીડિયા, નોટિફિકેશન અને ઍપ જોવાની સુવિધાનું સેટઅપ કરવાની પ્રક્રિયા કરો</translation>
@@ -1478,7 +1481,6 @@
 <translation id="589817443623831496">પૉઇન્ટ સ્કૅનિંગ</translation>
 <translation id="5901316534475909376">Shift + Esc</translation>
 <translation id="5901630391730855834">પીળો</translation>
-<translation id="5911231045062997865">Lacros વિન્ડોને હાલમાં સપોર્ટ કરવામાં આવતો નથી. અન્ય ઍપ સાચવવામાં આવશે.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916646100036936191">નવા નોટિફિકેશન, કુલ <ph name="NOTIFICATION_COUNT" /></translation>
 <translation id="5916664084637901428">ચાલુ</translation>
@@ -1648,6 +1650,7 @@
 <translation id="6468406072297048412">{0,plural, =1{1 મિનિટની અંદર પાછલા વર્ઝન પર ડિવાઇસ અપડેટ કરો}one{# મિનિટની અંદર પાછલા વર્ઝન પર ડિવાઇસ અપડેટ કરો}other{# મિનિટની અંદર પાછલા વર્ઝન પર ડિવાઇસ અપડેટ કરો}}</translation>
 <translation id="6469104339369989396">હૉટસ્પૉટ ટૉગલ કરો</translation>
 <translation id="6477681113376365978">ફાઇલ ડાઉનલોડ કરી શકાતી નથી</translation>
+<translation id="648135757200234041">સંપર્ક બનાવી શક્યા નથી</translation>
 <translation id="6482559668224714696">પૂર્ણ-સ્ક્રીન મૅગ્નિફાયર</translation>
 <translation id="6485086611007560630">હવામાન (ઉપલબ્ધ નથી)</translation>
 <translation id="6490471652906364588">USB-C ઉપકરણ (જમણું પોર્ટ)</translation>
@@ -1977,6 +1980,7 @@
 <translation id="7611213136657090146">કૅમેરા ફરી કનેક્ટ કર્યો.</translation>
 <translation id="7613620083300976559">ગેમના નિયંત્રણો ચાલુ કરો</translation>
 <translation id="761736749114493194">કૅમેરા ફ્રેમિંગને ટૉગલ કરો. <ph name="STATE_TEXT" /></translation>
+<translation id="7621008024906456933">ક્વિક શેરના સેટિંગ</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7627303771480696593">પ્રશ્ન પૂછો</translation>
 <translation id="7634648064048557203">કૅમેરાને નીચેના જમણા ખૂણામાં સ્નેપ કર્યો</translation>
@@ -2287,6 +2291,7 @@
 <translation id="8653151467777939995">નોટિફિકેશન સેટિંગ બતાવો. નોટિફિકેશન ચાલુ છે</translation>
 <translation id="8657066291275741003">લોઅરકેસ</translation>
 <translation id="8660331759611631213">71નું વર્ગમૂળ</translation>
+<translation id="8662921061190671299">કૅલેન્ડરમાં ઉમેરી શક્યા નથી</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">આંશિક સ્ક્રીનશૉટ કૅપ્ચર કરવા માટે Enter કી દબાવો</translation>
 <translation id="8676770494376880701">નિમ્ન-પાવર ચાર્જર કનેક્ટ કર્યું છે</translation>

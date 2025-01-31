@@ -126,7 +126,6 @@
 <translation id="1076766328672150609">Vaikas gali atrakinti įrenginį PIN kodu.</translation>
 <translation id="1076818208934827215">„Microsoft Internet Explorer“</translation>
 <translation id="1076882167394279216">Nepavyko atsisiųsti <ph name="LANGUAGE" /> rašybos tikrinimo žodyno. Bandykite dar kartą.</translation>
-<translation id="1078029726086090536">Patvirtinti slaptažodį</translation>
 <translation id="1078037449555275327">„ChromeVox“ nustatymai</translation>
 <translation id="1079242569060319448">Pamiršote PIN kodą?</translation>
 <translation id="1079285777677001938">Funkcijos gali neveikti kai kuriose svetainėse.</translation>
@@ -372,6 +371,7 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="1241066500170667906">Pasirinkite „<ph name="EXPERIMENT_NAME" />“ eksperimento būseną</translation>
 <translation id="124116460088058876">Daugiau kalbų</translation>
 <translation id="1241381048229838873">Rodyti visas žymas</translation>
+<translation id="1242044645101871359">Prisijungimas dar kartą</translation>
 <translation id="1242633766021457174">„<ph name="THIRD_PARTY_TOOL_NAME" />“ nori iš naujo nustatyti nustatymus.</translation>
 <translation id="1243002225871118300">Pateikties ir teksto dydžio keitimas</translation>
 <translation id="1243314992276662751">Įkelti</translation>
@@ -1630,7 +1630,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2113921862428609753">Prieiga prie įstaigų informacijos</translation>
 <translation id="2114145607116268663">Nepavyko įdiegti; reikia paleisti iš naujo. Paleiskite kompiuterį iš naujo ir bandykite dar kartą. Klaidos kodas: <ph name="ERROR" />.</translation>
 <translation id="2114326799768592691">Įkelti &amp;rėmelį iš naujo</translation>
-<translation id="2114413269775311385">Naudokite šią paskyrą „Android“ programose. „Android“ programų leidimus galite valdyti skiltyje <ph name="LINK_BEGIN" />„Programų nustatymai“<ph name="LINK_END" />.</translation>
 <translation id="2114995631896158695">Neįdėta jokių SIM kortelių</translation>
 <translation id="2116619964159595185">Paprastai svetainėse prisijungiama prie „Bluetooth“ įrenginių vykdant tam tikras funkcijas, pvz., nustatant ar sinchronizuojant žemo energijos lygio signalų siųstuvą, sveikatos ar mankštos stebėjimo priemonę arba išmaniojo šviestuvo lemputę</translation>
 <translation id="2117655453726830283">Kita skaidrė</translation>
@@ -4651,6 +4650,7 @@ Tai gali būti informacija apie įdiegtą programinę įrangą, failus, naršykl
 <translation id="4242533952199664413">Atidaryti nustatymus</translation>
 <translation id="4242577469625748426">Diegiant politikos nustatymus įrenginyje įvyko klaida: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385">Jūsų <ph name="BEGIN_LINK" />naršyklę ir profilį tvarko<ph name="END_LINK" /> <ph name="DOMAIN" /></translation>
+<translation id="424315890655130736">Slaptafrazės įvedimas</translation>
 <translation id="4243504193894350135">Spausdintuvas pristabdytas</translation>
 <translation id="4243624244759495699"><ph name="LOCALE" />, <ph name="GRADE" /> klasė</translation>
 <translation id="4244238649050961491">Rasti daugiau rašiklio programų</translation>
@@ -5373,7 +5373,6 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="4766598565665644999">Visi plėtiniai gali skaityti ir keisti <ph name="HOST" /></translation>
 <translation id="4767427586072640478">Sužinokite daugiau apie išjungtus plėtinius.</translation>
 <translation id="4768332406694066911">Turite jus identifikuojančius sertifikatus iš šių organizacijų</translation>
-<translation id="4768945955870840220">Kai kurių produktų apžvalgas „Chrome“ gali rinkti iš viso žiniatinklio</translation>
 <translation id="4769632191812288342">Jūsų apsauga yra įprasta</translation>
 <translation id="4770119228883592393">Pateikta užklausa dėl leidimo; paspauskite ⌘ + „Option“ + žemyn, kad atsakytumėte</translation>
 <translation id="4770755495532014179">Naudokite šį slaptažodį „iPhone“ įrenginyje</translation>
@@ -8780,7 +8779,6 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7243092385765551741">Ištrinti prieigos raktą?</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (geriausia)</translation>
 <translation id="7246230585855757313">Įdėkite saugos raktą iš naujo ir bandykite dar kartą</translation>
-<translation id="724835896049478274">„Android“ programose pasiekiamos paskyros</translation>
 <translation id="7248802599439396696">Padarykite skirtukus neaktyvius</translation>
 <translation id="7249197363678284330">Pakeiskite šį nustatymą adreso juostoje.</translation>
 <translation id="7249764475759804559">Įtraukti šią programą kaip parinktį atidarant failus</translation>
@@ -10734,7 +10732,6 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8625124982056504555">Skaityti „Chrome“ OS įrenginio ir komponentų serijos numerius</translation>
 <translation id="862542460444371744">&amp;Plėtiniai</translation>
 <translation id="8625663000550647058">Neleidžiama naudoti mikrofono</translation>
-<translation id="8625679025395572221">Jūsų paskyrai vis tiek gali kilti pavojus.</translation>
 <translation id="8625916342247441948">Neleisti svetainėms prisijungti prie HID įrenginių</translation>
 <translation id="862727964348362408">Laikinai sustabdyta</translation>
 <translation id="862750493060684461">CSS talpykla</translation>
@@ -11619,7 +11616,6 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="936801553271523408">Sistemos diagnostikos duomenys</translation>
 <translation id="93766956588638423">Pataisyti plėtinį</translation>
 <translation id="938623846785894166">Neįprastas failas</translation>
-<translation id="939401694733344652">Šiuo metu šios paskyros nėra naudojamos „Android“ programose. Jei pasirinksite paskyrą, kurią norite naudoti šioje „Android“ programoje, paskyrą taip pat galėsite naudoti kitose „Android“ programose. Galite pakeisti „Android“ programų prieigą skiltyje <ph name="LINK_BEGIN" />„Nustatymai“ &gt; „Paskyros“<ph name="LINK_END" />.</translation>
 <translation id="939598580284253335">Įvesti slaptafrazę</translation>
 <translation id="939736085109172342">Naujas aplankas</translation>
 <translation id="940212040923880623">&amp;Rasti ir redaguoti</translation>

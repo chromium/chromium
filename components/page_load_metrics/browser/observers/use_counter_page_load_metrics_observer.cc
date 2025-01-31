@@ -17,7 +17,7 @@ using UkmFeatureList = UseCounterMetricsRecorder::UkmFeatureList;
 using WebFeature = blink::mojom::WebFeature;
 using WebDXFeature = blink::mojom::WebDXFeature;
 using CSSSampleId = blink::mojom::CSSSampleId;
-using PermissionsPolicyFeature = blink::mojom::PermissionsPolicyFeature;
+using PermissionsPolicyFeature = network::mojom::PermissionsPolicyFeature;
 
 namespace {
 
@@ -80,13 +80,13 @@ UseCounterMetricsRecorder::UseCounterMetricsRecorder(
       std::make_unique<AtMostOnceEnumUmaDeferrer<blink::mojom::CSSSampleId>>(
           "Blink.UseCounter.AnimatedCSSProperties");
   uma_permissions_policy_violation_enforce_ = std::make_unique<
-      AtMostOnceEnumUmaDeferrer<blink::mojom::PermissionsPolicyFeature>>(
+      AtMostOnceEnumUmaDeferrer<network::mojom::PermissionsPolicyFeature>>(
       "Blink.UseCounter.PermissionsPolicy.Violation.Enforce");
   uma_permissions_policy_allow2_ = std::make_unique<
-      AtMostOnceEnumUmaDeferrer<blink::mojom::PermissionsPolicyFeature>>(
+      AtMostOnceEnumUmaDeferrer<network::mojom::PermissionsPolicyFeature>>(
       "Blink.UseCounter.PermissionsPolicy.Allow2");
   uma_permissions_policy_header2_ = std::make_unique<
-      AtMostOnceEnumUmaDeferrer<blink::mojom::PermissionsPolicyFeature>>(
+      AtMostOnceEnumUmaDeferrer<network::mojom::PermissionsPolicyFeature>>(
       "Blink.UseCounter.PermissionsPolicy.Header2");
 }
 

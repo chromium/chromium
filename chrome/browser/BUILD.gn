@@ -4339,11 +4339,6 @@ static_library("browser") {
       "//components/unexportable_keys:unexportable_keys",
       "//components/user_education/common",
       "//components/user_education/webui:webui",
-      "//components/user_notes:features",
-      "//components/user_notes:user_notes_prefs",
-      "//components/user_notes/browser",
-      "//components/user_notes/interfaces",
-      "//components/user_notes/storage",
       "//components/vector_icons",
       "//components/web_modal",
       "//components/webauthn/content/browser",
@@ -6917,13 +6912,7 @@ static_library("browser") {
   }
 
   if (is_win || is_mac || is_linux || is_chromeos) {
-    deps += [
-      "//components/power_metrics",
-      "//components/user_notes:features",
-      "//components/user_notes/browser",
-      "//components/user_notes/interfaces",
-      "//components/user_notes/model",
-    ]
+    deps += [ "//components/power_metrics" ]
   }
 
   if (is_win || is_mac || is_linux) {

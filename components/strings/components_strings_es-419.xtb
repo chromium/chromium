@@ -674,7 +674,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2157640075051554492">Notificaciones de seguimiento de precios</translation>
 <translation id="21613918653299710">Galerías de imágenes en línea</translation>
 <translation id="2161656808144014275">Texto</translation>
-<translation id="2162510787844374618">Nos estamos comunicando con tu banco…</translation>
 <translation id="2162620598375156287">Ahora <ph name="CURRENT_PRICE" /> en <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Revisa que no haya errores de ortografía en <ph name="HOST_NAME" />.</translation>
 <translation id="2166049586286450108">Acceso de administrador completo</translation>
@@ -2429,7 +2428,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5288108484102287882">La validación de los valores de la política generó advertencias</translation>
 <translation id="5289384342738547352">Control de varios documentos</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{Debes actualizar ChromeOS hoy}=2{Debes actualizar ChromeOS para mañana}other{Debes actualizar ChromeOS dentro de # días}}</translation>
-<translation id="5292714443869769806">Ir a la configuración de <ph name="OPERATING_SYSTEM" /></translation>
 <translation id="5293919335876685914">Cupés</translation>
 <translation id="5298618990685278995">un primer borrador</translation>
 <translation id="5299298092464848405">Error al analizar la política</translation>
@@ -3652,6 +3650,7 @@ Detalles adicionales:
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Camiones y remolques de carga</translation>
 <translation id="7461924472993315131">Fijar</translation>
+<translation id="746329643760972486">MacOS</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> sabrá que visitaste <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7465963048299965912">25.4 × 33 cm (10 × 13 in)</translation>
 <translation id="7469935732330206581">El formulario no es seguro</translation>
@@ -3922,7 +3921,6 @@ Detalles adicionales:
 <translation id="7942349550061667556">Rojo</translation>
 <translation id="7943397946612013052">Descarga bloqueada</translation>
 <translation id="7943893128817522649">Puede solicitar permiso para descargar múltiples archivos de forma automática</translation>
-<translation id="794567586469801724">macOS</translation>
 <translation id="7947285636476623132">Comprueba el año de vencimiento y vuelve a intentarlo</translation>
 <translation id="7947310711271925113">Música pop</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab y, luego, Intro para conocer las funciones de Chrome</translation>
@@ -4675,7 +4673,6 @@ Detalles adicionales:
 <translation id="984275831282074731">Formas de pago</translation>
 <translation id="985199708454569384">&lt;p&gt;Este error se muestra si la fecha y hora de tu computadora o dispositivo móvil son incorrectas.&lt;/p&gt;
     &lt;p&gt;Para solucionar el error, abre el reloj del dispositivo y asegúrate de que la fecha y hora sean correctas.&lt;/p&gt;</translation>
-<translation id="986257639512122511">Permitiste <ph name="PERMISSION" /> en <ph name="ORIGIN" /></translation>
 <translation id="987264212798334818">General</translation>
 <translation id="988159990683914416">Build para desarrolladores</translation>
 <translation id="989988560359834682">Modificar dirección</translation>

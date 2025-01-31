@@ -504,10 +504,16 @@ void SharedWorkerHost::BindCacheStorageInternal(
     coep_reporter_->Clone(coep_reporter.InitWithNewPipeAndPassReceiver());
   }
 
+  mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>
+      dip_reporter;
+  if (dip_reporter_) {
+    dip_reporter_->Clone(dip_reporter.InitWithNewPipeAndPassReceiver());
+  }
+
   GetProcessHost()->BindCacheStorage(
       cross_origin_embedder_policy(), std::move(coep_reporter),
-      worker_client_security_state_->document_isolation_policy, bucket_locator,
-      std::move(receiver));
+      worker_client_security_state_->document_isolation_policy,
+      std::move(dip_reporter), bucket_locator, std::move(receiver));
 }
 
 void SharedWorkerHost::GetSandboxedFileSystemForBucket(
@@ -623,7 +629,7 @@ void SharedWorkerHost::BindPressureService(
         auto* render_frame_host = RenderFrameHostImpl::FromID(id);
         return render_frame_host &&
                !render_frame_host->IsFeatureEnabled(
-                   blink::mojom::PermissionsPolicyFeature::kComputePressure);
+                   network::mojom::PermissionsPolicyFeature::kComputePressure);
       })) {
     for (const auto& id : GetRenderFrameIDsForWorker()) {
       auto* rfh = RenderFrameHostImpl::FromID(id);
@@ -632,7 +638,7 @@ void SharedWorkerHost::BindPressureService(
       }
 
       if (rfh->IsFeatureEnabled(
-              blink::mojom::PermissionsPolicyFeature::kComputePressure)) {
+              network::mojom::PermissionsPolicyFeature::kComputePressure)) {
         rfh->AddMessageToConsole(
             blink::mojom::ConsoleMessageLevel::kWarning,
             "This frame is connected to a Shared Worker that has requested "
@@ -819,7 +825,7 @@ void SharedWorkerHost::AddClient(
       RenderFrameHostImpl::FromID(client_render_frame_host_id);
   if (pressure_service_ && render_frame_host &&
       !render_frame_host->IsFeatureEnabled(
-          blink::mojom::PermissionsPolicyFeature::kComputePressure)) {
+          network::mojom::PermissionsPolicyFeature::kComputePressure)) {
     render_frame_host->AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kWarning,
         "This frame is now connected to a Shared Worker using the Compute "

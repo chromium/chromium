@@ -768,6 +768,7 @@
 <translation id="4654549501020883054">Breyta daglega</translation>
 <translation id="4655868084888499342">Mynd sett upp sem veggfóður</translation>
 <translation id="4661249927038176904">Súrrealískt</translation>
+<translation id="4661392828086261436">Þessi uppfærsla er veitt af framleiðanda tækisins og Google hefur ekki staðfest hana</translation>
 <translation id="4664651912255946953">feldi</translation>
 <translation id="4665014895760275686">Framleiðandi</translation>
 <translation id="467510802200863975">Aðgangsorð stemma ekki</translation>
@@ -1027,6 +1028,7 @@
 <translation id="5904994456462260490">Bæta við nýju APN</translation>
 <translation id="590746845088109442">kettir</translation>
 <translation id="5907649332524363701">litur lykils</translation>
+<translation id="5908813850962688338">Það tekur nokkrar mínútur að setja upp þessa uppfærslu. Hafðu tækið í sambandi og kveikt á því þegar verið er að sækja uppfærsluna. Tækið þitt kann að endurræsast nokkrum sinnum og skjárinn gæti orðið svartur meðan á ferlinu stendur. Þú færð beiðni um að endurræsa tækið til að ljúka uppsetningu.</translation>
 <translation id="5916084858004523819">Bannað</translation>
 <translation id="5916664084637901428">Kveikt</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Skráin var skönnuð og vistuð í <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Skrárnar voru skannaðar og vistaðar í <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Skrárnar voru skannaðar og vistaðar í <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>

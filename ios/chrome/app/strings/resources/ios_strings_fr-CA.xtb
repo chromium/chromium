@@ -263,7 +263,6 @@
 <translation id="2074131957428911366">Vous pouvez toujours choisir les éléments à synchroniser dans les <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />.</translation>
 <translation id="2078437078822043850">Vous pouvez faire défiler l'écran vers la droite pour naviguer en mode Navigation privée.</translation>
 <translation id="2079545284768500474">Annuler</translation>
-<translation id="2082906935540894275">Les fonctionnalités les plus pertinentes pour vous en fonction de l'heure.</translation>
 <translation id="2085876078937250610">Enregistrer…</translation>
 <translation id="2096239473850415494">Impossible de télécharger</translation>
 <translation id="2096716221239095980">Supprimer toutes les données</translation>
@@ -548,7 +547,6 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="344589138074534176">En savoir plus sur Lentille Google</translation>
 <translation id="3447332786336558089">Une fois que vous serez déconnecté, les onglets seront fermés, et les données de compte non enregistrées seront supprimées de cet appareil. Cela peut inclure les mots de passe, l'historique et plus encore.</translation>
-<translation id="3449016921756175697">Des suggestions utiles qui rendent la navigation meilleure et plus facile.</translation>
 <translation id="345348365500626747">Adresse trouvée</translation>
 <translation id="3464194322481586217">Impossible d'effectuer le suivi du prix.</translation>
 <translation id="3469117812148449995">Options d'enregistrement du mot de passe</translation>
@@ -718,6 +716,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="422477017457571619">Une protection propulsée par l'IA en temps réel contre les sites, les extensions et les téléchargements dangereux, basée sur vos données de navigation envoyées à Google</translation>
 <translation id="4231395118547300571">Les notifications de Vérification de sécurité sont activées</translation>
 <translation id="4237377247299956313">Touchez <ph name="BEGIN_BOLD" />Navigateur par défaut<ph name="END_BOLD" /></translation>
+<translation id="4241893428331130998">Aucun mot de passe ni clé d'accès enregistré</translation>
 <translation id="4242533952199664413">Ouvrir les paramètres</translation>
 <translation id="4250432749243022864">{count,plural, =0{Ouvrir {count} onglet}=1{Ouvrir {count} onglet}one{Ouvrir {count} onglet}other{Ouvrir {count} onglets}}</translation>
 <translation id="4250680216510889253">Non</translation>
@@ -922,7 +921,6 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="5127538504377457572">Actif il y a <ph name="DAYS" /> jours</translation>
 <translation id="5128788795241319992">Explorer le nouveau menu</translation>
 <translation id="5132942445612118989">Synchronisez vos mots de passe, votre historique et plus encore sur tous vos appareils</translation>
-<translation id="5137526732000415202">Votre dernier onglet ouvert sur tous vos appareils.</translation>
 <translation id="5145331760738811130">Quitter le Gestionnaire d'onglets</translation>
 <translation id="5157638238828697074">Un problème est survenu. L'application n'a pas pu être ouverte.</translation>
 <translation id="5163417375525818870">Fichiers PDF</translation>
@@ -1023,7 +1021,6 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="559567008082979829">Faites en sorte que vos téléchargements soient supprimés après un mois.</translation>
 <translation id="5596627076506792578">Autres options</translation>
 <translation id="560322036295180549">Option désactivée par votre organisation</translation>
-<translation id="5611107723541161735">Raccourcis vers les sites que vous avez visités récemment sur cet appareil.</translation>
 <translation id="5611398002774823980">Enregistrer dans le compte</translation>
 <translation id="5613297089029360427">Trier par Plus récents</translation>
 <translation id="5614553682702429503">Enregistrer le mot de passe?</translation>
@@ -1487,7 +1484,6 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="7512075701202892785">Le navigateur que vous aimez, maintenant sur iPad</translation>
 <translation id="7512909159512473473">Entrer la phrase de passe…</translation>
 <translation id="7514365320538308">Télécharger</translation>
-<translation id="7521117365186708026">Des conseils de configuration qui vous aident à tirer le meilleur parti de Chrome.</translation>
 <translation id="7524055474074101597">Accédez à vos mots de passe et plus encore dans toutes les applications.</translation>
 <translation id="75362970626182391">Nouveau groupe d'onglets</translation>
 <translation id="7537586195939242955">Imposs. d'install. votre pass. pour Passbook pour le moment.</translation>
@@ -1600,6 +1596,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="7982789257301363584">Réseau</translation>
 <translation id="7987685713885608670">Pour renforcer la sécurité, chiffrez les mots de passe sur votre appareil avant qu'ils soient enregistrés dans le gestionnaire de mots de passe Google.</translation>
 <translation id="798991908416757345">Les groupes d'onglets ne sont pas accessibles</translation>
+<translation id="7993170188789685695">Toucher deux fois pour fermer cette notification.</translation>
 <translation id="7993619969781047893">Des fonctionnalités sur certains sites risquent de ne pas fonctionner</translation>
 <translation id="7996239959906074962">Configurer…</translation>
 <translation id="800361585186029508">Ouvre les URL entrées dans Google Chrome.</translation>
@@ -1706,7 +1703,6 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8439758443371991593">Masquer Ajouter à la Liste de lecture</translation>
 <translation id="8449869326050867919">Mot de passe partagé</translation>
 <translation id="8453847087068411809">Ne jamais détecter automatiquement les colis</translation>
-<translation id="846158969830690371">Déterminez si vos paramètres sont les plus sûrs ou si vous devez modifier quoi que ce soit.</translation>
 <translation id="8473863474539038330">Adresses et plus</translation>
 <translation id="8474378002946546633">Autoriser les notifications</translation>
 <translation id="8477178913400731244">Supprimer les données</translation>

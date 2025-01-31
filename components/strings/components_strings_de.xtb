@@ -674,7 +674,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2157640075051554492">Preisbenachrichtigungen</translation>
 <translation id="21613918653299710">Onlinebildergalerien</translation>
 <translation id="2161656808144014275">Text</translation>
-<translation id="2162510787844374618">Bank wird kontaktiert…</translation>
 <translation id="2162620598375156287">Jetzt <ph name="CURRENT_PRICE" /> auf <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Prüfe, ob „<ph name="HOST_NAME" />“ einen Tippfehler enthält.</translation>
 <translation id="2166049586286450108">Vollständiger Administratorzugriff</translation>
@@ -2426,7 +2425,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5288108484102287882">Die Validierung der Richtlinienwerte hat Warnungen ergeben</translation>
 <translation id="5289384342738547352">Handhabung mehrerer Dokumente</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{Update heute erforderlich}=2{Update bis morgen erforderlich}other{Update innerhalb von # Tagen erforderlich}}</translation>
-<translation id="5292714443869769806"><ph name="OPERATING_SYSTEM" />-Einstellungen aufrufen</translation>
 <translation id="5293919335876685914">Coupés</translation>
 <translation id="5298618990685278995">einen ersten Entwurf</translation>
 <translation id="5299298092464848405">Fehler beim Parsen der Richtlinie</translation>
@@ -3649,6 +3647,7 @@ Weitere Details:
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">LKWs und Anhänger</translation>
 <translation id="7461924472993315131">Anpinnen</translation>
+<translation id="746329643760972486">MacOS</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> wird darüber informiert, dass du <ph name="TOP_LEVEL_URL" /> besucht hast</translation>
 <translation id="7465963048299965912">10 × 13 Zoll</translation>
 <translation id="7469935732330206581">Dieses Formular ist nicht sicher</translation>
@@ -3919,7 +3918,6 @@ Weitere Details:
 <translation id="7942349550061667556">Rot</translation>
 <translation id="7943397946612013052">Herunterladen blockiert</translation>
 <translation id="7943893128817522649">Darf nachfragen, wenn sie automatisch mehrere Dateien herunterladen möchte</translation>
-<translation id="794567586469801724">macOS</translation>
 <translation id="7947285636476623132">Prüfe das Ablaufjahr und versuche es dann erneut</translation>
 <translation id="7947310711271925113">Popmusik</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um mehr über die Funktionen von Chrome zu erfahren</translation>
@@ -4672,7 +4670,6 @@ Weitere Details:
 <translation id="984275831282074731">Zahlungsmethoden</translation>
 <translation id="985199708454569384">&lt;p&gt;Diese Fehlermeldung wird angezeigt, wenn das Datum bzw. die Uhrzeit auf deinem Computer oder Mobilgerät nicht korrekt ist.&lt;/p&gt;
     &lt;p&gt;Korrigiere in den Geräteeinstellungen die Uhrzeit und das Datum, um den Fehler zu beheben.&lt;/p&gt;</translation>
-<translation id="986257639512122511">Du hast <ph name="ORIGIN" /> bereits die Berechtigung „<ph name="PERMISSION" />“ erteilt</translation>
 <translation id="987264212798334818">Allgemein</translation>
 <translation id="988159990683914416">Entwickler-Build</translation>
 <translation id="989988560359834682">Adresse bearbeiten</translation>

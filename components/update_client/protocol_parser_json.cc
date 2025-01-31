@@ -323,18 +323,14 @@ bool ProtocolParserJSON::DoParse(const std::string& response_json,
     ParseError("Missing secure JSON prefix.");
     return false;
   }
-  const auto doc = base::JSONReader::Read(base::MakeStringPiece(
+  const auto doc = base::JSONReader::ReadDict(base::MakeStringPiece(
       response_json.begin() + std::char_traits<char>::length(kJSONPrefix),
       response_json.end()));
   if (!doc) {
     ParseError("JSON read error.");
     return false;
   }
-  if (!doc->is_dict()) {
-    ParseError("JSON document is not a dictionary.");
-    return false;
-  }
-  const base::Value::Dict* response_node = doc->GetDict().FindDict("response");
+  const base::Value::Dict* response_node = doc->FindDict("response");
   if (!response_node) {
     ParseError("Missing 'response' element or 'response' is not a dictionary.");
     return false;
@@ -355,12 +351,12 @@ bool ProtocolParserJSON::DoParse(const std::string& response_json,
     const std::optional<int> elapsed_seconds =
         daystart_node->FindInt("elapsed_seconds");
     if (elapsed_seconds) {
-      results->daystart_elapsed_seconds = elapsed_seconds.value();
+      results->daystart_elapsed_seconds = *elapsed_seconds;
     }
     const std::optional<int> elapsed_days =
         daystart_node->FindInt("elapsed_days");
     if (elapsed_days) {
-      results->daystart_elapsed_days = elapsed_days.value();
+      results->daystart_elapsed_days = *elapsed_days;
     }
   }
 

@@ -4,17 +4,28 @@
 
 package org.chromium.base;
 
+import static android.content.Context.UI_MODE_SERVICE;
+
+import static org.chromium.build.NullUtil.assumeNonNull;
+
+import android.app.UiModeManager;
+import android.content.Context;
 import android.content.pm.ApplicationInfo;
+import android.content.pm.FeatureInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
+import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.os.Process;
+import android.text.TextUtils;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.CalledByNativeForTesting;
 import org.jni_zero.JniType;
 
+import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.NativeLibraries;
 import org.chromium.build.annotations.NullMarked;
@@ -29,14 +40,17 @@ import javax.annotation.concurrent.GuardedBy;
 /**
  * BuildInfo is a utility class providing easy access to {@link PackageInfo} information. This is
  * primarily of use for accessing package information from native code.
- *
- * <p>NOTE: This class is deprecated, You can find the appropriate utilities that lived here in
- * AndroidInfo, ApkInfo or DeviceInfo.
  */
 @NullMarked
-@Deprecated
 public class BuildInfo {
     private static final String TAG = "BuildInfo";
+    private static final int MAX_FINGERPRINT_LENGTH = 128;
+
+    private static @Nullable PackageInfo sBrowserPackageInfo;
+    private static boolean sInitialized;
+    private static @Nullable String sGmsVersionCodeForTesting;
+
+    private ApplicationInfo mBrowserApplicationInfo;
 
     /**
      * The package name of the host app which has loaded WebView, retrieved from the application
@@ -111,6 +125,9 @@ public class BuildInfo {
     @GuardedBy("mCertLock")
     private @Nullable String mHostSigningCertSha256;
 
+    /** The versionCode of Play Services. Can be overridden in tests. */
+    private String mGmsVersionCode;
+
     private final Object mCertLock = new Object();
 
     private static class Holder {
@@ -118,12 +135,65 @@ public class BuildInfo {
     }
 
     @CalledByNative
+    private static String[] getAll() {
+        return BuildInfo.getInstance().getAllProperties();
+    }
+
+    @CalledByNative
     private static @JniType("std::string") String lazyGetHostSigningCertSha256() {
         return BuildInfo.getInstance().getHostSigningCertSha256();
     }
 
+    @CalledByNativeForTesting
     public static void setGmsVersionCodeForTest(@JniType("std::string") String gmsVersionCode) {
-        DeviceInfo.setGmsVersionCodeForTest(gmsVersionCode);
+        sGmsVersionCodeForTesting = gmsVersionCode;
+    }
+
+    /** Returns a serialized string array of all properties of this class. */
+    private String[] getAllProperties() {
+        // This implementation needs to be kept in sync with the native BuildInfo constructor.
+        return new String[] {
+            Build.BRAND,
+            Build.DEVICE,
+            Build.ID,
+            Build.MANUFACTURER,
+            Build.MODEL,
+            String.valueOf(Build.VERSION.SDK_INT),
+            Build.TYPE,
+            Build.BOARD,
+            hostPackageName,
+            String.valueOf(hostVersionCode),
+            hostPackageLabel,
+            packageName,
+            String.valueOf(versionCode),
+            versionName,
+            androidBuildFingerprint,
+            getGmsVersionCode(),
+            installerPackageName,
+            abiString,
+            customThemes,
+            resourcesVersion,
+            String.valueOf(
+                    ContextUtils.getApplicationContext().getApplicationInfo().targetSdkVersion),
+            isDebugAndroid() ? "1" : "0",
+            isTV ? "1" : "0",
+            Build.VERSION.INCREMENTAL,
+            Build.HARDWARE,
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU ? "1" : "0",
+            isAutomotive ? "1" : "0",
+            Build.VERSION.SDK_INT >= VERSION_CODES.UPSIDE_DOWN_CAKE ? "1" : "0",
+            targetsAtLeastU() ? "1" : "0",
+            Build.VERSION.CODENAME,
+            String.valueOf(vulkanDeqpLevel),
+            isFoldable ? "1" : "0",
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ? Build.SOC_MANUFACTURER : "",
+            isDebugApp() ? "1" : "0",
+            isDesktop ? "1" : "0",
+        };
+    }
+
+    private static String nullToEmpty(@Nullable CharSequence seq) {
+        return seq == null ? "" : seq.toString();
     }
 
     /**
@@ -156,14 +226,15 @@ public class BuildInfo {
      * @param packageInfo Package for Chrome/WebView (as opposed to host app).
      */
     public static void setBrowserPackageInfo(PackageInfo packageInfo) {
-        ApkInfo.setBrowserPackageInfo(packageInfo);
+        assert !sInitialized;
+        sBrowserPackageInfo = packageInfo;
     }
 
     /**
      * @return ApplicationInfo for Chrome/WebView (as opposed to host app).
      */
     public ApplicationInfo getBrowserApplicationInfo() {
-        return ApkInfo.getInstance().getBrowserApplicationInfo();
+        return mBrowserApplicationInfo;
     }
 
     public static BuildInfo getInstance() {
@@ -177,26 +248,183 @@ public class BuildInfo {
 
     /** The versionCode of Play Services. */
     public String getGmsVersionCode() {
-        return DeviceInfo.getGmsVersionCode();
+        return sGmsVersionCodeForTesting == null ? mGmsVersionCode : sGmsVersionCodeForTesting;
     }
 
     @SuppressWarnings("NullAway") // https://github.com/uber/NullAway/issues/98
     private BuildInfo() {
-        hostPackageName = ApkInfo.getHostPackageName();
-        hostPackageLabel = ApkInfo.getHostPackageLabel();
-        hostVersionCode = ApkInfo.getHostVersionCode();
-        packageName = ApkInfo.getPackageName();
-        versionName = ApkInfo.getPackageVersionName();
-        installerPackageName = ApkInfo.getInstallerPackageName();
-        abiString = AndroidInfo.getAndroidSupportedAbis();
-        androidBuildFingerprint = AndroidInfo.getAndroidBuildFingerprint();
-        customThemes = DeviceInfo.getCustomThemes();
-        resourcesVersion = ApkInfo.getResourcesVersion();
-        isTV = DeviceInfo.isTV();
-        isAutomotive = DeviceInfo.isAutomotive();
-        isFoldable = DeviceInfo.isFoldable();
-        isDesktop = DeviceInfo.isDesktop();
-        vulkanDeqpLevel = DeviceInfo.getVulkanDeqpLevel();
+        sInitialized = true;
+        Context appContext = ContextUtils.getApplicationContext();
+        String appContextPackageName = appContext.getPackageName();
+        PackageManager pm = appContext.getPackageManager();
+
+        String providedHostPackageName = null;
+        String providedHostPackageLabel = null;
+        String providedPackageName = null;
+        String providedPackageVersionName = null;
+        Long providedHostVersionCode = null;
+
+        // The child processes are running in an isolated process so they can't grab a lot of
+        // package information in the same way that we normally would retrieve them. To get around
+        // this, we feed the information as command line switches.
+        if (CommandLine.isInitialized()) {
+            CommandLine commandLine = CommandLine.getInstance();
+            providedHostPackageName = commandLine.getSwitchValue(BaseSwitches.HOST_PACKAGE_NAME);
+            providedHostPackageLabel = commandLine.getSwitchValue(BaseSwitches.HOST_PACKAGE_LABEL);
+            providedPackageName = commandLine.getSwitchValue(BaseSwitches.PACKAGE_NAME);
+            providedPackageVersionName =
+                    commandLine.getSwitchValue(BaseSwitches.PACKAGE_VERSION_NAME);
+
+            String flagValue = commandLine.getSwitchValue(BaseSwitches.HOST_VERSION_CODE);
+
+            if (flagValue != null) {
+                providedHostVersionCode = Long.parseLong(flagValue);
+            }
+        }
+
+        boolean hostInformationProvided =
+                providedHostPackageName != null
+                        && providedHostPackageLabel != null
+                        && providedHostVersionCode != null
+                        && providedPackageName != null
+                        && providedPackageVersionName != null;
+
+        // We want to retrieve the original package installed to verify to host package name.
+        // In the case of the SDK Runtime, we would like to retrieve the package name loading the
+        // SDK.
+        String appInstalledPackageName = appContextPackageName;
+
+        if (hostInformationProvided) {
+            hostPackageName = providedHostPackageName;
+            hostPackageLabel = providedHostPackageLabel;
+            hostVersionCode = providedHostVersionCode;
+            versionName = providedPackageVersionName;
+            packageName = providedPackageName;
+
+            mBrowserApplicationInfo = appContext.getApplicationInfo();
+        } else {
+            // The SDK Qualified package name will retrieve the same information as
+            // appInstalledPackageName but prefix it with the SDK Sandbox process so that we can
+            // tell SDK Runtime data apart from regular data in our logs and metrics.
+            String sdkQualifiedName = appInstalledPackageName;
+
+            // TODO(bewise): There isn't currently an official API to grab the host package name
+            // with the SDK Runtime. We can work around this because SDKs loaded in the SDK
+            // Runtime have the host UID + 10000. This should be updated if a public API comes
+            // along that we can use.
+            // You can see more about this in the Android source:
+            // https://cs.android.com/android/platform/superproject/main/+/main:frameworks/base/core/java/android/os/Process.java;l=292;drc=47fffdd53115a9af1820e3f89d8108745be4b55d
+            if (ContextUtils.isSdkSandboxProcess()) {
+                final int hostId = Process.myUid() - 10000;
+                final String[] packageNames = pm.getPackagesForUid(hostId);
+
+                if (packageNames != null && packageNames.length > 0) {
+                    // We could end up with more than one package name if the app used a
+                    // sharedUserId but these are deprecated so this is a safe bet to rely on the
+                    // first package name.
+                    appInstalledPackageName = packageNames[0];
+                    sdkQualifiedName += ":" + appInstalledPackageName;
+                }
+            }
+
+            ApplicationInfo appInfo = appContext.getApplicationInfo();
+            hostPackageName = sdkQualifiedName;
+            hostPackageLabel = nullToEmpty(pm.getApplicationLabel(appInfo));
+
+            if (sBrowserPackageInfo != null) {
+                PackageInfo pi =
+                        assumeNonNull(PackageUtils.getPackageInfo(appInstalledPackageName, 0));
+                hostVersionCode = packageVersionCode(pi);
+                packageName = sBrowserPackageInfo.packageName;
+                versionName = nullToEmpty(sBrowserPackageInfo.versionName);
+                mBrowserApplicationInfo = sBrowserPackageInfo.applicationInfo;
+                sBrowserPackageInfo = null;
+            } else {
+                packageName = appContextPackageName;
+                hostVersionCode = BuildConfig.VERSION_CODE;
+                versionName = VersionInfo.getProductVersion();
+                mBrowserApplicationInfo = appInfo;
+            }
+        }
+
+        installerPackageName = nullToEmpty(pm.getInstallerPackageName(appInstalledPackageName));
+
+        PackageInfo gmsPackageInfo = PackageUtils.getPackageInfo("com.google.android.gms", 0);
+        mGmsVersionCode =
+                gmsPackageInfo != null
+                        ? String.valueOf(packageVersionCode(gmsPackageInfo))
+                        : "gms versionCode not available.";
+
+        // Substratum is a theme engine that enables users to use custom themes provided
+        // by theme apps. Sometimes these can cause crashs if not installed correctly.
+        // These crashes can be difficult to debug, so knowing if the theme manager is
+        // present on the device is useful (http://crbug.com/820591).
+        customThemes = String.valueOf(PackageUtils.isPackageInstalled("projekt.substratum"));
+
+        String currentResourcesVersion = "Not Enabled";
+        // Controlled by target specific build flags.
+        if (BuildConfig.R_STRING_PRODUCT_VERSION != 0) {
+            try {
+                // This value can be compared with the actual product version to determine if
+                // corrupted resources were the cause of a crash. This can happen if the app
+                // loads resources from the outdated package  during an update
+                // (http://crbug.com/820591).
+                currentResourcesVersion =
+                        ContextUtils.getApplicationContext()
+                                .getString(BuildConfig.R_STRING_PRODUCT_VERSION);
+            } catch (Exception e) {
+                currentResourcesVersion = "Not found";
+            }
+        }
+        resourcesVersion = currentResourcesVersion;
+
+        abiString = TextUtils.join(", ", Build.SUPPORTED_ABIS);
+
+        // The value is truncated, as this is used for crash and UMA reporting.
+        androidBuildFingerprint =
+                Build.FINGERPRINT.substring(
+                        0, Math.min(Build.FINGERPRINT.length(), MAX_FINGERPRINT_LENGTH));
+
+        // See https://developer.android.com/training/tv/start/hardware.html#runtime-check.
+        UiModeManager uiModeManager = (UiModeManager) appContext.getSystemService(UI_MODE_SERVICE);
+        isTV =
+                uiModeManager != null
+                        && uiModeManager.getCurrentModeType()
+                                == Configuration.UI_MODE_TYPE_TELEVISION;
+
+        boolean isAutomotive;
+        try {
+            isAutomotive = pm.hasSystemFeature(PackageManager.FEATURE_AUTOMOTIVE);
+        } catch (SecurityException e) {
+            Log.e(TAG, "Unable to query for Automotive system feature", e);
+
+            // `hasSystemFeature` can possibly throw an exception on modified instances of
+            // Android. In this case, assume the device is not a car since automotive vehicles
+            // should not have such a modification.
+            isAutomotive = false;
+        }
+        this.isAutomotive = isAutomotive;
+
+        // Detect whether device is foldable.
+        this.isFoldable =
+                Build.VERSION.SDK_INT >= VERSION_CODES.R
+                        && pm.hasSystemFeature(PackageManager.FEATURE_SENSOR_HINGE_ANGLE);
+
+        this.isDesktop = pm.hasSystemFeature(PackageManager.FEATURE_PC);
+
+        int vulkanLevel = 0;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            FeatureInfo[] features = pm.getSystemAvailableFeatures();
+            if (features != null) {
+                for (FeatureInfo feature : features) {
+                    if (PackageManager.FEATURE_VULKAN_DEQP_LEVEL.equals(feature.name)) {
+                        vulkanLevel = feature.version;
+                        break;
+                    }
+                }
+            }
+        }
+        vulkanDeqpLevel = vulkanLevel;
     }
 
     /**
@@ -204,7 +432,7 @@ public class BuildInfo {
      * API {@code Build.IS_DEBUGGABLE}.
      */
     public static boolean isDebugAndroid() {
-        return AndroidInfo.isDebugAndroid();
+        return "eng".equals(Build.TYPE) || "userdebug".equals(Build.TYPE);
     }
 
     /*
@@ -212,12 +440,13 @@ public class BuildInfo {
      * In WebView, this refers to the host app.
      */
     public static boolean isDebugApp() {
-        return ApkInfo.isDebugApp();
+        int appFlags = ContextUtils.getApplicationContext().getApplicationInfo().flags;
+        return (appFlags & ApplicationInfo.FLAG_DEBUGGABLE) != 0;
     }
 
     /**
-     * Check if this is either a debuggable build of Android or of the host app. Use this to enable
-     * developer-only features.
+     * Check if this is either a debuggable build of Android or of the host app.
+     * Use this to enable developer-only features.
      */
     public static boolean isDebugAndroidOrApp() {
         return isDebugAndroid() || isDebugApp();
@@ -238,12 +467,24 @@ public class BuildInfo {
     }
 
     /**
-     * Checks if the application targets pre-release SDK U. This must be manually maintained as the
-     * SDK goes through finalization! Avoid depending on this if possible; this is only intended for
-     * WebView.
+     * Checks if the application targets pre-release SDK U.
+     * This must be manually maintained as the SDK goes through finalization!
+     * Avoid depending on this if possible; this is only intended for WebView.
      */
     public static boolean targetsAtLeastU() {
-        return ApkInfo.targetsAtLeastU();
+        int target = ContextUtils.getApplicationContext().getApplicationInfo().targetSdkVersion;
+
+        // Logic for pre-API-finalization:
+        // return BuildCompat.isAtLeastU() && target == Build.VERSION_CODES.CUR_DEVELOPMENT;
+
+        // Logic for after API finalization but before public SDK release has to just hardcode the
+        // appropriate SDK integer. This will include Android builds with the finalized SDK, and
+        // also pre-API-finalization builds (because CUR_DEVELOPMENT == 10000).
+        // return target >= 34;
+
+        // Now that the public SDK is upstreamed we can use the defined constant. All users of this
+        // should now just inline this check themselves.
+        return target >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE;
     }
 
     @NullUnmarked

@@ -126,7 +126,6 @@
 <translation id="1076766328672150609">‏آپ کا بچہ آلے کو مقفل کرنے کے لیے ایک PIN کا استعمال کر سکتا ہے۔</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216"><ph name="LANGUAGE" /> کے لیے املا کی جانچ کرنے والی لغت ڈاؤن لوڈ نہیں ہو سکی۔ دوبارہ کوشش کریں۔</translation>
-<translation id="1078029726086090536">اپنے پاس ورڈ کی توثیق کریں</translation>
 <translation id="1078037449555275327">‏ChromeVox کی ترتیبات</translation>
 <translation id="1079242569060319448">‏‫PIN بھول گئے؟</translation>
 <translation id="1079285777677001938">ہو سکتا ہے کہ کچھ سائٹس پر خصوصیات کام نہ کریں۔</translation>
@@ -369,6 +368,7 @@
 <translation id="1241066500170667906"><ph name="EXPERIMENT_NAME" /> کے لیے تجربے کی حالت منتخب کریں</translation>
 <translation id="124116460088058876">مزید زبانیں</translation>
 <translation id="1241381048229838873">سبھی بُک مارکس دکھائیں</translation>
+<translation id="1242044645101871359">دوبارہ سائن ان کریں</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" /> آپ کی ترتیبات کو دوبارہ ترتیب دینا چاہتا ہے۔</translation>
 <translation id="1243002225871118300">ڈسپلے اور ٹیکسٹ کے سائز کو تبدیل کریں</translation>
 <translation id="1243314992276662751">اپ لوڈ کریں</translation>
@@ -1618,7 +1618,6 @@
 <translation id="2113921862428609753">اتھارٹی کی معلومات تک رسائی</translation>
 <translation id="2114145607116268663">انسٹال کرنے سے قاصر، ریبوٹ درکار ہے۔ براہ کرم اپنا کمپیوٹر ری اسٹارٹ کریں اور دوبارہ کوشش کریں۔ خرابی کا کوڈ <ph name="ERROR" /> ہے۔</translation>
 <translation id="2114326799768592691">&amp;فریم دوبارہ لوڈ کریں</translation>
-<translation id="2114413269775311385">‏Android ایپس کے ساتھ اس اکاؤنٹ کا استعمال کریں۔ آپ <ph name="LINK_BEGIN" />ایپس کی ترتیبات<ph name="LINK_END" /> میں Android ایپس کے لیے اجازتیں کنٹرول کر سکتے ہیں۔</translation>
 <translation id="2114995631896158695">‏کوئی SIM کارڈ داخل نہیں کیا گیا</translation>
 <translation id="2116619964159595185">سائٹس عام طور پر کم توانائی والے بیکن کو سیٹ اپ کرنے یا مطابقت پذیر کرنے، صحت یا تندرستی کے ٹریکر یا اسمارٹ لائٹ بلب جیسی خصوصیات کے لئے بلوٹوتھ آلات سے منسلک ہوتی ہیں</translation>
 <translation id="2117655453726830283">اگلی سلائیڈ</translation>
@@ -4634,6 +4633,7 @@
 <translation id="4242533952199664413">ترتیبات کھولیں</translation>
 <translation id="4242577469625748426">آلہ پر پالیسی کی ترتیبات انسٹال کرنے میں ناکام ہوگیا: <ph name="VALIDATION_ERROR" />۔</translation>
 <translation id="4242825475818569385">آپ کے <ph name="BEGIN_LINK" />براؤزر اور پروفائل کا نظم<ph name="END_LINK" /> <ph name="DOMAIN" /> کرتا ہے</translation>
+<translation id="424315890655130736">پاس فریز درج کریں</translation>
 <translation id="4243504193894350135">پرنٹر موقوف ہے</translation>
 <translation id="4243624244759495699"><ph name="LOCALE" />، گریڈ <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">مزید اسٹائلس ایپس تلاش کریں</translation>
@@ -5356,7 +5356,6 @@
 <translation id="4766598565665644999">سبھی ایکسٹینشنز <ph name="HOST" /> کو پڑھ اور تبدیل کر سکتی ہیں</translation>
 <translation id="4767427586072640478">غیر فعال ایکسٹینشنز کے بارے میں مزید جانیں۔</translation>
 <translation id="4768332406694066911">آپ کی شناخت کرنے والی ان تنظیموں کی جانب سے آپ کے پاس سرٹیفیکیٹس ہیں</translation>
-<translation id="4768945955870840220">‏کچھ پروڈکٹس کے لیے، Chrome پورے ویب سے جائزے اکٹھا کر سکتا ہے</translation>
 <translation id="4769632191812288342">آپ کو معیاری تحفظ حاصل ہو رہا ہے</translation>
 <translation id="4770119228883592393">‏اجازت کی درخواست کی گئی، جواب دینے کے لیے ⌘ + Option + نیچے تیر کا نشان دبائیں</translation>
 <translation id="4770755495532014179">‏یہ پاس ورڈ اپنے iPhone پر استعمال کریں</translation>
@@ -8751,7 +8750,6 @@
 <translation id="7243092385765551741">پاس کی حذف کریں؟</translation>
 <translation id="7245628041916450754">‏<ph name="WIDTH" /> x <ph name="HEIGHT" /> (بہترین)</translation>
 <translation id="7246230585855757313">اپنی سیکیورٹی کلید دوبارہ داخل کریں اور دوبارہ کوشش کریں</translation>
-<translation id="724835896049478274">‏Android ایپس کے لیے اکاؤنٹس دستیاب ہیں</translation>
 <translation id="7248802599439396696">ٹیبز کو غیر فعال بنائیں</translation>
 <translation id="7249197363678284330">ایڈریس بار میں اس ترتیب کو تبدیل کریں۔</translation>
 <translation id="7249764475759804559">فائلز کھولتے وقت اس ایپ کو بطور اختیار شامل کریں</translation>
@@ -10700,7 +10698,6 @@
 <translation id="8625124982056504555">‏ChromeOS آلہ اور جزو کے نمبر شمار پڑھیں</translation>
 <translation id="862542460444371744">&amp;ایکسٹینشنز</translation>
 <translation id="8625663000550647058">آپ کے مائیکروفون کو استعمال کرنے کی اجازت نہیں ہے</translation>
-<translation id="8625679025395572221">آپ کا اکاؤنٹ اب بھی خطرے میں ہو سکتا ہے۔</translation>
 <translation id="8625916342247441948">‏سائٹس کو HID آلات سے منسلک ہونے کی اجازت نہ دیں</translation>
 <translation id="862727964348362408">معطل</translation>
 <translation id="862750493060684461">‏CSS کیش</translation>
@@ -11582,7 +11579,6 @@
 <translation id="936801553271523408">سسٹم ڈائیگناسٹک ڈیٹا</translation>
 <translation id="93766956588638423">ایکسٹینشن کو درست کریں</translation>
 <translation id="938623846785894166">خلاف معمول فائل</translation>
-<translation id="939401694733344652">‏یہ اکاؤنٹس ابھی Android ایپس کے ساتھ استعمال نہیں ہو رہے ہیں۔ اگر آپ اس Android ایپ کے ساتھ استعمال کرنے کے لیے کوئی اکاؤنٹ منتخب کرتے ہیں تو اس اکاؤنٹ کو دیگر Android ایپس کے ساتھ بھی استعمال کیا جا سکتا ہے۔ آپ <ph name="LINK_BEGIN" />ترتیبات &gt; اکاؤنٹس<ph name="LINK_END" /> میں Android ایپ کی رسائی کو تبدیل کر سکتے ہیں۔</translation>
 <translation id="939598580284253335">پاس فریز درج کریں</translation>
 <translation id="939736085109172342">نیا فولڈر</translation>
 <translation id="940212040923880623">&amp;تلاش اور ترمیم کریں</translation>

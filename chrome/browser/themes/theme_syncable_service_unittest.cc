@@ -1042,8 +1042,9 @@ class RealThemeSyncableServiceTest
 
     theme_service_ = ThemeServiceFactory::GetForProfile(profile());
 
-    theme_sync_service_ =
-        std::make_unique<ThemeSyncableService>(profile(), theme_service_);
+    theme_sync_service_ = theme_service_->GetThemeSyncableService();
+    ASSERT_TRUE(theme_sync_service_);
+
     fake_change_processor_ =
         std::make_unique<syncer::FakeSyncChangeProcessor>();
 
@@ -1058,11 +1059,6 @@ class RealThemeSyncableServiceTest
     ASSERT_EQ(1u, extensions::ExtensionRegistry::Get(profile())
                       ->enabled_extensions()
                       .size());
-  }
-
-  void TearDown() override {
-    theme_sync_service_.reset();
-    base::RunLoop().RunUntilIdle();
   }
 
   ThemeService* theme_service() { return theme_service_; }
@@ -1081,7 +1077,7 @@ class RealThemeSyncableServiceTest
 
  private:
   raw_ptr<ThemeService> theme_service_;
-  std::unique_ptr<ThemeSyncableService> theme_sync_service_;
+  raw_ptr<ThemeSyncableService> theme_sync_service_;
   std::unique_ptr<syncer::FakeSyncChangeProcessor> fake_change_processor_;
   scoped_refptr<extensions::Extension> theme_extension_;
 };

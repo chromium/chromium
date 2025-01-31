@@ -101,7 +101,7 @@ class NativeWindowOcclusionTrackerTest : public test::AuraTestBase {
     gfx::Rect bounds(0, 0, 100, 100);
     native_win_->Init(nullptr, bounds);
     HWND hwnd = native_win_->hwnd();
-    base::win::ScopedRegion region(CreateRectRgn(0, 0, 0, 0));
+    base::win::ScopedGDIObject<HRGN> region(CreateRectRgn(0, 0, 0, 0));
     if (GetWindowRgn(hwnd, region.get()) == COMPLEXREGION) {
       // If the newly created window has a complex region by default, e.g.,
       // if it has the WS_EX_LAYERED style, it will be ignored during the
@@ -109,7 +109,7 @@ class NativeWindowOcclusionTrackerTest : public test::AuraTestBase {
       // we get test coverage for the window.
       RECT bounding_rect;
       EXPECT_TRUE(GetWindowRect(hwnd, &bounding_rect));
-      base::win::ScopedRegion rectangular_region(
+      base::win::ScopedGDIObject<HRGN> rectangular_region(
           CreateRectRgnIndirect(&bounding_rect));
       SetWindowRgn(hwnd, rectangular_region.get(), /*redraw=*/TRUE);
     }
@@ -207,7 +207,8 @@ TEST_F(NativeWindowOcclusionTrackerTest, ComplexRegionWindow) {
   HWND hwnd = CreateNativeWindow(/*style=*/0, /*ex_style=*/0);
   gfx::Rect win_rect;
   // Create a region with rounded corners, which should be a complex region.
-  base::win::ScopedRegion region(CreateRoundRectRgn(1, 1, 100, 100, 5, 5));
+  base::win::ScopedGDIObject<HRGN> region(
+      CreateRoundRectRgn(1, 1, 100, 100, 5, 5));
   SetWindowRgn(hwnd, region.get(), /*redraw=*/TRUE);
   // Windows with complex regions are not considered visible and fully opaque.
   EXPECT_FALSE(CheckWindowVisibleAndFullyOpaque(hwnd, &win_rect));

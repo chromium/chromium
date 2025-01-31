@@ -5,11 +5,12 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 
 #include <memory>
+
 #include "base/test/scoped_feature_list.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/platform/network/encoded_form_data.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -113,56 +114,64 @@ TEST(ResourceRequestTest, IsFeatureEnabledForSubresourceRequestAssumingOptIn) {
         CreateFromParentPolicy(nullptr, /*header_policy=*/{}, origin_a);
 
     EXPECT_TRUE(policy->IsFeatureEnabledForOrigin(
-        mojom::blink::PermissionsPolicyFeature::kBrowsingTopics, origin_a));
-    EXPECT_TRUE(request_with_topics_opt_in
-                    .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
-                        policy.get(),
-                        mojom::blink::PermissionsPolicyFeature::kBrowsingTopics,
-                        origin_a));
-    EXPECT_TRUE(request_with_both_opt_in
-                    .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
-                        policy.get(),
-                        mojom::blink::PermissionsPolicyFeature::kBrowsingTopics,
-                        origin_a));
+        network::mojom::PermissionsPolicyFeature::kBrowsingTopics, origin_a));
+    EXPECT_TRUE(
+        request_with_topics_opt_in
+            .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
+                policy.get(),
+                network::mojom::PermissionsPolicyFeature::kBrowsingTopics,
+                origin_a));
+    EXPECT_TRUE(
+        request_with_both_opt_in
+            .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
+                policy.get(),
+                network::mojom::PermissionsPolicyFeature::kBrowsingTopics,
+                origin_a));
 
     EXPECT_TRUE(policy->IsFeatureEnabledForOrigin(
-        mojom::blink::PermissionsPolicyFeature::kSharedStorage, origin_a));
-    EXPECT_TRUE(request_with_shared_storage_opt_in
-                    .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
-                        policy.get(),
-                        mojom::blink::PermissionsPolicyFeature::kSharedStorage,
-                        origin_a));
-    EXPECT_TRUE(request_with_both_opt_in
-                    .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
-                        policy.get(),
-                        mojom::blink::PermissionsPolicyFeature::kSharedStorage,
-                        origin_a));
+        network::mojom::PermissionsPolicyFeature::kSharedStorage, origin_a));
+    EXPECT_TRUE(
+        request_with_shared_storage_opt_in
+            .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
+                policy.get(),
+                network::mojom::PermissionsPolicyFeature::kSharedStorage,
+                origin_a));
+    EXPECT_TRUE(
+        request_with_both_opt_in
+            .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
+                policy.get(),
+                network::mojom::PermissionsPolicyFeature::kSharedStorage,
+                origin_a));
 
     EXPECT_TRUE(policy->IsFeatureEnabledForOrigin(
-        mojom::blink::PermissionsPolicyFeature::kBrowsingTopics, origin_b));
-    EXPECT_TRUE(request_with_topics_opt_in
-                    .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
-                        policy.get(),
-                        mojom::blink::PermissionsPolicyFeature::kBrowsingTopics,
-                        origin_b));
-    EXPECT_TRUE(request_with_both_opt_in
-                    .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
-                        policy.get(),
-                        mojom::blink::PermissionsPolicyFeature::kBrowsingTopics,
-                        origin_b));
+        network::mojom::PermissionsPolicyFeature::kBrowsingTopics, origin_b));
+    EXPECT_TRUE(
+        request_with_topics_opt_in
+            .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
+                policy.get(),
+                network::mojom::PermissionsPolicyFeature::kBrowsingTopics,
+                origin_b));
+    EXPECT_TRUE(
+        request_with_both_opt_in
+            .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
+                policy.get(),
+                network::mojom::PermissionsPolicyFeature::kBrowsingTopics,
+                origin_b));
 
     EXPECT_TRUE(policy->IsFeatureEnabledForOrigin(
-        mojom::blink::PermissionsPolicyFeature::kSharedStorage, origin_b));
-    EXPECT_TRUE(request_with_shared_storage_opt_in
-                    .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
-                        policy.get(),
-                        mojom::blink::PermissionsPolicyFeature::kSharedStorage,
-                        origin_b));
-    EXPECT_TRUE(request_with_both_opt_in
-                    .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
-                        policy.get(),
-                        mojom::blink::PermissionsPolicyFeature::kSharedStorage,
-                        origin_b));
+        network::mojom::PermissionsPolicyFeature::kSharedStorage, origin_b));
+    EXPECT_TRUE(
+        request_with_shared_storage_opt_in
+            .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
+                policy.get(),
+                network::mojom::PermissionsPolicyFeature::kSharedStorage,
+                origin_b));
+    EXPECT_TRUE(
+        request_with_both_opt_in
+            .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
+                policy.get(),
+                network::mojom::PermissionsPolicyFeature::kSharedStorage,
+                origin_b));
   }
 
   {
@@ -179,12 +188,12 @@ TEST(ResourceRequestTest, IsFeatureEnabledForSubresourceRequestAssumingOptIn) {
 
     std::unique_ptr<PermissionsPolicy> policy = CreateFromParentPolicy(
         nullptr,
-        {{{mojom::blink::PermissionsPolicyFeature::kBrowsingTopics,
+        {{{network::mojom::PermissionsPolicyFeature::kBrowsingTopics,
            /*allowed_origins=*/{},
            /*self_if_matches=*/origin_a,
            /*matches_all_origins=*/false,
            /*matches_opaque_src=*/false},
-          {mojom::blink::PermissionsPolicyFeature::kSharedStorage,
+          {network::mojom::PermissionsPolicyFeature::kSharedStorage,
            /*allowed_origins=*/{},
            /*self_if_matches=*/origin_a,
            /*matches_all_origins=*/false,
@@ -192,58 +201,64 @@ TEST(ResourceRequestTest, IsFeatureEnabledForSubresourceRequestAssumingOptIn) {
         origin_a);
 
     EXPECT_TRUE(policy->IsFeatureEnabledForOrigin(
-        mojom::blink::PermissionsPolicyFeature::kBrowsingTopics, origin_a));
-    EXPECT_TRUE(request_with_topics_opt_in
-                    .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
-                        policy.get(),
-                        mojom::blink::PermissionsPolicyFeature::kBrowsingTopics,
-                        origin_a));
-    EXPECT_TRUE(request_with_both_opt_in
-                    .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
-                        policy.get(),
-                        mojom::blink::PermissionsPolicyFeature::kBrowsingTopics,
-                        origin_a));
+        network::mojom::PermissionsPolicyFeature::kBrowsingTopics, origin_a));
+    EXPECT_TRUE(
+        request_with_topics_opt_in
+            .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
+                policy.get(),
+                network::mojom::PermissionsPolicyFeature::kBrowsingTopics,
+                origin_a));
+    EXPECT_TRUE(
+        request_with_both_opt_in
+            .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
+                policy.get(),
+                network::mojom::PermissionsPolicyFeature::kBrowsingTopics,
+                origin_a));
 
     EXPECT_TRUE(policy->IsFeatureEnabledForOrigin(
-        mojom::blink::PermissionsPolicyFeature::kSharedStorage, origin_a));
-    EXPECT_TRUE(request_with_shared_storage_opt_in
-                    .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
-                        policy.get(),
-                        mojom::blink::PermissionsPolicyFeature::kSharedStorage,
-                        origin_a));
-    EXPECT_TRUE(request_with_both_opt_in
-                    .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
-                        policy.get(),
-                        mojom::blink::PermissionsPolicyFeature::kSharedStorage,
-                        origin_a));
+        network::mojom::PermissionsPolicyFeature::kSharedStorage, origin_a));
+    EXPECT_TRUE(
+        request_with_shared_storage_opt_in
+            .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
+                policy.get(),
+                network::mojom::PermissionsPolicyFeature::kSharedStorage,
+                origin_a));
+    EXPECT_TRUE(
+        request_with_both_opt_in
+            .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
+                policy.get(),
+                network::mojom::PermissionsPolicyFeature::kSharedStorage,
+                origin_a));
 
     EXPECT_FALSE(policy->IsFeatureEnabledForOrigin(
-        mojom::blink::PermissionsPolicyFeature::kBrowsingTopics, origin_b));
+        network::mojom::PermissionsPolicyFeature::kBrowsingTopics, origin_b));
     EXPECT_FALSE(
         request_with_topics_opt_in
             .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
                 policy.get(),
-                mojom::blink::PermissionsPolicyFeature::kBrowsingTopics,
+                network::mojom::PermissionsPolicyFeature::kBrowsingTopics,
                 origin_b));
     EXPECT_FALSE(
         request_with_both_opt_in
             .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
                 policy.get(),
-                mojom::blink::PermissionsPolicyFeature::kBrowsingTopics,
+                network::mojom::PermissionsPolicyFeature::kBrowsingTopics,
                 origin_b));
 
     EXPECT_FALSE(policy->IsFeatureEnabledForOrigin(
-        mojom::blink::PermissionsPolicyFeature::kSharedStorage, origin_b));
-    EXPECT_FALSE(request_with_shared_storage_opt_in
-                     .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
-                         policy.get(),
-                         mojom::blink::PermissionsPolicyFeature::kSharedStorage,
-                         origin_b));
-    EXPECT_FALSE(request_with_both_opt_in
-                     .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
-                         policy.get(),
-                         mojom::blink::PermissionsPolicyFeature::kSharedStorage,
-                         origin_b));
+        network::mojom::PermissionsPolicyFeature::kSharedStorage, origin_b));
+    EXPECT_FALSE(
+        request_with_shared_storage_opt_in
+            .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
+                policy.get(),
+                network::mojom::PermissionsPolicyFeature::kSharedStorage,
+                origin_b));
+    EXPECT_FALSE(
+        request_with_both_opt_in
+            .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
+                policy.get(),
+                network::mojom::PermissionsPolicyFeature::kSharedStorage,
+                origin_b));
   }
 
   {
@@ -260,12 +275,12 @@ TEST(ResourceRequestTest, IsFeatureEnabledForSubresourceRequestAssumingOptIn) {
 
     std::unique_ptr<PermissionsPolicy> policy = CreateFromParentPolicy(
         nullptr,
-        {{{mojom::blink::PermissionsPolicyFeature::kBrowsingTopics,
+        {{{network::mojom::PermissionsPolicyFeature::kBrowsingTopics,
            /*allowed_origins=*/{},
            /*self_if_matches=*/std::nullopt,
            /*matches_all_origins=*/false,
            /*matches_opaque_src=*/false},
-          {mojom::blink::PermissionsPolicyFeature::kSharedStorage,
+          {network::mojom::PermissionsPolicyFeature::kSharedStorage,
            /*allowed_origins=*/{},
            /*self_if_matches=*/std::nullopt,
            /*matches_all_origins=*/false,
@@ -273,60 +288,64 @@ TEST(ResourceRequestTest, IsFeatureEnabledForSubresourceRequestAssumingOptIn) {
         origin_a);
 
     EXPECT_FALSE(policy->IsFeatureEnabledForOrigin(
-        mojom::blink::PermissionsPolicyFeature::kBrowsingTopics, origin_a));
+        network::mojom::PermissionsPolicyFeature::kBrowsingTopics, origin_a));
     EXPECT_FALSE(
         request_with_topics_opt_in
             .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
                 policy.get(),
-                mojom::blink::PermissionsPolicyFeature::kBrowsingTopics,
+                network::mojom::PermissionsPolicyFeature::kBrowsingTopics,
                 origin_a));
     EXPECT_FALSE(
         request_with_both_opt_in
             .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
                 policy.get(),
-                mojom::blink::PermissionsPolicyFeature::kBrowsingTopics,
+                network::mojom::PermissionsPolicyFeature::kBrowsingTopics,
                 origin_a));
 
     EXPECT_FALSE(policy->IsFeatureEnabledForOrigin(
-        mojom::blink::PermissionsPolicyFeature::kSharedStorage, origin_a));
-    EXPECT_FALSE(request_with_shared_storage_opt_in
-                     .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
-                         policy.get(),
-                         mojom::blink::PermissionsPolicyFeature::kSharedStorage,
-                         origin_a));
-    EXPECT_FALSE(request_with_both_opt_in
-                     .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
-                         policy.get(),
-                         mojom::blink::PermissionsPolicyFeature::kSharedStorage,
-                         origin_a));
+        network::mojom::PermissionsPolicyFeature::kSharedStorage, origin_a));
+    EXPECT_FALSE(
+        request_with_shared_storage_opt_in
+            .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
+                policy.get(),
+                network::mojom::PermissionsPolicyFeature::kSharedStorage,
+                origin_a));
+    EXPECT_FALSE(
+        request_with_both_opt_in
+            .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
+                policy.get(),
+                network::mojom::PermissionsPolicyFeature::kSharedStorage,
+                origin_a));
 
     EXPECT_FALSE(policy->IsFeatureEnabledForOrigin(
-        mojom::blink::PermissionsPolicyFeature::kBrowsingTopics, origin_b));
+        network::mojom::PermissionsPolicyFeature::kBrowsingTopics, origin_b));
     EXPECT_FALSE(
         request_with_topics_opt_in
             .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
                 policy.get(),
-                mojom::blink::PermissionsPolicyFeature::kBrowsingTopics,
+                network::mojom::PermissionsPolicyFeature::kBrowsingTopics,
                 origin_b));
     EXPECT_FALSE(
         request_with_both_opt_in
             .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
                 policy.get(),
-                mojom::blink::PermissionsPolicyFeature::kBrowsingTopics,
+                network::mojom::PermissionsPolicyFeature::kBrowsingTopics,
                 origin_b));
 
     EXPECT_FALSE(policy->IsFeatureEnabledForOrigin(
-        mojom::blink::PermissionsPolicyFeature::kSharedStorage, origin_b));
-    EXPECT_FALSE(request_with_shared_storage_opt_in
-                     .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
-                         policy.get(),
-                         mojom::blink::PermissionsPolicyFeature::kSharedStorage,
-                         origin_b));
-    EXPECT_FALSE(request_with_both_opt_in
-                     .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
-                         policy.get(),
-                         mojom::blink::PermissionsPolicyFeature::kSharedStorage,
-                         origin_b));
+        network::mojom::PermissionsPolicyFeature::kSharedStorage, origin_b));
+    EXPECT_FALSE(
+        request_with_shared_storage_opt_in
+            .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
+                policy.get(),
+                network::mojom::PermissionsPolicyFeature::kSharedStorage,
+                origin_b));
+    EXPECT_FALSE(
+        request_with_both_opt_in
+            .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
+                policy.get(),
+                network::mojom::PermissionsPolicyFeature::kSharedStorage,
+                origin_b));
   }
 
   {
@@ -343,12 +362,12 @@ TEST(ResourceRequestTest, IsFeatureEnabledForSubresourceRequestAssumingOptIn) {
 
     std::unique_ptr<PermissionsPolicy> policy = CreateFromParentPolicy(
         nullptr,
-        {{{mojom::blink::PermissionsPolicyFeature::kBrowsingTopics,
+        {{{network::mojom::PermissionsPolicyFeature::kBrowsingTopics,
            /*allowed_origins=*/{},
            /*self_if_matches=*/std::nullopt,
            /*matches_all_origins=*/true,
            /*matches_opaque_src=*/false},
-          {mojom::blink::PermissionsPolicyFeature::kSharedStorage,
+          {network::mojom::PermissionsPolicyFeature::kSharedStorage,
            /*allowed_origins=*/{},
            /*self_if_matches=*/std::nullopt,
            /*matches_all_origins=*/true,
@@ -356,56 +375,64 @@ TEST(ResourceRequestTest, IsFeatureEnabledForSubresourceRequestAssumingOptIn) {
         origin_a);
 
     EXPECT_TRUE(policy->IsFeatureEnabledForOrigin(
-        mojom::blink::PermissionsPolicyFeature::kBrowsingTopics, origin_a));
-    EXPECT_TRUE(request_with_topics_opt_in
-                    .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
-                        policy.get(),
-                        mojom::blink::PermissionsPolicyFeature::kBrowsingTopics,
-                        origin_a));
-    EXPECT_TRUE(request_with_both_opt_in
-                    .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
-                        policy.get(),
-                        mojom::blink::PermissionsPolicyFeature::kBrowsingTopics,
-                        origin_a));
+        network::mojom::PermissionsPolicyFeature::kBrowsingTopics, origin_a));
+    EXPECT_TRUE(
+        request_with_topics_opt_in
+            .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
+                policy.get(),
+                network::mojom::PermissionsPolicyFeature::kBrowsingTopics,
+                origin_a));
+    EXPECT_TRUE(
+        request_with_both_opt_in
+            .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
+                policy.get(),
+                network::mojom::PermissionsPolicyFeature::kBrowsingTopics,
+                origin_a));
 
     EXPECT_TRUE(policy->IsFeatureEnabledForOrigin(
-        mojom::blink::PermissionsPolicyFeature::kSharedStorage, origin_a));
-    EXPECT_TRUE(request_with_shared_storage_opt_in
-                    .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
-                        policy.get(),
-                        mojom::blink::PermissionsPolicyFeature::kSharedStorage,
-                        origin_a));
-    EXPECT_TRUE(request_with_both_opt_in
-                    .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
-                        policy.get(),
-                        mojom::blink::PermissionsPolicyFeature::kSharedStorage,
-                        origin_a));
+        network::mojom::PermissionsPolicyFeature::kSharedStorage, origin_a));
+    EXPECT_TRUE(
+        request_with_shared_storage_opt_in
+            .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
+                policy.get(),
+                network::mojom::PermissionsPolicyFeature::kSharedStorage,
+                origin_a));
+    EXPECT_TRUE(
+        request_with_both_opt_in
+            .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
+                policy.get(),
+                network::mojom::PermissionsPolicyFeature::kSharedStorage,
+                origin_a));
 
     EXPECT_TRUE(policy->IsFeatureEnabledForOrigin(
-        mojom::blink::PermissionsPolicyFeature::kBrowsingTopics, origin_b));
-    EXPECT_TRUE(request_with_topics_opt_in
-                    .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
-                        policy.get(),
-                        mojom::blink::PermissionsPolicyFeature::kBrowsingTopics,
-                        origin_b));
-    EXPECT_TRUE(request_with_both_opt_in
-                    .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
-                        policy.get(),
-                        mojom::blink::PermissionsPolicyFeature::kBrowsingTopics,
-                        origin_b));
+        network::mojom::PermissionsPolicyFeature::kBrowsingTopics, origin_b));
+    EXPECT_TRUE(
+        request_with_topics_opt_in
+            .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
+                policy.get(),
+                network::mojom::PermissionsPolicyFeature::kBrowsingTopics,
+                origin_b));
+    EXPECT_TRUE(
+        request_with_both_opt_in
+            .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
+                policy.get(),
+                network::mojom::PermissionsPolicyFeature::kBrowsingTopics,
+                origin_b));
 
     EXPECT_TRUE(policy->IsFeatureEnabledForOrigin(
-        mojom::blink::PermissionsPolicyFeature::kSharedStorage, origin_b));
-    EXPECT_TRUE(request_with_shared_storage_opt_in
-                    .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
-                        policy.get(),
-                        mojom::blink::PermissionsPolicyFeature::kSharedStorage,
-                        origin_b));
-    EXPECT_TRUE(request_with_both_opt_in
-                    .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
-                        policy.get(),
-                        mojom::blink::PermissionsPolicyFeature::kSharedStorage,
-                        origin_b));
+        network::mojom::PermissionsPolicyFeature::kSharedStorage, origin_b));
+    EXPECT_TRUE(
+        request_with_shared_storage_opt_in
+            .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
+                policy.get(),
+                network::mojom::PermissionsPolicyFeature::kSharedStorage,
+                origin_b));
+    EXPECT_TRUE(
+        request_with_both_opt_in
+            .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
+                policy.get(),
+                network::mojom::PermissionsPolicyFeature::kSharedStorage,
+                origin_b));
   }
 
   {
@@ -426,13 +453,13 @@ TEST(ResourceRequestTest, IsFeatureEnabledForSubresourceRequestAssumingOptIn) {
 
     std::unique_ptr<PermissionsPolicy> policy = CreateFromParentPolicy(
         nullptr,
-        {{{mojom::blink::PermissionsPolicyFeature::
+        {{{network::mojom::PermissionsPolicyFeature::
                kBrowsingTopics, /*allowed_origins=*/
            {*blink::OriginWithPossibleWildcards::FromOrigin(origin_b)},
            /*self_if_matches=*/std::nullopt,
            /*matches_all_origins=*/false,
            /*matches_opaque_src=*/false},
-          {mojom::blink::PermissionsPolicyFeature::
+          {network::mojom::PermissionsPolicyFeature::
                kSharedStorage, /*allowed_origins=*/
            {*blink::OriginWithPossibleWildcards::FromOrigin(origin_b)},
            /*self_if_matches=*/std::nullopt,
@@ -441,86 +468,94 @@ TEST(ResourceRequestTest, IsFeatureEnabledForSubresourceRequestAssumingOptIn) {
         origin_a);
 
     EXPECT_FALSE(policy->IsFeatureEnabledForOrigin(
-        mojom::blink::PermissionsPolicyFeature::kBrowsingTopics, origin_a));
+        network::mojom::PermissionsPolicyFeature::kBrowsingTopics, origin_a));
     EXPECT_FALSE(
         request_with_topics_opt_in
             .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
                 policy.get(),
-                mojom::blink::PermissionsPolicyFeature::kBrowsingTopics,
+                network::mojom::PermissionsPolicyFeature::kBrowsingTopics,
                 origin_a));
     EXPECT_FALSE(
         request_with_both_opt_in
             .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
                 policy.get(),
-                mojom::blink::PermissionsPolicyFeature::kBrowsingTopics,
+                network::mojom::PermissionsPolicyFeature::kBrowsingTopics,
                 origin_a));
 
     EXPECT_FALSE(policy->IsFeatureEnabledForOrigin(
-        mojom::blink::PermissionsPolicyFeature::kSharedStorage, origin_a));
-    EXPECT_FALSE(request_with_shared_storage_opt_in
-                     .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
-                         policy.get(),
-                         mojom::blink::PermissionsPolicyFeature::kSharedStorage,
-                         origin_a));
-    EXPECT_FALSE(request_with_both_opt_in
-                     .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
-                         policy.get(),
-                         mojom::blink::PermissionsPolicyFeature::kSharedStorage,
-                         origin_a));
+        network::mojom::PermissionsPolicyFeature::kSharedStorage, origin_a));
+    EXPECT_FALSE(
+        request_with_shared_storage_opt_in
+            .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
+                policy.get(),
+                network::mojom::PermissionsPolicyFeature::kSharedStorage,
+                origin_a));
+    EXPECT_FALSE(
+        request_with_both_opt_in
+            .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
+                policy.get(),
+                network::mojom::PermissionsPolicyFeature::kSharedStorage,
+                origin_a));
 
     EXPECT_TRUE(policy->IsFeatureEnabledForOrigin(
-        mojom::blink::PermissionsPolicyFeature::kBrowsingTopics, origin_b));
-    EXPECT_TRUE(request_with_topics_opt_in
-                    .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
-                        policy.get(),
-                        mojom::blink::PermissionsPolicyFeature::kBrowsingTopics,
-                        origin_b));
-    EXPECT_TRUE(request_with_both_opt_in
-                    .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
-                        policy.get(),
-                        mojom::blink::PermissionsPolicyFeature::kBrowsingTopics,
-                        origin_b));
+        network::mojom::PermissionsPolicyFeature::kBrowsingTopics, origin_b));
+    EXPECT_TRUE(
+        request_with_topics_opt_in
+            .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
+                policy.get(),
+                network::mojom::PermissionsPolicyFeature::kBrowsingTopics,
+                origin_b));
+    EXPECT_TRUE(
+        request_with_both_opt_in
+            .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
+                policy.get(),
+                network::mojom::PermissionsPolicyFeature::kBrowsingTopics,
+                origin_b));
 
     EXPECT_TRUE(policy->IsFeatureEnabledForOrigin(
-        mojom::blink::PermissionsPolicyFeature::kSharedStorage, origin_b));
-    EXPECT_TRUE(request_with_shared_storage_opt_in
-                    .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
-                        policy.get(),
-                        mojom::blink::PermissionsPolicyFeature::kSharedStorage,
-                        origin_b));
-    EXPECT_TRUE(request_with_both_opt_in
-                    .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
-                        policy.get(),
-                        mojom::blink::PermissionsPolicyFeature::kSharedStorage,
-                        origin_b));
+        network::mojom::PermissionsPolicyFeature::kSharedStorage, origin_b));
+    EXPECT_TRUE(
+        request_with_shared_storage_opt_in
+            .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
+                policy.get(),
+                network::mojom::PermissionsPolicyFeature::kSharedStorage,
+                origin_b));
+    EXPECT_TRUE(
+        request_with_both_opt_in
+            .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
+                policy.get(),
+                network::mojom::PermissionsPolicyFeature::kSharedStorage,
+                origin_b));
 
     EXPECT_FALSE(policy->IsFeatureEnabledForOrigin(
-        mojom::blink::PermissionsPolicyFeature::kBrowsingTopics, origin_c));
+        network::mojom::PermissionsPolicyFeature::kBrowsingTopics, origin_c));
     EXPECT_FALSE(
         request_with_topics_opt_in
             .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
                 policy.get(),
-                mojom::blink::PermissionsPolicyFeature::kBrowsingTopics,
+                network::mojom::PermissionsPolicyFeature::kBrowsingTopics,
                 origin_c));
     EXPECT_FALSE(
         request_with_both_opt_in
             .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
                 policy.get(),
-                mojom::blink::PermissionsPolicyFeature::kBrowsingTopics,
+                network::mojom::PermissionsPolicyFeature::kBrowsingTopics,
                 origin_c));
 
     EXPECT_FALSE(policy->IsFeatureEnabledForOrigin(
-        mojom::blink::PermissionsPolicyFeature::kSharedStorage, origin_c));
-    EXPECT_FALSE(request_with_shared_storage_opt_in
-                     .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
-                         policy.get(),
-                         mojom::blink::PermissionsPolicyFeature::kSharedStorage,
-                         origin_c));
-    EXPECT_FALSE(request_with_both_opt_in
-                     .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
-                         policy.get(),
-                         mojom::blink::PermissionsPolicyFeature::kSharedStorage,
-                         origin_c));
+        network::mojom::PermissionsPolicyFeature::kSharedStorage, origin_c));
+    EXPECT_FALSE(
+        request_with_shared_storage_opt_in
+            .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
+                policy.get(),
+                network::mojom::PermissionsPolicyFeature::kSharedStorage,
+                origin_c));
+    EXPECT_FALSE(
+        request_with_both_opt_in
+            .IsFeatureEnabledForSubresourceRequestAssumingOptIn(
+                policy.get(),
+                network::mojom::PermissionsPolicyFeature::kSharedStorage,
+                origin_c));
   }
 }
 

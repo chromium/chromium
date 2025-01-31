@@ -674,7 +674,6 @@
 <translation id="2157640075051554492">Ειδοποιήσεις παρακολούθησης τιμών</translation>
 <translation id="21613918653299710">Συλλογές εικόνων στο διαδίκτυο</translation>
 <translation id="2161656808144014275">Κείμενο</translation>
-<translation id="2162510787844374618">Επικοινωνία με την τράπεζά σας…</translation>
 <translation id="2162620598375156287">Τώρα <ph name="CURRENT_PRICE" /> στο <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Ελέγξτε μήπως υπάρχει κάποιο ορθογραφικό λάθος στη διεύθυνση <ph name="HOST_NAME" />.</translation>
 <translation id="2166049586286450108">Πλήρης πρόσβαση διαχειριστή</translation>
@@ -2410,6 +2409,7 @@
 <translation id="5254043433801397071">Βελτιστοποίηση περιεχομένου εκτύπωσης</translation>
 <translation id="5255583962255635076">Εφαρμοσμένες πολιτικές προγράμματος περιήγησης στο προφίλ εργασίας</translation>
 <translation id="5255690596502591079">Λήψη ούτως ή άλλως</translation>
+<translation id="5255771248404149177">Ο πάροχος της κάρτας σας θέλει να επαληθεύσει την ταυτότητά σας</translation>
 <translation id="5255833070095767006">350 x 460 χιλ.</translation>
 <translation id="5257739419779698609">{0,plural, =1{Η πολιτική διαχειριστή δεν συνιστά την αντιγραφή αυτού του αρχείου σε <ph name="DESTINATION_NAME" />.}other{Η πολιτική διαχειριστή δεν συνιστά την αντιγραφή αυτών των αρχείων σε <ph name="DESTINATION_NAME" />.}}</translation>
 <translation id="5263867360296733198">Απαιτείται έλεγχος πριν από τη μεταφόρτωση</translation>
@@ -2430,7 +2430,6 @@
 <translation id="5288108484102287882">Η επικύρωση των τιμών πολιτικής είχε ως αποτέλεσμα την εμφάνιση προειδοποιήσεων</translation>
 <translation id="5289384342738547352">Χειρισμός πολλών εγγράφων</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{Απαιτείται ενημέρωση σήμερα}=2{Απαιτείται ενημέρωση έως αύριο}other{Απαιτείται ενημέρωση εντός # ημερών}}</translation>
-<translation id="5292714443869769806">Μετάβαση στις ρυθμίσεις <ph name="OPERATING_SYSTEM" /></translation>
 <translation id="5293919335876685914">Αυτοκίνητα κουπέ</translation>
 <translation id="5298618990685278995">ένα αρχικό πρόχειρο</translation>
 <translation id="5299298092464848405">Σφάλμα ανάλυσης πολιτικής</translation>
@@ -2558,6 +2557,7 @@
 <translation id="5518352028556756716">Οι περισσότεροι ιστότοποι δεν μπορούν να χρησιμοποιήσουν cookie τρίτου μέρους για να σας παρακολουθούν καθώς περιηγείστε. Επίσης, οι ιστότοποι δεν μπορούν να χρησιμοποιήσουν cookie τρίτου μέρους σε Κατάσταση ανώνυμης περιήγησης.</translation>
 <translation id="5519516356611866228">Με τις αλλαγές σας</translation>
 <translation id="5519696598216267194">Χαρτί (Με τρύπες)</translation>
+<translation id="5520105693415771152">Δεν βλέπετε τα τρέχοντα στοιχεία σας; Επικοινωνήστε με τον πάροχό σας για να γίνει ενημέρωση.</translation>
 <translation id="5521782189689806907">Ντουλάπια</translation>
 <translation id="5523118979700054094">Όνομα πολιτικής</translation>
 <translation id="5523588073846127669">Ο έμπορος δεν αποδέχεται αυτή την εικονική κάρτα</translation>
@@ -3653,6 +3653,7 @@
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Φορτηγά και τρέιλερ</translation>
 <translation id="7461924472993315131">Καρφίτσωμα</translation>
+<translation id="746329643760972486">MacOS</translation>
 <translation id="7465036432780054056">Το <ph name="EMBEDDED_URL" /> θα γνωρίζει ότι επισκεφτήκατε το <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7465963048299965912">10 x 13 ίντσες</translation>
 <translation id="7469935732330206581">Η φόρμα δεν είναι ασφαλής</translation>
@@ -3923,7 +3924,6 @@
 <translation id="7942349550061667556">Κόκκινο</translation>
 <translation id="7943397946612013052">Αποκλεισμένη λήψη</translation>
 <translation id="7943893128817522649">Μπορεί να ζητά την αυτόματη λήψη πολλών αρχείων.</translation>
-<translation id="794567586469801724">macOS</translation>
 <translation id="7947285636476623132">Ελέγξτε το έτος λήξης σας και δοκιμάστε ξανά</translation>
 <translation id="7947310711271925113">Ποπ μουσική</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε το πλήκτρο Tab και έπειτα το πλήκτρο Enter για να μάθετε σχετικά με τις λειτουργίες του Chrome</translation>
@@ -4676,7 +4676,6 @@
 <translation id="984275831282074731">Τρόποι πληρωμής</translation>
 <translation id="985199708454569384">&lt;p&gt;Αυτό το σφάλμα θα εμφανιστεί εάν η ημερομηνία και η ώρα του υπολογιστή ή της κινητής συσκευής σας είναι ανακριβείς.&lt;/p&gt;
     &lt;p&gt;Για να διορθώσετε το σφάλμα, ανοίξτε το ρολόι της συσκευής. Βεβαιωθείτε ότι η ώρα και η ημερομηνία είναι σωστές.&lt;/p&gt;</translation>
-<translation id="986257639512122511">Έχετε παραχωρήσει την άδεια <ph name="PERMISSION" /> στο <ph name="ORIGIN" /></translation>
 <translation id="987264212798334818">Γενικά</translation>
 <translation id="988159990683914416">Έκδοση προγραμματιστή</translation>
 <translation id="989988560359834682">Επεξεργασία διεύθυνσης</translation>

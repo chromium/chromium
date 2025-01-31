@@ -731,6 +731,7 @@
 <translation id="3522979239100719575">იძებნება ხელმისაწვდომი პროფილები. ამას შეიძლება რამდენიმე წუთი დასჭირდეს.</translation>
 <translation id="3526440770046466733">ბმულის გახსნა ახალ ჩანართზე და მიმდინარე ჩანართზე დარჩენა</translation>
 <translation id="353086728817903341">დაკავშირებულია <ph name="NUM_DEVICES" /> მოწყობილობასთან</translation>
+<translation id="3532247131850366052">Google Sheet-ის შექმნა ვერ მოხერხდა</translation>
 <translation id="3533126039236445965">აპები თაროზე</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" />-ის უსადენო ქსელი</translation>
 <translation id="3540893133818942399">თქვენი ტელეფონის ბოლოდროინდელი ფოტოებისა და მედიაფაილების ნახვის დაყენების დახურვა</translation>
@@ -829,6 +830,7 @@
 <translation id="380165613292957338">გამარჯობა, რით შემიძლია გემსახუროთ?</translation>
 <translation id="3804737937830804242">კამერის ჩაკეცვა</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 emoji. სხვა შედეგები არ არის.}other{# emoji. სხვა შედეგები არ არის.}}</translation>
+<translation id="3822403841174077928">დაკოპირება ფორმატირების შენარჩუნებით ვერ მოხერხდა</translation>
 <translation id="3824784079442479685"><ph name="APP_NAME" />-ს, ასევე, ყველა აპსა და ვებსაიტს, რომლებსაც აქვს კამერის გამოყენების ნებართვა, მიენიჭება კამერაზე წვდომა. შესაძლოა, დაგჭირდეთ ვებგვერდის განახლება ან აპის გადატვირთვა.</translation>
 <translation id="3826099427150913765">პაროლზე გადართვა</translation>
 <translation id="383058930331066723">ბატარეის დამზოგის რეჟიმი ჩართულია</translation>
@@ -1215,6 +1217,7 @@
 <translation id="5043679421800073804">თაროზე ბოლო ხატულაზე დაწკაპუნება ან შეხება</translation>
 <translation id="504465286040788597">წინა აბზაცი</translation>
 <translation id="5045550434625856497">არასწორი პაროლი</translation>
+<translation id="5058794129231928255">Google Doc-ის შექმნა ვერ მოხერხდა</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">თუ საუბრისას თქვენი ხმა არ ისმის, შეტყობინებას მიიღებთ. აუდიო მუდამ თქვენს მოწყობილობაზე ინახება.</translation>
 <translation id="5077416371682039027">თქვენი ტელეფონის ბოლოდროინდელი ფოტოების, მედიაფაილების, შეტყობინებებისა და აპების ნახვის დაყენება</translation>
@@ -1478,7 +1481,6 @@
 <translation id="589817443623831496">წერტილოვანი სკანირება</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">ყვითელი</translation>
-<translation id="5911231045062997865">Lacros ფანჯრები ამჟამად მხარდაუჭერელია. სხვა აპები შეინახება.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916646100036936191">ახალი შეტყობინება, ჯამში <ph name="NOTIFICATION_COUNT" /></translation>
 <translation id="5916664084637901428">ჩართვა</translation>
@@ -1648,6 +1650,7 @@
 <translation id="6468406072297048412">{0,plural, =1{დააბრუნეთ მოწყობილობის წინა ვერსია 1 წუთის განმავლობაში}other{დააბრუნეთ მოწყობილობის წინა ვერსია # წუთის განმავლობაში}}</translation>
 <translation id="6469104339369989396">უსადენო ქსელის გადართვა</translation>
 <translation id="6477681113376365978">ფაილი ვერ ჩამოიტვირთა</translation>
+<translation id="648135757200234041">კონტაქტის შექმნა ვერ მოხერხდა</translation>
 <translation id="6482559668224714696">სრულეკრანიანი ლუპა</translation>
 <translation id="6485086611007560630">ამინდი (მიუწვდომელი)</translation>
 <translation id="6490471652906364588">USB-C მოწყობილობა (მარჯვენა პორტი)</translation>
@@ -2288,6 +2291,7 @@
 <translation id="8653151467777939995">შეტყობინების პარამეტრების ჩვენება. შეტყობინებები ჩართულია</translation>
 <translation id="8657066291275741003">ქვედა რეგისტრი</translation>
 <translation id="8660331759611631213">71-ის კვადრატული ფესვი</translation>
+<translation id="8662921061190671299">კალენდრისთვის დამატება ვერ მოხერხდა</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, სიგნალის სიძლიერე: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">ეკრანის ნაწილობრივი ანაბეჭდის აღსაბეჭდად დააჭირეთ Enter-ს</translation>
 <translation id="8676770494376880701">დაბალი სიმძლავრის დამტენი დაკავშირებულია</translation>

@@ -126,7 +126,6 @@
 <translation id="1076766328672150609">Con bạn có thể dùng mã PIN để mở khóa thiết bị này.</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216">Không thể tải từ điển kiểm tra lỗi chính tả xuống cho <ph name="LANGUAGE" />. Hãy thử lại.</translation>
-<translation id="1078029726086090536">Xác minh mật khẩu</translation>
 <translation id="1078037449555275327">Cài đặt ChromeVox</translation>
 <translation id="1079242569060319448">Bạn quên mã PIN?</translation>
 <translation id="1079285777677001938">Các tính năng của một số trang web có thể không hoạt động.</translation>
@@ -369,6 +368,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1241066500170667906">Chọn trạng thái thử nghiệm cho <ph name="EXPERIMENT_NAME" /></translation>
 <translation id="124116460088058876">Ngôn ngữ khác</translation>
 <translation id="1241381048229838873">Hiện tất cả dấu trang</translation>
+<translation id="1242044645101871359">Đăng nhập lại</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" /> muốn đặt lại cài đặt của bạn.</translation>
 <translation id="1243002225871118300">Thay đổi kích thước hiển thị và văn bản</translation>
 <translation id="1243314992276662751">Tải lên</translation>
@@ -1627,7 +1627,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2113921862428609753">Quyền Truy cập Thông tin Tổ chức Cấp Chứng chỉ</translation>
 <translation id="2114145607116268663">Không thể cài đặt, cần khởi động lại. Vui lòng khởi động lại máy tính rồi thử lại. Mã lỗi là <ph name="ERROR" />.</translation>
 <translation id="2114326799768592691">Tải lại &amp;khung</translation>
-<translation id="2114413269775311385">Dùng tài khoản này trong ứng dụng Android. Bạn có thể kiểm soát các quyền cho ứng dụng Android trong phần <ph name="LINK_BEGIN" />Cài đặt ứng dụng<ph name="LINK_END" />.</translation>
 <translation id="2114995631896158695">Chưa lắp thẻ SIM</translation>
 <translation id="2116619964159595185">Các trang web thường kết nối với thiết bị Bluetooth cho những tính năng như thiết lập hoặc đồng bộ hóa beacon năng lượng thấp, trình theo dõi sức khỏe/hoạt động tập thể dục hoặc bóng đèn thông minh</translation>
 <translation id="2117655453726830283">Trang trình bày tiếp theo</translation>
@@ -4647,6 +4646,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="4242533952199664413">Mở phần cài đặt</translation>
 <translation id="4242577469625748426">Không thể cài đặt các cài đặt chính sách trên thiết bị: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385"><ph name="BEGIN_LINK" />Trình duyệt và hồ sơ của bạn<ph name="END_LINK" /> đều do <ph name="DOMAIN" /> quản lý</translation>
+<translation id="424315890655130736">Nhập cụm mật khẩu</translation>
 <translation id="4243504193894350135">Máy in đã tạm dừng</translation>
 <translation id="4243624244759495699"><ph name="LOCALE" />, Hạng <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">Tìm thêm ứng dụng bút cảm ứng</translation>
@@ -5369,7 +5369,6 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="4766598565665644999">Tất cả tiện ích đều có thể đọc và thay đổi <ph name="HOST" /></translation>
 <translation id="4767427586072640478">Tìm hiểu thêm về các tiện ích bị tắt.</translation>
 <translation id="4768332406694066911">Bạn có các chứng chỉ từ những tổ chức nhận dạng bạn sau đây</translation>
-<translation id="4768945955870840220">Với một số sản phẩm, Chrome có thể thu thập các bài đánh giá trên web</translation>
 <translation id="4769632191812288342">Bạn đang sử dụng chế độ bảo vệ tiêu chuẩn</translation>
 <translation id="4770119228883592393">Đã yêu cầu quyền. Hãy nhấn tổ hợp phím ⌘ + Option + Mũi tên xuống để phản hồi</translation>
 <translation id="4770755495532014179">Dùng mật khẩu này trên iPhone của bạn</translation>
@@ -8770,7 +8769,6 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7243092385765551741">Xoá khoá truy cập?</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (Tốt nhất)</translation>
 <translation id="7246230585855757313">Cắm lại khóa bảo mật rồi thử lại lần nữa</translation>
-<translation id="724835896049478274">Tài khoản hiện có để sử dụng cho các ứng dụng Android</translation>
 <translation id="7248802599439396696">Dừng hoạt động của thẻ</translation>
 <translation id="7249197363678284330">Thay đổi chế độ cài đặt này trong thanh địa chỉ.</translation>
 <translation id="7249764475759804559">Thêm ứng dụng này làm một tuỳ chọn để mở tệp</translation>
@@ -10720,7 +10718,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8625124982056504555">Đọc số sê-ri của linh kiện và thiết bị ChromeOS</translation>
 <translation id="862542460444371744">&amp;Tiện ích mở rộng</translation>
 <translation id="8625663000550647058">Không được phép sử dụng micrô của bạn</translation>
-<translation id="8625679025395572221">Tài khoản của bạn vẫn có thể gặp nguy hiểm.</translation>
 <translation id="8625916342247441948">Không cho phép trang web kết nối với các thiết bị HID</translation>
 <translation id="862727964348362408">Bị tạm ngưng</translation>
 <translation id="862750493060684461">Bộ nhớ đệm CSS</translation>
@@ -11602,7 +11599,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="936801553271523408">Dữ liệu chẩn đoán hệ thống</translation>
 <translation id="93766956588638423">Sửa tiện ích</translation>
 <translation id="938623846785894166">Tệp bất thường</translation>
-<translation id="939401694733344652">Những tài khoản này hiện không được sử dụng cho các ứng dụng Android. Nếu bạn chọn một tài khoản để sử dụng cho ứng dụng Android này, thì tài khoản đó cũng có thể được sử dụng cho các ứng dụng Android khác. Bạn có thể thay đổi quyền truy cập vào ứng dụng Android trong phần <ph name="LINK_BEGIN" />Cài đặt &gt; Tài khoản<ph name="LINK_END" />.</translation>
 <translation id="939598580284253335">Nhập cụm mật khẩu</translation>
 <translation id="939736085109172342">Thư mục mới</translation>
 <translation id="940212040923880623">&amp;Tìm và chỉnh sửa</translation>

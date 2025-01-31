@@ -127,9 +127,12 @@ GetReauthorizeHostResponseStruct(const ReauthorizeHostResponse&);
 // LoggingService helpers
 // ======================
 
+extern std::string_view GetRemoteAccessLoggingPath();
+extern std::string_view GetRemoteSupportLoggingPath();
+
 // ReportSessionDisconnected
+extern std::string_view GetReportSessionDisconnectedRequestVerb();
 using ReportSessionDisconnectedRequest = DoNothingProto;
-extern std::string GetReportSessionDisconnectedRequestPath();
 extern std::unique_ptr<ReportSessionDisconnectedRequest>
 GetReportSessionDisconnectedRequest(
     const ReportSessionDisconnectedRequestStruct&);

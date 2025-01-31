@@ -674,7 +674,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2157640075051554492">Hysbysiadau olrhain prisiau</translation>
 <translation id="21613918653299710">Orielau Lluniau Ar-lein</translation>
 <translation id="2161656808144014275">Testun</translation>
-<translation id="2162510787844374618">Wrthi'n cysylltu â'ch banc…</translation>
 <translation id="2162620598375156287">Nawr <ph name="CURRENT_PRICE" /> yn <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Gwiriwch a oes teipo yn <ph name="HOST_NAME" />.</translation>
 <translation id="2166049586286450108">Mynediad Gweinyddol Llawn</translation>
@@ -2408,6 +2407,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="5254043433801397071">Optimeiddio'r cynnwys i'w argraffu</translation>
 <translation id="5255583962255635076">Polisïau porwr cymhwysol yn eich proffil gwaith</translation>
 <translation id="5255690596502591079">Cipio beth bynnag</translation>
+<translation id="5255771248404149177">Mae darparwr eich cerdyn eisiau sicrhau mai chi sydd yno</translation>
 <translation id="5255833070095767006">350 x 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{Nid yw'r polisi gweinyddwr yn argymell copïo'r ffeil hon i <ph name="DESTINATION_NAME" />}zero{Nid yw'r polisi gweinyddwr yn argymell copïo'r ffeiliau hyn i <ph name="DESTINATION_NAME" />}two{Nid yw'r polisi gweinyddwr yn argymell copïo'r ffeiliau hyn i <ph name="DESTINATION_NAME" />}few{Nid yw'r polisi gweinyddwr yn argymell copïo'r ffeiliau hyn i <ph name="DESTINATION_NAME" />}many{Nid yw'r polisi gweinyddwr yn argymell copïo'r ffeiliau hyn i <ph name="DESTINATION_NAME" />}other{Nid yw'r polisi gweinyddwr yn argymell copïo'r ffeiliau hyn i <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5263867360296733198">Mae angen adolygiad cyn uwchlwytho</translation>
@@ -2428,7 +2428,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="5288108484102287882">Mae dilysu gwerthoedd polisi wedi codi rhybuddion</translation>
 <translation id="5289384342738547352">Trin sawl dogfen</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{Mae angen diweddaru heddiw}=2{Mae angen diweddaru erbyn yfory}zero{Mae angen diweddaru o fewn # diwrnod}few{Mae angen diweddaru o fewn # diwrnod}many{Mae angen diweddaru o fewn # diwrnod}other{Mae angen diweddaru o fewn # diwrnod}}</translation>
-<translation id="5292714443869769806">Mynd i'r gosodiadau <ph name="OPERATING_SYSTEM" /></translation>
 <translation id="5293919335876685914">Ceir coupe</translation>
 <translation id="5298618990685278995">drafft cyntaf</translation>
 <translation id="5299298092464848405">Polisi dosrannu gwallau</translation>
@@ -2556,6 +2555,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="5518352028556756716">Ni all y rhan fwyaf o wefannau ddefnyddio cwcis trydydd parti i'ch olrhain wrth i chi bori, ac ni all gwefannau ddefnyddio cwcis trydydd parti yn y modd Anhysbys.</translation>
 <translation id="5519516356611866228">Gyda'ch newidiadau</translation>
 <translation id="5519696598216267194">Papur (Rhagdyllwyd)</translation>
+<translation id="5520105693415771152">Ddim yn gweld eich gwybodaeth gyfredol? Cysylltwch â'ch darparwr i'w ddiweddaru.</translation>
 <translation id="5521782189689806907">Cabinetau</translation>
 <translation id="5523118979700054094">Enw'r polisi</translation>
 <translation id="5523588073846127669">Nid yw'r masnachwr yn derbyn y cerdyn rhithwir hwn</translation>
@@ -3650,6 +3650,7 @@ Manylion ychwanegol:
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Tryciau Cargo ac Ôl-gerbydau</translation>
 <translation id="7461924472993315131">Pinio</translation>
+<translation id="746329643760972486">MacOS</translation>
 <translation id="7465036432780054056">Bydd <ph name="EMBEDDED_URL" /> yn gwybod eich bod wedi ymweld â <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7465963048299965912">10 x 13 modfedd</translation>
 <translation id="7469935732330206581">Nid yw'r ffurflen yn ddiogel</translation>
@@ -3920,7 +3921,6 @@ Manylion ychwanegol:
 <translation id="7942349550061667556">Coch</translation>
 <translation id="7943397946612013052">Lawrlwytho wedi'i rwystro</translation>
 <translation id="7943893128817522649">Yn gallu gofyn am lawrlwytho mwy nag un ffeil yn awtomatig</translation>
-<translation id="794567586469801724">macOS</translation>
 <translation id="7947285636476623132">Gwiriwch eich blwyddyn darfod a rhowch gynnig arall arni</translation>
 <translation id="7947310711271925113">Cerddoriaeth Pop</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, pwyswch Tab yna Enter i ddysgu am nodweddion Chrome</translation>
@@ -4672,7 +4672,6 @@ Manylion ychwanegol:
 <translation id="984275831282074731">Dulliau talu</translation>
 <translation id="985199708454569384">&lt;p&gt;Byddwch yn gweld y gwall hwn os yw dyddiad ac amser eich cyfrifiadur neu ddyfais symudol yn anghywir.&lt;/p&gt;
     &lt;p&gt;Agorwch gloc eich dyfais i gywiro'r gwall. Gwnewch yn siŵr bod yr amser a'r dyddiad yn gywir.&lt;/p&gt;</translation>
-<translation id="986257639512122511">Rydych wedi caniatáu <ph name="PERMISSION" /> ar <ph name="ORIGIN" /></translation>
 <translation id="987264212798334818">Cyffredinol</translation>
 <translation id="988159990683914416">Fersiwn Datblygwyr</translation>
 <translation id="989988560359834682">Golygu'r Cyfeiriad</translation>

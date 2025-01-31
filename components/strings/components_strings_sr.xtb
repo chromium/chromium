@@ -674,7 +674,6 @@
 <translation id="2157640075051554492">Обавештења о праћењу цена</translation>
 <translation id="21613918653299710">Онлајн галерије слика</translation>
 <translation id="2161656808144014275">Текст</translation>
-<translation id="2162510787844374618">Контактира се са банком…</translation>
 <translation id="2162620598375156287">Цена је сада <ph name="CURRENT_PRICE" /> на <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Уверите се да <ph name="HOST_NAME" /> не садржи словне грешке.</translation>
 <translation id="2166049586286450108">Потпуни администраторски приступ</translation>
@@ -2408,6 +2407,7 @@
 <translation id="5254043433801397071">Оптимизујте садржај за штампање</translation>
 <translation id="5255583962255635076">Примењене смернице за прегледач на пословном профилу</translation>
 <translation id="5255690596502591079">Ипак сними</translation>
+<translation id="5255771248404149177">Добављач картице жели да се увери да сте то ви</translation>
 <translation id="5255833070095767006">350×460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{Смернице администратора не препоручују копирање овог фајла на <ph name="DESTINATION_NAME" />}one{Смернице администратора не препоручују копирање ових фајлова на <ph name="DESTINATION_NAME" />}few{Смернице администратора не препоручују копирање ових фајлова на <ph name="DESTINATION_NAME" />}other{Смернице администратора не препоручују копирање ових фајлова на <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5263867360296733198">Потребан је преглед пре отпремања</translation>
@@ -2428,7 +2428,6 @@
 <translation id="5288108484102287882">Валидација вредности смерница је активирала упозорења</translation>
 <translation id="5289384342738547352">Обрада више докумената</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{Ажурирање мора да се обави данас}=2{Ажурирање мора да се обави до сутра}one{Ажурирање мора да се обави у року од # дана}few{Ажурирање мора да се обави у року од # дана}other{Ажурирање мора да се обави у року од # дана}}</translation>
-<translation id="5292714443869769806">Иди у подешавања система <ph name="OPERATING_SYSTEM" /></translation>
 <translation id="5293919335876685914">Купеи</translation>
 <translation id="5298618990685278995">прва радна верзија</translation>
 <translation id="5299298092464848405">Грешка при рашчлањивању смерница</translation>
@@ -2556,6 +2555,7 @@
 <translation id="5518352028556756716">Већина сајтова не може да користи колачиће треће стране да би вас пратила док прегледате и сајтови не могу да користе колачиће треће стране у режиму без архивирања.</translation>
 <translation id="5519516356611866228">Са променама</translation>
 <translation id="5519696598216267194">Папир (припремљен)</translation>
+<translation id="5520105693415771152">Не видите актуелне податке? Обратите се банци да бисте их ажурирали.</translation>
 <translation id="5521782189689806907">Ормарићи</translation>
 <translation id="5523118979700054094">Назив смерница</translation>
 <translation id="5523588073846127669">Продавац не прихвата ову виртуелну картицу</translation>
@@ -3650,6 +3650,7 @@
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Теретни камиони и приколице</translation>
 <translation id="7461924472993315131">Закачи</translation>
+<translation id="746329643760972486">MacOS</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> ће знати да сте посетили <ph name="TOP_LEVEL_URL" />.</translation>
 <translation id="7465963048299965912">10×13 in</translation>
 <translation id="7469935732330206581">Образац није безбедан</translation>
@@ -3920,7 +3921,6 @@
 <translation id="7942349550061667556">Црвена</translation>
 <translation id="7943397946612013052">Преузимање је блокирано</translation>
 <translation id="7943893128817522649">Може да тражи да аутоматски преузима више фајлова</translation>
-<translation id="794567586469801724">macOS</translation>
 <translation id="7947285636476623132">Проверите годину истека и пробајте поново</translation>
 <translation id="7947310711271925113">Поп музика</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте сазнали више о Chrome функцијама</translation>
@@ -4673,7 +4673,6 @@
 <translation id="984275831282074731">Начини плаћања</translation>
 <translation id="985199708454569384">&lt;p&gt;Ова грешка се приказује ако датум и време на рачунару или мобилном уређају нису тачни.&lt;/p&gt;
     &lt;p&gt;Да бисте отклонили грешку, отворите сат на уређају. Уверите се да су време и датум тачни.&lt;/p&gt;</translation>
-<translation id="986257639512122511">Дали сте дозволу за ставку <ph name="PERMISSION" /> на <ph name="ORIGIN" /></translation>
 <translation id="987264212798334818">Опште</translation>
 <translation id="988159990683914416">Верзија за програмере</translation>
 <translation id="989988560359834682">Измена адресе</translation>

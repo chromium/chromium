@@ -158,7 +158,12 @@ class SigninPromoViewMediatorTest : public PlatformTest {
   // Adds an identity and tests the mediator.
   void TestSigninPromoWithAccount(SigninPromoViewStyle style) {
     // Expect to receive an update to the consumer with a configurator.
-    ExpectConfiguratorNotification(YES /* identity changed */);
+    ExpectConfiguratorNotification(/*identity_changed=*/YES);
+    if (base::FeatureList::IsEnabled(kUseAccountListFromIdentityManager)) {
+      // IdentityManager sends an extra "account changed" notification when
+      // adding an account to the device.
+      ExpectConfiguratorNotification(/*identity_changed=*/NO);
+    }
     AddDefaultIdentity();
     // Check the configurator received by the consumer.
     CheckSigninWithAccountConfigurator(configurator_, style);

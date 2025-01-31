@@ -23,10 +23,17 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
+using testing::Eq;
+using testing::Field;
+
 namespace {
 class MockObserver : public DeviceAccountsProvider::Observer {
  public:
   MOCK_METHOD(void, OnAccountsOnDeviceChanged, (), (override));
+  MOCK_METHOD(void,
+              OnAccountOnDeviceUpdated,
+              (const DeviceAccountsProvider::AccountInfo& device_account),
+              (override));
 };
 
 const char* const kClientID = "ClientID";
@@ -111,4 +118,21 @@ TEST_F(DeviceAccountsProviderImplTest, TestOnAccountsOnDeviceChanged) {
 
   EXPECT_CALL(observer, OnAccountsOnDeviceChanged());
   fake_system_identity_manager_->FireSystemIdentityReloaded();
+}
+
+// Tests the observer is invoked.
+TEST_F(DeviceAccountsProviderImplTest, TestOnAccountOnDeviceUpdated) {
+  const FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
+  fake_system_identity_manager_->AddIdentity(fake_identity);
+
+  DeviceAccountsProviderImpl* provider = GetDeviceAccountsProviderImpl();
+  MockObserver observer;
+  base::ScopedObservation<DeviceAccountsProvider, MockObserver>
+      scoped_observation{&observer};
+  scoped_observation.Observe(provider);
+
+  EXPECT_CALL(observer, OnAccountOnDeviceUpdated(
+                            Field(&DeviceAccountsProvider::AccountInfo::gaia,
+                                  Eq(GaiaId(fake_identity.gaiaID)))));
+  fake_system_identity_manager_->FireIdentityUpdatedNotification(fake_identity);
 }

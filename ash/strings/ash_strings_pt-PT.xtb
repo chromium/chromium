@@ -731,6 +731,7 @@ Caso contrário, o touchpad incorporado é reativado dentro de <ph name="TIMEOUT
 <translation id="3522979239100719575">A procurar perfis disponíveis. Esta ação pode demorar alguns minutos.</translation>
 <translation id="3526440770046466733">Abrir o link num novo separador e permanecer no separador atual</translation>
 <translation id="353086728817903341">Ligado a <ph name="NUM_DEVICES" /> dispositivos</translation>
+<translation id="3532247131850366052">Não foi possível criar uma folha de cálculo do Google Sheets</translation>
 <translation id="3533126039236445965">Apps na prateleira</translation>
 <translation id="3539957339480430241">Zona Wi-Fi do <ph name="DEVICE_NAME" /></translation>
 <translation id="3540893133818942399">Ignore a configuração da visualização das fotos e dos conteúdos multimédia recentes do telemóvel</translation>
@@ -829,6 +830,7 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="380165613292957338">Olá, como posso ajudar?</translation>
 <translation id="3804737937830804242">Reduza a câmara</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 emoji. Não existem mais resultados.}other{# emojis. Não existem mais resultados.}}</translation>
+<translation id="3822403841174077928">Não foi possível copiar com a formatação</translation>
 <translation id="3824784079442479685">Isto permite o acesso à câmara para a app <ph name="APP_NAME" />, e para todas as apps e Websites com a autorização da câmara. Pode ter de atualizar a página Web ou reiniciar a app.</translation>
 <translation id="3826099427150913765">Mudar para palavra-passe</translation>
 <translation id="383058930331066723">O modo de Poupança de bateria está ativado.</translation>
@@ -1215,6 +1217,7 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="5043679421800073804">Clicar ou tocar no último ícone na prateleira</translation>
 <translation id="504465286040788597">Parágrafo anterior</translation>
 <translation id="5045550434625856497">Palavra-passe incorrecta</translation>
+<translation id="5058794129231928255">Não foi possível criar um documento do Google Docs</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Vai receber uma notificação se falar enquanto estiver com o som desativado. O áudio nunca sai do seu dispositivo.</translation>
 <translation id="5077416371682039027">Configurar visualização das fotos, dos conteúdos multimédia, das notificações e das apps recentes do telemóvel</translation>
@@ -1478,7 +1481,6 @@ Nenhum dispositivo ligado.</translation>
 <translation id="589817443623831496">Análise de pontos</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">Amarelo</translation>
-<translation id="5911231045062997865">De momento, as janelas do Lacros não são suportadas. As outras apps serão guardadas.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916646100036936191">Nova notificação, <ph name="NOTIFICATION_COUNT" /> no total</translation>
 <translation id="5916664084637901428">Ativado</translation>
@@ -1648,6 +1650,7 @@ Nenhum dispositivo ligado.</translation>
 <translation id="6468406072297048412">{0,plural, =1{Atualize o dispositivo para a versão anterior dentro de 1 minuto}other{Atualize o dispositivo para a versão anterior dentro de # minutos}}</translation>
 <translation id="6469104339369989396">Ativar/desativar zona Wi-Fi</translation>
 <translation id="6477681113376365978">Não é possível transferir o ficheiro</translation>
+<translation id="648135757200234041">Não foi possível criar o contacto</translation>
 <translation id="6482559668224714696">Lupa de ecrã inteiro</translation>
 <translation id="6485086611007560630">Meteorologia (não disponível)</translation>
 <translation id="6490471652906364588">Dispositivo USB-C (porta direita)</translation>
@@ -2288,6 +2291,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="8653151467777939995">Mostrar definições de notificação. As notificações estão ativadas</translation>
 <translation id="8657066291275741003">minúsculas</translation>
 <translation id="8660331759611631213">Raiz quadrada de 71</translation>
+<translation id="8662921061190671299">Não foi possível adicionar ao Calendário</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, intensidade do sinal: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Prima Enter para fazer uma captura de ecrã parcial</translation>
 <translation id="8676770494376880701">Carregador de baixo consumo ligado</translation>

@@ -32,6 +32,7 @@ namespace remoting {
 
 class ChromotingHost;
 class ChromotingHostContext;
+class CorpHostStatusLogger;
 class DesktopEnvironmentFactory;
 class FtlSignalingConnector;
 class HostEventLogger;
@@ -251,13 +252,17 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
   std::unique_ptr<HostStatusLogger> host_status_logger_;
   std::unique_ptr<DesktopEnvironmentFactory> desktop_environment_factory_;
   std::unique_ptr<HostEventLogger> host_event_logger_;
-  LocalSessionPoliciesProvider local_session_policies_provider_;
+  std::unique_ptr<LocalSessionPoliciesProvider>
+      local_session_policies_provider_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<HostEventReporter> host_event_reporter_;
   HostEventReporterFactory host_event_reporter_factory_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   bool use_corp_session_authz_ = false;
+
+  // Only set if |use_corp_session_authz_| is true.
+  std::unique_ptr<CorpHostStatusLogger> corp_host_status_logger_;
 
   std::unique_ptr<ChromotingHost> host_;
   int failed_login_attempts_ = 0;

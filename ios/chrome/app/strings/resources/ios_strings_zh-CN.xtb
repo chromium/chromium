@@ -263,7 +263,6 @@
 <translation id="2074131957428911366">您随时可在<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />中选择要同步的内容。</translation>
 <translation id="2078437078822043850">向右滚动即可在无痕模式下浏览内容。</translation>
 <translation id="2079545284768500474">撤消</translation>
-<translation id="2082906935540894275">在不同时间为您提供最相关的功能。</translation>
 <translation id="2085876078937250610">保存…</translation>
 <translation id="2096239473850415494">无法下载</translation>
 <translation id="2096716221239095980">删除所有数据</translation>
@@ -548,7 +547,6 @@
 <translation id="3445288400492335833"><ph name="MINUTES" />分钟</translation>
 <translation id="344589138074534176">详细了解 Google 智能镜头</translation>
 <translation id="3447332786336558089">您退出账号后，标签页将被关闭，未保存的账号数据将从此设备中删除。这些数据可能包括密码、历史记录等。</translation>
-<translation id="3449016921756175697">让浏览更顺畅、更轻松的实用建议。</translation>
 <translation id="345348365500626747">找到地址</translation>
 <translation id="3464194322481586217">无法跟踪价格。</translation>
 <translation id="3469117812148449995">密码保存选项</translation>
@@ -718,6 +716,7 @@
 <translation id="422477017457571619">根据系统向 Google 发送的浏览数据，实时提供 AI 赋能的保护，防范危险的网站、下载内容和扩展程序</translation>
 <translation id="4231395118547300571">已开启安全检查通知</translation>
 <translation id="4237377247299956313">点按<ph name="BEGIN_BOLD" />默认浏览器应用<ph name="END_BOLD" /></translation>
+<translation id="4241893428331130998">尚未保存任何密码或通行密钥</translation>
 <translation id="4242533952199664413">打开“设置”</translation>
 <translation id="4250432749243022864">{count,plural, =0{打开 {count} 个标签页}=1{打开 {count} 个标签页}other{打开 {count} 个标签页}}</translation>
 <translation id="4250680216510889253">否</translation>
@@ -922,7 +921,6 @@
 <translation id="5127538504377457572"><ph name="DAYS" /> 天前曾有活动</translation>
 <translation id="5128788795241319992">探索新菜单</translation>
 <translation id="5132942445612118989">将您的密码、历史记录等信息同步到所有设备上</translation>
-<translation id="5137526732000415202">您上次在所有设备上打开的标签页。</translation>
 <translation id="5145331760738811130">离开标签页切换器</translation>
 <translation id="5157638238828697074">出了点问题。无法打开该应用。</translation>
 <translation id="5163417375525818870">PDF</translation>
@@ -1023,7 +1021,6 @@
 <translation id="559567008082979829">设置在一个月后自动删除下载内容。</translation>
 <translation id="5596627076506792578">更多选项</translation>
 <translation id="560322036295180549">已被贵组织关闭</translation>
-<translation id="5611107723541161735">您最近在此设备上访问过的网站的快捷方式。</translation>
 <translation id="5611398002774823980">保存到账号</translation>
 <translation id="5613297089029360427">按新近度排序</translation>
 <translation id="5614553682702429503">要保存密码吗？</translation>
@@ -1487,7 +1484,6 @@
 <translation id="7512075701202892785">您喜爱的浏览器现已登陆 iPad</translation>
 <translation id="7512909159512473473">输入口令…</translation>
 <translation id="7514365320538308">下载</translation>
-<translation id="7521117365186708026">设置提示，帮助您充分利用 Chrome。</translation>
 <translation id="7524055474074101597">获取您为各种应用保存的密码和其他信息。</translation>
 <translation id="75362970626182391">新标签页分组</translation>
 <translation id="7537586195939242955">抱歉，目前无法将您的票证添加到 Passbook。</translation>
@@ -1600,6 +1596,7 @@
 <translation id="7982789257301363584">网络</translation>
 <translation id="7987685713885608670">为了提高安全性，请先在设备上对密码进行加密，然后再将其保存到 Google 密码管理工具中。</translation>
 <translation id="798991908416757345">标签页分组不可用</translation>
+<translation id="7993170188789685695">点按两次即可关闭此通知。</translation>
 <translation id="7993619969781047893">某些网站上的功能可能会无法正常运作</translation>
 <translation id="7996239959906074962">设置…</translation>
 <translation id="800361585186029508">在 Google Chrome 中打开输入的网址。</translation>
@@ -1706,7 +1703,6 @@
 <translation id="8439758443371991593">隐藏“添加到阅读清单”</translation>
 <translation id="8449869326050867919">已分享密码</translation>
 <translation id="8453847087068411809">一律不自动检测包裹</translation>
-<translation id="846158969830690371">了解您是否已使用最安全的设置，或是否需要检查任何内容。</translation>
 <translation id="8473863474539038330">地址和其他信息</translation>
 <translation id="8474378002946546633">允许通知</translation>
 <translation id="8477178913400731244">删除数据</translation>

@@ -259,11 +259,15 @@ class It2MeHostTest : public testing::Test, public It2MeHost::Observer {
   ChromotingHost* GetHost() { return it2me_host_->host_.get(); }
 
   const SessionPolicies& get_local_session_policies() const {
-    return it2me_host_->local_session_policies_provider_.get_local_policies();
+    return it2me_host_->local_session_policies_provider_->get_local_policies();
   }
 
   bool is_using_corp_session_authz() const {
     return it2me_host_->use_corp_session_authz_;
+  }
+
+  bool has_corp_host_status_logger() const {
+    return it2me_host_->corp_host_status_logger_.get() != nullptr;
   }
 
   // Configuration values used by StartHost();
@@ -929,6 +933,7 @@ TEST_F(It2MeHostTest, StartHost_UseCorpSessionAuthz) {
   // No shared secret after the support ID.
   ASSERT_EQ(stored_access_code_, kTestSupportId);
   ASSERT_TRUE(is_using_corp_session_authz());
+  ASSERT_TRUE(has_corp_host_status_logger());
 }
 
 TEST_F(It2MeHostTest, StartHost_DoesNotUseCorpSessionAuthz) {
@@ -939,6 +944,7 @@ TEST_F(It2MeHostTest, StartHost_DoesNotUseCorpSessionAuthz) {
   // ID.
   ASSERT_GT(stored_access_code_.length(), strlen(kTestSupportId));
   ASSERT_FALSE(is_using_corp_session_authz());
+  ASSERT_FALSE(has_corp_host_status_logger());
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

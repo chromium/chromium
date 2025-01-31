@@ -731,6 +731,7 @@
 <translation id="3522979239100719575">Հասանելի պրոֆիլների որոնում։ Դա կարող է մի քանի րոպե տևել։</translation>
 <translation id="3526440770046466733">Բացել հղումը նոր ներդիրում և մնալ ընթացիկ ներդիրում</translation>
 <translation id="353086728817903341">Միացված է <ph name="NUM_DEVICES" /> սարքի</translation>
+<translation id="3532247131850366052">Չհաջողվեց ստեղծել Google աղյուսակ</translation>
 <translation id="3533126039236445965">Հավելվածներ դարակում</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" />-ի թեժ կետ</translation>
 <translation id="3540893133818942399">Բաց թողնել հեռախոսի վերջին լուսանկարների և մեդիաֆայլերի դիտման կարգավորումը</translation>
@@ -829,6 +830,7 @@
 <translation id="380165613292957338">Ողջույն: Ինչո՞վ կարող եմ օգնել:</translation>
 <translation id="3804737937830804242">Ծալել տեսախցիկը</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 էմոջի։ Այլ արդյունքներ չկան։}one{# էմոջի։ Այլ արդյունքներ չկան։}other{# էմոջի։ Այլ արդյունքներ չկան։}}</translation>
+<translation id="3822403841174077928">Չհաջողվեց պատճենել ձևաչափումով</translation>
 <translation id="3824784079442479685">Սա հասանելի է դարձնում տեսախցիկը <ph name="APP_NAME" /> հավելվածին, ինչպես նաև բոլոր հավելվածներին և կայքերին, որոնք ունեն տեսախցիկի օգտագործման թույլտվություն։ Հնարավոր է՝ անհրաժեշտ լինի թարմացնել վեբ էջը կամ վերագործարկել հավելվածը։</translation>
 <translation id="3826099427150913765">Անցնել գաղտնաբառով նույնականացմանը</translation>
 <translation id="383058930331066723">Մարտկոցի տնտեսման ռեժիմը միացված է</translation>
@@ -1215,6 +1217,7 @@
 <translation id="5043679421800073804">Ընտրել վերջին պատկերակը դարակում</translation>
 <translation id="504465286040788597">Նախորդ պարբերությունը</translation>
 <translation id="5045550434625856497">Գաղտնաբառը սխալ է</translation>
+<translation id="5058794129231928255">Չհաջողվեց ստեղծել Google փաստաթուղթ</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Դուք ծանուցում կստանաք, եթե խոսեք ձայնն անջատված ժամանակ։ Ձայնը մնում է ձեր սարքում։</translation>
 <translation id="5077416371682039027">Կարգավորել հեռախոսի վերջին լուսանկարների, մեդիաֆայլերի, ծանուցումների և հավելվածների դիտումը</translation>
@@ -1478,7 +1481,6 @@
 <translation id="589817443623831496">Կետերի որոնում</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">Դեղին</translation>
-<translation id="5911231045062997865">Lacros պատուհանները ներկայումս չեն աջակցվում։ Մյուս հավելվածները կպահվեն։</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916646100036936191">Նոր ծանուցում, ընդհանուր՝ <ph name="NOTIFICATION_COUNT" /></translation>
 <translation id="5916664084637901428">Միացնել</translation>
@@ -1648,6 +1650,7 @@
 <translation id="6468406072297048412">{0,plural, =1{Վերադարձեք սարքի օպերացիոն համակարգի նախորդ տարբերակին 1 րոպեի ընթացքում}one{Վերադարձեք սարքի օպերացիոն համակարգի նախորդ տարբերակին # րոպեի ընթացքում}other{Վերադարձեք սարքի օպերացիոն համակարգի նախորդ տարբերակին # րոպեի ընթացքում}}</translation>
 <translation id="6469104339369989396">Միացնել/անջատել թեժ կետը</translation>
 <translation id="6477681113376365978">Չհաջողվեց ներբեռնել ֆայլը</translation>
+<translation id="648135757200234041">Չհաջողվեց ստեղծել կոնտակտ</translation>
 <translation id="6482559668224714696">Լիաէկրան խոշորացույց</translation>
 <translation id="6485086611007560630">Եղանակ (հասանելի չէ)</translation>
 <translation id="6490471652906364588">USB-C սարք (աջ միացք)</translation>
@@ -1977,6 +1980,7 @@
 <translation id="7611213136657090146">Տեսախցիկը նորից միացվեց։</translation>
 <translation id="7613620083300976559">Միացնել խաղի կարգավորումները</translation>
 <translation id="761736749114493194">Միացնել/անջատել տեսախցիկի կադրավորումը։ <ph name="STATE_TEXT" /></translation>
+<translation id="7621008024906456933">Quick Share-ի կարգավորումներ</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7627303771480696593">Հարց տվեք</translation>
 <translation id="7634648064048557203">Տեսախցիկի պատկերն ամրացված է ներքևի աջ անկյունում</translation>
@@ -2287,6 +2291,7 @@
 <translation id="8653151467777939995">Ցուցադրել ծանուցումների կարգավորումները: Ծանուցումները միացված են:</translation>
 <translation id="8657066291275741003">փոքրատառ</translation>
 <translation id="8660331759611631213">71 թվից քառակուսի արմատ</translation>
+<translation id="8662921061190671299">Չհաջողվեց ավելացնել Օրացույցում</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Սեղմեք Enter՝ մասնակի սքրինշոթ անելու համար</translation>
 <translation id="8676770494376880701">Կապակցվել է թույլ լիցքով լիցքավորիչ</translation>

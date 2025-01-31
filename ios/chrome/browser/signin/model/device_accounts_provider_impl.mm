@@ -88,32 +88,38 @@ AccessTokenResult AccessTokenResultFrom(
   }
 }
 
+DeviceAccountsProvider::AccountInfo ConvertSystemIdentityToAccountInfo(
+    id<SystemIdentity> identity) {
+  CHECK(identity);
+
+  SystemIdentityManager* system_identity_manager =
+      GetApplicationContext()->GetSystemIdentityManager();
+
+  AccountInfo account_info;
+  account_info.gaia = GaiaId(identity.gaiaID);
+  account_info.email = base::SysNSStringToUTF8(identity.userEmail);
+
+  // If hosted domain is nil, then it means the information has not been
+  // fetched from gaia; in that case, set account_info.hosted_domain to
+  // an empty string. Otherwise, set it to the value of the hostedDomain
+  // or kNoHostedDomainFound if the string is empty.
+  NSString* hosted_domain =
+      system_identity_manager->GetCachedHostedDomainForIdentity(identity);
+  if (hosted_domain) {
+    account_info.hosted_domain = hosted_domain.length
+                                     ? base::SysNSStringToUTF8(hosted_domain)
+                                     : kNoHostedDomainFound;
+  }
+  return account_info;
+}
+
 std::vector<DeviceAccountsProvider::AccountInfo>
 ConvertSystemIdentitiesToAccountInfos(NSArray<id<SystemIdentity>>* identities) {
   std::vector<AccountInfo> result;
   result.reserve(identities.count);
 
-  SystemIdentityManager* system_identity_manager =
-      GetApplicationContext()->GetSystemIdentityManager();
-
   for (id<SystemIdentity> identity : identities) {
-    CHECK(identity);
-    AccountInfo account_info;
-    account_info.gaia = GaiaId(identity.gaiaID);
-    account_info.email = base::SysNSStringToUTF8(identity.userEmail);
-
-    // If hosted domain is nil, then it means the information has not been
-    // fetched from gaia; in that case, set account_info.hosted_domain to
-    // an empty string. Otherwise, set it to the value of the hostedDomain
-    // or kNoHostedDomainFound if the string is empty.
-    NSString* hosted_domain =
-        system_identity_manager->GetCachedHostedDomainForIdentity(identity);
-    if (hosted_domain) {
-      account_info.hosted_domain = hosted_domain.length
-                                       ? base::SysNSStringToUTF8(hosted_domain)
-                                       : kNoHostedDomainFound;
-    }
-    result.push_back(std::move(account_info));
+    result.push_back(ConvertSystemIdentityToAccountInfo(identity));
   }
 
   return result;
@@ -184,5 +190,13 @@ DeviceAccountsProviderImpl::GetAccountsOnDevice() const {
 void DeviceAccountsProviderImpl::OnIdentitiesOnDeviceChanged() {
   for (auto& observer : observer_list_) {
     observer.OnAccountsOnDeviceChanged();
+  }
+}
+
+void DeviceAccountsProviderImpl::OnIdentityOnDeviceUpdated(
+    id<SystemIdentity> identity) {
+  AccountInfo info = ConvertSystemIdentityToAccountInfo(identity);
+  for (auto& observer : observer_list_) {
+    observer.OnAccountOnDeviceUpdated(info);
   }
 }

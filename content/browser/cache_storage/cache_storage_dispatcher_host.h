@@ -57,6 +57,8 @@ class CacheStorageDispatcherHost {
       mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
           coep_reporter,
       const network::DocumentIsolationPolicy& document_isolation_policy,
+      mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>
+          dip_reporter,
       const blink::StorageKey& storage_key,
       const std::optional<storage::BucketLocator>& bucket,
       storage::mojom::CacheStorageOwner owner,

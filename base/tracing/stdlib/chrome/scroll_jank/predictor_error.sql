@@ -66,7 +66,7 @@ SELECT
       THEN $d2/MAX($d1, $d3) - $threshold
     WHEN MIN($d1, $d3)/$d2 >= $threshold
       THEN MIN($d1, $d3)/$d2 - $threshold
-    ELSE 0
+    ELSE 0.0
   END;
 
 CREATE PERFETTO TABLE _deltas_and_neighbors AS

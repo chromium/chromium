@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/strings/strcat.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "remoting/base/internal_headers.h"
 #include "remoting/base/protobuf_http_request.h"
@@ -18,11 +19,13 @@ namespace remoting {
 
 CorpLoggingServiceClient::CorpLoggingServiceClient(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    std::unique_ptr<OAuthTokenGetter> oauth_token_getter)
+    std::unique_ptr<OAuthTokenGetter> oauth_token_getter,
+    std::string_view logging_path)
     : oauth_token_getter_(std::move(oauth_token_getter)),
       http_client_(ServiceUrls::GetInstance()->remoting_corp_endpoint(),
                    oauth_token_getter_.get(),
-                   url_loader_factory) {}
+                   url_loader_factory),
+      logging_path_(logging_path) {}
 
 CorpLoggingServiceClient::~CorpLoggingServiceClient() = default;
 
@@ -67,7 +70,9 @@ void CorpLoggingServiceClient::ReportSessionDisconnected(
         })");
   auto request_config =
       std::make_unique<ProtobufHttpRequestConfig>(traffic_annotation);
-  request_config->path = internal::GetReportSessionDisconnectedRequestPath();
+  request_config->path =
+      base::StrCat({logging_path_, ":",
+                    internal::GetReportSessionDisconnectedRequestVerb()});
   request_config->api_key = internal::GetRemotingCorpApiKey();
   request_config->authenticated = true;
   request_config->provide_certificate = true;

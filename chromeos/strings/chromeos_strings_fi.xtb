@@ -768,6 +768,7 @@
 <translation id="4654549501020883054">Vaihda päivittäin</translation>
 <translation id="4655868084888499342">Kuva asetettu taustakuvaksi</translation>
 <translation id="4661249927038176904">Surrealistinen</translation>
+<translation id="4661392828086261436">Päivityksen tarjoaa laitevalmistaja, eikä Google ole vahvistanut sitä</translation>
 <translation id="4664651912255946953">turkki</translation>
 <translation id="4665014895760275686">Valmistaja</translation>
 <translation id="467510802200863975">Salasanat eivät täsmää</translation>
@@ -1027,6 +1028,7 @@
 <translation id="5904994456462260490">Lisää uusi APN</translation>
 <translation id="590746845088109442">kissat</translation>
 <translation id="5907649332524363701">avaimen väri</translation>
+<translation id="5908813850962688338">Päivityksen asentamisessa kuluu muutama minuutti. Pidä laite kytkettynä virtalähteeseen ja päällä, kun päivitystä ladataan. Laite saattaa käynnistyä uudelleen useita kertoja ja näyttää mustan näytön prosessin aikana. Sinua pyydetään käynnistämään laite uudelleen asennuksen viimeistelemiseksi.</translation>
 <translation id="5916084858004523819">Kielletty</translation>
 <translation id="5916664084637901428">Päällä</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Tiedostosi skannaus onnistui. Se on tallennettu tänne: <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Tiedostojesi skannaus onnistui. Ne on tallennettu tänne: <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>

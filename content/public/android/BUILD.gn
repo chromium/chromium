@@ -194,6 +194,7 @@ android_library("content_full_java") {
     "//services/device/public/java:nfc_java",
     "//services/device/public/mojom:mojom_java",
     "//services/media_session/public/cpp/android:media_session_java",
+    "//services/network/public/mojom:mojom_permissions_policy_java",
     "//services/service_manager/public/java:service_manager_java",
     "//services/service_manager/public/mojom:mojom_java",
     "//services/shape_detection:shape_detection_java",

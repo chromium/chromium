@@ -35,7 +35,7 @@
 #include "url/origin.h"
 
 using blink::PermissionType;
-using blink::mojom::PermissionsPolicyFeature;
+using network::mojom::PermissionsPolicyFeature;
 
 namespace permissions {
 namespace {

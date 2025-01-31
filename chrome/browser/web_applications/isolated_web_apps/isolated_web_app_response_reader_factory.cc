@@ -25,21 +25,16 @@
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
-#include "components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace web_app {
 
 IsolatedWebAppResponseReaderFactory::IsolatedWebAppResponseReaderFactory(
     Profile& profile,
-    std::unique_ptr<IsolatedWebAppValidator> validator,
-    base::RepeatingCallback<
-        std::unique_ptr<web_package::SignedWebBundleSignatureVerifier>()>
-        signature_verifier_factory)
+    std::unique_ptr<IsolatedWebAppValidator> validator)
     : profile_(profile),
       trust_checker_(profile),
-      validator_(std::move(validator)),
-      signature_verifier_factory_(std::move(signature_verifier_factory)) {}
+      validator_(std::move(validator)) {}
 
 IsolatedWebAppResponseReaderFactory::~IsolatedWebAppResponseReaderFactory() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -57,10 +52,8 @@ void IsolatedWebAppResponseReaderFactory::CreateResponseReader(
       base::StrCat({chrome::kIsolatedAppScheme, url::kStandardSchemeSeparator,
                     web_bundle_id.id()}));
 
-  std::unique_ptr<web_package::SignedWebBundleSignatureVerifier>
-      signature_verifier = signature_verifier_factory_.Run();
-  std::unique_ptr<SignedWebBundleReader> reader = SignedWebBundleReader::Create(
-      web_bundle_path, std::move(base_url), std::move(signature_verifier));
+  std::unique_ptr<SignedWebBundleReader> reader =
+      SignedWebBundleReader::Create(web_bundle_path, std::move(base_url));
 
   SignedWebBundleReader& reader_ref = *reader.get();
   reader_ref.ReadIntegrityBlock(base::BindOnce(

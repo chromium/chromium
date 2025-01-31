@@ -3207,17 +3207,6 @@ Ist die Richtlinie deaktiviert, sind keine Wortvorschläge bei Nutzung der physi
 <translation id="3387211681524224831">Wenn die Richtlinie aktiviert ist, wird der Browserverlauf nicht gespeichert, die Tab-Synchronisierung ist deaktiviert und Nutzer können diese Einstellung nicht ändern.
 
       Ist die Richtlinie deaktiviert oder nicht konfiguriert, wird der Browserverlauf gespeichert.</translation>
-<translation id="3387875422525138489">Wenn diese Richtlinie konfiguriert ist, wird eine Liste isolierter Web-Apps (IWAs) angegeben, die automatisch installiert werden.
-      IWAs sind Anwendungen mit nützlichen Sicherheitsfunktionen, die normalen Webseiten nicht zur Verfügung stehen. Sie sind in einem signierten Web Bundle verpackt. Der öffentliche Schlüssel des signierten Web Bundles wird verwendet, um eine Web-Bundle‑ID zu erstellen, mit der die IWA identifiziert wird.
-      Bisher funktioniert diese Richtlinie nur bei verwalteten Gastsitzungen.
-
-      Jedes Listenelement der Richtlinie ist ein Objekt, das zwei Pflichtfelder hat: das Update-Manifest „<ph name="URL_LABEL" />“ und die Web-Bundle‑ID der isolierten Web-App.
-
-      Jedes Element kann auch diese optionalen Felder enthalten:
-
-        * <ph name="UPDATE_CHANNEL_OPTION" />: Der Name des Release-/Updatekanals der IWA. Wenn die Richtlinie nicht konfiguriert ist, wird „default“ verwendet.
-        * <ph name="PINNED_VERSION_OPTION" />: Eine bestimmte Version, die installiert werden soll. Das System versucht, diese Version zu installieren, sofern sie im angegebenen Updatekanal verfügbar ist. Wenn eine IWA in einer bestimmten Version angepinnt wird, verhindert das standardmäßig, dass sie über diese Version hinaus aktualisiert wird. Zum Loslösen muss dieses Feld entfernt werden.
-        * <ph name="ALLOW_DOWNGRADES_OPTION" />: Ermöglicht die Installation älterer Versionen der IWA. Dazu muss das Feld „pinned_version“ festgelegt sein. Wenn es nicht angegeben oder auf „<ph name="FALSE" />“ festgelegt ist, ist ein Downgrade für diese IWA deaktiviert.</translation>
 <translation id="3387999258705169775">Standardverhalten für die verschachtelte Mindestverzögerung der Funktion „setTimeout()“.</translation>
 <translation id="3388628790024977864"><ph name="CLOUD_UPLOAD_NAME" />-Ablauf für <ph name="GOOGLE_DRIVE_NAME" /> und <ph name="GOOGLE_WORKSPACE_NAME" /> nicht zulassen</translation>
 <translation id="3389088527709746815">Gnubby-Authentifizierung für den Host für den Remote-Zugriff aktivieren</translation>

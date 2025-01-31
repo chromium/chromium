@@ -1314,6 +1314,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Permissions.Query.TopLevelStorageAccess" enum="BooleanEnabled"
+    expires_after="2026-01-01">
+  <owner>selya@google.com</owner>
+  <owner>mtaylor@chromium.org</owner>
+  <summary>
+    Records if the permission being queried is
+    &quot;top-level-storage-access&quot; permission.
+  </summary>
+</histogram>
+
 <histogram name="Permissions.QuietChip.TimeToInteraction" units="ms"
     expires_after="2025-02-04">
   <owner>elklm@chromium.org</owner>

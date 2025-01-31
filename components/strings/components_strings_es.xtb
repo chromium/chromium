@@ -674,7 +674,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2157640075051554492">Notificaciones de seguimiento de precios</translation>
 <translation id="21613918653299710">Galerías de imágenes online</translation>
 <translation id="2161656808144014275">Texto</translation>
-<translation id="2162510787844374618">Contactando con tu banco...</translation>
 <translation id="2162620598375156287">Ahora, por <ph name="CURRENT_PRICE" /> en <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Comprueba si hay un error de escritura en <ph name="HOST_NAME" />.</translation>
 <translation id="2166049586286450108">Acceso de administrador completo</translation>
@@ -2408,6 +2407,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5254043433801397071">Optimizar el contenido de impresión</translation>
 <translation id="5255583962255635076">Las políticas del navegador aplicadas en tu perfil de trabajo</translation>
 <translation id="5255690596502591079">Capturar de todos modos</translation>
+<translation id="5255771248404149177">El proveedor de tu tarjeta quiere verificar que eres tú</translation>
 <translation id="5255833070095767006">350x460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{La política del administrador no recomienda copiar este archivo en <ph name="DESTINATION_NAME" />}other{La política del administrador no recomienda copiar estos archivos en <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5263867360296733198">Los archivos deben revisarse antes de subirse</translation>
@@ -2428,7 +2428,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5288108484102287882">La validación de los valores de las políticas ha generado advertencias</translation>
 <translation id="5289384342738547352">Gestión de varios documentos</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{Es necesario actualizar hoy}=2{Tienes hasta mañana para iniciar la actualización}other{Es necesario actualizar en el plazo de # días}}</translation>
-<translation id="5292714443869769806">Ir a la configuración de <ph name="OPERATING_SYSTEM" /></translation>
 <translation id="5293919335876685914">Cupés</translation>
 <translation id="5298618990685278995">un primer borrador</translation>
 <translation id="5299298092464848405">Error al analizar la política</translation>
@@ -2556,6 +2555,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5518352028556756716">La mayoría de los sitios no pueden usar cookies de terceros para hacer un seguimiento de tu actividad mientras navegas y ninguno puede usar cookies de terceros en el modo Incógnito.</translation>
 <translation id="5519516356611866228">Con tus cambios</translation>
 <translation id="5519696598216267194">Papel (perforado)</translation>
+<translation id="5520105693415771152">¿No está actualizada tu información? Ponte en contacto con tu proveedor para actualizarla.</translation>
 <translation id="5521782189689806907">Armarios</translation>
 <translation id="5523118979700054094">Nombre de la política</translation>
 <translation id="5523588073846127669">El comercio no acepta esta tarjeta virtual</translation>
@@ -3651,6 +3651,7 @@ Más información:
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Camiones de carga y remolques</translation>
 <translation id="7461924472993315131">Fijar</translation>
+<translation id="746329643760972486">macOS</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> sabrá que has visitado <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7465963048299965912">10x13 pulgadas</translation>
 <translation id="7469935732330206581">El formulario no es seguro</translation>
@@ -3921,7 +3922,6 @@ Más información:
 <translation id="7942349550061667556">Rojo</translation>
 <translation id="7943397946612013052">Descarga bloqueada</translation>
 <translation id="7943893128817522649">Puede solicitar permiso para descargar varios archivos automáticamente</translation>
-<translation id="794567586469801724">macOS</translation>
 <translation id="7947285636476623132">Consulta el año de vencimiento y vuelve a intentarlo</translation>
 <translation id="7947310711271925113">Música pop</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, pulsa Tabulador y luego Intro para ver información sobre las funciones de Chrome</translation>
@@ -4673,7 +4673,6 @@ Más información:
 <translation id="984275831282074731">Métodos de pago</translation>
 <translation id="985199708454569384">&lt;p&gt;Este error se muestra si la fecha y la hora de tu ordenador o tu dispositivo móvil no son correctas.&lt;/p&gt;
     &lt;p&gt;Para solucionar el problema, abre el reloj de tu dispositivo. Comprueba que la fecha y la hora sean correctas.&lt;/p&gt;</translation>
-<translation id="986257639512122511">Has permitido <ph name="PERMISSION" /> en <ph name="ORIGIN" /></translation>
 <translation id="987264212798334818">General</translation>
 <translation id="988159990683914416">Build para desarrolladores</translation>
 <translation id="989988560359834682">Editar dirección</translation>

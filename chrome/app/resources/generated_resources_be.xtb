@@ -126,7 +126,6 @@
 <translation id="1076766328672150609">Для разблакіроўкі прылады ваша дзіця можа выкарыстоўваць PIN-код.</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216">Не ўдалося спампаваць слоўнік для праверкі правапісу (мова: <ph name="LANGUAGE" />) Паўтарыце спробу.</translation>
-<translation id="1078029726086090536">Пацвердзіце пароль</translation>
 <translation id="1078037449555275327">Налады ChromeVox</translation>
 <translation id="1079242569060319448">Забылі PIN-код?</translation>
 <translation id="1079285777677001938">На некаторых сайтах можа не працаваць частка функцый.</translation>
@@ -372,6 +371,7 @@
 <translation id="1241066500170667906">Выберыце стан для эксперымента "<ph name="EXPERIMENT_NAME" />"</translation>
 <translation id="124116460088058876">Іншыя мовы</translation>
 <translation id="1241381048229838873">Паказаць усе закладкі</translation>
+<translation id="1242044645101871359">Увайдзіце яшчэ раз</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" /> запытвае дазвол скінуць налады.</translation>
 <translation id="1243002225871118300">Змяніць памер тэксту і маштаб</translation>
 <translation id="1243314992276662751">Запампаваць</translation>
@@ -1618,7 +1618,6 @@
 <translation id="2113921862428609753">Доступ да інфармацыя аб паўнамоцтвах</translation>
 <translation id="2114145607116268663">Не ўдалося выканаць усталяванне. Патрабуецца перазагрузка. Перазапусціце камп’ютар і паўтарыце спробу. Код памылкі: <ph name="ERROR" />.</translation>
 <translation id="2114326799768592691">Перазагрузіць &amp;фрэйм</translation>
-<translation id="2114413269775311385">Выкарыстоўваць гэты ўліковы запіс у праграмах для Android. Вы можаце кіраваць дазволамі, дадзенымі праграмам для Android, у <ph name="LINK_BEGIN" />Наладах праграм<ph name="LINK_END" />.</translation>
 <translation id="2114995631896158695">SIM-карта не ўстаўлена</translation>
 <translation id="2116619964159595185">Сайты звычайна падключаюцца да прылад з Bluetooth для работы такіх функцый, як наладжванне або сінхранізацыя маячкоў з нізкім энергаспажываннем, фітнес-трэкераў або разумных лямпачак</translation>
 <translation id="2117655453726830283">Наступны слайд</translation>
@@ -4632,6 +4631,7 @@
 <translation id="4242533952199664413">Адкрыць налады</translation>
 <translation id="4242577469625748426">Не ўдалося ўсталяваць налады палітыкі на прыладу: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385">Ваш <ph name="BEGIN_LINK" />браўзер і профіль знаходзяцца пад кіраваннем<ph name="END_LINK" /> <ph name="DOMAIN" /></translation>
+<translation id="424315890655130736">Увядз. фразу-пароль</translation>
 <translation id="4243504193894350135">Работа прынтара прыпынена</translation>
 <translation id="4243624244759495699"><ph name="LOCALE" />, узровень <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">Знайсці больш праграм для стыла</translation>
@@ -5354,7 +5354,6 @@
 <translation id="4766598565665644999">Усе пашырэнні могуць счытваць і змяняць даныя на сайце <ph name="HOST" /></translation>
 <translation id="4767427586072640478">Даведацца больш пра адключаныя пашырэнні.</translation>
 <translation id="4768332406694066911">У вас ёсць сертыфікаты ад гэтых арганізацый, якія ідэнтыфікуюць вас</translation>
-<translation id="4768945955870840220">Для некаторых тавараў Chrome можа збіраць водгукі з інтэрнэту.</translation>
 <translation id="4769632191812288342">Выбрана стандартная абарона</translation>
 <translation id="4770119228883592393">Запытаны дазвол. Каб адказаць, націсніце ⌘ + Option + стрэлка ўніз</translation>
 <translation id="4770755495532014179">Выкарыстоўвайце гэты пароль на iPhone</translation>
@@ -5496,6 +5495,7 @@
 <translation id="4862642413395066333">Падпісванне адказаў OCSP</translation>
 <translation id="4863702650881330715">Пашыраная сумяшчальнасць</translation>
 <translation id="4863769717153320198">Здаецца, гэта <ph name="WIDTH" /> × <ph name="HEIGHT" /> (стандартная)</translation>
+<translation id="4864334716800138793">Ваша арганізацыя адключыла магчымасць наладжвання працоўнага профілю</translation>
 <translation id="4864369630010738180">Уваход...</translation>
 <translation id="4864805589453749318">Выберыце, хто з бацькоў дае дазвол дадаць навучальны ўліковы запіс.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (заблакіравана)</translation>
@@ -6456,6 +6456,7 @@
 <translation id="5559768063688681413">Няма захаваных прынтараў</translation>
 <translation id="55601339223879446">Рэгуліроўка граніц працоўнага стала ў межах дысплэя</translation>
 <translation id="5561162485081632007">Выяўляе небяспечныя падзеі і папярэджвае пра іх</translation>
+<translation id="5562588178647493983">Звярніцеся да адміністратара для атрымання дадатковай інфармацыі</translation>
 <translation id="556321030400250233">лакальны ці абагулены файл</translation>
 <translation id="5563234215388768762">Увядзіце URL-адрас або запыт для пошуку праз Google</translation>
 <translation id="5563824734298958390">Выйсці з групы ўкладак?</translation>
@@ -8755,7 +8756,6 @@
 <translation id="7243092385765551741">Выдаліць ключ доступу?</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> × <ph name="HEIGHT" /> (найлепшая)</translation>
 <translation id="7246230585855757313">Устаўце ключ бяспекі яшчэ раз і паўтарыце спробу</translation>
-<translation id="724835896049478274">Уліковыя запісы, даступныя для праграм для Android</translation>
 <translation id="7248802599439396696">Адключыць укладкі</translation>
 <translation id="7249197363678284330">Гэту наладу можна змяніць праз адрасны радок.</translation>
 <translation id="7249764475759804559">Зрабіць гэту праграму адным з варыянтаў выбару пры адкрыцці файлаў</translation>
@@ -9792,6 +9792,7 @@
 <translation id="7968833647796919681">Уключыць збор даных аб прадукцыйнасці</translation>
 <translation id="7968982339740310781">Паказаць падрабязныя звесткі</translation>
 <translation id="7969046989155602842">Command</translation>
+<translation id="7969144945436590933">Атрымаць дадатковую інфармацыю</translation>
 <translation id="7970673414865679092">Звесткі пра Ethernet</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 з шыфраваннем RSA</translation>
 <translation id="7973149423217802477">Калі націснуць кнопку "Не падабаецца", будзе адпраўлены водгук аб тым, што вам не спадабалася гэта функцыя.</translation>
@@ -10703,7 +10704,6 @@
 <translation id="8625124982056504555">Прагляд серыйных нумароў прылады з ChromeOS і яе кампанентаў</translation>
 <translation id="862542460444371744">&amp;Пашырэнні</translation>
 <translation id="8625663000550647058">Не дазволена выкарыстоўваць мікрафон</translation>
-<translation id="8625679025395572221">Ваш уліковы запіс можа па-ранейшаму заставацца ў небяспецы.</translation>
 <translation id="8625916342247441948">Не дазваляць сайтам падключацца да прылад HID</translation>
 <translation id="862727964348362408">Прыпынена</translation>
 <translation id="862750493060684461">Кэш CSS</translation>
@@ -11585,7 +11585,6 @@
 <translation id="936801553271523408">Даныя дыягностыкі сістэмы</translation>
 <translation id="93766956588638423">Выправіць пашырэнне</translation>
 <translation id="938623846785894166">Незвычайны файл</translation>
-<translation id="939401694733344652">Гэтыя ўліковыя запісы цяпер не выкарыстоўваюцца ў праграмах для Android. Калі вы выбераце ўліковы запіс для выкарыстання ў гэтай праграме для Android, яго можна будзе выкарыстаць і ў іншых такіх праграмах. Параметры доступу да праграм для Android можна змяніць у раздзеле <ph name="LINK_BEGIN" />Налады &gt; Уліковыя запісы<ph name="LINK_END" />.</translation>
 <translation id="939598580284253335">Увядзіце фразу-пароль</translation>
 <translation id="939736085109172342">Новая папка</translation>
 <translation id="940212040923880623">&amp;Знайсці і змяніць</translation>

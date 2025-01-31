@@ -768,6 +768,7 @@
 <translation id="4654549501020883054">ປ່ຽນທຸກມື້</translation>
 <translation id="4655868084888499342">ຮູບທີ່ຕັ້ງເປັນພາບພື້ນຫຼັງ</translation>
 <translation id="4661249927038176904">ເໜືອຄວາມຈິງ</translation>
+<translation id="4661392828086261436">ການອັບເດດນີ້ສະໜອງໂດຍຜູ້ຜະລິດອຸປະກອນ ແລະ ຍັງບໍ່ໄດ້ຮັບການຢັ້ງຢືນຈາກ Google</translation>
 <translation id="4664651912255946953">ຂົນ</translation>
 <translation id="4665014895760275686">ຜູ້​ຜະ​ລິດ</translation>
 <translation id="467510802200863975">ລະຫັດຜ່ານບໍ່ກົງກັນ</translation>
@@ -1027,6 +1028,7 @@
 <translation id="5904994456462260490">ເພີ່ມ APN ໃໝ່</translation>
 <translation id="590746845088109442">ແມວ</translation>
 <translation id="5907649332524363701">ສີຂອງປຸ່ມ</translation>
+<translation id="5908813850962688338">ການຕິດຕັ້ງການອັບເດດນີ້ຈະໃຊ້ເວລາສອງສາມນາທີ. ສຽບອຸປະກອນຂອງທ່ານໄວ້ ແລະ ເປີດເຄື່ອງເມື່ອອັບເດດກຳລັງຖືກດາວໂຫຼດ. ອຸປະກອນຂອງທ່ານອາດຈະປິດ​ເປີດ​ໃໝ່ດ້ວຍຕົວມັນເອງເປັນເວລາຫຼາຍເທື່ອ ແລະ ສະແດງໜ້າຈໍດຳໃນລະຫວ່າງຂະບວນການນີ້. ທ່ານຈະໄດ້ຮັບການເຕືອນໃຫ້ຣີສະຕາດອຸປະກອນຂອງທ່ານເພື່ອສໍາເລັດການຕິດຕັ້ງ.</translation>
 <translation id="5916084858004523819">ຫ້າມໃຊ້</translation>
 <translation id="5916664084637901428">ເປີດ</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{ສະແກນ ແລະ ບັນທຶກໄຟລ໌ຂອງທ່ານໄວ້ໃນ <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ແລ້ວ.}other{ສະແກນ ແລະ ບັນທຶກໄຟລ໌ຂອງທ່ານໄວ້ໃນ <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ແລ້ວ.}}</translation>

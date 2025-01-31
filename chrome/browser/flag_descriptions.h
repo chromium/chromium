@@ -2224,9 +2224,6 @@ extern const char kUiPartialSwapDescription[];
 extern const char kUIEnableSharedImageCacheForGpuName[];
 extern const char kUIEnableSharedImageCacheForGpuDescription[];
 
-extern const char kUserNotesSidePanelName[];
-extern const char kUserNotesSidePanelDescription[];
-
 extern const char kUseSearchClickForRightClickName[];
 extern const char kUseSearchClickForRightClickDescription[];
 

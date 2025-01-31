@@ -36,7 +36,8 @@ bool IsLensOverlaySameTabNavigationEnabled() {
 }
 
 bool IsLVFUnifiedExperienceEnabled() {
-  return base::FeatureList::IsEnabled(kEnableLensViewFinderUnifiedExperience);
+  return IsLensOverlayAvailable() &&
+         base::FeatureList::IsEnabled(kEnableLensViewFinderUnifiedExperience);
 }
 
 LensOverlayOnboardingTreatment GetLensOverlayOnboardingTreatment() {

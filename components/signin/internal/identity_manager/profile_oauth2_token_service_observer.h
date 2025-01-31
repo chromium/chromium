@@ -7,6 +7,7 @@
 
 #include "base/observer_list_types.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 
@@ -49,6 +50,9 @@ class ProfileOAuth2TokenServiceObserver : public base::CheckedObserver {
 #if BUILDFLAG(IS_IOS)
   // Called after the list of accounts on the device changes.
   virtual void OnAccountsOnDeviceChanged() {}
+  // Called after an individual account on the device is updated. Note that
+  // spurious updates are possible.
+  virtual void OnAccountOnDeviceUpdated(const AccountInfo& account_info) {}
 #endif
 };
 

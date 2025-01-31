@@ -25,10 +25,10 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/message.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy_features.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "url/origin.h"
 
 namespace autofill {
@@ -420,7 +420,7 @@ bool ContentAutofillDriver::IsInAnyMainFrame() const {
 
 bool ContentAutofillDriver::HasSharedAutofillPermission() const {
   return render_frame_host_->IsFeatureEnabled(
-      blink::mojom::PermissionsPolicyFeature::kSharedAutofill);
+      network::mojom::PermissionsPolicyFeature::kSharedAutofill);
 }
 
 bool ContentAutofillDriver::CanShowAutofillUi() const {

@@ -263,7 +263,6 @@
 <translation id="2074131957428911366">您隨時可在<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />中選擇要同步的資料。</translation>
 <translation id="2078437078822043850">向右碌就可以用無痕模式瀏覽。</translation>
 <translation id="2079545284768500474">復原</translation>
-<translation id="2082906935540894275">不同時間最切合你所需的功能。</translation>
 <translation id="2085876078937250610">儲存…</translation>
 <translation id="2096239473850415494">無法下載</translation>
 <translation id="2096716221239095980">刪除所有資料</translation>
@@ -548,7 +547,6 @@
 <translation id="3445288400492335833"><ph name="MINUTES" /> 分鐘</translation>
 <translation id="344589138074534176">進一步瞭解「Google 智能鏡頭」</translation>
 <translation id="3447332786336558089">當你登出後，系統會關閉此裝置上的分頁並刪除未儲存的帳戶資料，包括密碼、記錄等項目。</translation>
-<translation id="3449016921756175697">提供實用建議，輕鬆提升瀏覽體驗。</translation>
 <translation id="345348365500626747">找到地址</translation>
 <translation id="3464194322481586217">無法追蹤價格。</translation>
 <translation id="3469117812148449995">儲存密碼選項</translation>
@@ -718,7 +716,7 @@
 <translation id="422477017457571619">系統會根據你向 Google 傳送的瀏覽資料，即時採用 AI 技術防範危險的網站、下載內容和擴充程式</translation>
 <translation id="4231395118547300571">「安全檢查」通知已開啟</translation>
 <translation id="4237377247299956313">輕按 [預設瀏覽器應用程式]<ph name="BEGIN_BOLD" /><ph name="END_BOLD" /></translation>
-<translation id="4241893428331130998">未儲存密碼或密碼金鑰</translation>
+<translation id="4241893428331130998">沒有儲存任何密碼或密鑰</translation>
 <translation id="4242533952199664413">開啟設定</translation>
 <translation id="4250432749243022864">{count,plural, =0{開啟 {count} 個分頁}=1{開啟 {count} 個分頁}other{開啟 {count} 個分頁}}</translation>
 <translation id="4250680216510889253">否</translation>
@@ -923,7 +921,6 @@
 <translation id="5127538504377457572"><ph name="DAYS" /> 天前在線</translation>
 <translation id="5128788795241319992">探索新選單</translation>
 <translation id="5132942445612118989">將您的書籤、密碼、記錄等資料同步至所有裝置</translation>
-<translation id="5137526732000415202">在你的所有裝置上顯示最後開啟的分頁。</translation>
 <translation id="5145331760738811130">退出分頁切換工具</translation>
 <translation id="5157638238828697074">發生問題，無法開啟應用程式。</translation>
 <translation id="5163417375525818870">PDF</translation>
@@ -1024,7 +1021,6 @@
 <translation id="559567008082979829">設定下載項目在一個月後刪除。</translation>
 <translation id="5596627076506792578">更多選項</translation>
 <translation id="560322036295180549">已由您的機構停用</translation>
-<translation id="5611107723541161735">「捷徑」讓你前往最近在此裝置上瀏覽過的網站。</translation>
 <translation id="5611398002774823980">儲存在帳戶中</translation>
 <translation id="5613297089029360427">按最新項目排序</translation>
 <translation id="5614553682702429503">要儲存密碼嗎？</translation>
@@ -1488,7 +1484,6 @@
 <translation id="7512075701202892785">你現可將喜愛的瀏覽器設定為 iPad 預設瀏覽器</translation>
 <translation id="7512909159512473473">輸入密碼短語…</translation>
 <translation id="7514365320538308">下載</translation>
-<translation id="7521117365186708026">設定提示可助你充分發揮 Chrome 的效用。</translation>
 <translation id="7524055474074101597">在多款應用程式中使用您的密碼和其他資料。</translation>
 <translation id="75362970626182391">新分頁群組</translation>
 <translation id="7537586195939242955">抱歉，目前無法將您的票證安裝至 Passbook。</translation>
@@ -1601,7 +1596,7 @@
 <translation id="7982789257301363584">網絡</translation>
 <translation id="7987685713885608670">為進一步增強安全性，請先在裝置上將密碼加密，然後才將密碼儲存至 Google 密碼管理工具。</translation>
 <translation id="798991908416757345">無法使用分頁群組</translation>
-<translation id="7993170188789685695">輕觸兩下即可關閉這則通知。</translation>
+<translation id="7993170188789685695">㩒兩下可以閂呢個通知。</translation>
 <translation id="7993619969781047893">部分網站的功能可能會無法正常運作</translation>
 <translation id="7996239959906074962">設定…</translation>
 <translation id="800361585186029508">在 Google Chrome 中開啟已輸入的網址。</translation>
@@ -1708,7 +1703,6 @@
 <translation id="8439758443371991593">隱藏「加入閱讀清單」</translation>
 <translation id="8449869326050867919">已分享密碼</translation>
 <translation id="8453847087068411809">一律不自動偵測包裹</translation>
-<translation id="846158969830690371">瞭解目前設定是否安全，或是否有項目需要檢查。</translation>
 <translation id="8473863474539038330">地址及其他資料</translation>
 <translation id="8474378002946546633">允許通知</translation>
 <translation id="8477178913400731244">刪除資料</translation>

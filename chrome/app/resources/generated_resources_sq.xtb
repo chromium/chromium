@@ -126,7 +126,6 @@
 <translation id="1076766328672150609">Fëmija yt mund të përdorë një PIN për ta shkyçur këtë pajisje.</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216">Fjalori i kontrollit drejtshkrimor për gjuhën <ph name="LANGUAGE" /> nuk mund të shkarkohej Provo përsëri.</translation>
-<translation id="1078029726086090536">Verifiko fjalëkalimin tënd</translation>
 <translation id="1078037449555275327">Cilësimet e ChromeVox</translation>
 <translation id="1079242569060319448">Harrove kodin PIN?</translation>
 <translation id="1079285777677001938">Veçoritë në disa sajte mund të mos funksionojnë.</translation>
@@ -369,6 +368,7 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1241066500170667906">Zgjidh gjendjen eksperimentale për <ph name="EXPERIMENT_NAME" /></translation>
 <translation id="124116460088058876">Gjuhë të tjera</translation>
 <translation id="1241381048229838873">Shfaq të gjithë faqeshënuesit</translation>
+<translation id="1242044645101871359">Identifikohu përsëri</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" /> dëshiron të rivendosë cilësimet e tua.</translation>
 <translation id="1243002225871118300">Ndrysho madhësinë e ekranit dhe të tekstit</translation>
 <translation id="1243314992276662751">Ngarko</translation>
@@ -1614,7 +1614,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2113921862428609753">Qasja tek informacionet e autoritetit</translation>
 <translation id="2114145607116268663">Nuk mund të instalohet. Kërkohet rindezja. Rinise kompjuterin dhe provo përsëri. Kodi i gabimit është <ph name="ERROR" />.</translation>
 <translation id="2114326799768592691">Ringarko &amp;kornizën</translation>
-<translation id="2114413269775311385">Përdor këtë llogari me aplikacionet për Android. Lejet për aplikacionet për Android mund t'i kontrollosh te <ph name="LINK_BEGIN" />Cilësimet e aplikacioneve<ph name="LINK_END" />.</translation>
 <translation id="2114995631896158695">Nuk është futur një kartë SIM</translation>
 <translation id="2116619964159595185">Sajtet lidhen zakonisht me pajisjet me Bluetooth për veçoritë si konfigurimi ose sinkronizimi i një sinjalizuesi me nivel të ulët energjie, një monitoruesi shëndeti ose fitnesi ose një llambe inteligjente</translation>
 <translation id="2117655453726830283">Diapozitivi tjetër</translation>
@@ -4630,6 +4629,7 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="4242533952199664413">Hap cilësimet</translation>
 <translation id="4242577469625748426">Dështoi në instalimin e cilësimeve në këtë pajisje: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385"><ph name="BEGIN_LINK" />Shfletuesi dhe profili yt menaxhohen<ph name="END_LINK" /> nga <ph name="DOMAIN" /></translation>
+<translation id="424315890655130736">Fut frazën e kalimit</translation>
 <translation id="4243504193894350135">Printeri është vendosur në pauzë</translation>
 <translation id="4243624244759495699"><ph name="LOCALE" />, shkalla <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">Gjej më shumë aplikacione të stilolapsit</translation>
@@ -5352,7 +5352,6 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="4766598565665644999">Të gjitha shtesat mund të lexojnë dhe të ndryshojnë <ph name="HOST" /></translation>
 <translation id="4767427586072640478">Mëso më shumë rreth shtesave të çaktivizuara.</translation>
 <translation id="4768332406694066911">Ke certifikata nga këto organizata që të identifikojnë</translation>
-<translation id="4768945955870840220">Për disa produkte, Chrome mund të mbledhë komente nga uebi</translation>
 <translation id="4769632191812288342">Po merr mbrojtje standarde</translation>
 <translation id="4770119228883592393">Kërkohet leje, shtyp ⌘ + Option + Shigjetën poshtë për t'u përgjigjur</translation>
 <translation id="4770755495532014179">Përdor këtë fjalëkalim në iPhone</translation>
@@ -5493,6 +5492,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="4862642413395066333">Po nënshkruan përgjigjet OCSP</translation>
 <translation id="4863702650881330715">Zgjero përputhshmërinë</translation>
 <translation id="4863769717153320198">Duket si <ph name="WIDTH" /> x <ph name="HEIGHT" /> (e parazgjedhur)</translation>
+<translation id="4864334716800138793">Konfigurimi i profilit të punës është çaktivizuar nga organizata jote</translation>
 <translation id="4864369630010738180">Po identifikohet...</translation>
 <translation id="4864805589453749318">Zgjidh prindin që po jep lejen për shtimin e një llogarie shkolle.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (bllokuar)</translation>
@@ -6453,6 +6453,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5559768063688681413">Nuk ka printerë të ruajtur</translation>
 <translation id="55601339223879446">Rregullo kufijtë e desktopit tënd brenda ekranit</translation>
 <translation id="5561162485081632007">Zbulon dhe të paralajmëron rreth ngjarjeve të rrezikshme kur ato ndodhin</translation>
+<translation id="5562588178647493983">Kontakto me administratorin për më shumë informacione</translation>
 <translation id="556321030400250233">skedar lokal ose i ndarë</translation>
 <translation id="5563234215388768762">Kërko në Google ose shkruaj një URL</translation>
 <translation id="5563824734298958390">Dëshiron të largohesh nga grupi i skedave?</translation>
@@ -8746,7 +8747,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7243092385765551741">Të fshihet çelësi i kalimit?</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (më i miri)</translation>
 <translation id="7246230585855757313">Rifut çelësin e sigurisë dhe provo përsëri</translation>
-<translation id="724835896049478274">Llogaritë që ofrohen për aplikacionet për Android</translation>
 <translation id="7248802599439396696">Bëji joaktive skedat</translation>
 <translation id="7249197363678284330">Të ndryshohet ky cilësim në shiritin e adresave?</translation>
 <translation id="7249764475759804559">Përfshije këtë aplikacion si opsion kur hap skedarët</translation>
@@ -9782,6 +9782,7 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="7968833647796919681">Aktivizo grumbullimin e të dhënave të cilësisë së funksionimit</translation>
 <translation id="7968982339740310781">Shiko detajet</translation>
 <translation id="7969046989155602842">Komanda</translation>
+<translation id="7969144945436590933">Merr detaje të tjera</translation>
 <translation id="7970673414865679092">Detajet e eternetit</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 me enkriptim RSA</translation>
 <translation id="7973149423217802477">Opsioni i gishtave poshtë tregon se nuk të pëlqen kjo.</translation>
@@ -10693,7 +10694,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8625124982056504555">Të lexojë numrat e serisë të pajisjes me ChromeOS dhe të komponentit</translation>
 <translation id="862542460444371744">&amp;Shtesat</translation>
 <translation id="8625663000550647058">Nuk lejohen të përdorin mikrofonin</translation>
-<translation id="8625679025395572221">Llogaria jote mund të jetë akoma në rrezik.</translation>
 <translation id="8625916342247441948">Mos lejo që sajtet të lidhen me pajisjet HID</translation>
 <translation id="862727964348362408">Pezulluar</translation>
 <translation id="862750493060684461">Memoria specifike e CSS-së</translation>
@@ -11575,7 +11575,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="936801553271523408">Të dhënat diagnostikuese të sistemit</translation>
 <translation id="93766956588638423">Riparo shtesën</translation>
 <translation id="938623846785894166">Skedar i pazakontë</translation>
-<translation id="939401694733344652">Aktualisht, këto llogari nuk po përdoren me aplikacione për Android. Nëse zgjedh një llogari për ta përdorur me këtë aplikacion për Android, ajo mund të përdoret edhe me aplikacione të tjera për Android. Qasjen e aplikacionit për Android mund ta ndryshosh te <ph name="LINK_BEGIN" />Cilësimet &gt; Llogaritë<ph name="LINK_END" />.</translation>
 <translation id="939598580284253335">Fut frazën e kalimit</translation>
 <translation id="939736085109172342">Dosje e re</translation>
 <translation id="940212040923880623">&amp;Gjej dhe modifiko</translation>

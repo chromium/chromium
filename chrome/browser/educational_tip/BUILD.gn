@@ -61,7 +61,9 @@ android_resources("java_resources") {
     "java/res/drawable/tab_group_sync_promo_logo.xml",
     "java/res/layout/educational_tip_default_browser_bottom_sheet.xml",
     "java/res/layout/educational_tip_module_layout.xml",
+    "java/res/values-night/colors.xml",
     "java/res/values-night/dimens.xml",
+    "java/res/values/colors.xml",
     "java/res/values/dimens.xml",
   ]
 

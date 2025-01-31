@@ -52,7 +52,7 @@ class BLINK_COMMON_EXPORT
     StructTraits<blink::mojom::ParsedPermissionsPolicyDeclarationDataView,
                  blink::ParsedPermissionsPolicyDeclaration> {
  public:
-  static blink::mojom::PermissionsPolicyFeature feature(
+  static network::mojom::PermissionsPolicyFeature feature(
       const blink::ParsedPermissionsPolicyDeclaration& policy) {
     return policy.feature;
   }

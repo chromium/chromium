@@ -131,7 +131,7 @@ TEST_F(BrowserTaskQueuesTest, TasksRunWhenQueuesAreEnabled) {
 TEST_F(BrowserTaskQueuesTest, SimplePosting) {
   handle_->OnStartupComplete();
   scoped_refptr<base::SingleThreadTaskRunner> tq =
-      handle_->GetBrowserTaskRunner(QueueType::kUserBlocking);
+      handle_->GetBrowserTaskRunner(QueueType::kDefault);
 
   StrictMockTask task_1;
   StrictMockTask task_2;
@@ -163,7 +163,7 @@ TEST_F(BrowserTaskQueuesTest, RunAllPendingTasksForTesting) {
     }
   }));
 
-  handle_->GetBrowserTaskRunner(QueueType::kUserBlocking)
+  handle_->GetBrowserTaskRunner(QueueType::kDefault)
       ->PostTask(FROM_HERE, task.Get());
 
   {
@@ -206,7 +206,7 @@ TEST_F(BrowserTaskQueuesTest, RunAllPendingTasksForTestingIsReentrant) {
   StrictMockTask task_3;
 
   EXPECT_CALL(task_1, Run).WillOnce(Invoke([&]() {
-    handle_->GetBrowserTaskRunner(QueueType::kUserBlocking)
+    handle_->GetBrowserTaskRunner(QueueType::kDefault)
         ->PostTask(FROM_HERE, task_2.Get());
     RunLoop run_loop(RunLoop::Type::kNestableTasksAllowed);
     handle_->ScheduleRunAllPendingTasksForTesting(run_loop.QuitClosure());
@@ -214,11 +214,11 @@ TEST_F(BrowserTaskQueuesTest, RunAllPendingTasksForTestingIsReentrant) {
   }));
 
   EXPECT_CALL(task_2, Run).WillOnce(Invoke([&]() {
-    handle_->GetBrowserTaskRunner(QueueType::kUserBlocking)
+    handle_->GetBrowserTaskRunner(QueueType::kDefault)
         ->PostTask(FROM_HERE, task_3.Get());
   }));
 
-  handle_->GetBrowserTaskRunner(QueueType::kUserBlocking)
+  handle_->GetBrowserTaskRunner(QueueType::kDefault)
       ->PostTask(FROM_HERE, task_1.Get());
 
   RunLoop run_loop;
@@ -234,7 +234,7 @@ TEST_F(BrowserTaskQueuesTest,
 
   handle_->GetBrowserTaskRunner(QueueType::kBestEffort)
       ->PostTask(FROM_HERE, best_effort_task.Get());
-  handle_->GetBrowserTaskRunner(QueueType::kUserBlocking)
+  handle_->GetBrowserTaskRunner(QueueType::kDefault)
       ->PostTask(FROM_HERE, default_task.Get());
 
   EXPECT_CALL(default_task, Run);
@@ -260,7 +260,7 @@ TEST_F(BrowserTaskQueuesTest,
   }));
   EXPECT_CALL(task_2, Run);
 
-  handle_->GetBrowserTaskRunner(QueueType::kUserBlocking)
+  handle_->GetBrowserTaskRunner(QueueType::kDefault)
       ->PostTask(FROM_HERE, task_1.Get());
   handle_->GetBrowserTaskRunner(QueueType::kBestEffort)
       ->PostTask(FROM_HERE, task_2.Get());

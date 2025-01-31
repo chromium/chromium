@@ -384,8 +384,10 @@ bool DeviceCommandStartCrdSessionJob::ShouldShowConfirmationDialog() const {
   switch (GetCurrentUserSessionType()) {
     case UserSessionType::AUTO_LAUNCHED_KIOSK_SESSION:
     case UserSessionType::MANUALLY_LAUNCHED_KIOSK_SESSION:
-    case UserSessionType::NO_SESSION:
       return false;
+
+    case UserSessionType::NO_SESSION:
+      return GetCrdSessionType() == CrdSessionType::REMOTE_SUPPORT_SESSION;
 
     case UserSessionType::AFFILIATED_USER_SESSION:
     case UserSessionType::MANAGED_GUEST_SESSION:

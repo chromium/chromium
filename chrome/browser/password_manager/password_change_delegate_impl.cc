@@ -356,6 +356,8 @@ void PasswordChangeDelegateImpl::OnChangeFormSubmissionVerified(bool result) {
 }
 
 bool PasswordChangeDelegateImpl::IsPrivacyNoticeAcknowledged() const {
+  // TODO(391147412): Use OptimizationGuideKeyedService
+  // ShouldFeatureAllowModelExecutionForSignedInUser() instead.
   Profile* profile =
       Profile::FromBrowserContext(originator_->GetBrowserContext());
   return profile->GetPrefs()->GetBoolean(

@@ -257,12 +257,16 @@ public class PermissionDialogMediator
 
     /** Handle positive button clicked, right after user click on that button */
     protected void handlePositiveButtonClicked(PropertyModel model) {
-        mModalDialogManager.dismissDialog(model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+        if (mModalDialogManager != null) {
+            mModalDialogManager.dismissDialog(model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+        }
     }
 
     /** Handle negative button clicked, right after user click on that button */
     protected void handleNegativeButtonClicked(PropertyModel model) {
-        mModalDialogManager.dismissDialog(model, DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
+        if (mModalDialogManager != null) {
+            mModalDialogManager.dismissDialog(model, DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
+        }
     }
 
     /** Handle negative button clicked state, after dialog is dismissed */
@@ -320,6 +324,10 @@ public class PermissionDialogMediator
     }
 
     public void destroy() {
+        if (mModalDialogManager != null) {
+            mModalDialogManager.dismissDialog(mDialogModel, DialogDismissalCause.UNKNOWN);
+        }
+
         mDialogModel = null;
         mDialogDelegate = null;
         mModalDialogManager = null;

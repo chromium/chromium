@@ -674,7 +674,6 @@
 <translation id="2157640075051554492">നിരക്ക് ട്രാക്ക് ചെയ്യലുമായി ബന്ധപ്പെട്ട അറിയിപ്പുകൾ</translation>
 <translation id="21613918653299710">ഓൺലൈൻ ചിത്ര ഗാലറികൾ</translation>
 <translation id="2161656808144014275">വാചകം</translation>
-<translation id="2162510787844374618">നിങ്ങളുടെ ബാങ്കുമായി ബന്ധപ്പെടുന്നു...</translation>
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> -ൽ ഇപ്പോൾ <ph name="CURRENT_PRICE" />-ന് ലഭ്യം</translation>
 <translation id="2164510882479075877"><ph name="HOST_NAME" /> എന്നതിൽ അക്ഷരത്തെറ്റ് ഉണ്ടോ എന്ന് പരിശോധിക്കുക.</translation>
 <translation id="2166049586286450108">പൂർണ്ണമായ അഡ്‌മിൻ ആക്‌സസ്</translation>
@@ -2407,6 +2406,7 @@
 <translation id="5254043433801397071">പ്രിന്റ് ചെയ്യാനുള്ള ഉള്ളടക്കം ഒപ്റ്റിമൈസ് ചെയ്യുക</translation>
 <translation id="5255583962255635076">നിങ്ങളുടെ ഔദ്യോഗിക പ്രൊഫൈലിൽ ബാധകമാക്കിയ ബ്രൗസർ നയങ്ങൾ</translation>
 <translation id="5255690596502591079">എന്തായാലും ക്യാപ്‌ചർ ചെയ്യുക</translation>
+<translation id="5255771248404149177">നിങ്ങളുടെ കാർഡ് ദാതാവ് ഇത് നിങ്ങളാണെന്ന് ഉറപ്പാക്കാൻ ആഗ്രഹിക്കുന്നു</translation>
 <translation id="5255833070095767006">350 x 460 മി.മീ</translation>
 <translation id="5257739419779698609">{0,plural, =1{ഈ ഫയൽ <ph name="DESTINATION_NAME" /> എന്നതിലേക്ക് പകർത്താൻ അഡ്‌മിൻ നയം നിർദ്ദേശിക്കുന്നില്ല}other{ഈ ഫയലുകൾ <ph name="DESTINATION_NAME" /> എന്നതിലേക്ക് പകർത്താൻ അഡ്‌മിൻ നയം നിർദ്ദേശിക്കുന്നില്ല}}</translation>
 <translation id="5263867360296733198">അപ്‌ലോഡ് ചെയ്യുന്നതിന് മുമ്പ് അവലോകനം ചെയ്യേണ്ടതുണ്ട്</translation>
@@ -2427,7 +2427,6 @@
 <translation id="5288108484102287882">നയ മൂല്യങ്ങളുടെ സാധൂകരണം മുന്നറിയിപ്പുകൾ സൃഷ്‌ടിച്ചിട്ടുണ്ട്</translation>
 <translation id="5289384342738547352">ഒന്നിലധികം ഡോക്യുമെന്റുകൾ കൈകാര്യം ചെയ്യൽ</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{ഇന്ന് അപ്ഡേറ്റ് ചെയ്യേണ്ടതുണ്ട്}=2{നാളെ അപ്‌ഡേറ്റ് ചെയ്യേണ്ടതുണ്ട്}other{# ദിവസത്തിനുള്ളിൽ അപ്‌ഡേറ്റ് ചെയ്യേണ്ടതുണ്ട്}}</translation>
-<translation id="5292714443869769806"><ph name="OPERATING_SYSTEM" /> ക്രമീകരണത്തിലേക്ക് പോകുക</translation>
 <translation id="5293919335876685914">കൂപ്പെകൾ</translation>
 <translation id="5298618990685278995">ആദ്യത്തെ ഡ്രാഫ്റ്റ്</translation>
 <translation id="5299298092464848405">നയം വിശകലനം ചെയ്യുന്നതിൽ പിശക്</translation>
@@ -2555,6 +2554,7 @@
 <translation id="5518352028556756716">ബ്രൗസ് ചെയ്യുമ്പോൾ നിങ്ങളെ ട്രാക്ക് ചെയ്യാൻ മിക്ക സൈറ്റുകൾക്കും മൂന്നാം കക്ഷി കുക്കികൾ ഉപയോഗിക്കാനാകില്ല, കൂടാതെ സൈറ്റുകൾക്ക് അദൃശ്യ മോഡിൽ മൂന്നാം കക്ഷി കുക്കികൾ ഉപയോഗിക്കാനുമാകില്ല.</translation>
 <translation id="5519516356611866228">നിങ്ങൾ വരുത്തിയ മാറ്റങ്ങൾ സഹിതം</translation>
 <translation id="5519696598216267194">പേപ്പർ (പ്രീപഞ്ച് ചെയ്തത്)</translation>
+<translation id="5520105693415771152">നിങ്ങളുടെ നിലവിലെ വിവരങ്ങൾ കാണുന്നില്ലേ? അത് അപ്ഡേറ്റ് ചെയ്യാൻ നിങ്ങളുടെ ദാതാവിനെ ബന്ധപ്പെടുക.</translation>
 <translation id="5521782189689806907">ക്യാബിനറ്റ് നിർമ്മാണം</translation>
 <translation id="5523118979700054094">നയത്തിന്റെ പേര്</translation>
 <translation id="5523588073846127669">വ്യാപാരി ഈ വെർച്വൽ കാർഡ് സ്വീകരിക്കുന്നില്ല</translation>
@@ -3648,6 +3648,7 @@
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">കാർഗോ ട്രക്കുകളും ട്രെയ്‌ലറുകളും</translation>
 <translation id="7461924472993315131">പിൻ ചെയ്യുക</translation>
+<translation id="746329643760972486">MacOS</translation>
 <translation id="7465036432780054056">നിങ്ങൾ <ph name="TOP_LEVEL_URL" /> സന്ദർശിച്ചെന്ന് <ph name="EMBEDDED_URL" /> എന്നതിന് അറിയിപ്പ് ലഭിക്കും</translation>
 <translation id="7465963048299965912">10 x 13 ഇഞ്ച്</translation>
 <translation id="7469935732330206581">ഫോം സുരക്ഷിതമല്ല</translation>
@@ -3918,7 +3919,6 @@
 <translation id="7942349550061667556">ചുവപ്പ്</translation>
 <translation id="7943397946612013052">ഡൗൺലോഡ് ചെയ്യുന്നത് ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു</translation>
 <translation id="7943893128817522649">ഒന്നിലധികം ഫയലുകൾ സ്വയമേവ ഡൗൺലോഡ് ചെയ്യാൻ ആവശ്യപ്പെടാം</translation>
-<translation id="794567586469801724">macOS</translation>
 <translation id="7947285636476623132">കാലാവധി തീരുന്ന വർഷം പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="7947310711271925113">പോപ്പ് സംഗീതം</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ഫീച്ചറുകളെ കുറിച്ച് കൂടുതലറിയാൻ Tab അമർത്തുക, തുടർന്ന് Enter അമർത്തുക</translation>
@@ -4670,7 +4670,6 @@
 <translation id="984275831282074731">പേയ്‌മെന്റ് രീതികൾ</translation>
 <translation id="985199708454569384">&lt;p&gt;നിങ്ങളുടെ കമ്പ്യൂട്ടറിന്റെയോ മൊബൈൽ ഉപകരണത്തിന്റെയോ തീയതിയും സമയവും കൃത്യമല്ലെങ്കിൽ ഈ പിശക് കാണും.&lt;/p&gt;
     &lt;p&gt;പിശക് പരിഹരിക്കാൻ, ഉപകരണത്തിന്റെ ക്ലോക്ക് തുറക്കുക. സമയവും തീയതിയും കൃത്യമാണെന്ന് ഉറപ്പാക്കുക.&lt;/p&gt;</translation>
-<translation id="986257639512122511"><ph name="ORIGIN" /> -ൽ നിങ്ങൾ <ph name="PERMISSION" /> അനുവദിച്ചു</translation>
 <translation id="987264212798334818">പൊതുവായ</translation>
 <translation id="988159990683914416">ഡെവലപ്പർ പതിപ്പ്</translation>
 <translation id="989988560359834682">വിലാസം എഡിറ്റുചെയ്യുക</translation>

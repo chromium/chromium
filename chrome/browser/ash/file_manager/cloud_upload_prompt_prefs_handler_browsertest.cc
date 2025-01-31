@@ -9,16 +9,16 @@
 #include "base/notreached.h"
 #include "base/strings/string_split.h"
 #include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
-#include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/testing_profile.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/test/test_sync_service.h"
 #include "content/public/test/browser_test.h"
@@ -52,7 +52,7 @@ std::string ConvertPrefNameToCamelCase(const std::string& pref_name) {
 
 using ash::cloud_upload::CloudProvider;
 
-class CloudUploadPromptPrefsHandlerTestBase : public policy::PolicyTest {
+class CloudUploadPromptPrefsHandlerTestBase : public InProcessBrowserTest {
  public:
   CloudUploadPromptPrefsHandlerTestBase() {
     feature_list_.InitWithFeatures(
@@ -64,18 +64,25 @@ class CloudUploadPromptPrefsHandlerTestBase : public policy::PolicyTest {
   ~CloudUploadPromptPrefsHandlerTestBase() override = default;
 
   void SetUpOnMainThread() override {
-    policy::PolicyTest::SetUpOnMainThread();
-    profile_policy_connector()->OverrideIsManagedForTesting(true);
+    InProcessBrowserTest::SetUpOnMainThread();
+
+    // The service is created only for managed profiles.
+    TestingProfile::Builder profile_builder;
+    profile_builder.OverridePolicyConnectorIsManagedForTesting(true);
+    profile_ = profile_builder.Build();
   }
 
-  Profile* profile() { return browser()->profile(); }
+  void TearDownOnMainThread() override { profile_.reset(); }
+
+  Profile* profile() { return profile_.get(); }
 
   policy::ProfilePolicyConnector* profile_policy_connector() {
-    return browser()->profile()->GetProfilePolicyConnector();
+    return profile_->GetProfilePolicyConnector();
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<TestingProfile> profile_;
 };
 
 IN_PROC_BROWSER_TEST_F(CloudUploadPromptPrefsHandlerTestBase,
@@ -134,23 +141,19 @@ class CloudUploadPromptPrefsHandlerTest
   // `value` (should be one of kAutomated, kAllowed, kDisallowed).
   void SetCloudUploadPolicy(const std::string& value) {
     const CloudProvider cloud_provider = std::get<0>(GetParam());
-    policy::PolicyMap policies;
     switch (cloud_provider) {
       case ash::cloud_upload::CloudProvider::kGoogleDrive:
-        policy::PolicyTest::SetPolicy(&policies,
-                                      policy::key::kGoogleWorkspaceCloudUpload,
-                                      base::Value(value));
+        profile()->GetPrefs()->SetString(prefs::kGoogleWorkspaceCloudUpload,
+                                         value);
         break;
       case ash::cloud_upload::CloudProvider::kOneDrive:
-        policy::PolicyTest::SetPolicy(&policies,
-                                      policy::key::kMicrosoftOfficeCloudUpload,
-                                      base::Value(value));
+        profile()->GetPrefs()->SetString(prefs::kMicrosoftOfficeCloudUpload,
+                                         value);
         break;
       case ash::cloud_upload::CloudProvider::kNone:
       case ash::cloud_upload::CloudProvider::kUnknown:
         NOTREACHED();
     }
-    provider_.UpdateChromePolicy(policies);
   }
 
   // Verifies the syncing behavior of two preferences: `syncable_pref` and

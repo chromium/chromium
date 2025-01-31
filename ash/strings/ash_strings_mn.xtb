@@ -731,6 +731,7 @@
 <translation id="3522979239100719575">Боломжтой профайлыг хайж байна. Үүнд хэдэн минут шаардлагатай байж магадгүй.</translation>
 <translation id="3526440770046466733">Холбоосыг шинэ табд нээж, одоогийн табд үлдэх</translation>
 <translation id="353086728817903341"><ph name="NUM_DEVICES" /> төхөөрөмжид холбогдсон</translation>
+<translation id="3532247131850366052">Google Хүснэгт үүсгэж чадсангүй</translation>
 <translation id="3533126039236445965">Тавиур дээрх аппууд</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" />-н сүлжээний цэг</translation>
 <translation id="3540893133818942399">Утасныхаа саяхны зургууд болон медиаг харахыг тохируулахыг үл хэрэгсэх</translation>
@@ -830,6 +831,7 @@
 <translation id="380165613292957338">Сайн байна уу, танд хэрхэн туслах вэ?</translation>
 <translation id="3804737937830804242">Камерыг хураах</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 эможи. Өөр илэрц байхгүй.}other{# эможи. Өөр илэрц байхгүй.}}</translation>
+<translation id="3822403841174077928">Форматтайгаар хуулж чадсангүй</translation>
 <translation id="3824784079442479685">Энэ нь <ph name="APP_NAME" /> болон камерын зөвшөөрөлтэй бүх апп, вебсайтын камерын хандалтыг зөвшөөрнө. Та веб хуудсыг сэргээх эсвэл аппыг дахин эхлүүлэх шаардлагатай байж магадгүй.</translation>
 <translation id="3826099427150913765">Нууц үг рүү сэлгэх</translation>
 <translation id="383058930331066723">Батарей хэмнэгчийн горим асаалттай байна</translation>
@@ -1216,6 +1218,7 @@
 <translation id="5043679421800073804">Тавиурын сүүлийн дүрс тэмдгийг дарах эсвэл товших</translation>
 <translation id="504465286040788597">Өмнөх догол мөр</translation>
 <translation id="5045550434625856497">Буруу нууц үг</translation>
+<translation id="5058794129231928255">Google Док үүсгэж чадсангүй</translation>
 <translation id="5062496344832867502">шуурхай санах ой</translation>
 <translation id="5068762093486106012">Та дууг нь хаасан үед яривал танд мэдэгдэнэ. Аудио таны төхөөрөмжөөс гадагш хэзээ ч гарахгүй.</translation>
 <translation id="5077416371682039027">Утасныхаа саяхны зураг, медиа, мэдэгдэл болон аппуудыг харахыг тохируулах</translation>
@@ -1479,7 +1482,6 @@
 <translation id="589817443623831496">Цэгээр скан хийх</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">Шар</translation>
-<translation id="5911231045062997865">Lacros цонхыг одоогоор дэмждэггүй. Бусад аппыг хадгална.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916646100036936191">Шинэ мэдэгдэл, нийт <ph name="NOTIFICATION_COUNT" /></translation>
 <translation id="5916664084637901428">Асаах</translation>
@@ -1649,6 +1651,7 @@
 <translation id="6468406072297048412">{0,plural, =1{Төхөөрөмжийг 1 минутын дотор өмнөх хувилбар луу нь шинэчилнэ үү}other{Төхөөрөмжийг # минутын дотор өмнөх хувилбар луу нь шинэчилнэ үү}}</translation>
 <translation id="6469104339369989396">Сүлжээний цэгийг асаана уу/унтраана уу</translation>
 <translation id="6477681113376365978">Файлыг татах боломжгүй</translation>
+<translation id="648135757200234041">Харилцагч үүсгэж чадсангүй</translation>
 <translation id="6482559668224714696">Бүтэн дэлгэц томруулагч</translation>
 <translation id="6485086611007560630">Цаг агаар (боломжгүй)</translation>
 <translation id="6490471652906364588">USB-C төхөөрөмж (баруун талын порт)</translation>
@@ -2290,6 +2293,7 @@
 <translation id="8653151467777939995">Мэдэгдлийн тохиргоог харуулна уу. Мэдэгдлийг асаасан байна</translation>
 <translation id="8657066291275741003">жижиг үсгээр</translation>
 <translation id="8660331759611631213">71-ийн квадрат язгуур</translation>
+<translation id="8662921061190671299">Календарьт нэмж чадсангүй</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, дохионы хүч <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Хэсэгчилсэн дэлгэцийн агшин авахын тулд enter дээр дарна уу</translation>
 <translation id="8676770494376880701">Цэнэглэгчийг холбосон байна</translation>

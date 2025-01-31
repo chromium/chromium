@@ -698,6 +698,16 @@ useful for Chirp alerts (go/crca-alerts). -->
   <token key="RequestType" variants="ClientSideDetectionRequestType"/>
 </histogram>
 
+<histogram name="SBClientPhishing.MatchCSDAllowlistOnFullscreenApi"
+    enum="BooleanMatched" expires_after="2026-01-29">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the CSD allowlist match result when a fullscreen API is triggered on
+    the page.
+  </summary>
+</histogram>
+
 <histogram name="SBClientPhishing.MatchHighConfidenceAllowlist{RequestType}"
     enum="ClientSideAllowlistMatchResult" expires_after="2025-06-17">
   <owner>andysjlim@chromium.org</owner>
@@ -920,18 +930,20 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="SBClientPhishing.PreClassificationCheckResult"
+<histogram name="SBClientPhishing.PreClassificationCheckResult{RequestType}"
     enum="SBClientDetectionPreClassificationCheckResult"
-    expires_after="2025-06-01">
+    expires_after="2026-01-30">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
-    Records the result of phishing pre-classification checks. This is recorded
-    on every classification attempt (roughly every page load).
+    Records the result of phishing pre-classification checks for a given
+    {RequestType}. This is recorded on every classification attempt for roughly
+    every {RequestType} that comes in.
 
     Starting in M95, the PRIVATE_IP bucket was split to include LOCAL_RESOURCE
     and CHROME_UI_PAGE.
   </summary>
+  <token key="RequestType" variants="ClientSideDetectionRequestType"/>
 </histogram>
 
 <histogram name="SBClientPhishing.RTLookupForceRequest"

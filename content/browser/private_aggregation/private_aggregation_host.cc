@@ -9,11 +9,12 @@
 
 #include <algorithm>
 #include <bit>
-#include <iterator>
+#include <map>
 #include <memory>
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -21,12 +22,12 @@
 #include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/numerics/clamped_math.h"
@@ -41,7 +42,6 @@
 #include "components/aggregation_service/aggregation_coordinator_utils.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
-#include "content/browser/private_aggregation/private_aggregation_budgeter.h"
 #include "content/browser/private_aggregation/private_aggregation_caller_api.h"
 #include "content/browser/private_aggregation/private_aggregation_features.h"
 #include "content/browser/private_aggregation/private_aggregation_manager.h"
@@ -226,8 +226,7 @@ PrivateAggregationHost::GetEffectiveMaxContributions(
   // These constants define the maximum number of contributions that can go in
   // an `AggregatableReport` after merging.
   static constexpr size_t kMaxContributionsSharedStorage = 20;
-  static constexpr size_t kMaxContributionsProtectedAudience = 20;
-  static constexpr size_t kMaxContributionsProtectedAudienceIncreased = 100;
+  static constexpr size_t kMaxContributionsProtectedAudience = 100;
   static constexpr size_t kMaxContributionsWhenCustomized = 1000;
 
   if (requested_max_contributions.has_value()) {
@@ -245,10 +244,7 @@ PrivateAggregationHost::GetEffectiveMaxContributions(
     case PrivateAggregationCallerApi::kSharedStorage:
       return kMaxContributionsSharedStorage;
     case PrivateAggregationCallerApi::kProtectedAudience:
-      return base::FeatureList::IsEnabled(
-                 kPrivateAggregationApi100ContributionsForProtectedAudience)
-                 ? kMaxContributionsProtectedAudienceIncreased
-                 : kMaxContributionsProtectedAudience;
+      return kMaxContributionsProtectedAudience;
   }
   NOTREACHED();
 }

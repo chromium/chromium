@@ -674,7 +674,6 @@
 <translation id="2157640075051554492">价格跟踪通知</translation>
 <translation id="21613918653299710">在线图库</translation>
 <translation id="2161656808144014275">文字</translation>
-<translation id="2162510787844374618">正在联系银行…</translation>
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> 上的现价为 <ph name="CURRENT_PRICE" /></translation>
 <translation id="2164510882479075877">检查 <ph name="HOST_NAME" /> 中是否有拼写错误。</translation>
 <translation id="2166049586286450108">完全的管理员访问权限</translation>
@@ -2404,6 +2403,7 @@
 <translation id="5254043433801397071">优化打印内容</translation>
 <translation id="5255583962255635076">您的工作资料中已应用的浏览器政策</translation>
 <translation id="5255690596502591079">仍然截取/录制</translation>
+<translation id="5255771248404149177">发卡机构想要确认您的身份</translation>
 <translation id="5255833070095767006">350 x 460 毫米</translation>
 <translation id="5257739419779698609">{0,plural, =1{管理员政策不建议将这个文件复制到<ph name="DESTINATION_NAME" />}other{管理员政策不建议将这些文件复制到<ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5263867360296733198">上传前需要检查</translation>
@@ -2424,7 +2424,6 @@
 <translation id="5288108484102287882">政策值验证引发了警告</translation>
 <translation id="5289384342738547352">多文档处理</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{必须在今天更新}=2{必须在明天更新}other{必须在 # 天内更新}}</translation>
-<translation id="5292714443869769806">前往 <ph name="OPERATING_SYSTEM" /> 的设置部分</translation>
 <translation id="5293919335876685914">轿跑车</translation>
 <translation id="5298618990685278995">初稿</translation>
 <translation id="5299298092464848405">解析策略时出错</translation>
@@ -2552,6 +2551,7 @@
 <translation id="5518352028556756716">大多数网站无法使用第三方 Cookie 跟踪您在浏览时的活动，并且网站无法在无痕模式下使用第三方 Cookie。</translation>
 <translation id="5519516356611866228">含您所做更改</translation>
 <translation id="5519696598216267194">纸（预打孔纸）</translation>
+<translation id="5520105693415771152">看到的不是最新信息？请与发卡机构联系，以更新信息。</translation>
 <translation id="5521782189689806907">橱柜</translation>
 <translation id="5523118979700054094">政策名</translation>
 <translation id="5523588073846127669">商家不接受此虚拟卡</translation>
@@ -3646,6 +3646,7 @@
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">货车与拖车</translation>
 <translation id="7461924472993315131">固定</translation>
+<translation id="746329643760972486">MacOS</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> 会知道您访问过 <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7465963048299965912">10 x 13 英寸</translation>
 <translation id="7469935732330206581">表单不安全</translation>
@@ -3916,7 +3917,6 @@
 <translation id="7942349550061667556">红色</translation>
 <translation id="7943397946612013052">禁止下载</translation>
 <translation id="7943893128817522649">可以询问能否自动下载多个文件</translation>
-<translation id="794567586469801724">macOS</translation>
 <translation id="7947285636476623132">请检查您的信用卡到期年份，然后重试</translation>
 <translation id="7947310711271925113">流行音乐</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可了解各项 Chrome 功能</translation>
@@ -4668,7 +4668,6 @@
 <translation id="984275831282074731">支付方式</translation>
 <translation id="985199708454569384">&lt;p&gt;如果您的计算机或移动设备的日期与时间不准确，您就会看到这条错误消息。&lt;/p&gt;
     &lt;p&gt;要修正该错误，请打开您设备的时钟，并确保日期与时间正确无误。&lt;/p&gt;</translation>
-<translation id="986257639512122511">您已向 <ph name="ORIGIN" /> 授予<ph name="PERMISSION" />使用期限</translation>
 <translation id="987264212798334818">常规</translation>
 <translation id="988159990683914416">开发者内部版本</translation>
 <translation id="989988560359834682">修改地址</translation>

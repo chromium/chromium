@@ -162,6 +162,10 @@ class AwBrowserContext : public content::BrowserContext,
   blink::mojom::PermissionStatus GetGeolocationPermission(
       const GURL& origin) const override;
 
+  // Returns the default "Accept Language" header before WebView has access
+  // to the user preferred locale.
+  std::string GetDefaultAcceptLanguageHeader();
+
   mojo::PendingRemote<network::mojom::URLLoaderFactory>
   CreateURLLoaderFactory();
 

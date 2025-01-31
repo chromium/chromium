@@ -75,6 +75,8 @@ class CONTENT_EXPORT PrefetchServiceDelegate {
   virtual bool IsContaminationExempt(const GURL& referring_url) = 0;
 
   virtual void OnPrefetchLikely(WebContents* web_contents) = 0;
+
+  virtual void SetAcceptLanguageHeader(std::string accept_language_header) = 0;
 };
 
 }  // namespace content

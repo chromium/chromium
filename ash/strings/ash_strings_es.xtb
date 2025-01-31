@@ -731,6 +731,7 @@ De lo contrario, el panel táctil integrado se volverá a habilitar en <ph name=
 <translation id="3522979239100719575">Buscando perfiles disponibles. Este proceso puede durar unos minutos.</translation>
 <translation id="3526440770046466733">Abrir el enlace en una pestaña nueva y permanecer en la pestaña actual</translation>
 <translation id="353086728817903341">Conectado a <ph name="NUM_DEVICES" /> dispositivos</translation>
+<translation id="3532247131850366052">No se ha podido crear la hoja de cálculo de Google</translation>
 <translation id="3533126039236445965">Aplicaciones en la estantería</translation>
 <translation id="3539957339480430241">Punto de acceso de <ph name="DEVICE_NAME" /></translation>
 <translation id="3540893133818942399">Cierra la configuración de la visualización de las fotos y el contenido multimedia recientes de tu teléfono</translation>
@@ -830,6 +831,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="380165613292957338">Hola, ¿cómo puedo ayudarte?</translation>
 <translation id="3804737937830804242">Contraer cámara</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 emoji. No hay más resultados.}other{# emojis. No hay más resultados.}}</translation>
+<translation id="3822403841174077928">No se ha podido copiar con formato</translation>
 <translation id="3824784079442479685">Esto permite que accedan a la cámara <ph name="APP_NAME" /> y todas aplicaciones y sitios web con el permiso de cámara. Es posible que tengas que actualizar la página web o reiniciar la aplicación.</translation>
 <translation id="3826099427150913765">Cambiar a contraseña</translation>
 <translation id="383058930331066723">Modo de ahorro de batería activado</translation>
@@ -1216,6 +1218,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="5043679421800073804">Tocar o hacer clic en el último icono de la estantería</translation>
 <translation id="504465286040788597">Párrafo anterior</translation>
 <translation id="5045550434625856497">Contraseña incorrecta</translation>
+<translation id="5058794129231928255">No se ha podido crear el documento de Google</translation>
 <translation id="5062496344832867502">RAM</translation>
 <translation id="5068762093486106012">Se te avisará si hablas y el micrófono está silenciado. El audio no saldrá de tu dispositivo.</translation>
 <translation id="5077416371682039027">Configurar la visualización de las fotos, el contenido multimedia, las notificaciones y las aplicaciones recientes de tu teléfono</translation>
@@ -1479,7 +1482,6 @@ No hay dispositivos conectados.</translation>
 <translation id="589817443623831496">Búsqueda por punto</translation>
 <translation id="5901316534475909376">Mayús+Esc</translation>
 <translation id="5901630391730855834">Amarillo</translation>
-<translation id="5911231045062997865">Las ventanas de Lacros no se admiten actualmente. Otras aplicaciones se guardarán.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916646100036936191">Nueva notificación, <ph name="NOTIFICATION_COUNT" /> en total</translation>
 <translation id="5916664084637901428">Activado</translation>
@@ -1649,6 +1651,7 @@ No hay dispositivos conectados.</translation>
 <translation id="6468406072297048412">{0,plural, =1{Restaura la versión anterior en el dispositivo en un plazo de 1 minuto}other{Restaura la versión anterior en el dispositivo en un plazo de # minutos}}</translation>
 <translation id="6469104339369989396">Activar o desactivar punto de acceso</translation>
 <translation id="6477681113376365978">No se puede descargar el archivo</translation>
+<translation id="648135757200234041">No se ha podido crear el contacto</translation>
 <translation id="6482559668224714696">Lupa de pantalla completa</translation>
 <translation id="6485086611007560630">El tiempo (no disponible)</translation>
 <translation id="6490471652906364588">Dispositivo USB-C (puerto derecho)</translation>
@@ -2289,6 +2292,7 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="8653151467777939995">Muestra la configuración de notificaciones. Las notificaciones están activadas.</translation>
 <translation id="8657066291275741003">minúscula</translation>
 <translation id="8660331759611631213">Raíz cuadrada de 71</translation>
+<translation id="8662921061190671299">No se ha podido añadir al calendario</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Pulsa Intro para hacer una captura de una parte de la pantalla</translation>
 <translation id="8676770494376880701">Cargador de baja potencia conectado</translation>

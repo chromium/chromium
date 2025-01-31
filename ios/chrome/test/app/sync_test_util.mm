@@ -566,7 +566,7 @@ void DeleteTabOrGroupFromFakeServer(const base::Uuid& uuid) {
   }
 }
 
-void AddColloaborationGroupToFakeServer(const std::string& collaboration_id) {
+void AddCollaborationGroupToFakeServer(const std::string& collaboration_id) {
   const data_sharing::GroupId group_id =
       data_sharing::GroupId(collaboration_id);
   const sync_pb::CollaborationGroupSpecifics collab_specifics =

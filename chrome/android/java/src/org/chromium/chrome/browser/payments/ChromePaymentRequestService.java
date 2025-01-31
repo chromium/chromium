@@ -9,6 +9,7 @@ import android.content.Context;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.app.AlertDialog;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -212,7 +213,12 @@ public class ChromePaymentRequestService
                         paymentRequestService.isOffTheRecord(),
                         mJourneyLogger,
                         topLevelOrigin);
-        mDialogController = new DialogControllerImpl(mWebContents);
+        mDialogController =
+                new DialogControllerImpl(
+                        mWebContents,
+                        (context, style) -> {
+                            return new AlertDialog.Builder(context, style);
+                        });
         if (PaymentRequestService.getNativeObserverForTest() != null) {
             PaymentRequestService.getNativeObserverForTest()
                     .onPaymentUiServiceCreated(mPaymentUiService);

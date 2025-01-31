@@ -674,7 +674,6 @@
 <translation id="2157640075051554492">Qiymət izləmə bildirişləri</translation>
 <translation id="21613918653299710">Onlayn Görüntü Qalleriyaları</translation>
 <translation id="2161656808144014275">Mətn</translation>
-<translation id="2162510787844374618">Bankınızla əlaqə saxlanılır...</translation>
 <translation id="2162620598375156287">İndi <ph name="SOURCE_WEBSITE" /> saytında <ph name="CURRENT_PRICE" /></translation>
 <translation id="2164510882479075877"><ph name="HOST_NAME" /> hostunda orfoqrafik səhv olub-olmadığını yoxlayın.</translation>
 <translation id="2166049586286450108">Tam Admin Girişi</translation>
@@ -2424,7 +2423,6 @@
 <translation id="5288108484102287882">Siyasət dəyərlərinin doğrulanması haqqında xəbərdarlıq var</translation>
 <translation id="5289384342738547352">Çoxsaylı sənədin idarə edilməsi</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{Bu gün güncəlləmək lazımdır}=2{Sabaha qədər güncəlləmək lazımdır}other{# gün ərzində güncəlləmək lazımdır}}</translation>
-<translation id="5292714443869769806"><ph name="OPERATING_SYSTEM" /> ayarlarına keçin</translation>
 <translation id="5293919335876685914">Kupelər</translation>
 <translation id="5298618990685278995">birinci qaralama</translation>
 <translation id="5299298092464848405">Siyasət təhlili xətası</translation>
@@ -3646,6 +3644,7 @@
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Karqo Maşınları və Treylerlər</translation>
 <translation id="7461924472993315131">Pin</translation>
+<translation id="746329643760972486">MacOS</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> <ph name="TOP_LEVEL_URL" /> saytına daxil olduğunuzu biləcək</translation>
 <translation id="7465963048299965912">10 x 13 düym</translation>
 <translation id="7469935732330206581">Forma güvənli deyil</translation>
@@ -3877,6 +3876,7 @@
 <translation id="784404208867107517">Qruplaşdırılmış tarixçə</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Heç bir tətbiq}=1{1 tətbiq (<ph name="EXAMPLE_APP_1" />)}=2{2 tətbiq (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# tətbiq (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Xəta baş verdi. Yenidən cəhd edin.</translation>
+<translation id="784623644169604270">Son fəaliyyət yoxdur</translation>
 <translation id="785476343534277563">Kollec İdmanı</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7860345425589240791">Yeni bitmə tarixini və <ph name="SIDE_OF_CARD" /> tərəfdəki CVC-ni daxil edin</translation>
@@ -3915,7 +3915,6 @@
 <translation id="7942349550061667556">Qırmızı</translation>
 <translation id="7943397946612013052">Endirmə bloklanıb</translation>
 <translation id="7943893128817522649">Saytlar çoxsaylı faylları avtomatik endirmək üçün icazə istəyə bilər</translation>
-<translation id="794567586469801724">macOS</translation>
 <translation id="7947285636476623132">Bitmə ilini yoxlayın və yenidən cəhd edin</translation>
 <translation id="7947310711271925113">Pop Musiqisi</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq Chrome funksiyaları haqqında ətraflı məlumat əldə edin</translation>
@@ -4667,7 +4666,6 @@
 <translation id="984275831282074731">Ödəniş üsulları</translation>
 <translation id="985199708454569384">&lt;p&gt;Kompüter və ya mobil cihazın tarix və vaxtı dəqiq deyilsə, bu xətanı görəcəksiniz.&lt;/p&gt;
     &lt;p&gt;Bunu həll etmək üçün cihazın saatına daxil olun. Tarix və vaxtın düzgün olduğuna əmin olun&lt;/p&gt;</translation>
-<translation id="986257639512122511"><ph name="ORIGIN" /> ünvanında <ph name="PERMISSION" /> icazəsi vermisiniz</translation>
 <translation id="987264212798334818">Ümumi</translation>
 <translation id="988159990683914416">Developer Build</translation>
 <translation id="989988560359834682">Ünvana düzəliş edin</translation>

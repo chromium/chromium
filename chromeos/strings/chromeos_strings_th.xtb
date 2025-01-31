@@ -768,6 +768,7 @@
 <translation id="4654549501020883054">เปลี่ยนทุกวัน</translation>
 <translation id="4655868084888499342">ตั้งรูปภาพเป็นวอลเปเปอร์แล้ว</translation>
 <translation id="4661249927038176904">เหนือจริง</translation>
+<translation id="4661392828086261436">การอัปเดตนี้ให้บริการโดยผู้ผลิตอุปกรณ์และไม่ได้รับการยืนยันจาก Google</translation>
 <translation id="4664651912255946953">ขนสัตว์</translation>
 <translation id="4665014895760275686">ผู้ผลิต</translation>
 <translation id="467510802200863975">รหัสผ่านไม่ตรงกัน</translation>
@@ -1027,6 +1028,7 @@
 <translation id="5904994456462260490">เพิ่ม APN ใหม่</translation>
 <translation id="590746845088109442">แมว</translation>
 <translation id="5907649332524363701">สีเต็มแป้นพิมพ์</translation>
+<translation id="5908813850962688338">การติดตั้งการอัปเดตนี้จะใช้เวลาสักครู่ โปรดเสียบปลั๊กและเปิดอุปกรณ์ไว้ขณะดาวน์โหลดการอัปเดต อุปกรณ์อาจรีบูตตัวเองหลายครั้งและแสดงหน้าจอสีดำในระหว่างกระบวนการนี้ ระบบจะแจ้งให้คุณรีสตาร์ทอุปกรณ์เพื่อให้การติดตั้งเสร็จสมบูรณ์</translation>
 <translation id="5916084858004523819">ห้ามใช้</translation>
 <translation id="5916664084637901428">เปิด</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{สแกนไฟล์และบันทึกไว้ใน <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> เรียบร้อยแล้ว}other{สแกนไฟล์และบันทึกไว้ใน <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> เรียบร้อยแล้ว}}</translation>

@@ -9045,11 +9045,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "user-notes-side-panel",
-    "owners": [ "corising@chromium.org", "chrome-desktop-ui-sea@chromium.org" ],
-    "expiry_milestone": 118
-  },
-  {
     "name": "username-first-flow-with-intermediate-values-predictions",
     "owners": [ "kazinova@google.com", "vasilii@chromium.org" ],
     "expiry_milestone": 135

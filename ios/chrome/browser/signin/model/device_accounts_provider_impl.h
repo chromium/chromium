@@ -43,6 +43,7 @@ class DeviceAccountsProviderImpl
 
   // ChromeAccountManagerService::Observer
   void OnIdentitiesOnDeviceChanged() override;
+  void OnIdentityOnDeviceUpdated(id<SystemIdentity> identity) override;
 
  private:
   raw_ptr<ChromeAccountManagerService> account_manager_service_ = nullptr;

@@ -53,8 +53,12 @@ class ChromeAccountManagerService : public KeyedService,
     // handled by the observer.
     virtual void OnIdentitiesOnDeviceChanged() {}
 
-    // Called when the identity is updated.
+    // Called when an identity in this profile is updated.
+    // TODO(crbug.com/368409110): Rename to OnIdentitiesInProfileChanged.
     virtual void OnIdentityUpdated(id<SystemIdentity> identity) {}
+
+    // Called when an identity on this device is updated.
+    virtual void OnIdentityOnDeviceUpdated(id<SystemIdentity> identity) {}
 
     // Handles refresh token updated events.
     // `identity` is the identity for which the refresh token was updated.
@@ -149,6 +153,7 @@ class ChromeAccountManagerService : public KeyedService,
   void OnIdentityListChanged() override;
   void OnIdentitiesOnDeviceChanged() override;
   void OnIdentityUpdated(id<SystemIdentity> identity) override;
+  void OnIdentityOnDeviceUpdated(id<SystemIdentity> identity) override;
   void OnIdentityRefreshTokenUpdated(id<SystemIdentity> identity) override;
   void OnIdentityAccessTokenRefreshFailed(
       id<SystemIdentity> identity,

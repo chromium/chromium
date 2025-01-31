@@ -731,6 +731,7 @@
 <translation id="3522979239100719575">Αναζήτηση για διαθέσιμα προφίλ. Ενδέχεται να χρειαστούν μερικά λεπτά.</translation>
 <translation id="3526440770046466733">Άνοιγμα συνδέσμου σε νέα καρτέλα και παραμονή στην τρέχουσα καρτέλα</translation>
 <translation id="353086728817903341">Πραγματοποιήθηκε σύνδεση σε <ph name="NUM_DEVICES" /> συσκευές</translation>
+<translation id="3532247131850366052">Δεν ήταν δυνατή η δημιουργία Φύλλου Google</translation>
 <translation id="3533126039236445965">Εφαρμογές στο ράφι</translation>
 <translation id="3539957339480430241">Σημείο πρόσβασης Wi-Fi <ph name="DEVICE_NAME" /></translation>
 <translation id="3540893133818942399">Παράβλεψη ρύθμισης προβολής των πρόσφατων φωτογραφιών και μέσων του τηλεφώνου σας</translation>
@@ -829,6 +830,7 @@
 <translation id="380165613292957338">Γεια, πώς μπορώ να βοηθήσω;</translation>
 <translation id="3804737937830804242">Σύμπτυξη κάμερας</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 emoji. Δεν υπάρχουν άλλα αποτελέσματα.}other{# emoji. Δεν υπάρχουν άλλα αποτελέσματα.}}</translation>
+<translation id="3822403841174077928">Δεν ήταν δυνατή η αντιγραφή με μορφοποίηση</translation>
 <translation id="3824784079442479685">Αυτό επιτρέπει την πρόσβαση στην κάμερα για την εφαρμογή <ph name="APP_NAME" /> και όλες τις εφαρμογές και τους ιστοτόπους με άδεια κάμερας. Ίσως χρειαστεί να ανανεώσετε την ιστοσελίδα ή να επανεκκινήσετε την εφαρμογή.</translation>
 <translation id="3826099427150913765">Αλλαγή σε κωδικό πρόσβασης</translation>
 <translation id="383058930331066723">Η λειτουργία εξοικονόμησης μπαταρίας είναι ενεργοποιημένη</translation>
@@ -1215,6 +1217,7 @@
 <translation id="5043679421800073804">Κλικ ή πάτημα του τελευταίου εικονιδίου στο ράφι</translation>
 <translation id="504465286040788597">Προηγούμενη παράγραφος</translation>
 <translation id="5045550434625856497">Λανθασμένος κωδικός πρόσβασης</translation>
+<translation id="5058794129231928255">Δεν ήταν δυνατή η δημιουργία Εγγράφου Google</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Θα ειδοποιηθείτε εάν μιλήσετε ενώ είστε σε σίγαση. Ο ήχος παραμένει πάντα στη συσκευή σας.</translation>
 <translation id="5077416371682039027">Ρύθμιση προβολής των πρόσφατων φωτογραφιών, μέσων, ειδοποιήσεων και εφαρμογών του τηλεφώνου σας</translation>
@@ -1478,7 +1481,6 @@
 <translation id="589817443623831496">Σάρωση σημείων</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">Κίτρινο</translation>
-<translation id="5911231045062997865">Προς το παρόν, δεν υποστηρίζονται τα παράθυρα Lacros. Οι άλλες εφαρμογές θα αποθηκευτούν.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916646100036936191">Νέα ειδοποίηση, <ph name="NOTIFICATION_COUNT" /> συνολικά</translation>
 <translation id="5916664084637901428">Ενεργό</translation>
@@ -1648,6 +1650,7 @@
 <translation id="6468406072297048412">{0,plural, =1{Επαναφορά της έκδοσης της συσκευής σε προηγούμενη εντός 1 λεπτού}other{Επαναφορά της έκδοσης της συσκευής σε προηγούμενη εντός # λεπτών}}</translation>
 <translation id="6469104339369989396">Εναλλαγή σημείου πρόσβασης Wi-Fi</translation>
 <translation id="6477681113376365978">Δεν είναι δυνατή η λήψη του αρχείου</translation>
+<translation id="648135757200234041">Δεν ήταν δυνατή η δημιουργία επαφής</translation>
 <translation id="6482559668224714696">Μεγεθυντικός φακός πλήρους οθόνης</translation>
 <translation id="6485086611007560630">Καιρός (μη διαθέσιμο)</translation>
 <translation id="6490471652906364588">Συσκευή USB-C (δεξιά θύρα)</translation>
@@ -2288,6 +2291,7 @@
 <translation id="8653151467777939995">Εμφάνιση ρυθμίσεων ειδοποιήσεων. Οι ειδοποιήσεις είναι ενεργοποιημένες.</translation>
 <translation id="8657066291275741003">πεζά</translation>
 <translation id="8660331759611631213">Τετραγωνική ρίζα του 71</translation>
+<translation id="8662921061190671299">Δεν ήταν δυνατή η προσθήκη στο Ημερολόγιο</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, ισχύς σήματος <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Πατήστε Enter για λήψη μερικού στιγμιότυπου οθόνης</translation>
 <translation id="8676770494376880701">Ο συνδεδεμένος φορτιστής παρέχει χαμηλή ισχύ</translation>

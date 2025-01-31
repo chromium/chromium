@@ -674,7 +674,6 @@
 <translation id="2157640075051554492">가격 추적 알림</translation>
 <translation id="21613918653299710">온라인 이미지 갤러리</translation>
 <translation id="2161656808144014275">텍스트</translation>
-<translation id="2162510787844374618">은행 연결 중…</translation>
 <translation id="2162620598375156287">이제 <ph name="SOURCE_WEBSITE" />에서 <ph name="CURRENT_PRICE" />에 판매됨</translation>
 <translation id="2164510882479075877"><ph name="HOST_NAME" />에 오타가 있는지 확인하세요.</translation>
 <translation id="2166049586286450108">전체 관리자 액세스</translation>
@@ -2408,6 +2407,7 @@
 <translation id="5254043433801397071">인쇄 콘텐츠 최적화</translation>
 <translation id="5255583962255635076">직장 프로필에 적용된 브라우저 정책</translation>
 <translation id="5255690596502591079">무시하고 캡처</translation>
+<translation id="5255771248404149177">카드 제공업체에서 본인 확인을 요청합니다.</translation>
 <translation id="5255833070095767006">350x460mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{관리자 정책에 따라 이 파일을 <ph name="DESTINATION_NAME" />에 복사하지 않는 것이 좋습니다.}other{관리자 정책에 따라 이 파일을 <ph name="DESTINATION_NAME" />에 복사하지 않는 것이 좋습니다.}}</translation>
 <translation id="5263867360296733198">업로드하기 전에 검토 필요</translation>
@@ -2428,7 +2428,6 @@
 <translation id="5288108484102287882">정책 값 유효성 검사 결과 경고가 발생했습니다.</translation>
 <translation id="5289384342738547352">여러 문서 처리</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{오늘 업데이트 필요}=2{내일까지 업데이트 필요}other{#일 이내로 업데이트 필요}}</translation>
-<translation id="5292714443869769806"><ph name="OPERATING_SYSTEM" /> 설정으로 이동</translation>
 <translation id="5293919335876685914">쿠페</translation>
 <translation id="5298618990685278995">최초 초안</translation>
 <translation id="5299298092464848405">정책을 파싱하는 중 오류 발생</translation>
@@ -2556,6 +2555,7 @@
 <translation id="5518352028556756716">대부분의 사이트는 탐색 중인 사용자를 추적하려는 목적으로 서드 파티 쿠키를 사용할 수 없으며 시크릿 모드에서는 사이트가 서드 파티 쿠키를 사용할 수 없습니다.</translation>
 <translation id="5519516356611866228">변경사항 포함</translation>
 <translation id="5519696598216267194">용지(천공)</translation>
+<translation id="5520105693415771152">최신 정보가 표시되지 않나요? 제공업체에 문의하여 업데이트하세요.</translation>
 <translation id="5521782189689806907">수납장</translation>
 <translation id="5523118979700054094">정책 이름</translation>
 <translation id="5523588073846127669">판매자가 이 가상 카드를 받지 않습니다.</translation>
@@ -3650,6 +3650,7 @@
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">화물 트럭 및 트레일러</translation>
 <translation id="7461924472993315131">고정</translation>
+<translation id="746329643760972486">MacOS</translation>
 <translation id="7465036432780054056"><ph name="TOP_LEVEL_URL" />에 방문한 사실을 <ph name="EMBEDDED_URL" />에서 알 수 있습니다</translation>
 <translation id="7465963048299965912">10x13인치</translation>
 <translation id="7469935732330206581">안전하지 않은 양식</translation>
@@ -3920,7 +3921,6 @@
 <translation id="7942349550061667556">빨간색</translation>
 <translation id="7943397946612013052">다운로드 차단됨</translation>
 <translation id="7943893128817522649">여러 파일의 자동 다운로드를 요청할 수 있음</translation>
-<translation id="794567586469801724">macOS</translation>
 <translation id="7947285636476623132">유효기간 연도를 확인한 후 다시 시도해 주세요.</translation>
 <translation id="7947310711271925113">팝 음악</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab을 누른 다음 Enter를 눌러 Chrome 기능 자세히 알아보기</translation>
@@ -4671,7 +4671,6 @@
 <translation id="984275831282074731">결제 수단</translation>
 <translation id="985199708454569384">&lt;p&gt;컴퓨터나 휴대기기의 날짜 및 시간이 잘못 설정되어 있는 경우 이 오류가 표시됩니다.&lt;/p&gt;
     &lt;p&gt;오류를 수정하려면 기기의 시계를 열고 날짜 및 시간이 올바른지 확인하세요.&lt;/p&gt;</translation>
-<translation id="986257639512122511"><ph name="ORIGIN" />에서 <ph name="PERMISSION" /> 권한을 허용했습니다.</translation>
 <translation id="987264212798334818">일반</translation>
 <translation id="988159990683914416">개발자 빌드</translation>
 <translation id="989988560359834682">주소 수정</translation>

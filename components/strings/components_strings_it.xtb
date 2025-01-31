@@ -674,7 +674,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2157640075051554492">Notifiche per il monitoraggio dei prezzi</translation>
 <translation id="21613918653299710">Gallerie di immagini online</translation>
 <translation id="2161656808144014275">Testo</translation>
-<translation id="2162510787844374618">Stiamo contattando la tua banca…</translation>
 <translation id="2162620598375156287">Ora a <ph name="CURRENT_PRICE" /> su <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Controlla eventuali errori di battitura in <ph name="HOST_NAME" />.</translation>
 <translation id="2166049586286450108">Accesso amministrativo completo</translation>
@@ -1871,6 +1870,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4269264543938335308">Costumi da bagno</translation>
 <translation id="4269599248168651462">Il certificato del server viene emesso con un nome non univoco.</translation>
 <translation id="4270541775497538019">Fascicolatore 6</translation>
+<translation id="4271311252511481365">{NUM_REVIEWS,plural, =0{Visualizza 0 recensioni. La valutazione media è di <ph name="STARS" /> stelle.}=1{Visualizza 1 recensione. La valutazione media è di <ph name="STARS" /> stelle.}other{Visualizza # recensioni. La valutazione media è di <ph name="STARS" /> stelle.}}</translation>
 <translation id="4271652479722040953">Quando vengono aggiunte estensioni a Chrome, i relativi dati pertinenti vengono inviati a terze parti a scopo di analisi e potrebbero essere visibili all'amministratore. I dati includono informazioni sulle estensioni, come nome, momento di installazione, origine dell'installazione, nonché l'attività associata a queste estensioni (ad esempio, cambio di schede, contatto con siti web o accesso ai cookie). Questi dati vengono raccolti per le estensioni installate dal Chrome Web Store e per le estensioni non disponibili nel negozio.</translation>
 <translation id="4275830172053184480">Riavvia il dispositivo</translation>
 <translation id="4276974990916607331">No, grazie</translation>
@@ -2405,6 +2405,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5254043433801397071">Ottimizza contenuti di stampa</translation>
 <translation id="5255583962255635076">Criteri del browser applicati nel profilo di lavoro</translation>
 <translation id="5255690596502591079">Acquisisci comunque</translation>
+<translation id="5255771248404149177">Il fornitore della carta vuole verificare la tua identità</translation>
 <translation id="5255833070095767006">350 x 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{Il criterio dell'amministratore sconsiglia di copiare questo file su <ph name="DESTINATION_NAME" />}other{Il criterio dell'amministratore sconsiglia di copiare questi file su <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5263867360296733198">La revisione è obbligatoria prima del caricamento</translation>
@@ -2425,7 +2426,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5288108484102287882">La convalida dei valori della norma ha generato degli avvisi</translation>
 <translation id="5289384342738547352">Gestione di più documenti</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{Aggiornamento richiesto oggi}=2{Aggiornamento richiesto entro domani}other{Aggiornamento richiesto entro # giorni}}</translation>
-<translation id="5292714443869769806">Vai alle impostazioni di <ph name="OPERATING_SYSTEM" /></translation>
 <translation id="5293919335876685914">Coupé</translation>
 <translation id="5298618990685278995">Una prima bozza</translation>
 <translation id="5299298092464848405">Errore durante l'analisi del criterio</translation>
@@ -2553,6 +2553,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5518352028556756716">La maggior parte dei siti non può utilizzare cookie di terze parti per monitorare la tua navigazione e i siti non possono utilizzare i cookie di terze parti in modalità di navigazione in incognito.</translation>
 <translation id="5519516356611866228">Con le tue modifiche</translation>
 <translation id="5519696598216267194">Carta (preforata)</translation>
+<translation id="5520105693415771152">Non visualizzi le informazioni correnti? Contatta il tuo fornitore per aggiornarle.</translation>
 <translation id="5521782189689806907">Mobili</translation>
 <translation id="5523118979700054094">Nome criterio</translation>
 <translation id="5523588073846127669">Il commerciante non accetta questa carta virtuale</translation>
@@ -2948,6 +2949,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6224281071334553713">Pietre preziose e gioielli</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab e poi Invio per personalizzare i tuoi strumenti di accessibilità nelle impostazioni di Chrome</translation>
 <translation id="6228346913624365233">Veicoli di lusso</translation>
+<translation id="6228836011612806720">Recensioni del negozio. La valutazione media è di <ph name="STARS" /> stelle.</translation>
 <translation id="6229196330202833460">Streaming di film e programmi TV</translation>
 <translation id="6234122620015464377">Taglia le pagine dopo la stampa di ciascun documento</translation>
 <translation id="6234310016144827337">Controlla la connessione e riprova</translation>
@@ -3647,6 +3649,7 @@ Ulteriori dettagli:
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Autocarri e rimorchi da carico</translation>
 <translation id="7461924472993315131">Fissa</translation>
+<translation id="746329643760972486">MacOS</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> saprà che hai visitato <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7465963048299965912">10 x 13 in</translation>
 <translation id="7469935732330206581">Modulo non sicuro</translation>
@@ -3878,6 +3881,7 @@ Ulteriori dettagli:
 <translation id="784404208867107517">Cronologia raggruppata</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Nessuna}=1{1 app (<ph name="EXAMPLE_APP_1" />)}=2{2 app (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# app (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Si è verificato un errore. Riprova.</translation>
+<translation id="784623644169604270">Nessuna attività recente</translation>
 <translation id="785476343534277563">Sport universitari</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7860345425589240791">Inserisci la nuova data di scadenza e il CVC indicati sulla <ph name="SIDE_OF_CARD" /></translation>
@@ -3916,7 +3920,6 @@ Ulteriori dettagli:
 <translation id="7942349550061667556">Rosso</translation>
 <translation id="7943397946612013052">Download bloccato</translation>
 <translation id="7943893128817522649">Può chiedere di scaricare automaticamente più file</translation>
-<translation id="794567586469801724">macOS</translation>
 <translation id="7947285636476623132">Controlla l'anno di scadenza e riprova</translation>
 <translation id="7947310711271925113">Musica pop</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab e poi Invio per scoprire di più sulle funzionalità di Chrome</translation>
@@ -4668,7 +4671,6 @@ Ulteriori dettagli:
 <translation id="984275831282074731">Metodi di pagamento</translation>
 <translation id="985199708454569384">&lt;p&gt;Vedrai questo errore se la data e l'ora del dispositivo mobile o del computer non sono esatte.&lt;/p&gt;
     &lt;p&gt;Per risolvere il problema, apri l'orologio del dispositivo e assicurati che la data e l'ora siano corrette.&lt;/p&gt;</translation>
-<translation id="986257639512122511">Hai consentito l'accesso a <ph name="PERMISSION" /> su <ph name="ORIGIN" /></translation>
 <translation id="987264212798334818">Generali</translation>
 <translation id="988159990683914416">Build</translation>
 <translation id="989988560359834682">Modifica indirizzo</translation>

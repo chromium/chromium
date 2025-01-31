@@ -352,6 +352,13 @@ void ChromeAccountManagerService::OnIdentityUpdated(
   }
 }
 
+void ChromeAccountManagerService::OnIdentityOnDeviceUpdated(
+    id<SystemIdentity> identity) {
+  for (auto& observer : observer_list_) {
+    observer.OnIdentityOnDeviceUpdated(identity);
+  }
+}
+
 void ChromeAccountManagerService::OnIdentityRefreshTokenUpdated(
     id<SystemIdentity> identity) {
   if (!this->IsValidIdentity(identity)) {

@@ -882,7 +882,7 @@ class AutomaticFullscreenTest : public FullscreenControllerInteractiveTest,
       std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app =
           web_app::IsolatedWebAppBuilder(
               web_app::ManifestBuilder().AddPermissionsPolicyWildcard(
-                  blink::mojom::PermissionsPolicyFeature::kFullscreen))
+                  network::mojom::PermissionsPolicyFeature::kFullscreen))
               .BuildBundle();
       app->TrustSigningKey();
       web_app::IsolatedWebAppUrlInfo url_info =

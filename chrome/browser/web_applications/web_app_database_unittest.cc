@@ -60,12 +60,12 @@
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
 #include "components/web_package/signed_web_bundles/ed25519_signature.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_stack_entry.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy_declaration.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -1263,17 +1263,17 @@ TEST_F(WebAppDatabaseProtoDataTest, SavesIsolationDataUpdateInfo) {
 
 TEST_F(WebAppDatabaseProtoDataTest, PermissionsPolicyRoundTrip) {
   const blink::ParsedPermissionsPolicy policy = {
-      {blink::mojom::PermissionsPolicyFeature::kGyroscope,
+      {network::mojom::PermissionsPolicyFeature::kGyroscope,
        /*allowed_origins=*/{},
        /*self_if_matches=*/std::nullopt,
        /*matches_all_origins=*/false,
        /*matches_opaque_src=*/true},
-      {blink::mojom::PermissionsPolicyFeature::kGeolocation,
+      {network::mojom::PermissionsPolicyFeature::kGeolocation,
        /*allowed_origins=*/{},
        /*self_if_matches=*/std::nullopt,
        /*matches_all_origins=*/true,
        /*matches_opaque_src=*/false},
-      {blink::mojom::PermissionsPolicyFeature::kGamepad,
+      {network::mojom::PermissionsPolicyFeature::kGamepad,
        {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
             url::Origin::Create(GURL("https://example.com")),
             /*has_subdomain_wildcard=*/false),
@@ -1293,17 +1293,17 @@ TEST_F(WebAppDatabaseProtoDataTest, PermissionsPolicyRoundTrip) {
 
 TEST_F(WebAppDatabaseProtoDataTest, PermissionsPolicyProto) {
   const blink::ParsedPermissionsPolicy policy = {
-      {blink::mojom::PermissionsPolicyFeature::kGyroscope,
+      {network::mojom::PermissionsPolicyFeature::kGyroscope,
        /*allowed_origins=*/{},
        /*self_if_matches=*/std::nullopt,
        /*matches_all_origins=*/false,
        /*matches_opaque_src=*/true},
-      {blink::mojom::PermissionsPolicyFeature::kGeolocation,
+      {network::mojom::PermissionsPolicyFeature::kGeolocation,
        /*allowed_origins=*/{},
        /*self_if_matches=*/std::nullopt,
        /*matches_all_origins=*/true,
        /*matches_opaque_src=*/false},
-      {blink::mojom::PermissionsPolicyFeature::kGamepad,
+      {network::mojom::PermissionsPolicyFeature::kGamepad,
        {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
             url::Origin::Create(GURL("https://example.com")),
             /*has_subdomain_wildcard=*/false),

@@ -674,7 +674,6 @@
 <translation id="2157640075051554492">اعلان‌های ردیابی قیمت</translation>
 <translation id="21613918653299710">گالری تصاویر آنلاین</translation>
 <translation id="2161656808144014275">نوشتار</translation>
-<translation id="2162510787844374618">درحال تماس با بانک…</translation>
 <translation id="2162620598375156287">اکنون با قیمت <ph name="CURRENT_PRICE" /> در <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">احتمال وجود غلط املائی در <ph name="HOST_NAME" /> را بررسی کنید.</translation>
 <translation id="2166049586286450108">دسترسی کامل سرپرست</translation>
@@ -2408,6 +2407,7 @@
 <translation id="5254043433801397071">بهینه‌سازی محتوای چاپ</translation>
 <translation id="5255583962255635076">خط‌مشی‌های مرورگر اعمال‌شده در نمایه کاری شما</translation>
 <translation id="5255690596502591079">درهرصورت ضبط شود</translation>
+<translation id="5255771248404149177">ارائه‌دهنده کارت شما می‌خواهد هویت شما را تأیید کند</translation>
 <translation id="5255833070095767006">۴۶۰ × ۳۵۰ میلی‌متر</translation>
 <translation id="5257739419779698609">{0,plural, =1{خط‌مشی سرپرست توصیه نمی‌کند این فایل را در <ph name="DESTINATION_NAME" /> کپی کنید}one{خط‌مشی سرپرست توصیه نمی‌کند این فایل را در <ph name="DESTINATION_NAME" /> کپی کنید}other{خط‌مشی سرپرست توصیه نمی‌کند این فایل‌ها را در <ph name="DESTINATION_NAME" /> کپی کنید}}</translation>
 <translation id="5263867360296733198">قبل‌از بارگذاری باید بررسی شود</translation>
@@ -2428,7 +2428,6 @@
 <translation id="5288108484102287882">اعتبارسنجی مقادیر خط‌مشی با چند هشدار به پایان رسید</translation>
 <translation id="5289384342738547352">کار با چندین سند</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{باید امروز به‌روز شود}=2{باید تا فردا به‌روز شود}one{باید تا # روز دیگر به‌روز شود}other{باید تا # روز دیگر به‌روز شود}}</translation>
-<translation id="5292714443869769806">رفتن به تنظیمات <ph name="OPERATING_SYSTEM" /></translation>
 <translation id="5293919335876685914">کوپه</translation>
 <translation id="5298618990685278995">پیش‌نویس اولیه</translation>
 <translation id="5299298092464848405">خطا در تجزیه خط‌‌مشی</translation>
@@ -2556,6 +2555,7 @@
 <translation id="5518352028556756716">اکثر سایت‌ها نمی‌توانند برای ردیابی شما هنگام مرور از کوکی‌های طرف سوم استفاده کنند و سایت‌ها نمی‌توانند از کوکی‌های طرف سوم در «حالت ناشناس» استفاده کنند.</translation>
 <translation id="5519516356611866228">با تغییرات اعمال‌شده</translation>
 <translation id="5519696598216267194">کاغذ (ازپیش پانچ‌شده)</translation>
+<translation id="5520105693415771152">اطلاعات کنونی‌تان را نمی‌بینید؟ برای به‌روزرسانی آن با ارائه‌دهنده تماس بگیرید.</translation>
 <translation id="5521782189689806907">کابینت‌سازی</translation>
 <translation id="5523118979700054094">نام خط‌مشی</translation>
 <translation id="5523588073846127669">فروشنده این کارت مجازی را نمی‌پذیرد</translation>
@@ -3651,6 +3651,7 @@
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">کامیون باری و تریلر</translation>
 <translation id="7461924472993315131">پین</translation>
+<translation id="746329643760972486">MacOS</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> متوجه خواهد شد که شما از <ph name="TOP_LEVEL_URL" /> بازدید کرده‌اید</translation>
 <translation id="7465963048299965912">۱۳ × ۱۰ اینچ</translation>
 <translation id="7469935732330206581">فرم ایمن نیست</translation>
@@ -3921,7 +3922,6 @@
 <translation id="7942349550061667556">قرمز</translation>
 <translation id="7943397946612013052">بارگیری مسدود شد</translation>
 <translation id="7943893128817522649">می‌تواند برای بارگیری خودکار چند فایل درخواست دهد</translation>
-<translation id="794567586469801724">macOS</translation>
 <translation id="7947285636476623132">سال انقضا را بررسی و دوباره امتحان کنید</translation>
 <translation id="7947310711271925113">موسیقی پاپ</translation>
 <translation id="7947813448670013867">‏<ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای اطلاع از ویژگی‌های جدید Chrome، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
@@ -4673,7 +4673,6 @@
 <translation id="984275831282074731">روش‌های پرداخت</translation>
 <translation id="985199708454569384">‏&lt;p&gt;اگر تاریخ و زمان رایانه یا دستگاه همراهتان درست نباشد این خطا را می‌بینید.&lt;/p&gt;
     &lt;p&gt;برای برطرف کردن این خطا، ساعت دستگاه را باز کنید. مطمئن شوید تاریخ و زمان صحیح است.&lt;/p&gt;</translation>
-<translation id="986257639512122511">دسترسی به <ph name="PERMISSION" /> را در <ph name="ORIGIN" /> مجاز کرده‌اید</translation>
 <translation id="987264212798334818">موارد کلی</translation>
 <translation id="988159990683914416">ساخت برنامه‌نویس</translation>
 <translation id="989988560359834682">ویرایش نشانی</translation>

@@ -674,7 +674,6 @@
 <translation id="2157640075051554492">Уведомления об отслеживаемых ценах</translation>
 <translation id="21613918653299710">Веб-галереи изображений</translation>
 <translation id="2161656808144014275">Текст</translation>
-<translation id="2162510787844374618">Устанавливается связь с банком…</translation>
 <translation id="2162620598375156287"><ph name="CURRENT_PRICE" /> на сайте <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Проверьте, нет ли опечаток в имени хоста <ph name="HOST_NAME" />.</translation>
 <translation id="2166049586286450108">Доступ администратора ко всем данным</translation>
@@ -2407,6 +2406,7 @@
 <translation id="5254043433801397071">Оптимизировать контент для печати</translation>
 <translation id="5255583962255635076">Действующие в рабочем профиле правила браузера.</translation>
 <translation id="5255690596502591079">Все равно записать</translation>
+<translation id="5255771248404149177">Поставщику вашей карты нужно убедиться, что это действительно вы.</translation>
 <translation id="5255833070095767006">350 x 460 мм</translation>
 <translation id="5257739419779698609">{0,plural, =1{Администратор не рекомендует копировать этот файл в место назначения "<ph name="DESTINATION_NAME" />".}one{Администратор не рекомендует копировать эти файлы в место назначения "<ph name="DESTINATION_NAME" />".}few{Администратор не рекомендует копировать эти файлы в место назначения "<ph name="DESTINATION_NAME" />".}many{Администратор не рекомендует копировать эти файлы в место назначения "<ph name="DESTINATION_NAME" />".}other{Администратор не рекомендует копировать эти файлы в место назначения "<ph name="DESTINATION_NAME" />".}}</translation>
 <translation id="5263867360296733198">Проверьте файлы, перед тем как загружать их</translation>
@@ -2427,7 +2427,6 @@
 <translation id="5288108484102287882">При проверке значений политик обнаружены некритичные ошибки</translation>
 <translation id="5289384342738547352">Обработка нескольких документов</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{Необходимо установить обновление сегодня.}=2{Необходимо установить обновление к завтрашнему дню.}one{Необходимо установить обновление в течение # дня.}few{Необходимо установить обновление в течение # дней.}many{Необходимо установить обновление в течение # дней.}other{Необходимо установить обновление в течение # дня.}}</translation>
-<translation id="5292714443869769806">К настройкам <ph name="OPERATING_SYSTEM" /></translation>
 <translation id="5293919335876685914">Автомобили типа "купе"</translation>
 <translation id="5298618990685278995">Свой черновик текста.</translation>
 <translation id="5299298092464848405">Не удалось выполнить анализ политики</translation>
@@ -2555,6 +2554,7 @@
 <translation id="5518352028556756716">Сторонние файлы cookie нельзя использовать в режиме инкогнито, и большинству сайтов запрещено с их помощью отслеживать ваши действия в интернете.</translation>
 <translation id="5519516356611866228">С вашими изменениями</translation>
 <translation id="5519696598216267194">Бумага (с перфорацией)</translation>
+<translation id="5520105693415771152">Если вы видите устаревшие данные, обратитесь к поставщику, чтобы обновить их.</translation>
 <translation id="5521782189689806907">Корпусная мебель</translation>
 <translation id="5523118979700054094">Название правила</translation>
 <translation id="5523588073846127669">Продавец не принимает эту виртуальную карту.</translation>
@@ -3650,6 +3650,7 @@
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Грузовики и автоприцепы</translation>
 <translation id="7461924472993315131">Закрепить</translation>
+<translation id="746329643760972486">macOS</translation>
 <translation id="7465036432780054056">Сайт "<ph name="EMBEDDED_URL" />" получит информацию о том, что вы посетили страницу "<ph name="TOP_LEVEL_URL" />".</translation>
 <translation id="7465963048299965912">10 x 13 дюймов</translation>
 <translation id="7469935732330206581">Форма не защищена</translation>
@@ -3920,7 +3921,6 @@
 <translation id="7942349550061667556">Красный</translation>
 <translation id="7943397946612013052">Скачивание остановлено</translation>
 <translation id="7943893128817522649">Разрешено отправлять запрос на автоматическое скачивание нескольких файлов</translation>
-<translation id="794567586469801724">macOS</translation>
 <translation id="7947285636476623132">Проверьте год в сроке действия карты и повторите попытку</translation>
 <translation id="7947310711271925113">Поп-музыка</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Чтобы узнать больше о функциях Chrome, нажмите Tab, а затем Ввод.</translation>
@@ -4672,7 +4672,6 @@
 <translation id="984275831282074731">Способы оплаты</translation>
 <translation id="985199708454569384">&lt;p&gt;Эта ошибка возникает, если дата и время на компьютере или мобильном устройстве установлены неправильно.&lt;/p&gt;
     &lt;p&gt;Чтобы устранить проблему, откройте настройки системных часов и установите правильные параметры.&lt;/p&gt;</translation>
-<translation id="986257639512122511">Вы предоставили разрешение "<ph name="PERMISSION" />" для сайта <ph name="ORIGIN" />.</translation>
 <translation id="987264212798334818">Общие</translation>
 <translation id="988159990683914416">Сборка для разработчиков</translation>
 <translation id="989988560359834682">Изменение адреса</translation>

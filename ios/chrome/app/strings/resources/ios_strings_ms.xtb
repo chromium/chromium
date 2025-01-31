@@ -263,7 +263,6 @@
 <translation id="2074131957428911366">Anda boleh memilih item yang hendak disegerakkan dalam <ph name="BEGIN_LINK" />tetapan<ph name="END_LINK" /> pada bila-bila masa.</translation>
 <translation id="2078437078822043850">Anda boleh menatal ke kanan untuk menyemak imbas dalam Inkognito.</translation>
 <translation id="2079545284768500474">Buat asal</translation>
-<translation id="2082906935540894275">Ciri yang paling berkaitan untuk anda pada masa yang berbeza.</translation>
 <translation id="2085876078937250610">Simpan…</translation>
 <translation id="2096239473850415494">Tidak dapat memuat turun</translation>
 <translation id="2096716221239095980">Padamkan semua data</translation>
@@ -548,7 +547,6 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="344589138074534176">Ketahui lebih lanjut tentang Google Lens</translation>
 <translation id="3447332786336558089">Selepas anda log keluar, tab akan ditutup dan data akaun yang tidak disimpan akan dipadamkan daripada peranti ini. Perkara ini mungkin termasuk kata laluan, sejarah dan pelbagai lagi.</translation>
-<translation id="3449016921756175697">Cadangan berguna yang menjadikan penyemakan imbas lebih baik dan lebih mudah.</translation>
 <translation id="345348365500626747">Alamat ditemukan</translation>
 <translation id="3464194322481586217">Tidak dapat menjejaki harga.</translation>
 <translation id="3469117812148449995">Pilihan untuk menyimpan kata laluan</translation>
@@ -718,6 +716,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="422477017457571619">Perlindungan masa nyata yang dikuasakan AI terhadap laman, muat turun dan sambungan yang berbahaya berdasarkan data semakan imbas anda yang dihantar kepada Google</translation>
 <translation id="4231395118547300571">Pemberitahuan Semakan Keselamatan dihidupkan</translation>
 <translation id="4237377247299956313">Ketik <ph name="BEGIN_BOLD" />Apl Penyemak Imbas Lalai<ph name="END_BOLD" /></translation>
+<translation id="4241893428331130998">Tiada kata laluan atau kunci laluan yang disimpan</translation>
 <translation id="4242533952199664413">Buka tetapan</translation>
 <translation id="4250432749243022864">{count,plural, =0{Buka {count} tab}=1{Buka {count} tab}other{Buka {count} tab}}</translation>
 <translation id="4250680216510889253">Tidak</translation>
@@ -922,7 +921,6 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="5127538504377457572">Aktif <ph name="DAYS" /> hari lalu</translation>
 <translation id="5128788795241319992">Terokai menu baharu</translation>
 <translation id="5132942445612118989">Segerakkan kata laluan, sejarah &amp; pelbagai lagi pada semua peranti</translation>
-<translation id="5137526732000415202">Tab terakhir yang anda buka merentas semua peranti anda.</translation>
 <translation id="5145331760738811130">Tinggalkan Penukar Tab</translation>
 <translation id="5157638238828697074">Ada masalah. Aplikasi tidak dapat dibuka.</translation>
 <translation id="5163417375525818870">PDF</translation>
@@ -1023,7 +1021,6 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="559567008082979829">Tetapkan muat turun anda untuk dipadamkan selepas sebulan.</translation>
 <translation id="5596627076506792578">Lagi pilihan</translation>
 <translation id="560322036295180549">Dimatikan oleh organisasi anda</translation>
-<translation id="5611107723541161735">Pintasan kepada laman yang telah anda lawati kebelakangan ini pada peranti ini.</translation>
 <translation id="5611398002774823980">Simpan dalam akaun</translation>
 <translation id="5613297089029360427">Isih mengikut yang terbaharu</translation>
 <translation id="5614553682702429503">Simpan kata laluan?</translation>
@@ -1487,7 +1484,6 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="7512075701202892785">Penyemak imbas kegemaran anda kini pada iPad</translation>
 <translation id="7512909159512473473">Masukkan ungkapan laluan…</translation>
 <translation id="7514365320538308">Muat Turun</translation>
-<translation id="7521117365186708026">Petua penyediaan yang membantu anda memanfaatkan Chrome sepenuhnya.</translation>
 <translation id="7524055474074101597">Akses kata laluan anda dan pelbagai lagi merentas apl.</translation>
 <translation id="75362970626182391">Kumpulan Tab Baharu</translation>
 <translation id="7537586195939242955">Maaf, Pas anda tidak boleh dipasang pd Passbook pd masa ini.</translation>
@@ -1600,11 +1596,13 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="7982789257301363584">Rangkaian</translation>
 <translation id="7987685713885608670">Untuk keselamatan tambahan, sulitkan kata laluan pada peranti sebelum disimpan ke Pengurus Kata Laluan Google.</translation>
 <translation id="798991908416757345">Kumpulan tab tidak tersedia</translation>
+<translation id="7993170188789685695">Ketik dua kali untuk menutup pemberitahuan ini.</translation>
 <translation id="7993619969781047893">Ciri pada sesetengah tapak mungkin rosak</translation>
 <translation id="7996239959906074962">Sediakan…</translation>
 <translation id="800361585186029508">Membuka URL yang dimasukkan dalam Google Chrome.</translation>
 <translation id="8005666035647241369">Kepada Pengurus Kata Laluan Google pada peranti ini</translation>
 <translation id="8011489434346330032">Pemeriksa Web</translation>
+<translation id="8017015647846870183">Daripada Google Password Manager, termasuk kata laluan dan kunci laluan</translation>
 <translation id="802154636333426148">Muat turun gagal</translation>
 <translation id="8023170444051056234">Anda akan kehilangan akses kepada kumpulan tab “<ph name="GROUP_NAME" />" dengan serta-merta dan kumpulan tab ini akan dipadamkan daripada semua peranti anda</translation>
 <translation id="8023878949384262191">Mengembangkan bahagian.</translation>
@@ -1705,7 +1703,6 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="8439758443371991593">Sembunyikan Tambahkan pada Senarai Bacaan</translation>
 <translation id="8449869326050867919">Kata laluan dikongsi</translation>
 <translation id="8453847087068411809">Jangan sesekali mengesan bungkusan secara automatik</translation>
-<translation id="846158969830690371">Ketahui jika anda mempunyai tetapan yang paling selamat atau perlu menyemak apa-apa.</translation>
 <translation id="8473863474539038330">Alamat dan pelbagai lagi</translation>
 <translation id="8474378002946546633">Benarkan pemberitahuan</translation>
 <translation id="8477178913400731244">Padamkan data</translation>

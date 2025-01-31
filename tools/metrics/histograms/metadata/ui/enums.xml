@@ -723,7 +723,6 @@ chromium-metrics-reviews@google.com.
   <int value="-511253776" label="chrome://snippets-internals/"/>
   <int value="-492330636" label="chrome://connectivity-diagnostics/"/>
   <int value="-485494550" label="chrome://interventions-internals/"/>
-  <int value="-476825727" label="chrome://user-notes-side-panel.top-chrome/"/>
   <int value="-451371558" label="chrome://serviceworker-internals/"/>
   <int value="-443189279" label="chrome://enterprise-profile-welcome/"/>
   <int value="-407160627" label="chrome://on-device-translation-internals/"/>

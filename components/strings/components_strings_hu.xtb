@@ -674,7 +674,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2157640075051554492">Árkövetési értesítések</translation>
 <translation id="21613918653299710">Internetes képgalériák</translation>
 <translation id="2161656808144014275">Szöveg</translation>
-<translation id="2162510787844374618">Kapcsolatfelvétel a bankkal…</translation>
 <translation id="2162620598375156287">Most <ph name="CURRENT_PRICE" /> áron a következő webhelyen: <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Ellenőrizze, hogy van-e elírás a(z) <ph name="HOST_NAME" /> domainnévben.</translation>
 <translation id="2166049586286450108">Teljes rendszergazdai hozzáférés</translation>
@@ -2425,7 +2424,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5288108484102287882">A házirendértékek ellenőrzése során figyelmeztetések merültek fel</translation>
 <translation id="5289384342738547352">Több dokumentum kezelése</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{A mai napon frissítés szükséges}=2{Holnapig frissítés szükséges}other{# napon belül frissítés szükséges}}</translation>
-<translation id="5292714443869769806">Ugrás a(z) <ph name="OPERATING_SYSTEM" /> beállításaihoz</translation>
 <translation id="5293919335876685914">Kupék</translation>
 <translation id="5298618990685278995">egy első vázlat</translation>
 <translation id="5299298092464848405">Irányelv-előfeldolgozási hiba</translation>
@@ -3648,6 +3646,7 @@ További részletek:
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Áruszállító teherautók és kamionok</translation>
 <translation id="7461924472993315131">Rögzítés</translation>
+<translation id="746329643760972486">macOS</translation>
 <translation id="7465036432780054056">A(z) <ph name="EMBEDDED_URL" /> tudni fogja, hogy Ön járt itt: <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7465963048299965912">10 × 13 hüvelyk</translation>
 <translation id="7469935732330206581">Az űrlap nem biztonságos</translation>
@@ -3879,6 +3878,7 @@ További részletek:
 <translation id="784404208867107517">Csoportosított előzmények</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Nincs}=1{1 alkalmazás (<ph name="EXAMPLE_APP_1" />)}=2{2 alkalmazás (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# alkalmazás (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Valami hiba történt. Próbálja újra.</translation>
+<translation id="784623644169604270">Nincs tevékenység a közelmúltból</translation>
 <translation id="785476343534277563">Egyetemi sportok</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" />: <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="7860345425589240791">Adja meg az új lejárati dátumot és a CVC-számot, amelyet itt talál: <ph name="SIDE_OF_CARD" /></translation>
@@ -3917,7 +3917,6 @@ További részletek:
 <translation id="7942349550061667556">Piros</translation>
 <translation id="7943397946612013052">Letiltott letöltés</translation>
 <translation id="7943893128817522649">Engedélyt kérhet arra, hogy több fájlt is letöltsön automatikusan</translation>
-<translation id="794567586469801724">macOS</translation>
 <translation id="7947285636476623132">Ellenőrizze a lejárati évet, majd próbálja újra</translation>
 <translation id="7947310711271925113">Popzene</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, tartsa lenyomva a Tab billentyűt, majd nyomja meg az Enter billentyűt a Chrome funkcióival kapcsolatos további információkért</translation>
@@ -4671,7 +4670,6 @@ További részletek:
 <translation id="984275831282074731">Fizetési módok</translation>
 <translation id="985199708454569384">&lt;p&gt;Ez a hiba akkor fordul elő, ha a számítógép vagy mobileszköz dátuma és ideje pontatlan.&lt;/p&gt;
     &lt;p&gt;A hiba kijavításához nyissa meg eszköze óráját. Ellenőrizze, hogy helyes-e a dátum és az idő.&lt;/p&gt;</translation>
-<translation id="986257639512122511">Engedélyezte a következőt a(z) <ph name="ORIGIN" /> webhelyen: <ph name="PERMISSION" /></translation>
 <translation id="987264212798334818">Általános</translation>
 <translation id="988159990683914416">Fejlesztői változat</translation>
 <translation id="989988560359834682">Cím szerkesztése</translation>

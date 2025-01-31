@@ -119,7 +119,7 @@ void DidGenerateCacheableMetadataInCacheStorageOnUI(
 
   cache_storage_control->AddReceiver(
       cross_origin_embedder_policy, mojo::NullRemote(),
-      document_isolation_policy,
+      document_isolation_policy, mojo::NullRemote(),
       storage::BucketLocator::ForDefaultBucket(code_cache_storage_key),
       storage::mojom::CacheStorageOwner::kCacheAPI,
       remote.BindNewPipeAndPassReceiver());

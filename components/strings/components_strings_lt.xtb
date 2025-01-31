@@ -674,7 +674,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2157640075051554492">Kainų stebėjimo pranešimai</translation>
 <translation id="21613918653299710">Vaizdų galerijos prisijungus</translation>
 <translation id="2161656808144014275">Tekstas</translation>
-<translation id="2162510787844374618">Susisiekiama su banku…</translation>
 <translation id="2162620598375156287">Dabar <ph name="CURRENT_PRICE" /> svetainėje <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Patikrinkite, ar pavadinime <ph name="HOST_NAME" /> nėra klaidos.</translation>
 <translation id="2166049586286450108">Visateisė administratoriaus prieiga</translation>
@@ -2430,7 +2429,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5288108484102287882">Patvirtinant politikos vertes pateikta įspėjimų</translation>
 <translation id="5289384342738547352">Kelių dokumentų apdorojimas</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{Atnaujinti reiki šiandien}=2{Atnaujinti reikia iki rytojaus}one{Atnaujinti reikia per # dieną}few{Atnaujinti reikia per # dienas}many{Atnaujinti reikia per # dienos}other{Atnaujinti reikia per # dienų}}</translation>
-<translation id="5292714443869769806">Eiti į „<ph name="OPERATING_SYSTEM" />“ nustatymus</translation>
 <translation id="5293919335876685914">Kupė</translation>
 <translation id="5298618990685278995">pirmą juodraštį</translation>
 <translation id="5299298092464848405">Analizuojant politiką įvyko klaida</translation>
@@ -3654,6 +3652,7 @@ Papildoma išsami informacija:
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Krovininiai sunkvežimiai ir priekabos</translation>
 <translation id="7461924472993315131">Prisegti</translation>
+<translation id="746329643760972486">MacOS</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> žinos, kad lankėtės <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7465963048299965912">10 x 13 col.</translation>
 <translation id="7469935732330206581">Forma nesaugi</translation>
@@ -3924,7 +3923,6 @@ Papildoma išsami informacija:
 <translation id="7942349550061667556">Raudona</translation>
 <translation id="7943397946612013052">Užblokuotas atsisiuntimas</translation>
 <translation id="7943893128817522649">Gali būti prašoma automatiškai atsisiųsti kelis failus</translation>
-<translation id="794567586469801724">macOS</translation>
 <translation id="7947285636476623132">Patikrinkite galiojimo pabaigos metus ir bandykite dar kartą</translation>
 <translation id="7947310711271925113">Popmuzika</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, paspauskite tabuliavimo klavišą, tada – klavišą „Enter“, jei norite sužinoti apie „Chrome“ funkcijas</translation>
@@ -4677,7 +4675,6 @@ Papildoma išsami informacija:
 <translation id="984275831282074731">Mokėjimo metodai</translation>
 <translation id="985199708454569384">&lt;p&gt;Ši klaida rodoma, jei kompiuterio ar mobiliojo įrenginio data ir laikas netikslūs.&lt;/p&gt;
     &lt;p&gt;Kad ištaisytumėte klaidą, atidarykite įrenginio laikrodį. Įsitikinkite, kad rodomas tikslus laikas ir data.&lt;/p&gt;</translation>
-<translation id="986257639512122511">Leidote naudoti „<ph name="PERMISSION" />“ programoje „<ph name="ORIGIN" />“</translation>
 <translation id="987264212798334818">Bendra</translation>
 <translation id="988159990683914416">Vykdymo programa sukurta</translation>
 <translation id="989988560359834682">Adreso redagavimas</translation>

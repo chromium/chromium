@@ -43,6 +43,7 @@ robolectric_library("junit") {
     ":junit_test_support",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//base:callback_java",
     "//chrome/android:chrome_java",
     "//chrome/browser/autofill/android:java",
     "//chrome/browser/profiles/android:java",
@@ -57,6 +58,7 @@ robolectric_library("junit") {
     "//mojo/public/java:bindings_java",
     "//mojo/public/java:system_java",
     "//services/service_manager/public/java:service_manager_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/blink/public/mojom:android_mojo_bindings_java",
     "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit",
@@ -67,6 +69,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/payments/AutofillContactTest.java",
     "java/src/org/chromium/chrome/browser/payments/AutofillContactUnitTest.java",
     "java/src/org/chromium/chrome/browser/payments/ChromePaymentRequestFactoryTest.java",
+    "java/src/org/chromium/chrome/browser/payments/DialogControllerImplUnitTest.java",
     "java/src/org/chromium/chrome/browser/payments/PaymentRequestIntegrationTest.java",
     "java/src/org/chromium/chrome/browser/payments/handler/toolbar/PaymentHandlerToolbarMediatorTest.java",
   ]

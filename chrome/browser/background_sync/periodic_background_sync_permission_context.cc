@@ -36,10 +36,10 @@ BASE_FEATURE(kPeriodicSyncPermissionForDefaultSearchEngine,
 PeriodicBackgroundSyncPermissionContext::
     PeriodicBackgroundSyncPermissionContext(
         content::BrowserContext* browser_context)
-    : PermissionContextBase(browser_context,
-                            ContentSettingsType::PERIODIC_BACKGROUND_SYNC,
-                            blink::mojom::PermissionsPolicyFeature::kNotFound) {
-}
+    : PermissionContextBase(
+          browser_context,
+          ContentSettingsType::PERIODIC_BACKGROUND_SYNC,
+          network::mojom::PermissionsPolicyFeature::kNotFound) {}
 
 PeriodicBackgroundSyncPermissionContext::
     ~PeriodicBackgroundSyncPermissionContext() = default;

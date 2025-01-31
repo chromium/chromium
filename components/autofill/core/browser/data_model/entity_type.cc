@@ -52,6 +52,18 @@ FieldType AttributeTypeNameToFieldType(AttributeTypeName a) {
       return LOYALTY_MEMBERSHIP_PROVIDER;
     case AttributeTypeName::kLoyaltyCardMemberId:
       return LOYALTY_MEMBERSHIP_ID;
+    case AttributeTypeName::kCarOwner:
+    case AttributeTypeName::kCarLicensePlate:
+    case AttributeTypeName::kCarRegistration:
+    case AttributeTypeName::kCarMake:
+    case AttributeTypeName::kCarModel:
+      return UNKNOWN_TYPE;
+    case AttributeTypeName::kDriversLicenseName:
+    case AttributeTypeName::kDriversLicenseRegion:
+    case AttributeTypeName::kDriversLicenseNumber:
+    case AttributeTypeName::kDriversLicenseExpirationDate:
+    case AttributeTypeName::kDriversLicenseIssueDate:
+      return UNKNOWN_TYPE;
   }
   NOTREACHED();
 }

@@ -944,7 +944,17 @@ void AccountProfileMapper::NotifyIdentityUpdated(
     id<SystemIdentity> identity,
     const std::optional<std::string>& profile_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Notify all observers (independent of profile) of updates to an identity on
+  // the device.
+  for (const auto& [name, observer_list] : observer_lists_per_profile_name_) {
+    for (Observer& observer : observer_list) {
+      observer.OnIdentityOnDeviceUpdated(identity);
+    }
+  }
+
   if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    // Notify observers for the affected profile.
     if (!profile_name.has_value()) {
       return;
     }

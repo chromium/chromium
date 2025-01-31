@@ -669,7 +669,6 @@
 <translation id="2157640075051554492">ధర ట్రాకింగ్ నోటిఫికేషన్‌లు</translation>
 <translation id="21613918653299710">ఆన్‌లైన్ ఇమేజ్ గ్యాలరీలు</translation>
 <translation id="2161656808144014275">వచనం</translation>
-<translation id="2162510787844374618">మీ బ్యాంక్‌ను సంప్రదిస్తోంది...</translation>
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" />లోని ప్రస్తుత ధర <ph name="CURRENT_PRICE" /></translation>
 <translation id="2164510882479075877"><ph name="HOST_NAME" />లో అక్షర దోషం ఉందేమో చెక్ చేయండి.</translation>
 <translation id="2166049586286450108">పూర్తి నిర్వాహక యాక్సెస్</translation>
@@ -2423,7 +2422,6 @@
 <translation id="5288108484102287882">విధాన విలువల క్రమబద్ధీకరణ హెచ్చరికలను జారీ చేసింది</translation>
 <translation id="5289384342738547352">అనేక డాక్యుమెంట్‌లను హ్యాండిల్ చేయడం</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{ఈరోజే అప్‌డేట్ చేయాలి}=2{రేపుటి లోపు అప్‌డేట్ చేయాలి}other{# రోజులలోపు అప్‌డేట్ చేయాలి}}</translation>
-<translation id="5292714443869769806"><ph name="OPERATING_SYSTEM" /> సెట్టింగ్‌లకు వెళ్లండి</translation>
 <translation id="5293919335876685914">కూప్స్</translation>
 <translation id="5298618990685278995">మొదటి డ్రాఫ్ట్</translation>
 <translation id="5299298092464848405">విధానాన్ని అన్వయించడంలో ఎర్రర్</translation>
@@ -3646,6 +3644,7 @@
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">కార్గో ట్రక్కులు &amp; ట్రయిలర్‌లు</translation>
 <translation id="7461924472993315131">పిన్ చేయండి</translation>
+<translation id="746329643760972486">MacOS</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" />‌కు మీరు <ph name="TOP_LEVEL_URL" />‌ను సందర్శించినట్లుగా తెలుస్తుంది</translation>
 <translation id="7465963048299965912">10 x 13 అంగుళాలు</translation>
 <translation id="7469935732330206581">ఫారమ్ సురక్షితమైనది కాదు</translation>
@@ -3916,7 +3915,6 @@
 <translation id="7942349550061667556">ఎరుపు</translation>
 <translation id="7943397946612013052">డౌన్‌లోడ్ చేయకుండా బ్లాక్ చేయబడింది</translation>
 <translation id="7943893128817522649">అనేక ఫైళ్లను ఆటోమేటిక్‌గా డౌన్‌లోడ్ చేయడానికి సైట్ అనుమతి అడగవచ్చు</translation>
-<translation id="794567586469801724">macOS</translation>
 <translation id="7947285636476623132">మీ గడువు ముగింపు సంవత్సరాన్ని చెక్ చేసి, మళ్లీ ట్రై చేయండి</translation>
 <translation id="7947310711271925113">పాప్ మ్యూజిక్</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ఫీచర్‌ల గురించి తెలుసుకోవడానికి Tabను నొక్కి, ఆపై Enterను నొక్కండి</translation>
@@ -4668,7 +4666,6 @@
 <translation id="984275831282074731">పేమెంట్ ఆప్షన్‌లు</translation>
 <translation id="985199708454569384">&lt;p&gt;మీ కంప్యూటర్ లేదా మొబైల్ పరికరంలో తేదీ మరియు సమయం తప్పుగా ఉన్నట్లయితే మీకు ఈ ఎర్రర్ కనిపిస్తుంది.&lt;/p&gt;
     &lt;p&gt;ఎర్రర్‌ను పరిష్కరించడానికి, మీ పరికర గడియారాన్ని తెరవండి. సమయం మరియు తేదీ సరిగ్గా ఉన్నాయని నిర్ధారించుకోండి.&lt;/p&gt;</translation>
-<translation id="986257639512122511">మీరు <ph name="ORIGIN" />‌లో <ph name="PERMISSION" />‌ను అనుమతించారు</translation>
 <translation id="987264212798334818">సాధారణం</translation>
 <translation id="988159990683914416">డెవలపర్ బిల్డ్</translation>
 <translation id="989988560359834682">అడ్రస్‌ను ఎడిట్ చేయండి</translation>

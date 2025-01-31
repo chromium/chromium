@@ -15,7 +15,7 @@
 #include "base/no_destructor.h"
 #include "components/page_load_metrics/browser/observers/use_counter/at_most_once_enum_uma_deferrer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom.h"
@@ -93,13 +93,13 @@ class UseCounterMetricsRecorder {
   std::unique_ptr<AtMostOnceEnumUmaDeferrer<blink::mojom::CSSSampleId>>
       uma_animated_css_properties_;
   std::unique_ptr<
-      AtMostOnceEnumUmaDeferrer<blink::mojom::PermissionsPolicyFeature>>
+      AtMostOnceEnumUmaDeferrer<network::mojom::PermissionsPolicyFeature>>
       uma_permissions_policy_violation_enforce_;
   std::unique_ptr<
-      AtMostOnceEnumUmaDeferrer<blink::mojom::PermissionsPolicyFeature>>
+      AtMostOnceEnumUmaDeferrer<network::mojom::PermissionsPolicyFeature>>
       uma_permissions_policy_allow2_;
   std::unique_ptr<
-      AtMostOnceEnumUmaDeferrer<blink::mojom::PermissionsPolicyFeature>>
+      AtMostOnceEnumUmaDeferrer<network::mojom::PermissionsPolicyFeature>>
       uma_permissions_policy_header2_;
 
   // To keep tracks of which features have been measured.

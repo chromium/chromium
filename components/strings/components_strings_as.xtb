@@ -674,7 +674,6 @@
 <translation id="2157640075051554492">মূল্য ট্ৰেক কৰা সম্পৰ্কীয় জাননী</translation>
 <translation id="21613918653299710">অনলাইন প্ৰতিচ্ছবিৰ গেলাৰী</translation>
 <translation id="2161656808144014275">পাঠ</translation>
-<translation id="2162510787844374618">আপোনাৰ বেংকৰ সৈতে যোগাযোগ কৰি থকা হৈছে…</translation>
 <translation id="2162620598375156287">এতিয়া <ph name="SOURCE_WEBSITE" />ত <ph name="CURRENT_PRICE" /></translation>
 <translation id="2164510882479075877"><ph name="HOST_NAME" /> টাইপ কৰোঁতে ভুল হৈছে নেকি পৰীক্ষা কৰক।</translation>
 <translation id="2166049586286450108">প্ৰশাসকৰ সম্পূর্ণ এক্সেছ</translation>
@@ -2404,6 +2403,7 @@
 <translation id="5254043433801397071">প্ৰিণ্টৰ সমল অপ্টিমাইজ কৰক</translation>
 <translation id="5255583962255635076">আপোনাৰ কৰ্মস্থানৰ প্ৰ’ফাইলত প্ৰযোজ্য হোৱা ব্ৰাউজাৰৰ নীতি</translation>
 <translation id="5255690596502591079">তথাপি কেপচাৰ কৰক</translation>
+<translation id="5255771248404149177">আপোনাৰ কাৰ্ড প্ৰদানকাৰীয়ে এয়া আপুনি বুলি নিশ্চিত কৰিব বিচাৰে</translation>
 <translation id="5255833070095767006">৩৫০ x ৪৬০ মি.মি.</translation>
 <translation id="5257739419779698609">{0,plural, =1{প্ৰশাসকৰ নীতিয়ে এই ফাইলটো <ph name="DESTINATION_NAME" />লৈ প্ৰতিলিপি কৰাটো চুপাৰিছ নকৰে}one{প্ৰশাসকৰ নীতিয়ে এই ফাইলটো <ph name="DESTINATION_NAME" />লৈ প্ৰতিলিপি কৰাটো চুপাৰিছ নকৰে}other{প্ৰশাসকৰ নীতিয়ে এই ফাইলটো <ph name="DESTINATION_NAME" />লৈ প্ৰতিলিপি কৰাটো চুপাৰিছ নকৰে}}</translation>
 <translation id="5263867360296733198">আপল’ড কৰাৰ আগতে পৰ্যালোচনাৰ প্ৰয়োজন</translation>
@@ -2424,7 +2424,6 @@
 <translation id="5288108484102287882">নীতিৰ মানৰ মান্যতা পৰীক্ষা কৰাটোৱে সতৰ্কবাণী দিছে</translation>
 <translation id="5289384342738547352">একাধিক নথিৰ পৰিচালনা</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{আজি আপডে’ট কৰাৰ প্ৰয়োজন}=2{কাইলৈৰ ভিতৰত আপডে’ট কৰাৰ প্ৰয়োজন}one{# দিনৰ ভিতৰত আপডে’ট কৰাৰ প্ৰয়োজন}other{# দিনৰ ভিতৰত আপডে’ট কৰাৰ প্ৰয়োজন}}</translation>
-<translation id="5292714443869769806"><ph name="OPERATING_SYSTEM" />ৰ ছেটিঙলৈ যাওক</translation>
 <translation id="5293919335876685914">দুজনৰ আসন থকা বন্ধ গাড়ী</translation>
 <translation id="5298618990685278995">এটা প্ৰথম খচৰা</translation>
 <translation id="5299298092464848405">নীতি পাৰ্ছ কৰোঁতে আসোঁৱাহ হৈছে</translation>
@@ -2552,6 +2551,7 @@
 <translation id="5518352028556756716">আপুনি ব্ৰাউজ কৰাৰ সময়ত অধিকাংশ ছাইটে তৃতীয় পক্ষৰ কুকিসমূহ ব্যৱহাৰ কৰিব নোৱাৰে আৰু ছাইটসমূহে ইনক’গনিট’ ম’ডত তৃতীয় পক্ষৰ কুকিসমূহ ব্যৱহাৰ কৰিব নোৱাৰে।</translation>
 <translation id="5519516356611866228">আপুনি কৰা সালসলনিসমূহৰ সৈতে</translation>
 <translation id="5519696598216267194">কাগজ (আগতে পাঞ্চ কৰা)</translation>
+<translation id="5520105693415771152">আপোনাৰ বৰ্তমানৰ তথ্য দেখা নাই নেকি? এয়া আপডে’ট কৰিবলৈ আপোনাৰ প্ৰদানকাৰীৰ সৈতে যোগাযোগ কৰক।</translation>
 <translation id="5521782189689806907">কেবিনেট</translation>
 <translation id="5523118979700054094">নীতিৰ নাম</translation>
 <translation id="5523588073846127669">বণিকে এই ভাৰ্ছুৱেল কাৰ্ডখন গ্ৰহণ নকৰে</translation>
@@ -3645,6 +3645,7 @@
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">কাৰ্গ’ ট্ৰাক আৰু ট্ৰেইলাৰ</translation>
 <translation id="7461924472993315131">পিন</translation>
+<translation id="746329643760972486">MacOS</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" />এ আপুনি <ph name="TOP_LEVEL_URL" /> চোৱা বুলি জানিব</translation>
 <translation id="7465963048299965912">১০ x ১৩ ইঞ্চি</translation>
 <translation id="7469935732330206581">ফৰ্মখন সুৰক্ষিত নহয়</translation>
@@ -3876,6 +3877,7 @@
 <translation id="784404208867107517">গোট হিচাপে ৰখা ইতিহাস</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{এটাও নহয়}=1{১টা এপ্ (<ph name="EXAMPLE_APP_1" />)}=2{২টা এপ্ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{#টা এপ্ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{#টা এপ্ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">কিবা আসোঁৱাহ হৈছে। পুনৰ চেষ্টা কৰক।</translation>
+<translation id="784623644169604270">কোনো শেহতীয়া কাৰ্যকলাপ নাই</translation>
 <translation id="785476343534277563">কলেজৰ ক্ৰীড়া</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7860345425589240791"><ph name="SIDE_OF_CARD" />ত আপোনাৰ নতুন ম্যাদ উকলাৰ তাৰিখটো আৰু CVC দিয়ক</translation>
@@ -3914,7 +3916,6 @@
 <translation id="7942349550061667556">ৰঙা</translation>
 <translation id="7943397946612013052">ডাউনল’ড কৰাটো অৱৰোধ কৰা হৈছে</translation>
 <translation id="7943893128817522649">স্বয়ংক্ৰিয়ভাৱে একাধিক ফাইল ডাউনল’ড কৰিবলৈ বিচাৰিব পাৰে</translation>
-<translation id="794567586469801724">macOS</translation>
 <translation id="7947285636476623132">আপোনাৰ ক্ৰেডিট কার্ডৰ ম্যাদ উকলাৰ বছৰ পৰীক্ষা কৰি আকৌ চেষ্টা কৰক</translation>
 <translation id="7947310711271925113">পপ সংগীত</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chromeৰ সুবিধাসমূহৰ বিষয়ে জানিবলৈ প্ৰথমে টেব তাৰ পাছত এণ্টাৰ টিপক</translation>
@@ -4666,7 +4667,6 @@
 <translation id="984275831282074731">পৰিশোধ পদ্ধতি</translation>
 <translation id="985199708454569384">&lt;p&gt;আপোনাৰ কম্পিউটাৰ বা ম’বাইল ডিভাইচৰ তাৰিখ আৰু সময় সঠিক নহ’লে আপুনি এই আসোঁৱাহ দেখা পাব।&lt;/p&gt;
     &lt;p&gt;এই আসোঁৱাহ সমাধান কৰিবলৈ আপোনাৰ ডিভাইচৰ ঘড়ীটো খোলক। সময় আৰু তাৰিখ শুদ্ধ আছে বুলি নিশ্চিত কৰক।&lt;/p&gt;</translation>
-<translation id="986257639512122511">আপুনি <ph name="ORIGIN" />ত <ph name="PERMISSION" /> অনুমতি দিছে</translation>
 <translation id="987264212798334818">সাধাৰণ</translation>
 <translation id="988159990683914416">বিকাশকৰ্তাৰ বিল্ড</translation>
 <translation id="989988560359834682">ঠিকনা সম্পাদনা কৰক</translation>

@@ -3252,17 +3252,6 @@ Bu politika, Devre Dışı değerine ayarlanırsa fiziksel klavyede tahmine daya
 <translation id="3387211681524224831">Politika, Etkin değerine ayarlanırsa tarama geçmişi kaydedilmez, sekme senkronizasyonu kapalı olur ve kullanıcılar bu ayarı değiştiremez.
 
       Politika, Devre dışı değerine ayarlanır veya ayarlanmadan bırakılırsa tarama geçmişi kaydedilir.</translation>
-<translation id="3387875422525138489">Politika ayarlanırsa sessiz bir şekilde yüklenen izole web uygulamalarının (IWA) listesi belirtilir.
-      IWA'lar, normal web sayfalarında mevcut olmayan yararlı güvenlik özelliklerine sahip uygulamalardır. Bunlar, imzalanmış Web Bundle'da yer alır. İmzalanmış Web Bundle'ın ortak anahtarı, IWA'yı tanımlayan Web Bundle kimliğini oluşturmak için kullanılır.
-      Bu politika şimdilik yalnızca yönetilen misafir oturumunda geçerlidir.
-
-      Politikanın her liste öğesi, iki zorunlu alan içeren bir nesnedir: <ph name="URL_LABEL" /> güncelleme manifesti ve yalıtılmış web uygulamasının web paketi kimliği.
-
-      Her öğede şu isteğe bağlı alanlar da bulunabilir:
-
-        * <ph name="UPDATE_CHANNEL_OPTION" />: IWA sürüm/güncelleme kanalının adı. Ayarlanmazsa "varsayılan" kullanılır.
-        * <ph name="PINNED_VERSION_OPTION" />:  Yüklenecek sürüm. Sistem, belirtilen güncelleme kanalında varsa bu sürümü yüklemeyi dener. IWA'yı belirli bir sürüme sabitlerseniz bu sürümden sonraki sürümlere güncellenmesi varsayılan olarak engellenir. Sabitlemeyi kaldırmak için bu alanı kaldırın.
-        * <ph name="ALLOW_DOWNGRADES_OPTION" />: IWA'nın eski sürümlerinin yüklenmesini etkinleştirir. Bunun için "pinned_version" alanının ayarlanması gerekir. Belirtilmez veya <ph name="FALSE" /> değerine ayarlanırsa ilgili IWA için eski sürüme geçirme devre dışı bırakılır.</translation>
 <translation id="3387999258705169775">setTimeout() fonksiyonu iç içe yerleştirilmiş zaman aşımı için varsayılan davranış.</translation>
 <translation id="3388628790024977864"><ph name="GOOGLE_DRIVE_NAME" /> ve <ph name="GOOGLE_WORKSPACE_NAME" /> için <ph name="CLOUD_UPLOAD_NAME" /> akışına izin verme</translation>
 <translation id="3389088527709746815">Uzaktan erişim ana makinesi için gnubby kimlik doğrulamayı etkinleştir</translation>
