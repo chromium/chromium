@@ -179,7 +179,8 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
         // show disclosure text, the next dialog shown should be the request permission dialog with
         // only the newly signed-in account and the disclosure text shown.
         assertEquals(
-                HeaderType.REQUEST_PERMISSION, mAccountSelection.getMediator().getHeaderType());
+                HeaderType.REQUEST_PERMISSION_MODAL,
+                mAccountSelection.getMediator().getHeaderType());
         onView(withId(R.id.account_selection_continue_btn))
                 .check(matches(withText("Continue as Bob")));
         onView(withId(R.id.user_data_sharing_consent))
@@ -467,7 +468,8 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
 
         // Click continue in the request permission dialog.
         assertEquals(
-                HeaderType.REQUEST_PERMISSION, mAccountSelection.getMediator().getHeaderType());
+                HeaderType.REQUEST_PERMISSION_MODAL,
+                mAccountSelection.getMediator().getHeaderType());
         clickContinueButton();
 
         // User is now signed in and shown the verifying UI.
@@ -554,7 +556,8 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
         // Clicking an account should show the request permission dialog.
         clickFirstAccountInAccountsList();
         assertEquals(
-                HeaderType.REQUEST_PERMISSION, mAccountSelection.getMediator().getHeaderType());
+                HeaderType.REQUEST_PERMISSION_MODAL,
+                mAccountSelection.getMediator().getHeaderType());
 
         // Press back from the request permission dialog, returning to the account chooser.
         Espresso.pressBack();
@@ -584,7 +587,8 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
         // Clicking an account should show the request permission dialog.
         clickFirstAccountInAccountsList();
         assertEquals(
-                HeaderType.REQUEST_PERMISSION, mAccountSelection.getMediator().getHeaderType());
+                HeaderType.REQUEST_PERMISSION_MODAL,
+                mAccountSelection.getMediator().getHeaderType());
 
         // Swipe to dismiss on request permission dialog.
         BottomSheetTestSupport sheetSupport = new BottomSheetTestSupport(mBottomSheetController);
@@ -676,7 +680,8 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
         // Clicking an account should show the request permission dialog.
         clickFirstAccountInAccountsList();
         assertEquals(
-                HeaderType.REQUEST_PERMISSION, mAccountSelection.getMediator().getHeaderType());
+                HeaderType.REQUEST_PERMISSION_MODAL,
+                mAccountSelection.getMediator().getHeaderType());
         String expectedTitle =
                 ((TextView) contentView.findViewById(R.id.header_title)).getText().toString();
         String expectedSubtitle =
@@ -1078,7 +1083,8 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
 
         // Click continue in the request permission dialog.
         assertEquals(
-                HeaderType.REQUEST_PERMISSION, mAccountSelection.getMediator().getHeaderType());
+                HeaderType.REQUEST_PERMISSION_MODAL,
+                mAccountSelection.getMediator().getHeaderType());
         clickContinueButton();
 
         histogramWatcher.assertExpected();

@@ -797,7 +797,7 @@ class AccountSelectionViewBinder {
                     brandIcon != null
                             && model.get(HeaderProperties.IDP_BRAND_ICON) != null
                             && model.get(HeaderProperties.TYPE)
-                                    == HeaderProperties.HeaderType.REQUEST_PERMISSION;
+                                    == HeaderProperties.HeaderType.REQUEST_PERMISSION_MODAL;
             headerIconView.setVisibility(isRpIconVisible ? View.VISIBLE : View.GONE);
             arrowRangeIcon.setVisibility(isRpIconVisible ? View.VISIBLE : View.GONE);
         } else if (key == HeaderProperties.CLOSE_ON_CLICK_LISTENER) {

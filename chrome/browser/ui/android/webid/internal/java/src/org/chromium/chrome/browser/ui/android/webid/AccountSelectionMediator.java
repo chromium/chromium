@@ -370,7 +370,7 @@ class AccountSelectionMediator {
                                                     ? LoadingDialogResult.SWIPE
                                                     : null;
                                     mDisclosureDialogState =
-                                            mHeaderType == HeaderType.REQUEST_PERMISSION
+                                            mHeaderType == HeaderType.REQUEST_PERMISSION_MODAL
                                                     ? DisclosureDialogResult.SWIPE
                                                     : null;
                                 } else if (reason
@@ -402,7 +402,7 @@ class AccountSelectionMediator {
                                                     ? LoadingDialogResult.TAP_SCRIM
                                                     : null;
                                     mDisclosureDialogState =
-                                            mHeaderType == HeaderType.REQUEST_PERMISSION
+                                            mHeaderType == HeaderType.REQUEST_PERMISSION_MODAL
                                                     ? DisclosureDialogResult.TAP_SCRIM
                                                     : null;
                                 }
@@ -472,14 +472,14 @@ class AccountSelectionMediator {
                                 && ((mSelectedAccount != null
                                                 && mAccounts.size() != 1
                                                 && mHeaderType != HeaderType.VERIFY)
-                                        || mHeaderType == HeaderType.REQUEST_PERMISSION)
+                                        || mHeaderType == HeaderType.REQUEST_PERMISSION_MODAL)
                         ? this::handleBackPress
                         : null);
     }
 
     private void handleBackPress() {
         mSelectedAccount = null;
-        if (mHeaderType == HeaderType.REQUEST_PERMISSION) {
+        if (mHeaderType == HeaderType.REQUEST_PERMISSION_MODAL) {
             mDisclosureDialogState = DisclosureDialogResult.BACK_PRESS;
             maybeRecordDisclosureDialogResult();
         }
@@ -525,7 +525,7 @@ class AccountSelectionMediator {
     private int getSheetType() {
         switch (mHeaderType) {
             case SIGN_IN:
-            case REQUEST_PERMISSION:
+            case REQUEST_PERMISSION_MODAL:
                 return SheetType.ACCOUNT_SELECTION;
             case VERIFY:
                 return SheetType.VERIFYING;
@@ -549,7 +549,7 @@ class AccountSelectionMediator {
         // In the request permission dialog, account is shown as an account chip instead of in the
         // accounts list. In the active mode verifying dialog, we do not show accounts.
         if (mRpMode == RpMode.ACTIVE
-                && (mHeaderType == HeaderType.REQUEST_PERMISSION
+                && (mHeaderType == HeaderType.REQUEST_PERMISSION_MODAL
                         || mHeaderType == HeaderType.VERIFY
                         || mHeaderType == HeaderType.VERIFY_AUTO_REAUTHN)) {
             return;
@@ -671,7 +671,7 @@ class AccountSelectionMediator {
         // mDisclosureDialogState is set on dismissal e.g. tap scrim, back press or if the user
         // presses continue. If it hasn't been set but onDismissed is called while the disclosure
         // dialog is being shown, it means the user has closed the tab or navigated away.
-        if (mDisclosureDialogState == null && mHeaderType == HeaderType.REQUEST_PERMISSION) {
+        if (mDisclosureDialogState == null && mHeaderType == HeaderType.REQUEST_PERMISSION_MODAL) {
             mDisclosureDialogState = DisclosureDialogResult.DESTROY;
         }
 
@@ -691,8 +691,9 @@ class AccountSelectionMediator {
     }
 
     boolean showVerifySheet(Account account) {
-        if (mHeaderType == HeaderType.SIGN_IN || mHeaderType == HeaderType.REQUEST_PERMISSION) {
-            if (mHeaderType == HeaderType.REQUEST_PERMISSION) {
+        if (mHeaderType == HeaderType.SIGN_IN
+                || mHeaderType == HeaderType.REQUEST_PERMISSION_MODAL) {
+            if (mHeaderType == HeaderType.REQUEST_PERMISSION_MODAL) {
                 mDisclosureDialogState = DisclosureDialogResult.CONTINUE;
                 maybeRecordDisclosureDialogResult();
             }
@@ -709,8 +710,8 @@ class AccountSelectionMediator {
         return true;
     }
 
-    boolean showRequestPermissionSheet(Account account) {
-        mHeaderType = HeaderType.REQUEST_PERMISSION;
+    boolean showRequestPermissionModalSheet(Account account) {
+        mHeaderType = HeaderType.REQUEST_PERMISSION_MODAL;
         if (!updateSheet(Arrays.asList(account), /* areAccountsClickable= */ false)) {
             return false;
         }
@@ -958,7 +959,7 @@ class AccountSelectionMediator {
             boolean shouldShowRequestPermissionDialog =
                     !newlySignedInAccount.isSignIn() && mDisclosureFields.length > 0;
             if (shouldShowRequestPermissionDialog) {
-                return showRequestPermissionSheet(mSelectedAccount);
+                return showRequestPermissionModalSheet(mSelectedAccount);
             }
 
             // Else:
@@ -1049,7 +1050,7 @@ class AccountSelectionMediator {
             continueButtonCallback = this::onClickGotItButton;
         }
 
-        if (mHeaderType == HeaderType.REQUEST_PERMISSION) {
+        if (mHeaderType == HeaderType.REQUEST_PERMISSION_MODAL) {
             assert mSelectedAccount != null;
             isDataSharingConsentVisible = true;
             continueButtonCallback = this::onClickAccountSelected;
@@ -1103,7 +1104,7 @@ class AccountSelectionMediator {
                         : null);
         mModel.set(
                 ItemProperties.ACCOUNT_CHIP,
-                mHeaderType == HeaderType.REQUEST_PERMISSION
+                mHeaderType == HeaderType.REQUEST_PERMISSION_MODAL
                         ? createAccountItem(mSelectedAccount, /* isAccountClickable= */ false)
                         : null);
         mModel.set(
@@ -1255,7 +1256,7 @@ class AccountSelectionMediator {
         // verifying sheet.
         if ((mRpMode == RpMode.PASSIVE && oldSelectedAccount != null)
                 || selectedAccount.isSignIn()
-                || mHeaderType == HeaderType.REQUEST_PERMISSION
+                || mHeaderType == HeaderType.REQUEST_PERMISSION_MODAL
                 || mDisclosureFields.length == 0) {
             mDelegate.onAccountSelected(mIdpMetadata.getConfigUrl(), selectedAccount);
             showVerifySheet(selectedAccount);
@@ -1263,9 +1264,9 @@ class AccountSelectionMediator {
         }
 
         // At this point, the account is a non-returning user. If RP mode is button,
-        // we'd request permission through the request permission dialog.
+        // we'd request permission through the request permission modal dialog.
         if (mRpMode == RpMode.ACTIVE) {
-            showRequestPermissionSheet(selectedAccount);
+            showRequestPermissionModalSheet(selectedAccount);
             return;
         }
 

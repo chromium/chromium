@@ -71,7 +71,7 @@ class AccountSelectionProperties {
             SIGN_IN_TO_IDP_STATIC,
             SIGN_IN_ERROR,
             LOADING,
-            REQUEST_PERMISSION
+            REQUEST_PERMISSION_MODAL
         }
 
         static final ReadableObjectPropertyKey<Runnable> CLOSE_ON_CLICK_LISTENER =
