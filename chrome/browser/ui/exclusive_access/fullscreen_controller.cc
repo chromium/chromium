@@ -51,10 +51,6 @@
 #include "components/prefs/pref_service.h"
 #endif
 
-#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-#include "chrome/browser/safe_browsing/safe_browsing_service.h"  // nogncheck
-#endif
-
 using content::WebContents;
 
 namespace {
@@ -117,7 +113,6 @@ void RecordWebsiteStateAtApiRequest(history::HistoryLastVisitResult result,
 void CheckUrlForAllowlistAndRecordMetric(
     const GURL& url,
     history::HistoryLastVisitResult result) {
-#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   auto* safe_browsing_service_internal =
       reinterpret_cast<safe_browsing::SafeBrowsingServiceInterface*>(
           g_browser_process->safe_browsing_service());
@@ -137,9 +132,6 @@ void CheckUrlForAllowlistAndRecordMetric(
                 RecordWebsiteStateAtApiRequest(result, on_allowlist);
               },
               result));
-#else
-  RecordWebsiteStateAtApiRequest(result, std::nullopt);
-#endif
 }
 
 }  // namespace

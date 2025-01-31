@@ -128,7 +128,6 @@ source_set("browser_process") {
   public_deps = [
     "//build:chromeos_buildflags",
     "//chrome/common:buildflags",
-    "//components/safe_browsing:buildflags",
     "//media:media_buildflags",
   ]
 }

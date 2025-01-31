@@ -7,11 +7,8 @@
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ssl/sct_reporting_service.h"
-
-#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
-#endif
+#include "chrome/browser/ssl/sct_reporting_service.h"
 
 // static
 SCTReportingServiceFactory* SCTReportingServiceFactory::GetInstance() {
@@ -44,7 +41,6 @@ SCTReportingServiceFactory::~SCTReportingServiceFactory() = default;
 std::unique_ptr<KeyedService>
 SCTReportingServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* profile) const {
-#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   safe_browsing::SafeBrowsingService* safe_browsing_service =
       g_browser_process->safe_browsing_service();
   // In unit tests the safe browsing service can be null, if this happens,
@@ -54,9 +50,6 @@ SCTReportingServiceFactory::BuildServiceInstanceForBrowserContext(
 
   return std::make_unique<SCTReportingService>(safe_browsing_service,
                                                static_cast<Profile*>(profile));
-#else
-  return nullptr;
-#endif
 }
 
 // Force this to be created during BrowserContext creation, since we can't

@@ -94,11 +94,8 @@ class SiteForCookies;
 namespace safe_browsing {
 class AsyncCheckTracker;
 class RealTimeUrlLookupServiceBase;
-class UrlCheckerDelegate;
-
-#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 class SafeBrowsingService;
-#endif
+class UrlCheckerDelegate;
 
 namespace hash_realtime_utils {
 enum class HashRealTimeSelection;
@@ -1307,9 +1304,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   // Parts are deleted in the reverse order they are added.
   std::vector<std::unique_ptr<ChromeContentBrowserClientParts>> extra_parts_;
 
-#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   scoped_refptr<safe_browsing::SafeBrowsingService> safe_browsing_service_;
-#endif
   scoped_refptr<safe_browsing::UrlCheckerDelegate>
       safe_browsing_url_checker_delegate_;
 

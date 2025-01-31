@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
-import("//components/enterprise/buildflags/buildflags.gni")
 import("//components/safe_browsing/buildflags.gni")
 
 buildflag_header("buildflags") {
@@ -28,12 +27,6 @@ buildflag_header("buildflags") {
     flags += [ "SAFE_BROWSING_AVAILABLE=0" ]
     flags += [ "SAFE_BROWSING_DB_LOCAL=0" ]
     flags += [ "SAFE_BROWSING_DB_REMOTE=0" ]
-
-    assert(
-        !enterprise_content_analysis,
-        "Need to disable both `enterprise_cloud_content_analysis` and" +
-            " `enterprise_local_content_analysis` for `safe_browsing_mode==0`" +
-            " because content analysis depends on safe browsing feature.")
   } else if (safe_browsing_mode == 1) {
     flags += [ "FULL_SAFE_BROWSING=1" ]
     flags += [ "SAFE_BROWSING_AVAILABLE=1" ]
