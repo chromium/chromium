@@ -1149,7 +1149,10 @@ void SellerWorklet::V8State::ScoreAd(
        !browser_signals_dict.Set(
            "selectedBuyerAndSellerReportingId",
            *browser_signal_selected_buyer_and_seller_reporting_id)) ||
-      (browser_signal_buyer_and_seller_reporting_id.has_value() &&
+      // We only pass the buyerAndSellerReportingId if there is a
+      // selectedBuyerAndSellerReportingId.
+      (browser_signal_selected_buyer_and_seller_reporting_id.has_value() &&
+       browser_signal_buyer_and_seller_reporting_id.has_value() &&
        !browser_signals_dict.Set(
            "buyerAndSellerReportingId",
            *browser_signal_buyer_and_seller_reporting_id)) ||
@@ -2178,11 +2181,14 @@ void SellerWorklet::StartFetchingSignalsForTask(
 
   TrustedSignals::CreativeInfo main_ad(
       send_creative_scanning_metadata, *score_ad_task->ad,
-      score_ad_task->browser_signal_interest_group_owner);
+      score_ad_task->browser_signal_interest_group_owner,
+      score_ad_task->browser_signal_buyer_and_seller_reporting_id);
   std::set<TrustedSignals::CreativeInfo> component_ads;
   for (const auto& component : score_ad_task->ad_components) {
-    component_ads.emplace(send_creative_scanning_metadata, *component,
-                          score_ad_task->browser_signal_interest_group_owner);
+    component_ads.emplace(
+        send_creative_scanning_metadata, *component,
+        score_ad_task->browser_signal_interest_group_owner,
+        /*browser_signal_buyer_and_seller_reporting_id=*/std::nullopt);
   }
 
   if (trusted_signals_request_manager_->HasPublicKey()) {

@@ -3767,7 +3767,8 @@ class TrustedSignalsRequestManagerCreativeScanTest
             blink::AdSize(100, blink::AdSize::LengthUnit::kPixels, 50,
                           blink::AdSize::LengthUnit::kPixels)),
         /*creative_scanning_metadata=*/"s1",
-        /*interest_group_owner=*/url::Origin::Create(GURL("https://b1.test")));
+        /*interest_group_owner=*/url::Origin::Create(GURL("https://b1.test")),
+        /*buyer_and_seller_reporting_id=*/"chair");
 
     ads_.emplace_back(
         /*ad_descriptor=*/blink::AdDescriptor(
@@ -3775,12 +3776,14 @@ class TrustedSignalsRequestManagerCreativeScanTest
             blink::AdSize(100, blink::AdSize::LengthUnit::kPixels, 50,
                           blink::AdSize::LengthUnit::kPixels)),
         /*creative_scanning_metadata=*/"s2",
-        /*interest_group_owner=*/url::Origin::Create(GURL("https://b2.test")));
+        /*interest_group_owner=*/url::Origin::Create(GURL("https://b2.test")),
+        /*buyer_and_seller_reporting_id=*/"couch");
 
     ads_.emplace_back(
         /*ad_descriptor=*/blink::AdDescriptor(GURL("https://bar.test")),
         /*creative_scanning_metadata=*/"s3",
-        /*interest_group_owner=*/url::Origin::Create(GURL("https://b2.test")));
+        /*interest_group_owner=*/url::Origin::Create(GURL("https://b2.test")),
+        /*buyer_and_seller_reporting_id=*/"floor");
 
     ad_components_.emplace_back(
         /*ad_descriptor=*/blink::AdDescriptor(
@@ -3788,7 +3791,8 @@ class TrustedSignalsRequestManagerCreativeScanTest
             blink::AdSize(30, blink::AdSize::LengthUnit::kPixels, 16,
                           blink::AdSize::LengthUnit::kPixels)),
         /*creative_scanning_metadata=*/"c1",
-        /*interest_group_owner=*/url::Origin::Create(GURL("https://b1.test")));
+        /*interest_group_owner=*/url::Origin::Create(GURL("https://b1.test")),
+        /*buyer_and_seller_reporting_id=*/"unused1");
 
     ad_components_.emplace_back(
         /*ad_descriptor=*/blink::AdDescriptor(
@@ -3796,7 +3800,8 @@ class TrustedSignalsRequestManagerCreativeScanTest
             blink::AdSize(60, blink::AdSize::LengthUnit::kPixels, 32,
                           blink::AdSize::LengthUnit::kPixels)),
         /*creative_scanning_metadata=*/"c2",
-        /*interest_group_owner=*/url::Origin::Create(GURL("https://b2.test")));
+        /*interest_group_owner=*/url::Origin::Create(GURL("https://b2.test")),
+        /*buyer_and_seller_reporting_id=*/"unused2");
   }
 
  protected:
@@ -3846,7 +3851,8 @@ TEST_F(TrustedSignalsRequestManagerCreativeScanTest, ManyRequests) {
           "&adSizes=100px,50px"
           "&adComponentSizes=30px,16px"
           "&adBuyer=https%3A%2F%2Fb1.test"
-          "&adComponentBuyer=https%3A%2F%2Fb1.test");
+          "&adComponentBuyer=https%3A%2F%2Fb1.test"
+          "&adBuyerAndSellerReportingIds=chair");
       AddJsonResponse(&url_loader_factory_, url1, kBaseScoringJson);
 
       GURL url2(
@@ -3858,7 +3864,8 @@ TEST_F(TrustedSignalsRequestManagerCreativeScanTest, ManyRequests) {
           "&adSizes=100px,50px"
           "&adComponentSizes=60px,32px"
           "&adBuyer=https%3A%2F%2Fb2.test"
-          "&adComponentBuyer=https%3A%2F%2Fb2.test");
+          "&adComponentBuyer=https%3A%2F%2Fb2.test"
+          "&adBuyerAndSellerReportingIds=couch");
       AddJsonResponse(&url_loader_factory_, url2, kBaseScoringJson);
 
       GURL url3(
@@ -3871,7 +3878,8 @@ TEST_F(TrustedSignalsRequestManagerCreativeScanTest, ManyRequests) {
           "&adSizes=,"
           "&adComponentSizes=60px,32px,30px,16px"
           "&adBuyer=https%3A%2F%2Fb2.test"
-          "&adComponentBuyer=https%3A%2F%2Fb2.test,https%3A%2F%2Fb1.test");
+          "&adComponentBuyer=https%3A%2F%2Fb2.test,https%3A%2F%2Fb1.test"
+          "&adBuyerAndSellerReportingIds=floor");
       AddJsonResponse(&url_loader_factory_, url3, kBaseScoringJson);
     } else {
       GURL url(
@@ -3886,7 +3894,8 @@ TEST_F(TrustedSignalsRequestManagerCreativeScanTest, ManyRequests) {
           "&adComponentSizes=60px,32px,30px,16px"
           "&adBuyer=https%3A%2F%2Fb2.test,https%3A%2F%2Fb1.test,"
           "https%3A%2F%2Fb2.test"
-          "&adComponentBuyer=https%3A%2F%2Fb2.test,https%3A%2F%2Fb1.test");
+          "&adComponentBuyer=https%3A%2F%2Fb2.test,https%3A%2F%2Fb1.test"
+          "&adBuyerAndSellerReportingIds=floor,chair,couch");
       AddJsonResponse(&url_loader_factory_, url, kBaseScoringJson);
     }
     scoring_request_manager_.StartBatchedTrustedSignalsRequest();

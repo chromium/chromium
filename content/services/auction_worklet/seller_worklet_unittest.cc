@@ -2310,6 +2310,7 @@ TEST_F(SellerWorkletTest, ScoreAdTrustedScoringSignalsCreativeScanning) {
     SCOPED_TRACE(send_creative_scanning_metadata);
     send_creative_scanning_metadata_ = send_creative_scanning_metadata;
     creative_scanning_metadata_ = "legit main ad";
+    browser_signal_buyer_and_seller_reporting_id_ = "comfy";
     browser_signal_render_size_ =
         blink::AdSize(80, blink::AdSize::LengthUnit::kScreenWidth, 100,
                       blink::AdSize::LengthUnit::kPixels);
@@ -2338,7 +2339,8 @@ TEST_F(SellerWorkletTest, ScoreAdTrustedScoringSignalsCreativeScanning) {
         "&adComponentSizes=100px,100px,,"
         "&adBuyer=https%3A%2F%2Finterest.group.owner.test"
         "&adComponentBuyer=https%3A%2F%2Finterest.group.owner.test,"
-        "https%3A%2F%2Finterest.group.owner.test");
+        "https%3A%2F%2Finterest.group.owner.test"
+        "&adBuyerAndSellerReportingIds=comfy");
     GURL signals_without_scanning(
         "https://url.test/trusted_scoring_signals?hostname=window.test"
         "&renderUrls=https%3A%2F%2Frender.url.test%2F"
@@ -2390,17 +2392,19 @@ TEST_F(SellerWorkletTest, ScoreAdTrustedScoringSignalsCreativeScanningBatch) {
     std::optional<std::string> creative_scanning_metadata;
     int expected_score;
     url::Origin owner;
+    std::optional<std::string> buyer_and_seller_reporting_id;
   } inputs[] = {
       {blink::AdDescriptor(
            GURL("https://render.url.test/"),
            blink::AdSize(1920, blink::mojom::AdSize_LengthUnit::kPixels, 100,
                          blink::mojom::AdSize_LengthUnit::kScreenHeight)),
-       "c1", 4, url::Origin::Create(GURL("https://b1.test"))},
+       "c1", 4, url::Origin::Create(GURL("https://b1.test")), "seat1"},
       {blink::AdDescriptor(
            GURL("https://other.test/"),
            blink::AdSize(400, blink::mojom::AdSize_LengthUnit::kPixels, 200,
                          blink::mojom::AdSize_LengthUnit::kPixels)),
-       "c2", 5, url::Origin::Create(GURL("https://b2.test"))}};
+       "c2", 5, url::Origin::Create(GURL("https://b2.test")),
+       /*buyer_and_seller_reporting_id=*/std::nullopt}};
 
   size_t num_completed_worklets = 0;
   base::RunLoop run_loop;
@@ -2409,6 +2413,8 @@ TEST_F(SellerWorkletTest, ScoreAdTrustedScoringSignalsCreativeScanningBatch) {
     browser_signal_render_size_ = input.ad_desciptor.size;
     creative_scanning_metadata_ = input.creative_scanning_metadata;
     browser_signal_interest_group_owner_ = input.owner;
+    browser_signal_buyer_and_seller_reporting_id_ =
+        input.buyer_and_seller_reporting_id;
     RunScoreAdOnWorkletAsync(
         seller_worklet.get(), /*expected_score=*/input.expected_score,
         /*expected_errors=*/std::vector<std::string>(),
@@ -2437,7 +2443,8 @@ TEST_F(SellerWorkletTest, ScoreAdTrustedScoringSignalsCreativeScanningBatch) {
       "&renderUrls=https%3A%2F%2Fother.test%2F,https%3A%2F%2Frender.url.test%2F"
       "&adCreativeScanningMetadata=c2,c1"
       "&adSizes=400px,200px,1920px,100sh"
-      "&adBuyer=https%3A%2F%2Fb2.test,https%3A%2F%2Fb1.test");
+      "&adBuyer=https%3A%2F%2Fb2.test,https%3A%2F%2Fb1.test"
+      "&adBuyerAndSellerReportingIds=,seat1");
 
   AddJsonResponse(&url_loader_factory_, response_url, kResponse);
 

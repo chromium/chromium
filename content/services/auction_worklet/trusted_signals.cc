@@ -92,7 +92,8 @@ bool ContainsNonUrlInfo(
   for (const auto& creative_info : creative_info_set) {
     if (creative_info.ad_descriptor.size.has_value() ||
         !creative_info.creative_scanning_metadata.empty() ||
-        creative_info.interest_group_owner.has_value()) {
+        creative_info.interest_group_owner.has_value() ||
+        !creative_info.buyer_and_seller_reporting_id.empty()) {
       return true;
     }
   }
@@ -385,21 +386,27 @@ TrustedSignals::CreativeInfo::CreativeInfo() = default;
 TrustedSignals::CreativeInfo::CreativeInfo(
     blink::AdDescriptor ad_descriptor,
     std::string creative_scanning_metadata,
-    std::optional<url::Origin> interest_group_owner)
+    std::optional<url::Origin> interest_group_owner,
+    std::string buyer_and_seller_reporting_id)
     : ad_descriptor(std::move(ad_descriptor)),
       creative_scanning_metadata(std::move(creative_scanning_metadata)),
-      interest_group_owner(std::move(interest_group_owner)) {}
+      interest_group_owner(std::move(interest_group_owner)),
+      buyer_and_seller_reporting_id(std::move(buyer_and_seller_reporting_id)) {}
 
 TrustedSignals::CreativeInfo::CreativeInfo(
     bool send_creative_scanning_metadata,
     const mojom::CreativeInfoWithoutOwner& mojo_creative_info,
-    const url::Origin& in_interest_group_owner) {
+    const url::Origin& in_interest_group_owner,
+    const std::optional<std::string>&
+        browser_signal_buyer_and_seller_reporting_id) {
   ad_descriptor.url = mojo_creative_info.ad_descriptor.url;
   if (send_creative_scanning_metadata) {
     ad_descriptor.size = mojo_creative_info.ad_descriptor.size;
     creative_scanning_metadata =
         mojo_creative_info.creative_scanning_metadata.value_or(std::string());
     interest_group_owner = in_interest_group_owner;
+    buyer_and_seller_reporting_id =
+        browser_signal_buyer_and_seller_reporting_id.value_or(std::string());
   }
 }
 
@@ -415,9 +422,10 @@ TrustedSignals::CreativeInfo& TrustedSignals::CreativeInfo::operator=(
 bool TrustedSignals::CreativeInfo::operator<(
     const TrustedSignals::CreativeInfo& other) const {
   return std::tie(ad_descriptor, creative_scanning_metadata,
-                  interest_group_owner) <
+                  interest_group_owner, buyer_and_seller_reporting_id) <
          std::tie(other.ad_descriptor, other.creative_scanning_metadata,
-                  other.interest_group_owner);
+                  other.interest_group_owner,
+                  other.buyer_and_seller_reporting_id);
 }
 
 GURL TrustedSignals::BuildTrustedBiddingSignalsURL(
@@ -490,6 +498,11 @@ GURL TrustedSignals::BuildTrustedScoringSignalsURL(
       return creative_info.interest_group_owner->Serialize();
     };
 
+    auto extract_buyer_and_seller_reporting_id =
+        [](const CreativeInfo& creative_info) -> const std::string& {
+      return creative_info.buyer_and_seller_reporting_id;
+    };
+
     base::StrAppend(
         &query_params,
         {CreateQueryParam("adCreativeScanningMetadata", ads,
@@ -501,7 +514,9 @@ GURL TrustedSignals::BuildTrustedScoringSignalsURL(
          CreateQueryParam("adComponentSizes", component_ads, extract_size,
                           /*escape=*/false),
          CreateQueryParam("adBuyer", ads, extract_buyer),
-         CreateQueryParam("adComponentBuyer", component_ads, extract_buyer)});
+         CreateQueryParam("adComponentBuyer", component_ads, extract_buyer),
+         CreateQueryParam("adBuyerAndSellerReportingIds", ads,
+                          extract_buyer_and_seller_reporting_id)});
   } else {
     DCHECK(!ContainsNonUrlInfo(ads));
     DCHECK(!ContainsNonUrlInfo(component_ads));
