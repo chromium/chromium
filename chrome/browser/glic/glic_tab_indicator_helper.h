@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_GLIC_GLIC_TAB_INDICATOR_HELPER_H_
 #define CHROME_BROWSER_GLIC_GLIC_TAB_INDICATOR_HELPER_H_
 
-#include <memory>
-
 #include "base/callback_list.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -26,8 +24,6 @@ class GlicTabIndicatorHelper {
   ~GlicTabIndicatorHelper();
 
  private:
-  class PromoHelper;
-
   // Updates the given tab if it is in the current tabstrip.
   void MaybeUpdateTab(const content::WebContents* contents);
 
@@ -52,7 +48,6 @@ class GlicTabIndicatorHelper {
   base::CallbackListSubscription indicator_change_subscription_;
   base::CallbackListSubscription will_detach_subscription_;
   base::CallbackListSubscription did_insert_subscription_;
-  const std::unique_ptr<PromoHelper> promo_helper_;
 };
 
 }  // namespace glic

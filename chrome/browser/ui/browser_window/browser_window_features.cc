@@ -54,6 +54,7 @@
 
 #if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/glic_enabling.h"
+#include "chrome/browser/glic/glic_iph_controller.h"
 #endif
 namespace {
 
@@ -131,6 +132,7 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
       DCHECK(features::IsTabstripComboButtonEnabled());
       glic_nudge_controller_ =
           std::make_unique<tabs::GlicNudgeController>(browser);
+      glic_iph_controller_ = std::make_unique<glic::GlicIphController>(browser);
     }
 #endif  // BUILDFLAG(ENABLE_GLIC)
   }

@@ -13,6 +13,7 @@ source_set("glic") {
     "glic_cookie_synchronizer.h",
     "glic_enabling.h",
     "glic_focused_tab_manager.h",
+    "glic_iph_controller.h",
     "glic_keyed_service.h",
     "glic_keyed_service_factory.h",
     "glic_page_context_fetcher.h",
@@ -48,6 +49,7 @@ source_set("glic") {
     "//ui/views/controls/webview",
     "//ui/webui",
   ]
+  deps = [ "//components/user_education/common" ]
 }
 
 source_set("impl") {
@@ -56,6 +58,7 @@ source_set("impl") {
     "glic_cookie_synchronizer.cc",
     "glic_enabling.cc",
     "glic_focused_tab_manager.cc",
+    "glic_iph_controller.cc",
     "glic_keyed_service.cc",
     "glic_keyed_service_factory.cc",
     "glic_metrics.cc",

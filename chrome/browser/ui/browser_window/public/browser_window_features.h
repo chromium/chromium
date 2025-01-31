@@ -10,6 +10,12 @@
 #include "base/functional/callback.h"
 #include "chrome/common/buildflags.h"
 
+#if BUILDFLAG(ENABLE_GLIC)
+namespace glic {
+class GlicIphController;
+}
+#endif
+
 class Browser;
 class BrowserView;
 class BrowserWindowInterface;
@@ -217,6 +223,10 @@ class BrowserWindowFeatures {
   std::unique_ptr<DownloadToolbarUIController> download_toolbar_ui_controller_;
 
   std::unique_ptr<tabs::GlicNudgeController> glic_nudge_controller_;
+
+#if BUILDFLAG(ENABLE_GLIC)
+  std::unique_ptr<glic::GlicIphController> glic_iph_controller_;
+#endif
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_BROWSER_WINDOW_FEATURES_H_
