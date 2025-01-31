@@ -4190,6 +4190,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.MediaRecorder.TrackTransformationChangeCount"
+    units="count" expires_after="2025-06-08">
+  <owner>handellm@google.com</owner>
+  <owner>guidou@chromium.org</owner>
+  <summary>
+    The number of transformation changes received on a recorded video track.
+    Recorded when a MediaRecorder has stopped recording. 0 means there were no
+    frames delivered to the recorder. 1 means the first frame did or did not
+    have transformation information attached, and no subsequent changes in
+    transformation beyond the first frame. N means there were N-1 changes in
+    transformation after the initial received frame.
+  </summary>
+</histogram>
+
 <histogram name="Media.MediaStreamManager.DesktopVideoDeviceUpdate"
     enum="MediaStreamRequestResult2" expires_after="2023-07-16">
   <owner>eladalon@chromium.org</owner>
