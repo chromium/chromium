@@ -789,7 +789,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sTabStateFlatBuffer =
             newCachedFlag(
                     TAB_STATE_FLAT_BUFFER,
-                    /* defaultValue= */ false,
+                    /* defaultValue= */ true,
                     /* defaultValueInTests= */ true);
     public static final CachedFlag sTabStripIncognitoMigration =
             newCachedFlag(
@@ -1301,7 +1301,7 @@ public abstract class ChromeFeatureList {
             newBooleanCachedFeatureParam(
                     TAB_RESUMPTION_MODULE_ANDROID, "show_tabs_in_one_module", false);
     public static final BooleanCachedFeatureParam sTabStateFlatBufferMigrateStaleTabs =
-            newBooleanCachedFeatureParam(TAB_STATE_FLAT_BUFFER, "migrate_stale_tabs", false);
+            newBooleanCachedFeatureParam(TAB_STATE_FLAT_BUFFER, "migrate_stale_tabs", true);
     public static final IntCachedFeatureParam
             sTabWindowManagerReportIndicesMismatchTimeDiffThresholdMs =
                     newIntCachedFeatureParam(

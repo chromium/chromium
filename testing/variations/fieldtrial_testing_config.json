@@ -23353,24 +23353,6 @@
             ]
         }
     ],
-    "TabStateFlatBuffer": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20240713",
-                    "params": {
-                        "migrate_stale_tabs": "true"
-                    },
-                    "enable_features": [
-                        "TabStateFlatBuffer"
-                    ]
-                }
-            ]
-        }
-    ],
     "TabStripIncognitoMigration": [
         {
             "platforms": [
