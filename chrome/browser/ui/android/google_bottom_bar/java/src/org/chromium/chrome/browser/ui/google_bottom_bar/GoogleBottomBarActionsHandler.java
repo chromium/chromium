@@ -280,7 +280,7 @@ class GoogleBottomBarActionsHandler {
         addedIntent.setData(Uri.parse(tab.getUrl().getSpec()));
         try {
             ActivityOptions options = ActivityOptions.makeBasic();
-            ApiCompatibilityUtils.setActivityOptionsBackgroundActivityStartMode(options);
+            ApiCompatibilityUtils.setActivityOptionsBackgroundActivityStartAllowAlways(options);
             pendingIntent.send(
                     mActivity,
                     /* code= */ 0,
