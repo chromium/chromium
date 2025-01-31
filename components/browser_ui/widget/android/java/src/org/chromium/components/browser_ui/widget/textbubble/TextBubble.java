@@ -99,10 +99,12 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
             };
 
     /**
-     * How long to wait before automatically dismissing the bubble.  {@link #NO_TIMEOUT} is the
+     * How long to wait before automatically dismissing the bubble. {@link #NO_TIMEOUT} is the
      * default and means the bubble will stay visible indefinitely.
      */
     private long mAutoDismissTimeoutMs = NO_TIMEOUT;
+
+    private boolean mDismissOnTouchInteraction;
 
     // Content specific variables.
     /** The string to show in the bubble. */
@@ -569,7 +571,12 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
     public void setDismissOnTouchInteraction(boolean dismiss) {
         // For accessibility mode, since there is no timeout value, the bubble can be dismissed
         // only on touch interaction.
-        mPopupWindow.setDismissOnTouchInteraction(mIsAccessibilityEnabled || dismiss);
+        mDismissOnTouchInteraction = mIsAccessibilityEnabled || dismiss;
+        mPopupWindow.setDismissOnTouchInteraction(mDismissOnTouchInteraction);
+    }
+
+    public boolean getDismissOnTouchInteractionForTesting() {
+        return mDismissOnTouchInteraction;
     }
 
     /**

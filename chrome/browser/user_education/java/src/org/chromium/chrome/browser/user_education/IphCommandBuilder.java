@@ -21,9 +21,12 @@ import org.chromium.ui.widget.ViewRectProvider;
 /** Builder for (@see IphCommand.java). Use this instead of constructing an IphCommand directly. */
 public class IphCommandBuilder {
 
+    private String mContentString;
+    private String mAccessibilityText;
     private Resources mResources;
     private final String mFeatureName;
     private boolean mDismissOnTouch = true;
+    private long mDismissOnTouchTimeout = TextBubble.NO_TIMEOUT;
     @StringRes private int mStringId;
     private Object[] mStringArgs;
     @StringRes private int mAccessibilityStringId;
@@ -106,6 +109,8 @@ public class IphCommandBuilder {
             String accessibilityText) {
         mResources = resources;
         mFeatureName = featureName;
+        mContentString = contentString;
+        mAccessibilityText = accessibilityText;
     }
 
     /**
@@ -153,10 +158,26 @@ public class IphCommandBuilder {
 
     /**
      * @param dismissOnTouch Whether the IPH bubble should be dismissed when the user performs a
-     *     touch interaction.
+     *     touch interaction. Not compatible with delayed dismiss on touch set via {@link
+     *     #setDelayedDismissOnTouch(long)}
      */
     public IphCommandBuilder setDismissOnTouch(boolean dismissOnTouch) {
         mDismissOnTouch = dismissOnTouch;
+        mDismissOnTouchTimeout = TextBubble.NO_TIMEOUT;
+        return this;
+    }
+
+    /**
+     * Set a timeout after which the IPH bubble can be dismissed by touch. For the duration of the
+     * timeout, the bubble will not dismiss from touches; the first subsequent touch will dismiss
+     * it. Not compatible with immediate dismiss on touch set via {@link
+     * #setDismissOnTouch(boolean)}. Theoretically compatible with {@link
+     * #setAutoDismissTimeout(int)} but only meaningful for auto-dismiss timeouts longer than the
+     * one set here.
+     */
+    public IphCommandBuilder setDelayedDismissOnTouch(long timeout) {
+        mDismissOnTouchTimeout = timeout;
+        mDismissOnTouch = false;
         return this;
     }
 
@@ -248,14 +269,17 @@ public class IphCommandBuilder {
                     mFeatureName,
                     mStringId,
                     mStringArgs,
+                    mContentString,
                     mAccessibilityStringId,
                     mAccessibilityStringArgs,
+                    mAccessibilityText,
                     mDismissOnTouch,
                     mAnchorView,
                     mOnDismissCallback,
                     mOnShowCallback,
                     mOnBlockedCallback,
                     mAutoDismissTimeout,
+                    mDismissOnTouchTimeout,
                     mViewRectProvider,
                     mHighlightParams,
                     mAnchorRect,
