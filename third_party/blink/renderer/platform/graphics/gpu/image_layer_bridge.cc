@@ -32,14 +32,17 @@ scoped_refptr<StaticBitmapImage> MakeAccelerated(
     const scoped_refptr<StaticBitmapImage>& source,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper>
         context_provider_wrapper) {
+  bool can_use_source_directly = source->IsTextureBacked();
 #if BUILDFLAG(IS_MAC)
-  // On MacOS, if |source| is not an overlay candidate, it is worth copying it
-  // to a new buffer that is an overlay candidate, even when |source| is
-  // already on the GPU.
-  if (source->IsOverlayCandidate()) {
-#else
-  if (source->IsTextureBacked()) {
+  //  On MacOS, if |source| doesn't have SCANOUT usage, it is worth copying it
+  //  to a new buffer with the SCANOUT even when |source| is
+  //  already on the GPU, to keep using delegated compositing.
+  can_use_source_directly =
+      can_use_source_directly &&
+      source->GetSharedImage()->usage().Has(gpu::SHARED_IMAGE_USAGE_SCANOUT);
 #endif
+
+  if (can_use_source_directly) {
     return source;
   }
 
