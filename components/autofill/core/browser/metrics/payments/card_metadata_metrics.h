@@ -16,6 +16,7 @@ namespace autofill::autofill_metrics {
 // autofill/histograms.xml file.
 constexpr std::string_view kAmericanExpress = "Amex";
 constexpr std::string_view kAnz = "Anz";
+constexpr std::string_view kBmo = "Bmo";
 constexpr std::string_view kCapitalOne = "CapitalOne";
 constexpr std::string_view kChase = "Chase";
 constexpr std::string_view kCiti = "Citi";
