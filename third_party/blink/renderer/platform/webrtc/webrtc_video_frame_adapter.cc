@@ -302,8 +302,7 @@ WebRtcVideoFrameAdapter::SharedResources::ConstructVideoFrameFromTexture(
   }
 
   return media::ReadbackTextureBackedFrameToMemorySync(
-      *source_frame, ri, raster_context_provider->ContextCapabilities(),
-      &pool_for_mapped_frames_);
+      *source_frame, ri, &pool_for_mapped_frames_);
 }
 
 scoped_refptr<media::VideoFrame>

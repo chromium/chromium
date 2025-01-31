@@ -364,8 +364,8 @@ scoped_refptr<media::VideoFrame> SyncReadbackThread::ReadbackToFrame(
     return nullptr;
 
   auto* ri = context_provider_->RasterInterface();
-  return media::ReadbackTextureBackedFrameToMemorySync(
-      *frame, ri, context_provider_->GetCapabilities(), &result_frame_pool_);
+  return media::ReadbackTextureBackedFrameToMemorySync(*frame, ri,
+                                                       &result_frame_pool_);
 }
 
 bool SyncReadbackThread::ReadbackToBuffer(
@@ -389,9 +389,9 @@ bool SyncReadbackThread::ReadbackToBuffer(
         media::VideoFrame::SampleSize(dest_layout.Format(), i);
     gfx::Rect plane_src_rect = PlaneRect(src_rect, sample_size);
     uint8_t* dest_pixels = dest_buffer.data() + dest_layout.Offset(i);
-    if (!media::ReadbackTexturePlaneToMemorySync(
-            *frame, i, plane_src_rect, dest_pixels, dest_layout.Stride(i), ri,
-            context_provider_->GetCapabilities())) {
+    if (!media::ReadbackTexturePlaneToMemorySync(*frame, i, plane_src_rect,
+                                                 dest_pixels,
+                                                 dest_layout.Stride(i), ri)) {
       // It's possible to fail after copying some but not all planes, leaving
       // the output buffer in a corrupt state D:
       return false;

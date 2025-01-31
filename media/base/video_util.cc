@@ -24,7 +24,6 @@
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/raster_interface.h"
-#include "gpu/command_buffer/common/capabilities.h"
 #include "media/base/limits.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_frame_pool.h"
@@ -706,7 +705,6 @@ bool I420CopyWithPadding(const VideoFrame& src_frame, VideoFrame* dst_frame) {
 scoped_refptr<VideoFrame> ReadbackTextureBackedFrameToMemorySync(
     VideoFrame& txt_frame,
     gpu::raster::RasterInterface* ri,
-    const gpu::Capabilities& caps,
     VideoFramePool* pool) {
   DCHECK(ri);
 
@@ -739,7 +737,7 @@ scoped_refptr<VideoFrame> ReadbackTextureBackedFrameToMemorySync(
     gfx::Rect src_rect(0, 0, txt_frame.columns(plane), txt_frame.rows(plane));
     if (!ReadbackTexturePlaneToMemorySync(txt_frame, plane, src_rect,
                                           result->writable_data(plane),
-                                          result->stride(plane), ri, caps)) {
+                                          result->stride(plane), ri)) {
       return nullptr;
     }
   }
@@ -751,8 +749,7 @@ bool ReadbackTexturePlaneToMemorySync(VideoFrame& src_frame,
                                       gfx::Rect& src_rect,
                                       uint8_t* dest_pixels,
                                       size_t dest_stride,
-                                      gpu::raster::RasterInterface* ri,
-                                      const gpu::Capabilities& caps) {
+                                      gpu::raster::RasterInterface* ri) {
   DCHECK(ri);
 
   bool result = ReadbackTexturePlaneToMemorySyncOOP(
