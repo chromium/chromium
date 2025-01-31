@@ -374,6 +374,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_utils.h"
 #include "content/public/common/window_container_type.mojom-shared.h"
+#include "device/fido/features.h"
 #include "device/vr/buildflags/buildflags.h"
 #include "extensions/browser/browser_frame_context_data.h"
 #include "extensions/buildflags/buildflags.h"
@@ -2901,11 +2902,16 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
-      // Make the WebAuthenticationRemoteProxiedRequestsAllowed policy enable
-      // the experimental WebAuthenticationRemoteDesktopSupport Blink runtime
+      // Make the {WebAuthenticationRemoteProxiedRequestsAllowed or
+      // WebAuthenticationRemoteDesktopAllowedOrigins} policy enable the
+      // experimental WebAuthenticationRemoteDesktopSupport Blink runtime
       // feature.
       if (prefs->GetBoolean(
-              webauthn::pref_names::kRemoteProxiedRequestsAllowed)) {
+              webauthn::pref_names::kRemoteProxiedRequestsAllowed) ||
+          (base::FeatureList::IsEnabled(
+               device::kWebAuthnRemoteDesktopAllowedOriginsPolicy) &&
+           !prefs->GetList(webauthn::pref_names::kRemoteDesktopAllowedOrigins)
+                .empty())) {
         command_line->AppendSwitch(switches::kWebAuthRemoteDesktopSupport);
       }
 #endif

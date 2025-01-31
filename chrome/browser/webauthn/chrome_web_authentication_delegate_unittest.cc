@@ -34,6 +34,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/web_contents_tester.h"
 #include "device/fido/cable/cable_discovery_data.h"
+#include "device/fido/features.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension_builder.h"
@@ -517,7 +518,14 @@ class OriginMayUseRemoteDesktopClientOverrideTest
       "https://remotedesktop-autopush.corp.google.com/";
   static constexpr char kCorpCrdDailyOrigin[] =
       "https://remotedesktop-daily-6.corp.google.com/";
+
+  const std::array<const char*, 3> kCorpCrdOrigins = {
+      kCorpCrdOrigin, kCorpCrdAutopushOrigin, kCorpCrdDailyOrigin};
+
   static constexpr char kExampleOrigin[] = "https://example.com";
+  static constexpr char kAnotherExampleOrigin[] = "https://another.example.com";
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(OriginMayUseRemoteDesktopClientOverrideTest,
@@ -533,8 +541,7 @@ TEST_F(OriginMayUseRemoteDesktopClientOverrideTest,
   ChromeWebAuthenticationDelegate delegate;
   PrefService* prefs =
       Profile::FromBrowserContext(GetBrowserContext())->GetPrefs();
-  for (auto* origin : {kCorpCrdOrigin, kCorpCrdAutopushOrigin,
-                       kCorpCrdDailyOrigin, kExampleOrigin}) {
+  for (auto* origin : kCorpCrdOrigins) {
     for (const auto policy :
          {Policy::kUnset, Policy::kDisabled, Policy::kEnabled}) {
       switch (policy) {
@@ -565,7 +572,7 @@ TEST_F(OriginMayUseRemoteDesktopClientOverrideTest,
 }
 
 TEST_F(OriginMayUseRemoteDesktopClientOverrideTest,
-       OriginMayUseRemoteDesktopClientOverrideAdditionalOriginSwitch) {
+       AdditionalOriginSwitch_WithGooglePolicy) {
   // The --webauthn-remote-proxied-requests-allowed-additional-origin switch
   // allows passing an additional origin for testing.
   ChromeWebAuthenticationDelegate delegate;
@@ -594,6 +601,193 @@ TEST_F(OriginMayUseRemoteDesktopClientOverrideTest,
   EXPECT_FALSE(delegate.OriginMayUseRemoteDesktopClientOverride(
       browser_context(),
       url::Origin::Create(GURL("https://other.example.com"))));
+}
+
+TEST_F(OriginMayUseRemoteDesktopClientOverrideTest,
+       AdditionalOriginSwitch_WithAllowedOriginsPolicy) {
+  // The --webauthn-remote-proxied-requests-allowed-additional-origin switch
+  // allows passing an additional origin for testing. This origin will be
+  // allowed if the kWebAuthnRemoteDesktopAllowedOriginsPolicy preference is set
+  // to a non-empty list of origins.  If the policy is set, the command-line
+  // origin is treated as another allowed origin in addition to those specified
+  // by the policy.
+  ChromeWebAuthenticationDelegate delegate;
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      webauthn::switches::kRemoteProxiedRequestsAllowedAdditionalOrigin,
+      kExampleOrigin);
+  scoped_feature_list_.InitAndEnableFeature(
+      device::kWebAuthnRemoteDesktopAllowedOriginsPolicy);
+
+  // Initially, no origins should be allowed because the allowed origins pref
+  // hasn't been set yet.
+  EXPECT_FALSE(delegate.OriginMayUseRemoteDesktopClientOverride(
+      browser_context(), url::Origin::Create(GURL(kExampleOrigin))));
+  EXPECT_FALSE(delegate.OriginMayUseRemoteDesktopClientOverride(
+      browser_context(), url::Origin::Create(GURL(kAnotherExampleOrigin))));
+
+  // Set the allowed origins pref to include another origin.
+  PrefService* prefs =
+      Profile::FromBrowserContext(GetBrowserContext())->GetPrefs();
+  prefs->SetList(webauthn::pref_names::kRemoteDesktopAllowedOrigins,
+                 base::Value::List().Append(kAnotherExampleOrigin));
+
+  // Both the origin specified by the command-line switch and the origin in the
+  // allowed origins pref should be allowed.
+  EXPECT_TRUE(delegate.OriginMayUseRemoteDesktopClientOverride(
+      browser_context(), url::Origin::Create(GURL(kExampleOrigin))));
+  EXPECT_TRUE(delegate.OriginMayUseRemoteDesktopClientOverride(
+      browser_context(), url::Origin::Create(GURL(kAnotherExampleOrigin))));
+
+  // Google Corp CRD origins are not affected by either the switch or this
+  // policy.
+  for (auto* origin : kCorpCrdOrigins) {
+    EXPECT_FALSE(delegate.OriginMayUseRemoteDesktopClientOverride(
+        browser_context(), url::Origin::Create(GURL(origin))));
+  }
+
+  // Origins not listed in either the switch or the policy remain disallowed.
+  EXPECT_FALSE(delegate.OriginMayUseRemoteDesktopClientOverride(
+      browser_context(),
+      url::Origin::Create(GURL("https://very.other.example.com"))));
+}
+
+TEST_F(OriginMayUseRemoteDesktopClientOverrideTest,
+       AdditionalOriginSwitch_WithExplicitlyEmptyAllowedOriginsPolicy) {
+  // The --webauthn-remote-proxied-requests-allowed-additional-origin switch
+  // should be ignored when the allowed origins policy list is empty.
+  ChromeWebAuthenticationDelegate delegate;
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      webauthn::switches::kRemoteProxiedRequestsAllowedAdditionalOrigin,
+      kExampleOrigin);
+  scoped_feature_list_.InitAndEnableFeature(
+      device::kWebAuthnRemoteDesktopAllowedOriginsPolicy);
+
+  PrefService* prefs =
+      Profile::FromBrowserContext(GetBrowserContext())->GetPrefs();
+
+  // Test with policy unset.
+  prefs->ClearPref(webauthn::pref_names::kRemoteDesktopAllowedOrigins);
+  EXPECT_FALSE(delegate.OriginMayUseRemoteDesktopClientOverride(
+      browser_context(), url::Origin::Create(GURL(kExampleOrigin))));
+
+  // Test with policy explicitly empty.
+  prefs->SetList(webauthn::pref_names::kRemoteDesktopAllowedOrigins,
+                 base::Value::List());
+  EXPECT_FALSE(delegate.OriginMayUseRemoteDesktopClientOverride(
+      browser_context(), url::Origin::Create(GURL(kExampleOrigin))));
+}
+
+TEST_F(OriginMayUseRemoteDesktopClientOverrideTest,
+       AllowedOriginsPolicy_InvalidURLs) {
+  ChromeWebAuthenticationDelegate delegate;
+  scoped_feature_list_.InitAndEnableFeature(
+      device::kWebAuthnRemoteDesktopAllowedOriginsPolicy);
+
+  PrefService* prefs =
+      Profile::FromBrowserContext(GetBrowserContext())->GetPrefs();
+
+  const std::vector<std::string> invalid_origins = {
+      "invalid",
+      "http://",
+      "example.com",  // Missing scheme
+      "https://example.com:invalidport",
+  };
+
+  base::Value::List invalid_origins_list;
+  for (const auto& origin : invalid_origins) {
+    invalid_origins_list.Append(origin);
+  }
+  prefs->SetList(webauthn::pref_names::kRemoteDesktopAllowedOrigins,
+                 std::move(invalid_origins_list));
+
+  // None of the above invalid origins should grant access.
+  for (const auto& origin : invalid_origins) {
+    EXPECT_FALSE(delegate.OriginMayUseRemoteDesktopClientOverride(
+        browser_context(), url::Origin::Create(GURL(origin))));
+  }
+
+  // A valid one, added for good measure, should still work.
+  prefs->SetList(webauthn::pref_names::kRemoteDesktopAllowedOrigins,
+                 base::Value::List().Append(kExampleOrigin));
+  EXPECT_TRUE(delegate.OriginMayUseRemoteDesktopClientOverride(
+      browser_context(), url::Origin::Create(GURL(kExampleOrigin))));
+}
+
+TEST_F(OriginMayUseRemoteDesktopClientOverrideTest,
+       AllowedOriginsPolicy_FeatureDisabled) {
+  ChromeWebAuthenticationDelegate delegate;
+  // Feature explicitly disabled.
+  scoped_feature_list_.InitAndDisableFeature(
+      device::kWebAuthnRemoteDesktopAllowedOriginsPolicy);
+
+  PrefService* prefs =
+      Profile::FromBrowserContext(GetBrowserContext())->GetPrefs();
+  prefs->SetList(webauthn::pref_names::kRemoteDesktopAllowedOrigins,
+                 base::Value::List().Append(kExampleOrigin));
+
+  EXPECT_FALSE(delegate.OriginMayUseRemoteDesktopClientOverride(
+      browser_context(), url::Origin::Create(GURL(kExampleOrigin))));
+}
+
+TEST_F(OriginMayUseRemoteDesktopClientOverrideTest,
+       AllowedOriginsPolicy_MultipleValidURLs) {
+  ChromeWebAuthenticationDelegate delegate;
+  scoped_feature_list_.InitAndEnableFeature(
+      device::kWebAuthnRemoteDesktopAllowedOriginsPolicy);
+
+  PrefService* prefs =
+      Profile::FromBrowserContext(GetBrowserContext())->GetPrefs();
+  base::Value::List valid_origins;
+  valid_origins.Append(kExampleOrigin);
+  valid_origins.Append(kAnotherExampleOrigin);
+  prefs->SetList(webauthn::pref_names::kRemoteDesktopAllowedOrigins,
+                 std::move(valid_origins));
+
+  // Both origins specified in the policy should grant access.
+  EXPECT_TRUE(delegate.OriginMayUseRemoteDesktopClientOverride(
+      browser_context(), url::Origin::Create(GURL(kExampleOrigin))));
+  EXPECT_TRUE(delegate.OriginMayUseRemoteDesktopClientOverride(
+      browser_context(), url::Origin::Create(GURL(kAnotherExampleOrigin))));
+
+  // An unrelated origin should not be allowed.
+  EXPECT_FALSE(delegate.OriginMayUseRemoteDesktopClientOverride(
+      browser_context(),
+      url::Origin::Create(GURL("https://very.other.example.com"))));
+}
+
+TEST_F(OriginMayUseRemoteDesktopClientOverrideTest,
+       AllowedOriginsPolicy_SchemePortPathMismatch) {
+  ChromeWebAuthenticationDelegate delegate;
+  scoped_feature_list_.InitAndEnableFeature(
+      device::kWebAuthnRemoteDesktopAllowedOriginsPolicy);
+  PrefService* prefs =
+      Profile::FromBrowserContext(GetBrowserContext())->GetPrefs();
+
+  // Scheme mismatch.
+  prefs->SetList(webauthn::pref_names::kRemoteDesktopAllowedOrigins,
+                 base::Value::List().Append("https://example.com"));
+  EXPECT_FALSE(delegate.OriginMayUseRemoteDesktopClientOverride(
+      browser_context(), url::Origin::Create(GURL("http://example.com"))));
+
+  // Port mismatch.
+  prefs->SetList(webauthn::pref_names::kRemoteDesktopAllowedOrigins,
+                 base::Value::List().Append("https://example.com:1234"));
+  EXPECT_FALSE(delegate.OriginMayUseRemoteDesktopClientOverride(
+      browser_context(), url::Origin::Create(GURL("https://example.com"))));
+  EXPECT_FALSE(delegate.OriginMayUseRemoteDesktopClientOverride(
+      browser_context(),
+      url::Origin::Create(GURL("https://example.com:5678"))));
+
+  // Path mismatch (should be allowed because paths are ignored).
+  prefs->SetList(webauthn::pref_names::kRemoteDesktopAllowedOrigins,
+                 base::Value::List().Append("https://example.com/path"));
+  EXPECT_TRUE(delegate.OriginMayUseRemoteDesktopClientOverride(
+      browser_context(), url::Origin::Create(GURL("https://example.com"))));
+  EXPECT_TRUE(delegate.OriginMayUseRemoteDesktopClientOverride(
+      browser_context(),
+      url::Origin::Create(GURL("https://example.com/otherpath"))));
 }
 
 }  // namespace
