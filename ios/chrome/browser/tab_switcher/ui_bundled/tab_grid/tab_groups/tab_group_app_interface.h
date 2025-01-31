@@ -7,11 +7,13 @@
 
 #import <Foundation/Foundation.h>
 
-// App-side implementation for TabGroupEarlGrey.
+// An app interface for updating tab groups. The implementation of helper
+// methods is compiled into the app binary and they can be called from either
+// the app or the test code.
 @interface TabGroupAppInterface : NSObject
 
-// Creates and saves `numberOfGroups` saved tab groups.
-+ (void)prepareFakeSavedTabGroups:(NSInteger)numberOfGroups;
+// Creates and saves `numberOfGroups` synced tab groups.
++ (void)prepareFakeSyncedTabGroups:(NSInteger)numberOfGroups;
 
 // Removes a group at `index`.
 + (void)removeAtIndex:(unsigned int)index;

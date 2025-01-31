@@ -7,7 +7,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
-#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_group_earl_grey.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_group_app_interface.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_constants.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_eg_utils.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -121,7 +121,7 @@ void CloseGroupAtIndex(int group_cell_index) {
 - (void)tearDownHelper {
   [super tearDownHelper];
   // Delete all saved groups.
-  [TabGroupEarlGrey cleanup];
+  [TabGroupAppInterface cleanup];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
@@ -147,18 +147,18 @@ void CloseGroupAtIndex(int group_cell_index) {
       assertWithMatcher:grey_notNil()];
 }
 
-// Tests that TabGroupEarlGrey creates saved tab groups correctly.
-- (void)testPreparedSavedTabGroups {
-  GREYAssertEqual(0, [TabGroupEarlGrey countOfSavedTabGroups],
+// Tests that TabGroupAppInterface creates synced tab groups correctly.
+- (void)testPreparedSyncedTabGroups {
+  GREYAssertEqual(0, [TabGroupAppInterface countOfSavedTabGroups],
                   @"The number of saved tab groups should be 0.");
-  [TabGroupEarlGrey prepareFakeSavedTabGroups:3];
+  [TabGroupAppInterface prepareFakeSyncedTabGroups:3];
 
   // Sign in to trigger group download.
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
                          enableHistorySync:YES];
   [ChromeEarlGrey waitForSyncTransportStateActiveWithTimeout:base::Seconds(10)];
 
-  GREYAssertEqual(3, [TabGroupEarlGrey countOfSavedTabGroups],
+  GREYAssertEqual(3, [TabGroupAppInterface countOfSavedTabGroups],
                   @"The number of saved tab groups should be 3.");
 
   // Open the tab grid.
@@ -179,12 +179,12 @@ void CloseGroupAtIndex(int group_cell_index) {
       selectElementWithMatcher:TabGroupsPanelCellWithName(kSyncedGroup3Name, 1)]
       assertWithMatcher:grey_notNil()];
 
-  [TabGroupEarlGrey cleanup];
+  [TabGroupAppInterface cleanup];
 
   GREYCondition* groupsDeletedCheck = [GREYCondition
       conditionWithName:@"Wait for tab groups to be deleted"
                   block:^{
-                    return [TabGroupEarlGrey countOfSavedTabGroups] == 0;
+                    return [TabGroupAppInterface countOfSavedTabGroups] == 0;
                   }];
   bool groupsDeleted = [groupsDeletedCheck waitWithTimeout:10];
 
@@ -206,7 +206,7 @@ void CloseGroupAtIndex(int group_cell_index) {
   [[EarlGrey
       selectElementWithMatcher:TabGroupsPanelCellWithName(kGroup1Name, 1)]
       assertWithMatcher:grey_notNil()];
-  GREYAssertEqual(1, [TabGroupEarlGrey countOfSavedTabGroups],
+  GREYAssertEqual(1, [TabGroupAppInterface countOfSavedTabGroups],
                   @"The number of saved tab groups should be 1.");
 
   // Delete a group from the context menu of a tab groups panel cell.
@@ -237,7 +237,7 @@ void CloseGroupAtIndex(int group_cell_index) {
       assertWithMatcher:grey_nil()];
 
   // Check that the group is deleted from the sync service.
-  GREYAssertEqual(0, [TabGroupEarlGrey countOfSavedTabGroups],
+  GREYAssertEqual(0, [TabGroupAppInterface countOfSavedTabGroups],
                   @"The number of saved tab groups should be 0.");
 }
 
@@ -299,7 +299,7 @@ void CloseGroupAtIndex(int group_cell_index) {
   [[EarlGrey
       selectElementWithMatcher:TabGroupsPanelCellWithName(kGroup1Name, 1)]
       assertWithMatcher:grey_notNil()];
-  GREYAssertEqual(1, [TabGroupEarlGrey countOfSavedTabGroups],
+  GREYAssertEqual(1, [TabGroupAppInterface countOfSavedTabGroups],
                   @"The number of saved tab groups should be 1.");
 
   // Navigate back to the tab grid.
@@ -319,7 +319,7 @@ void CloseGroupAtIndex(int group_cell_index) {
       assertWithMatcher:grey_nil()];
 
   // Check that the group is deleted from the sync service.
-  GREYAssertEqual(0, [TabGroupEarlGrey countOfSavedTabGroups],
+  GREYAssertEqual(0, [TabGroupAppInterface countOfSavedTabGroups],
                   @"The number of saved tab groups should be 0.");
 }
 
@@ -362,14 +362,14 @@ void CloseGroupAtIndex(int group_cell_index) {
       assertWithMatcher:grey_notNil()];
 
   // Check that the group still exists in the sync service.
-  GREYAssertEqual(1, [TabGroupEarlGrey countOfSavedTabGroups],
+  GREYAssertEqual(1, [TabGroupAppInterface countOfSavedTabGroups],
                   @"The number of saved tab groups should be 1.");
 }
 
 // Tests deleting a saved group from one device while the same group is
 // being viewed in the tab group view on a different device.
 - (void)testDeleteGroupOnAnotherDevice {
-  [TabGroupEarlGrey prepareFakeSavedTabGroups:1];
+  [TabGroupAppInterface prepareFakeSyncedTabGroups:1];
 
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
                          enableHistorySync:YES];
@@ -387,11 +387,11 @@ void CloseGroupAtIndex(int group_cell_index) {
 
   // Delete the group on another device by modifying directly
   // TabGroupSyncService.
-  [TabGroupEarlGrey removeAtIndex:0];
+  [TabGroupAppInterface removeAtIndex:0];
   GREYCondition* groupsDeletedCheck = [GREYCondition
       conditionWithName:@"Wait for tab group to be deleted"
                   block:^{
-                    return [TabGroupEarlGrey countOfSavedTabGroups] == 0;
+                    return [TabGroupAppInterface countOfSavedTabGroups] == 0;
                   }];
   bool groupsDeleted = [groupsDeletedCheck waitWithTimeout:10];
 
@@ -453,7 +453,7 @@ void CloseGroupAtIndex(int group_cell_index) {
   [[EarlGrey
       selectElementWithMatcher:TabGroupsPanelCellWithName(kGroup1Name, 1)]
       assertWithMatcher:grey_nil()];
-  GREYAssertEqual(0, [TabGroupEarlGrey countOfSavedTabGroups],
+  GREYAssertEqual(0, [TabGroupAppInterface countOfSavedTabGroups],
                   @"The number of saved tab groups should be 0.");
 }
 
@@ -489,7 +489,7 @@ void CloseGroupAtIndex(int group_cell_index) {
                                                           kGroup1Name, 1)];
   [[EarlGrey selectElementWithMatcher:TabGridGroupCellWithName(kGroup1Name, 1)]
       assertWithMatcher:grey_notNil()];
-  GREYAssertEqual(1, [TabGroupEarlGrey countOfSavedTabGroups],
+  GREYAssertEqual(1, [TabGroupAppInterface countOfSavedTabGroups],
                   @"The number of saved tab groups should be 1.");
 
   // Ungroup a group.
@@ -498,7 +498,7 @@ void CloseGroupAtIndex(int group_cell_index) {
   // Verity that the group with `kGroup1Name` doesn't exist anymore.
   [[EarlGrey selectElementWithMatcher:TabGridGroupCellWithName(kGroup1Name, 1)]
       assertWithMatcher:grey_nil()];
-  GREYAssertEqual(0, [TabGroupEarlGrey countOfSavedTabGroups],
+  GREYAssertEqual(0, [TabGroupAppInterface countOfSavedTabGroups],
                   @"The number of saved tab groups should be 0.");
 }
 
@@ -523,7 +523,7 @@ void CloseGroupAtIndex(int group_cell_index) {
   [[EarlGrey
       selectElementWithMatcher:TabGroupsPanelCellWithName(kGroup1Name, 1)]
       assertWithMatcher:grey_notNil()];
-  GREYAssertEqual(1, [TabGroupEarlGrey countOfSavedTabGroups],
+  GREYAssertEqual(1, [TabGroupAppInterface countOfSavedTabGroups],
                   @"The number of saved tab groups should be 1.");
 
   // Try to delete a group from the context menu of a tab groups panel cell.
@@ -546,7 +546,7 @@ void CloseGroupAtIndex(int group_cell_index) {
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:TabGroupsPanelCellWithName(
                                               kGroup1Name, 1)];
-  GREYAssertEqual(1, [TabGroupEarlGrey countOfSavedTabGroups],
+  GREYAssertEqual(1, [TabGroupAppInterface countOfSavedTabGroups],
                   @"The number of saved tab groups should be 1.");
 
   // Delete a group from the context menu of a tab groups panel cell.
@@ -567,7 +567,7 @@ void CloseGroupAtIndex(int group_cell_index) {
   [[EarlGrey
       selectElementWithMatcher:TabGroupsPanelCellWithName(kGroup1Name, 1)]
       assertWithMatcher:grey_nil()];
-  GREYAssertEqual(0, [TabGroupEarlGrey countOfSavedTabGroups],
+  GREYAssertEqual(0, [TabGroupAppInterface countOfSavedTabGroups],
                   @"The number of saved tab groups should be 0.");
 }
 
