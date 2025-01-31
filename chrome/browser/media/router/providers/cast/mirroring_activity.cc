@@ -817,7 +817,7 @@ void MirroringActivity::StartSession(const std::string& destination_id,
           &MirroringActivity::StartOnUiThread, weak_ptr_factory_.GetWeakPtr(),
           SessionParameters::New(
               session_type, cast_data_.ip_endpoint.address(),
-              cast_data_.model_name, sink_.sink().name(), destination_id,
+              sink_.sink().name(), destination_id,
               message_handler_->source_id(), target_playout_delay_,
               route().media_source().IsRemotePlaybackSource(),
               ShouldForceLetterboxing(cast_data_.model_name),
