@@ -992,15 +992,15 @@ fyi_mac_builder(
             "mac_13_x64",
         ],
         per_test_modifications = {
-            "headless_shell_wpt_tests_include_all": targets.mixin(
+            "headless_shell_wpt_tests_inverted": targets.mixin(
                 args = [
                     "--test-type",
                     "testharness",
                     "reftest",
                     "crashtest",
                     "print-reftest",
-                    "--exit-after-n-crashes-or-timeouts=10000",
-                    "--exit-after-n-failures=10000",
+                    "--exit-after-n-crashes-or-timeouts=1000",
+                    "--exit-after-n-failures=1000",
                 ],
                 experiment_percentage = 100,
             ),
@@ -1052,20 +1052,17 @@ ci.builder(
             "linux-jammy",
         ],
         per_test_modifications = {
-            "headless_shell_wpt_tests_include_all": targets.mixin(
+            "headless_shell_wpt_tests_inverted": targets.mixin(
                 args = [
                     "--test-type",
                     "testharness",
                     "reftest",
                     "crashtest",
                     "print-reftest",
-                    "--exit-after-n-crashes-or-timeouts=10000",
-                    "--exit-after-n-failures=10000",
+                    "--exit-after-n-crashes-or-timeouts=1000",
+                    "--exit-after-n-failures=1000",
                 ],
                 experiment_percentage = 100,
-                swarming = targets.swarming(
-                    shards = 15,
-                ),
             ),
         },
     ),
@@ -2637,15 +2634,15 @@ ci.builder(
             "isolate_profile_data",
         ],
         per_test_modifications = {
-            "headless_shell_wpt_tests_include_all": targets.mixin(
+            "headless_shell_wpt_tests_inverted": targets.mixin(
                 args = [
                     "--test-type",
                     "testharness",
                     "reftest",
                     "crashtest",
                     "print-reftest",
-                    "--exit-after-n-crashes-or-timeouts=10000",
-                    "--exit-after-n-failures=10000",
+                    "--exit-after-n-crashes-or-timeouts=1000",
+                    "--exit-after-n-failures=1000",
                 ],
                 experiment_percentage = 100,
             ),

@@ -4676,12 +4676,12 @@ targets.bundle(
 targets.bundle(
     name = "headless_shell_wpt_tests_isolated_scripts",
     targets = [
-        "headless_shell_wpt_tests_include_all",
+        "headless_shell_wpt_tests_inverted",
     ],
     per_test_modifications = {
-        "headless_shell_wpt_tests_include_all": targets.mixin(
+        "headless_shell_wpt_tests_inverted": targets.mixin(
             swarming = targets.swarming(
-                shards = 10,
+                shards = 5,
             ),
         ),
     },
