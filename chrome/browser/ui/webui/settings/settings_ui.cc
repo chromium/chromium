@@ -24,6 +24,8 @@
 #include "chrome/browser/history_embeddings/history_embeddings_utils.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/password_manager/chrome_password_change_service.h"
+#include "chrome/browser/password_manager/password_change_service_factory.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_tuning_utils.h"
 #include "chrome/browser/preloading/preloading_features.h"
@@ -589,8 +591,12 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
                    shopping_service->GetAccountChecker())
              : commerce::CanFetchProductSpecificationsData(
                    shopping_service->GetAccountChecker())},
-        // TODO(crbug.com/391131625): Check the actual feature state.
-        {"showPasswordChangeControl", false},
+        {"showPasswordChangeControl",
+         use_is_setting_visible &&
+             // TODO(crbug.com/391131625): Check if feature is explicitly
+             // enabled.
+             PasswordChangeServiceFactory::GetForProfile(profile)
+                 ->IsPasswordChangeAvailable()},
     };
 
     bool show_ai_page = show_ai_settings_for_testing;
