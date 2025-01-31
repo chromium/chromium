@@ -1,0 +1,47 @@
+<style include="print-preview-shared">
+  :host {
+    margin-top: 0 !important;
+  }
+
+  :host([is-pin-valid]) #pinValue {
+    --cr-input-error-display: none;
+  }
+
+  /* Margin = standard margin (16px) - error field margin (8px) */
+  :host([!is-pin-valid]) #customInputWrapper {
+    margin-bottom: 8px;
+  }
+
+  #pinValue {
+    --cr-form-field-label-height: 100%;
+    cursor: default;
+  }
+
+  :host #title {
+    align-self: baseline;
+  }
+</style>
+<print-preview-settings-section>
+  <div slot="title"></div>
+  <div slot="controls" class="checkbox">
+    <cr-checkbox id="pin" on-change="onPinChange_"
+      disabled="[[checkboxDisabled_]]" aria-labelledby="pin-label">
+      <span id="pin-label">$i18n{optionPin}</span>
+    </cr-checkbox>
+  </div>
+</print-preview-settings-section>
+<cr-collapse opened="[[pinEnabled_]]"
+    on-transitionend="onCollapseChanged_">
+  <print-preview-settings-section id="customInputWrapper">
+    <div slot="title"></div>
+    <div slot="controls">
+      <cr-input id="pinValue" type="text" pattern="[0-9]{4}" minlength="4"
+          maxlength="4" data-timeout-delay="250" aria-labelledby="pin"
+          placeholder="$i18n{pinPlaceholder}" spellcheck="false"
+          disabled$="[[inputDisabled_(pinEnabled_, isPinValid, disabled)]]"
+          error-message="[[getPinErrorMessage_(isPinValid)]]" required
+          auto-validate>
+      </cr-input>
+    </div>
+  </print-preview-settings-section>
+</cr-collapse>

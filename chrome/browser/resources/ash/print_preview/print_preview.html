@@ -1,0 +1,63 @@
+<!doctype html>
+<html dir="$i18n{textdirection}" lang="$i18n{language}" class="loading">
+<head>
+  <title>$i18n{pageDescription}</title>
+  <meta charset="utf-8">
+  <meta name="color-scheme" content="light dark">
+  <base href="chrome://print">
+  <style>
+    html {
+      background: white;
+      /* Remove 300ms delay for 'click' event, when using touch interface. */
+      touch-action: manipulation;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      html {
+        background: rgb(40, 41, 44);
+      }
+    }
+
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      width: 100%;
+    }
+
+    .loading body {
+    }
+
+    .loading body::before {
+      background: rgb(218, 220, 224);  /* --google-grey-300 */
+      border-bottom-width: 0;
+      border-color: rgb(232, 234, 237);
+      border-inline-end-width: 1px;
+      border-inline-start-width: 0;
+      border-style: solid;
+      border-top-width: 0;
+      content: '';
+      display: block;
+      height: 100%;
+      width: calc(100% - 385px);  /* --print-preview-sidebar-width */
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .loading body::before {
+        background: rgb(95, 99, 104);  /* --google-grey-700 */
+        border-color: rgba(40, 41, 44, .9);
+      }
+    }
+  </style>
+</head>
+<body>
+  <print-preview-app></print-preview-app>
+  <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
+  <link rel="stylesheet" href="chrome://resources/css/md_colors.css">
+<if expr="is_chromeos">
+  <link rel="stylesheet" href="chrome://theme/typography.css">
+</if>
+  <script type="module" src="print_preview.js"></script>
+</body>
+</html>

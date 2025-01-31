@@ -1,0 +1,62 @@
+/* Copyright 2022 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style
+ * #import=chrome://resources/cr_elements/cr_hidden_style.css.js
+ * #import=chrome://resources/cr_elements/cr_shared_style.css.js
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #import=./throbber.css.js
+ * #include=print-preview-shared cr-hidden-style throbber
+ * #css_wrapper_metadata_end */
+
+:host-context([dir=rtl]) #manageIcon {
+  transform: scaleX(-1);
+}
+
+#dialog::part(dialog) {
+  height: calc(100vh - 2 * var(--print-preview-dialog-margin));
+  max-width: 640px;
+  width:  calc(100vw - 2 * var(--print-preview-dialog-margin));
+}
+
+#dialog::part(wrapper) {
+  height: calc(100vh - 2 * var(--print-preview-dialog-margin));
+}
+
+#dialog::part(body-container) {
+  flex: 1;
+}
+
+print-preview-search-box {
+  margin-bottom: 16px;
+  margin-top: 6px;
+}
+
+cr-dialog [slot=body] {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+div[slot='button-container'] {
+  justify-content: space-between;
+}
+
+cr-button {
+  font-size: calc(12 / 13 * 1em);
+}
+
+.cancel-button {
+  margin-inline-end: 0;
+}
+
+cr-button cr-icon {
+  --iron-icon-fill-color: currentColor;
+  margin-inline-start: 8px;
+}
+
+#warning-message {
+  color: var(--cr-primary-text-color);
+}

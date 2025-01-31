@@ -142,7 +142,8 @@ def _is_browser_only_dep(dep):
 
 def _is_dependency_allowed(is_ash_target, raw_dep, target_path):
   if is_ash_target and _is_browser_only_dep(raw_dep):
-    return False
+    # TODO: Update Ash Print Preview to use ash cr_elements.
+    return target_path == 'chrome/browser/resources/ash/print_preview'
 
   is_ash_dep = isInAshFolder(raw_dep[2:])
   if not is_ash_dep or is_ash_target:
@@ -151,6 +152,8 @@ def _is_dependency_allowed(is_ash_target, raw_dep, target_path):
   exceptions = [
       # TODO(crbug.com/40946949): Remove this incorrect dependency
       'chrome/browser/resources/settings',
+      # TODO: Fork Print Preview tests
+      'chrome/test/data/webui/print_preview',
   ]
 
   return target_path in exceptions

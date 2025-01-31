@@ -1,0 +1,74 @@
+<style include="print-preview-shared cr-hidden-style throbber">
+  #dialog::part(dialog) {
+    height: -webkit-fit-content;
+    max-height: calc(100vh - 4 * var(--print-preview-dialog-margin));
+    max-width:  calc(100vw - 4 * var(--print-preview-dialog-margin));
+  }
+
+  .throbber-placeholder {
+    height: 16px;
+    margin: 4px;
+    width: 16px;
+  }
+
+  .message {
+    line-height: calc(20/13 * 1em);
+    margin: 0;
+    padding-bottom: 12px;
+    padding-top: 8px;
+  }
+
+  .extension-desc {
+    display: flex;
+  }
+
+  .extension-icon {
+    background-position: center;
+    background-repeat: none;
+    height: 24px;
+    width: 24px;
+  }
+
+  .extension-name {
+    color: var(--cr-primary-text-color);
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+    line-height: 20px;
+    margin-inline-start: 1em;
+    overflow-wrap: break-word;
+  }
+
+  /* override print preview shared style */
+  #dialog #buttons {
+    box-shadow: none;
+  }
+</style>
+<cr-dialog id="dialog" on-close="onCancel_">
+  <div slot="title">$i18n{resolveExtensionUSBDialogTitle}</div>
+  <div slot="body">
+    <p class="message">
+      [[getPermissionMessage_(state_, destination_.extensionName)]]
+    </p>
+    <div class="extension-desc" hidden="[[isInErrorState_(state_)]]">
+      <div class$="throbber-placeholder [[getThrobberClass_(state_)]]"
+          role="img" alt=""></div>
+      <div class="extension-icon" role="img" alt=""></div>
+      <div class="extension-name">
+        [[destination_.extensionName]]
+      </div>
+    </div>
+  </div>
+  <div slot="button-container" id="buttons">
+    <cr-button class="cancel-button" on-click="onCancelClick_">
+      $i18n{goBackButton}
+    </cr-button>
+    <cr-button class="action-button"
+        hidden="[[isInErrorState_(state_)]]"
+        disabled="[[!isInActiveState_(state_)]]"
+        on-click="startResolveDestination_">
+      $i18n{selectButton}
+    </cr-button>
+  </div>
+</cr-dialog>

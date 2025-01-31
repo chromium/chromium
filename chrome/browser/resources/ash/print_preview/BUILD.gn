@@ -7,8 +7,7 @@ import("//printing/buildflags/buildflags.gni")
 
 import("//ui/webui/resources/tools/build_webui.gni")
 
-assert(!is_chromeos,
-       "ChromeOS should use chrome/browser/resources/ash/print_preview")
+assert(is_chromeos, "chrome/browser/resources/ash/print_preview is CrOS only")
 assert(enable_print_preview, "enable_print_preview check failed")
 
 build_webui("build") {

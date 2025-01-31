@@ -498,7 +498,11 @@ template("chrome_extra_paks") {
     }
     if (enable_print_preview) {
       sources += [ "$root_gen_dir/chrome/print_preview_resources.pak" ]
-      deps += [ "//chrome/browser/resources/print_preview:resources" ]
+      if (is_chromeos) {
+        deps += [ "//chrome/browser/resources/ash/print_preview:resources" ]
+      } else {
+        deps += [ "//chrome/browser/resources/print_preview:resources" ]
+      }
     }
     if (enable_webui_tab_strip) {
       sources += [ "$root_gen_dir/chrome/tab_strip_resources.pak" ]
