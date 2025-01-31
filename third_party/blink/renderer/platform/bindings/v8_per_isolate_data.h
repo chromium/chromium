@@ -112,8 +112,7 @@ class PLATFORM_EXPORT V8PerIsolateData final {
                                  scoped_refptr<base::SingleThreadTaskRunner>,
                                  V8ContextSnapshotMode,
                                  v8::CreateHistogramCallback,
-                                 v8::AddHistogramSampleCallback,
-                                 std::unique_ptr<v8::CppHeap>);
+                                 v8::AddHistogramSampleCallback);
 
   static V8PerIsolateData* From(v8::Isolate* isolate) {
     DCHECK(isolate);
@@ -266,8 +265,7 @@ class PLATFORM_EXPORT V8PerIsolateData final {
                    scoped_refptr<base::SingleThreadTaskRunner>,
                    V8ContextSnapshotMode,
                    v8::CreateHistogramCallback,
-                   v8::AddHistogramSampleCallback,
-                   std::unique_ptr<v8::CppHeap>);
+                   v8::AddHistogramSampleCallback);
   ~V8PerIsolateData();
 
   // A really simple hash function, which makes lookups faster. The set of

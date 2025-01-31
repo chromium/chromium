@@ -18,7 +18,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_initializer.h"
 #include "third_party/blink/renderer/core/inspector/worker_thread_debugger.h"
 #include "third_party/blink/renderer/core/workers/worker_backing_thread_startup_data.h"
-#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread_scheduler.h"
@@ -127,7 +126,7 @@ void WorkerBackingThread::InitializeOnBackingThread(
       scheduler->V8TaskRunner(), scheduler->V8UserVisibleTaskRunner(),
       scheduler->V8BestEffortTaskRunner(),
       V8PerIsolateData::V8ContextSnapshotMode::kDontUseSnapshot, nullptr,
-      nullptr, ThreadState::Current()->ReleaseCppHeap());
+      nullptr);
   scheduler->SetV8Isolate(isolate_);
   AddWorkerIsolate(isolate_);
   V8Initializer::InitializeWorker(isolate_);
@@ -156,15 +155,12 @@ void WorkerBackingThread::ShutdownOnBackingThread() {
   Platform::Current()->WillStopWorkerThread();
 
   V8PerIsolateData::WillBeDestroyed(isolate_);
+  backing_thread_->ShutdownOnThread();
 
   RemoveForegroundedWorkerIsolate(isolate_);
   RemoveWorkerIsolate(isolate_);
   V8PerIsolateData::Destroy(isolate_);
   isolate_ = nullptr;
-
-  // Shutdown scheduler and GCSupport at the very end. This is necessary as
-  // Isolate shutdown invokes all Oilpan pre-finalizers and finalizers.
-  backing_thread_->ShutdownOnThread();
 }
 
 void WorkerBackingThread::SetForegrounded() {

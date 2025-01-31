@@ -23,7 +23,6 @@
 #include "gin/v8_initializer.h"
 #include "gin/v8_isolate_memory_dump_provider.h"
 #include "gin/v8_shared_memory_dump_provider.h"
-#include "v8/include/v8-cppgc.h"
 #include "v8/include/v8-isolate.h"
 #include "v8/include/v8-locker.h"
 #include "v8/include/v8-snapshot.h"
@@ -40,16 +39,13 @@ std::unique_ptr<v8::Isolate::CreateParams> getModifiedIsolateParams(
     std::unique_ptr<v8::Isolate::CreateParams> params,
     IsolateHolder::AllowAtomicsWaitMode atomics_wait_mode,
     v8::CreateHistogramCallback create_histogram_callback,
-    v8::AddHistogramSampleCallback add_histogram_sample_callback,
-    std::unique_ptr<v8::CppHeap> cpp_heap) {
+    v8::AddHistogramSampleCallback add_histogram_sample_callback) {
   params->create_histogram_callback = create_histogram_callback;
   params->add_histogram_sample_callback = add_histogram_sample_callback;
   params->allow_atomics_wait =
       atomics_wait_mode ==
       IsolateHolder::AllowAtomicsWaitMode::kAllowAtomicsWait;
   params->array_buffer_allocator = g_array_buffer_allocator;
-  // V8 takes ownership of the CppHeap.
-  params->cpp_heap = cpp_heap.release();
   return params;
 }
 }  // namespace
@@ -80,16 +76,14 @@ IsolateHolder::IsolateHolder(
     v8::CreateHistogramCallback create_histogram_callback,
     v8::AddHistogramSampleCallback add_histogram_sample_callback,
     scoped_refptr<base::SingleThreadTaskRunner> user_visible_task_runner,
-    scoped_refptr<base::SingleThreadTaskRunner> best_effort_task_runner,
-    std::unique_ptr<v8::CppHeap> cpp_heap)
+    scoped_refptr<base::SingleThreadTaskRunner> best_effort_task_runner)
     : IsolateHolder(std::move(task_runner),
                     access_mode,
                     isolate_type,
                     getModifiedIsolateParams(getDefaultIsolateParams(),
                                              atomics_wait_mode,
                                              create_histogram_callback,
-                                             add_histogram_sample_callback,
-                                             std::move(cpp_heap)),
+                                             add_histogram_sample_callback),
                     isolate_creation_mode,
                     std::move(user_visible_task_runner),
                     std::move(best_effort_task_runner)) {}
@@ -116,14 +110,13 @@ IsolateHolder::IsolateHolder(
   isolate_data_ = std::make_unique<PerIsolateData>(
       isolate_, allocator, access_mode_, task_runner,
       std::move(user_visible_task_runner), std::move(best_effort_task_runner));
+  //  TODO(crbug.com/40854483): Refactor such that caller need not
+  //  provide params when creating a snapshot.
   if (isolate_creation_mode == IsolateCreationMode::kCreateSnapshot) {
     // This branch is called when creating a V8 snapshot for Blink.
-    // SnapshotCreator initializes the Isolate using the CreateParams and calls
-    // isolate->Enter() in its construction. The Isolate is still owned by the
-    // IsolateHolder.
-    params->external_references = g_reference_table;
+    // Note SnapshotCreator calls isolate->Enter() in its construction.
     snapshot_creator_ =
-        std::make_unique<v8::SnapshotCreator>(isolate_, *params);
+        std::make_unique<v8::SnapshotCreator>(isolate_, g_reference_table);
     DCHECK_EQ(isolate_, snapshot_creator_->GetIsolate());
   } else {
     v8::Isolate::Initialize(isolate_, *params);
