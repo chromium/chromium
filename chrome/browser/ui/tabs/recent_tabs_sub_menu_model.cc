@@ -702,7 +702,7 @@ std::u16string RecentTabsSubMenuModel::GetGroupItemLabel(std::u16string title,
   } else {
     item_label = l10n_util::GetPluralStringFUTF16(IDS_RECENTLY_CLOSED_GROUP,
                                                   static_cast<int>(num_tabs));
-    item_label = base::ReplaceStringPlaceholders(item_label, {title}, nullptr);
+    item_label = base::ReplaceStringPlaceholders(item_label, title, nullptr);
   }
   return item_label;
 }

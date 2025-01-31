@@ -65,7 +65,7 @@ std::u16string TabGroup::GetContentString() const {
   std::u16string short_title;
   gfx::ElideString(controller_->GetTitleAt(tabs_in_group.start()),
                    kContextMenuTabTitleMaxLength, &short_title);
-  return base::ReplaceStringPlaceholders(format_string, {short_title}, nullptr);
+  return base::ReplaceStringPlaceholders(format_string, short_title, nullptr);
 }
 
 void TabGroup::AddTab() {

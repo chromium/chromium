@@ -41,8 +41,8 @@ struct SampleRecord {
   // Expected size for 32/64-bit check.
   static constexpr size_t kExpectedInstanceSize = 16;
 
-  uint64_t id;               // Unique identifier of owner.
-  Sample32 value;            // The value for which this record holds a count.
+  uint64_t id;                 // Unique identifier of owner.
+  Sample32 value;              // The value for which this record holds a count.
   std::atomic<Count32> count;  // The count associated with the above value.
 
   // `count` may operate inter-process and so must be lock-free.

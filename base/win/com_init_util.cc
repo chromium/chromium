@@ -39,7 +39,7 @@ struct OleTlsData {
 };
 
 OleTlsData* GetOleTlsData() {
-  TEB* teb = NtCurrentTeb();
+  ::TEB* teb = NtCurrentTeb();
   return reinterpret_cast<OleTlsData*>(teb->ReservedForOle);
 }
 

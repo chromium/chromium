@@ -634,8 +634,8 @@ BASE_EXPORT std::string ReplaceStringPlaceholders(
 
 // Single-string shortcut for ReplaceStringHolders. |offset| may be NULL.
 BASE_EXPORT std::u16string ReplaceStringPlaceholders(
-    const std::u16string& format_string,
-    const std::u16string& a,
+    std::u16string_view format_string,
+    std::u16string_view subst,
     size_t* offset);
 
 // Helper function for creating a std::string_view from a string literal that

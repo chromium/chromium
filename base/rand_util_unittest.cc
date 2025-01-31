@@ -27,36 +27,36 @@ namespace base {
 
 namespace {
 
-const int kIntMin = std::numeric_limits<int>::min();
-const int kIntMax = std::numeric_limits<int>::max();
+constexpr int kIntMin = std::numeric_limits<int>::min();
+constexpr int kIntMax = std::numeric_limits<int>::max();
 
 }  // namespace
 
 TEST(RandUtilTest, RandInt) {
-  EXPECT_EQ(base::RandInt(0, 0), 0);
-  EXPECT_EQ(base::RandInt(kIntMin, kIntMin), kIntMin);
-  EXPECT_EQ(base::RandInt(kIntMax, kIntMax), kIntMax);
+  EXPECT_EQ(RandInt(0, 0), 0);
+  EXPECT_EQ(RandInt(kIntMin, kIntMin), kIntMin);
+  EXPECT_EQ(RandInt(kIntMax, kIntMax), kIntMax);
 
   // Check that the DCHECKS in RandInt() don't fire due to internal overflow.
   // There was a 50% chance of that happening, so calling it 40 times means
   // the chances of this passing by accident are tiny (9e-13).
   for (int i = 0; i < 40; ++i) {
-    base::RandInt(kIntMin, kIntMax);
+    RandInt(kIntMin, kIntMax);
   }
 }
 
 TEST(RandUtilTest, RandDouble) {
   // Force 64-bit precision, making sure we're not in a 80-bit FPU register.
-  volatile double number = base::RandDouble();
-  EXPECT_GT(1.0, number);
-  EXPECT_LE(0.0, number);
+  volatile double number = RandDouble();
+  EXPECT_LT(number, 1.0);
+  EXPECT_GE(number, 0.0);
 }
 
 TEST(RandUtilTest, RandFloat) {
   // Force 32-bit precision, making sure we're not in an 80-bit FPU register.
-  volatile float number = base::RandFloat();
-  EXPECT_GT(1.f, number);
-  EXPECT_LE(0.f, number);
+  volatile float number = RandFloat();
+  EXPECT_LT(number, 1.0f);
+  EXPECT_GE(number, 0.0f);
 }
 
 TEST(RandUtilTest, RandBool) {
@@ -69,29 +69,28 @@ TEST(RandUtilTest, RandBool) {
 
 TEST(RandUtilTest, RandTimeDelta) {
   {
-    const auto delta =
-        base::RandTimeDelta(-base::Seconds(2), -base::Seconds(1));
-    EXPECT_GE(delta, -base::Seconds(2));
-    EXPECT_LT(delta, -base::Seconds(1));
+    const auto delta = RandTimeDelta(-Seconds(2), -Seconds(1));
+    EXPECT_GE(delta, -Seconds(2));
+    EXPECT_LT(delta, -Seconds(1));
   }
 
   {
-    const auto delta = base::RandTimeDelta(-base::Seconds(2), base::Seconds(2));
-    EXPECT_GE(delta, -base::Seconds(2));
-    EXPECT_LT(delta, base::Seconds(2));
+    const auto delta = RandTimeDelta(-Seconds(2), Seconds(2));
+    EXPECT_GE(delta, -Seconds(2));
+    EXPECT_LT(delta, Seconds(2));
   }
 
   {
-    const auto delta = base::RandTimeDelta(base::Seconds(1), base::Seconds(2));
-    EXPECT_GE(delta, base::Seconds(1));
-    EXPECT_LT(delta, base::Seconds(2));
+    const auto delta = RandTimeDelta(Seconds(1), Seconds(2));
+    EXPECT_GE(delta, Seconds(1));
+    EXPECT_LT(delta, Seconds(2));
   }
 }
 
 TEST(RandUtilTest, RandTimeDeltaUpTo) {
-  const auto delta = base::RandTimeDeltaUpTo(base::Seconds(2));
+  const auto delta = RandTimeDeltaUpTo(Seconds(2));
   EXPECT_FALSE(delta.is_negative());
-  EXPECT_LT(delta, base::Seconds(2));
+  EXPECT_LT(delta, Seconds(2));
 }
 
 TEST(RandUtilTest, RandomizeByPercentage) {
@@ -155,24 +154,24 @@ TEST(RandUtilTest, RandBytes) {
   const size_t buffer_size = 50;
   uint8_t buffer[buffer_size];
   memset(buffer, 0, buffer_size);
-  base::RandBytes(buffer);
+  RandBytes(buffer);
   std::sort(buffer, buffer + buffer_size);
   // Probability of occurrence of less than 25 unique bytes in 50 random bytes
   // is below 10^-25.
   EXPECT_GT(std::unique(buffer, buffer + buffer_size) - buffer, 25);
 }
 
-// Verify that calling base::RandBytes with an empty buffer doesn't fail.
+// Verify that calling RandBytes with an empty buffer doesn't fail.
 TEST(RandUtilTest, RandBytes0) {
-  base::RandBytes(span<uint8_t>());
+  RandBytes(span<uint8_t>());
 }
 
 TEST(RandUtilTest, RandBytesAsVector) {
-  std::vector<uint8_t> random_vec = base::RandBytesAsVector(0);
+  std::vector<uint8_t> random_vec = RandBytesAsVector(0);
   EXPECT_TRUE(random_vec.empty());
-  random_vec = base::RandBytesAsVector(1);
+  random_vec = RandBytesAsVector(1);
   EXPECT_EQ(1U, random_vec.size());
-  random_vec = base::RandBytesAsVector(145);
+  random_vec = RandBytesAsVector(145);
   EXPECT_EQ(145U, random_vec.size());
   char accumulator = 0;
   for (auto i : random_vec) {
@@ -184,9 +183,9 @@ TEST(RandUtilTest, RandBytesAsVector) {
 }
 
 TEST(RandUtilTest, RandBytesAsString) {
-  std::string random_string = base::RandBytesAsString(1);
+  std::string random_string = RandBytesAsString(1);
   EXPECT_EQ(1U, random_string.size());
-  random_string = base::RandBytesAsString(145);
+  random_string = RandBytesAsString(145);
   EXPECT_EQ(145U, random_string.size());
   char accumulator = 0;
   for (auto i : random_string) {
@@ -200,7 +199,7 @@ TEST(RandUtilTest, RandBytesAsString) {
 // Make sure that it is still appropriate to use RandGenerator in conjunction
 // with std::random_shuffle().
 TEST(RandUtilTest, RandGeneratorForRandomShuffle) {
-  EXPECT_EQ(base::RandGenerator(1), 0U);
+  EXPECT_EQ(RandGenerator(1), 0U);
   EXPECT_LE(std::numeric_limits<ptrdiff_t>::max(),
             std::numeric_limits<int64_t>::max());
 }
@@ -210,7 +209,7 @@ TEST(RandUtilTest, RandGeneratorIsUniform) {
   // regression test that consistently failed when RandGenerator was
   // implemented this way:
   //
-  //   return base::RandUint64() % max;
+  //   return RandUint64() % max;
   //
   // A degenerate case for such an implementation is e.g. a top of
   // range that is 2/3rds of the way to MAX_UINT64, in which case the
@@ -228,7 +227,7 @@ TEST(RandUtilTest, RandGeneratorIsUniform) {
   double cumulative_average = 0.0;
   int count = 0;
   while (count < kMaxAttempts) {
-    uint64_t value = base::RandGenerator(kTopOfRange);
+    uint64_t value = RandGenerator(kTopOfRange);
     cumulative_average = (count * cumulative_average + value) / (count + 1);
 
     // Don't quit too quickly for things to start converging, or we may have
@@ -255,7 +254,7 @@ TEST(RandUtilTest, RandUint64ProducesBothValuesOfAllBits) {
   uint64_t found_zeros = kAllOnes;
 
   for (size_t i = 0; i < 1000; ++i) {
-    uint64_t value = base::RandUint64();
+    uint64_t value = RandUint64();
     found_ones |= value;
     found_zeros &= value;
 
@@ -270,11 +269,11 @@ TEST(RandUtilTest, RandUint64ProducesBothValuesOfAllBits) {
 TEST(RandUtilTest, RandBytesLonger) {
   // Fuchsia can only retrieve 256 bytes of entropy at a time, so make sure we
   // handle longer requests than that.
-  std::string random_string0 = base::RandBytesAsString(255);
+  std::string random_string0 = RandBytesAsString(255);
   EXPECT_EQ(255u, random_string0.size());
-  std::string random_string1 = base::RandBytesAsString(1023);
+  std::string random_string1 = RandBytesAsString(1023);
   EXPECT_EQ(1023u, random_string1.size());
-  std::string random_string2 = base::RandBytesAsString(4097);
+  std::string random_string2 = RandBytesAsString(4097);
   EXPECT_EQ(4097u, random_string2.size());
 }
 
@@ -288,11 +287,11 @@ TEST(RandUtilTest, DISABLED_RandBytesPerf) {
   const size_t kTestBufferSize = 1 * 1024 * 1024;
 
   std::array<uint8_t, kTestBufferSize> buffer;
-  const base::TimeTicks now = base::TimeTicks::Now();
+  const TimeTicks now = TimeTicks::Now();
   for (int i = 0; i < kTestIterations; ++i) {
-    base::RandBytes(buffer);
+    RandBytes(buffer);
   }
-  const base::TimeTicks end = base::TimeTicks::Now();
+  const TimeTicks end = TimeTicks::Now();
 
   LOG(INFO) << "RandBytes(" << kTestBufferSize
             << ") took: " << (end - now).InMicroseconds() << "µs";

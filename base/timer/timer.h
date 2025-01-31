@@ -242,7 +242,10 @@ class BASE_EXPORT OneShotTimer : public internal::DelayTimerBase {
              TimeDelta delay,
              Receiver* receiver,
              void (Receiver::*method)()) {
-    Start(posted_from, delay, BindOnce(method, Unretained(receiver)));
+    // Explicitly qualify calls, in case this is used inside Blink (which has
+    // similar methods in WTF).
+    Start(posted_from, delay,
+          ::base::BindOnce(method, ::base::Unretained(receiver)));
   }
 
   // Run the scheduled task immediately, and stop the timer. The timer needs to

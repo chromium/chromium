@@ -518,9 +518,7 @@ bool ThreadPoolImpl::EnqueueJobTaskSource(
 void ThreadPoolImpl::RemoveJobTaskSource(
     scoped_refptr<JobTaskSource> task_source) {
   auto transaction = task_source->BeginTransaction();
-  ThreadGroup* const current_thread_group =
-      GetThreadGroupForTraits(transaction.traits());
-  current_thread_group->RemoveTaskSource(*task_source);
+  GetThreadGroupForTraits(transaction.traits())->RemoveTaskSource(*task_source);
 }
 
 void ThreadPoolImpl::UpdatePriority(scoped_refptr<TaskSource> task_source,
@@ -538,21 +536,21 @@ void ThreadPoolImpl::UpdatePriority(scoped_refptr<TaskSource> task_source,
            "BEST_EFFORT. See ThreadPolicy documentation.";
   }
 
-  ThreadGroup* const current_thread_group =
+  ThreadGroup* const old_thread_group =
       GetThreadGroupForTraits(transaction.traits());
   transaction.UpdatePriority(priority);
   ThreadGroup* const new_thread_group =
       GetThreadGroupForTraits(transaction.traits());
 
-  if (new_thread_group == current_thread_group) {
+  if (new_thread_group == old_thread_group) {
     // |task_source|'s position needs to be updated within its current thread
     // group.
-    current_thread_group->UpdateSortKey(std::move(transaction));
+    old_thread_group->UpdateSortKey(std::move(transaction));
   } else {
     // |task_source| is changing thread groups; remove it from its current
     // thread group and reenqueue it.
     auto registered_task_source =
-        current_thread_group->RemoveTaskSource(*task_source);
+        old_thread_group->RemoveTaskSource(*task_source);
     if (registered_task_source) {
       DCHECK(task_source);
       new_thread_group->PushTaskSourceAndWakeUpWorkers(
