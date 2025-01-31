@@ -120,7 +120,11 @@ bool DeferMediaLoadInBackgroundTab() {
 }
 
 bool ShouldForceRemoveClosedTabGroupsOnStartup() {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   return base::FeatureList::IsEnabled(kForceRemoveClosedTabGroupsOnStartup);
+#else
+  return false;
+#endif
 }
 
 bool IsTabTitleSanitizationEnabled() {
