@@ -397,16 +397,16 @@ public class PageStation extends Station<ChromeTabbedActivity> {
             builder.mExpectedUrlSubstring = url;
         }
 
-        // TODO(crbug.com/341978208): Wait for a page loaded callback.
         T destination = builder.build();
         Transition.Trigger trigger =
                 () -> {
                     @PageTransition
                     int transitionType = PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR;
-                    getActivity().getActivityTab().loadUrl(new LoadUrlParams(url, transitionType));
+                    getLoadedTab().loadUrl(new LoadUrlParams(url, transitionType));
                 };
         Transition.TransitionOptions options =
                 Transition.newOptions()
+                        .withCondition(new PageLoadCallbackCondition(getLoadedTab()))
                         .withTimeout(10000)
                         .withPossiblyAlreadyFulfilled()
                         .withRunTriggerOnUiThread()
