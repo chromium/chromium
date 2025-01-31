@@ -188,10 +188,18 @@ GetReauthorizeHostResponseStruct(const ReauthorizeHostResponse&) {
 // LoggingService helpers
 // ======================
 
+std::string_view GetRemoteAccessLoggingPath() {
+  return {};
+}
+
+std::string_view GetRemoteSupportLoggingPath() {
+  return {};
+}
+
 // ReportSessionDisconnected
 
-std::string GetReportSessionDisconnectedRequestPath() {
-  return "";
+std::string_view GetReportSessionDisconnectedRequestVerb() {
+  return {};
 }
 
 std::unique_ptr<ReportSessionDisconnectedRequest>
