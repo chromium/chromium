@@ -9,11 +9,13 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
+#include "chrome/browser/ui/views/page_action/page_action_observer.h"
 #include "components/translate/content/browser/content_translate_driver.h"
 #include "content/public/browser/web_contents.h"
 
 class TranslatePageActionController
-    : public translate::ContentTranslateDriver::TranslationObserver {
+    : public translate::ContentTranslateDriver::TranslationObserver,
+      public page_actions::PageActionObserver {
  public:
   explicit TranslatePageActionController(tabs::TabInterface& tab_interface);
   ~TranslatePageActionController() override;
@@ -24,15 +26,18 @@ class TranslatePageActionController
   // TranslationObserver
   void OnTranslateEnabledChanged(content::WebContents* source) override;
 
+  // PageActionObserver
+  void OnPageActionIconShown(
+      const page_actions::PageActionState& page_action) override;
+  void OnPageActionIconHidden(
+      const page_actions::PageActionState& page_action) override;
+
  private:
+  void RecordIconChange(bool showing);
   void WillDiscardContents(tabs::TabInterface* tab_interface,
                            content::WebContents* old_contents,
                            content::WebContents* new_contents);
 
-  // TODO(crbug.com/376283213): This implementation currently doesn't report
-  // metrics (i.e., calling `TranslateMetricsLogger::LogOmniboxIconChange`)
-  // because the page actions controller-model are per-tab and don't
-  // necessarily indicate whether an icon is showing.
   void UpdatePageAction();
 
   raw_ref<tabs::TabInterface> tab_interface_;

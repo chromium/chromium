@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/translate/translate_page_action_controller.h"
 
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
@@ -29,20 +30,40 @@ ChromeTranslateClient& GetTranslateClient(
 
 TranslatePageActionController::TranslatePageActionController(
     tabs::TabInterface& tab_interface)
-    : tab_interface_(tab_interface) {
+    : PageActionObserver(kActionShowTranslate), tab_interface_(tab_interface) {
   translate_observation_.Observe(
       GetTranslateClient(tab_interface).translate_driver());
   will_discard_contents_subscription_ =
       tab_interface_->RegisterWillDiscardContents(base::BindRepeating(
           &TranslatePageActionController::WillDiscardContents,
           base::Unretained(this)));
+
+  RegisterAsPageActionObserver(
+      CHECK_DEREF(tab_interface_->GetTabFeatures()->page_action_controller()));
 }
 
 TranslatePageActionController::~TranslatePageActionController() = default;
 
+void TranslatePageActionController::OnPageActionIconShown(
+    const page_actions::PageActionState& page_action) {
+  RecordIconChange(true);
+}
+
+void TranslatePageActionController::OnPageActionIconHidden(
+    const page_actions::PageActionState& page_action) {
+  RecordIconChange(false);
+}
+
 void TranslatePageActionController::OnTranslateEnabledChanged(
     content::WebContents* source) {
   UpdatePageAction();
+}
+
+void TranslatePageActionController::RecordIconChange(bool is_showing) {
+  GetTranslateClient(tab_interface_.get())
+      .GetTranslateManager()
+      ->GetActiveTranslateMetricsLogger()
+      ->LogOmniboxIconChange(is_showing);
 }
 
 void TranslatePageActionController::WillDiscardContents(
