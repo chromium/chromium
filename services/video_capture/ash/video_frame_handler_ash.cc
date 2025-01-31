@@ -80,7 +80,7 @@ crosapi::mojom::GpuMemoryBufferHandlePtr ToCrosapiGpuMemoryBufferHandle(
   if (buffer_handle.type == gfx::GpuMemoryBufferType::SHARED_MEMORY_BUFFER) {
     crosapi_gpu_handle->platform_handle =
         crosapi::mojom::GpuMemoryBufferPlatformHandle::NewSharedMemoryHandle(
-            std::move(buffer_handle.region));
+            std::move(buffer_handle.region()));
   } else if (buffer_handle.type == gfx::GpuMemoryBufferType::NATIVE_PIXMAP) {
     auto crosapi_native_pixmap_handle =
         crosapi::mojom::NativePixmapHandle::New();

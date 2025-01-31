@@ -26,7 +26,7 @@ gfx::mojom::GpuMemoryBufferPlatformHandlePtr StructTraits<
       break;
     case gfx::SHARED_MEMORY_BUFFER:
       return gfx::mojom::GpuMemoryBufferPlatformHandle::NewSharedMemoryHandle(
-          std::move(handle.region));
+          std::move(handle.region()));
     case gfx::NATIVE_PIXMAP:
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_OZONE)
       return gfx::mojom::GpuMemoryBufferPlatformHandle::NewNativePixmapHandle(
@@ -52,7 +52,8 @@ gfx::mojom::GpuMemoryBufferPlatformHandlePtr StructTraits<
       return gfx::mojom::GpuMemoryBufferPlatformHandle::NewDxgiHandle(
           gfx::mojom::DXGIHandle::New(
               mojo::PlatformHandle(std::move(handle.dxgi_handle)),
-              std::move(handle.dxgi_token.value()), std::move(handle.region)));
+              std::move(handle.dxgi_token.value()),
+              std::move(handle.region())));
 #else
       break;
 #endif
@@ -94,7 +95,7 @@ bool StructTraits<gfx::mojom::GpuMemoryBufferHandleDataView,
     case gfx::mojom::GpuMemoryBufferPlatformHandleDataView::Tag::
         kSharedMemoryHandle:
       out->type = gfx::SHARED_MEMORY_BUFFER;
-      out->region = std::move(platform_handle->get_shared_memory_handle());
+      out->set_region(std::move(platform_handle->get_shared_memory_handle()));
       return true;
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_OZONE)
     case gfx::mojom::GpuMemoryBufferPlatformHandleDataView::Tag::
@@ -124,7 +125,7 @@ bool StructTraits<gfx::mojom::GpuMemoryBufferHandleDataView,
       auto dxgi_handle = std::move(platform_handle->get_dxgi_handle());
       out->dxgi_handle = dxgi_handle->buffer_handle.TakeHandle();
       out->dxgi_token = std::move(dxgi_handle->token);
-      out->region = std::move(dxgi_handle->shared_memory_handle);
+      out->set_region(std::move(dxgi_handle->shared_memory_handle));
       return true;
     }
 #elif BUILDFLAG(IS_ANDROID)

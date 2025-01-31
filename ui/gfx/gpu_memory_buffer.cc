@@ -60,7 +60,6 @@ GpuMemoryBufferHandle GpuMemoryBufferHandle::Clone() const {
   GpuMemoryBufferHandle handle;
   handle.type = type;
   handle.id = id;
-  handle.region = region.Duplicate();
   handle.offset = offset;
   handle.stride = stride;
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
@@ -75,6 +74,7 @@ GpuMemoryBufferHandle GpuMemoryBufferHandle::Clone() const {
 #elif BUILDFLAG(IS_ANDROID)
   NOTIMPLEMENTED();
 #endif
+  handle.region_ = region_.Duplicate();
   return handle;
 }
 

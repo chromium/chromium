@@ -220,7 +220,7 @@ GpuMemoryBufferTrackerWin::GetGpuMemoryBufferHandle() {
     return gfx::GpuMemoryBufferHandle();
   }
   auto handle = buffer_->CloneHandle();
-  handle.region = region_.Duplicate();
+  handle.set_region(region_.Duplicate());
   return handle;
 }
 

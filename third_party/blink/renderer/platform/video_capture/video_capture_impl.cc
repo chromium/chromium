@@ -391,7 +391,7 @@ bool VideoCaptureImpl::ProcessBuffer(
           !buffer_context->data()) {
         auto gmb_handle = buffer_context->CloneGpuMemoryBufferHandle();
         buffer_context->InitializeFromUnsafeShmemRegion(
-            std::move(gmb_handle.region));
+            std::move(gmb_handle.region()));
         DCHECK(buffer_context->data());
       }
       // On Windows it might happen that the Renderer process loses GPU
@@ -441,9 +441,14 @@ bool VideoCaptureImpl::ProcessBuffer(
       video_frame_init_data.is_webgpu_compatible =
           buffer_handle.type == gfx::GpuMemoryBufferType::DXGI_SHARED_HANDLE;
 #endif
-      // No need to propagate shared memory region further as it's already
-      // exposed by |buffer_context->data()|.
-      buffer_handle.region = base::UnsafeSharedMemoryRegion();
+
+      if (buffer_handle.type ==
+              gfx::GpuMemoryBufferType::SHARED_MEMORY_BUFFER ||
+          buffer_handle.type == gfx::GpuMemoryBufferType::DXGI_SHARED_HANDLE) {
+        // No need to propagate shared memory region further as it's already
+        // exposed by |buffer_context->data()|.
+        buffer_handle.set_region(base::UnsafeSharedMemoryRegion());
+      }
 
       // The buffer_context might still have a mapped shared memory region.
       // However, it contains valid data only if |is_premapped| is set.

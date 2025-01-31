@@ -57,7 +57,7 @@ bool SharedMemoryRegionWrapper::Initialize(
     gfx::BufferFormat format) {
   DCHECK(!mapping_.IsValid());
 
-  if (!handle.region.IsValid()) {
+  if (!handle.region().IsValid()) {
     DLOG(ERROR) << "Invalid GMB shared memory region.";
     return false;
   }
@@ -90,7 +90,7 @@ bool SharedMemoryRegionWrapper::Initialize(
   }
 
   const size_t map_size = checked_size.ValueOrDie();
-  mapping_ = handle.region.MapAt(static_cast<off_t>(map_offset), map_size);
+  mapping_ = handle.region().MapAt(static_cast<off_t>(map_offset), map_size);
   if (!mapping_.IsValid()) {
     DLOG(ERROR) << "Failed to map shared memory.";
     return false;

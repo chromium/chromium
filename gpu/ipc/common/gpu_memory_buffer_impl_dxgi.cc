@@ -48,7 +48,7 @@ GpuMemoryBufferImplDXGI::CreateFromHandle(
   return base::WrapUnique(new GpuMemoryBufferImplDXGI(
       handle.id, size, format, std::move(callback),
       std::move(handle.dxgi_handle), std::move(handle.dxgi_token.value()),
-      std::move(handle.region), gpu_memory_buffer_manager, std::move(pool),
+      std::move(handle.region()), gpu_memory_buffer_manager, std::move(pool),
       premapped_memory));
 }
 

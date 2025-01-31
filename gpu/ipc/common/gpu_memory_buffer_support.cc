@@ -283,7 +283,7 @@ AllocatedBufferInfo::AllocatedBufferInfo(
   DCHECK_NE(gfx::EMPTY_BUFFER, type_);
 
   if (type_ == gfx::SHARED_MEMORY_BUFFER) {
-    shared_memory_guid_ = handle.region.GetGUID();
+    shared_memory_guid_ = handle.region().GetGUID();
   }
 }
 

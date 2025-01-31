@@ -183,7 +183,7 @@ TEST_F(StructTraitsTest, GpuMemoryBufferHandle) {
   gfx::GpuMemoryBufferHandle handle;
   handle.type = gfx::SHARED_MEMORY_BUFFER;
   handle.id = kId;
-  handle.region = shared_memory_region.Duplicate();
+  handle.set_region(shared_memory_region.Duplicate());
   handle.offset = kOffset;
   handle.stride = kStride;
 
@@ -195,7 +195,7 @@ TEST_F(StructTraitsTest, GpuMemoryBufferHandle) {
   EXPECT_EQ(kOffset, output.offset);
   EXPECT_EQ(kStride, output.stride);
 
-  base::UnsafeSharedMemoryRegion output_memory = std::move(output.region);
+  base::UnsafeSharedMemoryRegion output_memory = std::move(output.region());
   EXPECT_TRUE(output_memory.Map().IsValid());
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_OZONE)
