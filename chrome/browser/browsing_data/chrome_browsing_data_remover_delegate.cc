@@ -70,7 +70,6 @@
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/reading_list/reading_list_model_factory.h"
-#include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/verdict_cache_manager_factory.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -223,6 +222,10 @@
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/media/cdm_document_service_impl.h"
 #endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "chrome/browser/safe_browsing/safe_browsing_service.h"
+#endif
 
 using base::UserMetricsAction;
 using content::BrowserContext;
@@ -660,10 +663,12 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
     base::RecordAction(UserMetricsAction("ClearBrowsingData_Cookies"));
 
     network::mojom::NetworkContext* safe_browsing_context = nullptr;
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
     safe_browsing::SafeBrowsingService* sb_service =
         g_browser_process->safe_browsing_service();
     if (sb_service)
       safe_browsing_context = sb_service->GetNetworkContext(profile_);
+#endif
 
     // Cleared for DATA_TYPE_HISTORY, DATA_TYPE_COOKIES and DATA_TYPE_PASSWORDS.
     browsing_data::RemoveFederatedSiteSettingsData(delete_begin_, delete_end_,

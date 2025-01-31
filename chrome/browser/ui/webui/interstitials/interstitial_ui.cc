@@ -23,7 +23,6 @@
 #include "chrome/browser/lookalikes/lookalike_url_blocking_page.h"
 #include "chrome/browser/lookalikes/lookalike_url_controller_client.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_blocking_page_quiet.h"
 #include "chrome/browser/ssl/chrome_security_blocking_page_factory.h"
 #include "chrome/browser/ssl/https_only_mode_controller_client.h"
@@ -79,6 +78,10 @@
 #include "chrome/browser/supervised_user/supervised_user_verification_controller_client.h"
 #include "chrome/browser/supervised_user/supervised_user_verification_page_blocked_sites.h"
 #include "chrome/browser/supervised_user/supervised_user_verification_page_youtube.h"
+#endif
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #endif
 
 using security_interstitials::TestSafeBrowsingBlockingPageQuiet;
@@ -292,6 +295,7 @@ CreateHttpsOnlyModePage(content::WebContents* web_contents) {
       /*use_new_interstitial=*/IsNewHttpsFirstModeInterstitialEnabled());
 }
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 std::unique_ptr<security_interstitials::SecurityInterstitialPage>
 CreateSafeBrowsingBlockingPage(content::WebContents* web_contents) {
   safe_browsing::SBThreatType threat_type =
@@ -350,6 +354,7 @@ CreateSafeBrowsingBlockingPage(content::WebContents* web_contents) {
           /*forward_extension_event=*/false,
           /*blocked_page_shown_timestamp=*/std::nullopt));
 }
+#endif
 
 std::unique_ptr<EnterpriseBlockPage> CreateEnterpriseBlockPage(
     content::WebContents* web_contents) {
@@ -370,6 +375,7 @@ std::unique_ptr<ManagedProfileRequiredPage> CreateManagedProfileRequiredPage(
                                                                kRequestUrl));
 }
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 std::unique_ptr<EnterpriseWarnPage> CreateEnterpriseWarnPage(
     content::WebContents* web_contents) {
   const GURL kRequestUrl("https://enterprise-warn.example.net");
@@ -399,6 +405,7 @@ std::unique_ptr<EnterpriseWarnPage> CreateEnterpriseWarnPage(
       std::make_unique<EnterpriseWarnControllerClient>(web_contents,
                                                        kRequestUrl));
 }
+#endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 std::unique_ptr<SupervisedUserVerificationPageForYouTube>
@@ -436,6 +443,7 @@ CreateSupervisedUserVerificationPageForBlockedSites(
 }
 #endif
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 std::unique_ptr<TestSafeBrowsingBlockingPageQuiet>
 CreateSafeBrowsingQuietBlockingPage(content::WebContents* web_contents) {
   safe_browsing::SBThreatType threat_type =
@@ -492,6 +500,7 @@ CreateSafeBrowsingQuietBlockingPage(content::WebContents* web_contents) {
           g_browser_process->safe_browsing_service()->ui_manager().get(),
           web_contents, request_url, resource, is_giant_webview));
 }
+#endif
 
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
 std::unique_ptr<CaptivePortalBlockingPage> CreateCaptivePortalBlockingPage(
@@ -601,12 +610,16 @@ void InterstitialHTMLSource::StartDataRequest(
     interstitial_delegate = CreateMITMSoftwareBlockingPage(web_contents);
   } else if (path_without_query == "/blocked-interception") {
     interstitial_delegate = CreateBlockedInterceptionBlockingPage(web_contents);
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   } else if (path_without_query == "/safebrowsing") {
     interstitial_delegate = CreateSafeBrowsingBlockingPage(web_contents);
+#endif
   } else if (path_without_query == "/enterprise-block") {
     interstitial_delegate = CreateEnterpriseBlockPage(web_contents);
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   } else if (path_without_query == "/enterprise-warn") {
     interstitial_delegate = CreateEnterpriseWarnPage(web_contents);
+#endif
   } else if (path_without_query == "/clock") {
     interstitial_delegate = CreateBadClockBlockingPage(web_contents);
   } else if (path_without_query == "/lookalike") {
@@ -638,12 +651,15 @@ void InterstitialHTMLSource::StartDataRequest(
 #endif
   }
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   if (path_without_query == "/quietsafebrowsing") {
     std::unique_ptr<TestSafeBrowsingBlockingPageQuiet> blocking_page =
         CreateSafeBrowsingQuietBlockingPage(web_contents);
     html = blocking_page->GetHTML();
     interstitial_delegate = std::move(blocking_page);
-  } else if (path_without_query == "/supervised-user-ask-parent") {
+  } else
+#endif
+  if (path_without_query == "/supervised-user-ask-parent") {
     html = GetSupervisedUserInterstitialHTML(path);
   } else if (interstitial_delegate.get()) {
     html = interstitial_delegate.get()->GetHTMLContents();

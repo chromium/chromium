@@ -37,7 +37,6 @@
 #include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
-#include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/search_engines/ui_thread_search_terms_data.h"
 #include "chrome/browser/subresource_filter/subresource_filter_profile_context_factory.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -102,6 +101,10 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/common/constants.h"
+#endif
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #endif
 
 namespace {
@@ -448,6 +451,7 @@ void ChromePermissionsClient::OnPromptResolved(
       PermissionRevocationRequest::ExemptOriginFromFutureRevocations(profile,
                                                                      origin);
     }
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
     if (action == permissions::PermissionAction::GRANTED) {
       if (g_browser_process->safe_browsing_service()) {
         g_browser_process->safe_browsing_service()
@@ -458,6 +462,7 @@ void ChromePermissionsClient::OnPromptResolved(
                 origin, prompt_display_duration);
       }
     }
+#endif
   }
 
   auto content_setting_type = RequestTypeToContentSettingsType(request_type);
