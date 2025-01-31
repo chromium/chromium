@@ -241,6 +241,7 @@ def ExecuteCheckHistogramFormatting(input_api, output_api, allow_test_paths,
 def CheckWebViewHistogramsAllowlistOnUpload(input_api,
                                             output_api,
                                             cache_file_override_path=None,
+                                            allowlist_path_override=None,
                                             xml_paths_override=None):
   """Checks that histograms_allowlist.txt contains valid histograms.
 
@@ -253,7 +254,7 @@ def CheckWebViewHistogramsAllowlistOnUpload(input_api,
   return _RunCheckWithCache(
       ExecuteCheckWebViewHistogramsAllowlistOnUpload,
       HistogramsPresubmitCheckType.ALL_ALLOWLIST_HISTOGRAMS_PRESENT, input_api,
-      output_api, cache_file_path, xml_paths_override)
+      output_api, cache_file_path, allowlist_path_override, xml_paths_override)
 
 
 # Note: Execute convention in this file comes from the fact that PRESUBMIT
@@ -261,6 +262,7 @@ def CheckWebViewHistogramsAllowlistOnUpload(input_api,
 # avoid this and at the same we want to add a caching support, we are using
 # Execute prefix for executing the checks on cache miss.
 def ExecuteCheckWebViewHistogramsAllowlistOnUpload(input_api, output_api,
+                                                   allowlist_path_override,
                                                    xml_paths_override):
   """Checks that histograms_allowlist.txt contains valid histograms."""
   xml_filter = lambda f: Path(f.LocalPath()).suffix == '.xml'
@@ -270,18 +272,22 @@ def ExecuteCheckWebViewHistogramsAllowlistOnUpload(input_api, output_api,
 
   sys.path.append(input_api.PresubmitLocalPath())
   from histogram_paths import ALL_XMLS
-  if xml_paths_override is not None:
-    xml_files_paths = xml_paths_override
-  else:
-    xml_files_paths = ALL_XMLS
-
-  xml_files = [open(f, encoding='utf-8') for f in xml_files_paths]
-
   from histograms_allowlist_check import check_histograms_allowlist
   from histograms_allowlist_check import WellKnownAllowlistPath
+
+  xml_files_paths = ALL_XMLS
+  if xml_paths_override is not None:
+    xml_files_paths = xml_paths_override
+
+  xml_files = [open(f, encoding='utf-8') for f in xml_files_paths]
   src_path = os.path.join(input_api.PresubmitLocalPath(), '..', '..', '..')
+
   allowlist_path = os.path.join(
       src_path, WellKnownAllowlistPath.ANDROID_WEBVIEW.relative_path())
+
+  if allowlist_path_override is not None:
+    allowlist_path = allowlist_path_override
+
   result = check_histograms_allowlist(output_api, allowlist_path, xml_files)
   for f in xml_files:
     f.close()

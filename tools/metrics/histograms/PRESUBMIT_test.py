@@ -74,6 +74,12 @@ class MetricsPresubmitTest(unittest.TestCase):
         f'{os.path.dirname(__file__)}'
         '/test_data'
         '/no_allowlist_entries_histograms.xml')
+    valid_enums_path = (f'{os.path.dirname(__file__)}'
+                        '/test_data'
+                        '/example_valid_enums.xml')
+    example_allowlist_path = (f'{os.path.dirname(__file__)}'
+                              '/test_data'
+                              '/allowlist_example.txt')
 
     with open(missing_allow_list_entries_histograms_path, 'r') as f:
       invalid_histograms_contents = f.read()
@@ -87,12 +93,16 @@ class MetricsPresubmitTest(unittest.TestCase):
     results = PRESUBMIT.ExecuteCheckWebViewHistogramsAllowlistOnUpload(
         mock_input_api,
         MockOutputApi(),
-        xml_paths_override=[missing_allow_list_entries_histograms_path],
+        allowlist_path_override=example_allowlist_path,
+        xml_paths_override=[
+            missing_allow_list_entries_histograms_path, valid_enums_path,
+            _TOP_LEVEL_ENUMS_PATH
+        ],
     )
     self.assertEqual(len(results), 1)
     self.assertRegex(
         results[0].message.replace('\n', ' '), 'All histograms in'
-        ' .*histograms_allowlist.txt must be valid.')
+        ' .*allowlist_example.txt must be valid.')
     self.assertEqual(results[0].type, 'error')
 
   def testCheckBooleansAreEnumsFailureIsDetected(self):
@@ -143,6 +153,12 @@ class MetricsPresubmitTest(unittest.TestCase):
     valid_histograms_path = (f'{os.path.dirname(__file__)}'
                              '/test_data'
                              '/example_valid_histograms.xml')
+    valid_enums_path = (f'{os.path.dirname(__file__)}'
+                        '/test_data'
+                        '/example_valid_enums.xml')
+    example_allowlist_path = (f'{os.path.dirname(__file__)}'
+                              '/test_data'
+                              '/allowlist_example.txt')
 
     with open(valid_histograms_path, 'r') as f:
       valid_contents = f.read()
@@ -154,7 +170,12 @@ class MetricsPresubmitTest(unittest.TestCase):
     ]
 
     results = PRESUBMIT.ExecuteCheckWebViewHistogramsAllowlistOnUpload(
-        mock_input_api, MockOutputApi(), xml_paths_override=None)
+        mock_input_api,
+        MockOutputApi(),
+        allowlist_path_override=example_allowlist_path,
+        xml_paths_override=[
+            valid_histograms_path, valid_enums_path, _TOP_LEVEL_ENUMS_PATH
+        ])
     # Zero results mean that there were no errors reported.
     self.assertEqual(len(results), 0)
 
