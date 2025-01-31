@@ -456,6 +456,7 @@ class DeveloperPrivateApiUnitTest : public ExtensionServiceTestWithInstall {
   }
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   // This test does not create a root window. Because of this,
   // ScopedDisableRootChecking needs to be used (which disables the root window
   // check).
@@ -3182,6 +3183,9 @@ class DeveloperPrivateApiAllowlistUnitTest
     feature_list_.InitAndEnableFeature(
         extensions_features::kSafeBrowsingCrxAllowlistShowWarnings);
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(DeveloperPrivateApiAllowlistUnitTest,

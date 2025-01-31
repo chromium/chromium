@@ -1015,7 +1015,7 @@ class SupervisedUserWithEnabledExtensionParentalControlsTest
           supervised_user::
               kEnableSupervisedUserSkipParentApprovalToInstallExtensions);
     }
-    feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
   // SupervisedUserExtensionTestBase implementation:
