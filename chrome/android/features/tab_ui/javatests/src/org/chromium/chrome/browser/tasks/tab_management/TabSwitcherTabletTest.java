@@ -21,6 +21,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+
 import android.os.Build;
 import android.view.ViewGroup;
 import android.view.ViewStub;
@@ -390,7 +392,7 @@ public class TabSwitcherTabletTest {
 
         // Incognito tab switcher should exit to go to normal tab switcher and we should see empty
         // view.
-        onView(
+        onViewWaiting(
                         allOf(
                                 withId(R.id.empty_state_container),
                                 isDescendantOfA(withId(tabSwitcherAncestorId))))

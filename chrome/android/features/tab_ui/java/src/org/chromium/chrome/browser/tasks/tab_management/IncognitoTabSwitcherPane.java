@@ -11,13 +11,16 @@ import android.view.View.OnClickListener;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.DelegateButtonData;
+import org.chromium.chrome.browser.hub.DisplayButtonData;
 import org.chromium.chrome.browser.hub.FullButtonData;
 import org.chromium.chrome.browser.hub.HubColorScheme;
 import org.chromium.chrome.browser.hub.Pane;
@@ -31,6 +34,7 @@ import org.chromium.chrome.browser.tabmodel.IncognitoTabModel;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabList;
+import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
@@ -50,14 +54,9 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
 
                 @Override
                 public void didBecomeEmpty() {
-                    mReferenceButtonDataSupplier.set(null);
-                    if (isFocused()) {
-                        @Nullable PaneHubController controller = getPaneHubController();
-                        assert controller != null
-                                : "isFocused requires a non-null PaneHubController.";
-                        controller.focusPane(PaneId.TAB_SWITCHER);
-                    }
-                    destroyTabSwitcherPaneCoordinator();
+                    IncognitoTabSwitcherPaneCleaner cleanupHelper =
+                            initIncognitoTabSwitcherPaneCleanup();
+                    cleanupHelper.coordinateCleanUp();
                 }
             };
 
@@ -89,6 +88,14 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
                 public void onIncognitoReauthFailure() {}
             };
 
+    private final TabModelObserver mTabModelObserver =
+            new TabModelObserver() {
+                @Override
+                public void onFinishingTabClosure(Tab tab) {
+                    mLastClosedTabId = tab.getId();
+                }
+            };
+
     /** Not safe to use until initWithNative. */
     private final @NonNull Supplier<TabGroupModelFilter> mIncognitoTabGroupModelFilterSupplier;
 
@@ -97,6 +104,7 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
     private final @NonNull FullButtonData mDisabledNewTabButtonData;
 
     private boolean mIsNativeInitialized;
+    private int mLastClosedTabId;
     private @Nullable IncognitoReauthController mIncognitoReauthController;
     private @Nullable CallbackController mCallbackController;
 
@@ -131,6 +139,7 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
                 compositorViewHolderSupplier);
 
         mIncognitoTabGroupModelFilterSupplier = incognitoTabGroupModelFilterSupplier;
+        mLastClosedTabId = Tab.INVALID_TAB_ID;
 
         // TODO(crbug.com/40946413): Update this string to not be an a11y string and it should
         // probably
@@ -185,6 +194,7 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
         IncognitoTabModel incognitoTabModel = getIncognitoTabModel();
         if (incognitoTabModel != null) {
             incognitoTabModel.removeIncognitoObserver(mIncognitoTabModelObserver);
+            incognitoTabModel.removeObserver(mTabModelObserver);
         }
         if (mIncognitoReauthController != null) {
             mIncognitoReauthController.removeIncognitoReauthCallback(mIncognitoReauthCallback);
@@ -200,6 +210,7 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
         mIsNativeInitialized = true;
         IncognitoTabModel incognitoTabModel = getIncognitoTabModel();
         incognitoTabModel.addIncognitoObserver(mIncognitoTabModelObserver);
+        incognitoTabModel.addObserver(mTabModelObserver);
         if (incognitoTabModel.getCount() > 0) {
             mIncognitoTabModelObserver.wasFirstTabCreated();
         }
@@ -309,5 +320,143 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
     private void setNewTabButtonEnabledState(boolean enabled) {
         mNewTabButtonDataSupplier.set(
                 enabled ? mEnabledNewTabButtonData : mDisabledNewTabButtonData);
+    }
+
+    private IncognitoTabSwitcherPaneCleaner initIncognitoTabSwitcherPaneCleanup() {
+        TabSwitcherPaneCoordinator paneCoordinator = getTabSwitcherPaneCoordinator();
+        assert paneCoordinator != null;
+
+        Supplier<Integer> recentlySwipedTabIdSupplier =
+                paneCoordinator.getRecentlySwipedTabIdSupplier();
+        boolean wasFinalTabSwiped =
+                recentlySwipedTabIdSupplier.get() != null
+                        && recentlySwipedTabIdSupplier.get() != Tab.INVALID_TAB_ID
+                        && recentlySwipedTabIdSupplier.get() == mLastClosedTabId;
+
+        @Nullable
+        ObservableSupplier<Boolean> isAnimatingSupplier =
+                paneCoordinator.getIsRecyclerViewAnimatorRunning();
+        @Nullable
+        ObservableSupplier<Boolean> dialogShowingOrAnimationSupplier =
+                paneCoordinator.getTabGridDialogShowingOrAnimationSupplier();
+
+        Runnable cleanUpRunnable =
+                () -> {
+                    destroyTabSwitcherPaneCoordinator();
+                    mLastClosedTabId = Tab.INVALID_TAB_ID;
+                };
+
+        return new IncognitoTabSwitcherPaneCleaner(
+                isAnimatingSupplier,
+                dialogShowingOrAnimationSupplier,
+                mReferenceButtonDataSupplier,
+                cleanUpRunnable,
+                getPaneHubController(),
+                isFocused(),
+                wasFinalTabSwiped);
+    }
+
+    /**
+     * A helper class to manage the cleanup of the Incognito Tab Switcher pane. This class ensures
+     * that the pane clean up is coordinated after the animations and dialogs associated with it
+     * have finished.
+     */
+    private static class IncognitoTabSwitcherPaneCleaner {
+        @Nullable private final ObservableSupplier<Boolean> mIsAnimatingSupplier;
+        @Nullable private final ObservableSupplier<Boolean> mDialogShowingOrAnimationSupplier;
+        private final Callback<Boolean> mOnAnimationStatusChange = this::onAnimationStatusChange;
+        private final ObservableSupplierImpl<DisplayButtonData> mReferenceButtonDataSupplier;
+        private final Runnable mCleanUpRunnable;
+        private final @Nullable PaneHubController mController;
+        private final boolean mIsFocused;
+        private final boolean mWasFinalTabSwiped;
+        private boolean mStartedAnimating;
+        private boolean mForceCleanup;
+
+        /**
+         * @param isAnimatingSupplier Provides the animation status.
+         * @param dialogShowingOrAnimationSupplier Provides the visibility of the tab group dialog.
+         * @param referenceButtonDataSupplier Provides the reference button data.
+         * @param cleanUpRunnable Runnable to run when cleanup should occur.
+         * @param controller The controller to focus hub panes.
+         * @param isFocused Whether the pane is focused.
+         * @param wasFinalTabSwiped Whether the final tab was swiped close.
+         */
+        public IncognitoTabSwitcherPaneCleaner(
+                @Nullable ObservableSupplier<Boolean> isAnimatingSupplier,
+                @Nullable ObservableSupplier<Boolean> dialogShowingOrAnimationSupplier,
+                ObservableSupplierImpl<DisplayButtonData> referenceButtonDataSupplier,
+                Runnable cleanUpRunnable,
+                @Nullable PaneHubController controller,
+                boolean isFocused,
+                boolean wasFinalTabSwiped) {
+            mIsAnimatingSupplier = isAnimatingSupplier;
+            mDialogShowingOrAnimationSupplier = dialogShowingOrAnimationSupplier;
+            mReferenceButtonDataSupplier = referenceButtonDataSupplier;
+            mCleanUpRunnable = cleanUpRunnable;
+            mController = controller;
+            mIsFocused = isFocused;
+            mWasFinalTabSwiped = wasFinalTabSwiped;
+        }
+
+        /**
+         * Coordinates the cleanup process. Observes various attributes to determine when it is safe
+         * to clean up the pane.
+         */
+        void coordinateCleanUp() {
+            // In case the isAnimatingSupplier is null, we can force a cleanup.
+            if (mIsAnimatingSupplier != null) {
+                mIsAnimatingSupplier.addObserver(mOnAnimationStatusChange);
+            } else {
+                mForceCleanup = true;
+                mOnAnimationStatusChange.onResult(false);
+            }
+        }
+
+        /** Determines whether to clean up upon the animation status changing. */
+        private void onAnimationStatusChange(Boolean isAnimating) {
+            boolean isTabGridDialogVisible =
+                    mDialogShowingOrAnimationSupplier != null
+                            && mDialogShowingOrAnimationSupplier.get();
+
+            if (shouldNotCleanup(isAnimating, isTabGridDialogVisible)) {
+                mStartedAnimating = isAnimating;
+                return;
+            }
+            cleanUp();
+            if (mIsAnimatingSupplier != null) {
+                mIsAnimatingSupplier.removeObserver(mOnAnimationStatusChange);
+            }
+        }
+
+        /**
+         * This ensures that we delay the clean up iff we have started any final animation prior to
+         * changing tab switcher panes.
+         *
+         * <p>This also means the clean up doesn't wait for animations:
+         *
+         * <p>a) When the tab grid dialog is visible.
+         *
+         * <p>b) When the final tab is swiped.
+         *
+         * @param isAnimating Whether {@link TabListItemAnimator} is currently running.
+         * @param isTabGridDialogVisible Whether the tab group dialog is visible.
+         */
+        private boolean shouldNotCleanup(Boolean isAnimating, boolean isTabGridDialogVisible) {
+            return !mForceCleanup
+                    && !mWasFinalTabSwiped
+                    && !isTabGridDialogVisible
+                    && (isAnimating || !mStartedAnimating);
+        }
+
+        /** Performs the cleanup of the Incognito Tab Switcher pane. */
+        private void cleanUp() {
+            mReferenceButtonDataSupplier.set(null);
+            if (mIsFocused) {
+                assert mController != null : "isFocused requires a non-null PaneHubController.";
+                mController.focusPane(PaneId.TAB_SWITCHER);
+            }
+            mCleanUpRunnable.run();
+        }
     }
 }
