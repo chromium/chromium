@@ -545,6 +545,7 @@ SigninViewControllerDelegate::CreateManagedUserNoticeDelegate(
         create_param) {
   bool profile_creation_required_by_policy =
       create_param->profile_creation_required_by_policy;
+  bool is_oidc_enrollment = create_param->is_oidc_account;
 
   if (profile_creation_required_by_policy &&
       base::FeatureList::IsEnabled(
@@ -604,9 +605,12 @@ SigninViewControllerDelegate::CreateManagedUserNoticeDelegate(
 
   // Block all navigations to avoid users bypassing the dialog using another
   // window.
+  // Does not block navigation to OIDC profile enrollment landing page since we
+  // need to display information there.
   if (profile_creation_required_by_policy &&
       base::FeatureList::IsEnabled(
-          features::kManagedProfileRequiredInterstitial)) {
+          features::kManagedProfileRequiredInterstitial) &&
+      !is_oidc_enrollment) {
     content::WebContents* active_contents =
         browser->tab_strip_model()->GetActiveWebContents();
     // Reload the active web contents so that the managed profile required
