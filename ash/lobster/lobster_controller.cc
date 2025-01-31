@@ -106,6 +106,15 @@ void LobsterController::StartSession(std::unique_ptr<LobsterClient> client,
       std::make_unique<LobsterSessionImpl>(std::move(client), entry_point);
   lobster_client_ptr->SetActiveSession(active_session_.get());
 
+  LobsterStatus lobster_status = lobster_client_ptr->GetSystemState().status;
+  // When LobsterForceShowDisclaimer flag is enabled, we will show the Lobster
+  // Disclaimer screen even when Lobster consent status has been approved
+  // before.
+  if (lobster_status == LobsterStatus::kEnabled &&
+      ash::features::IsLobsterAlwaysShowDisclaimerForTesting()) {
+    lobster_status = LobsterStatus::kConsentNeeded;
+  }
+
   switch (lobster_client_ptr->GetSystemState().status) {
     case LobsterStatus::kConsentNeeded:
       active_session_->ShowDisclaimerUIAndCacheQuery(query);
