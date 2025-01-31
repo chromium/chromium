@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/check_deref.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
@@ -18,6 +19,7 @@
 #include "chromeos/ash/services/network_config/in_process_instance.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
+#include "remoting/host/chromeos/features.h"
 #include "remoting/protocol/errors.h"
 #include "ui/base/user_activity/user_activity_detector.h"
 
@@ -32,6 +34,7 @@ using chromeos::network_config::mojom::NetworkFilter;
 using chromeos::network_config::mojom::NetworkStatePropertiesPtr;
 using chromeos::network_config::mojom::NetworkType;
 using chromeos::network_config::mojom::OncSource;
+using remoting::features::kEnableCrdSharedSessionToUnattendedDevice;
 using remoting::protocol::ErrorCode;
 
 const ash::KioskAppManagerBase* GetKioskAppManager(
@@ -292,6 +295,9 @@ bool UserSessionSupportsRemoteSupport(UserSessionType user_session) {
       return true;
 
     case UserSessionType::NO_SESSION:
+      return base::FeatureList::IsEnabled(
+          kEnableCrdSharedSessionToUnattendedDevice);
+
     case UserSessionType::UNAFFILIATED_USER_SESSION:
     case UserSessionType::GUEST_SESSION:
     case UserSessionType::USER_SESSION_TYPE_UNKNOWN:
