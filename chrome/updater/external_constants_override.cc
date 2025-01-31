@@ -53,6 +53,23 @@ std::vector<GURL> GURLVectorFromStringList(
   return ret;
 }
 
+// The test binary only ever needs to contact localhost during integration
+// tests. To reduce the program's utility as a mule, crash if there is a
+// non-localhost override.
+GURL CheckURL(const GURL& url) {
+  CHECK(url.is_empty() || url.host() == "localhost" ||
+        url.host() == "127.0.0.1" || url.host() == "not_exist")
+      << "Illegal URL override: " << url;
+  return url;
+}
+
+std::vector<GURL> CheckURLs(const std::vector<GURL>& urls) {
+  for (const auto& url : urls) {
+    CheckURL(url);
+  }
+  return urls;
+}
+
 }  // anonymous namespace
 
 namespace updater {
@@ -81,9 +98,9 @@ std::vector<GURL> ExternalConstantsOverrider::UpdateURL() const {
       override_values_.Find(kDevOverrideKeyUrl);
   switch (update_url_value->type()) {
     case base::Value::Type::STRING:
-      return {GURL(update_url_value->GetString())};
+      return CheckURLs({GURL(update_url_value->GetString())});
     case base::Value::Type::LIST:
-      return GURLVectorFromStringList(update_url_value->GetList());
+      return CheckURLs(GURLVectorFromStringList(update_url_value->GetList()));
     default:
       LOG(FATAL) << "Unexpected type of override[" << kDevOverrideKeyUrl
                  << "]: " << base::Value::GetTypeName(update_url_value->type());
@@ -100,7 +117,7 @@ GURL ExternalConstantsOverrider::CrashUploadURL() const {
   CHECK(crash_upload_url_value->is_string())
       << "Unexpected type of override[" << kDevOverrideKeyCrashUploadUrl
       << "]: " << base::Value::GetTypeName(crash_upload_url_value->type());
-  return {GURL(crash_upload_url_value->GetString())};
+  return CheckURL({GURL(crash_upload_url_value->GetString())});
 }
 
 GURL ExternalConstantsOverrider::DeviceManagementURL() const {
@@ -112,7 +129,7 @@ GURL ExternalConstantsOverrider::DeviceManagementURL() const {
   CHECK(device_management_url_value->is_string())
       << "Unexpected type of override[" << kDevOverrideKeyDeviceManagementUrl
       << "]: " << base::Value::GetTypeName(device_management_url_value->type());
-  return {GURL(device_management_url_value->GetString())};
+  return CheckURL({GURL(device_management_url_value->GetString())});
 }
 
 GURL ExternalConstantsOverrider::AppLogoURL() const {
@@ -124,7 +141,7 @@ GURL ExternalConstantsOverrider::AppLogoURL() const {
   CHECK(app_logo_url_value->is_string())
       << "Unexpected type of override[" << kDevOverrideKeyAppLogoUrl
       << "]: " << base::Value::GetTypeName(app_logo_url_value->type());
-  return {GURL(app_logo_url_value->GetString())};
+  return CheckURL({GURL(app_logo_url_value->GetString())});
 }
 
 bool ExternalConstantsOverrider::UseCUP() const {
