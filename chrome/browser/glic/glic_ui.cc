@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/command_line.h"
+#include "chrome/browser/glic/fre_util.h"
 #include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_fre_page_handler.h"
 #include "chrome/browser/glic/glic_page_handler.h"
@@ -73,6 +74,9 @@ GlicUI::GlicUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
 
   // Set up guest URL via cli flag or default to finch param value.
   source->AddString("glicGuestURL", GetGuestURL().spec());
+
+  // Add current global hotkey configuration.
+  source->AddString("glicHotkeyString", GetHotkeyString());
 
   // Set up loading notice timeout values.
   source->AddInteger("preLoadingTimeMs", features::kGlicPreLoadingTimeMs.Get());
