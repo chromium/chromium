@@ -129,6 +129,7 @@ class SharedStorageBrowserTestBase : public ContentBrowserTest {
 
   static constexpr char kRemainingBudgetPrefix[] = "remaining budget: ";
 
+  static constexpr char kSimplePagePath[] = "/simple_page.html";
   static constexpr char kFencedFramePath[] = "/fenced_frames/title0.html";
 
   static constexpr char kGenerateURLsListScript[] = R"(
