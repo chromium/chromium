@@ -55,15 +55,11 @@ class OneCopyRasterBufferProvider::OneCopyGpuBacking
     if (!shared_image) {
       return;
     }
-    auto* sii = worker_context_provider->SharedImageInterface();
     if (returned_sync_token.HasData())
-      sii->DestroySharedImage(returned_sync_token, std::move(shared_image));
+      shared_image->UpdateDestructionSyncToken(returned_sync_token);
     else if (mailbox_sync_token.HasData())
-      sii->DestroySharedImage(mailbox_sync_token, std::move(shared_image));
+      shared_image->UpdateDestructionSyncToken(mailbox_sync_token);
   }
-
-  // The context used to clean up the mailbox
-  raw_ptr<viz::RasterContextProvider> worker_context_provider = nullptr;
 };
 
 OneCopyRasterBufferProvider::RasterBufferImpl::RasterBufferImpl(
@@ -92,9 +88,9 @@ OneCopyRasterBufferProvider::RasterBufferImpl::~RasterBufferImpl() {
   }
   backing_->shared_image = std::move(shared_image_);
   if (should_destroy_shared_image_ && backing_->shared_image) {
-    backing_->worker_context_provider->SharedImageInterface()
-        ->DestroySharedImage(before_raster_sync_token_,
-                             std::move(backing_->shared_image));
+    backing_->shared_image->UpdateDestructionSyncToken(
+        before_raster_sync_token_);
+    backing_->shared_image.reset();
   }
 }
 
@@ -168,7 +164,6 @@ OneCopyRasterBufferProvider::AcquireBufferForRaster(
     bool depends_on_hardware_accelerated_webp_candidates) {
   if (!resource.gpu_backing()) {
     auto backing = std::make_unique<OneCopyGpuBacking>();
-    backing->worker_context_provider = worker_context_provider_;
     backing->overlay_candidate = tile_overlay_candidate_;
     resource.set_gpu_backing(std::move(backing));
   }
