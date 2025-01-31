@@ -256,6 +256,11 @@ std::string NoCapturePattern(const std::string& pattern,
       {"(?i:", pattern, "(?:", options.separator, ")+)", quantifier});
 }
 
+std::string NoCapturePatternOptional(const std::string& pattern) {
+  return NoCapturePattern(
+      pattern, CaptureOptions{.quantifier = MatchQuantifier::kOptional});
+}
+
 std::string CaptureTypeWithAffixedPattern(const FieldType& type,
                                           const std::string& prefix,
                                           const std::string& pattern,
@@ -304,6 +309,19 @@ std::string CaptureTypeWithPattern(const FieldType& type,
                                    CaptureOptions options) {
   return CaptureTypeWithAffixedPattern(type, std::string(), pattern,
                                        std::string(), options);
+}
+
+std::string CaptureTypeWithPatternOptional(const FieldType& type,
+                                           const std::string& pattern) {
+  return CaptureTypeWithPattern(type, pattern,
+                                {.quantifier = MatchQuantifier::kOptional});
+}
+
+std::string CaptureTypeWithPatternOptional(
+    const FieldType& type,
+    std::initializer_list<std::string_view> pattern_span_initializer_list) {
+  return CaptureTypeWithPatternOptional(
+      type, base::StrCat(base::span(pattern_span_initializer_list)));
 }
 
 std::u16string NormalizeAndRewrite(const AddressCountryCode& country_code,

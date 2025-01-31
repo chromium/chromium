@@ -208,6 +208,12 @@ TEST(AutofillStructuredAddressUtils, NoCaptureTypeWithPattern) {
   EXPECT_EQ("(?i:abs\\w(?:,|\\s+|$)+)", NoCapturePattern("abs\\w"));
   EXPECT_EQ("(?i:abs\\w(?:_)+)",
             NoCapturePattern("abs\\w", {.separator = "_"}));
+  EXPECT_EQ(
+      NoCapturePattern("abs\\w", {.quantifier = MatchQuantifier::kOptional}),
+      NoCapturePatternOptional("abs\\w"));
+  EXPECT_EQ(CaptureTypeWithPattern(NAME_FULL, "abs\\w",
+                                   {.quantifier = MatchQuantifier::kOptional}),
+            CaptureTypeWithPatternOptional(NAME_FULL, "abs\\w"));
 }
 
 TEST(AutofillStructuredAddressUtils, TokenizeValue) {

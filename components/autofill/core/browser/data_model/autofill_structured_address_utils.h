@@ -207,6 +207,9 @@ std::string CaptureTypeWithPattern(
 std::string NoCapturePattern(const std::string& pattern,
                              const CaptureOptions& options = CaptureOptions());
 
+// A wrapper for NoCapturePattern() that makes the match optional.
+std::string NoCapturePatternOptional(const std::string& pattern);
+
 // Returns a capture group named by the string representation of |type| that
 // matches |pattern| with an additional uncaptured |prefix_pattern| and
 // |suffix_pattern|.
@@ -239,6 +242,16 @@ std::string CaptureTypeWithPattern(
     const FieldType& type,
     const std::string& pattern,
     const CaptureOptions options = CaptureOptions());
+
+// A wrapper for CaptureTypeWithPattern() that makes the match optional.
+std::string CaptureTypeWithPatternOptional(const FieldType& type,
+                                           const std::string& pattern);
+
+// Calls CaptureTypeWithPatternOptional with a pattern created by the
+// concatenation of the string_views in |pattern_span_initializer_list|.
+std::string CaptureTypeWithPatternOptional(
+    const FieldType& type,
+    std::initializer_list<std::string_view> pattern_span_initializer_list);
 
 // Normalizes and rewrites `text` using the rules for `country_code`.
 // If `country_code` is empty, it defaults to US.

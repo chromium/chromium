@@ -68,10 +68,10 @@ const char kHonorificPrefixRe[] =
     "|lt|ltc|ltg|ltjg|maj|major|mg|pastor|prof|rep|reverend"
     "|rev|sen|st)";
 
-// Regular expression pattern for an optional last name suffix.
-const char kOptionalLastNameSuffixRe[] =
-    "(?:(?:(?:b\\.a|ba|d\\.d\\.s|dds|ii|iii|iv|ix|jr|m\\.a|m\\.d|md|ms|"
-    "ph\\.?d|sr|v|vi|vii|viii|x)\\.?)?)";
+// Regular expression pattern for a last name suffix.
+const char kLastNameSuffixRe[] =
+    "(?:(?:b\\.a|ba|d\\.d\\.s|dds|ii|iii|iv|ix|jr|m\\.a|m\\.d|md|ms|"
+    "ph\\.?d|sr|v|vi|vii|viii|x)\\.?)";
 
 // Regular expression pattern for a CJK character.
 const char kCjkCharacterRe[] =
@@ -140,17 +140,16 @@ const char kHispanicLastNameConjunctionsRe[] = "(?:y|e|i)";
 // "le"/"la" as used in Hispanic/Latinx names.
 // * The matching of "i" is made lazy to give the last name conjunction
 // precedence.
-const char kOptionalLastNamePrefixRe[] =
-    "(?:(?:"
-    "a|ab|af|av|ap|abu|aït|al|ālam|aust|austre|bar|bath|bat|ben|bin|ibn|bet|"
+const char kLastNamePrefixRe[] =
+    "(?:a|ab|af|av|ap|abu|aït|al|ālam|aust|austre|bar|bath|bat|ben|bin|ibn|bet|"
     "bint|binti|binte|da|das|de|degli|dele|del|du|della|der|di|dos|du|e|el|"
     "fetch|vetch|fitz|i??|kil|gil|de le|de "
     "la|la|le|lille|lu|m|mac|mc|mck|mhic|mic|mala|"
     "mellom|myljom|na|ned|nedre|neder|nic|ni|nin|nord|norr|ny|o|ua|"
-    "ui|opp|upp|öfver|ost|öst|öster|øst|øst|østre|över|øvste|øvre|øver|öz|pour|"
-    "putra|putri|setia|tor|söder|sør|sønder|sør|syd|søndre|syndre|søre|ter|ter|"
-    "tre|van|van der|väst|väster|verch|erch|vest|vestre|vesle|vetle|von|zu|von "
-    "und zu)\\s)?";
+    "ui|opp|upp|öfver|ost|öst|öster|øst|østre|över|øvste|øvre|øver|öz|pour|"
+    "putra|putri|setia|tor|söder|sør|sønder|sør|syd|søndre|syndre|søre|ter|"
+    "tre|väst|väster|verch|erch|vest|vestre|vesle|vetle|zu|von und zu|"
+    "v[ao]n de[nr]?|v[ao]n)";
 
 // Regular expression to match the affixes that indicate the floor an
 // apartment is located in.
@@ -185,9 +184,8 @@ std::string ParseSeparatedCJkNameExpression() {
   return CaptureTypeWithPattern(
       NAME_FULL,
       {// Parse one or more CJK characters into the last name.
-       CaptureTypeWithPattern(
-           NAME_LAST, kCjkCharactersRe,
-           {.separator = kCjkNameSeperatorsRe}),
+       CaptureTypeWithPattern(NAME_LAST, kCjkCharactersRe,
+                              {.separator = kCjkNameSeperatorsRe}),
        // Parse the remaining CJK characters into the first name.
        CaptureTypeWithPattern(NAME_FIRST, kCjkCharactersRe)});
 }
@@ -196,9 +194,8 @@ std::string ParseSeparatedCJkAlternativeNameExpression() {
   return CaptureTypeWithPattern(
       ALTERNATIVE_FULL_NAME,
       {// Parse one or more CJK characters into the last name.
-       CaptureTypeWithPattern(
-           ALTERNATIVE_FAMILY_NAME, kCjkCharactersRe,
-           {.separator = kCjkNameSeperatorsRe}),
+       CaptureTypeWithPattern(ALTERNATIVE_FAMILY_NAME, kCjkCharactersRe,
+                              {.separator = kCjkNameSeperatorsRe}),
        // Parse the remaining CJK characters into the first name.
        CaptureTypeWithPattern(ALTERNATIVE_GIVEN_NAME, kCjkCharactersRe)});
 }
@@ -255,16 +252,16 @@ std::string MatchCjkNameExpression() {
                        "^", kCjkCharactersRe,
                        // Followed by an optional separator with one
                        // or more additional CJK characters.
-                       "(", kCjkNameSeperatorsRe,
-                       kCjkCharactersRe, ")?$"});
+                       "(", kCjkNameSeperatorsRe, kCjkCharactersRe, ")?$"});
 }
 
 // Returns an expression to parse a full name that contains only a last name.
 std::string ParseOnlyLastNameExpression() {
   return CaptureTypeWithPattern(
       NAME_FULL, {CaptureTypeWithPattern(
-                      NAME_LAST, {kOptionalLastNamePrefixRe, kSingleWordRe}),
-                  kOptionalLastNameSuffixRe});
+                      NAME_LAST, {NoCapturePatternOptional(kLastNamePrefixRe),
+                                  kSingleWordRe}),
+                  NoCapturePatternOptional(kLastNameSuffixRe)});
 }
 
 // Returns an expression to parse a name that consists of a first, middle and
@@ -278,18 +275,15 @@ std::string ParseOnlyLastNameExpression() {
 std::string ParseFirstMiddleLastNameExpression() {
   return CaptureTypeWithPattern(
       NAME_FULL,
-      {NoCapturePattern(
-           kHonorificPrefixRe,
-           CaptureOptions{.quantifier = MatchQuantifier::kOptional}),
-       CaptureTypeWithPattern(
-           NAME_FIRST, kSingleWordRe,
-           CaptureOptions{.quantifier = MatchQuantifier::kOptional}),
+      {NoCapturePatternOptional(kHonorificPrefixRe),
+       CaptureTypeWithPatternOptional(NAME_FIRST, kSingleWordRe),
        CaptureTypeWithPattern(
            NAME_MIDDLE, kMultipleLazyWordsRe,
            CaptureOptions{.quantifier = MatchQuantifier::kLazyOptional}),
-       CaptureTypeWithPattern(NAME_LAST,
-                              {kOptionalLastNamePrefixRe, kSingleWordRe}),
-       kOptionalLastNameSuffixRe});
+       CaptureTypeWithPattern(
+           NAME_LAST,
+           {NoCapturePatternOptional(kLastNamePrefixRe), kSingleWordRe}),
+       NoCapturePatternOptional(kLastNameSuffixRe)});
 }
 
 // Returns an expression to parse a name that starts with the last name,
@@ -302,15 +296,12 @@ std::string ParseFirstMiddleLastNameExpression() {
 std::string ParseLastCommaFirstMiddleExpression() {
   return CaptureTypeWithPattern(
       NAME_FULL,
-      {NoCapturePattern(
-           kHonorificPrefixRe,
-           CaptureOptions{.quantifier = MatchQuantifier::kOptional}),
-       CaptureTypeWithPattern(NAME_LAST,
-                              {kOptionalLastNamePrefixRe, kSingleWordRe},
-                              {.separator = "\\s*,\\s*"}),
+      {NoCapturePatternOptional(kHonorificPrefixRe),
        CaptureTypeWithPattern(
-           NAME_FIRST, kSingleWordRe,
-           CaptureOptions{.quantifier = MatchQuantifier::kOptional}),
+           NAME_LAST,
+           {NoCapturePatternOptional(kLastNamePrefixRe), kSingleWordRe},
+           {.separator = "\\s*,\\s*"}),
+       CaptureTypeWithPatternOptional(NAME_FIRST, kSingleWordRe),
        CaptureTypeWithPattern(
            NAME_MIDDLE, kMultipleLazyWordsRe,
            CaptureOptions{.quantifier = MatchQuantifier::kLazyOptional})});
@@ -327,13 +318,14 @@ std::string ParseLastCommaFirstMiddleExpression() {
 std::string ParseHispanicLastNameExpression() {
   return CaptureTypeWithPattern(
       NAME_LAST,
-      {CaptureTypeWithPattern(NAME_LAST_FIRST,
-                              {kOptionalLastNamePrefixRe, kSingleWordRe}),
+      {CaptureTypeWithPattern(
+           NAME_LAST_FIRST,
+           {NoCapturePatternOptional(kLastNamePrefixRe), kSingleWordRe}),
+       CaptureTypeWithPatternOptional(NAME_LAST_CONJUNCTION,
+                                      kHispanicLastNameConjunctionsRe),
        CaptureTypeWithPattern(
-           NAME_LAST_CONJUNCTION, kHispanicLastNameConjunctionsRe,
-           CaptureOptions{.quantifier = MatchQuantifier::kOptional}),
-       CaptureTypeWithPattern(NAME_LAST_SECOND,
-                              {kOptionalLastNamePrefixRe, kSingleWordRe})});
+           NAME_LAST_SECOND,
+           {NoCapturePatternOptional(kLastNamePrefixRe), kSingleWordRe})});
 }
 
 // Returns an expression to parse a full Hispanic/Latinx name that
@@ -342,9 +334,7 @@ std::string ParseHispanicLastNameExpression() {
 std::string ParseHispanicFullNameExpression() {
   return CaptureTypeWithPattern(
       NAME_FULL,
-      {NoCapturePattern(
-           kHonorificPrefixRe,
-           CaptureOptions{.quantifier = MatchQuantifier::kOptional}),
+      {NoCapturePatternOptional(kHonorificPrefixRe),
        CaptureTypeWithPattern(
            NAME_FIRST, kMultipleLazyWordsRe,
            CaptureOptions{.quantifier = MatchQuantifier::kLazyOptional}),
@@ -376,7 +366,7 @@ std::string ParseStreetNameHouseNumberExpression() {
                                           kHouseNumberOptionalPrefixRe,
                                           "(?:\\d+\\w?)", "(th\\.|\\.)?")},
            CaptureOptions{.separator = ""}),
-       CaptureTypeWithPattern(
+       CaptureTypeWithPatternOptional(
            ADDRESS_HOME_SUBPREMISE,
            {
                CaptureTypeWithPrefixedPattern(
@@ -386,8 +376,7 @@ std::string ParseStreetNameHouseNumberExpression() {
                    ADDRESS_HOME_APT_NUM, kApartmentNumberPrefix,
                    "(?:(\\d{1,3}\\w?|\\w))",
                    CaptureOptions{.quantifier = MatchQuantifier::kOptional}),
-           },
-           CaptureOptions{.quantifier = MatchQuantifier::kOptional})});
+           })});
 }
 
 // Returns an expression to parse a street address into the street name, the
@@ -409,7 +398,7 @@ std::string ParseStreetNameHouseNumberSuffixedFloorAndAppartmentExpression() {
                                           "(?:\\d+\\w?)", "(th\\.|\\.)?")},
            CaptureOptions{.separator = ""}),
 
-       CaptureTypeWithPattern(
+       CaptureTypeWithPatternOptional(
            ADDRESS_HOME_SUBPREMISE,
            {
                CaptureTypeWithSuffixedPattern(
@@ -419,8 +408,7 @@ std::string ParseStreetNameHouseNumberSuffixedFloorAndAppartmentExpression() {
                    ADDRESS_HOME_APT_NUM, "(-\\s*)?", "(?:(\\d{1,3}\\w?|\\w))",
                    kApartmentNumberSuffix,
                    CaptureOptions{.quantifier = MatchQuantifier::kOptional}),
-           },
-           CaptureOptions{.quantifier = MatchQuantifier::kOptional})});
+           })});
 }
 
 // Returns an expression to parse a street address into the street name, the
@@ -441,7 +429,7 @@ std::string ParseStreetNameHouseNumberExpressionSuffixedFloor() {
                                           "(?:\\d+\\w?)", "(th\\.|\\.)?")},
            {.separator = ""}),
 
-       CaptureTypeWithPattern(
+       CaptureTypeWithPatternOptional(
            ADDRESS_HOME_SUBPREMISE,
            {
                CaptureTypeWithSuffixedPattern(
@@ -451,8 +439,7 @@ std::string ParseStreetNameHouseNumberExpressionSuffixedFloor() {
                    ADDRESS_HOME_APT_NUM, kApartmentNumberPrefix,
                    "(?:(\\d{0,3}\\w?))",
                    CaptureOptions{.quantifier = MatchQuantifier::kOptional}),
-           },
-           CaptureOptions{.quantifier = MatchQuantifier::kOptional})});
+           })});
 }
 
 // Returns an expression to parse a street address into the street name, the
@@ -472,7 +459,7 @@ std::string ParseHouseNumberStreetNameExpression() {
             CaptureTypeWithPattern(ADDRESS_HOME_STREET_NAME,
                                    kMultipleLazyWordsRe)},
            {.separator = ""}),
-       CaptureTypeWithPattern(
+       CaptureTypeWithPatternOptional(
            ADDRESS_HOME_SUBPREMISE,
            {
                CaptureTypeWithPrefixedPattern(
@@ -482,8 +469,7 @@ std::string ParseHouseNumberStreetNameExpression() {
                    ADDRESS_HOME_APT_NUM, kApartmentNumberPrefix,
                    "(?:(\\d{0,3}\\w?))",
                    CaptureOptions{.quantifier = MatchQuantifier::kOptional}),
-           },
-           CaptureOptions{.quantifier = MatchQuantifier::kOptional})});
+           })});
 }
 }  // namespace
 
