@@ -80,10 +80,12 @@ views::View* FocusedViewOf(views::Widget* widget) {
   return widget->GetFocusManager()->GetFocusedView();
 }
 
+const gfx::VectorIcon kEmptyIcon;
+
 const std::vector<sharing_hub::SharingHubAction> kFirstPartyActions = {
-    {0, u"Feed to Dino", &gfx::VectorIcon::EmptyIcon(), "feed-to-dino", 0},
-    {1, u"Reverse Star", &gfx::VectorIcon::EmptyIcon(), "reverse-star", 0},
-    {2, u"Pastelify", &gfx::VectorIcon::EmptyIcon(), "pastelify", 0},
+    {0, u"Feed to Dino", &kEmptyIcon, "feed-to-dino", 0},
+    {1, u"Reverse Star", &kEmptyIcon, "reverse-star", 0},
+    {2, u"Pastelify", &kEmptyIcon, "pastelify", 0},
 };
 
 }  // namespace

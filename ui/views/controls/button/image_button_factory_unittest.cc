@@ -104,7 +104,7 @@ TEST_F(ImageButtonFactoryWidgetTest, AccessibleCheckedStateChange) {
       CreateVectorToggleImageButton(Button::PressedCallback());
   ui::AXNodeData data;
   const ui::ImageModel& image =
-      ui::ImageModel::FromVectorIcon(gfx::VectorIcon::EmptyIcon(), 23, 56);
+      ui::ImageModel::FromVectorIcon(gfx::VectorIcon(), 23, 56);
   toggle_image_button->SetToggledImageModel(Button::STATE_NORMAL, image);
   EXPECT_EQ(data.GetCheckedState(), ax::mojom::CheckedState::kNone);
 

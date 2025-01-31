@@ -35,7 +35,6 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/gfx/vector_icon_types.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/button/radio_button.h"
@@ -154,7 +153,7 @@ void ContentSettingBubbleContents::ListItemContainer::AddItem(
         *item.image, ui::kColorLabelForeground,
         GetLayoutConstant(LOCATION_BAR_ICON_SIZE),
         item.has_blocked_badge ? &vector_icons::kBlockedBadgeIcon
-                               : &gfx::VectorIcon::EmptyIcon()));
+                               : &gfx::kNoneIcon));
   }
 
   std::unique_ptr<views::View> item_contents;

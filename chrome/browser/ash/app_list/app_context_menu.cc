@@ -136,14 +136,14 @@ const gfx::VectorIcon& AppContextMenu::GetMenuItemVectorIcon(int command_id,
       return views::kNewIncognitoWindowIcon;
     case ash::INSTALL:
       // Deprecated.
-      return gfx::VectorIcon::EmptyIcon();
+      return gfx::kNoneIcon;
     case ash::SETTINGS:
       return vector_icons::kSettingsIcon;
     case ash::USE_LAUNCH_TYPE_REGULAR:
     case ash::USE_LAUNCH_TYPE_WINDOW:
     case ash::USE_LAUNCH_TYPE_TABBED_WINDOW:
       // Check items use the default icon.
-      return gfx::VectorIcon::EmptyIcon();
+      return gfx::kNoneIcon;
     case ash::DEPRECATED_USE_LAUNCH_TYPE_PINNED:
     case ash::DEPRECATED_USE_LAUNCH_TYPE_FULLSCREEN:
       NOTREACHED();

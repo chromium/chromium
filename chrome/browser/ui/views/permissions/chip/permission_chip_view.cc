@@ -25,7 +25,6 @@
 #include "ui/color/color_provider.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/gfx/vector_icon_types.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/painter.h"
@@ -204,7 +203,7 @@ const gfx::VectorIcon& PermissionChipView::GetIcon() const {
     return const_cast<decltype(*icon_)>(*icon_);
   }
 
-  return gfx::VectorIcon::EmptyIcon();
+  return gfx::kNoneIcon;
 }
 
 SkColor PermissionChipView::GetForegroundColor() const {

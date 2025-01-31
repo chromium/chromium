@@ -110,7 +110,7 @@ struct MESSAGE_CENTER_PUBLIC_EXPORT ButtonInfo {
   gfx::Image icon;
 
   // Vector icon to that's used for icon-only notification buttons.
-  raw_ptr<const gfx::VectorIcon> vector_icon = &gfx::VectorIcon::EmptyIcon();
+  raw_ptr<const gfx::VectorIcon> vector_icon = &gfx::kNoneIcon;
 
   // Accessible name to be used for the button's tooltip. Required when creating
   // an icon-only notification button.
@@ -191,8 +191,7 @@ class MESSAGE_CENTER_PUBLIC_EXPORT RichNotificationData {
   // retain VectorIcon reference.  https://crbug.com/760866
   // RAW_PTR_EXCLUSION: Never allocated by PartitionAlloc (always points to a
   // global), so there is no benefit to using a raw_ptr, only cost.
-  RAW_PTR_EXCLUSION const gfx::VectorIcon* vector_small_image =
-      &gfx::VectorIcon::EmptyIcon();
+  RAW_PTR_EXCLUSION const gfx::VectorIcon* vector_small_image = &gfx::kNoneIcon;
 
   // Vector image to display on the parent notification of this notification,
   // illustrating the source of the group notification that this notification
@@ -201,7 +200,7 @@ class MESSAGE_CENTER_PUBLIC_EXPORT RichNotificationData {
   // RAW_PTR_EXCLUSION: Never allocated by PartitionAlloc (always points to a
   // global), so there is no benefit to using a raw_ptr, only cost.
   RAW_PTR_EXCLUSION const gfx::VectorIcon* parent_vector_small_image =
-      &gfx::VectorIcon::EmptyIcon();
+      &gfx::kNoneIcon;
 
   // Items to display on the notification. Only applicable for notifications
   // that have type NOTIFICATION_TYPE_MULTIPLE.

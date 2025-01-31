@@ -26,7 +26,6 @@
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/gfx/vector_icon_types.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/interaction/interactive_views_test.h"
 #include "ui/views/view_utils.h"
@@ -172,7 +171,7 @@ IN_PROC_BROWSER_TEST_F(MidiPermissionsFlowInteractiveUITest,
                   EXPECT_EQ(element_view->get_icon_for_testing(),
                             &vector_icons::kMidiOffChromeRefreshIcon);
                   EXPECT_EQ(element_view->get_icon_badge_for_testing(),
-                            &gfx::VectorIcon::EmptyIcon());
+                            &gfx::kNoneIcon);
                   EXPECT_EQ(element_view->get_tooltip_text_for_testing(),
                             l10n_util::GetStringUTF16(
                                 IDS_BLOCKED_MIDI_SYSEX_MESSAGE));
@@ -192,7 +191,7 @@ IN_PROC_BROWSER_TEST_F(MidiPermissionsFlowInteractiveUITest,
                   EXPECT_EQ(element_view->get_icon_for_testing(),
                             &vector_icons::kMidiChromeRefreshIcon);
                   EXPECT_EQ(element_view->get_icon_badge_for_testing(),
-                            &gfx::VectorIcon::EmptyIcon());
+                            &gfx::kNoneIcon);
                   EXPECT_EQ(element_view->get_tooltip_text_for_testing(),
                             l10n_util::GetStringUTF16(
                                 IDS_ALLOWED_MIDI_SYSEX_MESSAGE));
