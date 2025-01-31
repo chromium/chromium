@@ -673,12 +673,9 @@ TEST_F(SigninUiUtilTest, ShowExtensionSigninPrompt) {
   // With explicit signin, `sync_url` is used even though Sync is not going to
   // be enabled. This is because that web page displays additional text
   // explaining to the user that they are signing in to Chrome.
-  EXPECT_TRUE(
-      base::StartsWith(tab->GetVisibleURL().spec(),
-                       switches::IsExplicitBrowserSigninUIOnDesktopEnabled()
-                           ? sync_url.spec()
-                           : add_account_url.spec(),
-                       base::CompareCase::INSENSITIVE_ASCII));
+  EXPECT_TRUE(base::StartsWith(tab->GetVisibleURL().spec(), sync_url.spec(),
+                               base::CompareCase::INSENSITIVE_ASCII));
+  EXPECT_NE(tab->GetVisibleURL().query().find("flow=promo"), std::string::npos);
 }
 
 TEST_F(SigninUiUtilTest, ShowExtensionSigninPrompt_AsLockedProfile) {
@@ -766,13 +763,7 @@ TEST_F(SigninUiUtilTest, GetSignInTabWithAccessPoint) {
             sign_in_tab->GetVisibleURL());
 }
 
-class SigninUiUtilWithUnoDesktopTest : public SigninUiUtilTest {
- private:
-  base::test::ScopedFeatureList feature_list_{
-      switches::kExplicitBrowserSigninUIOnDesktop};
-};
-
-TEST_F(SigninUiUtilWithUnoDesktopTest, EnableSyncWithExistingWebOnlyAccount) {
+TEST_F(SigninUiUtilTest, EnableSyncWithExistingWebOnlyAccount) {
   CoreAccountId account_id =
       GetIdentityManager()->GetAccountsMutator()->AddOrUpdateAccount(
           GaiaId(kMainGaiaID), kMainEmail, "refresh_token", false,
@@ -807,8 +798,7 @@ TEST_F(SigninUiUtilWithUnoDesktopTest, EnableSyncWithExistingWebOnlyAccount) {
 }
 
 // Checks that sync is treated as a promo for kSettings.
-TEST_F(SigninUiUtilWithUnoDesktopTest,
-       EnableSyncPromoWithExistingWebOnlyAccount) {
+TEST_F(SigninUiUtilTest, EnableSyncPromoWithExistingWebOnlyAccount) {
   base::test::ScopedFeatureList feature_list{
       switches::kImprovedSettingsUIOnDesktop};
   access_point_ = signin_metrics::AccessPoint::kSettings;
@@ -831,7 +821,7 @@ TEST_F(SigninUiUtilWithUnoDesktopTest,
       /*is_default_promo_account=*/true);
 }
 
-TEST_F(SigninUiUtilWithUnoDesktopTest, SignInWithExistingWebOnlyAccount) {
+TEST_F(SigninUiUtilTest, SignInWithExistingWebOnlyAccount) {
   CoreAccountId account_id =
       GetIdentityManager()->GetAccountsMutator()->AddOrUpdateAccount(
           GaiaId(kMainGaiaID), kMainEmail, "refresh_token", false,
@@ -849,27 +839,7 @@ TEST_F(SigninUiUtilWithUnoDesktopTest, SignInWithExistingWebOnlyAccount) {
       GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 }
 
-TEST_F(SigninUiUtilWithUnoDesktopTest, ShowExtensionSigninPrompt) {
-  Profile* profile = browser()->profile();
-  TabStripModel* tab_strip = browser()->tab_strip_model();
-  ShowExtensionSigninPrompt(profile, /*enable_sync=*/false,
-                            /*email_hint=*/std::string());
-  EXPECT_EQ(1, tab_strip->count());
-  // Calling the function again reuses the tab.
-  ShowExtensionSigninPrompt(profile, /*enable_sync=*/false,
-                            /*email_hint=*/std::string());
-  EXPECT_EQ(1, tab_strip->count());
-
-  content::WebContents* tab = tab_strip->GetWebContentsAt(0);
-  ASSERT_TRUE(tab);
-  EXPECT_TRUE(base::StartsWith(
-      tab->GetVisibleURL().spec(),
-      GaiaUrls::GetInstance()->signin_chrome_sync_dice().spec(),
-      base::CompareCase::INSENSITIVE_ASCII));
-  EXPECT_NE(tab->GetVisibleURL().query().find("flow=promo"), std::string::npos);
-}
-
-TEST_F(SigninUiUtilWithUnoDesktopTest, ShowExtensionSigninPromptReauth) {
+TEST_F(SigninUiUtilTest, ShowExtensionSigninPromptReauth) {
   CoreAccountId account_id =
       GetIdentityManager()->GetAccountsMutator()->AddOrUpdateAccount(
           GaiaId(kMainGaiaID), kMainEmail, "refresh_token", false,
