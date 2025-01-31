@@ -277,6 +277,28 @@ public class ModalDialogProperties {
     /** The minimum vertical margin used by the dialog relative to the window. */
     public static final WritableIntPropertyKey VERTICAL_MARGIN = new WritableIntPropertyKey();
 
+    /**
+     * Whether the positive button should draw an indeterminate spinner within the button while
+     * awaiting a pending result. Only one of the positive or negative buttons should have the
+     * loading state applied with the spinner active.
+     */
+    public static final WritableBooleanPropertyKey POSITIVE_BUTTON_LOADING =
+            new WritableBooleanPropertyKey();
+
+    /**
+     * Whether the negative button should draw an indeterminate spinner within the button while
+     * awaiting a pending result. Only one of the positive or negative buttons should have the
+     * loading state applied with the spinner active.
+     */
+    public static final WritableBooleanPropertyKey NEGATIVE_BUTTON_LOADING =
+            new WritableBooleanPropertyKey();
+
+    /**
+     * Block all inputs on the rest of the dialog view. Note that this does not override any
+     * existing behaviour for touching the scrim or system backpress handling.
+     */
+    public static final WritableBooleanPropertyKey BLOCK_INPUTS = new WritableBooleanPropertyKey();
+
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 NAME,
@@ -310,5 +332,8 @@ public class ModalDialogProperties {
                 TAB_MODAL_DIALOG_CANCEL_ON_ESCAPE,
                 HORIZONTAL_MARGIN,
                 VERTICAL_MARGIN,
+                POSITIVE_BUTTON_LOADING,
+                NEGATIVE_BUTTON_LOADING,
+                BLOCK_INPUTS,
             };
 }
