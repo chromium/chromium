@@ -76,6 +76,10 @@ class PageActionController : public PinnedToolbarActionsModel::Observer {
                             int to_index) override;
   void OnActionsChanged() override;
 
+  static base::PassKey<PageActionController> PassKeyForTesting() {
+    return base::PassKey<PageActionController>();
+  }
+
  private:
   using PageActionModelsMap =
       std::map<actions::ActionId, std::unique_ptr<PageActionModelInterface>>;
