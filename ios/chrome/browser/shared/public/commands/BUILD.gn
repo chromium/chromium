@@ -10,6 +10,7 @@ source_set("commands") {
     "activity_service_share_url_command.mm",
     "add_contacts_commands.h",
     "application_commands.h",
+    "auto_deletion_commands.h",
     "autofill_commands.h",
     "bookmarks_commands.h",
     "bring_android_tabs_commands.h",
