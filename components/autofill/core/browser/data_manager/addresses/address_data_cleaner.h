@@ -15,7 +15,7 @@
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/alternative_state_name_map_updater.h"
-#include "components/autofill/core/browser/metrics/profile_deduplication_metrics.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/service/sync_service_observer.h"
 
@@ -49,36 +49,21 @@ class AddressDataCleaner : public AddressDataManager::Observer,
 
   // Computes the `comparator.NonMergeableSettingVisibleTypes()` between
   // `profile` and every element of `other_profiles`. Returns the subset of them
-  // that have minimum size. Thus, all elements of the returned vector have the
-  // same size.
-  // In profile deduplication context, this indicates what the minimum sets of
+  // that have minimum size combined with a profile that was used to obtain
+  // them. Thus, all elements of the returned vector have the same size. In
+  // profile deduplication context, this indicates what is the minimum sets of
   // types are whose removal makes `profile` a duplicate with specific other
-  // profile in `other_profiles`. In a mathematical sense, the returned vector
-  // is not a set and may contain duplicates. This is intentional, as this means
-  // the same set of types prevented deduplication in multiple cases, which is
-  // used to weight metrics. Profile pairs of different countries are ignored.
-  // See `NonMergeableSettingVisibleTypes()`. As such, the returned vector is
-  // empty if no profile in `other_profiles` has the same country as `profile`.
-  static std::vector<FieldTypeSet> CalculateMinimalIncompatibleTypeSets(
-      const AutofillProfile& profile,
-      base::span<const AutofillProfile> other_profiles,
-      const AutofillProfileComparator& comparator);
-  static std::vector<FieldTypeSet> CalculateMinimalIncompatibleTypeSets(
-      const AutofillProfile& profile,
-      base::span<const AutofillProfile* const> existing_profiles,
-      const AutofillProfileComparator& comparator);
-
-  // Computes the same sets of types as `CalculateMinimalIncompatibleTypeSets()`
-  // with additional AutofillProfile that was used to get them.
+  // profile in `other_profiles`. The returned type
+  // sets in the returned vector are not unique and may contain duplicates. This
+  // is intentional, as this means the same set of types prevented deduplication
+  // in multiple cases, which is used to weight metrics. Profile pairs of
+  // different countries are ignored. See `NonMergeableSettingVisibleTypes()`.
+  // As such, the returned vector is empty if no profile in `other_profiles` has
+  // the same country as `profile`.
   static std::vector<autofill_metrics::DifferingProfileWithTypeSet>
   CalculateMinimalIncompatibleProfileWithTypeSets(
       const AutofillProfile& profile,
       base::span<const AutofillProfile* const> existing_profiles,
-      const AutofillProfileComparator& comparator);
-  static std::vector<autofill_metrics::DifferingProfileWithTypeSet>
-  CalculateMinimalIncompatibleProfileWithTypeSets(
-      const AutofillProfile& profile,
-      base::span<const AutofillProfile> existing_profiles,
       const AutofillProfileComparator& comparator);
 
   // Decides whether the `ProfileTokenQuality` stored for the `profile` and

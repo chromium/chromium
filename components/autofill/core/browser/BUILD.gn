@@ -408,8 +408,6 @@ static_library("browser") {
     "metrics/placeholder_metrics.h",
     "metrics/prediction_quality_metrics.cc",
     "metrics/prediction_quality_metrics.h",
-    "metrics/profile_deduplication_metrics.cc",
-    "metrics/profile_deduplication_metrics.h",
     "metrics/profile_import_metrics.cc",
     "metrics/profile_import_metrics.h",
     "metrics/profile_token_quality_metrics.cc",

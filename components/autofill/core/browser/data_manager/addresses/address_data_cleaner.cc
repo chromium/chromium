@@ -191,28 +191,6 @@ void AddressDataCleaner::MaybeCleanupAddressData() {
 }
 
 // static
-std::vector<FieldTypeSet>
-AddressDataCleaner::CalculateMinimalIncompatibleTypeSets(
-    const AutofillProfile& profile,
-    base::span<const AutofillProfile> other_profiles,
-    const AutofillProfileComparator& comparator) {
-  return CalculateMinimalIncompatibleTypeSetsImpl<FieldTypeSet>(
-      profile, base::ToVector(other_profiles, [](auto& x) { return &x; }),
-      comparator, [](const AutofillProfile*, FieldTypeSet s) { return s; });
-}
-
-// static
-std::vector<FieldTypeSet>
-AddressDataCleaner::CalculateMinimalIncompatibleTypeSets(
-    const AutofillProfile& profile,
-    base::span<const AutofillProfile* const> existing_profiles,
-    const AutofillProfileComparator& comparator) {
-  return CalculateMinimalIncompatibleTypeSetsImpl<FieldTypeSet>(
-      profile, existing_profiles, comparator,
-      [](const AutofillProfile*, FieldTypeSet s) { return s; });
-}
-
-// static
 std::vector<DifferingProfileWithTypeSet>
 AddressDataCleaner::CalculateMinimalIncompatibleProfileWithTypeSets(
     const AutofillProfile& profile,
@@ -223,17 +201,6 @@ AddressDataCleaner::CalculateMinimalIncompatibleProfileWithTypeSets(
       [](const AutofillProfile* other, FieldTypeSet s) {
         return DifferingProfileWithTypeSet(other, s);
       });
-}
-
-// static
-std::vector<DifferingProfileWithTypeSet>
-AddressDataCleaner::CalculateMinimalIncompatibleProfileWithTypeSets(
-    const AutofillProfile& profile,
-    base::span<const AutofillProfile> existing_profiles,
-    const AutofillProfileComparator& comparator) {
-  return CalculateMinimalIncompatibleProfileWithTypeSets(
-      profile, base::ToVector(existing_profiles, [](auto& x) { return &x; }),
-      comparator);
 }
 
 // static
