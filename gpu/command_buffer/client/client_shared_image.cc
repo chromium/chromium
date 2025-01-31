@@ -434,6 +434,12 @@ scoped_refptr<ClientSharedImage> ClientSharedImage::ImportUnowned(
       exported_shared_image.texture_target_));
 }
 
+void ClientSharedImage::BackingWasExternallyUpdated(
+    const gpu::SyncToken& sync_token) {
+  CHECK(sii_holder_);
+  sii_holder_->Get()->UpdateSharedImage(sync_token, mailbox());
+}
+
 void ClientSharedImage::OnMemoryDump(
     base::trace_event::ProcessMemoryDump* pmd,
     const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,

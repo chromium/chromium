@@ -314,6 +314,7 @@ void TestSharedImageInterface::UpdateSharedImage(
     const Mailbox& mailbox) {
   base::AutoLock locked(lock_);
   DCHECK(shared_images_.find(mailbox) != shared_images_.end());
+  num_update_shared_image_no_fence_calls_++;
 }
 
 void TestSharedImageInterface::UpdateSharedImage(
