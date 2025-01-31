@@ -33,8 +33,8 @@ namespace {
 void TruncateString(std::string* data) {
   const size_t kMaxLength = 200;
   if (data->length() > kMaxLength) {
-    data->resize(kMaxLength);
-    data->replace(kMaxLength - 3, 3, "...");
+    base::TruncateUTF8ToByteSize(*data, kMaxLength - 3, data);
+    data->append("...");
   }
 }
 

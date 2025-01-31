@@ -4241,6 +4241,11 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
         );
       """))
 
+  def testUnicodeLogTruncation(self):
+    """ Regression test for crbug.com/367752739 """
+    self._driver.Load(self.GetHttpUrlForFile(
+        '/chromedriver/log_long_unicode_string.html'))
+
 class ChromeDriverBackgroundTest(ChromeDriverBaseTestWithWebServer):
   def setUp(self):
     self._driver1 = self.CreateDriver()
