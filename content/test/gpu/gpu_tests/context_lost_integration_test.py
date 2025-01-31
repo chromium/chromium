@@ -204,7 +204,7 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   @functools.lru_cache(maxsize=None)
   def _GetWaitTimeout(self):
     timeout = 60
-    if self._is_asan:
+    if self._is_asan or self.browser.browser_type == 'debug':
       timeout *= 2
     return timeout
 
