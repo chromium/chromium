@@ -29,7 +29,7 @@ TEST(BrowserIOThreadDelegateTest, CanPostTasksToThread) {
   thread.StartWithOptions(std::move(options));
 
   auto runner =
-      handle->GetBrowserTaskRunner(BrowserTaskQueues::QueueType::kUserBlocking);
+      handle->GetBrowserTaskRunner(BrowserTaskQueues::QueueType::kDefault);
 
   base::WaitableEvent event;
   runner->PostTask(FROM_HERE, base::BindOnce(&base::WaitableEvent::Signal,
