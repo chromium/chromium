@@ -22,6 +22,16 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="Glic.Api.NotifyPanelWillOpen" enum="GlicWebClientMode"
+    expires_after="2026-01-15">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <summary>
+    Recorded whenever the glic web client returns from being notified that the
+    panel will open. Records the active web client mode.
+  </summary>
+</histogram>
+
 <histogram name="Glic.PanelPresentationTime.{InputMode}" units="ms"
     expires_after="2026-01-15">
   <owner>dewittj@google.com</owner>
