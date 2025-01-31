@@ -94,10 +94,6 @@ class PageLiveStateDataImpl
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return is_dev_tools_open_;
   }
-  ui::AXMode GetAccessibilityMode() const override {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return accessibility_mode_;
-  }
   bool UpdatedTitleOrFaviconInBackground() const override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return updated_title_or_favicon_in_background_;
@@ -144,9 +140,6 @@ class PageLiveStateDataImpl
   }
   void SetIsDevToolsOpenForTesting(bool value) override {
     set_is_dev_tools_open(value);
-  }
-  void SetAccessibilityModeForTesting(ui::AXMode value) override {
-    set_accessibility_mode(value);
   }
   void SetUpdatedTitleOrFaviconInBackgroundForTesting(bool value) override {
     set_updated_title_or_favicon_in_background(value);
@@ -271,16 +264,6 @@ class PageLiveStateDataImpl
       obs.OnIsDevToolsOpenChanged(page_node_);
     }
   }
-  void set_accessibility_mode(ui::AXMode accessibility_mode) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    if (accessibility_mode_ == accessibility_mode) {
-      return;
-    }
-    accessibility_mode_ = accessibility_mode;
-    for (auto& obs : observers_) {
-      obs.OnAccessibilityModeChanged(page_node_);
-    }
-  }
   void set_updated_title_or_favicon_in_background(bool updated) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     updated_title_or_favicon_in_background_ = updated;
@@ -305,7 +288,6 @@ class PageLiveStateDataImpl
   bool is_active_tab_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
   bool is_pinned_tab_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
   bool is_dev_tools_open_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
-  ui::AXMode accessibility_mode_ GUARDED_BY_CONTEXT(sequence_checker_);
   bool updated_title_or_favicon_in_background_
       GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
@@ -440,15 +422,6 @@ void PageLiveStateDecorator::SetIsDevToolsOpen(content::WebContents* contents,
       is_dev_tools_open);
 }
 
-// static
-void PageLiveStateDecorator::SetAccessibilityMode(
-    content::WebContents* contents,
-    ui::AXMode accessibility_mode) {
-  SetPropertyForWebContentsPageNode(
-      contents, &PageLiveStateDataImpl::set_accessibility_mode,
-      accessibility_mode);
-}
-
 void PageLiveStateDecorator::OnPassedToGraph(Graph* graph) {
   graph->GetNodeDataDescriberRegistry()->RegisterDescriber(this,
                                                            kDescriberName);
@@ -481,7 +454,6 @@ base::Value::Dict PageLiveStateDecorator::DescribePageNodeData(
   ret.Set("IsActiveTab", data->IsActiveTab());
   ret.Set("IsPinnedTab", data->IsPinnedTab());
   ret.Set("IsDevToolsOpen", data->IsDevToolsOpen());
-  ret.Set("AccessibilityMode", data->GetAccessibilityMode().ToString());
   ret.Set("UpdatedTitleOrFaviconInBackground",
           data->UpdatedTitleOrFaviconInBackground());
 

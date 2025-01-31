@@ -58,7 +58,6 @@ class FrameVisibilityDecorator : public GraphOwnedDefaultImpl,
   void OnIsActiveTabChanged(const PageNode* page_node) override {}
   void OnIsPinnedTabChanged(const PageNode* page_node) override {}
   void OnIsDevToolsOpenChanged(const PageNode* page_node) override {}
-  void OnAccessibilityModeChanged(const PageNode* page_node) override {}
 
   // FrameNodeObserver:
   void OnBeforeFrameNodeAdded(
