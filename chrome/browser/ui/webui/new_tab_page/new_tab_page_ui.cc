@@ -453,8 +453,9 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
       base::NumberToString(
           ntp_features::kNtpCalendarModuleWindowEndDeltaParam.Get().InHours()));
 
-  source->AddBoolean("microsoftModuleEnabled",
-                     IsMicrosoftModuleEnabledForProfile(profile));
+  bool microsoft_module_enabled = IsMicrosoftModuleEnabledForProfile(profile);
+  source->AddBoolean("microsoftModuleEnabled", microsoft_module_enabled);
+  source->AddBoolean("modulesReloadable", microsoft_module_enabled);
 
   SearchboxHandler::SetupWebUIDataSource(
       source, profile,

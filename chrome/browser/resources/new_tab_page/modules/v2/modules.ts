@@ -18,9 +18,10 @@ import {loadTimeData} from '../../i18n_setup.js';
 import {recordOccurence as recordOccurrence} from '../../metrics_utils.js';
 import type {PageHandlerRemote} from '../../new_tab_page.mojom-webui.js';
 import {IphFeature} from '../../new_tab_page.mojom-webui.js';
+import type {ModuleIdName} from '../../new_tab_page.mojom-webui.js';
 import {NewTabPageProxy} from '../../new_tab_page_proxy.js';
 import {WindowProxy} from '../../window_proxy.js';
-import type {Module} from '../module_descriptor.js';
+import type {Module, ModuleDescriptor} from '../module_descriptor.js';
 import {ModuleRegistry} from '../module_registry.js';
 import type {ModuleInstance, ModuleWrapperElement} from '../module_wrapper.js';
 
@@ -54,6 +55,13 @@ export type DismissModuleElementEvent = UndoActionEvent;
 export type DismissModuleInstanceEvent = UndoActionEvent;
 export type DisableModuleEvent = UndoActionEvent;
 
+type ModuleWrapperConstructor = new (_: Object) =>
+    TemplateInstanceBase&HTMLElement;
+
+interface ItemTemplateInstance extends TemplateInstanceBase {
+  item: {descriptor: ModuleDescriptor};
+}
+
 declare global {
   interface HTMLElementEventMap {
     'disable-module': DisableModuleEvent;
@@ -72,6 +80,53 @@ export interface ModulesV2Element {
 
 export const MODULE_CUSTOMIZE_ELEMENT_ID =
     'NewTabPageUI::kModulesCustomizeIPHAnchorElement';
+
+/**
+ * Computes the IDs of modules that have been newly enabled.
+ *
+ * This function compares the current and previous lists of disabled module IDs
+ * to identify modules that are now enabled. It then filters out modules that
+ * already have template instances, ensuring that only truly newly enabled
+ * modules are returned.
+ *
+ * @param newDisabledIds The latest list of disabled module IDs.
+ * @param prevDisabledIds The previous list of disabled module IDs.
+ * @param templateInstances A list of existing template instances.
+ * @returns An array of module IDs that are newly enabled and do not yet have
+ *     template instances.
+ */
+function computeNewlyEnabledModuleIds(
+    newDisabledIds: string[], prevDisabledIds: string[],
+    templateInstances: TemplateInstanceBase[]): string[] {
+  const enabledIds = prevDisabledIds.filter(id => !newDisabledIds.includes(id));
+  const newlyEnabledModuleIds = enabledIds.filter((enabledId) => {
+    return !templateInstances.some(
+        (templateInstance) =>
+            (templateInstance as unknown as ItemTemplateInstance)
+                .item.descriptor.id === enabledId);
+  });
+  return newlyEnabledModuleIds;
+}
+
+/**
+ * Creates template instances for a list of modules.
+ *
+ * @param modules The modules for which to create template instances.
+ * @param moduleWrapperConstructor The constructor used to create the template
+ *     instances.
+ * @returns An array of `TemplateInstanceBase` objects.
+ */
+function createTemplateInstances(
+    modules: Module[], moduleWrapperConstructor: ModuleWrapperConstructor):
+    TemplateInstanceBase[] {
+  return modules.flatMap(module => module.elements.map(element => {
+    const instanceData = {
+      element,
+      descriptor: module.descriptor,
+    };
+    return new moduleWrapperConstructor({item: instanceData});
+  }));
+}
 
 const AppElementBase = HelpBubbleMixin(PolymerElement) as
     {new (): PolymerElement & HelpBubbleMixinInterface};
@@ -116,12 +171,23 @@ export class ModulesV2Element extends AppElementBase {
   private setDisabledModulesListenerId_: number|null = null;
   private containerObserver_: MutationObserver|null = null;
   private templateInstances_: TemplateInstanceBase[] = [];
+  private modulesLoaded_: boolean = false;
+  // TODO(crbug.com/385174675): Remove |modulesReloadable_| flag when safe.
+  // Otherwise, when Microsoft modules are enabled ToT, the current behavior
+  // gated by |modulesReloadable_| should become the default module loading
+  // behavior.
+  private modulesReloadable_: boolean =
+      loadTimeData.getBoolean('modulesReloadable');
+  private moduleWrapperConstructor_: ModuleWrapperConstructor|null = null;
+  private newlyEnabledModuleIds_: string[] = [];
 
   private handler_: PageHandlerRemote;
+  private moduleRegistry_: ModuleRegistry;
 
   constructor() {
     super();
     this.handler_ = NewTabPageProxy.getInstance().handler;
+    this.moduleRegistry_ = ModuleRegistry.getInstance();
   }
 
   override connectedCallback() {
@@ -131,7 +197,11 @@ export class ModulesV2Element extends AppElementBase {
         NewTabPageProxy.getInstance()
             .callbackRouter.setDisabledModules.addListener(
                 (all: boolean, ids: string[]) => {
-                  this.disabledModules_ = {all, ids};
+                  if (!this.modulesReloadable_) {
+                    this.disabledModules_ = {all, ids};
+                  } else {
+                    this.maybeLoadModules_({all, ids});
+                  }
                 });
     this.handler_.updateDisabledModules();
 
@@ -212,10 +282,11 @@ export class ModulesV2Element extends AppElementBase {
         this.maxColumnCount_ * SUPPORTED_MODULE_WIDTHS[0].value +
         (this.maxColumnCount_ - 1) * CONTAINER_GAP_WIDTH;
 
-    // TODO(crbug.com/390713116): If Microsoft Auth is enabled and silent
-    // auth is occurring, do not load modules until the handler observes
-    // a change in auth status.
-    this.loadModules_();
+    // If |this.modulesReloadable_| is true, module loading is managed by
+    // |this.setDisabledModulesListenerId_|.
+    if (!this.modulesReloadable_) {
+      this.loadModules_();
+    }
   }
 
   private moduleDisabled_(
@@ -225,26 +296,80 @@ export class ModulesV2Element extends AppElementBase {
         disabledModules.ids.includes(instance.descriptor.id);
   }
 
+  /**
+   * Manages the loading and reloading of modules within the container based on
+   * updates to the disabled modules list.
+   *
+   * If this is the first time modules are being loaded, |loadModules_()| is
+   * called to populate the container.
+   *
+   * Subsequent calls handle potential reloads. Newly enabled modules are
+   * queued and loaded individually. The user does not see these modules until
+   * the entire container is reloaded via |reloadModules_()| after all
+   * queued modules have been loaded. Loading continues as long as
+   * |this.newlyEnabledModuleIds_| is not empty, even across multiple calls to
+   * |maybeLoadModules_()|.
+   *
+   * @param newDisabledModules - Object specifying which modules are disabled.
+   *    `all: boolean` indicates if all modules are disabled.
+   *    `ids: string[]` lists the IDs of disabled modules.
+   */
+  private async maybeLoadModules_(
+      newDisabledModules: {all: boolean, ids: string[]}): Promise<void> {
+    // TODO(crbug.com/392707760): Add ability to defer loading until page
+    // handler gives go ahead (supports modules that need to make updates after
+    // this element has been created e.g. Microsoft authentication dependent
+    // modules).
+    if (!this.modulesLoaded_ || this.templateInstances_.length === 0) {
+      // Update the disabled modules list before attempting load.
+      // |loadModules_()| expects the disabled module list to be
+      // up-to-date.
+      this.disabledModules_ = newDisabledModules;
+      this.loadModules_();
+      return;
+    }
+
+    const prevDisabledIds = this.disabledModules_.ids;
+    const newlyEnabledModuleIds = computeNewlyEnabledModuleIds(
+        newDisabledModules.ids, prevDisabledIds, this.templateInstances_);
+    this.newlyEnabledModuleIds_ =
+        this.newlyEnabledModuleIds_.concat(newlyEnabledModuleIds);
+
+    if (this.newlyEnabledModuleIds_.length === 0) {
+      this.disabledModules_ = newDisabledModules;
+      return;
+    }
+
+    while (this.newlyEnabledModuleIds_.length > 0) {
+      await this.addTemplateInstance_(this.newlyEnabledModuleIds_[0]);
+      this.newlyEnabledModuleIds_.shift();
+      if (this.newlyEnabledModuleIds_.length === 0) {
+        this.disabledModules_ = newDisabledModules;
+        await this.reloadModules_();
+      } else {
+        // There are requests being processed already. This
+        // request will be processed along with those.
+        return;
+      }
+    }
+  }
+
+  /**
+   * Initializes the module container by loading all currently enabled modules.
+   * This method uses |this.moduleRegistry_| to determine which modules to load
+   * and is called only when the container is empty.
+   */
   private async loadModules_(): Promise<void> {
     const modulesIdNames = (await this.handler_.getModulesIdNames()).data;
-    const modules =
-        await ModuleRegistry.getInstance().initializeModulesHavingIds(
-            modulesIdNames.map(m => m.id),
-            loadTimeData.getInteger('modulesLoadTimeout'));
+    const modules = await this.moduleRegistry_.initializeModulesHavingIds(
+        modulesIdNames.map((m: ModuleIdName) => m.id),
+        loadTimeData.getInteger('modulesLoadTimeout'));
     if (modules) {
       this.handler_.onModulesLoadedWithData(
           modules.map(module => module.descriptor.id));
 
-      const template = this.shadowRoot!.querySelector('template')!;
-      const moduleWrapperConstructor:
-          {new (_: Object): TemplateInstanceBase&HTMLElement} =
-              templatize(template, this, {
-                parentModel: true,
-                forwardHostProp: this.forwardHostProp_,
-                instanceProps: {item: true},
-              }) as {new (): TemplateInstanceBase & HTMLElement};
-
-
+      // TODO(crbug.com/392889804): Remove this logic, since no modules populate
+      // more than once anymore.
       if (modules.length > 1) {
         const maxModuleInstanceCount =
             (modules.length >= this.maxColumnCount_) ?
@@ -260,39 +385,20 @@ export class ModulesV2Element extends AppElementBase {
         }
       }
 
-      this.templateInstances_ =
-          modules
-              .map(module => {
-                return module.elements.map(element => {
-                  return {
-                    element,
-                    descriptor: module.descriptor,
-                  };
-                });
-              })
-              .flat()
-              .map(instance => {
-                return new moduleWrapperConstructor({item: instance});
-              });
-      this.templateInstances_.map(t => t.children[0] as HTMLElement)
-          .forEach(wrapperElement => {
-            this.$.container.appendChild(wrapperElement);
-          });
+      if (modules.length > 0) {
+        if (!this.moduleWrapperConstructor_) {
+          this.initModuleWrapperConstructor_();
+        }
 
-      chrome.metricsPrivate.recordSmallCount(
-          'NewTabPage.Modules.LoadedModulesCount', modules.length);
-      modulesIdNames.forEach(({id}) => {
-        chrome.metricsPrivate.recordBoolean(
-            `NewTabPage.Modules.EnabledOnNTPLoad.${id}`,
-            !this.disabledModules_.all &&
-                !this.disabledModules_.ids.includes(id));
-      });
-      chrome.metricsPrivate.recordSmallCount(
-          'NewTabPage.Modules.InstanceCount', this.templateInstances_.length);
-      chrome.metricsPrivate.recordBoolean(
-          'NewTabPage.Modules.VisibleOnNTPLoad', !this.disabledModules_.all);
-      this.recordModuleLoadedWithModules_(modules);
-      this.dispatchEvent(new Event('modules-loaded'));
+        this.templateInstances_ =
+            createTemplateInstances(modules, this.moduleWrapperConstructor_!);
+        this.$.container.replaceChildren(
+            ...this.templateInstances_.map(t => t.children[0] as HTMLElement));
+      }
+
+      if (!this.modulesLoaded_) {
+        this.onInitialLoadDone_(modules, modulesIdNames);
+      }
 
       if (this.templateInstances_.length > 0) {
         this.registerHelpBubble(
@@ -313,6 +419,46 @@ export class ModulesV2Element extends AppElementBase {
     }
   }
 
+  private initModuleWrapperConstructor_() {
+    const template = this.shadowRoot!.querySelector('template')!;
+    this.moduleWrapperConstructor_ = templatize(template, this, {
+                                       parentModel: true,
+                                       forwardHostProp: this.forwardHostProp_,
+                                       instanceProps: {item: true},
+                                     }) as new (item: Object) =>
+                                         TemplateInstanceBase & HTMLElement;
+  }
+
+  /**
+   * Records initial load metrics and dispatches the `modules-loaded` event.
+   * @param modules The list of loaded `Module` objects.
+   * @param modulesIdNames The list of `ModuleIdName` objects, each containing
+   *     the ID and name of an available NTP module (regardless of
+   *     enabled/disabled state).
+   */
+  private onInitialLoadDone_(
+      modules: Module[], modulesIdNames: ModuleIdName[]) {
+    this.modulesLoaded_ = true;
+
+    // TODO(crbug.com/392707563): Decide if any of these metrics should be
+    // recorded again whenever the module container is reloaded.
+    chrome.metricsPrivate.recordSmallCount(
+        'NewTabPage.Modules.LoadedModulesCount', modules.length);
+    modulesIdNames.forEach(({id}) => {
+      chrome.metricsPrivate.recordBoolean(
+          `NewTabPage.Modules.EnabledOnNTPLoad.${id}`,
+          !this.disabledModules_.all &&
+              !this.disabledModules_.ids.includes(id));
+    });
+    chrome.metricsPrivate.recordSmallCount(
+        'NewTabPage.Modules.InstanceCount', this.templateInstances_.length);
+    chrome.metricsPrivate.recordBoolean(
+        'NewTabPage.Modules.VisibleOnNTPLoad', !this.disabledModules_.all);
+    this.recordModuleLoadedWithModules_(modules);
+
+    this.dispatchEvent(new Event('modules-loaded'));
+  }
+
   private recordModuleLoadedWithModules_(modules: Module[]) {
     const moduleDescriptorIds = modules.map(m => m.descriptor.id);
 
@@ -324,6 +470,47 @@ export class ModulesV2Element extends AppElementBase {
         }
       });
     }
+  }
+
+  /**
+   * Creates a template instance for a module then appends it to
+   * |this.templateInstances_| based on the provided module id.
+   *
+   * @param moduleId A module id to be leveraged when determining the
+   *     module to be initialized.
+   */
+  private async addTemplateInstance_(moduleId: string): Promise<void> {
+    const module = await this.moduleRegistry_.initializeModuleById(
+        moduleId, loadTimeData.getInteger('modulesLoadTimeout'));
+
+    if (!module) {
+      return;
+    }
+
+    if (!this.moduleWrapperConstructor_) {
+      this.initModuleWrapperConstructor_();
+    }
+
+    this.templateInstances_ = this.templateInstances_.concat(
+        ...createTemplateInstances([module], this.moduleWrapperConstructor_!));
+  }
+
+  /**
+   * Reloads the modules container by sorting template instances based on the
+   * order provided by |this.handler_| and then updating the container's DOM.
+   */
+  private async reloadModules_(): Promise<void> {
+    const orderedIds = (await this.handler_.getModulesOrder()).moduleIds;
+    this.templateInstances_ = this.templateInstances_.sort((a, b) => {
+      const aIndex = orderedIds.indexOf(
+          (a as unknown as ItemTemplateInstance).item.descriptor.id);
+      const bIndex = orderedIds.indexOf(
+          (b as unknown as ItemTemplateInstance).item.descriptor.id);
+      return aIndex - bIndex;
+    });
+
+    this.$.container.replaceChildren(
+        ...this.templateInstances_.map(t => t.children[0] as HTMLElement));
   }
 
   private forwardHostProp_(property: string, value: any) {
