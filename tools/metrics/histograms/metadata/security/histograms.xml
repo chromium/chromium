@@ -438,6 +438,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Security.PageInfo.MerchantTrustEngagement.{Event}"
+    units="EngagementScore" expires_after="2026-01-30">
+  <owner>tommasin@chromium.org</owner>
+  <owner>privacy-on-the-web@google.com</owner>
+  <summary>
+    Tracks the site engagement score when interacting with the merchant trust
+    UI.
+  </summary>
+  <token key="Event">
+    <variant name="BubbleOpened"/>
+    <variant name="PageInfoRowShown"/>
+    <variant name="SidePanelOpened"/>
+  </token>
+</histogram>
+
 <histogram name="Security.PageInfo.MerchantTrustInteraction.{SiteFamiliarity}"
     enum="MerchantTrustInteraction" expires_after="2026-01-30">
   <owner>tommasin@chromium.org</owner>

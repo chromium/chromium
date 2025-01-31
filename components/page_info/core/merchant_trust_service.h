@@ -130,6 +130,9 @@ class MerchantTrustService : public KeyedService {
   // Whether the evaluation survey should be shown based on how long ago user
   // interacted with the feature.
   bool CanShowEvaluationSurvey();
+
+  void RecordEngagementScore(const GURL& url,
+                             MerchantTrustInteraction interaction) const;
 };
 
 }  // namespace page_info

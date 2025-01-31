@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
 #include "components/commerce/core/proto/merchant_trust.pb.h"
@@ -245,6 +246,7 @@ void MerchantTrustService::RecordMerchantTrustInteraction(
 
   base::UmaHistogramEnumeration(histogram_name, interaction);
   base::RecordAction(base::UserMetricsAction(user_action_string.c_str()));
+  RecordEngagementScore(url, interaction);
 }
 
 void MerchantTrustService::RecordMerchantTrustUkm(
@@ -270,6 +272,35 @@ void MerchantTrustService::RecordMerchantTrustUkm(
       ukm::builders::Shopping_MerchantTrust_SidePanelOpened(source_id)
           .SetHasOccurred(true)
           .Record(ukm::UkmRecorder::Get());
+      break;
+    case MerchantTrustInteraction::kBubbleClosed:
+    case MerchantTrustInteraction::kSidePanelClosed:
+    case MerchantTrustInteraction::kSidePanelOpenedOnSameTabNavigation:
+    case MerchantTrustInteraction::kSidePanelClosedOnSameTabNavigation:
+      break;
+  }
+}
+
+void MerchantTrustService::RecordEngagementScore(
+    const GURL& url,
+    MerchantTrustInteraction interaction) const {
+  auto engagement_score = delegate_->GetSiteEngagementScore(url);
+  switch (interaction) {
+    case MerchantTrustInteraction::kPageInfoRowShown:
+      UMA_HISTOGRAM_COUNTS_100(
+          "Security.PageInfo.MerchantTrustEngagement.PageInfoRowShown",
+          engagement_score);
+      break;
+    case MerchantTrustInteraction::kBubbleOpenedFromPageInfo:
+    case MerchantTrustInteraction::kBubbleOpenedFromLocationBarChip:
+      UMA_HISTOGRAM_COUNTS_100(
+          "Security.PageInfo.MerchantTrustEngagement.BubbleOpened",
+          engagement_score);
+      break;
+    case MerchantTrustInteraction::kSidePanelOpened:
+      UMA_HISTOGRAM_COUNTS_100(
+          "Security.PageInfo.MerchantTrustEngagement.SidePanelOpened",
+          engagement_score);
       break;
     case MerchantTrustInteraction::kBubbleClosed:
     case MerchantTrustInteraction::kSidePanelClosed:
