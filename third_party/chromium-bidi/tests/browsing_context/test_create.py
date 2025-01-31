@@ -112,7 +112,7 @@ async def test_browsingContext_windowOpen_nonBlank_eventsEmitted(
         })
 
     events = await read_messages(
-        4,
+        5,
         # Filter out the command result, as it's order is not defined.
         filter_lambda=lambda m: 'id' not in m,
         keys_to_stabilize=['context', 'navigation'],
@@ -133,6 +133,15 @@ async def test_browsingContext_windowOpen_nonBlank_eventsEmitted(
         }
     }, {
         'method': 'browsingContext.navigationStarted',
+        'params': {
+            'context': 'stable_0',
+            'navigation': 'stable_1',
+            'timestamp': ANY_TIMESTAMP,
+            'url': url_example,
+        },
+        'type': 'event',
+    }, {
+        'method': 'browsingContext.navigationCommitted',
         'params': {
             'context': 'stable_0',
             'navigation': 'stable_1',

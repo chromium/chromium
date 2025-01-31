@@ -310,7 +310,12 @@ describe('NavigationTracker', () => {
 
         navigationTracker.frameNavigated(YET_ANOTHER_URL, LOADER_ID);
 
-        assertNoNavigationEvents();
+        assertNavigationEvent(
+          ChromiumBidi.BrowsingContext.EventNames.NavigationCommitted,
+          sinon.match.any,
+          YET_ANOTHER_URL,
+        );
+
         assert.equal(navigationTracker.url, YET_ANOTHER_URL);
 
         navigationTracker.loadPageEvent(LOADER_ID);
