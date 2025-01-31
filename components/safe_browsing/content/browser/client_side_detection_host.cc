@@ -125,6 +125,8 @@ std::string GetRequestTypeName(
       return "PointerLockRequested";
     case safe_browsing::ClientSideDetectionType::VIBRATION_API:
       return "VibrationApi";
+    case safe_browsing::ClientSideDetectionType::FULLSCREEN_API:
+      return "FullscreenApi";
   }
 }
 
@@ -315,6 +317,10 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest {
       base::UmaHistogramEnumeration(
           "SBClientPhishing.PreClassificationCheckResult", reason,
           PreClassificationCheckResult::NO_CLASSIFY_MAX);
+      base::UmaHistogramEnumeration(
+          "SBClientPhishing.PreClassificationCheckResult." +
+              GetRequestTypeName(phishing_detection_request_type_),
+          reason, PreClassificationCheckResult::NO_CLASSIFY_MAX);
       if (base::FeatureList::IsEnabled(
               kClientSideDetectionDebuggingMetadataCache) &&
           host_ && host_->delegate_->GetPrefs() &&
@@ -393,6 +399,12 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest {
 
     if (phishing_reason !=
         PreClassificationCheckResult::NO_CLASSIFY_NO_DATABASE_MANAGER) {
+      if (phishing_detection_request_type_ ==
+          ClientSideDetectionType::FULLSCREEN_API) {
+        base::UmaHistogramBoolean(
+            "SBClientPhishing.MatchCSDAllowlistOnFullscreenApi",
+            match_allowlist);
+      }
       // This check is also for logging purposes although the CSD allowlist
       // could be matched or not checked at all. Once it completes,
       // preclassification check will continue.
@@ -439,6 +451,16 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest {
     if (phishing_reason == NO_CLASSIFY_MAX && ShouldAcceptHCAllowlist()) {
       phishing_reason =
           PreClassificationCheckResult::NO_CLASSIFY_MATCH_HC_ALLOWLIST;
+    }
+
+    if (phishing_detection_request_type_ ==
+        ClientSideDetectionType::FULLSCREEN_API) {
+      // The purpose of triggering preclassification for fullscreen API to have
+      // an initial assessment on how often we'll be hitting the allowlist and
+      // triggering the classification. We will not go further than checking for
+      // this metric for now.
+      DontClassifyForPhishing(
+          PreClassificationCheckResult::NO_CLASSIFY_ALLOWLIST_METRIC);
     }
 
     CheckCache(phishing_reason);
@@ -760,6 +782,20 @@ void ClientSideDetectionHost::VibrationRequested() {
       ClientSideDetectionFeatureCache::FromWebContents(web_contents());
   if (!feature_cache_map->WasVibrationClassificationTriggered(current_url_)) {
     MaybeStartPreClassification(ClientSideDetectionType::VIBRATION_API);
+  }
+}
+
+void ClientSideDetectionHost::DidToggleFullscreenModeForTab(
+    bool entered_fullscreen,
+    bool will_cause_resize) {
+  // We do not check for entered_fullscreen, because although the user may never
+  // successfully enter fullscreen, we want to proceed with the
+  // preclassification check. Instead, we check for |last_fullscreen_url|
+  // instead which is updated per fresh committed URL on the RenderFrameHost.
+  content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
+  if (rfh->GetLastCommittedURL() != last_fullscreen_url_) {
+    last_fullscreen_url_ = rfh->GetLastCommittedURL();
+    MaybeStartPreClassification(ClientSideDetectionType::FULLSCREEN_API);
   }
 }
 

@@ -166,6 +166,7 @@ chromium-metrics-reviews@google.com.
   <int value="16" label="CHROME_UI_PAGE"/>
   <int value="17" label="(Obsolete) NOT_ALLOWED_BY_POLICY"/>
   <int value="18" label="MATCH_HC_ALLOWLIST"/>
+  <int value="19" label="ALLOWLIST_MATCH_METRIC"/>
 </enum>
 
 <enum name="SBClientDownloadCheckDownloadStats">
