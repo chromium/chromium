@@ -17,6 +17,7 @@
 #include "extensions/browser/api/storage/storage_frontend.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/test/extension_background_page_waiter.h"
 #include "extensions/test/extension_test_message_listener.h"
 
@@ -64,10 +65,19 @@ class DevToolsExtensionsProtocolTest : public DevToolsProtocolTestBase {
 
 class DevToolsExtensionsProtocolWithUnsafeDebuggingTest
     : public DevToolsExtensionsProtocolTest {
+ public:
+  DevToolsExtensionsProtocolWithUnsafeDebuggingTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        extensions_features::kExtensionDisableUnsupportedDeveloper);
+  }
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     DevToolsExtensionsProtocolTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(::switches::kEnableUnsafeExtensionDebugging);
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest, CannotInstallExtension) {
