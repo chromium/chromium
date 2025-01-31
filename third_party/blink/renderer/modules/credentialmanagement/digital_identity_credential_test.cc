@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/webid/digital_identity_request.mojom-forward.h"
 #include "third_party/blink/public/mojom/webid/digital_identity_request.mojom.h"
@@ -17,6 +18,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_credential_creation_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_credential_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_digital_credential_creation_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_digital_credential_request.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_digital_credential_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_request_provider.h"
@@ -34,6 +36,10 @@ namespace blink {
 
 namespace {
 
+using testing::_;
+using testing::SizeIs;
+using testing::WithArg;
+
 // Mock mojom::DigitalIdentityRequest which succeeds and returns "token".
 class MockDigitalIdentityRequest : public mojom::DigitalIdentityRequest {
  public:
@@ -47,11 +53,12 @@ class MockDigitalIdentityRequest : public mojom::DigitalIdentityRequest {
     receiver_.Bind(std::move(receiver));
   }
 
-  void Get(std::vector<blink::mojom::DigitalCredentialRequestPtr> requests,
-           GetCallback callback) override {
-    std::move(callback).Run(mojom::RequestDigitalIdentityStatus::kSuccess,
-                            "protocol", "token");
-  }
+  MOCK_METHOD(void,
+              Get,
+              (std::vector<blink::mojom::DigitalCredentialRequestPtr> requests,
+               blink::mojom::GetRequestFormat format,
+               GetCallback callback),
+              (override));
 
   void Create(blink::mojom::DigitalCredentialRequestPtr request,
               CreateCallback callback) override {
@@ -65,7 +72,7 @@ class MockDigitalIdentityRequest : public mojom::DigitalIdentityRequest {
   mojo::Receiver<mojom::DigitalIdentityRequest> receiver_{this};
 };
 
-CredentialRequestOptions* CreateGetOptionsWithProviders(
+CredentialRequestOptions* CreateLegacyGetOptionsWithProviders(
     const HeapVector<Member<IdentityRequestProvider>>& providers) {
   DigitalCredentialRequestOptions* digital_credential_request =
       DigitalCredentialRequestOptions::Create();
@@ -75,7 +82,7 @@ CredentialRequestOptions* CreateGetOptionsWithProviders(
   return options;
 }
 
-CredentialRequestOptions* CreateValidGetOptions() {
+CredentialRequestOptions* CreateLegacyGetValidOptions() {
   IdentityRequestProvider* identity_provider =
       IdentityRequestProvider::Create();
   identity_provider->setProtocol("openid4vp");
@@ -83,7 +90,27 @@ CredentialRequestOptions* CreateValidGetOptions() {
       MakeGarbageCollected<V8UnionObjectOrString>(String("request")));
   HeapVector<Member<IdentityRequestProvider>> identity_providers;
   identity_providers.push_back(identity_provider);
-  return CreateGetOptionsWithProviders(identity_providers);
+  return CreateLegacyGetOptionsWithProviders(identity_providers);
+}
+
+CredentialRequestOptions* CreateGetOptionsWithRequests(
+    const HeapVector<Member<DigitalCredentialRequest>>& requests) {
+  DigitalCredentialRequestOptions* digital_credential_request =
+      DigitalCredentialRequestOptions::Create();
+  digital_credential_request->setRequests(requests);
+  CredentialRequestOptions* options = CredentialRequestOptions::Create();
+  options->setDigital(digital_credential_request);
+  return options;
+}
+
+CredentialRequestOptions* CreateValidGetOptions() {
+  DigitalCredentialRequest* request = DigitalCredentialRequest::Create();
+  request->setProtocol("openid4vp");
+  request->setData(
+      MakeGarbageCollected<V8UnionObjectOrString>(String("request")));
+  HeapVector<Member<DigitalCredentialRequest>> requests;
+  requests.push_back(request);
+  return CreateGetOptionsWithRequests(requests);
 }
 
 CredentialCreationOptions* CreateValidCreateOptions() {
@@ -111,20 +138,33 @@ class DigitalIdentityCredentialTest : public testing::Test {
   DigitalIdentityCredentialTest& operator=(
       const DigitalIdentityCredentialTest&) = delete;
 
+  void SetUp() override {
+    ON_CALL(mock_request_, Get)
+        .WillByDefault(
+            WithArg<2>([](mojom::DigitalIdentityRequest::GetCallback callback) {
+              std::move(callback).Run(
+                  mojom::RequestDigitalIdentityStatus::kSuccess, "protocol",
+                  "token");
+            }));
+  }
+
+  MockDigitalIdentityRequest* mock_request() { return &mock_request_; }
+
  private:
   test::TaskEnvironment task_environment_;
+  MockDigitalIdentityRequest mock_request_;
 };
 
 // Test that navigator.credentials.get() increments the feature use counter when
-// one of the identity providers is a digital identity credential.
-TEST_F(DigitalIdentityCredentialTest, IdentityDigitalCredentialUseCounter) {
+// one of the identity providers is a digital identity credential using the
+// legacy request format.
+TEST_F(DigitalIdentityCredentialTest,
+       IdentityDigitalCredentialUseCounterForLegacyRequestFormat) {
   V8TestingScope context(::blink::KURL("https://example.test"));
 
   ScopedWebIdentityDigitalCredentialsForTest scoped_digital_credentials(
       /*enabled=*/true);
 
-  std::unique_ptr mock_request = std::make_unique<MockDigitalIdentityRequest>();
-  auto mock_request_ptr = mock_request.get();
   context.GetWindow().GetBrowserInterfaceBroker().SetBinderForTesting(
       mojom::DigitalIdentityRequest::Name_,
       WTF::BindRepeating(
@@ -134,12 +174,58 @@ TEST_F(DigitalIdentityCredentialTest, IdentityDigitalCredentialUseCounter) {
                 mojo::PendingReceiver<mojom::DigitalIdentityRequest>(
                     std::move(handle)));
           },
-          WTF::Unretained(mock_request_ptr)));
+          WTF::Unretained(mock_request())));
 
   ScriptState* script_state = context.GetScriptState();
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLNullable<Credential>>>(
           script_state);
+
+  EXPECT_CALL(*mock_request(),
+              Get(SizeIs(1), mojom::GetRequestFormat::kLegacy, _));
+  DiscoverDigitalIdentityCredentialFromExternalSource(
+      resolver, *CreateLegacyGetValidOptions(), context.GetExceptionState());
+
+  test::RunPendingTasks();
+
+  EXPECT_TRUE(context.GetWindow().document()->IsUseCounted(
+      blink::mojom::WebFeature::kIdentityDigitalCredentials));
+  EXPECT_TRUE(context.GetWindow().document()->IsUseCounted(
+      blink::mojom::WebFeature::kIdentityDigitalCredentialsSuccess));
+
+  // Remove the binding for other tests to be able to set their own binding.
+  // Otherwise, it it wll be bound already.
+  context.GetWindow().GetBrowserInterfaceBroker().SetBinderForTesting(
+      mojom::DigitalIdentityRequest::Name_, {});
+}
+
+// Test that navigator.credentials.get() increments the feature use counter when
+// one of the identity requests is a digital identity credential using the
+// modern request format.
+TEST_F(DigitalIdentityCredentialTest, IdentityDigitalCredentialUseCounter) {
+  V8TestingScope context(::blink::KURL("https://example.test"));
+
+  ScopedWebIdentityDigitalCredentialsForTest scoped_digital_credentials(
+      /*enabled=*/true);
+
+  context.GetWindow().GetBrowserInterfaceBroker().SetBinderForTesting(
+      mojom::DigitalIdentityRequest::Name_,
+      WTF::BindRepeating(
+          [](MockDigitalIdentityRequest* mock_request_ptr,
+             mojo::ScopedMessagePipeHandle handle) {
+            mock_request_ptr->Bind(
+                mojo::PendingReceiver<mojom::DigitalIdentityRequest>(
+                    std::move(handle)));
+          },
+          WTF::Unretained(mock_request())));
+
+  ScriptState* script_state = context.GetScriptState();
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLNullable<Credential>>>(
+          script_state);
+
+  EXPECT_CALL(*mock_request(),
+              Get(SizeIs(1), mojom::GetRequestFormat::kModern, _));
   DiscoverDigitalIdentityCredentialFromExternalSource(
       resolver, *CreateValidGetOptions(), context.GetExceptionState());
 
@@ -149,6 +235,53 @@ TEST_F(DigitalIdentityCredentialTest, IdentityDigitalCredentialUseCounter) {
       blink::mojom::WebFeature::kIdentityDigitalCredentials));
   EXPECT_TRUE(context.GetWindow().document()->IsUseCounted(
       blink::mojom::WebFeature::kIdentityDigitalCredentialsSuccess));
+}
+
+// Test that navigator.credentials.get() doesn't forward request with legacy
+// format when it's not supported anymore.
+TEST_F(DigitalIdentityCredentialTest,
+       IdentityDigitalCredentialForLegacyRequestFormatNotSupported) {
+  V8TestingScope context(::blink::KURL("https://example.test"));
+
+  ScopedWebIdentityDigitalCredentialsForTest scoped_digital_credentials(
+      /*enabled=*/true);
+  ScopedWebIdentityDigitalCredentialsStopSupportingLegacyRequestFormatForTest
+      scoped_no_legacy_format_support(/*enabled=*/true);
+
+  context.GetWindow().GetBrowserInterfaceBroker().SetBinderForTesting(
+      mojom::DigitalIdentityRequest::Name_,
+      WTF::BindRepeating(
+          [](MockDigitalIdentityRequest* mock_request_ptr,
+             mojo::ScopedMessagePipeHandle handle) {
+            mock_request_ptr->Bind(
+                mojo::PendingReceiver<mojom::DigitalIdentityRequest>(
+                    std::move(handle)));
+          },
+          WTF::Unretained(mock_request())));
+
+  ScriptState* script_state = context.GetScriptState();
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLNullable<Credential>>>(
+          script_state);
+
+  // All requests will dropped at the rendered layer since they use the legacy
+  // format which isn't supported anymore, and hence the request won't be
+  // invoked.
+  EXPECT_CALL(*mock_request(), Get).Times(0);
+  DiscoverDigitalIdentityCredentialFromExternalSource(
+      resolver, *CreateLegacyGetValidOptions(), context.GetExceptionState());
+
+  test::RunPendingTasks();
+
+  EXPECT_FALSE(context.GetWindow().document()->IsUseCounted(
+      blink::mojom::WebFeature::kIdentityDigitalCredentials));
+  EXPECT_FALSE(context.GetWindow().document()->IsUseCounted(
+      blink::mojom::WebFeature::kIdentityDigitalCredentialsSuccess));
+
+  // Remove the binding for other tests to be able to set their own binding.
+  // Otherwise, it it wll be bound already.
+  context.GetWindow().GetBrowserInterfaceBroker().SetBinderForTesting(
+      mojom::DigitalIdentityRequest::Name_, {});
 }
 
 // Test that navigator.credentials.create() increments the feature use counter
@@ -186,6 +319,11 @@ TEST_F(DigitalIdentityCredentialTest,
       blink::mojom::WebFeature::kIdentityDigitalCredentials));
   EXPECT_TRUE(context.GetWindow().document()->IsUseCounted(
       blink::mojom::WebFeature::kIdentityDigitalCredentialsSuccess));
+
+  // Remove the binding for other tests to be able to set their own binding.
+  // Otherwise, it wll be bound already.
+  context.GetWindow().GetBrowserInterfaceBroker().SetBinderForTesting(
+      mojom::DigitalIdentityRequest::Name_, {});
 }
 
 }  // namespace blink

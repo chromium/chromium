@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_credential_creation_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_credential_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_digital_credential_creation_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_digital_credential_request.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_digital_credential_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_provider_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_request_provider.h"
@@ -182,27 +183,54 @@ void DiscoverDigitalIdentityCredentialFromExternalSource(
     return;
   }
 
+  auto process_request =
+      [resolver](
+          V8UnionObjectOrString* request_object_or_string,
+          const String& protocol,
+          Vector<blink::mojom::blink::DigitalCredentialRequestPtr>& requests) {
+        String stringified_request;
+        if (request_object_or_string->IsString()) {
+          stringified_request = request_object_or_string->GetAsString();
+        } else {
+          stringified_request = ValidateAndStringifyObject(
+              resolver, request_object_or_string->GetAsObject());
+          if (stringified_request.IsNull()) {
+            return;
+          }
+        }
+
+        blink::mojom::blink::DigitalCredentialRequestPtr
+            digital_credential_request =
+                blink::mojom::blink::DigitalCredentialRequest::New();
+        digital_credential_request->protocol = protocol;
+        digital_credential_request->data = stringified_request;
+        requests.push_back(std::move(digital_credential_request));
+      };
+
+  mojom::blink::GetRequestFormat format =
+      mojom::blink::GetRequestFormat::kModern;
+  // When the new format is available (i.e. contains requests()), consider it,
+  // otherwise use the old format (i.e. contains providers).
   Vector<blink::mojom::blink::DigitalCredentialRequestPtr> requests;
-  for (const auto& provider : options.digital()->providers()) {
-    V8UnionObjectOrString* request_object_or_string = provider->request();
-
-    String stringified_request;
-    if (request_object_or_string->IsString()) {
-      stringified_request = request_object_or_string->GetAsString();
-    } else {
-      stringified_request = ValidateAndStringifyObject(
-          resolver, request_object_or_string->GetAsObject());
-      if (stringified_request.IsNull()) {
-        continue;
-      }
+  if (options.digital()->hasRequests()) {
+    format = mojom::blink::GetRequestFormat::kModern;
+    for (const auto& request : options.digital()->requests()) {
+      process_request(request->data(), request->protocol(), requests);
     }
+  } else if (
+      options.digital()->hasProviders() &&
+      !RuntimeEnabledFeatures::
+          WebIdentityDigitalCredentialsStopSupportingLegacyRequestFormatEnabled()) {
+    format = mojom::blink::GetRequestFormat::kLegacy;
+    for (const auto& provider : options.digital()->providers()) {
+      process_request(provider->request(), provider->protocol(), requests);
+    }
+  }
 
-    blink::mojom::blink::DigitalCredentialRequestPtr
-        digital_credential_request =
-            blink::mojom::blink::DigitalCredentialRequest::New();
-    digital_credential_request->protocol = provider->protocol();
-    digital_credential_request->data = stringified_request;
-    requests.push_back(std::move(digital_credential_request));
+  if (requests.empty()) {
+    resolver->RejectWithTypeError(
+        "Digital identity API needs at least one request.");
+    return;
   }
 
   UseCounter::Count(resolver->GetExecutionContext(),
@@ -218,7 +246,7 @@ void DiscoverDigitalIdentityCredentialFromExternalSource(
 
   auto* request =
       CredentialManagerProxy::From(script_state)->DigitalIdentityRequest();
-  request->Get(std::move(requests),
+  request->Get(std::move(requests), format,
                WTF::BindOnce(&OnCompleteRequest, WrapPersistent(resolver),
                              std::move(scoped_abort_state)));
 }

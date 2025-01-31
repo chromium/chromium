@@ -1,13 +1,4 @@
 This is a testharness.js-based test.
-[FAIL] navigator.credentials.get() promise is rejected if called with an aborted controller.
-  promise_rejects_dom: function "function() { throw e }" threw object "TypeError: Failed to execute 'get' on 'CredentialsContainer': Failed to read the 'digital' property from 'CredentialRequestOptions': Failed to read the 'providers' property from 'DigitalCredentialRequestOptions': Required member is undefined." that is not a DOMException AbortError: property "code" is equal to undefined, expected 20
-[FAIL] navigator.credentials.get() promise is rejected if called with an aborted controller in same-origin iframe.
-  promise_rejects_dom: function "function() { throw e }" threw object "TypeError: Failed to execute 'get' on 'CredentialsContainer': Failed to read the 'digital' property from 'CredentialRequestOptions': Failed to read the 'providers' property from 'DigitalCredentialRequestOptions': Required member is undefined." that is not a DOMException AbortError: property "code" is equal to undefined, expected 20
-[FAIL] navigator.credentials.get() promise is rejected if called with an aborted signal in cross-origin iframe.
-  assert_equals: expected "DOMException" but got "TypeError"
-[FAIL] navigator.credentials.get() promise is rejected if abort controller is aborted after call to get().
-  promise_rejects_dom: function "function() { throw e }" threw object "TypeError: Failed to execute 'get' on 'CredentialsContainer': Failed to read the 'digital' property from 'CredentialRequestOptions': Failed to read the 'providers' property from 'DigitalCredentialRequestOptions': Required member is undefined." that is not a DOMException AbortError: property "code" is equal to undefined, expected 20
-[FAIL] navigator.credentials.get() promise is rejected if abort controller is aborted after call to get() in cross-origin iframe.
-  assert_equals: expected "DOMException" but got "TypeError"
+[FAIL] Mediation is required to get a DigitalCredential.
+  assert_unreached: Should have rejected: undefined Reached unreachable code
 Harness: the test ran to completion.
-

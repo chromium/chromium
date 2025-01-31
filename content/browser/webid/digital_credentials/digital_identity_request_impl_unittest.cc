@@ -13,12 +13,15 @@
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
+#include "content/browser/webid/test/mock_digital_identity_provider.h"
 #include "content/browser/webid/test/stub_digital_identity_provider.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/test/test_render_frame_host.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
@@ -27,12 +30,17 @@ namespace {
 constexpr char kOpenid4vpProtocol[] = "openid4vp";
 constexpr char kPreviewProtocol[] = "preview";
 
+using base::Value;
+using base::ValueView;
+using testing::_;
+using testing::DoAll;
+using testing::WithArg;
+
 using InterstitialType = content::DigitalIdentityInterstitialType;
 using DigitalCredentialRequestPtr = blink::mojom::DigitalCredentialRequestPtr;
 using DigitalCredentialRequest = blink::mojom::DigitalCredentialRequest;
 using RequestDigitalIdentityStatus = blink::mojom::RequestDigitalIdentityStatus;
 
-using testing::_;
 
 // StubDigitalIdentityProvider which enables overriding
 // DigitalIdentityProvider::IsLowRiskOrigin().
@@ -194,7 +202,7 @@ std::optional<InterstitialType> ComputeInterstitialType(
 
 }  // anonymous namespace
 
-class DigitalIdentityRequestImplTest : public testing::Test {
+class DigitalIdentityRequestImplInterstitialTest : public testing::Test {
  public:
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
@@ -205,14 +213,14 @@ class DigitalIdentityRequestImplTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(DigitalIdentityRequestImplTest,
+TEST_F(DigitalIdentityRequestImplInterstitialTest,
        Openid4VpProtocol_ComputeInterstitialType_OnlyAgeOver) {
   EXPECT_EQ(std::nullopt,
             ComputeInterstitialType(kOpenid4vpProtocol,
                                     GenerateOnlyAgeOpenid4VpRequest()));
 }
 
-TEST_F(DigitalIdentityRequestImplTest,
+TEST_F(DigitalIdentityRequestImplInterstitialTest,
        Openid4VpProtocol_ComputeInterstitialType_OnlyAgeInYears) {
   base::Value request = GenerateOnlyAgeOpenid4VpRequest();
   ASSERT_TRUE(SetPathItem(request, "$['org.iso.18013.5.1']['age_in_years']"));
@@ -220,7 +228,7 @@ TEST_F(DigitalIdentityRequestImplTest,
             ComputeInterstitialType(kOpenid4vpProtocol, std::move(request)));
 }
 
-TEST_F(DigitalIdentityRequestImplTest,
+TEST_F(DigitalIdentityRequestImplInterstitialTest,
        Openid4VpProtocol_ComputeIntersitialType_OnlyAgeBirthYear) {
   base::Value request = GenerateOnlyAgeOpenid4VpRequest();
   ASSERT_TRUE(SetPathItem(request, "$['org.iso.18013.5.1']['age_birth_year']"));
@@ -228,7 +236,7 @@ TEST_F(DigitalIdentityRequestImplTest,
             ComputeInterstitialType(kOpenid4vpProtocol, std::move(request)));
 }
 
-TEST_F(DigitalIdentityRequestImplTest,
+TEST_F(DigitalIdentityRequestImplInterstitialTest,
        Openid4VpProtocol_ComputeIntersitialType_OnlyBirthDate) {
   base::Value request = GenerateOnlyAgeOpenid4VpRequest();
   ASSERT_TRUE(SetPathItem(request, "$['org.iso.18013.5.1']['birth_date']"));
@@ -242,14 +250,14 @@ base::Value GenerateNonAgeOpenid4VpRequest() {
   return request;
 }
 
-TEST_F(DigitalIdentityRequestImplTest,
+TEST_F(DigitalIdentityRequestImplInterstitialTest,
        Openid4VpProtocol_ComputeIntersitialType_OnlyNonAgeDataElement) {
   EXPECT_EQ(InterstitialType::kLowRisk,
             ComputeInterstitialType(kOpenid4vpProtocol,
                                     GenerateNonAgeOpenid4VpRequest()));
 }
 
-TEST_F(DigitalIdentityRequestImplTest,
+TEST_F(DigitalIdentityRequestImplInterstitialTest,
        Openid4VpProtocol_LowRiskOriginTakesPrecedenceOverRequestType) {
   auto provider = std::make_unique<TestDigitalIdentityProviderWithCustomRisk>(
       /*are_origins_low_risk=*/true);
@@ -258,7 +266,7 @@ TEST_F(DigitalIdentityRequestImplTest,
                               GenerateNonAgeOpenid4VpRequest()));
 }
 
-TEST_F(DigitalIdentityRequestImplTest,
+TEST_F(DigitalIdentityRequestImplInterstitialTest,
        Openid4VpProtocol_ComputeInterstitialType_EmptyPathList) {
   base::Value request = GenerateOnlyAgeOpenid4VpRequest();
   base::Value* paths = FindValueWithKey(request, "path");
@@ -269,7 +277,7 @@ TEST_F(DigitalIdentityRequestImplTest,
             ComputeInterstitialType(kOpenid4vpProtocol, std::move(request)));
 }
 
-TEST_F(DigitalIdentityRequestImplTest,
+TEST_F(DigitalIdentityRequestImplInterstitialTest,
        Openid4VpProtocol_ComputeInterstitialType_RequestMultiplePaths) {
   base::Value request = GenerateOnlyAgeOpenid4VpRequest();
   base::Value* paths = FindValueWithKey(request, "path");
@@ -282,7 +290,7 @@ TEST_F(DigitalIdentityRequestImplTest,
             ComputeInterstitialType(kOpenid4vpProtocol, std::move(request)));
 }
 
-TEST_F(DigitalIdentityRequestImplTest,
+TEST_F(DigitalIdentityRequestImplInterstitialTest,
        Openid4VpProtocol_ComputeInterstitialType_NoPath) {
   base::Value request = GenerateOnlyAgeOpenid4VpRequest();
   base::Value* fields = FindValueWithKey(request, "fields");
@@ -293,7 +301,7 @@ TEST_F(DigitalIdentityRequestImplTest,
             ComputeInterstitialType(kOpenid4vpProtocol, std::move(request)));
 }
 
-TEST_F(DigitalIdentityRequestImplTest,
+TEST_F(DigitalIdentityRequestImplInterstitialTest,
        Openid4VpProtocol_ComputeInterstitialType_EmptyFieldsList) {
   base::Value request = GenerateOnlyAgeOpenid4VpRequest();
   base::Value* fields = FindValueWithKey(request, "fields");
@@ -304,7 +312,7 @@ TEST_F(DigitalIdentityRequestImplTest,
             ComputeInterstitialType(kOpenid4vpProtocol, std::move(request)));
 }
 
-TEST_F(DigitalIdentityRequestImplTest,
+TEST_F(DigitalIdentityRequestImplInterstitialTest,
        Openid4VpProtocol_ComputeInterstitialType_RequestMultipleAgeAssertions) {
   base::Value request = GenerateOnlyAgeOpenid4VpRequest();
   base::Value* fields = FindValueWithKey(request, "fields");
@@ -321,7 +329,7 @@ TEST_F(DigitalIdentityRequestImplTest,
             ComputeInterstitialType(kOpenid4vpProtocol, std::move(request)));
 }
 
-TEST_F(DigitalIdentityRequestImplTest,
+TEST_F(DigitalIdentityRequestImplInterstitialTest,
        Openid4VpProtocol_ComputeInterstitialType_RequestMultipleFields) {
   base::Value request = GenerateOnlyAgeOpenid4VpRequest();
   base::Value* fields = FindValueWithKey(request, "fields");
@@ -338,7 +346,7 @@ TEST_F(DigitalIdentityRequestImplTest,
             ComputeInterstitialType(kOpenid4vpProtocol, std::move(request)));
 }
 
-TEST_F(DigitalIdentityRequestImplTest,
+TEST_F(DigitalIdentityRequestImplInterstitialTest,
        Openid4VpProtocol_ComputeInterstitialType_NoConstraints) {
   base::Value request = GenerateOnlyAgeOpenid4VpRequest();
   base::Value* input_descriptors =
@@ -350,7 +358,7 @@ TEST_F(DigitalIdentityRequestImplTest,
             ComputeInterstitialType(kOpenid4vpProtocol, std::move(request)));
 }
 
-TEST_F(DigitalIdentityRequestImplTest,
+TEST_F(DigitalIdentityRequestImplInterstitialTest,
        Openid4VpProtocol_ComputeInterstitialType_EmptyInputDescriptorList) {
   base::Value request = GenerateOnlyAgeOpenid4VpRequest();
   base::Value* input_descriptors =
@@ -362,7 +370,7 @@ TEST_F(DigitalIdentityRequestImplTest,
             ComputeInterstitialType(kOpenid4vpProtocol, std::move(request)));
 }
 
-TEST_F(DigitalIdentityRequestImplTest,
+TEST_F(DigitalIdentityRequestImplInterstitialTest,
        Openid4VpProtocol_ComputeInterstitialType_RequestMultipleDocuments) {
   base::Value request = GenerateOnlyAgeOpenid4VpRequest();
   base::Value* input_descriptors =
@@ -376,7 +384,7 @@ TEST_F(DigitalIdentityRequestImplTest,
             ComputeInterstitialType(kOpenid4vpProtocol, std::move(request)));
 }
 
-TEST_F(DigitalIdentityRequestImplTest,
+TEST_F(DigitalIdentityRequestImplInterstitialTest,
        Openid4VpProtocol_ComputeInterstitialType_NonMdlInputDescriptorId) {
   base::Value request = GenerateOnlyAgeOpenid4VpRequest();
   base::Value* input_descriptors =
@@ -391,7 +399,7 @@ TEST_F(DigitalIdentityRequestImplTest,
             ComputeInterstitialType(kOpenid4vpProtocol, std::move(request)));
 }
 
-TEST_F(DigitalIdentityRequestImplTest,
+TEST_F(DigitalIdentityRequestImplInterstitialTest,
        Openid4VpProtocol_ComputeInterstitialType_NoPresentationDefinition) {
   base::Value request = GenerateOnlyAgeOpenid4VpRequest();
   RemoveDictKey(request.GetDict(), "presentation_definition");
@@ -400,14 +408,14 @@ TEST_F(DigitalIdentityRequestImplTest,
             ComputeInterstitialType(kOpenid4vpProtocol, std::move(request)));
 }
 
-TEST_F(DigitalIdentityRequestImplTest,
+TEST_F(DigitalIdentityRequestImplInterstitialTest,
        PreviewProtocol_ComputeInterstitialType_OnlyAgeOver) {
   EXPECT_EQ(std::nullopt,
             ComputeInterstitialType(kPreviewProtocol,
                                     GenerateOnlyAgePreviewRequest()));
 }
 
-TEST_F(DigitalIdentityRequestImplTest,
+TEST_F(DigitalIdentityRequestImplInterstitialTest,
        PreviewProtocol_ComputeInterstitialType_OnlyAgeInYears) {
   base::Value request = GenerateOnlyAgePreviewRequest();
   ASSERT_TRUE(SetFieldNameValue(request, "age_in_years"));
@@ -415,7 +423,7 @@ TEST_F(DigitalIdentityRequestImplTest,
             ComputeInterstitialType(kPreviewProtocol, std::move(request)));
 }
 
-TEST_F(DigitalIdentityRequestImplTest,
+TEST_F(DigitalIdentityRequestImplInterstitialTest,
        PreviewProtocol_ComputeIntersitialType_OnlyAgeBirthYear) {
   base::Value request = GenerateOnlyAgePreviewRequest();
   ASSERT_TRUE(SetFieldNameValue(request, "age_birth_year"));
@@ -423,7 +431,7 @@ TEST_F(DigitalIdentityRequestImplTest,
             ComputeInterstitialType(kPreviewProtocol, std::move(request)));
 }
 
-TEST_F(DigitalIdentityRequestImplTest,
+TEST_F(DigitalIdentityRequestImplInterstitialTest,
        PreviewProtocol_ComputeIntersitialType_OnlyBirthDate) {
   base::Value request = GenerateOnlyAgePreviewRequest();
   ASSERT_TRUE(SetFieldNameValue(request, "birth_date"));
@@ -431,7 +439,7 @@ TEST_F(DigitalIdentityRequestImplTest,
             ComputeInterstitialType(kPreviewProtocol, std::move(request)));
 }
 
-TEST_F(DigitalIdentityRequestImplTest,
+TEST_F(DigitalIdentityRequestImplInterstitialTest,
        PreviewProtocol_ComputeIntersitialType_GivenName) {
   base::Value request = GenerateOnlyAgePreviewRequest();
   ASSERT_TRUE(SetFieldNameValue(request, "given_name"));
@@ -556,6 +564,137 @@ TEST_F(DigitalIdentityRequestImplWithCreationEnabledTest,
   digital_identity_request_impl()->Create(std::move(digital_credential_request),
                                           callback.Get());
   digital_identity_request_impl()->Abort();
+}
+
+class ContentBrowserClientWithMockDigitalIdentityProvider
+    : public ContentBrowserClient {
+ public:
+  ContentBrowserClientWithMockDigitalIdentityProvider() = default;
+  ~ContentBrowserClientWithMockDigitalIdentityProvider() override = default;
+
+  // ContentBrowserClient overrides:
+  std::unique_ptr<DigitalIdentityProvider> CreateDigitalIdentityProvider()
+      override {
+    return std::move(provider_);
+  }
+
+  void SetDigitalIdentityProvider(
+      std::unique_ptr<DigitalIdentityProvider> provider) {
+    provider_ = std::move(provider);
+  }
+
+ private:
+  std::unique_ptr<DigitalIdentityProvider> provider_;
+};
+
+class DigitalIdentityRequestImplTest : public RenderViewHostTestHarness {
+ public:
+  void SetUp() override {
+    RenderViewHostTestHarness::SetUp();
+
+    auto mock_digital_identity_provider =
+        std::make_unique<MockDigitalIdentityProvider>();
+    mock_digital_identity_provider_ = mock_digital_identity_provider.get();
+    content_browser_client_.SetDigitalIdentityProvider(
+        std::move(mock_digital_identity_provider));
+    content::SetBrowserClientForTesting(&content_browser_client_);
+
+    digital_identity_request_impl_ = DigitalIdentityRequestImpl::CreateInstance(
+        *web_contents()->GetPrimaryMainFrame(),
+        request_remote_.BindNewPipeAndPassReceiver());
+
+    content::RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
+        ->SimulateUserActivation();
+
+    // Tests in this fixture don't test the dialog behaviour.
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kWebIdentityDigitalCredentials, {{"dialog", "no_dialog"}});
+  }
+
+  void TearDown() override {
+    // Reset here to avoid dangling pointer upon the destruction of the rvh.
+    digital_identity_request_impl_ = nullptr;
+    mock_digital_identity_provider_ = nullptr;
+    RenderViewHostTestHarness::TearDown();
+  }
+
+  DigitalIdentityRequestImpl* digital_identity_request_impl() {
+    return digital_identity_request_impl_.get();
+  }
+
+  MockDigitalIdentityProvider* mock_digital_identity_provider() {
+    return mock_digital_identity_provider_;
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  // base::test::ScopedCommandLine command_line_;
+
+  raw_ptr<MockDigitalIdentityProvider> mock_digital_identity_provider_;
+  ContentBrowserClientWithMockDigitalIdentityProvider content_browser_client_;
+
+  mojo::Remote<blink::mojom::DigitalIdentityRequest> request_remote_;
+  base::WeakPtr<DigitalIdentityRequestImpl> digital_identity_request_impl_;
+};
+
+TEST_F(DigitalIdentityRequestImplTest, ShouldGetUsingLegacyFormat) {
+  const std::string kProtocol = "protocol";
+
+  DigitalCredentialRequestPtr digital_credential_request =
+      DigitalCredentialRequest::New();
+  digital_credential_request->protocol = kProtocol;
+  digital_credential_request->data = "{\"data\": \"request data\"}";
+
+  std::vector<DigitalCredentialRequestPtr> requests;
+  requests.push_back(std::move(digital_credential_request));
+
+  base::RunLoop run_loop;
+  // Intercept the `Get()` call and verify that the request is formatted
+  // properly.
+  EXPECT_CALL(*mock_digital_identity_provider(), Get)
+      .WillOnce(DoAll(WithArg<2>([](ValueView request) {
+                        Value::Dict dict = request.ToValue().GetDict().Clone();
+                        EXPECT_TRUE(dict.contains("providers"));
+                        for (const Value& req : *dict.FindList("providers")) {
+                          EXPECT_TRUE(req.GetDict().contains("protocol"));
+                          EXPECT_TRUE(req.GetDict().contains("request"));
+                        }
+                      }),
+                      base::test::RunOnceClosure(run_loop.QuitClosure())));
+  digital_identity_request_impl()->Get(std::move(requests),
+                                       blink::mojom::GetRequestFormat::kLegacy,
+                                       base::DoNothing());
+  run_loop.Run();
+}
+
+TEST_F(DigitalIdentityRequestImplTest, ShouldGetUsingModernFormat) {
+  const std::string kProtocol = "protocol";
+
+  DigitalCredentialRequestPtr digital_credential_request =
+      DigitalCredentialRequest::New();
+  digital_credential_request->protocol = kProtocol;
+  digital_credential_request->data = "{\"data\": \"request data\"}";
+
+  std::vector<DigitalCredentialRequestPtr> requests;
+  requests.push_back(std::move(digital_credential_request));
+
+  base::RunLoop run_loop;
+  // Intercept the `Get()` call and verify that the request is formatted
+  // properly.
+  EXPECT_CALL(*mock_digital_identity_provider(), Get)
+      .WillOnce(DoAll(WithArg<2>([](ValueView request) {
+                        Value::Dict dict = request.ToValue().GetDict().Clone();
+                        EXPECT_TRUE(dict.contains("requests"));
+                        for (const Value& req : *dict.FindList("requests")) {
+                          EXPECT_TRUE(req.GetDict().contains("protocol"));
+                          EXPECT_TRUE(req.GetDict().contains("data"));
+                        }
+                      }),
+                      base::test::RunOnceClosure(run_loop.QuitClosure())));
+  digital_identity_request_impl()->Get(std::move(requests),
+                                       blink::mojom::GetRequestFormat::kModern,
+                                       base::DoNothing());
+  run_loop.Run();
 }
 
 }  // namespace content

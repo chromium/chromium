@@ -4955,6 +4955,11 @@
       status: "test",
       base_feature: "none",
     },
+    {
+      // When enabled, the legacy format of the Digital Credentials request isn't
+      // supported anymore, and only the modern format is supported.
+      name: "WebIdentityDigitalCredentialsStopSupportingLegacyRequestFormat",
+    },
     // Kill switch for making BigInt handling in WebIDL use ToBigInt.
     {
       name: "WebIDLBigIntUsesToBigInt",
