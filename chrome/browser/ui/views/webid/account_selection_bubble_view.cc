@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/monogram_utils.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/browser/ui/views/extensions/security_dialog_tracker.h"
 #include "chrome/browser/ui/views/webid/account_selection_view_base.h"
@@ -553,9 +554,16 @@ AccountSelectionBubbleView::CreateSingleAccountChooser(
                                      /*clickable_position=*/std::nullopt,
                                      /*should_include_idp=*/false));
 
-  // Prefer using the given name if it is provided, otherwise fallback to name.
-  const std::string display_name =
-      account->given_name.empty() ? account->name : account->given_name;
+  // Prefer using the given name if it is provided, otherwise fallback to name,
+  // unless that is disabled.
+  std::u16string button_title = l10n_util::GetStringUTF16(IDS_SIGNIN_CONTINUE);
+  if (!account->given_name.empty() ||
+      !base::FeatureList::IsEnabled(features::kFedCmContinueWithoutName)) {
+    const std::string display_name =
+        account->given_name.empty() ? account->name : account->given_name;
+    button_title = l10n_util::GetStringFUTF16(IDS_ACCOUNT_SELECTION_CONTINUE,
+                                              base::UTF8ToUTF16(display_name));
+  }
   const content::IdentityProviderData& idp_data = *account->identity_provider;
   const content::IdentityProviderMetadata& idp_metadata = idp_data.idp_metadata;
   // We can pass crefs to OnAccountSelected because the `observer_` owns the
@@ -563,9 +571,7 @@ AccountSelectionBubbleView::CreateSingleAccountChooser(
   auto button = std::make_unique<ContinueButton>(
       base::BindRepeating(&FedCmAccountSelectionView::OnAccountSelected,
                           base::Unretained(owner_), account),
-      l10n_util::GetStringFUTF16(IDS_ACCOUNT_SELECTION_CONTINUE,
-                                 base::UTF8ToUTF16(display_name)),
-      this, idp_metadata, base::UTF8ToUTF16(account->email));
+      button_title, this, idp_metadata, base::UTF8ToUTF16(account->email));
   continue_button_ = row->AddChildView(std::move(button));
 
   // Do not add disclosure text if this is a sign in or if we were requested
