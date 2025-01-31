@@ -189,7 +189,7 @@ def ValidateSingleFile(input_api, output_api, file_obj, cwd, results,
 
 def CheckHistogramFormatting(input_api,
                              output_api,
-                             cache_file_override_path=None,
+                             cache_file_path=_CACHE_FILE_PATH,
                              allow_test_paths=False,
                              xml_paths_override=None):
   """Checks that histograms.xml is pretty-printed and well-formatted.
@@ -197,9 +197,6 @@ def CheckHistogramFormatting(input_api,
   This function is a wrapper around
   ExecuteCheckHistogramFormatting that adds caching support.
   """
-  cache_file_path = _CACHE_FILE_PATH
-  if cache_file_override_path is not None:
-    cache_file_path = cache_file_override_path
   return _RunCheckWithCache(ExecuteCheckHistogramFormatting,
                             HistogramsPresubmitCheckType.FORMATTING_VALIDATION,
                             input_api, output_api, cache_file_path,
@@ -240,7 +237,7 @@ def ExecuteCheckHistogramFormatting(input_api, output_api, allow_test_paths,
 
 def CheckWebViewHistogramsAllowlistOnUpload(input_api,
                                             output_api,
-                                            cache_file_override_path=None,
+                                            cache_file_path=_CACHE_FILE_PATH,
                                             allowlist_path_override=None,
                                             xml_paths_override=None):
   """Checks that histograms_allowlist.txt contains valid histograms.
@@ -248,9 +245,6 @@ def CheckWebViewHistogramsAllowlistOnUpload(input_api,
   This function is a wrapper around
   ExecuteCheckWebViewHistogramsAllowlistOnUpload that adds caching support.
   """
-  cache_file_path = _CACHE_FILE_PATH
-  if cache_file_override_path is not None:
-    cache_file_path = cache_file_override_path
   return _RunCheckWithCache(
       ExecuteCheckWebViewHistogramsAllowlistOnUpload,
       HistogramsPresubmitCheckType.ALL_ALLOWLIST_HISTOGRAMS_PRESENT, input_api,
@@ -294,15 +288,14 @@ def ExecuteCheckWebViewHistogramsAllowlistOnUpload(input_api, output_api,
   return result
 
 
-def CheckBooleansAreEnums(input_api, output_api, cache_file_override_path=None):
+def CheckBooleansAreEnums(input_api,
+                          output_api,
+                          cache_file_path=_CACHE_FILE_PATH):
   """Checks that histograms that use Booleans do not use units.
 
   This function is a wrapper around ExecuteCheckBooleansAreEnums that adds
   caching support.
   """
-  cache_file_path = _CACHE_FILE_PATH
-  if cache_file_override_path is not None:
-    cache_file_path = cache_file_override_path
   return _RunCheckWithCache(ExecuteCheckBooleansAreEnums,
                             HistogramsPresubmitCheckType.BOOLS_ARE_ENUMS,
                             input_api, output_api, cache_file_path)
