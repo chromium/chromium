@@ -482,8 +482,8 @@ void DevToolsSession::ResumeSendingMessagesToAgent() {
 void DevToolsSession::ClearPendingMessages(bool did_crash) {
   for (auto it = pending_messages_.begin(); it != pending_messages_.end();) {
     const PendingMessage& message = *it;
-    if (SpanEquals(crdtp::SpanFrom("Page.reload"),
-                   crdtp::SpanFrom(message.method))) {
+    if (crdtp::SpanEquals(crdtp::SpanFrom("Page.reload"),
+                          crdtp::SpanFrom(message.method))) {
       ++it;
       continue;
     }

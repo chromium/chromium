@@ -142,7 +142,7 @@ void ChromeDevToolsSession::HandleCommand(
       dispatcher_.Dispatch(dispatchable);
 
   auto command_uma_id = GetCommandUmaId(std::string_view(
-      reinterpret_cast<const char*>(dispatchable.Method().begin()),
+      reinterpret_cast<const char*>(dispatchable.Method().data()),
       dispatchable.Method().size()));
   std::string client_type = client_channel_->GetClient()->GetTypeForMetrics();
   DCHECK(client_type == "DevTools" || client_type == "Extension" ||
