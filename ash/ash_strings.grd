@@ -4148,9 +4148,6 @@ No devices connected.
       <message name="IDS_ASH_IME_MENU_ACCESSIBLE_NAME" desc="The accessible text for opt-in IME menu icon in status tray.">
         IME menu button
       </message>
-      <message name="IDS_ASH_MOUSE_KEYS_TRAY_ACCESSIBLE_NAME" desc="The accessible text for the mouse keys menu icon in the status tray.">
-        Mouse keys button
-      </message>
       <message name="IDS_ASH_SELECT_TO_SPEAK_TRAY_ACCESSIBLE_NAME" desc="The accessible text for the select-to-speak menu icon in the status tray.">
         Select-to-speak button
       </message>

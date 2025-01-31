@@ -55,10 +55,10 @@ class MouseKeysTrayTest : public AshTestBase {
     EXPECT_TRUE(IsVisible());
   }
 
- private:
   // Gets the current tray image view.
   views::ImageView* GetImageView() { return GetTray()->GetIcon(); }
 
+ private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -86,25 +86,42 @@ TEST_F(MouseKeysTrayTest, AccessibleName) {
   ui::AXNodeData tray_data;
   GetTray()->GetViewAccessibility().GetAccessibleNodeData(&tray_data);
   EXPECT_EQ(tray_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
-            l10n_util::GetStringUTF16(IDS_ASH_MOUSE_KEYS_TRAY_ACCESSIBLE_NAME));
+            l10n_util::GetStringUTF16(
+                IDS_ASH_STATUS_TRAY_ACCESSIBILITY_MOUSE_KEYS_PAUSE));
 }
 
 // Tests that the mouse keys icon is activated and deactivated when unpaused
 // and paused respectively.
-TEST_F(MouseKeysTrayTest, MouseKeysIconColorChangesOnPause) {
+TEST_F(MouseKeysTrayTest, MouseKeysTrayStateChangesOnPause) {
   // When mouse keys is initially enabled, it should also be unpaused.
   Shell::Get()->accessibility_controller()->mouse_keys().SetEnabled(true);
   EXPECT_FALSE(Shell::Get()->mouse_keys_controller()->paused());
   EXPECT_TRUE(IsVisible());
   EXPECT_TRUE(IsActive());
 
+  ui::AXNodeData tray_data;
+  GetTray()->GetViewAccessibility().GetAccessibleNodeData(&tray_data);
+
   Shell::Get()->accessibility_controller()->ToggleMouseKeys();
   EXPECT_TRUE(Shell::Get()->mouse_keys_controller()->paused());
+  EXPECT_EQ(GetImageView()->GetTooltipText(),
+            l10n_util::GetStringUTF16(
+                IDS_ASH_STATUS_TRAY_ACCESSIBILITY_MOUSE_KEYS_RESUME));
+  EXPECT_EQ(tray_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            l10n_util::GetStringUTF16(
+                IDS_ASH_STATUS_TRAY_ACCESSIBILITY_MOUSE_KEYS_PAUSE));
   EXPECT_FALSE(IsActive());
 
+  GetTray()->GetViewAccessibility().GetAccessibleNodeData(&tray_data);
   Shell::Get()->accessibility_controller()->ToggleMouseKeys();
   EXPECT_FALSE(Shell::Get()->mouse_keys_controller()->paused());
   EXPECT_TRUE(IsActive());
+  EXPECT_EQ(GetImageView()->GetTooltipText(),
+            l10n_util::GetStringUTF16(
+                IDS_ASH_STATUS_TRAY_ACCESSIBILITY_MOUSE_KEYS_PAUSE));
+  EXPECT_EQ(tray_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            l10n_util::GetStringUTF16(
+                IDS_ASH_STATUS_TRAY_ACCESSIBILITY_MOUSE_KEYS_RESUME));
 }
 
 // Tests that the mouse keys icon stays active when enabled from a previously

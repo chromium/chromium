@@ -64,8 +64,8 @@ MouseKeysTray::MouseKeysTray(Shelf* shelf,
   // state is updated or when it is disabled/enabled.
   Shell::Get()->accessibility_controller()->AddObserver(this);
 
-  GetViewAccessibility().SetName(
-      l10n_util::GetStringUTF16(IDS_ASH_MOUSE_KEYS_TRAY_ACCESSIBLE_NAME));
+  GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
+      IDS_ASH_STATUS_TRAY_ACCESSIBILITY_MOUSE_KEYS_PAUSE));
 }
 
 MouseKeysTray::~MouseKeysTray() {
@@ -119,14 +119,18 @@ void MouseKeysTray::UpdateStatus() {
   bool is_mouse_keys_active =
       is_mouse_keys_enabled && !mouse_keys_controller->paused();
   UpdateTrayItemColor(is_mouse_keys_active);
-  UpdateToolTipText(is_mouse_keys_active);
+  SetMouseKeysStatusText(is_mouse_keys_active);
 }
 
-void MouseKeysTray::UpdateToolTipText(bool is_active) {
-  int tooltip_string =
-      is_active ? IDS_ASH_STATUS_TRAY_ACCESSIBILITY_MOUSE_KEYS_PAUSE
-                : IDS_ASH_STATUS_TRAY_ACCESSIBILITY_MOUSE_KEYS_RESUME;
-  GetIcon()->SetTooltipText(l10n_util::GetStringUTF16(tooltip_string));
+void MouseKeysTray::SetMouseKeysStatusText(bool is_active) {
+  auto tooltip_string =
+      is_active ? l10n_util::GetStringUTF16(
+                      IDS_ASH_STATUS_TRAY_ACCESSIBILITY_MOUSE_KEYS_PAUSE)
+                : l10n_util::GetStringUTF16(
+                      IDS_ASH_STATUS_TRAY_ACCESSIBILITY_MOUSE_KEYS_RESUME);
+
+  GetViewAccessibility().SetName(tooltip_string);
+  GetIcon()->SetTooltipText(tooltip_string);
 }
 
 void MouseKeysTray::OnSessionStateChanged(session_manager::SessionState state) {
