@@ -4921,7 +4921,10 @@ message DeviceManagementRequest {
   optional FmRegistrationTokenUploadRequest
       fm_registration_token_upload_request = 42;
 
-  // Next id: 43.
+  optional DeterminePromotionEligibilityRequest
+      determine_promotion_eligibility_request = 43;
+
+  // Next id: 44.
 }
 
 // Response from server to device.
