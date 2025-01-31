@@ -21,5 +21,24 @@
     ],
     "merge constraints": "import constraints",
     "syncable": true
+  },
+  {
+    "name": "Car",
+    "attributes": [ "Owner", "License plate", "Registration", "Make", "Model" ],
+    "import constraints": [
+      [ "Owner", "License plate" ]
+    ],
+    "merge constraints": "import constraints",
+    "syncable": false
+  },
+  {
+    "name": "Driver's license",
+    "attributes":
+      [ "Name", "Region", "Number", "Expiration date", "Issue date" ],
+    "import constraints": [
+      [ "Name", "Number" ]
+    ],
+    "merge constraints": "import constraints",
+    "syncable": false
   }
 ]
