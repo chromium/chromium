@@ -347,6 +347,10 @@ source_set("tests") {
     if (!is_android) {
       sources += [ "public/cpp/usb/usb_ids_unittest.cc" ]
     }
+
+    if (is_android || is_chromeos || is_linux) {
+      sources += [ "usb/usb_device_handle_usbfs_unittest.cc" ]
+    }
   }
 
   if (is_apple) {

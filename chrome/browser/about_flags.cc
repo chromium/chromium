@@ -11738,6 +11738,12 @@ const FeatureEntry kFeatureEntries[] = {
      kOsMac | kOsWin | kOsLinux,
      FEATURE_VALUE_TYPE(switches::kEnableSnackbarInSettings)},
 
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
+    {"automatic-usb-detach", flag_descriptions::kAutomaticUsbDetachName,
+     flag_descriptions::kAutomaticUsbDetachDescription, kOsAndroid | kOsLinux,
+     FEATURE_VALUE_TYPE(features::kAutomaticUsbDetach)},
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

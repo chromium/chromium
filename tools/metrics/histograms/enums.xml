@@ -10314,6 +10314,7 @@ from previous Chrome versions.
       label="SafeBrowsingGooglePlayProtectPrompt:disabled"/>
   <int value="-1505836593" label="ImprovedIncognitoScreenshot:disabled"/>
   <int value="-1505222604" label="ClearIdentityInCanMakePaymentEvent:disabled"/>
+  <int value="-1505076171" label="AutomaticUsbDetach:enabled"/>
   <int value="-1504305449" label="NTPPhysicalWebPageSuggestions:enabled"/>
   <int value="-1503851906" label="EnableSettingsShortcutSearch:enabled"/>
   <int value="-1503745396" label="UnifiedPasswordManagerReenrollment:disabled"/>
@@ -10687,6 +10688,7 @@ from previous Chrome versions.
   <int value="-1363709707" label="MaterialDesignHistory:disabled"/>
   <int value="-1362431915" label="RelatedSearches:disabled"/>
   <int value="-1361493814" label="FCMInvalidations:disabled"/>
+  <int value="-1359250244" label="AutomaticUsbDetach:disabled"/>
   <int value="-1358669137" label="enable-supervised-user-blacklist"/>
   <int value="-1357655121" label="enable-iframe-based-signin"/>
   <int value="-1357008397" label="ContextualSuggestionsCarousel:disabled"/>
