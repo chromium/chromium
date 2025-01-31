@@ -499,12 +499,6 @@ void GlicWindowController::ShowFinish() {
   // Set the draggable area to the top bar of the window, by default.
   GetGlicView()->SetDraggableAreas(
       {{0, 0, GetGlicView()->width(), kWidgetTopBarHeight}});
-
-  // On Mac, when opening in detached mode, the widget is shown with
-  // ShowInactive() to avoid also bringing forward a browser window. Activate
-  // now.
-  GetGlicWidget()->Activate();
-
   NotifyIfPanelStateChanged();
 }
 
