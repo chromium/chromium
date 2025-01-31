@@ -150,6 +150,7 @@ extern const char kOnTheFlyMhtmlHashComputation[];
 extern const char kOpenInNewWindow[];
 extern const char kPackExtension[];
 extern const char kPackExtensionKey[];
+extern const char kPasswordChangeUrl[];
 extern const char kPreCrashpadCrashTest[];
 extern const char kPredictionServiceMockLikelihood[];
 extern const char kPreinstalledWebAppsDir[];
