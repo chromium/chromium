@@ -124,6 +124,7 @@
       <div class="card">
         <cr-link-row id="viewOsImportedClientCerts"
             label="[[i18n('certificateManagerV2PlatformCertsViewLink')]]"
+            sub-label="[[numPlatformClientCertsString_]]"
             on-click="onClientPlatformCertsLinkRowClick_">
         </cr-link-row>
         <if expr="is_win or is_macosx">

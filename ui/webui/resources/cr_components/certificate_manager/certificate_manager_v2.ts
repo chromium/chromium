@@ -40,13 +40,14 @@ import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {assert, assertNotReached} from '//resources/js/assert.js';
 import {focusWithoutInk} from '//resources/js/focus_without_ink.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
+import {PluralStringProxyImpl} from '//resources/js/plural_string_proxy.js';
 import {PromiseResolver} from '//resources/js/promise_resolver.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {CertificateConfirmationDialogElement} from './certificate_confirmation_dialog.js';
 import type {CertificateListV2Element} from './certificate_list_v2.js';
 import {getTemplate} from './certificate_manager_v2.html.js';
-import type {ActionResult} from './certificate_manager_v2.mojom-webui.js';
+import type {ActionResult, SummaryCertInfo} from './certificate_manager_v2.mojom-webui.js';
 import {CertificateSource} from './certificate_manager_v2.mojom-webui.js';
 import type {CertificatePasswordDialogElement} from './certificate_password_dialog.js';
 import type {CertificateSubpageV2Element, SubpageCertificateList} from './certificate_subpage_v2.js';
@@ -241,6 +242,8 @@ export class CertificateManagerV2Element extends
         type: Object,
         value: Page,
       },
+
+      numPlatformClientCertsString_: String,
     };
   }
 
@@ -265,6 +268,7 @@ export class CertificateManagerV2Element extends
   private showClientCertImport_: boolean;
   private showClientCertImportAndBind_: boolean;
   // </if>
+  private numPlatformClientCertsString_: string;
 
   override ready() {
     super.ready();
@@ -273,6 +277,28 @@ export class CertificateManagerV2Element extends
         this.onAskForImportPassword_.bind(this));
     proxy.callbackRouter.askForConfirmation.addListener(
         this.onAskForConfirmation_.bind(this));
+    proxy.callbackRouter.triggerReload.addListener(
+        this.onTriggerReload_.bind(this));
+    this.getClientCertCount_();
+  }
+
+  private onTriggerReload_(certSources: CertificateSource[]) {
+    if (certSources.includes(CertificateSource.kPlatformClientCert)) {
+      this.getClientCertCount_();
+    }
+  }
+
+  private getClientCertCount_() {
+    CertificatesV2BrowserProxy.getInstance()
+        .handler.getCertificates(CertificateSource.kPlatformClientCert)
+        .then((results: {certs: SummaryCertInfo[]}) => {
+          PluralStringProxyImpl.getInstance()
+              .getPluralString(
+                  'certificateManagerV2NumCerts', results.certs.length)
+              .then(label => {
+                this.numPlatformClientCertsString_ = label;
+              });
+        });
   }
 
   private onAskForImportPassword_(): Promise<PasswordResult> {
