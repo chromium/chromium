@@ -29,6 +29,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.blink_public.input.SelectionGranularity;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.PanelState;
@@ -334,6 +335,8 @@ public class ContextualSearchManager
      * @param canPromoteToNewTab Whether the Conextual search panel can be promoted to a new tab.
      * @param intentRequestTracker The {@link IntentRequestTracker} of the current activity.
      * @param desktopWindowStateManager Manager to get desktop window and app header state.
+     * @param bottomControlsStacker The {@link BottomControlsStacker} for observing and changing
+     *     browser controls heights.
      */
     public void initialize(
             @NonNull ViewGroup parentView,
@@ -344,7 +347,8 @@ public class ContextualSearchManager
             @NonNull ToolbarManager toolbarManager,
             boolean canPromoteToNewTab,
             @NonNull IntentRequestTracker intentRequestTracker,
-            DesktopWindowStateManager desktopWindowStateManager) {
+            DesktopWindowStateManager desktopWindowStateManager,
+            @NonNull BottomControlsStacker bottomControlsStacker) {
         mNativeContextualSearchManagerPtr = ContextualSearchManagerJni.get().init(this, mProfile);
 
         mParentView = parentView;
@@ -366,7 +370,8 @@ public class ContextualSearchManager
                         canPromoteToNewTab,
                         mTabSupplier,
                         mEdgeToEdgeControllerSupplier,
-                        desktopWindowStateManager);
+                        desktopWindowStateManager,
+                        bottomControlsStacker);
         panel.setManagementDelegate(this);
 
         setContextualSearchPanel(panel);

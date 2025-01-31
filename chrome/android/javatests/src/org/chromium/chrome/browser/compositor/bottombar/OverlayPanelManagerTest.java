@@ -101,7 +101,8 @@ public class OverlayPanelManagerTest {
                     compositorViewHolder,
                     MOCK_TOOLBAR_HEIGHT,
                     () -> tab,
-                    /* desktopWindowStateManager= */ null);
+                    /* desktopWindowStateManager= */ null,
+                    /* bottomControlsStacker= */ null);
             mPriority = priority;
             mCanBeSuppressed = canBeSuppressed;
         }
