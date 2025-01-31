@@ -566,19 +566,9 @@ void MaybeRegisterChromeFeaturePromos(
 
   // kIPHGlicPromoFeature:
   registry.RegisterFeature(std::move(
-      FeaturePromoSpecification::CreateForCustomAction(
+      FeaturePromoSpecification::CreateForSnoozePromo(
           feature_engagement::kIPHGlicPromoFeature, kGlicButtonElementId,
-          IDS_GLIC_PROMO_BODY, IDS_GLIC_PROMO_CUSTOM_ACTION,
-          base::BindRepeating(
-              [](ui::ElementContext context,
-                 user_education::FeaturePromoHandle promo_handle) {
-                if (auto* const button =
-                        views::ElementTrackerViews::GetInstance()
-                            ->GetUniqueViewAs<glic::GlicButton>(
-                                kGlicButtonElementId, context)) {
-                  button->ToggleUI();
-                }
-              }))
+          IDS_GLIC_PROMO_BODY)
           .SetBubbleArrow(HelpBubbleArrow::kTopRight)
           .SetBubbleTitleText(IDS_GLIC_PROMO_TITLE)
           .SetMetadata(
