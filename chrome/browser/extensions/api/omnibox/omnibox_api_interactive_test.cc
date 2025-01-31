@@ -1091,6 +1091,102 @@ IN_PROC_BROWSER_TEST_P(UnscopedOmniboxApiTest, UnscopedSendSuggestions) {
   }
 }
 
+IN_PROC_BROWSER_TEST_P(UnscopedOmniboxApiTest, UnscopedDeleteSuggestions) {
+  constexpr char kManifest[] =
+      R"({
+           "name": "Basic Send Suggestions",
+           "manifest_version": 2,
+           "version": "0.1",
+           "omnibox": { "keyword": "alpha" },
+           "background": { "scripts": [ "background.js" ], "persistent": true },
+           "permissions" : [ "omnibox.directInput" ]
+         })";
+
+  constexpr char kBackground[] =
+      R"(chrome.omnibox.onInputChanged.addListener((text, suggest) => {
+           suggest([
+             {content: 'first', description: 'first description'},
+             {
+                content: 'second',
+                description: 'second description',
+                deletable: true,
+              },
+           ]);
+         });
+         chrome.omnibox.onDeleteSuggestion.addListener((text) => {
+           chrome.test.sendMessage('onDeleteSuggestion: ' + text);
+         });)";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackground);
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  AutocompleteController* autocomplete_controller = GetAutocompleteController();
+  chrome::FocusLocationBar(browser());
+
+  // Test that our extension can send suggestions back to us.
+  AutocompleteInput input(u"input", metrics::OmniboxEventProto::NTP,
+                          ChromeAutocompleteSchemeClassifier(profile()));
+  autocomplete_controller->Start(input);
+  WaitForAutocompleteDone(browser());
+  EXPECT_TRUE(autocomplete_controller->done());
+
+  const AutocompleteResult& result = autocomplete_controller->result();
+  // Check if the 2 suggestions are received (+1 for the default search entry).
+  ASSERT_EQ(3U, result.size()) << AutocompleteResultAsString(result);
+
+  // First suggestion is not deletable.
+  {
+    EXPECT_EQ(u"first", result.match_at(1).fill_into_edit);
+    EXPECT_FALSE(result.match_at(1).deletable);
+  }
+
+  // Second suggestion is deletable.
+  {
+    EXPECT_EQ(u"second", result.match_at(2).fill_into_edit);
+    EXPECT_FALSE(result.match_at(1).deletable);
+  }
+
+  // This test portion is excluded from Mac because the Mac key combination
+  // FN+SHIFT+DEL used to delete an omnibox suggestion cannot be reproduced.
+  // This is because the FN key is not supported in interactive_test_util.h.
+  // On (some?) platforms, there is also a navigable "x" in the suggestion that
+  // we could use instead. However, this is more prone to UI churn, and mostly
+  // tests functionality that should instead be tested as part of the omnibox
+  // view. We should have sufficient Mac coverage here by ensuring the result
+  // matches are marked as deletable (verified above).
+#if !BUILDFLAG(IS_MAC)
+  ExtensionTestMessageListener delete_suggestion_listener;
+
+  // Skip the first (accept current input) and second (first extension-provided
+  // suggestion) omnibox results.
+  EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_DOWN, false,
+                                              false, false, false));
+  EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_DOWN, false,
+                                              false, false, false));
+
+  // Delete the second suggestion result. On non-Mac, this is done via
+  // SHIFT+DEL.
+  EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_DELETE, false,
+                                              true, false, false));
+
+  // Verify that the onDeleteSuggestion event was fired. When this happens, the
+  // extension sends us a message.
+  ASSERT_TRUE(delete_suggestion_listener.WaitUntilSatisfied());
+  EXPECT_EQ("onDeleteSuggestion: second description",
+            delete_suggestion_listener.message());
+
+  // Verify that the second suggestion result was deleted. There should be one
+  // less suggestion result, 3 now instead of 4 (accept current input and two
+  // extension-provided suggestions).
+  ASSERT_EQ(2u, result.size());
+  EXPECT_EQ(u"input", result.match_at(0).fill_into_edit);
+  EXPECT_EQ(u"first", result.match_at(1).fill_into_edit);
+#endif
+}
+
 IN_PROC_BROWSER_TEST_P(UnscopedOmniboxApiTest, OnInputEntered) {
   constexpr char kManifest[] =
       R"({

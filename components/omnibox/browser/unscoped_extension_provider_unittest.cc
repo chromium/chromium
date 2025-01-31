@@ -49,6 +49,10 @@ class UnscopedExtensionProviderTest : public testing::Test {
                 (const AutocompleteInput&, bool, std::set<std::string>),
                 (override));
     MOCK_METHOD(void, Stop, (bool clear_cached_suggestions), (override));
+    MOCK_METHOD(void,
+                DeleteSuggestion,
+                (const TemplateURL*, const std::u16string&),
+                (override));
   };
 
  protected:

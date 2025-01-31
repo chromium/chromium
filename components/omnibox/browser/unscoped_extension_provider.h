@@ -33,6 +33,7 @@ class UnscopedExtensionProvider : public AutocompleteProvider {
   // AutocompleteProvider:
   void Start(const AutocompleteInput& input, bool minimal_changes) override;
   void Stop(bool clear_cached_results, bool due_to_user_inactivity) override;
+  void DeleteMatch(const AutocompleteMatch& match) override;
 
   // Used by UnscopedExtensionProviderDelegateImpl.
   TemplateURLService* GetTemplateURLService() const;

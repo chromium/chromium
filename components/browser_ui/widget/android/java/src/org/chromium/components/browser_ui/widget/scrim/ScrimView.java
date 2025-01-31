@@ -13,6 +13,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator.TouchEventDelegate;
 import org.chromium.ui.UiUtils;
 
 /**
@@ -26,7 +27,7 @@ public class ScrimView extends View {
     private final ViewGroup mParent;
 
     /** A means of passing all touch events to an external handler. */
-    private ScrimCoordinator.@Nullable TouchEventDelegate mEventDelegate;
+    private @Nullable TouchEventDelegate mEventDelegate;
 
     /**
      * @param context An Android {@link Context} for creating the view.
@@ -49,7 +50,7 @@ public class ScrimView extends View {
      * @param touchEventDelegate A means of passing motion events back to the mediator for
      *     processing.
      */
-    void setTouchEventDelegate(ScrimCoordinator.TouchEventDelegate touchEventDelegate) {
+    void setTouchEventDelegate(TouchEventDelegate touchEventDelegate) {
         mEventDelegate = touchEventDelegate;
     }
 
@@ -69,6 +70,7 @@ public class ScrimView extends View {
             assert anchorView instanceof ViewGroup : "Focused view must be part of the hierarchy!";
         }
         if (inFrontOf) {
+            // TODO(skym): This un-intuitively inserts before (underneath) other previous scrims.
             UiUtils.insertAfter(mParent, this, anchorView);
         } else {
             UiUtils.insertBefore(mParent, this, anchorView);

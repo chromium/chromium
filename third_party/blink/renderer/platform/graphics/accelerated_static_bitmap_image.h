@@ -124,9 +124,6 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
   bool IsOriginTopLeft() const final {
     return shared_image_->surface_origin() == kTopLeft_GrSurfaceOrigin;
   }
-  bool IsOverlayCandidate() const final {
-    return shared_image_->usage().Has(gpu::SHARED_IMAGE_USAGE_SCANOUT);
-  }
 
   PaintImage PaintImageForCurrentFrame() override;
 

@@ -76,6 +76,15 @@ void UnscopedExtensionProviderDelegateImpl::Stop(bool clear_cached_results) {
   if (clear_cached_results) {
     ClearSuggestions();
   }
+  provider_->set_done(true);
+}
+
+void UnscopedExtensionProviderDelegateImpl::DeleteSuggestion(
+    const TemplateURL* template_url,
+    const std::u16string& suggestion_text) {
+  extensions::ExtensionOmniboxEventRouter::OnDeleteSuggestion(
+      profile_, template_url->GetExtensionId(),
+      base::UTF16ToUTF8(suggestion_text));
 }
 
 void UnscopedExtensionProviderDelegateImpl::OnOmniboxSuggestionsReady(
@@ -159,7 +168,8 @@ UnscopedExtensionProviderDelegateImpl::CreateAutocompleteMatch(
     const omnibox_api::SuggestResult& suggestion,
     int relevance,
     const std::string& extension_id) {
-  AutocompleteMatch match(provider_.get(), relevance, false,
+  AutocompleteMatch match(provider_.get(), relevance,
+                          suggestion.deletable.value_or(false),
                           AutocompleteMatchType::SEARCH_OTHER_ENGINE);
   match.fill_into_edit = base::UTF8ToUTF16(suggestion.content);
   match.contents = base::UTF8ToUTF16(suggestion.description);
