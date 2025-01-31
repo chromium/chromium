@@ -434,8 +434,18 @@ class WritableCertLoader : public CertificateManagerPageHandler::CertSource {
 #if BUILDFLAG(IS_CHROMEOS)
 class KcerLoader : public WritableCertLoader {
  public:
-  explicit KcerLoader(Profile* profile)
-      : profile_(profile), kcer_(kcer::KcerFactoryAsh::GetKcer(profile)) {}
+  explicit KcerLoader(
+      Profile* profile,
+      mojo::Remote<certificate_manager_v2::mojom::CertificateManagerPage>*
+          remote_client)
+      : profile_(profile),
+        remote_client_(remote_client),
+        kcer_(kcer::KcerFactoryAsh::GetKcer(profile)) {
+    if (kcer_) {
+      observer_callback_ = kcer_->AddObserver(base::BindRepeating(
+          &KcerLoader::OnCertDbChanged, weak_ptr_factory_.GetWeakPtr()));
+    }
+  }
   ~KcerLoader() override = default;
 
   void RefreshCachedCertificateList(base::OnceClosure callback) override {
@@ -449,7 +459,18 @@ class KcerLoader : public WritableCertLoader {
                                              std::move(callback)));
   }
 
+  void OnCertDbChanged() {
+    RefreshCachedCertificateList(base::BindOnce(
+        &KcerLoader::TriggerReload, weak_ptr_factory_.GetWeakPtr()));
+  }
+
  private:
+  void TriggerReload() {
+    (*remote_client_)
+        ->TriggerReload({certificate_manager_v2::mojom::CertificateSource::
+                             kPlatformClientCert});
+  }
+
   void GotKcerTokens(base::OnceClosure callback,
                      base::flat_set<kcer::Token> tokens) {
     if (!kcer_) {
@@ -496,7 +517,10 @@ class KcerLoader : public WritableCertLoader {
   }
 
   raw_ptr<Profile> profile_;
+  raw_ptr<mojo::Remote<certificate_manager_v2::mojom::CertificateManagerPage>>
+      remote_client_;
   base::WeakPtr<kcer::Kcer> kcer_;
+  base::CallbackListSubscription observer_callback_;
   base::WeakPtrFactory<KcerLoader> weak_ptr_factory_{this};
 };
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -566,7 +590,7 @@ class WritableClientCertSource
       : remote_client_(remote_client), profile_(profile) {
 #if BUILDFLAG(IS_CHROMEOS)
     if (ash::features::ShouldUseKcerClientCertStore()) {
-      cert_loader_ = std::make_unique<KcerLoader>(profile);
+      cert_loader_ = std::make_unique<KcerLoader>(profile, remote_client);
     } else {
       cert_loader_ = std::make_unique<NSSLoader>(profile);
     }
