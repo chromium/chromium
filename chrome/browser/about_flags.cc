@@ -282,7 +282,6 @@
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/web_applications/preinstalled_app_install_features.h"
-#include "components/user_notes/user_notes_features.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -9767,12 +9766,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"power-bookmark-backend", flag_descriptions::kPowerBookmarkBackendName,
      flag_descriptions::kPowerBookmarkBackendDescription, kOsAll,
      FEATURE_VALUE_TYPE(power_bookmarks::kPowerBookmarkBackend)},
-
-#if !BUILDFLAG(IS_ANDROID)
-    {"user-notes-side-panel", flag_descriptions::kUserNotesSidePanelName,
-     flag_descriptions::kUserNotesSidePanelDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(user_notes::kUserNotes)},
-#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
     {"enable-eol-notification-reset-dismissed-prefs",

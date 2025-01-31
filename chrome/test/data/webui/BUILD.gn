@@ -213,7 +213,6 @@ source_set("browser_tests") {
     "//components/site_engagement/content",
     "//components/spellcheck/browser:browser",
     "//components/user_education/common",
-    "//components/user_notes:features",
     "//components/webui/chrome_urls/",
     "//net:test_support",
   ]
@@ -298,7 +297,6 @@ source_set("interactive_ui_tests") {
     "//components/password_manager/content/common",
     "//components/power_bookmarks/core:features",
     "//components/search",
-    "//components/user_notes:features",
   ]
 
   if (enable_compose) {

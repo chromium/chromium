@@ -169,7 +169,6 @@ source_set("side_panel") {
     "//components/translate/core/browser",
     "//components/translate/core/common",
     "//components/user_education/common",
-    "//components/user_notes:features",
     "//components/vector_icons",
     "//components/web_modal",
     "//extensions/buildflags",

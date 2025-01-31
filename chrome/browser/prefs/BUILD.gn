@@ -276,7 +276,6 @@ source_set("impl") {
       "//components/headless/policy",
       "//components/live_caption",
       "//components/live_caption:live_translate",
-      "//components/user_notes:user_notes_prefs",
     ]
   }
 

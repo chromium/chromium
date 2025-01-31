@@ -407,7 +407,6 @@ include_rules = [
   "+components/user_annotations",
   "+components/user_education",
   "+components/user_manager",
-  "+components/user_notes",
   "+components/user_prefs",
   "+components/value_store",
   "+components/vector_icons",

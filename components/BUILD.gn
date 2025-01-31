@@ -845,8 +845,6 @@ test("components_unittests") {
       "//components/metrics/dwa:unit_tests",
       "//components/metrics/structured:unit_tests",
       "//components/metrics/structured/mojom:unit_tests",
-      "//components/user_notes/browser:unit_tests",
-      "//components/user_notes/storage:unit_tests",
     ]
   }
 
