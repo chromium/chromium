@@ -106,10 +106,6 @@ DatabaseTracker::DatabaseTracker(
                   ? profile_path_.Append(kIncognitoDatabaseDirectoryName)
                   : profile_path_.Append(kDatabaseDirectoryName)),
       db_(std::make_unique<sql::Database>(
-          sql::DatabaseOptions{
-              .page_size = 4096,
-              .cache_size = 500,
-          },
           sql::Database::Tag("DatabaseTracker"))),
       quota_manager_proxy_(std::move(quota_manager_proxy)),
       task_runner_(base::ThreadPool::CreateSequencedTaskRunner(

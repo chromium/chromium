@@ -585,7 +585,6 @@ RequestQueueStore::~RequestQueueStore() {
 void RequestQueueStore::Initialize(InitializeCallback callback) {
   DCHECK(!db_);
   db_ = std::make_unique<sql::Database>(
-      sql::DatabaseOptions{.page_size = 4096, .cache_size = 500},
       sql::Database::Tag("BackgroundRequestQueue"));
 
   background_task_runner_->PostTaskAndReplyWithResult(

@@ -1057,8 +1057,6 @@ QuotaError QuotaDatabase::EnsureOpened() {
       // all client-side storage APIs fail, because they don't know where their
       // data is stored.
       .flush_to_media = true,
-      .page_size = 4096,
-      .cache_size = 500,
   };
 
   db_ = std::make_unique<sql::Database>(std::move(options),

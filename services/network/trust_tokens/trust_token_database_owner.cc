@@ -91,8 +91,6 @@ NOINLINE TrustTokenDatabaseOwner::TrustTokenDatabaseOwner(
       db_task_runner_(db_task_runner),
       backing_database_(std::make_unique<sql::Database>(
           sql::DatabaseOptions{
-              .page_size = 4096,
-              .cache_size = 500,
               // TODO(pwnall): Add a meta table and remove this option.
               .mmap_alt_status_discouraged = true,
               .enable_views_discouraged = true,  // Required by mmap_alt_status.

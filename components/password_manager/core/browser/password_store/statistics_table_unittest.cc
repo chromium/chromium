@@ -50,7 +50,6 @@ class StatisticsTableTest : public testing::Test {
     base::FilePath file = temp_dir_.GetPath().AppendASCII("TestDatabase");
     db_ = std::make_unique<StatisticsTable>();
     connection_ = std::make_unique<sql::Database>(
-        sql::DatabaseOptions{.page_size = 4096, .cache_size = 500},
         sql::test::kTestTag);
     ASSERT_TRUE(connection_->Open(file));
     db_->Init(connection_.get());

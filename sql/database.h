@@ -152,11 +152,6 @@ struct COMPONENT_EXPORT(SQL) DatabaseOptions {
 
   // Database page size.
   //
-  // New Chrome features should set an explicit page size in their
-  // DatabaseOptions initializers, even if they use the default page size. This
-  // makes it easier to track the page size used by the databases on the users'
-  // devices.
-  //
   // The value in this option is only applied to newly created databases. In
   // other words, changing the value doesn't impact the databases that have
   // already been created on the users' devices. So, changing the value in the
@@ -169,27 +164,15 @@ struct COMPONENT_EXPORT(SQL) DatabaseOptions {
   // more I/O when making small changes to existing records.
   //
   // Must be a power of two between 512 and 65536 inclusive.
-  //
-  // TODO(pwnall): Replace the default with an invalid value after all
-  //               sql::Database users explicitly initialize page_size.
   int page_size = kDefaultPageSize;
 
   // The size of in-memory cache, in pages.
-  //
-  // New Chrome features should set an explicit cache size in their
-  // DatabaseOptions initializers, even if they use the default cache size. This
-  // makes it easier to track the cache size used by the databases on the users'
-  // devices. The default page size of 4,096 bytes results in a cache size of
-  // 500 pages.
   //
   // SQLite's database cache will take up at most (`page_size` * `cache_size`)
   // bytes of RAM.
   //
   // 0 invokes SQLite's default, which is currently to size up the cache to use
   // exactly 2,048,000 bytes of RAM.
-  //
-  // TODO(pwnall): Replace the default with an invalid value after all
-  //               sql::Database users explicitly initialize page_size.
   int cache_size = 0;
 
   // Stores mmap failures in the SQL schema, instead of the meta table.
