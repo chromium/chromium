@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
@@ -12,28 +13,44 @@
 #include <ostream>
 #include <string>
 #include <tuple>
+#include <utility>
 #include <vector>
 
 #include "base/barrier_closure.h"
+#include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/contains.h"
+#include "base/containers/flat_map.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/functional/overloaded.h"
+#include "base/json/json_writer.h"
+#include "base/location.h"
+#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/path_service.h"
+#include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"  // For `StringPairs`
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/test_future.h"
-#include "base/test/with_feature_override.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
+#include "content/browser/fenced_frame/fenced_frame_config.h"
+#include "content/browser/private_aggregation/private_aggregation_budget_key.h"
+#include "content/browser/private_aggregation/private_aggregation_budgeter.h"
 #include "content/browser/private_aggregation/private_aggregation_caller_api.h"
 #include "content/browser/private_aggregation/private_aggregation_manager_impl.h"
 #include "content/browser/private_aggregation/private_aggregation_test_utils.h"
@@ -41,17 +58,20 @@
 #include "content/browser/shared_storage/shared_storage_document_service_impl.h"
 #include "content/browser/shared_storage/shared_storage_event_params.h"
 #include "content/browser/shared_storage/shared_storage_features.h"
-#include "content/browser/shared_storage/shared_storage_header_observer.h"
 #include "content/browser/shared_storage/shared_storage_runtime_manager.h"
-#include "content/browser/shared_storage/shared_storage_worklet_driver.h"
 #include "content/browser/shared_storage/shared_storage_worklet_host.h"
+#include "content/browser/shared_storage/test_shared_storage_worklet_host.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/document_user_data.h"
+#include "content/public/browser/frame_tree_node_id.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/network_service_util.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
-#include "content/public/common/content_paths.h"
+#include "content/public/common/page_type.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -68,19 +88,38 @@
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "content/test/fenced_frame_test_utils.h"
+#include "mojo/public/cpp/base/big_buffer.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/net_errors.h"
+#include "net/base/schemeful_site.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
+#include "net/test/embedded_test_server/http_response.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"  // For `network::mojom::CredentialsMode`
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
+#include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
+#include "third_party/blink/public/common/messaging/cloneable_message.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 #include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
+#include "third_party/blink/public/mojom/loader/code_cache.mojom.h"
+#include "third_party/blink/public/mojom/origin_trials/origin_trial_feature.mojom-shared.h"
+#include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom.h"
+#include "third_party/blink/public/mojom/shared_storage/shared_storage.mojom.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
+#include "ui/base/page_transition_types.h"
+#include "url/url_constants.h"
 
 namespace content {
 
@@ -271,372 +310,6 @@ auto describe_param = [](const auto& info) {
 
 }  // namespace
 
-class TestSharedStorageWorkletHost : public SharedStorageWorkletHost {
- public:
-  TestSharedStorageWorkletHost(
-      SharedStorageDocumentServiceImpl& document_service,
-      const url::Origin& frame_origin,
-      const url::Origin& data_origin,
-      const GURL& script_source_url,
-      network::mojom::CredentialsMode credentials_mode,
-      blink::mojom::SharedStorageWorkletCreationMethod creation_method,
-      const std::vector<blink::mojom::OriginTrialFeature>&
-          origin_trial_features,
-      mojo::PendingAssociatedReceiver<blink::mojom::SharedStorageWorkletHost>
-          worklet_host,
-      blink::mojom::SharedStorageDocumentService::CreateWorkletCallback
-          callback,
-      bool should_defer_worklet_messages)
-      : SharedStorageWorkletHost(document_service,
-                                 frame_origin,
-                                 data_origin,
-                                 script_source_url,
-                                 credentials_mode,
-                                 creation_method,
-                                 origin_trial_features,
-                                 std::move(worklet_host),
-                                 std::move(callback)),
-        should_defer_worklet_messages_(should_defer_worklet_messages) {}
-
-  ~TestSharedStorageWorkletHost() override = default;
-
-  // Separate from `WaitForWorkletResponses()` so that we can wait for it
-  // without having to set an expected response count beforehand. The worklet
-  // host won't exist before the first call to either `addModule(), `run()`, or
-  // `selectURL()`. In the correct flow, `addModule()` will be called first.
-  void WaitForAddModule() {
-    if (add_module_called_) {
-      ResetAddModuleCalledAndMaybeCloseWorklet();
-      return;
-    }
-
-    add_module_waiter_ = std::make_unique<base::RunLoop>();
-    add_module_waiter_->Run();
-    add_module_waiter_.reset();
-    ResetAddModuleCalledAndMaybeCloseWorklet();
-  }
-
-  // Only applies to `run()` and `selectURL()`. Must be set before calling the
-  // operation. Precondition: Either `addModule()`, `run()`, or `selectURL()`
-  // has previously been called so that this worklet host exists.
-  void SetExpectedWorkletResponsesCount(size_t count) {
-    expected_worklet_responses_count_ = count;
-    response_expectation_set_ = true;
-  }
-
-  // Only applies to `run()` and `selectURL()`.
-  // Precondition: `SetExpectedWorkletResponsesCount()` has been called with the
-  // desired expected `count`, followed by the operation(s) itself/themselves.
-  void WaitForWorkletResponses() {
-    if (worklet_responses_count_ >= expected_worklet_responses_count_) {
-      ResetResponseCountsAndMaybeCloseWorklet();
-      return;
-    }
-
-    worklet_responses_count_waiter_ = std::make_unique<base::RunLoop>();
-    worklet_responses_count_waiter_->Run();
-    worklet_responses_count_waiter_.reset();
-    ResetResponseCountsAndMaybeCloseWorklet();
-  }
-
-  void set_should_defer_worklet_messages(bool should_defer_worklet_messages) {
-    should_defer_worklet_messages_ = should_defer_worklet_messages;
-  }
-
-  const std::vector<base::OnceClosure>& pending_worklet_messages() {
-    return pending_worklet_messages_;
-  }
-
-  void DidAddMessageToConsole(blink::mojom::ConsoleMessageLevel level,
-                              const std::string& message) override {
-    DidAddMessageToConsoleHelper(level, message, /*initial_message=*/true);
-  }
-
-  void DidAddMessageToConsoleHelper(blink::mojom::ConsoleMessageLevel level,
-                                    const std::string& message,
-                                    bool initial_message) {
-    if (should_defer_worklet_messages_ && initial_message) {
-      pending_worklet_messages_.push_back(base::BindOnce(
-          &TestSharedStorageWorkletHost::DidAddMessageToConsoleHelper,
-          weak_ptr_factory_.GetWeakPtr(), level, message,
-          /*initial_message=*/false));
-      return;
-    }
-
-    SharedStorageWorkletHost::DidAddMessageToConsole(level, message);
-  }
-
-  void FireKeepAliveTimerNow() {
-    ASSERT_TRUE(GetKeepAliveTimerForTesting().IsRunning());
-    GetKeepAliveTimerForTesting().FireNow();
-  }
-
-  void ExecutePendingWorkletMessages() {
-    for (auto& callback : pending_worklet_messages_) {
-      std::move(callback).Run();
-    }
-  }
-
- private:
-  void OnCreateWorkletScriptLoadingFinished(
-      bool success,
-      const std::string& error_message) override {
-    OnCreateWorkletScriptLoadingFinishedHelper(success, error_message,
-                                               /*initial_message=*/true);
-  }
-
-  void OnCreateWorkletScriptLoadingFinishedHelper(
-      bool success,
-      const std::string& error_message,
-      bool initial_message) {
-    bool in_keep_alive = IsInKeepAlivePhase();
-    if (should_defer_worklet_messages_ && initial_message) {
-      pending_worklet_messages_.push_back(
-          base::BindOnce(&TestSharedStorageWorkletHost::
-                             OnCreateWorkletScriptLoadingFinishedHelper,
-                         weak_ptr_factory_.GetWeakPtr(), success, error_message,
-                         /*initial_message=*/false));
-    } else {
-      SharedStorageWorkletHost::OnCreateWorkletScriptLoadingFinished(
-          success, error_message);
-    }
-
-    if (initial_message) {
-      OnAddModuleResponseReceived();
-    }
-    if (!in_keep_alive) {
-      ProcessAddModuleExpirationIfWorkletExpired();
-    }
-  }
-
-  void OnRunOperationOnWorkletFinished(
-      base::TimeTicks start_time,
-      bool success,
-      const std::string& error_message) override {
-    OnRunOperationOnWorkletFinishedHelper(start_time, success, error_message,
-                                          /*initial_message=*/true);
-  }
-
-  void OnRunOperationOnWorkletFinishedHelper(base::TimeTicks start_time,
-                                             bool success,
-                                             const std::string& error_message,
-                                             bool initial_message) {
-    bool in_keep_alive = IsInKeepAlivePhase();
-    if (should_defer_worklet_messages_ && initial_message) {
-      pending_worklet_messages_.push_back(base::BindOnce(
-          &TestSharedStorageWorkletHost::OnRunOperationOnWorkletFinishedHelper,
-          weak_ptr_factory_.GetWeakPtr(), start_time, success, error_message,
-          /*initial_message=*/false));
-    } else {
-      SharedStorageWorkletHost::OnRunOperationOnWorkletFinished(
-          start_time, success, error_message);
-    }
-
-    if (initial_message) {
-      OnWorkletResponseReceived();
-    }
-    if (!in_keep_alive) {
-      ProcessRunOrSelectURLExpirationIfWorkletExpired();
-    }
-  }
-
-  void OnRunURLSelectionOperationOnWorkletFinished(
-      const GURL& urn_uuid,
-      base::TimeTicks start_time,
-      const std::string& operation_name,
-      const std::u16string& saved_query_name_to_cache,
-      bool script_execution_success,
-      const std::string& script_execution_error_message,
-      uint32_t index,
-      bool use_page_budgets,
-      BudgetResult budget_result) override {
-    OnRunURLSelectionOperationOnWorkletFinishedHelper(
-        urn_uuid, start_time, operation_name, saved_query_name_to_cache,
-        script_execution_success, script_execution_error_message, index,
-        use_page_budgets, std::move(budget_result), /*initial_message=*/true);
-  }
-
-  void OnRunURLSelectionOperationOnWorkletFinishedHelper(
-      const GURL& urn_uuid,
-      base::TimeTicks start_time,
-      const std::string& operation_name,
-      const std::u16string& saved_query_name_to_cache,
-      bool script_execution_success,
-      const std::string& script_execution_error_message,
-      uint32_t index,
-      bool use_page_budgets,
-      BudgetResult budget_result,
-      bool initial_message) {
-    bool in_keep_alive = IsInKeepAlivePhase();
-    if (should_defer_worklet_messages_ && initial_message) {
-      pending_worklet_messages_.push_back(base::BindOnce(
-          &TestSharedStorageWorkletHost::
-              OnRunURLSelectionOperationOnWorkletFinishedHelper,
-          weak_ptr_factory_.GetWeakPtr(), urn_uuid, start_time, operation_name,
-          saved_query_name_to_cache, script_execution_success,
-          script_execution_error_message, index, use_page_budgets,
-          std::move(budget_result), /*initial_message=*/false));
-    } else {
-      SharedStorageWorkletHost::OnRunURLSelectionOperationOnWorkletFinished(
-          urn_uuid, start_time, operation_name, saved_query_name_to_cache,
-          script_execution_success, script_execution_error_message, index,
-          use_page_budgets, std::move(budget_result));
-    }
-
-    if (initial_message) {
-      OnWorkletResponseReceived();
-    }
-    if (!in_keep_alive) {
-      ProcessRunOrSelectURLExpirationIfWorkletExpired();
-    }
-  }
-
-  void ExpireWorklet() override {
-    // We must defer the destruction of the expired worklet until the rest of
-    // the test worklet code has run, in order to avoid segmentation faults. In
-    // particular, if either the `add_module_waiter_` or the
-    // `worklet_responses_count_waiter_` is running, we must quit it first
-    // before we actually destroy the worklet (regardless of how many worklet
-    // responses have been received). Hence we save a callback to destroy the
-    // worklet after we quit the waiter. The `Quit()` will occur in
-    // `Process*ExpirationIfWorkletExpired()` after returning to
-    // `On*OnWorkletFinishedHelper()`. If no waiter is running, we still have to
-    // finish running whichever `On*OnWorkletFinishedHelper()` triggered the
-    // call to `ExpireWorklet()`.
-    DCHECK(!pending_expire_worklet_callback_);
-    pending_expire_worklet_callback_ =
-        base::BindOnce(&TestSharedStorageWorkletHost::ExpireWorkletOnBaseClass,
-                       weak_ptr_factory_.GetWeakPtr());
-  }
-
-  void ExpireWorkletOnBaseClass() { SharedStorageWorkletHost::ExpireWorklet(); }
-
-  void ProcessAddModuleExpirationIfWorkletExpired() {
-    if (!pending_expire_worklet_callback_) {
-      return;
-    }
-
-    // We can't have both waiters running at the same time.
-    DCHECK(!worklet_responses_count_waiter_);
-
-    if (add_module_waiter_ && add_module_waiter_->running()) {
-      // The worklet is expired and needs to be destroyed. Since
-      // `add_module_waiter_` is running, quitting it will return us to
-      // `WaitForAddModule()`, where the waiter will be reset, and then, in
-      // `ResetAddModuleCalledAndMaybeCloseWorklet()`, the
-      // `pending_expire_worklet_callback_` callback will be run.
-      add_module_waiter_->Quit();
-    }
-
-    std::move(pending_expire_worklet_callback_).Run();
-
-    // Do not add code after this. The worklet has been destroyed.
-  }
-
-  void ProcessRunOrSelectURLExpirationIfWorkletExpired() {
-    if (!pending_expire_worklet_callback_) {
-      return;
-    }
-
-    // We can't have both waiters running at the same time.
-    DCHECK(!add_module_waiter_);
-
-    if (worklet_responses_count_waiter_ &&
-        worklet_responses_count_waiter_->running()) {
-      // The worklet is expired and needs to be destroyed. Since
-      // `worklet_responses_count_waiter_` is running, quitting it will return
-      // us to `WaitForWorkletResponses()`, where the waiter will be reset, and
-      // then, in `ResetResponseCountsAndMaybeCloseWorklet()`, the
-      // `pending_expire_worklet_callback_` callback will be run.
-      worklet_responses_count_waiter_->Quit();
-      return;
-    }
-
-    if (response_expectation_set_) {
-      // We expect a call to `WaitForWorkletResponses()`, which will run the
-      // callback.
-      return;
-    }
-
-    // No response expectation has been set, so we do expect a call to
-    // `WaitForWorkletResponses()`.
-    std::move(pending_expire_worklet_callback_).Run();
-
-    // Do not add code after this. The worklet has been destroyed.
-  }
-
-  void OnAddModuleResponseReceived() {
-    add_module_called_ = true;
-
-    if (add_module_waiter_ && add_module_waiter_->running()) {
-      add_module_waiter_->Quit();
-    }
-  }
-
-  void OnWorkletResponseReceived() {
-    ++worklet_responses_count_;
-
-    if (worklet_responses_count_waiter_ &&
-        worklet_responses_count_waiter_->running() &&
-        worklet_responses_count_ >= expected_worklet_responses_count_) {
-      worklet_responses_count_waiter_->Quit();
-    }
-  }
-
-  void ResetAddModuleCalledAndMaybeCloseWorklet() {
-    add_module_called_ = false;
-
-    if (pending_expire_worklet_callback_) {
-      std::move(pending_expire_worklet_callback_).Run();
-
-      // Do not add code after this. The worklet has been destroyed.
-    }
-  }
-
-  void ResetResponseCountsAndMaybeCloseWorklet() {
-    expected_worklet_responses_count_ = 0u;
-    worklet_responses_count_ = 0u;
-    response_expectation_set_ = false;
-
-    if (pending_expire_worklet_callback_) {
-      std::move(pending_expire_worklet_callback_).Run();
-
-      // Do not add code after this. The worklet has been destroyed.
-    }
-  }
-
-  base::TimeDelta GetKeepAliveTimeout() const override {
-    // Configure a timeout large enough so that the scheduled task won't run
-    // automatically. Instead, we will manually call OneShotTimer::FireNow().
-    return base::Seconds(30);
-  }
-
-  // Whether or not `addModule()` has been called since the last time (if any)
-  // that `add_module_waiter_` was reset.
-  bool add_module_called_ = false;
-  std::unique_ptr<base::RunLoop> add_module_waiter_;
-
-  // How many worklet operations have finished. This only includes `selectURL()`
-  // and `run()`.
-  size_t worklet_responses_count_ = 0;
-  size_t expected_worklet_responses_count_ = 0;
-  bool response_expectation_set_ = false;
-  std::unique_ptr<base::RunLoop> worklet_responses_count_waiter_;
-
-  // Whether we should defer messages received from the worklet environment to
-  // handle them later. This includes request callbacks (e.g. for `addModule()`,
-  // `selectURL()` and `run()`), as well as commands initiated from the worklet
-  // (e.g. `console.log()`).
-  bool should_defer_worklet_messages_;
-  std::vector<base::OnceClosure> pending_worklet_messages_;
-
-  // This callback will be non-null if the worklet is pending expiration due to
-  // the option `keepAlive: false` (which is the default value) being received
-  // in the most recent call to `run()` or `selectURL()`.
-  base::OnceClosure pending_expire_worklet_callback_;
-
-  base::WeakPtrFactory<TestSharedStorageWorkletHost> weak_ptr_factory_{this};
-};
 
 class TestSharedStorageObserver
     : public SharedStorageRuntimeManager::SharedStorageObserverInterface {
