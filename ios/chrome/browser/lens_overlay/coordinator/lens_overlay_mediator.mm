@@ -15,10 +15,12 @@
 #import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_omnibox_client.h"
+#import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_mediator_delegate.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_navigation_manager.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_navigation_mutator.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_url_utils.h"
+#import "ios/chrome/browser/lens_overlay/public/lens_overlay_constants.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_toolbar_consumer.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_coordinator.h"
 #import "ios/chrome/browser/orchestrator/ui_bundled/edit_view_animatee.h"
@@ -111,7 +113,26 @@
       _thumbnailRemoved || _currentLensResult.isTextSelection;
   if (isUnimodalTextQuery) {
     if (textClobbered) {
-      [self.delegate lensOverlayMediatorOpenURLInNewTabRequsted:destinationURL];
+      if (IsLensOverlaySameTabNavigationEnabled()) {
+        __weak LensOverlayMediator* weakSelf = self;
+        // Delay navigation until after omnibox defocus and toolbar button hide
+        // animations complete. This ensures a smooth transition and avoids
+        // interrupting the UI animations.
+        GURL URL = destinationURL;
+        CGFloat totalAnimationDuration =
+            kLensResultPageButtonAnimationDuration +
+            kLensResultPageToolbarLayoutDuration;
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW,
+                                     totalAnimationDuration * NSEC_PER_SEC),
+                       dispatch_get_main_queue(), ^{
+                         [weakSelf.delegate
+                             lensOverlayMediatorOpenURLInNewTabRequsted:URL];
+                       });
+      } else {
+        [self.delegate
+            lensOverlayMediatorOpenURLInNewTabRequsted:destinationURL];
+      }
+
       [self recordNewTabGeneratedBy:lens::LensOverlayNewTabSource::kOmnibox];
       if (_omniboxClient) {
         [self updateOmniboxText:_omniboxClient->GetOmniboxSteadyStateText()];

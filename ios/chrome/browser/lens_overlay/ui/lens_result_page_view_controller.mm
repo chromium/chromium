@@ -7,6 +7,7 @@
 #import "base/check.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
+#import "ios/chrome/browser/lens_overlay/public/lens_overlay_constants.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_progress_bar.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_result_page_mutator.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_toolbar_mutator.h"
@@ -50,9 +51,6 @@ const CGFloat kWebContainerTopPadding = 16;
 const CGFloat kProgressBarHeight = 2.0f;
 /// Value of a full progress bar.
 const CGFloat kProgressBarFull = 1.0f;
-
-/// The duration for buttons appear & disappear animations.
-const CGFloat kButtonAnimationDuration = 0.2f;
 
 }  // namespace
 
@@ -318,7 +316,7 @@ const CGFloat kButtonAnimationDuration = 0.2f;
   }
 
   __weak __typeof(self) weakSelf = self;
-  [UIView animateWithDuration:kButtonAnimationDuration
+  [UIView animateWithDuration:kLensResultPageButtonAnimationDuration
                         delay:0
                       options:UIViewAnimationOptionCurveEaseInOut
                    animations:^{
@@ -472,7 +470,7 @@ const CGFloat kButtonAnimationDuration = 0.2f;
   }
 
   __weak __typeof(self) weakSelf = self;
-  [UIView animateWithDuration:kButtonAnimationDuration
+  [UIView animateWithDuration:kLensResultPageButtonAnimationDuration
                         delay:0
                       options:UIViewAnimationOptionCurveEaseInOut
                    animations:^{
