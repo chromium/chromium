@@ -1089,8 +1089,16 @@ public class StripLayoutHelper
                         public void onTabGroupLocalIdChanged(
                                 String syncTabGroupId, @Nullable LocalTabGroupId localTabGroupId) {
                             if (localTabGroupId == null) return;
-                            updateSharedTabGroupIfNeeded(
-                                    findGroupTitle(localTabGroupId.tabGroupId));
+
+                            // The group title can be null in split-screen since the sync service
+                            // notifies both screens of a group localId change, but only one screen
+                            // contains the group.
+                            @Nullable
+                            StripLayoutGroupTitle groupTitle =
+                                    findGroupTitle(localTabGroupId.tabGroupId);
+                            if (groupTitle == null) return;
+
+                            updateSharedTabGroupIfNeeded(groupTitle);
                         }
                     };
             mTabGroupSyncService.addObserver(mTabGroupSyncObserver);
@@ -2034,7 +2042,7 @@ public class StripLayoutHelper
      *
      * @param groupTitle The group title to update with the shared tab group state.
      */
-    private void updateSharedTabGroupIfNeeded(StripLayoutGroupTitle groupTitle) {
+    private void updateSharedTabGroupIfNeeded(@NonNull StripLayoutGroupTitle groupTitle) {
         Token tabGroupId = groupTitle.getTabGroupId();
         if (shouldEnableGroupSharing(mTabGroupModelFilter.getTabModel().getProfile())) {
             SavedTabGroup savedTabGroup =
