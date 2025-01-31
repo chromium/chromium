@@ -25,10 +25,10 @@
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
 #include "net/http/http_status_code.h"
-#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-forward.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 #include "ui/gfx/geometry/size.h"
 
 class Profile;
@@ -110,9 +110,9 @@ class ManifestBuilder {
                            std::string_view content_type);
 
   ManifestBuilder& AddPermissionsPolicyWildcard(
-      network::mojom::PermissionsPolicyFeature feature);
+      blink::mojom::PermissionsPolicyFeature feature);
   ManifestBuilder& AddPermissionsPolicy(
-      network::mojom::PermissionsPolicyFeature feature,
+      blink::mojom::PermissionsPolicyFeature feature,
       bool self,
       std::vector<url::Origin> origins);
 
@@ -138,7 +138,7 @@ class ManifestBuilder {
       blink::mojom::DisplayMode::kStandalone;
   std::vector<blink::mojom::DisplayMode> display_mode_override_;
   std::vector<IconMetadata> icons_;
-  std::map<network::mojom::PermissionsPolicyFeature, PermissionsPolicy>
+  std::map<blink::mojom::PermissionsPolicyFeature, PermissionsPolicy>
       permissions_policy_;
   std::vector<std::pair<std::string, std::string>> protocol_handlers_;
   std::map<std::string, FileHandlerAccept> file_handlers_;

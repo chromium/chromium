@@ -3359,7 +3359,7 @@ void WebLocalFrameImpl::SetLCPPHint(
 }
 
 bool WebLocalFrameImpl::IsFeatureEnabled(
-    const network::mojom::PermissionsPolicyFeature& feature) const {
+    const mojom::blink::PermissionsPolicyFeature& feature) const {
   return GetFrame()->DomWindow()->IsFeatureEnabled(feature);
 }
 

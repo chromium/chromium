@@ -43,7 +43,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
-#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "url/gurl.h"
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -81,7 +81,7 @@ const char PermissionContextBase::kPermissionsKillSwitchBlockedValue[] =
 PermissionContextBase::PermissionContextBase(
     content::BrowserContext* browser_context,
     ContentSettingsType content_settings_type,
-    network::mojom::PermissionsPolicyFeature permissions_policy_feature)
+    blink::mojom::PermissionsPolicyFeature permissions_policy_feature)
     : browser_context_(browser_context),
       content_settings_type_(content_settings_type),
       permissions_policy_feature_(permissions_policy_feature) {
@@ -700,9 +700,8 @@ bool PermissionContextBase::PermissionAllowedByPermissionsPolicy(
     content::RenderFrameHost* rfh) const {
   // Some features don't have an associated permissions policy yet. Allow those.
   if (permissions_policy_feature_ ==
-      network::mojom::PermissionsPolicyFeature::kNotFound) {
+      blink::mojom::PermissionsPolicyFeature::kNotFound)
     return true;
-  }
 
   return rfh->IsFeatureEnabled(permissions_policy_feature_);
 }

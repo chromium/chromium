@@ -16,7 +16,6 @@
 #include "build/build_config.h"
 #include "media/base/media_permission.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/mediastream/media_devices.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
@@ -24,6 +23,7 @@
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 #include "third_party/blink/public/mojom/media/capture_handle_config.mojom-blink.h"
 #include "third_party/blink/public/mojom/mediastream/media_devices.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -623,7 +623,7 @@ ScriptPromise<IDLSequence<MediaStream>> MediaDevices::getAllScreensMedia(
   }
 
   const bool capture_allowed_by_permissions_policy = context->IsFeatureEnabled(
-      network::mojom::PermissionsPolicyFeature::kAllScreensCapture,
+      mojom::blink::PermissionsPolicyFeature::kAllScreensCapture,
       ReportOptions::kReportOnFailure);
 
   base::UmaHistogramEnumeration(
@@ -684,7 +684,7 @@ ScriptPromise<MediaStream> MediaDevices::getDisplayMedia(
   }
 
   const bool capture_allowed_by_permissions_policy = window->IsFeatureEnabled(
-      network::mojom::PermissionsPolicyFeature::kDisplayCapture,
+      mojom::blink::PermissionsPolicyFeature::kDisplayCapture,
       ReportOptions::kReportOnFailure);
 
   base::UmaHistogramEnumeration(

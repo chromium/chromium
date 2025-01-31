@@ -12,10 +12,10 @@ namespace permissions {
 
 KeyboardLockPermissionContext::KeyboardLockPermissionContext(
     content::BrowserContext* browser_context)
-    : PermissionContextBase(
-          browser_context,
-          ContentSettingsType::KEYBOARD_LOCK,
-          network::mojom::PermissionsPolicyFeature::kNotFound) {}
+    : PermissionContextBase(browser_context,
+                            ContentSettingsType::KEYBOARD_LOCK,
+                            blink::mojom::PermissionsPolicyFeature::kNotFound) {
+}
 
 #if !BUILDFLAG(IS_ANDROID)
 ContentSetting KeyboardLockPermissionContext::GetPermissionStatusInternal(

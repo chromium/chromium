@@ -68,7 +68,6 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
-#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/features.h"
@@ -79,6 +78,7 @@
 #include "third_party/blink/public/common/permissions_policy/policy_helper_public.h"
 #include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -137,7 +137,7 @@ bool AreAllowedReportingOriginsAttested(
 // `feature` for the child frame's origin.
 bool ShouldWarnAboutPermissionPolicyDefault(
     RenderFrameHostImpl& frame,
-    network::mojom::PermissionsPolicyFeature feature) {
+    blink::mojom::PermissionsPolicyFeature feature) {
   RenderFrameHostImpl* parent = frame.GetParent();
   if (!parent) {
     return false;
@@ -401,7 +401,7 @@ void AdAuctionServiceImpl::UpdateAdInterestGroups() {
   // If the interest group API is not allowed for this context by Permissions
   // Policy, do nothing
   if (!IsPermissionPolicyEnabledAndWarnIfNeeded(
-          network::mojom::PermissionsPolicyFeature::kJoinAdInterestGroup,
+          blink::mojom::PermissionsPolicyFeature::kJoinAdInterestGroup,
           "updateAdInterestGroups")) {
     // TODO(https://crbug.com/382786767): Figure out why permission policy can
     // be inconsistent between the browser and renderer policy, fix it, and then
@@ -438,7 +438,7 @@ void AdAuctionServiceImpl::RunAdAuction(
   // If the run ad auction API is not allowed for this context by Permissions
   // Policy, do nothing.
   if (!IsPermissionPolicyEnabledAndWarnIfNeeded(
-          network::mojom::PermissionsPolicyFeature::kRunAdAuction,
+          blink::mojom::PermissionsPolicyFeature::kRunAdAuction,
           "runAdAuction")) {
     // TODO(https://crbug.com/382786767): Figure out why permission policy can
     // be inconsistent between the browser and renderer policy, fix it, and then
@@ -635,7 +635,7 @@ void AdAuctionServiceImpl::GetInterestGroupAdAuctionData(
 
   bool api_blocked = false;
   if (!IsPermissionPolicyEnabledAndWarnIfNeeded(
-          network::mojom::PermissionsPolicyFeature::kRunAdAuction,
+          blink::mojom::PermissionsPolicyFeature::kRunAdAuction,
           "getInterestGroupAdAuctionData")) {
     // TODO(https://crbug.com/382786767): Figure out why permission policy can
     // be inconsistent between the browser and renderer policy, fix it, and then
@@ -882,7 +882,7 @@ bool AdAuctionServiceImpl::JoinOrLeaveApiAllowedFromRenderer(
   // If the interest group API is not allowed for this context by Permissions
   // Policy, do nothing.
   if (!IsPermissionPolicyEnabledAndWarnIfNeeded(
-          network::mojom::PermissionsPolicyFeature::kJoinAdInterestGroup,
+          blink::mojom::PermissionsPolicyFeature::kJoinAdInterestGroup,
           invoked_method)) {
     // TODO(https://crbug.com/382786767): Figure out why permission policy can
     // be inconsistent between the browser and renderer policy, fix it, and then
@@ -894,7 +894,7 @@ bool AdAuctionServiceImpl::JoinOrLeaveApiAllowedFromRenderer(
 }
 
 bool AdAuctionServiceImpl::IsPermissionPolicyEnabledAndWarnIfNeeded(
-    network::mojom::PermissionsPolicyFeature feature,
+    blink::mojom::PermissionsPolicyFeature feature,
     const char* invoked_method) {
   if (!render_frame_host().IsFeatureEnabled(feature)) {
     return false;

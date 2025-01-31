@@ -16,7 +16,7 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 
 namespace controlled_frame {
 
@@ -73,7 +73,7 @@ IN_PROC_BROWSER_TEST_P(ControlledFramePermissionRequestInteractiveTest,
   )";
   test_case.permission_name = "fullscreen";
   test_case.policy_features.insert(
-      {network::mojom::PermissionsPolicyFeature::kFullscreen});
+      {blink::mojom::PermissionsPolicyFeature::kFullscreen});
 
   PermissionRequestTestParam test_param = GetParam();
   VerifyEnabledPermission(test_case, test_param);

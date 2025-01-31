@@ -21,7 +21,7 @@
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
-#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/webshare/mac/sharing_service_operation.h"
@@ -170,7 +170,7 @@ void ShareServiceImpl::Share(const std::string& title,
   UMA_HISTOGRAM_ENUMERATION(kWebShareApiCountMetric, WebShareMethod::kShare);
 
   if (!render_frame_host().IsFeatureEnabled(
-          network::mojom::PermissionsPolicyFeature::kWebShare)) {
+          blink::mojom::PermissionsPolicyFeature::kWebShare)) {
     std::move(callback).Run(blink::mojom::ShareError::PERMISSION_DENIED);
     ReportBadMessageAndDeleteThis("Feature policy blocks Web Share");
     return;

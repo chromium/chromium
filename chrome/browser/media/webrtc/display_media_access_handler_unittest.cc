@@ -526,7 +526,7 @@ TEST_F(DisplayMediaAccessHandlerTest, IsolatedWebAppNameAsksForPermissions) {
           web_app::ManifestBuilder()
               .SetName(app_name)
               .AddPermissionsPolicyWildcard(
-                  network::mojom::PermissionsPolicyFeature::kDisplayCapture))
+                  blink::mojom::PermissionsPolicyFeature::kDisplayCapture))
           .BuildBundle();
   iwa->TrustSigningKey();
   iwa->FakeInstallPageState(profile());

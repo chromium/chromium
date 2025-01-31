@@ -289,7 +289,7 @@ FencedFrameURLMapping::AssignFencedFrameURLAndInterestGroupInfo(
   config.on_navigate_callback_ = std::move(on_navigate_callback);
 
   config.effective_enabled_permissions_ =
-      std::vector<network::mojom::PermissionsPolicyFeature>(
+      std::vector<blink::mojom::PermissionsPolicyFeature>(
           std::begin(blink::kFencedFrameFledgeDefaultRequiredFeatures),
           std::end(blink::kFencedFrameFledgeDefaultRequiredFeatures));
 

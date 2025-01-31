@@ -54,11 +54,11 @@ MediaDevicesManager::BoolDeviceTypes DoCheckPermissionsOnUIThread(
       blink::mojom::PermissionStatus::GRANTED;
 
   bool mic_permissions_policy = frame_host->IsFeatureEnabled(
-      network::mojom::PermissionsPolicyFeature::kMicrophone);
+      blink::mojom::PermissionsPolicyFeature::kMicrophone);
   bool camera_permissions_policy = frame_host->IsFeatureEnabled(
-      network::mojom::PermissionsPolicyFeature::kCamera);
+      blink::mojom::PermissionsPolicyFeature::kCamera);
   bool speaker_selection_permissions_policy = frame_host->IsFeatureEnabled(
-      network::mojom::PermissionsPolicyFeature::kSpeakerSelection);
+      blink::mojom::PermissionsPolicyFeature::kSpeakerSelection);
 
   MediaDevicesManager::BoolDeviceTypes result;
 
@@ -125,7 +125,7 @@ void GetSpeakerSelectionAndMicrophoneState(
               blink::PermissionType::SPEAKER_SELECTION, frame_host);
 
   bool speaker_selection_permissions_policy = frame_host->IsFeatureEnabled(
-      network::mojom::PermissionsPolicyFeature::kSpeakerSelection);
+      blink::mojom::PermissionsPolicyFeature::kSpeakerSelection);
 
   // Check if permission is DENIED or permissions policy is not enabled.
   MediaDevicesManager::PermissionDeniedState

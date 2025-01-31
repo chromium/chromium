@@ -629,7 +629,7 @@ void SharedWorkerHost::BindPressureService(
         auto* render_frame_host = RenderFrameHostImpl::FromID(id);
         return render_frame_host &&
                !render_frame_host->IsFeatureEnabled(
-                   network::mojom::PermissionsPolicyFeature::kComputePressure);
+                   blink::mojom::PermissionsPolicyFeature::kComputePressure);
       })) {
     for (const auto& id : GetRenderFrameIDsForWorker()) {
       auto* rfh = RenderFrameHostImpl::FromID(id);
@@ -638,7 +638,7 @@ void SharedWorkerHost::BindPressureService(
       }
 
       if (rfh->IsFeatureEnabled(
-              network::mojom::PermissionsPolicyFeature::kComputePressure)) {
+              blink::mojom::PermissionsPolicyFeature::kComputePressure)) {
         rfh->AddMessageToConsole(
             blink::mojom::ConsoleMessageLevel::kWarning,
             "This frame is connected to a Shared Worker that has requested "
@@ -825,7 +825,7 @@ void SharedWorkerHost::AddClient(
       RenderFrameHostImpl::FromID(client_render_frame_host_id);
   if (pressure_service_ && render_frame_host &&
       !render_frame_host->IsFeatureEnabled(
-          network::mojom::PermissionsPolicyFeature::kComputePressure)) {
+          blink::mojom::PermissionsPolicyFeature::kComputePressure)) {
     render_frame_host->AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kWarning,
         "This frame is now connected to a Shared Worker using the Compute "

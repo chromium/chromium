@@ -144,7 +144,7 @@ void KeyboardLockServiceImpl::GetKeyboardLayoutMap(
   // with the permission policy enabled.
   if (frame_host_impl.GetParentOrOuterDocument() &&
       !frame_host_impl.IsFeatureEnabled(
-          network::mojom::PermissionsPolicyFeature::kKeyboardMap)) {
+          blink::mojom::PermissionsPolicyFeature::kKeyboardMap)) {
     response->status = blink::mojom::GetKeyboardLayoutMapStatus::kDenied;
     std::move(callback).Run(std::move(response));
     return;

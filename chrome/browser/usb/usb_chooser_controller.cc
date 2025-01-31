@@ -282,7 +282,7 @@ bool UsbChooserController::DisplayDevice(
     is_usb_unrestricted =
         requesting_frame_ &&
         requesting_frame_->IsFeatureEnabled(
-            network::mojom::PermissionsPolicyFeature::kUsbUnrestricted) &&
+            blink::mojom::PermissionsPolicyFeature::kUsbUnrestricted) &&
         content::HasIsolatedContextCapability(requesting_frame_);
   }
   // Isolated context with permission to access the policy-controlled feature

@@ -11,7 +11,7 @@
 #include <utility>
 
 #include "base/notreached.h"
-#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 #include "third_party/blink/public/mojom/webid/digital_identity_request.mojom-shared.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -173,7 +173,7 @@ void DiscoverDigitalIdentityCredentialFromExternalSource(
   }
 
   if (!resolver->GetExecutionContext()->IsFeatureEnabled(
-          network::mojom::PermissionsPolicyFeature::kDigitalCredentialsGet)) {
+          mojom::blink::PermissionsPolicyFeature::kDigitalCredentialsGet)) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kNotAllowedError,
         "The 'digital-credentials-get' feature is not enabled in this "

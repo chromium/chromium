@@ -23,8 +23,8 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/base/host_port_pair.h"
-#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -79,10 +79,10 @@ std::unique_ptr<web_app::BundledIsolatedWebApp> CreateTestIwa() {
   return web_app::IsolatedWebAppBuilder(
              web_app::ManifestBuilder()
                  .AddPermissionsPolicy(
-                     network::mojom::PermissionsPolicyFeature::kBluetooth,
+                     blink::mojom::PermissionsPolicyFeature::kBluetooth,
                      /*self=*/true, /*origins=*/{})
                  .AddPermissionsPolicy(
-                     network::mojom::PermissionsPolicyFeature::kMicrophone,
+                     blink::mojom::PermissionsPolicyFeature::kMicrophone,
                      /*self=*/true, /*origins=*/{}))
       .BuildBundle(web_app::test::GetDefaultEd25519KeyPair());
 }

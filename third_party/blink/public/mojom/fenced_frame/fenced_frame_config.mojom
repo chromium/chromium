@@ -9,7 +9,7 @@ module blink.mojom;
 
 import "services/network/public/mojom/schemeful_site.mojom";
 import "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom";
-import "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom";
+import "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 import "url/mojom/origin.mojom";
@@ -173,7 +173,7 @@ struct FencedFrameConfig {
   // channel. Instead, each API sets a list of feature permissions that a fenced
   // frame needs to enable to be allowed to load. Only used for fenced frames
   // with a fixed permissions policy.
-  array<network.mojom.PermissionsPolicyFeature> effective_enabled_permissions;
+  array<PermissionsPolicyFeature> effective_enabled_permissions;
 
   // Fenced frames with a flexible permissions policy are allowed to inherit
   // certain permissions policies from their parent. However, a fenced frame's
@@ -218,7 +218,7 @@ struct FencedFrameProperties {
 
   DeprecatedFencedFrameMode mode;
 
-  array<network.mojom.PermissionsPolicyFeature> effective_enabled_permissions;
+  array<PermissionsPolicyFeature> effective_enabled_permissions;
 
   // Fenced frames with a flexible permissions policy are allowed to inherit
   // certain permissions policies from their parent. However, a fenced frame's

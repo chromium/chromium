@@ -681,7 +681,7 @@ TEST_F(SerialTest, RejectOpaqueOriginEmbeddedFrame) {
       RenderFrameHostTester::For(main_test_rfh())
           ->AppendChildWithPolicy(
               "embedded_frame",
-              {{network::mojom::PermissionsPolicyFeature::kSerial,
+              {{blink::mojom::PermissionsPolicyFeature::kSerial,
                 /*allowed_origins=*/{},
                 /*self_if_matches=*/url::Origin::Create(kEmbeddedUrl),
                 /*matches_all_origins=*/false, /*matches_opaque_src=*/true}});

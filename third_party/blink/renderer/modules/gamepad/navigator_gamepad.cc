@@ -132,7 +132,7 @@ HeapVector<Member<Gamepad>> NavigatorGamepad::getGamepads(
   ExecutionContext* context = navigator_gamepad->GetExecutionContext();
 
   if (!context || !context->IsFeatureEnabled(
-                      network::mojom::PermissionsPolicyFeature::kGamepad)) {
+                      mojom::blink::PermissionsPolicyFeature::kGamepad)) {
     exception_state.ThrowSecurityError(kFeaturePolicyBlocked);
     return HeapVector<Member<Gamepad>>();
   }

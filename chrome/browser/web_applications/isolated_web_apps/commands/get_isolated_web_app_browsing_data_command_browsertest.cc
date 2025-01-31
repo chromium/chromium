@@ -45,7 +45,7 @@ class GetIsolatedWebAppBrowsingDataCommandBrowserTest
   GetIsolatedWebAppBrowsingDataCommandBrowserTest()
       : app_(IsolatedWebAppBuilder(
                  ManifestBuilder().AddPermissionsPolicy(
-                     network::mojom::PermissionsPolicyFeature::kControlledFrame,
+                     blink::mojom::PermissionsPolicyFeature::kControlledFrame,
                      /*self=*/true,
                      /*origins=*/{}))
                  .BuildAndStartProxyServer()) {}

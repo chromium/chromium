@@ -50,8 +50,8 @@
 #include "extensions/common/permissions/permission_message.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/verifier_formats.h"
-#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/origin.h"
 
@@ -70,14 +70,14 @@ constexpr base::TimeDelta kExtensionReadyPollingTimeout = base::Seconds(3);
 
 // The set of allowlisted permission policy for diagnostics IWA.
 constexpr auto kAllowlistedPermissionPolicyStringMap =
-    base::MakeFixedFlatMap<network::mojom::PermissionsPolicyFeature, int>(
-        {{network::mojom::PermissionsPolicyFeature::kCamera,
+    base::MakeFixedFlatMap<blink::mojom::PermissionsPolicyFeature, int>(
+        {{blink::mojom::PermissionsPolicyFeature::kCamera,
           IDS_ASH_SHIMLESS_RMA_APP_ACCESS_PERMISSION_CAMERA},
-         {network::mojom::PermissionsPolicyFeature::kMicrophone,
+         {blink::mojom::PermissionsPolicyFeature::kMicrophone,
           IDS_ASH_SHIMLESS_RMA_APP_ACCESS_PERMISSION_MICROPHONE},
-         {network::mojom::PermissionsPolicyFeature::kFullscreen,
+         {blink::mojom::PermissionsPolicyFeature::kFullscreen,
           IDS_ASH_SHIMLESS_RMA_APP_ACCESS_PERMISSION_FULLSCREEN},
-         {network::mojom::PermissionsPolicyFeature::kHid,
+         {blink::mojom::PermissionsPolicyFeature::kHid,
           IDS_ASH_SHIMLESS_RMA_APP_ACCESS_PERMISSION_HID_DEVICES}});
 
 std::optional<url::Origin>& GetInstalledDiagnosticsAppOriginInternal() {

@@ -343,7 +343,7 @@ ScriptPromise<T> DocumentStorageAccess::RequestStorageAccessImpl(
   if (RuntimeEnabledFeatures::FedCmWithStorageAccessAPIEnabled(
           GetSupplementable()->GetExecutionContext()) &&
       GetSupplementable()->GetExecutionContext()->IsFeatureEnabled(
-          network::mojom::PermissionsPolicyFeature::kIdentityCredentialsGet)) {
+          mojom::blink::PermissionsPolicyFeature::kIdentityCredentialsGet)) {
     UseCounter::Count(GetSupplementable()->GetExecutionContext(),
                       WebFeature::kFedCmWithStorageAccessAPI);
   }

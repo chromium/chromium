@@ -192,12 +192,12 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   }
   ScriptWrappable* ToScriptWrappable() final { return this; }
   void ReportPermissionsPolicyViolation(
-      network::mojom::PermissionsPolicyFeature,
+      mojom::blink::PermissionsPolicyFeature,
       mojom::blink::PolicyDisposition,
       const std::optional<String>& reporting_endpoint,
       const String& message = g_empty_string) const final;
   void ReportPotentialPermissionsPolicyViolation(
-      network::mojom::PermissionsPolicyFeature,
+      mojom::blink::PermissionsPolicyFeature,
       mojom::blink::PolicyDisposition,
       const std::optional<String>& reporting_endpoint,
       const String& message = g_empty_string,
@@ -235,7 +235,7 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
 
   // Count permissions policy feature usage through use counter.
   void CountPermissionsPolicyUsage(
-      network::mojom::PermissionsPolicyFeature feature,
+      mojom::blink::PermissionsPolicyFeature feature,
       UseCounterImpl::PermissionsPolicyUsageType type);
 
   // Checks if navigation to Javascript URL is allowed. This check should run

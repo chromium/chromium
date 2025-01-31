@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/modules/printing/web_printing_manager.h"
 
 #include "printing/buildflags/buildflags.h"
-#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/execution_context/navigator_base.h"
@@ -29,7 +29,7 @@ bool CheckContextAndPermissions(ScriptState* script_state,
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   if (!execution_context->IsIsolatedContext() ||
       !execution_context->IsFeatureEnabled(
-          network::mojom::PermissionsPolicyFeature::kCrossOriginIsolated)) {
+          mojom::blink::PermissionsPolicyFeature::kCrossOriginIsolated)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "Frame is not sufficiently isolated to use Web Printing.");
@@ -37,7 +37,7 @@ bool CheckContextAndPermissions(ScriptState* script_state,
   }
 
   if (!execution_context->IsFeatureEnabled(
-          network::mojom::PermissionsPolicyFeature::kWebPrinting)) {
+          mojom::blink::PermissionsPolicyFeature::kWebPrinting)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "Permissions-Policy: web-printing is disabled.");

@@ -46,11 +46,11 @@
 #include "net/first_party_sets/first_party_set_entry.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
-#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/runtime_feature_state/runtime_feature_state_read_context.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 
 namespace {
 
@@ -229,7 +229,7 @@ FederatedIdentityPermissionContext* IsAutograntViaFedCmAllowed(
   CHECK(base::FeatureList::IsEnabled(
       blink::features::kFedCmWithStorageAccessAPI));
   if (!rfh->IsFeatureEnabled(
-          network::mojom::PermissionsPolicyFeature::kIdentityCredentialsGet)) {
+          blink::mojom::PermissionsPolicyFeature::kIdentityCredentialsGet)) {
     RecordAutograntViaFedCmOutcomeSample(
         AutograntViaFedCmOutcome::kDeniedByPermissionsPolicy);
     return nullptr;
@@ -277,7 +277,7 @@ StorageAccessGrantPermissionContext::StorageAccessGrantPermissionContext(
     : PermissionContextBase(
           browser_context,
           ContentSettingsType::STORAGE_ACCESS,
-          network::mojom::PermissionsPolicyFeature::kStorageAccessAPI) {}
+          blink::mojom::PermissionsPolicyFeature::kStorageAccessAPI) {}
 
 StorageAccessGrantPermissionContext::~StorageAccessGrantPermissionContext() =
     default;

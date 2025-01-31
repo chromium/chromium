@@ -18,7 +18,7 @@ class FakePermissionContext : public PermissionContextBase {
   FakePermissionContext(
       content::BrowserContext* browser_context,
       ContentSettingsType content_settings_type,
-      network::mojom::PermissionsPolicyFeature permissions_policy_feature)
+      blink::mojom::PermissionsPolicyFeature permissions_policy_feature)
       : PermissionContextBase(browser_context,
                               content_settings_type,
                               permissions_policy_feature) {}
@@ -29,7 +29,7 @@ class FakePermissionContextAlwaysAllow : public FakePermissionContext {
   FakePermissionContextAlwaysAllow(
       content::BrowserContext* browser_context,
       ContentSettingsType content_settings_type,
-      network::mojom::PermissionsPolicyFeature permissions_policy_feature)
+      blink::mojom::PermissionsPolicyFeature permissions_policy_feature)
       : FakePermissionContext(browser_context,
                               content_settings_type,
                               permissions_policy_feature) {}
@@ -49,47 +49,47 @@ PermissionManager::PermissionContextMap CreatePermissionContexts(
   permission_contexts[ContentSettingsType::GEOLOCATION] =
       std::make_unique<FakePermissionContext>(
           browser_context, ContentSettingsType::GEOLOCATION,
-          network::mojom::PermissionsPolicyFeature::kGeolocation);
+          blink::mojom::PermissionsPolicyFeature::kGeolocation);
   permission_contexts[ContentSettingsType::NOTIFICATIONS] =
       std::make_unique<FakePermissionContext>(
           browser_context, ContentSettingsType::NOTIFICATIONS,
-          network::mojom::PermissionsPolicyFeature::kNotFound);
+          blink::mojom::PermissionsPolicyFeature::kNotFound);
   permission_contexts[ContentSettingsType::MIDI_SYSEX] =
       std::make_unique<FakePermissionContext>(
           browser_context, ContentSettingsType::MIDI_SYSEX,
-          network::mojom::PermissionsPolicyFeature::kMidiFeature);
+          blink::mojom::PermissionsPolicyFeature::kMidiFeature);
   permission_contexts[ContentSettingsType::MIDI] =
       std::make_unique<FakePermissionContextAlwaysAllow>(
           browser_context, ContentSettingsType::MIDI,
-          network::mojom::PermissionsPolicyFeature::kMidiFeature);
+          blink::mojom::PermissionsPolicyFeature::kMidiFeature);
   permission_contexts[ContentSettingsType::STORAGE_ACCESS] =
       std::make_unique<FakePermissionContextAlwaysAllow>(
           browser_context, ContentSettingsType::STORAGE_ACCESS,
-          network::mojom::PermissionsPolicyFeature::kStorageAccessAPI);
+          blink::mojom::PermissionsPolicyFeature::kStorageAccessAPI);
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
   permission_contexts[ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER] =
       std::make_unique<FakePermissionContext>(
           browser_context, ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER,
-          network::mojom::PermissionsPolicyFeature::kEncryptedMedia);
+          blink::mojom::PermissionsPolicyFeature::kEncryptedMedia);
 #endif
   permission_contexts[ContentSettingsType::WEB_APP_INSTALLATION] =
       std::make_unique<FakePermissionContext>(
           browser_context, ContentSettingsType::WEB_APP_INSTALLATION,
-          network::mojom::PermissionsPolicyFeature::kWebAppInstallation);
+          blink::mojom::PermissionsPolicyFeature::kWebAppInstallation);
   permission_contexts[ContentSettingsType::WINDOW_MANAGEMENT] =
       std::make_unique<WindowManagementPermissionContext>(browser_context);
   permission_contexts[ContentSettingsType::MEDIASTREAM_CAMERA] =
       std::make_unique<FakePermissionContext>(
           browser_context, ContentSettingsType::MEDIASTREAM_CAMERA,
-          network::mojom::PermissionsPolicyFeature::kCamera);
+          blink::mojom::PermissionsPolicyFeature::kCamera);
   permission_contexts[ContentSettingsType::MEDIASTREAM_MIC] =
       std::make_unique<FakePermissionContext>(
           browser_context, ContentSettingsType::MEDIASTREAM_MIC,
-          network::mojom::PermissionsPolicyFeature::kMicrophone);
+          blink::mojom::PermissionsPolicyFeature::kMicrophone);
   permission_contexts[ContentSettingsType::AUTOMATIC_FULLSCREEN] =
       std::make_unique<FakePermissionContext>(
           browser_context, ContentSettingsType::AUTOMATIC_FULLSCREEN,
-          network::mojom::PermissionsPolicyFeature::kFullscreen);
+          blink::mojom::PermissionsPolicyFeature::kFullscreen);
   return permission_contexts;
 }
 

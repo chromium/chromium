@@ -28,7 +28,6 @@ include_rules = [
   "+services/metrics/public/cpp",
   "+services/network/public/cpp",
   "+services/network/public/mojom",
-  "+services/network/public/mojom/permissions_policy",
   "+services/network/test",
   "+sql",
   "+third_party/blink/public/common",

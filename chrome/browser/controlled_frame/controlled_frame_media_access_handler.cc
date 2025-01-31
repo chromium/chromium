@@ -14,25 +14,25 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "extensions/browser/browser_frame_context_data.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
-#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 
 namespace controlled_frame {
 
 namespace {
 
-network::mojom::PermissionsPolicyFeature
+blink::mojom::PermissionsPolicyFeature
 GetPermissionPolicyFeatureForMediaStreamType(
     blink::mojom::MediaStreamType type) {
   switch (type) {
     case blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE:
-      return network::mojom::PermissionsPolicyFeature::kMicrophone;
+      return blink::mojom::PermissionsPolicyFeature::kMicrophone;
     case blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE:
-      return network::mojom::PermissionsPolicyFeature::kCamera;
+      return blink::mojom::PermissionsPolicyFeature::kCamera;
     default:
-      return network::mojom::PermissionsPolicyFeature::kNotFound;
+      return blink::mojom::PermissionsPolicyFeature::kNotFound;
   }
 }
 

@@ -541,7 +541,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   bool GetSuddenTerminationDisablerState(
       blink::mojom::SuddenTerminationDisablerType disabler_type) override;
   bool IsFeatureEnabled(
-      network::mojom::PermissionsPolicyFeature feature) override;
+      blink::mojom::PermissionsPolicyFeature feature) override;
   const blink::PermissionsPolicy* GetPermissionsPolicy() override;
   const blink::ParsedPermissionsPolicy& GetPermissionsPolicyHeader() override;
   void ViewSource() override;

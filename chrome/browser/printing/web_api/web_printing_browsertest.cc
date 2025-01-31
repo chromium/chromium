@@ -158,7 +158,7 @@ class WebPrintingBrowserTestBase
     std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app =
         web_app::IsolatedWebAppBuilder(
             web_app::ManifestBuilder().AddPermissionsPolicyWildcard(
-                network::mojom::PermissionsPolicyFeature::kWebPrinting))
+                blink::mojom::PermissionsPolicyFeature::kWebPrinting))
             .BuildBundle();
     app->TrustSigningKey();
     web_app::IsolatedWebAppUrlInfo url_info = app->InstallChecked(profile());

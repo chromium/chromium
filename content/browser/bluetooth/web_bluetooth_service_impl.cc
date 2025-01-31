@@ -458,7 +458,7 @@ WebBluetoothServiceImpl::GetBluetoothAllowed() {
 
   // Check if Web Bluetooth is allowed by Permissions Policy.
   if (!render_frame_host().IsFeatureEnabled(
-          network::mojom::PermissionsPolicyFeature::kBluetooth)) {
+          blink::mojom::PermissionsPolicyFeature::kBluetooth)) {
     return blink::mojom::WebBluetoothResult::PERMISSIONS_POLICY_VIOLATION;
   }
 

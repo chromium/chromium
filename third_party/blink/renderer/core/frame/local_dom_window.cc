@@ -603,7 +603,7 @@ scoped_refptr<base::SingleThreadTaskRunner> LocalDOMWindow::GetTaskRunner(
 }
 
 void LocalDOMWindow::ReportPermissionsPolicyViolation(
-    network::mojom::PermissionsPolicyFeature feature,
+    mojom::blink::PermissionsPolicyFeature feature,
     mojom::blink::PolicyDisposition disposition,
     const std::optional<String>& reporting_endpoint,
     const String& message) const {
@@ -648,7 +648,7 @@ void LocalDOMWindow::ReportPermissionsPolicyViolation(
 }
 
 void LocalDOMWindow::ReportPotentialPermissionsPolicyViolation(
-    network::mojom::PermissionsPolicyFeature feature,
+    mojom::blink::PermissionsPolicyFeature feature,
     mojom::blink::PolicyDisposition disposition,
     const std::optional<String>& reporting_endpoint,
     const String& message,
@@ -812,7 +812,7 @@ void LocalDOMWindow::CountWebDXFeature(mojom::blink::WebDXFeature feature) {
 }
 
 void LocalDOMWindow::CountPermissionsPolicyUsage(
-    network::mojom::PermissionsPolicyFeature feature,
+    mojom::blink::PermissionsPolicyFeature feature,
     UseCounterImpl::PermissionsPolicyUsageType type) {
   if (!GetFrame())
     return;
@@ -2268,7 +2268,7 @@ DOMWindow* LocalDOMWindow::open(v8::Isolate* isolate,
     UseCounter::Count(*entered_window,
                       WebFeature::kPartitionedPopin_OpenAttempt);
     if (!IsFeatureEnabled(
-            network::mojom::PermissionsPolicyFeature::kPartitionedPopins,
+            mojom::blink::PermissionsPolicyFeature::kPartitionedPopins,
             ReportOptions::kReportOnFailure)) {
       exception_state.ThrowSecurityError(
           "Permissions-Policy: `popin` access denied.",
@@ -2492,7 +2492,7 @@ void LocalDOMWindow::Trace(Visitor* visitor) const {
 bool LocalDOMWindow::CrossOriginIsolatedCapability() const {
   return Agent::IsCrossOriginIsolated() &&
          IsFeatureEnabled(
-             network::mojom::PermissionsPolicyFeature::kCrossOriginIsolated) &&
+             mojom::blink::PermissionsPolicyFeature::kCrossOriginIsolated) &&
          GetPolicyContainer()->GetPolicies().allow_cross_origin_isolation;
 }
 

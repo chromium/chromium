@@ -159,8 +159,7 @@ class SubAppsServiceImplBrowserTest : public IsolatedWebAppBrowserTestHarness {
     std::unique_ptr<ScopedBundledIsolatedWebApp> app =
         IsolatedWebAppBuilder(
             ManifestBuilder().AddPermissionsPolicy(
-                network::mojom::PermissionsPolicyFeature::kSubApps,
-                /*self=*/true,
+                blink::mojom::PermissionsPolicyFeature::kSubApps, /*self=*/true,
                 /*origins=*/{}))
             .AddFolderFromDisk("/", "web_apps/subapps_isolated_app")
             .BuildBundle();
@@ -1071,7 +1070,7 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
       IsolatedWebAppUrlInfo parent_app_2,
       IsolatedWebAppBuilder(
           ManifestBuilder().AddPermissionsPolicy(
-              network::mojom::PermissionsPolicyFeature::kSubApps, true, {}))
+              blink::mojom::PermissionsPolicyFeature::kSubApps, true, {}))
           .BuildBundle()
           ->Install(profile()));
   content::RenderFrameHost* iwa_frame_2 = OpenApp(parent_app_2.app_id());
@@ -1230,7 +1229,7 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, RemoveFailWrongParent) {
       IsolatedWebAppUrlInfo parent_app_2,
       IsolatedWebAppBuilder(
           ManifestBuilder().AddPermissionsPolicy(
-              network::mojom::PermissionsPolicyFeature::kSubApps, true, {}))
+              blink::mojom::PermissionsPolicyFeature::kSubApps, true, {}))
           .BuildBundle()
           ->Install(profile()));
   content::RenderFrameHost* iwa_frame_2 = OpenApp(parent_app_2.app_id());

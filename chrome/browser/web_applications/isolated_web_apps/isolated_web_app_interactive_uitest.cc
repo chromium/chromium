@@ -30,9 +30,9 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest, ClipboardReadWrite) {
       IsolatedWebAppBuilder(
           ManifestBuilder()
               .AddPermissionsPolicyWildcard(
-                  network::mojom::PermissionsPolicyFeature::kClipboardRead)
+                  blink::mojom::PermissionsPolicyFeature::kClipboardRead)
               .AddPermissionsPolicyWildcard(
-                  network::mojom::PermissionsPolicyFeature::kClipboardWrite))
+                  blink::mojom::PermissionsPolicyFeature::kClipboardWrite))
           .BuildBundle();
   ASSERT_OK_AND_ASSIGN(web_app::IsolatedWebAppUrlInfo url_info,
                        app->Install(profile()));

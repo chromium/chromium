@@ -32,10 +32,10 @@ class RenderFrameHostPermissionsPolicyTest
   static constexpr const char* kOrigin3 = "https://example.com";
   static constexpr const char* kOrigin4 = "https://test.com";
 
-  static const network::mojom::PermissionsPolicyFeature kDefaultEnabledFeature =
-      network::mojom::PermissionsPolicyFeature::kSyncXHR;
-  static const network::mojom::PermissionsPolicyFeature kDefaultSelfFeature =
-      network::mojom::PermissionsPolicyFeature::kGeolocation;
+  static const blink::mojom::PermissionsPolicyFeature kDefaultEnabledFeature =
+      blink::mojom::PermissionsPolicyFeature::kSyncXHR;
+  static const blink::mojom::PermissionsPolicyFeature kDefaultSelfFeature =
+      blink::mojom::PermissionsPolicyFeature::kGeolocation;
 
   RenderFrameHost* GetMainRFH(const char* origin) {
     RenderFrameHost* result = web_contents()->GetPrimaryMainFrame();
@@ -56,7 +56,7 @@ class RenderFrameHostPermissionsPolicyTest
   // page to simulate that.
   void RefreshPageAndSetHeaderPolicy(
       RenderFrameHost** rfh,
-      network::mojom::PermissionsPolicyFeature feature,
+      blink::mojom::PermissionsPolicyFeature feature,
       const std::vector<std::string>& origins) {
     RenderFrameHost* current = *rfh;
     auto navigation = NavigationSimulator::CreateRendererInitiated(
@@ -68,7 +68,7 @@ class RenderFrameHostPermissionsPolicyTest
 
   void SetContainerPolicy(RenderFrameHost* parent,
                           RenderFrameHost* child,
-                          network::mojom::PermissionsPolicyFeature feature,
+                          blink::mojom::PermissionsPolicyFeature feature,
                           const std::vector<std::string>& origins) {
     // If kOriginKeyedProcessesByDefault is enabled, then it's possible that
     // `parent` and `child` are cross-process to each other even if they're same
@@ -103,7 +103,7 @@ class RenderFrameHostPermissionsPolicyTest
 
  private:
   blink::ParsedPermissionsPolicy CreateFPHeader(
-      network::mojom::PermissionsPolicyFeature feature,
+      blink::mojom::PermissionsPolicyFeature feature,
       const std::vector<std::string>& origins) {
     blink::ParsedPermissionsPolicy result(1);
     result[0].feature = feature;

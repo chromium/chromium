@@ -18,8 +18,8 @@
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
-#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 
 namespace browsing_topics {
 
@@ -74,9 +74,9 @@ BrowsingTopicsPageLoadDataTracker::BrowsingTopicsPageLoadDataTracker(
        base::FeatureList::IsEnabled(
            blink::features::kBrowsingTopicsBypassIPIsPubliclyRoutableCheck)) &&
       page.GetMainDocument().IsFeatureEnabled(
-          network::mojom::PermissionsPolicyFeature::kBrowsingTopics) &&
+          blink::mojom::PermissionsPolicyFeature::kBrowsingTopics) &&
       page.GetMainDocument().IsFeatureEnabled(
-          network::mojom::PermissionsPolicyFeature::
+          blink::mojom::PermissionsPolicyFeature::
               kBrowsingTopicsBackwardCompatible) &&
       page.GetMainDocument().IsLastCrossDocumentNavigationStartedByUser()) {
     eligible_to_observe_ = true;

@@ -20,7 +20,7 @@
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_request_data.h"
 #include "content/public/browser/permission_result.h"
-#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 
 class GURL;
 
@@ -84,7 +84,7 @@ class PermissionContextBase : public content_settings::Observer {
   PermissionContextBase(
       content::BrowserContext* browser_context,
       ContentSettingsType content_settings_type,
-      network::mojom::PermissionsPolicyFeature permissions_policy_feature);
+      blink::mojom::PermissionsPolicyFeature permissions_policy_feature);
   ~PermissionContextBase() override;
 
   // A field trial used to enable the global permissions kill switch.
@@ -252,7 +252,7 @@ class PermissionContextBase : public content_settings::Observer {
 
   raw_ptr<content::BrowserContext> browser_context_;
   const ContentSettingsType content_settings_type_;
-  const network::mojom::PermissionsPolicyFeature permissions_policy_feature_;
+  const blink::mojom::PermissionsPolicyFeature permissions_policy_feature_;
   std::unordered_map<
       std::string,
       std::pair<std::unique_ptr<PermissionRequest>, BrowserPermissionCallback>>

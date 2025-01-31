@@ -1476,20 +1476,6 @@ mojom("mojom_host_resolver") {
   blink_cpp_typemaps = shared_cpp_typemaps
 }
 
-mojom("mojom_permissions_policy") {
-  generate_java = true
-  sources = [ "permissions_policy/permissions_policy_feature.mojom" ]
-
-  if (!is_ios) {
-    export_class_attribute = "BLINK_COMMON_EXPORT"
-    export_define = "BLINK_COMMON_IMPLEMENTATION=1"
-    export_header = "third_party/blink/public/common/common_export.h"
-  }
-
-  # Don't scramble message IDs so they are redistributable to external tests.
-  scramble_message_ids = false
-}
-
 mojom("mojom") {
   generate_java = true
   sources = [

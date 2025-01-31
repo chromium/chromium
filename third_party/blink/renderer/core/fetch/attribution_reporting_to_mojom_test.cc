@@ -27,11 +27,11 @@ ScopedNullExecutionContext MakeExecutionContext(bool has_permission) {
 
   if (has_permission) {
     AllowFeatureEverywhere(
-        network::mojom::PermissionsPolicyFeature::kAttributionReporting,
+        mojom::blink::PermissionsPolicyFeature::kAttributionReporting,
         parsed_policy);
   } else {
     DisallowFeature(
-        network::mojom::PermissionsPolicyFeature::kAttributionReporting,
+        mojom::blink::PermissionsPolicyFeature::kAttributionReporting,
         parsed_policy);
   }
 

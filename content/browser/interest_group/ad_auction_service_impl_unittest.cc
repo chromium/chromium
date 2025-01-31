@@ -9799,7 +9799,7 @@ function reportResult() {
       NavigationSimulator::CreateBrowserInitiated(kUrlA, web_contents());
   blink::ParsedPermissionsPolicy policy;
   policy.emplace_back(
-      network::mojom::PermissionsPolicyFeature::kSharedStorage,
+      blink::mojom::PermissionsPolicyFeature::kSharedStorage,
       /*allowed_origins=*/
       std::vector{*blink::OriginWithPossibleWildcards::FromOrigin(kOriginA)},
       /*self_if_matches=*/std::nullopt,
@@ -10001,7 +10001,7 @@ function scoreAd(
         NavigationSimulator::CreateBrowserInitiated(kUrlA, web_contents());
     blink::ParsedPermissionsPolicy policy;
     policy.emplace_back(
-        network::mojom::PermissionsPolicyFeature::kPrivateAggregation,
+        blink::mojom::PermissionsPolicyFeature::kPrivateAggregation,
         /*allowed_origins=*/
         std::vector{*blink::OriginWithPossibleWildcards::FromOrigin(kOriginA)},
         /*self_if_matches=*/std::nullopt,
@@ -10026,7 +10026,7 @@ function scoreAd(
         NavigationSimulator::CreateBrowserInitiated(kUrlA, web_contents());
     blink::ParsedPermissionsPolicy policy;
     policy.emplace_back(
-        network::mojom::PermissionsPolicyFeature::kPrivateAggregation,
+        blink::mojom::PermissionsPolicyFeature::kPrivateAggregation,
         /*allowed_origins=*/
         std::vector{*blink::OriginWithPossibleWildcards::FromOrigin(kOriginA),
                     *blink::OriginWithPossibleWildcards::FromOrigin(kOriginC)},
@@ -10086,7 +10086,7 @@ function scoreAd(
         NavigationSimulator::CreateBrowserInitiated(kUrlA, web_contents());
     blink::ParsedPermissionsPolicy policy;
     policy.emplace_back(
-        network::mojom::PermissionsPolicyFeature::kPrivateAggregation,
+        blink::mojom::PermissionsPolicyFeature::kPrivateAggregation,
         /*allowed_origins=*/
         std::vector{*blink::OriginWithPossibleWildcards::FromOrigin(kOriginA)},
         /*self_if_matches=*/std::nullopt,
@@ -10111,7 +10111,7 @@ function scoreAd(
         NavigationSimulator::CreateBrowserInitiated(kUrlA, web_contents());
     blink::ParsedPermissionsPolicy policy;
     policy.emplace_back(
-        network::mojom::PermissionsPolicyFeature::kPrivateAggregation,
+        blink::mojom::PermissionsPolicyFeature::kPrivateAggregation,
         /*allowed_origins=*/
         std::vector{*blink::OriginWithPossibleWildcards::FromOrigin(kOriginA),
                     *blink::OriginWithPossibleWildcards::FromOrigin(kOriginC)},

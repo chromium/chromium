@@ -131,7 +131,7 @@ void HidService::Create(
   CHECK(render_frame_host);
 
   if (!render_frame_host->IsFeatureEnabled(
-          network::mojom::PermissionsPolicyFeature::kHid)) {
+          blink::mojom::PermissionsPolicyFeature::kHid)) {
     mojo::ReportBadMessage("Permissions policy blocks access to HID.");
     return;
   }

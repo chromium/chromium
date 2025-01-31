@@ -12,6 +12,6 @@ LocalFontsPermissionContext::LocalFontsPermissionContext(
     : PermissionContextBase(
           browser_context,
           ContentSettingsType::LOCAL_FONTS,
-          network::mojom::PermissionsPolicyFeature::kLocalFonts) {}
+          blink::mojom::PermissionsPolicyFeature::kLocalFonts) {}
 
 LocalFontsPermissionContext::~LocalFontsPermissionContext() = default;
