@@ -32,6 +32,8 @@ class FailedPasswordChangeBubbleController
   // Marks password change flow as completed.
   void FinishPasswordChange();
 
+  void NavigateToPasswordChangeSettings();
+
  private:
   base::WeakPtr<PasswordChangeDelegate> password_change_delegate_;
 };

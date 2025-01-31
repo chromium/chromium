@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/passwords/password_change/successful_password_change_view.h"
 
+#include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/passwords/bubble_controllers/password_change/successful_password_change_bubble_controller.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
@@ -178,19 +180,6 @@ std::unique_ptr<views::View> CreateManagePasswordsView(
   return manage_passwords_button;
 }
 
-std::unique_ptr<views::View> CreateFooterView() {
-  // TODO(crbug.com/381054978): Add proper closure.
-  base::RepeatingClosure open_password_manager_closure =
-      base::BindRepeating([]() {});
-  // TODO(crbug.com/381054978): Use proper strings.
-  return CreateGooglePasswordManagerLabel(
-      /*text_message_id=*/
-      IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_FOOTER,
-      /*link_message_id=*/
-      IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_SETTINGS_LINK,
-      open_password_manager_closure);
-}
-
 }  // namespace
 
 SuccessfulPasswordChangeView::SuccessfulPasswordChangeView(
@@ -237,6 +226,19 @@ SuccessfulPasswordChangeView::SuccessfulPasswordChangeView(
         }
       },
       this));
+}
+
+std::unique_ptr<views::View> SuccessfulPasswordChangeView::CreateFooterView() {
+  base::RepeatingClosure navigate_to_settings =
+      base::BindRepeating(&SuccessfulPasswordChangeBubbleController::
+                              NavigateToPasswordChangeSettings,
+                          base::Unretained(controller_.get()));
+  return CreateGooglePasswordManagerLabel(
+      /*text_message_id=*/
+      IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_FOOTER,
+      /*link_message_id=*/
+      IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_SETTINGS_LINK,
+      navigate_to_settings);
 }
 
 SuccessfulPasswordChangeView::~SuccessfulPasswordChangeView() = default;

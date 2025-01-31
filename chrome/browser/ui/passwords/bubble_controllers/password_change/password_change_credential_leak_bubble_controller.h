@@ -31,7 +31,7 @@ class PasswordChangeCredentialLeakBubbleController
   std::u16string GetDisplayOrigin() const;
   std::u16string GetPrimaryAccountEmail() const;
 
-  void OnGooglePasswordManagerLinkClicked();
+  void NavigateToPasswordChangeSettings();
   void ChangePassword();
   void Cancel();
 

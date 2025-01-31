@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/functional/bind.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/passwords/bubble_controllers/password_change/password_change_credential_leak_bubble_controller.h"
@@ -83,16 +84,16 @@ PasswordChangeCredentialLeakBubbleView::
 
 std::unique_ptr<views::StyledLabel>
 PasswordChangeCredentialLeakBubbleView::CreateBodyText() {
-  base::RepeatingClosure open_password_manager_closure =
+  base::RepeatingClosure navigate_to_settings =
       base::BindRepeating(&PasswordChangeCredentialLeakBubbleController::
-                              OnGooglePasswordManagerLinkClicked,
+                              NavigateToPasswordChangeSettings,
                           base::Unretained(&controller_));
   return CreateGooglePasswordManagerLabel(
       /*text_message_id=*/
       IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_LEAK_BUBBLE_DETAILS,
       /*link_message_id=*/
       IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_SETTINGS_LINK,
-      controller_.GetPrimaryAccountEmail(), open_password_manager_closure,
+      controller_.GetPrimaryAccountEmail(), navigate_to_settings,
       CONTEXT_DIALOG_BODY_TEXT_SMALL, views::style::STYLE_PRIMARY);
 }
 

@@ -11,6 +11,8 @@
 #include "base/test/gmock_callback_support.h"
 #include "chrome/browser/password_manager/password_change_delegate.h"
 #include "chrome/browser/password_manager/password_change_delegate_mock.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/passwords/bubble_controllers/password_change/successful_password_change_bubble_controller.h"
 #include "chrome/browser/ui/views/passwords/manage_passwords_view_ids.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_test_base.h"
 #include "chrome/grit/branded_strings.h"
@@ -147,4 +149,13 @@ TEST_F(SuccessfulPasswordChangeViewTest, EyeButtonClick) {
   // Verify password is hidden.
   EXPECT_TRUE(GetLabelById(SuccessfulPasswordChangeView::kPasswordLabelId)
                   ->GetObscured());
+}
+
+TEST_F(SuccessfulPasswordChangeViewTest, PasswordChangeLinkClicked) {
+  CreateAndShowView();
+
+  EXPECT_CALL(*model_delegate_mock(), NavigateToPasswordChangeSettings);
+  auto* controller = static_cast<SuccessfulPasswordChangeBubbleController*>(
+      static_cast<PasswordBubbleViewBase*>(view())->GetController());
+  controller->NavigateToPasswordChangeSettings();
 }

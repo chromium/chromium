@@ -50,3 +50,7 @@ void FailedPasswordChangeBubbleController::FixManually() {
 void FailedPasswordChangeBubbleController::FinishPasswordChange() {
   password_change_delegate_->Stop();
 }
+
+void FailedPasswordChangeBubbleController::NavigateToPasswordChangeSettings() {
+  delegate_->NavigateToPasswordChangeSettings();
+}

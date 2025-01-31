@@ -10,6 +10,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/password_manager/password_change_delegate.h"
 #include "chrome/browser/password_manager/password_change_delegate_mock.h"
+#include "chrome/browser/ui/passwords/bubble_controllers/password_change/failed_password_change_bubble_controller.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_test_base.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -106,4 +107,13 @@ TEST_F(FailedPasswordChangeViewTest, ClosingBubbleStopsTheFlow) {
   EXPECT_CALL(*model_delegate_mock(), OnBubbleHidden);
 
   CloseBubble(views::Widget::ClosedReason::kCloseButtonClicked);
+}
+
+TEST_F(FailedPasswordChangeViewTest, PasswordChangeLinkClicked) {
+  CreateAndShowView();
+
+  EXPECT_CALL(*model_delegate_mock(), NavigateToPasswordChangeSettings);
+  auto* controller = static_cast<FailedPasswordChangeBubbleController*>(
+      static_cast<PasswordBubbleViewBase*>(view())->GetController());
+  controller->NavigateToPasswordChangeSettings();
 }

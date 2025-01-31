@@ -211,6 +211,9 @@ class PasswordsModelDelegate {
 
   virtual PasswordsLeakDialogDelegate* GetPasswordsLeakDialogDelegate() = 0;
 
+  // Opens the password change settings page as a separate tab.
+  virtual void NavigateToPasswordChangeSettings() = 0;
+
  protected:
   virtual ~PasswordsModelDelegate() = default;
 };

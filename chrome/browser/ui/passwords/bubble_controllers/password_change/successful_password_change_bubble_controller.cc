@@ -77,6 +77,11 @@ std::u16string SuccessfulPasswordChangeBubbleController::GetNewPassword()
   return password_change_delegate_->GetGeneratedPassword();
 }
 
+void SuccessfulPasswordChangeBubbleController::
+    NavigateToPasswordChangeSettings() {
+  delegate_->NavigateToPasswordChangeSettings();
+}
+
 base::WeakPtr<SuccessfulPasswordChangeBubbleController>
 SuccessfulPasswordChangeBubbleController::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();

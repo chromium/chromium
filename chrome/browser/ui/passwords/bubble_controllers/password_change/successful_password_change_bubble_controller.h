@@ -30,6 +30,8 @@ class SuccessfulPasswordChangeBubbleController
   std::u16string GetUsername() const;
   std::u16string GetNewPassword() const;
 
+  void NavigateToPasswordChangeSettings();
+
   base::WeakPtr<SuccessfulPasswordChangeBubbleController> GetWeakPtr();
 
  private:
