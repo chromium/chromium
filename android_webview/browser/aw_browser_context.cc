@@ -598,11 +598,8 @@ void AwBrowserContext::ConfigureNetworkContextParams(
   context_params->user_agent = android_webview::GetUserAgent();
 
   // TODO(ntfschr): set this value to a proper value based on the user's
-  // preferred locales (http://crbug.com/898555). For now, set this to
-  // "en-US,en" instead of "en-us,en", since Android guarantees region codes
-  // will be uppercase.
-  context_params->accept_language =
-      net::HttpUtil::GenerateAcceptLanguageHeader("en-US,en");
+  // preferred locales (http://crbug.com/898555).
+  context_params->accept_language = GetDefaultAcceptLanguageHeader();
 
   // HTTP cache
   context_params->http_cache_enabled = true;
@@ -820,6 +817,12 @@ blink::mojom::PermissionStatus AwBrowserContext::GetGeolocationPermission(
 
   return static_cast<blink::mojom::PermissionStatus>(
       Java_AwBrowserContext_getGeolocationPermission(env, obj_, origin.spec()));
+}
+
+std::string AwBrowserContext::GetDefaultAcceptLanguageHeader() {
+  // For now, set this to "en-US,en" instead of "en-us,en", since Android
+  // guarantees region codes will be uppercase.
+  return net::HttpUtil::GenerateAcceptLanguageHeader("en-US,en");
 }
 
 mojo::PendingRemote<network::mojom::URLLoaderFactory>

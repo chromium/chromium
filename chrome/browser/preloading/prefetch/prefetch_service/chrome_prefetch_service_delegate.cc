@@ -134,3 +134,8 @@ void ChromePrefetchServiceDelegate::OnPrefetchLikely(
 
   metrics_web_contents_observer->OnPrefetchLikely();
 }
+
+void ChromePrefetchServiceDelegate::SetAcceptLanguageHeader(
+    std::string accept_language_header) {
+  // no-op.
+}

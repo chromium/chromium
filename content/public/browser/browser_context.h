@@ -209,6 +209,11 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
       const net::HttpRequestHeaders& additional_headers,
       std::unique_ptr<PrefetchRequestStatusListener> request_status_listener);
 
+  // Updates the "Accept Language" header that the prefetch service delegate
+  // will use.
+  void UpdatePrefetchServiceDelegateAcceptLanguageHeader(
+      std::string accept_language_header);
+
   using BlobCallback = base::OnceCallback<void(std::unique_ptr<BlobHandle>)>;
   using BlobContextGetter =
       base::RepeatingCallback<base::WeakPtr<storage::BlobStorageContext>()>;
