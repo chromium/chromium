@@ -214,6 +214,29 @@
         Tab Switcher
       </message>
 
+      <!-- Tab Group Share Notice Bottom Sheet -->
+      <message name="IDS_TAB_GROUP_SHARE_NOTICE_BOTTOM_SHEET_CONTENT_DESCRIPTION" desc="The description of the Tab Group Share Notice bottom sheet.">
+         Notice: Changes to this shared Tab Group are visible to everyone. Everyone can make changes to your shared tab groups
+      </message>
+      <message name="IDS_TAB_GROUP_SHARE_NOTICE_BOTTOM_SHEET_HALF_HEIGHT" desc="The announcement when the Tab Group Share Notice bottom sheet is opened to half height.">
+         Notice about Shared Tab Group changes at half height
+      </message>
+      <message name="IDS_TAB_GROUP_SHARE_NOTICE_BOTTOM_SHEET_FULL_HEIGHT" desc="The announcement when the Tab Group Share Notice bottom sheet is opened to full height.">
+         Notice about Shared Tab Group changes opened at full height
+      </message>
+      <message name="IDS_TAB_GROUP_SHARE_NOTICE_BOTTOM_SHEET_CLOSED" desc="The announcement when the Tab Group Share Notice bottom sheet is closed.">
+         Notice about Shared Tab Group changes closed
+      </message>
+      <message name="IDS_TAB_GROUP_SHARE_NOTICE_BOTTOM_SHEET_TITLE" desc="Title text for the Tab Group Share Notice bottom sheet.">
+         Everyone can make changes to your shared tab groups
+      </message>
+      <message name="IDS_TAB_GROUP_SHARE_NOTICE_BOTTOM_SHEET_SUBTITLE" desc="Subtitle text for the Tab Group Share Notice bottom sheet.">
+         Changes made are seen by everyone in the group
+      </message>
+      <message name="IDS_TAB_GROUP_SHARE_NOTICE_BOTTOM_SHEET_BUTTON_TEXT" desc="Text for the confirm button on the Tab Group Share Notice bottom sheet.">
+         Got it
+      </message>
+
       <!-- Tab Selection Editor strings -->
       <message name="IDS_TAB_SELECTION_EDITOR_TOOLBAR_SELECT_TABS" desc="Label shown on Tab Selection Editor Toolbar asking user to select tabs from the list.">
         Select tabs
