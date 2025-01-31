@@ -654,8 +654,17 @@ void AutofillAgent::FocusedElementChanged(
           !config_.focus_requires_scroll;
       HandleFocusChangeComplete(
           /*focused_node_was_last_clicked=*/focused_node_was_last_clicked,
-          extracted_form ? SynchronousFormCache(*extracted_form)
-                         : SynchronousFormCache());
+          extracted_form && GetDocument() &&
+                  // Sometimes Autofill receives FocusedElementChanged signals
+                  // where `new_focused_element` is different from
+                  // `document.FocusedElement()`. In those cases we shouldn't
+                  // cache the form because it might be different from the one
+                  // that will be used later.
+                  // TODO(crbug.com/40947729): Figure out why this happens and
+                  // document the reason.
+                  new_focused_element == GetDocument().FocusedElement()
+              ? SynchronousFormCache(*extracted_form)
+              : SynchronousFormCache());
     }
   };
 
