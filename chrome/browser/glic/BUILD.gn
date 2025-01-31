@@ -109,6 +109,7 @@ source_set("impl") {
     "//components/favicon/content:content",
     "//components/feature_engagement/public:feature_constants",
     "//components/guest_view/browser",
+    "//components/language/core/common",
     "//components/pdf/browser:browser",
     "//components/pdf/common:constants",
     "//components/sessions",
