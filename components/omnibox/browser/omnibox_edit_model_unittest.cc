@@ -21,6 +21,7 @@
 #include "components/omnibox/browser/actions/tab_switch_action.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_match.h"
+#include "components/omnibox/browser/fake_autocomplete_controller.h"
 #include "components/omnibox/browser/omnibox_controller.h"
 #include "components/omnibox/browser/omnibox_popup_view.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
@@ -39,8 +40,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/omnibox_proto/answer_type.pb.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/image/image_unittest_util.h"
 
 using metrics::OmniboxEventProto;
 using Selection = OmniboxPopupSelection;
@@ -1322,6 +1325,105 @@ TEST_F(OmniboxEditModelPopupTest, OpenThumbsDownSelectionShowsFeedback) {
       1, OmniboxPopupSelection::FOCUSED_BUTTON_THUMBS_DOWN));
   EXPECT_EQ(FeedbackType::kNone, result->match_at(1)->feedback_type);
 }
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+// Tests the `GetMatchIcon()` method, verifying that a page favicon is used for
+// `URL_WHAT_YOU_TYPED` matches.
+TEST_F(OmniboxEditModelPopupTest,
+       GetMatchIconForUrlWhatYouTypedUsesPageFavicon) {
+  const GURL kUrl("https://foo.com");
+
+  GURL page_url;
+  EXPECT_CALL(*client(), GetFaviconForPageUrl(_, _))
+      .WillOnce(DoAll(SaveArg<0>(&page_url), Return(gfx::Image())));
+  EXPECT_CALL(*client(), GetFaviconForKeywordSearchProvider(_, _)).Times(0);
+
+  AutocompleteMatch match;
+  match.type = AutocompleteMatchType::URL_WHAT_YOU_TYPED;
+  match.destination_url = kUrl;
+
+  gfx::Image image = model()->GetMatchIcon(match, 0);
+  EXPECT_EQ(page_url, kUrl);
+}
+
+// Tests the `GetMatchIcon()` method, verifying that a keyword favicon is used
+// for `FEATURED_ENTERPRISE_SEARCH` matches with `kSiteSearch` policy origin.
+TEST_F(OmniboxEditModelPopupTest,
+       GetMatchIconForFeaturedEnterpriseSiteSearchUsesKeywordFavicon) {
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(16, 16);
+  bitmap.eraseColor(SK_ColorRED);
+  gfx::Image expected_image =
+      gfx::Image(gfx::ImageSkia::CreateFrom1xBitmap(bitmap));
+
+  EXPECT_CALL(*client(), GetFaviconForPageUrl(_, _)).Times(0);
+  EXPECT_CALL(*client(), GetFaviconForKeywordSearchProvider(_, _))
+      .WillOnce(Return(expected_image));
+
+  TemplateURLData data;
+  data.SetKeyword(u"sitesearch");
+  data.SetURL("https://sitesearch.com");
+  data.featured_by_policy = true;
+  data.policy_origin = TemplateURLData::PolicyOrigin::kSiteSearch;
+  TemplateURL* turl = controller()->client()->GetTemplateURLService()->Add(
+      std::make_unique<TemplateURL>(data));
+  ASSERT_TRUE(turl);
+
+  AutocompleteMatch match;
+  match.type = AutocompleteMatchType::FEATURED_ENTERPRISE_SEARCH;
+  match.destination_url = GURL("https://sitesearch.com");
+  match.keyword = u"sitesearch";
+  match.associated_keyword = std::make_unique<AutocompleteMatch>(match);
+
+  gfx::Image image = model()->GetMatchIcon(match, 0);
+  gfx::test::CheckColors(bitmap.getColor(0, 0),
+                         image.ToSkBitmap()->getColor(0, 0));
+}
+
+// Tests the `GetMatchIcon()` method, verifying that no favicon is used for
+// `FEATURED_ENTERPRISE_SEARCH` matches with `kSearchAggregator` policy origin.
+TEST_F(OmniboxEditModelPopupTest,
+       GetMatchIconForFeaturedEnterpriseSearchAggregatorUsesDoesNotUseFavicon) {
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(16, 16);
+  bitmap.eraseColor(SK_ColorRED);
+
+  EXPECT_CALL(*client(), GetFaviconForPageUrl(_, _)).Times(0);
+  EXPECT_CALL(*client(), GetFaviconForKeywordSearchProvider(_, _)).Times(0);
+
+  TemplateURLData data;
+  data.SetKeyword(u"searchaggregator");
+  data.SetURL("https://searchaggregator.com");
+  data.featured_by_policy = true;
+  data.policy_origin = TemplateURLData::PolicyOrigin::kSearchAggregator;
+  TemplateURL* turl = controller()->client()->GetTemplateURLService()->Add(
+      std::make_unique<TemplateURL>(data));
+  ASSERT_TRUE(turl);
+
+  // Creates a set of matches.
+  ACMatches matches;
+  AutocompleteMatch search_aggregator_match(
+      nullptr, 1350, false, AutocompleteMatchType::FEATURED_ENTERPRISE_SEARCH);
+  search_aggregator_match.keyword = u"searchaggregator";
+  search_aggregator_match.associated_keyword =
+      std::make_unique<AutocompleteMatch>(search_aggregator_match);
+  matches.push_back(search_aggregator_match);
+  AutocompleteMatch url_match(nullptr, 1000, false,
+                              AutocompleteMatchType::URL_WHAT_YOU_TYPED);
+  url_match.keyword = u"match";
+  matches.push_back(url_match);
+  AutocompleteResult* result =
+      &controller()->autocomplete_controller()->published_result_;
+  result->AppendMatches(matches);
+
+  // Sets the popup rich suggestion bitmap for search aggregator match.
+  model()->SetPopupRichSuggestionBitmap(0, bitmap);
+
+  gfx::Image image = model()->GetMatchIcon(search_aggregator_match, 0);
+  gfx::test::CheckColors(bitmap.getColor(0, 0),
+                         image.ToSkBitmap()->getColor(0, 0));
+}
+#endif
 
 TEST_F(OmniboxEditModelTest, OmniboxEscapeHistogram) {
   // Escape should incrementally revert temporary text, close the popup, clear

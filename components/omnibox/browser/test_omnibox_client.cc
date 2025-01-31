@@ -93,6 +93,13 @@ gfx::Image TestOmniboxClient::GetSizedIcon(
   return gfx::Image(gfx::ImageSkia::CreateFrom1xBitmap(bitmap));
 }
 
+gfx::Image TestOmniboxClient::GetSizedIcon(const gfx::Image& icon) const {
+  if (icon.IsEmpty()) {
+    return gfx::Image();
+  }
+  return gfx::Image(*icon.ToImageSkia());
+}
+
 std::u16string TestOmniboxClient::GetFormattedFullURL() const {
   return location_bar_model_.GetFormattedFullURL();
 }

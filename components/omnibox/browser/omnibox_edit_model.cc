@@ -1751,12 +1751,24 @@ gfx::Image OmniboxEditModel::GetMatchIcon(const AutocompleteMatch& match,
     auto on_icon_fetched =
         base::BindOnce(&OmniboxEditModel::OnFaviconFetched,
                        weak_factory_.GetWeakPtr(), match.destination_url);
-    favicon =
-        (turl && AutocompleteMatch::IsFeaturedEnterpriseSearchType(match.type))
-            ? controller_->client()->GetFaviconForKeywordSearchProvider(
-                  turl, std::move(on_icon_fetched))
-            : controller_->client()->GetFaviconForPageUrl(
-                  match.destination_url, std::move(on_icon_fetched));
+    if (turl && AutocompleteMatch::IsFeaturedEnterpriseSearchType(match.type)) {
+      // `IsFeaturedEnterpriseSearchType()` also includes site search matches.
+      // We should only use the bitmap for enterprise search aggregators.
+      // Otherwise, use the favicon for the keyword search provider.
+      if (turl->policy_origin() ==
+          TemplateURLData::PolicyOrigin::kSearchAggregator) {
+        const SkBitmap* bitmap = GetPopupRichSuggestionBitmap(match.keyword);
+        if (bitmap) {
+          favicon = gfx::Image(gfx::ImageSkia::CreateFrom1xBitmap(*bitmap));
+        }
+      } else {
+        favicon = controller_->client()->GetFaviconForKeywordSearchProvider(
+            turl, std::move(on_icon_fetched));
+      }
+    } else {
+      favicon = controller_->client()->GetFaviconForPageUrl(
+          match.destination_url, std::move(on_icon_fetched));
+    }
 
     // Extension icons are the correct size for non-touch UI but need to be
     // adjusted to be the correct size for touch mode.
@@ -2845,4 +2857,17 @@ std::u16string OmniboxEditModel::GetText() const {
   } else {
     NOTREACHED();
   }
+}
+
+const SkBitmap* OmniboxEditModel::GetPopupRichSuggestionBitmap(
+    const std::u16string& keyword) const {
+  DCHECK(popup_view_);
+
+  for (size_t i = 0; i < autocomplete_controller()->result().size(); ++i) {
+    auto& result_match = autocomplete_controller()->result().match_at(i);
+    if (result_match.keyword == keyword) {
+      return GetPopupRichSuggestionBitmap(i);
+    }
+  }
+  return nullptr;
 }

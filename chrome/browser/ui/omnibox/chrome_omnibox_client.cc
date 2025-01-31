@@ -350,12 +350,22 @@ void ChromeOmniboxClient::OnResultChanged(
   int result_index = -1;
   for (const AutocompleteMatch& match : result) {
     ++result_index;
-    if (match.ImageUrl().is_empty()) {
-      continue;
+    if (!match.ImageUrl().is_empty()) {
+      request_ids_.push_back(bitmap_fetcher_service->RequestImage(
+          match.ImageUrl(), base::BindOnce(on_bitmap_fetched, result_index)));
+    } else if (AutocompleteMatch::IsFeaturedEnterpriseSearchType(match.type)) {
+      // Request the policy favicon for featured search aggregator matches.
+      // `IsFeaturedEnterpriseSearchType()` also includes site search matches.
+      // We should only fetch the bitmap for enterprise search aggregators.
+      const TemplateURL* turl =
+          match.GetTemplateURL(GetTemplateURLService(), false);
+      if (turl && turl->policy_origin() ==
+                      TemplateURLData::PolicyOrigin::kSearchAggregator) {
+        request_ids_.push_back(bitmap_fetcher_service->RequestImage(
+            turl->favicon_url(),
+            base::BindOnce(on_bitmap_fetched, result_index)));
+      }
     }
-
-    request_ids_.push_back(bitmap_fetcher_service->RequestImage(
-        match.ImageUrl(), base::BindOnce(on_bitmap_fetched, result_index)));
   }
 }
 
