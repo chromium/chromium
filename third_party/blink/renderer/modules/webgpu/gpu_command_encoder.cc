@@ -93,10 +93,10 @@ std::string ValidateColorAttachmentsDepthSlice(
 // wgpu::kQuerySetIndexUndefined (0xFFFF'FFFF). Blink must make sure that an
 // actual value of 0xFFFF'FFFF coming in from JS is not treated as
 // wgpu::kQuerySetIndexUndefined, so it injects an error in that case.
-template <typename GPUTimestampWrites, typename TimestampWrites>
+template <typename GPUTimestampWrites>
 std::string ValidateAndConvertTimestampWrites(
     const GPUTimestampWrites* webgpu_desc,
-    TimestampWrites* dawn_desc,
+    wgpu::PassTimestampWrites* dawn_desc,
     const char* desc_type,
     const char* desc_label) {
   DCHECK(webgpu_desc);
@@ -273,7 +273,7 @@ GPURenderPassEncoder* GPUCommandEncoder::beginRenderPass(
     dawn_desc.occlusionQuerySet = AsDawnType(descriptor->occlusionQuerySet());
   }
 
-  wgpu::RenderPassTimestampWrites timestampWrites = {};
+  wgpu::PassTimestampWrites timestampWrites = {};
   if (descriptor->hasTimestampWrites()) {
     GPURenderPassTimestampWrites* timestamp_writes =
         descriptor->timestampWrites();
@@ -307,7 +307,7 @@ GPUComputePassEncoder* GPUCommandEncoder::beginComputePass(
     dawn_desc.label = label.c_str();
   }
 
-  wgpu::ComputePassTimestampWrites timestampWrites = {};
+  wgpu::PassTimestampWrites timestampWrites = {};
   if (descriptor->hasTimestampWrites()) {
     GPUComputePassTimestampWrites* timestamp_writes =
         descriptor->timestampWrites();
