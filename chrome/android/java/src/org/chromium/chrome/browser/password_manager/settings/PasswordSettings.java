@@ -31,7 +31,6 @@ import org.chromium.base.BuildInfo;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.access_loss.PasswordAccessLossWarningType;
 import org.chromium.chrome.browser.password_check.PasswordCheck;
@@ -45,7 +44,6 @@ import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SearchUtils;
@@ -135,7 +133,6 @@ public class PasswordSettings extends ChromeBaseSettingsFragment
 
     private @Nullable PasswordCheck mPasswordCheck;
     private @ManagePasswordsReferrer int mManagePasswordsReferrer;
-    private OneshotSupplier<BottomSheetController> mBottomSheetControllerSupplier;
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     /** For controlling the UX flow of exporting passwords. */
@@ -429,12 +426,6 @@ public class PasswordSettings extends ChromeBaseSettingsFragment
                         .announceForAccessibility(
                                 getString(R.string.accessible_find_in_page_no_results));
             }
-        }
-
-        if (!mNoPasswords) {
-            PasswordManagerHandlerProvider.getForProfile(getProfile())
-                    .getPasswordManagerHandler()
-                    .showMigrationWarning(getActivity(), mBottomSheetControllerSupplier.get());
         }
     }
 
@@ -749,11 +740,6 @@ public class PasswordSettings extends ChromeBaseSettingsFragment
         getActivity().startActivity(intent);
         // Return true to notify the click was handled.
         return true;
-    }
-
-    public void setBottomSheetControllerSupplier(
-            OneshotSupplier<BottomSheetController> bottomSheetControllerSupplier) {
-        mBottomSheetControllerSupplier = bottomSheetControllerSupplier;
     }
 
     Menu getMenuForTesting() {

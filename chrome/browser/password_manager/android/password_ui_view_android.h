@@ -93,10 +93,6 @@ class PasswordUiViewAndroid
       const base::android::JavaRef<jobject>& context,
       int index,
       const base::android::JavaParamRef<jobject>& obj);
-  void ShowMigrationWarning(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& activity,
-      const base::android::JavaParamRef<jobject>& controller);
   jboolean IsWaitingForPasswordStore(JNIEnv* env,
                                      const base::android::JavaRef<jobject>&);
   // Destroy the native implementation.

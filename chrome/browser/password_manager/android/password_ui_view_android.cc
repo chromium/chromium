@@ -296,16 +296,6 @@ void PasswordUiViewAndroid::HandleShowBlockedCredentialView(
       context);
 }
 
-void PasswordUiViewAndroid::ShowMigrationWarning(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& activity,
-    const base::android::JavaParamRef<jobject>& bottom_sheet_controller) {
-  local_password_migration::ShowWarningWithActivity(
-      activity, bottom_sheet_controller, profile_,
-      password_manager::metrics_util::PasswordMigrationWarningTriggers::
-          kPasswordSettings);
-}
-
 void PasswordUiViewAndroid::OnEditUIDismissed() {
   credential_edit_bridge_.reset();
 }
