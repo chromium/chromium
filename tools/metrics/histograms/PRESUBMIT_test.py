@@ -23,6 +23,7 @@ sys.path.append(
 from PRESUBMIT_test_mocks import MockAffectedFile, MockInputApi, MockOutputApi
 
 _BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+_TOP_LEVEL_ENUMS_PATH = (f'{os.path.dirname(__file__)}/enums.xml')
 
 
 def _TempCacheFile():
@@ -46,15 +47,27 @@ class MetricsPresubmitTest(unittest.TestCase):
         MockAffectedFile(malformed_histograms_path, malformed_contents),
     ]
 
-    results = PRESUBMIT.ExecuteCheckHistogramFormatting(mock_input_api,
-                                                        MockOutputApi(),
-                                                        allow_test_paths=True)
-    self.assertEqual(len(results), 1)
+    results = PRESUBMIT.ExecuteCheckHistogramFormatting(
+        mock_input_api,
+        MockOutputApi(),
+        allow_test_paths=True,
+        xml_paths_override=[malformed_histograms_path, _TOP_LEVEL_ENUMS_PATH])
+
+    self.assertEqual(len(results), 2)
+
     self.assertEqual(results[0].type, 'error')
     self.assertRegex(
         results[0].message,
         '.*histograms.xml contains histogram.* using <variants> not defined in'
         ' the file, please run validate_token.py .*histograms.xml to fix.')
+
+    # validate_format.py also reports errors when the variants are not defined
+    # in the file, hence there is a second error from the same check.
+    self.assertEqual(results[1].type, 'error')
+    self.assertRegex(
+        results[1].message,
+        'Histograms are not well-formatted; please run .*validate_format.py and'
+        ' fix the reported errors.')
 
   def testCheckWebViewHistogramsAllowlistOnUploadFailureIsDetected(self):
     missing_allow_list_entries_histograms_path = (
@@ -103,6 +116,9 @@ class MetricsPresubmitTest(unittest.TestCase):
     valid_histograms_path = (f'{os.path.dirname(__file__)}'
                              '/test_data'
                              '/example_valid_histograms.xml')
+    valid_enums_path = (f'{os.path.dirname(__file__)}'
+                        '/test_data'
+                        '/example_valid_enums.xml')
 
     with open(valid_histograms_path, 'r') as f:
       valid_contents = f.read()
@@ -113,9 +129,13 @@ class MetricsPresubmitTest(unittest.TestCase):
         MockAffectedFile(valid_histograms_path, valid_contents),
     ]
 
-    results = PRESUBMIT.ExecuteCheckHistogramFormatting(mock_input_api,
-                                                        MockOutputApi(),
-                                                        allow_test_paths=True)
+    results = PRESUBMIT.ExecuteCheckHistogramFormatting(
+        mock_input_api,
+        MockOutputApi(),
+        allow_test_paths=True,
+        xml_paths_override=[
+            valid_histograms_path, valid_enums_path, _TOP_LEVEL_ENUMS_PATH
+        ])
     # Zero results mean that there were no errors reported.
     self.assertEqual(len(results), 0)
 

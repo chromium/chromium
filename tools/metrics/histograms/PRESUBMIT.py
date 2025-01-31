@@ -99,14 +99,29 @@ def GetTokenErrors(input_api, output_api, cwd, rel_path, results):
     results.append(output_api.PresubmitError(error_msg))
 
 
-def GetValidateHistogramsError(input_api, output_api, cwd, results):
-  """Validates histograms format and index file."""
-  exit_code = input_api.subprocess.call([
-      input_api.python3_executable,
-      os.path.join(input_api.PresubmitLocalPath(), 'validate_format.py')
-  ],
-                                        cwd=cwd)
+def GetValidateHistogramsError(input_api: Type, output_api: Type, cwd: str,
+                               xml_paths_override: List[str],
+                               results: List[Any]):
+  """Validates histograms format and index file.
 
+  Args:
+    input_api: An input_api instance that contains information about changes.
+    output_api: An output_api instance to create results of the PRESUBMIT check.
+    cwd: Work directory to run the python process in.
+    xml_paths: A list of paths to the xml files to validate or None to use the
+      default set of production xml files.
+    results: The list of output_api objects to append the check warnings to.
+  """
+  validate_format_argv = [
+      input_api.python3_executable,
+      os.path.join(input_api.PresubmitLocalPath(), 'validate_format.py'),
+  ]
+
+  if xml_paths_override is not None:
+    validate_format_argv.append('--xml_paths')
+    validate_format_argv.extend(xml_paths_override)
+
+  exit_code = input_api.subprocess.call(validate_format_argv, cwd=cwd)
   if exit_code != 0:
     error_msg = (
         'Histograms are not well-formatted; please run %s/validate_format.py '
@@ -175,7 +190,8 @@ def ValidateSingleFile(input_api, output_api, file_obj, cwd, results,
 def CheckHistogramFormatting(input_api,
                              output_api,
                              cache_file_override_path=None,
-                             allow_test_paths=False):
+                             allow_test_paths=False,
+                             xml_paths_override=None):
   """Checks that histograms.xml is pretty-printed and well-formatted.
 
   This function is a wrapper around
@@ -187,14 +203,15 @@ def CheckHistogramFormatting(input_api,
   return _RunCheckWithCache(ExecuteCheckHistogramFormatting,
                             HistogramsPresubmitCheckType.FORMATTING_VALIDATION,
                             input_api, output_api, cache_file_path,
-                            allow_test_paths)
+                            allow_test_paths, xml_paths_override)
 
 
 # Note: Execute convention in this file comes from the fact that PRESUBMIT
 # will try to call anything with a Check prefix as a function. As we want to
 # avoid this and at the same we want to add a caching support, we are using
 # Execute prefix for executing the checks on cache miss.
-def ExecuteCheckHistogramFormatting(input_api, output_api, allow_test_paths):
+def ExecuteCheckHistogramFormatting(input_api, output_api, allow_test_paths,
+                                    xml_paths_override):
   """Checks that histograms.xml is pretty-printed and well-formatted.
 
   This is a method that is called by the PRESUBMIT system and those it
@@ -215,7 +232,8 @@ def ExecuteCheckHistogramFormatting(input_api, output_api, allow_test_paths):
   # Run validate_format.py and validate_histograms_index.py, if changed files
   # contain histograms.xml or enums.xml.
   if xml_changed:
-    GetValidateHistogramsError(input_api, output_api, cwd, results)
+    GetValidateHistogramsError(input_api, output_api, cwd, xml_paths_override,
+                               results)
 
   return results
 

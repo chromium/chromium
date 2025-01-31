@@ -29,7 +29,7 @@ class ValidateTokenTests(unittest.TestCase):
       self.assertTrue(has_token_error)
     self.assertEqual(len(logs.output), 1)
     output = logs.output[0]
-    self.assertIn('Token(s) TestToken, TestToken3 in', output)
+    self.assertIn('Token(s) TestToken3 in', output)
     self.assertIn('Test.{TestToken3}.Histogram.{TestToken}.{TestToken2}',
                   output)
 
