@@ -264,7 +264,7 @@ void TestShareKitService::SetTabGroupCollabIdFromGroupId(
     std::optional<tab_groups::SavedTabGroup> saved_group =
         tab_group_sync_service_->GetGroup(tab_group_id);
     if (saved_group && !saved_group->is_shared_tab_group()) {
-      chrome_test_util::AddColloaborationGroupToFakeServer(collaboration_id);
+      chrome_test_util::AddCollaborationGroupToFakeServer(collaboration_id);
       chrome_test_util::TriggerSyncCycle(syncer::COLLABORATION_GROUP);
       // TODO(crbug.com/382557489): implement the callback.
       tab_group_sync_service_->MakeTabGroupShared(
