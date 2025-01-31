@@ -331,6 +331,10 @@ const base::FeatureParam<std::string> kGlicWebUICSPOverride{
     " https://*.google.com/"
     " https://*.googleplex.com/;"};
 
+BASE_FEATURE(kGlicKeyboardShortcutNewBadge,
+             "GlicKeyboardShortcutNewBadge",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kTabstripComboButton,
              "TabstripComboButton",
              base::FEATURE_DISABLED_BY_DEFAULT);

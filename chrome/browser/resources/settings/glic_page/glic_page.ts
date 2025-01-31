@@ -99,6 +99,10 @@ export class SettingsGlicPageElement extends SettingsGlicPageElementBase {
         shortcutInput.getBubbleAnchor());
   }
 
+  private onToggleChange_(event: CustomEvent<boolean>) {
+    this.browserProxy_.setGlicOsLauncherEnabled(event.detail);
+  }
+
   private onShortcutUpdated_(event: CustomEvent<string>) {
     this.browserProxy_.setGlicShortcut(event.detail);
   }

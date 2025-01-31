@@ -9,10 +9,15 @@ export class TestGlicBrowserProxy extends TestBrowserProxy implements
     GlicBrowserProxy {
   constructor() {
     super([
+      'setGlicOsLauncherEnabled',
       'getGlicShortcut',
       'setGlicShortcut',
       'setShortcutSuspensionState',
     ]);
+  }
+
+  setGlicOsLauncherEnabled(enabled: boolean) {
+    this.methodCalled('setGlicOsLauncherEnabled', enabled);
   }
 
   getGlicShortcut() {

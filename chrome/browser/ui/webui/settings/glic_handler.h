@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_GLIC_HANDLER_H_
 
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
+#include "content/public/browser/web_ui.h"
 
 namespace settings {
 
@@ -23,9 +24,14 @@ class GlicHandler : public SettingsPageUIHandler {
   void OnJavascriptAllowed() override {}
   void OnJavascriptDisallowed() override {}
 
+  void SetWebUIForTesting(content::WebUI* web_ui);
+
  private:
   FRIEND_TEST_ALL_PREFIXES(GlicHandlerBrowserTest, UpdateShortcutSuspension);
   FRIEND_TEST_ALL_PREFIXES(GlicHandlerBrowserTest, UpdateGlicShortcut);
+
+  // Updates settings based on the OS launcher enabled state.
+  void HandleSetGlicOsLauncherEnabled(const base::Value::List& args);
 
   // Sends to the settings page the last saved shortcut.
   void HandleGetGlicShortcut(const base::Value::List& args);

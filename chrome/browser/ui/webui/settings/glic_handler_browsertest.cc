@@ -13,8 +13,10 @@
 #include "chrome/browser/glic/launcher/glic_launcher_configuration.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/test_browser_window.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_web_ui.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener.h"
@@ -28,7 +30,16 @@ class GlicHandlerBrowserTest : public InProcessBrowserTest {
   void SetUp() override {
     feature_list_.InitWithFeatures(
         {features::kGlic, features::kTabstripComboButton}, {});
+
     InProcessBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    web_ui_ = std::make_unique<content::TestWebUI>();
+    web_ui_->set_web_contents(
+        browser()->tab_strip_model()->GetActiveWebContents());
+    glic_handler_ = std::make_unique<GlicHandler>();
+    glic_handler_->SetWebUIForTesting(web_ui_.get());
   }
 
   void TearDownOnMainThread() override {
@@ -41,8 +52,9 @@ class GlicHandlerBrowserTest : public InProcessBrowserTest {
   GlicHandler* glic_handler() { return glic_handler_.get(); }
 
  private:
-  std::unique_ptr<GlicHandler> glic_handler_ = std::make_unique<GlicHandler>();
+  std::unique_ptr<GlicHandler> glic_handler_;
   base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<content::TestWebUI> web_ui_;
 };
 
 // TODO(crbug.com/388101855): Remove buildflag when GlobalAcceleratorListener
