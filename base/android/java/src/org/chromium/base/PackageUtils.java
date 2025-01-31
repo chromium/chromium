@@ -80,18 +80,6 @@ public class PackageUtils {
         return ret;
     }
 
-    /**
-     * Return the "long" version code of the given PackageInfo. Does the right thing for
-     * before/after Android P when this got wider.
-     */
-    public static long packageVersionCode(PackageInfo pi) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            return pi.getLongVersionCode();
-        } else {
-            return pi.versionCode;
-        }
-    }
-
     // Need to call an internal method to work around a framework bug.
     @SuppressWarnings("PrivateApi")
     public static void maybeWorkAroundWebViewPackageVisibility() {
