@@ -272,6 +272,8 @@ inline constexpr char kChromeUIUntrustedDataSharingURL[] =
     "chrome-untrusted://data-sharing/";
 inline constexpr char kChromeUIUntrustedDataSharingAPIURL[] =
     "chrome-untrusted://data-sharing/data_sharing_api.html";
+inline constexpr char kChromeUIUntrustedFavicon2URL[] =
+    "chrome-untrusted://favicon2/";
 inline constexpr char kChromeUIUntrustedImageEditorURL[] =
     "chrome-untrusted://image-editor/";
 inline constexpr char kChromeUIUntrustedPrintURL[] =

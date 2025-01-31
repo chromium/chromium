@@ -68,8 +68,9 @@ class TestFaviconSource : public FaviconSource {
  public:
   TestFaviconSource(chrome::FaviconUrlFormat format,
                     Profile* profile,
-                    ui::NativeTheme* theme)
-      : FaviconSource(profile, format), theme_(theme) {}
+                    ui::NativeTheme* theme,
+                    bool serve_untrusted = false)
+      : FaviconSource(profile, format, serve_untrusted), theme_(theme) {}
 
   ~TestFaviconSource() override = default;
 
@@ -88,8 +89,13 @@ class TestFaviconSource : public FaviconSource {
 
 class FaviconSourceTestBase : public testing::Test {
  public:
-  explicit FaviconSourceTestBase(chrome::FaviconUrlFormat format)
-      : source_(format, &profile_, &theme_) {
+  explicit FaviconSourceTestBase(chrome::FaviconUrlFormat format,
+                                 bool serve_untrusted = false)
+      : source_(format, &profile_, &theme_, serve_untrusted) {
+    Init();
+  }
+
+  void Init() {
     // Setup testing factories for main dependencies.
     mock_history_ui_favicon_request_handler_ =
         static_cast<NiceMock<MockHistoryUiFaviconRequestHandler>*>(
@@ -155,12 +161,6 @@ class FaviconSourceTestWithLegacyFormat : public FaviconSourceTestBase {
       : FaviconSourceTestBase(chrome::FaviconUrlFormat::kFaviconLegacy) {}
 };
 
-class FaviconSourceTestWithFavicon2Format : public FaviconSourceTestBase {
- public:
-  FaviconSourceTestWithFavicon2Format()
-      : FaviconSourceTestBase(chrome::FaviconUrlFormat::kFavicon2) {}
-};
-
 TEST_F(FaviconSourceTestWithLegacyFormat, DarkDefault) {
   SetDarkMode(true);
   EXPECT_CALL(*source(), LoadIconBytes(_, IDR_DEFAULT_FAVICON_DARK));
@@ -216,7 +216,20 @@ TEST_F(FaviconSourceTestWithLegacyFormat, ShouldNotQueryIfInvalidScaleFactor) {
       test_web_contents_getter_, base::DoNothing());
 }
 
-TEST_F(FaviconSourceTestWithFavicon2Format,
+class FaviconSourceTestWithFavicon2Format
+    : public FaviconSourceTestBase,
+      public testing::WithParamInterface<bool> {
+ public:
+  FaviconSourceTestWithFavicon2Format()
+      : FaviconSourceTestBase(chrome::FaviconUrlFormat::kFavicon2,
+                              /*serve_untrusted=*/GetParam()) {}
+};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         FaviconSourceTestWithFavicon2Format,
+                         /*serve_untrusted=*/testing::Bool());
+
+TEST_P(FaviconSourceTestWithFavicon2Format,
        ShouldNotRecordFaviconResourceHistogram) {
   base::HistogramTester tester;
   source()->StartDataRequest(
@@ -229,21 +242,21 @@ TEST_F(FaviconSourceTestWithFavicon2Format,
   EXPECT_EQ(0, samples->TotalCount());
 }
 
-TEST_F(FaviconSourceTestWithFavicon2Format, DarkDefault) {
+TEST_P(FaviconSourceTestWithFavicon2Format, DarkDefault) {
   SetDarkMode(true);
   EXPECT_CALL(*source(), LoadIconBytes(_, IDR_DEFAULT_FAVICON_DARK));
   source()->StartDataRequest(GURL(kDummyPrefix), test_web_contents_getter_,
                              base::DoNothing());
 }
 
-TEST_F(FaviconSourceTestWithFavicon2Format, LightDefault) {
+TEST_P(FaviconSourceTestWithFavicon2Format, LightDefault) {
   SetDarkMode(false);
   EXPECT_CALL(*source(), LoadIconBytes(_, IDR_DEFAULT_FAVICON));
   source()->StartDataRequest(GURL(kDummyPrefix), test_web_contents_getter_,
                              base::DoNothing());
 }
 
-TEST_F(FaviconSourceTestWithFavicon2Format, LightOverride) {
+TEST_P(FaviconSourceTestWithFavicon2Format, LightOverride) {
   SetDarkMode(true);
   EXPECT_CALL(*source(), LoadIconBytes(_, IDR_DEFAULT_FAVICON));
   source()->StartDataRequest(
@@ -253,7 +266,7 @@ TEST_F(FaviconSourceTestWithFavicon2Format, LightOverride) {
       test_web_contents_getter_, base::DoNothing());
 }
 
-TEST_F(FaviconSourceTestWithFavicon2Format,
+TEST_P(FaviconSourceTestWithFavicon2Format,
        ShouldNotQueryHistoryUiFaviconRequestHandlerIfNotAllowed) {
   content::WebContentsTester::For(test_web_contents_.get())
       ->SetLastCommittedURL(GURL(chrome::kChromeUIHistoryURL));
@@ -270,7 +283,7 @@ TEST_F(FaviconSourceTestWithFavicon2Format,
       test_web_contents_getter_, base::DoNothing());
 }
 
-TEST_F(FaviconSourceTestWithFavicon2Format,
+TEST_P(FaviconSourceTestWithFavicon2Format,
        ShouldNotQueryHistoryUiFaviconRequestHandlerIfHasNotHistoryUiOrigin) {
   content::WebContentsTester::For(test_web_contents_.get())
       ->SetLastCommittedURL(GURL("chrome://non-history-url"));
@@ -287,7 +300,7 @@ TEST_F(FaviconSourceTestWithFavicon2Format,
       test_web_contents_getter_, base::DoNothing());
 }
 
-TEST_F(
+TEST_P(
     FaviconSourceTestWithFavicon2Format,
     ShouldQueryHistoryUiFaviconRequestHandlerIfHasHistoryUiOriginAndAllowed) {
   content::WebContentsTester::For(test_web_contents_.get())
@@ -305,7 +318,7 @@ TEST_F(
       test_web_contents_getter_, base::DoNothing());
 }
 
-TEST_F(FaviconSourceTestWithFavicon2Format,
+TEST_P(FaviconSourceTestWithFavicon2Format,
        ShouldNotQueryIfDesiredSizeTooLarge) {
   EXPECT_CALL(*mock_history_ui_favicon_request_handler_,
               GetRawFaviconForPageURL)
@@ -321,7 +334,7 @@ TEST_F(FaviconSourceTestWithFavicon2Format,
       test_web_contents_getter_, base::DoNothing());
 }
 
-TEST_F(FaviconSourceTestWithFavicon2Format,
+TEST_P(FaviconSourceTestWithFavicon2Format,
        ShouldNotQueryIfInvalidScaleFactor) {
   EXPECT_CALL(*mock_history_ui_favicon_request_handler_,
               GetRawFaviconForPageURL)
@@ -335,4 +348,16 @@ TEST_F(FaviconSourceTestWithFavicon2Format,
           {kDummyPrefix,
            "?size=16&scaleFactor=-2x&pageUrl=https%3A%2F%2Fwww.google.com"})),
       test_web_contents_getter_, base::DoNothing());
+}
+
+class FaviconSourceTestWithFavicon2FormatServeUntrusted
+    : public FaviconSourceTestBase {
+ public:
+  FaviconSourceTestWithFavicon2FormatServeUntrusted()
+      : FaviconSourceTestBase(chrome::FaviconUrlFormat::kFavicon2,
+                              /*serve_untrusted=*/true) {}
+};
+
+TEST_F(FaviconSourceTestWithFavicon2FormatServeUntrusted, ValidateGetSource) {
+  EXPECT_EQ(source()->GetSource(), chrome::kChromeUIUntrustedFavicon2URL);
 }
