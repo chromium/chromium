@@ -1212,11 +1212,26 @@
       <message name="IDS_EDUCATIONAL_TIP_DEFAULT_BROWSER_BOTTOM_SHEET_SECOND_STEP" desc="The second step in the bottom sheet of the default browser section within the educational tip module on the NTP.">
         Tap Apps  > Default apps
       </message>
+      <message name="IDS_EDUCATIONAL_TIP_DEFAULT_BROWSER_BOTTOM_SHEET_SECOND_STEP_ACCESSIBILITY" desc="Accessibility string that describes the second step in the bottom sheet of the default browser section within the educational tip module on the NTP.">
+        Tap Apps then tap Default apps
+      </message>
       <message name="IDS_EDUCATIONAL_TIP_DEFAULT_BROWSER_BOTTOM_SHEET_THIRD_STEP" desc="The third step in the bottom sheet of the default browser section within the educational tip module on the NTP.">
         Tap Browser app > Chrome
       </message>
+      <message name="IDS_EDUCATIONAL_TIP_DEFAULT_BROWSER_BOTTOM_SHEET_THIRD_STEP_ACCESSIBILITY" desc="Accessibility string that describes the third step in the bottom sheet of the default browser section within the educational tip module on the NTP.">
+        Tap Browser app then tap Chrome
+      </message>
       <message name="IDS_EDUCATIONAL_TIP_DEFAULT_BROWSER_BOTTOM_SHEET_BUTTON" desc="The name of the button in the bottom sheet of the default browser section within the educational tip module on the NTP">
         Settings
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_DEFAULT_BROWSER_BOTTOM_SHEET_ACCESSIBILITY_CLOSED" desc="Accessibility string that describes that the default browser bottom sheet has closed.">
+        Default browser bottom sheet closed
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_DEFAULT_BROWSER_BOTTOM_SHEET_CONTENT_DESCRIPTION" desc="Accessibility string that describes the default browser bottom sheet.">
+        Default browser bottom sheet
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_DEFAULT_BROWSER_BOTTOM_SHEET_ACCESSIBILITY_OPENED_FULL" desc="Accessibility string that describes that the default browser bottom sheet has fully opened.">
+        Default browser bottom sheet opened at full height
       </message>
 
       <!-- Safety Hub Magic Stack strings -->

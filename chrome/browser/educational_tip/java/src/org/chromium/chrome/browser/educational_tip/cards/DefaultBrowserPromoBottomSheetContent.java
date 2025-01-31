@@ -62,21 +62,23 @@ public class DefaultBrowserPromoBottomSheetContent implements BottomSheetContent
 
     @Override
     public @NonNull String getSheetContentDescription(Context context) {
-        return context.getString(R.string.educational_tip_default_browser_title);
+        return context.getString(
+                R.string.educational_tip_default_browser_bottom_sheet_content_description);
     }
 
     @Override
     public int getSheetHalfHeightAccessibilityStringId() {
-        return R.string.educational_tip_default_browser_title;
+        assert false : "This method will not be called.";
+        return 0;
     }
 
     @Override
     public int getSheetFullHeightAccessibilityStringId() {
-        return R.string.educational_tip_default_browser_title;
+        return R.string.educational_tip_default_browser_bottom_sheet_accessibility_opened_full;
     }
 
     @Override
     public int getSheetClosedAccessibilityStringId() {
-        return R.string.educational_tip_default_browser_title;
+        return R.string.educational_tip_default_browser_bottom_sheet_accessibility_closed;
     }
 }
