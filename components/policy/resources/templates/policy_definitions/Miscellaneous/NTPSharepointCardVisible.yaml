@@ -16,9 +16,6 @@ example_value: false
 features:
   dynamic_refresh: true
   per_profile: true
-future_on:
-- chrome.*
-- chrome_os
 items:
 - caption: Enable NTP SharePoint and OneDrive File Card
   value: true
@@ -31,5 +28,8 @@ owners:
 - ftirelo@chromium.org
 schema:
   type: boolean
+supported_on:
+- chrome.*:134-
+- chrome_os:134-
 tags: []
 type: main
