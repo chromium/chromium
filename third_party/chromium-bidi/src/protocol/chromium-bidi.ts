@@ -73,6 +73,7 @@ export namespace BrowsingContext {
     HistoryUpdated = 'browsingContext.historyUpdated',
     Load = 'browsingContext.load',
     NavigationAborted = 'browsingContext.navigationAborted',
+    NavigationCommitted = 'browsingContext.navigationCommitted',
     NavigationFailed = 'browsingContext.navigationFailed',
     NavigationStarted = 'browsingContext.navigationStarted',
     UserPromptClosed = 'browsingContext.userPromptClosed',

@@ -565,6 +565,7 @@ export const BrowsingContextEventSchema = z.lazy(() =>
     BrowsingContext.HistoryUpdatedSchema,
     BrowsingContext.LoadSchema,
     BrowsingContext.NavigationAbortedSchema,
+    BrowsingContext.NavigationCommittedSchema,
     BrowsingContext.NavigationFailedSchema,
     BrowsingContext.NavigationStartedSchema,
     BrowsingContext.UserPromptClosedSchema,
@@ -1087,6 +1088,14 @@ export namespace BrowsingContext {
   export const NavigationAbortedSchema = z.lazy(() =>
     z.object({
       method: z.literal('browsingContext.navigationAborted'),
+      params: BrowsingContext.NavigationInfoSchema,
+    }),
+  );
+}
+export namespace BrowsingContext {
+  export const NavigationCommittedSchema = z.lazy(() =>
+    z.object({
+      method: z.literal('browsingContext.navigationCommitted'),
       params: BrowsingContext.NavigationInfoSchema,
     }),
   );

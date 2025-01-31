@@ -422,6 +422,7 @@ export type BrowsingContextEvent =
   | BrowsingContext.HistoryUpdated
   | BrowsingContext.Load
   | BrowsingContext.NavigationAborted
+  | BrowsingContext.NavigationCommitted
   | BrowsingContext.NavigationFailed
   | BrowsingContext.NavigationStarted
   | BrowsingContext.UserPromptClosed
@@ -888,6 +889,12 @@ export namespace BrowsingContext {
 export namespace BrowsingContext {
   export type NavigationAborted = {
     method: 'browsingContext.navigationAborted';
+    params: BrowsingContext.NavigationInfo;
+  };
+}
+export namespace BrowsingContext {
+  export type NavigationCommitted = {
+    method: 'browsingContext.navigationCommitted';
     params: BrowsingContext.NavigationInfo;
   };
 }
