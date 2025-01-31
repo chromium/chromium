@@ -1296,8 +1296,9 @@ IN_PROC_BROWSER_TEST_P(UnscopedOmniboxApiTest, OnActionExecuted) {
            ]);
          });
 
-         chrome.omnibox.onActionExecuted.addListener((actionName) => {
-           chrome.test.sendMessage(actionName);
+         chrome.omnibox.onActionExecuted.addListener((actionExecution) => {
+           chrome.test.sendMessage(
+               actionExecution.actionName + "-" + actionExecution.content);
          });)";
 
   TestExtensionDir test_dir;
@@ -1306,7 +1307,7 @@ IN_PROC_BROWSER_TEST_P(UnscopedOmniboxApiTest, OnActionExecuted) {
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
-  ExtensionTestMessageListener listener("do_something");
+  ExtensionTestMessageListener listener("do_something-sending input");
   AutocompleteController* autocomplete_controller = GetAutocompleteController();
   chrome::FocusLocationBar(browser());
 
@@ -1330,7 +1331,7 @@ IN_PROC_BROWSER_TEST_P(UnscopedOmniboxApiTest, OnActionExecuted) {
       base::TimeTicks(), WindowOpenDisposition::CURRENT_TAB);
 
   ASSERT_TRUE(listener.WaitUntilSatisfied());
-  EXPECT_EQ("do_something", listener.message());
+  EXPECT_EQ("do_something-sending input", listener.message());
   EXPECT_TRUE(listener.had_user_gesture());
 }
 

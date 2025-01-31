@@ -208,19 +208,20 @@ void ExtensionOmniboxEventRouter::OnDeleteSuggestion(
 void ExtensionOmniboxEventRouter::OnActionExecuted(
     Profile* profile,
     const ExtensionId& extension_id,
-    const std::string& action_name) {
+    const std::string& action_name,
+    const std::string& content) {
   EventRouter* event_router = EventRouter::Get(profile);
   if (!event_router->ExtensionHasEventListener(
           extension_id, omnibox::OnActionExecuted::kEventName)) {
     return;
   }
 
-  base::Value::List args;
-  args.Append(action_name);
-
-  auto event = std::make_unique<Event>(events::OMNIBOX_ON_ACTION_EXECUTED,
-                                       omnibox::OnActionExecuted::kEventName,
-                                       std::move(args), profile);
+  omnibox::ActionExecution action_execution;
+  action_execution.action_name = action_name;
+  action_execution.content = content;
+  auto event = std::make_unique<Event>(
+      events::OMNIBOX_ON_ACTION_EXECUTED, omnibox::OnActionExecuted::kEventName,
+      omnibox::OnActionExecuted::Create(std::move(action_execution)), profile);
   event->user_gesture = EventRouter::USER_GESTURE_ENABLED;
   event_router->DispatchEventToExtension(extension_id, std::move(event));
 }

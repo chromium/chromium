@@ -195,7 +195,8 @@ UnscopedExtensionProviderDelegateImpl::CreateAutocompleteMatch(
           base::UTF8ToUTF16(action.tooltip_text),
           base::BindRepeating(
               &UnscopedExtensionProviderDelegateImpl::OnActionExecuted,
-              weak_factory_.GetWeakPtr(), extension_id, action.name)));
+              weak_factory_.GetWeakPtr(), extension_id, action.name,
+              suggestion.content)));
     }
   }
 
@@ -211,9 +212,10 @@ void UnscopedExtensionProviderDelegateImpl::ClearSuggestions() {
 
 void UnscopedExtensionProviderDelegateImpl::OnActionExecuted(
     const std::string& extension_id,
-    const std::string& action_name) {
+    const std::string& action_name,
+    const std::string& contents) {
   extensions::ExtensionOmniboxEventRouter::OnActionExecuted(
-      profile_.get(), extension_id, action_name);
+      profile_.get(), extension_id, action_name, contents);
   // Action has been executed, clear the current list of suggestions and ensure
   // any suggestions that may be incoming later with a stale request ID are
   // discarded.

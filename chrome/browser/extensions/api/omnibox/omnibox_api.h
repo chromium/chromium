@@ -83,7 +83,8 @@ class ExtensionOmniboxEventRouter {
   // The user has clicked an action of an extension omnibox suggestion result.
   static void OnActionExecuted(Profile* profile,
                                const ExtensionId& extension_id,
-                               const std::string& action_name);
+                               const std::string& action_name,
+                               const std::string& content);
 };
 
 class OmniboxSendSuggestionsFunction : public ExtensionFunction {

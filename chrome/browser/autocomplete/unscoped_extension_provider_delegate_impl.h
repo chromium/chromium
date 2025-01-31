@@ -68,7 +68,8 @@ class UnscopedExtensionProviderDelegateImpl
   void ClearSuggestions();
 
   void OnActionExecuted(const std::string& extension_id,
-                        const std::string& action_name);
+                        const std::string& action_name,
+                        const std::string& contents);
 
   // Incremented each time a new request for suggestions is sent to extensions
   // or when the input is accepted. Used to discard any suggestions that may be
