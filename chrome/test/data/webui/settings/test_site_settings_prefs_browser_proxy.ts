@@ -136,7 +136,6 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
     }
     if (loadTimeData.getBoolean('enableKeyboardLockPrompt')) {
       this.categoryList_.push(ContentSettingsTypes.KEYBOARD_LOCK);
-      this.categoryList_.push(ContentSettingsTypes.POINTER_LOCK);
     }
 
     // <if expr="is_chromeos">

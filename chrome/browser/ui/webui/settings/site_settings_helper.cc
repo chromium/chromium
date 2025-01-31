@@ -160,7 +160,6 @@ constexpr auto kContentSettingsTypeGroupNames = std::to_array<
     {ContentSettingsType::SPEAKER_SELECTION, "speaker-selection"},
     {ContentSettingsType::AUTOMATIC_FULLSCREEN, "automatic-fullscreen"},
     {ContentSettingsType::KEYBOARD_LOCK, "keyboard-lock"},
-    {ContentSettingsType::POINTER_LOCK, "pointer-lock"},
     {ContentSettingsType::TRACKING_PROTECTION, "tracking-protection"},
     {ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS, "top-level-storage-access"},
     {ContentSettingsType::WEB_APP_INSTALLATION, "web-app-installation"},
@@ -246,6 +245,8 @@ constexpr auto kContentSettingsTypeGroupNames = std::to_array<
     {ContentSettingsType::ARE_SUSPICIOUS_NOTIFICATIONS_ALLOWLISTED_BY_USER,
      nullptr},
     {ContentSettingsType::CONTROLLED_FRAME, nullptr},
+    // POINTER_LOCK has been deprecated.
+    {ContentSettingsType::POINTER_LOCK, nullptr},
 });
 
 static_assert(
@@ -631,7 +632,6 @@ std::vector<ContentSettingsType> GetVisiblePermissionCategories(
     if (base::FeatureList::IsEnabled(
             permissions::features::kKeyboardLockPrompt)) {
       base_types->push_back(ContentSettingsType::KEYBOARD_LOCK);
-      base_types->push_back(ContentSettingsType::POINTER_LOCK);
     }
 
 #if BUILDFLAG(ENABLE_VR)

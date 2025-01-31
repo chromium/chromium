@@ -113,7 +113,6 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
   r.SITE_SETTINGS_JAVASCRIPT_OPTIMIZER = r.SITE_SETTINGS.createChild('v8');
   if (loadTimeData.getBoolean('enableKeyboardLockPrompt')) {
     r.SITE_SETTINGS_KEYBOARD_LOCK = r.SITE_SETTINGS.createChild('keyboardLock');
-    r.SITE_SETTINGS_POINTER_LOCK = r.SITE_SETTINGS.createChild('pointerLock');
   }
   r.SITE_SETTINGS_SOUND = r.SITE_SETTINGS.createChild('sound');
   r.SITE_SETTINGS_SENSORS = r.SITE_SETTINGS.createChild('sensors');
