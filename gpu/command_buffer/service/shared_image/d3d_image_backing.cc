@@ -970,13 +970,12 @@ void D3DImageBacking::EndAccessD3D11(
   D3DSharedFenceSet signaled_fence;
   if (use_cross_device_fence_synchronization()) {
     auto& d3d11_signal_fence = d3d11_signaled_fence_map_[d3d11_device];
-    if (!d3d11_signal_fence) {
-      d3d11_signal_fence = gfx::D3DSharedFence::CreateForD3D11(d3d11_device);
-    }
-    if (d3d11_signal_fence && d3d11_signal_fence->IncrementAndSignalD3D11()) {
-      signaled_fence.insert(d3d11_signal_fence);
-    } else {
-      LOG(ERROR) << "Failed to signal D3D11 device fence on EndAccess";
+    if (d3d11_signal_fence) {
+      if (d3d11_signal_fence->IncrementAndSignalD3D11()) {
+        signaled_fence.insert(d3d11_signal_fence);
+      } else {
+        LOG(ERROR) << "Failed to signal D3D11 device fence on EndAccess";
+      }
     }
   }
 

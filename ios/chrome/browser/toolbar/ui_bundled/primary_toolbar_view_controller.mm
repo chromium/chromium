@@ -33,6 +33,11 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 
+namespace {
+// Duration for the banner promo appearance/disappearance animation
+const base::TimeDelta kBannerPromoAnimationDuration = base::Seconds(0.5);
+}  // namespace
+
 // TODO(crbug.com/374808149): Clean up the killswitch.
 BASE_FEATURE(kPrimaryToolbarViewDidLoadUpdateViews,
              "PrimaryToolbarViewDidLoadUpdateViews",
@@ -332,15 +337,47 @@ BASE_FEATURE(kPrimaryToolbarViewDidLoadUpdateViews,
 #pragma mark - PrimaryToolbarConsumer
 
 - (void)showBannerPromo {
+  [self.view prepareToShowBannerPromo];
+  [self.view.superview layoutIfNeeded];
+
+  __weak __typeof(self) weakSelf = self;
+  [UIView animateWithDuration:kBannerPromoAnimationDuration.InSecondsF()
+                   animations:^{
+                     [weakSelf showBannerPromoAnimationBlock];
+                   }];
+}
+
+// Helper method to actually do the animation to show the banner promo.
+- (void)showBannerPromoAnimationBlock {
   [self.view showBannerPromo];
   [self.toolbarHeightDelegate toolbarsHeightChanged];
+  [self.view.superview layoutIfNeeded];
 }
 
 - (void)hideBannerPromo {
-  [self.view hideBannerPromo];
-  [self.toolbarHeightDelegate toolbarsHeightChanged];
+  [self.view.superview layoutIfNeeded];
+  __weak __typeof(self) weakSelf = self;
+  [UIView animateWithDuration:kBannerPromoAnimationDuration.InSecondsF()
+      animations:^{
+        [weakSelf hideBannerPromoAnimationBlock];
+      }
+      completion:^(BOOL completed) {
+        [weakSelf hideBannerPromoCompletionBlock];
+      }];
 }
 
+// Helper method to actually do the animation to hide the banner promo.
+- (void)hideBannerPromoAnimationBlock {
+  [self.view hideBannerPromo];
+  [self.toolbarHeightDelegate toolbarsHeightChanged];
+  [self.view.superview layoutIfNeeded];
+}
+
+// Helper method for completion.
+- (void)hideBannerPromoCompletionBlock {
+  [self.view cleanupAfterHideBannerPromo];
+  [self.view.superview layoutIfNeeded];
+}
 #pragma mark - Private
 
 // Adjusts the layout and appearance of views in response to changes in
