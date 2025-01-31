@@ -1681,6 +1681,45 @@ TEST_F(DownloadTargetDeterminerTest, PromptAlways_TrustedExtension) {
   RunTestCasesWithActiveItem(kPromptingTestCases,
                              std::size(kPromptingTestCases));
 }
+
+TEST_F(DownloadTargetDeterminerTest, DownloadRestrictions_TrustedExtension) {
+  // The following test cases should not be blocked by the DownloadRestrictions
+  // policy, even if it is set to 1 or 2.
+  const DownloadTestCase kPromptingTestCases[] = {
+      {// 0: Automatic Browser Extension download
+       AUTOMATIC, download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
+       DownloadFileType::NOT_DANGEROUS, "http://example.com/foo.kindabad",
+       extensions::Extension::kMimeType, FILE_PATH_LITERAL(""),
+
+       FILE_PATH_LITERAL("foo.crx"), DownloadItem::TARGET_DISPOSITION_OVERWRITE,
+
+       EXPECT_CRDOWNLOAD},
+
+      {// 1: Automatic User Script
+       AUTOMATIC, download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
+       DownloadFileType::NOT_DANGEROUS, "http://example.com/foo.user.js", "",
+       FILE_PATH_LITERAL(""),
+
+       FILE_PATH_LITERAL("foo.user.js"),
+       DownloadItem::TARGET_DISPOSITION_OVERWRITE,
+
+       EXPECT_CRDOWNLOAD},
+  };
+
+  auto allow_offstore_install =
+      download_crx_util::OverrideOffstoreInstallAllowedForTesting(true);
+
+  profile()->GetTestingPrefService()->SetInteger(
+        policy::policy_prefs::kDownloadRestrictions, 1);
+  RunTestCasesWithActiveItem(kPromptingTestCases,
+                             std::size(kPromptingTestCases));
+
+  profile()->GetTestingPrefService()->SetInteger(
+        policy::policy_prefs::kDownloadRestrictions, 2);
+  RunTestCasesWithActiveItem(kPromptingTestCases,
+                             std::size(kPromptingTestCases));
+}
+
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // If the download path is managed, then we don't show any prompts.
