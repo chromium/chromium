@@ -18,7 +18,6 @@ import org.chromium.components.browser_ui.widget.DualControlLayout;
 import org.chromium.components.browser_ui.widget.DualControlLayout.ButtonType;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.SigninFeatures;
-import org.chromium.ui.base.ViewUtils;
 
 /**
  * View shown to a user who has removed the device lock to inform them that their private data will
@@ -51,6 +50,11 @@ public class MissingDeviceLockView extends LinearLayout {
         mDescription = findViewById(R.id.missing_device_lock_description);
         mCheckBox = findViewById(R.id.missing_device_lock_remove_local_data);
 
+        int buttonWidth =
+                SigninFeatureMap.isEnabled(SigninFeatures.UNO_FOR_AUTO)
+                        ? ViewGroup.LayoutParams.MATCH_PARENT
+                        : ViewGroup.LayoutParams.WRAP_CONTENT;
+
         mCreateDeviceLockButton =
                 DualControlLayout.createButtonForLayout(
                         getContext(),
@@ -58,8 +62,7 @@ public class MissingDeviceLockView extends LinearLayout {
                         getResources().getString(R.string.device_lock_create_lock_button),
                         null);
         mCreateDeviceLockButton.setLayoutParams(
-                new ViewGroup.LayoutParams(
-                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                new ViewGroup.LayoutParams(buttonWidth, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         mContinueButton =
                 DualControlLayout.createButtonForLayout(
@@ -68,8 +71,7 @@ public class MissingDeviceLockView extends LinearLayout {
                         getResources().getString(R.string.delete_and_continue),
                         null);
         mContinueButton.setLayoutParams(
-                new ViewGroup.LayoutParams(
-                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                new ViewGroup.LayoutParams(buttonWidth, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         mButtonBar = findViewById(R.id.dual_control_button_bar);
         mButtonBar.addView(mContinueButton);
@@ -77,10 +79,19 @@ public class MissingDeviceLockView extends LinearLayout {
 
         ImageView illustration = findViewById(R.id.missing_device_lock_illustration);
         int illustrationTopMargin;
+
         if (SigninFeatureMap.isEnabled(SigninFeatures.UNO_FOR_AUTO)) {
             illustration.setBackgroundColor(Color.TRANSPARENT);
-            illustrationTopMargin = ViewUtils.dpToPx(getContext(), 16);
-            mButtonBar.setAlignment(DualControlLayout.DualControlLayoutAlignment.END);
+            illustrationTopMargin =
+                    getContext()
+                            .getResources()
+                            .getDimensionPixelSize(
+                                    R.dimen.device_lock_dialog_illustration_top_margin);
+            mButtonBar.setAlignment(DualControlLayout.DualControlLayoutAlignment.STACK);
+            DeviceLockUtils.updateDialogSubviewMargins(mButtonBar);
+            DeviceLockUtils.updateDialogSubviewMargins(mTitle);
+            DeviceLockUtils.updateDialogSubviewMargins(mDescription);
+            DeviceLockUtils.updateDialogSubviewMargins(mCheckBox);
         } else {
             illustration.setBackgroundColor(
                     getContext().getColor(R.color.signin_header_animation_background));

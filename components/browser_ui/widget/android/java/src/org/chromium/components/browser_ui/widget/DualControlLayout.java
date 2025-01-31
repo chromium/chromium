@@ -40,8 +40,12 @@ import java.lang.annotation.RetentionPolicy;
  * | PRIMARY SECONDARY         |    | SECONDARY         PRIMARY |    |         SECONDARY PRIMARY |
  * -----------------------------    -----------------------------    -----------------------------
  *
- * Controls are stacked automatically when they don't fit on the same row, with each control taking
- * up the full available width and with the primary control sitting on top of the secondary.
+ * If the alignment is set to STACK, or controls don't fit on the same row, controls will be
+ * automatically stacked with each control taking up the full available width and with the primary
+ * control sitting on top of the secondary.
+ *
+ * Note that if the alignment is set to STACK and there's no secondary control, the primary
+ * control will still take the full width for consistency.
  * -----------------------------
  * | PRIMARY------------------ |
  * | SECONDARY---------------- |
@@ -53,13 +57,15 @@ public final class DualControlLayout extends ViewGroup {
     @IntDef({
         DualControlLayoutAlignment.START,
         DualControlLayoutAlignment.END,
-        DualControlLayoutAlignment.APART
+        DualControlLayoutAlignment.APART,
+        DualControlLayoutAlignment.STACK
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface DualControlLayoutAlignment {
         int START = 0;
         int END = 1;
         int APART = 2;
+        int STACK = 3;
     }
 
     @IntDef({
@@ -178,7 +184,7 @@ public final class DualControlLayout extends ViewGroup {
     /**
      * Define how the controls will be laid out.
      *
-     * @param alignment One of ALIGN_START, ALIGN_APART, ALIGN_END.
+     * @param alignment One of ALIGN_START, ALIGN_APART, ALIGN_END, STACK.
      */
     public void setAlignment(@DualControlLayoutAlignment int alignment) {
         mAlignment = alignment;
@@ -246,7 +252,7 @@ public final class DualControlLayout extends ViewGroup {
                 combinedWidth += mHorizontalMarginBetweenViews;
             }
 
-            if (combinedWidth > maxWidth) {
+            if (combinedWidth > maxWidth || mAlignment == DualControlLayoutAlignment.STACK) {
                 // Stack the Views on top of each other.
                 mIsStacked = true;
 
@@ -264,7 +270,15 @@ public final class DualControlLayout extends ViewGroup {
                 layoutWidth = combinedWidth;
                 layoutHeight = Math.max(layoutHeight, mSecondaryView.getMeasuredHeight());
             }
+        } else if (mAlignment == DualControlLayoutAlignment.STACK) {
+            // Force the only button to be full-width when using DualControlLayoutAlignment.STACK
+            //  for consistency with the two-buttons layout.
+            mIsStacked = true;
+            layoutWidth = maxWidth;
+            int widthSpec = MeasureSpec.makeMeasureSpec(maxWidth, MeasureSpec.EXACTLY);
+            mPrimaryView.measure(widthSpec, unspecifiedSpec);
         }
+
         layoutWidth += sidePadding;
         layoutHeight += verticalPadding;
 
@@ -290,14 +304,25 @@ public final class DualControlLayout extends ViewGroup {
         // If primary view visibility is GONE, do not take into account the space it would occupy.
         int primaryViewMeasuredWidth =
                 mPrimaryView.getVisibility() != View.GONE ? mPrimaryView.getMeasuredWidth() : 0;
-        int primaryRight =
+        int nonStackedPrimaryRight =
                 isPrimaryOnRight
                         ? (width - rightPadding)
                         : (primaryViewMeasuredWidth + leftPadding);
-        int primaryLeft = primaryRight - primaryViewMeasuredWidth;
+        int primaryRight =
+                mAlignment == DualControlLayoutAlignment.STACK
+                        ? width - rightPadding
+                        : nonStackedPrimaryRight;
+        int primaryLeft =
+                mAlignment == DualControlLayoutAlignment.STACK
+                        ? leftPadding
+                        : primaryRight - primaryViewMeasuredWidth;
         int primaryTop = getPaddingTop();
         int primaryBottom = primaryTop + mPrimaryView.getMeasuredHeight();
         mPrimaryView.layout(primaryLeft, primaryTop, primaryRight, primaryBottom);
+
+        if (mSecondaryView == null) {
+            return;
+        }
 
         if (mIsStacked) {
             // Fill out the row.  onMeasure() should have already applied the correct width.
@@ -308,7 +333,7 @@ public final class DualControlLayout extends ViewGroup {
                     secondaryTop,
                     leftPadding + mSecondaryView.getMeasuredWidth(),
                     secondaryBottom);
-        } else if (mSecondaryView != null) {
+        } else {
             // Center the secondary View vertically with the primary View.
             int secondaryHeight = mSecondaryView.getMeasuredHeight();
             int primaryCenter = (primaryTop + primaryBottom) / 2;

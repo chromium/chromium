@@ -12,7 +12,6 @@ found in the LICENSE file.
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:paddingHorizontal="12dp"
     android:id="@+id/device_lock_view">
 
     <ScrollView
