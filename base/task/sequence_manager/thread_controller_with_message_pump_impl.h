@@ -73,7 +73,6 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
   void SetTaskExecutionAllowedInNativeNestedLoop(bool allowed) override;
   bool IsTaskExecutionAllowed() const override;
   MessagePump* GetBoundMessagePump() const override;
-  void PrioritizeYieldingToNative(base::TimeTicks prioritize_until) override;
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
   void AttachToMessagePump() override;
 #endif
@@ -127,10 +126,6 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
     int work_batch_size = 1;
 
     bool can_change_batch_size = true;
-
-    // While Now() is less than |yield_to_native_after_batch| we will request a
-    // yield to the MessagePump after |work_batch_size| work items.
-    base::TimeTicks yield_to_native_after_batch = base::TimeTicks();
 
     // The time after which the runloop should quit.
     TimeTicks quit_runloop_after = TimeTicks::Max();

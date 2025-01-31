@@ -39,9 +39,6 @@ void MockInputRouterClient::DecrementInFlightEventCount(
   --in_flight_event_count_;
 }
 
-void MockInputRouterClient::NotifyUISchedulerOfGestureEventUpdate(
-    blink::WebInputEvent::Type gesture_event) {}
-
 void MockInputRouterClient::DidOverscroll(
     const ui::DidOverscrollParams& params) {
   overscroll_ = params;

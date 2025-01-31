@@ -345,7 +345,7 @@ class BASE_EXPORT PersistentMemoryAllocator {
 
   virtual ~PersistentMemoryAllocator();
 
-  // Check if memory segment is acceptable for creation of an Allocator. This
+  // Checks if memory segment is acceptable for creation of an Allocator. This
   // doesn't do any analysis of the data and so doesn't guarantee that the
   // contents are valid, just that the paramaters won't cause the program to
   // abort. The IsCorrupt() method will report detection of data problems
@@ -355,11 +355,15 @@ class BASE_EXPORT PersistentMemoryAllocator {
                                  size_t page_size,
                                  bool readonly);
 
-  // Get the internal identifier for this persistent memory segment.
+  // Returns the internal identifier for this persistent memory segment.
   uint64_t Id() const;
 
-  // Get the internal name of this allocator (possibly an empty string).
-  const char* Name() const;
+  // Returns the internal name of this allocator (possibly an empty string).
+  // The returned string_view references a bounded span within the shared
+  // memory region. As such, it should be treated as a volatile but bounded
+  // block of memory. In particular, clients should respect the 'length()' of
+  // the returned view instead of relying on a terminating NUL char.
+  std::string_view Name() const;
 
   // Is this segment open only for read?
   bool IsReadonly() const { return access_mode_ == kReadOnly; }
@@ -368,7 +372,7 @@ class BASE_EXPORT PersistentMemoryAllocator {
   void SetMemoryState(uint8_t memory_state);
   uint8_t GetMemoryState() const;
 
-  // Create internal histograms for tracking memory use and allocation sizes
+  // Creates internal histograms for tracking memory use and allocation sizes
   // for allocator of `name` (which can simply be the result of Name()). This
   // is done separately from construction for situations such as when the
   // histograms will be backed by memory provided by this very allocator.
@@ -400,9 +404,10 @@ class BASE_EXPORT PersistentMemoryAllocator {
   const void* data() const { return const_cast<const char*>(mem_base_); }
   size_t length() const { return mem_size_; }
   size_t size() const { return mem_size_; }
+  size_t page_size() const { return mem_page_; }
   size_t used() const;
 
-  // Get an object referenced by a `ref`. For safety reasons, the `type_id`
+  // Returns the object referenced by a `ref`. For safety reasons, the `type_id`
   // code and size-of(`T`) are compared to ensure the reference is valid
   // and cannot return an object outside of the memory segment. A `type_id` of
   // kTypeIdAny (zero) will match any though the size is still checked. NULL is
@@ -423,7 +428,7 @@ class BASE_EXPORT PersistentMemoryAllocator {
   // elements, or manually insert padding fields as appropriate for the
   // largest architecture, including at the end.
   //
-  // To protected against mistakes, all objects must have the attribute
+  // To protect against mistakes, all objects must have the attribute
   // `kExpectedInstanceSize` (static constexpr size_t)  that is a hard-coded
   // numerical value -- NNN, not sizeof(T) -- that can be tested. If the
   // instance size is not fixed, at least one build will fail.
@@ -460,7 +465,7 @@ class BASE_EXPORT PersistentMemoryAllocator {
         GetBlockData(ref, T::kPersistentTypeId, sizeof(T), alloc_size)));
   }
 
-  // Like GetAsObject() but get an array of simple, fixed-size types.
+  // Like GetAsObject() but returns an array of simple, fixed-size types.
   //
   // Use a `count` of the required number of array elements, or kSizeAny.
   // The, optionally returned, `alloc_size` can be used to calculate the upper
@@ -491,12 +496,12 @@ class BASE_EXPORT PersistentMemoryAllocator {
         GetBlockData(ref, type_id, count * sizeof(T), alloc_size)));
   }
 
-  // Get the corresponding reference for an object held in persistent memory.
+  // Gets the corresponding reference for an object held in persistent memory.
   // If the `memory` is not valid or the type does not match, a kReferenceNull
   // result will be returned.
   Reference GetAsReference(const void* memory, uint32_t type_id) const;
 
-  // Access the internal "type" of an object. This generally isn't necessary
+  // Accesses the internal "type" of an object. This generally isn't necessary
   // but can be used to "clear" the type and so effectively mark it as deleted
   // even though the memory stays valid and allocated. Changing the type is
   // an atomic compare/exchange and so requires knowing the existing value.
@@ -528,7 +533,7 @@ class BASE_EXPORT PersistentMemoryAllocator {
   // Changing the type does not alter its "iterable" status.
   void MakeIterable(Reference ref);
 
-  // Get the information about the amount of free space in the allocator. The
+  // Gets the information about the amount of free space in the allocator. The
   // amount of free space should be treated as approximate due to extras from
   // alignment and metadata. Concurrent allocations from other threads will
   // also make the true amount less than what is reported.
@@ -556,7 +561,7 @@ class BASE_EXPORT PersistentMemoryAllocator {
   // While the above works much like malloc & free, these next methods provide
   // an "object" interface similar to new and delete.
 
-  // Reserve space in the memory segment of the desired `size` and `type_id`.
+  // Reserves space in the memory segment of the desired `size` and `type_id`.
   //
   // A return value of zero indicates the allocation failed, otherwise the
   // returned reference can be used by any process to get a real pointer via
@@ -566,8 +571,8 @@ class BASE_EXPORT PersistentMemoryAllocator {
                      uint32_t type_id,
                      size_t* alloc_size = nullptr);
 
-  // Allocate and construct an object in persistent memory. The type must have
-  // both (size_t) kExpectedInstanceSize and (uint32_t) kPersistentTypeId
+  // Allocates and constructs an object in persistent memory. The type must
+  // have both (size_t) kExpectedInstanceSize and (uint32_t) kPersistentTypeId
   // static constexpr fields that are used to ensure compatibility between
   // software versions. An optional size parameter can be specified to force
   // the allocation to be bigger than the size of the object; this is useful
@@ -672,6 +677,21 @@ class BASE_EXPORT PersistentMemoryAllocator {
   void MakeIterable(const T* obj) {
     MakeIterable(GetAsReference<T>(obj));
   }
+
+  // Returns a string_view of a c-style string that is located at the end of an
+  // allocated memory block. It is the caller's responsibility to know/ensure
+  // that `object` is of some type that ends with a c-style string and that
+  // said string begins at `offset` bytes from `object`. `alloc_size` must be
+  // the size of the allocation, as returned by the allocator. If `object` is
+  // `nullptr` or `offset >= alloc_size` then an empty string_view is returned.
+  // Users should treat the returned view as a volatile bounded memory region;
+  // it references the underlying shared memory, whose contents can be changed
+  // or corrupted at any time.  In particular, clients should respect the
+  // 'length()' of the returned view instead of relying on a terminating NUL
+  // char.
+  static std::string_view StringViewAt(const void* object,
+                                       size_t offset,
+                                       size_t alloc_size);
 
  protected:
   enum MemoryType {
@@ -790,9 +810,14 @@ class BASE_EXPORT PersistentMemoryAllocator {
   // Histogram recording used space.
   raw_ptr<HistogramBase> used_histogram_ = nullptr;
 
-  // TODO(crbug.com/40064026) For debugging purposes. Remove these once done.
+  // TODO(crbug.com/40064026): Remove these. They are used to investigate
+  // unexpected failures and code paths.
   friend class DelayedPersistentAllocation;
   friend class metrics::FileMetricsProvider;
+  void DumpWithoutCrashing(Reference ref,
+                           uint32_t expected_type,
+                           size_t expected_size,
+                           bool dump_block_header) const;
 
   friend class PersistentMemoryAllocatorTest;
   FRIEND_TEST_ALL_PREFIXES(PersistentMemoryAllocatorTest, AllocateAndIterate);

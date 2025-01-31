@@ -21,6 +21,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/display_features.h"
 #include "ui/display/types/display_configuration_params.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/linux/test/mock_gbm_device.h"
 #include "ui/ozone/platform/drm/common/display_types.h"
@@ -28,6 +29,7 @@
 #include "ui/ozone/platform/drm/common/scoped_drm_types.h"
 #include "ui/ozone/platform/drm/gpu/drm_device_manager.h"
 #include "ui/ozone/platform/drm/gpu/drm_display.h"
+#include "ui/ozone/platform/drm/gpu/drm_window.h"
 #include "ui/ozone/platform/drm/gpu/fake_drm_device.h"
 #include "ui/ozone/platform/drm/gpu/fake_drm_device_generator.h"
 #include "ui/ozone/platform/drm/gpu/mock_drm_device.h"
@@ -1960,6 +1962,175 @@ TEST_F(TiledDisplayGetDisplaysTest, ConfigureTileDisplayTileCompositeMode) {
        display::ModesetFlag::kCommitModeset},
       out_requests));
   ExpectEqualRequestsWithExceptions(config_requests, out_requests);
+}
+
+TEST_F(DrmGpuDisplayManagerTest, RelinquishDisplayControl) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(display::features::kFastDrmMasterDrop);
+  ASSERT_FALSE(display::features::IsFastDrmMasterDropEnabled());
+
+  auto drm = AddDrmDevice();
+  drm->ResetStateWithAllProperties();
+
+  // Add 2 connectors, each with one active display.
+  for (size_t i = 0; i < 2; ++i) {
+    drm->AddCrtcWithPrimaryAndCursorPlanes();
+
+    auto& encoder = drm->AddEncoder();
+    encoder.possible_crtcs = 1 << i;
+
+    auto& connector = drm->AddConnector();
+    connector.connection = true;
+    connector.modes = std::vector<ResolutionAndRefreshRate>{
+        kStandardModes[i % kStandardModes.size()]};
+    connector.encoders = std::vector<uint32_t>{encoder.id};
+    connector.edid_blob =
+        std::vector<uint8_t>(kHPz32x, kHPz32x + kHPz32xLength);
+  }
+  drm->InitializeState(/* use_atomic */ true);
+
+  MovableDisplaySnapshots display_snapshots =
+      drm_gpu_display_manager_->GetDisplays();
+  ASSERT_EQ(display_snapshots.size(), 2u);
+
+  // Make sure configuration on the returned snapshots is possible.
+  ASSERT_TRUE(ConfigureDisplays(display_snapshots,
+                                {display::ModesetFlag::kTestModeset,
+                                 display::ModesetFlag::kCommitModeset}));
+
+  EXPECT_TRUE(drm->has_master());
+  drm_gpu_display_manager_->RelinquishDisplayControl();
+  EXPECT_FALSE(drm->has_master());
+}
+
+TEST_F(DrmGpuDisplayManagerTest, RelinquishDisplayControlFastDrop) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(display::features::kFastDrmMasterDrop);
+  ASSERT_TRUE(display::features::IsFastDrmMasterDropEnabled());
+
+  auto drm = AddDrmDevice();
+  drm->ResetStateWithAllProperties();
+
+  // Add 1 connector/display.
+  auto& crtc = drm->AddCrtcWithPrimaryAndCursorPlanes();
+  auto& encoder = drm->AddEncoder();
+  encoder.possible_crtcs = 1;
+
+  auto& connector = drm->AddConnector();
+  connector.connection = true;
+  connector.modes = kStandardModes;
+  connector.encoders = std::vector<uint32_t>{encoder.id};
+  connector.edid_blob = std::vector<uint8_t>(kHPz32x, kHPz32x + kHPz32xLength);
+
+  drm->InitializeState(/* use_atomic */ true);
+
+  MovableDisplaySnapshots display_snapshots =
+      drm_gpu_display_manager_->GetDisplays();
+  ASSERT_EQ(display_snapshots.size(), 1u);
+  display::DisplaySnapshot* snapshot = display_snapshots[0].get();
+
+  // Make sure configuration on the returned snapshots is possible.
+  const display::ModesetFlags flags = {display::ModesetFlag::kTestModeset,
+                                       display::ModesetFlag::kCommitModeset};
+  const std::vector<display::DisplayConfigurationParams> config_requests = {
+      display::DisplayConfigurationParams(snapshot->display_id(),
+                                          snapshot->origin(),
+                                          snapshot->modes()[0].get())};
+
+  std::vector<display::DisplayConfigurationParams> out_requests;
+  ASSERT_TRUE(drm_gpu_display_manager_->ConfigureDisplays(config_requests,
+                                                          flags, out_requests));
+
+  HardwareDisplayController* controller =
+      screen_manager_->GetDisplayController(drm.get(), crtc.id);
+  ASSERT_NE(controller, nullptr);
+  ASSERT_TRUE(controller->IsEnabled());
+
+  // Establish display controller to window mapping.
+  auto window = std::make_unique<DrmWindow>(1, device_manager_.get(),
+                                            screen_manager_.get());
+  window->Initialize();
+  gfx::Rect window_bounds(controller->origin(), controller->GetModeSize());
+  window->SetBounds(window_bounds);
+  screen_manager_->AddWindow(1, std::move(window));
+  ASSERT_EQ(screen_manager_->GetWindow(1)->GetController(), controller);
+
+  EXPECT_TRUE(drm->has_master());
+  int modeset_count = drm->get_commit_modeset_count();
+  drm_gpu_display_manager_->RelinquishDisplayControl();
+
+  EXPECT_FALSE(drm->has_master());
+  EXPECT_EQ(drm->get_commit_modeset_count(), modeset_count + 1);
+  ASSERT_EQ(screen_manager_->GetWindow(1)->GetController(), nullptr);
+
+  window = screen_manager_->RemoveWindow(1);
+  window->Shutdown();
+}
+
+TEST_F(DrmGpuDisplayManagerTest,
+       RelinquishDisplayControlFastDropDetachPlanesFailed) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(display::features::kFastDrmMasterDrop);
+  ASSERT_TRUE(display::features::IsFastDrmMasterDropEnabled());
+
+  auto drm = AddDrmDevice();
+  drm->ResetStateWithAllProperties();
+
+  // Add 1 connector/display.
+  auto& crtc = drm->AddCrtcWithPrimaryAndCursorPlanes();
+  auto& encoder = drm->AddEncoder();
+  encoder.possible_crtcs = 1;
+
+  auto& connector = drm->AddConnector();
+  connector.connection = true;
+  connector.modes = kStandardModes;
+  connector.encoders = std::vector<uint32_t>{encoder.id};
+  connector.edid_blob = std::vector<uint8_t>(kHPz32x, kHPz32x + kHPz32xLength);
+
+  drm->InitializeState(/* use_atomic */ true);
+
+  MovableDisplaySnapshots display_snapshots =
+      drm_gpu_display_manager_->GetDisplays();
+  ASSERT_EQ(display_snapshots.size(), 1u);
+  display::DisplaySnapshot* snapshot = display_snapshots[0].get();
+
+  // Make sure configuration on the returned snapshots is possible.
+  const display::ModesetFlags flags = {display::ModesetFlag::kTestModeset,
+                                       display::ModesetFlag::kCommitModeset};
+  const std::vector<display::DisplayConfigurationParams> config_requests = {
+      display::DisplayConfigurationParams(snapshot->display_id(),
+                                          snapshot->origin(),
+                                          snapshot->modes()[0].get())};
+
+  std::vector<display::DisplayConfigurationParams> out_requests;
+  ASSERT_TRUE(drm_gpu_display_manager_->ConfigureDisplays(config_requests,
+                                                          flags, out_requests));
+
+  HardwareDisplayController* controller =
+      screen_manager_->GetDisplayController(drm.get(), crtc.id);
+  ASSERT_NE(controller, nullptr);
+  ASSERT_TRUE(controller->IsEnabled());
+
+  // Establish display controller to window mapping.
+  auto window = std::make_unique<DrmWindow>(1, device_manager_.get(),
+                                            screen_manager_.get());
+  window->Initialize();
+  gfx::Rect window_bounds(controller->origin(), controller->GetModeSize());
+  window->SetBounds(window_bounds);
+  screen_manager_->AddWindow(1, std::move(window));
+  ASSERT_EQ(screen_manager_->GetWindow(1)->GetController(), controller);
+
+  EXPECT_TRUE(drm->has_master());
+  int modeset_count = drm->get_commit_modeset_count();
+  drm->set_modeset_expectation(false);
+  drm_gpu_display_manager_->RelinquishDisplayControl();
+
+  EXPECT_TRUE(drm->has_master());
+  EXPECT_EQ(drm->get_commit_modeset_count(), modeset_count + 1);
+  ASSERT_NE(screen_manager_->GetWindow(1)->GetController(), nullptr);
+
+  window = screen_manager_->RemoveWindow(1);
+  window->Shutdown();
 }
 
 }  // namespace ui

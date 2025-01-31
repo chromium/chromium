@@ -60,6 +60,7 @@
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
@@ -271,7 +272,8 @@ bool ModelPredictionsContainCredentialTypes(
 }
 
 void RecordMetricsForPasswordVsOtpFrequency(
-    const base::flat_map<FieldGlobalId, FieldType>& field_predictions) {
+    const base::flat_map<FieldGlobalId, FieldType>& field_predictions,
+    ukm::SourceId ukm_source_id) {
   PasswordVsOtpFormType type = PasswordVsOtpFormType::kNone;
   if (std::any_of(field_predictions.begin(), field_predictions.end(),
                   [](const auto& field) {
@@ -287,6 +289,10 @@ void RecordMetricsForPasswordVsOtpFrequency(
   }
   if (type != PasswordVsOtpFormType::kNone) {
     base::UmaHistogramEnumeration("PasswordManager.ParsedFormIsOtpForm2", type);
+
+    ukm::builders::PasswordManager_Classification(ukm_source_id)
+        .SetPasswordVsOtpFormType(static_cast<int>(type))
+        .Record(ukm::UkmRecorder::Get());
   }
 }
 
@@ -1582,7 +1588,8 @@ void PasswordManager::ProcessClassificationModelPredictions(
     PasswordManagerDriver* driver,
     const autofill::FormData& form,
     const base::flat_map<FieldGlobalId, FieldType>& field_predictions) {
-  RecordMetricsForPasswordVsOtpFrequency(field_predictions);
+  RecordMetricsForPasswordVsOtpFrequency(field_predictions,
+                                         client_->GetUkmSourceId());
 
   // A combination of driver and form renderer id allow to identify fields
   // uniquely, so only the renderer ids need to be kept (not global ids).

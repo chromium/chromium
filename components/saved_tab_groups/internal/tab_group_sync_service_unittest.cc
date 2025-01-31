@@ -805,11 +805,13 @@ TEST_F(TabGroupSyncServiceTest, RemoveTab) {
       "TabGroups.Sync.TabGroup.TabRemoved.GroupCreateOrigin", 2u);
 }
 
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 TEST_F(TabGroupSyncServiceTest, ForceRemoveClosedTabGroupsOnStartup) {
   feature_list_.InitWithFeatures(
       {tab_groups::kForceRemoveClosedTabGroupsOnStartup}, {});
 
   EXPECT_CALL(*observer_, OnInitialized()).Times(1);
+
   EXPECT_CALL(*observer_, OnTabGroupRemoved(testing::TypedEq<const base::Uuid&>(
                                                 group_1_.saved_guid()),
                                             Eq(TriggerSource::LOCAL)))
@@ -828,6 +830,7 @@ TEST_F(TabGroupSyncServiceTest, ForceRemoveClosedTabGroupsOnStartup) {
   // Wait again as the posted task will post again.
   WaitForPostedTasks();
 }
+#endif
 
 TEST_F(TabGroupSyncServiceTest, NavigateTab) {
   base::HistogramTester histogram_tester;

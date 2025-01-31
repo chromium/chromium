@@ -66,7 +66,7 @@ TEST_F(PasswordChangeCredentialLeakBubbleControllerTest,
   base::HistogramTester histogram_tester;
   CreateController();
 
-  controller_->OnGooglePasswordManagerLinkClicked();
+  controller_->NavigateToPasswordChangeSettings();
   controller_.reset();
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.PasswordChange.LeakDetectionBubble",

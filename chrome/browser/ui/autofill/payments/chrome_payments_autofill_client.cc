@@ -50,6 +50,8 @@
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/ui/payments/autofill_error_dialog_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/autofill_progress_dialog_controller_impl.h"
+#include "components/autofill/core/browser/ui/payments/bnpl_tos_controller_impl.h"
+#include "components/autofill/core/browser/ui/payments/bnpl_tos_view.h"
 #include "components/autofill/core/browser/ui/payments/bubble_show_options.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_authentication_selection_dialog_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_otp_input_dialog_controller_impl.h"
@@ -714,6 +716,17 @@ void ChromePaymentsAutofillClient::OnUnmaskVerificationResult(
       NOTREACHED();
   }
 #endif  // BUILDFLAG(IS_ANDROID)
+}
+
+void ChromePaymentsAutofillClient::ShowBnplTos() {
+  if (!bnpl_tos_controller_) {
+    bnpl_tos_controller_ = std::make_unique<BnplTosControllerImpl>();
+  }
+#if !BUILDFLAG(IS_ANDROID)
+  bnpl_tos_controller_->Show(base::BindOnce(&CreateAndShowBnplTos,
+                                            bnpl_tos_controller_->GetWeakPtr(),
+                                            base::Unretained(web_contents())));
+#endif
 }
 
 VirtualCardEnrollmentManager*

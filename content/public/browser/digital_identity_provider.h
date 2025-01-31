@@ -36,7 +36,7 @@ class CONTENT_EXPORT DigitalIdentityProvider {
     kErrorNoCredential = 2,
     kErrorUserDeclined = 3,
     kErrorAborted = 4,
-    kErrorNoProviders = 5,
+    kErrorNoRequests = 5,
     kErrorNoTransientUserActivation = 6,
     kErrorInvalidJson = 7,
     kMaxValue = kErrorInvalidJson,

@@ -103,11 +103,8 @@ TEST_F(PasswordChangeCredentialLeakBubbleViewTest,
 
   auto* controller = static_cast<PasswordChangeCredentialLeakBubbleController*>(
       static_cast<PasswordBubbleViewBase*>(view())->GetController());
-  EXPECT_CALL(*model_delegate_mock(),
-              NavigateToPasswordManagerSettingsPage(
-                  password_manager::ManagePasswordsReferrer::
-                      kPasswordChangeInfoBubble));
-  controller->OnGooglePasswordManagerLinkClicked();
+  EXPECT_CALL(*model_delegate_mock(), NavigateToPasswordChangeSettings);
+  controller->NavigateToPasswordChangeSettings();
 }
 
 TEST_F(PasswordChangeCredentialLeakBubbleViewTest,

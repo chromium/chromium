@@ -17195,6 +17195,29 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="PasswordManager.Classification">
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Metrics for clientside password form classifications. Recorded when the
+    field types are received by Password Manager, iff there is data available
+    for the below metrics.
+  </summary>
+  <metric name="PasswordVsOtpFormType" enum="PasswordVsOtpFormType">
+    <summary>
+      Records whether a form is an OTP form, a normal multi-use password form,
+      or a combination of both.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="PasswordManager.FirstCCTPageLoad" singular="True">
   <owner>ioanap@chromium.org</owner>
   <owner>kazinova@google.com</owner>

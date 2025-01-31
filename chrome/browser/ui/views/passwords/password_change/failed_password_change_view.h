@@ -19,6 +19,8 @@ class FailedPasswordChangeView : public PasswordBubbleViewBase {
  private:
   ~FailedPasswordChangeView() override;
 
+  std::unique_ptr<views::View> CreateFooterView();
+
   // PasswordBubbleViewBase
   PasswordBubbleControllerBase* GetController() override;
   const PasswordBubbleControllerBase* GetController() const override;

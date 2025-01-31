@@ -166,6 +166,8 @@ void PaymentsAutofillClient::ShowUnmaskPrompt(
 void PaymentsAutofillClient::OnUnmaskVerificationResult(
     PaymentsRpcResult result) {}
 
+void PaymentsAutofillClient::ShowBnplTos() {}
+
 VirtualCardEnrollmentManager*
 PaymentsAutofillClient::GetVirtualCardEnrollmentManager() {
   return nullptr;

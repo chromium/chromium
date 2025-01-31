@@ -314,11 +314,6 @@ void RenderInputRouter::IncrementInFlightEventCount() {
   delegate_->IncrementInFlightEventCount();
 }
 
-void RenderInputRouter::NotifyUISchedulerOfGestureEventUpdate(
-    blink::WebInputEvent::Type gesture_event) {
-  delegate_->NotifyUISchedulerOfGestureEventUpdate(gesture_event);
-}
-
 void RenderInputRouter::DecrementInFlightEventCount(
     blink::mojom::InputEventResultSource ack_source) {
   delegate_->DecrementInFlightEventCount(ack_source);

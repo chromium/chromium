@@ -77,11 +77,6 @@ class BASE_EXPORT MessagePump {
       // isn't null nor max. MessagePump impls should use remaining_delay()
       // instead of resampling Now() if they wish to sleep for a TimeDelta.
       TimeTicks recent_now;
-
-      // If true, native messages should be processed before executing more work
-      // from the Delegate. This is an optional hint; not all message pumps
-      // implement this.
-      bool yield_to_native = false;
     };
 
     // Executes an immediate task or a ripe delayed task. Returns information

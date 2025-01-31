@@ -50,12 +50,9 @@ std::u16string PasswordChangeCredentialLeakBubbleController::GetDisplayOrigin()
 }
 
 void PasswordChangeCredentialLeakBubbleController::
-    OnGooglePasswordManagerLinkClicked() {
+    NavigateToPasswordChangeSettings() {
   dismissal_reason_ = metrics_util::CLICKED_ABOUT_PASSWORD_CHANGE;
-  if (delegate_) {
-    delegate_->NavigateToPasswordManagerSettingsPage(
-        password_manager::ManagePasswordsReferrer::kPasswordChangeInfoBubble);
-  }
+  delegate_->NavigateToPasswordChangeSettings();
 }
 
 std::u16string

@@ -909,6 +909,10 @@ bool FakeDrmDevice::CommitProperties(
     return false;
   }
 
+  if (!page_flip_request && !modeset_expectation_) {
+    return false;
+  }
+
   if (page_flip_request)
     callbacks_.push(page_flip_request->AddPageFlip());
 

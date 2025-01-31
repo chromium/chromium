@@ -324,16 +324,19 @@ std::unique_ptr<HistogramBase> PersistentHistogramAllocator::GetHistogram(
   // count data (while these must reference the persistent counts) and always
   // add it to the local list of known histograms (while these may be simple
   // references to histograms in other processes).
-  size_t length = 0;
+  size_t alloc_size = 0;
   PersistentHistogramData* data =
-      memory_allocator_->GetAsObject<PersistentHistogramData>(ref, &length);
+      memory_allocator_->GetAsObject<PersistentHistogramData>(ref, &alloc_size);
 
-  // Check that metadata is reasonable: name is null-terminated and non-empty,
+  // Checks data for nullptr; `metric_name` not empty means data is not nullptr.
+  std::string_view metric_name = PersistentMemoryAllocator::StringViewAt(
+      data, offsetof(PersistentHistogramData, name), alloc_size);
+
+  // Check that metadata is reasonable: metric_name is non-empty,
   // ID fields have been loaded with a hash of the name (0 is considered
   // unset/invalid).
-  if (!data || data->name[0] == '\0' ||
-      reinterpret_cast<char*>(data)[length - 1] != '\0' ||
-      data->samples_metadata.id == 0 || data->logged_metadata.id == 0 ||
+  if (metric_name.empty() || data->samples_metadata.id == 0 ||
+      data->logged_metadata.id == 0 ||
       // Note: Sparse histograms use `id + 1` in `logged_metadata`.
       (data->logged_metadata.id != data->samples_metadata.id &&
        data->logged_metadata.id != data->samples_metadata.id + 1) ||
@@ -341,7 +344,7 @@ std::unique_ptr<HistogramBase> PersistentHistogramAllocator::GetHistogram(
       // could just verify the name length based on the overall alloc length,
       // but that doesn't work because the allocated block may have been
       // aligned to the next boundary value.
-      HashMetricName(data->name) != data->samples_metadata.id) {
+      HashMetricName(metric_name) != data->samples_metadata.id) {
     return nullptr;
   }
   return CreateHistogram(data);
@@ -985,10 +988,11 @@ void GlobalHistogramAllocator::Set(GlobalHistogramAllocator* allocator) {
     DVLOG(1) << histogram_count
              << " histogram(s) created before persistence was enabled.";
 
-    if (allocator && allocator->Name() && allocator->Name()[0]) {
-      UmaHistogramCounts100(StrCat({"UMA.PersistentAllocator.EarlyHistograms.",
-                                    allocator->Name()}),
-                            static_cast<int>(histogram_count));
+    std::string_view name = (allocator ? allocator->Name() : "");
+    if (!name.empty()) {
+      UmaHistogramCounts100(
+          StrCat({"UMA.PersistentAllocator.EarlyHistograms.", name}),
+          static_cast<int>(histogram_count));
     }
   }
 }

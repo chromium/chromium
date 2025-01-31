@@ -102,7 +102,7 @@ gl::ScopedJavaSurface SurfaceTextureGLOwner::CreateJavaSurface() const {
   return gl::ScopedJavaSurface(surface_texture_.get());
 }
 
-bool SurfaceTextureGLOwner::UpdateTexImage() {
+bool SurfaceTextureGLOwner::UpdateTexImage(bool discard) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!surface_texture_) {
     return false;

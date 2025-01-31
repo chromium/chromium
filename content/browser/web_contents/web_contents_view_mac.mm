@@ -150,14 +150,33 @@ gfx::NativeWindow WebContentsViewMac::GetTopLevelNativeWindow() const {
 }
 
 gfx::Rect WebContentsViewMac::GetContainerBounds() const {
-  NSWindow* window = [GetInProcessNSView() window];
-  NSRect bounds = [GetInProcessNSView() bounds];
+  NSView* view = GetInProcessNSView();
+  NSWindow* window = [view window];
+  NSRect bounds;
+
   if (window)  {
+    bounds = [view bounds];
+
     // Convert bounds to window coordinate space.
-    bounds = [GetInProcessNSView() convertRect:bounds toView:nil];
+    bounds = [view convertRect:bounds toView:nil];
 
     // Convert bounds to screen coordinate space.
     bounds = [window convertRectToScreen:bounds];
+  } else {
+    // The only time Chrome calls this method with no NSWindow is very early in
+    // web contents creation cycle when the view has zero origin and size, so
+    // calling |bounds| or |frame| makes no difference. However, headless always
+    // runs with no NSWindow so it is important to retrieve view origin, hence
+    // we need to call |frame|. https://crbug.com/378531862.
+    bounds = [view frame];
+
+    // Convert bounds to the root view coordinate space.
+    NSView* root_view = view;
+    while (NSView* parent = [root_view superview]) {
+      root_view = parent;
+    }
+
+    bounds = [view convertRect:bounds toView:root_view];
   }
 
   return gfx::ScreenRectFromNSRect(bounds);

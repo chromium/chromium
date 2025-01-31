@@ -375,8 +375,4 @@ void ThreadControllerImpl::DetachFromMessagePump() {
 }
 #endif  // BUILDFLAG(IS_IOS)
 
-void ThreadControllerImpl::PrioritizeYieldingToNative(base::TimeTicks) {
-  NOTREACHED();
-}
-
 }  // namespace base::sequence_manager::internal

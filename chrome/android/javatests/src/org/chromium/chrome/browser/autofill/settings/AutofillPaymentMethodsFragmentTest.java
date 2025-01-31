@@ -1466,7 +1466,17 @@ public class AutofillPaymentMethodsFragmentTest {
     @MediumTest
     @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_PAYMENT_SETTINGS_CARD_PROMO_AND_SCAN_CARD})
     public void testFirstCardPromo_promoShownAndButtonOpensAddCard() throws Exception {
+        var cardsShownWithoutExistingCardsHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord(
+                                AutofillPaymentMethodsFragment
+                                        .VIEWED_CARDS_WITHOUT_EXISTING_CARDS_HISTOGRAM,
+                                true)
+                        .build();
+
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        cardsShownWithoutExistingCardsHistogram.assertExpected();
 
         Preference promoPreference = getFirstPaymentMethodPreference(activity);
         assertTrue(promoPreference instanceof CardWithButtonPreference);
@@ -1487,9 +1497,19 @@ public class AutofillPaymentMethodsFragmentTest {
     @MediumTest
     @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_PAYMENT_SETTINGS_CARD_PROMO_AND_SCAN_CARD})
     public void testFirstCardPromo_promoNotShownWithExistingCards() throws Exception {
+        var cardsShownWithoutExistingCardsHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord(
+                                AutofillPaymentMethodsFragment
+                                        .VIEWED_CARDS_WITHOUT_EXISTING_CARDS_HISTOGRAM,
+                                false)
+                        .build();
+
         mAutofillTestHelper.addServerCreditCard(SAMPLE_CARD_VISA);
 
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        cardsShownWithoutExistingCardsHistogram.assertExpected();
 
         Preference cardPreference = getFirstPaymentMethodPreference(activity);
         assertFalse(cardPreference instanceof CardWithButtonPreference);
@@ -1499,7 +1519,17 @@ public class AutofillPaymentMethodsFragmentTest {
     @MediumTest
     @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_PAYMENT_SETTINGS_CARD_PROMO_AND_SCAN_CARD})
     public void testFirstCardPromo_featureDisabledPromoNotShown() throws Exception {
+        var cardsShownWithoutExistingCardsHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord(
+                                AutofillPaymentMethodsFragment
+                                        .VIEWED_CARDS_WITHOUT_EXISTING_CARDS_HISTOGRAM,
+                                true)
+                        .build();
+
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        cardsShownWithoutExistingCardsHistogram.assertExpected();
 
         Preference cardPreference = getFirstPaymentMethodPreference(activity);
         assertFalse(cardPreference instanceof CardWithButtonPreference);

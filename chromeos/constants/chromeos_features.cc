@@ -212,7 +212,7 @@ BASE_FEATURE(kOrcaUseL10nStrings,
 // presentation time for the first frame of most overview sessions.
 BASE_FEATURE(kOverviewSessionInitOptimizations,
              "OverviewSessionInitOptimizations",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Feature management flag used to gate preinstallation of the Gemini app. This
 // flag is meant to be enabled by the feature management module.

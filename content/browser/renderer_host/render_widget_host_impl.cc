@@ -311,20 +311,6 @@ std::u16string GetWrappedTooltipText(
   return wrapped_tooltip_text;
 }
 
-BrowserUIThreadScheduler::ScrollState GetScrollStateUpdateFromGestureEvent(
-    blink::WebInputEvent::Type gesture_event) {
-  switch (gesture_event) {
-    case blink::WebInputEvent::Type::kGestureScrollBegin:
-      return BrowserUIThreadScheduler::ScrollState::kGestureScrollActive;
-    case blink::WebInputEvent::Type::kGestureScrollEnd:
-      return BrowserUIThreadScheduler::ScrollState::kNone;
-    case blink::WebInputEvent::Type::kGestureFlingStart:
-      return BrowserUIThreadScheduler::ScrollState::kFlingActive;
-    default:
-      return BrowserUIThreadScheduler::ScrollState::kNone;
-  }
-}
-
 // Retrieve an iterator over any RenderWidgetHosts that are immediately
 // embedded within this one. This does not return hosts that are embedded
 // indirectly (i.e. nested within embedded hosts).
@@ -2411,9 +2397,6 @@ void RenderWidgetHostImpl::Destroy(bool also_delete) {
 }
 
 void RenderWidgetHostImpl::OnInputEventAckTimeout() {
-  // Since input has timed out, let the BrowserUiThreadScheduler know we are
-  // done with input currently.
-  user_input_active_handle_.reset();
   RendererIsUnresponsive(
       RendererIsUnresponsiveReason::kOnInputEventAckTimeout,
       base::BindRepeating(
@@ -2603,7 +2586,6 @@ void RenderWidgetHostImpl::NotifyObserversOfInputEventAcks(
 
 bool RenderWidgetHostImpl::PreHandleGestureEvent(
     const blink::WebGestureEvent& event) {
-  NotifyUISchedulerOfGestureEventUpdate(event.GetType());
   return delegate()->PreHandleGestureEvent(event);
 }
 
@@ -3281,20 +3263,10 @@ bool RenderWidgetHostImpl::KeyPressListenersHandleEvent(
 
 void RenderWidgetHostImpl::IncrementInFlightEventCount() {
   ++in_flight_event_count_;
-  if (in_flight_event_count_ == 1) {
-    user_input_active_handle_ = BrowserTaskExecutor::OnUserInputStart();
-  }
 
   if (!is_hidden_) {
     StartInputEventAckTimeout();
   }
-}
-
-void RenderWidgetHostImpl::NotifyUISchedulerOfGestureEventUpdate(
-    blink::WebInputEvent::Type gesture_event) {
-  CHECK_CURRENTLY_ON(BrowserThread::UI);
-  BrowserUIThreadScheduler::Get()->OnScrollStateUpdate(
-      GetScrollStateUpdateFromGestureEvent(gesture_event));
 }
 
 void RenderWidgetHostImpl::OnInputIgnored(const blink::WebInputEvent& event) {
@@ -3307,7 +3279,6 @@ void RenderWidgetHostImpl::DecrementInFlightEventCount(
   if (in_flight_event_count_ <= 0) {
     // Cancel pending hung renderer checks since the renderer is responsive.
     StopInputEventAckTimeout();
-    user_input_active_handle_.reset();
   } else {
     // Only restart the hang monitor timer if we got a response from the
     // main thread.
@@ -3727,9 +3698,6 @@ void RenderWidgetHostImpl::SetupRenderInputRouter() {
 
 void RenderWidgetHostImpl::SetupInputRouter() {
   in_flight_event_count_ = 0;
-  // We are resetting in_flight_event_count_ so also inform the
-  // BrowserUIThreadScheduler that we are no longer processing input.
-  user_input_active_handle_.reset();
   suppress_events_until_keydown_ = false;
   monitoring_composition_info_ = false;
   StopInputEventAckTimeout();

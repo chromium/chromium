@@ -218,6 +218,7 @@ class FakeDrmDevice : public DrmDevice {
   void set_overlay_modeset_expectation(bool state) {
     modeset_with_overlays_expectation_ = state;
   }
+  void set_modeset_expectation(bool state) { modeset_expectation_ = state; }
 
   uint32_t current_framebuffer() const { return current_framebuffer_; }
 
@@ -469,6 +470,7 @@ class FakeDrmDevice : public DrmDevice {
   bool legacy_gamma_ramp_expectation_ = false;
   bool commit_expectation_ = true;
   bool modeset_with_overlays_expectation_ = true;
+  bool modeset_expectation_ = true;
 
   uint32_t current_framebuffer_ = 0;
 

@@ -49,6 +49,7 @@
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/promos/ios_promos_utils.h"
 #include "chrome/browser/ui/simple_message_box.h"
+#include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/tab_dialogs.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -1091,6 +1092,13 @@ void ManagePasswordsUIController::MaybeShowIOSPasswordPromo() {
 
 void ManagePasswordsUIController::RelaunchChrome() {
   chrome::AttemptRestart();
+}
+
+void ManagePasswordsUIController::NavigateToPasswordChangeSettings() {
+  Browser* browser = chrome::FindBrowserWithTab(web_contents());
+  ShowSingletonTabOverwritingNTP(browser,
+                                 GURL(chrome::kChromeUiPasswordChangeUrl),
+                                 NavigateParams::IGNORE_AND_NAVIGATE);
 }
 
 [[nodiscard]] std::unique_ptr<base::AutoReset<bool>>

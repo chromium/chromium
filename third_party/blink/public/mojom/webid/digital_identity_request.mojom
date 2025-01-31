@@ -8,12 +8,6 @@ module blink.mojom;
 //
 // Proposal: https://wicg.github.io/digital-identities
 
-// The specification of the query to digital credentials.
-struct DigitalCredentialProvider {
-  string protocol;
-  string request;
-};
-
 // The specification of the request to digital credentials.
 struct DigitalCredentialRequest {
   string protocol;
@@ -28,24 +22,24 @@ enum RequestDigitalIdentityStatus {
   kError,
   kErrorTooManyRequests,
   kErrorCanceled,
-  kErrorNoProviders,
+  kErrorNoRequests,
   kErrorNoTransientUserActivation,
   kErrorInvalidJson,
 };
 
-// Create a digital identity request using the specified provider.
+// Create a digital identity request using the specified request data.
 // This interface is called from a renderer process and is implemented in the
 // browser process.
 interface DigitalIdentityRequest {
-  // Requests a token to be generated, given a DigitalCredentialProvider.
+  // Requests a token to be generated, given a DigitalCredentialRequest.
   // Returns:
   // - Status of the request.
   // - Raw content of the token.
-  // - Protocol of the selected provider.
+  // - Protocol of the selected request.
   //
   // Does not support concurrent requests. Throws an error on a new request if
   // there is a pending request.
-  Get(array<DigitalCredentialProvider> digital_credential_providers) =>
+  Get(array<DigitalCredentialRequest> digital_credential_requests) =>
       (RequestDigitalIdentityStatus status,
       string? protocol,
       string? token);

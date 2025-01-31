@@ -131,6 +131,7 @@ class PasswordsModelDelegateMock : public PasswordsModelDelegate {
               GetPasswordsLeakDialogDelegate,
               (),
               (override));
+  MOCK_METHOD(void, NavigateToPasswordChangeSettings, (), (override));
 
   base::WeakPtr<PasswordsModelDelegateMock> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();

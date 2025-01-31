@@ -133,6 +133,25 @@ void HardwareDisplayController::GetEnableProps(
                           /*enable_vrr=*/std::nullopt);
 }
 
+void HardwareDisplayController::GetCurrentModesetPropsWithoutPlanes(
+    CommitRequest* commit_request) {
+  DCHECK(commit_request);
+  GetDrmDevice()->plane_manager()->BeginFrame(&owned_hardware_planes_);
+
+  for (const auto& controller : crtc_controllers_) {
+    drmModeModeInfo modeset_mode = controller->mode();
+    if (!controller->is_enabled() || ShouldDisableNonprimaryTileController(
+                                         *controller, modeset_mode, true)) {
+      continue;
+    }
+
+    CrtcCommitRequest request = CrtcCommitRequest::DetachPlanesRequest(
+        controller->crtc(), controller->connector(), modeset_mode, origin_,
+        /*plane_list=*/&owned_hardware_planes_, controller->vrr_enabled());
+    commit_request->push_back(std::move(request));
+  }
+}
+
 void HardwareDisplayController::GetModesetPropsForCrtcs(
     CommitRequest* commit_request,
     const DrmOverlayPlaneList& modeset_planes,

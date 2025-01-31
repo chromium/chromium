@@ -280,7 +280,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
-  'skia_revision': '6d3cae3febdcb37099a9eeaa0561fc97c1e5c7fc',
+  'skia_revision': '1d540887d4fcff613119563e6b7d4278e37d4200',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
@@ -288,7 +288,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
-  'angle_revision': '0c2d793cf2764e9e2779628fbb396f2b0c49c50e',
+  'angle_revision': '0549137f6a81deb3759f25615c70d43e022fe2df',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling SwiftShader
   # and whatever else without interference from each other.
@@ -1448,7 +1448,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    'bf55236129e930514112e1cd178513b6d249f3a9',
+    'bcb8da635ff3c55b00224cabe42566ab4030cc0a',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
@@ -2602,18 +2602,6 @@ deps = {
       ],
       # TODO(b/351926334): Do not add `non_git_source` to this condition until the bug is fixed.
       'condition': 'host_os == "linux" and checkout_fuchsia and checkout_fuchsia_for_arm64_host',
-      'dep_type': 'cipd',
-  },
-
-  'src/third_party/edk2': {
-      'packages': [
-          {
-              'package': 'fuchsia/third_party/edk2',
-              'version': 'TfGjbhGrxzU0x2fYk8elEgwMTrvwe-3DSPTQe4gb0tMC'
-          },
-      ],
-      # TODO(b/351926334): Do not add `non_git_source` to this condition until the bug is fixed.
-      'condition': 'host_os == "linux" and checkout_fuchsia',
       'dep_type': 'cipd',
   },
 

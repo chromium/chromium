@@ -230,11 +230,17 @@ class BASE_EXPORT PersistentHistogramAllocator {
   // Implement the "metadata" API of a PersistentMemoryAllocator, forwarding
   // those requests to the real one.
   uint64_t Id() const { return memory_allocator_->Id(); }
-  const char* Name() const { return memory_allocator_->Name(); }
   const void* data() const { return memory_allocator_->data(); }
   size_t length() const { return memory_allocator_->length(); }
   size_t size() const { return memory_allocator_->size(); }
   size_t used() const { return memory_allocator_->used(); }
+
+  // Returns the internal name of this allocator (possibly an empty string).
+  // The returned string_view references a bounded span within the shared
+  // memory region. As such, it should be treated as a volatile but bounded
+  // block of memory. In particular, clients should respect the 'length()' of
+  // the returned view instead of relying on a terminating NUL char.
+  std::string_view Name() const { return memory_allocator_->Name(); }
 
   // Recreate a Histogram from data held in persistent memory. Though this
   // object will be local to the current process, the sample data will be

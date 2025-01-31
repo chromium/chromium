@@ -57,7 +57,7 @@ class AutofillOptimizationGuideTest : public testing::Test {
     payments_data_manager_.SetSyncServiceForTest(&sync_service_);
   }
 
-  CreditCard GetVcnEnrolledCardForMerchantOptOut(
+  CreditCard GetVcnEnrolledCard(
       std::string_view network = kVisaCard,
       CreditCard::VirtualCardEnrollmentType virtual_card_enrollment_type =
           CreditCard::VirtualCardEnrollmentType::kNetwork,
@@ -124,11 +124,11 @@ TEST_F(AutofillOptimizationGuideTest, IbanFieldFound_IbanAutofillBlocked) {
 // associated optimization guide blocklist are present.
 TEST_F(AutofillOptimizationGuideTest, CreditCardFormFound_VcnMerchantOptOut) {
   payments_data_manager().AddServerCreditCard(
-      GetVcnEnrolledCardForMerchantOptOut());
+      GetVcnEnrolledCard());
   payments_data_manager().AddServerCreditCard(
-      GetVcnEnrolledCardForMerchantOptOut(kDiscoverCard));
+      GetVcnEnrolledCard(kDiscoverCard));
   payments_data_manager().AddServerCreditCard(
-      GetVcnEnrolledCardForMerchantOptOut(kMasterCard));
+      GetVcnEnrolledCard(kMasterCard));
 
   FormStructure form_structure{
       CreateTestCreditCardFormData(/*is_https=*/true,
@@ -150,7 +150,7 @@ TEST_F(AutofillOptimizationGuideTest, CreditCardFormFound_VcnMerchantOptOut) {
 TEST_F(AutofillOptimizationGuideTest,
        CreditCardFormFound_VcnMerchantOptOut_NotVisaNetwork) {
   payments_data_manager().AddServerCreditCard(
-      GetVcnEnrolledCardForMerchantOptOut(/*network=*/kAmericanExpressCard));
+      GetVcnEnrolledCard(/*network=*/kAmericanExpressCard));
 
   FormStructure form_structure{
       CreateTestCreditCardFormData(/*is_https=*/true,
@@ -169,7 +169,7 @@ TEST_F(AutofillOptimizationGuideTest,
 TEST_F(AutofillOptimizationGuideTest,
        CreditCardFormFound_VcnMerchantOptOut_IssuerEnrollment) {
   payments_data_manager().AddServerCreditCard(
-      GetVcnEnrolledCardForMerchantOptOut(
+      GetVcnEnrolledCard(
           /*network=*/kVisaCard,
           /*virtual_card_enrollment_type=*/CreditCard::
               VirtualCardEnrollmentType::kIssuer));
@@ -233,7 +233,7 @@ TEST_F(AutofillOptimizationGuideTest,
   test_api(form_structure).SetFieldTypes(field_types, field_types);
 
   payments_data_manager().AddServerCreditCard(
-      GetVcnEnrolledCardForMerchantOptOut());
+      GetVcnEnrolledCard());
 
   EXPECT_CALL(decider(),
               RegisterOptimizationTypes(testing::ElementsAre(
@@ -306,7 +306,7 @@ TEST_F(
 TEST_F(AutofillOptimizationGuideTest,
        ShouldBlockFormFieldSuggestion_VcnMerchantOptOutVisa) {
   GURL url("https://example.com/");
-  CreditCard card = GetVcnEnrolledCardForMerchantOptOut();
+  CreditCard card = GetVcnEnrolledCard();
   payments_data_manager().AddServerCreditCard(card);
 
   ON_CALL(decider(),
@@ -324,7 +324,7 @@ TEST_F(AutofillOptimizationGuideTest,
 TEST_F(AutofillOptimizationGuideTest,
        ShouldBlockFormFieldSuggestion_VcnMerchantOptOutDiscover) {
   GURL url("https://example.com/");
-  CreditCard card = GetVcnEnrolledCardForMerchantOptOut(kDiscoverCard);
+  CreditCard card = GetVcnEnrolledCard(kDiscoverCard);
   payments_data_manager().AddServerCreditCard(card);
 
   ON_CALL(
@@ -343,7 +343,7 @@ TEST_F(AutofillOptimizationGuideTest,
 TEST_F(AutofillOptimizationGuideTest,
        ShouldBlockFormFieldSuggestion_VcnMerchantOptOutMastercard) {
   GURL url("https://example.com/");
-  CreditCard card = GetVcnEnrolledCardForMerchantOptOut(kMasterCard);
+  CreditCard card = GetVcnEnrolledCard(kMasterCard);
   payments_data_manager().AddServerCreditCard(card);
 
   ON_CALL(decider(),
@@ -362,7 +362,7 @@ TEST_F(AutofillOptimizationGuideTest,
 TEST_F(AutofillOptimizationGuideTest,
        ShouldNotBlockFormFieldSuggestion_VcnMerchantOptOut_UrlNotBlocked) {
   GURL url("https://example.com/");
-  CreditCard card = GetVcnEnrolledCardForMerchantOptOut();
+  CreditCard card = GetVcnEnrolledCard();
   payments_data_manager().AddServerCreditCard(card);
 
   ON_CALL(decider(),
@@ -380,7 +380,7 @@ TEST_F(AutofillOptimizationGuideTest,
 TEST_F(AutofillOptimizationGuideTest,
        ShouldNotBlockFormFieldSuggestion_VcnMerchantOptOut_IssuerEnrollment) {
   GURL url("https://example.com/");
-  CreditCard card = GetVcnEnrolledCardForMerchantOptOut(
+  CreditCard card = GetVcnEnrolledCard(
       /*network=*/kVisaCard, /*virtual_card_enrollment_type=*/CreditCard::
           VirtualCardEnrollmentType::kIssuer);
   payments_data_manager().AddServerCreditCard(card);
@@ -403,7 +403,7 @@ TEST_F(
     ShouldNotBlockFormFieldSuggestion_VcnMerchantOptOut_NetworkDoesNotHaveBlocklist) {
   GURL url("https://example.com/");
   CreditCard card =
-      GetVcnEnrolledCardForMerchantOptOut(/*network=*/kAmericanExpressCard);
+      GetVcnEnrolledCard(/*network=*/kAmericanExpressCard);
   payments_data_manager().AddServerCreditCard(card);
 
   EXPECT_CALL(
@@ -421,7 +421,7 @@ TEST_F(
 TEST_F(AutofillOptimizationGuideTest,
        ShouldBlockBenefitSuggestionLabelsForCardAndUrl_CapitalOne_BlockedUrl) {
   GURL url("https://example.com/");
-  CreditCard card = GetVcnEnrolledCardForMerchantOptOut(
+  CreditCard card = GetVcnEnrolledCard(
       kVisaCard, CreditCard::VirtualCardEnrollmentType::kNetwork,
       kCapitalOneCardIssuerId);
   payments_data_manager().AddServerCreditCard(card);
@@ -439,7 +439,7 @@ TEST_F(
     AutofillOptimizationGuideTest,
     ShouldNotBlockBenefitSuggestionLabelsForCardAndUrl_CapitalOne_UnblockedUrl) {
   GURL url("https://example.com/");
-  CreditCard card = GetVcnEnrolledCardForMerchantOptOut(
+  CreditCard card = GetVcnEnrolledCard(
       kVisaCard, CreditCard::VirtualCardEnrollmentType::kNetwork,
       kCapitalOneCardIssuerId);
   payments_data_manager().AddServerCreditCard(card);
@@ -457,7 +457,7 @@ TEST_F(
     AutofillOptimizationGuideTest,
     ShouldNotBlockBenefitSuggestionLabelsForCardAndUrl_CapitalOne_UnknownDecision) {
   GURL url("https://example.com/");
-  CreditCard card = GetVcnEnrolledCardForMerchantOptOut(
+  CreditCard card = GetVcnEnrolledCard(
       kVisaCard, CreditCard::VirtualCardEnrollmentType::kNetwork,
       kCapitalOneCardIssuerId);
   payments_data_manager().AddServerCreditCard(card);
@@ -475,7 +475,7 @@ TEST_F(
     AutofillOptimizationGuideTest,
     ShouldNotBlockBenefitSuggestionLabelsForCardAndUrl_NonCapitalOne_BlockedUrl) {
   GURL url("https://example.com/");
-  CreditCard card = GetVcnEnrolledCardForMerchantOptOut(
+  CreditCard card = GetVcnEnrolledCard(
       /*network=*/kAmericanExpressCard, /*virtual_card_enrollment_type=*/
       CreditCard::VirtualCardEnrollmentType::kNetwork,
       /*issuer_id=*/kAmexCardIssuerId);
@@ -494,7 +494,7 @@ TEST_F(
     AutofillOptimizationGuideTest,
     ShouldNotBlockBenefitSuggestionLabelsForCardAndUrl_NonCapitalOne_UnblockedUrl) {
   GURL url("https://example.com/");
-  CreditCard card = GetVcnEnrolledCardForMerchantOptOut(
+  CreditCard card = GetVcnEnrolledCard(
       /*network=*/kAmericanExpressCard, /*virtual_card_enrollment_type=*/
       CreditCard::VirtualCardEnrollmentType::kNetwork,
       /*issuer_id=*/kAmexCardIssuerId);
@@ -520,7 +520,7 @@ TEST_F(AutofillOptimizationGuideTest,
       .SetFieldTypes({CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER,
                       CREDIT_CARD_EXP_MONTH, CREDIT_CARD_VERIFICATION_CODE});
   payments_data_manager().AddServerCreditCard(
-      GetVcnEnrolledCardForMerchantOptOut(
+      GetVcnEnrolledCard(
           /*network=*/kAmericanExpressCard,
           /*virtual_card_enrollment_type=*/
           CreditCard::VirtualCardEnrollmentType::kNetwork,
@@ -552,8 +552,7 @@ TEST_F(AutofillOptimizationGuideTest, CreditCardFormFound_BmoCategoryBenefits) {
       .SetFieldTypes({CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER,
                       CREDIT_CARD_EXP_MONTH, CREDIT_CARD_VERIFICATION_CODE});
   payments_data_manager().AddServerCreditCard(
-      // TODO: crbug.com/391664356 - Rename this function.
-      GetVcnEnrolledCardForMerchantOptOut(
+      GetVcnEnrolledCard(
           /*network=*/kMasterCard,
           /*virtual_card_enrollment_type=*/
           CreditCard::VirtualCardEnrollmentType::kNetwork,
@@ -591,7 +590,7 @@ TEST_F(AutofillOptimizationGuideTest,
       .SetFieldTypes({CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER,
                       CREDIT_CARD_EXP_MONTH, CREDIT_CARD_VERIFICATION_CODE});
   payments_data_manager().AddServerCreditCard(
-      GetVcnEnrolledCardForMerchantOptOut(
+      GetVcnEnrolledCard(
           /*network=*/kMasterCard,
           /*virtual_card_enrollment_type=*/
           CreditCard::VirtualCardEnrollmentType::kNetwork,
@@ -624,7 +623,7 @@ TEST_F(AutofillOptimizationGuideTest,
       .SetFieldTypes({CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER,
                       CREDIT_CARD_EXP_MONTH, CREDIT_CARD_VERIFICATION_CODE});
   payments_data_manager().AddServerCreditCard(
-      GetVcnEnrolledCardForMerchantOptOut(
+      GetVcnEnrolledCard(
           /*network=*/kAmericanExpressCard,
           /*virtual_card_enrollment_type=*/
           CreditCard::VirtualCardEnrollmentType::kNetwork,
@@ -656,7 +655,7 @@ TEST_F(AutofillOptimizationGuideTest,
       .SetFieldTypes({CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER,
                       CREDIT_CARD_EXP_MONTH, CREDIT_CARD_VERIFICATION_CODE});
   payments_data_manager().AddServerCreditCard(
-      GetVcnEnrolledCardForMerchantOptOut(
+      GetVcnEnrolledCard(
           /*network=*/kMasterCard,
           /*virtual_card_enrollment_type=*/
           CreditCard::VirtualCardEnrollmentType::kNetwork,
@@ -684,7 +683,7 @@ TEST_F(AutofillOptimizationGuideTest,
       .SetFieldTypes({CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER,
                       CREDIT_CARD_EXP_MONTH, CREDIT_CARD_VERIFICATION_CODE});
   payments_data_manager().AddServerCreditCard(
-      GetVcnEnrolledCardForMerchantOptOut(
+      GetVcnEnrolledCard(
           /*network=*/kMasterCard,
           /*virtual_card_enrollment_type=*/
           CreditCard::VirtualCardEnrollmentType::kNetwork,

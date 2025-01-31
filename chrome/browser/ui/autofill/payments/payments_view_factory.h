@@ -20,6 +20,8 @@ class AutofillErrorDialogController;
 class AutofillErrorDialogView;
 class AutofillProgressDialogController;
 class AutofillProgressDialogView;
+class BnplTosController;
+class BnplTosView;
 class CardUnmaskAuthenticationSelectionDialogController;
 class CardUnmaskAuthenticationSelectionDialog;
 class CardUnmaskOtpInputDialogController;
@@ -71,6 +73,11 @@ CreateAndShowPaymentsWindowUserConsentDialog(
     content::WebContents* web_contents,
     base::OnceClosure accept_callback,
     base::OnceClosure cancel_callback);
+
+// Factory function for creating and showing the BNPL Terms of Service.
+std::unique_ptr<BnplTosView> CreateAndShowBnplTos(
+    base::WeakPtr<BnplTosController> controller,
+    content::WebContents* web_contents);
 
 }  // namespace autofill
 

@@ -186,6 +186,8 @@ inline constexpr char kChromeUIPasswordManagerSettingsURL[] =
     "chrome://password-manager/settings";
 inline constexpr char kChromeUIPasswordManagerURL[] =
     "chrome://password-manager";
+inline constexpr char kChromeUiPasswordChangeUrl[] =
+    "chrome://password-manager/settings/password-change";
 inline constexpr char kChromeUIPolicyHost[] = "policy";
 inline constexpr char kChromeUIPolicyTestURL[] = "chrome://policy/test";
 inline constexpr char kChromeUIPolicyURL[] = "chrome://policy/";

@@ -814,6 +814,14 @@ public class AutofillLocalCardEditorTest {
                                 4)
                         .build();
 
+        // Expect histogram to record false for adding a with existing cards.
+        HistogramWatcher saveCardWithoutExistingCardsHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord(
+                                AutofillLocalCardEditor.CARD_ADDED_WITHOUT_EXISTING_CARDS_HISTOGRAM,
+                                false)
+                        .build();
+
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
         AutofillLocalCardEditor autofillLocalCardEditorFragment =
                 (AutofillLocalCardEditor) activity.getMainFragment();
@@ -825,6 +833,33 @@ public class AutofillLocalCardEditorTest {
         performButtonClickOnEditor(autofillLocalCardEditorFragment.mDoneButton);
 
         saveCardCountHistogram.assertExpected();
+        saveCardWithoutExistingCardsHistogram.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE})
+    public void testRecordHistogram_whenNewCreditCardIsAddedWithoutExistingCards()
+            throws Exception {
+        // Expect histogram to record true for adding a card without existing cards.
+        HistogramWatcher saveCardWithoutExistingCardsHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord(
+                                AutofillLocalCardEditor.CARD_ADDED_WITHOUT_EXISTING_CARDS_HISTOGRAM,
+                                true)
+                        .build();
+
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+        AutofillLocalCardEditor autofillLocalCardEditorFragment =
+                (AutofillLocalCardEditor) activity.getMainFragment();
+        setCardNumberOnEditor(autofillLocalCardEditorFragment, NON_AMEX_CARD_NUMBER);
+        setExpirationDateOnEditor(
+                autofillLocalCardEditorFragment,
+                String.format("12/%s", AutofillTestHelper.nextYear().substring(2)));
+        setSecurityCodeOnEditor(autofillLocalCardEditorFragment, /* code= */ "321");
+        performButtonClickOnEditor(autofillLocalCardEditorFragment.mDoneButton);
+
+        saveCardWithoutExistingCardsHistogram.assertExpected();
     }
 
     @Test
@@ -967,6 +1002,42 @@ public class AutofillLocalCardEditorTest {
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 
         addCardFlowHistogram.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    public void testRecordHistogram_whenAddCardFlowStartedWithoutExistingCards() {
+        // Expect histogram to record true for entering the add card flow without existing cards.
+        HistogramWatcher addCardFlowWithoutExistingCardsHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord(
+                                AutofillLocalCardEditor
+                                        .ADD_CARD_FLOW_WITHOUT_EXISTING_CARDS_HISTOGRAM,
+                                true)
+                        .build();
+
+        mSettingsActivityTestRule.startSettingsActivity();
+
+        addCardFlowWithoutExistingCardsHistogram.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    public void testRecordHistogram_whenAddCardFlowStartedWithExistingCards() throws Exception {
+        // Expect histogram to record false for entering the card added with existing cards.
+        HistogramWatcher addCardFlowWithoutExistingCardsHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord(
+                                AutofillLocalCardEditor
+                                        .ADD_CARD_FLOW_WITHOUT_EXISTING_CARDS_HISTOGRAM,
+                                false)
+                        .build();
+
+        mAutofillTestHelper.addServerCreditCard(SAMPLE_LOCAL_CARD);
+
+        mSettingsActivityTestRule.startSettingsActivity();
+
+        addCardFlowWithoutExistingCardsHistogram.assertExpected();
     }
 
     private void openDeletePaymentMethodConfirmationDialog(

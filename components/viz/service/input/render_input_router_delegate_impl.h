@@ -92,8 +92,6 @@ class VIZ_SERVICE_EXPORT RenderInputRouterDelegateImpl
   bool IsInitializedAndNotDead() override;
   void OnInputEventPreDispatch(const blink::WebInputEvent& event) override {}
   void OnInvalidInputEventSource() override;
-  void NotifyUISchedulerOfGestureEventUpdate(
-      blink::WebInputEvent::Type gesture_event) override {}
   void OnInputIgnored(const blink::WebInputEvent& event) override {}
   // TODO(391135801): Handle renderer unresponsiveness with InputVizard.
   void IncrementInFlightEventCount() override {}

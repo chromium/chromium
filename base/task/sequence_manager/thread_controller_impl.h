@@ -67,7 +67,6 @@ class BASE_EXPORT ThreadControllerImpl : public ThreadController,
 #if BUILDFLAG(IS_IOS)
   void DetachFromMessagePump() override;
 #endif
-  void PrioritizeYieldingToNative(base::TimeTicks prioritize_until) override;
   bool ShouldQuitRunLoopWhenIdle() override;
 
   // RunLoop::NestingObserver:

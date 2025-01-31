@@ -267,17 +267,4 @@ std::unique_ptr<BrowserProcessIOThread> BrowserTaskExecutor::CreateIOThread() {
   return io_thread;
 }
 
-// static
-std::optional<BrowserUIThreadScheduler::UserInputActiveHandle>
-BrowserTaskExecutor::OnUserInputStart() {
-  DCHECK(Get()->browser_ui_thread_scheduler_);
-  return Get()->browser_ui_thread_scheduler_->OnUserInputStart();
-}
-
-// static
-void BrowserTaskExecutor::PostFeatureListSetup() {
-  DCHECK(Get()->browser_ui_thread_scheduler_);
-  Get()->browser_ui_thread_scheduler_->PostFeatureListSetup();
-}
-
 }  // namespace content
