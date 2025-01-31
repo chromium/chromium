@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/base64.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/rand_util.h"
@@ -402,6 +403,30 @@ TEST_F(DPAPIKeyProviderTestBase, NoOSCrypt) {
   EXPECT_FALSE(encryptor.IsEncryptionAvailable());
   EXPECT_FALSE(encryptor.IsDecryptionAvailable());
   expected_histogram_ = DPAPIKeyProvider::KeyStatus::kKeyNotFound;
+}
+
+TEST_F(DPAPIKeyProviderTest, DPAPIFailing) {
+  // This first part obtains an encryptor with the DPAPI Key provider, then
+  // encrypts some data with it.
+  std::optional<std::vector<uint8_t>> ciphertext;
+  {
+    Encryptor encryptor = GetInstanceWithDPAPI();
+    ciphertext = encryptor.EncryptString("secret");
+    ASSERT_TRUE(ciphertext);
+  }
+
+  // Now, break the DPAPI key provider by storing a key that will not decrypt
+  // with DPAPI. This encryptor should fall back to OSCrypt sync, which has
+  // already been initialized. This decryption should function correctly since
+  // the DPAPI key provider is OSCrypt Sync compatible.
+  prefs_.SetString("os_crypt.encrypted_key", base::Base64Encode("DPAPIBadKey"));
+  expected_histogram_ = DPAPIKeyProvider::KeyStatus::kDPAPIDecryptFailure;
+  {
+    Encryptor encryptor = GetInstanceWithDPAPI();
+    const auto decrypted = encryptor.DecryptData(*ciphertext);
+    ASSERT_TRUE(decrypted);
+    EXPECT_EQ(*decrypted, "secret");
+  }
 }
 
 }  // namespace os_crypt_async
