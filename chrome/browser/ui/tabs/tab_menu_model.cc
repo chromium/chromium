@@ -11,8 +11,10 @@
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/commerce/browser_utils.h"
+#include "chrome/browser/commerce/product_specifications/product_specifications_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
+#include "chrome/browser/ui/tabs/existing_comparison_table_sub_menu_model.h"
 #include "chrome/browser/ui/tabs/existing_tab_group_sub_menu_model.h"
 #include "chrome/browser/ui/tabs/existing_window_sub_menu_model.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
@@ -140,6 +142,28 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
       AddItemWithStringId(TabStripModel::CommandRemoveFromGroup,
                           IDS_TAB_CXMENU_REMOVE_TAB_FROM_GROUP);
       break;
+    }
+  }
+
+  if (num_tabs == 1 &&
+      base::FeatureList::IsEnabled(commerce::kProductSpecifications)) {
+    auto* product_specs_service =
+        commerce::ProductSpecificationsServiceFactory::GetForBrowserContext(
+            tab_strip->profile());
+    if (commerce::ExistingComparisonTableSubMenuModel::ShouldShowSubmenu(
+            tab_strip->GetActiveWebContents()->GetLastCommittedURL(),
+            product_specs_service)) {
+      // Create submenu with existing comparison tables.
+      add_to_existing_comparison_table_submenu_ =
+          std::make_unique<commerce::ExistingComparisonTableSubMenuModel>(
+              delegate(), tab_menu_model_delegate_, tab_strip, index,
+              product_specs_service);
+      AddSubMenuWithStringId(TabStripModel::CommandAddToExistingComparisonTable,
+                             IDS_COMPARE_ADD_TAB_TO_COMPARISON_TABLE,
+                             add_to_existing_comparison_table_submenu_.get());
+    } else if (product_specs_service) {
+      AddItemWithStringId(TabStripModel::CommandAddToNewComparisonTable,
+                          IDS_TAB_CXMENU_ADD_TAB_TO_NEW_COMPARISON_TABLE);
     }
   }
 

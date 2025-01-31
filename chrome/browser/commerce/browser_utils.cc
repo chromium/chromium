@@ -19,8 +19,8 @@ const std::vector<GURL> GetListOfProductSpecsEligibleUrls(
     const std::vector<content::WebContents*>& web_contents_list) {
   std::vector<GURL> urls;
   for (auto* wc : web_contents_list) {
-    const auto& url = wc->GetURL();
-    if (!url.SchemeIs(url::kHttpsScheme) && !url.SchemeIs(url::kHttpScheme)) {
+    const auto& url = wc->GetLastCommittedURL();
+    if (!IsUrlEligibleForProductSpecs(url)) {
       continue;
     }
     urls.push_back(url);
@@ -33,6 +33,10 @@ bool IsWebContentsListEligibleForProductSpecs(
   auto eligible_urls = GetListOfProductSpecsEligibleUrls(web_contents_list);
   return static_cast<int>(eligible_urls.size()) >=
          kProductSpecificationsMinTabsCount;
+}
+
+bool IsUrlEligibleForProductSpecs(const GURL& url) {
+  return url.SchemeIsHTTPOrHTTPS();
 }
 
 bool IsProductSpecsMultiSelectMenuEnabled(Profile* profile,

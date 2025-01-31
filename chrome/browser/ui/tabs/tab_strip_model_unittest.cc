@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "components/commerce/core/commerce_utils.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -5025,4 +5026,76 @@ TEST_F(TabStripModelTest, SelectionChangedForMoveSelectedTabsTo) {
   EXPECT_EQ(change.new_model.size(), 3u);
 
   observer.ClearStates();
+}
+
+TEST_F(TabStripModelTest, AddToComparisonTable_EnabledForHttps) {
+  TestTabStripModelDelegate delegate;
+  std::unique_ptr<TabStripModel> tab_strip =
+      std::make_unique<TabStripModel>(&delegate, profile());
+
+  std::unique_ptr<content::WebContents> https_web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  content::WebContentsTester::For(https_web_contents.get())
+      ->NavigateAndCommit(GURL("https://example.com"));
+
+  tab_strip->AppendWebContents(std::move(https_web_contents), true);
+  ASSERT_TRUE(tab_strip->IsContextMenuCommandEnabled(
+      0, TabStripModel::CommandAddToNewComparisonTable));
+  ASSERT_TRUE(tab_strip->IsContextMenuCommandEnabled(
+      0, TabStripModel::CommandAddToExistingComparisonTable));
+}
+
+TEST_F(TabStripModelTest, AddToComparisonTable_EnabledForHttp) {
+  TestTabStripModelDelegate delegate;
+  std::unique_ptr<TabStripModel> tab_strip =
+      std::make_unique<TabStripModel>(&delegate, profile());
+
+  std::unique_ptr<content::WebContents> http_web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  content::WebContentsTester::For(http_web_contents.get())
+      ->NavigateAndCommit(GURL("http://example.com"));
+
+  tab_strip->AppendWebContents(std::move(http_web_contents), true);
+  ASSERT_TRUE(tab_strip->IsContextMenuCommandEnabled(
+      0, TabStripModel::CommandAddToNewComparisonTable));
+  ASSERT_TRUE(tab_strip->IsContextMenuCommandEnabled(
+      0, TabStripModel::CommandAddToExistingComparisonTable));
+}
+
+TEST_F(TabStripModelTest, AddToComparisonTable_DisabledForNonHttpOrHttps) {
+  TestTabStripModelDelegate delegate;
+  std::unique_ptr<TabStripModel> tab_strip =
+      std::make_unique<TabStripModel>(&delegate, profile());
+
+  std::unique_ptr<content::WebContents> chrome_web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  content::WebContentsTester::For(chrome_web_contents.get())
+      ->NavigateAndCommit(GURL("chrome://abc"));
+
+  tab_strip->AppendWebContents(std::move(chrome_web_contents), true);
+  ASSERT_FALSE(tab_strip->IsContextMenuCommandEnabled(
+      0, TabStripModel::CommandAddToNewComparisonTable));
+  ASSERT_FALSE(tab_strip->IsContextMenuCommandEnabled(
+      0, TabStripModel::CommandAddToExistingComparisonTable));
+}
+
+TEST_F(TabStripModelTest, AddToComparisonTable_AddToNewTableOpensTab) {
+  TestTabStripModelDelegate delegate;
+  std::unique_ptr<TabStripModel> tab_strip =
+      std::make_unique<TabStripModel>(&delegate, profile());
+
+  GURL url("https://example.com");
+
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  content::WebContentsTester::For(web_contents.get())->NavigateAndCommit(url);
+  tab_strip->AppendWebContents(std::move(web_contents), true);
+
+  tab_strip->ExecuteContextMenuCommand(
+      0, TabStripModel::CommandAddToNewComparisonTable);
+
+  // New Compare tab with the URL should be opened and activated.
+  ASSERT_TRUE(tab_strip->count() == 2);
+  ASSERT_TRUE(tab_strip->GetActiveWebContents()->GetVisibleURL() ==
+              commerce::GetProductSpecsTabUrl({url}));
 }

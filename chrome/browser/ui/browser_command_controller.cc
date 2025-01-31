@@ -21,6 +21,7 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/commerce/browser_utils.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -1657,9 +1658,10 @@ void BrowserCommandController::UpdateCommandsForTabState() {
 
   // Disable the add to comparison table menu when the page is not a standard
   // webpage.
-  const GURL& current_url = current_web_contents->GetLastCommittedURL();
-  command_updater_.UpdateCommandEnabled(IDC_ADD_TO_COMPARISON_TABLE_MENU,
-                                        current_url.SchemeIsHTTPOrHTTPS());
+  command_updater_.UpdateCommandEnabled(
+      IDC_ADD_TO_COMPARISON_TABLE_MENU,
+      commerce::IsUrlEligibleForProductSpecs(
+          current_web_contents->GetLastCommittedURL()));
 }
 
 void BrowserCommandController::UpdateCommandsForZoomState() {

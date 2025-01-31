@@ -11218,6 +11218,9 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_TAB_CXMENU_COMMERCE_PRODUCT_SPEC" desc="The text for the context menu item to compare selected tabs." translateable="false">
           Compare tabs
         </message>
+        <message name="IDS_TAB_CXMENU_ADD_TAB_TO_NEW_COMPARISON_TABLE" desc="The label for the tab context menu item to add the current tab to a new comparison table">
+          Add tab to new comparison table
+        </message>
         <if expr="is_chromeos">
           <message name="IDS_TAB_CXMENU_GROUPED_BY_DESK_MENU_ITEM_A11Y" desc="The a11y message for menu items in 'Move tabs to another window' when grouped by desk.">
             <ph name="TAB_TITLE">$1<ex>Google News</ex></ph> belongs to desk <ph name="DESK_TITLE">$2<ex>School</ex></ph>
@@ -11318,6 +11321,9 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         </message>
         <message name="IDS_TAB_CXMENU_COMMERCE_PRODUCT_SPEC" desc="In Title Case: The text for the context menu item to compare selected tabs." translateable="false">
           Compare Tabs
+        </message>
+        <message name="IDS_TAB_CXMENU_ADD_TAB_TO_NEW_COMPARISON_TABLE" desc="The label for the tab context menu item to add the current tab to a new comparison table">
+          Add Tab to New Comparison Table
         </message>
       </if>
 
