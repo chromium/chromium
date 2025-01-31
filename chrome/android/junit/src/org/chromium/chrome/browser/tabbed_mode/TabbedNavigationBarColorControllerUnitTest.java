@@ -281,6 +281,37 @@ public class TabbedNavigationBarColorControllerUnitTest {
     }
 
     @Test
+    @EnableFeatures({ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN})
+    public void testOnScrimOverlapChanged() {
+        when(mTab.getBackgroundColor()).thenReturn(Color.LTGRAY);
+        when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
+
+        // Verify the nav bar color.
+        mNavColorController.onBottomAttachedColorChanged(Color.LTGRAY, false, false);
+        runColorUpdateAnimation();
+        verify(mEdgeToEdgeSystemBarColorHelper).setNavigationBarColor(eq(Color.LTGRAY));
+
+        // Apply a scrim to the nav bar via onScrimOverlapChanged.
+        @ColorInt int fullScrimColor = ColorUtils.applyAlphaFloat(Color.RED, .5f);
+        mNavColorController.onScrimOverlapChanged(fullScrimColor);
+
+        @ColorInt
+        int expectedColorWithScrim = ColorUtils.overlayColor(Color.LTGRAY, fullScrimColor);
+
+        // Verify that the scrim was properly applied to the nav bar.
+        verify(mEdgeToEdgeSystemBarColorHelper).setNavigationBarColor(eq(expectedColorWithScrim));
+
+        mNavColorController.updateActiveTabForTesting();
+        runColorUpdateAnimation();
+
+        // Verify that a subsequent call to updateNavigationBarColor doesn't remove the scrim
+        // effect. setNavigationBarColor(expectedColorWithScrim) is called once via
+        // onScrimOverlapChanged and once via updateActiveTabForTesting.
+        verify(mEdgeToEdgeSystemBarColorHelper, times(2))
+                .setNavigationBarColor(eq(expectedColorWithScrim));
+    }
+
+    @Test
     public void testOverviewColorEnabled() {
         mNavColorController.enableOverviewMode();
 
