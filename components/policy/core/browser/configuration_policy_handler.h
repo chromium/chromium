@@ -447,6 +447,16 @@ class POLICY_EXPORT SimpleSchemaValidatingPolicyHandler
   const bool allow_mandatory_;
 };
 
+// Maps a policy to a preference path, validating the schema.
+struct POLICY_EXPORT SchemaValidatingPolicyToPreferenceMapEntry {
+  const char* const policy_name;
+  const char* const preference_path;
+  SchemaOnErrorStrategy strategy;
+  SimpleSchemaValidatingPolicyHandler::RecommendedPermission
+      recommended_permission;
+  SimpleSchemaValidatingPolicyHandler::MandatoryPermission mandatory_permission;
+};
+
 // Maps policy to pref like SimplePolicyHandler. Ensures that the root value
 // of the policy is of the correct type (that is, a string, or a list, depending
 // on the policy). Apart from that, all policy values are accepted without
