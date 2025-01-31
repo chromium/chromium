@@ -224,33 +224,42 @@ INSTANTIATE_TEST_SUITE_P(
                    .result_query_param = base::StringPrintf(
                        "result=%s",
                        supervised_user::CreatePacpResizeResult()),
+                   .expected_approval_result =
+                       supervised_user::LocalApprovalResult::kError,
                    .test_name_suffix = "IgnoresResult"}),
-        TestParam(
-            {.redirect_to_target_url = true,
-             // A result is provided and navigation completes,
-             // but the result is in invalid encoding (Malformed result).
-             .result_query_param =
-                 base::StringPrintf("result=%s", CreateInvalidEncodingResult()),
-             .expected_approval_result =
-                 supervised_user::LocalApprovalResult::kMalformedPacpResult,
-             .test_name_suffix = "FailsWithInvalidEncoding"}),
-        TestParam(
-            {.redirect_to_target_url = true,
-             // A result query param is provided but it's empty (Malformed
-             // result).
-             .result_query_param = "result=",
-             .expected_approval_result =
-                 supervised_user::LocalApprovalResult::kMalformedPacpResult,
-             .test_name_suffix = "FailsWithEmptyResult"}),
-        TestParam(
-            {.redirect_to_target_url = true,
-             // A result query param is provided it's not parsed to a PACP
-             // response (Malformed result).
-             .result_query_param =
-                 base::StringPrintf("result=%s", CreateInvalidPacpResponse()),
-             .expected_approval_result =
-                 supervised_user::LocalApprovalResult::kMalformedPacpResult,
-             .test_name_suffix = "FailsWithNonParsableResponse"}),
+        TestParam({.redirect_to_target_url = true,
+                   // A result is provided and navigation completes,
+                   // but the result is in invalid encoding (Malformed result).
+                   .result_query_param =
+                       base::StringPrintf("result=%s",
+                                          CreateInvalidEncodingResult()),
+                   .expected_approval_result =
+                       supervised_user::LocalApprovalResult::kError,
+                   .test_name_suffix = "FailsWithUnexpectedResult"}),
+        TestParam({.redirect_to_target_url = true,
+                   // A result is provided and navigation completes,
+                   // but the result is an invalid encoding.
+                   .result_query_param =
+                       base::StringPrintf("result=%s",
+                                          CreateInvalidEncodingResult()),
+                   .expected_approval_result =
+                       supervised_user::LocalApprovalResult::kError,
+                   .test_name_suffix = "FailsWithInvalidEncoding"}),
+        TestParam({.redirect_to_target_url = true,
+                   // A result query param is provided but it's empty.
+                   .result_query_param = "result=",
+                   .expected_approval_result =
+                       supervised_user::LocalApprovalResult::kError,
+                   .test_name_suffix = "FailsWithEmptyResult"}),
+        TestParam({.redirect_to_target_url = true,
+                   // A result query param is provided it's not parsed to a PACP
+                   // response.
+                   .result_query_param =
+                       base::StringPrintf("result=%s",
+                                          CreateInvalidPacpResponse()),
+                   .expected_approval_result =
+                       supervised_user::LocalApprovalResult::kError,
+                   .test_name_suffix = "FailsWithNonParsableResponse"}),
         TestParam({.redirect_to_target_url = true,
                    // No query result provided.
                    .result_query_param = std::nullopt,

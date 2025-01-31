@@ -47,7 +47,7 @@ void ParentAccessDialogWebContentsObserver::DidStartNavigation(
 
   if (encoded_callback.value().empty()) {
     // The `result` query param was empty.
-    result_ = supervised_user::LocalApprovalResult::kMalformedPacpResult;
+    result_ = supervised_user::LocalApprovalResult::kError;
     return;
   }
   supervised_user::ParentAccessCallbackParsedResult callback_result =
@@ -58,7 +58,7 @@ void ParentAccessDialogWebContentsObserver::DidStartNavigation(
   // Set the `result_` according to the parsed PACP callback we received.
   // This will be handled when the navigation completes.
   if (callback_result.GetError().has_value()) {
-    result_ = supervised_user::LocalApprovalResult::kMalformedPacpResult;
+    result_ = supervised_user::LocalApprovalResult::kError;
     // TODO(crbug.com/385354582): Add metrics on the error type we
     // encountered.
     return;
@@ -75,6 +75,7 @@ void ParentAccessDialogWebContentsObserver::DidStartNavigation(
     // TODO(crbug.com/385354582): Add support for the cancellation message
     // once PACP returns it for the approval flow.
     default:
+      result_ = supervised_user::LocalApprovalResult::kError;
       // TODO(crbug.com/385354582): Add logging and handling of unexpected
       // messages.
       break;
