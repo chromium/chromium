@@ -2177,6 +2177,7 @@ _CONFIG = [
         ],
         'allowed': [
             'viz::SharedImageFormat',
+            'viz::SinglePlaneFormat',
             'viz::SkColorTypeToSinglePlaneSharedImageFormat',
         ],
     },

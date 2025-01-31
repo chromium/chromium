@@ -6,6 +6,7 @@
 
 #include "base/notreached.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
+#include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 
 namespace blink {
 
@@ -17,6 +18,16 @@ Canvas2DColorParams::Canvas2DColorParams(PredefinedColorSpace color_space,
     : color_space_(color_space),
       pixel_format_(pixel_format),
       has_alpha_(has_alpha) {}
+
+viz::SharedImageFormat Canvas2DColorParams::GetSharedImageFormat() const {
+  switch (pixel_format_) {
+    case CanvasPixelFormat::kF16:
+      return viz::SinglePlaneFormat::kRGBA_F16;
+    case CanvasPixelFormat::kUint8:
+      return GetN32FormatForCanvas();
+  }
+  NOTREACHED();
+}
 
 SkColorType Canvas2DColorParams::GetSkColorType() const {
   switch (pixel_format_) {
