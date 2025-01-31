@@ -9,7 +9,6 @@
 #include <memory>
 #include <vector>
 
-#include "cc/raster/raster_buffer.h"
 #include "cc/raster/raster_source.h"
 #include "cc/raster/task_graph_runner.h"
 #include "cc/raster/tile_task.h"
@@ -22,6 +21,8 @@ class WaitableEvent;
 }
 
 namespace cc {
+
+class RasterBuffer;
 
 class CC_EXPORT RasterBufferProvider {
  public:

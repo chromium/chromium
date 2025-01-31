@@ -15,6 +15,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/cancelable_callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
 #include "base/synchronization/waitable_event.h"
@@ -24,23 +25,18 @@
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "cc/base/unique_notifier.h"
+#include "cc/cc_export.h"
 #include "cc/paint/target_color_params.h"
-#include "cc/raster/raster_buffer_provider.h"
-#include "cc/raster/raster_query_queue.h"
-#include "cc/raster/raster_source.h"
 #include "cc/resources/memory_history.h"
 #include "cc/resources/resource_pool.h"
 #include "cc/tiles/checker_image_tracker.h"
 #include "cc/tiles/decoded_image_tracker.h"
-#include "cc/tiles/eviction_tile_priority_queue.h"
 #include "cc/tiles/image_controller.h"
 #include "cc/tiles/raster_tile_priority_queue.h"
 #include "cc/tiles/tile.h"
 #include "cc/tiles/tile_draw_info.h"
 #include "cc/tiles/tile_manager_settings.h"
-#include "cc/tiles/tile_task_manager.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
-#include "ui/gfx/display_color_spaces.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -51,73 +47,13 @@ class TracedValue;
 }
 
 namespace cc {
+class EvictionTilePriorityQueue;
 class ImageDecodeCache;
-class TilesWithResourceIterator;
-
-class CC_EXPORT TileManagerClient {
- public:
-  // Called when all tiles marked as required for activation are ready to draw.
-  virtual void NotifyReadyToActivate() = 0;
-
-  // Called when all tiles marked as required for draw are ready to draw.
-  virtual void NotifyReadyToDraw() = 0;
-
-  // Called when all tile tasks started by the most recent call to PrepareTiles
-  // are completed.
-  virtual void NotifyAllTileTasksCompleted() = 0;
-
-  // Called when the visible representation of a tile might have changed. Some
-  // examples are:
-  // - Tile version initialized.
-  // - Tile resources freed.
-  // - Tile marked for on-demand raster.
-  virtual void NotifyTileStateChanged(const Tile* tile) = 0;
-
-  // Given an empty raster tile priority queue, this will build a priority queue
-  // that will return tiles in the order in which they should be rasterized.
-  // Note if the queue was previously built, Reset must be called on it.
-  virtual std::unique_ptr<RasterTilePriorityQueue> BuildRasterQueue(
-      TreePriority tree_priority,
-      RasterTilePriorityQueue::Type type) = 0;
-
-  // Given an empty eviction tile priority queue, this will build a priority
-  // queue that will return tiles in the order in which they should be evicted.
-  // Note if the queue was previously built, Reset must be called on it.
-  virtual std::unique_ptr<EvictionTilePriorityQueue> BuildEvictionQueue(
-      TreePriority tree_priority) = 0;
-
-  // Returns an iterator over all the tiles that have a resource.
-  virtual std::unique_ptr<TilesWithResourceIterator>
-  CreateTilesWithResourceIterator() = 0;
-
-  // Informs the client that due to the currently rasterizing (or scheduled to
-  // be rasterized) tiles, we will be in a position that will likely require a
-  // draw. This can be used to preemptively start a frame.
-  virtual void SetIsLikelyToRequireADraw(bool is_likely_to_require_a_draw) = 0;
-
-  // Requests the color parameters in which the tiles should be rasterized.
-  virtual TargetColorParams GetTargetColorParams(
-      gfx::ContentColorUsage content_color_usage) const = 0;
-
-  // Requests that a pending tree be scheduled to invalidate content on the
-  // pending on active tree. This is currently used when tiles that are
-  // rasterized with missing images need to be invalidated.
-  virtual void RequestImplSideInvalidationForCheckerImagedTiles() = 0;
-
-  // Returns the frame index to display for the given image on the given tree.
-  virtual size_t GetFrameIndexForImage(const PaintImage& paint_image,
-                                       WhichTree tree) const = 0;
-
-  // Returns the sample count to use if MSAA is enabled for a tile.
-  virtual int GetMSAASampleCountForRaster(
-      const DisplayItemList& display_list) const = 0;
-
-  // True if there is a pending tree.
-  virtual bool HasPendingTree() = 0;
-
- protected:
-  virtual ~TileManagerClient() {}
-};
+class RasterBufferProvider;
+class RasterQueryQueue;
+class TaskGraphRunner;
+class TileManagerClient;
+class TileTaskManager;
 
 struct RasterTaskCompletionStats {
   RasterTaskCompletionStats();
@@ -221,42 +157,8 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient,
   }
 
   // Public methods for testing.
-  void InitializeTilesWithResourcesForTesting(const std::vector<Tile*>& tiles) {
-    for (size_t i = 0; i < tiles.size(); ++i) {
-      TileDrawInfo& draw_info = tiles[i]->draw_info();
-      ResourcePool::InUsePoolResource resource =
-          resource_pool_->AcquireResource(
-              tiles[i]->desired_texture_size(),
-              raster_buffer_provider_->GetFormat(),
-              client_->GetTargetColorParams(gfx::ContentColorUsage::kSRGB)
-                  .color_space);
-      raster_buffer_provider_->AcquireBufferForRaster(
-          resource, 0, 0,
-          /*depends_on_at_raster_decodes=*/false,
-          /*depends_on_hardware_accelerated_jpeg_candidates=*/false,
-          /*depends_on_hardware_accelerated_webp_candidates=*/false);
-      // The raster here never really happened, cuz tests. So just add an
-      // arbitrary sync token.
-      if (resource.gpu_backing()) {
-        resource.gpu_backing()->shared_image =
-            gpu::ClientSharedImage::CreateForTesting();
-        resource.gpu_backing()->mailbox_sync_token.Set(
-            gpu::GPU_IO, gpu::CommandBufferId::FromUnsafeValue(1), 1);
-      }
-      bool exported = resource_pool_->PrepareForExport(
-          resource, viz::TransferableResource::ResourceSource::kTest);
-      DCHECK(exported);
-      draw_info.SetResource(std::move(resource), false, false);
-      draw_info.set_resource_ready_for_draw();
-    }
-  }
-
-  void ReleaseTileResourcesForTesting(const std::vector<Tile*>& tiles) {
-    for (size_t i = 0; i < tiles.size(); ++i) {
-      Tile* tile = tiles[i];
-      FreeResourcesForTile(tile);
-    }
-  }
+  void InitializeTilesWithResourcesForTesting(const std::vector<Tile*>& tiles);
+  void ReleaseTileResourcesForTesting(const std::vector<Tile*>& tiles);
 
   void SetGlobalStateForTesting(
       const GlobalStateThatImpactsTilePriority& state) {
@@ -264,9 +166,7 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient,
   }
 
   void SetTileTaskManagerForTesting(
-      std::unique_ptr<TileTaskManager> tile_task_manager) {
-    tile_task_manager_ = std::move(tile_task_manager);
-  }
+      std::unique_ptr<TileTaskManager> tile_task_manager);
 
   void SetRasterBufferProviderForTesting(
       RasterBufferProvider* raster_buffer_provider) {
@@ -278,12 +178,7 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient,
     pending_raster_queries_ = pending_raster_queries;
   }
 
-  std::vector<Tile*> AllTilesForTesting() const {
-    std::vector<Tile*> tiles;
-    for (auto& tile_pair : tiles_)
-      tiles.push_back(tile_pair.second);
-    return tiles;
-  }
+  std::vector<Tile*> AllTilesForTesting() const;
 
   void SetScheduledRasterTaskLimitForTesting(size_t limit) {
     scheduled_raster_task_limit_ = limit;
