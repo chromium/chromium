@@ -175,6 +175,13 @@ void SavedTabGroupKeyedService::ConnectRestoredGroupToSaveId(
     // If there is no saved group with guid `saved_guid`, the group must
     // have been unsaved since this session closed.
     if (!group) {
+      // Close the tab group in the case the group we want to connect to has
+      // been removed from the model. This prevents a crash during session
+      // restore but after the sync bridge initializes and removes the
+      // associated group from the model.
+      // See crbug.com/392174867 for more details.
+      SavedTabGroupUtils::RemoveGroupFromTabstrip(/*browser=*/nullptr,
+                                                  local_group_id);
       return;
     }
 
@@ -501,6 +508,13 @@ void SavedTabGroupKeyedService::SavedTabGroupModelLoaded() {
   for (const auto& [saved_guid, local_group_id] :
        restored_groups_to_connect_on_load_) {
     if (!model()->Contains(saved_guid)) {
+      // Close the tab group in the case the group we want to connect to has
+      // been removed from the model. This prevents a crash during session
+      // restore but after the sync bridge initializes and removes the
+      // associated group from the model.
+      // See crbug.com/392174867 for more details.
+      SavedTabGroupUtils::RemoveGroupFromTabstrip(/*browser=*/nullptr,
+                                                  local_group_id);
       continue;
     }
 
