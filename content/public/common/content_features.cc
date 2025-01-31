@@ -236,7 +236,7 @@ const char kCookieDeprecationTestingDisableAdsAPIsName[] = "disable_ads_apis";
 // When enabled, the DevTools Privacy UI is displayed.
 BASE_FEATURE(kDevToolsPrivacyUI,
              "DevToolsPrivacyUI",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables deferring the creation of the speculative RFH when the navigation
 // starts. The creation of a speculative RFH consumes about 2ms and is blocking
