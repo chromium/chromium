@@ -835,7 +835,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="3870197372373144624">Essayez d'éteindre votre appareil.</translation>
 <translation id="3886872229787704059">Ouvert aujourd'hui</translation>
 <translation id="3891340733213178823">Appuyez deux fois sur Ctrl + Maj + Q pour vous déconnecter.</translation>
-<translation id="3893630138897523026">ChromeVox (commentaires audio)</translation>
+<translation id="3893630138897523026">ChromeVox (lecture vocale)</translation>
 <translation id="3897533311200664389">Soumettre une requête textuelle</translation>
 <translation id="3898464793473355515">Faire pivoter l'écran de 90 degrés dans le sens des aiguilles d'une montre</translation>
 <translation id="3899995891769452915">Saisie vocale</translation>
@@ -1369,7 +1369,7 @@ Aucun appareil connecté.</translation>
 <translation id="5596627076506792578">Plus d'options</translation>
 <translation id="5599242528220103262">Le raccourci clavier est désactivé</translation>
 <translation id="5600415762228455511">Le mode Sans distractions est activé pour la tâche <ph name="TASK_NAME" />. Il reste <ph name="REMAINING_TIME" />.</translation>
-<translation id="5600837773213129531">Appuyez sur Ctrl+Alt+Z pour désactiver les commentaires audio.</translation>
+<translation id="5600837773213129531">Appuyez sur Ctrl+Alt+Z pour désactiver la lecture vocale.</translation>
 <translation id="5601503069213153581">Code d'accès</translation>
 <translation id="5618148318840095371">Nous vous avons connecté à un meilleur réseau</translation>
 <translation id="5619862035903135339">Une règle définie par l'administrateur a désactivé la capture d'écran</translation>

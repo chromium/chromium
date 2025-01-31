@@ -1761,19 +1761,19 @@ Si la inhabilitas, los usuarios no podrán usar esta función.
 <translation id="2224706708550115831">Permitir que el navegador del usuario acceda a una lista de URLs mientras la VPN siempre activada está activa en modo estricto con el bloqueo habilitado y la VPN no está conectada</translation>
 <translation id="222673035924187991">Habilitar TLS Encrypted ClientHello</translation>
 <translation id="2231817271680715693">Importar historial de navegación del navegador predeterminado en la primera ejecución</translation>
-<translation id="2231962946025538735">Esta política dejó de estar disponible. Usa <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> para controlar la disponibilidad del complemento de Flash y <ph name="ALWAYS_OPEN_PDF_EXTERNALLY_POLICY_NAME" /> para controlar si debe usarse el visor de PDF integrado para abrir este tipo de archivos.
+<translation id="2231962946025538735">Esta política está obsoleta. Usa <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> para controlar la disponibilidad del complemento de Flash y <ph name="ALWAYS_OPEN_PDF_EXTERNALLY_POLICY_NAME" /> para controlar si debe usarse el lector de PDF integrado para abrir este tipo de archivos.
 
       Especifica una lista de complementos que el usuario puede habilitar o inhabilitar en <ph name="PRODUCT_NAME" />.
 
-      Se pueden usar los caracteres comodín "*" y "?" para buscar secuencias de caracteres arbitrarios. "*" busca una cantidad arbitraria de caracteres, mientras que "?" especifica un único carácter opcional, es decir, busca un carácter o ninguno. El carácter de escape es "\", de modo que para que la búsqueda coincida con los caracteres "*", "?" o "\" propiamente dichos puedes incluir una "\" delante de ellos.
+      Se pueden usar los caracteres comodín "*" y "?" para buscar secuencias de caracteres arbitrarios. "*" busca una cantidad arbitraria de caracteres, mientras que "?" especifica un único carácter opcional, es decir, busca un carácter o ninguno. El carácter de escape es "\", por lo que debe anteponerse para que la búsqueda coincida con los caracteres "*", "?" o "\" propiamente dichos.
 
-      Si habilitas esta configuración, la lista especificada de complementos se puede utilizar en <ph name="PRODUCT_NAME" />. Los usuarios pueden habilitarlos o inhabilitarlos en "about:plugins", incluso si el complemento también coincide con un patrón incluido en DisabledPlugins. Los usuarios también pueden habilitar e inhabilitar complementos que no coinciden con ningún patrón incluido en DisabledPlugins, DisabledPluginsExceptions y EnabledPlugins.
+      Si habilitas este parámetro de configuración, la lista especificada de complementos se puede utilizar en <ph name="PRODUCT_NAME" />. Los usuarios pueden habilitarlos o inhabilitarlos en "about:plugins", incluso si el complemento también coincide con un patrón incluido en DisabledPlugins. Los usuarios también pueden habilitar e inhabilitar complementos que no coinciden con ningún patrón incluido en DisabledPlugins, DisabledPluginsExceptions y EnabledPlugins.
 
       Esta política permite bloquear complementos de forma estricta cuando la lista DisabledPlugins contiene entradas con comodines, como inhabilitar todos los complementos "*" o inhabilitar todos los complementos de Java "*Java*", pero el administrador desea permitir alguna versión particular, como "IcedTea Java 2.3". En esta política, se puede especificar cada una de estas versiones.
 
-      Ten en cuenta que tanto el nombre del complemento como el nombre del grupo de complementos deben exceptuarse. Cada grupo de complementos se muestra en una sección diferente en "about:plugins" y cada sección puede tener uno o más complementos. Por ejemplo, el complemento "Shockwave Flash" pertenece al grupo "Adobe Flash Player". Si deseas que ese complemento se exceptúe de la lista de entidades bloqueadas, ambos nombres deberán coincidir con elementos de la lista de excepciones.
+      Ten en cuenta que tanto el nombre del complemento como el nombre del grupo de complementos deben exceptuarse. Cada grupo de complementos se muestra en una sección diferente en "about:plugins" y cada sección puede tener uno o más complementos. Por ejemplo, el complemento "Shockwave Flash" pertenece al grupo "Adobe Flash Player". Si deseas que ese complemento se exceptúe de la lista de complementos bloqueados, ambos nombres deberán coincidir con elementos de la lista de excepciones.
 
-      Si no se configura esta política, se inhabilitará cualquier complemento que coincida con patrones incluidos en DisabledPlugins, y el usuario no podrá habilitarlo.</translation>
+      Si no se configura esta política, se inhabilitará cualquier complemento que coincida con patrones incluidos en DisabledPlugins y el usuario no podrá habilitarlo.</translation>
 <translation id="2236488539271255289">No permitir que ningún sitio configure los datos locales.</translation>
 <translation id="2236593201136596376">Permitir la recopilación de registros de textos de WebRTC de los Servicios de Google</translation>
 <translation id="2237258181338466053">Si habilitas esta política, <ph name="PRODUCT_NAME" /> intentará ejecutar algunas URLs en un navegador alternativo, como <ph name="IE_PRODUCT_NAME" />. Esta función está configurada conforme a las políticas del grupo <ph name="LEGACY_BROWSER_SUPPORT_POLICY_GROUP" />.
@@ -2518,11 +2518,11 @@ Si la inhabilitas o no la estableces, los usuarios podrán transferir archivos a
 <translation id="2760947619380644513">Permitir que los usuarios con acceso remoto abran las URLs del host en el navegador de su cliente local</translation>
 <translation id="2761483219396643566">Demora para la advertencia de inactividad cuando el dispositivo está funcionando a batería</translation>
 <translation id="2764750330785898947">Habilitar la compatibilidad de la codificación de contenido con <ph name="ZSTANDARD_SHORTNAME" /></translation>
-<translation id="2764964245640818227">Controla si el visor de PDF de <ph name="PRODUCT_NAME" /> puede agregar anotaciones en archivos PDF.
+<translation id="2764964245640818227">Controla si el lector de PDF de <ph name="PRODUCT_NAME" /> puede agregar anotaciones en archivos PDF.
 
-      Si no estableces esta política o la estableces como verdadera, el visor de PDF podrá agregar anotaciones en archivos PDF.
+      Si no estableces esta política o la estableces como verdadera, el lector de PDF podrá agregar anotaciones en archivos PDF.
 
-      Si la estableces como falsa, el visor de PDF no podrá agregar anotaciones en archivos PDF.</translation>
+      Si la estableces como falsa, el lector de PDF no podrá agregar anotaciones en archivos PDF.</translation>
 <translation id="2769199041812510302">URL del logotipo de empresa</translation>
 <translation id="2769952903507981510">Configura el nombre de dominio requerido para los hosts de acceso remoto.</translation>
 <translation id="2770376586681635746">Determina si los usuarios pueden agregar cuentas de Kerberos.
@@ -2818,7 +2818,7 @@ Si el valor se establece como <ph name="DISABLED_ENUM_VALUE" />, las entidades n
 Si el valor se establece como <ph name="LONGPRESSONLY_ENUM_VALUE" />, se detectan las entidades y solo se puede realizar una acción si se mantiene presionado.</translation>
 <translation id="3010907817113180883">Tasa de recopilación de la señal de monitoreo de funcionamiento de la actividad del dispositivo en milisegundos.</translation>
 <translation id="3016585641676676461">Bloquear la pantalla completa automática en estos sitios</translation>
-<translation id="3017578958356048910">El visor de PDF puede agregar anotaciones en archivos PDF</translation>
+<translation id="3017578958356048910">El lector de PDF puede agregar anotaciones en archivos PDF</translation>
 <translation id="3020623128585817424">Inhabilitar la verificación de navegador predeterminado en el inicio</translation>
 <translation id="3020953534071988875">La configuración de esta política habilitará o inhabilitará la autenticación ambiental para los perfiles de incógnito y de invitado en <ph name="PRODUCT_NAME" />.
 
@@ -4761,7 +4761,7 @@ Esto se quitó en M112.</translation>
 <translation id="4410361389637971319">Permitir que los orígenes de apps web aisladas usen Direct Sockets</translation>
 <translation id="4411734231900934213">La diferencia permitida entre el reloj del dispositivo del niño y el del padre o la madre (en segundos).</translation>
 <translation id="441217499641439905">Inhabilitar Google Drive a través de conexiones móviles en la app de Archivos de <ph name="PRODUCT_OS_NAME" /></translation>
-<translation id="4412885120239670573">Si habilitas la política, se desactivará el visor de PDF interno de <ph name="PRODUCT_NAME" />, se tratarán los archivos PDF como descargas y los usuarios podrán abrir los archivos PDF con la aplicación predeterminada.
+<translation id="4412885120239670573">Si habilitas la política, se desactivará el lector de PDF interno de <ph name="PRODUCT_NAME" />, se tratarán los archivos PDF como descargas y los usuarios podrán abrir los archivos PDF con la aplicación predeterminada.
 
 Si inhabilitas la política, se abrirán los archivos PDF, a menos que los usuarios desactiven el complemento de PDF.
 
@@ -4774,7 +4774,7 @@ Si estableces esta política, los usuarios no podrán cambiarla en <ph name="PRO
 <translation id="4424004842303301809">Inhabilitar la generación de informes para los eventos de prevención de filtración de datos</translation>
 <translation id="4426601693403743089">Inhabilitar la prueba interna de Screencast para los usuarios de Family Link</translation>
 <translation id="4426986640594727372">Permitir el acceso a la ubicación geográfica del sistema</translation>
-<translation id="4427173305799125784">El visor de PDF no puede agregar anotaciones en archivos PDF</translation>
+<translation id="4427173305799125784">El lector de PDF no puede agregar anotaciones en archivos PDF</translation>
 <translation id="4432762137771104529">Habilitar el informe extendido de Navegación segura</translation>
 <translation id="443454694385851356">Heredados (inseguro)</translation>
 <translation id="4435032708588431506">Permitir QUIC</translation>
@@ -4905,11 +4905,11 @@ Si estableces esta política como "Mostrar insignias empresariales en todos los 
 Si estableces esta política como "Mostrar insignias empresariales solo en dispositivos administrados (valor 3)", se mostrarán todas las insignias si un usuario de tu organización usa un perfil administrado en un dispositivo administrado.
 
 Un dispositivo se considera administrado si se utiliza una versión empresarial del SO o si se establece alguna política en el nivel de la máquina y afecta al navegador.</translation>
-<translation id="4548555985107150628">Esta política es obsoleta. Usa <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> para controlar la disponibilidad del complemento de Flash y <ph name="ALWAYS_OPEN_PDF_EXTERNALLY_POLICY_NAME" /> para controlar si debe usarse el visor de PDF integrado para abrir este tipo de archivos.
+<translation id="4548555985107150628">Esta política está obsoleta. Usa <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> para controlar la disponibilidad del complemento de Flash y <ph name="ALWAYS_OPEN_PDF_EXTERNALLY_POLICY_NAME" /> para controlar si debe usarse el lector de PDF integrado para abrir este tipo de archivos.
 
-      Especifica una lista de complementos que están habilitados en <ph name="PRODUCT_NAME" /> y evita que los usuarios cambien esta configuración.
+      Especifica una lista de complementos que están habilitados en <ph name="PRODUCT_NAME" /> y evita que los usuarios cambien el parámetro de configuración.
 
-      Se pueden usar los caracteres comodín "*" y "?" para buscar secuencias de caracteres arbitrarios. "*" busca una cantidad arbitraria de caracteres, mientras que "?" especifica un único carácter opcional, es decir, busca un carácter o ninguno. El carácter de escape es "\", de modo que, para que coincida con los caracteres "*", "?" o "\" reales, debes colocar una "\" delante de ellos.
+      Se pueden usar los caracteres comodín "*" y "?" para buscar secuencias de caracteres arbitrarios. "*" busca una cantidad arbitraria de caracteres, mientras que "?" especifica un único carácter opcional, es decir, busca un carácter o ninguno. El carácter de escape es "\", por lo que debe anteponerse para que la búsqueda coincida con los caracteres "*", "?" o "\" propiamente dichos.
 
       Si los complementos están instalados, se usará siempre la lista especificada en <ph name="PRODUCT_NAME" />. Los complementos se marcan como inhabilitados en "about:plugins" y los usuarios no pueden habilitarlos.
 
@@ -7992,13 +7992,13 @@ Si no estableces la política, se aplicará la tasa predeterminada de 15 minutos
       Si un sitio coincide con un patrón de URL de esta política, no se considerará la política <ph name="SCREEN_CAPTURE_ALLOWED_POLICY_NAME" />.
 
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  Esta política solo establece coincidencias basadas en el origen; por lo tanto, se ignoran todas las rutas de acceso que se incluyan en el patrón de URL.</translation>
-<translation id="6568977718979857253">Esta política es obsoleta. Usa <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> para controlar la disponibilidad del complemento de Flash y <ph name="ALWAYS_OPEN_PDF_EXTERNALLY_POLICY_NAME" /> para controlar si debe usarse el visor de PDF integrado para abrir este tipo de archivos.
+<translation id="6568977718979857253">Esta política está obsoleta. Usa <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> para controlar la disponibilidad del complemento de Flash y <ph name="ALWAYS_OPEN_PDF_EXTERNALLY_POLICY_NAME" /> para controlar si debe usarse el lector de PDF integrado para abrir este tipo de archivos.
 
-      Especifica una lista de complementos que están inhabilitados en <ph name="PRODUCT_NAME" /> y evita que los usuarios cambien esta configuración.
+      Especifica una lista de complementos que están inhabilitados en <ph name="PRODUCT_NAME" /> y evita que los usuarios cambien el parámetro de configuración.
 
-      Se pueden usar los caracteres comodín "*" y "?" para buscar secuencias de caracteres arbitrarios. "*" busca una cantidad arbitraria de caracteres, mientras que "?" especifica un único carácter opcional, es decir, busca un carácter o ninguno. El carácter de escape es "\", de modo que, para que coincida con los caracteres "*", "?" o "\" reales, debes colocar una "\" delante de ellos.
+      Se pueden usar los caracteres comodín "*" y "?" para buscar secuencias de caracteres arbitrarios. "*" busca una cantidad arbitraria de caracteres, mientras que "?" especifica un único carácter opcional, es decir, busca un carácter o ninguno. El carácter de escape es "\", por lo que debe anteponerse para que la búsqueda coincida con los caracteres "*", "?" o "\" propiamente dichos.
 
-      Si habilitas esta configuración, nunca se usará la lista especificada de complementos en <ph name="PRODUCT_NAME" />. Los complementos se marcan como inhabilitados en "about:plugins" y los usuarios no pueden habilitarlos.
+      Si habilitas este parámetro de configuración, nunca se usará la lista especificada de complementos en <ph name="PRODUCT_NAME" />. Los complementos se marcan como inhabilitados en "about:plugins" y los usuarios no pueden habilitarlos.
 
       Ten en cuenta que se puede anular esta política con las políticas EnabledPlugins y DisabledPluginsExceptions.
 
@@ -8558,7 +8558,7 @@ Si se establece como "google_drive", los archivos locales se mueven a Google Dri
 Si se establece como “microsoft_onedrive”, los archivos locales se mueven a OneDrive y las carpetas locales se ocultan.
 Si se establece como "solo lectura" o no se establece, los archivos locales permanecerán en modo de solo lectura.</translation>
 <translation id="6972540544240464302">Selecciona la configuración del programador de tareas</translation>
-<translation id="6975533677426693807">Abrir siempre los archivos PDF mediante el visor de PDF interno</translation>
+<translation id="6975533677426693807">Abrir siempre los archivos PDF con el lector interno</translation>
 <translation id="6986172482189158664">Configuración de la duración de los datos de navegación</translation>
 <translation id="6988791975283483023">Inhabilitar Wi-Fi</translation>
 <translation id="6990546578776912554">Especificar los dominios que se excluirán de la resolución con DNS-over-HTTPS</translation>
@@ -8676,7 +8676,7 @@ Si estableces esta política como <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE
 <translation id="7074437930865599190">Bloquear la versión principal del string usuario-agente en 99</translation>
 <translation id="7075847434649667522">Usar certificados TLS agregados por el usuario desde almacenes de confianza de la plataforma para la autenticación del servidor</translation>
 <translation id="7077471517869658421">Los usuarios pueden cambiar libremente el valor del parámetro de configuración "Usar el Selector o la tecla de búsqueda para cambiar el comportamiento de las teclas de función".</translation>
-<translation id="707988220162760379">Abrir siempre los archivos PDF mediante un visor de PDF externo</translation>
+<translation id="707988220162760379">Abrir siempre los archivos PDF con un lector externo</translation>
 <translation id="7081699207881888532">Habilitar sugerencias de emojis cuando los usuarios escriben</translation>
 <translation id="7081784525008938771">Si habilitas la política o no la estableces, no se considerará que el usuario está inactivo cuando se esté reproduciendo video. Esto evitará que se alcancen los tiempos de espera de inactividad, atenuación de la pantalla, pantalla apagada y bloqueo de pantalla, y que se tomen las medidas correspondientes.
 
