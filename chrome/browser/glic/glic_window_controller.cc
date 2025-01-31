@@ -626,11 +626,16 @@ void GlicWindowController::Resize(const gfx::Size& size,
   // If the glic window is not in the ready state, do nothing for now.
   // TODO(https://crbug.com/379164689): Drive resize animations for error states
   // from the browser. For now, we allow animations during the waiting state.
-  if (state_ == State::kOpen || state_ == State::kWaitingForGlicToLoad) {
+  // TOOD(https://crbug.com/392668958): If the widget is ready and asks for a
+  // resize before the opening animation is finished, we will stop the current
+  // animation and resize to the final size. Investigate a smoother way to
+  // animate this transition.
+  if (state_ == State::kOpen || state_ == State::kWaitingForGlicToLoad ||
+      state_ == State::kOpenAnimation) {
     AnimateSize(size, duration, std::move(callback));
   } else {
     // If the glic window is closed, or the widget isn't ready (e.g. because
-    // it's currently still animating open) immediately post the callback.
+    // it's currently still animating closed) immediately post the callback.
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, std::move(callback));
   }
