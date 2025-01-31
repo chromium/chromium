@@ -9972,6 +9972,7 @@ from previous Chrome versions.
   <int value="-1638815914" label="enable-experimental-productivity-features"/>
   <int value="-1638399923"
       label="PrivacySandboxProactiveTopicsBlocking:disabled"/>
+  <int value="-1638327396" label="CCTEphemeralMediaViewerExperiment:enabled"/>
   <int value="-1637649767" label="SingleCaCertVerificationPhase2:enabled"/>
   <int value="-1637552275" label="NtpRealboxUseGoogleGIcon:disabled"/>
   <int value="-1637519819" label="EnablePolicyTestPage:disabled"/>
@@ -15327,6 +15328,7 @@ from previous Chrome versions.
   <int value="480435665" label="ToastRefinements:disabled"/>
   <int value="480481070" label="FilesInlineSyncStatus:disabled"/>
   <int value="480544447" label="NonValidatingReloadOnRefreshContentV2:enabled"/>
+  <int value="480594286" label="CCTEphemeralMediaViewerExperiment:disabled"/>
   <int value="480677983" label="WebXRARDOMOverlay:disabled"/>
   <int value="481506759" label="ServiceWorkerScriptStreaming:enabled"/>
   <int value="482232604" label="PercentBasedScrolling:enabled"/>

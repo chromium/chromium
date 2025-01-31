@@ -8,6 +8,7 @@
 #include "crypto/scoped_mock_unexportable_key_provider.h"
 #include "net/device_bound_sessions/registration_fetcher.h"
 #include "net/device_bound_sessions/session_service.h"
+#include "net/device_bound_sessions/test_support.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
@@ -20,6 +21,7 @@ namespace {
 
 using net::device_bound_sessions::RegistrationFetcher;
 using net::device_bound_sessions::RegistrationFetcherParam;
+using net::device_bound_sessions::ScopedTestRegistrationFetcher;
 using net::device_bound_sessions::Session;
 using net::device_bound_sessions::SessionAccess;
 using net::device_bound_sessions::SessionKey;
@@ -27,23 +29,6 @@ using net::device_bound_sessions::SessionParams;
 using net::device_bound_sessions::SessionService;
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
-
-// TODO(drubery): Consolidate the test fetcher here with the test
-// fetchers in session_service_impl_unittest.cc
-std::optional<RegistrationFetcher::RegistrationCompleteParams> TestFetcher() {
-  std::vector<SessionParams::Credential> cookie_credentials;
-  cookie_credentials.push_back(
-      SessionParams::Credential{"test_cookie", "secure"});
-  SessionParams::Scope scope;
-  scope.include_site = true;
-  scope.origin = "example.com";
-  SessionParams session_params("SessionId", "https://example.com/refresh",
-                               std::move(scope), std::move(cookie_credentials));
-  unexportable_keys::UnexportableKeyId key_id;
-  return std::make_optional<RegistrationFetcher::RegistrationCompleteParams>(
-      std::move(session_params), std::move(key_id),
-      GURL("https://example.com/"));
-}
 
 class FakeDeviceBoundSessionObserver
     : public mojom::DeviceBoundSessionAccessObserver {
@@ -104,7 +89,9 @@ class DeviceBoundSessionManagerTest : public ::testing::Test {
 };
 
 TEST_F(DeviceBoundSessionManagerTest, ObserverNotifiesChangeOnlyOnSite) {
-  RegistrationFetcher::SetFetcherForTesting(&TestFetcher);
+  ScopedTestRegistrationFetcher scoped_fetcher =
+      ScopedTestRegistrationFetcher::CreateWithSuccess(
+          "SessionId", "https://example.com/refresh", "example.com");
 
   GURL url("https://example.com");
   net::SchemefulSite site(url);
@@ -130,8 +117,6 @@ TEST_F(DeviceBoundSessionManagerTest, ObserverNotifiesChangeOnlyOnSite) {
                                 SessionKey(site, Session::Id("SessionId"))}));
 
   EXPECT_THAT(off_site_observer.notifications(), IsEmpty());
-
-  RegistrationFetcher::SetFetcherForTesting(nullptr);
 }
 
 }  // namespace

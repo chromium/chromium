@@ -10,6 +10,8 @@
 #include <utility>
 
 #include "base/containers/span.h"
+#include "net/device_bound_sessions/registration_fetcher.h"
+#include "net/net_buildflags.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "url/gurl.h"
 
@@ -28,6 +30,37 @@ EmbeddedTestServer::HandleRequestCallback GetTestRequestHandler(
 // Verify the signature of a JWT using the ES256 JWK stored in the "key" claim
 // in its payload.
 bool VerifyEs256Jwt(std::string_view jwt);
+
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+// While this class is alive, session registration will always return a
+// fixed value.
+class ScopedTestRegistrationFetcher {
+ public:
+  // Creates a `ScopedTestRegistrationFetcher` that always succeeds at
+  // registering a session with the given `session_id`,
+  // `refresh_url_string`, and `origin_string`.
+  static ScopedTestRegistrationFetcher CreateWithSuccess(
+      std::string_view session_id,
+      std::string_view refresh_url_string,
+      std::string_view origin_string);
+
+  // Creates a `ScopedTestRegistrationFetcher` that always fails to register
+  static ScopedTestRegistrationFetcher CreateWithFailure();
+
+  // Creates a `ScopedTestRegistrationFetcher` that always instructs
+  // Chrome to terminate the session with given id and site.
+  static ScopedTestRegistrationFetcher CreateWithTermination(
+      std::string_view session_id,
+      std::string_view refresh_url_string);
+
+  explicit ScopedTestRegistrationFetcher(
+      RegistrationFetcher::FetcherType fetcher);
+  ~ScopedTestRegistrationFetcher();
+
+ private:
+  RegistrationFetcher::FetcherType fetcher_;
+};
+#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
 }  // namespace net::device_bound_sessions
 

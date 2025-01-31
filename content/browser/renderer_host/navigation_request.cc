@@ -1352,7 +1352,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
     NavigationEntryImpl* entry,
     blink::mojom::CommonNavigationParamsPtr common_params,
     blink::mojom::BeginNavigationParamsPtr begin_params,
-    int current_history_list_offset,
+    int current_history_list_index,
     int current_history_list_length,
     bool override_user_agent,
     scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
@@ -1395,7 +1395,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
           /*intended_as_new_entry=*/false,
           // Set to -1 because history-navigations do not use this path. See
           // comments above.
-          /*pending_history_list_offset=*/-1, current_history_list_offset,
+          /*pending_history_list_index=*/-1, current_history_list_index,
           current_history_list_length,
           /*was_discarded=*/false,
           /*is_view_source=*/false,
@@ -1546,8 +1546,8 @@ NavigationRequest::CreateForSynchronousRendererCommit(
           /*nav_entry_id=*/0,
           /*subframe_unique_names=*/base::flat_map<std::string, bool>(),
           /*intended_as_new_entry=*/false,
-          /*pending_history_list_offset=*/-1,
-          /*current_history_list_offset=*/-1,
+          /*pending_history_list_index=*/-1,
+          /*current_history_list_index=*/-1,
           /*current_history_list_length=*/-1,
           /*was_discarded=*/false,
           /*is_view_source=*/false,
@@ -6494,16 +6494,16 @@ void NavigationRequest::CommitPageActivation() {
   if (IsServedFromBackForwardCache()) {
     std::unique_ptr<BackForwardCacheImpl::Entry> activated_entry;
     // Navigations served from the back-forward cache must be a history
-    // navigation, and thus should have a valid |pending_history_list_offset|
+    // navigation, and thus should have a valid |pending_history_list_index|
     // value. We will pass that value and the |current_history_list_length|
-    // value to update the history offset and length information saved in the
+    // value to update the history index and length information saved in the
     // renderer, which might be stale.
-    DCHECK_GE(commit_params_->pending_history_list_offset, 0);
+    DCHECK_GE(commit_params_->pending_history_list_index, 0);
 
     auto page_restore_params = blink::mojom::PageRestoreParams::New();
     page_restore_params->navigation_start = NavigationStart();
-    page_restore_params->pending_history_list_offset =
-        commit_params_->pending_history_list_offset;
+    page_restore_params->pending_history_list_index =
+        commit_params_->pending_history_list_index;
     page_restore_params->current_history_list_length =
         commit_params_->current_history_list_length;
     activated_entry = controller->GetBackForwardCache().RestoreEntry(
@@ -7210,7 +7210,7 @@ NavigationRequest::CheckCSPEmbeddedEnforcement() {
 void NavigationRequest::UpdateHistoryParamsInCommitNavigationParams() {
   NavigationController& navigation_controller =
       frame_tree_node_->navigator().controller();
-  commit_params_->current_history_list_offset =
+  commit_params_->current_history_list_index =
       navigation_controller.GetCurrentEntryIndex();
   commit_params_->current_history_list_length =
       navigation_controller.GetEntryCount();

@@ -704,17 +704,17 @@ void Navigator::DidNavigate(
   }
   render_frame_host->set_last_committed_frame_entry(frame_entry);
 
-  // If the history length and/or offset changed, update other renderers in the
+  // If the history length and/or index changed, update other renderers in the
   // FrameTree.
   if (old_entry_count != controller_.GetEntryCount() ||
       details.previous_entry_index !=
           controller_.GetLastCommittedEntryIndex()) {
-    int history_offset = controller_.GetLastCommittedEntryIndex();
+    int history_index = controller_.GetLastCommittedEntryIndex();
     int history_count = controller_.GetEntryCount();
     frame_tree.root()->render_manager()->ExecutePageBroadcastMethod(
-        [history_offset, history_count](RenderViewHostImpl* rvh) {
+        [history_index, history_count](RenderViewHostImpl* rvh) {
           if (auto& broadcast = rvh->GetAssociatedPageBroadcast()) {
-            broadcast->SetHistoryOffsetAndLength(history_offset, history_count);
+            broadcast->SetHistoryIndexAndLength(history_index, history_count);
           }
         },
         site_instance->group());

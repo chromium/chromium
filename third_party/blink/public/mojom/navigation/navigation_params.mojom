@@ -423,13 +423,13 @@ struct CommitNavigationParams {
   // long enough to match them via nav_entry_id, above.
   bool intended_as_new_entry = false;
 
-  // For history navigations, this is the offset in the history list of the
+  // For history navigations, this is the index in the history list of the
   // pending load. For non-history navigations, this will be ignored.
-  int32 pending_history_list_offset = -1;
+  int32 pending_history_list_index = -1;
 
   // Where its current page contents reside in session history and the total
   // size of the session history list.
-  int32 current_history_list_offset = -1;
+  int32 current_history_list_index = -1;
   int32 current_history_list_length = 0;
 
   // Indicates that the tab was previously discarded.

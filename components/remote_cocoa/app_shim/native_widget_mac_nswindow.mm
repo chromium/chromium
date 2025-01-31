@@ -545,6 +545,10 @@ void OrderChildWindow(NSWindow* child_window,
   _activationIndependence = independence;
 }
 
+- (bool)activationIndependence {
+  return _activationIndependence;
+}
+
 // Override window order functions to intercept other visibility changes. This
 // is needed in addition to the -[NSWindow display] override because Cocoa
 // hardly ever calls display, and reports -[NSWindow isVisible] incorrectly

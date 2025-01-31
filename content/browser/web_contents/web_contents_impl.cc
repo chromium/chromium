@@ -5979,16 +5979,16 @@ WebContents* WebContentsImpl::OpenURL(
   return new_contents;
 }
 
-void WebContentsImpl::SetHistoryOffsetAndLengthForView(
+void WebContentsImpl::SetHistoryIndexAndLengthForView(
     RenderViewHost* render_view_host,
-    int history_offset,
+    int history_index,
     int history_length) {
   OPTIONAL_TRACE_EVENT2(
-      "content", "WebContentsImpl::SetHistoryOffsetAndLengthForView",
-      "history_offset", history_offset, "history_length", history_length);
+      "content", "WebContentsImpl::SetHistoryIndexAndLengthForView",
+      "history_index", history_index, "history_length", history_length);
   if (auto& broadcast = static_cast<RenderViewHostImpl*>(render_view_host)
                             ->GetAssociatedPageBroadcast()) {
-    broadcast->SetHistoryOffsetAndLength(history_offset, history_length);
+    broadcast->SetHistoryIndexAndLength(history_index, history_length);
   }
 }
 
@@ -10081,7 +10081,7 @@ bool WebContentsImpl::CreateRenderViewForRenderManager(
     ReattachOuterDelegateIfNeeded();
   }
 
-  SetHistoryOffsetAndLengthForView(
+  SetHistoryIndexAndLengthForView(
       render_view_host,
       rvh_impl->frame_tree()->controller().GetLastCommittedEntryIndex(),
       rvh_impl->frame_tree()->controller().GetEntryCount());

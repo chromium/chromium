@@ -1286,6 +1286,11 @@
     "expiry_milestone": 142
   },
   {
+    "name": "cct-ephemeral-media-viewer-experiment",
+    "owners": [ "chrome-incognito@chromium.org", "//chrome/android/java/src/org/chromium/chrome/browser/customtabs/OWNERS" ],
+    "expiry_milestone": 137
+  },
+  {
     "name": "cct-ephemeral-mode",
     "owners": [ "chrome-incognito@chromium.org", "//chrome/android/java/src/org/chromium/chrome/browser/customtabs/OWNERS" ],
     "expiry_milestone": 134

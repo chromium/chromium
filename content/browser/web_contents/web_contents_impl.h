@@ -1971,10 +1971,10 @@ class CONTENT_EXPORT WebContentsImpl
   // Misc non-view stuff -------------------------------------------------------
 
   // Sets the history for a specified RenderViewHost to |history_length|
-  // entries, with an offset of |history_offset|.
-  void SetHistoryOffsetAndLengthForView(RenderViewHost* render_view_host,
-                                        int history_offset,
-                                        int history_length);
+  // entries, with an index of |history_index|.
+  void SetHistoryIndexAndLengthForView(RenderViewHost* render_view_host,
+                                       int history_index,
+                                       int history_length);
 
   // Helper functions for sending notifications.
   void NotifyViewSwapped(RenderViewHost* old_view, RenderViewHost* new_view);

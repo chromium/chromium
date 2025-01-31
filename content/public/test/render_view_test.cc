@@ -891,7 +891,7 @@ void RenderViewTest::GoToOffset(int offset,
   blink::WebView* webview = web_view_;
   int history_list_length =
       webview->HistoryBackListCount() + webview->HistoryForwardListCount() + 1;
-  int pending_offset = offset + webview->HistoryBackListCount();
+  int pending_index = offset + webview->HistoryBackListCount();
 
   auto common_params = blink::mojom::CommonNavigationParams::New(
       url, /* initiator_origin= */ std::nullopt,
@@ -908,9 +908,9 @@ void RenderViewTest::GoToOffset(int offset,
       network::mojom::RequestDestination::kDocument);
   auto commit_params = blink::CreateCommitNavigationParams();
   commit_params->page_state = state.ToEncodedData();
-  commit_params->nav_entry_id = pending_offset + 1;
-  commit_params->pending_history_list_offset = pending_offset;
-  commit_params->current_history_list_offset = webview->HistoryBackListCount();
+  commit_params->nav_entry_id = pending_index + 1;
+  commit_params->pending_history_list_index = pending_index;
+  commit_params->current_history_list_index = webview->HistoryBackListCount();
   commit_params->current_history_list_length = history_list_length;
 
   auto* frame = static_cast<TestRenderFrame*>(GetMainRenderFrame());

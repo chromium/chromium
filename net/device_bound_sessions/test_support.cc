@@ -265,4 +265,66 @@ bool VerifyEs256Jwt(std::string_view jwt) {
   return verifier.VerifyFinal();
 }
 
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+// static
+ScopedTestRegistrationFetcher ScopedTestRegistrationFetcher::CreateWithSuccess(
+    std::string_view session_id,
+    std::string_view refresh_url_string,
+    std::string_view origin_string) {
+  return ScopedTestRegistrationFetcher(base::BindRepeating(
+      [](const std::string& session_id, const std::string& refresh_url_string,
+         const std::string& origin_string) {
+        std::vector<SessionParams::Credential> cookie_credentials;
+        cookie_credentials.push_back(
+            SessionParams::Credential{"test_cookie", "secure"});
+        SessionParams::Scope scope;
+        scope.include_site = true;
+        scope.origin = origin_string;
+        SessionParams session_params(session_id, refresh_url_string,
+                                     std::move(scope),
+                                     std::move(cookie_credentials));
+        unexportable_keys::UnexportableKeyId key_id;
+        return std::make_optional<
+            RegistrationFetcher::RegistrationCompleteParams>(
+            std::move(session_params), std::move(key_id),
+            GURL(refresh_url_string));
+      },
+      std::string(session_id), std::string(refresh_url_string),
+      std::string(origin_string)));
+}
+
+// static
+ScopedTestRegistrationFetcher
+ScopedTestRegistrationFetcher::CreateWithFailure() {
+  return ScopedTestRegistrationFetcher(base::BindRepeating([]() {
+    return std::optional<RegistrationFetcher::RegistrationCompleteParams>();
+  }));
+}
+
+// static
+ScopedTestRegistrationFetcher
+ScopedTestRegistrationFetcher::CreateWithTermination(
+    std::string_view session_id,
+    std::string_view refresh_url_string) {
+  return ScopedTestRegistrationFetcher(base::BindRepeating(
+      [](const std::string& session_id, const std::string& refresh_url_string) {
+        unexportable_keys::UnexportableKeyId key_id;
+        return std::make_optional<
+            RegistrationFetcher::RegistrationCompleteParams>(
+            SessionTerminationParams{session_id}, std::move(key_id),
+            GURL(refresh_url_string));
+      },
+      std::string(session_id), std::string(refresh_url_string)));
+}
+
+ScopedTestRegistrationFetcher::ScopedTestRegistrationFetcher(
+    RegistrationFetcher::FetcherType fetcher)
+    : fetcher_(fetcher) {
+  RegistrationFetcher::SetFetcherForTesting(&fetcher_);
+}
+ScopedTestRegistrationFetcher::~ScopedTestRegistrationFetcher() {
+  RegistrationFetcher::SetFetcherForTesting(nullptr);
+}
+#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+
 }  // namespace net::device_bound_sessions

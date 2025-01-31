@@ -4315,6 +4315,12 @@ const char kCCTBeforeUnloadName[] = "CCT before unload";
 const char kCCTBeforeUnloadDescription[] =
     "Kill switch for new CCT before unload behavior during back press";
 
+const char kCCTEphemeralMediaViewerExperimentName[] =
+    "Ephemeral CCT for Media Viewer";
+const char kCCTEphemeralMediaViewerExperimentDescription[] =
+    "Enables Media Viewer launched from Downloads to open in Ephemeral "
+    "mode.";
+
 const char kCCTEphemeralModeName[] =
     "Allow CCT embedders to open CCTs in ephemeral mode";
 const char kCCTEphemeralModeDescription[] =

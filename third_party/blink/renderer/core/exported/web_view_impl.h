@@ -230,7 +230,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   void SetWebPreferences(const web_pref::WebPreferences& preferences) override;
   const web_pref::WebPreferences& GetWebPreferences() override;
   void SetHistoryListFromNavigation(
-      int32_t history_offset,
+      int32_t history_index,
       std::optional<int32_t> history_length) override;
   void IncreaseHistoryListFromNavigation() override;
   int32_t HistoryBackListCount() const override;
@@ -307,8 +307,8 @@ class CORE_EXPORT WebViewImpl final : public WebView,
       const blink::web_pref::WebPreferences& preferences) override;
   void UpdateRendererPreferences(
       const RendererPreferences& preferences) override;
-  void SetHistoryOffsetAndLength(int32_t history_offset,
-                                 int32_t history_length) override;
+  void SetHistoryIndexAndLength(int32_t history_index,
+                                int32_t history_length) override;
   void SetPageBaseBackgroundColor(std::optional<SkColor> color) override;
   void CreateRemoteMainFrame(
       const RemoteFrameToken& frame_token,
@@ -885,10 +885,8 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   float compositor_device_scale_factor_override_ = 0.f;
   gfx::Transform device_emulation_transform_;
 
-  // The offset of the current item in the history list.
-  // The initial value is -1 since the offset should be lower than
-  // |history_list_length_| to count the back/forward history list.
-  int32_t history_list_offset_ = -1;
+  // The index of the current item in the history list.
+  int32_t history_list_index_ = -1;
 
   // The RenderView's current impression of the history length.  This includes
   // any items that have committed in this process, but because of cross-process
