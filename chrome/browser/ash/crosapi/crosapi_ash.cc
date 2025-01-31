@@ -802,11 +802,6 @@ void CrosapiAsh::BindVideoCaptureDeviceFactory(
       std::move(receiver));
 }
 
-void CrosapiAsh::BindVideoConferenceManager(
-    mojo::PendingReceiver<mojom::VideoConferenceManager> receiver) {
-  video_conference_manager_ash_->BindReceiver(std::move(receiver));
-}
-
 void CrosapiAsh::BindVirtualKeyboard(
     mojo::PendingReceiver<mojom::VirtualKeyboard> receiver) {
   virtual_keyboard_ash_->BindReceiver(std::move(receiver));

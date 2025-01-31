@@ -663,9 +663,7 @@ interface Crosapi {
   [MinVersion=20] BindVideoCaptureDeviceFactory@25(
       pending_receiver<crosapi.mojom.VideoCaptureDeviceFactory> receiver);
 
-  // Binds the video conference manager to video conference mojo clients.
-  [MinVersion=98] BindVideoConferenceManager@102(
-    pending_receiver<crosapi.mojom.VideoConferenceManager> receiver);
+  // BindVideoConferenceManager@102 was removed.
 
   // VirtualKeyboard is a service that allows trusted extensions in Lacros
   // to control the virtual keyboard. Implemented in Ash.
