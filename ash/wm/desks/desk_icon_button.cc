@@ -114,8 +114,14 @@ void DeskIconButton::UpdateState(State state) {
 
   state_ = state;
 
-  SetBackground(views::CreateRoundedRectBackground(
-      background()->get_color(), GetCornerRadiusOnState(state_)));
+  // A null `background()` means this view's hierarchy is not attached to a
+  // widget yet. When that happens, `OnThemeChanged()` -> `UpdateEnabledState()`
+  // will cause the background to be painted with a corner radius reflecting
+  // the new `state_`.
+  if (background()) {
+    SetBackground(views::CreateRoundedRectBackground(
+        background()->get_color(), GetCornerRadiusOnState(state_)));
+  }
   views::InstallRoundRectHighlightPathGenerator(
       this, gfx::Insets(kWindowMiniViewFocusRingHaloInset),
       GetFocusRingRadiusForState(state_));

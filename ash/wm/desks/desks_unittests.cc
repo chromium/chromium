@@ -9751,6 +9751,7 @@ TEST_P(DeskBarTest, NewDeskButton) {
 
     EXPECT_TRUE(desks_controller->CanRemoveDesks());
     EXPECT_THAT(desks_controller->GetNumberOfDesks(), i);
+    views::test::RunScheduledLayout(desk_bar_view);
   }
 
   // The new desk button should be disabled.
