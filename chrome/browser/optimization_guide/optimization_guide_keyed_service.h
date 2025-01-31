@@ -181,7 +181,7 @@ class OptimizationGuideKeyedService
   // Returns true if the user passes all sign-in checks and is allowed to use
   // model execution. This does not perform any feature related checks such as
   // allowed by enterprise policy.
-  bool ShouldModelExecutionBeAllowedForUser() const;
+  virtual bool ShouldModelExecutionBeAllowedForUser() const;
 
   // Adds `observer` which can observe the change in feature settings.
   void AddModelExecutionSettingsEnabledObserver(

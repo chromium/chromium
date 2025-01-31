@@ -58,7 +58,9 @@ class ChromePasswordChangeService
       content::WebContents* web_contents);
 
   // PasswordChangeServiceInterface implementation.
+  bool IsPasswordChangeAvailable() override;
   bool IsPasswordChangeSupported(const GURL& url) override;
+
   // For testing only.
   void SetCustomTabOpening(OpenNewTabCallback callback) {
     new_tab_callback_ = std::move(callback);

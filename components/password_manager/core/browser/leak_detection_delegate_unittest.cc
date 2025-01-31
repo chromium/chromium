@@ -106,6 +106,7 @@ class MockLeakDetectionCheck : public LeakDetectionCheck {
 
 class MockPasswordChangeService : public PasswordChangeServiceInterface {
  public:
+  MOCK_METHOD(bool, IsPasswordChangeAvailable, (), (override));
   MOCK_METHOD(bool, IsPasswordChangeSupported, (const GURL& url), (override));
 };
 
