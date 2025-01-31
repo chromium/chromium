@@ -152,7 +152,7 @@ enum ChromeDistanceMetric {
   // Minimum distance between the horizontal edges of the toast and the browser
   // window. Relevant if the toast is wide relative to the browser.
   DISTANCE_TOAST_BUBBLE_BROWSER_WINDOW_MARGIN,
-  // Size to use for avatars in the Recent Activity dialog.
+  // Size to resize avatars to in the Recent Activity dialog.
   DISTANCE_RECENT_ACTIVITY_AVATAR_SIZE,
   // Size to use for favicon containers in the Recent Activity dialog.
   DISTANCE_RECENT_ACTIVITY_FAVICON_CONTAINER_RADIUS,

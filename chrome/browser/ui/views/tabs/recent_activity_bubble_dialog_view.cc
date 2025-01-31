@@ -36,6 +36,7 @@
 #include "components/favicon_base/favicon_types.h"
 #include "components/image_fetcher/core/image_fetcher_service.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
+#include "components/signin/public/base/avatar_icon_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
@@ -380,9 +381,7 @@ void RecentActivityRowImageView::FetchAvatar() {
   }
 
   data_sharing_service->GetAvatarImageForURL(
-      user->avatar_url,
-      ChromeLayoutProvider::Get()->GetDistanceMetric(
-          DISTANCE_RECENT_ACTIVITY_AVATAR_SIZE),
+      user->avatar_url, signin::kAccountInfoImageSize,
       base::BindOnce(&RecentActivityRowImageView::SetAvatar,
                      weak_factory_.GetWeakPtr()),
       image_fetcher_service->GetImageFetcher(
@@ -390,7 +389,11 @@ void RecentActivityRowImageView::FetchAvatar() {
 }
 
 void RecentActivityRowImageView::SetAvatar(const gfx::Image& avatar) {
-  avatar_image_ = avatar.AsImageSkia();
+  const int avatar_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
+      DISTANCE_RECENT_ACTIVITY_AVATAR_SIZE);
+  avatar_image_ = gfx::ImageSkiaOperations::CreateResizedImage(
+      avatar.AsImageSkia(), skia::ImageOperations::ResizeMethod::RESIZE_GOOD,
+      gfx::Size(avatar_size, avatar_size));
   SchedulePaint();
 }
 
