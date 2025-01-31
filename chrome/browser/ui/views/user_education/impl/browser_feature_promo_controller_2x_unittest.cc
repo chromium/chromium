@@ -2471,8 +2471,8 @@ TEST_P(BrowserFeaturePromoController2xPriorityTest,
                   Do([&notice]() { notice.Release(); }));
 }
 
-// TODO(crbug.com/391799252): Fix and re-enabled test on Mac ASAN.
-#if BUILDFLAG(IS_MAC) && defined(ADDRESS_SANITIZER)
+// TODO(crbug.com/391799252): Fix and re-enabled test on Mac.
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_MultipleStartupPromosHighThenNoticeThenLow \
   DISABLED_MultipleStartupPromosHighThenNoticeThenLow
 #else
