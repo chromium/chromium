@@ -1842,27 +1842,8 @@ void LayerTreeHost::SetElementOpacityMutated(ElementId element_id,
   if (list_type != ElementListType::ACTIVE)
     return;
 
-  if (IsUsingLayerLists()) {
-    property_trees()->effect_tree_mutable().OnOpacityAnimated(element_id,
-                                                              opacity);
-    return;
-  }
-
-  Layer* layer = LayerByElementId(element_id);
-  DCHECK(layer);
-  layer->OnOpacityAnimated(opacity);
-
-  if (EffectNode* node = property_trees()->effect_tree_mutable().Node(
-          layer->effect_tree_index())) {
-    DCHECK_EQ(layer->effect_tree_index(), node->id);
-    if (node->opacity == opacity)
-      return;
-
-    node->opacity = opacity;
-    property_trees()->effect_tree_mutable().set_needs_update(true);
-  }
-
-  SetNeedsUpdateLayers();
+  property_tree_delegate_->OnElementOpacityMutated(element_id, list_type,
+                                                   opacity);
 }
 
 void LayerTreeHost::SetElementTransformMutated(

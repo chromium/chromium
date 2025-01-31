@@ -139,4 +139,13 @@ void PropertyTreeLayerListDelegate::OnElementBackdropFilterMutated(
       element_id, backdrop_filters);
 }
 
+void PropertyTreeLayerListDelegate::OnElementOpacityMutated(
+    ElementId element_id,
+    ElementListType list_type,
+    float opacity) {
+  host()->property_trees()->effect_tree_mutable().OnOpacityAnimated(element_id,
+                                                                    opacity);
+  return;
+}
+
 }  // namespace cc

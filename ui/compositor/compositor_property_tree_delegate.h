@@ -69,6 +69,9 @@ class COMPOSITOR_EXPORT CompositorPropertyTreeDelegate
       cc::ElementId element_id,
       cc::ElementListType list_type,
       const cc::FilterOperations& backdrop_filters) override;
+  void OnElementOpacityMutated(cc::ElementId element_id,
+                               cc::ElementListType list_type,
+                               float opacity) override;
 
  private:
   raw_ptr<Observer> observer_ = nullptr;

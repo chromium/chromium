@@ -49,6 +49,9 @@ class CC_EXPORT PropertyTreeLayerListDelegate : public PropertyTreeDelegate {
       ElementId element_id,
       ElementListType list_type,
       const FilterOperations& backdrop_filters) override;
+  void OnElementOpacityMutated(ElementId element_id,
+                               ElementListType list_type,
+                               float opacity) override;
 
  private:
   raw_ptr<LayerTreeHost> host_ = nullptr;

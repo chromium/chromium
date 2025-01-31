@@ -85,4 +85,26 @@ void PropertyTreeLayerTreeDelegate::OnElementBackdropFilterMutated(
   layer->OnBackdropFilterAnimated(backdrop_filters);
 }
 
+void PropertyTreeLayerTreeDelegate::OnElementOpacityMutated(
+    ElementId element_id,
+    ElementListType list_type,
+    float opacity) {
+  Layer* layer = host()->LayerByElementId(element_id);
+  DCHECK(layer);
+  layer->OnOpacityAnimated(opacity);
+
+  if (EffectNode* node = host()->property_trees()->effect_tree_mutable().Node(
+          layer->effect_tree_index())) {
+    DCHECK_EQ(layer->effect_tree_index(), node->id);
+    if (node->opacity == opacity) {
+      return;
+    }
+
+    node->opacity = opacity;
+    host()->property_trees()->effect_tree_mutable().set_needs_update(true);
+  }
+
+  host()->SetNeedsUpdateLayers();
+}
+
 }  // namespace cc

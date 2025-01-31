@@ -102,6 +102,17 @@ void CompositorPropertyTreeDelegate::OnElementBackdropFilterMutated(
       element_id, list_type, backdrop_filters);
 }
 
+void CompositorPropertyTreeDelegate::OnElementOpacityMutated(
+    cc::ElementId element_id,
+    cc::ElementListType list_type,
+    float opacity) {
+  // TODO(crbug.com/389771428): Implement this w/ layer lists. For now,
+  // just call the base class implementation to ensure that we don't get
+  // out of date.
+  cc::PropertyTreeLayerTreeDelegate::OnElementOpacityMutated(
+      element_id, list_type, opacity);
+}
+
 void CompositorPropertyTreeDelegate::SetObserverForTesting(Observer* observer) {
   observer_ = observer;
 }
