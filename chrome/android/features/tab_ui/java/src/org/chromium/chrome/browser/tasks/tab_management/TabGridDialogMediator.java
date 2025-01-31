@@ -108,6 +108,7 @@ public class TabGridDialogMediator
                 TabGridItemTouchHelperCallback.OnLongPressTabItemEventListener,
                 AppHeaderObserver {
     @VisibleForTesting static final String SHOW_SEND_FEEDBACK_PARAM = "show_send_feedback";
+    @VisibleForTesting static final String SHARE_FEEDBACK_CATEGORY_SUFFIX = ".tab_group_share";
 
     /** Defines an interface for a {@link TabGridDialogMediator} to control dialog. */
     interface DialogController extends BackPressHandler {
@@ -1023,8 +1024,8 @@ public class TabGridDialogMediator
     private void sendFeedback() {
         HelpAndFeedbackLauncher launcher =
                 HelpAndFeedbackLauncherFactory.getForProfile(mOriginalProfile);
-        // TODO(crbug.com/391766089): Replace the categoryTag with something non-null.
-        launcher.showFeedback(mActivity, /* url= */ null, /* categoryTag= */ null);
+        String tag = mActivity.getPackageName() + SHARE_FEEDBACK_CATEGORY_SUFFIX;
+        launcher.showFeedback(mActivity, /* url= */ null, tag);
     }
 
     private void handleShareClick() {
