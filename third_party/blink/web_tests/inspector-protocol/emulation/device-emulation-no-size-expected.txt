@@ -1,0 +1,39 @@
+Tests that device emulation without viewport override works correctly.
+Emulating device: 0x0x1
+Loading page with viewport=w=dw
+Device:
+window.screenX = 0px
+window.screenY = 0px
+Viewport: = ?w=dw
+@media orientation = landscape
+window.orientation = 0
+@media resolution = 96dpi
+@media device-pixel-ratio = 1
+window.devicePixelRatio = 1
+Widths:
+@media device-width = 800px
+screen.width = 800px
+screen.availWidth = 800px
+window.outerWidth = 800px
+window.innerWidth = 800px
+@media width = 800px
+doc.docElem.clientWidth = 800px
+doc.docElem.offsetWidth = 800px
+doc.docElem.scrollWidth = 800px
+doc.body.clientWidth = 800px
+doc.body.offsetWidth = 800px
+doc.body.scrollWidth = 800px
+Heights:
+@media device-height = 600px
+screen.height = 600px
+screen.availHeight = 600px
+window.outerHeight = 600px
+window.innerHeight = 600px
+@media height = 600px
+doc.docElem.clientHeight = 1000px
+doc.docElem.offsetHeight = 1000px
+doc.docElem.scrollHeight = 1000px
+doc.body.clientHeight = 600px
+doc.body.offsetHeight = 1000px
+doc.body.scrollHeight = 1000px
+

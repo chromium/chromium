@@ -372,7 +372,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': '89937486292628e7226ca3113413801777bdd161',
+  'devtools_frontend_revision': 'bca4ff516a3eb71e00e433956968514d8fe706d5',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -1448,7 +1448,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    'e3a04fa1ba7691c2caa585bf9af67920f689b95d',
+    'bc3f3e15f8cc302427a64de8f46d9d21051f5a70',
     'condition': 'checkout_android and checkout_src_internal',
   },
 

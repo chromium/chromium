@@ -28,6 +28,7 @@
 #include "components/saved_tab_groups/internal/tab_group_sync_service_impl.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
+#include "components/signin/public/base/avatar_icon_util.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -48,8 +49,7 @@ using data_sharing::GroupMember;
 namespace tab_groups {
 namespace {
 
-const int kAvatarSize = 32;
-constexpr char kAvatarUrl[] = "/avatar=s32-cc-rp-ns";
+const int kAvatarSize = signin::kAccountInfoImageSize;
 
 // Create mock gfx::Image and convert to a string.
 std::string CreateSerializedAvatar() {
@@ -330,7 +330,7 @@ class RecentActivityBubbleDialogViewActionBrowserTest
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       const net::test_server::HttpRequest& request) {
     GURL absolute_url = embedded_test_server()->GetURL(request.relative_url);
-    if (absolute_url.path() != kAvatarUrl) {
+    if (absolute_url.path() != avatar_url_) {
       return nullptr;
     }
 
@@ -413,7 +413,7 @@ class RecentActivityBubbleDialogViewActionBrowserTest
     return saved_tab_group.value();
   }
 
-  GURL GetAvatarURL() { return embedded_test_server()->GetURL(kAvatarUrl); }
+  GURL GetAvatarURL() { return embedded_test_server()->GetURL(avatar_url_); }
 
   // Create a mock message for the group and tab. This fills in just
   // enough information for RecentActivity to behave correctly.
@@ -457,6 +457,8 @@ class RecentActivityBubbleDialogViewActionBrowserTest
   }
 
  private:
+  const std::string avatar_url_ =
+      base::StringPrintf("/avatar=s%d-cc-rp-ns", kAvatarSize);
   std::unique_ptr<base::RunLoop> run_loop_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
