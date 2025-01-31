@@ -470,23 +470,6 @@ void GetTextInterceptsInternal(const ShapeResultBloberizer::BlobBuffer& blobs,
 
 }  // anonymous namespace
 
-void Font::GetTextIntercepts(const TextRunPaintInfo& run_info,
-                             const cc::PaintFlags& flags,
-                             const std::tuple<float, float>& bounds,
-                             Vector<TextIntercept>& intercepts) const {
-  if (ShouldSkipDrawing())
-    return;
-
-  CachingWordShaper word_shaper(*this);
-  ShapeResultBuffer buffer;
-  word_shaper.FillResultBuffer(run_info.run, &buffer);
-  ShapeResultBloberizer::FillGlyphs bloberizer(
-      GetFontDescription(), run_info, buffer,
-      ShapeResultBloberizer::Type::kTextIntercepts);
-
-  GetTextInterceptsInternal(bloberizer.Blobs(), flags, bounds, intercepts);
-}
-
 void Font::GetTextIntercepts(const TextFragmentPaintInfo& text_info,
                              const cc::PaintFlags& flags,
                              const std::tuple<float, float>& bounds,

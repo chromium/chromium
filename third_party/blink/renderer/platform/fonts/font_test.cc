@@ -6,13 +6,14 @@
 
 #include "cc/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/fonts/font_variant_emoji.h"
-#include "third_party/blink/renderer/platform/fonts/text_run_paint_info.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_shaper.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
+#include "third_party/blink/renderer/platform/fonts/text_fragment_paint_info.h"
 #include "third_party/blink/renderer/platform/testing/font_test_base.h"
 #include "third_party/blink/renderer/platform/testing/font_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/text/tab_size.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
-#include "third_party/blink/renderer/platform/text/text_run.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 
 using blink::test::CreateTestFont;
@@ -152,16 +153,20 @@ TEST_F(FontTest, TextIntercepts) {
   // are rectangles below the baseline.
   UChar ahem_above_below_baseline_string[] = {0xc9, 0x70, 0xc9, 0x70, 0xc9,
                                               0x70, 0xc9, 0x70, 0xc9};
-  TextRun ahem_above_below_baseline{
+  String ahem_above_below_baseline{
       base::span(ahem_above_below_baseline_string)};
-  TextRunPaintInfo text_run_paint_info(ahem_above_below_baseline);
+  ShapeResult* shape_result = HarfBuzzShaper(ahem_above_below_baseline)
+                                  .Shape(&font, TextDirection::kLtr);
+  TextFragmentPaintInfo text_paint_info{ahem_above_below_baseline, 0,
+                                        ahem_above_below_baseline.length(),
+                                        ShapeResultView::Create(shape_result)};
   cc::PaintFlags default_paint;
 
   std::tuple<float, float> below_baseline_bounds = std::make_tuple(2, 4);
   Vector<Font::TextIntercept> text_intercepts;
   // 4 intercept ranges for below baseline p glyphs in the test string
-  font.GetTextIntercepts(text_run_paint_info, default_paint,
-                         below_baseline_bounds, text_intercepts);
+  font.GetTextIntercepts(text_paint_info, default_paint, below_baseline_bounds,
+                         text_intercepts);
   EXPECT_EQ(text_intercepts.size(), 4u);
   for (auto text_intercept : text_intercepts) {
     EXPECT_GT(text_intercept.end_, text_intercept.begin_);
@@ -169,8 +174,8 @@ TEST_F(FontTest, TextIntercepts) {
 
   std::tuple<float, float> above_baseline_bounds = std::make_tuple(-4, -2);
   // 5 intercept ranges for the above baseline E ACUTE glyphs
-  font.GetTextIntercepts(text_run_paint_info, default_paint,
-                         above_baseline_bounds, text_intercepts);
+  font.GetTextIntercepts(text_paint_info, default_paint, above_baseline_bounds,
+                         text_intercepts);
   EXPECT_EQ(text_intercepts.size(), 5u);
   for (auto text_intercept : text_intercepts) {
     EXPECT_GT(text_intercept.end_, text_intercept.begin_);
