@@ -44,6 +44,7 @@ specific_include_rules = {
     "+base/task/current_thread.h",
     "+base/threading/thread.h",
     "+components/viz/test",
+    "+gpu/command_buffer/client/test_shared_image_interface.h",
     "+media/mojo/services",
     "+media/renderers",
     "+media/video/fake_gpu_memory_buffer.h",
