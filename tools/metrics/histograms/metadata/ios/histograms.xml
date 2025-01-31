@@ -3366,7 +3366,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.PageLoadTiming.OmnibarToPageLoaded" units="ms"
-    expires_after="2025-03-09">
+    expires_after="2026-03-09">
   <owner>gambard@chromium.org</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>
