@@ -5614,6 +5614,74 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="BTM.ShortVisit" singular="True">
+  <owner>rtarpine@chromium.org</owner>
+  <owner>dc-komics@google.com</owner>
+  <summary>
+    Records metrics related to user engagement. Recorded when the user stays on
+    a page for 10 seconds or less, and either (or both) of the previous and
+    following pages are not same-site to the current page.
+  </summary>
+  <metric name="ExitHadUserGesture">
+    <summary>
+      Whether or not the navigation away from the page was initiated by a user
+      gesture (i.e., the value returned by NavigationHandle::HasUserGesture()).
+    </summary>
+  </metric>
+  <metric name="ExitPageTransition">
+    <summary>
+      The type of transition away from the page (i.e., the value returned by
+      NavigationHandle::GetPageTransition()).
+    </summary>
+  </metric>
+  <metric name="ExitWasRendererInitiated">
+    <summary>
+      Whether or not the navigation away from the page was initiated by the
+      renderer process (i.e., the value returned by
+      NavigationHandle::IsRendererInitiated()).
+    </summary>
+  </metric>
+  <metric name="NextSiteSame">
+    <summary>
+      Whether or not the next-visited page was same-site to the briefly-visited
+      page.
+    </summary>
+  </metric>
+  <metric name="PreviousAndNextSiteSame">
+    <summary>
+      Whether or not the previously-visited page was same-site to the
+      next-visited page (or -1 for the first visit in a new tab, which has no
+      previous site).
+    </summary>
+  </metric>
+  <metric name="PreviousSiteSame">
+    <summary>
+      Whether or not the previously-visited page was same-site to the
+      briefly-visited page (or -1 for the first visit in a new tab, which has no
+      previous site).
+    </summary>
+  </metric>
+  <metric name="SiteEngagement" enum="SiteEngagementLevel">
+    <summary>
+      The level of site engagement returned by the SiteEngagementService.
+    </summary>
+  </metric>
+  <metric name="TimeSinceLastInteraction">
+    <summary>
+      If the BTM database has a record of past user interaction on the
+      briefly-visited page's site, then the time that has elapsed since then,
+      bucketed according to ukm::GetSemanticBucketMinForDurationTiming(); if no
+      record, then -1.
+    </summary>
+  </metric>
+  <metric name="VisitDuration">
+    <summary>
+      The integer number of seconds (0...10) the user spent on the page before
+      initiating the navigation away.
+    </summary>
+  </metric>
+</event>
+
 <event name="ChargeEventHistory">
   <owner>thanhdng@chromium.org</owner>
   <summary>
