@@ -2539,6 +2539,12 @@ void RenderWidgetHostViewAura::OnHostMovedInPixels(aura::WindowTreeHost* host) {
   TRACE_EVENT0("ui", "RenderWidgetHostViewAura::OnHostMovedInPixels");
 
   UpdateScreenInfo();
+
+  // Close the child popup window if the browser window moves (e.g. due to
+  // moving the window with the keyboard.)
+  if (popup_child_host_view_) {
+    popup_child_host_view_->Shutdown();
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
