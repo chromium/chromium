@@ -2522,6 +2522,9 @@ extern const char kCCTAuthTabEnableHttpsRedirectsDescription[];
 extern const char kCCTBeforeUnloadName[];
 extern const char kCCTBeforeUnloadDescription[];
 
+extern const char kCCTEphemeralMediaViewerExperimentName[];
+extern const char kCCTEphemeralMediaViewerExperimentDescription[];
+
 extern const char kCCTEphemeralModeName[];
 extern const char kCCTEphemeralModeDescription[];
 

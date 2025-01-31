@@ -217,6 +217,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTClientDataHeader,
     &kCCTEarlyNav,
     &kCCTExtendTrustedCdnPublisher,
+    &kCCTEphemeralMediaViewerExperiment,
     &kCCTEphemeralMode,
     &kCCTFreInSameTask,
     &kCCTIncognitoAvailableToThirdParty,
@@ -609,6 +610,10 @@ BASE_FEATURE(kCCTClientDataHeader,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCCTEarlyNav, "CCTEarlyNav", base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kCCTEphemeralMediaViewerExperiment,
+             "CCTEphemeralMediaViewerExperiment",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCCTEphemeralMode,
              "CCTEphemeralMode",

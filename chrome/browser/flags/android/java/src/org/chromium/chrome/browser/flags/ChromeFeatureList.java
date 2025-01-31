@@ -252,6 +252,8 @@ public abstract class ChromeFeatureList {
     public static final String CCT_BEFORE_UNLOAD = "CCTBeforeUnload";
     public static final String CCT_CLIENT_DATA_HEADER = "CCTClientDataHeader";
     public static final String CCT_EARLY_NAV = "CCTEarlyNav";
+    public static final String CCT_EPHEMERAL_MEDIA_VIEWER_EXPERIMENT =
+            "CCTEphemeralMediaViewerExperiment";
     public static final String CCT_EPHEMERAL_MODE = "CCTEphemeralMode";
     public static final String CCT_EXTEND_TRUSTED_CDN_PUBLISHER = "CCTExtendTrustedCdnPublisher";
     public static final String CCT_FRE_IN_SAME_TASK = "CCTFreInSameTask";
@@ -619,6 +621,8 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sCctAuthTabEnableHttpsRedirects =
             newCachedFlag(CCT_AUTH_TAB_ENABLE_HTTPS_REDIRECTS, true);
     public static final CachedFlag sCctAutoTranslate = newCachedFlag(CCT_AUTO_TRANSLATE, true);
+    public static final CachedFlag sCCTEphemeralMediaViewerExperiment =
+            newCachedFlag(CCT_EPHEMERAL_MEDIA_VIEWER_EXPERIMENT, false);
     public static final CachedFlag sCctEphemeralMode = newCachedFlag(CCT_EPHEMERAL_MODE, true);
     public static final CachedFlag sCctFreInSameTask = newCachedFlag(CCT_FRE_IN_SAME_TASK, true);
     public static final CachedFlag sCctIncognitoAvailableToThirdParty =
@@ -836,6 +840,7 @@ public abstract class ChromeFeatureList {
                     sCctAuthTabDisableAllExternalIntents,
                     sCctAuthTabEnableHttpsRedirects,
                     sCctAutoTranslate,
+                    sCCTEphemeralMediaViewerExperiment,
                     sCctEphemeralMode,
                     sCctFreInSameTask,
                     sCctIncognitoAvailableToThirdParty,
