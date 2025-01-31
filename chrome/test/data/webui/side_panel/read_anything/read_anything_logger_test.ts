@@ -75,6 +75,13 @@ suite('Logger', () => {
     assertEquals(2, metrics.getCallCount('recordHighlightOff'));
   });
 
+  test('highlight granularity change', () => {
+    logger.logHighlightGranularity(0);
+    logger.logHighlightGranularity(4);
+
+    assertEquals(2, metrics.getCallCount('recordHighlightGranularity'));
+  });
+
   test('text settings', async () => {
     logger.logTextSettingsChange(ReadAnythingSettingsChange.FONT_SIZE_CHANGE);
     assertEquals(

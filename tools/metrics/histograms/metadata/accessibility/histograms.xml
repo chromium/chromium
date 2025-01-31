@@ -2711,6 +2711,17 @@ even if they fit the naming pattern. -->
   <summary>Records when the Read Anything omnibox icon is shown.</summary>
 </histogram>
 
+<histogram name="Accessibility.ReadAnything.ReadAloud.HighlightGranularity"
+    enum="ReadAnythingHighlightState" expires_after="2025-07-28">
+  <owner>ajitnarayanan@google.com</owner>
+  <owner>xiangxiao@google.com</owner>
+  <owner>komo-eng@google.com</owner>
+  <summary>
+    Records the user-chosen highlight granularity for reading aloud in the Read
+    Anything panel.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.ReadAnything.ReadAloud.HighlightState"
     enum="ReadAnythingHighlightState" expires_after="2025-07-06">
   <owner>kristislee@google.com</owner>

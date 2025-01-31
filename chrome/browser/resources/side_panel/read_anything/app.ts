@@ -2493,8 +2493,9 @@ export class AppElement extends AppElementBase {
     // particular, when switching from word or phrase to sentence, the sentence
     // highlight needs to be recalculated.
 
-    // TODO(crbug.com/364546547): Log these highlight granularity changes when
-    // the phrase menu is shown. (Toggles are already logged in the toolbar.)
+    // Log these highlight granularity changes when the phrase menu is shown.
+    // (Toggles are already logged in the toolbar.)
+    this.logger_.logHighlightGranularity(changedHighlight);
   }
 
   // If the screen is locked during speech, we should stop speaking.

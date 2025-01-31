@@ -4,16 +4,18 @@
 
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {BrowserProxy} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {BrowserProxy, MetricsBrowserProxyImpl, ReadAnythingLogger} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {AppElement, ReadAnythingToolbarElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {stubAnimationFrame, suppressInnocuousErrors} from './common.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
+import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
 suite('PhraseHighlighting', () => {
   let app: AppElement;
   let testBrowserProxy: TestColorUpdaterBrowserProxy;
+  let metrics: TestMetricsBrowserProxy;
 
   // root htmlTag='#document' id=1
   // ++link htmlTag='a' url='http://www.google.com' id=2
@@ -66,6 +68,10 @@ suite('PhraseHighlighting', () => {
     // the rest of the Read Anything feature, which we are not testing here.
     chrome.readingMode.onConnected = () => {};
 
+    metrics = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(metrics);
+    ReadAnythingLogger.setInstance(new ReadAnythingLogger());
+
     app = document.createElement('read-anything-app');
     document.body.appendChild(app);
     flush();
@@ -100,7 +106,7 @@ suite('PhraseHighlighting', () => {
           menu.querySelectorAll<HTMLButtonElement>('.dropdown-item'));
     });
 
-    test('with word highlighting on, word is highlighted', () => {
+    test('with word highlighting on, word is highlighted', async () => {
       options[1]!.click();
       flush();
       assertEquals(
@@ -113,9 +119,12 @@ suite('PhraseHighlighting', () => {
           app.$.container.querySelector('.current-read-highlight');
       assertTrue(currentHighlight !== undefined);
       assertEquals(currentHighlight!.textContent!, 'This ');
+
+      assertEquals(2, await metrics.whenCalled('recordHighlightGranularity'));
+      assertEquals(1, metrics.getCallCount('recordHighlightGranularity'));
     });
 
-    test('with phrase highlighting on, phrase is highlighted', () => {
+    test('with phrase highlighting on, phrase is highlighted', async () => {
       options[2]!.click();
       flush();
       assertEquals(
@@ -128,9 +137,11 @@ suite('PhraseHighlighting', () => {
           app.$.container.querySelector('.current-read-highlight');
       assertTrue(currentHighlight !== undefined);
       assertEquals(currentHighlight!.textContent!, 'This is a ');
+      assertEquals(3, await metrics.whenCalled('recordHighlightGranularity'));
+      assertEquals(1, metrics.getCallCount('recordHighlightGranularity'));
     });
 
-    test('with sentence highlighting on, sentence is highlighted', () => {
+    test('with sentence highlighting on, sentence is highlighted', async () => {
       options[3]!.click();
       flush();
       assertEquals(
@@ -143,9 +154,11 @@ suite('PhraseHighlighting', () => {
           app.$.container.querySelector('.current-read-highlight');
       assertTrue(currentHighlight !== undefined);
       assertEquals(currentHighlight!.textContent!, 'This is a link.');
+      assertEquals(4, await metrics.whenCalled('recordHighlightGranularity'));
+      assertEquals(1, metrics.getCallCount('recordHighlightGranularity'));
     });
 
-    test('with highlighting off, highlight is invisible', () => {
+    test('with highlighting off, highlight is invisible', async () => {
       options[4]!.click();
       flush();
       assertEquals(
@@ -158,6 +171,8 @@ suite('PhraseHighlighting', () => {
           app.$.container.querySelector('.current-read-highlight');
       assertTrue(currentHighlight !== undefined);
       assertEquals('transparent', computeStyle('--current-highlight-bg-color'));
+      assertEquals(1, await metrics.whenCalled('recordHighlightGranularity'));
+      assertEquals(1, metrics.getCallCount('recordHighlightGranularity'));
     });
   });
 

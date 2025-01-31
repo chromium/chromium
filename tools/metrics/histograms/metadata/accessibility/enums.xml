@@ -1724,6 +1724,18 @@ Unknown properties are collapsed to zero. -->
 
 <!-- LINT.ThenChange(//chrome/common/read_anything/read_anything_constants.h:ReadAnythingFont) -->
 
+<!-- LINT.IfChange(ReadAnythingHighlightGranularity) -->
+
+<enum name="ReadAnythingHighlightGranularity">
+  <int value="0" label="Auto-select highlight granularity"/>
+  <int value="1" label="No highlighting"/>
+  <int value="2" label="Word highlighting"/>
+  <int value="3" label="Phrase highlighting"/>
+  <int value="4" label="Sentence highlighting"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/side_panel/read_anything/metrics_browser_proxy.ts:ReadAloudHighlightGranularity) -->
+
 <!-- LINT.IfChange(ReadAnythingHighlightState) -->
 
 <enum name="ReadAnythingHighlightState">
