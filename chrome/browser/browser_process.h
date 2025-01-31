@@ -312,6 +312,10 @@ class BrowserProcess {
   // Returns the feature controllers scoped to this browser process.
   virtual GlobalFeatures* GetFeatures() = 0;
 
+  // Create GlobalFeatures scoped to this browser process. Should only be used
+  // in unit tests to create GlobalFeatures after modifying feature flags.
+  virtual void CreateGlobalFeaturesForTesting() = 0;
+
   // Do not add new members to this class. Instead use GlobalFeatures. See file
   // level comment for details.
 };

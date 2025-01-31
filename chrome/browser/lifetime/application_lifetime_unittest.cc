@@ -9,6 +9,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/prefs/testing_pref_service.h"
 
@@ -16,6 +17,8 @@ using ApplicationLifetimeTest = BrowserWithTestWindowTest;
 
 TEST_F(ApplicationLifetimeTest, AttemptRestart) {
   ASSERT_TRUE(g_browser_process);
+  TestingBrowserProcess::GetGlobal()->CreateGlobalFeaturesForTesting();
+
   TestingPrefServiceSimple* testing_pref_service =
       profile_manager()->local_state()->Get();
 

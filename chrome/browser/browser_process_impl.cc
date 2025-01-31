@@ -29,6 +29,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -1136,6 +1137,10 @@ void BrowserProcessImpl::RegisterPrefs(PrefRegistrySimple* registry) {
 
 GlobalFeatures* BrowserProcessImpl::GetFeatures() {
   return features_.get();
+}
+
+void BrowserProcessImpl::CreateGlobalFeaturesForTesting() {
+  NOTIMPLEMENTED();
 }
 
 DownloadRequestLimiter* BrowserProcessImpl::download_request_limiter() {

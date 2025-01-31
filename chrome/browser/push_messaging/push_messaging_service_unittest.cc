@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/test/base/testing_browser_process.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -141,6 +142,10 @@ class PushMessagingServiceTest : public ::testing::Test {
   }
 
   ~PushMessagingServiceTest() override = default;
+
+  void SetUp() override {
+    TestingBrowserProcess::GetGlobal()->CreateGlobalFeaturesForTesting();
+  }
 
   void SetPermission(const GURL& origin, ContentSetting value) {
     HostContentSettingsMap* host_content_settings_map =
@@ -495,6 +500,7 @@ class ExtensionsPushMessagingServiceTest
       const ExtensionsPushMessagingServiceTest&) = delete;
 
   void SetUp() override {
+    TestingBrowserProcess::GetGlobal()->CreateGlobalFeaturesForTesting();
     ExtensionServiceTestWithInstall::SetUp();
     InitializeExtensionService(ExtensionServiceInitParams());
   }
