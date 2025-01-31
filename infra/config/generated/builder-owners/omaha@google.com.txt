@@ -20,6 +20,7 @@ ci/mac14-x64-updater-tester-rel
 ci/mac15-arm64-updater-tester-dbg
 ci/mac15-arm64-updater-tester-rel
 ci/win-arm64-updater-builder-dbg
+ci/win-arm64-updater-builder-rel
 ci/win-updater-builder-dbg
 ci/win-updater-builder-rel
 ci/win10-32-on-64-updater-tester-dbg
