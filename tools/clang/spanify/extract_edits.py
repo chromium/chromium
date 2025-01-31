@@ -307,7 +307,15 @@ def main():
     source_nodes = []
     for source in sources:
         source_node = Node.from_key(source)
-        assert source_node is not None
+        # When using templates, it is possible the source isn't part of any
+        # edges. In this case, it can't be rewritten, because we don't know
+        # if its size info is available.
+        #
+        # This is a limitation of the current implementation. We could improve
+        # this by adding a new line that indicates whether the node's size
+        # information is available. It shouldn't be part of the edges.
+        if source_node is None:
+            continue
         source_nodes.append(source_node)
 
         # Determine whether size information is available from this source.
