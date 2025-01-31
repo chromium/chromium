@@ -37,12 +37,27 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Glic.Response.Attached" enum="Boolean"
+    expires_after="2026-01-15">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <summary>
+    When glic returns a response to user input, whether glic was attached or
+    detached at the time the response started. Only emitted if glic was visible
+    when the response started.
+  </summary>
+</histogram>
+
 <histogram name="Glic.Response.Rated" enum="BooleanPositive"
     expires_after="2026-01-15">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>erikchen@chromium.org</owner>
-  <summary>Recorded anytime a response is rated.</summary>
+  <summary>
+    Recorded anytime a response is rated. There is no guarantee of correlation
+    with any other Response.* metrics. This exists for diagnostic purposes only.
+  </summary>
 </histogram>
 
 <histogram name="Glic.Response.StartTime" units="ms" expires_after="2026-01-15">
@@ -50,7 +65,8 @@ chromium-metrics-reviews@google.com.
   <owner>harringtond@chromium.org</owner>
   <owner>erikchen@chromium.org</owner>
   <summary>
-    Measures the time from a user's submitted input until a response starts.
+    Measures the time from a user's submitted input until a response starts and
+    was visible to the user.
   </summary>
 </histogram>
 
@@ -60,6 +76,8 @@ chromium-metrics-reviews@google.com.
   <owner>erikchen@chromium.org</owner>
   <summary>
     Measures the time from a user's submitted input until a response stops.
+    There is no guarantee of correlation with Response.StartTime. This exists
+    for diagnostic purposes only.
   </summary>
 </histogram>
 

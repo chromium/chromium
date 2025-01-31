@@ -5718,6 +5718,16 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="9" label="kErrorDeserializingJSonLogs"/>
 </enum>
 
+<!-- LINT.IfChange(GlicResponseError) -->
+
+<enum name="GlicResponseError">
+  <int value="0" label="Response start without input."/>
+  <int value="1" label="Response stop without input."/>
+  <int value="2" label="Response start while hiding or hidden."/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/glic_metrics.cc:Error) -->
+
 <enum name="GooglePlayServicesConnectionResult">
   <summary>
     Results of attempting a connection to Google Play Services. See Javadoc for

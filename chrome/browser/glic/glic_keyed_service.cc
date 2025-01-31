@@ -39,7 +39,7 @@ GlicKeyedService::GlicKeyedService(content::BrowserContext* browser_context,
       profile_manager_(profile_manager) {
   CHECK(GlicEnabling::IsProfileEligible(
       Profile::FromBrowserContext(browser_context)));
-  metrics_ = std::make_unique<GlicMetrics>();
+  metrics_ = std::make_unique<GlicMetrics>(&window_controller_);
 }
 
 GlicKeyedService::~GlicKeyedService() = default;

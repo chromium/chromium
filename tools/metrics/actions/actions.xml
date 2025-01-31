@@ -12207,7 +12207,31 @@ should be able to be added at any place in this file.
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>erikchen@chromium.org</owner>
-  <description>Tracks a single input/response in glic.</description>
+  <description>
+    This is the canonical metric to track for glic usage. It tracks an input,
+    followed by a response start that was visible to the user.
+  </description>
+</action>
+
+<action name="GlicResponseInputSubmit">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>Tracks a single input submission into glic.</description>
+</action>
+
+<action name="GlicResponseStart">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>Tracks a single response start in glic.</description>
+</action>
+
+<action name="GlicResponseStop">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>Tracks a single response stop in glic.</description>
 </action>
 
 <action name="GlicSessionEnd">
