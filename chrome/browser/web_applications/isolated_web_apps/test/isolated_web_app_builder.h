@@ -434,16 +434,17 @@ WITH_TRAITS(InstallationTraits)
 base::expected<IsolatedWebAppUrlInfo, std::string>
 BundledIsolatedWebApp::Install(Profile* profile,
                                InstallationTraits&&... traits) {
-  return InstallWithSource(
-      profile, &IsolatedWebAppInstallSource::FromGraphicalInstaller,
-      IwaSourceBundleModeAndFileOp::kProdModeCopy, traits...);
+  return InstallWithSource(profile,
+                           &IsolatedWebAppInstallSource::FromGraphicalInstaller,
+                           IwaSourceBundleModeAndFileOp::kProdModeCopy,
+                           std::forward<InstallationTraits>(traits)...);
 }
 
 WITH_TRAITS(InstallationTraits)
 IsolatedWebAppUrlInfo BundledIsolatedWebApp::InstallChecked(
     Profile* profile,
     InstallationTraits&&... traits) {
-  auto result = Install(profile, traits...);
+  auto result = Install(profile, std::forward<InstallationTraits>(traits)...);
   CHECK(result.has_value()) << result.error();
   return *result;
 }
@@ -460,7 +461,7 @@ BundledIsolatedWebApp::InstallWithSource(
       profile,
       install_source_provider(IwaSourceProdModeWithFileOp(
           IwaSourceBundleProdModeWithFileOp(path(), file_op))),
-      traits...);
+      std::forward<InstallationTraits>(traits)...);
 }
 
 WITH_TRAITS(InstallationTraits)
@@ -475,7 +476,7 @@ BundledIsolatedWebApp::InstallWithSource(
       profile,
       install_source_provider(IwaSourceDevModeWithFileOp(
           IwaSourceBundleDevModeWithFileOp(path(), file_op))),
-      traits...);
+      std::forward<InstallationTraits>(traits)...);
 }
 
 WITH_TRAITS(InstallationTraits)
@@ -490,7 +491,7 @@ BundledIsolatedWebApp::InstallWithSource(
       profile,
       install_source_provider(
           IwaSourceBundleWithModeAndFileOp(path(), file_op)),
-      traits...);
+      std::forward<InstallationTraits>(traits)...);
 }
 #undef WITH_TRAITS
 

@@ -342,12 +342,10 @@ TEST_F(IsolatedWebAppUpdateManagerDevModeUpdateTest,
           ManifestBuilder().SetVersion("2.0.0").SetName("updated iwa"))
           .BuildBundle(bundle_id, {test::GetDefaultEd25519KeyPair()});
 
-  ASSERT_OK_AND_ASSIGN(
-      IsolatedWebAppUrlInfo url_info,
-      initial_bundle->InstallWithSource(
-          profile(), &IsolatedWebAppInstallSource::FromDevUi,
-          web_app::IwaSourceBundleDevFileOp::kCopy,
-          ScopedBundledIsolatedWebApp::DoNotFakeInstallPage()));
+  ASSERT_OK_AND_ASSIGN(IsolatedWebAppUrlInfo url_info,
+                       initial_bundle->InstallWithSource(
+                           profile(), &IsolatedWebAppInstallSource::FromDevUi,
+                           web_app::IwaSourceBundleDevFileOp::kCopy));
 
   update_bundle->FakeInstallPageState(profile());
 
