@@ -82,6 +82,7 @@ using IsResetOnlyFunction = bool (*)(CSSPropertyID);
 using IsPositionKeyword = bool (*)(CSSValueID);
 
 constexpr size_t kMaxNumAnimationLonghands = 12;
+constexpr size_t kMaxNumAnimationTriggerLonghands = 6;
 
 void Complete4Sides(CSSValue* side[4]);
 
@@ -366,6 +367,13 @@ CSSValue* ConsumeSingleTimelineName(CSSParserTokenStream&,
                                     const CSSParserContext&);
 CSSValue* ConsumeSingleTimelineInset(CSSParserTokenStream&,
                                      const CSSParserContext&);
+
+bool ConsumeAnimationTriggerShorthand(const StylePropertyShorthand&,
+                                      HeapVector<Member<CSSValueList>, kMaxNumAnimationTriggerLonghands>&,
+                                      CSSParserTokenStream&,
+                                      const CSSParserContext&);
+
+CSSValue* GetImpliedRangeEnd(const CSSValue* start_range);
 
 void AddBackgroundValue(CSSValue*& list, const CSSValue*);
 CSSValue* ConsumeBackgroundAttachment(CSSParserTokenStream&);

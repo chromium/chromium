@@ -244,16 +244,8 @@ bool ConsumeAnimationRangeItemInto(CSSParserTokenStream& stream,
   const CSSValue* end_range = ConsumeAnimationRange(
       stream, context, /* default_offset_percent */ 100.0);
 
-  // The form 'name X' must expand to 'name X name 100%'.
-  //
-  // https://github.com/w3c/csswg-drafts/issues/8438
-  if (start_range && start_range->IsValueList() && !end_range) {
-    CSSValueList* implied_end = CSSValueList::CreateSpaceSeparated();
-    const CSSValue& name = To<CSSValueList>(start_range)->First();
-    if (name.IsIdentifierValue()) {
-      implied_end->Append(name);
-      end_range = implied_end;
-    }
+  if (!end_range) {
+    end_range = css_parsing_utils::GetImpliedRangeEnd(start_range);
   }
 
   if (!start_range) {
@@ -376,6 +368,83 @@ const CSSValue* AnimationRange::CSSValueFromComputedStyleInternal(
 
   return AnimationRangeCSSValueFromComputedStyle(style, range_start_list,
                                                  range_end_list);
+}
+
+const CSSValue* AnimationTrigger::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  if (const CSSAnimationData* animation_data = style.Animations()) {
+    CSSValueList* animations_list = CSSValueList::CreateCommaSeparated();
+    for (wtf_size_t i = 0; i < animation_data->NameList().size(); ++i) {
+      CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+      list->Append(*ComputedStyleUtils::ValueForAnimationTimeline(
+          animation_data->TriggerTimelineList().at(i)));
+      list->Append(*ComputedStyleUtils::ValueForAnimationTriggerType(
+          animation_data->TriggerTypeList().at(i)));
+      list->Append(*ComputedStyleUtils::ValueForAnimationRange(
+          animation_data->TriggerRangeStartList().at(i), style,
+          Length::Percent(0.0)));
+      list->Append(*ComputedStyleUtils::ValueForAnimationRange(
+          animation_data->TriggerRangeEndList().at(i), style,
+          Length::Percent(100)));
+      list->Append(*ComputedStyleUtils::ValueForAnimationRange(
+          animation_data->TriggerExitRangeStartList().at(i), style,
+          Length::Percent(0.0)));
+      list->Append(*ComputedStyleUtils::ValueForAnimationRange(
+          animation_data->TriggerExitRangeEndList().at(i), style,
+          Length::Percent(100)));
+      animations_list->Append(*list);
+    }
+    return animations_list;
+  }
+
+  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+  list->Append(*ComputedStyleUtils::ValueForAnimationTimeline(
+      CSSAnimationData::InitialTriggerTimeline()));
+  list->Append(*ComputedStyleUtils::ValueForAnimationTriggerType(
+      CSSAnimationData::InitialTriggerType()));
+  list->Append(*ComputedStyleUtils::ValueForAnimationRange(
+      CSSAnimationData::InitialTriggerRangeStart(), style,
+      Length::Percent(0.0)));
+  list->Append(*ComputedStyleUtils::ValueForAnimationRange(
+      CSSAnimationData::InitialTriggerRangeEnd(), style, Length::Percent(100)));
+  list->Append(*ComputedStyleUtils::ValueForAnimationRange(
+      CSSAnimationData::InitialTriggerExitRangeStart(), style,
+      Length::Percent(0.0)));
+  list->Append(*ComputedStyleUtils::ValueForAnimationRange(
+      CSSAnimationData::InitialTriggerExitRangeEnd(), style,
+      Length::Percent(100)));
+
+  return list;
+}
+
+bool AnimationTrigger::ParseShorthand(
+    bool important,
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    const CSSParserLocalContext& local_context,
+    HeapVector<CSSPropertyValue, 64>& properties) const {
+  const StylePropertyShorthand& shorthand = animationTriggerShorthand();
+  const unsigned longhand_count = shorthand.length();
+  HeapVector<Member<CSSValueList>,
+             css_parsing_utils::kMaxNumAnimationTriggerLonghands>
+      longhands(longhand_count);
+
+  if (!css_parsing_utils::ConsumeAnimationTriggerShorthand(shorthand, longhands,
+                                                           stream, context)) {
+    return false;
+  }
+
+  for (unsigned i = 0; i < longhand_count; ++i) {
+    css_parsing_utils::AddProperty(
+        shorthand.properties()[i]->PropertyID(), shorthand.id(), *longhands[i],
+        important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
+        properties);
+  }
+
+  return true;
 }
 
 bool AnimationTriggerRange::ParseShorthand(

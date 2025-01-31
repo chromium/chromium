@@ -523,6 +523,8 @@ String StylePropertySerializer::SerializeShorthand(
       return GetLayeredShorthandValue(animationShorthand());
     case CSSPropertyID::kAnimationRange:
       return AnimationRangeShorthandValue();
+    case CSSPropertyID::kAnimationTrigger:
+      return GetLayeredShorthandValue(animationTriggerShorthand());
     case CSSPropertyID::kAnimationTriggerRange:
       return AnimationTriggerRangeShorthandValue();
     case CSSPropertyID::kAnimationTriggerExitRange:

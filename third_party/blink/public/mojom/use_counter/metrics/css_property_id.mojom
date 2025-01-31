@@ -884,6 +884,7 @@ enum CSSSampleId {
     kAnimationTriggerRange = 825,
     kAnimationTriggerExitRange = 826,
     kInterestTargetDelay = 827,
+    kAnimationTrigger = 828,
 
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).
