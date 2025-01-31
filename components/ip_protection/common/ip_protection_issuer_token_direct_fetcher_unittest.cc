@@ -17,6 +17,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 // The ASSIGN_OR_RETURN macro is defined in the both the base::expected code and
 // the private-join-and-compute code. We need to undefine the macro here to
@@ -161,7 +162,8 @@ class FetcherTestBase : public testing::Test {
   }
 
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::optional<std::string> expected_experiment_arm_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   GURL token_server_get_issuer_token_url_;
@@ -341,6 +343,7 @@ TEST_F(IpProtectionIssuerTokenDirectFetcherTest, TryGetIssuerTokensSuccess) {
   const auto& result = future.Get<1>();
   EXPECT_EQ(result.status, TryGetIssuerTokensStatus::kSuccess);
   EXPECT_EQ(result.network_error_code, net::OK);
+  EXPECT_EQ(result.try_again_after, std::nullopt);
 }
 
 TEST_F(IpProtectionIssuerTokenDirectFetcherTest,
@@ -361,6 +364,7 @@ TEST_F(IpProtectionIssuerTokenDirectFetcherTest,
   const auto& result = future.Get<1>();
   EXPECT_EQ(result.status, TryGetIssuerTokensStatus::kTooFewTokens);
   EXPECT_EQ(result.network_error_code, net::OK);
+  EXPECT_EQ(result.try_again_after, std::nullopt);
 }
 
 TEST_F(IpProtectionIssuerTokenDirectFetcherTest,
@@ -381,6 +385,7 @@ TEST_F(IpProtectionIssuerTokenDirectFetcherTest,
   const auto& result = future.Get<1>();
   EXPECT_EQ(result.status, TryGetIssuerTokensStatus::kTooManyTokens);
   EXPECT_EQ(result.network_error_code, net::OK);
+  EXPECT_EQ(result.try_again_after, std::nullopt);
 }
 
 TEST_F(IpProtectionIssuerTokenDirectFetcherTest,
@@ -404,6 +409,7 @@ TEST_F(IpProtectionIssuerTokenDirectFetcherTest,
   const auto& result = future.Get<1>();
   EXPECT_EQ(result.status, TryGetIssuerTokensStatus::kExpirationTooSoon);
   EXPECT_EQ(result.network_error_code, net::OK);
+  EXPECT_EQ(result.try_again_after, std::nullopt);
 }
 
 TEST_F(IpProtectionIssuerTokenDirectFetcherTest,
@@ -427,6 +433,7 @@ TEST_F(IpProtectionIssuerTokenDirectFetcherTest,
   const auto& result = future.Get<1>();
   EXPECT_EQ(result.status, TryGetIssuerTokensStatus::kExpirationTooLate);
   EXPECT_EQ(result.network_error_code, net::OK);
+  EXPECT_EQ(result.try_again_after, std::nullopt);
 }
 
 TEST_F(IpProtectionIssuerTokenDirectFetcherTest,
@@ -449,6 +456,7 @@ TEST_F(IpProtectionIssuerTokenDirectFetcherTest,
   EXPECT_EQ(result.status,
             TryGetIssuerTokensStatus::kInvalidNumTokensWithSignal);
   EXPECT_EQ(result.network_error_code, net::OK);
+  EXPECT_EQ(result.try_again_after, std::nullopt);
 }
 
 TEST_F(IpProtectionIssuerTokenDirectFetcherTest,
@@ -471,6 +479,7 @@ TEST_F(IpProtectionIssuerTokenDirectFetcherTest,
   EXPECT_EQ(result.status,
             TryGetIssuerTokensStatus::kInvalidNumTokensWithSignal);
   EXPECT_EQ(result.network_error_code, net::OK);
+  EXPECT_EQ(result.try_again_after, std::nullopt);
 }
 
 TEST_F(IpProtectionIssuerTokenDirectFetcherTest,
@@ -492,6 +501,7 @@ TEST_F(IpProtectionIssuerTokenDirectFetcherTest,
   const auto& result = future.Get<1>();
   EXPECT_EQ(result.status, TryGetIssuerTokensStatus::kInvalidPublicKey);
   EXPECT_EQ(result.network_error_code, net::OK);
+  EXPECT_EQ(result.try_again_after, std::nullopt);
 }
 
 TEST_F(IpProtectionIssuerTokenDirectFetcherTest,
@@ -513,6 +523,7 @@ TEST_F(IpProtectionIssuerTokenDirectFetcherTest,
   const auto& result = future.Get<1>();
   EXPECT_EQ(result.status, TryGetIssuerTokensStatus::kInvalidTokenVersion);
   EXPECT_EQ(result.network_error_code, net::OK);
+  EXPECT_EQ(result.try_again_after, std::nullopt);
 }
 
 TEST_F(IpProtectionIssuerTokenDirectFetcherTest,
@@ -534,6 +545,7 @@ TEST_F(IpProtectionIssuerTokenDirectFetcherTest,
   const auto& result = future.Get<1>();
   EXPECT_EQ(result.status, TryGetIssuerTokensStatus::kInvalidTokenSize);
   EXPECT_EQ(result.network_error_code, net::OK);
+  EXPECT_EQ(result.try_again_after, std::nullopt);
 }
 
 TEST_F(IpProtectionIssuerTokenDirectFetcherTest,
@@ -555,6 +567,7 @@ TEST_F(IpProtectionIssuerTokenDirectFetcherTest,
   const auto& result = future.Get<1>();
   EXPECT_EQ(result.status, TryGetIssuerTokensStatus::kInvalidTokenSize);
   EXPECT_EQ(result.network_error_code, net::OK);
+  EXPECT_EQ(result.try_again_after, std::nullopt);
 }
 
 TEST_F(IpProtectionIssuerTokenDirectFetcherTest,
@@ -574,6 +587,7 @@ TEST_F(IpProtectionIssuerTokenDirectFetcherTest,
   const auto& result = future.Get<1>();
   EXPECT_EQ(result.status, TryGetIssuerTokensStatus::kTooFewTokens);
   EXPECT_EQ(result.network_error_code, net::OK);
+  EXPECT_EQ(result.try_again_after, std::nullopt);
 }
 
 TEST_F(IpProtectionIssuerTokenDirectFetcherTest,
@@ -593,6 +607,7 @@ TEST_F(IpProtectionIssuerTokenDirectFetcherTest,
   const auto& result = future.Get<1>();
   EXPECT_EQ(result.status, TryGetIssuerTokensStatus::kTooFewTokens);
   EXPECT_EQ(result.network_error_code, net::OK);
+  EXPECT_EQ(result.try_again_after, std::nullopt);
 }
 
 TEST_F(IpProtectionIssuerTokenDirectFetcherTest,
@@ -630,6 +645,7 @@ TEST_F(IpProtectionIssuerTokenDirectFetcherTest,
   const auto& result = future.Get<1>();
   EXPECT_EQ(result.status, TryGetIssuerTokensStatus::kSuccess);
   EXPECT_EQ(result.network_error_code, net::OK);
+  EXPECT_EQ(result.try_again_after, std::nullopt);
 }
 
 TEST_F(IpProtectionIssuerTokenDirectFetcherTest,
@@ -655,6 +671,7 @@ TEST_F(IpProtectionIssuerTokenDirectFetcherTest,
   const auto& result = future.Get<1>();
   EXPECT_EQ(result.status, TryGetIssuerTokensStatus::kNetNotOk);
   EXPECT_EQ(result.network_error_code, net::ERR_INSUFFICIENT_RESOURCES);
+  EXPECT_EQ(result.try_again_after, base::Time::Now() + base::Minutes(1));
 }
 
 TEST_F(IpProtectionIssuerTokenDirectFetcherTest,
@@ -673,6 +690,7 @@ TEST_F(IpProtectionIssuerTokenDirectFetcherTest,
   const auto& result = future.Get<1>();
   EXPECT_EQ(result.status, TryGetIssuerTokensStatus::kResponseParsingFailed);
   EXPECT_EQ(result.network_error_code, net::OK);
+  EXPECT_EQ(result.try_again_after, std::nullopt);
 }
 
 TEST_F(IpProtectionIssuerTokenDirectFetcherTest, NullExperimentArm) {
@@ -693,6 +711,190 @@ TEST_F(IpProtectionIssuerTokenDirectFetcherTest, NullExperimentArm) {
   const auto& result = future.Get<1>();
   EXPECT_EQ(result.status, TryGetIssuerTokensStatus::kSuccess);
   EXPECT_EQ(result.network_error_code, net::OK);
+  EXPECT_EQ(result.try_again_after, std::nullopt);
+}
+
+TEST_F(IpProtectionIssuerTokenDirectFetcherTest, TryGetIssuerTokensBackoff) {
+  // Set a response that is too large to be downloaded.
+  GetIssuerTokenResponse large_response_proto = BuildIssuerTokenResponse(
+      /*num_tokens=*/1000);
+  std::string response_str = large_response_proto.SerializeAsString();
+  ASSERT_GT(response_str.size(), std::size_t(32 * 1024));
+  SetResponse(response_str);
+
+  base::test::TestFuture<std::optional<TryGetIssuerTokensOutcome>,
+                         TryGetIssuerTokensResult>
+      future;
+
+  // url_loader->DownloadToString() will fail.
+  fetcher_->TryGetIssuerTokens(future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
+  // First call - network error, backoff 1 minute.
+  EXPECT_FALSE(future.Get<0>());
+  const auto& result1 = future.Get<1>();
+  EXPECT_EQ(result1.status, TryGetIssuerTokensStatus::kNetNotOk);
+  EXPECT_EQ(result1.network_error_code, net::ERR_INSUFFICIENT_RESOURCES);
+
+  base::Time backoff_time = base::Time::Now() + base::Minutes(1);
+  EXPECT_EQ(result1.try_again_after, backoff_time);
+
+  future.Clear();
+  task_environment_.FastForwardBy(base::Seconds(59));
+  fetcher_->TryGetIssuerTokens(future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
+  // Second call - too soon, no request made, backoff same as before.
+  EXPECT_FALSE(future.Get<0>());
+  const auto& result2 = future.Get<1>();
+  EXPECT_EQ(result2.status, TryGetIssuerTokensStatus::kRequestBackedOff);
+  EXPECT_EQ(result2.network_error_code, net::OK);
+  EXPECT_EQ(result2.try_again_after, backoff_time);
+
+  future.Clear();
+  task_environment_.FastForwardBy(base::Seconds(1));
+  fetcher_->TryGetIssuerTokens(future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
+  // Third call - request made, another network error, backoff 2 minutes.
+  EXPECT_FALSE(future.Get<0>());
+  const auto& result3 = future.Get<1>();
+  EXPECT_EQ(result3.status, TryGetIssuerTokensStatus::kNetNotOk);
+  EXPECT_EQ(result3.network_error_code, net::ERR_INSUFFICIENT_RESOURCES);
+
+  backoff_time = base::Time::Now() + base::Minutes(2);
+  EXPECT_EQ(result3.try_again_after, backoff_time);
+
+  future.Clear();
+  task_environment_.FastForwardBy(base::Minutes(2));
+
+  // Set a valid response.
+  GetIssuerTokenResponse valid_response_proto =
+      BuildIssuerTokenResponse(/*num_tokens=*/10);
+  response_str = valid_response_proto.SerializeAsString();
+  SetResponse(response_str);
+
+  fetcher_->TryGetIssuerTokens(future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
+  // Fourth call - request successful, backoff reset.
+  EXPECT_TRUE(future.Get<0>());
+  const auto& result4 = future.Get<1>();
+  EXPECT_EQ(result4.status, TryGetIssuerTokensStatus::kSuccess);
+  EXPECT_EQ(result4.network_error_code, net::OK);
+  EXPECT_EQ(result4.try_again_after, std::nullopt);
+
+  future.Clear();
+
+  // Set a large response again.
+  response_str = large_response_proto.SerializeAsString();
+  SetResponse(response_str);
+
+  fetcher_->TryGetIssuerTokens(future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
+  // Fifth call - network error, backoff back to 1 minute.
+  EXPECT_FALSE(future.Get<0>());
+  const auto& result5 = future.Get<1>();
+  EXPECT_EQ(result5.status, TryGetIssuerTokensStatus::kNetNotOk);
+  EXPECT_EQ(result5.network_error_code, net::ERR_INSUFFICIENT_RESOURCES);
+
+  backoff_time = base::Time::Now() + base::Minutes(1);
+  EXPECT_EQ(result5.try_again_after, backoff_time);
+}
+
+TEST_F(IpProtectionIssuerTokenDirectFetcherTest,
+       TryGetIssuerTokensAccountStatusChangedWithAccountAvailable) {
+  // Set a response that is too large to be downloaded.
+  GetIssuerTokenResponse large_response_proto = BuildIssuerTokenResponse(
+      /*num_tokens=*/1000);
+  std::string response_str = large_response_proto.SerializeAsString();
+  ASSERT_GT(response_str.size(), std::size_t(32 * 1024));
+  SetResponse(response_str);
+
+  base::test::TestFuture<std::optional<TryGetIssuerTokensOutcome>,
+                         TryGetIssuerTokensResult>
+      future;
+
+  // url_loader->DownloadToString() will fail.
+  fetcher_->TryGetIssuerTokens(future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
+  // First call - network error, backoff 1 minute.
+  EXPECT_FALSE(future.Get<0>());
+  const auto& result1 = future.Get<1>();
+  EXPECT_EQ(result1.status, TryGetIssuerTokensStatus::kNetNotOk);
+  EXPECT_EQ(result1.network_error_code, net::ERR_INSUFFICIENT_RESOURCES);
+
+  base::Time backoff_time = base::Time::Now() + base::Minutes(1);
+  EXPECT_EQ(result1.try_again_after, backoff_time);
+
+  future.Clear();
+
+  // Set a valid response.
+  GetIssuerTokenResponse valid_response_proto =
+      BuildIssuerTokenResponse(/*num_tokens=*/10);
+  response_str = valid_response_proto.SerializeAsString();
+  SetResponse(response_str);
+
+  // Retry request immediately after account status change.
+  fetcher_->AccountStatusChanged(true);
+  fetcher_->TryGetIssuerTokens(future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
+  // Second call - request successful without being backed off.
+  EXPECT_TRUE(future.Get<0>());
+  const auto& result2 = future.Get<1>();
+  EXPECT_EQ(result2.status, TryGetIssuerTokensStatus::kSuccess);
+  EXPECT_EQ(result2.network_error_code, net::OK);
+  EXPECT_EQ(result2.try_again_after, std::nullopt);
+}
+
+TEST_F(IpProtectionIssuerTokenDirectFetcherTest,
+       TryGetIssuerTokensAccountStatusChangedWithAccountUnavailable) {
+  // Set a response that is too large to be downloaded.
+  GetIssuerTokenResponse large_response_proto = BuildIssuerTokenResponse(
+      /*num_tokens=*/1000);
+  std::string response_str = large_response_proto.SerializeAsString();
+  ASSERT_GT(response_str.size(), std::size_t(32 * 1024));
+  SetResponse(response_str);
+
+  base::test::TestFuture<std::optional<TryGetIssuerTokensOutcome>,
+                         TryGetIssuerTokensResult>
+      future;
+
+  // url_loader->DownloadToString() will fail.
+  fetcher_->TryGetIssuerTokens(future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
+  // First call - network error, backoff 1 minute.
+  EXPECT_FALSE(future.Get<0>());
+  const auto& result1 = future.Get<1>();
+  EXPECT_EQ(result1.status, TryGetIssuerTokensStatus::kNetNotOk);
+  EXPECT_EQ(result1.network_error_code, net::ERR_INSUFFICIENT_RESOURCES);
+
+  base::Time backoff_time = base::Time::Now() + base::Minutes(1);
+  EXPECT_EQ(result1.try_again_after, backoff_time);
+
+  future.Clear();
+
+  // Set a valid response.
+  GetIssuerTokenResponse valid_response_proto =
+      BuildIssuerTokenResponse(/*num_tokens=*/10);
+  response_str = valid_response_proto.SerializeAsString();
+  SetResponse(response_str);
+
+  // Retry request immediately after account status change.
+  fetcher_->AccountStatusChanged(false);
+  fetcher_->TryGetIssuerTokens(future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
+  // Second call - request backed off (backoff was not reset).
+  EXPECT_FALSE(future.Get<0>());
+  const auto& result2 = future.Get<1>();
+  EXPECT_EQ(result2.status, TryGetIssuerTokensStatus::kRequestBackedOff);
+  EXPECT_EQ(result2.network_error_code, net::OK);
+  EXPECT_EQ(result2.try_again_after, backoff_time);
 }
 
 }  // namespace ip_protection

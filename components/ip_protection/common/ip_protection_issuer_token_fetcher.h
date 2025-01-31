@@ -27,7 +27,8 @@ enum class TryGetIssuerTokensStatus {
   kExpirationTooLate = 10,
   kInvalidPublicKey = 11,
   kInvalidNumTokensWithSignal = 12,
-  kMaxValue = kInvalidNumTokensWithSignal,
+  kRequestBackedOff = 13,
+  kMaxValue = kRequestBackedOff,
 };
 
 // Stores return status of TryGetIssuerTokens() together with
@@ -43,6 +44,10 @@ struct TryGetIssuerTokensResult {
   // `status` is kProxyDisabled and TryGetIssuerTokens returned before making
   // a network call.
   int network_error_code;
+  // Stores the time when the next TryGetIssuerTokens() call should be made.
+  // `try_again_after` is set on network errors (i.e. when `status` is kNetNotOk
+  // or kNetOkNullResponse), nullopt otherwise.
+  std::optional<base::Time> try_again_after;
 };
 
 // Stores parsed TryGetIssuerTokensResponse for successfully parsed
