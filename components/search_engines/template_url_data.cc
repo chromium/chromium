@@ -171,8 +171,8 @@ void TemplateURLData::SetURL(const std::string& url) {
 }
 
 std::vector<uint8_t> TemplateURLData::GenerateHash() const {
-  CHECK(!url_.empty());
-  CHECK_NE(id, 0);
+  DCHECK(!url_.empty());
+  DCHECK_NE(id, 0);
   base::Pickle pickle;
   pickle.WriteInt64(id);
   pickle.WriteString(url_);
