@@ -289,16 +289,8 @@ void GlicWindowController::Toggle(BrowserWindowInterface* bwi) {
       return;
     }
 
-    // Below here: hotkey invoked when glic is already detached and will remain
-    // detached.
-    if (IsActive()) {
-      // Hotkey when glic is open, detached and active: close.
-      // TODO(392158646): This causes the browser to activate on Mac.
-      Close();
-    } else {
-      // Glic already open detached but not active: activate.
-      GetGlicWidget()->Activate();
-    }
+    // Hotkey invoked when glic is already detached.
+    Close();
 
   } else if (state_ != State::kClosed) {
     // Currently in the process of showing the widget, allow that to finish.
