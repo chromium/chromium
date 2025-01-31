@@ -30,6 +30,7 @@
 #include "content/browser/private_aggregation/private_aggregation_caller_api.h"
 #include "content/browser/private_aggregation/private_aggregation_features.h"
 #include "content/browser/private_aggregation/private_aggregation_host.h"
+#include "content/browser/private_aggregation/private_aggregation_pending_contributions.h"
 #include "content/browser/private_aggregation/private_aggregation_test_utils.h"
 #include "content/public/browser/private_aggregation_data_model.h"
 #include "content/public/browser/storage_partition.h"
@@ -200,8 +201,9 @@ TEST_F(PrivateAggregationManagerImplTest,
 
   auto [generator, contributions] = CloneAndSplitOutGenerator(expected_request);
   manager_.OnReportRequestDetailsReceivedFromHost(
-      std::move(generator), std::move(contributions), example_key,
-      NullReportBehavior::kDontSendReport);
+      std::move(generator),
+      PrivateAggregationPendingContributions::Wrapper(std::move(contributions)),
+      example_key, NullReportBehavior::kDontSendReport);
 
   histogram.ExpectUniqueSample(
       kBudgeterResultHistogram,
@@ -276,8 +278,9 @@ TEST_F(PrivateAggregationManagerImplTest,
 
   auto [generator, contributions] = CloneAndSplitOutGenerator(expected_request);
   manager_.OnReportRequestDetailsReceivedFromHost(
-      std::move(generator), std::move(contributions), example_key,
-      NullReportBehavior::kDontSendReport);
+      std::move(generator),
+      PrivateAggregationPendingContributions::Wrapper(std::move(contributions)),
+      example_key, NullReportBehavior::kDontSendReport);
 
   histogram.ExpectUniqueSample(
       kBudgeterResultHistogram,
@@ -332,8 +335,9 @@ TEST_F(PrivateAggregationManagerImplTest,
 
   auto [generator, contributions] = CloneAndSplitOutGenerator(expected_request);
   manager_.OnReportRequestDetailsReceivedFromHost(
-      std::move(generator), std::move(contributions), example_key,
-      NullReportBehavior::kDontSendReport);
+      std::move(generator),
+      PrivateAggregationPendingContributions::Wrapper(std::move(contributions)),
+      example_key, NullReportBehavior::kDontSendReport);
 
   histogram.ExpectUniqueSample(kBudgeterResultHistogram,
                                PrivateAggregationBudgeter::RequestResult::
@@ -381,8 +385,9 @@ TEST_F(PrivateAggregationManagerImplTest,
 
   auto [generator, contributions] = CloneAndSplitOutGenerator(expected_request);
   manager_.OnReportRequestDetailsReceivedFromHost(
-      std::move(generator), std::move(contributions), example_key,
-      NullReportBehavior::kDontSendReport);
+      std::move(generator),
+      PrivateAggregationPendingContributions::Wrapper(std::move(contributions)),
+      example_key, NullReportBehavior::kDontSendReport);
 
   histogram.ExpectUniqueSample(
       kBudgeterResultHistogram,
@@ -453,8 +458,9 @@ TEST_F(PrivateAggregationManagerImplTest,
   auto [generator, contributions] =
       CloneAndSplitOutGenerator(standard_request.value());
   manager_.OnReportRequestDetailsReceivedFromHost(
-      std::move(generator), std::move(contributions), example_key,
-      NullReportBehavior::kDontSendReport);
+      std::move(generator),
+      PrivateAggregationPendingContributions::Wrapper(std::move(contributions)),
+      example_key, NullReportBehavior::kDontSendReport);
 
   histogram.ExpectUniqueSample(
       kBudgeterResultHistogram,
@@ -523,8 +529,9 @@ TEST_F(PrivateAggregationManagerImplTest,
   auto [generator, contributions] =
       CloneAndSplitOutGenerator(standard_request.value());
   manager_.OnReportRequestDetailsReceivedFromHost(
-      std::move(generator), std::move(contributions), example_key,
-      NullReportBehavior::kSendNullReport);
+      std::move(generator),
+      PrivateAggregationPendingContributions::Wrapper(std::move(contributions)),
+      example_key, NullReportBehavior::kSendNullReport);
 
   histogram.ExpectUniqueSample(
       kBudgeterResultHistogram,
@@ -610,16 +617,20 @@ TEST_F(PrivateAggregationManagerImplTest, DebugReportingPath) {
     auto [generator, contributions] =
         CloneAndSplitOutGenerator(standard_request.value());
     manager_.OnReportRequestDetailsReceivedFromHost(
-        std::move(generator), std::move(contributions), protected_audience_key,
-        NullReportBehavior::kDontSendReport);
+        std::move(generator),
+        PrivateAggregationPendingContributions::Wrapper(
+            std::move(contributions)),
+        protected_audience_key, NullReportBehavior::kDontSendReport);
   }
   checkpoint.Call(1);
   {
     auto [generator, contributions] =
         CloneAndSplitOutGenerator(standard_request.value());
     manager_.OnReportRequestDetailsReceivedFromHost(
-        std::move(generator), std::move(contributions), shared_storage_key,
-        NullReportBehavior::kDontSendReport);
+        std::move(generator),
+        PrivateAggregationPendingContributions::Wrapper(
+            std::move(contributions)),
+        shared_storage_key, NullReportBehavior::kDontSendReport);
   }
 
   histogram.ExpectUniqueSample(
@@ -672,8 +683,9 @@ TEST_F(PrivateAggregationManagerImplTest,
   auto [generator, contributions] =
       CloneAndSplitOutGenerator(standard_request.value());
   manager_.OnReportRequestDetailsReceivedFromHost(
-      std::move(generator), std::move(contributions), example_key,
-      NullReportBehavior::kDontSendReport);
+      std::move(generator),
+      PrivateAggregationPendingContributions::Wrapper(std::move(contributions)),
+      example_key, NullReportBehavior::kDontSendReport);
 
   histogram.ExpectUniqueSample(
       kBudgeterResultHistogram,
@@ -753,7 +765,9 @@ TEST_F(PrivateAggregationManagerImplTest,
   auto [generator, null_contributions] =
       CloneAndSplitOutGenerator(null_request.value());
   manager_.OnReportRequestDetailsReceivedFromHost(
-      std::move(generator), example_request.payload_contents().contributions,
+      std::move(generator),
+      PrivateAggregationPendingContributions::Wrapper(
+          example_request.payload_contents().contributions),
       example_key, NullReportBehavior::kSendNullReport);
 
   histogram.ExpectUniqueSample(
@@ -826,8 +840,11 @@ TEST_F(PrivateAggregationManagerImplTest,
   auto [generator, null_contributions] =
       CloneAndSplitOutGenerator(null_request.value());
   manager_.OnReportRequestDetailsReceivedFromHost(
-      std::move(generator), /*contributions=*/{}, example_key,
-      NullReportBehavior::kSendNullReport);
+      std::move(generator),
+      /*contributions=*/
+      PrivateAggregationPendingContributions::Wrapper(
+          std::vector<blink::mojom::AggregatableReportHistogramContribution>()),
+      example_key, NullReportBehavior::kSendNullReport);
 
   histogram.ExpectTotalCount(kBudgeterResultHistogram, 0);
   histogram.ExpectUniqueSample(

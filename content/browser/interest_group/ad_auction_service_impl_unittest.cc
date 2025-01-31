@@ -63,6 +63,7 @@
 #include "content/browser/private_aggregation/private_aggregation_budgeter.h"
 #include "content/browser/private_aggregation/private_aggregation_caller_api.h"
 #include "content/browser/private_aggregation/private_aggregation_manager_impl.h"
+#include "content/browser/private_aggregation/private_aggregation_pending_contributions.h"
 #include "content/browser/private_aggregation/private_aggregation_test_utils.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
@@ -778,11 +779,11 @@ class MockPrivateAggregationHostForTest : public PrivateAggregationHost {
   MockPrivateAggregationHostForTest(
       base::RepeatingCallback<void(const std::optional<url::Origin>&,
                                    const url::Origin&)> check_coordinator,
-      base::RepeatingCallback<void(
-          ReportRequestGenerator,
-          std::vector<blink::mojom::AggregatableReportHistogramContribution>,
-          PrivateAggregationBudgetKey,
-          PrivateAggregationHost::NullReportBehavior)>
+      base::RepeatingCallback<
+          void(ReportRequestGenerator,
+               PrivateAggregationPendingContributions::Wrapper,
+               PrivateAggregationBudgetKey,
+               PrivateAggregationHost::NullReportBehavior)>
           on_report_request_details_received,
       content::BrowserContext* browser_context)
       : PrivateAggregationHost(std::move(on_report_request_details_received),
@@ -1287,7 +1288,7 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
 
   base::MockRepeatingCallback<void(
       PrivateAggregationHost::ReportRequestGenerator,
-      std::vector<blink::mojom::AggregatableReportHistogramContribution>,
+      PrivateAggregationPendingContributions::Wrapper,
       PrivateAggregationBudgetKey,
       PrivateAggregationHost::NullReportBehavior)>
       mock_private_aggregation_cb_;
@@ -9932,12 +9933,11 @@ function scoreAd(
   EXPECT_CALL(mock_private_aggregation_cb_, Run)
       .WillOnce(testing::Invoke(
           [&](PrivateAggregationHost::ReportRequestGenerator generator,
-              std::vector<blink::mojom::AggregatableReportHistogramContribution>
-                  contributions,
+              PrivateAggregationPendingContributions::Wrapper contributions,
               PrivateAggregationBudgetKey budget_key,
               PrivateAggregationHost::NullReportBehavior null_report_behavior) {
-            AggregatableReportRequest request =
-                std::move(generator).Run(contributions);
+            AggregatableReportRequest request = std::move(generator).Run(
+                std::move(contributions.GetContributionsVector()));
             EXPECT_THAT(
                 request.payload_contents().contributions,
                 testing::UnorderedElementsAre(
@@ -10609,21 +10609,21 @@ function reportResult() {}
 
   auto* storage_partition_impl = static_cast<StoragePartitionImpl*>(
       browser_context()->GetDefaultStoragePartition());
-  auto mock_private_aggregation_host = std::make_unique<
-      MockPrivateAggregationHostForTest>(
-      std::move(check_coordinator),
-      /*on_report_request_received=*/
-      base::BindRepeating(
-          [](PrivateAggregationHost::ReportRequestGenerator generator,
-             std::vector<blink::mojom::AggregatableReportHistogramContribution>
-                 contributions,
-             PrivateAggregationBudgetKey budget_key,
-             PrivateAggregationHost::NullReportBehavior null_report_behavior) {
-            AggregatableReportRequest request =
-                std::move(generator).Run(contributions);
-          }),
-      /*browser_context=*/
-      storage_partition_impl->browser_context());
+  auto mock_private_aggregation_host =
+      std::make_unique<MockPrivateAggregationHostForTest>(
+          std::move(check_coordinator),
+          /*on_report_request_received=*/
+          base::BindRepeating(
+              [](PrivateAggregationHost::ReportRequestGenerator generator,
+                 PrivateAggregationPendingContributions::Wrapper contributions,
+                 PrivateAggregationBudgetKey budget_key,
+                 PrivateAggregationHost::NullReportBehavior
+                     null_report_behavior) {
+                AggregatableReportRequest request = std::move(generator).Run(
+                    std::move(contributions.GetContributionsVector()));
+              }),
+          /*browser_context=*/
+          storage_partition_impl->browser_context());
   MockPrivateAggregationHostForTest* private_aggregation_host =
       mock_private_aggregation_host.get();
   storage_partition_impl->OverridePrivateAggregationManagerForTesting(
@@ -13714,12 +13714,11 @@ function reportResult(auctionConfig, browserSignals) {
   EXPECT_CALL(mock_private_aggregation_cb_, Run)
       .WillOnce(testing::Invoke(
           [&](PrivateAggregationHost::ReportRequestGenerator generator,
-              std::vector<blink::mojom::AggregatableReportHistogramContribution>
-                  contributions,
+              PrivateAggregationPendingContributions::Wrapper contributions,
               PrivateAggregationBudgetKey budget_key,
               PrivateAggregationHost::NullReportBehavior null_report_behavior) {
-            AggregatableReportRequest request =
-                std::move(generator).Run(contributions);
+            AggregatableReportRequest request = std::move(generator).Run(
+                std::move(contributions.GetContributionsVector()));
             EXPECT_THAT(
                 request.payload_contents().contributions,
                 testing::UnorderedElementsAre(
@@ -13848,12 +13847,11 @@ TEST_F(AdAuctionServiceImplBAndATest,
   EXPECT_CALL(mock_private_aggregation_cb_, Run)
       .WillOnce(testing::Invoke(
           [&](PrivateAggregationHost::ReportRequestGenerator generator,
-              std::vector<blink::mojom::AggregatableReportHistogramContribution>
-                  contributions,
+              PrivateAggregationPendingContributions::Wrapper contributions,
               PrivateAggregationBudgetKey budget_key,
               PrivateAggregationHost::NullReportBehavior null_report_behavior) {
-            AggregatableReportRequest request =
-                std::move(generator).Run(contributions);
+            AggregatableReportRequest request = std::move(generator).Run(
+                std::move(contributions.GetContributionsVector()));
             EXPECT_THAT(
                 request.payload_contents().contributions,
                 testing::UnorderedElementsAre(
@@ -13915,18 +13913,17 @@ function reportResult(auctionConfig, browserSignals) {
           });
 
   base::RunLoop run_loop2;
-  base::RepeatingCallback<void(
-      PrivateAggregationHost::ReportRequestGenerator,
-      std::vector<blink::mojom::AggregatableReportHistogramContribution>,
-      PrivateAggregationBudgetKey, PrivateAggregationHost::NullReportBehavior)>
+  base::RepeatingCallback<void(PrivateAggregationHost::ReportRequestGenerator,
+                               PrivateAggregationPendingContributions::Wrapper,
+                               PrivateAggregationBudgetKey,
+                               PrivateAggregationHost::NullReportBehavior)>
       mock_callback = base::BindLambdaForTesting(
           [&](PrivateAggregationHost::ReportRequestGenerator generator,
-              std::vector<blink::mojom::AggregatableReportHistogramContribution>
-                  contributions,
+              PrivateAggregationPendingContributions::Wrapper contributions,
               PrivateAggregationBudgetKey budget_key,
               PrivateAggregationHost::NullReportBehavior null_report_behavior) {
-            AggregatableReportRequest request =
-                std::move(generator).Run(contributions);
+            AggregatableReportRequest request = std::move(generator).Run(
+                std::move(contributions.GetContributionsVector()));
             EXPECT_THAT(
                 request.payload_contents().contributions,
                 testing::UnorderedElementsAre(
@@ -17799,14 +17796,12 @@ TEST_P(AdAuctionServiceImplBAndAKAnonEnabledTest,
     EXPECT_CALL(mock_private_aggregation_cb_, Run)
         .WillOnce(testing::Invoke(
             [&](PrivateAggregationHost::ReportRequestGenerator generator,
-                std::vector<
-                    blink::mojom::AggregatableReportHistogramContribution>
-                    contributions,
+                PrivateAggregationPendingContributions::Wrapper contributions,
                 PrivateAggregationBudgetKey budget_key,
                 PrivateAggregationHost::NullReportBehavior
                     null_report_behavior) {
-              AggregatableReportRequest request =
-                  std::move(generator).Run(contributions);
+              AggregatableReportRequest request = std::move(generator).Run(
+                  contributions.GetContributionsVector());
               EXPECT_THAT(
                   request.payload_contents().contributions,
                   testing::UnorderedElementsAre(

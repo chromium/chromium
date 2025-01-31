@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <memory>
 #include <numeric>
 #include <optional>
@@ -36,6 +37,7 @@
 #include "content/browser/private_aggregation/private_aggregation_caller_api.h"
 #include "content/browser/private_aggregation/private_aggregation_features.h"
 #include "content/browser/private_aggregation/private_aggregation_host.h"
+#include "content/browser/private_aggregation/private_aggregation_pending_contributions.h"
 #include "content/browser/private_aggregation/private_aggregation_utils.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/private_aggregation_data_model.h"
@@ -141,10 +143,12 @@ bool PrivateAggregationManagerImpl::IsDebugModeAllowed(
 
 void PrivateAggregationManagerImpl::OnReportRequestDetailsReceivedFromHost(
     PrivateAggregationHost::ReportRequestGenerator report_request_generator,
-    std::vector<blink::mojom::AggregatableReportHistogramContribution>
-        contributions,
+    PrivateAggregationPendingContributions::Wrapper contributions_wrapper,
     PrivateAggregationBudgetKey budget_key,
     PrivateAggregationHost::NullReportBehavior null_report_behavior) {
+  std::vector<blink::mojom::AggregatableReportHistogramContribution>
+      contributions = std::move(contributions_wrapper.GetContributionsVector());
+
   base::CheckedNumeric<int> budget_needed = std::accumulate(
       contributions.begin(), contributions.end(),
       /*init=*/base::CheckedNumeric<int>(0), /*op=*/

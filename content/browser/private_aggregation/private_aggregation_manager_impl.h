@@ -21,6 +21,7 @@
 #include "content/browser/private_aggregation/private_aggregation_caller_api.h"
 #include "content/browser/private_aggregation/private_aggregation_host.h"
 #include "content/browser/private_aggregation/private_aggregation_manager.h"
+#include "content/browser/private_aggregation/private_aggregation_pending_contributions.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/private_aggregation_data_model.h"
 #include "content/public/browser/storage_partition.h"
@@ -106,8 +107,7 @@ class CONTENT_EXPORT PrivateAggregationManagerImpl
   // for report generation from a completed mojo pipe.
   void OnReportRequestDetailsReceivedFromHost(
       PrivateAggregationHost::ReportRequestGenerator report_request_generator,
-      std::vector<blink::mojom::AggregatableReportHistogramContribution>
-          contributions,
+      PrivateAggregationPendingContributions::Wrapper contributions,
       PrivateAggregationBudgetKey budget_key,
       PrivateAggregationHost::NullReportBehavior null_report_behavior);
 

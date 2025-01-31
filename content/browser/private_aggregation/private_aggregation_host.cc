@@ -45,6 +45,7 @@
 #include "content/browser/private_aggregation/private_aggregation_caller_api.h"
 #include "content/browser/private_aggregation/private_aggregation_features.h"
 #include "content/browser/private_aggregation/private_aggregation_manager.h"
+#include "content/browser/private_aggregation/private_aggregation_pending_contributions.h"
 #include "content/browser/private_aggregation/private_aggregation_utils.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
@@ -53,7 +54,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
-#include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom.h"
@@ -131,19 +131,8 @@ void RecordNumberOfContributionMergeKeysHistogram(
   }
 }
 
-// Contributions can be merged if they have matching keys.
-struct ContributionMergeKey {
-  explicit ContributionMergeKey(
-      const blink::mojom::AggregatableReportHistogramContributionPtr&
-          contribution)
-      : bucket(contribution->bucket),
-        filtering_id(contribution->filtering_id.value_or(0)) {}
-
-  auto operator<=>(const ContributionMergeKey& a) const = default;
-
-  absl::uint128 bucket;
-  uint64_t filtering_id;
-};
+using ContributionMergeKey =
+    PrivateAggregationPendingContributions::ContributionMergeKey;
 
 }  // namespace
 
@@ -162,7 +151,7 @@ struct PrivateAggregationHost::ReceiverContext {
   bool did_truncate_contributions = false;
 
   // Contributions passed to `ContributeToHistogram()` for this receiver,
-  // associated with their `ContributionMergeKey`s.
+  // associated with their merge keys.
   std::map<ContributionMergeKey,
            blink::mojom::AggregatableReportHistogramContribution>
       accepted_contributions;
@@ -187,7 +176,7 @@ struct PrivateAggregationHost::ReceiverContext {
 PrivateAggregationHost::PrivateAggregationHost(
     base::RepeatingCallback<
         void(ReportRequestGenerator,
-             std::vector<blink::mojom::AggregatableReportHistogramContribution>,
+             PrivateAggregationPendingContributions::Wrapper,
              PrivateAggregationBudgetKey,
              NullReportBehavior)> on_report_request_details_received,
     BrowserContext* browser_context)
@@ -695,7 +684,8 @@ void PrivateAggregationHost::SendReportOnTimeoutOrDisconnect(
   CHECK(budget_key.has_value());
 
   on_report_request_details_received_.Run(
-      std::move(report_request_generator), std::move(contributions),
+      std::move(report_request_generator),
+      PrivateAggregationPendingContributions::Wrapper(std::move(contributions)),
       std::move(budget_key.value()), receiver_context.null_report_behavior);
 }
 
