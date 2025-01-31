@@ -75,17 +75,19 @@ class NameInfo : public FormGroup {
     return *alternative_name_;
   }
 
-  // Returns the node in the tree that supports `field_type`. This node, if it
-  // exists, is unique by definition.
-  const AddressComponent* GetNodeForType(FieldType type) const;
+  // Returns the root node of either `name_` or `alternative_name_`
+  // depending on the `type`.
+  // This node is unique by definition.
+  const AddressComponent* GetRootForType(FieldType type) const;
 
  private:
   // FormGroup:
   void GetSupportedTypes(FieldTypeSet* supported_types) const override;
 
-  // Returns the node in the tree that supports `field_type`. This node, if it
-  // exists, is unique by definition.
-  AddressComponent* GetNodeForType(FieldType type);
+  // Returns the root node of either `name_` or `alternative_name_`
+  // depending on the `type`.
+  // This node is unique by definition.
+  AddressComponent* GetRootForType(FieldType type);
 
   // This data structures store structured representation of the name and
   // alternative (e.g. phonetic) name.
