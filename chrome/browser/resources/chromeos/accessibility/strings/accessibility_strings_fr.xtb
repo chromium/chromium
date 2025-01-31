@@ -8,7 +8,7 @@
 <translation id="1012173283529841972">Élément de liste</translation>
 <translation id="1013742170491673792">recherche</translation>
 <translation id="1014370462248694370">Balayer l'écran vers la droite avec deux doigts</translation>
-<translation id="1022586497894531524">Est-ce la première fois que vous utilisez les commentaires audio de ChromeVox ? Ce tutoriel rapide explique les bases pour commencer à utiliser ChromeVox.</translation>
+<translation id="1022586497894531524">Est-ce la première fois que vous utilisez la lecture vocale de ChromeVox ? Ce tutoriel rapide explique les bases pour commencer à utiliser ChromeVox.</translation>
 <translation id="1025074108959230262">Mode rémanent désactivé</translation>
 <translation id="1031961866430398710">puis</translation>
 <translation id="1038643060055067718">Lignes :</translation>
@@ -504,7 +504,7 @@
 <translation id="4148180433151187540">{COUNT,plural, =1{accolade droite}one{# accolade droite}other{# accolades droites}}</translation>
 <translation id="4159784952369912983">Violet</translation>
 <translation id="4161104397932142764">{COUNT,plural, =1{seconde}one{seconde}other{secondes}}</translation>
-<translation id="4161663686871496107">La fonctionnalité de commentaires audio ChromeVox est prête.</translation>
+<translation id="4161663686871496107">La lecture vocale ChromeVox est prête.</translation>
 <translation id="4176463684765177261">Désactivé</translation>
 <translation id="4187322598335821254">Balayez l'écran vers le haut ou vers le bas pour vous déplacer ligne par ligne</translation>
 <translation id="4188530942454211480">Phrase précédente</translation>

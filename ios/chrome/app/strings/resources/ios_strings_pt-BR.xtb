@@ -565,7 +565,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3595252146048399851">Nas <ph name="BEGIN_LINK" />configurações<ph name="END_LINK" />, é possível escolher a qualquer momento o que é sincronizado. O Google pode personalizar a Pesquisa e outros serviços com base no seu histórico.</translation>
 <translation id="3596414637720633074">Bloquear cookies de terceiros na navegação anônima</translation>
 <translation id="3602260545951981695">Escolha "Proteção reforçada"</translation>
-<translation id="3622175633937495219">Histórico de pesquisa (<ph name="COUNT" /> encontrados)</translation>
+<translation id="3622175633937495219">Pesquisar no histórico (<ph name="COUNT" /> encontrados)</translation>
 <translation id="3625008969091706597">Deslize a borda da tela para voltar.</translation>
 <translation id="362709345066740529">Personalize os cards, o feed e muito mais aqui</translation>
 <translation id="3630104167004786843">Não receber atualizações</translation>
@@ -1562,7 +1562,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8079602123447022758">Esta configuração é gerenciada. Toque duas vezes para ver mais informações</translation>
 <translation id="8080028325999236607">Fechar todas as guias</translation>
 <translation id="8084285576995584326">Controlar os dados da sua Conta do Google</translation>
-<translation id="809543534949702122">Histórico de pesquisa</translation>
+<translation id="809543534949702122">Pesquisar no histórico</translation>
 <translation id="8101409298456377967">Crie, salve e gerencie suas senhas para facilitar o login em sites e apps. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="8102130909719902723">N</translation>
 <translation id="8114753159095730575">O download de arquivo está disponível. Opções disponíveis perto da parte inferior da tela.</translation>
