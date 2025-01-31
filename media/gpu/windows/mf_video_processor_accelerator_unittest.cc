@@ -38,6 +38,7 @@ class MFVideoProcessorAcceleratorTest : public ::testing::Test {
 
   HRESULT CreateTexture(UINT width,
                         UINT height,
+                        UINT bytes_per_pixel,
                         DXGI_FORMAT format,
                         BYTE* image_buffer,
                         ID3D11Texture2D** texture_out) {
@@ -57,7 +58,7 @@ class MFVideoProcessorAcceleratorTest : public ::testing::Test {
 
     D3D11_SUBRESOURCE_DATA data;
     data.pSysMem = image_buffer;
-    data.SysMemPitch = width * sizeof(RGBQUAD);
+    data.SysMemPitch = width * bytes_per_pixel;
     data.SysMemSlicePitch = 0;
 
     return d3d11_device_->CreateTexture2D(&desc, &data, texture_out);
@@ -77,6 +78,20 @@ class MFVideoProcessorAcceleratorTest : public ::testing::Test {
         image[y * width * 4 + x * 4 + 1] = color.rgbGreen;
         image[y * width * 4 + x * 4 + 2] = color.rgbRed;
         image[y * width * 4 + x * 4 + 3] = color.rgbReserved;
+      }
+    }
+    return image;
+  }
+
+  std::vector<BYTE> CreateYUY2Checkerboard(UINT width, UINT height) {
+    std::vector<BYTE> image(width * height * 2);
+    for (UINT y = 0; y < height; y++) {
+      for (UINT x = 0; x < width; x++) {
+        bool use_color0 =
+            ((x % 4) < 2 && (y % 4) < 2) || ((x % 4) >= 2 && (y % 4) >= 2);
+        BYTE luma = use_color0 ? kLumaGreen : kLumaMagenta;
+        image[y * width * 2 + x * 2 + 0] = luma;
+        image[y * width * 2 + x * 2 + 1] = 0;
       }
     }
     return image;
@@ -190,7 +205,7 @@ TEST_F(MFVideoProcessorAcceleratorTest, RGBToNV12) {
       CreateRGBCheckerboard(kWidth, kHeight, kGreen, kMagenta);
   Microsoft::WRL::ComPtr<ID3D11Texture2D> texture;
   ASSERT_HRESULT_SUCCEEDED(CreateTexture(
-      kWidth, kHeight, DXGI_FORMAT_B8G8R8A8_UNORM, image.data(), &texture));
+      kWidth, kHeight, 4, DXGI_FORMAT_B8G8R8A8_UNORM, image.data(), &texture));
 
   // Flush graphics pipeline so initial texture data is available when
   // texture is accessed through shared handle.
@@ -244,7 +259,7 @@ TEST_F(MFVideoProcessorAcceleratorTest, RGBResize) {
       CreateRGBCheckerboard(kWidth, kHeight, kGreen, kMagenta);
   Microsoft::WRL::ComPtr<ID3D11Texture2D> texture;
   ASSERT_HRESULT_SUCCEEDED(CreateTexture(
-      kWidth, kHeight, DXGI_FORMAT_B8G8R8A8_UNORM, image.data(), &texture));
+      kWidth, kHeight, 4, DXGI_FORMAT_B8G8R8A8_UNORM, image.data(), &texture));
 
   // Flush graphics pipeline so initial texture data is available when
   // texture is accessed through shared handle.
@@ -304,7 +319,7 @@ TEST_F(MFVideoProcessorAcceleratorTest, RGBToNV12Resize) {
       CreateRGBCheckerboard(kWidth, kHeight, kGreen, kMagenta);
   Microsoft::WRL::ComPtr<ID3D11Texture2D> texture;
   ASSERT_HRESULT_SUCCEEDED(CreateTexture(
-      kWidth, kHeight, DXGI_FORMAT_B8G8R8A8_UNORM, image.data(), &texture));
+      kWidth, kHeight, 4, DXGI_FORMAT_B8G8R8A8_UNORM, image.data(), &texture));
 
   // Flush graphics pipeline so initial texture data is available when
   // texture is accessed through shared handle.
@@ -385,7 +400,7 @@ TEST_F(MFVideoProcessorAcceleratorTest, RGBToNV12SizeChange) {
   std::vector<BYTE> image =
       CreateRGBCheckerboard(kWidth * 2, kHeight * 2, kGreen, kMagenta);
   Microsoft::WRL::ComPtr<ID3D11Texture2D> texture;
-  ASSERT_HRESULT_SUCCEEDED(CreateTexture(kWidth * 2, kHeight * 2,
+  ASSERT_HRESULT_SUCCEEDED(CreateTexture(kWidth * 2, kHeight * 2, 4,
                                          DXGI_FORMAT_B8G8R8A8_UNORM,
                                          image.data(), &texture));
 
@@ -417,6 +432,87 @@ TEST_F(MFVideoProcessorAcceleratorTest, RGBToNV12SizeChange) {
     // This test is affected by the same tolerance issues as RGBToNV12Resize.
     EXPECT_NEAR(image[0], kLumaGreen, 16);
     EXPECT_NEAR(image[1], kLumaMagenta, 16);
+  });
+}
+
+TEST_F(MFVideoProcessorAcceleratorTest, VideoPixelFormatChange) {
+  CheckForVideoDevice();
+
+  const UINT kWidth = 128;
+  const UINT kHeight = 128;
+
+  std::unique_ptr<MediaFoundationVideoProcessorAccelerator> video_processor;
+  video_processor = std::make_unique<MediaFoundationVideoProcessorAccelerator>(
+      gpu::GpuPreferences(), gpu::GpuDriverBugWorkarounds());
+  MediaFoundationVideoProcessorAccelerator::Config config;
+  config.input_format = VideoPixelFormat::PIXEL_FORMAT_XRGB;
+  config.input_visible_size = {kWidth, kHeight};
+  config.input_color_space = gfx::ColorSpace::CreateREC709();
+  config.output_format = VideoPixelFormat::PIXEL_FORMAT_NV12;
+  config.output_visible_size = {kWidth, kHeight};
+  config.output_color_space = gfx::ColorSpace::CreateREC709();
+  ASSERT_TRUE(video_processor->Initialize(config, dxgi_device_man_,
+                                          std::make_unique<NullMediaLog>()));
+
+  std::vector<BYTE> image =
+      CreateRGBCheckerboard(kWidth, kHeight, kGreen, kMagenta);
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> texture;
+  ASSERT_HRESULT_SUCCEEDED(CreateTexture(
+      kWidth, kHeight, 4, DXGI_FORMAT_B8G8R8A8_UNORM, image.data(), &texture));
+
+  // Flush graphics pipeline so initial texture data is available when
+  // texture is accessed through shared handle.
+  Microsoft::WRL::ComPtr<ID3D11DeviceContext> d3d11_context;
+  d3d11_device_->GetImmediateContext(&d3d11_context);
+  d3d11_context->Flush();
+
+  std::unique_ptr<gfx::GpuMemoryBuffer> gmb =
+      TextureToGpuMemoryBuffer(texture.Get(), kWidth, kHeight);
+  ASSERT_TRUE(gmb);
+  auto timestamp = base::Milliseconds(0);
+  auto frame = VideoFrame::WrapExternalGpuMemoryBuffer(
+      {kWidth, kHeight}, {kWidth, kHeight}, std::move(gmb), timestamp);
+
+  Microsoft::WRL::ComPtr<IMFSample> sample;
+  ASSERT_HRESULT_SUCCEEDED(video_processor->Convert(frame, &sample));
+
+  Microsoft::WRL::ComPtr<IMFMediaBuffer> media_buffer;
+  ASSERT_HRESULT_SUCCEEDED(sample->GetBufferByIndex(0, &media_buffer));
+  Microsoft::WRL::ComPtr<IMFDXGIBuffer> dxgi_buffer;
+  ASSERT_HRESULT_SUCCEEDED(media_buffer.As(&dxgi_buffer));
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> output_texture;
+  ASSERT_HRESULT_SUCCEEDED(
+      dxgi_buffer->GetResource(IID_PPV_ARGS(&output_texture)));
+  ValidateResult(output_texture.Get(), kWidth, kHeight, [](BYTE* image) {
+    EXPECT_NEAR(image[0], kLumaGreen, 1);
+    EXPECT_NEAR(image[2], kLumaMagenta, 1);
+  });
+
+  std::vector<BYTE> imageYuy2 = CreateYUY2Checkerboard(kWidth, kHeight);
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> textureYuy2;
+  ASSERT_HRESULT_SUCCEEDED(CreateTexture(kWidth, kHeight, 2, DXGI_FORMAT_YUY2,
+                                         imageYuy2.data(), &textureYuy2));
+  d3d11_context->Flush();
+
+  std::unique_ptr<gfx::GpuMemoryBuffer> gmbYuy2 =
+      TextureToGpuMemoryBuffer(textureYuy2.Get(), kWidth, kHeight);
+  ASSERT_TRUE(gmbYuy2);
+  auto frameYuy2 = VideoFrame::WrapExternalGpuMemoryBuffer(
+      {kWidth, kHeight}, {kWidth, kHeight}, std::move(gmbYuy2), timestamp);
+
+  Microsoft::WRL::ComPtr<IMFSample> sample1;
+  ASSERT_HRESULT_SUCCEEDED(video_processor->Convert(frameYuy2, &sample1));
+
+  Microsoft::WRL::ComPtr<IMFMediaBuffer> media_buffer1;
+  ASSERT_HRESULT_SUCCEEDED(sample1->GetBufferByIndex(0, &media_buffer1));
+  Microsoft::WRL::ComPtr<IMFDXGIBuffer> dxgi_buffer1;
+  ASSERT_HRESULT_SUCCEEDED(media_buffer1.As(&dxgi_buffer1));
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> output_texture1;
+  ASSERT_HRESULT_SUCCEEDED(
+      dxgi_buffer1->GetResource(IID_PPV_ARGS(&output_texture1)));
+  ValidateResult(output_texture1.Get(), kWidth, kHeight, [](BYTE* image) {
+    EXPECT_NEAR(image[0], kLumaGreen, 10);
+    EXPECT_NEAR(image[2], kLumaMagenta, 10);
   });
 }
 
@@ -501,7 +597,7 @@ TEST_F(MFVideoProcessorAcceleratorTest, RGBToH264) {
   std::vector<BYTE> image =
       CreateRGBCheckerboard(kWidth, kHeight, kGreen, kMagenta);
   Microsoft::WRL::ComPtr<ID3D11Texture2D> texture;
-  ASSERT_HRESULT_SUCCEEDED(CreateTexture(kWidth * 2, kHeight * 2,
+  ASSERT_HRESULT_SUCCEEDED(CreateTexture(kWidth * 2, kHeight * 2, 4,
                                          DXGI_FORMAT_B8G8R8A8_UNORM,
                                          image.data(), &texture));
 

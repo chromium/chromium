@@ -825,7 +825,12 @@ HRESULT InitializeSampleFromTexture(const VideoFrame* frame,
   hr = sample->SetSampleTime(frame->timestamp().InMicroseconds() *
                              kOneMicrosecondInMFSampleTimeUnits);
   RETURN_ON_HR_FAILURE(hr, "Failed to set sample timestamp", hr);
-
+  if (frame->ColorSpace().GetPrimaryID() !=
+      gfx::ColorSpace::PrimaryID::INVALID) {
+    (void)sample->SetUINT32(
+        MF_MT_VIDEO_PRIMARIES,
+        VideoPrimariesToMFVideoPrimaries(frame->ColorSpace().GetPrimaryID()));
+  }
   return S_OK;
 }
 
