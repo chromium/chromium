@@ -94,7 +94,10 @@ std::string PostTestCaseName(const ::testing::TestParamInfo<bool>& info) {
 
 class MockInputTransferHandler : public InputTransferHandlerAndroid {
  public:
-  MOCK_METHOD(bool, OnTouchEvent, (const ui::MotionEvent& event), (override));
+  MOCK_METHOD(bool,
+              OnTouchEvent,
+              (const ui::MotionEventAndroid& event),
+              (override));
 };
 
 class RenderWidgetHostViewAndroidTest : public RenderViewHostImplTestHarness {

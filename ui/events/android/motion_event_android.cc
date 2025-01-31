@@ -299,6 +299,10 @@ float MotionEventAndroid::GetTickMultiplier() const {
   return ToDips(tick_multiplier_);
 }
 
+float MotionEventAndroid::GetRawXPix(size_t pointer_index) const {
+  return GetRawX(pointer_index) / pix_to_dip();
+}
+
 ScopedJavaLocalRef<jobject> MotionEventAndroid::GetJavaObject() const {
   DUMP_WILL_BE_NOTREACHED();
   return nullptr;

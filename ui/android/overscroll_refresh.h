@@ -43,7 +43,9 @@ class UI_ANDROID_EXPORT OverscrollRefresh {
  public:
   // The default distance in dp from a side of the device to start a navigation
   // from.
+  // LINT.IfChange
   static constexpr int kDefaultNavigationEdgeWidth = 24;
+  // LINT.ThenChange(//ui/android/java/src/org/chromium/ui/OverscrollRefreshHandler.java:kDefaultNavigationEdgeWidth)
 
   OverscrollRefresh(OverscrollRefreshHandler* handler, float edge_width);
 

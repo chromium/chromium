@@ -11,7 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "content/common/content_export.h"
 #include "gpu/ipc/common/surface_handle.h"
-#include "ui/events/velocity_tracker/motion_event.h"
+#include "ui/events/android/motion_event_android.h"
 
 namespace content {
 
@@ -34,7 +34,9 @@ class CONTENT_EXPORT InputTransferHandlerAndroid {
   class JniDelegate {
    public:
     virtual ~JniDelegate() = default;
-    virtual bool MaybeTransferInputToViz(int surface_id) = 0;
+    // `raw_x` is the point's x coordinate in pixels in coordinate space of the
+    // device display similar to MotionEvent.getRawX.
+    virtual bool MaybeTransferInputToViz(int surface_id, float raw_x) = 0;
   };
 
   explicit InputTransferHandlerAndroid(
@@ -42,7 +44,7 @@ class CONTENT_EXPORT InputTransferHandlerAndroid {
   virtual ~InputTransferHandlerAndroid();
 
   // Virtual for testing.
-  virtual bool OnTouchEvent(const ui::MotionEvent& event);
+  virtual bool OnTouchEvent(const ui::MotionEventAndroid& event);
 
   void set_jni_delegate_for_testing(std::unique_ptr<JniDelegate> delegate) {
     jni_delegate_ = std::move(delegate);
