@@ -46,16 +46,9 @@ AddToComparisonTableSubMenuModel::AddToComparisonTableSubMenuModel(
       browser_->GetActiveTabInterface()->GetContents()->GetLastCommittedURL();
 
   for (const auto& set : sets) {
-    bool contains_current_url = false;
-    for (const auto& url_info : set.url_infos()) {
-      if (url_info.url == current_url) {
-        contains_current_url = true;
-        break;
-      }
-    }
-
     const int command_id = GetAndIncrementNextMenuId();
-    command_id_to_table_info_[command_id] = {set.uuid(), contains_current_url};
+    command_id_to_table_info_[command_id] = {set.uuid(),
+                                             set.ContainsUrl(current_url)};
     AddItem(command_id, base::UTF8ToUTF16(set.name()));
   }
 }

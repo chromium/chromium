@@ -85,4 +85,13 @@ sync_pb::ProductComparisonSpecifics ProductSpecificationsSet::ToProto() const {
   return specifics;
 }
 
+bool ProductSpecificationsSet::ContainsUrl(const GURL& url) const {
+  for (const auto& url_info : url_infos()) {
+    if (url_info.url == url) {
+      return true;
+    }
+  }
+  return false;
+}
+
 }  // namespace commerce

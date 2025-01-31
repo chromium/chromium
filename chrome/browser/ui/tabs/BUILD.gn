@@ -124,6 +124,7 @@ if (!is_android) {
   source_set("tab_model") {
     sources = [
       "existing_base_sub_menu_model.h",
+      "existing_comparison_table_sub_menu_model.h",
       "existing_tab_group_sub_menu_model.h",
       "existing_window_sub_menu_model.h",
       "recent_tabs_sub_menu_model.h",
@@ -136,6 +137,7 @@ if (!is_android) {
       ":tabs_public",
       "//base",
       "//components/back_forward_cache",
+      "//components/commerce/core/product_specifications:product_specifications",
       "//components/constrained_window",
       "//components/favicon/core",
       "//components/sessions",
@@ -157,6 +159,7 @@ if (!is_android) {
 
     sources = [
       "existing_base_sub_menu_model.cc",
+      "existing_comparison_table_sub_menu_model.cc",
       "existing_tab_group_sub_menu_model.cc",
       "existing_window_sub_menu_model.cc",
       "tab_model.cc",
@@ -169,9 +172,12 @@ if (!is_android) {
       ":tab_strip",
       ":tabs",
       "//chrome/app/vector_icons",
+      "//chrome/browser/commerce:commerce",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/commerce:commerce",
+      "//components/commerce/core/product_specifications:product_specifications",
       "//components/tab_groups",
     ]
 
@@ -477,6 +483,7 @@ if (!is_android) {
     testonly = true
     sources = [
       "existing_base_sub_menu_model_unittest.cc",
+      "existing_comparison_table_sub_menu_model_unittest.cc",
       "existing_tab_group_sub_menu_model_unittest.cc",
       "existing_window_sub_menu_model_unittest.cc",
       "pinned_tab_codec_unittest.cc",
