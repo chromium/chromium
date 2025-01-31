@@ -384,7 +384,7 @@ TEST_F(ExtensionMetricsProviderInstallsTest, TestProtoConstruction) {
             .Build();
     add_extension(extension.get());
     prefs()->SetExtensionDisabled(
-        extension->id(), extensions::disable_reason::DISABLE_USER_ACTION);
+        extension->id(), {extensions::disable_reason::DISABLE_USER_ACTION});
     {
       ExtensionInstallProto install = ConstructProto(*extension);
       ASSERT_EQ(1, install.disable_reasons_size());

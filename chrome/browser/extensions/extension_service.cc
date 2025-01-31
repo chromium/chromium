@@ -1561,10 +1561,14 @@ void ExtensionService::CheckPermissionsIncrease(const Extension* extension,
     disable_reasons |= disable_reason::DISABLE_PERMISSIONS_INCREASE;
   }
 
-  if (disable_reasons == disable_reason::DISABLE_NONE)
+  if (disable_reasons == disable_reason::DISABLE_NONE) {
     extension_prefs_->SetExtensionEnabled(extension->id());
-  else
-    extension_prefs_->SetExtensionDisabled(extension->id(), disable_reasons);
+  } else {
+    // TODO(crbug.com/372186532): Remove the conversion code after
+    // GetDisableReasons() is migrated to return a `DisableReasonSet`.
+    extension_prefs_->SetExtensionDisabled(
+        extension->id(), BitflagToIntegerSet(disable_reasons));
+  }
 }
 
 void ExtensionService::UpdateActiveExtensionsInCrashReporter() {
@@ -1589,7 +1593,7 @@ void ExtensionService::OnExtensionInstalled(
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
 
   const std::string& id = extension->id();
-  int disable_reasons = GetDisableReasonsOnInstalled(extension);
+  DisableReasonSet disable_reasons = GetDisableReasonsOnInstalled(extension);
   std::string install_parameter;
   const PendingExtensionInfo* pending_extension_info =
       pending_extension_manager()->GetById(id);
@@ -1632,21 +1636,21 @@ void ExtensionService::OnExtensionInstalled(
     // extension; if we're here, that means the user is manually
     // installing the extension.
     if (extension_prefs_->IsExternalExtensionUninstalled(id)) {
-      disable_reasons = disable_reason::DISABLE_NONE;
+      disable_reasons.clear();
     }
   }
 
   // If the old version of the extension was disabled due to corruption, this
   // new install may correct the problem.
-  disable_reasons &= ~disable_reason::DISABLE_CORRUPTED;
+  disable_reasons.erase(disable_reason::DISABLE_CORRUPTED);
 
   // Unsupported requirements overrides the management policy.
   if (install_flags & kInstallFlagHasRequirementErrors) {
-    disable_reasons |= disable_reason::DISABLE_UNSUPPORTED_REQUIREMENT;
+    disable_reasons.insert(disable_reason::DISABLE_UNSUPPORTED_REQUIREMENT);
   } else {
     // Requirement is supported now, remove the corresponding disable reason
     // instead.
-    disable_reasons &= ~disable_reason::DISABLE_UNSUPPORTED_REQUIREMENT;
+    disable_reasons.erase(disable_reason::DISABLE_UNSUPPORTED_REQUIREMENT);
   }
 
   // Check if the extension was disabled because of the minimum version
@@ -1654,7 +1658,7 @@ void ExtensionService::OnExtensionInstalled(
   if (ExtensionManagementFactory::GetForBrowserContext(profile())
           ->CheckMinimumVersion(extension, nullptr)) {
     // And remove the corresponding disable reason.
-    disable_reasons &= ~disable_reason::DISABLE_UPDATE_REQUIRED_BY_POLICY;
+    disable_reasons.erase(disable_reason::DISABLE_UPDATE_REQUIRED_BY_POLICY);
   }
 
   if (install_flags & kInstallFlagIsBlocklistedForMalware) {
@@ -1696,12 +1700,12 @@ void ExtensionService::OnExtensionInstalled(
   }
 
   const Extension::State initial_state =
-      disable_reasons == disable_reason::DISABLE_NONE ? Extension::ENABLED
-                                                      : Extension::DISABLED;
-  if (initial_state == Extension::ENABLED)
+      disable_reasons.empty() ? Extension::ENABLED : Extension::DISABLED;
+  if (initial_state == Extension::ENABLED) {
     extension_prefs_->SetExtensionEnabled(id);
-  else
+  } else {
     extension_prefs_->SetExtensionDisabled(id, disable_reasons);
+  }
 
   allowlist()->OnExtensionInstalled(id, install_flags);
 
@@ -2022,7 +2026,8 @@ void ExtensionService::RenderProcessHostDestroyed(
   process_map->Remove(host->GetDeprecatedID());
 }
 
-int ExtensionService::GetDisableReasonsOnInstalled(const Extension* extension) {
+DisableReasonSet ExtensionService::GetDisableReasonsOnInstalled(
+    const Extension* extension) {
   bool is_update_from_same_type = false;
   {
     const Extension* existing_extension =
@@ -2038,13 +2043,14 @@ int ExtensionService::GetDisableReasonsOnInstalled(const Extension* extension) {
                                                        &disable_reason)) {
     // A specified reason is required to disable the extension.
     DCHECK(disable_reason != disable_reason::DISABLE_NONE);
-    return disable_reason;
+    return {disable_reason};
   }
 
   // Extensions installed by policy can't be disabled. So even if a previous
   // installation disabled the extension, make sure it is now enabled.
-  if (system_->management_policy()->MustRemainEnabled(extension, nullptr))
-    return disable_reason::DISABLE_NONE;
+  if (system_->management_policy()->MustRemainEnabled(extension, nullptr)) {
+    return {};
+  }
 
   // An already disabled extension should inherit the disable reasons and
   // remain disabled.
@@ -2052,9 +2058,11 @@ int ExtensionService::GetDisableReasonsOnInstalled(const Extension* extension) {
     int disable_reasons = extension_prefs_->GetDisableReasons(extension->id());
     // If an extension was disabled without specified reason, presume it's
     // disabled by user.
+    // TODO(crbug.com/372186532): Remove the conversion code after
+    // GetDisableReasons() is migrated to return a DisableReasonSet.
     return disable_reasons == disable_reason::DISABLE_NONE
-               ? disable_reason::DISABLE_USER_ACTION
-               : disable_reasons;
+               ? DisableReasonSet({disable_reason::DISABLE_USER_ACTION})
+               : BitflagToIntegerSet(disable_reasons);
   }
 
   if (ExternalInstallManager::IsPromptingEnabled()) {
@@ -2069,11 +2077,11 @@ int ExtensionService::GetDisableReasonsOnInstalled(const Extension* extension) {
         Manifest::IsExternalLocation(extension->location()) &&
         !extension_prefs_->IsExternalExtensionAcknowledged(extension->id()) &&
         !is_update_from_same_type) {
-      return disable_reason::DISABLE_EXTERNAL_EXTENSION;
+      return {disable_reason::DISABLE_EXTERNAL_EXTENSION};
     }
   }
 
-  return disable_reason::DISABLE_NONE;
+  return {};
 }
 
 InstallGate::Action ExtensionService::ShouldDelayExtensionInstall(

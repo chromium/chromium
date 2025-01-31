@@ -620,9 +620,9 @@ class ExtensionService : public ExtensionServiceInterface,
   void UpdateActiveExtensionsInCrashReporter();
 
   // Helper to get the disable reasons for an installed (or upgraded) extension.
-  // A return value of disable_reason::DISABLE_NONE indicates that we should
-  // enable this extension initially.
-  int GetDisableReasonsOnInstalled(const Extension* extension);
+  // Returning an empty set indicates that we should enable this extension
+  // initially.
+  DisableReasonSet GetDisableReasonsOnInstalled(const Extension* extension);
 
   // Helper to determine if installing an extensions should proceed immediately,
   // or if we should delay the install until further notice, or if the install

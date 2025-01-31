@@ -119,7 +119,7 @@ class ExtensionPrefsExtensionState : public ExtensionPrefsTest {
   void Initialize() override {
     extension = prefs_.AddExtension("test");
     prefs()->SetExtensionDisabled(extension->id(),
-                                  disable_reason::DISABLE_USER_ACTION);
+                                  {disable_reason::DISABLE_USER_ACTION});
   }
 
   void Verify() override {
@@ -136,10 +136,11 @@ class ExtensionPrefsDeprecatedDisableReason : public ExtensionPrefsTest {
  public:
   void Initialize() override {
     extension1_ = prefs_.AddExtension("test1");
-    int disable_reasons = disable_reason::DEPRECATED_DISABLE_UNKNOWN_FROM_SYNC;
+    DisableReasonSet disable_reasons = {
+        disable_reason::DEPRECATED_DISABLE_UNKNOWN_FROM_SYNC};
     prefs()->SetExtensionDisabled(extension1_->id(), disable_reasons);
     extension2_ = prefs_.AddExtension("test2");
-    disable_reasons |= disable_reason::DISABLE_PERMISSIONS_INCREASE;
+    disable_reasons.insert(disable_reason::DISABLE_PERMISSIONS_INCREASE);
     prefs()->SetExtensionDisabled(extension2_->id(), disable_reasons);
     prefs()->MigrateDeprecatedDisableReasons();
   }
@@ -165,12 +166,12 @@ class ExtensionPrefsDisableReasonsBitflagToListMigration
  public:
   void Initialize() override {
     extension_1_ = prefs_.AddExtension("test1");
-    prefs()->SetExtensionDisabled(extension_1_->id(),
-                                  extension_1_disable_reasons_);
+    prefs()->SetExtensionDisabled(
+        extension_1_->id(), BitflagToIntegerSet(extension_1_disable_reasons_));
 
     extension_2_ = prefs_.AddExtension("test2");
-    prefs()->SetExtensionDisabled(extension_2_->id(),
-                                  extension_2_disable_reasons_);
+    prefs()->SetExtensionDisabled(
+        extension_2_->id(), BitflagToIntegerSet(extension_2_disable_reasons_));
   }
 
   void Verify() override {
@@ -216,8 +217,8 @@ class ExtensionPrefsEscalatePermissions : public ExtensionPrefsTest {
  public:
   void Initialize() override {
     extension = prefs_.AddExtension("test");
-    prefs()->SetExtensionDisabled(extension->id(),
-                                  disable_reason::DISABLE_PERMISSIONS_INCREASE);
+    prefs()->SetExtensionDisabled(
+        extension->id(), {disable_reason::DISABLE_PERMISSIONS_INCREASE});
   }
 
   void Verify() override {

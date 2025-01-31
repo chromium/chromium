@@ -1058,22 +1058,6 @@ void ExtensionPrefs::RemoveDisableReason(
 void ExtensionPrefs::ReplaceDisableReasons(
     const ExtensionId& extension_id,
     const DisableReasonSet& disable_reasons) {
-  // TODO(crbug.com/372186532) This assertion is temporary. Many callers do
-  // this:
-  //
-  // int reasons = GetDisableReasons(extension_id);
-  // ... modify reasons ...
-  // ReplaceDisableReasons(extension_id, reasons);
-  //
-  // Currently, GetDisableReasons() returns unknown disable reasons, without
-  // collapsing them to DISABLE_UNKNOWN. So, this is not a problem.
-  //
-  // Once GetDisableReasons() starts returning DISABLE_UNKNOWN, this assertion
-  // should be removed. We handle the case when DISABLE_UNKNOWN is passed here
-  // by getting all unknown reasons from the prefs and adding them back to the
-  // set before writing it to the prefs.
-  CHECK(!disable_reasons.contains(disable_reason::DISABLE_UNKNOWN))
-      << "Can not add DISABLE_UNKNOWN to the disable reasons list.";
   auto passkey = DisableReasonRawManipulationPasskey();
   ReplaceDisableReasons(passkey, extension_id, disable_reasons);
 }
@@ -1465,11 +1449,11 @@ void ExtensionPrefs::SetExtensionEnabled(const ExtensionId& extension_id) {
   }
 }
 
-void ExtensionPrefs::SetExtensionDisabled(const ExtensionId& extension_id,
-                                          int disable_reasons) {
+void ExtensionPrefs::SetExtensionDisabled(
+    const ExtensionId& extension_id,
+    const DisableReasonSet& disable_reasons) {
   auto passkey = DisableReasonRawManipulationPasskey();
-  SetExtensionDisabled(passkey, extension_id,
-                       BitflagToIntegerSet(disable_reasons));
+  SetExtensionDisabled(passkey, extension_id, disable_reasons);
 }
 
 void ExtensionPrefs::SetExtensionDisabled(
@@ -1997,6 +1981,25 @@ base::flat_set<int> ExtensionPrefs::ReadDisableReasonsFromPrefs(
 void ExtensionPrefs::WriteDisableReasonsToPrefs(
     const ExtensionId& extension_id,
     const base::flat_set<int>& disable_reasons) {
+  // TODO(crbug.com/372186532) This assertion is temporary. Many callers do
+  // this:
+  //
+  // int reasons = GetDisableReasons(extension_id);
+  // ... modify reasons ...
+  // ReplaceDisableReasons(extension_id, reasons);
+  // ... OR ...
+  // SetExtensionDisabled(extension_id, reasons);
+  //
+  // Currently, GetDisableReasons() returns unknown disable reasons, without
+  // collapsing them to DISABLE_UNKNOWN. So, this is not a problem.
+  //
+  // Once GetDisableReasons() starts returning DISABLE_UNKNOWN, this assertion
+  // should be removed. We handle the case when DISABLE_UNKNOWN is passed here
+  // by getting all unknown reasons from the prefs and adding them back to the
+  // set before writing it to the prefs.
+  CHECK(!disable_reasons.contains(disable_reason::DISABLE_UNKNOWN))
+      << "Can not add DISABLE_UNKNOWN to the disable reasons list.";
+
   base::Value::List to_write;
 
   for (int value : disable_reasons) {

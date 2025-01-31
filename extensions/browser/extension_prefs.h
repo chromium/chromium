@@ -402,7 +402,7 @@ class ExtensionPrefs : public KeyedService {
   // However, if the current state is EXTERNAL_EXTENSION_UNINSTALLED then that
   // is preserved (but the disable reasons are still set).
   void SetExtensionDisabled(const ExtensionId& extension_id,
-                            int disable_reasons);
+                            const DisableReasonSet& disable_reasons);
 
   // Getters and setters for disabled reason.
   // Note that you should rarely need to modify disable reasons directly -

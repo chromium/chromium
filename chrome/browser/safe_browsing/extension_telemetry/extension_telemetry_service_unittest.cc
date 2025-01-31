@@ -818,7 +818,7 @@ TEST_F(ExtensionTelemetryServiceTest, TestExtensionInfoProtoConstruction) {
             .Build();
     add_extension(extension.get());
     extension_prefs_->SetExtensionDisabled(
-        extension->id(), extensions::disable_reason::DISABLE_USER_ACTION);
+        extension->id(), {extensions::disable_reason::DISABLE_USER_ACTION});
     {
       std::unique_ptr<ExtensionInfo> extension_pb =
           GetExtensionInfo(*extension);

@@ -359,7 +359,7 @@ class ControlledPrefsDisableExtension : public ExtensionControlledPrefsTest {
     std::string actual = prefs()->pref_service()->GetString(kPref1);
     EXPECT_EQ("val1", actual);
     prefs()->SetExtensionDisabled(extension1()->id(),
-                                  disable_reason::DISABLE_USER_ACTION);
+                                  {disable_reason::DISABLE_USER_ACTION});
   }
   void Verify() override {
     std::string actual = prefs()->pref_service()->GetString(kPref1);
@@ -373,7 +373,7 @@ class ControlledPrefsReenableExtension : public ExtensionControlledPrefsTest {
   void Initialize() override {
     InstallExtensionControlledPref(extension1(), kPref1, base::Value("val1"));
     prefs()->SetExtensionDisabled(extension1()->id(),
-                                  disable_reason::DISABLE_USER_ACTION);
+                                  {disable_reason::DISABLE_USER_ACTION});
     prefs()->SetExtensionEnabled(extension1()->id());
   }
   void Verify() override {
