@@ -13,6 +13,7 @@
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/glic_page_context_fetcher.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
+#include "chrome/browser/glic/glic_screenshot_capturer.h"
 #include "chrome/browser/glic/glic_settings_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -35,6 +36,7 @@ GlicKeyedService::GlicKeyedService(content::BrowserContext* browser_context,
       window_controller_(Profile::FromBrowserContext(browser_context)),
       focused_tab_manager_(Profile::FromBrowserContext(browser_context),
                            window_controller_),
+      screenshot_capturer_(std::make_unique<GlicScreenshotCapturer>()),
       cookie_synchronizer_(browser_context, identity_manager),
       profile_manager_(profile_manager) {
   CHECK(GlicEnabling::IsProfileEligible(
@@ -201,9 +203,9 @@ void GlicKeyedService::GetContextFromFocusedTab(
 
 void GlicKeyedService::CaptureScreenshot(
     mojom::WebClientHandler::CaptureScreenshotCallback callback) {
-  // Implemented in follow up CL:
-  // https://chromium-review.googlesource.com/c/chromium/src/+/6194893
-  NOTIMPLEMENTED();
+  screenshot_capturer_->CaptureScreenshot(
+      window_controller_.GetGlicWidget()->GetNativeWindow(),
+      std::move(callback));
 }
 
 content::WebContents* GlicKeyedService::GetFocusedTab() {

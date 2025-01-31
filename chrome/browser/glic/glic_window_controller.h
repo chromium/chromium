@@ -162,7 +162,7 @@ class GlicWindowController : public views::WidgetObserver {
   // GlicWindowResizeAnimation.
   void ResizeFinished();
 
-  // Returns the widget that backs the glic window. Public for testing.
+  // Returns the widget that backs the glic window.
   views::Widget* GetGlicWidget();
 
   // Returns the WebContents hosted in the glic window, or nullptr if none.

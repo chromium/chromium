@@ -156,8 +156,6 @@ export declare interface GlicBrowserHost {
       (options: TabContextOptions): Promise<TabContextResult>;
 
   /**
-   * @todo Not yet implemented. https://crbug.com/384728537
-   *
    * Requests the host to capture a screenshot. The choice of the screenshot
    * target is made by the host, possibly allowing the user to choose between a
    * desktop, window or arbitrary region.

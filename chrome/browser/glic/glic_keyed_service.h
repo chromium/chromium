@@ -33,6 +33,7 @@ class GlicFocusedTabManager;
 class GlicMetrics;
 class GlicProfileManager;
 class GlicWindowController;
+class GlicScreenshotCapturer;
 
 // The GlicKeyedService is created for each eligible (i.e. non-incognito,
 // non-system, etc.) browser profile if Glic flags are enabled, regardless of
@@ -158,6 +159,7 @@ class GlicKeyedService : public KeyedService {
   GlicProfileConfiguration configuration_;
   GlicWindowController window_controller_;
   GlicFocusedTabManager focused_tab_manager_;
+  std::unique_ptr<GlicScreenshotCapturer> screenshot_capturer_;
   GlicCookieSynchronizer cookie_synchronizer_;
   std::unique_ptr<GlicMetrics> metrics_;
   // Unowned

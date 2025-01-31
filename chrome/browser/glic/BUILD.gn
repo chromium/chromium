@@ -64,6 +64,8 @@ source_set("impl") {
     "glic_page_handler.cc",
     "glic_profile_configuration.cc",
     "glic_profile_manager.cc",
+    "glic_screenshot_capturer.cc",
+    "glic_screenshot_capturer.h",
     "glic_settings_util.cc",
     "glic_tab_data.cc",
     "glic_tab_indicator_helper.cc",
