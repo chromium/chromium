@@ -1451,12 +1451,7 @@ crbug.com/387475844 external/wpt/css/css-images/gradient/gradient-longer-hue-lch
 crbug.com/387475844 external/wpt/css/css-images/gradient/gradient-longer-hue-lch-012.html [ Failure ]
 
 # css-scoping
-crbug.com/369883705 external/wpt/css/css-scoping/has-slotted-004.tentative.html [ Failure ]
-crbug.com/369883705 external/wpt/css/css-scoping/has-slotted-006.tentative.html [ Failure ]
-crbug.com/369883705 external/wpt/css/css-scoping/has-slotted-007.tentative.html [ Failure ]
-crbug.com/369883705 external/wpt/css/css-scoping/has-slotted-flattened-004.tentative.html [ Failure ]
-crbug.com/369883705 external/wpt/css/css-scoping/has-slotted-flattened-006.tentative.html [ Failure ]
-crbug.com/369883705 external/wpt/css/css-scoping/has-slotted-flattened-007.tentative.html [ Failure ]
+crbug.com/369883705 external/wpt/css/css-scoping/has-slotted-flattened-004.html [ Failure ]
 crbug.com/369883705 external/wpt/css/css-scoping/has-slotted-functional-001.tentative.html [ Failure ]
 crbug.com/369883705 external/wpt/css/css-scoping/has-slotted-functional-004.tentative.html [ Failure ]
 crbug.com/369883705 external/wpt/css/css-scoping/has-slotted-functional-006.tentative.html [ Failure ]
@@ -1467,6 +1462,10 @@ crbug.com/369883705 external/wpt/css/css-scoping/has-slotted-functional-flattene
 crbug.com/390453034 external/wpt/css/css-scoping/host-multiple-002.html [ Failure ]
 crbug.com/390453034 external/wpt/css/css-scoping/host-multiple-005.html [ Failure ]
 crbug.com/390453034 external/wpt/css/css-scoping/host-multiple-006.html [ Failure ]
+crbug.com/393395931 external/wpt/css/css-scoping/slotted-has-001.html [ Failure ]
+crbug.com/393395931 external/wpt/css/css-scoping/slotted-has-002.html [ Failure ]
+crbug.com/393395931 external/wpt/css/css-scoping/slotted-has-003.html [ Failure ]
+crbug.com/393395931 external/wpt/css/css-scoping/slotted-has-004.html [ Failure ]
 
 # ====== Style team owned tests to here ======
 
@@ -2714,10 +2713,6 @@ crbug.com/383880384 [ Win ] external/wpt/css/css-properties-values-api/registere
 crbug.com/393401460 external/wpt/webrtc/simulcast/av1.https.html [ Skip Timeout ]
 crbug.com/392927699 external/wpt/css/css-lists/list-style-position-001.html [ Failure ]
 crbug.com/392927987 [ Mac15 ] external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-to-same-origin.https.html?5-6 [ Crash ]
-crbug.com/392944181 external/wpt/css/css-scoping/slotted-has-001.html [ Failure ]
-crbug.com/392944181 external/wpt/css/css-scoping/slotted-has-002.html [ Failure ]
-crbug.com/392944181 external/wpt/css/css-scoping/slotted-has-003.html [ Failure ]
-crbug.com/392944181 external/wpt/css/css-scoping/slotted-has-004.html [ Failure ]
 crbug.com/392948859 [ Mac15 ] external/wpt/html/cross-origin-opener-policy/tentative/restrict-properties/iframe-popup-to-un.https.html?1-2 [ Crash Failure ]
 crbug.com/392180059 [ Linux ] external/wpt/digital-credentials/disabled-by-permissions-policy.https.sub.html [ Failure Timeout ]
 crbug.com/391975648 [ Win11-arm64 ] external/wpt/partitioned-popins/partitioned-popins.partitions.tentative.https.window.html?include=variant-5-test [ Crash Failure ]
@@ -2728,7 +2723,6 @@ crbug.com/391728750 [ Win11 ] external/wpt/ai/translator/ai_translator_translate
 crbug.com/391728750 [ Linux ] external/wpt/ai/translator/ai_translator_translate.tentative.https.any.serviceworker.html [ Skip Timeout ]
 crbug.com/391728750 [ Win11 ] external/wpt/ai/translator/ai_translator_translate.tentative.https.any.sharedworker.html [ Skip Timeout ]
 crbug.com/391728750 [ Linux ] external/wpt/ai/translator/ai_translator_translate.tentative.https.any.sharedworker.html [ Failure Timeout ]
-crbug.com/391753680 external/wpt/css/css-scoping/has-slotted-flattened-004.html [ Failure ]
 crbug.com/391520705 external/wpt/dom/nodes/MutationObserver-textContent.html [ Timeout ]
 crbug.com/390467419 [ Mac15-arm64 ] external/wpt/geolocation/enabled-by-permission-policy-attribute-redirect-on-load.https.sub.html [ Timeout ]
 crbug.com/390467419 [ Mac15 ] external/wpt/geolocation/enabled-by-permission-policy-attribute-redirect-on-load.https.sub.html [ Failure Timeout ]
