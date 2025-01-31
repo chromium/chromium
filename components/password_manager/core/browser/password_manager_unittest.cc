@@ -6111,6 +6111,7 @@ TEST_P(PasswordManagerTest, ProcessingModelPredictions_IrrelevantForm) {
 
 TEST_P(PasswordManagerTest, PasswordVsOtpMetric_PasswordForm) {
   base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   FormData form_data(MakeSimpleFormData());
   manager()->ProcessClassificationModelPredictions(
       &driver_, form_data,
@@ -6118,16 +6119,27 @@ TEST_P(PasswordManagerTest, PasswordVsOtpMetric_PasswordForm) {
        {form_data.fields()[1].global_id(), FieldType::PASSWORD}});
   histogram_tester.ExpectUniqueSample("PasswordManager.ParsedFormIsOtpForm2",
                                       PasswordVsOtpFormType::kPassword, 1);
+  CheckMetricHasValue(
+      test_ukm_recorder,
+      ukm::builders::PasswordManager_Classification::kEntryName,
+      ukm::builders::PasswordManager_Classification::kPasswordVsOtpFormTypeName,
+      PasswordVsOtpFormType::kPassword);
 }
 
 TEST_P(PasswordManagerTest, PasswordVsOtpMetric_OtpForm) {
   base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   FormData form_data(MakeSimpleFormData());
   manager()->ProcessClassificationModelPredictions(
       &driver_, form_data,
       {{form_data.fields()[0].global_id(), FieldType::ONE_TIME_CODE}});
   histogram_tester.ExpectUniqueSample("PasswordManager.ParsedFormIsOtpForm2",
                                       PasswordVsOtpFormType::kOtp, 1);
+  CheckMetricHasValue(
+      test_ukm_recorder,
+      ukm::builders::PasswordManager_Classification::kEntryName,
+      ukm::builders::PasswordManager_Classification::kPasswordVsOtpFormTypeName,
+      PasswordVsOtpFormType::kOtp);
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)

@@ -1607,9 +1607,9 @@ chromium-metrics-reviews@google.com.
 <enum name="PasswordVsOtpFormType">
   <int value="0"
       label="Form without password and OTP fields (e.g. single username form)"/>
-  <int value="1" label="Password form"/>
-  <int value="2" label="OTP form"/>
-  <int value="3" label="Password + OTP form"/>
+  <int value="2" label="Password form"/>
+  <int value="4" label="OTP form"/>
+  <int value="6" label="Password + OTP form"/>
 </enum>
 
 <enum name="PasswordWeaknessScore">
