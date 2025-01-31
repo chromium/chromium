@@ -69,12 +69,12 @@ using media::cast::FrameSenderConfig;
 using media::cast::OperationalStatus;
 using media::cast::Packet;
 using media::cast::PacketEvent;
-using media::mojom::RemotingSinkAudioCapability;
-using media::mojom::RemotingSinkVideoCapability;
+
 using mirroring::mojom::SessionError;
 using mirroring::mojom::SessionType;
 
 namespace mirroring {
+
 namespace {
 
 // The time between updating the bandwidth estimates.
@@ -100,72 +100,6 @@ int NumberOfEncodeThreads() {
   // with only 1 or 2 cores, use only one thread for encoding. On systems with
   // more cores, allow half of the cores to be used for encoding.
   return std::min(8, (base::SysInfo::NumberOfProcessors() + 1) / 2);
-}
-
-// Convert the sink capabilities to media::mojom::RemotingSinkMetadata.
-media::mojom::RemotingSinkMetadata ToRemotingSinkMetadata(
-    const openscreen::cast::RemotingCapabilities& capabilities,
-    const std::string& friendly_name) {
-  media::mojom::RemotingSinkMetadata sink_metadata;
-  sink_metadata.friendly_name = friendly_name;
-
-  for (const openscreen::cast::AudioCapability capability :
-       capabilities.audio) {
-    switch (capability) {
-      case openscreen::cast::AudioCapability::kBaselineSet:
-        sink_metadata.audio_capabilities.push_back(
-            RemotingSinkAudioCapability::CODEC_BASELINE_SET);
-        continue;
-
-      case openscreen::cast::AudioCapability::kAac:
-        sink_metadata.audio_capabilities.push_back(
-            RemotingSinkAudioCapability::CODEC_AAC);
-        continue;
-
-      case openscreen::cast::AudioCapability::kOpus:
-        sink_metadata.audio_capabilities.push_back(
-            RemotingSinkAudioCapability::CODEC_OPUS);
-        continue;
-    }
-    NOTREACHED();
-  }
-
-  for (const openscreen::cast::VideoCapability capability :
-       capabilities.video) {
-    switch (capability) {
-      case openscreen::cast::VideoCapability::kSupports4k:
-        sink_metadata.video_capabilities.push_back(
-            RemotingSinkVideoCapability::SUPPORT_4K);
-        continue;
-
-      case openscreen::cast::VideoCapability::kH264:
-        sink_metadata.video_capabilities.push_back(
-            RemotingSinkVideoCapability::CODEC_H264);
-        continue;
-
-      case openscreen::cast::VideoCapability::kVp8:
-        sink_metadata.video_capabilities.push_back(
-            RemotingSinkVideoCapability::CODEC_VP8);
-        continue;
-
-      case openscreen::cast::VideoCapability::kVp9:
-        sink_metadata.video_capabilities.push_back(
-            RemotingSinkVideoCapability::CODEC_VP9);
-        continue;
-
-      case openscreen::cast::VideoCapability::kHevc:
-        sink_metadata.video_capabilities.push_back(
-            RemotingSinkVideoCapability::CODEC_HEVC);
-        continue;
-
-      // TODO(crbug.com/40238534): remoting should support AV1.
-      case openscreen::cast::VideoCapability::kAv1:
-        continue;
-    }
-    NOTREACHED();
-  }
-
-  return sink_metadata;
 }
 
 void UpdateConfigUsingSessionParameters(
@@ -1149,8 +1083,8 @@ void OpenscreenSessionHost::InitMediaRemoter(
       std::make_unique<RpcDispatcherImpl>(session_->session_messenger());
   media_remoter_ = std::make_unique<MediaRemoter>(
       *this,
-      ToRemotingSinkMetadata(capabilities,
-                             session_params_.receiver_friendly_name),
+      media::cast::ToRemotingSinkMetadata(
+          capabilities, session_params_.receiver_friendly_name),
       *rpc_dispatcher_);
 }
 

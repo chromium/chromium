@@ -486,6 +486,11 @@ const char kPackExtension[] = "pack-extension";
 // Optional PEM private key to use in signing packaged .crx.
 const char kPackExtensionKey[] = "pack-extension-key";
 
+// This switch allows testing password change feature on provided URL. Password
+// change will be offered by submitting password form on any URL with matching
+// eTLD+1.
+const char kPasswordChangeUrl[] = "password-change-url";
+
 // Causes the browser process to crash very early in startup, just before
 // crashpad (or breakpad) is initialized.
 const char kPreCrashpadCrashTest[] = "pre-crashpad-crash-test";

@@ -198,7 +198,6 @@
 
 // Handles taps on the menu button.
 - (void)menuButtonTapped:(id)sender {
-  [self.mutator updateSharedState];
   base::RecordAction(base::UserMetricsAction(
       _displayedOnNTP ? "MobileTabGroupIndicatorShowNTPMenu"
                       : "MobileTabGroupIndicatorShowMenu"));

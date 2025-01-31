@@ -66,6 +66,37 @@ id<GREYMatcher> FacePileButton() {
   return grey_accessibilityID(kTabGroupFacePileButtonIdentifier);
 }
 
+// Long presses a tab group cell.
+void LongPressTabGroupCellAtIndex(unsigned int index) {
+  // Make sure the cell has appeared. Otherwise, long pressing can be flaky.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:TabGridGroupCellAtIndex(index)];
+  [ChromeEarlGreyUI waitForAppToIdle];
+  [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(index)]
+      performAction:grey_longPress()];
+}
+
+// Shares the group at `index`.
+void ShareGroupAtIndex(unsigned int index) {
+  // Share the first group.
+  LongPressTabGroupCellAtIndex(index);
+  [[EarlGrey selectElementWithMatcher:ShareGroupButton()]
+      performAction:grey_tap()];
+
+  // Verify that this opened the fake Share flow.
+  [[EarlGrey selectElementWithMatcher:FakeShareFlowView()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Actually share the group.
+  [[EarlGrey selectElementWithMatcher:NavigationBarSaveButton()]
+      performAction:grey_tap()];
+
+  // Wait for the disappearance of the Share Flow View and appearance of the
+  // underlying Done button from the Tab Grid.
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:FakeShareFlowView()];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:TabGridDoneButton()];
+}
+
 // Returns the completely configured AppLaunchConfiguration (i.e. setting all
 // the underlying feature dependencies), with the Shared Tab Groups flavor as a
 // parameter.
@@ -83,23 +114,6 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
       "--" + std::string(test_switches::kEnableFakeTabGroupSyncService));
 
   return config;
-}
-
-// Shares the group at `index`.
-void ShareGroupAtIndex(int index) {
-  // Share the first group.
-  [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(index)]
-      performAction:grey_longPress()];
-  [[EarlGrey selectElementWithMatcher:ShareGroupButton()]
-      performAction:grey_tap()];
-
-  // Verify that this opened the fake Share flow.
-  [[EarlGrey selectElementWithMatcher:FakeShareFlowView()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Actually share the group.
-  [[EarlGrey selectElementWithMatcher:NavigationBarSaveButton()]
-      performAction:grey_tap()];
 }
 
 }  // namespace
@@ -171,12 +185,11 @@ void ShareGroupAtIndex(int index) {
   // Open the tab grid.
   [ChromeEarlGreyUI openTabGrid];
 
-  // Creates a tab group with an item at 0.
+  // Create a tab group with an item at 0.
   CreateTabGroupAtIndex(0, kGroup1Name);
 
   // Share the first group.
-  [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(0)]
-      performAction:grey_longPress()];
+  LongPressTabGroupCellAtIndex(0);
   [[EarlGrey selectElementWithMatcher:ShareGroupButton()]
       performAction:grey_tap()];
 
@@ -188,14 +201,12 @@ void ShareGroupAtIndex(int index) {
   [[EarlGrey selectElementWithMatcher:NavigationBarCancelButton()]
       performAction:grey_tap()];
 
-  // Verify that it closed the Share flow.
-  [[EarlGrey selectElementWithMatcher:FakeShareFlowView()]
-      assertWithMatcher:grey_notVisible()];
+  // Verify that it closes the Share flow.
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:FakeShareFlowView()];
 
   // Verify that the group is not shared by checking that the context menu
   // offers to Share rather than Manage the group.
-  [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(0)]
-      performAction:grey_longPress()];
+  LongPressTabGroupCellAtIndex(0);
   [[EarlGrey selectElementWithMatcher:ShareGroupButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey selectElementWithMatcher:ManageGroupButton()]
@@ -208,7 +219,7 @@ void ShareGroupAtIndex(int index) {
   // Open the tab grid.
   [ChromeEarlGreyUI openTabGrid];
 
-  // Creates a tab group with an item at 0.
+  // Create a tab group with an item at 0.
   CreateTabGroupAtIndex(0, kGroup1Name);
 
   // Open the tab group view.
@@ -254,12 +265,11 @@ void ShareGroupAtIndex(int index) {
   // Open the tab grid.
   [ChromeEarlGreyUI openTabGrid];
 
-  // Creates a tab group with an item at 0.
+  // Create a tab group with an item at 0.
   CreateTabGroupAtIndex(0, kGroup1Name);
 
   // Share the first group.
-  [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(0)]
-      performAction:grey_longPress()];
+  LongPressTabGroupCellAtIndex(0);
   [[EarlGrey selectElementWithMatcher:ShareGroupButton()]
       performAction:grey_tap()];
 
@@ -271,14 +281,12 @@ void ShareGroupAtIndex(int index) {
   [[EarlGrey selectElementWithMatcher:NavigationBarSaveButton()]
       performAction:grey_tap()];
 
-  // Verify that it closed the Share flow.
-  [[EarlGrey selectElementWithMatcher:FakeShareFlowView()]
-      assertWithMatcher:grey_notVisible()];
+  // Verify that it closes the Share flow.
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:FakeShareFlowView()];
 
   // Verify that the group is shared by checking that the context menu offers to
   // Manage rather than Share the group.
-  [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(0)]
-      performAction:grey_longPress()];
+  LongPressTabGroupCellAtIndex(0);
   [[EarlGrey selectElementWithMatcher:ManageGroupButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey selectElementWithMatcher:ShareGroupButton()]
@@ -370,12 +378,11 @@ void ShareGroupAtIndex(int index) {
   // Open the tab grid.
   [ChromeEarlGreyUI openTabGrid];
 
-  // Creates a tab group with an item at 0.
+  // Create a tab group with an item at 0.
   CreateTabGroupAtIndex(0, kGroup1Name);
 
   // Share the first group.
-  [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(0)]
-      performAction:grey_longPress()];
+  LongPressTabGroupCellAtIndex(0);
   [[EarlGrey selectElementWithMatcher:ShareGroupButton()]
       performAction:grey_tap()];
 
@@ -387,13 +394,11 @@ void ShareGroupAtIndex(int index) {
   [[EarlGrey selectElementWithMatcher:NavigationBarSaveButton()]
       performAction:grey_tap()];
 
-  // Verify that it closed the Share flow.
-  [[EarlGrey selectElementWithMatcher:FakeShareFlowView()]
-      assertWithMatcher:grey_notVisible()];
+  // Verify that it closes the Share flow.
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:FakeShareFlowView()];
 
   // Long press the group.
-  [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(0)]
-      performAction:grey_longPress()];
+  LongPressTabGroupCellAtIndex(0);
 
   // Verify that the leave button is not available.
   [[EarlGrey selectElementWithMatcher:LeaveSharedGroupButton()]
@@ -435,11 +440,9 @@ void ShareGroupAtIndex(int index) {
   // Check that the group is loaded.
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:TabGridGroupCellAtIndex(1)];
-  [ChromeEarlGreyUI waitForAppToIdle];
 
   // Long press the group.
-  [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(1)]
-      performAction:grey_longPress()];
+  LongPressTabGroupCellAtIndex(1);
 
   // Verify that the delete button is not available.
   [[EarlGrey selectElementWithMatcher:DeleteGroupButton()]
@@ -482,12 +485,11 @@ void ShareGroupAtIndex(int index) {
   // Open the tab grid.
   [ChromeEarlGreyUI openTabGrid];
 
-  // Creates a tab group with an item at 0.
+  // Create a tab group with an item at 0.
   CreateTabGroupAtIndex(0, kGroup1Name);
 
   // Try to share the first group.
-  [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(0)]
-      performAction:grey_longPress()];
+  LongPressTabGroupCellAtIndex(0);
 
   // Verify that there is no Share or Manage button.
   [[EarlGrey selectElementWithMatcher:ShareGroupButton()]

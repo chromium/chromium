@@ -51,7 +51,7 @@ using ::permissions::PredictionRequestFeatures;
 using QuietUiReason = PredictionBasedPermissionUiSelector::QuietUiReason;
 using Decision = PredictionBasedPermissionUiSelector::Decision;
 using PredictionSource = PredictionBasedPermissionUiSelector::PredictionSource;
-using PermissionsAiResponse = optimization_guide::proto::PermissionsAiResponse;
+using ::optimization_guide::proto::PermissionsAiResponse;
 
 constexpr auto VeryUnlikely = permissions::
     PermissionPrediction_Likelihood_DiscretizedLikelihood_VERY_UNLIKELY;

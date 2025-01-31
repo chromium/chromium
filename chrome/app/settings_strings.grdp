@@ -4525,7 +4525,10 @@
     Data sent to Google may be seen by human reviewers to improve Chrome AI’s technology
   </message>
   <message name="IDS_SETTINGS_AI_PAGE_MAIN_MANAGED_SUBLABEL_3" desc="This is a bullet point on a card that sets the context for the ‘AI innovations’ section of Chrome’s settings. Here, the user can see settings related to AI (artificial intelligence) in this section; these settings include Help me write, Tab organizer, and more. This bullet point is after the ‘Reimagine Chrome, supercharged with AI’ title and ‘Things to consider’ subheading. We want users to read this card and understand the considerations that apply to all Chrome’s AI features. This bullet point specifically notes that AI features are actively developing, and that humans may review feature usage and corresponding data in order to further improve the feature. The tone should be informative.">
-    Your organization controls how data collected by these features may be used. <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
+    Your organization controls how data collected by these features may be used.
+  </message>
+  <message name="IDS_SETTINGS_AI_PAGE_MAIN_MANAGED_LEARN_MORE_ACCESSIBILITY_LABEL" desc="This string is found in a link that takes the user to the AI features and policies help center article when the user taps it. The tone should be informative">
+    Learn more about using generative AI at work
   </message>
   <message name="IDS_SETTINGS_AI_SUBPAGE_SUBLABEL_AI" desc="This is a bullet point in the ‘Things to consider’ column, which describes things users should consider about a feature. This string explains that AI features are actively developing and results may include errors. The tone should be informative.">
     This feature uses AI, is in early development, and won’t always get it right

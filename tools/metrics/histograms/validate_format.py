@@ -2,11 +2,12 @@
 # Copyright 2013 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """Verifies that the histograms XML file is well-formatted."""
 
+import argparse
 import logging
 import sys
+from typing import List
 import xml.dom.minidom
 
 import extract_histograms
@@ -22,10 +23,22 @@ _NAMESPACES_IN_MULTIPLE_FILES = [
 ]
 
 
-def CheckNamespaces():
+def CheckNamespaces(xml_paths: List[str]):
+  """Check that histograms from a single namespace are all in the same file.
+
+  Generally we want the histograms from a single namespace to be in the same
+  file. There are some exceptions to that which are listed in the
+  _NAMESPACES_IN_MULTIPLE_FILES variable.
+
+  The namespace is the first component of the name of the histogram. e.g.
+  `Foo.Bar.Baz` has a namespace of `Foo`.
+
+  Args:
+    xml_paths: A list of paths to the xml files to validate.
+  """
   namespaces = {}
   has_errors = False
-  for path in histogram_paths.ALL_XMLS:
+  for path in xml_paths:
     tree = xml.dom.minidom.parse(path)
 
     def _GetNamespace(node):
@@ -50,11 +63,22 @@ def CheckNamespaces():
 
 
 def main():
-  doc = merge_xml.MergeFiles(histogram_paths.ALL_XMLS,
+  parser = argparse.ArgumentParser()
+  parser.add_argument(
+      '--xml_paths',
+      type=str,
+      nargs='*',
+      default=histogram_paths.ALL_XMLS,
+      help='An optional list of paths to XML files to validate passed as'
+      ' consecutive arguments. Production XML files are validated by default.')
+  paths_to_check = parser.parse_args().xml_paths
+
+  doc = merge_xml.MergeFiles(paths_to_check,
                              expand_owners_and_extract_components=False)
   _, errors = extract_histograms.ExtractHistogramsFromDom(doc)
-  errors = errors or CheckNamespaces()
+  errors = errors or CheckNamespaces(paths_to_check)
   sys.exit(errors)
+
 
 if __name__ == '__main__':
   main()

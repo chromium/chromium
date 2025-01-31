@@ -26,6 +26,14 @@ BASE_FEATURE(kLocalWebApprovals,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+#if BUILDFLAG(IS_IOS)
+const int kLocalWebApprovalBottomSheetLoadTimeoutDefaultValueMs = 5000;
+
+const base::FeatureParam<int> kLocalWebApprovalBottomSheetLoadTimeoutMs{
+    &kLocalWebApprovals, /*name=*/"LocalWebApprovalBottomSheetLoadTimeoutMs",
+    kLocalWebApprovalBottomSheetLoadTimeoutDefaultValueMs};
+#endif
+
 bool IsGoogleBrandedBuild() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return true;

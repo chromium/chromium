@@ -119,6 +119,10 @@ SkColorType GPUCanvasContext::GetSkColorType() const {
   return viz::ToClosestSkColorType(swap_buffers_->Format());
 }
 
+viz::SharedImageFormat GPUCanvasContext::GetSharedImageFormat() const {
+  return viz::SkColorTypeToSinglePlaneSharedImageFormat(GetSkColorType());
+}
+
 gfx::ColorSpace GPUCanvasContext::GetColorSpace() const {
   if (!swap_buffers_) {
     return gfx::ColorSpace::CreateSRGB();

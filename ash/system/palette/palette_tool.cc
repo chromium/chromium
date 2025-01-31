@@ -16,6 +16,7 @@
 #include "ash/system/palette/tools/magnifier_mode.h"
 #include "ash/system/palette/tools/marker_mode.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/vector_icon_types.h"
 
 namespace ash {
 
@@ -43,7 +44,7 @@ void PaletteTool::OnDisable() {
 }
 
 const gfx::VectorIcon& PaletteTool::GetActiveTrayIcon() const {
-  return gfx::kNoneIcon;
+  return gfx::VectorIcon::EmptyIcon();
 }
 
 }  // namespace ash

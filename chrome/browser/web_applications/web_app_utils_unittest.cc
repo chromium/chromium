@@ -179,14 +179,28 @@ TEST(WebAppTest, ResolveEffectiveDisplayModeWithIsolatedWebApp) {
             ResolveEffectiveDisplayMode(
                 /*app_display_mode=*/DisplayMode::kBrowser,
                 /*app_display_mode_overrides=*/{DisplayMode::kBrowser},
-                /*user_display_mode=*/mojom::UserDisplayMode::kBrowser,
+                /*user_display_mode=*/mojom::UserDisplayMode::kStandalone,
                 /*is_isolated=*/true));
 
   EXPECT_EQ(DisplayMode::kStandalone,
             ResolveEffectiveDisplayMode(
                 /*app_display_mode=*/DisplayMode::kMinimalUi,
                 /*app_display_mode_overrides=*/{},
-                /*user_display_mode=*/mojom::UserDisplayMode::kBrowser,
+                /*user_display_mode=*/mojom::UserDisplayMode::kStandalone,
+                /*is_isolated=*/true));
+
+  EXPECT_EQ(DisplayMode::kStandalone,
+            ResolveEffectiveDisplayMode(
+                /*app_display_mode=*/DisplayMode::kFullscreen,
+                /*app_display_mode_overrides=*/{},
+                /*user_display_mode=*/mojom::UserDisplayMode::kStandalone,
+                /*is_isolated=*/true));
+
+  EXPECT_EQ(DisplayMode::kBorderless,
+            ResolveEffectiveDisplayMode(
+                /*app_display_mode=*/DisplayMode::kStandalone,
+                /*app_display_mode_overrides=*/{DisplayMode::kBorderless},
+                /*user_display_mode=*/mojom::UserDisplayMode::kStandalone,
                 /*is_isolated=*/true));
 }
 

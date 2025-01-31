@@ -10,10 +10,12 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/collaboration/public/collaboration_service.h"
 #import "components/data_sharing/public/data_sharing_service.h"
+#import "components/data_sharing/public/group_data.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/saved_tab_groups/public/tab_group_sync_service.h"
 #import "ios/chrome/browser/collaboration/model/features.h"
+#import "ios/chrome/browser/data_sharing/model/data_sharing_service_observer_bridge.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_face_pile_configuration.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_manage_configuration.h"
@@ -39,13 +41,17 @@ using PeopleGroupActionOutcome =
 using ScopedTabGroupSyncObservation =
     base::ScopedObservation<tab_groups::TabGroupSyncService,
                             tab_groups::TabGroupSyncService::Observer>;
+using ScopedDataSharingSyncObservation =
+    base::ScopedObservation<data_sharing::DataSharingService,
+                            data_sharing::DataSharingService::Observer>;
 
 namespace {
 // The preferred size in points for the avatar icons.
 constexpr CGFloat kFacePileAvatarSize = 20;
 }  // namespace
 
-@interface TabGroupIndicatorMediator () <TabGroupSyncServiceObserverDelegate,
+@interface TabGroupIndicatorMediator () <DataSharingServiceObserverDelegate,
+                                         TabGroupSyncServiceObserverDelegate,
                                          WebStateListObserving>
 @end
 
@@ -55,9 +61,16 @@ constexpr CGFloat kFacePileAvatarSize = 20;
   raw_ptr<tab_groups::TabGroupSyncService> _tabGroupSyncService;
   raw_ptr<data_sharing::DataSharingService> _dataSharingService;
   raw_ptr<feature_engagement::Tracker> _tracker;
-  // The bridge between the service C++ observer and this Objective-C class.
-  std::unique_ptr<TabGroupSyncServiceObserverBridge> _syncServiceObserver;
-  std::unique_ptr<ScopedTabGroupSyncObservation> _scopedSyncServiceObservation;
+
+  // Bridges between C++ service observers and this Objective-C class.
+  std::unique_ptr<TabGroupSyncServiceObserverBridge>
+      _tabGroupSyncServiceObserver;
+  std::unique_ptr<ScopedTabGroupSyncObservation>
+      _scopedTabGroupSyncServiceObservation;
+  std::unique_ptr<DataSharingServiceObserverBridge> _dataSharingServiceObserver;
+  std::unique_ptr<ScopedDataSharingSyncObservation>
+      _scopedDataSharingServiceObservation;
+
   // URL loader to open tabs when needed.
   raw_ptr<UrlLoadingBrowserAgent> _URLLoader;
   __weak id<TabGroupIndicatorConsumer> _consumer;
@@ -89,14 +102,25 @@ constexpr CGFloat kFacePileAvatarSize = 20;
     _collaborationService = collaborationService;
     _tabGroupSyncService = tabGroupSyncService;
     _dataSharingService = dataSharingService;
+
     if (tabGroupSyncService) {
-      _syncServiceObserver =
+      _tabGroupSyncServiceObserver =
           std::make_unique<TabGroupSyncServiceObserverBridge>(self);
-      _scopedSyncServiceObservation =
+      _scopedTabGroupSyncServiceObservation =
           std::make_unique<ScopedTabGroupSyncObservation>(
-              _syncServiceObserver.get());
-      _scopedSyncServiceObservation->Observe(_tabGroupSyncService);
+              _tabGroupSyncServiceObserver.get());
+      _scopedTabGroupSyncServiceObservation->Observe(_tabGroupSyncService);
     }
+
+    if (dataSharingService) {
+      _dataSharingServiceObserver =
+          std::make_unique<DataSharingServiceObserverBridge>(self);
+      _scopedDataSharingServiceObservation =
+          std::make_unique<ScopedDataSharingSyncObservation>(
+              _dataSharingServiceObserver.get());
+      _scopedDataSharingServiceObservation->Observe(_dataSharingService);
+    }
+
     _consumer = consumer;
     _tracker = tracker;
     _incognito = incognito;
@@ -116,8 +140,10 @@ constexpr CGFloat kFacePileAvatarSize = 20;
     _webStateList = nullptr;
   }
   _webStateListObserver.reset();
-  _scopedSyncServiceObservation.reset();
-  _syncServiceObserver.reset();
+  _scopedTabGroupSyncServiceObservation.reset();
+  _tabGroupSyncServiceObserver.reset();
+  _scopedDataSharingServiceObservation.reset();
+  _dataSharingServiceObserver.reset();
   _tabGroupSyncService = nullptr;
   _collaborationService = nullptr;
   _shareKitService = nullptr;
@@ -268,11 +294,6 @@ constexpr CGFloat kFacePileAvatarSize = 20;
                  sharedTabGroup:tabGroup];
 }
 
-- (void)updateSharedState {
-  const TabGroup* tabGroup = [self currentTabGroup];
-  [self updateTabGroupSharedState:tabGroup];
-}
-
 #pragma mark - SceneStateObserver
 
 - (void)sceneState:(SceneState*)sceneState
@@ -290,6 +311,7 @@ constexpr CGFloat kFacePileAvatarSize = 20;
 
 - (void)tabGroupSyncServiceInitialized {
   [self presentForegroundIPHIfNeeded];
+  [self updateTabGroupSharedState:[self currentTabGroup]];
   [self updateFacePileUI];
 }
 
@@ -305,7 +327,64 @@ constexpr CGFloat kFacePileAvatarSize = 20;
   [self updateFacePileUI];
 }
 
+#pragma mark DataSharingServiceObserverDelegate
+
+- (void)dataSharingServiceInitialized {
+  [self presentForegroundIPHIfNeeded];
+  [self updateTabGroupSharedState:[self currentTabGroup]];
+  [self updateFacePileUI];
+}
+
+- (void)dataSharingServiceDidAddGroup:(const data_sharing::GroupData&)groupData
+                               atTime:(const base::Time&)eventTime {
+  [self handleDataSharingUpdateForGroupId:groupData.group_token.group_id];
+}
+
+- (void)dataSharingServiceDidRemoveGroup:(const data_sharing::GroupId&)groupId
+                                  atTime:(const base::Time&)eventTime {
+  [self handleDataSharingUpdateForGroupId:groupId];
+}
+
+- (void)dataSharingServiceDidAddMember:(const GaiaId&)memberId
+                               toGroup:(const data_sharing::GroupId&)groupId
+                                atTime:(const base::Time&)eventTime {
+  [self handleDataSharingUpdateForGroupId:groupId];
+}
+
+- (void)dataSharingServiceDidRemoveMember:(const GaiaId&)memberId
+                                  toGroup:(const data_sharing::GroupId&)groupId
+                                   atTime:(const base::Time&)eventTime {
+  [self handleDataSharingUpdateForGroupId:groupId];
+}
+
 #pragma mark - Private
+
+// Updates the consumer after a data sharing service update for the current tab
+// group. `groupId` The ID of the group that was updated.
+- (void)handleDataSharingUpdateForGroupId:
+    (const data_sharing::GroupId&)groupId {
+  const TabGroup* tabGroup = [self currentTabGroup];
+  if (!tabGroup) {
+    return;
+  }
+
+  std::optional<tab_groups::SavedTabGroup> savedGroup =
+      _tabGroupSyncService->GetGroup(tabGroup->tab_group_id());
+
+  // Early return if the current group is not shared.
+  if (!savedGroup || !savedGroup->collaboration_id().has_value()) {
+    return;
+  }
+
+  // Group Ids doesn't match.
+  if (savedGroup->collaboration_id().value() !=
+      tab_groups::CollaborationId(groupId.value())) {
+    return;
+  }
+
+  [self updateTabGroupSharedState:tabGroup];
+  [self updateFacePileUI];
+}
 
 // Takes the corresponded action to `actionType` for the shared `group`.
 // Not handled TabGroupActionType: kUngroupTabGroup, kDeleteTabGroup.

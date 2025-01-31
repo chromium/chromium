@@ -322,7 +322,7 @@ class OpenscreenSessionHostTest : public mojom::ResourceProvider,
         mojom::SessionParameters::New();
     session_params->type = session_type_;
     session_params->receiver_address = receiver_endpoint_.address();
-    session_params->receiver_model_name = "Chromecast";
+    session_params->receiver_friendly_name = "Chromecast Ultra";
     session_params->source_id = "sender-123";
     session_params->destination_id = "receiver-456";
     if (target_playout_delay_ != kDefaultPlayoutDelay) {

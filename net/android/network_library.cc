@@ -20,6 +20,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "net/base/features.h"
 #include "net/base/net_errors.h"
 #include "net/dns/public/dns_protocol.h"
 
@@ -50,6 +51,8 @@ std::vector<std::string> GetUserAddedRoots() {
 void VerifyX509CertChain(const std::vector<std::string>& cert_chain,
                          std::string_view auth_type,
                          std::string_view host,
+                         std::string_view ocsp_response,
+                         std::string_view sct_list,
                          CertVerifyStatusAndroid* status,
                          bool* is_issued_by_known_root,
                          std::vector<std::string>* verified_chain) {
@@ -67,9 +70,25 @@ void VerifyX509CertChain(const std::vector<std::string>& cert_chain,
       ConvertUTF8ToJavaString(env, host);
   DCHECK(!host_string.is_null());
 
+  ScopedJavaLocalRef<jbyteArray> ocsp_response_byte;
+  ScopedJavaLocalRef<jbyteArray> sct_list_byte;
+  if (base::FeatureList::IsEnabled(
+          features::kUseCertTransparencyAwareApiForOsCertVerify)) {
+    // We also don't want to pass down an empty OCSP response or SCT list array
+    // because the platform cert verifier expects null when there's no OCSP
+    // response or SCT list.
+    if (!ocsp_response.empty()) {
+      ocsp_response_byte = ToJavaByteArray(env, ocsp_response);
+    }
+    if (!sct_list.empty()) {
+      sct_list_byte = ToJavaByteArray(env, sct_list);
+    }
+  }
+
   ScopedJavaLocalRef<jobject> result =
       Java_AndroidNetworkLibrary_verifyServerCertificates(
-          env, chain_byte_array, auth_string, host_string);
+          env, chain_byte_array, auth_string, host_string, ocsp_response_byte,
+          sct_list_byte);
 
   ExtractCertVerifyResult(result, status, is_issued_by_known_root,
                           verified_chain);

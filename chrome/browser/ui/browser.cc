@@ -1551,6 +1551,14 @@ void Browser::OnTabStripModelChanged(TabStripModel* tab_strip_model,
                tab_strip_model, "change", change);
   switch (change.type()) {
     case TabStripModelChange::kInserted: {
+      // Initialize find bar controller when tab having active find session
+      // is inserted in a new window.
+      find_in_page::FindTabHelper* find_tab_helper =
+          find_in_page::FindTabHelper::FromWebContents(selection.new_contents);
+      if (!HasFindBarController() && find_tab_helper &&
+          find_tab_helper->is_find_session_active()) {
+        GetFindBarController();
+      }
       for (const auto& contents : change.GetInsert()->contents) {
         OnTabInsertedAt(contents.contents, contents.index);
       }

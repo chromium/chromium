@@ -62,7 +62,7 @@ class PredictionBasedPermissionUiSelectorTest : public testing::Test {
           {{permissions::feature_params::kPermissionPredictionsV2HoldbackChance
                 .name,
             holdback_chance_string}}}},
-        {} /* disabled_features */);
+        /*disabled_features=*/{});
   }
 
   void RecordHistoryActions(size_t action_count,
@@ -254,6 +254,7 @@ TEST_F(PredictionBasedPermissionUiSelectorTest, GetPredictionTypeToUse) {
 #endif
       },
       {});
+
   // Use server side for both desktop and android
   EXPECT_EQ(PredictionSource::USE_SERVER_SIDE,
             prediction_selector.GetPredictionTypeToUse(
@@ -261,6 +262,28 @@ TEST_F(PredictionBasedPermissionUiSelectorTest, GetPredictionTypeToUse) {
   EXPECT_EQ(PredictionSource::USE_SERVER_SIDE,
             prediction_selector.GetPredictionTypeToUse(
                 permissions::RequestType::kGeolocation));
+
+#if !BUILDFLAG(IS_ANDROID)
+  // All CPSS related flags enabled + the one for using the on-device genai
+  // model.
+  feature_list_->Reset();
+  feature_list_->InitWithFeatures(
+      {
+          permissions::features::kPermissionsAIv1,
+          permissions::features::kPermissionPredictionsV2,
+          permissions::features::kPermissionOnDeviceNotificationPredictions,
+          permissions::features::kPermissionOnDeviceGeolocationPredictions,
+          features::kQuietNotificationPrompts,
+      },
+      /*disabled_features=*/{});
+  // Use on-device genai model.
+  EXPECT_EQ(PredictionSource::USE_ONDEVICE_GENAI_AND_SERVER_SIDE,
+            prediction_selector.GetPredictionTypeToUse(
+                permissions::RequestType::kNotifications));
+  EXPECT_EQ(PredictionSource::USE_ONDEVICE_GENAI_AND_SERVER_SIDE,
+            prediction_selector.GetPredictionTypeToUse(
+                permissions::RequestType::kGeolocation));
+#endif
 }
 
 TEST_F(PredictionBasedPermissionUiSelectorTest, HoldbackHistogramTest) {

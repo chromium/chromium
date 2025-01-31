@@ -70,6 +70,9 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
   SkColorType GetSkColorType() const override {
     return color_params_.GetSkColorType();
   }
+  viz::SharedImageFormat GetSharedImageFormat() const override {
+    return viz::SkColorTypeToSinglePlaneSharedImageFormat(GetSkColorType());
+  }
   gfx::ColorSpace GetColorSpace() const override {
     return color_params_.GetGfxColorSpace();
   }

@@ -37,6 +37,7 @@
 #include "ui/display/screen.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/views/vector_icons.h"
 
 namespace {
@@ -232,7 +233,7 @@ const gfx::VectorIcon& ShelfContextMenu::GetCommandIdVectorIcon(
     case ash::USE_LAUNCH_TYPE_WINDOW:
     case ash::USE_LAUNCH_TYPE_TABBED_WINDOW:
       // Check items use a default icon in touchable and default context menus.
-      return gfx::kNoneIcon;
+      return gfx::VectorIcon::EmptyIcon();
     case ash::DEPRECATED_USE_LAUNCH_TYPE_PINNED:
     case ash::DEPRECATED_USE_LAUNCH_TYPE_FULLSCREEN:
       NOTREACHED();
@@ -249,7 +250,7 @@ const gfx::VectorIcon& ShelfContextMenu::GetCommandIdVectorIcon(
       return views::kLinuxLowDensityIcon;
     case ash::SWAP_WITH_NEXT:
     case ash::SWAP_WITH_PREVIOUS:
-      return gfx::kNoneIcon;
+      return gfx::VectorIcon::EmptyIcon();
     case ash::LAUNCH_APP_SHORTCUT_FIRST:
     case ash::LAUNCH_APP_SHORTCUT_LAST:
     case ash::COMMAND_ID_COUNT:

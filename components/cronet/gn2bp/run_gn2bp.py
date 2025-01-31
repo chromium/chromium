@@ -126,10 +126,10 @@ def _gen_boringssl() -> int:
   return cronet_utils.run(cmd, shell=True)
 
 
-def _run_copybara_to_aosp(
-    config: str = _COPYBARA_CONFIG_PATH,
-    copybara_binary: str = _COPYBARA_PATH,
-    git_url_and_branch: Optional[Tuple[str, str]] = None) -> int:
+def _run_copybara_to_aosp(config: str = _COPYBARA_CONFIG_PATH,
+                          copybara_binary: str = _COPYBARA_PATH,
+                          git_url_and_branch: Optional[Tuple[str, str]] = None,
+                          regenerate_consistency_file: bool = False) -> int:
   """Run Copybara CLI to generate an AOSP Gerrit CL with the generated files.
   Get the commit hash of AOSP `external/cronet` tip of tree to merge into.
   It will print the generated Gerrit url to stdout.
@@ -147,60 +147,26 @@ def _run_copybara_to_aosp(
     msg = f'gn2bp{time.time_ns()}'
     change_id = f'I{hashlib.sha1(msg.encode()).hexdigest()}'
     print(f'Generated {change_id=}')
-  with tempfile.TemporaryDirectory() as empty_dir:
-    return cronet_utils.run([
-        _JAVA_PATH,
-        '-jar',
-        copybara_binary,
-        config,
-        "import_cronet_to_aosp_gerrit"
-        if git_url_and_branch is None else "import_cronet_to_git_branch",
-        REPOSITORY_ROOT,
-        # We use copybara in merge_import mode to preserve local changes in AOSP
-        # that were not upstreamed to Chromium (in practice, that means
-        # various additional files such as external/cronet/android/). This means
-        # copybara will attempt to do a 3-way merge between:
-        #
-        #  - Left side: AOSP HEAD
-        #  - Right side: final output of this run (including transforms)
-        #  - Center: the "baseline"
-        #
-        # The correct baseline here would be the output of the *previous* run,
-        # i.e. the output of the run that was used to produce the current AOSP
-        # HEAD. This, however, is not trivial to produce: we'd need to find some
-        # way to determine which Chromium commit the previous run used input,
-        # then check that out, then run gn2bp on that, etc.
-        #
-        # Instead, we take a shortcut and use an empty directory as the
-        # baseline. This is a clever way to trick the 3-way merge into seeing
-        # every file as "new" on both sides. What happens then is if a file is
-        # only present on one side then that side is used; and if it's present
-        # on both sides then the right side (i.e. the output of this run)
-        # always overwrites the left side. This is basically a hacky workaround
-        # to ensure copybara never deletes our extra files on the AOSP side.
-        #
-        # While this kinda works, it has two undesirable properties:
-        #  - Any change made in AOSP to a file that also exists in Chromium will
-        #    be silently overwritten on import, instead of being 3-way merged.
-        #    (In practice this means every change to Chromium code in AOSP MUST
-        #    be upstreamed in Chromium before importing, otherwise it will be
-        #    reverted on import)
-        #  - Files deleted in Chromium will never be deleted in AOSP. More
-        #    generally, this approach makes copybara incapable of deleting any
-        #    files. (This makes sense, because in this setup copybara has no way
-        #    to distinguish between an AOSP-only file and a file that was
-        #    deleted from Chromium.)
-        #
-        # TODO: https://crbug.com/382268057 - improve on the above.
-        '--baseline-for-merge-import',
-        empty_dir,
-        '--ignore-noop',
-        *(('--change-request-parent', parent_commit, '--git-push-option',
-           'nokeycheck', '--git-push-option', 'uploadvalidator~skip',
-           '--gerrit-change-id', change_id) if git_url_and_branch is None else
-          ('--git-destination-url', git_url_and_branch[0],
-           '--git-destination-push', git_url_and_branch[1]))
-    ])
+  return cronet_utils.run([
+      _JAVA_PATH,
+      '-jar',
+      copybara_binary,
+      config,
+      "import_cronet_to_aosp_gerrit"
+      if git_url_and_branch is None else "import_cronet_to_git_branch",
+      REPOSITORY_ROOT,
+      '--ignore-noop',
+      *(('--change-request-parent', parent_commit, '--git-push-option',
+         'nokeycheck', '--git-push-option', 'uploadvalidator~skip',
+         '--gerrit-change-id', change_id) if git_url_and_branch is None else
+        ('--git-destination-url', git_url_and_branch[0],
+         '--git-destination-push', git_url_and_branch[1])),
+      # We can't use the copybara `regenerate` subcommand because it doesn't
+      # support folder origins. See https://crbug.com/391331930.
+      *(('--disable-consistency-merge-import', 'true',
+         '--baseline-for-merge-import',
+         REPOSITORY_ROOT) if regenerate_consistency_file else ())
+  ])
 
 
 def main():
@@ -239,6 +205,15 @@ def main():
                       action='store_true',
                       help=("Don't clean up temporary files. Useful for "
                             "troubleshooting."))
+  parser.add_argument('--regenerate-consistency-file',
+                      action='store_true',
+                      help=("Ask copybara to ignore the existing merge import "
+                            "consistency file and generate a new one. Note for "
+                            "this to work the script must be run from the same "
+                            "origin as the one that was used for the last "
+                            "import into the destination; in other words, you "
+                            "must re-import the exact same Cronet version that "
+                            "is currently in the destination."))
   args = parser.parse_args()
   run_copybara = not args.skip_copybara
   delete_temporary_files = not args.keep_temporary_files
@@ -283,7 +258,8 @@ def main():
       res_copybara = _run_copybara_to_aosp(
           config=args.config,
           copybara_binary=args.copybara,
-          git_url_and_branch=args.git_url_and_branch)
+          git_url_and_branch=args.git_url_and_branch,
+          regenerate_consistency_file=args.regenerate_consistency_file)
 
   finally:
     for file in arch_to_temp_desc_file.values():

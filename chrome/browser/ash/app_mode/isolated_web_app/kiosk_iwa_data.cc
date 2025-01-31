@@ -62,7 +62,7 @@ KioskIwaData::KioskIwaData(const std::string& user_id,
       iwa_info_(iwa_info),
       update_manifest_url_(update_manifest_url),
       delegate_(delegate) {
-  name_ = update_manifest_url_.GetWithoutFilename().spec();
+  name_ = update_manifest_url_.GetWithoutFilename().GetContent();
 }
 
 KioskIwaData::~KioskIwaData() = default;

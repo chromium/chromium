@@ -120,7 +120,7 @@ void DeviceCommandResetEuiccJob::ShowResetEuiccNotification() {
       message_center::RichNotificationData(),
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           base::DoNothingAs<void()>()),
-      /*small_image=*/gfx::VectorIcon(),
+      /*small_image=*/gfx::VectorIcon::EmptyIcon(),
       message_center::SystemNotificationWarningLevel::NORMAL);
   SystemNotificationHelper::GetInstance()->Display(notification);
 }

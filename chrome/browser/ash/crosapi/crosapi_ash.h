@@ -338,8 +338,6 @@ class CrosapiAsh : public mojom::Crosapi {
   void BindVideoCaptureDeviceFactory(
       mojo::PendingReceiver<mojom::VideoCaptureDeviceFactory> receiver)
       override;
-  void BindVideoConferenceManager(
-      mojo::PendingReceiver<mojom::VideoConferenceManager> receiver) override;
   void BindVirtualKeyboard(
       mojo::PendingReceiver<mojom::VirtualKeyboard> receiver) override;
   void BindVolumeManager(

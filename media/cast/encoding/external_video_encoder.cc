@@ -448,7 +448,7 @@ class ExternalVideoEncoder::VEAClientImpl final
         DCHECK_GT(request.target_bit_rate, 0);
         const double bitrate_utilization =
             actual_bitrate / request.target_bit_rate;
-        double quantizer = QuantizerEstimator::NO_RESULT;
+        std::optional<double> quantizer;
         // If the quantizer can be parsed from the key frame, try to parse
         // the following delta frames as well.
         // Otherwise, switch back to entropy estimation for the key frame
@@ -461,10 +461,10 @@ class ExternalVideoEncoder::VEAClientImpl final
           } else {
             NOTIMPLEMENTED();
           }
-          if (quantizer < 0) {
-            LOG(ERROR) << "Unable to parse quantizer from encoded "
-                       << (metadata.key_frame ? "key" : "delta")
-                       << " frame, id=" << encoded_frame->frame_id;
+          if (!quantizer.has_value()) {
+            DVLOG(2) << "Unable to parse quantizer from encoded "
+                     << (metadata.key_frame ? "key" : "delta")
+                     << " frame, id=" << encoded_frame->frame_id;
             if (metadata.key_frame) {
               key_frame_quantizer_parsable_ = false;
               quantizer = quantizer_estimator_.EstimateForKeyFrame(
@@ -479,13 +479,13 @@ class ExternalVideoEncoder::VEAClientImpl final
           quantizer =
               quantizer_estimator_.EstimateForDeltaFrame(*request.video_frame);
         }
-        if (quantizer >= 0) {
+        if (quantizer.has_value()) {
           const double max_quantizer =
               IsVpxProfile(codec_profile_)
                   ? static_cast<int>(QuantizerEstimator::MAX_VPX_QUANTIZER)
                   : static_cast<int>(kMaxH264Quantizer);
           encoded_frame->lossiness =
-              bitrate_utilization * (quantizer / max_quantizer);
+              bitrate_utilization * (quantizer.value() / max_quantizer);
         }
       } else {
         quantizer_estimator_.Reset();
@@ -545,11 +545,12 @@ class ExternalVideoEncoder::VEAClientImpl final
   }
 
   // Parse H264 SPS, PPS, and Slice header, and return the averaged frame
-  // quantizer in the range of [0, 51], or -1 on parse error.
-  double GetH264FrameQuantizer(base::span<uint8_t> encoded_data) {
+  // quantizer in the range of [0, 51], or std::nullopt on parse error.
+  std::optional<double> GetH264FrameQuantizer(
+      base::span<uint8_t> encoded_data) {
     DCHECK(task_runner_->RunsTasksInCurrentSequence());
     if (encoded_data.empty()) {
-      return -1;
+      return std::nullopt;
     }
     h264_parser_.SetStream(encoded_data.data(), encoded_data.size());
     double total_quantizer = 0;
@@ -562,7 +563,7 @@ class ExternalVideoEncoder::VEAClientImpl final
         break;
       }
       if (res != H264Parser::kOk) {
-        return -1;
+        return std::nullopt;
       }
       switch (nalu.nal_unit_type) {
         case H264NALU::kIDRSlice:
@@ -570,12 +571,12 @@ class ExternalVideoEncoder::VEAClientImpl final
           H264SliceHeader slice_header;
           if (h264_parser_.ParseSliceHeader(nalu, &slice_header) !=
               H264Parser::kOk) {
-            return -1;
+            return std::nullopt;
           }
           const H264PPS* pps =
               h264_parser_.GetPPS(slice_header.pic_parameter_set_id);
           if (!pps) {
-            return -1;
+            return std::nullopt;
           }
           ++num_slices;
           int slice_quantizer =
@@ -591,14 +592,14 @@ class ExternalVideoEncoder::VEAClientImpl final
         case H264NALU::kSPS: {
           int id;
           if (h264_parser_.ParseSPS(&id) != H264Parser::kOk) {
-            return -1;
+            return std::nullopt;
           }
           break;
         }
         case H264NALU::kPPS: {
           int id;
           if (h264_parser_.ParsePPS(&id) != H264Parser::kOk) {
-            return -1;
+            return std::nullopt;
           }
           break;
         }
@@ -607,7 +608,10 @@ class ExternalVideoEncoder::VEAClientImpl final
           break;
       }
     }
-    return (num_slices == 0) ? -1 : (total_quantizer / num_slices);
+    if (num_slices == 0) {
+      return std::nullopt;
+    }
+    return total_quantizer / num_slices;
   }
 
   const scoped_refptr<CastEnvironment> cast_environment_;
@@ -859,9 +863,10 @@ void QuantizerEstimator::Reset() {
   last_frame_pixel_buffer_.reset();
 }
 
-double QuantizerEstimator::EstimateForKeyFrame(const VideoFrame& frame) {
+std::optional<double> QuantizerEstimator::EstimateForKeyFrame(
+    const VideoFrame& frame) {
   if (!CanExamineFrame(frame)) {
-    return NO_RESULT;
+    return std::nullopt;
   }
 
   // If the size of the frame is different from the last frame, allocate a new
@@ -907,9 +912,10 @@ double QuantizerEstimator::EstimateForKeyFrame(const VideoFrame& frame) {
       histogram.data(), histogram.size(), num_samples));
 }
 
-double QuantizerEstimator::EstimateForDeltaFrame(const VideoFrame& frame) {
+std::optional<double> QuantizerEstimator::EstimateForDeltaFrame(
+    const VideoFrame& frame) {
   if (!CanExamineFrame(frame)) {
-    return NO_RESULT;
+    return std::nullopt;
   }
 
   // If the size of the |frame| has changed, no difference can be examined.

@@ -13,7 +13,10 @@
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/url_formatter/elide_url.h"
+
+namespace metrics_util = password_manager::metrics_util;
 
 PasswordChangeCredentialLeakBubbleController::
     PasswordChangeCredentialLeakBubbleController(
@@ -36,7 +39,9 @@ std::u16string PasswordChangeCredentialLeakBubbleController::GetTitle() const {
 }
 
 void PasswordChangeCredentialLeakBubbleController::ReportInteractions() {
-  // TODO(crbug.com/381053884): Report metrics.
+  base::UmaHistogramEnumeration(
+      "PasswordManager.PasswordChange.LeakDetectionBubble", dismissal_reason_,
+      metrics_util::NUM_UI_RESPONSES);
 }
 
 std::u16string PasswordChangeCredentialLeakBubbleController::GetDisplayOrigin()
@@ -46,6 +51,7 @@ std::u16string PasswordChangeCredentialLeakBubbleController::GetDisplayOrigin()
 
 void PasswordChangeCredentialLeakBubbleController::
     OnGooglePasswordManagerLinkClicked() {
+  dismissal_reason_ = metrics_util::CLICKED_ABOUT_PASSWORD_CHANGE;
   if (delegate_) {
     delegate_->NavigateToPasswordManagerSettingsPage(
         password_manager::ManagePasswordsReferrer::kPasswordChangeInfoBubble);
@@ -61,10 +67,12 @@ PasswordChangeCredentialLeakBubbleController::GetPrimaryAccountEmail() const {
 }
 
 void PasswordChangeCredentialLeakBubbleController::ChangePassword() {
+  dismissal_reason_ = metrics_util::CLICKED_ACCEPT;
   password_change_delegate_->StartPasswordChangeFlow();
 }
 
 void PasswordChangeCredentialLeakBubbleController::Cancel() {
+  dismissal_reason_ = metrics_util::CLICKED_CANCEL;
   CHECK(password_change_delegate_);
   password_change_delegate_->Stop();
   delegate_->GetPasswordsLeakDialogDelegate()->OnLeakDialogHidden();

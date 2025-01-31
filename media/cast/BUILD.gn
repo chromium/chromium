@@ -47,6 +47,7 @@ source_set("common") {
 
   deps = [
     "//media",
+    "//media/mojo/mojom:remoting_common",
     "//third_party/openscreen/src/platform:base",
   ]
 

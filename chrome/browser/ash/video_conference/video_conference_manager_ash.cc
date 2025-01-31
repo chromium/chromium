@@ -27,7 +27,6 @@
 #include "chromeos/crosapi/mojom/video_conference.mojom-forward.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace ash {
 
@@ -43,13 +42,6 @@ void VideoConferenceManagerAsh::RegisterCppClient(
     crosapi::mojom::VideoConferenceManagerClient* client,
     const base::UnguessableToken& client_id) {
   client_id_to_wrapper_.try_emplace(client_id, client, this);
-}
-
-void VideoConferenceManagerAsh::BindReceiver(
-    mojo::PendingReceiver<crosapi::mojom::VideoConferenceManager> receiver) {
-  // At present the pending receiver should only be from lacros-chrome but
-  // in the future there will be other mojo clients as well.
-  receivers_.Add(this, std::move(receiver));
 }
 
 void VideoConferenceManagerAsh::GetMediaApps(
@@ -130,7 +122,7 @@ void VideoConferenceManagerAsh::CreateBackgroundImage() {
 
 void VideoConferenceManagerAsh::NotifyMediaUsageUpdate(
     crosapi::mojom::VideoConferenceMediaUsageStatusPtr status,
-    NotifyMediaUsageUpdateCallback callback) {
+    base::OnceCallback<void(bool)> callback) {
   if (auto it = client_id_to_wrapper_.find(status->client_id);
       it != client_id_to_wrapper_.end()) {
     it->second.state() = {
@@ -151,19 +143,10 @@ void VideoConferenceManagerAsh::NotifyMediaUsageUpdate(
   std::move(callback).Run(true);
 }
 
-void VideoConferenceManagerAsh::RegisterMojoClient(
-    mojo::PendingRemote<crosapi::mojom::VideoConferenceManagerClient> client,
-    const base::UnguessableToken& client_id,
-    RegisterMojoClientCallback callback) {
-  client_id_to_wrapper_.try_emplace(client_id, std::move(client), client_id,
-                                    this);
-  std::move(callback).Run(true);
-}
-
 void VideoConferenceManagerAsh::NotifyDeviceUsedWhileDisabled(
     crosapi::mojom::VideoConferenceMediaDevice device,
     const std::u16string& app_name,
-    NotifyDeviceUsedWhileDisabledCallback callback) {
+    base::OnceCallback<void(bool)> callback) {
   // TODO(crbug.com/40240249): Remove this conditional check once it becomes
   // possible to enable ash features in lacros browsertests.
   if (ash::features::IsVideoConferenceEnabled()) {

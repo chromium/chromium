@@ -6,4 +6,5 @@ found in the LICENSE file.
 -->
 <resources>
     <dimen name="device_lock_dialog_illustration_top_margin">16dp</dimen>
+    <dimen name="device_lock_dialog_horizontal_margin">12dp</dimen>
 </resources>

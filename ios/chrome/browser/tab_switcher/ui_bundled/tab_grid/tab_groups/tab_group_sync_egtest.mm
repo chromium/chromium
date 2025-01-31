@@ -51,10 +51,10 @@ namespace {
 NSString* const kGroup1Name = @"1group";
 NSString* const kGroup2Name = @"2group";
 
-// The groups added by FakeTabGroupSyncService::PrepareFakeSavedTabGroups().
-NSString* const kSavedGroup1Name = @"0RemoteGroup";
-NSString* const kSavedGroup2Name = @"1RemoteGroup";
-NSString* const kSavedGroup3Name = @"2RemoteGroup";
+// The groups added by TabGroupAppInterface.
+NSString* const kSyncedGroup1Name = @"0RemoteGroup";
+NSString* const kSyncedGroup2Name = @"1RemoteGroup";
+NSString* const kSyncedGroup3Name = @"2RemoteGroup";
 
 // Displays the group cell context menu by long pressing at the group cell at
 // `group_cell_index`.
@@ -170,13 +170,13 @@ void CloseGroupAtIndex(int group_cell_index) {
 
   // Check that the groups exist.
   [[EarlGrey
-      selectElementWithMatcher:TabGroupsPanelCellWithName(kSavedGroup1Name, 1)]
+      selectElementWithMatcher:TabGroupsPanelCellWithName(kSyncedGroup1Name, 1)]
       assertWithMatcher:grey_notNil()];
   [[EarlGrey
-      selectElementWithMatcher:TabGroupsPanelCellWithName(kSavedGroup2Name, 1)]
+      selectElementWithMatcher:TabGroupsPanelCellWithName(kSyncedGroup2Name, 1)]
       assertWithMatcher:grey_notNil()];
   [[EarlGrey
-      selectElementWithMatcher:TabGroupsPanelCellWithName(kSavedGroup3Name, 1)]
+      selectElementWithMatcher:TabGroupsPanelCellWithName(kSyncedGroup3Name, 1)]
       assertWithMatcher:grey_notNil()];
 
   [TabGroupEarlGrey cleanup];
@@ -543,9 +543,9 @@ void CloseGroupAtIndex(int group_cell_index) {
       waitForUIElementToDisappearWithMatcher:DeleteGroupConfirmationButton()];
 
   // Verify that the group with `kGroup1Name` still exists.
-  [[EarlGrey
-      selectElementWithMatcher:TabGroupsPanelCellWithName(kGroup1Name, 1)]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:TabGroupsPanelCellWithName(
+                                              kGroup1Name, 1)];
   GREYAssertEqual(1, [TabGroupEarlGrey countOfSavedTabGroups],
                   @"The number of saved tab groups should be 1.");
 

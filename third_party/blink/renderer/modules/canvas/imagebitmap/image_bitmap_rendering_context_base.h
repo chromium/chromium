@@ -44,6 +44,9 @@ class MODULES_EXPORT ImageBitmapRenderingContextBase
 
   SkAlphaType GetAlphaType() const override { return kPremul_SkAlphaType; }
   SkColorType GetSkColorType() const override { return kN32_SkColorType; }
+  viz::SharedImageFormat GetSharedImageFormat() const override {
+    return viz::SkColorTypeToSinglePlaneSharedImageFormat(GetSkColorType());
+  }
   gfx::ColorSpace GetColorSpace() const override {
     return gfx::ColorSpace::CreateSRGB();
   }

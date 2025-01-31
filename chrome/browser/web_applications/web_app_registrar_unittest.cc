@@ -1109,6 +1109,7 @@ TEST_F(WebAppRegistrarTest,
 
 TEST_F(WebAppRegistrarTest,
        IsolatedWebAppsGetDisplayModeStandaloneRegardlessOfUserSettings) {
+  base::test::ScopedFeatureList scoped_feature_list(features::kIsolatedWebApps);
   StartWebAppProvider();
 
   std::unique_ptr<WebApp> web_app = test::CreateWebApp();
@@ -1120,13 +1121,36 @@ TEST_F(WebAppRegistrarTest,
   web_app->SetInstallState(proto::INSTALLED_WITH_OS_INTEGRATION);
   web_app->SetIsolationData(
       IsolationData::Builder(
-          IwaStorageProxy{url::Origin::Create(GURL("http://127.0.0.1:8080"))},
+          IwaStorageOwnedBundle{"random_name", /*dev_mode=*/false},
           base::Version("1.0.0"))
           .Build());
 
   RegisterAppUnsafe(std::move(web_app));
 
   EXPECT_EQ(DisplayMode::kStandalone,
+            registrar().GetAppEffectiveDisplayMode(app_id));
+}
+
+TEST_F(WebAppRegistrarTest,
+       IsolatedWebAppsGetDisplayModeBorderlessRegardlessOfUserSettings) {
+  base::test::ScopedFeatureList scoped_feature_list(features::kIsolatedWebApps);
+  StartWebAppProvider();
+
+  std::unique_ptr<WebApp> web_app = test::CreateWebApp();
+  const webapps::AppId app_id = web_app->app_id();
+
+  web_app->SetDisplayMode(DisplayMode::kBorderless);
+  web_app->SetUserDisplayMode(mojom::UserDisplayMode::kBrowser);
+  web_app->SetInstallState(proto::INSTALLED_WITH_OS_INTEGRATION);
+  web_app->SetIsolationData(
+      IsolationData::Builder(
+          IwaStorageOwnedBundle{"random_name", /*dev_mode=*/false},
+          base::Version("1.0.0"))
+          .Build());
+
+  RegisterAppUnsafe(std::move(web_app));
+
+  EXPECT_EQ(DisplayMode::kBorderless,
             registrar().GetAppEffectiveDisplayMode(app_id));
 }
 

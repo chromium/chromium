@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.password_manager;
 
-import android.app.Activity;
 import android.content.Context;
 
 import org.jni_zero.CalledByNative;
@@ -41,15 +40,6 @@ class PasswordMigrationWarningBridge {
         // The export flow won't work unless the sheet is started with an Activity as a Context.
         if (ContextUtils.activityFromContext(context) == null) return;
         showWarningInternal(context, bottomSheetController, profile, referrer);
-    }
-
-    @CalledByNative
-    static void showWarningWithActivity(
-            Activity activity,
-            BottomSheetController bottomSheetController,
-            Profile profile,
-            @PasswordMigrationWarningTriggers int referrer) {
-        showWarningInternal(activity, bottomSheetController, profile, referrer);
     }
 
     private static void showWarningInternal(

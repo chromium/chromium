@@ -16,12 +16,17 @@ namespace supervised_user {
 // renumbered and numeric values should never be reused.
 // LINT.IfChange(LocalApprovalResult)
 enum class LocalApprovalResult {
+  // The parent has locally approved the website.
   kApproved = 0,
+  // The parent has explicitly declined the approval.
   kDeclined = 1,
+  // The local web approval is canceled without user intervention.
   kCanceled = 2,
+  // The local web approval is interrupted due to an error, e.g. parsing error
+  // or unexpected `result` from the server.
   kError = 3,
-  kMalformedPacpResult = 4,
-  kMaxValue = kMalformedPacpResult
+  // Deprecated kMalformedPacpResult = 4,
+  kMaxValue = kError
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/families/enums.xml:FamilyLinkUserLocalWebApprovalResult)
 

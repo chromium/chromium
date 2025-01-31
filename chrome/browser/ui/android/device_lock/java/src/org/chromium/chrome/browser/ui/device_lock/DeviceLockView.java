@@ -56,6 +56,27 @@ public class DeviceLockView extends LinearLayout {
         mDescription = findViewById(R.id.device_lock_description);
         mNoticeText = findViewById(R.id.device_lock_notice);
         mNoticeTextLegacy = findViewById(R.id.device_lock_notice_legacy);
+
+        int buttonWidth =
+                SigninFeatureMap.isEnabled(SigninFeatures.UNO_FOR_AUTO)
+                        ? ViewGroup.LayoutParams.MATCH_PARENT
+                        : ViewGroup.LayoutParams.WRAP_CONTENT;
+        mDismissButton =
+                DualControlLayout.createButtonForLayout(
+                        getContext(), ButtonType.SECONDARY_TEXT, "", null);
+        mDismissButton.setLayoutParams(
+                new ViewGroup.LayoutParams(buttonWidth, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+        mContinueButton =
+                DualControlLayout.createButtonForLayout(
+                        getContext(), ButtonType.PRIMARY_FILLED, "", null);
+        mContinueButton.setLayoutParams(
+                new ViewGroup.LayoutParams(buttonWidth, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+        mButtonBar = findViewById(R.id.dual_control_button_bar);
+        mButtonBar.addView(mContinueButton);
+        mButtonBar.addView(mDismissButton);
+
         ImageView illustration = findViewById(R.id.device_lock_illustration);
         int illustrationTopMargin;
 
@@ -68,13 +89,20 @@ public class DeviceLockView extends LinearLayout {
                                     R.dimen.device_lock_dialog_illustration_top_margin);
             findViewById(R.id.device_lock_notice_container).setVisibility(View.GONE);
             mNoticeText.setVisibility(View.VISIBLE);
+            mButtonBar.setAlignment(DualControlLayout.DualControlLayoutAlignment.STACK);
+            DeviceLockUtils.updateDialogSubviewMargins(mTitle);
+            DeviceLockUtils.updateDialogSubviewMargins(mDescription);
+            DeviceLockUtils.updateDialogSubviewMargins(mNoticeText);
+            DeviceLockUtils.updateDialogSubviewMargins(mButtonBar);
         } else {
             illustration.setBackgroundColor(
                     getContext().getColor(R.color.signin_header_animation_background));
             illustrationTopMargin = 0;
             findViewById(R.id.device_lock_notice_container).setVisibility(View.VISIBLE);
             mNoticeText.setVisibility(View.GONE);
+            mButtonBar.setAlignment(DualControlLayout.DualControlLayoutAlignment.APART);
         }
+
         MarginLayoutParams illustrationParams = (MarginLayoutParams) illustration.getLayoutParams();
         illustrationParams.setMargins(
                 illustrationParams.leftMargin,
@@ -82,29 +110,6 @@ public class DeviceLockView extends LinearLayout {
                 illustrationParams.rightMargin,
                 illustrationParams.bottomMargin);
         illustration.setLayoutParams(illustrationParams);
-
-        mDismissButton =
-                DualControlLayout.createButtonForLayout(
-                        getContext(), ButtonType.SECONDARY_TEXT, "", null);
-        mDismissButton.setLayoutParams(
-                new ViewGroup.LayoutParams(
-                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-
-        mContinueButton =
-                DualControlLayout.createButtonForLayout(
-                        getContext(), ButtonType.PRIMARY_FILLED, "", null);
-        mContinueButton.setLayoutParams(
-                new ViewGroup.LayoutParams(
-                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-
-        mButtonBar = findViewById(R.id.dual_control_button_bar);
-        mButtonBar.addView(mContinueButton);
-        mButtonBar.addView(mDismissButton);
-        if (SigninFeatureMap.isEnabled(SigninFeatures.UNO_FOR_AUTO)) {
-            mButtonBar.setAlignment(DualControlLayout.DualControlLayoutAlignment.END);
-        } else {
-            mButtonBar.setAlignment(DualControlLayout.DualControlLayoutAlignment.APART);
-        }
     }
 
     MaterialProgressBar getProgressBar() {

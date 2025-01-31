@@ -447,7 +447,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.MachineIdState" enum="UmaMachineIdState"
-    expires_after="2025-02-28">
+    expires_after="2026-02-28">
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -497,7 +497,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.MetricsService.OnBackgroundedScopedTerminationChecker"
-    enum="ScopedTerminationCheckerStatus" expires_after="2025-02-28">
+    enum="ScopedTerminationCheckerStatus" expires_after="2026-02-28">
   <owner>lucnguyen@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -509,7 +509,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.MetricsService.PendingOngoingLog" enum="Boolean"
-    expires_after="2025-02-28">
+    expires_after="2026-02-28">
   <owner>lucnguyen@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -521,7 +521,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.MetricsService.PendingOngoingLogOnBackgrounded"
-    enum="Boolean" expires_after="2025-07-13">
+    enum="Boolean" expires_after="2026-02-28">
   <owner>lucnguyen@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -533,7 +533,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.MetricsService.PendingOngoingLogOnDisable" enum="Boolean"
-    expires_after="2025-07-06">
+    expires_after="2026-02-28">
   <owner>lucnguyen@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -548,7 +548,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.MetricsService.PendingOngoingLogOnForegrounded"
-    enum="Boolean" expires_after="2025-02-28">
+    enum="Boolean" expires_after="2026-02-28">
   <owner>lucnguyen@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -560,7 +560,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.MetricsService.PeriodicOngoingLog.CloseTime" units="ms"
-    expires_after="2025-02-28">
+    expires_after="2026-02-28">
   <owner>lucnguyen@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -766,7 +766,7 @@ chromium-metrics-reviews@google.com.
     is eligible for sampling. (As of February 2021, all clients on Android and
     Windows are eligible for sampling. Prior to Jan 26 2021, only Windows and
     Android installs on which the UMA checkbox was enabled by default were
-    eligible, see redacted).
+    eligible, see [redacted]).
 
     Clients not eligible for sampling will not have this histogram recorded.
 

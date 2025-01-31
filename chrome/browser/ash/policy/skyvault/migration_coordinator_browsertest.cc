@@ -287,7 +287,9 @@ IN_PROC_BROWSER_TEST_F(OneDriveMigrationCoordinatorTest, CancelUpload) {
   ASSERT_TRUE(run_future.Wait());
   EXPECT_TRUE(odfs_uploader_);
   EXPECT_CALL(*odfs_uploader_, Cancel).Times(1);
-  coordinator.Cancel(base::DoNothing());
+  base::test::TestFuture<bool> cancel_future;
+  coordinator.Cancel(cancel_future.GetCallback());
+  EXPECT_TRUE(cancel_future.Get());
 
   // Check that the source file has NOT been moved to OneDrive.
   CheckPathNotFoundOnODFS(base::FilePath("/").AppendASCII(test_file_name));
@@ -541,11 +543,15 @@ IN_PROC_BROWSER_TEST_F(GoogleDriveMigrationCoordinatorTest, CancelUpload) {
   coordinator.SetCancelledCallbackForTesting(
       base::BindLambdaForTesting([&run_loop]() { run_loop.Quit(); }));
 
-  on_transfer_in_progress_callback_ = base::BindLambdaForTesting(
-      [&coordinator] { coordinator.Cancel(base::DoNothing()); });
+  base::test::TestFuture<bool> cancel_future;
+  on_transfer_in_progress_callback_ =
+      base::BindLambdaForTesting([&coordinator, &cancel_future] {
+        coordinator.Cancel(cancel_future.GetCallback());
+      });
   coordinator.Run(CloudProvider::kGoogleDrive, {file_path}, kUploadRootPrefix,
                   base::DoNothing());
   run_loop.Run();
+  EXPECT_TRUE(cancel_future.Get());
 
   // Check that the file hasn't been moved to Google Drive.
   {

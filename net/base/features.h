@@ -713,6 +713,12 @@ NET_EXPORT BASE_DECLARE_FEATURE_PARAM(size_t,
 // report uploads.
 NET_EXPORT BASE_DECLARE_FEATURE(kReportingApiCorsOriginHeader);
 
+#if BUILDFLAG(IS_ANDROID)
+// If enabled, Android OS's certificate verification (CertVerifyProcAndroid) is
+// done using the certificate transparency aware API.
+NET_EXPORT BASE_DECLARE_FEATURE(kUseCertTransparencyAwareApiForOsCertVerify);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_

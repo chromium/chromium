@@ -495,6 +495,8 @@ DisplayMode WebAppRegistrar::GetAppEffectiveDisplayMode(
     return DisplayMode::kBrowser;
   }
 
+  bool is_isolated = IsIsolated(app_id);
+
   auto app_display_mode = GetAppDisplayMode(app_id);
   std::optional<mojom::UserDisplayMode> user_display_mode =
       GetAppUserDisplayMode(app_id);
@@ -502,11 +504,16 @@ DisplayMode WebAppRegistrar::GetAppEffectiveDisplayMode(
       !user_display_mode.has_value()) {
     return DisplayMode::kUndefined;
   }
+  // TODO(https://crbug.com/389919693): Remove this if display mode restrictions
+  // are added to the WebAppProvider system.
+  if (is_isolated) {
+    user_display_mode = mojom::UserDisplayMode::kStandalone;
+  }
 
   std::vector<DisplayMode> display_mode_overrides =
       GetAppDisplayModeOverride(app_id);
   return ResolveEffectiveDisplayMode(app_display_mode, display_mode_overrides,
-                                     *user_display_mode, IsIsolated(app_id));
+                                     *user_display_mode, is_isolated);
 }
 
 DisplayMode WebAppRegistrar::GetEffectiveDisplayModeFromManifest(

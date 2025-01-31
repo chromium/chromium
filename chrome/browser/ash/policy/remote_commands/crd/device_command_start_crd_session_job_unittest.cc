@@ -48,6 +48,7 @@ using chromeos::network_config::mojom::NetworkType;
 using chromeos::network_config::mojom::OncSource;
 using remoting::features::kEnableCrdAdminRemoteAccessV2;
 using remoting::features::kEnableCrdFileTransferForKiosk;
+using remoting::features::kEnableCrdSharedSessionToUnattendedDevice;
 using test::TestSessionType;
 
 using Payload = base::Value::Dict;
@@ -424,6 +425,8 @@ TEST_P(DeviceCommandStartCrdSessionJobTestParameterized,
 
       case TestSessionType::kGuestSession:
       case TestSessionType::kUnaffiliatedUserSession:
+      // TODO(b:393521569) Update session type supported on default enabled
+      // state for CRD unattended feature flag.
       case TestSessionType::kNoSession:
         return false;
     }
@@ -460,6 +463,8 @@ TEST_P(DeviceCommandStartCrdSessionJobTestParameterized,
       case TestSessionType::kGuestSession:
       case TestSessionType::kUnaffiliatedUserSession:
       case TestSessionType::kNoSession:
+        // TODO(b:393521569) Update session type supported on default enabled
+        // state for CRD unattended feature flag.
         return false;
     }
   }();
@@ -602,6 +607,19 @@ TEST_P(DeviceCommandStartCrdSessionJobTestBoolParameterized,
 
   // Troubleshooting tools are never shown in the UI for non-kiosk sessions.
   EXPECT_FALSE(delegate().session_parameters().show_troubleshooting_tools);
+}
+
+TEST_F(DeviceCommandStartCrdSessionJobTest,
+       AllowRemoteSupportSessionAtLoginScreenIfEnabledByFeatureFlag) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kEnableCrdSharedSessionToUnattendedDevice);
+
+  StartSessionOfType(TestSessionType::kNoSession);
+
+  Result result = RunJobAndWaitForResult(
+      Payload().Set("crdSessionType", CrdSessionType::REMOTE_SUPPORT_SESSION));
+
+  EXPECT_SUCCESS(result);
 }
 
 TEST_F(DeviceCommandStartCrdSessionJobTest,

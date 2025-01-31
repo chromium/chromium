@@ -26,6 +26,16 @@ bool IsPostalAddressForm(const FormStructure& form);
 
 }  // namespace internal
 
+// Used to store `CalculateMinimalIncompatibleProfileWithTypeSets() ` result. It
+// contains the `profile` that was being compared and a set of FieldTypes that
+// had different values.
+struct DifferingProfileWithTypeSet {
+  const raw_ptr<const AutofillProfile> profile;
+  const FieldTypeSet field_type_set;
+
+  bool operator==(const DifferingProfileWithTypeSet& other) const = default;
+};
+
 // kAccount profiles are synced from an external source and have potentially
 // originated from outside of Autofill. In order to determine the added value
 // for Autofill, the `AutofillProfile::RecordType` is further resolved in some
@@ -106,6 +116,13 @@ bool ShouldLogAutofillSuggestionShown(
 // used to leave room for possible other future values.
 int GetBucketForAcceptanceMetricsGroupedByFieldType(FieldType field_type,
                                                     bool suggestion_accepted);
+
+// Given the result of `CalculateMinimalIncompatibleProfileWithTypeSets()`,
+// returns the minimum number of fields whose removal makes `import_candidate` a
+// duplicate of any entry in `existing_profiles`. Returns
+// `std::numeric_limits<int>::max()` in case `min_incompatible_sets` is empty.
+int GetDuplicationRank(
+    base::span<const DifferingProfileWithTypeSet> min_incompatible_sets);
 
 }  // namespace autofill::autofill_metrics
 

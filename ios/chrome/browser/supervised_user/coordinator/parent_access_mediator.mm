@@ -6,8 +6,11 @@
 
 #import <memory>
 
+#import "base/timer/timer.h"
+#import "components/supervised_user/core/common/features.h"
 #import "components/supervised_user/core/common/supervised_user_constants.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/supervised_user/coordinator/parent_access_mediator_delegate.h"
 #import "ios/chrome/browser/supervised_user/ui/parent_access_consumer.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state_observer_bridge.h"
@@ -17,10 +20,13 @@
 @end
 
 @implementation ParentAccessMediator {
+  // WebState to load the PACP widget.
   std::unique_ptr<web::WebState> _webState;
-
-  // Used to observe the active WebState.
+  // Observer for the WebState.
   std::unique_ptr<web::WebStateObserverBridge> _webStateObserverBridge;
+  // Configurable timer to dismiss the parent access bottom sheet if the
+  // WebState is unresponsive.
+  base::OneShotTimer _initialLoadTimer;
 }
 
 - (instancetype)initWithWebState:(std::unique_ptr<web::WebState>)webState {
@@ -49,6 +55,18 @@
   // Hide the WebView initially as it does not adapt to dark mode styling.
   [_consumer setWebViewHidden:YES];
   [_consumer setWebView:_webState->GetView()];
+
+  // Set a timer to dismiss the bottom sheet if the web state fails to load in
+  // time. This prevents the sheet from hanging indefinitely if there's a
+  // problem loading the widget.
+  __weak __typeof(self) weakSelf = self;
+  _initialLoadTimer.Start(
+      FROM_HERE,
+      base::Milliseconds(
+          supervised_user::kLocalWebApprovalBottomSheetLoadTimeoutMs.Get()),
+      base::BindOnce(^{
+        [weakSelf.delegate hideParentAccessBottomSheetOnTimeout];
+      }));
 }
 
 - (void)disconnect {
@@ -60,7 +78,9 @@
 #pragma mark - CRWWebStateObserver
 
 - (void)webState:(web::WebState*)webState didLoadPageWithSuccess:(BOOL)success {
-  // Unhide the WebView once it is loaded with correct styling.
+  // Stop the timer that would dismiss the unresponsive bottom sheet.
+  _initialLoadTimer.Stop();
+  // Unhide the WebView as it should be loaded with correct styling.
   [_consumer setWebViewHidden:NO];
 }
 

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/password_manager/chrome_password_change_service.h"
 
+#include "base/command_line.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -11,6 +12,7 @@
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/common/chrome_switches.h"
 #include "components/affiliations/core/browser/mock_affiliation_service.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "content/public/test/browser_task_environment.h"
@@ -76,4 +78,26 @@ TEST_F(ChromePasswordChangeServiceTest,
           optimization_guide::UserVisibleFeatureKey::kPasswordChangeSubmission))
       .WillOnce(testing::Return(false));
   EXPECT_FALSE(change_service()->IsPasswordChangeSupported(url));
+}
+
+TEST_F(ChromePasswordChangeServiceTest,
+       PasswordChangeSupportedIfCommandLineArgProvided) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kPasswordChangeUrl, "https://test.com/new_password/");
+
+  GURL url("https://test.com/");
+  EXPECT_CALL(affiliation_service(), GetChangePasswordURL).Times(0);
+
+  EXPECT_TRUE(change_service()->IsPasswordChangeSupported(url));
+}
+
+TEST_F(ChromePasswordChangeServiceTest,
+       PasswordChangeSupportedIfPSLMatchedInArg) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kPasswordChangeUrl, "https://test.com/new_password/");
+
+  GURL url("https://www.test.com/");
+  EXPECT_CALL(affiliation_service(), GetChangePasswordURL).Times(0);
+
+  EXPECT_TRUE(change_service()->IsPasswordChangeSupported(url));
 }

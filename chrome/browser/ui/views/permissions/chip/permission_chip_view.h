@@ -153,7 +153,7 @@ class PermissionChipView : public views::MdTextButton {
   bool fully_collapsed_ = false;
   bool is_divider_visible_ = false;
 
-  raw_ptr<const gfx::VectorIcon> icon_ = &gfx::kNoneIcon;
+  raw_ptr<const gfx::VectorIcon> icon_ = &gfx::VectorIcon::EmptyIcon();
 
   base::ObserverList<Observer> observers_;
 };

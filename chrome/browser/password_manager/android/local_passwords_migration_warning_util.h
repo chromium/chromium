@@ -18,15 +18,6 @@ void ShowWarning(
     password_manager::metrics_util::PasswordMigrationWarningTriggers
         trigger_source);
 
-// Shows the local password migration warning. `activity` is provided from
-// java.
-void ShowWarningWithActivity(
-    const base::android::JavaParamRef<jobject>& activity,
-    const base::android::JavaParamRef<jobject>& bottom_sheet_controller,
-    Profile* profile,
-    password_manager::metrics_util::PasswordMigrationWarningTriggers
-        trigger_source);
-
 // Returns whether the UPM local passwords migration warning should be
 // displayed. `profile` is used to retrieve necessary services for checking
 // the conditions.

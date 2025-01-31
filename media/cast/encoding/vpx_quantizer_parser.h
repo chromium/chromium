@@ -5,20 +5,18 @@
 #ifndef MEDIA_CAST_ENCODING_VPX_QUANTIZER_PARSER_H_
 #define MEDIA_CAST_ENCODING_VPX_QUANTIZER_PARSER_H_
 
-#include <stddef.h>
 #include <stdint.h>
 
+#include <optional>
+
 #include "base/containers/span.h"
-#include "media/cast/cast_config.h"
 
-namespace media {
-namespace cast {
+namespace media::cast {
 
-// Partially parse / skip data in the header and the first partition,
-// and return the base quantizer in the range [0,63], or -1 on parse error.
-int ParseVpxHeaderQuantizer(base::span<const uint8_t> data);
+// Partially parse / skip data in the header and the first partition, and return
+// the base quantizer in the range [0,63], or std::nullopt on parse error.
+std::optional<int> ParseVpxHeaderQuantizer(base::span<const uint8_t> data);
 
-}  // namespace cast
-}  // namespace media
+}  // namespace media::cast
 
 #endif  // MEDIA_CAST_ENCODING_VPX_QUANTIZER_PARSER_H_

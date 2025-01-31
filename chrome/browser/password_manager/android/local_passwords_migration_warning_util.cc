@@ -5,7 +5,6 @@
 #include "chrome/browser/password_manager/android/local_passwords_migration_warning_util.h"
 
 #include "base/android/build_info.h"
-#include "base/android/scoped_java_ref.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
@@ -18,7 +17,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/version_info/android/channel_getter.h"
 #include "ui/android/window_android.h"
-#include "ui/gfx/native_widget_types.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/PasswordMigrationWarningBridge_jni.h"
@@ -59,24 +57,6 @@ void ShowWarning(
   Java_PasswordMigrationWarningBridge_showWarning(
       AttachCurrentThread(), window->GetJavaObject(), profile->GetJavaObject(),
       static_cast<int>(trigger_source));
-
-  RecordPasswordMigrationWarningTriggerSource(trigger_source);
-}
-
-void ShowWarningWithActivity(
-    const base::android::JavaParamRef<jobject>& activity,
-    const base::android::JavaParamRef<jobject>& bottom_sheet_controller,
-    Profile* profile,
-    password_manager::metrics_util::PasswordMigrationWarningTriggers
-        trigger_source) {
-  if (!ShouldShowWarning(profile)) {
-    return;
-  }
-  SaveWarningShownTimestamp(profile->GetPrefs());
-
-  Java_PasswordMigrationWarningBridge_showWarningWithActivity(
-      AttachCurrentThread(), activity, bottom_sheet_controller,
-      profile->GetJavaObject(), static_cast<int>(trigger_source));
 
   RecordPasswordMigrationWarningTriggerSource(trigger_source);
 }

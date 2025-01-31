@@ -10,12 +10,16 @@
 #import "ios/web/public/web_state.h"
 
 @protocol ParentAccessConsumer;
+@protocol ParentAccessMediatorDelegate;
 
 // Mediator for ParentAccessCoordinator.
 @interface ParentAccessMediator : NSObject
 
 // Consumer to reflect model changes in the UI.
 @property(nonatomic, weak) id<ParentAccessConsumer> consumer;
+
+// Delegate for this mediator.
+@property(nonatomic, weak) id<ParentAccessMediatorDelegate> delegate;
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithWebState:(std::unique_ptr<web::WebState>)webState

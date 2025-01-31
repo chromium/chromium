@@ -12,6 +12,7 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/vector_icon_types.h"
 #endif
 
 namespace permissions {
@@ -65,7 +66,7 @@ IconId PermissionsClient::GetOverrideIconId(RequestType request_type) {
 #if BUILDFLAG(IS_ANDROID)
   return 0;
 #else
-  return gfx::kNoneIcon;
+  return gfx::VectorIcon::EmptyIcon();
 #endif
 }
 

@@ -216,4 +216,13 @@ int GetBucketForAcceptanceMetricsGroupedByFieldType(FieldType field_type,
 
   return (field_type << 2) | suggestion_accepted;
 }
+
+int GetDuplicationRank(
+    base::span<const DifferingProfileWithTypeSet> min_incompatible_sets) {
+  // All elements of `min_incompatible_sets` have the same size.
+  return min_incompatible_sets.empty()
+             ? std::numeric_limits<int>::max()
+             : min_incompatible_sets.back().field_type_set.size();
+}
+
 }  // namespace autofill::autofill_metrics

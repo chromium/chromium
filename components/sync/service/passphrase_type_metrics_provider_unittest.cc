@@ -19,8 +19,13 @@ namespace syncer {
 
 namespace {
 
+// Original metric, only recorded once Sync has become active.
 const char kMetricWithoutCaching[] = "Sync.PassphraseType2";
+// Supposed replacement metric, based on cached state in prefs, which however
+// counts signed-out users into the kImplicitPassphrase bucket.
 const char kMetricWithCaching[] = "Sync.PassphraseType4";
+// Replacement metric, based on cached state in prefs.
+const char kMetricWithCachingAndUnknown[] = "Sync.PassphraseType5";
 
 using testing::Return;
 
@@ -31,17 +36,17 @@ class PassphraseTypeMetricsProviderTest : public testing::Test {
 
   // The returned object must not outlive `this`.
   std::unique_ptr<PassphraseTypeMetricsProvider> CreateProvider(
-      bool use_cached_passphrase_type) {
+      PassphraseTypeMetricsProvider::HistogramVersion histogram_version) {
     // base::Unretained() is safe, because the provider must not outlive `this`.
     return std::make_unique<PassphraseTypeMetricsProvider>(
-        use_cached_passphrase_type,
+        histogram_version,
         base::BindRepeating(&PassphraseTypeMetricsProviderTest::GetSyncServices,
                             base::Unretained(this)));
   }
 
   // Adds sync service, which will be passed to the provider returned by
   // CreateProvider().
-  void AddSyncService(PassphraseType passphrase_type,
+  void AddSyncService(std::optional<PassphraseType> passphrase_type,
                       bool sync_transport_active = true) {
     sync_services_.emplace_back(
         std::make_unique<testing::NiceMock<MockSyncService>>());
@@ -71,11 +76,16 @@ class PassphraseTypeMetricsProviderTest : public testing::Test {
 // consequently there is no SyncService.
 TEST_F(PassphraseTypeMetricsProviderTest, NoSyncService) {
   base::HistogramTester histogram_tester;
-  CreateProvider(/*use_cached_passphrase_type=*/false)->OnDidCreateMetricsLog();
-  CreateProvider(/*use_cached_passphrase_type=*/true)->OnDidCreateMetricsLog();
+  CreateProvider(PassphraseTypeMetricsProvider::HistogramVersion::kV2)
+      ->OnDidCreateMetricsLog();
+  CreateProvider(PassphraseTypeMetricsProvider::HistogramVersion::kV4)
+      ->OnDidCreateMetricsLog();
+  CreateProvider(PassphraseTypeMetricsProvider::HistogramVersion::kV5)
+      ->OnDidCreateMetricsLog();
   histogram_tester.ExpectUniqueSample(kMetricWithoutCaching,
                                       PassphraseTypeForMetrics::kUnknown, 1);
   histogram_tester.ExpectTotalCount(kMetricWithCaching, 0);
+  histogram_tester.ExpectTotalCount(kMetricWithCachingAndUnknown, 0);
 }
 
 // The sync engine wasn't initialized yet, but will eventually be. This test
@@ -86,25 +96,60 @@ TEST_F(PassphraseTypeMetricsProviderTest, TransportInitializing) {
   AddSyncService(PassphraseType::kKeystorePassphrase,
                  /*sync_transport_active=*/false);
   base::HistogramTester histogram_tester;
-  CreateProvider(/*use_cached_passphrase_type=*/false)->OnDidCreateMetricsLog();
-  CreateProvider(/*use_cached_passphrase_type=*/true)->OnDidCreateMetricsLog();
+  CreateProvider(PassphraseTypeMetricsProvider::HistogramVersion::kV2)
+      ->OnDidCreateMetricsLog();
+  CreateProvider(PassphraseTypeMetricsProvider::HistogramVersion::kV4)
+      ->OnDidCreateMetricsLog();
+  CreateProvider(PassphraseTypeMetricsProvider::HistogramVersion::kV5)
+      ->OnDidCreateMetricsLog();
   histogram_tester.ExpectUniqueSample(kMetricWithoutCaching,
                                       PassphraseTypeForMetrics::kUnknown, 1);
   histogram_tester.ExpectUniqueSample(
       kMetricWithCaching, PassphraseTypeForMetrics::kKeystorePassphrase, 1);
+  histogram_tester.ExpectUniqueSample(
+      kMetricWithCachingAndUnknown,
+      PassphraseTypeForMetrics::kKeystorePassphrase, 1);
+}
+
+// There is no signed-in users, so the passphrase type is unknown. This test
+// captures the difference between Sync.PassphraseType4 (confusingly records
+// kImplicitPassphrase) and Sync.PassphraseType5 (correctly records kUnknown).
+TEST_F(PassphraseTypeMetricsProviderTest, SignedOut) {
+  AddSyncService(/*passphrase_type=*/std::nullopt);
+
+  base::HistogramTester histogram_tester;
+  CreateProvider(PassphraseTypeMetricsProvider::HistogramVersion::kV2)
+      ->OnDidCreateMetricsLog();
+  CreateProvider(PassphraseTypeMetricsProvider::HistogramVersion::kV4)
+      ->OnDidCreateMetricsLog();
+  CreateProvider(PassphraseTypeMetricsProvider::HistogramVersion::kV5)
+      ->OnDidCreateMetricsLog();
+  histogram_tester.ExpectUniqueSample(kMetricWithoutCaching,
+                                      PassphraseTypeForMetrics::kUnknown, 1);
+  histogram_tester.ExpectUniqueSample(
+      kMetricWithCaching, PassphraseTypeForMetrics::kImplicitPassphrase, 1);
+  histogram_tester.ExpectUniqueSample(kMetricWithCachingAndUnknown,
+                                      PassphraseTypeForMetrics::kUnknown, 1);
 }
 
 TEST_F(PassphraseTypeMetricsProviderTest, ShouldRecordMultipleSyncingProfiles) {
   AddSyncService(PassphraseType::kImplicitPassphrase);
   AddSyncService(PassphraseType::kKeystorePassphrase);
   base::HistogramTester histogram_tester;
-  CreateProvider(/*use_cached_passphrase_type=*/false)->OnDidCreateMetricsLog();
-  CreateProvider(/*use_cached_passphrase_type=*/true)->OnDidCreateMetricsLog();
+  CreateProvider(PassphraseTypeMetricsProvider::HistogramVersion::kV2)
+      ->OnDidCreateMetricsLog();
+  CreateProvider(PassphraseTypeMetricsProvider::HistogramVersion::kV4)
+      ->OnDidCreateMetricsLog();
+  CreateProvider(PassphraseTypeMetricsProvider::HistogramVersion::kV5)
+      ->OnDidCreateMetricsLog();
   histogram_tester.ExpectUniqueSample(
       kMetricWithoutCaching,
       PassphraseTypeForMetrics::kInconsistentStateAcrossProfiles, 1);
   histogram_tester.ExpectUniqueSample(
       kMetricWithCaching,
+      PassphraseTypeForMetrics::kInconsistentStateAcrossProfiles, 1);
+  histogram_tester.ExpectUniqueSample(
+      kMetricWithCachingAndUnknown,
       PassphraseTypeForMetrics::kInconsistentStateAcrossProfiles, 1);
 }
 
@@ -113,71 +158,113 @@ TEST_F(PassphraseTypeMetricsProviderTest,
   AddSyncService(PassphraseType::kKeystorePassphrase);
   AddSyncService(PassphraseType::kKeystorePassphrase);
   base::HistogramTester histogram_tester;
-  CreateProvider(/*use_cached_passphrase_type=*/false)->OnDidCreateMetricsLog();
-  CreateProvider(/*use_cached_passphrase_type=*/true)->OnDidCreateMetricsLog();
+  CreateProvider(PassphraseTypeMetricsProvider::HistogramVersion::kV2)
+      ->OnDidCreateMetricsLog();
+  CreateProvider(PassphraseTypeMetricsProvider::HistogramVersion::kV4)
+      ->OnDidCreateMetricsLog();
+  CreateProvider(PassphraseTypeMetricsProvider::HistogramVersion::kV5)
+      ->OnDidCreateMetricsLog();
   histogram_tester.ExpectUniqueSample(
       kMetricWithoutCaching, PassphraseTypeForMetrics::kKeystorePassphrase, 1);
   histogram_tester.ExpectUniqueSample(
       kMetricWithCaching, PassphraseTypeForMetrics::kKeystorePassphrase, 1);
+  histogram_tester.ExpectUniqueSample(
+      kMetricWithCachingAndUnknown,
+      PassphraseTypeForMetrics::kKeystorePassphrase, 1);
 }
 
 TEST_F(PassphraseTypeMetricsProviderTest, ShouldRecordImplicitPassphrase) {
   AddSyncService(PassphraseType::kImplicitPassphrase);
   base::HistogramTester histogram_tester;
-  CreateProvider(/*use_cached_passphrase_type=*/false)->OnDidCreateMetricsLog();
-  CreateProvider(/*use_cached_passphrase_type=*/true)->OnDidCreateMetricsLog();
+  CreateProvider(PassphraseTypeMetricsProvider::HistogramVersion::kV2)
+      ->OnDidCreateMetricsLog();
+  CreateProvider(PassphraseTypeMetricsProvider::HistogramVersion::kV4)
+      ->OnDidCreateMetricsLog();
+  CreateProvider(PassphraseTypeMetricsProvider::HistogramVersion::kV5)
+      ->OnDidCreateMetricsLog();
   histogram_tester.ExpectUniqueSample(
       kMetricWithoutCaching, PassphraseTypeForMetrics::kImplicitPassphrase, 1);
   histogram_tester.ExpectUniqueSample(
       kMetricWithCaching, PassphraseTypeForMetrics::kImplicitPassphrase, 1);
+  histogram_tester.ExpectUniqueSample(
+      kMetricWithCachingAndUnknown,
+      PassphraseTypeForMetrics::kImplicitPassphrase, 1);
 }
 
 TEST_F(PassphraseTypeMetricsProviderTest, ShouldRecordKeystorePassphrase) {
   AddSyncService(PassphraseType::kKeystorePassphrase);
   base::HistogramTester histogram_tester;
-  CreateProvider(/*use_cached_passphrase_type=*/false)->OnDidCreateMetricsLog();
-  CreateProvider(/*use_cached_passphrase_type=*/true)->OnDidCreateMetricsLog();
+  CreateProvider(PassphraseTypeMetricsProvider::HistogramVersion::kV2)
+      ->OnDidCreateMetricsLog();
+  CreateProvider(PassphraseTypeMetricsProvider::HistogramVersion::kV4)
+      ->OnDidCreateMetricsLog();
+  CreateProvider(PassphraseTypeMetricsProvider::HistogramVersion::kV5)
+      ->OnDidCreateMetricsLog();
   histogram_tester.ExpectUniqueSample(
       kMetricWithoutCaching, PassphraseTypeForMetrics::kKeystorePassphrase, 1);
   histogram_tester.ExpectUniqueSample(
       kMetricWithCaching, PassphraseTypeForMetrics::kKeystorePassphrase, 1);
+  histogram_tester.ExpectUniqueSample(
+      kMetricWithCachingAndUnknown,
+      PassphraseTypeForMetrics::kKeystorePassphrase, 1);
 }
 
 TEST_F(PassphraseTypeMetricsProviderTest,
        ShouldRecordFrozenImplicitPassphrase) {
   AddSyncService(PassphraseType::kFrozenImplicitPassphrase);
   base::HistogramTester histogram_tester;
-  CreateProvider(/*use_cached_passphrase_type=*/false)->OnDidCreateMetricsLog();
-  CreateProvider(/*use_cached_passphrase_type=*/true)->OnDidCreateMetricsLog();
+  CreateProvider(PassphraseTypeMetricsProvider::HistogramVersion::kV2)
+      ->OnDidCreateMetricsLog();
+  CreateProvider(PassphraseTypeMetricsProvider::HistogramVersion::kV4)
+      ->OnDidCreateMetricsLog();
+  CreateProvider(PassphraseTypeMetricsProvider::HistogramVersion::kV5)
+      ->OnDidCreateMetricsLog();
   histogram_tester.ExpectUniqueSample(
       kMetricWithoutCaching,
       PassphraseTypeForMetrics::kFrozenImplicitPassphrase, 1);
   histogram_tester.ExpectUniqueSample(
       kMetricWithCaching, PassphraseTypeForMetrics::kFrozenImplicitPassphrase,
       1);
+  histogram_tester.ExpectUniqueSample(
+      kMetricWithCachingAndUnknown,
+      PassphraseTypeForMetrics::kFrozenImplicitPassphrase, 1);
 }
 
 TEST_F(PassphraseTypeMetricsProviderTest, ShouldRecordCustomPassphrase) {
   AddSyncService(PassphraseType::kCustomPassphrase);
   base::HistogramTester histogram_tester;
-  CreateProvider(/*use_cached_passphrase_type=*/false)->OnDidCreateMetricsLog();
-  CreateProvider(/*use_cached_passphrase_type=*/true)->OnDidCreateMetricsLog();
+  CreateProvider(PassphraseTypeMetricsProvider::HistogramVersion::kV2)
+      ->OnDidCreateMetricsLog();
+  CreateProvider(PassphraseTypeMetricsProvider::HistogramVersion::kV4)
+      ->OnDidCreateMetricsLog();
+  CreateProvider(PassphraseTypeMetricsProvider::HistogramVersion::kV5)
+      ->OnDidCreateMetricsLog();
   histogram_tester.ExpectUniqueSample(
       kMetricWithoutCaching, PassphraseTypeForMetrics::kCustomPassphrase, 1);
   histogram_tester.ExpectUniqueSample(
       kMetricWithCaching, PassphraseTypeForMetrics::kCustomPassphrase, 1);
+  histogram_tester.ExpectUniqueSample(
+      kMetricWithCachingAndUnknown, PassphraseTypeForMetrics::kCustomPassphrase,
+      1);
 }
 
 TEST_F(PassphraseTypeMetricsProviderTest, ShouldRecordTrustedVaultPassphrase) {
   AddSyncService(PassphraseType::kTrustedVaultPassphrase);
   base::HistogramTester histogram_tester;
-  CreateProvider(/*use_cached_passphrase_type=*/false)->OnDidCreateMetricsLog();
-  CreateProvider(/*use_cached_passphrase_type=*/true)->OnDidCreateMetricsLog();
+  CreateProvider(PassphraseTypeMetricsProvider::HistogramVersion::kV2)
+      ->OnDidCreateMetricsLog();
+  CreateProvider(PassphraseTypeMetricsProvider::HistogramVersion::kV4)
+      ->OnDidCreateMetricsLog();
+  CreateProvider(PassphraseTypeMetricsProvider::HistogramVersion::kV5)
+      ->OnDidCreateMetricsLog();
   histogram_tester.ExpectUniqueSample(
       kMetricWithoutCaching, PassphraseTypeForMetrics::kTrustedVaultPassphrase,
       1);
   histogram_tester.ExpectUniqueSample(
       kMetricWithCaching, PassphraseTypeForMetrics::kTrustedVaultPassphrase, 1);
+  histogram_tester.ExpectUniqueSample(
+      kMetricWithCachingAndUnknown,
+      PassphraseTypeForMetrics::kTrustedVaultPassphrase, 1);
 }
 
 }  // namespace

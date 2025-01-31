@@ -366,6 +366,10 @@ void AddAiStrings(content::WebUIDataSource* html_source) {
       {"aiPageMainSublabel1", IDS_SETTINGS_AI_PAGE_MAIN_SUBLABEL_1},
       {"aiPageMainSublabel2", IDS_SETTINGS_AI_PAGE_MAIN_SUBLABEL_2},
       {"aiPageMainSublabel3", IDS_SETTINGS_AI_PAGE_MAIN_SUBLABEL_3},
+      {"aiPageMainManagedSublabel3",
+       IDS_SETTINGS_AI_PAGE_MAIN_MANAGED_SUBLABEL_3},
+      {"aiPageMainManagedLearnMoreAccessibiltyLabel",
+       IDS_SETTINGS_AI_PAGE_MAIN_MANAGED_LEARN_MORE_ACCESSIBILITY_LABEL},
       {"aiSubpageSublabelAi", IDS_SETTINGS_AI_SUBPAGE_SUBLABEL_AI},
       {"aiSubpageSublabelReviewers",
        IDS_SETTINGS_AI_SUBPAGE_SUBLABEL_REVIEWERS},
@@ -498,10 +502,8 @@ void AddAiStrings(content::WebUIDataSource* html_source) {
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
-  std::string managed_sublabel_3 =
-      l10n_util::GetStringFUTF8(IDS_SETTINGS_AI_PAGE_MAIN_MANAGED_SUBLABEL_3,
-                                {chrome::kAiSettingsLearnMorePageManagedUrl});
-  html_source->AddString("aiPageMainManagedSublabel3", managed_sublabel_3);
+  html_source->AddString("aiPageMainManagedLearnMoreUrl",
+                         chrome::kAiSettingsLearnMorePageManagedUrl);
 
   html_source->AddString("historySearchLearnMoreUrl",
                          chrome::kHistorySearchLearnMorePageURL);

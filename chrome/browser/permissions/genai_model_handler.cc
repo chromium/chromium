@@ -123,12 +123,12 @@ void GenAiModelHandler::StopListeningToOnDeviceModelUpdate() {
 
 void GenAiModelHandler::SetOnDeviceModelAvailable() {
   LogOnDeviceModelDownloadSuccess(/*success=*/true);
-  on_device_model_available_ = true;
+  is_on_device_model_available_ = true;
   observing_on_device_model_availability_ = false;
 }
 
 void GenAiModelHandler::OnDeviceModelAvailabilityChanged(
-    optimization_guide::ModelBasedCapabilityKey feature,
+    ModelBasedCapabilityKey feature,
     optimization_guide::OnDeviceModelEligibilityReason reason) {
   if (!observing_on_device_model_availability_ || feature != kFeatureKey) {
     return;
@@ -153,7 +153,7 @@ void GenAiModelHandler::CreateModelExecutorSession() {
   if (!optimization_guide_) {
     return;
   }
-  if (on_device_model_available_) {
+  if (is_on_device_model_available_) {
     session_ =
         optimization_guide_->StartSession(kFeatureKey, kSessionConfigParams);
   } else {
@@ -205,19 +205,12 @@ void GenAiModelHandler::OnModelExecutionComplete(
 }
 
 bool GenAiModelHandler::IsOnDeviceModelAvailable() {
-  return on_device_model_available_;
+  return is_on_device_model_available_;
 }
 
 void GenAiModelHandler::InquireGenAiOnDeviceModel(
     std::string rendered_text,
     base::OnceCallback<void(std::optional<PermissionsAiResponse>)> callback) {
-  LogOnDeviceModelAvailabilityAtInquiryTime(on_device_model_available_);
-
-  if (!on_device_model_available_) {
-    std::move(callback).Run(std::nullopt);
-    return;
-  }
-
   // Close off the previous session if session's model execution from a previous
   // call into InquireOnDeviceModel is still happening.
   if (session_) {
@@ -226,6 +219,7 @@ void GenAiModelHandler::InquireGenAiOnDeviceModel(
   base::TimeTicks session_creation_start_time = base::TimeTicks::Now();
 
   CreateModelExecutorSession();
+  LogOnDeviceModelAvailabilityAtInquiryTime(is_on_device_model_available_);
 
   if (!session_) {
     LogOnDeviceModelSessionCreationSuccess(

@@ -179,13 +179,8 @@ chromium-metrics-reviews@google.com.
     verification).
   </int>
   <int value="3" label="Error">
-    An error occured during the request flow. On Windows, Linux and Mac this
-    does not include malformed responses from PACP, instead a dedicated value
-    `Malformed Result` is used for these errors.
-  </int>
-  <int value="4" label="Malformed Result">
-    An invalid response is sent from the PACP widget. Currently used on Windows,
-    Linux and Mac only.
+    An error occured during the request flows, including malformed requests and
+    server-client connection errors.
   </int>
 </enum>
 
