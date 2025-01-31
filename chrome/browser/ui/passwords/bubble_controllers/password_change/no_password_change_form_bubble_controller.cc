@@ -8,7 +8,10 @@
 #include "chrome/browser/password_manager/password_change_delegate.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "ui/base/l10n/l10n_util.h"
+
+namespace metrics_util = password_manager::metrics_util;
 
 NoPasswordChangeFormBubbleController::NoPasswordChangeFormBubbleController(
     base::WeakPtr<PasswordsModelDelegate> delegate)
@@ -24,11 +27,13 @@ NoPasswordChangeFormBubbleController::~NoPasswordChangeFormBubbleController() {
 }
 
 void NoPasswordChangeFormBubbleController::Restart() {
+  dismissal_reason_ = metrics_util::CLICKED_ACCEPT;
   CHECK(password_change_delegate_);
   password_change_delegate_->Restart();
 }
 
 void NoPasswordChangeFormBubbleController::Cancel() {
+  dismissal_reason_ = metrics_util::CLICKED_CANCEL;
   CHECK(password_change_delegate_);
   password_change_delegate_->Stop();
 }
@@ -49,5 +54,7 @@ std::u16string NoPasswordChangeFormBubbleController::GetAcceptButton() const {
 }
 
 void NoPasswordChangeFormBubbleController::ReportInteractions() {
-  // TODO(crbug.com/381055148): Report metrics.
+  base::UmaHistogramEnumeration(
+      "PasswordManager.PasswordChange.NoPasswordFormBubble", dismissal_reason_,
+      metrics_util::NUM_UI_RESPONSES);
 }

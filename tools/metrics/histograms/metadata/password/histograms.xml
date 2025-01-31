@@ -2554,6 +2554,17 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.PasswordChange.NoPasswordFormBubble"
+    enum="PasswordManagerUIDismissalReason" expires_after="2025-11-30">
+  <owner>atsvirchkova@google.com</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    Records the result of interaction with one of the password change flow
+    bubbles. This bubble is displayed when error occures, namely no password
+    change form is detected. The metric is recorded during the bubble closure.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.PasswordChange.PrivacyNoticeBubble"
     enum="PasswordManagerUIDismissalReason" expires_after="2025-11-30">
   <owner>atsvirchkova@google.com</owner>
