@@ -459,7 +459,7 @@ void SafetyCheckNotificationClient::ClearAndRescheduleSafetyCheckNotifications(
               base::CallbackToBlock(base::BindOnce(
                   &SafetyCheckNotificationClient::ShowUIForNotificationMetadata,
                   weak_ptr_factory_.GetWeakPtr(),
-                  interacted_notification_metadata_, browser))];
+                  interacted_notification_metadata_, browser->AsWeakPtr()))];
     }
   }
 
@@ -478,8 +478,13 @@ void SafetyCheckNotificationClient::ClearAndRescheduleSafetyCheckNotifications(
 
 void SafetyCheckNotificationClient::ShowUIForNotificationMetadata(
     NSDictionary* notification_metadata,
-    Browser* browser) {
+    base::WeakPtr<Browser> weak_browser) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  Browser* browser = weak_browser.get();
+  if (!browser) {
+    // The Scene has been closed while preparing to present the notification.
+    return;
+  }
 
   // The notification metadata must correspond to one of the Safety Check
   // notification types.
