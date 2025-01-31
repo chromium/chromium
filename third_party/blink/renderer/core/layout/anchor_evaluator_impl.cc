@@ -107,8 +107,17 @@ namespace {
 
 bool IsScopedByElement(const ScopedCSSName* lookup_name,
                        const Element& element) {
-  const StyleAnchorScope& anchor_scope =
-      element.ComputedStyleRef().AnchorScope();
+  const ComputedStyle* style = element.GetComputedStyle();
+  if (!style) {
+    // TODO(crbug.com/384523570): We should not be here without a style,
+    // but apparently that can happen [1]. This is likely related to poking
+    // into a dirty layout tree during scroll snapshotting,
+    // since ValidateSnapshot() is on the stack [1].
+    //
+    // [1] crbug.com/393395576
+    return false;
+  }
+  const StyleAnchorScope& anchor_scope = style->AnchorScope();
   if (anchor_scope.IsNone()) {
     return false;
   }
