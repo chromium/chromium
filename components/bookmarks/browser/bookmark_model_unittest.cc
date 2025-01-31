@@ -280,7 +280,7 @@ void VerifyModelMatchesNode(TestNode* expected, const BookmarkNode* actual) {
     ASSERT_EQ(expected_child->GetTitle(), actual_child->GetTitle());
     if (expected_child->value == BookmarkNode::FOLDER) {
       ASSERT_TRUE(actual_child->type() == BookmarkNode::FOLDER);
-      // Recurse throught children.
+      // Recurse through children.
       VerifyModelMatchesNode(expected_child, actual_child);
     } else {
       // No need to check the URL, just the title is enough.
@@ -317,6 +317,11 @@ class BookmarkModelTest : public testing::Test, public BookmarkModelObserver {
       index2_ = index2;
       added_by_user_ = added_by_user;
       location_ = location;
+    }
+
+    void Reset() {
+      Set(nullptr, nullptr, static_cast<size_t>(-1), static_cast<size_t>(-1),
+          false, FROM_HERE);
     }
 
     void ExpectEquals(const BookmarkNode* node1,
@@ -458,6 +463,8 @@ class BookmarkModelTest : public testing::Test, public BookmarkModelObserver {
 
   void OnWillRemoveAllUserBookmarks(const base::Location& location) override {
     ++before_remove_all_count_;
+    observer_details_.Reset();
+    before_observer_details_.Reset();
   }
 
   void GroupedBookmarkChangesBeginning() override {
@@ -2360,6 +2367,45 @@ TEST_F(BookmarkModelTest, GetNodeByUuidAfterRemoveAllUserBookmarks) {
                             NodeTypeForUuidLookup::kLocalOrSyncableNodes));
 }
 
+TEST_F(BookmarkModelTest, GetTotalNumberOfUrlsAndFoldersIncludingManagedNodes) {
+  constexpr size_t kOriginalNumberOfNodes = 4u;
+  EXPECT_EQ(kOriginalNumberOfNodes,
+            model_->GetTotalNumberOfUrlsAndFoldersIncludingManagedNodes());
+
+  // Add a folder.
+  const BookmarkNode* folder =
+      model_->AddFolder(model_->bookmark_bar_node(), 0, u"title");
+  EXPECT_EQ(kOriginalNumberOfNodes + 1,
+            model_->GetTotalNumberOfUrlsAndFoldersIncludingManagedNodes());
+
+  // Add a URL in the folder.
+  model_->AddURL(folder, 0, u"title", GURL("http://foo.com"));
+  EXPECT_EQ(kOriginalNumberOfNodes + 2,
+            model_->GetTotalNumberOfUrlsAndFoldersIncludingManagedNodes());
+
+  // Remove the bookmark URL.
+  model_->RemoveLastChild(
+      folder, bookmarks::metrics::BookmarkEditSource::kOther, FROM_HERE);
+  EXPECT_EQ(kOriginalNumberOfNodes + 1,
+            model_->GetTotalNumberOfUrlsAndFoldersIncludingManagedNodes());
+
+  // Add a bookmark in the bookmark bar.
+  model_->AddNewURL(model_->bookmark_bar_node(), 0, u"url",
+                    GURL("http://url.com"));
+  EXPECT_EQ(kOriginalNumberOfNodes + 2,
+            model_->GetTotalNumberOfUrlsAndFoldersIncludingManagedNodes());
+
+  // Create account folders.
+  model_->CreateAccountPermanentFolders();
+  EXPECT_EQ(kOriginalNumberOfNodes + 5,
+            model_->GetTotalNumberOfUrlsAndFoldersIncludingManagedNodes());
+
+  // Delete everything.
+  model_->RemoveAllUserBookmarks(FROM_HERE);
+  EXPECT_EQ(kOriginalNumberOfNodes + 3,
+            model_->GetTotalNumberOfUrlsAndFoldersIncludingManagedNodes());
+}
+
 TEST(BookmarkModelLoadTest, NodesPopulatedOnLoad) {
   // Create a model with a single url.
   base::ScopedTempDir tmp_dir;
@@ -2615,6 +2661,73 @@ TEST(BookmarkModelLoadTest, UuidIndexPopulatedForAccountNodesOnLoad) {
                                  NodeTypeForUuidLookup::kLocalOrSyncableNodes));
   EXPECT_NE(nullptr, model->GetNodeByUuid(
                          node_uuid, NodeTypeForUuidLookup::kAccountNodes));
+}
+
+TEST(BookmarkModelStorageTest,
+     GetTotalNumberOfUrlsAndFoldersIncludingManagedNodes) {
+  base::test::ScopedFeatureList features{
+      syncer::kSyncEnableBookmarksInTransportMode};
+
+  // Create a model with a single url.
+  base::ScopedTempDir tmp_dir;
+  ASSERT_TRUE(tmp_dir.CreateUniqueTempDir());
+  base::test::TaskEnvironment task_environment{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  auto model =
+      std::make_unique<BookmarkModel>(std::make_unique<TestBookmarkClient>());
+  model->Load(tmp_dir.GetPath());
+  test::WaitForBookmarkModelToLoad(model.get());
+  model->CreateAccountPermanentFolders();
+
+  const base::Uuid node_uuid =
+      model
+          ->AddURL(model->account_bookmark_bar_node(), 0, u"User",
+                   GURL("http://google.com"))
+          ->uuid();
+
+  // This is necessary to ensure the save completes.
+  task_environment.FastForwardUntilNoTasksRemain();
+
+  // Recreate the model and ensure GetBookmarksMatching() returns the url that
+  // was added.
+  model =
+      std::make_unique<BookmarkModel>(std::make_unique<TestBookmarkClient>());
+  model->Load(tmp_dir.GetPath());
+  test::WaitForBookmarkModelToLoad(model.get());
+
+  constexpr size_t kOriginalNumberOfNodes = 7u;
+
+  // Take into account the node loaded.
+  EXPECT_EQ(kOriginalNumberOfNodes + 1,
+            model->GetTotalNumberOfUrlsAndFoldersIncludingManagedNodes());
+
+  // Add a folder.
+  const BookmarkNode* folder =
+      model->AddFolder(model->bookmark_bar_node(), 0, u"title");
+  EXPECT_EQ(kOriginalNumberOfNodes + 2,
+            model->GetTotalNumberOfUrlsAndFoldersIncludingManagedNodes());
+
+  // Add a URL in the folder.
+  model->AddURL(folder, 0, u"title", GURL("http://foo.com"));
+  EXPECT_EQ(kOriginalNumberOfNodes + 3,
+            model->GetTotalNumberOfUrlsAndFoldersIncludingManagedNodes());
+
+  // Remove the bookmark URL.
+  model->RemoveLastChild(folder, bookmarks::metrics::BookmarkEditSource::kOther,
+                         FROM_HERE);
+  EXPECT_EQ(kOriginalNumberOfNodes + 2,
+            model->GetTotalNumberOfUrlsAndFoldersIncludingManagedNodes());
+
+  // Add a bookmark in the bookmark bar.
+  model->AddNewURL(model->bookmark_bar_node(), 0, u"url",
+                   GURL("http://url.com"));
+  EXPECT_EQ(kOriginalNumberOfNodes + 3,
+            model->GetTotalNumberOfUrlsAndFoldersIncludingManagedNodes());
+
+  // Delete everything.
+  model->RemoveAllUserBookmarks(FROM_HERE);
+  EXPECT_EQ(kOriginalNumberOfNodes,
+            model->GetTotalNumberOfUrlsAndFoldersIncludingManagedNodes());
 }
 
 TEST(BookmarkModelStorageTest, SaveExactlyOneFile) {

@@ -433,6 +433,12 @@ class BookmarkModel : public BookmarkUndoProvider,
   // by sync code only. Must only be invoked after BookmarkModel is loaded.
   void RemoveAccountPermanentFolders();
 
+  // Returns the total number of bookmark nodes (URLs and folders) in the model.
+  // This is equivalent to iterating the entire tree starting with root_node(),
+  // root node included.
+  // On Android this does *not* include partner bookmarks.
+  size_t GetTotalNumberOfUrlsAndFoldersIncludingManagedNodes() const;
+
   base::WeakPtr<BookmarkModel> AsWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }

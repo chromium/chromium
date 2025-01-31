@@ -1477,6 +1477,15 @@ void BookmarkModel::RemoveAccountPermanentFolders() {
   }
 }
 
+size_t BookmarkModel::GetTotalNumberOfUrlsAndFoldersIncludingManagedNodes()
+    const {
+  size_t number_of_nodes = 0;
+  for (auto const& [lookup, uuid_index] : uuid_index_) {
+    number_of_nodes += uuid_index.size();
+  }
+  return number_of_nodes;
+}
+
 void BookmarkModel::ScheduleSaveForNode(const BookmarkNode* node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
