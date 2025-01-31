@@ -26,6 +26,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/native_theme/native_theme.h"
 
 namespace {
 gfx::ImageSkia GetIconForTheme(const ui::NativeTheme* native_theme) {

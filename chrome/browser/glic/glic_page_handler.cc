@@ -168,7 +168,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
       SetPanelDraggableAreasCallback callback) override {
     if (!draggable_areas.empty()) {
       glic_service_->SetPanelDraggableAreas(draggable_areas);
-
     } else {
       // Default to the top bar area of the panel.
       // TODO(cuianthony): Define panel dimensions constants in shared location.

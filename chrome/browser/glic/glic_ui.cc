@@ -8,6 +8,7 @@
 
 #include "base/command_line.h"
 #include "chrome/browser/glic/glic_enabling.h"
+#include "chrome/browser/glic/glic_fre_page_handler.h"
 #include "chrome/browser/glic/glic_page_handler.h"
 #include "chrome/browser/glic/guest_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -113,6 +114,12 @@ void GlicUI::CreatePageHandler(
     mojo::PendingReceiver<glic::mojom::PageHandler> receiver) {
   page_handler_ = std::make_unique<GlicPageHandler>(web_ui()->GetWebContents(),
                                                     std::move(receiver));
+}
+
+void GlicUI::CreateFrePageHandler(
+    mojo::PendingReceiver<glic::mojom::FrePageHandler> receiver) {
+  fre_page_handler_ = std::make_unique<GlicFrePageHandler>(
+      web_ui()->GetWebContents(), std::move(receiver));
 }
 
 }  // namespace glic

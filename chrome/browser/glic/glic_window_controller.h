@@ -17,7 +17,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/interaction/element_tracker.h"
-#include "ui/views/widget/unique_widget_ptr.h"
+#include "ui/views/widget/widget_observer.h"
 
 class Browser;
 namespace gfx {
@@ -33,6 +33,7 @@ class GlicView;
 class WebUIContentsContainer;
 class GlicWindowResizeAnimation;
 class ScopedGlicButtonIndicator;
+class GlicFreController;
 
 // This class owns and manages the glic window. This class has the same lifetime
 // as the GlicKeyedService, so it exists if and only if the profile exists.
@@ -196,6 +197,8 @@ class GlicWindowController : public views::WidgetObserver {
   void ShowDetachedForTesting();
 
   void WebUiStateChanged(mojom::WebUiState new_state);
+
+  GlicFreController* fre_controller() { return fre_controller_.get(); }
 
  private:
   gfx::Rect GetInitialDetachedBounds();
@@ -372,6 +375,8 @@ class GlicWindowController : public views::WidgetObserver {
   mojom::WebClientMode starting_mode_;
 
   std::unique_ptr<ScopedGlicButtonIndicator> scoped_glic_button_indicator_;
+
+  std::unique_ptr<GlicFreController> fre_controller_;
 
   base::WeakPtrFactory<GlicWindowController> weak_ptr_factory_{this};
 };

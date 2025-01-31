@@ -14,8 +14,10 @@ import "mojo/public/mojom/base/time.mojom";
 
 // Factory for PageHandler used in chrome://glic.
 interface PageHandlerFactory {
-  // Creates the PageHandler.
+  // Creates the PageHandler for chrome://glic.
   CreatePageHandler(pending_receiver<PageHandler> receiver);
+  // Creates the handler for chrome://glic/glic_fre.
+  CreateFrePageHandler(pending_receiver<FrePageHandler> receiver);
 };
 
 enum WebUiState {
@@ -67,6 +69,17 @@ interface PageHandler {
 
   // Notifies the PageHandler that the state of the WebUI has changed.
   WebUiStateChanged(WebUiState new_state);
+};
+
+// Handler for the glic FRE WebUI.
+// TODO(crbug.com/393399675): The FRE should be handled in a separate WebUI
+// and mojom.
+interface FrePageHandler {
+  // Closes the glic FRE modal dialog and opens the widget hosting the main
+  // glic WebUI.
+  AcceptFre();
+  // Closes the glic FRE modal dialog.
+  DismissFre();
 };
 
 // Reason why getting tab context failed.
