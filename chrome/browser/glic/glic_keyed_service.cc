@@ -199,6 +199,13 @@ void GlicKeyedService::GetContextFromFocusedTab(
           std::move(fetcher), std::move(callback)));
 }
 
+void GlicKeyedService::CaptureScreenshot(
+    mojom::WebClientHandler::CaptureScreenshotCallback callback) {
+  // Implemented in follow up CL:
+  // https://chromium-review.googlesource.com/c/chromium/src/+/6194893
+  NOTIMPLEMENTED();
+}
+
 content::WebContents* GlicKeyedService::GetFocusedTab() {
   return focused_tab_manager_.GetWebContentsForFocusedTab();
 }

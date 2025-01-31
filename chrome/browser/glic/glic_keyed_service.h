@@ -125,6 +125,9 @@ class GlicKeyedService : public KeyedService {
       const mojom::GetTabContextOptions& options,
       glic::mojom::WebClientHandler::GetContextFromFocusedTabCallback callback);
 
+  void CaptureScreenshot(
+      glic::mojom::WebClientHandler::CaptureScreenshotCallback callback);
+
   void SyncWebviewCookies(
       mojom::PageHandler::SyncWebviewCookiesCallback callback);
 

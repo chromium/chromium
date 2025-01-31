@@ -49,9 +49,25 @@ enum GetTabContextErrorReason {
   kWebContentsChanged,
 };
 
+// Reason why capturing desktop screenshot failed. This MUST be kept in sync
+// with the glic_api.ts enum.
+enum CaptureScreenshotErrorReason {
+  // Screen capture or frame encoding failure.
+  kScreenCaptureFailedForUnknownReason = 0,
+  // Screen capture requested but already in progress of serving another request
+  kScreenCaptureRequestThrottled = 1,
+  // User declined screen capture dialog before taking a screenshot.
+  kUserCancelledScreenPickerDialog = 2,
+};
+
 union GetContextResult {
   GetTabContextErrorReason error_reason;
   TabContext tab_context;
+};
+
+union CaptureScreenshotResult {
+  CaptureScreenshotErrorReason error_reason;
+  Screenshot screenshot;
 };
 
 // Information about the user profile.
@@ -146,6 +162,11 @@ interface WebClientHandler {
   // If the widget doesn't exist yet, `size` will be used as its initial size
   // when it's created later.
   ResizeWidget(gfx.mojom.Size size, mojo_base.mojom.TimeDelta duration) => ();
+
+  // Returns the screenshot result or error reason. 'screenshot' is null when an
+  // error occurs during capture. This can also fail if the user cancels the
+  // screen picker dialog.
+  CaptureScreenshot() => (CaptureScreenshotResult result);
 
   // Requests that audio ducking be enabled or disabled.
   // If enabled, audio from other sources will be attenuated.

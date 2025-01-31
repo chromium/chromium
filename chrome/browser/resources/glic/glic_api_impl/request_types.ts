@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {AnnotatedPageData, ChromeVersion, DraggableArea, GetTabContextErrorReason, OpenPanelInfo, PanelState, PdfDocumentData, TabContextOptions, TabContextResult, TabData, UserProfileInfo} from '../glic_api/glic_api.js';
+import type {AnnotatedPageData, CaptureScreenshotErrorReason, ChromeVersion, DraggableArea, GetTabContextErrorReason, OpenPanelInfo, PanelState, PdfDocumentData, Screenshot, TabContextOptions, TabContextResult, TabData, UserProfileInfo} from '../glic_api/glic_api.js';
 
 /*
 This file defines messages sent over postMessage in-between the Glic WebUI
@@ -79,6 +79,15 @@ export declare interface HostRequestTypes {
       // The error reason. Should be present when `tabContextResult` is not, but
       // might still be undefined for some older chrome versions.
       error?: GetTabContextErrorReason,
+    },
+  };
+  glicBrowserCaptureScreenshot: {
+    request: {},
+    response: {
+      // Present on success.
+      screenshot?: Screenshot,
+      // The error reason. Should be present when `screenshot` is not.
+      errorReason?: CaptureScreenshotErrorReason,
     },
   };
   glicBrowserResizeWindow: {

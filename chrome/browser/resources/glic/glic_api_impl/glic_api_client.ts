@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {AnnotatedPageData, ChromeVersion, DraggableArea, ErrorWithReason, GlicBrowserHost, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, ObservableValue, OpenPanelInfo, PanelState, PdfDocumentData, Subscriber, TabContextOptions, TabContextResult, TabData, UserProfileInfo} from '../glic_api/glic_api.js';
-import {GetTabContextErrorReason} from '../glic_api/glic_api.js';
+import type {AnnotatedPageData, ChromeVersion, DraggableArea, ErrorWithReason, GlicBrowserHost, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, ObservableValue, OpenPanelInfo, PanelState, PdfDocumentData, Screenshot, Subscriber, TabContextOptions, TabContextResult, TabData, UserProfileInfo} from '../glic_api/glic_api.js';
+import {CaptureScreenshotErrorReason, GetTabContextErrorReason} from '../glic_api/glic_api.js';
 
 import {PostMessageRequestReceiver, PostMessageRequestSender} from './post_message_transport.js';
 import type {AnnotatedPageDataPrivate, PdfDocumentDataPrivate, RgbaImage, TabContextResultPrivate, TabDataPrivate, WebClientRequestTypes} from './request_types.js';
@@ -252,6 +252,19 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
 
     return this.sender.requestWithResponse(
         'glicBrowserResizeWindow', {size: {width, height}, options});
+  }
+
+  async captureScreenshot(): Promise<Screenshot> {
+    const screenshotResult = await this.sender.requestWithResponse(
+        'glicBrowserCaptureScreenshot', {});
+    if (!screenshotResult.screenshot) {
+      throw new ErrorWithReasonImpl(
+          'captureScreenshot failed',
+          screenshotResult.errorReason ??
+              CaptureScreenshotErrorReason
+                  .SCREEN_CAPTURE_FAILED_FOR_UNKNOWN_REASON);
+    }
+    return screenshotResult.screenshot;
   }
 
   setWindowDraggableAreas(areas: DraggableArea[]) {
