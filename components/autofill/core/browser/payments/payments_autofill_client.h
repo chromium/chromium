@@ -481,6 +481,10 @@ class PaymentsAutofillClient : public RiskDataLoader {
       base::WeakPtr<CardUnmaskDelegate> delegate);
   virtual void OnUnmaskVerificationResult(PaymentsRpcResult result);
 
+  // Shows a view that presents the Buy-Now-Pay-Later Terms of Service to the
+  // user to accept or decline.
+  virtual void ShowBnplTos();
+
   // Returns a pointer to a VirtualCardEnrollmentManager that is owned by
   // PaymentsAutofillClient. VirtualCardEnrollmentManager is used for virtual
   // card enroll and unenroll related flows. This function will return a nullptr
