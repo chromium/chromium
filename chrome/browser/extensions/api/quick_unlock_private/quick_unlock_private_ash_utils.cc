@@ -95,10 +95,6 @@ void QuickUnlockPrivateGetAuthTokenHelper::OnAuthSessionStarted(
     return;
   }
 
-  auto on_authenticated =
-      base::BindOnce(&QuickUnlockPrivateGetAuthTokenHelper::OnAuthenticated,
-                     weak_factory_.GetWeakPtr(), std::move(callback));
-
   const auto* password_factor =
       user_context->GetAuthFactorsData().FindFactorByType(
           cryptohome::AuthFactorType::kPassword);
@@ -109,6 +105,10 @@ void QuickUnlockPrivateGetAuthTokenHelper::OnAuthSessionStarted(
     if (pin_factor) {
       if (!pin_factor->GetPinStatus().IsLockedFactor()) {
         const std::string salt = GetUserSalt(user_context->GetAccountId());
+        auto on_authenticated = base::BindOnce(
+            &QuickUnlockPrivateGetAuthTokenHelper::OnAuthenticated,
+            weak_factory_.GetWeakPtr(), std::move(callback));
+
         auth_performer_.AuthenticateWithPin(password_, salt,
                                             std::move(user_context),
                                             std::move(on_authenticated));
@@ -130,6 +130,10 @@ void QuickUnlockPrivateGetAuthTokenHelper::OnAuthSessionStarted(
                               user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND)));
     return;
   }
+
+  auto on_authenticated =
+      base::BindOnce(&QuickUnlockPrivateGetAuthTokenHelper::OnAuthenticated,
+                     weak_factory_.GetWeakPtr(), std::move(callback));
 
   auth_performer_.AuthenticateWithPassword(
       *(password_factor->ref().label()), std::move(password_),
