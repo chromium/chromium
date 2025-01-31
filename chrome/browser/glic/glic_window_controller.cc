@@ -526,12 +526,22 @@ gfx::Point GlicWindowController::GetTopRightPositionForAttachedGlicWindow(
 }
 
 gfx::Point GlicWindowController::GetTopRightPositionForDetachedGlicWindow() {
-  // Position determined by screen bounds. Returns the top right point of the
-  // screen.
-  display::Screen* screen = display::Screen::GetScreen();
-  gfx::Point top_right_bounds =
-      screen->GetPrimaryDisplay().work_area().top_right();
-
+  // Use the top right corner of the display of the most recently
+  // active browser. If there was no recently active browser, use the primary
+  // display.
+  Browser* last_active_browser = BrowserList::GetInstance()->GetLastActive();
+  std::optional<display::Display> display_to_use;
+  if (last_active_browser) {
+    std::optional<display::Display> widget_display =
+        last_active_browser->GetBrowserView().GetWidget()->GetNearestDisplay();
+    if (widget_display) {
+      display_to_use = widget_display.value();
+    }
+  }
+  if (!display_to_use) {
+    display_to_use = display::Screen::GetScreen()->GetPrimaryDisplay();
+  }
+  gfx::Point top_right_bounds = display_to_use->work_area().top_right();
   return top_right_bounds;
 }
 
@@ -607,6 +617,7 @@ void GlicWindowController::AttachToBrowser(Browser* browser) {
   GetGlicWidget()->SetZOrderLevel(ui::ZOrderLevel::kNormal);
 #if BUILDFLAG(IS_MAC)
   GetGlicWidget()->SetActivationIndependence(false);
+  GetGlicWidget()->SetVisibleOnAllWorkspaces(false);
 #endif
 
   browser_close_subscription_ = browser->RegisterBrowserDidClose(
@@ -975,6 +986,8 @@ void GlicWindowController::MaybeCreateHolderWindowAndReparent() {
   GetGlicWidget()->SetZOrderLevel(ui::ZOrderLevel::kFloatingWindow);
 #if BUILDFLAG(IS_MAC)
   GetGlicWidget()->SetActivationIndependence(true);
+  holder_widget_->SetVisibleOnAllWorkspaces(true);
+  GetGlicWidget()->SetVisibleOnAllWorkspaces(true);
 #endif
 }
 
