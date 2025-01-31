@@ -34,6 +34,10 @@ namespace gpu {
 
 namespace {
 
+BASE_FEATURE(kDiscardDroppedEarlyRenderedFrames,
+             "DiscardDroppedEarlyRenderedFrames",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 bool IsSurfaceControl(TextureOwner::Mode mode) {
   switch (mode) {
     case TextureOwner::Mode::kAImageReaderInsecureSurfaceControl:
@@ -255,7 +259,7 @@ gl::ScopedJavaSurface ImageReaderGLOwner::CreateJavaSurface() const {
   return gl::ScopedJavaSurface(j_surface, /*auto_release=*/true);
 }
 
-bool ImageReaderGLOwner::UpdateTexImage() {
+bool ImageReaderGLOwner::UpdateTexImage(bool discard) {
   base::AutoLock auto_lock(lock_);
 
   // If we've lost the texture, then do nothing.
@@ -328,6 +332,16 @@ bool ImageReaderGLOwner::UpdateTexImage() {
 
   UMA_HISTOGRAM_BOOLEAN("Media.AImageReaderGLOwner.HasFence",
                         scoped_acquire_fence_fd.is_valid());
+
+  if (discard && current_image_ref_ &&
+      base::FeatureList::IsEnabled(kDiscardDroppedEarlyRenderedFrames)) {
+    if (scoped_acquire_fence_fd.is_valid()) {
+      AImage_deleteAsync(image, scoped_acquire_fence_fd.release());
+    } else {
+      AImage_delete(image);
+    }
+    return true;
+  }
 
   // Make the newly acquired image as current image.
   current_image_ref_.emplace(this, image, std::move(scoped_acquire_fence_fd));
