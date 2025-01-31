@@ -16,6 +16,16 @@
 
 namespace permissions {
 
+namespace {
+
+// Returns whether the Android location setting is enabled/disabled.
+bool IsSystemLocationSettingEnabled() {
+  LocationSettingsImpl location_settings;
+  return location_settings.IsSystemLocationSettingEnabled();
+}
+
+}  // namespace
+
 void AppendRequiredAndroidPermissionsForContentSetting(
     ContentSettingsType content_settings_type,
     std::vector<std::string>* out) {
@@ -148,20 +158,23 @@ bool HasSystemPermission(ContentSettingsType type,
   if (!web_contents || !web_contents->GetNativeView()) {
     return false;
   }
+  if (type == ContentSettingsType::GEOLOCATION &&
+      !IsSystemLocationSettingEnabled()) {
+    return false;
+  }
   auto* window_android = web_contents->GetNativeView()->GetWindowAndroid();
   DCHECK(window_android);
-  if (type == ContentSettingsType::GEOLOCATION) {
-    LocationSettingsImpl location_settings;
-    if (!location_settings.IsSystemLocationSettingEnabled()) {
-      return false;
-    }
-  }
+
   return HasRequiredAndroidPermissionsForContentSetting(window_android, type);
 }
 
 bool CanRequestSystemPermission(ContentSettingsType type,
                                 content::WebContents* web_contents) {
   if (!web_contents || !web_contents->GetNativeView()) {
+    return false;
+  }
+  if (type == ContentSettingsType::GEOLOCATION &&
+      !IsSystemLocationSettingEnabled()) {
     return false;
   }
   JNIEnv* env = base::android::AttachCurrentThread();

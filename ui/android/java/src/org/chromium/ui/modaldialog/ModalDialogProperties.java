@@ -226,6 +226,13 @@ public class ModalDialogProperties {
     public static final WritableObjectPropertyKey<ModalDialogButtonSpec[]>
             BUTTON_GROUP_BUTTON_SPEC_LIST = new WritableObjectPropertyKey<>();
 
+    /**
+     * Configure if this dialog can dynamically switch between using the button spec list and the
+     * in-built positive/negative buttons or if the dialog can dynamically change its custom view.
+     */
+    public static final ReadableBooleanPropertyKey CHANGE_CUSTOM_VIEW_OR_BUTTONS =
+            new ReadableBooleanPropertyKey();
+
     /** Whether the title is scrollable with the message. */
     public static final WritableBooleanPropertyKey TITLE_SCROLLABLE =
             new WritableBooleanPropertyKey();
@@ -320,6 +327,7 @@ public class ModalDialogProperties {
                 FOOTER_MESSAGE,
                 CANCEL_ON_TOUCH_OUTSIDE,
                 BUTTON_GROUP_BUTTON_SPEC_LIST,
+                CHANGE_CUSTOM_VIEW_OR_BUTTONS,
                 TOUCH_FILTERED_CALLBACK,
                 FILTER_TOUCH_FOR_SECURITY,
                 WRAP_CUSTOM_VIEW_IN_SCROLLABLE,

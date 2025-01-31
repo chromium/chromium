@@ -336,6 +336,31 @@ public class EmbeddedPermissionPromptTest {
     @Test
     @MediumTest
     @Features.EnableFeatures({PermissionsAndroidFeatureList.PERMISSION_ELEMENT})
+    public void testDisableLocationSettingsPromptText() throws Exception {
+        RuntimePermissionTestUtils.setupGeolocationSystemMock(false);
+        String[] requestablePermission =
+                new String[] {
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                };
+        mTestAndroidPermissionDelegate =
+                new TestAndroidPermissionDelegate(
+                        requestablePermission, RuntimePromptResponse.GRANT);
+        runTest(
+                mTestAndroidPermissionDelegate,
+                TEST_PAGE,
+                "geolocation",
+                stringToContentSettingsType("geolocation"),
+                ContentSettingValues.BLOCK,
+                "To use your location on this site, give Chrome access",
+                "Android settings",
+                /* expectedPositiveEphemeralButtonText */ "",
+                "Cancel");
+    }
+
+    @Test
+    @MediumTest
+    @Features.EnableFeatures({PermissionsAndroidFeatureList.PERMISSION_ELEMENT})
     public void testOsSettingsPromptText() throws Exception {
         mTestAndroidPermissionDelegate =
                 new TestAndroidPermissionDelegate(new String[] {}, RuntimePromptResponse.DENY);
