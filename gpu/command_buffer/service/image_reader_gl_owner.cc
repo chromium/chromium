@@ -255,12 +255,12 @@ gl::ScopedJavaSurface ImageReaderGLOwner::CreateJavaSurface() const {
   return gl::ScopedJavaSurface(j_surface, /*auto_release=*/true);
 }
 
-void ImageReaderGLOwner::UpdateTexImage() {
+bool ImageReaderGLOwner::UpdateTexImage() {
   base::AutoLock auto_lock(lock_);
 
   // If we've lost the texture, then do nothing.
   if (!texture())
-    return;
+    return false;
 
   DCHECK(image_reader_);
 
@@ -298,17 +298,17 @@ void ImageReaderGLOwner::UpdateTexImage() {
   switch (return_code) {
     case AMEDIA_ERROR_INVALID_PARAMETER:
       LOG(ERROR) << "AImageReader: Invalid parameter";
-      return;
+      return false;
     case AMEDIA_IMGREADER_MAX_IMAGES_ACQUIRED:
       LOG(ERROR)
           << "number of concurrently acquired images has reached the limit";
-      return;
+      return false;
     case AMEDIA_IMGREADER_NO_BUFFER_AVAILABLE:
       LOG(ERROR) << "no buffers currently available in the reader queue";
-      return;
+      return false;
     case AMEDIA_ERROR_UNKNOWN:
       LOG(ERROR) << "method fails for some other reasons";
-      return;
+      return false;
     case AMEDIA_OK:
       // Method call succeeded.
       break;
@@ -323,7 +323,7 @@ void ImageReaderGLOwner::UpdateTexImage() {
   // still be bound to the texture.
   if (!image) {
     LOG(ERROR) << "AImageReader: image is nullptr: " << return_code;
-    return;
+    return false;
   }
 
   UMA_HISTOGRAM_BOOLEAN("Media.AImageReaderGLOwner.HasFence",
@@ -331,6 +331,7 @@ void ImageReaderGLOwner::UpdateTexImage() {
 
   // Make the newly acquired image as current image.
   current_image_ref_.emplace(this, image, std::move(scoped_acquire_fence_fd));
+  return true;
 }
 
 std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
