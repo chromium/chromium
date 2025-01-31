@@ -41,10 +41,7 @@ class FingerprintingProtectionFilterAndroidBrowserTest
 
 IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterAndroidBrowserTest,
                        MainFrameActivation) {
-  // TODO(crbug.com/386089639): Use GetTestUrl() when localhost subresource
-  // requests are no longer ignored.
-  GURL url = embedded_test_server()->GetURL("a.example",
-                                            "/frame_with_included_script.html");
+  GURL url(GetTestUrl("/frame_with_included_script.html"));
 
   ASSERT_NO_FATAL_FAILURE(SetRulesetToDisallowURLsWithPathSuffix(
       "suffix-that-does-not-match-anything"));

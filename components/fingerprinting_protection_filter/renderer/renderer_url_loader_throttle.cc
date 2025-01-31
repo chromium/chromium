@@ -87,7 +87,7 @@ RendererURLLoaderThrottle::~RendererURLLoaderThrottle() = default;
 bool RendererURLLoaderThrottle::WillIgnoreRequest(
     const GURL& url,
     network::mojom::RequestDestination request_destination) {
-  return !url.SchemeIsHTTPOrHTTPS() || net::IsLocalhost(url) ||
+  return !url.SchemeIsHTTPOrHTTPS() ||
          (request_destination !=
               network::mojom::RequestDestination::kWebBundle &&
           request_destination != network::mojom::RequestDestination::kScript);
