@@ -15,15 +15,19 @@ constexpr char kDeviceTypeKey[] = "DEVICETYPE";
 constexpr char kFormFactor[] = "form-factor";
 }  // namespace
 
-DeviceType GetDeviceType() {
+std::string GetFormFactor() {
   std::string value;
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(kFormFactor)) {
-    value = command_line->GetSwitchValueASCII(kFormFactor);
-  } else if (!base::SysInfo::GetLsbReleaseValue(kDeviceTypeKey, &value)) {
-    return DeviceType::kUnknown;
+    return command_line->GetSwitchValueASCII(kFormFactor);
+  } else if (base::SysInfo::GetLsbReleaseValue(kDeviceTypeKey, &value)) {
+    return value;
   }
+  return std::string();
+}
 
+DeviceType GetDeviceType() {
+  std::string value = GetFormFactor();
   // Most devices are Chromebooks, so we will also consider reference boards
   // as Chromebooks.
   if (value == "CHROMEBOOK" || value == "REFERENCE" || value == "CHROMESLATE" ||

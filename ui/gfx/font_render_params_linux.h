@@ -16,6 +16,10 @@ bool QueryFontconfig(const FontRenderParamsQuery& query,
                      FontRenderParams* params_out,
                      std::string* family_out);
 
+// Force disables subpixel font rendering.
+COMPONENT_EXPORT(GFX)
+void SetForceDisableSubpixelFontRendering(bool disable);
+
 }  // namespace gfx
 
 #endif  // UI_GFX_FONT_RENDER_PARAMS_LINUX_H_

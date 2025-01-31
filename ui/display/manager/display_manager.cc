@@ -32,6 +32,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chromeos/constants/devicetype.h"
 #include "chromeos/ui/base/display_util.h"
 #include "components/device_event_log/device_event_log.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -55,6 +56,7 @@
 #include "ui/events/devices/touchscreen_device.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/font_render_params.h"
+#include "ui/gfx/font_render_params_linux.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -480,6 +482,7 @@ DisplayManager::DisplayManager(std::unique_ptr<Screen> screen)
 
 DisplayManager::~DisplayManager() {
   // Reset the font params.
+  gfx::SetForceDisableSubpixelFontRendering(/*disable=*/false);
   gfx::SetFontRenderParamsDeviceScaleFactor(1.0f);
   on_display_zoom_modify_timeout_.Cancel();
 }
@@ -535,6 +538,11 @@ void DisplayManager::UpdateInternalDisplay(
 }
 
 void DisplayManager::RefreshFontParams() {
+  if (features::DoesFormFactorControlSubpixelRendering()) {
+    gfx::SetForceDisableSubpixelFontRendering(
+        chromeos::GetFormFactor() != chromeos::form_factor::kClamshell);
+  }
+
   gfx::SetFontRenderParamsDeviceScaleFactor(
       chromeos::GetRepresentativeDeviceScaleFactor(active_display_list_));
 }

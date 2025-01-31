@@ -124,5 +124,14 @@ bool IsFastDrmMasterDropEnabled() {
   return base::FeatureList::IsEnabled(kFastDrmMasterDrop);
 }
 
+// TODO(crbug.com/392021508): Remove the flag once the feature is launched.
+BASE_FEATURE(kFormFactorControlsSubpixelRendering,
+             "FormFactorControlsSubpixelRendering",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+bool DoesFormFactorControlSubpixelRendering() {
+  return base::FeatureList::IsEnabled(kFormFactorControlsSubpixelRendering);
+}
+
 }  // namespace features
 }  // namespace display
