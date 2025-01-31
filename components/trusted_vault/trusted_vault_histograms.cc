@@ -161,8 +161,17 @@ void RecordRecoveryKeyStoreURLFetchResponse(
 }
 
 void RecordTrustedVaultDownloadKeysStatus(
+    SecurityDomainId security_domain_id,
     TrustedVaultDownloadKeysStatusForUMA status) {
-  base::UmaHistogramEnumeration("Sync.TrustedVaultDownloadKeysStatus", status);
+  base::UmaHistogramEnumeration(
+      "TrustedVault.DownloadKeysStatus." +
+          GetSecurityDomainNameForUma(security_domain_id),
+      status);
+}
+
+void RecordTrustedVaultDownloadKeysStatus(
+    TrustedVaultDownloadKeysStatusForUMA status) {
+  RecordTrustedVaultDownloadKeysStatus(SecurityDomainId::kChromeSync, status);
 }
 
 void RecordTrustedVaultFileReadStatus(SecurityDomainId security_domain_id,

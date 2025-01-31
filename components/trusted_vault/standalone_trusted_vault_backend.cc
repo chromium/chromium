@@ -1105,7 +1105,7 @@ void StandaloneTrustedVaultBackend::FulfillFetchKeys(
       FindUserVault(gaia_id);
 
   if (status_for_uma.has_value()) {
-    RecordTrustedVaultDownloadKeysStatus(*status_for_uma);
+    RecordTrustedVaultDownloadKeysStatus(security_domain_id_, *status_for_uma);
   }
 
   std::vector<std::vector<uint8_t>> vault_keys;

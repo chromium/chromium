@@ -1940,16 +1940,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Sync.TrustedVaultDownloadKeysStatus"
-    enum="TrustedVaultDownloadKeysStatus" expires_after="2025-06-08">
-  <owner>mmoskvitin@google.com</owner>
-  <owner>mastiz@chromium.org</owner>
-  <summary>
-    Records the result of an attempt to download trusted vault keys from the
-    server (includes all registration versions).
-  </summary>
-</histogram>
-
 <histogram name="Sync.TrustedVaultErrorShownOnFirstTimeSync2" enum="Boolean"
     expires_after="2025-06-22">
   <owner>mmoskvitin@google.com</owner>
