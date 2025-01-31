@@ -89,6 +89,9 @@ class NET_EXPORT Session {
   // On use of a session, extend the TTL.
   void RecordAccess();
 
+  // Whether the URL is in-scope for the session.
+  bool IncludesUrl(const GURL& url) const;
+
  private:
   Session(Id id, url::Origin origin, GURL refresh);
   Session(Id id,

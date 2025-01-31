@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_PUBLIC_CPP_EXTERNAL_ARC_OVERLAY_TEST_FAKE_ARC_OVERLAY_CONTROLLER_IMPL_H_
-#define ASH_PUBLIC_CPP_EXTERNAL_ARC_OVERLAY_TEST_FAKE_ARC_OVERLAY_CONTROLLER_IMPL_H_
+#ifndef CHROMEOS_ASH_EXPERIENCES_ARC_OVERLAY_TEST_FAKE_ARC_OVERLAY_CONTROLLER_IMPL_H_
+#define CHROMEOS_ASH_EXPERIENCES_ARC_OVERLAY_TEST_FAKE_ARC_OVERLAY_CONTROLLER_IMPL_H_
 
 #include "chromeos/ash/experiences/arc/arc_export.h"
 #include "chromeos/ash/experiences/arc/overlay/arc_overlay_controller.h"
@@ -21,4 +21,4 @@ class ARC_EXPORT FakeArcOverlayControllerImpl : public ArcOverlayController {
 
 }  // namespace ash
 
-#endif  // ASH_PUBLIC_CPP_EXTERNAL_ARC_OVERLAY_TEST_FAKE_ARC_OVERLAY_CONTROLLER_IMPL_H_
+#endif  // CHROMEOS_ASH_EXPERIENCES_ARC_OVERLAY_TEST_FAKE_ARC_OVERLAY_CONTROLLER_IMPL_H_

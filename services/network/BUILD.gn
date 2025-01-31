@@ -530,6 +530,10 @@ source_set("tests") {
     ]
   }
 
+  if (enable_device_bound_sessions) {
+    sources += [ "device_bound_session_manager_unittest.cc" ]
+  }
+
   deps = [
     ":network_service",
     ":test_support",

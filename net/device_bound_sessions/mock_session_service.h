@@ -67,6 +67,11 @@ class SessionServiceMock : public SessionService {
        base::RepeatingCallback<bool(const net::SchemefulSite&)> site_matcher,
        base::OnceClosure completion_callback),
       (override));
+  MOCK_METHOD(base::ScopedClosureRunner,
+              AddObserver,
+              (const GURL& url,
+               base::RepeatingCallback<void(const SessionAccess&)> callback),
+              (override));
 };
 
 }  // namespace net::device_bound_sessions

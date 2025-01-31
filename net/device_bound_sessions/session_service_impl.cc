@@ -100,6 +100,12 @@ void SessionServiceImpl::RegisterBoundSession(
                      std::move(on_access_callback)));
 }
 
+SessionServiceImpl::Observer::Observer(
+    const GURL& url,
+    base::RepeatingCallback<void(const SessionAccess&)> callback)
+    : url(url), callback(callback) {}
+SessionServiceImpl::Observer::~Observer() = default;
+
 void SessionServiceImpl::OnLoadSessionsComplete(
     SessionStore::SessionsMap sessions) {
   unpartitioned_sessions_.merge(sessions);
@@ -411,6 +417,17 @@ void SessionServiceImpl::DeleteAllSessions(
   std::move(completion_callback).Run();
 }
 
+base::ScopedClosureRunner SessionServiceImpl::AddObserver(
+    const GURL& url,
+    base::RepeatingCallback<void(const SessionAccess&)> callback) {
+  auto observer = std::make_unique<Observer>(url, callback);
+  base::ScopedClosureRunner subscription(base::BindOnce(
+      &SessionServiceImpl::RemoveObserver, weak_factory_.GetWeakPtr(),
+      net::SchemefulSite(url), observer.get()));
+  observers_by_site_[net::SchemefulSite(url)].insert(std::move(observer));
+  return subscription;
+}
+
 SessionServiceImpl::SessionsMap::iterator
 SessionServiceImpl::DeleteSessionAndNotifyInternal(
     SessionServiceImpl::SessionsMap::iterator it,
@@ -435,6 +452,38 @@ void SessionServiceImpl::NotifySessionAccess(
   SessionAccess access{access_type, {site, session.id()}};
   if (per_request_callback) {
     per_request_callback.Run(access);
+  }
+
+  auto observers_it = observers_by_site_.find(site);
+  if (observers_it == observers_by_site_.end()) {
+    return;
+  }
+
+  for (const auto& observer : observers_it->second) {
+    if (session.IncludesUrl(observer->url)) {
+      observer->callback.Run(access);
+    }
+  }
+}
+
+void SessionServiceImpl::RemoveObserver(net::SchemefulSite site,
+                                        Observer* observer) {
+  auto observers_it = observers_by_site_.find(site);
+  if (observers_it == observers_by_site_.end()) {
+    return;
+  }
+
+  ObserverSet& observers = observers_it->second;
+
+  auto it = observers.find(observer);
+  if (it == observers.end()) {
+    return;
+  }
+
+  observers.erase(it);
+
+  if (observers.empty()) {
+    observers_by_site_.erase(observers_it);
   }
 }
 

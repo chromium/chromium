@@ -10,6 +10,7 @@
 #include "chrome/browser/apps/link_capturing/link_capturing_features.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/navigation_handle_user_data_forwarder.h"
@@ -210,6 +211,14 @@ void ReparentWebContentsToTabbedBrowser(content::WebContents* old_web_contents,
                                      target_browser_window);
 }
 
+Browser* FindNormalBrowser(const Profile& profile) {
+  for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
+    if (browser->is_type_normal() && browser->profile() == &profile) {
+      return browser;
+    }
+  }
+  return nullptr;
+}
 }  // namespace
 
 // static
@@ -480,10 +489,8 @@ NavigationCapturingProcess::GetInitialBrowserAndTabOverrideForNavigation(
 
   std::optional<ClientModeAndBrowser> client_mode_and_browser;
   if (first_navigation_app_id_) {
-    client_mode_and_browser = GetEffectiveClientModeAndBrowserForCapturing(
-        *profile_, *first_navigation_app_id_, source_tab_app_id_,
-        /*ignore_browser_tabs_for_standalone_apps=*/false,
-        /*navigate_params_requested_browser=*/params.browser);
+    client_mode_and_browser =
+        GetEffectiveClientModeAndBrowser(*first_navigation_app_id_);
     debug_data_.Set(
         "effective_client_mode",
         base::ToString(client_mode_and_browser->effective_client_mode));
@@ -855,10 +862,7 @@ NavigationCapturingProcess::HandleRedirect() {
   }
 
   ClientModeAndBrowser client_mode_and_browser =
-      GetEffectiveClientModeAndBrowserForCapturing(
-          *profile_, *target_app_id, source_tab_app_id_,
-          /*ignore_browser_tabs_for_standalone_apps=*/false,
-          /*navigate_params_requested_browser=*/navigation_params_browser_);
+      GetEffectiveClientModeAndBrowser(*target_app_id);
 
   // After this point:
   // - The navigation is non-user-modified.
@@ -1034,6 +1038,114 @@ bool NavigationCapturingProcess::
 #endif
 
   return false;
+}
+
+NavigationCapturingProcess::ClientModeAndBrowser
+NavigationCapturingProcess::GetEffectiveClientModeAndBrowser(
+    const webapps::AppId& app_id) {
+  WebAppProvider* provider = WebAppProvider::GetForWebApps(&*profile_);
+  CHECK(provider);
+  web_app::WebAppRegistrar& registrar = provider->registrar_unsafe();
+
+  ClientModeAndBrowser result;
+  result.effective_client_mode = registrar.GetAppById(app_id)
+                                     ->launch_handler()
+                                     .value_or(LaunchHandler())
+                                     .parsed_client_mode();
+  if (result.effective_client_mode == LaunchHandler::ClientMode::kAuto) {
+    result.effective_client_mode = LaunchHandler::ClientMode::kNavigateNew;
+  }
+
+  blink::mojom::DisplayMode requested_display_mode =
+      registrar.GetAppEffectiveDisplayMode(app_id);
+
+  // If the developer has an in-scope link that opens a new top level browsing
+  // in their own page, then force the client mode to be navigate-new. To
+  // detect this, we consider both the app_id that controls the referrer url
+  // as well as the app id of the tab that initiated the navigation.
+  if (source_tab_app_id_ == app_id) {
+    result.effective_client_mode = LaunchHandler::ClientMode::kNavigateNew;
+  }
+
+  if (result.effective_client_mode ==
+          LaunchHandler::ClientMode::kNavigateExisting ||
+      result.effective_client_mode ==
+          LaunchHandler::ClientMode::kFocusExisting) {
+    // For navigate and focus existing find an existing tab for this app,
+    // depending on the display mode requested.
+    std::optional<AppBrowserController::BrowserAndTabIndex> existing_app_host;
+    switch (requested_display_mode) {
+      case blink::mojom::DisplayMode::kUndefined:
+      case blink::mojom::DisplayMode::kBrowser:
+        existing_app_host =
+            AppBrowserController::FindTopLevelBrowsingContextForWebApp(
+                *profile_, app_id, Browser::TYPE_NORMAL);
+        break;
+      case blink::mojom::DisplayMode::kMinimalUi:
+      case blink::mojom::DisplayMode::kStandalone:
+      case blink::mojom::DisplayMode::kWindowControlsOverlay:
+      case blink::mojom::DisplayMode::kBorderless:
+        // TODO(https://crbug.com/393432158): Consider the
+        // navigate_params_browser
+        existing_app_host =
+            AppBrowserController::FindTopLevelBrowsingContextForWebApp(
+                *profile_, app_id, Browser::TYPE_APP);
+        // If no app tab was found, fall back to looking for a regular browser
+        // tab.
+        if (!existing_app_host) {
+          existing_app_host =
+              AppBrowserController::FindTopLevelBrowsingContextForWebApp(
+                  *profile_, app_id, Browser::TYPE_NORMAL);
+        }
+        break;
+        // TODO(crbug.com/375504532): Support tabbed mode on desktop.
+      case blink::mojom::DisplayMode::kTabbed:
+      case blink::mojom::DisplayMode::kFullscreen:
+      case blink::mojom::DisplayMode::kPictureInPicture:
+        NOTREACHED();
+    }
+
+    if (existing_app_host.has_value()) {
+      CHECK(existing_app_host->browser);
+      CHECK_NE(existing_app_host->tab_index, -1);
+      result.browser = existing_app_host->browser;
+      result.tab_index = existing_app_host->tab_index;
+      return result;
+    }
+    // If no tab was found to focus or navigate, we'll need to open and
+    // navigate a new tab instead.
+    result.effective_client_mode = LaunchHandler::ClientMode::kNavigateNew;
+  }
+
+  CHECK_EQ(result.effective_client_mode,
+           LaunchHandler::ClientMode::kNavigateNew);
+  result.tab_index = std::nullopt;
+  switch (requested_display_mode) {
+    case blink::mojom::DisplayMode::kUndefined:
+    case blink::mojom::DisplayMode::kBrowser:
+      // For kBrowser apps, an explicitly specific browser to navigate in
+      // should override what browser we might otherwise use for the profile.
+      if (navigation_params_browser_ &&
+          navigation_params_browser_->is_type_normal()) {
+        result.browser = navigation_params_browser_;
+      } else {
+        result.browser = FindNormalBrowser(*profile_);
+      }
+      break;
+    case blink::mojom::DisplayMode::kMinimalUi:
+    case blink::mojom::DisplayMode::kStandalone:
+    case blink::mojom::DisplayMode::kWindowControlsOverlay:
+    case blink::mojom::DisplayMode::kBorderless:
+      result.browser = AppBrowserController::FindForWebApp(*profile_, app_id);
+      break;
+      // TODO(crbug.com/375504532): Support tabbed mode on desktop.
+    case blink::mojom::DisplayMode::kTabbed:
+    case blink::mojom::DisplayMode::kFullscreen:
+    case blink::mojom::DisplayMode::kPictureInPicture:
+      NOTREACHED();
+  }
+
+  return result;
 }
 
 BrowserAndTabOverride NavigationCapturingProcess::CapturingDisabled() {

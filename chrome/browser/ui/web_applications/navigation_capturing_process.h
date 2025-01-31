@@ -155,6 +155,26 @@ class NavigationCapturingProcess
   // Called when this process is attached to a NavigationHandle.
   void OnAttachedToNavigationHandle();
 
+  // Returns the effective client mode for the given app, taking into account
+  // the app's effective display mode as well as what windows and tabs are
+  // currently open.
+  //
+  // If the effective client mode is `kNavigateNew`, only the `browser` will be
+  // populated, indicating the window in which the new tab should be opened. If
+  // a new window should be opened `browser` will be null.
+  //
+  // For an effective client mode of `kNavigateExisting` or `kFocusExisting`,
+  // both `browser` and `tab_index` will be populated, indicating the tab that
+  // should be navigated or focused.
+  struct ClientModeAndBrowser {
+    LaunchHandler::ClientMode effective_client_mode =
+        LaunchHandler::ClientMode::kNavigateNew;
+    raw_ptr<Browser> browser = nullptr;
+    std::optional<int> tab_index;
+  };
+  ClientModeAndBrowser GetEffectiveClientModeAndBrowser(
+      const webapps::AppId& app_id);
+
   // Helper methods for `GetInitialBrowserAndTabOverrideForNavigation()` that
   // return the correct return value and update internal state of this class
   // with the corresponding outcome.
