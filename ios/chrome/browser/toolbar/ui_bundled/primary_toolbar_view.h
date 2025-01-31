@@ -82,11 +82,17 @@
 // Updates the `tabGroupIndicatorView` availability.
 - (void)updateTabGroupIndicatorAvailability;
 
-// Shows the banner promo view.
+// Prepares to animate showing the banner promo.
+- (void)prepareToShowBannerPromo;
+
+// Shows the banner promo, possibly inside an animation block.
 - (void)showBannerPromo;
 
-// Hides the banner promo view.
+// Hides the banner promo, possibly inside an animation block.
 - (void)hideBannerPromo;
+
+// Cleans up after hiding the banner promo, possibly after an animation.
+- (void)cleanupAfterHideBannerPromo;
 
 @end
 
