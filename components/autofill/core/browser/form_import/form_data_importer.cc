@@ -318,7 +318,7 @@ FormDataImporter::ExtractedFormData FormDataImporter::ExtractFormData(
   }
 
   if (profile_autofill_enabled && payment_methods_autofill_enabled) {
-    auto origin = url::Origin::Create(submitted_form.source_url());
+    const url::Origin origin = submitted_form.main_frame_origin();
     FormSignature form_signature = submitted_form.form_signature();
     // If multiple complete address profiles were extracted, this most likely
     // corresponds to billing and shipping sections within the same form.
