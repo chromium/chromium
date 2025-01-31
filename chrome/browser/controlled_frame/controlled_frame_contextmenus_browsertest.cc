@@ -23,6 +23,9 @@
 
 namespace controlled_frame {
 
+using testing::Each;
+using testing::Eq;
+
 constexpr char kEvalSuccessStr[] = "SUCCESS";
 
 class ControlledFrameContextMenusTest : public ControlledFrameTestBase {
@@ -391,14 +394,40 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameContextMenusTest, OnClicked) {
 
   ASSERT_TRUE(CreateControlledFrame(
       app_frame, embedded_https_test_server().GetURL("/index.html")));
-  EXPECT_EQ(kEvalSuccessStr, CreateContextMenuItem(app_frame, test_menu_item_id,
-                                                   /*title=*/"Test1"));
+
+  auto create_context_menu_script = content::JsReplace(R"(
+new Promise(async (resolve, reject) => {
+  const frame = document.getElementsByTagName('controlledframe')[0];
+  if (!frame || !frame.contextMenus || !frame.contextMenus.create) {
+    reject('FAIL: frame, frame.contextMenus, or ' +
+        'frame.contextMenus.create is undefined');
+    return;
+  }
+  await frame.contextMenus.create(
+  {
+    title: 'test_title',
+    id: $1,
+    onclick: function(info){
+      document.clickedMenuItemId =
+          [...(document.clickedMenuItemId ?? []), info.menuItemId];
+      document.inlineOnClickedCount=(document.inlineOnClickedCount ?? 0) + 1;
+    }
+  });
+  resolve('SUCCESS');
+});
+    )",
+                                                       test_menu_item_id);
+
+  // Create a ContextMenu item with a inline listener.
+  ASSERT_EQ(content::EvalJs(app_frame, create_context_menu_script),
+            kEvalSuccessStr);
 
   auto add_handler_script = content::JsReplace(
       R"(
 document.onClickedHandler = function(info) {
-  document.lastClickedMenuItemId = info.menuItemId;
-  document.onClickedCount = (document.onClickedCount ?? 0) + 1;
+  document.clickedMenuItemId =
+      [...(document.clickedMenuItemId ?? []), info.menuItemId];
+  document.globalOnClickedCount = (document.globalOnClickedCount ?? 0) + 1;
 };
 
 (function() {
@@ -429,8 +458,7 @@ document.onClickedHandler = function(info) {
 )",
       kEvalSuccessStr);
 
-  // Add a listener for 'onClicked' then simulate clicking on menu item and
-  // expect the listener to be triggered.
+  // Add a global listener for 'onClicked' then simulate clicking on menu item.
   ASSERT_EQ(content::EvalJs(app_frame, add_handler_script), kEvalSuccessStr);
 
   extensions::WebViewGuest* web_view_guest = GetWebViewGuest(app_frame);
@@ -440,9 +468,11 @@ document.onClickedHandler = function(info) {
   ASSERT_TRUE(controlled_frame);
   SimulateClickContextMenuItem(controlled_frame);
 
-  ASSERT_EQ(content::EvalJs(app_frame, "document.onClickedCount"), 1);
-  ASSERT_EQ(content::EvalJs(app_frame, "document.lastClickedMenuItemId"),
-            test_menu_item_id);
+  EXPECT_EQ(content::EvalJs(app_frame, "document.inlineOnClickedCount"), 1);
+  EXPECT_EQ(content::EvalJs(app_frame, "document.globalOnClickedCount"), 1);
+  EXPECT_THAT(
+      content::EvalJs(app_frame, "document.clickedMenuItemId").ExtractList(),
+      Each(Eq(test_menu_item_id)));
 
   auto remove_handler_script = content::JsReplace(
       R"(
@@ -474,11 +504,15 @@ document.onClickedHandler = function(info) {
 )",
       kEvalSuccessStr);
 
-  // Remove the listener for 'onClicked' then simulate clicking on menu item and
-  // expect the listener to not be triggered.
+  // Remove the global listener for 'onClicked' then simulate clicking on menu
+  // item.
   ASSERT_EQ(content::EvalJs(app_frame, remove_handler_script), kEvalSuccessStr);
 
   SimulateClickContextMenuItem(controlled_frame);
-  ASSERT_EQ(content::EvalJs(app_frame, "document.onClickedCount"), 1);
+  EXPECT_EQ(content::EvalJs(app_frame, "document.inlineOnClickedCount"), 2);
+  EXPECT_EQ(content::EvalJs(app_frame, "document.globalOnClickedCount"), 1);
+  EXPECT_THAT(
+      content::EvalJs(app_frame, "document.clickedMenuItemId").ExtractList(),
+      Each(Eq(test_menu_item_id)));
 }
 }  // namespace controlled_frame
