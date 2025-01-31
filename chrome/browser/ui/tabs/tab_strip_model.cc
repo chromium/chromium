@@ -1159,6 +1159,14 @@ void TabStripModel::AddToNewSplit(const std::vector<int> indices) {
   MoveTabsAndSetGroupImpl(indices, destination_index, std::nullopt);
 }
 
+void TabStripModel::AddTabGroup(const tab_groups::TabGroupId group_id,
+                                tab_groups::TabGroupVisualData visual_data) {
+  ReentrancyCheck reentrancy_check(&reentrancy_guard_);
+  CHECK(SupportsTabGroups());
+  group_model_->AddTabGroup(group_id, visual_data,
+                            base::PassKey<TabStripModel>());
+}
+
 tab_groups::TabGroupId TabStripModel::AddToNewGroup(
     const std::vector<int> indices,
     const tab_groups::TabGroupId group_id,
@@ -2657,7 +2665,8 @@ void TabStripModel::AddToNewGroupImpl(
     return true;
   }());
 
-  group_model_->AddTabGroup(new_group, visual_data);
+  group_model_->AddTabGroup(new_group, visual_data,
+                            base::PassKey<TabStripModel>());
 
   // Find a destination for the first tab that's not pinned or inside another
   // group. We will stack the rest of the tabs up to its right.
@@ -3018,7 +3027,7 @@ void TabStripModel::RemoveTabFromGroupModel(
   tab_group->RemoveTab();
 
   if (tab_group->IsEmpty()) {
-    group_model_->RemoveTabGroup(group);
+    group_model_->RemoveTabGroup(group, base::PassKey<TabStripModel>());
   }
 }
 

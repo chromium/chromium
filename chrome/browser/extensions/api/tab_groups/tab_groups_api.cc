@@ -360,7 +360,7 @@ bool TabGroupsMoveFunction::MoveGroup(int group_id,
           tab_group_sync_service->CreateScopedLocalObserverPauser();
     }
 
-    target_tab_strip->group_model()->AddTabGroup(*group, *visual_data);
+    target_tab_strip->AddTabGroup(*group, *visual_data);
 
     for (size_t i = 0; i < tabs.length(); ++i) {
       // Detach tabs from the same index each time, since each detached tab is

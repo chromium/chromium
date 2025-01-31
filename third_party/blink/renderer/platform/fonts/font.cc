@@ -161,15 +161,15 @@ void DrawBlobs(cc::PaintCanvas* canvas,
 }  // anonymous ns
 
 void Font::DrawText(cc::PaintCanvas* canvas,
-                    const TextRunPaintInfo& run_info,
+                    const TextRun& run,
                     const gfx::PointF& point,
                     const cc::PaintFlags& flags,
                     DrawType draw_type) const {
-  DrawText(canvas, run_info, point, cc::kInvalidNodeId, flags, draw_type);
+  DrawText(canvas, run, point, cc::kInvalidNodeId, flags, draw_type);
 }
 
 void Font::DrawText(cc::PaintCanvas* canvas,
-                    const TextRunPaintInfo& run_info,
+                    const TextRun& run,
                     const gfx::PointF& point,
                     cc::NodeId node_id,
                     const cc::PaintFlags& flags,
@@ -181,7 +181,8 @@ void Font::DrawText(cc::PaintCanvas* canvas,
 
   CachingWordShaper word_shaper(*this);
   ShapeResultBuffer buffer;
-  word_shaper.FillResultBuffer(run_info, &buffer);
+  word_shaper.FillResultBuffer(run, &buffer);
+  TextRunPaintInfo run_info(run);
   ShapeResultBloberizer::FillGlyphs bloberizer(
       GetFontDescription(), run_info, buffer,
       draw_type == Font::DrawType::kGlyphsOnly
@@ -277,7 +278,7 @@ bool Font::DrawBidiText(cc::PaintCanvas* canvas,
     }
 
     ShapeResultBuffer buffer;
-    word_shaper.FillResultBuffer(subrun_info, &buffer);
+    word_shaper.FillResultBuffer(subrun, &buffer);
 
     // Fix regression with -ftrivial-auto-var-init=pattern. See
     // crbug.com/1055652.
@@ -303,7 +304,7 @@ bool Font::DrawBidiText(cc::PaintCanvas* canvas,
 
 // This function is not used if TextCombineEmphasisNG flag is enabled.
 void Font::DrawEmphasisMarks(cc::PaintCanvas* canvas,
-                             const TextRunPaintInfo& run_info,
+                             const TextRun& run,
                              const AtomicString& mark,
                              const gfx::PointF& point,
                              const cc::PaintFlags& flags) const {
@@ -318,7 +319,8 @@ void Font::DrawEmphasisMarks(cc::PaintCanvas* canvas,
 
   CachingWordShaper word_shaper(*this);
   ShapeResultBuffer buffer;
-  word_shaper.FillResultBuffer(run_info, &buffer);
+  word_shaper.FillResultBuffer(run, &buffer);
+  TextRunPaintInfo run_info(run);
   ShapeResultBloberizer::FillTextEmphasisGlyphs bloberizer(
       GetFontDescription(), run_info, buffer, emphasis_glyph_data);
   DrawBlobs(canvas, flags, bloberizer.Blobs(), point);
@@ -467,23 +469,6 @@ void GetTextInterceptsInternal(const ShapeResultBloberizer::BlobBuffer& blobs,
 }
 
 }  // anonymous namespace
-
-void Font::GetTextIntercepts(const TextRunPaintInfo& run_info,
-                             const cc::PaintFlags& flags,
-                             const std::tuple<float, float>& bounds,
-                             Vector<TextIntercept>& intercepts) const {
-  if (ShouldSkipDrawing())
-    return;
-
-  CachingWordShaper word_shaper(*this);
-  ShapeResultBuffer buffer;
-  word_shaper.FillResultBuffer(run_info, &buffer);
-  ShapeResultBloberizer::FillGlyphs bloberizer(
-      GetFontDescription(), run_info, buffer,
-      ShapeResultBloberizer::Type::kTextIntercepts);
-
-  GetTextInterceptsInternal(bloberizer.Blobs(), flags, bounds, intercepts);
-}
 
 void Font::GetTextIntercepts(const TextFragmentPaintInfo& text_info,
                              const cc::PaintFlags& flags,

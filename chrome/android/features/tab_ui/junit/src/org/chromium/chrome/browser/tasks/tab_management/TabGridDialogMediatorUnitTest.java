@@ -304,8 +304,13 @@ public class TabGridDialogMediatorUnitTest {
                 .createOrManageFlow(eq(mActivity), eq(null), eq(LOCAL_TAB_GROUP_ID), any());
 
         mModel.get(TabGridDialogProperties.SEND_FEEDBACK_RUNNABLE).run();
-        // TODO(crbug.com/391766089): Replace the second isNull() with the categoryTag.
-        verify(mHelpAndFeedbackLauncher).showFeedback(eq(mActivity), isNull(), isNull());
+        ArgumentCaptor<String> categoryCaptor = ArgumentCaptor.forClass(String.class);
+        verify(mHelpAndFeedbackLauncher)
+                .showFeedback(eq(mActivity), isNull(), categoryCaptor.capture());
+        assertTrue(
+                categoryCaptor
+                        .getValue()
+                        .contains(TabGridDialogMediator.SHARE_FEEDBACK_CATEGORY_SUFFIX));
     }
 
     @Test

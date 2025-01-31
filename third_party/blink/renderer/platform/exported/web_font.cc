@@ -79,12 +79,11 @@ void WebFont::DrawText(cc::PaintCanvas* canvas,
                        SkColor color) const {
   FontCachePurgePreventer font_cache_purge_preventer;
   TextRun text_run(run);
-  TextRunPaintInfo run_info(text_run);
 
   cc::PaintFlags flags;
   flags.setColor(color);
   flags.setAntiAlias(true);
-  private_->GetFont().DrawText(canvas, run_info, left_baseline, flags);
+  private_->GetFont().DrawText(canvas, text_run, left_baseline, flags);
 }
 
 int WebFont::CalculateWidth(const WebTextRun& run) const {

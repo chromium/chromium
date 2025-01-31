@@ -170,9 +170,7 @@ std::unique_ptr<DragImage> DragImage::Create(const KURL& url,
   }
 
   // First step is drawing the link drag image width.
-  TextRun label_run(label.Impl());
-  TextRun url_run(url_string.Impl());
-  gfx::Size label_size(label_font.Width(label_run),
+  gfx::Size label_size(label_font.Width(TextRun(label)),
                        label_font_data->GetFontMetrics().Ascent() +
                            label_font_data->GetFontMetrics().Descent());
 
@@ -186,7 +184,7 @@ std::unique_ptr<DragImage> DragImage::Create(const KURL& url,
                        label_size.height() + kDragLabelBorderY * 2);
 
   if (draw_url_string) {
-    url_string_size.set_width(url_font.Width(url_run));
+    url_string_size.set_width(url_font.Width(TextRun(url_string)));
     url_string_size.set_height(url_font_data->GetFontMetrics().Ascent() +
                                url_font_data->GetFontMetrics().Descent());
     image_size.set_height(image_size.height() + url_string_size.height());
@@ -239,11 +237,10 @@ std::unique_ptr<DragImage> DragImage::Create(const KURL& url,
             (kLabelBorderYOffset + url_font_data->GetFontMetrics().Descent()));
     TextRun text_run(url_string);
     if (RuntimeEnabledFeatures::DragImageNoNodeIdEnabled()) {
-      url_font.DrawText(&resource_provider->Canvas(),
-                        TextRunPaintInfo(text_run), text_pos, text_paint);
+      url_font.DrawText(&resource_provider->Canvas(), text_run, text_pos,
+                        text_paint);
     } else {
-      url_font.DrawText(&resource_provider->Canvas(),
-                        TextRunPaintInfo(text_run), text_pos,
+      url_font.DrawText(&resource_provider->Canvas(), text_run, text_pos,
                         device_scale_factor, text_paint);
     }
   }

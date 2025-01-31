@@ -541,11 +541,11 @@ void GraphicsContext::DrawEmphasisMarksInternal(
 
 // This function is not used if TextCombineEmphasisNG flag is enabled.
 void GraphicsContext::DrawEmphasisMarks(const Font& font,
-                                        const TextRunPaintInfo& text_info,
+                                        const TextRun& run,
                                         const AtomicString& mark,
                                         const gfx::PointF& point,
                                         const AutoDarkMode& auto_dark_mode) {
-  DrawEmphasisMarksInternal(font, text_info, mark, point, auto_dark_mode);
+  DrawEmphasisMarksInternal(font, run, mark, point, auto_dark_mode);
 }
 
 void GraphicsContext::DrawEmphasisMarks(const Font& font,
@@ -557,11 +557,11 @@ void GraphicsContext::DrawEmphasisMarks(const Font& font,
 }
 
 void GraphicsContext::DrawBidiText(const Font& font,
-                                   const TextRunPaintInfo& run_info,
+                                   const TextRun& run,
                                    const gfx::PointF& point,
                                    const AutoDarkMode& auto_dark_mode) {
   DrawTextPasses([&](const cc::PaintFlags& flags) {
-    if (font.DrawBidiText(canvas_, run_info, point,
+    if (font.DrawBidiText(canvas_, TextRunPaintInfo(run), point,
                           Font::kDoNotPaintIfFontNotReady,
                           DarkModeFlags(this, auto_dark_mode, flags),
                           printing_ ? Font::DrawType::kGlyphsAndClusters

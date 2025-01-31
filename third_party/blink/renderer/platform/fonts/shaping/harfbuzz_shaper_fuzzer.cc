@@ -80,7 +80,7 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
     TextRunPaintInfo subrun_info(subrun);
     ShapeResultBuffer buffer;
-    word_shaper.FillResultBuffer(subrun_info, &buffer);
+    word_shaper.FillResultBuffer(subrun, &buffer);
     ShapeResultBloberizer::FillGlyphs bloberizer(
         font.GetFontDescription(), subrun_info, buffer,
         ShapeResultBloberizer::Type::kEmitText);

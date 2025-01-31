@@ -2712,9 +2712,6 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
       <message name="IDS_ASH_DESKS_TEMPLATES_DELETE_DESK_DIALOG_TITLE" desc="The text of the title of the saved desk delete dialog, which shows up when trying to delete a saved desk.">
         Delete saved desk?
       </message>
-      <message name="IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_LACROS_DIALOG_DESCRIPTION" desc="The text of the description of the desks templates unsupported apps dialog, which shows up when trying to save a desk that contains an unsupported app (i.e. Crostini app).">
-        Lacros windows aren't currently supported. Other apps will be saved.
-      </message>
       <message name="IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_LINUX_APPS_DIALOG_DESCRIPTION" desc="The text of the description of the desks templates unsupported apps dialog, which shows up when trying to save a desk that contains an unsupported app (i.e. Crostini app).">
         Linux apps aren’t currently supported. Other apps will be saved.
       </message>

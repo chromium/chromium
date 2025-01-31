@@ -1423,7 +1423,7 @@ void TabDragController::AttachToNewContext(
                                        og_visual_data.color(),
                                        /*is_collapsed=*/false);
 
-    attached_context_->GetTabStripModel()->group_model()->AddTabGroup(
+    attached_context_->GetTabStripModel()->AddTabGroup(
         group_drag_data_.value().group, new_visual_data);
   }
 
@@ -1442,6 +1442,7 @@ void TabDragController::AttachToNewContext(
     // We should have owned_tab here, this CHECK is used to gather data for
     // https://crbug.com/677806.
     CHECK(drag_data_[i].owned_tab);
+
     attached_context_->GetTabStripModel()->InsertDetachedTabAt(
         index + i - first_tab_index(), std::move(drag_data_[i].owned_tab),
         add_types,

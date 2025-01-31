@@ -149,13 +149,12 @@ void TextCombinePainter::PaintEmphasisMark(const TextPaintStyle& text_style,
   const gfx::PointF emphasis_mark_text_origin =
       gfx::PointF(text_origin()) +
       gfx::Vector2dF(0, font_ascent + emphasis_mark_offset());
-  const TextRunPaintInfo text_run_paint_info(placeholder_text_run);
 
   if (RuntimeEnabledFeatures::TextCombineEmphasisNGEnabled()) {
     // TODO(crbug.com/389726691): Remove the CachingWordShaper usage.
     CachingWordShaper word_shaper(emphasis_mark_font);
     ShapeResultBuffer buffer;
-    word_shaper.FillResultBuffer(text_run_paint_info, &buffer);
+    word_shaper.FillResultBuffer(placeholder_text_run, &buffer);
     if (buffer.ShapeResultSize() == 0) {
       return;
     }
@@ -168,7 +167,7 @@ void TextCombinePainter::PaintEmphasisMark(const TextPaintStyle& text_style,
     return;
   }
   graphics_context().DrawEmphasisMarks(
-      emphasis_mark_font, text_run_paint_info, emphasis_mark(),
+      emphasis_mark_font, placeholder_text_run, emphasis_mark(),
       emphasis_mark_text_origin,
       PaintAutoDarkMode(style_, DarkModeFilter::ElementRole::kForeground));
 }

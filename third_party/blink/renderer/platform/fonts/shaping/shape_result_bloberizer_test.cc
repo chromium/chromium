@@ -345,7 +345,7 @@ TEST_F(ShapeResultBloberizerTest, CommonAccentLeftToRightFillGlyphBuffer) {
   Font font(font_description);
   CachingWordShaper word_shaper(font);
   ShapeResultBuffer buffer;
-  word_shaper.FillResultBuffer(run_info, &buffer);
+  word_shaper.FillResultBuffer(text_run, &buffer);
   ShapeResultBloberizer::FillGlyphs bloberizer(
       font.GetFontDescription(), run_info, buffer,
       ShapeResultBloberizer::Type::kEmitText);
@@ -355,7 +355,7 @@ TEST_F(ShapeResultBloberizerTest, CommonAccentLeftToRightFillGlyphBuffer) {
 
   CachingWordShaper reference_word_shaper(reference_font);
   ShapeResultBuffer reference_buffer;
-  reference_word_shaper.FillResultBuffer(run_info, &reference_buffer);
+  reference_word_shaper.FillResultBuffer(text_run, &reference_buffer);
   ShapeResultBloberizer::FillGlyphs reference_bloberizer(
       reference_font.GetFontDescription(), run_info, reference_buffer,
       ShapeResultBloberizer::Type::kEmitText);
@@ -388,14 +388,14 @@ TEST_F(ShapeResultBloberizerTest, CommonAccentLeftToRightFillGlyphBuffer) {
 TEST_F(ShapeResultBloberizerTest, CommonAccentRightToLeftFillGlyphBuffer) {
   // "[] []" with an accent mark over the last square bracket.
   const UChar kStr[] = {0x5B, 0x5D, 0x20, 0x5B, 0x301, 0x5D};
-  TextRun text_run(base::span(kStr), TextDirection::kRtl);
+  TextRun text_run(StringView(base::span(kStr)), TextDirection::kRtl);
   TextRunPaintInfo run_info(text_run);
   run_info.from = 1;
 
   Font font(font_description);
   CachingWordShaper word_shaper(font);
   ShapeResultBuffer buffer;
-  word_shaper.FillResultBuffer(run_info, &buffer);
+  word_shaper.FillResultBuffer(text_run, &buffer);
   ShapeResultBloberizer::FillGlyphs bloberizer(
       font.GetFontDescription(), run_info, buffer,
       ShapeResultBloberizer::Type::kEmitText);
@@ -405,7 +405,7 @@ TEST_F(ShapeResultBloberizerTest, CommonAccentRightToLeftFillGlyphBuffer) {
 
   CachingWordShaper reference_word_shaper(reference_font);
   ShapeResultBuffer reference_buffer;
-  reference_word_shaper.FillResultBuffer(run_info, &reference_buffer);
+  reference_word_shaper.FillResultBuffer(text_run, &reference_buffer);
   ShapeResultBloberizer::FillGlyphs reference_bloberizer(
       reference_font.GetFontDescription(), run_info, reference_buffer,
       ShapeResultBloberizer::Type::kEmitText);
@@ -639,7 +639,7 @@ TEST_F(ShapeResultBloberizerTest, SubRunWithZeroGlyphs) {
 
   CachingWordShaper word_shaper(font);
   ShapeResultBuffer buffer;
-  word_shaper.FillResultBuffer(run_info, &buffer);
+  word_shaper.FillResultBuffer(text_run, &buffer);
   ShapeResultBloberizer::FillGlyphs bloberizer(
       font.GetFontDescription(), run_info, buffer,
       ShapeResultBloberizer::Type::kEmitText);

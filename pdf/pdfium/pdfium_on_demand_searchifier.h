@@ -54,6 +54,8 @@ class PDFiumOnDemandSearchifier {
   void SearchifyNextPage();
   void SearchifyNextImage();
 
+  void CommitResultsToPage();
+
   struct BitmapResult {
     SkBitmap bitmap;
     int image_index;

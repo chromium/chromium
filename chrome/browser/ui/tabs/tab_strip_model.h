@@ -232,6 +232,13 @@ class TabStripModel : public TabGroupController {
       int add_types,
       std::optional<tab_groups::TabGroupId> group = std::nullopt);
 
+  // Creates a group object so that group_model can link it with once group
+  // collection owns it.
+  // TODO(392952244): Remove this after replacing callers with detaching and
+  // attaching groups.
+  void AddTabGroup(const tab_groups::TabGroupId group_id,
+                   tab_groups::TabGroupVisualData visual_data);
+
   // Adds a TabModel from another tabstrip at the specified location. See
   // InsertWebContentsAt.
   int InsertDetachedTabAt(
