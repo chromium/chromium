@@ -14,6 +14,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "base/containers/linked_list.h"
 #include "base/files/file.h"
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
@@ -140,7 +141,7 @@ class NET_EXPORT_PRIVATE SimpleFileTracker {
   bool IsEmptyForTesting();
 
  private:
-  struct TrackedFiles {
+  struct TrackedFiles : public base::LinkNode<TrackedFiles> {
     // We can potentially run through this state machine multiple times for
     // FILE_1, as that's often missing, so SimpleSynchronousEntry can sometimes
     // close and remove the file for an empty stream, then re-open it on actual
@@ -163,6 +164,8 @@ class NET_EXPORT_PRIVATE SimpleFileTracker {
     // is still relevant.
     bool HasOpenFiles() const;
 
+    bool InLRUList() const;
+    void RemoveIfLinked();
     // We use pointers to SimpleSynchronousEntry two ways:
     // 1) As opaque keys. This is handy as it avoids having to compare paths in
     //    case multiple backends use the same key. Since we access the
@@ -182,12 +185,6 @@ class NET_EXPORT_PRIVATE SimpleFileTracker {
     std::array<std::unique_ptr<base::File>, kSimpleEntryTotalFileCount> files;
 
     std::array<State, kSimpleEntryTotalFileCount> state;
-    std::list<raw_ptr<TrackedFiles, CtnExperimental>>::iterator position_in_lru;
-
-    // true if position_in_lru is valid. For entries where we closed everything,
-    // we try not to keep them in the LRU so that we don't have to constantly
-    // rescan them.
-    bool in_lru = false;
   };
 
   // Marks the file that was previously returned by Acquire as eligible for
@@ -219,10 +216,13 @@ class NET_EXPORT_PRIVATE SimpleFileTracker {
   base::Lock lock_;
   std::unordered_map<uint64_t, std::vector<std::unique_ptr<TrackedFiles>>>
       tracked_files_;
-  std::list<raw_ptr<TrackedFiles, CtnExperimental>> lru_;
-
+  // base::LinkedList (an intrusive linked list) is used instead of std::list to
+  // avoid allocating a separate node object for each TrackedFiles. In an
+  // intrusive list, the next/previous pointers are stored directly in
+  // TrackedFiles (via base::LinkNode), reducing overhead and improving
+  // performance for LRU operations.
+  base::LinkedList<TrackedFiles> lru_;
   int file_limit_;
-
   // How many actually open files we are using.
   // Note that when a thread commits to closing a file, but hasn't actually
   // executed the close yet, the file is no longer counted as open here, so this
