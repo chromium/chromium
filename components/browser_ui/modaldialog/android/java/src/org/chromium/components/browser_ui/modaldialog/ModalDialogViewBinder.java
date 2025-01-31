@@ -8,6 +8,7 @@ import android.text.TextUtils;
 import android.view.View;
 
 import org.chromium.ui.modaldialog.ModalDialogProperties;
+import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
 import org.chromium.ui.modaldialog.ModalDialogProperties.ModalDialogButtonSpec;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -121,6 +122,18 @@ public class ModalDialogViewBinder
             view.setHorizontalMargin(model.get(ModalDialogProperties.HORIZONTAL_MARGIN));
         } else if (ModalDialogProperties.VERTICAL_MARGIN == propertyKey) {
             view.setVerticalMargin(model.get(ModalDialogProperties.VERTICAL_MARGIN));
+        } else if (ModalDialogProperties.POSITIVE_BUTTON_LOADING == propertyKey) {
+            view.setLoadingButtonState(
+                    model.get(ModalDialogProperties.POSITIVE_BUTTON_LOADING),
+                    model.get(ModalDialogProperties.BUTTON_STYLES),
+                    ButtonType.POSITIVE);
+        } else if (ModalDialogProperties.NEGATIVE_BUTTON_LOADING == propertyKey) {
+            view.setLoadingButtonState(
+                    model.get(ModalDialogProperties.NEGATIVE_BUTTON_LOADING),
+                    model.get(ModalDialogProperties.BUTTON_STYLES),
+                    ButtonType.NEGATIVE);
+        } else if (ModalDialogProperties.BLOCK_INPUTS == propertyKey) {
+            view.blockInputs(model.get(ModalDialogProperties.BLOCK_INPUTS));
         } else {
             assert false : "Unhandled property detected in ModalDialogViewBinder!";
         }

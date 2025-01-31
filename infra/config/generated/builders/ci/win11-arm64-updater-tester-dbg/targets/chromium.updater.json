@@ -1,9 +1,4 @@
 {
-  "win-arm64-updater-builder-dbg": {
-    "additional_compile_targets": [
-      "chrome/updater:all"
-    ]
-  },
   "win11-arm64-updater-tester-dbg": {
     "gtest_tests": [
       {

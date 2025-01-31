@@ -114,9 +114,6 @@ extern const char kAnnotatorModeDescription[];
 extern const char kAriaElementReflectionName[];
 extern const char kAriaElementReflectionDescription[];
 
-extern const char kAutomaticUsbDetachName[];
-extern const char kAutomaticUsbDetachDescription[];
-
 extern const char kAutomotiveFullscreenToolbarImprovementsName[];
 extern const char kAutomotiveFullscreenToolbarImprovementsDescription[];
 

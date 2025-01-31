@@ -341,7 +341,6 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
   class Layerizer;
 
   struct ScrollTranslationInfo {
-    gfx::Rect scrolling_contents_cull_rect;
     bool is_composited = false;
     bool force_main_thread_repaint = false;
   };

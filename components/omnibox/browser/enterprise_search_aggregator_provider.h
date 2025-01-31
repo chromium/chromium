@@ -20,15 +20,16 @@ namespace network {
 class SimpleURLLoader;
 }
 
+class AutocompleteInput;
 class AutocompleteProviderClient;
 class AutocompleteProviderDebouncer;
-class AutocompleteInput;
+class AutocompleteProviderListener;
 class TemplateURL;
 
 class EnterpriseSearchAggregatorProvider : public AutocompleteProvider {
  public:
-  explicit EnterpriseSearchAggregatorProvider(
-      AutocompleteProviderClient* client);
+  EnterpriseSearchAggregatorProvider(AutocompleteProviderClient* client,
+                                     AutocompleteProviderListener* listener);
 
   // AutocompleteProvider:
   void Start(const AutocompleteInput& input, bool minimal_changes) override;

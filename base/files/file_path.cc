@@ -41,7 +41,7 @@
 namespace base {
 
 using StringType = FilePath::StringType;
-using StringPieceType = FilePath::StringPieceType;
+using StringViewType = FilePath::StringViewType;
 
 namespace {
 
@@ -56,7 +56,7 @@ const FilePath::CharType kStringTerminator = FILE_PATH_LITERAL('\0');
 // otherwise returns npos.  This can only be true on Windows, when a pathname
 // begins with a letter followed by a colon.  On other platforms, this always
 // returns npos.
-StringPieceType::size_type FindDriveLetter(StringPieceType path) {
+StringViewType::size_type FindDriveLetter(StringViewType path) {
 #if defined(FILE_PATH_USES_DRIVE_LETTERS)
   // This is dependent on an ASCII-based character set, but that's a
   // reasonable assumption.  iswalpha can be too inclusive here.
@@ -70,7 +70,7 @@ StringPieceType::size_type FindDriveLetter(StringPieceType path) {
 }
 
 #if defined(FILE_PATH_USES_DRIVE_LETTERS)
-bool EqualDriveLetterCaseInsensitive(StringPieceType a, StringPieceType b) {
+bool EqualDriveLetterCaseInsensitive(StringViewType a, StringViewType b) {
   size_t a_letter_pos = FindDriveLetter(a);
   size_t b_letter_pos = FindDriveLetter(b);
 
@@ -78,19 +78,19 @@ bool EqualDriveLetterCaseInsensitive(StringPieceType a, StringPieceType b) {
     return a == b;
   }
 
-  StringPieceType a_letter(a.substr(0, a_letter_pos + 1));
-  StringPieceType b_letter(b.substr(0, b_letter_pos + 1));
+  StringViewType a_letter(a.substr(0, a_letter_pos + 1));
+  StringViewType b_letter(b.substr(0, b_letter_pos + 1));
   if (!StartsWith(a_letter, b_letter, CompareCase::INSENSITIVE_ASCII)) {
     return false;
   }
 
-  StringPieceType a_rest(a.substr(a_letter_pos + 1));
-  StringPieceType b_rest(b.substr(b_letter_pos + 1));
+  StringViewType a_rest(a.substr(a_letter_pos + 1));
+  StringViewType b_rest(b.substr(b_letter_pos + 1));
   return a_rest == b_rest;
 }
 #endif  // defined(FILE_PATH_USES_DRIVE_LETTERS)
 
-bool IsPathAbsolute(StringPieceType path) {
+bool IsPathAbsolute(StringViewType path) {
 #if defined(FILE_PATH_USES_DRIVE_LETTERS)
   StringType::size_type letter = FindDriveLetter(path);
   if (letter != StringType::npos) {
@@ -191,7 +191,7 @@ FilePath::FilePath() = default;
 FilePath::FilePath(const FilePath& that) = default;
 FilePath::FilePath(FilePath&& that) noexcept = default;
 
-FilePath::FilePath(StringPieceType path) : path_(path) {
+FilePath::FilePath(StringViewType path) : path_(path) {
   StringType::size_type nul_pos = path_.find(kStringTerminator);
   if (nul_pos != StringType::npos) {
     path_.erase(nul_pos, StringType::npos);
@@ -442,7 +442,7 @@ FilePath FilePath::RemoveFinalExtension() const {
   return FilePath(path_.substr(0, dot));
 }
 
-FilePath FilePath::InsertBeforeExtension(StringPieceType suffix) const {
+FilePath FilePath::InsertBeforeExtension(StringViewType suffix) const {
   if (suffix.empty()) {
     return FilePath(path_);
   }
@@ -464,7 +464,7 @@ FilePath FilePath::InsertBeforeExtensionASCII(std::string_view suffix) const {
 #endif
 }
 
-FilePath FilePath::AddExtension(StringPieceType extension) const {
+FilePath FilePath::AddExtension(StringViewType extension) const {
   if (IsEmptyOrSpecialCase(BaseName().value())) {
     return FilePath();
   }
@@ -493,7 +493,7 @@ FilePath FilePath::AddExtensionASCII(std::string_view extension) const {
 #endif
 }
 
-FilePath FilePath::ReplaceExtension(StringPieceType extension) const {
+FilePath FilePath::ReplaceExtension(StringViewType extension) const {
   if (IsEmptyOrSpecialCase(BaseName().value())) {
     return FilePath();
   }
@@ -513,7 +513,7 @@ FilePath FilePath::ReplaceExtension(StringPieceType extension) const {
   return FilePath(str);
 }
 
-bool FilePath::MatchesExtension(StringPieceType extension) const {
+bool FilePath::MatchesExtension(StringViewType extension) const {
   DCHECK(extension.empty() || extension[0] == kExtensionSeparator);
 
   StringType current_extension = Extension();
@@ -525,7 +525,7 @@ bool FilePath::MatchesExtension(StringPieceType extension) const {
   return FilePath::CompareEqualIgnoreCase(extension, current_extension);
 }
 
-bool FilePath::MatchesFinalExtension(StringPieceType extension) const {
+bool FilePath::MatchesFinalExtension(StringViewType extension) const {
   DCHECK(extension.empty() || extension[0] == kExtensionSeparator);
 
   StringType current_final_extension = FinalExtension();
@@ -537,14 +537,14 @@ bool FilePath::MatchesFinalExtension(StringPieceType extension) const {
   return FilePath::CompareEqualIgnoreCase(extension, current_final_extension);
 }
 
-FilePath FilePath::Append(StringPieceType component) const {
-  StringPieceType appended = component;
+FilePath FilePath::Append(StringViewType component) const {
+  StringViewType appended = component;
   StringType without_nuls;
 
   StringType::size_type nul_pos = component.find(kStringTerminator);
-  if (nul_pos != StringPieceType::npos) {
+  if (nul_pos != StringViewType::npos) {
     without_nuls = StringType(component.substr(0, nul_pos));
-    appended = StringPieceType(without_nuls);
+    appended = StringViewType(without_nuls);
   }
 
   DCHECK(!IsPathAbsolute(appended));
@@ -784,8 +784,8 @@ bool FilePath::ReadFromPickle(PickleIterator* iter) {
 #if BUILDFLAG(IS_WIN)
 // Windows specific implementation of file string comparisons.
 
-int FilePath::CompareIgnoreCase(StringPieceType string1,
-                                StringPieceType string2) {
+int FilePath::CompareIgnoreCase(StringViewType string1,
+                                StringViewType string2) {
   // CharUpperW within user32 is used here because it will provide unicode
   // conversions regardless of locale. The STL alternative, towupper, has a
   // locale consideration that prevents it from converting all characters by
@@ -794,10 +794,10 @@ int FilePath::CompareIgnoreCase(StringPieceType string1,
   // Perform character-wise upper case comparison rather than using the
   // fully Unicode-aware CompareString(). For details see:
   // http://blogs.msdn.com/michkap/archive/2005/10/17/481600.aspx
-  StringPieceType::const_iterator i1 = string1.begin();
-  StringPieceType::const_iterator i2 = string2.begin();
-  StringPieceType::const_iterator string1end = string1.end();
-  StringPieceType::const_iterator string2end = string2.end();
+  StringViewType::const_iterator i1 = string1.begin();
+  StringViewType::const_iterator i2 = string2.begin();
+  StringViewType::const_iterator string1end = string1.end();
+  StringViewType::const_iterator string2end = string2.end();
   for (; i1 != string1end && i2 != string2end; ++i1, ++i2) {
     wchar_t c1 =
         (wchar_t)LOWORD(::CharUpperW((LPWSTR)(DWORD_PTR)MAKELONG(*i1, 0)));
@@ -1279,8 +1279,8 @@ inline base_icu::UChar32 HFSReadNextNonIgnorableCodepoint(const char* string,
 // Special UTF-8 version of FastUnicodeCompare. Cf:
 // http://developer.apple.com/mac/library/technotes/tn/tn1150.html#StringComparisonAlgorithm
 // The input strings must be in the special HFS decomposed form.
-int FilePath::HFSFastUnicodeCompare(StringPieceType string1,
-                                    StringPieceType string2) {
+int FilePath::HFSFastUnicodeCompare(StringViewType string1,
+                                    StringViewType string2) {
   size_t length1 = string1.length();
   size_t length2 = string2.length();
   size_t index1 = 0;
@@ -1302,7 +1302,7 @@ int FilePath::HFSFastUnicodeCompare(StringPieceType string1,
   }
 }
 
-StringType FilePath::GetHFSDecomposedForm(StringPieceType string) {
+StringType FilePath::GetHFSDecomposedForm(StringViewType string) {
   apple::ScopedCFTypeRef<CFStringRef> cfstring(CFStringCreateWithBytesNoCopy(
       nullptr, reinterpret_cast<const UInt8*>(string.data()),
       checked_cast<CFIndex>(string.length()), kCFStringEncodingUTF8, false,
@@ -1338,8 +1338,8 @@ StringType FilePath::GetHFSDecomposedForm(CFStringRef cfstring) {
   return result;
 }
 
-int FilePath::CompareIgnoreCase(StringPieceType string1,
-                                StringPieceType string2) {
+int FilePath::CompareIgnoreCase(StringViewType string1,
+                                StringViewType string2) {
   // Quick checks for empty strings - these speed things up a bit and make the
   // following code cleaner.
   if (string1.empty()) {
@@ -1387,8 +1387,8 @@ int FilePath::CompareIgnoreCase(StringPieceType string1,
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
 // Generic Posix system comparisons.
-int FilePath::CompareIgnoreCase(StringPieceType string1,
-                                StringPieceType string2) {
+int FilePath::CompareIgnoreCase(StringViewType string1,
+                                StringViewType string2) {
   size_t rlen = std::min(string1.size(), string2.size());
   int comparison = strncasecmp(string1.data(), string2.data(), rlen);
   if (comparison < 0 || (comparison == 0 && string1.size() < string2.size())) {

@@ -17,6 +17,7 @@
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
+#include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
@@ -25,6 +26,7 @@
 #include "components/search_engines/template_url_service.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "ui/base/page_transition_types.h"
+#include "url/gurl.h"
 
 namespace {
 using testing::Return;
@@ -34,8 +36,9 @@ class FakeEnterpriseSearchAggregatorProvider
     : public EnterpriseSearchAggregatorProvider {
  public:
   explicit FakeEnterpriseSearchAggregatorProvider(
-      AutocompleteProviderClient* client)
-      : EnterpriseSearchAggregatorProvider(client) {}
+      AutocompleteProviderClient* client,
+      AutocompleteProviderListener* listener)
+      : EnterpriseSearchAggregatorProvider(client, listener) {}
 
   using EnterpriseSearchAggregatorProvider::SuggestionType;
 
@@ -44,8 +47,9 @@ class FakeEnterpriseSearchAggregatorProvider
   using EnterpriseSearchAggregatorProvider::IsProviderAllowed;
   using EnterpriseSearchAggregatorProvider::
       ParseEnterpriseSearchAggregatorSearchResults;
+  using EnterpriseSearchAggregatorProvider::RequestCompleted;
 
-  using EnterpriseSearchAggregatorProvider ::done_;
+  using EnterpriseSearchAggregatorProvider::done_;
   using EnterpriseSearchAggregatorProvider::input_;
   using EnterpriseSearchAggregatorProvider::matches_;
 
@@ -55,86 +59,176 @@ class FakeEnterpriseSearchAggregatorProvider
 
 const std::string kGoodJsonResponse = base::StringPrintf(
     R"({
-      "querySuggestions": [
-        {
-          "suggestion": "Document 1",
-          "dataStore": []
-        }
-      ],
-      "peopleSuggestions": [
-        {
-          "document": {
-            "name": "sundar",
-            "derivedStructData": {
-              "name": {
-                "display_name_lower": "john doe",
-                "familyName": "Doe",
-                "givenName": "John",
-                "given_name_lower": "john",
-                "family_name_lower": "doe",
-                "displayName": "John Doe",
-                "userName": "john@example.com"
-              },
-              "emails": [
-                {
-                  "type": "primary",
-                  "value": "john@example.com"
+        "querySuggestions": [
+          {
+            "suggestion": "Document 1",
+            "dataStore": []
+          }
+        ],
+        "peopleSuggestions": [
+          {
+            "document": {
+              "name": "sundar",
+              "derivedStructData": {
+                "name": {
+                  "display_name_lower": "john doe",
+                  "familyName": "Doe",
+                  "givenName": "John",
+                  "given_name_lower": "john",
+                  "family_name_lower": "doe",
+                  "displayName": "John Doe",
+                  "userName": "john@example.com"
+                },
+                "emails": [
+                  {
+                    "type": "primary",
+                    "value": "john@example.com"
+                  }
+                ],
+                "displayPhoto": {
+                  "url": "www.example.com"
                 }
-              ],
-              "displayPhoto": {
-                "url": "www.example.com"
+              }
+            },
+            "dataStore": "project 1"
+          }
+        ],
+        "contentSuggestions": [
+          {
+            "suggestion": "critical crash",
+            "contentType": "THIRD_PARTY",
+            "document": {
+              "name": "Document 2",
+              "structData": {
+                "title": "Critical Crash",
+                "uri": "www.example.com"
+              },
+              "derivedStructData": {
+                "source_type": "jira",
+                "entity_type": "issue",
+                "title": "Critical Crash",
+                "link": "https://www.example.com"
+              }
+            },
+            "dataStore": "project2"
+          }
+        ]
+      })");
+
+const std::string kGoodEmptyJsonResponse = base::StringPrintf(
+    R"({
+        "querySuggestions": [],
+        "peopleSuggestions": [],
+        "contentSuggestions": []
+      })");
+
+const std::string kMissingFieldsJsonResponse = base::StringPrintf(
+    R"({
+        "querySuggestions": [
+          {
+            "suggestion": "",
+            "dataStore": []
+          },
+          {
+            "suggestion": "Document 1",
+            "dataStore": []
+          }
+        ],
+        "peopleSuggestions": [
+          {
+            "document": {
+              "derivedStructData": {
+                "name": {
+                  "userName": "missingDisplayName@example.com"
+                }
               }
             }
           },
-          "dataStore": "project 1"
-        }
-      ],
-      "contentSuggestions": [
-        {
-          "suggestion": "critical crash",
-          "contentType": "THIRD_PARTY",
-          "document": {
-            "name": "Document 2",
-            "structData": {
-              "title": "Critical Crash",
-              "uri": "www.example.com"
-            },
-            "derivedStructData": {
-              "source_type": "jira",
-              "entity_type": "issue",
-              "title": "Critical Crash",
-              "link": "https://www.example.com"
+          {
+            "document": {
+              "derivedStructData": {
+                "name": {
+                  "displayName": "Missing user name"
+                }
+              }
             }
           },
-          "dataStore": "project2"
-        }
-      ]
-      })");
+          {
+            "document": {
+              "derivedStructData": {
+                "name": {
+                  "displayName": "John Doe",
+                  "userName": "john@example.com"
+                }
+              }
+            }
+          }
+        ],
+        "contentSuggestions": [
+          {
+            "document": {
+              "derivedStructData": {
+                "title": "Missing URI"
+              }
+            }
+          },
+          {
+            "document": {
+              "name": "Document 2",
+              "derivedStructData": {
+                "link": "www.missingTitle.com"
+              }
+            }
+          },
+          {
+            "document": {
+              "name": "Document 2",
+              "derivedStructData": {
+                "title": "Critical Crash",
+                "link": "www.example.com"
+              }
+            }
+          }
+        ]
+        })");
 
-class EnterpriseSearchAggregatorProviderTestBase {
+class EnterpriseSearchAggregatorProviderTest : public testing::Test,
+                                               AutocompleteProviderListener {
  protected:
-  EnterpriseSearchAggregatorProviderTestBase() {
+  EnterpriseSearchAggregatorProviderTest() {
     client_ = std::make_unique<FakeAutocompleteProviderClient>();
-    provider_ = new FakeEnterpriseSearchAggregatorProvider(client_.get());
+    provider_ = new FakeEnterpriseSearchAggregatorProvider(client_.get(), this);
+    InitClient();
+    InitFeature();
+    InitTemplateUrlService();
   }
+
+  // AutocompleteProviderListener:
+  void OnProviderUpdate(bool updated_matches,
+                        const AutocompleteProvider* provider) override {}
 
   void InitClient() {
     EXPECT_CALL(*client_.get(), IsAuthenticated()).WillRepeatedly(Return(true));
     EXPECT_CALL(*client_.get(), IsOffTheRecord()).WillRepeatedly(Return(false));
   }
 
-  omnibox_feature_configs::ScopedConfigForTesting<
-      omnibox_feature_configs::SearchAggregatorProvider>
-  InitFeature() {
-    omnibox_feature_configs::ScopedConfigForTesting<
-        omnibox_feature_configs::SearchAggregatorProvider>
-        scoped_config;
-    scoped_config.Get().enabled = true;
-    scoped_config.Get().name = "test";
-    scoped_config.Get().shortcut = "test";
-    scoped_config.Get().search_url = "example.com/{searchTerms}";
-    scoped_config.Get().suggest_url = "example.com";
-    return scoped_config;
+  void InitFeature() {
+    scoped_config_.Get().enabled = true;
+    scoped_config_.Get().name = "keyword";
+    scoped_config_.Get().shortcut = "keyword";
+    scoped_config_.Get().search_url = "example.com/{searchTerms}";
+    scoped_config_.Get().suggest_url = "example.com";
+  }
+
+  void InitTemplateUrlService() {
+    TemplateURLData data;
+    data.SetShortName(u"keyword");
+    data.SetKeyword(u"keyword");
+    data.SetURL("http://www.yahoo.com/{searchTerms}");
+    data.is_active = TemplateURLData::ActiveStatus::kTrue;
+    data.featured_by_policy = true;
+    data.policy_origin = TemplateURLData::PolicyOrigin::kSearchAggregator;
+    client_->GetTemplateURLService()->Add(std::make_unique<TemplateURL>(data));
   }
 
   std::vector<std::u16string> GetMatches() {
@@ -148,19 +242,9 @@ class EnterpriseSearchAggregatorProviderTestBase {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<FakeAutocompleteProviderClient> client_;
   scoped_refptr<FakeEnterpriseSearchAggregatorProvider> provider_;
-};
-
-class EnterpriseSearchAggregatorProviderTest
-    : public EnterpriseSearchAggregatorProviderTestBase,
-      public testing::Test {
- public:
-  void SetUp() override {
-    TemplateURLData data;
-    data.SetShortName(u"test");
-    data.SetKeyword(u"test");
-    data.SetURL("http://www.yahoo.com/{searchTerms}");
-    client_->GetTemplateURLService()->Add(std::make_unique<TemplateURL>(data));
-  }
+  omnibox_feature_configs::ScopedConfigForTesting<
+      omnibox_feature_configs::SearchAggregatorProvider>
+      scoped_config_;
 };
 
 TEST_F(EnterpriseSearchAggregatorProviderTest, CreateMatch) {
@@ -184,11 +268,6 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, CreateMatch) {
 
 // Test that the provider runs only when allowed.
 TEST_F(EnterpriseSearchAggregatorProviderTest, IsProviderAllowed) {
-  InitClient();
-
-  // Feature must be enabled.
-  auto scoped_config = InitFeature();
-
   AutocompleteInput input(u"text text", metrics::OmniboxEventProto::OTHER,
                           TestSchemeClassifier());
 
@@ -205,9 +284,9 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, IsProviderAllowed) {
 
   {
     // Feature must be enabled.
-    scoped_config.Get().enabled = false;
+    scoped_config_.Get().enabled = false;
     EXPECT_FALSE(provider_->IsProviderAllowed(input));
-    scoped_config.Get().enabled = true;
+    scoped_config_.Get().enabled = true;
     EXPECT_TRUE(provider_->IsProviderAllowed(input));
   }
 }
@@ -215,9 +294,9 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, IsProviderAllowed) {
 // Test that a call to `Start()` will stop old requests to prevent their results
 // from appearing with the new input.
 TEST_F(EnterpriseSearchAggregatorProviderTest, StartCallsStop) {
-  InitClient();
-
-  AutocompleteInput invalid_input(u"@test", metrics::OmniboxEventProto::OTHER,
+  scoped_config_.Get().enabled = false;
+  AutocompleteInput invalid_input(u"keyword text",
+                                  metrics::OmniboxEventProto::OTHER,
                                   TestSchemeClassifier());
   invalid_input.set_omit_asynchronous_matches(false);
 
@@ -227,13 +306,12 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, StartCallsStop) {
 }
 
 // Test response is parsed accurately.
-TEST_F(EnterpriseSearchAggregatorProviderTest,
-       ParseEnterpriseSearchAggregatorSearchResults) {
+TEST_F(EnterpriseSearchAggregatorProviderTest, Parse) {
   std::optional<base::Value> response =
       base::JSONReader::Read(kGoodJsonResponse);
   ASSERT_TRUE(response);
   ASSERT_TRUE(response->is_dict());
-  AutocompleteInput input{u"test text", metrics::OmniboxEventProto::OTHER,
+  AutocompleteInput input{u"keyword text", metrics::OmniboxEventProto::OTHER,
                           TestSchemeClassifier()};
   input.set_keyword_mode_entry_method(metrics::OmniboxEventProto::TAB);
 
@@ -242,7 +320,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest,
   provider_->ParseEnterpriseSearchAggregatorSearchResults(*response);
   ACMatches matches = provider_->matches_;
 
-  EXPECT_EQ(matches.size(), 3u);
+  ASSERT_EQ(matches.size(), 3u);
 
   for (int i = 0; i < int(matches.size()); i++) {
     EXPECT_EQ(matches[i].relevance, 1000 - i);
@@ -266,35 +344,30 @@ TEST_F(EnterpriseSearchAggregatorProviderTest,
   EXPECT_EQ(matches[2].destination_url, GURL("https://www.example.com"));
 }
 
-class EnterpriseSearchAggregatorProviderFeaturedByPolicyTest
-    : public EnterpriseSearchAggregatorProviderTestBase,
-      public testing::TestWithParam<bool> {};
+// Test results with missing expected fields are skipped.
+TEST_F(EnterpriseSearchAggregatorProviderTest, ParseWithMissingFields) {
+  std::optional<base::Value> response =
+      base::JSONReader::Read(kMissingFieldsJsonResponse);
+  ASSERT_TRUE(response);
+  ASSERT_TRUE(response->is_dict());
+  AutocompleteInput input{u"keyword text", metrics::OmniboxEventProto::OTHER,
+                          TestSchemeClassifier()};
+  input.set_keyword_mode_entry_method(metrics::OmniboxEventProto::TAB);
 
-INSTANTIATE_TEST_SUITE_P(,
-                         EnterpriseSearchAggregatorProviderFeaturedByPolicyTest,
-                         testing::Bool());
+  provider_->input_ = input;
+  provider_->ParseEnterpriseSearchAggregatorSearchResults(*response);
 
-TEST_P(EnterpriseSearchAggregatorProviderFeaturedByPolicyTest, CacheMatches) {
-  // Setup.
-  InitClient();
-  TemplateURLData turl_data;
-  turl_data.SetShortName(u"keyword");
-  turl_data.SetKeyword(u"keyword");
-  turl_data.SetURL("http://www.keyword.com/{searchTerms}");
-  turl_data.is_active = TemplateURLData::ActiveStatus::kTrue;
-  turl_data.featured_by_policy = GetParam();
-  turl_data.policy_origin = TemplateURLData::PolicyOrigin::kSearchAggregator;
-  client_->GetTemplateURLService()->Add(
-      std::make_unique<TemplateURL>(turl_data));
-  auto scoped_config = InitFeature();
+  EXPECT_THAT(GetMatches(),
+              testing::ElementsAre(u"http://www.yahoo.com/Document%201",
+                                   u"http://www.yahoo.com/john@example.com",
+                                   u"www.example.com"));
+}
+
+// Test matches are cached and cleared in the appropriate flows.
+TEST_F(EnterpriseSearchAggregatorProviderTest, CacheMatches_Start) {
+  // Set a cached match.
   AutocompleteInput input(u"keyword query", metrics::OmniboxEventProto::OTHER,
                           TestSchemeClassifier());
-
-  // Call `Start()` to put debouncer on cooldown.
-  provider_->Start(input, false);
-  EXPECT_THAT(GetMatches(), testing::ElementsAre(u"https://wikipedia.org"));
-
-  // Set an old match.
   provider_->matches_ = {provider_->CreateMatch(
       input, u"keyword",
       FakeEnterpriseSearchAggregatorProvider::SuggestionType::QUERY, true, 1500,
@@ -303,17 +376,86 @@ TEST_P(EnterpriseSearchAggregatorProviderFeaturedByPolicyTest, CacheMatches) {
   // Call `Start()`, old match should still be present.
   provider_->Start(input, false);
   EXPECT_THAT(GetMatches(), testing::ElementsAre(u"https://cached.org"));
-
-  // Wait for debouncer and request to complete, old match should be
-  // replaced by new match.
-  task_environment_.FastForwardBy(base::Minutes(1));
-
-  EXPECT_THAT(GetMatches(), testing::ElementsAre(u"https://wikipedia.org"));
 }
 
-// TODO(manukh): Test that results with missing fields aren't added to the
-//   provider's `matches_`.
-// TODO(manukh): Test that an empty results response clears the provider's
-//   `matches_`.
-// TODO(manukh): Test that an error response does NOT clears the provider's
-//   `matches_`.
+// Test matches are cached and cleared in the appropriate flows.
+TEST_F(EnterpriseSearchAggregatorProviderTest, CacheMatches_ErrorResponse) {
+  // Set a cached match.
+  AutocompleteInput input(u"keyword query", metrics::OmniboxEventProto::OTHER,
+                          TestSchemeClassifier());
+  provider_->matches_ = {provider_->CreateMatch(
+      input, u"keyword",
+      FakeEnterpriseSearchAggregatorProvider::SuggestionType::QUERY, true, 1500,
+      "https://cached.org", u"cached", u"cached")};
+
+  // Complete request with error, old match should still be present.
+  provider_->input_ = input;
+  provider_->done_ = false;
+  provider_->RequestCompleted(nullptr, 404,
+                              std::make_unique<std::string>("bad"));
+  EXPECT_THAT(GetMatches(), testing::ElementsAre(u"https://cached.org"));
+}
+
+// Test matches are cached and cleared in the appropriate flows.
+TEST_F(EnterpriseSearchAggregatorProviderTest, CacheMatches_EmptyResponse) {
+  // Set a cached match.
+  AutocompleteInput input(u"keyword query", metrics::OmniboxEventProto::OTHER,
+                          TestSchemeClassifier());
+  provider_->matches_ = {provider_->CreateMatch(
+      input, u"keyword",
+      FakeEnterpriseSearchAggregatorProvider::SuggestionType::QUERY, true, 1500,
+      "https://cached.org", u"cached", u"cached")};
+
+  // Complete request with empty results, old match should be cleared.
+  provider_->input_ = input;
+  provider_->done_ = false;
+  provider_->RequestCompleted(
+      nullptr, 200, std::make_unique<std::string>(kGoodEmptyJsonResponse));
+  EXPECT_THAT(GetMatches(), testing::ElementsAre());
+}
+
+// Test matches are cached and cleared in the appropriate flows.
+TEST_F(EnterpriseSearchAggregatorProviderTest,
+       CacheMatches_SuccessfulResponse) {
+  // Set a cached match.
+  AutocompleteInput input(u"keyword query", metrics::OmniboxEventProto::OTHER,
+                          TestSchemeClassifier());
+  provider_->matches_ = {provider_->CreateMatch(
+      input, u"keyword",
+      FakeEnterpriseSearchAggregatorProvider::SuggestionType::QUERY, true, 1500,
+      "https://cached.org", u"cached", u"cached")};
+
+  // Complete request with non-empty results, old match should be replaced.
+  provider_->input_ = input;
+  provider_->done_ = false;
+  provider_->RequestCompleted(nullptr, 200,
+                              std::make_unique<std::string>(kGoodJsonResponse));
+  EXPECT_THAT(GetMatches(),
+              testing::ElementsAre(u"http://www.yahoo.com/Document%201",
+                                   u"http://www.yahoo.com/john@example.com",
+                                   u"https://www.example.com"));
+}
+
+// Test things work when using an unfeatured keyword.
+TEST_F(EnterpriseSearchAggregatorProviderTest, UnfeaturedKeyword) {
+  TemplateURLData turl_data;
+  turl_data.SetShortName(u"unfeatured");
+  turl_data.SetKeyword(u"unfeatured");
+  turl_data.SetURL("http://www.unfeatured.com/{searchTerms}");
+  turl_data.is_active = TemplateURLData::ActiveStatus::kTrue;
+  turl_data.featured_by_policy = false;
+  turl_data.policy_origin = TemplateURLData::PolicyOrigin::kSearchAggregator;
+  client_->GetTemplateURLService()->Add(
+      std::make_unique<TemplateURL>(turl_data));
+  AutocompleteInput input(u"unfeatured query",
+                          metrics::OmniboxEventProto::OTHER,
+                          TestSchemeClassifier());
+
+  provider_->Start(input, false);
+  provider_->RequestCompleted(nullptr, 200,
+                              std::make_unique<std::string>(kGoodJsonResponse));
+  EXPECT_THAT(GetMatches(), testing::ElementsAre(
+                                u"http://www.unfeatured.com/Document%201",
+                                u"http://www.unfeatured.com/john@example.com",
+                                u"https://www.example.com"));
+}

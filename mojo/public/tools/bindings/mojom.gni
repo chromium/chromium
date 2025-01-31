@@ -115,7 +115,6 @@ mojom_parser_sources = [
   "$_mojom_library_root/parse/conditional_features.py",
   "$_mojom_library_root/parse/lexer.py",
   "$_mojom_library_root/parse/parser.py",
-  "//tools/diagnosis/crbug_1001171.py",
 ]
 
 mojom_generator_root = "$_mojom_tools_root/bindings"

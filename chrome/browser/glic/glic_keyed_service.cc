@@ -108,7 +108,7 @@ void GlicKeyedService::CreateTab(
     std::move(callback).Run(nullptr);
     return;
   }
-  // TODO(crbug.com/379931179): This is a placeholder implementation. Implement
+  // TODO(crbug.com/393391681): This is a placeholder implementation. Implement
   // createTab() correctly. It should consider which window to use, and observe
   // the `open_in_background` flag. It should return actual data using the
   // callback.

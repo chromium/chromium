@@ -66,13 +66,17 @@ def set_status(msg: str, *, quiet: bool = False, build_id: str = None):
   print(f'\r{prefix}{msg}\033[K', end='', flush=True)
 
 
-
 def _exception_hook(exctype: type, exc: Exception, tb):
+  # Let KeyboardInterrupt through.
+  if issubclass(exctype, KeyboardInterrupt):
+    sys.__excepthook__(exctype, exc, tb)
+    return
+  stacktrace = ''.join(traceback.format_exception(exctype, exc, tb))
+  stacktrace_lines = [f'\n⛔{line}' for line in stacktrace.splitlines()]
   # Output uncaught exceptions to all live terminals
-  BuildManager.broadcast(''.join(traceback.format_exception(exctype, exc, tb)))
+  BuildManager.broadcast(''.join(stacktrace_lines))
   # Cancel all pending tasks cleanly (i.e. delete stamp files if necessary).
   TaskManager.deactivate()
-  sys.__excepthook__(exctype, exc, tb)
 
 
 class LogfileManager:
@@ -287,6 +291,11 @@ class BuildManager:
           tty.flush()
         except BrokenPipeError:
           pass
+    # Write to the current terminal if we have not written to it yet.
+    st = os.stat(sys.stderr.fileno())
+    stderr_key = (st.st_ino, st.st_dev)
+    if stderr_key not in cls._cached_ttys:
+      print(msg, file=sys.stderr)
 
   @classmethod
   def has_live_builds(cls):

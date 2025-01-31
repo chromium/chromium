@@ -47,7 +47,7 @@ void AddTextFragmentSuffixResult(
   const int suffix_boundary_count =
       suffix_result.char_index() - suffix_boundary_start;
   const auto suffix_boundary =
-      PDFiumRange(engine->pages()[before_suffix_range.page_index()].get(),
+      PDFiumRange(engine->GetPage(before_suffix_range.page_index()),
                   suffix_boundary_start, suffix_boundary_count);
 
   for (const auto& c : suffix_boundary.GetText()) {
@@ -98,8 +98,8 @@ void AddTextFragmentStartResult(
     const int boundary_start = prefix_end;
     const int boundary_count = start_result.char_index() - prefix_end;
     const auto boundary =
-        PDFiumRange(engine->pages()[start_result.page_index()].get(),
-                    boundary_start, boundary_count);
+        PDFiumRange(engine->GetPage(start_result.page_index()), boundary_start,
+                    boundary_count);
     for (const auto& c : boundary.GetText()) {
       if (!base::IsUnicodeWhitespace(c)) {
         return;
@@ -171,7 +171,7 @@ void PDFiumTextFragmentFinder::StartTextFragmentSearch(
   // If StartTextFragmentSearch() gets called before `engine_` has any page
   // information (i.e. before the first call to LoadDocument has happened).
   // Handle this case.
-  if (engine_->pages().empty()) {
+  if (engine_->GetNumberOfPages() == 0) {
     return;
   }
 
@@ -192,8 +192,7 @@ void PDFiumTextFragmentFinder::FindTextFragmentPrefix(
   text_fragment_prefixes_.clear();
   const auto prefix_unicode = base::UTF8ToUTF16(fragment.prefix());
   for (int current_page = page_to_start_search_from;
-       current_page < static_cast<int>(engine_->pages().size());
-       current_page++) {
+       current_page < engine_->GetNumberOfPages(); current_page++) {
     last_unsearched_page_ = current_page + 1;
     engine_->SearchForFragment(
         prefix_unicode,
@@ -217,8 +216,7 @@ void PDFiumTextFragmentFinder::FindTextFragmentStart(
   // the text fragment. In this case, searching for the start term itself should
   // be adequate.
   if (text_fragment_prefixes_.empty()) {
-    for (int current_page = 0;
-         current_page < static_cast<int>(engine_->pages().size());
+    for (int current_page = 0; current_page < engine_->GetNumberOfPages();
          current_page++) {
       engine_->SearchForFragment(
           start_unicode,
@@ -272,7 +270,7 @@ void PDFiumTextFragmentFinder::FindTextFragmentStart(
   // prefix, search again for the text fragment prefix in case the fragment is
   // actually on an unsearched page.
   if (text_fragment_starts_.empty() && !fragment.prefix().empty() &&
-      last_unsearched_page_ < static_cast<int>(engine_->pages().size())) {
+      last_unsearched_page_ < engine_->GetNumberOfPages()) {
     FindTextFragmentPrefix(fragment, last_unsearched_page_);
   }
 }
@@ -306,7 +304,7 @@ void PDFiumTextFragmentFinder::FindTextFragmentEnd(
   // If no text end was found and the fragment contains a prefix, search again
   // for the text fragment prefix in case the fragment is on an unsearched page.
   if (!text_fragment_end_ && !fragment.prefix().empty() &&
-      last_unsearched_page_ < static_cast<int>(engine_->pages().size())) {
+      last_unsearched_page_ < engine_->GetNumberOfPages()) {
     FindTextFragmentPrefix(fragment, last_unsearched_page_);
   }
 }

@@ -17,6 +17,7 @@
 #include "components/omnibox/browser/autocomplete_match_classification.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
+#include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/remote_suggestions_service.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
@@ -39,11 +40,14 @@ std::string ptr_to_string(const std::string* ptr) {
 }  // namespace
 
 EnterpriseSearchAggregatorProvider::EnterpriseSearchAggregatorProvider(
-    AutocompleteProviderClient* client)
+    AutocompleteProviderClient* client,
+    AutocompleteProviderListener* listener)
     : AutocompleteProvider(
           AutocompleteProvider::TYPE_ENTERPRISE_SEARCH_AGGREGATOR),
       client_(client),
-      debouncer_(std::make_unique<AutocompleteProviderDebouncer>(true, 300)) {}
+      debouncer_(std::make_unique<AutocompleteProviderDebouncer>(true, 300)) {
+  AddListener(listener);
+}
 
 EnterpriseSearchAggregatorProvider::~EnterpriseSearchAggregatorProvider() =
     default;
@@ -108,14 +112,8 @@ void EnterpriseSearchAggregatorProvider::Run() {
   CHECK(template_url->policy_origin() ==
         TemplateURLData::PolicyOrigin::kSearchAggregator);
 
-  // Clear old matches from the last response.
-  matches_.clear();
-
-  auto match = CreateMatch(
-      input_, template_url->keyword(), SuggestionType::CONTENT, true, 1500,
-      "https://wikipedia.org", u"Your document", u"Last edited Feb 25");
-  matches_.push_back(match);
-  NotifyListeners(/*updated_matches=*/true);
+  // Don't clear `matches_` until a new successful response is ready to replace
+  // them.
 
   client_->GetRemoteSuggestionsService(/*create_if_necessary=*/true)
       ->CreateEnterpriseSearchAggregatorSuggestionsRequest(
@@ -144,6 +142,8 @@ void EnterpriseSearchAggregatorProvider::RequestCompleted(
       UpdateResults(SearchSuggestionParser::ExtractJsonData(
           source, std::move(response_body)));
 
+  // Keep showing old `matches_` if received an error response.
+
   loader_.reset();
   done_ = true;
   NotifyListeners(/*updated_matches=*/updated_matches);
@@ -157,6 +157,10 @@ bool EnterpriseSearchAggregatorProvider::UpdateResults(
     return false;
   }
 
+  // Clear old matches if received a successful response, even if the response
+  // is empty.
+  matches_.clear();
+
   // Fill `matches_` with the new server matches.
   ParseEnterpriseSearchAggregatorSearchResults(*response);
 
@@ -165,9 +169,10 @@ bool EnterpriseSearchAggregatorProvider::UpdateResults(
 
 void EnterpriseSearchAggregatorProvider::
     ParseEnterpriseSearchAggregatorSearchResults(const base::Value& root_val) {
+  auto adjusted_input = input_;
   const TemplateURL* template_url =
       AutocompleteInput::GetSubstitutingTemplateURLForInput(
-          client_->GetTemplateURLService(), &input_);
+          client_->GetTemplateURLService(), &adjusted_input);
 
   // Parse the results.
   const base::Value::List* queryResults =
@@ -299,12 +304,12 @@ AutocompleteMatch EnterpriseSearchAggregatorProvider::CreateMatch(
   match.destination_url = GURL(url);
   match.fill_into_edit = base::UTF8ToUTF16(url);
 
-  match.description = description;
+  match.description = AutocompleteMatch::SanitizeString(description);
   match.description_class = ClassifyTermMatches(
       FindTermMatches(input.text(), match.description),
       match.description.size(), ACMatchClassification::MATCH,
       ACMatchClassification::NONE);
-  match.contents = contents;
+  match.contents = AutocompleteMatch::SanitizeString(contents);
   match.contents_class = ClassifyTermMatches(
       FindTermMatches(input.text(), match.contents), match.contents.size(),
       ACMatchClassification::MATCH | ACMatchClassification::URL,

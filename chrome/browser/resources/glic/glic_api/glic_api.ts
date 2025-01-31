@@ -13,49 +13,70 @@
 //   tab).
 // - The defined functions and interfaces can be "evolved" to provide more
 //   functionality and data, as needed.
+// - Functions are documented with their known behavior. Exceptions and promise
+//   failures should will be documented only if they are expected.
+// - The browser provided tab and window IDs are not stable between Chrome
+//   restarts, and should not be saved to persisted storage for later reuse.
+// - All URLs sent or received through this API will be silently made empty if
+//   exceeding the length limit imposed by Mojo's URL implementation. See:
+//   https://source.chromium.org/chromium/chromium/src/+/main:url/mojom/url.mojom
 
-/**
- * Allows the Glic web client to register with the host WebUI.
- * NOTE: There will be a TBD setup step to be executed by the web client before
- * this API can be used. It will inject needed infrastructure code to
- * enable/implement this API, and provide an instance of GlicHostRegistry to the
- * web client.
- */
+/** Allows the Glic web client to register with the host WebUI. */
 export declare interface GlicHostRegistry {
-  // Registers the GlicWebClient instance with the browser. On success, the
-  // browser will follow up with a call initialize. A rejection of the promise
-  // indicates a browser side failure.
-  // The web client must call this once when its webview on-load event is fired.
+  /**
+   * Registers the GlicWebClient instance with the browser. On success, the
+   * browser will follow up with a call to `GlicWebClient#initialize`. A
+   * rejection of the promise indicates a browser side failure.
+   *
+   * The web client must call this once when its webview on-load event is fired.
+   */
   registerWebClient(webClient: GlicWebClient): Promise<void>;
 }
 
 /**
- * Implemented by the Glic web client. Most functions are optional.
+ * Implemented by the Glic web client, with its methods being called by the
+ * browser. Most functions are optional.
  */
 export declare interface GlicWebClient {
-  // Signals to the web client that it should initialize itself and get ready to
-  // be invoked by the user. The provided GlicBrowserHost instance offers
-  // information access functions so that the web client can configure itself
-  // That instance should also be stored for later usage.
-  // Successful initialization should be signaled with a void promise return, in
-  // which case the web client is considered ready to be invoked by the user and
-  // initialize() will not be called again.
-  // A failed promise means initialization failed and it will not be retried.
-  // NOTE: Later on, error-status information may be bundled with the failed
-  // promise so that the browser may retry calling initialize() in case of
-  // retryable errors.
+  /**
+   * Signals to the web client that it should initialize itself and get ready to
+   * be invoked by the user. The provided GlicBrowserHost instance offers
+   * information access functions so that the web client can configure itself
+   * That instance should also be stored for later usage.
+   *
+   * Successful initialization should be signaled with a void promise return, in
+   * which case the web client is considered ready to be invoked by the user and
+   * initialize() will not be called again.
+   *
+   * A failed promise means initialization failed and it will not be retried.
+   *
+   * Note: Later on, error-status information may be bundled with the failed
+   * promise so that the browser may retry calling initialize() in case of
+   * retryable errors.
+   */
   initialize(glicBrowserHost: GlicBrowserHost): Promise<void>;
 
   /**
    * @todo Remove void promise value once the web client returns OpenPanelInfo.
    *       https://crbug.com/390176911
    *
+   * @todo The browser is currently storing the previous panel size, but the web
+   *       client should be updated to set the panel size when handling this
+   *       call. https://crbug.com/392141194
+   *
    * Called right before the panel is made visible to the user. This event is
    * always called no matter how the panel opening is initiated.
+   *
+   * The web client should use the handling of this call to execute any
+   * preparations needed to become user-visible. Especially, these actions are
+   * expected from the web client:
+   * - Set the correct size of the panel.
+   *
    * The fulfilled promise should return an OpenPanelInfo containing relevant
    * information from the web client.
-   * Important: the returned promise must be fulfilled for the panel
-   * to be made visible to the user.
+   *
+   * Important: The panel is only made user-visible once the returned promise is
+   * resolved or failed (failures are ignored and the panel is still shown).
    */
   notifyPanelWillOpen?(panelState: PanelState): Promise<void|OpenPanelInfo>;
 
@@ -63,9 +84,11 @@ export declare interface GlicWebClient {
    * Called right after the panel was hidden away and is not visible to
    * the user anymore. This event is always called no matter how the panel
    * closing is initiated.
-   * Important: the returned promise must be fulfilled to allow the browser
-   * to free any needed resources. The browser will keep the web client
-   * alive until the promise is resolved.
+   *
+   * Important: The browser will keep the web client alive at least until the
+   * promise is resolved or failed (failures are ignored).  After that, the
+   * browser will not necessarily terminate the web client right away, but may
+   * do so at any time.
    */
   notifyPanelWasClosed?(): Promise<void>;
 
@@ -73,6 +96,7 @@ export declare interface GlicWebClient {
    * The user has requested activation of the web client.
    * The attachedToWindowId identifies the browser window to which the
    * panel is attached to. It is undefined if it is detached.
+   *
    * Note: The returned promise is currently not used in the browser.
    *
    * @deprecated: Not supported anymore and will eventually be removed.
@@ -82,6 +106,7 @@ export declare interface GlicWebClient {
   /**
    * The user has closed the web client window. The window may be activated
    * again later.
+   *
    * The promise being resolved indicates the web client has stored any needed
    * information and stopped accepting the user's input.
    *
@@ -95,18 +120,30 @@ export declare interface GlicWebClient {
  * Most functions are optional.
  */
 export declare interface GlicBrowserHost {
-  // Returns Chrome's version.
+  /** Returns the precise Chrome's version. */
   getChromeVersion(): Promise<ChromeVersion>;
 
-  // Sets the size of the glic window to the specified dimensions. Resolves when
-  // the animation finishes, is interrupted, or immediately if the window
-  // doesn't exist yet, in which case the size will be used as the initial size
-  // when the widget is eventually created.
+  /**
+   * Sets the size of the glic window to the specified dimensions. Resolves when
+   * the animation finishes, is interrupted, or immediately if the window
+   * doesn't exist yet, in which case the size will be used as the initial size
+   * when the widget is eventually created. Size values are in DIPs.
+   *
+   * If `options.durationMs` is provided, its value will be used as the total
+   * duration of the resize animation in milliseconds. If not provided, defaults
+   * to 0 (instant resizing). The promise will fail in case `durationMs` is not
+   * finite.
+   */
   resizeWindow(width: number, height: number, options?: {durationMs?: number}):
       Promise<void>;
 
-  // Set the areas of the glic window from which it should be draggable. Returns
-  // a promise that resolves when the browser has updated the draggable area.
+  /**
+   * Set the areas of the glic window from which it should be draggable. If
+   * `areas` is empty, a default draggable area will be created.
+   *
+   * Returns a promise that resolves when the browser has updated the draggable
+   * area.
+   */
   setWindowDraggableAreas(areas: DraggableArea[]): Promise<void>;
 
   /**
@@ -124,44 +161,60 @@ export declare interface GlicBrowserHost {
    * Requests the host to capture a screenshot. The choice of the screenshot
    * target is made by the host, possibly allowing the user to choose between a
    * desktop, window or arbitrary region.
+   *
    * The promise will be failed if the user rejects the capture or another
    * problem happens.
    */
   captureScreenshot?(): Promise<Screenshot>;
 
-  // Creates a tab and navigates to a url. It is made the active tab by default
-  // but that can be changed using the openInBackground option.
-  // The tab is created in the currently active window by default. If windowId
-  // is specified, it is created within the respective window.
-  // The promise returns information about the newly created tab. The promise
-  // may be rejected in case of errors.
-  // NOTE: This function does not return loading information for the newly
-  // created tab. If that's needed, we can add another function that does it.
+  /**
+   * @todo This has only a bare bones implementation: all options are ignored
+   *       and the returned TabData will be empty on a successful tab creation.
+   *       https://crbug.com/393391681
+   *
+   * Creates a tab and navigates to a URL. It is made the active tab by default
+   * but that can be changed using the openInBackground option.
+   *
+   * Only HTTP and HTTPS schemes are accepted. Other schemes
+   *
+   * The tab is created in the currently active window by default. If windowId
+   * is specified, it is created within the respective window.
+   *
+   * The promise returns information about the newly created tab. The promise
+   * may be rejected in case of errors that prevented the tab from being
+   * created.
+   *
+   * Note: This function does not return loading information for the newly
+   * created tab. If that's needed, we can add another function that does it.
+   */
   createTab?(
       url: string,
       options: {openInBackground?: boolean, windowId?: string},
       ): Promise<TabData>;
 
-  // Opens a new tab to the glic settings page.
+  /** Opens a new tab to the glic settings page. */
   openGlicSettingsPage?(): void;
 
-  // Requests the closing of the panel containing the web client.
+  /** Requests the closing of the panel containing the web client. */
   closePanel?(): Promise<void>;
 
-  // Requests that the web client's panel be attached to a browser
-  // window.
+  /** Requests that the web client's panel be attached to a browser window. */
   attachPanel?(): void;
 
-  // Requests that the web client's panel be detached from a browser
-  // window (floats free).
+  /**
+   * Requests that the web client's panel be detached from a browser window
+   * (floats free).
+   */
   detachPanel?(): void;
 
-  // Triggers the change profile flow, which allows the user to switch which
-  // profile is used. If a new profile is chosen, this web client will be
-  // closed in favor of a new one.
+  /**
+   * Triggers the change profile flow, which allows the user to switch which
+   * profile is used. If a new profile is chosen, this web client will be
+   * closed in favor of a new one.
+   */
   showProfilePicker?(): void;
 
-  // Returns the state of the panel.
+  /** Returns the state of the panel. */
   getPanelState?(): ObservableValue<PanelState>;
 
   /**
@@ -173,41 +226,50 @@ export declare interface GlicBrowserHost {
    * current focused tab.
    *
    * @returns An ObservableValue for `TabData` values that will be updated when
-   *     a new tab is focused or the current tab is navigated. The value will be
-   *     `undefined` if there's no active tab or it cannot be focused.
+   *          a new tab is focused or the current tab is navigated. The value
+   *          will be `undefined` if there's no active tab or it cannot be
+   *          focused (i.e. the URL is ineligible for tab context sharing).
    */
   getFocusedTabState?(): ObservableValue<TabData|undefined>;
 
-  // Returns the state of the microphone permission.
+  /** Returns the state of the microphone permission. */
   getMicrophonePermissionState?(): ObservableValue<boolean>;
 
-  // Returns the state of the location permission.
+  /** Returns the state of the location permission. */
   getLocationPermissionState?(): ObservableValue<boolean>;
 
-  // Returns the state of the tab context permission.
+  /** Returns the state of the tab context permission. */
   getTabContextPermissionState?(): ObservableValue<boolean>;
 
-  // Set the state of the microphone permission in settings. Returns a promise
-  // that resolves when the browser has stored the new pref value.
+  /**
+   * Set the state of the microphone permission in settings. Returns a promise
+   * that resolves when the browser has stored the new pref value.
+   */
   setMicrophonePermissionState(enabled: boolean): Promise<void>;
 
-  // Set the state of the location permission in settings. Returns a promise
-  // that resolves when the browser has stored the new pref value.
+  /**
+   * Set the state of the location permission in settings. Returns a promise
+   * that resolves when the browser has stored the new pref value.
+   */
   setLocationPermissionState(enabled: boolean): Promise<void>;
 
-  // Set the state of the tab context permission in settings. Returns a promise
-  // that resolves when the browser has stored the new pref value.
+  /**
+   * Set the state of the tab context permission in settings. Returns a promise
+   * that resolves when the browser has stored the new pref value.
+   */
   setTabContextPermissionState(enabled: boolean): Promise<void>;
 
-  // Returns the user profile information.
+  /** Returns the user profile information. */
   getUserProfileInfo?(): Promise<UserProfileInfo>;
 
-  // Update Google sign-in cookies for this client. Resolves after the cookies
-  // are successfully updated. Rejects if sign-in cookies cannot be updated.
-  // This should only be called if the web client detects that it is not
-  // signed-in, as Chrome will attempt to refresh cookies automatically in some
-  // circumstances. If this is called while a cookie refresh is already in
-  // progress, only one cookie refresh will take place.
+  /**
+   * Update Google sign-in cookies for this client. Resolves after the cookies
+   * are successfully updated. Rejects if sign-in cookies cannot be updated.
+   * This should only be called if the web client detects that it is not
+   * signed-in, as Chrome will attempt to refresh cookies automatically in some
+   * circumstances. If this is called while a cookie refresh is already in
+   * progress, only one cookie refresh will take place.
+   */
   refreshSignInCookies?(): Promise<void>;
 
   /**
@@ -229,13 +291,11 @@ export declare interface GlicBrowserHost {
   /**
    * Allows the web client to control audio ducking (aka audio suppression) of
    * other sounds, beyond what's played by itself. It is important that ducking
-   * be enabled only when it's necessary.
+   * be enabled only when it's necessary (e.g. only during active audio mode).
    */
   setAudioDucking?(enabled: boolean): void;
 
-  /**
-   * Returns an object that holds metrics-related functionality.
-   */
+  /** Returns an object that holds metrics-related functionality. */
   getMetrics?(): GlicBrowserHostMetrics;
 }
 
@@ -256,11 +316,7 @@ export declare interface GlicBrowserHost {
  * intentionally no constraints on when or how often they are called.
  */
 export declare interface GlicBrowserHostMetrics {
-  /**
-   *
-   * Called when the user has submitted input via the web client.
-   *
-   */
+  /** Called when the user has submitted input via the web client. */
   onUserInputSubmitted?(mode: WebClientMode): void;
 
   /**
@@ -275,14 +331,10 @@ export declare interface GlicBrowserHostMetrics {
    */
   onResponseStopped?(): void;
 
-  /**
-   * Called when a session terminates.
-   */
+  /** Called when a session terminates. */
   onSessionTerminated?(): void;
 
-  /**
-   * Called when the user rates a response.
-   */
+  /** Called when the user rates a response. */
   onResponseRated?(positive: boolean): void;
 }
 
@@ -294,9 +346,7 @@ export enum WebClientMode {
   AUDIO = 1,
 }
 
-/**
- * Data sent back to the host about the opening of the panel.
- */
+/** Data sent back to the host about the opening of the panel. */
 export declare interface OpenPanelInfo {
   /** The mode in which the web client is opening at. */
   startingMode: WebClientMode;
@@ -316,16 +366,25 @@ export enum PanelStateKind {
   ATTACHED = 2,
 }
 
+/** Information of how the panel is being presented/configured. */
 export declare interface PanelState {
+  /** The panel's presentation kind/state. */
   kind: PanelStateKind;
-  // Present when attached, indicates to which window the panel is attached.
+  /**
+   * Present only when attached to a window, indicating which window it is
+   * attached to.
+   */
   windowId?: string;
 }
 
-/** The default for TabContextOptions.pdfSizeLimit. */
+/** The default value of TabContextOptions.pdfSizeLimit. */
 export const DEFAULT_PDF_SIZE_LIMIT = 64 * 1024 * 1024;
 
-/** @todo The default for TabContextOptions.innerTextBytesLimit. */
+/**
+ * @todo Not yet implemented. https://crbug.com/383110287
+ *
+ * The default value of TabContextOptions.innerTextBytesLimit.
+ */
 export const DEFAULT_INNER_TEXT_BYTES_LIMIT = 20000;
 
 /** Options for getting context from a tab. */
@@ -391,9 +450,7 @@ export declare interface TabContextResult {
   annotatedPageData?: AnnotatedPageData;
 }
 
-/**
- * Information about a web page being rendered in a tab.
- */
+/** Information about a web page being rendered in a tab. */
 export declare interface WebPageData {
   mainDocument: DocumentData;
 }
@@ -412,19 +469,25 @@ export declare interface PdfDocumentData {
 
 /** Text information about a web document. */
 export declare interface DocumentData {
-  // Origin of the document.
+  /** Origin of the document. */
   origin: string;
-  // The innerText of the document at its current state. Currently includes
-  // embedded same-origin iframes.
+  /**
+   * The innerText of the document at its current state. Currently includes
+   * embedded same-origin iframes.
+   */
   innerText?: string;
 }
 
+/** Annotated data from a web document. */
 export declare interface AnnotatedPageData {
   /** Serialized annotatedPageContent proto. */
   annotatedPageContent?: ReadableStream<Uint8Array>;
 }
+
 /**
- * Various bits of data about a browser tab.
+ * Various bits of data about a browser tab. Optional fields may not be
+ * available while the page is being loaded or if not provided by the page
+ * itself.
  */
 export declare interface TabData {
   /** Unique ID of the tab that owns the page. */
@@ -434,19 +497,27 @@ export declare interface TabData {
   /** URL of the page. */
   url: string;
   /**
-   * The title of the loaded page. Returned if the page is loaded enough for it
-   * to be available. It may be empty if the page did not define a title.
+   * The title of the loaded page. Returned only if the page is loaded enough
+   * for it to be available. It may be empty if the page did not define a title.
    */
   title?: string;
-  /** The favicon for the tab. Provided when available. */
+  /**
+   * Returns the favicon for the tab, encoded as a PNG image. Returned only if
+   * the page is loaded enough for it to be available and the page specifies
+   * one.
+   */
   favicon?(): Promise<Blob|undefined>;
-  /** MIME type of the main document. */
+  /**
+   * MIME type of the main document. Returned only if the page is loaded enough
+   * for it to be available.
+   */
   documentMimeType?: string;
 }
 
 /**
  * Annotates an image, providing security relevant information about the origins
  * from which image is composed.
+ *
  * Note: This will be updated in the future when we have a solution worked out
  * for annotating the captured screenshots.
  */
@@ -454,40 +525,49 @@ export declare interface ImageOriginAnnotations {}
 
 /**
  * An encoded screenshot image and associated metadata.
- * NOTE: Only JPEG images will be supported initially, so mimeType will always
+ *
+ * Note: Only JPEG images will be supported initially, so mimeType will always
  * be "image/jpeg".
  */
 export declare interface Screenshot {
-  // Width and height of the image in pixels.
+  /** Width and height of the image in pixels. */
   widthPixels: number;
   heightPixels: number;
-  // Encoded image data. ArrayBuffer is transferable, so it should be copied
-  // more efficiently over postMessage.
+  /**
+   * Encoded image data. ArrayBuffer is transferable, so it should be copied
+   * more efficiently over postMessage.
+   */
   data: ArrayBuffer;
-  // The image encoding format represented as a MIME type.
+  /** The image encoding format represented as a MIME type. */
   mimeType: string;
-  // Image annotations for this screenshot.
+  /** Image annotations for this screenshot. */
   originAnnotations: ImageOriginAnnotations;
 }
 
+/** Error implementation with a typed generic reason attached. */
 export declare interface ErrorWithReason<T> extends Error {
   reason: T;
 }
 
-// Reason for failure while getting tab context.
+/** Reason for failure while extracting tab context. */
 export enum GetTabContextErrorReason {
   UNKNOWN = 'UNKNOWN',
-  // A valid web contents was not found, or was navigated or closed during
-  // context gathering.
+  /**
+   * A valid web contents was not found, or was navigated or closed during
+   * context gathering.
+   */
   WEB_CONTENTS_CHANGED = 'WEB_CONTENTS_CHANGED',
-  // The request was throttled, try again later.
+  /** The request was throttled, try again later. */
   REQUEST_THROTTLED = 'REQUEST_THROTTLED',
 }
 
+/** Error type used for tab context extraction errors. */
 export type GetTabContextError = ErrorWithReason<GetTabContextErrorReason>;
 
 /**
- * A rectangular area based in the glic window's coordinate system.
+ * A rectangular area based in the glic window's coordinate system. All
+ * coordinate and size values are in DIPs. The coordinate system is based in the
+ * panel's view with the origin located in the top-left of the panel.
  */
 export declare interface DraggableArea {
   x: number;
@@ -504,7 +584,7 @@ export declare interface DraggableArea {
  * returned by subscribe.
  */
 export declare interface Observable<T> {
-  // Listen for changes.
+  /** Receive updates for value changes. */
   subscribe(change: (newValue: T) => void): Subscriber;
 }
 
@@ -518,19 +598,25 @@ export declare interface Observable<T> {
  */
 export interface ObservableValue<T> extends Observable<T> {}
 
+/** Allows control of a subscription to an Observable. */
 export declare interface Subscriber {
   unsubscribe(): void;
 }
 
+/** Information from a signed-in Chrome user profile. */
 export declare interface UserProfileInfo {
-  // Returns the avatar icon for the profile, if available.
+  /**
+   * Returns the avatar icon for the profile, if available. Encoded as a PNG
+   * image.
+   */
   avatarIcon(): Promise<Blob|undefined>;
-  // The name displayed for this profile.
+  /** The name displayed for this profile. */
   displayName: string;
-  // The profile email.
+  /** The profile email. */
   email: string;
 }
 
+/** Chrome version data broken down into its numeric components. */
 export declare interface ChromeVersion {
   major: number;
   minor: number;
@@ -542,11 +628,12 @@ export declare interface ChromeVersion {
 // Types used in the boot process.
 //
 
-
+/** Allows access to the injected boot function. */
 export declare interface WithGlicApi {
   internalAutoGlicBoot?(chromeSource: WindowProxy): GlicHostRegistry;
 }
 
+/** Message used to signal a boot injection request to the host. */
 export declare interface GlicApiBootMessage {
   type: 'glic-bootstrap';
   glicApiSource: string;

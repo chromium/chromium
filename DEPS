@@ -296,7 +296,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling PDFium
   # and whatever else without interference from each other.
-  'pdfium_revision': 'a9f2f0f330441b211b377710342e92e6113be818',
+  'pdfium_revision': '012fe571c9fe430da68dbcd2f5ba21758db0ae15',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling BoringSSL
   # and whatever else without interference from each other.
@@ -1448,7 +1448,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    '1e6b192b8a0e471d2f5af32c94800154137d89f0',
+    '8b9c5a7bda853bc7fc11daf1349f7e64067941a1',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
@@ -1927,7 +1927,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/google/cpu_features.git' + '@' + '936b9ab5515dead115606559502e3864958f7f6e',
 
   'src/third_party/cpuinfo/src':
-    Var('chromium_git') + '/external/github.com/pytorch/cpuinfo.git' + '@' + 'ca156f7bc9109c552973414a63d310f76ef0cbf8',
+    Var('chromium_git') + '/external/github.com/pytorch/cpuinfo.git' + '@' + '8a1772a0c5c447df2d18edf33ec4603a8c9c04a6',
 
   'src/third_party/crc32c/src':
     Var('chromium_git') + '/external/github.com/google/crc32c.git' + '@' + 'd3d60ac6e0f16780bcfcc825385e1d338801a558',
@@ -1943,7 +1943,7 @@ deps = {
 
 
   'src/third_party/depot_tools':
-    Var('chromium_git') + '/chromium/tools/depot_tools.git' + '@' + '9fd46c2b6b86e1f13ba0d94e113bb636b374d8e6',
+    Var('chromium_git') + '/chromium/tools/depot_tools.git' + '@' + 'c60f8194a598cd2b67116e4769696e2f64d228d6',
 
   'src/third_party/devtools-frontend/src':
     Var('chromium_git') + '/devtools/devtools-frontend' + '@' + Var('devtools_frontend_revision'),
@@ -1952,7 +1952,7 @@ deps = {
     Var('chromium_git') + '/chromium/dom-distiller/dist.git' + '@' + '199de96b345ada7c6e7e6ba3d2fa7a6911b8767d',
 
   'src/third_party/eigen3/src':
-    Var('chromium_git') + '/external/gitlab.com/libeigen/eigen.git' + '@' + '7bb23b1e360e22a395eef75061565fc079ae6a85',
+    Var('chromium_git') + '/external/gitlab.com/libeigen/eigen.git' + '@' + '2a35a917be47766a895be610bedd66006980b7e6',
 
   'src/third_party/emoji-metadata/src': {
     'url': Var('chromium_git') + '/external/github.com/googlefonts/emoji-metadata' + '@' + '045f146fca682a836e01cd265171312bfb300e06',
@@ -2579,7 +2579,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/protocolbuffers/protobuf-javascript' + '@' + 'e34549db516f8712f678fcd4bc411613b5cc5295',
 
   'src/third_party/pthreadpool/src':
-    Var('chromium_git') + '/external/github.com/google/pthreadpool.git' + '@' + 'b4fb4eb1668c7d976cdaa941b135a02462adb460',
+    Var('chromium_git') + '/external/github.com/google/pthreadpool.git' + '@' + 'e1469417238e13eebaa001779fa031ed25c59def',
 
   # Dependency of skia.
   'src/third_party/pyelftools': {
@@ -2748,7 +2748,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/GoogleChromeLabs/text-fragments-polyfill.git' + '@' + 'c036420683f672d685e27415de0a5f5e85bdc23f',
 
   'src/third_party/tflite/src':
-    Var('chromium_git') + '/external/github.com/tensorflow/tensorflow.git' + '@' + 'b7bed6cb1d5eeebd81324b60d8bd624b9124ef5b',
+    Var('chromium_git') + '/external/github.com/tensorflow/tensorflow.git' + '@' + '51c6eed226abcfeeb46864e837d01563cc5b907b',
 
   'src/third_party/turbine/cipd': {
       'packages': [

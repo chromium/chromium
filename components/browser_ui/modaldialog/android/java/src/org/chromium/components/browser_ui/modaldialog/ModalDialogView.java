@@ -5,7 +5,9 @@
 package org.chromium.components.browser_ui.modaldialog;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.util.AttributeSet;
@@ -19,17 +21,21 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
+import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TimeUtils;
 import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.BoundedLinearLayout;
 import org.chromium.components.browser_ui.widget.FadingEdgeScrollView;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
+import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonStyles;
 import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
 import org.chromium.ui.widget.ButtonCompat;
 
@@ -73,6 +79,10 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
     // displayed to prevent potentially unintentional user interactions. A value of zero turns off
     // this kind of tap-jacking protection.
     private long mButtonTapProtectionDurationMs;
+    private boolean mBlockTouchInput;
+    private CircularProgressDrawable mSpinner;
+    private float mTextScaleX;
+    private LayerDrawable mSpinnerButtonBackground;
 
     private int mHorizontalMargin = NOT_SPECIFIED;
     private int mVerticalMargin = NOT_SPECIFIED;
@@ -535,6 +545,105 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
     void setFooterMessage(CharSequence message) {
         mFooterMessageView.setText(message);
         updateContentVisibility();
+    }
+
+    /**
+     * @param isLoading Whether the button should play a loading spinner.
+     * @param buttonStyles The button styles applied to this implementation of the modal dialog.
+     * @param buttonType The button type that the spinner should be applied to.
+     */
+    void setLoadingButtonState(
+            boolean isLoading, @ButtonStyles int buttonStyles, @ButtonType int buttonType) {
+        Context context = getContext();
+        Button button = getButton(buttonType);
+
+        if (isLoading) {
+            // Set a fixed button width before hiding the button text and starting the spinner
+            // animation.
+            int buttonWidth = button.getWidth();
+            var layoutParams = button.getLayoutParams();
+            layoutParams.width = buttonWidth;
+            button.setLayoutParams(layoutParams);
+            mTextScaleX = button.getTextScaleX();
+            button.setTextScaleX(0);
+
+            @ColorInt int spinnerColor = getSpinnerColor(context, buttonType, buttonStyles);
+            // TODO(crbug.com/392152746): Implement a custom spinner button to replace the defaults
+            // that controls its own state to prevent conflicting stored properties.
+            assert mSpinner == null : "A button is already in the loading phase";
+            mSpinner = new CircularProgressDrawable(context);
+            mSpinner.setStyle(CircularProgressDrawable.DEFAULT);
+            mSpinner.setColorSchemeColors(spinnerColor);
+
+            Drawable buttonBackgroundDrawable = button.getBackground();
+            mSpinnerButtonBackground =
+                    new LayerDrawable(new Drawable[] {buttonBackgroundDrawable, mSpinner});
+            button.setBackground(mSpinnerButtonBackground);
+            mSpinner.start();
+        } else {
+            // Reset the button width to be variable based on the content and show the button text,
+            // and stop the spinner animation.
+            var layoutParams = button.getLayoutParams();
+            layoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+            button.setLayoutParams(layoutParams);
+
+            if (mTextScaleX != 0.0f) {
+                button.setTextScaleX(mTextScaleX);
+                mTextScaleX = 0.0f;
+            }
+
+            if (mSpinnerButtonBackground != null) {
+                Drawable buttonBackgroundDrawable = mSpinnerButtonBackground.getDrawable(0);
+                button.setBackground(buttonBackgroundDrawable);
+                mSpinnerButtonBackground = null;
+            }
+
+            assert mSpinner != null;
+            if (mSpinner != null) {
+                mSpinner.stop();
+                mSpinner = null;
+            }
+        }
+    }
+
+    /**
+     * @param shouldBlockInputs Whether all inputs on the modal dialog should be blocked.
+     */
+    void blockInputs(boolean shouldBlockInputs) {
+        mBlockTouchInput = shouldBlockInputs;
+    }
+
+    private @ColorInt int getSpinnerColor(
+            Context context, @ButtonType int buttonType, @ButtonStyles int buttonStyles) {
+        @ColorInt
+        int colorForOutlineBackground = SemanticColorUtils.getDefaultIconColorAccent1(context);
+        @ColorInt int colorForFilledBackground = SemanticColorUtils.getDefaultBgColor(context);
+
+        switch (buttonStyles) {
+            case ButtonStyles.PRIMARY_OUTLINE_NEGATIVE_OUTLINE:
+                return colorForOutlineBackground;
+            case ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE:
+                return buttonType == ButtonType.POSITIVE
+                        ? colorForFilledBackground
+                        : colorForOutlineBackground;
+            case ButtonStyles.PRIMARY_OUTLINE_NEGATIVE_FILLED:
+                return buttonType == ButtonType.NEGATIVE
+                        ? colorForFilledBackground
+                        : colorForOutlineBackground;
+            case ButtonStyles.PRIMARY_FILLED_NO_NEGATIVE:
+                return colorForFilledBackground;
+            default:
+                assert false
+                        : "unknown button style encountered when determining spinner color scheme";
+                return Color.TRANSPARENT;
+        }
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent e) {
+        if (mBlockTouchInput) return true;
+
+        return super.dispatchTouchEvent(e);
     }
 
     private void updateContentVisibility() {
