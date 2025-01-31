@@ -581,6 +581,13 @@ void IdentityManager::OnAccountsOnDeviceChanged() {
     observer.OnAccountsOnDeviceChanged();
   }
 }
+
+void IdentityManager::OnAccountOnDeviceUpdated(
+    const AccountInfo& account_info) {
+  for (auto& observer : observer_list_) {
+    observer.OnExtendedAccountInfoUpdated(account_info);
+  }
+}
 #endif
 
 void IdentityManager::OnGaiaAccountsInCookieUpdated(

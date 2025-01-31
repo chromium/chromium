@@ -35,9 +35,13 @@ class AccountProfileMapper {
     // Called when the list of identities on device has changed.
     virtual void OnIdentitiesOnDeviceChanged() {}
 
-    // Called when information about `identity` (such as the name or the image)
-    // have been updated.
+    // Called when information about an `identity` (such as the name or the
+    // image) in a profile have been updated.
     virtual void OnIdentityUpdated(id<SystemIdentity> identity) {}
+
+    // Called when information about an `identity` (such as the name or the
+    // image) on the device have been updated.
+    virtual void OnIdentityOnDeviceUpdated(id<SystemIdentity> identity) {}
 
     // Called on identity refresh token updated events.
     // `identity` is the the identity for which the refresh token was updated.

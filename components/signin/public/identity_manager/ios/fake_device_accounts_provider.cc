@@ -52,6 +52,20 @@ DeviceAccountsProvider::AccountInfo FakeDeviceAccountsProvider::AddAccount(
   return account;
 }
 
+DeviceAccountsProvider::AccountInfo FakeDeviceAccountsProvider::UpdateAccount(
+    const GaiaId& gaia,
+    const std::string& email) {
+  for (AccountInfo& account : accounts_) {
+    if (account.gaia != gaia) {
+      continue;
+    }
+    account.email = email;
+    FireAccountOnDeviceUpdated(account);
+    return account;
+  }
+  NOTREACHED() << "Account with Gaia ID " << gaia << " not found";
+}
+
 void FakeDeviceAccountsProvider::ClearAccounts() {
   accounts_.clear();
   FireOnAccountsOnDeviceChanged();
@@ -78,5 +92,12 @@ void FakeDeviceAccountsProvider::IssueAccessTokenErrorForAllRequests() {
 void FakeDeviceAccountsProvider::FireOnAccountsOnDeviceChanged() {
   for (auto& observer : observer_list_) {
     observer.OnAccountsOnDeviceChanged();
+  }
+}
+
+void FakeDeviceAccountsProvider::FireAccountOnDeviceUpdated(
+    const AccountInfo& account) {
+  for (auto& observer : observer_list_) {
+    observer.OnAccountOnDeviceUpdated(account);
   }
 }

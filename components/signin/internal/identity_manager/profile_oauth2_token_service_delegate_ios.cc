@@ -379,6 +379,17 @@ void ProfileOAuth2TokenServiceIOSDelegate::OnAccountsOnDeviceChanged() {
   FireAccountsOnDeviceChanged();
 }
 
+void ProfileOAuth2TokenServiceIOSDelegate::OnAccountOnDeviceUpdated(
+    const DeviceAccountsProvider::AccountInfo& device_account) {
+  // Note: Ideally, only notifications about accounts that are *not* in the
+  // current profile would be forwarded here, since AccountTrackerService takes
+  // care of notifying observers about accounts in the profile anyway. But
+  // currently, AccountTrackerService doesn't know about some account
+  // properties, specifically about the account avatar, and those notifications
+  // would otherwise not get propagated at all.
+  FireAccountOnDeviceUpdated(AccountInfoFromDeviceAccount(device_account));
+}
+
 void ProfileOAuth2TokenServiceIOSDelegate::RemoveAccount(
     const CoreAccountId& account_id) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
