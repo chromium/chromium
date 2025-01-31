@@ -21,8 +21,11 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
+import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.url.GURL;
@@ -46,6 +49,14 @@ public class TabListFaviconProvider {
          * @param faviconCallback Called once with a favicon for the tab. Payload may be null.
          */
         void fetch(Callback<TabFavicon> faviconCallback);
+    }
+
+    /** Delegate interface for providing a favicon from a tab's web contents. */
+    @FunctionalInterface
+    public interface TabWebContentsFaviconDelegate {
+        /** Returns the bitmap the tab has for a favicon on its web contents. */
+        @Nullable
+        Bitmap getBitmap(Tab tab);
     }
 
     /**
@@ -254,9 +265,10 @@ public class TabListFaviconProvider {
     private final int mDefaultFaviconSize;
     private final int mFaviconSize;
     private final int mFaviconInset;
-    private final int mFaviconCornerRadius;
     private final Context mContext;
     private final boolean mIsTabStrip;
+    private final int mFaviconCornerRadius;
+    private final @Nullable TabWebContentsFaviconDelegate mTabWebContentsFaviconDelegate;
 
     private boolean mIsInitialized;
     private Profile mProfile;
@@ -264,12 +276,18 @@ public class TabListFaviconProvider {
 
     /**
      * Construct the provider that provides favicons for tab list.
-     * @param context    The context to use for accessing {@link android.content.res.Resources}
+     *
+     * @param context The context to use for accessing {@link android.content.res.Resources}
      * @param isTabStrip Indicator for whether this class provides favicons for tab strip or not.
      * @param faviconCornerRadiusId The resource Id for the favicon corner radius.
-     *
+     * @param tabWebContentsFaviconDelegate An optional delegate for fetching favicons off a tab's
+     *     web contents.
      */
-    public TabListFaviconProvider(Context context, boolean isTabStrip, int faviconCornerRadiusId) {
+    public TabListFaviconProvider(
+            Context context,
+            boolean isTabStrip,
+            int faviconCornerRadiusId,
+            @Nullable TabWebContentsFaviconDelegate tabWebContentsFaviconDelegate) {
         mContext = context;
         mDefaultFaviconSize =
                 context.getResources().getDimensionPixelSize(R.dimen.tab_grid_favicon_size);
@@ -283,6 +301,7 @@ public class TabListFaviconProvider {
                                 .getDimensionPixelSize(R.dimen.tab_strip_favicon_inset));
         mIsTabStrip = isTabStrip;
         mFaviconCornerRadius = context.getResources().getDimensionPixelSize(faviconCornerRadiusId);
+        mTabWebContentsFaviconDelegate = tabWebContentsFaviconDelegate;
 
         @ColorInt
         int defaultIconColor =
@@ -355,15 +374,14 @@ public class TabListFaviconProvider {
      * Creates a fetcher that asynchronously fetches a favicon. Used when favicon is static and not
      * changing colors when its parent component is selected.
      *
-     * @param url The URL to get a favicon for
-     * @param isIncognito Whether the style is for incognito.
+     * @param tab The tab to get a favicon for.
      * @return a favicon fetcher to fetch the favicon from native.
      */
-    public TabFaviconFetcher getFaviconForUrlFetcher(GURL url, boolean isIncognito) {
+    public TabFaviconFetcher getFaviconForTabFetcher(Tab tab) {
         return new TabFaviconFetcher() {
             @Override
             public void fetch(Callback<TabFavicon> faviconCallback) {
-                getFaviconForUrlAsync(url, isIncognito, faviconCallback);
+                getFaviconForTabAsync(tab, faviconCallback);
             }
         };
     }
@@ -371,16 +389,12 @@ public class TabListFaviconProvider {
     /**
      * Asynchronously get the processed favicon as a {@link Drawable}.
      *
-     * @param url The URL to get a favicon for
-     * @param isIncognito Whether the style is for incognito.
+     * @param tab The tab to get a favicon for.
      * @param faviconCallback The callback to be serviced with the drawable when ready.
      */
-    public void getFaviconDrawableForUrlAsync(
-            GURL url, boolean isIncognito, Callback<Drawable> faviconCallback) {
-        getFaviconForUrlAsync(
-                url,
-                isIncognito,
-                tabFavicon -> faviconCallback.onResult(tabFavicon.getDefaultDrawable()));
+    public void getFaviconDrawableForTabAsync(Tab tab, Callback<Drawable> faviconCallback) {
+        getFaviconForTabAsync(
+                tab, tabFavicon -> faviconCallback.onResult(tabFavicon.getDefaultDrawable()));
     }
 
     /**
@@ -447,51 +461,106 @@ public class TabListFaviconProvider {
         return new UrlTabFavicon(processBitmap(icon, mIsTabStrip), iconUrl);
     }
 
+    private @Nullable Bitmap getFaviconFromTabWebContents(Tab tab) {
+        return mTabWebContentsFaviconDelegate == null
+                ? null
+                : mTabWebContentsFaviconDelegate.getBitmap(tab);
+    }
+
     /**
-     * Asynchronously creates a {@link TabFavicon} for a URL. Visible for testing to override return
-     * value. Prefer {@link #getFaviconDrawableForUrlAsync} or {@link #getFaviconForUrlFetcher}.
+     * Asynchronously creates a {@link TabFavicon} for a tab.
      *
-     * @param url The URL of the tab whose favicon is being requested.
-     * @param isIncognito Whether the tab is incognito or not.
+     * <p>Visible for testing to override return value. Prefer {@link
+     * #getFaviconDrawableForTabAsync} or {@link #getFaviconForTabFetcher}.
+     *
+     * <p>The following cases are handled:
+     *
+     * <ol>
+     *   <li>NTP specialization: Returns the rounded Chrome favicon.
+     *   <li>The tab's web content's already has a bitmap: Returns the bitmap as a favicon.
+     *   <li>The tab is in a tab group and is not incognito: First checks the local favicon DB and
+     *       falls back to a proxy service to fetch the favicon if not found.
+     *   <li>Standalone tabs and incognito mode: To minimize traffic to the proxy server the local
+     *       favicon image is preferred for tabs not in tab groups since these should already have
+     *       been visited and will have a favicon in the local favicon database.
+     * </ol>
+     *
+     * @param tab The tab whose favicon is being requested.
      * @param faviconCallback The callback that requests for favicon.
      */
     @VisibleForTesting
-    public void getFaviconForUrlAsync(
-            GURL url, boolean isIncognito, Callback<TabFavicon> faviconCallback) {
-        if (mFaviconHelper == null || UrlUtilities.isNtpUrl(url)) {
+    public void getFaviconForTabAsync(Tab tab, Callback<TabFavicon> faviconCallback) {
+        boolean isIncognito = tab.isIncognitoBranded();
+        GURL tabUrl = tab.getUrl();
+
+        // Case 1: NTP specialization.
+        if (mFaviconHelper == null || UrlUtilities.isNtpUrl(tabUrl)) {
             faviconCallback.onResult(getRoundedChromeFavicon(isIncognito));
+            return;
+        }
+
+        // Case 2: The Tab is live and its WebContent's already has a bitmap.
+        @Nullable Bitmap webContentsBitmap = getFaviconFromTabWebContents(tab);
+        if (webContentsBitmap != null) {
+            Drawable processedBitmap = processBitmap(webContentsBitmap, mIsTabStrip);
+            faviconCallback.onResult(new UrlTabFavicon(processedBitmap, tabUrl));
+            return;
+        }
+
+        // Note iconUrl != tabUrl.
+        FaviconImageCallback faviconImageCallback =
+                (image, iconUrl) -> {
+                    TabFavicon favicon;
+                    if (image == null) {
+                        favicon = getRoundedGlobeFavicon(isIncognito);
+                    } else if (UrlUtilities.isInternalScheme(tabUrl) && !mIsTabStrip) {
+                        Bitmap resizedFavicon =
+                                getResizedBitmapFromDrawable(
+                                        processBitmap(image, false), mDefaultFaviconSize);
+                        @ColorInt
+                        int iconColor =
+                                isIncognito ? mIncognitoSelectedIconColor : mSelectedIconColor;
+                        favicon =
+                                createChromeOwnedUrlTabFavicon(
+                                        resizedFavicon, 0, iconColor, true, iconUrl);
+                    } else {
+                        favicon = new UrlTabFavicon(processBitmap(image, mIsTabStrip), iconUrl);
+                    }
+                    faviconCallback.onResult(favicon);
+                };
+
+        Profile profile = getProfile(isIncognito);
+        if (tab.getTabGroupId() != null
+                && !isIncognito
+                && ChromeFeatureList.sTabSwitcherForeignFaviconSupport.isEnabled()) {
+            // Case 3: The tab is in a tab group and is not incognito.
+            //
+            // This approach first checks the local favicon DB and falls back to a proxy service to
+            // fetch the favicon if not found. The proxy is only used if the profile meets certain
+            // sync and sign-in conditions.
+            //
+            // Tabs originating from TabGroupSyncService have a higher chance of this happening
+            // since the host they are for may never have been accessed on the device so the local
+            // favicon database will have no fallback. However, to avoid a complex multi-part check
+            // that would be repeated in native just call this method for all tab groups since they
+            // are relatively rare.
+            mFaviconHelper.getForeignFaviconImageForURL(
+                    profile, tabUrl, mFaviconSize, faviconImageCallback);
         } else {
+            // Case 4: Standalone tabs and incognito mode.
+            //
+            // To minimize traffic to the proxy server the local favicon image is preferred for tabs
+            // not in tab groups since these should already have been visited and will have a
+            // favicon in the local favicon database. There are some exceptions where this is not
+            // the case e.g. low-end devices using lazily loaded background tabs. However, the
+            // exceptions are rare enough it probably isn't worth the extra traffic.
+            //
+            // Notably in incognito mode favicons are not saved to the favicon database and the
+            // proxy is not used so there is a high chance of not seeing a favicon in incognito
+            // mode if Case 2 didn't provide one and there isn't a fallback with the same host in
+            // the favicon database already.
             mFaviconHelper.getLocalFaviconImageForURL(
-                    getProfile(isIncognito),
-                    url,
-                    mFaviconSize,
-                    (image, iconUrl) -> {
-                        TabFavicon favicon;
-                        if (image == null) {
-                            favicon = getRoundedGlobeFavicon(isIncognito);
-                        } else if (UrlUtilities.isInternalScheme(url) && !mIsTabStrip) {
-                            Bitmap resizedFavicon =
-                                    getResizedBitmapFromDrawable(
-                                            processBitmap(image, false), mDefaultFaviconSize);
-                            favicon =
-                                    isIncognito
-                                            ? createChromeOwnedUrlTabFavicon(
-                                                    resizedFavicon,
-                                                    0,
-                                                    mIncognitoSelectedIconColor,
-                                                    true,
-                                                    iconUrl)
-                                            : createChromeOwnedUrlTabFavicon(
-                                                    resizedFavicon,
-                                                    0,
-                                                    mSelectedIconColor,
-                                                    true,
-                                                    iconUrl);
-                        } else {
-                            favicon = new UrlTabFavicon(processBitmap(image, mIsTabStrip), iconUrl);
-                        }
-                        faviconCallback.onResult(favicon);
-                    });
+                    profile, tabUrl, mFaviconSize, faviconImageCallback);
         }
     }
 

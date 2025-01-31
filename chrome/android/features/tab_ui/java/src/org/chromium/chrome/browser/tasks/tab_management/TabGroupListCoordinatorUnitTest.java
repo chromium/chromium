@@ -73,7 +73,10 @@ public class TabGroupListCoordinatorUnitTest {
         mActivity = activity;
         mTabListFaviconProvider =
                 new TabListFaviconProvider(
-                        activity, /* isTabStrip= */ false, R.dimen.default_favicon_corner_radius);
+                        activity,
+                        /* isTabStrip= */ false,
+                        R.dimen.default_favicon_corner_radius,
+                        /* tabWebContentsFaviconDelegate= */ null);
     }
 
     @After

@@ -29,6 +29,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabFavicon;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabContentManagerThumbnailProvider;
@@ -38,7 +39,6 @@ import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
-import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -218,8 +218,6 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
                 if (tab != null) {
                     // Create final copies to get lambda captures to compile.
                     final int index = i;
-                    final GURL url = tab.getUrl();
-                    final boolean isIncognito = tab.isIncognito();
                     final Size tabThumbnailSize =
                             new Size((int) thumbnailRect.width(), (int) thumbnailRect.height());
                     // getTabThumbnailWithCallback() might call the callback up to twice,
@@ -237,9 +235,8 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
                                 if (lastFavicon.get() != null) {
                                     drawFaviconThenMaybeSendBack(lastFavicon.get(), index);
                                 } else {
-                                    mTabListFaviconProvider.getFaviconDrawableForUrlAsync(
-                                            url,
-                                            isIncognito,
+                                    mTabListFaviconProvider.getFaviconDrawableForTabAsync(
+                                            tab,
                                             (Drawable favicon) -> {
                                                 if (tab.isClosing() || tab.isDestroyed()) return;
 
@@ -344,7 +341,11 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
                 resources.getDimension(R.dimen.tab_grid_thumbnail_favicon_frame_corner_radius);
 
         mTabListFaviconProvider =
-                new TabListFaviconProvider(context, false, R.dimen.default_favicon_corner_radius);
+                new TabListFaviconProvider(
+                        context,
+                        false,
+                        R.dimen.default_favicon_corner_radius,
+                        TabFavicon::getBitmap);
 
         // Initialize Paints to use.
         mEmptyThumbnailPaint = new Paint();

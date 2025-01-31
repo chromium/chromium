@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabFavicon;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
@@ -295,7 +296,8 @@ public class TabListCoordinator
                 new TabListFaviconProvider(
                         mActivity,
                         mMode == TabListMode.STRIP,
-                        R.dimen.default_favicon_corner_radius);
+                        R.dimen.default_favicon_corner_radius,
+                        TabFavicon::getBitmap);
 
         mMediator =
                 new TabListMediator(
