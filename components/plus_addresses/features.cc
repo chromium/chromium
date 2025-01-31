@@ -90,6 +90,13 @@ extern const base::FeatureParam<int> kPlusAddressPreallocationMinimumSize(
     "minimum-size",
     10);
 
+// When enabled, focusing on a username field will show plus address suggestion
+// alongside the autocomplete suggestions.
+// TODO(crbug.com/360791229): Remove when launched.
+BASE_FEATURE(kPlusAddressSuggestionsOnUsernameFields,
+             "PlusAddressSuggestionsOnUsernameFields",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, the plus address creation dialogs or bottom sheets include
 // extended feature description and usage notice.
 BASE_FEATURE(kPlusAddressUserOnboardingEnabled,

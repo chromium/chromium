@@ -943,7 +943,7 @@ protocol::Response InspectorPageAgent::getPermissionsPolicyState(
   for (const auto& entry :
        blink::GetDefaultFeatureNameMap(is_isolated_context)) {
     const String& feature_name = entry.key;
-    const network::mojom::PermissionsPolicyFeature feature = entry.value;
+    const mojom::blink::PermissionsPolicyFeature feature = entry.value;
 
     if (blink::DisabledByOriginTrial(feature_name, frame->DomWindow()))
       continue;
@@ -1307,9 +1307,8 @@ protocol::Page::CrossOriginIsolatedContextType
 CreateProtocolCrossOriginIsolatedContextType(ExecutionContext* context) {
   if (context->CrossOriginIsolatedCapability()) {
     return protocol::Page::CrossOriginIsolatedContextTypeEnum::Isolated;
-  } else if (context->IsFeatureEnabled(
-                 network::mojom::PermissionsPolicyFeature::
-                     kCrossOriginIsolated)) {
+  } else if (context->IsFeatureEnabled(mojom::blink::PermissionsPolicyFeature::
+                                           kCrossOriginIsolated)) {
     return protocol::Page::CrossOriginIsolatedContextTypeEnum::NotIsolated;
   }
   return protocol::Page::CrossOriginIsolatedContextTypeEnum::

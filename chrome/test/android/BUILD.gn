@@ -238,6 +238,7 @@ android_library("chrome_java_transit") {
     "javatests/src/org/chromium/chrome/test/transit/page/IncognitoWebPageAppMenuFacility.java",
     "javatests/src/org/chromium/chrome/test/transit/page/PageAppMenuFacility.java",
     "javatests/src/org/chromium/chrome/test/transit/page/PageInteractableOrHiddenCondition.java",
+    "javatests/src/org/chromium/chrome/test/transit/page/PageLoadCallbackCondition.java",
     "javatests/src/org/chromium/chrome/test/transit/page/PageLoadedCondition.java",
     "javatests/src/org/chromium/chrome/test/transit/page/PageStation.java",
     "javatests/src/org/chromium/chrome/test/transit/page/PopupBlockedMessageFacility.java",

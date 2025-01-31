@@ -43,6 +43,25 @@ public class AccountSelectionWidgetModeViewTest extends AccountSelectionJUnitTes
                 new RpContextEntry(0xCAFE, R.string.account_selection_sheet_title_explicit_signin)
             };
 
+    private final RpContextEntry[] mMultiIdpRpContexts =
+            new RpContextEntry[] {
+                new RpContextEntry(
+                        RpContext.SIGN_IN,
+                        R.string.account_selection_multi_idp_sheet_title_explicit_signin),
+                new RpContextEntry(
+                        RpContext.SIGN_UP,
+                        R.string.account_selection_multi_idp_sheet_title_explicit_signup),
+                new RpContextEntry(
+                        RpContext.USE,
+                        R.string.account_selection_multi_idp_sheet_title_explicit_use),
+                new RpContextEntry(
+                        RpContext.CONTINUE,
+                        R.string.account_selection_multi_idp_sheet_title_explicit_continue),
+                // Test an invalid value.
+                new RpContextEntry(
+                        0xCAFE, R.string.account_selection_multi_idp_sheet_title_explicit_signin)
+            };
+
     @Before
     @Override
     public void setUp() {
@@ -68,6 +87,29 @@ public class AccountSelectionWidgetModeViewTest extends AccountSelectionJUnitTes
             assertEquals(
                     "Incorrect title",
                     mResources.getString(rpContext.mTitleId, "example.org", "idp.org"),
+                    title.getText().toString());
+        }
+    }
+
+    @Test
+    public void testMultiIdpTitleDisplayed() {
+        for (RpContextEntry rpContext : mMultiIdpRpContexts) {
+            mModel.set(
+                    ItemProperties.HEADER,
+                    new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
+                            .with(HeaderProperties.TYPE, HeaderType.SIGN_IN)
+                            .with(HeaderProperties.RP_FOR_DISPLAY, "example.org")
+                            .with(HeaderProperties.IDP_FOR_DISPLAY, "should_not_show_up.com")
+                            .with(HeaderProperties.RP_CONTEXT, rpContext.mValue)
+                            .with(HeaderProperties.RP_MODE, RpMode.PASSIVE)
+                            .with(HeaderProperties.IS_MULTIPLE_IDPS, true)
+                            .build());
+            assertEquals(View.VISIBLE, mContentView.getVisibility());
+            TextView title = mContentView.findViewById(R.id.header_title);
+
+            assertEquals(
+                    "Incorrect title",
+                    mResources.getString(rpContext.mTitleId, "example.org"),
                     title.getText().toString());
         }
     }

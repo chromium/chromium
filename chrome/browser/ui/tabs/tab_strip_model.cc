@@ -1490,6 +1490,10 @@ bool TabStripModel::IsContextMenuCommandEnabled(
                  selected_web_contents);
     }
 
+    case CommandAddToNewComparisonTable:
+    case CommandAddToExistingComparisonTable:
+      return false;
+
     case CommandCopyURL:
       DCHECK(delegate()->IsForWebApp());
       return true;
@@ -1785,6 +1789,16 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
           chrome::FindBrowserWithTab(GetWebContentsAt(context_index));
       chrome::OpenCommerceProductSpecificationsTab(browser, eligible_urls,
                                                    indices.back());
+      break;
+    }
+
+    case CommandAddToNewComparisonTable: {
+      // TODO(390669584) - Implement adding to a new table.
+      break;
+    }
+
+    case CommandAddToExistingComparisonTable: {
+      // Handled by the existing comparison table submenu model.
       break;
     }
 

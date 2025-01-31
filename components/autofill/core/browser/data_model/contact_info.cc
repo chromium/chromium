@@ -135,14 +135,14 @@ bool NameInfo::operator==(const NameInfo& other) const {
 
 std::u16string NameInfo::GetRawInfo(FieldType type) const {
   DCHECK_EQ(FieldTypeGroup::kName, GroupTypeOfFieldType(type));
-  return GetNodeForType(type)->GetValueForType(type);
+  return GetRootForType(type)->GetValueForType(type);
 }
 
 void NameInfo::SetRawInfoWithVerificationStatus(FieldType type,
                                                 const std::u16string& value,
                                                 VerificationStatus status) {
   DCHECK_EQ(FieldTypeGroup::kName, GroupTypeOfFieldType(type));
-  GetNodeForType(type)->SetValueForType(type, value, status);
+  GetRootForType(type)->SetValueForType(type, value, status);
 }
 
 void NameInfo::GetSupportedTypes(FieldTypeSet* supported_types) const {
@@ -176,11 +176,11 @@ bool NameInfo::SetInfoWithVerificationStatus(const AutofillType& type,
     // the end.
     // TODO(crbug.com/40266145): Move this logic to the data model.
     AreStringTokenEquivalent(value,
-                             GetNodeForType(type.GetStorableType())
+                             GetRootForType(type.GetStorableType())
                                  ->GetValueForType(type.GetStorableType()))
-        ? GetNodeForType(type.GetStorableType())
+        ? GetRootForType(type.GetStorableType())
               ->SetValueForType(type.GetStorableType(), value, status)
-        : GetNodeForType(type.GetStorableType())
+        : GetRootForType(type.GetStorableType())
               ->SetValueForTypeAndResetSubstructure(type.GetStorableType(),
                                                     value, status);
     return true;
@@ -190,15 +190,15 @@ bool NameInfo::SetInfoWithVerificationStatus(const AutofillType& type,
 }
 
 VerificationStatus NameInfo::GetVerificationStatus(FieldType type) const {
-  return GetNodeForType(type)->GetVerificationStatusForType(type);
+  return GetRootForType(type)->GetVerificationStatusForType(type);
 }
 
-AddressComponent* NameInfo::GetNodeForType(FieldType field_type) {
+AddressComponent* NameInfo::GetRootForType(FieldType field_type) {
   return const_cast<AddressComponent*>(
-      const_cast<const NameInfo*>(this)->GetNodeForType(field_type));
+      const_cast<const NameInfo*>(this)->GetRootForType(field_type));
 }
 
-const AddressComponent* NameInfo::GetNodeForType(FieldType field_type) const {
+const AddressComponent* NameInfo::GetRootForType(FieldType field_type) const {
   DCHECK_EQ(FieldTypeGroup::kName, GroupTypeOfFieldType(field_type));
   if (IsAlternativeNameType(field_type)) {
     return alternative_name_.get();

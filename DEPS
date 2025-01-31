@@ -284,7 +284,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'v8_revision': '39fbea4f3d9fb37360afb6afac074a0942240e2f',
+  'v8_revision': '4ae73e0a01d924441e0d06dc8ae86897f233fc3e',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
@@ -372,7 +372,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': '4ec8037ea4b84a3bc3d94f37785d92ace4020528',
+  'devtools_frontend_revision': 'adf55dc38aeb38dead69b8a163ff9840be245702',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -1913,7 +1913,7 @@ deps = {
   # Tools used when building Chrome for Chrome OS. This affects both the Simple
   # Chrome workflow, as well as the chromeos-chrome ebuild.
   'src/third_party/chromite': {
-      'url': Var('chromium_git') + '/chromiumos/chromite.git' + '@' + '913b72e6383a13c91c2eb80f9033bcc0f1bc1b26',
+      'url': Var('chromium_git') + '/chromiumos/chromite.git' + '@' + 'e3b48b419cfe7afc04688b08668e788511398892',
       'condition': 'checkout_chromeos',
   },
 
@@ -1934,7 +1934,7 @@ deps = {
 
   # For Linux and Chromium OS.
   'src/third_party/cros_system_api': {
-      'url': Var('chromium_git') + '/chromiumos/platform2/system_api.git' + '@' + '497b90c6e283745f976d783ed2beaafeef42b1bf',
+      'url': Var('chromium_git') + '/chromiumos/platform2/system_api.git' + '@' + 'ea21b22629965105426f3df5e58190513e95a17e',
       'condition': 'checkout_linux or checkout_chromeos',
   },
 
@@ -2442,7 +2442,7 @@ deps = {
     Var('pdfium_git') + '/pdfium.git' + '@' +  Var('pdfium_revision'),
 
   'src/third_party/perfetto':
-    Var('android_git') + '/platform/external/perfetto.git' + '@' + '9042b5fbd2d5461a24d9f0e44e75f3fda3673cff',
+    Var('android_git') + '/platform/external/perfetto.git' + '@' + 'b0bdbb138010a29dceeb55a8d1e740f6686f8c93',
 
   'src/base/tracing/test/data': {
     'bucket': 'perfetto',
@@ -2761,16 +2761,16 @@ deps = {
       'dep_type': 'cipd',
   },
 
-  'src/third_party/vulkan-deps': '{chromium_git}/vulkan-deps@3a89e5275402878a6f389d39635f25687940c4cc',
+  'src/third_party/vulkan-deps': '{chromium_git}/vulkan-deps@430dae9cea66d5193e8d6ac010bfaeaf0bf8857a',
   'src/third_party/glslang/src': '{chromium_git}/external/github.com/KhronosGroup/glslang@0549c7127c2fbab2904892c9d6ff491fa1e93751',
   'src/third_party/spirv-cross/src': '{chromium_git}/external/github.com/KhronosGroup/SPIRV-Cross@b8fcf307f1f347089e3c46eb4451d27f32ebc8d3',
   'src/third_party/spirv-headers/src': '{chromium_git}/external/github.com/KhronosGroup/SPIRV-Headers@e7294a8ebed84f8c5bd3686c68dbe12a4e65b644',
-  'src/third_party/spirv-tools/src': '{chromium_git}/external/github.com/KhronosGroup/SPIRV-Tools@3364b982713a0440d1d342dd5eec65b122a61b71',
-  'src/third_party/vulkan-headers/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Headers@e43027aa41c4f51b12d79aeae53ff608951c36ec',
-  'src/third_party/vulkan-loader/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Loader@369afe24d1351d6e03cbfc3daf1fc5f6cd103649',
-  'src/third_party/vulkan-tools/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Tools@7658238ddc50d7ef1fe923d95b7112597a5adc68',
-  'src/third_party/vulkan-utility-libraries/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Utility-Libraries@1ddbe6c40aeaf98d4138f07c325ebb01beeece68',
-  'src/third_party/vulkan-validation-layers/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-ValidationLayers@cc4c765c9ccacabd6338f348082841846053abb9',
+  'src/third_party/spirv-tools/src': '{chromium_git}/external/github.com/KhronosGroup/SPIRV-Tools@04b4a204aa501992ae85a207be1e200e195c98e1',
+  'src/third_party/vulkan-headers/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Headers@39f924b810e561fd86b2558b6711ca68d4363f68',
+  'src/third_party/vulkan-loader/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Loader@0508dee4ff864f5034ae6b7f68d34cb2822b827d',
+  'src/third_party/vulkan-tools/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Tools@c52931f012cb7b48e42bbf2050a7fb2183b76406',
+  'src/third_party/vulkan-utility-libraries/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Utility-Libraries@fe7a09b13899c5c77d956fa310286f7a7eb2c4ed',
+  'src/third_party/vulkan-validation-layers/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-ValidationLayers@c3dc948b0b960b3a01506b57a15ecee2a9e31bf2',
 
   'src/third_party/vulkan_memory_allocator':
     Var('chromium_git') + '/external/github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git' + '@' + '56300b29fbfcc693ee6609ddad3fdd5b7a449a21',
@@ -2956,7 +2956,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/media_app/app',
-        'version': '8pIWqDYn5tj71xnehD6XNAgsdxRnMPrrYR9ApBCB_2kC',
+        'version': 'OT9brkEgPEsYePNSZ-9TyvzJGVC9K3-8BAkEap9KJigC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
@@ -4377,7 +4377,7 @@ deps = {
   # grepping.
   'src/chrome/installer/mac/internal': {
       'url': Var('chrome_git') + '/chrome/installer/mac/internal.git' + '@' +
-        '85c282fe6f2763822964028cb89be7b808b07169',
+        'a897caf7789a35ff29961f5bda42eee326b1bc61',
       'condition': 'checkout_src_internal',
   },
 
@@ -4459,7 +4459,7 @@ deps = {
 
   'src/components/metrics/internal': {
       'url': Var('chrome_git') + '/chrome/components/metrics/internal.git' + '@' +
-        'b142ab0612763d64d3ec3b79cd71c6dc9bcbe20b',
+        'd74edd43ad58d28a67278699f6756e2482aa6cc1',
       'condition': 'checkout_src_internal',
   },
 
@@ -4537,7 +4537,7 @@ deps = {
 
   'src/ios_internal':  {
       'url': Var('chrome_git') + '/chrome/ios_internal.git' + '@' +
-        '082e9dc3d4c01e0920b487a45697bb9511a3ce8c',
+        'f6d6a5aa1a06045a65e01412dad47170019f9853',
       'condition': 'checkout_ios and checkout_src_internal',
   },
 

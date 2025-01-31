@@ -235,12 +235,18 @@ SkGradientShader::Interpolation Gradient::ResolveSkInterpolation() const {
         sk_interpolation.fColorSpace = sk_colorspace::kDestination;
       }
       break;
-    // We do not yet support interpolation in these spaces.
     case Color::ColorSpace::kDisplayP3:
+      sk_interpolation.fColorSpace = sk_colorspace::kDisplayP3;
+      break;
     case Color::ColorSpace::kA98RGB:
+      sk_interpolation.fColorSpace = sk_colorspace::kA98RGB;
+      break;
     case Color::ColorSpace::kProPhotoRGB:
+      sk_interpolation.fColorSpace = sk_colorspace::kProphotoRGB;
+      break;
     case Color::ColorSpace::kRec2020:
-      NOTREACHED();
+      sk_interpolation.fColorSpace = sk_colorspace::kRec2020;
+      break;
   }
 
   switch (hue_interpolation_method_) {

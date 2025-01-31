@@ -25,7 +25,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/global_routing_id.h"
-#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 
 namespace content {
 
@@ -54,7 +54,7 @@ std::optional<AttributionSuitableContext> AttributionSuitableContext::Create(
   }
 
   if (!initiator_frame->IsFeatureEnabled(
-          network::mojom::PermissionsPolicyFeature::kAttributionReporting)) {
+          blink::mojom::PermissionsPolicyFeature::kAttributionReporting)) {
     return std::nullopt;
   }
   RenderFrameHostImpl* initiator_root_frame =

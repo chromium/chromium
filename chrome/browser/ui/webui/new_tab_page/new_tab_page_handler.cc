@@ -580,6 +580,7 @@ NewTabPageHandler::~NewTabPageHandler() {
 // static
 void NewTabPageHandler::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterListPref(prefs::kNtpDisabledModules);
+  registry->RegisterListPref(prefs::kNtpCustomizeChromeHiddenModules);
   registry->RegisterListPref(prefs::kNtpModulesOrder);
   registry->RegisterBooleanPref(prefs::kNtpModulesVisible, true);
   registry->RegisterIntegerPref(prefs::kNtpCustomizeChromeButtonOpenCount, 0);
@@ -1312,9 +1313,11 @@ void NewTabPageHandler::OnAuthStateUpdated() {
 
   for (const auto& module_id : enabled_modules) {
     SetModuleDisabled(module_id, false);
+    SetModuleHiddenInCustomizeChrome(module_id, false);
   }
   for (const auto& module_id : disabled_modules) {
     SetModuleDisabled(module_id, true);
+    SetModuleHiddenInCustomizeChrome(module_id, true);
   }
 }
 
@@ -1720,6 +1723,22 @@ void NewTabPageHandler::SetCustomizeChromeSidePanelController(
             weak_ptr_factory_.GetWeakPtr()));
   } else {
     page_->SetCustomizeChromeSidePanelVisibility(false);
+  }
+}
+
+void NewTabPageHandler::SetModuleHiddenInCustomizeChrome(
+    const std::string& module_id,
+    bool hidden) {
+  ScopedListPrefUpdate update(profile_->GetPrefs(),
+                              prefs::kNtpCustomizeChromeHiddenModules);
+  base::Value::List& list = update.Get();
+  base::Value module_id_value(module_id);
+  if (hidden) {
+    if (!base::Contains(list, module_id_value)) {
+      list.Append(std::move(module_id_value));
+    }
+  } else {
+    list.EraseValue(module_id_value);
   }
 }
 

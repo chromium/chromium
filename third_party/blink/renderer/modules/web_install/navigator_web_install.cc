@@ -168,7 +168,7 @@ bool NavigatorWebInstall::CheckPreconditionsMaybeThrow(
     ExceptionState& exception_state) {
   if (!ExecutionContext::From(script_state)
            ->IsFeatureEnabled(
-               network::mojom::PermissionsPolicyFeature::kWebAppInstallation)) {
+               mojom::blink::PermissionsPolicyFeature::kWebAppInstallation)) {
     exception_state.ThrowSecurityError(
         "Access to the feature \"web-app-installation\" is disallowed by "
         "Permissions Policy.");

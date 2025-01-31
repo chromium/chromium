@@ -384,8 +384,6 @@ source_set("eg_test_support+eg2") {
   sources = [
     "tab_group_app_interface.h",
     "tab_group_app_interface_stub.mm",
-    "tab_group_earl_grey.h",
-    "tab_group_earl_grey.mm",
   ]
   deps = [ "//ios/testing/earl_grey:eg_test_support+eg2" ]
 }

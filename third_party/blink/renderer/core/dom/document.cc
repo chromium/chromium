@@ -60,7 +60,6 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
-#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink-forward.h"
 #include "services/network/public/mojom/trust_tokens.mojom-blink.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
 #include "third_party/blink/public/common/features.h"
@@ -74,6 +73,7 @@
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/page_state/page_state.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -883,7 +883,7 @@ Document::Document(const DocumentInit& initializer,
         RuntimeEnabledFeatures::ExperimentalPoliciesEnabled() &&
         !frame->IsOutermostMainFrame() &&
         !dom_window_->IsFeatureEnabled(
-            network::mojom::PermissionsPolicyFeature::kVerticalScroll);
+            mojom::blink::PermissionsPolicyFeature::kVerticalScroll);
     cached_top_frame_site_for_visited_links_ =
         net::SchemefulSite(TopFrameOrigin()->ToUrlOrigin());
   } else {
@@ -8961,7 +8961,7 @@ bool Document::IsFocusAllowed() const {
     return true;
   return GetFrame()->AllowFocusDuringFocusAdvance() ||
          GetExecutionContext()->IsFeatureEnabled(
-             network::mojom::PermissionsPolicyFeature::
+             mojom::blink::PermissionsPolicyFeature::
                  kFocusWithoutUserActivation);
 }
 

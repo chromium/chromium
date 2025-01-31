@@ -245,7 +245,7 @@ bool CheckSecurityRequirementsBeforeRequest(
       // "self", which means the webauthn feature is allowed by default in
       // same-origin child browsing contexts.
       if (!resolver->GetExecutionContext()->IsFeatureEnabled(
-              network::mojom::PermissionsPolicyFeature::
+              mojom::blink::PermissionsPolicyFeature::
                   kPublicKeyCredentialsGet)) {
         resolver->Reject(MakeGarbageCollected<DOMException>(
             DOMExceptionCode::kNotAllowedError,
@@ -268,7 +268,7 @@ bool CheckSecurityRequirementsBeforeRequest(
       // "self", which means the webauthn feature is allowed by default in
       // same-origin child browsing contexts.
       if (!resolver->GetExecutionContext()->IsFeatureEnabled(
-              network::mojom::PermissionsPolicyFeature::
+              mojom::blink::PermissionsPolicyFeature::
                   kPublicKeyCredentialsCreate)) {
         resolver->Reject(MakeGarbageCollected<DOMException>(
             DOMExceptionCode::kNotAllowedError,
@@ -288,7 +288,7 @@ bool CheckSecurityRequirementsBeforeRequest(
     case RequiredOriginType::
         kSecureAndPermittedByWebOTPAssertionPermissionsPolicy:
       if (!resolver->GetExecutionContext()->IsFeatureEnabled(
-              network::mojom::PermissionsPolicyFeature::kOTPCredentials)) {
+              mojom::blink::PermissionsPolicyFeature::kOTPCredentials)) {
         resolver->Reject(MakeGarbageCollected<DOMException>(
             DOMExceptionCode::kNotAllowedError,
             "The 'otp-credentials' feature is not enabled in this document."));
@@ -305,7 +305,7 @@ bool CheckSecurityRequirementsBeforeRequest(
       break;
     case RequiredOriginType::kSecureAndPermittedByFederatedPermissionsPolicy:
       if (!resolver->GetExecutionContext()->IsFeatureEnabled(
-              network::mojom::PermissionsPolicyFeature::
+              mojom::blink::PermissionsPolicyFeature::
                   kIdentityCredentialsGet)) {
         resolver->Reject(MakeGarbageCollected<DOMException>(
             DOMExceptionCode::kNotAllowedError,
@@ -326,9 +326,9 @@ bool CheckSecurityRequirementsBeforeRequest(
       // not authentication. Authentication flows via the Payment Request API,
       // which checks for the 'payment' permission separately.
       if (!resolver->GetExecutionContext()->IsFeatureEnabled(
-              network::mojom::PermissionsPolicyFeature::kPayment) &&
+              mojom::blink::PermissionsPolicyFeature::kPayment) &&
           !resolver->GetExecutionContext()->IsFeatureEnabled(
-              network::mojom::PermissionsPolicyFeature::
+              mojom::blink::PermissionsPolicyFeature::
                   kPublicKeyCredentialsCreate)) {
         resolver->Reject(MakeGarbageCollected<DOMException>(
             DOMExceptionCode::kNotSupportedError,
@@ -368,36 +368,35 @@ void AssertSecurityRequirementsBeforeResponse(
     case RequiredOriginType::
         kSecureAndPermittedByWebAuthGetAssertionPermissionsPolicy:
       SECURITY_CHECK(resolver->GetExecutionContext()->IsFeatureEnabled(
-          network::mojom::PermissionsPolicyFeature::kPublicKeyCredentialsGet));
+          mojom::blink::PermissionsPolicyFeature::kPublicKeyCredentialsGet));
       break;
 
     case RequiredOriginType::
         kSecureAndPermittedByWebAuthCreateCredentialPermissionsPolicy:
       SECURITY_CHECK(resolver->GetExecutionContext()->IsFeatureEnabled(
-          network::mojom::PermissionsPolicyFeature::
-              kPublicKeyCredentialsCreate));
+          mojom::blink::PermissionsPolicyFeature::kPublicKeyCredentialsCreate));
       break;
 
     case RequiredOriginType::
         kSecureAndPermittedByWebOTPAssertionPermissionsPolicy:
       SECURITY_CHECK(
           resolver->GetExecutionContext()->IsFeatureEnabled(
-              network::mojom::PermissionsPolicyFeature::kOTPCredentials) &&
+              mojom::blink::PermissionsPolicyFeature::kOTPCredentials) &&
           IsAncestorChainValidForWebOTP(
               To<LocalDOMWindow>(resolver->GetExecutionContext())->GetFrame()));
       break;
 
     case RequiredOriginType::kSecureAndPermittedByFederatedPermissionsPolicy:
       SECURITY_CHECK(resolver->GetExecutionContext()->IsFeatureEnabled(
-          network::mojom::PermissionsPolicyFeature::kIdentityCredentialsGet));
+          mojom::blink::PermissionsPolicyFeature::kIdentityCredentialsGet));
       break;
 
     case RequiredOriginType::
         kSecureWithPaymentOrCreateCredentialPermissionPolicy:
       SECURITY_CHECK(resolver->GetExecutionContext()->IsFeatureEnabled(
-                         network::mojom::PermissionsPolicyFeature::kPayment) ||
+                         mojom::blink::PermissionsPolicyFeature::kPayment) ||
                      resolver->GetExecutionContext()->IsFeatureEnabled(
-                         network::mojom::PermissionsPolicyFeature::
+                         mojom::blink::PermissionsPolicyFeature::
                              kPublicKeyCredentialsCreate));
       break;
   }
@@ -815,7 +814,7 @@ void OnSmsReceive(ScriptPromiseResolver<IDLNullable<Credential>>* resolver,
                   const String& otp) {
   AssertSecurityRequirementsBeforeResponse(
       resolver, resolver->GetExecutionContext()->IsFeatureEnabled(
-                    network::mojom::PermissionsPolicyFeature::kOTPCredentials)
+                    mojom::blink::PermissionsPolicyFeature::kOTPCredentials)
                     ? RequiredOriginType::
                           kSecureAndPermittedByWebOTPAssertionPermissionsPolicy
                     : RequiredOriginType::kSecureAndSameWithAncestors);

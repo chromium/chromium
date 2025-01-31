@@ -485,14 +485,22 @@ std::optional<PhysicalRect> InkOverflow::ComputeTextInkOverflow(
                                                ink_overflow);
   }
 
-  if (const ShadowList* text_shadow = style.TextShadow()) {
-    ExpandForShadowOverflow(ink_overflow, *text_shadow, writing_mode);
+  if (!RuntimeEnabledFeatures::TextShadowPaintingOptimizationEnabled()) {
+    if (const ShadowList* text_shadow = style.TextShadow()) {
+      ExpandForShadowOverflow(ink_overflow, *text_shadow, writing_mode);
+    }
   }
 
   PhysicalRect local_ink_overflow =
       WritingModeConverter({writing_mode, TextDirection::kLtr},
                            rect_in_container.size)
           .ToPhysical(ink_overflow);
+
+  if (RuntimeEnabledFeatures::TextShadowPaintingOptimizationEnabled()) {
+    if (const ShadowList* text_shadow = style.TextShadow()) {
+      ExpandForShadowOverflow(local_ink_overflow, *text_shadow);
+    }
+  }
 
   // Uniting the frame rect ensures that non-ink spaces such side bearings, or
   // even space characters, are included in the visual rect for decorations.
@@ -525,6 +533,16 @@ LogicalRect InkOverflow::ComputeEmphasisMarkOverflow(
         ink_overflow.BlockEndOffset(), logical_height + emphasis_mark_height));
   }
   return ink_overflow;
+}
+
+// static
+void InkOverflow::ExpandForShadowOverflow(PhysicalRect& ink_overflow,
+                                          const ShadowList& text_shadow) {
+  gfx::OutsetsF text_shadow_outsets =
+      text_shadow.RectOutsetsIncludingOriginal();
+  // Get rid of negative outsets.
+  text_shadow_outsets.SetToMax(gfx::OutsetsF());
+  ink_overflow.Expand(PhysicalBoxStrut::Enclosing(text_shadow_outsets));
 }
 
 // static

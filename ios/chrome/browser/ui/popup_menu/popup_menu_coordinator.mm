@@ -13,6 +13,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
+#import "components/send_tab_to_self/features.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_container/ui_bundled/browser_container_mediator.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter.h"
@@ -593,6 +594,13 @@ using base::UserMetricsAction;
 
 - (BOOL)hasBlueDotForOverflowMenu {
   return [self.popupMenuHelpCoordinator hasBlueDotForOverflowMenu];
+}
+
+- (void)displayPopupMenuTabRemindersIPH {
+  CHECK(
+      send_tab_to_self::IsSendTabIOSPushNotificationsEnabledWithTabReminders());
+
+  [self.popupMenuHelpCoordinator displayPopupMenuTabRemindersIPH];
 }
 
 #pragma mark - OverflowMenuCustomizationCommands

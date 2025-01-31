@@ -8,6 +8,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <utility>
+
 #include "base/component_export.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "build/build_config.h"
@@ -69,11 +71,32 @@ struct COMPONENT_EXPORT(GFX) GpuMemoryBufferHandle {
   GpuMemoryBufferHandle(GpuMemoryBufferHandle&& other);
   GpuMemoryBufferHandle& operator=(GpuMemoryBufferHandle&& other);
   ~GpuMemoryBufferHandle();
+
   GpuMemoryBufferHandle Clone() const;
   bool is_null() const { return type == EMPTY_BUFFER; }
+
+  // The shared memory region may only be used with SHARED_MEMORY_BUFFER and
+  // DXGI_SHARED_HANDLE. In the case of DXGI handles, the actual contents of the
+  // buffer can only be accessed from the GPU process, so `Map()`ing the buffer
+  // into memory actually requires an IPC to the GPU process, which then copies
+  // the contents into the shmem region so it can be accessed from other
+  // processes.
+  const base::UnsafeSharedMemoryRegion& region() const {
+    CHECK(type == SHARED_MEMORY_BUFFER || type == DXGI_SHARED_HANDLE);
+    return region_;
+  }
+  base::UnsafeSharedMemoryRegion& region() {
+    CHECK(type == SHARED_MEMORY_BUFFER || type == DXGI_SHARED_HANDLE);
+    return region_;
+  }
+  void set_region(base::UnsafeSharedMemoryRegion region) {
+    CHECK(type == SHARED_MEMORY_BUFFER || type == DXGI_SHARED_HANDLE);
+    region_ = std::move(region);
+  }
+
   GpuMemoryBufferType type = GpuMemoryBufferType::EMPTY_BUFFER;
   GpuMemoryBufferId id{0};
-  base::UnsafeSharedMemoryRegion region;
+
   uint32_t offset = 0;
   uint32_t stride = 0;
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
@@ -86,6 +109,11 @@ struct COMPONENT_EXPORT(GFX) GpuMemoryBufferHandle {
 #elif BUILDFLAG(IS_ANDROID)
   base::android::ScopedHardwareBufferHandle android_hardware_buffer;
 #endif
+
+ private:
+  // This naming isn't entirely styleguide-compliant, but per the TODO, the end
+  // goal is to make `this` an encapsulated class.
+  base::UnsafeSharedMemoryRegion region_;
 };
 
 // This interface typically correspond to a type of shared memory that is also

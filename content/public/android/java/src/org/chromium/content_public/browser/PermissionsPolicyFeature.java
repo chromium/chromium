@@ -16,6 +16,6 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.SOURCE)
 @NullMarked
 public @interface PermissionsPolicyFeature {
-    int PAYMENT = org.chromium.network.mojom.PermissionsPolicyFeature.PAYMENT;
-    int WEB_SHARE = org.chromium.network.mojom.PermissionsPolicyFeature.WEB_SHARE;
+    int PAYMENT = org.chromium.blink.mojom.PermissionsPolicyFeature.PAYMENT;
+    int WEB_SHARE = org.chromium.blink.mojom.PermissionsPolicyFeature.WEB_SHARE;
 }

@@ -23,6 +23,7 @@ import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionPrope
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.IDP_BRAND_ICON;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.IDP_FOR_DISPLAY;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.IS_MULTIPLE_ACCOUNT_CHOOSER;
+import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.IS_MULTIPLE_IDPS;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.RP_FOR_DISPLAY;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.RP_MODE;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.SET_FOCUS_VIEW_CALLBACK;
@@ -124,6 +125,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         assertNotNull(headerModel.get(IDP_BRAND_ICON));
         assertEquals((Integer) mRpMode, headerModel.get(RP_MODE));
         assertFalse(headerModel.get(IS_MULTIPLE_ACCOUNT_CHOOSER));
+        assertFalse(headerModel.get(IS_MULTIPLE_IDPS));
     }
 
     @Test
@@ -159,6 +161,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         assertNotNull(headerModel.get(IDP_BRAND_ICON));
         assertEquals((Integer) mRpMode, headerModel.get(RP_MODE));
         assertTrue(headerModel.get(IS_MULTIPLE_ACCOUNT_CHOOSER));
+        assertFalse(headerModel.get(IS_MULTIPLE_IDPS));
     }
 
     /**

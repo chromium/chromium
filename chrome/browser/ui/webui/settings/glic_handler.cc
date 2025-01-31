@@ -13,7 +13,10 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/launcher/glic_launcher_configuration.h"
+#include "chrome/browser/user_education/user_education_service.h"
+#include "chrome/common/chrome_features.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener.h"
@@ -24,6 +27,10 @@ GlicHandler::GlicHandler() = default;
 GlicHandler::~GlicHandler() = default;
 
 void GlicHandler::RegisterMessages() {
+  web_ui()->RegisterMessageCallback(
+      "setGlicOsLauncherEnabled",
+      base::BindRepeating(&GlicHandler::HandleSetGlicOsLauncherEnabled,
+                          base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "getGlicShortcut",
       base::BindRepeating(&GlicHandler::HandleGetGlicShortcut,
@@ -36,6 +43,16 @@ void GlicHandler::RegisterMessages() {
       "setShortcutSuspensionState",
       base::BindRepeating(&GlicHandler::HandleSetShortcutSuspensionState,
                           base::Unretained(this)));
+}
+
+void GlicHandler::SetWebUIForTesting(content::WebUI* web_ui) {
+  set_web_ui(web_ui);
+}
+
+void GlicHandler::HandleSetGlicOsLauncherEnabled(
+    const base::Value::List& args) {
+  UserEducationService::MaybeNotifyNewBadgeFeatureUsed(
+      web_ui()->GetWebContents()->GetBrowserContext(), features::kGlic);
 }
 
 void GlicHandler::HandleGetGlicShortcut(const base::Value::List& args) {
@@ -62,6 +79,10 @@ void GlicHandler::HandleSetGlicShortcut(const base::Value::List& args) {
                updated_hotkey.modifiers());
   g_browser_process->local_state()->SetDict(
       glic::prefs::kGlicLauncherGlobalHotkey, std::move(hotkey_dictionary));
+
+  UserEducationService::MaybeNotifyNewBadgeFeatureUsed(
+      web_ui()->GetWebContents()->GetBrowserContext(),
+      features::kGlicKeyboardShortcutNewBadge);
 }
 
 void GlicHandler::HandleSetShortcutSuspensionState(

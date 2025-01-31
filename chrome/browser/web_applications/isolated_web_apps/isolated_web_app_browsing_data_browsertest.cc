@@ -87,7 +87,7 @@ class IsolatedWebAppBrowsingDataTest : public IsolatedWebAppBrowserTestHarness {
     std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app =
         web_app::IsolatedWebAppBuilder(
             web_app::ManifestBuilder().AddPermissionsPolicyWildcard(
-                network::mojom::PermissionsPolicyFeature::kControlledFrame))
+                blink::mojom::PermissionsPolicyFeature::kControlledFrame))
             .BuildBundle();
     app->TrustSigningKey();
     return app->InstallChecked(profile());

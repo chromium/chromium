@@ -30,8 +30,8 @@
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/test/test_render_frame_host.h"
-#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 
 namespace permissions {
 
@@ -52,7 +52,7 @@ constexpr const char* kGeolocationPermissionsPolicyActionHistogramName =
     "TopLevelHeaderPolicy";
 
 blink::ParsedPermissionsPolicy CreatePermissionsPolicy(
-    network::mojom::PermissionsPolicyFeature feature,
+    blink::mojom::PermissionsPolicyFeature feature,
     const std::vector<std::string>& origins,
     bool matches_all_origins = false) {
   std::vector<blink::OriginWithPossibleWildcards> allow_origins;
@@ -74,7 +74,7 @@ PermissionRequestManager* SetupRequestManager(
 struct PermissionsDelegationTestConfig {
   ContentSettingsType type;
   PermissionAction action;
-  std::optional<network::mojom::PermissionsPolicyFeature> feature_overriden;
+  std::optional<blink::mojom::PermissionsPolicyFeature> feature_overriden;
 
   bool matches_all_origins;
   std::vector<std::string> origins;
@@ -725,7 +725,7 @@ TEST_F(PermissionsDelegationUmaUtilTest, SameOriginFrame) {
   auto* child_frame = AddChildFrameWithPermissionsPolicy(
       main_frame, kSameOriginFrameUrl,
       CreatePermissionsPolicy(
-          network::mojom::PermissionsPolicyFeature::kGeolocation,
+          blink::mojom::PermissionsPolicyFeature::kGeolocation,
           {std::string(kTopLevelUrl), std::string(kSameOriginFrameUrl)},
           /*matches_all_origins*/ true));
   histograms.ExpectTotalCount(kGeolocationUsageHistogramName, 0);
@@ -822,8 +822,8 @@ INSTANTIATE_TEST_SUITE_P(
         PermissionsDelegationTestConfig{
             ContentSettingsType::GEOLOCATION,
             PermissionAction::GRANTED,
-            std::make_optional<network::mojom::PermissionsPolicyFeature>(
-                network::mojom::PermissionsPolicyFeature::kCamera),
+            std::make_optional<blink::mojom::PermissionsPolicyFeature>(
+                blink::mojom::PermissionsPolicyFeature::kCamera),
             /*matches_all_origins*/ false,
             {std::string(kTopLevelUrl)},
             PermissionHeaderPolicyForUMA::FEATURE_NOT_PRESENT},
@@ -973,8 +973,8 @@ INSTANTIATE_TEST_SUITE_P(
         PermissionsDelegationTestConfig{
             ContentSettingsType::GEOLOCATION,
             PermissionAction::GRANTED,
-            std::make_optional<network::mojom::PermissionsPolicyFeature>(
-                network::mojom::PermissionsPolicyFeature::kCamera),
+            std::make_optional<blink::mojom::PermissionsPolicyFeature>(
+                blink::mojom::PermissionsPolicyFeature::kCamera),
             /*matches_all_origins*/ false,
             {std::string(kTopLevelUrl), std::string(kCrossOriginFrameUrl)},
             PermissionHeaderPolicyForUMA::FEATURE_NOT_PRESENT},

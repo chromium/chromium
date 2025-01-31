@@ -315,12 +315,12 @@ SmartCardTestContentBrowserClient::GetPermissionsPolicyForIsolatedWebApp(
     WebContents* web_contents,
     const url::Origin& app_origin) {
   blink::ParsedPermissionsPolicyDeclaration coi_decl(
-      network::mojom::PermissionsPolicyFeature::kCrossOriginIsolated,
+      blink::mojom::PermissionsPolicyFeature::kCrossOriginIsolated,
       /*allowed_origins=*/{},
       /*self_if_matches=*/std::nullopt, /*matches_all_origins=*/true,
       /*matches_opaque_src=*/false);
   blink::ParsedPermissionsPolicyDeclaration smart_card_decl(
-      network::mojom::PermissionsPolicyFeature::kSmartCard,
+      blink::mojom::PermissionsPolicyFeature::kSmartCard,
       /*allowed_origins=*/{},
       /*self_if_matches=*/app_origin, /*matches_all_origins=*/false,
       /*matches_opaque_src=*/false);
@@ -1642,7 +1642,7 @@ class NoCoiPermissionSmartCardTestContentBrowserClient
       WebContents* web_contents,
       const url::Origin& app_origin) override {
     return {{blink::ParsedPermissionsPolicyDeclaration(
-        network::mojom::PermissionsPolicyFeature::kSmartCard,
+        blink::mojom::PermissionsPolicyFeature::kSmartCard,
         /*allowed_origins=*/{},
         /*self_if_matches=*/app_origin,
         /*matches_all_origins=*/false, /*matches_opaque_src=*/false)}};

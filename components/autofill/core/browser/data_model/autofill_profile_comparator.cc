@@ -931,7 +931,7 @@ void AutofillProfileComparator::MergeNamesImpl(
   // * One name is a variant of the other. In this scenario, use the non-variant
   // name.
   // First, set info to the original profile.
-  name_component.CopyFrom(*old_profile.GetNameInfo().GetNodeForType(name_type));
+  name_component.CopyFrom(*old_profile.GetNameInfo().GetRootForType(name_type));
   // If the name of the `new_profile` is empty, just keep the state of
   // `old_profile`.
   if (HasOnlySkippableCharacters(full_name_1)) {
@@ -941,12 +941,12 @@ void AutofillProfileComparator::MergeNamesImpl(
   // empty name
   if (HasOnlySkippableCharacters(full_name_2)) {
     name_component.CopyFrom(
-        *new_profile.GetNameInfo().GetNodeForType(name_type));
+        *new_profile.GetNameInfo().GetRootForType(name_type));
     return;
   }
   // Try to apply a direct merging.
   if (name_component.MergeWithComponent(
-          *new_profile.GetNameInfo().GetNodeForType(name_type))) {
+          *new_profile.GetNameInfo().GetRootForType(name_type))) {
     return;
   }
   // If the name in `old_profile` is a variant of `new_profile` use the one in
@@ -956,10 +956,10 @@ void AutofillProfileComparator::MergeNamesImpl(
   if (IsNameVariantOf(NormalizeForComparison(full_name_1),
                       NormalizeForComparison(full_name_2))) {
     name_component.CopyFrom(
-        *new_profile.GetNameInfo().GetNodeForType(name_type));
+        *new_profile.GetNameInfo().GetRootForType(name_type));
   } else {
     name_component.CopyFrom(
-        *old_profile.GetNameInfo().GetNodeForType(name_type));
+        *old_profile.GetNameInfo().GetRootForType(name_type));
   }
 }
 

@@ -211,7 +211,7 @@ class MetricsPresubmitTest(unittest.TestCase):
     results = PRESUBMIT.CheckBooleansAreEnums(
         mock_input_api,
         MockOutputApi(),
-        cache_file_override_path=test_cache_file)
+        cache_file_path=test_cache_file)
     self.assertEqual(len(results), 1)
     self.assertRegex(
         results[0].message.replace('\n', ' '),
@@ -225,7 +225,7 @@ class MetricsPresubmitTest(unittest.TestCase):
     second_results = PRESUBMIT.CheckBooleansAreEnums(
         mock_input_api,
         MockOutputApi(),
-        cache_file_override_path=test_cache_file)
+        cache_file_path=test_cache_file)
     self.assertEqual(len(second_results), 1)
     self.assertEqual(results[0].message, second_results[0].message)
     self.assertEqual(results[0].type, second_results[0].type)
@@ -249,7 +249,7 @@ class MetricsPresubmitTest(unittest.TestCase):
     results = PRESUBMIT.CheckBooleansAreEnums(
         mock_input_api,
         MockOutputApi(),
-        cache_file_override_path=test_cache_file)
+        cache_file_path=test_cache_file)
     # Zero results mean that there were no errors reported.
     self.assertEqual(len(results), 0)
 
@@ -259,7 +259,7 @@ class MetricsPresubmitTest(unittest.TestCase):
     second_results = PRESUBMIT.CheckBooleansAreEnums(
         mock_input_api,
         MockOutputApi(),
-        cache_file_override_path=test_cache_file)
+        cache_file_path=test_cache_file)
     # Zero results mean that there were no errors reported.
     self.assertEqual(len(second_results), 0)
 
@@ -289,7 +289,7 @@ class MetricsPresubmitTest(unittest.TestCase):
     results = PRESUBMIT.CheckBooleansAreEnums(
         mock_input_api,
         MockOutputApi(),
-        cache_file_override_path=test_cache_file)
+        cache_file_path=test_cache_file)
     # Zero results mean that there were no errors reported.
     self.assertEqual(len(results), 0)
 
@@ -306,7 +306,7 @@ class MetricsPresubmitTest(unittest.TestCase):
     second_results = PRESUBMIT.CheckBooleansAreEnums(
         mock_input_api,
         MockOutputApi(),
-        cache_file_override_path=test_cache_file)
+        cache_file_path=test_cache_file)
 
     self.assertEqual(len(second_results), 1)
     self.assertRegex(

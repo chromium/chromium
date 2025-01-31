@@ -178,7 +178,8 @@ net::CertStatus LensOmniboxClient::GetCertStatus() const {
 }
 
 const gfx::VectorIcon& LensOmniboxClient::GetVectorIcon() const {
-  return gfx::VectorIcon::EmptyIcon();
+  static const gfx::VectorIcon kEmptyVectorIcon = {};
+  return kEmptyVectorIcon;
 }
 
 std::optional<lens::proto::LensOverlaySuggestInputs>

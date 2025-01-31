@@ -37,6 +37,7 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
     private final Rect mWindowInsets;
     private final Rect mCurrentSafeArea;
     private int mKeyboardInset;
+    private final Rect mSystemGestureInsets;
     protected final ObserverList<WindowInsetObserver> mObservers;
     private final KeyboardInsetObservableSupplier mKeyboardInsetSupplier;
     private final WindowInsetsAnimationCompat.Callback mWindowInsetsAnimationProxyCallback;
@@ -61,6 +62,8 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
          * has consumed the corresponding insets during {@link #onApplyWindowInsets}.
          */
         default void onInsetChanged() {}
+
+        default void onSystemGestureInsetsChanged(int left, int top, int right, int bottom) {}
 
         /**
          * Called when the keyboard inset changes. Note that the keyboard inset passed to this
@@ -154,6 +157,7 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
         mCurrentSafeArea = new Rect();
         mDisplayCutoutRect = new Rect();
         mKeyboardInset = 0;
+        mSystemGestureInsets = new Rect();
         mObservers = new ObserverList<>();
         mKeyboardInsetSupplier = new KeyboardInsetObservableSupplier();
         addObserver(mKeyboardInsetSupplier);
@@ -309,6 +313,12 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
         Insets systemInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars());
         onInsetChanged(
                 systemInsets.left, systemInsets.top, systemInsets.right, systemInsets.bottom);
+        Insets systemGestureInsets = insets.getInsets(WindowInsetsCompat.Type.systemGestures());
+        onSystemGestureInsetsChanged(
+                systemGestureInsets.left,
+                systemGestureInsets.top,
+                systemGestureInsets.right,
+                systemGestureInsets.bottom);
         insets =
                 WindowInsetsCompat.toWindowInsetsCompat(
                         view.onApplyWindowInsets(insets.toWindowInsets()));
@@ -335,6 +345,21 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
 
         for (WindowInsetObserver observer : mObservers) {
             observer.onInsetChanged();
+        }
+    }
+
+    private void onSystemGestureInsetsChanged(int left, int top, int right, int bottom) {
+        if (mSystemGestureInsets.left == left
+                && mSystemGestureInsets.top == top
+                && mSystemGestureInsets.right == right
+                && mSystemGestureInsets.bottom == bottom) {
+            return;
+        }
+
+        mSystemGestureInsets.set(left, top, right, bottom);
+
+        for (WindowInsetObserver observer : mObservers) {
+            observer.onSystemGestureInsetsChanged(left, top, right, bottom);
         }
     }
 

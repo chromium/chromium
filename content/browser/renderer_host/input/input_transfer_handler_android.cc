@@ -28,9 +28,9 @@ class JniDelegateImpl : public InputTransferHandlerAndroid::JniDelegate {
  public:
   ~JniDelegateImpl() override = default;
 
-  bool MaybeTransferInputToViz(int surface_id) override {
+  bool MaybeTransferInputToViz(int surface_id, float raw_x) override {
     return Java_InputTransferHandler_maybeTransferInputToViz(
-        base::android::AttachCurrentThread(), surface_id);
+        base::android::AttachCurrentThread(), surface_id, raw_x);
   }
 };
 
@@ -47,7 +47,8 @@ InputTransferHandlerAndroid::InputTransferHandlerAndroid() = default;
 
 InputTransferHandlerAndroid::~InputTransferHandlerAndroid() = default;
 
-bool InputTransferHandlerAndroid::OnTouchEvent(const ui::MotionEvent& event) {
+bool InputTransferHandlerAndroid::OnTouchEvent(
+    const ui::MotionEventAndroid& event) {
   // TODO(crbug.com/383307455): Forward events seen on Browser post transfer
   // over to Viz.
   if (touch_transferred_) {
@@ -78,8 +79,9 @@ bool InputTransferHandlerAndroid::OnTouchEvent(const ui::MotionEvent& event) {
     return false;
   }
 
-  touch_transferred_ =
-      jni_delegate_->MaybeTransferInputToViz(client_->GetRootSurfaceHandle());
+  // Use "RawX" to account for multi-window cases
+  touch_transferred_ = jni_delegate_->MaybeTransferInputToViz(
+      client_->GetRootSurfaceHandle(), event.GetRawXPix(/*pointer_index=*/0));
   if (touch_transferred_) {
     cached_transferred_sequence_down_time_ms_ = event.GetDownTime();
     client_->SendStateOnTouchTransfer(event);

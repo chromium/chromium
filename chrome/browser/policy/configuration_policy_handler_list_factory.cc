@@ -2360,6 +2360,27 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
 };
 // clang-format on
 
+// Mapping of policies to preferences with schema validation. Used for simple
+// policies that directly map to a single preference.
+// TODO(crbug.com/393395937): Move existing usages of
+// SimpleSchemaValidatingPolicyHandler to kSchemaValidatingPolicyMap.
+// clang-format off
+const SchemaValidatingPolicyToPreferenceMapEntry kSchemaValidatingPolicyMap[] =
+    {
+  // Policies for all platforms - Start.
+  // Policies for all platforms - End.
+  // Policies for ChromeOS - Start.
+#if BUILDFLAG(IS_CHROMEOS)
+  { key::kExternalStorageAllowlist,
+    disks::prefs::kExternalStorageAllowlist,
+    SCHEMA_ALLOW_UNKNOWN,
+    SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
+    SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED },
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  // Policies for ChromeOS - End.
+};
+// clang-format on
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 void GetExtensionAllowedTypesMap(
     std::vector<std::unique_ptr<StringMappingListPolicyHandler::MappingEntry>>*
@@ -2409,6 +2430,12 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
   for (PolicyToPreferenceMapEntry entry : kSimplePolicyMap) {
     handlers->AddHandler(std::make_unique<SimplePolicyHandler>(
         entry.policy_name, entry.preference_path, entry.value_type));
+  }
+
+  for (const auto& entry : kSchemaValidatingPolicyMap) {
+    handlers->AddHandler(std::make_unique<SimpleSchemaValidatingPolicyHandler>(
+        entry.policy_name, entry.preference_path, chrome_schema, entry.strategy,
+        entry.recommended_permission, entry.mandatory_permission));
   }
 
   // Policies for all platforms - Start

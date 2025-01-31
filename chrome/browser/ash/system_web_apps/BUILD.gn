@@ -146,6 +146,7 @@ source_set("unit_tests") {
     "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
     "//chrome/common:chrome_features",
     "//chrome/test:test_support",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/experiences/system_web_apps/types",
     "//chromeos/components/kiosk:test_support",
     "//components/prefs",

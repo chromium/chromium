@@ -19,7 +19,7 @@ import type {BrowserProxy} from '../browser_proxy.js';
 import type {PanelState as PanelStateMojo, TabData as TabDataMojo, WebClientHandlerInterface, WebClientInterface} from '../glic.mojom-webui.js';
 import {GetTabContextErrorReason as MojoGetTabContextErrorReason, WebClientHandlerRemote, WebClientMode, WebClientReceiver} from '../glic.mojom-webui.js';
 import type {DraggableArea, PanelState, Screenshot, TabContextOptions, WebPageData} from '../glic_api/glic_api.js';
-import {DEFAULT_PDF_SIZE_LIMIT, GetTabContextErrorReason} from '../glic_api/glic_api.js';
+import {CaptureScreenshotErrorReason, DEFAULT_PDF_SIZE_LIMIT, GetTabContextErrorReason} from '../glic_api/glic_api.js';
 import type {GlicAppController} from '../glic_app_controller.js';
 
 import type {PostMessageRequestHandler} from './post_message_transport.js';
@@ -66,7 +66,7 @@ class WebClientImpl implements WebClientInterface {
 
     // The web client is ready to show, ensure the webview is
     // displayed.
-    this.appController.openGuestPanel();
+    this.appController.webClientReady();
 
     return {
       webClientMode:
@@ -322,6 +322,33 @@ class HostMessageHandler implements HostMessageHandlerInterface {
     return await this.handler.resizeWidget(request.size, {
       microseconds: BigInt(Math.floor(durationMs * 1000)),
     });
+  }
+
+  async glicBrowserCaptureScreenshot(_request: {}, transfer: Transferable[]):
+      Promise<{
+        screenshot?: Screenshot,
+        errorReason?: CaptureScreenshotErrorReason,
+      }> {
+    const {
+      result: {screenshot, errorReason},
+    } = await this.handler.captureScreenshot();
+    if (!screenshot) {
+      const returnedErrorReason =
+          (errorReason as CaptureScreenshotErrorReason | undefined) ??
+          CaptureScreenshotErrorReason.SCREEN_CAPTURE_FAILED_FOR_UNKNOWN_REASON;
+      return {errorReason: returnedErrorReason};
+    }
+    const screenshotArray = new Uint8Array(screenshot.data);
+    transfer.push(screenshotArray.buffer);
+    return {
+      screenshot: {
+        widthPixels: screenshot.widthPixels,
+        heightPixels: screenshot.heightPixels,
+        data: screenshotArray.buffer,
+        mimeType: screenshot.mimeType,
+        originAnnotations: {},
+      },
+    };
   }
 
   glicBrowserSetWindowDraggableAreas(request: {areas: DraggableArea[]}) {

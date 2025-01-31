@@ -269,6 +269,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kForceTranslucentNotificationTrampoline,
     &kFullscreenInsetsApiMigration,
     &kFullscreenInsetsApiMigrationOnAutomotive,
+    &kGroupNewTabWithParent,
     &kHideTabletToolbarDownloadButton,
     &kHistoryPaneAndroid,
     &kLockBackPressHandlerAtStart,
@@ -826,6 +827,10 @@ BASE_FEATURE(kFullscreenInsetsApiMigration,
 
 BASE_FEATURE(kFullscreenInsetsApiMigrationOnAutomotive,
              "FullscreenInsetsApiMigrationOnAutomotive",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kGroupNewTabWithParent,
+             "GroupNewTabWithParent",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kHistoryPaneAndroid,

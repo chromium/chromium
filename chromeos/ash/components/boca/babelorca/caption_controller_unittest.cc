@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/values.h"
+#include "chromeos/ash/components/boca/babelorca/babel_orca_caption_bubble_settings.h"
 #include "chromeos/ash/components/boca/babelorca/fakes/fake_caption_controller_delegate.h"
 #include "components/live_caption/caption_bubble_context.h"
 #include "components/live_caption/caption_bubble_controller.h"
@@ -76,7 +77,7 @@ TEST(CaptionControllerTest, SetStyleOnStartLiveCaption) {
   auto* delegate_ptr = delegate.get();
   CaptionController caption_controller(
       /*caption_bubble_context=*/nullptr, &pref_service, kApplicationLocale,
-      std::move(delegate));
+      /*caption_bubble_settings=*/nullptr, std::move(delegate));
 
   caption_controller.StartLiveCaption();
 
@@ -92,7 +93,7 @@ TEST(CaptionControllerTest, DispatchBeforeStartLiveCaption) {
   auto* delegate_ptr = delegate.get();
   CaptionController caption_controller(
       /*caption_bubble_context=*/nullptr, &pref_service, kApplicationLocale,
-      std::move(delegate));
+      /*caption_bubble_settings=*/nullptr, std::move(delegate));
 
   bool dispatch_success = caption_controller.DispatchTranscription(
       media::SpeechRecognitionResult("transcript", /*is_final=*/true));
@@ -109,7 +110,7 @@ TEST(CaptionControllerTest, DispatchTranscription) {
   auto* delegate_ptr = delegate.get();
   CaptionController caption_controller(
       /*caption_bubble_context=*/nullptr, &pref_service, kApplicationLocale,
-      std::move(delegate));
+      /*caption_bubble_settings=*/nullptr, std::move(delegate));
 
   caption_controller.StartLiveCaption();
   media::SpeechRecognitionResult transcript("transcript", /*is_final=*/true);
@@ -128,7 +129,7 @@ TEST(CaptionControllerTest, DispatchAfterStopLiveCaption) {
   auto* delegate_ptr = delegate.get();
   CaptionController caption_controller(
       /*caption_bubble_context=*/nullptr, &pref_service, kApplicationLocale,
-      std::move(delegate));
+      /*caption_bubble_settings=*/nullptr, std::move(delegate));
 
   caption_controller.StartLiveCaption();
   caption_controller.StopLiveCaption();
@@ -146,7 +147,7 @@ TEST(CaptionControllerTest, OnAudioStreamEndBeforeStart) {
   auto* delegate_ptr = delegate.get();
   CaptionController caption_controller(
       /*caption_bubble_context=*/nullptr, &pref_service, kApplicationLocale,
-      std::move(delegate));
+      /*caption_bubble_settings=*/nullptr, std::move(delegate));
 
   caption_controller.OnAudioStreamEnd();
 
@@ -160,7 +161,7 @@ TEST(CaptionControllerTest, OnAudioStreamEnd) {
   auto* delegate_ptr = delegate.get();
   CaptionController caption_controller(
       /*caption_bubble_context=*/nullptr, &pref_service, kApplicationLocale,
-      std::move(delegate));
+      /*caption_bubble_settings=*/nullptr, std::move(delegate));
 
   caption_controller.StartLiveCaption();
   caption_controller.OnAudioStreamEnd();
@@ -175,7 +176,7 @@ TEST(CaptionControllerTest, OnAudioStreamEndAfterStop) {
   auto* delegate_ptr = delegate.get();
   CaptionController caption_controller(
       /*caption_bubble_context=*/nullptr, &pref_service, kApplicationLocale,
-      std::move(delegate));
+      /*caption_bubble_settings=*/nullptr, std::move(delegate));
 
   caption_controller.StartLiveCaption();
   caption_controller.StopLiveCaption();
@@ -191,7 +192,7 @@ TEST(CaptionControllerTest, OnCaptionStyleUpdated) {
   auto* delegate_ptr = delegate.get();
   CaptionController caption_controller(
       /*caption_bubble_context=*/nullptr, &pref_service, kApplicationLocale,
-      std::move(delegate));
+      /*caption_bubble_settings=*/nullptr, std::move(delegate));
 
   caption_controller.StartLiveCaption();
   ASSERT_THAT(delegate_ptr->GetCaptionStyleObserver(), testing::NotNull());
@@ -210,7 +211,7 @@ TEST(CaptionControllerTest, OnCaptionStylePrefChange) {
   auto* delegate_ptr = delegate.get();
   CaptionController caption_controller(
       /*caption_bubble_context=*/nullptr, &pref_service, kApplicationLocale,
-      std::move(delegate));
+      /*caption_bubble_settings=*/nullptr, std::move(delegate));
 
   caption_controller.StartLiveCaption();
   pref_service.SetUserPref(prefs::kAccessibilityCaptionsTextSize,
@@ -229,7 +230,7 @@ TEST(CaptionControllerTest, NoCaptionStyleUpdatesAfterStopLiveCaption) {
   auto* delegate_ptr = delegate.get();
   CaptionController caption_controller(
       /*caption_bubble_context=*/nullptr, &pref_service, kApplicationLocale,
-      std::move(delegate));
+      /*caption_bubble_settings=*/nullptr, std::move(delegate));
 
   caption_controller.StartLiveCaption();
   caption_controller.StopLiveCaption();
@@ -246,7 +247,7 @@ TEST(CaptionControllerTest, DispatchTranscriptionFailed) {
   auto* delegate_ptr = delegate.get();
   CaptionController caption_controller(
       /*caption_bubble_context=*/nullptr, &pref_service, kApplicationLocale,
-      std::move(delegate));
+      /*caption_bubble_settings=*/nullptr, std::move(delegate));
 
   caption_controller.StartLiveCaption();
   delegate_ptr->SetOnTranscriptionSuccess(/*success=*/false);

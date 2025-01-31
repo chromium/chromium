@@ -16,7 +16,7 @@ ClipboardReadWritePermissionContext::ClipboardReadWritePermissionContext(
     : PermissionContextBase(
           browser_context,
           ContentSettingsType::CLIPBOARD_READ_WRITE,
-          network::mojom::PermissionsPolicyFeature::kClipboardRead) {}
+          blink::mojom::PermissionsPolicyFeature::kClipboardRead) {}
 
 ClipboardReadWritePermissionContext::~ClipboardReadWritePermissionContext() =
     default;

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 
 #include <stddef.h>
@@ -36,7 +37,6 @@
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
 #include "components/services/app_service/public/cpp/share_target.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
-#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
@@ -45,6 +45,7 @@
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-shared.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/size.h"
@@ -158,7 +159,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
 
   {
     blink::ParsedPermissionsPolicyDeclaration declaration;
-    declaration.feature = network::mojom::PermissionsPolicyFeature::kFullscreen;
+    declaration.feature = blink::mojom::PermissionsPolicyFeature::kFullscreen;
     declaration.allowed_origins = {
         *blink::OriginWithPossibleWildcards::FromOrigin(
             url::Origin::Create(GURL("https://www.example.com")))};
@@ -281,7 +282,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
   EXPECT_EQ(1u, web_app_info.permissions_policy.size());
   auto declaration = web_app_info.permissions_policy[0];
   EXPECT_EQ(declaration.feature,
-            network::mojom::PermissionsPolicyFeature::kFullscreen);
+            blink::mojom::PermissionsPolicyFeature::kFullscreen);
   EXPECT_EQ(1u, declaration.allowed_origins.size());
   EXPECT_EQ("https://www.example.com",
             declaration.allowed_origins[0].Serialize());

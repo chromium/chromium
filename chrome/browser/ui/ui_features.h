@@ -254,6 +254,10 @@ BASE_DECLARE_FEATURE(kPageActionsMigration);
 // vs. a repeating timer.
 BASE_DECLARE_FEATURE(kCompositorLoadingAnimations);
 
+// If enabled, when no given_name is provided, the FedCM Continue button will
+// say "Continue" instead of "Continue as Firstname Lastname".
+BASE_DECLARE_FEATURE(kFedCmContinueWithoutName);
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_UI_UI_FEATURES_H_

@@ -15,6 +15,12 @@
 
 namespace glic {
 
+namespace {
+
+constexpr base::TimeDelta kDebounceDelay = base::Seconds(0.5);
+
+}  // namespace
+
 // TODO(wry): Add interactive_ui_tests to check basic functionality.
 
 GlicFocusedTabManager::GlicFocusedTabManager(
@@ -91,8 +97,24 @@ void GlicFocusedTabManager::PrimaryPageChanged(content::Page& page) {
 }
 
 void GlicFocusedTabManager::MaybeUpdateFocusedTab(bool force_notify) {
+  // Cache any calls with force_notify set to true so they don't get swallowed
+  // by subsequent calls without it. Otherwise necessary updates might get
+  // dropped.
+  if (force_notify) {
+    cached_force_notify_ = true;
+  }
+  debouncer_.Start(
+      FROM_HERE, kDebounceDelay,
+      base::BindOnce(&GlicFocusedTabManager::PerformMaybeUpdateFocusedTab,
+                     base::Unretained(this), cached_force_notify_));
+}
+
+void GlicFocusedTabManager::PerformMaybeUpdateFocusedTab(bool force_notify) {
+  cached_force_notify_ = false;
   content::WebContents* const new_focused_web_contents = ComputeFocusedTab();
-  bool focus_changed = new_focused_web_contents != focused_web_contents_.get();
+  bool focus_changed =
+      (focused_web_contents_.WasInvalidated() ||
+       new_focused_web_contents != focused_web_contents_.get());
 
   if (focus_changed) {
     if (new_focused_web_contents) {
@@ -142,8 +164,6 @@ content::WebContents* GlicFocusedTabManager::ComputeFocusableTabForBrowser(
 }
 
 void GlicFocusedTabManager::NotifyFocusedTabChanged() {
-  // TODO(wry): Debounce here to avoid awkwardness with Mac OS
-  // deactivation/activation handling.
   focused_callback_list_.Notify(GetWebContentsForFocusedTab());
 }
 

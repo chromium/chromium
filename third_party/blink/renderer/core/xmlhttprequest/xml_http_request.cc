@@ -742,7 +742,7 @@ bool XMLHttpRequest::InitSend(ExceptionState& exception_state) {
     if (GetExecutionContext()->IsWindow()) {
       bool sync_xhr_disabled_by_permissions_policy =
           !GetExecutionContext()->IsFeatureEnabled(
-              network::mojom::PermissionsPolicyFeature::kSyncXHR,
+              mojom::blink::PermissionsPolicyFeature::kSyncXHR,
               ReportOptions::kReportOnFailure,
               "Synchronous requests are disabled by permissions policy.");
 

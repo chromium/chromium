@@ -969,7 +969,7 @@ class MultiScreenCaptureInIsolatedWebAppBrowserTest
         web_app::ManifestBuilder().SetName("app-3.0.4").SetVersion("3.0.4");
     if (IsPermissionPolicySet()) {
       manifest_builder.AddPermissionsPolicy(
-          network::mojom::PermissionsPolicyFeature::kAllScreensCapture,
+          blink::mojom::PermissionsPolicyFeature::kAllScreensCapture,
           /*self=*/true, /*origins=*/{});
     }
     auto builder = web_app::IsolatedWebAppBuilder(std::move(manifest_builder));

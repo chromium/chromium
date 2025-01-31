@@ -6,8 +6,8 @@
 
 #include "base/no_destructor.h"
 #include "base/notreached.h"
-#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 
 namespace blink {
 
@@ -105,57 +105,57 @@ std::string GetPermissionString(PermissionType permission) {
   NOTREACHED();
 }
 
-std::optional<network::mojom::PermissionsPolicyFeature>
+std::optional<mojom::PermissionsPolicyFeature>
 PermissionTypeToPermissionsPolicyFeature(PermissionType permission) {
   switch (permission) {
     case PermissionType::GEOLOCATION:
-      return network::mojom::PermissionsPolicyFeature::kGeolocation;
+      return mojom::PermissionsPolicyFeature::kGeolocation;
     case PermissionType::MIDI_SYSEX:
-      return network::mojom::PermissionsPolicyFeature::kMidiFeature;
+      return mojom::PermissionsPolicyFeature::kMidiFeature;
     case PermissionType::PROTECTED_MEDIA_IDENTIFIER:
-      return network::mojom::PermissionsPolicyFeature::kEncryptedMedia;
+      return mojom::PermissionsPolicyFeature::kEncryptedMedia;
     case PermissionType::AUDIO_CAPTURE:
-      return network::mojom::PermissionsPolicyFeature::kMicrophone;
+      return mojom::PermissionsPolicyFeature::kMicrophone;
     case PermissionType::VIDEO_CAPTURE:
-      return network::mojom::PermissionsPolicyFeature::kCamera;
+      return mojom::PermissionsPolicyFeature::kCamera;
     case PermissionType::MIDI:
-      return network::mojom::PermissionsPolicyFeature::kMidiFeature;
+      return mojom::PermissionsPolicyFeature::kMidiFeature;
     case PermissionType::CLIPBOARD_READ_WRITE:
-      return network::mojom::PermissionsPolicyFeature::kClipboardRead;
+      return mojom::PermissionsPolicyFeature::kClipboardRead;
     case PermissionType::CLIPBOARD_SANITIZED_WRITE:
-      return network::mojom::PermissionsPolicyFeature::kClipboardWrite;
+      return mojom::PermissionsPolicyFeature::kClipboardWrite;
     case PermissionType::IDLE_DETECTION:
-      return network::mojom::PermissionsPolicyFeature::kIdleDetection;
+      return mojom::PermissionsPolicyFeature::kIdleDetection;
     case PermissionType::WAKE_LOCK_SCREEN:
-      return network::mojom::PermissionsPolicyFeature::kScreenWakeLock;
+      return mojom::PermissionsPolicyFeature::kScreenWakeLock;
     case PermissionType::HAND_TRACKING:
-      return network::mojom::PermissionsPolicyFeature::kWebXr;
+      return mojom::PermissionsPolicyFeature::kWebXr;
     case PermissionType::VR:
-      return network::mojom::PermissionsPolicyFeature::kWebXr;
+      return mojom::PermissionsPolicyFeature::kWebXr;
     case PermissionType::AR:
-      return network::mojom::PermissionsPolicyFeature::kWebXr;
+      return mojom::PermissionsPolicyFeature::kWebXr;
     case PermissionType::SMART_CARD:
-      return network::mojom::PermissionsPolicyFeature::kSmartCard;
+      return mojom::PermissionsPolicyFeature::kSmartCard;
     case PermissionType::WEB_PRINTING:
-      return network::mojom::PermissionsPolicyFeature::kWebPrinting;
+      return mojom::PermissionsPolicyFeature::kWebPrinting;
     case PermissionType::STORAGE_ACCESS_GRANT:
-      return network::mojom::PermissionsPolicyFeature::kStorageAccessAPI;
+      return mojom::PermissionsPolicyFeature::kStorageAccessAPI;
     case PermissionType::TOP_LEVEL_STORAGE_ACCESS:
-      return network::mojom::PermissionsPolicyFeature::kStorageAccessAPI;
+      return mojom::PermissionsPolicyFeature::kStorageAccessAPI;
     case PermissionType::WINDOW_MANAGEMENT:
-      return network::mojom::PermissionsPolicyFeature::kWindowManagement;
+      return mojom::PermissionsPolicyFeature::kWindowManagement;
     case PermissionType::LOCAL_FONTS:
-      return network::mojom::PermissionsPolicyFeature::kLocalFonts;
+      return mojom::PermissionsPolicyFeature::kLocalFonts;
     case PermissionType::DISPLAY_CAPTURE:
-      return network::mojom::PermissionsPolicyFeature::kDisplayCapture;
+      return mojom::PermissionsPolicyFeature::kDisplayCapture;
     case PermissionType::CAPTURED_SURFACE_CONTROL:
-      return network::mojom::PermissionsPolicyFeature::kCapturedSurfaceControl;
+      return mojom::PermissionsPolicyFeature::kCapturedSurfaceControl;
     case PermissionType::SPEAKER_SELECTION:
-      return network::mojom::PermissionsPolicyFeature::kSpeakerSelection;
+      return mojom::PermissionsPolicyFeature::kSpeakerSelection;
     case PermissionType::AUTOMATIC_FULLSCREEN:
-      return network::mojom::PermissionsPolicyFeature::kFullscreen;
+      return mojom::PermissionsPolicyFeature::kFullscreen;
     case PermissionType::WEB_APP_INSTALLATION:
-      return network::mojom::PermissionsPolicyFeature::kWebAppInstallation;
+      return mojom::PermissionsPolicyFeature::kWebAppInstallation;
 
     case PermissionType::PERIODIC_BACKGROUND_SYNC:
     case PermissionType::DURABLE_STORAGE:

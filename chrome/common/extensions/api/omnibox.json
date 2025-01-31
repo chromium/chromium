@@ -115,6 +115,22 @@
             }
           }
         }
+      },
+      {
+        "id": "ActionExecution",
+        "type": "object",
+        "description": "Details about an action executed by the user sent in the listener of `onActionExecuted`.",
+        "nodoc": true,
+        "properties": {
+          "actionName": {
+            "type": "string",
+            "description": "The name of the action the user selected, as defined by the `action` field in `Action`."
+          },
+          "content": {
+            "type": "string",
+            "description": "The text of the suggestion corresponding to the action, as shown in the Omnibox. The same as the `SuggestResult.content`."
+          }
+        }
       }
     ],
     "manifest_keys": {
@@ -237,9 +253,8 @@
         "description": "User has selected an action attached to a suggested result by pressing the corresponding button in the Omnibox.",
         "parameters": [
           {
-            "type": "string",
-            "name": "actionName",
-            "description": "The name of the action the user selected, as defined by the `action` field in `Action`."
+            "name": "actionExecution",
+            "$ref": "ActionExecution"
           }
         ]
       }

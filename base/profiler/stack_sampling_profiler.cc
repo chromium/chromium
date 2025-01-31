@@ -982,7 +982,7 @@ void StackSamplingProfiler::ApplyMetadataToPastSamples(
 // static
 void StackSamplingProfiler::AddProfileMetadata(
     uint64_t name_hash,
-    int64_t key,
+    std::optional<int64_t> key,
     int64_t value,
     std::optional<PlatformThreadId> thread_id) {
   SamplingThread::GetInstance()->AddProfileMetadata(name_hash, key, value,

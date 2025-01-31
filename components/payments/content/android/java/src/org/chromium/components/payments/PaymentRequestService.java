@@ -18,7 +18,6 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.components.page_info.CertificateChainHelper;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.RenderFrameHost;
@@ -97,7 +96,6 @@ public class PaymentRequestService
     private String mPaymentRequestOrigin;
     private Origin mPaymentRequestSecurityOrigin;
     private String mMerchantName;
-    @Nullable private byte[][] mCertificateChain;
     private boolean mIsOffTheRecord;
     private PaymentOptions mPaymentOptions;
     private boolean mRequestShipping;
@@ -270,19 +268,6 @@ public class PaymentRequestService
          */
         default String formatUrlForSecurityDisplay(GURL uri) {
             return UrlFormatter.formatUrlForSecurityDisplay(uri, SchemeDisplay.SHOW);
-        }
-
-        /**
-         * @param webContents The WebContents to get site certificate chain from.
-         * @return The site certificate chain of the given WebContents. Can return null when
-         *     ANDROID_PAYMENT_INTENTS_OMIT_DEPRECATED_PARAMETERS is enabled or when the page is
-         *     localhost or is a file.
-         */
-        @Nullable default byte[][] getCertificateChain(WebContents webContents) {
-            return PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
-                           PaymentFeatureList.ANDROID_PAYMENT_INTENTS_OMIT_DEPRECATED_PARAMETERS)
-                    ? null
-                    : CertificateChainHelper.getCertificateChain(webContents);
         }
 
         /**
@@ -471,7 +456,6 @@ public class PaymentRequestService
         mTopLevelOrigin = mDelegate.formatUrlForSecurityDisplay(mWebContents.getLastCommittedUrl());
 
         mMerchantName = mWebContents.getTitle();
-        mCertificateChain = mDelegate.getCertificateChain(mWebContents);
         mIsOffTheRecord = mDelegate.isOffTheRecord();
         mJourneyLogger = mDelegate.createJourneyLogger(mWebContents);
 
@@ -844,7 +828,7 @@ public class PaymentRequestService
                 mMerchantName,
                 mTopLevelOrigin,
                 mPaymentRequestOrigin,
-                mCertificateChain,
+                getCertificateChain(),
                 Collections.unmodifiableMap(methodData),
                 mSpec.getRawTotal(),
                 mSpec.getRawLineItems(),
@@ -1725,7 +1709,7 @@ public class PaymentRequestService
     @Override
     @Nullable
     public byte[][] getCertificateChain() {
-        return mCertificateChain;
+        return mBrowserPaymentRequest.getCertificateChain();
     }
 
     // PaymentAppFactoryParams implementation.

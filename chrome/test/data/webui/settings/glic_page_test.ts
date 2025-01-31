@@ -63,10 +63,14 @@ suite('GlicPage', function() {
     launcherToggle.click();
     assertTrue(page.getPref(PrefName.LAUNCHER_ENABLED).value);
     assertTrue(launcherToggle.checked);
+    assertEquals(1, glicBrowserProxy.getCallCount('setGlicOsLauncherEnabled'));
+    glicBrowserProxy.reset();
 
     launcherToggle.click();
     assertFalse(page.getPref(PrefName.LAUNCHER_ENABLED).value);
     assertFalse(launcherToggle.checked);
+    assertEquals(1, glicBrowserProxy.getCallCount('setGlicOsLauncherEnabled'));
+    glicBrowserProxy.reset();
   });
 
   // Test that the keyboard shortcut is collapsed/invisible when the launcher

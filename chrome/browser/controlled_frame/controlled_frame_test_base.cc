@@ -96,7 +96,7 @@ ControlledFrameTestBase::CreateAndInstallEmptyApp(
     const web_app::ManifestBuilder& manifest_builder) {
   auto updated_manifest_builder = manifest_builder;
   updated_manifest_builder.AddPermissionsPolicy(
-      network::mojom::PermissionsPolicyFeature::kControlledFrame, /*self=*/true,
+      blink::mojom::PermissionsPolicyFeature::kControlledFrame, /*self=*/true,
       /*origins=*/{});
   app_ = web_app::IsolatedWebAppBuilder(updated_manifest_builder).BuildBundle();
   app_->TrustSigningKey();

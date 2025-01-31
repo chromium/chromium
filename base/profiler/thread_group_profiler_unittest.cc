@@ -148,7 +148,7 @@ class ThreadGroupProfilerTest : public testing::Test {
     ThreadGroupProfiler::SetClient(
         std::make_unique<MockThreadGroupProfilerClient>());
     profiler_ = std::make_unique<ThreadGroupProfiler>(
-        ThreadPool::CreateSequencedTaskRunner({}), "Test",
+        ThreadPool::CreateSequencedTaskRunner({}), /*thread_group_type=*/0,
         std::make_unique<MockPeriodicSamplingScheduler>(kTimeToNextCollection),
         GetMockProfilerFactory(sampling_profilers_,
                                sampling_profilers_created_));

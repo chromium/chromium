@@ -10,6 +10,7 @@
 #include "components/account_id/account_id.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/fake_user_manager.h"
+#include "components/user_manager/test_helper.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -73,8 +74,8 @@ TEST_F(BluetoothLogControllerTest, NonRegularUser) {
   auto* upstart_client = FakeUpstartClient::Get();
   upstart_client->StartRecordingUpstartOperations();
 
-  auto* user = user_manager().AddKioskAppUser(
-      AccountId::FromUserEmail("test@google.com"));
+  auto* user = user_manager::TestHelper(user_manager())
+                   .AddKioskAppUser("test@kiosk-apps.device-local.localhost");
   // TODO(b/278643115): use UserManager::UserLoggedIn() to notify observer.
   controller().OnUserLoggedIn(*user);
 

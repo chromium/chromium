@@ -11,6 +11,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chromeos/ash/components/boca/babelorca/babel_orca_caption_bubble_settings.h"
 #include "components/live_caption/caption_bubble_settings.h"
 
 class PrefChangeRegistrar;
@@ -18,7 +19,7 @@ class PrefService;
 
 namespace ash::babelorca {
 
-class ConsumerCaptionBubbleSettings : public ::captions::CaptionBubbleSettings {
+class ConsumerCaptionBubbleSettings : public BabelOrcaCaptionBubbleSettings {
  public:
   ConsumerCaptionBubbleSettings(PrefService* profile_prefs,
                                 std::string_view caption_language_code);
@@ -29,7 +30,7 @@ class ConsumerCaptionBubbleSettings : public ::captions::CaptionBubbleSettings {
 
   ~ConsumerCaptionBubbleSettings() override;
 
-  // ::captions::CaptionBubbleSettings:
+  // BabelOrcaCaptionBubbleSettings:
   void SetObserver(base::WeakPtr<::captions::CaptionBubbleSettings::Observer>
                        observer) override;
   void RemoveObserver() override;
@@ -42,8 +43,7 @@ class ConsumerCaptionBubbleSettings : public ::captions::CaptionBubbleSettings {
   void SetLiveCaptionBubbleExpanded(bool expanded) override;
   void SetLiveTranslateTargetLanguageCode(
       std::string_view language_code) override;
-
-  void SetLiveTranslateEnabled(bool enabled);
+  void SetLiveTranslateEnabled(bool enabled) override;
 
  private:
   const raw_ptr<PrefService> profile_prefs_;

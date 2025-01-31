@@ -117,7 +117,7 @@ ScriptPromise<MIDIAccess> NavigatorWebMIDI::requestMIDIAccess(
       WebFeature::kRequestMIDIAccessIframe_ObscuredByFootprinting);
 
   if (!window->IsFeatureEnabled(
-          network::mojom::PermissionsPolicyFeature::kMidiFeature,
+          mojom::blink::PermissionsPolicyFeature::kMidiFeature,
           ReportOptions::kReportOnFailure, kFeaturePolicyConsoleWarning)) {
     UseCounter::Count(window, WebFeature::kMidiDisabledByFeaturePolicy);
     exception_state.ThrowSecurityError(kFeaturePolicyErrorMessage);

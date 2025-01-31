@@ -991,6 +991,32 @@ TEST_F(CustomizeChromePageHandlerWithModulesTest, SetModuleDisabled) {
   EXPECT_TRUE(microsoft_auth_settings->enabled);
 }
 
+TEST_F(CustomizeChromePageHandlerWithModulesTest,
+       SetModuleHiddenInCustomizeChrome) {
+  std::vector<side_panel::mojom::ModuleSettingsPtr> modules_settings;
+  EXPECT_CALL(mock_page_, SetModulesSettings)
+      .Times(1)
+      .WillRepeatedly(Invoke(
+          [&modules_settings](std::vector<side_panel::mojom::ModuleSettingsPtr>
+                                  modules_settings_arg,
+                              bool managed_arg, bool visible_arg) {
+            modules_settings = std::move(modules_settings_arg);
+          }));
+
+  base::Value::List hidden_modules_list;
+  hidden_modules_list.Append(ntp_modules::kMostRelevantTabResumptionModuleId);
+
+  profile().GetPrefs()->SetList(prefs::kNtpCustomizeChromeHiddenModules,
+                                std::move(hidden_modules_list));
+  mock_page_.FlushForTesting();
+
+  EXPECT_EQ(2u, modules_settings.size());
+  const auto& tab_resumption_settings = modules_settings[0];
+  EXPECT_FALSE(tab_resumption_settings->visible);
+  const auto& microsoft_auth_settings = modules_settings[1];
+  EXPECT_TRUE(microsoft_auth_settings->visible);
+}
+
 class CustomizeChromePageHandlerWithModulesVisibilityTest
     : public CustomizeChromePageHandlerWithModulesTest,
       public ::testing::WithParamInterface<bool> {

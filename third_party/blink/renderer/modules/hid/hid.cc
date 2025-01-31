@@ -74,7 +74,7 @@ bool ShouldBlockHidServiceCall(LocalDOMWindow* window,
     return true;
   }
 
-  if (!context->IsFeatureEnabled(network::mojom::PermissionsPolicyFeature::kHid,
+  if (!context->IsFeatureEnabled(mojom::blink::PermissionsPolicyFeature::kHid,
                                  ReportOptions::kReportOnFailure)) {
     if (exception_state) {
       exception_state->ThrowSecurityError(kFeaturePolicyBlocked);

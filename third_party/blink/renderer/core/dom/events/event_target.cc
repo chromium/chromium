@@ -610,7 +610,7 @@ bool EventTarget::AddEventListenerInternal(
       !RuntimeEnabledFeatures::DeprecateUnloadOptOutEnabled(
           execution_context) &&
       !execution_context->IsFeatureEnabled(
-          network::mojom::PermissionsPolicyFeature::kUnload,
+          mojom::blink::PermissionsPolicyFeature::kUnload,
           ReportOptions::kReportOnFailure)) {
     return false;
   }

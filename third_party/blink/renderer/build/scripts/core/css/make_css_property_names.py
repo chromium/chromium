@@ -79,11 +79,13 @@ class CSSPropertyNamesWriter(json5_generator.Writer):
                 current_offset += len(name) + 1
 
         # This is the input to gperf.
-        css_name_and_enum_pairs = [
-            (property_.name.original,
-             f'static_cast<int>(CSSPropertyID::{property_.enum_key})')
-            for property_ in self._css_properties.gperf_properties
-        ]
+        css_name_and_enum_pairs = []
+        for property_ in self._css_properties.gperf_properties:
+            assert (property_.enum_value & 0x8000 == 0)
+            val = f'static_cast<int>(CSSPropertyID::{property_.enum_key})'
+            if not property_.known_exposed:
+                val += ' | kNotKnownExposedPropertyBit'
+            css_name_and_enum_pairs.append((property_.name.original, val))
 
         css_sample_id_pairs = [
             (property_.enum_key, property_.css_sample_id)

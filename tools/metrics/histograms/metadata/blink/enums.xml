@@ -5875,7 +5875,7 @@ Called by update_use_counter_feature_enum.py.-->
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
 
 <enum name="FeaturePolicyFeature">
-<!-- Generated from services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.
+<!-- Generated from third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.
 Called by update_permissions_policy_enum.py.-->
 
 <!-- Obsolete / deprecated features in this enum should be prefixed with

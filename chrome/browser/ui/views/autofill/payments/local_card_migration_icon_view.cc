@@ -19,7 +19,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/gfx/vector_icon_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 
@@ -133,7 +132,7 @@ const gfx::VectorIcon& LocalCardMigrationIconView::GetVectorIconBadge() const {
                         LocalCardMigrationFlowStep::MIGRATION_FAILED) {
     return vector_icons::kBlockedBadgeIcon;
   }
-  return gfx::VectorIcon::EmptyIcon();
+  return gfx::kNoneIcon;
 }
 
 ManageMigrationUiController* LocalCardMigrationIconView::GetController() const {

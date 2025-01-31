@@ -10528,7 +10528,8 @@ void Element::SetHovered(bool hovered) {
         //    schedule an InterestLost task. Any existing InterestLost tasks
         //    would have been cancelled (above) when this element was hovered.
         // Note that an element can be both an interest invoker and a target.
-        CHECK(!upstream_invoker->GetInterestInvokerData()
+        CHECK(!upstream_invoker->GetInterestInvokerData() ||
+              !upstream_invoker->GetInterestInvokerData()
                    ->hasInterestGainedTask());
         if (!upstream_invoker->IsHovered()) {
           upstream_invoker->ScheduleInterestLostTask();

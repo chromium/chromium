@@ -17,6 +17,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
@@ -44,6 +45,12 @@ void AttemptChromeSignin(CoreAccountId account_id,
                          signin_metrics::AccessPoint access_point) {
   CHECK(!account_id.empty());
 
+  // For the non-ExplicitBrowserSignin equivalent counterpart, the code takes
+  // care of in `SigninManager::UpdateUnconsentedPrimaryAccount()`.
+  if (!switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
+    return;
+  }
+
   // Do not sign in if the access point is unknown.
   if (access_point == signin_metrics::AccessPoint::kUnknown) {
     return;
@@ -52,18 +59,20 @@ void AttemptChromeSignin(CoreAccountId account_id,
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(&profile);
   if (access_point == signin_metrics::AccessPoint::kWebSignin) {
-    AccountInfo account_info =
-        identity_manager->FindExtendedAccountInfoByAccountId(account_id);
-    // If the user did not choose the signin choice, do not proceed with a
-    // sign in from a Web Signin.
-    if (SigninPrefs(*profile.GetPrefs())
-            .GetChromeSigninInterceptionUserChoice(account_info.gaia) !=
-        ChromeSigninUserChoice::kSignin) {
-      return;
-    }
+    if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
+      AccountInfo account_info =
+          identity_manager->FindExtendedAccountInfoByAccountId(account_id);
+      // If the user did not choose the signin choice, do not proceed with a
+      // sign in from a Web Signin.
+      if (SigninPrefs(*profile.GetPrefs())
+              .GetChromeSigninInterceptionUserChoice(account_info.gaia) !=
+          ChromeSigninUserChoice::kSignin) {
+        return;
+      }
 
-    // Proceed with the access point as the choice remembered.
-    access_point = signin_metrics::AccessPoint::kSigninChoiceRemembered;
+      // Proceed with the access point as the choice remembered.
+      access_point = signin_metrics::AccessPoint::kSigninChoiceRemembered;
+    }
   }
 
   // This access point should only be used as a result of a non Uno flow.

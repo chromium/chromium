@@ -30,14 +30,14 @@ class AccountProfileMapper {
     ~Observer() override = default;
 
     // Called when the list of identities in a profile has changed.
-    virtual void OnIdentityListChanged() {}
+    virtual void OnIdentitiesInProfileChanged() {}
 
     // Called when the list of identities on device has changed.
     virtual void OnIdentitiesOnDeviceChanged() {}
 
     // Called when information about an `identity` (such as the name or the
     // image) in a profile have been updated.
-    virtual void OnIdentityUpdated(id<SystemIdentity> identity) {}
+    virtual void OnIdentityInProfileUpdated(id<SystemIdentity> identity) {}
 
     // Called when information about an `identity` (such as the name or the
     // image) on the device have been updated.

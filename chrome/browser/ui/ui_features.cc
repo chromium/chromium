@@ -405,4 +405,8 @@ BASE_FEATURE(kCompositorLoadingAnimations,
              "CompositorLoadingAnimations",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kFedCmContinueWithoutName,
+             "FedCmContinueWithoutName",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features

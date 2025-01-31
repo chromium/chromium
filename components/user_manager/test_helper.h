@@ -5,10 +5,17 @@
 #ifndef COMPONENTS_USER_MANAGER_TEST_HELPER_H_
 #define COMPONENTS_USER_MANAGER_TEST_HELPER_H_
 
+#include <string_view>
+
+#include "base/memory/raw_ref.h"
+
 class AccountId;
 class PrefService;
 
 namespace user_manager {
+
+class User;
+class UserManager;
 
 // Utilities to set up UserManager related environment.
 class TestHelper {
@@ -22,9 +29,15 @@ class TestHelper {
   static void RegisterPersistedUser(PrefService& local_state,
                                     const AccountId& account_id);
 
+  explicit TestHelper(UserManager& user_manager);
+  ~TestHelper();
+
+  // Creates and adds a new Kiosk user.
+  // On failure, nullptr is returned.
+  [[nodiscard]] User* AddKioskAppUser(std::string_view user_id);
+
  private:
-  // Currently, this has only static methods.
-  TestHelper() = delete;
+  raw_ref<UserManager> user_manager_;
 };
 
 }  // namespace user_manager

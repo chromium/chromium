@@ -26,7 +26,6 @@
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/gfx/vector_icon_types.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/label.h"
@@ -138,7 +137,7 @@ void EmbeddedPermissionPromptBaseView::Show() {
 }
 
 const gfx::VectorIcon& EmbeddedPermissionPromptBaseView::GetIcon() const {
-  return gfx::VectorIcon::EmptyIcon();
+  return gfx::kNoneIcon;
 }
 
 bool EmbeddedPermissionPromptBaseView::ShowLoadingIcon() const {

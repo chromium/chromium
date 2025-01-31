@@ -48,6 +48,10 @@ constexpr EnvironmentParams kUtilityPoolEnvironmentParams{
 constexpr EnvironmentParams kBackgroundPoolEnvironmentParams{
     "Background", base::ThreadType::kBackground};
 
+// Used for ThreadGroupProfiler to tag profiles collected for different thread
+// groups.
+enum ThreadGroupType { FOREGROUND = 0, UTILITY, BACKGROUND };
+
 constexpr size_t kMaxBestEffortTasks = 2;
 
 // Indicates whether BEST_EFFORT tasks are disabled by a command line switch.
@@ -87,7 +91,8 @@ ThreadPoolImpl::ThreadPoolImpl(std::string_view histogram_label,
                 "."),
       kForegroundPoolEnvironmentParams.name_suffix,
       kForegroundPoolEnvironmentParams.thread_type_hint,
-      task_tracker_->GetTrackedRef(), tracked_ref_factory_.GetTrackedRef());
+      ThreadGroupType::FOREGROUND, task_tracker_->GetTrackedRef(),
+      tracked_ref_factory_.GetTrackedRef());
 
   if (CanUseBackgroundThreadTypeForWorkerThread()) {
     background_thread_group_ = std::make_unique<ThreadGroupImpl>(
@@ -100,7 +105,8 @@ ThreadPoolImpl::ThreadPoolImpl(std::string_view histogram_label,
         use_background_threads
             ? kBackgroundPoolEnvironmentParams.thread_type_hint
             : kForegroundPoolEnvironmentParams.thread_type_hint,
-        task_tracker_->GetTrackedRef(), tracked_ref_factory_.GetTrackedRef());
+        ThreadGroupType::BACKGROUND, task_tracker_->GetTrackedRef(),
+        tracked_ref_factory_.GetTrackedRef());
   }
 }
 
@@ -150,7 +156,8 @@ void ThreadPoolImpl::Start(const ThreadPoolInstance::InitParams& init_params,
                   "."),
         kUtilityPoolEnvironmentParams.name_suffix,
         kUtilityPoolEnvironmentParams.thread_type_hint,
-        task_tracker_->GetTrackedRef(), tracked_ref_factory_.GetTrackedRef());
+        ThreadGroupType::UTILITY, task_tracker_->GetTrackedRef(),
+        tracked_ref_factory_.GetTrackedRef());
     foreground_thread_group_
         ->HandoffNonUserBlockingTaskSourcesToOtherThreadGroup(
             utility_thread_group_.get());

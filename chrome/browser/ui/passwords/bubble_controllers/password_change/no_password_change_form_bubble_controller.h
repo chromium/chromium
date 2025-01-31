@@ -30,6 +30,9 @@ class NoPasswordChangeFormBubbleController
 
  private:
   base::WeakPtr<PasswordChangeDelegate> password_change_delegate_;
+  // Dismissal reason for this bubble.
+  password_manager::metrics_util::UIDismissalReason dismissal_reason_ =
+      password_manager::metrics_util::NO_DIRECT_INTERACTION;
 };
 
 #endif  // CHROME_BROWSER_UI_PASSWORDS_BUBBLE_CONTROLLERS_PASSWORD_CHANGE_NO_PASSWORD_CHANGE_FORM_BUBBLE_CONTROLLER_H_

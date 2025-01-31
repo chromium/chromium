@@ -428,8 +428,10 @@ class KioskUkmConsentStateObserverTest : public UkmConsentStateObserverTest {
 
 TEST_P(KioskUkmConsentStateObserverTest, VerifyDefaultConsent) {
   // Enter Kiosk session.
+  TestingPrefServiceSimple local_state;
+  user_manager::UserManager::RegisterPrefs(local_state.registry());
   user_manager::ScopedUserManager user_manager(
-      std::make_unique<user_manager::FakeUserManager>());
+      std::make_unique<user_manager::FakeUserManager>(&local_state));
   chromeos::SetUpFakeKioskSession();
 
   sync_preferences::TestingPrefServiceSyncable prefs;

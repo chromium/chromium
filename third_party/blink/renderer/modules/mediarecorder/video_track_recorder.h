@@ -433,6 +433,8 @@ class MODULES_EXPORT VideoTrackRecorderImpl : public VideoTrackRecorder {
       GUARDED_BY_CONTEXT(main_sequence_checker_);
   bool encoder_support_known_ GUARDED_BY_CONTEXT(main_sequence_checker_) =
       false;
+  size_t num_video_transformation_changes_ = 0;
+  std::optional<media::VideoTransformation> last_transformation_ = std::nullopt;
   base::WeakPtrFactory<VideoTrackRecorderImpl> weak_factory_{this};
 };
 

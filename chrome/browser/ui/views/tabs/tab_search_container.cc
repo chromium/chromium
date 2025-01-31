@@ -32,6 +32,8 @@
 
 namespace {
 
+const gfx::VectorIcon kEmptyIcon;
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class TriggerOutcome {
@@ -298,8 +300,7 @@ TabSearchContainer::CreateAutoTabGroupButton(
       base::BindRepeating(&TabSearchContainer::OnAutoTabGroupButtonDismissed,
                           base::Unretained(this)),
       l10n_util::GetStringUTF16(IDS_TAB_ORGANIZE), kAutoTabGroupButtonElementId,
-      GetFlatEdge(false, tab_search_before_chips),
-      gfx::VectorIcon::EmptyIcon());
+      GetFlatEdge(false, tab_search_before_chips), kEmptyIcon);
   button->SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_TAB_ORGANIZE));
   button->GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_ACCNAME_TAB_ORGANIZE));
@@ -322,7 +323,7 @@ TabSearchContainer::CreateTabDeclutterButton(
           ? l10n_util::GetStringUTF16(IDS_TAB_DECLUTTER)
           : l10n_util::GetStringUTF16(IDS_TAB_DECLUTTER_NO_DEDUPE),
       kTabDeclutterButtonElementId, GetFlatEdge(false, tab_search_before_chips),
-      gfx::VectorIcon::EmptyIcon());
+      kEmptyIcon);
 
   button->SetTooltipText(
       features::IsTabstripDedupeEnabled()

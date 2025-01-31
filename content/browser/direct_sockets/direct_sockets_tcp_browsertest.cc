@@ -747,7 +747,7 @@ class NoCoiPermissionIsolatedWebAppContentBrowserClient
       WebContents* web_contents,
       const url::Origin& app_origin) override {
     return {{blink::ParsedPermissionsPolicyDeclaration(
-        network::mojom::PermissionsPolicyFeature::kDirectSockets,
+        blink::mojom::PermissionsPolicyFeature::kDirectSockets,
         /*allowed_origins=*/{},
         /*self_if_matches=*/app_origin,
         /*matches_all_origins=*/false, /*matches_opaque_src=*/false)}};

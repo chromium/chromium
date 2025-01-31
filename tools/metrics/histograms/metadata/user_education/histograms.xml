@@ -33,6 +33,9 @@ chromium-metrics-reviews@google.com.
                saved state to resume.."/>
   <variant name="ComposeProactiveNudge"
       summary="For Compose feature; shown on autofill popup."/>
+  <variant name="Glic" summary="Glic toggle on settings page."/>
+  <variant name="GlicKeyboardShortcutNewBadge"
+      summary="Glic keyboard shortcut input on settings page."/>
   <variant name="LensOverlay"
       summary="Lens Overlay entry points in app and web context menus."/>
   <variant name="NewBadgeTestFeature"

@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "chromeos/ash/components/boca/babelorca/babel_orca_caption_bubble_settings.h"
 #include "components/live_caption/caption_bubble_context.h"
 #include "components/live_caption/caption_bubble_controller.h"
 #include "components/live_caption/caption_util.h"
@@ -60,15 +61,12 @@ CaptionController::CaptionController(
     std::unique_ptr<::captions::CaptionBubbleContext> caption_bubble_context,
     PrefService* profile_prefs,
     const std::string& application_locale,
+    std::unique_ptr<BabelOrcaCaptionBubbleSettings> caption_bubble_settings,
     std::unique_ptr<Delegate> delegate)
     : caption_bubble_context_(std::move(caption_bubble_context)),
       profile_prefs_(profile_prefs),
       application_locale_(application_locale),
-      // TODO(crbug.com/6176897): Add babel orca implementation for bubble
-      // settings and use it here.
-      caption_bubble_settings_(
-          std::make_unique<::captions::LiveCaptionBubbleSettings>(
-              profile_prefs_)),
+      caption_bubble_settings_(std::move(caption_bubble_settings)),
       delegate_(delegate ? std::move(delegate)
                          : std::make_unique<CaptionControllerDelgateImpl>()) {
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
@@ -111,6 +109,14 @@ void CaptionController::StopLiveCaption() {
   for (const char* const pref_name : kCaptionStylePrefsToObserve) {
     pref_change_registrar_->Remove(pref_name);
   }
+}
+
+void CaptionController::SetLiveTranslateEnabled(bool enabled) {
+  caption_bubble_settings_->SetLiveTranslateEnabled(enabled);
+}
+
+std::string CaptionController::GetLiveTranslateTargetLanguageCode() {
+  return caption_bubble_settings_->GetLiveTranslateTargetLanguageCode();
 }
 
 bool CaptionController::DispatchTranscription(

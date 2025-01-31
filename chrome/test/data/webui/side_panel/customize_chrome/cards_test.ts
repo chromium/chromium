@@ -16,7 +16,7 @@ import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
-import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {assertNotStyle, assertStyle, installMock} from './test_support.js';
 
@@ -78,6 +78,12 @@ suite('CardsTest', () => {
     assertEquals(checked, checkbox.checked);
   }
 
+  function assertCardVisibility(
+      cards: Map<string, HTMLElement>, name: string, visible: boolean) {
+    assertTrue(cards.has(name));
+    assertEquals(visible, isVisible(cards.get(name)!));
+  }
+
   [true, false].forEach(visible => {
     test(
         `creating element shows correctly for cards visibility '${visible}'`,
@@ -85,18 +91,26 @@ suite('CardsTest', () => {
           // Arrange & Act.
           await setupTest(
               [
-                {id: 'foo', name: 'foo name', description: null, enabled: true},
+                {
+                  id: 'foo',
+                  name: 'foo name',
+                  description: null,
+                  enabled: true,
+                  visible: true,
+                },
                 {
                   id: 'bar',
                   name: 'bar name',
                   description: 'bar description',
                   enabled: true,
+                  visible: true,
                 },
                 {
                   id: 'baz',
                   name: 'baz name',
                   description: null,
                   enabled: false,
+                  visible: true,
                 },
               ],
               /*modulesManaged=*/ false,
@@ -128,8 +142,15 @@ suite('CardsTest', () => {
               name: 'foo name',
               description: 'foo description',
               enabled: true,
+              visible: true,
             },
-            {id: 'bar', name: 'bar name', description: null, enabled: false},
+            {
+              id: 'bar',
+              name: 'bar name',
+              description: null,
+              enabled: false,
+              visible: true,
+            },
           ],
           /*modulesManaged=*/ false,
           /*modulesVisible=*/ visible);
@@ -152,12 +173,19 @@ suite('CardsTest', () => {
         async () => {
           await setupTest(
               [
-                {id: 'foo', name: 'foo name', description: null, enabled: true},
+                {
+                  id: 'foo',
+                  name: 'foo name',
+                  description: null,
+                  enabled: true,
+                  visible: true,
+                },
                 {
                   id: 'bar',
                   name: 'bar name',
                   description: 'bar description',
                   enabled: false,
+                  visible: true,
                 },
               ],
               /*modulesManaged=*/ false,
@@ -182,12 +210,19 @@ suite('CardsTest', () => {
         async () => {
           await setupTest(
               [
-                {id: 'foo', name: 'foo name', description: null, enabled: true},
+                {
+                  id: 'foo',
+                  name: 'foo name',
+                  description: null,
+                  enabled: true,
+                  visible: true,
+                },
                 {
                   id: 'bar',
                   name: 'bar name',
                   description: 'bar description',
                   enabled: false,
+                  visible: true,
                 },
               ],
               /*modulesManaged=*/ true,
@@ -207,12 +242,19 @@ suite('CardsTest', () => {
         async () => {
           await setupTest(
               [
-                {id: 'foo', name: 'foo name', description: null, enabled: true},
+                {
+                  id: 'foo',
+                  name: 'foo name',
+                  description: null,
+                  enabled: true,
+                  visible: true,
+                },
                 {
                   id: 'bar',
                   name: 'bar name',
                   description: 'bar description',
                   enabled: false,
+                  visible: true,
                 },
               ],
               /*modulesManaged=*/ true,
@@ -233,11 +275,49 @@ suite('CardsTest', () => {
         });
   });
 
+  test(
+      'cards visiblity depends on their associated module settings',
+      async () => {
+        // Arrange/Act.
+        await setupTest(
+            [
+              {
+                id: 'foo',
+                name: 'foo name',
+                description: null,
+                enabled: true,
+                visible: true,
+              },
+              {
+                id: 'bar',
+                name: 'bar name',
+                description: 'bar description',
+                enabled: false,
+                visible: false,
+              },
+            ],
+            /*modulesManaged=*/ false,
+            /*modulesVisible=*/ true);
+        await microtasksFinished();
+
+        // Assert.
+        const cards = getCardsMap();
+        assertCardVisibility(cards, 'foo name', true);
+        assertCardVisibility(cards, 'bar name', false);
+      });
+
+
   test(`cards can be disabled/enabled via their checkbox`, async () => {
     // Arrange & Act.
     await setupTest(
         [
-          {id: 'foo', name: 'foo name', description: null, enabled: true},
+          {
+            id: 'foo',
+            name: 'foo name',
+            description: null,
+            enabled: true,
+            visible: true,
+          },
         ],
         /*modulesManaged=*/ false,
         /*modulesVisible=*/ true);
@@ -273,7 +353,13 @@ suite('CardsTest', () => {
     // Arrange & Act.
     await setupTest(
         [
-          {id: 'foo', name: 'foo name', description: null, enabled: true},
+          {
+            id: 'foo',
+            name: 'foo name',
+            description: null,
+            enabled: true,
+            visible: true,
+          },
         ],
         /*modulesManaged=*/ false,
         /*modulesVisible=*/ true);
@@ -317,7 +403,13 @@ suite('CardsTest', () => {
 
     // Act (initialize).
     callbackRouterRemote.setModulesSettings(
-        [{id: 'foo', name: 'Foo', description: null, enabled: true}],
+        [{
+          id: 'foo',
+          name: 'Foo',
+          description: null,
+          enabled: true,
+          visible: true,
+        }],
         /*modulesManaged=*/ false,
         /*modulesVisible=*/ true);
     await callbackRouterRemote.$.flushForTesting();
@@ -327,7 +419,13 @@ suite('CardsTest', () => {
 
     // Act (update).
     callbackRouterRemote.setModulesSettings(
-        [{id: 'bar', name: 'Bar', description: null, enabled: true}],
+        [{
+          id: 'bar',
+          name: 'Bar',
+          description: null,
+          enabled: true,
+          visible: true,
+        }],
         /*modulesManaged=*/ false,
         /*modulesVisible=*/ true);
     await callbackRouterRemote.$.flushForTesting();

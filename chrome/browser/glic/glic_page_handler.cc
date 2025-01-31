@@ -145,6 +145,10 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     glic_service_->GetContextFromFocusedTab(*options, std::move(callback));
   }
 
+  void CaptureScreenshot(CaptureScreenshotCallback callback) override {
+    glic_service_->CaptureScreenshot(std::move(callback));
+  }
+
   void SetAudioDucking(bool enabled,
                        SetAudioDuckingCallback callback) override {
     content::WebContents* web_contents = page_handler_->guest_contents();

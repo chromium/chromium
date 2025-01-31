@@ -50,7 +50,7 @@ class MediaDevicesPermissionCheckerTest : public RenderViewHostImplTestHarness {
   // The header policy should only be set once on page load, so we refresh the
   // page to simulate that.
   void RefreshPageAndSetHeaderPolicy(
-      network::mojom::PermissionsPolicyFeature feature,
+      blink::mojom::PermissionsPolicyFeature feature,
       bool enabled) {
     auto navigation = NavigationSimulator::CreateBrowserInitiated(
         origin_.GetURL(), web_contents());
@@ -109,14 +109,13 @@ TEST_F(MediaDevicesPermissionCheckerTest,
   EXPECT_TRUE(CheckPermission(MediaDeviceType::kMediaVideoInput));
 
   RefreshPageAndSetHeaderPolicy(
-      network::mojom::PermissionsPolicyFeature::kMicrophone,
+      blink::mojom::PermissionsPolicyFeature::kMicrophone,
       /*enabled=*/false);
   EXPECT_FALSE(CheckPermission(MediaDeviceType::kMediaAudioInput));
   EXPECT_TRUE(CheckPermission(MediaDeviceType::kMediaVideoInput));
 
-  RefreshPageAndSetHeaderPolicy(
-      network::mojom::PermissionsPolicyFeature::kCamera,
-      /*enabled=*/false);
+  RefreshPageAndSetHeaderPolicy(blink::mojom::PermissionsPolicyFeature::kCamera,
+                                /*enabled=*/false);
   EXPECT_TRUE(CheckPermission(MediaDeviceType::kMediaAudioInput));
   EXPECT_FALSE(CheckPermission(MediaDeviceType::kMediaVideoInput));
 }

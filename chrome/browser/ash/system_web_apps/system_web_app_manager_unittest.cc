@@ -18,6 +18,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_background_task.h"
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_installation.h"
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_manager.h"
@@ -35,9 +36,14 @@
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate_map.h"
 #include "chromeos/components/kiosk/kiosk_test_utils.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/fake_user_manager.h"
+#include "components/user_manager/scoped_user_manager.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/test/test_utils.h"
@@ -1529,7 +1535,8 @@ TEST_F(SystemWebAppManagerTest, DestroyUiManager) {
   run_loop.Run();
 }
 
-class SystemWebAppManagerInKioskTest : public ChromeRenderViewHostTestHarness {
+class SystemWebAppManagerInKioskTest : public ChromeRenderViewHostTestHarness,
+                                       public Profile::Delegate {
  public:
   template <typename... TaskEnvironmentTraits>
   explicit SystemWebAppManagerInKioskTest(TaskEnvironmentTraits&&... traits)
@@ -1543,13 +1550,46 @@ class SystemWebAppManagerInKioskTest : public ChromeRenderViewHostTestHarness {
   ~SystemWebAppManagerInKioskTest() override = default;
 
   void SetUp() override {
-    ChromeRenderViewHostTestHarness::SetUp();
+    // Kiosk user session needs to be set up before profile creation done in
+    // ChromeRenderViewHostTestHarness::SetUp().
+    user_manager_.Reset(
+        std::make_unique<user_manager::FakeUserManager>(local_state_.Get()));
+    ash::ProfileHelper::Get();  // Instantiate BrowserContextHelper.
     chromeos::SetUpFakeKioskSession();
+    ChromeRenderViewHostTestHarness::SetUp();
   }
 
   void TearDown() override {
     ChromeRenderViewHostTestHarness::TearDown();
+    user_manager_.Reset();
   }
+
+  std::unique_ptr<TestingProfile> CreateTestingProfile() override {
+    auto* user = user_manager_->GetActiveUser();
+    TestingProfile::Builder builder;
+    builder.SetProfileName(user->GetAccountId().GetUserEmail());
+    builder.AddTestingFactories(GetTestingFactories());
+    builder.SetDelegate(this);
+    return builder.Build();
+  }
+
+  // Profile::Delegate:
+  void OnProfileCreationStarted(Profile* profile,
+                                Profile::CreateMode create_mode) override {
+    ash::AnnotatedAccountId::Set(
+        profile, user_manager_->GetActiveUser()->GetAccountId());
+  }
+
+  void OnProfileCreationFinished(Profile* profile,
+                                 Profile::CreateMode create_mode,
+                                 bool success,
+                                 bool is_new_profile) override {
+    // Do nothing.
+  }
+
+ private:
+  ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
+  user_manager::ScopedUserManager user_manager_;
 };
 
 // Checks that SWA manager is not created in Kiosk sessions.

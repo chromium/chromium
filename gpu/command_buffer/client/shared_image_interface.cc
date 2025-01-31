@@ -60,7 +60,7 @@ void SharedImageInterface::CreateSharedMemoryRegionFromSIInfo(
   handle.offset = 0;
   handle.stride = static_cast<int32_t>(
       gfx::RowSizeForBufferFormat(si_info.meta.size.width(), buffer_format, 0));
-  handle.region = std::move(shared_memory_region);
+  handle.set_region(std::move(shared_memory_region));
 }
 
 SharedImageInterface::SwapChainSharedImages::SwapChainSharedImages(

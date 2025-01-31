@@ -122,6 +122,7 @@ bool GpuMemoryBufferTrackerWin::Init(const gfx::Size& dimensions,
   }
 
   gfx::GpuMemoryBufferHandle gmb_handle;
+  gmb_handle.type = gfx::DXGI_SHARED_HANDLE;
   gmb_handle.dxgi_handle = CreateNV12Texture(d3d_device_.Get(), dimensions);
   gmb_handle.dxgi_token = gfx::DXGIHandleToken();
   return CreateBufferInternal(std::move(gmb_handle), std::move(dimensions));
@@ -219,7 +220,7 @@ GpuMemoryBufferTrackerWin::GetGpuMemoryBufferHandle() {
     return gfx::GpuMemoryBufferHandle();
   }
   auto handle = buffer_->CloneHandle();
-  handle.region = region_.Duplicate();
+  handle.set_region(region_.Duplicate());
   return handle;
 }
 

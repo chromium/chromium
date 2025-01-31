@@ -163,43 +163,9 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
       CheckControllerHasWidget(false));
 }
 
-// TODO(392649231): Fix and enable.
-//
-// Note that window activation - especially programmatic activation - is very
-// unreliable on Linux testbots, specifically those running the Weston
-// reference implementation of Wayland. Because of this, it might not be
-// possible to get this test to work on most Linux testbots.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_HotkeyWhenOpenDetachedInactiveActivates \
-  DISABLED_HotkeyWhenOpenDetachedInactiveActivates
-#else
-#define MAYBE_HotkeyWhenOpenDetachedInactiveActivates \
-  HotkeyWhenOpenDetachedInactiveActivates
-#endif
-IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
-                       MAYBE_HotkeyWhenOpenDetachedInactiveActivates) {
-  gfx::NativeView glic_native_view;
-
-  RunTestSequence(ObserveState(views::test::kCurrentWidgetFocus),
-                  OpenGlicWindow(GlicWindowMode::kDetached),
-                  // Note: it is possible that this will re-activate the browser
-                  // window on some platforms, which will cause an error. If
-                  // this flakes, feel free to disable the test.
-                  //
-                  // (This is likely one reason the test flakes on Linux; see
-                  // above.)
-                  Do([this, &glic_native_view] {
-                    auto* const widget = window_controller().GetGlicWidget();
-                    glic_native_view = widget->GetNativeView();
-                    widget->Deactivate();
-                  }),
-                  SimulateGlicHotkey(),
-                  WaitForState(views::test::kCurrentWidgetFocus,
-                               std::ref(glic_native_view)),
-                  CheckControllerHasWidget(true),
-                  CheckResult([this] { return window_controller().IsActive(); },
-                              true, "Glic is active"));
-}
+// TODO(388102775): When Mac app focus issues are resolved, add a test to verify
+// that invoking the hotkey while open detached always closes glic regardless of
+// activation.
 
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, ApiDetach) {
   RunTestSequence(

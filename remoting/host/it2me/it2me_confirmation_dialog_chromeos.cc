@@ -68,7 +68,7 @@ class It2MeConfirmationDialogChromeOS : public It2MeConfirmationDialog {
   const gfx::VectorIcon& GetIcon() const {
     switch (style_) {
       case DialogStyle::kConsumer:
-        return gfx::VectorIcon::EmptyIcon();
+        return gfx::kNoneIcon;
       case DialogStyle::kEnterprise:
         return chromeos::kEnterpriseIcon;
     }

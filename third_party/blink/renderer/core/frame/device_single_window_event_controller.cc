@@ -70,10 +70,10 @@ void DeviceSingleWindowEventController::DidRemoveAllEventListeners(
 }
 
 bool DeviceSingleWindowEventController::CheckPolicyFeatures(
-    const Vector<network::mojom::PermissionsPolicyFeature>& features) const {
+    const Vector<mojom::blink::PermissionsPolicyFeature>& features) const {
   LocalDOMWindow& window = GetWindow();
   return std::ranges::all_of(
-      features, [&window](network::mojom::PermissionsPolicyFeature feature) {
+      features, [&window](mojom::blink::PermissionsPolicyFeature feature) {
         return window.IsFeatureEnabled(feature,
                                        ReportOptions::kReportOnFailure);
       });

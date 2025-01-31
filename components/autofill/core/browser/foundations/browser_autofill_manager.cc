@@ -1232,6 +1232,8 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase1(
     std::vector<Suggestion> autofill_ai_suggestions) {
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
+  const AutofillPlusAddressDelegate* plus_address_delegate =
+      client().GetPlusAddressDelegate();
   // Note that this function cannot exit early in case GetCachedFormAndField()
   // yields nullptrs for form_structure and autofill_field. This happens in case
   // autofill_count() returns 0 (i.e. the number of autofillable fields is 0).
@@ -1248,10 +1250,10 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase1(
       IsPlusAddressesManuallyTriggered(trigger_source) ||
       (!context.should_show_mixed_content_warning &&
        context.is_autofill_available &&
-       !context.do_not_generate_autofill_suggestions &&
-       context.filling_product == FillingProduct::kAddress && autofill_field &&
-       client().GetPlusAddressDelegate() &&
-       client().GetPlusAddressDelegate()->IsPlusAddressFillingEnabled(
+       !context.do_not_generate_autofill_suggestions && autofill_field &&
+       plus_address_delegate &&
+       plus_address_delegate->IsFieldEligibleForPlusAddress(*autofill_field) &&
+       plus_address_delegate->IsPlusAddressFillingEnabled(
            client().GetLastCommittedPrimaryMainFrameOrigin()));
 
   auto generate_suggestions_and_maybe_show_ui_phase2 = base::BindOnce(
@@ -1430,7 +1432,9 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
   // Whether or not to show plus address suggestions.
   const bool should_offer_plus_addresses =
       context.field_is_relevant_for_plus_addresses && autofill_field &&
-      autofill_field->Type().group() == FieldTypeGroup::kEmail;
+      (autofill_field->Type().group() == FieldTypeGroup::kEmail ||
+       autofill_field->Type().GetStorableType() == FieldType::USERNAME ||
+       autofill_field->Type().GetStorableType() == FieldType::SINGLE_USERNAME);
 
   const size_t barrier_calls =
       static_cast<size_t>(should_offer_single_field_form_fill) +

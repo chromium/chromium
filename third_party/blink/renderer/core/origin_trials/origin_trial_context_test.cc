@@ -417,7 +417,7 @@ TEST_F(OriginTrialContextTest, PermissionsPolicy) {
   // Make a mock feature name map with "frobulate".
   FeatureNameMap feature_map;
   feature_map.Set("frobulate",
-                  network::mojom::PermissionsPolicyFeature::kFrobulate);
+                  mojom::blink::PermissionsPolicyFeature::kFrobulate);
 
   // Attempt to parse the "frobulate" permissions policy. This will only work if
   // the permissions policy is successfully enabled via the origin trial.
@@ -430,7 +430,7 @@ TEST_F(OriginTrialContextTest, PermissionsPolicy) {
       "frobulate=*", security_origin, nullptr, logger, feature_map, window);
   EXPECT_TRUE(logger.GetMessages().empty());
   ASSERT_EQ(1u, result.size());
-  EXPECT_EQ(network::mojom::PermissionsPolicyFeature::kFrobulate,
+  EXPECT_EQ(mojom::blink::PermissionsPolicyFeature::kFrobulate,
             result[0].feature);
 }
 

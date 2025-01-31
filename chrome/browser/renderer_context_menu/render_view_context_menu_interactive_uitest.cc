@@ -616,50 +616,6 @@ IN_PROC_BROWSER_TEST_F(
   RunTest(test_case);
 }
 
-IN_PROC_BROWSER_TEST_F(ContextMenuFencedFrameTest,
-                       OpenLinkInNewTabAfterNetworkCutoff) {
-  // Set up page with fenced frame
-  ASSERT_TRUE(embedded_https_test_server().Start());
-  GURL fenced_frame_url(embedded_https_test_server().GetURL(
-      "a.test", "/fenced_frames/title1.html"));
-  GURL new_tab_url(
-      embedded_https_test_server().GetURL("a.test", "/empty.html"));
-  content::RenderFrameHost* fenced_frame_rfh =
-      CreateFencedFrame(fenced_frame_url);
-  content::WaitForHitTestData(fenced_frame_rfh);
-
-  // This simulates the conditions when right clicking on a link.
-  content::ContextMenuParams params;
-  params.is_editable = false;
-  params.media_type = blink::mojom::ContextMenuDataMediaType::kNone;
-  params.page_url = fenced_frame_url;
-  params.link_url = new_tab_url;
-
-  ui_test_utils::TabAddedWaiter tab_add(browser());
-
-  // Open the contextual menu and click "Open Link in New Tab".
-  TestRenderViewContextMenu menu(*fenced_frame_rfh, params);
-  menu.Init();
-
-  // Disable network while the context menu is still open.
-  ASSERT_TRUE(ExecJs(fenced_frame_rfh, R"(
-    (async () => {
-      await window.fence.disableUntrustedNetwork();
-    })();
-  )"));
-
-  // Select "open in new tab"
-  menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKNEWTAB, 0);
-
-  // Make sure the navigation did not take place.
-  tab_add.Wait();
-  int index_of_new_tab = browser()->tab_strip_model()->count() - 1;
-  content::WebContents* new_web_contents =
-      browser()->tab_strip_model()->GetWebContentsAt(index_of_new_tab);
-  EXPECT_TRUE(WaitForLoadStop(new_web_contents));
-  EXPECT_EQ(new_web_contents->GetLastCommittedURL(), "");
-}
-
 IN_PROC_BROWSER_TEST_F(
     ContextMenuFencedFrameTest,
     OpenImageInNewTabDisabledInFencedFrameAfterNetworkCutoff) {

@@ -584,13 +584,13 @@ DedicatedWorkerHost::CreateNetworkFactoryForSubresources(
           worker_client_security_state_->Clone(), std::move(coep_reporter),
           std::move(dip_reporter), worker_process_host_,
           ancestor_render_frame_host->IsFeatureEnabled(
-              network::mojom::PermissionsPolicyFeature::
+              blink::mojom::PermissionsPolicyFeature::
                   kPrivateStateTokenIssuance)
               ? network::mojom::TrustTokenOperationPolicyVerdict::
                     kPotentiallyPermit
               : network::mojom::TrustTokenOperationPolicyVerdict::kForbid,
           ancestor_render_frame_host->IsFeatureEnabled(
-              network::mojom::PermissionsPolicyFeature::kTrustTokenRedemption)
+              blink::mojom::PermissionsPolicyFeature::kTrustTokenRedemption)
               ? network::mojom::TrustTokenOperationPolicyVerdict::
                     kPotentiallyPermit
               : network::mojom::TrustTokenOperationPolicyVerdict::kForbid,
@@ -912,7 +912,7 @@ void DedicatedWorkerHost::BindPressureService(
   }
 
   if (!ancestor_render_frame_host->IsFeatureEnabled(
-          network::mojom::PermissionsPolicyFeature::kComputePressure)) {
+          blink::mojom::PermissionsPolicyFeature::kComputePressure)) {
     ancestor_render_frame_host->AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kWarning,
         "This frame is connected to a Dedicated Worker that has requested "

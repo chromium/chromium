@@ -1858,8 +1858,8 @@ void D3DImageBackingFactoryTest::RunCreateFromSharedMemoryMultiplanarTest(
 
   gfx::GpuMemoryBufferHandle shm_gmb_handle;
   shm_gmb_handle.type = gfx::SHARED_MEMORY_BUFFER;
-  shm_gmb_handle.region = shm_region.Duplicate();
-  DCHECK(shm_gmb_handle.region.IsValid());
+  shm_gmb_handle.set_region(shm_region.Duplicate());
+  DCHECK(shm_gmb_handle.region().IsValid());
   shm_gmb_handle.stride = size.width();
 
   // CompoundImageBacking wrapping D3DImageBacking is required for shared

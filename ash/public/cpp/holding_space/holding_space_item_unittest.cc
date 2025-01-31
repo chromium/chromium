@@ -21,7 +21,6 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/gfx/vector_icon_types.h"
 
 namespace ash {
 
@@ -147,8 +146,7 @@ TEST_P(HoldingSpaceItemTest, InProgressCommands) {
   // It should be possible to update commands to a new value.
   std::vector<HoldingSpaceItem::InProgressCommand> in_progress_commands;
   in_progress_commands.push_back(HoldingSpaceItem::InProgressCommand(
-      HoldingSpaceCommandId::kCancelItem, /*label_id=*/-1,
-      &gfx::VectorIcon::EmptyIcon(),
+      HoldingSpaceCommandId::kCancelItem, /*label_id=*/-1, &gfx::kNoneIcon,
       /*handler=*/base::DoNothing()));
   EXPECT_TRUE(holding_space_item->SetInProgressCommands(in_progress_commands));
   EXPECT_EQ(holding_space_item->in_progress_commands(), in_progress_commands);

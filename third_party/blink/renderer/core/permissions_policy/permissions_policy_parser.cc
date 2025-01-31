@@ -50,10 +50,10 @@ class ParsedFeaturePolicies final
   explicit ParsedFeaturePolicies(ExecutionContext& context)
       : Supplement<ExecutionContext>(context),
         policies_(static_cast<size_t>(
-                      network::mojom::PermissionsPolicyFeature::kMaxValue) +
+                      mojom::blink::PermissionsPolicyFeature::kMaxValue) +
                   1) {}
 
-  bool Observed(network::mojom::PermissionsPolicyFeature feature) {
+  bool Observed(mojom::blink::PermissionsPolicyFeature feature) {
     wtf_size_t feature_index = static_cast<wtf_size_t>(feature);
     if (policies_[feature_index]) {
       return true;
@@ -73,11 +73,11 @@ const char ParsedFeaturePolicies::kSupplementName[] = "ParsedFeaturePolicies";
 class FeatureObserver {
  public:
   // Returns whether the feature has been observed before or not.
-  bool FeatureObserved(network::mojom::PermissionsPolicyFeature feature);
+  bool FeatureObserved(mojom::blink::PermissionsPolicyFeature feature);
 
  private:
   std::bitset<static_cast<size_t>(
-                  network::mojom::PermissionsPolicyFeature::kMaxValue) +
+                  mojom::blink::PermissionsPolicyFeature::kMaxValue) +
               1>
       features_specified_;
 };
@@ -127,7 +127,7 @@ class ParsingContext {
     ParsedAllowlist() : allowed_origins({}) {}
   };
 
-  std::optional<network::mojom::PermissionsPolicyFeature> ParseFeatureName(
+  std::optional<mojom::blink::PermissionsPolicyFeature> ParseFeatureName(
       const String& feature_name);
 
   // Parse allowlist for feature.
@@ -135,9 +135,8 @@ class ParsingContext {
       const Vector<String>& origin_strings,
       const OriginWithPossibleWildcards::NodeType type);
 
-  void ReportFeatureUsage(network::mojom::PermissionsPolicyFeature feature);
-  void ReportFeatureUsageLegacy(
-      network::mojom::PermissionsPolicyFeature feature);
+  void ReportFeatureUsage(mojom::blink::PermissionsPolicyFeature feature);
+  void ReportFeatureUsageLegacy(mojom::blink::PermissionsPolicyFeature feature);
 
   // This function should be called after Allowlist Histograms related flags
   // have been captured.
@@ -156,7 +155,7 @@ class ParsingContext {
 };
 
 bool FeatureObserver::FeatureObserved(
-    network::mojom::PermissionsPolicyFeature feature) {
+    mojom::blink::PermissionsPolicyFeature feature) {
   if (features_specified_[static_cast<size_t>(feature)]) {
     return true;
   } else {
@@ -168,14 +167,14 @@ bool FeatureObserver::FeatureObserved(
 // TODO: Remove this function once we verified the new histogram counts
 // are consistent with old ones.
 void ParsingContext::ReportFeatureUsageLegacy(
-    network::mojom::PermissionsPolicyFeature feature) {
+    mojom::blink::PermissionsPolicyFeature feature) {
   if (!src_origin_) {
     UMA_HISTOGRAM_ENUMERATION("Blink.UseCounter.FeaturePolicy.Header", feature);
   }
 }
 
 void ParsingContext::ReportFeatureUsage(
-    network::mojom::PermissionsPolicyFeature feature) {
+    mojom::blink::PermissionsPolicyFeature feature) {
   if (!execution_context_ || !execution_context_->IsWindow()) {
     return;
   }
@@ -189,7 +188,7 @@ void ParsingContext::ReportFeatureUsage(
   local_dom_window->CountPermissionsPolicyUsage(feature, usage_type);
 }
 
-std::optional<network::mojom::PermissionsPolicyFeature>
+std::optional<mojom::blink::PermissionsPolicyFeature>
 ParsingContext::ParseFeatureName(const String& feature_name) {
   DCHECK(!feature_name.empty());
   if (!feature_names_.Contains(feature_name)) {
@@ -201,10 +200,10 @@ ParsingContext::ParseFeatureName(const String& feature_name) {
                  feature_name + "'.");
     return std::nullopt;
   }
-  network::mojom::PermissionsPolicyFeature feature =
+  mojom::blink::PermissionsPolicyFeature feature =
       feature_names_.at(feature_name);
 
-  if (feature == network::mojom::PermissionsPolicyFeature::kUnload) {
+  if (feature == mojom::blink::PermissionsPolicyFeature::kUnload) {
     UseCounter::Count(execution_context_, WebFeature::kPermissionsPolicyUnload);
   }
   return feature;
@@ -336,7 +335,7 @@ ParsingContext::ParsedAllowlist ParsingContext::ParseAllowlist(
 std::optional<ParsedPermissionsPolicyDeclaration> ParsingContext::ParseFeature(
     const PermissionsPolicyParser::Declaration& declaration_node,
     const OriginWithPossibleWildcards::NodeType type) {
-  std::optional<network::mojom::PermissionsPolicyFeature> feature =
+  std::optional<mojom::blink::PermissionsPolicyFeature> feature =
       ParseFeatureName(declaration_node.feature_name);
   if (!feature) {
     return std::nullopt;
@@ -646,13 +645,13 @@ ParsedPermissionsPolicy PermissionsPolicyParser::ParsePermissionsPolicyForTest(
       .ParsePermissionsPolicy(policy);
 }
 
-bool IsFeatureDeclared(network::mojom::PermissionsPolicyFeature feature,
+bool IsFeatureDeclared(mojom::blink::PermissionsPolicyFeature feature,
                        const ParsedPermissionsPolicy& policy) {
   return base::Contains(policy, feature,
                         &ParsedPermissionsPolicyDeclaration::feature);
 }
 
-bool RemoveFeatureIfPresent(network::mojom::PermissionsPolicyFeature feature,
+bool RemoveFeatureIfPresent(mojom::blink::PermissionsPolicyFeature feature,
                             ParsedPermissionsPolicy& policy) {
   auto new_end = std::remove_if(policy.begin(), policy.end(),
                                 [feature](const auto& declaration) {
@@ -665,9 +664,8 @@ bool RemoveFeatureIfPresent(network::mojom::PermissionsPolicyFeature feature,
   return true;
 }
 
-bool DisallowFeatureIfNotPresent(
-    network::mojom::PermissionsPolicyFeature feature,
-    ParsedPermissionsPolicy& policy) {
+bool DisallowFeatureIfNotPresent(mojom::blink::PermissionsPolicyFeature feature,
+                                 ParsedPermissionsPolicy& policy) {
   if (IsFeatureDeclared(feature, policy)) {
     return false;
   }
@@ -677,7 +675,7 @@ bool DisallowFeatureIfNotPresent(
 }
 
 bool AllowFeatureEverywhereIfNotPresent(
-    network::mojom::PermissionsPolicyFeature feature,
+    mojom::blink::PermissionsPolicyFeature feature,
     ParsedPermissionsPolicy& policy) {
   if (IsFeatureDeclared(feature, policy)) {
     return false;
@@ -689,18 +687,18 @@ bool AllowFeatureEverywhereIfNotPresent(
   return true;
 }
 
-void DisallowFeature(network::mojom::PermissionsPolicyFeature feature,
+void DisallowFeature(mojom::blink::PermissionsPolicyFeature feature,
                      ParsedPermissionsPolicy& policy) {
   RemoveFeatureIfPresent(feature, policy);
   DisallowFeatureIfNotPresent(feature, policy);
 }
 
 bool IsFeatureForMeasurementOnly(
-    network::mojom::PermissionsPolicyFeature feature) {
-  return feature == network::mojom::PermissionsPolicyFeature::kWebShare;
+    mojom::blink::PermissionsPolicyFeature feature) {
+  return feature == mojom::blink::PermissionsPolicyFeature::kWebShare;
 }
 
-void AllowFeatureEverywhere(network::mojom::PermissionsPolicyFeature feature,
+void AllowFeatureEverywhere(mojom::blink::PermissionsPolicyFeature feature,
                             ParsedPermissionsPolicy& policy) {
   RemoveFeatureIfPresent(feature, policy);
   AllowFeatureEverywhereIfNotPresent(feature, policy);
@@ -719,7 +717,7 @@ const Vector<String> GetAvailableFeatures(ExecutionContext* execution_context) {
   return available_features;
 }
 
-const String GetNameForFeature(network::mojom::PermissionsPolicyFeature feature,
+const String GetNameForFeature(mojom::blink::PermissionsPolicyFeature feature,
                                bool is_isolated_context) {
   for (const auto& entry : GetDefaultFeatureNameMap(is_isolated_context)) {
     if (entry.value == feature) {

@@ -164,6 +164,8 @@ export declare interface GlicBrowserHost {
    *
    * The promise will be failed if the user rejects the capture or another
    * problem happens.
+   *
+   * @throws {CaptureScreenshotError} on failure.
    */
   captureScreenshot?(): Promise<Screenshot>;
 
@@ -561,8 +563,23 @@ export enum GetTabContextErrorReason {
   REQUEST_THROTTLED = 'REQUEST_THROTTLED',
 }
 
+// Reason why capturing desktop screenshot failed.
+export enum CaptureScreenshotErrorReason {
+  // Screen capture or frame encoding failure.
+  SCREEN_CAPTURE_FAILED_FOR_UNKNOWN_REASON = 0,
+  // Screen capture requested but already in progress of serving another
+  // request.
+  SCREEN_CAPTURE_REQUEST_THROTTLED = 1,
+  // User declined screen capture dialog before taking a screenshot.
+  USER_CANCELLED_SCREEN_PICKER_DIALOG = 2,
+}
+
 /** Error type used for tab context extraction errors. */
 export type GetTabContextError = ErrorWithReason<GetTabContextErrorReason>;
+
+/** Error type used for screenshot capture errors. */
+export type CaptureScreenshotError =
+    ErrorWithReason<CaptureScreenshotErrorReason>;
 
 /**
  * A rectangular area based in the glic window's coordinate system. All

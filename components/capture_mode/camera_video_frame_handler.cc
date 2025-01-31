@@ -272,7 +272,7 @@ class GpuMemoryBufferHandleHolder : public BufferHandleHolder,
   }
 
   base::UnsafeSharedMemoryRegion TakeGpuMemoryBufferHandleRegion() {
-    return std::move(gpu_memory_buffer_handle_.region);
+    return std::move(gpu_memory_buffer_handle_.region());
   }
 
  private:

@@ -14,7 +14,7 @@ namespace blink {
 
 std::optional<PermissionsPolicyBlockLocator> TracePermissionsPolicyBlockSource(
     Frame* frame,
-    network::mojom::PermissionsPolicyFeature feature) {
+    mojom::PermissionsPolicyFeature feature) {
   const PermissionsPolicy* current_policy =
       frame->GetSecurityContext()->GetPermissionsPolicy();
   DCHECK(current_policy);

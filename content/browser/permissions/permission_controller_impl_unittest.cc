@@ -561,10 +561,10 @@ class PermissionControllerImplWithDelegateTest
   content::RenderFrameHost* AddChildRFH(
       content::RenderFrameHost* parent,
       const GURL& origin,
-      network::mojom::PermissionsPolicyFeature feature =
-          network::mojom::PermissionsPolicyFeature::kNotFound) {
+      blink::mojom::PermissionsPolicyFeature feature =
+          blink::mojom::PermissionsPolicyFeature::kNotFound) {
     blink::ParsedPermissionsPolicy frame_policy = {};
-    if (feature != network::mojom::PermissionsPolicyFeature::kNotFound) {
+    if (feature != blink::mojom::PermissionsPolicyFeature::kNotFound) {
       frame_policy.emplace_back(
           feature,
           std::vector{*blink::OriginWithPossibleWildcards::FromOrigin(
@@ -625,7 +625,7 @@ TEST_F(PermissionControllerImplWithDelegateTest, PermissionPolicyTest) {
 
   content::RenderFrameHost* child_with_policy =
       AddChildRFH(parent, GURL(kOrigin2),
-                  network::mojom::PermissionsPolicyFeature::kGeolocation);
+                  blink::mojom::PermissionsPolicyFeature::kGeolocation);
   ASSERT_TRUE(child_with_policy);
 
   // The top-level frame has no permission, hence a cross-origin iframe has no

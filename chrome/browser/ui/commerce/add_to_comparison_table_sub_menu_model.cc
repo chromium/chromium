@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
+#include "chrome/browser/ui/commerce/ui_utils.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
@@ -45,16 +46,9 @@ AddToComparisonTableSubMenuModel::AddToComparisonTableSubMenuModel(
       browser_->GetActiveTabInterface()->GetContents()->GetLastCommittedURL();
 
   for (const auto& set : sets) {
-    bool contains_current_url = false;
-    for (const auto& url_info : set.url_infos()) {
-      if (url_info.url == current_url) {
-        contains_current_url = true;
-        break;
-      }
-    }
-
     const int command_id = GetAndIncrementNextMenuId();
-    command_id_to_table_info_[command_id] = {set.uuid(), contains_current_url};
+    command_id_to_table_info_[command_id] = {set.uuid(),
+                                             set.ContainsUrl(current_url)};
     AddItem(command_id, base::UTF8ToUTF16(set.name()));
   }
 }
@@ -123,21 +117,7 @@ void AddToComparisonTableSubMenuModel::AddUrlToSet(const UrlInfo& url_info,
     product_specs_service_->SetUrls(set_uuid, std::move(existing_url_infos));
   }
 
-  ShowConfirmationToast(base::UTF8ToUTF16(set->name()));
-}
-
-void AddToComparisonTableSubMenuModel::ShowConfirmationToast(
-    std::u16string set_name) {
-  if (base::FeatureList::IsEnabled(kCompareConfirmationToast)) {
-    ToastController* const toast_controller =
-        browser_->GetFeatures().toast_controller();
-    if (toast_controller) {
-      ToastParams params = ToastParams(ToastId::kAddedToComparisonTable);
-
-      params.body_string_replacement_params = {set_name};
-      toast_controller->MaybeShowToast(ToastParams(std::move(params)));
-    }
-  }
+  ShowProductSpecsConfirmationToast(base::UTF8ToUTF16(set->name()), browser_);
 }
 
 }  // namespace commerce

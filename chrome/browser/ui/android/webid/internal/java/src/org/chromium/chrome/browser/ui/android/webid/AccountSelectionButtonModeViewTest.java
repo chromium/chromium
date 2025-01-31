@@ -106,7 +106,7 @@ public class AccountSelectionButtonModeViewTest extends AccountSelectionJUnitTes
             mModel.set(
                     ItemProperties.HEADER,
                     new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
-                            .with(HeaderProperties.TYPE, HeaderType.REQUEST_PERMISSION)
+                            .with(HeaderProperties.TYPE, HeaderType.REQUEST_PERMISSION_MODAL)
                             .with(HeaderProperties.RP_FOR_DISPLAY, "example.org")
                             .with(HeaderProperties.IDP_FOR_DISPLAY, "idp.org")
                             .with(HeaderProperties.RP_CONTEXT, rpContext.mValue)
@@ -136,6 +136,7 @@ public class AccountSelectionButtonModeViewTest extends AccountSelectionJUnitTes
                             .with(HeaderProperties.RP_CONTEXT, rpContext.mValue)
                             .with(HeaderProperties.RP_MODE, RpMode.ACTIVE)
                             .with(HeaderProperties.IS_MULTIPLE_ACCOUNT_CHOOSER, true)
+                            .with(HeaderProperties.IS_MULTIPLE_IDPS, false)
                             .build());
             assertEquals(View.VISIBLE, mContentView.getVisibility());
             TextView subtitle = mContentView.findViewById(R.id.header_subtitle);
@@ -224,7 +225,7 @@ public class AccountSelectionButtonModeViewTest extends AccountSelectionJUnitTes
         mModel.set(
                 ItemProperties.HEADER,
                 new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
-                        .with(HeaderProperties.TYPE, HeaderType.REQUEST_PERMISSION)
+                        .with(HeaderProperties.TYPE, HeaderType.REQUEST_PERMISSION_MODAL)
                         .with(HeaderProperties.RP_FOR_DISPLAY, "example.org")
                         .with(HeaderProperties.IDP_FOR_DISPLAY, "idp.org")
                         .with(HeaderProperties.RP_CONTEXT, RpContext.SIGN_IN)
@@ -287,7 +288,7 @@ public class AccountSelectionButtonModeViewTest extends AccountSelectionJUnitTes
         mModel.set(
                 ItemProperties.HEADER,
                 new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
-                        .with(HeaderProperties.TYPE, HeaderType.REQUEST_PERMISSION)
+                        .with(HeaderProperties.TYPE, HeaderType.REQUEST_PERMISSION_MODAL)
                         .with(HeaderProperties.RP_FOR_DISPLAY, "example.org")
                         .with(HeaderProperties.IDP_FOR_DISPLAY, "idp.org")
                         .with(HeaderProperties.RP_CONTEXT, RpContext.SIGN_IN)
@@ -312,7 +313,7 @@ public class AccountSelectionButtonModeViewTest extends AccountSelectionJUnitTes
         mModel.set(
                 ItemProperties.HEADER,
                 new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
-                        .with(HeaderProperties.TYPE, HeaderType.REQUEST_PERMISSION)
+                        .with(HeaderProperties.TYPE, HeaderType.REQUEST_PERMISSION_MODAL)
                         .with(HeaderProperties.RP_FOR_DISPLAY, "example.org")
                         .with(HeaderProperties.IDP_FOR_DISPLAY, "idp.org")
                         .with(HeaderProperties.RP_CONTEXT, RpContext.SIGN_IN)
@@ -337,7 +338,7 @@ public class AccountSelectionButtonModeViewTest extends AccountSelectionJUnitTes
         mModel.set(
                 ItemProperties.HEADER,
                 new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
-                        .with(HeaderProperties.TYPE, HeaderType.REQUEST_PERMISSION)
+                        .with(HeaderProperties.TYPE, HeaderType.REQUEST_PERMISSION_MODAL)
                         .with(HeaderProperties.RP_FOR_DISPLAY, "example.org")
                         .with(HeaderProperties.IDP_FOR_DISPLAY, "idp.org")
                         .with(HeaderProperties.RP_CONTEXT, RpContext.SIGN_IN)

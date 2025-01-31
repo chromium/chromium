@@ -10,7 +10,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/gfx/vector_icon_types.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
@@ -67,7 +66,7 @@ TEST_P(ScalableIphPixelTest, NotificationNoBodyText) {
           u"NotificationTitle", /*message=*/u"", u"NotificationSourceName",
           GURL(), message_center::NotifierId(),
           message_center::RichNotificationData(),
-          /*delegate=*/nullptr, gfx::VectorIcon::EmptyIcon(),
+          /*delegate=*/nullptr, gfx::kNoneIcon,
           message_center::SystemNotificationWarningLevel::NORMAL);
 
   message_center::MessageCenter* message_center =

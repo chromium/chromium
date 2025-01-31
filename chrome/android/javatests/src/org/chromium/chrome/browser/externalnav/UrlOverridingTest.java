@@ -62,7 +62,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -556,8 +555,12 @@ public class UrlOverridingTest {
                 // Some tests have a long delay before starting the load.
                 loadCallback.waitForCallback(loadCount, 1, 20, TimeUnit.SECONDS);
             } catch (TimeoutException ex) {
-                // Non-subframe clicks shouldn't be flaky.
-                if (!params.willLoadSubframe) throw ex;
+                // Non-subframe clicks shouldn't be flaky. Tablets also appear to be flaky.
+                if (!params.willLoadSubframe
+                        && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(
+                                mActivityTestRule.getActivity())) {
+                    throw ex;
+                }
                 // Subframe clicks are flaky so re-try them if nothing started loading.
                 doClick(params.clickTargetId, tab);
             }
@@ -1100,7 +1103,6 @@ public class UrlOverridingTest {
 
     @Test
     @LargeTest
-    @DisabledTest(message = "b/361599939")
     public void testIntentURIWithMixedCaseFileSchemeDoesNothing() throws Exception {
         mActivityTestRule.startMainActivityOnBlankPage();
         String targetUrl =
@@ -1129,7 +1131,6 @@ public class UrlOverridingTest {
 
     @Test
     @LargeTest
-    @DisabledTest(message = "b/361599939")
     public void testIntentURIWithEmptySchemeDoesNothing() throws Exception {
         mActivityTestRule.startMainActivityOnBlankPage();
         String targetUrl =

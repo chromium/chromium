@@ -19,6 +19,8 @@ class TabStripNudgeButtonTest : public ChromeViewsTestBase {
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
 
+    const gfx::VectorIcon kEmptyIcon;
+
     tab_strip_controller_ = std::make_unique<FakeBaseTabStripController>();
     button_ = std::make_unique<TabStripNudgeButton>(
         tab_strip_controller_.get(),
@@ -27,8 +29,7 @@ class TabStripNudgeButtonTest : public ChromeViewsTestBase {
         base::BindRepeating(&TabStripNudgeButtonTest::MockButtonCallback,
                             base::Unretained(this)),
         l10n_util::GetStringUTF16(IDS_TAB_ORGANIZE),
-        kAutoTabGroupButtonElementId, Edge::kRight,
-        gfx::VectorIcon::EmptyIcon());
+        kAutoTabGroupButtonElementId, Edge::kRight, kEmptyIcon);
   }
 
   void MockButtonCallback() { button_callback_count_++; }

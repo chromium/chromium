@@ -210,6 +210,7 @@ class ThreadGroupImpl::WorkerDelegate : public WorkerThread::Delegate,
 ThreadGroupImpl::ThreadGroupImpl(std::string_view histogram_label,
                                  std::string_view thread_group_label,
                                  ThreadType thread_type_hint,
+                                 int64_t thread_group_type,
                                  TrackedRef<TaskTracker> task_tracker,
                                  TrackedRef<Delegate> delegate)
     : ThreadGroup(histogram_label,
@@ -217,6 +218,7 @@ ThreadGroupImpl::ThreadGroupImpl(std::string_view histogram_label,
                   thread_type_hint,
                   std::move(task_tracker),
                   std::move(delegate)),
+      thread_group_type_(thread_group_type),
       tracked_ref_factory_(this) {
   DCHECK(!thread_group_label_.empty());
 }
@@ -239,7 +241,7 @@ void ThreadGroupImpl::Start(
   // start but before worker threads are created.
   if (ThreadGroupProfiler::IsProfilingEnabled()) {
     thread_group_profiler_.emplace(service_thread_task_runner,
-                                   thread_group_label_);
+                                   thread_group_type_);
   }
 
   ScopedCommandsExecutor executor(this);

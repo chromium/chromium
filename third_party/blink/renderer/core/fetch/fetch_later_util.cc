@@ -32,9 +32,8 @@ constexpr uint32_t kMaxContainersWithMinimalQuota =
     kQuotaReservedForDeferredFetchMinimal / kMinimalReservedDeferredFetchQuota;
 
 // A convenient helper to tell if `feature` is enabled for `frame`.
-bool IsFeatureEnabledForFrame(
-    const Frame* frame,
-    network::mojom::PermissionsPolicyFeature feature) {
+bool IsFeatureEnabledForFrame(const Frame* frame,
+                              mojom::blink::PermissionsPolicyFeature feature) {
   CHECK(frame);
   CHECK(frame->DomWindow());
   CHECK(frame->DomWindow()->IsLocalDOMWindow());
@@ -106,13 +105,13 @@ uint32_t FetchLaterUtil::GetReservedDeferredFetchQuota(const Frame* frame) {
   // 4. Let deferredFetchAllowed be true if controlDocument is allowed to use
   // the policy-controlled feature "deferred-fetch"; otherwise false.
   bool is_deferred_fetch_allowed = IsFeatureEnabledForFrame(
-      frame, network::mojom::PermissionsPolicyFeature::kDeferredFetch);
+      frame, mojom::blink::PermissionsPolicyFeature::kDeferredFetch);
 
   // 5. Let deferredFetchMinimalAllowed be true if controlDocument is allowed to
   // use the policy-controlled feature "deferred-fetch-minimal"; otherwise
   // false.
   bool is_deferred_fetch_minimal_allowed = IsFeatureEnabledForFrame(
-      frame, network::mojom::PermissionsPolicyFeature::kDeferredFetchMinimal);
+      frame, mojom::blink::PermissionsPolicyFeature::kDeferredFetchMinimal);
 
   // 6. Let quota be the result of the first matching statement:
 
@@ -221,8 +220,8 @@ FetchLaterUtil::GetContainerDeferredFetchPolicyOnNavigation(
   // 3. If the "inherited policy" for "deferred-fetch", container and
   // originToNavigateTo is Enabled, and the available deferred-fetch quota for
   // controlDocument is equal or greater than normal quota:
-  auto deferred_fetch_it = feature_list.find(
-      network::mojom::PermissionsPolicyFeature::kDeferredFetch);
+  auto deferred_fetch_it =
+      feature_list.find(mojom::blink::PermissionsPolicyFeature::kDeferredFetch);
   CHECK(deferred_fetch_it != feature_list.end());
   if (PermissionsPolicy::InheritedValueForFeature(
           to_url_origin, parent_permissions_policy, *deferred_fetch_it,
@@ -241,7 +240,7 @@ FetchLaterUtil::GetContainerDeferredFetchPolicyOnNavigation(
   // 4-2. The "inherited policy" for "deferred-fetch-minimal", container and
   // originToNavigateTo is Enabled.
   auto deferred_fetch_minimal_it = feature_list.find(
-      network::mojom::PermissionsPolicyFeature::kDeferredFetchMinimal);
+      mojom::blink::PermissionsPolicyFeature::kDeferredFetchMinimal);
   CHECK(deferred_fetch_minimal_it != feature_list.end());
   if (!PermissionsPolicy::InheritedValueForFeature(
           to_url_origin, parent_permissions_policy, *deferred_fetch_minimal_it,

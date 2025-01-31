@@ -84,7 +84,7 @@ using OperationAndResult = SharedStorageWriteOperationAndResult;
           : std::vector<blink::OriginWithPossibleWildcards>();
   return blink::ParsedPermissionsPolicy(
       {blink::ParsedPermissionsPolicyDeclaration(
-          network::mojom::PermissionsPolicyFeature::kSharedStorage,
+          blink::mojom::PermissionsPolicyFeature::kSharedStorage,
           std::move(allowed_origins),
           /*self_if_matches=*/std::nullopt,
           /*matches_all_origins=*/shared_storage_enabled_for_all,

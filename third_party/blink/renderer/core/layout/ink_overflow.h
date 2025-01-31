@@ -163,6 +163,8 @@ class CORE_EXPORT InkOverflow {
       const LogicalRect& ink_overflow);
 
   // Expands the given overflow to account for shadows.
+  static void ExpandForShadowOverflow(PhysicalRect& ink_overflow,
+                                      const ShadowList& text_shadow);
   static void ExpandForShadowOverflow(LogicalRect& ink_overflow,
                                       const ShadowList& text_shadow,
                                       const WritingMode writing_mode);

@@ -213,7 +213,7 @@ void CdmStorageManager::OnFileReceiverDisconnect(
     base::PassKey<CdmFileImpl> pass_key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto count = cdm_files_.erase(CdmFileIdTwo(name, cdm_type, storage_key));
+  auto count = cdm_files_.erase(CdmFileId(name, cdm_type, storage_key));
   DCHECK_GT(count, 0u);
 }
 
@@ -231,7 +231,7 @@ void CdmStorageManager::DidOpenFile(const blink::StorageKey& storage_key,
   }
 
   // Check whether this CDM file is in-use.
-  CdmFileIdTwo id(file_name, cdm_type, storage_key);
+  CdmFileId id(file_name, cdm_type, storage_key);
   if (base::Contains(cdm_files_, id)) {
     std::move(callback).Run(Status::kInUse, mojo::NullAssociatedRemote());
     return;

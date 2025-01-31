@@ -28,6 +28,7 @@ source_set("popup_menu") {
     "//components/reading_list/core",
     "//components/segmentation_platform/embedder/default_model",
     "//components/segmentation_platform/public",
+    "//components/send_tab_to_self",
     "//components/translate/core/browser",
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/app/strings",

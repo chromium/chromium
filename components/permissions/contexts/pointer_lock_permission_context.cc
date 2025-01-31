@@ -12,10 +12,10 @@ namespace permissions {
 
 PointerLockPermissionContext::PointerLockPermissionContext(
     content::BrowserContext* browser_context)
-    : PermissionContextBase(
-          browser_context,
-          ContentSettingsType::POINTER_LOCK,
-          network::mojom::PermissionsPolicyFeature::kNotFound) {}
+    : PermissionContextBase(browser_context,
+                            ContentSettingsType::POINTER_LOCK,
+                            blink::mojom::PermissionsPolicyFeature::kNotFound) {
+}
 
 void PointerLockPermissionContext::NotifyPermissionSet(
     const PermissionRequestID& id,

@@ -233,6 +233,9 @@ class AccountSelectionMediator {
     // All of the user's accounts.
     private List<Account> mAccounts;
 
+    // Whether the current state of the dialog involves multiple IDPs.
+    private boolean mIsMultipleIdps;
+
     // The account that the user has selected.
     private Account mSelectedAccount;
 
@@ -367,7 +370,7 @@ class AccountSelectionMediator {
                                                     ? LoadingDialogResult.SWIPE
                                                     : null;
                                     mDisclosureDialogState =
-                                            mHeaderType == HeaderType.REQUEST_PERMISSION
+                                            mHeaderType == HeaderType.REQUEST_PERMISSION_MODAL
                                                     ? DisclosureDialogResult.SWIPE
                                                     : null;
                                 } else if (reason
@@ -399,7 +402,7 @@ class AccountSelectionMediator {
                                                     ? LoadingDialogResult.TAP_SCRIM
                                                     : null;
                                     mDisclosureDialogState =
-                                            mHeaderType == HeaderType.REQUEST_PERMISSION
+                                            mHeaderType == HeaderType.REQUEST_PERMISSION_MODAL
                                                     ? DisclosureDialogResult.TAP_SCRIM
                                                     : null;
                                 }
@@ -469,14 +472,14 @@ class AccountSelectionMediator {
                                 && ((mSelectedAccount != null
                                                 && mAccounts.size() != 1
                                                 && mHeaderType != HeaderType.VERIFY)
-                                        || mHeaderType == HeaderType.REQUEST_PERMISSION)
+                                        || mHeaderType == HeaderType.REQUEST_PERMISSION_MODAL)
                         ? this::handleBackPress
                         : null);
     }
 
     private void handleBackPress() {
         mSelectedAccount = null;
-        if (mHeaderType == HeaderType.REQUEST_PERMISSION) {
+        if (mHeaderType == HeaderType.REQUEST_PERMISSION_MODAL) {
             mDisclosureDialogState = DisclosureDialogResult.BACK_PRESS;
             maybeRecordDisclosureDialogResult();
         }
@@ -487,7 +490,8 @@ class AccountSelectionMediator {
             HeaderType headerType,
             String rpForDisplay,
             String idpForDisplay,
-            @RpContext.EnumType int rpContext) {
+            @RpContext.EnumType int rpContext,
+            Boolean isMultipleIdps) {
         Runnable closeOnClickRunnable =
                 () -> {
                     onDismissed(IdentityRequestDialogDismissReason.CLOSE_BUTTON);
@@ -514,13 +518,14 @@ class AccountSelectionMediator {
                         HeaderProperties.IS_MULTIPLE_ACCOUNT_CHOOSER,
                         mSelectedAccount == null && mAccounts != null && mAccounts.size() > 1)
                 .with(HeaderProperties.SET_FOCUS_VIEW_CALLBACK, this::setFocusView)
+                .with(HeaderProperties.IS_MULTIPLE_IDPS, isMultipleIdps)
                 .build();
     }
 
     private int getSheetType() {
         switch (mHeaderType) {
             case SIGN_IN:
-            case REQUEST_PERMISSION:
+            case REQUEST_PERMISSION_MODAL:
                 return SheetType.ACCOUNT_SELECTION;
             case VERIFY:
                 return SheetType.VERIFYING;
@@ -544,7 +549,7 @@ class AccountSelectionMediator {
         // In the request permission dialog, account is shown as an account chip instead of in the
         // accounts list. In the active mode verifying dialog, we do not show accounts.
         if (mRpMode == RpMode.ACTIVE
-                && (mHeaderType == HeaderType.REQUEST_PERMISSION
+                && (mHeaderType == HeaderType.REQUEST_PERMISSION_MODAL
                         || mHeaderType == HeaderType.VERIFY
                         || mHeaderType == HeaderType.VERIFY_AUTO_REAUTHN)) {
             return;
@@ -666,7 +671,7 @@ class AccountSelectionMediator {
         // mDisclosureDialogState is set on dismissal e.g. tap scrim, back press or if the user
         // presses continue. If it hasn't been set but onDismissed is called while the disclosure
         // dialog is being shown, it means the user has closed the tab or navigated away.
-        if (mDisclosureDialogState == null && mHeaderType == HeaderType.REQUEST_PERMISSION) {
+        if (mDisclosureDialogState == null && mHeaderType == HeaderType.REQUEST_PERMISSION_MODAL) {
             mDisclosureDialogState = DisclosureDialogResult.DESTROY;
         }
 
@@ -686,8 +691,9 @@ class AccountSelectionMediator {
     }
 
     boolean showVerifySheet(Account account) {
-        if (mHeaderType == HeaderType.SIGN_IN || mHeaderType == HeaderType.REQUEST_PERMISSION) {
-            if (mHeaderType == HeaderType.REQUEST_PERMISSION) {
+        if (mHeaderType == HeaderType.SIGN_IN
+                || mHeaderType == HeaderType.REQUEST_PERMISSION_MODAL) {
+            if (mHeaderType == HeaderType.REQUEST_PERMISSION_MODAL) {
                 mDisclosureDialogState = DisclosureDialogResult.CONTINUE;
                 maybeRecordDisclosureDialogResult();
             }
@@ -704,8 +710,8 @@ class AccountSelectionMediator {
         return true;
     }
 
-    boolean showRequestPermissionSheet(Account account) {
-        mHeaderType = HeaderType.REQUEST_PERMISSION;
+    boolean showRequestPermissionModalSheet(Account account) {
+        mHeaderType = HeaderType.REQUEST_PERMISSION_MODAL;
         if (!updateSheet(Arrays.asList(account), /* areAccountsClickable= */ false)) {
             return false;
         }
@@ -735,6 +741,7 @@ class AccountSelectionMediator {
         mRpForDisplay = rpForDisplay;
         mIdpForDisplay = idpForDisplay;
         mAccounts = accounts;
+        mIsMultipleIdps = idpDataList.size() > 1;
         mIdpMetadata = idpData.getIdpMetadata();
         mClientMetadata = idpData.getClientMetadata();
         mIsAutoReauthn = isAutoReauthn;
@@ -758,7 +765,9 @@ class AccountSelectionMediator {
             return true;
         }
 
-        fetchBrandIcon(mIdpMetadata.getBrandIconUrl(), bitmap -> updateIdpBrandIcon(bitmap));
+        if (!mIsMultipleIdps) {
+            fetchBrandIcon(mIdpMetadata.getBrandIconUrl(), bitmap -> updateIdpBrandIcon(bitmap));
+        }
         // RP brand icon is fetched here, but not shown until the request permission dialog.
         if (mRpMode == RpMode.ACTIVE) {
             fetchBrandIcon(mClientMetadata.getBrandIconUrl(), bitmap -> updateRpBrandIcon(bitmap));
@@ -781,6 +790,7 @@ class AccountSelectionMediator {
         mIdpForDisplay = idpForDisplay;
         mIdpMetadata = idpMetadata;
         mRpContext = rpContext;
+        mIsMultipleIdps = false;
         mHeaderType = HeaderProperties.HeaderType.SIGN_IN_TO_IDP_STATIC;
         if (!updateSheet(/* accounts= */ null, /* areAccountsClickable= */ false)) {
             return false;
@@ -801,6 +811,7 @@ class AccountSelectionMediator {
         mIdpMetadata = idpMetadata;
         mRpContext = rpContext;
         mError = error;
+        mIsMultipleIdps = false;
         mHeaderType = HeaderProperties.HeaderType.SIGN_IN_ERROR;
         setComponentShowTime(SystemClock.elapsedRealtime());
 
@@ -868,6 +879,7 @@ class AccountSelectionMediator {
         mRpForDisplay = rpForDisplay;
         mIdpForDisplay = idpForDisplay;
         mRpContext = rpContext;
+        mIsMultipleIdps = false;
         mHeaderType = HeaderProperties.HeaderType.LOADING;
         if (!updateSheet(/* accounts= */ null, /* areAccountsClickable= */ false)) {
             return false;
@@ -947,7 +959,7 @@ class AccountSelectionMediator {
             boolean shouldShowRequestPermissionDialog =
                     !newlySignedInAccount.isSignIn() && mDisclosureFields.length > 0;
             if (shouldShowRequestPermissionDialog) {
-                return showRequestPermissionSheet(mSelectedAccount);
+                return showRequestPermissionModalSheet(mSelectedAccount);
             }
 
             // Else:
@@ -1038,7 +1050,7 @@ class AccountSelectionMediator {
             continueButtonCallback = this::onClickGotItButton;
         }
 
-        if (mHeaderType == HeaderType.REQUEST_PERMISSION) {
+        if (mHeaderType == HeaderType.REQUEST_PERMISSION_MODAL) {
             assert mSelectedAccount != null;
             isDataSharingConsentVisible = true;
             continueButtonCallback = this::onClickAccountSelected;
@@ -1092,7 +1104,7 @@ class AccountSelectionMediator {
                         : null);
         mModel.set(
                 ItemProperties.ACCOUNT_CHIP,
-                mHeaderType == HeaderType.REQUEST_PERMISSION
+                mHeaderType == HeaderType.REQUEST_PERMISSION_MODAL
                         ? createAccountItem(mSelectedAccount, /* isAccountClickable= */ false)
                         : null);
         mModel.set(
@@ -1114,7 +1126,8 @@ class AccountSelectionMediator {
 
     private void updateHeader() {
         PropertyModel headerModel =
-                createHeaderItem(mHeaderType, mRpForDisplay, mIdpForDisplay, mRpContext);
+                createHeaderItem(
+                        mHeaderType, mRpForDisplay, mIdpForDisplay, mRpContext, mIsMultipleIdps);
         mModel.set(ItemProperties.HEADER, headerModel);
     }
 
@@ -1230,6 +1243,12 @@ class AccountSelectionMediator {
         // FedCM.
         Account oldSelectedAccount = mSelectedAccount;
         mSelectedAccount = selectedAccount;
+        // If we were in multi IDP mode, we had not fetched the IDP brand icon yet. Fetch it now.
+        // TODO(crbug.com/390790111): fetch the correct IDP, not the first one.
+        if (mIsMultipleIdps) {
+            fetchBrandIcon(mIdpMetadata.getBrandIconUrl(), bitmap -> updateIdpBrandIcon(bitmap));
+        }
+        mIsMultipleIdps = false;
 
         // If the account is a returning user or if the account is selected from UI which shows the
         // disclosure text or if the browser doesn't need to request permission because the IDP
@@ -1237,7 +1256,7 @@ class AccountSelectionMediator {
         // verifying sheet.
         if ((mRpMode == RpMode.PASSIVE && oldSelectedAccount != null)
                 || selectedAccount.isSignIn()
-                || mHeaderType == HeaderType.REQUEST_PERMISSION
+                || mHeaderType == HeaderType.REQUEST_PERMISSION_MODAL
                 || mDisclosureFields.length == 0) {
             mDelegate.onAccountSelected(mIdpMetadata.getConfigUrl(), selectedAccount);
             showVerifySheet(selectedAccount);
@@ -1245,9 +1264,9 @@ class AccountSelectionMediator {
         }
 
         // At this point, the account is a non-returning user. If RP mode is button,
-        // we'd request permission through the request permission dialog.
+        // we'd request permission through the request permission modal dialog.
         if (mRpMode == RpMode.ACTIVE) {
-            showRequestPermissionSheet(selectedAccount);
+            showRequestPermissionModalSheet(selectedAccount);
             return;
         }
 

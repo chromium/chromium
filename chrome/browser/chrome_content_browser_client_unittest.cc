@@ -142,6 +142,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "chromeos/components/kiosk/kiosk_test_utils.h"
+#include "chromeos/components/kiosk/kiosk_utils.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -356,13 +357,28 @@ TEST_F(ChromeContentBrowserClientWindowTest, AutomaticBeaconCredentials) {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
-TEST_F(ChromeContentBrowserClientWindowTest,
-       BackForwardCacheIsDisallowedForCacheControlNoStorePageWhenInKioskMode) {
-  // Enter Kiosk session.
-  user_manager::ScopedUserManager user_manager(
-      std::make_unique<user_manager::FakeUserManager>());
-  chromeos::SetUpFakeKioskSession();
 
+class ChromeContentBrowserClientWindowKioskTest
+    : public ChromeContentBrowserClientWindowTest {
+ public:
+  void SetUp() override {
+    ChromeContentBrowserClientWindowTest::SetUp();
+    ASSERT_TRUE(chromeos::IsKioskSession());
+  }
+
+  std::optional<std::string> GetDefaultProfileName() override {
+    return "test@kiosk-apps.device-local.localhost";
+  }
+
+  void LogIn(std::string_view email, const GaiaId& gaia_id) override {
+    chromeos::SetUpFakeKioskSession(email);
+    ash_test_helper()->test_session_controller_client()->AddUserSession(
+        std::string(email));
+  }
+};
+
+TEST_F(ChromeContentBrowserClientWindowKioskTest,
+       BackForwardCacheIsDisallowedForCacheControlNoStorePageWhenInKioskMode) {
   ChromeContentBrowserClient client;
   ASSERT_FALSE(client.ShouldAllowBackForwardCacheForCacheControlNoStorePage(
       browser()->profile()));

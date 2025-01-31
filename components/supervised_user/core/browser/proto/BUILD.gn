@@ -10,5 +10,6 @@ proto_library("proto") {
     "kidsmanagement_messages.proto",
     "parent_access_callback.proto",
     "permissions_common.proto",
+    "transaction_data.proto",
   ]
 }

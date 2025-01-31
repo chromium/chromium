@@ -92,7 +92,7 @@ bool IsRequestDenied(LocalDOMWindow* window, ExceptionState& exception_state) {
 // Bluetooth API methods.
 bool IsFeatureEnabled(LocalDOMWindow* window) {
   return window->IsFeatureEnabled(
-      network::mojom::PermissionsPolicyFeature::kBluetooth,
+      mojom::blink::PermissionsPolicyFeature::kBluetooth,
       ReportOptions::kReportOnFailure);
 }
 

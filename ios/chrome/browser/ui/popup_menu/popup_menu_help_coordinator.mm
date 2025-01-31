@@ -12,6 +12,7 @@
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
+#import "components/send_tab_to_self/features.h"
 #import "components/sync/service/sync_service.h"
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_constants.h"
@@ -278,10 +279,6 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
 #pragma mark - Popup Menu Button Bubble/IPH methods
 
 - (BubbleViewControllerPresenter*)newPopupMenuBubblePresenter {
-  NSString* text =
-      l10n_util::GetNSString(IDS_IOS_VIEW_BROWSING_HISTORY_OVERFLOW_MENU_TIP);
-
-  // Prepare the dismissal callback.
   __weak __typeof(self) weakSelf = self;
   CallbackWithIPHDismissalReasonType dismissalCallback =
       ^(IPHDismissalReasonType IPHDismissalReasonType,
@@ -290,21 +287,21 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
                                           SnoozeAction:snoozeAction];
       };
 
-  // Create the BubbleViewControllerPresenter.
-  BubbleArrowDirection arrowDirection =
-      IsSplitToolbarMode(self.baseViewController) ? BubbleArrowDirectionDown
-                                                  : BubbleArrowDirectionUp;
-  BubbleViewControllerPresenter* bubbleViewControllerPresenter =
-      [[BubbleViewControllerPresenter alloc]
-          initDefaultBubbleWithText:text
-                     arrowDirection:arrowDirection
-                          alignment:BubbleAlignmentBottomOrTrailing
-                  dismissalCallback:dismissalCallback];
+  NSString* text =
+      l10n_util::GetNSString(IDS_IOS_VIEW_BROWSING_HISTORY_OVERFLOW_MENU_TIP);
+
   std::u16string menuButtonA11yLabel = base::SysNSStringToUTF16(
       l10n_util::GetNSString(IDS_IOS_TOOLBAR_SETTINGS));
-  bubbleViewControllerPresenter.voiceOverAnnouncement = l10n_util::GetNSStringF(
+
+  NSString* voiceOverAnnouncement = l10n_util::GetNSStringF(
       IDS_IOS_VIEW_BROWSING_HISTORY_FROM_MENU_ANNOUNCEMENT,
       menuButtonA11yLabel);
+
+  BubbleViewControllerPresenter* bubbleViewControllerPresenter =
+      [self createPopupMenuBubblePresenterWithText:text
+                             voiceOverAnnouncement:voiceOverAnnouncement
+                                 dismissalCallback:dismissalCallback];
+
   return bubbleViewControllerPresenter;
 }
 
@@ -317,8 +314,17 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
       IPHDismissalReasonType == IPHDismissalReasonType::kTimedOut) {
     self.inSessionWithHistoryMenuItemIPH = YES;
   }
-  [self trackerIPHDidDismissWithSnoozeAction:snoozeAction];
+
+  feature_engagement::Tracker* tracker = self.featureEngagementTracker;
+
+  if (tracker) {
+    const base::Feature& feature =
+        feature_engagement::kIPHiOSHistoryOnOverflowMenuFeature;
+    tracker->DismissedWithSnooze(feature, snoozeAction);
+  }
+
   [self.UIUpdater updateUIForIPHDismissed];
+
   self.popupMenuBubblePresenter = nil;
 }
 
@@ -360,41 +366,17 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
 }
 
 - (void)showPopupMenuBubbleIfNecessary {
-  // Skip if a presentation is already in progress
-  if (self.popupMenuBubblePresenter) {
+  if (!iph_for_new_chrome_user::IsUserNewSafariSwitcher(
+          _deviceSwitcherResultDispatcher)) {
     return;
   }
 
   BubbleViewControllerPresenter* bubblePresenter =
       [self newPopupMenuBubblePresenter];
 
-  // Get the anchor point for the bubble. In Split Toolbar Mode, the anchor
-  // button is at the bottom of the screen, so the bubble should be above it.
-  // When there's only one toolbar, the anchor button is at the top of the
-  // screen, so the bubble should be below it.
-  CGRect anchorFrame = self.layoutGuide.layoutFrame;
-  CGFloat anchorPointY = IsSplitToolbarMode(self.baseViewController)
-                             ? CGRectGetMinY(anchorFrame)
-                             : CGRectGetMaxY(anchorFrame);
-  CGPoint anchorPoint = CGPointMake(CGRectGetMidX(anchorFrame), anchorPointY);
-
-  // Discard if it doesn't fit in the view as it is currently shown.
-  if (![bubblePresenter canPresentInView:self.baseViewController.view
-                             anchorPoint:anchorPoint]) {
-    return;
-  }
-
-  // Early return if the engagement tracker won't display the IPH.
-  if (![self canShowIPHForPopupMenu]) {
-    return;
-  }
-
-  // Present the bubble after the delay.
-  self.popupMenuBubblePresenter = bubblePresenter;
-  [self.popupMenuBubblePresenter presentInViewController:self.baseViewController
-                                             anchorPoint:anchorPoint
-                                         anchorViewFrame:anchorFrame];
-  [self.UIUpdater updateUIForOverflowMenuIPHDisplayed];
+  [self displayPopupMenuIPHBubble:bubblePresenter
+                       forFeature:feature_engagement::
+                                      kIPHiOSHistoryOnOverflowMenuFeature];
 }
 
 - (void)updateBlueDotVisibility {
@@ -420,6 +402,72 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
   if (IsBlueDotOnToolsMenuButtoneEnabled()) {
     [self.UIUpdater setOverflowMenuBlueDot:self.hasBlueDot];
   }
+}
+
+- (void)displayPopupMenuTabRemindersIPH {
+  CHECK(
+      send_tab_to_self::IsSendTabIOSPushNotificationsEnabledWithTabReminders());
+
+  BubbleViewControllerPresenter* bubblePresenter =
+      [self newReminderNotificationsOverflowMenuBubblePresenter];
+
+  [self
+      displayPopupMenuIPHBubble:bubblePresenter
+                     forFeature:
+                         feature_engagement::
+                             kIPHiOSReminderNotificationsOverflowMenuBubbleFeature];
+}
+
+// Creates and returns a `BubbleViewControllerPresenter` for the reminder
+// notifications IPH in the overflow menu.
+- (BubbleViewControllerPresenter*)
+    newReminderNotificationsOverflowMenuBubblePresenter {
+  CHECK(
+      send_tab_to_self::IsSendTabIOSPushNotificationsEnabledWithTabReminders());
+
+  NSString* text = l10n_util::GetNSString(
+      IDS_IOS_REMINDER_NOTIFICATIONS_TOOLS_MENU_BUBBLE_IPH);
+
+  __weak __typeof(self) weakSelf = self;
+  CallbackWithIPHDismissalReasonType dismissalCallback =
+      ^(IPHDismissalReasonType IPHDismissalReasonType,
+        feature_engagement::Tracker::SnoozeAction /* snoozeAction */) {
+        [weakSelf reminderNotificationsOverflowMenuIPHDidDismissWithReasonType:
+                      IPHDismissalReasonType];
+      };
+
+  BubbleViewControllerPresenter* bubbleViewControllerPresenter =
+      [self createPopupMenuBubblePresenterWithText:text
+                             voiceOverAnnouncement:nil
+                                 dismissalCallback:dismissalCallback];
+
+  bubbleViewControllerPresenter.customBubbleVisibilityDuration =
+      kDefaultLongDurationBubbleVisibility;
+
+  return bubbleViewControllerPresenter;
+}
+
+// Handles the dismissal of the reminder notifications IPH in the overflow menu.
+// `IPHDismissalReasonType`: The reason why the IPH was dismissed.
+- (void)reminderNotificationsOverflowMenuIPHDidDismissWithReasonType:
+    (IPHDismissalReasonType)IPHDismissalReasonType {
+  CHECK(
+      send_tab_to_self::IsSendTabIOSPushNotificationsEnabledWithTabReminders());
+
+  // TODO(crbug.com/389912241): Handle `IPHDismissalReasonType` in this
+  // dismissal logic and ensure subsequent events are logged to the FET.
+
+  feature_engagement::Tracker* tracker = self.featureEngagementTracker;
+
+  if (tracker) {
+    const base::Feature& feature = feature_engagement::
+        kIPHiOSReminderNotificationsOverflowMenuBubbleFeature;
+    tracker->Dismissed(feature);
+  }
+
+  [self.UIUpdater updateUIForIPHDismissed];
+
+  self.popupMenuBubblePresenter = nil;
 }
 
 #pragma mark - Overflow Menu Bubble methods
@@ -522,30 +570,6 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
 
 #pragma mark - Feature Engagement Tracker queries
 
-// Queries the feature engagement tracker to see if IPH can currently be
-// displayed. Once this is returning YES, the IPH MUST be shown and dismissed.
-- (BOOL)canShowIPHForPopupMenu {
-  if (!iph_for_new_chrome_user::IsUserNewSafariSwitcher(
-          _deviceSwitcherResultDispatcher)) {
-    return NO;
-  }
-  feature_engagement::Tracker* tracker = self.featureEngagementTracker;
-  const base::Feature& feature =
-      feature_engagement::kIPHiOSHistoryOnOverflowMenuFeature;
-  return tracker && tracker->ShouldTriggerHelpUI(feature);
-}
-
-// Alerts the feature engagement tracker that a shown IPH was dismissed.
-- (void)trackerIPHDidDismissWithSnoozeAction:
-    (feature_engagement::Tracker::SnoozeAction)snoozeAction {
-  feature_engagement::Tracker* tracker = self.featureEngagementTracker;
-  if (tracker) {
-    const base::Feature& feature =
-        feature_engagement::kIPHiOSHistoryOnOverflowMenuFeature;
-    tracker->DismissedWithSnooze(feature, snoozeAction);
-  }
-}
-
 // Queries the feature engagement tracker to see if the Overflow Menu
 // Customization IPH can be displayed. If this returns YES, the IPH MUST be
 // shown and dismissed.
@@ -554,6 +578,75 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
   const base::Feature& feature =
       feature_engagement::kIPHiOSOverflowMenuCustomizationFeature;
   return tracker && tracker->ShouldTriggerHelpUI(feature);
+}
+
+#pragma mark - Bubble Presenter Helpers
+
+// Helper function to create a `BubbleViewControllerPresenter` specifically
+// for the popup menu button (also known as the tools menu button).
+// `text`: The text to display in the bubble.
+// `voiceOverAnnouncement`: The announcement for VoiceOver to read. Can be
+// `nil`.
+// `dismissalCallback`: A callback invoked when the bubble is dismissed.
+- (BubbleViewControllerPresenter*)
+    createPopupMenuBubblePresenterWithText:(NSString*)text
+                     voiceOverAnnouncement:(NSString*)voiceOverAnnouncement
+                         dismissalCallback:(CallbackWithIPHDismissalReasonType)
+                                               dismissalCallback {
+  BubbleArrowDirection arrowDirection =
+      IsSplitToolbarMode(self.baseViewController) ? BubbleArrowDirectionDown
+                                                  : BubbleArrowDirectionUp;
+
+  BubbleViewControllerPresenter* bubbleViewControllerPresenter =
+      [[BubbleViewControllerPresenter alloc]
+          initDefaultBubbleWithText:text
+                     arrowDirection:arrowDirection
+                          alignment:BubbleAlignmentBottomOrTrailing
+                  dismissalCallback:dismissalCallback];
+
+  bubbleViewControllerPresenter.voiceOverAnnouncement = voiceOverAnnouncement;
+
+  return bubbleViewControllerPresenter;
+}
+
+// Displays an IPH bubble anchored to the popup menu button (tools menu button).
+// `bubblePresenter`: The presenter configured for the bubble.
+// `feature`: The feature engagement feature associated with this IPH.
+- (void)displayPopupMenuIPHBubble:
+            (BubbleViewControllerPresenter*)bubblePresenter
+                       forFeature:(const base::Feature&)feature {
+  // Skip if a presentation is already in progress.
+  if (self.popupMenuBubblePresenter) {
+    return;
+  }
+
+  // Get the anchor point for the bubble. In Split Toolbar Mode, the anchor
+  // button is at the bottom of the screen, so the bubble should be above it.
+  // When there's only one toolbar, the anchor button is at the top of the
+  // screen, so the bubble should be below it.
+  CGRect anchorFrame = self.layoutGuide.layoutFrame;
+  CGFloat anchorPointY = IsSplitToolbarMode(self.baseViewController)
+                             ? CGRectGetMinY(anchorFrame)
+                             : CGRectGetMaxY(anchorFrame);
+  CGPoint anchorPoint = CGPointMake(CGRectGetMidX(anchorFrame), anchorPointY);
+
+  // Discard if it doesn't fit in the view as it is currently shown.
+  if (![bubblePresenter canPresentInView:self.baseViewController.view
+                             anchorPoint:anchorPoint]) {
+    return;
+  }
+
+  // Early return if the Feature Engagement Tracker won't display the IPH.
+  feature_engagement::Tracker* tracker = self.featureEngagementTracker;
+  if (!tracker || !tracker->ShouldTriggerHelpUI(feature)) {
+    return;
+  }
+
+  self.popupMenuBubblePresenter = bubblePresenter;
+  [self.popupMenuBubblePresenter presentInViewController:self.baseViewController
+                                             anchorPoint:anchorPoint
+                                         anchorViewFrame:anchorFrame];
+  [self.UIUpdater updateUIForOverflowMenuIPHDisplayed];
 }
 
 @end

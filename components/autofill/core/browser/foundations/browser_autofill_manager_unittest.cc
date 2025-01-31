@@ -7464,6 +7464,11 @@ class BrowserAutofillManagerPlusAddressTest
 // Ensure that plus address options aren't queried for non-email fields.
 TEST_F(BrowserAutofillManagerPlusAddressTest, NoPlusAddressesWithNameFields) {
   const std::vector<std::string> plus_addresses = {kPlusAddress};
+  EXPECT_CALL(plus_address_delegate(), IsFieldEligibleForPlusAddress)
+      .WillRepeatedly([&](const AutofillField& f) {
+        return autofill::GetFillingProductFromFieldTypeGroup(
+                   f.Type().group()) == FillingProduct::kAddress;
+      });
   EXPECT_CALL(plus_address_delegate(), GetAffiliatedPlusAddresses)
       .WillOnce(RunOnceCallback<1>(plus_addresses));
   EXPECT_CALL(plus_address_delegate(), GetSuggestionsFromPlusAddresses(
@@ -7500,6 +7505,8 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
 
   // Plus address suggestions request.
   const std::vector<std::string> plus_addresses = {kPlusAddress};
+  EXPECT_CALL(plus_address_delegate(), IsFieldEligibleForPlusAddress)
+      .WillRepeatedly(Return(true));
   EXPECT_CALL(plus_address_delegate(), GetAffiliatedPlusAddresses)
       .WillOnce(RunOnceCallback<1>(plus_addresses));
   EXPECT_CALL(plus_address_delegate(), GetSuggestionsFromPlusAddresses(
@@ -7546,6 +7553,8 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
   personal_data().test_address_data_manager().ClearProfiles();
 
   // Plus address suggestions request.
+  EXPECT_CALL(plus_address_delegate(), IsFieldEligibleForPlusAddress)
+      .WillRepeatedly(Return(true));
   EXPECT_CALL(plus_address_delegate(), GetAffiliatedPlusAddresses)
       .WillOnce(RunOnceCallback<1>(std::vector<std::string>{}));
   EXPECT_CALL(plus_address_delegate(), GetSuggestionsFromPlusAddresses)
@@ -7682,6 +7691,8 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
 
   // Plus address suggestions request.
   const std::vector<std::string> plus_addresses = {kPlusAddress};
+  EXPECT_CALL(plus_address_delegate(), IsFieldEligibleForPlusAddress)
+      .WillRepeatedly(Return(true));
   EXPECT_CALL(plus_address_delegate(), GetAffiliatedPlusAddresses)
       .WillOnce(RunOnceCallback<1>(plus_addresses));
   EXPECT_CALL(plus_address_delegate(), GetSuggestionsFromPlusAddresses(
@@ -7735,6 +7746,8 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
   using enum AutofillPlusAddressDelegate::SuggestionContext;
   using enum PasswordFormClassification::Type;
   personal_data().test_address_data_manager().ClearProfiles();
+  EXPECT_CALL(plus_address_delegate(), IsFieldEligibleForPlusAddress)
+      .WillRepeatedly(Return(true));
   EXPECT_CALL(plus_address_delegate(), GetAffiliatedPlusAddresses)
       .WillOnce(RunOnceCallback<1>(std::vector<std::string>{}));
   EXPECT_CALL(plus_address_delegate(), GetSuggestionsFromPlusAddresses)
@@ -7894,6 +7907,8 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
                                            plus_addresses, _, _, _, _, _, _, _))
       .Times(0);
   // No single field form fill suggestions requests.
+  EXPECT_CALL(plus_address_delegate(), IsFieldEligibleForPlusAddress)
+      .WillRepeatedly(Return(true));
   EXPECT_CALL(single_field_fill_router(), OnGetSingleFieldSuggestions).Times(0);
   EXPECT_CALL(plus_address_delegate(), OnPlusAddressSuggestionShown).Times(0);
 
@@ -7945,6 +7960,8 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
   // Plus address suggestions request.
   const std::string kDummyPlusAddress = "plus+plus@plus.plus";
   const std::vector<std::string> plus_addresses = {kDummyPlusAddress};
+  EXPECT_CALL(plus_address_delegate(), IsFieldEligibleForPlusAddress)
+      .WillRepeatedly(Return(true));
   EXPECT_CALL(plus_address_delegate(), GetAffiliatedPlusAddresses)
       .WillOnce(RunOnceCallback<1>(plus_addresses));
   ON_CALL(plus_address_delegate(), IsPlusAddress)
@@ -8017,6 +8034,8 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
   // Plus address suggestions request.
   const std::string kDummyPlusAddress = "plus+plus@plus.plus";
   const std::vector<std::string> plus_addresses = {kDummyPlusAddress};
+  EXPECT_CALL(plus_address_delegate(), IsFieldEligibleForPlusAddress)
+      .WillRepeatedly(Return(true));
   EXPECT_CALL(plus_address_delegate(), GetAffiliatedPlusAddresses)
       .WillOnce(RunOnceCallback<1>(plus_addresses));
   ON_CALL(plus_address_delegate(), IsPlusAddress)

@@ -1072,7 +1072,7 @@ TEST(StableVideoDecoderTypesMojomTraitsTest,
   gfx::GpuMemoryBufferHandle gmb_handle;
   gmb_handle.id = gfx::GpuMemoryBufferId(10);
   gmb_handle.type = gfx::SHARED_MEMORY_BUFFER;
-  gmb_handle.region = base::UnsafeSharedMemoryRegion::Create(100);
+  gmb_handle.set_region(base::UnsafeSharedMemoryRegion::Create(100));
   gmb_handle.offset = 2;
   gmb_handle.stride = 10;
 

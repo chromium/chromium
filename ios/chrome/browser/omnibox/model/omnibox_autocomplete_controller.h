@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 class AutocompleteResult;
+class OmniboxController;
 @class OmniboxPopupController;
 
 /// Controller for the omnibox autocomplete system. Handles interactions with
@@ -18,11 +19,19 @@ class AutocompleteResult;
 /// Controller of the omnibox popup.
 @property(nonatomic, weak) OmniboxPopupController* omniboxPopupController;
 
+/// Initializes with an OmniboxController.
+- (instancetype)initWithOmniboxController:(OmniboxController*)omniboxController
+    NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_UNAVAILABLE;
+
+/// Removes all C++ references.
+- (void)disconnect;
+
 // Reaction to events from OmniboxEditModel.
 #pragma mark - OmniboxEditModel delegate
 
-/// Updates the omnibox with `results`.
-- (void)updateWithResults:(const AutocompleteResult&)result;
+/// Updates the popup suggestions.
+- (void)updatePopupSuggestions;
 
 @end
 

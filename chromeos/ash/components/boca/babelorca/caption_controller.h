@@ -28,6 +28,8 @@ struct SpeechRecognitionResult;
 
 namespace ash::babelorca {
 
+class BabelOrcaCaptionBubbleSettings;
+
 class CaptionController : public ui::NativeThemeObserver {
  public:
   class Delegate {
@@ -55,6 +57,7 @@ class CaptionController : public ui::NativeThemeObserver {
       std::unique_ptr<::captions::CaptionBubbleContext> caption_bubble_context,
       PrefService* profile_prefs,
       const std::string& application_locale,
+      std::unique_ptr<BabelOrcaCaptionBubbleSettings> caption_bubble_settings,
       std::unique_ptr<Delegate> delegate = nullptr);
 
   CaptionController(const CaptionController&) = delete;
@@ -73,6 +76,10 @@ class CaptionController : public ui::NativeThemeObserver {
 
   void StopLiveCaption();
 
+  void SetLiveTranslateEnabled(bool enabled);
+
+  std::string GetLiveTranslateTargetLanguageCode();
+
  private:
   // ui::NativeThemeObserver:
   void OnCaptionStyleUpdated() override;
@@ -80,7 +87,7 @@ class CaptionController : public ui::NativeThemeObserver {
   std::unique_ptr<::captions::CaptionBubbleContext> caption_bubble_context_;
   raw_ptr<PrefService> profile_prefs_;
   const std::string application_locale_;
-  const std::unique_ptr<::captions::CaptionBubbleSettings>
+  const std::unique_ptr<BabelOrcaCaptionBubbleSettings>
       caption_bubble_settings_;
   const std::unique_ptr<Delegate> delegate_;
 

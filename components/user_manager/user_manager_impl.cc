@@ -1689,16 +1689,6 @@ void UserManagerImpl::Initialize() {
   NotifyLoginStateUpdated();
 }
 
-const User* UserManagerImpl::AddKioskAppUserForTesting(
-    const AccountId& account_id,
-    const std::string& username_hash) {
-  User* user = User::CreateKioskAppUser(account_id);
-  user->set_username_hash(username_hash);
-  user_storage_.emplace_back(user);
-  users_.push_back(user);
-  return user;
-}
-
 void UserManagerImpl::OnActiveUserSwitched(User& new_active_user) {
   if (active_user_) {
     active_user_->set_is_active(false);

@@ -4727,16 +4727,16 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         Other devices
       </message>
       <message name="IDS_IOS_RECENT_TABS_OTHER_DEVICES_EMPTY_TITLE" desc="Title shown in the Other Devices section of the Recent Tabs screen when there are no recent tabs from other devices. Either because the user is signed out, Tabs synchronization is off or because there are no other devices signed in with Tabs synchronization turned on.">
-          You'll find your tabs from other devices here
+        You'll find your tabs from other devices here
       </message>
       <message name="IDS_IOS_RECENT_TABS_OTHER_DEVICES_LABEL" desc="Label for the sign-in promo in the Recent tabs page.">
-          To see tabs from your other devices, sync your tabs and history.
+        To see tabs from your other devices, sync your tabs and history.
       </message>
       <message name="IDS_IOS_RECENT_TABS_OTHER_DEVICES_TURN_ON_SYNC" desc="Button label to turn Sync on for user. [Length: 30em]">
-          Turn on sync
+        Turn on sync
       </message>
       <message name="IDS_IOS_RECENT_TABS_OTHER_DEVICES_TURN_ON_TABS" desc="Button for the sign-in promo in the Recent tabs page.">
-          Turn on
+        Turn on
       </message>
       <message name="IDS_IOS_RECENT_TABS_RECENTLY_CLOSED" desc="The heading of the recently closed section in the recent tab panel. [Length: 35em] [iOS only]">
         Recently closed
@@ -4752,6 +4752,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_REMINDER_NOTIFICATIONS_SET_A_REMINDER" desc="Text for the 'Set a Reminder' overflow menu action. [iOS only]">
         Set a Reminder
+      </message>
+      <message name="IDS_IOS_REMINDER_NOTIFICATIONS_TOOLS_MENU_BUBBLE_IPH" desc="Text for a bubble IPH displayed on the tools menu, informing the user that they can set a reminder for the current tab. [iOS only]">
+        You can set a reminder to revisit this page later
       </message>
       <message name="IDS_IOS_REMOVE_ACCOUNT_ALERT_TITLE" desc="Title of the alert view when the remove account button is clicked.">
         Remove account <ph name="USER_EMAIL">$1<ex>janedoe@google.com</ex></ph>?
@@ -4778,7 +4781,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
           <ph name="TIME">$1</ph> h ago
           </message>
       <message name="IDS_IOS_RETURN_TO_RECENT_TAB_TITLE" desc="Title of the Return to Recent Tab Content Suggestons Tile.">
-          Return to recent tab
+        Return to recent tab
       </message>
       <message name="IDS_IOS_REUSED_PASSWORD_ISSUES_DESCRIPTION" desc="Header displayed on the password manager screen displaying credentials that share passwords with other credentials in the password manager [iOS only]" meaning="This header explains the risks of reusing passwords for multiple sites and apps. It suggests the user changing reused passwords.">
         Use a unique password for every site or app. If someone discovers a reused password, it can be used to access your other accounts. Click to open the website and change them now.

@@ -11,6 +11,8 @@
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/strings/to_string.h"
+#include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/plus_addresses/features.h"
@@ -161,6 +163,21 @@ bool FakePlusAddressService::IsPlusAddressCreationEnabled(
 bool FakePlusAddressService::IsPlusAddress(
     const std::string& potential_plus_address) const {
   return potential_plus_address == plus_addresses::test::kFakePlusAddress;
+}
+
+bool FakePlusAddressService::IsFieldEligibleForPlusAddress(
+    const autofill::AutofillField& field) const {
+  autofill::FillingProduct filling_product =
+      autofill::GetFillingProductFromFieldTypeGroup(field.Type().group());
+  if (filling_product == autofill::FillingProduct::kAddress) {
+    return true;
+  }
+
+  return base::FeatureList::IsEnabled(
+             features::kPlusAddressSuggestionsOnUsernameFields) &&
+         (field.server_type() == autofill::FieldType::USERNAME ||
+          field.server_type() == autofill::FieldType::SINGLE_USERNAME) &&
+         field.heuristic_type() == autofill::FieldType::EMAIL_ADDRESS;
 }
 
 bool FakePlusAddressService::MatchesPlusAddressFormat(

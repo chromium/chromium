@@ -8,6 +8,7 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -70,9 +71,14 @@ class GlicFocusedTabManager : public BrowserListObserver,
   // True if `web_contents` is allowed to be focused.
   bool IsValidFocusable(content::WebContents* web_contents);
 
-  // Updates focused tab if a new one is computed. Notifies if updated or if
-  // `force_notify` is true.
+  // Updates focused tab if a new one is computed. Notifies after debounce
+  // threshold if updated or if `force_notify` is true for any call within the
+  // duration of the debouncing.
   void MaybeUpdateFocusedTab(bool force_notify = false);
+
+  // Updates focused tab if a new one is computed without debouncing. Prefer
+  // `MaybeUpdateFocusedTab` unless debouncing must specifically be avoided.
+  void PerformMaybeUpdateFocusedTab(bool force_notfiiy = false);
 
   // Computes the currently focused tab.
   content::WebContents* ComputeFocusedTab();
@@ -120,6 +126,14 @@ class GlicFocusedTabManager : public BrowserListObserver,
   // WidgetObserver for triggering window minimization/maximization changes.
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};
+
+  // One shot time used to debounce focus notifications.
+  base::OneShotTimer debouncer_;
+
+  // Cached force_notify state for carrying over across debounces. If any call
+  // to MaybeUpdateFocusedTab has a forced notify, this will be set to true
+  // until debouncing resolves.
+  bool cached_force_notify_ = false;
 };
 
 }  // namespace glic

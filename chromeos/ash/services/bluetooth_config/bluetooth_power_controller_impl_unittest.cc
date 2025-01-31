@@ -12,6 +12,7 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -22,6 +23,8 @@ namespace {
 
 constexpr char kUser1Email[] = "user1@bluetooth";
 constexpr GaiaId::Literal kFakeGaia1("fakegaia1");
+
+constexpr char kKioskEmail[] = "example@kiosk-apps.device-local.localhost";
 
 }  // namespace
 
@@ -65,14 +68,14 @@ class BluetoothPowerControllerImplTest : public testing::Test {
                       const GaiaId& gaia_id,
                       bool is_user_kiosk = false,
                       bool is_new_profile = false) {
-    const AccountId account_id =
-        AccountId::FromUserEmailGaiaId(display_email, gaia_id);
     const user_manager::User* user;
     if (is_user_kiosk) {
-      user = fake_user_manager_->AddKioskAppUser(account_id);
+      user = user_manager::TestHelper(*fake_user_manager_)
+                 .AddKioskAppUser(display_email);
     } else {
-      user = fake_user_manager_->AddGaiaUser(account_id,
-                                             user_manager::UserType::kRegular);
+      user = fake_user_manager_->AddGaiaUser(
+          AccountId::FromUserEmailGaiaId(display_email, gaia_id),
+          user_manager::UserType::kRegular);
     }
     fake_user_manager_->SetIsCurrentUserNew(is_new_profile);
 
@@ -84,7 +87,7 @@ class BluetoothPowerControllerImplTest : public testing::Test {
 
     // Logging in doesn't set the user in UserManager as the active user if
     // there already is an active user, do so manually.
-    fake_user_manager_->SwitchActiveUser(account_id);
+    fake_user_manager_->SwitchActiveUser(user->GetAccountId());
 
     bluetooth_power_controller_->SetPrefs(&active_user_prefs_, local_state());
   }
@@ -303,8 +306,7 @@ TEST_F(BluetoothPowerControllerImplTest, ApplyBluetoothKioskUserPrefDefault) {
                   ->IsDefaultValue());
   EXPECT_EQ(GetAdapterState(), mojom::BluetoothSystemState::kDisabled);
 
-  AddUserSession(kUser1Email, kFakeGaia1,
-                 /*is_user_kiosk=*/true);
+  AddUserSession(kKioskEmail, GaiaId(), /*is_user_kiosk=*/true);
 
   // For non-regular user, the Bluetooth setting should not be applied and pref
   // not set.

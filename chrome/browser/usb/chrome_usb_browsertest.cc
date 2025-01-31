@@ -647,7 +647,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUsbBrowserTest, ClaimInterface) {
   std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app =
       web_app::IsolatedWebAppBuilder(
           web_app::ManifestBuilder().AddPermissionsPolicyWildcard(
-              network::mojom::PermissionsPolicyFeature::kUsb))
+              blink::mojom::PermissionsPolicyFeature::kUsb))
           .BuildBundle();
   ASSERT_OK_AND_ASSIGN(web_app::IsolatedWebAppUrlInfo url_info,
                        app->Install(profile()));
@@ -727,7 +727,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
   std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app =
       web_app::IsolatedWebAppBuilder(
           web_app::ManifestBuilder().AddPermissionsPolicyWildcard(
-              network::mojom::PermissionsPolicyFeature::kUsb))
+              blink::mojom::PermissionsPolicyFeature::kUsb))
           .BuildBundle();
   ASSERT_OK_AND_ASSIGN(web_app::IsolatedWebAppUrlInfo url_info,
                        app->Install(profile()));
@@ -764,7 +764,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
   std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app =
       web_app::IsolatedWebAppBuilder(
           web_app::ManifestBuilder().AddPermissionsPolicyWildcard(
-              network::mojom::PermissionsPolicyFeature::kUsb))
+              blink::mojom::PermissionsPolicyFeature::kUsb))
           .BuildBundle();
   ASSERT_OK_AND_ASSIGN(web_app::IsolatedWebAppUrlInfo url_info,
                        app->Install(profile()));
@@ -803,7 +803,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
   std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app =
       web_app::IsolatedWebAppBuilder(
           web_app::ManifestBuilder().AddPermissionsPolicyWildcard(
-              network::mojom::PermissionsPolicyFeature::kUsb))
+              blink::mojom::PermissionsPolicyFeature::kUsb))
           .BuildBundle();
   ASSERT_OK_AND_ASSIGN(web_app::IsolatedWebAppUrlInfo url_info,
                        app->Install(profile()));
@@ -846,7 +846,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
   std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app =
       web_app::IsolatedWebAppBuilder(
           web_app::ManifestBuilder().AddPermissionsPolicyWildcard(
-              network::mojom::PermissionsPolicyFeature::kUsb))
+              blink::mojom::PermissionsPolicyFeature::kUsb))
           .BuildBundle();
   ASSERT_OK_AND_ASSIGN(web_app::IsolatedWebAppUrlInfo url_info,
                        app->Install(profile()));
@@ -877,7 +877,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
   std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app =
       web_app::IsolatedWebAppBuilder(
           web_app::ManifestBuilder().AddPermissionsPolicyWildcard(
-              network::mojom::PermissionsPolicyFeature::kUsb))
+              blink::mojom::PermissionsPolicyFeature::kUsb))
           .BuildBundle();
   ASSERT_OK_AND_ASSIGN(web_app::IsolatedWebAppUrlInfo url_info,
                        app->Install(profile()));
@@ -909,7 +909,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
   std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app =
       web_app::IsolatedWebAppBuilder(
           web_app::ManifestBuilder().AddPermissionsPolicyWildcard(
-              network::mojom::PermissionsPolicyFeature::kUsb))
+              blink::mojom::PermissionsPolicyFeature::kUsb))
           .AddFileFromDisk("/usb_none.html",
                            "web_apps/simple_isolated_app/usb_none.html")
           .BuildBundle();
@@ -955,7 +955,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
   std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app =
       web_app::IsolatedWebAppBuilder(
           web_app::ManifestBuilder().AddPermissionsPolicyWildcard(
-              network::mojom::PermissionsPolicyFeature::kUsb))
+              blink::mojom::PermissionsPolicyFeature::kUsb))
           .AddFileFromDisk("/usb_self.html",
                            "web_apps/simple_isolated_app/usb_self.html")
           .BuildBundle();
@@ -998,7 +998,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
   std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app =
       web_app::IsolatedWebAppBuilder(
           web_app::ManifestBuilder().AddPermissionsPolicyWildcard(
-              network::mojom::PermissionsPolicyFeature::kUsb))
+              blink::mojom::PermissionsPolicyFeature::kUsb))
           .AddFileFromDisk("/usb_all.html",
                            "web_apps/simple_isolated_app/usb_all.html")
           .BuildBundle();
@@ -1037,12 +1037,11 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
       web_app::IsolatedWebAppBuilder(
           web_app::ManifestBuilder()
               .AddPermissionsPolicyWildcard(
-                  network::mojom::PermissionsPolicyFeature::kUsb)
+                  blink::mojom::PermissionsPolicyFeature::kUsb)
               .AddPermissionsPolicyWildcard(
-                  network::mojom::PermissionsPolicyFeature::kUsbUnrestricted)
+                  blink::mojom::PermissionsPolicyFeature::kUsbUnrestricted)
               .AddPermissionsPolicyWildcard(
-                  network::mojom::PermissionsPolicyFeature::
-                      kCrossOriginIsolated))
+                  blink::mojom::PermissionsPolicyFeature::kCrossOriginIsolated))
           .BuildBundle();
   ASSERT_OK_AND_ASSIGN(web_app::IsolatedWebAppUrlInfo url_info,
                        app->Install(profile()));
@@ -1106,12 +1105,11 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
       web_app::IsolatedWebAppBuilder(
           web_app::ManifestBuilder()
               .AddPermissionsPolicyWildcard(
-                  network::mojom::PermissionsPolicyFeature::kUsb)
+                  blink::mojom::PermissionsPolicyFeature::kUsb)
               .AddPermissionsPolicyWildcard(
-                  network::mojom::PermissionsPolicyFeature::kUsbUnrestricted)
+                  blink::mojom::PermissionsPolicyFeature::kUsbUnrestricted)
               .AddPermissionsPolicyWildcard(
-                  network::mojom::PermissionsPolicyFeature::
-                      kCrossOriginIsolated))
+                  blink::mojom::PermissionsPolicyFeature::kCrossOriginIsolated))
           .AddHtml("/empty.html", "Empty Page")
           .BuildBundle();
   ASSERT_OK_AND_ASSIGN(web_app::IsolatedWebAppUrlInfo url_info,

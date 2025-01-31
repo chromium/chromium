@@ -14,6 +14,6 @@ AutomaticFullscreenPermissionContext::AutomaticFullscreenPermissionContext(
     : PermissionContextBase(
           browser_context,
           ContentSettingsType::AUTOMATIC_FULLSCREEN,
-          network::mojom::PermissionsPolicyFeature::kFullscreen) {}
+          blink::mojom::PermissionsPolicyFeature::kFullscreen) {}
 
 }  // namespace permissions

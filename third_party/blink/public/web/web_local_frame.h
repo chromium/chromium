@@ -243,7 +243,7 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
 
   // Tests whether the policy-controlled feature is enabled in this frame.
   virtual bool IsFeatureEnabled(
-      const network::mojom::PermissionsPolicyFeature&) const = 0;
+      const mojom::PermissionsPolicyFeature&) const = 0;
 
   // Hierarchy ----------------------------------------------------------
 

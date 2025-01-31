@@ -168,7 +168,7 @@ const gfx::VectorIcon& GetBlockedIconIdDesktop(RequestType type) {
       return vector_icons::kStorageAccessOffIcon;
     case RequestType::kIdentityProvider:
       // TODO(crbug.com/40252825): use a dedicated icon
-      return gfx::VectorIcon::EmptyIcon();
+      return gfx::kNoneIcon;
     case RequestType::kKeyboardLock:
       return vector_icons::kKeyboardLockOffIcon;
     case RequestType::kPointerLock:

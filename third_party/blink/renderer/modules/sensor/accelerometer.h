@@ -23,7 +23,7 @@ class Accelerometer : public Sensor {
                 const SpatialSensorOptions*,
                 ExceptionState&,
                 device::mojom::blink::SensorType,
-                const Vector<network::mojom::PermissionsPolicyFeature>&);
+                const Vector<mojom::blink::PermissionsPolicyFeature>&);
 
   std::optional<double> x() const;
   std::optional<double> y() const;

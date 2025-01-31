@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/modules/device_orientation/device_motion_controller.h"
 
-#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_permission_state.h"
@@ -70,8 +70,8 @@ void DeviceMotionController::DidAddEventListener(
 
   if (!has_event_listener_) {
     if (!CheckPolicyFeatures(
-            {network::mojom::PermissionsPolicyFeature::kAccelerometer,
-             network::mojom::PermissionsPolicyFeature::kGyroscope})) {
+            {mojom::blink::PermissionsPolicyFeature::kAccelerometer,
+             mojom::blink::PermissionsPolicyFeature::kGyroscope})) {
       DeviceOrientationController::LogToConsolePolicyFeaturesDisabled(
           *GetWindow().GetFrame(), EventTypeName());
       return;

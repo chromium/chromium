@@ -39,7 +39,7 @@ GlicKeyedService::GlicKeyedService(content::BrowserContext* browser_context,
       profile_manager_(profile_manager) {
   CHECK(GlicEnabling::IsProfileEligible(
       Profile::FromBrowserContext(browser_context)));
-  metrics_ = std::make_unique<GlicMetrics>();
+  metrics_ = std::make_unique<GlicMetrics>(&window_controller_);
 }
 
 GlicKeyedService::~GlicKeyedService() = default;
@@ -197,6 +197,13 @@ void GlicKeyedService::GetContextFromFocusedTab(
             std::move(callback).Run(std::move(result));
           },
           std::move(fetcher), std::move(callback)));
+}
+
+void GlicKeyedService::CaptureScreenshot(
+    mojom::WebClientHandler::CaptureScreenshotCallback callback) {
+  // Implemented in follow up CL:
+  // https://chromium-review.googlesource.com/c/chromium/src/+/6194893
+  NOTIMPLEMENTED();
 }
 
 content::WebContents* GlicKeyedService::GetFocusedTab() {

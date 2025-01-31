@@ -75,6 +75,8 @@ class PlusAddressServiceImpl : public PlusAddressService,
   bool MatchesPlusAddressFormat(const std::u16string& value) const override;
   bool IsPlusAddressFillingEnabled(const url::Origin& origin) const override;
   bool IsPlusAddressFullFormFillingEnabled() const override;
+  bool IsFieldEligibleForPlusAddress(
+      const autofill::AutofillField& field) const override;
   void GetAffiliatedPlusAddresses(
       const url::Origin& origin,
       base::OnceCallback<void(std::vector<std::string>)> callback) override;

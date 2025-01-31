@@ -8465,9 +8465,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_MODULES_DRIVE_DISABLE_BUTTON_TEXT_V2" desc="Text shown on the disable button of a NTP Drive module v2.">
        Don't show Drive
       </message>
-      <message name="IDS_NTP_MODULES_DRIVE_DISMISS_BUTTON_TEXT" desc="Text shown on the disable button of a NTP Drive module v2.">
-       Hide these files
-      </message>
       <message name="IDS_NTP_MODULES_DRIVE_NAME" desc="Name of the Drive module in sentence case shown in various UIs.">
         Google Drive
       </message>
@@ -10174,16 +10171,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_GLIC_PROMO_BODY" desc="Glic promo body text.">
         [placeholder text]
       </message>
-      <if expr="use_titlecase">
-        <message name="IDS_GLIC_PROMO_CUSTOM_ACTION" desc="Glic promo custom action button caption.">
-          Try It Out
-        </message>
-      </if>
-      <if expr="not use_titlecase">
-        <message name="IDS_GLIC_PROMO_CUSTOM_ACTION" desc="Glic promo custom action button caption.">
-          Try it out
-        </message>
-      </if>
       <message name="IDS_SHARED_HIGHLIGHTING_PROMO" desc="The title of in-product-help message encouraging users to interact with the highlight">
         To create a highlight like this one, select any text and right-click.
       </message>

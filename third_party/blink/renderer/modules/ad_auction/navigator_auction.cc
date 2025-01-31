@@ -2998,7 +2998,7 @@ ScriptPromise<IDLUndefined> JoinAdInterestGroupInternal(
     return EmptyPromise();
   }
   if (!context->IsFeatureEnabled(
-          network::mojom::PermissionsPolicyFeature::kJoinAdInterestGroup)) {
+          mojom::blink::PermissionsPolicyFeature::kJoinAdInterestGroup)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "Feature join-ad-interest-group is not enabled by Permissions Policy");
@@ -3664,7 +3664,7 @@ ScriptPromise<IDLUndefined> NavigatorAuction::leaveAdInterestGroup(
   RecordCommonFledgeUseCounters(navigator.DomWindow()->document());
   ExecutionContext* context = ExecutionContext::From(script_state);
   if (!context->IsFeatureEnabled(
-          network::mojom::PermissionsPolicyFeature::kJoinAdInterestGroup)) {
+          mojom::blink::PermissionsPolicyFeature::kJoinAdInterestGroup)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "Feature join-ad-interest-group is not enabled by Permissions Policy");
@@ -3757,7 +3757,7 @@ ScriptPromise<IDLUndefined> NavigatorAuction::clearOriginJoinedAdInterestGroups(
   RecordCommonFledgeUseCounters(navigator.DomWindow()->document());
   ExecutionContext* context = ExecutionContext::From(script_state);
   if (!context->IsFeatureEnabled(
-          network::mojom::PermissionsPolicyFeature::kJoinAdInterestGroup)) {
+          mojom::blink::PermissionsPolicyFeature::kJoinAdInterestGroup)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "Feature join-ad-interest-group is not enabled by Permissions Policy");
@@ -3786,7 +3786,7 @@ void NavigatorAuction::updateAdInterestGroups(ScriptState* script_state,
   RecordCommonFledgeUseCounters(navigator.DomWindow()->document());
   ExecutionContext* context = ExecutionContext::From(script_state);
   if (!context->IsFeatureEnabled(
-          network::mojom::PermissionsPolicyFeature::kJoinAdInterestGroup)) {
+          mojom::blink::PermissionsPolicyFeature::kJoinAdInterestGroup)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "Feature join-ad-interest-group is not enabled by Permissions Policy");
@@ -3934,7 +3934,7 @@ NavigatorAuction::runAdAuction(ScriptState* script_state,
   RecordCommonFledgeUseCounters(navigator.DomWindow()->document());
   const ExecutionContext* context = ExecutionContext::From(script_state);
   if (!context->IsFeatureEnabled(
-          network::mojom::PermissionsPolicyFeature::kRunAdAuction)) {
+          mojom::blink::PermissionsPolicyFeature::kRunAdAuction)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "Feature run-ad-auction is not enabled by Permissions Policy");
@@ -4688,7 +4688,7 @@ ScriptPromise<AdAuctionData> NavigatorAuction::getInterestGroupAdAuctionData(
   RecordCommonFledgeUseCounters(navigator.DomWindow()->document());
   const ExecutionContext* context = ExecutionContext::From(script_state);
   if (!context->IsFeatureEnabled(
-          network::mojom::PermissionsPolicyFeature::kRunAdAuction)) {
+          mojom::blink::PermissionsPolicyFeature::kRunAdAuction)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "Feature run-ad-auction is not enabled by Permissions Policy");

@@ -28,28 +28,28 @@ namespace content {
 
 namespace {
 
-constexpr std::vector<network::mojom::PermissionsPolicyFeature>
+constexpr std::vector<blink::mojom::PermissionsPolicyFeature>
 SensorTypeToPermissionsPolicyFeatures(SensorType type) {
   switch (type) {
     case SensorType::AMBIENT_LIGHT:
-      return {network::mojom::PermissionsPolicyFeature::kAmbientLightSensor};
+      return {blink::mojom::PermissionsPolicyFeature::kAmbientLightSensor};
     case SensorType::ACCELEROMETER:
     case SensorType::LINEAR_ACCELERATION:
     case SensorType::GRAVITY:
-      return {network::mojom::PermissionsPolicyFeature::kAccelerometer};
+      return {blink::mojom::PermissionsPolicyFeature::kAccelerometer};
     case SensorType::GYROSCOPE:
-      return {network::mojom::PermissionsPolicyFeature::kGyroscope};
+      return {blink::mojom::PermissionsPolicyFeature::kGyroscope};
     case SensorType::MAGNETOMETER:
-      return {network::mojom::PermissionsPolicyFeature::kMagnetometer};
+      return {blink::mojom::PermissionsPolicyFeature::kMagnetometer};
     case SensorType::ABSOLUTE_ORIENTATION_EULER_ANGLES:
     case SensorType::ABSOLUTE_ORIENTATION_QUATERNION:
-      return {network::mojom::PermissionsPolicyFeature::kAccelerometer,
-              network::mojom::PermissionsPolicyFeature::kGyroscope,
-              network::mojom::PermissionsPolicyFeature::kMagnetometer};
+      return {blink::mojom::PermissionsPolicyFeature::kAccelerometer,
+              blink::mojom::PermissionsPolicyFeature::kGyroscope,
+              blink::mojom::PermissionsPolicyFeature::kMagnetometer};
     case SensorType::RELATIVE_ORIENTATION_EULER_ANGLES:
     case SensorType::RELATIVE_ORIENTATION_QUATERNION:
-      return {network::mojom::PermissionsPolicyFeature::kAccelerometer,
-              network::mojom::PermissionsPolicyFeature::kGyroscope};
+      return {blink::mojom::PermissionsPolicyFeature::kAccelerometer,
+              blink::mojom::PermissionsPolicyFeature::kGyroscope};
   }
 }
 
@@ -74,7 +74,7 @@ void FrameSensorProviderProxy::GetSensor(device::mojom::SensorType type,
                                          GetSensorCallback callback) {
   const bool passes_permissions_policy_check = std::ranges::all_of(
       SensorTypeToPermissionsPolicyFeatures(type),
-      [this](network::mojom::PermissionsPolicyFeature feature) {
+      [this](blink::mojom::PermissionsPolicyFeature feature) {
         return render_frame_host().IsFeatureEnabled(feature);
       });
 

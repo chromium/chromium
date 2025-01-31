@@ -20,6 +20,7 @@
 #include "components/permissions/prediction_service/prediction_service_messages.pb.h"
 #include "components/permissions/request_type.h"
 #include "content/public/browser/permission_result.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 
 namespace blink {
 enum class PermissionType;

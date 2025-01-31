@@ -68,6 +68,10 @@ public class InsetObserverTest {
 
     private static final Insets SYSTEM_BAR_INSETS_MODIFIED = Insets.of(1, 1, 1, 2);
 
+    private static final Insets SYSTEM_GESTURES_INSETS = Insets.of(1, 1, 1, 1);
+
+    private static final Insets SYSTEM_GESTURES_INSETS_MODIFIED = Insets.of(1, 1, 1, 2);
+
     @Mock private InsetObserver.WindowInsetObserver mObserver;
 
     @Mock private WindowInsetsCompat mInsets;
@@ -103,6 +107,12 @@ public class InsetObserverTest {
         doReturn(SYSTEM_BAR_INSETS_MODIFIED)
                 .when(mModifiedInsets)
                 .getInsets(WindowInsetsCompat.Type.systemBars());
+        doReturn(SYSTEM_GESTURES_INSETS)
+                .when(mInsets)
+                .getInsets(WindowInsetsCompat.Type.systemGestures());
+        doReturn(SYSTEM_GESTURES_INSETS_MODIFIED)
+                .when(mModifiedInsets)
+                .getInsets(WindowInsetsCompat.Type.systemGestures());
 
         mInsetObserver = new InsetObserver(new ImmutableWeakReference<View>(mContentView));
         mInsetObserver.addObserver(mObserver);
@@ -114,17 +124,28 @@ public class InsetObserverTest {
     public void applyInsets_NotifiesObservers() {
         mInsetObserver.onApplyWindowInsets(mContentView, mInsets);
         verify(mObserver, times(1)).onInsetChanged();
+        verify(mObserver, times(1))
+                .onSystemGestureInsetsChanged(
+                        SYSTEM_GESTURES_INSETS.left,
+                        SYSTEM_GESTURES_INSETS.top,
+                        SYSTEM_GESTURES_INSETS.right,
+                        SYSTEM_GESTURES_INSETS.bottom);
+        clearInvocations(mObserver);
 
         // Apply the insets a second time; the observer should not be notified.
         mInsetObserver.onApplyWindowInsets(mContentView, mInsets);
-        verify(mObserver, times(1)).onInsetChanged();
+        verify(mObserver, never()).onInsetChanged();
+        verify(mObserver, never())
+                .onSystemGestureInsetsChanged(anyInt(), anyInt(), anyInt(), anyInt());
 
-        clearInvocations(mObserver);
-        doReturn(Insets.of(1, 1, 1, 2))
-                .when(mInsets)
-                .getInsets(WindowInsetsCompat.Type.systemBars());
-        mInsetObserver.onApplyWindowInsets(mContentView, mInsets);
+        mInsetObserver.onApplyWindowInsets(mContentView, mModifiedInsets);
         verify(mObserver).onInsetChanged();
+        verify(mObserver)
+                .onSystemGestureInsetsChanged(
+                        SYSTEM_GESTURES_INSETS_MODIFIED.left,
+                        SYSTEM_GESTURES_INSETS_MODIFIED.top,
+                        SYSTEM_GESTURES_INSETS_MODIFIED.right,
+                        SYSTEM_GESTURES_INSETS_MODIFIED.bottom);
     }
 
     @Test

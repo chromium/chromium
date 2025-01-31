@@ -22,7 +22,7 @@
 #include "url/origin.h"
 
 using blink::PermissionType;
-using network::mojom::PermissionsPolicyFeature;
+using blink::mojom::PermissionsPolicyFeature;
 
 // This class tests PermissionStatus.onChange observer.
 class PermissionSubscriptionTest : public ChromeRenderViewHostTestHarness {

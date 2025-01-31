@@ -71,7 +71,7 @@ class AccountSelectionProperties {
             SIGN_IN_TO_IDP_STATIC,
             SIGN_IN_ERROR,
             LOADING,
-            REQUEST_PERMISSION
+            REQUEST_PERMISSION_MODAL
         }
 
         static final ReadableObjectPropertyKey<Runnable> CLOSE_ON_CLICK_LISTENER =
@@ -93,6 +93,8 @@ class AccountSelectionProperties {
                 new ReadableBooleanPropertyKey("is_multiple_account_chooser");
         static final ReadableObjectPropertyKey<Callback<View>> SET_FOCUS_VIEW_CALLBACK =
                 new ReadableObjectPropertyKey<>("set_focus_view_callback");
+        static final ReadableBooleanPropertyKey IS_MULTIPLE_IDPS =
+                new ReadableBooleanPropertyKey("is_multiple_idps");
 
         static final PropertyKey[] ALL_KEYS = {
             CLOSE_ON_CLICK_LISTENER,
@@ -104,7 +106,8 @@ class AccountSelectionProperties {
             RP_CONTEXT,
             RP_MODE,
             IS_MULTIPLE_ACCOUNT_CHOOSER,
-            SET_FOCUS_VIEW_CALLBACK
+            SET_FOCUS_VIEW_CALLBACK,
+            IS_MULTIPLE_IDPS
         };
 
         private HeaderProperties() {}

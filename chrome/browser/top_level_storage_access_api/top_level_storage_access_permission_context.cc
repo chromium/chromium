@@ -46,7 +46,7 @@ TopLevelStorageAccessPermissionContext::TopLevelStorageAccessPermissionContext(
     : PermissionContextBase(
           browser_context,
           ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
-          network::mojom::PermissionsPolicyFeature::kStorageAccessAPI) {}
+          blink::mojom::PermissionsPolicyFeature::kStorageAccessAPI) {}
 
 TopLevelStorageAccessPermissionContext::
     ~TopLevelStorageAccessPermissionContext() = default;

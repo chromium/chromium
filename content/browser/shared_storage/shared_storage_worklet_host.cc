@@ -249,13 +249,13 @@ GetSharedStorageWorkletPermissionsPolicyState(
 
   return blink::mojom::SharedStorageWorkletPermissionsPolicyState::New(
       permissions_policy->IsFeatureEnabledForOrigin(
-          network::mojom::PermissionsPolicyFeature::kPrivateAggregation,
+          blink::mojom::PermissionsPolicyFeature::kPrivateAggregation,
           shared_storage_origin),
       permissions_policy->IsFeatureEnabledForOrigin(
-          network::mojom::PermissionsPolicyFeature::kJoinAdInterestGroup,
+          blink::mojom::PermissionsPolicyFeature::kJoinAdInterestGroup,
           shared_storage_origin),
       permissions_policy->IsFeatureEnabledForOrigin(
-          network::mojom::PermissionsPolicyFeature::kRunAdAuction,
+          blink::mojom::PermissionsPolicyFeature::kRunAdAuction,
           shared_storage_origin));
 }
 

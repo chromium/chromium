@@ -49,6 +49,9 @@ interface PageElementTypes {
   mic: HTMLAudioElement;
   audioDuckingOn: HTMLButtonElement;
   audioDuckingOff: HTMLButtonElement;
+  desktopScreenshot: HTMLButtonElement;
+  desktopScreenshotImg: HTMLImageElement;
+  desktopScreenshotErrorReason: HTMLSpanElement;
 }
 
 const $: PageElementTypes = new Proxy({}, {
@@ -391,6 +394,23 @@ window.addEventListener('load', () => {
   });
   $.audioCapStart.addEventListener('click', () => {
     audioCapture.start();
+  });
+  $.desktopScreenshot.addEventListener('click', async () => {
+    logMessage('Requesting desktop screenshot...');
+    try {
+      const screenshot = await getBrowser()!.captureScreenshot!();
+      if (screenshot) {
+        const blob = new Blob([screenshot.data], {type: 'image/jpeg'});
+        $.desktopScreenshotImg.src = URL.createObjectURL(blob);
+        $.desktopScreenshotErrorReason!.innerText =
+            'Desktop screenshot captured.';
+      } else {
+        $.desktopScreenshotErrorReason!.innerText =
+            'Failed to capture desktop screenshot.';
+      }
+    } catch (error) {
+      $.desktopScreenshotErrorReason!.innerText = `Caught error: ${error}`;
+    }
   });
 });
 

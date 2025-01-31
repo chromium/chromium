@@ -76,7 +76,7 @@ class BASE_EXPORT ThreadGroupProfiler {
   using GetTimeToNextCollectionCallback = RepeatingCallback<TimeDelta()>;
 
   // ThreadGroupProfiler constructor. |task_runner| will be used to schedule the
-  // profile collection. |thread_group_label| will used to tag the metadata for
+  // profile collection. |thread_group_type| will used to tag the metadata for
   // all samples collected in this profiler. |profiler_factory| is a repeating
   // callback that will be used to make Profiler, intended to be used for
   // dependency injection for testing. |time_to_next_collection_callback| is a
@@ -84,7 +84,7 @@ class BASE_EXPORT ThreadGroupProfiler {
   // intended to be used for dependency injection for testing.
   explicit ThreadGroupProfiler(
       scoped_refptr<SequencedTaskRunner> task_runner,
-      std::string_view thread_group_label,
+      int64_t thread_group_type,
       std::unique_ptr<PeriodicSamplingScheduler> periodic_sampling_scheduler =
           nullptr,
       ProfilerFactory profiler_factory = GetDefaultProfilerFactory());
@@ -129,6 +129,7 @@ class BASE_EXPORT ThreadGroupProfiler {
     explicit ActiveCollection(
         const flat_map<internal::WorkerThread*, WorkerThreadContext>&
             worker_thread_context_set,
+        int64_t thread_group_type,
         const TimeDelta& sampling_duration,
         SequencedTaskRunner* task_runner,
         ProfilerFactory stack_sampling_profiler_factory,
@@ -157,6 +158,8 @@ class BASE_EXPORT ThreadGroupProfiler {
     void OnProfilerCollectionCompleted(internal::WorkerThread* worker_thread);
     // Invokes collection completed callback to end an empty collection.
     void OnEmptyCollectionCompleted();
+
+    const int64_t thread_group_type_;
 
     // A map that stores the active `StackSamplingProfiler` instances
     // for each worker thread.
@@ -228,9 +231,9 @@ class BASE_EXPORT ThreadGroupProfiler {
   std::optional<ActiveCollection> active_collection_
       GUARDED_BY_CONTEXT(task_runner_sequence_checker_);
 
-  // Label to use as metadata for specifying which group (foreground,
-  // background, utility) the worker thread being sampled belongs to.
-  const std::string thread_group_label_;
+  // Value to use as metadata for specifying which type of thread group is being
+  // profiled.
+  const int64_t thread_group_type_;
 
   // Used to block worker threads from exiting during ThreadGroupProfiler
   // shutdown.

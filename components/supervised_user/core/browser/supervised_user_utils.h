@@ -18,6 +18,7 @@
 #include "components/supervised_user/core/browser/proto/parent_access_callback.pb.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "url/gurl.h"
 
 class GURL;
 class PrefService;
@@ -125,6 +126,17 @@ class UrlFormatter {
   const raw_ref<const SupervisedUserURLFilter> supervised_user_url_filter_;
   const FilteringBehaviorReason filtering_behavior_reason_;
 };
+
+// Returns the URL of the PACP widget for the iOS local web approval flow.
+// `locale` is the display language (go/bcp47).
+GURL GetParentAccessURLForIOS(const std::string& locale);
+
+// Returns the URL of the PACP widget for the Desktop local web approval flow.
+// `locale` is the display language (go/bcp47).
+// `blocked_url` is the url subject to approval that is shown in the PACP
+// widget.
+GURL GetParentAccessURLForDesktop(const std::string& locale,
+                                  const GURL& blocked_url);
 
 }  // namespace supervised_user
 

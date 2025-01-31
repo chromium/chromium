@@ -4321,6 +4321,10 @@
       status: "stable",
     },
     {
+      name: "TextShadowPaintingOptimization",
+      status: "stable",
+    },
+    {
       // New implementation of text-size-adjust that applies during style rather
       // than via the text autosizer. This also includes changes such as
       // directly using percentage values without heuristics, and fully

@@ -97,7 +97,7 @@ ACTION_TEMPLATE(InvokeCallbackArgument,
 
 @implementation TabGroupAppInterface
 
-+ (void)prepareFakeSavedTabGroups:(NSInteger)numberOfGroups {
++ (void)prepareFakeSyncedTabGroups:(NSInteger)numberOfGroups {
   CHECK(IsTabGroupSyncEnabled());
   for (NSInteger i = 0; i < numberOfGroups; i++) {
     base::Uuid group_id = base::Uuid::GenerateRandomV4();

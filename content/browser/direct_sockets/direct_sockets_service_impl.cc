@@ -29,12 +29,12 @@
 #include "services/network/public/cpp/ip_address_space_util.h"
 #include "services/network/public/cpp/simple_host_resolver.h"
 #include "services/network/public/mojom/network_context.mojom.h"
-#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "services/network/public/mojom/restricted_udp_socket.mojom.h"
 #include "services/network/public/mojom/tcp_socket.mojom.h"
 #include "services/network/public/mojom/udp_socket.mojom.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/direct_sockets/direct_sockets.mojom.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <winsock2.h>
@@ -133,7 +133,7 @@ bool RequiresPrivateNetworkAccess(const net::AddressList& addresses) {
 void RequestPrivateNetworkAccess(content::RenderFrameHost& rfh,
                                  base::OnceCallback<void(bool)> callback) {
   if (!rfh.IsFeatureEnabled(
-          network::mojom::PermissionsPolicyFeature::kDirectSocketsPrivate)) {
+          blink::mojom::PermissionsPolicyFeature::kDirectSocketsPrivate)) {
     std::move(callback).Run(/*access_allowed=*/false);
     return;
   }
@@ -348,7 +348,7 @@ void DirectSocketsServiceImpl::CreateForFrame(
     return;
   }
   if (!render_frame_host->IsFeatureEnabled(
-          network::mojom::PermissionsPolicyFeature::kDirectSockets)) {
+          blink::mojom::PermissionsPolicyFeature::kDirectSockets)) {
     mojo::ReportBadMessage(
         "Permissions policy blocks access to Direct Sockets.");
     return;

@@ -66,10 +66,9 @@ export class MicrosoftFilesModuleElement extends
         {
           action: 'dismiss',
           icon: 'modules:visibility_off',
-          // TODO(crbug.com/372724129): Rename `modulesDriveDismissButtonText`
-          // to accommodate both sharepoint and drive modules, or replace it
-          // with a sharepoint-specific string.
-          text: this.i18n('modulesDriveDismissButtonText'),
+          text: this.i18nRecursive(
+              '', 'modulesDismissForHoursButtonText',
+              'fileSuggestionDismissHours'),
         },
         {
           action: 'disable',

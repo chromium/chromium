@@ -578,7 +578,7 @@ TEST_F(DocumentLoaderSimTest, FramePolicyIntegrityOnNavigationCommit) {
   auto* child_window = child_frame->GetFrame()->DomWindow();
 
   EXPECT_TRUE(child_window->IsFeatureEnabled(
-      network::mojom::PermissionsPolicyFeature::kPayment));
+      mojom::blink::PermissionsPolicyFeature::kPayment));
 }
 
 TEST_P(DocumentLoaderTest, CommitsDeferredOnSameOriginNavigation) {

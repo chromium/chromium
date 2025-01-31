@@ -2,6 +2,7 @@ include_rules = [
   "-components/browser_ui/bottomsheet",
   "-components/payments/content/android/spc",
   "-components/payments/content/android/ui",
+  "-components/page_info",
 
   "+components/embedder_support/android",
   "+components/payments/content/android/jni_headers",

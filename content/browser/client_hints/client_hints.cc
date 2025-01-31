@@ -552,7 +552,7 @@ struct ClientHintsExtendedData {
       // See crbug.com/1470634.
       const std::optional<FencedFrameProperties>& fenced_frame_properties =
           frame_tree_node->GetFencedFrameProperties();
-      base::span<const network::mojom::PermissionsPolicyFeature> permissions;
+      base::span<const blink::mojom::PermissionsPolicyFeature> permissions;
       if (fenced_frame_properties) {
         permissions = fenced_frame_properties->effective_enabled_permissions();
       }

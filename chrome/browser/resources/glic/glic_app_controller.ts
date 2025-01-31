@@ -39,11 +39,38 @@ const $: PageElementTypes = new Proxy({}, {
 type PanelId =
     'loadingPanel'|'guestPanel'|'offlinePanel'|'errorPanel'|'unavailablePanel';
 
+type State =
+    // Web client begins loading; no visible UI.
+    'begin-load'|
+    // Loading panel is displayed. This state, combined with the `hold-loading`
+    // state, will be held for `kMinHoldLoadingTimeMs` if entered.
+    'show-loading'|
+    // Loading panel is still displayed, but the web client is ready. This
+    // state will be held for the remainder of `kMinHoldLoadingTimeMs`.
+    'hold-loading'|
+    // Loading panel is displayed until web client is ready, or until
+    // `kMaxWaitTimeMs` timeout is reached.
+    'finish-loading'|
+    // "Something went wrong" error panel is displayed.
+    'error'|
+    // Connection offline panel is displayed.
+    'offline'|
+    // Glic is not available for profile; "Unavailable" panel is displayed.
+    'unavailable'|
+    // Web view is displayed.
+    'ready';
+
+interface StateDescriptor {
+  onEnter?: () => void;
+  onExit?: () => void;
+}
+
+type StateList = {
+  [key in State]: StateDescriptor;
+};
+
 export class GlicAppController {
-  preLoadingTimer: number|undefined;
-  minHoldTimer: number|undefined;
-  maxWaitTimer: number|undefined;
-  webViewLoaded: boolean = false;
+  loadingTimer: number|undefined;
 
   // This is used to simulate no connection for tests.
   simulateNoConnection: boolean =
@@ -53,14 +80,18 @@ export class GlicAppController {
   lastWidth: number = 400;
   lastHeight: number = 80;
 
-  // Set to true when the panel has been opened by the browser at least once.
-  guestPanelOpened: boolean = false;
-
   host: GlicApiHost|undefined;
 
   // Created from constructor and never null since the destructor replaces it
   // with an empty <webview>.
   webview: chrome.webviewTag.WebView;
+
+  state: State|undefined;
+
+  // When entering loading state, this represents the earliest timestamp at
+  // which the UI can transition to the ready state. This ensures that the
+  // loading UI isn't just a brief flash on screen.
+  earliestLoadingDismissTime: number|undefined;
 
   constructor(private browserProxy: BrowserProxyImpl) {
     // Bind event listener functions so that they can be used and removed when
@@ -72,17 +103,18 @@ export class GlicAppController {
 
     this.webview = this.createWebView();
 
-    this.preLoadingTimer = setTimeout(() => {
-      this.showLoading();
-    }, kPreHoldLoadingTimeMs);
-
-    this.updateOnlineState(navigator.onLine);
     window.addEventListener('online', () => {
-      this.updateOnlineState(true);
+      this.online();
     });
     window.addEventListener('offline', () => {
-      this.updateOnlineState(false);
+      this.offline();
     });
+
+    if (navigator.onLine && !this.simulateNoConnection) {
+      this.setState('begin-load');
+    } else {
+      this.setState('offline');
+    }
   }
 
   onLoadCommit(e: any): void {
@@ -99,8 +131,121 @@ export class GlicAppController {
     }
   }
 
+  setState(newState: State): void {
+    if (this.state === newState) {
+      return;
+    }
+    if (this.state) {
+      this.states[this.state].onExit?.call(this);
+    }
+    this.state = newState;
+    this.states[this.state].onEnter?.call(this);
+  }
+
+  states: StateList = {
+    'begin-load': {onEnter: this.beginLoad, onExit: this.cancelTimeout},
+    'show-loading': {onEnter: this.showLoading, onExit: this.cancelTimeout},
+    'hold-loading': {onEnter: this.holdLoading, onExit: this.cancelTimeout},
+    'finish-loading': {onEnter: this.finishLoading, onExit: this.cancelTimeout},
+    'error': {
+      onEnter:
+          () => {
+            this.destroyWebview();
+            this.showPanel('errorPanel');
+          },
+    },
+    'offline': {
+      onEnter:
+          () => {
+            this.destroyWebview();
+            this.showPanel('offlinePanel');
+          },
+    },
+    'unavailable': {
+      onEnter:
+          () => {
+            this.destroyWebview();
+            this.showPanel('unavailablePanel');
+          },
+    },
+    'ready': {
+      onEnter:
+          () => {
+            this.showPanel('guestPanel');
+          },
+    },
+  };
+
+  cancelTimeout(): void {
+    if (this.loadingTimer) {
+      clearTimeout(this.loadingTimer);
+      this.loadingTimer = undefined;
+    }
+  }
+
+  beginLoad(): void {
+    // Send this message but block on it only after webview cookies are synced
+    // to minimize latency. Enabling state is checked only when going online.
+    // This only applies when showing Glic in a tab (since the entry point
+    // button is removed when disabled) so the mild inconsistency doesn't
+    // matter.
+    const enabledCheck = this.browserProxy.handler.isProfileEnabled();
+
+    // Time to show the loading panel if the web client is not ready.
+    const showLoadingTime = performance.now() + kPreHoldLoadingTimeMs;
+
+    // Blocking on cookie syncing here introduces latency, we should consider
+    // ways to avoid it.
+    this.browserProxy.handler.syncWebviewCookies().then(async () => {
+      const isEnabled = (await enabledCheck).enabled;
+      if (!isEnabled) {
+        this.setState('unavailable');
+        return;
+      }
+
+      // Load the web client only after cookie sync is complete.
+      this.webview!.src = loadTimeData.getString('glicGuestURL');
+      this.loadingTimer = setTimeout(() => {
+        this.setState('show-loading');
+      }, Math.max(0, showLoadingTime - performance.now()));
+    });
+  }
+
+  showLoading(): void {
+    this.showPanel('loadingPanel');
+    // After kMinHoldLoadingTimeMs, transition to finish-loading or ready. Note
+    // that we do not transition from show-loading to ready before the timeout.
+    this.earliestLoadingDismissTime = performance.now() + kMinHoldLoadingTimeMs;
+    this.loadingTimer = setTimeout(() => {
+      this.setState('finish-loading');
+    }, kMinHoldLoadingTimeMs);
+  }
+
+  holdLoading(): void {
+    // The web client is ready, but we still wait for the remainder of
+    // `kMinHoldLoadingTimeMs` before showing it, to allow the loading animation
+    // to complete once.
+    this.loadingTimer = setTimeout(() => {
+      this.setState('ready');
+    }, Math.max(0, this.earliestLoadingDismissTime! - performance.now()));
+  }
+
+  finishLoading(): void {
+    // The web client is not yet ready, so wait for the remainder of
+    // `kMaxWaitTimeMs`. Switch to error state at that time unless interrupted
+    // by `webClientReady`.
+    this.loadingTimer = setTimeout(() => {
+      this.setState('error');
+    }, kMaxWaitTimeMs - kMinHoldLoadingTimeMs);
+  }
+
+  reload(): void {
+    this.destroyWebview();
+    // TODO: Allow the timeout on this load to be longer than the initial load.
+    this.setState('begin-load');
+  }
+
   createWebView(): chrome.webviewTag.WebView {
-    this.webViewLoaded = false;
     const webview =
         document.createElement('webview') as chrome.webviewTag.WebView;
     webview.id = 'guestPanel';
@@ -144,7 +289,9 @@ export class GlicAppController {
     // TODO(https://crbug.com/388328847): Remove when login issues are resolved.
     if (url.startsWith('https://login.corp.google.com/') ||
         url.startsWith('https://accounts.google.com/')) {
-      this.showLogin();
+      this.lastWidth = 400;
+      this.lastHeight = 800;
+      this.setState('ready');
     }
   }
 
@@ -173,35 +320,6 @@ export class GlicAppController {
     }
   }
 
-  beginLoadingSequence(maxWaitTimeMs?: number): void {
-    // Send this message but block on it only after webview cookies are synced
-    // to minimize latency. Enabling state is checked only when going online.
-    // This only applies when showing Glic in a tab (since the entry point
-    // button is removed when disabled) so the mild inconsistency doesn't
-    // matter.
-    const enabledCheck = this.browserProxy.handler.isProfileEnabled();
-
-    // Blocking on cookie syncing here introduces latency, we should consider
-    // ways to avoid it.
-    this.browserProxy.handler.syncWebviewCookies().then(async () => {
-      const isEnabled = (await enabledCheck).enabled;
-      if (!isEnabled) {
-        clearTimeout(this.maxWaitTimer);
-        this.maxWaitTimer = undefined;
-        clearTimeout(this.minHoldTimer);
-        this.minHoldTimer = undefined;
-        clearTimeout(this.preLoadingTimer);
-        this.preLoadingTimer = undefined;
-        this.showPanel('unavailablePanel');
-        return;
-      }
-
-      // Load the web client only after cookie sync is complete.
-      this.webview!.src = loadTimeData.getString('glicGuestURL');
-      this.showLoading(maxWaitTimeMs);
-    });
-  }
-
   // Destroy the current webview and create a new one. This is necessary because
   // webview does not support unloading content by setting src=""
   destroyWebview(): void {
@@ -221,74 +339,49 @@ export class GlicAppController {
     this.webview = this.createWebView();
   }
 
-  updateOnlineState(online: boolean): void {
-    if (this.webViewLoaded) {
+  online(): void {
+    if (this.simulateNoConnection) {
       return;
     }
-    if (online && !this.simulateNoConnection) {
-      this.beginLoadingSequence();
-    } else {
-      clearTimeout(this.maxWaitTimer);
-      this.maxWaitTimer = undefined;
-      clearTimeout(this.minHoldTimer);
-      this.minHoldTimer = undefined;
-      clearTimeout(this.preLoadingTimer);
-      this.preLoadingTimer = undefined;
-      this.destroyWebview();
-      this.showPanel('offlinePanel');
+    if (this.state !== 'offline') {
+      return;
+    }
+    this.setState('begin-load');
+  }
+
+  offline(): void {
+    const allowedStates = ['begin-load', 'show-loading', 'finish-loading'];
+    if (allowedStates.includes(this.state!)) {
+      this.setState('offline');
     }
   }
 
+  // External entry points - these methods are called from WebClientImpl and
+  // HostMessageHandler in glic_api_host.ts
+
+  // Called when the web client requests that the window size be changed.
   onGuestResizeRequest(request: {width: number, height: number}) {
     // Save most recently requested guest window size.
     this.lastWidth = request.width;
     this.lastHeight = request.height;
   }
 
-  showLoading(maxWaitTimeMs?: number): void {
-    this.minHoldTimer = setTimeout(() => {
-      this.minHoldTimer = undefined;
-      if (this.webViewLoaded) {
-        this.showGuest();
-      }
-    }, kMinHoldLoadingTimeMs);
-    this.maxWaitTimer = setTimeout(() => {
-      this.maxWaitTimer = undefined;
-      if (!this.webViewLoaded) {
-        this.destroyWebview();
-        this.showPanel('errorPanel');
-      }
-    }, maxWaitTimeMs ?? kMaxWaitTimeMs);
-
-    this.showPanel('loadingPanel');
-  }
-
   // Called when the notifyPanelWillOpen promise resolves to open the panel
   // when triggered from the browser.
-  openGuestPanel(): void {
-    this.guestPanelOpened = true;
-    this.showGuest();
+  webClientReady(): void {
+    if (this.state === 'begin-load' || this.state === 'finish-loading') {
+      this.setState('ready');
+    } else if (this.state === 'show-loading') {
+      this.setState('hold-loading');
+    }
   }
 
   // This may also be called when the panel is re-opened by webui after being
   // hidden, such as when an error panel is shown.
-  // This will do nothing if openGuestPanel has not been called at least once.
+  // This will do nothing if the app is not in 'ready' state.
   showGuest(): void {
-    if (this.guestPanelOpened) {
-      clearTimeout(this.maxWaitTimer);
-      this.maxWaitTimer = undefined;
-      this.webViewLoaded = true;
-      // Wait for at least one loading animation cycle
-      if (!this.minHoldTimer) {
-        this.showPanel('guestPanel');
-      }
+    if (this.state === 'ready') {
+      this.showPanel('guestPanel');
     }
-  }
-
-  // TODO(https://crbug.com/388328847): Remove when login issues are resolved.
-  showLogin(): void {
-    this.lastWidth = 400;
-    this.lastHeight = 800;
-    this.openGuestPanel();
   }
 }

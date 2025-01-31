@@ -508,8 +508,11 @@ BASE_FEATURE(kTabGroupsIPad,
 
 bool IsTabGroupInGridEnabled() {
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    return base::FeatureList::IsEnabled(kTabGroupsIPad) &&
-           base::FeatureList::IsEnabled(kModernTabStrip);
+    if (@available(iOS 17, *)) {
+      return base::FeatureList::IsEnabled(kTabGroupsIPad) &&
+             base::FeatureList::IsEnabled(kModernTabStrip);
+    }
+    return false;
   }
   return true;
 }

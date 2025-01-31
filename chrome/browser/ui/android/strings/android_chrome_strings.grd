@@ -6281,6 +6281,18 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_VERIFY_SHEET_TITLE" desc="Header for verify sheet for explicit sign-in.">
         Verifying…
       </message>
+      <message name="IDS_ACCOUNT_SELECTION_MULTI_IDP_SHEET_TITLE_EXPLICIT_SIGNIN" desc="Header for sign in sheet. Sheet is shown to prompt user to sign in to a website using an account from one of several identity providers." translateable="false">
+        Sign in to <ph name="SITE_ETLD_PLUS_ONE">%1$s<ex>rp.example</ex></ph>
+      </message>
+      <message name="IDS_ACCOUNT_SELECTION_MULTI_IDP_SHEET_TITLE_EXPLICIT_SIGNUP" desc="Header for sign up sheet. Sheet is shown to prompt user to sign up to a website using an account from one of several identity providers." translateable="false">
+        Sign up to <ph name="SITE_ETLD_PLUS_ONE">%1$s<ex>rp.example</ex></ph>
+      </message>
+      <message name="IDS_ACCOUNT_SELECTION_MULTI_IDP_SHEET_TITLE_EXPLICIT_USE" desc="Header for use sheet. Sheet is shown to prompt user to use a website using an account from one of several identity providers." translateable="false">
+        Use an account on <ph name="SITE_ETLD_PLUS_ONE">%1$s<ex>rp.com</ex></ph>
+      </message>
+      <message name="IDS_ACCOUNT_SELECTION_MULTI_IDP_SHEET_TITLE_EXPLICIT_CONTINUE" desc="Header for continue sheet. Sheet is shown to prompt user to continue to a website using an account from one of several identity providers." translateable="false">
+        Continue on <ph name="SITE_ETLD_PLUS_ONE">%1$s<ex>rp.com</ex></ph>
+      </message>
 
       <!-- HTTPS-First Mode settings strings -->
       <message name="IDS_SETTINGS_HTTPS_FIRST_MODE_TITLE" desc="Text for the HTTPS-First Mode toggle in settings.">

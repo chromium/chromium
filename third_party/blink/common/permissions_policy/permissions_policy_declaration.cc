@@ -16,11 +16,11 @@ ParsedPermissionsPolicyDeclaration::ParsedPermissionsPolicyDeclaration() =
     default;
 
 ParsedPermissionsPolicyDeclaration::ParsedPermissionsPolicyDeclaration(
-    network::mojom::PermissionsPolicyFeature feature)
+    mojom::PermissionsPolicyFeature feature)
     : feature(feature) {}
 
 ParsedPermissionsPolicyDeclaration::ParsedPermissionsPolicyDeclaration(
-    network::mojom::PermissionsPolicyFeature feature,
+    mojom::PermissionsPolicyFeature feature,
     const std::vector<blink::OriginWithPossibleWildcards>& allowed_origins,
     const std::optional<url::Origin>& self_if_matches,
     bool matches_all_origins,

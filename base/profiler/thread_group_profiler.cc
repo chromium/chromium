@@ -11,6 +11,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/profiler/periodic_sampling_scheduler.h"
+#include "base/profiler/sample_metadata.h"
 #include "base/profiler/sampling_profiler_thread_token.h"
 #include "base/profiler/stack_sampling_profiler.h"
 #include "base/profiler/thread_group_profiler_client.h"
@@ -58,6 +59,8 @@ ThreadGroupProfilerClient* g_thread_group_profiler_client = nullptr;
 // Run continuous profiling 2% of the time.
 constexpr double kFractionOfExecutionTimeToSample = 0.02;
 
+constexpr char kProfilerMetadataThreadGroupType[] = "ThreadGroupType";
+
 // Keep sampling new worker thread until last second of sampling duration.
 // This is intended as an performance optimization, i.e. it's not worth it to do
 // the whole StackSamplingProfiler set up just to get less than 10 samples. And
@@ -85,10 +88,10 @@ bool ThreadGroupProfiler::IsProfilingEnabled() {
 
 ThreadGroupProfiler::ThreadGroupProfiler(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
-    std::string_view thread_group_label,
+    int64_t thread_group_type,
     std::unique_ptr<PeriodicSamplingScheduler> periodic_sampling_scheduler,
     ProfilerFactory profiler_factory)
-    : thread_group_label_(thread_group_label),
+    : thread_group_type_(thread_group_type),
       periodic_sampling_scheduler_(std::move(periodic_sampling_scheduler)),
       task_runner_(std::move(task_runner)),
       stack_sampling_profiler_factory_(std::move(profiler_factory)) {
@@ -176,11 +179,13 @@ class ThreadGroupProfiler::ProfilerImpl : public ThreadGroupProfiler::Profiler {
 ThreadGroupProfiler::ActiveCollection::ActiveCollection(
     const flat_map<internal::WorkerThread*, WorkerThreadContext>&
         worker_thread_context_set,
+    int64_t thread_group_type,
     const TimeDelta& sampling_duration,
     SequencedTaskRunner* task_runner,
     ProfilerFactory factory,
     OnceClosure collection_complete_callback)
-    : task_runner_(task_runner),
+    : thread_group_type_(thread_group_type),
+      task_runner_(task_runner),
       stack_sampling_profiler_factory_(factory),
       collection_complete_callback_(std::move(collection_complete_callback)),
       sampling_duration_(sampling_duration),
@@ -195,6 +200,8 @@ ThreadGroupProfiler::ActiveCollection::ActiveCollection(
       std::unique_ptr<Profiler> profiler = CreateSamplingProfilerForThread(
           worker_thread, context.token, GetClient()->GetSamplingParams());
       profiler->Start();
+      AddProfileMetadataForThread(kProfilerMetadataThreadGroupType,
+                                  thread_group_type_, context.token.id);
       new_profilers.emplace_back(worker_thread, std::move(profiler));
     }
   }
@@ -235,6 +242,8 @@ void ThreadGroupProfiler::ActiveCollection::MaybeAddWorkerThread(
   std::unique_ptr<Profiler> profiler =
       CreateSamplingProfilerForThread(worker_thread, token, sampling_params);
   profiler->Start();
+  AddProfileMetadataForThread(kProfilerMetadataThreadGroupType,
+                              thread_group_type_, token.id);
   profilers_.emplace(worker_thread, std::move(profiler));
   // Cancel empty callback since there is a profiler running now.
   empty_collection_closure_.Cancel();
@@ -386,8 +395,8 @@ void ThreadGroupProfiler::CollectProfilesTask() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(task_runner_sequence_checker_);
   DCHECK(!active_collection_);
   active_collection_.emplace(
-      worker_thread_context_set_, GetSamplingDuration(), task_runner_.get(),
-      stack_sampling_profiler_factory_,
+      worker_thread_context_set_, thread_group_type_, GetSamplingDuration(),
+      task_runner_.get(), stack_sampling_profiler_factory_,
       BindOnce(&ThreadGroupProfiler::EndActiveCollectionTask,
                Unretained(this)));
 }

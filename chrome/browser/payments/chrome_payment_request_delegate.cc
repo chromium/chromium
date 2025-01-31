@@ -45,7 +45,7 @@
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "third_party/libaddressinput/chromium/chrome_metadata_source.h"
 #include "third_party/libaddressinput/chromium/chrome_storage_impl.h"
 
@@ -68,7 +68,7 @@ std::unique_ptr<::i18n::addressinput::Storage> GetAddressInputStorage() {
 bool FrameSupportsPayments(content::RenderFrameHost* rfh) {
   return rfh && rfh->IsActive() && rfh->IsRenderFrameLive() &&
          rfh->IsFeatureEnabled(
-             network::mojom::PermissionsPolicyFeature::kPayment);
+             blink::mojom::PermissionsPolicyFeature::kPayment);
 }
 
 }  // namespace

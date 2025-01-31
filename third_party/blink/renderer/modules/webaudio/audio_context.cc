@@ -272,7 +272,7 @@ AudioContext::AudioContext(LocalDOMWindow& window,
               MediaPlaybackWhileNotVisiblePermissionPolicyEnabled() &&
           RuntimeEnabledFeatures::AudioContextInterruptedStateEnabled() &&
           !GetExecutionContext()->IsFeatureEnabled(
-              network::mojom::PermissionsPolicyFeature::
+              mojom::blink::PermissionsPolicyFeature::
                   kMediaPlaybackWhileNotVisible,
               ReportOptions::kDoNotReport)),
       player_id_(GetNextMediaPlayerId()),

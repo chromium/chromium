@@ -996,6 +996,9 @@ TEST_P(NewTabPageHandlerMicrosoftAuthStateTest, OnAuthStateUpdated) {
 
   EXPECT_EQ(profile_->GetPrefs()->GetList(prefs::kNtpDisabledModules),
             expected_disabled_modules);
+  EXPECT_EQ(
+      profile_->GetPrefs()->GetList(prefs::kNtpCustomizeChromeHiddenModules),
+      expected_disabled_modules);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1093,10 +1096,18 @@ TEST_F(NewTabPageHandlerTest, SurveyLaunchSkippedEligibleModulesCriteria) {
   }
 }
 
-TEST_F(NewTabPageHandlerTest, SetModuleDisabledTriggersPageCall) {
+TEST_F(NewTabPageHandlerTest, SetModuleDisabled) {
+  base::Value::List disabled_modules_list;
+  EXPECT_EQ(disabled_modules_list,
+            profile_->GetPrefs()->GetList(prefs::kNtpDisabledModules));
+
   handler_->SetModuleDisabled(ntp_modules::kDriveModuleId, true);
   EXPECT_CALL(mock_page_, SetDisabledModules).Times(1);
   mock_page_.FlushForTesting();
+
+  disabled_modules_list.Append(ntp_modules::kDriveModuleId);
+  EXPECT_EQ(disabled_modules_list,
+            profile_->GetPrefs()->GetList(prefs::kNtpDisabledModules));
 }
 
 TEST_F(NewTabPageHandlerTest, ModulesVisiblePrefChangeTriggersPageCall) {

@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/ash/quick_answers/test/chrome_quick_answers_test_base.h"
+#include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/components/kiosk/kiosk_test_utils.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
@@ -19,6 +20,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "third_party/icu/source/common/unicode/locid.h"
@@ -89,23 +91,26 @@ class QuickAnswersStateAshTest : public ChromeQuickAnswersTestBase,
   // ChromeQuickAnswersTestBase:
   void SetUp() override {
     ChromeQuickAnswersTestBase::SetUp();
+
     CHECK(QuickAnswersState::Get()->prefs_initialized());
 
     observer_ = std::make_unique<TestQuickAnswersStateObserver>();
   }
 
   void SetUpInitialPrefValues() override {
-    prefs_ = static_cast<TestingPrefServiceSimple*>(
-        ash::Shell::Get()->session_controller()->GetPrimaryUserPrefService());
-    CHECK(prefs_);
+    EXPECT_EQ(
+        ash::Shell::Get()->session_controller()->GetPrimaryUserPrefService(),
+        prefs());
+    prefs()->SetString(language::prefs::kPreferredLanguages, "");
   }
 
-  TestingPrefServiceSimple* prefs() { return prefs_; }
+  sync_preferences::TestingPrefServiceSyncable* prefs() {
+    return GetProfile()->GetTestingPrefService();
+  }
 
   TestQuickAnswersStateObserver* observer() { return observer_.get(); }
 
  private:
-  raw_ptr<TestingPrefServiceSimple, DanglingUntriaged> prefs_ = nullptr;
   std::unique_ptr<TestQuickAnswersStateObserver> observer_;
 };
 
@@ -360,14 +365,20 @@ TEST_F(QuickAnswersStateAshEnabledTest, EnabledFromBeginning) {
          "turned on, i.e., consent status must be un-touched.";
 }
 
-TEST_P(QuickAnswersStateAshTest, ForceDisabledForKiosk) {
+class QuickAnswersStateAshKioskTest : public QuickAnswersStateAshTest {
+ public:
+  user_manager::User* StartUserSession() override {
+    // TODO(crbug.com/278643115): Consider to return Session instance by
+    // chromeos::SetUpFakeKioskSession().
+    chromeos::SetUpFakeKioskSession();
+    return user_manager::UserManager::Get()->GetActiveUser();
+  }
+};
+
+TEST_P(QuickAnswersStateAshKioskTest, ForceDisabledForKiosk) {
   QuickAnswersState::Get()->AddObserver(observer());
 
-  user_manager::ScopedUserManager user_manager(
-      std::make_unique<user_manager::FakeUserManager>());
-  chromeos::SetUpFakeKioskSession();
-
-  EXPECT_TRUE(chromeos::IsKioskSession());
+  ASSERT_TRUE(chromeos::IsKioskSession());
   prefs()->SetBoolean(quick_answers::prefs::kQuickAnswersEnabled, GetParam());
 
   EXPECT_FALSE(
@@ -378,5 +389,5 @@ TEST_P(QuickAnswersStateAshTest, ForceDisabledForKiosk) {
 }
 
 INSTANTIATE_TEST_SUITE_P(ForceDisabledForKiosk,
-                         QuickAnswersStateAshTest,
+                         QuickAnswersStateAshKioskTest,
                          testing::Bool());

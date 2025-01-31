@@ -29,7 +29,7 @@ class MockJniDelegate : public InputTransferHandlerAndroid::JniDelegate {
  public:
   ~MockJniDelegate() override = default;
 
-  MOCK_METHOD((bool), MaybeTransferInputToViz, (int), (override));
+  MOCK_METHOD((bool), MaybeTransferInputToViz, (int, float), (override));
 };
 
 }  // namespace
@@ -86,7 +86,7 @@ IN_PROC_BROWSER_TEST_F(InputOnVizBrowserTest, TransfersStateOnTouchDown) {
       ui::MotionEventAndroid::GetAndroidAction(action), 1, 0, 0, 0, 0, 0, 0, 0,
       0, 0, false, &p, nullptr);
 
-  EXPECT_CALL(*mock_jni, MaybeTransferInputToViz(_)).WillOnce(Return(true));
+  EXPECT_CALL(*mock_jni, MaybeTransferInputToViz(_, _)).WillOnce(Return(true));
   view->OnTouchEvent(touch);
 
   absl::Status status = ttp.StopAndParseTrace();

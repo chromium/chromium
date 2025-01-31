@@ -134,7 +134,7 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
                 Arrays.asList(mIdpData),
                 /* isAutoReauthn= */ false,
                 /* newAccounts= */ Collections.EMPTY_LIST);
-        mMediator.showRequestPermissionSheet(mNewUserAccount);
+        mMediator.showRequestPermissionModalSheet(mNewUserAccount);
 
         // For request permission dialog, we expect header + account chip + disclosure text +
         // continue button.
@@ -142,7 +142,8 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
 
         // There is no sheet account items because the account is shown in an account chip instead.
         assertEquals(0, mSheetAccountItems.size());
-        assertEquals(HeaderType.REQUEST_PERMISSION, mModel.get(ItemProperties.HEADER).get(TYPE));
+        assertEquals(
+                HeaderType.REQUEST_PERMISSION_MODAL, mModel.get(ItemProperties.HEADER).get(TYPE));
         assertTrue(containsItemOfType(mModel, ItemProperties.ACCOUNT_CHIP));
         assertTrue(containsItemOfType(mModel, ItemProperties.DATA_SHARING_CONSENT));
         assertTrue(containsItemOfType(mModel, ItemProperties.CONTINUE_BUTTON));
@@ -216,10 +217,12 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
                 /* isAutoReauthn= */ false,
                 mNewAccountsSingleNewAccount);
 
-        // Request permission dialog is NOT skipped for a single newly signed-in new account. Since
+        // Request permission modal dialog is NOT skipped for a single newly signed-in new account.
+        // Since
         // this is a new account and request permission is true, we need to show the request
-        // permission dialog to gather permission from the user.
-        assertEquals(HeaderType.REQUEST_PERMISSION, mModel.get(ItemProperties.HEADER).get(TYPE));
+        // permission modal dialog to gather permission from the user.
+        assertEquals(
+                HeaderType.REQUEST_PERMISSION_MODAL, mModel.get(ItemProperties.HEADER).get(TYPE));
     }
 
     @Test

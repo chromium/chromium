@@ -89,8 +89,8 @@ class ThreadGroupImplImplTestBase : public ThreadGroup::Delegate {
     service_thread_.Start();
     delayed_task_manager_.Start(service_thread_.task_runner());
     thread_group_ = std::make_unique<ThreadGroupImpl>(
-        "TestThreadGroup", "A", thread_type, task_tracker_.GetTrackedRef(),
-        tracked_ref_factory_.GetTrackedRef());
+        "TestThreadGroup", "A", thread_type, /*thread_group_type=*/0,
+        task_tracker_.GetTrackedRef(), tracked_ref_factory_.GetTrackedRef());
     ASSERT_TRUE(thread_group_);
 
     mock_pooled_task_runner_delegate_.SetThreadGroup(thread_group_.get());
@@ -1236,7 +1236,8 @@ class ThreadGroupImplOverCapacityTest : public ThreadGroupImplImplTestBase,
     delayed_task_manager_.Start(service_thread_.task_runner());
     thread_group_ = std::make_unique<ThreadGroupImpl>(
         "OverCapacityTestThreadGroup", "A", ThreadType::kDefault,
-        task_tracker_.GetTrackedRef(), tracked_ref_factory_.GetTrackedRef());
+        /*thread_group_type=*/0, task_tracker_.GetTrackedRef(),
+        tracked_ref_factory_.GetTrackedRef());
     ASSERT_TRUE(thread_group_);
 
     mock_pooled_task_runner_delegate_.SetThreadGroup(thread_group_.get());

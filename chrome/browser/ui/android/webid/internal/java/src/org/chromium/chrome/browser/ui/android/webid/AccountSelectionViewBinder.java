@@ -681,7 +681,8 @@ class AccountSelectionViewBinder {
                 || key == HeaderProperties.RP_CONTEXT
                 || key == HeaderProperties.RP_MODE
                 || key == HeaderProperties.IS_MULTIPLE_ACCOUNT_CHOOSER
-                || key == HeaderProperties.SET_FOCUS_VIEW_CALLBACK) {
+                || key == HeaderProperties.SET_FOCUS_VIEW_CALLBACK
+                || key == HeaderProperties.IS_MULTIPLE_IDPS) {
             TextView headerTitleText = view.findViewById(R.id.header_title);
             TextView headerSubtitleText = view.findViewById(R.id.header_subtitle);
             HeaderProperties.HeaderType headerType = model.get(HeaderProperties.TYPE);
@@ -691,7 +692,8 @@ class AccountSelectionViewBinder {
                             resources,
                             model.get(HeaderProperties.RP_FOR_DISPLAY),
                             model.get(HeaderProperties.RP_MODE),
-                            model.get(HeaderProperties.IS_MULTIPLE_ACCOUNT_CHOOSER));
+                            model.get(HeaderProperties.IS_MULTIPLE_ACCOUNT_CHOOSER),
+                            model.get(HeaderProperties.IS_MULTIPLE_IDPS));
             if (!subtitle.isEmpty()) {
                 headerTitleText.setPadding(
                         /* left= */ 0, /* top= */ 12, /* right= */ 0, /* bottom= */ 0);
@@ -712,7 +714,8 @@ class AccountSelectionViewBinder {
                             model.get(HeaderProperties.RP_FOR_DISPLAY),
                             model.get(HeaderProperties.IDP_FOR_DISPLAY),
                             model.get(HeaderProperties.RP_CONTEXT),
-                            model.get(HeaderProperties.RP_MODE));
+                            model.get(HeaderProperties.RP_MODE),
+                            model.get(HeaderProperties.IS_MULTIPLE_IDPS));
             if (headerTitleText.getText() != title
                     && model.get(HeaderProperties.SET_FOCUS_VIEW_CALLBACK) != null) {
                 model.get(HeaderProperties.SET_FOCUS_VIEW_CALLBACK).onResult(headerView);
@@ -752,7 +755,16 @@ class AccountSelectionViewBinder {
                 view.findViewById(R.id.header_divider)
                         .setVisibility(!progressBarVisible ? View.VISIBLE : View.GONE);
             }
+            if (key == HeaderProperties.IS_MULTIPLE_IDPS) {
+                // Do not reserve space for IDP icon if there are multiple IDPs.
+                ImageView headerIconView = (ImageView) view.findViewById(R.id.header_idp_icon);
+                if (model.get(HeaderProperties.IS_MULTIPLE_IDPS)) {
+                    headerIconView.setVisibility(View.GONE);
+                }
+            }
         } else if (key == HeaderProperties.IDP_BRAND_ICON) {
+            // There should not be an IDP icon when multi IDPs are used.
+            if (model.get(HeaderProperties.IS_MULTIPLE_IDPS)) return;
             Bitmap brandIcon = model.get(HeaderProperties.IDP_BRAND_ICON);
             if (brandIcon != null) {
                 int iconSize =
@@ -785,7 +797,7 @@ class AccountSelectionViewBinder {
                     brandIcon != null
                             && model.get(HeaderProperties.IDP_BRAND_ICON) != null
                             && model.get(HeaderProperties.TYPE)
-                                    == HeaderProperties.HeaderType.REQUEST_PERMISSION;
+                                    == HeaderProperties.HeaderType.REQUEST_PERMISSION_MODAL;
             headerIconView.setVisibility(isRpIconVisible ? View.VISIBLE : View.GONE);
             arrowRangeIcon.setVisibility(isRpIconVisible ? View.VISIBLE : View.GONE);
         } else if (key == HeaderProperties.CLOSE_ON_CLICK_LISTENER) {
@@ -820,9 +832,11 @@ class AccountSelectionViewBinder {
             String rpUrl,
             String idpUrl,
             @RpContext.EnumType int rpContext,
-            @RpMode.EnumType int rpMode) {
+            @RpMode.EnumType int rpMode,
+            Boolean isMultipleIdps) {
         @StringRes int titleStringId;
-        if (rpMode == RpMode.ACTIVE) {
+        // In single IDP active mode, show the title with RP and IDP.
+        if (rpMode == RpMode.ACTIVE && !isMultipleIdps) {
             switch (rpContext) {
                 case RpContext.SIGN_UP:
                     titleStringId =
@@ -842,11 +856,33 @@ class AccountSelectionViewBinder {
             return String.format(resources.getString(titleStringId), idpUrl);
         }
 
-        if (type == HeaderProperties.HeaderType.VERIFY) {
+        // In passive mode, we change the title when signing in the user.
+        if (rpMode == RpMode.PASSIVE && type == HeaderProperties.HeaderType.VERIFY) {
             return resources.getString(getVerifyHeaderStringId());
         }
-        if (type == HeaderProperties.HeaderType.VERIFY_AUTO_REAUTHN) {
+        if (rpMode == RpMode.PASSIVE && type == HeaderProperties.HeaderType.VERIFY_AUTO_REAUTHN) {
             return resources.getString(getVerifyHeaderAutoReauthnStringId());
+        }
+
+        // If there are multiple IDPs, show the title with just the RP.
+        if (isMultipleIdps) {
+            switch (rpContext) {
+                case RpContext.SIGN_UP:
+                    titleStringId =
+                            R.string.account_selection_multi_idp_sheet_title_explicit_signup;
+                    break;
+                case RpContext.USE:
+                    titleStringId = R.string.account_selection_multi_idp_sheet_title_explicit_use;
+                    break;
+                case RpContext.CONTINUE:
+                    titleStringId =
+                            R.string.account_selection_multi_idp_sheet_title_explicit_continue;
+                    break;
+                default:
+                    titleStringId =
+                            R.string.account_selection_multi_idp_sheet_title_explicit_signin;
+            }
+            return String.format(resources.getString(titleStringId), rpUrl);
         }
 
         switch (rpContext) {
@@ -869,8 +905,9 @@ class AccountSelectionViewBinder {
             Resources resources,
             String rpUrl,
             @RpMode.EnumType int rpMode,
-            Boolean isMultipleAccountChooser) {
-        if (rpMode == RpMode.PASSIVE) return "";
+            Boolean isMultipleAccountChooser,
+            Boolean isMultipleIdps) {
+        if (rpMode == RpMode.PASSIVE || isMultipleIdps) return "";
 
         if (isMultipleAccountChooser) {
             return String.format(
