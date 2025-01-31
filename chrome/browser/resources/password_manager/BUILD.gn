@@ -54,6 +54,7 @@ build_webui("build") {
     "checkup_details_section.ts",
     "checkup_list_item.ts",
     "checkup_section.ts",
+    "password_change_details.ts",
     "credential_details/credential_field.ts",
     "credential_details/credential_note.ts",
     "credential_details/passkey_details_card.ts",

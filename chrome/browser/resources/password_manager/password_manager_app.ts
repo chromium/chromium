@@ -9,6 +9,7 @@ import '/shared/settings/prefs/prefs.js';
 import './checkup_section.js';
 import './checkup_details_section.js';
 import './password_details_section.js';
+import './password_change_details.js';
 import './passwords_exporter.js';
 import './passwords_section.js';
 import './settings_section.js';
@@ -229,7 +230,8 @@ export class PasswordManagerAppElement extends PasswordManagerAppElementBase {
   override currentRouteChanged(route: Route): void {
     this.selectedPage_ = route.page;
     setTimeout(() => {  // Async to allow page to load.
-      if (route.page === Page.CHECKUP_DETAILS) {
+      if (route.page === Page.CHECKUP_DETAILS ||
+          route.page === Page.PASSWORD_CHANGE) {
         this.enableScrollObservation(false);
         this.setForceDropShadows(true);
       } else {
