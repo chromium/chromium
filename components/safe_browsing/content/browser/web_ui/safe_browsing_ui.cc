@@ -1798,6 +1798,9 @@ base::Value::Dict SerializeReferringAppInfo(
            ReferringAppInfo_ReferringAppSource_Name(info.referring_app_source));
   dict.Set("referring_app_info", info.referring_app_name);
   dict.Set("target_url", info.target_url.spec());
+  // Do not bother serializing referring_webapk_* here, because they are only
+  // populated for a WebAPK, and it is not possible to launch
+  // chrome://safe-browsing in a WebAPK, so they will never show up here.
   return dict;
 }
 #endif

@@ -5905,11 +5905,14 @@ ChromeContentBrowserClient::MaybeCreateSafeBrowsingURLLoaderThrottle(
   if (safe_browsing::IsEnhancedProtectionEnabled(*profile->GetPrefs()) &&
       base::FeatureList::IsEnabled(
           safe_browsing::kAddReferringAppInfoToProtegoPings)) {
+    bool get_webapk_info = base::FeatureList::IsEnabled(
+        safe_browsing::kAddReferringWebApkToProtegoPings);
     WebContents* web_contents = wc_getter.Run();
     if (web_contents) {
       referring_app_info =
           std::make_optional<safe_browsing::internal::ReferringAppInfo>(
-              safe_browsing::GetReferringAppInfo(web_contents));
+              safe_browsing::GetReferringAppInfo(web_contents,
+                                                 get_webapk_info));
     }
   }
 #endif

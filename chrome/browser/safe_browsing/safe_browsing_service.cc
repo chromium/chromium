@@ -328,7 +328,10 @@ SafeBrowsingServiceImpl::GetReferrerChainProviderFromBrowserContext(
 #if BUILDFLAG(IS_ANDROID)
 internal::ReferringAppInfo SafeBrowsingServiceImpl::GetReferringAppInfo(
     content::WebContents* web_contents) {
-  return safe_browsing::GetReferringAppInfo(web_contents);
+  // This is currently only used for the chrome://safe-browsing UI, which does
+  // not need WebAPK info.
+  return safe_browsing::GetReferringAppInfo(web_contents,
+                                            /*get_webapk_info=*/false);
 }
 #endif
 

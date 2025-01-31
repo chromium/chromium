@@ -1315,6 +1315,27 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.GetReferringAppInfo.WithWebApk.Duration"
+    units="ms" expires_after="2025-07-28">
+  <owner>chlily@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the elapsed time in GetReferringAppInfo() when requesting WebAPK
+    info to be retrieved from Java. This is recorded on a subset of calls for
+    which SafeBrowsing.GetReferringAppInfo.Duration is recorded.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.GetReferringAppInfo.WithWebApk.FoundWebApk"
+    enum="BooleanFound" expires_after="2025-07-28">
+  <owner>chlily@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether GetReferringAppInfo(), when requesting WebAPK info to be
+    retrieved from Java, found a valid WebAPK start_url.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.GmsSafeBrowsingApi.ApiExceptionStatusCode"
     enum="SafeBrowsingApiExceptionStatusCode" expires_after="2025-06-08">
   <owner>xinghuilu@chromium.org</owner>

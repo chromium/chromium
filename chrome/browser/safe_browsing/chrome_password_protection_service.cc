@@ -1882,8 +1882,10 @@ void ChromePasswordProtectionService::RemovePhishedSavedPasswordCredential(
 #if BUILDFLAG(IS_ANDROID)
 ReferringAppInfo ChromePasswordProtectionService::GetReferringAppInfo(
     content::WebContents* web_contents) {
-  internal::ReferringAppInfo info_struct =
-      safe_browsing::GetReferringAppInfo(web_contents);
+  // Do not get WebAPK info for PhishGuard. We don't consume referring WebAPK
+  // data for password reuse events.
+  internal::ReferringAppInfo info_struct = safe_browsing::GetReferringAppInfo(
+      web_contents, /*get_webapk_info=*/false);
   ReferringAppInfo info_proto;
   info_proto.set_referring_app_source(info_struct.referring_app_source);
   info_proto.set_referring_app_name(info_struct.referring_app_name);

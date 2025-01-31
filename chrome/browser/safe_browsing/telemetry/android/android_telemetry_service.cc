@@ -186,7 +186,8 @@ void AndroidTelemetryService::FillReferrerChain(download::DownloadItem* item) {
           : nullptr;
 
   if (web_contents) {
-    GURL intent_url = GetReferringAppInfo(web_contents).target_url;
+    GURL intent_url =
+        GetReferringAppInfo(web_contents, /*get_webapk_info=*/false).target_url;
     referrer_chain_result_[item].triggered_by_intent =
         intent_url == item->GetOriginalUrl();
   }

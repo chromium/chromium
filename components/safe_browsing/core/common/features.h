@@ -28,6 +28,10 @@ BASE_DECLARE_FEATURE(kAdSamplerTriggerFeature);
 #if BUILDFLAG(IS_ANDROID)
 // Enables adding an Android app referrer to Protego pings.
 BASE_DECLARE_FEATURE(kAddReferringAppInfoToProtegoPings);
+
+// Enables adding a WebAPK referrer to Protego pings. (This is a no-op if
+// `kAddReferringAppInfoToProtegoPings` is not enabled.)
+BASE_DECLARE_FEATURE(kAddReferringWebApkToProtegoPings);
 #endif
 
 // Enables adding warning shown timestamp to client safe browsing report.

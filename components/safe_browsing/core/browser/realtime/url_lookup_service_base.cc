@@ -610,6 +610,7 @@ std::unique_ptr<RTLookupRequest> RealTimeUrlLookupServiceBase::FillRequestProto(
         referring_app_info.value().referring_app_name);
     referring_app_info_proto.set_referring_app_source(
         referring_app_info.value().referring_app_source);
+    // TODO(chlily): Populate WebAPK fields.
     *request->mutable_referring_app_info() =
         std::move(referring_app_info_proto);
   }
