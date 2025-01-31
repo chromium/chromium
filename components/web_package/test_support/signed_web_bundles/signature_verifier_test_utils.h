@@ -12,26 +12,20 @@
 #include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.h"
 #include "components/web_package/signed_web_bundles/types.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace web_package::test {
 
-// A fake signature verifier that invokes `on_verify_signatures_` on each
-// verification and responds with a deferred result depending on the supplied
-// `error_`.
-class FakeSignatureVerifier : public SignedWebBundleSignatureVerifier {
+class MockSignatureVerifier : public SignedWebBundleSignatureVerifier {
  public:
-  explicit FakeSignatureVerifier(
-      std::optional<SignedWebBundleSignatureVerifier::Error> error,
-      base::RepeatingClosure on_verify_signatures = base::DoNothing());
-  ~FakeSignatureVerifier() override;
-
-  void VerifySignatures(base::File file,
-                        SignedWebBundleIntegrityBlock integrity_block,
-                        SignatureVerificationCallback callback) const override;
-
- private:
-  std::optional<SignedWebBundleSignatureVerifier::Error> error_;
-  base::RepeatingClosure on_verify_signatures_;
+  MockSignatureVerifier();
+  ~MockSignatureVerifier() override;
+  MOCK_METHOD(void,
+              VerifySignatures,
+              (base::File file,
+               SignedWebBundleIntegrityBlock integrity_block,
+               SignatureVerificationCallback callback),
+              (const, override));
 };
 
 mojom::BundleIntegrityBlockSignatureStackEntryPtr MakeSignatureStackEntry(

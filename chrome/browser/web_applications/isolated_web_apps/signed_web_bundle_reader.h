@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/files/file_path.h"
@@ -105,10 +106,7 @@ class SignedWebBundleReader {
   // the Web Bundle will result in an error.
   static std::unique_ptr<SignedWebBundleReader> Create(
       const base::FilePath& web_bundle_path,
-      const std::optional<GURL>& base_url,
-      std::unique_ptr<
-          web_package::SignedWebBundleSignatureVerifier> signature_verifier =
-          std::make_unique<web_package::SignedWebBundleSignatureVerifier>());
+      const std::optional<GURL>& base_url);
 
   // Starts reading the Signed Web Bundle. This will invoke
   // `integrity_block_result_callback` after reading the integrity block, which
@@ -205,12 +203,13 @@ class SignedWebBundleReader {
 
   base::WeakPtr<SignedWebBundleReader> AsWeakPtr();
 
+  static base::AutoReset<web_package::SignedWebBundleSignatureVerifier*>
+  SetSignatureVerifierForTesting(
+      web_package::SignedWebBundleSignatureVerifier*);
+
  private:
-  explicit SignedWebBundleReader(
-      const base::FilePath& web_bundle_path,
-      const std::optional<GURL>& base_url,
-      std::unique_ptr<web_package::SignedWebBundleSignatureVerifier>
-          signature_verifier);
+  explicit SignedWebBundleReader(const base::FilePath& web_bundle_path,
+                                 const std::optional<GURL>& base_url);
 
   void OnFileOpened(
       IntegrityBlockReadResultCallback integrity_block_result_callback,
@@ -267,10 +266,10 @@ class SignedWebBundleReader {
   void OnFileClosed(base::OnceClosure callback);
   void ReplyClosedIfNecessary();
 
-  State state_ = State::kUninitialized;
+  web_package::SignedWebBundleSignatureVerifier& GetSignatureVerifier();
 
-  std::unique_ptr<web_package::SignedWebBundleSignatureVerifier>
-      signature_verifier_;
+  State state_ = State::kUninitialized;
+  web_package::SignedWebBundleSignatureVerifier signature_verifier_;
 
   // Integrity Block
   std::optional<web_package::SignedWebBundleIntegrityBlock> integrity_block_;

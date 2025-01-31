@@ -9,13 +9,14 @@
 #include <string>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/repeating_test_future.h"
@@ -55,6 +56,7 @@ using IntegrityBlockErrorForTesting =
 
 using base::test::ErrorIs;
 using base::test::HasValue;
+using base::test::RunOnceCallback;
 using testing::Eq;
 using testing::IsTrue;
 using testing::Message;
@@ -134,8 +136,6 @@ class SignedWebBundleReaderWithRealBundlesTest : public testing::Test {
       SignedWebBundleReader::ReadErrorCallback callback,
       VerificationAction verification_action =
           VerificationAction::ContinueAndVerifySignatures(),
-      std::optional<web_package::SignedWebBundleSignatureVerifier::Error>
-          signature_verifier_error = std::nullopt,
       const std::string test_file_data = kHtmlString) {
     base::FilePath swbn_file_path =
         temp_dir_.GetPath().Append(base::FilePath::FromASCII("bundle.swbn"));
@@ -147,10 +147,7 @@ class SignedWebBundleReaderWithRealBundlesTest : public testing::Test {
                               ? build_options.base_url_.value()
                               : kUrl;
     std::unique_ptr<SignedWebBundleReader> reader =
-        SignedWebBundleReader::Create(
-            swbn_file_path, base_url,
-            std::make_unique<web_package::test::FakeSignatureVerifier>(
-                signature_verifier_error));
+        SignedWebBundleReader::Create(swbn_file_path, base_url);
 
     StartReadingIntegrityBlock(reader.get(), std::move(verification_action),
                                std::move(callback),
@@ -163,6 +160,12 @@ class SignedWebBundleReaderWithRealBundlesTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
   const GURL kUrl = GURL("https://example.com");
   constexpr static char kHtmlString[] = "test";
+  testing::StrictMock<web_package::test::MockSignatureVerifier>
+      signature_verifier_;
+  base::AutoReset<web_package::SignedWebBundleSignatureVerifier*>
+      reset_signature_verifier_ =
+          web_app::SignedWebBundleReader::SetSignatureVerifierForTesting(
+              &signature_verifier_);
 };
 
 // Note that Isolated Web Apps (IWAs) don't support having primary URLs, but the
@@ -170,9 +173,10 @@ class SignedWebBundleReaderWithRealBundlesTest : public testing::Test {
 // compatible with IWAs. Also, when baseURL is empty, relative URLs are used.
 TEST_F(SignedWebBundleReaderWithRealBundlesTest,
        ReadValidWebBundleWithPrimaryUrlAndRelativeUrls) {
+  EXPECT_CALL(signature_verifier_, VerifySignatures)
+      .WillOnce(RunOnceCallback<2>(base::ok()));
   base::test::TestFuture<base::expected<void, UnusableSwbnFileError>>
       parse_status_future;
-
   auto reader = CreateReaderAndInitialize(
       TestSignedWebBundleBuilder::BuildOptions().SetPrimaryUrl(kUrl),
       parse_status_future.GetCallback());
@@ -189,9 +193,10 @@ TEST_F(SignedWebBundleReaderWithRealBundlesTest,
 }
 
 TEST_F(SignedWebBundleReaderWithRealBundlesTest, ReadValidResponse) {
+  EXPECT_CALL(signature_verifier_, VerifySignatures)
+      .WillOnce(RunOnceCallback<2>(base::ok()));
   base::test::TestFuture<base::expected<void, UnusableSwbnFileError>>
       parse_status_future;
-
   auto reader =
       CreateReaderAndInitialize(TestSignedWebBundleBuilder::BuildOptions()
                                     .SetBaseUrl(kUrl)
@@ -227,7 +232,6 @@ TEST_F(SignedWebBundleReaderWithRealBundlesTest,
        ReadIntegrityBlockWithInvalidVersion) {
   base::test::TestFuture<base::expected<void, UnusableSwbnFileError>>
       parse_status_future;
-
   auto reader = CreateReaderAndInitialize(
       TestSignedWebBundleBuilder::BuildOptions()
           .SetBaseUrl(kUrl)
@@ -250,7 +254,6 @@ TEST_F(SignedWebBundleReaderWithRealBundlesTest,
        ReadIntegrityBlockWithInvalidStructure) {
   base::test::TestFuture<base::expected<void, UnusableSwbnFileError>>
       parse_status_future;
-
   auto reader = CreateReaderAndInitialize(
       TestSignedWebBundleBuilder::BuildOptions()
           .SetBaseUrl(kUrl)
@@ -271,7 +274,6 @@ TEST_F(SignedWebBundleReaderWithRealBundlesTest,
 TEST_F(SignedWebBundleReaderWithRealBundlesTest, ReadIntegrityBlockAndAbort) {
   base::test::TestFuture<base::expected<void, UnusableSwbnFileError>>
       parse_status_future;
-
   auto reader = CreateReaderAndInitialize(
       TestSignedWebBundleBuilder::BuildOptions().SetBaseUrl(kUrl),
       parse_status_future.GetCallback(),
@@ -291,9 +293,10 @@ TEST_F(SignedWebBundleReaderWithRealBundlesTest, ReadIntegrityBlockAndAbort) {
 }
 
 TEST_F(SignedWebBundleReaderWithRealBundlesTest, Close) {
+  EXPECT_CALL(signature_verifier_, VerifySignatures)
+      .WillOnce(RunOnceCallback<2>(base::ok()));
   base::test::TestFuture<base::expected<void, UnusableSwbnFileError>>
       parse_status_future;
-
   auto reader =
       CreateReaderAndInitialize(TestSignedWebBundleBuilder::BuildOptions()
                                     .SetBaseUrl(kUrl)
@@ -370,8 +373,6 @@ class SignedWebBundleReaderTest : public testing::Test {
       SignedWebBundleReader::ReadErrorCallback callback,
       VerificationAction verification_action =
           VerificationAction::ContinueAndVerifySignatures(),
-      std::optional<web_package::SignedWebBundleSignatureVerifier::Error>
-          signature_verifier_error = std::nullopt,
       const std::optional<GURL>& base_url = std::nullopt,
       const std::string test_file_data = kResponseBody) {
     // Provide a buffer that contains the contents of just a single
@@ -389,10 +390,7 @@ class SignedWebBundleReaderTest : public testing::Test {
             base::Unretained(parser_factory_.get())));
 
     std::unique_ptr<SignedWebBundleReader> reader =
-        SignedWebBundleReader::Create(
-            temp_file_path, base_url,
-            std::make_unique<web_package::test::FakeSignatureVerifier>(
-                signature_verifier_error));
+        SignedWebBundleReader::Create(temp_file_path, base_url);
 
     StartReadingIntegrityBlock(reader.get(), std::move(verification_action),
                                std::move(callback),
@@ -438,15 +436,20 @@ class SignedWebBundleReaderTest : public testing::Test {
 
   constexpr static char kResponseBody[] = "test";
   web_package::mojom::BundleResponsePtr response_;
+  testing::StrictMock<web_package::test::MockSignatureVerifier>
+      signature_verifier_;
+  base::AutoReset<web_package::SignedWebBundleSignatureVerifier*>
+      reset_signature_verifier_ =
+          web_app::SignedWebBundleReader::SetSignatureVerifierForTesting(
+              &signature_verifier_);
 };
 
 TEST(SignedWebBundleReaderFileFalureTest, CantOpenFile) {
   base::test::TaskEnvironment env;
   base::FilePath file_path = base::FilePath::FromASCII("does-not-exist.swbn");
 
-  std::unique_ptr<SignedWebBundleReader> reader = SignedWebBundleReader::Create(
-      file_path, std::nullopt,
-      std::make_unique<web_package::test::FakeSignatureVerifier>(std::nullopt));
+  std::unique_ptr<SignedWebBundleReader> reader =
+      SignedWebBundleReader::Create(file_path, std::nullopt);
 
   base::test::TestFuture<base::expected<
       web_package::SignedWebBundleIntegrityBlock, UnusableSwbnFileError>>
@@ -460,9 +463,12 @@ TEST(SignedWebBundleReaderFileFalureTest, CantOpenFile) {
 }
 
 TEST_F(SignedWebBundleReaderTest, ReadValidIntegrityBlockAndMetadata) {
+  EXPECT_CALL(signature_verifier_, VerifySignatures)
+      .WillOnce(RunOnceCallback<2>(base::ok()));
   base::test::TestFuture<base::expected<void, UnusableSwbnFileError>>
       parse_status_future;
   base::HistogramTester histogram_tester;
+
   auto reader = CreateReaderAndInitialize(parse_status_future.GetCallback());
 
   parser_factory_->RunIntegrityBlockCallback(integrity_block_->Clone());
@@ -524,11 +530,13 @@ class SignedWebBundleReaderSignatureVerificationErrorTest
 
 TEST_P(SignedWebBundleReaderSignatureVerificationErrorTest,
        SignatureVerificationError) {
+  EXPECT_CALL(signature_verifier_, VerifySignatures)
+      .WillOnce(RunOnceCallback<2>(base::unexpected(GetParam())));
   base::test::TestFuture<base::expected<void, UnusableSwbnFileError>>
       parse_status_future;
   auto reader = CreateReaderAndInitialize(
       parse_status_future.GetCallback(),
-      VerificationAction::ContinueAndVerifySignatures(), GetParam());
+      VerificationAction::ContinueAndVerifySignatures());
 
   parser_factory_->RunIntegrityBlockCallback(integrity_block_->Clone());
 
@@ -559,11 +567,10 @@ TEST_F(SignedWebBundleReaderTest,
        ReadIntegrityBlockAndSkipSignatureVerification) {
   base::test::TestFuture<base::expected<void, UnusableSwbnFileError>>
       parse_status_future;
+
   auto reader = CreateReaderAndInitialize(
       parse_status_future.GetCallback(),
-      VerificationAction::ContinueAndSkipSignatureVerification(),
-      web_package::SignedWebBundleSignatureVerifier::Error::ForInvalidSignature(
-          "invalid signature"));
+      VerificationAction::ContinueAndSkipSignatureVerification());
 
   parser_factory_->RunIntegrityBlockCallback(integrity_block_.Clone());
   parser_factory_->RunMetadataCallback(integrity_block_->size,
@@ -577,6 +584,8 @@ TEST_F(SignedWebBundleReaderTest,
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(SignedWebBundleReaderTest, ReadMetadataError) {
+  EXPECT_CALL(signature_verifier_, VerifySignatures)
+      .WillOnce(RunOnceCallback<2>(base::ok()));
   base::test::TestFuture<base::expected<void, UnusableSwbnFileError>>
       parse_status_future;
   auto reader = CreateReaderAndInitialize(parse_status_future.GetCallback());
@@ -596,6 +605,8 @@ TEST_F(SignedWebBundleReaderTest, ReadMetadataError) {
 }
 
 TEST_F(SignedWebBundleReaderTest, ReadMetadataWithParserCrash) {
+  EXPECT_CALL(signature_verifier_, VerifySignatures)
+      .WillOnce(RunOnceCallback<2>(base::ok()));
   parser_factory_->SimulateParseMetadataCrash();
   base::test::TestFuture<base::expected<void, UnusableSwbnFileError>>
       parse_status_future;
@@ -613,6 +624,8 @@ TEST_F(SignedWebBundleReaderTest, ReadMetadataWithParserCrash) {
 }
 
 TEST_F(SignedWebBundleReaderTest, ReadResponse) {
+  EXPECT_CALL(signature_verifier_, VerifySignatures)
+      .WillOnce(RunOnceCallback<2>(base::ok()));
   base::test::TestFuture<base::expected<void, UnusableSwbnFileError>>
       parse_status_future;
   auto reader = CreateReaderAndInitialize(parse_status_future.GetCallback());
@@ -638,6 +651,8 @@ TEST_F(SignedWebBundleReaderTest, ReadResponse) {
 }
 
 TEST_F(SignedWebBundleReaderTest, ReadResponseWithFragment) {
+  EXPECT_CALL(signature_verifier_, VerifySignatures)
+      .WillOnce(RunOnceCallback<2>(base::ok()));
   base::test::TestFuture<base::expected<void, UnusableSwbnFileError>>
       parse_status_future;
   auto reader = CreateReaderAndInitialize(parse_status_future.GetCallback());
@@ -665,6 +680,8 @@ TEST_F(SignedWebBundleReaderTest, ReadResponseWithFragment) {
 }
 
 TEST_F(SignedWebBundleReaderTest, ReadNonExistingResponseWithPath) {
+  EXPECT_CALL(signature_verifier_, VerifySignatures)
+      .WillOnce(RunOnceCallback<2>(base::ok()));
   base::test::TestFuture<base::expected<void, UnusableSwbnFileError>>
       parse_status_future;
   auto reader = CreateReaderAndInitialize(parse_status_future.GetCallback());
@@ -698,6 +715,8 @@ TEST_F(SignedWebBundleReaderTest, ReadNonExistingResponseWithPath) {
 }
 
 TEST_F(SignedWebBundleReaderTest, ReadNonExistingResponseWithQuery) {
+  EXPECT_CALL(signature_verifier_, VerifySignatures)
+      .WillOnce(RunOnceCallback<2>(base::ok()));
   base::test::TestFuture<base::expected<void, UnusableSwbnFileError>>
       parse_status_future;
   auto reader = CreateReaderAndInitialize(parse_status_future.GetCallback());
@@ -731,6 +750,8 @@ TEST_F(SignedWebBundleReaderTest, ReadNonExistingResponseWithQuery) {
 }
 
 TEST_F(SignedWebBundleReaderTest, ReadResponseError) {
+  EXPECT_CALL(signature_verifier_, VerifySignatures)
+      .WillOnce(RunOnceCallback<2>(base::ok()));
   base::test::TestFuture<base::expected<void, UnusableSwbnFileError>>
       parse_status_future;
   auto reader = CreateReaderAndInitialize(parse_status_future.GetCallback());
@@ -758,6 +779,8 @@ TEST_F(SignedWebBundleReaderTest, ReadResponseError) {
 }
 
 TEST_F(SignedWebBundleReaderTest, ReadResponseWithParserDisconnect) {
+  EXPECT_CALL(signature_verifier_, VerifySignatures)
+      .WillOnce(RunOnceCallback<2>(base::ok()));
   base::test::TestFuture<base::expected<void, UnusableSwbnFileError>>
       parse_status_future;
   auto reader = CreateReaderAndInitialize(parse_status_future.GetCallback());
@@ -804,6 +827,8 @@ TEST_F(SignedWebBundleReaderTest, ReadResponseWithParserDisconnect) {
 
 
 TEST_F(SignedWebBundleReaderTest, ReadResponseWithParserCrash) {
+  EXPECT_CALL(signature_verifier_, VerifySignatures)
+      .WillOnce(RunOnceCallback<2>(base::ok()));
   parser_factory_->SimulateParseResponseCrash();
   base::test::TestFuture<base::expected<void, UnusableSwbnFileError>>
       parse_status_future;
@@ -834,6 +859,8 @@ TEST_F(SignedWebBundleReaderTest, ReadResponseWithParserCrash) {
 }
 
 TEST_F(SignedWebBundleReaderTest, ReadResponseBody) {
+  EXPECT_CALL(signature_verifier_, VerifySignatures)
+      .WillOnce(RunOnceCallback<2>(base::ok()));
   base::test::TestFuture<base::expected<void, UnusableSwbnFileError>>
       parse_status_future;
   auto reader = CreateReaderAndInitialize(parse_status_future.GetCallback());
@@ -860,6 +887,8 @@ TEST_F(SignedWebBundleReaderTest, ReadResponseBody) {
 }
 
 TEST_F(SignedWebBundleReaderTest, CloseWhileReadingResponseBody) {
+  EXPECT_CALL(signature_verifier_, VerifySignatures)
+      .WillOnce(RunOnceCallback<2>(base::ok()));
   base::test::TestFuture<base::expected<void, UnusableSwbnFileError>>
       parse_status_future;
   auto reader = CreateReaderAndInitialize(parse_status_future.GetCallback());
@@ -907,6 +936,8 @@ TEST_F(SignedWebBundleReaderTest, CloseWhileReadingResponseBody) {
 }
 
 TEST_F(SignedWebBundleReaderTest, ResponseBodyEndDoesntFitInUint64) {
+  EXPECT_CALL(signature_verifier_, VerifySignatures)
+      .WillOnce(RunOnceCallback<2>(base::ok()));
   base::test::TestFuture<base::expected<void, UnusableSwbnFileError>>
       parse_status_future;
   auto reader = CreateReaderAndInitialize(parse_status_future.GetCallback());
@@ -950,6 +981,8 @@ class SignedWebBundleReaderBaseUrlTest
 };
 
 TEST_P(SignedWebBundleReaderBaseUrlTest, IsPassedThroughCorrectly) {
+  EXPECT_CALL(signature_verifier_, VerifySignatures)
+      .WillOnce(RunOnceCallback<2>(base::ok()));
   base::test::RepeatingTestFuture<std::optional<GURL>> on_create_parser_future;
   parser_factory_ = std::make_unique<web_package::MockWebBundleParserFactory>(
       on_create_parser_future.GetCallback());
@@ -958,8 +991,7 @@ TEST_P(SignedWebBundleReaderBaseUrlTest, IsPassedThroughCorrectly) {
       parse_status_future;
   auto reader = CreateReaderAndInitialize(
       parse_status_future.GetCallback(),
-      VerificationAction::ContinueAndVerifySignatures(), std::nullopt,
-      base_url_);
+      VerificationAction::ContinueAndVerifySignatures(), base_url_);
 
   parser_factory_->RunIntegrityBlockCallback(integrity_block_->Clone());
   parser_factory_->RunMetadataCallback(integrity_block_->size,

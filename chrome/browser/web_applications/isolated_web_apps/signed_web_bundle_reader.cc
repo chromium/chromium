@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/containers/to_vector.h"
@@ -89,16 +90,14 @@ void OpenFileDataSource(
       std::move(open_callback));
 }
 
+web_package::SignedWebBundleSignatureVerifier*
+    g_signature_verifier_for_testing = nullptr;
 }  // namespace
 
 SignedWebBundleReader::SignedWebBundleReader(
     const base::FilePath& web_bundle_path,
-    const std::optional<GURL>& base_url,
-    std::unique_ptr<web_package::SignedWebBundleSignatureVerifier>
-        signature_verifier)
-    : signature_verifier_(std::move(signature_verifier)),
-      web_bundle_path_(web_bundle_path),
-      base_url_(base_url) {}
+    const std::optional<GURL>& base_url)
+    : web_bundle_path_(web_bundle_path), base_url_(base_url) {}
 
 SignedWebBundleReader::~SignedWebBundleReader() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -110,11 +109,8 @@ SignedWebBundleReader::~SignedWebBundleReader() {
 // static
 std::unique_ptr<SignedWebBundleReader> SignedWebBundleReader::Create(
     const base::FilePath& web_bundle_path,
-    const std::optional<GURL>& base_url,
-    std::unique_ptr<web_package::SignedWebBundleSignatureVerifier>
-        signature_verifier) {
-  return base::WrapUnique(new SignedWebBundleReader(
-      web_bundle_path, base_url, std::move(signature_verifier)));
+    const std::optional<GURL>& base_url) {
+  return base::WrapUnique(new SignedWebBundleReader(web_bundle_path, base_url));
 }
 
 void SignedWebBundleReader::Close(base::OnceClosure callback) {
@@ -244,7 +240,7 @@ void SignedWebBundleReader::OnFileLengthRead(
 
   CHECK(integrity_block_.has_value())
       << "The integrity block must have been read before verifying signatures.";
-  signature_verifier_->VerifySignatures(
+  GetSignatureVerifier().VerifySignatures(
       file_->Duplicate(), *integrity_block_,
       base::BindOnce(&SignedWebBundleReader::OnSignaturesVerified,
                      weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now(),
@@ -446,8 +442,28 @@ void SignedWebBundleReader::ReplyClosedIfNecessary() {
   }
 }
 
+web_package::SignedWebBundleSignatureVerifier&
+SignedWebBundleReader::GetSignatureVerifier() {
+  if (g_signature_verifier_for_testing) {
+    return *g_signature_verifier_for_testing;
+  } else {
+    return signature_verifier_;
+  }
+}
+
 base::WeakPtr<SignedWebBundleReader> SignedWebBundleReader::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
+}
+
+// static
+base::AutoReset<web_package::SignedWebBundleSignatureVerifier*>
+SignedWebBundleReader::SetSignatureVerifierForTesting(
+    web_package::SignedWebBundleSignatureVerifier* verifier) {
+  CHECK_IS_TEST();
+
+  base::AutoReset<web_package::SignedWebBundleSignatureVerifier*> resetter(
+      &g_signature_verifier_for_testing, verifier);
+  return resetter;
 }
 
 // static
