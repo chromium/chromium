@@ -237,11 +237,10 @@ std::unique_ptr<DragImage> DragImage::Create(const KURL& url,
             (kLabelBorderYOffset + url_font_data->GetFontMetrics().Descent()));
     TextRun text_run(url_string);
     if (RuntimeEnabledFeatures::DragImageNoNodeIdEnabled()) {
-      url_font.DrawText(&resource_provider->Canvas(),
-                        TextRunPaintInfo(text_run), text_pos, text_paint);
+      url_font.DrawText(&resource_provider->Canvas(), text_run, text_pos,
+                        text_paint);
     } else {
-      url_font.DrawText(&resource_provider->Canvas(),
-                        TextRunPaintInfo(text_run), text_pos,
+      url_font.DrawText(&resource_provider->Canvas(), text_run, text_pos,
                         device_scale_factor, text_paint);
     }
   }

@@ -71,7 +71,6 @@ class PaintController;
 class Path;
 class StrokeData;
 class StyledStrokeData;
-struct TextRunPaintInfo;
 
 // Tiling parameters for the DrawImageTiled() method.
 struct ImageTilingInfo {
@@ -403,7 +402,7 @@ class PLATFORM_EXPORT GraphicsContext {
                 const AutoDarkMode& auto_dark_mode);
 
   void DrawEmphasisMarks(const Font&,
-                         const TextRunPaintInfo&,
+                         const TextRun&,
                          const AtomicString& mark,
                          const gfx::PointF&,
                          const AutoDarkMode& auto_dark_mode);
@@ -414,7 +413,7 @@ class PLATFORM_EXPORT GraphicsContext {
                          const AutoDarkMode& auto_dark_mode);
 
   void DrawBidiText(const Font&,
-                    const TextRunPaintInfo&,
+                    const TextRun&,
                     const gfx::PointF&,
                     const AutoDarkMode& auto_dark_mode);
 

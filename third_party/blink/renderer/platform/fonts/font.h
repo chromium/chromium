@@ -89,12 +89,12 @@ class PLATFORM_EXPORT Font {
   };
 
   void DrawText(cc::PaintCanvas*,
-                const TextRunPaintInfo&,
+                const TextRun&,
                 const gfx::PointF&,
                 const cc::PaintFlags&,
                 DrawType = DrawType::kGlyphsOnly) const;
   void DrawText(cc::PaintCanvas*,
-                const TextRunPaintInfo&,
+                const TextRun&,
                 const gfx::PointF&,
                 cc::NodeId node_id,
                 const cc::PaintFlags&,
@@ -112,7 +112,7 @@ class PLATFORM_EXPORT Font {
                     const cc::PaintFlags&,
                     DrawType = DrawType::kGlyphsOnly) const;
   void DrawEmphasisMarks(cc::PaintCanvas*,
-                         const TextRunPaintInfo&,
+                         const TextRun&,
                          const AtomicString& mark,
                          const gfx::PointF&,
                          const cc::PaintFlags&) const;

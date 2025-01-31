@@ -92,11 +92,10 @@ void EmbeddedObjectPainter::PaintReplaced(const PaintInfo& paint_info,
   gfx::RectF text_rect(gfx::PointF(), text_geometry);
   text_rect.Offset(gfx::PointF(content_rect.Center()) -
                    text_rect.CenterPoint());
-  TextRunPaintInfo run_info(text_run);
   context.SetFillColor(Color::FromSkColor(
       ScaleAlpha(SK_ColorBLACK, kReplacementTextTextOpacity)));
   context.DrawBidiText(
-      font, run_info,
+      font, text_run,
       text_rect.origin() +
           gfx::Vector2dF(0, font_data->GetFontMetrics().Ascent()),
       auto_dark_mode);
