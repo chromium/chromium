@@ -181,7 +181,7 @@ void Font::DrawText(cc::PaintCanvas* canvas,
 
   CachingWordShaper word_shaper(*this);
   ShapeResultBuffer buffer;
-  word_shaper.FillResultBuffer(run_info, &buffer);
+  word_shaper.FillResultBuffer(run_info.run, &buffer);
   ShapeResultBloberizer::FillGlyphs bloberizer(
       GetFontDescription(), run_info, buffer,
       draw_type == Font::DrawType::kGlyphsOnly
@@ -277,7 +277,7 @@ bool Font::DrawBidiText(cc::PaintCanvas* canvas,
     }
 
     ShapeResultBuffer buffer;
-    word_shaper.FillResultBuffer(subrun_info, &buffer);
+    word_shaper.FillResultBuffer(subrun, &buffer);
 
     // Fix regression with -ftrivial-auto-var-init=pattern. See
     // crbug.com/1055652.
@@ -318,7 +318,7 @@ void Font::DrawEmphasisMarks(cc::PaintCanvas* canvas,
 
   CachingWordShaper word_shaper(*this);
   ShapeResultBuffer buffer;
-  word_shaper.FillResultBuffer(run_info, &buffer);
+  word_shaper.FillResultBuffer(run_info.run, &buffer);
   ShapeResultBloberizer::FillTextEmphasisGlyphs bloberizer(
       GetFontDescription(), run_info, buffer, emphasis_glyph_data);
   DrawBlobs(canvas, flags, bloberizer.Blobs(), point);
@@ -477,7 +477,7 @@ void Font::GetTextIntercepts(const TextRunPaintInfo& run_info,
 
   CachingWordShaper word_shaper(*this);
   ShapeResultBuffer buffer;
-  word_shaper.FillResultBuffer(run_info, &buffer);
+  word_shaper.FillResultBuffer(run_info.run, &buffer);
   ShapeResultBloberizer::FillGlyphs bloberizer(
       GetFontDescription(), run_info, buffer,
       ShapeResultBloberizer::Type::kTextIntercepts);

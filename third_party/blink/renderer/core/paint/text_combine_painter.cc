@@ -155,7 +155,7 @@ void TextCombinePainter::PaintEmphasisMark(const TextPaintStyle& text_style,
     // TODO(crbug.com/389726691): Remove the CachingWordShaper usage.
     CachingWordShaper word_shaper(emphasis_mark_font);
     ShapeResultBuffer buffer;
-    word_shaper.FillResultBuffer(text_run_paint_info, &buffer);
+    word_shaper.FillResultBuffer(placeholder_text_run, &buffer);
     if (buffer.ShapeResultSize() == 0) {
       return;
     }

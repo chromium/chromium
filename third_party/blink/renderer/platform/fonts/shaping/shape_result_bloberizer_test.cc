@@ -345,7 +345,7 @@ TEST_F(ShapeResultBloberizerTest, CommonAccentLeftToRightFillGlyphBuffer) {
   Font font(font_description);
   CachingWordShaper word_shaper(font);
   ShapeResultBuffer buffer;
-  word_shaper.FillResultBuffer(run_info, &buffer);
+  word_shaper.FillResultBuffer(text_run, &buffer);
   ShapeResultBloberizer::FillGlyphs bloberizer(
       font.GetFontDescription(), run_info, buffer,
       ShapeResultBloberizer::Type::kEmitText);
@@ -355,7 +355,7 @@ TEST_F(ShapeResultBloberizerTest, CommonAccentLeftToRightFillGlyphBuffer) {
 
   CachingWordShaper reference_word_shaper(reference_font);
   ShapeResultBuffer reference_buffer;
-  reference_word_shaper.FillResultBuffer(run_info, &reference_buffer);
+  reference_word_shaper.FillResultBuffer(text_run, &reference_buffer);
   ShapeResultBloberizer::FillGlyphs reference_bloberizer(
       reference_font.GetFontDescription(), run_info, reference_buffer,
       ShapeResultBloberizer::Type::kEmitText);
@@ -395,7 +395,7 @@ TEST_F(ShapeResultBloberizerTest, CommonAccentRightToLeftFillGlyphBuffer) {
   Font font(font_description);
   CachingWordShaper word_shaper(font);
   ShapeResultBuffer buffer;
-  word_shaper.FillResultBuffer(run_info, &buffer);
+  word_shaper.FillResultBuffer(text_run, &buffer);
   ShapeResultBloberizer::FillGlyphs bloberizer(
       font.GetFontDescription(), run_info, buffer,
       ShapeResultBloberizer::Type::kEmitText);
@@ -405,7 +405,7 @@ TEST_F(ShapeResultBloberizerTest, CommonAccentRightToLeftFillGlyphBuffer) {
 
   CachingWordShaper reference_word_shaper(reference_font);
   ShapeResultBuffer reference_buffer;
-  reference_word_shaper.FillResultBuffer(run_info, &reference_buffer);
+  reference_word_shaper.FillResultBuffer(text_run, &reference_buffer);
   ShapeResultBloberizer::FillGlyphs reference_bloberizer(
       reference_font.GetFontDescription(), run_info, reference_buffer,
       ShapeResultBloberizer::Type::kEmitText);
@@ -639,7 +639,7 @@ TEST_F(ShapeResultBloberizerTest, SubRunWithZeroGlyphs) {
 
   CachingWordShaper word_shaper(font);
   ShapeResultBuffer buffer;
-  word_shaper.FillResultBuffer(run_info, &buffer);
+  word_shaper.FillResultBuffer(text_run, &buffer);
   ShapeResultBloberizer::FillGlyphs bloberizer(
       font.GetFontDescription(), run_info, buffer,
       ShapeResultBloberizer::Type::kEmitText);
