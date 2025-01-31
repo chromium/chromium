@@ -21,16 +21,34 @@ import org.chromium.ui.base.WindowAndroid;
 /** The implementation of dialog display controller for PaymentRequest using AlertDialog. */
 /* package */ class DialogControllerImpl implements DialogController {
     private final WebContents mWebContents;
+    private final AlertDialogFactory mAlertDialogFactory;
+
+    /** A interface for creating alert dialogs. */
+    /* package */ static interface AlertDialogFactory {
+        /**
+         * Returns a new dialog builder. Mocked in tests.
+         *
+         * @param context The Activity context of the web contents where PaymentRequest was invoked.
+         *     Cannot be null.
+         * @param style The resource identifier for the dialog style.
+         * @return A new dialog builder. Never null.
+         */
+        AlertDialog.Builder createAlertDialogBuilder(Context context, int style);
+    }
 
     /**
      * Constructs the dialog display controller for PaymentRequest.
      *
      * @param webContents The web contents where PaymentRequest API was invoked. Should not be null.
+     * @param alertDialogFactory Creates alert dialogs. Should not be null.
      */
-    /* package */ DialogControllerImpl(WebContents webContents) {
+    /* package */ DialogControllerImpl(
+            WebContents webContents, AlertDialogFactory alertDialogFactory) {
         assert webContents != null;
+        assert alertDialogFactory != null;
 
         mWebContents = webContents;
+        mAlertDialogFactory = alertDialogFactory;
     }
 
     // Implement DialogController:
@@ -42,7 +60,9 @@ import org.chromium.ui.base.WindowAndroid;
         if (context == null) {
             return;
         }
-        new AlertDialog.Builder(context, R.style.ThemeOverlay_BrowserUI_AlertDialog)
+
+        mAlertDialogFactory
+                .createAlertDialogBuilder(context, R.style.ThemeOverlay_BrowserUI_AlertDialog)
                 .setMessage(readyToPayDebugInfo)
                 .show();
     }
@@ -60,7 +80,8 @@ import org.chromium.ui.base.WindowAndroid;
             return;
         }
 
-        new AlertDialog.Builder(context, R.style.ThemeOverlay_BrowserUI_AlertDialog)
+        mAlertDialogFactory
+                .createAlertDialogBuilder(context, R.style.ThemeOverlay_BrowserUI_AlertDialog)
                 .setTitle(R.string.external_app_leave_incognito_warning_title)
                 .setMessage(R.string.external_payment_app_leave_incognito_warning)
                 .setPositiveButton(
