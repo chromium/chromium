@@ -278,14 +278,10 @@ void PaintArtifactCompositor::UpdatePaintedScrollTranslationsBeforeLayerization(
     if (it == painted_scroll_translations_.end()) {
       painted_scroll_translations_.insert(
           &scroll_translation,
-          ScrollTranslationInfo{.scrolling_contents_cull_rect =
-                                    hit_test_data->scrolling_contents_cull_rect,
-                                .is_composited = is_composited});
+          ScrollTranslationInfo{.is_composited = is_composited});
     } else {
       // The node was added in the second half of this function before.
       // Update the is_composited field now.
-      it->value.scrolling_contents_cull_rect =
-          hit_test_data->scrolling_contents_cull_rect;
       if (is_composited) {
         it->value.is_composited = true;
         it->value.force_main_thread_repaint = false;
@@ -945,10 +941,10 @@ void PaintArtifactCompositor::UpdateCompositorViewportProperties(
     CHECK(NeedsCompositedScrolling(*properties.outer_scroll_translation));
     painted_scroll_translations_.insert(
         properties.inner_scroll_translation,
-        ScrollTranslationInfo{InfiniteIntRect(), true});
+        ScrollTranslationInfo{.is_composited = true});
     painted_scroll_translations_.insert(
         properties.outer_scroll_translation,
-        ScrollTranslationInfo{InfiniteIntRect(), true});
+        ScrollTranslationInfo{.is_composited = true});
   }
 
   layer_tree_host->RegisterViewportPropertyIds(ids);
@@ -1012,9 +1008,8 @@ void PaintArtifactCompositor::Update(
   for (auto& node : scroll_translation_nodes) {
     property_tree_manager.EnsureCompositorScrollNode(*node);
   }
-  for (auto& [node, info] : painted_scroll_translations_) {
-    property_tree_manager.EnsureCompositorScrollAndTransformNode(
-        *node, info.scrolling_contents_cull_rect);
+  for (auto& [node, _] : painted_scroll_translations_) {
+    property_tree_manager.EnsureCompositorScrollAndTransformNode(*node);
   }
 
   cc::LayerSelection layer_selection;
@@ -1048,7 +1043,7 @@ void PaintArtifactCompositor::Update(
 
     int scroll_id =
         property_tree_manager.EnsureCompositorScrollAndTransformNode(
-            ScrollTranslationStateForLayer(pending_layer), InfiniteIntRect());
+            ScrollTranslationStateForLayer(pending_layer));
 
     layer_list_builder.Add(&layer);
 
