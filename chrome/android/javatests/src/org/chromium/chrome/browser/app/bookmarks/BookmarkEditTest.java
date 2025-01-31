@@ -90,7 +90,6 @@ public class BookmarkEditTest {
                         sBookmarkModel =
                                 BookmarkModel.getForProfile(
                                         ProfileManager.getLastUsedRegularProfile());
-                        sBookmarkModel.setPartnerBookmarkIteratorSupplier(() -> null);
                         sBookmarkModel.loadEmptyPartnerBookmarkShimForTesting();
                     });
 

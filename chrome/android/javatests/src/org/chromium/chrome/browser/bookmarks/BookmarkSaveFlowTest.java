@@ -110,7 +110,6 @@ public class BookmarkSaveFlowTest {
                             mActivity.getRootUiCoordinatorForTesting().getBottomSheetController();
                     mBottomSheetTestSupport = new BottomSheetTestSupport(mBottomSheetController);
                     mBookmarkModel = mActivity.getBookmarkModelForTesting();
-                    mBookmarkModel.loadEmptyPartnerBookmarkShimForTesting();
                     mBookmarkSaveFlowCoordinator =
                             new BookmarkSaveFlowCoordinator(
                                     mActivity,

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.bookmarks;
 import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -22,12 +23,10 @@ import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
-import org.chromium.chrome.test.util.BookmarkTestRule;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
-import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -41,7 +40,6 @@ import java.util.List;
 @DisabledTest(message = "crbug.com/393436289")
 public class BookmarkBridgeTest {
     @Rule public final ChromeBrowserTestRule mChromeBrowserTestRule = new ChromeBrowserTestRule();
-    @Rule public BookmarkTestRule mBookmarkTestRule = new BookmarkTestRule();
 
     private BookmarkBridge mBookmarkBridge;
     private BookmarkId mMobileNode;
@@ -50,23 +48,25 @@ public class BookmarkBridgeTest {
 
     @Before
     public void setUp() {
-        NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Profile profile = ProfileManager.getLastUsedRegularProfile();
                     mBookmarkBridge = BookmarkBridge.getForProfile(profile);
-                    mBookmarkBridge.setPartnerBookmarkIteratorSupplier(() -> null);
                     mBookmarkBridge.loadFakePartnerBookmarkShimForTesting();
                 });
 
         BookmarkTestUtil.waitForBookmarkModelLoaded();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mBookmarkBridge.removeAllUserBookmarks();
                     mMobileNode = mBookmarkBridge.getMobileFolderId();
                     mDesktopNode = mBookmarkBridge.getDesktopFolderId();
                     mOtherNode = mBookmarkBridge.getOtherFolderId();
                 });
+    }
+
+    @After
+    public void tearDown() {
+        ThreadUtils.runOnUiThreadBlocking(() -> mBookmarkBridge.removeAllUserBookmarks());
     }
 
     @Test
