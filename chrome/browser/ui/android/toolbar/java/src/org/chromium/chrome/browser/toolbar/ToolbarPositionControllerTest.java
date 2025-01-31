@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import android.content.Context;
@@ -447,11 +448,13 @@ public class ToolbarPositionControllerTest {
     public void testUpdatePositionChangesWithFormFieldFocusState() {
         setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
         assertControlsAtBottom();
+        verify(mControlContainerView).setVisibility(View.INVISIBLE);
 
         mIsFormFieldFocused.onNodeAttributeUpdated(true, false);
         mKeyboardVisibilityDelegate.setVisibilityForTests(true);
         assertEquals(-TOOLBAR_HEIGHT, mBrowserControlsSizer.getTopControlOffset());
         assertControlsAtTop();
+        verify(mControlContainerView, times(2)).setVisibility(View.INVISIBLE);
 
         mKeyboardVisibilityDelegate.setVisibilityForTests(false);
         assertEquals(TOOLBAR_HEIGHT, mBrowserControlsSizer.getBottomControlOffset());

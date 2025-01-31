@@ -334,8 +334,14 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
 
         mBottomControlsStacker.updateLayerVisibilitiesAndSizes();
         mCurrentPosition = newControlsPosition;
-        mBrowserControlsSizer.setAnimateBrowserControlsHeightChanges(
-                animatingToTop || animatingToBottom);
+        if (animatingToTop || animatingToBottom) {
+            mBrowserControlsSizer.setAnimateBrowserControlsHeightChanges(true);
+            // Prevent a visual glitch when animating the control container into a new location by
+            // making it immediately invisible. Without this, it can show for a single frame before
+            // hiding then sliding into place.
+            mControlContainer.getView().setVisibility(View.INVISIBLE);
+        }
+
         mBrowserControlsSizer.setControlsPosition(
                 mCurrentPosition,
                 newTopHeight,
