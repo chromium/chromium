@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_controller.h"
 #include "components/tab_groups/tab_group_color.h"
@@ -24,7 +25,8 @@ TabGroupModel::~TabGroupModel() = default;
 
 TabGroup* TabGroupModel::AddTabGroup(
     const tab_groups::TabGroupId& id,
-    std::optional<tab_groups::TabGroupVisualData> visual_data) {
+    std::optional<tab_groups::TabGroupVisualData> visual_data,
+    base::PassKey<TabStripModel>) {
   // The tab group must not already exist - replacing the old group without
   // first removing it would invalidate pointers to the old group and could
   // easily UAF.
@@ -50,7 +52,8 @@ TabGroup* TabGroupModel::GetTabGroup(const tab_groups::TabGroupId& id) const {
   return groups_.find(id)->second.get();
 }
 
-void TabGroupModel::RemoveTabGroup(const tab_groups::TabGroupId& id) {
+void TabGroupModel::RemoveTabGroup(const tab_groups::TabGroupId& id,
+                                   base::PassKey<TabStripModel>) {
   CHECK(ContainsTabGroup(id));
   std::erase(group_ids_, id);
   groups_.erase(id);

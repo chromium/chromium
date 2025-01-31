@@ -14,10 +14,11 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/types/pass_key.h"
 
 class TabGroup;
 class TabGroupController;
-
+class TabStripModel;
 namespace tab_groups {
 enum class TabGroupColorId;
 class TabGroupId;
@@ -40,7 +41,8 @@ class TabGroupModel {
   // added to it immediately.
   TabGroup* AddTabGroup(
       const tab_groups::TabGroupId& id,
-      std::optional<tab_groups::TabGroupVisualData> visual_data);
+      std::optional<tab_groups::TabGroupVisualData> visual_data,
+      base::PassKey<TabStripModel>);
 
   // Returns whether a tab group with the given |id| exists.
   bool ContainsTabGroup(const tab_groups::TabGroupId& id) const;
@@ -50,7 +52,8 @@ class TabGroupModel {
 
   // Removes the tab group with the given |id| from the registry. Should be
   // called whenever the group becomes empty.
-  void RemoveTabGroup(const tab_groups::TabGroupId& id);
+  void RemoveTabGroup(const tab_groups::TabGroupId& id,
+                      base::PassKey<TabStripModel>);
 
   std::vector<tab_groups::TabGroupId> ListTabGroups() const;
 

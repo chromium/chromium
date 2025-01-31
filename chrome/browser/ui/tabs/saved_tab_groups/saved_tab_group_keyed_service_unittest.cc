@@ -259,8 +259,7 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest, PauseResumeTracking) {
       browser_1->tab_strip_model()->group_model()->ContainsTabGroup(group_id));
 
   // Recreate the local group and add the tab to it (same browser is fine).
-  browser_1->tab_strip_model()->group_model()->AddTabGroup(group_id,
-                                                           visual_data);
+  browser_1->tab_strip_model()->AddTabGroup(group_id, visual_data);
   browser_1->tab_strip_model()->InsertDetachedTabAt(
       1, std::move(detached_tab), AddTabTypes::ADD_NONE, group_id);
 
