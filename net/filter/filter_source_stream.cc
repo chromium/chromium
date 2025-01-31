@@ -16,6 +16,8 @@
 #include "base/strings/string_util.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
+#include "net/base/trace_constants.h"
+#include "net/base/tracing.h"
 
 namespace net {
 
@@ -154,17 +156,23 @@ int FilterSourceStream::DoFilterData() {
   DCHECK(drainable_input_buffer_);
 
   size_t consumed_bytes = 0;
+  const int bytes_remaining = drainable_input_buffer_->BytesRemaining();
+  TRACE_EVENT_BEGIN2(NetTracingCategory(), "FilterSourceStream::FilterData",
+                     "remaining", bytes_remaining, "upstream_end_reached",
+                     upstream_end_reached_);
   base::expected<size_t, Error> bytes_output = FilterData(
       output_buffer_.get(), output_buffer_size_, drainable_input_buffer_.get(),
-      drainable_input_buffer_->BytesRemaining(), &consumed_bytes,
-      upstream_end_reached_);
+      bytes_remaining, &consumed_bytes, upstream_end_reached_);
+  TRACE_EVENT_END2(NetTracingCategory(), "FilterSourceStream::FilterData",
+                   "consumed_bytes", consumed_bytes, "output_or_error",
+                   bytes_output.has_value()
+                       ? base::checked_cast<int>(bytes_output.value())
+                       : bytes_output.error());
 
-  const auto bytes_remaining =
-      base::checked_cast<size_t>(drainable_input_buffer_->BytesRemaining());
   if (bytes_output.has_value() && bytes_output.value() == 0) {
-    DCHECK_EQ(consumed_bytes, bytes_remaining);
+    DCHECK_EQ(consumed_bytes, base::checked_cast<size_t>(bytes_remaining));
   } else {
-    DCHECK_LE(consumed_bytes, bytes_remaining);
+    DCHECK_LE(consumed_bytes, base::checked_cast<size_t>(bytes_remaining));
   }
   // FilterData() is not allowed to return ERR_IO_PENDING.
   if (!bytes_output.has_value())
