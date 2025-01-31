@@ -4,10 +4,15 @@
 
 package org.chromium.chrome.browser.app.tab_activity_glue;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
+import android.graphics.Rect;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -22,6 +27,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 
+import org.chromium.base.Token;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -31,10 +37,18 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.night_mode.WebContentsDarkModeController;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabCreator;
+import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.ui.shadows.ShadowColorUtils;
 import org.chromium.url.GURL;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 /** Unit test for {@link ActivityTabWebContentsDelegateAndroid}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -55,36 +69,71 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
         }
     }
 
+    static class TestActivityTabWebContentsDelegateAndroid
+            extends ActivityTabWebContentsDelegateAndroid {
+        private final TabGroupModelFilter mTabGroupModelFilter;
+        private Map<WebContents, Tab> mTabMap;
+
+        public TestActivityTabWebContentsDelegateAndroid(
+                Tab tab,
+                Activity activity,
+                TabCreatorManager tabCreatorManager,
+                TabGroupModelFilter tabGroupModelFilter) {
+            super(
+                    tab,
+                    activity,
+                    null,
+                    false,
+                    null,
+                    null,
+                    tabCreatorManager,
+                    mock(Supplier.class),
+                    mock(Supplier.class),
+                    mock(Supplier.class));
+            mTabGroupModelFilter = tabGroupModelFilter;
+            mTabMap = new HashMap<>();
+        }
+
+        @Override
+        protected Tab fromWebContents(WebContents webContents) {
+            return mTabMap.get(webContents);
+        }
+
+        @Override
+        protected TabGroupModelFilter getTabGroupModelFilter(Tab tab) {
+            return mTabGroupModelFilter;
+        }
+
+        public void setTabMap(Map<WebContents, Tab> tabMap) {
+            mTabMap = tabMap;
+        }
+    }
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock Activity mActivity;
     @Mock Profile mProfile;
     @Mock WebContents mWebContents;
     @Mock Tab mTab;
+    @Mock TabCreatorManager mTabCreatorManager;
+    @Mock TabCreator mTabCreator;
+    @Mock TabGroupModelFilter mTabGroupModelFilter;
 
     GURL mUrl1 = new GURL("https://url1.com");
     GURL mUrl2 = new GURL("https://url2.com");
 
-    private ActivityTabWebContentsDelegateAndroid mTabWebContentsDelegateAndroid;
+    private TestActivityTabWebContentsDelegateAndroid mTabWebContentsDelegateAndroid;
 
     @Before
     public void setup() {
         mTabWebContentsDelegateAndroid =
-                new ActivityTabWebContentsDelegateAndroid(
-                        mTab,
-                        mActivity,
-                        null,
-                        false,
-                        null,
-                        null,
-                        null,
-                        mock(Supplier.class),
-                        mock(Supplier.class),
-                        mock(Supplier.class));
+                new TestActivityTabWebContentsDelegateAndroid(
+                        mTab, mActivity, mTabCreatorManager, mTabGroupModelFilter);
 
         doReturn(mWebContents).when(mTab).getWebContents();
         doReturn(mProfile).when(mTab).getProfile();
         doReturn(mUrl1).when(mWebContents).getVisibleUrl();
+        doReturn(mTabCreator).when(mTabCreatorManager).getTabCreator(anyBoolean());
     }
 
     @After
@@ -154,6 +203,47 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
 
         doReturn(mUrl2).when(mWebContents).getVisibleUrl();
         assertForceDarkEnabledForWebContents(true);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.GROUP_NEW_TAB_WITH_PARENT)
+    public void testAddNewContentsNotInTabGroup() {
+        WebContents newWebContents = mock(WebContents.class);
+        Map<WebContents, Tab> tabMap =
+                Map.of(mWebContents, mock(Tab.class), newWebContents, mock(Tab.class));
+        mTabWebContentsDelegateAndroid.setTabMap(tabMap);
+
+        mTabWebContentsDelegateAndroid.webContentsCreated(
+                mWebContents, 0, 0, "testFrame", new GURL("https://foo.com"), newWebContents);
+        mTabWebContentsDelegateAndroid.addNewContents(
+                mWebContents,
+                newWebContents,
+                WindowOpenDisposition.NEW_FOREGROUND_TAB,
+                new Rect(),
+                false);
+        verify(mTabGroupModelFilter, never()).mergeListOfTabsToGroup(any(), any(), anyBoolean());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.GROUP_NEW_TAB_WITH_PARENT)
+    public void testAddNewContentsToTabGroup() {
+        WebContents newWebContents = mock(WebContents.class);
+        Tab parentTab = mock(Tab.class);
+        Tab newTab = mock(Tab.class);
+        doReturn(Token.createRandom()).when(parentTab).getTabGroupId();
+        Map<WebContents, Tab> tabMap = Map.of(mWebContents, parentTab, newWebContents, newTab);
+        mTabWebContentsDelegateAndroid.setTabMap(tabMap);
+
+        mTabWebContentsDelegateAndroid.webContentsCreated(
+                mWebContents, 0, 0, "testFrame", new GURL("https://foo.com"), newWebContents);
+        mTabWebContentsDelegateAndroid.addNewContents(
+                mWebContents,
+                newWebContents,
+                WindowOpenDisposition.NEW_FOREGROUND_TAB,
+                new Rect(),
+                false);
+        verify(mTabGroupModelFilter)
+                .mergeListOfTabsToGroup(Arrays.asList(newTab), parentTab, false);
     }
 
     private void assertForceDarkEnabledForWebContents(boolean isEnabled) {

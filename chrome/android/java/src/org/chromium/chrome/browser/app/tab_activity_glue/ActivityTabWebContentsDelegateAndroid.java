@@ -27,6 +27,7 @@ import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.SwipeRefreshHandler;
+import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.contextmenu.ContextMenuUtils;
@@ -42,9 +43,11 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab.TabWebContentsDelegateAndroid;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
@@ -61,10 +64,11 @@ import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
 
+import java.util.Arrays;
+
 /**
- * {@link WebContentsDelegateAndroid} that interacts with {@link Activity} and those
- * of the lifetime of the activity to process requests from underlying {@link WebContents}
- * for a given {@link Tab}.
+ * {@link WebContentsDelegateAndroid} that interacts with {@link Activity} and those of the lifetime
+ * of the activity to process requests from underlying {@link WebContents} for a given {@link Tab}.
  */
 public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegateAndroid {
     private static final String TAG = "ActivityTabWCDA";
@@ -210,6 +214,30 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
                             url.getSpec(),
                             "");
                 }
+            }
+        }
+
+        Tab sourceTab = fromWebContents(sourceWebContents);
+        if (sourceTab == null
+                || sourceTab.getTabGroupId() == null
+                || !ChromeFeatureList.isEnabled(ChromeFeatureList.GROUP_NEW_TAB_WITH_PARENT)) {
+            return success;
+        }
+
+        if (disposition != WindowOpenDisposition.NEW_FOREGROUND_TAB
+                && disposition != WindowOpenDisposition.NEW_BACKGROUND_TAB) {
+            return success;
+        }
+
+        Tab newTab = fromWebContents(webContents);
+        // If the new tab is in a different TabModel from the parent tab, don't group them.
+        if (TabWindowManagerSingleton.getInstance().getTabModelForTab(sourceTab)
+                == TabWindowManagerSingleton.getInstance().getTabModelForTab(newTab)) {
+            TabGroupModelFilter tabGroupModelFilter = getTabGroupModelFilter(sourceTab);
+            // Set notify to false so snackbar to undo the grouping will not be shown.
+            if (tabGroupModelFilter != null) {
+                tabGroupModelFilter.mergeListOfTabsToGroup(
+                        Arrays.asList(newTab), sourceTab, /* notify= */ false);
             }
         }
 
@@ -515,5 +543,13 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
     @Override
     protected boolean isDynamicSafeAreaInsetsEnabled() {
         return EdgeToEdgeControllerFactory.isSupportedConfiguration(mActivity);
+    }
+
+    protected TabGroupModelFilter getTabGroupModelFilter(Tab tab) {
+        return TabModelUtils.getTabGroupModelFilterByTab(tab);
+    }
+
+    protected Tab fromWebContents(WebContents webContents) {
+        return TabUtils.fromWebContents(webContents);
     }
 }
