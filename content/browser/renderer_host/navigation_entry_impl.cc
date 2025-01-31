@@ -921,8 +921,8 @@ NavigationEntryImpl::ConstructCommitNavigationParams(
     const std::string& original_method,
     const base::flat_map<std::string, bool>& subframe_unique_names,
     bool intended_as_new_entry,
-    int pending_history_list_offset,
-    int current_history_list_offset,
+    int pending_history_list_index,
+    int current_history_list_index,
     int current_history_list_length,
     const blink::FramePolicy& frame_policy,
     bool ancestor_or_self_has_cspee,
@@ -941,15 +941,15 @@ NavigationEntryImpl::ConstructCommitNavigationParams(
     redirects = frame_entry.redirect_chain();
   }
 
-  int pending_offset_to_send = pending_history_list_offset;
-  int current_offset_to_send = current_history_list_offset;
+  int pending_index_to_send = pending_history_list_index;
+  int current_index_to_send = current_history_list_index;
   int current_length_to_send = current_history_list_length;
   if (should_clear_history_list()) {
     // Set the history list related parameters to the same values a
     // NavigationController would return before its first navigation. This will
     // fully clear the RenderView's view of the session history.
-    pending_offset_to_send = -1;
-    current_offset_to_send = -1;
+    pending_index_to_send = -1;
+    current_index_to_send = -1;
     current_length_to_send = 0;
   }
 
@@ -963,8 +963,8 @@ NavigationEntryImpl::ConstructCommitNavigationParams(
           std::vector<net::RedirectInfo>(), std::string(), original_url,
           original_method, GetCanLoadLocalResources(),
           frame_entry.page_state().ToEncodedData(), GetUniqueID(),
-          subframe_unique_names, intended_as_new_entry, pending_offset_to_send,
-          current_offset_to_send, current_length_to_send, false,
+          subframe_unique_names, intended_as_new_entry, pending_index_to_send,
+          current_index_to_send, current_length_to_send, false,
           IsViewSourceMode(), should_clear_history_list(),
           blink::mojom::NavigationTiming::New(),
           blink::mojom::WasActivatedOption::kUnknown,

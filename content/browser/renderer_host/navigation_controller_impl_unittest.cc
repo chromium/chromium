@@ -133,8 +133,8 @@ class MockPageBroadcast : public blink::mojom::PageBroadcast {
               (const ::blink::RendererPreferences& preferences),
               (override));
   MOCK_METHOD(void,
-              SetHistoryOffsetAndLength,
-              (int32_t offset, int32_t length),
+              SetHistoryIndexAndLength,
+              (int32_t index, int32_t length),
               (override));
   MOCK_METHOD(void,
               SetPageBaseBackgroundColor,
@@ -3252,7 +3252,7 @@ TEST_F(NavigationControllerTest, DeleteNavigationEntries) {
     testing::NiceMock<MockPageBroadcast> mock_page_broadcast;
     contents()->GetRenderViewHost()->BindPageBroadcast(
         mock_page_broadcast.GetRemote());
-    EXPECT_CALL(mock_page_broadcast, SetHistoryOffsetAndLength(2, 3));
+    EXPECT_CALL(mock_page_broadcast, SetHistoryIndexAndLength(2, 3));
     controller.DeleteNavigationEntries(
         base::BindLambdaForTesting([&](content::NavigationEntry* entry) {
           return entry->GetURL() == url2 || entry->GetURL() == url4;
@@ -3271,7 +3271,7 @@ TEST_F(NavigationControllerTest, DeleteNavigationEntries) {
     testing::NiceMock<MockPageBroadcast> mock_page_broadcast;
     contents()->GetRenderViewHost()->BindPageBroadcast(
         mock_page_broadcast.GetRemote());
-    EXPECT_CALL(mock_page_broadcast, SetHistoryOffsetAndLength(0, 1));
+    EXPECT_CALL(mock_page_broadcast, SetHistoryIndexAndLength(0, 1));
     controller.DeleteNavigationEntries(base::BindRepeating(
         [](content::NavigationEntry* entry) { return true; }));
     EXPECT_EQ(2U, navigation_entries_deleted_counter_);
@@ -3339,7 +3339,7 @@ TEST_F(NavigationControllerTest, PruneAllButLastCommittedForSingle) {
   testing::NiceMock<MockPageBroadcast> mock_page_broadcast;
   contents()->GetRenderViewHost()->BindPageBroadcast(
       mock_page_broadcast.GetRemote());
-  EXPECT_CALL(mock_page_broadcast, SetHistoryOffsetAndLength(0, 1));
+  EXPECT_CALL(mock_page_broadcast, SetHistoryIndexAndLength(0, 1));
   controller.PruneAllButLastCommitted();
 
   EXPECT_EQ(-1, controller.GetPendingEntryIndex());
@@ -3372,7 +3372,7 @@ TEST_F(NavigationControllerTest, PruneAllButLastCommittedForFirst) {
   testing::NiceMock<MockPageBroadcast> mock_page_broadcast;
   contents()->GetRenderViewHost()->BindPageBroadcast(
       mock_page_broadcast.GetRemote());
-  EXPECT_CALL(mock_page_broadcast, SetHistoryOffsetAndLength(0, 1));
+  EXPECT_CALL(mock_page_broadcast, SetHistoryIndexAndLength(0, 1));
 
   controller.PruneAllButLastCommitted();
 
@@ -3396,7 +3396,7 @@ TEST_F(NavigationControllerTest, PruneAllButLastCommittedForIntermediate) {
   testing::NiceMock<MockPageBroadcast> mock_page_broadcast;
   contents()->GetRenderViewHost()->BindPageBroadcast(
       mock_page_broadcast.GetRemote());
-  EXPECT_CALL(mock_page_broadcast, SetHistoryOffsetAndLength(0, 1));
+  EXPECT_CALL(mock_page_broadcast, SetHistoryIndexAndLength(0, 1));
 
   controller.PruneAllButLastCommitted();
 
@@ -3424,13 +3424,13 @@ TEST_F(NavigationControllerTest, PruneAllButLastCommittedForPendingNotInList) {
 
   {
     // Ensure that the PruneAllButLastCommitted() call will result in a
-    // SetHistoryOffsetAndLength() call. We put this into its own scope so that
+    // SetHistoryIndexAndLength() call. We put this into its own scope so that
     // other PageBroadcast calls (e.g. SetPageLifecycleState()) won't go through
     // the mock.
     testing::NiceMock<MockPageBroadcast> mock_page_broadcast;
     contents()->GetRenderViewHost()->BindPageBroadcast(
         mock_page_broadcast.GetRemote());
-    EXPECT_CALL(mock_page_broadcast, SetHistoryOffsetAndLength(0, 1));
+    EXPECT_CALL(mock_page_broadcast, SetHistoryIndexAndLength(0, 1));
     controller.PruneAllButLastCommitted();
   }
 

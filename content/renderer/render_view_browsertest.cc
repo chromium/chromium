@@ -384,17 +384,16 @@ class RenderViewImplTest : public RenderViewTest {
       blink::mojom::CommitNavigationParamsPtr commit_params) {
     EXPECT_TRUE(common_params->transition & ui::PAGE_TRANSITION_FORWARD_BACK);
     blink::WebView* webview = web_view_;
-    int pending_offset = offset + webview->HistoryBackListCount();
+    int pending_index = offset + webview->HistoryBackListCount();
 
     // The load actually happens asynchronously, so we pump messages to process
     // the pending continuation.
     CommonParamsFrameLoadWaiter waiter(frame());
 
     commit_params->page_state = state.ToEncodedData();
-    commit_params->nav_entry_id = pending_offset + 1;
-    commit_params->pending_history_list_offset = pending_offset;
-    commit_params->current_history_list_offset =
-        webview->HistoryBackListCount();
+    commit_params->nav_entry_id = pending_index + 1;
+    commit_params->pending_history_list_index = pending_index;
+    commit_params->current_history_list_index = webview->HistoryBackListCount();
     commit_params->current_history_list_length =
         webview->HistoryForwardListCount() + webview->HistoryBackListCount() +
         1;
@@ -2473,8 +2472,8 @@ TEST_F(RenderViewImplTest, NavigateSubframe) {
   common_params->navigation_start = base::TimeTicks::Now();
   auto commit_params = DummyCommitNavigationParams();
   commit_params->current_history_list_length = 1;
-  commit_params->current_history_list_offset = 0;
-  commit_params->pending_history_list_offset = 1;
+  commit_params->current_history_list_index = 0;
+  commit_params->pending_history_list_index = 1;
 
   TestRenderFrame* subframe =
       static_cast<TestRenderFrame*>(RenderFrameImpl::FromWebFrame(
@@ -2784,8 +2783,8 @@ TEST_F(RenderViewImplTest, NavigationStartForCrossProcessHistoryNavigation) {
                                   common_params->url, false, nullptr, nullptr)
                                   .ToEncodedData();
   commit_params->nav_entry_id = 42;
-  commit_params->pending_history_list_offset = 1;
-  commit_params->current_history_list_offset = 0;
+  commit_params->pending_history_list_index = 1;
+  commit_params->current_history_list_index = 0;
   commit_params->current_history_list_length = 1;
   CommonParamsFrameLoadWaiter waiter(frame());
   frame()->Navigate(common_params.Clone(), std::move(commit_params));
@@ -2850,7 +2849,7 @@ TEST_F(RenderViewImplTest, HistoryIsProperlyUpdatedOnNavigation) {
 
   // Receive a CommitNavigation message with history parameters.
   auto commit_params = DummyCommitNavigationParams();
-  commit_params->current_history_list_offset = 1;
+  commit_params->current_history_list_index = 1;
   commit_params->current_history_list_length = 2;
   auto common_params = blink::CreateCommonNavigationParams();
   common_params->navigation_type =
@@ -2874,9 +2873,9 @@ TEST_F(RenderViewImplTest, HistoryIsProperlyUpdatedOnHistoryNavigation) {
 
   // Receive a CommitNavigation message with history parameters.
   auto commit_params = DummyCommitNavigationParams();
-  commit_params->current_history_list_offset = 1;
+  commit_params->current_history_list_index = 1;
   commit_params->current_history_list_length = 25;
-  commit_params->pending_history_list_offset = 12;
+  commit_params->pending_history_list_index = 12;
   commit_params->nav_entry_id = 777;
   auto common_params = blink::CreateCommonNavigationParams();
   common_params->navigation_type =
@@ -2900,7 +2899,7 @@ TEST_F(RenderViewImplTest, HistoryIsProperlyUpdatedOnShouldClearHistoryList) {
 
   // Receive a CommitNavigation message with history parameters.
   auto commit_params = DummyCommitNavigationParams();
-  commit_params->current_history_list_offset = 12;
+  commit_params->current_history_list_index = 12;
   commit_params->current_history_list_length = 25;
   commit_params->should_clear_history_list = true;
   frame()->Navigate(blink::CreateCommonNavigationParams(),

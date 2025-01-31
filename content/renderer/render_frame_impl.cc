@@ -3105,7 +3105,7 @@ void RenderFrameImpl::CommitFailedNavigation(
       this, kMayReplaceInitialEmptyDocument);
 
   GetWebView()->SetHistoryListFromNavigation(
-      commit_params->current_history_list_offset,
+      commit_params->current_history_list_index,
       commit_params->current_history_list_length);
 
   // Note: this intentionally does not call |Detach()| before |reset()|. If
@@ -5176,7 +5176,7 @@ void RenderFrameImpl::UpdateNavigationHistory(
   bool is_new_navigation = commit_type == blink::kWebStandardCommit;
   blink::WebView* webview = GetWebView();
   if (commit_params.should_clear_history_list) {
-    webview->SetHistoryListFromNavigation(/*history_offset*/ 0,
+    webview->SetHistoryListFromNavigation(/*history_index*/ 0,
                                           /*history_length*/ 1);
   } else if (is_new_navigation) {
     DCHECK(!navigation_state->common_params().should_replace_current_entry ||
@@ -5187,7 +5187,7 @@ void RenderFrameImpl::UpdateNavigationHistory(
   } else if (commit_params.nav_entry_id != 0 &&
              !commit_params.intended_as_new_entry) {
     webview->SetHistoryListFromNavigation(
-        navigation_state->commit_params().pending_history_list_offset, {});
+        navigation_state->commit_params().pending_history_list_index, {});
   }
 }
 
@@ -5302,7 +5302,7 @@ void RenderFrameImpl::PrepareFrameForCommit(
       url, frame_->Top()->GetSecurityOrigin().ToString().Utf8());
 
   GetWebView()->SetHistoryListFromNavigation(
-      commit_params.current_history_list_offset,
+      commit_params.current_history_list_index,
       commit_params.current_history_list_length);
 }
 
@@ -5351,8 +5351,8 @@ blink::mojom::CommitResult RenderFrameImpl::PrepareForHistoryNavigationCommit(
       SCOPED_CRASH_KEY_BOOL("history_no_item", "is_main_frame", IsMainFrame());
       SCOPED_CRASH_KEY_NUMBER("history_no_item", "renderer_commit_state",
                               (int)navigation_commit_state_);
-      SCOPED_CRASH_KEY_NUMBER("history_no_item", "browser_history_offset",
-                              commit_params.current_history_list_offset);
+      SCOPED_CRASH_KEY_NUMBER("history_no_item", "browser_history_index",
+                              commit_params.current_history_list_index);
       SCOPED_CRASH_KEY_NUMBER("history_no_item", "browser_history_len",
                               commit_params.current_history_list_length);
       SCOPED_CRASH_KEY_NUMBER("history_no_item", "renderer_history_len",

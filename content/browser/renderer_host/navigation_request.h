@@ -275,7 +275,7 @@ class CONTENT_EXPORT NavigationRequest
       NavigationEntryImpl* entry,
       blink::mojom::CommonNavigationParamsPtr common_params,
       blink::mojom::BeginNavigationParamsPtr begin_params,
-      int current_history_list_offset,
+      int current_history_list_index,
       int current_history_list_length,
       bool override_user_agent,
       scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,

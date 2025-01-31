@@ -2537,11 +2537,11 @@ void WebViewImpl::SetPageLifecycleStateInternal(
 
   if (restoring_from_bfcache) {
     DCHECK(page_restore_params);
-    // Update the history offset and length value, as pages that are kept in
+    // Update the history index and length value, as pages that are kept in
     // the back-forward cache do not get notified about updates on these
     // values, so the currently saved value might be stale.
-    SetHistoryOffsetAndLength(page_restore_params->pending_history_list_offset,
-                              page_restore_params->current_history_list_length);
+    SetHistoryIndexAndLength(page_restore_params->pending_history_list_index,
+                             page_restore_params->current_history_list_length);
   }
   if (eviction_changed)
     HookBackForwardCacheEviction(new_state->eviction_enabled);
@@ -3579,38 +3579,38 @@ void WebViewImpl::UpdateRendererPreferences(
   MaybePreloadSystemFonts(GetPage());
 }
 
-void WebViewImpl::SetHistoryOffsetAndLength(int32_t history_offset,
-                                            int32_t history_length) {
-  // -1 <= history_offset < history_length <= kMaxSessionHistoryEntries.
-  DCHECK_LE(-1, history_offset);
-  DCHECK_LT(history_offset, history_length);
+void WebViewImpl::SetHistoryIndexAndLength(int32_t history_index,
+                                           int32_t history_length) {
+  // -1 <= history_index < history_length <= kMaxSessionHistoryEntries.
+  DCHECK_LE(-1, history_index);
+  DCHECK_LT(history_index, history_length);
   DCHECK_LE(history_length, kMaxSessionHistoryEntries);
 
-  history_list_offset_ = history_offset;
+  history_list_index_ = history_index;
   history_list_length_ = history_length;
 }
 
 void WebViewImpl::SetHistoryListFromNavigation(
-    int32_t history_offset,
+    int32_t history_index,
     std::optional<int32_t> history_length) {
   if (!history_length.has_value()) {
-    history_list_offset_ = history_offset;
+    history_list_index_ = history_index;
     return;
   }
 
-  SetHistoryOffsetAndLength(history_offset, *history_length);
+  SetHistoryIndexAndLength(history_index, *history_length);
 }
 
 void WebViewImpl::IncreaseHistoryListFromNavigation() {
-  // Advance our offset in session history, applying the length limit.
+  // Advance our index in session history, applying the length limit.
   // There is now no forward history.
-  history_list_offset_ =
-      std::min(history_list_offset_ + 1, kMaxSessionHistoryEntries - 1);
-  history_list_length_ = history_list_offset_ + 1;
+  history_list_index_ =
+      std::min(history_list_index_ + 1, kMaxSessionHistoryEntries - 1);
+  history_list_length_ = history_list_index_ + 1;
 }
 
 int32_t WebViewImpl::HistoryBackListCount() const {
-  return std::max(history_list_offset_, 0);
+  return std::max(history_list_index_, 0);
 }
 
 int32_t WebViewImpl::HistoryForwardListCount() const {
