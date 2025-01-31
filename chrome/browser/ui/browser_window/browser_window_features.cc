@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/performance_controls/memory_saver_opt_in_iph_controller.h"
 #include "chrome/browser/ui/tabs/glic_nudge_controller.h"
 #include "chrome/browser/ui/tabs/organization/tab_declutter_controller.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/most_recent_update_store.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/session_service_tab_group_sync_observer.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
@@ -118,6 +119,9 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
           std::make_unique<tab_groups::SessionServiceTabGroupSyncObserver>(
               browser->GetProfile(), browser->GetTabStripModel(),
               browser->GetSessionID());
+
+      most_recent_update_store_ =
+          std::make_unique<tab_groups::MostRecentUpdateStore>(browser);
     }
 
     if (features::IsTabstripDeclutterEnabled() &&
