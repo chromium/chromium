@@ -205,8 +205,8 @@ export class PersonalizationRouterElement extends PolymerElement {
     return isSeaPenAllowed() && isSeaPenPath(path);
   }
 
-  private shouldShowWallpaperSelected_(path: string|null): boolean {
-    return path === Paths.SEA_PEN_COLLECTION;
+  private getWallpaperSelectedClass_(path: string|null): string {
+    return path !== Paths.SEA_PEN_COLLECTION ? 'wallpaperSelectedHidden' : '';
   }
 
   private shouldShowBreadcrumb_(path: string|null): boolean {

@@ -226,6 +226,10 @@ suite('PersonalizationRouterElementTest', function() {
     assertNotEquals(
         getComputedStyle(wallpaperSelected).display, 'none',
         'sea-pen-router shows wallpaper-selected');
+    assertFalse(
+        !!routerElement.shadowRoot!.getElementById('wallpaperSelected')!
+              .classList.contains('wallpaperSelectedHidden'),
+        'wallpaper-selected should be displayed on template home page');
   });
 
   test('hides wallpaper selected on non root path sea pen', async () => {
@@ -248,16 +252,18 @@ suite('PersonalizationRouterElementTest', function() {
         'sea-pen-router is shown');
 
     // No wallpaper-selected in Template results page.
-    assertFalse(
-        !!routerElement.shadowRoot!.getElementById('wallpaperSelected'),
+    assertTrue(
+        !!routerElement.shadowRoot!.getElementById('wallpaperSelected')!
+              .classList.contains('wallpaperSelectedHidden'),
         'wallpaper-selected should not be displayed in template results page');
 
     // No wallpaper-selected in Freeform subpage.
     routerElement.goToRoute(Paths.SEA_PEN_FREEFORM);
     await waitAfterNextRender(routerElement);
-    assertFalse(
-        !!routerElement.shadowRoot!.getElementById('wallpaperSelected'),
-        'wallpaper-selected should not be displayed in freeform page');
+    assertTrue(
+        !!routerElement.shadowRoot!.getElementById('wallpaperSelected')!
+              .classList.contains('wallpaperSelectedHidden'),
+        'wallpaper-selected should not be displayed in freeform subpage');
   });
 
   test('supports transition animation', async () => {
