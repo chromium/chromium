@@ -1840,7 +1840,7 @@ Thumbnail PDFiumPage::GenerateThumbnail(float device_pixel_ratio) {
     fill_color = 0xFFFFFFFF;
   }
 
-  Thumbnail thumbnail = GetThumbnail(device_pixel_ratio);
+  Thumbnail thumbnail = CreateThumbnail(device_pixel_ratio);
   const gfx::Size& image_size = thumbnail.image_size();
 
   // Create and initialize the bitmap.
@@ -1870,7 +1870,7 @@ Thumbnail PDFiumPage::GenerateThumbnail(float device_pixel_ratio) {
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
 gfx::Size PDFiumPage::GetThumbnailSize(float device_pixel_ratio) {
-  return GetThumbnail(device_pixel_ratio).image_size();
+  return CreateThumbnail(device_pixel_ratio).image_size();
 }
 #endif
 
@@ -1879,7 +1879,7 @@ void PDFiumPage::GenerateAndSendThumbnail(float device_pixel_ratio,
   std::move(send_callback).Run(GenerateThumbnail(device_pixel_ratio));
 }
 
-Thumbnail PDFiumPage::GetThumbnail(float device_pixel_ratio) {
+Thumbnail PDFiumPage::CreateThumbnail(float device_pixel_ratio) {
   CHECK(available());
 
   FPDF_PAGE page = GetPage();

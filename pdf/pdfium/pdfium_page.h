@@ -464,9 +464,10 @@ class PDFiumPage {
   void GenerateAndSendThumbnail(float device_pixel_ratio,
                                 SendThumbnailCallback send_callback);
 
-  // Helper that just create a `Thumbnail` for a given `device_pixel_ratio`
-  // using this page's size.
-  Thumbnail GetThumbnail(float device_pixel_ratio);
+  // Creates a `Thumbnail` for a given `device_pixel_ratio` using this page's
+  // size. The caller is responsible for rendering the page content into the
+  // thumbnail.
+  Thumbnail CreateThumbnail(float device_pixel_ratio);
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   bool IsCharacterAddedBySearchify(int char_index);
