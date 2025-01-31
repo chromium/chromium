@@ -1239,6 +1239,9 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   (*s_allowlist)[optimization_guide::prefs::GetSettingEnabledPrefName(
       optimization_guide::UserVisibleFeatureKey::kHistorySearch)] =
       settings_api::PrefType::kNumber;
+  (*s_allowlist)[optimization_guide::prefs::GetSettingEnabledPrefName(
+      optimization_guide::UserVisibleFeatureKey::kPasswordChangeSubmission)] =
+      settings_api::PrefType::kNumber;
 
   // AI enterprise prefs
   (*s_allowlist)
@@ -1252,6 +1255,9 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   (*s_allowlist)
       [optimization_guide::prefs::kHistorySearchEnterprisePolicyAllowed] =
           settings_api::PrefType::kNumber;
+  (*s_allowlist)[optimization_guide::prefs::
+                     kPasswordChangeSubmissionEnterprisePolicyAllowed] =
+      settings_api::PrefType::kNumber;
   (*s_allowlist)[optimization_guide::prefs::
                      kProductSpecificationsEnterprisePolicyAllowed] =
       settings_api::PrefType::kNumber;

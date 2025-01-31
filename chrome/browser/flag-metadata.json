@@ -7239,6 +7239,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "prompt-api-for-gemini-nano-multimodal-input",
+    "owners": ["//chrome/browser/ai/OWNERS"],
+    "expiry_milestone": 140
+  },
+  {
     "name": "protected-audience-debug-token",
     "owners": [
       "behamilton@google.com",

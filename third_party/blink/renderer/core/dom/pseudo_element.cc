@@ -117,8 +117,8 @@ PseudoElement* PseudoElement::Create(Element* parent,
     return MakeGarbageCollected<ScrollMarkerPseudoElement>(parent);
   } else if (pseudo_id == kPseudoIdScrollButtonBlockStart ||
              pseudo_id == kPseudoIdScrollButtonInlineStart ||
-             pseudo_id == kPseudoIdScrollButtonBlockEnd ||
-             pseudo_id == kPseudoIdScrollButtonInlineEnd) {
+             pseudo_id == kPseudoIdScrollButtonInlineEnd ||
+             pseudo_id == kPseudoIdScrollButtonBlockEnd) {
     return MakeGarbageCollected<ScrollButtonPseudoElement>(parent, pseudo_id);
   }
   DCHECK(pseudo_id == kPseudoIdAfter || pseudo_id == kPseudoIdBefore ||
@@ -182,15 +182,15 @@ const QualifiedName& PseudoElementTagName(PseudoId pseudo_id) {
                           (AtomicString("::scroll-button(inline-start)")));
       return scroll_button_inline_start;
     }
-    case kPseudoIdScrollButtonBlockEnd: {
-      DEFINE_STATIC_LOCAL(QualifiedName, scroll_button_block_end,
-                          (AtomicString("::scroll-button(block-end)")));
-      return scroll_button_block_end;
-    }
     case kPseudoIdScrollButtonInlineEnd: {
       DEFINE_STATIC_LOCAL(QualifiedName, scroll_button_inline_end,
                           (AtomicString("::scroll-button(inline-end)")));
       return scroll_button_inline_end;
+    }
+    case kPseudoIdScrollButtonBlockEnd: {
+      DEFINE_STATIC_LOCAL(QualifiedName, scroll_button_block_end,
+                          (AtomicString("::scroll-button(block-end)")));
+      return scroll_button_block_end;
     }
     case kPseudoIdScrollMarker: {
       DEFINE_STATIC_LOCAL(QualifiedName, scroll_marker,
@@ -459,8 +459,8 @@ void PseudoElement::AttachLayoutTree(AttachContext& context) {
     }
     case kPseudoIdScrollButtonBlockStart:
     case kPseudoIdScrollButtonInlineStart:
-    case kPseudoIdScrollButtonBlockEnd:
     case kPseudoIdScrollButtonInlineEnd:
+    case kPseudoIdScrollButtonBlockEnd:
       if (style.ContentBehavesAsNormal()) {
         context.counters_context.LeaveObject(*layout_object);
         return;
@@ -524,8 +524,8 @@ bool PseudoElement::CanGenerateContent() const {
     case kPseudoIdScrollMarkerGroup:
     case kPseudoIdScrollButtonBlockStart:
     case kPseudoIdScrollButtonInlineStart:
-    case kPseudoIdScrollButtonBlockEnd:
     case kPseudoIdScrollButtonInlineEnd:
+    case kPseudoIdScrollButtonBlockEnd:
       return true;
     default:
       return false;
@@ -629,8 +629,8 @@ bool PseudoElementLayoutObjectIsNeeded(PseudoId pseudo_id,
     case kPseudoIdScrollMarker:
     case kPseudoIdScrollButtonBlockStart:
     case kPseudoIdScrollButtonInlineStart:
-    case kPseudoIdScrollButtonBlockEnd:
     case kPseudoIdScrollButtonInlineEnd:
+    case kPseudoIdScrollButtonBlockEnd:
       return !pseudo_style.ContentBehavesAsNormal();
     case kPseudoIdMarker: {
       if (!pseudo_style.ContentBehavesAsNormal()) {

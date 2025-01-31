@@ -138,9 +138,8 @@ void CanvasRenderingContextHost::CreateCanvasResourceProviderWebGPU() {
   std::unique_ptr<CanvasResourceProvider> provider;
   if (SharedGpuContext::IsGpuCompositingEnabled()) {
     provider = CanvasResourceProvider::CreateWebGPUImageProvider(
-        Size(), GetRenderingContextSkColorType(),
-        GetRenderingContextAlphaType(), GetRenderingContextColorSpace(),
-        gpu::SharedImageUsageSet(), this);
+        Size(), GetRenderingContextFormat(), GetRenderingContextAlphaType(),
+        GetRenderingContextColorSpace(), gpu::SharedImageUsageSet(), this);
   }
   ReplaceResourceProvider(std::move(provider));
   if (ResourceProvider() && ResourceProvider()->IsValid()) {

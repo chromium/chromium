@@ -91,6 +91,17 @@ chromium-metrics-reviews@google.com.
   <token key="SecurityDomainId" variants="SecurityDomainId"/>
 </histogram>
 
+<histogram name="TrustedVault.DownloadKeysStatus{SecurityDomainId}"
+    enum="TrustedVaultDownloadKeysStatus" expires_after="2025-06-08">
+  <owner>mmoskvitin@google.com</owner>
+  <owner>mastiz@chromium.org</owner>
+  <summary>
+    Records the result of an attempt to download trusted vault keys from the
+    server (includes all registration versions).
+  </summary>
+  <token key="SecurityDomainId" variants="SecurityDomainId"/>
+</histogram>
+
 <histogram name="TrustedVault.FileReadStatus{SecurityDomainId}"
     enum="TrustedVaultFileReadStatus" expires_after="2025-07-27">
   <owner>mmoskvitin@google.com</owner>

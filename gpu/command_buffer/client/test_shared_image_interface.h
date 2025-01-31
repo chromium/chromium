@@ -128,6 +128,9 @@ class TestSharedImageInterface : public SharedImageInterface {
   }
 
   size_t shared_image_count() const { return shared_images_.size(); }
+  size_t num_update_shared_image_no_fence_calls() const {
+    return num_update_shared_image_no_fence_calls_;
+  }
   const gfx::Size& MostRecentSize() const { return most_recent_size_; }
   const SyncToken& MostRecentGeneratedToken() const {
     return most_recent_generated_token_;
@@ -170,6 +173,7 @@ class TestSharedImageInterface : public SharedImageInterface {
   mutable base::Lock lock_;
 
   uint64_t release_id_ = 0;
+  size_t num_update_shared_image_no_fence_calls_ = 0;
   gfx::Size most_recent_size_;
   SyncToken most_recent_generated_token_;
   SyncToken most_recent_destroy_token_;

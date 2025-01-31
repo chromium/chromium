@@ -769,7 +769,7 @@ test("gfx_unittests") {
     "text_elider_unittest.cc",
     "text_utils_unittest.cc",
   ]
-  if (is_linux) {
+  if (is_linux || is_chromeos) {
     sources += [ "font_render_params_linux_unittest.cc" ]
   }
   if (is_linux || is_chromeos) {

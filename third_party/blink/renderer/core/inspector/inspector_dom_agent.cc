@@ -254,8 +254,8 @@ protocol::DOM::PseudoType InspectorDOMAgent::ProtocolPseudoElementType(
     case kPseudoIdScrollButton:
     case kPseudoIdScrollButtonBlockStart:
     case kPseudoIdScrollButtonInlineStart:
-    case kPseudoIdScrollButtonBlockEnd:
     case kPseudoIdScrollButtonInlineEnd:
+    case kPseudoIdScrollButtonBlockEnd:
       return protocol::DOM::PseudoTypeEnum::ScrollButton;
     case kPseudoIdColumn:
       return protocol::DOM::PseudoTypeEnum::Column;

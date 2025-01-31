@@ -38,15 +38,10 @@ class ZeroCopyGpuBacking : public ResourcePool::GpuBacking {
       return;
     }
     if (returned_sync_token.HasData())
-      shared_image_interface->DestroySharedImage(returned_sync_token,
-                                                 std::move(shared_image));
+      shared_image->UpdateDestructionSyncToken(returned_sync_token);
     else if (mailbox_sync_token.HasData())
-      shared_image_interface->DestroySharedImage(mailbox_sync_token,
-                                                 std::move(shared_image));
+      shared_image->UpdateDestructionSyncToken(mailbox_sync_token);
   }
-
-  // The SharedImageInterface used to clean up the shared image.
-  raw_ptr<gpu::SharedImageInterface> shared_image_interface = nullptr;
 };
 
 // RasterBuffer for the zero copy upload, which is given to the raster worker
@@ -167,8 +162,6 @@ ZeroCopyRasterBufferProvider::AcquireBufferForRaster(
     // until they are not in use by the gpu anymore, which a fence is used
     // to determine.
     backing->wait_on_fence_required = true;
-    backing->shared_image_interface =
-        compositor_context_provider_->SharedImageInterface();
     resource.set_gpu_backing(std::move(backing));
   }
   ZeroCopyGpuBacking* backing =

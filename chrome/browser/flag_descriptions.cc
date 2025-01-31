@@ -4138,11 +4138,27 @@ const char kPromptAPIForGeminiNanoDescription[] =
     "use cases that require factual accuracy (e.g. answering knowledge "
     "questions). "
     "You must comply with our Prohibited Use Policy [2] which provides "
-    "additional details about appropriate use of "
-    "Generative AI.";
+    "additional details about appropriate use of Generative AI.";
 const char* const kAIAPIsForGeminiNanoLinks[2] = {
     "https://goo.gle/chrome-ai-dev-preview",
     "https://policies.google.com/terms/generative-ai/use-policy"};
+
+const char kPromptAPIForGeminiNanoMultimodalInputName[] =
+    "Prompt API for Gemini Nano with Multimodal Input";
+const char kPromptAPIForGeminiNanoMultimodalInputDescription[] =
+    "Extends the exploratory Prompt API with image and audio input types. "
+    "Allows you to supplement natural language instructions for a built-in "
+    "large language model (Gemini Nano in Chrome) with image and audio inputs. "
+    "Exploratory APIs are designed for local prototyping to help discover "
+    "potential use cases, and may never launch. These explorations will inform "
+    "the built-in AI roadmap [1]. "
+    "This API enhancement is primarily intended for natural language "
+    "processing tasks associated with visual and auditory data, such as "
+    "generating rough descriptions of pictures and sounds. It is NOT suitable "
+    "for use cases that require factual accuracy (e.g. answering knowledge "
+    "questions). "
+    "You must comply with our Prohibited Use Policy [2] which provides "
+    "additional details about appropriate use of Generative AI.";
 
 const char kSummarizationAPIForGeminiNanoName[] =
     "Summarization API for Gemini Nano";

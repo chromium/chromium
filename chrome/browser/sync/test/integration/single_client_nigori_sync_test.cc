@@ -2117,7 +2117,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
   EXPECT_FALSE(GetSecurityDomainsServer()->ReceivedInvalidRequest());
 
   histogram_tester.ExpectUniqueSample(
-      "Sync.TrustedVaultDownloadKeysStatus",
+      "TrustedVault.DownloadKeysStatus.ChromeSync",
       /*sample=*/trusted_vault::TrustedVaultDownloadKeysStatus::kSuccess,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(

@@ -20,6 +20,8 @@ namespace affiliations {
 class AffiliationService;
 }
 
+class OptimizationGuideKeyedService;
+
 namespace content {
 class WebContents;
 }
@@ -36,7 +38,8 @@ class ChromePasswordChangeService
                                                     content::WebContents*)>;
 
   explicit ChromePasswordChangeService(
-      affiliations::AffiliationService* affiliation_service);
+      affiliations::AffiliationService* affiliation_service,
+      OptimizationGuideKeyedService* optimization_keyed_service);
   ~ChromePasswordChangeService() override;
 
   // Indicates that password change will be proposed to the user for a given
@@ -56,7 +59,6 @@ class ChromePasswordChangeService
 
   // PasswordChangeServiceInterface implementation.
   bool IsPasswordChangeSupported(const GURL& url) override;
-
   // For testing only.
   void SetCustomTabOpening(OpenNewTabCallback callback) {
     new_tab_callback_ = std::move(callback);
@@ -70,6 +72,7 @@ class ChromePasswordChangeService
   void Shutdown() override;
 
   const raw_ptr<affiliations::AffiliationService> affiliation_service_;
+  const raw_ptr<OptimizationGuideKeyedService> optimization_keyed_service_;
 
   // TODO(crbug.com/382652112): Remove once testing is simplified.
   OpenNewTabCallback new_tab_callback_;

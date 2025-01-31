@@ -436,17 +436,17 @@ Node* Node::PseudoAwarePreviousSibling() const {
       [[fallthrough]];
     case kPseudoIdCheckMark:
       if (Node* previous =
-              parent->GetPseudoElement(kPseudoIdScrollButtonInlineEnd)) {
-        return previous;
-      }
-      [[fallthrough]];
-    case kPseudoIdScrollButtonInlineEnd:
-      if (Node* previous =
               parent->GetPseudoElement(kPseudoIdScrollButtonBlockEnd)) {
         return previous;
       }
       [[fallthrough]];
     case kPseudoIdScrollButtonBlockEnd:
+      if (Node* previous =
+              parent->GetPseudoElement(kPseudoIdScrollButtonInlineEnd)) {
+        return previous;
+      }
+      [[fallthrough]];
+    case kPseudoIdScrollButtonInlineEnd:
       if (Node* previous =
               parent->GetPseudoElement(kPseudoIdScrollButtonInlineStart)) {
         return previous;
@@ -567,17 +567,17 @@ Node* Node::PseudoAwareNextSibling() const {
       [[fallthrough]];
     case kPseudoIdScrollButtonInlineStart:
       if (Node* next =
-              parent->GetPseudoElement(kPseudoIdScrollButtonBlockEnd)) {
-        return next;
-      }
-      [[fallthrough]];
-    case kPseudoIdScrollButtonBlockEnd:
-      if (Node* next =
               parent->GetPseudoElement(kPseudoIdScrollButtonInlineEnd)) {
         return next;
       }
       [[fallthrough]];
     case kPseudoIdScrollButtonInlineEnd:
+      if (Node* next =
+              parent->GetPseudoElement(kPseudoIdScrollButtonBlockEnd)) {
+        return next;
+      }
+      [[fallthrough]];
+    case kPseudoIdScrollButtonBlockEnd:
       if (Node* next = parent->GetPseudoElement(kPseudoIdCheckMark)) {
         return next;
       }
@@ -694,11 +694,11 @@ Node* Node::PseudoAwareFirstChild() const {
       return first;
     }
     if (Node* first =
-            current_element->GetPseudoElement(kPseudoIdScrollButtonBlockEnd)) {
+            current_element->GetPseudoElement(kPseudoIdScrollButtonInlineEnd)) {
       return first;
     }
     if (Node* first =
-            current_element->GetPseudoElement(kPseudoIdScrollButtonInlineEnd)) {
+            current_element->GetPseudoElement(kPseudoIdScrollButtonBlockEnd)) {
       return first;
     }
     if (Node* first = current_element->GetPseudoElement(kPseudoIdCheckMark)) {
@@ -774,11 +774,11 @@ Node* Node::PseudoAwareLastChild() const {
       return last;
     }
     if (Node* last =
-            current_element->GetPseudoElement(kPseudoIdScrollButtonInlineEnd)) {
+            current_element->GetPseudoElement(kPseudoIdScrollButtonBlockEnd)) {
       return last;
     }
     if (Node* last =
-            current_element->GetPseudoElement(kPseudoIdScrollButtonBlockEnd)) {
+            current_element->GetPseudoElement(kPseudoIdScrollButtonInlineEnd)) {
       return last;
     }
     if (Node* last = current_element->GetPseudoElement(

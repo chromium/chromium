@@ -3584,8 +3584,8 @@ void Element::AttachLayoutTree(AttachContext& context) {
   // https://drafts.csswg.org/css-overflow-5/#scroll-buttons.
   AttachPseudoElement(kPseudoIdScrollButtonBlockStart, context);
   AttachPseudoElement(kPseudoIdScrollButtonInlineStart, context);
-  AttachPseudoElement(kPseudoIdScrollButtonBlockEnd, context);
   AttachPseudoElement(kPseudoIdScrollButtonInlineEnd, context);
+  AttachPseudoElement(kPseudoIdScrollButtonBlockEnd, context);
   AttachPseudoElement(kPseudoIdScrollMarkerGroupAfter, context);
 
   if (skipped_container_descendants &&
@@ -4116,9 +4116,9 @@ void Element::RecalcStyle(const StyleRecalcChange change,
                                      child_change, child_recalc_context);
     UpdateLayoutSiblingPseudoElement(kPseudoIdScrollButtonInlineStart,
                                      child_change, child_recalc_context);
-    UpdateLayoutSiblingPseudoElement(kPseudoIdScrollButtonBlockEnd,
-                                     child_change, child_recalc_context);
     UpdateLayoutSiblingPseudoElement(kPseudoIdScrollButtonInlineEnd,
+                                     child_change, child_recalc_context);
+    UpdateLayoutSiblingPseudoElement(kPseudoIdScrollButtonBlockEnd,
                                      child_change, child_recalc_context);
     UpdatePseudoElement(kPseudoIdScrollMarker, child_change,
                         child_recalc_context);
@@ -4683,9 +4683,9 @@ void Element::RebuildLayoutTree(WhitespaceAttacher& whitespace_attacher) {
     RebuildPseudoElementLayoutTree(kPseudoIdCheckMark, *child_attacher);
     RebuildPseudoElementLayoutTree(kPseudoIdBefore, *child_attacher);
     RebuildPseudoElementLayoutTree(kPseudoIdMarker, *child_attacher);
-    RebuildPseudoElementLayoutTree(kPseudoIdScrollButtonInlineEnd,
-                                   local_attacher);
     RebuildPseudoElementLayoutTree(kPseudoIdScrollButtonBlockEnd,
+                                   local_attacher);
+    RebuildPseudoElementLayoutTree(kPseudoIdScrollButtonInlineEnd,
                                    local_attacher);
     RebuildPseudoElementLayoutTree(kPseudoIdScrollButtonInlineStart,
                                    local_attacher);
@@ -8533,8 +8533,8 @@ PseudoElement* Element::UpdateLayoutSiblingPseudoElement(
          pseudo_id == kPseudoIdScrollMarkerGroupAfter ||
          pseudo_id == kPseudoIdScrollButtonBlockStart ||
          pseudo_id == kPseudoIdScrollButtonInlineStart ||
-         pseudo_id == kPseudoIdScrollButtonBlockEnd ||
-         pseudo_id == kPseudoIdScrollButtonInlineEnd);
+         pseudo_id == kPseudoIdScrollButtonInlineEnd ||
+         pseudo_id == kPseudoIdScrollButtonBlockEnd);
   StyleRecalcContext context(style_recalc_context);
   if (style_recalc_context.container &&
       style_recalc_context.container == this) {
@@ -9023,7 +9023,7 @@ bool Element::HasSiblingBoxPseudoElements() const {
   }
   for (PseudoId pseudo_id :
        {kPseudoIdScrollButtonBlockStart, kPseudoIdScrollButtonInlineStart,
-        kPseudoIdScrollButtonBlockEnd, kPseudoIdScrollButtonInlineEnd,
+        kPseudoIdScrollButtonInlineEnd, kPseudoIdScrollButtonBlockEnd,
         kPseudoIdScrollMarkerGroupAfter, kPseudoIdScrollMarkerGroupBefore}) {
     if (rare_data->GetPseudoElement(pseudo_id)) {
       return true;
@@ -11245,8 +11245,8 @@ Element* Element::ImplicitAnchorElement() const {
       case kPseudoIdScrollMarker:
       case kPseudoIdScrollButtonBlockStart:
       case kPseudoIdScrollButtonInlineStart:
-      case kPseudoIdScrollButtonBlockEnd:
       case kPseudoIdScrollButtonInlineEnd:
+      case kPseudoIdScrollButtonBlockEnd:
         return pseudo_element->UltimateOriginatingElement()
             ->ImplicitAnchorElement();
       default:

@@ -128,8 +128,8 @@ enum class PseudoPriority {
   kScrollMarker,
   kScrollButtonBlockStart,
   kScrollButtonInlineStart,
-  kScrollButtonBlockEnd,
   kScrollButtonInlineEnd,
+  kScrollButtonBlockEnd,
   kBefore,
   kOther,
   kAfter,
@@ -158,11 +158,11 @@ PseudoPriority ConvertPseudoIdtoPriority(const PseudoId& pseudo) {
   if (pseudo == kPseudoIdScrollButtonInlineStart) {
     return PseudoPriority::kScrollButtonInlineStart;
   }
-  if (pseudo == kPseudoIdScrollButtonBlockEnd) {
-    return PseudoPriority::kScrollButtonBlockEnd;
-  }
   if (pseudo == kPseudoIdScrollButtonInlineEnd) {
     return PseudoPriority::kScrollButtonInlineEnd;
+  }
+  if (pseudo == kPseudoIdScrollButtonBlockEnd) {
+    return PseudoPriority::kScrollButtonBlockEnd;
   }
   if (pseudo == kPseudoIdBefore)
     return PseudoPriority::kBefore;

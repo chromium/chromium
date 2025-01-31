@@ -280,11 +280,11 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
-  'skia_revision': 'e0941791b86ecee6cae216ac218a8c358e3c8488',
+  'skia_revision': 'c1dc5033e7c9194669e0edfa622fd2ada529bb1f',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'v8_revision': 'd4d2ac6e7fcdd6fee12c5600ea9262bc9930df28',
+  'v8_revision': 'eb86605562b08d6fd606b677c66cd8b43852b173',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
@@ -2809,7 +2809,7 @@ deps = {
     Var('chromium_git') + '/external/khronosgroup/webgl.git' + '@' + '450cceb587613ac1469c5a131fac15935c99e0e7',
 
   'src/third_party/webgpu-cts/src':
-    Var('chromium_git') + '/external/github.com/gpuweb/cts.git' + '@' + '6addaa3db7457f359d16af89ca291e85639e5ace',
+    Var('chromium_git') + '/external/github.com/gpuweb/cts.git' + '@' + 'eeea35cb4832faac599ad193977b08fb3365f377',
 
   'src/third_party/webpagereplay':
     Var('chromium_git') + '/webpagereplay.git' + '@' + Var('webpagereplay_revision'),

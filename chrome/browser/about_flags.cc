@@ -10859,6 +10859,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(blink::features::kAIPromptAPIForWebPlatform),
      flag_descriptions::kAIAPIsForGeminiNanoLinks},
 
+    {"prompt-api-for-gemini-nano-multimodal-input",
+     flag_descriptions::kPromptAPIForGeminiNanoMultimodalInputName,
+     flag_descriptions::kPromptAPIForGeminiNanoMultimodalInputDescription,
+     kOsAll, FEATURE_VALUE_TYPE(blink::features::kAIPromptAPIMultimodalInput),
+     flag_descriptions::kAIAPIsForGeminiNanoLinks},
+
     {"summarization-api-for-gemini-nano",
      flag_descriptions::kSummarizationAPIForGeminiNanoName,
      flag_descriptions::kSummarizationAPIForGeminiNanoDescription, kOsAll,

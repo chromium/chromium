@@ -412,8 +412,8 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetsForPseudoElement(
   switch (pseudo_id) {
     case kPseudoIdScrollButtonBlockStart:
     case kPseudoIdScrollButtonInlineStart:
-    case kPseudoIdScrollButtonBlockEnd:
-    case kPseudoIdScrollButtonInlineEnd: {
+    case kPseudoIdScrollButtonInlineEnd:
+    case kPseudoIdScrollButtonBlockEnd: {
       if (scroll_button_style_sheet_) {
         return false;
       }

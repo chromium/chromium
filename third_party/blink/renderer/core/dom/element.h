@@ -1852,8 +1852,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
     DetachPseudoElement(kPseudoIdAfter, performing_reattach);
     DetachPseudoElement(kPseudoIdScrollButtonBlockStart, performing_reattach);
     DetachPseudoElement(kPseudoIdScrollButtonInlineStart, performing_reattach);
-    DetachPseudoElement(kPseudoIdScrollButtonBlockEnd, performing_reattach);
     DetachPseudoElement(kPseudoIdScrollButtonInlineEnd, performing_reattach);
+    DetachPseudoElement(kPseudoIdScrollButtonBlockEnd, performing_reattach);
     DetachPseudoElement(kPseudoIdScrollMarkerGroupAfter, performing_reattach);
     DetachPseudoElement(kPseudoIdBackdrop, performing_reattach);
     DetachPseudoElement(kPseudoIdFirstLetter, performing_reattach);

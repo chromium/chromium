@@ -4242,6 +4242,15 @@ HttpCache::Transaction::LookupRequestInNoVarySearchCache() {
   EnsureMutableRequest();
   mutable_request_->url = std::move(result.original_url);
   no_vary_search_cache_erase_handle_ = std::move(result.erase_handle);
+
+  // Regenerate the cache key with the modified URL.
+  std::optional<std::string> cache_key =
+      HttpCache::GenerateCacheKeyForRequest(request_);
+  // NoVarySearchCache should never rewrite a URL that has a valid cache key to
+  // one that doesn't.
+  CHECK(cache_key);
+  cache_key_ = cache_key.value();
+
   // May be updated to a different value later.
   return NoVarySearchUseResult::kUsed;
 }

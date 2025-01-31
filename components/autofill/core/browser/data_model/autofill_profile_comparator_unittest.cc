@@ -1704,30 +1704,6 @@ TEST_F(AutofillProfileComparatorTest,
               testing::Optional(testing::IsEmpty()));
 }
 
-// Tests that `NonMergeableSettingVisibleTypes()` is nullopt if one
-// of the profiles has a field that has a too long value.
-TEST_F(AutofillProfileComparatorTest,
-       NonMergeableSettingVisibleTypes_ValueTooLong) {
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kAutofillLogDeduplicationMetrics};
-  AutofillProfile a = test::GetFullProfile();
-  AutofillProfile b = a;
-  // Profile `a` has street name longer than
-  // `kAutofillLogDeduplicationMetricsMaxFieldLengthForMergingParam`
-  a.SetRawInfo(
-      ADDRESS_HOME_STREET_ADDRESS,
-      base::StrCat(
-          {u"123 Str",
-           std::u16string(
-               features::
-                   kAutofillLogDeduplicationMetricsMaxFieldLengthForMergingParam
-                       .Get(),
-               'e'),
-           u"t"}));
-  b.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"123 Street");
-  EXPECT_THAT(comparator_.NonMergeableSettingVisibleTypes(a, b), std::nullopt);
-}
-
 // Tests that `NonMergeableSettingVisibleTypes()` is nullopt for profiles of
 // differing countries.
 TEST_F(AutofillProfileComparatorTest,

@@ -1399,7 +1399,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 
   // Download keys status should be recorded for every fetch.
   histogram_tester.ExpectUniqueSample(
-      "Sync.TrustedVaultDownloadKeysStatus",
+      "TrustedVault.DownloadKeysStatus." + security_domain_name_for_uma(),
       /*sample=*/TrustedVaultDownloadKeysStatusForUMA::kSuccess,
       /*expected_bucket_count=*/2);
 }
@@ -1442,7 +1442,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
            /*keys=*/std::vector<std::vector<uint8_t>>(),
            /*last_key_version=*/0);
   histogram_tester.ExpectUniqueSample(
-      "Sync.TrustedVaultDownloadKeysStatus",
+      "TrustedVault.DownloadKeysStatus." + security_domain_name_for_uma(),
       /*sample=*/TrustedVaultDownloadKeysStatusForUMA::kOtherError,
       /*expected_bucket_count=*/1);
   EXPECT_TRUE(backend()->AreConnectionRequestsThrottledForTesting());
@@ -1500,7 +1500,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
            /*keys=*/std::vector<std::vector<uint8_t>>(),
            /*last_key_version=*/0);
   histogram_tester.ExpectUniqueSample(
-      "Sync.TrustedVaultDownloadKeysStatus",
+      "TrustedVault.DownloadKeysStatus." + security_domain_name_for_uma(),
       /*sample=*/TrustedVaultDownloadKeysStatusForUMA::kNoNewKeys,
       /*expected_bucket_count=*/1);
 

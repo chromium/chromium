@@ -68,6 +68,9 @@ COMPONENT_EXPORT(DISPLAY_FEATURES) BASE_DECLARE_FEATURE(kFastDrmMasterDrop);
 
 COMPONENT_EXPORT(DISPLAY_FEATURES) bool IsFastDrmMasterDropEnabled();
 
+COMPONENT_EXPORT(DISPLAY_FEATURES)
+bool DoesFormFactorControlSubpixelRendering();
+
 }  // namespace features
 }  // namespace display
 

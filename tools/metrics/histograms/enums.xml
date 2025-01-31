@@ -9014,6 +9014,7 @@ from previous Chrome versions.
   <int value="-2021954068" label="TapVisualizerApp:disabled"/>
   <int value="-2020721975" label="smart-virtual-keyboard"/>
   <int value="-2020024440" label="scroll-end-effect"/>
+  <int value="-2019050827" label="AIPromptAPIMultimodalInput:enabled"/>
   <int value="-2018579114" label="ImprovedKeyboardShortcuts:enabled"/>
   <int value="-2017953534" label="enable-hosted-app-shim-creation"/>
   <int value="-2017821808" label="PrivacySandboxAdsAPIsOverride:disabled"/>
@@ -11209,6 +11210,7 @@ from previous Chrome versions.
   <int value="-1154343236" label="VrBrowsingTabsView:disabled"/>
   <int value="-1153892430"
       label="AlignFontDisplayAutoTimeoutWithLCPGoal:enabled"/>
+  <int value="-1153477286" label="AIPromptAPIMultimodalInput:disabled"/>
   <int value="-1153113849" label="OmniboxAggregateShortcuts:enabled"/>
   <int value="-1151766565" label="enable-fullscreen-tab-detaching"/>
   <int value="-1151615978" label="BorealisBigGl:disabled"/>

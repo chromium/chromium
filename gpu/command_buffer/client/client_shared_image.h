@@ -185,6 +185,11 @@ class GPU_EXPORT ClientSharedImage
     destruction_sync_token_ = sync_token;
   }
 
+  // Signals the service-side that the backing of this SharedImage was modified
+  // on the CPU or through external devices. `sync_token` can be passed to order
+  // the processing of the signal.
+  void BackingWasExternallyUpdated(const gpu::SyncToken& sync_token);
+
   // Creates a ClientSharedImage that is not associated with any
   // SharedImageInterface for testing.
   static scoped_refptr<ClientSharedImage> CreateForTesting();

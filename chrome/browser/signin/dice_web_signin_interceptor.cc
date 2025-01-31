@@ -128,6 +128,8 @@ AccountInfo GetPrimaryAccountInfo(signin::IdentityManager* manager) {
   return account_info;
 }
 
+// This function is based on the email rather than the GaiaID, because the Gaia
+// ID is not always available at the start of the interception process.
 bool IsFirstAccount(signin::IdentityManager* manager,
                     const std::string& email) {
   std::vector<CoreAccountInfo> accounts_in_chrome =
@@ -297,6 +299,8 @@ bool IsRequiredExtendedAccountInfoAvailable(const AccountInfo& account_info) {
 // Returns no value if info is required to determine if enterprise separation
 // is required. If `profile_separation_policies` is `std::nullopt` then the
 // user cloud profile separation policies have not yet been fetched.
+// This function is based on the email rather than the GaiaID, because the Gaia
+// ID is not always available at the start of the interception process.
 std::optional<bool> EnterpriseSeparationMaybeRequired(
     Profile* profile,
     signin::IdentityManager* identity_manager,
@@ -513,7 +517,7 @@ DiceWebSigninInterceptor::GetHeuristicOutcome(
   }
 
   const ProfileAttributesEntry* switch_to_entry = ShouldShowProfileSwitchBubble(
-      email,
+      gaia_id /*maybe empty*/, email,
       &g_browser_process->profile_manager()->GetProfileAttributesStorage());
   if (switch_to_entry && entry) {
     *entry = switch_to_entry;
@@ -732,21 +736,30 @@ void DiceWebSigninInterceptor::Reset() {
 
 const ProfileAttributesEntry*
 DiceWebSigninInterceptor::ShouldShowProfileSwitchBubble(
-    const std::string& intercepted_email,
+    const GaiaId& intercepted_gaia_id,
+    const std::string& intercepted_email_fallback,
     ProfileAttributesStorage* profile_attribute_storage) const {
   // Check if there is already an existing profile with this account.
   base::FilePath profile_path = profile_->GetPath();
-  for (const auto* entry :
-       profile_attribute_storage->GetAllProfilesAttributes()) {
-    if (entry->GetPath() == profile_path) {
-      continue;
-    }
-    if (gaia::AreEmailsSame(intercepted_email,
-                            base::UTF16ToUTF8(entry->GetUserName()))) {
-      return entry;
-    }
-  }
-  return nullptr;
+  std::vector<ProfileAttributesEntry*> attributes =
+      profile_attribute_storage->GetAllProfilesAttributes();
+  auto it =
+      std::find_if(attributes.begin(), attributes.end(),
+                   [&profile_path, &intercepted_email_fallback,
+                    &intercepted_gaia_id](const ProfileAttributesEntry* entry) {
+                     if (entry->GetPath() == profile_path) {
+                       // Skip the current profile.
+                       return false;
+                     }
+                     // Compare GaiaIds, but fallback to email if the GaiaId is
+                     // missing (which can happen at the heuristic step).
+                     return intercepted_gaia_id.empty()
+                                ? gaia::AreEmailsSame(
+                                      intercepted_email_fallback,
+                                      base::UTF16ToUTF8(entry->GetUserName()))
+                                : intercepted_gaia_id == entry->GetGAIAId();
+                   });
+  return it == attributes.end() ? nullptr : *it;
 }
 
 bool DiceWebSigninInterceptor::ShouldEnforceEnterpriseProfileSeparation(
@@ -960,7 +973,7 @@ void DiceWebSigninInterceptor::OnInterceptionReadyToBeProcessed(
   SkColor profile_color = GenerateNewProfileColor(entry).color;
 
   const ProfileAttributesEntry* switch_to_entry = ShouldShowProfileSwitchBubble(
-      info.email,
+      info.gaia, info.email,
       &g_browser_process->profile_manager()->GetProfileAttributesStorage());
 
   bool force_profile_separation =

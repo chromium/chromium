@@ -371,11 +371,11 @@ class CORE_EXPORT Node : public EventTarget {
   DISABLE_CFI_PERF bool IsScrollButtonInlineStartPseudoElement() const {
     return GetPseudoId() == kPseudoIdScrollButtonInlineStart;
   }
-  DISABLE_CFI_PERF bool IsScrollButtonBlockEndPseudoElement() const {
-    return GetPseudoId() == kPseudoIdScrollButtonBlockEnd;
-  }
   DISABLE_CFI_PERF bool IsScrollButtonInlineEndPseudoElement() const {
     return GetPseudoId() == kPseudoIdScrollButtonInlineEnd;
+  }
+  DISABLE_CFI_PERF bool IsScrollButtonBlockEndPseudoElement() const {
+    return GetPseudoId() == kPseudoIdScrollButtonBlockEnd;
   }
   DISABLE_CFI_PERF bool IsMarkerPseudoElement() const {
     return GetPseudoId() == kPseudoIdMarker;

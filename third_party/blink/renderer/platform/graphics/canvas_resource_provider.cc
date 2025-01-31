@@ -1197,7 +1197,7 @@ CanvasResourceProvider::CreateSharedImageProvider(
 std::unique_ptr<CanvasResourceProvider>
 CanvasResourceProvider::CreateWebGPUImageProvider(
     gfx::Size size,
-    SkColorType sk_color_type,
+    viz::SharedImageFormat format,
     SkAlphaType alpha_type,
     const gfx::ColorSpace& color_space,
     gpu::SharedImageUsageSet shared_image_usage_flags,
@@ -1212,8 +1212,8 @@ CanvasResourceProvider::CreateWebGPUImageProvider(
   //   the WebGPU interface)
   // Hence, both WEBGPU_READ and WEBGPU_WRITE usage are needed here.
   return CreateSharedImageProvider(
-      size, viz::SkColorTypeToSinglePlaneSharedImageFormat(sk_color_type),
-      alpha_type, color_space, CanvasResourceProvider::ShouldInitialize::kNo,
+      size, format, alpha_type, color_space,
+      CanvasResourceProvider::ShouldInitialize::kNo,
       std::move(context_provider_wrapper), RasterMode::kGPU,
       shared_image_usage_flags | gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
           gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE,

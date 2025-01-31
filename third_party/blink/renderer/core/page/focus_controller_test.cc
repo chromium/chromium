@@ -445,10 +445,10 @@ TEST_F(FocusControllerTest, FullCarouselFocusOrder) {
       before_scroller->GetPseudoElement(kPseudoIdScrollButtonBlockStart);
   Element* before_inline_start_button =
       before_scroller->GetPseudoElement(kPseudoIdScrollButtonInlineStart);
-  Element* before_block_end_button =
-      before_scroller->GetPseudoElement(kPseudoIdScrollButtonBlockEnd);
   Element* before_inline_end_button =
       before_scroller->GetPseudoElement(kPseudoIdScrollButtonInlineEnd);
+  Element* before_block_end_button =
+      before_scroller->GetPseudoElement(kPseudoIdScrollButtonBlockEnd);
 
   Element* before_first_child = before_scroller->firstElementChild();
   Element* before_second_child = before_first_child->nextElementSibling();
@@ -464,10 +464,10 @@ TEST_F(FocusControllerTest, FullCarouselFocusOrder) {
       after_scroller->GetPseudoElement(kPseudoIdScrollButtonBlockStart);
   Element* after_inline_start_button =
       after_scroller->GetPseudoElement(kPseudoIdScrollButtonInlineStart);
-  Element* after_block_end_button =
-      after_scroller->GetPseudoElement(kPseudoIdScrollButtonBlockEnd);
   Element* after_inline_end_button =
       after_scroller->GetPseudoElement(kPseudoIdScrollButtonInlineEnd);
+  Element* after_block_end_button =
+      after_scroller->GetPseudoElement(kPseudoIdScrollButtonBlockEnd);
 
   Element* after_first_child = after_scroller->firstElementChild();
   Element* after_last_child = after_scroller->lastElementChild();
@@ -479,15 +479,15 @@ TEST_F(FocusControllerTest, FullCarouselFocusOrder) {
                                     before_first_scroll_marker,
                                     before_block_start_button,
                                     before_inline_start_button,
-                                    before_block_end_button,
                                     before_inline_end_button,
+                                    before_block_end_button,
                                     before_scroller,
                                     before_first_child,
                                     before_second_child,
                                     after_block_start_button,
                                     after_inline_start_button,
-                                    after_block_end_button,
                                     after_inline_end_button,
+                                    after_block_end_button,
                                     after_scroller,
                                     after_first_child,
                                     after_last_child,
@@ -555,10 +555,10 @@ TEST_F(FocusControllerTest, CarouselWithOnlyButtonsFocusOrder) {
       before_scroller->GetPseudoElement(kPseudoIdScrollButtonBlockStart);
   Element* before_inline_start_button =
       before_scroller->GetPseudoElement(kPseudoIdScrollButtonInlineStart);
-  Element* before_block_end_button =
-      before_scroller->GetPseudoElement(kPseudoIdScrollButtonBlockEnd);
   Element* before_inline_end_button =
       before_scroller->GetPseudoElement(kPseudoIdScrollButtonInlineEnd);
+  Element* before_block_end_button =
+      before_scroller->GetPseudoElement(kPseudoIdScrollButtonBlockEnd);
 
   Element* before_first_child = before_scroller->firstElementChild();
   Element* before_second_child =
@@ -568,10 +568,10 @@ TEST_F(FocusControllerTest, CarouselWithOnlyButtonsFocusOrder) {
       after_scroller->GetPseudoElement(kPseudoIdScrollButtonBlockStart);
   Element* after_inline_start_button =
       after_scroller->GetPseudoElement(kPseudoIdScrollButtonInlineStart);
-  Element* after_block_end_button =
-      after_scroller->GetPseudoElement(kPseudoIdScrollButtonBlockEnd);
   Element* after_inline_end_button =
       after_scroller->GetPseudoElement(kPseudoIdScrollButtonInlineEnd);
+  Element* after_block_end_button =
+      after_scroller->GetPseudoElement(kPseudoIdScrollButtonBlockEnd);
 
   Element* after_first_child = after_scroller->firstElementChild();
   Element* after_last_child = after_scroller->lastElementChild();
@@ -579,15 +579,15 @@ TEST_F(FocusControllerTest, CarouselWithOnlyButtonsFocusOrder) {
   std::array<Element*, 16> order = {pre_input,
                                     before_block_start_button,
                                     before_inline_start_button,
-                                    before_block_end_button,
                                     before_inline_end_button,
+                                    before_block_end_button,
                                     before_scroller,
                                     before_first_child,
                                     before_second_child,
                                     after_block_start_button,
                                     after_inline_start_button,
-                                    after_block_end_button,
                                     after_inline_end_button,
+                                    after_block_end_button,
                                     after_scroller,
                                     after_first_child,
                                     after_last_child,
@@ -807,10 +807,10 @@ TEST_F(FocusControllerTest, FullCarouselWithExtraPseudoElementsFocusOrder) {
       before_scroller->GetPseudoElement(kPseudoIdScrollButtonBlockStart);
   Element* before_inline_start_button =
       before_scroller->GetPseudoElement(kPseudoIdScrollButtonInlineStart);
-  Element* before_block_end_button =
-      before_scroller->GetPseudoElement(kPseudoIdScrollButtonBlockEnd);
   Element* before_inline_end_button =
       before_scroller->GetPseudoElement(kPseudoIdScrollButtonInlineEnd);
+  Element* before_block_end_button =
+      before_scroller->GetPseudoElement(kPseudoIdScrollButtonBlockEnd);
 
   Element* before_first_child = before_scroller->firstElementChild();
   Element* before_second_child =
@@ -823,10 +823,10 @@ TEST_F(FocusControllerTest, FullCarouselWithExtraPseudoElementsFocusOrder) {
       after_scroller->GetPseudoElement(kPseudoIdScrollButtonBlockStart);
   Element* after_inline_start_button =
       after_scroller->GetPseudoElement(kPseudoIdScrollButtonInlineStart);
-  Element* after_block_end_button =
-      after_scroller->GetPseudoElement(kPseudoIdScrollButtonBlockEnd);
   Element* after_inline_end_button =
       after_scroller->GetPseudoElement(kPseudoIdScrollButtonInlineEnd);
+  Element* after_block_end_button =
+      after_scroller->GetPseudoElement(kPseudoIdScrollButtonBlockEnd);
 
   Element* after_first_child = after_scroller->firstElementChild();
   Element* after_last_child = after_scroller->lastElementChild();
@@ -838,15 +838,15 @@ TEST_F(FocusControllerTest, FullCarouselWithExtraPseudoElementsFocusOrder) {
                                     before_first_scroll_marker,
                                     before_block_start_button,
                                     before_inline_start_button,
-                                    before_block_end_button,
                                     before_inline_end_button,
+                                    before_block_end_button,
                                     before_scroller,
                                     before_first_child,
                                     before_second_child,
                                     after_block_start_button,
                                     after_inline_start_button,
-                                    after_block_end_button,
                                     after_inline_end_button,
+                                    after_block_end_button,
                                     after_scroller,
                                     after_first_child,
                                     after_last_child,

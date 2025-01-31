@@ -6,6 +6,7 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/password_manager/chrome_password_change_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_context.h"
@@ -14,6 +15,7 @@ PasswordChangeServiceFactory::PasswordChangeServiceFactory()
     : ProfileKeyedServiceFactory("PasswordChangeServiceFactory",
                                  ProfileSelections::BuildForRegularProfile()) {
   DependsOn(AffiliationServiceFactory::GetInstance());
+  DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
 }
 
 PasswordChangeServiceFactory::~PasswordChangeServiceFactory() = default;
@@ -34,5 +36,6 @@ PasswordChangeServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<ChromePasswordChangeService>(
-      AffiliationServiceFactory::GetForProfile(profile));
+      AffiliationServiceFactory::GetForProfile(profile),
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile));
 }
