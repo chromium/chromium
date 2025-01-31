@@ -71,8 +71,8 @@ public class TabSwitcherPaneCoordinatorFactory {
      * @param tabCreatorManager For creating new tabs.
      * @param browserControlsStateProvider For determining thumbnail size.
      * @param multiWindowModeStateDispatcher For managing behavior in multi-window.
-     * @param rootUiScrimManager The root UI coordinator's scrim component. On LFF this is unused as
-     *     the root UI's scrim component is used for the show/hide animation.
+     * @param scrimManager The root UI coordinator's scrim component. On LFF this is unused as the
+     *     root UI's scrim component is used for the show/hide animation.
      * @param snackbarManager The activity level snackbar manager.
      * @param modalDialogManager The modal dialog manager for the activity.
      * @param bottomSheetController The {@link BottomSheetController} for the current activity.
@@ -91,7 +91,7 @@ public class TabSwitcherPaneCoordinatorFactory {
             @NonNull TabCreatorManager tabCreatorManager,
             @NonNull BrowserControlsStateProvider browserControlsStateProvider,
             @NonNull MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
-            @NonNull ScrimManager rootUiScrimManager,
+            @NonNull ScrimManager scrimManager,
             @NonNull SnackbarManager snackbarManager,
             @NonNull ModalDialogManager modalDialogManager,
             @NonNull BottomSheetController bottomSheetController,
@@ -107,7 +107,7 @@ public class TabSwitcherPaneCoordinatorFactory {
         mTabCreatorManager = tabCreatorManager;
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mMultiWindowModeStateDispatcher = multiWindowModeStateDispatcher;
-        mScrimManager = rootUiScrimManager;
+        mScrimManager = scrimManager;
         mSnackbarManager = snackbarManager;
         mModalDialogManager = modalDialogManager;
         mBottomSheetController = bottomSheetController;

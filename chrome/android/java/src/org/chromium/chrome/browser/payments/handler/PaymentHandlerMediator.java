@@ -238,10 +238,10 @@ import java.lang.annotation.RetentionPolicy;
     }
 
     private void showScrim() {
-        ScrimManager coordinator = mBottomSheetController.getScrimManager();
-        if (coordinator != null && !coordinator.isShowingScrim()) {
+        ScrimManager scrimManager = mBottomSheetController.getScrimManager();
+        if (scrimManager != null && !scrimManager.isShowingScrim()) {
             mScrimProperties = mBottomSheetController.createScrimParams();
-            coordinator.showScrim(mScrimProperties);
+            scrimManager.showScrim(mScrimProperties);
         }
         setObscureState(true);
     }
