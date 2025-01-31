@@ -1699,6 +1699,9 @@ void HttpStreamPool::AttemptManager::CreateSpdyStreamAndNotify() {
 }
 
 void HttpStreamPool::AttemptManager::CreateQuicStreamAndNotify() {
+  CHECK(!is_canceling_jobs_);
+  CHECK(!is_failing_);
+
   QuicChromiumClientSession* quic_session =
       quic_session_pool()->FindExistingSession(
           quic_session_alias_key().session_key(),
@@ -1739,6 +1742,7 @@ void HttpStreamPool::AttemptManager::HandleSpdySessionReady(
   CHECK(!group_->force_quic());
   CHECK(!is_failing_);
   CHECK(spdy_session_);
+  CHECK(spdy_session_->IsAvailable());
 
   group_->Refresh(kSwitchingToHttp2, refresh_group_reason);
   NotifyPreconnectsComplete(OK);
