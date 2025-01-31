@@ -2704,8 +2704,8 @@ void LayoutObject::SetPseudoElementStyle(const LayoutObject& owner,
          pseudo_style->StyleType() == kPseudoIdScrollMarker ||
          pseudo_style->StyleType() == kPseudoIdScrollButtonBlockStart ||
          pseudo_style->StyleType() == kPseudoIdScrollButtonInlineStart ||
-         pseudo_style->StyleType() == kPseudoIdScrollButtonBlockEnd ||
-         pseudo_style->StyleType() == kPseudoIdScrollButtonInlineEnd);
+         pseudo_style->StyleType() == kPseudoIdScrollButtonInlineEnd ||
+         pseudo_style->StyleType() == kPseudoIdScrollButtonBlockEnd);
 
   InheritIsInDetachedNonDomTree(owner);
 

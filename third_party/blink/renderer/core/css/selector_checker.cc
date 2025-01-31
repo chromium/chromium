@@ -336,14 +336,14 @@ PseudoId PseudoIdFromScrollButtonArgument(const AtomicString& argument,
   if (argument == AtomicString("block-start")) {
     return kPseudoIdScrollButtonBlockStart;
   }
-  if (argument == AtomicString("block-end")) {
-    return kPseudoIdScrollButtonBlockEnd;
-  }
   if (argument == AtomicString("inline-start")) {
     return kPseudoIdScrollButtonInlineStart;
   }
   if (argument == AtomicString("inline-end")) {
     return kPseudoIdScrollButtonInlineEnd;
+  }
+  if (argument == AtomicString("block-end")) {
+    return kPseudoIdScrollButtonBlockEnd;
   }
   PhysicalToLogical<bool> mapping(
       style.GetWritingDirection(), argument == AtomicString("up"),
@@ -352,14 +352,14 @@ PseudoId PseudoIdFromScrollButtonArgument(const AtomicString& argument,
   if (mapping.BlockStart()) {
     return kPseudoIdScrollButtonBlockStart;
   }
-  if (mapping.BlockEnd()) {
-    return kPseudoIdScrollButtonBlockEnd;
-  }
   if (mapping.InlineStart()) {
     return kPseudoIdScrollButtonInlineStart;
   }
-  CHECK(mapping.InlineEnd());
-  return kPseudoIdScrollButtonInlineEnd;
+  if (mapping.InlineEnd()) {
+    return kPseudoIdScrollButtonInlineEnd;
+  }
+  CHECK(mapping.BlockEnd());
+  return kPseudoIdScrollButtonBlockEnd;
 }
 
 bool MatchScrollButton(const Element& element,

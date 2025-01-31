@@ -2319,8 +2319,8 @@ class ComputedStyle final : public ComputedStyleBase {
     }
     if (pseudo == kPseudoIdScrollButtonBlockStart ||
         pseudo == kPseudoIdScrollButtonInlineStart ||
-        pseudo == kPseudoIdScrollButtonBlockEnd ||
-        pseudo == kPseudoIdScrollButtonInlineEnd) {
+        pseudo == kPseudoIdScrollButtonInlineEnd ||
+        pseudo == kPseudoIdScrollButtonBlockEnd) {
       return HasPseudoElementStyle(kPseudoIdScrollButton);
     }
     if (!HasPseudoElementStyle(pseudo)) {

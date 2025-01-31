@@ -4,8 +4,8 @@ rootWebArea focusable
 ++++++genericContainer focusable
 ++++++++button focusable name='up'
 ++++++++button focusable name='prev'
-++++++++button focusable name='down'
 ++++++++button focusable name='next'
+++++++++button focusable name='down'
 ++++++++genericContainer
 ++++++++++staticText name='One'
 ++++++++++++inlineTextBox name='One'

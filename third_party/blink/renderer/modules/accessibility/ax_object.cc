@@ -4313,8 +4313,8 @@ bool AXObject::ComputeIsIgnoredButIncludedInTree() {
                   element->GetPseudoElement(kPseudoIdMarker) ||
                   element->GetPseudoElement(kPseudoIdScrollButtonBlockStart) ||
                   element->GetPseudoElement(kPseudoIdScrollButtonInlineStart) ||
-                  element->GetPseudoElement(kPseudoIdScrollButtonBlockEnd) ||
                   element->GetPseudoElement(kPseudoIdScrollButtonInlineEnd) ||
+                  element->GetPseudoElement(kPseudoIdScrollButtonBlockEnd) ||
                   element->GetPseudoElement(kPseudoIdScrollMarkerGroupBefore) ||
                   element->GetPseudoElement(kPseudoIdScrollMarkerGroupAfter) ||
                   element->GetPseudoElement(kPseudoIdScrollMarker))) {

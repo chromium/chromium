@@ -95,8 +95,8 @@ Element* GetSelectedScrollMarkerFromScrollMarkerGroup(const Element& current) {
 bool ElementHasScrollButton(const Element& element) {
   return element.GetPseudoElement(kPseudoIdScrollButtonBlockStart) ||
          element.GetPseudoElement(kPseudoIdScrollButtonInlineStart) ||
-         element.GetPseudoElement(kPseudoIdScrollButtonBlockEnd) ||
-         element.GetPseudoElement(kPseudoIdScrollButtonInlineEnd);
+         element.GetPseudoElement(kPseudoIdScrollButtonInlineEnd) ||
+         element.GetPseudoElement(kPseudoIdScrollButtonBlockEnd);
 }
 
 bool ElementHasPrecedingCarouselPseudoElement(const Element& element) {
@@ -221,7 +221,7 @@ Element* GetPreviousInCarouselOrDomOrder(const Element& current,
     // This order is described in
     // https://drafts.csswg.org/css-overflow-5/#scroll-buttons
     static std::array<PseudoId, 5> order = {
-        kPseudoIdScrollButtonInlineEnd, kPseudoIdScrollButtonBlockEnd,
+        kPseudoIdScrollButtonBlockEnd, kPseudoIdScrollButtonInlineEnd,
         kPseudoIdScrollButtonInlineStart, kPseudoIdScrollButtonBlockStart,
         kPseudoIdScrollMarkerGroupBefore};
     for (auto pseudo_id : order) {

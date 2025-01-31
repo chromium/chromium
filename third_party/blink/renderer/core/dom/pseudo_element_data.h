@@ -135,8 +135,8 @@ inline void PseudoElementData::ClearPseudoElements() {
   SetPseudoElement(kPseudoIdScrollMarker, nullptr);
   SetPseudoElement(kPseudoIdScrollButtonBlockStart, nullptr);
   SetPseudoElement(kPseudoIdScrollButtonInlineStart, nullptr);
-  SetPseudoElement(kPseudoIdScrollButtonBlockEnd, nullptr);
   SetPseudoElement(kPseudoIdScrollButtonInlineEnd, nullptr);
+  SetPseudoElement(kPseudoIdScrollButtonBlockEnd, nullptr);
   if (column_pseudo_elements_) {
     for (ColumnPseudoElement* column_pseudo_element : *column_pseudo_elements_) {
       column_pseudo_element->Dispose();
@@ -195,13 +195,13 @@ inline void PseudoElementData::SetPseudoElement(
       previous_element = generated_scroll_button_inline_start_;
       generated_scroll_button_inline_start_ = element;
       break;
-    case kPseudoIdScrollButtonBlockEnd:
-      previous_element = generated_scroll_button_block_end_;
-      generated_scroll_button_block_end_ = element;
-      break;
     case kPseudoIdScrollButtonInlineEnd:
       previous_element = generated_scroll_button_inline_end_;
       generated_scroll_button_inline_end_ = element;
+      break;
+    case kPseudoIdScrollButtonBlockEnd:
+      previous_element = generated_scroll_button_block_end_;
+      generated_scroll_button_block_end_ = element;
       break;
     case kPseudoIdBackdrop:
       previous_element = backdrop_;
@@ -263,11 +263,11 @@ inline PseudoElement* PseudoElementData::GetPseudoElement(
   if (kPseudoIdScrollButtonInlineStart == pseudo_id) {
     return generated_scroll_button_inline_start_.Get();
   }
-  if (kPseudoIdScrollButtonBlockEnd == pseudo_id) {
-    return generated_scroll_button_block_end_.Get();
-  }
   if (kPseudoIdScrollButtonInlineEnd == pseudo_id) {
     return generated_scroll_button_inline_end_.Get();
+  }
+  if (kPseudoIdScrollButtonBlockEnd == pseudo_id) {
+    return generated_scroll_button_block_end_.Get();
   }
 // Workaround for CPU bug. This avoids compiler optimizing
 // this group of if conditions into switch. See http://crbug.com/855390.
@@ -322,11 +322,11 @@ PseudoElementData::GetPseudoElements() const {
   if (generated_scroll_button_inline_start_) {
     result.push_back(generated_scroll_button_inline_start_);
   }
-  if (generated_scroll_button_block_end_) {
-    result.push_back(generated_scroll_button_block_end_);
-  }
   if (generated_scroll_button_inline_end_) {
     result.push_back(generated_scroll_button_inline_end_);
+  }
+  if (generated_scroll_button_block_end_) {
+    result.push_back(generated_scroll_button_block_end_);
   }
   if (column_pseudo_elements_) {
     result.AppendVector(*column_pseudo_elements_);
