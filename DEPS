@@ -2605,18 +2605,6 @@ deps = {
       'dep_type': 'cipd',
   },
 
-  'src/third_party/edk2': {
-      'packages': [
-          {
-              'package': 'fuchsia/third_party/edk2',
-              'version': 'TfGjbhGrxzU0x2fYk8elEgwMTrvwe-3DSPTQe4gb0tMC'
-          },
-      ],
-      # TODO(b/351926334): Do not add `non_git_source` to this condition until the bug is fixed.
-      'condition': 'host_os == "linux" and checkout_fuchsia',
-      'dep_type': 'cipd',
-  },
-
   'src/third_party/re2/src':
     Var('chromium_git') + '/external/github.com/google/re2.git' + '@' + '6dcd83d60f7944926bfd308cc13979fc53dd69ca',
 
