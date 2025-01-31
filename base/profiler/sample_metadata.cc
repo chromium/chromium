@@ -105,7 +105,7 @@ void ApplyMetadataToPastSamples(TimeTicks period_start,
 }
 
 void AddProfileMetadataImpl(uint64_t name_hash,
-                            int64_t key,
+                            std::optional<int64_t> key,
                             int64_t value,
                             std::optional<PlatformThreadId> thread_id) {
   StackSamplingProfiler::AddProfileMetadata(name_hash, key, value, thread_id);
@@ -117,6 +117,13 @@ void AddProfileMetadata(std::string_view name,
                         SampleMetadataScope scope) {
   return AddProfileMetadataImpl(HashMetricName(name), key, value,
                                 GetPlatformThreadIdForScope(scope));
+}
+
+void AddProfileMetadataForThread(std::string_view name,
+                                 int64_t value,
+                                 PlatformThreadId other_thread) {
+  return AddProfileMetadataImpl(HashMetricName(name), std::nullopt, value,
+                                other_thread);
 }
 
 MetadataRecorder* GetSampleMetadataRecorder() {

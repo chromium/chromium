@@ -45,10 +45,12 @@ class BASE_EXPORT ThreadGroupImpl : public ThreadGroup {
   // It must not be empty. |thread group_label| is used to label the thread
   // group's threads, it must not be empty. |thread_type_hint| is the preferred
   // thread type; the actual thread type depends on shutdown state and platform
-  // capabilities. |task_tracker| keeps track of tasks.
+  // capabilities. |thread_group_type| is used for thread group profiler to tag
+  // the profiles collected on this group. |task_tracker| keeps track of tasks.
   ThreadGroupImpl(std::string_view histogram_label,
                   std::string_view thread_group_label,
                   ThreadType thread_type_hint,
+                  int64_t thread_group_type,
                   TrackedRef<TaskTracker> task_tracker,
                   TrackedRef<Delegate> delegate);
 
@@ -135,6 +137,16 @@ class BASE_EXPORT ThreadGroupImpl : public ThreadGroup {
   // is inserted on this set when it receives nullptr from GetWork().
   WorkerThreadSet idle_workers_set_ GUARDED_BY(lock_);
 
+  // This is used in ThreadGroupProfiler to tag as metadata on profiles
+  // collected for worker threads within this thread group.
+  const int64_t thread_group_type_;
+
+  // This is set in Start() if profiling is enabled, before any worker thread is
+  // created. If profiling is not enabled, this will remain std::nullopt. If
+  // created the ThreadGroupProfiler instance will exist until ThreadGroupImpl
+  // destruction.
+  std::optional<ThreadGroupProfiler> thread_group_profiler_;
+
   // Ensures recently cleaned up workers (ref.
   // WorkerDelegate::CleanupLockRequired()) had time to exit as
   // they have a raw reference to |this| (and to TaskTracker) which can
@@ -143,12 +155,6 @@ class BASE_EXPORT ThreadGroupImpl : public ThreadGroup {
   // https://crbug.com/810464. Uses AtomicRefCount to make its only public
   // method thread-safe.
   TrackedRefFactory<ThreadGroupImpl> tracked_ref_factory_;
-
-  // This is set in Start() if profiling is enabled, before any worker thread is
-  // created. If profiling is not enabled, this will remain std::nullopt. If
-  // created the ThreadGroupProfiler instance will exist until ThreadGroupImpl
-  // destruction.
-  std::optional<ThreadGroupProfiler> thread_group_profiler_;
 };
 
 }  // namespace internal

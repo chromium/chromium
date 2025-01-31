@@ -110,7 +110,8 @@ class ThreadGroupTestBase : public testing::Test, public ThreadGroup::Delegate {
     ASSERT_FALSE(thread_group_);
     thread_group_ = std::make_unique<ThreadGroupImpl>(
         "TestThreadGroup", "A", ThreadType::kDefault,
-        task_tracker_.GetTrackedRef(), tracked_ref_factory_.GetTrackedRef());
+        /*thread_group_type=*/0, task_tracker_.GetTrackedRef(),
+        tracked_ref_factory_.GetTrackedRef());
 
     mock_pooled_task_runner_delegate_.SetThreadGroup(thread_group_.get());
   }

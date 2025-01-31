@@ -182,7 +182,7 @@ class BASE_EXPORT StackSamplingProfiler {
       int64_t value,
       std::optional<PlatformThreadId> thread_id);
   friend void AddProfileMetadataImpl(uint64_t name_hash,
-                                     int64_t key,
+                                     std::optional<int64_t> key,
                                      int64_t value,
                                      std::optional<PlatformThreadId> thread_id);
 
@@ -198,7 +198,7 @@ class BASE_EXPORT StackSamplingProfiler {
 
   // Adds metadata as metadata global to the sampling profile.
   static void AddProfileMetadata(uint64_t name_hash,
-                                 int64_t key,
+                                 std::optional<int64_t> key,
                                  int64_t value,
                                  std::optional<PlatformThreadId> thread_id);
 
