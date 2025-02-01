@@ -538,10 +538,16 @@ void DisplayManager::UpdateInternalDisplay(
 }
 
 void DisplayManager::RefreshFontParams() {
+  bool force_disable_subpixel_font_rendering = false;
   if (features::DoesFormFactorControlSubpixelRendering()) {
-    gfx::SetForceDisableSubpixelFontRendering(
-        chromeos::GetFormFactor() != chromeos::form_factor::kClamshell);
+    force_disable_subpixel_font_rendering =
+        chromeos::GetFormFactor() != chromeos::form_factor::kClamshell;
   }
+  if (features::IsOledScaleFactorEnabled()) {
+    force_disable_subpixel_font_rendering = true;
+  }
+  gfx::SetForceDisableSubpixelFontRendering(
+      force_disable_subpixel_font_rendering);
 
   gfx::SetFontRenderParamsDeviceScaleFactor(
       chromeos::GetRepresentativeDeviceScaleFactor(active_display_list_));

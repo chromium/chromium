@@ -188,6 +188,10 @@ void SetForceDisableSubpixelFontRendering(bool disable) {
   force_disable_subpixel_font_rendering = disable;
 }
 
+bool GetFontRenderParamsSubpixelRenderingEnabledForTesting() {
+  return force_disable_subpixel_font_rendering;
+}
+
 FontRenderParams GetFontRenderParams(const FontRenderParamsQuery& query,
                                      std::string* family_out) {
   TRACE_EVENT0("fonts", "gfx::GetFontRenderParams");
