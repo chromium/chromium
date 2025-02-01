@@ -34,6 +34,14 @@ constexpr char kNoScheduledTime[] =
 constexpr char kMaxAlarmsError[] =
     "An extension cannot have more than %d active alarms.";
 
+constexpr char kWarningMinimumDevDelay[] =
+    "Alarm %s is less than the minimum duration of %zu seconds."
+    " In packed extensions, alarm \"%s\" will fire after the minimum duration.";
+
+constexpr char kWarningMinimumReleaseDelay[] =
+    "Alarm %s is less than the minimum duration of %zu seconds."
+    " Alarm \"%s\" will fire after the minimum duration.";
+
 bool ValidateAlarmCreateInfo(const std::string& alarm_name,
                              const alarms::AlarmCreateInfo& create_info,
                              const Extension* extension,
@@ -66,13 +74,13 @@ bool ValidateAlarmCreateInfo(const std::string& alarm_name,
   if (create_info.delay_in_minutes) {
     if (base::Minutes(*create_info.delay_in_minutes) < min_packed_delay) {
       if (is_unpacked) {
-        warnings->push_back(base::StringPrintf(
-            alarms_api_constants::kWarningMinimumDevDelay, "delay",
-            min_packed_delay.InSeconds(), alarm_name.c_str()));
+        warnings->push_back(base::StringPrintf(kWarningMinimumDevDelay, "delay",
+                                               min_packed_delay.InSeconds(),
+                                               alarm_name.c_str()));
       } else {
         warnings->push_back(base::StringPrintf(
-            alarms_api_constants::kWarningMinimumReleaseDelay, "delay",
-            min_packed_delay.InSeconds(), alarm_name.c_str()));
+            kWarningMinimumReleaseDelay, "delay", min_packed_delay.InSeconds(),
+            alarm_name.c_str()));
       }
     }
   }
@@ -80,12 +88,12 @@ bool ValidateAlarmCreateInfo(const std::string& alarm_name,
     if (base::Minutes(*create_info.period_in_minutes) < min_packed_delay) {
       if (is_unpacked) {
         warnings->push_back(base::StringPrintf(
-            alarms_api_constants::kWarningMinimumDevDelay, "period",
-            min_packed_delay.InSeconds(), alarm_name.c_str()));
+            kWarningMinimumDevDelay, "period", min_packed_delay.InSeconds(),
+            alarm_name.c_str()));
       } else {
         warnings->push_back(base::StringPrintf(
-            alarms_api_constants::kWarningMinimumReleaseDelay, "period",
-            min_packed_delay.InSeconds(), alarm_name.c_str()));
+            kWarningMinimumReleaseDelay, "period", min_packed_delay.InSeconds(),
+            alarm_name.c_str()));
       }
     }
   }
