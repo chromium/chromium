@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stdint.h>
 
 #include <memory>
@@ -223,9 +218,8 @@ TEST_F(PlatformNotificationServiceTest, DisplayPersistentThenClose) {
 }
 
 TEST_F(PlatformNotificationServiceTest, DisplayNonPersistentPropertiesMatch) {
-  std::vector<int> vibration_pattern(
-      kNotificationVibrationPattern,
-      kNotificationVibrationPattern + std::size(kNotificationVibrationPattern));
+  std::vector<int> vibration_pattern(std::begin(kNotificationVibrationPattern),
+                                     std::end(kNotificationVibrationPattern));
 
   PlatformNotificationData data;
   data.title = u"My notification's title";
@@ -255,9 +249,8 @@ TEST_F(PlatformNotificationServiceTest, DisplayNonPersistentPropertiesMatch) {
 }
 
 TEST_F(PlatformNotificationServiceTest, DisplayPersistentPropertiesMatch) {
-  std::vector<int> vibration_pattern(
-      kNotificationVibrationPattern,
-      kNotificationVibrationPattern + std::size(kNotificationVibrationPattern));
+  std::vector<int> vibration_pattern(std::begin(kNotificationVibrationPattern),
+                                     std::end(kNotificationVibrationPattern));
   PlatformNotificationData data;
   data.title = u"My notification's title";
   data.body = u"Hello, world!";

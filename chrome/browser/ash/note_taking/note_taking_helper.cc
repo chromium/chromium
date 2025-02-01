@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ash/note_taking/note_taking_helper.h"
 
 #include <stddef.h>
 
 #include <atomic>
+#include <iterator>
 #include <map>
 #include <ostream>
 #include <utility>
@@ -437,9 +433,9 @@ NoteTakingHelper::NoteTakingHelper()
     force_allowed_app_ids_ = base::SplitString(
         switch_value, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   }
-  force_allowed_app_ids_.insert(
-      force_allowed_app_ids_.end(), kDefaultAllowedAppIds,
-      kDefaultAllowedAppIds + std::size(kDefaultAllowedAppIds));
+  force_allowed_app_ids_.insert(force_allowed_app_ids_.end(),
+                                std::begin(kDefaultAllowedAppIds),
+                                std::end(kDefaultAllowedAppIds));
 
   // Track profiles so we can observe their app registries.
   profile_manager_observation_.Observe(g_browser_process->profile_manager());

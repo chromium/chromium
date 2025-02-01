@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/prefs/pref_service_incognito_allowlist.h"
 
 #include <vector>
@@ -233,8 +228,8 @@ namespace prefs {
 
 std::vector<const char*> GetIncognitoPersistentPrefsAllowlist() {
   std::vector<const char*> allowlist;
-  allowlist.insert(allowlist.end(), kPersistentPrefNames,
-                   kPersistentPrefNames + std::size(kPersistentPrefNames));
+  allowlist.insert(allowlist.end(), std::begin(kPersistentPrefNames),
+                   std::end(kPersistentPrefNames));
   return allowlist;
 }
 

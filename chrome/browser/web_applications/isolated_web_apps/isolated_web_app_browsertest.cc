@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <optional>
 #include <string_view>
 
@@ -103,9 +98,8 @@ const uint8_t kApplicationServerKey[kApplicationServerKeyLength] = {
     0xB6, 0x01, 0x20, 0xD8, 0x35, 0xA5, 0xD9, 0x3C, 0x43, 0xFD};
 
 std::string GetTestApplicationServerKey() {
-  std::string application_server_key(
-      kApplicationServerKey,
-      kApplicationServerKey + std::size(kApplicationServerKey));
+  std::string application_server_key(std::begin(kApplicationServerKey),
+                                     std::end(kApplicationServerKey));
 
   return application_server_key;
 }
