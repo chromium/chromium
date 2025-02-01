@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/demo_mode/demo_mode_idle_handler.h"
 
+#include "ash/metrics/demo_session_metrics_recorder.h"
 #include "ash/public/cpp/wallpaper/wallpaper_info.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/shell.h"
@@ -75,9 +76,19 @@ class DemoModeIdleHandlerTest : public ChromeAshTestBase {
     wallpaper_controller_->set_bypass_decode_for_testing();
 
     fake_user_manager_->LoginUser(kAccountId);
+
+    // We need to create `metrics_recorder_` in idle handler unit test here
+    // because `DemoModeIdleHandler::OnIdle()` will
+    // `ReportShopperSessionDwellTime()`, which requires `first_user_activity_`
+    // to be not null. Once `metrics_recorder_` is created, it'll observe user
+    // activity to set `first_user_activity_`.
+    metrics_recorder_ = std::make_unique<DemoSessionMetricsRecorder>();
   }
 
   void TearDown() override {
+    // metrics_recorder_ needs to be destroyed first because it still needs some
+    // services to report some metrics.
+    metrics_recorder_.reset();
     ChromeAshTestBase::TearDown();
     profile_ = nullptr;
     profile_manager_.DeleteAllTestingProfiles();
@@ -117,6 +128,7 @@ class DemoModeIdleHandlerTest : public ChromeAshTestBase {
   raw_ptr<WallpaperControllerImpl, DisableDanglingPtrDetection>
       wallpaper_controller_ = nullptr;
   base::ScopedTempDir user_data_dir_;
+  std::unique_ptr<DemoSessionMetricsRecorder> metrics_recorder_;
 };
 
 TEST_F(DemoModeIdleHandlerTest, CloseAllBrowsers) {

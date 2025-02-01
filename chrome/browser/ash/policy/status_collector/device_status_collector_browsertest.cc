@@ -4150,8 +4150,8 @@ class DeviceStatusCollectorNetworkInterfacesTest
             iface->mdn() == dev.mdn && iface->iccid() == dev.iccid &&
             (iface->type() != em::NetworkInterface::TYPE_CELLULAR ||
              std::ranges::equal(iface->eids().begin(), iface->eids().end(),
-                                kFakeSimSlots,
-                                kFakeSimSlots + std::size(kFakeSimSlots),
+                                std::begin(kFakeSimSlots),
+                                std::end(kFakeSimSlots),
                                 std::ranges::equal_to(), std::identity(),
                                 &FakeSimSlotInfo::eid))) {
           found_match = true;

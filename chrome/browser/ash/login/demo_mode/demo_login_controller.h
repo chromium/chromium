@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 
+#include "ash/metrics/demo_session_metrics_recorder.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -22,17 +23,6 @@ namespace ash {
 class DemoLoginController
     : public policy::DeviceCloudPolicyManagerAsh::Observer {
  public:
-  enum class ResultCode {
-    kSuccess = 0,               // Demo account request success.
-    kResponseParsingError = 1,  // Malformat Http response.
-    kInvalidCreds = 2,          // Missing required credential for login.
-    kEmptyReponse = 3,          // Empty Http response.
-    kNetworkError = 4,          // Network error.
-    kRequestFailed = 5,         // Server side error or out of quota.
-    kCannotObtainDMTokenAndClientID =
-        6,  // Unbale to obtain the DM Token and the Client ID.
-  };
-
   enum class State {
     // `DemoLoginController` is not initialized properly.
     kUnknown = 0,
@@ -56,8 +46,9 @@ class DemoLoginController
     kLoginToMGS = 5,
   };
 
-  using FailedRequestCallback =
-      base::OnceCallback<void(const ResultCode result_code)>;
+  using FailedRequestCallback = base::OnceCallback<void()>;
+
+  using ResultCode = DemoSessionMetricsRecorder::DemoAccountRequestResultCode;
 
   explicit DemoLoginController(base::RepeatingClosure auto_login_mgs_callback);
   DemoLoginController(const DemoLoginController&) = delete;
@@ -69,10 +60,8 @@ class DemoLoginController
   // Trigger Demo account login flow.
   void TriggerDemoAccountLoginFlow();
 
-  void SetSetupFailedCallbackForTest(
-      base::OnceCallback<void(const ResultCode result_code)> callback);
-  void SetCleanUpFailedCallbackForTest(
-      base::OnceCallback<void(const ResultCode result_code)> callback);
+  void SetSetupFailedCallbackForTest(FailedRequestCallback callback);
+  void SetCleanUpFailedCallbackForTest(FailedRequestCallback callback);
   void SetDeviceCloudPolicyManagerForTesting(
       policy::CloudPolicyManager* policy_manager);
 

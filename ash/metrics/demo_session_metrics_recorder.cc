@@ -37,12 +37,22 @@ using DemoModeApp = DemoSessionMetricsRecorder::DemoModeApp;
 
 using ExitSessionFrom = DemoSessionMetricsRecorder::ExitSessionFrom;
 
+DemoSessionMetricsRecorder* g_demo_session_metrics_recorder = nullptr;
+
 // How often to sample.
 constexpr auto kSamplePeriod = base::Seconds(1);
 
 // Redefining chromeos::preinstalled_web_apps::kHelpAppId as ash can't depend on
 // chrome.
 constexpr char kHelpAppId[] = "nbljnnecbjbmifnoehiemkgefbnpoeak";
+
+constexpr char kDemoModeSignedInShopperDwellTime[] =
+    "DemoMode.SignedIn.Shopper.DwellTime";
+
+constexpr char kSetupDemoAccountRequestResult[] =
+    "DemoMode.SignedIn.Request.SetupResult";
+constexpr char kCleanupDemoAccountRequestResult[] =
+    "DemoMode.SignedIn.Request.CleanupResult";
 
 // How many periods to wait for user activity before discarding samples.
 // This timeout is low because demo sessions tend to be very short. If we
@@ -420,6 +430,11 @@ void DemoSessionMetricsRecorder::RecordExitSessionAction(
   }
 }
 
+// static
+DemoSessionMetricsRecorder* DemoSessionMetricsRecorder::Get() {
+  return g_demo_session_metrics_recorder;
+}
+
 DemoSessionMetricsRecorder::DemoSessionMetricsRecorder(
     std::unique_ptr<base::RepeatingTimer> timer)
     : timer_(std::move(timer)),
@@ -427,6 +442,9 @@ DemoSessionMetricsRecorder::DemoSessionMetricsRecorder(
           std::make_unique<UniqueAppsLaunchedArcPackageNameObserver>(this)),
       active_app_arc_package_name_observer_(
           std::make_unique<ActiveAppArcPackageNameObserver>(this)) {
+  CHECK(!g_demo_session_metrics_recorder);
+  g_demo_session_metrics_recorder = this;
+
   // Outside of tests, use a normal repeating timer.
   if (!timer_.get()) {
     timer_ = std::make_unique<base::RepeatingTimer>();
@@ -453,6 +471,8 @@ DemoSessionMetricsRecorder::~DemoSessionMetricsRecorder() {
   // won't be any.)
   ReportSamples();
 
+  ReportShopperSessionDwellTime();
+
   ReportDwellTime();
 
   ReportUserClickesAndPresses();
@@ -461,6 +481,8 @@ DemoSessionMetricsRecorder::~DemoSessionMetricsRecorder() {
   activation_client_->RemoveObserver(this);
 
   ReportUniqueAppsLaunched();
+
+  g_demo_session_metrics_recorder = nullptr;
 }
 
 void DemoSessionMetricsRecorder::RecordAppLaunch(const std::string& id,
@@ -539,11 +561,15 @@ void DemoSessionMetricsRecorder::OnWindowActivated(ActivationReason reason,
 }
 
 void DemoSessionMetricsRecorder::OnUserActivity(const ui::Event* event) {
-  // Record the first and last time activity was observed.
+  // Record the first and last user activities upon observing them.
+  base::TimeTicks now = base::TimeTicks::Now();
   if (first_user_activity_.is_null()) {
-    first_user_activity_ = base::TimeTicks::Now();
+    first_user_activity_ = now;
   }
-  last_user_activity_ = base::TimeTicks::Now();
+  if (shopper_session_first_user_activity_.is_null()) {
+    shopper_session_first_user_activity_ = now;
+  }
+  last_user_activity_ = now;
 
   // Report samples recorded since the last activity.
   ReportSamples();
@@ -567,6 +593,36 @@ void DemoSessionMetricsRecorder::OnTouchEvent(ui::TouchEvent* event) {
   if (event->type() == ui::EventType::kTouchPressed) {
     user_clicks_and_presses_++;
   }
+}
+
+void DemoSessionMetricsRecorder::ReportShopperSessionDwellTime() {
+  std::optional<user_manager::UserType> user_type =
+      Shell::Get()->session_controller()->GetUserType();
+  // Check if the current session is signed-in (a regular user).
+  // TODO: Instead of checking the user type, we should have a flag here set
+  // from DemoLoginController to tell if it's a signed-in session.
+  if (user_type && *user_type == user_manager::UserType::kRegular) {
+    if (!shopper_session_first_user_activity_.is_null()) {
+      DCHECK(!last_user_activity_.is_null());
+      DCHECK_LE(shopper_session_first_user_activity_, last_user_activity_);
+
+      base::TimeDelta dwell_time =
+          last_user_activity_ - shopper_session_first_user_activity_;
+      ReportHistogramLongSecondsTimes100(kDemoModeSignedInShopperDwellTime,
+                                         dwell_time);
+    }
+    shopper_session_first_user_activity_ = base::TimeTicks();
+  }
+}
+
+void DemoSessionMetricsRecorder::ReportDemoAccountSetupResult(
+    DemoAccountRequestResultCode result_code) {
+  base::UmaHistogramEnumeration(kSetupDemoAccountRequestResult, result_code);
+}
+
+void DemoSessionMetricsRecorder::ReportDemoAccountCleanupResult(
+    DemoAccountRequestResultCode result_code) {
+  base::UmaHistogramEnumeration(kCleanupDemoAccountRequestResult, result_code);
 }
 
 void DemoSessionMetricsRecorder::StartRecording() {

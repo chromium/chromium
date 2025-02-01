@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/demo_mode/demo_mode_idle_handler.h"
 
+#include "ash/metrics/demo_session_metrics_recorder.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/ash/experiences/idle_detector/idle_detector.h"
@@ -61,6 +62,9 @@ void DemoModeIdleHandler::OnUserActivity(const ui::Event* event) {
 }
 
 void DemoModeIdleHandler::OnIdle() {
+  // Report shopper session dwell time metrics.
+  DemoSessionMetricsRecorder::Get()->ReportShopperSessionDwellTime();
+
   // Stop idle detect clock:
   idle_detector_.reset();
   is_user_active_ = false;

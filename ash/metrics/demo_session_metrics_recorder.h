@@ -95,10 +95,32 @@ class ASH_EXPORT DemoSessionMetricsRecorder
     kSystemTrayPowerButton = 2,
   };
 
+  // The types of the result of the demo account setup or cleanup request.
+  // This enum is tied directly to a UMA enum
+  // `DemoModeSignedInAccountRequestResult`, and should always reflect it (do
+  // not change one without changing the other). Entries should never be
+  // modified or reordered. Entries can only be removed by deprecating it and
+  // its value should never be reused. New ones should be added to the end
+  // (right before the max value).
+  enum class DemoAccountRequestResultCode {
+    kSuccess = 0,               // Demo account request success.
+    kResponseParsingError = 1,  // Malformat Http response.
+    kInvalidCreds = 2,          // Missing required credential for login.
+    kEmptyReponse = 3,          // Empty Http response.
+    kNetworkError = 4,          // Network error.
+    kRequestFailed = 5,         // Server side error or out of quota.
+    kCannotObtainDMTokenAndClientID =
+        6,  // Unable to obtain the DM Token and the Client ID.
+    kMaxValue = kCannotObtainDMTokenAndClientID,
+  };
+
   static constexpr char kUserClicksAndPressesMetric[] =
       "DemoMode.UserClicksAndPresses";
 
   static void RecordExitSessionAction(ExitSessionFrom recorded_from);
+
+  // Getter of this class' instance.
+  static DemoSessionMetricsRecorder* Get();
 
   // The recorder will create a normal timer by default. Tests should provide a
   // mock timer to control sampling periods.
@@ -122,6 +144,17 @@ class ASH_EXPORT DemoSessionMetricsRecorder
   // ui::EventHandler:
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnTouchEvent(ui::TouchEvent* event) override;
+
+  // Records the duration of time the user spent interacting with the current
+  // demo mode signed-in shopper session, measured from first user activity to
+  // last user activity.
+  void ReportShopperSessionDwellTime();
+
+  // Records the result of demo account setup request.
+  void ReportDemoAccountSetupResult(DemoAccountRequestResultCode result_code);
+
+  // Records the result of demo account cleanup request.
+  void ReportDemoAccountCleanupResult(DemoAccountRequestResultCode result_code);
 
  private:
   // Starts the timer for periodic sampling.
@@ -179,6 +212,8 @@ class ASH_EXPORT DemoSessionMetricsRecorder
   base::TimeTicks first_user_activity_;
 
   base::TimeTicks last_user_activity_;
+
+  base::TimeTicks shopper_session_first_user_activity_;
 
   std::unique_ptr<base::RepeatingTimer> timer_;
 

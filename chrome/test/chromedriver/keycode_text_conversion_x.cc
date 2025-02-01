@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
 
 #include <algorithm>
+#include <iterator>
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/test/chromedriver/chrome/ui_events.h"
@@ -94,11 +90,10 @@ int KeyboardCodeToXKeyCode(ui::KeyboardCode key_code) {
   KeyCodeAndXKeyCode find;
   find.key_code = key_code;
   const KeyCodeAndXKeyCode* found = std::lower_bound(
-      kKeyCodeToXKeyCode, kKeyCodeToXKeyCode + std::size(kKeyCodeToXKeyCode),
-      find);
-  if (found >= kKeyCodeToXKeyCode + std::size(kKeyCodeToXKeyCode) ||
-      found->key_code != key_code)
+      std::begin(kKeyCodeToXKeyCode), std::end(kKeyCodeToXKeyCode), find);
+  if (found >= std::end(kKeyCodeToXKeyCode) || found->key_code != key_code) {
     return -1;
+  }
   return found->x_key_code;
 }
 

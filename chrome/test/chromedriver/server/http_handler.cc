@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/test/chromedriver/server/http_handler.h"
 
 #include <stddef.h>
@@ -1216,7 +1211,7 @@ HttpHandler::HttpHandler(
                         base::BindRepeating(&ExecuteSendCommandFromWebSocket))),
   };
   command_map_ =
-      std::make_unique<CommandMap>(commands, commands + std::size(commands));
+      std::make_unique<CommandMap>(std::begin(commands), std::end(commands));
 
   static_bidi_command_map_.emplace(
       "session.status", base::BindRepeating(&ExecuteBidiSessionStatus));

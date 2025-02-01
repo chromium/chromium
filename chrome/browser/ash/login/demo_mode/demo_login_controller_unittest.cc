@@ -6,10 +6,12 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/metrics/demo_session_metrics_recorder.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/mock_log.h"
 #include "base/test/scoped_feature_list.h"
@@ -83,6 +85,11 @@ constexpr char kPublicAccountUserId[] = "public_session_user@localhost";
 
 constexpr GaiaId::Literal kTestGaiaId("123");
 constexpr char kTestEmail[] = "example@gmail.com";
+
+constexpr char kSetupDemoAccountRequestResultHistogram[] =
+    "DemoMode.SignedIn.Request.SetupResult";
+constexpr char kCleanupDemoAccountRequestResultHistogram[] =
+    "DemoMode.SignedIn.Request.CleanupResult";
 
 }  // namespace
 
@@ -232,6 +239,7 @@ class DemoLoginControllerTest : public testing::Test {
     EXPECT_TRUE(user_list[0]->IsDeviceLocalAccount());
   }
 
+  base::HistogramTester histogram_tester_;
   network::TestURLLoaderFactory test_url_loader_factory_;
 
  private:
@@ -297,16 +305,21 @@ TEST_F(DemoLoginControllerTest, OnSetupDemoAccountSuccessFirstTime) {
 
 TEST_F(DemoLoginControllerTest, InValidGaia) {
   test_url_loader_factory_.AddResponse(GetSetupUrl().spec(), kInValidGaiaCreds);
-  base::RunLoop loop;
-  EXPECT_CALL(login_display_host(), CompleteLogin).Times(0);
-  GetDemoLoginController()->SetSetupFailedCallbackForTest(
-      base::BindLambdaForTesting(
-          [&](const DemoLoginController::ResultCode result_code) {
-            EXPECT_EQ(result_code,
-                      DemoLoginController::ResultCode::kInvalidCreds);
-            loop.Quit();
-          }));
 
+  EXPECT_CALL(login_display_host(), CompleteLogin).Times(0);
+  base::RunLoop loop;
+  GetDemoLoginController()->SetSetupFailedCallbackForTest(
+      base::BindLambdaForTesting([&]() {
+        // Expect the setup request to fail by checking metrics.
+        histogram_tester_.ExpectTotalCount(
+            kSetupDemoAccountRequestResultHistogram, 1);
+        histogram_tester_.ExpectBucketCount(
+            kSetupDemoAccountRequestResultHistogram,
+            DemoSessionMetricsRecorder::DemoAccountRequestResultCode::
+                kInvalidCreds,
+            1);
+        loop.Quit();
+      }));
   // Verify demo account login gets triggered by `ExistingUserController`.
   ConfigureAutoLoginSetting();
   loop.Run();
@@ -321,20 +334,17 @@ TEST_F(DemoLoginControllerTest,
   // base::Value::Dict), causing the request to fail.
   GetDemoLoginController()->SetDeviceCloudPolicyManagerForTesting(nullptr);
 
-  base::RunLoop loop;
-  EXPECT_CALL(login_display_host(), CompleteLogin).Times(0);
-  GetDemoLoginController()->SetSetupFailedCallbackForTest(
-      base::BindLambdaForTesting([&](const DemoLoginController::ResultCode
-                                         result_code) {
-        EXPECT_EQ(
-            result_code,
-            DemoLoginController::ResultCode::kCannotObtainDMTokenAndClientID);
-        loop.Quit();
-      }));
-
   // Verify demo account login gets triggered by `ExistingUserController`.
   ConfigureAutoLoginSetting();
-  loop.Run();
+
+  // Expect the setup request to fail by checking metrics.
+  histogram_tester_.ExpectTotalCount(kSetupDemoAccountRequestResultHistogram,
+                                     1);
+  histogram_tester_.ExpectBucketCount(
+      kSetupDemoAccountRequestResultHistogram,
+      DemoSessionMetricsRecorder::DemoAccountRequestResultCode::
+          kCannotObtainDMTokenAndClientID,
+      1);
 }
 
 TEST_F(DemoLoginControllerTest, ServerCleanUpSuccess) {
@@ -343,12 +353,6 @@ TEST_F(DemoLoginControllerTest, ServerCleanUpSuccess) {
   local_state->SetString(prefs::kDemoAccountGaiaId, kTestGaiaId.ToString());
   const std::string last_session_id = "device_id";
   local_state->SetString(prefs::kDemoModeSessionIdentifier, last_session_id);
-  base::MockCallback<DemoLoginController::FailedRequestCallback>
-      cleanup_failed_callback;
-  // `cleanup_failed_callback` not called means no failure for the cleanup.
-  EXPECT_CALL(cleanup_failed_callback, Run(testing::_)).Times(0);
-  GetDemoLoginController()->SetCleanUpFailedCallbackForTest(
-      cleanup_failed_callback.Get());
 
   // Verify demo account login gets triggered by `ExistingUserController`.
   ConfigureAutoLoginSetting();
@@ -361,6 +365,13 @@ TEST_F(DemoLoginControllerTest, ServerCleanUpSuccess) {
   const auto new_session_id =
       local_state->GetString(prefs::kDemoModeSessionIdentifier);
   EXPECT_NE(new_session_id, last_session_id);
+
+  // Expect the cleanup request to succeed by checking metrics.
+  histogram_tester_.ExpectTotalCount(kCleanupDemoAccountRequestResultHistogram,
+                                     1);
+  histogram_tester_.ExpectBucketCount(
+      kCleanupDemoAccountRequestResultHistogram,
+      DemoSessionMetricsRecorder::DemoAccountRequestResultCode::kSuccess, 1);
 
   ExpectOnlyDeviceLocalAccountInUserList();
 }
@@ -375,13 +386,17 @@ TEST_F(DemoLoginControllerTest, ServerCleanUpFailed) {
                                        net::HTTP_UNAUTHORIZED);
   base::RunLoop loop;
   GetDemoLoginController()->SetCleanUpFailedCallbackForTest(
-      base::BindLambdaForTesting(
-          [&](const DemoLoginController::ResultCode result_code) {
-            EXPECT_EQ(result_code,
-                      DemoLoginController::ResultCode::kRequestFailed);
-            loop.Quit();
-          }));
-
+      base::BindLambdaForTesting([&]() {
+        // Expect the cleanup request to fail by checking metrics.
+        histogram_tester_.ExpectTotalCount(
+            kCleanupDemoAccountRequestResultHistogram, 1);
+        histogram_tester_.ExpectBucketCount(
+            kCleanupDemoAccountRequestResultHistogram,
+            DemoSessionMetricsRecorder::DemoAccountRequestResultCode::
+                kRequestFailed,
+            1);
+        loop.Quit();
+      }));
   // Verify demo account login gets triggered by `ExistingUserController`.
   ConfigureAutoLoginSetting();
   loop.Run();
@@ -413,46 +428,59 @@ TEST_F(DemoLoginControllerTest,
   const std::string last_session_id = "device_id";
   local_state->SetString(prefs::kDemoModeSessionIdentifier, last_session_id);
 
-  // Right after the account cleanup failed, it'll try to set up the demo
-  // account regardless of the cleanup result. However, it's still
-  // unable to obtain the DM Token and the Client ID, so it will fail again and
-  // fall back to MGS.
-  base::RunLoop loop;
-  GetDemoLoginController()->SetCleanUpFailedCallbackForTest(
-      base::BindLambdaForTesting([&](const DemoLoginController::ResultCode
-                                         result_code) {
-        EXPECT_EQ(
-            result_code,
-            DemoLoginController::ResultCode::kCannotObtainDMTokenAndClientID);
-        loop.Quit();
-      }));
-
   // Verify demo account login gets triggered by `ExistingUserController`.
   ConfigureAutoLoginSetting();
-  loop.Run();
 
   // Expect the test account to be removed even if the cleanup failed.
   ExpectOnlyDeviceLocalAccountInUserList();
 
-  // Expect auto login managed guest session to start.
+  // Expect the cleanup request to fail by checking metrics.
+  histogram_tester_.ExpectTotalCount(kCleanupDemoAccountRequestResultHistogram,
+                                     1);
+  histogram_tester_.ExpectBucketCount(
+      kCleanupDemoAccountRequestResultHistogram,
+      DemoSessionMetricsRecorder::DemoAccountRequestResultCode::
+          kCannotObtainDMTokenAndClientID,
+      1);
+
+  // Right after the account cleanup failed, it'll try to set up the demo
+  // account regardless of the cleanup result. However, it's still
+  // unable to obtain the DM Token and the Client ID, so it will fail again and
+  // fall back to MGS. Therefore, we expect the auto login managed guest session
+  // to start.
   EXPECT_TRUE(existing_user_controller()->IsAutoLoginTimerRunningForTesting());
+  // Also expect the setup request to fail for the same reason by checking
+  // metrics.
+  histogram_tester_.ExpectTotalCount(kSetupDemoAccountRequestResultHistogram,
+                                     1);
+  histogram_tester_.ExpectBucketCount(
+      kSetupDemoAccountRequestResultHistogram,
+      DemoSessionMetricsRecorder::DemoAccountRequestResultCode::
+          kCannotObtainDMTokenAndClientID,
+      1);
 }
 
 TEST_F(DemoLoginControllerTest, FallbackToMGS) {
   // Mock setup failed by returning invalid credential.
   test_url_loader_factory_.AddResponse(GetSetupUrl().spec(), kInValidGaiaCreds);
 
-  base::RunLoop loop;
   EXPECT_CALL(login_display_host(), CompleteLogin).Times(0);
-  GetDemoLoginController()->SetSetupFailedCallbackForTest(
-      base::BindLambdaForTesting(
-          [&](const DemoLoginController::ResultCode result_code) {
-            loop.Quit();
-          }));
 
+  base::RunLoop loop;
+  GetDemoLoginController()->SetSetupFailedCallbackForTest(
+      base::BindLambdaForTesting([&]() {
+        // Expect the setup request to fail by checking metrics.
+        histogram_tester_.ExpectTotalCount(
+            kSetupDemoAccountRequestResultHistogram, 1);
+        histogram_tester_.ExpectBucketCount(
+            kSetupDemoAccountRequestResultHistogram,
+            DemoSessionMetricsRecorder::DemoAccountRequestResultCode::
+                kInvalidCreds,
+            1);
+        loop.Quit();
+      }));
   // Verify demo account login gets triggered by `ExistingUserController`.
   ConfigureAutoLoginSetting();
-
   loop.Run();
 
   // Expect auto login managed guest session to start.
@@ -470,20 +498,24 @@ TEST_F(DemoLoginControllerTest, LogServerError) {
           testing::HasSubstr("Setup response error: error code: 500; message: "
                              "Internal error encountered.; status: INTERNAL.")))
       .Times(1);
-  base::RunLoop loop;
   EXPECT_CALL(login_display_host(), CompleteLogin).Times(0);
-  GetDemoLoginController()->SetSetupFailedCallbackForTest(
-      base::BindLambdaForTesting(
-          [&](const DemoLoginController::ResultCode result_code) {
-            EXPECT_EQ(result_code,
-                      DemoLoginController::ResultCode::kRequestFailed);
-            loop.Quit();
-            log.StartCapturingLogs();
-          }));
 
+  base::RunLoop loop;
+  GetDemoLoginController()->SetSetupFailedCallbackForTest(
+      base::BindLambdaForTesting([&]() {
+        // Expect the setup request to fail by checking metrics.
+        histogram_tester_.ExpectTotalCount(
+            kSetupDemoAccountRequestResultHistogram, 1);
+        histogram_tester_.ExpectBucketCount(
+            kSetupDemoAccountRequestResultHistogram,
+            DemoSessionMetricsRecorder::DemoAccountRequestResultCode::
+                kRequestFailed,
+            1);
+        loop.Quit();
+        log.StartCapturingLogs();
+      }));
   // Trigger auto sign in:
   ConfigureAutoLoginSetting();
-
   loop.Run();
 }
 

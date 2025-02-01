@@ -3749,6 +3749,19 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="33" label="Success. No error."/>
 </enum>
 
+<enum name="DemoModeSignedInAccountRequestResult">
+  <summary>
+    The result of account cleanup request in demo mode signed in experience.
+  </summary>
+  <int value="0" label="Success."/>
+  <int value="1" label="Malformat Http response."/>
+  <int value="2" label="Missing required credential for login."/>
+  <int value="3" label="Empty Http response."/>
+  <int value="4" label="Network error."/>
+  <int value="5" label="Server side error or out of quota."/>
+  <int value="6" label="Unbale to obtain the DM Token and the Client ID."/>
+</enum>
+
 <enum name="DeprecatedArcKioskUserStatus">
   <int value="0" label="Hide ARC kiosk user on the login screen"/>
   <int value="1" label="Attempt to delete cryptohome for ARC kiosk user"/>
