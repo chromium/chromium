@@ -133,5 +133,15 @@ bool DoesFormFactorControlSubpixelRendering() {
   return base::FeatureList::IsEnabled(kFormFactorControlsSubpixelRendering);
 }
 
+// Open Pluggable Specification (OPS) is a special industry standard with
+// slot-in computing modules.
+BASE_FEATURE(kOpsDisplayScaleFactor,
+             "OpsDisplayScaleFactor",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsOpsDisplayScaleFactorEnabled() {
+  return base::FeatureList::IsEnabled(kOpsDisplayScaleFactor);
+}
+
 }  // namespace features
 }  // namespace display

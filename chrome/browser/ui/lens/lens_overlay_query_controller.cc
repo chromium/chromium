@@ -683,6 +683,19 @@ LensOverlayQueryController::LensServerFetchRequest::LensServerFetchRequest(
 LensOverlayQueryController::LensServerFetchRequest::~LensServerFetchRequest() =
     default;
 
+std::string LensOverlayQueryController::GetVsridForNewTab() {
+  std::unique_ptr<lens::LensOverlayRequestId> request_id =
+      request_id_generator_->GetNextRequestId(
+          RequestIdUpdateMode::kOpenInNewTab);
+  std::string serialized_request_id;
+  CHECK(request_id->SerializeToString(&serialized_request_id));
+  std::string encoded_request_id;
+  base::Base64UrlEncode(serialized_request_id,
+                        base::Base64UrlEncodePolicy::OMIT_PADDING,
+                        &encoded_request_id);
+  return encoded_request_id;
+}
+
 std::unique_ptr<lens::LensOverlayRequestId>
 LensOverlayQueryController::GetNextRequestId(RequestIdUpdateMode update_mode) {
   std::unique_ptr<lens::LensOverlayRequestId> request_id =

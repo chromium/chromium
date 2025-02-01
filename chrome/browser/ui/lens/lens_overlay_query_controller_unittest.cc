@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/lens/lens_overlay_gen204_controller.h"
 #include "chrome/browser/ui/lens/test_lens_overlay_query_controller.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/base32/base32.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_mime_type.h"
@@ -245,18 +246,26 @@ class LensOverlayQueryControllerTest : public testing::Test {
     return vsrid_param;
   }
 
-  std::string GetAnalyticsIdFromUrl(std::string url_string) {
-    GURL url = GURL(url_string);
-    std::string vsrid_param;
-    EXPECT_TRUE(
-        net::GetValueForKeyInQuery(url, kRequestIdParameterKey, &vsrid_param));
+  lens::LensOverlayRequestId DecodeRequestIdFromVsrid(std::string vsrid_param) {
     std::string serialized_proto;
     EXPECT_TRUE(base::Base64UrlDecode(
         vsrid_param, base::Base64UrlDecodePolicy::DISALLOW_PADDING,
         &serialized_proto));
     lens::LensOverlayRequestId proto;
     EXPECT_TRUE(proto.ParseFromString(serialized_proto));
-    return proto.analytics_id();
+    return proto;
+  }
+
+  lens::LensOverlayRequestId GetRequestIdFromUrl(std::string url_string) {
+    GURL url = GURL(url_string);
+    std::string vsrid_param;
+    EXPECT_TRUE(
+        net::GetValueForKeyInQuery(url, kRequestIdParameterKey, &vsrid_param));
+    return DecodeRequestIdFromVsrid(vsrid_param);
+  }
+
+  std::string GetAnalyticsIdFromUrl(std::string url_string) {
+    return GetRequestIdFromUrl(url_string).analytics_id();
   }
 
   lens::LensOverlayRoutingInfo GetRoutingInfoFromUrl(std::string url_string) {
@@ -2242,6 +2251,80 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_EQ(query_controller.latency_gen_204_counter(
                 LatencyType::kFullPageTranslateRequestFetchLatency),
             2);
+
+  query_controller.EndQuery();
+}
+
+TEST_F(LensOverlayQueryControllerTest, GetVsridForNewTab) {
+  base::test::TestFuture<std::vector<lens::mojom::OverlayObjectPtr>,
+                         lens::mojom::TextPtr, bool>
+      full_image_response_future;
+  base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
+      url_response_future;
+  base::test::TestFuture<const std::string&> thumbnail_created_future;
+  TestLensOverlayQueryController query_controller(
+      full_image_response_future.GetRepeatingCallback(),
+      url_response_future.GetRepeatingCallback(), GetSuggestInputsCallback(),
+      thumbnail_created_future.GetRepeatingCallback(),
+      fake_variations_client_.get(),
+      IdentityManagerFactory::GetForProfile(profile()), profile(),
+      lens::LensOverlayInvocationSource::kAppMenu,
+      /*use_dark_mode=*/false, GetGen204Controller());
+
+  // Set up the query controller responses.
+  lens::LensOverlayObjectsResponse fake_objects_response;
+  fake_objects_response.mutable_cluster_info()->set_server_session_id(
+      kTestServerSessionId);
+  query_controller.set_fake_objects_response(fake_objects_response);
+  lens::LensOverlayInteractionResponse fake_interaction_response;
+  fake_interaction_response.set_encoded_response(kTestSuggestSignals);
+  query_controller.set_fake_interaction_response(fake_interaction_response);
+
+  SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
+  std::map<std::string, std::string> additional_search_query_params;
+  query_controller.StartQueryFlow(
+      bitmap, GURL(kTestPageUrl),
+      std::make_optional<std::string>(kTestPageTitle),
+      std::vector<lens::mojom::CenterRotatedBoxPtr>(),
+      /*underlying_content_bytes=*/{}, lens::MimeType::kUnknown, 0,
+      base::TimeTicks::Now());
+  ASSERT_TRUE(full_image_response_future.Wait());
+  ASSERT_TRUE(full_image_response_future.IsReady());
+
+  auto region = lens::mojom::CenterRotatedBox::New();
+  region->box = gfx::RectF(30, 40, 50, 60);
+  region->coordinate_type =
+      lens::mojom::CenterRotatedBox_CoordinateType::kImage;
+  query_controller.SendMultimodalRequest(
+      std::move(region), kTestQueryText, lens::MULTIMODAL_SEARCH,
+      additional_search_query_params, std::nullopt);
+
+  ASSERT_TRUE(url_response_future.Wait());
+
+  // Check that GetVsridForNewTab produces a vsrid that changes the analytics
+  // id but keeps the other fields the same.
+  lens::LensOverlayRequestId request_id =
+      GetRequestIdFromUrl(url_response_future.Get().url());
+  lens::LensOverlayRequestId new_tab_request_id =
+      DecodeRequestIdFromVsrid(query_controller.GetVsridForNewTab());
+  ASSERT_EQ(request_id.uuid(), new_tab_request_id.uuid());
+  ASSERT_EQ(request_id.sequence_id(), new_tab_request_id.sequence_id());
+  ASSERT_EQ(request_id.image_sequence_id(),
+            new_tab_request_id.image_sequence_id());
+  ASSERT_NE(request_id.analytics_id(), new_tab_request_id.analytics_id());
+
+  // Check that sending a new task completion event still has the original
+  // analytics id.
+  query_controller
+      .LensOverlayQueryController::SendTaskCompletionGen204IfEnabled(
+          lens::mojom::UserAction::kCopyText);
+  EXPECT_TRUE(
+      query_controller.last_task_completion_gen204_analytics_id().has_value());
+  std::string encoded_analytics_id =
+      base32::Base32Encode(base::as_byte_span(request_id.analytics_id()),
+                           base32::Base32EncodePolicy::OMIT_PADDING);
+  EXPECT_EQ(query_controller.last_task_completion_gen204_analytics_id().value(),
+            encoded_analytics_id);
 
   query_controller.EndQuery();
 }

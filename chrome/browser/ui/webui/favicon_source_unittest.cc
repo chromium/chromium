@@ -318,6 +318,24 @@ TEST_P(
       test_web_contents_getter_, base::DoNothing());
 }
 
+TEST_P(
+    FaviconSourceTestWithFavicon2Format,
+    ShouldQueryHistoryUiFaviconRequestHandlerIfHasDataSharingOriginAndAllowed) {
+  content::WebContentsTester::For(test_web_contents_.get())
+      ->SetLastCommittedURL(GURL(chrome::kChromeUIUntrustedDataSharingURL));
+
+  EXPECT_CALL(*mock_history_ui_favicon_request_handler_,
+              GetRawFaviconForPageURL(GURL("https://www.google.com"), _, _))
+      .Times(1);
+
+  source()->StartDataRequest(
+      GURL(base::StrCat(
+          {kDummyPrefix,
+           "?size=16&scaleFactor=1x&pageUrl=https%3A%2F%2Fwww.google."
+           "com&allowGoogleServerFallback=1"})),
+      test_web_contents_getter_, base::DoNothing());
+}
+
 TEST_P(FaviconSourceTestWithFavicon2Format,
        ShouldNotQueryIfDesiredSizeTooLarge) {
   EXPECT_CALL(*mock_history_ui_favicon_request_handler_,

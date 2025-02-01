@@ -685,6 +685,10 @@ bool IsExcludeDisplayInMirrorModeEnabled() {
   return display::features::IsExcludeDisplayInMirrorModeEnabled();
 }
 
+bool IsOpsDisplayScaleFactorEnabled() {
+  return display::features::IsOpsDisplayScaleFactorEnabled();
+}
+
 bool IsShowForceRespectUiGainsToggleEnabled() {
   // No need to show the toggle if UI gains is not going to be ignored.
   if (!base::FeatureList::IsEnabled(media::kIgnoreUiGains)) {
@@ -1920,6 +1924,9 @@ void DeviceSection::AddDeviceDisplayStrings(
 
   html_source->AddBoolean("excludeDisplayInMirrorModeEnabled",
                           IsExcludeDisplayInMirrorModeEnabled());
+
+  html_source->AddBoolean("opsDisplayScaleFactorEnabled",
+                          IsOpsDisplayScaleFactorEnabled());
 }
 
 }  // namespace ash::settings

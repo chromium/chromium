@@ -236,6 +236,8 @@ inline constexpr gfx::Size kWUXGA{1920, 1200};
 inline constexpr gfx::Size kFHD_1280{1920, 1280};
 inline constexpr gfx::Size k2K{2256, 1504};
 inline constexpr gfx::Size k4K_UHD{3840, 2160};
+inline constexpr gfx::Size k4K_WUHD(5120, 2160);
+inline constexpr gfx::Size k8k_UHD(7680, 4320);
 inline constexpr gfx::Size kQHD{2560, 1440};
 
 // Dru

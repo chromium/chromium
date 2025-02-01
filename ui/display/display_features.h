@@ -71,6 +71,11 @@ COMPONENT_EXPORT(DISPLAY_FEATURES) bool IsFastDrmMasterDropEnabled();
 COMPONENT_EXPORT(DISPLAY_FEATURES)
 bool DoesFormFactorControlSubpixelRendering();
 
+COMPONENT_EXPORT(DISPLAY_FEATURES)
+BASE_DECLARE_FEATURE(kOpsDisplayScaleFactor);
+
+COMPONENT_EXPORT(DISPLAY_FEATURES) bool IsOpsDisplayScaleFactorEnabled();
+
 }  // namespace features
 }  // namespace display
 

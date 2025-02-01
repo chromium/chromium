@@ -172,6 +172,11 @@ class LensOverlayQueryController {
   // Testing method to reset the cluster info state.
   void ResetRequestClusterInfoStateForTesting();
 
+  // Returns a vsrid string for opening in a new tab, to replace the vsrid in
+  // an existing query URL. Will not affect the state of this controller's
+  // request id generator or analytics id.
+  std::string GetVsridForNewTab();
+
   base::TimeTicks partial_page_contents_request_start_time_for_testing() const {
     return partial_page_contents_request_start_time_;
   }

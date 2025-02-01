@@ -10,6 +10,7 @@
 
 #include "base/containers/span.h"
 #include "components/base32/base32.h"
+#include "lens_overlay_request_id_generator.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace lens {
@@ -89,6 +90,35 @@ TEST_F(LensOverlayRequestIdGeneratorTest,
             request_id_generator.GetNextRequestId(RequestIdUpdateMode::kNone)
                 ->sequence_id());
   ASSERT_EQ(first_id->analytics_id(), second_id->analytics_id());
+}
+
+TEST_F(LensOverlayRequestIdGeneratorTest,
+       GetNextIdForOpenInNewTab_OutputsNewAnalyticsIdButDoesNotStore) {
+  lens::LensOverlayRequestIdGenerator request_id_generator;
+  std::unique_ptr<lens::LensOverlayRequestId> first_id =
+      request_id_generator.GetNextRequestId(
+          RequestIdUpdateMode::kFullImageRequest);
+  ASSERT_EQ(first_id->sequence_id(), 1);
+  ASSERT_EQ(first_id->image_sequence_id(), 1);
+  ASSERT_EQ(first_id->sequence_id(),
+            request_id_generator.GetNextRequestId(RequestIdUpdateMode::kNone)
+                ->sequence_id());
+  std::unique_ptr<lens::LensOverlayRequestId> second_id =
+      request_id_generator.GetNextRequestId(RequestIdUpdateMode::kOpenInNewTab);
+  ASSERT_EQ(second_id->sequence_id(), 1);
+  ASSERT_EQ(second_id->image_sequence_id(), 1);
+  ASSERT_EQ(second_id->sequence_id(),
+            request_id_generator.GetNextRequestId(RequestIdUpdateMode::kNone)
+                ->sequence_id());
+  ASSERT_NE(first_id->analytics_id(), second_id->analytics_id());
+  std::unique_ptr<lens::LensOverlayRequestId> third_id =
+      request_id_generator.GetNextRequestId(RequestIdUpdateMode::kSearchUrl);
+  ASSERT_EQ(third_id->sequence_id(), 2);
+  ASSERT_EQ(third_id->image_sequence_id(), 1);
+  ASSERT_EQ(third_id->sequence_id(),
+            request_id_generator.GetNextRequestId(RequestIdUpdateMode::kNone)
+                ->sequence_id());
+  ASSERT_EQ(first_id->analytics_id(), third_id->analytics_id());
 }
 
 TEST_F(LensOverlayRequestIdGeneratorTest, ResetRequestId_ChangesAnalyticsId) {
