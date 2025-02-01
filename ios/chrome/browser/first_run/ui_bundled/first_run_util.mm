@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_util.h"
 
-#import "base/command_line.h"
 #import "base/files/file.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
@@ -19,7 +18,6 @@
 #import "ios/chrome/browser/crash_report/model/crash_helper.h"
 #import "ios/chrome/browser/first_run/model/first_run.h"
 #import "ios/chrome/browser/first_run/model/first_run_metrics.h"
-#import "ios/chrome/browser/flags/chrome_switches.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
@@ -99,12 +97,6 @@ bool ShouldPresentFirstRunExperience() {
   if (tests_hook::DisableDefaultFirstRun()) {
     return false;
   }
-
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisableFirstRunExperience)) {
-    return false;
-  }
-
   return !HasFirstRunSentinel();
 }
 
