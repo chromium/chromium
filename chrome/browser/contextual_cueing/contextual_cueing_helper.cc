@@ -96,6 +96,14 @@ ContextualCueingHelper::ContextualCueingHelper(
 
 ContextualCueingHelper::~ContextualCueingHelper() = default;
 
+tabs::GlicNudgeController* ContextualCueingHelper::GetGlicNudgeController() {
+  Browser* browser = chrome::FindBrowserWithTab(web_contents());
+  if (!browser) {
+    return nullptr;
+  }
+  return browser->browser_window_features()->glic_nudge_controller();
+}
+
 void ContextualCueingHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (!navigation_handle->IsInMainFrame()) {
@@ -106,17 +114,16 @@ void ContextualCueingHelper::DidFinishNavigation(
     return;
   }
   contextual_cueing_service_->ReportPageLoad(navigation_handle->GetURL());
+  auto* glic_nudge_controller = GetGlicNudgeController();
+  if (glic_nudge_controller) {
+    glic_nudge_controller->UpdateNudgeLabel(web_contents(), std::string());
+  }
 }
 
 void ContextualCueingHelper::DocumentOnLoadCompletedInPrimaryMainFrame() {
   last_navigation_cue_label_.clear();
 
-  Browser* browser = chrome::FindBrowserWithTab(web_contents());
-  if (!browser) {
-    return;
-  }
-  auto* glic_nudge_controller =
-      browser->browser_window_features()->glic_nudge_controller();
+  auto* glic_nudge_controller = GetGlicNudgeController();
   if (!glic_nudge_controller) {
     return;
   }
