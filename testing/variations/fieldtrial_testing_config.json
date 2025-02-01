@@ -8689,6 +8689,21 @@
             ]
         }
     ],
+    "EducationalTipModule": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EducationalTipModule"
+                    ]
+                }
+            ]
+        }
+    ],
     "ElementGetInnerHTML": [
         {
             "platforms": [
