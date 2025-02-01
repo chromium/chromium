@@ -693,6 +693,49 @@ TEST_P(DisplayChangeObserverTest, DisplayModeNativeCalculation) {
   }
 }
 
+TEST_P(DisplayChangeObserverTest, OPSDisplayScaleFactor) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kOpsDisplayScaleFactor);
+  // Since the only way to set the physical size of FakeDisplaySnapshot is to
+  // use dpi, these are the calculated dpis for some common displays from 50 in
+  // to 110 in.
+  struct OpsTestParam {
+    gfx::Size resolution;
+    float dpi;
+    float expected_scale_factor;
+  };
+  const OpsTestParam testing_params[] = {
+      {k4K_UHD, 80.11f, 2.0f},         // 55"
+      {k4K_UHD, 67.78f, 1.6f},         // 65"
+      {k4K_UHD, 58.74f, kDsf_1_333},   // 75"
+      {k4K_UHD, 51.23f, 1.25f},        // 86"
+      {k4K_UHD, 40.05f, 1.0f},         // 110"
+      {k4K_WUHD, 60.4f, 1.6f},         // 92"
+      {k4K_WUHD, 52.92f, kDsf_1_333},  // 105"
+      {k8k_UHD, 160.21f, kDsf_2_666},  // 55"
+      {k8k_UHD, 135.56f, kDsf_2_666},  // 65"
+      {k8k_UHD, 80.11f, 2.0f},         // 110"
+  };
+  ui::DeviceDataManager::CreateInstance();
+  DisplayManager manager(nullptr);
+  DisplayChangeObserver observer(&manager);
+  for (const OpsTestParam param : testing_params) {
+    const auto snapshot = FakeDisplaySnapshot::Builder()
+                              .SetId(10)
+                              .SetType(DISPLAY_CONNECTION_TYPE_HDMI)
+                              .SetNativeMode(param.resolution)
+                              .SetCurrentMode(param.resolution)
+                              .SetDPI(param.dpi)
+                              .Build();
+
+    const ManagedDisplayInfo managed_display_info = CreateManagedDisplayInfo(
+        &observer, snapshot.get(), snapshot->current_mode());
+
+    EXPECT_EQ(managed_display_info.GetEffectiveDeviceScaleFactor(),
+              param.expected_scale_factor);
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          DisplayChangeObserverTest,
                          ::testing::Values(false, true));
