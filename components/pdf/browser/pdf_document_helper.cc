@@ -381,10 +381,6 @@ void PDFDocumentHelper::InitTouchSelectionClientManager() {
   touch_selection_controller_client_manager_->AddObserver(this);
 }
 
-void PDFDocumentHelper::HasUnsupportedFeature() {
-  client_->OnPDFHasUnsupportedFeature(&GetWebContents());
-}
-
 void PDFDocumentHelper::SaveUrlAs(const GURL& url,
                                   network::mojom::ReferrerPolicy policy) {
   client_->OnSaveURL(&GetWebContents());

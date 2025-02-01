@@ -1330,14 +1330,9 @@ void PdfViewWebPlugin::DocumentHasUnsupportedFeature(
     const std::string& feature) {
   DCHECK(!feature.empty());
   std::string metric = base::StrCat({"PDF_Unsupported_", feature});
-  if (unsupported_features_reported_.insert(metric).second)
+  if (unsupported_features_reported_.insert(metric).second) {
     client_->RecordComputedAction(metric);
-
-  if (!full_frame_ || notified_browser_about_unsupported_feature_)
-    return;
-
-  notified_browser_about_unsupported_feature_ = true;
-  pdf_host_->HasUnsupportedFeature();
+  }
 }
 
 void PdfViewWebPlugin::DocumentLoadProgress(uint32_t available,

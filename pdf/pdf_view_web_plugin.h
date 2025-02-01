@@ -895,10 +895,6 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
   // spamming the metrics if a feature shows up many times per document.
   base::flat_set<std::string> unsupported_features_reported_;
 
-  // Indicates whether the browser has been notified about an unsupported
-  // feature once, which helps prevent the infobar from going up more than once.
-  bool notified_browser_about_unsupported_feature_ = false;
-
   // The metafile in which to save the printed output. Assigned a value only
   // between `PrintBegin()` and `PrintEnd()` calls.
   raw_ptr<printing::MetafileSkia> printing_metafile_ = nullptr;
