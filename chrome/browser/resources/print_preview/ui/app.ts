@@ -16,32 +16,19 @@ import {isMac, isWindows} from 'chrome://resources/js/platform.js';
 import {hasKeyModifiers} from 'chrome://resources/js/util.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-// <if expr="not is_chromeos">
 import type {Destination} from '../data/destination.js';
 import {DestinationOrigin, PrinterType} from '../data/destination.js';
-// </if>
-// <if expr="is_chromeos">
-import type {Destination} from '../data/destination_cros.js';
-import {DestinationOrigin, PrinterType} from '../data/destination_cros.js';
-// </if>
 import type {DocumentSettings, PrintPreviewDocumentInfoElement} from '../data/document_info.js';
 import type {Margins} from '../data/margins.js';
 import {MeasurementSystem} from '../data/measurement_system.js';
 import type {PrintPreviewModelElement} from '../data/model.js';
 import {DuplexMode, whenReady} from '../data/model.js';
 import type {PrintableArea} from '../data/printable_area.js';
-// <if expr="is_chromeos">
-import {computePrinterState, PrintAttemptOutcome, PrinterState} from '../data/printer_status_cros.js';
-// </if>
 import type {Size} from '../data/size.js';
 import type {PrintPreviewStateElement} from '../data/state.js';
 import {Error, State} from '../data/state.js';
 import type {NativeInitialSettings, NativeLayer} from '../native_layer.js';
 import {NativeLayerImpl} from '../native_layer.js';
-// <if expr="is_chromeos">
-import {NativeLayerCrosImpl} from '../native_layer_cros.js';
-
-// </if>
 
 import {getTemplate} from './app.html.js';
 import {DestinationState} from './destination_settings.js';

@@ -6,10 +6,6 @@ import type {NativeInitialSettings, PrintPreviewAppElement, SerializedSettings, 
 import {getInstance, MarginsType, NativeLayerImpl, PluginProxyImpl, ScalingType} from 'chrome://print/print_preview.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
-// <if expr="is_chromeos">
-import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
-// </if>
-
 import {NativeLayerStub} from './native_layer_stub.js';
 import {getCddTemplateWithAdvancedSettings, getDefaultInitialSettings} from './print_preview_test_utils.js';
 import {TestPluginProxy} from './test_plugin_proxy.js';

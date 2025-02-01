@@ -21,28 +21,17 @@ import './more_settings.js';
 import './other_options_settings.js';
 import './pages_per_sheet_settings.js';
 import './pages_settings.js';
-// <if expr="is_chromeos">
-import './pin_settings.js';
-// </if>
 import './print_preview_vars.css.js';
 import './scaling_settings.js';
 import '/strings.m.js';
-// <if expr="not is_chromeos">
 import './link_container.js';
-
-// </if>
 
 import {CrContainerShadowMixin} from 'chrome://resources/cr_elements/cr_container_shadow_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DarkModeMixin} from '../dark_mode_mixin.js';
-// <if expr="not is_chromeos">
 import type {Destination} from '../data/destination.js';
-// </if>
-// <if expr="is_chromeos">
-import type {Destination} from '../data/destination_cros.js';
-// </if>
 import type {Settings} from '../data/model.js';
 import type {Error} from '../data/state.js';
 import {State} from '../data/state.js';

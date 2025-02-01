@@ -7,10 +7,6 @@ import {NativeLayerImpl} from 'chrome://print/print_preview.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
 
-// <if expr="is_chromeos">
-import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
-// </if>
-
 import {NativeLayerStub} from './native_layer_stub.js';
 import {getCddTemplate} from './print_preview_test_utils.js';
 

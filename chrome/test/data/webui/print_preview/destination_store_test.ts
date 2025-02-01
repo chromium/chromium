@@ -4,27 +4,13 @@
 
 import type {DestinationStore, LocalDestinationInfo, NativeInitialSettings} from 'chrome://print/print_preview.js';
 import {Destination, DestinationErrorType, DestinationOrigin, DestinationStoreEventType, GooglePromotedDestinationId, makeRecentDestination, NativeLayerImpl,
-        // <if expr="is_chromeos">
-        PrinterStatusReason, PrinterStatusSeverity,
-        // </if>
         PrinterType} from 'chrome://print/print_preview.js';
-// <if expr="not is_chromeos">
 import type {RecentDestination} from 'chrome://print/print_preview.js';
-// </if>
 
-// <if expr="is_chromeos">
-import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-// </if>
-// <if expr="not is_chromeos">
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-// </if>
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-// <if expr="is_chromeos">
-import type {NativeLayerCrosStub} from './native_layer_cros_stub.js';
-import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
-// </if>
 import {NativeLayerStub} from './native_layer_stub.js';
 import {createDestinationStore, getCddTemplate, getDefaultInitialSettings, getDestinations, getSaveAsPdfDestination, setupTestListenerElement} from './print_preview_test_utils.js';
 

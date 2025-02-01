@@ -7,24 +7,12 @@ import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import '/strings.m.js';
 
-// <if expr="is_chromeos">
-import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
-// </if>
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-// <if expr="is_chromeos">
-import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
-// </if>
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-// <if expr="not is_chromeos">
 import type {Destination} from '../data/destination.js';
 import {PrinterType} from '../data/destination.js';
-// </if>
-// <if expr="is_chromeos">
-import type {Destination} from '../data/destination_cros.js';
-import {PrinterType} from '../data/destination_cros.js';
-// </if>
 import {State} from '../data/state.js';
 
 import {getTemplate} from './button_strip.html.js';

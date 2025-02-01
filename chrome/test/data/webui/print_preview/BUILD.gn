@@ -17,8 +17,11 @@ build_webui_tests("build") {
     "copies_settings_test.ts",
     "custom_margins_test.ts",
     "destination_dialog_test.ts",
+    "destination_dialog_interactive_test.ts",
     "destination_item_test.ts",
     "destination_list_test.ts",
+    "destination_search_test.ts",
+    "destination_select_test.ts",
     "destination_settings_test.ts",
     "destination_store_test.ts",
     "dpi_settings_test.ts",
@@ -27,6 +30,7 @@ build_webui_tests("build") {
     "invalid_settings_test.ts",
     "key_event_test.ts",
     "layout_settings_test.ts",
+    "link_container_test.ts",
     "margins_settings_test.ts",
     "media_size_settings_test.ts",
     "media_type_settings_test.ts",
@@ -59,30 +63,6 @@ build_webui_tests("build") {
 
   if (is_mac || is_win) {
     files += [ "system_dialog_test.ts" ]
-  }
-
-  if (is_chromeos) {
-    files += [
-      "destination_dialog_cros_interactive_test.ts",
-      "destination_dialog_cros_test.ts",
-      "destination_dropdown_cros_test.ts",
-      "destination_item_test_cros.ts",
-      "destination_search_test_chromeos.ts",
-      "managed_print_options_test_chromeos.ts",
-      "native_layer_cros_stub.ts",
-      "pin_settings_test.ts",
-      "print_server_store_test.ts",
-      "printer_setup_info_cros_test.ts",
-      "printer_status_test.ts",
-      "searchable_drop_down_cros_test.ts",
-    ]
-  } else {
-    files += [
-      "destination_dialog_interactive_test.ts",
-      "destination_search_test.ts",
-      "destination_select_test.ts",
-    ]
-    files += [ "link_container_test.ts" ]
   }
 
   ts_definitions = [

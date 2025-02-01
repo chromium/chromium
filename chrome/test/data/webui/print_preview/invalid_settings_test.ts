@@ -8,9 +8,6 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
-// <if expr="is_chromeos">
-import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
-// </if>
 import {NativeLayerStub} from './native_layer_stub.js';
 import {getCddTemplate, getDefaultMediaSize, getDefaultOrientation} from './print_preview_test_utils.js';
 import {TestPluginProxy} from './test_plugin_proxy.js';

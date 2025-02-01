@@ -4,17 +4,9 @@
 
 import type {CrCheckboxElement, NativeInitialSettings, PolicyObjectEntry, PrintPreviewAppElement, SerializedSettings} from 'chrome://print/print_preview.js';
 import {BackgroundGraphicsModeRestriction, NativeLayerImpl, PluginProxyImpl} from 'chrome://print/print_preview.js';
-// <if expr="is_chromeos">
-import type {CrButtonElement} from 'chrome://print/print_preview.js';
-import {ColorModeRestriction, DuplexMode, DuplexModeRestriction, PinModeRestriction, PrintPreviewPluralStringProxyImpl} from 'chrome://print/print_preview.js';
-// </if>
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
-// <if expr="is_chromeos">
-import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
-import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
-// </if>
 
 import {NativeLayerStub} from './native_layer_stub.js';
 import {getDefaultInitialSettings} from './print_preview_test_utils.js';
