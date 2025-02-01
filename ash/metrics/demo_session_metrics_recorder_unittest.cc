@@ -717,12 +717,63 @@ TEST_F(DemoSessionMetricsRecorderTest, DwellTime) {
   task_environment()->FastForwardBy(base::Seconds(5));
   SendUserActivity();
 
-  // Simulate a session "timing out" after 60 seconds.
-  task_environment()->FastForwardBy(base::Seconds(60));
+  // Simulate a session "timing out" after 90 seconds.
+  task_environment()->FastForwardBy(base::Seconds(90));
   DeleteMetricsRecorder();
 
   // The recorded dwell time should be 10 seconds.
   histogram_tester_->ExpectUniqueSample("DemoMode.DwellTime", 10, 1);
+}
+
+TEST_F(DemoSessionMetricsRecorderTest, ShopperSessionDwellTime) {
+  // Simulate user activity for 12 seconds.
+  SendUserActivity();
+
+  task_environment()->FastForwardBy(base::Seconds(4));
+  SendUserActivity();
+
+  task_environment()->FastForwardBy(base::Seconds(8));
+  SendUserActivity();
+
+  // Simulate a shopper session "timing out" after 90 seconds.
+  task_environment()->FastForwardBy(base::Seconds(90));
+  DemoSessionMetricsRecorder::Get()->ReportShopperSessionDwellTime();
+
+  // The recorded dwell time should be 12 seconds.
+  histogram_tester_->ExpectUniqueSample("DemoMode.SignedIn.Shopper.DwellTime",
+                                        12, 1);
+
+  // Simulate user activity in another shopper session for 12 seconds.
+  SendUserActivity();
+
+  task_environment()->FastForwardBy(base::Seconds(12));
+  SendUserActivity();
+
+  // Simulate exiting the shopper and cros sessions after 90 seconds.
+  task_environment()->FastForwardBy(base::Seconds(90));
+  DeleteMetricsRecorder();
+
+  // The recorded dwell time should be 12 seconds again.
+  histogram_tester_->ExpectUniqueSample("DemoMode.SignedIn.Shopper.DwellTime",
+                                        12, 2);
+}
+
+TEST_F(DemoSessionMetricsRecorderTest, ZeroDwellTime) {
+  // Simulate the user comes in after 15 seconds.
+  task_environment()->FastForwardBy(base::Seconds(15));
+
+  // Simulate user interacting with the device only once.
+  SendUserActivity();
+
+  // Simulate a session "timing out" after 90 seconds.
+  task_environment()->FastForwardBy(base::Seconds(90));
+  DeleteMetricsRecorder();
+
+  // The recorded dwell time should be 0 second because the first and the last
+  // user activities are the same.
+  histogram_tester_->ExpectUniqueSample("DemoMode.DwellTime", 0, 1);
+  histogram_tester_->ExpectUniqueSample("DemoMode.SignedIn.Shopper.DwellTime",
+                                        0, 1);
 }
 
 // Within the demo session, test user clicks the home button on shelf, clicks on
@@ -730,6 +781,10 @@ TEST_F(DemoSessionMetricsRecorderTest, DwellTime) {
 // should be 4.
 TEST_F(DemoSessionMetricsRecorderTest,
        UserClicksAndPressesEqualsThreeInDemoSession) {
+  // SetIsDemoSession() will create another demo session metrics recorder. To
+  // avoid having two global instances, we delete the one created in the setup.
+  DeleteMetricsRecorder();
+
   TestSessionControllerClient* session =
       AshTestBase::GetSessionControllerClient();
   session->SetIsDemoSession();
@@ -742,23 +797,30 @@ TEST_F(DemoSessionMetricsRecorderTest,
   ash::Shell::Get()->metrics()->OnShellShuttingDown();
 
   // The recorded count UserInteracted should be 4, with one sample recorded.
-  histogram_tester_->ExpectUniqueSample(
+  // Additionally,  there should be one sample of 0 count recorded because we
+  // destroyed demo session metrics recorder at the beginning once.
+  histogram_tester_->ExpectBucketCount(
       DemoSessionMetricsRecorder::kUserClicksAndPressesMetric, 4, 1);
+  histogram_tester_->ExpectBucketCount(
+      DemoSessionMetricsRecorder::kUserClicksAndPressesMetric, 1, 0);
 }
 
 // Within the demo session, test user does not do any clicks/presses, then the
 // UserClickesAndPresses should be 0.
 TEST_F(DemoSessionMetricsRecorderTest,
        UserClicksAndPressesEqualsZeroInDemoSession) {
+  DeleteMetricsRecorder();
+
   TestSessionControllerClient* session =
       AshTestBase::GetSessionControllerClient();
   session->SetIsDemoSession();
 
   ash::Shell::Get()->metrics()->OnShellShuttingDown();
 
-  // The recorded count UserInteracted should be 0, with one sample recorded.
+  // The recorded count UserInteracted should be 0, with two samples recorded,
+  // because we destroyed demo session metrics recorder twice.
   histogram_tester_->ExpectUniqueSample(
-      DemoSessionMetricsRecorder::kUserClicksAndPressesMetric, 0, 1);
+      DemoSessionMetricsRecorder::kUserClicksAndPressesMetric, 0, 2);
 }
 
 // Out of demo session, test user clicks the home button on shelf, clicks on the

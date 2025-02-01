@@ -100,6 +100,9 @@ class ASH_EXPORT DemoSessionMetricsRecorder
 
   static void RecordExitSessionAction(ExitSessionFrom recorded_from);
 
+  // Getter of this class' instance.
+  static DemoSessionMetricsRecorder* Get();
+
   // The recorder will create a normal timer by default. Tests should provide a
   // mock timer to control sampling periods.
   explicit DemoSessionMetricsRecorder(
@@ -122,6 +125,11 @@ class ASH_EXPORT DemoSessionMetricsRecorder
   // ui::EventHandler:
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnTouchEvent(ui::TouchEvent* event) override;
+
+  // Records the duration of time the user spent interacting with the current
+  // demo mode signed-in shopper session, measured from first user activity to
+  // last user activity.
+  void ReportShopperSessionDwellTime();
 
  private:
   // Starts the timer for periodic sampling.
@@ -179,6 +187,8 @@ class ASH_EXPORT DemoSessionMetricsRecorder
   base::TimeTicks first_user_activity_;
 
   base::TimeTicks last_user_activity_;
+
+  base::TimeTicks shopper_session_first_user_activity_;
 
   std::unique_ptr<base::RepeatingTimer> timer_;
 

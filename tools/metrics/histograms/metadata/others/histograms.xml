@@ -3685,6 +3685,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="DemoMode.SignedIn.Shopper.DwellTime" units="seconds"
+    expires_after="2026-01-21">
+  <owner>wanghaifan@google.com</owner>
+  <owner>xiqiruan@chromium.org</owner>
+  <owner>cros-demo-mode-eng@google.com</owner>
+  <summary>
+    The duration the user spent interacting with a signed-in demo mode shopper
+    session, measured from the first user activity to the last user activity.
+    Note that the shopper session here is different from the Chrome OS session.
+    A shopper session restarts after idling a period of time. A Chrome OS
+    session can contain multiple shopper sessions. This metric rounds the
+    duration to the nearest second and uses exponential bucketing capped at 1
+    hour. The value would be 0 when there is only one user activity in a demo
+    session, i.e. the first user activity = the last user activity.
+  </summary>
+</histogram>
+
 <histogram name="DemoMode.UniqueAppsLaunched" units="units"
     expires_after="2026-01-21">
   <owner>llin@chromium.org</owner>
