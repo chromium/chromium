@@ -9,6 +9,7 @@
 
 #include "base/containers/queue.h"
 #include "base/time/time.h"
+#include "chrome/browser/contextual_cueing/contextual_cueing_enums.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class GURL;
@@ -33,9 +34,9 @@ class ContextualCueingService : public KeyedService {
   // Should be called when the nudge is clicked on by the user.
   void CueingNudgeClicked();
 
-  // Returns true if a nudge should be shown and is not blocked by feature
-  // engagement constraints.
-  bool CanShowNudge();
+  // Returns if a nudge should be shown and is not blocked by feature
+  // engagement constraints, and if not, why.
+  NudgeDecision CanShowNudge();
 
  private:
   // Returns true if nudge should not be shown due to the backoff rule.

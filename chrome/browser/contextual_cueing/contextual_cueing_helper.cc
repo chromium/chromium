@@ -71,6 +71,8 @@ class ScopedNudgeDecisionRecorder {
     nudge_decision_ = nudge_decision;
   }
 
+  NudgeDecision nudge_decision() const { return nudge_decision_; }
+
  private:
   optimization_guide::proto::OptimizationType optimization_type_;
   NudgeDecision nudge_decision_ = NudgeDecision::kUnknown;
@@ -109,10 +111,6 @@ void ContextualCueingHelper::DidFinishNavigation(
 void ContextualCueingHelper::DocumentOnLoadCompletedInPrimaryMainFrame() {
   last_navigation_cue_label_.clear();
 
-  if (!contextual_cueing_service_->CanShowNudge()) {
-    return;
-  }
-
   Browser* browser = chrome::FindBrowserWithTab(web_contents());
   if (!browser) {
     return;
@@ -145,15 +143,22 @@ void ContextualCueingHelper::DocumentOnLoadCompletedInPrimaryMainFrame() {
         }
       }
 
-      recorder.set_nudge_decision(last_navigation_cue_label_.empty()
-                                      ? NudgeDecision::kClientConditionsUnmet
-                                      : NudgeDecision::kSuccess);
+      recorder.set_nudge_decision(
+          last_navigation_cue_label_.empty()
+              ? NudgeDecision::kClientConditionsUnmet
+              : contextual_cueing_service_->CanShowNudge());
     } else {
       recorder.set_nudge_decision(NudgeDecision::kServerDataMalformed);
     }
   } else {
     recorder.set_nudge_decision(NudgeDecision::kServerDataUnavailable);
   }
+
+  if (recorder.nudge_decision() != NudgeDecision::kSuccess) {
+    // Clear out the label since we didn't show it.
+    last_navigation_cue_label_.clear();
+  }
+
   glic_nudge_controller->UpdateNudgeLabel(web_contents(),
                                           last_navigation_cue_label_);
 }

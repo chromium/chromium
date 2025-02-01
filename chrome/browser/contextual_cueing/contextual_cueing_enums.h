@@ -19,9 +19,18 @@ enum class NudgeDecision {
   // The server had data for the page, but the client conditions did not
   // evaluate to true.
   kClientConditionsUnmet = 4,
+  // The page was eligible for the nudge, but not enough page loads have been
+  // navigated to since the last nudge shown to the user.
+  kNotEnoughPageLoadsSinceLastNudge = 5,
+  // The page was eligible for the nudge, but not enough time has elapsed since
+  // the last nudge shown to the user.
+  kNotEnoughTimeHasElapsedSinceLastNudge = 6,
+  // The page was eligible for the nudge, but too many nudges have been shown to
+  // the user recently.
+  kTooManyNudgesShownToTheUser = 7,
 
   // New values above this line.
-  kMaxValue = kClientConditionsUnmet,
+  kMaxValue = kTooManyNudgesShownToTheUser,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/contextual_cueing/enums.xml:NudgeDecision)
 
