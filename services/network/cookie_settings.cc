@@ -413,20 +413,31 @@ void CookieSettings::AugmentInclusionStatus(
     const net::FirstPartySetMetadata& first_party_set_metadata,
     net::CookieSettingOverrides overrides,
     net::CookieInclusionStatus& out_status) const {
+  const bool could_be_affected_by_tpc_phaseout =
+      !setting_with_metadata.is_explicit_setting() &&
+      setting_with_metadata.is_third_party_request();
+
   if (IsCookieAllowed(cookie, setting_with_metadata)) {
-    if (!setting_with_metadata.is_third_party_request() ||
-        !ShouldApply3pcdRelatedReasons(cookie)) {
+    if (!ShouldApply3pcdRelatedReasons(cookie)) {
       return;
     }
+    const ThirdPartyCookieAllowMechanism allow_mechanism(
+        setting_with_metadata.third_party_cookie_allow_mechanism());
+    const bool has_exemption =
+        allow_mechanism != ThirdPartyCookieAllowMechanism::kNone;
+    if (!could_be_affected_by_tpc_phaseout) {
+      // Recall: (A => B) == (!A || B)
+      // If there's no exemption, then this must not be a third-party request.
+      CHECK(has_exemption || !setting_with_metadata.is_third_party_request());
+      out_status.MaybeSetExemptionReason(GetExemptionReason(allow_mechanism));
+      return;
+    }
+
     if (ShouldBlockThirdPartyCookies() ||
         IsThirdPartyPhaseoutEnabled(top_frame_origin, overrides)) {
-      out_status.MaybeSetExemptionReason(GetExemptionReason(
-          setting_with_metadata.third_party_cookie_allow_mechanism()));
-      return;
-    }
-    if (!setting_with_metadata.is_explicit_setting()) {
-      // The cookie should be allowed by default to have this warning
-      // reason.
+      CHECK(has_exemption);
+      out_status.MaybeSetExemptionReason(GetExemptionReason(allow_mechanism));
+    } else {
       out_status.AddWarningReason(
           net::CookieInclusionStatus::WarningReason::WARN_THIRD_PARTY_PHASEOUT);
     }
@@ -435,10 +446,9 @@ void CookieSettings::AugmentInclusionStatus(
 
   // The cookie is blocked.
 
-  if (setting_with_metadata.is_third_party_request() &&
-      setting_with_metadata.allow_partitioned_cookies() &&
-      IsThirdPartyPhaseoutEnabled(top_frame_origin, overrides) &&
-      !setting_with_metadata.is_explicit_setting()) {
+  if (setting_with_metadata.allow_partitioned_cookies() &&
+      could_be_affected_by_tpc_phaseout &&
+      IsThirdPartyPhaseoutEnabled(top_frame_origin, overrides)) {
     // This cookie is blocked due to 3PCD.
     if (!ShouldApply3pcdRelatedReasons(cookie)) {
       return;
