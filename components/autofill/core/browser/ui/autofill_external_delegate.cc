@@ -1403,7 +1403,9 @@ void AutofillExternalDelegate::DidAcceptPaymentsSuggestion(
                                                 query_field_);
       break;
     case SuggestionType::kSaveAndFillCreditCardEntry:
-      // TODO(crbug.com/378165178): Add save and fill action handling.
+      manager_->client()
+          .GetPaymentsAutofillClient()
+          ->ShowCreditCardSaveAndFillDialog();
       break;
     case SuggestionType::kShowAccountCards:
       autofill_metrics::LogAutofillShowCardsFromGoogleAccountButtonEventMetric(

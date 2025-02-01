@@ -597,6 +597,9 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // handle BNPL flows. It is not implemented on iOS and iOS WebView, and should
   // not be used on those platforms.
   virtual payments::BnplManager* GetPaymentsBnplManager();
+
+  // Shows the `Save and Fill` modal dialog.
+  virtual void ShowCreditCardSaveAndFillDialog();
 };
 
 }  // namespace payments

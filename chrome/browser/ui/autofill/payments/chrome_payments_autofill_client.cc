@@ -57,6 +57,7 @@
 #include "components/autofill/core/browser/ui/payments/card_unmask_otp_input_dialog_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
+#include "components/autofill/core/browser/ui/payments/save_and_fill_dialog_controller_impl.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -959,6 +960,20 @@ payments::BnplManager* ChromePaymentsAutofillClient::GetPaymentsBnplManager() {
 const PaymentsDataManager&
 ChromePaymentsAutofillClient::GetPaymentsDataManager() const {
   return client_->GetPersonalDataManager().payments_data_manager();
+}
+
+void ChromePaymentsAutofillClient::ShowCreditCardSaveAndFillDialog() {
+#if !BUILDFLAG(IS_ANDROID)
+  if (!save_and_fill_dialog_controller_) {
+    save_and_fill_dialog_controller_ =
+        std::make_unique<SaveAndFillDialogControllerImpl>();
+  }
+  save_and_fill_dialog_controller_->ShowDialog(base::BindOnce(
+      &CreateAndShowSaveAndFillDialog,
+      save_and_fill_dialog_controller_->GetWeakPtr(), web_contents()));
+#else
+  NOTIMPLEMENTED();
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 #if BUILDFLAG(IS_ANDROID)

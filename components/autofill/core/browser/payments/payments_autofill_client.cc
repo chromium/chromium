@@ -251,4 +251,6 @@ payments::BnplManager* PaymentsAutofillClient::GetPaymentsBnplManager() {
   return nullptr;
 }
 
+void PaymentsAutofillClient::ShowCreditCardSaveAndFillDialog() {}
+
 }  // namespace autofill::payments
