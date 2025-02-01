@@ -4,54 +4,17 @@
 
 // https://github.com/webmachinelearning/prompt-api
 
-// The argument to the prompt() method and others like it
-typedef (AILanguageModelPromptLine or sequence<AILanguageModelPromptLine>) AILanguageModelPromptInput;
-
-// Initial prompt lines
-dictionary AILanguageModelInitialPromptLineDict {
+dictionary AILanguageModelInitialPrompt {
   required AILanguageModelInitialPromptRole role;
-  required AILanguageModelPromptContent content;
-};
-typedef (
-  DOMString                                 // interpreted as { role: "user", content: { type: "text", data: providedValue } }
-  or AILanguageModelPromptContent           // interpreted as { role: "user", content: providedValue }
-  or AILanguageModelInitialPromptLineDict   // canonical form
-) AILanguageModelInitialPromptLine;
-
-// Prompt lines
-dictionary AILanguageModelPromptLineDict {
-  required AILanguageModelPromptRole role;
-  required AILanguageModelPromptContent content;
-};
-typedef (
-  DOMString                                 // interpreted as { role: "user", content: { type: "text", data: providedValue } }
-  or AILanguageModelPromptContent           // interpreted as { role: "user", content: providedValue }
-  or AILanguageModelPromptLineDict          // canonical form
-) AILanguageModelPromptLine;
-
-// Prompt content inside the lines
-dictionary AILanguageModelPromptContentDict {
-  required AILanguageModelPromptType type;
-  required AILanguageModelPromptData data;
-};
-typedef (DOMString or AILanguageModelPromptContentDict) AILanguageModelPromptContent;
-typedef (ImageBitmapSource or BufferSource or AudioBuffer or HTMLAudioElement or DOMString) AILanguageModelPromptData;
-enum AILanguageModelPromptType { "text", "image", "audio" };
-
-// Prompt roles inside the lines
-enum AILanguageModelInitialPromptRole { "system", "user", "assistant" };
-enum AILanguageModelPromptRole { "user", "assistant" };
-
-dictionary AILanguageModelCreateCoreOptions {
-  [EnforceRange] unsigned long topK;
-  float temperature;
-  sequence<DOMString> expectedInputLanguages;
-  sequence<AILanguageModelPromptType> expectedInputTypes;
+  required DOMString content;
 };
 
-dictionary AILanguageModelCreateOptions : AILanguageModelCreateCoreOptions {
+dictionary AILanguageModelCreateOptions {
   AbortSignal signal;
   AICreateMonitorCallback monitor;
+
+  [EnforceRange] unsigned long topK;
+  float temperature;
   DOMString systemPrompt;
-  sequence<AILanguageModelInitialPromptLine> initialPrompts;
+  sequence<AILanguageModelInitialPrompt> initialPrompts;
 };

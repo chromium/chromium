@@ -1448,7 +1448,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    '397b60348a98585f834a85e9c19c973357d460d0',
+    '83ca6d104703fde8396ccd61139ee6ac0d3113f0',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
@@ -2185,7 +2185,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/kotlin_stdlib',
-              'version': 'DW6fMEHOxSX-RY8l9d6xsdYh3AFqG8jskjDGVJ6uqUoC',
+              'version': 'vDSe2YumA17HBoAJfWLoM5euQtRR4FL9fhJL9T0mbnYC',
           },
       ],
       'condition': 'checkout_android and non_git_source',

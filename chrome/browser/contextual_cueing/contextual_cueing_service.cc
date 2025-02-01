@@ -31,7 +31,10 @@ void ContextualCueingService::CueingNudgeShown() {
     recent_nudge_timestamps_.pop();
   }
   recent_nudge_timestamps_.push(base::Time::Now());
-  remaining_quiet_loads_ = kMinPageCountBetweenNudges.Get();
+  if (kMinPageCountBetweenNudges.Get()) {
+    // Let the cue logic be performed the next page after quiet count pages.
+    remaining_quiet_loads_ = kMinPageCountBetweenNudges.Get() + 1;
+  }
 }
 
 void ContextualCueingService::CueingNudgeDismissed() {

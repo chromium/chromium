@@ -63,8 +63,8 @@ TEST_F(ContextualCueingServiceTestCapCountAndMinPageCount,
   service()->CueingNudgeShown();
   task_environment.FastForwardBy(base::Minutes(1));
 
-  // 2 quiet page loads after the cue.
-  for (size_t i = 0; i < 2; i++) {
+  // 3 quiet page loads after the cue.
+  for (size_t i = 0; i < 3; i++) {
     service()->ReportPageLoad(GURL(kFooURL));
     EXPECT_EQ(service()->CanShowNudge(),
               NudgeDecision::kNotEnoughPageLoadsSinceLastNudge);
@@ -76,8 +76,8 @@ TEST_F(ContextualCueingServiceTestCapCountAndMinPageCount,
   service()->CueingNudgeShown();
   task_environment.FastForwardBy(base::Minutes(1));
 
-  // 2 quiet page loads after the cue.
-  for (size_t i = 0; i < 2; i++) {
+  // 3 quiet page loads after the cue.
+  for (size_t i = 0; i < 3; i++) {
     service()->ReportPageLoad(GURL(kFooURL));
     EXPECT_EQ(service()->CanShowNudge(),
               NudgeDecision::kNotEnoughPageLoadsSinceLastNudge);
@@ -89,8 +89,8 @@ TEST_F(ContextualCueingServiceTestCapCountAndMinPageCount,
   service()->CueingNudgeShown();
   task_environment.FastForwardBy(base::Minutes(1));
 
-  // 2 quiet page loads after the cue.
-  for (size_t i = 0; i < 2; i++) {
+  // 3 quiet page loads after the cue.
+  for (size_t i = 0; i < 3; i++) {
     service()->ReportPageLoad(GURL(kFooURL));
     EXPECT_EQ(service()->CanShowNudge(),
               NudgeDecision::kNotEnoughPageLoadsSinceLastNudge);
@@ -204,8 +204,8 @@ TEST_F(ContextualCueingServiceTestMinPageCountBetweenNudges,
   service()->CueingNudgeShown();
   task_environment.FastForwardBy(base::Minutes(1));
 
-  // 2 quiet page loads after the cue.
-  for (size_t i = 0; i < 2; i++) {
+  // 3 quiet page loads after the cue.
+  for (size_t i = 0; i < 3; i++) {
     service()->ReportPageLoad(GURL(kFooURL));
     EXPECT_EQ(service()->CanShowNudge(),
               NudgeDecision::kNotEnoughPageLoadsSinceLastNudge);

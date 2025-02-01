@@ -10,7 +10,6 @@
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_union_ailanguagemodelpromptcontentdict_ailanguagemodelpromptcontentdictorstringorailanguagemodelpromptlinedictorstringsequence_ailanguagemodelpromptlinedict_string_string.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/modules/ai/ai_language_model_factory.h"
@@ -183,7 +182,7 @@ ExecutionContext* AILanguageModel::GetExecutionContext() const {
 
 ScriptPromise<IDLString> AILanguageModel::prompt(
     ScriptState* script_state,
-    const V8AILanguageModelPromptInput* input,
+    const WTF::String& input,
     const AILanguageModelPromptOptions* options,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
@@ -191,24 +190,16 @@ ScriptPromise<IDLString> AILanguageModel::prompt(
     return ScriptPromise<IDLString>();
   }
 
-  ScriptPromiseResolver<IDLString>* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<IDLString>>(script_state);
-  auto promise = resolver->Promise();
-
-  // The API impl only accepts a string for now, more to come soon!
-  if (!input->IsString()) {
-    resolver->RejectWithTypeError("Input type not supported");
-    return promise;
-  }
-  const WTF::String& input_string = input->GetAsString();
-
   base::UmaHistogramEnumeration(AIMetrics::GetAIAPIUsageMetricName(
                                     AIMetrics::AISessionType::kLanguageModel),
                                 AIMetrics::AIAPI::kSessionPrompt);
 
   base::UmaHistogramCounts1M(AIMetrics::GetAISessionRequestSizeMetricName(
                                  AIMetrics::AISessionType::kLanguageModel),
-                             int(input_string.CharactersSizeInBytes()));
+                             int(input.CharactersSizeInBytes()));
+  ScriptPromiseResolver<IDLString>* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLString>>(script_state);
+  auto promise = resolver->Promise();
 
   if (!language_model_remote_) {
     ThrowSessionDestroyedException(exception_state);
@@ -228,13 +219,13 @@ ScriptPromise<IDLString> AILanguageModel::prompt(
                     WrapWeakPersistent(this)),
       WTF::BindRepeating(&AILanguageModel::OnContextOverflow,
                          WrapWeakPersistent(this)));
-  language_model_remote_->Prompt(input_string, std::move(pending_remote));
+  language_model_remote_->Prompt(input, std::move(pending_remote));
   return promise;
 }
 
 ReadableStream* AILanguageModel::promptStreaming(
     ScriptState* script_state,
-    const V8AILanguageModelPromptInput* input,
+    const WTF::String& input,
     const AILanguageModelPromptOptions* options,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
@@ -242,20 +233,13 @@ ReadableStream* AILanguageModel::promptStreaming(
     return nullptr;
   }
 
-  // The API impl only accepts a string for now, more to come soon!
-  if (!input->IsString()) {
-    exception_state.ThrowTypeError("Input type not supported");
-    return nullptr;
-  }
-  const WTF::String& input_string = input->GetAsString();
-
   base::UmaHistogramEnumeration(AIMetrics::GetAIAPIUsageMetricName(
                                     AIMetrics::AISessionType::kLanguageModel),
                                 AIMetrics::AIAPI::kSessionPromptStreaming);
 
   base::UmaHistogramCounts1M(AIMetrics::GetAISessionRequestSizeMetricName(
                                  AIMetrics::AISessionType::kLanguageModel),
-                             int(input_string.CharactersSizeInBytes()));
+                             int(input.CharactersSizeInBytes()));
 
   if (!language_model_remote_) {
     ThrowSessionDestroyedException(exception_state);
@@ -275,7 +259,7 @@ ReadableStream* AILanguageModel::promptStreaming(
                         WrapWeakPersistent(this)),
           WTF::BindRepeating(&AILanguageModel::OnContextOverflow,
                              WrapWeakPersistent(this)));
-  language_model_remote_->Prompt(input_string, std::move(pending_remote));
+  language_model_remote_->Prompt(input, std::move(pending_remote));
   return readable_stream;
 }
 

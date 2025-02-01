@@ -329,6 +329,7 @@ source_set("unit_tests") {
 
   if ((is_chromeos_ash || is_linux) && (use_vaapi || use_v4l2_codec)) {
     sources += [ "stable_video_decoder_service_unittest.cc" ]
+    deps += [ "//gpu:test_support" ]
   }
 
   if (is_fuchsia) {

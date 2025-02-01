@@ -4,6 +4,9 @@
 
 // https://github.com/webmachinelearning/prompt-api
 
+enum AILanguageModelInitialPromptRole { "system", "user", "assistant" };
+enum AILanguageModelPromptRole { "user", "assistant" };
+
 [
   Exposed=(Window,Worker),
   SecureContext,
