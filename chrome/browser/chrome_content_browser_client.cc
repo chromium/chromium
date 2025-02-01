@@ -457,7 +457,7 @@
 #include "chrome/browser/mac/auth_session_request.h"
 #include "chrome/browser/mac/chrome_browser_main_extra_parts_mac.h"
 #include "components/soda/constants.h"
-#include "sandbox/mac/sandbox_compiler.h"
+#include "sandbox/mac/sandbox_serializer.h"
 #include "sandbox/policy/mac/params.h"
 #include "sandbox/policy/mac/sandbox_mac.h"
 #elif BUILDFLAG(IS_CHROMEOS)
@@ -7961,20 +7961,21 @@ void ChromeContentBrowserClient::OnKeepaliveRequestFinished() {
 #if BUILDFLAG(IS_MAC)
 bool ChromeContentBrowserClient::SetupEmbedderSandboxParameters(
     sandbox::mojom::Sandbox sandbox_type,
-    sandbox::SandboxCompiler* compiler) {
+    sandbox::SandboxSerializer* serializer) {
   if (sandbox_type == sandbox::mojom::Sandbox::kSpeechRecognition) {
     base::FilePath soda_component_path = speech::GetSodaDirectory();
     CHECK(!soda_component_path.empty());
-    CHECK(compiler->SetParameter(sandbox::policy::kParamSodaComponentPath,
-                                 soda_component_path.value()));
+    CHECK(serializer->SetParameter(sandbox::policy::kParamSodaComponentPath,
+                                   soda_component_path.value()));
 
     base::FilePath soda_language_pack_path =
         speech::GetSodaLanguagePacksDirectory();
     CHECK(!soda_language_pack_path.empty());
-    CHECK(compiler->SetParameter(sandbox::policy::kParamSodaLanguagePackPath,
-                                 soda_language_pack_path.value()));
+    CHECK(serializer->SetParameter(sandbox::policy::kParamSodaLanguagePackPath,
+                                   soda_language_pack_path.value()));
     return true;
-  } else if (sandbox_type == sandbox::mojom::Sandbox::kScreenAI) {
+  }
+  if (sandbox_type == sandbox::mojom::Sandbox::kScreenAI) {
     // ScreenAI service needs read access to ScreenAI component binary path to
     // load it.
     base::FilePath screen_ai_binary_path =
@@ -7984,9 +7985,11 @@ bool ChromeContentBrowserClient::SetupEmbedderSandboxParameters(
       VLOG(1) << "Screen AI component not found.";
       return false;
     }
-    return compiler->SetParameter(sandbox::policy::kParamScreenAiComponentPath,
-                                  screen_ai_binary_path.value());
-  } else if (sandbox_type == sandbox::mojom::Sandbox::kOnDeviceTranslation) {
+    return serializer->SetParameter(
+        sandbox::policy::kParamScreenAiComponentPath,
+        screen_ai_binary_path.value());
+  }
+  if (sandbox_type == sandbox::mojom::Sandbox::kOnDeviceTranslation) {
     auto translatekit_binary_path =
         on_device_translation::ComponentManager::GetInstance()
             .GetTranslateKitComponentPath();
@@ -7994,7 +7997,7 @@ bool ChromeContentBrowserClient::SetupEmbedderSandboxParameters(
       VLOG(1) << "TranslationKit component not found.";
       return false;
     }
-    return compiler->SetParameter(
+    return serializer->SetParameter(
         sandbox::policy::kParamTranslatekitComponentPath,
         translatekit_binary_path.value());
   }

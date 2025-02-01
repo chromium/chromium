@@ -1589,7 +1589,7 @@ void ContentBrowserClient::OnKeepaliveRequestFinished() {}
 #if BUILDFLAG(IS_MAC)
 bool ContentBrowserClient::SetupEmbedderSandboxParameters(
     sandbox::mojom::Sandbox sandbox_type,
-    sandbox::SandboxCompiler* compiler) {
+    sandbox::SandboxSerializer* serializer) {
   return false;
 }
 #endif  // BUILDFLAG(IS_MAC)

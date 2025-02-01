@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "sandbox/mac/seatbelt.pb.h"
 #include "sandbox/mac/seatbelt_export.h"
 
 namespace sandbox {
@@ -45,10 +44,9 @@ class SEATBELT_EXPORT SeatbeltExecClient {
   int GetReadFD();
 
   // Sends the policy to the SeatbeltExecServer and returns success or failure.
-  bool SendPolicy(const mac::SandboxPolicy& policy);
+  bool SendPolicy(const std::string& serialized_policy);
 
  private:
-  // This writes a string (the serialized protobuf) to the |pipe_|.
   bool WriteString(const std::string& str);
 
   // A file descriptor pair used for interprocess communication.
@@ -90,13 +88,8 @@ class SEATBELT_EXPORT SeatbeltExecServer {
   // or not the operation succeeds.
   bool InitializeSandbox();
 
-  // Applies the given sandbox policy, and returns whether or not the operation
-  // succeeds.
-  bool ApplySandboxProfile(const mac::SandboxPolicy& sandbox_policy);
-
  private:
-  // Reads from the |fd_| and stores the data into a string. This does
-  // not append a NUL terminator as protobuf does not expect one.
+  // Reads from the |fd_| and stores the data into a string.
   bool ReadString(std::string* string);
 
   // The file descriptor used to communicate with the launcher process.
