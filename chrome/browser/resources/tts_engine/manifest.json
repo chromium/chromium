@@ -16,6 +16,6 @@
       "webRequest",
       "webRequestBlocking"
     ],
-    "content_security_policy": "script-src 'self' 'wasm-eval' 'unsafe-eval' https://dl.google.com 'unsafe-inline' 'sha256-7yPdtKnajzuS+D9nDHSVdSs+1kaL1E1Zl0HU6csK2Y4=' 'sha256-qqURePDT8lm/GIarEoYDapkx9QqXvQob+ivJckgxsXY=' 'sha256-RMSqHznNzfybAW99WZABbiusMDFL1dNKAedUmiUifxA=' 'sha256-6GFr/PbTsH4+cJ0C9phPX+lGpsvyJrh3NNnT3bfDoh8='; object-src 'self'; connect-src *"
+    "content_security_policy": "script-src 'self' 'wasm-eval' 'unsafe-eval' https://dl.google.com 'unsafe-inline' 'sha256-i1wuR7SfJ9G/6ZTUagF9upq6l9Wb8YzCqIH29UR1QDA=' 'sha256-7yPdtKnajzuS+D9nDHSVdSs+1kaL1E1Zl0HU6csK2Y4=' 'sha256-qqURePDT8lm/GIarEoYDapkx9QqXvQob+ivJckgxsXY=' 'sha256-RMSqHznNzfybAW99WZABbiusMDFL1dNKAedUmiUifxA=' 'sha256-6GFr/PbTsH4+cJ0C9phPX+lGpsvyJrh3NNnT3bfDoh8='; object-src 'self'; connect-src *"
 
 }

@@ -1412,20 +1412,30 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
   // MHTML archives do not load from the network and must load immediately. Data
   // urls can also load immediately, except in cases when they should be
   // deferred.
+
+  bool is_data_url_in_preloads_list = false;
   if (!is_stale_revalidation &&
       (archive_ || (is_data_url && defer_policy != DeferPolicy::kDefer))) {
-    prepare_helper.UpgradeForLoaderIfNecessary(pauser);
-    resource = CreateResourceForStaticData(params, factory);
-    if (resource) {
-      policy =
-          DetermineRevalidationPolicy(resource_type, params, *resource, true);
-    } else if (!is_data_url && archive_) {
-      // Abort the request if the archive doesn't contain the resource, except
-      // in the case of data URLs which might have resources such as fonts that
-      // need to be decoded only on demand. These data URLs are allowed to be
-      // processed using the normal ResourceFetcher machinery.
-      return ResourceForBlockedRequest(
-          params, factory, ResourceRequestBlockedReason::kOther, client);
+    if (RuntimeEnabledFeatures::PreloadLinkRelDataUrlsEnabled() &&
+        is_data_url) {
+      is_data_url_in_preloads_list =
+          preloads_.find(PreloadKey(params.Url(), resource_type)) !=
+          preloads_.end();
+    }
+    if (!is_data_url_in_preloads_list) {
+      prepare_helper.UpgradeForLoaderIfNecessary(pauser);
+      resource = CreateResourceForStaticData(params, factory);
+      if (resource) {
+        policy =
+            DetermineRevalidationPolicy(resource_type, params, *resource, true);
+      } else if (!is_data_url && archive_) {
+        // Abort the request if the archive doesn't contain the resource, except
+        // in the case of data URLs which might have resources such as fonts
+        // that need to be decoded only on demand. These data URLs are allowed
+        // to be processed using the normal ResourceFetcher machinery.
+        return ResourceForBlockedRequest(
+            params, factory, ResourceRequestBlockedReason::kOther, client);
+      }
     }
   }
 
@@ -1435,8 +1445,9 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
 
   if (!is_stale_revalidation && !resource) {
     if (!prepare_helper.WasUpgradeForLoaderCalled() &&
-        preloads_.find(PreloadKey(params.Url(), resource_type)) !=
-            preloads_.end()) {
+        (is_data_url_in_preloads_list ||
+         preloads_.find(PreloadKey(params.Url(), resource_type)) !=
+             preloads_.end())) {
       prepare_helper.UpgradeForLoaderIfNecessary(pauser);
     }
     resource = MatchPreload(params, resource_type);
@@ -1594,7 +1605,16 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
     ScheduleLoadingPotentiallyUnusedPreload(resource);
   }
 
-  if (policy != RevalidationPolicy::kUse) {
+  if (policy != RevalidationPolicy::kUse ||
+      (RuntimeEnabledFeatures::PreloadLinkRelDataUrlsEnabled() && is_data_url &&
+       defer_policy != DeferPolicy::kDefer && params.IsLinkPreload())) {
+    // If `resource` needs to be loaded, or is a data URL preloaded via a link
+    // element, and not a potentially unused preload, store it in the preloads
+    // list.
+    // Note: params.IsLinkPreload() indicates that this request was initiated
+    // from a `link rel=preload`, as opposed to resource->IsLinkPreload()
+    // which is also true if the resource was originally from a
+    // `link rel=preload` in a previous request.
     InsertAsPreloadIfNecessary(resource, params, resource_type);
   }
 
