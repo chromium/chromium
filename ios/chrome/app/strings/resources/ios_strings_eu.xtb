@@ -716,6 +716,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="422477017457571619">Webgune, deskarga eta luzapen arriskutsuen aurkako AA bidezko babesa denbora errealean, Google-ri bidaltzen zaizkion zure arakatze-datuetan oinarritutakoa</translation>
 <translation id="4231395118547300571">Aktibatu dira segurtasun-egiaztapenaren jakinarazpenak</translation>
 <translation id="4237377247299956313">Sakatu <ph name="BEGIN_BOLD" />Arakatzaile lehenetsia<ph name="END_BOLD" />.</translation>
+<translation id="4241893428331130998">Ez dago pasahitzik edo sarbide-gakorik gordeta</translation>
 <translation id="4242533952199664413">Ireki ezarpenak</translation>
 <translation id="4250432749243022864">{count,plural, =0{Ireki {count} fitxa}=1{Ireki {count} fitxa}other{Ireki {count} fitxa}}</translation>
 <translation id="4250680216510889253">Ez</translation>
@@ -1595,6 +1596,7 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="7982789257301363584">Sarea</translation>
 <translation id="7987685713885608670">Seguruagoa izan dadin, enkriptatu pasahitzak gailuan bertan Google-ren Pasahitz-kudeatzailea zerbitzuan gorde aurretik.</translation>
 <translation id="798991908416757345">Fitxa taldeak ez daude erabilgarri</translation>
+<translation id="7993170188789685695">Sakatu birritan jakinarazpen hau ixteko.</translation>
 <translation id="7993619969781047893">Baliteke webgune batzuetako eginbideek ez funtzionatzea</translation>
 <translation id="7996239959906074962">Konfiguratu…</translation>
 <translation id="800361585186029508">Idatzitako URLak Google Chrome-n irekitzen ditu.</translation>

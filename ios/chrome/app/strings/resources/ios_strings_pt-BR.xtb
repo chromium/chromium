@@ -257,6 +257,7 @@
 <translation id="20485545164632846">novo item</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> contas usando a mesma senha</translation>
 <translation id="2059166748188874810">Município</translation>
+<translation id="2060114494785549741">Excluir em 1 mês</translation>
 <translation id="20638360198452347">Seletor de tipo de unidade de medida</translation>
 <translation id="2067852168641682340">Salvar sempre nesta conta</translation>
 <translation id="2074119687904553223">{count,plural, =1{1 guia}one{{count} guia}other{{count} guias}}</translation>
@@ -288,6 +289,7 @@
 <translation id="2202084845446535117">Sem contas de e-mail</translation>
 <translation id="2214453882118345682">Compre, traduza e identifique o que está ao seu redor usando a câmera.</translation>
 <translation id="2220529011494928058">Informar um problema</translation>
+<translation id="2220887224562128152">Não é possível recuperar um arquivo depois que ele é programado para exclusão.</translation>
 <translation id="2223461067862937305">Criar um QR code</translation>
 <translation id="2229345671837147090">Grade de guias remotas</translation>
 <translation id="2230173723195178503">Página da Web carregada</translation>
@@ -342,6 +344,7 @@ Eles também não podem usar cookies para ver sua atividade de navegação em di
 <translation id="2394659309569789395">Abrir site mesmo assim</translation>
 <translation id="2403129868389095715">Não foi possível entregar seu pacote</translation>
 <translation id="2410754283952462441">Escolher uma conta</translation>
+<translation id="2422174748424038845">Se você excluir o grupo, todos vão perder imediatamente o acesso ao grupo de guias "<ph name="GROUP_NAME" />" e ele será excluído de todos os dispositivos.</translation>
 <translation id="2424805048070062787">Continuar com esta guia</translation>
 <translation id="2426805022920575512">Escolher outra conta</translation>
 <translation id="243275146591958220">Cancelar download</translation>
@@ -477,6 +480,7 @@ Seu mecanismo de pesquisa é o <ph name="DSE_NAME" />. Confira as instruções p
 <translation id="3059270601560379555">Nova pesquisa</translation>
 <translation id="3064547930554042309">Gerenciar downloads</translation>
 <translation id="3072279342064724558">A senha já existe</translation>
+<translation id="3074862506644936708">Ativar a exclusão automática</translation>
 <translation id="3076846064362030967">Sua Conta do Google não será desconectada. <ph name="BEGIN_LINK" />Outras formas de atividade<ph name="END_LINK" /> podem ser salvas na sua conta quando ela está conectada. É possível excluí-las a qualquer momento.
 
 
@@ -620,6 +624,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3810973564298564668">Gerenciar</translation>
 <translation id="381219490185664296">Desfazer grupo de guias?</translation>
 <translation id="3812308602011798782">Avaliações</translation>
+<translation id="3815668647912194650">Mantenha esse grupo para adicionar guias mais tarde ou saia dele se não quiser mais ter acesso.</translation>
 <translation id="3818045793209708987">Você parou de rastrear este pacote</translation>
 <translation id="3819183753496523827">Você está off-line. Verifique sua conexão de Internet e tente novamente.</translation>
 <translation id="3828924571679282172">{COUNT,plural, =1{1 forma de pagamento}one{# forma de pagamento}other{# formas de pagamento}}</translation>
@@ -716,6 +721,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="422477017457571619">Proteção com tecnologia de IA em tempo real contra sites, extensões e downloads perigosos baseados nos dados de navegação enviados ao Google</translation>
 <translation id="4231395118547300571">Notificações da Confirmação de segurança ativadas</translation>
 <translation id="4237377247299956313">Toque em <ph name="BEGIN_BOLD" />App de navegação padrão<ph name="END_BOLD" />.</translation>
+<translation id="4241893428331130998">Nenhuma senha ou chave de acesso salva</translation>
 <translation id="4242533952199664413">Abrir configurações.</translation>
 <translation id="4250432749243022864">{count,plural, =0{Abrir {count} guia}=1{Abrir {count} guia}one{Abrir {count} guia}other{Abrir {count} guias}}</translation>
 <translation id="4250680216510889253">Não</translation>
@@ -1191,6 +1197,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6284652193729350524">Oferecer a opção de traduzir o <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Você parou de seguir <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Acesse <ph name="BEGIN_LINK" />Serviços do Google<ph name="END_LINK" /> e toque em "Navegação segura" para ativar esse recurso.</translation>
+<translation id="6295434468271563378">Exclua seus downloads automaticamente</translation>
 <translation id="6295751040240588413">Apelido do cartão inválido</translation>
 <translation id="629730747756840877">Conta</translation>
 <translation id="6301104306974789820">Receber notificações de monitoramento de preço</translation>
@@ -1452,6 +1459,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="741204030948306876">Sim</translation>
 <translation id="7417689656810783109">Renomear grupo</translation>
 <translation id="7419565702166471774">Sempre usar conexões seguras</translation>
+<translation id="742001653298797675">Programe a exclusão de todos os downloads após um mês para economizar espaço no smartphone e proteger sua privacidade.</translation>
 <translation id="7425053386765766120">Adicionar forma de pagamento…</translation>
 <translation id="7425346204213733349">Alterações feitas nos seus favoritos, histórico, senhas e outras configurações não serão mais sincronizadas com sua Conta do Google. No entanto, os dados já existentes permanecerão armazenados na Conta do Google.</translation>
 <translation id="742664698522525515">Manter grupo?</translation>
@@ -1595,6 +1603,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="7982789257301363584">Rede</translation>
 <translation id="7987685713885608670">Para ter mais segurança, criptografe as senhas no dispositivo antes que elas sejam salvas no Gerenciador de senhas do Google.</translation>
 <translation id="798991908416757345">Os grupos de guias estão indisponíveis</translation>
+<translation id="7993170188789685695">Toque duas vezes para fechar a notificação.</translation>
 <translation id="7993619969781047893">Os recursos de alguns sites podem apresentar falhas</translation>
 <translation id="7996239959906074962">Configurar…</translation>
 <translation id="800361585186029508">Abre os URLs fornecidos no Google Chrome.</translation>
@@ -1760,6 +1769,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8680786875305615692">Ajude a melhorar a segurança para todos na Web</translation>
 <translation id="8680787084697685621">Os detalhes de login da conta estão desatualizados.</translation>
 <translation id="8683563711222071415">Transferir o endereço para a conta</translation>
+<translation id="8690752723634292147">Confirmar exclusão</translation>
 <translation id="8692689525339542358">Proteja-se contra sites, extensões e downloads perigosos.</translation>
 <translation id="8694281486652655615">Mostra este item</translation>
 <translation id="8696297579102085705">Enviar para seu dispositivo</translation>

@@ -768,6 +768,7 @@
 <translation id="4654549501020883054">Aldatu egunero</translation>
 <translation id="4655868084888499342">Ezarri da irudia horma-paper gisa</translation>
 <translation id="4661249927038176904">Surrealista</translation>
+<translation id="4661392828086261436">Eguneratze hau gailuaren fabrikatzaileak hornitu du, eta Google-k ez du egiaztatu</translation>
 <translation id="4664651912255946953">larrua</translation>
 <translation id="4665014895760275686">Fabrikatzailea</translation>
 <translation id="467510802200863975">Pasahitzak ez datoz bat</translation>
@@ -1027,6 +1028,7 @@
 <translation id="5904994456462260490">Gehitu beste APN bat</translation>
 <translation id="590746845088109442">katuak</translation>
 <translation id="5907649332524363701">teklen kolorea</translation>
+<translation id="5908813850962688338">Minutu batzuk beharko dira eguneratze hau instalatzeko. Mantendu gailua entxufatuta eta piztuta eguneratzea deskargatu bitartean. Prozesua egiten den bitartean, baliteke gailua behin eta berriro berrabiaraztea eta pantaila beltz bat erakustea. Instalazioa osatzeko, gailua berrabiarazteko eskatuko zaizu.</translation>
 <translation id="5916084858004523819">Debekatuta</translation>
 <translation id="5916664084637901428">Aktibatuta</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Fitxategia eskaneatu da, eta <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> karpetan gorde.}other{Fitxategiak eskaneatu dira, eta <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> karpetan gorde.}}</translation>

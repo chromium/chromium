@@ -2403,6 +2403,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="5254043433801397071">Optimalizovat obsah tisku</translation>
 <translation id="5255583962255635076">Použité zásady prohlížeče ve vašem pracovním profilu</translation>
 <translation id="5255690596502591079">Přesto pořídit</translation>
+<translation id="5255771248404149177">Poskytovatel karty se chce ujistit, že jste to vy</translation>
 <translation id="5255833070095767006">350 × 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{Zásady administrátora nedoporučují kopírovat tento soubor do následujícího cíle: <ph name="DESTINATION_NAME" />}few{Zásady administrátora nedoporučují kopírovat tyto soubory do následujícího cíle: <ph name="DESTINATION_NAME" />}many{Zásady administrátora nedoporučují kopírovat tyto soubory do následujícího cíle: <ph name="DESTINATION_NAME" />}other{Zásady administrátora nedoporučují kopírovat tyto soubory do následujícího cíle: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5263867360296733198">Před nahráním je vyžadována kontrola</translation>
@@ -2550,6 +2551,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="5518352028556756716">Většina webů nemůže používat soubory cookie třetích stran ke sledování vašeho procházení a weby nemohou používat soubory cookie třetích stran v anonymním režimu.</translation>
 <translation id="5519516356611866228">S vašimi změnami</translation>
 <translation id="5519696598216267194">Papír (předděrovaný)</translation>
+<translation id="5520105693415771152">Pokud údaje nejsou aktuální, požádejte banku o aktualizaci.</translation>
 <translation id="5521782189689806907">Skříně</translation>
 <translation id="5523118979700054094">Název zásady</translation>
 <translation id="5523588073846127669">Obchodník tuto virtuální kartu nepřijímá</translation>

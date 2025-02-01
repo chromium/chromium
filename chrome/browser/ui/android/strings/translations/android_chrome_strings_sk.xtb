@@ -131,6 +131,7 @@
 <translation id="1513858653616922153">Odstrániť heslo</translation>
 <translation id="1521774566618522728">Aktívne dnes</translation>
 <translation id="153446405401665083">K dispozícii je nová verzia Chromu</translation>
+<translation id="1540012742443808215">Panel s adresou je momentálne hore</translation>
 <translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{1 záložka je uložená iba v tomto zariadení. Ak ju chcete používať v ďalších zariadeniach, uložte si ju do účtu Google <ph name="ACCOUNT_EMAIL" />.}few{# záložky sú uložené iba v tomto zariadení. Ak ich chcete používať v ďalších zariadeniach, uložte si ich do účtu Google <ph name="ACCOUNT_EMAIL" />.}many{# bookmarks are saved only to this device. To use them on your other devices, save them in your Google Account, <ph name="ACCOUNT_EMAIL" />.}other{# záložiek je uložených iba v tomto zariadení. Ak ich chcete používať v ďalších zariadeniach, uložte si ich do účtu Google <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="1544084554881119930">Spôsoby platby a adresy nebudú šifrované. História prehliadania z Chromu sa nebude synchronizovať.
 Šifrované údaje môže čítať iba používateľ s prístupovou frázou. Prístupová fráza sa do Googlu neodosiela a Google ju ani neukladá. Ak prístupovú frázu zabudnete alebo budete chcieť toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje Chromu vo svojom účte<ph name="END_LINK" />.</translation>
@@ -385,7 +386,6 @@
 <translation id="2781151931089541271">Zostáva: 1 s</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome našiel recyklované heslo, ktoré môžete zlepšiť}few{Chrome našiel # recyklované heslá, ktoré môžete zlepšiť}many{Chrome found # reused passwords that you could improve}other{Chrome našiel # recyklovaných hesiel, ktoré môžete zlepšiť}}</translation>
-<translation id="2796651346651857052">Ak chcete zmeniť pozíciu panela s adresou, pridržte ho.</translation>
 <translation id="2800066122460699237">Karta <ph name="TAB_TITLE" /> bude zavretá</translation>
 <translation id="2805756323405976993">Aplikácie</translation>
 <translation id="281504910091592009">Zobrazenie a správa uložených hesiel v <ph name="BEGIN_LINK" />účte Google<ph name="END_LINK" /></translation>
@@ -1186,6 +1186,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="6459045781120991510">Prieskumy</translation>
 <translation id="6461962085415701688">Súbor sa nedá otvoriť</translation>
 <translation id="6464977750820128603">Môžete si zobraziť weby, ktoré navštevujete v Chrome, a nastaviť pre ne časovače.\n\nGoogle získa informácie o weboch, pre ktoré nastavíte časovače, a údaje o tom, koľko času na nich strávite. Tieto informácie sa použijú na zlepšenie digitálnej rovnováhy.</translation>
+<translation id="6468703991511753953">Panel s adresou je momentálne dole</translation>
 <translation id="6470181189905173055">Tu sa budú zobrazovať stránky, ktoré ste otvorili v Chrome pri používaní aplikácie <ph name="APP_LABEL" />.</translation>
 <translation id="6473086018775716761">Zoznam možností zdieľania je otvorený na polovičnú výšku.</translation>
 <translation id="6475951671322991020">Stiahnuť video</translation>

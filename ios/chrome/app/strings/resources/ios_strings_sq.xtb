@@ -716,6 +716,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="422477017457571619">Mbrojtje e mundësuar nga IA-ja dhe në kohë reale nga sajtet, shkarkimet dhe shtesat e rrezikshme që bazohet në të dhënat e tua të shfletimit që dërgohen te Google</translation>
 <translation id="4231395118547300571">Njoftimet e "Kontrollit të sigurisë" janë aktivizuar</translation>
 <translation id="4237377247299956313">Trokit <ph name="BEGIN_BOLD" />Aplikacionin e parazgjedhur të shfletuesit<ph name="END_BOLD" /></translation>
+<translation id="4241893428331130998">Nuk ka çelësa kalimi apo fjalëkalime të ruajtura</translation>
 <translation id="4242533952199664413">Hap cilësimet</translation>
 <translation id="4250432749243022864">{count,plural, =0{Hap {count} skeda}=1{Hap {count} skedë}other{Hap {count} skeda}}</translation>
 <translation id="4250680216510889253">Jo</translation>
@@ -1595,6 +1596,7 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="7982789257301363584">Rrjeti</translation>
 <translation id="7987685713885608670">Për më shumë siguri, enkripto fjalëkalimet në pajisjen tënde para se të ruhen në "Menaxherin e fjalëkalimeve të Google".</translation>
 <translation id="798991908416757345">Grupet e skedave nuk ofrohen</translation>
+<translation id="7993170188789685695">Trokit dy herë për ta mbyllur këtë njoftim.</translation>
 <translation id="7993619969781047893">Veçoritë në disa sajte mund të ndalojnë së funksionuari</translation>
 <translation id="7996239959906074962">Konfiguro…</translation>
 <translation id="800361585186029508">Hap URL-të e futura në Google Chrome.</translation>

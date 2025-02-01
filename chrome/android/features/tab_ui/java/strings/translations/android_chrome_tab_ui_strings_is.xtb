@@ -86,6 +86,7 @@ Ef þú eyðir honum munu allir notendur umsvifalaust missa aðgang að flipahó
 <translation id="4783638485675352219">Deila heitum og vefslóðum opinna flipa í þessu tæki með stýrikerfinu</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> umsögn)}one{(<ph name="REVIEWS_COUNT_MANY" /> umsögn)}other{(<ph name="REVIEWS_COUNT_MANY" /> umsagnir)}}</translation>
 <translation id="4850886885716139402">Yfirlit</translation>
+<translation id="4861953997778766866">Allir geta gert breytingar á samnýttu flipahópunum þínum</translation>
 <translation id="4870911314065352661">Loka öllum flipum?</translation>
 <translation id="4871719318659334896">Loka hópi</translation>
 <translation id="4881695831933465202">Opna</translation>
@@ -179,6 +180,7 @@ Ef þú eyðir honum munu allir notendur umsvifalaust missa aðgang að flipahó
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> flipa bætt við, <ph name="ANY_CLOSED" /> lokað}one{<ph name="MANY_ADDED" /> flipa bætt við, <ph name="ANY_CLOSED" /> lokað}other{<ph name="MANY_ADDED" /> flipum bætt við, <ph name="ANY_CLOSED" /> lokað}}</translation>
 <translation id="8633025649649592204">Nýleg virkni</translation>
 <translation id="870736955561925754">Loka flipa og eyða hóp?</translation>
+<translation id="8712637175834984815">Ég skil</translation>
 <translation id="8714939927607906138">Lægra verð</translation>
 <translation id="8730621377337864115">Lokið</translation>
 <translation id="8730999928494395583">Virknin þín í þessum huliðsflipum verður fjarlægð úr þessu tæki</translation>

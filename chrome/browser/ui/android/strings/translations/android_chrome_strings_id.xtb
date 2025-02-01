@@ -385,7 +385,6 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="2781151931089541271">1 detik lagi</translation>
 <translation id="2789486458103222910">Oke</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome menemukan sandi yang digunakan ulang yang dapat Anda perbaiki}other{Chrome menemukan # sandi yang digunakan ulang yang dapat Anda perbaiki}}</translation>
-<translation id="2796651346651857052">Sentuh lama kolom URL untuk mengubah posisinya.</translation>
 <translation id="2800066122460699237">Tab <ph name="TAB_TITLE" /> akan ditutup</translation>
 <translation id="2805756323405976993">Aplikasi</translation>
 <translation id="281504910091592009">Lihat dan kelola sandi tersimpan di <ph name="BEGIN_LINK" />Akun Google<ph name="END_LINK" /></translation>

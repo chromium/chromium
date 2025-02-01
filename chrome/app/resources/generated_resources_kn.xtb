@@ -2157,7 +2157,6 @@
 <translation id="2471632709106952369">ಹೋಲಿಕೆಯ ಟೇಬಲ್‌ಗಳು</translation>
 <translation id="2473195200299095979">ಈ ಪುಟವನ್ನು ಅನುವಾದಿಸಿ</translation>
 <translation id="2475982808118771221">ದೋಷವೊಂದು ಕಾಣಿಸಿಕೊಂಡಿದೆ</translation>
-<translation id="247616523300581745">ಈ ಫೈಲ್‌ಗಳನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="2476435723907345463">ಪಾಸ್‌ಕೀಗಳ ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ತೆಗೆದುಹಾಕಲಾಗಿದೆ</translation>
 <translation id="2476901513051581836">ಆಫ್‌ಲೈನ್ ಸಂಗ್ರಹಣೆ ಗಾತ್ರ ತಿಳಿಯುವವರೆಗೆ ಸಂಗ್ರಹಣೆಯನ್ನು ತೆರವುಗೊಳಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ.</translation>
 <translation id="2476974672882258506"><ph name="PARALLELS_DESKTOP" /> ಅನ್ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು Windows ಶಟ್ ಡೌನ್ ಮಾಡಿ.</translation>
@@ -2799,6 +2798,7 @@
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> ಬೆಂಬಲಿತವಾಗಿಲ್ಲ.</translation>
 <translation id="2926708162326352948">ಅಪ್‌ಲೋಡ್ ಮಾಡಿದ ಚಿತ್ರಕ್ಕೆ ಥೀಮ್ ಅನ್ನು ಅಪ್‌ಡೇಟ್‌ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="2927017729816812676">ಕ್ಯಾಷ್ ಸಂಗ್ರಹಣೆ</translation>
+<translation id="2928030851119977280">ಅಯ್ಕೆಯನ್ನು ಸೇವ್ ಮಾಡಲಾಗಿದೆ. ನೀವು ಇತರ Google ಸೇವೆಗಳಿಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿದಾಗ ನಿಮ್ಮ ಆಯ್ಕೆಯು ಅನ್ವಯಿಸುತ್ತದೆ.</translation>
 <translation id="2928795416630981206">ನಿಮ್ಮ ಕ್ಯಾಮರಾ ಸ್ಥಾನವನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಲು ಈ ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="2929345818093040583">{NUM_SITES,plural, =1{Chrome 1 ಸೈಟ್‌ನಿಂದ ಅನುಮತಿಗಳನ್ನು ತೆಗೆದುಹಾಕಿದೆ}one{Chrome {NUM_SITES} ಸೈಟ್‌ಗಳಿಂದ ಅನುಮತಿಗಳನ್ನು ತೆಗೆದುಹಾಕಿದೆ}other{Chrome {NUM_SITES} ಸೈಟ್‌ಗಳಿಂದ ಅನುಮತಿಗಳನ್ನು ತೆಗೆದುಹಾಕಿದೆ}}</translation>
 <translation id="2931157624143513983">ಮುದ್ರಿಸಬಹುದಾದ ಪ್ರದೇಶಕ್ಕೆ ಹೊಂದಿಸಿ</translation>
@@ -3230,7 +3230,6 @@
 <translation id="3257733480216378006"><ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" /> ಅನ್ನು ಅನುಮತಿಸಬೇಕೇ?</translation>
 <translation id="325797067711573598">ಅನುಮಾನಾಸ್ಪದ ಡೌನ್‌ಲೋಡ್ ಅನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="3259723213051400722">ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
-<translation id="3260199651491738298">ಈ ಫೀಚರ್‌ಗಳು ಸಂಗ್ರಹಿಸುವ ಡೇಟಾವನ್ನು ಹೇಗೆ ಬಳಸಬಹುದು ಎಂಬುದನ್ನು ನಿಮ್ಮ ಸಂಸ್ಥೆಯು ನಿಯಂತ್ರಿಸುತ್ತದೆ. <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="3261090393424563833">ನಮೂನೆ ದರವನ್ನು ಹೆಚ್ಚಿಸಿ</translation>
 <translation id="3261268979727295785">ದೊಡ್ಡ ಮಕ್ಕಳಿಗಾಗಿ, ಸೆಟಪ್ ಅನ್ನು ಪೂರ್ಣಗೊಳಿಸಿದ ನಂತರ ನೀವು ಪೋಷಕ ನಿಯಂತ್ರಣಗಳನ್ನು ಸೇರಿಸಬಹುದು. ಎಕ್ಸ್‌ಪ್ಲೋರ್ ಆ್ಯಪ್‌ನಲ್ಲಿ ಪೋಷಕ ನಿಯಂತ್ರಣಗಳ ಕುರಿತ ಮಾಹಿತಿಯನ್ನು ನೀವು ಕಾಣಬಹುದು.</translation>
 <translation id="3261832505033014216"><ph name="USER_EMAIL" /> ಗಾಗಿ ಪಾಸ್‌ಕೀ</translation>
@@ -7412,6 +7411,7 @@
 <translation id="6253801023880399036">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು <ph name="GOOGLE_PASSWORD_MANAGER" /> ನಲ್ಲಿ ಉಳಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="6254503684448816922">ಕೀಲಿ ಹೊಂದಾಣಿಕೆ</translation>
 <translation id="6254892857036829079">ಪರಿಪೂರ್ಣ</translation>
+<translation id="6257131917452817589">ಆಟೋಮೇಟೆಡ್ ಪಾಸ್‌ವರ್ಡ್ ಬದಲಾವಣೆ</translation>
 <translation id="6257602895346497974">ಸಿಂಕ್‌ ಆನ್‌ ಮಾಡಿ...</translation>
 <translation id="6257614441619555296"><ph name="KEY" />: <ph name="VALUE" /></translation>
 <translation id="625827534921607067">ಈ ಹಿಂದೆ ಕನೆಕ್ಟ್ ಮಾಡಲಾದ ಅಥವಾ ಕಾನ್ಫಿಗರ್ ಮಾಡಲಾದ ಒಂದಕ್ಕಿಂತ ಹೆಚ್ಚು ನೆಟ್‌ವರ್ಕ್ ಲಭ್ಯವಿದ್ದರೆ ಈ ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಆದ್ಯತೆ ನೀಡಲಾಗುತ್ತದೆ</translation>
@@ -8592,7 +8592,6 @@
 <translation id="7113974454301513811">ಈಗ ನಿಮ್ಮ ಪಟ್ಟಿಯಲ್ಲಿ ಪ್ರಸ್ತುತ ಟ್ಯಾಬ್ ಅನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="7114054701490058191">ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಹೊಂದಾಣಿಕೆಯಾಗುವುದಿಲ್ಲ</translation>
 <translation id="7114648273807173152">ನಿಮ್ಮ Google ಖಾತೆಗೆ ಸೈನ್ ಇನ್ ಮಾಡಲು Smart Lock ಬಳಸುವುದಕ್ಕೆ, ಸೆಟ್ಟಿಂಗ್‌ಗಳು &gt; ಸಂಪರ್ಕಗೊಂಡಿರುವ ಸಾಧನಗಳು &gt; ನಿಮ್ಮ ಫೋನ್ &gt; Smart Lock ಎಂಬಲ್ಲಿ ಹೋಗಿ.</translation>
-<translation id="7115051913071512405">ಇದನ್ನು ಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="7115361495406486998">ಯಾವುದೇ ಸಂಪರ್ಕಗಳಿಗೆ ಕನೆಕ್ಟ್ ಆಗುತ್ತಿಲ್ಲ</translation>
 <translation id="7115731767122970828">ಈಗಲೇ ಬೂಸ್ಟ್‌‌ ಮಾಡಿ</translation>
 <translation id="7116554090938189816">ಪ್ರಿಂಟರ್ SSL ಪ್ರಮಾಣಪತ್ರದ ಅವಧಿ ಮೀರಿದೆ. ಪ್ರಿಂಟರ್ ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸಿ ಮತ್ತು ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
@@ -9124,6 +9123,7 @@
 <translation id="7502528909759062987">ಟ್ಯಾಬ್ <ph name="DEVICE_NAME" /> ಗೆ ಬಿತ್ತರಿಸುವುದನ್ನು ವಿರಾಮಗೊಳಿಸಿ</translation>
 <translation id="7502804472671406749">ಹಂಚಿಕೊಂಡ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸ್ಕ್ರಾಲ್ ಮಾಡಬಹುದು ಮತ್ತು ಝೂಮ್ ಮಾಡಬಹುದು</translation>
 <translation id="7503191893372251637">Netscape ಪ್ರಮಾಣಪತ್ರ ಪ್ರಕಾರ</translation>
+<translation id="7503259455663961898">ನನಗಾಗಿ ಇದನ್ನು ಬದಲಾಯಿಸಿ</translation>
 <translation id="7503985202154027481">ನೀವು ಈ ಸೈಟ್‌ಗೆ ಭೇಟಿ ನೀಡಿರುವ ಕುರಿತಾದ ದಾಖಲೆಗಳನ್ನು ನಿಮ್ಮ ಭದ್ರತೆ ಕೀಯಲ್ಲಿ ಉಳಿಸಲಾಗಿರುತ್ತದೆ.</translation>
 <translation id="7504145862399276792">ಈ ಟ್ಯಾಬ್‌ನ ಆಡಿಯೊವನ್ನು ಮ್ಯೂಟ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="750509436279396091">ಡೌನ್‌ಲೋಡ್‌ಗಳ ಫೋಲ್ಡರ್ ಅನ್ನು ತೆರೆಯಿರಿ</translation>
@@ -9186,6 +9186,7 @@
 <translation id="7551059576287086432"><ph name="FILE_NAME" /> ಡೌನ್‌ಲೋಡ್ ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="7551643184018910560">ಶೆಲ್ಫ್‌ಗೆ ಪಿನ್‌ ಮಾಡು</translation>
 <translation id="7552191410769096467">ಟ್ಯಾಬ್ ಗುಂಪುಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳಲು ಅಥವಾ ಸೇರಿಕೊಳ್ಳಲು, ನೀವು ಸೈನ್ ಇನ್ ಮಾಡಬೇಕಾಗುತ್ತದೆ ಮತ್ತು ಸಿಂಕ್ ಅನ್ನು ಆನ್ ಮಾಡಬೇಕಾಗುತ್ತದೆ</translation>
+<translation id="7552196109089297786">Microsoft ನ ಸೈನ್‌ ಔಟ್‌</translation>
 <translation id="7552846755917812628">ಕೆಳಗಿನ ಸಲಹೆಗಳನ್ನು ಪ್ರಯತ್ನಿಸಿ:</translation>
 <translation id="7553012839257224005">Linux ಕಂಟೇನರ್ ಅನ್ನು ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="7553242001898162573">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ನಮೂದಿಸಿ</translation>
@@ -10311,6 +10312,7 @@
 <translation id="8330617762701840933">ಪರ್ಯಾಯ ಬ್ರೌಸರ್‌ಗೆ ಮರುನಿರ್ದೇಶಿಸುವ ವೆಬ್‌ಸೈಟ್‌ಗಳ ಪಟ್ಟಿ.</translation>
 <translation id="8330689128072902965">ಸಮೀಪದಲ್ಲಿರುವ ಸಂಪರ್ಕಗಳು ನಿಮ್ಮ ಜೊತೆ ಹಂಚಿಕೊಳ್ಳಬಹುದು. ಬದಲಾಯಿಸಲು ಕ್ಲಿಕ್ ಮಾಡಿ.</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{ಬೆಂಬಲಿತ ಫೈಲ್ ಪ್ರಕಾರ: <ph name="FILE_TYPE1" />}=2{ಬೆಂಬಲಿತ ಫೈಲ್ ಪ್ರಕಾರಗಳು: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />}=3{ಬೆಂಬಲಿತ ಫೈಲ್ ಪ್ರಕಾರಗಳು: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />}=4{ಬೆಂಬಲಿತ ಫೈಲ್ ಪ್ರಕಾರಗಳು: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" />}one{ಬೆಂಬಲಿತ ಫೈಲ್ ಪ್ರಕಾರಗಳು: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />ಮತ್ತು {OVERFLOW_COUNT} ಇನ್ನಷ್ಟು<ph name="END_LINK" />)}other{ಬೆಂಬಲಿತ ಫೈಲ್ ಪ್ರಕಾರಗಳು: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />ಮತ್ತು {OVERFLOW_COUNT} ಇನ್ನಷ್ಟು<ph name="END_LINK" />)}}</translation>
+<translation id="8331578454993293727">ಈ ಪಾಸ್‌ವರ್ಡ್ ಡೇಟಾ ಉಲ್ಲಂಘನೆಯಲ್ಲಿ ಕಂಡುಬಂದಿದೆ</translation>
 <translation id="8331822764922665615">ನಿಮ್ಮ ಗುಂಪನ್ನು ಹೆಸರಿಸಿ, ಬಣ್ಣವೊಂದನ್ನು ಆಯ್ಕೆಮಾಡಿ, ನಂತರ Esc ಒತ್ತಿರಿ</translation>
 <translation id="833256022891467078">Crostini ಹಂಚಿಕೊಂಡ ಫೋಲ್ಡರ್‌ಗಳು</translation>
 <translation id="833262891116910667">ಹೈಲೈಟ್ ಮಾಡಿ</translation>
@@ -10392,6 +10394,7 @@
     <ph name="BEGIN_PARAGRAPH2" />ಹೆಚ್ಚಿನ ಸಹಾಯಕ್ಕಾಗಿ, ಇಲ್ಲಿಗೆ ಭೇಟಿ ನೀಡಿ: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8383614331548401927">ಸುಸ್ವಾಗತ Recap</translation>
 <translation id="8386091599636877289">ಕಾರ್ಯನೀತಿ ಕಂಡುಬಂದಿಲ್ಲ.</translation>
+<translation id="8387087863179559896">Chrome, ಈ ಸೈಟ್‌ನ ನಿಮ್ಮ ಖಾತೆಯನ್ನು ಸದೃಢ ಪಾಸ್‌ವರ್ಡ್‌ನೊಂದಿಗೆ ಅಪ್‌ಡೇಟ್ ಮಾಡಬಹುದು. ನಿಮಗಾಗಿ <ph name="EMAIL" /> ನ Google Password Manager ನಲ್ಲಿ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಸೇವ್ ಮಾಡಿರುವ ಕಾರಣ, ಅದನ್ನು ನೀವು ನೆನಪಿಟ್ಟುಕೊಳ್ಳುವ ಅಗತ್ಯವಿಲ್ಲ. <ph name="PASSWORD_CHANGE" /> ಕುರಿತು ಇನ್ನಷ್ಟು.</translation>
 <translation id="8387361103813440603">ನಿಮ್ಮ ಸ್ಥಳವನ್ನು ನೋಡಲು ಈ ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="8387617938027387193">ಇದು ನೀವೇ ಎಂಬುದನ್ನು ದೃಢೀಕರಿಸಿ</translation>
 <translation id="8388770971141403598">ಸೆಕೆಂಡರಿ ಪ್ರೊಫೈಲ್‌ಗಳು ಬೆಂಬಲಿತವಾಗಿಲ್ಲ</translation>
@@ -10890,7 +10893,6 @@
 <translation id="8737966899544698733">ಸ್ಥಳದ ನಿಖರತೆ (Android ಮಾತ್ರ)</translation>
 <translation id="8738418093147087440">ದೇಶಗಳು, ಭಾಷೆ ಅಥವಾ ಇನ್‌ಪುಟ್ ಹೆಸರುಗಳ ಪ್ರಕಾರವಾಗಿ ಹುಡುಕಿ</translation>
 <translation id="8740086188450289493">Google ಖಾತೆಯ ಪಾಸ್‌ವರ್ಡ್ ಬಳಸಿ</translation>
-<translation id="874023689350909633">ಇದನ್ನು ಬಳಸಿ ನೋಡಿ</translation>
 <translation id="8740247629089392745">ಈ Chromebook ಅನ್ನು <ph name="SUPERVISED_USER_NAME" /> ಅವರಿಗೆ ಹಸ್ತಾಂತರಿಸಬಹುದು. ಸೆಟಪ್ ಬಹುತೇಕ ಪೂರ್ಣಗೊಂಡಿದೆ, ಇದು ಎಕ್ಸ್‌ಪ್ಲೋರ್ ಮಾಡುವ ಸಮಯ.</translation>
 <translation id="8740672167979365981">ChromeOS Flex ಅನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡುವ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="8741944563400125534">ಸ್ವಿಚ್‌ ಆ್ಯಕ್ಸೆಸ್ ಸೆಟಪ್ ಗೈಡ್‌</translation>

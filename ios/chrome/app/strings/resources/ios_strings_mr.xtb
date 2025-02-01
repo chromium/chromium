@@ -716,6 +716,7 @@
 <translation id="422477017457571619">Google ला पाठवल्या जाणाऱ्या तुमच्या ब्राउझिंग डेटावर आधारित धोकादायक साइट, डाउनलोड आणि एक्स्टेंशनपासून रीअल-टाइम, AI द्वारे सक्षम केलेले संरक्षण</translation>
 <translation id="4231395118547300571">सुरक्षितता तपासणी नोटिफिकेशन सुरू केली आहेत</translation>
 <translation id="4237377247299956313"><ph name="BEGIN_BOLD" />डीफॉल्ट ब्राउझर अ‍ॅप<ph name="END_BOLD" /> वर टॅप करा</translation>
+<translation id="4241893428331130998">कोणतेही सेव्ह केलेले पासवर्ड किंवा पासकी नाहीत</translation>
 <translation id="4242533952199664413">सेटिंग्ज उघडा</translation>
 <translation id="4250432749243022864">{count,plural, =0{Open {count} tab}=1{{count} टॅब उघडा}other{{count} टॅब उघडा}}</translation>
 <translation id="4250680216510889253">नाही</translation>
@@ -1596,6 +1597,7 @@
 <translation id="7982789257301363584">नेटवर्क</translation>
 <translation id="7987685713885608670">अतिरिक्त सुरक्षिततेसाठी, पासवर्ड हे Google पासवर्ड व्यवस्थापक यामध्ये सेव्ह केले जाण्यापूर्वी ते तुमच्या डिव्हाइसवर एंक्रिप्ट करा.</translation>
 <translation id="798991908416757345">टॅब गट उपलब्ध नाहीत</translation>
+<translation id="7993170188789685695">हे नोटिफिकेशन बंद करण्यासाठी दोनदा टॅप करा.</translation>
 <translation id="7993619969781047893">काही साइटवरील वैशिष्ट्यांमध्ये खंड पडू शकतो</translation>
 <translation id="7996239959906074962">सेट करा…</translation>
 <translation id="800361585186029508">Google Chrome मध्ये इनपुट केलेल्या URL उघडते.</translation>

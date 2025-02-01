@@ -131,6 +131,7 @@ Kui soovite näha veel seadeid, mis kasutavad andmeid teie Chrome'i kasutuskogem
 <translation id="1513858653616922153">Kustuta parool</translation>
 <translation id="1521774566618522728">Aktiivne täna</translation>
 <translation id="153446405401665083">Saadaval on Chrome'i uus versioon</translation>
+<translation id="1540012742443808215">Aadressiriba hetkel üleval</translation>
 <translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{1 järjehoidja on salvestatud ainult sellesse seadmesse. Selle kasutamiseks muudes seadmetes salvestage see oma Google’i kontole <ph name="ACCOUNT_EMAIL" />.}other{# järjehoidjat on salvestatud ainult sellesse seadmesse. Nende kasutamiseks muudes seadmetes salvestage need oma Google'i kontole <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="1544084554881119930">Makseviise ja aadresse ei krüpteerita. Chrome’i sirvimisajalugu ei sünkroonita.
 Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Parooli ei saadeta Google’ile ja Google ei salvesta seda. Kui parooli unustate või soovite seda seadet muuta, <ph name="BEGIN_LINK" />kustutage oma kontol Chrome’i andmed<ph name="END_LINK" />.</translation>
@@ -385,7 +386,6 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="2781151931089541271">Jäänud on 1 sekund</translation>
 <translation id="2789486458103222910">Selge</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome leidis korduvalt kasutatud parooli, mida saaksite tugevdada}other{Chrome leidis # korduvalt kasutatud parooli, mida saaksite tugevdada}}</translation>
-<translation id="2796651346651857052">Puudutage pikalt aadressiriba, et selle asukohta muuta.</translation>
 <translation id="2800066122460699237">Vaheleht <ph name="TAB_TITLE" /> suletakse</translation>
 <translation id="2805756323405976993">Rakendused</translation>
 <translation id="281504910091592009">Vaadake ja hallake salvestatud paroole oma <ph name="BEGIN_LINK" />Google'i kontol<ph name="END_LINK" /></translation>
@@ -1186,6 +1186,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="6459045781120991510">Küsitlused</translation>
 <translation id="6461962085415701688">Faili ei saa avada</translation>
 <translation id="6464977750820128603">Näete saite, mida Chrome'is külastate, ja saate nendele taimereid määrata.\n\nGoogle saab teavet saitide kohta, millele taimereid määrate, ja näeb, kui kaua neid külastate. Selle teabe abil muudetakse teenus Digitaalne heaolu paremaks.</translation>
+<translation id="6468703991511753953">Aadressiriba hetkel all</translation>
 <translation id="6470181189905173055">Lehed, mille Chrome'is rakenduse <ph name="APP_LABEL" /> kasutamise ajal avasite, kuvatakse siin.</translation>
 <translation id="6473086018775716761">Jagamisvalikute loend on avatud poolele kõrgusele.</translation>
 <translation id="6475951671322991020">Laadi video alla</translation>

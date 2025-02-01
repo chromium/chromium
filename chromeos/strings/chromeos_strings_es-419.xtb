@@ -768,6 +768,7 @@
 <translation id="4654549501020883054">Cambiar a diario</translation>
 <translation id="4655868084888499342">Se estableció la imagen como fondo de pantalla</translation>
 <translation id="4661249927038176904">Surrealista</translation>
+<translation id="4661392828086261436">Esta actualización la proporciona el fabricante del dispositivo y Google no la verificó.</translation>
 <translation id="4664651912255946953">pelaje</translation>
 <translation id="4665014895760275686">Fabricante</translation>
 <translation id="467510802200863975">Las contraseñas no coinciden</translation>
@@ -1027,6 +1028,7 @@
 <translation id="5904994456462260490">Agregar un APN nuevo</translation>
 <translation id="590746845088109442">gatos</translation>
 <translation id="5907649332524363701">color de la tecla</translation>
+<translation id="5908813850962688338">La instalación de esta actualización tomará unos minutos. Mantén el dispositivo enchufado y encendido mientras se descarga la actualización. Es posible que el dispositivo se reinicie varias veces y muestre una pantalla negra durante este proceso. Se te pedirá que reinicies el dispositivo para completar la instalación.</translation>
 <translation id="5916084858004523819">Prohibido</translation>
 <translation id="5916664084637901428">Activado</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Tu archivo se escaneó correctamente y se guardó en <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Tus archivos se escanearon correctamente y se guardaron en <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>

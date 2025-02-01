@@ -768,6 +768,7 @@
 <translation id="4654549501020883054">Badilisha Kila Siku</translation>
 <translation id="4655868084888499342">Picha imewekwa kuwa mandhari</translation>
 <translation id="4661249927038176904">Ya ajabu</translation>
+<translation id="4661392828086261436">Sasisho hili linatolewa na mtengenezaji wa kifaa na halijathibitishwa na Google</translation>
 <translation id="4664651912255946953">manyoya</translation>
 <translation id="4665014895760275686">Mtengenezaji</translation>
 <translation id="467510802200863975">Manenosiri hayalingani</translation>
@@ -1027,6 +1028,7 @@
 <translation id="5904994456462260490">Weka APN mpya</translation>
 <translation id="590746845088109442">paka</translation>
 <translation id="5907649332524363701">rangi ya kitufe</translation>
+<translation id="5908813850962688338">Kuweka sasisho hili kutachukua dakika kadhaa. Hakikisha kifaa chako kimechomekwa na kimewashwa wakati sasisho hili linapakiliwa. Huenda kifaa chako kikajiwasha tena mara kadhaa na kuonyesha skrini nyeusi wakati wa mchakato huu. Utaombwa kuzima kisha uwashe kifaa chako ili kukamilisha uwekaji huu.</translation>
 <translation id="5916084858004523819">Marufuku</translation>
 <translation id="5916664084637901428">Imewashwa</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Faili yako imechanganuliwa na imehifadhiwa kwenye <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Faili zako zimechanganuliwa na zimehifadhiwa kwenye <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>

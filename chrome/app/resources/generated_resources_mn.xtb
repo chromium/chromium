@@ -2160,7 +2160,6 @@
 <translation id="2471632709106952369">Харьцуулалтын хүснэгт</translation>
 <translation id="2473195200299095979">Энэ хуудсыг орчуул</translation>
 <translation id="2475982808118771221">Алдаа гарлаа</translation>
-<translation id="247616523300581745">Эдгээр файлыг нуух</translation>
 <translation id="2476435723907345463">Нэвтрэх түлхүүрт хандах эрхийг хассан</translation>
 <translation id="2476901513051581836">Офлайн хадгалах сангийн хэмжээ мэдэгдэх хүртэл хадгалах санг цэвэрлэх боломжгүй.</translation>
 <translation id="2476974672882258506"><ph name="PARALLELS_DESKTOP" />-г устгахын тулд Windows-г унтраана уу.</translation>
@@ -3236,7 +3235,6 @@
 <translation id="3257733480216378006"><ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" />-г зөвшөөрөх үү?</translation>
 <translation id="325797067711573598">Сэжигтэй таталтыг блоклосон</translation>
 <translation id="3259723213051400722">Дахин оролдоно уу.</translation>
-<translation id="3260199651491738298">Танай байгууллага эдгээр онцлогийн цуглуулсан өгөгдлийг хэрхэн ашиглаж болоохыг хянана. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="3261090393424563833">Хурдыг нэмэгдүүлэх</translation>
 <translation id="3261268979727295785">Тохируулгыг дуусгасны дараа та том хүүхдэд зориулж эцэг эхийн хяналт нэмж болно. Судлах апп дээрээс та эцэг эхийн хяналттай холбоотой мэдээллийг олж авах боломжтой.</translation>
 <translation id="3261832505033014216"><ph name="USER_EMAIL" />-н нэвтрэх түлхүүр</translation>
@@ -8593,7 +8591,6 @@
 <translation id="7113974454301513811">Одоо та одоогийн табыг жагсаалтдаа нэмнэ үү</translation>
 <translation id="7114054701490058191">Нууц үг таарахгүй байна</translation>
 <translation id="7114648273807173152">Google бүртгэлдээ нэвтрэх ухаалаг түгжээ ашиглахын тулд Тохиргоо &gt; Холбогдсон төхөөрөмжүүд &gt; Таны утас &gt; Ухаалаг түгжээ хэсэгт очно уу.</translation>
-<translation id="7115051913071512405">Үүнийг туршаад үзээрэй.</translation>
 <translation id="7115361495406486998">Холбогдох боломжгүй харилцагчид</translation>
 <translation id="7115731767122970828">Одоо идэвхжүүлэх</translation>
 <translation id="7116554090938189816">Хэвлэгчийн SSL сертификатын хугацаа дууссан. Хэвлэгчийг дахин эхлүүлж, дахин оролдоно уу.</translation>
@@ -10897,7 +10894,6 @@
 <translation id="8737966899544698733">Байршлын нарийвчлал (зөвхөн Android)</translation>
 <translation id="8738418093147087440">Улс, хэл эсвэл оролтын нэрээр хайх</translation>
 <translation id="8740086188450289493">Google Бүртгэлийн нууц үгийг ашиглах</translation>
-<translation id="874023689350909633">Үүнийг туршиж үзэх</translation>
 <translation id="8740247629089392745">Та энэ Chromebook-г <ph name="SUPERVISED_USER_NAME" />-д өгч болно. Тохируулга бараг дуусаж, одоо судлах цаг боллоо.</translation>
 <translation id="8740672167979365981">ChromeOS Flex-г шинэчлэх шаардлагатай</translation>
 <translation id="8741944563400125534">Сэлгүүрийн тохируулгын хөтөч</translation>

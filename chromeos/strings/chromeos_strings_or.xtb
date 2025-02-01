@@ -768,6 +768,7 @@
 <translation id="4654549501020883054">ଦୈନିକ ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
 <translation id="4655868084888499342">ଇମେଜକୁ ୱାଲପେପର ଭାବେ ସେଟ କରାଯାଇଛି</translation>
 <translation id="4661249927038176904">ଅବାସ୍ତବ</translation>
+<translation id="4661392828086261436">ଏହି ଅପଡେଟ ଡିଭାଇସର ନିର୍ମାତା ଦ୍ୱାରା ପ୍ରଦାନ କରାଯାଇଛି ଏବଂ ଏହାକୁ Google ଦ୍ୱାରା ଯାଞ୍ଚ କରାଯାଇନାହିଁ।</translation>
 <translation id="4664651912255946953">ଲୋମ</translation>
 <translation id="4665014895760275686">ଉତ୍ପାଦକ</translation>
 <translation id="467510802200863975">ପାସ୍‌ୱାର୍ଡ ମେଳ ହେଉ ନାହିଁ</translation>
@@ -1027,6 +1028,7 @@
 <translation id="5904994456462260490">ଏକ ନୂଆ APN ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="590746845088109442">ବିଲେଇ</translation>
 <translation id="5907649332524363701">କୀ'ର ରଙ୍ଗ</translation>
+<translation id="5908813850962688338">ଏହି ଅପଡେଟ ଇନଷ୍ଟଲ କରିବାକୁ କିଛି ସମୟ ଲାଗିବ। ଅପଡେଟ ଡାଉନଲୋଡ ହେଉଥିବା ସମୟରେ ଆପଣଙ୍କ ଡିଭାଇସକୁ ପ୍ଲଗ ଇନ କରି ପାୱାର ଚାଲୁ ରଖନ୍ତୁ। ଏହି ପ୍ରକ୍ରିୟା ସମୟରେ ଆପଣଙ୍କ ଡିଭାଇସ ଅନେକ ଥର ରିବୁଟ ହୋଇପାରେ ଏବଂ ଏକ କଳା ସ୍କ୍ରିନ ଦେଖାଇପାରେ। ଇନଷ୍ଟଲେସନ ସମ୍ପୂର୍ଣ୍ଣ କରିବା ପାଇଁ ଆପଣଙ୍କୁ ଆପଣଙ୍କ ଡିଭାଇସକୁ ରିଷ୍ଟାର୍ଟ କରିବାକୁ ପ୍ରମ୍ପ୍ଟ କରିବାକୁ କୁହାଯିବ।</translation>
 <translation id="5916084858004523819">ନିଷିଦ୍ଧ</translation>
 <translation id="5916664084637901428">ଚାଲୁ</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{ଆପଣଙ୍କ ଫାଇଲକୁ ସଫଳତାପୂର୍ବକ ସ୍କାନ୍ କରାଯାଇ <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />ରେ ସେଭ୍ କରାଯାଇଛି।}other{ଆପଣଙ୍କ ଫାଇଲଗୁଡ଼ିକୁ ସଫଳତାପୂର୍ବକ ସ୍କାନ୍ କରାଯାଇ <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />ରେ ସେଭ୍ କରାଯାଇଛି।}}</translation>

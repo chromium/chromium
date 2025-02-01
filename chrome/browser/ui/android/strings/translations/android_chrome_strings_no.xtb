@@ -385,7 +385,6 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="2781151931089541271">1 sekund igjen</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome fant et gjenbrukt passord du kan forbedre}other{Chrome fant # gjenbrukte passord du kan forbedre}}</translation>
-<translation id="2796651346651857052">Trykk og hold på adressefeltet for å endre posisjonen.</translation>
 <translation id="2800066122460699237">Fanen <ph name="TAB_TITLE" /> blir lukket</translation>
 <translation id="2805756323405976993">Apper</translation>
 <translation id="281504910091592009">Se og administrer lagrede passord i <ph name="BEGIN_LINK" />Google-kontoen<ph name="END_LINK" /> din</translation>

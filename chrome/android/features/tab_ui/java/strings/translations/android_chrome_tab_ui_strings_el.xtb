@@ -86,6 +86,7 @@
 <translation id="4783638485675352219">Μοιραστείτε τίτλους και διευθύνσεις URL ανοικτών καρτελών από αυτή τη συσκευή με το λειτουργικό σύστημα</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> κριτική)}other{(<ph name="REVIEWS_COUNT_MANY" /> κριτικές)}}</translation>
 <translation id="4850886885716139402">Προβολή</translation>
+<translation id="4861953997778766866">Όλοι μπορούν να κάνουν αλλαγές στις κοινόχρηστες ομάδες καρτελών</translation>
 <translation id="4870911314065352661">Θέλετε να κλείσετε όλες τις καρτέλες;</translation>
 <translation id="4871719318659334896">Κλείσιμο ομάδας</translation>
 <translation id="4881695831933465202">Άνοιγμα</translation>
@@ -179,6 +180,7 @@
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{Προστέθηκε <ph name="ONE_ADDED" /> καρτέλα, έκλεισαν <ph name="ANY_CLOSED" />}other{Προστέθηκαν <ph name="MANY_ADDED" /> καρτέλες, έκλεισαν <ph name="ANY_CLOSED" />}}</translation>
 <translation id="8633025649649592204">Πρόσφατη δραστηριότητα</translation>
 <translation id="870736955561925754">Να κλείσει η καρτέλα και να διαγραφεί η ομάδα;</translation>
+<translation id="8712637175834984815">Κατάλαβα!</translation>
 <translation id="8714939927607906138">Χαμηλότερη τιμή</translation>
 <translation id="8730621377337864115">Ολοκληρώθηκε</translation>
 <translation id="8730999928494395583">Η δραστηριότητά σας σε αυτές τις καρτέλες ανώνυμης περιήγησης θα καταργηθεί από αυτήν τη συσκευή.</translation>

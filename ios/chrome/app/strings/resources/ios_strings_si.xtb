@@ -716,6 +716,7 @@
 <translation id="422477017457571619">ඔබේ බ්‍රවුස් කිරීමේ දත්ත Google වෙත යැවීම මත පදනම් වූ අනතුරුදායක අඩවි, බාගැනීම්, සහ දිගුවලට එරෙහිව තත්‍ය කාලීන, AI-බලගන්වන ලද ආරක්ෂාව</translation>
 <translation id="4231395118547300571">ආරක්ෂිත පරීක්ෂා දැනුම්දීම් ක්‍රියාත්මකයි</translation>
 <translation id="4237377247299956313"><ph name="BEGIN_BOLD" />පෙරනිමි බ්‍රව්සර යෙදුම<ph name="END_BOLD" /> තට්ටු කරන්න</translation>
+<translation id="4241893428331130998">සුරැකි මුරපද හෝ මුරයතුරු නොමැත</translation>
 <translation id="4242533952199664413">සැකසීම් විවෘත කරන්න</translation>
 <translation id="4250432749243022864">{count,plural, =0{{count} පටිත්ත විවෘත කරන්න}=1{{count} පටිත්ත විවෘත කරන්න}one{පටිති {count} විවෘත කරන්න}other{පටිති {count} විවෘත කරන්න}}</translation>
 <translation id="4250680216510889253">නැත</translation>
@@ -1595,6 +1596,7 @@
 <translation id="7982789257301363584">ජාලය</translation>
 <translation id="7987685713885608670">එක් කළ ආරක්ෂාව සඳහා, Google මුරපද කළමනාකරු වෙත සුරැකීමට පෙර ඔබගේ උපාංගයේ මුරපද සංකේතනය කරන්න.</translation>
 <translation id="798991908416757345">පටිති සමූහ නොලැබේ</translation>
+<translation id="7993170188789685695">මෙම දැනුම්දීම වැසීමට දෙවරක් තට්ටු කරන්න.</translation>
 <translation id="7993619969781047893">සමහර වෙබ් අඩවි මත විශේෂාංග කැඩී ගිය හැක</translation>
 <translation id="7996239959906074962">පිහිටුවන්න</translation>
 <translation id="800361585186029508">ආදාන කළ URL ටික Google Chrome තුළින් විවෘත කරයි.</translation>

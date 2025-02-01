@@ -86,6 +86,7 @@ Uma ulisula, wonke umuntu ngokushesha uzolahlekelwa ukufinyelela eqenjini letheb
 <translation id="4783638485675352219">Yabelana ngezihloko nama-URL wamathebhu avuliwe ukusuka kule divayisi ngesistimu yokusebenza</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(isibuyekezo esingu-<ph name="REVIEWS_COUNT_ONE" />)}one{(izibuyekezo ezingu-<ph name="REVIEWS_COUNT_MANY" />)}other{(izibuyekezo ezingu-<ph name="REVIEWS_COUNT_MANY" />)}}</translation>
 <translation id="4850886885716139402">Buka</translation>
+<translation id="4861953997778766866">Wonke umuntu angenza ushintsho emaqenjini ethebhu owabelane ngawo</translation>
 <translation id="4870911314065352661">Vala wonke amathebhu?</translation>
 <translation id="4871719318659334896">Vala iqembu</translation>
 <translation id="4881695831933465202">Vula</translation>
@@ -179,6 +180,7 @@ Uma ulisula, wonke umuntu ngokushesha uzolahlekelwa ukufinyelela eqenjini letheb
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{Ithebhu engu-<ph name="ONE_ADDED" /> ifakiwe, kuvalwe engu-<ph name="ANY_CLOSED" />}one{Amathebhu angu-<ph name="MANY_ADDED" /> afakiwe, kuvalwe angu-<ph name="ANY_CLOSED" />}other{Amathebhu angu-<ph name="MANY_ADDED" /> afakiwe, kuvalwe angu-<ph name="ANY_CLOSED" />}}</translation>
 <translation id="8633025649649592204">Umsebenzi wakamuva</translation>
 <translation id="870736955561925754">Vala ithebhu futhi usule iqembu?</translation>
+<translation id="8712637175834984815">Ngiyitholile</translation>
 <translation id="8714939927607906138">Intengo ephansi</translation>
 <translation id="8730621377337864115">Kwenziwe</translation>
 <translation id="8730999928494395583">Umsebenzi wakho kula mathebhu we-Incognito uzosuswa kule divayisi</translation>

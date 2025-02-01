@@ -86,6 +86,7 @@
 <translation id="4783638485675352219">‏مشاركة عناوين علامات التبويب المفتوحة وعناوين URL الخاصة بها من هذا الجهاز مع نظام التشغيل</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(مراجعة واحدة (<ph name="REVIEWS_COUNT_ONE" />))}zero{(<ph name="REVIEWS_COUNT_MANY" /> مراجعة)}two{(مراجعتان (<ph name="REVIEWS_COUNT_MANY" />))}few{(<ph name="REVIEWS_COUNT_MANY" /> مراجعات)}many{(<ph name="REVIEWS_COUNT_MANY" /> مراجعة)}other{(<ph name="REVIEWS_COUNT_MANY" /> مراجعة)}}</translation>
 <translation id="4850886885716139402">عرض</translation>
+<translation id="4861953997778766866">يمكن للجميع إجراء تغييرات على مجموعات علامات التبويب المشتركة</translation>
 <translation id="4870911314065352661">هل تريد إغلاق جميع علامات التبويب؟</translation>
 <translation id="4871719318659334896">إغلاق المجموعة</translation>
 <translation id="4881695831933465202">فتح</translation>
@@ -179,6 +180,7 @@
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{تمت إضافة علامة تبويب واحدة (<ph name="ONE_ADDED" />) وإغلاق <ph name="ANY_CLOSED" />}zero{تمت إضافة <ph name="MANY_ADDED" /> علامة تبويب وإغلاق <ph name="ANY_CLOSED" />}two{تمت إضافة علامتَي تبويب (<ph name="MANY_ADDED" />) وإغلاق <ph name="ANY_CLOSED" />}few{تمت إضافة <ph name="MANY_ADDED" /> علامات تبويب وإغلاق <ph name="ANY_CLOSED" />}many{تمت إضافة <ph name="MANY_ADDED" /> علامة تبويب وإغلاق <ph name="ANY_CLOSED" />}other{تمت إضافة <ph name="MANY_ADDED" /> علامة تبويب وإغلاق <ph name="ANY_CLOSED" />}}</translation>
 <translation id="8633025649649592204">الأنشطة الحديثة</translation>
 <translation id="870736955561925754">هل تريد إغلاق علامة التبويب وحذف المجموعة؟</translation>
+<translation id="8712637175834984815">حسنًا</translation>
 <translation id="8714939927607906138">السعر المنخفض</translation>
 <translation id="8730621377337864115">تم</translation>
 <translation id="8730999928494395583">ستتم إزالة نشاطك في علامات التبويب في وضع التصفُّح المتخفي من هذا الجهاز.</translation>

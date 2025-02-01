@@ -86,6 +86,7 @@
 <translation id="4783638485675352219">இந்தச் சாதனத்தில் திறக்கப்பட்டுள்ள பக்கங்களின் URLகளையும் தலைப்புகளையும் ஆப்ரேட்டிங் சிஸ்டத்துடன் பகிர்</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> மதிப்புரை)}other{(<ph name="REVIEWS_COUNT_MANY" /> மதிப்புரைகள்)}}</translation>
 <translation id="4850886885716139402">காட்சி</translation>
+<translation id="4861953997778766866">நீங்கள் பகிரும் பக்கக் குழுக்களில் எல்லோரும் மாற்றங்களைச் செய்யலாம்</translation>
 <translation id="4870911314065352661">அனைத்து உலாவிப் பக்கங்களையும் மூடவா?</translation>
 <translation id="4871719318659334896">குழுவை மூடுக</translation>
 <translation id="4881695831933465202">திற</translation>
@@ -179,6 +180,7 @@
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> பக்கம் சேர்க்கப்பட்டது, <ph name="ANY_CLOSED" /> மூடப்பட்டது.}other{<ph name="MANY_ADDED" /> பக்கங்கள் சேர்க்கப்பட்டன, <ph name="ANY_CLOSED" /> மூடப்பட்டது.}}</translation>
 <translation id="8633025649649592204">சமீபத்திய செயல்</translation>
 <translation id="870736955561925754">பக்கத்தை மூடிவிட்டு குழுவை நீக்க வேண்டுமா?</translation>
+<translation id="8712637175834984815">புரிந்தது</translation>
 <translation id="8714939927607906138">குறைவான விலை</translation>
 <translation id="8730621377337864115">முடிந்தது</translation>
 <translation id="8730999928494395583">இந்த மறைநிலைப் பக்கங்களில் நீங்கள் மேற்கொண்ட செயல்பாடுகள் குறித்த விவரங்கள் இந்தச் சாதனத்தில் இருந்து அகற்றப்படும்</translation>

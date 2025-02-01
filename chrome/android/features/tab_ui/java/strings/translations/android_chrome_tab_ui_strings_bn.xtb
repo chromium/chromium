@@ -86,6 +86,7 @@
 <translation id="4783638485675352219">এই ডিভাইস থেকে খোলা ট্যাবের শিরোনাম ও URL, অপারেটিং সিস্টেমের সাথে শেয়ার করুন</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" />টি রিভিউ)}one{(<ph name="REVIEWS_COUNT_MANY" />টি রিভিউ)}other{(<ph name="REVIEWS_COUNT_MANY" />টি রিভিউ)}}</translation>
 <translation id="4850886885716139402">দেখুন</translation>
+<translation id="4861953997778766866">আপনার শেয়ার করা ট্যাব গ্রুপে প্রত্যেকে পরিবর্তন করতে পারবেন</translation>
 <translation id="4870911314065352661">সব ট্যাব বন্ধ করবেন?</translation>
 <translation id="4871719318659334896">গ্রুপ বন্ধ করুন</translation>
 <translation id="4881695831933465202">খুলুন</translation>
@@ -179,6 +180,7 @@
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" />টি ট্যাব যোগ করা হয়েছে, <ph name="ANY_CLOSED" />টি বন্ধ করা হয়েছে}one{<ph name="MANY_ADDED" />টি ট্যাব যোগ করা হয়েছে, <ph name="ANY_CLOSED" />টি বন্ধ করা হয়েছে}other{<ph name="MANY_ADDED" />টি ট্যাব যোগ করা হয়েছে, <ph name="ANY_CLOSED" />টি বন্ধ করা হয়েছে}}</translation>
 <translation id="8633025649649592204">সাম্প্রতিক অ্যাক্টিভিটি</translation>
 <translation id="870736955561925754">ট্যাব বন্ধ করে গ্রুপ মুছে দেবেন?</translation>
+<translation id="8712637175834984815">বুঝেছি</translation>
 <translation id="8714939927607906138">খুব কম দামে</translation>
 <translation id="8730621377337864115">হয়ে গেছে</translation>
 <translation id="8730999928494395583">এইসব 'ছদ্মবেশী' ট্যাবে আপনার করা অ্যাক্টিভিটি এই ডিভাইস থেকে সরানো হবে</translation>

@@ -178,7 +178,6 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1550523713251050646">Aukera gehiago ikusteko, egin klik hemen</translation>
 <translation id="1555130319947370107">Urdina</translation>
 <translation id="1557622599341396706">Erakutsi lan-eremuaren izena</translation>
-<translation id="1567138500090284106">Saguaren teklen botoia</translation>
 <translation id="1569384531973824928">Kamera/Mikrofonoa erabiltzeko baimena duten aplikazio eta webgune guztiek atzitu ahal izango dute. Agian web-orria freskatu beharko duzu, edo aplikazioa berrabiarazi.</translation>
 <translation id="1571697193564730395">Gaitu/Desgaitu ez molestatzeko modua. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Txikitu lupa aktibatuta dagoenean</translation>
@@ -731,6 +730,7 @@ Bestela, <ph name="TIMEOUT_SECONDS" /> barru gaituko da berriro ukipen-panel int
 <translation id="3522979239100719575">Erabilgarri dauden profilak bilatzen. Agian minutu batzuk beharko dira.</translation>
 <translation id="3526440770046466733">Ireki esteka beste fitxa batean eta geratu oraingo fitxan</translation>
 <translation id="353086728817903341">Konektatu da <ph name="NUM_DEVICES" /> gailutara</translation>
+<translation id="3532247131850366052">Ezin izan da sortu Google-ko kalkulu-orririk</translation>
 <translation id="3533126039236445965">Apaleko aplikazioak</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> wifi-gunea</translation>
 <translation id="3540893133818942399">Baztertu telefonoko azkenaldiko argazkiak eta multimedia-elementuak ikusteko aukera konfiguratzeko prozesua</translation>
@@ -830,6 +830,7 @@ Aurrera egiteko, erabiltzaile guztiek saioa amaitu behar dute.</translation>
 <translation id="380165613292957338">Kaixo! Zertan lagun zaitzaket?</translation>
 <translation id="3804737937830804242">Tolestu kamera</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{Emoji bat. Ez dago beste emaitzarik.}other{# emoji. Ez dago beste emaitzarik.}}</translation>
+<translation id="3822403841174077928">Ezin izan da kopiatu formatuarekin</translation>
 <translation id="3824784079442479685"><ph name="APP_NAME" /> aplikazioak eta kamera erabiltzeko baimena duten beste aplikazio eta webgune guztiek kamera atzitu ahal izango dute. Agian web-orria freskatu beharko duzu, edo aplikazioa berrabiarazi.</translation>
 <translation id="3826099427150913765">Aldatu pasahitzera</translation>
 <translation id="383058930331066723">Bateria-aurreztailea aktibatuta dago</translation>
@@ -1216,6 +1217,7 @@ Gailu bat dago konektatuta.</translation>
 <translation id="5043679421800073804">Sakatu apaleko azken ikonoa</translation>
 <translation id="504465286040788597">Aurreko paragrafoa</translation>
 <translation id="5045550434625856497">Pasahitz okerra</translation>
+<translation id="5058794129231928255">Ezin izan da sortu Google-ko dokumenturik</translation>
 <translation id="5062496344832867502">RAMa</translation>
 <translation id="5068762093486106012">Audioa desaktibatuta daukazunean hitz egiten baduzu, jakinarazpen bat jasoko duzu. Audioa ez da inoiz irtengo gailutik.</translation>
 <translation id="5077416371682039027">Konfiguratu telefonoko azkenaldiko argazkiak, multimedia-elementuak, jakinarazpenak eta aplikazioak ikusteko aukera</translation>
@@ -1648,6 +1650,7 @@ Ez dago gailurik konektatuta.</translation>
 <translation id="6468406072297048412">{0,plural, =1{Itzuli gailuaren aurreko bertsiora minutu bat barru}other{Itzuli gailuaren aurreko bertsiora # minutu barru}}</translation>
 <translation id="6469104339369989396">Aktibatu/Desaktibatu wifi-gunea</translation>
 <translation id="6477681113376365978">Ezin da deskargatu fitxategia</translation>
+<translation id="648135757200234041">Ezin izan da sortu kontakturik</translation>
 <translation id="6482559668224714696">Pantaila osoko lupa</translation>
 <translation id="6485086611007560630">Eguraldia (ez dago erabilgarri)</translation>
 <translation id="6490471652906364588">USB-C gailua (eskuinaldeko ataka)</translation>
@@ -2288,6 +2291,7 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="8653151467777939995">Erakutsi jakinarazpen-ezarpenak. Aktibatuta daude jakinarazpenak.</translation>
 <translation id="8657066291275741003">minuskulak</translation>
 <translation id="8660331759611631213">Zein da 71ren erro karratua</translation>
+<translation id="8662921061190671299">Ezin izan da gehitu Calendar-en</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />. Seinalearen indarra: <ph name="SIGNAL_STRENGTH" />.</translation>
 <translation id="8664282223139913403">Pantaila zati baten pantaila-argazki bat ateratzeko, sakatu Sartu</translation>
 <translation id="8676770494376880701">Potentzia txikiko kargagailua konektatu da</translation>

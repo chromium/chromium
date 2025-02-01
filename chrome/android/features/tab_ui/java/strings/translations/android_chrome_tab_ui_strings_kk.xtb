@@ -86,6 +86,7 @@
 <translation id="4783638485675352219">Бұл құрылғыдағы ашық қойындылардың атаулары мен URL мекенжайларын операциялық жүйемен бөлісу</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> пікір)}other{(<ph name="REVIEWS_COUNT_MANY" /> пікір)}}</translation>
 <translation id="4850886885716139402">Көрініс</translation>
+<translation id="4861953997778766866">Ортақ қойындылар топтарына барлығы өзгеріс енгізе алады.</translation>
 <translation id="4870911314065352661">Барлық қойынды жабылсын ба?</translation>
 <translation id="4871719318659334896">Топты жабу</translation>
 <translation id="4881695831933465202">Ашу</translation>
@@ -179,6 +180,7 @@
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> қойынды қосылды, <ph name="ANY_CLOSED" /> жабылды.}other{<ph name="MANY_ADDED" /> қойынды қосылды, <ph name="ANY_CLOSED" /> жабылды.}}</translation>
 <translation id="8633025649649592204">Соңғы іс-әрекеттер</translation>
 <translation id="870736955561925754">Қойындыны жауып, топты жою қажет пе?</translation>
+<translation id="8712637175834984815">Түсінікті</translation>
 <translation id="8714939927607906138">Арзанырақ</translation>
 <translation id="8730621377337864115">Дайын</translation>
 <translation id="8730999928494395583">Бұл инкогнито қойындыларындағы әрекетіңіз осы құрылғыдан өшіріледі.</translation>

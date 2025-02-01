@@ -86,6 +86,7 @@
 <translation id="4783638485675352219">Предоставлять ОС доступ к заголовкам и URL вкладок, открытых на этом устройстве</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> отзыв).}one{(<ph name="REVIEWS_COUNT_MANY" /> отзыв).}few{(<ph name="REVIEWS_COUNT_MANY" /> отзыва).}many{(<ph name="REVIEWS_COUNT_MANY" /> отзывов).}other{(<ph name="REVIEWS_COUNT_MANY" /> отзыва).}}</translation>
 <translation id="4850886885716139402">Смотреть</translation>
+<translation id="4861953997778766866">Любой может изменять ваши группы вкладок с общим доступом</translation>
 <translation id="4870911314065352661">Закрыть все вкладки?</translation>
 <translation id="4871719318659334896">Закрыть группу</translation>
 <translation id="4881695831933465202">Открыть</translation>
@@ -179,6 +180,7 @@
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{Вкладок добавлено: <ph name="ONE_ADDED" />, закрыто: <ph name="ANY_CLOSED" />.}one{Вкладок добавлено: <ph name="MANY_ADDED" />, закрыто: <ph name="ANY_CLOSED" />.}few{Вкладок добавлено: <ph name="MANY_ADDED" />, закрыто: <ph name="ANY_CLOSED" />.}many{Вкладок добавлено: <ph name="MANY_ADDED" />, закрыто: <ph name="ANY_CLOSED" />.}other{Вкладок добавлено: <ph name="MANY_ADDED" />, закрыто: <ph name="ANY_CLOSED" />.}}</translation>
 <translation id="8633025649649592204">Недавние действия</translation>
 <translation id="870736955561925754">Закрыть вкладку и удалить группу?</translation>
+<translation id="8712637175834984815">OK</translation>
 <translation id="8714939927607906138">Более низкая цена</translation>
 <translation id="8730621377337864115">Готово</translation>
 <translation id="8730999928494395583">Информация о действиях на этих вкладках инкогнито будет удалена с устройства.</translation>

@@ -768,6 +768,7 @@
 <translation id="4654549501020883054">Cambiar todos os días</translation>
 <translation id="4655868084888499342">Imaxe definida como fondo de pantalla</translation>
 <translation id="4661249927038176904">surrealista</translation>
+<translation id="4661392828086261436">O fabricante do dispositivo forneceu esta actualización, pero non está verificada por Google</translation>
 <translation id="4664651912255946953">pel</translation>
 <translation id="4665014895760275686">Fabricante</translation>
 <translation id="467510802200863975">Os contrasinais non coinciden</translation>
@@ -1027,6 +1028,7 @@
 <translation id="5904994456462260490">Engadir un APN novo</translation>
 <translation id="590746845088109442">gatos</translation>
 <translation id="5907649332524363701">cor das teclas</translation>
+<translation id="5908813850962688338">A instalación desta actualización pode levar uns minutiños. Non desenchufes nin apagues o dispositivo mentres se estea descargando a actualización. Pode que o aparello se reinicie varias veces e mostre unha pantalla negra durante o proceso. Pediráseche que reinicies o dispositivo para poder completar a instalación.</translation>
 <translation id="5916084858004523819">Prohibida</translation>
 <translation id="5916664084637901428">Si</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{O teu ficheiro escaneouse e gardouse correctamente en <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Os teus ficheiros escaneáronse e gardáronse correctamente en <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>

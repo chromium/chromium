@@ -131,6 +131,7 @@ Chromeni yaxshilashda ishlatiladigan maʼlumotlar qoʻshimcha sozlamalarini <ph 
 <translation id="1513858653616922153">Parolni o‘chirish</translation>
 <translation id="1521774566618522728">Bugun onlayn edi</translation>
 <translation id="153446405401665083">Chromening yangi versiyasi chiqdi</translation>
+<translation id="1540012742443808215">Manzillar qatorida tepada joylangan</translation>
 <translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{1 ta bukmark faqat shu qurilmada saqlangan. Boshqa qurilmalarda foydalanish uchun uni Google hisobingizda (<ph name="ACCOUNT_EMAIL" />) saqlang.}other{# ta bukmark faqat shu qurilmaga saqlangan. Boshqa qurilmalarda foydalanish uchun ularni Google hisobingizda (<ph name="ACCOUNT_EMAIL" />) saqlang.}}</translation>
 <translation id="1544084554881119930">Toʻlov usullari va manzillar shifrlanmaydi. Chrome brauzer tarixi sinxronlanmaydi.
 Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli ibora ulashilmaydi va Google serverlarida saqlanmaydi. Agar kodli iborani unutsangiz yoki bu sozlamani oʻzgartirmoqchi boʻlsangiz, <ph name="BEGIN_LINK" />hisobingizda Chrome maʼlumotlarini tozalang<ph name="END_LINK" />.</translation>
@@ -385,7 +386,6 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="2781151931089541271">1 soniya qoldi</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome yaxshilanishi mumkin qayta ishlatilgan parolni aniqladi}other{Chrome yaxshilanishi mumkin # ta qayta ishlatilgan parolni aniqladi}}</translation>
-<translation id="2796651346651857052">Joylashuvini oʻzgartirish uchun manzillar qatorini bosib turing.</translation>
 <translation id="2800066122460699237"><ph name="TAB_TITLE" /> nomli varaq yopiladi</translation>
 <translation id="2805756323405976993">Ilovalar</translation>
 <translation id="281504910091592009"><ph name="BEGIN_LINK" />Google hisobingizga<ph name="END_LINK" /> saqlangan parollarni ko‘rish va boshqarish</translation>
@@ -1186,6 +1186,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="6459045781120991510">Soʻrovnomalar</translation>
 <translation id="6461962085415701688">Fayl ochilmadi</translation>
 <translation id="6464977750820128603">Chromeda ochilgan saytlarni koʻrish va ular uchun taymerlar sozlash mumkin.\n\nGooglega faqat taymer sozlangan saytlar va ular qancha vaqt ochilganligi haqidagi axborot yuboriladi. Bu axborot Raqamli qulaylikni yaxshilashga yordam beradi.</translation>
+<translation id="6468703991511753953">Manzillar qatori pastda joylashgan</translation>
 <translation id="6470181189905173055"><ph name="APP_LABEL" /> orqali Chromeda ochilgan sahifalar shu yerda chiqadi.</translation>
 <translation id="6473086018775716761">Ruxsat parametrlari roʻyxati yarim hajmda ochildi.</translation>
 <translation id="6475951671322991020">Videoni yuklab olish</translation>

@@ -2163,7 +2163,6 @@
 <translation id="2471632709106952369">तुलना सारण्या</translation>
 <translation id="2473195200299095979">या पृष्ठाचे भाषांतर करा</translation>
 <translation id="2475982808118771221">एक एरर आली आहे</translation>
-<translation id="247616523300581745">या फाइल लपवा</translation>
 <translation id="2476435723907345463">पासकीचा अ‍ॅक्सेस काढून टाकला आहे</translation>
 <translation id="2476901513051581836">ऑफलाइन स्टोरेज जागा ज्ञात होईपर्यंत स्टोरेज साफ करू शकत नाही.</translation>
 <translation id="2476974672882258506"><ph name="PARALLELS_DESKTOP" /> अनइंस्टॉल करण्यासाठी Windows बंद करा.</translation>
@@ -2805,6 +2804,7 @@
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> ला सपोर्ट नाही.</translation>
 <translation id="2926708162326352948">थीम ही अपलोड केलेल्या इमेजवर अपडेट केली आहे</translation>
 <translation id="2927017729816812676">कॅशे स्टोरेज</translation>
+<translation id="2928030851119977280">निवड सेव्ह केली आहे. तुम्ही इतर Google सेवांमध्ये साइन इन करता, तेव्हा तुमची निवड लागू होईल.</translation>
 <translation id="2928795416630981206">तुमच्या कॅमेराचे स्थान ट्रॅक करण्याची अनुमती आहे</translation>
 <translation id="2929345818093040583">{NUM_SITES,plural, =1{Chrome ने १ साइटवरून परवानग्या काढून टाकल्या}other{Chrome ने {NUM_SITES} साइटवरून परवानग्या काढून टाकल्या}}</translation>
 <translation id="2931157624143513983">प्रिंट करण्यायोग्य भागात बसवा</translation>
@@ -3238,7 +3238,6 @@
 <translation id="3257733480216378006"><ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" /> ला अनुमती द्यायची आहे का?</translation>
 <translation id="325797067711573598">संशयास्पद डाउनलोड ब्लॉक केले आहे</translation>
 <translation id="3259723213051400722">कृपया पुन्हा प्रयत्न करा.</translation>
-<translation id="3260199651491738298">या वैशिष्ट्यांद्वारे गोळा केलेला डेटा कसा वापरला जाऊ शकतो हे तुमची संस्था नियंत्रित करते. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="3261090393424563833">दर वाढवा</translation>
 <translation id="3261268979727295785">मोठ्या मुलांसाठी, सेटअप पूर्ण केल्‍यानंतर तुम्‍ही पालक नियंत्रणे जोडू शकता. तुम्‍हाला Explore ॲपमध्ये पालक नियंत्रणांविषयी माहिती मिळेल.</translation>
 <translation id="3261832505033014216"><ph name="USER_EMAIL" /> साठी पासकी</translation>
@@ -7420,6 +7419,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6253801023880399036">पासवर्ड <ph name="GOOGLE_PASSWORD_MANAGER" /> मध्ये सेव्ह केले जातात.</translation>
 <translation id="6254503684448816922">की तडजोड</translation>
 <translation id="6254892857036829079">उत्तम आहे</translation>
+<translation id="6257131917452817589">ऑटोमेटेड पासवर्ड बदल</translation>
 <translation id="6257602895346497974">सिंक सुरू करा…</translation>
 <translation id="6257614441619555296"><ph name="KEY" />: <ph name="VALUE" /></translation>
 <translation id="625827534921607067">पूर्वी कनेक्ट केलेले किंवा कॉन्फिगर केलेले एकापेक्षा जास्त नेटवर्क उपलब्ध असल्यास, या नेटवर्कला प्राधान्य दिले जाईल</translation>
@@ -8597,7 +8597,6 @@ I feel - विटांची इमारत</translation>
 <translation id="7113974454301513811">आता तुमच्या सूचीमध्ये सध्याचा टॅब जोडा</translation>
 <translation id="7114054701490058191">पासवर्ड जुळत नाहीत</translation>
 <translation id="7114648273807173152">तुमच्या Google खात्यामध्ये साइन इन करण्यासाठी Smart Lock वापरण्याकरिता, सेटिंग्ज &gt; कनेक्ट केलेली डिव्हाइस &gt; तुमचा फोन &gt; Smart Lock वर जा.</translation>
-<translation id="7115051913071512405">हे वापरून पहा</translation>
 <translation id="7115361495406486998">कोणत्याही संपर्कांपर्यंत पोहोचू शकत नाही</translation>
 <translation id="7115731767122970828">आता बूस्ट करा</translation>
 <translation id="7116554090938189816">प्रिंटर SSL सर्टिफिकेट एक्स्पायर झाले आहे. प्रिंटर रीस्टार्ट करा आणि पुन्हा प्रयत्न करा.</translation>
@@ -9130,6 +9129,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7502528909759062987"><ph name="DEVICE_NAME" /> वर टॅब कास्ट करणे थांबवा</translation>
 <translation id="7502804472671406749">शेअर केलेले टॅब स्क्रोल आणि झूम केले जाऊ शकतात</translation>
 <translation id="7503191893372251637">Netscape सर्टिफिकेट प्रकार</translation>
+<translation id="7503259455663961898">माझ्यासाठी बदला</translation>
 <translation id="7503985202154027481">तुम्ही या साइटला भेट दिल्याचे रेकॉर्ड तुमच्या सिक्युरिटी कीवर ठेवले जातील.</translation>
 <translation id="7504145862399276792">या टॅबचा ऑडिओ म्यूट केला जात आहे</translation>
 <translation id="750509436279396091">डाउनलोड फोल्डर उघडा</translation>
@@ -9192,6 +9192,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7551059576287086432"><ph name="FILE_NAME" /> डाउनलोड करणे अयशस्वी</translation>
 <translation id="7551643184018910560">शेल्फवर पिन करा</translation>
 <translation id="7552191410769096467">टॅब गट शेअर करण्यासाठी किंवा त्यामध्ये सामील होण्यासाठी, साइन इन करून सिंक सुरू करणे आवश्यक आहे</translation>
+<translation id="7552196109089297786">Microsoft मधून साइन आउट करा</translation>
 <translation id="7552846755917812628">खालील टिपा वापरून पहा:</translation>
 <translation id="7553012839257224005">Linux कंटेनर तपासत आहे</translation>
 <translation id="7553242001898162573">तुमचा पासवर्ड एंटर करा</translation>
@@ -10319,6 +10320,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8330617762701840933">पर्यायी ब्राउझरवर रीडिरेक्ट करणाऱ्या वेबसाइटची सूची.</translation>
 <translation id="8330689128072902965">जवळपासचे संपर्क तुमच्यासोबत शेअर करू शकतात. बदलण्यासाठी क्लिक करा.</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{सपोर्ट असलेला फाइल प्रकार: <ph name="FILE_TYPE1" />}=2{सपोर्ट असलेले फाइल प्रकार: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />}=3{सपोर्ट असलेले फाइल प्रकार: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />}=4{सपोर्ट असलेले फाइल प्रकार: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" />}other{सपोर्ट असलेले फाइल प्रकार: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />आणि {OVERFLOW_COUNT} आणखी<ph name="END_LINK" />)}}</translation>
+<translation id="8331578454993293727">तुमचा पासवर्ड डेटा भंगामध्ये आढळला होता</translation>
 <translation id="8331822764922665615">तुमच्या गटाला नाव द्या, रंग निवडा त्यानंतर Esc प्रेस करा</translation>
 <translation id="833256022891467078">Crostini ने शेअर केलेले फोल्डर</translation>
 <translation id="833262891116910667">हायलाइट</translation>
@@ -10400,6 +10402,7 @@ I feel - विटांची इमारत</translation>
     <ph name="BEGIN_PARAGRAPH2" />अधिक मदतीसाठी, पुढील लिंकला भेट द्या: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8383614331548401927">स्वागत Recap</translation>
 <translation id="8386091599636877289">धोरण सापडले नाही.</translation>
+<translation id="8387087863179559896">Chrome या साइटसाठी तुमचे खाते क्लिष्ट पासवर्डने अपडेट करू शकते. तुम्हाला पासवर्ड लक्षात ठेवण्याची आवश्यकता नाही, कारण तो तुमच्यासाठी <ph name="EMAIL" /> करिता Google Password Manager मध्ये सेव्ह केलेला आहे. <ph name="PASSWORD_CHANGE" /> बद्दल अधिक.</translation>
 <translation id="8387361103813440603">तुमचे स्थान पाहण्याची अनुमती नाही</translation>
 <translation id="8387617938027387193">हे तुम्हीच आहात याची पडताळणी करा</translation>
 <translation id="8388770971141403598">दुय्यम प्रोफाइलना सपोर्ट नाही</translation>
@@ -10898,7 +10901,6 @@ I feel - विटांची इमारत</translation>
 <translation id="8737966899544698733">स्थान अचूकता (Android फक्त)</translation>
 <translation id="8738418093147087440">देश, भाषा किंवा इनपुटच्या नावांनुसार शोधा</translation>
 <translation id="8740086188450289493">Google खाते पासवर्ड वापरा</translation>
-<translation id="874023689350909633">हे वापरून पहा</translation>
 <translation id="8740247629089392745">तुम्ही हे Chromebook <ph name="SUPERVISED_USER_NAME" /> कडे सोपवू शकता. सेट करणे जवळपास पूर्ण झाले आहे, त्यानंतर एक्सप्लोर करण्याची वेळ आहे.</translation>
 <translation id="8740672167979365981">ChromeOS Flex अपडेट करणे आवश्यक आहे</translation>
 <translation id="8741944563400125534">स्विच अ‍ॅक्सेस सेटअप मार्गदर्शक</translation>

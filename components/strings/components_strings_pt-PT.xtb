@@ -1873,6 +1873,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4269264543938335308">Vestuário de natação</translation>
 <translation id="4269599248168651462">O certificado do servidor é emitido para um nome não exclusivo.</translation>
 <translation id="4270541775497538019">Empilhador 6</translation>
+<translation id="4271311252511481365">{NUM_REVIEWS,plural, =0{Veja 0 críticas. A classificação média é de <ph name="STARS" /> estrelas.}=1{Veja 1 crítica. A classificação média é de <ph name="STARS" /> estrelas.}other{Veja as # críticas. A classificação média é de <ph name="STARS" /> estrelas.}}</translation>
 <translation id="4271652479722040953">Quando são adicionadas extensões ao Chrome, são enviados dados relevantes acerca destas extensões para terceiros para análise e estes podem estar visíveis para o seu administrador. Os dados incluem informações sobre as extensões, como o nome, a hora de instalação, a origem da instalação, bem como a atividade associada a estas extensões (como alterar separadores, contactar Websites ou aceder a cookies). Estes dados são recolhidos relativamente a extensões instaladas a partir da Web Store do Chrome, bem como extensões fora da loja.</translation>
 <translation id="4275830172053184480">Reiniciar o dispositivo</translation>
 <translation id="4276974990916607331">Não</translation>
@@ -2952,6 +2953,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6224281071334553713">Pedras preciosas e jóias</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Prima Tab e, em seguida, Enter para personalizar as ferramentas de acessibilidade nas definições do Chrome</translation>
 <translation id="6228346913624365233">Veículos de luxo</translation>
+<translation id="6228836011612806720">Críticas da loja. A classificação média é de <ph name="STARS" /> estrelas.</translation>
 <translation id="6229196330202833460">Streaming de filmes e TV</translation>
 <translation id="6234122620015464377">Cortar no fim de cada documento</translation>
 <translation id="6234310016144827337">Verifique a ligação e tente novamente</translation>

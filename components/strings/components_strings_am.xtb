@@ -2406,6 +2406,7 @@
 <translation id="5254043433801397071">የህትመት ይዘትን አትባ</translation>
 <translation id="5255583962255635076">በስራ መገለጫዎ ውስጥ የተተገበሩ የአሳሽ መመሪያዎች</translation>
 <translation id="5255690596502591079">ለማንኛውም አንሳ</translation>
+<translation id="5255771248404149177">የካርድ አቅራቢዎ እርስዎ መሆንዎን ማረጋገጥ ይፈልጋል</translation>
 <translation id="5255833070095767006">350 x 460 ሚሜ</translation>
 <translation id="5257739419779698609">{0,plural, =1{የአስተዳዳሪ መመሪያ ይህን ፋይል ወደ <ph name="DESTINATION_NAME" /> መቅዳትን አይመክርም}one{የአስተዳዳሪ መመሪያ ይህን ፋይል ወደ <ph name="DESTINATION_NAME" /> መቅዳትን አይመክርም}other{የአስተዳዳሪ መመሪያ እነዚህን ፋይሎች ወደ <ph name="DESTINATION_NAME" /> መቅዳትን አይመክርም}}</translation>
 <translation id="5263867360296733198">ከመስቀል በፊት ግምገማ ያስፈልጋል</translation>
@@ -2553,6 +2554,7 @@
 <translation id="5518352028556756716">አብዛኛዎቹ ጣቢያዎች በማሰስ ላይ እንዳሉ እርስዎን ለመከታተል የሦስተኛ ወገን ኩኪዎችን መጠቀም አይችሉም እና ጣቢያዎች በማንነት የማያሳውቅ ሁነታ ውስጥ የሦስተኛ ወገን ኩኪዎችን መጠቀም አይችሉም።</translation>
 <translation id="5519516356611866228">ከእርስዎ ለውጦች ጋር</translation>
 <translation id="5519696598216267194">ወረቀት (ቀድሞ የተመታ)</translation>
+<translation id="5520105693415771152">የአሁን መረጃዎን እየተመለከቱ አይደለም? እሱን ለማዘመን አቅራቢዎን ያነጋግሩ።</translation>
 <translation id="5521782189689806907">የመሣቢያ ቁምሳጥኖች</translation>
 <translation id="5523118979700054094">የመምሪያ ስም</translation>
 <translation id="5523588073846127669">ነጋዴ ይህን ምናባዊ ካርድ አይቀበልም</translation>

@@ -2165,7 +2165,6 @@
 <translation id="2471632709106952369">Табели за споредба</translation>
 <translation id="2473195200299095979">Преведи ја страницата</translation>
 <translation id="2475982808118771221">Настана грешка</translation>
-<translation id="247616523300581745">Скриј ги датотекиве</translation>
 <translation id="2476435723907345463">Пристапот до криптографските клучеви е отстранет</translation>
 <translation id="2476901513051581836">Не може да се подзачисти просторот сѐ додека не се знае колку простор има офлајн.</translation>
 <translation id="2476974672882258506">Исклучете го Windows за да се деинсталира <ph name="PARALLELS_DESKTOP" />.</translation>
@@ -2807,6 +2806,7 @@
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> не е поддржано.</translation>
 <translation id="2926708162326352948">Темата се замени со прикачена слика</translation>
 <translation id="2927017729816812676">Склад за кеш</translation>
+<translation id="2928030851119977280">Изборот е зачуван. Изборот ќе важи при најавување на други услуги на Google</translation>
 <translation id="2928795416630981206">Дозволено им е да ја следат позицијата на камерата</translation>
 <translation id="2929345818093040583">{NUM_SITES,plural, =1{Chrome ги отстрани дозволите од 1 сајт}one{Chrome ги отстрани дозволите од {NUM_SITES} сајт}other{Chrome ги отстрани дозволите од {NUM_SITES} сајта}}</translation>
 <translation id="2931157624143513983">Приспособи според областа за печатење</translation>
@@ -3240,7 +3240,6 @@
 <translation id="3257733480216378006">Да се дозволи <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" />?</translation>
 <translation id="325797067711573598">Блокирано е сомнително преземање</translation>
 <translation id="3259723213051400722">Обидете се повторно.</translation>
-<translation id="3260199651491738298">Вашата организација контролира како може да се користат податоците што ги прибираат функцииве. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="3261090393424563833">Зголеми ја фреквенцијата</translation>
 <translation id="3261268979727295785">За постари деца, може да додадете родителски контроли откако ќе завршите со поставувањето. Информации за родителските контроли ќе најдете во апликацијата Explore.</translation>
 <translation id="3261832505033014216">Криптографски клуч за <ph name="USER_EMAIL" /></translation>
@@ -7421,6 +7420,7 @@
 <translation id="6253801023880399036">Лозинките се зачувуваат во <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="6254503684448816922">Клучот е доведен во опасност</translation>
 <translation id="6254892857036829079">Совршено</translation>
+<translation id="6257131917452817589">автоматизираната промена на лозинката</translation>
 <translation id="6257602895346497974">Вклучете синхронизација…</translation>
 <translation id="6257614441619555296"><ph name="KEY" />: <ph name="VALUE" /></translation>
 <translation id="625827534921607067">Оваа мрежа ќе има предност ако е достапна повеќе од една претходно поврзана или конфигурирана мрежа</translation>
@@ -8599,7 +8599,6 @@
 <translation id="7113974454301513811">Сега додајте ја тековната картичка во списокот</translation>
 <translation id="7114054701490058191">Лозинките не се совпаѓаат</translation>
 <translation id="7114648273807173152">За да ја користите Smart Lock за најавување на вашата сметка на Google, одете во „Поставки &gt; Поврзани уреди &gt; Вашиот телефон &gt; Smart Lock“.</translation>
-<translation id="7115051913071512405">Испробај го</translation>
 <translation id="7115361495406486998">Нема достапни контакти</translation>
 <translation id="7115731767122970828">Засили сега</translation>
 <translation id="7116554090938189816">SSL-сертификатот на печатачот е истечен. Рестартирајте го печатачот, па обидете се повторно.</translation>
@@ -9132,6 +9131,7 @@
 <translation id="7502528909759062987">Паузирај со емитување картичка на <ph name="DEVICE_NAME" /></translation>
 <translation id="7502804472671406749">Споделените картички може да се лизгаат и зумираат</translation>
 <translation id="7503191893372251637">Тип сертификат за Netscape</translation>
+<translation id="7503259455663961898">Промени ја за мене</translation>
 <translation id="7503985202154027481">Запис за вашата посета на сајтов ќе се чува на вашиот безбедносен клуч.</translation>
 <translation id="7504145862399276792">Звукот на аудиото на картичкава е исклучен</translation>
 <translation id="750509436279396091">Отвори папка на преземања</translation>
@@ -9194,6 +9194,7 @@
 <translation id="7551059576287086432">Преземањето на <ph name="FILE_NAME" /> е неуспешно</translation>
 <translation id="7551643184018910560">Прикачи на полицата</translation>
 <translation id="7552191410769096467">За да споделувате или да се придружувате во групи картички, треба да се најавите и да вклучите синхронизација</translation>
+<translation id="7552196109089297786">Одјавете се од Microsoft</translation>
 <translation id="7552846755917812628">Испробајте ги следните совети:</translation>
 <translation id="7553012839257224005">Се проверува контејнерот за Linux</translation>
 <translation id="7553242001898162573">Внесете ја вашата лозинка</translation>
@@ -10325,6 +10326,7 @@
 <translation id="8330617762701840933">Списокот на веб-сајтови кои пренасочуваат кон алтернативен прелистувач.</translation>
 <translation id="8330689128072902965">Контактите во близина може да споделуваат со вас. Кликнете за промена.</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{Поддржан тип датотека: <ph name="FILE_TYPE1" />}=2{Поддржани типови датотеки: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />}=3{Поддржани типови датотеки: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />}=4{Поддржани типови датотеки: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" />}one{Поддржани типови датотеки: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />и уште {OVERFLOW_COUNT}<ph name="END_LINK" />)}other{Поддржани типови датотеки: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />и уште {OVERFLOW_COUNT}<ph name="END_LINK" />)}}</translation>
+<translation id="8331578454993293727">Вашата лозинка е најдена при упад во податоци</translation>
 <translation id="8331822764922665615">Именувајте ја групата, изберете ја бојата, а потоа притиснете Esc</translation>
 <translation id="833256022891467078">Споделени папки на Crostini</translation>
 <translation id="833262891116910667">Нагласување</translation>
@@ -10406,6 +10408,7 @@
     <ph name="BEGIN_PARAGRAPH2" />Ако ви треба уште помош, одете на: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8383614331548401927">Резиме за добредојде</translation>
 <translation id="8386091599636877289">Правилото не е пронајдено.</translation>
+<translation id="8387087863179559896">Chrome може да ја ажурира вашата сметка за сајтов со силна лозинка. Не треба да ја памтите лозинката бидејќи е зачувана за вас во Google Password Manager за <ph name="EMAIL" />. Повеќе за <ph name="PASSWORD_CHANGE" />.</translation>
 <translation id="8387361103813440603">Не им е дозволено да ја гледаат локацијата</translation>
 <translation id="8387617938027387193">Потврдете дека сте вие</translation>
 <translation id="8388770971141403598">Секундарните профили не се поддржани</translation>
@@ -10904,7 +10907,6 @@
 <translation id="8737966899544698733">Прецизност на локација (само за Android)</translation>
 <translation id="8738418093147087440">Пребарувајте според земји, јазик или имиња на внесени елементи</translation>
 <translation id="8740086188450289493">Употребете ја лозинката за сметката на Google</translation>
-<translation id="874023689350909633">Испробајте</translation>
 <translation id="8740247629089392745">Може да му го предадете овој Chromebook на<ph name="SUPERVISED_USER_NAME" />. Поставувањето речиси е готово, а потоа е време за истражување.</translation>
 <translation id="8740672167979365981">Потребно е ажурирање на ChromeOS Flex</translation>
 <translation id="8741944563400125534">Водич за поставување на „Пристап со прекинувачи“</translation>

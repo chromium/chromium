@@ -2153,7 +2153,6 @@
 <translation id="2471632709106952369">موازنہ کے ٹیبلز</translation>
 <translation id="2473195200299095979">اس صفحہ کا ترجمہ کریں</translation>
 <translation id="2475982808118771221">ایک خرابی پیش آگئی</translation>
-<translation id="247616523300581745">ان فائلوں کو چھپائیں</translation>
 <translation id="2476435723907345463">پاس کیز تک رسائی ہٹا دی گئی</translation>
 <translation id="2476901513051581836">آف لائن اسٹوریج کا سائز معلوم ہونے تک اسٹوریج کو صاف نہیں کیا جا سکتا۔</translation>
 <translation id="2476974672882258506"><ph name="PARALLELS_DESKTOP" /> کو اَن انسٹال کرنے کیلئے ونڈوز شٹ ڈاؤن کریں۔</translation>
@@ -2795,6 +2794,7 @@
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> تعاون یافتہ نہیں ہے۔</translation>
 <translation id="2926708162326352948">تھیم کو اپ لوڈ کردہ تصویر میں اپ ڈیٹ کر دیا گیا</translation>
 <translation id="2927017729816812676">کیش اسٹوریج</translation>
+<translation id="2928030851119977280">‏انتخاب محفوظ ہو گیا۔ جب آپ Google کی دیگر سروسز میں سائن ان کریں گے تو آپ کا انتخاب لاگو ہوگا۔</translation>
 <translation id="2928795416630981206">آپ کے کیمرا کی پوزیشن ٹریک کرنے کی اجازت ہے</translation>
 <translation id="2929345818093040583">{NUM_SITES,plural, =1{‏‫Chrome نے 1 سائٹ سے اجازتیں ہٹا دیں}other{‏‫Chrome نے {NUM_SITES} سائٹس سے اجازتیں ہٹا دیں}}</translation>
 <translation id="2931157624143513983">پرنٹ کرنے لائق جگہ پر فٹ کریں</translation>
@@ -3226,7 +3226,6 @@
 <translation id="3257733480216378006"><ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" /> کو اجازت دیں؟</translation>
 <translation id="325797067711573598">مشتبہ ڈاؤن لوڈ مسدود کر دیا گیا</translation>
 <translation id="3259723213051400722">براہ کرم دوبارہ کوشش کریں۔</translation>
-<translation id="3260199651491738298">آپ کی تنظیم کنٹرول کرتی ہے کہ ان خصوصیات کے ذریعے جمع کردہ ڈیٹا کو کس طرح استعمال کیا جا سکتا ہے۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="3261090393424563833">شرح بڑھائیں</translation>
 <translation id="3261268979727295785">‏بڑی عمر کے بچوں کیلئے، آپ سیٹ اپ مکمل ہونے کے بعد پیرنٹل کنٹرولز شامل کر سکتے ہیں۔ آپ کو Explore ایپ میں پیرنٹل کنٹرولز سے متعلق معلومات ملے گی۔</translation>
 <translation id="3261832505033014216"><ph name="USER_EMAIL" /> کی پاس کی</translation>
@@ -7404,6 +7403,7 @@
 <translation id="6253801023880399036">پاس ورڈز <ph name="GOOGLE_PASSWORD_MANAGER" /> میں محفوظ ہیں۔</translation>
 <translation id="6254503684448816922">کلید سے سمجھوتہ</translation>
 <translation id="6254892857036829079">کامل</translation>
+<translation id="6257131917452817589">خودکار پاس ورڈ کی تبدیلی</translation>
 <translation id="6257602895346497974">مطابقت پذیری آن کریں…</translation>
 <translation id="6257614441619555296"><ph name="KEY" />: <ph name="VALUE" /></translation>
 <translation id="625827534921607067">اس نیٹ ورک کو ترجیح دی جائے گی اگر پہلے سے منسلک یا کنفیگر شدہ ایک سے زیادہ نیٹ ورکس دستیاب ہوں</translation>
@@ -8580,7 +8580,6 @@
 <translation id="7113974454301513811">اب موجودہ ٹیب کو اپنی فہرست میں شامل کریں</translation>
 <translation id="7114054701490058191">پاس ورڈز مماثل نہیں ہیں</translation>
 <translation id="7114648273807173152">‏اپنے Google اکاؤنٹ میں سائن ان کرنے کی خاطر Smart Lock استعمال کرنے کیلئے، ترتیبات &gt; منسلک کردہ آلات &gt; اپنے فون &gt; Smart Lock پر جائیں۔</translation>
-<translation id="7115051913071512405">اسے آزمائیں</translation>
 <translation id="7115361495406486998">کوئی قابل رسائی رابطہ نہیں</translation>
 <translation id="7115731767122970828">ابھی بوسٹ کریں</translation>
 <translation id="7116554090938189816">‏پرنٹر SSL سرٹیفکیٹ کی میعاد ختم ہو گئی ہے۔ پرنٹر ری اسٹارٹ کریں اور دوبارہ کوشش کریں۔</translation>
@@ -9113,6 +9112,7 @@
 <translation id="7502528909759062987"><ph name="DEVICE_NAME" /> پر ٹیب کو کاسٹ کرنا روکیں</translation>
 <translation id="7502804472671406749">مشترکہ ٹیبز کو اسکرول اور زوم کیا جا سکتا ہے</translation>
 <translation id="7503191893372251637">‏Netscape سرٹیفیکیٹ کی قسم</translation>
+<translation id="7503259455663961898">میرے لیے اسے تبدیل کریں</translation>
 <translation id="7503985202154027481">آپ کی سیکیورٹی کلید پر آپ کے اس سائٹ کو ملاحظہ کرنے کا ریکارڈ رکھا جائے گا۔</translation>
 <translation id="7504145862399276792">اس ٹیب کی آڈیو خاموش کی جا رہی ہے</translation>
 <translation id="750509436279396091">ڈاؤن لوڈز کا فولڈر کھولیں</translation>
@@ -9175,6 +9175,7 @@
 <translation id="7551059576287086432"><ph name="FILE_NAME" /> کو ڈاؤن لوڈ کرنا ناکام رہا</translation>
 <translation id="7551643184018910560">شیلف میں پن کریں</translation>
 <translation id="7552191410769096467">ٹیب گروپس کا اشتراک کرنے یا اس میں شامل ہونے کے لیے آپ کو سائن ان کر کے سنک کو آن کرنے کی ضرورت ہے</translation>
+<translation id="7552196109089297786">‏‫Microsoft سے سائن آؤٹ کریں</translation>
 <translation id="7552846755917812628">درج ذیل تجاویز کی کوشش کریں:</translation>
 <translation id="7553012839257224005">‏Linux کنٹینر کو چیک کیا جا رہا ہے</translation>
 <translation id="7553242001898162573">اپنا پاس ورڈ درج کریں</translation>
@@ -10303,6 +10304,7 @@
 <translation id="8330617762701840933">ان ویب سائٹس کی فہرست جو متبادل براؤزر پر ری ڈائریکٹ ہوتی ہیں۔</translation>
 <translation id="8330689128072902965">قریبی رابطے آپ کے ساتھ اشتراک کر سکتے ہیں۔ تبدیل کرنے کے لیے کلک کریں۔</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{تعاون یافتہ فائل کی قسم: <ph name="FILE_TYPE1" />}=2{تعاون یافتہ فائل کی قسمیں: <ph name="FILE_TYPE1" />، <ph name="FILE_TYPE2" />}=3{تعاون یافتہ فائل کی قسمیں: <ph name="FILE_TYPE1" />، <ph name="FILE_TYPE2" />، <ph name="FILE_TYPE3" />}=4{تعاون یافتہ فائل کی قسمیں: <ph name="FILE_TYPE1" />، <ph name="FILE_TYPE2" />، <ph name="FILE_TYPE3" />، <ph name="FILE_TYPE4" />}other{تعاون یافتہ فائل کی قسمیں: <ph name="FILE_TYPE1" />، <ph name="FILE_TYPE2" />، <ph name="FILE_TYPE3" />، <ph name="FILE_TYPE4" /> (<ph name="LINK" />اور {OVERFLOW_COUNT} مزید<ph name="END_LINK" />)}}</translation>
+<translation id="8331578454993293727">آپ کا پاس ورڈ ڈیٹا کی خلاف ورزی میں ملا</translation>
 <translation id="8331822764922665615">‏اپنے گروپ کو نام دیں، ایک رنگ منتخب کریں پھر Esc دبائیں</translation>
 <translation id="833256022891467078">‏Crostini کے اشتراک کردہ فولڈرز</translation>
 <translation id="833262891116910667">ہائی لائٹ کریں</translation>
@@ -10384,6 +10386,7 @@
     <ph name="BEGIN_PARAGRAPH2" />مزید مدد کیلئے، ملاحظہ کریں: g.co/flex/InstallErrors۔<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8383614331548401927">استقبالی خلاصہ</translation>
 <translation id="8386091599636877289">پالیسی نہیں ملی۔</translation>
+<translation id="8387087863179559896">‏‫Chrome ایک مضبوط پاس ورڈ کے ساتھ اس سائٹ کے لیے آپ کے اکاؤنٹ کو اپ ڈیٹ کر سکتا ہے۔ آپ کو پاس ورڈ یاد رکھنے کی ضرورت نہیں ہوگی کیونکہ یہ آپ کی خاطر <ph name="EMAIL" /> کے لیے Google پاس ورڈ مینیجر میں محفوظ ہے۔ <ph name="PASSWORD_CHANGE" /> کے متعلق مزید معلومات۔</translation>
 <translation id="8387361103813440603">آپ کا مقام دیکھنے کی اجازت نہیں ہے</translation>
 <translation id="8387617938027387193">توثیق کریں کہ یہ آپ ہیں</translation>
 <translation id="8388770971141403598">ثانوی پروفائلز تعاون یافتہ نہیں ہیں</translation>
@@ -10882,7 +10885,6 @@
 <translation id="8737966899544698733">‏مقام کی درستگی (صرف Android)</translation>
 <translation id="8738418093147087440">ممالک، زبان یا ان پٹ ناموں کے لحاظ سے تلاش کریں</translation>
 <translation id="8740086188450289493">‏Google اکاؤنٹ کا پاس ورڈ استعمال کریں</translation>
-<translation id="874023689350909633">اسے آزمائیں</translation>
 <translation id="8740247629089392745">‏آپ اس Chromebook کو <ph name="SUPERVISED_USER_NAME" /> کو دے سکتے ہیں۔ سیٹ اپ تقریباً مکمل ہو گیا ہے، اب اسے دریافت کرنے کا وقت ہے۔</translation>
 <translation id="8740672167979365981">‏ChromeOS Flex اپ ڈیٹ درکار ہے</translation>
 <translation id="8741944563400125534">سوئچ رسائی کی سیٹ اپ گائیڈ</translation>

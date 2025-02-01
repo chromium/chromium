@@ -86,6 +86,7 @@ Om du raderar den förlorar alla omedelbart åtkomst till flikgruppen <ph name="
 <translation id="4783638485675352219">Dela titlar och webbadresser till öppna flikar från den här enheten med operativsystemet</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(Recension av <ph name="REVIEWS_COUNT_ONE" />)}other{(Recensioner av <ph name="REVIEWS_COUNT_MANY" />)}}</translation>
 <translation id="4850886885716139402">Visa</translation>
+<translation id="4861953997778766866">Alla kan göra ändringar i dina delade flikgrupper</translation>
 <translation id="4870911314065352661">Vill du stänga alla flikar?</translation>
 <translation id="4871719318659334896">Stäng grupp</translation>
 <translation id="4881695831933465202">Öppna</translation>
@@ -179,6 +180,7 @@ Om du raderar den förlorar alla omedelbart åtkomst till flikgruppen <ph name="
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> flik har lagts till, <ph name="ANY_CLOSED" /> har stängts}other{<ph name="MANY_ADDED" /> flikar har lagts till, <ph name="ANY_CLOSED" /> har stängts}}</translation>
 <translation id="8633025649649592204">Senaste aktiviteterna</translation>
 <translation id="870736955561925754">Vill du stänga fliken och radera gruppen?</translation>
+<translation id="8712637175834984815">Uppfattat</translation>
 <translation id="8714939927607906138">Lägre pris</translation>
 <translation id="8730621377337864115">Klart</translation>
 <translation id="8730999928494395583">Aktivitet på de här inkognitoflikarna tas bort från enheten</translation>

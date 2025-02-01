@@ -385,7 +385,6 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="2781151931089541271">Pozostała sekunda</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Przeglądarka Chrome znalazła ponownie użyte hasło, które możesz ulepszyć}few{Przeglądarka Chrome znalazła # ponownie użyte hasła, które możesz ulepszyć}many{Przeglądarka Chrome znalazła # ponownie użytych haseł, które możesz ulepszyć}other{Przeglądarka Chrome znalazła # ponownie użytego hasła, które możesz ulepszyć}}</translation>
-<translation id="2796651346651857052">Aby zmienić pozycję paska adresu, naciśnij go i przytrzymaj.</translation>
 <translation id="2800066122460699237">Zostanie zamknięta karta <ph name="TAB_TITLE" /></translation>
 <translation id="2805756323405976993">Aplikacje</translation>
 <translation id="281504910091592009">Zapisane hasła znajdziesz na swoim <ph name="BEGIN_LINK" />koncie Google<ph name="END_LINK" /></translation>

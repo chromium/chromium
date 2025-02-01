@@ -2152,7 +2152,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2471632709106952369">Tabele de comparație</translation>
 <translation id="2473195200299095979">Traduceți această pagină</translation>
 <translation id="2475982808118771221">A apărut o eroare</translation>
-<translation id="247616523300581745">Ascunde aceste fișiere</translation>
 <translation id="2476435723907345463">Accesul la cheile de acces a fost eliminat</translation>
 <translation id="2476901513051581836">Nu poți elibera spațiu de stocare înainte să cunoști dimensiunea spațiului stocare offline.</translation>
 <translation id="2476974672882258506">Închide Windows pentru a dezinstala <ph name="PARALLELS_DESKTOP" />.</translation>
@@ -3227,7 +3226,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3257733480216378006">Permiți <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" />?</translation>
 <translation id="325797067711573598">Descărcarea a fost blocată deoarece este suspectă</translation>
 <translation id="3259723213051400722">Încearcă din nou.</translation>
-<translation id="3260199651491738298">Organizația ta stabilește modul în care pot fi folosite datele colectate de aceste funcții. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="3261090393424563833">Mărește rata</translation>
 <translation id="3261268979727295785">În cazul copiilor mai mari, poți adăuga opțiuni de control parental după ce finalizezi configurarea. Vei găsi informații despre controlul parental în aplicația Explorare.</translation>
 <translation id="3261832505033014216">Cheia de acces pentru <ph name="USER_EMAIL" /></translation>
@@ -8586,7 +8584,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7113974454301513811">Acum adaugă fila actuală în listă</translation>
 <translation id="7114054701490058191">Parolele nu corespund</translation>
 <translation id="7114648273807173152">Pentru a folosi Smart Lock ca să te conectezi la Contul Google, accesează Setări &gt; Dispozitive conectate &gt; Telefon &gt; Smart Lock.</translation>
-<translation id="7115051913071512405">Încercați</translation>
 <translation id="7115361495406486998">Nu sunt disponibile persoane de contact</translation>
 <translation id="7115731767122970828">Accelerează acum</translation>
 <translation id="7116554090938189816">Certificatul SSL al imprimantei a expirat. Repornește imprimanta și încearcă din nou.</translation>
@@ -10893,7 +10890,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8737966899544698733">Precizia locației (numai pentru Android)</translation>
 <translation id="8738418093147087440">Caută după țară, limbă sau numele metodei de introducere a textului</translation>
 <translation id="8740086188450289493">Folosește parola Contului Google</translation>
-<translation id="874023689350909633">Încearcă</translation>
 <translation id="8740247629089392745">Poți să îi dai Chromebookul utilizatorului <ph name="SUPERVISED_USER_NAME" />. Configurarea este aproape gata, apoi conținutul va putea fi explorat.</translation>
 <translation id="8740672167979365981">Este necesară actualizarea sistemului de operare Chrome Flex</translation>
 <translation id="8741944563400125534">Ghid de configurare pentru acces prin comutare</translation>

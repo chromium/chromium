@@ -2407,6 +2407,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5254043433801397071">Optimera utskriftsinnehåll</translation>
 <translation id="5255583962255635076">Webbläsarpolicyer som har tillämpats i jobbprofilen</translation>
 <translation id="5255690596502591079">Ta bild/spela in ändå</translation>
+<translation id="5255771248404149177">Kortutgivaren vill verifiera din identitet</translation>
 <translation id="5255833070095767006">350 x 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{Enligt administratörspolicyn är det inte rekommenderat att kopiera den här filen till <ph name="DESTINATION_NAME" />}other{Enligt administratörspolicyn är det inte rekommenderat att kopiera dessa filer till <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5263867360296733198">Granskning krävs innan du laddar upp</translation>
@@ -2554,6 +2555,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5518352028556756716">De flesta webbplatser kan inte använda tredjepartscookies för att spåra dig när du surfar, och webbplatser kan inte använda tredjepartscookies i inkognitoläge.</translation>
 <translation id="5519516356611866228">Med dina ändringar</translation>
 <translation id="5519696598216267194">Papper (perforerat)</translation>
+<translation id="5520105693415771152">Saknar du aktuella uppgifter? Kontakta utgivaren för att uppdatera dem.</translation>
 <translation id="5521782189689806907">Skåp</translation>
 <translation id="5523118979700054094">Policynamn</translation>
 <translation id="5523588073846127669">Säljaren accepterar inte det här virtuella kortet</translation>

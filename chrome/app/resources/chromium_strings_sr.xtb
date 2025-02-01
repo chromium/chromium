@@ -504,7 +504,6 @@ Chromium не може да врати подешавања.</translation>
 <translation id="7872446069773932638">Преузима се... Још <ph name="SECONDS" /> сек</translation>
 <translation id="7888981273428720788">Подесите Chromium као подразумевани прегледач</translation>
 <translation id="7934340546140346950">Chromium аутоматски надограђује небезбедне везе на HTTPS када је то могуће</translation>
-<translation id="7935734571048689933">Chromium-ом се управља</translation>
 <translation id="7937630085815544518">Били сте пријављени на Chromium као <ph name="USER_EMAIL_ADDRESS" />. Користите исти налог да бисте се поново пријавили.</translation>
 <translation id="7975919845073681630">Ово је секундарна инсталација Chromium-а па не можете да га подесите као подразумевани прегледач.</translation>
 <translation id="7997934263947464652">Додаци, апликације и теме из непознатих извора могу да нашкоде уређају. Chromium препоручује да их инсталирате само из: <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>

@@ -86,6 +86,7 @@ Se o eliminas, todas as persoas perderán inmediatamente o acceso ao grupo de pe
 <translation id="4783638485675352219">Comparte os títulos e URL das pestanas abertas deste dispositivo co sistema operativo</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> recensión)}other{(<ph name="REVIEWS_COUNT_MANY" /> recensións)}}</translation>
 <translation id="4850886885716139402">Vista</translation>
+<translation id="4861953997778766866">Todos os membros do grupo poden facer cambios nos grupos de pestanas compartidos</translation>
 <translation id="4870911314065352661">Queres pechar todas as pestanas?</translation>
 <translation id="4871719318659334896">Pechar grupo</translation>
 <translation id="4881695831933465202">Abrir</translation>
@@ -179,6 +180,7 @@ Se o eliminas, todas as persoas perderán inmediatamente o acceso ao grupo de pe
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> pestana engadida. Pestanas pechadas: <ph name="ANY_CLOSED" />}other{<ph name="MANY_ADDED" /> pestanas engadidas. Pestanas pechadas: <ph name="ANY_CLOSED" />}}</translation>
 <translation id="8633025649649592204">Actividade recente</translation>
 <translation id="870736955561925754">Queres pechar a pestana e eliminar o grupo?</translation>
+<translation id="8712637175834984815">De acordo</translation>
 <translation id="8714939927607906138">Prezo máis baixo</translation>
 <translation id="8730621377337864115">Feito</translation>
 <translation id="8730999928494395583">A túa actividade nestas pestanas do modo de incógnito quitarase deste dispositivo</translation>

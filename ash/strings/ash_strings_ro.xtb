@@ -178,7 +178,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1550523713251050646">Dă clic pentru mai multe opțiuni</translation>
 <translation id="1555130319947370107">Albastru</translation>
 <translation id="1557622599341396706">Afișează numele desktopului</translation>
-<translation id="1567138500090284106">Butonul pentru butoanele mouse-ului</translation>
 <translation id="1569384531973824928">Astfel, se permite accesul pentru toate aplicațiile și site-urile cu permisiuni pentru camera foto și microfon. Poate fi necesar să actualizezi pagina web sau să repornești aplicația.</translation>
 <translation id="1571697193564730395">Activează / dezactivează funcția Nu deranja. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Micșorează când este activată lupa</translation>
@@ -731,6 +730,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3522979239100719575">Se caută profiluri disponibile. Procesul poate dura câteva minute.</translation>
 <translation id="3526440770046466733">Deschide linkul într-o filă nouă și rămâi în fila actuală</translation>
 <translation id="353086728817903341">S-a conectat la <ph name="NUM_DEVICES" /> dispozitive</translation>
+<translation id="3532247131850366052">Nu s-a putut crea Foaia de calcul Google</translation>
 <translation id="3533126039236445965">Aplicații pe raft</translation>
 <translation id="3539957339480430241">Hotspot <ph name="DEVICE_NAME" /></translation>
 <translation id="3540893133818942399">Renunță la configurarea afișării fotografiilor și a elementelor media recente ale telefonului</translation>
@@ -829,6 +829,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="380165613292957338">Bună ziua, cu ce vă pot ajuta?</translation>
 <translation id="3804737937830804242">Restrânge camera</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{Un emoji. Nu există alte rezultate.}few{# emojiuri. Nu există alte rezultate.}other{# de emojiuri. Nu există alte rezultate.}}</translation>
+<translation id="3822403841174077928">Nu s-a putut copia cu formatare</translation>
 <translation id="3824784079442479685">Astfel, se permite accesul la cameră pentru <ph name="APP_NAME" /> și pentru toate aplicațiile și site-urile care au permisiunea adecvată Poate fi necesar să actualizezi pagina web sau să repornești aplicația.</translation>
 <translation id="3826099427150913765">Comută la parolă</translation>
 <translation id="383058930331066723">Modul Economisirea bateriei este activat</translation>
@@ -1215,6 +1216,7 @@ Un dispozitiv conectat.</translation>
 <translation id="5043679421800073804">Dă clic pe sau atinge ultima pictogramă de pe raft</translation>
 <translation id="504465286040788597">Paragraful anterior</translation>
 <translation id="5045550434625856497">Parolă incorectă</translation>
+<translation id="5058794129231928255">Nu s-a putut crea documentul Google</translation>
 <translation id="5062496344832867502">memorie ram</translation>
 <translation id="5068762093486106012">Vei primi o notificare dacă vorbești cu sunetul dezactivat. Conținutul audio nu părăsește niciodată dispozitivul.</translation>
 <translation id="5077416371682039027">Configurează afișarea fotografiilor, a elementelor media, a notificărilor și a aplicațiilor recente ale telefonului</translation>
@@ -1647,6 +1649,7 @@ Niciun dispozitiv conectat.</translation>
 <translation id="6468406072297048412">{0,plural, =1{Treci la versiunea anterioară a dispozitivului în cel mult un minut}few{Treci la versiunea anterioară a dispozitivului în cel mult # minute}other{Treci la versiunea anterioară a dispozitivului în cel mult # de minute}}</translation>
 <translation id="6469104339369989396">Comută hotspotul</translation>
 <translation id="6477681113376365978">Nu s-a putut descărca fișierul</translation>
+<translation id="648135757200234041">Persoana de contact nu a putut fi creată</translation>
 <translation id="6482559668224714696">Lupă de ecran complet</translation>
 <translation id="6485086611007560630">Vreme (indisponibilă)</translation>
 <translation id="6490471652906364588">Dispozitiv USB-C (portul din dreapta)</translation>
@@ -2287,6 +2290,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="8653151467777939995">Afișează setările pentru notificări. Notificările sunt activate</translation>
 <translation id="8657066291275741003">minuscule</translation>
 <translation id="8660331759611631213">Rădăcina pătrată a numărului 71</translation>
+<translation id="8662921061190671299">Nu s-a putut adăuga în Calendar</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Apasă pe Enter pentru a realiza o captură de ecran parțială</translation>
 <translation id="8676770494376880701">A fost conectat un încărcător de putere joasă</translation>

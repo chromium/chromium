@@ -2165,7 +2165,6 @@
 <translation id="2471632709106952369">ਤੁਲਨਾ ਸਾਰਨੀਆਂ</translation>
 <translation id="2473195200299095979">ਇਸ ਸਫ਼ੇ ਦਾ ਅਨੁਵਾਦ ਕਰੋ</translation>
 <translation id="2475982808118771221">ਇੱਕ ਗੜਬੜ ਹੋਈ</translation>
-<translation id="247616523300581745">ਇਨ੍ਹਾਂ ਫ਼ਾਈਲਾਂ ਨੂੰ ਲੁਕਾਓ</translation>
 <translation id="2476435723907345463">ਪਾਸਕੀਆਂ ਤੱਕ ਪਹੁੰਚ ਨੂੰ ਹਟਾਇਆ ਗਿਆ</translation>
 <translation id="2476901513051581836">ਜਦੋਂ ਤੱਕ ਆਫ਼ਲਾਈਨ ਸਟੋਰੇਜ ਦੇ ਆਕਾਰ ਬਾਰੇ ਪਤਾ ਨਹੀਂ ਲੱਗਦਾ, ਸਟੋਰੇਜ ਨੂੰ ਖਾਲੀ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ।</translation>
 <translation id="2476974672882258506"><ph name="PARALLELS_DESKTOP" /> ਨੂੰ ਅਣਸਥਾਪਤ ਕਰਨ ਲਈ Windows ਨੂੰ ਬੰਦ ਕਰੋ।</translation>
@@ -2808,6 +2807,7 @@
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ।</translation>
 <translation id="2926708162326352948">ਅੱਪਲੋਡ ਕੀਤੇ ਚਿੱਤਰ 'ਤੇ ਥੀਮ ਅੱਪਡੇਟ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="2927017729816812676">ਕੈਸ਼ੇ ਸਟੋਰੇਜ</translation>
+<translation id="2928030851119977280">ਚੋਣ ਨੂੰ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ। ਹੋਰ Google ਸੇਵਾਵਾਂ ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰਨ 'ਤੇ, ਤੁਹਾਡੀ ਚੋਣ ਲਾਗੂ ਹੋਵੇਗੀ।</translation>
 <translation id="2928795416630981206">ਤੁਹਾਡੇ ਕੈਮਰੇ ਦੀ ਸਥਿਤੀ ਨੂੰ ਟਰੈਕ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਹੈ</translation>
 <translation id="2929345818093040583">{NUM_SITES,plural, =1{Chrome ਨੇ 1 ਸਾਈਟ ਤੋਂ ਇਜਾਜ਼ਤਾਂ ਨੂੰ ਹਟਾ ਦਿੱਤਾ ਹੈ}one{Chrome ਨੇ {NUM_SITES} ਸਾਈਟ ਤੋਂ ਇਜਾਜ਼ਤਾਂ ਨੂੰ ਹਟਾ ਦਿੱਤਾ ਹੈ}other{Chrome ਨੇ {NUM_SITES} ਸਾਈਟਾਂ ਤੋਂ ਇਜਾਜ਼ਤਾਂ ਨੂੰ ਹਟਾ ਦਿੱਤਾ ਹੈ}}</translation>
 <translation id="2931157624143513983">ਪ੍ਰਿੰਟ ਕਰਨ ਯੋਗ ਖੇਤਰ ਵਿੱਚ ਫਿੱਟ ਕਰੋ</translation>
@@ -3241,7 +3241,6 @@
 <translation id="3257733480216378006">ਕੀ <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" /> ਨੂੰ ਆਗਿਆ ਦੇਣੀ ਹੈ?</translation>
 <translation id="325797067711573598">ਸ਼ੱਕੀ ਡਾਊਨਲੋਡ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="3259723213051400722">ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
-<translation id="3260199651491738298">ਤੁਹਾਡੀ ਸੰਸਥਾ ਇਹ ਕੰਟਰੋਲ ਕਰਦੀ ਹੈ ਕਿ ਇਨ੍ਹਾਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਵੱਲੋਂ ਇਕੱਤਰ ਕੀਤੇ ਡਾਟੇ ਦੀ ਵਰਤੋਂ ਕਿਵੇਂ ਕੀਤੀ ਜਾ ਸਕਦੀ ਹੈ। <ph name="BEGIN_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK" /></translation>
 <translation id="3261090393424563833">ਸੈਂਪਲ ਰੇਟ ਵਧਾਓ</translation>
 <translation id="3261268979727295785">ਵੱਡੇ ਬੱਚਿਆਂ ਲਈ, ਇੱਕ ਵਾਰ ਸੈੱਟਅੱਪ ਪੂਰਾ ਕਰਨ ਤੋਂ ਬਾਅਦ ਤੁਸੀਂ ਮਾਪਿਆਂ ਦੇ ਕੰਟਰੋਲ ਸ਼ਾਮਲ ਕਰ ਸਕਦੇ ਹੋ। ਤੁਸੀਂ Explore ਐਪ ਵਿੱਚ ਮਾਪਿਆਂ ਦੇ ਕੰਟਰੋਲ ਬਾਰੇ ਜਾਣਕਾਰੀ ਲੱਭ ਸਕਦੇ ਹੋ।</translation>
 <translation id="3261832505033014216"><ph name="USER_EMAIL" /> ਲਈ ਪਾਸਕੀ</translation>
@@ -7421,6 +7420,7 @@
 <translation id="6253801023880399036">ਪਾਸਵਰਡਾਂ ਨੂੰ <ph name="GOOGLE_PASSWORD_MANAGER" /> ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="6254503684448816922">ਕੁੰਜੀ ਸਮਝੌਤਾ</translation>
 <translation id="6254892857036829079">ਬਿਲਕੁਲ ਸਹੀ ਚੱਲਣਾ</translation>
+<translation id="6257131917452817589">ਸਵੈਚਲਿਤ ਪਾਸਵਰਡ ਤਬਦੀਲੀ</translation>
 <translation id="6257602895346497974">ਸਿੰਕ ਚਾਲੂ ਕਰੋ...</translation>
 <translation id="6257614441619555296"><ph name="KEY" />: <ph name="VALUE" /></translation>
 <translation id="625827534921607067">ਇਸ ਨੈੱਟਵਰਕ ਨੂੰ ਤਰਜੀਹ ਦਿੱਤੀ ਜਾਵੇਗੀ ਜੇ ਇੱਕ ਤੋਂ ਵੱਧ ਪਿਛਲਾ ਕਨੈਕਟ ਕੀਤਾ ਜਾਂ ਸੰਰੂਪਣ ਕੀਤਾ ਨੈੱਟਵਰਕ ਉਪਲਬਧ ਹੁੰਦਾ ਹੈ</translation>
@@ -8600,7 +8600,6 @@
 <translation id="7113974454301513811">ਹੁਣ ਆਪਣੀ ਸੂਚੀ ਵਿੱਚ ਮੋਜੂਦਾ ਟੈਬ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="7114054701490058191">ਪਾਸਵਰਡ ਮੇਲ ਨਹੀਂ ਖਾਂਦੇ</translation>
 <translation id="7114648273807173152">ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰਨ ਵਾਸਤੇ ਸਮਾਰਟ ਲਾਕ ਦੀ ਵਰਤੋਂ ਕਰਨ ਲਈ, ਸੈਟਿੰਗਾਂ &gt; ਕਨੈਕਟ ਕੀਤੇ ਡੀਵਾਈਸ &gt; ਤੁਹਾਡਾ ਫ਼ੋਨ &gt; ਸਮਾਰਟ ਲਾਕ 'ਤੇ ਜਾਓ।</translation>
-<translation id="7115051913071512405">ਇਸਨੂੰ ਅਜ਼ਮਾਓ</translation>
 <translation id="7115361495406486998">ਕੋਈ ਸੰਪਰਕ ਪਹੁੰਚਯੋਗ ਨਹੀਂ ਹੈ</translation>
 <translation id="7115731767122970828">ਹੁਣੇ ਬੂਸਟ ਕਰੋ</translation>
 <translation id="7116554090938189816">ਪ੍ਰਿੰਟਰ SSL ਪ੍ਰਮਾਣ-ਪੱਤਰ ਦੀ ਮਿਆਦ ਸਮਾਪਤ ਹੋ ਗਈ ਹੈ। ਪ੍ਰਿੰਟਰ ਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰ ਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
@@ -9133,6 +9132,7 @@
 <translation id="7502528909759062987"><ph name="DEVICE_NAME" /> 'ਤੇ ਟੈਬ ਨੂੰ ਕਾਸਟ ਕਰਨ ਤੋਂ ਰੋਕੋ</translation>
 <translation id="7502804472671406749">ਸਾਂਝੀਆਂ ਕੀਤੀਆਂ ਟੈਬਾਂ ਨੂੰ ਸਕ੍ਰੋਲ ਅਤੇ ਜ਼ੂਮ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ</translation>
 <translation id="7503191893372251637">Netscape ਪ੍ਰਮਾਣ-ਪੱਤਰ ਪ੍ਰਕਾਰ</translation>
+<translation id="7503259455663961898">ਮੇਰੇ ਲਈ ਇਸ ਨੂੰ ਬਦਲੋ</translation>
 <translation id="7503985202154027481">ਇਸ ਸਾਈਟ 'ਤੇ ਤੁਹਾਡੇ ਜਾਣ ਦਾ ਰਿਕਾਰਡ ਤੁਹਾਡੀ ਸੁਰੱਖਿਆ ਕੁੰਜੀ ਵਿੱਚ ਰੱਖਿਆ ਜਾਵੇਗਾ।</translation>
 <translation id="7504145862399276792">ਇਸ ਟੈਬ ਦੀ ਆਡੀਓ ਨੂੰ ਮਿਊਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="750509436279396091">ਡਾਊਨਲੋਡਸ ਫੋਲਡਰ ਖੋਲ੍ਹੋ</translation>
@@ -9195,6 +9195,7 @@
 <translation id="7551059576287086432"><ph name="FILE_NAME" /> ਡਾਊਨਲੋਡ ਅਸਫਲ</translation>
 <translation id="7551643184018910560">ਸ਼ੈਲਫ ਤੇ ਪਿਨ ਕਰੋ</translation>
 <translation id="7552191410769096467">ਟੈਬ ਗਰੁੱਪਾਂ ਨੂੰ ਸਾਂਝਾ ਕਰਨ ਜਾਂ ਉਨ੍ਹਾਂ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋਣ ਲਈ, ਤੁਹਾਨੂੰ ਸਾਈਨ-ਇਨ ਕਰਨ ਅਤੇ ਸਿੰਕ ਨੂੰ ਚਾਲੂ ਕਰਨ ਦੀ ਲੋੜ ਹੈ</translation>
+<translation id="7552196109089297786">Microsoft ਤੋਂ ਸਾਈਨ-ਆਊਟ ਕਰੋ</translation>
 <translation id="7552846755917812628">ਅੱਗੇ ਦਿੱਤੇ ਨੁਕਤਿਆਂ ਨੂੰ ਅਜ਼ਮਾਓ:</translation>
 <translation id="7553012839257224005">Linux ਕੰਟੇਨਰ ਦੀ ਜਾਂਚ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
 <translation id="7553242001898162573">ਆਪਣਾ ਪਾਸਵਰਡ ਦਰਜ ਕਰੋ</translation>
@@ -10322,6 +10323,7 @@
 <translation id="8330617762701840933">ਉਨ੍ਹਾਂ ਵੈੱਬਸਾਈਟਾਂ ਦੀ ਸੂਚੀ ਜੋ ਵਿਕਲਪਿਕ ਬ੍ਰਾਊਜ਼ਰ 'ਤੇ ਰੀਡਾਇਰੈਕਟ ਹੁੰਦੀਆਂ ਹਨ।</translation>
 <translation id="8330689128072902965">ਨਜ਼ਦੀਕੀ ਸੰਪਰਕ ਤੁਹਾਡੇ ਨਾਲ ਸਾਂਝਾ ਕਰ ਸਕਦੇ ਹਨ। ਬਦਲਣ ਲਈ ਕਲਿੱਕ ਕਰੋ।</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{ਸਮਰਥਿਤ ਫ਼ਾਈਲ ਦੀ ਕਿਸਮ: <ph name="FILE_TYPE1" />}=2{ਸਮਰਥਿਤ ਫ਼ਾਈਲ ਦੀਆਂ ਕਿਸਮਾਂ: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />}=3{ਸਮਰਥਿਤ ਫ਼ਾਈਲ ਦੀਆਂ ਕਿਸਮਾਂ: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />}=4{ਸਮਰਥਿਤ ਫ਼ਾਈਲ ਦੀਆਂ ਕਿਸਮਾਂ: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" />}one{ਸਮਰਥਿਤ ਫ਼ਾਈਲ ਦੀ ਕਿਸਮ: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />ਅਤੇ {OVERFLOW_COUNT} ਹੋਰ<ph name="END_LINK" />)}other{ਸਮਰਥਿਤ ਫ਼ਾਈਲ ਦੀਆਂ ਕਿਸਮਾਂ: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />ਅਤੇ {OVERFLOW_COUNT} ਹੋਰ<ph name="END_LINK" />)}}</translation>
+<translation id="8331578454993293727">ਤੁਹਾਡਾ ਪਾਸਵਰਡ ਕਿਸੇ ਡਾਟਾ ਉਲੰਘਣਾ ਵਿੱਚ ਮਿਲਿਆ ਸੀ</translation>
 <translation id="8331822764922665615">ਆਪਣੇ ਗਰੁੱਪ ਦਾ ਨਾਮ ਰੱਖੋ, ਕੋਈ ਰੰਗ ਚੁਣੋ, ਫਿਰ Esc ਦਬਾਓ</translation>
 <translation id="833256022891467078">Crostini ਸਾਂਝੇ ਕੀਤੇ ਫੋਲਡਰ</translation>
 <translation id="833262891116910667">ਉਜਾਗਰ ਕਰੋ</translation>
@@ -10403,6 +10405,7 @@
     <ph name="BEGIN_PARAGRAPH2" />ਹੋਰ ਮਦਦ ਲਈ, ਇਸ 'ਤੇ ਜਾਓ: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8383614331548401927">Recap ਵਿੱਚ ਜੀ ਆਇਆਂ ਨੂੰ</translation>
 <translation id="8386091599636877289">ਨੀਤੀ ਨਹੀਂ ਮਿਲੀ।</translation>
+<translation id="8387087863179559896">Chrome ਇਸ ਸਾਈਟ ਲਈ ਤੁਹਾਡੇ ਖਾਤੇ ਨੂੰ ਮਜ਼ਬੂਤ ਪਾਸਵਰਡ ਨਾਲ ਅੱਪਡੇਟ ਕਰ ਸਕਦਾ ਹੈ। ਤੁਹਾਨੂੰ ਪਾਸਵਰਡ ਯਾਦ ਰੱਖਣ ਦੀ ਲੋੜ ਨਹੀਂ ਪਵੇਗੀ ਕਿਉਂਕਿ ਇਹ ਤੁਹਾਡੇ ਲਈ <ph name="EMAIL" /> ਦੇ Google Password Manager ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ। <ph name="PASSWORD_CHANGE" /> ਬਾਰੇ ਹੋਰ।</translation>
 <translation id="8387361103813440603">ਤੁਹਾਡੇ ਟਿਕਾਣੇ ਨੂੰ ਦੇਖਣ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ</translation>
 <translation id="8387617938027387193">ਆਪਣੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
 <translation id="8388770971141403598">ਸੈਕੰਡਰੀ ਪ੍ਰੋਫਾਈਲਾਂ ਸਮਰਥਿਤ ਨਹੀਂ ਹਨ</translation>
@@ -10901,7 +10904,6 @@
 <translation id="8737966899544698733">ਟਿਕਾਣਾ ਸਟੀਕਤਾ (ਸਿਰਫ਼ Android)</translation>
 <translation id="8738418093147087440">ਦੇਸ਼ਾਂ, ਭਾਸ਼ਾਵਾਂ ਜਾਂ ਇਨਪੁੱਟ ਨਾਮਾਂ ਰਾਹੀਂ ਖੋਜੋ</translation>
 <translation id="8740086188450289493">Google ਖਾਤੇ ਦੇ ਪਾਸਵਰਡ ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
-<translation id="874023689350909633">ਇਸਨੂੰ ਅਜ਼ਮਾਓ</translation>
 <translation id="8740247629089392745">ਤੁਸੀਂ ਇਹ Chromebook <ph name="SUPERVISED_USER_NAME" /> ਨੂੰ ਦੇ ਸਕਦੇ ਹੋ। ਸੈੱਟਅੱਪ ਲਗਭਗ ਹੋ ਗਿਆ ਹੈ, ਉਸ ਤੋਂ ਬਾਅਦ ਪੜਚੋਲ ਕਰਨ ਦਾ ਸਮਾਂ ਹੈ।</translation>
 <translation id="8740672167979365981">ChromeOS Flex ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="8741944563400125534">ਸਵਿੱਚ ਪਹੁੰਚ ਲਈ ਸੈੱਟਅੱਪ ਗਾਈਡ</translation>

@@ -178,7 +178,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1550523713251050646">Cliquez pour afficher plus d'options</translation>
 <translation id="1555130319947370107">Bleu</translation>
 <translation id="1557622599341396706">Afficher le nom du bureau</translation>
-<translation id="1567138500090284106">Bouton des touches de la souris</translation>
 <translation id="1569384531973824928">Cela autorise l'accès pour toutes les applications et tous les sites Web disposant des autorisations d'accès à l'appareil photo et au microphone. Vous devrez peut-être actualiser la page Web ou redémarrer l'application.</translation>
 <translation id="1571697193564730395">Basculer le mode Ne pas déranger. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Dézoomer lorsque la loupe est activée</translation>
@@ -731,6 +730,7 @@ Sinon, le pavé tactile intégré sera réactivé dans <ph name="TIMEOUT_SECONDS
 <translation id="3522979239100719575">Recherche des profils accessibles en cours… Cette opération peut prendre quelques minutes.</translation>
 <translation id="3526440770046466733">Ouvrir le lien dans un nouvel onglet et demeurer dans l'onglet actuel</translation>
 <translation id="353086728817903341">Connecté à <ph name="NUM_DEVICES" /> appareils</translation>
+<translation id="3532247131850366052">Impossible de créer une feuille de calcul Google</translation>
 <translation id="3533126039236445965">Applications dans l'étagère</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> point d'accès sans fil</translation>
 <translation id="3540893133818942399">Ignorez la configuration de l'affichage des photos et du contenu multimédia récents de votre téléphone</translation>
@@ -829,6 +829,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="380165613292957338">Bonjour, comment puis-je vous aider?</translation>
 <translation id="3804737937830804242">Réduire le bouton caméra</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 émoji. Aucun autre résultat.}one{# émoji. Aucun autre résultat.}other{# émojis. Aucun autre résultat.}}</translation>
+<translation id="3822403841174077928">Impossible de copier le texte avec le formatage</translation>
 <translation id="3824784079442479685">Cela autorise l'accès à l'appareil photo pour <ph name="APP_NAME" /> et pour toutes les applications et tous les sites Web disposant de l'autorisation d'accès à l'appareil photo. Vous devrez peut-être actualiser la page Web ou redémarrer l'application.</translation>
 <translation id="3826099427150913765">Passer au mot de passe</translation>
 <translation id="383058930331066723">Le mode Économiseur de pile est activé</translation>
@@ -1214,6 +1215,7 @@ Un appareil connecté.</translation>
 <translation id="5043679421800073804">Cliquer sur la dernière icône sur l'étagère ou la toucher</translation>
 <translation id="504465286040788597">Paragraphe précédent</translation>
 <translation id="5045550434625856497">Mot de passe incorrect</translation>
+<translation id="5058794129231928255">Impossible de créer un document Google</translation>
 <translation id="5062496344832867502">mémoire vive</translation>
 <translation id="5068762093486106012">Vous serez averti si vous parlez en sourdine. Les données audio ne quittent jamais votre appareil.</translation>
 <translation id="5077416371682039027">Configurer l'affichage des photos, des notifications, des applications et du contenu multimédia récents de votre téléphone</translation>
@@ -1646,6 +1648,7 @@ Aucun appareil n'est connecté.</translation>
 <translation id="6468406072297048412">{0,plural, =1{Mettez à jour l'appareil vers la version précédente dans un délai d'une minute}one{Mettez à jour l'appareil vers la version précédente dans un délai de # minute}other{Mettez à jour l'appareil vers la version précédente dans un délai de # minutes}}</translation>
 <translation id="6469104339369989396">Basculer le point d'accès</translation>
 <translation id="6477681113376365978">Impossible de télécharger le fichier</translation>
+<translation id="648135757200234041">Impossible de créer le contact</translation>
 <translation id="6482559668224714696">Loupe en mode plein écran</translation>
 <translation id="6485086611007560630">Météo (non accessible)</translation>
 <translation id="6490471652906364588">Appareil USB-C (port de droite)</translation>
@@ -2286,6 +2289,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="8653151467777939995">Afficher les paramètres de notification. Les notifications sont activées</translation>
 <translation id="8657066291275741003">minuscules</translation>
 <translation id="8660331759611631213">Racine carrée de 71</translation>
+<translation id="8662921061190671299">Impossible d'ajouter l'événement à l'Agenda</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Appuyez sur Entrée pour effectuer une capture d'écran partielle</translation>
 <translation id="8676770494376880701">Chargeur de faible puissance connecté</translation>

@@ -385,7 +385,6 @@
 <translation id="2781151931089541271">เหลือ 1 วิ</translation>
 <translation id="2789486458103222910">ตกลง</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome พบรหัสผ่านที่ใช้ซ้ำซึ่งคุณควรเปลี่ยนให้ดีขึ้น}other{Chrome พบรหัสผ่านที่ใช้ซ้ำ # รายการซึ่งคุณควรเปลี่ยนให้ดีขึ้น}}</translation>
-<translation id="2796651346651857052">แตะแถบที่อยู่ค้างไว้เพื่อเปลี่ยนตำแหน่ง</translation>
 <translation id="2800066122460699237">ระบบจะปิดแท็บ <ph name="TAB_TITLE" /></translation>
 <translation id="2805756323405976993">แอป</translation>
 <translation id="281504910091592009">ดูและจัดการรหัสผ่านที่บันทึกไว้ใน<ph name="BEGIN_LINK" />บัญชี Google<ph name="END_LINK" /></translation>

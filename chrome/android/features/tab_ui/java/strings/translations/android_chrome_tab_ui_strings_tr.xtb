@@ -86,6 +86,7 @@ Grubu silerseniz herkes "<ph name="TITLE_OF_GROUP" />" sekme grubuna erişimini 
 <translation id="4783638485675352219">Bu cihazdaki açık sekmelerin başlıklarını ve URL'lerini işletim sistemiyle paylaş</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> yorum)}other{(<ph name="REVIEWS_COUNT_MANY" /> yorum)}}</translation>
 <translation id="4850886885716139402">Görüntüle</translation>
+<translation id="4861953997778766866">Herkes, paylaşılan sekme gruplarınızda değişiklik yapabilir</translation>
 <translation id="4870911314065352661">Tüm sekmeler kapatılsın mı?</translation>
 <translation id="4871719318659334896">Grubu kapat</translation>
 <translation id="4881695831933465202">Aç</translation>
@@ -179,6 +180,7 @@ Grubu silerseniz herkes "<ph name="TITLE_OF_GROUP" />" sekme grubuna erişimini 
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> sekme eklendi, <ph name="ANY_CLOSED" /> sekme kapatıldı}other{<ph name="MANY_ADDED" /> sekme eklendi, <ph name="ANY_CLOSED" /> sekme kapatıldı}}</translation>
 <translation id="8633025649649592204">Son işlem</translation>
 <translation id="870736955561925754">Sekme kapatılıp grup silinsin mi?</translation>
+<translation id="8712637175834984815">Anladım</translation>
 <translation id="8714939927607906138">Daha düşük fiyat</translation>
 <translation id="8730621377337864115">Bitti</translation>
 <translation id="8730999928494395583">Bu gizli sekmelerdeki etkinliğiniz bu cihazdan silinecektir</translation>

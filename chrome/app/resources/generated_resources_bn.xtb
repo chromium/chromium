@@ -2165,7 +2165,6 @@
 <translation id="2471632709106952369">'তুলনা' করার টেবিল</translation>
 <translation id="2473195200299095979">এই পৃষ্ঠাটি অনুবাদ করুন</translation>
 <translation id="2475982808118771221">একটি ত্রুটি ঘটেছে</translation>
-<translation id="247616523300581745">এইসব ফাইল লুকান</translation>
 <translation id="2476435723907345463">পাসকীয়ের অ্যাক্সেস সরানো হয়েছে</translation>
 <translation id="2476901513051581836">অফলাইন স্টোরেজের সাইজ না জানা পর্যন্ত স্টোরেজ মোছা যাচ্ছে না।</translation>
 <translation id="2476974672882258506"><ph name="PARALLELS_DESKTOP" /> আনইনস্টল করার জন্য Windows বন্ধ করুন।</translation>
@@ -2807,6 +2806,7 @@
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> কাজ করে না।</translation>
 <translation id="2926708162326352948">আপলোড করা ছবিতে থিম আপডেট করা হয়েছে</translation>
 <translation id="2927017729816812676">ক্যাশে সঞ্চয় স্থান</translation>
+<translation id="2928030851119977280">পছন্দ সেভ করা হয়েছে। আপনি অন্য Google পরিষেবায় সাইন করলে আপনার পছন্দ প্রয়োগ করা হবে।</translation>
 <translation id="2928795416630981206">আপনার ক্যামেরার পজিশন ট্র্যাক করার অনুমতি দেওয়া হয়েছে</translation>
 <translation id="2929345818093040583">{NUM_SITES,plural, =1{Chrome ১টি সাইটের জন্য অনুমতি সরিয়ে দিয়েছে}one{Chrome {NUM_SITES}টি সাইটের জন্য অনুমতি সরিয়ে দিয়েছে}other{Chrome {NUM_SITES}টি সাইটের জন্য অনুমতি সরিয়ে দিয়েছে}}</translation>
 <translation id="2931157624143513983">পৃষ্ঠার প্রিন্টযোগ্য অংশে ফিট করুন</translation>
@@ -3240,7 +3240,6 @@
 <translation id="3257733480216378006"><ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" />-কে অনুমতি দেবেন?</translation>
 <translation id="325797067711573598">সন্দেহজনক ডাউনলোড ব্লক করা রয়েছে</translation>
 <translation id="3259723213051400722">আবার চেষ্টা করুন।</translation>
-<translation id="3260199651491738298">এইসব ফিচারের মাধ্যমে সংগ্রহ করা ডেটা কন্ট্রোল করার আপনার সংস্থার পদ্ধতি ব্যবহার করা হতে পারে। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="3261090393424563833">রেট বাড়ান</translation>
 <translation id="3261268979727295785">সেট আপ করা হয়ে গেলে আপনি বড় বাচ্চাদের জন্য অভিভাবকীয় নিয়ন্ত্রণ যোগ করতে পারেন। Explore অ্যাপ থেকে আপনি অভিভাবকীয় নিয়ন্ত্রণ সম্পর্কে জানতে পারবেন।</translation>
 <translation id="3261832505033014216"><ph name="USER_EMAIL" /> আইডির জন্য 'পাসকী'</translation>
@@ -7422,6 +7421,7 @@
 <translation id="6253801023880399036"><ph name="GOOGLE_PASSWORD_MANAGER" />-এ পাসওয়ার্ড সেভ করা হয়েছে।</translation>
 <translation id="6254503684448816922">মূল সমঝোতা</translation>
 <translation id="6254892857036829079">নিখুঁত</translation>
+<translation id="6257131917452817589">অটোমেটিক পাসওয়ার্ড পরিবর্তন করার সুবিধা</translation>
 <translation id="6257602895346497974">সিঙ্ক চালু করুন...</translation>
 <translation id="6257614441619555296"><ph name="KEY" />: <ph name="VALUE" /></translation>
 <translation id="625827534921607067">আগে কানেক্ট করা বা কনফিগার করা একাধিক নেটওয়ার্ক উপলভ্য থাকলে এই নেটওয়ার্ক বেছে নেওয়া হবে</translation>
@@ -8601,7 +8601,6 @@
 <translation id="7113974454301513811">এখন আপনার তালিকায় বর্তমান ট্যাব যোগ করুন</translation>
 <translation id="7114054701490058191">পাসওয়ার্ডগুলি মিলছে না</translation>
 <translation id="7114648273807173152">Smart Lock ব্যবহার করতে আপনার Google অ্যাকাউন্টে সাইন-ইন করে সেটিংস &gt; কানেক্ট করা ডিভাইস &gt; আপনার ফোন &gt; Smart Lock বিকল্পে যান।</translation>
-<translation id="7115051913071512405">এটি চেষ্টা করে দেখুন</translation>
 <translation id="7115361495406486998">যোগাযোগ করা যেতে পারে এমন কোনও পরিচিত নেই</translation>
 <translation id="7115731767122970828">এখনই বুস্ট করুন</translation>
 <translation id="7116554090938189816">প্রিন্টারের SSL সার্টিফিকেটের মেয়াদ শেষ হয়ে গেছে। প্রিন্টার রিস্টার্ট করে আবার চেষ্টা করুন।</translation>
@@ -9134,6 +9133,7 @@
 <translation id="7502528909759062987"><ph name="DEVICE_NAME" />-এ ট্যাব কাস্ট করা পজ করুন</translation>
 <translation id="7502804472671406749">শেয়ার করা ট্যাব স্ক্রল ও জুম করা যাবে</translation>
 <translation id="7503191893372251637">Netscape সার্টিফিকেটের প্রকার</translation>
+<translation id="7503259455663961898">আপনার জন্য এটি পরিবর্তন করুন</translation>
 <translation id="7503985202154027481">আপনার এই সাইটে যাওয়ার রেকর্ড নিরাপত্তা কীয়ে সেভ করা থাকবে।</translation>
 <translation id="7504145862399276792">এই ট্যাবের অডিও মিউট করা হয়েছে</translation>
 <translation id="750509436279396091">ডাউনলোড ফোল্ডার খুলুন</translation>
@@ -9196,6 +9196,7 @@
 <translation id="7551059576287086432"><ph name="FILE_NAME" /> ডাউনলোড করা যায়নি</translation>
 <translation id="7551643184018910560">শেল্ফে পিন করুন</translation>
 <translation id="7552191410769096467">ট্যাব গ্রুপে শেয়ার করতে বা যোগ দিতে হলে, আপনাকে সাইন-ইন করতে এবং সিঙ্ক চালু করতে হবে</translation>
+<translation id="7552196109089297786">Microsoft থেকে সাইন-আউট করুন</translation>
 <translation id="7552846755917812628">নিম্নোল্লিখিত টিপ্স ব্যবহার করে দেখুন:</translation>
 <translation id="7553012839257224005">Linux কন্টেনার চেক করে দেখা হচ্ছে</translation>
 <translation id="7553242001898162573">আপনার পাসওয়ার্ডটি লিখুন</translation>
@@ -10324,6 +10325,7 @@
 <translation id="8330617762701840933">বিকল্প ব্রাউজারে রিডাইরেক্ট করে এমন ওয়েবসাইটগুলির তালিকা।</translation>
 <translation id="8330689128072902965">আশপাশের পরিচিতিরা আপনার সাথে শেয়ার করতে পারবেন। পরিবর্তন করতে ক্লিক করুন।</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{যে ধরনের ফাইল কাজ করে: <ph name="FILE_TYPE1" />}=2{যে ধরনের ফাইল কাজ করে: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />}=3{যে ধরনের ফাইল কাজ করে: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />}=4{যে ধরনের ফাইল কাজ করে: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" />}one{যে ধরনের ফাইল কাজ করে: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />এবং আরও {OVERFLOW_COUNT}টি <ph name="END_LINK" />)}other{যে ধরনের ফাইল কাজ করে: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />এবং আরও {OVERFLOW_COUNT}টি <ph name="END_LINK" />)}}</translation>
+<translation id="8331578454993293727">ডেটা লঙ্ঘনের জন্য এই পাসওয়ার্ড প্রকাশ হয়ে গেছে</translation>
 <translation id="8331822764922665615">আপনার গ্রুপের নাম দিন, রঙ বেছে নিন, তারপরে Escape কী প্রেস করুন</translation>
 <translation id="833256022891467078">Crostini-এর শেয়ার করা ফোল্ডার</translation>
 <translation id="833262891116910667">হাইলাইট</translation>
@@ -10405,6 +10407,7 @@
     <ph name="BEGIN_PARAGRAPH2" />আরও সহায়তার জন্য, দেখুন: g.co/flex/InstallErrors<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8383614331548401927">ওয়েলকাম রিক্যাপ</translation>
 <translation id="8386091599636877289">নীতি খুঁজে পাওয়া যায়নি।</translation>
+<translation id="8387087863179559896">Chrome শক্তিশালী পাসওয়ার্ড ব্যবহার করে এই সাইটের জন্য আপনার অ্যাকাউন্ট আপডেট করতে পারবে। আপনার পাসওয়ার্ড মনে রাখার প্রয়োজন নেই কারণ <ph name="EMAIL" />-এর জন্য Google Password Manager-এ এটি সেভ হয়ে যাবে। <ph name="PASSWORD_CHANGE" /> সম্পর্কে আরও জানুন।</translation>
 <translation id="8387361103813440603">আপনার লোকেশন দেখার অনুমতি দেওয়া হয়নি</translation>
 <translation id="8387617938027387193">আপনার পরিচয় যাচাই করান</translation>
 <translation id="8388770971141403598">সেকেন্ডারি প্রোফাইল কাজ করে না</translation>
@@ -10903,7 +10906,6 @@
 <translation id="8737966899544698733">'লোকেশন অ্যাকুরেসি' সেটিং (শুধুমাত্র Android-এ উপলভ্য)</translation>
 <translation id="8738418093147087440">দেশ, ভাষা বা ইনপুটের নাম অনুযায়ী সার্চ করুন</translation>
 <translation id="8740086188450289493">Google অ্যাকাউন্টের পাসওয়ার্ড ব্যবহার করুন</translation>
-<translation id="874023689350909633">এটি ব্যবহার করে দেখুন</translation>
 <translation id="8740247629089392745">আপনি এই Chromebook <ph name="SUPERVISED_USER_NAME" />-কে ফেরত দিতে পারেন। সেটআপ প্রায় হয়ে গেছে, তারপর আপনি সব সুবিধা চেক করে দেখতে পারবেন।</translation>
 <translation id="8740672167979365981">ChromeOS Flex আপডেট করতে হবে</translation>
 <translation id="8741944563400125534">সুইচ দিয়ে অ্যাক্সেসের সেটআপ গাইড</translation>

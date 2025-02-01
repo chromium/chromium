@@ -2164,7 +2164,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2471632709106952369">Vergelykingtabelle</translation>
 <translation id="2473195200299095979">Vertaal hierdie bladsy</translation>
 <translation id="2475982808118771221">'n Fout het voorgekom</translation>
-<translation id="247616523300581745">Versteek hierdie lêers</translation>
 <translation id="2476435723907345463">Toegang tot toegangsleutels is verwyder</translation>
 <translation id="2476901513051581836">Kan nie berging skoonmaak voordat grootte van vanlyn berging bekend is nie.</translation>
 <translation id="2476974672882258506">Skakel Windows af om <ph name="PARALLELS_DESKTOP" /> te deïnstalleer.</translation>
@@ -2806,6 +2805,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> word nie gesteun nie.</translation>
 <translation id="2926708162326352948">Tema volgens opgelaaide prent opgedateer</translation>
 <translation id="2927017729816812676">Kasberging</translation>
+<translation id="2928030851119977280">Keuse is gestoor. Jou keuse sal van toepassing wees wanneer jy by ander Google-dienste aanmeld.</translation>
 <translation id="2928795416630981206">Mag jou kameraposisie naspoor</translation>
 <translation id="2929345818093040583">{NUM_SITES,plural, =1{Chrome het toestemmings vanaf 1 werf verwyder}other{Chrome het toestemmings vanaf {NUM_SITES} werwe verwyder}}</translation>
 <translation id="2931157624143513983">Pas op drukbare gebied</translation>
@@ -3239,7 +3239,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3257733480216378006">Laat <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" /> toe?</translation>
 <translation id="325797067711573598">Verdagte aflaai geblokkeer</translation>
 <translation id="3259723213051400722">Probeer weer.</translation>
-<translation id="3260199651491738298">Jou organisasie beheer hoe data wat deur hierdie kenmerke ingesamel word, gebruik mag word. <ph name="BEGIN_LINK" />Meer inligting<ph name="END_LINK" /></translation>
 <translation id="3261090393424563833">Vermeerder koers</translation>
 <translation id="3261268979727295785">Vir ouer kinders kan jy ouerkontroles byvoeg nadat jy die opstelling voltooi het. Jy kan inligting oor ouerkontroles in die Verken-program kry.</translation>
 <translation id="3261832505033014216">Toegangsleutel vir <ph name="USER_EMAIL" /></translation>
@@ -7421,6 +7420,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6253801023880399036">Wagwoorde word gestoor in <ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
 <translation id="6254503684448816922">Sleutelkompromie</translation>
 <translation id="6254892857036829079">Perfek</translation>
+<translation id="6257131917452817589">geoutomatiseerde wagwoordverandering</translation>
 <translation id="6257602895346497974">Skakel sinkronisering aan …</translation>
 <translation id="6257614441619555296"><ph name="KEY" />: <ph name="VALUE" /></translation>
 <translation id="625827534921607067">Hierdie netwerk sal verkies word as daar meer as een gekonfigureerde netwerk beskikbaar is waaraan jy voorheen gekoppel het</translation>
@@ -8597,7 +8597,6 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7113974454301513811">Voeg nou die huidige oortjie by jou lys</translation>
 <translation id="7114054701490058191">Wagwoorde stem nie ooreen nie</translation>
 <translation id="7114648273807173152">Gaan na Instellings &gt; Gekoppelde toestelle &gt; Jou foon &gt; Smart Lock toe om Smart Lock te gebruik om by jou Google-rekening aan te meld.</translation>
-<translation id="7115051913071512405">Probeer dit</translation>
 <translation id="7115361495406486998">Geen bereikbare kontakte nie</translation>
 <translation id="7115731767122970828">Gee nou hupstoot</translation>
 <translation id="7116554090938189816">Drukker se SSL-sertifikaat het verval. Herbegin drukker en probeer weer.</translation>
@@ -9130,6 +9129,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7502528909759062987">Onderbreek uitsending van die oortjie na <ph name="DEVICE_NAME" /></translation>
 <translation id="7502804472671406749">Gedeelde oortjies kan gerollees en gezoem word</translation>
 <translation id="7503191893372251637">Netscape-sertifikaattipe</translation>
+<translation id="7503259455663961898">Verander dit vir my</translation>
 <translation id="7503985202154027481">'n Rekord van jou besoek aan hierdie werf sal op jou sekuriteitsleutel gehou word.</translation>
 <translation id="7504145862399276792">Hierdie oortjie se klank word gedemp</translation>
 <translation id="750509436279396091">Maak aflaaivouer oop</translation>
@@ -9192,6 +9192,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7551059576287086432">Kon nie <ph name="FILE_NAME" /> aflaai nie</translation>
 <translation id="7551643184018910560">Speld aan rak vas</translation>
 <translation id="7552191410769096467">Jy moet aanmeld en sinkronisering aanskakel om oortjiegroepe te deel of by hulle aan te sluit</translation>
+<translation id="7552196109089297786">Meld by Microsoft af</translation>
 <translation id="7552846755917812628">Probeer die volgende wenke:</translation>
 <translation id="7553012839257224005">Gaan tans die Linux-houer na</translation>
 <translation id="7553242001898162573">Voer jou wagwoord in</translation>
@@ -10320,6 +10321,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8330617762701840933">Die lys webwerwe wat na ’n alternatiewe blaaier herlei word.</translation>
 <translation id="8330689128072902965">Kontakte in die omtrek kan met jou deel. Klik om te verander.</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{Gesteunde lêertipe: <ph name="FILE_TYPE1" />}=2{Gesteunde lêertipes: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />}=3{Gesteunde lêertipes: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />}=4{Gesteunde lêertipes: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" />}other{Gesteunde lêertipes: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />en nog {OVERFLOW_COUNT}<ph name="END_LINK" />)}}</translation>
+<translation id="8331578454993293727">Hierdie wagwoord is in ’n dataskending gekry</translation>
 <translation id="8331822764922665615">Gee jou groep ’n naam, kies ’n kleur, en druk Esc</translation>
 <translation id="833256022891467078">Gedeelde vouers in Crostini</translation>
 <translation id="833262891116910667">Merk</translation>
@@ -10401,6 +10403,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
     <ph name="BEGIN_PARAGRAPH2" />Vir meer hulp, besoek: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8383614331548401927">Opsomming van verwelkoming</translation>
 <translation id="8386091599636877289">Kon nie beleid kry nie.</translation>
+<translation id="8387087863179559896">Chrome kan jou rekening vir hierdie werf met ’n sterk wagwoord opdateer. Jy hoef nie die wagwoord te onthou nie omdat dit vir jou gestoor is in Google Wagwoordbestuurder vir <ph name="EMAIL" />. Meer oor <ph name="PASSWORD_CHANGE" />.</translation>
 <translation id="8387361103813440603">Mag nie jou ligging sien nie</translation>
 <translation id="8387617938027387193">Verifieer dat dit jy is</translation>
 <translation id="8388770971141403598">Sekondêre profiele word nie gesteun nie</translation>
@@ -10899,7 +10902,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8737966899544698733">Liggingakkuraatheid (net Android)</translation>
 <translation id="8738418093147087440">Soek volgens lande, taal of invoername</translation>
 <translation id="8740086188450289493">Gebruik Google-rekeningwagwoord</translation>
-<translation id="874023689350909633">Probeer dit</translation>
 <translation id="8740247629089392745">Jy kan hierdie Chromebook aan <ph name="SUPERVISED_USER_NAME" /> oorhandig. Die opstelling is amper klaar. Dan is dit tyd om te verken.</translation>
 <translation id="8740672167979365981">Chrome OS Flex-opdatering word vereis</translation>
 <translation id="8741944563400125534">Opstellinggids vir skakelaartoegang</translation>

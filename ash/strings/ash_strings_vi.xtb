@@ -178,7 +178,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1550523713251050646">Nhấp để xem các tùy chọn khác</translation>
 <translation id="1555130319947370107">Xanh lam</translation>
 <translation id="1557622599341396706">Hiện tên không gian làm việc</translation>
-<translation id="1567138500090284106">Nút phím điều khiển chuột</translation>
 <translation id="1569384531973824928">Nếu bạn bật, tất cả ứng dụng và trang web có quyền truy cập máy ảnh và micrô sẽ có thể sử dụng máy ảnh và micrô. Bạn có thể cần làm mới trang web hoặc khởi động lại ứng dụng.</translation>
 <translation id="1571697193564730395">Bật/tắt chế độ Không làm phiền. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Thu nhỏ khi kính lúp đang bật</translation>
@@ -731,6 +730,7 @@ Nếu không, bàn di chuột tích hợp sẵn sẽ bật lại sau <ph name="T
 <translation id="3522979239100719575">Đang tìm hồ sơ có sẵn. Quá trình này có thể mất vài phút.</translation>
 <translation id="3526440770046466733">Mở đường liên kết trong thẻ mới và tiếp tục sử dụng thẻ hiện tại</translation>
 <translation id="353086728817903341">Đã kết nối với <ph name="NUM_DEVICES" /> thiết bị</translation>
+<translation id="3532247131850366052">Không thể tạo Google Trang tính</translation>
 <translation id="3533126039236445965">Ứng dụng trong kệ</translation>
 <translation id="3539957339480430241">Điểm phát sóng <ph name="DEVICE_NAME" /></translation>
 <translation id="3540893133818942399">Loại bỏ việc thiết lập tính năng xem nội dung nghe nhìn và ảnh gần đây có trên điện thoại</translation>
@@ -829,6 +829,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="380165613292957338">Xin chào, tôi có thể trợ giúp gì?</translation>
 <translation id="3804737937830804242">Thu gọn máy ảnh</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 biểu tượng cảm xúc. Không có kết quả nào khác.}other{# biểu tượng cảm xúc. Không có kết quả nào khác.}}</translation>
+<translation id="3822403841174077928">Không thể sao chép cùng với định dạng</translation>
 <translation id="3824784079442479685">Nếu bạn bật, <ph name="APP_NAME" /> và tất cả ứng dụng cũng như trang web có quyền truy cập máy ảnh sẽ có thể sử dụng máy ảnh. Bạn có thể cần làm mới trang web hoặc khởi động lại ứng dụng.</translation>
 <translation id="3826099427150913765">Chuyển sang mật khẩu</translation>
 <translation id="383058930331066723">Chế độ trình tiết kiệm pin đang bật</translation>
@@ -1215,6 +1216,7 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="5043679421800073804">Nhấp hoặc nhấn vào biểu tượng cuối cùng trên kệ</translation>
 <translation id="504465286040788597">Đoạn trước</translation>
 <translation id="5045550434625856497">Mật khẩu sai</translation>
+<translation id="5058794129231928255">Không thể tạo Google Tài liệu</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Bạn sẽ nhận được thông báo nếu bạn nói trong khi tắt tiếng. Thiết bị của bạn sẽ không truyền âm thanh đi.</translation>
 <translation id="5077416371682039027">Thiết lập tính năng xem ứng dụng, thông báo, nội dung nghe nhìn và ảnh gần đây có trên điện thoại</translation>
@@ -1647,6 +1649,7 @@ Chưa kết nối thiết bị nào.</translation>
 <translation id="6468406072297048412">{0,plural, =1{Khôi phục hệ điều hành trên thiết bị về phiên bản trước trong vòng 1 phút}other{Khôi phục hệ điều hành trên thiết bị về phiên bản trước trong vòng # phút}}</translation>
 <translation id="6469104339369989396">Bật/tắt điểm phát sóng</translation>
 <translation id="6477681113376365978">Không tải được tệp xuống</translation>
+<translation id="648135757200234041">Không thể tạo địa chỉ liên hệ</translation>
 <translation id="6482559668224714696">Phóng to toàn màn hình</translation>
 <translation id="6485086611007560630">Thông tin thời tiết (không có)</translation>
 <translation id="6490471652906364588">Thiết bị USB-C (cổng bên phải)</translation>
@@ -2287,6 +2290,7 @@ Mới cài đặt</translation>
 <translation id="8653151467777939995">Hiển thị các tùy chọn cài đặt thông báo. Thông báo đang bật</translation>
 <translation id="8657066291275741003">viết thường</translation>
 <translation id="8660331759611631213">Căn bậc hai của 71</translation>
+<translation id="8662921061190671299">Không thể thêm vào Lịch</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Nhấn phím Enter để chụp ảnh một phần màn hình</translation>
 <translation id="8676770494376880701">Đã kết nối bộ sạc công suất thấp</translation>

@@ -385,7 +385,6 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="2781151931089541271">Zbývá: 1 s</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome našel opakovaně použité heslo, které byste mohli vylepšit}few{Chrome našel # opakovaně použitá hesla, která byste mohli vylepšit}many{Chrome našel # opakovaně použitého hesla, které byste mohli vylepšit}other{Chrome našel # opakovaně použitých hesel, která byste mohli vylepšit}}</translation>
-<translation id="2796651346651857052">Podržením adresního řádku můžete změnit jeho pozici.</translation>
 <translation id="2800066122460699237">Zavře se karta <ph name="TAB_TITLE" /></translation>
 <translation id="2805756323405976993">Aplikace</translation>
 <translation id="281504910091592009">Zobrazit a spravovat uložená hesla v <ph name="BEGIN_LINK" />účtu Google<ph name="END_LINK" /></translation>

@@ -86,6 +86,7 @@
 <translation id="4783638485675352219">ଅପରେଟିଂ ସିଷ୍ଟମ ସହିତ ଏହି ଡିଭାଇସରୁ ଖୋଲା ଥିବା ଟାବଗୁଡ଼ିକର ଟାଇଟେଲ ଏବଂ URLଗୁଡ଼ିକ ସେୟାର କରନ୍ତୁ</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" />ଟି ସମୀକ୍ଷା)}other{(<ph name="REVIEWS_COUNT_MANY" />ଟି ସମୀକ୍ଷା)}}</translation>
 <translation id="4850886885716139402">ଦେଖନ୍ତୁ</translation>
+<translation id="4861953997778766866">ଆପଣଙ୍କର ସେୟାର କରାଯାଇଥିବା ଟାବ ଗ୍ରୁପରେ ସମସ୍ତେ ପରିବର୍ତ୍ତନ କରିପାରିବେ</translation>
 <translation id="4870911314065352661">ସମସ୍ତ ଟାବକୁ ବନ୍ଦ କରିବେ?</translation>
 <translation id="4871719318659334896">ଗୋଷ୍ଠୀ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="4881695831933465202">ଖୋଲନ୍ତୁ</translation>
@@ -179,6 +180,7 @@
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ଟାବ ଯୋଗ କରାଯାଇଛି, <ph name="ANY_CLOSED" /> ବନ୍ଦ କରାଯାଇଛି}other{<ph name="MANY_ADDED" /> ଟାବ ଯୋଗ କରାଯାଇଛି, <ph name="ANY_CLOSED" /> ବନ୍ଦ କରାଯାଇଛି}}</translation>
 <translation id="8633025649649592204">ବର୍ତ୍ତମାନର କାର୍ଯ୍ୟକଳାପ</translation>
 <translation id="870736955561925754">ଟାବକୁ ବନ୍ଦ କରି ଗ୍ରୁପକୁ ଡିଲିଟ କରିବେ?</translation>
+<translation id="8712637175834984815">ବୁଝିଗଲି</translation>
 <translation id="8714939927607906138">କମ୍ ଦାମ୍</translation>
 <translation id="8730621377337864115">ସମାପ୍ତ ହୋଇଛି</translation>
 <translation id="8730999928494395583">ଏହି ଇନକଗ୍ନିଟୋ ଟାବଗୁଡ଼ିକରେ ଆପଣଙ୍କ କାର୍ଯ୍ୟକଳାପକୁ ଏହି ଡିଭାଇସରୁ କାଢ଼ି ଦିଆଯିବ</translation>

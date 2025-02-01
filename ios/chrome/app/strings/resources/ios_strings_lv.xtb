@@ -716,6 +716,7 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="422477017457571619">MI nodrošināta reāllaika aizsardzība pret bīstamām vietnēm, lejupielādēm un paplašinājumiem, kura tiek panākta, sūtot jūsu pārlūkošanas datus uzņēmumam Google.</translation>
 <translation id="4231395118547300571">Drošības pārbaudes paziņojumi ir ieslēgti.</translation>
 <translation id="4237377247299956313">Pieskarieties vienumam <ph name="BEGIN_BOLD" />Noklusējuma pārlūka lietotne<ph name="END_BOLD" />.</translation>
+<translation id="4241893428331130998">Nav saglabātu paroļu vai piekļuves atslēgu</translation>
 <translation id="4242533952199664413">Atvērt iestatījumus</translation>
 <translation id="4250432749243022864">{count,plural, =0{Atvērt {count} cilnes}=1{Atvērt {count} cilni}zero{Atvērt {count} cilnes}one{Atvērt {count} cilni}other{Atvērt {count} cilnes}}</translation>
 <translation id="4250680216510889253">Nē</translation>
@@ -1595,6 +1596,7 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="7982789257301363584">Tīkls</translation>
 <translation id="7987685713885608670">Lai gādātu par papildu drošību, šifrējiet paroles savā ierīcē, pirms tās tiek saglabātas Google paroļu pārvaldniekā.</translation>
 <translation id="798991908416757345">Ciļņu grupas nav pieejamas</translation>
+<translation id="7993170188789685695">Veiciet dubultskārienu, lai aizvērtu šo paziņojumu.</translation>
 <translation id="7993619969781047893">Noteiktās vietnēs funkcijas var nedarboties</translation>
 <translation id="7996239959906074962">Iestatīt…</translation>
 <translation id="800361585186029508">Ievadītie vietrāži URL tiek atvērti pārlūkā Google Chrome.</translation>

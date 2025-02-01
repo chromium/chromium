@@ -2407,6 +2407,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5254043433801397071">Optimiser le contenu imprimé</translation>
 <translation id="5255583962255635076">Règles du navigateur appliquées dans votre profil professionnel</translation>
 <translation id="5255690596502591079">Capturer quand même</translation>
+<translation id="5255771248404149177">Le fournisseur de votre carte souhaite vérifier votre identité</translation>
 <translation id="5255833070095767006">350 x 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{Une règle de l'administrateur déconseille de copier ce fichier vers <ph name="DESTINATION_NAME" />}one{Une règle de l'administrateur déconseille de copier ce fichier vers <ph name="DESTINATION_NAME" />}other{Une règle de l'administrateur déconseille de copier ces fichiers vers <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5263867360296733198">Examen requis avant l'importation</translation>
@@ -2554,6 +2555,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5518352028556756716">La plupart des sites ne peuvent pas utiliser de cookies tiers pour vous suivre lorsque vous naviguez, et les sites ne peuvent pas utiliser de cookies tiers en mode navigation privée.</translation>
 <translation id="5519516356611866228">Avec vos modifications</translation>
 <translation id="5519696598216267194">Papier (perforé)</translation>
+<translation id="5520105693415771152">Vos infos actuelles ne sont pas affichées ? Contactez votre fournisseur pour les mettre à jour.</translation>
 <translation id="5521782189689806907">Meubles de rangement</translation>
 <translation id="5523118979700054094">Nom de la règle</translation>
 <translation id="5523588073846127669">Le marchand n'accepte pas cette carte virtuelle</translation>

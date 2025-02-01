@@ -768,6 +768,7 @@
 <translation id="4654549501020883054">Менувај секојдневно</translation>
 <translation id="4655868084888499342">Сликата е поставена како тапет</translation>
 <translation id="4661249927038176904">Нереална</translation>
+<translation id="4661392828086261436">Ова ажурирање го обезбедува производителот на уредот и не е потврдено од Google</translation>
 <translation id="4664651912255946953">крзно</translation>
 <translation id="4665014895760275686">Производител</translation>
 <translation id="467510802200863975">Лозинките не се совпаѓаат</translation>
@@ -1027,6 +1028,7 @@
 <translation id="5904994456462260490">Додајте нова APN</translation>
 <translation id="590746845088109442">мачки</translation>
 <translation id="5907649332524363701">боја на копчиња</translation>
+<translation id="5908813850962688338">Инсталирањето на ажурирањево ќе трае неколку минути. Уредот нека биде приклучен на напојување и вклучен при преземањето на ажурирањето. Уредот може да се рестартира неколку пати и притоа да се прикажува црн екран. Ќе треба да го рестартирате уредот за да го завршите инсталирањето.</translation>
 <translation id="5916084858004523819">Забранета</translation>
 <translation id="5916664084637901428">Вклучено</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Датотеката е успешно скенирана и зачувана во <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Датотеките се успешно скенирани и зачувани во <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Датотеките се успешно скенирани и зачувани во <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>

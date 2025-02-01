@@ -716,6 +716,7 @@
 <translation id="422477017457571619">જોખમકારક સાઇટ, ડાઉનલોડ અને એક્સ્ટેન્શન સામે રિઅલ-ટાઇમ, AI-સંચાલિત સંરક્ષણ કે જે Googleને મોકલવામાં આવતા તમારા બ્રાઉઝિંગ ડેટા પર આધારિત હોય છે</translation>
 <translation id="4231395118547300571">સલામતી માટે તપાસ સંબંધિત નોટિફિકેશન ચાલુ કર્યા</translation>
 <translation id="4237377247299956313"><ph name="BEGIN_BOLD" />ડિફૉલ્ટ બ્રાઉઝર ઍપ<ph name="END_BOLD" /> પર ટૅપ કરો</translation>
+<translation id="4241893428331130998">સાચવેલો કોઈ પાસવર્ડ કે પાસકી નથી</translation>
 <translation id="4242533952199664413">સેટિંગ ખોલો</translation>
 <translation id="4250432749243022864">{count,plural, =0{{count} ટૅબ ખોલો}=1{{count} ટૅબ ખોલો}one{{count} ટૅબ ખોલો}other{{count} ટૅબ ખોલો}}</translation>
 <translation id="4250680216510889253">નહીં</translation>
@@ -1595,6 +1596,7 @@
 <translation id="7982789257301363584">નેટવર્ક</translation>
 <translation id="7987685713885608670">વધારાની સલામતી માટે, તમારા પાસવર્ડ Google પાસવર્ડ મેનેજરમાં સાચવવામાં આવે એ પહેલાં એમને તમારા ડિવાઇસમાં એન્ક્રિપ્ટ કરો.</translation>
 <translation id="798991908416757345">ટૅબના ગ્રૂપ ઉપલબ્ધ નથી</translation>
+<translation id="7993170188789685695">આ નોટિફિકેશન બંધ કરવા માટે, બે વાર ટૅપ કરો.</translation>
 <translation id="7993619969781047893">અમુક સાઇટ પરની સુવિધાઓને કદાચ બંધ કરવામાં આવી શકે</translation>
 <translation id="7996239959906074962">સેટઅપ કરો…</translation>
 <translation id="800361585186029508">ઇનપુટ કરેલા URLsને Google Chromeમાં ખોલે છે.</translation>

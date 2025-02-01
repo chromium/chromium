@@ -2151,7 +2151,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2471632709106952369">Taules de comparació</translation>
 <translation id="2473195200299095979">Tradueix aquesta pàgina</translation>
 <translation id="2475982808118771221">S'ha produït un error</translation>
-<translation id="247616523300581745">Amaga aquests fitxers</translation>
 <translation id="2476435723907345463">S'ha suprimit l'accés a les claus d'accés</translation>
 <translation id="2476901513051581836">No es pot alliberar emmagatzematge fins que no es conegui la mida de l'emmagatzematge sense connexió.</translation>
 <translation id="2476974672882258506">Apaga Windows per desinstal·lar <ph name="PARALLELS_DESKTOP" />.</translation>
@@ -3225,7 +3224,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3257733480216378006">Vols permetre <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" />?</translation>
 <translation id="325797067711573598">S'ha bloquejat una baixada sospitosa</translation>
 <translation id="3259723213051400722">Torna-ho a provar.</translation>
-<translation id="3260199651491738298">La teva organització controla com es poden utilitzar les dades que aquestes funcions recullen. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="3261090393424563833">Augmenta la velocitat</translation>
 <translation id="3261268979727295785">En el cas de nens més grans, pots afegir controls parentals quan acabis la configuració. Trobaràs informació sobre els controls parentals a l'aplicació Explora.</translation>
 <translation id="3261832505033014216">Clau d'accés per a <ph name="USER_EMAIL" /></translation>
@@ -8580,7 +8578,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7113974454301513811">Ara afegeix la pestanya actual a la llista</translation>
 <translation id="7114054701490058191">Les contrasenyes no coincideixen</translation>
 <translation id="7114648273807173152">Per utilitzar Smart Lock per iniciar la sessió al Compte de Google, ves a Configuració &gt; Dispositius connectats &gt; El teu telèfon &gt; Smart Lock.</translation>
-<translation id="7115051913071512405">Prova-ho</translation>
 <translation id="7115361495406486998">No hi ha cap contacte a l'abast</translation>
 <translation id="7115731767122970828">Optimitza ara</translation>
 <translation id="7116554090938189816">El certificat SSL de la impressora ha caducat. Reinicia la impressora i torna-ho a provar.</translation>
@@ -10888,7 +10885,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8737966899544698733">Precisió de la ubicació (només per a Android)</translation>
 <translation id="8738418093147087440">Cerca per països, idiomes o noms d'entrada</translation>
 <translation id="8740086188450289493">Utilitza la contrasenya del Compte de Google</translation>
-<translation id="874023689350909633">Prova-ho</translation>
 <translation id="8740247629089392745">Pots donar aquest Chromebook a <ph name="SUPERVISED_USER_NAME" />. Ja queda poc per finalitzar la configuració. És hora d'explorar.</translation>
 <translation id="8740672167979365981">Cal actualitzar ChromeOS Flex</translation>
 <translation id="8741944563400125534">Guia de configuració d'accés amb interruptors</translation>

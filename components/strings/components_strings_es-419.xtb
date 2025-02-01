@@ -2408,6 +2408,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5254043433801397071">Optimizar el contenido de impresión</translation>
 <translation id="5255583962255635076">Políticas del navegador aplicadas en tu perfil de trabajo</translation>
 <translation id="5255690596502591079">Capturar de todos modos</translation>
+<translation id="5255771248404149177">El proveedor de la tarjeta quiere confirmar tu identidad</translation>
 <translation id="5255833070095767006">350 × 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{La política del administrador no recomienda copiar este archivo a <ph name="DESTINATION_NAME" />.}other{La política del administrador no recomienda copiar estos archivos a <ph name="DESTINATION_NAME" />.}}</translation>
 <translation id="5263867360296733198">Se debe revisar antes de subir los archivos</translation>
@@ -2555,6 +2556,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5518352028556756716">La mayoría de los sitios no pueden usar cookies de terceros para seguirte mientras navegas, y los sitios no pueden usar cookies de terceros en el modo Incógnito.</translation>
 <translation id="5519516356611866228">Con tus cambios</translation>
 <translation id="5519696598216267194">Papel (perforado)</translation>
+<translation id="5520105693415771152">Si no aparece tu información actual, comunícate con tu proveedor para actualizarla.</translation>
 <translation id="5521782189689806907">Ebanistería</translation>
 <translation id="5523118979700054094">Nombre de la política</translation>
 <translation id="5523588073846127669">El comercio no acepta esta tarjeta virtual</translation>

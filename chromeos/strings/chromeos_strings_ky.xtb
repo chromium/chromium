@@ -768,6 +768,7 @@
 <translation id="4654549501020883054">Күн сайын өзгөртүү</translation>
 <translation id="4655868084888499342">Сүрөт тушкагаз катары коюлган</translation>
 <translation id="4661249927038176904">Сюрреалдык</translation>
+<translation id="4661392828086261436">Бул жаңыртууну түзмөк өндүрүүчүсү сунган жана Google тарабынан тастыкталган эмес</translation>
 <translation id="4664651912255946953">мех</translation>
 <translation id="4665014895760275686">Өндүрүүчү</translation>
 <translation id="467510802200863975">Сырсөздөр дал келген жок</translation>
@@ -1027,6 +1028,7 @@
 <translation id="5904994456462260490">Жаңы APN'ди кошуу</translation>
 <translation id="590746845088109442">мышыктар</translation>
 <translation id="5907649332524363701">баскычтын түсү</translation>
+<translation id="5908813850962688338">Жаңыртуу бир нече мүнөткө созулат. Жаңыртылып жатканда түзмөк кубатталып жана күйүп турушу керек. Түзмөк бир нече жолу өчүп-күйүп, экраны кара болушу мүмкүн. Орнотууну аягына чыгаруу үчүн аны өчүрүп күйгүзүү суралат.</translation>
 <translation id="5916084858004523819">Тыюу салынат</translation>
 <translation id="5916664084637901428">Күйүк</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Файл ийгиликтүү скандалып, <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> папкасына сакталды.}other{Файлдар ийгиликтүү скандалып, <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> папкасына сакталды.}}</translation>

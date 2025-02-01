@@ -86,6 +86,7 @@
 <translation id="4783638485675352219">แชร์ชื่อและ URL ของแท็บที่เปิดอยู่จากอุปกรณ์นี้กับระบบปฏิบัติการ</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> รีวิว)}other{(<ph name="REVIEWS_COUNT_MANY" /> รีวิว)}}</translation>
 <translation id="4850886885716139402">ดู</translation>
+<translation id="4861953997778766866">ทุกคนจะเปลี่ยนแปลงกลุ่มแท็บที่แชร์ของคุณได้</translation>
 <translation id="4870911314065352661">ปิดแท็บทั้งหมดใช่ไหม</translation>
 <translation id="4871719318659334896">ปิดกลุ่ม</translation>
 <translation id="4881695831933465202">เปิด</translation>
@@ -179,6 +180,7 @@
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{เพิ่มแล้ว <ph name="ONE_ADDED" /> แท็บ ปิดแล้ว <ph name="ANY_CLOSED" /> แท็บ}other{เพิ่มแล้ว <ph name="MANY_ADDED" /> แท็บ ปิดแล้ว <ph name="ANY_CLOSED" /> แท็บ}}</translation>
 <translation id="8633025649649592204">กิจกรรมล่าสุด</translation>
 <translation id="870736955561925754">ปิดแท็บและลบกลุ่มใช่ไหม</translation>
+<translation id="8712637175834984815">รับทราบ</translation>
 <translation id="8714939927607906138">ราคาต่ำกว่า</translation>
 <translation id="8730621377337864115">เสร็จสิ้น</translation>
 <translation id="8730999928494395583">ระบบจะนำกิจกรรมในแท็บที่ไม่ระบุตัวตนเหล่านี้ออกจากอุปกรณ์นี้</translation>

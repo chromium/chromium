@@ -768,6 +768,7 @@
 <translation id="4654549501020883054">রোজ পরিবর্তন করুন</translation>
 <translation id="4655868084888499342">ওয়ালপেপার হিসেবে ছবি সেট করা আছে</translation>
 <translation id="4661249927038176904">সুররিয়েল</translation>
+<translation id="4661392828086261436">এই আপডেট দিয়েছে ডিভাইস প্রস্তুতকারক এবং তা Google-এর মাধ্যমে যাচাই করা হয়নি</translation>
 <translation id="4664651912255946953">ফার</translation>
 <translation id="4665014895760275686">প্রস্তুতকর্তা</translation>
 <translation id="467510802200863975">পাসওয়ার্ড মিলছে না</translation>
@@ -1027,6 +1028,7 @@
 <translation id="5904994456462260490">নতুন APN যোগ করুন</translation>
 <translation id="590746845088109442">বিড়াল</translation>
 <translation id="5907649332524363701">কী কালার</translation>
+<translation id="5908813850962688338">এই আপডেট ইনস্টল হতে কয়েক মিনিট সময় লাগবে। আপনার ডিভাইস প্লাগ-ইন করে রাখুন, এবং আপডেট ডাউনলোড হওয়ার সময় পাওয়ার কানেক্ট করে রাখুন। আপনার ডিভাইস নিজে থেকে একাধিকবার রিবুট হতে পারে এবং এই প্রসেসের সময় কোনও একটি কালো স্ক্রিন দেখা যেতে পারে। ইনস্টল সম্পূর্ণ করতে আপনার ডিভাইস রিস্টার্ট করার জন্য আপনাকে প্রম্পট করা হতে পারে।</translation>
 <translation id="5916084858004523819">নিষিদ্ধ</translation>
 <translation id="5916664084637901428">চালু</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{আপনার ফাইল স্ক্যান করে <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />-এ সেভ করা হয়েছে।}one{আপনার ফাইল স্ক্যান করে <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />-এ সেভ করা হয়েছে।}other{আপনার ফাইল স্ক্যান করে <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />-এ সেভ করা হয়েছে।}}</translation>

@@ -86,6 +86,7 @@ Nếu bạn xoá, mọi người sẽ lập tức mất quyền truy cập vào 
 <translation id="4783638485675352219">Chia sẻ tiêu đề và URL của các thẻ đang mở trên thiết bị này với hệ điều hành</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> bài đánh giá)}other{(<ph name="REVIEWS_COUNT_MANY" /> bài đánh giá)}}</translation>
 <translation id="4850886885716139402">Xem</translation>
+<translation id="4861953997778766866">Mọi người đều có thể thay đổi nhóm thẻ bạn đã chia sẻ</translation>
 <translation id="4870911314065352661">Đóng tất cả các thẻ?</translation>
 <translation id="4871719318659334896">Đóng nhóm</translation>
 <translation id="4881695831933465202">Mở</translation>
@@ -179,6 +180,7 @@ Nếu bạn xoá, mọi người sẽ lập tức mất quyền truy cập vào 
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{Đã thêm <ph name="ONE_ADDED" /> thẻ, đã đóng <ph name="ANY_CLOSED" /> thẻ}other{Đã thêm <ph name="MANY_ADDED" /> thẻ, đã đóng <ph name="ANY_CLOSED" /> thẻ}}</translation>
 <translation id="8633025649649592204">Hoạt động gần đây</translation>
 <translation id="870736955561925754">Bạn muốn đóng thẻ và xoá nhóm?</translation>
+<translation id="8712637175834984815">Tôi hiểu</translation>
 <translation id="8714939927607906138">Giá thấp hơn</translation>
 <translation id="8730621377337864115">Xong</translation>
 <translation id="8730999928494395583">Hoạt động của bạn trong các thẻ ẩn danh này sẽ bị xoá khỏi thiết bị này</translation>

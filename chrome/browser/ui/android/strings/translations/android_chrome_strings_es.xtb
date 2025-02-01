@@ -385,7 +385,6 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="2781151931089541271">Queda 1 segundo</translation>
 <translation id="2789486458103222910">Aceptar</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome ha detectado una contraseña reutilizada que podrías mejorar}other{Chrome ha detectado # contraseñas reutilizadas que podrías mejorar}}</translation>
-<translation id="2796651346651857052">Mantén pulsada la barra de direcciones para cambiar su posición.</translation>
 <translation id="2800066122460699237">Se cerrará la pestaña <ph name="TAB_TITLE" /></translation>
 <translation id="2805756323405976993">Aplicaciones</translation>
 <translation id="281504910091592009">Consulta y gestiona las contraseñas guardadas en tu <ph name="BEGIN_LINK" />cuenta de Google<ph name="END_LINK" /></translation>

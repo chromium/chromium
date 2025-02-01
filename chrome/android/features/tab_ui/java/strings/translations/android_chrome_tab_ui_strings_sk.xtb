@@ -86,6 +86,7 @@ Ak ju odstránite, všetci okamžite stratia prístup k skupine kariet <ph name
 <translation id="4783638485675352219">Zdieľajte názvy a webové adresy otvorených kariet z tohto zariadenia s operačným systémom</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> recenzia)}few{(<ph name="REVIEWS_COUNT_MANY" /> recenzie)}many{(<ph name="REVIEWS_COUNT_MANY" /> reviews)}other{(<ph name="REVIEWS_COUNT_MANY" /> recenzií)}}</translation>
 <translation id="4850886885716139402">Zobraziť</translation>
+<translation id="4861953997778766866">Zdieľané skupiny kariet môže upravovať ktokoľvek</translation>
 <translation id="4870911314065352661">Chcete zavrieť všetky karty?</translation>
 <translation id="4871719318659334896">Zavrieť skupinu</translation>
 <translation id="4881695831933465202">Otvoriť</translation>
@@ -179,6 +180,7 @@ Ak ju odstránite, všetci okamžite stratia prístup k skupine kariet <ph name
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> karta bola pridaná, zavreté: <ph name="ANY_CLOSED" />}few{<ph name="MANY_ADDED" /> karty boli pridané, zavreté: <ph name="ANY_CLOSED" />}many{<ph name="MANY_ADDED" /> tabs added, <ph name="ANY_CLOSED" /> closed}other{<ph name="MANY_ADDED" /> kariet bolo pridaných, zavreté: <ph name="ANY_CLOSED" />}}</translation>
 <translation id="8633025649649592204">Nedávna aktivita</translation>
 <translation id="870736955561925754">Chcete zavrieť kartu a odstrániť skupinu?</translation>
+<translation id="8712637175834984815">Dobre</translation>
 <translation id="8714939927607906138">Nižšia cena</translation>
 <translation id="8730621377337864115">Hotovo</translation>
 <translation id="8730999928494395583">Vaša aktivita v týchto kartách inkognito bude odstránená z tohto zariadenia</translation>

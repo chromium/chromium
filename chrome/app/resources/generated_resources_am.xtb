@@ -2160,7 +2160,6 @@
 <translation id="2471632709106952369">የንጽጽር ሠንጠረዦች</translation>
 <translation id="2473195200299095979">ይህን ገፅ መተርጎም</translation>
 <translation id="2475982808118771221">ስህተት ተከስቷል</translation>
-<translation id="247616523300581745">እነዚህን ፋይሎች ደብቅ</translation>
 <translation id="2476435723907345463">የይለፍ ቁልፎች መዳረሻ ተወግዷል</translation>
 <translation id="2476901513051581836">ከመስመር ውጭ ማከማቻ መጠን እስከሚታወቅ ድረስ ማከማቻውን ማጽዳት አይቻልም።</translation>
 <translation id="2476974672882258506"><ph name="PARALLELS_DESKTOP" /> ለማራገፍ መስኮቶቹን ይዝጉ።</translation>
@@ -2802,6 +2801,7 @@
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> አይደገፍም።</translation>
 <translation id="2926708162326352948">ገጽታ ወደ የተሰቀለው ምስል ተዘምኗል</translation>
 <translation id="2927017729816812676">የመሸጎጫ ማከማቻ</translation>
+<translation id="2928030851119977280">ምርጫ ተቀምጧል። ወደ ሌሎች የGoogle አገልግሎቶች ሲገቡ ምርጫዎ ተግባራዊ ይሆናል።</translation>
 <translation id="2928795416630981206">የካሜራዎን አቀማመጥ ለመከታተል ተፈቅዷል</translation>
 <translation id="2929345818093040583">{NUM_SITES,plural, =1{Chrome ከ1 ጣቢያ ፈቃዶችን አስወግዷል}one{Chrome ከ{NUM_SITES} ጣቢያ ፈቃዶችን አስወግዷል}other{Chrome ከ{NUM_SITES} ጣቢያዎች ፈቃዶችን አስወግዷል}}</translation>
 <translation id="2931157624143513983">ሊታተም ከሚችል አካባቢ ጋር አመጣጥን</translation>
@@ -3235,7 +3235,6 @@
 <translation id="3257733480216378006"><ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" /> ይፈቀድለት?</translation>
 <translation id="325797067711573598">አጠራጣሪ ውርድ ታግዷል</translation>
 <translation id="3259723213051400722">እባክዎ እንደገና ይሞክሩ።</translation>
-<translation id="3260199651491738298">ድርጅትዎ በእነዚህ ባህሪያት የተሰበሰበ ውሂብ እንዴት ጥቅም ላይ ሊውል እንደሚችል ይቆጣጠራል። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="3261090393424563833">ፍጥነትን ጨምር</translation>
 <translation id="3261268979727295785">ዕድሜያቸው ተለቅ ላሉ ሕፃናት ልክ ውቅረትን እንደጨረሱ የወላጅ መቆጣጠሪያዎችን ማከል ይችላሉ። በአሳሽ መተግበሪያው ውስጥ በወላጅ መቆጣጠሪያዎች ላይ መረጃ ያገኛሉ።</translation>
 <translation id="3261832505033014216">የይለፍ ቁልፍ ለ፦ <ph name="USER_EMAIL" /></translation>
@@ -7414,6 +7413,7 @@
 <translation id="6253801023880399036">የይለፍ ቃላት በ<ph name="GOOGLE_PASSWORD_MANAGER" /> ላይ ተቀምጠዋል።</translation>
 <translation id="6254503684448816922">ቁልፍ ስምምነት ማድረግ</translation>
 <translation id="6254892857036829079">ፍጹም</translation>
+<translation id="6257131917452817589">ራስ-ሰር የይለፍ ቃል ቅየራ</translation>
 <translation id="6257602895346497974">አስምርን አብራ...</translation>
 <translation id="6257614441619555296"><ph name="KEY" />፦ <ph name="VALUE" /></translation>
 <translation id="625827534921607067">ከዚህ ቀደም የተገናኘ ወይም የተዋቀረ ከአንድ በላይ አውታረ መረብ የሚገኝ ከሆነ ይህ አውታረ መረብ ተመራጭ ይሆናል</translation>
@@ -8593,7 +8593,6 @@
 <translation id="7113974454301513811">የአሁኑን ትር ወደ ዝርዝርዎ አሁን ያክሉት</translation>
 <translation id="7114054701490058191">የይለፍ ቃላት አይዛመዱም</translation>
 <translation id="7114648273807173152">Smart Lockን ተጠቅመው ወደ የGoogle መለያዎ ለመግባት ወደ ቅንብሮች &gt; የተገናኙ መሣሪያዎች &gt; የእርስዎ ስልክ &gt; Smart Lock ይሂዱ።</translation>
-<translation id="7115051913071512405">ሞክረው</translation>
 <translation id="7115361495406486998">ሊደረስባቸው የሚችሉ እውቂያዎች የሉም</translation>
 <translation id="7115731767122970828">አሁን ጨምር</translation>
 <translation id="7116554090938189816">የማተሚያ የኤስኤስኤል የዕውቅና ማረጋገጫ ጊዜው አልፎበታል። ማተሚያን እንደገና ያስጀመሩ እና እንደገና ይሞክሩ።</translation>
@@ -9126,6 +9125,7 @@
 <translation id="7502528909759062987">ትርን ወደ <ph name="DEVICE_NAME" /> cast ማድረግን ባለበት አቁም</translation>
 <translation id="7502804472671406749">የተጋሩ ትሮች ሊሸበለሉ እና ሊጎሉ ይችላሉ</translation>
 <translation id="7503191893372251637">የNetscape ሰርቲፊኬት ዓይነት</translation>
+<translation id="7503259455663961898">ቀይርልኝ</translation>
 <translation id="7503985202154027481">ወደዚህ ጣቢያ ያደረጉት የጉብኝትዎ መዝገብ በደህንነት ቁልፍዎ ላይ ይቀመጣል።</translation>
 <translation id="7504145862399276792">የዚህ ትር ኦዲዮ ድምጸ-ከል እየተደረገ ነው</translation>
 <translation id="750509436279396091">የውርዶች አቃፊን ከፍት</translation>
@@ -9188,6 +9188,7 @@
 <translation id="7551059576287086432"><ph name="FILE_NAME" /> ማውረድ አልተሳካም</translation>
 <translation id="7551643184018910560">መደርደሪያ ላይ ሰካ</translation>
 <translation id="7552191410769096467">የትር ቡድኖችን ለማጋራት ወይም ለመቀላቀል በመለያ መግባት እና ሥምረትን ማብራት ያስፈልግዎታል</translation>
+<translation id="7552196109089297786">ከMicrosoft ዘግተህ ውጣ</translation>
 <translation id="7552846755917812628">የሚከተሉትን ጠቃሚ ምክሮች ይሞክሩ፦</translation>
 <translation id="7553012839257224005">የLinux መያዣውን በመፈተሽ ላይ</translation>
 <translation id="7553242001898162573">ይለፍ ቃልዎን ያስገቡ</translation>
@@ -10322,6 +10323,7 @@ nil</translation>
 <translation id="8330617762701840933">ወደ አማራጭ አሳሽ የሚያዞሩ ድር ጣቢያዎች ዝርዝር።</translation>
 <translation id="8330689128072902965">በአቅራቢያ ያሉ እውቂያዎች ለእርስዎ ማጋራት ይችላሉ። ለመቀየር ጠቅ ያድርጉ።</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{የሚደገፍ የፋይል ዓይነት፡- <ph name="FILE_TYPE1" />}=2{የሚደገፉ የፋይል አይነቶች፦ <ph name="FILE_TYPE1" />፣ <ph name="FILE_TYPE2" />}=3{የሚደገፉ የፋይል አይነቶች፦ <ph name="FILE_TYPE1" />፣ <ph name="FILE_TYPE2" />፣ <ph name="FILE_TYPE3" />}=4{የሚደገፉ የፋይል አይነቶች፦ <ph name="FILE_TYPE1" />፣ <ph name="FILE_TYPE2" />፣ <ph name="FILE_TYPE3" />፣ <ph name="FILE_TYPE4" />}one{የሚደገፉ የፋይል አይነቶች፦ <ph name="FILE_TYPE1" />፣ <ph name="FILE_TYPE2" />፣ <ph name="FILE_TYPE3" />፣ <ph name="FILE_TYPE4" /> (<ph name="LINK" />እና {OVERFLOW_COUNT} ሌሎች<ph name="END_LINK" />)}other{የሚደገፉ የፋይል አይነቶች፦ <ph name="FILE_TYPE1" />፣ <ph name="FILE_TYPE2" />፣ <ph name="FILE_TYPE3" />፣ <ph name="FILE_TYPE4" /> (<ph name="LINK" />እና {OVERFLOW_COUNT} ሌሎች<ph name="END_LINK" />)}}</translation>
+<translation id="8331578454993293727">የይለፍ ቃልዎ በውሂብ ጥሰት ውስጥ ተገኝቷል</translation>
 <translation id="8331822764922665615">ቡድንዎን ይሰይሙ፣ ቀለም ይምረጡ እና Escን ይጫኑ</translation>
 <translation id="833256022891467078">በCrostini የተጋሩ ውሂቦች</translation>
 <translation id="833262891116910667">አድምቅ</translation>
@@ -10403,6 +10405,7 @@ nil</translation>
     <ph name="BEGIN_PARAGRAPH2" />ተጨማሪ እገዛ ለማግኘት የሚከተለውን ይጎብኙ፦ g.co/flex/InstallErrors።<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8383614331548401927">እንኳን ወደ Recap በደህና መጡ</translation>
 <translation id="8386091599636877289">መመሪያ አልተገኘም።</translation>
+<translation id="8387087863179559896">Chrome ለዚህ ጣቢያ መለያዎን በጠንካራ የይለፍ ቃል ማዘመን ይችላል። የይለፍ ቃሉን ማስታወስ አይኖርብዎትም ምክንያቱም በGoogle የይለፍ ቃል አስተዳዳሪ ለ<ph name="EMAIL" /> ተቀምጧል። ስለ <ph name="PASSWORD_CHANGE" /> ተጨማሪ።</translation>
 <translation id="8387361103813440603">አካባቢዎን ለማየት አልተፈቀደም</translation>
 <translation id="8387617938027387193">እርስዎን መሆንዎን ያረጋግጡ</translation>
 <translation id="8388770971141403598">የሁለተኛ ደረጃ መገለጫዎች አይደገፉም</translation>
@@ -10901,7 +10904,6 @@ nil</translation>
 <translation id="8737966899544698733">የአካባቢ ትክክለኛነት (Android ብቻ)</translation>
 <translation id="8738418093147087440">በሀገር፣ በቋንቋ ወይም በግብዓት ስሞች ይፈልጉ</translation>
 <translation id="8740086188450289493">የGoogle መለያ የይለፍ ቃል ይጠቀሙ</translation>
-<translation id="874023689350909633">ይሞክሩት</translation>
 <translation id="8740247629089392745">ይህን Chromebook ለ<ph name="SUPERVISED_USER_NAME" /> መስጠት ይችላሉ። ማዋቀር ሊጠናቀቅ ትንሽ ነው የቀረው፣ እንግዲህ የማሰስ ጊዜው አሁን ነው።</translation>
 <translation id="8740672167979365981">የChromeOS Flex ዝማኔ ያስፈልጋል</translation>
 <translation id="8741944563400125534">የመቀያየሪያ መዳረሻ ውቅረት መመሪያ</translation>

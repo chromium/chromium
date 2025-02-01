@@ -768,6 +768,7 @@
 <translation id="4654549501020883054">Kundalik oʻzgarsin</translation>
 <translation id="4655868084888499342">Fon rasmi tanlandi</translation>
 <translation id="4661249927038176904">Syurreal</translation>
+<translation id="4661392828086261436">Bu yangilanish qurilma ishlab chiqaruvchisi tomonidan taqdim etilgan va Google tomonidan tasdiqlanmagan</translation>
 <translation id="4664651912255946953">moʻyna</translation>
 <translation id="4665014895760275686">Ishlab chiqaruvchi</translation>
 <translation id="467510802200863975">Parollaringiz mos kelmadi</translation>
@@ -1027,6 +1028,7 @@
 <translation id="5904994456462260490">Yangi APN kiriting</translation>
 <translation id="590746845088109442">mushuklar</translation>
 <translation id="5907649332524363701">tugma rangi</translation>
+<translation id="5908813850962688338">Yangilanishni oʻrnatish bir necha daqiqa vaqt olishi mumkin. Yangilanishni yuklab olishda qurilmani quvvat manbaidan uzmay turing. Bu jarayonda qurilma bir necha marta qayta ishga tushishi hamda qora ekran chiqarishi mumkin. Oʻrnatish yakunida qurilmani qayta ishga tushirish soʻraladi.</translation>
 <translation id="5916084858004523819">Taqiqlangan</translation>
 <translation id="5916664084637901428">Yoniq</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Fayl skanerlandi va <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> jildiga saqlandi.}other{Fayllar skanerlandi va <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> jildiga saqlandi.}}</translation>

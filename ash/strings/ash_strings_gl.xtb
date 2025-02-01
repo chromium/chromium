@@ -178,7 +178,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1550523713251050646">Fai clic para ver máis opcións</translation>
 <translation id="1555130319947370107">Azul</translation>
 <translation id="1557622599341396706">Mostrar nome do escritorio</translation>
-<translation id="1567138500090284106">Botón de teclas do rato</translation>
 <translation id="1569384531973824928">Desta forma, todas as aplicacións e sitios web que teñan permisos de cámara e micrófono poderán acceder. É posible que teñas que actualizar a páxina web ou reiniciar a aplicación.</translation>
 <translation id="1571697193564730395">Activar ou desactivar o modo Non molestar. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Afasta o zoom cando a lupa está activada</translation>
@@ -731,6 +730,7 @@ Se non o fas, o panel táctil volverá activarse dentro de <ph name="TIMEOUT_SEC
 <translation id="3522979239100719575">Buscando perfís dispoñibles. Esta acción pode tardar uns minutos.</translation>
 <translation id="3526440770046466733">Abre a ligazón nunha pestana nova e queda na pestana actual</translation>
 <translation id="353086728817903341">Conexión establecida con <ph name="NUM_DEVICES" /> dispositivos</translation>
+<translation id="3532247131850366052">Non se puido crear a folla de cálculo de Google</translation>
 <translation id="3533126039236445965">Aplicacións no andel</translation>
 <translation id="3539957339480430241">Zona wifi de <ph name="DEVICE_NAME" /></translation>
 <translation id="3540893133818942399">Pechar a configuración de visualización do contido multimedia e das fotos recentes do teu teléfono</translation>
@@ -830,6 +830,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="380165613292957338">Ola! Como podo axudarche?</translation>
 <translation id="3804737937830804242">Contraer a cámara</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 emoji. Non hai máis resultados.}other{# emojis. Non hai máis resultados.}}</translation>
+<translation id="3822403841174077928">Non se puido copiar o texto co formato</translation>
 <translation id="3824784079442479685">Desta forma, <ph name="APP_NAME" /> e todas as aplicacións e sitios web que teñan permiso de cámara poderán acceder a ela. É posible que teñas que actualizar a páxina web ou reiniciar a aplicación.</translation>
 <translation id="3826099427150913765">Cambiar ao contrasinal</translation>
 <translation id="383058930331066723">Está activado o modo de aforro de batería</translation>
@@ -1216,6 +1217,7 @@ Hai 1 dispositivo conectado.</translation>
 <translation id="5043679421800073804">Fai clic na última icona do andel ou tócaa</translation>
 <translation id="504465286040788597">Anterior parágrafo</translation>
 <translation id="5045550434625856497">Contrasinal incorrecto</translation>
+<translation id="5058794129231928255">Non se puido crear o documento de Google</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Se falas cando o micrófono estea desactivado, recibirás unha notificación. O audio non sairá do dispositivo.</translation>
 <translation id="5077416371682039027">Configurar a visualización do contido multimedia, das notificacións e das fotos recentes do teu teléfono</translation>
@@ -1648,6 +1650,7 @@ Non hai ningún dispositivo conectado.</translation>
 <translation id="6468406072297048412">{0,plural, =1{Restaura a versión anterior no dispositivo no prazo de 1 minuto}other{Restaura a versión anterior no dispositivo no prazo de # minutos}}</translation>
 <translation id="6469104339369989396">Activar ou desactivar a zona wifi</translation>
 <translation id="6477681113376365978">Non se puido descargar o ficheiro</translation>
+<translation id="648135757200234041">Non se puido crear o contacto</translation>
 <translation id="6482559668224714696">Lupa de pantalla completa</translation>
 <translation id="6485086611007560630">O tempo (non dispoñible)</translation>
 <translation id="6490471652906364588">Dispositivo USB‑C (porto dereito)</translation>
@@ -2288,6 +2291,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="8653151467777939995">Mostrar a configuración de notificacións. Están activadas</translation>
 <translation id="8657066291275741003">minúsculas</translation>
 <translation id="8660331759611631213">Raíz cadrada de 71</translation>
+<translation id="8662921061190671299">Non se puido engadir o evento a Calendar</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Premer Introducir para facer captura de pantalla parcial</translation>
 <translation id="8676770494376880701">Cargador de baixa potencia conectado</translation>

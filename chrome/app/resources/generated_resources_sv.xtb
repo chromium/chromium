@@ -2164,7 +2164,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2471632709106952369">Jämförelsetabeller</translation>
 <translation id="2473195200299095979">Översätt den här sidan</translation>
 <translation id="2475982808118771221">Det uppstod ett fel</translation>
-<translation id="247616523300581745">Dölj de här filerna</translation>
 <translation id="2476435723907345463">Åtkomst till nycklar har tagits bort</translation>
 <translation id="2476901513051581836">Det går inte att rensa lagringsutrymmet förrän storleken på offlineutrymmet är känd.</translation>
 <translation id="2476974672882258506">Avsluta Windows för att avinstallera <ph name="PARALLELS_DESKTOP" />.</translation>
@@ -2806,6 +2805,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> stöds inte.</translation>
 <translation id="2926708162326352948">Temat har uppdaterats till uppladdad bild</translation>
 <translation id="2927017729816812676">Cachelagring</translation>
+<translation id="2928030851119977280">Valet har sparats. Ditt val gäller när du loggar in i andra av Googles tjänster.</translation>
 <translation id="2928795416630981206">Får registrera kamerans position</translation>
 <translation id="2929345818093040583">{NUM_SITES,plural, =1{Chrome har tagit bort behörigheter från 1 webbplats}other{Chrome har tagit bort behörigheter från {NUM_SITES} webbplatser}}</translation>
 <translation id="2931157624143513983">Anpassa till det utskrivbara området</translation>
@@ -3239,7 +3239,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3257733480216378006">Vill du tillåta <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" />?</translation>
 <translation id="325797067711573598">Misstänkt nedladdning har blockerats</translation>
 <translation id="3259723213051400722">Försök igen.</translation>
-<translation id="3260199651491738298">Organisationen styr hur data som samlas in av dessa funktioner får användas. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="3261090393424563833">Öka hastigheten</translation>
 <translation id="3261268979727295785">Du kan lägga till föräldrakontroller för äldre barn när du har slutfört konfigureringen. Information om föräldrakontroller finns i Utforska-appen.</translation>
 <translation id="3261832505033014216">Nyckel för <ph name="USER_EMAIL" /></translation>
@@ -7420,6 +7419,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6253801023880399036">Lösenord sparas i <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="6254503684448816922">Nyckelkompromiss</translation>
 <translation id="6254892857036829079">Perfekt</translation>
+<translation id="6257131917452817589">automatisk lösenordsändring</translation>
 <translation id="6257602895346497974">Aktivera synkronisering …</translation>
 <translation id="6257614441619555296"><ph name="KEY" />: <ph name="VALUE" /></translation>
 <translation id="625827534921607067">Det här nätverket visas om det finns fler än ett tidigare anslutet eller konfigurerat nätverk.</translation>
@@ -8597,7 +8597,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7113974454301513811">Lägg till den aktuella fliken i listan</translation>
 <translation id="7114054701490058191">Lösenorden matchar inte</translation>
 <translation id="7114648273807173152">Öppna Inställningar &gt; Anslutna enheter &gt; Din mobil &gt; Smart Lock om du vill kunna logga in på Google-kontot med Smart Lock.</translation>
-<translation id="7115051913071512405">Testa själv</translation>
 <translation id="7115361495406486998">Det finns inga kontakter inom räckhåll</translation>
 <translation id="7115731767122970828">Förbättra nu</translation>
 <translation id="7116554090938189816">Skrivarens SSL-certifikat har upphört att gälla. Starta om skrivaren och försök igen.</translation>
@@ -9130,6 +9129,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7502528909759062987">Pausa castingen av fliken till <ph name="DEVICE_NAME" /></translation>
 <translation id="7502804472671406749">Det går att scrolla och zooma på delade flikar</translation>
 <translation id="7503191893372251637">Certifieringstyp för Netscape</translation>
+<translation id="7503259455663961898">Ändra det åt mig</translation>
 <translation id="7503985202154027481">Ditt besök på webbplatsen sparas i säkerhetsnyckeln.</translation>
 <translation id="7504145862399276792">Ljudet är avstängt på den här fliken</translation>
 <translation id="750509436279396091">Öppna mappen för nedladdningar</translation>
@@ -9192,6 +9192,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7551059576287086432">Det gick inte att ladda ned <ph name="FILE_NAME" /></translation>
 <translation id="7551643184018910560">Fäst på hyllan</translation>
 <translation id="7552191410769096467">Om du vill dela eller gå med i flikgrupper måste du logga in och aktivera synkronisering</translation>
+<translation id="7552196109089297786">Logga ut från Microsoft</translation>
 <translation id="7552846755917812628">Testa följande tips:</translation>
 <translation id="7553012839257224005">Linux-behållaren kontrolleras</translation>
 <translation id="7553242001898162573">Ange ditt lösenord</translation>
@@ -10321,6 +10322,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8330617762701840933">Listan med webbplatser som omdirigerar till alternativa webbläsare.</translation>
 <translation id="8330689128072902965">Kontakter i närheten kan dela med dig. Klicka för att ändra.</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{Filtyp som stöds: <ph name="FILE_TYPE1" />}=2{Filtyper som stöds: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />}=3{Filtyper som stöds: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />}=4{Filtyper som stöds: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" />}other{Filtyper som stöds: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />och {OVERFLOW_COUNT} till<ph name="END_LINK" />)}}</translation>
+<translation id="8331578454993293727">Detta lösenord har hittats i ett dataintrång</translation>
 <translation id="8331822764922665615">Ge gruppen ett namn, välj en färg och tryck sedan på Esc</translation>
 <translation id="833256022891467078">Delade mappar i Crostini</translation>
 <translation id="833262891116910667">Markera</translation>
@@ -10402,6 +10404,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
     <ph name="BEGIN_PARAGRAPH2" />Besök g.co/flex/InstallErrors om du vill ha mer hjälp<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8383614331548401927">Välkommen tillbaka</translation>
 <translation id="8386091599636877289">Policyn hittades inte.</translation>
+<translation id="8387087863179559896">Chrome kan uppdatera ditt konto för den här webbplatsen med ett starkt lösenord. Du behöver inte komma ihåg lösenordet eftersom det sparas i Google Lösenordshantering för <ph name="EMAIL" />. Mer om <ph name="PASSWORD_CHANGE" />.</translation>
 <translation id="8387361103813440603">Får inte se var du befinner dig</translation>
 <translation id="8387617938027387193">Verifiera din identitet</translation>
 <translation id="8388770971141403598">Sekundära profiler stöds inte</translation>
@@ -10900,7 +10903,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8737966899544698733">Platsangivelsens exakthet (endast Android)</translation>
 <translation id="8738418093147087440">Sök efter land, språk eller inmatningsnamn</translation>
 <translation id="8740086188450289493">Använd lösenordet för Google-kontot</translation>
-<translation id="874023689350909633">Testa nu</translation>
 <translation id="8740247629089392745">Du kan lämna över denna Chromebook till <ph name="SUPERVISED_USER_NAME" />. Konfigureringen är nästan klar. Sedan är det dags att utforska.</translation>
 <translation id="8740672167979365981">Uppdatering av ChromeOS Flex krävs</translation>
 <translation id="8741944563400125534">Konfigurationsguide för brytarstyrning</translation>

@@ -86,6 +86,7 @@
 <translation id="4783638485675352219">Надавати операційній системі доступ до назв і URL-адрес вкладок, відкритих на цьому пристрої</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> відгук)}one{(<ph name="REVIEWS_COUNT_MANY" /> відгук)}few{(<ph name="REVIEWS_COUNT_MANY" /> відгуки)}many{(<ph name="REVIEWS_COUNT_MANY" /> відгуків)}other{(<ph name="REVIEWS_COUNT_MANY" /> відгуку)}}</translation>
 <translation id="4850886885716139402">Перегляд</translation>
+<translation id="4861953997778766866">Усі користувачі можуть вносити зміни в спільні групи вкладок</translation>
 <translation id="4870911314065352661">Закрити всі вкладки?</translation>
 <translation id="4871719318659334896">Закрити групу</translation>
 <translation id="4881695831933465202">Відкрити</translation>
@@ -179,6 +180,7 @@
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> вкладку додано, <ph name="ANY_CLOSED" /> закрито}one{<ph name="MANY_ADDED" /> вкладку додано, <ph name="ANY_CLOSED" /> закрито}few{<ph name="MANY_ADDED" /> вкладки додано, <ph name="ANY_CLOSED" /> закрито}many{<ph name="MANY_ADDED" /> вкладок додано, <ph name="ANY_CLOSED" /> закрито}other{<ph name="MANY_ADDED" /> вкладки додано, <ph name="ANY_CLOSED" /> закрито}}</translation>
 <translation id="8633025649649592204">Останні дії</translation>
 <translation id="870736955561925754">Закрити вкладку й видалити групу?</translation>
+<translation id="8712637175834984815">OK</translation>
 <translation id="8714939927607906138">Дешевше</translation>
 <translation id="8730621377337864115">Готово</translation>
 <translation id="8730999928494395583">Дані про ваші дії на цих анонімних вкладках буде вилучено з пристрою</translation>

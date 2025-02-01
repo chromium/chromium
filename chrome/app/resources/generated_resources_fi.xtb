@@ -2163,7 +2163,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2471632709106952369">Vertailutaulukot</translation>
 <translation id="2473195200299095979">Käännä tämä sivu</translation>
 <translation id="2475982808118771221">Tapahtui virhe</translation>
-<translation id="247616523300581745">Piilota nämä tiedostot</translation>
 <translation id="2476435723907345463">Avainkoodien pääsy poistettu</translation>
 <translation id="2476901513051581836">Tallennustilaa ei voi vapauttaa, ennen kuin offline-tallennustilan koko on tiedossa.</translation>
 <translation id="2476974672882258506">Sammuta Windows, jotta <ph name="PARALLELS_DESKTOP" /> voidaan poistaa.</translation>
@@ -3239,7 +3238,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3257733480216378006">Sallitaanko <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" />?</translation>
 <translation id="325797067711573598">Epäilyttävä lataus estetty</translation>
 <translation id="3259723213051400722">Yritä uudelleen.</translation>
-<translation id="3260199651491738298">Organisaatiosi päättää, miten näiden ominaisuuksien keräämää dataa voidaan käyttää. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="3261090393424563833">Korota näyteenottotaajuutta</translation>
 <translation id="3261268979727295785">Jos kyseessä on vanhempi lapsi, voit lisätä lapsilukon, kun käyttöönotto on valmis. Voit lukea lisää lapsilukosta Explore-sovelluksesta.</translation>
 <translation id="3261832505033014216">Avainkoodi: <ph name="USER_EMAIL" /></translation>
@@ -8595,7 +8593,6 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7113974454301513811">Lisää nykyinen välilehti listalle</translation>
 <translation id="7114054701490058191">Salasanat eivät täsmää</translation>
 <translation id="7114648273807173152">Jos haluat kirjautua Google-tilillesi Smart Lockin avulla, siirry kohtaan Asetukset &gt; Yhdistetyt laitteet &gt; Puhelimesi &gt; Smart Lock.</translation>
-<translation id="7115051913071512405">Kokeile</translation>
 <translation id="7115361495406486998">Ei kontakteja tavoitettavissa</translation>
 <translation id="7115731767122970828">Tehosta nyt</translation>
 <translation id="7116554090938189816">Tulostimen SSL-varmenne on vanhentunut. Käynnistä tulostin uudelleen ja yritä uudelleen.</translation>
@@ -10901,7 +10898,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8737966899544698733">Sijaintitietojen tarkkuus (vain Android)</translation>
 <translation id="8738418093147087440">Hae maiden, kielten tai syöttötapojen nimien mukaan</translation>
 <translation id="8740086188450289493">Käytä Google-tilin salasanaa</translation>
-<translation id="874023689350909633">Kokeile</translation>
 <translation id="8740247629089392745"><ph name="SUPERVISED_USER_NAME" /> voi nyt saada tämän Chromebookin. Käyttöönotto on melkein valmis, pian on aika tutkia.</translation>
 <translation id="8740672167979365981">ChromeOS Flex on päivitettävä</translation>
 <translation id="8741944563400125534">Switch Access ‑käyttöönotto-ohjeet</translation>

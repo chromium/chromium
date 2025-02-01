@@ -2153,7 +2153,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2471632709106952369">Srovnávací tabulky</translation>
 <translation id="2473195200299095979">Přeložit tuto stránku</translation>
 <translation id="2475982808118771221">Došlo k chybě</translation>
-<translation id="247616523300581745">Skrýt tyto soubory</translation>
 <translation id="2476435723907345463">Přístup k přístupovým klíčům odebrán</translation>
 <translation id="2476901513051581836">Úložiště nelze vyčistit, dokud nebude známa velikost úložiště offline.</translation>
 <translation id="2476974672882258506">Pokud chcete odinstalovat <ph name="PARALLELS_DESKTOP" />, ukončete Windows.</translation>
@@ -2795,6 +2794,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="2926620265753325858">Zařízení <ph name="DEVICE_NAME" /> není podporováno</translation>
 <translation id="2926708162326352948">Motiv byl aktualizován na nahraný obrázek</translation>
 <translation id="2927017729816812676">Cache Storage</translation>
+<translation id="2928030851119977280">Volba se uložila a při přihlášení do jiných služeb Google se použije.</translation>
 <translation id="2928795416630981206">Povolení sledovat pozici kamery</translation>
 <translation id="2929345818093040583">{NUM_SITES,plural, =1{Chrome odebral oprávnění 1 webu}few{Chrome odebral oprávnění {NUM_SITES} webům}many{Chrome odebral oprávnění {NUM_SITES} webu}other{Chrome odebral oprávnění {NUM_SITES} webům}}</translation>
 <translation id="2931157624143513983">Přizpůsobit tisknutelné oblasti</translation>
@@ -3226,7 +3226,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3257733480216378006">Povolit <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" />?</translation>
 <translation id="325797067711573598">Bylo zablokováno stažení podezřelého souboru</translation>
 <translation id="3259723213051400722">Zkuste to znovu.</translation>
-<translation id="3260199651491738298">Vaše organizace určuje, jak mohou být data shromážděná těmito funkcemi použita. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="3261090393424563833">Zvýšení vzorkovací frekvenci</translation>
 <translation id="3261268979727295785">Starším dětem můžete rodičovskou kontrolu přidat po dokončení nastavení. Informace o rodičovské kontrole najdete v aplikaci Explore.</translation>
 <translation id="3261832505033014216">Přístupový klíč pro účet <ph name="USER_EMAIL" /></translation>
@@ -7401,6 +7400,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6253801023880399036">Hesla se ukládají do <ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
 <translation id="6254503684448816922">Ohrožení bezpečnosti klíče</translation>
 <translation id="6254892857036829079">Perfektní</translation>
+<translation id="6257131917452817589">automatické změně hesla</translation>
 <translation id="6257602895346497974">Zapnout synchronizaci...</translation>
 <translation id="6257614441619555296"><ph name="KEY" />: <ph name="VALUE" /></translation>
 <translation id="625827534921607067">Tato síť bude preferována, pokud bude k dispozici více než jedna dříve připojená nebo nakonfigurovaná síť</translation>
@@ -8582,7 +8582,6 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7113974454301513811">Teď do seznamu přidejte aktuální kartu</translation>
 <translation id="7114054701490058191">Hesla nejsou shodná</translation>
 <translation id="7114648273807173152">Chcete-li se ke svému účtu Google přihlašovat pomocí funkce Smart Lock, přejděte na Nastavení &gt; Připojená zařízení &gt; Váš telefon &gt; Smart Lock.</translation>
-<translation id="7115051913071512405">Vyzkoušejte to</translation>
 <translation id="7115361495406486998">Žádné dostupné kontakty</translation>
 <translation id="7115731767122970828">Zvýšit výkon</translation>
 <translation id="7116554090938189816">Platnost certifikátu SSL tiskárny vypršela. Restartujte tiskárnu a zkuste to znovu.</translation>
@@ -9114,6 +9113,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7502528909759062987">Pozastavit odesílání karty do zařízení <ph name="DEVICE_NAME" /></translation>
 <translation id="7502804472671406749">Sdílené karty lze posouvat a přibližovat</translation>
 <translation id="7503191893372251637">Certifikát typu Netscape</translation>
+<translation id="7503259455663961898">Změňte mi ho</translation>
 <translation id="7503985202154027481">Na bezpečnostním klíči zůstane záznam o návštěvě tohoto webu.</translation>
 <translation id="7504145862399276792">Zvuk této karty je ztlumen</translation>
 <translation id="750509436279396091">Otevřít složku stažených souborů</translation>
@@ -9176,6 +9176,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7551059576287086432">Stažení souboru <ph name="FILE_NAME" /> bylo úspěšné</translation>
 <translation id="7551643184018910560">Připnout k poličce</translation>
 <translation id="7552191410769096467">Pokud chcete sdílet skupiny karet nebo se k nim připojit, musíte se přihlásit a zapnout synchronizaci</translation>
+<translation id="7552196109089297786">Odhlásit se z účtu Microsoft</translation>
 <translation id="7552846755917812628">Vyzkoušejte následující tipy:</translation>
 <translation id="7553012839257224005">Kontrola kontejneru systému Linux</translation>
 <translation id="7553242001898162573">Zadejte heslo.</translation>
@@ -10305,6 +10306,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8330617762701840933">Seznam webů, které přesměrovávají na alternativní prohlížeč.</translation>
 <translation id="8330689128072902965">Kontakty v okolí s vámi mohou sdílet obsah. Kliknutím změníte.</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{Podporovaný typ souboru: <ph name="FILE_TYPE1" />}=2{Podporované typy souborů: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />}=3{Podporované typy souborů: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" /> a <ph name="FILE_TYPE3" />}=4{Podporované typy souborů: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" /> a <ph name="FILE_TYPE4" />}many{Podporované typy souborů: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> <ph name="LINK" />a další ({OVERFLOW_COUNT})<ph name="END_LINK" />}other{Podporované typy souborů: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> <ph name="LINK" />a další ({OVERFLOW_COUNT})<ph name="END_LINK" />}}</translation>
+<translation id="8331578454993293727">Vaše heslo bylo nalezeno mezi hesly prozrazenými při incidentu porušení zabezpečení údajů.</translation>
 <translation id="8331822764922665615">Pojmenujte skupinu, vyberte barvu a poté stiskněte Escape</translation>
 <translation id="833256022891467078">Sdílené složky Crostini</translation>
 <translation id="833262891116910667">Zvýraznit</translation>
@@ -10386,6 +10388,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
     <ph name="BEGIN_PARAGRAPH2" />Další informace najdete na stránce g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8383614331548401927">Shrnutí na přivítanou</translation>
 <translation id="8386091599636877289">Zásady nebyly nalezeny.</translation>
+<translation id="8387087863179559896">Chrome může váš účet pro tento web aktualizovat na silné heslo. Heslo si nebudete muset pamatovat, protože se vám uloží do Správce hesel Google pro účet <ph name="EMAIL" />. Přečtěte si další informace o<ph name="PASSWORD_CHANGE" />.</translation>
 <translation id="8387361103813440603">Zákaz přístupu k vaší poloze</translation>
 <translation id="8387617938027387193">Potvrďte, že jste to vy</translation>
 <translation id="8388770971141403598">Sekundární profily nejsou podporovány</translation>
@@ -10883,7 +10886,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8737966899544698733">Přesnost určování polohy (pouze Android)</translation>
 <translation id="8738418093147087440">Vyhledat podle zemí, jazyka nebo názvů metod zadávání</translation>
 <translation id="8740086188450289493">Použít heslo k účtu Google</translation>
-<translation id="874023689350909633">Vyzkoušet</translation>
 <translation id="8740247629089392745">Tento Chromebook můžete předat uživateli <ph name="SUPERVISED_USER_NAME" />. Nastavení je skoro hotové. Pak bude čas prozkoumat obsah.</translation>
 <translation id="8740672167979365981">Je vyžadována aktualizace systému ChromeOS Flex</translation>
 <translation id="8741944563400125534">Průvodce nastavením přístupu pomocí přepínačů</translation>

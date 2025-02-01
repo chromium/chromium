@@ -2152,7 +2152,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2471632709106952369">Tabelle di confronto</translation>
 <translation id="2473195200299095979">Traduci questa pagina</translation>
 <translation id="2475982808118771221">Si è verificato un errore</translation>
-<translation id="247616523300581745">Nascondi questi file</translation>
 <translation id="2476435723907345463">Accesso alle passkey rimosso</translation>
 <translation id="2476901513051581836">Non è possibile pulire lo spazio di archiviazione finché non si conoscono le dimensioni dello spazio di archiviazione offline.</translation>
 <translation id="2476974672882258506">Arresta la VM Windows per disinstallare <ph name="PARALLELS_DESKTOP" />.</translation>
@@ -3231,7 +3230,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3257733480216378006">Vuoi consentire <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" />?</translation>
 <translation id="325797067711573598">Download sospetto bloccato</translation>
 <translation id="3259723213051400722">Riprova.</translation>
-<translation id="3260199651491738298">La tua organizzazione controlla il modo in cui possono essere utilizzati i dati raccolti da queste funzionalità. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="3261090393424563833">Aumenta frequenza</translation>
 <translation id="3261268979727295785">Per i bambini più grandi, puoi aggiungere la funzionalità Controllo genitori dopo aver completato la configurazione. Leggi informazioni su questa funzionalità nell'app Esplora.</translation>
 <translation id="3261832505033014216">Passkey per <ph name="USER_EMAIL" /></translation>
@@ -8595,7 +8593,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7113974454301513811">Ora aggiungi la scheda corrente al tuo elenco</translation>
 <translation id="7114054701490058191">Le password non corrispondono</translation>
 <translation id="7114648273807173152">Per utilizzare Smart Lock per accedere al tuo Account Google, apri Impostazioni &gt; Dispositivi connessi &gt; Il tuo telefono &gt; Smart Lock.</translation>
-<translation id="7115051913071512405">Provalo</translation>
 <translation id="7115361495406486998">Nessun contatto raggiungibile</translation>
 <translation id="7115731767122970828">Aumenta prestazioni ora</translation>
 <translation id="7116554090938189816">Il certificato SSL della stampante è scaduto. Riavvia la stampante e riprova.</translation>
@@ -10902,7 +10899,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8737966899544698733">Precisione della posizione (solo Android)</translation>
 <translation id="8738418093147087440">Cerca per paesi, lingua o nomi di input</translation>
 <translation id="8740086188450289493">Usa la password del tuo Account Google</translation>
-<translation id="874023689350909633">Prova</translation>
 <translation id="8740247629089392745">Puoi consegnare il Chromebook a <ph name="SUPERVISED_USER_NAME" />. La configurazione è quasi completa, a breve sarà possibile utilizzare il dispositivo.</translation>
 <translation id="8740672167979365981">Aggiornamento di ChromeOS Flex richiesto</translation>
 <translation id="8741944563400125534">Guida alla configurazione di Switch Access</translation>

@@ -385,7 +385,6 @@
 <translation id="2781151931089541271">۱ ثانیه باقی‌مانده است</translation>
 <translation id="2789486458103222910">تأیید</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{‏‫Chrome یک مورد استفاده مجدد از گذرواژه پیدا کرده است که می‌توانید آن را بهبود دهید}one{‏‫Chrome ‏# مورد استفاده مجدد از گذرواژه پیدا کرده است که می‌توانید آن‌ها را بهبود دهید}other{‏‫Chrome ‏# مورد استفاده مجدد از گذرواژه پیدا کرده است که می‌توانید آن‌ها را بهبود دهید}}</translation>
-<translation id="2796651346651857052">برای تغییر دادن مکان نوار نشانی، آن را لمس کنید و نگه دارید.</translation>
 <translation id="2800066122460699237">برگه <ph name="TAB_TITLE" /> بسته خواهد شد</translation>
 <translation id="2805756323405976993">برنامه‌ها</translation>
 <translation id="281504910091592009">‏در <ph name="BEGIN_LINK" />حساب Google<ph name="END_LINK" /> خود گذرواژه‌های ذخیره‌شده را مشاهده و مدیریت کنید</translation>

@@ -2162,7 +2162,6 @@
 <translation id="2471632709106952369">టేబుల్స్‌ను కంపార్ చేయండి</translation>
 <translation id="2473195200299095979">ఈ పేజీని అనువదించండి</translation>
 <translation id="2475982808118771221">ఒక ఎర్రర్ ఏర్పడింది</translation>
-<translation id="247616523300581745">ఈ ఫైళ్లను దాచండి</translation>
 <translation id="2476435723907345463">పాస్-కీల యాక్సెస్‌ను తీసివేయడం జరిగింది</translation>
 <translation id="2476901513051581836">ఆఫ్‌లైన్ స్టోరేజ్ సైజు తెలిసే వరకు స్టోరేజ్‌ను క్లీన్ చేయడం సాధ్యం కాదు.</translation>
 <translation id="2476974672882258506"><ph name="PARALLELS_DESKTOP" />ను అన్‌ఇన్‌స్టాల్ చేయడానికి Windowsను షట్ డౌన్ చేయండి.</translation>
@@ -2804,6 +2803,7 @@
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> సపోర్ట్ చేయదు.</translation>
 <translation id="2926708162326352948">అప్‌లోడ్ చేసిన ఇమేజ్‌కు థీమ్ అప్‌డేట్ చేయబడింది</translation>
 <translation id="2927017729816812676">కాష్ స్టోరేజ్‌</translation>
+<translation id="2928030851119977280">ఎంపిక సేవ్ అయింది. మీరు ఇతర Google సర్వీస్‌లకు సైన్ ఇన్ చేసినప్పుడు మీ ఎంపిక వర్తిస్తుంది.</translation>
 <translation id="2928795416630981206">మీ కెమెరా పొజిషన్‌ను ట్రాక్ చేయడానికి అనుమతించబడింది</translation>
 <translation id="2929345818093040583">{NUM_SITES,plural, =1{Chrome 1 సైట్ నుండి అనుమతులను తీసివేసింది}other{Chrome {NUM_SITES} సైట్‌ల నుండి అనుమతులను తీసివేసింది}}</translation>
 <translation id="2931157624143513983">ప్రింట్ చేయగల సైజ్‌కు అమర్చు</translation>
@@ -3237,7 +3237,6 @@
 <translation id="3257733480216378006"><ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" />ను అనుమతించాలా?</translation>
 <translation id="325797067711573598">అనుమానాస్పదమైన డౌన్‌లోడ్ బ్లాక్ చేయబడింది</translation>
 <translation id="3259723213051400722">దయచేసి మళ్లీ ట్రై చేయండి.</translation>
-<translation id="3260199651491738298">ఈ ఫీచర్‌ల ద్వారా కలెక్ట్ చేసిన డేటా ఎలా ఉపయోగించబడుతుందో మీ సంస్థ కంట్రోల్ చేస్తుంది. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="3261090393424563833">రేటు పెంచండి</translation>
 <translation id="3261268979727295785">ఎదిగిన పిల్లల కోసం, మీరు సెటప్‌ను పూర్తి చేశాక తల్లిదండ్రుల నియంత్రణలను జోడించవచ్చు. తల్లిదండ్రుల నియంత్రణలకు సంబంధించిన సమాచారాన్ని Explore యాప్‌లో చూడగలరు.</translation>
 <translation id="3261832505033014216"><ph name="USER_EMAIL" /> కోసం పాస్-కీ</translation>
@@ -7417,6 +7416,7 @@
 <translation id="6253801023880399036">పాస్‌వర్డ్‌లు <ph name="GOOGLE_PASSWORD_MANAGER" />‌లో సేవ్ చేయబడ్డాయి.</translation>
 <translation id="6254503684448816922">కీ రాజీ</translation>
 <translation id="6254892857036829079">అద్భుతంగా ఉంది</translation>
+<translation id="6257131917452817589">ఆటోమేటిక్‌గా పాస్‌వర్డ్‌ను మార్చడం</translation>
 <translation id="6257602895346497974">సింక్‌ను ఆన్ చేయి...</translation>
 <translation id="6257614441619555296"><ph name="KEY" />: <ph name="VALUE" /></translation>
 <translation id="625827534921607067">ఒకటి కంటే ఎక్కువ మునుపటి నెట్‌వర్క్‌లు లేదా కాన్ఫిగ‌ర్ చేసిన నెట్‌వర్క్ అందుబాటులో ఉంటే, ఈ ప్రాధాన్య నెట్‌వర్క్ ఉపయోగించబడుతుంది</translation>
@@ -8594,7 +8594,6 @@
 <translation id="7113974454301513811">ఇప్పుడు మీ లిస్ట్‌కు ప్రస్తుత ట్యాబ్‌ను జోడించండి</translation>
 <translation id="7114054701490058191">పాస్‌‌వర్డ్‌లు సరిపోలలేదు</translation>
 <translation id="7114648273807173152">మీ Google ఖాతాకు సైన్ ఇన్ చేయడం కోసం Smart Lockని ఉపయోగించడానికి, సెట్టింగ్‌లు &gt; కనెక్ట్ చేసిన పరికరాలు &gt; మీ ఫోన్ &gt; Smart Lockకు వెళ్లండి.</translation>
-<translation id="7115051913071512405">దీన్ని ప్రయత్నించు</translation>
 <translation id="7115361495406486998">అందుబాటులో కాంటాక్ట్‌లు ఏవీ లేవు</translation>
 <translation id="7115731767122970828">ఇప్పుడే బూస్ట్ చేయండి</translation>
 <translation id="7116554090938189816">ప్రింటర్ SSL సర్టిఫికెట్ గడువు ముగిసింది. ప్రింటర్‌ను రీస్టార్ట్ చేసి, మళ్లీ ట్రై చేయండి.</translation>
@@ -9127,6 +9126,7 @@
 <translation id="7502528909759062987">ట్యాబ్‌ను <ph name="DEVICE_NAME" />లో ప్రసారం చేయడాన్ని పాజ్ చేయండి</translation>
 <translation id="7502804472671406749">షేర్ చేసిన ట్యాబ్‌లను స్క్రోల్ చేయవచ్చు, జూమ్ చేయవచ్చు</translation>
 <translation id="7503191893372251637">Netscape సర్టిఫికెట్ రకం</translation>
+<translation id="7503259455663961898">నా కోసం దాన్ని మార్చండి</translation>
 <translation id="7503985202154027481">ఈ సైట్‌కు మీ సందర్శన గురించిన సమాచారం మీ సెక్యూరిటీ కీలో రికార్డ్ చేయబడుతుంది.</translation>
 <translation id="7504145862399276792">ఈ ట్యాబ్ ఆడియో మ్యూట్ చేయబడుతోంది</translation>
 <translation id="750509436279396091">డౌన్‌లోడ్‌ల ఫోల్డర్ తెరువు</translation>
@@ -9189,6 +9189,7 @@
 <translation id="7551059576287086432"><ph name="FILE_NAME" /> డౌన్‌లోడ్ విఫలమైంది</translation>
 <translation id="7551643184018910560">అరకు పిన్ చేయండి</translation>
 <translation id="7552191410769096467">ట్యాబ్ గ్రూప్‌లను షేర్ చేయడానికి లేదా వాటిలో చేరడానికి, మీరు సైన్ ఇన్ చేసి, సింక్‌ను ఆన్ చేయాలి</translation>
+<translation id="7552196109089297786">Microsoft నుండి సైన్ అవుట్ చేయండి</translation>
 <translation id="7552846755917812628">కింది చిట్కాలను ప్రయత్నించండి:</translation>
 <translation id="7553012839257224005">Linux కంటెయినర్‌ను చెక్ చేస్తోంది</translation>
 <translation id="7553242001898162573">మీ పాస్‌వర్డ్‌ను నమోదు చేయండి</translation>
@@ -10314,6 +10315,7 @@
 <translation id="8330617762701840933">ప్రత్యామ్నాయ బ్రౌజర్‌కు మళ్లించే వెబ్‌సైట్‌ల లిస్ట్.</translation>
 <translation id="8330689128072902965">సమీపంలోని కాంటాక్ట్‌లు మీతో షేర్ చేయగలవు. మార్చడానికి క్లిక్ చేయండి.</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{సపోర్ట్ కలిగిన ఫైల్ రకం: <ph name="FILE_TYPE1" />}=2{సపోర్ట్ కలిగిన ఫైల్ రకాలు: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />}=3{సపోర్ట్ కలిగిన ఫైల్ రకాలు: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />}=4{సపోర్ట్ కలిగిన ఫైల్ రకాలు: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" />}other{సపోర్ట్ కలిగిన ఫైల్ రకాలు: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />మరియు, మరో {OVERFLOW_COUNT}<ph name="END_LINK" />)}}</translation>
+<translation id="8331578454993293727">డేటా ఉల్లంఘన జరిగిన ఒక సంఘటనలో మీ పాస్‌వర్డ్ బహిర్గతమైంది</translation>
 <translation id="8331822764922665615">మీ గ్రూప్‌నకు పేరు, రంగును ఎంచుకొని, Escను నొక్కండి</translation>
 <translation id="833256022891467078">Crostini షేర్ చేసిన ఫోల్డర్‌లు</translation>
 <translation id="833262891116910667">హైలైట్ చేస్తుంది</translation>
@@ -10395,6 +10397,7 @@
     <ph name="BEGIN_PARAGRAPH2" />మరింత సహాయం కోసం, ఈ సైట్‌ను సందర్శించండి: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8383614331548401927">Recapకు స్వాగతం</translation>
 <translation id="8386091599636877289">విధానం కనుగొనబడలేదు.</translation>
+<translation id="8387087863179559896">ఈ సైట్‌కు మీ ఖాతాను Chrome శక్తివంతమైన పాస్‌వర్డ్‌తో అప్‌డేట్ చేయగలదు. మీరు పాస్‌వర్డ్‌ను గుర్తుంచుకోవాల్సిన అవసరం లేదు, ఎందుకంటే అది <ph name="EMAIL" />‌కు Google Password Managerలో సేవ్ అవుతుంది. <ph name="PASSWORD_CHANGE" /> గురించి మరింత సమాచారం.</translation>
 <translation id="8387361103813440603">మీ లొకేషన్‌ను చూడటానికి అనుమతించబడలేదు</translation>
 <translation id="8387617938027387193">ఇది మీరేనని వెరిఫై చేయండి</translation>
 <translation id="8388770971141403598">ద్వితీయ ప్రొఫైళ్లు సపోర్ట్ చేయవు</translation>
@@ -10893,7 +10896,6 @@
 <translation id="8737966899544698733">లొకేషన్ ఖచ్చితత్వం (Androidలో మాత్రమే)</translation>
 <translation id="8738418093147087440">దేశాలు, భాష లేదా ఇన్‌పుట్ పేర్ల ఆధారంగా సెర్చ్ చేయండి</translation>
 <translation id="8740086188450289493">Google ఖాతా పాస్‌వర్డ్‌ను ఉపయోగించండి</translation>
-<translation id="874023689350909633">దీన్ని ట్రై చేయండి</translation>
 <translation id="8740247629089392745">మీరు ఈ Chromebookను <ph name="SUPERVISED_USER_NAME" />కు ఇవ్వవచ్చు. సెటప్ దాదాపు పూర్తయింది, మరిన్ని విషయాలను తెలుసుకునే సమయం ఆసన్నమైంది.</translation>
 <translation id="8740672167979365981">ChromeOS Flex అప్‌డేట్ అవసరం</translation>
 <translation id="8741944563400125534">Switch Access సెటప్ గైడ్</translation>

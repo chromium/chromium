@@ -327,6 +327,7 @@
 <translation id="569897634095159764">Internetga ulanmadi. Proksi server autentifikatsiyani talab qiladi.</translation>
 <translation id="5761096224651992291">Yaqinda ochmagansiz. Chromium olib tashladi: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /></translation>
 <translation id="5768371961535086509">Chromium nofaol varaqlar orqali xotirani boʻshatadi. Bunda faol varaqlar va boshqa ilovalar kompyuter resurslarini oshiradi va Chromium ishlashi tezlashadi. Nofaol varaqlar ularga qaytilganda avtomatik faollashadi. <ph name="BEGIN_LINK" />Operativ xotirani tejash haqida batafsil<ph name="END_LINK" /></translation>
+<translation id="5775198138441669627">Agar kodli iborani unutsangiz yoki bu sozlamani oʻzgartirmoqchi boʻlsangiz, hisobingizda Chromium maʼlumotlarini <ph name="SETTINGS_LINK" /></translation>
 <translation id="5800158606660203929">Chromiumni oʻzingizga moslab, boshqaring. Chromiumni asosiy brauzer etib belgilang.</translation>
 <translation id="5809516625706423866">Internetga ulanmadi. HTTP 401, ruxsat berilmagan. Proksi konfiguratsiyasini tekshiring.</translation>
 <translation id="5821520528363214608">Chromium maʼlumotlarini ishlatish va Google hisobingizda saqlash uchun Chromiumni yangilang</translation>
@@ -499,7 +500,6 @@ Chromium sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="7872446069773932638">Yuklab olinmoqda... <ph name="SECONDS" /> soniya qoldi.</translation>
 <translation id="7888981273428720788">Chromiumni asosiy brauzer etib belgilang</translation>
 <translation id="7934340546140346950">Chromium himoyasiz ulanishlarni imkon qadar HTTPS protokolga avtomatik yangilaydi</translation>
-<translation id="7935734571048689933">Chromium boshqariladi</translation>
 <translation id="7937630085815544518">Avvallari siz Chromium‘ga <ph name="USER_EMAIL_ADDRESS" /> hisobidan kirgandingiz. O‘sha hisobdan foydalanib yana qaytadan kiring.</translation>
 <translation id="7975919845073681630">Chromium takroran o‘rnatilgan, shuning uchun u asosiy brauzer bo‘la olmaydi.</translation>
 <translation id="7997934263947464652">Nomaʼlum manbalar kengaytmalari, ilovalari va mavzulari qurilmangizni zararlashi mumkin. Chromium ularni faqat <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> orqali oʻrnatishni tavsiya qiladi</translation>

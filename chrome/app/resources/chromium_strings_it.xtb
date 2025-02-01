@@ -502,7 +502,6 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="7872446069773932638">Download in corso… Secondi rimanenti: <ph name="SECONDS" /></translation>
 <translation id="7888981273428720788">Imposta Chromium come browser predefinito</translation>
 <translation id="7934340546140346950">Quando possibile, Chromium esegue automaticamente l'upgrade delle connessioni non sicure a HTTPS</translation>
-<translation id="7935734571048689933">Chromium è gestito</translation>
 <translation id="7937630085815544518">Hai eseguito l'accesso a Chromium come <ph name="USER_EMAIL_ADDRESS" />. Utilizza lo stesso account per eseguire di nuovo l'accesso.</translation>
 <translation id="7975919845073681630">Questa è un'installazione secondaria, di conseguenza Chromium non può essere impostato come browser predefinito.</translation>
 <translation id="7997934263947464652">Estensioni, app e temi da origini sconosciute possono danneggiare il tuo dispositivo. Chromium consiglia di installare questi elementi soltanto dal <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>

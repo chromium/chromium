@@ -86,6 +86,7 @@ Jeśli ją usuniesz, wszyscy natychmiast utracą dostęp do grupy kart „<ph na
 <translation id="4783638485675352219">Udostępniaj systemowi operacyjnemu tytuły i adresy URL otwartych kart z tego urządzenia</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> opinia)}few{(<ph name="REVIEWS_COUNT_MANY" /> opinie)}many{(<ph name="REVIEWS_COUNT_MANY" /> opinii)}other{(<ph name="REVIEWS_COUNT_MANY" /> opinii)}}</translation>
 <translation id="4850886885716139402">Widok</translation>
+<translation id="4861953997778766866">Każdy może wprowadzać zmiany w udostępnionych grupach kart</translation>
 <translation id="4870911314065352661">Zamknąć wszystkie karty?</translation>
 <translation id="4871719318659334896">Zamknij grupę</translation>
 <translation id="4881695831933465202">Otwórz</translation>
@@ -179,6 +180,7 @@ Jeśli ją usuniesz, wszyscy natychmiast utracą dostęp do grupy kart „<ph na
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{Dodano <ph name="ONE_ADDED" /> kartę, zamknięto <ph name="ANY_CLOSED" />}few{Dodano <ph name="MANY_ADDED" /> karty, zamknięto <ph name="ANY_CLOSED" />}many{Dodano <ph name="MANY_ADDED" /> kart, zamknięto <ph name="ANY_CLOSED" />}other{Dodano <ph name="MANY_ADDED" /> karty, zamknięto <ph name="ANY_CLOSED" />}}</translation>
 <translation id="8633025649649592204">Ostatnia aktywność</translation>
 <translation id="870736955561925754">Zamknąć kartę i usunąć grupę?</translation>
+<translation id="8712637175834984815">OK</translation>
 <translation id="8714939927607906138">Niższa cena</translation>
 <translation id="8730621377337864115">Gotowe</translation>
 <translation id="8730999928494395583">Twoja aktywność na tych kartach incognito zostanie usunięta z tego urządzenia</translation>

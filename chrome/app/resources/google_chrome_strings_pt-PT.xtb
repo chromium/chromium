@@ -435,6 +435,7 @@
 <translation id="659498884637196217">No Gestor de palavras-passe da Google neste dispositivo</translation>
 <translation id="6632473616050862500">A criação do ChromeOS Flex foi possível devido a <ph name="BEGIN_LINK_CROS_OSS" />software de código aberto<ph name="END_LINK_CROS_OSS" /> adicional.</translation>
 <translation id="6660596345553328257">Iniciar sessão no Chrome?</translation>
+<translation id="6664219008737641504">Se se esqueceu da frase de acesso ou quiser alterar esta definição, <ph name="SETTINGS_LINK" /> os dados do Chrome na sua conta</translation>
 <translation id="6676384891291319759">Aceder à Internet</translation>
 <translation id="6679975945624592337">Permitir que o Google Chrome seja executado em segundo plano</translation>
 <translation id="6696915334902295848">O Chrome necessita da autorização do microfone para este site</translation>
@@ -508,7 +509,6 @@
 <translation id="7572537927358445944">Desativada • O Chrome não consegue validar a origem desta extensão</translation>
 <translation id="7583399374488819119">Instalador do <ph name="COMPANY_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
-<translation id="7617512710641355143">O Chrome é gerido</translation>
 <translation id="7626032353295482388">Bem-vindo ao Chrome</translation>
 <translation id="7626072681686626474"><ph name="MANAGER" /> requer a leitura e a aceitação dos seguintes Termos de Utilização antes de usar este dispositivo. Estes termos não ampliam, não modificam nem limitam os Termos do Google ChromeOS.</translation>
 <translation id="7629695634924605473">O Chrome indica-lhe se as suas palavras-passe forem comprometidas.</translation>

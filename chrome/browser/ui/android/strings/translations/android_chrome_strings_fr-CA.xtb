@@ -385,7 +385,6 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="2781151931089541271">Il reste 1 s</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome a trouvé un mot de passe réutilisé que vous pourriez améliorer}one{Chrome a trouvé # mot de passe réutilisé que vous pourriez améliorer}other{Chrome a trouvé # mots de passe réutilisés que vous pourriez améliorer}}</translation>
-<translation id="2796651346651857052">Maintenez le doigt sur la barre d'adresse pour modifier sa position.</translation>
 <translation id="2800066122460699237">L'onglet <ph name="TAB_TITLE" /> sera fermé</translation>
 <translation id="2805756323405976993">Applications</translation>
 <translation id="281504910091592009">Affichez et gérez les mots de passe enregistrés dans votre <ph name="BEGIN_LINK" />compte google<ph name="END_LINK" /></translation>

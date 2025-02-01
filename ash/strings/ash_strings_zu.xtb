@@ -178,7 +178,6 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="1550523713251050646">Chofoza ukuze uthole okunye okungakhethwa</translation>
 <translation id="1555130319947370107">Okuluhlaza okwesibhakabhaka</translation>
 <translation id="1557622599341396706">Bonisa igama ledeski</translation>
-<translation id="1567138500090284106">Inkinobho yokhiye bemouse</translation>
 <translation id="1569384531973824928">Lokhu kuvumela ukufinyelela kwawo wonke ama-app namawebhusayithi anemvume yekhamera nemakrofoni. Ungase udinge ukuvuselela ikhasi lewebhu noma uqale kabusha i-app.</translation>
 <translation id="1571697193564730395">Guqula okuthi Ungaphazamisi. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Hlehlisa lapho isikhulisi sivuliwe</translation>
@@ -731,6 +730,7 @@ Uma kungenjalo iphedi yokuthinta eyakhelwe ngaphakathi izonikwa amandla kabusha 
 <translation id="3522979239100719575">Ifuna amaphrofayela atholakalayo. Lokhu kungathatha imizuzu embalwa.</translation>
 <translation id="3526440770046466733">Vula ilinki kuthebhu entsha futhi uhlale kuthebhu yamanje</translation>
 <translation id="353086728817903341">Ixhunywe kumadivayisi angu-<ph name="NUM_DEVICES" /></translation>
+<translation id="3532247131850366052">Ayikwazanga ukusungula iGoogle Sheet</translation>
 <translation id="3533126039236445965">Ama-app aseshelufini</translation>
 <translation id="3539957339480430241">I-hotspot ye-<ph name="DEVICE_NAME" /></translation>
 <translation id="3540893133818942399">Yeka ukusetha ukubuka izithombe nemidiya yefoni yakho yakamuva</translation>
@@ -829,6 +829,7 @@ Xhuma idivayisi yakho emandleni.</translation>
 <translation id="380165613292957338">Sawubona, ngingasiza kanjani?</translation>
 <translation id="3804737937830804242">Goqa ikhamera</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{I-emoji eli-1. Ayikho eminye imiphumela.}one{Ama-emoji angu-# Ayikho eminye imiphumela.}other{Ama-emoji angu-# Ayikho eminye imiphumela.}}</translation>
+<translation id="3822403841174077928">Ayikwazanga ukukopisha ngokufometha</translation>
 <translation id="3824784079442479685">Lokhu kuvumela ukufinyelela kwekhamera ku-<ph name="APP_NAME" />, nakuwo wonke ama-app namawebhusayithi anemvume yekhamera Ungase udinge ukuvuselela ikhasi lewebhu noma uqale kabusha i-app.</translation>
 <translation id="3826099427150913765">Shintshela kuphasiwedi</translation>
 <translation id="383058930331066723">Imodi yesilondolozi sebhethri sivuliwe</translation>
@@ -1215,6 +1216,7 @@ Kuxhunywe idivayisi engu-1.</translation>
 <translation id="5043679421800073804">Chofoza noma thepha isithonjana sokugcina eshalofini</translation>
 <translation id="504465286040788597">Ipharagrafu yangaphambilini</translation>
 <translation id="5045550434625856497">Iphasiwedi engalungile</translation>
+<translation id="5058794129231928255">Ayikwazanga ukusungula iGoogle Doc</translation>
 <translation id="5062496344832867502">i-ram</translation>
 <translation id="5068762093486106012">Uzokwaziswa uma ukhuluma ngenkathi uthulisiwe. Umsindo awulokothi ushiye idivayisi yakho.</translation>
 <translation id="5077416371682039027">Setha ukubuka izithombe, imidiya, izaziso, nama-app efoni yakho akamuva</translation>
@@ -1647,6 +1649,7 @@ Awekho amadivayisi axhunyiwe.</translation>
 <translation id="6468406072297048412">{0,plural, =1{Buyekeza idivayisi ibe uhlobo lwangaphambilini ngomzuzu owodwa}one{Buyekeza idivayisi ibe uhlobo lwangaphambilini ngemizuzu engu-#}other{Buyekeza idivayisi ibe uhlobo lwangaphambilini ngemizuzu engu-#}}</translation>
 <translation id="6469104339369989396">Guqula i-hotspot</translation>
 <translation id="6477681113376365978">Ayikwazi ukudawuniloda ifayela</translation>
+<translation id="648135757200234041">Ayikwazanga ukusungula oxhumana naye</translation>
 <translation id="6482559668224714696">Isikhulisi sesikrini esidokhiwe</translation>
 <translation id="6485086611007560630">Isimo sezulu (asitholakali)</translation>
 <translation id="6490471652906364588">Idivayisi ye-USB-C (imbobo engakwesokudla)</translation>
@@ -2287,6 +2290,7 @@ Ukuze uvale idivayisi, cindezela futhi ubambe inkinobho yamandla kudivayisi futh
 <translation id="8653151467777939995">Bonisa izilungiselelo zesaziso. Izaziso zivuliwe</translation>
 <translation id="8657066291275741003">uhlamvu oluncane</translation>
 <translation id="8660331759611631213">I-Square root sokungu-71</translation>
+<translation id="8662921061190671299">Ayikwazanga ukwengeza Ikhalenda</translation>
 <translation id="8663756353922886599">I-<ph name="CONNECTION_STATUS" />, amandla esignali angu-<ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Cindezela u-enter ukuze uthathe ingxenye yesithombe-skrini</translation>
 <translation id="8676770494376880701">Ishaja yamandla amancane ixhunyiwe</translation>

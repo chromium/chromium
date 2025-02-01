@@ -386,7 +386,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2781151931089541271">1 sec rimanente</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome ha rilevato una password riutilizzata che potresti migliorare}other{Chrome ha rilevato # password riutilizzate che potresti migliorare}}</translation>
-<translation id="2796651346651857052">Tocca e tieni premuta la barra degli indirizzi per cambiare la sua posizione.</translation>
 <translation id="2800066122460699237">La scheda <ph name="TAB_TITLE" /> verrà chiusa</translation>
 <translation id="2805756323405976993">App</translation>
 <translation id="281504910091592009">Visualizza e gestisci le password salvate nel tuo <ph name="BEGIN_LINK" />Account Google<ph name="END_LINK" /></translation>

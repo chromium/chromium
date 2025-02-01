@@ -435,6 +435,7 @@
 <translation id="659498884637196217">No Gerenciador de senhas do Google deste dispositivo</translation>
 <translation id="6632473616050862500">A criação do ChromeOS Flex só foi possível graças a um outro <ph name="BEGIN_LINK_CROS_OSS" />software de código aberto<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6660596345553328257">Fazer login no Chrome?</translation>
+<translation id="6664219008737641504">Se você esquecer a senha longa ou quiser mudar essa configuração, <ph name="SETTINGS_LINK" /> os dados do Chrome da sua conta</translation>
 <translation id="6676384891291319759">Acessar a internet</translation>
 <translation id="6679975945624592337">Permitir a execução do Google Chrome em segundo plano</translation>
 <translation id="6696915334902295848">O Chrome precisa da permissão de acesso ao microfone para este site</translation>
@@ -508,7 +509,6 @@
 <translation id="7572537927358445944">Desativada: o Chrome não consegue verificar a origem dessa extensão</translation>
 <translation id="7583399374488819119">Instalador do <ph name="COMPANY_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
-<translation id="7617512710641355143">O Chrome está sendo gerenciado</translation>
 <translation id="7626032353295482388">Este é o Google Chrome</translation>
 <translation id="7626072681686626474"><ph name="MANAGER" /> requer que você leia e aceite os Termos de Serviço a seguir antes de usar o dispositivo. Esses termos não ampliam, modificam nem limitam os Termos do Google ChromeOS.</translation>
 <translation id="7629695634924605473">O Chrome avisa se suas senhas forem comprometidas</translation>

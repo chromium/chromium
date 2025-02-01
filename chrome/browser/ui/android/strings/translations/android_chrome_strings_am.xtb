@@ -385,7 +385,6 @@
 <translation id="2781151931089541271">1 ሰከንድ ይቀራል</translation>
 <translation id="2789486458103222910">እሺ</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome ሊያሻሽሉት የሚችሉት ዳግም ጥቅም ላይ የዋለ የይለፍ ቃል አግኝቷል}one{Chrome ሊያሻሽሉት የሚችሉት # ዳግም ጥቅም ላይ የዋለ የይለፍ ቃል አግኝቷል}other{Chrome ሊያሻሽሏቸው የሚችሏቸው # ዳግም ጥቅም ላይ የዋሉ የይለፍ ቃላትን አግኝቷል}}</translation>
-<translation id="2796651346651857052">ቦታውን ለመቀየር የአድራሻ አሞሌውን ይንኩ እና ይያዙ።</translation>
 <translation id="2800066122460699237">ትር <ph name="TAB_TITLE" /> ይዘጋል</translation>
 <translation id="2805756323405976993">መተግበሪያዎች</translation>
 <translation id="281504910091592009">የተቀመጡ የይለፍ ቃላትን በእርስዎ <ph name="BEGIN_LINK" />Google መለያ<ph name="END_LINK" /> ውስጥ ይመልከቱ እና ያስተዳድሩ</translation>

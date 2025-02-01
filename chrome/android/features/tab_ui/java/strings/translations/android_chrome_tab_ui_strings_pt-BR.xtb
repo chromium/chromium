@@ -86,6 +86,7 @@ Se você excluir o grupo, todos vão perder imediatamente o acesso ao grupo de g
 <translation id="4783638485675352219">Compartilhar títulos e URLs de guias abertas neste dispositivo com o sistema operacional</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> avaliação)}one{(<ph name="REVIEWS_COUNT_MANY" /> avaliação)}other{(<ph name="REVIEWS_COUNT_MANY" /> avaliações)}}</translation>
 <translation id="4850886885716139402">Ver</translation>
+<translation id="4861953997778766866">Todos os participantes podem fazer mudanças em grupos de guias compartilhados</translation>
 <translation id="4870911314065352661">Fechar todas as guias?</translation>
 <translation id="4871719318659334896">Fechar grupo</translation>
 <translation id="4881695831933465202">Abrir</translation>
@@ -179,6 +180,7 @@ Se você excluir o grupo, todos vão perder imediatamente o acesso ao grupo de g
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> guia adicionada, <ph name="ANY_CLOSED" /> fechada(s)}one{<ph name="MANY_ADDED" /> guia adicionada, <ph name="ANY_CLOSED" /> fechada(s)}other{<ph name="MANY_ADDED" /> guias adicionadas, <ph name="ANY_CLOSED" /> fechada(s)}}</translation>
 <translation id="8633025649649592204">Atividade recente</translation>
 <translation id="870736955561925754">Fechar guia e excluir grupo?</translation>
+<translation id="8712637175834984815">Entendi</translation>
 <translation id="8714939927607906138">Preço menor</translation>
 <translation id="8730621377337864115">Concluir</translation>
 <translation id="8730999928494395583">Sua atividade nessas guias anônimas será removida deste dispositivo</translation>

@@ -385,7 +385,6 @@
 <translation id="2781151931089541271">Остава 1 сек</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome откри повторно използвана парола, която можете да подобрите}other{Chrome откри # повторно използвани пароли, които можете да подобрите}}</translation>
-<translation id="2796651346651857052">Докоснете и задръжте адресната лента, за да промените позицията ѝ.</translation>
 <translation id="2800066122460699237">Разделът <ph name="TAB_TITLE" /> ще бъде затворен</translation>
 <translation id="2805756323405976993">Приложения</translation>
 <translation id="281504910091592009">Преглеждайте и управлявайте запазените пароли в <ph name="BEGIN_LINK" />профила си в Google<ph name="END_LINK" /></translation>

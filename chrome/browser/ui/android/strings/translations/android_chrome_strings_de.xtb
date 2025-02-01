@@ -385,7 +385,6 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="2781151931089541271">1 Sekunde übrig</translation>
 <translation id="2789486458103222910">Ok</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome hat ein mehrfach verwendetes Passwort gefunden, dessen Sicherheit du verbessern kannst}other{Chrome hat # mehrfach verwendete Passwörter gefunden, deren Sicherheit du verbessern kannst}}</translation>
-<translation id="2796651346651857052">Halte die Adressleiste gedrückt, um die Position zu ändern.</translation>
 <translation id="2800066122460699237">Der Tab „<ph name="TAB_TITLE" />“ wird geschlossen</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="281504910091592009">Gespeicherte Passwörter in meinem <ph name="BEGIN_LINK" />Google-Konto<ph name="END_LINK" /> ansehen und verwalten</translation>

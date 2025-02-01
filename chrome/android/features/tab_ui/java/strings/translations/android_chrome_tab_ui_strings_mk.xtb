@@ -86,6 +86,7 @@
 <translation id="4783638485675352219">Споделете ги насловите и URL-адресите на отворените картички од уредов со оперативниот систем</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> рецензија)}one{(<ph name="REVIEWS_COUNT_MANY" /> рецензија)}other{(<ph name="REVIEWS_COUNT_MANY" /> рецензии)}}</translation>
 <translation id="4850886885716139402">Приказ</translation>
+<translation id="4861953997778766866">Секој може да врши промени во споделените групи картички</translation>
 <translation id="4870911314065352661">Да се затворат сите картички?</translation>
 <translation id="4871719318659334896">Затвори ја групата</translation>
 <translation id="4881695831933465202">Отвори</translation>
@@ -179,6 +180,7 @@
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{Додадени картички: <ph name="ONE_ADDED" />, затворени: <ph name="ANY_CLOSED" />}one{Додадени картички: <ph name="MANY_ADDED" />, затворени: <ph name="ANY_CLOSED" />}other{Додадени картички: <ph name="MANY_ADDED" />, затворени: <ph name="ANY_CLOSED" />}}</translation>
 <translation id="8633025649649592204">Неодамнешна активност</translation>
 <translation id="870736955561925754">Да се затвори картичката и да се избрише групата?</translation>
+<translation id="8712637175834984815">Сфатив</translation>
 <translation id="8714939927607906138">Пониска цена</translation>
 <translation id="8730621377337864115">Готово</translation>
 <translation id="8730999928494395583">Вашата активност во картичкиве „Инкогнито“ ќе се отстрани од уредов</translation>

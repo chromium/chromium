@@ -2163,7 +2163,6 @@
 <translation id="2471632709106952369">טבלאות השוואה</translation>
 <translation id="2473195200299095979">תרגום הדף</translation>
 <translation id="2475982808118771221">אירעה שגיאה</translation>
-<translation id="247616523300581745">הסתרת הקבצים האלה</translation>
 <translation id="2476435723907345463">הגישה למפתחות הגישה הוסרה</translation>
 <translation id="2476901513051581836">אי אפשר לפנות מקום כל עוד הגודל של נפח האחסון אופליין לא ידוע.</translation>
 <translation id="2476974672882258506">‏יש לכבות את Windows כדי להסיר את <ph name="PARALLELS_DESKTOP" />.</translation>
@@ -3238,7 +3237,6 @@
 <translation id="3257733480216378006">רוצה לאשר את <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" />?</translation>
 <translation id="325797067711573598">הורדה חשודה נחסמה</translation>
 <translation id="3259723213051400722">אפשר לנסות שוב.</translation>
-<translation id="3260199651491738298">הארגון שלך קובע את אופן השימוש בנתונים שנאספו באמצעות התכונות האלה. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="3261090393424563833">הגברת הקצב</translation>
 <translation id="3261268979727295785">‏בחשבונות של ילדים בוגרים יותר יש לך אפשרות להוסיף בקרת הורים לאחר סיום ההגדרה. באפליקציה 'מה חדש ב-Chromebook' מפורט מידע נוסף על בקרת הורים.</translation>
 <translation id="3261832505033014216">מפתח הגישה של <ph name="USER_EMAIL" /></translation>
@@ -8601,7 +8599,6 @@
 <translation id="7113974454301513811">עכשיו צריך להוסיף את הכרטיסייה הנוכחית לרשימה</translation>
 <translation id="7114054701490058191">הסיסמאות לא תואמות</translation>
 <translation id="7114648273807173152">‏כדי להשתמש ב-Smart Lock על מנת להיכנס אל חשבון Google צריך לעבור אל 'הגדרות' &gt; 'מכשירים מחוברים' &gt; 'הטלפון שלך' &gt; Smart Lock.</translation>
-<translation id="7115051913071512405">נסה את זה</translation>
 <translation id="7115361495406486998">אין אנשי קשר זמינים</translation>
 <translation id="7115731767122970828">שיפור עכשיו</translation>
 <translation id="7116554090938189816">‏פג התוקף של אישור ה-SSL של המדפסת. צריך להפעיל את המדפסת מחדש ולנסות שוב.</translation>
@@ -10905,7 +10902,6 @@
 <translation id="8737966899544698733">‏קביעת מיקום יותר מדויקת (Android בלבד)</translation>
 <translation id="8738418093147087440">חיפוש לפי מדינות, שפות או שמות קלט</translation>
 <translation id="8740086188450289493">‏שימוש בסיסמה לחשבון Google</translation>
-<translation id="874023689350909633">אני רוצה לנסות</translation>
 <translation id="8740247629089392745">‏אפשר להעביר את ה-Chromebook הזה אל <ph name="SUPERVISED_USER_NAME" />. ההתקנה כמעט הסתיימה. מיד ניתן יהיה לחקור ולהתנסות.</translation>
 <translation id="8740672167979365981">‏נדרש עדכון של ChromeOS Flex</translation>
 <translation id="8741944563400125534">מדריך להגדרת גישה באמצעות מתג</translation>

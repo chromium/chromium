@@ -2149,7 +2149,6 @@
 <translation id="2471632709106952369">Табеле за поређење</translation>
 <translation id="2473195200299095979">Преведите ову страницу</translation>
 <translation id="2475982808118771221">Дошло је до грешке</translation>
-<translation id="247616523300581745">Сакриј ове фајлове</translation>
 <translation id="2476435723907345463">Уклоњен је приступ приступним кључевима</translation>
 <translation id="2476901513051581836">Није могуће очистити меморијски простор док не знате величину офлајн меморијског простора.</translation>
 <translation id="2476974672882258506">Искључите Windows да бисте деинсталирали <ph name="PARALLELS_DESKTOP" />.</translation>
@@ -3225,7 +3224,6 @@
 <translation id="3257733480216378006">Желите да дозволите додатак <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" />?</translation>
 <translation id="325797067711573598">Сумњиво преузимање је блокирано</translation>
 <translation id="3259723213051400722">Пробајте поново.</translation>
-<translation id="3260199651491738298">Организација контролише како подаци прикупљени помоћу ових функција могу да се користе. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="3261090393424563833">Повећај стопу</translation>
 <translation id="3261268979727295785">Можете да додате родитељски надзор за старију децу када довршите подешавање. Пронаћи ћете информације о родитељском надзору у апликацији Истражите.</translation>
 <translation id="3261832505033014216">Приступни кључ за <ph name="USER_EMAIL" /></translation>
@@ -8587,7 +8585,6 @@
 <translation id="7113974454301513811">Сада додајте актуелну картицу на листу</translation>
 <translation id="7114054701490058191">Лозинке се не подударају</translation>
 <translation id="7114648273807173152">Да бисте користили Smart Lock за пријављивање на Google налог, идите на Подешавања &gt; Повезани уређаји &gt; Телефон &gt; Smart Lock.</translation>
-<translation id="7115051913071512405">Испробајте</translation>
 <translation id="7115361495406486998">Нема доступних контаката</translation>
 <translation id="7115731767122970828">Побољшај</translation>
 <translation id="7116554090938189816">SSL сертификат штампача је истекао. Рестартујте штампач и пробајте поново.</translation>
@@ -10894,7 +10891,6 @@
 <translation id="8737966899544698733">Прецизност локације (само за Android)</translation>
 <translation id="8738418093147087440">Претражите према земљама, језику или називима уноса</translation>
 <translation id="8740086188450289493">Користите лозинку за Google налог</translation>
-<translation id="874023689350909633">Испробајте</translation>
 <translation id="8740247629089392745">Можете да предате овај Chromebook кориснику <ph name="SUPERVISED_USER_NAME" />. Подешавање је скоро готове, па долази време за истраживање.</translation>
 <translation id="8740672167979365981">Треба да ажурирате Chrome OS Flex</translation>
 <translation id="8741944563400125534">Водич за подешавање приступа помоћу прекидача</translation>

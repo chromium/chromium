@@ -2152,7 +2152,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2471632709106952369">Tableaux de comparaison</translation>
 <translation id="2473195200299095979">Traduire cette page</translation>
 <translation id="2475982808118771221">Une erreur s'est produite</translation>
-<translation id="247616523300581745">Masquer ces fichiers</translation>
 <translation id="2476435723907345463">L'Accès par clé d'accès a été retiré</translation>
 <translation id="2476901513051581836">Impossible de libérer de l'espace de stockage tant que la taille du stockage hors ligne n'est pas connue.</translation>
 <translation id="2476974672882258506">Éteignez Windows pour désinstaller <ph name="PARALLELS_DESKTOP" />.</translation>
@@ -3230,7 +3229,6 @@ l'<ph name="BEGIN_LINK" />
 <translation id="3257733480216378006">Autoriser <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" />?</translation>
 <translation id="325797067711573598">Téléchargement suspect bloqué</translation>
 <translation id="3259723213051400722">Veuillez réessayer.</translation>
-<translation id="3260199651491738298">Votre organisation contrôle comment les données recueillies par ces fonctionnalités peuvent être utilisées. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="3261090393424563833">Augmenter le taux</translation>
 <translation id="3261268979727295785">Pour les enfants plus âgés, vous pouvez ajouter des contrôles parentaux une fois la configuration terminée. Vous trouverez de l'information sur les contrôles parentaux dans l'application Explorer.</translation>
 <translation id="3261832505033014216">Clé d'accès pour <ph name="USER_EMAIL" /></translation>
@@ -8588,7 +8586,6 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7113974454301513811">Maintenant, ajoutez l'onglet actuel à votre liste</translation>
 <translation id="7114054701490058191">Les mots de passe ne correspondent pas</translation>
 <translation id="7114648273807173152">Pour utiliser Smart Lock pour vous connecter à votre compte Google, accédez à Paramètres &gt; Appareils connectés &gt; Votre téléphone &gt; Smart Lock.</translation>
-<translation id="7115051913071512405">Essayez-le</translation>
 <translation id="7115361495406486998">Aucun contact joignable</translation>
 <translation id="7115731767122970828">Améliorer maintenant</translation>
 <translation id="7116554090938189816">Le certificat SSL de l'imprimante a expiré. Redémarrez l'imprimante et réessayez.</translation>
@@ -10893,7 +10890,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8737966899544698733">Précision de la localisation (Android uniquement)</translation>
 <translation id="8738418093147087440">Rechercher par pays, par langue ou par nom d'entrée</translation>
 <translation id="8740086188450289493">Utiliser le mot de passe du compte Google</translation>
-<translation id="874023689350909633">Essayer</translation>
 <translation id="8740247629089392745">Vous pouvez remettre ce Chromebook à <ph name="SUPERVISED_USER_NAME" />. La configuration est presque terminée. Après cela, c'est l'heure d'explorer.</translation>
 <translation id="8740672167979365981">Chrome OS Flex doit être mis à jour</translation>
 <translation id="8741944563400125534">Guide de configuration de Switch Access</translation>

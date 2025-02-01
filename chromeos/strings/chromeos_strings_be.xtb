@@ -768,6 +768,7 @@
 <translation id="4654549501020883054">Змяняць штодня</translation>
 <translation id="4655868084888499342">Відарыс зададзены ў якасці шпалер</translation>
 <translation id="4661249927038176904">Сюррэалістычны відарыс</translation>
+<translation id="4661392828086261436">Гэта абнаўленне пастаўлена вытворцам прылады і не было праверана Google</translation>
 <translation id="4664651912255946953">поўсць</translation>
 <translation id="4665014895760275686">Вытворца</translation>
 <translation id="467510802200863975">Паролі не супадаюць</translation>
@@ -1027,6 +1028,7 @@
 <translation id="5904994456462260490">Дадаванне новай назвы пункта доступу</translation>
 <translation id="590746845088109442">кошкі</translation>
 <translation id="5907649332524363701">колер клавіш</translation>
+<translation id="5908813850962688338">Усталяванне абнаўлення зойме некалькі хвілін. Падчас спампоўвання абнаўлення не адключайце прыладу ад крыніцы сілкавання. Прылада можа перазагружацца некалькі разоў, а экран – гаснуць. Каб завяршыць усталяванне, вам трэба будзе перазапусціць прыладу.</translation>
 <translation id="5916084858004523819">Забароненая</translation>
 <translation id="5916664084637901428">Уключана</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Сканіраванне завершана. Файл захаваны ў папку <ph name="LINK_BEGIN" />"<ph name="FOLDER_NAME" />"<ph name="LINK_END" />.}one{Сканіраванне завершана. Файлы захаваны ў папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Сканіраванне завершана. Файлы захаваны ў папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}many{Сканіраванне завершана. Файлы захаваны ў папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Сканіраванне завершана. Файлы захаваны ў папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>

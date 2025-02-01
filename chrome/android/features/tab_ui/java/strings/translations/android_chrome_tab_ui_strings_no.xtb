@@ -86,6 +86,7 @@ Hvis du sletter den, mister alle umiddelbart tilgangen til fanegruppen «<ph nam
 <translation id="4783638485675352219">Del titlene og nettadressene til åpne faner på denne enheten med operativsystemet</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> anmeldelse)}other{(<ph name="REVIEWS_COUNT_MANY" /> anmeldelser)}}</translation>
 <translation id="4850886885716139402">Visning</translation>
+<translation id="4861953997778766866">Alle kan gjøre endringer i de delte fanegruppene dine</translation>
 <translation id="4870911314065352661">Vil du lukke alle faner?</translation>
 <translation id="4871719318659334896">Lukk gruppen</translation>
 <translation id="4881695831933465202">Åpne</translation>
@@ -179,6 +180,7 @@ Hvis du sletter den, mister alle umiddelbart tilgangen til fanegruppen «<ph nam
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> fane er lagt til, <ph name="ANY_CLOSED" /> er lukket}other{<ph name="MANY_ADDED" /> faner er lagt til, <ph name="ANY_CLOSED" /> er lukket}}</translation>
 <translation id="8633025649649592204">Nylig aktivitet</translation>
 <translation id="870736955561925754">Vil du lukke fanen og slette gruppen?</translation>
+<translation id="8712637175834984815">Skjønner</translation>
 <translation id="8714939927607906138">Lavere pris</translation>
 <translation id="8730621377337864115">Ferdig</translation>
 <translation id="8730999928494395583">Aktiviteten din på disse inkognitofanene blir fjernet fra denne enheten</translation>

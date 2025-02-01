@@ -385,7 +385,6 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="2781151931089541271">1 segundo na lang ang natitira</translation>
 <translation id="2789486458103222910">Okay</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Nakakita ang Chrome ng password na ginamit ulit na puwede mo pang palakasin}one{Nakakita ang Chrome ng # password na ginamit ulit na puwede mo pang palakasin}other{Nakakita ang Chrome ng # na password na ginamit ulit na puwede mo pang palakasin}}</translation>
-<translation id="2796651346651857052">Pindutin nang matagal ang address bar para baguhin ang posisyon nito.</translation>
 <translation id="2800066122460699237">Isasara ang tab na <ph name="TAB_TITLE" /></translation>
 <translation id="2805756323405976993">Mga App</translation>
 <translation id="281504910091592009">Tingnan at pamahalaan ang mga naka-save na password sa iyong <ph name="BEGIN_LINK" />Google Account<ph name="END_LINK" /></translation>

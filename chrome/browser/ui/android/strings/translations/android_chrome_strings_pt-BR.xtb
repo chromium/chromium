@@ -131,6 +131,7 @@ Para conferir mais configurações que usam dados para melhorar sua experiência
 <translation id="1513858653616922153">Excluir senha</translation>
 <translation id="1521774566618522728">Ativo hoje</translation>
 <translation id="153446405401665083">Uma nova versão do Chrome está disponível</translation>
+<translation id="1540012742443808215">A barra de endereço está na parte de cima da tela</translation>
 <translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{1 favorito foi salvo apenas neste dispositivo. Salve na sua Conta do Google <ph name="ACCOUNT_EMAIL" /> para usar em outros dispositivos.}one{# favorito foi salvo apenas neste dispositivo. Salve na sua Conta do Google <ph name="ACCOUNT_EMAIL" /> para usar em outros dispositivos.}other{# favoritos foram salvos apenas neste dispositivo. Salve na sua Conta do Google <ph name="ACCOUNT_EMAIL" /> para usar em outros dispositivos.}}</translation>
 <translation id="1544084554881119930">Formas de pagamento e endereços não serão criptografados. O histórico de navegação do Chrome não será sincronizado.
 Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senha longa não é enviada ao Google nem armazenada por ele. Se você esquecer a senha longa ou quiser mudar essa configuração, <ph name="BEGIN_LINK" />limpe os dados do Chrome na sua conta<ph name="END_LINK" />.</translation>
@@ -385,7 +386,6 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="2781151931089541271">Um segundo restante</translation>
 <translation id="2789486458103222910">Ok</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{O Chrome encontrou uma senha reutilizada que pode ser melhorada}one{O Chrome encontrou # senha reutilizada que pode ser melhorada}other{O Chrome encontrou # senhas reutilizadas que podem ser melhoradas}}</translation>
-<translation id="2796651346651857052">Toque na barra de endereço e pressione para mudar a posição.</translation>
 <translation id="2800066122460699237">A guia <ph name="TAB_TITLE" /> será fechada</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="281504910091592009">Ver e gerenciar as senhas salvas na sua <ph name="BEGIN_LINK" />Conta do Google<ph name="END_LINK" /></translation>
@@ -1187,6 +1187,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6459045781120991510">Pesquisas</translation>
 <translation id="6461962085415701688">Não é possível abrir o arquivo</translation>
 <translation id="6464977750820128603">Você pode ver os sites que visita no Chrome e definir timers para eles.\n\nO Google recebe informações sobre os sites para os quais você definiu timers e sobre o tempo que você passa neles. Essas informações são usadas para melhorar o Bem-estar digital.</translation>
+<translation id="6468703991511753953">A barra de endereço está na parte de baixo da tela</translation>
 <translation id="6470181189905173055">As páginas que você abriu no Chrome usando o app <ph name="APP_LABEL" /> vão aparecer aqui.</translation>
 <translation id="6473086018775716761">Lista de opções de compartilhamento aberta na metade da altura.</translation>
 <translation id="6475951671322991020">Baixar o vídeo</translation>

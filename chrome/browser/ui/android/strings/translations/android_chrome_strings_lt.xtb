@@ -385,7 +385,6 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="2781151931089541271">Liko 1 sek.</translation>
 <translation id="2789486458103222910">Gerai</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{„Chrome“ aptiko pakartotinai naudojamą slaptažodį, kurį galėtumėte patobulinti}one{„Chrome“ aptiko # pakartotinai naudojamą slaptažodį, kurį galėtumėte patobulinti}few{„Chrome“ aptiko # pakartotinai naudojamus slaptažodžius, kuriuos galėtumėte patobulinti}many{„Chrome“ aptiko # pakartotinai naudojamo slaptažodžio, kuriuos galėtumėte patobulinti}other{„Chrome“ aptiko # pakartotinai naudojamų slaptažodžių, kuriuos galėtumėte patobulinti}}</translation>
-<translation id="2796651346651857052">Palieskite ir palaikykite adreso juostą, kad pakeistumėte jos poziciją.</translation>
 <translation id="2800066122460699237">Skirtukas „<ph name="TAB_TITLE" />“ bus uždarytas</translation>
 <translation id="2805756323405976993">Taikomosios programos</translation>
 <translation id="281504910091592009">Peržiūrėkite ir tvarkykite išsaugotus slaptažodžius <ph name="BEGIN_LINK" />„Google“ paskyroje<ph name="END_LINK" /></translation>

@@ -86,6 +86,7 @@
 <translation id="4783638485675352219">Ушул түзмөктөгү аталыштарды жана ачылган өтмөктөрдүн URL даректерин операциялык тутум менен бөлүшүү</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> сын-пикир)}other{(<ph name="REVIEWS_COUNT_MANY" /> сын-пикир)}}</translation>
 <translation id="4850886885716139402">Көрүнүш</translation>
+<translation id="4861953997778766866">Бөлүшүлгөн өтмөк топторуна баары өзгөртүү киргизе алышат</translation>
 <translation id="4870911314065352661">Бардык өтмөктөр жабылсынбы?</translation>
 <translation id="4871719318659334896">Топту жабуу</translation>
 <translation id="4881695831933465202">Ачуу</translation>
@@ -179,6 +180,7 @@
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> өтмөк кошулду, <ph name="ANY_CLOSED" /> өтмөк жабылды}other{<ph name="MANY_ADDED" /> өтмөк кошулду, <ph name="ANY_CLOSED" /> өтмөк жабылды}}</translation>
 <translation id="8633025649649592204">Соңку аракеттер</translation>
 <translation id="870736955561925754">Өтмөк жабылып, топ өчүрүлсүнбү?</translation>
+<translation id="8712637175834984815">Түшүндүм</translation>
 <translation id="8714939927607906138">Арзаныраак баа</translation>
 <translation id="8730621377337864115">Бүттү</translation>
 <translation id="8730999928494395583">Ушул Жашыруун өтмөктөрдө издеген нерселериңиз бул түзмөктөн өчүрүлөт</translation>

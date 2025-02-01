@@ -768,6 +768,7 @@
 <translation id="4654549501020883054">Ndrysho çdo ditë</translation>
 <translation id="4655868084888499342">Imazhi u caktua si imazh sfondi</translation>
 <translation id="4661249927038176904">surreale</translation>
+<translation id="4661392828086261436">Ky përditësim ofrohet nga prodhuesi i pajisjes dhe nuk është verifikuar nga Google</translation>
 <translation id="4664651912255946953">gëzof</translation>
 <translation id="4665014895760275686">Prodhuesi</translation>
 <translation id="467510802200863975">Fjalëkalimet nuk përputhen</translation>
@@ -1027,6 +1028,7 @@
 <translation id="5904994456462260490">Shto një APN të re</translation>
 <translation id="590746845088109442">mace</translation>
 <translation id="5907649332524363701">ngjyra e tastit</translation>
+<translation id="5908813850962688338">Instalimi i këtij përditësimi do të zgjasë disa minuta. Mbaje pajisjen tënde në prizë dhe të ndezur kur shkarkohet përditësimi. Pajisja jote mund të rindizet vetë disa herë dhe të shfaqë një ekran të zi gjatë këtij procesi. Do të të kërkohet që të rinisësh pajisjen për të përfunduar instalimin.</translation>
 <translation id="5916084858004523819">E ndaluar</translation>
 <translation id="5916664084637901428">Aktiv</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Skedari yt është skanuar dhe është ruajtur me sukses në <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Skedarët e tu janë skanuar dhe janë ruajtur me sukses në <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>

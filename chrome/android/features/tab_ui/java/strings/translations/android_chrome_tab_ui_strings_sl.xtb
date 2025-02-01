@@ -86,6 +86,7 @@
 <translation id="4783638485675352219">Deljenje naslovov in URL-jev odprtih zavihkov iz te naprave z operacijskim sistemom</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> mnenje)}one{(<ph name="REVIEWS_COUNT_MANY" /> mnenje)}two{(<ph name="REVIEWS_COUNT_MANY" /> mnenji)}few{(<ph name="REVIEWS_COUNT_MANY" /> mnenja)}other{(<ph name="REVIEWS_COUNT_MANY" /> mnenj)}}</translation>
 <translation id="4850886885716139402">Prikaži</translation>
+<translation id="4861953997778766866">Vsi lahko spreminjajo vaše deljene skupine zavihkov</translation>
 <translation id="4870911314065352661">Želite zapreti vse zavihke?</translation>
 <translation id="4871719318659334896">Zapri skupino</translation>
 <translation id="4881695831933465202">Odpri</translation>
@@ -179,6 +180,7 @@
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> zavihek je dodan, zaprtih: <ph name="ANY_CLOSED" />}one{<ph name="MANY_ADDED" /> zavihek je dodan, zaprtih: <ph name="ANY_CLOSED" />}two{<ph name="MANY_ADDED" /> zavihka sta dodana, zaprtih: <ph name="ANY_CLOSED" />}few{<ph name="MANY_ADDED" /> zavihki so dodani, zaprtih: <ph name="ANY_CLOSED" />}other{<ph name="MANY_ADDED" /> zavihkov je dodanih, zaprtih: <ph name="ANY_CLOSED" />}}</translation>
 <translation id="8633025649649592204">Nedavna dejavnost</translation>
 <translation id="870736955561925754">Želite zapreti zavihek in izbrisati skupino?</translation>
+<translation id="8712637175834984815">Razumem</translation>
 <translation id="8714939927607906138">Nižja cena</translation>
 <translation id="8730621377337864115">Končano</translation>
 <translation id="8730999928494395583">Vaša dejavnost na teh anonimnih zavihkih bo odstranjena iz te naprave</translation>

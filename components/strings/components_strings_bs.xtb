@@ -2407,7 +2407,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5254043433801397071">Optimiziranje sadržaja za štampanje</translation>
 <translation id="5255583962255635076">primijenjena pravila preglednika na radnom profilu</translation>
 <translation id="5255690596502591079">Ipak snimi</translation>
-<translation id="5255771248404149177">Vaš davatelj kartice želi potvrditi vaš identitet</translation>
+<translation id="5255771248404149177">Pružalac usluge kartice želi potvrditi vaše identitet</translation>
 <translation id="5255833070095767006">350 x 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{Prema administratorskim pravilima nije preporučeno kopiranje ovog fajla na <ph name="DESTINATION_NAME" />}one{Prema administratorskim pravilima nije preporučeno kopiranje ovih fajlova na <ph name="DESTINATION_NAME" />}few{Prema administratorskim pravilima nije preporučeno kopiranje ovih fajlova na <ph name="DESTINATION_NAME" />}other{Prema administratorskim pravilima nije preporučeno kopiranje ovih fajlova na <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5263867360296733198">Potreban je pregled prije otpremanja</translation>
@@ -2555,7 +2555,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5518352028556756716">Većina web lokacija ne može koristiti kolačiće trećih strana kako bi vas pratile dok pregledate niti web lokacije mogu koristiti kolačiće trećih strana u anonimnom načinu rada.</translation>
 <translation id="5519516356611866228">S vašim promjenama</translation>
 <translation id="5519696598216267194">Papir (unaprijed perforirani)</translation>
-<translation id="5520105693415771152">Ne vidite svoje trenutačne podatke? Obratite se svojem davatelju kartice da biste ih ažurirali.</translation>
+<translation id="5520105693415771152">Ne vidite svoje trenutne informacije? Kontaktirajte pružaoca usluge da ih ažurirate.</translation>
 <translation id="5521782189689806907">Komode</translation>
 <translation id="5523118979700054094">Naziv pravila</translation>
 <translation id="5523588073846127669">Trgovac ne prihvata tu virtuelnu karticu</translation>

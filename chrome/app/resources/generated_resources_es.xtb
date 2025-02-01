@@ -2152,7 +2152,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2471632709106952369">Tablas comparativas</translation>
 <translation id="2473195200299095979">Traducir esta página</translation>
 <translation id="2475982808118771221">Se ha producido un error.</translation>
-<translation id="247616523300581745">Ocultar estos archivos</translation>
 <translation id="2476435723907345463">Acceso a llaves de acceso eliminado</translation>
 <translation id="2476901513051581836">No se puede liberar espacio de almacenamiento hasta que se conozca el tamaño del almacenamiento sin conexión.</translation>
 <translation id="2476974672882258506">Apaga Windows para desinstalar <ph name="PARALLELS_DESKTOP" />.</translation>
@@ -3228,7 +3227,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3257733480216378006">¿Permitir <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" />?</translation>
 <translation id="325797067711573598">Descarga sospechosa bloqueada</translation>
 <translation id="3259723213051400722">Vuelve a intentarlo.</translation>
-<translation id="3260199651491738298">Tu organización controla cómo se pueden usar los datos recopilados por estas funciones. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="3261090393424563833">Aumentar frecuencia</translation>
 <translation id="3261268979727295785">Podrás añadir el control parental para adolescentes cuando termines la configuración. Encontrarás información sobre el control parental en la aplicación Explorar.</translation>
 <translation id="3261832505033014216">Llave de acceso para <ph name="USER_EMAIL" /></translation>
@@ -8584,7 +8582,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7113974454301513811">Ahora añade la pestaña actual a tu lista</translation>
 <translation id="7114054701490058191">Las contraseñas no coinciden</translation>
 <translation id="7114648273807173152">Si quieres usar Smart Lock para iniciar sesión en tu cuenta de Google, ve a Configuración &gt; Dispositivos conectados &gt; Tu teléfono &gt; Smart Lock.</translation>
-<translation id="7115051913071512405">Pruébalo</translation>
 <translation id="7115361495406486998">No hay contactos disponibles</translation>
 <translation id="7115731767122970828">Mejorar ahora</translation>
 <translation id="7116554090938189816">El certificado SSL de la impresora ha caducado. Reinicia la impresora e inténtalo de nuevo.</translation>
@@ -10891,7 +10888,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8737966899544698733">Precisión de la ubicación (solo en Android)</translation>
 <translation id="8738418093147087440">Buscar por países, idiomas o nombres de entrada</translation>
 <translation id="8740086188450289493">Usar contraseña de la cuenta de Google</translation>
-<translation id="874023689350909633">Pruébalo</translation>
 <translation id="8740247629089392745">Puedes darle este Chromebook a <ph name="SUPERVISED_USER_NAME" />. La configuración ya casi está lista, así que ha llegado la hora de explorar.</translation>
 <translation id="8740672167979365981">Actualización de ChromeOS necesaria</translation>
 <translation id="8741944563400125534">Guía de configuración de Accesibilidad con interruptores</translation>

@@ -86,6 +86,7 @@ Kui te selle kustutate, kaotavad kõik kohe juurdepääsu vahelehegrupile „<ph
 <translation id="4783638485675352219">Jagage operatsioonisüsteemiga selle seadme avatud vahelehtede pealkirju ja URL-e</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> arvustus)}other{(<ph name="REVIEWS_COUNT_MANY" /> arvustust)}}</translation>
 <translation id="4850886885716139402">Kuva</translation>
+<translation id="4861953997778766866">Kõik saavad teie jagatud vahelehegruppides muudatusi teha</translation>
 <translation id="4870911314065352661">Kas sulgeda kõik vahelehed?</translation>
 <translation id="4871719318659334896">Grupi sulgemine</translation>
 <translation id="4881695831933465202">Ava</translation>
@@ -179,6 +180,7 @@ Kui te selle kustutate, kaotavad kõik kohe juurdepääsu vahelehegrupile „<ph
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> vaheleht lisati, <ph name="ANY_CLOSED" /> suleti}other{<ph name="MANY_ADDED" /> vahelehte lisati, <ph name="ANY_CLOSED" /> suleti}}</translation>
 <translation id="8633025649649592204">Hiljutised toimingud</translation>
 <translation id="870736955561925754">Kas sulgeda vaheleht ja kustutada grupp?</translation>
+<translation id="8712637175834984815">Selge</translation>
 <translation id="8714939927607906138">Soodsam hind</translation>
 <translation id="8730621377337864115">Valmis</translation>
 <translation id="8730999928494395583">Teie tegevused nendel inkognito vahelehtedel eemaldatakse sellest seadmest</translation>

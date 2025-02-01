@@ -2149,7 +2149,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2471632709106952369">Tabelat e krahasimit</translation>
 <translation id="2473195200299095979">Përktheje këtë faqe</translation>
 <translation id="2475982808118771221">Ndodhi një gabim</translation>
-<translation id="247616523300581745">Fshih këta skedarë</translation>
 <translation id="2476435723907345463">Qasja te çelësat e kalimit u hoq</translation>
 <translation id="2476901513051581836">Hapësira ruajtëse nuk mund të pastrohet derisa të mësohet madhësia e hapësirës ruajtëse offline.</translation>
 <translation id="2476974672882258506">Fike sistemin Windows për ta çinstaluar <ph name="PARALLELS_DESKTOP" />.</translation>
@@ -2791,6 +2790,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> nuk mbështetet.</translation>
 <translation id="2926708162326352948">Tema u përditësua me imazhin e ngarkuar</translation>
 <translation id="2927017729816812676">Hapësira ruajtëse e memories së përkohshme</translation>
+<translation id="2928030851119977280">Zgjedhja u ruajt. Zgjedhja jote do të zbatohet kur të identifikohesh në shërbimet e tjera të Google.</translation>
 <translation id="2928795416630981206">Lejohen të monitorojnë pozicionin e kamerës</translation>
 <translation id="2929345818093040583">{NUM_SITES,plural, =1{Chrome hoqi lejet nga 1 sajt}other{Chrome hoqi lejet nga {NUM_SITES} sajte}}</translation>
 <translation id="2931157624143513983">Përshtate me sipërfaqen e printueshme</translation>
@@ -3222,7 +3222,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3257733480216378006">Të lejohet <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" />?</translation>
 <translation id="325797067711573598">Një shkarkim i dyshimtë u bllokua</translation>
 <translation id="3259723213051400722">Provo përsëri.</translation>
-<translation id="3260199651491738298">Organizata jote kontrollon se si mund të përdoren të dhënat e mbledhura nga këto veçori. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="3261090393424563833">Rrit shpejtësinë</translation>
 <translation id="3261268979727295785">Për fëmijët më të rritur, mund t'i shtosh kontrollet prindërore pasi të përfundosh konfigurimin. Informacionet për kontrollet prindërore mund t'i gjesh në aplikacionin "Eksploro".</translation>
 <translation id="3261832505033014216">Çelësi i kalimit për <ph name="USER_EMAIL" /></translation>
@@ -7401,6 +7400,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6253801023880399036">Fjalëkalimet ruhen te <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="6254503684448816922">Kompromisi për çelësin</translation>
 <translation id="6254892857036829079">E përkryer</translation>
+<translation id="6257131917452817589">ndryshimit të automatizuar të fjalëkalimit</translation>
 <translation id="6257602895346497974">Aktivizo sinkronizimin...</translation>
 <translation id="6257614441619555296"><ph name="KEY" />: <ph name="VALUE" /></translation>
 <translation id="625827534921607067">Ky rrjet do të jetë i preferuar nëse ofrohen më shumë se një rrjet i lidhur ose i konfiguruar më parë</translation>
@@ -8577,7 +8577,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7113974454301513811">Tani shto skedën aktuale në listën tënde</translation>
 <translation id="7114054701490058191">Fjalëkalimet nuk përputhen</translation>
 <translation id="7114648273807173152">Për të përdorur Smart Lock për t'u identifikuar në "Llogarinë tënde të Google", shko te Cilësimet &gt; Pajisjet e lidhura &gt; Telefoni yt &gt; Smart Lock.</translation>
-<translation id="7115051913071512405">Provoje</translation>
 <translation id="7115361495406486998">Nuk ka asnjë kontakt të arritshëm</translation>
 <translation id="7115731767122970828">Optimizoje tani</translation>
 <translation id="7116554090938189816">Certifikata SSL e printerit ka skaduar. Rinis printerin dhe provo përsëri.</translation>
@@ -9110,6 +9109,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7502528909759062987">Vendos në pauzë transmetimin e skedës te <ph name="DEVICE_NAME" /></translation>
 <translation id="7502804472671406749">Skedat e ndara mund të lëvizen dhe zmadhohen</translation>
 <translation id="7503191893372251637">Lloji i certifikatës Netscape</translation>
+<translation id="7503259455663961898">Ndryshoje për mua</translation>
 <translation id="7503985202154027481">Një regjistrim i vizitës sate në këtë sajt do të ruhet në çelësin tënd të sigurisë.</translation>
 <translation id="7504145862399276792">Audioja e kësaj skede është vendosur në heshtje</translation>
 <translation id="750509436279396091">Hap dosjen e shkarkimeve</translation>
@@ -9172,6 +9172,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7551059576287086432">Shkarkimi i <ph name="FILE_NAME" /> nuk u krye me sukses</translation>
 <translation id="7551643184018910560">Gozhdo në raft</translation>
 <translation id="7552191410769096467">Për të ndarë ose për t'u bashkuar në grupet e skedave, duhet të identifikohesh dhe të aktivizosh sinkronizimin</translation>
+<translation id="7552196109089297786">Dil nga Microsoft</translation>
 <translation id="7552846755917812628">Provo këshillat e mëposhtme:</translation>
 <translation id="7553012839257224005">Po kontrollon kontejnerin e Linux</translation>
 <translation id="7553242001898162573">Fut fjalëkalimin</translation>
@@ -10299,6 +10300,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8330617762701840933">Lista e sajteve që ridrejtohen te një shfletues alternativ.</translation>
 <translation id="8330689128072902965">Kontaktet në afërsi mund të ndajnë me ty. Kliko për ta ndryshuar.</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{Lloji i mbështetur i skedarit: <ph name="FILE_TYPE1" />}=2{Llojet e mbështetura të skedarëve: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />}=3{Llojet e mbështetura të skedarëve: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />}=4{Llojet e mbështetura të skedarëve: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" />}other{Llojet e mbështetura të skedarëve: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />dhe {OVERFLOW_COUNT} të tjera<ph name="END_LINK" />)}}</translation>
+<translation id="8331578454993293727">Fjalëkalimi yt është gjetur në një nxjerrje të paautorizuar të të dhënave</translation>
 <translation id="8331822764922665615">Emërto grupin tënd, zgjidh një ngjyrë dhe më pas shtyp tastin "Esc"</translation>
 <translation id="833256022891467078">Dosjet e ndara të Crostini</translation>
 <translation id="833262891116910667">Thekso</translation>
@@ -10380,6 +10382,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
     <ph name="BEGIN_PARAGRAPH2" />Për më shumë ndihmë, vizito: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8383614331548401927">Përmbledhja e mirëseardhjes</translation>
 <translation id="8386091599636877289">Politika nuk u gjet.</translation>
+<translation id="8387087863179559896">Chrome mund ta përditësojë llogarinë tënde për këtë sajt me një fjalëkalim të fortë. Nuk do të jetë e nevojshme ta mbash mend fjalëkalimin pasi ai ruhet për ty te "Menaxheri i fjalëkalimeve i Google" për <ph name="EMAIL" />. Më shumë rreth <ph name="PASSWORD_CHANGE" />.</translation>
 <translation id="8387361103813440603">Nuk lejohen të shikojnë vendndodhjen tënde</translation>
 <translation id="8387617938027387193">Verifiko që je ti</translation>
 <translation id="8388770971141403598">Nuk mbështetet profilet dytësore</translation>
@@ -10878,7 +10881,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8737966899544698733">Saktësia e vendndodhjes (vetëm për Android)</translation>
 <translation id="8738418093147087440">Kërko sipas shteteve, gjuhëve ose emrave të hyrjeve</translation>
 <translation id="8740086188450289493">Përdor fjalëkalimin e "Llogarisë së Google"</translation>
-<translation id="874023689350909633">Provoje</translation>
 <translation id="8740247629089392745">Këtë Chromebook mund t'ia dorëzosh <ph name="SUPERVISED_USER_NAME" />. Konfigurimi pothuajse mbaroi, më pas është koha për eksplorim.</translation>
 <translation id="8740672167979365981">Kërkohet përditësimi i Chrome OS Flex</translation>
 <translation id="8741944563400125534">Udhëzuesi i konfigurimit të "Qasjes me çelës"</translation>

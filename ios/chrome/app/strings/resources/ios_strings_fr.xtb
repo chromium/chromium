@@ -716,6 +716,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="422477017457571619">Protection optimisée par l'IA en temps réel contre les extensions, sites et téléchargements dangereux, basée sur vos données de navigation envoyées à Google</translation>
 <translation id="4231395118547300571">Notifications du contrôle de sécurité activées</translation>
 <translation id="4237377247299956313">Appuyez sur <ph name="BEGIN_BOLD" />Navigateur par défaut<ph name="END_BOLD" /></translation>
+<translation id="4241893428331130998">Pas de clés d'accès ni de mots de passe enregistrés</translation>
 <translation id="4242533952199664413">Ouvrir les paramètres</translation>
 <translation id="4250432749243022864">{count,plural, =0{Ouvrir {count} onglet}=1{Ouvrir {count} onglet}one{Ouvrir {count} onglet}other{Ouvrir {count} onglets}}</translation>
 <translation id="4250680216510889253">Non</translation>
@@ -1595,6 +1596,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="7982789257301363584">Réseau</translation>
 <translation id="7987685713885608670">Pour renforcer la sécurité, chiffrez les mots de passe sur votre appareil avant qu'ils soient enregistrés dans le Gestionnaire de mots de passe de Google.</translation>
 <translation id="798991908416757345">Les groupes d'onglets ne sont pas disponibles</translation>
+<translation id="7993170188789685695">Appuyer deux fois pour fermer cette notification.</translation>
 <translation id="7993619969781047893">Des fonctionnalités sur certains sites risquent de ne pas fonctionner</translation>
 <translation id="7996239959906074962">Configurer…</translation>
 <translation id="800361585186029508">Ouvre les URL saisies dans Google Chrome.</translation>

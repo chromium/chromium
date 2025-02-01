@@ -2166,7 +2166,6 @@
 <translation id="2471632709106952369">비교 테이블</translation>
 <translation id="2473195200299095979">이 페이지 번역하기</translation>
 <translation id="2475982808118771221">오류가 발생했습니다.</translation>
-<translation id="247616523300581745">파일 숨기기</translation>
 <translation id="2476435723907345463">패스키 액세스 권한이 삭제됨</translation>
 <translation id="2476901513051581836">오프라인 스토리지 크기가 제공될 때까지 스토리지를 정리할 수 없습니다.</translation>
 <translation id="2476974672882258506"><ph name="PARALLELS_DESKTOP" />을 제거하려면 Windows를 종료하세요.</translation>
@@ -3242,7 +3241,6 @@
 <translation id="3257733480216378006"><ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" /> 확장 프로그램을 허용하시겠습니까?</translation>
 <translation id="325797067711573598">의심스러운 다운로드 차단됨</translation>
 <translation id="3259723213051400722">다시 시도해 주세요.</translation>
-<translation id="3260199651491738298">조직에서 이러한 기능으로 수집한 데이터를 사용하는 방식을 관리합니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="3261090393424563833">속도 높이기</translation>
 <translation id="3261268979727295785">자녀가 청소년이라면 설정이 완료된 후에 자녀 보호 기능을 추가할 수 있습니다. 살펴보기 앱에서 자녀 보호 기능에 관한 정보를 확인하세요.</translation>
 <translation id="3261832505033014216"><ph name="USER_EMAIL" />의 패스키</translation>
@@ -8600,7 +8598,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7113974454301513811">이제 목록에 현재 탭을 추가합니다.</translation>
 <translation id="7114054701490058191">비밀번호가 일치하지 않습니다.</translation>
 <translation id="7114648273807173152">Smart Lock을 사용해 Google 계정에 로그인하려면 설정 &gt; 연결된 기기 &gt; 휴대전화 &gt; Smart Lock으로 이동하세요.</translation>
-<translation id="7115051913071512405">사용해 보기</translation>
 <translation id="7115361495406486998">연락 가능한 연락처 없음</translation>
 <translation id="7115731767122970828">지금 향상</translation>
 <translation id="7116554090938189816">프린터 SSL 인증서가 만료되었습니다. 프린터를 다시 시작한 후 다시 시도해 보세요</translation>
@@ -10907,7 +10904,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8737966899544698733">위치 정확도(Android만 해당)</translation>
 <translation id="8738418093147087440">국가, 언어 또는 입력 이름으로 검색</translation>
 <translation id="8740086188450289493">Google 계정 비밀번호 사용</translation>
-<translation id="874023689350909633">사용해 보기</translation>
 <translation id="8740247629089392745">이 Chromebook을 <ph name="SUPERVISED_USER_NAME" />님에게 전달할 수 있습니다. 설정이 거의 끝났습니다. 기기를 살펴보세요.</translation>
 <translation id="8740672167979365981">ChromeOS Flex 업데이트 필요</translation>
 <translation id="8741944563400125534">스위치 제어 설정 가이드</translation>

@@ -716,6 +716,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="422477017457571619">Protección impulsada por IA y en tiempo real contra descargas, extensiones y sitios peligrosos que se basa en el envío de tus datos de navegación a Google</translation>
 <translation id="4231395118547300571">Se activaron las notificaciones de la Verificación de seguridad</translation>
 <translation id="4237377247299956313">Presiona <ph name="BEGIN_BOLD" />App de navegador predeterminada<ph name="END_BOLD" />.</translation>
+<translation id="4241893428331130998">No hay contraseñas ni llaves de acceso guardadas</translation>
 <translation id="4242533952199664413">Abrir la configuración</translation>
 <translation id="4250432749243022864">{count,plural, =0{Abrir {count} pestaña}=1{Abrir {count} pestaña}other{Abrir {count} pestañas}}</translation>
 <translation id="4250680216510889253">No</translation>
@@ -1595,6 +1596,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="7982789257301363584">Red</translation>
 <translation id="7987685713885608670">Para más seguridad, encripta las contraseñas en tu dispositivo antes de que se guarden en el Administrador de contraseñas de Google</translation>
 <translation id="798991908416757345">Los grupos de pestañas no están disponibles</translation>
+<translation id="7993170188789685695">Presiona dos veces para cerrar esta notificación.</translation>
 <translation id="7993619969781047893">Es posible que las características de algunos sitios no funcionen de forma correcta</translation>
 <translation id="7996239959906074962">Configuración…</translation>
 <translation id="800361585186029508">Abre las URL ingresadas en Google Chrome.</translation>

@@ -716,6 +716,7 @@
 <translation id="422477017457571619">‏‫Google کو بھیجے جا رہے آپ کے براؤزنگ ڈیٹا کی بنیاد پر خطرناک سائٹس، ڈاؤن لوڈز اور ایکسٹینشنز کے خلاف ریئل ٹائم میں AI تقویت یافتہ حفاظت ملتی ہے</translation>
 <translation id="4231395118547300571">سیفٹی چیک کی اطلاعات آن ہیں</translation>
 <translation id="4237377247299956313"><ph name="BEGIN_BOLD" />ڈیفالٹ براؤزر ایپ<ph name="END_BOLD" /> پر تھپتھپائیں</translation>
+<translation id="4241893428331130998">کوئی محفوظ کردہ پاس ورڈ یا پاس کی نہیں ہے</translation>
 <translation id="4242533952199664413">ترتیبات کھولیں</translation>
 <translation id="4250432749243022864">{count,plural, =0{{count} ٹیب کھولیں}=1{{count} ٹیب کھولیں}other{{count} ٹیبز کھولیں}}</translation>
 <translation id="4250680216510889253">نہیں</translation>
@@ -1595,6 +1596,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7982789257301363584">نیٹ ورک</translation>
 <translation id="7987685713885608670">‏اضافی حفاظت کے لیے، پاس ورڈز کو Google پاس ورڈ مینیجر میں محفوظ کرنے سے پہلے اپنے آلے پر مرموز کریں۔</translation>
 <translation id="798991908416757345">ٹیب گروپس دستیاب نہیں ہیں</translation>
+<translation id="7993170188789685695">اس اطلاع کو بند کرنے کے لیے دو بار تھپتھپائیں۔</translation>
 <translation id="7993619969781047893">کچھ سائٹس پر خصوصیات میں خلل ہو سکتا ہے۔</translation>
 <translation id="7996239959906074962">سیٹ اپ کریں…</translation>
 <translation id="800361585186029508">‏درج کردہ URLs کو Google Chrome میں کھولتا ہے۔</translation>

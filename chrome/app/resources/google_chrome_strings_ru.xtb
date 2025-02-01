@@ -434,6 +434,7 @@
 <translation id="659498884637196217">В Google Менеджере паролей на этом устройстве</translation>
 <translation id="6632473616050862500">Chrome OS Flex работает благодаря дополнительному <ph name="BEGIN_LINK_CROS_OSS" />программному обеспечению с открытым исходным кодом<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6660596345553328257">Войти в Chrome?</translation>
+<translation id="6664219008737641504">Если вы забыли кодовую фразу или хотите изменить эти настройки, <ph name="SETTINGS_LINK" /> данные Chrome из аккаунта.</translation>
 <translation id="6676384891291319759">Доступ в Интернет</translation>
 <translation id="6679975945624592337">Разрешить Google Chrome работать в фоновом режиме</translation>
 <translation id="6696915334902295848">Браузер Chrome запрашивает доступ к микрофону для этого сайта.</translation>
@@ -507,7 +508,6 @@
 <translation id="7572537927358445944">Отключено • Chrome не может проверить происхождение расширения</translation>
 <translation id="7583399374488819119">Установщик <ph name="COMPANY_NAME" /></translation>
 <translation id="7606334485649076285">Google Chrome OS Flex</translation>
-<translation id="7617512710641355143">Chrome находится под управлением</translation>
 <translation id="7626032353295482388">Добро пожаловать в Chrome!</translation>
 <translation id="7626072681686626474">Согласно действующим правилам <ph name="MANAGER" />, до начала работы с устройством необходимо ознакомиться с приведенными ниже Условиями использования и принять их. Они не дополняют, не заменяют и не ограничивают Условия использования Google Chrome OS.</translation>
 <translation id="7629695634924605473">Chrome сообщит вам, если возникнет проблема с безопасностью ваших паролей.</translation>

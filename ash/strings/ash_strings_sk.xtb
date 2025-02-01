@@ -178,7 +178,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1550523713251050646">Kliknutím zobrazíte ďalšie možnosti</translation>
 <translation id="1555130319947370107">Modrá</translation>
 <translation id="1557622599341396706">Zobraziť názov plochy</translation>
-<translation id="1567138500090284106">Tlačidlo klávesov myši</translation>
 <translation id="1569384531973824928">Týmto povolíte prístup všetkým aplikáciám a webom s povoleniami používať kameru a mikrofón. Zrejme budete musieť obnoviť webovú stránku alebo reštartovať aplikáciu.</translation>
 <translation id="1571697193564730395">Prepnúť režim bez vyrušení. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Oddialenie pri zapnutej lupe</translation>
@@ -731,6 +730,7 @@ Ak to neurobíte, vstavaný touchpad sa znova aktivuje o <ph name="TIMEOUT_SECO
 <translation id="3522979239100719575">Hľadajú sa dostupné profily. Môže to niekoľko minút trvať.</translation>
 <translation id="3526440770046466733">Otvorenie odkazu na novej karte a zotrvanie na aktuálnej karte</translation>
 <translation id="353086728817903341">Pripojené k <ph name="NUM_DEVICES" /> zariadeniam</translation>
+<translation id="3532247131850366052">Tabuľku Google sa nepodarilo vytvoriť</translation>
 <translation id="3533126039236445965">Aplikácie na poličke</translation>
 <translation id="3539957339480430241">Hotspot zariadenia <ph name="DEVICE_NAME" /></translation>
 <translation id="3540893133818942399">Zrušiť nastavovanie zobrazovania nedávnych fotiek a médií z telefónu</translation>
@@ -829,6 +829,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="380165613292957338">Ako vám môžem pomôcť?</translation>
 <translation id="3804737937830804242">Zbaliť kameru</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 emodži. Žiadne ďalšie výsledky.}few{# emodži. Žiadne ďalšie výsledky.}many{# emojis. No other results.}other{# emodži. Žiadne ďalšie výsledky.}}</translation>
+<translation id="3822403841174077928">Nepodarilo sa skopírovať s formátovaním</translation>
 <translation id="3824784079442479685">Týmto povolíte prístup ku kamere aplikácii <ph name="APP_NAME" /> a všetkým aplikáciám a webom s povolením používať kameru. Zrejme budete musieť obnoviť webovú stránku alebo reštartovať aplikáciu.</translation>
 <translation id="3826099427150913765">Prepnúť na heslo</translation>
 <translation id="383058930331066723">Režim šetriča batérie je zapnutý</translation>
@@ -1215,6 +1216,7 @@ Pripojené je jedno zariadenie.</translation>
 <translation id="5043679421800073804">Kliknutie alebo klepnutie na poslednú ikonu na poličke</translation>
 <translation id="504465286040788597">Predchádzajúci odsek</translation>
 <translation id="5045550434625856497">Nesprávne heslo</translation>
+<translation id="5058794129231928255">Dokument Google sa nepodarilo vytvoriť</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Ak budete hovoriť s vypnutým zvukom, dostanete upozornenie. Zvuk nikdy neopustí vaše zariadenie.</translation>
 <translation id="5077416371682039027">Nastaviť zobrazovanie nedávnych fotiek, médií, upozornení a aplikácií z telefónu</translation>
@@ -1647,6 +1649,7 @@ Nie sú pripojené žiadne zariadenia.</translation>
 <translation id="6468406072297048412">{0,plural, =1{Do 1 minúty aktualizujte zariadenie na predchádzajúcu verziu}few{Do # minút aktualizujte zariadenie na predchádzajúcu verziu}many{Do # minúty aktualizujte zariadenie na predchádzajúcu verziu}other{Do # minút aktualizujte zariadenie na predchádzajúcu verziu}}</translation>
 <translation id="6469104339369989396">Prepnúť hotspot</translation>
 <translation id="6477681113376365978">Súbor sa nedá stiahnuť</translation>
+<translation id="648135757200234041">Kontakt sa nepodarilo vytvoriť</translation>
 <translation id="6482559668224714696">Lupa na celú obrazovku</translation>
 <translation id="6485086611007560630">Počasie (návrhy nie sú k dispozícii)</translation>
 <translation id="6490471652906364588">Zariadenie USB-C (port vpravo)</translation>
@@ -2287,6 +2290,7 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="8653151467777939995">Zobraziť nastavenia upozornení. Upozornenia sú zapnuté</translation>
 <translation id="8657066291275741003">malé písmená</translation>
 <translation id="8660331759611631213">Druhá odmocnina zo 71</translation>
+<translation id="8662921061190671299">Nepodarilo sa pridať do Kalendára</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, sila signálu <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Čiastočnú snímku obrazovky vytvoríte stlačením klávesa Enter</translation>
 <translation id="8676770494376880701">Pripojila sa nabíjačka s nízkym výkonom</translation>

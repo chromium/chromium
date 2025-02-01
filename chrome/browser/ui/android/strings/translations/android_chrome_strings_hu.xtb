@@ -385,7 +385,6 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="2781151931089541271">1 másodperc van hátra</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{A Chrome talált egy újrafelhasznált jelszót, amelyen lehetne javítani}other{A Chrome talált # újrafelhasznált jelszót, amelyen lehetne javítani}}</translation>
-<translation id="2796651346651857052">Tartsa lenyomva a címsávot a pozíciójának módosításához.</translation>
 <translation id="2800066122460699237">A lap (<ph name="TAB_TITLE" />) be lesz zárva</translation>
 <translation id="2805756323405976993">Alkalmazások</translation>
 <translation id="281504910091592009">Mentett jelszavait megtekintheti és kezelheti <ph name="BEGIN_LINK" />Google-fiókjában<ph name="END_LINK" /></translation>

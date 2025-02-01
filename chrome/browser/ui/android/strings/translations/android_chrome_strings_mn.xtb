@@ -385,7 +385,6 @@
 <translation id="2781151931089541271">1 секунд үлдсэн</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome таны сайжруулж болох дахин ашигласан нууц үг оллоо}other{Chrome таны сайжруулж болох дахин ашигласан # нууц үг оллоо}}</translation>
-<translation id="2796651346651857052">Хаяг оруулах хэсгийн байрлалыг өөрчлөхийн тулд хүрээд удаан дарна уу.</translation>
 <translation id="2800066122460699237"><ph name="TAB_TITLE" /> табыг хаана</translation>
 <translation id="2805756323405976993">Програм</translation>
 <translation id="281504910091592009"><ph name="BEGIN_LINK" />Google Бүртгэл<ph name="END_LINK" />-дээ хадгалсан нууц үгнүүдийг харах болон удирдах</translation>

@@ -2153,7 +2153,6 @@
 <translation id="2471632709106952369">සංසන්දනාත්මක වගු</translation>
 <translation id="2473195200299095979">මෙම පිටුව පරිවර්තනය කරන්න</translation>
 <translation id="2475982808118771221">දෝෂයක් සිදු විණි</translation>
-<translation id="247616523300581745">මෙම ගොනු සඟවන්න</translation>
 <translation id="2476435723907345463">මුරයතුරු ප්‍රවේශය ඉවත් කරන ලදි</translation>
 <translation id="2476901513051581836">නොබැඳි ආචයනය තරම දන්නා තෙක් ආචයනය පිරිසිදු කළ නොහැක.</translation>
 <translation id="2476974672882258506"><ph name="PARALLELS_DESKTOP" /> අස්ථාපනය කිරීමට Windows වසන්න.</translation>
@@ -2795,6 +2794,7 @@
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> සඳහා සහාය නොදක්වයි.</translation>
 <translation id="2926708162326352948">උඩුගත කළ රූපයට තේමාව යාවත්කාලීන කරන ලදි</translation>
 <translation id="2927017729816812676">හැඹිලි ගබඩාව</translation>
+<translation id="2928030851119977280">තේරීම සුරකින ලදි. ඔබ වෙනත් Google සේවා වෙත පුරනය වන විට ඔබේ තේරීම අදාළ වනු ඇත.</translation>
 <translation id="2928795416630981206">ඔබගේ කැමරා පිහිටුම හඹා යාමට ඉඩ දේ</translation>
 <translation id="2929345818093040583">{NUM_SITES,plural, =1{Chrome 1 අඩවියකින් අවසර ඉවත් කරන ලදි}one{Chrome අඩවි {NUM_SITES}කින් අවසර ඉවත් කරන ලදි}other{Chrome අඩවි {NUM_SITES}කින් අවසර ඉවත් කරන ලදි}}</translation>
 <translation id="2931157624143513983">මුද්‍රණ කළ හැකි ප්‍රදේශයට ගළපන්න</translation>
@@ -3226,7 +3226,6 @@
 <translation id="3257733480216378006"><ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" /> ඉඩ දෙන්නද?</translation>
 <translation id="325797067711573598">සැක සහිත බාගැනීම අවහිර කර ඇත</translation>
 <translation id="3259723213051400722">නැවත උත්සාහ කරන්න.</translation>
-<translation id="3260199651491738298">මෙම විශේෂාංග මගින් රැස් කරන ලද දත්ත භාවිතා කළ හැකි ආකාරය ඔබේ සංවිධානය පාලනය කරයි. <ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" /></translation>
 <translation id="3261090393424563833">අනුපාතය වැඩි කරන්න</translation>
 <translation id="3261268979727295785">වයසින් වැඩි දරුවන් සඳහා, ඔබ පිහිටුවීම අවසන් කළ පසු ඔබට මාපිය පාලන එක් කළ හැකිය. Explore යෙදුමෙන් ඔබ මාපිය පාලන පිළිබඳ තොරතුරු සොයා ගනු ඇත.</translation>
 <translation id="3261832505033014216"><ph name="USER_EMAIL" /> සඳහා මුරයතුර</translation>
@@ -7408,6 +7407,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6253801023880399036">මුරපද <ph name="GOOGLE_PASSWORD_MANAGER" /> වෙත සුරැකේ.</translation>
 <translation id="6254503684448816922">යතුරු සම්මුතිය</translation>
 <translation id="6254892857036829079">පරිපූර්ණයි</translation>
+<translation id="6257131917452817589">ස්වයංක්‍රීය මුරපද වෙනස් කිරීම</translation>
 <translation id="6257602895346497974">සමමුහුව ක්‍රියාත්මක කරන්න...</translation>
 <translation id="6257614441619555296"><ph name="KEY" />: <ph name="VALUE" /></translation>
 <translation id="625827534921607067">කලින් සම්බන්ධ වූ හෝ වින්‍යාස කළ ජාල එකකට වඩා තිබේ නම් මෙම ජාලය වඩාත් කැමති වනු ඇත</translation>
@@ -8584,7 +8584,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7113974454301513811">දැන් ඔබේ ලැයිස්තුවට වත්මන් පටිත්ත එක් කරන්න</translation>
 <translation id="7114054701490058191">මුරපද නොගැළපේ</translation>
 <translation id="7114648273807173152">ඔබේ Google ගිණුමට පුරන්නට Smart Lock භාවිත කිරීමට, සැකසීම් &gt; සම්බන්ධිත උපාංග &gt; ඔබේ දුරකථනය &gt; Smart Lock වෙත යන්න.</translation>
-<translation id="7115051913071512405">ඊට උත්සාහ කර බලන්න</translation>
 <translation id="7115361495406486998">ළඟා විය හැකි සම්බන්ධතා නැත</translation>
 <translation id="7115731767122970828">දැන් වැඩි කරන්න</translation>
 <translation id="7116554090938189816">මුද්‍රකයේ SSL සහතිකය කල් ඉකුත් වී ඇත. මුද්‍රකය යළි අරඹා නැවත උත්සාහ කරන්න.</translation>
@@ -9117,6 +9116,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7502528909759062987"><ph name="DEVICE_NAME" /> වෙත පටිත්ත විකාශනය විරාම කරන්න</translation>
 <translation id="7502804472671406749">බෙදා ගත් පටිති අනුචලනය කර විශාලනය කළ හැක</translation>
 <translation id="7503191893372251637">Netscape සහතික වර්ගය</translation>
+<translation id="7503259455663961898">මා වෙනුවෙන් එය වෙනස් කරන්න</translation>
 <translation id="7503985202154027481">ඔබේ ආරක්‍ෂක යතුරේ මෙම වෙබ් අඩවිය වෙත ඔබේ පැමිණීමේ සටහනක් තබනු ලැබේ.</translation>
 <translation id="7504145862399276792">මෙම පටිත්තේ ශ්‍රව්‍ය නිහඬ කර ඇත</translation>
 <translation id="750509436279396091">බාගැනීම් ෆෝල්ඩරය විවෘත කරන්න</translation>
@@ -9179,6 +9179,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7551059576287086432"><ph name="FILE_NAME" /> බාගැනීම සාර්ථකයි</translation>
 <translation id="7551643184018910560">රාක්කය වෙත අමුණන්න</translation>
 <translation id="7552191410769096467">පටිති සමූහ බෙදා ගැනීමට හෝ සම්බන්ධ වීමට, ඔබ පුරනය වී සමමුහුර්ත කිරීම ක්‍රියාත්මක කළ යුතු ය</translation>
+<translation id="7552196109089297786">Microsoft වෙතින් වරන්න</translation>
 <translation id="7552846755917812628">පහත ඉඟි උත්සාහ කරන්න:</translation>
 <translation id="7553012839257224005">ලිනක්ස් භාජනය පරීක්ෂා කිරීම</translation>
 <translation id="7553242001898162573">ඔබේ මුරපදය ඇතුළු කරන්න</translation>
@@ -10306,6 +10307,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8330617762701840933">විකල්ප බ්‍රවුසරයට හරවා යවන වෙබ් අඩවි ලැයිස්තුව.</translation>
 <translation id="8330689128072902965">ළඟ සම්බන්ධතාවලට ඔබ සමග බෙදා ගත හැකිය. වෙනස් කිරීමට ක්ලික් කරන්න.</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{සහාය දක්වන ගොනු වර්ගය: <ph name="FILE_TYPE1" />}=2{සහාය දක්වන ගොනු වර්ග: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />}=3{සහාය දක්වන ගොනු වර්ග: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />}=4{සහාය දක්වන ගොනු වර්ග: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" />}one{සහාය දක්වන ගොනු වර්ග: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />සහ තවත් {OVERFLOW_COUNT} <ph name="END_LINK" />)}other{සහාය දක්වන ගොනු වර්ග: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />සහ තවත් {OVERFLOW_COUNT} <ph name="END_LINK" />)}}</translation>
+<translation id="8331578454993293727">ඔබේ මුරපදය දත්ත කඩ කිරීමකදී හමු විය</translation>
 <translation id="8331822764922665615">ඔබගේ සමූහය නම් කරන්න, වර්ණයක් තෝරන්න, අනතුරුව Esc ඔබන්න</translation>
 <translation id="833256022891467078">Crostini බෙදාගත් ෆෝල්ඩර</translation>
 <translation id="833262891116910667">උද්දීපන කරන්න</translation>
@@ -10387,6 +10389,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
     <ph name="BEGIN_PARAGRAPH2" />වැඩිදුර උදවු සඳහා, මෙතැනට පිවිසෙන්න: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8383614331548401927">Recap සාදරයෙන් පිළිගනිමු</translation>
 <translation id="8386091599636877289">ප්‍රතිපත්තිය හමු නොවිය.</translation>
+<translation id="8387087863179559896">Chrome හට ශක්තිමත් මුරපදයක් සමග මෙම වෙබ් අඩවිය සඳහා ඔබේ ගිණුම යාවත්කාලීන කළ හැක. ඔබට මුරපදය මතක තබා ගැනීමට අවශ්‍ය නොවනු ඇත, මන්ද එය ඔබ වෙනුවෙන් <ph name="EMAIL" /> හි Google මුරපද කළමනාකරු තුළ සුරකින ලදි. <ph name="PASSWORD_CHANGE" /> පිළිබඳ තවත්.</translation>
 <translation id="8387361103813440603">ඔබගේ ස්ථානය බැලීමට ඉඩ නොදේ</translation>
 <translation id="8387617938027387193">ඒ ඔබ බව සත්‍යාපනය කරන්න</translation>
 <translation id="8388770971141403598">ද්විතියික පැතිකඩවල් සඳහා සහාය නොදක්වයි</translation>
@@ -10885,7 +10888,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8737966899544698733">ස්ථාන නිරවද්‍යතාව (Android පමණයි)</translation>
 <translation id="8738418093147087440">රටවල්, භාෂාව, හෝ ආදාන නම් අනුව සොයන්න</translation>
 <translation id="8740086188450289493">Google ගිණුම් මුරපදය භාවිත කරන්න</translation>
-<translation id="874023689350909633">ඊට උත්සාහ කර බලන්න</translation>
 <translation id="8740247629089392745">ඔබට මෙම Chromebook <ph name="SUPERVISED_USER_NAME" /> වෙත භාර දිය හැකිය. පිහිටුවීම දැනටමත් නිමයි, එසේ නම් එය ගවේෂණය කිරීමට වේලාවයි.</translation>
 <translation id="8740672167979365981">ChromeOS Flex යාවත්කාලීනය අවශ්‍යයි</translation>
 <translation id="8741944563400125534">ප්‍රවේශ මාරුව පිහිටුවීමේ මාර්ගෝපදේශය</translation>

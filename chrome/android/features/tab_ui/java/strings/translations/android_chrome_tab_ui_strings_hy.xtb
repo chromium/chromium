@@ -86,6 +86,7 @@
 <translation id="4783638485675352219">Կիսվել այս սարքում բացված ներդիրների վերնագրերով և URL-ներով օպերացիոն համակարգի հետ</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> կարծիք)}one{(<ph name="REVIEWS_COUNT_MANY" /> կարծիք)}other{(<ph name="REVIEWS_COUNT_MANY" /> կարծիք)}}</translation>
 <translation id="4850886885716139402">Տեսք</translation>
+<translation id="4861953997778766866">Ցանկացած օգտատեր կարող է փոփոխություններ կատարել ներդիրների ընդհանուր խմբերում</translation>
 <translation id="4870911314065352661">Փակե՞լ բոլոր ներդիրները</translation>
 <translation id="4871719318659334896">Փակել խումբը</translation>
 <translation id="4881695831933465202">Բացել</translation>
@@ -179,6 +180,7 @@
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ներդիր ավելացվել է, <ph name="ANY_CLOSED" />-ը՝ փոփոխվել}one{<ph name="MANY_ADDED" /> ներդիր ավելացվել է, <ph name="ANY_CLOSED" />-ը՝ փոփոխվել}other{<ph name="MANY_ADDED" /> ներդիր ավելացվել է, <ph name="ANY_CLOSED" />-ը՝ փոփոխվել}}</translation>
 <translation id="8633025649649592204">Վերջին գործողությունները</translation>
 <translation id="870736955561925754">Փակե՞լ ներդիրը և ջնջել խումբը</translation>
+<translation id="8712637175834984815">Պատրաստ է</translation>
 <translation id="8714939927607906138">Ավելի ցածր գին</translation>
 <translation id="8730621377337864115">Պատրաստ է</translation>
 <translation id="8730999928494395583">Այս ինկոգնիտո ներդիրներում ձեր կատարած գործողությունները կհեռացվեն սարքից</translation>

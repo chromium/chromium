@@ -768,6 +768,7 @@
 <translation id="4654549501020883054">Thay đổi hằng ngày</translation>
 <translation id="4655868084888499342">Đã đặt hình ảnh làm hình nền</translation>
 <translation id="4661249927038176904">Huyền ảo</translation>
+<translation id="4661392828086261436">Bản cập nhật này do nhà sản xuất thiết bị cung cấp và chưa được Google xác minh</translation>
 <translation id="4664651912255946953">lông thú</translation>
 <translation id="4665014895760275686">Nhà sản xuất</translation>
 <translation id="467510802200863975">Mật khẩu không khớp</translation>
@@ -1027,6 +1028,7 @@
 <translation id="5904994456462260490">Thêm APN mới</translation>
 <translation id="590746845088109442">mèo</translation>
 <translation id="5907649332524363701">màu phím</translation>
+<translation id="5908813850962688338">Quá trình cài đặt bản cập nhật này sẽ mất vài phút. Hãy luôn cắm thiết bị vào nguồn điện và bật thiết bị trong khi tải bản cập nhật xuống. Trong quá trình này, thiết bị của bạn có thể tự khởi động lại nhiều lần và hiển thị màn hình màu đen. Bạn sẽ được nhắc khởi động lại thiết bị để hoàn tất quá trình cài đặt.</translation>
 <translation id="5916084858004523819">Bị cấm</translation>
 <translation id="5916664084637901428">Đang bật</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Tệp của bạn đã được quét thành công và lưu vào <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Các tệp của bạn đã được quét thành công và lưu vào <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>

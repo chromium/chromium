@@ -768,6 +768,7 @@
 <translation id="4654549501020883054">દરરોજ બદલો</translation>
 <translation id="4655868084888499342">છબીને વૉલપેપર તરીકે સેટ કરો</translation>
 <translation id="4661249927038176904">અદ્ભુત</translation>
+<translation id="4661392828086261436">આ અપડેટ ડિવાઇસ નિર્માતા દ્વારા આપવામાં આવે છે અને તેની Google દ્વારા ચકાસણી કરવામાં આવી નથી</translation>
 <translation id="4664651912255946953">ફર</translation>
 <translation id="4665014895760275686">નિર્માતા</translation>
 <translation id="467510802200863975">પાસવર્ડ મેળ ખાતા નથી</translation>
@@ -1027,6 +1028,7 @@
 <translation id="5904994456462260490">નવું APN ઉમેરો</translation>
 <translation id="590746845088109442">બિલાડીઓ</translation>
 <translation id="5907649332524363701">કીનો રંગ</translation>
+<translation id="5908813850962688338">આ અપડેટ ઇન્સ્ટૉલ કરવામાં થોડો સમય લાગશે. જ્યારે અપડેટ ડાઉનલોડ કરવામાં આવતી હોય, ત્યારે તમારું ડિવાઇસ પ્લગ ઇન કરેલું અને ચાલુ કરેલું રાખો. આ પ્રક્રિયા દરમિયાન, તમારું ડિવાઇસ તેની જાતે ઘણી વખત રીબૂટ થાય અને કાળી સ્ક્રીન બતાવે એમ બની શકે છે. ઇન્સ્ટૉલ કરવાની પ્રક્રિયા પૂર્ણ કરવા માટે તમને તમારું ડિવાઇસ ફરી શરૂ કરવાનું કહેવામાં આવશે.</translation>
 <translation id="5916084858004523819">નિષિદ્ધ</translation>
 <translation id="5916664084637901428">ચાલુ</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{તમારી ફાઇલ સફળતાપૂર્વક સ્કૅન કરવામાં આવી અને <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />માં સાચવવામાં આવી.}one{તમારી ફાઇલ સફળતાપૂર્વક સ્કૅન કરવામાં આવી અને <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />માં સાચવવામાં આવી.}other{તમારી ફાઇલો સફળતાપૂર્વક સ્કૅન કરવામાં આવી અને <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />માં સાચવવામાં આવી.}}</translation>

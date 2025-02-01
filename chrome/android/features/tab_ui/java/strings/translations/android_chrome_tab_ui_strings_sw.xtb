@@ -86,6 +86,7 @@ Ukikifuta, papo hapo kila mtu hataweza kufikia kikundi cha vichupo cha "<ph name
 <translation id="4783638485675352219">Ruhusu ufikiaji wa majina na URL za vichupo vilivyofunguliwa kwenye kifaa hiki vilivyo na mfumo wa uendeshaji</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(Maoni <ph name="REVIEWS_COUNT_ONE" />)}other{(Maoni <ph name="REVIEWS_COUNT_MANY" />)}}</translation>
 <translation id="4850886885716139402">Mwonekano</translation>
+<translation id="4861953997778766866">Kila mtu anaweza kubadilisha vikundi vyako vya vichupo vya pamoja</translation>
 <translation id="4870911314065352661">Unataka kufunga vichupo vyote?</translation>
 <translation id="4871719318659334896">Funga kikundi</translation>
 <translation id="4881695831933465202">Fungua</translation>
@@ -179,6 +180,7 @@ Ukikifuta, papo hapo kila mtu hataweza kufikia kikundi cha vichupo cha "<ph name
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{Kichupo <ph name="ONE_ADDED" /> kimeongezwa, <ph name="ANY_CLOSED" /> vimefungwa}other{Vichupo <ph name="MANY_ADDED" /> vimeongezwa, <ph name="ANY_CLOSED" /> vimefungwa}}</translation>
 <translation id="8633025649649592204">Shughuli za hivi majuzi</translation>
 <translation id="870736955561925754">Ungependa kufunga kichupo na ufute kikundi?</translation>
+<translation id="8712637175834984815">Nimeelewa</translation>
 <translation id="8714939927607906138">Bei nafuu</translation>
 <translation id="8730621377337864115">Nimemaliza</translation>
 <translation id="8730999928494395583">Shughuli yako katika vichupo fiche hivi itaondolewa kwenye kifaa hiki</translation>

@@ -2161,7 +2161,6 @@
 <translation id="2471632709106952369">جدول‌های مقایسه</translation>
 <translation id="2473195200299095979">ترجمه این صفحه</translation>
 <translation id="2475982808118771221">یک خطا روی داد</translation>
-<translation id="247616523300581745">پنهان کردن این فایل‌ها</translation>
 <translation id="2476435723907345463">دسترسی به گذرکلیدها برداشته شد</translation>
 <translation id="2476901513051581836">تا زمانی که اندازه فضای ذخیره‌سازی آفلاین مشخص نشود نمی‌توان فضای ذخیره‌سازی را پاک کرد.</translation>
 <translation id="2476974672882258506">‏برای حذف نصب <ph name="PARALLELS_DESKTOP" />، ‏Windows را خاموش کنید.</translation>
@@ -3237,7 +3236,6 @@
 <translation id="3257733480216378006">به <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" /> اجازه داده شود؟</translation>
 <translation id="325797067711573598">بارگیری مشکوک مسدود شد</translation>
 <translation id="3259723213051400722">لطفاً دوباره امتحان کنید.</translation>
-<translation id="3260199651491738298">سازمان شما کنترل می‌کند که داده‌های جمع‌آوری‌شده توسط این ویژگی‌ها چگونه استفاده شوند. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="3261090393424563833">افزایش نرخ</translation>
 <translation id="3261268979727295785">بعد از تمام کردن راه‌اندازی، می‌توانید کنترل‌های والدین را برای فرزندان بزرگ‌تر اضافه کنید. می‌توانید اطلاعات را در کنترل‌های والدین در برنامه «کاوش» پیدا کنید.</translation>
 <translation id="3261832505033014216">گذرکلید برای <ph name="USER_EMAIL" /></translation>
@@ -8598,7 +8596,6 @@
 <translation id="7113974454301513811">اکنون برگه فعلی را به فهرست اضافه کنید</translation>
 <translation id="7114054701490058191">گذرواژه‌ها مطابقت ندارند</translation>
 <translation id="7114648273807173152">‏برای استفاده از Smart Lock برای ورود به سیستم حساب Google، به «تنظیمات &gt; دستگاه‌های متصل &gt; Smart Lock» بروید.</translation>
-<translation id="7115051913071512405">امتحان کنید</translation>
 <translation id="7115361495406486998">مخاطبی دردسترس نیست</translation>
 <translation id="7115731767122970828">اکنون تقویت شود</translation>
 <translation id="7116554090938189816">‏گواهینامه SSL چاپگر منقضی شده است. چاپگر را بازراه‌اندازی کنید و دوباره امتحان کنید.</translation>
@@ -10904,7 +10901,6 @@
 <translation id="8737966899544698733">‏دقت مکان (فقط Android)</translation>
 <translation id="8738418093147087440">جستجو براساس کشور، زبان، یا نام‌های ورودی</translation>
 <translation id="8740086188450289493">‏استفاده از گذرواژه «حساب Google»</translation>
-<translation id="874023689350909633">امتحان کنید</translation>
 <translation id="8740247629089392745">‏می‌توانید این Chromebook را به <ph name="SUPERVISED_USER_NAME" /> بدهید. راه‌اندازی به‌زودی تمام می‌شود و زمان کاوش دستگاه می‌رسد.</translation>
 <translation id="8740672167979365981">‏به‌روزرسانی ChromeOS Flex لازم است</translation>
 <translation id="8741944563400125534">راهنمای راه‌اندازی «دسترسی کلیدی»</translation>

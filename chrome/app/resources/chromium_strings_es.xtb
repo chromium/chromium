@@ -504,7 +504,6 @@ Chromium no puede recuperar tu configuración.</translation>
 <translation id="7872446069773932638">Descargando... Segundos restantes: <ph name="SECONDS" />.</translation>
 <translation id="7888981273428720788">Establecer Chromium como navegador predeterminado</translation>
 <translation id="7934340546140346950">Chromium cambia las conexiones no seguras a HTTPS automáticamente cuando es posible</translation>
-<translation id="7935734571048689933">Chromium está gestionado</translation>
 <translation id="7937630085815544518">Habías iniciado sesión en Chromium como <ph name="USER_EMAIL_ADDRESS" />. Utiliza la misma cuenta para volver a iniciar sesión.</translation>
 <translation id="7975919845073681630">Esta instalación de Chromium es secundaria, por lo que no se puede establecer como navegador predeterminado.</translation>
 <translation id="7997934263947464652">Las extensiones, las aplicaciones y los temas de fuentes desconocidas pueden dañar tu dispositivo. Chromium recomienda instalarlos únicamente desde <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />.</translation>

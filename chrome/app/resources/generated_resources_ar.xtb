@@ -2156,7 +2156,6 @@
 <translation id="2471632709106952369">جداول المقارنة</translation>
 <translation id="2473195200299095979">ترجم هذه الصفحة</translation>
 <translation id="2475982808118771221">حدث خطأ</translation>
-<translation id="247616523300581745">إخفاء هذه الملفات</translation>
 <translation id="2476435723907345463">تمت إزالة إمكانية الوصول إلى مفاتيح المرور</translation>
 <translation id="2476901513051581836">لا يمكن إخلاء مساحة تخزين إلا بعد معرفة حجم مساحة التخزين المستخدَمة بلا إنترنت.</translation>
 <translation id="2476974672882258506">‏يجب إيقاف تشغيل نظام Windows لإلغاء تثبيت <ph name="PARALLELS_DESKTOP" />.</translation>
@@ -3232,7 +3231,6 @@
 <translation id="3257733480216378006">هل تريد السماح للإضافة <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" /> بالوصول إلى الموقع الإلكتروني هذا؟</translation>
 <translation id="325797067711573598">تم حظر عملية تنزيل مريبة.</translation>
 <translation id="3259723213051400722">يُرجى إعادة المحاولة.</translation>
-<translation id="3260199651491738298">تتحكّم مؤسستك في الكيفية التي يجوز فيها استخدام البيانات التي تجمعها هذه الميزات. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="3261090393424563833">زيادة المعدَّل</translation>
 <translation id="3261268979727295785">في ما يتعلّق بالأطفال الأكبر سنًا، يمكنك إضافة أدوات رقابة الأهل بعد الانتهاء من الإعداد. يمكنك العثور على معلومات حول أدوات رقابة الأهل في تطبيق "استكشاف".</translation>
 <translation id="3261832505033014216">مفتاح مرور <ph name="USER_EMAIL" /></translation>
@@ -8597,7 +8595,6 @@
 <translation id="7113974454301513811">عليك الآن إضافة علامة التبويب الحالية إلى قائمتك.</translation>
 <translation id="7114054701490058191">كلمات المرور غير متطابقة</translation>
 <translation id="7114648273807173152">‏لاستخدام Smart Lock لتسجيل الدخول إلى حسابك على Google، يمكنك الانتقال إلى "الإعدادات" &gt; "الأجهزة المتصلة" &gt; "هاتفك" &gt; Smart Lock.</translation>
-<translation id="7115051913071512405">جرب بنفسك</translation>
 <translation id="7115361495406486998">ما من جهات اتصال يمكن الوصول إليها</translation>
 <translation id="7115731767122970828">تعزيز الأداء الآن</translation>
 <translation id="7116554090938189816">‏انتهت صلاحية شهادة طبقة المقابس الآمنة (SSL) للطابعة. يُرجى إعادة تشغيل الطابعة والمحاولة مرة أخرى.</translation>
@@ -10905,7 +10902,6 @@
 <translation id="8737966899544698733">‏الإعداد "دقة الموقع الجغرافي" (على أجهزة Android فقط)</translation>
 <translation id="8738418093147087440">البحث حسب البلدان أو اللغة أو أسماء عناصر الإدخال</translation>
 <translation id="8740086188450289493">‏استخدام كلمة مرور حساب Google</translation>
-<translation id="874023689350909633">تجربة الإجراء</translation>
 <translation id="8740247629089392745">‏يمكنك تسليم جهاز Chromebook هذا إلى <ph name="SUPERVISED_USER_NAME" />. أوشك الإعداد على الانتهاء. بعد ذلك، يمكنك استكشاف محتوى الجهاز.</translation>
 <translation id="8740672167979365981">‏مطلوب تحديث نظام التشغيل ChromeOS Flex</translation>
 <translation id="8741944563400125534">دليل إعداد ميزة "الوصول عبر مفتاح تبديل"</translation>

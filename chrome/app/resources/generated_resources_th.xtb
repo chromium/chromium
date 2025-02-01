@@ -2151,7 +2151,6 @@
 <translation id="2471632709106952369">ตารางเปรียบเทียบ</translation>
 <translation id="2473195200299095979">แปลหน้านี้</translation>
 <translation id="2475982808118771221">มีข้อผิดพลาดเกิดขึ้น</translation>
-<translation id="247616523300581745">ซ่อนไฟล์เหล่านี้</translation>
 <translation id="2476435723907345463">นำสิทธิ์เข้าถึงพาสคีย์ออกแล้ว</translation>
 <translation id="2476901513051581836">ล้างพื้นที่เก็บข้อมูลไม่ได้จนกว่าจะทราบขนาดพื้นที่เก็บข้อมูลออฟไลน์</translation>
 <translation id="2476974672882258506">ปิด Windows เพื่อถอนการติดตั้ง <ph name="PARALLELS_DESKTOP" /></translation>
@@ -3225,7 +3224,6 @@
 <translation id="3257733480216378006">อนุญาต <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" /> ไหม</translation>
 <translation id="325797067711573598">บล็อกการดาวน์โหลดที่น่าสงสัยแล้ว</translation>
 <translation id="3259723213051400722">โปรดลองอีกครั้ง</translation>
-<translation id="3260199651491738298">องค์กรของคุณเป็นผู้ควบคุมวิธีใช้ข้อมูลที่ฟีเจอร์เหล่านี้เก็บรวบรวม <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="3261090393424563833">เพิ่มอัตรา</translation>
 <translation id="3261268979727295785">สำหรับบุตรหลานที่มีอายุมากกว่าเกณฑ์ คุณจะเพิ่มการควบคุมโดยผู้ปกครองได้เมื่อตั้งค่าเรียบร้อยแล้ว ดูข้อมูลเกี่ยวกับการควบคุมโดยผู้ปกครองได้ในแอปสำรวจ</translation>
 <translation id="3261832505033014216">พาสคีย์สำหรับ <ph name="USER_EMAIL" /></translation>
@@ -8579,7 +8577,6 @@
 <translation id="7113974454301513811">เพิ่มแท็บปัจจุบันลงในรายการ</translation>
 <translation id="7114054701490058191">รหัสผ่านไม่ตรงกัน</translation>
 <translation id="7114648273807173152">หากต้องการใช้ Smart Lock ในการลงชื่อเข้าใช้ Google ให้ไปที่การตั้งค่า &gt; อุปกรณ์ที่เชื่อมต่อ &gt; โทรศัพท์ของคุณ &gt; Smart Lock</translation>
-<translation id="7115051913071512405">ลองใช้งาน</translation>
 <translation id="7115361495406486998">ไม่มีรายชื่อติดต่อที่ติดต่อได้</translation>
 <translation id="7115731767122970828">เพิ่มประสิทธิภาพเลย</translation>
 <translation id="7116554090938189816">ใบรับรอง SSL ของเครื่องพิมพ์หมดอายุแล้ว รีสตาร์ทเครื่องพิมพ์แล้วลองอีกครั้ง</translation>
@@ -10885,7 +10882,6 @@
 <translation id="8737966899544698733">ความแม่นยำของตำแหน่ง (Android เท่านั้น)</translation>
 <translation id="8738418093147087440">ค้นหาตามประเทศ ภาษา หรือชื่อการป้อนข้อมูล</translation>
 <translation id="8740086188450289493">ใช้รหัสผ่านของบัญชี Google</translation>
-<translation id="874023689350909633">ลองเลย</translation>
 <translation id="8740247629089392745">คุณส่งมอบ Chromebook เครื่องนี้ให้ <ph name="SUPERVISED_USER_NAME" /> ได้ การตั้งค่าใกล้เสร็จแล้ว จากนั้นก็ได้เวลาแห่งการสำรวจ</translation>
 <translation id="8740672167979365981">ต้องอัปเดต Chrome OS Flex</translation>
 <translation id="8741944563400125534">คู่มือการตั้งค่าการเข้าถึงด้วยสวิตช์</translation>

@@ -178,7 +178,6 @@
 <translation id="1550523713251050646">আরও বিকল্পের জন্য ক্লিক করুন</translation>
 <translation id="1555130319947370107">নীল</translation>
 <translation id="1557622599341396706">ডেস্কের নাম দেখুন</translation>
-<translation id="1567138500090284106">মাউস 'কী' বোতাম</translation>
 <translation id="1569384531973824928">এর ফলে ক্যামেরা ও মাইক্রোফোন ব্যবহার করার অনুমতি আছে এমন সমস্ত অ্যাপ ও ওয়েবসাইট অ্যাক্সেস করা যায়। আপনাকে ওয়েব পেজ রিফ্রেশ করতে বা অ্যাপটি রিস্টার্ট করতে হতে পারে।</translation>
 <translation id="1571697193564730395">'বিরক্ত করবে না' টগল করুন। <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">ম্যাগনিফায়ার চালু থাকাকালীন ছোট করুন</translation>
@@ -731,6 +730,7 @@
 <translation id="3522979239100719575">উপলভ্য প্রোফাইল খুঁজে দেখা হচ্ছে। এর জন্য কয়েক মিনিট সময় লাগতে পারে।</translation>
 <translation id="3526440770046466733">নতুন ট্যাবে লিঙ্ক খুলুন এবং বর্তমান ট্যাবে কাজ চালিয়ে যান</translation>
 <translation id="353086728817903341"><ph name="NUM_DEVICES" />টি ডিভাইসে কানেক্ট করা হয়েছে</translation>
+<translation id="3532247131850366052">Google Sheet তৈরি করা যায়নি</translation>
 <translation id="3533126039236445965">শেল্ফে অ্যাপ</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> হটস্পট</translation>
 <translation id="3540893133818942399">আপনার ফোনের সাম্প্রতিক ফটো ও মিডিয়া দেখা সংক্রান্ত সেট-আপের পদ্ধতি বাতিল করুন</translation>
@@ -829,6 +829,7 @@
 <translation id="380165613292957338">হাই, আমি কীভাবে সাহায্য করতে পারি?</translation>
 <translation id="3804737937830804242">ক্যামেরা আড়াল করুন</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{১টি ইমোজি। অন্য কোনও ফলাফল নেই।}one{#টি ইমোজি। অন্য কোনও ফলাফল নেই।}other{#টি ইমোজি। অন্য কোনও ফলাফল নেই।}}</translation>
+<translation id="3822403841174077928">ফর্ম্যাটিং সহ কপি করা যায়নি</translation>
 <translation id="3824784079442479685">এর ফলে <ph name="APP_NAME" /> এবং ক্যামেরা ব্যবহার করার অনুমতি আছে এমন সমস্ত অ্যাপ ও ওয়েবসাইটে ক্যামেরা অ্যাক্সেস করা যায়। আপনাকে ওয়েব পেজ রিফ্রেশ করতে বা অ্যাপটি রিস্টার্ট করতে হতে পারে।</translation>
 <translation id="3826099427150913765">যাচাইকরণের জন্য পাসওয়ার্ড ব্যবহার করুন</translation>
 <translation id="383058930331066723">'ব্যাটারি সেভার' মোড চালু আছে</translation>
@@ -1215,6 +1216,7 @@
 <translation id="5043679421800073804">শেল্ফের শেষ আইকনে ক্লিক করুন বা ট্যাপ করুন</translation>
 <translation id="504465286040788597">পূর্ববর্তী অনুচ্ছেদ</translation>
 <translation id="5045550434625856497">ভুল পাসওয়ার্ড</translation>
+<translation id="5058794129231928255">Google Doc তৈরি করা যায়নি</translation>
 <translation id="5062496344832867502">রাম</translation>
 <translation id="5068762093486106012">মিউট করা অবস্থায় আপনি কথা বললে, আপনাকে তা জানানো হবে। অডিও সব সময় আপনার ডিভাইসেই থেকে যায়।</translation>
 <translation id="5077416371682039027">আপনার ফোনের সাম্প্রতিক ফটো, মিডিয়া, বিজ্ঞপ্তি ও অ্যাপ দেখা সংক্রান্ত পদ্ধতি সেট-আপ করুন</translation>
@@ -1647,6 +1649,7 @@
 <translation id="6468406072297048412">{0,plural, =1{১ মিনিটের মধ্যে ডিভাইস আগের ভার্সনে আপডেট করুন}one{# মিনিটের মধ্যে ডিভাইস আগের ভার্সনে আপডেট করুন}other{# মিনিটের মধ্যে ডিভাইস আগের ভার্সনে আপডেট করুন}}</translation>
 <translation id="6469104339369989396">হটস্পট টগল করুন</translation>
 <translation id="6477681113376365978">ফাইল ডাউনলোড করা যাচ্ছে না</translation>
+<translation id="648135757200234041">পরিচিতি তৈরি করা যায়নি</translation>
 <translation id="6482559668224714696">ফুল-স্ক্রিন ম্যাগনিফায়ার</translation>
 <translation id="6485086611007560630">আবহাওয়া সম্পর্কিত সাজেশন (উপলভ্য নেই)</translation>
 <translation id="6490471652906364588">USB-C ডিভাইস (ডান পোর্ট)</translation>
@@ -2288,6 +2291,7 @@
 <translation id="8653151467777939995">বিজ্ঞপ্তি সেটিংস দেখান। বিজ্ঞপ্তি চালু আছে</translation>
 <translation id="8657066291275741003">ছোট হাতের অক্ষর</translation>
 <translation id="8660331759611631213">৭১-এর বর্গমূল</translation>
+<translation id="8662921061190671299">Calendar-এ যোগ করা যায়নি</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, সিগন্যাল: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">আংশিক স্ক্রিনশট ক্যাপচার Enter প্রেস করুন</translation>
 <translation id="8676770494376880701">নিম্ন শক্তির চার্জার সংযুক্ত করা হয়েছে</translation>

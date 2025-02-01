@@ -178,7 +178,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1550523713251050646">Smelltu til að sjá fleiri valkosti</translation>
 <translation id="1555130319947370107">Blár</translation>
 <translation id="1557622599341396706">Sýna heiti skrifborðs</translation>
-<translation id="1567138500090284106">Músarhnappar</translation>
 <translation id="1569384531973824928">Þetta veitir öllum forritum og vefsvæðum með myndavélar- og hljóðnemaheimildir aðgang. Þú gætir þurft að endurnýja vefsíðuna eða endurræsa forritið.</translation>
 <translation id="1571697193564730395">Kveikja/slökkva á „Ónáðið ekki“. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Minnka þegar kveikt er á stækkunargleri</translation>
@@ -731,6 +730,7 @@ Annars verður aftur kveikt á innbyggða snertifletinum eftir <ph name="TIMEOUT
 <translation id="3522979239100719575">Leitar að tiltækum prófílum. Þetta gæti tekið nokkrar mínútur.</translation>
 <translation id="3526440770046466733">Opna tengil í nýjum flipa og halda áfram í núverandi flipa</translation>
 <translation id="353086728817903341">Tengdist við <ph name="NUM_DEVICES" /> tæki</translation>
+<translation id="3532247131850366052">Ekki tókst að búa til Google-töflureikni</translation>
 <translation id="3533126039236445965">Forrit á hillu</translation>
 <translation id="3539957339480430241">Heitur reitur <ph name="DEVICE_NAME" /></translation>
 <translation id="3540893133818942399">Hafna að setja upp skoðun nýlegra mynda og efnis í símanum</translation>
@@ -829,6 +829,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="380165613292957338">Hæ, hvernig get ég aðstoðað?</translation>
 <translation id="3804737937830804242">Minnka myndavél</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{Eitt emoji-tákn. Engar aðrar niðurstöður.}one{# emoji-tákn. Engar aðrar niðurstöður.}other{# emoji-tákn. Engar aðrar niðurstöður.}}</translation>
+<translation id="3822403841174077928">Ekki tókst að afrita ásamt sniði</translation>
 <translation id="3824784079442479685">Þetta veitir <ph name="APP_NAME" /> og öllum forritum og vefsvæðum með myndavélarheimild aðgang að myndavél. Þú gætir þurft að endurnýja vefsíðuna eða endurræsa forritið.</translation>
 <translation id="3826099427150913765">Skipta yfir í aðgangsorð</translation>
 <translation id="383058930331066723">Kveikt er á rafhlöðusparnaði</translation>
@@ -1215,6 +1216,7 @@ Eitt tæki er tengt.</translation>
 <translation id="5043679421800073804">Smella eða ýta á síðasta atriði á hillu</translation>
 <translation id="504465286040788597">Fyrri málsgrein</translation>
 <translation id="5045550434625856497">Rangt aðgangsorð</translation>
+<translation id="5058794129231928255">Ekki tókst að búa til Google-skjal</translation>
 <translation id="5062496344832867502">vinnsluminni</translation>
 <translation id="5068762093486106012">Þú færð tilkynningu ef þú talar á meðan slökkt er á hljóðinu. Ekkert hljóð er sent úr tækinu.</translation>
 <translation id="5077416371682039027">Setja upp skoðun nýlegra mynda, efnis, tilkynninga og forrita í símanum</translation>
@@ -1647,6 +1649,7 @@ Engin tæki eru tengd.</translation>
 <translation id="6468406072297048412">{0,plural, =1{Uppfæra verður tækið í fyrri útgáfu innan 1 mínútu}one{Uppfæra verður tækið í fyrri útgáfu innan # mínútu}other{Uppfæra verður tækið í fyrri útgáfu innan # mínútna}}</translation>
 <translation id="6469104339369989396">Kveikja/slökkva á heitum reit</translation>
 <translation id="6477681113376365978">Ekki tókst að sækja skrá</translation>
+<translation id="648135757200234041">Ekki tókst að stofna tengilið</translation>
 <translation id="6482559668224714696">Stækkunargler á öllum skjánum</translation>
 <translation id="6485086611007560630">Veður (ekki tiltækt)</translation>
 <translation id="6490471652906364588">USB-C-tæki (hægra tengi)</translation>
@@ -2287,6 +2290,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="8653151467777939995">Sýna tilkynningastillingar. Kveikt er á tilkynningum</translation>
 <translation id="8657066291275741003">lágstafir</translation>
 <translation id="8660331759611631213">Kvaðratrótin af 71</translation>
+<translation id="8662921061190671299">Ekki tókst að bæta við Dagatal</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, sendistyrkur <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Ýttu á Enter til að taka skjámynd af hluta skjásins</translation>
 <translation id="8676770494376880701">Afllítið hleðslutæki tengt</translation>

@@ -385,7 +385,6 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="2781151931089541271">1 seconde resterend</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome heeft een hergebruikt wachtwoord gevonden dat je kunt verbeteren}other{Chrome heeft # hergebruikte wachtwoorden gevonden die je kunt verbeteren}}</translation>
-<translation id="2796651346651857052">Houd je vinger op de adresbalk om de positie te wijzigen.</translation>
 <translation id="2800066122460699237">Het tabblad <ph name="TAB_TITLE" /> wordt gesloten</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="281504910091592009">Bekijk en beheer opgeslagen wachtwoorden in je <ph name="BEGIN_LINK" />Google-account<ph name="END_LINK" /></translation>

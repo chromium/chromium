@@ -178,7 +178,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1550523713251050646">Kliko për opsione të tjera</translation>
 <translation id="1555130319947370107">E kaltër</translation>
 <translation id="1557622599341396706">Shfaq emrin e tavolinës së punës</translation>
-<translation id="1567138500090284106">Butoni i tasteve të miut</translation>
 <translation id="1569384531973824928">Kjo lejon qasjen për të gjitha aplikacionet dhe uebsajtet që kanë lejen për kamerën dhe mikrofonin. Mund të duhet të rifreskosh faqen e uebit ose të rinisësh aplikacionin.</translation>
 <translation id="1571697193564730395">Aktivizo/çaktivizo modalitetin "Mos shqetëso". <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Zvogëlo kur zmadhuesi është aktiv</translation>
@@ -731,6 +730,7 @@ Në rast të kundërt, blloku i integruar me prekje do të riaktivizohet pas <ph
 <translation id="3522979239100719575">Po kërkon për profilet e disponueshme. Kjo mund të zgjasë disa minuta.</translation>
 <translation id="3526440770046466733">Hape lidhjen në një skedë të re dhe qëndro në skedën aktuale</translation>
 <translation id="353086728817903341">U lidh me <ph name="NUM_DEVICES" /> pajisje</translation>
+<translation id="3532247131850366052">Dokumenti i "Fletëve të Google" nuk mund të krijohej</translation>
 <translation id="3533126039236445965">Aplikacionet në raft</translation>
 <translation id="3539957339480430241">Zona e qasjes për internet e <ph name="DEVICE_NAME" /></translation>
 <translation id="3540893133818942399">Hiq konfigurimin e shikimit të medias dhe fotografive më të fundit të telefonit tënd</translation>
@@ -829,6 +829,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="380165613292957338">Përshëndetje, si mund të të ndihmoj?</translation>
 <translation id="3804737937830804242">Palos kamerën</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 emoji. Nuk ka rezultate të tjera.}other{# emoji. Nuk ka rezultate të tjera.}}</translation>
+<translation id="3822403841174077928">Nuk mund të kopjohej me formatimin</translation>
 <translation id="3824784079442479685">Kjo lejon qasjen te kamera për <ph name="APP_NAME" /> dhe të gjitha aplikacionet dhe uebsajtet me lejen e kamerës. Mund të duhet të rifreskosh faqen e uebit ose të rinisësh aplikacionin.</translation>
 <translation id="3826099427150913765">Kalo te fjalëkalimi</translation>
 <translation id="383058930331066723">Modaliteti i kursimit të baterisë është aktiv</translation>
@@ -1215,6 +1216,7 @@ Disa veçori janë kufizuar për të rritur kohëzgjatjen e baterisë.</translat
 <translation id="5043679421800073804">Kliko ose trokit tek ikona e fundit në raft</translation>
 <translation id="504465286040788597">Paragrafi i mëparshëm</translation>
 <translation id="5045550434625856497">Fjalëkalim i gabuar</translation>
+<translation id="5058794129231928255">Dokumenti i "Dokumenteve të Google" nuk mund të krijohej</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Do të marrësh njoftime nëse flet kur është në heshtje. Audioja nuk largohet asnjëherë nga pajisja jote.</translation>
 <translation id="5077416371682039027">Konfiguro shikimin e njoftimeve, aplikacioneve, medias dhe fotografive më të fundit të telefonit tënd</translation>
@@ -1647,6 +1649,7 @@ Nuk ka pajisje të lidhura.</translation>
 <translation id="6468406072297048412">{0,plural, =1{Kalo pajisjen në versionin e mëparshëm brenda 1 minute}other{Kalo pajisjen në versionin e mëparshëm brenda # minutash}}</translation>
 <translation id="6469104339369989396">Aktivizo/çaktivizo zonën e qasjes për internet</translation>
 <translation id="6477681113376365978">Skedari nuk mund të shkarkohet</translation>
+<translation id="648135757200234041">Kontakti nuk mund të krijohej</translation>
 <translation id="6482559668224714696">Zmadhuesi në ekran të plotë</translation>
 <translation id="6485086611007560630">Moti (nuk ofrohet)</translation>
 <translation id="6490471652906364588">Pajisja USB-C (porta djathtas)</translation>
@@ -2287,6 +2290,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="8653151467777939995">Shfaq cilësimet e njoftimeve. Njoftimet janë aktive</translation>
 <translation id="8657066291275741003">shkronja të vogla</translation>
 <translation id="8660331759611631213">Rrënja katrore e 71</translation>
+<translation id="8662921061190671299">Nuk mund të shtohej te "Kalendari"</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Shtyp "Enter" për të nxjerrë një pamje të pjesshme të ekranit</translation>
 <translation id="8676770494376880701">Është lidhur karikues me fuqi të ulët</translation>

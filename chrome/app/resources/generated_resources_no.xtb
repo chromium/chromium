@@ -2158,7 +2158,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2471632709106952369">Sammenligningstabeller</translation>
 <translation id="2473195200299095979">Oversett denne siden</translation>
 <translation id="2475982808118771221">Det oppsto en feil</translation>
-<translation id="247616523300581745">Skjul disse filene</translation>
 <translation id="2476435723907345463">Tilgangen til passnøkler er fjernet</translation>
 <translation id="2476901513051581836">Kan ikke frigjøre lagringsplass før vi vet størrelsen på lagringsplassen uten nett.</translation>
 <translation id="2476974672882258506">Slå av Windows for å avinstallere <ph name="PARALLELS_DESKTOP" />.</translation>
@@ -3234,7 +3233,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3257733480216378006">Vil du tillate <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" />?</translation>
 <translation id="325797067711573598">En mistenkelig nedlasting er blokkert</translation>
 <translation id="3259723213051400722">Prøv på nytt.</translation>
-<translation id="3260199651491738298">Organisasjonen din styrer hvordan dataene som samles inn av disse funksjonene, kan brukes. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="3261090393424563833">Øk frekvensen</translation>
 <translation id="3261268979727295785">For eldre barn kan du legge til foreldrekontroll når du er ferdig med konfigureringen. Du finner informasjon om foreldrekontroll i Utforsk-appen.</translation>
 <translation id="3261832505033014216">Passnøkkel for <ph name="USER_EMAIL" /></translation>
@@ -8588,7 +8586,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7113974454301513811">Legg til den aktive fanen på listen din</translation>
 <translation id="7114054701490058191">Passordene er ikke like</translation>
 <translation id="7114648273807173152">For å bruke Smart Lock til å logge på Google-kontoen din, gå til Innstillinger &gt; Tilkoblede enheter &gt; Telefonen din &gt; Smart Lock.</translation>
-<translation id="7115051913071512405">Test det</translation>
 <translation id="7115361495406486998">Ingen kontakter kan nås</translation>
 <translation id="7115731767122970828">Øk ytelsen nå</translation>
 <translation id="7116554090938189816">SSL-sertifikatet for skriveren er utløpt. Start skriveren på nytt, og prøv igjen.</translation>
@@ -10895,7 +10892,6 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8737966899544698733">Posisjonsnøyaktighet (bare Android)</translation>
 <translation id="8738418093147087440">Søk etter land, språk eller inndatanavn</translation>
 <translation id="8740086188450289493">Bruk passordet for Google-kontoen</translation>
-<translation id="874023689350909633">Prøv det</translation>
 <translation id="8740247629089392745">Du kan gi Chromebooken til <ph name="SUPERVISED_USER_NAME" />. Konfigureringen er nesten ferdig, og så er det tid for å utforske.</translation>
 <translation id="8740672167979365981">ChromeOS Flex må oppdateres</translation>
 <translation id="8741944563400125534">Konfigureringsveiledning for brytertilgang</translation>

@@ -2167,7 +2167,6 @@
 <translation id="2471632709106952369">Порівняльні таблиці</translation>
 <translation id="2473195200299095979">Перекласти цю сторінку</translation>
 <translation id="2475982808118771221">Сталася помилка</translation>
-<translation id="247616523300581745">Приховати ці файли</translation>
 <translation id="2476435723907345463">Дозвіл використовувати ключі доступу скасовано</translation>
 <translation id="2476901513051581836">Неможливо звільнити місце, доки не буде відомий розмір офлайн-сховища.</translation>
 <translation id="2476974672882258506">Щоб видалити <ph name="PARALLELS_DESKTOP" />, завершіть роботу Windows.</translation>
@@ -2809,6 +2808,7 @@
 <translation id="2926620265753325858">Пристрій <ph name="DEVICE_NAME" /> не підтримується</translation>
 <translation id="2926708162326352948">Тему оновлено. Використовується тема на основі завантаженого зображення.</translation>
 <translation id="2927017729816812676">Кеш-пам’ять</translation>
+<translation id="2928030851119977280">Вибране налаштування збережено. Воно застосовуватиметься під час входу в інші сервіси Google.</translation>
 <translation id="2928795416630981206">Дозволено відстежувати положення камери</translation>
 <translation id="2929345818093040583">{NUM_SITES,plural, =1{Chrome скасував дозволи для 1 сайту}one{Chrome скасував дозволи для {NUM_SITES} сайту}few{Chrome скасував дозволи для {NUM_SITES} сайтів}many{Chrome скасував дозволи для {NUM_SITES} сайтів}other{Chrome скасував дозволи для {NUM_SITES} сайту}}</translation>
 <translation id="2931157624143513983">За розміром області друку</translation>
@@ -3242,7 +3242,6 @@
 <translation id="3257733480216378006">Дозволити (<ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" />)?</translation>
 <translation id="325797067711573598">Підозріле завантаження заблоковано</translation>
 <translation id="3259723213051400722">Повторіть спробу.</translation>
-<translation id="3260199651491738298">Ваша організація контролює, як використовуються дані, які збирають ці функції. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="3261090393424563833">Збільшити частоту</translation>
 <translation id="3261268979727295785">Ви зможете ввімкнути батьківський контроль для старших дітей, коли завершите налаштування. Інформація про цю функцію доступна в додатку Можливості.</translation>
 <translation id="3261832505033014216">Ключ доступу, зв’язаний з іменем користувача <ph name="USER_EMAIL" /></translation>
@@ -7418,6 +7417,7 @@
 <translation id="6253801023880399036">Паролі зберігаються в сервісі <ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
 <translation id="6254503684448816922">Дискредитація ключа</translation>
 <translation id="6254892857036829079">Чудова</translation>
+<translation id="6257131917452817589">автоматичне змінення пароля</translation>
 <translation id="6257602895346497974">Увімкнути синхронізацію…</translation>
 <translation id="6257614441619555296"><ph name="KEY" />: <ph name="VALUE" /></translation>
 <translation id="625827534921607067">Якщо доступно кілька мереж, до яких ви раніше підключалися або які налаштовували, використовуватиметься ця мережа</translation>
@@ -8601,7 +8601,6 @@
 <translation id="7113974454301513811">Тепер додайте поточну вкладку в список</translation>
 <translation id="7114054701490058191">Паролі не збігаються</translation>
 <translation id="7114648273807173152">Щоб увійти в обліковий запис Google за допомогою Smart Lock, перейдіть у меню "Налаштування" &gt; "Підключені пристрої" &gt; "Телефон" &gt; "Smart Lock".</translation>
-<translation id="7115051913071512405">Спробувати</translation>
 <translation id="7115361495406486998">Немає доступних контактів</translation>
 <translation id="7115731767122970828">Підвищити</translation>
 <translation id="7116554090938189816">Строк дії сертифіката SSL принтера минув. Перезапустіть принтер і повторіть спробу.</translation>
@@ -9133,6 +9132,7 @@
 <translation id="7502528909759062987">Призупинити трансляцію вкладки на пристрій "<ph name="DEVICE_NAME" />"</translation>
 <translation id="7502804472671406749">Ви можете прокручувати вкладки, які демонструються, і змінювати їх масштаб</translation>
 <translation id="7503191893372251637">Тип сертифіката Netscape</translation>
+<translation id="7503259455663961898">Змінити пароль</translation>
 <translation id="7503985202154027481">На ключі безпеки збережеться запис, що ви відвідували цей сайт.</translation>
 <translation id="7504145862399276792">Звук на цій вкладці вимкнено</translation>
 <translation id="750509436279396091">Відкрити папку завантажень</translation>
@@ -9195,6 +9195,7 @@
 <translation id="7551059576287086432">Не вдалося завантажити файл "<ph name="FILE_NAME" />"</translation>
 <translation id="7551643184018910560">Закріпити на панелі запуску</translation>
 <translation id="7552191410769096467">Щоб ділитися групами вкладок або приєднуватися до них, потрібно ввійти в обліковий запис і ввімкнути синхронізацію</translation>
+<translation id="7552196109089297786">Вийти з облікового запису Microsoft</translation>
 <translation id="7552846755917812628">Виконайте вказівки нижче.</translation>
 <translation id="7553012839257224005">Перевірка контейнера Linux</translation>
 <translation id="7553242001898162573">Пароль</translation>
@@ -10324,6 +10325,7 @@
 <translation id="8330617762701840933">Список веб-сайтів, які переспрямовуються в альтернативний веб-переглядач.</translation>
 <translation id="8330689128072902965">Контакти поблизу можуть ділитися контентом із вами. Натисніть, щоб змінити.</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{Підтримуваний тип файлу: <ph name="FILE_TYPE1" />}=2{Підтримувані типи файлів: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />}=3{Підтримувані типи файлів: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />}=4{Підтримувані типи файлів: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" />}one{Підтримувані типи файлів: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />і ще {OVERFLOW_COUNT}<ph name="END_LINK" />)}few{Підтримувані типи файлів: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />і ще {OVERFLOW_COUNT}<ph name="END_LINK" />)}many{Підтримувані типи файлів: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />і ще {OVERFLOW_COUNT}<ph name="END_LINK" />)}other{Підтримувані типи файлів: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />і ще {OVERFLOW_COUNT}<ph name="END_LINK" />)}}</translation>
+<translation id="8331578454993293727">Ваш пароль розкрито через порушення безпеки даних</translation>
 <translation id="8331822764922665615">Додайте назву групи, виберіть колір і натисніть клавішу Esc</translation>
 <translation id="833256022891467078">Спільні папки Crostini</translation>
 <translation id="833262891116910667">Виділити</translation>
@@ -10405,6 +10407,7 @@
     <ph name="BEGIN_PARAGRAPH2" />Щоб дізнатися більше, перейдіть на сторінку g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8383614331548401927">З поверненням</translation>
 <translation id="8386091599636877289">Правило не знайдено.</translation>
+<translation id="8387087863179559896">Chrome може оновити ваш обліковий запис на цьому сайті за допомогою надійного пароля. Його не потрібно запам’ятовувати, оскільки він зберігається в Google Менеджері паролів для облікового запису <ph name="EMAIL" />. Докладніше про <ph name="PASSWORD_CHANGE" />.</translation>
 <translation id="8387361103813440603">Заборонено переглядати дані про ваше місцезнаходження</translation>
 <translation id="8387617938027387193">Підтвердьте свою особу</translation>
 <translation id="8388770971141403598">Додаткові профілі не підтримуються</translation>
@@ -10903,7 +10906,6 @@
 <translation id="8737966899544698733">Точна геолокація (лише для пристроїв Android)</translation>
 <translation id="8738418093147087440">Пошук за країнами, мовами або назвами методів введення</translation>
 <translation id="8740086188450289493">Використати пароль облікового запису Google</translation>
-<translation id="874023689350909633">Спробувати</translation>
 <translation id="8740247629089392745"><ph name="SUPERVISED_USER_NAME" /> може отримати цей пристрій Chromebook. Налаштування майже завершено.</translation>
 <translation id="8740672167979365981">Оновіть ОС Chrome Flex</translation>
 <translation id="8741944563400125534">Налаштування кнопкового доступу</translation>

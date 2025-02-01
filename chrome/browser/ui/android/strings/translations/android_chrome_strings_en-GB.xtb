@@ -385,7 +385,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2781151931089541271">1 sec left</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome found a reused password that you could improve}other{Chrome found # reused passwords that you could improve}}</translation>
-<translation id="2796651346651857052">Touch and hold the address bar to change its position.</translation>
 <translation id="2800066122460699237">The tab <ph name="TAB_TITLE" /> will be closed</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="281504910091592009">View and manage saved passwords in your <ph name="BEGIN_LINK" />Google Account<ph name="END_LINK" /></translation>
