@@ -32,8 +32,15 @@ class XRWebGLTextureArraySwapChain final : public XRWebGLSwapChain {
   void Trace(Visitor* visitor) const override;
 
  private:
+  GLuint GetCopyProgram();
+
   Member<XRWebGLSwapChain> wrapped_swap_chain_;
   GLuint owned_texture_;
+
+  GLuint copy_program_;
+  GLuint texture_uniform_;
+  GLuint layer_count_uniform_;
+  GLuint vao_;
 };
 
 }  // namespace blink

@@ -1448,7 +1448,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    '0d9574015460c7f6e0b244e53e2f410f7d664db6',
+    '4977192d37850779d820325d385ffc7f6c1d0ee2',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
@@ -1943,7 +1943,7 @@ deps = {
 
 
   'src/third_party/depot_tools':
-    Var('chromium_git') + '/chromium/tools/depot_tools.git' + '@' + '6e2031a2ddde16d317c670c9f59ca19de11d7ed2',
+    Var('chromium_git') + '/chromium/tools/depot_tools.git' + '@' + 'f4ac21ad798e10a3c24cbf7b8e1a59ee19dc5dd0',
 
   'src/third_party/devtools-frontend/src':
     Var('chromium_git') + '/devtools/devtools-frontend' + '@' + Var('devtools_frontend_revision'),

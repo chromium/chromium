@@ -574,6 +574,9 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   void RestoreScissorBox();
   void RestoreClearColor();
   void RestoreColorMask();
+  void RestoreVertexArrayObjectBinding();
+  void RestoreProgram();
+  void RestoreActiveTexture();
 
   gpu::gles2::GLES2Interface* ContextGL() const {
     DrawingBuffer* d = GetDrawingBuffer();

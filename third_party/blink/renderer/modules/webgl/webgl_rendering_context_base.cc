@@ -1792,6 +1792,31 @@ void WebGLRenderingContextBase::RestoreColorMask() {
                          color_mask_[3]);
 }
 
+void WebGLRenderingContextBase::RestoreVertexArrayObjectBinding() {
+  if (isContextLost()) {
+    return;
+  }
+
+  ContextGL()->BindVertexArrayOES(
+      ObjectOrZero(bound_vertex_array_object_.Get()));
+}
+
+void WebGLRenderingContextBase::RestoreProgram() {
+  if (isContextLost()) {
+    return;
+  }
+
+  ContextGL()->UseProgram(ObjectOrZero(current_program_.Get()));
+}
+
+void WebGLRenderingContextBase::RestoreActiveTexture() {
+  if (isContextLost()) {
+    return;
+  }
+
+  ContextGL()->ActiveTexture(active_texture_unit_ + GL_TEXTURE0);
+}
+
 void WebGLRenderingContextBase::MarkLayerComposited() {
   if (!isContextLost())
     GetDrawingBuffer()->SetBufferClearNeeded(true);
