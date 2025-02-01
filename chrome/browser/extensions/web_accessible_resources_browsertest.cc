@@ -97,14 +97,6 @@ class WebAccessibleResourcesBrowserTest : public ExtensionPlatformBrowserTest {
   ScopedCurrentChannel current_channel_{version_info::Channel::CANARY};
 };
 
-// Exercise web accessible resources without experimental extension features.
-class WebAccessibleResourcesNonGuidBrowserTest
-    : public WebAccessibleResourcesBrowserTest {
- public:
-  WebAccessibleResourcesNonGuidBrowserTest()
-      : WebAccessibleResourcesBrowserTest(false) {}
-};
-
 // If `use_dynamic_url` is set to true in manifest.json, then the associated web
 // accessible resource(s) can only be loaded using the dynamic url. Loading with
 // the static url containing the extension id won't work.
@@ -360,6 +352,14 @@ IN_PROC_BROWSER_TEST_P(ParameterizedWebAccessibleResourcesBrowserTest,
   }
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+// Exercise web accessible resources without experimental extension features.
+class WebAccessibleResourcesNonGuidBrowserTest
+    : public WebAccessibleResourcesBrowserTest {
+ public:
+  WebAccessibleResourcesNonGuidBrowserTest()
+      : WebAccessibleResourcesBrowserTest(false) {}
+};
 
 // If `use_dynamic_url` is set to true in manifest.json, then the associated web
 // accessible resource(s) can only be loaded using the dynamic url if using the
