@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
+#include "chrome/browser/new_tab_page/microsoft_auth/microsoft_auth_service.h"
 #include "chrome/browser/new_tab_page/modules/file_suggestion/file_suggestion.mojom.h"
 #include "chrome/browser/new_tab_page/modules/file_suggestion/microsoft_files.mojom.h"
 #include "chrome/browser/profiles/profile.h"
@@ -20,6 +21,8 @@
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+
+class MicrosoftAuthService;
 
 class MicrosoftFilesPageHandler
     : public file_suggestion::mojom::MicrosoftFilesPageHandler {
@@ -52,6 +55,7 @@ class MicrosoftFilesPageHandler
       std::vector<std::pair<base::Time, file_suggestion::mojom::FilePtr>>
           unsorted_suggestions);
   mojo::Receiver<file_suggestion::mojom::MicrosoftFilesPageHandler> handler_;
+  raw_ptr<MicrosoftAuthService> microsoft_auth_service_;
   raw_ptr<PrefService> pref_service_;
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;

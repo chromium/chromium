@@ -7,10 +7,12 @@
 #include "base/files/file_path.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/new_tab_page/microsoft_auth/microsoft_auth_service_factory.h"
 #include "chrome/browser/new_tab_page/modules/file_suggestion/file_suggestion.mojom.h"
 #include "components/search/ntp_features.h"
 #include "net/base/mime_util.h"
 #include "net/http/http_response_headers.h"
+#include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -328,6 +330,8 @@ MicrosoftFilesPageHandler::MicrosoftFilesPageHandler(
         handler,
     Profile* profile)
     : handler_(this, std::move(handler)),
+      microsoft_auth_service_(
+          MicrosoftAuthServiceFactory::GetForProfile(profile)),
       pref_service_(profile->GetPrefs()),
       url_loader_factory_(profile->GetURLLoaderFactory()) {}
 
@@ -392,9 +396,10 @@ void MicrosoftFilesPageHandler::GetTrendingFiles(GetFilesCallback callback) {
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->method = "GET";
   resource_request->url = GURL(kTrendingFilesEndpoint);
-  // TODO(389714511): Pass in access token once available.
+  const std::string access_token = microsoft_auth_service_->GetAccessToken();
+  const std::string auth_header_value = "Bearer " + access_token;
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kAuthorization,
-                                      "Bearer <accesstoken>");
+                                      auth_header_value);
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kCacheControl,
                                       "no-cache");
 
@@ -416,8 +421,11 @@ void MicrosoftFilesPageHandler::GetRecentlyUsedAndSharedFiles(
                                       "application/json");
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kCacheControl,
                                       "no-cache");
+  const std::string access_token = microsoft_auth_service_->GetAccessToken();
+  const std::string auth_header_value = "Bearer " + access_token;
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kAuthorization,
-                                      "Bearer <accesstoken>");
+                                      auth_header_value);
+
   url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                                  traffic_annotation);
   url_loader_->AttachStringForUpload(kNonInsightsRequestBody);
@@ -434,7 +442,7 @@ void MicrosoftFilesPageHandler::OnJsonReceived(
     std::unique_ptr<std::string> response_body) {
   const int net_error = url_loader_->NetError();
 
-  // Check for throttling errors.
+  // Check for unauthorized and throttling errors.
   auto* response_info = url_loader_->ResponseInfo();
   if (net_error != net::OK && response_info && response_info->headers) {
     int64_t wait_time =
@@ -442,6 +450,9 @@ void MicrosoftFilesPageHandler::OnJsonReceived(
     if (wait_time != -1) {
       pref_service_->SetTime(prefs::kNtpMicrosoftFilesModuleRetryAfterTime,
                              base::Time::Now() + base::Seconds(wait_time));
+    } else if (response_info->headers->response_code() ==
+               net::HTTP_UNAUTHORIZED) {
+      microsoft_auth_service_->SetAuthStateError();
     }
   }
 

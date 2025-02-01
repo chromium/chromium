@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/new_tab_page/microsoft_auth/microsoft_auth_service_factory.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/calendar_data.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/calendar_fake_data_helper.h"
 #include "chrome/common/pref_names.h"
@@ -31,7 +32,7 @@ const char kBaseIconUrl[] =
     "item-types/16/";
 
 const char kBaseAttachmentResourceUrl[] =
-    "https://outlook.live.com/mail/0/deeplink/attachment/";
+    "https://outlook.office.com/mail/deeplink/attachment/";
 
 const char kRequestUrl[] =
     "https://graph.microsoft.com/v1.0/me/calendar/"
@@ -227,6 +228,8 @@ OutlookCalendarPageHandler::OutlookCalendarPageHandler(
         handler,
     Profile* profile)
     : handler_(this, std::move(handler)),
+      microsoft_auth_service_(
+          MicrosoftAuthServiceFactory::GetForProfile(profile)),
       pref_service_(profile->GetPrefs()),
       url_loader_factory_(profile->GetURLLoaderFactory()) {}
 
@@ -278,10 +281,10 @@ void OutlookCalendarPageHandler::MakeRequest(GetEventsCallback callback) {
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->method = "GET";
   resource_request->url = GetRequestUrl();
-
-  // TODO(357700028): Pass in actual access token.
+  const std::string access_token = microsoft_auth_service_->GetAccessToken();
+  const std::string auth_header_value = "Bearer " + access_token;
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kAuthorization,
-                                      "Bearer <accesstoken>");
+                                      auth_header_value);
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kCacheControl,
                                       "no-cache");
 
@@ -302,7 +305,7 @@ void OutlookCalendarPageHandler::OnJsonReceived(
   OutlookCalendarRequestResult request_result =
       OutlookCalendarRequestResult::kNetworkError;
 
-  // Check for throttling errors.
+  // Check for unauthorized and throttling errors.
   auto* response_info = url_loader_->ResponseInfo();
   if (net_error != net::OK && response_info && response_info->headers) {
     int64_t wait_time =
@@ -312,6 +315,9 @@ void OutlookCalendarPageHandler::OnJsonReceived(
       RecordThrottlingWaitTime(base::Seconds(wait_time));
       pref_service_->SetTime(prefs::kNtpOutlookCalendarRetryAfterTime,
                              base::Time::Now() + base::Seconds(wait_time));
+    } else if (response_info->headers->response_code() ==
+               net::HTTP_UNAUTHORIZED) {
+      microsoft_auth_service_->SetAuthStateError();
     }
   }
 

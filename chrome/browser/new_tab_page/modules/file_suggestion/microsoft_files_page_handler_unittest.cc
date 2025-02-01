@@ -10,11 +10,15 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/new_tab_page/microsoft_auth/microsoft_auth_service.h"
+#include "chrome/browser/new_tab_page/microsoft_auth/microsoft_auth_service_factory.h"
 #include "chrome/browser/new_tab_page/modules/file_suggestion/file_suggestion.mojom.h"
 #include "chrome/browser/new_tab_page/modules/file_suggestion/microsoft_files.mojom.h"
+#include "chrome/browser/ui/webui/ntp_microsoft_auth/ntp_microsoft_auth_untrusted_ui.mojom.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/search/ntp_features.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -42,7 +46,24 @@ class MicrosoftFilesPageHandlerTest : public testing::Test {
     TestingProfile::Builder profile_builder;
     profile_builder.SetSharedURLLoaderFactory(
         test_url_loader_factory_.GetSafeWeakWrapper());
+    profile_builder.AddTestingFactory(
+        MicrosoftAuthServiceFactory::GetInstance(),
+        base::BindRepeating([](content::BrowserContext* context)
+                                -> std::unique_ptr<KeyedService> {
+          return std::make_unique<MicrosoftAuthService>();
+        }));
     profile_ = profile_builder.Build();
+
+    profile_->GetTestingPrefService()->SetManagedPref(
+        prefs::kNtpSharepointModuleVisible, base::Value(true));
+
+    // Set access token needed for requests.
+    new_tab_page::mojom::AccessTokenPtr access_token =
+        new_tab_page::mojom::AccessToken::New();
+    access_token->token = "1234";
+    access_token->expiration = base::Time::Now() + base::Hours(24);
+    MicrosoftAuthServiceFactory::GetForProfile(profile_.get())
+        ->SetAccessToken(std::move(access_token));
     handler_ = std::make_unique<MicrosoftFilesPageHandler>(
         mojo::PendingReceiver<
             file_suggestion::mojom::MicrosoftFilesPageHandler>(),
@@ -72,10 +93,13 @@ class MicrosoftFilesPageHandlerTestForTrending
     : public MicrosoftFilesPageHandlerTest {
  public:
   MicrosoftFilesPageHandlerTestForTrending() {
-    feature_list().InitAndEnableFeatureWithParameters(
-        ntp_features::kNtpSharepointModule,
-        {{ntp_features::kNtpSharepointModuleDataParam.name,
-          "trending-insights"}});
+    feature_list().InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{ntp_features::kNtpSharepointModule,
+          {{ntp_features::kNtpSharepointModuleDataParam.name,
+            "trending-insights"}}},
+         {ntp_features::kNtpMicrosoftAuthenticationModule, {}}},
+        /*disabled_features=*/{});
   }
 };
 
@@ -83,16 +107,23 @@ class MicrosoftFilesPageHandlerTestForNonInsights
     : public MicrosoftFilesPageHandlerTest {
  public:
   MicrosoftFilesPageHandlerTestForNonInsights() {
-    feature_list().InitAndEnableFeatureWithParameters(
-        ntp_features::kNtpSharepointModule,
-        {{ntp_features::kNtpSharepointModuleDataParam.name, "non-insights"}});
+    feature_list().InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{ntp_features::kNtpSharepointModule,
+          {{ntp_features::kNtpSharepointModuleDataParam.name, "non-insights"}}},
+         {ntp_features::kNtpMicrosoftAuthenticationModule, {}}},
+        /*disabled_features=*/{});
   }
 };
 
 TEST_F(MicrosoftFilesPageHandlerTest, GetFakeTrendingFiles) {
-  feature_list().InitAndEnableFeatureWithParameters(
-      ntp_features::kNtpSharepointModule,
-      {{ntp_features::kNtpSharepointModuleDataParam.name, "fake-trending"}});
+  feature_list().InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{ntp_features::kNtpSharepointModule,
+        {{ntp_features::kNtpSharepointModuleDataParam.name, "fake-trending"}}},
+       {ntp_features::kNtpMicrosoftAuthenticationModule, {}}},
+      /*disabled_features=*/{});
+
   base::test::TestFuture<std::vector<file_suggestion::mojom::FilePtr>> future;
 
   handler().GetFiles(future.GetCallback());
@@ -265,10 +296,14 @@ TEST_F(MicrosoftFilesPageHandlerTestForTrending, DismissAndRestoreModule) {
 }
 
 TEST_F(MicrosoftFilesPageHandlerTest, GetFakeNonInsightsFiles) {
-  feature_list().InitAndEnableFeatureWithParameters(
-      ntp_features::kNtpSharepointModule,
-      {{ntp_features::kNtpSharepointModuleDataParam.name,
-        "fake-non-insights"}});
+  feature_list().InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{ntp_features::kNtpSharepointModule,
+        {{ntp_features::kNtpSharepointModuleDataParam.name,
+          "fake-non-insights"}}},
+       {ntp_features::kNtpMicrosoftAuthenticationModule, {}}},
+      /*disabled_features=*/{});
+
   base::test::TestFuture<std::vector<file_suggestion::mojom::FilePtr>> future;
 
   handler().GetFiles(future.GetCallback());
@@ -833,4 +868,19 @@ TEST_F(MicrosoftFilesPageHandlerTestForNonInsights, RemoveDuplicates) {
   const std::vector<file_suggestion::mojom::FilePtr>& suggestions =
       future.Get();
   EXPECT_EQ(suggestions.size(), 5u);
+}
+
+TEST_F(MicrosoftFilesPageHandlerTestForNonInsights,
+       NoFilesOnUnauthorizedRequestCode) {
+  base::test::TestFuture<std::vector<file_suggestion::mojom::FilePtr>> future;
+
+  handler().GetFiles(future.GetCallback());
+
+  auto head = network::CreateURLResponseHead(net::HTTP_UNAUTHORIZED);
+  head->mime_type = "application/json";
+  network::URLLoaderCompletionStatus status;
+  test_url_loader_factory().AddResponse(GURL(kNonInsightsRequestUrl),
+                                        std::move(head), "", status);
+
+  EXPECT_EQ(future.Get().size(), 0u);
 }

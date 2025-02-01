@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/new_tab_page/microsoft_auth/microsoft_auth_service.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/outlook_calendar.mojom.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -18,6 +19,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 
+class MicrosoftAuthService;
 class PrefRegistrySimple;
 class PrefService;
 class Profile;
@@ -67,6 +69,7 @@ class OutlookCalendarPageHandler
       scoped_refptr<net::HttpResponseHeaders> headers);
 
   mojo::Receiver<ntp::calendar::mojom::OutlookCalendarPageHandler> handler_;
+  raw_ptr<MicrosoftAuthService> microsoft_auth_service_;
   raw_ptr<PrefService> pref_service_;
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
