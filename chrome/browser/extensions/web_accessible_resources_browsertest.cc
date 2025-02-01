@@ -498,35 +498,39 @@ class WebAccessibleResourcesBrowserRedirectTest
     server_redirect(net::OK, "web_accessible_resource.html", true);
     server_redirect(net::OK, "resource.html", false);
   }
+
+  void TestBrowserRedirectMV2() {
+    TestBrowserRedirect(
+        R"({
+          "name": "Test browser redirect",
+          "version": "0.1",
+          "manifest_version": 2,
+          "web_accessible_resources": ["web_accessible_resource.html"]
+        })",
+        "Extensions.WAR.XOriginWebAccessible.MV2");
+  }
+
+  void TestBrowserRedirectMV3() {
+    TestBrowserRedirect(
+        R"({
+          "name": "Redirect Test",
+          "version": "0.1",
+          "manifest_version": 3,
+          "web_accessible_resources": [
+            {
+              "resources": ["web_accessible_resource.html"],
+              "matches": ["http://example.com/*"]
+            }
+          ]
+        })",
+        "Extensions.WAR.XOriginWebAccessible.MV3");
+  }
 };
 
 // Test server redirect to a web accessible or extension resource.
-IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserRedirectTest, MV2) {
-  TestBrowserRedirect(
-      R"({
-      "name": "Test browser redirect",
-      "version": "0.1",
-      "manifest_version": 2,
-      "web_accessible_resources": ["web_accessible_resource.html"]
-    })",
-      "Extensions.WAR.XOriginWebAccessible.MV2");
-}
-
-// Test server redirect to a web accessible or extension resource.
-IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserRedirectTest, MV3) {
-  TestBrowserRedirect(
-      R"({
-      "name": "Redirect Test",
-      "version": "0.1",
-      "manifest_version": 3,
-      "web_accessible_resources": [
-        {
-          "resources": ["web_accessible_resource.html"],
-          "matches": ["http://example.com/*"]
-        }
-      ]
-    })",
-      "Extensions.WAR.XOriginWebAccessible.MV3");
+IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserRedirectTest, Manifests) {
+  TestBrowserRedirectMV2();
+  TestBrowserRedirectMV3();
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
