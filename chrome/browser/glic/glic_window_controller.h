@@ -304,6 +304,9 @@ class GlicWindowController : public views::WidgetObserver {
 
   void ResetPresentationTimingState();
 
+  // Return true if the state is the state when the panel display is finished.
+  bool IsDisplayFinishState(mojom::WebUiState state);
+
   // Observes the widget for the attached browser.
   base::ScopedObservation<views::Widget, WidgetObserver>
       attached_browser_widget_observation_{this};

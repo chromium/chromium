@@ -47,6 +47,13 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Glic.PanelWebUiState.FinishState" enum="WebUiState"
+    expires_after="2026-01-15">
+  <owner>dewittj@google.com</owner>
+  <owner>iwells@google.com</owner>
+  <summary>Record the state when the panel display is finished.</summary>
+</histogram>
+
 <histogram name="Glic.Response.Attached" enum="Boolean"
     expires_after="2026-01-15">
   <owner>carlosk@chromium.org</owner>
