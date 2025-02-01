@@ -11,6 +11,10 @@
 
 class OptimizationGuideKeyedService;
 
+namespace tabs {
+class GlicNudgeController;
+}  // namespace tabs
+
 namespace contextual_cueing {
 
 class ContextualCueingService;
@@ -31,6 +35,8 @@ class ContextualCueingHelper
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
   void DocumentOnLoadCompletedInPrimaryMainFrame() override;
+
+  tabs::GlicNudgeController* GetGlicNudgeController();
 
   const std::string& last_navigation_cue_label() const {
     return last_navigation_cue_label_;
