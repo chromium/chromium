@@ -373,7 +373,7 @@
   },
   "experimentalAiData": {
     "extension_types": ["extension"],
-    "channel": "dev",
+    "channel": "beta",
     "command_line_switch": "extension-ai-data-collection"
   },
   "favicon": {
