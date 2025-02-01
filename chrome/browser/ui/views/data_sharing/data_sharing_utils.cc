@@ -121,12 +121,8 @@ void data_sharing::ProcessPreviewOutcome(
     if (outcome->shared_tab_group_preview) {
       group_preview->title = outcome->shared_tab_group_preview->title;
       for (const auto& tab : outcome->shared_tab_group_preview->tabs) {
-        // TODO(crbug.com/376744402): favicon should be retrieved from the tab
-        // url. Changed the favicon URL below to a byte array so the data can be
-        // passed.
         group_preview->shared_tabs.push_back(
-            data_sharing::mojom::SharedTab::New(tab.GetDisplayUrl(),
-                                                GURL("chrome://favicon2")));
+            data_sharing::mojom::SharedTab::New(tab.GetDisplayUrl(), tab.url));
       }
     }
     // If group is unnamed use default name e.g. "1 tab" / "3 tabs".

@@ -305,12 +305,23 @@ export class DataSharingApp extends CustomElement implements Logger {
             res.groupPreview.sharedTabs.map((sharedTab) => {
               previews.push({
                 url: sharedTab.displayUrl,
-                faviconUrl: sharedTab.faviconUrl.url,
+                faviconUrl: this.getFaviconServiceUrl(sharedTab.faviconUrl.url)
+                                .toString(),
               });
             });
             resolve(previews);
           });
     });
+  }
+
+  // TODO(crbug.com/392965221): Use function from icon.ts instead.
+  private getFaviconServiceUrl(pageUrl: string): URL {
+    const url: URL = new URL('chrome-untrusted://favicon2');
+    url.searchParams.set('size', '16');
+    url.searchParams.set('scaleFactor', '1x');
+    url.searchParams.set('allowGoogleServerFallback', '1');
+    url.searchParams.set('pageUrl', pageUrl);
+    return url;
   }
 
   private processUrl() {

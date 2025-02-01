@@ -44,6 +44,18 @@ chromium-metrics-reviews@google.com.
     The server had data for the page but the client conditions to show the nudge
     were unmet.
   </int>
+  <int value="5" label="Not enough page loads since last nudge">
+    The page was eligible for the nudge, but not enough page loads have been
+    navigated to since the last nudge shown to the user.
+  </int>
+  <int value="6" label="Not enough time has elapsed since last nudge">
+    The page was eligible for the nudge, but not enough time has elapsed since
+    the last nudge shown to the user.
+  </int>
+  <int value="7" label="Too many nudges shown to the user">
+    The page was eligible for the nudge, but too many nudges have been shown to
+    the user recently.
+  </int>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/contextual_cueing/contextual_cueing_enums.h:NudgeDecision) -->

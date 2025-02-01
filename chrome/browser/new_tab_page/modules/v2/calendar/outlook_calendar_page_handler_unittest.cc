@@ -13,12 +13,16 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/new_tab_page/microsoft_auth/microsoft_auth_service.h"
+#include "chrome/browser/new_tab_page/microsoft_auth/microsoft_auth_service_factory.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/calendar_data.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/calendar_fake_data_helper.h"
+#include "chrome/browser/ui/webui/ntp_microsoft_auth/ntp_microsoft_auth_untrusted_ui.mojom.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -32,7 +36,7 @@ const char kDocIconUrl[] =
     "item-types/16/docx.png";
 
 const char kBaseAttachmentResourceUrl[] =
-    "https://outlook.live.com/mail/0/deeplink/attachment/";
+    "https://outlook.office.com/mail/deeplink/attachment/";
 
 const char kRequestUrl[] =
     "https://graph.microsoft.com/v1.0/me/calendar/"
@@ -42,7 +46,7 @@ const char kRequestUrl[] =
     "contentType)";
 
 const char kFakeAttachmentResourceUrl[] =
-    "https://outlook.live.com/mail/0/deeplink/attachment/1/1-ABC";
+    "https://outlook.office.com/mail/deeplink/attachment/1/1-ABC";
 
 }  // namespace
 
@@ -52,7 +56,23 @@ class OutlookCalendarPageHandlerTest : public testing::Test {
     TestingProfile::Builder profile_builder;
     profile_builder.SetSharedURLLoaderFactory(
         test_url_loader_factory_.GetSafeWeakWrapper());
+    profile_builder.AddTestingFactory(
+        MicrosoftAuthServiceFactory::GetInstance(),
+        base::BindRepeating([](content::BrowserContext* context)
+                                -> std::unique_ptr<KeyedService> {
+          return std::make_unique<MicrosoftAuthService>();
+        }));
     profile_ = profile_builder.Build();
+    profile_->GetTestingPrefService()->SetManagedPref(
+        prefs::kNtpOutlookModuleVisible, base::Value(true));
+
+    // Set access token needed for requests.
+    new_tab_page::mojom::AccessTokenPtr access_token =
+        new_tab_page::mojom::AccessToken::New();
+    access_token->token = "1234";
+    access_token->expiration = base::Time::Now() + base::Hours(24);
+    MicrosoftAuthServiceFactory::GetForProfile(profile_.get())
+        ->SetAccessToken(std::move(access_token));
   }
 
   std::unique_ptr<OutlookCalendarPageHandler> CreateHandler() {
@@ -1026,10 +1046,13 @@ TEST_F(OutlookCalendarPageHandlerTest, AttachmentUrlSet) {
 // Ensure attachments are disabled when
 // `kNtpOutlookCalendarModuleDisableAttachmentsParam` is set to true.
 TEST_F(OutlookCalendarPageHandlerTest, DisableAttachments) {
-  feature_list().InitAndEnableFeatureWithParameters(
-      ntp_features::kNtpOutlookCalendarModule,
-      {{ntp_features::kNtpOutlookCalendarModuleDisableAttachmentsParam.name,
-        "true"}});
+  feature_list().InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{ntp_features::kNtpOutlookCalendarModule,
+        {{ntp_features::kNtpOutlookCalendarModuleDisableAttachmentsParam.name,
+          "true"}}},
+       {ntp_features::kNtpMicrosoftAuthenticationModule, {}}},
+      /*disabled_features=*/{});
 
   std::unique_ptr<OutlookCalendarPageHandler> handler = CreateHandler();
   base::test::TestFuture<std::vector<ntp::calendar::mojom::CalendarEventPtr>>
@@ -1063,10 +1086,13 @@ TEST_F(OutlookCalendarPageHandlerTest, DisableAttachments) {
 // `kNtpOutlookCalendarModuleAttachmentCheckParam` is set to false (by default
 // set to true).
 TEST_F(OutlookCalendarPageHandlerTest, NoAttachmentCheck) {
-  feature_list().InitAndEnableFeatureWithParameters(
-      ntp_features::kNtpOutlookCalendarModule,
-      {{ntp_features::kNtpOutlookCalendarModuleAttachmentCheckParam.name,
-        "false"}});
+  feature_list().InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{ntp_features::kNtpOutlookCalendarModule,
+        {{ntp_features::kNtpOutlookCalendarModuleAttachmentCheckParam.name,
+          "false"}}},
+       {ntp_features::kNtpMicrosoftAuthenticationModule, {}}},
+      /*disabled_features=*/{});
 
   std::unique_ptr<OutlookCalendarPageHandler> handler = CreateHandler();
   base::test::TestFuture<std::vector<ntp::calendar::mojom::CalendarEventPtr>>
@@ -1077,4 +1103,20 @@ TEST_F(OutlookCalendarPageHandlerTest, NoAttachmentCheck) {
   EXPECT_EQ(test_url_loader_factory().NumPending(), 1);
   test_url_loader_factory().SimulateResponseForPendingRequest(GetRequestUrl(),
                                                               "");
+}
+
+TEST_F(OutlookCalendarPageHandlerTest, NoEventsOnUnauthorizedResponseCode) {
+  std::unique_ptr<OutlookCalendarPageHandler> handler = CreateHandler();
+  base::test::TestFuture<std::vector<ntp::calendar::mojom::CalendarEventPtr>>
+      future;
+
+  handler->GetEvents(future.GetCallback());
+
+  auto head = network::CreateURLResponseHead(net::HTTP_UNAUTHORIZED);
+  head->mime_type = "application/json";
+  network::URLLoaderCompletionStatus status;
+  test_url_loader_factory().AddResponse(GURL(GetRequestUrl()), std::move(head),
+                                        "", status);
+
+  EXPECT_EQ(future.Get().size(), 0u);
 }

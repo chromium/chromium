@@ -46,9 +46,17 @@ void ContextualCueingService::CueingNudgeClicked() {
   dismiss_count_ = 0;
 }
 
-bool ContextualCueingService::CanShowNudge() {
-  return !(remaining_quiet_loads_ > 0 || IsNudgeBlockedByBackoffRule() ||
-           IsNudgeBlockedByNudgeCap());
+NudgeDecision ContextualCueingService::CanShowNudge() {
+  if (remaining_quiet_loads_ > 0) {
+    return NudgeDecision::kNotEnoughPageLoadsSinceLastNudge;
+  }
+  if (IsNudgeBlockedByBackoffRule()) {
+    return NudgeDecision::kNotEnoughTimeHasElapsedSinceLastNudge;
+  }
+  if (IsNudgeBlockedByNudgeCap()) {
+    return NudgeDecision::kTooManyNudgesShownToTheUser;
+  }
+  return NudgeDecision::kSuccess;
 }
 
 bool ContextualCueingService::IsNudgeBlockedByBackoffRule() const {
