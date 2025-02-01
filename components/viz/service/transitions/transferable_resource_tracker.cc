@@ -4,8 +4,6 @@
 
 #include "components/viz/service/transitions/transferable_resource_tracker.h"
 
-#include <GLES2/gl2.h>
-
 #include <limits>
 #include <memory>
 #include <utility>
@@ -17,6 +15,7 @@
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gl/gl_bindings.h"
 
 namespace viz {
 

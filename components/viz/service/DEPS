@@ -16,6 +16,7 @@ include_rules = [
   "+skia/ext",
   "+third_party/skia",
   "+ui/base/ozone_buildflags.h",
+  "+ui/gl",
   "+ui/latency",
   "+ui/ozone/public",
 ]

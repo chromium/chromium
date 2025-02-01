@@ -4,8 +4,6 @@
 
 #include "components/viz/service/frame_sinks/eviction_handler.h"
 
-#include <GLES2/gl2.h>
-
 #include <utility>
 
 #include "base/functional/callback_helpers.h"
@@ -18,6 +16,7 @@
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "ui/gfx/video_types.h"
+#include "ui/gl/gl_bindings.h"
 
 namespace viz {
 

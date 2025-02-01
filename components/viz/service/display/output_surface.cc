@@ -13,9 +13,9 @@
 #include "base/trace_event/trace_event.h"
 #include "components/viz/service/display/output_surface_client.h"
 #include "components/viz/service/display/output_surface_frame.h"
-#include "gpu/GLES2/gl2extchromium.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/swap_result.h"
+#include "ui/gl/gl_bindings.h"
 
 namespace viz {
 

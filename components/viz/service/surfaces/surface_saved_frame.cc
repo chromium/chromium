@@ -4,8 +4,6 @@
 
 #include "components/viz/service/surfaces/surface_saved_frame.h"
 
-#include <GLES2/gl2.h>
-
 #include <algorithm>
 #include <iterator>
 #include <utility>
@@ -33,6 +31,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gl/gl_bindings.h"
 
 namespace viz {
 
