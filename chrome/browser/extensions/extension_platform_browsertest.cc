@@ -17,9 +17,11 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/service_worker/service_worker_test_utils.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_paths.h"
+#include "extensions/common/manifest_handlers/background_info.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
@@ -42,6 +44,7 @@ namespace extensions {
 namespace {
 
 using ContextType = extensions::browser_test_util::ContextType;
+using extensions::service_worker_test_utils::TestServiceWorkerContextObserver;
 
 void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   NotificationDisplayServiceTester::EnsureFactoryBuilt();
@@ -279,13 +282,21 @@ const Extension* ExtensionPlatformBrowserTest::LoadExtension(
     loader.set_install_param(options.install_param);
   }
 
-  // TODO(crbug.com/373434594): Support TestServiceWorkerContextObserver for the
-  // wait_for_registration_stored option.
-  CHECK(!options.wait_for_registration_stored);
+  std::unique_ptr<TestServiceWorkerContextObserver> registration_observer;
+  if (options.wait_for_registration_stored) {
+    registration_observer =
+        std::make_unique<TestServiceWorkerContextObserver>(profile());
+  }
 
   scoped_refptr<const Extension> extension =
       loader.LoadExtension(extension_path);
   last_loaded_extension_id_ = extension->id();
+
+  if (options.wait_for_registration_stored) {
+    CHECK(BackgroundInfo::IsServiceWorkerBased(extension.get()));
+    registration_observer->WaitForRegistrationStored();
+  }
+
   return extension.get();
 }
 
