@@ -25,6 +25,10 @@ class WebUIContentsContainer : public content::WebContentsDelegate {
   content::WebContents* web_contents() { return web_contents_.get(); }
 
  private:
+  // Observes the outer and inner web contents.
+  class WCObserver;
+  friend class WCObserver;
+
   // content::WebContentsDelegate:
   bool HandleKeyboardEvent(content::WebContents* source,
                            const input::NativeWebKeyboardEvent& event) override;
@@ -33,8 +37,14 @@ class WebUIContentsContainer : public content::WebContentsDelegate {
       const content::MediaStreamRequest& request,
       content::MediaResponseCallback callback) override;
 
+  void InnerWebContentsAttached(content::WebContents* contents,
+                                WCObserver* observer);
+  void RendererCrashed(WCObserver* observer);
+
   ScopedProfileKeepAlive profile_keep_alive_;
   std::unique_ptr<content::WebContents> web_contents_;
+  std::unique_ptr<WCObserver> outer_wc_observer_;
+  std::unique_ptr<WCObserver> inner_wc_observer_;
   views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
   // GlicWindowController owns this.
   raw_ptr<GlicWindowController> glic_window_controller_;
