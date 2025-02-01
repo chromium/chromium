@@ -50,7 +50,12 @@ GURL GetUnsafeRequestOrigin(const content::WebContents::Getter& wc_getter) {
   return web_contents ? web_contents->GetLastCommittedURL() : GURL();
 }
 
-bool IsHistoryUiOrigin(const GURL& url) {
+bool IsOriginAllowedServerFallback(const GURL& url) {
+  // Allow chrome-untrusted://data-sharing to use Google server fallback.
+  if (url.scheme() == content::kChromeUIUntrustedScheme &&
+      url.host() == chrome::kChromeUIUntrustedDataSharingHost) {
+    return true;
+  }
   GURL history_url(chrome::kChromeUIHistoryURL);
   if (url == history_url) {
     return true;
@@ -152,8 +157,8 @@ void FaviconSource::StartDataRequest(
       }
     }
 
-    if (!parsed.allow_favicon_server_fallback ||
-        !IsHistoryUiOrigin(GetUnsafeRequestOrigin(wc_getter))) {
+    if (!(parsed.allow_favicon_server_fallback &&
+          IsOriginAllowedServerFallback(GetUnsafeRequestOrigin(wc_getter)))) {
       // Request from local storage only.
       const bool fallback_to_host = true;
       favicon_service->GetRawFaviconForPageURL(
