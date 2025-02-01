@@ -1050,9 +1050,10 @@ void ViewAccessibility::SetValue(const std::string& value) {
   }
   data_.AddStringAttribute(ax::mojom::StringAttribute::kValue, value);
 
-  OnStringAttributeChanged(ax::mojom::StringAttribute::kValue, value);
-
-  NotifyEvent(ax::mojom::Event::kValueChanged, true);
+  if (ready_to_notify_events_) {
+    OnStringAttributeChanged(ax::mojom::StringAttribute::kValue, value);
+    NotifyEvent(ax::mojom::Event::kValueChanged, true);
+  }
 }
 
 void ViewAccessibility::SetValue(const std::u16string& value) {

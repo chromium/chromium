@@ -7,6 +7,7 @@
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/switch.h"
 #include "ash/system/audio/audio_detailed_view.h"
 #include "ash/system/audio/mic_gain_slider_controller.h"
@@ -35,6 +36,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/cros_system_api/dbus/audio/dbus-constants.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/toggle_button.h"
@@ -282,6 +285,18 @@ class UnifiedAudioDetailedViewControllerTest : public AshTestBase {
         ->GetViewAccessibility()
         .GetAccessibleNodeData(&node_data);
     EXPECT_EQ(node_data.role, ax::mojom::Role::kSlider);
+
+    auto* focused_view = slider->GetFocusManager()->GetFocusedView();
+    auto* slider_view = static_cast<QuickSettingsSlider*>(focused_view);
+    std::u16string volume_level = base::UTF8ToUTF16(base::StringPrintf(
+        "%d%%", static_cast<int>(slider_view->GetValue() * 100 + 0.5)));
+    EXPECT_EQ(
+        node_data.GetString16Attribute(ax::mojom::StringAttribute::kValue),
+        is_input_slider
+            ? volume_level
+            : l10n_util::GetStringFUTF16(
+                  IDS_ASH_STATUS_TRAY_VOLUME_SLIDER_ACCESSIBILITY_ANNOUNCEMENT,
+                  volume_level));
 
     const bool is_muted =
         is_input_slider
