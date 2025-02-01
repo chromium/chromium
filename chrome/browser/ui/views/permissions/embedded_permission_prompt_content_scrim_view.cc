@@ -28,7 +28,8 @@ EmbeddedPermissionPromptContentScrimView::
 std::unique_ptr<views::Widget>
 EmbeddedPermissionPromptContentScrimView::CreateScrimWidget(
     base::WeakPtr<Delegate> delegate,
-    SkColor color) {
+    SkColor color,
+    bool activatable) {
   views::Widget::InitParams params(
       views::Widget::InitParams::CLIENT_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
@@ -44,6 +45,9 @@ EmbeddedPermissionPromptContentScrimView::CreateScrimWidget(
   params.bounds = web_content->GetContainerBounds();
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.accept_events = true;
+  params.activatable = activatable
+                           ? views::Widget::InitParams::Activatable::kYes
+                           : views::Widget::InitParams::Activatable::kNo;
   params.name = kWidgetName;
   auto widget = std::make_unique<views::Widget>();
   widget->Init(std::move(params));

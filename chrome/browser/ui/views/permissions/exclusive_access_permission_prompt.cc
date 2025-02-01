@@ -58,7 +58,8 @@ bool ExclusiveAccessPermissionPrompt::ShowPrompt() {
   content_scrim_widget_ =
       EmbeddedPermissionPromptContentScrimView::CreateScrimWidget(
           weak_factory_.GetWeakPtr(),
-          web_contents()->GetColorProvider().GetColor(ui::kColorSysStateScrim));
+          web_contents()->GetColorProvider().GetColor(ui::kColorSysStateScrim),
+          /*activatable=*/false);
 
   // If the tab/native view is closed, the `content_scrim_widget_` may be
   // nullptr. In this scenario, skip showing the prompt.

@@ -55,7 +55,8 @@ class EmbeddedPermissionPromptContentScrimView : public views::View,
   // Create and returns the widget that contains this scrim view.
   static std::unique_ptr<views::Widget> CreateScrimWidget(
       base::WeakPtr<Delegate> delegate,
-      SkColor color);
+      SkColor color,
+      bool activatable);
 
   // Views::View
   bool OnMousePressed(const ui::MouseEvent& event) override;
