@@ -363,6 +363,10 @@ class MEDIA_EXPORT WASAPIAudioInputStream
   // timestamps instead of default which are QPC based.
   std::optional<bool> use_fake_audio_capture_timestamps_;
 
+  // Controls whether an attempt to enable native echo cancellation is done or
+  // not. Only supported for non-loopback devices on Windows 24H2 and later.
+  bool use_echo_cancellation_ = false;
+
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
