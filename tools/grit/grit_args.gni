@@ -5,7 +5,6 @@
 import("//build/config/chrome_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/devtools.gni")
-import("//build/config/features.gni")
 import("//build/config/ui.gni")
 
 shared_intermediate_dir = rebase_path(root_gen_dir, root_build_dir)
@@ -39,8 +38,6 @@ _grit_defines = [
   "use_titlecase=${is_mac}",
 
   "is_desktop_android=${is_desktop_android}",
-
-  "enable_glic=${enable_glic}",
 ]
 
 # Must match `enable_hidpi` in ui/base/ui_features.gni.

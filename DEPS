@@ -352,7 +352,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling chromium_variations
   # and whatever else without interference from each other.
-  'chromium_variations_revision': '108cf56d0a3d6c32377bac8ee04821e13a54afff',
+  'chromium_variations_revision': 'bb022d0b35c6c82a777fdc1e579ef234c64867d1',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling CrossBench
   # and whatever else without interference from each other.
@@ -4459,7 +4459,7 @@ deps = {
 
   'src/components/optimization_guide/internal': {
       'url': Var('chrome_git') + '/chrome/components/optimization_guide.git' + '@' +
-        '0ffcec7c5bbdaf056f7951f75e9277cf7572fcc5',
+        'fbdd15ab8d8e66a51505a33378364d7858b064bd',
       'condition': 'checkout_src_internal',
   },
 

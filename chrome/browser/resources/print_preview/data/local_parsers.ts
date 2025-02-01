@@ -5,16 +5,8 @@
 import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {isChromeOS} from 'chrome://resources/js/platform.js';
 
-// <if expr="not is_chromeos">
 import type {DestinationOptionalParams} from './destination.js';
 import {Destination, DestinationOrigin, PrinterType} from './destination.js';
-// </if>
-// <if expr="is_chromeos">
-import type {DestinationOptionalParams} from './destination_cros.js';
-import {Destination, DestinationOrigin, DestinationProvisionalType, PrinterType} from './destination_cros.js';
-import type {PrinterStatus} from './printer_status_cros.js';
-import type {ManagedPrintOptions} from './managed_print_options_cros.ts';
-// </if>
 
 interface ObjectMap {
   [k: string]: any;

@@ -12,9 +12,6 @@ import type {ModifiersParam} from 'chrome://webui-test/keyboard_mock_interaction
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-// <if expr="is_chromeos">
-import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
-// </if>
 import {NativeLayerStub} from './native_layer_stub.js';
 import {getCddTemplateWithAdvancedSettings, getDefaultInitialSettings} from './print_preview_test_utils.js';
 import {TestPluginProxy} from './test_plugin_proxy.js';

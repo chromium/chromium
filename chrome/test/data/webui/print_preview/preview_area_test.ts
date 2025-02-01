@@ -4,19 +4,8 @@
 
 import type {PrintPreviewPreviewAreaElement} from 'chrome://print/print_preview.js';
 import {Destination, DestinationOrigin, Error, Margins, MeasurementSystem, MeasurementSystemUnitType, NativeLayerImpl, PluginProxyImpl, PreviewAreaState, Size, State} from 'chrome://print/print_preview.js';
-// <if expr="is_chromeos">
-// clang-format off
-import {PrinterSetupInfoMessageType, PrintPreviewPrinterSetupInfoCrosElement} from 'chrome://print/print_preview.js';
-// clang-format on
-// </if>
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
-// <if expr="is_chromeos">
-import {isChildVisible} from 'chrome://webui-test/test_util.js';
-
-import type {NativeLayerCrosStub} from './native_layer_cros_stub.js';
-import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
-// </if>
 
 import {NativeLayerStub} from './native_layer_stub.js';
 import {getCddTemplate} from './print_preview_test_utils.js';

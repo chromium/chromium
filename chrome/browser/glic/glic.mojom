@@ -20,6 +20,9 @@ interface PageHandlerFactory {
   CreateFrePageHandler(pending_receiver<FrePageHandler> receiver);
 };
 
+// It is used in the Glic.PanelWebUiState.FinishState histogram.
+// This must match enums.xml.
+// LINT.IfChange
 enum WebUiState {
   // Glic app controller not started.
   kUninitialized,
@@ -43,6 +46,7 @@ enum WebUiState {
   // Web view is displayed.
   kReady,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml)
 
 // Page handler for the glic WebUI.
 interface PageHandler {

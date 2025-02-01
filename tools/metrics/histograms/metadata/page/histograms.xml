@@ -1563,6 +1563,59 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="PageLoad.Clients.LCPP.ImageLoadingPriority.TotalFrequencyOfActual{PositiveOrNegative}.PerConfidence"
+    units="Count" expires_after="2025-08-01">
+  <owner>chikamune@chromium.org</owner>
+  <owner>
+    src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
+  </owner>
+  <summary>
+    Records a value (10 * normalized_confidence_0_to_10 +
+    normalized_total_frequency_0_to_10) of ElementLocator per confidence that
+    {PositiveOrNegative} actually.
+
+    The metric is emitted only for navigations that LCP Critical Path Predictor
+    provided non-empty hint data and only when LCP is recorded.
+  </summary>
+  <token key="PositiveOrNegative">
+    <variant name="Negative" summary="didn't become LCP"/>
+    <variant name="Positive" summary="became LCP"/>
+  </token>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.LCPP.ImageLoadingPriority.TotalFrequencyOfActual{PositiveOrNegative}.WithConfidence{Range}"
+    units="Count" expires_after="2025-08-01">
+  <owner>chikamune@chromium.org</owner>
+  <owner>
+    src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
+  </owner>
+  <summary>
+    Records the total frequency of ElementLocator that {PositiveOrNegative}
+    actually and it also has a confidence value between {Range}.
+
+    The metric is emitted only for navigations that LCP Critical Path Predictor
+    provided non-empty hint data and only when LCP is recorded.
+  </summary>
+  <token key="PositiveOrNegative">
+    <variant name="Negative" summary="didn't become LCP"/>
+    <variant name="Positive" summary="became LCP"/>
+  </token>
+  <token key="Range">
+    <variant name="0To10" summary="0% to 10%"/>
+    <variant name="10To20" summary="10% to 20%"/>
+    <variant name="20To30" summary="20% to 30%"/>
+    <variant name="30To40" summary="30% to 40%"/>
+    <variant name="40To50" summary="40% to 50%"/>
+    <variant name="50To60" summary="50% to 60%"/>
+    <variant name="60To70" summary="60% to 70%"/>
+    <variant name="70To80" summary="70% to 80%"/>
+    <variant name="80To90" summary="80% to 90%"/>
+    <variant name="90To100" summary="90% to 100%"/>
+  </token>
+</histogram>
+
 <histogram name="PageLoad.Clients.LCPP.PaintTiming.ActualLCPIndex2"
     units="Index(1 origin)" expires_after="2025-06-22">
   <owner>yoichio@chromium.org</owner>
@@ -1774,6 +1827,70 @@ chromium-metrics-reviews@google.com.
   <token key="PositiveOrNegative">
     <variant name="Negative" summary="was not loaded"/>
     <variant name="Positive" summary="was actually loaded"/>
+  </token>
+  <token key="Site">
+    <variant name="" summary="same-site and cross-site"/>
+    <variant name=".CrossSite" summary="cross-site"/>
+    <variant name=".SameSite" summary="same-site"/>
+  </token>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.LCPP.Subresource.TotalFrequencyOfActual{PositiveOrNegative}.PerConfidence{Site}"
+    units="Count" expires_after="2025-08-01">
+  <owner>chikamune@chromium.org</owner>
+  <owner>
+    src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
+  </owner>
+  <summary>
+    Records a value (10 * normalized_confidence_0_to_10 +
+    normalized_total_frequency_0_to_10) of {Site} subresource url per confidence
+    that {PositiveOrNegative} actually.
+
+    The metric is emitted only for navigations that LCP Critical Path Predictor
+    provided non-empty hint data and only when LCP is recorded.
+  </summary>
+  <token key="PositiveOrNegative">
+    <variant name="Negative" summary="was not loaded"/>
+    <variant name="Positive" summary="was actually loaded"/>
+  </token>
+  <token key="Site">
+    <variant name="" summary="same-site and cross-site"/>
+    <variant name=".CrossSite" summary="cross-site"/>
+    <variant name=".SameSite" summary="same-site"/>
+  </token>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.LCPP.Subresource.TotalFrequencyOfActual{PositiveOrNegative}.WithConfidence{Range}{Site}"
+    units="Count" expires_after="2025-08-01">
+  <owner>chikamune@chromium.org</owner>
+  <owner>
+    src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
+  </owner>
+  <summary>
+    Records the total frequency of {Site} subresource url that
+    {PositiveOrNegative} actually and it also has a confidence value between
+    {Range}.
+
+    The metric is emitted only for navigations that LCP Critical Path Predictor
+    provided non-empty hint data and only when LCP is recorded.
+  </summary>
+  <token key="PositiveOrNegative">
+    <variant name="Negative" summary="was not loaded"/>
+    <variant name="Positive" summary="was actually loaded"/>
+  </token>
+  <token key="Range">
+    <variant name="0To10" summary="0% to 10%"/>
+    <variant name="10To20" summary="10% to 20%"/>
+    <variant name="20To30" summary="20% to 30%"/>
+    <variant name="30To40" summary="30% to 40%"/>
+    <variant name="40To50" summary="40% to 50%"/>
+    <variant name="50To60" summary="50% to 60%"/>
+    <variant name="60To70" summary="60% to 70%"/>
+    <variant name="70To80" summary="70% to 80%"/>
+    <variant name="80To90" summary="80% to 90%"/>
+    <variant name="90To100" summary="90% to 100%"/>
   </token>
   <token key="Site">
     <variant name="" summary="same-site and cross-site"/>

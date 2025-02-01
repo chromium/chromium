@@ -8,30 +8,14 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import type {CapabilitiesResponse, NativeLayer} from '../native_layer.js';
 import {NativeLayerImpl} from '../native_layer.js';
-// <if expr="is_chromeos">
-import type {NativeLayerCros, PrinterSetupResponse} from '../native_layer_cros.js';
-import {NativeLayerCrosImpl} from '../native_layer_cros.js';
-
-// </if>
 import type {Cdd, MediaSizeOption} from './cdd.js';
 
-// <if expr="not is_chromeos">
 import type {RecentDestination} from './destination.js';
 import {createDestinationKey, createRecentDestinationKey, Destination, DestinationOrigin, GooglePromotedDestinationId, isPdfPrinter, PDF_DESTINATION_KEY, PrinterType} from './destination.js';
-// </if>
-// <if expr="is_chromeos">
-import type {RecentDestination} from './destination_cros.js';
-import {createDestinationKey, createRecentDestinationKey, Destination, DestinationOrigin, DestinationProvisionalType, GooglePromotedDestinationId, isPdfPrinter, PDF_DESTINATION_KEY, PrinterType} from './destination_cros.js';
-// </if>
 
 import {DestinationMatch} from './destination_match.js';
 import type {ExtensionDestinationInfo, LocalDestinationInfo} from './local_parsers.js';
 import {parseDestination} from './local_parsers.js';
-
-// <if expr="is_chromeos">
-import {parseExtensionDestination} from './local_parsers.js';
-import {getStatusReasonFromPrinterStatus, PrinterStatusReason} from './printer_status_cros.js';
-// </if>
 
 /**
  * Printer search statuses used by the destination store.
@@ -153,7 +137,6 @@ function sortMediaSizes(capabilities: Cdd): Cdd {
 
 /**
  * Event types dispatched by the destination store.
- * @enum {string}
  */
 export enum DestinationStoreEventType {
   DESTINATION_SEARCH_DONE = 'DestinationStore.DESTINATION_SEARCH_DONE',

@@ -39,6 +39,25 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Non-PDF main doc; PDF not found"/>
 </enum>
 
+<!-- LINT.IfChange(WebUiState) -->
+
+<enum name="WebUiState">
+  <int value="0" label="Glic app controller not started"/>
+  <int value="1" label="Web client begins loading; no visible UI"/>
+  <int value="2" label="Loading panel is displayed"/>
+  <int value="3"
+      label="Loading panel is still displayed, but the web client is ready"/>
+  <int value="4"
+      label="Loading panel is displayed until web client is ready, or timeout
+             is reached"/>
+  <int value="5" label="'Something went wrong' error panel is displayed"/>
+  <int value="6" label="Connection offline panel is displayed"/>
+  <int value="7" label="Glic is not available for profile"/>
+  <int value="8" label="Web view is displayed"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/glic.mojom:WebUiState) -->
+
 </enums>
 
 </histogram-configuration>

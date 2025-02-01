@@ -5,12 +5,7 @@
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 
 import type {Cdd} from './data/cdd.js';
-// <if expr="not is_chromeos">
 import type {PrinterType} from './data/destination.js';
-// </if>
-// <if expr="is_chromeos">
-import type {PrinterType} from './data/destination_cros.js';
-// </if>
 import type {LocalDestinationInfo} from './data/local_parsers.js';
 import type {MeasurementSystemUnitType} from './data/measurement_system.js';
 

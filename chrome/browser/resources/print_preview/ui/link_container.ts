@@ -10,12 +10,7 @@ import './throbber.css.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-// <if expr="not is_chromeos">
 import type {Destination} from '../data/destination.js';
-// </if>
-// <if expr="is_chromeos">
-import type {Destination} from '../data/destination_cros.js';
-// </if>
 // <if expr="is_win">
 import {DestinationOrigin, GooglePromotedDestinationId} from '../data/destination.js';
 // </if>

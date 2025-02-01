@@ -16,12 +16,7 @@ import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {removeHighlights} from 'chrome://resources/js/search_highlight_utils.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-// <if expr="not is_chromeos">
 import type {Destination} from '../data/destination.js';
-// </if>
-// <if expr="is_chromeos">
-import type {Destination} from '../data/destination_cros.js';
-// </if>
 import {MetricsContext, PrintSettingsUiBucket} from '../metrics.js';
 
 import {getTemplate} from './advanced_settings_dialog.html.js';

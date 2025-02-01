@@ -10,27 +10,13 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import type {Policies} from '../native_layer.js';
 import {BackgroundGraphicsModeRestriction} from '../native_layer.js';
 
-// <if expr="is_chromeos">
-import {ColorModeRestriction, DuplexModeRestriction, PinModeRestriction} from '../native_layer.js';
-// </if>
-
 import type {CapabilityWithReset, Cdd, CddCapabilities, ColorOption, DpiOption, DuplexOption, MediaSizeOption, MediaTypeOption} from './cdd.js';
 import {DuplexType} from './cdd.js';
-// <if expr="not is_chromeos">
 import type {Destination, RecentDestination} from './destination.js';
 import {DestinationOrigin, GooglePromotedDestinationId, PrinterType} from './destination.js';
-// </if>
-// <if expr="is_chromeos">
-import type {Destination, RecentDestination} from './destination_cros.js';
-import {DestinationOrigin, GooglePromotedDestinationId, PrinterType} from './destination_cros.js';
-// </if>
 import type {DocumentSettings} from './document_info.js';
 import type {Margins, MarginsSetting} from './margins.js';
 import {CustomMarginsOrientation, MarginsType} from './margins.js';
-// <if expr="is_chromeos">
-import {IPP_PRINT_QUALITY, managedPrintOptionsDuplexToCdd, managedPrintOptionsQualityToIpp} from './managed_print_options_cros.js';
-import {PrinterStatusReason} from './printer_status_cros.js';
-// </if>
 
 import {ScalingType} from './scaling.js';
 import type {Size} from './size.js';

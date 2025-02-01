@@ -4,16 +4,9 @@
 
 import type {CrButtonElement, NativeInitialSettings, PrintPreviewAppElement, PrintTicket} from 'chrome://print/print_preview.js';
 import {
-  // <if expr="is_chromeos">
-  GooglePromotedDestinationId,
-  // </if>
   NativeLayerImpl, PluginProxyImpl, State} from 'chrome://print/print_preview.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-
-// <if expr="is_chromeos">
-import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
-// </if>
 
 import {NativeLayerStub} from './native_layer_stub.js';
 import {getDefaultInitialSettings} from './print_preview_test_utils.js';

@@ -10,15 +10,8 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 import {fakeDataBind, waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-// clang-format off
-// <if expr="is_chromeos">
-import type {NativeLayerCrosStub} from './native_layer_cros_stub.js';
-import { setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
-import {getGoogleDriveDestination} from './print_preview_test_utils.js';
-// </if>
 import {NativeLayerStub} from './native_layer_stub.js';
 import {getDestinations, getSaveAsPdfDestination, setupTestListenerElement} from './print_preview_test_utils.js';
-// clang-format on
 
 suite('DestinationSettingsTest', function() {
   let destinationSettings: PrintPreviewDestinationSettingsElement;

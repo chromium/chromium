@@ -48,6 +48,9 @@ declare_args() {
   # Enables usage of notifications via Chrome's MessageCenter.
   enable_chrome_notifications = is_mac || is_win || is_linux || is_fuchsia
 
+  # Enables inclusion of glic in the build.
+  enable_glic = is_mac || is_win || is_linux
+
   # Hangout services is an extension that adds extra features to Hangouts.
   # It is enableable separately to facilitate testing.
   enable_hangout_services_extension = is_chrome_branded
@@ -83,6 +86,7 @@ chrome_grit_defines = [
   "enable_printing=$enable_printing",
   "enable_extensions=$enable_extensions",
   "enable_extensions_core=$enable_extensions_core",
+  "enable_glic=$enable_glic",
   "enable_hangout_services_extension=$enable_hangout_services_extension",
   "enable_ink=$enable_ink",
   "enable_pdf_ink2=$enable_pdf_ink2",

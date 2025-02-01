@@ -365,7 +365,6 @@ class FakePdfHost : public pdf::mojom::PdfHost {
               (mojo::PendingRemote<pdf::mojom::PdfListener>),
               (override));
   MOCK_METHOD(void, UpdateContentRestrictions, (int32_t), (override));
-  MOCK_METHOD(void, HasUnsupportedFeature, (), (override));
   MOCK_METHOD(void,
               SaveUrlAs,
               (const GURL&, network::mojom::ReferrerPolicy),
@@ -773,9 +772,6 @@ TEST_F(PdfViewWebPluginTest, DocumentHasUnsupportedFeature) {
   EXPECT_CALL(*client_ptr_, RecordComputedAction("PDF_Unsupported_feature1"));
   EXPECT_CALL(*client_ptr_, RecordComputedAction("PDF_Unsupported_feature2"));
 
-  // `HasUnsupportedFeature()` is not called if the viewer is not full-frame.
-  EXPECT_CALL(pdf_host_, HasUnsupportedFeature).Times(0);
-
   plugin_->DocumentHasUnsupportedFeature("feature1");
   plugin_->DocumentHasUnsupportedFeature("feature2");
 
@@ -786,9 +782,6 @@ TEST_F(PdfViewWebPluginTest, DocumentHasUnsupportedFeatureWithRepeatedFeature) {
   // Metrics should only be recorded once per feature.
   EXPECT_CALL(*client_ptr_, RecordComputedAction).Times(AnyNumber());
   EXPECT_CALL(*client_ptr_, RecordComputedAction("PDF_Unsupported_feature"));
-
-  // `HasUnsupportedFeature()` is not called if the viewer is not full-frame.
-  EXPECT_CALL(pdf_host_, HasUnsupportedFeature).Times(0);
 
   plugin_->DocumentHasUnsupportedFeature("feature");
   plugin_->DocumentHasUnsupportedFeature("feature");
@@ -801,9 +794,6 @@ TEST_F(PdfViewWebPluginFullFrameTest, DocumentHasUnsupportedFeature) {
   EXPECT_CALL(*client_ptr_, RecordComputedAction("PDF_Unsupported_feature1"));
   EXPECT_CALL(*client_ptr_, RecordComputedAction("PDF_Unsupported_feature2"));
 
-  // `HasUnsupportedFeature()` is called once for all features.
-  EXPECT_CALL(pdf_host_, HasUnsupportedFeature);
-
   plugin_->DocumentHasUnsupportedFeature("feature1");
   plugin_->DocumentHasUnsupportedFeature("feature2");
 
@@ -815,9 +805,6 @@ TEST_F(PdfViewWebPluginFullFrameTest,
   // Metrics should only be recorded once per feature.
   EXPECT_CALL(*client_ptr_, RecordComputedAction).Times(AnyNumber());
   EXPECT_CALL(*client_ptr_, RecordComputedAction("PDF_Unsupported_feature"));
-
-  // `HasUnsupportedFeature()` is called once for all features.
-  EXPECT_CALL(pdf_host_, HasUnsupportedFeature);
 
   plugin_->DocumentHasUnsupportedFeature("feature");
   plugin_->DocumentHasUnsupportedFeature("feature");
