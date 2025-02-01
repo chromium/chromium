@@ -35,6 +35,7 @@
 #include <limits>
 
 #include "base/bits.h"
+#include "base/feature_list.h"
 #include "base/system/sys_info.h"
 #include "gin/array_buffer.h"
 #include "partition_alloc/oom.h"
@@ -44,6 +45,21 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
+
+namespace {
+
+// On ArrayBufferContents allocation failure, this feature enables simulating V8
+// memory pressure to trigger garbage collection and retrying the allocation up
+// to two times. This is expected to reduce OOM crashes. The feature exists to
+// allow quantifying the impact on OOM crashes, CPU usage and user engagement.
+//
+// TODO(crbug.com/371904440): Clean up the feature after running the experiment,
+// no later than in M136.
+BASE_FEATURE(kGCOnArrayBufferAllocationFailure,
+             "GCOnArrayBufferAllocationFailure",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+}  // namespace
 
 ArrayBufferContents::ArrayBufferContents(
     const base::subtle::PlatformSharedMemoryRegion& region,
@@ -95,24 +111,34 @@ ArrayBufferContents::ArrayBufferContents(
 
   if (!max_num_elements) {
     // Create a fixed-length ArrayBuffer.
-    void* data = [&]() {
-      for (int i = 0; i < 2; ++i) {
-        void* data = AllocateMemoryOrNull(length, policy);
-        if (data != nullptr) {
-          return data;
+    void* data = nullptr;
+
+    if (base::FeatureList::IsEnabled(kGCOnArrayBufferAllocationFailure)) {
+      data = [&]() {
+        for (int i = 0; i < 2; ++i) {
+          void* data = AllocateMemoryOrNull(length, policy);
+          if (data != nullptr) {
+            return data;
+          }
+          if (v8::Isolate::TryGetCurrent() != nullptr) {
+            v8::Isolate::GetCurrent()->MemoryPressureNotification(
+                v8::MemoryPressureLevel::kCritical);
+          }
         }
-        if (v8::Isolate::TryGetCurrent() != nullptr) {
-          v8::Isolate::GetCurrent()->MemoryPressureNotification(
-              v8::MemoryPressureLevel::kCritical);
+        if (allocation_failure_behavior == AllocationFailureBehavior::kCrash) {
+          return AllocateMemory<partition_alloc::AllocFlags::kNone>(length,
+                                                                    policy);
+        } else {
+          return AllocateMemoryOrNull(length, policy);
         }
-      }
-      if (allocation_failure_behavior == AllocationFailureBehavior::kCrash) {
-        return AllocateMemory<partition_alloc::AllocFlags::kNone>(length,
-                                                                  policy);
-      } else {
-        return AllocateMemoryOrNull(length, policy);
-      }
-    }();
+      }();
+    } else {
+      data = (allocation_failure_behavior == AllocationFailureBehavior::kCrash)
+                 ? AllocateMemory<partition_alloc::AllocFlags::kNone>(length,
+                                                                      policy)
+                 : AllocateMemoryOrNull(length, policy);
+    }
+
     if (!data) {
       return;
     }
