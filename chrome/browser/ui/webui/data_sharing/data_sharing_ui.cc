@@ -7,11 +7,13 @@
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/data_sharing/data_sharing_page_handler.h"
+#include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/data_sharing_resources.h"
 #include "chrome/grit/data_sharing_resources_map.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/data_sharing/public/features.h"
+#include "components/favicon_base/favicon_url_parser.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -58,6 +60,7 @@ DataSharingUI::DataSharingUI(content::WebUI* web_ui)
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ImgSrc,
       "img-src "
+      "chrome-untrusted://favicon2 "
       "https://lh3.google.com "
       "https://lh3.googleusercontent.com "
       "https://www.gstatic.com "
@@ -164,6 +167,12 @@ DataSharingUI::DataSharingUI(content::WebUI* web_ui)
   source->AddBoolean(
       "metricsReportingEnabled",
       ChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled());
+
+  Profile* profile = Profile::FromWebUI(web_ui);
+  content::URLDataSource::Add(profile,
+                              std::make_unique<FaviconSource>(
+                                  profile, chrome::FaviconUrlFormat::kFavicon2,
+                                  /*serve_untrusted=*/true));
 }
 
 DataSharingUI::~DataSharingUI() = default;

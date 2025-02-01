@@ -15,7 +15,7 @@ import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
 import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome-untrusted://webui-test/test_browser_proxy.js';
 import {TestMock} from 'chrome-untrusted://webui-test/test_mock.js';
-import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
 class TestDataSharingBrowserProxy extends TestBrowserProxy implements
     BrowserProxy {
@@ -144,5 +144,13 @@ suite('Start flows', () => {
     assertEquals(1, testDataSharingSdk.getCallCount('updateClearcut'));
     const arg = testDataSharingSdk.getArgs('updateClearcut')[0];
     assertEquals(true, arg.enabled);
+  });
+
+  test('Load favicon', async () => {
+    const img = document.createElement('img');
+    img.src =
+        'chrome-untrusted://favicon2/?size=16&scaleFactor=1x&pageUrl=chrome%3A%2F%2Fsettings&allowGoogleServerFallback=1';
+    document.body.appendChild(img);
+    await eventToPromise('load', img);
   });
 });
