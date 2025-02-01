@@ -238,6 +238,7 @@ constexpr char kViewportWidthQueryParamKey[] = "biw";
 constexpr char kViewportHeightQueryParamKey[] = "bih";
 constexpr char kTextQueryParamKey[] = "q";
 constexpr char kChromeSidePanelParameterKey[] = "gsc";
+constexpr char kLensRequestQueryParameter[] = "vsrid";
 
 constexpr char kResultsSearchBaseUrl[] = "https://www.google.com/search";
 
@@ -2717,7 +2718,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // Loading a url in the side panel should show the results page. This needs to
   // be done to set up the WebContentsObserver.
-  const GURL search_url("https://www.google.com/search?gsc=2");
+  const GURL search_url("https://www.google.com/search?gsc=2&vsrid=12345");
   controller->LoadURLInResultsFrame(search_url);
 
   // Expect the Lens Overlay results panel to open.
@@ -2744,15 +2745,22 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       lens::LensOverlaySidePanelCoordinator::CommandID::COMMAND_OPEN_IN_NEW_TAB,
       /*event_flags=*/0);
 
-  // Verify the new tab opens to a URL with the same path but no gsc param.
-  // Other params are allowed to vary.
+  // Verify the new tab opens to a URL with the same path, no gsc param, and a
+  // different vsrid. Other params may be changed or unchanged.
   content::WebContents* new_tab = add_tab.Wait();
   content::WaitForLoadStop(new_tab);
   EXPECT_EQ(new_tab->GetLastCommittedURL().path(), search_url.path());
-  std::string param_value;
+  std::string gsc_value;
   EXPECT_FALSE(net::GetValueForKeyInQuery(new_tab->GetLastCommittedURL(),
                                           kChromeSidePanelParameterKey,
-                                          &param_value));
+                                          &gsc_value));
+  std::string original_vsrid_value;
+  net::GetValueForKeyInQuery(search_url, kLensRequestQueryParameter,
+                             &original_vsrid_value);
+  std::string new_vsrid_value;
+  net::GetValueForKeyInQuery(new_tab->GetLastCommittedURL(),
+                             kLensRequestQueryParameter, &new_vsrid_value);
+  EXPECT_NE(original_vsrid_value, new_vsrid_value);
 
   // Verify histogram recorded.
   histogram_tester.ExpectTotalCount(

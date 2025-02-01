@@ -131,6 +131,9 @@ inline constexpr char kTextQueryParameterKey[] = "q";
 // The url query param key for visual input type, used for contextual queries.
 inline constexpr char kVisualInputTypeQueryParameterKey[] = "vit";
 
+// The url query param key for the lens request id.
+inline constexpr char kLensRequestQueryParameter[] = "vsrid";
+
 // Allows lookup of a LensOverlayController from a WebContents associated with a
 // tab.
 class LensOverlayControllerTabLookup
@@ -2999,7 +3002,13 @@ void LensOverlayController::OpenInNewTabRequestedByEvent(int event_flags) {
   if (side_panel_new_tab_url_.is_empty()) {
     return;
   }
-  content::OpenURLParams params(side_panel_new_tab_url_, content::Referrer(),
+
+  // Each new tab needs its own unique vsrid.
+  GURL url_with_new_vsrid = net::AppendOrReplaceQueryParameter(
+      side_panel_new_tab_url_, kLensRequestQueryParameter,
+      lens_overlay_query_controller_->GetVsridForNewTab());
+
+  content::OpenURLParams params(url_with_new_vsrid, content::Referrer(),
                                 WindowOpenDisposition::NEW_FOREGROUND_TAB,
                                 ui::PAGE_TRANSITION_AUTO_BOOKMARK,
                                 /*is_renderer_initiated=*/false);
