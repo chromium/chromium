@@ -224,6 +224,10 @@ void GlicWindowController::OnWidgetBoundsChanged(views::Widget* widget,
   if (attached_browser_ &&
       attached_browser_->GetBrowserView().GetWidgetForAnchoring() == widget) {
     MovePositionToBrowserGlicButton(attached_browser_, false);
+  } else if (in_move_loop_) {
+    // While in a move loop, look for nearby browsers to toggle the drop to
+    // attach indicator.
+    HandleGlicButtonIndicator();
   }
 }
 
@@ -845,10 +849,6 @@ void GlicWindowController::HandleWindowDragWithOffset(
     // Check whether `GetGlicWidget()` is in a position to attach to a
     // browser window.
     HandleAttachmentToBrowserWindows();
-  } else {
-    // While in a move loop, look for nearby browsers to toggle the drop to
-    // attach indicator.
-    HandleGlicButtonIndicator();
   }
 }
 
