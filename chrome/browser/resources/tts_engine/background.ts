@@ -13,7 +13,7 @@ console.info('TTS engine extension installed!');
 const DOWNLOAD_BASE_URL = 'https://dl.google.com/android/tts/wasm/';
 
 // This should be incremented each time there's a new upload of the TTS engine.
-let CURRENT_VERSION_NUMBER = 1.1;
+let CURRENT_VERSION_NUMBER = 1.2;
 
 fetch(DOWNLOAD_BASE_URL + 'version.json')
     .then(response => response.json())
