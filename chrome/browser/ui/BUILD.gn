@@ -3754,6 +3754,8 @@ static_library("ui") {
       "views/autofill/payments/payments_window_user_consent_dialog_view.h",
       "views/autofill/payments/promo_code_label_button.cc",
       "views/autofill/payments/promo_code_label_button.h",
+      "views/autofill/payments/save_and_fill_dialog_views.cc",
+      "views/autofill/payments/save_and_fill_dialog_views.h",
       "views/autofill/payments/save_card_bubble_views.cc",
       "views/autofill/payments/save_card_bubble_views.h",
       "views/autofill/payments/save_card_manage_cards_bubble_views.cc",

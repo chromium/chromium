@@ -13,6 +13,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -117,6 +118,7 @@ import java.util.List;
 public class DataSharingTabManagerUnitTest {
     private static final LocalTabGroupId LOCAL_ID = new LocalTabGroupId(Token.createRandom());
     private static final Integer TAB_ID = 456;
+    private static final int TAB_GROUP_ROOT_ID = 148;
     private static final String TITLE = "Title";
     private static final GURL TEST_URL = JUnitTestGURLs.URL_1;
 
@@ -272,6 +274,17 @@ public class DataSharingTabManagerUnitTest {
                 PeopleGroupActionFailure.UNKNOWN);
     }
 
+    private void setupTabGroupFilterForOpenGroupWithId() {
+        doReturn(mTabGroupModelFilterProvider)
+                .when(mTabModelSelector)
+                .getTabGroupModelFilterProvider();
+        doReturn(mTabGroupModelFilter)
+                .when(mTabGroupModelFilterProvider)
+                .getTabGroupModelFilter(anyBoolean());
+        doReturn(mSavedTabGroup).when(mTabGroupSyncService).getGroup(SYNC_GROUP_ID1);
+        doReturn(TAB_GROUP_ROOT_ID).when(mTabGroupModelFilter).getRootIdFromStableId(any());
+    }
+
     @Test
     public void testNoProfile() {
         mDataSharingTabManager =
@@ -309,9 +322,10 @@ public class DataSharingTabManagerUnitTest {
         Tab tab = new MockTab(TAB_ID, mProfile);
         doReturn(tab).when(mTabModel).getTabById(TAB_ID);
         doReturn(true).when(mTabGroupModelFilter).isTabInTabGroup(tab);
+        setupTabGroupFilterForOpenGroupWithId();
 
         mDataSharingTabManager.initiateJoinFlow(mActivity, TEST_URL);
-        verify(mDataSharingTabGroupsDelegate).openTabGroupWithTabId(TAB_ID);
+        verify(mDataSharingTabGroupsDelegate).openTabGroupWithTabId(TAB_GROUP_ROOT_ID);
     }
 
     @Test
@@ -330,10 +344,20 @@ public class DataSharingTabManagerUnitTest {
         // Mock does not exist in local tab model.
         mSavedTabGroup.localId = null;
 
+        doAnswer(
+                        invocation -> {
+                            mSavedTabGroup.localId = LOCAL_ID; // Set the localId when opened.
+                            return null;
+                        })
+                .when(mTabGroupUiActionHandler)
+                .openTabGroup(any());
+
+        setupTabGroupFilterForOpenGroupWithId();
+
         mDataSharingTabManager.initiateJoinFlow(mActivity, TEST_URL);
 
         verify(mTabGroupUiActionHandler).openTabGroup(SYNC_GROUP_ID1);
-        verify(mDataSharingTabGroupsDelegate).openTabGroupWithTabId(TAB_ID);
+        verify(mDataSharingTabGroupsDelegate).openTabGroupWithTabId(TAB_GROUP_ROOT_ID);
     }
 
     @Test
@@ -362,6 +386,8 @@ public class DataSharingTabManagerUnitTest {
 
         uiConfig.getJoinCallback()
                 .onGroupJoinedWithWait(getSyncGroupData(), mJoinTestHelper.mOnJoinFinished);
+
+        setupTabGroupFilterForOpenGroupWithId();
         syncObserverCaptor.getValue().onTabGroupAdded(mSavedTabGroup, TriggerSource.REMOTE);
 
         mJoinTestHelper.waitForCallback();
@@ -392,6 +418,7 @@ public class DataSharingTabManagerUnitTest {
 
         assertNotNull(uiConfig.getJoinCallback());
 
+        setupTabGroupFilterForOpenGroupWithId();
         syncObserverCaptor.getValue().onTabGroupAdded(mSavedTabGroup, TriggerSource.REMOTE);
         uiConfig.getJoinCallback()
                 .onGroupJoinedWithWait(getSyncGroupData(), mJoinTestHelper.mOnJoinFinished);
@@ -498,6 +525,7 @@ public class DataSharingTabManagerUnitTest {
                 .getOriginalUrlFromDistillerUrl(any(String.class));
 
         mSavedTabGroup.collaborationId = null;
+        mSavedTabGroup.title = "test title";
         doReturn(mSavedTabGroup).when(mTabGroupSyncService).getGroup(LOCAL_ID);
 
         mDataSharingTabManager.createOrManageFlow(
@@ -510,7 +538,6 @@ public class DataSharingTabManagerUnitTest {
         DataSharingCreateUiConfig uiConfig = uiConfigCaptor.getValue();
 
         mSavedTabGroup.collaborationId = COLLABORATION_ID1;
-        mSavedTabGroup.title = "test title";
         doReturn(mSavedTabGroup).when(mTabGroupSyncService).getGroup(SYNC_GROUP_ID1);
         doReturn(new String[] {SYNC_GROUP_ID1}).when(mTabGroupSyncService).getAllGroupIds();
 
@@ -521,6 +548,7 @@ public class DataSharingTabManagerUnitTest {
                         (result) -> {
                             assertTrue(result);
                         });
+        assertEquals("test title", uiConfig.getCommonConfig().getTabGroupName());
 
         verify(mDataSharingTabGroupsDelegate)
                 .getPreviewBitmap(
@@ -574,6 +602,7 @@ public class DataSharingTabManagerUnitTest {
         DataSharingCreateUiConfig uiConfig = uiConfigCaptor.getValue();
 
         assertNotNull(uiConfig.getCreateCallback());
+        assertEquals("1 tab", uiConfig.getCommonConfig().getTabGroupName());
         uiConfig.getCreateCallback().onCancelClicked();
 
         // Verifying DataSharingService createGroup API is called.
@@ -661,10 +690,10 @@ public class DataSharingTabManagerUnitTest {
     public void testPromoteTabGroup() {
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
 
-        doReturn(mSavedTabGroup).when(mTabGroupSyncService).getGroup(SYNC_GROUP_ID1);
+        setupTabGroupFilterForOpenGroupWithId();
 
         mDataSharingTabManager.promoteTabGroup(COLLABORATION_ID1);
-        verify(mDataSharingTabGroupsDelegate).openTabGroupWithTabId(TAB_ID);
+        verify(mDataSharingTabGroupsDelegate).openTabGroupWithTabId(TAB_GROUP_ROOT_ID);
     }
 
     private void setupActivityLogItemsOnTheBackend() {

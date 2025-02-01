@@ -17,6 +17,7 @@
 #include "components/autofill/core/browser/ui/payments/autofill_error_dialog_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/autofill_progress_dialog_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller_impl.h"
+#include "components/autofill/core/browser/ui/payments/save_and_fill_dialog_controller_impl.h"
 #include "content/public/browser/web_contents_observer.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -63,6 +64,7 @@ struct OfferNotificationOptions;
 class OtpUnmaskDelegate;
 enum class OtpUnmaskResult;
 class PaymentsDataManager;
+class SaveAndFillDialogControllerImpl;
 class TouchToFillDelegate;
 struct VirtualCardEnrollmentFields;
 class VirtualCardEnrollmentManager;
@@ -213,6 +215,7 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
       override;
   payments::BnplManager* GetPaymentsBnplManager() override;
   const PaymentsDataManager& GetPaymentsDataManager() const override;
+  void ShowCreditCardSaveAndFillDialog() override;
 
 #if BUILDFLAG(IS_ANDROID)
   // The AutofillMessageController is used to show a message notification
@@ -326,6 +329,9 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
       payments_mandatory_reauth_manager_;
 
   std::unique_ptr<payments::BnplManager> bnpl_manager_;
+
+  std::unique_ptr<SaveAndFillDialogControllerImpl>
+      save_and_fill_dialog_controller_;
 
   // Used to cache client side risk data. The cache is invalidated when the
   // chrome browser tab is closed.

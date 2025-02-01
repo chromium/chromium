@@ -603,10 +603,14 @@ public class DataSharingTabManager {
      * @param tabId The tab id of the first tab in the group.
      */
     void switchToTabGroup(SavedTabGroup group) {
-        Integer tabId = group.savedTabs.get(0).localId;
-        assert tabId != null;
-        // TODO(b/354003616): Verify that the loading dialog is gone.
-        mDataSharingTabGroupsDelegate.openTabGroupWithTabId(tabId);
+        TabGroupModelFilter filter =
+                mTabModelSelectorSupplier
+                        .get()
+                        .getTabGroupModelFilterProvider()
+                        .getTabGroupModelFilter(false);
+        int rootId = filter.getRootIdFromStableId(group.localId.tabGroupId);
+        assert rootId != Tab.INVALID_TAB_ID;
+        mDataSharingTabGroupsDelegate.openTabGroupWithTabId(rootId);
     }
 
     /**
@@ -795,6 +799,11 @@ public class DataSharingTabManager {
             SavedTabGroup existingGroup,
             DataSharingCreateUiConfig.CreateCallback createCallback) {
         DataSharingUIDelegate uiDelegate = mDataSharingService.getUiDelegate();
+
+        if (TextUtils.isEmpty(tabGroupDisplayName)) {
+            tabGroupDisplayName =
+                    TabGroupTitleUtils.getDefaultTitle(activity, existingGroup.savedTabs.size());
+        }
 
         DataSharingStringConfig stringConfig =
                 new DataSharingStringConfig.Builder()
