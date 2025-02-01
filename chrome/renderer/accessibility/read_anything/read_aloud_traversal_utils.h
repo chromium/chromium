@@ -101,6 +101,10 @@ struct ReadAloudCurrentGranularity {
 
   // Boundary indices for phrases. Starts at 0.
   std::vector<int> phrase_boundaries;
+
+  // Whether phrases has been calculated based on the dependency heads generated
+  // by the model.
+  bool are_phrases_calculated = false;
 };
 }  // namespace a11y
 
