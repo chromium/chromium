@@ -95,6 +95,25 @@ class ASH_EXPORT DemoSessionMetricsRecorder
     kSystemTrayPowerButton = 2,
   };
 
+  // The types of the result of the demo account setup or cleanup request.
+  // This enum is tied directly to a UMA enum
+  // `DemoModeSignedInAccountRequestResult`, and should always reflect it (do
+  // not change one without changing the other). Entries should never be
+  // modified or reordered. Entries can only be removed by deprecating it and
+  // its value should never be reused. New ones should be added to the end
+  // (right before the max value).
+  enum class DemoAccountRequestResultCode {
+    kSuccess = 0,               // Demo account request success.
+    kResponseParsingError = 1,  // Malformat Http response.
+    kInvalidCreds = 2,          // Missing required credential for login.
+    kEmptyReponse = 3,          // Empty Http response.
+    kNetworkError = 4,          // Network error.
+    kRequestFailed = 5,         // Server side error or out of quota.
+    kCannotObtainDMTokenAndClientID =
+        6,  // Unable to obtain the DM Token and the Client ID.
+    kMaxValue = kCannotObtainDMTokenAndClientID,
+  };
+
   static constexpr char kUserClicksAndPressesMetric[] =
       "DemoMode.UserClicksAndPresses";
 
@@ -130,6 +149,12 @@ class ASH_EXPORT DemoSessionMetricsRecorder
   // demo mode signed-in shopper session, measured from first user activity to
   // last user activity.
   void ReportShopperSessionDwellTime();
+
+  // Records the result of demo account setup request.
+  void ReportDemoAccountSetupResult(DemoAccountRequestResultCode result_code);
+
+  // Records the result of demo account cleanup request.
+  void ReportDemoAccountCleanupResult(DemoAccountRequestResultCode result_code);
 
  private:
   // Starts the timer for periodic sampling.

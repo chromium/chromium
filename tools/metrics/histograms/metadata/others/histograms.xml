@@ -3685,6 +3685,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="DemoMode.SignedIn.AccountCleanupResult"
+    enum="DemoModeSignedInAccountRequestResult" expires_after="2026-01-15">
+  <owner>wanghaifan@google.com</owner>
+  <owner>cros-demo-mode-eng@google.com</owner>
+  <summary>
+    This records the result of the account cleanup request in demo mode signed
+    in experience. It can be success or one of the possible failure reasons,
+    such as the network error. Please refer to the enum class
+    DemoSessionMetricsRecorder::DemoAccountRequestResultCode for more
+    information.
+  </summary>
+</histogram>
+
+<histogram name="DemoMode.SignedIn.AccountSetupResult"
+    enum="DemoModeSignedInAccountRequestResult" expires_after="2026-01-15">
+  <owner>wanghaifan@google.com</owner>
+  <owner>cros-demo-mode-eng@google.com</owner>
+  <summary>
+    This records the result of the account setup request in demo mode signed in
+    experience. It can be success or one of the possible failure reasons, such
+    as the network error. Please refer to the enum class
+    DemoSessionMetricsRecorder::DemoAccountRequestResultCode for more
+    information.
+  </summary>
+</histogram>
+
 <histogram name="DemoMode.SignedIn.Shopper.DwellTime" units="seconds"
     expires_after="2026-01-21">
   <owner>wanghaifan@google.com</owner>

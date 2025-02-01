@@ -49,6 +49,11 @@ constexpr char kHelpAppId[] = "nbljnnecbjbmifnoehiemkgefbnpoeak";
 constexpr char kDemoModeSignedInShopperDwellTime[] =
     "DemoMode.SignedIn.Shopper.DwellTime";
 
+constexpr char kSetupDemoAccountRequestResult[] =
+    "DemoMode.SignedIn.Request.SetupResult";
+constexpr char kCleanupDemoAccountRequestResult[] =
+    "DemoMode.SignedIn.Request.CleanupResult";
+
 // How many periods to wait for user activity before discarding samples.
 // This timeout is low because demo sessions tend to be very short. If we
 // recorded samples for a full minute while the device is in between uses, we
@@ -608,6 +613,16 @@ void DemoSessionMetricsRecorder::ReportShopperSessionDwellTime() {
     }
     shopper_session_first_user_activity_ = base::TimeTicks();
   }
+}
+
+void DemoSessionMetricsRecorder::ReportDemoAccountSetupResult(
+    DemoAccountRequestResultCode result_code) {
+  base::UmaHistogramEnumeration(kSetupDemoAccountRequestResult, result_code);
+}
+
+void DemoSessionMetricsRecorder::ReportDemoAccountCleanupResult(
+    DemoAccountRequestResultCode result_code) {
+  base::UmaHistogramEnumeration(kCleanupDemoAccountRequestResult, result_code);
 }
 
 void DemoSessionMetricsRecorder::StartRecording() {

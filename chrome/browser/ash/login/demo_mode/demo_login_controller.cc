@@ -381,12 +381,12 @@ void DemoLoginController::TriggerDemoAccountLoginFlow() {
 }
 
 void DemoLoginController::SetSetupFailedCallbackForTest(
-    base::OnceCallback<void(const ResultCode result_code)> callback) {
+    FailedRequestCallback callback) {
   setup_failed_callback_for_testing_ = std::move(callback);
 }
 
 void DemoLoginController::SetCleanUpFailedCallbackForTest(
-    base::OnceCallback<void(const ResultCode result_code)> callback) {
+    FailedRequestCallback callback) {
   clean_up_failed_callback_for_testing_ = std::move(callback);
 }
 
@@ -453,6 +453,10 @@ void DemoLoginController::HandleSetupDemoAcountResponse(
     return;
   }
 
+  // Report success to the metrics.
+  DemoSessionMetricsRecorder::Get()->ReportDemoAccountSetupResult(
+      ResultCode::kSuccess);
+
   UserLoginPermissionTracker::Get()->SetDemoUser(
       gaia::CanonicalizeEmail(*email));
   DCHECK_EQ(State::kSetupDemoAccountInProgress, state_);
@@ -469,7 +473,7 @@ void DemoLoginController::HandleSetupDemoAcountResponse(
 }
 
 void DemoLoginController::OnSetupDemoAccountError(
-    const DemoLoginController::ResultCode result_code) {
+    const ResultCode result_code) {
   // TODO(crbug.com/372333479): Instruct how to do retry on failed according to
   // the error code.
 
@@ -478,12 +482,15 @@ void DemoLoginController::OnSetupDemoAccountError(
 
   DCHECK_EQ(State::kSetupDemoAccountInProgress, state_);
 
+  // Report error to the metrics.
+  DemoSessionMetricsRecorder::Get()->ReportDemoAccountSetupResult(result_code);
+
   // Login public account session when set up failed.
   state_ = State::kLoginToMGS;
   configure_auto_login_callback_.Run();
 
   if (setup_failed_callback_for_testing_) {
-    std::move(setup_failed_callback_for_testing_).Run(result_code);
+    std::move(setup_failed_callback_for_testing_).Run();
   }
 }
 
@@ -554,7 +561,11 @@ void DemoLoginController::MaybeCleanupPreviousDemoAccount() {
 void DemoLoginController::OnCleanUpDemoAccountComplete(
     std::unique_ptr<std::string> response_body) {
   auto result = GetDemoAccountRequestResult(url_loader_.get(), *response_body);
-  if (result != ResultCode::kSuccess) {
+
+  if (result == ResultCode::kSuccess) {
+    // Report success to the metrics.
+    DemoSessionMetricsRecorder::Get()->ReportDemoAccountCleanupResult(result);
+  } else {
     LogServerResponseError(*response_body, /*is_setup*/ false);
     OnCleanUpDemoAccountError(result);
   }
@@ -564,14 +575,17 @@ void DemoLoginController::OnCleanUpDemoAccountComplete(
 }
 
 void DemoLoginController::OnCleanUpDemoAccountError(
-    const DemoLoginController::ResultCode result_code) {
-  if (clean_up_failed_callback_for_testing_) {
-    std::move(clean_up_failed_callback_for_testing_).Run(result_code);
-  }
+    const ResultCode result_code) {
+  // Report error to the metrics.
+  DemoSessionMetricsRecorder::Get()->ReportDemoAccountCleanupResult(
+      result_code);
 
-  // TODO(crbug.com/364214790): Record metric for the failure.
   LOG(ERROR) << "Failed to clean up demo account. Result code: "
              << static_cast<int>(result_code);
+
+  if (clean_up_failed_callback_for_testing_) {
+    std::move(clean_up_failed_callback_for_testing_).Run();
+  }
 }
 
 std::optional<base::Value::Dict> DemoLoginController::GetDeviceIdentifier(
