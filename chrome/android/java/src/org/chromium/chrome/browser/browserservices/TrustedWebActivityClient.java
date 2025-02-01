@@ -267,8 +267,8 @@ public class TrustedWebActivityClient {
                         extraIntent.putExtra(EXTRA_MESSENGER, new Messenger(handler));
                         try {
                             ActivityOptions options = ActivityOptions.makeBasic();
-                            ApiCompatibilityUtils.setActivityOptionsBackgroundActivityStartMode(
-                                    options);
+                            ApiCompatibilityUtils
+                                    .setActivityOptionsBackgroundActivityStartAllowAlways(options);
                             pendingIntent.send(
                                     ContextUtils.getApplicationContext(),
                                     0,

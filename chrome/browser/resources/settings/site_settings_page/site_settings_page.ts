@@ -309,15 +309,6 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       disabledLabel: 'siteSettingsPerformanceSublabel',
     },
     {
-      route: routes.SITE_SETTINGS_POINTER_LOCK,
-      id: Id.POINTER_LOCK,
-      label: 'siteSettingsPointerLock',
-      icon: 'settings20:pointer-lock',
-      enabledLabel: 'siteSettingsPointerLockAllowed',
-      disabledLabel: 'siteSettingsPointerLockBlocked',
-      shouldShow: () => loadTimeData.getBoolean('enableKeyboardLockPrompt'),
-    },
-    {
       route: routes.SITE_SETTINGS_POPUPS,
       id: Id.POPUPS,
       label: 'siteSettingsPopups',
@@ -529,7 +520,6 @@ export class SettingsSiteSettingsPageElement extends
               Id.AUTO_PICTURE_IN_PICTURE,
               Id.CAPTURED_SURFACE_CONTROL,
               Id.KEYBOARD_LOCK,
-              Id.POINTER_LOCK,
               // <if expr="is_chromeos">
               Id.SMART_CARD_READERS,
               // </if>

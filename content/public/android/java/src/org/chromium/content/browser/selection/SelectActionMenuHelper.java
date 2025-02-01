@@ -394,7 +394,7 @@ public class SelectActionMenuHelper {
         return v -> {
             try {
                 ActivityOptions options = ActivityOptions.makeBasic();
-                ApiCompatibilityUtils.setActivityOptionsBackgroundActivityStartMode(options);
+                ApiCompatibilityUtils.setActivityOptionsBackgroundActivityStartAllowAlways(options);
                 action.getActionIntent()
                         .send(
                                 ContextUtils.getApplicationContext(),

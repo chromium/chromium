@@ -350,14 +350,9 @@ TEST_P(FaviconSourceTestWithFavicon2Format,
       test_web_contents_getter_, base::DoNothing());
 }
 
-class FaviconSourceTestWithFavicon2FormatServeUntrusted
-    : public FaviconSourceTestBase {
- public:
-  FaviconSourceTestWithFavicon2FormatServeUntrusted()
-      : FaviconSourceTestBase(chrome::FaviconUrlFormat::kFavicon2,
-                              /*serve_untrusted=*/true) {}
-};
-
-TEST_F(FaviconSourceTestWithFavicon2FormatServeUntrusted, ValidateGetSource) {
-  EXPECT_EQ(source()->GetSource(), chrome::kChromeUIUntrustedFavicon2URL);
+TEST_P(FaviconSourceTestWithFavicon2Format, ValidateGetSource) {
+  bool serveUntrusted = GetParam();
+  EXPECT_EQ(serveUntrusted ? chrome::kChromeUIUntrustedFavicon2URL
+                           : chrome::kChromeUIFavicon2Host,
+            source()->GetSource());
 }

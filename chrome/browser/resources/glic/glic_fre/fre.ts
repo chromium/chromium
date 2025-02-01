@@ -12,11 +12,10 @@ const browserProxy = BrowserProxyImpl.getInstance();
 
 const webview =
     document.getElementById('fre-guest-frame') as chrome.webviewTag.WebView;
-// TODO(cuianthony): For now, borrow the configuration of the glic guest URL, to
-// be replaced with the correct configuration set up for the FRE.
-webview.src = loadTimeData.getString('glicGuestURL');
+webview.src = getWebviewSrc();
 
 webview.addEventListener('loadcommit', onLoadCommit);
+webview.addEventListener('newwindow', onNewWindow);
 
 function onLoadCommit(e: any) {
   if (!e.isTopLevel) {
@@ -34,4 +33,23 @@ function onLoadCommit(e: any) {
   } else if (urlHash === '#noThanks') {
     browserProxy.freHandler.dismissFre();
   }
+}
+
+function onNewWindow(e: any) {
+  e.preventDefault();
+  browserProxy.freHandler.validateAndOpenLinkInNewTab({
+    url: e.targetUrl,
+  });
+  e.stopPropagation();
+}
+
+function getWebviewSrc() {
+  // If a valid hotkey configuration is used, append the string as a query
+  // parameter to the given FRE URL.
+  const glicHotkeyString = loadTimeData.getString('glicHotkeyString');
+  const hotkeyQueryParamString =
+      glicHotkeyString ? '?hotkey=' + glicHotkeyString : '';
+  // TODO(cuianthony): For now, borrow the configuration of the glic guest URL,
+  // to be replaced with the correct configuration set up for the FRE.
+  return loadTimeData.getString('glicFreURL') + hotkeyQueryParamString;
 }

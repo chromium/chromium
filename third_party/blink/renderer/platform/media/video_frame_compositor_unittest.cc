@@ -15,7 +15,9 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
+#include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "media/base/video_frame.h"
 #include "media/video/fake_gpu_memory_buffer.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -81,6 +83,7 @@ class VideoFrameCompositorTest
     compositor_->set_tick_clock_for_testing(&tick_clock_);
     // Disable background rendering by default.
     compositor_->set_background_rendering_for_testing(false);
+    test_sii_ = base::MakeRefCounted<gpu::TestSharedImageInterface>();
   }
 
   ~VideoFrameCompositorTest() override {
@@ -149,6 +152,7 @@ class VideoFrameCompositorTest
       std::make_unique<StrictMock<MockWebVideoFrameSubmitter>>();
   std::unique_ptr<VideoFrameCompositor> compositor_;
   raw_ptr<StrictMock<MockWebVideoFrameSubmitter>> submitter_;
+  scoped_refptr<gpu::TestSharedImageInterface> test_sii_;
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_ =
       task_environment_.GetMainThreadTaskRunner();
 };
@@ -514,13 +518,18 @@ TEST_F(VideoFrameCompositorTest, OnContextLost) {
   scoped_refptr<media::VideoFrame> non_gpu_frame = CreateOpaqueFrame();
 
   gfx::Size encode_size(320, 240);
-  std::unique_ptr<gfx::GpuMemoryBuffer> gmb =
-      std::make_unique<media::FakeGpuMemoryBuffer>(
-          encode_size, gfx::BufferFormat::YUV_420_BIPLANAR);
-  scoped_refptr<media::VideoFrame> gpu_frame =
-      media::VideoFrame::WrapExternalGpuMemoryBuffer(
-          gfx::Rect(encode_size), encode_size, std::move(gmb),
-          base::TimeDelta());
+  // Setting some default usage in order to get a mappable shared image.
+  const auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
+                        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+
+  auto shared_image = test_sii_->CreateSharedImage(
+      {viz::MultiPlaneFormat::kNV12, encode_size, gfx::ColorSpace(),
+       gpu::SharedImageUsageSet(si_usage), "VideoFrameCompositorTest"},
+      gpu::kNullSurfaceHandle, gfx::BufferUsage::GPU_READ);
+  auto gpu_frame = media::VideoFrame::WrapMappableSharedImage(
+      std::move(shared_image), test_sii_->GenVerifiedSyncToken(),
+      base::NullCallback(), gfx::Rect(encode_size), encode_size,
+      base::TimeDelta());
 
   compositor_->set_background_rendering_for_testing(true);
 

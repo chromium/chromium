@@ -902,6 +902,8 @@ const char kForceNtpMobilePromo[] = "force-ntp-mobile-promo";
 // Overrides the glic guest URL.
 const char kGlicGuestURL[] = "glic-guest-url";
 const char kCSPOverride[] = "glic-webui-csp-override";
+const char kGlicAlwaysOpenFre[] = "glic-always-open-fre";
+const char kGlicFreURL[] = "glic-fre-url";
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

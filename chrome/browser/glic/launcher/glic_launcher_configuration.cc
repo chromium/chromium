@@ -47,7 +47,13 @@ void GlicLauncherConfiguration::RegisterLocalStatePrefs(
       prefs::kGlicLauncherGlobalHotkey,
       base::Value::Dict()
           .Set(kHotkeyKeyCode, ui::KeyboardCode::VKEY_G)
-          .Set(kHotkeyModifiers, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN));
+          .Set(kHotkeyModifiers,
+#if BUILDFLAG(IS_MAC)
+               ui::EF_CONTROL_DOWN
+#else
+               ui::EF_ALT_DOWN
+#endif
+               ));
 }
 
 // static

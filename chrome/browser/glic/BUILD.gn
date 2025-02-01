@@ -55,6 +55,8 @@ source_set("glic") {
 source_set("impl") {
   sources = [
     "border_view.cc",
+    "fre_util.cc",
+    "fre_util.h",
     "glic_cookie_synchronizer.cc",
     "glic_enabling.cc",
     "glic_focused_tab_manager.cc",

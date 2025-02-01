@@ -1391,31 +1391,6 @@
             </category-setting-exceptions>
           </settings-subpage>
         </template>
-        <template is="dom-if" route-path="/content/pointerLock" no-search>
-          <settings-subpage page-title="$i18n{siteSettingsPointerLock}"
-              search-label="$i18n{siteSettingsAllSitesSearch}"
-              search-term="{{searchFilter_}}">
-            <div class="content-settings-header secondary">
-              $i18n{siteSettingsPointerLockDescription}
-            </div>
-            <settings-category-default-radio-group
-                category="[[contentSettingsTypesEnum_.POINTER_LOCK]]"
-                allow-option-label=
-                    "$i18n{siteSettingsPointerLockAllowed}"
-                allow-option-icon="settings20:pointer-lock"
-                block-option-label="$i18n{siteSettingsPointerLockBlocked}"
-                block-option-icon="settings20:pointer-lock-off">
-            </settings-category-default-radio-group>
-            <category-setting-exceptions
-                category="[[contentSettingsTypesEnum_.POINTER_LOCK]]"
-                allow-header=
-                    "$i18n{siteSettingsPointerLockAllowedExceptions}"
-                block-header=
-                    "$i18n{siteSettingsPointerLockBlockedExceptions}"
-                search-filter="[[searchFilter_]]">
-            </category-setting-exceptions>
-          </settings-subpage>
-        </template>
       </template>
       <template is="dom-if" if="[[enableWebAppInstallation_]]">
         <template is="dom-if" route-path="/content/webApplications" no-search>

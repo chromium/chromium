@@ -201,20 +201,14 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestLazyApiTest, GetMatchedRules) {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-// TODO(crbug.com/392682596): Port to desktop Android. Service worker
-// registration fails on load.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestLazyApiTest, IsRegexSupported) {
   ASSERT_TRUE(RunExtensionTest("is_regex_supported")) << message_;
 }
 
-// TODO(crbug.com/392682596): Port to desktop Android. Service worker
-// registration fails on load.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestLazyApiTest, TestMatchOutcome) {
   ASSERT_TRUE(RunExtensionTest("test_match_outcome")) << message_;
 }
 
-// TODO(crbug.com/392682596): Port to desktop Android. Service worker
-// registration fails on load.
 IN_PROC_BROWSER_TEST_F(DeclarativeNetRequestApiTest, UpdateStaticRules) {
   ASSERT_TRUE(RunExtensionTest("update_static_rules")) << message_;
 }
@@ -303,8 +297,6 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          DeclarativeNetRequestLazyApiResponseHeadersTest,
                          ::testing::Values(ContextType::kServiceWorker));
 
-// TODO(crbug.com/392682596): Port to desktop Android. Service worker
-// registration fails on load.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestLazyApiResponseHeadersTest,
                        TestMatchOutcomeWithResponseHeaders) {
   ASSERT_TRUE(RunExtensionTest("test_match_outcome_response_headers"))

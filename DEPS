@@ -280,7 +280,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
-  'skia_revision': 'a3987e7d63ec9461eb8154df2b2e66492f868041',
+  'skia_revision': 'bef93b25d3fe4eb7a982136ea41a307a1ab7aed5',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
@@ -424,7 +424,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling crabbyavif
   # and whatever else without interference from each other.
-  'crabbyavif_revision': 'ffaeba134ffd9476fa44d334f9f703c75b1e4ebc',
+  'crabbyavif_revision': '375c4261638ad66ddd713707c31ff26c34f7ce12',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Speedometer v3.0
   # and whatever else without interference from each other.
@@ -1943,7 +1943,7 @@ deps = {
 
 
   'src/third_party/depot_tools':
-    Var('chromium_git') + '/chromium/tools/depot_tools.git' + '@' + 'c88ad7af1a5c20b6788d52beb54f33203de492a8',
+    Var('chromium_git') + '/chromium/tools/depot_tools.git' + '@' + '6e2031a2ddde16d317c670c9f59ca19de11d7ed2',
 
   'src/third_party/devtools-frontend/src':
     Var('chromium_git') + '/devtools/devtools-frontend' + '@' + Var('devtools_frontend_revision'),
@@ -2442,7 +2442,7 @@ deps = {
     Var('pdfium_git') + '/pdfium.git' + '@' +  Var('pdfium_revision'),
 
   'src/third_party/perfetto':
-    Var('android_git') + '/platform/external/perfetto.git' + '@' + 'e9ed9fc480c6eb7badaa944f97b74d8973b387e4',
+    Var('android_git') + '/platform/external/perfetto.git' + '@' + '22c1eb49eefd18c66942e8fa0a1d53f001703616',
 
   'src/base/tracing/test/data': {
     'bucket': 'perfetto',
@@ -2749,7 +2749,7 @@ deps = {
       'dep_type': 'cipd',
   },
 
-  'src/third_party/vulkan-deps': '{chromium_git}/vulkan-deps@430dae9cea66d5193e8d6ac010bfaeaf0bf8857a',
+  'src/third_party/vulkan-deps': '{chromium_git}/vulkan-deps@b0b0acdd3457aa469e0c3bda7bf10529b6c1b028',
   'src/third_party/glslang/src': '{chromium_git}/external/github.com/KhronosGroup/glslang@0549c7127c2fbab2904892c9d6ff491fa1e93751',
   'src/third_party/spirv-cross/src': '{chromium_git}/external/github.com/KhronosGroup/SPIRV-Cross@b8fcf307f1f347089e3c46eb4451d27f32ebc8d3',
   'src/third_party/spirv-headers/src': '{chromium_git}/external/github.com/KhronosGroup/SPIRV-Headers@e7294a8ebed84f8c5bd3686c68dbe12a4e65b644',
@@ -2758,7 +2758,7 @@ deps = {
   'src/third_party/vulkan-loader/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Loader@0508dee4ff864f5034ae6b7f68d34cb2822b827d',
   'src/third_party/vulkan-tools/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Tools@c52931f012cb7b48e42bbf2050a7fb2183b76406',
   'src/third_party/vulkan-utility-libraries/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Utility-Libraries@fe7a09b13899c5c77d956fa310286f7a7eb2c4ed',
-  'src/third_party/vulkan-validation-layers/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-ValidationLayers@c3dc948b0b960b3a01506b57a15ecee2a9e31bf2',
+  'src/third_party/vulkan-validation-layers/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-ValidationLayers@c2e3e6e06d87155be7f56e248a62fc29aa2c4dcc',
 
   'src/third_party/vulkan_memory_allocator':
     Var('chromium_git') + '/external/github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git' + '@' + '56300b29fbfcc693ee6609ddad3fdd5b7a449a21',
@@ -4459,7 +4459,7 @@ deps = {
 
   'src/components/optimization_guide/internal': {
       'url': Var('chrome_git') + '/chrome/components/optimization_guide.git' + '@' +
-        'd9c55d2d05061e2b35746dcb4dd8b84abdf8c704',
+        '0ffcec7c5bbdaf056f7951f75e9277cf7572fcc5',
       'condition': 'checkout_src_internal',
   },
 
@@ -4525,7 +4525,7 @@ deps = {
 
   'src/ios_internal':  {
       'url': Var('chrome_git') + '/chrome/ios_internal.git' + '@' +
-        'f9cb407729eb637105e5becbae3053b7cac8af24',
+        '6632ef3e9a9ac2fcd2547e9abde10871679fcd75',
       'condition': 'checkout_ios and checkout_src_internal',
   },
 

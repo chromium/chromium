@@ -633,12 +633,12 @@ targets.tests.isolated_script_test(
 )
 
 targets.tests.isolated_script_test(
-    name = "headless_shell_wpt_tests_include_all",
+    name = "headless_shell_wpt_tests_inverted",
     mixins = [
         "has_native_resultdb_integration",
     ],
     args = [
-        "--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter",
+        "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/content_shell.filter",
     ],
     binary = "headless_shell_wpt",
 )

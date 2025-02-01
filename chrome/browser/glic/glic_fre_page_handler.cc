@@ -4,6 +4,9 @@
 
 #include "chrome/browser/glic/glic_fre_page_handler.h"
 
+#include <optional>
+
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/glic/glic_fre_controller.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
@@ -33,6 +36,13 @@ void GlicFrePageHandler::AcceptFre() {
 
 void GlicFrePageHandler::DismissFre() {
   GetGlicService()->window_controller().fre_controller()->DismissFre();
+}
+
+void GlicFrePageHandler::ValidateAndOpenLinkInNewTab(const GURL& url) {
+  if (url.DomainIs("google.com")) {
+    GetGlicService()->CreateTab(url, /*open_in_background=*/true, std::nullopt,
+                                base::DoNothing());
+  }
 }
 
 }  // namespace glic

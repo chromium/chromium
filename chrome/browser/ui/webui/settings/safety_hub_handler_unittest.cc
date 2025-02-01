@@ -1034,6 +1034,7 @@ TEST_F(SafetyHubHandlerTest, RevokeAllContentSettingTypes) {
           ContentSettingsType::FILE_SYSTEM_READ_GUARD,
           ContentSettingsType::CAMERA_PAN_TILT_ZOOM,
           ContentSettingsType::FILE_SYSTEM_ACCESS_EXTENDED_PERMISSION,
+          ContentSettingsType::POINTER_LOCK,
           // clang-format on
       });
 

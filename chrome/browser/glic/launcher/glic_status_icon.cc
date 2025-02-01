@@ -90,6 +90,7 @@ void GlicStatusIcon::OnStatusIconClicked() {
 }
 
 void GlicStatusIcon::ExecuteCommand(int command_id, int event_flags) {
+  auto* profile = GlicProfileManager::GetInstance()->GetProfileForLaunch();
   switch (command_id) {
     case IDC_GLIC_STATUS_ICON_MENU_SHOW: {
       controller_->Show();
@@ -98,22 +99,19 @@ void GlicStatusIcon::ExecuteCommand(int command_id, int event_flags) {
       break;
     }
     case IDC_GLIC_STATUS_ICON_MENU_CUSTOMIZE_KEYBOARD_SHORTCUT: {
-      OpenGlicKeyboardShortcutSetting(
-          GlicProfileManager::GetInstance()->GetProfileForLaunch());
+      OpenGlicKeyboardShortcutSetting(profile);
       base::RecordAction(base::UserMetricsAction(
           "GlicOsEntrypoint.ContextMenuSelection.OpenHotkeySettings"));
       break;
     }
     case IDC_GLIC_STATUS_ICON_MENU_REMOVE_ICON: {
-      OpenGlicOsToggleSetting(
-          GlicProfileManager::GetInstance()->GetProfileForLaunch());
+      OpenGlicOsToggleSetting(profile);
       base::RecordAction(base::UserMetricsAction(
           "GlicOsEntrypoint.ContextMenuSelection.RemoveIcon"));
       break;
     }
     case IDC_GLIC_STATUS_ICON_MENU_SETTINGS: {
-      OpenGlicSettingsPage(
-          GlicProfileManager::GetInstance()->GetProfileForLaunch());
+      OpenGlicSettingsPage(profile);
       base::RecordAction(base::UserMetricsAction(
           "GlicOsEntrypoint.ContextMenuSelection.OpenSettings"));
       break;

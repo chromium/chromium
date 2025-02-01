@@ -713,7 +713,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
             String menuTitle = mMenuEntries.get(menuIndex).first;
             PendingIntent pendingIntent = mMenuEntries.get(menuIndex).second;
             ActivityOptions options = ActivityOptions.makeBasic();
-            ApiCompatibilityUtils.setActivityOptionsBackgroundActivityStartMode(options);
+            ApiCompatibilityUtils.setActivityOptionsBackgroundActivityStartAllowAlways(options);
             pendingIntent.send(
                     activity,
                     0,

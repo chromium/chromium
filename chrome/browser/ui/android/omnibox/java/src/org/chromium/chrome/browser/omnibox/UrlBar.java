@@ -28,6 +28,7 @@ import android.view.accessibility.AccessibilityEvent;
 import android.view.autofill.AutofillManager;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
+import android.view.inputmethod.InputMethodManager;
 import android.view.textclassifier.TextClassifier;
 import android.widget.TextView;
 
@@ -41,12 +42,14 @@ import androidx.core.text.TextDirectionHeuristicsCompat;
 import androidx.core.view.inputmethod.EditorInfoCompat;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.MathUtils;
 import org.chromium.base.SysUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.metrics.TimingMetric;
+import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.CheckDiscard;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -450,6 +453,35 @@ public class UrlBar extends AutocompleteEditText {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        // TODO(b:384508488): REMOVE once no longer needed.
+        // Attempt to identify view being served. Hacky and bad, but possibly the only
+        // way for us to determine which view announces itself as focused.
+        if (mFocused) {
+            var imm =
+                    (InputMethodManager)
+                            getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (imm.isActive() && !imm.isActive(this)) {
+                Log.e("b:384508488", "IMM appears to be handling a different view");
+                if (VersionInfo.isCanaryBuild() || VersionInfo.isLocalBuild()) {
+                    var activityContext = ContextUtils.activityFromContext(getContext());
+                    var focusedView = activityContext.getCurrentFocus();
+                    if (focusedView != this) {
+                        Log.e(
+                                "b:384508488",
+                                "Activity reports a different focused view: " + focusedView);
+                    } else {
+                        Log.e(
+                                "b:384508488",
+                                "UrlBar is focused, but IME handles a different, unknown view");
+                    }
+
+                    assert false
+                            : "b:384508488: UrlBar is focused, but IME is handling a different"
+                                    + " view. Please collect logcat and attach it to the bug.";
+                }
+            }
+        }
+
         if (event.getActionMasked() == MotionEvent.ACTION_UP) {
             performClick();
         }
@@ -1148,16 +1180,6 @@ public class UrlBar extends AutocompleteEditText {
         // Allows translation in CCT that has to animate URL bar text for branding.
         // TODO(crbug.com/357399658): Consider a new approach to remove this exception for CCT.
         if (mIsInCct) super.setTranslationY(translationY);
-    }
-
-    @Override
-    public void requestLayout() {
-        // TODO(crbug.com/40285597): it is speculated that a requestLayout invoked during an active
-        // layout pass is causing Omnibox/Chrome to become unresponsive.
-        // While Android seemingly supports that, emitting just a warning, we can't rule this out
-        // completely. It is currently unclear where the secondary requestLayout could come from.
-        if (isInLayout()) return;
-        super.requestLayout();
     }
 
     @Override

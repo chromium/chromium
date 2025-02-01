@@ -78,6 +78,7 @@ void GlobalFeatures::Shutdown() {
 #if BUILDFLAG(ENABLE_GLIC)
   if (glic_background_mode_manager_) {
     glic_background_mode_manager_->Shutdown();
+    glic_background_mode_manager_.reset();
   }
 #endif
 }
