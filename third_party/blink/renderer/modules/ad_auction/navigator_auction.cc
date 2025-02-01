@@ -344,26 +344,11 @@ class NavigatorAuction::AuctionHandle final : public AbortSignal::Algorithm {
   };
 
   class ResolveToConfigResolved
-      : public ThenCallable<IDLAny, ResolveToConfigResolved>,
-        public AuctionHandleFunction {
+      : public AuctionHandleFunctionImpl<IDLBoolean, ResolveToConfigResolved> {
    public:
     ResolveToConfigResolved(AuctionHandle* auction_handle,
                             const MemberScriptPromise<IDLBoolean>&);
-
-    void Trace(Visitor* visitor) const override {
-      ThenCallable<IDLAny, ResolveToConfigResolved>::Trace(visitor);
-      AuctionHandleFunction::Trace(visitor);
-      visitor->Trace(promise_);
-    }
-
-    void Attach(ScriptState* script_state, Rejected* rejected) final {
-      promise_.Unwrap().ThenWithNoTypeChecks(script_state, this, rejected);
-    }
-
-    void React(ScriptState* script_state, ScriptValue);
-
-   private:
-    MemberScriptPromise<IDLBoolean> promise_;
+    void React(ScriptState* script_state, bool);
   };
 
   class Rejected : public AuctionHandleFunctionImpl<IDLAny, Rejected> {
@@ -3371,41 +3356,20 @@ void NavigatorAuction::AuctionHandle::AdditionalBidsResolved::React(
 NavigatorAuction::AuctionHandle::ResolveToConfigResolved::
     ResolveToConfigResolved(AuctionHandle* auction_handle,
                             const MemberScriptPromise<IDLBoolean>& promise)
-    : AuctionHandleFunction(auction_handle, /*is_input=*/false),
-      promise_(promise) {
-  ThenCallable<IDLAny, ResolveToConfigResolved>::SetExceptionContext(
-      ExceptionContext(v8::ExceptionContext::kOperation, "NavigatorAuction",
-                       "runAdAuction"));
-}
+    : AuctionHandleFunctionImpl(auction_handle,
+                                promise,
+                                /*input_promise=*/false) {}
 
 void NavigatorAuction::AuctionHandle::ResolveToConfigResolved::React(
     ScriptState* script_state,
-    ScriptValue value) {
+    bool value) {
   OnResolved();
 
   if (!script_state->ContextIsValid()) {
     return;
   }
 
-  v8::Local<v8::Value> v8_value = value.V8Value();
-  if (!v8_value->IsBoolean()) {
-    // This case is not how booleans are typically handled when converted from
-    // script. Any JS value can be coerced to a boolean, but instead we treat
-    // non-booleans as always false. Measure cases where coercion would result
-    // in a value of true, to determine the compat risk of moving to standard
-    // coercion behavior.
-    bool coerced_bool_value =
-        ToBoolean(script_state->GetIsolate(), v8_value, ASSERT_NO_EXCEPTION);
-    if (coerced_bool_value) {
-      UseCounter::Count(ExecutionContext::From(script_state),
-                        WebFeature::kResolveToConfigValueCoercedToTrue);
-    }
-    auction_handle()->SetResolveToConfig(false);
-  } else {
-    auction_handle()->SetResolveToConfig(
-        v8_value->BooleanValue(script_state->GetIsolate()));
-  }
-
+  auction_handle()->SetResolveToConfig(value);
   auction_handle()->MaybeResolveAuction();
 }
 

@@ -105,10 +105,6 @@ enum class HashRealTimeSelection;
 }
 }  // namespace safe_browsing
 
-namespace sandbox {
-class SandboxCompiler;
-}  // namespace sandbox
-
 namespace ui {
 class NativeTheme;
 }  // namespace ui
@@ -942,7 +938,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 #if BUILDFLAG(IS_MAC)
   bool SetupEmbedderSandboxParameters(
       sandbox::mojom::Sandbox sandbox_type,
-      sandbox::SandboxCompiler* compiler) override;
+      sandbox::SandboxSerializer* serializer) override;
 #endif  // BUILDFLAG(IS_MAC)
 
   void GetHyphenationDictionary(

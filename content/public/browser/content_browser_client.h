@@ -206,7 +206,7 @@ struct ResourceRequest;
 }  // namespace network
 
 namespace sandbox {
-class SandboxCompiler;
+class SandboxSerializer;
 class TargetConfig;
 namespace mojom {
 enum class Sandbox;
@@ -2788,7 +2788,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   // parameters were set up.
   virtual bool SetupEmbedderSandboxParameters(
       sandbox::mojom::Sandbox sandbox_type,
-      sandbox::SandboxCompiler* compiler);
+      sandbox::SandboxSerializer* serializer);
 #endif  // BUILDFLAG(IS_MAC)
 
   virtual void GetHyphenationDictionary(

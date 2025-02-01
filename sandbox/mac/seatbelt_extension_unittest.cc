@@ -15,7 +15,7 @@
 #include "base/test/bind.h"
 #include "base/test/multiprocess_test.h"
 #include "base/test/test_timeouts.h"
-#include "sandbox/mac/sandbox_compiler.h"
+#include "sandbox/mac/sandbox_serializer.h"
 #include "sandbox/mac/sandbox_test.h"
 #include "sandbox/mac/seatbelt_extension_token.h"
 #include "testing/multiprocess_func_list.h"
@@ -73,8 +73,8 @@ TEST_F(SeatbeltExtensionTest, FileReadAccess) {
   base::CommandLine command_line(
       base::GetMultiProcessTestChildBaseCommandLine());
 
-  auto token = sandbox::SeatbeltExtension::Issue(
-      sandbox::SeatbeltExtension::FILE_READ, file_path().value());
+  auto token = SeatbeltExtension::Issue(SeatbeltExtension::FILE_READ,
+                                        file_path().value());
   ASSERT_TRUE(token.get());
 
   base::Process test_child =
@@ -86,10 +86,11 @@ TEST_F(SeatbeltExtensionTest, FileReadAccess) {
 }
 
 MULTIPROCESS_TEST_MAIN(FileReadAccess) {
-  sandbox::SandboxCompiler compiler;
-  compiler.SetProfile(kSandboxProfile);
-  std::string error;
-  CHECK(compiler.CompileAndApplyProfile(error)) << error;
+  SandboxSerializer serializer(SandboxSerializer::Target::kSource);
+  serializer.SetProfile(kSandboxProfile);
+  std::string error, serialized;
+  CHECK(serializer.SerializePolicy(serialized, error)) << error;
+  CHECK(serializer.ApplySerializedPolicy(serialized));
 
   auto* command_line = base::CommandLine::ForCurrentProcess();
 
@@ -100,8 +101,8 @@ MULTIPROCESS_TEST_MAIN(FileReadAccess) {
   std::string token_str = command_line->GetSwitchValueASCII(kSwitchExtension);
   CHECK(!token_str.empty());
 
-  auto token = sandbox::SeatbeltExtensionToken::CreateForTesting(token_str);
-  auto extension = sandbox::SeatbeltExtension::FromToken(std::move(token));
+  auto token = SeatbeltExtensionToken::CreateForTesting(token_str);
+  auto extension = SeatbeltExtension::FromToken(std::move(token));
   CHECK(extension);
   CHECK(token.token().empty());
 
@@ -136,8 +137,8 @@ MULTIPROCESS_TEST_MAIN(FileReadAccess) {
 
   // Re-acquire the access by using the token, but this time consume it
   // permanetly.
-  token = sandbox::SeatbeltExtensionToken::CreateForTesting(token_str);
-  extension = sandbox::SeatbeltExtension::FromToken(std::move(token));
+  token = SeatbeltExtensionToken::CreateForTesting(token_str);
+  extension = SeatbeltExtension::FromToken(std::move(token));
   CHECK(extension);
   CHECK(extension->ConsumePermanently());
 
@@ -153,9 +154,8 @@ TEST_F(SeatbeltExtensionTest, DirReadWriteAccess) {
   base::CommandLine command_line(
       base::GetMultiProcessTestChildBaseCommandLine());
 
-  auto token = sandbox::SeatbeltExtension::Issue(
-      sandbox::SeatbeltExtension::FILE_READ_WRITE,
-      file_path().DirName().value());
+  auto token = SeatbeltExtension::Issue(SeatbeltExtension::FILE_READ_WRITE,
+                                        file_path().DirName().value());
   ASSERT_TRUE(token.get());
 
   base::Process test_child =
@@ -167,10 +167,11 @@ TEST_F(SeatbeltExtensionTest, DirReadWriteAccess) {
 }
 
 MULTIPROCESS_TEST_MAIN(DirReadWriteAccess) {
-  sandbox::SandboxCompiler compiler;
-  compiler.SetProfile(kSandboxProfile);
-  std::string error;
-  CHECK(compiler.CompileAndApplyProfile(error)) << error;
+  SandboxSerializer serializer(SandboxSerializer::Target::kSource);
+  serializer.SetProfile(kSandboxProfile);
+  std::string serialized, error;
+  CHECK(serializer.SerializePolicy(serialized, error)) << error;
+  CHECK(serializer.ApplySerializedPolicy(serialized));
 
   auto* command_line = base::CommandLine::ForCurrentProcess();
 
@@ -181,8 +182,8 @@ MULTIPROCESS_TEST_MAIN(DirReadWriteAccess) {
   std::string token_str = command_line->GetSwitchValueASCII(kSwitchExtension);
   CHECK(!token_str.empty());
 
-  auto token = sandbox::SeatbeltExtensionToken::CreateForTesting(token_str);
-  auto extension = sandbox::SeatbeltExtension::FromToken(std::move(token));
+  auto token = SeatbeltExtensionToken::CreateForTesting(token_str);
+  auto extension = SeatbeltExtension::FromToken(std::move(token));
   CHECK(extension);
   CHECK(token.token().empty());
 

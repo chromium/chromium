@@ -18,6 +18,7 @@
 
 #include "base/posix/eintr_wrapper.h"  //nogncheck
 #include "sandbox/mac/sandbox_logging.h"
+#include "sandbox/mac/sandbox_serializer.h"
 #include "sandbox/mac/seatbelt.h"
 
 namespace sandbox {
@@ -101,17 +102,11 @@ int SeatbeltExecClient::GetReadFD() {
   return pipe_[0];
 }
 
-bool SeatbeltExecClient::SendPolicy(const mac::SandboxPolicy& policy) {
+bool SeatbeltExecClient::SendPolicy(const std::string& serialized_policy) {
   IGNORE_EINTR(close(pipe_[0]));
   pipe_[0] = -1;
 
-  std::string serialized_protobuf;
-  if (!policy.SerializeToString(&serialized_protobuf)) {
-    logging::Error("SeatbeltExecClient: Serializing the profile failed.");
-    return false;
-  }
-
-  if (!WriteString(serialized_protobuf)) {
+  if (!WriteString(serialized_policy)) {
     return false;
   }
 
@@ -185,39 +180,7 @@ bool SeatbeltExecServer::InitializeSandbox() {
   if (!ReadString(&policy_string))
     return false;
 
-  mac::SandboxPolicy policy;
-  if (!policy.ParseFromString(policy_string)) {
-    logging::Error("SeatbeltExecServer: ParseFromString failed");
-    return false;
-  }
-
-  return ApplySandboxProfile(policy);
-}
-
-bool SeatbeltExecServer::ApplySandboxProfile(const mac::SandboxPolicy& policy) {
-  std::string error;
-  bool ok = false;
-
-  if (policy.has_compiled()) {
-    ok = Seatbelt::ApplyCompiledProfile(policy.compiled().data(), &error);
-  } else {
-    const mac::SourcePolicy& source_policy = policy.source();
-
-    std::vector<const char*> weak_params;
-    for (const auto& pair : source_policy.params()) {
-      weak_params.push_back(pair.first.c_str());
-      weak_params.push_back(pair.second.c_str());
-    }
-    weak_params.push_back(nullptr);
-
-    ok = Seatbelt::InitWithParams(source_policy.profile().c_str(), 0,
-                                  weak_params.data(), &error);
-  }
-  if (!ok) {
-    logging::Error("SeatbeltExecServer: Failed to initialize sandbox: %s",
-                   error.c_str());
-  }
-  return ok;
+  return SandboxSerializer::ApplySerializedPolicy(policy_string);
 }
 
 bool SeatbeltExecServer::ReadString(std::string* str) {

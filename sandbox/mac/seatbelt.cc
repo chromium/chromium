@@ -125,13 +125,19 @@ bool Seatbelt::Init(const char* profile, uint64_t flags, std::string* error) {
 }
 
 // static
-bool Seatbelt::InitWithParams(const char* profile,
+bool Seatbelt::InitWithParams(const std::string& profile,
                               uint64_t flags,
-                              const char* const parameters[],
+                              const std::vector<std::string>& parameters,
                               std::string* error) {
+  std::vector<const char*> weak_params;
+  for (const std::string& param : parameters) {
+    weak_params.push_back(param.c_str());
+  }
+  // The parameters array must be null terminated.
+  weak_params.push_back(nullptr);
   char* errorbuf = nullptr;
-  int rv =
-      ::sandbox_init_with_parameters(profile, flags, parameters, &errorbuf);
+  int rv = ::sandbox_init_with_parameters(profile.c_str(), flags,
+                                          weak_params.data(), &errorbuf);
   return HandleSandboxResult(rv, errorbuf, error);
 }
 

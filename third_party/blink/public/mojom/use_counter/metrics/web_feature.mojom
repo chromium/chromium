@@ -4539,7 +4539,7 @@ enum WebFeature {
   kV8AILanguageModel_TokensLeft_AttributeGetter = 5155,
   kSvgContextFillOrStroke = 5156,
   kARIAActionsAttribute = 5157,
-  kResolveToConfigValueCoercedToTrue = 5158,
+  kOBSOLETE_ResolveToConfigValueCoercedToTrue = 5158,
   kServiceWorkerStaticRouter_RaceNetworkAndFetchHandlerImprovement = 5159,
   kHasCapUnits = 5160,
   kHasRcapUnits = 5161,

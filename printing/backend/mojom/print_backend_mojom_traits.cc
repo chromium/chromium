@@ -7,6 +7,8 @@
 #include <map>
 
 #include "base/containers/contains.h"
+#include "base/debug/alias.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "build/build_config.h"
 #include "ui/gfx/geometry/mojom/geometry.mojom-shared.h"
@@ -80,21 +82,36 @@ bool StructTraits<printing::mojom::PrinterBasicInfoDataView,
                   printing::PrinterBasicInfo>::
     Read(printing::mojom::PrinterBasicInfoDataView data,
          printing::PrinterBasicInfo* out) {
-  if (!data.ReadPrinterName(&out->printer_name) ||
-      !data.ReadDisplayName(&out->display_name) ||
-      !data.ReadPrinterDescription(&out->printer_description)) {
+  if (!data.ReadPrinterName(&out->printer_name)) {
+    base::debug::Alias(&data);
+    base::debug::DumpWithoutCrashing();
+    return false;
+  }
+  if (!data.ReadDisplayName(&out->display_name)) {
+    base::debug::Alias(&data);
+    base::debug::DumpWithoutCrashing();
+    return false;
+  }
+  if (!data.ReadPrinterDescription(&out->printer_description)) {
+    base::debug::Alias(&data);
+    base::debug::DumpWithoutCrashing();
     return false;
   }
   out->printer_status = data.printer_status();
   out->is_default = data.is_default();
-  if (!data.ReadOptions(&out->options))
+  if (!data.ReadOptions(&out->options)) {
+    base::debug::Alias(&data);
+    base::debug::DumpWithoutCrashing();
     return false;
+  }
 
   // There should be a non-empty value for `printer_name` since it needs to
   // uniquely identify the printer with the operating system among multiple
   // possible destinations.
   if (out->printer_name.empty()) {
     DLOG(ERROR) << "The printer name must not be empty.";
+    base::debug::Alias(&data);
+    base::debug::DumpWithoutCrashing();
     return false;
   }
   // There should be a non-empty value for `display_name` since it needs to
@@ -102,6 +119,8 @@ bool StructTraits<printing::mojom::PrinterBasicInfoDataView,
   // destinations.
   if (out->display_name.empty()) {
     DLOG(ERROR) << "The printer's display name must not be empty.";
+    base::debug::Alias(&data);
+    base::debug::DumpWithoutCrashing();
     return false;
   }
 
@@ -117,9 +136,24 @@ bool StructTraits<printing::mojom::PaperDataView,
   std::string vendor_id;
   gfx::Size size_um;
   std::optional<gfx::Rect> maybe_printable_area_um;
-  if (!data.ReadDisplayName(&display_name) || !data.ReadVendorId(&vendor_id) ||
-      !data.ReadSizeUm(&size_um) ||
-      !data.ReadPrintableAreaUm(&maybe_printable_area_um)) {
+  if (!data.ReadDisplayName(&display_name)) {
+    base::debug::Alias(&data);
+    base::debug::DumpWithoutCrashing();
+    return false;
+  }
+  if (!data.ReadVendorId(&vendor_id)) {
+    base::debug::Alias(&data);
+    base::debug::DumpWithoutCrashing();
+    return false;
+  }
+  if (!data.ReadSizeUm(&size_um)) {
+    base::debug::Alias(&data);
+    base::debug::DumpWithoutCrashing();
+    return false;
+  }
+  if (!data.ReadPrintableAreaUm(&maybe_printable_area_um)) {
+    base::debug::Alias(&data);
+    base::debug::DumpWithoutCrashing();
     return false;
   }
   int max_height_um = data.max_height_um();
@@ -140,6 +174,10 @@ bool StructTraits<printing::mojom::PaperDataView,
 
   // If `max_height_um` is specified, ensure it's larger than size.
   if (max_height_um > 0 && max_height_um < size_um.height()) {
+    base::debug::Alias(&data);
+    base::debug::Alias(&max_height_um);
+    base::debug::Alias(&size_um);
+    base::debug::DumpWithoutCrashing();
     return false;
   }
 
@@ -148,6 +186,10 @@ bool StructTraits<printing::mojom::PaperDataView,
   // since `printable_area_um` is always relative to `size_um`.
   if (printable_area_um.IsEmpty() ||
       !gfx::Rect(size_um).Contains(printable_area_um)) {
+    base::debug::Alias(&data);
+    base::debug::Alias(&printable_area_um);
+    base::debug::Alias(&size_um);
+    base::debug::DumpWithoutCrashing();
     return false;
   }
   *out = printing::PrinterSemanticCapsAndDefaults::Paper(
@@ -161,8 +203,17 @@ bool StructTraits<printing::mojom::MediaTypeDataView,
                   printing::PrinterSemanticCapsAndDefaults::MediaType>::
     Read(printing::mojom::MediaTypeDataView data,
          printing::PrinterSemanticCapsAndDefaults::MediaType* out) {
-  return data.ReadDisplayName(&out->display_name) &&
-         data.ReadVendorId(&out->vendor_id);
+  if (!data.ReadDisplayName(&out->display_name)) {
+    base::debug::Alias(&data);
+    base::debug::DumpWithoutCrashing();
+    return false;
+  }
+  if (!data.ReadVendorId(&out->vendor_id)) {
+    base::debug::Alias(&data);
+    base::debug::DumpWithoutCrashing();
+    return false;
+  }
+  return true;
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -211,7 +262,17 @@ bool StructTraits<printing::mojom::AdvancedCapabilityValueDataView,
                   ::printing::AdvancedCapabilityValue>::
     Read(printing::mojom::AdvancedCapabilityValueDataView data,
          ::printing::AdvancedCapabilityValue* out) {
-  return data.ReadName(&out->name) && data.ReadDisplayName(&out->display_name);
+  if (!data.ReadName(&out->name)) {
+    base::debug::Alias(&data);
+    base::debug::DumpWithoutCrashing();
+    return false;
+  }
+  if (!data.ReadDisplayName(&out->display_name)) {
+    base::debug::Alias(&data);
+    base::debug::DumpWithoutCrashing();
+    return false;
+  }
+  return true;
 }
 
 // static
@@ -219,11 +280,32 @@ bool StructTraits<printing::mojom::AdvancedCapabilityDataView,
                   ::printing::AdvancedCapability>::
     Read(printing::mojom::AdvancedCapabilityDataView data,
          ::printing::AdvancedCapability* out) {
-  return data.ReadName(&out->name) &&
-         data.ReadDisplayName(&out->display_name) &&
-         data.ReadType(&out->type) &&
-         data.ReadDefaultValue(&out->default_value) &&
-         data.ReadValues(&out->values);
+  if (!data.ReadName(&out->name)) {
+    base::debug::Alias(&data);
+    base::debug::DumpWithoutCrashing();
+    return false;
+  }
+  if (!data.ReadDisplayName(&out->display_name)) {
+    base::debug::Alias(&data);
+    base::debug::DumpWithoutCrashing();
+    return false;
+  }
+  if (!data.ReadType(&out->type)) {
+    base::debug::Alias(&data);
+    base::debug::DumpWithoutCrashing();
+    return false;
+  }
+  if (!data.ReadDefaultValue(&out->default_value)) {
+    base::debug::Alias(&data);
+    base::debug::DumpWithoutCrashing();
+    return false;
+  }
+  if (!data.ReadValues(&out->values)) {
+    base::debug::Alias(&data);
+    base::debug::DumpWithoutCrashing();
+    return false;
+  }
+  return true;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -233,7 +315,17 @@ bool StructTraits<printing::mojom::PageOutputQualityAttributeDataView,
                   printing::PageOutputQualityAttribute>::
     Read(printing::mojom::PageOutputQualityAttributeDataView data,
          printing::PageOutputQualityAttribute* out) {
-  return data.ReadDisplayName(&out->display_name) && data.ReadName(&out->name);
+  if (!data.ReadDisplayName(&out->display_name)) {
+    base::debug::Alias(&data);
+    base::debug::DumpWithoutCrashing();
+    return false;
+  }
+  if (!data.ReadName(&out->name)) {
+    base::debug::Alias(&data);
+    base::debug::DumpWithoutCrashing();
+    return false;
+  }
+  return true;
 }
 
 // static
@@ -241,8 +333,17 @@ bool StructTraits<printing::mojom::PageOutputQualityDataView,
                   printing::PageOutputQuality>::
     Read(printing::mojom::PageOutputQualityDataView data,
          printing::PageOutputQuality* out) {
-  return data.ReadQualities(&out->qualities) &&
-         data.ReadDefaultQuality(&out->default_quality);
+  if (!data.ReadQualities(&out->qualities)) {
+    base::debug::Alias(&data);
+    base::debug::DumpWithoutCrashing();
+    return false;
+  }
+  if (!data.ReadDefaultQuality(&out->default_quality)) {
+    base::debug::Alias(&data);
+    base::debug::DumpWithoutCrashing();
+    return false;
+  }
+  return true;
 }
 #endif
 
@@ -259,24 +360,61 @@ bool StructTraits<printing::mojom::PrinterSemanticCapsAndDefaultsDataView,
   out->collate_capable = data.collate_capable();
   out->collate_default = data.collate_default();
   out->copies_max = data.copies_max();
-  if (!data.ReadDuplexModes(&out->duplex_modes) ||
-      !data.ReadDuplexDefault(&out->duplex_default)) {
+  if (!data.ReadDuplexModes(&out->duplex_modes)) {
+    base::debug::Alias(&data);
+    base::debug::DumpWithoutCrashing();
+    return false;
+  }
+  if (!data.ReadDuplexDefault(&out->duplex_default)) {
+    base::debug::Alias(&data);
+    base::debug::DumpWithoutCrashing();
     return false;
   }
   out->color_changeable = data.color_changeable();
   out->color_default = data.color_default();
-  if (!data.ReadColorModel(&out->color_model) ||
-      !data.ReadBwModel(&out->bw_model) || !data.ReadPapers(&out->papers) ||
-      !data.ReadUserDefinedPapers(&out->user_defined_papers) ||
-      !data.ReadDefaultPaper(&out->default_paper) ||
-      !data.ReadDpis(&out->dpis) || !data.ReadDefaultDpi(&out->default_dpi)) {
+  if (!data.ReadColorModel(&out->color_model)) {
+    base::debug::Alias(&data);
+    base::debug::DumpWithoutCrashing();
+    return false;
+  }
+  if (!data.ReadBwModel(&out->bw_model)) {
+    base::debug::Alias(&data);
+    base::debug::DumpWithoutCrashing();
+    return false;
+  }
+  if (!data.ReadPapers(&out->papers)) {
+    base::debug::Alias(&data);
+    base::debug::DumpWithoutCrashing();
+    return false;
+  }
+  if (!data.ReadUserDefinedPapers(&out->user_defined_papers)) {
+    base::debug::Alias(&data);
+    base::debug::DumpWithoutCrashing();
+    return false;
+  }
+  if (!data.ReadDefaultPaper(&out->default_paper)) {
+    base::debug::Alias(&data);
+    base::debug::DumpWithoutCrashing();
+    return false;
+  }
+  if (!data.ReadDpis(&out->dpis)) {
+    base::debug::Alias(&data);
+    base::debug::DumpWithoutCrashing();
+    return false;
+  }
+  if (!data.ReadDefaultDpi(&out->default_dpi)) {
+    base::debug::Alias(&data);
+    base::debug::DumpWithoutCrashing();
     return false;
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
   out->pin_supported = data.pin_supported();
-  if (!data.ReadAdvancedCapabilities(&out->advanced_capabilities))
+  if (!data.ReadAdvancedCapabilities(&out->advanced_capabilities)) {
+    base::debug::Alias(&data);
+    base::debug::DumpWithoutCrashing();
     return false;
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Extra validity checks.
@@ -284,6 +422,8 @@ bool StructTraits<printing::mojom::PrinterSemanticCapsAndDefaultsDataView,
   // Can not have less than one copy.
   if (out->copies_max < 1) {
     DLOG(ERROR) << "Must have copies_max greater than zero.";
+    base::debug::Alias(&data);
+    base::debug::DumpWithoutCrashing();
     return false;
   }
 
@@ -291,6 +431,8 @@ bool StructTraits<printing::mojom::PrinterSemanticCapsAndDefaultsDataView,
   DuplicateChecker<printing::mojom::DuplexMode> duplex_modes_dup_checker;
   if (duplex_modes_dup_checker.HasDuplicates(out->duplex_modes)) {
     DLOG(ERROR) << "Duplicate duplex_modes detected.";
+    base::debug::Alias(&data);
+    base::debug::DumpWithoutCrashing();
     return false;
   }
 
@@ -298,6 +440,8 @@ bool StructTraits<printing::mojom::PrinterSemanticCapsAndDefaultsDataView,
       user_defined_papers_dup_checker;
   if (user_defined_papers_dup_checker.HasDuplicates(out->user_defined_papers)) {
     DLOG(ERROR) << "Duplicate user_defined_papers detected.";
+    base::debug::Alias(&data);
+    base::debug::DumpWithoutCrashing();
     return false;
   }
 
@@ -307,12 +451,16 @@ bool StructTraits<printing::mojom::PrinterSemanticCapsAndDefaultsDataView,
   if (advanced_capabilities_dup_checker.HasDuplicates(
           out->advanced_capabilities)) {
     DLOG(ERROR) << "Duplicate advanced_capabilities detected.";
+    base::debug::Alias(&data);
+    base::debug::DumpWithoutCrashing();
     return false;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
   if (!data.ReadPageOutputQuality(&out->page_output_quality)) {
+    base::debug::Alias(&data);
+    base::debug::DumpWithoutCrashing();
     return false;
   }
   DuplicateChecker<printing::PageOutputQualityAttribute>
@@ -330,6 +478,10 @@ bool StructTraits<printing::mojom::PrinterSemanticCapsAndDefaultsDataView,
                           &printing::PageOutputQualityAttribute::name)) {
         DLOG(ERROR) << "Non-null default quality, but page output qualities "
                        "does not contain default quality";
+        base::debug::Alias(&data);
+        base::debug::Alias(&default_quality);
+        base::debug::Alias(&qualities);
+        base::debug::DumpWithoutCrashing();
         return false;
       }
     }
@@ -337,6 +489,9 @@ bool StructTraits<printing::mojom::PrinterSemanticCapsAndDefaultsDataView,
     // There should be no duplicates in `qualities` array.
     if (page_output_quality_dup_checker.HasDuplicates(qualities)) {
       DLOG(ERROR) << "Duplicate page output qualities detected.";
+      base::debug::Alias(&data);
+      base::debug::Alias(&qualities);
+      base::debug::DumpWithoutCrashing();
       return false;
     }
   }
@@ -344,6 +499,8 @@ bool StructTraits<printing::mojom::PrinterSemanticCapsAndDefaultsDataView,
 
   if (!data.ReadMediaTypes(&media_types) ||
       !data.ReadDefaultMediaType(&default_media_type)) {
+    base::debug::Alias(&data);
+    base::debug::DumpWithoutCrashing();
     return false;
   }
 

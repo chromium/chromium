@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include <string>
+#include <vector>
 
 #include "sandbox/mac/seatbelt_export.h"
 
@@ -60,18 +61,15 @@ class SEATBELT_EXPORT Seatbelt {
   // pairs in sequence. [key1,val1,key2,val2,nullptr]. Returns true on success
   // with the sandbox applied; otherwise, returns false and outputs the
   // error in `error`.
-  static bool InitWithParams(const char* profile,
+  static bool InitWithParams(const std::string& profile,
                              uint64_t flags,
-                             const char* const parameters[],
+                             const std::vector<std::string>& parameters,
                              std::string* error);
 
   // Compiles a profile string, with optional parameters, into binary
   // representation. Returns true on success with the result of compilation
   // stored in `compiled_profile`. On error, returns false with a message
   // stored in the optional `error` parameter.
-  // Note that the data are binary, but because this is used with the
-  // seatbelt.pb proto, which uses std::string for binary data, this
-  // interface takes std::string rather than std::vector<uint8_t>.
   static bool Compile(const char* profile,
                       const Parameters& params,
                       std::string& compiled_profile,

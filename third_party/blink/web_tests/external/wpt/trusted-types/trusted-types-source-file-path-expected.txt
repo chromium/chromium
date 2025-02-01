@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] same-document script
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to set the 'data' property on 'HTMLObjectElement': This document requires 'TrustedScriptURL' assignment."
-[FAIL] same-origin script
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to set the 'data' property on 'HTMLObjectElement': This document requires 'TrustedScriptURL' assignment."
-[FAIL] cross-origin script
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to set the 'data' property on 'HTMLObjectElement': This document requires 'TrustedScriptURL' assignment."
-Harness: the test ran to completion.
-
