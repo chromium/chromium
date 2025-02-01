@@ -299,8 +299,12 @@ void HTMLSlotElement::DetachDisplayLockedAssignedNodesLayoutTreeIfNeeded() {
   StyleEngine& style_engine = GetDocument().GetStyleEngine();
   StyleEngine::DetachLayoutTreeScope detach_scope(style_engine);
   for (auto& current : assigned_nodes_) {
-    if (current->GetForceReattachLayoutTree())
+    if (current->GetForceReattachLayoutTree()) {
       current->DetachLayoutTree();
+      // Restore the force-reattach state for when it's no longer display
+      // locked.
+      current->SetForceReattachLayoutTree();
+    }
   }
 }
 
