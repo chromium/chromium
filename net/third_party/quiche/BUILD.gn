@@ -440,6 +440,7 @@ source_set("quiche_tests") {
     "src/quiche/blind_sign_auth/blind_sign_auth_test.cc",
     "src/quiche/blind_sign_auth/cached_blind_sign_auth_test.cc",
     "src/quiche/common/btree_scheduler_test.cc",
+    "src/quiche/common/bug_utils_test.cc",
     "src/quiche/common/capsule_test.cc",
     "src/quiche/common/http/http_header_block_test.cc",
     "src/quiche/common/http/http_header_storage_test.cc",
@@ -605,7 +606,6 @@ source_set("quiche_tests") {
     "src/quiche/quic/core/internet_checksum_test.cc",
     "src/quiche/quic/core/legacy_quic_stream_id_manager_test.cc",
     "src/quiche/quic/core/packet_number_indexed_queue_test.cc",
-    "src/quiche/quic/core/qpack/qpack_blocking_manager_test.cc",
     "src/quiche/quic/core/qpack/qpack_decoded_headers_accumulator_test.cc",
     "src/quiche/quic/core/qpack/qpack_decoder_stream_receiver_test.cc",
     "src/quiche/quic/core/qpack/qpack_decoder_stream_sender_test.cc",
@@ -699,6 +699,7 @@ source_set("quiche_tests") {
     "src/quiche/quic/tools/quic_tcp_like_trace_converter_test.cc",
     "src/quiche/quic/tools/simple_ticket_crypter_test.cc",
     "src/quiche/web_transport/encapsulated/encapsulated_web_transport_test.cc",
+    "src/quiche/web_transport/test_tools/in_memory_stream_test.cc",
     "src/quiche/web_transport/web_transport_headers_test.cc",
   ]
 
