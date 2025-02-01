@@ -86,6 +86,7 @@
 <translation id="4783638485675352219">ಆಪರೇಟಿಂಗ್ ಸಿಸ್ಟಮ್ ಮೂಲಕ ಈ ಸಾಧನದಿಂದ ಶೀರ್ಷಿಕೆಗಳು ಮತ್ತು ತೆರೆದ ಟ್ಯಾಬ್‌ಗಳ URL ಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> ವಿಮರ್ಶೆ)}one{(<ph name="REVIEWS_COUNT_MANY" /> ವಿಮರ್ಶೆಗಳು)}other{(<ph name="REVIEWS_COUNT_MANY" /> ವಿಮರ್ಶೆಗಳು)}}</translation>
 <translation id="4850886885716139402">ವೀಕ್ಷಣೆ</translation>
+<translation id="4861953997778766866">ನಿಮ್ಮ ಹಂಚಿಕೊಳ್ಳಲಾದ ಟ್ಯಾಬ್‌ ಗುಂಪುಗಳಿಗೆ ಪ್ರತಿಯೊಬ್ಬರೂ ಬದಲಾವಣೆಗಳನ್ನು ಮಾಡಬಹುದು</translation>
 <translation id="4870911314065352661">ಎಲ್ಲಾ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಬೇಕೇ?</translation>
 <translation id="4871719318659334896">ಗುಂಪನ್ನು ಮುಚ್ಚಿರಿ</translation>
 <translation id="4881695831933465202">ತೆರೆ</translation>
@@ -179,6 +180,7 @@
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ಟ್ಯಾಬ್ ಸೇರಿಸಲಾಗಿದೆ, <ph name="ANY_CLOSED" /> ಮುಚ್ಚಲಾಗಿದೆ}one{<ph name="MANY_ADDED" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸೇರಿಸಲಾಗಿದೆ, <ph name="ANY_CLOSED" /> ಮುಚ್ಚಲಾಗಿದೆ}other{<ph name="MANY_ADDED" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸೇರಿಸಲಾಗಿದೆ, <ph name="ANY_CLOSED" /> ಮುಚ್ಚಲಾಗಿದೆ}}</translation>
 <translation id="8633025649649592204">ಇತ್ತೀಚಿನ ಚಟುವಟಿಕೆ</translation>
 <translation id="870736955561925754">ಟ್ಯಾಬ್ ಅನ್ನು ಮುಚ್ಚಬೇಕೆ ಹಾಗೂ ಗುಂಪನ್ನು ಅಳಿಸಬೇಕೆ?</translation>
+<translation id="8712637175834984815">ಅರ್ಥವಾಯಿತು</translation>
 <translation id="8714939927607906138">ಕಡಿಮೆ ಬೆಲೆ</translation>
 <translation id="8730621377337864115">ಮುಗಿದಿದೆ</translation>
 <translation id="8730999928494395583">ಈ ಅಜ್ಞಾತ ಟ್ಯಾಬ್‌ಗಳಲ್ಲಿನ ನಿಮ್ಮ ಚಟುವಟಿಕೆಗಳನ್ನು ಈ ಸಾಧನದಿಂದ ತೆರವುಗೊಳಿಸಲಾಗುತ್ತದೆ</translation>

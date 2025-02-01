@@ -385,7 +385,6 @@
 <translation id="2781151931089541271">尚餘 1 秒</translation>
 <translation id="2789486458103222910">確定</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome 發現 1 個重用密碼，建議改用其他密碼}other{Chrome 發現 # 個重用密碼，建議改用其他密碼}}</translation>
-<translation id="2796651346651857052">按住網址列即可變更位置。</translation>
 <translation id="2800066122460699237">即將關閉 <ph name="TAB_TITLE" /> 分頁</translation>
 <translation id="2805756323405976993">應用程式</translation>
 <translation id="281504910091592009">查看和管理儲存在 <ph name="BEGIN_LINK" />Google 帳戶<ph name="END_LINK" />中的密碼</translation>

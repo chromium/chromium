@@ -257,6 +257,7 @@
 <translation id="20485545164632846">item baharu</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> akaun menggunakan kata laluan yang sama</translation>
 <translation id="2059166748188874810">Perbandaran</translation>
+<translation id="2060114494785549741">Padamkan selepas 1 bulan</translation>
 <translation id="20638360198452347">Pemilih jenis unit</translation>
 <translation id="2067852168641682340">Simpan pada akaun ini setiap kali</translation>
 <translation id="2074119687904553223">{count,plural, =1{1 tab}other{{count} tab}}</translation>
@@ -288,6 +289,7 @@
 <translation id="2202084845446535117">Tiada akaun e-mel</translation>
 <translation id="2214453882118345682">Beli, terjemahkan dan kenal pasti perkara yang anda lihat menggunakan kamera anda.</translation>
 <translation id="2220529011494928058">Laporkan isu</translation>
+<translation id="2220887224562128152">Setelah fail dijadualkan untuk pemadaman, fail tersebut tidak dapat dipulihkan.</translation>
 <translation id="2223461067862937305">Buat Kod QR</translation>
 <translation id="2229345671837147090">Grid tab jauh</translation>
 <translation id="2230173723195178503">Halaman web dimuatkan</translation>
@@ -342,6 +344,7 @@ Tapak tidak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda 
 <translation id="2394659309569789395">Buka Laman Juga</translation>
 <translation id="2403129868389095715">Pakej anda tidak dapat dihantar</translation>
 <translation id="2410754283952462441">Pilih akaun</translation>
+<translation id="2422174748424038845">Jika anda memadamkan kumpulan, semua orang akan kehilangan akses kepada kumpulan tab “<ph name="GROUP_NAME" />" dengan serta-merta dan kumpulan akan dipadamkan daripada semua peranti.</translation>
 <translation id="2424805048070062787">Teruskan dengan tab ini</translation>
 <translation id="2426805022920575512">Pilih akaun lain</translation>
 <translation id="243275146591958220">Batalkan muat turun</translation>
@@ -477,6 +480,7 @@ Enjin carian anda ialah <ph name="DSE_NAME" />. Lihat arahan enjin carian itu un
 <translation id="3059270601560379555">Carian baharu</translation>
 <translation id="3064547930554042309">Urus Muat Turun</translation>
 <translation id="3072279342064724558">Kata laluan sudah wujud</translation>
+<translation id="3074862506644936708">Dayakan autopadam</translation>
 <translation id="3076846064362030967">Anda tidak akan dilog keluar daripada Google Account anda. <ph name="BEGIN_LINK" />Bentuk aktiviti lain<ph name="END_LINK" /> mungkin disimpan dalam Google Account anda semasa anda dilog masuk. Anda boleh memadamkan data tersebut pada bila-bila masa.
 
 
@@ -620,6 +624,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="3810973564298564668">Urus</translation>
 <translation id="381219490185664296">Nyahkumpulkan kumpulan tab?</translation>
 <translation id="3812308602011798782">Ulasan</translation>
+<translation id="3815668647912194650">Simpan kumpulan ini untuk menambahkan tab kemudian atau keluar daripada kumpulan ini jika anda tidak mahu akses kepada kumpulan ini lagi.</translation>
 <translation id="3818045793209708987">Berhenti menjejaki pakej ini</translation>
 <translation id="3819183753496523827">Anda di luar talian. Periksa sambungan Internet anda dan cuba lagi.</translation>
 <translation id="3828924571679282172">{COUNT,plural, =1{1 kaedah pembayaran}other{# kaedah Pembayaran}}</translation>
@@ -1192,6 +1197,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="6284652193729350524">Tawarkan untuk menterjemah <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Telah berhenti mengikuti <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Untuk menghidupkan Penyemakan Imbas Selamat, buka <ph name="BEGIN_LINK" />Perkhidmatan Google<ph name="END_LINK" /> dan ketik Penyemakan Imbas Selamat.</translation>
+<translation id="6295434468271563378">Autopadam muat turun anda</translation>
 <translation id="6295751040240588413">Nama panggilan kad tidak sah</translation>
 <translation id="629730747756840877">Akaun</translation>
 <translation id="6301104306974789820">Dapatkan pemberitahuan penjejakan harga</translation>
@@ -1453,6 +1459,7 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="741204030948306876">Ya, saya setuju</translation>
 <translation id="7417689656810783109">Namakan Semula Kumpulan</translation>
 <translation id="7419565702166471774">Sentiasa gunakan sambungan selamat</translation>
+<translation id="742001653298797675">Jadualkan semua muat turun untuk pemadaman selepas sebulan bagi menjimatkan ruang pada telefon anda dan melindungi privasi anda.</translation>
 <translation id="7425053386765766120">Tambahkan kaedah pembayaran…</translation>
 <translation id="7425346204213733349">Perubahan kepada penanda halaman, sejarah, kata laluan dan tetapan anda yang lain tidak akan disegerakkan ke Google Account anda lagi. Walau bagaimanapun, data sedia ada akan kekal disimpan dalam Google Account anda.</translation>
 <translation id="742664698522525515">Simpan kumpulan?</translation>
@@ -1762,6 +1769,7 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="8680786875305615692">Bantu tingkatkan keselamatan pada Web untuk semua orang</translation>
 <translation id="8680787084697685621">Butiran log masuk akaun sudah lapuk.</translation>
 <translation id="8683563711222071415">Alihkan alamat kepada akaun</translation>
+<translation id="8690752723634292147">Sahkan pemadaman</translation>
 <translation id="8692689525339542358">Dapatkan perlindungan daripada laman, muat turun dan sambungan yang berbahaya.</translation>
 <translation id="8694281486652655615">Menunjukkan item ini</translation>
 <translation id="8696297579102085705">Hantar kepada peranti anda</translation>

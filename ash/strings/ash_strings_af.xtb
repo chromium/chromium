@@ -178,7 +178,6 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1550523713251050646">Klik vir meer opsies</translation>
 <translation id="1555130319947370107">Blou</translation>
 <translation id="1557622599341396706">Wys lessenaarnaam</translation>
-<translation id="1567138500090284106">Muissleutelsknoppie</translation>
 <translation id="1569384531973824928">Dit gee toegang vir alle apps en webwerwe met die kamera- en mikrofoontoestemming. Jy sal die webblasy moet herlaai of die app moet herbegin.</translation>
 <translation id="1571697193564730395">Wissel Moenie Steur Nie. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Zoem uit wanneer vergrootglas aan is</translation>
@@ -731,6 +730,7 @@ Anders sal die ingeboude raakpaneel binne <ph name="TIMEOUT_SECONDS" /> geherakt
 <translation id="3522979239100719575">Soek tans beskikbare profiele. Dit kan ’n paar minute neem.</translation>
 <translation id="3526440770046466733">Maak skakel in nuwe oortjie oop en bly in huidige oortjie</translation>
 <translation id="353086728817903341">Gekoppel aan <ph name="NUM_DEVICES" /> toestelle</translation>
+<translation id="3532247131850366052">Kon nie Google-sigblad skep nie</translation>
 <translation id="3533126039236445965">Apps op rak</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" />-warmkol</translation>
 <translation id="3540893133818942399">Maak die opstelling toe vir die bekyk van jou foon se onlangse foto’s en media</translation>
@@ -830,6 +830,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="380165613292957338">Hallo, hoe kan ek help?</translation>
 <translation id="3804737937830804242">Vou kamera in</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 emosiekoon. Geen ander resultate nie.}other{# emosiekone. Geen ander resultate nie.}}</translation>
+<translation id="3822403841174077928">Kon nie met formatering kopieer nie</translation>
 <translation id="3824784079442479685">Dit gee kameratoegang vir <ph name="APP_NAME" /> en alle apps en webwerwe met die kameratoestemming. Jy sal die webblasy moet herlaai of die app moet herbegin.</translation>
 <translation id="3826099427150913765">Skakel oor na wagwoord</translation>
 <translation id="383058930331066723">Batterybespaardermodus is aan</translation>
@@ -1216,6 +1217,7 @@ Sommige kenmerke is beperk om die batterylewe te verleng.</translation>
 <translation id="5043679421800073804">Klik of tik op laaste ikoon op rak</translation>
 <translation id="504465286040788597">Vorige paragraaf</translation>
 <translation id="5045550434625856497">Verkeerde wagwoord</translation>
+<translation id="5058794129231928255">Kon nie Google Dokument skep nie</translation>
 <translation id="5062496344832867502">RAM</translation>
 <translation id="5068762093486106012">Jy sal ingelig word as jy praat terwyl dit gedemp is. Oudio verlaat nooit jou toestel nie.</translation>
 <translation id="5077416371682039027">Stel jou foon op om jou onlangse foto’s, media, kennisgewings en apps te bekyk</translation>
@@ -1648,6 +1650,7 @@ Geen toestelle is gekoppel nie.</translation>
 <translation id="6468406072297048412">{0,plural, =1{Dateer toestel binne 1 minuut na vorige weergawe op}other{Dateer toestel binne # minute na vorige weergawe op}}</translation>
 <translation id="6469104339369989396">Wissel warmkol</translation>
 <translation id="6477681113376365978">Kan nie lêer aflaai nie</translation>
+<translation id="648135757200234041">Kon nie kontak skep nie</translation>
 <translation id="6482559668224714696">Volskermvergrootglas</translation>
 <translation id="6485086611007560630">Weer (nie beskikbaar nie)</translation>
 <translation id="6490471652906364588">USB C-toestel (poort aan regterkant)</translation>
@@ -2288,6 +2291,7 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="8653151467777939995">Wys kennisgewinginstellings. Kennisgewings is aan</translation>
 <translation id="8657066291275741003">kleinletters</translation>
 <translation id="8660331759611631213">Vierkantswortel van 71</translation>
+<translation id="8662921061190671299">Kon nie by Kalender voeg nie</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, seinsterkte <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Druk Enter om gedeeltelike skermskoot vas te vang</translation>
 <translation id="8676770494376880701">Laekraglaaier gekoppel</translation>

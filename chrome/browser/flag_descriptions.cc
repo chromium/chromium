@@ -5644,6 +5644,14 @@ const char kBlockRootWindowAccessibleNameChangeEventDescription[] =
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
+const char kEnforceSystemEchoCancellationName[] =
+    "Enable System Audio Echo Cancellation (AEC)";
+const char kEnforceSystemEchoCancellationDescription[] =
+    "Enables usage of system AEC on Windows and Mac. The goal is to ensure "
+    "that audio which is played out from from external (non-Chrome) "
+    "applications does not leak into microphone signals and thereby causing "
+    "echo. On Windows, Windows 11 24H2 (build 26100) and above is required.";
+
 const char kLocationProviderManagerName[] =
     "Enable location provider manager for Geolocation API";
 const char kLocationProviderManagerDescription[] =

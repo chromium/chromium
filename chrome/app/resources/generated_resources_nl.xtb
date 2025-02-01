@@ -2151,7 +2151,6 @@ Dit heeft geen gevolgen voor bookmarks, geschiedenis en opgeslagen wachtwoorden.
 <translation id="2471632709106952369">Vergelijkingstabellen</translation>
 <translation id="2473195200299095979">Deze pagina vertalen</translation>
 <translation id="2475982808118771221">Er is een fout opgetreden</translation>
-<translation id="247616523300581745">Deze bestanden verbergen</translation>
 <translation id="2476435723907345463">Toegang tot toegangssleutels ingetrokken</translation>
 <translation id="2476901513051581836">Kan de opslag pas opschonen als de offline opslaggrootte bekend is.</translation>
 <translation id="2476974672882258506">Sluit Windows af om <ph name="PARALLELS_DESKTOP" /> te verwijderen.</translation>
@@ -3225,7 +3224,6 @@ Je kunt instellingen op deze kaart altijd beheren of meer opties bekijken in het
 <translation id="3257733480216378006"><ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" /> toestaan?</translation>
 <translation id="325797067711573598">Verdachte download geblokkeerd</translation>
 <translation id="3259723213051400722">Probeer het opnieuw.</translation>
-<translation id="3260199651491738298">Je organisatie beheert hoe gegevens die door deze functies worden verzameld, mogen worden gebruikt. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="3261090393424563833">Samplingsnelheid verhogen</translation>
 <translation id="3261268979727295785">Je kunt ouderlijk toezicht toevoegen voor andere kinderen nadat je klaar bent met instellen. In de app Ontdekken vind je meer informatie over ouderlijk toezicht.</translation>
 <translation id="3261832505033014216">Toegangssleutel voor <ph name="USER_EMAIL" /></translation>
@@ -8578,7 +8576,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7113974454301513811">Voeg nu het huidige tabblad aan je lijst toe</translation>
 <translation id="7114054701490058191">Wachtwoorden komen niet overeen</translation>
 <translation id="7114648273807173152">Als je Smart Lock wilt gebruiken om in te loggen op je Google-account, ga je naar Instellingen &gt; Verbonden apparaten &gt; Je telefoon &gt; Smart Lock.</translation>
-<translation id="7115051913071512405">Probeer het uit</translation>
 <translation id="7115361495406486998">Geen bereikbare contacten</translation>
 <translation id="7115731767122970828">Nu boosten</translation>
 <translation id="7116554090938189816">SSL-certificaat voor printer is verlopen. Start de printer opnieuw op en probeer het nog een keer.</translation>
@@ -10883,7 +10880,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8737966899544698733">Locatienauwkeurigheid (alleen Android)</translation>
 <translation id="8738418093147087440">Zoeken op landen, taal of invoernamen</translation>
 <translation id="8740086188450289493">Wachtwoord van Google-account gebruiken</translation>
-<translation id="874023689350909633">Nu proberen</translation>
 <translation id="8740247629089392745">Je kunt deze Chromebook aan <ph name="SUPERVISED_USER_NAME" /> geven. Het instellen is bijna afgerond. Daarna is het tijd om te verkennen.</translation>
 <translation id="8740672167979365981">Chrome OS Flex-update vereist</translation>
 <translation id="8741944563400125534">Instelgids voor Toegang via schakelaar</translation>

@@ -86,6 +86,7 @@ Si vous le supprimez, tout le monde perdra immédiatement l'accès au groupe d'o
 <translation id="4783638485675352219">Partager les titres et les URL des onglets ouverts depuis cet appareil avec le système d'exploitation</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> avis)}one{(<ph name="REVIEWS_COUNT_MANY" /> avis)}other{(<ph name="REVIEWS_COUNT_MANY" /> avis)}}</translation>
 <translation id="4850886885716139402">Afficher</translation>
+<translation id="4861953997778766866">Tout le monde peut modifier vos groupes d'onglets partagés</translation>
 <translation id="4870911314065352661">Fermer tous les onglets ?</translation>
 <translation id="4871719318659334896">Fermer le groupe</translation>
 <translation id="4881695831933465202">Ouvrir</translation>
@@ -179,6 +180,7 @@ Si vous le supprimez, tout le monde perdra immédiatement l'accès au groupe d'o
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> onglet ajouté, <ph name="ANY_CLOSED" /> fermé(s)}one{<ph name="MANY_ADDED" /> onglet ajouté, <ph name="ANY_CLOSED" /> fermé(s)}other{<ph name="MANY_ADDED" /> onglets ajoutés, <ph name="ANY_CLOSED" /> fermé(s)}}</translation>
 <translation id="8633025649649592204">Activité récente</translation>
 <translation id="870736955561925754">Fermer l'onglet et supprimer le groupe ?</translation>
+<translation id="8712637175834984815">OK</translation>
 <translation id="8714939927607906138">Prix inférieur</translation>
 <translation id="8730621377337864115">OK</translation>
 <translation id="8730999928494395583">Votre activité dans ces onglets de navigation privée sera supprimée de cet appareil</translation>

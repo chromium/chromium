@@ -86,6 +86,7 @@ Ako je izbrišete, svi će odmah izgubiti pristup grupi kartica <ph name="TITLE_
 <translation id="4783638485675352219">Dijeli naslove i URL-ove otvorenih kartica s ovog uređaja s operativnim sustavom</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> recenzija)}one{(<ph name="REVIEWS_COUNT_MANY" /> recenzija)}few{(<ph name="REVIEWS_COUNT_MANY" /> recenzije)}other{(<ph name="REVIEWS_COUNT_MANY" /> recenzija)}}</translation>
 <translation id="4850886885716139402">Prikaz</translation>
+<translation id="4861953997778766866">Svi mogu unositi promjene u vaše dijeljene grupe kartica</translation>
 <translation id="4870911314065352661">Želite li zatvoriti sve kartice?</translation>
 <translation id="4871719318659334896">Zatvori grupu</translation>
 <translation id="4881695831933465202">Otvori</translation>
@@ -179,6 +180,7 @@ Ako je izbrišete, svi će odmah izgubiti pristup grupi kartica <ph name="TITLE_
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{Dodana je <ph name="ONE_ADDED" /> kartica, zatvoreno: <ph name="ANY_CLOSED" />}one{Dodana je <ph name="MANY_ADDED" /> kartica, zatvoreno: <ph name="ANY_CLOSED" />}few{Dodane su <ph name="MANY_ADDED" /> kartice, zatvoreno: <ph name="ANY_CLOSED" />}other{Dodano je <ph name="MANY_ADDED" /> kartica, zatvoreno: <ph name="ANY_CLOSED" />}}</translation>
 <translation id="8633025649649592204">Nedavna aktivnost</translation>
 <translation id="870736955561925754">Želite li zatvoriti karticu i izbrisati grupu?</translation>
+<translation id="8712637175834984815">Shvaćam</translation>
 <translation id="8714939927607906138">Niža cijena</translation>
 <translation id="8730621377337864115">Gotovo</translation>
 <translation id="8730999928494395583">Vaša aktivnost na tim anonimnim karticama uklonit će se s ovog uređaja</translation>

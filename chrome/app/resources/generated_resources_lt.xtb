@@ -2167,7 +2167,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2471632709106952369">Palyginimo lentelės</translation>
 <translation id="2473195200299095979">Išversti šį puslapį</translation>
 <translation id="2475982808118771221">Įvyko klaida</translation>
-<translation id="247616523300581745">Slėpti šiuos failus</translation>
 <translation id="2476435723907345463">Prieiga prie prieigos raktų pašalinta</translation>
 <translation id="2476901513051581836">Negalima išvalyti saugyklos, kol nenurodytas saugyklos neprisijungus dydis.</translation>
 <translation id="2476974672882258506">Išjunkite „Windows“, kad pašalintumėte „<ph name="PARALLELS_DESKTOP" />“.</translation>
@@ -3243,7 +3242,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3257733480216378006">Leisti <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" />?</translation>
 <translation id="325797067711573598">Užblokuotas įtartinas atsisiuntimas</translation>
 <translation id="3259723213051400722">Bandykite dar kartą.</translation>
-<translation id="3260199651491738298">Jūsų organizacija valdo, kaip gali būti naudojami šiomis funkcijomis surinkti duomenys. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="3261090393424563833">Padidinti dažnį</translation>
 <translation id="3261268979727295785">Vyresniems vaikams tėvų kontrolę galite pridėti tik baigę sąranką. Informacijos apie tėvų kontrolę rasite programoje „Explore“.</translation>
 <translation id="3261832505033014216">Prieigos raktas, skirtas <ph name="USER_EMAIL" /></translation>
@@ -8609,7 +8607,6 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7113974454301513811">Dabar pridėkite dabartinį skirtuką prie sąrašo</translation>
 <translation id="7114054701490058191">Slaptažodžiai neatitinka</translation>
 <translation id="7114648273807173152">Jei norite prisijungti prie „Google“ paskyros naudodami „Smart Lock“, eikite į skiltį „Nustatymai“ &gt; „Prijungti įrenginiai“ &gt; „Jūsų telefonas“ &gt; „Smart Lock“.</translation>
-<translation id="7115051913071512405">Išbandykite</translation>
 <translation id="7115361495406486998">Pasiekiamų kontaktų nėra</translation>
 <translation id="7115731767122970828">Padidinti dabar</translation>
 <translation id="7116554090938189816">Spausdintuvo SSL sertifikatas nebegalioja. Iš naujo paleiskite spausdintuvą ir bandykite dar kartą.</translation>
@@ -10916,7 +10913,6 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8737966899544698733">Vietovės nustatymo tikslumas (tik „Android“)</translation>
 <translation id="8738418093147087440">Paieška pagal šalis, kalbas ar įvesčių pavadinimus</translation>
 <translation id="8740086188450289493">Naudoti „Google“ paskyros slaptažodį</translation>
-<translation id="874023689350909633">Išbandykite</translation>
 <translation id="8740247629089392745">Galite grąžinti šį „Chromebook“ <ph name="SUPERVISED_USER_NAME" />. Nustatymo procesas beveik baigtas, tada galėsite naršyti.</translation>
 <translation id="8740672167979365981">Reikia atnaujinti „ChromeOS Flex“</translation>
 <translation id="8741944563400125534">Prieigos jungikliu nustatymo vadovas</translation>

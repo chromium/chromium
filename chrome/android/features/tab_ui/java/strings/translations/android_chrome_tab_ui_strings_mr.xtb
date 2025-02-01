@@ -86,6 +86,7 @@
 <translation id="4783638485675352219">ऑपरेटिंग सिस्टीमसह या डिव्हाइसमधील उघड्या टॅबची शीर्षके आणि URLs शेअर करा</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> परीक्षण)}other{(<ph name="REVIEWS_COUNT_MANY" /> परीक्षणे)}}</translation>
 <translation id="4850886885716139402">पहा</translation>
+<translation id="4861953997778766866">सर्वजण तुमच्या शेअर केलेल्या टॅब गटांमध्ये बदल करू शकतात</translation>
 <translation id="4870911314065352661">सर्व टॅब बंद करायचे आहेत का?</translation>
 <translation id="4871719318659334896">गट बंद करा</translation>
 <translation id="4881695831933465202">उघडा</translation>
@@ -179,6 +180,7 @@
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> टॅब जोडला, <ph name="ANY_CLOSED" /> बंद केला}other{<ph name="MANY_ADDED" /> टॅब जोडले, <ph name="ANY_CLOSED" /> बंद केले}}</translation>
 <translation id="8633025649649592204">अलीकडील अ‍ॅक्टिव्हिटी</translation>
 <translation id="870736955561925754">टॅब बंद करून गट हटवायचा आहे का?</translation>
+<translation id="8712637175834984815">समजले</translation>
 <translation id="8714939927607906138">आणखी कमी किंमत</translation>
 <translation id="8730621377337864115">पूर्ण झाले</translation>
 <translation id="8730999928494395583">या गुप्त टॅबमधील तुमची अ‍ॅक्टिव्हिटी या डिव्हाइसवरून काढून टाकली जाईल</translation>

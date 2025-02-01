@@ -2144,7 +2144,6 @@
 <translation id="2471632709106952369">比较表格</translation>
 <translation id="2473195200299095979">翻译此页</translation>
 <translation id="2475982808118771221">出现错误</translation>
-<translation id="247616523300581745">隐藏这些文件</translation>
 <translation id="2476435723907345463">已撤消通行密钥访问权限</translation>
 <translation id="2476901513051581836">在知道离线存储空间大小之前，无法清理存储空间。</translation>
 <translation id="2476974672882258506">请关闭 Windows 以卸载 <ph name="PARALLELS_DESKTOP" />。</translation>
@@ -3217,7 +3216,6 @@
 <translation id="3257733480216378006">允许 <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" /> 款扩展程序访问此网站？</translation>
 <translation id="325797067711573598">已阻止可疑下载操作</translation>
 <translation id="3259723213051400722">请重试。</translation>
-<translation id="3260199651491738298">贵组织可控制由这些功能收集的数据的使用方式。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="3261090393424563833">提高采样率</translation>
 <translation id="3261268979727295785">对于年龄较大的孩子，您只需完成设置，便可添加家长控制功能。您可在“探索”应用内找到与此功能相关的信息。</translation>
 <translation id="3261832505033014216"><ph name="USER_EMAIL" /> 的通行密钥</translation>
@@ -8570,7 +8568,6 @@
 <translation id="7113974454301513811">现在，将当前标签页添加到您的清单中</translation>
 <translation id="7114054701490058191">密码不符</translation>
 <translation id="7114648273807173152">要使用 Smart Lock 登录您的 Google 账号，请依次转到“设置”&gt;“已连接的设备”&gt;“您的手机”&gt;“Smart Lock”。</translation>
-<translation id="7115051913071512405">试用</translation>
 <translation id="7115361495406486998">没有可设为分享对象的联系人</translation>
 <translation id="7115731767122970828">立即提升</translation>
 <translation id="7116554090938189816">打印机 SSL 证书已过期。请重启打印机，然后重试。</translation>
@@ -10877,7 +10874,6 @@
 <translation id="8737966899544698733">位置信息精确度（仅限 Android）</translation>
 <translation id="8738418093147087440">按国家/地区、语言或输入法名称搜索</translation>
 <translation id="8740086188450289493">使用 Google 账号密码</translation>
-<translation id="874023689350909633">试试看</translation>
 <translation id="8740247629089392745">您可将这部 Chromebook 交给<ph name="SUPERVISED_USER_NAME" />。即将设置完毕，然后就能尽情探索了。</translation>
 <translation id="8740672167979365981">需要更新 ChromeOS Flex</translation>
 <translation id="8741944563400125534">开关控制设置指南</translation>

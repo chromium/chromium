@@ -768,6 +768,7 @@
 <translation id="4654549501020883054">Күн сайын өзгертіп тұру</translation>
 <translation id="4655868084888499342">Сурет тұсқағаз ретінде орнатылды</translation>
 <translation id="4661249927038176904">сюрреалистік</translation>
+<translation id="4661392828086261436">Бұл жаңартуды құрылғы өндірушісі ұсынады және оны Google тексермеген.</translation>
 <translation id="4664651912255946953">тері</translation>
 <translation id="4665014895760275686">Өндірушісі</translation>
 <translation id="467510802200863975">Құпия сөздер сәйкес келмейді.</translation>
@@ -1027,6 +1028,7 @@
 <translation id="5904994456462260490">Жаңа APN қосу</translation>
 <translation id="590746845088109442">мысықтар</translation>
 <translation id="5907649332524363701">перне түсі</translation>
+<translation id="5908813850962688338">Бұл жаңартуды орнату бірнеше минутқа созылады. Жаңарту жүктеп алынып жатқан кезде, құрылғыны қуат көзінен ажыратпаңыз. Бұл процесс кезінде құрылғы өздігінен өшіп қосылып, қара экран көрсетілуі мүмкін. Орнатуды аяқтау үшін сізден құрылғыны өшіріп қосу сұралады.</translation>
 <translation id="5916084858004523819">Тыйым салынды</translation>
 <translation id="5916664084637901428">Қосулы</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Файлыңыз сканерленді және <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> қалтасына сақталды.}other{Файлдарыңыз сканерленді және <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> қалтасына сақталды.}}</translation>

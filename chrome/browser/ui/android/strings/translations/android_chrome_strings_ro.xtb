@@ -385,7 +385,6 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="2781151931089541271">1 sec. rămasă</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome a găsit o parolă refolosită pe care o poți face mai sigură}few{Chrome a găsit # parole refolosite pe care le poți face mai sigure}other{Chrome a găsit # de parole refolosite pe care le poți face mai sigure}}</translation>
-<translation id="2796651346651857052">Atinge lung bara de adrese pentru a-i schimba poziția.</translation>
 <translation id="2800066122460699237">Fila <ph name="TAB_TITLE" /> va fi închisă</translation>
 <translation id="2805756323405976993">Aplicații</translation>
 <translation id="281504910091592009">Vezi și gestionează parolele salvate în <ph name="BEGIN_LINK" />Contul Google<ph name="END_LINK" /></translation>

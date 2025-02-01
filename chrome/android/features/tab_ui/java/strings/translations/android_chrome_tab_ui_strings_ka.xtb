@@ -86,6 +86,7 @@
 <translation id="4783638485675352219">ამ მოწყობილობაში არსებული ღია ჩანართების სათაურებისა და URL-ების გაზიარება ოპერაციულ სისტემასთან</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> მიმოხილვა)}other{(<ph name="REVIEWS_COUNT_MANY" /> მიმოხილვა)}}</translation>
 <translation id="4850886885716139402">გადახედვა</translation>
+<translation id="4861953997778766866">ყველას შეუძლია ცვლილებების შეტანა თქვენს საზიარო ჩანართების ჯგუფში</translation>
 <translation id="4870911314065352661">გსურთ, ყველა ჩანართი დაიხუროს?</translation>
 <translation id="4871719318659334896">ჯგუფის დახურვა</translation>
 <translation id="4881695831933465202">გახსნა</translation>
@@ -179,6 +180,7 @@
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ჩანართი დაემატა, <ph name="ANY_CLOSED" /> დაიხურა}other{<ph name="MANY_ADDED" /> ჩანართი დაემატა, <ph name="ANY_CLOSED" /> დაიხურა}}</translation>
 <translation id="8633025649649592204">ბოლოდროინდელი აქტივობა</translation>
 <translation id="870736955561925754">დაიხუროს ჩანართი და წაიშალოს ჯგუფი?</translation>
+<translation id="8712637175834984815">კარგი</translation>
 <translation id="8714939927607906138">უფრო დაბალი ფასი</translation>
 <translation id="8730621377337864115">მზადაა</translation>
 <translation id="8730999928494395583">ამ ინკოგნიტო ჩანართებში თქვენი აქტივობა წაიშლება ამ მოწყობილობიდან</translation>

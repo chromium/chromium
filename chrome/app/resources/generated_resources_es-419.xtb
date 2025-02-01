@@ -2148,7 +2148,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2471632709106952369">Tablas de comparación</translation>
 <translation id="2473195200299095979">Traducir esta página</translation>
 <translation id="2475982808118771221">Se ha producido un error</translation>
-<translation id="247616523300581745">Ocultar estos archivos</translation>
 <translation id="2476435723907345463">Se quitó el acceso a las llaves de acceso</translation>
 <translation id="2476901513051581836">No se puede liberar espacio hasta que se conozca el tamaño del almacenamiento sin conexión.</translation>
 <translation id="2476974672882258506">Para desinstalar <ph name="PARALLELS_DESKTOP" />, debes cerrar Windows.</translation>
@@ -2790,6 +2789,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2926620265753325858">El dispositivo <ph name="DEVICE_NAME" /> no es compatible.</translation>
 <translation id="2926708162326352948">Se actualizó el tema a la imagen subida</translation>
 <translation id="2927017729816812676">Almacenamiento en caché</translation>
+<translation id="2928030851119977280">Se guardó la elección. Tu elección se aplicará cuando accedas a otros servicios de Google.</translation>
 <translation id="2928795416630981206">Puede realizar un seguimiento de la posición de la cámara</translation>
 <translation id="2929345818093040583">{NUM_SITES,plural, =1{Chrome quitó los permisos de 1 sitio}other{Chrome quitó los permisos de {NUM_SITES} sitios}}</translation>
 <translation id="2931157624143513983">Ajustar al área de impresión</translation>
@@ -3223,7 +3223,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3257733480216378006">¿Quieres permitir <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" />?</translation>
 <translation id="325797067711573598">Se bloqueó una descarga sospechosa</translation>
 <translation id="3259723213051400722">Vuelve a intentarlo.</translation>
-<translation id="3260199651491738298">Tu organización controla cómo se pueden usar los datos recopilados por estas funciones. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="3261090393424563833">Aumentar tasa</translation>
 <translation id="3261268979727295785">En el caso de niños más grandes, puedes agregar los controles parentales una vez que finalices con la configuración. En la app de Explorar, encontrarás información sobre estos controles.</translation>
 <translation id="3261832505033014216">Llave de acceso para <ph name="USER_EMAIL" /></translation>
@@ -7404,6 +7403,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6253801023880399036">Las contraseñas se guardan en <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="6254503684448816922">Compromiso de la clave</translation>
 <translation id="6254892857036829079">Perfecta</translation>
+<translation id="6257131917452817589">cambio automatizado de contraseña</translation>
 <translation id="6257602895346497974">Activar la sincronización…</translation>
 <translation id="6257614441619555296"><ph name="KEY" />: <ph name="VALUE" /></translation>
 <translation id="625827534921607067">Se preferirá esta red si hay disponible más de una red conectada o configurada anteriormente</translation>
@@ -8581,7 +8581,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7113974454301513811">Ahora agrega la pestaña actual a tu lista</translation>
 <translation id="7114054701490058191">Las contraseñas no coinciden</translation>
 <translation id="7114648273807173152">Si quieres usar Smart Lock para acceder a tu Cuenta de Google, ve a Configuración &gt; Dispositivos conectados &gt; Tu teléfono &gt; Smart Lock.</translation>
-<translation id="7115051913071512405">Probar</translation>
 <translation id="7115361495406486998">No hay contactos disponibles</translation>
 <translation id="7115731767122970828">Aumentar ahora</translation>
 <translation id="7116554090938189816">El certificado SSL de la impresora venció. Reinicia la impresora y vuelve a intentarlo.</translation>
@@ -9114,6 +9113,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7502528909759062987">Pausar la transmisión de la pestaña a <ph name="DEVICE_NAME" /></translation>
 <translation id="7502804472671406749">Se puede hacer zoom en las pestañas compartidas y desplazarse en ellas</translation>
 <translation id="7503191893372251637">Tipo de certificado Netscape</translation>
+<translation id="7503259455663961898">Cambiarla por mí</translation>
 <translation id="7503985202154027481">En tu llave de seguridad, se guardará un registro de tu visita a este sitio.</translation>
 <translation id="7504145862399276792">El audio de esta pestaña está silenciado</translation>
 <translation id="750509436279396091">Abrir carpeta de descargas</translation>
@@ -9176,6 +9176,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7551059576287086432">Se descargó <ph name="FILE_NAME" /> correctamente.</translation>
 <translation id="7551643184018910560">Fijar en la barra</translation>
 <translation id="7552191410769096467">Para compartir grupos de pestañas o unirte a ellos, debes acceder y activar la sincronización</translation>
+<translation id="7552196109089297786">Salir de Microsoft</translation>
 <translation id="7552846755917812628">Intenta las siguientes sugerencias:</translation>
 <translation id="7553012839257224005">Revisando el contenedor de Linux</translation>
 <translation id="7553242001898162573">Ingresar contraseña</translation>
@@ -10305,6 +10306,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8330617762701840933">La lista de sitios web que se van a redireccionar a un navegador alternativo.</translation>
 <translation id="8330689128072902965">Los contactos cercanos pueden enviarte contenido. Haz clic para cambiarlo.</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{Tipo de archivo compatible: <ph name="FILE_TYPE1" />}=2{Tipos de archivos compatibles: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />}=3{Tipos de archivos compatibles: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />}=4{Tipos de archivos compatibles: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" />}other{Tipos de archivos compatibles: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />y {OVERFLOW_COUNT} más<ph name="END_LINK" />)}}</translation>
+<translation id="8331578454993293727">Se encontró esta contraseña en una violación de la seguridad de los datos</translation>
 <translation id="8331822764922665615">Asígnale un nombre al grupo, elige un color y presiona Esc.</translation>
 <translation id="833256022891467078">Carpetas compartidas de Crostini</translation>
 <translation id="833262891116910667">Destacar</translation>
@@ -10386,6 +10388,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
     <ph name="BEGIN_PARAGRAPH2" />Para obtener más ayuda, visita: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8383614331548401927">Inicio inteligente</translation>
 <translation id="8386091599636877289">No se encontró la política.</translation>
+<translation id="8387087863179559896">Chrome puede actualizar tu cuenta de este sitio con una contraseña segura. No es necesario que recuerdes la contraseña porque se guarda en el Administrador de contraseñas de Google de <ph name="EMAIL" />. Obtén más información sobre el <ph name="PASSWORD_CHANGE" />.</translation>
 <translation id="8387361103813440603">No puede ver tu ubicación</translation>
 <translation id="8387617938027387193">Verifica que eres tú</translation>
 <translation id="8388770971141403598">Los perfiles secundarios no son compatibles</translation>
@@ -10884,7 +10887,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8737966899544698733">Precisión de la ubicación (solo para Android)</translation>
 <translation id="8738418093147087440">Buscar por país, idioma o nombre de entrada</translation>
 <translation id="8740086188450289493">Usar la contraseña de la Cuenta de Google</translation>
-<translation id="874023689350909633">Probar</translation>
 <translation id="8740247629089392745">Puedes pasarle esta Chromebook a <ph name="SUPERVISED_USER_NAME" />. La configuración está casi lista. Luego, podrán comenzar a explorar.</translation>
 <translation id="8740672167979365981">Es necesario actualizar ChromeOS Flex</translation>
 <translation id="8741944563400125534">Guía de configuración de Accesibilidad con interruptores</translation>

@@ -716,6 +716,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="422477017457571619">AI-baserat skydd i realtid mot farliga webbplatser, nedladdningar och tillägg baserat på webbinformation som skickas till Google</translation>
 <translation id="4231395118547300571">Aviseringar från säkerhetskontroll har aktiverats</translation>
 <translation id="4237377247299956313">Tryck på <ph name="BEGIN_BOLD" />Standardwebbläsarapp<ph name="END_BOLD" /></translation>
+<translation id="4241893428331130998">Inga sparade lösenord eller nycklar</translation>
 <translation id="4242533952199664413">Öppna Inställningar</translation>
 <translation id="4250432749243022864">{count,plural, =0{Öppna {count} flik}=1{Öppna {count} flik}other{Öppna {count} flikar}}</translation>
 <translation id="4250680216510889253">Nej</translation>
@@ -1595,6 +1596,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="7982789257301363584">Nätverk</translation>
 <translation id="7987685713885608670">Öka säkerheten genom att kryptera lösenord på enheten innan de sparas i Google Lösenordshantering</translation>
 <translation id="798991908416757345">Flikgrupper är inte tillgängliga</translation>
+<translation id="7993170188789685695">Tryck snabbt två gånger för att stänga den här aviseringen.</translation>
 <translation id="7993619969781047893">Funktioner kan sluta att fungera på vissa webbplatser</translation>
 <translation id="7996239959906074962">Konfigurera …</translation>
 <translation id="800361585186029508">Öppnar de angivna webbadresserna i Google Chrome.</translation>

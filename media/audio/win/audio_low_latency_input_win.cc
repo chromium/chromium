@@ -41,6 +41,7 @@
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/channel_layout.h"
 #include "media/base/limits.h"
+#include "media/base/media_switches.h"
 #include "media/base/timestamp_constants.h"
 
 using ABI::Windows::Foundation::Collections::IVectorView;
@@ -331,6 +332,17 @@ WASAPIAudioInputStream::WASAPIAudioInputStream(
   bool avrt_init = avrt::Initialize();
   if (!avrt_init)
     SendLogMessage("%s => (WARNING: failed to load Avrt.dll)", __func__);
+
+  if (!(params.effects() & AudioParameters::ECHO_CANCELLER)) {
+    SendLogMessage("%s => (system AEC is not requested)", __func__);
+  } else if (!manager->IsEchoCancellationSupported(device_id)) {
+    SendLogMessage("%s => (WARNING: failed to apply system AEC as requested)",
+                   __func__);
+  } else {
+    use_echo_cancellation_ = true;
+  }
+  SendLogMessage("%s => (use_echo_cancellation=[%s])", __func__,
+                 use_echo_cancellation_ ? "true" : "false");
 
   const SampleFormat kSampleFormat = kSampleFormatS16;
 
@@ -1379,6 +1391,15 @@ WASAPIAudioInputStream::SetCommunicationsCategoryAndMaybeRawCaptureMode(
     // capture mode on devices with more than eight input channels.
     if (channels > 0 && channels <= media::kMaxConcurrentChannels) {
       audio_props.Options = AUDCLNT_STREAMOPTIONS_RAW;
+    }
+    // Use AUDCLNT_STREAMOPTIONS_NONE instead of AUDCLNT_STREAMOPTIONS_RAW if
+    // system AEC has been enabled to ensure that "Voice Clarity" can kick in.
+    // From Win11 24H2, apps which use Communications Signal Processing Mode
+    // do not need any additional modifications and Voice Clarity will work for
+    // them automatically when the OEM device does not offer Communications Mode
+    // processing.
+    if (use_echo_cancellation_) {
+      audio_props.Options = AUDCLNT_STREAMOPTIONS_NONE;
     }
     hr = audio_client2->SetClientProperties(&audio_props);
     if (FAILED(hr)) {

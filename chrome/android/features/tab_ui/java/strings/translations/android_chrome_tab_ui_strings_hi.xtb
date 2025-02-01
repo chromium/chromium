@@ -86,6 +86,7 @@
 <translation id="4783638485675352219">इस डिवाइस से, खुले हुए टैब के टाइटल और यूआरएल को ऑपरेटिंग सिस्टम के साथ शेयर करें</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> समीक्षा)}one{(<ph name="REVIEWS_COUNT_MANY" /> समीक्षा)}other{(<ph name="REVIEWS_COUNT_MANY" /> समीक्षाएं)}}</translation>
 <translation id="4850886885716139402">देखें</translation>
+<translation id="4861953997778766866">आपके शेयर किए गए टैब ग्रुप में, सभी लोग बदलाव कर सकते हैं</translation>
 <translation id="4870911314065352661">सभी टैब बंद करें?</translation>
 <translation id="4871719318659334896">ग्रुप बंद करें</translation>
 <translation id="4881695831933465202">खोलें</translation>
@@ -179,6 +180,7 @@
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> टैब जोड़ा गया, <ph name="ANY_CLOSED" /> टैब बंद किए गए}one{<ph name="MANY_ADDED" /> टैब जोड़ा गया, <ph name="ANY_CLOSED" /> टैब बंद किए गए}other{<ph name="MANY_ADDED" /> टैब जोड़े गए, <ph name="ANY_CLOSED" /> टैब बंद किए गए}}</translation>
 <translation id="8633025649649592204">हाल की गतिविधि</translation>
 <translation id="870736955561925754">क्या टैब बंद करके ग्रुप मिटाना है?</translation>
+<translation id="8712637175834984815">समझ लिया</translation>
 <translation id="8714939927607906138">कम कीमत</translation>
 <translation id="8730621377337864115">हो गया</translation>
 <translation id="8730999928494395583">इन गुप्त टैब में की गई आपकी गतिविधि को इस डिवाइस से हटा दिया जाएगा</translation>

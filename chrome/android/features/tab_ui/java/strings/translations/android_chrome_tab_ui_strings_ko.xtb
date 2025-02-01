@@ -86,6 +86,7 @@
 <translation id="4783638485675352219">이 기기에서 열려 있는 탭의 제목과 URL을 운영체제와 공유</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(리뷰 <ph name="REVIEWS_COUNT_ONE" />개)}other{(리뷰 <ph name="REVIEWS_COUNT_MANY" />개)}}</translation>
 <translation id="4850886885716139402">보기</translation>
+<translation id="4861953997778766866">모든 사용자가 공유 탭 그룹을 변경할 수 있습니다</translation>
 <translation id="4870911314065352661">모든 탭을 닫을까요?</translation>
 <translation id="4871719318659334896">그룹 닫기</translation>
 <translation id="4881695831933465202">열기</translation>
@@ -179,6 +180,7 @@
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{탭 <ph name="ONE_ADDED" />개 추가됨, <ph name="ANY_CLOSED" />개 닫힘}other{탭 <ph name="MANY_ADDED" />개 추가됨, <ph name="ANY_CLOSED" />개 닫힘}}</translation>
 <translation id="8633025649649592204">최근 활동</translation>
 <translation id="870736955561925754">탭을 닫고 그룹을 삭제하시겠습니까?</translation>
+<translation id="8712637175834984815">확인</translation>
 <translation id="8714939927607906138">더 낮은 가격</translation>
 <translation id="8730621377337864115">완료</translation>
 <translation id="8730999928494395583">시크릿 탭의 활동 내역이 이 기기에서 삭제됩니다.</translation>

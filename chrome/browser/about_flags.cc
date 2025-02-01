@@ -11756,6 +11756,14 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(lens::features::kLensOverlaySidePanelOpenInNewTab)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+    {"enforce-system-echo-cancellation",
+     flag_descriptions::kEnforceSystemEchoCancellationName,
+     flag_descriptions::kEnforceSystemEchoCancellationDescription,
+     kOsWin | kOsMac,
+     FEATURE_VALUE_TYPE(media::kEnforceSystemEchoCancellation)},
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

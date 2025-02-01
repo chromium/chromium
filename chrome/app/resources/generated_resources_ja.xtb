@@ -2146,7 +2146,6 @@
 <translation id="2471632709106952369">比較表</translation>
 <translation id="2473195200299095979">このページを翻訳</translation>
 <translation id="2475982808118771221">エラーが発生しました</translation>
-<translation id="247616523300581745">これらのファイルを非表示にする</translation>
 <translation id="2476435723907345463">パスキーへのアクセス権を削除しました</translation>
 <translation id="2476901513051581836">オフライン ストレージのサイズが判明するまで、ストレージをクリーンアップできません。</translation>
 <translation id="2476974672882258506"><ph name="PARALLELS_DESKTOP" /> をアンインストールするには Windows をシャットダウンしてください。</translation>
@@ -3219,7 +3218,6 @@
 <translation id="3257733480216378006"><ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" /> を許可しますか？</translation>
 <translation id="325797067711573598">不審なダウンロードをブロックしました</translation>
 <translation id="3259723213051400722">もう一度お試しください。</translation>
-<translation id="3260199651491738298">これらの機能で収集されるデータの使用方法は組織が管理しています。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="3261090393424563833">レートを増やす</translation>
 <translation id="3261268979727295785">年長のお子様には、セットアップが完了してから保護者による使用制限を設定できます。保護者による使用制限に関する情報は、「使い方・ヒント」アプリで確認できます。</translation>
 <translation id="3261832505033014216"><ph name="USER_EMAIL" /> のパスキー</translation>
@@ -8568,7 +8566,6 @@
 <translation id="7113974454301513811">ここで現在のタブをリストに追加します</translation>
 <translation id="7114054701490058191">パスワードが一致しません</translation>
 <translation id="7114648273807173152">Smart Lock を使用して Google アカウントにログインするには、[設定] &gt; [接続済みのデバイス] &gt; [スマートフォン] &gt; [Smart Lock] に移動します。</translation>
-<translation id="7115051913071512405">試してみる</translation>
 <translation id="7115361495406486998">連絡先が見つかりませんでした</translation>
 <translation id="7115731767122970828">今すぐ向上</translation>
 <translation id="7116554090938189816">プリンタの SSL 証明書の有効期限が切れています。プリンタを再起動してもう一度お試しください。</translation>
@@ -10874,7 +10871,6 @@
 <translation id="8737966899544698733">位置情報の精度（Android のみ）</translation>
 <translation id="8738418093147087440">国、言語、入力名で検索</translation>
 <translation id="8740086188450289493">Google アカウントのパスワードを使用</translation>
-<translation id="874023689350909633">試してみる</translation>
 <translation id="8740247629089392745">この Chromebook を <ph name="SUPERVISED_USER_NAME" /> に渡す準備ができました。設定はあと少しで完了です。</translation>
 <translation id="8740672167979365981">ChromeOS Flex の更新が必要です</translation>
 <translation id="8741944563400125534">スイッチ アクセス設定ガイド</translation>

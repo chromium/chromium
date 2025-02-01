@@ -768,6 +768,7 @@
 <translation id="4654549501020883054">रोज़ बदलें</translation>
 <translation id="4655868084888499342">इमेज को वॉलपेपर के तौर पर सेट किया गया</translation>
 <translation id="4661249927038176904">सरीयल</translation>
+<translation id="4661392828086261436">यह अपडेट, डिवाइस बनाने वाली कंपनी ने उपलब्ध कराया है और Google ने अब तक इसकी पुष्टि नहीं की है</translation>
 <translation id="4664651912255946953">फ़र</translation>
 <translation id="4665014895760275686">निर्माता</translation>
 <translation id="467510802200863975">पासवर्ड मेल नहीं खाते</translation>
@@ -1027,6 +1028,7 @@
 <translation id="5904994456462260490">नया एपीएन जोड़ें</translation>
 <translation id="590746845088109442">बिल्लियां</translation>
 <translation id="5907649332524363701">बटन का रंग</translation>
+<translation id="5908813850962688338">इस अपडेट को इंस्टॉल करने में कुछ मिनट लगेंगे. अपडेट डाउनलोड होने के दौरान, अपने डिवाइस को पावर सॉकेट से कनेक्ट करके रखें. साथ ही, यह ध्यान रहे कि डिवाइस चालू हो. ऐसा हो सकता है कि इस प्रोसेस के दौरान आपका डिवाइस कई बार अपने-आप फिर से चालू हो जाए और स्क्रीन पर काला रंग दिखे. इंस्टॉलेशन पूरा करने के लिए, आपको डिवाइस रीस्टार्ट करने के लिए कहा जाएगा.</translation>
 <translation id="5916084858004523819">निषिद्ध</translation>
 <translation id="5916664084637901428">चालू है</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{आपकी फ़ाइल स्कैन कर दी गई है. साथ ही, उसे <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> में सेव कर दिया गया है.}one{आपकी फ़ाइल स्कैन कर दी गई है. साथ ही, उसे <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> में सेव कर दिया गया है.}other{आपकी फ़ाइलें स्कैन कर दी गई हैं. साथ ही, उन्हें <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> में सेव कर दिया गया है.}}</translation>

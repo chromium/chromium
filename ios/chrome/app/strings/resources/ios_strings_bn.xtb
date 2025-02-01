@@ -716,6 +716,7 @@
 <translation id="422477017457571619">Google-কে পাঠানো আপনার ব্রাউজ করা ডেটা উপর নির্ভর করে বিপজ্জনক সাইট, ডাউনলোড এবং এক্সটেনশন থেকে রিয়েল-টাইমে AI পরিচালিত সুরক্ষার সুবিধা</translation>
 <translation id="4231395118547300571">নিরাপত্তা সংক্রান্ত পরীক্ষার বিজ্ঞপ্তি চালু করা হয়েছে</translation>
 <translation id="4237377247299956313"><ph name="BEGIN_BOLD" />ডিফল্ট ব্রাউজার অ্যাপ<ph name="END_BOLD" /> বিকল্পে ট্যাপ করুন</translation>
+<translation id="4241893428331130998">কোনও পাসওয়ার্ড বা পাসকী সেভ করা নেই</translation>
 <translation id="4242533952199664413">সেটিংস খুলুন</translation>
 <translation id="4250432749243022864">{count,plural, =0{{count}টি ট্যাব খুলুন}=1{{count}টি ট্যাব খুলুন}one{{count}টি ট্যাব খুলুন}other{{count}টি ট্যাব খুলুন}}</translation>
 <translation id="4250680216510889253">না</translation>
@@ -1596,6 +1597,7 @@
 <translation id="7982789257301363584">নেটওয়ার্ক</translation>
 <translation id="7987685713885608670">অতিরিক্ত নিরাপত্তার জন্য, Google পাসওয়ার্ড ম্যানেজারে সেভ করার আগে আপনার ডিভাইসে পাসওয়ার্ড এনক্রিপ্ট করুন।</translation>
 <translation id="798991908416757345">ট্যাব গ্রুপ উপলভ্য নয়</translation>
+<translation id="7993170188789685695">এই বিজ্ঞপ্তি বন্ধ করতে ডবল ট্যাপ করুন</translation>
 <translation id="7993619969781047893">কিছু কিছু সাইটের ফিচারগুলি কাজ নাও করতে পারে</translation>
 <translation id="7996239959906074962">সেট-আপ করুন…</translation>
 <translation id="800361585186029508">Google Chrome-এ ইনপুট করা ইউআরএলগুলি খোলে।</translation>

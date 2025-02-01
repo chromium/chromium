@@ -2167,7 +2167,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2471632709106952369">Primerjalne tabele</translation>
 <translation id="2473195200299095979">Prevede to stran</translation>
 <translation id="2475982808118771221">Prišlo je do napake</translation>
-<translation id="247616523300581745">Skrij te datoteke</translation>
 <translation id="2476435723907345463">Dostop do ključev za dostop je bil odstranjen</translation>
 <translation id="2476901513051581836">Shrambe ni mogoče počistiti, dokler ni znana velikost shrambe brez povezave.</translation>
 <translation id="2476974672882258506">Zaustavite sistem Windows, če želite odmestiti program <ph name="PARALLELS_DESKTOP" />.</translation>
@@ -3243,7 +3242,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3257733480216378006">Želite odobriti <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" />?</translation>
 <translation id="325797067711573598">Blokiran sumljiv prenos</translation>
 <translation id="3259723213051400722">Poskusite znova.</translation>
-<translation id="3260199651491738298">Vaša organizacija nadzira, kako se lahko uporabljajo podatki, ki jih zberejo te funkcije. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="3261090393424563833">Zvišaj stopnjo</translation>
 <translation id="3261268979727295785">Za starejše otroke lahko starševski nadzor dodate po koncu nastavitve. Informacije o starševskem nadzoru so na voljo v aplikaciji Raziskovanje.</translation>
 <translation id="3261832505033014216">Ključ za dostop za uporabnika <ph name="USER_EMAIL" /></translation>
@@ -8610,7 +8608,6 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7113974454301513811">Zdaj dodajte trenutni zavihek na seznam.</translation>
 <translation id="7114054701490058191">Gesli se ne ujemata</translation>
 <translation id="7114648273807173152">Če se želite v račun za Google prijaviti s funkcijo Smart Lock, odprite »Nastavitve &gt; Povezane naprave &gt; Vaš telefon &gt; Smart Lock«.</translation>
-<translation id="7115051913071512405">Preskusite</translation>
 <translation id="7115361495406486998">Ni dosegljivih stikov</translation>
 <translation id="7115731767122970828">Izboljšaj zdaj</translation>
 <translation id="7116554090938189816">Potrdilo SSL tiskalnika je poteklo. Tiskalnik zaženite znova in poskusite še enkrat.</translation>
@@ -10917,7 +10914,6 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8737966899544698733">Natančnost zaznavanja lokacije (samo v sistemu Android)</translation>
 <translation id="8738418093147087440">Iskanje glede na države, jezik ali imena vnosov</translation>
 <translation id="8740086188450289493">Uporabite geslo za račun Google</translation>
-<translation id="874023689350909633">Preizkusite</translation>
 <translation id="8740247629089392745">Ta Chromebook lahko predate osebi <ph name="SUPERVISED_USER_NAME" />. Nastavitev je skoraj dokončana, čas je za raziskovanje.</translation>
 <translation id="8740672167979365981">Zahtevana je posodobitev sistema ChromeOS Flex</translation>
 <translation id="8741944563400125534">Vodnik za nastavitev stikalnega dostopa</translation>

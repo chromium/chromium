@@ -86,6 +86,7 @@ Silsəniz, hər kəs "<ph name="TITLE_OF_GROUP" />" tab qrupuna girişi dərhal 
 <translation id="4783638485675352219">Bu cihazda açıq tabların başlıq və URL-ni əməliyyat sistemi ilə paylaşın</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> rəy)}other{(<ph name="REVIEWS_COUNT_MANY" /> rəy)}}</translation>
 <translation id="4850886885716139402">Görünüş</translation>
+<translation id="4861953997778766866">Hər kəs paylaşılan tab qruplarınıza dəyişiklik edə bilər</translation>
 <translation id="4870911314065352661">Bütün tablar bağlansın?</translation>
 <translation id="4871719318659334896">Qrupu bağlayın</translation>
 <translation id="4881695831933465202">Açın</translation>
@@ -179,6 +180,7 @@ Silsəniz, hər kəs "<ph name="TITLE_OF_GROUP" />" tab qrupuna girişi dərhal 
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> tab əlavə edilib, <ph name="ANY_CLOSED" /> tab bağlanıb}other{<ph name="MANY_ADDED" /> tab əlavə edilib, <ph name="ANY_CLOSED" /> tab bağlanıb}}</translation>
 <translation id="8633025649649592204">Son fəaliyyət</translation>
 <translation id="870736955561925754">Tab bağlansın və tab qrupu silinsin?</translation>
+<translation id="8712637175834984815">Anladım</translation>
 <translation id="8714939927607906138">Aşağı qiymət</translation>
 <translation id="8730621377337864115">Tamamdır</translation>
 <translation id="8730999928494395583">Bu Anonim tablardakı fəaliyyət bu cihazdan silinəcək</translation>

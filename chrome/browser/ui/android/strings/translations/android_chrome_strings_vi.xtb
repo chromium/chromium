@@ -385,7 +385,6 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="2781151931089541271">Còn 1 giây</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome đã phát hiện một mật khẩu trùng lặp mà bạn có thể cải thiện}other{Chrome đã phát hiện # mật khẩu trùng lặp mà bạn có thể cải thiện}}</translation>
-<translation id="2796651346651857052">Chạm và giữ thanh địa chỉ để thay đổi vị trí.</translation>
 <translation id="2800066122460699237">Thẻ <ph name="TAB_TITLE" /> sẽ đóng</translation>
 <translation id="2805756323405976993">Ứng dụng</translation>
 <translation id="281504910091592009">Xem và quản lý các mật khẩu đã lưu trong <ph name="BEGIN_LINK" />Tài khoản Google<ph name="END_LINK" /> của bạn</translation>

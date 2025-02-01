@@ -768,7 +768,7 @@
 <translation id="4654549501020883054">Mijenjaj svakodnevno</translation>
 <translation id="4655868084888499342">Slika je postavljena kao pozadinska slika</translation>
 <translation id="4661249927038176904">Nadrealno</translation>
-<translation id="4661392828086261436">Ovo ažuriranje omogućuje proizvođač uređaja, a Google ga nije potvrdio</translation>
+<translation id="4661392828086261436">Ažuriranje pruža proizvođač uređaja i Google ga nije potvrdio</translation>
 <translation id="4664651912255946953">krzna</translation>
 <translation id="4665014895760275686">Proizvođač</translation>
 <translation id="467510802200863975">Lozinke se ne podudaraju</translation>
@@ -1028,7 +1028,7 @@
 <translation id="5904994456462260490">Dodajte novi APN</translation>
 <translation id="590746845088109442">Mačke</translation>
 <translation id="5907649332524363701">boja tipki</translation>
-<translation id="5908813850962688338">Instaliranje ovog ažuriranja potrajati će nekoliko minuta. Neka uređaj bude priključen i uključen dok se ažuriranje preuzima. Tijekom tog postupka uređaj se može nekoliko puta ponovno pokrenuti i prikazati crni zaslon. Za dovršetak instalacije trebat ćete ponovo pokrenuti uređaj.</translation>
+<translation id="5908813850962688338">Instaliranje ažuriranja će potrajati nekoliko minuta. Neka uređaj bude priključen i uključen dok se ažuriranje preuzima. Uređaj se može sam ponovo pokrenuti nekoliko puta i prikazati crni ekran tokom ovog postupka. Zatražit ćemo da ponovo pokrenete uređaj da završite instaliranje.</translation>
 <translation id="5916084858004523819">Zabranjeno</translation>
 <translation id="5916664084637901428">Uključeno</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Vaš fajl je uspješno skeniran i sačuvan u folder <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Vaši fajlovi su uspješno skenirani i sačuvani u folder <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Vaši fajlovi su uspješno skenirani i sačuvani u folder <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Vaši fajlovi su uspješno skenirani i sačuvani u folder <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>

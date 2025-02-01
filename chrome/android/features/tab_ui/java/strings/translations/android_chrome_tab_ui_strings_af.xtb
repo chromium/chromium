@@ -86,6 +86,7 @@ As jy dit uitvee sal almal onmiddellik toegang tot die “<ph name="TITLE_OF_GRO
 <translation id="4783638485675352219">Deel titels en die URL’e van oop oortjies vanaf hierdie toestel met die bedryfstelsel</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> resensie)}other{(<ph name="REVIEWS_COUNT_MANY" /> resensies)}}</translation>
 <translation id="4850886885716139402">Bekyk</translation>
+<translation id="4861953997778766866">Almal kan veranderinge aan jou gedeelde oortjiegroepe aanbring</translation>
 <translation id="4870911314065352661">Maak alle oortjies toe?</translation>
 <translation id="4871719318659334896">Maak groep toe</translation>
 <translation id="4881695831933465202">Maak oop</translation>
@@ -179,6 +180,7 @@ As jy dit uitvee sal almal onmiddellik toegang tot die “<ph name="TITLE_OF_GRO
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> oortjie is bygevoeg, <ph name="ANY_CLOSED" /> is toegemaak}other{<ph name="MANY_ADDED" /> oortjies is bygevoeg, <ph name="ANY_CLOSED" /> is toegemaak}}</translation>
 <translation id="8633025649649592204">Onlangse aktiwiteit</translation>
 <translation id="870736955561925754">Maak oortjie toe en vee groep uit?</translation>
+<translation id="8712637175834984815">Het dit</translation>
 <translation id="8714939927607906138">Laer prys</translation>
 <translation id="8730621377337864115">Gedoen</translation>
 <translation id="8730999928494395583">Jou aktiwiteit in hierdie Incognito-oortjies sal van hierdie toestel af verwyder word</translation>

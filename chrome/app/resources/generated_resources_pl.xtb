@@ -2141,7 +2141,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2471632709106952369">Tabele porównawcze</translation>
 <translation id="2473195200299095979">Przetłumacz tę stronę</translation>
 <translation id="2475982808118771221">Wystąpił błąd</translation>
-<translation id="247616523300581745">Ukryj te pliki</translation>
 <translation id="2476435723907345463">Usunięto dostęp do kluczy dostępu</translation>
 <translation id="2476901513051581836">Nie można wyczyścić pamięci, dopóki nie będzie znany jej rozmiar.</translation>
 <translation id="2476974672882258506">Aby odinstalować <ph name="PARALLELS_DESKTOP" />, zamknij system Windows.</translation>
@@ -3213,7 +3212,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3257733480216378006">Zezwolić na <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" />?</translation>
 <translation id="325797067711573598">Zablokowano podejrzaną próbę pobierania</translation>
 <translation id="3259723213051400722">Spróbuj jeszcze raz.</translation>
-<translation id="3260199651491738298">Twoja organizacja określa, jak mogą być używane dane zbierane przez te funkcje. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="3261090393424563833">Zwiększ szybkość</translation>
 <translation id="3261268979727295785">W przypadku starszych dzieci możesz dodać kontrolę rodzicielską, gdy zakończysz konfigurowanie. Informacje o kontroli rodzicielskiej znajdziesz w aplikacji Odkrywaj.</translation>
 <translation id="3261832505033014216">Klucz dostępu dla konta <ph name="USER_EMAIL" /></translation>
@@ -8569,7 +8567,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7113974454301513811">Teraz dodaj do listy bieżącą kartę</translation>
 <translation id="7114054701490058191">Hasła nie są identyczne</translation>
 <translation id="7114648273807173152">Aby logować się na swoje konto Google przy użyciu funkcji Smart Lock, kliknij Ustawienia &gt; Połączone urządzenia &gt; Twój telefon &gt; Smart Lock.</translation>
-<translation id="7115051913071512405">Wypróbuj</translation>
 <translation id="7115361495406486998">Brak osiągalnych kontaktów</translation>
 <translation id="7115731767122970828">Zwiększ wydajność</translation>
 <translation id="7116554090938189816">Certyfikat SSL drukarki wygasł. Uruchom ją ponownie i spróbuj jeszcze raz.</translation>
@@ -10873,7 +10870,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8737966899544698733">Dokładność lokalizacji (tylko Android)</translation>
 <translation id="8738418093147087440">Wyszukaj według kraju, języka lub nazwy metody wprowadzania</translation>
 <translation id="8740086188450289493">Użyj hasła do konta Google</translation>
-<translation id="874023689350909633">Wypróbuj</translation>
 <translation id="8740247629089392745">Możesz przekazać tego Chromebooka użytkownikowi <ph name="SUPERVISED_USER_NAME" />. Prawie wszystko zostało skonfigurowane i można korzystać z urządzenia.</translation>
 <translation id="8740672167979365981">Wymagana aktualizacja ChromeOS Flex</translation>
 <translation id="8741944563400125534">Przewodnik po konfiguracji Switch Access</translation>

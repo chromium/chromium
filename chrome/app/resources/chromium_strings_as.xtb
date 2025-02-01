@@ -332,6 +332,7 @@
 <translation id="569897634095159764">ইণ্টাৰনেটৰ লগত সংযোগ কৰিব পৰা নাই। প্ৰ’ক্সি ছাৰ্ভাৰৰ বাবে বিশ্বাসযোগ্যতা প্ৰমাণীকৰণৰ আৱশ্যক।</translation>
 <translation id="5761096224651992291">আপুনি শেহতীয়াকৈ চোৱা নাই। Chromiumএ <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> আঁতৰাইছে</translation>
 <translation id="5768371961535086509">Chromiumএ নিষ্ক্ৰিয় টেবসমূহৰ পৰা মেম’ৰী খালী কৰে। এইটোৱে সক্ৰিয় টেব আৰু অন্য এপক কম্পিউটাৰৰ অধিক সম্পদ দিয়ে আৰু Chromiumক দ্ৰুত কৰি ৰাখে। আপুনি নিজৰ নিষ্ক্ৰিয় টেবসমূহলৈ গ’লে সেইবোৰ স্বয়ংক্ৰিয়ভাৱে পুনৰ সক্ৰিয় হয়। <ph name="BEGIN_LINK" />মেম’ৰী সঞ্চয়কাৰীৰ বিষয়ে অধিক জানক<ph name="END_LINK" /></translation>
+<translation id="5775198138441669627">আপুনি যদি নিজৰ পাছফ্ৰে’জটো পাহৰিছে বা এই ছেটিংটো সলাব বিচাৰে, তেন্তে আপোনাৰ একাউণ্টৰ Chromiumৰ ডেটা <ph name="SETTINGS_LINK" /></translation>
 <translation id="5800158606660203929">Chromium কাষ্টমাইজ আৰু নিয়ন্ত্ৰণ কৰক। Chromiumক আপোনাৰ ডিফ’ল্ট হিচাপে ছেট কৰক।</translation>
 <translation id="5809516625706423866">ইণ্টাৰনেটৰ লগত সংযোগ কৰিব পৰা নাই। HTTP 401 অকৰ্তৃত্বশীল। অনুগ্ৰহ কৰি আপোনাৰ প্ৰ’ক্সি কনফিগাৰেশ্বন পৰীক্ষা কৰক।</translation>
 <translation id="5821520528363214608">আপোনাৰ Google একাউণ্টত Chromiumৰ ডেটা ব্যৱহাৰ আৰু ছেভ কৰিবলৈ, Chromium আপডে’ট কৰক</translation>
@@ -504,7 +505,6 @@ Chromiumএ আপোনাৰ ছেটিংসমূহ পুনৰুদ্
 <translation id="7872446069773932638">ডাউনল’ড হৈ আছে... <ph name="SECONDS" /> ছেকেণ্ড বাকী আছে</translation>
 <translation id="7888981273428720788">Chromiumক আপোনাৰ ডিফ’ল্ট হিচাপে ছেট কৰক</translation>
 <translation id="7934340546140346950">সম্ভৱ হ’লে Chromiumএ অসুৰক্ষিত সংযোগসমূহ স্বয়ংক্ৰিয়ভাৱে HTTPSলৈ আপগ্ৰে’ড কৰে</translation>
-<translation id="7935734571048689933">Chromium পৰিচালনা কৰা হৈ আছে</translation>
 <translation id="7937630085815544518">আপুনি Chromiumত <ph name="USER_EMAIL_ADDRESS" /> হিচাপে ছাইন ইন হৈ আছিল। আকৌ ছাইন ইন কৰিবলৈ অনুগ্ৰহ কৰি সেই একেটা একাউণ্ট ব্যৱহাৰ কৰক।</translation>
 <translation id="7975919845073681630">এয়া Chromiumৰ এক গৌণ ইনষ্টলেশ্বন আৰু ইয়াক আপোনাৰ ডিফ’ল্ট ব্ৰাউজাৰ কৰিব নোৱাৰি।</translation>
 <translation id="7997934263947464652">অজ্ঞাত উৎসৰ এক্সটেনশ্বন, এপ্ আৰু থীমসমূহে আপোনাৰ ডিভাইচৰ ক্ষতি কৰিব পাৰে। সেইবোৰ কেৱল <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />ৰ পৰা ডাউনল’ড কৰাটো Chromiumএ চুপাৰিছ কৰে</translation>

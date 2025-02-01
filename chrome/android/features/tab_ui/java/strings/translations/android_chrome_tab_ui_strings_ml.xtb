@@ -86,6 +86,7 @@
 <translation id="4783638485675352219">ഈ ഉപകരണത്തിൽ നിന്നുള്ള, തുറന്ന ടാബുകളുടെ തലക്കെട്ടുകളും URL-കളും ഓപ്പറേറ്റിംഗ് സിസ്റ്റവുമായി പങ്കിടുക</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> റിവ്യൂ)}other{(<ph name="REVIEWS_COUNT_MANY" /> റിവ്യൂകൾ)}}</translation>
 <translation id="4850886885716139402">കാണുക</translation>
+<translation id="4861953997778766866">നിങ്ങളുടെ പങ്കിട്ട ടാബ് ഗ്രൂപ്പുകളിൽ എല്ലാവർക്കും മാറ്റങ്ങൾ വരുത്താനാകും</translation>
 <translation id="4870911314065352661">എല്ലാ ടാബുകളും അടയ്‌ക്കണോ?</translation>
 <translation id="4871719318659334896">ഗ്രൂപ്പ് അടയ്ക്കുക</translation>
 <translation id="4881695831933465202">തുറക്കുക</translation>
@@ -179,6 +180,7 @@
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ടാബ് ചേർത്തു, <ph name="ANY_CLOSED" /> എണ്ണം അടച്ചു}other{<ph name="MANY_ADDED" /> ടാബുകൾ ചേർത്തു, <ph name="ANY_CLOSED" /> എണ്ണം അടച്ചു}}</translation>
 <translation id="8633025649649592204">സമീപകാല ആക്റ്റിവിറ്റി</translation>
 <translation id="870736955561925754">ടാബ് അടച്ച് ഗ്രൂപ്പ് ഇല്ലാതാക്കണോ?</translation>
+<translation id="8712637175834984815">മനസ്സിലായി</translation>
 <translation id="8714939927607906138">കുറഞ്ഞ വില</translation>
 <translation id="8730621377337864115">പൂർത്തിയാക്കി</translation>
 <translation id="8730999928494395583">ഈ അദൃശ്യ ടാബുകളിൽ നിന്നുള്ള നിങ്ങളുടെ ആക്റ്റിവിറ്റി ഈ ഉപകരണത്തിൽ നിന്ന് നീക്കം ചെയ്യും</translation>

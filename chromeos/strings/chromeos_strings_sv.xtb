@@ -768,6 +768,7 @@
 <translation id="4654549501020883054">Ändra dagligen</translation>
 <translation id="4655868084888499342">Bilden har angetts som bakgrund</translation>
 <translation id="4661249927038176904">Surrealistisk</translation>
+<translation id="4661392828086261436">Den här uppdateringen tillhandahålls av enhetstillverkaren och har inte verifierats av Google</translation>
 <translation id="4664651912255946953">päls</translation>
 <translation id="4665014895760275686">Tillverkare</translation>
 <translation id="467510802200863975">Lösenorden matchar inte</translation>
@@ -1027,6 +1028,7 @@
 <translation id="5904994456462260490">Lägg till en ny APN</translation>
 <translation id="590746845088109442">katter</translation>
 <translation id="5907649332524363701">tangentfärg</translation>
+<translation id="5908813850962688338">Det tar några minuter att installera den här uppdateringen. Låt enheten vara inkopplad och påslagen medan uppdateringen laddas ned. Enheten kan starta om flera gånger och visa en svart skärm under processen. Du uppmanas att starta om enheten för att slutföra installationen.</translation>
 <translation id="5916084858004523819">Aldrig</translation>
 <translation id="5916664084637901428">På</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Filen har genomsökts och sparats i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Filerna har genomsökts och sparats i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>

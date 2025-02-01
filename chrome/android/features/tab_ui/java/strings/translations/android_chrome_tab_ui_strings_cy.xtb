@@ -86,6 +86,7 @@ Os byddwch yn ei ddileu, bydd pawb yn colli mynediad at y grŵp tabiau "<ph name
 <translation id="4783638485675352219">Rhannu teitlau a chyfeiriadau URL tabiau agored o'r ddyfais hon gyda'r system weithredu</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> adolygiad)}zero{(<ph name="REVIEWS_COUNT_MANY" /> adolygiad)}two{(<ph name="REVIEWS_COUNT_MANY" /> adolygiad)}few{(<ph name="REVIEWS_COUNT_MANY" /> adolygiad)}many{(<ph name="REVIEWS_COUNT_MANY" /> adolygiad)}other{(<ph name="REVIEWS_COUNT_MANY" /> adolygiad)}}</translation>
 <translation id="4850886885716139402">Gweld</translation>
+<translation id="4861953997778766866">Gall pawb wneud newidiadau i'ch grwpiau tabiau a rennir</translation>
 <translation id="4870911314065352661">Cau pob tab?</translation>
 <translation id="4871719318659334896">Cau'r grŵp</translation>
 <translation id="4881695831933465202">Agor</translation>
@@ -179,6 +180,7 @@ Os byddwch yn ei ddileu, bydd pawb yn colli mynediad at y grŵp tabiau "<ph name
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{Ychwanegwyd <ph name="ONE_ADDED" /> tab, <ph name="ANY_CLOSED" /> wedi cau}zero{Ychwanegwyd <ph name="MANY_ADDED" /> tabiau, <ph name="ANY_CLOSED" /> wedi cau}two{Ychwanegwyd <ph name="MANY_ADDED" /> dab, <ph name="ANY_CLOSED" /> wedi cau}few{Ychwanegwyd <ph name="MANY_ADDED" /> thab, <ph name="ANY_CLOSED" /> wedi cau}many{Ychwanegwyd <ph name="MANY_ADDED" /> thab, <ph name="ANY_CLOSED" /> wedi cau}other{Ychwanegwyd <ph name="MANY_ADDED" /> tab, <ph name="ANY_CLOSED" /> wedi cau}}</translation>
 <translation id="8633025649649592204">Gweithgarwch diweddar</translation>
 <translation id="870736955561925754">Cau'r tab a dileu'r grŵp?</translation>
+<translation id="8712637175834984815">Iawn</translation>
 <translation id="8714939927607906138">Pris is</translation>
 <translation id="8730621377337864115">Wedi gorffen</translation>
 <translation id="8730999928494395583">Bydd eich gweithgarwch yn y tabiau Anhysbys hyn yn cael eu tynnu o'r ddyfais hon</translation>

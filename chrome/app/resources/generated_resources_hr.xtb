@@ -2154,7 +2154,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2471632709106952369">Tablice za usporedbu</translation>
 <translation id="2473195200299095979">Prevedi ovu stranicu</translation>
 <translation id="2475982808118771221">Došlo je do pogreške</translation>
-<translation id="247616523300581745">Sakrij ove datoteke</translation>
 <translation id="2476435723907345463">Uklonjen je pristup pristupnim ključevima</translation>
 <translation id="2476901513051581836">Pohrana se ne može osloboditi dok se ne zna veličina izvanmrežne pohrane.</translation>
 <translation id="2476974672882258506">Isključite Windows da biste deinstalirali <ph name="PARALLELS_DESKTOP" />.</translation>
@@ -3229,7 +3228,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3257733480216378006">Dopustiti <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" />?</translation>
 <translation id="325797067711573598">Blokirano je sumnjivo preuzimanje</translation>
 <translation id="3259723213051400722">Pokušajte ponovo.</translation>
-<translation id="3260199651491738298">Vaša organizacija kontrolira način na koji se podaci koje prikupljaju ove značajke mogu upotrebljavati. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="3261090393424563833">Povećaj brzinu</translation>
 <translation id="3261268979727295785">Za stariju djecu možete dodati roditeljski nadzor kad dovršite postavljanje. Informacije o roditeljskom nadzoru možete pronaći u aplikaciji Istražite.</translation>
 <translation id="3261832505033014216">Pristupni ključ za <ph name="USER_EMAIL" /></translation>
@@ -8587,7 +8585,6 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7113974454301513811">Sada dodajte trenutačnu karticu na popis</translation>
 <translation id="7114054701490058191">Zaporke se ne podudaraju</translation>
 <translation id="7114648273807173152">Da biste upotrebljavali Smart Lock za prijavu na Google račun, idite na Postavke &gt; Povezani uređaji &gt; Vaš telefon &gt; Smart Lock.</translation>
-<translation id="7115051913071512405">Isprobajte</translation>
 <translation id="7115361495406486998">Nema dostupnih kontakata</translation>
 <translation id="7115731767122970828">Pojačaj odmah</translation>
 <translation id="7116554090938189816">SSL certifikat pisača je istekao. Ponovo pokrenite pisač i pokušajte opet.</translation>
@@ -10894,7 +10891,6 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8737966899544698733">Preciznost lokacije (samo Android)</translation>
 <translation id="8738418093147087440">Pretražite po zemljama, jeziku ili nazivima unosa</translation>
 <translation id="8740086188450289493">Upotrijebite zaporku Google računa</translation>
-<translation id="874023689350909633">Isprobajte</translation>
 <translation id="8740247629089392745">Ovaj Chromebook možete predati korisniku <ph name="SUPERVISED_USER_NAME" />. Postavljanje je skoro gotovo, a zatim ćete moći istraživati</translation>
 <translation id="8740672167979365981">Potrebno je ažurirati ChromeOS Flex</translation>
 <translation id="8741944563400125534">Vodič za postavljanje navigacije prekidačima</translation>

@@ -86,6 +86,7 @@
 <translation id="4783638485675352219">将从此设备打开的标签页的标题和网址分享给操作系统</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{（共有 <ph name="REVIEWS_COUNT_ONE" /> 条评价）}other{（共有 <ph name="REVIEWS_COUNT_MANY" /> 条评价）}}</translation>
 <translation id="4850886885716139402">查看</translation>
+<translation id="4861953997778766866">所有人都可以更改您分享的标签页分组</translation>
 <translation id="4870911314065352661">要关闭所有标签页吗？</translation>
 <translation id="4871719318659334896">关闭组</translation>
 <translation id="4881695831933465202">打开</translation>
@@ -179,6 +180,7 @@
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{已添加 <ph name="ONE_ADDED" /> 个标签页，已关闭 <ph name="ANY_CLOSED" /> 个标签页}other{已添加 <ph name="MANY_ADDED" /> 个标签页，已关闭 <ph name="ANY_CLOSED" /> 个标签页}}</translation>
 <translation id="8633025649649592204">近期活动</translation>
 <translation id="870736955561925754">要关闭标签页并删除分组吗？</translation>
+<translation id="8712637175834984815">知道了</translation>
 <translation id="8714939927607906138">降价了</translation>
 <translation id="8730621377337864115">完成</translation>
 <translation id="8730999928494395583">您在这些无痕式标签页中的活动记录将从此设备上移除</translation>

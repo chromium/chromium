@@ -768,6 +768,7 @@
 <translation id="4654549501020883054">Skift på daglig basis</translation>
 <translation id="4655868084888499342">Billedet er angivet som baggrund</translation>
 <translation id="4661249927038176904">Surrealistisk</translation>
+<translation id="4661392828086261436">Denne opdatering er leveret af enhedsproducenten og er ikke verificeret af Google</translation>
 <translation id="4664651912255946953">pels</translation>
 <translation id="4665014895760275686">Producent</translation>
 <translation id="467510802200863975">Adgangskoderne stemmer ikke overens</translation>
@@ -1027,6 +1028,7 @@
 <translation id="5904994456462260490">Tilføj et nyt APN</translation>
 <translation id="590746845088109442">katte</translation>
 <translation id="5907649332524363701">farve på taster</translation>
+<translation id="5908813850962688338">Installationen af denne opdatering tager et par minutter. Lad din enhed være tilsluttet og tændt, mens opdateringen downloades. Din enhed genstarter muligvis flere gange og viser en sort skærm under denne proces. Du bliver bedt om at genstarte din enhed for at gennemføre installationen.</translation>
 <translation id="5916084858004523819">Forbudt</translation>
 <translation id="5916664084637901428">Til</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Din fil blev scannet og er gemt i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Din fil blev scannet og er gemt i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Dine filer blev scannet og er gemt i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>

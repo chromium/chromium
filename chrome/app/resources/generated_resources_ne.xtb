@@ -2148,7 +2148,6 @@
 <translation id="2471632709106952369">तुलनात्मक जानकारी भएका तालिकाहरू</translation>
 <translation id="2473195200299095979">यो पृष्ठलाई अनुवाद गर्नुहोस्</translation>
 <translation id="2475982808118771221">त्रुटि भयो</translation>
-<translation id="247616523300581745">यी फाइलहरू लुकाउनुहोस्</translation>
 <translation id="2476435723907345463">पासकीहरूको एक्सेस हटाइयो</translation>
 <translation id="2476901513051581836">अफलाइन भण्डारण क्षमता थाहा नहुँदासम्म भण्डारणमा ठाउँ खाली गर्न मिल्दैन।</translation>
 <translation id="2476974672882258506"><ph name="PARALLELS_DESKTOP" /> अनइन्स्टल गर्न Windows बन्द गर्नुहोस्।</translation>
@@ -2791,6 +2790,7 @@
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> प्रयोग गर्न मिल्दैन।</translation>
 <translation id="2926708162326352948">थिम अपडेट गरी अपलोड गरिएको फोटो भएको थिम लागू गरिएको छ</translation>
 <translation id="2927017729816812676">केस भण्डारण</translation>
+<translation id="2928030851119977280">छनौट सेभ गरियो। तपाईंले Google का अन्य सेवाहरूमा साइन इन गर्दा तपाईंले छनौट गरेको सेटिङ लागू हुने छ।</translation>
 <translation id="2928795416630981206">तपाईंको क्यामेराको स्थिति ट्र्याक गर्न अनुमति दिइएका साइटहरू</translation>
 <translation id="2929345818093040583">{NUM_SITES,plural, =1{Chrome ले एउटा साइटलाई दिइएका अनुमति रद्द गरेको छ}other{Chrome ले {NUM_SITES} वटा साइटलाई दिइएका अनुमति रद्द गरेको छ}}</translation>
 <translation id="2931157624143513983">छाप्न मिल्ने क्षेत्रमा ठ्याक्कै अट्ने बनाउनुहोस्</translation>
@@ -3222,7 +3222,6 @@
 <translation id="3257733480216378006"><ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" /> लाई अनुमति दिने हो?</translation>
 <translation id="325797067711573598">शङ्कास्पद सामग्री डाउनलोड गर्ने कार्य ब्लक गरिएको छ</translation>
 <translation id="3259723213051400722">कृपया फेरि प्रयास गर्नुहोस्।</translation>
-<translation id="3260199651491738298">तपाईंको सङ्गठनले यी सुविधा प्रयोग गरी सङ्कलन गरिएका डेटा प्रयोग गर्न सकिने तरिकामा नियन्त्रण गर्छ। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="3261090393424563833">रेट बढाउनुहोस्</translation>
 <translation id="3261268979727295785">ठुला बालबालिकाहरूका हकमा, तपाईंले सेटअप पूरा गरिसकेपछि तपाईं अभिभावकीय नियन्त्रणहरू थप्न सक्नुहुन्छ। तपाईं एक्स्प्लोर एपमा अभिभावकीय नियन्त्रणसम्बन्धी जानकारी फेला पार्न सक्नुहुन्छ।</translation>
 <translation id="3261832505033014216"><ph name="USER_EMAIL" /> को पासकी</translation>
@@ -7401,6 +7400,7 @@
 <translation id="6253801023880399036">पासवर्डहरू <ph name="GOOGLE_PASSWORD_MANAGER" /> मा सेभ गरिन्छन्।</translation>
 <translation id="6254503684448816922">मुख्य सम्झौता</translation>
 <translation id="6254892857036829079">उत्कृष्ट</translation>
+<translation id="6257131917452817589">स्वचालित पासवर्ड परिवर्तन</translation>
 <translation id="6257602895346497974">सिंक गर्ने सुविधा अन गर्नुहोस्...</translation>
 <translation id="6257614441619555296"><ph name="KEY" />: <ph name="VALUE" /></translation>
 <translation id="625827534921607067">यसअघि कनेक्ट वा कन्फिगर गरिएका एकभन्दा बढी नेटवर्क उपलब्ध भएमा यो नेटवर्कलाई प्राथमिकता दिइने छ</translation>
@@ -8577,7 +8577,6 @@
 <translation id="7113974454301513811">अब आफ्नो सूचीमा हालको ट्याब हाल्नुहोस्</translation>
 <translation id="7114054701490058191">पासवर्ड मिलेन</translation>
 <translation id="7114648273807173152">आफ्नो Google खातामा साइन इन गर्नका निम्ति Smart Lock को प्रयोग गर्न सेटिङहरू &gt; कनेक्ट गरिएका डिभाइस &gt; तपाईंको फोन &gt; Smart Lock मा जानुहोस्।</translation>
-<translation id="7115051913071512405">यसलाई प्रयास गर्नुहोस्</translation>
 <translation id="7115361495406486998">कन्ट्याक्टमा Google खाता भएका कोही पनि हुनुहुन्न</translation>
 <translation id="7115731767122970828">अहिले नै बुस्ट गर्नुहोस्</translation>
 <translation id="7116554090938189816">प्रिन्टरको SSL प्रमाणपत्रको म्याद सकिएको छ। प्रिन्टर रिस्टार्ट गरेर फेरि प्रयास गर्नुहोस्।</translation>
@@ -9110,6 +9109,7 @@
 <translation id="7502528909759062987"><ph name="DEVICE_NAME" /> मा ट्याब कास्ट गर्ने कार्य पज गर्नुहोस्</translation>
 <translation id="7502804472671406749">साझा ट्याबहरू स्क्रोल तथा जुम गर्न सकिन्छ</translation>
 <translation id="7503191893372251637">नेटस्केप प्रमाणपत्र प्रकार</translation>
+<translation id="7503259455663961898">मेरो तर्फबाट उक्त पासवर्ड परिवर्तन गरिदिनुहोस्</translation>
 <translation id="7503985202154027481">तपाईंको सुरक्षा साँचोमा तपाईं यो साइटमा जानुभएको कुराको रेकर्ड राखिने छ।</translation>
 <translation id="7504145862399276792">यो ट्याबको अडियो म्युट गरिएको छ</translation>
 <translation id="750509436279396091">डाउनलोडहरू फोल्डर खोल्नुहोस्</translation>
@@ -9172,6 +9172,7 @@
 <translation id="7551059576287086432"><ph name="FILE_NAME" /> डाउनलोड असफल</translation>
 <translation id="7551643184018910560">शेल्फमा पिन गर्नुहोस्</translation>
 <translation id="7552191410769096467">ट्याब समूह सेयर गर्न वा तिनमा सामेल हुन तपाईंले साइन इन गरेर सिंक गर्ने सुविधा अन गर्नु पर्ने हुन्छ</translation>
+<translation id="7552196109089297786">Microsoft बाट साइन आउट गर्नुहोस्</translation>
 <translation id="7552846755917812628">निम्न सुझावहरूको पालना गरी हेर्नुहोस्:</translation>
 <translation id="7553012839257224005">Linux कन्टेनर जाँच गरिँदै छ</translation>
 <translation id="7553242001898162573">तपाईँको पासवर्ड प्रविष्टि गर्नुहोस्।</translation>
@@ -10300,6 +10301,7 @@
 <translation id="8330617762701840933">रिडिरेक्ट गरेर वैकल्पिक ब्राउजरमा खोलिने वेबसाइटहरूको सूची।</translation>
 <translation id="8330689128072902965">नजिकैका कन्ट्याक्टहरू तपाईंसँग सामग्री सेयर गर्न सक्छन्। तपाईं यी सेटिङ बदल्न चाहनुहुन्छ भने क्लिक गर्नुहोस्।</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{खोल्न मिल्ने फाइलको प्रकार: <ph name="FILE_TYPE1" />}=2{खोल्न मिल्ने फाइलका प्रकारहरू: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />}=3{खोल्न मिल्ने फाइलका प्रकारहरू: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />}=4{खोल्न मिल्ने फाइलका प्रकारहरू: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" />}other{खोल्न मिल्ने फाइलका प्रकारहरू: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />र अन्य {OVERFLOW_COUNT} वटा<ph name="END_LINK" />)}}</translation>
+<translation id="8331578454993293727">तपाईंको पासवर्ड चोरी भएको डेटाको सङ्ग्रहमा भेटिएको छ</translation>
 <translation id="8331822764922665615">आफ्नो समूहको नाम राख्नुहोस्, यसका लागि कुनै रङ छनौट गर्नुहोस्, त्यसपछि Esc थिच्नुहोस्</translation>
 <translation id="833256022891467078">Crostini बाट सेयर गरिएका फोल्डरहरू</translation>
 <translation id="833262891116910667">हाइलाइट गर्नुहोस्</translation>
@@ -10381,6 +10383,7 @@
     <ph name="BEGIN_PARAGRAPH2" />तपाईंलाई थप मद्दत चाहिन्छ भने g.co/flex/InstallErrors मा जानुहोस्।<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8383614331548401927">स्वागत रिक्याप</translation>
 <translation id="8386091599636877289">नीति फेला परेन।</translation>
+<translation id="8387087863179559896">Chrome ले यो साइटको खाताको पासवर्ड परिवर्तन गरी भरपर्दो पासवर्ड राखिदिन सक्छ। उक्त पासवर्ड <ph name="EMAIL" /> को Google पासवर्ड म्यानेजरमा सेभ गरिने भएकाले तपाईंले उक्त पासवर्ड याद राखिराख्नु पर्दैन। <ph name="PASSWORD_CHANGE" />का बारेमा थप जानकारी प्राप्त गर्नुहोस्।</translation>
 <translation id="8387361103813440603">तपाईंको स्थान हेर्ने अनुमति नदिइएका साइटहरू</translation>
 <translation id="8387617938027387193">यो व्यक्ति तपाईं नै हो भन्ने कुरा पुष्टि गर्नुहोस्</translation>
 <translation id="8388770971141403598">सहायक प्रोफाइल प्रयोग गर्न मिल्दैन</translation>
@@ -10879,7 +10882,6 @@
 <translation id="8737966899544698733">लोकेसनको सटीकता (Android मा मात्र)</translation>
 <translation id="8738418093147087440">देश, भाषा वा इनपुटका नामअनुसार खोज्नुहोस्</translation>
 <translation id="8740086188450289493">Google खाताको पासवर्ड प्रयोग गर्नुहोस्</translation>
-<translation id="874023689350909633">प्रयोग गरी हेर्नुहोस्</translation>
 <translation id="8740247629089392745">तपाईं यो Chromebook <ph name="SUPERVISED_USER_NAME" /> लाई दिन सक्नुहुन्छ। सेटअप गर्ने काम लगभग सकियो, अब उनी यो डिभाइस चलाउन थाल्न सक्छन्।</translation>
 <translation id="8740672167979365981">ChromeOS Flex अपडेट गर्नु पर्ने हुन्छ</translation>
 <translation id="8741944563400125534">स्विचमार्फत पहुँच गर्ने सुविधा सेटअप गर्ने गाइड</translation>

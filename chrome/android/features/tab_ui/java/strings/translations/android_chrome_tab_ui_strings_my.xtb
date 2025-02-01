@@ -86,6 +86,7 @@
 <translation id="4783638485675352219">ဤစက်တွင် ဖွင့်ထားသောတဘ်များ၏ ခေါင်းစဉ်နှင့် URL များကို လည်ပတ်သည့်စနစ်နှင့် မျှဝေရန်</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(သုံးသပ်ချက် <ph name="REVIEWS_COUNT_ONE" /> ခု)}other{(သုံးသပ်ချက် <ph name="REVIEWS_COUNT_MANY" /> ခု)}}</translation>
 <translation id="4850886885716139402">မြင်ကွင်း</translation>
+<translation id="4861953997778766866">မျှဝေထားသော သင့်တဘ်အုပ်စုများကို လူတိုင်းက ပြောင်းလဲနိုင်သည်</translation>
 <translation id="4870911314065352661">တဘ်အားလုံး ပိတ်မလား။</translation>
 <translation id="4871719318659334896">အုပ်စုကို ပိတ်ရန်</translation>
 <translation id="4881695831933465202">ဖွင့်</translation>
@@ -179,6 +180,7 @@
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{တဘ် <ph name="ONE_ADDED" /> ခု ထည့်လိုက်သည်။ <ph name="ANY_CLOSED" /> ခု ပိတ်လိုက်သည်}other{တဘ် <ph name="MANY_ADDED" /> ခု ထည့်လိုက်သည်။ <ph name="ANY_CLOSED" /> ခု ပိတ်လိုက်သည်}}</translation>
 <translation id="8633025649649592204">မကြာသေးမီက လုပ်ဆောင်ချက်</translation>
 <translation id="870736955561925754">တဘ်ပိတ်ပြီး အုပ်စုကို ဖျက်မလား။</translation>
+<translation id="8712637175834984815">ရပါပြီ!</translation>
 <translation id="8714939927607906138">ကျသွားသော ဈေးနှုန်း</translation>
 <translation id="8730621377337864115">ပြီးပါပြီ</translation>
 <translation id="8730999928494395583">ဤ ‘ရုပ်ဖျက်တဘ်များ’ ရှိ သင့်လုပ်ဆောင်ချက်ကို ဤစက်မှ ဖယ်ရှားပါမည်</translation>

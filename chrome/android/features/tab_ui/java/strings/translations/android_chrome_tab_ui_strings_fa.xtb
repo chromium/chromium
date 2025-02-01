@@ -86,6 +86,7 @@
 <translation id="4783638485675352219">عنوان‌ها و نشانی‌های وب برگه‌های باز این دستگاه با سیستم‌عامل هم‌رسانی شود</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> مرور)}one{(<ph name="REVIEWS_COUNT_MANY" /> مرور)}other{(<ph name="REVIEWS_COUNT_MANY" /> مرور)}}</translation>
 <translation id="4850886885716139402">نما</translation>
+<translation id="4861953997778766866">همه می‌توانند در گروه‌های برگه هم‌رسانی‌شده شما تغییراتی ایجاد کنند</translation>
 <translation id="4870911314065352661">همه برگه‌ها بسته شود؟</translation>
 <translation id="4871719318659334896">بستن گروه</translation>
 <translation id="4881695831933465202">باز کردن</translation>
@@ -179,6 +180,7 @@
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{‫<ph name="ONE_ADDED" /> برگه اضافه شد، <ph name="ANY_CLOSED" /> برگه بسته شد}one{‫<ph name="MANY_ADDED" /> برگه اضافه شد، <ph name="ANY_CLOSED" /> برگه بسته شد}other{‫<ph name="MANY_ADDED" /> برگه اضافه شد، <ph name="ANY_CLOSED" /> برگه بسته شد}}</translation>
 <translation id="8633025649649592204">فعالیت اخیر</translation>
 <translation id="870736955561925754">برگه بسته و گروه حذف شود؟</translation>
+<translation id="8712637175834984815">متوجه شدم</translation>
 <translation id="8714939927607906138">قیمت کمتر</translation>
 <translation id="8730621377337864115">تمام</translation>
 <translation id="8730999928494395583">فعالیتتان در این «برگه‌های ناشناس» از این دستگاه حذف خواهد شد</translation>

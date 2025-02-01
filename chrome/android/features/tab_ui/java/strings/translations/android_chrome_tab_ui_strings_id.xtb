@@ -86,6 +86,7 @@ Jika Anda menghapusnya, semua orang akan segera kehilangan akses ke grup tab "<p
 <translation id="4783638485675352219">Bagikan judul dan URL tab yang terbuka dari perangkat ini dengan sistem operasi</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> ulasan)}other{(<ph name="REVIEWS_COUNT_MANY" /> ulasan)}}</translation>
 <translation id="4850886885716139402">Lihat</translation>
+<translation id="4861953997778766866">Siapa saja dapat melakukan perubahan pada grup tab bersama Anda</translation>
 <translation id="4870911314065352661">Tutup semua tab?</translation>
 <translation id="4871719318659334896">Tutup grup</translation>
 <translation id="4881695831933465202">Buka</translation>
@@ -179,6 +180,7 @@ Jika Anda menghapusnya, semua orang akan segera kehilangan akses ke grup tab "<p
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> tab ditambahkan, <ph name="ANY_CLOSED" /> ditutup}other{<ph name="MANY_ADDED" /> tab ditambahkan, <ph name="ANY_CLOSED" /> ditutup}}</translation>
 <translation id="8633025649649592204">Aktivitas terbaru</translation>
 <translation id="870736955561925754">Tutup tab dan hapus grup?</translation>
+<translation id="8712637175834984815">Mengerti</translation>
 <translation id="8714939927607906138">Harga yang lebih rendah</translation>
 <translation id="8730621377337864115">Selesai</translation>
 <translation id="8730999928494395583">Aktivitas Anda di tab Samaran ini akan dihapus dari perangkat ini</translation>

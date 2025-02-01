@@ -385,7 +385,6 @@
 <translation id="2781151931089541271">Απομένει 1 δευτερόλεπτο</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Το Chrome βρήκε έναν επαναχρησιμοποιημένο κωδικό πρόσβασης που θα μπορούσατε να βελτιώσετε}other{Το Chrome βρήκε # επαναχρησιμοποιημένους κωδικούς πρόσβασης που θα μπορούσατε να βελτιώσετε}}</translation>
-<translation id="2796651346651857052">Αγγίξτε παρατεταμένα τη γραμμή διευθύνσεων, για να αλλάξετε τη θέση της.</translation>
 <translation id="2800066122460699237">Πρόκειται να κλείσει η καρτέλα <ph name="TAB_TITLE" />.</translation>
 <translation id="2805756323405976993">Εφαρμογές </translation>
 <translation id="281504910091592009">Προβολή και διαχείριση αποθηκευμένων κωδικών πρόσβασης στον <ph name="BEGIN_LINK" />Λογαριασμό σας Google<ph name="END_LINK" /></translation>

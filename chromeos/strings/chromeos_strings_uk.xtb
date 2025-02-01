@@ -768,6 +768,7 @@
 <translation id="4654549501020883054">Змінювати щодня</translation>
 <translation id="4655868084888499342">Зображення встановлено як фоновий малюнок</translation>
 <translation id="4661249927038176904">Сюрреалістичний</translation>
+<translation id="4661392828086261436">Це оновлення надано виробником пристрою. Ми не перевіряли його.</translation>
 <translation id="4664651912255946953">хутра</translation>
 <translation id="4665014895760275686">Виробник</translation>
 <translation id="467510802200863975">Паролі не збігаються</translation>
@@ -1027,6 +1028,7 @@
 <translation id="5904994456462260490">Додати нове ім’я точки доступу (APN)</translation>
 <translation id="590746845088109442">коти</translation>
 <translation id="5907649332524363701">колір клавіш</translation>
+<translation id="5908813850962688338">Встановлення оновлення триватиме кілька хвилин. Протягом цього часу не відключайте пристрій від джерела живлення й не вимикайте його. Пристрій може перезапуститися кілька разів і показувати чорний екран. Щоб завершити встановлення, потрібно буде перезапустити пристрій.</translation>
 <translation id="5916084858004523819">Заборонено</translation>
 <translation id="5916664084637901428">Увімкнено</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Файл зіскановано та збережено в папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Файли зіскановано та збережено в папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Файли зіскановано та збережено в папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}many{Файли зіскановано та збережено в папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Файли зіскановано та збережено в папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>

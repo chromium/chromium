@@ -768,6 +768,7 @@
 <translation id="4654549501020883054">Mainīt katru dienu</translation>
 <translation id="4655868084888499342">Attēls ir iestatīts kā fona tapete</translation>
 <translation id="4661249927038176904">Sirreāls</translation>
+<translation id="4661392828086261436">Šo atjauninājumu nodrošina ierīces ražotājs, un uzņēmums Google to nav verificējis.</translation>
 <translation id="4664651912255946953">kažokāda</translation>
 <translation id="4665014895760275686">Ražotājs</translation>
 <translation id="467510802200863975">Paroles nav vienādas</translation>
@@ -1027,6 +1028,7 @@
 <translation id="5904994456462260490">Jauna APN pievienošana</translation>
 <translation id="590746845088109442">kaķi</translation>
 <translation id="5907649332524363701">taustiņu krāsa</translation>
+<translation id="5908813850962688338">Šī atjauninājuma instalēšana ilgs dažas minūtes. Atjauninājuma lejupielādes laikā ierīcei ir jābūt pievienotai barošanas avotam un ieslēgtai. Šī procesa laikā ierīce var tikt vairākas reizes atkārtoti palaista, kā arī var tikt rādīts melns ekrāns. Lai pabeigtu instalēšanu, jums tiks piedāvāts restartēt ierīci.</translation>
 <translation id="5916084858004523819">Aizliegts</translation>
 <translation id="5916664084637901428">Iesl.</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Fails ir sekmīgi noskenēts un saglabāts mapē <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}zero{Faili ir sekmīgi noskenēti un saglabāti mapē <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Faili ir sekmīgi noskenēti un saglabāti mapē <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Faili ir sekmīgi noskenēti un saglabāti mapē <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>

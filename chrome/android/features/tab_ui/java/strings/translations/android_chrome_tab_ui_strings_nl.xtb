@@ -86,6 +86,7 @@ Als je de groep verwijdert, raakt iedereen meteen de toegang tot de tabbladgroep
 <translation id="4783638485675352219">Deel titels en de URL's van geopende tabbladen van dit apparaat met het besturingssysteem</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> review)}other{(<ph name="REVIEWS_COUNT_MANY" /> reviews)}}</translation>
 <translation id="4850886885716139402">Weergave</translation>
+<translation id="4861953997778766866">Iedereen kan wijzigingen aanbrengen in je gedeelde tabbladgroepen</translation>
 <translation id="4870911314065352661">Alle tabbladen sluiten?</translation>
 <translation id="4871719318659334896">Groep sluiten</translation>
 <translation id="4881695831933465202">Openen</translation>
@@ -179,6 +180,7 @@ Als je de groep verwijdert, raakt iedereen meteen de toegang tot de tabbladgroep
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> tabblad toegevoegd, <ph name="ANY_CLOSED" /> gesloten}other{<ph name="MANY_ADDED" /> tabbladen toegevoegd, <ph name="ANY_CLOSED" /> gesloten}}</translation>
 <translation id="8633025649649592204">Recente activiteit</translation>
 <translation id="870736955561925754">Tabblad sluiten en groep verwijderen?</translation>
+<translation id="8712637175834984815">Begrepen</translation>
 <translation id="8714939927607906138">Lagere prijs</translation>
 <translation id="8730621377337864115">Klaar</translation>
 <translation id="8730999928494395583">Je activiteit in deze incognitotabbladen wordt verwijderd van dit apparaat</translation>

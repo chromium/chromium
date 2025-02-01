@@ -768,6 +768,7 @@
 <translation id="4654549501020883054">ਰੋਜ਼ਾਨਾ ਬਦਲੋ</translation>
 <translation id="4655868084888499342">ਚਿੱਤਰ ਨੂੰ ਵਾਲਪੇਪਰ ਵਜੋਂ ਸੈੱਟ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="4661249927038176904">ਕਾਲਪਨਿਕ</translation>
+<translation id="4661392828086261436">ਇਹ ਅੱਪਡੇਟ ਡੀਵਾਈਸ ਦੇ ਨਿਰਮਾਤਾ ਵੱਲੋਂ ਮੁਹੱਈਆ ਕਰਵਾਇਆ ਗਿਆ ਹੈ ਅਤੇ Google ਨੇ ਇਸਦੀ ਪੁਸ਼ਟੀ ਨਹੀਂ ਕੀਤੀ ਹੈ</translation>
 <translation id="4664651912255946953">ਖੱਲ</translation>
 <translation id="4665014895760275686">ਨਿਰਮਾਤਾ</translation>
 <translation id="467510802200863975">ਪਾਸਵਰਡ ਮੇਲ ਨਹੀਂ ਖਾਂਦੇ</translation>
@@ -1027,6 +1028,7 @@
 <translation id="5904994456462260490">ਨਵਾਂ APN ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="590746845088109442">ਬਿੱਲੀਆਂ</translation>
 <translation id="5907649332524363701">ਕੁੰਜੀ ਦਾ ਰੰਗ</translation>
+<translation id="5908813850962688338">ਇਸ ਅੱਪਡੇਟ ਨੂੰ ਸਥਾਪਤ ਕਰਨ ਵਿੱਚ ਕੁਝ ਮਿੰਟ ਲੱਗਣਗੇ। ਅੱਪਡੇਟ ਦੇ ਡਾਊਨਲੋਡ ਹੋਣ ਵੇਲੇ ਆਪਣੇ ਡੀਵਾਈਸ ਨੂੰ ਪਲੱਗ-ਇਨ ਕਰ ਕੇ ਅਤੇ ਚਾਲੂ ਰੱਖੋ। ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਇਸ ਪ੍ਰਕਿਰਿਆ ਦੌਰਾਨ ਤੁਹਾਡਾ ਡੀਵਾਈਸ ਕਈ ਵਾਰ ਆਪਣੇ ਆਪ ਰੀਬੂਟ ਹੋ ਜਾਵੇ ਅਤੇ ਕਾਲੀ ਸਕ੍ਰੀਨ ਦਿਖੇ। ਸਥਾਪਨਾ ਪੂਰੀ ਕਰਨ ਲਈ ਤੁਹਾਨੂੰ ਆਪਣੇ ਡੀਵਾਈਸ ਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਕਿਹਾ ਜਾਵੇਗਾ।</translation>
 <translation id="5916084858004523819">ਪਾਬੰਦੀ ਲਗਾਈ ਗਈ</translation>
 <translation id="5916664084637901428">ਚਾਲੂ</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{ਤੁਹਾਡੀ ਫ਼ਾਈਲ ਸਫਲਤਾਪੂਰਕ ਸਕੈਨ ਕੀਤੀ ਗਈ ਅਤੇ <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤੀ ਗਈ।}one{ਤੁਹਾਡੀ ਫ਼ਾਈਲ ਸਫਲਤਾਪੂਰਕ ਸਕੈਨ ਕੀਤੀ ਗਈ ਅਤੇ <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤੀ ਗਈ।}other{ਤੁਹਾਡੀਆਂ ਫ਼ਾਈਲਾਂ ਸਫਲਤਾਪੂਰਕ ਸਕੈਨ ਕੀਤੀਆਂ ਗਈਆਂ ਅਤੇ <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤੀਆਂ ਗਈਆਂ।}}</translation>

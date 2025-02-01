@@ -1873,6 +1873,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4269264543938335308">Trajes de banho</translation>
 <translation id="4269599248168651462">O certificado do servidor é emitido para um nome não exclusivo.</translation>
 <translation id="4270541775497538019">Empilhador 6</translation>
+<translation id="4271311252511481365">{NUM_REVIEWS,plural, =0{Ver 0 avaliação. A nota média é <ph name="STARS" /> estrelas.}=1{Ver 1 avaliação. A nota média é <ph name="STARS" /> estrelas.}one{Ver # avaliação. A nota média é <ph name="STARS" /> estrelas.}other{Ver todas as # avaliações. A nota média é <ph name="STARS" /> estrelas.}}</translation>
 <translation id="4271652479722040953">Quando extensões são adicionadas ao Chrome, dados relevantes sobre elas são enviados a terceiros para análise e podem ficar visíveis para o administrador. Os dados incluem informações sobre as extensões, por exemplo, nome, tempo de instalação, origem da instalação e atividades associadas a elas (como mudança de guias, contato com sites ou acesso a cookies). Esses dados são coletados para extensões instaladas na Chrome Web Store e fora dela.</translation>
 <translation id="4275830172053184480">Reiniciar seu dispositivo</translation>
 <translation id="4276974990916607331">Agora não</translation>
@@ -2407,6 +2408,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5254043433801397071">Otimizar o conteúdo da impressão</translation>
 <translation id="5255583962255635076">Políticas do navegador aplicadas ao seu perfil de trabalho</translation>
 <translation id="5255690596502591079">Capturar mesmo assim</translation>
+<translation id="5255771248404149177">O emissor do cartão precisa confirmar sua identidade</translation>
 <translation id="5255833070095767006">350 x 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{A política do administrador não recomenda copiar o arquivo para: <ph name="DESTINATION_NAME" />}one{A política do administrador não recomenda copiar o arquivo para: <ph name="DESTINATION_NAME" />}other{A política do administrador não recomenda copiar os arquivos para: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5263867360296733198">Revise antes de fazer upload dos arquivos</translation>
@@ -2554,6 +2556,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5518352028556756716">A maioria dos sites não pode usar cookies de terceiros para rastrear você durante a navegação, e nenhum site pode usar esses cookies no modo de navegação anônima.</translation>
 <translation id="5519516356611866228">Com suas modificações</translation>
 <translation id="5519696598216267194">Papel (perfurado)</translation>
+<translation id="5520105693415771152">Suas informações atuais não são mostradas? Entre em contato com seu emissor para atualizar esses dados.</translation>
 <translation id="5521782189689806907">Fabricação de armários</translation>
 <translation id="5523118979700054094">Nome da política</translation>
 <translation id="5523588073846127669">O comerciante não aceita este cartão virtual</translation>
@@ -2950,6 +2953,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6224281071334553713">Pedras preciosas e joias</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para personalizar as ferramentas de acessibilidade nas configurações do Chrome</translation>
 <translation id="6228346913624365233">Veículos de luxo</translation>
+<translation id="6228836011612806720">Avaliações da loja. A nota média é <ph name="STARS" /> estrela(s).</translation>
 <translation id="6229196330202833460">Streaming de filmes e programas de TV</translation>
 <translation id="6234122620015464377">Cortar a cada página impressa</translation>
 <translation id="6234310016144827337">Verifique a conexão e tente de novo</translation>

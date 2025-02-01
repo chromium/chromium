@@ -768,6 +768,7 @@
 <translation id="4654549501020883054">दररोज बदला</translation>
 <translation id="4655868084888499342">इमेज ही वॉलपेपर म्हणून सेट केली आहे</translation>
 <translation id="4661249927038176904">स्वप्नवत</translation>
+<translation id="4661392828086261436">हे अपडेट डिव्हाइस निर्मात्याने पुरवले आहे आणि Google ने त्याची पडताळणी केलेली नाही</translation>
 <translation id="4664651912255946953">फर</translation>
 <translation id="4665014895760275686">निर्माता</translation>
 <translation id="467510802200863975">पासवर्ड जुळत नाहीत</translation>
@@ -1027,6 +1028,7 @@
 <translation id="5904994456462260490">नवीन APN जोडा</translation>
 <translation id="590746845088109442">मांजरी</translation>
 <translation id="5907649332524363701">कीचा रंग</translation>
+<translation id="5908813850962688338">हे अपडेट इंस्टॉल करण्यासाठी काही मिनिटे लागतील. अपडेट डाउनलोड होत असताना तुमचे डिव्हाइस प्लग इन आणि सुरू ठेवा. या प्रक्रियेदरम्यान तुमचे डिव्हाइस अनेक वेळा रीबूट होऊ शकते आणि काळी स्क्रीन दिसू शकते. इंस्टॉलेशन पूर्ण करण्यासाठी तुम्हाला तुमचे डिव्हाइस रीस्टार्ट करण्याकरिता प्रॉम्प्ट केले जाईल.</translation>
 <translation id="5916084858004523819">प्रतिबंधित</translation>
 <translation id="5916664084637901428">सुरू</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{तुमची फाइल यशस्वीरीत्या स्कॅन करण्यात आली आहे आणि <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> वर सेव्ह केली आहे.}other{तुमच्या फाइल यशस्वीरीत्या स्कॅन करण्यात आल्या आहेत आणि <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> वर सेव्ह केल्या आहेत.}}</translation>

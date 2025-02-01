@@ -716,6 +716,7 @@
 <translation id="422477017457571619">Googleకు పంపబడే మీ బ్రౌజింగ్ డేటా ఆధారంగా ప్రమాదకరమైన సైట్‌లు, డౌన్‌లోడ్‌లు, ఇంకా ఎక్స్‌టెన్షన్‌ల నుండి రియల్-టైమ్, AI-అందించే రక్షణ</translation>
 <translation id="4231395118547300571">సేఫ్టీ చెక్ నోటిఫికేషన్‌లు ఆన్ చేయబడ్డాయి</translation>
 <translation id="4237377247299956313"><ph name="BEGIN_BOLD" />ఆటోమేటిక్ బ్రౌజర్ యాప్<ph name="END_BOLD" />‌ను ట్యాప్ చేయండి</translation>
+<translation id="4241893428331130998">సేవ్ చేసిన పాస్‌వర్డ్‌లు లేదా పాస్-కీలు ఏవీ లేవు</translation>
 <translation id="4242533952199664413">సెట్టింగ్‌లను తెరువు</translation>
 <translation id="4250432749243022864">{count,plural, =0{{count} ట్యాబ్‌ను తెరవండి}=1{{count} ట్యాబ్‌ను తెరవండి}other{{count} ట్యాబ్‌లను తెరవండి}}</translation>
 <translation id="4250680216510889253">లేదు</translation>
@@ -1595,6 +1596,7 @@
 <translation id="7982789257301363584">నెట్‌వర్క్</translation>
 <translation id="7987685713885608670">అదనపు భద్రత కోసం, పాస్‌వర్డ్‌లు Google Password Managerలో సేవ్ కావడానికి ముందు, వాటిని మీ పరికరంలో ఎన్‌క్రిప్ట్ చేయండి.</translation>
 <translation id="798991908416757345">ట్యాబ్ గ్రూప్‌లు అందుబాటులో లేవు</translation>
+<translation id="7993170188789685695">ఈ నోటిఫికేషన్‌ను మూసివేయడానికి డబుల్ ట్యాప్ చేయండి.</translation>
 <translation id="7993619969781047893">కొన్ని సైట్‌లలోని ఫీచర్‌లు పని చేయకపోవచ్చు</translation>
 <translation id="7996239959906074962">సెటప్ చేయండి…</translation>
 <translation id="800361585186029508">ఇన్‌పుట్ చేసిన URLలను Google Chromeలో తెరుస్తుంది.</translation>

@@ -86,6 +86,7 @@
 <translation id="4783638485675352219">በሥርዓተ ክወናው ከዚህ መሣሪያ የክፍት ትሮች ርዕሶች እና ዩአርኤሎችን ያጋሩ</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> ግምገማ)}one{(<ph name="REVIEWS_COUNT_MANY" /> ግምገማዎች)}other{(<ph name="REVIEWS_COUNT_MANY" /> ግምገማዎች)}}</translation>
 <translation id="4850886885716139402">አሳይ</translation>
+<translation id="4861953997778766866">ሁሉም ሰው ወደ እርስዎ የተጋሩ የትር ቡድኖች ለውጦችን ማድረግ ይችላል</translation>
 <translation id="4870911314065352661">ሁሉም ትሮች ይዘጉ?</translation>
 <translation id="4871719318659334896">ቡድንን ዝጋ</translation>
 <translation id="4881695831933465202">ክፍት የሚሆንባቸው</translation>
@@ -179,6 +180,7 @@
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ትር ታክሏል፣ <ph name="ANY_CLOSED" /> ተዘግቷል}one{<ph name="MANY_ADDED" /> ትር ታክሏል፣ <ph name="ANY_CLOSED" /> ተዘግቷል}other{<ph name="MANY_ADDED" /> ትር ታክለዋል፣ <ph name="ANY_CLOSED" /> ተዘግተዋል}}</translation>
 <translation id="8633025649649592204">የቅርብ ጊዜ እንቅስቃሴ</translation>
 <translation id="870736955561925754">ትር ይዘጋ እና ቡድን ይሰረዝ?</translation>
+<translation id="8712637175834984815">ገባኝ</translation>
 <translation id="8714939927607906138">ዝቅተኛ ዋጋ</translation>
 <translation id="8730621377337864115">ተከናውኗል</translation>
 <translation id="8730999928494395583">በእነዚህ ማንነትን የማያሳውቁ ትሮች ውስጥ የሚኖርዎት እንቅስቃሴ ከዚህ መሣሪያ ላይ ይወገዳል</translation>

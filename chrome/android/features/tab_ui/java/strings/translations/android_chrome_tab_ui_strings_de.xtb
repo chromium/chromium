@@ -86,6 +86,7 @@ Wenn du die Tabgruppe „<ph name="TITLE_OF_GROUP" />“ löschst, verlieren all
 <translation id="4783638485675352219">Titel und URLs von offenen Tabs von diesem Gerät mit dem Betriebssystem teilen</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> Rezension)}other{(<ph name="REVIEWS_COUNT_MANY" /> Rezensionen)}}</translation>
 <translation id="4850886885716139402">Anzeigen</translation>
+<translation id="4861953997778766866">Jeder kann Änderungen an deinen freigegebenen Tabgruppen vornehmen</translation>
 <translation id="4870911314065352661">Alle Tabs schließen?</translation>
 <translation id="4871719318659334896">Gruppe schließen</translation>
 <translation id="4881695831933465202">Öffnen</translation>
@@ -179,6 +180,7 @@ Wenn du die Tabgruppe „<ph name="TITLE_OF_GROUP" />“ löschst, verlieren all
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> Tab hinzugefügt, <ph name="ANY_CLOSED" /> Tabs geschlossen}other{<ph name="MANY_ADDED" /> Tabs hinzugefügt, <ph name="ANY_CLOSED" /> Tabs geschlossen}}</translation>
 <translation id="8633025649649592204">Letzte Aktivität</translation>
 <translation id="870736955561925754">Tab schließen und Gruppe löschen?</translation>
+<translation id="8712637175834984815">Ok</translation>
 <translation id="8714939927607906138">Günstigerer Preis</translation>
 <translation id="8730621377337864115">Fertig</translation>
 <translation id="8730999928494395583">Deine Aktivitäten auf diesen Inkognitotabs werden von diesem Gerät gelöscht</translation>

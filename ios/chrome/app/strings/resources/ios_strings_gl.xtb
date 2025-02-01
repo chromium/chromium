@@ -716,6 +716,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="422477017457571619">Protección con tecnoloxía de IA e en tempo real contra sitios, descargas e extensións perigosos baseada nos teus datos de navegación enviados a Google</translation>
 <translation id="4231395118547300571">Activáronse as notificacións de Comprobación de seguranza</translation>
 <translation id="4237377247299956313">Toca <ph name="BEGIN_BOLD" />Default Browser App<ph name="END_BOLD" /> (Aplicación de navegador predeterminada)</translation>
+<translation id="4241893428331130998">Non hai ningún contrasinal nin clave de acceso gardados</translation>
 <translation id="4242533952199664413">Abrir configuración</translation>
 <translation id="4250432749243022864">{count,plural, =0{Abrir {count} pestanas}=1{Abrir {count} pestana}other{Abrir {count} pestanas}}</translation>
 <translation id="4250680216510889253">Non</translation>
@@ -1595,6 +1596,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="7982789257301363584">Rede</translation>
 <translation id="7987685713885608670">Para dispoñer dunha maior seguranza, os teus contrasinais encríptanse no dispositivo antes de gardarse no xestor de contrasinais de Google.</translation>
 <translation id="798991908416757345">Os grupos de pestanas non están dispoñibles</translation>
+<translation id="7993170188789685695">Toca dúas veces para pechar esta notificación.</translation>
 <translation id="7993619969781047893">As funcións dalgúns sitios poden deixar de funcionar</translation>
 <translation id="7996239959906074962">Configurar…</translation>
 <translation id="800361585186029508">Abre os URL introducidos en Google Chrome.</translation>

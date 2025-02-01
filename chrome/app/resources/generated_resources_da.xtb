@@ -2165,7 +2165,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2471632709106952369">Sammenligningstabeller</translation>
 <translation id="2473195200299095979">Oversæt denne side</translation>
 <translation id="2475982808118771221">Der opstod en fejl</translation>
-<translation id="247616523300581745">Skjul disse filer</translation>
 <translation id="2476435723907345463">Adgangen til adgangsnøglerne er fjernet</translation>
 <translation id="2476901513051581836">Der kan ikke frigøres lagerplads, før størrelsen på offlinelagerpladsen er kendt.</translation>
 <translation id="2476974672882258506">Luk Windows ned for at afinstallere <ph name="PARALLELS_DESKTOP" />.</translation>
@@ -2807,6 +2806,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> understøttes ikke.</translation>
 <translation id="2926708162326352948">Temaet er opdateret til et uploadet billede</translation>
 <translation id="2927017729816812676">Cachelagring</translation>
+<translation id="2928030851119977280">Dit valg er gemt. Dit nye valg anvendes, når du logger ind i andre Google-tjenester.</translation>
 <translation id="2928795416630981206">Har tilladelse til at spore din kameraposition</translation>
 <translation id="2929345818093040583">{NUM_SITES,plural, =1{Chrome har fjernet tilladelser fra 1 website}one{Chrome har fjernet tilladelser fra {NUM_SITES} website}other{Chrome har fjernet tilladelser fra {NUM_SITES} websites}}</translation>
 <translation id="2931157624143513983">Tilpas til området, der kan udskrives</translation>
@@ -3240,7 +3240,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3257733480216378006">Vil du tillade brugen af <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" />?</translation>
 <translation id="325797067711573598">Mistænkelig download blev blokeret</translation>
 <translation id="3259723213051400722">Prøv igen.</translation>
-<translation id="3260199651491738298">Din organisation styrer, hvordan data, der indsamles af disse funktioner, må anvendes. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="3261090393424563833">Øg frekvens</translation>
 <translation id="3261268979727295785">Hvis du har ældre børn, kan du tilføje indstillinger for børnesikring, når du har gennemført konfigurationen. Du kan få flere oplysninger om indstillinger for børnesikring i appen Udforsk.</translation>
 <translation id="3261832505033014216">Adgangsnøgle til <ph name="USER_EMAIL" /></translation>
@@ -7421,6 +7420,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6253801023880399036">Adgangskoder gemmes i <ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
 <translation id="6254503684448816922">Sammensat nøgle</translation>
 <translation id="6254892857036829079">Perfekt</translation>
+<translation id="6257131917452817589">automatisk ændring af adgangskode</translation>
 <translation id="6257602895346497974">Aktivér synkronisering...</translation>
 <translation id="6257614441619555296"><ph name="KEY" />: <ph name="VALUE" /></translation>
 <translation id="625827534921607067">Dette netværk foretrækkes, hvis mere end ét forbundet eller konfigureret netværk er tilgængeligt</translation>
@@ -8600,7 +8600,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7113974454301513811">Føj nu den aktuelle fane til din liste</translation>
 <translation id="7114054701490058191">Adgangskoderne matcher ikke</translation>
 <translation id="7114648273807173152">Du kan bruge Smart Lock til at logge ind på din Google-konto ved at gå til Indstillinger &gt; Tilsluttede enheder &gt; Din telefon &gt; Smart Lock.</translation>
-<translation id="7115051913071512405">Prøv det</translation>
 <translation id="7115361495406486998">Der er ingen tilgængelige kontakter</translation>
 <translation id="7115731767122970828">Boost nu</translation>
 <translation id="7116554090938189816">Printerens SSL-certifikat er udløbet. Genstart printeren, og prøv igen.</translation>
@@ -9133,6 +9132,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7502528909759062987">Sæt casting af fanen til <ph name="DEVICE_NAME" /> på pause</translation>
 <translation id="7502804472671406749">Der kan rulles i og zoomes ind på delte faner</translation>
 <translation id="7503191893372251637">Netscape-certifikatstype</translation>
+<translation id="7503259455663961898">Skift den for mig</translation>
 <translation id="7503985202154027481">En registrering af dit besøg på dette website gemmes på din sikkerhedsnøgle.</translation>
 <translation id="7504145862399276792">Lyden er slået fra på denne fane</translation>
 <translation id="750509436279396091">Åbn mappen med downloads</translation>
@@ -9195,6 +9195,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7551059576287086432"><ph name="FILE_NAME" /> blev ikke downloadet</translation>
 <translation id="7551643184018910560">Fastgør til hylde</translation>
 <translation id="7552191410769096467">Log ind, og aktivér synkronisering for at dele og deltage i fanegrupper</translation>
+<translation id="7552196109089297786">Log ud af Microsoft</translation>
 <translation id="7552846755917812628">Prøv de følgende tip:</translation>
 <translation id="7553012839257224005">Tjekker Linux-containeren</translation>
 <translation id="7553242001898162573">Angiv din adgangskode</translation>
@@ -10323,6 +10324,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8330617762701840933">Liste over de websites, der omdirigerer til en alternativ browser.</translation>
 <translation id="8330689128072902965">Kontakter i nærheden kan dele med dig. Klik for at ændre.</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{Understøttet filtype: <ph name="FILE_TYPE1" />}=2{Understøttede filtyper: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />}=3{Understøttede filtyper: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />}=4{Understøttede filtyper: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" />}one{Understøttede filtyper: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />og {OVERFLOW_COUNT} anden<ph name="END_LINK" />)}other{Understøttede filtyper: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />og {OVERFLOW_COUNT} andre<ph name="END_LINK" />)}}</translation>
+<translation id="8331578454993293727">Denne adgangskode blev lækket i forbindelse med et brud på datasikkerheden.</translation>
 <translation id="8331822764922665615">Navngiv din gruppe, vælg en farve, og tryk derefter på Esc</translation>
 <translation id="833256022891467078">Delte mapper i Crostini</translation>
 <translation id="833262891116910667">Fremhæv</translation>
@@ -10404,6 +10406,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
     <ph name="BEGIN_PARAGRAPH2" />Du kan få yderligere hjælp på g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8383614331548401927">Velkomstoversigt</translation>
 <translation id="8386091599636877289">Politikken blev ikke fundet.</translation>
+<translation id="8387087863179559896">Chrome kan opdatere din konto for dette website med en stærk adgangskode. Du behøver ikke at huske adgangskoden, fordi den er gemt i Google Adgangskodeadministrator for <ph name="EMAIL" />. Flere oplysninger om <ph name="PASSWORD_CHANGE" />.</translation>
 <translation id="8387361103813440603">Har ikke tilladelse til at se din lokation</translation>
 <translation id="8387617938027387193">Verificer din identitet</translation>
 <translation id="8388770971141403598">Sekundære profiler understøttes ikke</translation>
@@ -10902,7 +10905,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8737966899544698733">Lokationsnøjagtighed (kun Android)</translation>
 <translation id="8738418093147087440">Søg efter lande, sprog eller navne på indtastningsmetode</translation>
 <translation id="8740086188450289493">Brug adgangskoden til din Google-konto</translation>
-<translation id="874023689350909633">Prøv det</translation>
 <translation id="8740247629089392745">Nu er denne Chromebook klar til <ph name="SUPERVISED_USER_NAME" />. Konfigurationen er næsten gennemført, og det er snart tid til at gå på opdagelse.</translation>
 <translation id="8740672167979365981">ChromeOS Flex skal opdateres</translation>
 <translation id="8741944563400125534">Konfigurationsvejledning til Kontaktadgang</translation>

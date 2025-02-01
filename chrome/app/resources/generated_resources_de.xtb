@@ -2148,7 +2148,6 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2471632709106952369">Vergleichstabellen</translation>
 <translation id="2473195200299095979">Diese Seite übersetzen</translation>
 <translation id="2475982808118771221">Ein Fehler ist aufgetreten.</translation>
-<translation id="247616523300581745">Diese Dateien ausblenden</translation>
 <translation id="2476435723907345463">Zugriff auf Passkeys entfernt</translation>
 <translation id="2476901513051581836">Der Speicherplatz kann erst freigegeben werden, wenn die Größe des Offlinespeichers bekannt ist.</translation>
 <translation id="2476974672882258506">Bitte Windows herunterfahren, um <ph name="PARALLELS_DESKTOP" /> zu deinstallieren.</translation>
@@ -2790,6 +2789,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> wird nicht unterstützt.</translation>
 <translation id="2926708162326352948">Design wurde durch das hochgeladene Bild aktualisiert</translation>
 <translation id="2927017729816812676">Cache-Speicher</translation>
+<translation id="2928030851119977280">Deine Auswahl wurde gespeichert. Sie wird angewendet, wenn du dich in anderen Google-Diensten anmeldest.</translation>
 <translation id="2928795416630981206">Dürfen meine Kameraposition erfassen</translation>
 <translation id="2929345818093040583">{NUM_SITES,plural, =1{Chrome hat Berechtigungen von 1 Website entfernt}other{Chrome hat Berechtigungen von {NUM_SITES} Websites entfernt}}</translation>
 <translation id="2931157624143513983">An Druckbereich anpassen</translation>
@@ -3221,7 +3221,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3257733480216378006"><ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" /> zulassen?</translation>
 <translation id="325797067711573598">Verdächtiger Download blockiert</translation>
 <translation id="3259723213051400722">Bitte versuche es noch einmal.</translation>
-<translation id="3260199651491738298">Deine Organisation legt fest, wie die von diesen Funktionen erhobenen Daten verwendet werden dürfen. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="3261090393424563833">Rate erhöhen</translation>
 <translation id="3261268979727295785">Für ältere Kinder kannst du die Jugendschutzeinstellungen hinzufügen, sobald du die Einrichtung beendet hast. Informationen zu den Jugendschutzeinstellungen findest du in der App "Entdecken".</translation>
 <translation id="3261832505033014216">Passkey für <ph name="USER_EMAIL" /></translation>
@@ -7397,6 +7396,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6253801023880399036">Passwörter sind im <ph name="GOOGLE_PASSWORD_MANAGER" /> gespeichert.</translation>
 <translation id="6254503684448816922">Kompromittierung des Schlüssels</translation>
 <translation id="6254892857036829079">Perfekt</translation>
+<translation id="6257131917452817589">automatischen Passwortänderung</translation>
 <translation id="6257602895346497974">Synchronisierung aktivieren…</translation>
 <translation id="6257614441619555296"><ph name="KEY" />: <ph name="VALUE" /></translation>
 <translation id="625827534921607067">Dieses Netzwerk wird bevorzugt, wenn mehr als ein zuvor verbundenes oder konfiguriertes Netzwerk verfügbar ist</translation>
@@ -8574,7 +8574,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7113974454301513811">Füge jetzt den aktuellen Tab deiner Liste hinzu</translation>
 <translation id="7114054701490058191">Die Passwörter stimmen nicht überein</translation>
 <translation id="7114648273807173152">Wenn du Smart Lock für die Anmeldung in deinem Google-Konto verwenden möchtest, gehe zu "Einstellungen" &gt; "Verbundene Geräte" &gt; "Mein Smartphone" &gt; "Smart Lock".</translation>
-<translation id="7115051913071512405">Testen</translation>
 <translation id="7115361495406486998">Keine erreichbaren Kontakte</translation>
 <translation id="7115731767122970828">Leistung steigern</translation>
 <translation id="7116554090938189816">Das SSL-Zertifikat für den Drucker ist abgelaufen. Starte den Drucker neu und versuche es dann noch einmal.</translation>
@@ -9107,6 +9106,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7502528909759062987">Streamen des Tabs an „<ph name="DEVICE_NAME" />“ pausieren</translation>
 <translation id="7502804472671406749">Auf geteilten Tabs darf gescrollt und gezoomt werden</translation>
 <translation id="7503191893372251637">Netscape-Zertifikatstyp</translation>
+<translation id="7503259455663961898">Passwort ändern lassen</translation>
 <translation id="7503985202154027481">Auf deinem Sicherheitsschlüssel wird zum Besuch dieser Website ein Datensatz angelegt.</translation>
 <translation id="7504145862399276792">Der Ton dieses Tabs ist stummgeschaltet</translation>
 <translation id="750509436279396091">Downloadordner öffnen</translation>
@@ -9169,6 +9169,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7551059576287086432">Fehler beim Download von <ph name="FILE_NAME" /></translation>
 <translation id="7551643184018910560">An Ablage anpinnen</translation>
 <translation id="7552191410769096467">Wenn du Tabgruppen teilen oder ihnen beitreten möchtest, musst du dich anmelden und die Synchronisierung aktivieren</translation>
+<translation id="7552196109089297786">Von Microsoft abmelden</translation>
 <translation id="7552846755917812628">Probiere folgende Tipps aus:</translation>
 <translation id="7553012839257224005">Linux-Container wird geprüft</translation>
 <translation id="7553242001898162573">Passwort eingeben</translation>
@@ -10298,6 +10299,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8330617762701840933">Die Liste mit Websites, die zum alternativen Browser weiterleiten.</translation>
 <translation id="8330689128072902965">Kontakte in der Nähe können Inhalte mit dir teilen. Zum Ändern klicken.</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{Unterstützter Dateityp: <ph name="FILE_TYPE1" />}=2{Unterstützte Dateitypen: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />}=3{Unterstützte Dateitypen: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />}=4{Unterstützte Dateitypen: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" />}other{Unterstützte Dateitypen: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />und {OVERFLOW_COUNT} weitere<ph name="END_LINK" />)}}</translation>
+<translation id="8331578454993293727">Dieses Passwort wurde in einer Datenpanne gefunden</translation>
 <translation id="8331822764922665615">Benenne deine Gruppe, wähle eine Farbe und drücke die Esc-Taste</translation>
 <translation id="833256022891467078">Freigegebene Crostini-Ordner</translation>
 <translation id="833262891116910667">Markieren</translation>
@@ -10379,6 +10381,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
     <ph name="BEGIN_PARAGRAPH2" />Weitere Hilfestellung findest du hier: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8383614331548401927">Willkommen zurück</translation>
 <translation id="8386091599636877289">Richtlinie nicht gefunden.</translation>
+<translation id="8387087863179559896">Chrome kann für dein Konto auf dieser Website ein starkes Passwort festlegen. Du musst dir das Passwort nicht merken, weil es im Google Passwortmanager für <ph name="EMAIL" /> gespeichert wird. Weitere Informationen zur <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="8387361103813440603">Dürfen meine Standortdaten nicht abrufen</translation>
 <translation id="8387617938027387193">Deine Identität bestätigen</translation>
 <translation id="8388770971141403598">Sekundäre Profile werden nicht unterstützt</translation>
@@ -10877,7 +10880,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8737966899544698733">Standortgenauigkeit (nur Android)</translation>
 <translation id="8738418093147087440">Nach Ländern, Sprache oder Eingabenamen suchen</translation>
 <translation id="8740086188450289493">Google-Kontopasswort verwenden</translation>
-<translation id="874023689350909633">Ausprobieren</translation>
 <translation id="8740247629089392745">Du kannst dieses Chromebook nun <ph name="SUPERVISED_USER_NAME" /> geben. Die Einrichtung ist fast abgeschlossen, jetzt ist es an der Zeit, auf Entdeckungstour zu gehen.</translation>
 <translation id="8740672167979365981">Chrome OS Flex-Update erforderlich</translation>
 <translation id="8741944563400125534">Einrichtung des Schalterzugriffs</translation>

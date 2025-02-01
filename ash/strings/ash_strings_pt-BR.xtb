@@ -178,7 +178,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1550523713251050646">Clique para ver mais opções</translation>
 <translation id="1555130319947370107">Azul</translation>
 <translation id="1557622599341396706">Mostrar nome do espaço de trabalho</translation>
-<translation id="1567138500090284106">Botão de teclas do mouse</translation>
 <translation id="1569384531973824928">Essa ação libera o acesso para todos os apps e sites com as permissões de câmera e microfone. Talvez seja necessário atualizar a página da Web ou reiniciar o app.</translation>
 <translation id="1571697193564730395">Alternar "Não perturbe". <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Diminuir zoom quando a lupa estiver ativada</translation>
@@ -731,6 +730,7 @@ Caso contrário, o touchpad integrado será reativado em <ph name="TIMEOUT_SECON
 <translation id="3522979239100719575">Procurando perfis disponíveis. Pode levar alguns minutos..</translation>
 <translation id="3526440770046466733">Abrir link em uma nova guia e continuar na atual</translation>
 <translation id="353086728817903341">Conectado a <ph name="NUM_DEVICES" /> dispositivos</translation>
+<translation id="3532247131850366052">Não foi possível criar a planilha Google</translation>
 <translation id="3533126039236445965">Apps na estante</translation>
 <translation id="3539957339480430241">Ponto de acesso do <ph name="DEVICE_NAME" /></translation>
 <translation id="3540893133818942399">Dispense a configuração de visualização de mídia e fotos recentes do smartphone</translation>
@@ -829,6 +829,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="380165613292957338">Oi! Como posso ajudar?</translation>
 <translation id="3804737937830804242">Fechar câmera</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 emoji. Nenhum outro resultado.}one{# emoji. Nenhum outro resultado.}other{# emojis. Nenhum outro resultado.}}</translation>
+<translation id="3822403841174077928">Não foi possível copiar com a formatação</translation>
 <translation id="3824784079442479685">Essa ação libera o acesso à câmera para <ph name="APP_NAME" /> e todos os apps e sites com essa permissão. Talvez seja necessário atualizar a página da Web ou reiniciar o app.</translation>
 <translation id="3826099427150913765">Usar senha</translation>
 <translation id="383058930331066723">Modo de Economia de bateria ativado</translation>
@@ -1215,6 +1216,7 @@ Alguns recursos estão limitados para aumentar a duração da bateria.</translat
 <translation id="5043679421800073804">Clicar ou tocar no último ícone da estante</translation>
 <translation id="504465286040788597">Parágrafo anterior</translation>
 <translation id="5045550434625856497">Senha incorreta</translation>
+<translation id="5058794129231928255">Não foi possível criar o documento Google</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Você receberá uma notificação se falar com o som desativado. O áudio nunca é enviado para fora do dispositivo.</translation>
 <translation id="5077416371682039027">Configurar a visualização de fotos, mídia, notificações e apps do smartphone</translation>
@@ -1647,6 +1649,7 @@ Nenhum dispositivo conectado.</translation>
 <translation id="6468406072297048412">{0,plural, =1{Reverta o dispositivo para a versão anterior em até 1 minuto}one{Reverta o dispositivo para a versão anterior em até # minuto}other{Reverta o dispositivo para a versão anterior em até # minutos}}</translation>
 <translation id="6469104339369989396">Alternar o ponto de acesso</translation>
 <translation id="6477681113376365978">Não é possível fazer o download do arquivo</translation>
+<translation id="648135757200234041">Não foi possível criar o contato</translation>
 <translation id="6482559668224714696">Lupa de tela cheia</translation>
 <translation id="6485086611007560630">Clima (indisponível)</translation>
 <translation id="6490471652906364588">Dispositivo USB-C (porta da direita)</translation>
@@ -2287,6 +2290,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8653151467777939995">Mostrar configurações de notificação. As notificações estão ativadas</translation>
 <translation id="8657066291275741003">letras minúsculas</translation>
 <translation id="8660331759611631213">Raiz quadrada de 71</translation>
+<translation id="8662921061190671299">Não foi possível adicionar à Agenda</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, intensidade do sinal em <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Pressione "Enter" para fazer uma captura de tela parcial</translation>
 <translation id="8676770494376880701">Carregador de baixa potência conectado</translation>

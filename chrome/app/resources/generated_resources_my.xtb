@@ -2162,7 +2162,6 @@
 <translation id="2471632709106952369">နှိုင်းယှဉ်မှု ဇယားများ</translation>
 <translation id="2473195200299095979">ဒီစာမျက်နှာကို ဘာသာပြန်ပေးရန်</translation>
 <translation id="2475982808118771221">အမှားတစ်ခု ဖြစ်ခဲ့သည်။</translation>
-<translation id="247616523300581745">ဤဖိုင်များကို ဖျောက်ထားရန်</translation>
 <translation id="2476435723907345463">လျှို့ဝှက်ကီးသုံးခွင့် ဖယ်ရှားလိုက်သည်</translation>
 <translation id="2476901513051581836">အော့ဖ်လိုင်း သိုလှောင်ခန်း အရွယ်အစားကို မသိသေးမီ သိုလှောင်ခန်းကို ရှင်း၍မရပါ။</translation>
 <translation id="2476974672882258506"><ph name="PARALLELS_DESKTOP" /> ကို ဖယ်ရှားရန် Windows ကို ပိတ်ပါ။</translation>
@@ -2805,6 +2804,7 @@
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> ကို ပံ့ပိုးမထားပါ။</translation>
 <translation id="2926708162326352948">အပ်လုဒ်လုပ်ထားသော ပုံတွင် အပ်ဒိတ်လုပ်ထားသည့် အပြင်အဆင်</translation>
 <translation id="2927017729816812676">ကက်ရှ် သိုလှောင်ခန်း</translation>
+<translation id="2928030851119977280">ရွေးချယ်မှုကို သိမ်းလိုက်သည်။ အခြား Google ဝန်ဆောင်မှုများသို့ လက်မှတ်ထိုးဝင်သောအခါ သင့်ရွေးချယ်မှု သက်ရောက်မည်။</translation>
 <translation id="2928795416630981206">သင့်ကင်မရာ၏အနေအထားကို ခြေရာခံရန် ခွင့်ပြုထားသည်</translation>
 <translation id="2929345818093040583">{NUM_SITES,plural, =1{Chrome သည် ဝဘ်ဆိုက် ၁ ခုမှ ခွင့်ပြုချက်များကို ဖယ်ရှားလိုက်သည်}other{Chrome သည် ဝဘ်ဆိုက် {NUM_SITES} ခုမှ ခွင့်ပြုချက်များကို ဖယ်ရှားလိုက်သည်}}</translation>
 <translation id="2931157624143513983">ပုံနှိပ်ထုတ်နိုင်သော နေရာနှင့် ကွက်တိ လုပ်ပေးရန်</translation>
@@ -3238,7 +3238,6 @@
 <translation id="3257733480216378006"><ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" /> ကို ခွင့်ပြုမလား။</translation>
 <translation id="325797067711573598">သံသယဖြစ်ဖွယ်ဒေါင်းလုဒ် ပိတ်ထားသည်</translation>
 <translation id="3259723213051400722">ထပ်စမ်းကြည့်ပါ။</translation>
-<translation id="3260199651491738298">ဤဝန်ဆောင်မှုများဖြင့် စုဆောင်းထားသော ဒေတာအား မည်သို့အသုံးပြုနိုင်ပုံကို သင့်အဖွဲ့အစည်းက ထိန်းချုပ်သည်။ <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="3261090393424563833">ကြိမ်နှုန်းကို တိုးရန်</translation>
 <translation id="3261268979727295785">စနစ်ထည့်သွင်းပြီးသွားသည့်အခါ ကလေးကြီးများအတွက် မိဘ အထိန်းအချုပ်များကို ထည့်သွင်းနိုင်သည်။ မိဘ အထိန်းအချုပ်များအကြောင်း အချက်အလက်များကို Explore အက်ပ်တွင် ရှာတွေ့နိုင်သည်။</translation>
 <translation id="3261832505033014216"><ph name="USER_EMAIL" /> အတွက် လျှို့ဝှက်ကီး</translation>
@@ -7418,6 +7417,7 @@
 <translation id="6253801023880399036">စကားဝှက်များကို <ph name="GOOGLE_PASSWORD_MANAGER" /> တွင် သိမ်းသည်။</translation>
 <translation id="6254503684448816922">ကီးညှိရန်</translation>
 <translation id="6254892857036829079">ပြည့်စုံ</translation>
+<translation id="6257131917452817589">အလိုအလျောက် စကားဝှက်ပြောင်းလဲမှု</translation>
 <translation id="6257602895346497974">စင့်ခ်လုပ်ခြင်းကို ဖွင့်ရန်…</translation>
 <translation id="6257614441619555296"><ph name="KEY" />- <ph name="VALUE" /></translation>
 <translation id="625827534921607067">ယခင်က ချိတ်ဆက်ထားသော (သို့) စီစဉ်သတ်မှတ်ထားသော ကွန်ရက်တစ်ခု ရှိပါက ဤကွန်ရက်ကို စိတ်ကြိုက်အဖြစ် သတ်မှတ်ပါမည်</translation>
@@ -8592,7 +8592,6 @@
 <translation id="7113974454301513811">လက်ရှိတဘ်ကို သင့်စာရင်းတွင် ယခုထည့်လိုက်ပါ</translation>
 <translation id="7114054701490058191">စကားဝှက်များ မတူပါ</translation>
 <translation id="7114648273807173152">သင့် Google အကောင့်သို့ လက်မှတ်ထိုးဝင်ရာတွင် Smart Lock သုံးရန် 'ဆက်တင်များ &gt; ချိတ်ဆက်ထားသော ကိရိယာများ &gt; သင်၏ဖုန်း &gt; Smart Lock' သို့ သွားပါ။</translation>
-<translation id="7115051913071512405">စမ်းကြည့်ပါ</translation>
 <translation id="7115361495406486998">ဆက်သွယ်နိုင်သော အဆက်အသွယ်များ မရှိပါ</translation>
 <translation id="7115731767122970828">ယခု မြှင့်တင်ရန်</translation>
 <translation id="7116554090938189816">ပရင်တာ SSL အသိအမှတ်ပြုလက်မှတ် သက်တမ်းကုန်သွားပြီ။ ပရင်တာကို ပြန်စပြီး ထပ်စမ်းကြည့်ပါ။</translation>
@@ -9125,6 +9124,7 @@
 <translation id="7502528909759062987">တဘ်ကို <ph name="DEVICE_NAME" /> သို့ ကာစ်လုပ်ခြင်း ခဏရပ်ရန်</translation>
 <translation id="7502804472671406749">မျှဝေထားသည့် တယ်များကို လှိမ့်နိုင်၊ ဇူးမ်ဆွဲနိုင်သည်</translation>
 <translation id="7503191893372251637">Netscape လက်မှတ် အမျိုးအစား</translation>
+<translation id="7503259455663961898">ကျွန်ုပ်အတွက် ပြောင်းပေးပါ</translation>
 <translation id="7503985202154027481">သင်၏ လုံခြုံရေးကီးတွင် ဤဝဘ်ဆိုက်ကို ဖွင့်ကြည့်သည့် မှတ်တမ်းတစ်ခု ရှိနေပါမည်။</translation>
 <translation id="7504145862399276792">ဤတဘ်ကို အသံပိတ်ထားသည်</translation>
 <translation id="750509436279396091">ဒေါင်းလုဒ်များ၏ ဖိုလ်ဒါကို ဖွင့်ပေးရန်</translation>
@@ -9187,6 +9187,7 @@
 <translation id="7551059576287086432"><ph name="FILE_NAME" /> အား အောင်မြင်စွာ ဒေါင်းလုပ်ရယူပြီး၏</translation>
 <translation id="7551643184018910560">စင်သို့ ပင်ထိုးရန်</translation>
 <translation id="7552191410769096467">တဘ်အုပ်စုများကို မျှဝေရန် (သို့) ၎င်းတို့တွင် ပါဝင်ရန် လက်မှတ်ထိုးဝင်ပြီး စင့်ခ်လုပ်ခြင်း ဖွင့်ရန်လိုအပ်သည်</translation>
+<translation id="7552196109089297786">Microsoft မှ ထွက်ရန်</translation>
 <translation id="7552846755917812628">အောက်ပါ နည်းလမ်းများကို စမ်းကြည့်ပါ−</translation>
 <translation id="7553012839257224005">Linux ကွန်တိန်နာ စစ်ဆေးနေသည်</translation>
 <translation id="7553242001898162573">သင့်စကားဝှက်အား ရိုက်ထည့်ရန်</translation>
@@ -10315,6 +10316,7 @@
 <translation id="8330617762701840933">အခြား ဘရောင်ဇာသို့ တစ်ဆင့်ပြန်ညွှန်ပြသည့် ဝဘ်ဆိုက်များစာရင်း။</translation>
 <translation id="8330689128072902965">အနီးတစ်ဝိုက်ရှိ အဆက်အသွယ်များက သင်နှင့်မျှဝေနိုင်သည်။ ပြောင်းရန် နှိပ်ပါ။</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{ပံ့ပိုးထားသည့် ဖိုင်အမျိုးအစား- <ph name="FILE_TYPE1" />}=2{ပံ့ပိုးထားသည့် ဖိုင်အမျိုးအစားများ- <ph name="FILE_TYPE1" />၊ <ph name="FILE_TYPE2" />}=3{ပံ့ပိုးထားသည့် ဖိုင်အမျိုးအစားများ- <ph name="FILE_TYPE1" />၊ <ph name="FILE_TYPE2" />၊ <ph name="FILE_TYPE3" />}=4{ပံ့ပိုးထားသည့် ဖိုင်အမျိုးအစားများ- <ph name="FILE_TYPE1" />၊ <ph name="FILE_TYPE2" />၊ <ph name="FILE_TYPE3" />၊ <ph name="FILE_TYPE4" />}other{ပံ့ပိုးထားသည့် ဖိုင်အမျိုးအစားများ- <ph name="FILE_TYPE1" />၊ <ph name="FILE_TYPE2" />၊ <ph name="FILE_TYPE3" />၊ <ph name="FILE_TYPE4" /> (<ph name="LINK" />နှင့် အခြား {OVERFLOW_COUNT} ခု<ph name="END_LINK" />)}}</translation>
+<translation id="8331578454993293727">သင့်စကားဝှက်ကို ဒေတာကျိုးပေါက်မှုတွင် တွေ့ရှိထားသည်</translation>
 <translation id="8331822764922665615">သင့်အဖွဲ့ကို အမည်ပေး၍ အရောင်ရွေးပြီး Esc ကို နှိပ်ပါ</translation>
 <translation id="833256022891467078">Crostini မျှဝေထားသော ဖိုင်တွဲများ</translation>
 <translation id="833262891116910667">အထူးအသားပေး ဖော်ပြချက်</translation>
@@ -10396,6 +10398,7 @@
     <ph name="BEGIN_PARAGRAPH2" />နောက်ထပ်အကူအညီလိုလျှင် g.co/flex/InstallErrors သို့သွားပါ။<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8383614331548401927">‘အကျဉ်းချုပ်’ က ကြိုဆိုပါသည်</translation>
 <translation id="8386091599636877289">မူဝါဒကို မတွေ့ပါ။</translation>
+<translation id="8387087863179559896">Chrome သည် ဤဝဘ်ဆိုက်အတွက် သင့်အကောင့်ကို လုံခြုံမှုမြင့်သည့် စကားဝှက်ဖြင့် အပ်ဒိတ်လုပ်နိုင်သည်။ <ph name="EMAIL" /> အတွက် စကားဝှက်ကို Google Password Manager တွင် သင့်အတွက် သိမ်းထားသဖြင့် ၎င်းကို မှတ်ထားစရာ မလိုပါ။ <ph name="PASSWORD_CHANGE" /> အကြောင်း ပိုမိုသိရှိရန်။</translation>
 <translation id="8387361103813440603">သင့်တည်နေရာကို ကြည့်ရန် ခွင့်ပြုမထားပါ</translation>
 <translation id="8387617938027387193">သင်ဖြစ်ကြောင်း အတည်ပြုပါ</translation>
 <translation id="8388770971141403598">ဒုတိယ ပရိုဖိုင်များကို ပံ့ပိုးမထားပါ</translation>
@@ -10894,7 +10897,6 @@
 <translation id="8737966899544698733">တည်နေရာတိကျမှန်ကန်မှု (Android သီးသန့်)</translation>
 <translation id="8738418093147087440">နိုင်ငံ၊ ဘာသာစကား (သို့) လက်ကွက်အမည်များအလိုက် ရှာပါ</translation>
 <translation id="8740086188450289493">Google Account စကားဝှက် သုံးရန်</translation>
-<translation id="874023689350909633">စမ်းကြည့်ပါ</translation>
 <translation id="8740247629089392745">ဤ Chromebook ကို <ph name="SUPERVISED_USER_NAME" /> အား ပြန်ပေးနိုင်သည်။ စနစ်ထည့်သွင်းမှု ပြီးလုနီးပြီ။ စူးစမ်းလေ့လာရန် အချိန်ကျပါပြီ။</translation>
 <translation id="8740672167979365981">ChromeOS Flex အပ်ဒိတ် လိုအပ်သည်</translation>
 <translation id="8741944563400125534">‘ခလုတ်သုံးခြင်း’ စနစ်ထည့်သွင်းမှုလမ်းညွှန်</translation>

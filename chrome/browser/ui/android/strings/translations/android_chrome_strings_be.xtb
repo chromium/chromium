@@ -385,7 +385,6 @@
 <translation id="2781151931089541271">Засталася 1 секунда</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome выявіў ужыты раней пароль, які можна палепшыць}one{Chrome выявіў # ужыты раней пароль, які можна палепшыць}few{Chrome выявіў # ужытыя раней паролі, якія можна палепшыць}many{Chrome выявіў # ужытых раней пароляў, якія можна палепшыць}other{Chrome выявіў # ужытага раней пароля, якія можна палепшыць}}</translation>
-<translation id="2796651346651857052">Каб змяніць палажэнне адраснага радка, націсніце яго і ўтрымлівайце.</translation>
 <translation id="2800066122460699237">Укладка "<ph name="TAB_TITLE" />" будзе закрыта</translation>
 <translation id="2805756323405976993">Праграмы</translation>
 <translation id="281504910091592009">Праглядайце захаваныя паролі і кіруйце імі праз <ph name="BEGIN_LINK" />Уліковы запіс Google<ph name="END_LINK" /></translation>

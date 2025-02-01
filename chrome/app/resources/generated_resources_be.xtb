@@ -2152,7 +2152,6 @@
 <translation id="2471632709106952369">Табліцы параўнання</translation>
 <translation id="2473195200299095979">Перакласці гэту старонку</translation>
 <translation id="2475982808118771221">Адбылася памылка</translation>
-<translation id="247616523300581745">Схаваць гэтыя файлы</translation>
 <translation id="2476435723907345463">Доступ да ключоў доступу выдалены</translation>
 <translation id="2476901513051581836">Ачысціць пазасеткавае сховішча нельга, пакуль не стане вядомы яго памер.</translation>
 <translation id="2476974672882258506">Каб выдаліць <ph name="PARALLELS_DESKTOP" />, завяршыце працу Windows.</translation>
@@ -2793,6 +2792,7 @@
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> не падтрымліваецца.</translation>
 <translation id="2926708162326352948">Тэма зменена на запампаваны відарыс</translation>
 <translation id="2927017729816812676">Сховішча кэша</translation>
+<translation id="2928030851119977280">Выбар захаваны. Ваш выбар будзе прыменены пры ўваходзе ў іншыя сэрвісы Google.</translation>
 <translation id="2928795416630981206">Дазволена адсочваць становішча камеры</translation>
 <translation id="2929345818093040583">{NUM_SITES,plural, =1{Chrome адклікаў дазволы для 1 сайта}one{Chrome адклікаў дазволы для {NUM_SITES} сайта}few{Chrome адклікаў дазволы для {NUM_SITES} сайтаў}many{Chrome адклікаў дазволы для {NUM_SITES} сайтаў}other{Chrome адклікаў дазволы для {NUM_SITES} сайта}}</translation>
 <translation id="2931157624143513983">Дапасаваць да меж вобласці друку</translation>
@@ -3226,7 +3226,6 @@
 <translation id="3257733480216378006">Дазволіць пашырэнні (<ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" />)?</translation>
 <translation id="325797067711573598">Падазроная спампоўка заблакіравана</translation>
 <translation id="3259723213051400722">Паўтарыце спробу.</translation>
-<translation id="3260199651491738298">Ваша арганізацыя кіруе тым, як могуць выкарыстоўвацца даныя, сабраныя з дапамогай гэтых функцый. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="3261090393424563833">Павялічыць частату</translation>
 <translation id="3261268979727295785">Для дзяцей старэйшага ўзросту функцыю бацькоўскага кантролю можна дадаць па завяршэнні наладкі. Інфармацыю пра бацькоўскі кантроль можна знайсці ў праграме "Агляд".</translation>
 <translation id="3261832505033014216">Ключ доступу для карыстальніка <ph name="USER_EMAIL" /></translation>
@@ -7404,6 +7403,7 @@
 <translation id="6253801023880399036">Паролі захоўваюцца ў сэрвісе "<ph name="GOOGLE_PASSWORD_MANAGER" />".</translation>
 <translation id="6254503684448816922">Кампраметацыя ключа</translation>
 <translation id="6254892857036829079">Выдатная</translation>
+<translation id="6257131917452817589">аўтаматычнае змяненне пароля</translation>
 <translation id="6257602895346497974">Уключыць сінхранізацыю...</translation>
 <translation id="6257614441619555296"><ph name="KEY" />: <ph name="VALUE" /></translation>
 <translation id="625827534921607067">Прылада будзе выкарыстоўваць гэту сетку, калі даступныя некалькі сетак, да якіх вы падключаліся або якія вы наладжвалі раней</translation>
@@ -8586,7 +8586,6 @@
 <translation id="7113974454301513811">Цяпер дадайце бягучую ўкладку ў спіс</translation>
 <translation id="7114054701490058191">Паролі не супадаюць</translation>
 <translation id="7114648273807173152">Каб карыстацца Разумнай блакіроўкай для ўваходу ва ўліковы запіс Google, перайдзіце ў раздзел "Налады &gt; Падключаныя прылады &gt; Ваш тэлефон &gt; Разумная блакіроўка".</translation>
-<translation id="7115051913071512405">Паспрабаваць</translation>
 <translation id="7115361495406486998">Няма даступных кантактаў</translation>
 <translation id="7115731767122970828">Павысіць</translation>
 <translation id="7116554090938189816">Скончыўся тэрмін дзеяння сертыфіката SSL для бяспечнага падключэння прынтара. Перазапусціце прынтар і паўтарыце спробу.</translation>
@@ -9119,6 +9118,7 @@
 <translation id="7502528909759062987">Прыпыніць трансляцыю ўкладкі на прыладу "<ph name="DEVICE_NAME" />"</translation>
 <translation id="7502804472671406749">Змяненне маштабу і прагортванне змесціва абагуленых укладак дазволены</translation>
 <translation id="7503191893372251637">Тып сертыфіката Netscape</translation>
+<translation id="7503259455663961898">Змяніць для мяне</translation>
 <translation id="7503985202154027481">На ключы бяспекі будзе пакінуты запіс пра наведванне вамі гэтага вэб-сайта.</translation>
 <translation id="7504145862399276792">Гук на гэтай укладцы выключаны</translation>
 <translation id="750509436279396091">Адкрыць папку спамповак</translation>
@@ -9181,6 +9181,7 @@
 <translation id="7551059576287086432">Не ўдалося спампаваць файл "<ph name="FILE_NAME" />"</translation>
 <translation id="7551643184018910560">Замацаваць на паліцы</translation>
 <translation id="7552191410769096467">Каб абагульваць групы ўкладак і далучацца да іх, неабходна ўвайсці ва ўліковы запіс і ўключыць сінхранізацыю</translation>
+<translation id="7552196109089297786">Выйсці з уліковага запісу Microsoft</translation>
 <translation id="7552846755917812628">Паспрабуйце наступнае:</translation>
 <translation id="7553012839257224005">Ідзе праверка наяўнасці кантэйнера Linux</translation>
 <translation id="7553242001898162573">Увядзіце пароль</translation>
@@ -10309,6 +10310,7 @@
 <translation id="8330617762701840933">Спіс вэб-сайтаў, якія адкрываюцца ў альтэрнатыўным браўзеры.</translation>
 <translation id="8330689128072902965">Абагульваць з вамі сваё змесціва могуць кантакты, якія знаходзяцца паблізу. Націсніце, каб змяніць гэта.</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{Сумяшчальны тып файлаў: <ph name="FILE_TYPE1" />}=2{Сумяшчальныя тыпы файлаў: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />}=3{Сумяшчальныя тыпы файлаў: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />}=4{Сумяшчальныя тыпы файлаў: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" />}one{Сумяшчальныя тыпы файлаў: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />і яшчэ {OVERFLOW_COUNT}<ph name="END_LINK" />)}few{Сумяшчальныя тыпы файлаў: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />і яшчэ {OVERFLOW_COUNT}<ph name="END_LINK" />)}many{Сумяшчальныя тыпы файлаў: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />і яшчэ {OVERFLOW_COUNT}<ph name="END_LINK" />)}other{Сумяшчальныя тыпы файлаў: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />і яшчэ {OVERFLOW_COUNT}<ph name="END_LINK" />)}}</translation>
+<translation id="8331578454993293727">Гэты пароль быў раскрыты пры ўцечцы даных</translation>
 <translation id="8331822764922665615">Дайце назву групе і выберыце колер, затым націсніце Esc</translation>
 <translation id="833256022891467078">Абагуленыя папкі Crostini</translation>
 <translation id="833262891116910667">Вылучэнне</translation>
@@ -10390,6 +10392,7 @@
     <ph name="BEGIN_PARAGRAPH2" />Дадатковую інфармацыю шукайце на сайце: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8383614331548401927">Кароткі агляд</translation>
 <translation id="8386091599636877289">Палітыка не знойдзена.</translation>
+<translation id="8387087863179559896">Chrome можа стварыць надзейны пароль для вашага ўліковага запісу на гэтым сайце. Вам не прыйдзецца запамінаць пароль, бо ён будзе захаваны ў Менеджары пароляў Google для адраса электроннай пошты <ph name="EMAIL" />. Падрабязней пра <ph name="PASSWORD_CHANGE" />.</translation>
 <translation id="8387361103813440603">Не дазволена атрымліваць звесткі пра ваша месцазнаходжанне</translation>
 <translation id="8387617938027387193">Прайдзіце спраўджанне асобы</translation>
 <translation id="8388770971141403598">Дадатковыя профілі не падтрымліваюцца</translation>
@@ -10888,7 +10891,6 @@
 <translation id="8737966899544698733">Дакладнасць вызначэння месцазнаходжання (толькі для Android)</translation>
 <translation id="8738418093147087440">Пошук па назве краіны, мовы або спосабу ўводу</translation>
 <translation id="8740086188450289493">Скарыстаць пароль ад Уліковага запісу Google</translation>
-<translation id="874023689350909633">Паспрабаваць</translation>
 <translation id="8740247629089392745">Вы можаце перадаць Chromebook карыстальніку <ph name="SUPERVISED_USER_NAME" />. Наладжванне амаль завершана. Пара пазнаёміцца са змесцівам.</translation>
 <translation id="8740672167979365981">Chrome OS Flex неабходна абнавіць</translation>
 <translation id="8741944563400125534">Майстар наладкі доступу праз пераключальнікі</translation>

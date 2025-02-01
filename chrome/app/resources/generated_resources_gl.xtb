@@ -2150,7 +2150,6 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2471632709106952369">Táboas de comparación</translation>
 <translation id="2473195200299095979">Traducir esta páxina</translation>
 <translation id="2475982808118771221">Produciuse un erro</translation>
-<translation id="247616523300581745">Ocultar estes ficheiros</translation>
 <translation id="2476435723907345463">Quitouse o acceso ás claves de acceso</translation>
 <translation id="2476901513051581836">Non se pode liberar espazo de almacenamento mentres non se saiba o tamaño do almacenamento sen conexión.</translation>
 <translation id="2476974672882258506">Para desinstalar <ph name="PARALLELS_DESKTOP" />, pecha Windows.</translation>
@@ -2792,6 +2791,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2926620265753325858">O dispositivo (<ph name="DEVICE_NAME" />) non é compatible.</translation>
 <translation id="2926708162326352948">Actualizouse o tema coa imaxe cargada</translation>
 <translation id="2927017729816812676">Almacenamento da caché</translation>
+<translation id="2928030851119977280">Gardouse a opción. Aplicarase cando inicies sesión noutros servizos de Google.</translation>
 <translation id="2928795416630981206">Permiso concedido para facer un seguimento da posición da cámara</translation>
 <translation id="2929345818093040583">{NUM_SITES,plural, =1{Chrome quitou os permisos de 1 sitio}other{Chrome quitou os permisos de {NUM_SITES} sitios}}</translation>
 <translation id="2931157624143513983">Axustar á área de impresión</translation>
@@ -3225,7 +3225,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3257733480216378006">Queres permitir <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" />?</translation>
 <translation id="325797067711573598">Bloqueouse a descarga sospeitosa</translation>
 <translation id="3259723213051400722">Téntao de novo.</translation>
-<translation id="3260199651491738298">A túa organización controla como se poden usar os datos recompilados por estas funcións. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="3261090393424563833">Aumentar velocidade</translation>
 <translation id="3261268979727295785">No caso dos nenos de máis idade, podes engadir os controis parentais unha vez rematada a configuración. Atoparás información ao respecto na aplicación Explorar.</translation>
 <translation id="3261832505033014216">Clave de acceso de <ph name="USER_EMAIL" /></translation>
@@ -7406,6 +7405,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6253801023880399036">Os contrasinais gárdanse no <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="6254503684448816922">Clave vulnerada</translation>
 <translation id="6254892857036829079">Perfecto</translation>
+<translation id="6257131917452817589">cambio de contrasinal automatizado</translation>
 <translation id="6257602895346497974">Activar sincronización…</translation>
 <translation id="6257614441619555296"><ph name="KEY" />: <ph name="VALUE" /></translation>
 <translation id="625827534921607067">Esta rede terá preferencia se hai dispoñible máis dunha rede xa configurada ou á que te conectases anteriormente</translation>
@@ -8582,7 +8582,6 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7113974454301513811">Agora engade a pestana actual á lista</translation>
 <translation id="7114054701490058191">Os contrasinais non coinciden</translation>
 <translation id="7114648273807173152">Se queres usar Smart Lock para iniciar sesión na túa Conta de Google, vai a Configuración &gt; Dispositivos conectados &gt; O teu teléfono &gt; Smart Lock.</translation>
-<translation id="7115051913071512405">Próbao</translation>
 <translation id="7115361495406486998">Non hai ningún contacto co que se poida establecer conexión</translation>
 <translation id="7115731767122970828">Mellorar agora</translation>
 <translation id="7116554090938189816">O certificado SSL da impresora caducou. Reinicia a impresora e téntao de novo.</translation>
@@ -9115,6 +9114,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7502528909759062987">Pór en pausa a emisión da pestana no seguinte dispositivo: <ph name="DEVICE_NAME" /></translation>
 <translation id="7502804472671406749">É posible desprazarse e facer zoom polas pestanas compartidas</translation>
 <translation id="7503191893372251637">Tipo de certificado de Netscape</translation>
+<translation id="7503259455663961898">Cambiar por min</translation>
 <translation id="7503985202154027481">Conservarase un rexistro da túa visita a este sitio na túa chave de seguranza.</translation>
 <translation id="7504145862399276792">Estase silenciando o audio desta pestana</translation>
 <translation id="750509436279396091">Abrir cartafol de descargas</translation>
@@ -9177,6 +9177,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7551059576287086432">Non se puido descargar <ph name="FILE_NAME" /></translation>
 <translation id="7551643184018910560">Fixar no estante</translation>
 <translation id="7552191410769096467">Para compartir grupos de pestanas ou unirte a eles, tes que iniciar sesión e activar a sincronización</translation>
+<translation id="7552196109089297786">Pechar sesión de Microsoft</translation>
 <translation id="7552846755917812628">Proba os seguintes consellos:</translation>
 <translation id="7553012839257224005">Comprobando contedor de Linux</translation>
 <translation id="7553242001898162573">Introduce o teu contrasinal</translation>
@@ -10305,6 +10306,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8330617762701840933">Lista de sitios web que redirixen o usuario a un navegador secundario.</translation>
 <translation id="8330689128072902965">Os contactos que estean cerca poden compartir contido contigo. Para cambialo, fai clic.</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{Tipo de ficheiro compatible: <ph name="FILE_TYPE1" />}=2{Tipos de ficheiro compatibles: <ph name="FILE_TYPE1" /> e <ph name="FILE_TYPE2" />}=3{Tipos de ficheiro compatibles: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" /> e <ph name="FILE_TYPE3" />}=4{Tipos de ficheiro compatibles: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" /> e <ph name="FILE_TYPE4" />}other{Tipos de ficheiro compatibles: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" /> e <ph name="FILE_TYPE4" /> (<ph name="LINK" />e {OVERFLOW_COUNT} máis<ph name="END_LINK" />)}}</translation>
+<translation id="8331578454993293727">Este contrasinal atopouse nunha violación da seguranza dos datos</translation>
 <translation id="8331822764922665615">Ponlle un nome ao grupo, escolle unha cor e, logo, preme Escape</translation>
 <translation id="833256022891467078">Cartafoles compartidos de Crostini</translation>
 <translation id="833262891116910667">Destacar</translation>
@@ -10386,6 +10388,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <ph name="BEGIN_PARAGRAPH2" />Para obter máis axuda, visita g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8383614331548401927">Recapitulación de benvida</translation>
 <translation id="8386091599636877289">Non se atopou a política.</translation>
+<translation id="8387087863179559896">Chrome pode actualizar a túa conta para este sitio cun contrasinal seguro. Non terás que lembrar o contrasinal porque se garda no xestor de contrasinais de Google de <ph name="EMAIL" />. Consulta máis información sobre o <ph name="PASSWORD_CHANGE" />.</translation>
 <translation id="8387361103813440603">Permiso denegado para ver a túa localización</translation>
 <translation id="8387617938027387193">Verifica a túa identidade</translation>
 <translation id="8388770971141403598">Os perfís secundarios non son compatibles</translation>
@@ -10884,7 +10887,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8737966899544698733">Precisión da localización (só Android)</translation>
 <translation id="8738418093147087440">Busca por país, idioma ou nome de entrada</translation>
 <translation id="8740086188450289493">Usar contrasinal da Conta de Google</translation>
-<translation id="874023689350909633">Probar</translation>
 <translation id="8740247629089392745">Podes entregar este Chromebook a <ph name="SUPERVISED_USER_NAME" />. A configuración case rematou, polo que é momento de explorar contido.</translation>
 <translation id="8740672167979365981">É necesario actualizar Chrome OS Flex</translation>
 <translation id="8741944563400125534">Guía de configuración de Acceso con interruptores</translation>

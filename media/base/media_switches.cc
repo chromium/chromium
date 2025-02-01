@@ -461,7 +461,7 @@ BASE_FEATURE(kChromeWideEchoCancellation,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-#if BUILDFLAG(IS_MAC)
+#if (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN))
 // Enforces the use of system echo cancellation.
 BASE_FEATURE(kEnforceSystemEchoCancellation,
              "EnforceSystemEchoCancellation",
@@ -1699,7 +1699,7 @@ bool IsChromeWideEchoCancellationEnabled() {
 }
 
 bool IsSystemEchoCancellationEnforced() {
-#if BUILDFLAG(IS_MAC)
+#if (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN))
   return base::FeatureList::IsEnabled(kEnforceSystemEchoCancellation);
 #else
   return false;

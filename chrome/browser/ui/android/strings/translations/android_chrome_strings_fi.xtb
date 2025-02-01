@@ -385,7 +385,6 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="2781151931089541271">1 sekunti jäljellä</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome on löytänyt uudelleenkäytetyn salasanan, jota voisi parantaa}other{Chrome on löytänyt # uudelleenkäytettyä salasanaa, joita voisi parantaa}}</translation>
-<translation id="2796651346651857052">Voit muuttaa osoitepalkin sijaintia koskettamalla sitä pitkään.</translation>
 <translation id="2800066122460699237">Tämä välilehti suljetaan: <ph name="TAB_TITLE" /></translation>
 <translation id="2805756323405976993">Sovellukset</translation>
 <translation id="281504910091592009">Katso ja ylläpidä <ph name="BEGIN_LINK" />Google-tilille<ph name="END_LINK" /> tallennettuja salasanoja</translation>

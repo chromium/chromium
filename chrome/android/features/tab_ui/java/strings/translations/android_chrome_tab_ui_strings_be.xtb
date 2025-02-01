@@ -86,6 +86,7 @@
 <translation id="4783638485675352219">Абагульваць назвы і URL-адрасы адкрытых укладак паміж гэтай прыладай і аперацыйнай сістэмай</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> водгук)}one{(<ph name="REVIEWS_COUNT_MANY" /> водгук)}few{(<ph name="REVIEWS_COUNT_MANY" /> водгукі)}many{(<ph name="REVIEWS_COUNT_MANY" /> водгукаў)}other{(<ph name="REVIEWS_COUNT_MANY" /> водгуку)}}</translation>
 <translation id="4850886885716139402">Праглядзець</translation>
+<translation id="4861953997778766866">Кожны карыстальнік можа ўносіць змяненні ў вашы абагуленыя групы ўкладак</translation>
 <translation id="4870911314065352661">Закрыць усе ўкладкі?</translation>
 <translation id="4871719318659334896">Закрыць групу</translation>
 <translation id="4881695831933465202">Адкрыць</translation>
@@ -179,6 +180,7 @@
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{Укладак дададзена: <ph name="ONE_ADDED" />, закрыта: <ph name="ANY_CLOSED" />}one{Укладак дададзена: <ph name="MANY_ADDED" />, закрыта: <ph name="ANY_CLOSED" />}few{Укладак дададзена: <ph name="MANY_ADDED" />, закрыта: <ph name="ANY_CLOSED" />}many{Укладак дададзена: <ph name="MANY_ADDED" />, закрыта: <ph name="ANY_CLOSED" />}other{Укладак дададзена: <ph name="MANY_ADDED" />, закрыта: <ph name="ANY_CLOSED" />}}</translation>
 <translation id="8633025649649592204">Нядаўнія дзеянні</translation>
 <translation id="870736955561925754">Закрыць укладку і выдаліць групу?</translation>
+<translation id="8712637175834984815">Зразумела</translation>
 <translation id="8714939927607906138">Цана знізілася</translation>
 <translation id="8730621377337864115">Гатова</translation>
 <translation id="8730999928494395583">Звесткі пра вашы дзеянні на гэтых укладках у рэжыме інкогніта будуць выдалены з прылады</translation>

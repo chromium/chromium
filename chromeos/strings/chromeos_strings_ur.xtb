@@ -768,6 +768,7 @@
 <translation id="4654549501020883054">روزانہ تبدیل کریں</translation>
 <translation id="4655868084888499342">تصویر کو وال پیپر کے طور پر سیٹ کیا گیا</translation>
 <translation id="4661249927038176904">ورائے حقیقت</translation>
+<translation id="4661392828086261436">‏یہ اپ ڈیٹ آلے کے کسی مینوفیکچرر کی طرف سے فراہم کی گئی ہے اور Google نے بھی اس کی توثیق نہیں کی ہے</translation>
 <translation id="4664651912255946953">پوستین</translation>
 <translation id="4665014895760275686">مینوفیکچرر</translation>
 <translation id="467510802200863975">پاس ورڈز مماثل نہیں ہیں</translation>
@@ -1027,6 +1028,7 @@
 <translation id="5904994456462260490">‏ایک نیا APN شامل کریں</translation>
 <translation id="590746845088109442">بلیاں</translation>
 <translation id="5907649332524363701">کلید کا رنگ</translation>
+<translation id="5908813850962688338">اس اپ ڈیٹ کو انسٹال کرنے میں چند منٹ لگیں گے۔ اپ ڈیٹ ڈاؤن لوڈ ہونے پر اپنے آلے کو پلگ ان اور پاور آن رکھیں۔ ممکن ہے کہ آپ کا آلہ خود کو کئی بار ریبوٹ کرے اور اس عمل کے دوران ایک سیاہ اسکرین دکھائے۔ انسٹالیشن مکمل کرنے کے لیے آپ کو اپنے آلے کو ری سٹارٹ کرنے کے لیے پرامپٹ کیا جائے گا۔</translation>
 <translation id="5916084858004523819">ممنوعہ</translation>
 <translation id="5916664084637901428">آن</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{آپ کی فائل کامیابی کے ساتھ اسکین ہو گئی ہے اور اسے <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> پر محفوظ کر دیا گیا ہے۔}other{آپ کی فائلیں کامیابی کے ساتھ اسکین ہو گئی ہیں اور انہیں <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> پر محفوظ کر دیا گیا ہے۔}}</translation>

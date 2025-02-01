@@ -768,6 +768,7 @@
 <translation id="4654549501020883054">Verander daagliks</translation>
 <translation id="4655868084888499342">Prent is as muurpapier gestel</translation>
 <translation id="4661249927038176904">Surrealisties</translation>
+<translation id="4661392828086261436">Hierdie opdatering word deur die toestelvervaardiger verskaf en is nie deur Google geverifieer nie</translation>
 <translation id="4664651912255946953">pels</translation>
 <translation id="4665014895760275686">Vervaardiger</translation>
 <translation id="467510802200863975">Wagwoorde is nie dieselfde nie</translation>
@@ -1027,6 +1028,7 @@
 <translation id="5904994456462260490">Voeg ’n nuwe APN by</translation>
 <translation id="590746845088109442">katte</translation>
 <translation id="5907649332524363701">sleutelkleur</translation>
+<translation id="5908813850962688338">Die installasie van hierdie opdatering sal ’n paar minute neem. Hou jou toestel ingeprop en aangeskakel terwyl die opdatering afgelaai word. Jou toestel kan homself verskeie kere herselflaai en ’n swart skerm wys tydens hierdie proses. Jy sal gevra word om jou toestel te herbegin om die installasie te voltooi.</translation>
 <translation id="5916084858004523819">Verbode</translation>
 <translation id="5916664084637901428">Aan</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Jou lêer is suksesvol geskandeer en in <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> gestoor.}other{Jou lêers is suksesvol geskandeer en in <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> gestoor.}}</translation>

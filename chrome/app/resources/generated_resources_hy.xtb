@@ -2153,7 +2153,6 @@
 <translation id="2471632709106952369">Համեմատման աղյուսակներ</translation>
 <translation id="2473195200299095979">Թարգմանել այս էջը</translation>
 <translation id="2475982808118771221">Սխալ առաջացավ</translation>
-<translation id="247616523300581745">Թաքցնել այս ֆայլերը</translation>
 <translation id="2476435723907345463">Դուք արգելեցիք մուտքի բանալիների օգտագործումը</translation>
 <translation id="2476901513051581836">Տարածքը կարելի է ազատել, միայն եթե անցանց հիշողության չափը հայտնի է։</translation>
 <translation id="2476974672882258506"><ph name="PARALLELS_DESKTOP" />-ն ապատեղադրելու համար ավարտեք Windows-ի հետ աշխատանքը։</translation>
@@ -2793,6 +2792,7 @@
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> սարքը չի աջակցվում։</translation>
 <translation id="2926708162326352948">Թեման թարմացվեց վերբեռնված պատկերով</translation>
 <translation id="2927017729816812676">Հիշապահեստ</translation>
+<translation id="2928030851119977280">Կարգավորումները պահվեցին։ Դրանք կկիրառվեն, երբ մուտք գործեք Google-ի այլ ծառայություններ։</translation>
 <translation id="2928795416630981206">Թույլատրվում է հետագծել ձեր տեսախցիկի դիրքը</translation>
 <translation id="2929345818093040583">{NUM_SITES,plural, =1{Chrome-ը հեռացրել է թույլտվությունները 1 կայքից}one{Chrome-ը հեռացրել է թույլտվությունները {NUM_SITES} կայքից}other{Chrome-ը հեռացրել է թույլտվությունները {NUM_SITES} կայքից}}</translation>
 <translation id="2931157624143513983">Տեղավորել տպվող հատվածում</translation>
@@ -3226,7 +3226,6 @@
 <translation id="3257733480216378006">Թույլատրե՞լ <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" /> ընդլայնում</translation>
 <translation id="325797067711573598">Կասկածելի ներբեռնումն արգելափակվել է</translation>
 <translation id="3259723213051400722">Նորից փորձեք:</translation>
-<translation id="3260199651491738298">Ձեր կազմակերպությունն է վերահսկում, թե ինչպես կարող են օգտագործվել այս գործառույթների կողմից հավաքված տվյալները։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="3261090393424563833">Ավելացնել հաճախականությունը</translation>
 <translation id="3261268979727295785">Ավելի մեծ տարիքի երեխաների համար դուք կարող եք ավելացնել ծնողական վերահսկողությունը՝ կարգավորումն ավարտելուց հետո։ Ծնողական վերահսկողության մասին տեղեկությունները դիտեք Հնարավորություններ հավելվածում։</translation>
 <translation id="3261832505033014216"><ph name="USER_EMAIL" /> հաշվի մուտքի բանալի</translation>
@@ -7401,6 +7400,7 @@
 <translation id="6253801023880399036">Գաղտնաբառերը պահվում են <ph name="GOOGLE_PASSWORD_MANAGER" />ում։</translation>
 <translation id="6254503684448816922">Բանալին բացահայտված է</translation>
 <translation id="6254892857036829079">Կատարյալ</translation>
+<translation id="6257131917452817589">գաղտնաբառի ավտոմատ փոփոխության</translation>
 <translation id="6257602895346497974">Միացնել համաժամացումը…</translation>
 <translation id="6257614441619555296"><ph name="KEY" />՝ <ph name="VALUE" /></translation>
 <translation id="625827534921607067">Սարքն օգտագործում է այս ցանցը, երբ հասանելի են մի քանի ցանցեր, որոնց նախկինում միացել եք</translation>
@@ -8579,7 +8579,6 @@
 <translation id="7113974454301513811">Այժմ ընթացիկ ներդիրն ավելացրեք ձեր ցանկում</translation>
 <translation id="7114054701490058191">Գաղտնաբառերը չեն համընկնում</translation>
 <translation id="7114648273807173152">Smart Lock-ն օգտագործելու համար մտեք ձեր Google հաշիվ, անցեք Կարգավորումներ &gt; Միացված սարքեր &gt; Ձեր հեռախոսը &gt; Smart Lock:</translation>
-<translation id="7115051913071512405">Փորձել</translation>
 <translation id="7115361495406486998">Հասանելի կոնտակտներ չկան</translation>
 <translation id="7115731767122970828">Բարձրացնել</translation>
 <translation id="7116554090938189816">Տպիչի SSL հավաստագրի ժամկետը լրացել է։ Վերագործարկեք տպիչը և նորից փորձեք։</translation>
@@ -9112,6 +9111,7 @@
 <translation id="7502528909759062987">Դադարեցնել ներդիրի հեռարձակումը <ph name="DEVICE_NAME" /> սարքին</translation>
 <translation id="7502804472671406749">Ընդհանուր ներդիրների մասշտաբը կարող է փոփոխվել ոլորումով</translation>
 <translation id="7503191893372251637">Netscape-ի վկայագրի տեսակ</translation>
+<translation id="7503259455663961898">Փոխել գաղտնաբառը</translation>
 <translation id="7503985202154027481">Անվտանգության բանալու վրա կպահվի նշում այս կայքի այցելության մասին:</translation>
 <translation id="7504145862399276792">Այս ներդիրի ձայնն անջատված է</translation>
 <translation id="750509436279396091">Բացել ներբեռնումների պանակը</translation>
@@ -9174,6 +9174,7 @@
 <translation id="7551059576287086432"><ph name="FILE_NAME" /> ֆայլի ներբեռնումը ձախողվեց</translation>
 <translation id="7551643184018910560">Ամրացնել դարակում</translation>
 <translation id="7552191410769096467">Ներդիրների խմբերով կիսվելու կամ դրանց միանալու համար մուտք գործեք հաշիվ և միացրեք համաժամացումը</translation>
+<translation id="7552196109089297786">Դուրս գալ Microsoft հաշվից</translation>
 <translation id="7552846755917812628">Փորձեք անել հետևյալը՝</translation>
 <translation id="7553012839257224005">Լինուքսի կոնտեյները ստուգվում է</translation>
 <translation id="7553242001898162573">Մուտքագրեք ձեր գաղտնաբառը</translation>
@@ -10301,6 +10302,7 @@
 <translation id="8330617762701840933">Կայքերի ցուցակը, որոնք վերաուղղորդում են դեպի այլընտրանքային դիտարկիչ։</translation>
 <translation id="8330689128072902965">Մոտ գտնվող կոնտակտները կարող են տվյալներով կիսվել ձեզ հետ։ Հպեք՝ կարգավորումները փոփոխելու համար։</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{Ֆայլի աջակցվող տեսակ՝ <ph name="FILE_TYPE1" />}=2{Ֆայլերի աջակցվող տեսակներ՝ <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />}=3{Ֆայլերի աջակցվող տեսակներ՝ <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />}=4{Ֆայլերի աջակցվող տեսակներ՝ <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" />}one{Ֆայլերի աջակցվող տեսակներ՝ <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />ու ևս {OVERFLOW_COUNT}-ը<ph name="END_LINK" />)}other{Ֆայլերի աջակցվող տեսակներ՝ <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />ու ևս {OVERFLOW_COUNT}-ը<ph name="END_LINK" />)}}</translation>
+<translation id="8331578454993293727">Տվյալների արտահոսքի արդյունքում ձեր գաղտնաբառը բացահայտվել է</translation>
 <translation id="8331822764922665615">Անվանեք ձեր խումբը, ընտրեք գույն և սեղմեք Esc ստեղնը</translation>
 <translation id="833256022891467078">Crostini-ի ընդհանուր պանակներ</translation>
 <translation id="833262891116910667">Նշել</translation>
@@ -10382,6 +10384,7 @@
     <ph name="BEGIN_PARAGRAPH2" />Լրացուցիչ օգնության համար այցելեք g.co/flex/InstallErrors էջ։<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8383614331548401927">Բարի վերադարձ</translation>
 <translation id="8386091599636877289">Քաղաքականությունը չգտնվեց։</translation>
+<translation id="8387087863179559896">Chrome-ը կարող է ձեզ համար հուսալի գաղտնաբառ ստեղծել այս կայքում։ Այդ գաղտնաբառը հիշելու կարիք չի լինի, քանի որ այն կպահվի <ph name="EMAIL" /> հաշվի Google գաղտնաբառերի կառավարչում։ Իմանալ ավելին <ph name="PASSWORD_CHANGE" /> մասին։</translation>
 <translation id="8387361103813440603">Չի թույլատրվում տեսնել ձեր տեղադրությունը</translation>
 <translation id="8387617938027387193">Հաստատեք ձեր ինքնությունը</translation>
 <translation id="8388770971141403598">Լրացուցիչ պրոֆիլները չեն աջակցվում</translation>
@@ -10880,7 +10883,6 @@
 <translation id="8737966899544698733">Տեղորոշման ճշգրտություն (միայն Android-ի համար)</translation>
 <translation id="8738418093147087440">Որոնեք ըստ երկրների, լեզուների կամ ներածման մեթոդների</translation>
 <translation id="8740086188450289493">Օգտագործել Google հաշվի գաղտնաբառը</translation>
-<translation id="874023689350909633">Փորձել</translation>
 <translation id="8740247629089392745">Դուք կարող եք տալ այս Chromebook-ը <ph name="SUPERVISED_USER_NAME" />-ին։ Կարգավորումը գրեթե ավարտված է։ Սարքը շուտով պատրաստ կլինի օգտագործման։</translation>
 <translation id="8740672167979365981">Թարմացրեք ChromeOS Flex-ը</translation>
 <translation id="8741944563400125534">Switch Access-ի կարգավորման ուղեցույց</translation>

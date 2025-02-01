@@ -178,7 +178,6 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1550523713251050646">Noklikšķiniet, lai skatītu citas iespējas.</translation>
 <translation id="1555130319947370107">Zila</translation>
 <translation id="1557622599341396706">Rādīt darbvietas nosaukumu</translation>
-<translation id="1567138500090284106">Poga Peles taustiņi</translation>
 <translation id="1569384531973824928">Tādējādi piekļuve tiek atļauta visām lietotnēm un vietnēm, kurām ir kameras un mikrofona atļauja. Iespējams, jums būs jāatsvaidzina tīmekļa lapa vai jārestartē lietotne.</translation>
 <translation id="1571697193564730395">Pārslēgt režīmu “Netraucēt”. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Tālināt, kad ieslēgta lupa</translation>
@@ -731,6 +730,7 @@ Pretējā gadījumā iebūvētais skārienpaliktnis tiks atkārtoti iespējots, 
 <translation id="3522979239100719575">Notiek pieejamu profilu meklēšana… Tā var ilgt dažas minūtes.</translation>
 <translation id="3526440770046466733">Atvērt saiti jaunā cilnē, bet palikt pašreizējā cilnē</translation>
 <translation id="353086728817903341">Izveidots savienojums ar <ph name="NUM_DEVICES" /> ierīcēm</translation>
+<translation id="3532247131850366052">Nevarēja izveidot Google izklājlapu.</translation>
 <translation id="3533126039236445965">Lietotņu plaukts</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> tīklājs</translation>
 <translation id="3540893133818942399">Nerādīt iespēju iestatīt tālruņa jaunāko fotoattēlu un multivides satura skatīšanu</translation>
@@ -829,6 +829,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="380165613292957338">Sveicināti! Kā varu palīdzēt?</translation>
 <translation id="3804737937830804242">Sakļaut kameru</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{Viena emocijzīme. Nav citu rezultātu.}zero{# emocijzīmes. Nav citu rezultātu.}one{Emocijzīmju skaits: #. Nav citu rezultātu.}other{Emocijzīmju skaits: #. Nav citu rezultātu.}}</translation>
+<translation id="3822403841174077928">Nevarēja nokopēt formatējumu.</translation>
 <translation id="3824784079442479685">Atļauj piekļuvi kamerai lietotnei <ph name="APP_NAME" /> un visām lietotnēm un vietnēm, kurām ir kameras atļauja. Iespējams, jums būs jāatsvaidzina tīmekļa lapa vai jārestartē lietotne.</translation>
 <translation id="3826099427150913765">Izmantot paroli</translation>
 <translation id="383058930331066723">Ir ieslēgts akumulatora enerģijas taupīšanas režīms</translation>
@@ -1215,6 +1216,7 @@ Pievienota viena ierīce.</translation>
 <translation id="5043679421800073804">Plauktā noklikšķināt uz pēdējās ikonas vai pieskarties tai</translation>
 <translation id="504465286040788597">Iepriekšējā rindkopa</translation>
 <translation id="5045550434625856497">Nepareiza parole</translation>
+<translation id="5058794129231928255">Nevarēja izveidot Google dokumentu.</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Ja runāsiet, kad ir izslēgts mikrofons, tiks parādīts paziņojums. Jūsu audio vienmēr atrodas tikai jūsu ierīcē.</translation>
 <translation id="5077416371682039027">Iestatīt tālruņa jaunāko fotoattēlu, multivides satura, paziņojumu un lietotņu skatīšanu</translation>
@@ -1647,6 +1649,7 @@ Nav pievienota neviena ierīce.</translation>
 <translation id="6468406072297048412">{0,plural, =1{Atjaunojiet ierīcē iepriekšējo versiju 1 minūtes laikā}zero{Atjaunojiet ierīcē iepriekšējo versiju # minūšu laikā}one{Atjaunojiet ierīcē iepriekšējo versiju # minūtes laikā}other{Atjaunojiet ierīcē iepriekšējo versiju # minūšu laikā}}</translation>
 <translation id="6469104339369989396">Pārslēgt tīklāju</translation>
 <translation id="6477681113376365978">Nevar lejupielādēt failu</translation>
+<translation id="648135757200234041">Nevarēja izveidot kontaktpersonu.</translation>
 <translation id="6482559668224714696">Pilnekrāna lupa</translation>
 <translation id="6485086611007560630">Laikapstākļi (informācija nav pieejama)</translation>
 <translation id="6490471652906364588">USB-C ierīce (pieslēgvieta pa labi)</translation>
@@ -2287,6 +2290,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="8653151467777939995">Rādīt paziņojumu iestatījumus. Paziņojumi ir ieslēgti</translation>
 <translation id="8657066291275741003">mazie burti</translation>
 <translation id="8660331759611631213">Kvadrātsakne no 71</translation>
+<translation id="8662921061190671299">Nevarēja pievienot Kalendāram.</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, signāla stiprums: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Lai uzņemtu daļēju ekrānuzņēmumu, nospiediet taustiņu Enter</translation>
 <translation id="8676770494376880701">Pievienots lādētājs ar mazu strāvas padevi</translation>

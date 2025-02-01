@@ -768,6 +768,7 @@
 <translation id="4654549501020883054">በየቀኑ ይለውጡ</translation>
 <translation id="4655868084888499342">ምስል እንደ ልጣፍ ተቀናብሯል</translation>
 <translation id="4661249927038176904">ሕልም አስተኔ</translation>
+<translation id="4661392828086261436">ይህ ዝማኔ የቀረበው በመሣሪያ አምራች ነው እና በGoogle አልተረጋገጠም</translation>
 <translation id="4664651912255946953">የእንስሳ ፀጉር</translation>
 <translation id="4665014895760275686">አምራች</translation>
 <translation id="467510802200863975">የይለፍ ቃላትዎ አይዛመዱም</translation>
@@ -1027,6 +1028,7 @@
 <translation id="5904994456462260490">አዲስ ኤፒኤን ያክሉ</translation>
 <translation id="590746845088109442">ድመቶች</translation>
 <translation id="5907649332524363701">የቁልፍ ቀለም</translation>
+<translation id="5908813850962688338">ይህን ዝማኔ መጫን ጥቂት ደቂቃዎችን ይወስዳል። ዝማኔው በሚወርድበት ጊዜ መሣሪያዎ እንደተሰካ እና እንደበራ ያቆዩት። በዚህ ሂደት ውስጥ መሣሪያዎ ራሱን ብዙ ጊዜ ዳግም ሊያስነሳ እና ጥቁር ማያ ገጽ ሊያሳይ ይችላል። መጫኑን ለማጠናቀቅ መሣሪያዎን እንደገና እንዲያስጀምሩት ይጠየቃሉ።</translation>
 <translation id="5916084858004523819">የተከለከሉ</translation>
 <translation id="5916664084637901428">በርቷል</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{የእርስዎ ፋይል በተሳካ ሁኔታ ተቃኝቶ <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ላይ ተቀምጧል።}one{የእርስዎ ፋይሎች በተሳካ ሁኔታ ተቃኝቶ <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ላይ ተቀምጧል።}other{የእርስዎ ፋይሎች በተሳካ ሁኔታ ተቃኝቶ <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ላይ ተቀምጧል።}}</translation>

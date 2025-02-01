@@ -86,6 +86,7 @@ Si el suprimeixes, tothom perdrà immediatament l'accés al grup de pestanyes "<
 <translation id="4783638485675352219">Comparteix els títols i els URL de les pestanyes obertes d'aquest dispositiu amb el sistema operatiu</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> ressenya)}other{(<ph name="REVIEWS_COUNT_MANY" /> ressenyes)}}</translation>
 <translation id="4850886885716139402">Mostra</translation>
+<translation id="4861953997778766866">Tothom pot fer canvis als teus grups de pestanyes compartits</translation>
 <translation id="4870911314065352661">Vols tancar totes les pestanyes?</translation>
 <translation id="4871719318659334896">Tanca el grup</translation>
 <translation id="4881695831933465202">Obre</translation>
@@ -179,6 +180,7 @@ Si el suprimeixes, tothom perdrà immediatament l'accés al grup de pestanyes "<
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{S'ha afegit <ph name="ONE_ADDED" /> pestanya i se n'ha tancat <ph name="ANY_CLOSED" />}other{S'han afegit <ph name="MANY_ADDED" /> pestanyes i se n'han tancat <ph name="ANY_CLOSED" />}}</translation>
 <translation id="8633025649649592204">Activitat recent</translation>
 <translation id="870736955561925754">Vols tancar la pestanya i suprimir el grup?</translation>
+<translation id="8712637175834984815">Entesos</translation>
 <translation id="8714939927607906138">Preu més baix</translation>
 <translation id="8730621377337864115">Fet</translation>
 <translation id="8730999928494395583">La teva activitat en aquestes pestanyes d'incògnit se suprimirà del dispositiu</translation>

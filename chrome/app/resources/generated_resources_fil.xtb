@@ -2165,7 +2165,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2471632709106952369">Mga talahanayan sa paghahambing</translation>
 <translation id="2473195200299095979">I-translate ang pahinang ito</translation>
 <translation id="2475982808118771221">May isang naganap na error</translation>
-<translation id="247616523300581745">I-hide ang mga file na ito</translation>
 <translation id="2476435723907345463">Inalis ang access sa mga passkey</translation>
 <translation id="2476901513051581836">Hindi malilinis ang storage hangga't hindi nalalaman ang laki ng offline na storage.</translation>
 <translation id="2476974672882258506">I-shut down ang Windows para ma-uninstall ang <ph name="PARALLELS_DESKTOP" />.</translation>
@@ -3241,7 +3240,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3257733480216378006">Payagan ang <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" />?</translation>
 <translation id="325797067711573598">Na-block ang kahina-hinalang pag-download</translation>
 <translation id="3259723213051400722">Pakisubukang muli.</translation>
-<translation id="3260199651491738298">Kinokontrol ng iyong organisasyon kung paano puwedeng gamitin ang mga data na kinokolekta ng mga feature na ito. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="3261090393424563833">Pabilisin ang rate</translation>
 <translation id="3261268979727295785">Para sa mga nakatatandang anak, puwede kang magdagdag ng parental controls kapag natapos mo na ang pag-set up. Makikita mo ang impormasyon tungkol sa parental controls sa Explore app.</translation>
 <translation id="3261832505033014216">Passkey para sa <ph name="USER_EMAIL" /></translation>
@@ -8602,7 +8600,6 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7113974454301513811">Idagdag ngayon ang kasalukuyang tab sa iyong listahan</translation>
 <translation id="7114054701490058191">Hindi magkatugma ang mga password</translation>
 <translation id="7114648273807173152">Para gamitin ang Smart Lock para mag-sign in sa iyong Google Account, pumunta sa Mga Setting &gt; Mga nakakonektang device &gt; Iyong telepono &gt; Smart Lock.</translation>
-<translation id="7115051913071512405">Subukan ito</translation>
 <translation id="7115361495406486998">Walang maabot na contact</translation>
 <translation id="7115731767122970828">Mag-boost ngayon</translation>
 <translation id="7116554090938189816">Nag-expire na ang SSL certificate ng printer. I-restart ang printer at subukan ulit.</translation>
@@ -10910,7 +10907,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8737966899544698733">Katumpakan ng Lokasyon (Android lang)</translation>
 <translation id="8738418093147087440">Maghanap ayon sa mga bansa, wika, o mga pangalan ng input</translation>
 <translation id="8740086188450289493">Gamitin ang password ng Google Account</translation>
-<translation id="874023689350909633">Subukan Ito</translation>
 <translation id="8740247629089392745">Puwede mong ibigay ang Chromebook na ito kay <ph name="SUPERVISED_USER_NAME" />. Malapit nang matapos ang pag-set up, puwede nang mag-explore pagkatapos nito.</translation>
 <translation id="8740672167979365981">Kinakailangang i-update ang ChromeOS Flex</translation>
 <translation id="8741944563400125534">Gabay sa pag-set up ng Switch Access</translation>

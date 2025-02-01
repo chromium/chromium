@@ -86,6 +86,7 @@
 <translation id="4783638485675352219">এই ডিভাইচটোৰ পৰা খোলা থকা টেবৰ শিৰোনাম আৰু URL অপাৰেটিং ছিষ্টেমৰ সৈতে শ্বেয়াৰ কৰক</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> টা পৰ্যালোচনা)}one{(<ph name="REVIEWS_COUNT_MANY" /> টা পৰ্যালোচনা)}other{(<ph name="REVIEWS_COUNT_MANY" /> টা পৰ্যালোচনা)}}</translation>
 <translation id="4850886885716139402">চাওক</translation>
+<translation id="4861953997778766866">আপোনাৰ শ্বেয়াৰ কৰা টেবৰ গোটত যিকোনো লোকে সালসলনি কৰিব পাৰে</translation>
 <translation id="4870911314065352661">আটাইবোৰ টেব বন্ধ কৰিবনে?</translation>
 <translation id="4871719318659334896">গোটটো বন্ধ কৰক</translation>
 <translation id="4881695831933465202">খোলক</translation>
@@ -179,6 +180,7 @@
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> টা টেব যোগ দিয়া হ’ল, <ph name="ANY_CLOSED" /> টা টেব বন্ধ কৰা হ'ল}one{<ph name="MANY_ADDED" /> টা টেব যোগ দিয়া হ’ল, <ph name="ANY_CLOSED" /> টা টেব বন্ধ কৰা হ'ল}other{<ph name="MANY_ADDED" /> টা টেব যোগ দিয়া হ’ল, <ph name="ANY_CLOSED" /> টা টেব বন্ধ কৰা হ'ল}}</translation>
 <translation id="8633025649649592204">শেহতীয়া কাৰ্যকলাপ</translation>
 <translation id="870736955561925754">টেবটো বন্ধ কৰিব আৰু গোটটো মচিবনে?</translation>
+<translation id="8712637175834984815">বুজি পালোঁ</translation>
 <translation id="8714939927607906138">কম মূল্য</translation>
 <translation id="8730621377337864115">হ’ল</translation>
 <translation id="8730999928494395583">এই ইনক’গনিট’ টেবসমূহত আপুনি কৰা কাৰ্যকলাপ এই ডিভাইচটোৰ পৰা আঁতৰোৱা হ’ব</translation>

@@ -768,6 +768,7 @@
 <translation id="4654549501020883054">Měnit denně</translation>
 <translation id="4655868084888499342">Obrázek nastaven jako tapeta</translation>
 <translation id="4661249927038176904">Fantaskní</translation>
+<translation id="4661392828086261436">Tuto aktualizaci poskytuje výrobce zařízení a nebyla ověřena společností Google</translation>
 <translation id="4664651912255946953">kožešina</translation>
 <translation id="4665014895760275686">Výrobce</translation>
 <translation id="467510802200863975">Hesla se neshodují</translation>
@@ -1027,6 +1028,7 @@
 <translation id="5904994456462260490">Přidání nového názvu přístupového bodu</translation>
 <translation id="590746845088109442">kočky</translation>
 <translation id="5907649332524363701">barva klíče</translation>
+<translation id="5908813850962688338">Instalace této aktualizace zabere několik minut. Během stahování aktualizace nechte zařízení připojené ke zdroji napájení a zapnuté. Zařízení se během procesu může několikrát restartovat a může se na něm zobrazit černá obrazovka. K dokončení instalace bude zařízení na výzvu potřeba restartovat.</translation>
 <translation id="5916084858004523819">Zakázáno</translation>
 <translation id="5916664084637901428">Zapnuto</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Soubor byl úspěšně naskenován a uložen do složky <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Soubory byly úspěšně naskenovány a uloženy do složky <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}many{Soubory byly úspěšně naskenovány a uloženy do složky <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Soubory byly úspěšně naskenovány a uloženy do složky <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>

@@ -768,6 +768,7 @@
 <translation id="4654549501020883054">Փոխել ամեն օր</translation>
 <translation id="4655868084888499342">Պատկերը սահմանվեց որպես պաստառ</translation>
 <translation id="4661249927038176904">Սյուրռեալիստական</translation>
+<translation id="4661392828086261436">Այս թարմացումը տրամադրվել է սարքի արտադրողի կողմից և չի ստուգվել Google-ի կողմից</translation>
 <translation id="4664651912255946953">մորթի</translation>
 <translation id="4665014895760275686">Արտադրող</translation>
 <translation id="467510802200863975">Գաղտնաբառերը չեն համընկնում</translation>
@@ -1027,6 +1028,7 @@
 <translation id="5904994456462260490">Ավելացրեք նոր APN</translation>
 <translation id="590746845088109442">կատուներ</translation>
 <translation id="5907649332524363701">ստեղների գույնը</translation>
+<translation id="5908813850962688338">Թարմացման տեղադրումը մի քանի րոպե կտևի։ Այդ ընթացքում սարքը պետք է միացված լինի հոսանքին և չանջատվի։ Այն կարող է մի քանի անգամ վերաբեռնվել, իսկ էկրանը՝ սևանալ։ Տեղադրումն ավարտելու համար ձեզ կառաջարկվի վերագործարկել սարքը։</translation>
 <translation id="5916084858004523819">Արգելված է</translation>
 <translation id="5916664084637901428">Միացնել</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Ձեր ֆայլը սկանավորվեց և պահվեց <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> պանակում։}one{Ձեր ֆայլերը սկանավորվեցին և պահվեցին <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> պանակում։}other{Ձեր ֆայլերը սկանավորվեցին և պահվեցին <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> պանակում։}}</translation>

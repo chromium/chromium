@@ -86,6 +86,7 @@ Nëse e fshin atë, të gjithë do të humbasin menjëherë qasjen te grupi i sk
 <translation id="4783638485675352219">Ndaj titujt dhe URL-të e skedave të hapura nga kjo pajisje me sistemin operativ</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> koment)}other{(<ph name="REVIEWS_COUNT_MANY" /> komente)}}</translation>
 <translation id="4850886885716139402">Pamja</translation>
+<translation id="4861953997778766866">Të gjithë mund të bëjnë ndryshime te grupet e skedave të ndara</translation>
 <translation id="4870911314065352661">Të mbyllen të gjitha skedat?</translation>
 <translation id="4871719318659334896">Mbyll grupin</translation>
 <translation id="4881695831933465202">Hap</translation>
@@ -179,6 +180,7 @@ Nëse e fshin atë, të gjithë do të humbasin menjëherë qasjen te grupi i sk
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> skedë u shtua, <ph name="ANY_CLOSED" /> u mbyllën}other{<ph name="MANY_ADDED" /> skeda u shtuan, <ph name="ANY_CLOSED" /> u mbyllën}}</translation>
 <translation id="8633025649649592204">Aktiviteti i fundit</translation>
 <translation id="870736955561925754">Të mbyllet skeda dhe të fshihet grupi?</translation>
+<translation id="8712637175834984815">E kuptova</translation>
 <translation id="8714939927607906138">Çmim më i ulët</translation>
 <translation id="8730621377337864115">U krye</translation>
 <translation id="8730999928494395583">Aktiviteti yt në këto skeda "të fshehta" do të hiqet nga kjo pajisje</translation>

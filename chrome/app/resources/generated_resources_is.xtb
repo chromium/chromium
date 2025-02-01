@@ -2165,7 +2165,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2471632709106952369">Samanburðartöflur</translation>
 <translation id="2473195200299095979">Þýða þessa síðu</translation>
 <translation id="2475982808118771221">Villa kom upp</translation>
-<translation id="247616523300581745">Fela þessar skrár</translation>
 <translation id="2476435723907345463">Aðgangur að aðgangslyklum var fjarlægður</translation>
 <translation id="2476901513051581836">Ekki er hægt að hreinsa upp geymslurými fyrr en stærð geymslurýmis án nettengingar er þekkt.</translation>
 <translation id="2476974672882258506">Lokaðu Windows til að fjarlægja <ph name="PARALLELS_DESKTOP" />.</translation>
@@ -3241,7 +3240,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3257733480216378006">Viltu leyfa <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" />?</translation>
 <translation id="325797067711573598">Lokað fyrir grunsamlegt niðurhal</translation>
 <translation id="3259723213051400722">Reyndu aftur.</translation>
-<translation id="3260199651491738298">Fyrirtækið þitt stjórnar því hvernig má nota gögnin sem þessir eiginleikar safna. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
 <translation id="3261090393424563833">Auka tíðni</translation>
 <translation id="3261268979727295785">Fyrir eldri börn getur þú bætt við barnalæsingum þegar uppsetningu er lokið. Þú finnur upplýsingar um barnalæsingar í forritinu Kanna.</translation>
 <translation id="3261832505033014216">Aðgangslykill fyrir <ph name="USER_EMAIL" /></translation>
@@ -8601,7 +8599,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7113974454301513811">Nú skaltu bæta núverandi flipa á listann</translation>
 <translation id="7114054701490058191">Aðgangsorðin stemma ekki</translation>
 <translation id="7114648273807173152">Þú getur notað Smart Lock til að skrá þig inn á Google reikninginn þinn með því að fara í Stillingar &gt; Tengd tæki &gt; Síminn þinn &gt; Smart Lock.</translation>
-<translation id="7115051913071512405">Prófa</translation>
 <translation id="7115361495406486998">Ekki næst í neina tengiliði</translation>
 <translation id="7115731767122970828">Bæta núna</translation>
 <translation id="7116554090938189816">SSL-vottorð prentara er útrunnið. Endurræstu prentarann og reyndu aftur.</translation>
@@ -10907,7 +10904,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8737966899544698733">Staðsetningarnákvæmni (Android eingöngu)</translation>
 <translation id="8738418093147087440">Leita eftir löndum, tungumáli eða innslegnu heiti</translation>
 <translation id="8740086188450289493">Nota aðgangsorð Google-reiknings</translation>
-<translation id="874023689350909633">Prófa</translation>
 <translation id="8740247629089392745">Þú getur afhent <ph name="SUPERVISED_USER_NAME" /> þessa Chromebook. Uppsetningu lýkur brátt og þá verður hægt að svipast um.</translation>
 <translation id="8740672167979365981">ChromeOS Flex uppfærslu krafist</translation>
 <translation id="8741944563400125534">Uppsetningarleiðsögn rofaaðgangs</translation>

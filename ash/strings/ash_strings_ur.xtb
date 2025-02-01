@@ -178,7 +178,6 @@
 <translation id="1550523713251050646">مزید اختیارات کیلئے کلک کریں</translation>
 <translation id="1555130319947370107">نیلا</translation>
 <translation id="1557622599341396706">ڈیسک نام دکھائیں</translation>
-<translation id="1567138500090284106">ماؤس کلیدوں کا بٹن</translation>
 <translation id="1569384531973824928">اس سے کیمرے اور مائیکروفون کی اجازتوں کے ساتھ تمام ایپس اور ویب سائٹس تک رسائی کی اجازت ملتی ہے۔ آپ کو ویب صفحہ کو ریفریش کرنے یا ایپ کو دوبارہ شروع کرنے کی ضرورت پڑ سکتی ہے۔</translation>
 <translation id="1571697193564730395">'ڈسٹرب نہ کریں' کو ٹوگل کریں۔ <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">میگنیفائر آن ہونے پر زوم آؤٹ کریں</translation>
@@ -731,6 +730,7 @@
 <translation id="3522979239100719575">دستیاب پروفائلز کو تلاش کیا جا رہا ہے۔ اس میں چند منٹ لگ سکتے ہیں۔</translation>
 <translation id="3526440770046466733">نئے ٹیب میں لنک کھولیں اور موجودہ ٹیب میں رہیں</translation>
 <translation id="353086728817903341"><ph name="NUM_DEVICES" /> آلات سے منسلک ہیں</translation>
+<translation id="3532247131850366052">‏‫Google Sheet تخلیق نہیں کی جا سکی</translation>
 <translation id="3533126039236445965">شیلف میں ایپس</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> ہاٹ اسپاٹ</translation>
 <translation id="3540893133818942399">اپنے فون کی حالیہ تصاویر اور میڈیا دیکھنے کے سیٹ اپ کو برخاست کریں</translation>
@@ -829,6 +829,7 @@
 <translation id="380165613292957338">آداب، میں کیسے مدد کر سکتا ہوں؟</translation>
 <translation id="3804737937830804242">کیمرا سکیڑیں</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 ایموجی۔ کوئی دوسرا نتیجہ نہیں ہے۔}other{# ایموجیز۔ کوئی دوسرا نتیجہ نہیں ہے۔}}</translation>
+<translation id="3822403841174077928">فارمیٹنگ کے ساتھ کاپی نہیں کیا جا سکا</translation>
 <translation id="3824784079442479685">اس سے کیمرے کی اجازت کے ساتھ <ph name="APP_NAME" />، اور تمام ایپس اور ویب سائٹس کو کیمرے تک رسائی کی اجازت ملتی ہے۔ آپ کو ویب صفحہ کو ریفریش کرنے یا ایپ کو دوبارہ شروع کرنے کی ضرورت پڑ سکتی ہے۔</translation>
 <translation id="3826099427150913765">پاس ورڈ پر سوئچ کریں</translation>
 <translation id="383058930331066723">بیٹری سیور موڈ آن ہے</translation>
@@ -1215,6 +1216,7 @@
 <translation id="5043679421800073804">شیلف پر موجود آخری آئیکن پر کلک کریں یا تھپتھپائیں</translation>
 <translation id="504465286040788597">گزشتہ پیراگراف</translation>
 <translation id="5045550434625856497">غلط پاس ورڈ</translation>
+<translation id="5058794129231928255">‏‫Google Doc تخلیق نہیں کیا جا سکا</translation>
 <translation id="5062496344832867502">RAM</translation>
 <translation id="5068762093486106012">اگر آپ خاموش وضع میں رہتے ہوئے بات کرتے ہیں تو آپ کو مطلع کر دیا جائے گا۔ آڈیو آپ کے آلے سے باہر نہیں جاتی ہے۔</translation>
 <translation id="5077416371682039027">اپنے فون کی حالیہ تصاویر، میڈیا، اطلاعات اور ایپس دیکھنے کو سیٹ اپ کریں</translation>
@@ -1647,6 +1649,7 @@
 <translation id="6468406072297048412">{0,plural, =1{1 منٹ کے اندر آلے کو پچھلے ورژن پر اپ ڈیٹ کریں}other{# منٹ کے اندر آلے کو پچھلے ورژن پر اپ ڈیٹ کریں}}</translation>
 <translation id="6469104339369989396">ہاٹ اسپاٹ کو ٹوگل کریں</translation>
 <translation id="6477681113376365978">فائل ڈاؤن لوڈ نہیں کر سکتے</translation>
+<translation id="648135757200234041">رابطہ تخلیق نہیں کیا جا سکا</translation>
 <translation id="6482559668224714696">پوری اسکرین مکبّر</translation>
 <translation id="6485086611007560630">موسم (دستیاب نہیں ہے)</translation>
 <translation id="6490471652906364588">‏USB-C آلہ (دایاں پورٹ)</translation>
@@ -2286,6 +2289,7 @@
 <translation id="8653151467777939995">اطلاع کی ترتیبات دکھائیں۔ اطلاعات آن ہیں</translation>
 <translation id="8657066291275741003">چھوٹے حروف</translation>
 <translation id="8660331759611631213">71 کا جَذر المربع</translation>
+<translation id="8662921061190671299">کیلنڈر میں شامل نہیں کیا جا سکا</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />، سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">جزوی اسکرین شاٹ کیپچر کرنے کے لیے اینٹر دبائیں</translation>
 <translation id="8676770494376880701">کم پاور چارجر منسلک ہوگیا</translation>

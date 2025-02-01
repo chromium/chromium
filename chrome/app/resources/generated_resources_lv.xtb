@@ -2153,7 +2153,6 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2471632709106952369">Salīdzinājuma tabulas</translation>
 <translation id="2473195200299095979">Tulkot šo lapu</translation>
 <translation id="2475982808118771221">Radās kļūda</translation>
-<translation id="247616523300581745">Paslēpt šos failus</translation>
 <translation id="2476435723907345463">Vairs nevar piekļūt piekļuves atslēgām.</translation>
 <translation id="2476901513051581836">Nevar atbrīvot vietu krātuvē, ja nav zināms bezsaistes krātuves lielums.</translation>
 <translation id="2476974672882258506">Lai atinstalētu <ph name="PARALLELS_DESKTOP" />, izslēdziet Windows datoru.</translation>
@@ -2795,6 +2794,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="2926620265753325858">Ierīce <ph name="DEVICE_NAME" /> netiek atbalstīta.</translation>
 <translation id="2926708162326352948">Motīvs ir atjaunināts uz augšupielādēto attēlu</translation>
 <translation id="2927017729816812676">Kešatmiņas krātuve</translation>
+<translation id="2928030851119977280">Izvēle ir saglabāta. Jūsu izvēlētais iestatījums tiks lietots, kad pierakstīsieties citos Google pakalpojumos.</translation>
 <translation id="2928795416630981206">Drīkst izsekot kameras pozīciju</translation>
 <translation id="2929345818093040583">{NUM_SITES,plural, =1{Pārlūkā Chrome tika noņemtas atļaujas 1 vietnei}zero{Pārlūkā Chrome tika noņemtas atļaujas {NUM_SITES} vietnēm}one{Pārlūkā Chrome tika noņemtas atļaujas {NUM_SITES} vietnei}other{Pārlūkā Chrome tika noņemtas atļaujas {NUM_SITES} vietnēm}}</translation>
 <translation id="2931157624143513983">Ietilpināt drukājamā apgabalā</translation>
@@ -3226,7 +3226,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3257733480216378006">Vai atļaut paplašinājumus (skaits: <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" />)?</translation>
 <translation id="325797067711573598">Bloķēta aizdomīga lejupielāde</translation>
 <translation id="3259723213051400722">Lūdzu, mēģiniet vēlreiz.</translation>
-<translation id="3260199651491738298">Jūsu organizācija kontrolē, kā var izmantot šo funkciju ievāktos datus. <ph name="BEGIN_LINK" />Uzziniet vairāk.<ph name="END_LINK" /></translation>
 <translation id="3261090393424563833">Palielināt frekvenci</translation>
 <translation id="3261268979727295785">Vecākiem bērniem varat pievienot vecāku kontroli pēc iestatīšanas pabeigšanas. Informāciju par vecāku kontroli varat atrast lietotnē Izpēte.</translation>
 <translation id="3261832505033014216">Piekļuves atslēga kontam <ph name="USER_EMAIL" /></translation>
@@ -7403,6 +7402,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="6253801023880399036">Paroles tiek saglabātas pakalpojumā <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="6254503684448816922">Atslēgas drošības politikas apdraudējums</translation>
 <translation id="6254892857036829079">Nevainojama</translation>
+<translation id="6257131917452817589">automatizētu paroles maiņu</translation>
 <translation id="6257602895346497974">Ieslēgt sinhronizāciju...</translation>
 <translation id="6257614441619555296"><ph name="KEY" />: <ph name="VALUE" /></translation>
 <translation id="625827534921607067">Ja būs pieejami vairāki konfigurēti tīkli vai tīkli, ar kuriem iepriekš tika izveidots savienojums, tiks izmantots šis tīkls.</translation>
@@ -8584,7 +8584,6 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7113974454301513811">Tagad pievienojiet sarakstam pašreizējo cilni.</translation>
 <translation id="7114054701490058191">Paroles nav vienādas</translation>
 <translation id="7114648273807173152">Lai pierakstītos Google kontā, izmantojot Smart Lock, atveriet sadaļu Iestatījumi &gt; Pievienotās ierīces &gt; Jūsu tālrunis &gt; Smart Lock.</translation>
-<translation id="7115051913071512405">Izmēģināt</translation>
 <translation id="7115361495406486998">Nav sasniedzamu kontaktpersonu</translation>
 <translation id="7115731767122970828">Uzlabot tūlīt</translation>
 <translation id="7116554090938189816">Printera SSL sertifikātam ir beidzies derīguma termiņš. Restartējiet printeri un mēģiniet vēlreiz.</translation>
@@ -9117,6 +9116,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7502528909759062987">Apturēt cilnes apraidi ierīcē <ph name="DEVICE_NAME" /></translation>
 <translation id="7502804472671406749">Kopīgotajās cilnēs var ritināt un tālummainīt</translation>
 <translation id="7503191893372251637">Netscape sertifikāta veids</translation>
+<translation id="7503259455663961898">Nomainīt manā vietā</translation>
 <translation id="7503985202154027481">Ieraksts par jūsu apmeklējumu šajā vietnē tiks reģistrēts jūsu drošības atslēgā.</translation>
 <translation id="7504145862399276792">Šīs cilnes skaņa ir izslēgta</translation>
 <translation id="750509436279396091">Atvērt lejupielāžu mapi</translation>
@@ -9179,6 +9179,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7551059576287086432">Neizdevās lejupielādēt failu <ph name="FILE_NAME" /></translation>
 <translation id="7551643184018910560">Piespraust plauktam</translation>
 <translation id="7552191410769096467">Lai kopīgotu vai pievienotos ciļņu grupām, jums ir jāpierakstās un jāieslēdz sinhronizācija</translation>
+<translation id="7552196109089297786">Izrakstīties no Microsoft</translation>
 <translation id="7552846755917812628">Izmantojiet tālāk sniegtos padomus.</translation>
 <translation id="7553012839257224005">Linux konteinera pārbaude</translation>
 <translation id="7553242001898162573">Ievadiet paroli.</translation>
@@ -10307,6 +10308,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8330617762701840933">To vietņu saraksts, kuras aktivizē novirzīšanu uz papildu pārlūkprogrammu.</translation>
 <translation id="8330689128072902965">Kontaktpersonas tuvumā var kopīgot saturu ar jums. Noklikšķiniet, lai mainītu šo iestatījumu.</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{Atbalstītais failu tips: <ph name="FILE_TYPE1" />}=2{Atbalstītie failu tipi: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />}=3{Atbalstītie failu tipi: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />}=4{Atbalstītie failu tipi: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" />}zero{Atbalstītie failu tipi: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />un vēl {OVERFLOW_COUNT}<ph name="END_LINK" />)}one{Atbalstītie failu tipi: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />un vēl {OVERFLOW_COUNT}<ph name="END_LINK" />)}other{Atbalstītie failu tipi: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />un vēl {OVERFLOW_COUNT}<ph name="END_LINK" />)}}</translation>
+<translation id="8331578454993293727">Jūsu parole tika atklāta datu aizsardzības pārkāpuma dēļ</translation>
 <translation id="8331822764922665615">Piešķiriet nosaukumu savai grupai, izvēlieties krāsu un pēc tam nospiediet atsoļa taustiņu.</translation>
 <translation id="833256022891467078">Crostini koplietotās mapes</translation>
 <translation id="833262891116910667">Atzīmēt</translation>
@@ -10388,6 +10390,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
     <ph name="BEGIN_PARAGRAPH2" />Papildu palīdzību skatiet vietnē g.co/flex/InstallErrors<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8383614331548401927">Kopsavilkums sākumam</translation>
 <translation id="8386091599636877289">Politika netika atrasta.</translation>
+<translation id="8387087863179559896">Pārlūkā Chrome var tikt atjaunināta jūsu konta parole šai vietnei, izmantojot drošu paroli. Jums nebūs jāiegaumē parole, jo tā būs saglabāta Google paroļu pārvaldniekā kontam <ph name="EMAIL" />. Plašāka informācija par <ph name="PASSWORD_CHANGE" />.</translation>
 <translation id="8387361103813440603">Nedrīkst skatīt jūsu atrašanās vietu</translation>
 <translation id="8387617938027387193">Apstipriniet, ka tas esat jūs</translation>
 <translation id="8388770971141403598">Sekundārie profili netiek atbalstīti</translation>
@@ -10886,7 +10889,6 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8737966899544698733">Atrašanās vietas precizitāte (tikai Android ierīcēs)</translation>
 <translation id="8738418093147087440">Meklēt pēc valsts, valodas vai ievades metodes nosaukuma</translation>
 <translation id="8740086188450289493">Izmantot Google konta paroli</translation>
-<translation id="874023689350909633">Izmēģināt</translation>
 <translation id="8740247629089392745">Varat iedot šo Chromebook datoru lietotājam <ph name="SUPERVISED_USER_NAME" />. Kad iestatīšana būs pabeigta, šo datoru varēs izmantot.</translation>
 <translation id="8740672167979365981">Nepieciešama Chrome OS Flex atjaunināšana</translation>
 <translation id="8741944563400125534">Slēdžu piekļuves iestatīšanas ceļvedis</translation>

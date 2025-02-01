@@ -385,7 +385,6 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="2781151931089541271">Još 1 s</translation>
 <translation id="2789486458103222910">U redu</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome je pronašao višestruko korištenu zaporku koju biste mogli poboljšati}one{Chrome je pronašao # višestruko korištenu zaporku koju biste mogli poboljšati}few{Chrome je pronašao # višestruko korištene zaporke koje biste mogli poboljšati}other{Chrome je pronašao # višestruko korištenih zaporki koje biste mogli poboljšati}}</translation>
-<translation id="2796651346651857052">Dodirnite adresnu traku i zadržite pritisak da biste joj promijenili položaj.</translation>
 <translation id="2800066122460699237">Zatvorit će se kartica <ph name="TAB_TITLE" /></translation>
 <translation id="2805756323405976993">Aplikacije</translation>
 <translation id="281504910091592009">Spremljene zaporke možete pregledati i upravljati njima na svojem <ph name="BEGIN_LINK" />Google računu<ph name="END_LINK" /></translation>

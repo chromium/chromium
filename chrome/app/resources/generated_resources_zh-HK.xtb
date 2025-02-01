@@ -2164,7 +2164,6 @@
 <translation id="2471632709106952369">比較表格</translation>
 <translation id="2473195200299095979">翻譯這個網頁</translation>
 <translation id="2475982808118771221">發生錯誤</translation>
-<translation id="247616523300581745">隱藏這些檔案</translation>
 <translation id="2476435723907345463">已移除密鑰存取權</translation>
 <translation id="2476901513051581836">必須得知離線儲存空間大小，才能清理儲存空間。</translation>
 <translation id="2476974672882258506">關閉 Windows 即可解除安裝 <ph name="PARALLELS_DESKTOP" />。</translation>
@@ -3237,7 +3236,6 @@
 <translation id="3257733480216378006">要允許「<ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" />」嗎？</translation>
 <translation id="325797067711573598">已封鎖可疑的下載內容</translation>
 <translation id="3259723213051400722">請再試一次。</translation>
-<translation id="3260199651491738298">你的機構可以控制這些功能收集資料的用途。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="3261090393424563833">提高取樣率</translation>
 <translation id="3261268979727295785">您可在完成設定後，為較年長的子女新增家長監控設定。您可在「探索」應用程式中找到家長監控設定的相關資料。</translation>
 <translation id="3261832505033014216"><ph name="USER_EMAIL" /> 嘅密鑰</translation>
@@ -8584,7 +8582,6 @@
 <translation id="7113974454301513811">現在，將現有分頁加入清單</translation>
 <translation id="7114054701490058191">密碼不符</translation>
 <translation id="7114648273807173152">如要使用 Smart Lock 登入 Google 帳戶，請前往 [設定] &gt; [已連接的裝置] &gt; [您的手機] &gt; [Smart Lock]。</translation>
-<translation id="7115051913071512405">試試看</translation>
 <translation id="7115361495406486998">沒有可用的聯絡人</translation>
 <translation id="7115731767122970828">立即提升</translation>
 <translation id="7116554090938189816">打印機 SSL 憑證已過期。請重新啟動打印機，並再試一次。</translation>
@@ -10890,7 +10887,6 @@
 <translation id="8737966899544698733">定位精確度 (只適用於 Android)</translation>
 <translation id="8738418093147087440">按國家/地區、語言或輸入名稱搜尋</translation>
 <translation id="8740086188450289493">使用 Google 帳戶密碼</translation>
-<translation id="874023689350909633">立即試用</translation>
 <translation id="8740247629089392745">您可將此 Chromebook 交還給<ph name="SUPERVISED_USER_NAME" />。設定即將完成，現在可開始探索。</translation>
 <translation id="8740672167979365981">需要更新 ChromeOS Flex</translation>
 <translation id="8741944563400125534">按鈕控制設定指南</translation>

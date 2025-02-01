@@ -86,6 +86,7 @@ Jos poistat sen, kaikki menettävät heti pääsyn välilehtiryhmään "<ph name
 <translation id="4783638485675352219">Jaa laitteen avointen välilehtien nimet ja URL-osoitteet käyttöjärjestelmälle</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> arvostelu)}other{(<ph name="REVIEWS_COUNT_MANY" /> arvostelua)}}</translation>
 <translation id="4850886885716139402">Näytä</translation>
+<translation id="4861953997778766866">Kaikki voivat tehdä muutoksia jaettuihin välilehtiryhmiin</translation>
 <translation id="4870911314065352661">Suljetaanko kaikki välilehdet?</translation>
 <translation id="4871719318659334896">Sulje ryhmä</translation>
 <translation id="4881695831933465202">Avaa</translation>
@@ -179,6 +180,7 @@ Jos poistat sen, kaikki menettävät heti pääsyn välilehtiryhmään "<ph name
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> välilehti lisätty, <ph name="ANY_CLOSED" /> suljettu}other{<ph name="MANY_ADDED" /> välilehteä lisätty, <ph name="ANY_CLOSED" /> suljettu}}</translation>
 <translation id="8633025649649592204">Uusimmat tapahtumat</translation>
 <translation id="870736955561925754">Suljetaanko välilehti ja poistetaanko ryhmä?</translation>
+<translation id="8712637175834984815">Ymmärretty</translation>
 <translation id="8714939927607906138">Edullisempi hinta</translation>
 <translation id="8730621377337864115">Valmis</translation>
 <translation id="8730999928494395583">Toimintasi näillä incognito-välilehdillä poistetaan laitteelta</translation>

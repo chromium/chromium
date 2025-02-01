@@ -2164,7 +2164,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2471632709106952369">Bảng so sánh</translation>
 <translation id="2473195200299095979">Dịch trang này</translation>
 <translation id="2475982808118771221">Đã xảy ra lôi</translation>
-<translation id="247616523300581745">Ẩn các tệp này</translation>
 <translation id="2476435723907345463">Đã xoá quyền truy cập vào khoá truy cập</translation>
 <translation id="2476901513051581836">Không thể giải phóng bộ nhớ chừng nào chưa xác định được dung lượng bộ nhớ ngoại tuyến.</translation>
 <translation id="2476974672882258506">Hãy tắt Windows để gỡ cài đặt <ph name="PARALLELS_DESKTOP" />.</translation>
@@ -2806,6 +2805,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> không được hỗ trợ.</translation>
 <translation id="2926708162326352948">Giao diện đã được cập nhật thành hình ảnh bạn tải lên</translation>
 <translation id="2927017729816812676">Bộ nhớ đệm</translation>
+<translation id="2928030851119977280">Đã lưu lựa chọn. Lựa chọn của bạn sẽ được áp dụng khi bạn đăng nhập vào các dịch vụ khác của Google.</translation>
 <translation id="2928795416630981206">Được phép theo dõi vị trí máy ảnh của bạn</translation>
 <translation id="2929345818093040583">{NUM_SITES,plural, =1{Chrome đã loại bỏ quyền khỏi 1 trang web}other{Chrome đã loại bỏ quyền khỏi {NUM_SITES} trang web}}</translation>
 <translation id="2931157624143513983">Vừa với vùng in được</translation>
@@ -3239,7 +3239,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3257733480216378006">Cho phép <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" />?</translation>
 <translation id="325797067711573598">Đã chặn hoạt động tải xuống đáng ngờ</translation>
 <translation id="3259723213051400722">Vui lòng thử lại.</translation>
-<translation id="3260199651491738298">Tổ chức của bạn kiểm soát cách sử dụng dữ liệu do các tính năng này thu thập. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="3261090393424563833">Tăng tốc độ</translation>
 <translation id="3261268979727295785">Đối với trẻ lớn, bạn có thể thêm các quyền kiểm soát của cha mẹ sau khi hoàn thành quy trình thiết lập. Bạn sẽ tìm thấy thông tin về các quyền kiểm soát của cha mẹ trong ứng dụng Khám phá.</translation>
 <translation id="3261832505033014216">Khoá truy cập cho <ph name="USER_EMAIL" /></translation>
@@ -7420,6 +7419,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6253801023880399036">Mật khẩu được lưu vào <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="6254503684448816922">Lộ Khoá</translation>
 <translation id="6254892857036829079">Hoàn hảo</translation>
+<translation id="6257131917452817589">thay đổi mật khẩu tự động</translation>
 <translation id="6257602895346497974">Bật tính năng đồng bộ hóa...</translation>
 <translation id="6257614441619555296"><ph name="KEY" />: <ph name="VALUE" /></translation>
 <translation id="625827534921607067">Mạng này sẽ được ưu tiên nếu có nhiều mạng đã kết nối hoặc định cấu hình trước đó</translation>
@@ -8599,7 +8599,6 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7113974454301513811">Bây giờ, hãy thêm thẻ hiện tại vào danh sách của bạn</translation>
 <translation id="7114054701490058191">Mật khẩu không khớp</translation>
 <translation id="7114648273807173152">Để đăng nhập vào Tài khoản Google bằng Smart Lock, hãy chuyển đến mục Cài đặt &gt; Thiết bị đã kết nối &gt; Điện thoại của bạn &gt; Smart Lock.</translation>
-<translation id="7115051913071512405">Dùng thử</translation>
 <translation id="7115361495406486998">Không có người liên hệ nào có thể chia sẻ</translation>
 <translation id="7115731767122970828">Tăng tốc ngay</translation>
 <translation id="7116554090938189816">Chứng chỉ SSL của máy in đã hết hạn. Khởi động lại máy in rồi thử lại.</translation>
@@ -9132,6 +9131,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7502528909759062987">Tạm dừng truyền thẻ tới <ph name="DEVICE_NAME" /></translation>
 <translation id="7502804472671406749">Có thể cuộn và thu phóng các thẻ được chia sẻ</translation>
 <translation id="7503191893372251637">Loại Chứng chỉ Netscape</translation>
+<translation id="7503259455663961898">Giúp tôi thay đổi</translation>
 <translation id="7503985202154027481">Khóa bảo mật sẽ lưu giữ bản ghi lượt truy cập của bạn vào trang web này.</translation>
 <translation id="7504145862399276792">Âm thanh của thẻ này đang tắt</translation>
 <translation id="750509436279396091">Mở thư mục tệp đã tải xuống</translation>
@@ -9194,6 +9194,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7551059576287086432">Tải xuống <ph name="FILE_NAME" /> không thành công</translation>
 <translation id="7551643184018910560">Ghim vào kệ</translation>
 <translation id="7552191410769096467">Để chia sẻ hoặc tham gia nhóm thẻ, bạn cần đăng nhập và bật tính năng đồng bộ hoá</translation>
+<translation id="7552196109089297786">Đăng xuất khỏi Microsoft</translation>
 <translation id="7552846755917812628">Thử các mẹo sau:</translation>
 <translation id="7553012839257224005">Đang kiểm tra vùng chứa Linux</translation>
 <translation id="7553242001898162573">Nhập mật khẩu của bạn</translation>
@@ -10323,6 +10324,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8330617762701840933">Danh sách trang web chuyển hướng tới trình duyệt thay thế.</translation>
 <translation id="8330689128072902965">Những người liên hệ ở gần có thể chia sẻ với bạn. Nhấp để thay đổi.</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{Loại tệp được hỗ trợ: <ph name="FILE_TYPE1" />}=2{Loại tệp được hỗ trợ: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />}=3{Loại tệp được hỗ trợ: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />}=4{Loại tệp được hỗ trợ: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" />}other{Loại tệp được hỗ trợ: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />và {OVERFLOW_COUNT} loại tệp khác<ph name="END_LINK" />)}}</translation>
+<translation id="8331578454993293727">Mật khẩu này đã được tìm thấy trong một sự cố rò rỉ dữ liệu</translation>
 <translation id="8331822764922665615">Đặt tên cho nhóm, chọn màu rồi nhấn phím Esc</translation>
 <translation id="833256022891467078">Thư mục do Crostini chia sẻ</translation>
 <translation id="833262891116910667">Đánh dấu</translation>
@@ -10404,6 +10406,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
     <ph name="BEGIN_PARAGRAPH2" />Để được trợ giúp thêm, hãy truy cập: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8383614331548401927">Chào mừng bạn đến với Recap</translation>
 <translation id="8386091599636877289">Không tìm thấy chính sách.</translation>
+<translation id="8387087863179559896">Chrome có thể cập nhật tài khoản của bạn cho trang web này bằng một mật khẩu mạnh. Bạn không cần nhớ mật khẩu này vì hệ thống đã lưu mật khẩu đó trong Trình quản lý mật khẩu của Google cho <ph name="EMAIL" />. Xem thêm về <ph name="PASSWORD_CHANGE" />.</translation>
 <translation id="8387361103813440603">Không được phép xem vị trí của bạn</translation>
 <translation id="8387617938027387193">Xác minh danh tính của bạn</translation>
 <translation id="8388770971141403598">Hồ sơ phụ không được hỗ trợ</translation>
@@ -10902,7 +10905,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8737966899544698733">Độ chính xác của vị trí (chỉ dành cho Android)</translation>
 <translation id="8738418093147087440">Tìm kiếm theo quốc gia, ngôn ngữ hoặc tên phương thức nhập</translation>
 <translation id="8740086188450289493">Dùng mật khẩu của Tài khoản Google</translation>
-<translation id="874023689350909633">Dùng thử</translation>
 <translation id="8740247629089392745">Bạn có thể đưa lại Chromebook này cho <ph name="SUPERVISED_USER_NAME" />. Sắp thiết lập xong. Hãy chuẩn bị khám phá.</translation>
 <translation id="8740672167979365981">Cần cập nhật ChromeOS Flex</translation>
 <translation id="8741944563400125534">Hướng dẫn thiết lập tính năng Tiếp cận bằng công tắc</translation>

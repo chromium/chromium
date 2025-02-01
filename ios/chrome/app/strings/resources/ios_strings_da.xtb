@@ -716,6 +716,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="422477017457571619">AI-baseret beskyttelse i realtid mod skadelige websites, downloads og udvidelser, der er baseret på dine browserdata, som sendes til Google</translation>
 <translation id="4231395118547300571">Notifikationer om Sikkerhedstjek er aktiveret</translation>
 <translation id="4237377247299956313">Tryk på <ph name="BEGIN_BOLD" />Standardapp til browsing<ph name="END_BOLD" /></translation>
+<translation id="4241893428331130998">Der er ingen gemte adgangskoder eller adgangsnøgler</translation>
 <translation id="4242533952199664413">Åbn Indstillinger</translation>
 <translation id="4250432749243022864">{count,plural, =0{Åbn {count} faner}=1{Åbn {count} fane}one{Åbn {count} fane}other{Åbn {count} faner}}</translation>
 <translation id="4250680216510889253">Nej</translation>
@@ -1595,6 +1596,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="7982789257301363584">Netværk</translation>
 <translation id="7987685713885608670">For at beskytte adgangskoderne yderligere krypteres de på din enhed, inden de gemmes i Googles Adgangs­kode­admin­istrator.</translation>
 <translation id="798991908416757345">Fanegrupper er ikke tilgængelige</translation>
+<translation id="7993170188789685695">Tryk to gange for at lukke denne notifikation.</translation>
 <translation id="7993619969781047893">Funktioner på visse websites fungerer muligvis ikke</translation>
 <translation id="7996239959906074962">Indstil…</translation>
 <translation id="800361585186029508">Åbner de angivne webadresser i Google Chrome.</translation>

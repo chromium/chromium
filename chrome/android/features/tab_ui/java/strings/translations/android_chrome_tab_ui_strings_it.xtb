@@ -86,6 +86,7 @@ Se lo elimini, tutti perderanno immediatamente l'accesso al gruppo di schede "<p
 <translation id="4783638485675352219">Condividi i titoli e gli URL delle schede aperte da questo dispositivo con il sistema operativo</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> recensione)}other{(<ph name="REVIEWS_COUNT_MANY" /> recensioni)}}</translation>
 <translation id="4850886885716139402">Visualizza</translation>
+<translation id="4861953997778766866">Tutti possono apportare modifiche ai tuoi gruppi di schede condivisi</translation>
 <translation id="4870911314065352661">Vuoi chiudere tutte le schede?</translation>
 <translation id="4871719318659334896">Chiudi gruppo</translation>
 <translation id="4881695831933465202">Apri</translation>
@@ -179,6 +180,7 @@ Se lo elimini, tutti perderanno immediatamente l'accesso al gruppo di schede "<p
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> scheda aggiunta, <ph name="ANY_CLOSED" /> chiusa}other{<ph name="MANY_ADDED" /> schede aggiunte, <ph name="ANY_CLOSED" /> chiuse}}</translation>
 <translation id="8633025649649592204">Attività recente</translation>
 <translation id="870736955561925754">Chiudere la scheda ed eliminare il gruppo?</translation>
+<translation id="8712637175834984815">Ok</translation>
 <translation id="8714939927607906138">Prezzo più basso</translation>
 <translation id="8730621377337864115">Fine</translation>
 <translation id="8730999928494395583">La tua attività in queste schede di navigazione in incognito verrà rimossa da questo dispositivo</translation>

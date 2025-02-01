@@ -2150,7 +2150,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2471632709106952369">Müqayisə cədvəlləri</translation>
 <translation id="2473195200299095979">Bu səhifəni tərcümə edin</translation>
 <translation id="2475982808118771221">Xəta baş verdi</translation>
-<translation id="247616523300581745">Bu faylları gizlədin</translation>
 <translation id="2476435723907345463">Giriş açarlarına giriş silindi</translation>
 <translation id="2476901513051581836">Oflayn yaddaş ölçüsü məlum olmadıqda yaddaşı təmizləmək olmur.</translation>
 <translation id="2476974672882258506"><ph name="PARALLELS_DESKTOP" /> tətbiqini quraşdırmaq üçün Windows'u söndürün.</translation>
@@ -2792,6 +2791,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> dəstəklənmir.</translation>
 <translation id="2926708162326352948">Tema yüklənmiş şəklə yeniləndi</translation>
 <translation id="2927017729816812676">Keş Yaddaşı</translation>
+<translation id="2928030851119977280">Seçim saxlanıldı. Digər Google xidmətlərinə daxil olduqda seçiminiz tətbiq olunacaq.</translation>
 <translation id="2928795416630981206">Kameranızın mövqeyini izləmək icazəsi verilib</translation>
 <translation id="2929345818093040583">{NUM_SITES,plural, =1{Chrome 1 saytdan icazələri sildi}other{Chrome {NUM_SITES} saytdan icazələri sildi}}</translation>
 <translation id="2931157624143513983">Çap olunan sahəyə sığdırın</translation>
@@ -3225,7 +3225,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3257733480216378006"><ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" /> girişinə icazə verilsin?</translation>
 <translation id="325797067711573598">Şübhəli endirmə bloklandı</translation>
 <translation id="3259723213051400722">Yenidən cəhd edin.</translation>
-<translation id="3260199651491738298">Təşkilatınız bu funksiyalar tərəfindən toplanan datanın necə istifadə olunacağına nəzarət edir. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="3261090393424563833">Göstəricini artırın</translation>
 <translation id="3261268979727295785">Daha böyük uşaqlar üçün ayarlamanı bitirdikdən sonra valideyn nəzarətini əlavə edə bilərsiniz. "Araşdırın" tətbiqində valideyn nəzarəti haqqında məlumat tapa bilərsiniz.</translation>
 <translation id="3261832505033014216"><ph name="USER_EMAIL" /> üçün giriş açarı</translation>
@@ -7402,6 +7401,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6253801023880399036">Parollar burada saxlanılır: <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="6254503684448816922">Açar Kompromisi</translation>
 <translation id="6254892857036829079">Mükəmməl</translation>
+<translation id="6257131917452817589">avtomatik parol dəyişikliyi</translation>
 <translation id="6257602895346497974">Sinxronizasiyanı aktiv edin...</translation>
 <translation id="6257614441619555296"><ph name="KEY" />: <ph name="VALUE" /></translation>
 <translation id="625827534921607067">Əvvəlcədən qoşulmuş və ya konfiqurasiya edilmiş bir neçə şəbəkə əlçatan olarsa, bu şəbəkə tərcih ediləcək</translation>
@@ -8578,7 +8578,6 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7113974454301513811">İndi siyahınıza cari tabı əlavə edin</translation>
 <translation id="7114054701490058191">Parollar eyni deyil</translation>
 <translation id="7114648273807173152">Smart Lock istifadə etmək üçün Google Hesabına daxil olun, Ayarlar &gt; Qoşulu cihazlar&gt; Telefon &gt; Smart Lock bölməsinə daxil olun.</translation>
-<translation id="7115051913071512405">Bunu sınayın</translation>
 <translation id="7115361495406486998">Əlçatan kontakt yoxdur</translation>
 <translation id="7115731767122970828">İndi gücləndirin</translation>
 <translation id="7116554090938189816">Printerin SSL sertifikatının vaxtı bitib. Printeri yenidən başladıb, təkrar cəhd edin.</translation>
@@ -9111,6 +9110,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7502528909759062987"><ph name="DEVICE_NAME" /> cihazında tab yayımını durdurun</translation>
 <translation id="7502804472671406749">Paylaşılan tablar sürüşdürülüb zumlana bilər</translation>
 <translation id="7503191893372251637">Netscape Sertifikat növü</translation>
+<translation id="7503259455663961898">Dəyişin</translation>
 <translation id="7503985202154027481">Sayta girişiniz güvənlik açarında qeyd ediləcək.</translation>
 <translation id="7504145862399276792">Bu tab audiosu susdurulub</translation>
 <translation id="750509436279396091">Endirilənlər qovluğunu açın</translation>
@@ -9173,6 +9173,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7551059576287086432"><ph name="FILE_NAME" /> endirmə uğursuz oldu</translation>
 <translation id="7551643184018910560">Rəfə sancaqlayın</translation>
 <translation id="7552191410769096467">Tab qruplarını paylaşmaq və ya onlara qoşulmaq üçün daxil olmalı və sinxronlaşdırmanı aktiv etməlisiniz</translation>
+<translation id="7552196109089297786">Microsoft-dan çıxın</translation>
 <translation id="7552846755917812628">Aşağıdakı məsləhətləri sınayın:</translation>
 <translation id="7553012839257224005">Linux konteyneri yoxlanılır</translation>
 <translation id="7553242001898162573">Şifrənizi daxil edin</translation>
@@ -10301,6 +10302,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8330617762701840933">Alternativ brauzerə yönləndirilən vebsaytların siyahısı.</translation>
 <translation id="8330689128072902965">Yaxındakı kontaktlar sizinlə paylaşa bilər. Dəyişmək üçün klikləyin.</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{Dəstəklənən fayl növü: <ph name="FILE_TYPE1" />}=2{Dəstəklənən fayl növləri: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />}=3{Dəstəklənən fayl növləri: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />}=4{Dəstəklənən fayl növləri: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" />}other{Dəstəklənən fayl növləri: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />və daha {OVERFLOW_COUNT} növ<ph name="END_LINK" />)}}</translation>
+<translation id="8331578454993293727">Parolunuz verilənlərin pozulmasına məruz qalıb</translation>
 <translation id="8331822764922665615">Qrupunuza ad verin, rəng seçin, sonra Escape düyməsini basın</translation>
 <translation id="833256022891467078">Crostini'nin paylaşılan qovluqları</translation>
 <translation id="833262891116910667">Vurğulama</translation>
@@ -10382,6 +10384,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
     <ph name="BEGIN_PARAGRAPH2" />Yardım üçün bu ünvana daxil olun: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8383614331548401927">Qarşılama icmalı</translation>
 <translation id="8386091599636877289">Qayda tapılmadı.</translation>
+<translation id="8387087863179559896">Chrome güclü parol ilə bu sayt üçün hesabınızı güncəlləyə bilər. Parol <ph name="EMAIL" /> üçün Google Parol Menecerində saxlanıldığına görə onu yadda saxlamalı olmayacaqsınız. <ph name="PASSWORD_CHANGE" /> haqqında ətraflı.</translation>
 <translation id="8387361103813440603">Məkanınıza baxmaq icazəsi verilməyib</translation>
 <translation id="8387617938027387193">Kimliyinizi doğrulayın</translation>
 <translation id="8388770971141403598">İkinci dərəcəli profillər dəstəklənmir</translation>
@@ -10880,7 +10883,6 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8737966899544698733">Məkan dəqiqliyi (yalnız Android)</translation>
 <translation id="8738418093147087440">Ölkə, dil və ya daxiletmə adı ilə axtarın</translation>
 <translation id="8740086188450289493">Google Hesabı parolundan istifadə edin</translation>
-<translation id="874023689350909633">Sınayın</translation>
 <translation id="8740247629089392745">Bu Chromebook'u <ph name="SUPERVISED_USER_NAME" /> adlı istifadəçiyə verə bilərsiniz. Ayarlama tamamlanmaq üzrədir, bundan sonra araşdırmağa başlaya bilərsiniz.</translation>
 <translation id="8740672167979365981">ChromeOS Flex güncəllənməsi tələb olunur</translation>
 <translation id="8741944563400125534">Düymə ilə Giriş ayarlama bələdçisi</translation>

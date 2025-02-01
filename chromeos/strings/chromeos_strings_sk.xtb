@@ -768,6 +768,7 @@
 <translation id="4654549501020883054">Meniť denne</translation>
 <translation id="4655868084888499342">Obrázok bol nastavený ako tapeta</translation>
 <translation id="4661249927038176904">Surreálne</translation>
+<translation id="4661392828086261436">Túto aktualizáciu poskytol výrobca zariadenia a Google ju neoveril</translation>
 <translation id="4664651912255946953">kožušina</translation>
 <translation id="4665014895760275686">Výrobca</translation>
 <translation id="467510802200863975">Heslá sa nezhodujú</translation>
@@ -1027,6 +1028,7 @@
 <translation id="5904994456462260490">Pridanie nového prístupového bodu</translation>
 <translation id="590746845088109442">mačky</translation>
 <translation id="5907649332524363701">farba klávesov</translation>
+<translation id="5908813850962688338">Inštalácia tejto aktualizácie bude trvať niekoľko minút. Počas sťahovania aktualizácie nechajte zariadenie pripojené a zapnuté. Zariadenie sa môže počas tohto procesu niekoľkokrát reštartovať a stmaviť obrazovku. Pred dokončením inštalácie sa zobrazí výzva na reštart zariadenia.</translation>
 <translation id="5916084858004523819">Zakázané</translation>
 <translation id="5916664084637901428">Zapnuté</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Súbor bol úspešne naskenovaný a uložený do priečinka <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Súbory boli úspešne naskenované a uložené do priečinka <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}many{Súbory boli úspešne naskenované a uložené do priečinka <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Súbory boli úspešne naskenované a uložené do priečinka <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>

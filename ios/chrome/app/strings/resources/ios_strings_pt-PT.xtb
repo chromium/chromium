@@ -257,6 +257,7 @@
 <translation id="20485545164632846">novo item</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> contas estão a usar a mesma palavra-passe</translation>
 <translation id="2059166748188874810">Município</translation>
+<translation id="2060114494785549741">Eliminar dentro de 1 mês</translation>
 <translation id="20638360198452347">Seletor do tipo de unidade</translation>
 <translation id="2067852168641682340">Guardar sempre nesta conta</translation>
 <translation id="2074119687904553223">{count,plural, =1{1 separador}other{{count} separadores}}</translation>
@@ -288,6 +289,7 @@
 <translation id="2202084845446535117">Sem contas de email</translation>
 <translation id="2214453882118345682">Compre, traduza e identifique o que vê com a câmara.</translation>
 <translation id="2220529011494928058">Comunicar um problema</translation>
+<translation id="2220887224562128152">Depois de um ficheiro ser programado para eliminação, não é possível recuperá-lo.</translation>
 <translation id="2223461067862937305">Criar código QR</translation>
 <translation id="2229345671837147090">Grelha de separadores remotos</translation>
 <translation id="2230173723195178503">Página Web carregada</translation>
@@ -342,6 +344,7 @@ Os sites não podem utilizar cookies para ver a sua atividade de navegação em 
 <translation id="2394659309569789395">Abrir site mesmo assim</translation>
 <translation id="2403129868389095715">Não é possível entregar o seu pacote</translation>
 <translation id="2410754283952462441">Selecione uma conta</translation>
+<translation id="2422174748424038845">Se o eliminar, todas as pessoas vão perder imediatamente o acesso ao grupo de separadores "<ph name="GROUP_NAME" />" e este vai ser eliminado de todos os dispositivos.</translation>
 <translation id="2424805048070062787">Continue com este separador</translation>
 <translation id="2426805022920575512">Selecionar outra conta</translation>
 <translation id="243275146591958220">Cancelar transferência</translation>
@@ -477,6 +480,7 @@ O seu motor de pesquisa é o <ph name="DSE_NAME" />. Se aplicável, consulte as 
 <translation id="3059270601560379555">Nova pesquisa</translation>
 <translation id="3064547930554042309">Faça a gestão das transferências</translation>
 <translation id="3072279342064724558">A palavra-passe já existe</translation>
+<translation id="3074862506644936708">Ativar eliminação automática</translation>
 <translation id="3076846064362030967">A sessão na sua Conta Google não é terminada. Podem ser guardadas <ph name="BEGIN_LINK" />outras formas de atividade<ph name="END_LINK" /> na sua Conta Google quando tem sessão iniciada. Pode eliminá-las em qualquer altura.
 
 
@@ -620,6 +624,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3810973564298564668">Administrar</translation>
 <translation id="381219490185664296">Desagrupar o grupo de separadores?</translation>
 <translation id="3812308602011798782">Críticas</translation>
+<translation id="3815668647912194650">Mantenha este grupo para adicionar separadores mais tarde ou saia do grupo se já não quiser aceder a este.</translation>
 <translation id="3818045793209708987">Parou de acompanhar esta encomenda</translation>
 <translation id="3819183753496523827">Está offline. Verifique a ligação à Internet e tente novamente.</translation>
 <translation id="3828924571679282172">{COUNT,plural, =1{1 método de pagamento}other{# métodos de pagamento}}</translation>
@@ -1192,6 +1197,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6284652193729350524">Propor tradução de <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Deixou de seguir o canal <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Para ativar a Navegação segura, abra <ph name="BEGIN_LINK" />Serviços Google<ph name="END_LINK" /> e toque em Navegação segura.</translation>
+<translation id="6295434468271563378">Elimine automaticamente as transferências</translation>
 <translation id="6295751040240588413">Alcunha do cartão inválida</translation>
 <translation id="629730747756840877">Conta</translation>
 <translation id="6301104306974789820">Receba notificações de acompanhamento de preço</translation>
@@ -1453,6 +1459,7 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="741204030948306876">Sim, aceito</translation>
 <translation id="7417689656810783109">Mudar o nome do grupo</translation>
 <translation id="7419565702166471774">Usar sempre ligações seguras</translation>
+<translation id="742001653298797675">Programe a eliminação de todas as suas transferências após 1 mês para poupar espaço no telemóvel e proteger a sua privacidade.</translation>
 <translation id="7425053386765766120">Adicionar método de pagamento…</translation>
 <translation id="7425346204213733349">As alterações aos marcadores, ao histórico, às palavras-passe e a outras definições deixam de ser sincronizadas com a Conta Google. Contudo, os dados existentes permanecem armazenados na Conta Google.</translation>
 <translation id="742664698522525515">Manter o grupo?</translation>
@@ -1762,6 +1769,7 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="8680786875305615692">Ajude a melhorar a segurança na Web para todos</translation>
 <translation id="8680787084697685621">Os detalhes de início de sessão na conta estão desactualizados.</translation>
 <translation id="8683563711222071415">Mover endereço para a conta</translation>
+<translation id="8690752723634292147">Confirmar eliminação</translation>
 <translation id="8692689525339542358">Proteja-se contra transferências, extensões e sites perigosos.</translation>
 <translation id="8694281486652655615">Mostra este artigo</translation>
 <translation id="8696297579102085705">Enviar para o dispositivo</translation>

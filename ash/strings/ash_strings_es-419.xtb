@@ -178,7 +178,6 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1550523713251050646">Haz clic para obtener más opciones</translation>
 <translation id="1555130319947370107">Azul</translation>
 <translation id="1557622599341396706">Mostrar el nombre del escritorio</translation>
-<translation id="1567138500090284106">Botón de teclas del mouse</translation>
 <translation id="1569384531973824928">Esto permite el acceso a todas las apps y sitios web con los permisos de cámara y micrófono. Es posible que debas actualizar la página web o reiniciar la app.</translation>
 <translation id="1571697193564730395">Activa o desactiva la función No interrumpir. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Alejar cuando la lupa esté activada</translation>
@@ -731,6 +730,7 @@ De lo contrario, el panel táctil integrado se volverá a habilitar dentro de <p
 <translation id="3522979239100719575">Se están buscando perfiles disponibles. Este proceso puede demorar unos minutos.</translation>
 <translation id="3526440770046466733">Abrir el vínculo en una pestaña nueva y permanecer en la pestaña actual</translation>
 <translation id="353086728817903341">Se estableció la conexión con <ph name="NUM_DEVICES" /> dispositivos</translation>
+<translation id="3532247131850366052">No se pudo crear la hoja de cálculo de Google</translation>
 <translation id="3533126039236445965">Apps en la barra</translation>
 <translation id="3539957339480430241">Hotspot de <ph name="DEVICE_NAME" /></translation>
 <translation id="3540893133818942399">Descartar la configuración de la visualización de las fotos y el contenido multimedia recientes de tu teléfono</translation>
@@ -830,6 +830,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="380165613292957338">Hola, ¿cómo puedo ayudarte?</translation>
 <translation id="3804737937830804242">Contraer la cámara</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 emoji. No hay más resultados.}other{# emojis. No hay más resultados.}}</translation>
+<translation id="3822403841174077928">No se pudo copiar con el formato</translation>
 <translation id="3824784079442479685">Permite el acceso a la cámara para <ph name="APP_NAME" /> y todas las apps y sitios web con el permiso correspondiente. Es posible que debas actualizar la página web o reiniciar la app.</translation>
 <translation id="3826099427150913765">Cambiar a contraseña</translation>
 <translation id="383058930331066723">El modo de Ahorro de batería está activado</translation>
@@ -1216,6 +1217,7 @@ Se conectó un dispositivo.</translation>
 <translation id="5043679421800073804">Hacer clic o presionar el último ícono de la barra</translation>
 <translation id="504465286040788597">Párrafo anterior</translation>
 <translation id="5045550434625856497">Contraseña incorrecta</translation>
+<translation id="5058794129231928255">No se pudo crear el documento de Google</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Recibirás una notificación si hablas con el micrófono silenciado. El audio nunca sale del dispositivo.</translation>
 <translation id="5077416371682039027">Configurar la visualización de las fotos, el contenido multimedia, las notificaciones y las apps recientes de tu teléfono</translation>
@@ -1648,6 +1650,7 @@ No hay dispositivos conectados.</translation>
 <translation id="6468406072297048412">{0,plural, =1{Cambia el dispositivo a la versión anterior en el transcurso de 1 minuto}other{Cambia el dispositivo a la versión anterior en el transcurso de # minutos}}</translation>
 <translation id="6469104339369989396">Activa o desactiva el hotspot.</translation>
 <translation id="6477681113376365978">No se puede descargar el archivo</translation>
+<translation id="648135757200234041">No se pudo crear el contacto</translation>
 <translation id="6482559668224714696">Lupa de pantalla completa</translation>
 <translation id="6485086611007560630">Clima (no disponible)</translation>
 <translation id="6490471652906364588">Dispositivo USB-C (puerto derecho)</translation>
@@ -2288,6 +2291,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="8653151467777939995">Mostrar la configuración de las notificaciones: Están activadas</translation>
 <translation id="8657066291275741003">minúscula</translation>
 <translation id="8660331759611631213">Raíz cuadrada de 71</translation>
+<translation id="8662921061190671299">No se pudo agregar al Calendario</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Presiona intro para tomar una captura de pantalla parcial</translation>
 <translation id="8676770494376880701">Cargador de baja potencia conectado</translation>

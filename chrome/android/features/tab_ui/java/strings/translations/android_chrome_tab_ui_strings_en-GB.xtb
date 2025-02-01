@@ -86,6 +86,7 @@ If you delete it, everyone will immediately lose access to the '<ph name="TITLE_
 <translation id="4783638485675352219">Share titles and the URLs of open tabs from this device with the operating system</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> review)}other{(<ph name="REVIEWS_COUNT_MANY" /> reviews)}}</translation>
 <translation id="4850886885716139402">View</translation>
+<translation id="4861953997778766866">Everyone can make changes to your shared tab groups</translation>
 <translation id="4870911314065352661">Close all tabs?</translation>
 <translation id="4871719318659334896">Close group</translation>
 <translation id="4881695831933465202">Open</translation>
@@ -179,6 +180,7 @@ If you delete it, everyone will immediately lose access to the '<ph name="TITLE_
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> tab added, <ph name="ANY_CLOSED" /> closed}other{<ph name="MANY_ADDED" /> tabs added, <ph name="ANY_CLOSED" /> closed}}</translation>
 <translation id="8633025649649592204">Recent activity</translation>
 <translation id="870736955561925754">Close tab and delete group?</translation>
+<translation id="8712637175834984815">Got it</translation>
 <translation id="8714939927607906138">Lower price</translation>
 <translation id="8730621377337864115">Done</translation>
 <translation id="8730999928494395583">Your activity in these Incognito tabs will be removed from this device</translation>

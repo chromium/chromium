@@ -86,6 +86,7 @@
 <translation id="4783638485675352219">यो डिभाइसमा खोलिएका ट्याबका शीर्षक तथा URL हरू अपरेटिङ सिस्टमसँग सेयर गर्नुहोस्</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> समीक्षा)}other{(<ph name="REVIEWS_COUNT_MANY" /> वटा समीक्षा)}}</translation>
 <translation id="4850886885716139402">हेर्नुहोस्</translation>
+<translation id="4861953997778766866">तपाईंले सेयर गर्नुभएका ट्याब समूहहरूमा सबै जनाले परिवर्तन गर्न सक्छन्</translation>
 <translation id="4870911314065352661">सबै ट्याबहरू बन्द गर्ने हो?</translation>
 <translation id="4871719318659334896">समूह बन्द गर्नुहोस्</translation>
 <translation id="4881695831933465202">खोल्नुहोस्</translation>
@@ -179,6 +180,7 @@
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> वटा ट्याब हालियो, <ph name="ANY_CLOSED" /> वटा ट्याब बन्द गरिए}other{<ph name="MANY_ADDED" /> वटा ट्याब हालिए, <ph name="ANY_CLOSED" /> वटा ट्याब बन्द गरिए}}</translation>
 <translation id="8633025649649592204">हालसालैको क्रियाकलाप</translation>
 <translation id="870736955561925754">ट्याब बन्द गर्ने र समूह मेटाउने हो?</translation>
+<translation id="8712637175834984815">भयो</translation>
 <translation id="8714939927607906138">अझ कम मूल्य</translation>
 <translation id="8730621377337864115">गरियो</translation>
 <translation id="8730999928494395583">तपाईंले यी इन्कोग्निटो ट्याबबाट गर्नुभएको क्रियाकलापको विवरण यो डिभाइसबाट हटाइने छ</translation>

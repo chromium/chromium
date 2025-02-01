@@ -768,6 +768,7 @@
 <translation id="4654549501020883054">दिनदिनै बदलियोस्</translation>
 <translation id="4655868084888499342">फोटोलाई वालपेपरका रूपमा सेट गरिएको छ</translation>
 <translation id="4661249927038176904">सुरियल</translation>
+<translation id="4661392828086261436">डिभाइस उत्पादन गर्ने कम्पनीले नै यो अपडेट उपलब्ध गराएको हो र Google ले यो अपडेट पुष्टि गरेको छैन</translation>
 <translation id="4664651912255946953">रौँ</translation>
 <translation id="4665014895760275686">निर्माता</translation>
 <translation id="467510802200863975">पासवर्डहरू मिलेनन्</translation>
@@ -1027,6 +1028,7 @@
 <translation id="5904994456462260490">नयाँ APN हाल्नुहोस्</translation>
 <translation id="590746845088109442">बिरालोहरू</translation>
 <translation id="5907649332524363701">कीको रङ</translation>
+<translation id="5908813850962688338">यो अपडेट इन्स्टल गर्न केही मिनेट लाग्ने छ। यो अपडेट डाउनलोड गर्दै गर्दा आफ्नो डिभाइस अन राखेर चार्ज गरिराख्नुहोस्। तपाईंको डिभाइस धेरै पटक स्वतः रिबुट हुन सक्छ र यो प्रक्रियाका क्रममा स्क्रिन कालो हुन सक्छ। इन्स्टल गर्ने प्रक्रिया पूरा गर्न तपाईंलाई आफ्नो डिभाइस रिस्टार्ट गर्न लगाइने छ।</translation>
 <translation id="5916084858004523819">प्रतिबन्धित</translation>
 <translation id="5916664084637901428">अन</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{तपाईंको फाइल स्क्यान गर्ने काम पूरा भएको छ र उक्त फाइल <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> मा सुरक्षित गरिएको छ।}other{तपाईंका फाइलहरू स्क्यान गर्ने काम पूरा भएको छ र ती फाइलहरू <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> मा सुरक्षित गरिएका छन्।}}</translation>

@@ -768,6 +768,7 @@
 <translation id="4654549501020883054">Gündəlik dəyişdirin</translation>
 <translation id="4655868084888499342">Şəkil divar kağızı kimi təyin edildi</translation>
 <translation id="4661249927038176904">Sürreal</translation>
+<translation id="4661392828086261436">Bu güncəllənmə cihaz istehsalçısı tərəfindən təmin edilib və Google tərəfindən doğrulanmayıb</translation>
 <translation id="4664651912255946953">xəz</translation>
 <translation id="4665014895760275686">İstehsalçı</translation>
 <translation id="467510802200863975">Parollar üst-üstə düşmür</translation>
@@ -1027,6 +1028,7 @@
 <translation id="5904994456462260490">Yeni APN əlavə edin</translation>
 <translation id="590746845088109442">pişiklər</translation>
 <translation id="5907649332524363701">açar rəngi</translation>
+<translation id="5908813850962688338">Bu güncəllənmənin quraşdırılması bir neçə dəqiqə çəkəcək. Güncəllənmə endirilən zaman cihazı qoşulu və yanılı saxlayın. Bu proses zamanı cihaz bir neçə dəfə yenidən yüklənə və qara ekran göstərə bilər. Quraşdırmanı tamamlamaq üçün cihazı yenidən başlatmağınız istəniləcək.</translation>
 <translation id="5916084858004523819">Qadağan olunub</translation>
 <translation id="5916664084637901428">Aktiv</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Faylınız uğurla skanlandı və <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> qovluğunda saxlanıldı.}other{Fayllarınız uğurla skanlandı və <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> qovluğunda saxlanıldı.}}</translation>

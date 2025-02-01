@@ -768,6 +768,7 @@
 <translation id="4654549501020883054">Minden nap más</translation>
 <translation id="4655868084888499342">Kép beállítva háttérképként</translation>
 <translation id="4661249927038176904">Szürreális</translation>
+<translation id="4661392828086261436">Ezt a frissítést az eszköz gyártója biztosítja, és a Google nem ellenőrizte</translation>
 <translation id="4664651912255946953">bunda</translation>
 <translation id="4665014895760275686">Gyártó</translation>
 <translation id="467510802200863975">A jelszavak nem egyeznek</translation>
@@ -1027,6 +1028,7 @@
 <translation id="5904994456462260490">Új APN hozzáadása</translation>
 <translation id="590746845088109442">macskák</translation>
 <translation id="5907649332524363701">billentyűk színe</translation>
+<translation id="5908813850962688338">A frissítés telepítése néhány percet vesz igénybe. A frissítés letöltése közben tartsa töltőre csatlakoztatva és bekapcsolva az eszközt. Előfordulhat, hogy az eszköz többször is újraindul, és a folyamat során fekete képernyő jelenik meg. A rendszer megkéri, hogy a telepítés befejezéséhez indítsa újra eszközét.</translation>
 <translation id="5916084858004523819">Letiltva</translation>
 <translation id="5916664084637901428">Be</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Fájlját a rendszer sikeresen ellenőrizte, és a(z) <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> mappába mentette.}other{Fájljait a rendszer sikeresen ellenőrizte, és a(z) <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> mappába mentette.}}</translation>

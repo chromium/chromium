@@ -385,7 +385,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="2781151931089541271">१ सेकेन्ड बाँकी छ</translation>
 <translation id="2789486458103222910">ठिक छ</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome ले पहिले नै प्रयोग गरिएको एउटा पासवर्ड भेट्टाएको छ। तपाईं उक्त पासवर्ड अझ सुरक्षित बनाउन सक्नुहुन्छ}other{Chrome ले पहिले नै प्रयोग गरिएका # वटा पासवर्ड भेट्टाएको छ। तपाईं ती पासवर्ड अझ सुरक्षित बनाउन सक्नुहुन्छ}}</translation>
-<translation id="2796651346651857052">एड्रेस बारको ठाउँ परिवर्तन गर्न उक्त एड्रेस बारमा टच गरिराख्नुहोस्।</translation>
 <translation id="2800066122460699237"><ph name="TAB_TITLE" /> ट्याब बन्द गरिने छ</translation>
 <translation id="2805756323405976993">एप्स</translation>
 <translation id="281504910091592009">आफ्नो <ph name="BEGIN_LINK" />Google खाता<ph name="END_LINK" /> मा सुरक्षित गरिएका पासवर्डहरू हेर्नुहोस् र व्यवस्थापन गर्नुहोस्</translation>

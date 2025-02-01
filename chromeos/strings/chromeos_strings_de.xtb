@@ -768,6 +768,7 @@
 <translation id="4654549501020883054">Täglich ändern</translation>
 <translation id="4655868084888499342">Bild als Hintergrund festgelegt</translation>
 <translation id="4661249927038176904">Surreal</translation>
+<translation id="4661392828086261436">Dieses Update wird vom Hersteller des Geräts bereitgestellt und wurde nicht von Google überprüft</translation>
 <translation id="4664651912255946953">Fell</translation>
 <translation id="4665014895760275686">Hersteller</translation>
 <translation id="467510802200863975">Die Passwörter stimmen nicht überein</translation>
@@ -1027,6 +1028,7 @@
 <translation id="5904994456462260490">Neuen APN hinzufügen</translation>
 <translation id="590746845088109442">Katzen</translation>
 <translation id="5907649332524363701">Tastenfarbe</translation>
+<translation id="5908813850962688338">Die Installation dieses Updates dauert einige Minuten. Schließ dein Gerät an das Stromnetz an und lass es eingeschaltet, während das Update heruntergeladen wird. Möglicherweise wird dein Gerät mehrmals neu gestartet; bei diesem Vorgang wird der Bildschirm ausgeschaltet. Du wirst anschließend aufgefordert, dein Gerät neu zu starten, um die Installation abzuschließen.</translation>
 <translation id="5916084858004523819">Unzulässig</translation>
 <translation id="5916664084637901428">An</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Deine Datei wurde gescannt und im Ordner <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> gespeichert.}other{Deine Dateien wurden gescannt und im Ordner <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> gespeichert.}}</translation>

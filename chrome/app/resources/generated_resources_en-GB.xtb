@@ -2164,7 +2164,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2471632709106952369">Comparison tables</translation>
 <translation id="2473195200299095979">Translate this page</translation>
 <translation id="2475982808118771221">An error occurred</translation>
-<translation id="247616523300581745">Hide these files</translation>
 <translation id="2476435723907345463">Passkeys access removed</translation>
 <translation id="2476901513051581836">Can’t clean up storage until offline storage size is known.</translation>
 <translation id="2476974672882258506">Shut down Windows to uninstall <ph name="PARALLELS_DESKTOP" />.</translation>
@@ -3240,7 +3239,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3257733480216378006">Allow <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" />?</translation>
 <translation id="325797067711573598">Suspicious download blocked</translation>
 <translation id="3259723213051400722">Please try again.</translation>
-<translation id="3260199651491738298">Your organisation controls how data collected by these features may be used. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="3261090393424563833">Increase rate</translation>
 <translation id="3261268979727295785">For older children, you can add parental controls once you finish setup. You'll find information on parental controls in the Explore app.</translation>
 <translation id="3261832505033014216">Passkey for <ph name="USER_EMAIL" /></translation>
@@ -8599,7 +8597,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7113974454301513811">Now add the current tab to your list</translation>
 <translation id="7114054701490058191">Passwords don't match</translation>
 <translation id="7114648273807173152">To use Smart Lock to sign in to your Google Account, go to Settings &gt; Connected devices &gt; Your phone &gt; Smart Lock.</translation>
-<translation id="7115051913071512405">Try it out</translation>
 <translation id="7115361495406486998">No reachable contacts</translation>
 <translation id="7115731767122970828">Boost now</translation>
 <translation id="7116554090938189816">Printer SSL certificate is expired. Restart printer and try again.</translation>
@@ -10906,7 +10903,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8737966899544698733">Location Accuracy (Android only)</translation>
 <translation id="8738418093147087440">Search by countries, language or input names</translation>
 <translation id="8740086188450289493">Use Google Account password</translation>
-<translation id="874023689350909633">Try it out</translation>
 <translation id="8740247629089392745">You can hand this Chromebook to <ph name="SUPERVISED_USER_NAME" />. Setup is almost done, then it's time to explore.</translation>
 <translation id="8740672167979365981">Chrome OS Flex update required</translation>
 <translation id="8741944563400125534">Switch Access setup guide</translation>
