@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] No violation reported for write() with TrustedHTML arguments.
+  assert_equals: no violation reported expected 0 but got 1
+[FAIL] No violation reported for writeln() with TrustedHTML arguments.
+  assert_equals: no violation reported expected 0 but got 1
+Harness: the test ran to completion.
+

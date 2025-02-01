@@ -2710,6 +2710,14 @@ crbug.com/383880384 [ Mac ] external/wpt/css/css-properties-values-api/registere
 crbug.com/383880384 [ Win ] external/wpt/css/css-properties-values-api/registered-property-change-style-002.html [ Failure Pass ]
 
 # ====== New tests from wpt-importer added here ======
+external/wpt/clear-site-data/clear-cache-partitioning.sub.https.html [ Failure Timeout ]  # Flaky `*-expected.txt` output
+external/wpt/css/css-text/line-breaking/segment-break-transformation-punctuation-002.html [ Failure ]
+external/wpt/css/cssom/adoptedstylesheets-adopt-link.tentative.html [ Failure ]
+external/wpt/css/cssom/adoptedstylesheets-adopt-style-subresource.tentative.html [ Failure ]
+external/wpt/css/cssom/adoptedstylesheets-adopt-style.tentative.html [ Failure ]
+virtual/threaded/external/wpt/css/css-view-transitions/duplicate-tag-rejects-start.html [ Crash Failure ]
+virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/duplicate-tag-rejects-start.html [ Crash Failure ]
+virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/duplicate-tag-rejects-start.html [ Crash Failure ]
 crbug.com/393401460 external/wpt/webrtc/simulcast/av1.https.html [ Skip Timeout ]
 crbug.com/392927699 external/wpt/css/css-lists/list-style-position-001.html [ Failure ]
 crbug.com/392927987 [ Mac15 ] external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-to-same-origin.https.html?5-6 [ Crash ]
@@ -3704,7 +3712,7 @@ crbug.com/626703 [ Mac12 ] external/wpt/webxr/render_state_update.https.html [ T
 crbug.com/626703 [ Mac14 ] external/wpt/webxr/render_state_update.https.html [ Timeout ]
 crbug.com/626703 [ Mac14-arm64 ] external/wpt/webxr/render_state_update.https.html [ Timeout ]
 crbug.com/626703 [ Mac15 ] external/wpt/webxr/render_state_update.https.html [ Timeout ]
-crbug.com/393437657 external/wpt/screen-orientation/active-lock.html [ Pass Timeout Failure ]
+crbug.com/393437657 external/wpt/screen-orientation/active-lock.html [ Failure Pass Timeout ]
 crbug.com/626703 external/wpt/webaudio/the-audio-api/the-audiocontext-interface/audiocontext-suspend-resume-close.html [ Timeout ]
 crbug.com/626703 external/wpt/screen-orientation/non-fully-active.html [ Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/fetch/api/abort/serviceworker-intercepted.https.html [ Timeout ]

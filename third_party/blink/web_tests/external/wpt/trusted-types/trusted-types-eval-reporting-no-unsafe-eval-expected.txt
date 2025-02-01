@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Trusted Type violation report: evaluating a string violates both script-src and trusted-types.
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to set the 'data' property on 'HTMLObjectElement': This document requires 'TrustedScriptURL' assignment."
-[FAIL] Trusted Type violation report: evaluating a Trusted Script violates script-src.
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to set the 'data' property on 'HTMLObjectElement': This document requires 'TrustedScriptURL' assignment."
-[FAIL] Trusted Type violation report: script-src restrictions apply after the default policy runs.
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to set the 'data' property on 'HTMLObjectElement': This document requires 'TrustedScriptURL' assignment and no 'default' policy for 'TrustedScriptURL' has been defined."
-Harness: the test ran to completion.
-

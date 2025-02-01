@@ -1,10 +1,10 @@
 This is a testharness.js-based test.
 [FAIL] Assign string to SVGScriptElement.href.baseVal.
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to set the 'data' property on 'HTMLObjectElement': This document requires 'TrustedScriptURL' assignment."
+  assert_equals: expected "SVGScriptElement href|about:blank" but got "SVGAnimatedString baseVal|about:blank"
 [FAIL] Assign string to non-attached SVGScriptElement.href via setAttribute.
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to set the 'data' property on 'HTMLObjectElement': This document requires 'TrustedScriptURL' assignment."
+  assert_equals: expected "SVGScriptElement href|about:blank" but got "Element setAttribute|about:blank"
 [FAIL] Assign string to attached SVGScriptElement.href via setAttribute.
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to set the 'data' property on 'HTMLObjectElement': This document requires 'TrustedScriptURL' assignment."
+  assert_equals: expected "SVGScriptElement href|about:blank" but got "Element setAttribute|about:blank"
 [FAIL] Assign string to SVGScriptElement.className.baseVal.
   Failed to set the 'baseVal' property on 'SVGAnimatedString': This document requires 'TrustedScriptURL' assignment.
 [FAIL] Assign string to SVGScriptElement.href.baseVal  w/ default policy.

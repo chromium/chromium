@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Require trusted types for 'script' block create HTML.
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to set the 'data' property on 'HTMLObjectElement': This document requires 'TrustedScriptURL' assignment."
-[FAIL] Require trusted types for 'script' block create script.
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to set the 'data' property on 'HTMLObjectElement': This document requires 'TrustedScriptURL' assignment."
-[FAIL] Require trusted types for 'script' block create script URL.
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to set the 'data' property on 'HTMLObjectElement': This document requires 'TrustedScriptURL' assignment."
-Harness: the test ran to completion.
-

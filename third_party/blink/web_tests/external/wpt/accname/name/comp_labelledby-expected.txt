@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] button's hidden referenced name (visibility:hidden) with hidden aria-labeledby traversal falls back to aria-label
-  assert_equals: <button aria-labeledby="span4" aria-label="foo" data-expectedlabel="foo" data-testname="button's hidden referenced name (visibility:hidden) with hidden aria-labeledby traversal falls back to aria-label" class="ex">\n  <span id="span4">\n    <span id="span5" style="visibility:hidden;">label</span>\n  </span>\n  x\n</button> expected "foo" but got "label"
-Harness: the test ran to completion.
-

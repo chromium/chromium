@@ -1,0 +1,41 @@
+This is a wdspec test.
+[FAIL] test_unsubscribe
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Unknown event: browsingContext.navigationCommitted)
+[FAIL] test_subscribe
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Unknown event: browsingContext.navigationCommitted)
+[FAIL] test_timestamp
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Unknown event: browsingContext.navigationCommitted)
+[FAIL] test_iframe
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Unknown event: browsingContext.navigationCommitted)
+[FAIL] test_nested_iframes
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Unknown event: browsingContext.navigationCommitted)
+[FAIL] test_same_document
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Unknown event: browsingContext.navigationCommitted)
+[FAIL] test_document_write[None]
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Unknown event: browsingContext.navigationCommitted)
+[FAIL] test_document_write[sandbox_1]
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Unknown event: browsingContext.navigationCommitted)
+[FAIL] test_base_element
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Unknown event: browsingContext.navigationCommitted)
+[FAIL] test_redirect_http_equiv
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Unknown event: browsingContext.navigationCommitted)
+[FAIL] test_redirect_navigation
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Unknown event: browsingContext.navigationCommitted)
+[FAIL] test_navigate_history_pushstate
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Unknown event: browsingContext.navigationCommitted)
+[FAIL] test_new_context[tab]
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Unknown event: browsingContext.navigationCommitted)
+[FAIL] test_new_context[window]
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Unknown event: browsingContext.navigationCommitted)
+[FAIL] test_navigate_to_about_blank
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Unknown event: browsingContext.navigationCommitted)
+[FAIL] test_window_open_with_about_blank[]
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Unknown event: browsingContext.navigationCommitted)
+[FAIL] test_window_open_with_about_blank[about:blank]
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Unknown event: browsingContext.navigationCommitted)
+[FAIL] test_window_open_with_about_blank[about:blank?test]
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Unknown event: browsingContext.navigationCommitted)
+[FAIL] test_window_open_with_url
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Unknown event: browsingContext.navigationCommitted)
+Harness: the test ran to completion.
+

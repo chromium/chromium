@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Require trusted types for 'script' block create HTML.
-  assert_equals: a single violation reported expected 1 but got 2
-[FAIL] Require trusted types for 'script' block create script.
-  assert_equals: a single violation reported expected 1 but got 2
-[FAIL] Require trusted types for 'script' block create script URL.
-  assert_equals: a single violation reported expected 1 but got 2
-Harness: the test ran to completion.
-

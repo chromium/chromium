@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Trusted Type violation report: evaluating a string.
-  assert_equals: a single violation reported expected 1 but got 2
-[FAIL] Trusted Type violation report: evaluating a Trusted Script.
-  assert_equals: no violation reported expected 0 but got 1
-[FAIL] Trusted Type violation report: default policy runs in report-only mode.
-  assert_equals: no violation reported expected 0 but got 1
-Harness: the test ran to completion.
-

@@ -37,14 +37,13 @@
   <span id="s1">verify</span><span id="s2">spaces</span><span>FAIL IF INCLUDED</span><span id="s3">between</span><span id="s4">foreach</span>
 </nav>
 
+
+<!-- Removed tests to be merged back in (or this PR reverted) after Interop 2024 completed on Feb 6, 2025. -->
+
 <h2>Tests for <code>aria-labeledby</code> (non-standard spelling)</h2>
 
 <span id="n1">first label</span>
 <span id="n2">second label</span>
-
-<a href="#" aria-labeledby="n1" class="ex" data-expectedlabel="first label" data-testname="link is labelled by aria-labeledby (non-standard spelling)">x</a>
-<button aria-labeledby="n1" class="ex" data-expectedlabel="first label" data-testname="button is labelled by aria-labeledby (non-standard spelling)">x</button>
-<div role="group" aria-labeledby="n1" class="ex" data-expectedlabel="first label" data-testname="div with role group is labelled by aria-labeledby (non-standard spelling)">x</div>
 
 <h2>Tests for precedence: <code>aria-labelledby</code> vs. <code>aria-labeledby</code> (non-standard spelling)</h2>
 <!-- The "aria-labelledby" spelling should take precedence over "aria-labeledby" for accname -->
@@ -60,54 +59,8 @@
 <h2>Tests for name precedence with <code>aria-labeledby</code> (non-standard spelling)</h2>
 <!-- Name computation: https://w3c.github.io/accname/#computation-steps -->
 
-<!-- Step 2A: Hidden Not Referenced supercedes 2B: AriaLabeledby -->
-<button aria-labeledby="span1" aria-label="foo" data-expectedlabel="label" data-testname="button's hidden referenced name (display:none) with aria-labeledby (non-standard spelling) supercedes aria-label" class="ex">
-  <span id="span1" style="display:none;">
-    <span id="span2" style="display:none;">label</span>
-  </span>
-x
-</button>
-
-<button aria-labeledby="span3" aria-label="foo" data-expectedlabel="label" data-testname="button's hidden referenced name (visibility:hidden) with aria-labeledby (non-standard spelling) supercedes aria-label" class="ex">
-  <span id="span3" style="visibility:hidden;">
-    <span id="span4" style="visibility:hidden;">label</span>
-  </span>
-  x
-</button>
-
-<button aria-labeledby="span4" aria-label="foo" data-expectedlabel="foo" data-testname="button's hidden referenced name (visibility:hidden) with hidden aria-labeledby traversal falls back to aria-label" class="ex">
-  <span id="span4">
-    <span id="span5" style="visibility:hidden;">label</span>
-  </span>
-  x
-</button>
-
-<!-- Step 2B: AriaLabeledby supercedes 2D: AriaLabel -->
-<a href="#" aria-labeledby="span6" aria-label="foo" data-expectedlabel="label" data-testname="link's aria-labeledby (non-standard spelling) name supercedes aria-label" class="ex">x</a>
-<span id="span6">label</span>
-
-<!-- Step 2C: Embedded Control labelling via aria-labeledby not defined in accname spec -->
-
-<!-- Step 2E: Host Language Label is superceded by 2B: AriaLabeledby -->
-<img alt="alt" aria-labeledby="n2" data-expectedlabel="second label" data-testname="img's aria-labeledby (non-standard spelling) supercedes alt attribute" class="ex" />
-
-<svg aria-labeledby="n2" data-expectedlabel="second label" data-testname="svg's aria-labeledby (non-standard spelling) supercedes title tag" class="ex">
-  <circle cx="5" cy="5" r="4">
-    <title>circle</title>
-  </circle>
-</svg>
-
-<label for="input1">label</label>
-<input type="text" id="input1" aria-labeledby="n2" data-expectedlabel="second label" data-testname="input with label for association is superceded by aria-labeledby (non-standard spelling)" class="ex" />
-
-<!-- Step 2F: Name From Content is superceded by 2B: AriaLabeledby -->
-<button aria-labeledby="n2" data-expectedlabel="second label" data-testname="button name from contents is superceded by aria-labeledby (non-standard spelling)" class="ex">x</button>
-
-<!-- Step 2G: Text Node is superceded by 2B: AriaLabeledby, also see wpt/accname/name/comp_text_node.html -->
-<h1 aria-labeledby="n2" data-expectedlabel="second label" data-testname="h1 text is superceded by aria-labeledby (non-standard spelling)" class="ex">x</h1>
-
 <!-- Step 2H: Recursive Name from Content, see wpt/accname/name/comp_name_from_content.html  -->
-<h3 data-expectedlabel="image link2 link3" data-testname="heading name from content for each child including two nested links using aria-labeledby (non-standard spelling) with nested image" class="ex">
+<h3>
   <a href="#" aria-labeledby="nested_image_label2">
     link1<!-- this text is skipped because of aria-labeledby -->
   </a>
@@ -119,10 +72,6 @@ x
     link3
   </a>
 </h3>
-
-<!-- Step 2I: Tooltip is superceded by 2B: AriaLabeledby, also see wpt/accname/name/comp_tooltip.html -->
-<button aria-labeledby="n2" title="foo" data-expectedlabel="second label" data-testname="button with title is superceded by aria-labeledby (non-standard spelling)" class="ex">x</button>
-
 
 <!--
 
