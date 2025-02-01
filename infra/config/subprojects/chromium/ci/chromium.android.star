@@ -4520,11 +4520,6 @@ ci.builder(
                     shards = 50,
                 ),
             ),
-            "chrome_public_unit_test_apk": targets.mixin(
-                args = [
-                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15.chrome_public_unit_test_apk.filter",
-                ],
-            ),
             "content_browsertests": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15.content_browsertests.filter",
@@ -4639,6 +4634,10 @@ ci.thin_tester(
         ],
         per_test_modifications = {
             "android_browsertests": targets.mixin(
+                args = [
+                    # https://crbug.com/375086487
+                    "--gtest_filter=-InstallableManagerBrowserTest.CheckManifestWithIconThatIsTooSmall",
+                ],
                 swarming = targets.swarming(
                     shards = 6,
                 ),
@@ -4659,6 +4658,11 @@ ci.thin_tester(
             "chrome_public_test_apk": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15_tablet.chrome_public_test_apk.filter",
+                ],
+            ),
+            "chrome_public_unit_test_apk": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15_tablet.chrome_public_unit_test_apk.filter",
                 ],
             ),
             "content_unittests": targets.mixin(
