@@ -2804,6 +2804,7 @@
 <translation id="2926620265753325858">אין תמיכה ב-<ph name="DEVICE_NAME" />.</translation>
 <translation id="2926708162326352948">העיצוב עודכן לתמונה שהועלתה</translation>
 <translation id="2927017729816812676">אחסון קובצי מטמון</translation>
+<translation id="2928030851119977280">‏הבחירה נשמרה. הבחירה שלך תחול בכניסה לשירותי Google אחרים.</translation>
 <translation id="2928795416630981206">מורשים לעקוב אחר מיקום המצלמה</translation>
 <translation id="2929345818093040583">{NUM_SITES,plural, =1{‏‫Chrome הסיר את ההרשאות מאתר אחד}one{‏‫Chrome הסיר את ההרשאות מ-{NUM_SITES} אתרים}two{‏‫Chrome הסיר את ההרשאות מ-{NUM_SITES} אתרים}other{‏‫Chrome הסיר את ההרשאות מ-{NUM_SITES} אתרים}}</translation>
 <translation id="2931157624143513983">התאמה לאזור שבו ניתן להדפיס</translation>
@@ -7418,6 +7419,7 @@
 <translation id="6253801023880399036">הסיסמאות נשמרות ב<ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="6254503684448816922">המפתח בסכנה</translation>
 <translation id="6254892857036829079">מושלם</translation>
+<translation id="6257131917452817589">שינוי סיסמה אוטומטי</translation>
 <translation id="6257602895346497974">הפעלת סנכרון...</translation>
 <translation id="6257614441619555296"><ph name="KEY" />: <ph name="VALUE" /></translation>
 <translation id="625827534921607067">אם יש יותר מרשת אחת שכבר חוברה או הוגדרה, הרשת הזו תקבל עדיפות</translation>
@@ -9131,6 +9133,7 @@
 <translation id="7502528909759062987">השהיה של העברת הכרטיסייה אל <ph name="DEVICE_NAME" /></translation>
 <translation id="7502804472671406749">ניתן לגלול ולשנות את מרחק התצוגה בכרטיסיות המשותפות</translation>
 <translation id="7503191893372251637">‏סוג אישור Netscape</translation>
+<translation id="7503259455663961898">שינוי הסיסמה בשבילי</translation>
 <translation id="7503985202154027481">תיעוד של ביקורך באתר יישמר במפתח האבטחה שלך.</translation>
 <translation id="7504145862399276792">האודיו בכרטיסייה הזו מושתק</translation>
 <translation id="750509436279396091">פתיחת תיקיית ההורדות</translation>
@@ -9193,6 +9196,7 @@
 <translation id="7551059576287086432">ההורדה של <ph name="FILE_NAME" /> הצליחה</translation>
 <translation id="7551643184018910560">הצמדה למדף</translation>
 <translation id="7552191410769096467">כדי לשתף קבוצות של כרטיסיות או להצטרף אליהן, צריך להיכנס לחשבון ולהפעיל את הסנכרון</translation>
+<translation id="7552196109089297786">יציאה ממיקרוסופט</translation>
 <translation id="7552846755917812628">אולי הטיפים האלו יעזרו לך:</translation>
 <translation id="7553012839257224005">‏המערכת בודקת את הקונטיינר של Linux</translation>
 <translation id="7553242001898162573">הזנת הסיסמה</translation>
@@ -10323,6 +10327,7 @@
 <translation id="8330617762701840933">רשימת האתרים שמפנים לדפדפן חלופי.</translation>
 <translation id="8330689128072902965">אנשי קשר בקרבת מקום יכולים לשתף איתך. אפשר ללחוץ כדי לשנות.</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{סוג הקובץ הנתמך: <ph name="FILE_TYPE1" />}=2{סוגי הקבצים הנתמכים: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />}=3{סוגי הקבצים הנתמכים: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />}=4{סוגי הקבצים הנתמכים: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" />}one{סוגי הקבצים הנתמכים: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />ועוד {OVERFLOW_COUNT}<ph name="END_LINK" />)}other{סוגי הקבצים הנתמכים: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />ועוד {OVERFLOW_COUNT}<ph name="END_LINK" />)}}</translation>
+<translation id="8331578454993293727">הסיסמה הזו נמצאה בפרצה באבטחת מידע</translation>
 <translation id="8331822764922665615">‏נותנים שם לקבוצה, בוחרים צבע ומקישים על Esc</translation>
 <translation id="833256022891467078">‏תיקיות משותפות של Crostini</translation>
 <translation id="833262891116910667">הדגשה</translation>
@@ -10404,6 +10409,7 @@
     <ph name="BEGIN_PARAGRAPH2" />עזרה נוספת זמינה בכתובת: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8383614331548401927">איפה היינו?</translation>
 <translation id="8386091599636877289">המדיניות לא נמצאה.</translation>
+<translation id="8387087863179559896">‏‫Chrome יכול לעדכן את החשבון שלך באתר הזה עם סיסמה חזקה. אין צורך לזכור את הסיסמה כי היא שמורה בשבילך במנהל הסיסמאות של Google בחשבון <ph name="EMAIL" />. מידע נוסף על <ph name="PASSWORD_CHANGE" />.</translation>
 <translation id="8387361103813440603">לא מורשים לראות את המיקום</translation>
 <translation id="8387617938027387193">אימות הזהות שלך</translation>
 <translation id="8388770971141403598">אין תמיכה בפרופילים משניים</translation>

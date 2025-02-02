@@ -716,6 +716,7 @@
 <translation id="422477017457571619">‏הגנה מבוססת-AI בזמן אמת מפני אתרים, הורדות ותוספים מסוכנים, על סמך נתוני הגלישה שלך שנשלחים אל Google</translation>
 <translation id="4231395118547300571">ההתראות של הטיימר לדיווח על מצב מסוכן מופעלות</translation>
 <translation id="4237377247299956313">לוחצים על <ph name="BEGIN_BOLD" />אפליקציית הדפדפן שמוגדרת כברירת מחדל<ph name="END_BOLD" />.</translation>
+<translation id="4241893428331130998">אין סיסמאות או מפתחות גישה שמורים</translation>
 <translation id="4242533952199664413">פתיחת ההגדרות</translation>
 <translation id="4250432749243022864">{count,plural, =0{פתיחת {count} כרטיסיות}=1{פתיחת הכרטיסייה ({count})}one{פתיחת {count} הכרטיסיות}two{פתיחת {count} הכרטיסיות}other{פתיחת {count} הכרטיסיות}}</translation>
 <translation id="4250680216510889253">לא</translation>
@@ -1595,6 +1596,7 @@
 <translation id="7982789257301363584">רשת</translation>
 <translation id="7987685713885608670">‏כדי לשפר את הבטיחות, כדאי להצפין את הסיסמאות במכשיר שלך לפני שהן נשמרות במנהל הסיסמאות של Google.</translation>
 <translation id="798991908416757345">קבוצות הכרטיסיות לא זמינות</translation>
+<translation id="7993170188789685695">צריך ללחוץ לחיצה כפולה כדי לסגור את ההתראה הזו.</translation>
 <translation id="7993619969781047893">ייתכן שהתכונות של חלק מהאתרים לא יפעלו כראוי</translation>
 <translation id="7996239959906074962">הגדרה של…</translation>
 <translation id="800361585186029508">‏פתיחת כתובות ה-URL שהוזנו ב-Google Chrome.</translation>
