@@ -9171,6 +9171,21 @@
             ]
         }
     ],
+    "EnableRootNsDnsProxy": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableRootNsDnsProxy"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableSessionSerializationOptimizations": [
         {
             "platforms": [
