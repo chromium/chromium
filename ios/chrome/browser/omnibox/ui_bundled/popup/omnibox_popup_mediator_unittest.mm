@@ -234,7 +234,7 @@ TEST_F(OmniboxPopupMediatorTest, Init) {
 // Tests that update matches with no matches returns no suggestion groups.
 TEST_F(OmniboxPopupMediatorTest, UpdateMatchesEmpty) {
   SetVisibleSuggestionCount(0);
-  [mediator_ popupController:nil didUpdateResults:autocomplete_result_];
+  [mediator_ updateMatches:autocomplete_result_];
   EXPECT_EQ(0ul, resultConsumerGroups_.count);
 }
 
@@ -242,7 +242,7 @@ TEST_F(OmniboxPopupMediatorTest, UpdateMatchesEmpty) {
 TEST_F(OmniboxPopupMediatorTest, UpdateMatchesCount) {
   SetVisibleSuggestionCount(0);
   autocomplete_result_.AppendMatches(GetAutocompleteMatches());
-  [mediator_ popupController:nil didUpdateResults:autocomplete_result_];
+  [mediator_ updateMatches:autocomplete_result_];
   EXPECT_EQ(1ul, resultConsumerGroups_.count);
   EXPECT_EQ(autocomplete_result_.size(),
             resultConsumerGroups_[resultConsumerGroupIndex_].suggestions.count);
@@ -252,7 +252,7 @@ TEST_F(OmniboxPopupMediatorTest, UpdateMatchesCount) {
 TEST_F(OmniboxPopupMediatorTest, SuggestionsAllVisible) {
   autocomplete_result_.AppendMatches(GetAutocompleteMatches());
   SetVisibleSuggestionCount(autocomplete_result_.size());
-  [mediator_ popupController:nil didUpdateResults:autocomplete_result_];
+  [mediator_ updateMatches:autocomplete_result_];
 
   EXPECT_EQ(1ul, resultConsumerGroups_.count);
   // Expect SearchVSURL skipping the first suggestion because its the omnibox's
@@ -269,7 +269,7 @@ TEST_F(OmniboxPopupMediatorTest, SuggestionsPartVisible) {
   // Configure matches.
   autocomplete_result_.AppendMatches(GetAutocompleteMatches());
   // Call update matches on mediator.
-  [mediator_ popupController:nil didUpdateResults:autocomplete_result_];
+  [mediator_ updateMatches:autocomplete_result_];
 
   EXPECT_EQ(1ul, resultConsumerGroups_.count);
   // Expect SearchVSURL skipping the first suggestion because its the omnibox's

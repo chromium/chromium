@@ -134,13 +134,18 @@ class OmniboxPopupMediatorDelegate {
                     delegate:(OmniboxPopupMediatorDelegate*)delegate
                      tracker:(feature_engagement::Tracker*)tracker;
 
+- (void)updateMatches:(const AutocompleteResult&)result;
+
 /// Sets the text alignment of the popup content.
 - (void)setTextAlignment:(NSTextAlignment)alignment;
 
 /// Sets whether the omnibox has a thumbnail.
 - (void)setHasThumbnail:(BOOL)hasThumbnail;
 
-/// Disconnects all observers set by the mediator.
+/// Updates the popup with the `results`.
+- (void)updateWithResults:(const AutocompleteResult&)results;
+
+// Disconnects all observers set by the mediator.
 - (void)disconnect;
 
 @end
