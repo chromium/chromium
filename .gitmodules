@@ -653,6 +653,10 @@
 	path = chrome/browser/enterprise/connectors/internal
 	url = https://chrome-internal.googlesource.com/chrome/browser/enterprise/connectors/internal
 	gclient-condition = checkout_src_internal
+[submodule "chrome/browser/glic/resources/internal"]
+	path = chrome/browser/glic/resources/internal
+	url = https://chrome-internal.googlesource.com/chrome/browser/glic/resources/internal
+	gclient-condition = checkout_src_internal
 [submodule "chrome/browser/google/linkdoctor_internal"]
 	path = chrome/browser/google/linkdoctor_internal
 	url = https://chrome-internal.googlesource.com/chrome/linkdoctor

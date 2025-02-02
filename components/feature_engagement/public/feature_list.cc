@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/feature_engagement/public/feature_list.h"
+
+#include <vector>
 
 #include "build/build_config.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -306,8 +303,8 @@ const base::Feature* const kAllFeatures[] = {
 }  // namespace
 
 std::vector<const base::Feature*> GetAllFeatures() {
-  return std::vector<const base::Feature*>(
-      kAllFeatures, kAllFeatures + std::size(kAllFeatures));
+  return std::vector<const base::Feature*>(std::begin(kAllFeatures),
+                                           std::end(kAllFeatures));
 }
 
 }  // namespace feature_engagement

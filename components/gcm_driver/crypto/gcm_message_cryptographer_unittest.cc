@@ -249,8 +249,8 @@ bool ComputeSharedP256SecretFromPrivateKeyStr(std::string_view private_key,
                                               std::string* out_shared_secret) {
   DCHECK(out_shared_secret);
   std::unique_ptr<crypto::ECPrivateKey> local_key(
-      crypto::ECPrivateKey::CreateFromPrivateKeyInfo(std::vector<uint8_t>(
-          private_key.data(), private_key.data() + private_key.size())));
+      crypto::ECPrivateKey::CreateFromPrivateKeyInfo(
+          std::vector<uint8_t>(private_key.begin(), private_key.end())));
   if (!local_key) {
     DLOG(ERROR) << "Unable to create the local key";
     return false;
@@ -281,16 +281,13 @@ void ComputeSharedSecret(std::string_view encoded_sender_private_key,
 class GCMMessageCryptographerTestBase : public ::testing::Test {
  public:
   void SetUp() override {
-    recipient_public_key_.assign(
-        kCommonRecipientPublicKey,
-        kCommonRecipientPublicKey + std::size(kCommonRecipientPublicKey));
-    sender_public_key_.assign(
-        kCommonSenderPublicKey,
-        kCommonSenderPublicKey + std::size(kCommonSenderPublicKey));
+    recipient_public_key_.assign(std::begin(kCommonRecipientPublicKey),
+                                 std::end(kCommonRecipientPublicKey));
+    sender_public_key_.assign(std::begin(kCommonSenderPublicKey),
+                              std::end(kCommonSenderPublicKey));
 
-    std::string recipient_private_key(
-        kCommonRecipientPrivateKey,
-        kCommonRecipientPrivateKey + std::size(kCommonRecipientPrivateKey));
+    std::string recipient_private_key(std::begin(kCommonRecipientPrivateKey),
+                                      std::end(kCommonRecipientPrivateKey));
     std::vector<uint8_t> recipient_private_key_vec(
       recipient_private_key.begin(), recipient_private_key.end());
     std::unique_ptr<crypto::ECPrivateKey> recipient_key =
@@ -299,8 +296,8 @@ class GCMMessageCryptographerTestBase : public ::testing::Test {
     ASSERT_TRUE(ComputeSharedP256Secret(
         *recipient_key, sender_public_key_, &ecdh_shared_secret_));
 
-    auth_secret_.assign(kCommonAuthSecret,
-                        kCommonAuthSecret + std::size(kCommonAuthSecret));
+    auth_secret_.assign(std::begin(kCommonAuthSecret),
+                        std::end(kCommonAuthSecret));
   }
 
  protected:

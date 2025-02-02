@@ -146,7 +146,7 @@ class ProfilePrefStoreManagerTest : public testing::Test,
         mock_validation_delegate_record_);
 
     ProfilePrefStoreManager::RegisterProfilePrefs(profile_pref_registry_.get());
-    for (prefs::TrackedPreferenceMetadata config : kConfiguration) {
+    for (const prefs::TrackedPreferenceMetadata& config : kConfiguration) {
       if (config.strategy == PrefTrackingStrategy::ATOMIC) {
         profile_pref_registry_->RegisterStringPref(config.name, std::string());
       } else {

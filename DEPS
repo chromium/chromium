@@ -352,7 +352,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling chromium_variations
   # and whatever else without interference from each other.
-  'chromium_variations_revision': 'bb022d0b35c6c82a777fdc1e579ef234c64867d1',
+  'chromium_variations_revision': '3b133676148ae72c2425f105e99b63ca30d63ab0',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling CrossBench
   # and whatever else without interference from each other.
@@ -1448,7 +1448,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    '7fd87aa91d2e25d220d949e56417ce07430e92e9',
+    'eb8b7635823dae10e788d3a5496706eeb51cfd4f',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
@@ -4279,6 +4279,12 @@ deps = {
       'condition': 'checkout_src_internal',
   },
 
+  'src/chrome/browser/glic/resources/internal': {
+      'url': Var('chrome_git') + '/chrome/browser/glic/resources/internal.git' + '@' +
+        'd8abfb71c804f0aace34fdc23471a5e3feb0be59',
+      'condition': 'checkout_src_internal',
+  },
+
   'src/chrome/browser/google/linkdoctor_internal': {
       'url': Var('chrome_git') + '/chrome/linkdoctor.git' + '@' +
         'fe28a8f90c5471f20f8fee9ff7f6c6f8b8d02bed', # from svn revision 32577
@@ -4525,7 +4531,7 @@ deps = {
 
   'src/ios_internal':  {
       'url': Var('chrome_git') + '/chrome/ios_internal.git' + '@' +
-        '9503d26264a1e19286ded4ca3551a5e8373e110a',
+        'dd3e8c26daebf1c251d484b2d7058f89933d0018',
       'condition': 'checkout_ios and checkout_src_internal',
   },
 

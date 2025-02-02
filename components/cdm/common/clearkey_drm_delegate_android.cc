@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/cdm/common/clearkey_drm_delegate_android.h"
 
-#include "media/cdm/clear_key_cdm_common.h"
+#include <cstdint>
+#include <vector>
 
-using media::kClearKeyUuid;
+#include "media/cdm/clear_key_cdm_common.h"
 
 namespace cdm {
 
@@ -20,8 +16,8 @@ ClearKeyDrmDelegateAndroid::ClearKeyDrmDelegateAndroid() = default;
 ClearKeyDrmDelegateAndroid::~ClearKeyDrmDelegateAndroid() = default;
 
 const std::vector<uint8_t> ClearKeyDrmDelegateAndroid::GetUUID() const {
-  return std::vector<uint8_t>(kClearKeyUuid,
-                              kClearKeyUuid + std::size(kClearKeyUuid));
+  return std::vector<uint8_t>(std::begin(media::kClearKeyUuid),
+                              std::end(media::kClearKeyUuid));
 }
 
 }  // namespace cdm

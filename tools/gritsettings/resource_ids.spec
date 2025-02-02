@@ -140,6 +140,13 @@
   "chrome/browser/test_dummy/internal/android/resources/resources.grd": {
     "includes": [2520],
   },
+  # chrome/browser/glic/resources/internal/browser_resources.grd and
+  # chrome/browser/glic/resources/browser_resources.grd must share the same id
+  # because they define the same resources, but only one of them is built
+  # depending on whether src_internal is available.
+  "chrome/browser/glic/resources/internal/browser_resources.grd": {
+    "includes": [2540],
+  },
   "chrome/browser/glic/resources/browser_resources.grd": {
     "includes": [2540],
   },

@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/policy/core/common/cloud/test/policy_builder.h"
+
+#include <vector>
 
 #include "base/base64.h"
 #include "base/notreached.h"
@@ -422,7 +419,7 @@ void PolicyBuilder::SetSigningKey(const crypto::RSAPrivateKey& key) {
 }
 
 void PolicyBuilder::SetDefaultSigningKey() {
-  raw_signing_key_.assign(kSigningKey, kSigningKey + std::size(kSigningKey));
+  raw_signing_key_.assign(std::begin(kSigningKey), std::end(kSigningKey));
 }
 
 void PolicyBuilder::UnsetSigningKey() {
@@ -436,8 +433,8 @@ std::unique_ptr<crypto::RSAPrivateKey> PolicyBuilder::GetNewSigningKey() const {
 }
 
 void PolicyBuilder::SetDefaultNewSigningKey() {
-  raw_new_signing_key_.assign(kNewSigningKey,
-                              kNewSigningKey + std::size(kNewSigningKey));
+  raw_new_signing_key_.assign(std::begin(kNewSigningKey),
+                              std::end(kNewSigningKey));
   raw_new_signing_key_signature_ = GetTestOtherSigningKeySignature();
 }
 
@@ -447,8 +444,7 @@ void PolicyBuilder::UnsetNewSigningKey() {
 }
 
 void PolicyBuilder::SetDefaultInitialSigningKey() {
-  raw_new_signing_key_.assign(kSigningKey,
-                              kSigningKey + std::size(kSigningKey));
+  raw_new_signing_key_.assign(std::begin(kSigningKey), std::end(kSigningKey));
   raw_new_signing_key_signature_ = GetTestSigningKeySignature();
   UnsetSigningKey();
 }
@@ -553,16 +549,16 @@ std::unique_ptr<em::PolicyFetchResponse> PolicyBuilder::GetCopy() const {
 
 // static
 std::unique_ptr<crypto::RSAPrivateKey> PolicyBuilder::CreateTestSigningKey() {
-  std::vector<uint8_t> raw_signing_key(kSigningKey,
-                                       kSigningKey + std::size(kSigningKey));
+  std::vector<uint8_t> raw_signing_key(std::begin(kSigningKey),
+                                       std::end(kSigningKey));
   return crypto::RSAPrivateKey::CreateFromPrivateKeyInfo(raw_signing_key);
 }
 
 // static
 std::unique_ptr<crypto::RSAPrivateKey>
 PolicyBuilder::CreateTestOtherSigningKey() {
-  std::vector<uint8_t> raw_new_signing_key(
-      kNewSigningKey, kNewSigningKey + std::size(kNewSigningKey));
+  std::vector<uint8_t> raw_new_signing_key(std::begin(kNewSigningKey),
+                                           std::end(kNewSigningKey));
   return crypto::RSAPrivateKey::CreateFromPrivateKeyInfo(raw_new_signing_key);
 }
 
