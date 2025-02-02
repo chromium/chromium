@@ -170,12 +170,11 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
   }
 }
 
-- (void)updateWithResults:(const AutocompleteResult&)result {
+- (void)updateMatches:(const AutocompleteResult&)result {
   self.nonPedalSuggestions = nil;
   self.currentPedals = nil;
 
-  BOOL hasResults = !result.empty();
-  self.hasResults = hasResults;
+  self.hasResults = !self.autocompleteResult.empty();
   [self.consumer newResultsAvailable];
 
   if (self.debugInfoConsumer) {
@@ -187,7 +186,11 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
                 variations::VariationsIdsProvider::GetInstance()
                     ->GetTriggerVariationsString())];
   }
-  self.open = hasResults;
+}
+
+- (void)updateWithResults:(const AutocompleteResult&)result {
+  [self updateMatches:result];
+  self.open = !result.empty();
   metrics::OmniboxFocusType inputFocusType =
       self.autocompleteController->input().focus_type();
   BOOL isFocusing =
@@ -247,12 +250,12 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
 
 - (void)requestResultsWithVisibleSuggestionCount:
     (NSUInteger)visibleSuggestionCount {
-  size_t resultSize = self.autocompleteResult.size();
   // If no suggestions are visible, consider all of them visible.
   if (visibleSuggestionCount == 0) {
-    visibleSuggestionCount = resultSize;
+    visibleSuggestionCount = self.autocompleteResult.size();
   }
-  NSUInteger visibleSuggestions = MIN(visibleSuggestionCount, resultSize);
+  NSUInteger visibleSuggestions =
+      MIN(visibleSuggestionCount, self.autocompleteResult.size());
   if (visibleSuggestions > 0) {
     // Groups visible suggestions by search vs url. Skip the first suggestion
     // because it's the omnibox content.
@@ -262,8 +265,7 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
   [self groupCurrentSuggestionsFrom:visibleSuggestions
                                  to:self.autocompleteResult.size()];
 
-  NSArray<id<AutocompleteSuggestionGroup>>* groups =
-      [self wrappedMatches:self.autocompleteResult];
+  NSArray<id<AutocompleteSuggestionGroup>>* groups = [self wrappedMatches];
 
   [self.consumer updateMatches:groups
       preselectedMatchGroupIndex:self.preselectedGroupIndex];
@@ -592,8 +594,9 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
     (const AutocompleteResult&)autocompleteResult {
   NSMutableArray<id<AutocompleteSuggestion>>* wrappedMatches =
       [[NSMutableArray alloc] init];
-  for (size_t i = 0; i < autocompleteResult.size(); i++) {
-    const AutocompleteMatch& match = autocompleteResult.match_at((NSUInteger)i);
+  for (size_t i = 0; i < self.autocompleteResult.size(); i++) {
+    const AutocompleteMatch& match =
+        self.autocompleteResult.match_at((NSUInteger)i);
     if (match.type == AutocompleteMatchType::TILE_NAVSUGGEST) {
       DCHECK(match.type == AutocompleteMatchType::TILE_NAVSUGGEST);
       for (const AutocompleteMatch::SuggestTile& tile : match.suggest_tiles) {
@@ -693,17 +696,16 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
 
 /// Unpacks AutocompleteMatch into wrapped AutocompleteSuggestion and
 /// AutocompleteSuggestionGroup. Sets `preselectedGroupIndex`.
-- (NSArray<id<AutocompleteSuggestionGroup>>*)wrappedMatches:
-    (const AutocompleteResult&)autocompleteResult {
+- (NSArray<id<AutocompleteSuggestionGroup>>*)wrappedMatches {
   NSMutableArray<id<AutocompleteSuggestionGroup>>* groups =
       [[NSMutableArray alloc] init];
 
   // Group the suggestions by the section Id.
   NSMutableArray<id<AutocompleteSuggestion>>* allMatches =
-      [self extractMatches:autocompleteResult];
+      [self extractMatches:self.autocompleteResult];
   NSArray<id<AutocompleteSuggestionGroup>>* allGroups =
       [self groupSuggestions:allMatches
-          usingACResultAsHeaderMap:autocompleteResult];
+          usingACResultAsHeaderMap:self.autocompleteResult];
   [groups addObjectsFromArray:allGroups];
 
   // Before inserting pedals above all, back up non-pedal suggestions for
