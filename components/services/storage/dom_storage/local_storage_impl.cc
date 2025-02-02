@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/services/storage/dom_storage/local_storage_impl.h"
 
 #include <inttypes.h>
@@ -105,8 +100,8 @@ DomStorageDatabase::Key CreateAccessMetaDataKey(
                                               storage_key_str.end());
   DomStorageDatabase::Key key;
   key.reserve(std::size(kAccessMetaPrefix) + serialized_storage_key.size());
-  key.insert(key.end(), kAccessMetaPrefix,
-             kAccessMetaPrefix + std::size(kAccessMetaPrefix));
+  key.insert(key.end(), std::begin(kAccessMetaPrefix),
+             std::end(kAccessMetaPrefix));
   key.insert(key.end(), serialized_storage_key.begin(),
              serialized_storage_key.end());
   return key;
@@ -119,8 +114,8 @@ DomStorageDatabase::Key CreateWriteMetaDataKey(
                                               storage_key_str.end());
   DomStorageDatabase::Key key;
   key.reserve(std::size(kWriteMetaPrefix) + serialized_storage_key.size());
-  key.insert(key.end(), kWriteMetaPrefix,
-             kWriteMetaPrefix + std::size(kWriteMetaPrefix));
+  key.insert(key.end(), std::begin(kWriteMetaPrefix),
+             std::end(kWriteMetaPrefix));
   key.insert(key.end(), serialized_storage_key.begin(),
              serialized_storage_key.end());
   return key;
