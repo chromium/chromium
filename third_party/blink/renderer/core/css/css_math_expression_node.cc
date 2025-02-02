@@ -3307,6 +3307,8 @@ CSSValueID TransformAnchorCSSValueID(
     case CSSValueID::kSelfEnd:
       return flip_logical ? CSSValueID::kSelfStart : from;
     case CSSValueID::kCenter:
+    case CSSValueID::kOutside:
+    case CSSValueID::kInside:
       return from;
     // anchor-size()
     case CSSValueID::kWidth:
