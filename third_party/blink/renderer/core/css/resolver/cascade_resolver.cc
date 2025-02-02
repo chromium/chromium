@@ -16,7 +16,7 @@ bool CascadeResolver::IsLocked(const CSSProperty& property) const {
   return Find(property) != kNotFound;
 }
 
-bool CascadeResolver::IsLocked(const String& attribute) const {
+bool CascadeResolver::IsLocked(const AtomicString& attribute) const {
   return Find(attribute) != kNotFound;
 }
 
@@ -35,7 +35,7 @@ bool CascadeResolver::DetectCycle(const CSSProperty& property) {
   return DetectCycle(Find(property));
 }
 
-bool CascadeResolver::DetectCycle(const String& attribute) {
+bool CascadeResolver::DetectCycle(const AtomicString& attribute) {
   return DetectCycle(Find(attribute));
 }
 
@@ -66,11 +66,11 @@ wtf_size_t CascadeResolver::Find(const CSSProperty& property) const {
   return kNotFound;
 }
 
-wtf_size_t CascadeResolver::Find(const String& attribute) const {
+wtf_size_t CascadeResolver::Find(const AtomicString& attribute) const {
   wtf_size_t index = 0;
   for (CycleElem elem : stack_) {
-    if (absl::holds_alternative<const String*>(elem) &&
-        *(absl::get<const String*>(elem)) == attribute) {
+    if (absl::holds_alternative<AtomicString>(elem) &&
+        absl::get<AtomicString>(elem) == attribute) {
       return index;
     }
     ++index;
@@ -85,11 +85,11 @@ CascadeResolver::AutoLock::AutoLock(const CSSProperty& property,
   resolver_.stack_.push_back(&property);
 }
 
-CascadeResolver::AutoLock::AutoLock(const String& attribute,
+CascadeResolver::AutoLock::AutoLock(const AtomicString& attribute,
                                     CascadeResolver& resolver)
     : resolver_(resolver) {
   DCHECK(!resolver.IsLocked(attribute));
-  resolver_.stack_.push_back(&attribute);
+  resolver_.stack_.push_back(attribute);
 }
 
 CascadeResolver::AutoLock::~AutoLock() {
