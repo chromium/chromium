@@ -40,15 +40,7 @@ Object: {
 			callTime: number
 			detail: string
 			navigationId: string
-			stackTrace: [
-				{
-					columnNumber: number
-					functionName: string
-					lineNumber: number
-					scriptId: string
-					url: string
-				}
-			]
+			sampleTraceId: number
 			startTime: number
 		}
 	}
@@ -64,16 +56,8 @@ Got performance measure event:
 Object: {
 	args: {
 		callTime: number
-		stackTrace: [
-			{
-				columnNumber: number
-				functionName: string
-				lineNumber: number
-				scriptId: string
-				url: string
-			}
-		]
 		startTime: number
+		traceId: number
 	}
 	cat: string
 	id2: {
@@ -88,6 +72,21 @@ Object: {
 Phase of begin event: b
 Phase of end event: e
 user timing event ids are equal.
+Got trace for performance measure call:
+Object: {
+	args: {
+		sampleTraceId: number
+		traceId: number
+	}
+	cat: string
+	dur: number
+	name: string
+	ph: string
+	pid: number
+	tid: number
+	ts: number
+}
+Performance measure trace matches user timing event by trace id.
 Got a TimerInstall event:
 Object: {
 	args: {

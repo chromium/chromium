@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/core/timing/performance_user_timing.h"
 
+#include "base/trace_event/trace_id_helper.h"
 #include "base/trace_event/typed_macros.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_performance_mark_options.h"
@@ -38,6 +39,7 @@
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
+#include "third_party/perfetto/include/perfetto/ext/base/string_utils.h"
 #include "v8/include/v8-profiler.h"
 #include "v8/include/v8.h"
 
@@ -80,17 +82,23 @@ void UserTiming::AddMarkToPerformanceTimeline(
   ScriptValue detail = mark_options && mark_options->hasDetail()
                            ? mark_options->detail()
                            : ScriptValue();
-  String serialized_detail = GetSerializedDetail(detail);
-  auto source_location = CaptureSourceLocation();
-  const base::TimeTicks callTime = base::TimeTicks::Now();
 
+  String serialized_detail = GetSerializedDetail(detail);
+  const base::TimeTicks callTime = base::TimeTicks::Now();
+  uint64_t trace_id = base::trace_event::GetNextGlobalTraceId();
+
+  if (ExecutionContext* execution_context =
+          performance_->GetExecutionContext()) {
+    v8::Isolate* isolate = execution_context->GetIsolate();
+    v8::CpuProfiler::CollectSample(isolate, trace_id);
+  }
   const auto trace_event_details = [&](perfetto::EventContext ctx) {
     ctx.event()->set_name(mark.name().Utf8().c_str());
     ctx.AddDebugAnnotation("data", [&](perfetto::TracedValue trace_context) {
       auto dict = std::move(trace_context).WriteDictionary();
       dict.Add("startTime", mark.startTime());
-      dict.Add("stackTrace", source_location);
       dict.Add("callTime", callTime);
+      dict.Add("sampleTraceId", trace_id);
       // Only set when performance_ is a WindowPerformance.
       // performance_->timing() returns null when performance_ is a
       // WorkerPerformance.
@@ -251,22 +259,28 @@ PerformanceMeasure* UserTiming::Measure(ScriptState* script_state,
     WTF::AddFloatToHash(hash, start_time);
     WTF::AddFloatToHash(hash, end_time);
     String serialized_detail = GetSerializedDetail(detail);
-    auto source_location = CaptureSourceLocation();
     v8::Isolate* isolate = script_state->GetIsolate();
     const base::TimeTicks callTime = base::TimeTicks::Now();
-    v8::CpuProfiler::CollectSample(isolate);
+
+    v8::CpuProfiler::CollectSample(isolate, hash);
+    // One event is dispatched for the performance.measure call itself
+    // and another to represent the measured timing in the tracing
+    // clock (note that the timestamps of begin / end events are
+    // overridden to use the params passed to the performance.measure
+    // call).
+    TRACE_EVENT("devtools.timeline", "UserTiming::Measure", "sampleTraceId",
+                hash, "traceId", hash);
     if (serialized_detail.length()) {
       TRACE_EVENT_BEGIN("blink.user_timing", nullptr, perfetto::Track(hash),
-                        unsafe_start_time, "startTime", start_time,
-                        "stackTrace", source_location, "callTime", callTime,
-                        "detail", serialized_detail,
+                        unsafe_start_time, "startTime", start_time, "callTime",
+                        callTime, "detail", serialized_detail, "traceId", hash,
                         [&](perfetto::EventContext ctx) {
                           ctx.event()->set_name(measure_name.Utf8().c_str());
                         });
     } else {
       TRACE_EVENT_BEGIN("blink.user_timing", nullptr, perfetto::Track(hash),
-                        unsafe_start_time, "startTime", start_time,
-                        "stackTrace", source_location, "callTime", callTime,
+                        unsafe_start_time, "startTime", start_time, "callTime",
+                        callTime, "traceId", hash,
                         [&](perfetto::EventContext ctx) {
                           ctx.event()->set_name(measure_name.Utf8().c_str());
                         });

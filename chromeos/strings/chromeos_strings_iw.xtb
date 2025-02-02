@@ -768,6 +768,7 @@
 <translation id="4654549501020883054">שינוי מדי יום</translation>
 <translation id="4655868084888499342">התמונה מוגדרת כטפט</translation>
 <translation id="4661249927038176904">סוריאליסטי</translation>
+<translation id="4661392828086261436">‏העדכון הזה סופק על ידי יצרן המכשיר והוא לא אומת על ידי Google</translation>
 <translation id="4664651912255946953">פרווה</translation>
 <translation id="4665014895760275686">יצרן</translation>
 <translation id="467510802200863975">הסיסמאות אינן תואמות</translation>
@@ -1027,6 +1028,7 @@
 <translation id="5904994456462260490">‏הוספת APN חדש</translation>
 <translation id="590746845088109442">חתולים</translation>
 <translation id="5907649332524363701">הצבע העיקרי</translation>
+<translation id="5908813850962688338">התקנת העדכון הזה תימשך כמה דקות. צריך להשאיר את המכשיר מחובר למטען ומופעל בזמן הורדת העדכון. יכול להיות שהמכשיר יופעל מחדש מעצמו כמה פעמים ויוצג מסך שחור במהלך התהליך. תוצג לך בקשה להפעיל מחדש את המכשיר כדי להשלים את ההתקנה.</translation>
 <translation id="5916084858004523819">אסור</translation>
 <translation id="5916664084637901428">פועל</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{הקובץ נסרק בהצלחה ונשמר בתיקייה <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{הקבצים נסרקו בהצלחה ונשמרו בתיקייה <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}two{הקבצים נסרקו בהצלחה ונשמרו בתיקייה <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{הקבצים נסרקו בהצלחה ונשמרו בתיקייה <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
