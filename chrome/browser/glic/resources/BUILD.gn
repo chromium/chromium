@@ -5,7 +5,11 @@
 import("//tools/grit/grit_rule.gni")
 
 grit("browser_resources") {
-  source = "browser_resources.grd"
+  if (is_chrome_branded) {
+    source = "internal/browser_resources.grd"
+  } else {
+    source = "browser_resources.grd"
+  }
   use_brotli = true
   outputs = [
     "glic_browser_resources.pak",
