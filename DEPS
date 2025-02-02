@@ -1448,7 +1448,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    '0b27c922783aaabc41a8004ec64b6f8351b50e4a',
+    '7fd87aa91d2e25d220d949e56417ce07430e92e9',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
@@ -2933,7 +2933,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/help_app/app',
-        'version': 'AxOk94iPGk-qnIvl8AYIYaMyaMxSewpMN0nOOLiL3GUC',
+        'version': '9SysswjFVuzlq3NRrgjN8HQa1yqbqh6P-gtVZFXMvLcC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
@@ -2944,7 +2944,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/media_app/app',
-        'version': 'zbwDuYmh34axFSPgwEWjoWQjKkHpCDdEcBs-geO1ksYC',
+        'version': 'uHvrHVLf0i5V7I8QFgcjYeZfWDjWnrr5Bur6sOEumm4C',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
