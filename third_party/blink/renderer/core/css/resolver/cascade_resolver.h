@@ -33,7 +33,7 @@ class CORE_EXPORT CascadeResolver {
   STACK_ALLOCATED();
 
  public:
-  using CycleElem = absl::variant<const CSSProperty*, const String*>;
+  using CycleElem = absl::variant<const CSSProperty*, AtomicString>;
   // TODO(crbug.com/985047): Probably use a HashMap for this.
   using CycleStack = Vector<CycleElem, 8>;
 
@@ -41,7 +41,7 @@ class CORE_EXPORT CascadeResolver {
   // In other words, once a property is locked, locking it again would form
   // a cycle, and is therefore an error.
   bool IsLocked(const CSSProperty&) const;
-  bool IsLocked(const String& attribute) const;
+  bool IsLocked(const AtomicString& attribute) const;
 
   // Returns the property we're currently applying.
   const CSSProperty* CurrentProperty() const {
@@ -90,7 +90,7 @@ class CORE_EXPORT CascadeResolver {
 
    public:
     AutoLock(const CSSProperty&, CascadeResolver&);
-    AutoLock(const String& attribute, CascadeResolver&);
+    AutoLock(const AtomicString& attribute, CascadeResolver&);
     ~AutoLock();
 
    private:
@@ -114,7 +114,7 @@ class CORE_EXPORT CascadeResolver {
   // The marked range of the stack shrinks during ~AutoLock, such that we won't
   // be InCycle whenever we move outside that of that range.
   bool DetectCycle(const CSSProperty&);
-  bool DetectCycle(const String& attribute);
+  bool DetectCycle(const AtomicString& attribute);
   bool DetectCycle(wtf_size_t index);
   // Returns true whenever the CascadeResolver is in a cycle state.
   // This DOES NOT detect cycles; the caller must call DetectCycle first.
@@ -123,7 +123,7 @@ class CORE_EXPORT CascadeResolver {
   // CSSPropertyName), or kNotFound if the property (name) is not present in
   // stack_.
   wtf_size_t Find(const CSSProperty&) const;
-  wtf_size_t Find(const String& attribute) const;
+  wtf_size_t Find(const AtomicString& attribute) const;
 
   CycleStack stack_;
   // If we're in a cycle, cycle_start_ is the index of the stack_ item that
