@@ -28,7 +28,7 @@ struct KeyCodeAndXKeyCode {
 // X key code. This list is not complete.
 // TODO(kkania): Merge this table with the existing one in
 // keyboard_code_conversion_x.cc.
-KeyCodeAndXKeyCode kKeyCodeToXKeyCode[] = {
+constexpr KeyCodeAndXKeyCode kKeyCodeToXKeyCode[] = {
     {ui::VKEY_BACK, 22},      {ui::VKEY_TAB, 23},
     {ui::VKEY_RETURN, 36},    {ui::VKEY_SHIFT, 50},
     {ui::VKEY_CONTROL, 37},   {ui::VKEY_MENU, 64},
@@ -79,18 +79,15 @@ KeyCodeAndXKeyCode kKeyCodeToXKeyCode[] = {
     {ui::VKEY_OEM_4, 34},     {ui::VKEY_OEM_5, 51},
     {ui::VKEY_OEM_6, 35},     {ui::VKEY_OEM_7, 48}};
 
-// Uses to compare two KeyCodeAndXKeyCode structs based on their key code.
-bool operator<(const KeyCodeAndXKeyCode& a, const KeyCodeAndXKeyCode& b) {
-  return a.key_code < b.key_code;
-}
-
 // Returns the equivalent X key code for the given key code. Returns -1 if
 // no X equivalent was found.
 int KeyboardCodeToXKeyCode(ui::KeyboardCode key_code) {
-  KeyCodeAndXKeyCode find;
-  find.key_code = key_code;
-  const KeyCodeAndXKeyCode* found = std::lower_bound(
-      std::begin(kKeyCodeToXKeyCode), std::end(kKeyCodeToXKeyCode), find);
+  KeyCodeAndXKeyCode find = {.key_code = key_code};
+  const KeyCodeAndXKeyCode* found = std::ranges::lower_bound(
+      kKeyCodeToXKeyCode, find,
+      [](const KeyCodeAndXKeyCode& a, const KeyCodeAndXKeyCode& b) {
+        return a.key_code < b.key_code;
+      });
   if (found >= std::end(kKeyCodeToXKeyCode) || found->key_code != key_code) {
     return -1;
   }
