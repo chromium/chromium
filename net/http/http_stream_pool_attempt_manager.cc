@@ -1008,7 +1008,12 @@ void HttpStreamPool::AttemptManager::ProcessServiceEndpointChanges() {
   // as the session could become inactive later.
   MaybeCalculateSSLConfig();
 
-  if (CanUseExistingSessionAfterEndpointChanges()) {
+  if (CanUseExistingQuicSessionAfterEndpointChanges()) {
+    CHECK(in_flight_attempts_.empty());
+    return;
+  }
+
+  if (CanUseExistingSpdySessionAfterEndpointChanges()) {
     CHECK(in_flight_attempts_.empty());
     return;
   }
@@ -1023,63 +1028,61 @@ void HttpStreamPool::AttemptManager::ProcessServiceEndpointChanges() {
 }
 
 bool HttpStreamPool::AttemptManager::
-    CanUseExistingSessionAfterEndpointChanges() {
-  CHECK(service_endpoint_request_);
-
-  if (!UsingTls()) {
+    CanUseExistingQuicSessionAfterEndpointChanges() {
+  if (!CanUseQuic()) {
     return false;
   }
 
   if (CanUseExistingQuicSession()) {
+    CancelQuicTask(OK);
     return true;
   }
 
-  if (CanUseQuic()) {
-    for (const auto& endpoint :
-         service_endpoint_request_->GetEndpointResults()) {
-      if (quic_session_pool()->HasMatchingIpSessionForServiceEndpoint(
-              quic_session_alias_key(), endpoint,
-              service_endpoint_request_->GetDnsAliasResults(), true)) {
-        if (quic_task_) {
-          quic_task_result_ = OK;
-          quic_task_.reset();
-        }
-
-        net_log_.AddEvent(
-            NetLogEventType::
-                HTTP_STREAM_POOL_ATTEMPT_MANAGER_EXISTING_QUIC_SESSION_MATCHED,
-            [&] {
-              base::Value::Dict dict;
-              QuicChromiumClientSession* quic_session =
-                  quic_session_pool()->FindExistingSession(
-                      quic_session_alias_key().session_key(),
-                      quic_session_alias_key().destination());
-              CHECK(quic_session);
-              quic_session->net_log().source().AddToEventParameters(dict);
-              return dict;
-            });
-        base::UmaHistogramTimes(
-            "Net.HttpStreamPool.ExistingQuicSessionFoundTime",
-            base::TimeTicks::Now() - dns_resolution_start_time_);
-
-        HandleQuicSessionReady(
-            StreamSocketCloseReason::kUsingExistingQuicSession);
-        // Use PostTask() because we could reach here from RequestStream()
-        // synchronously when the DNS resolution finishes immediately.
-        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE,
-            base::BindOnce(&AttemptManager::CreateQuicStreamAndNotify,
-                           weak_ptr_factory_.GetWeakPtr()));
-        return true;
-      }
+  for (const auto& endpoint : service_endpoint_request_->GetEndpointResults()) {
+    if (!quic_session_pool()->HasMatchingIpSessionForServiceEndpoint(
+            quic_session_alias_key(), endpoint,
+            service_endpoint_request_->GetDnsAliasResults(), true)) {
+      continue;
     }
+
+    CancelQuicTask(OK);
+
+    net_log_.AddEvent(
+        NetLogEventType::
+            HTTP_STREAM_POOL_ATTEMPT_MANAGER_EXISTING_QUIC_SESSION_MATCHED,
+        [&] {
+          base::Value::Dict dict;
+          QuicChromiumClientSession* quic_session =
+              quic_session_pool()->FindExistingSession(
+                  quic_session_alias_key().session_key(),
+                  quic_session_alias_key().destination());
+          CHECK(quic_session);
+          quic_session->net_log().source().AddToEventParameters(dict);
+          return dict;
+        });
+    base::UmaHistogramTimes(
+        "Net.HttpStreamPool.ExistingQuicSessionFoundTime",
+        base::TimeTicks::Now() - dns_resolution_start_time_);
+
+    HandleQuicSessionReady(StreamSocketCloseReason::kUsingExistingQuicSession);
+    // Use PostTask() because we could reach here from RequestStream()
+    // synchronously when the DNS resolution finishes immediately.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&AttemptManager::CreateQuicStreamAndNotify,
+                                  weak_ptr_factory_.GetWeakPtr()));
+    return true;
   }
 
+  return false;
+}
+
+bool HttpStreamPool::AttemptManager::
+    CanUseExistingSpdySessionAfterEndpointChanges() {
   if (spdy_session_) {
     return true;
   }
 
-  if (!IsIpBasedPoolingEnabled()) {
+  if (!IsIpBasedPoolingEnabled() || !UsingTls()) {
     return false;
   }
 
@@ -1088,28 +1091,30 @@ bool HttpStreamPool::AttemptManager::
         spdy_session_pool()->FindMatchingIpSessionForServiceEndpoint(
             spdy_session_key(), endpoint,
             service_endpoint_request_->GetDnsAliasResults());
-    if (spdy_session_) {
-      net_log_.AddEvent(
-          NetLogEventType::
-              HTTP_STREAM_POOL_ATTEMPT_MANAGER_EXISTING_SPDY_SESSION_MATCHED,
-          [&] {
-            base::Value::Dict dict;
-            spdy_session_->net_log().source().AddToEventParameters(dict);
-            return dict;
-          });
-      base::UmaHistogramTimes(
-          "Net.HttpStreamPool.ExistingSpdySessionFoundTime",
-          base::TimeTicks::Now() - dns_resolution_start_time_);
-
-      HandleSpdySessionReady(
-          StreamSocketCloseReason::kUsingExistingSpdySession);
-      // Use PostTask() because we could reach here from RequestStream()
-      // synchronously when the DNS resolution finishes immediately.
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(&AttemptManager::CreateSpdyStreamAndNotify,
-                                    weak_ptr_factory_.GetWeakPtr()));
-      return true;
+    if (!spdy_session_) {
+      continue;
     }
+    CHECK(spdy_session_->IsAvailable());
+
+    net_log_.AddEvent(
+        NetLogEventType::
+            HTTP_STREAM_POOL_ATTEMPT_MANAGER_EXISTING_SPDY_SESSION_MATCHED,
+        [&] {
+          base::Value::Dict dict;
+          spdy_session_->net_log().source().AddToEventParameters(dict);
+          return dict;
+        });
+    base::UmaHistogramTimes(
+        "Net.HttpStreamPool.ExistingSpdySessionFoundTime",
+        base::TimeTicks::Now() - dns_resolution_start_time_);
+
+    HandleSpdySessionReady(StreamSocketCloseReason::kUsingExistingSpdySession);
+    // Use PostTask() because we could reach here from RequestStream()
+    // synchronously when the DNS resolution finishes immediately.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&AttemptManager::CreateSpdyStreamAndNotify,
+                                  weak_ptr_factory_.GetWeakPtr()));
+    return true;
   }
 
   return false;

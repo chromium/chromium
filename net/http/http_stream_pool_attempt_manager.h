@@ -296,7 +296,8 @@ class HttpStreamPool::AttemptManager
   // Returns true when there is an active SPDY/QUIC session that can be used for
   // on-going jobs after service endpoint results has changed. May notify jobs
   // of stream ready.
-  bool CanUseExistingSessionAfterEndpointChanges();
+  bool CanUseExistingQuicSessionAfterEndpointChanges();
+  bool CanUseExistingSpdySessionAfterEndpointChanges();
 
   // Calculate SSLConfig if it's not calculated yet and `this` has received
   // enough information to calculate it.
