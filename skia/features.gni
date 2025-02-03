@@ -9,9 +9,10 @@ declare_args() {
   # Enable experimental Skia Graphite Dawn backend. Enabled on platforms where
   # the team has verified that at least basic rendering to the screen is
   # working.
-  skia_use_dawn = is_mac || is_win ||
-                  (is_android && target_cpu != "x86" && target_cpu != "x64") ||
-                  (is_ios && use_blink) || (is_linux && !is_castos)
+  skia_use_dawn =
+      is_mac || is_win ||
+      (is_android && target_cpu != "x86" && target_cpu != "x64") ||
+      (is_ios && use_blink) || (is_linux && !is_castos) || is_desktop_android
 
   # Enable experimental Skia Graphite Metal backend. Intended only for debugging
   # on non-official developer builds.
