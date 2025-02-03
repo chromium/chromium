@@ -4790,6 +4790,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_REMINDER_NOTIFICATIONS_SET_A_REMINDER" desc="Text for the 'Set a Reminder' overflow menu action. [iOS only]">
         Set a Reminder
       </message>
+      <message name="IDS_IOS_REMINDER_NOTIFICATIONS_TITLE" desc="Title of a notification reminding the user of a web page that they visited previously.">
+        Your reminder to revisit
+      </message>
       <message name="IDS_IOS_REMINDER_NOTIFICATIONS_TOOLS_MENU_BUBBLE_IPH" desc="Text for a bubble IPH displayed on the tools menu, informing the user that they can set a reminder for the current tab. [iOS only]">
         You can set a reminder to revisit this page later
       </message>
