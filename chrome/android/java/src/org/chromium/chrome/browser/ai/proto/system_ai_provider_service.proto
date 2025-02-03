@@ -66,6 +66,7 @@ message File {
 
 message UrlContext {
   string url = 1;
+  string page_content = 2;
 }
 
 message LaunchResponse {}

@@ -14,6 +14,7 @@ import com.google.common.util.concurrent.MoreExecutors;
 
 import org.chromium.base.Log;
 import org.chromium.base.ServiceLoaderUtil;
+import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ai.proto.SystemAiProviderService.AnalyzeAttachment;
@@ -24,9 +25,12 @@ import org.chromium.chrome.browser.ai.proto.SystemAiProviderService.File;
 import org.chromium.chrome.browser.ai.proto.SystemAiProviderService.LaunchRequest;
 import org.chromium.chrome.browser.ai.proto.SystemAiProviderService.SummarizeUrl;
 import org.chromium.chrome.browser.ai.proto.SystemAiProviderService.UrlContext;
+import org.chromium.chrome.browser.content_extraction.InnerTextBridge;
 import org.chromium.chrome.browser.pdf.PdfPage;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+
+import java.util.Optional;
 
 /**
  * Service to interact with an AI assistant, used to invoke an assistant UI to summarize web pages
@@ -115,10 +119,34 @@ public class AiAssistantService {
                     context,
                     getLaunchRequestForAnalyzeAttachment(pdfPage),
                     isSystemAiProviderAvailable);
-        } else if (isTabWebPage(tab) && isSummarizeUrlAvailable) {
-            sendLaunchRequest(
-                    context, getLaunchRequestForSummarizeUrl(tab), isSystemAiProviderAvailable);
+        } else if (isTabWebPage(tab) && tab.getWebContents() != null && isSummarizeUrlAvailable) {
+            var mainFrame = tab.getWebContents().getMainFrame();
+            ThreadUtils.postOnUiThread(
+                    () -> {
+                        InnerTextBridge.getInnerText(
+                                mainFrame,
+                                innerText -> {
+                                    onInnerTextReceived(
+                                            context, tab, isSystemAiProviderAvailable, innerText);
+                                });
+                    });
         }
+    }
+
+    private void onInnerTextReceived(
+            Context context,
+            Tab tab,
+            boolean isSystemAiProviderAvailable,
+            Optional<String> innerText) {
+        if (innerText.isEmpty()) {
+            Log.w(TAG, "Error while extracting page contents");
+            return;
+        }
+
+        sendLaunchRequest(
+                context,
+                getLaunchRequestForSummarizeUrl(tab, innerText.get()),
+                isSystemAiProviderAvailable);
     }
 
     private boolean isTabPdf(Tab tab) {
@@ -129,7 +157,9 @@ public class AiAssistantService {
     }
 
     private boolean isTabWebPage(Tab tab) {
-        return !isTabPdf(tab) && UrlUtilities.isHttpOrHttps(tab.getUrl());
+        return !isTabPdf(tab)
+                && UrlUtilities.isHttpOrHttps(tab.getUrl())
+                && tab.getWebContents() != null;
     }
 
     private LaunchRequest getLaunchRequestForAnalyzeAttachment(PdfPage pdfPage) {
@@ -146,8 +176,9 @@ public class AiAssistantService {
         return launchRequest;
     }
 
-    private LaunchRequest getLaunchRequestForSummarizeUrl(Tab tab) {
-        var urlContext = UrlContext.newBuilder().setUrl(tab.getUrl().getSpec());
+    private LaunchRequest getLaunchRequestForSummarizeUrl(Tab tab, String innerText) {
+        var urlContext =
+                UrlContext.newBuilder().setUrl(tab.getUrl().getSpec()).setPageContent(innerText);
         var summarizeUrl = SummarizeUrl.newBuilder().setUrlContext(urlContext);
         var launchRequest = LaunchRequest.newBuilder().setSummarizeUrl(summarizeUrl).build();
 
