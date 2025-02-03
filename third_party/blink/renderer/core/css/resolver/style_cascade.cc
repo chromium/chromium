@@ -1881,7 +1881,8 @@ bool StyleCascade::ResolveAutoBaseInto(
 
 KleeneValue StyleCascade::EvalIfStyleFeature(
     const MediaQueryFeatureExpNode& feature,
-    CascadeResolver& resolver) {
+    CascadeResolver& resolver,
+    const CSSParserContext& context) {
   const MediaQueryExpBounds& bounds = feature.Bounds();
 
   // Style features do not support the range syntax.
@@ -1917,9 +1918,25 @@ KleeneValue StyleCascade::EvalIfStyleFeature(
 
   const auto& decl_value = To<CSSUnparsedDeclarationValue>(query_specified);
 
-  // TODO(crbug.com/346977961): Need to resolve substitutions and use computed
-  // value of query_specified value in comparison.
+  // TODO(crbug.com/346977961): Need to resolve substitutions in
+  // query_specified.
   CSSVariableData* computed_query_data = decl_value.VariableDataValue();
+
+  if (property.IsRegistered()) {
+    const CSSValue* parsed_value = property.Parse(
+        computed_query_data->OriginalText(), context, CSSParserLocalContext());
+    if (!parsed_value) {
+      return KleeneValue::kFalse;
+    }
+    const CSSValue& computed_query_value =
+        StyleBuilderConverter::ConvertRegisteredPropertyValue(
+            state_, *parsed_value, decl_value.ParserContext());
+    // TODO(crbug.com/393698480): Ensure that attr-taint carries through
+    computed_query_data =
+        StyleBuilderConverter::ConvertRegisteredPropertyVariableData(
+            computed_query_value, /* is_animation_tainted */ false,
+            /* is_attr_tainted */ false);
+  }
 
   if (computed->EqualsIgnoringAttrTainting(*computed_query_data)) {
     return KleeneValue::kTrue;
@@ -1947,12 +1964,10 @@ bool StyleCascade::EvalIfCondition(CSSParserTokenStream& stream,
   DCHECK_EQ(stream.Peek().GetType(), kColonToken);
   stream.ConsumeIncludingWhitespace();
 
-  return MediaEval(*exp_node,
-                   [this, &resolver](const MediaQueryFeatureExpNode& feature) {
-                     return EvalIfStyleFeature(feature, resolver);
-                   }) == KleeneValue::kTrue
-             ? true
-             : false;
+  return MediaEval(*exp_node, [this, &resolver, &context](
+                                  const MediaQueryFeatureExpNode& feature) {
+           return EvalIfStyleFeature(feature, resolver, context);
+         }) == KleeneValue::kTrue;
 }
 
 bool StyleCascade::ResolveIfInto(CSSParserTokenStream& stream,

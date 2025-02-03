@@ -462,7 +462,8 @@ class CORE_EXPORT StyleCascade {
                        CascadeResolver& resolver,
                        const CSSParserContext& context);
   KleeneValue EvalIfStyleFeature(const MediaQueryFeatureExpNode&,
-                                 CascadeResolver&);
+                                 CascadeResolver&,
+                                 const CSSParserContext& context);
 
   // NOTE: The FunctionContext object must be the _caller's_ function context,
   // not the one the function itself sets up. This is because it is used to

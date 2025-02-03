@@ -19,8 +19,18 @@
     }
     @property --length {
       syntax: "<length>";
+      inherits: false;
+      initial-value: 3px;
+    }
+    @property --length-inherited {
+      syntax: "<length>";
       inherits: true;
       initial-value: 3px;
+    }
+    @property --percentage {
+      syntax: "<percentage>";
+      inherits: true;
+      initial-value: 30%;
     }
     @property --number {
       syntax: "<number>";
@@ -32,6 +42,8 @@
     }
     .outer {
       --inherited: outer_value;
+      --number: 30;
+      --x: 11;
       --length: 30px;
       --length-inherited: 30px;
     }
@@ -80,6 +92,21 @@
   test_if('if(style(--x: 0): )', [['--x', '0']], '');
   test_if('if(style(--x: blue): true_value;)', [['--x', 'blue']], 'true_value');
   test_if('if(style(--x: 3): true_value; else: false_value)', [['--x', '3']], 'true_value');
+  test_if('if(style(--x: initial): true_value; else: false_value)', [['--x', '']], 'true_value');
+  test_if('if(style(--x: initial): true_value; else: false_value)', [['--x', 'initial']], 'true_value');
+  test_if('if(style(--x: initial): true_value; else: false_value)', [['--x', '3']], 'false_value');
+  test_if(`if(style(--inherited: inherit): true_value;
+          else: false_value)`,
+        [['--inherited', 'outer_value']],
+        'true_value');
+  test_if(`if(style(--inherited: inherit): true_value;
+          else: false_value)`,
+        [['--inherited', 'inherit']],
+        'true_value');
+  test_if(`if(style(--inherited: inherit): true_value;
+          else: false_value)`,
+        [['--inherited', 'inner_value']],
+        'false_value');
   test_if('if(style(--x: 3): true_value; else:false_value)', [['--x', '3']], 'true_value');
   test_if('if(style(--x: 3): true_value; else: false_value;)', [['--x', '3']], 'true_value');
   test_if('if(style(--x: 0): true_value; else: false_value)', [['--x', '3']], 'false_value');
@@ -131,6 +158,14 @@
   test_if(`if(style(var(--x)): true_value;
           else: false_value;)`,
         [['--x', '3']],
+        'false_value');
+  test_if(`if(style(--x: revert): true_value;
+          else: false_value)`,
+        [['--x', '11']],
+        'false_value');
+  test_if(`if(style(--x: revert-layer): true_value;
+          else: false_value)`,
+        [['--x', '']],
         'false_value');
 
   // Valid if() with multiple conditions with unregistered custom properties
@@ -225,6 +260,7 @@
           else: false_value)`,
         [['--string', '"fail"']],
         'false_value');
+
   test_if(`if(style(--number: 1): true_value;
           else: false_value)`,
         [['--number', '1']],
@@ -241,6 +277,15 @@
           else: false_value)`,
         [['--number', 'calc(1 + 2)']],
         'true_value');
+  test_if(`if(style(--number: revert): true_value;
+          else: false_value)`,
+        [['--number', '3']],
+        'false_value');
+  test_if(`if(style(--number: revert-layer): true_value;
+          else: false_value)`,
+        [['--number', '3']],
+        'false_value');
+
   test_if(`if(style(--length: 1px): true_value;
           else: false_value)`,
         [['--length', '1px']],
@@ -249,6 +294,64 @@
           else: false_value)`,
         [['--length', '3px']],
         'false_value');
+  test_if(`if(style(--length: calc(1px + 2px)): true_value;
+          else: false_value)`,
+        [['--length', '3px']],
+        'true_value');
+  test_if(`if(style(--length: 3px): true_value;
+          else: false_value)`,
+        [['--length', 'calc(1px + 2px)']],
+        'true_value');
+  test_if(`if(style(--length: 1em): true_value;
+          else: false_value)`,
+        [['--length', '30px']],
+        'true_value');
+  test_if(`if(style(--length: 30px): true_value;
+          else: false_value)`,
+        [['--length', '1em']],
+        'true_value');
+  test_if(`if(style(--length: initial): true_value;
+          else: false_value)`,
+        [],
+        'true_value');
+  test_if(`if(style(--length: initial): true_value;
+          else: false_value)`,
+        [['--length', '3px']],
+        'true_value');
+  test_if(`if(style(--length: inherit): true_value;
+          else: false_value)`,
+        [],
+        'false_value');
+  test_if(`if(style(--length: inherit): true_value;
+          else: false_value)`,
+        [['--length', '30px']],
+        'true_value');
+  test_if(`if(style(--length-inherited: inherit): true_value;
+          else: false_value)`,
+        [],
+        'true_value');
+  test_if(`if(style(--length: inherit): true_value;
+          else: false_value)`,
+        [['--length-inherited', '30px']],
+        'true_value');
+
+  test_if(`if(style(--percentage: 30%): true_value;
+          else: false_value)`,
+        [['--percentage', '30%']],
+        'true_value');
+  test_if(`if(style(--percentage: 90px): true_value;
+          else: false_value)`,
+        [['--percentage', '30%']],
+        'false_value');
+  test_if(`if(style(--percentage: 30px): true_value;
+          else: false_value)`,
+        [['--percentage', '30%']],
+        'false_value');
+  test_if(`if(style(--percentage: 90%): true_value;
+          else: false_value)`,
+        [['--percentage', '3px']],
+        'false_value');
+
   test_if(`if(style(--color: green): true_value;
           else: false_value)`,
         [['--color', 'green']],
@@ -260,6 +363,14 @@
   test_if(`if(style(--color: green): true_value;
           else: false_value)`,
         [['--color', 'rgb(0, 128, 0)']],
+        'true_value');
+  test_if(`if(style(--color: #008000): true_value;
+          else: false_value)`,
+        [['--color', 'green']],
+        'true_value');
+  test_if(`if(style(--color: green): true_value;
+          else: false_value)`,
+        [['--color', '#008000']],
         'true_value');
   test_if(`if(style(--color: green): true_value;
           else: false_value)`,
