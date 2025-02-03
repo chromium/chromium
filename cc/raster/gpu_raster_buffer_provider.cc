@@ -43,26 +43,10 @@
 
 namespace cc {
 
-// Subclass for InUsePoolResource that holds ownership of a gpu-rastered backing
-// and does cleanup of the backing when destroyed.
-class GpuRasterBufferProvider::GpuRasterBacking
-    : public ResourcePool::GpuBacking {
- public:
-  ~GpuRasterBacking() override {
-    if (!shared_image) {
-      return;
-    }
-    if (returned_sync_token.HasData())
-      shared_image->UpdateDestructionSyncToken(returned_sync_token);
-    else if (mailbox_sync_token.HasData())
-      shared_image->UpdateDestructionSyncToken(mailbox_sync_token);
-  }
-};
-
 GpuRasterBufferProvider::RasterBufferImpl::RasterBufferImpl(
     GpuRasterBufferProvider* client,
     const ResourcePool::InUsePoolResource& in_use_resource,
-    GpuRasterBacking* backing,
+    ResourcePool::GpuBacking* backing,
     bool resource_has_previous_content,
     bool depends_on_at_raster_decodes,
     bool depends_on_hardware_accelerated_jpeg_candidates,
@@ -165,14 +149,13 @@ std::unique_ptr<RasterBuffer> GpuRasterBufferProvider::AcquireBufferForRaster(
     bool depends_on_hardware_accelerated_jpeg_candidates,
     bool depends_on_hardware_accelerated_webp_candidates) {
   if (!resource.gpu_backing()) {
-    auto backing = std::make_unique<GpuRasterBacking>();
+    auto backing = std::make_unique<ResourcePool::GpuBacking>();
     backing->overlay_candidate = tile_overlay_candidate_;
     backing->is_using_raw_draw =
         !backing->overlay_candidate && is_using_raw_draw_;
     resource.set_gpu_backing(std::move(backing));
   }
-  GpuRasterBacking* backing =
-      static_cast<GpuRasterBacking*>(resource.gpu_backing());
+  ResourcePool::GpuBacking* backing = resource.gpu_backing();
   bool resource_has_previous_content =
       resource_content_id && resource_content_id == previous_content_id;
   return std::make_unique<RasterBufferImpl>(

@@ -57,12 +57,11 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
   // Max delay before an evicted resource is flushed.
   static constexpr base::TimeDelta kDefaultMaxFlushDelay = base::Seconds(1);
 
-  // A base class to hold ownership of gpu backed PoolResources. Allows the
-  // client to define destruction semantics.
+  // A class to hold ownership of gpu backed PoolResources.
   class CC_EXPORT GpuBacking {
    public:
     GpuBacking();
-    virtual ~GpuBacking();
+    ~GpuBacking();
 
     scoped_refptr<gpu::ClientSharedImage> shared_image;
     gpu::SyncToken mailbox_sync_token;

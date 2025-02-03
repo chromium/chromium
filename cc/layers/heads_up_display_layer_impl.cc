@@ -139,19 +139,6 @@ std::unique_ptr<LayerImpl> HeadsUpDisplayLayerImpl::CreateLayerImpl(
                                          paused_localized_message_);
 }
 
-class HudGpuBacking : public ResourcePool::GpuBacking {
- public:
-  ~HudGpuBacking() override {
-    if (!shared_image) {
-      return;
-    }
-    if (returned_sync_token.HasData())
-      shared_image->UpdateDestructionSyncToken(returned_sync_token);
-    else if (mailbox_sync_token.HasData())
-      shared_image->UpdateDestructionSyncToken(mailbox_sync_token);
-  }
-};
-
 bool HeadsUpDisplayLayerImpl::WillDraw(
     DrawMode draw_mode,
     viz::ClientResourceProvider* resource_provider) {
@@ -256,7 +243,7 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
         internal_content_bounds_, raster_caps.tile_format, gfx::ColorSpace());
 
     if (!pool_resource.gpu_backing()) {
-      auto backing = std::make_unique<HudGpuBacking>();
+      auto backing = std::make_unique<ResourcePool::GpuBacking>();
       auto* sii = raster_context_provider->SharedImageInterface();
       backing->overlay_candidate = raster_caps.tile_overlay_candidate;
 
@@ -306,7 +293,7 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
 
   if (draw_mode == DRAW_MODE_HARDWARE) {
     DCHECK(pool_resource.gpu_backing());
-    auto* backing = static_cast<HudGpuBacking*>(pool_resource.gpu_backing());
+    auto* backing = pool_resource.gpu_backing();
     auto* ri = raster_context_provider->RasterInterface();
 
     if (raster_caps.use_gpu_rasterization) {

@@ -408,10 +408,10 @@ void NoVarySearchCache::MaybeInsert(const HttpRequestInfo& request,
       match->RemoveAndDelete();
     }
   }
-  EvictIfFull();
-  CHECK_LT(size_, max_size_);
+  CHECK_LE(size_, max_size_);
   ++size_;
   QueryString::CreateAndInsert(query, query_strings, lru_);
+  EvictIfOverfull();
 }
 
 void NoVarySearchCache::Erase(EraseHandle handle) {
@@ -439,9 +439,11 @@ NoVarySearchCache::QueryStringList::~QueryStringList() {
   }
 }
 
-void NoVarySearchCache::EvictIfFull() {
-  CHECK_LE(size_, max_size_);
-  if (size_ == max_size_) {
+void NoVarySearchCache::EvictIfOverfull() {
+  CHECK_LE(size_, max_size_ + 1);
+  if (size_ == max_size_ + 1) {
+    // This happens when an entry is added when the cache is already full.
+    // Remove an entry to make `size_` == `max_size_` again.
     EraseQuery(lru_.tail()->value()->ToQueryString());
   }
 }

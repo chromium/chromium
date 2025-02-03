@@ -196,10 +196,10 @@ class MODULES_EXPORT CanvasRenderingContext2D final
     return color_params_.GetAlphaType();
   }
   SkColorType GetSkColorType() const override {
-    return color_params_.GetSkColorType();
+    return viz::ToClosestSkColorType(GetSharedImageFormat());
   }
   viz::SharedImageFormat GetSharedImageFormat() const override {
-    return viz::SkColorTypeToSinglePlaneSharedImageFormat(GetSkColorType());
+    return color_params_.GetSharedImageFormat();
   }
   gfx::ColorSpace GetColorSpace() const override {
     return color_params_.GetGfxColorSpace();

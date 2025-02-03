@@ -10,6 +10,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
@@ -295,6 +296,52 @@ TEST_P(NoVarySearchCacheTest, MaybeInsertDoesNothingForDefaultBehavior) {
     Insert("a=b", no_vary_search);
     EXPECT_EQ(cache.GetSizeForTesting(), 0u) << no_vary_search;
   }
+}
+
+// A size 1 cache is a special case, because eviction results in an empty cache.
+TEST_P(NoVarySearchCacheTest, EvictWithSize1Cache) {
+  NoVarySearchCache cache(1u);
+  cache.MaybeInsert(TestRequest("a=1"), TestHeaders("key-order"));
+  cache.MaybeInsert(TestRequest("a=2"), TestHeaders("key-order"));
+  EXPECT_TRUE(cache.Lookup(TestRequest("a=2")).has_value());
+  EXPECT_EQ(cache.GetSizeForTesting(), 1u);
+}
+
+// This is a regression test for a bug where insertion led to eviction of the
+// only cache entry with the same base URL.
+TEST_P(NoVarySearchCacheTest, InsertWithBaseURLMatchingEvicted) {
+  static constexpr auto my_test_request = [](std::string_view query) {
+    constexpr std::string_view kBaseURL = "https://a.example/?";
+    return TestRequest(GURL(base::StrCat({kBaseURL, query})));
+  };
+
+  cache().MaybeInsert(my_test_request("will-be-evicted"),
+                      TestHeaders("key-order"));
+  for (size_t i = 1; i < kMaxSize; ++i) {
+    std::string query = "i=" + base::NumberToString(i);
+    Insert(query, "params, except=(\"i\")");
+  }
+  EXPECT_EQ(cache().GetSizeForTesting(), kMaxSize);
+
+  cache().MaybeInsert(my_test_request("same-base-url"),
+                      TestHeaders("key-order"));
+  EXPECT_TRUE(cache().Lookup(my_test_request("same-base-url")).has_value());
+}
+
+// This is a regression test for a bug where insertion led to eviction of the
+// only cache entry with the same base URL & No-Vary-Search header value.
+// The difference from the InsertWithBaseURLMatchingEvicted test is that in this
+// test there are other entries with the same base URL.
+TEST_P(NoVarySearchCacheTest, InsertWithNoVarySearchValueMatchingEvicted) {
+  Insert("will-be-evicted", "params=(\"ignored\")");
+  for (size_t i = 1; i < kMaxSize; ++i) {
+    std::string query = "i=" + base::NumberToString(i);
+    Insert(query, "params, except=(\"i\")");
+  }
+  EXPECT_EQ(cache().GetSizeForTesting(), kMaxSize);
+
+  Insert("same-nvs", "params=(\"ignored\")");
+  EXPECT_TRUE(Exists("same-nvs"));
 }
 
 TEST_P(NoVarySearchCacheTest, MatchesWithoutQueryString) {

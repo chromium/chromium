@@ -90,13 +90,11 @@ class CC_EXPORT OneCopyRasterBufferProvider : public RasterBufferProvider {
   void Flush() override;
 
  private:
-  class OneCopyGpuBacking;
-
   class RasterBufferImpl : public RasterBuffer {
    public:
     RasterBufferImpl(OneCopyRasterBufferProvider* client,
                      const ResourcePool::InUsePoolResource& in_use_resource,
-                     OneCopyGpuBacking* backing,
+                     ResourcePool::GpuBacking* backing,
                      uint64_t previous_content_id);
     RasterBufferImpl(const RasterBufferImpl&) = delete;
     ~RasterBufferImpl() override;
@@ -116,7 +114,7 @@ class CC_EXPORT OneCopyRasterBufferProvider : public RasterBufferProvider {
    private:
     // These fields may only be used on the compositor thread.
     const raw_ptr<OneCopyRasterBufferProvider> client_;
-    raw_ptr<OneCopyGpuBacking> backing_;
+    raw_ptr<ResourcePool::GpuBacking> backing_;
 
     // These fields are for use on the worker thread.
     const gfx::Size resource_size_;
