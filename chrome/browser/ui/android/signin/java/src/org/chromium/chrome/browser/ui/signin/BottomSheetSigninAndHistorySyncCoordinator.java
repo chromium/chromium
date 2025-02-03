@@ -70,6 +70,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator
     private PropertyModel mDialogModel;
     private boolean mDidShowSigninStep;
     private boolean mFlowInitialized;
+    private @ColorInt int mScrimStatusBarColor = ScrimProperties.INVALID_COLOR;
 
     /** This is a delegate that the embedder needs to implement. */
     public interface Delegate {
@@ -252,17 +253,18 @@ public class BottomSheetSigninAndHistorySyncCoordinator
 
     /** Implements {@link SigninAccountPickerCoordinator.Delegate}. */
     @Override
-    public void setScrimColor(@ColorInt int scrimColor) {
+    public void setStatusBarColor(@ColorInt int color) {
         // INVALID_COLOR is set at the start and end of the bottom sheet scrim fade out animation.
         // After the scrim fades out, the status bar background needs to be reset to match the
         // history sync full screen dialog if it's appearing next. In case the history sync dialog
         // is skipped, the activity will finish and the status bar color change is not shown to the
         // user.
-        if (scrimColor != ScrimProperties.INVALID_COLOR) {
-            mDelegate.setStatusBarColor(scrimColor);
-        } else if (mDelegate.isHistorySyncShownFullScreen() && mDialogModel != null) {
-            mDelegate.setStatusBarColor(getHistorySyncBackgroundColor());
+        if (color != ScrimProperties.INVALID_COLOR) {
+            mDelegate.setStatusBarColor(color);
+        } else if (mDialogModel != null && mScrimStatusBarColor != ScrimProperties.INVALID_COLOR) {
+            updateStatusBarColorForHistorySync();
         }
+        mScrimStatusBarColor = color;
     }
 
     /** Implements {@link HistorySyncDelegate} */
@@ -434,6 +436,12 @@ public class BottomSheetSigninAndHistorySyncCoordinator
 
         createHistorySyncCoordinator(profile);
         showDialogContentView();
+
+        // Updating the status bar color for the history sync view in case animations are disabled
+        // and the dialog model is created after the scrim animation finishes.
+        if (mScrimStatusBarColor == ScrimProperties.INVALID_COLOR) {
+            updateStatusBarColorForHistorySync();
+        }
     }
 
     private void createHistorySyncCoordinator(Profile profile) {
@@ -473,5 +481,11 @@ public class BottomSheetSigninAndHistorySyncCoordinator
 
     private @ColorInt int getHistorySyncBackgroundColor() {
         return SemanticColorUtils.getDefaultBgColor(mActivity);
+    }
+
+    private void updateStatusBarColorForHistorySync() {
+        if (mDelegate.isHistorySyncShownFullScreen()) {
+            mDelegate.setStatusBarColor(getHistorySyncBackgroundColor());
+        }
     }
 }

@@ -72,8 +72,11 @@ public class SigninAccountPickerCoordinator implements AccountPickerDelegate {
         /** Called when the bottom sheet is dismissed without completing sign-in. */
         void onSignInCancel();
 
-        /** Called when the bottom sheet scrim color is updated. */
-        void setScrimColor(@ColorInt int scrimColor);
+        /**
+         * Called when the bottom sheet scrim color is changed, and the hosting activity's status
+         * bar needs to be updated to the provided color.
+         */
+        void setStatusBarColor(@ColorInt int color);
     }
 
     /**
@@ -122,7 +125,7 @@ public class SigninAccountPickerCoordinator implements AccountPickerDelegate {
                 new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         mContainerView.addView(sheetContainer);
         mScrimManager = new ScrimManager(mActivity, (ViewGroup) sheetContainer.getParent());
-        mScrimManager.getStatusBarColorSupplier().addObserver(mDelegate::setScrimColor);
+        mScrimManager.getStatusBarColorSupplier().addObserver(mDelegate::setStatusBarColor);
 
         mBottomSheetController =
                 BottomSheetControllerFactory.createBottomSheetController(
