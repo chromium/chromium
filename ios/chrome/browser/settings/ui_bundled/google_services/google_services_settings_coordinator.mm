@@ -133,6 +133,16 @@ using signin_metrics::PromoAction;
                                        (signin_ui::SignoutCompletionCallback)
                                            completion {
   [self dismissSignoutCoordinator];
+  // Provide additional data retention options if the user is
+  // syncing their data.
+  // TODO(crbug.com/40066949): Simplify once kSync becomes
+  // unreachable or is deleted from the codebase. See
+  // ConsentLevel::kSync documentation for details.
+  if (self.identityManager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+    [self showDataRetentionOptionsWithTargetRect:targetRect
+                                      completion:completion];
+    return;
+  }
   [self signOutWithCompletion:completion];
 }
 
@@ -242,6 +252,32 @@ using signin_metrics::PromoAction;
           initWithBaseNavigationController:_baseNavigationController
                                    browser:self.browser];
   [_parcelTrackingSettingsCoordinator start];
+}
+
+// Displays the option to keep or clear data for a syncing user.
+- (void)showDataRetentionOptionsWithTargetRect:(CGRect)targetRect
+                                    completion:
+                                        (signin_ui::SignoutCompletionCallback)
+                                            completion {
+  DCHECK(completion);
+  self.signoutActionSheetCoordinator = [[SignoutActionSheetCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser
+                            rect:targetRect
+                            view:self.viewController.view
+        forceSnackbarOverToolbar:NO
+                      withSource:signin_metrics::ProfileSignout::
+                                     kUserClickedSignoutSettings];
+  __weak GoogleServicesSettingsCoordinator* weakSelf = self;
+  self.signoutActionSheetCoordinator.delegate = self;
+  self.signoutActionSheetCoordinator.signoutCompletion = ^(BOOL success) {
+    if (completion) {
+      completion(success);
+    }
+    [weakSelf.signoutActionSheetCoordinator stop];
+    weakSelf.signoutActionSheetCoordinator = nil;
+  };
+  [self.signoutActionSheetCoordinator start];
 }
 
 // Signs the user out of Chrome, only clears data for managed accounts.
