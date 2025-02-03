@@ -20,6 +20,7 @@ import type * as WebDriverBidiBluetooth from './generated/webdriver-bidi-bluetoo
 import type * as WebDriverBidiPermissions from './generated/webdriver-bidi-permissions.js';
 import type * as WebDriverBidi from './generated/webdriver-bidi.js';
 
+/* eslint-disable @typescript-eslint/no-unnecessary-template-expression */
 export type EventNames =
   // keep-sorted start
   | Cdp.EventNames
@@ -30,6 +31,7 @@ export type EventNames =
   | `${Network.EventNames}`
   | `${Script.EventNames}`;
 // keep-sorted end
+/* eslint-enable @typescript-eslint/no-unnecessary-template-expression */
 
 export enum BiDiModule {
   // keep-sorted start
@@ -100,34 +102,20 @@ export namespace Bluetooth {
   }
 }
 
+type ExternalSpecCommand<T> = {
+  // id is defined by the main WebDriver BiDi spec and extension specs do
+  // not re-define it. Therefore, it's not part of generated types.
+  id: WebDriverBidi.JsUint;
+} & T;
+
 export type Command = (
   | WebDriverBidi.Command
   | Cdp.Command
-  | ({
-      // id is defined by the main WebDriver BiDi spec and extension specs do
-      // not re-define it. Therefore, it's not part of generated types.
-      id: WebDriverBidi.JsUint;
-    } & WebDriverBidiPermissions.PermissionsCommand)
-  | ({
-      // id is defined by the main WebDriver BiDi spec and extension specs do
-      // not re-define it. Therefore, it's not part of generated types.
-      id: WebDriverBidi.JsUint;
-    } & WebDriverBidiBluetooth.Bluetooth.HandleRequestDevicePrompt)
-  | ({
-      // id is defined by the main WebDriver BiDi spec and extension specs do
-      // not re-define it. Therefore, it's not part of generated types.
-      id: WebDriverBidi.JsUint;
-    } & WebDriverBidiBluetooth.Bluetooth.SimulateAdapter)
-  | ({
-      // id is defined by the main WebDriver BiDi spec and extension specs do
-      // not re-define it. Therefore, it's not part of generated types.
-      id: WebDriverBidi.JsUint;
-    } & WebDriverBidiBluetooth.Bluetooth.SimulatePreconnectedPeripheral)
-  | ({
-      // id is defined by the main WebDriver BiDi spec and extension specs do
-      // not re-define it. Therefore, it's not part of generated types.
-      id: WebDriverBidi.JsUint;
-    } & WebDriverBidiBluetooth.Bluetooth.SimulateAdvertisement)
+  | ExternalSpecCommand<WebDriverBidiPermissions.PermissionsCommand>
+  | ExternalSpecCommand<WebDriverBidiBluetooth.Bluetooth.HandleRequestDevicePrompt>
+  | ExternalSpecCommand<WebDriverBidiBluetooth.Bluetooth.SimulateAdapter>
+  | ExternalSpecCommand<WebDriverBidiBluetooth.Bluetooth.SimulatePreconnectedPeripheral>
+  | ExternalSpecCommand<WebDriverBidiBluetooth.Bluetooth.SimulateAdvertisement>
 ) & {channel: BidiPlusChannel};
 
 export type CommandResponse =
