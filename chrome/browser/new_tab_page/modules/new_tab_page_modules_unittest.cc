@@ -80,7 +80,7 @@ TEST_F(NewTabPageModulesTest, MakeModuleIdDetails_PopulatesStructCorrectly) {
   EXPECT_EQ(3u, module_id_details.size());
   const auto& microsoft_files_details = module_id_details[0];
   EXPECT_EQ(ntp_modules::kMicrosoftFilesModuleId, microsoft_files_details.id_);
-  EXPECT_EQ(IDS_NTP_MODULES_SHAREPOINT_NAME,
+  EXPECT_EQ(IDS_NTP_MODULES_MICROSOFT_FILES_NAME,
             microsoft_files_details.name_message_id_);
   EXPECT_EQ(std::nullopt, microsoft_files_details.description_message_id_);
   const auto& microsoft_auth_details = module_id_details[1];

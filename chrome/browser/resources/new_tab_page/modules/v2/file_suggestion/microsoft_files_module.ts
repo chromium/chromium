@@ -73,10 +73,7 @@ export class MicrosoftFilesModuleElement extends
         {
           action: 'disable',
           icon: 'modules:block',
-          // TODO(crbug.com/372724129): Rename `modulesDriveDisableButtonTextV2`
-          // to accommodate both sharepoint and drive modules, or replace it
-          // with a sharepoint-specific string.
-          text: this.i18n('modulesDriveDisableButtonTextV2'),
+          text: this.i18n('modulesMicrosoftFilesDisableButtonText'),
         },
         {
           action: 'signout',
@@ -105,7 +102,7 @@ export class MicrosoftFilesModuleElement extends
       detail: {
         message: loadTimeData.getStringF(
             'disableModuleToastMessage',
-            loadTimeData.getString('modulesSharepointName')),
+            loadTimeData.getString('modulesMicrosoftFilesName')),
       },
     });
     this.dispatchEvent(disableEvent);
@@ -118,7 +115,9 @@ export class MicrosoftFilesModuleElement extends
       bubbles: true,
       composed: true,
       detail: {
-        message: this.i18n('modulesOutlookCalendarDismissToastMessage'),
+        message: loadTimeData.getStringF(
+            'dismissModuleToastMessage',
+            loadTimeData.getString('modulesFilesSentence')),
         restoreCallback: () => this.handler_.restoreModule(),
       },
     }));
