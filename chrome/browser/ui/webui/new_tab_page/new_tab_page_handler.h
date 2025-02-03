@@ -272,8 +272,7 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
 
   void SetCustomizeChromeSidePanelController(
       customize_chrome::SidePanelController* side_panel_controller);
-  void SetModuleHiddenInCustomizeChrome(const std::string& module_id,
-                                        bool hidden);
+  void SetModuleHidden(const std::string& module_id, bool hidden);
 
   // Synchronizes Microsoft module enablement with their current authentication
   // state. The return value indicates whether the modules should be considered

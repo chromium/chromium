@@ -1006,7 +1006,7 @@ TEST_F(CustomizeChromePageHandlerWithModulesTest,
   base::Value::List hidden_modules_list;
   hidden_modules_list.Append(ntp_modules::kMostRelevantTabResumptionModuleId);
 
-  profile().GetPrefs()->SetList(prefs::kNtpCustomizeChromeHiddenModules,
+  profile().GetPrefs()->SetList(prefs::kNtpHiddenModules,
                                 std::move(hidden_modules_list));
   mock_page_.FlushForTesting();
 

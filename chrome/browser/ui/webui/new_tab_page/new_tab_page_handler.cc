@@ -552,6 +552,10 @@ NewTabPageHandler::NewTabPageHandler(
       prefs::kNtpDisabledModules,
       base::BindRepeating(&NewTabPageHandler::UpdateDisabledModules,
                           base::Unretained(this)));
+  pref_change_registrar_.Add(
+      prefs::kNtpHiddenModules,
+      base::BindRepeating(&NewTabPageHandler::UpdateDisabledModules,
+                          base::Unretained(this)));
 
   pref_change_registrar_.Add(
       prefs::kSeedColorChangeCount,
@@ -579,7 +583,7 @@ NewTabPageHandler::~NewTabPageHandler() {
 // static
 void NewTabPageHandler::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterListPref(prefs::kNtpDisabledModules);
-  registry->RegisterListPref(prefs::kNtpCustomizeChromeHiddenModules);
+  registry->RegisterListPref(prefs::kNtpHiddenModules);
   registry->RegisterListPref(prefs::kNtpModulesOrder);
   registry->RegisterBooleanPref(prefs::kNtpModulesVisible, true);
   registry->RegisterIntegerPref(prefs::kNtpCustomizeChromeButtonOpenCount, 0);
@@ -772,16 +776,24 @@ void NewTabPageHandler::SetModuleDisabled(const std::string& module_id,
 }
 
 void NewTabPageHandler::UpdateDisabledModules() {
-  std::vector<std::string> module_ids;
+  std::set<std::string> module_ids_set;
   // If the module visibility is managed by policy we either disable all modules
   // (if invisible) or no modules (if visible).
   if (!profile_->GetPrefs()->IsManagedPreference(prefs::kNtpModulesVisible)) {
-    const auto& module_ids_value =
+    const auto& disabled_module_ids_value =
         profile_->GetPrefs()->GetList(prefs::kNtpDisabledModules);
-    for (const auto& id : module_ids_value) {
-      module_ids.push_back(id.GetString());
+    for (const auto& id : disabled_module_ids_value) {
+      module_ids_set.insert(id.GetString());
+    }
+
+    const auto& hidden_module_ids_value =
+        profile_->GetPrefs()->GetList(prefs::kNtpHiddenModules);
+    for (const auto& id : hidden_module_ids_value) {
+      module_ids_set.insert(id.GetString());
     }
   }
+  std::vector<std::string> module_ids(module_ids_set.begin(),
+                                      module_ids_set.end());
   page_->SetDisabledModules(
       !profile_->GetPrefs()->GetBoolean(prefs::kNtpModulesVisible),
       std::move(module_ids));
@@ -1693,11 +1705,9 @@ void NewTabPageHandler::SetCustomizeChromeSidePanelController(
   }
 }
 
-void NewTabPageHandler::SetModuleHiddenInCustomizeChrome(
-    const std::string& module_id,
-    bool hidden) {
-  ScopedListPrefUpdate update(profile_->GetPrefs(),
-                              prefs::kNtpCustomizeChromeHiddenModules);
+void NewTabPageHandler::SetModuleHidden(const std::string& module_id,
+                                        bool hidden) {
+  ScopedListPrefUpdate update(profile_->GetPrefs(), prefs::kNtpHiddenModules);
   base::Value::List& list = update.Get();
   base::Value module_id_value(module_id);
   if (hidden) {
@@ -1735,12 +1745,10 @@ bool NewTabPageHandler::SyncMicrosoftModulesWithAuth() {
   }
 
   for (const auto& module_id : enabled_modules) {
-    SetModuleDisabled(module_id, false);
-    SetModuleHiddenInCustomizeChrome(module_id, false);
+    SetModuleHidden(module_id, false);
   }
   for (const auto& module_id : disabled_modules) {
-    SetModuleDisabled(module_id, true);
-    SetModuleHiddenInCustomizeChrome(module_id, true);
+    SetModuleHidden(module_id, true);
   }
 
   return state != new_tab_page::mojom::AuthState::kNone;

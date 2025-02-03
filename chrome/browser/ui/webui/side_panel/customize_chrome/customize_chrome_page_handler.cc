@@ -126,7 +126,7 @@ CustomizeChromePageHandler::CustomizeChromePageHandler(
           &CustomizeChromePageHandler::UpdateMostVisitedSettings,
           base::Unretained(this)));
   pref_change_registrar_.Add(
-      prefs::kNtpCustomizeChromeHiddenModules,
+      prefs::kNtpHiddenModules,
       base::BindRepeating(&CustomizeChromePageHandler::UpdateModulesSettings,
                           base::Unretained(this)));
 
@@ -486,7 +486,7 @@ void CustomizeChromePageHandler::UpdateModulesSettings() {
 
   std::vector<std::string> hidden_module_ids;
   for (const auto& id :
-       profile_->GetPrefs()->GetList(prefs::kNtpCustomizeChromeHiddenModules)) {
+       profile_->GetPrefs()->GetList(prefs::kNtpHiddenModules)) {
     hidden_module_ids.push_back(id.GetString());
   }
 
