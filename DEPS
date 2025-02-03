@@ -2939,7 +2939,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/help_app/app',
-        'version': '9SysswjFVuzlq3NRrgjN8HQa1yqbqh6P-gtVZFXMvLcC',
+        'version': 'hAOVEZQbdu-s7HSVleLk6AP9C7S68wHTlpoRlrO1n1gC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
