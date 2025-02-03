@@ -1,0 +1,18 @@
+AXWebArea
+++AXGroup
+++++AXGroup
+++++++AXStaticText AXValue='l1'
+++++AXTextField AXTitle='l1'
+++++AXGroup
+++++++AXStaticText AXValue='l2'
+++++AXTextField AXTitle='l2' AXValue='value'
+++++AXTextField AXDescription='l2'
+++++AXTextField AXDescription='l2' AXValue='value  *'
+++++AXGroup
+++++++AXStaticText AXValue='Email'
+++++AXGroup
+++++AXTextField AXTitle='Email'
+++++AXTextField AXTitle='Email' AXValue='value'
+++++AXTextArea AXDescription='l5'
+++++AXTextArea AXDescription='l6' AXValue='Value'
+++++AXTextField AXDescription='Name' AXValue='value'

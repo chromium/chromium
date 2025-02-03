@@ -1,0 +1,11 @@
+[document web]
+++[combo box]
+++++[menu]
+++++++[menu item] name='Onscreen 1' selectable selected
+++++++[menu item] name='Onscreen 2' selectable
+++++++[menu item] name='Onscreen 3' selectable
+++[combo box]
+++++[menu]
+++++++[menu item] name='Offscreen 1' selectable selected
+++++++[menu item] name='Offscreen 2' selectable
+++++++[menu item] name='Offscreen 3' selectable

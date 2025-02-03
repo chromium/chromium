@@ -1,0 +1,128 @@
+UNKNOWN focusable has_input_focus
+++UNKNOWN hidden
+++++UNKNOWN hidden
+++++++UNKNOWN
+++++++++STATIC_TEXT label='Test label'
+++++++++++UNKNOWN label='Test label'
+++++++UNKNOWN label='aria label'
+++++++++STATIC_TEXT label='Generic container'
+++++++++++UNKNOWN label='Generic container'
+++++++UNKNOWN label='Test label'
+++++++++STATIC_TEXT label='Generic container with aria-labelledby'
+++++++++++UNKNOWN label='Generic container with aria-labelledby'
+++++++TEXT_FIELD label='aria label' actions='{SET_VALUE}' value='Textbox'
+++++++++STATIC_TEXT label='Textbox'
+++++++++++UNKNOWN label='Textbox'
+++++++TEXT_FIELD label='Test label' actions='{SET_VALUE}' value='Textbox with aria-labelledby'
+++++++++STATIC_TEXT label='Textbox with aria-labelledby'
+++++++++++UNKNOWN label='Textbox with aria-labelledby'
+++++++BUTTON label='aria label'
+++++++++STATIC_TEXT label='Button'
+++++++++++UNKNOWN label='Button'
+++++++BUTTON label='Test label'
+++++++++STATIC_TEXT label='Button with aria-labelledby'
+++++++++++UNKNOWN label='Button with aria-labelledby'
+++++++TEXT_FIELD_WITH_COMBO_BOX focusable label='aria label' actions='{DEFAULT, SET_VALUE}'
+++++++++UNKNOWN
+++++++UNKNOWN
+++++++++UNKNOWN focusable label='Option 1'
+++++++++++UNKNOWN hidden
+++++++++++++STATIC_TEXT label='%E2%80%A2 '
+++++++++++++++UNKNOWN label='%E2%80%A2 '
+++++++++++STATIC_TEXT label='Option 1'
+++++++++++++UNKNOWN label='Option 1'
+++++++++UNKNOWN focusable label='Option 2'
+++++++++++UNKNOWN hidden
+++++++++++++STATIC_TEXT label='%E2%80%A2 '
+++++++++++++++UNKNOWN label='%E2%80%A2 '
+++++++++++STATIC_TEXT label='Option 2'
+++++++++++++UNKNOWN label='Option 2'
+++++++TEXT_FIELD_WITH_COMBO_BOX focusable label='Test label' actions='{DEFAULT, SET_VALUE}'
+++++++++UNKNOWN
+++++++UNKNOWN
+++++++++UNKNOWN focusable label='Option 3'
+++++++++++UNKNOWN hidden
+++++++++++++STATIC_TEXT label='%E2%80%A2 '
+++++++++++++++UNKNOWN label='%E2%80%A2 '
+++++++++++STATIC_TEXT label='Option 3'
+++++++++++++UNKNOWN label='Option 3'
+++++++++UNKNOWN focusable label='Option 4'
+++++++++++UNKNOWN hidden
+++++++++++++STATIC_TEXT label='%E2%80%A2 '
+++++++++++++++UNKNOWN label='%E2%80%A2 '
+++++++++++STATIC_TEXT label='Option 4'
+++++++++++++UNKNOWN label='Option 4'
+++++++UNKNOWN focusable label='aria label' value='Combobox'
+++++++++STATIC_TEXT label='Combobox'
+++++++++++UNKNOWN label='Combobox'
+++++++UNKNOWN
+++++++++UNKNOWN label='Option 5'
+++++++++++UNKNOWN hidden
+++++++++++++STATIC_TEXT label='%E2%80%A2 '
+++++++++++++++UNKNOWN label='%E2%80%A2 '
+++++++++++STATIC_TEXT label='Option 5'
+++++++++++++UNKNOWN label='Option 5'
+++++++++UNKNOWN label='Option 6'
+++++++++++UNKNOWN hidden
+++++++++++++STATIC_TEXT label='%E2%80%A2 '
+++++++++++++++UNKNOWN label='%E2%80%A2 '
+++++++++++STATIC_TEXT label='Option 6'
+++++++++++++UNKNOWN label='Option 6'
+++++++UNKNOWN focusable label='Test label' value='Combobox with aria-labelledby'
+++++++++STATIC_TEXT label='Combobox with aria-labelledby'
+++++++++++UNKNOWN label='Combobox with aria-labelledby'
+++++++UNKNOWN
+++++++++UNKNOWN label='Option 7'
+++++++++++UNKNOWN hidden
+++++++++++++STATIC_TEXT label='%E2%80%A2 '
+++++++++++++++UNKNOWN label='%E2%80%A2 '
+++++++++++STATIC_TEXT label='Option 7'
+++++++++++++UNKNOWN label='Option 7'
+++++++++UNKNOWN label='Option 8'
+++++++++++UNKNOWN hidden
+++++++++++++STATIC_TEXT label='%E2%80%A2 '
+++++++++++++++UNKNOWN label='%E2%80%A2 '
+++++++++++STATIC_TEXT label='Option 8'
+++++++++++++UNKNOWN label='Option 8'
+++++++UNKNOWN focusable label='aria label' actions='{DEFAULT, SET_VALUE}' value='12:05'
+++++++++UNKNOWN hidden
+++++++++++UNKNOWN
+++++++++++++UNKNOWN
+++++++++++++++UNKNOWN focusable label='Hours aria label' actions='{SET_VALUE}' value='12'
+++++++++++++++++STATIC_TEXT label='12'
+++++++++++++++++++UNKNOWN label='12'
+++++++++++++++STATIC_TEXT label=':'
+++++++++++++++++UNKNOWN label=':'
+++++++++++++++UNKNOWN focusable label='Minutes aria label' actions='{SET_VALUE}' value='05'
+++++++++++++++++STATIC_TEXT label='05'
+++++++++++++++++++UNKNOWN label='05'
+++++++++++++++STATIC_TEXT label=' '
+++++++++++++++++UNKNOWN label=' '
+++++++++++++++UNKNOWN focusable label='AM/PM aria label' actions='{SET_VALUE}' value='PM'
+++++++++++++++++STATIC_TEXT label='PM'
+++++++++++++++++++UNKNOWN label='PM'
+++++++++++UNKNOWN focusable label='Show time picker' actions='{DEFAULT}'
+++++++UNKNOWN focusable label='Test label' actions='{DEFAULT, SET_VALUE}' value='12:05'
+++++++++UNKNOWN hidden
+++++++++++UNKNOWN
+++++++++++++UNKNOWN
+++++++++++++++UNKNOWN focusable label='Hours Test label' actions='{SET_VALUE}' value='12'
+++++++++++++++++STATIC_TEXT label='12'
+++++++++++++++++++UNKNOWN label='12'
+++++++++++++++STATIC_TEXT label=':'
+++++++++++++++++UNKNOWN label=':'
+++++++++++++++UNKNOWN focusable label='Minutes Test label' actions='{SET_VALUE}' value='05'
+++++++++++++++++STATIC_TEXT label='05'
+++++++++++++++++++UNKNOWN label='05'
+++++++++++++++STATIC_TEXT label=' '
+++++++++++++++++UNKNOWN label=' '
+++++++++++++++UNKNOWN focusable label='AM/PM Test label' actions='{SET_VALUE}' value='PM'
+++++++++++++++++STATIC_TEXT label='PM'
+++++++++++++++++++UNKNOWN label='PM'
+++++++++++UNKNOWN focusable label='Show time picker' actions='{DEFAULT}'
+++++++UNKNOWN focusable label='aria label' actions='{DEFAULT, SET_VALUE}' value='#e4e4e4'
+++++++++UNKNOWN hidden
+++++++++++UNKNOWN hidden
+++++++UNKNOWN focusable label='Test label' actions='{DEFAULT, SET_VALUE}' value='#e4e4e4'
+++++++++UNKNOWN hidden
+++++++++++UNKNOWN hidden
