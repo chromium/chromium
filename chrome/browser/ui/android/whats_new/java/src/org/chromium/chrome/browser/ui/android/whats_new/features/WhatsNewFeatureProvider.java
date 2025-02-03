@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.ui.android.whats_new.features;
 
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.android.whats_new.features.WhatsNewFeatureUtils.WhatsNewType;
 
 import java.util.ArrayList;
@@ -14,8 +16,9 @@ import java.util.List;
  * This class is responsible for providing a list of {@link WhatsNewFeature} to display in the
  * What's New page.
  */
+@NullMarked
 public class WhatsNewFeatureProvider {
-    private static List<WhatsNewFeature> sFeatureListForTesting;
+    private static @Nullable List<WhatsNewFeature> sFeatureListForTesting;
 
     public static void setFeatureListForTests(List<WhatsNewFeature> featureList) {
         sFeatureListForTesting = featureList;

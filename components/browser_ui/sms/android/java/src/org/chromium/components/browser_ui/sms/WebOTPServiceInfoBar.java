@@ -13,6 +13,8 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.infobars.ConfirmInfoBar;
 import org.chromium.components.infobars.InfoBarControlLayout;
 import org.chromium.components.infobars.InfoBarLayout;
@@ -20,12 +22,13 @@ import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.WindowAndroid;
 
 /** An InfoBar that asks for the user's permission to share the SMS with the page. */
+@NullMarked
 public class WebOTPServiceInfoBar extends ConfirmInfoBar {
     private static final String TAG = "WebOTPServiceInfoBar";
     private static final boolean DEBUG = false;
     private String mMessage;
     private WindowAndroid mWindowAndroid;
-    private Long mKeyboardDismissedTime;
+    private @Nullable Long mKeyboardDismissedTime;
 
     @VisibleForTesting
     @CalledByNative

@@ -4,9 +4,11 @@
 
 package org.chromium.chrome.modules.test_dummy;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.module_installer.engine.InstallListener;
 
 /** Installs and loads the test dummy module. */
+@NullMarked
 public class TestDummyModuleProvider {
     /** Returns true if the module is installed. */
     public static boolean isModuleInstalled() {

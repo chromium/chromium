@@ -8,9 +8,11 @@ import android.content.Context;
 
 import androidx.annotation.DrawableRes;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.android.whats_new.features.WhatsNewFeatureUtils.WhatsNewType;
 
 /** The interface for an entry in the What's New page. */
+@NullMarked
 public interface WhatsNewFeature {
     /** Get the {@link WhatsNewType} for this feature. */
     public @WhatsNewType int getType();

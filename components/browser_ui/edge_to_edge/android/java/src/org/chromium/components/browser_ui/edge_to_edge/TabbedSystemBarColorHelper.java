@@ -6,9 +6,8 @@ package org.chromium.components.browser_ui.edge_to_edge;
 
 import android.graphics.Color;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.edge_to_edge.layout.EdgeToEdgeLayoutCoordinator;
 
 /**
@@ -19,6 +18,7 @@ import org.chromium.components.browser_ui.edge_to_edge.layout.EdgeToEdgeLayoutCo
  * <p>This instance is meant to be created at the activity level in ChromeTabbedActivity, one per
  * instance.
  */
+@NullMarked
 public class TabbedSystemBarColorHelper extends BaseSystemBarColorHelper {
     private final EdgeToEdgeLayoutCoordinator mEdgeToEdgeLayoutCoordinator;
     private final OneshotSupplier<SystemBarColorHelper> mBottomChinDelegateHelperSupplier;
@@ -30,8 +30,8 @@ public class TabbedSystemBarColorHelper extends BaseSystemBarColorHelper {
      *     drawing edge-to-edge.
      */
     public TabbedSystemBarColorHelper(
-            @NonNull EdgeToEdgeLayoutCoordinator edgeToEdgeLayoutCoordinator,
-            @NonNull OneshotSupplier<SystemBarColorHelper> bottomChinDelegateHelperSupplier) {
+            EdgeToEdgeLayoutCoordinator edgeToEdgeLayoutCoordinator,
+            OneshotSupplier<SystemBarColorHelper> bottomChinDelegateHelperSupplier) {
         mEdgeToEdgeLayoutCoordinator = edgeToEdgeLayoutCoordinator;
         mBottomChinDelegateHelperSupplier = bottomChinDelegateHelperSupplier;
 
@@ -56,7 +56,7 @@ public class TabbedSystemBarColorHelper extends BaseSystemBarColorHelper {
         updateNavBarColors();
     }
 
-    private void onBottomChinDelegateColorHelperChanged(@NonNull SystemBarColorHelper delegate) {
+    private void onBottomChinDelegateColorHelperChanged(SystemBarColorHelper delegate) {
         updateNavBarColors();
     }
 

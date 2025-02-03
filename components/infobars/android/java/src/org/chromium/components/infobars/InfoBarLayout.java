@@ -101,6 +101,7 @@ public final class InfoBarLayout extends ViewGroup implements View.OnClickListen
      * Constructs a layout for the specified infobar. After calling this, be sure to set the
      * message, the buttons, and/or the custom content using setMessage(), setButtons(), and
      * setCustomContent().
+     *
      * @param context The context used to render.
      * @param infoBar InfoBarInteractionHandler that listens to events.
      * @param iconResourceId ID of the icon to use for the infobar.
@@ -113,7 +114,7 @@ public final class InfoBarLayout extends ViewGroup implements View.OnClickListen
             InfoBarInteractionHandler infoBar,
             int iconResourceId,
             @ColorRes int iconTintId,
-            Bitmap iconBitmap,
+            @Nullable Bitmap iconBitmap,
             CharSequence message) {
         super(context);
         mControlLayouts = new ArrayList<InfoBarControlLayout>();
@@ -221,10 +222,10 @@ public final class InfoBarLayout extends ViewGroup implements View.OnClickListen
     /**
      * Adds one or two buttons to the layout.
      *
-     * @param primaryText Text for the primary button.  If empty, no buttons are added at all.
+     * @param primaryText Text for the primary button. If empty, no buttons are added at all.
      * @param secondaryText Text for the secondary button, or null if there isn't a second button.
      */
-    public void setButtons(String primaryText, String secondaryText) {
+    public void setButtons(String primaryText, @Nullable String secondaryText) {
         if (TextUtils.isEmpty(primaryText)) {
             assert TextUtils.isEmpty(secondaryText);
             return;
@@ -543,7 +544,10 @@ public final class InfoBarLayout extends ViewGroup implements View.OnClickListen
      * @return {@link ImageButton} that represents the icon.
      */
     public static @Nullable ImageView createIconView(
-            Context context, int iconResourceId, @ColorRes int iconTintId, Bitmap iconBitmap) {
+            Context context,
+            int iconResourceId,
+            @ColorRes int iconTintId,
+            @Nullable Bitmap iconBitmap) {
         if (iconResourceId == 0 && iconBitmap == null) return null;
 
         final ChromeImageView iconView = new ChromeImageView(context);
