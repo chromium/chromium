@@ -28,9 +28,8 @@ namespace task_manager {
 // kept, and Extension and System processes will be filtered out.
 enum class DisplayCategory : uint8_t {
   kAll = 0,
-  kTabs = 1,
-  kExtensions = 2,
-  kSystem = 3,
+  kTabsAndExtensions = 1,
+  kSystem = 2,
   kMax = kSystem
 };
 

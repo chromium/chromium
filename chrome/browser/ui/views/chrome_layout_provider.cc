@@ -172,7 +172,7 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
     case DISTANCE_TASK_MANAGER_HEADER_HORIZONTAL_SPACING:
       return 12;
     case DISTANCE_TASK_MANAGER_HEADER_VERTICAL_SPACING:
-      return 4;
+      return 8;
     case DISTANCE_TASK_MANAGER_SEARCH_ICON_SIZE:
       return 20;
     case DISTANCE_TASK_MANAGER_TAB_SPACING:

@@ -126,13 +126,12 @@ int OrderUnavailableValue(bool v1, bool v2) {
   return v1 ? 1 : -1;
 }
 
-bool ShouldKeepTaskForTabs(Task::Type type, Task::SubType subtype) {
-  return type == Task::RENDERER && subtype != Task::SubType::kSpareRenderer &&
-         subtype != Task::SubType::kUnknownRenderer;
-}
-
-bool ShouldKeepTaskForExtensions(Task::Type type) {
+bool ShouldKeepTaskForTabsAndExtensions(Task::Type type,
+                                        Task::SubType subtype) {
   switch (type) {
+    case Task::RENDERER:
+      return subtype != Task::SubType::kSpareRenderer &&
+             subtype != Task::SubType::kUnknownRenderer;
     case Task::EXTENSION:
     case Task::GUEST:
     case Task::PLUGIN:
@@ -1068,8 +1067,7 @@ bool TaskManagerTableModel::ShouldKeepTaskForSupportedType(
   const Task::Type type = observed_task_manager()->GetType(root);
   const Task::SubType subtype = observed_task_manager()->GetSubType(root);
 
-  return ShouldKeepTaskForTabs(type, subtype) ||
-         ShouldKeepTaskForExtensions(type) ||
+  return ShouldKeepTaskForTabsAndExtensions(type, subtype) ||
          ShouldKeepTaskForSystem(type, subtype);
 }
 
@@ -1090,10 +1088,8 @@ bool TaskManagerTableModel::ShouldKeepTask(TaskId task_id) const {
   const Task::SubType subtype = observed_task_manager()->GetSubType(root);
 
   switch (display_category_) {
-    case DisplayCategory::kTabs:
-      return ShouldKeepTaskForTabs(type, subtype);
-    case DisplayCategory::kExtensions:
-      return ShouldKeepTaskForExtensions(type);
+    case DisplayCategory::kTabsAndExtensions:
+      return ShouldKeepTaskForTabsAndExtensions(type, subtype);
     case DisplayCategory::kSystem:
       return ShouldKeepTaskForSystem(type, subtype);
     case DisplayCategory::kAll:

@@ -113,11 +113,9 @@ class TaskManagerView : public TableViewDelegate,
 
   // TaskManagerSearchBarView::Delegate:
   void SearchBarOnInputChanged(const std::u16string& text) override;
+  void SearchBarOnHoverChange(const bool is_hover_on) override;
 
   views::TableView* tab_table_for_testing() { return tab_table_; }
-
-  // TaskManagerSearchBarView::Delegate:
-  void SearchBarOnHoverChange(const bool is_hover_on) override;
 
   static TaskManagerView* GetInstanceForTests();
 
@@ -145,6 +143,9 @@ class TaskManagerView : public TableViewDelegate,
 
   // Creates the header for the view.
   void CreateHeader(const ChromeLayoutProvider* provider);
+  std::unique_ptr<views::View> CreateHeaderContent(
+      const ChromeLayoutProvider* provider);
+  std::unique_ptr<views::View> CreateHeaderSeparatorUnderlay(int height);
 
   // Creates a new TableModel which only operates on the subset of tasks
   // associated with the DisplayCategory (e.g. kTabs means only Tab processes
@@ -162,7 +163,6 @@ class TaskManagerView : public TableViewDelegate,
       const ChromeLayoutProvider* provider);
   std::unique_ptr<views::MdTextButton> CreateEndProcessButton(
       const gfx::Insets& margins);
-  std::unique_ptr<views::Separator> CreateSeparator(const gfx::Insets& margins);
   std::unique_ptr<views::ScrollView> CreateProcessView(
       std::unique_ptr<views::TableView> tab_table,
       bool table_has_border,

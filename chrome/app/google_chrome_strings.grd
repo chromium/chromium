@@ -360,11 +360,8 @@ chromium_strings.grd. -->
       <message name="IDS_TASK_MANAGER_KILL_ACCESSIBILITY_NAME" desc="The accessibility description for the End Process button in the Task Manager window" translateable="false">
         Ends the highlighted process.
       </message>
-      <message name="IDS_TASK_MANAGER_CATEGORY_TABS_NAME" desc="The title of the 'Tabs' filter category." translateable="false">
-        Tabs
-      </message>
-      <message name="IDS_TASK_MANAGER_CATEGORY_EXTENSIONS_NAME" desc="The title of the 'Extensions' filter category." translateable="false">
-        Extensions
+      <message name="IDS_TASK_MANAGER_CATEGORY_TABS_AND_EXTENSIONS_NAME" desc="The title of the 'Tabs and Extensions' filter category." translateable="false">
+        Tabs &amp; Extensions
       </message>
       <message name="IDS_TASK_MANAGER_CATEGORY_SYSTEM_NAME" desc="The title of the 'System' filter category on ChromeOS." translateable="false">
         System
