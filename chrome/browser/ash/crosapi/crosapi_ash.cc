@@ -19,7 +19,6 @@
 #include "chrome/browser/apps/digital_goods/digital_goods_ash.h"
 #include "chrome/browser/ash/crosapi/arc_ash.h"
 #include "chrome/browser/ash/crosapi/audio_service_ash.h"
-#include "chrome/browser/ash/crosapi/automation_ash.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/cec_private_ash.h"
 #include "chrome/browser/ash/crosapi/cert_database_ash.h"
@@ -170,7 +169,6 @@ Profile* GetAshProfile() {
 CrosapiAsh::CrosapiAsh()
     : arc_ash_(std::make_unique<ArcAsh>()),
       audio_service_ash_(std::make_unique<AudioServiceAsh>()),
-      automation_ash_(std::make_unique<AutomationAsh>()),
       cec_private_ash_(std::make_unique<CecPrivateAsh>()),
       cert_database_ash_(std::make_unique<CertDatabaseAsh>()),
       cert_provisioning_ash_(std::make_unique<CertProvisioningAsh>()),
@@ -307,14 +305,6 @@ void CrosapiAsh::BindAudioService(
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
   audio_service_ash_->Initialize(profile);
   audio_service_ash_->BindReceiver(std::move(receiver));
-}
-
-void CrosapiAsh::BindAutomationDeprecated(
-    mojo::PendingReceiver<mojom::Automation> receiver) {}
-
-void CrosapiAsh::BindAutomationFactory(
-    mojo::PendingReceiver<mojom::AutomationFactory> receiver) {
-  automation_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindBrowserCdmFactory(mojo::GenericPendingReceiver receiver) {

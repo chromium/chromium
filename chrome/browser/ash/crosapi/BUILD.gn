@@ -41,8 +41,6 @@ static_library("crosapi") {
     "arc_ash.h",
     "audio_service_ash.cc",
     "audio_service_ash.h",
-    "automation_ash.cc",
-    "automation_ash.h",
     "browser_manager.cc",
     "browser_manager.h",
     "cec_private_ash.cc",
