@@ -31,21 +31,6 @@ namespace {
 
 constexpr static auto kBufferUsage = gfx::BufferUsage::GPU_READ_CPU_READ_WRITE;
 
-// Subclass for InUsePoolResource that holds ownership of a zero-copy backing
-// and does cleanup of the backing when destroyed.
-class ZeroCopyGpuBacking : public ResourcePool::GpuBacking {
- public:
-  ~ZeroCopyGpuBacking() override {
-    if (!shared_image) {
-      return;
-    }
-    if (returned_sync_token.HasData())
-      shared_image->UpdateDestructionSyncToken(returned_sync_token);
-    else if (mailbox_sync_token.HasData())
-      shared_image->UpdateDestructionSyncToken(mailbox_sync_token);
-  }
-};
-
 // RasterBuffer for the zero copy upload, which is given to the raster worker
 // threads for raster/upload.
 class ZeroCopyRasterBufferImpl : public RasterBuffer {
@@ -53,7 +38,7 @@ class ZeroCopyRasterBufferImpl : public RasterBuffer {
   ZeroCopyRasterBufferImpl(
       base::WaitableEvent* shutdown_event,
       const ResourcePool::InUsePoolResource& in_use_resource,
-      ZeroCopyGpuBacking* backing,
+      ResourcePool::GpuBacking* backing,
       scoped_refptr<gpu::SharedImageInterface> sii)
       : backing_(backing),
         sii_(sii),
@@ -128,7 +113,7 @@ class ZeroCopyRasterBufferImpl : public RasterBuffer {
 
  private:
   // These fields are safe to access on both the compositor and worker thread.
-  const raw_ptr<ZeroCopyGpuBacking> backing_;
+  const raw_ptr<ResourcePool::GpuBacking> backing_;
   const scoped_refptr<gpu::SharedImageInterface> sii_;
 
   // These fields are for use on the worker thread.
@@ -157,7 +142,7 @@ ZeroCopyRasterBufferProvider::AcquireBufferForRaster(
     bool depends_on_hardware_accelerated_jpeg_candidates,
     bool depends_on_hardware_accelerated_webp_candidates) {
   if (!resource.gpu_backing()) {
-    auto backing = std::make_unique<ZeroCopyGpuBacking>();
+    auto backing = std::make_unique<ResourcePool::GpuBacking>();
     backing->overlay_candidate = true;
     // This RasterBufferProvider will modify the resource outside of the
     // GL command stream. So resources should not become available for reuse
@@ -166,8 +151,7 @@ ZeroCopyRasterBufferProvider::AcquireBufferForRaster(
     backing->wait_on_fence_required = true;
     resource.set_gpu_backing(std::move(backing));
   }
-  ZeroCopyGpuBacking* backing =
-      static_cast<ZeroCopyGpuBacking*>(resource.gpu_backing());
+  ResourcePool::GpuBacking* backing = resource.gpu_backing();
 
   return std::make_unique<ZeroCopyRasterBufferImpl>(
       shutdown_event_, resource, backing,

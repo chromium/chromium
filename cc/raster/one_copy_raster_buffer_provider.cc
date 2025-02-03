@@ -46,26 +46,10 @@ const int kMaxBytesPerCopyOperation = 1024 * 1024 * 4;
 
 }  // namespace
 
-// Subclass for InUsePoolResource that holds ownership of a one-copy backing
-// and does cleanup of the backing when destroyed.
-class OneCopyRasterBufferProvider::OneCopyGpuBacking
-    : public ResourcePool::GpuBacking {
- public:
-  ~OneCopyGpuBacking() override {
-    if (!shared_image) {
-      return;
-    }
-    if (returned_sync_token.HasData())
-      shared_image->UpdateDestructionSyncToken(returned_sync_token);
-    else if (mailbox_sync_token.HasData())
-      shared_image->UpdateDestructionSyncToken(mailbox_sync_token);
-  }
-};
-
 OneCopyRasterBufferProvider::RasterBufferImpl::RasterBufferImpl(
     OneCopyRasterBufferProvider* client,
     const ResourcePool::InUsePoolResource& in_use_resource,
-    OneCopyGpuBacking* backing,
+    ResourcePool::GpuBacking* backing,
     uint64_t previous_content_id)
     : client_(client),
       backing_(backing),
@@ -163,12 +147,11 @@ OneCopyRasterBufferProvider::AcquireBufferForRaster(
     bool depends_on_hardware_accelerated_jpeg_candidates,
     bool depends_on_hardware_accelerated_webp_candidates) {
   if (!resource.gpu_backing()) {
-    auto backing = std::make_unique<OneCopyGpuBacking>();
+    auto backing = std::make_unique<ResourcePool::GpuBacking>();
     backing->overlay_candidate = tile_overlay_candidate_;
     resource.set_gpu_backing(std::move(backing));
   }
-  OneCopyGpuBacking* backing =
-      static_cast<OneCopyGpuBacking*>(resource.gpu_backing());
+  ResourcePool::GpuBacking* backing = resource.gpu_backing();
   // TODO(danakj): If resource_content_id != 0, we only need to copy/upload
   // the dirty rect.
   return std::make_unique<RasterBufferImpl>(this, resource, backing,

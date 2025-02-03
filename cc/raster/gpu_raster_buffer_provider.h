@@ -73,13 +73,11 @@ class CC_EXPORT GpuRasterBufferProvider : public RasterBufferProvider {
   void Flush() override;
 
  private:
-  class GpuRasterBacking;
-
   class RasterBufferImpl : public RasterBuffer {
    public:
     RasterBufferImpl(GpuRasterBufferProvider* client,
                      const ResourcePool::InUsePoolResource& in_use_resource,
-                     GpuRasterBacking* backing,
+                     ResourcePool::GpuBacking* backing,
                      bool resource_has_previous_content,
                      bool depends_on_at_raster_decodes,
                      bool depends_on_hardware_accelerated_jpeg_candidates,
@@ -128,7 +126,7 @@ class CC_EXPORT GpuRasterBufferProvider : public RasterBufferProvider {
 
     // These fields may only be used on the compositor thread.
     const raw_ptr<GpuRasterBufferProvider> client_;
-    raw_ptr<GpuRasterBacking> backing_;
+    raw_ptr<ResourcePool::GpuBacking> backing_;
 
     // These fields are for use on the worker thread.
     const gfx::Size resource_size_;

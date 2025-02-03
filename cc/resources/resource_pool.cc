@@ -39,7 +39,16 @@ using base::trace_event::MemoryDumpLevelOfDetail;
 namespace cc {
 
 ResourcePool::GpuBacking::GpuBacking() = default;
-ResourcePool::GpuBacking::~GpuBacking() = default;
+ResourcePool::GpuBacking::~GpuBacking() {
+  if (!shared_image) {
+    return;
+  }
+  if (returned_sync_token.HasData()) {
+    shared_image->UpdateDestructionSyncToken(returned_sync_token);
+  } else if (mailbox_sync_token.HasData()) {
+    shared_image->UpdateDestructionSyncToken(mailbox_sync_token);
+  }
+}
 
 ResourcePool::SoftwareBacking::SoftwareBacking() = default;
 ResourcePool::SoftwareBacking::~SoftwareBacking() {
