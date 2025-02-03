@@ -2293,6 +2293,9 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                     new TabbedSystemBarColorHelper(
                             ensureEdgeToEdgeLayoutCoordinator(), mBottomChinSupplier));
             return mSystemBarColorHelperSupplier;
+        } else if (EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled()) {
+            // If isEdgeToEdgeBottomChinEnabled() && !isEdgeToEdgeEverywhereEnabled()
+            return mBottomChinSupplier;
         }
         return super.createSystemBarColorHelperSupplier();
     }
