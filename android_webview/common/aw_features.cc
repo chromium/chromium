@@ -195,6 +195,11 @@ BASE_FEATURE(kWebViewPreloadClasses,
              "WebViewPreloadClasses",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Prefetches the native WebView code to memory during startup.
+BASE_FEATURE(kWebViewPrefetchNativeLibrary,
+             "WebViewPrefetchNativeLibrary",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled TYPE_SCROLLED accessibility events are sent every 100ms when user
 // is scrolling irrespective of GestureScrollUpdate being consumed or not.
 // If disabled events are sent on GSU consumed ack.

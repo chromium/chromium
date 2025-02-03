@@ -78,12 +78,20 @@ public class LibraryPrefetcher {
                 });
     }
 
+    public static void prefetchNativeLibraryForWebView() {
+        LibraryPrefetcherJni.get().prefetchNativeLibraryForWebView();
+    }
+
     @NativeMethods
     interface Natives {
         // Finds the ranges corresponding to the native library pages, forks a new
         // process to prefetch these pages and waits for it. The new process then
         // terminates. This is blocking.
+        // On some devices, this prefetches only the ordered part of the library.
         void forkAndPrefetchNativeLibrary();
+
+        // Similar to the above function, but always prefetches the whole library.
+        void prefetchNativeLibraryForWebView();
 
         // Returns the percentage of the native library code page that are currently reseident in
         // memory.
