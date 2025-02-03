@@ -153,6 +153,7 @@ component("gfx") {
     "ui_gfx_exports.cc",
     "utf16_indexing.cc",
     "utf16_indexing.h",
+    "vector_icon_types.cc",
     "vector_icon_types.h",
     "vector_icon_utils.cc",
     "vector_icon_utils.h",

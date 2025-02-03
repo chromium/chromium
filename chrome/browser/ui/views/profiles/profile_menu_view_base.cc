@@ -1060,7 +1060,7 @@ void ProfileMenuViewBase::AddFeatureButton(const std::u16string& text,
   }
 
   std::unique_ptr<FeatureButtonIconView> icon_view;
-  if (&icon != &gfx::kNoneIcon) {
+  if (&icon != &gfx::VectorIcon::EmptyIcon()) {
     icon_view =
         std::make_unique<FeatureButtonIconView>(icon, icon_to_image_ratio);
   }

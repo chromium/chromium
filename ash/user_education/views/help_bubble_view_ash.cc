@@ -386,7 +386,7 @@ HelpBubbleViewAsh::HelpBubbleViewAsh(
   // Add the body icon (optional).
   constexpr int kBodyIconSize = 20;
   constexpr int kBodyIconBackgroundSize = 24;
-  if (body_icon && (body_icon != &gfx::kNoneIcon)) {
+  if (body_icon && (body_icon != &gfx::VectorIcon::EmptyIcon())) {
     icon_view_ = top_text_container->AddChildViewAt(
         views::Builder<views::ImageView>()
             .SetAccessibleName(params.body_icon_alt_text)

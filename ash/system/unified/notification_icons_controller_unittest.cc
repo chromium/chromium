@@ -56,8 +56,8 @@ class NotificationIconsControllerTest : public AshTestBase {
             message_center::NotifierId(
                 message_center::NotifierType::SYSTEM_COMPONENT, notifier_id,
                 NotificationCatalogName::kTestCatalogName),
-            rich_notification_data, nullptr /* delegate */, gfx::VectorIcon(),
-            warning_level));
+            rich_notification_data, nullptr /* delegate */,
+            gfx::VectorIcon::EmptyIcon(), warning_level));
     notification_id_++;
 
     return id;

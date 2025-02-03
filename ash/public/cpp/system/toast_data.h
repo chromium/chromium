@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/time/time.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/vector_icon_types.h"
 
 namespace ash {
 
@@ -75,8 +76,10 @@ struct ASH_PUBLIC_EXPORT ToastData {
   std::u16string button_text;
   // RAW_PTR_EXCLUSION: Never allocated by PartitionAlloc (always points to a
   // global), so there is no benefit to using a raw_ptr, only cost.
-  RAW_PTR_EXCLUSION const gfx::VectorIcon* button_icon = &gfx::kNoneIcon;
-  RAW_PTR_EXCLUSION const gfx::VectorIcon* leading_icon = &gfx::kNoneIcon;
+  RAW_PTR_EXCLUSION const gfx::VectorIcon* button_icon =
+      &gfx::VectorIcon::EmptyIcon();
+  RAW_PTR_EXCLUSION const gfx::VectorIcon* leading_icon =
+      &gfx::VectorIcon::EmptyIcon();
   base::OnceClosure expired_callback;
   base::TimeTicks time_created;
   base::TimeTicks time_start_showing;

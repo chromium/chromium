@@ -27,8 +27,7 @@ int InfoBarDelegate::GetIconId() const {
 }
 
 const gfx::VectorIcon& InfoBarDelegate::GetVectorIcon() const {
-  static gfx::VectorIcon empty_icon;
-  return empty_icon;
+  return gfx::VectorIcon::EmptyIcon();
 }
 
 ui::ImageModel InfoBarDelegate::GetIcon() const {
