@@ -10,13 +10,19 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation to indicate that this collection of tests is not safe to run in batches, where the
- * Instrumentation Runner (and hence the process) does not need to be restarted between these
- * tests.
+ * Indicates this class should not be batched and all test methods should run in a fresh process.
+ * Using this annotation indicates that the Instrumentation Runner (and hence the process) need to
+ * be restarted between these tests. This is the opposite of {@link Batch}.
  *
- * Tests that are not safe to run in batch should have this annotation with reasons.
+ * <p>This can only be applied to the entire class. If you would like to indicate that only some
+ * methods in the class need a fresh process, consider using {@link RequiresRestart} on those
+ * methods and applying a {@link Batch} annotation on the test class.
  *
- * Tests should have either {@link Batch} or {@link DoNotBatch} annotation.
+ * <p>Supply a message explaining why batching is not appropriate.
+ *
+ * <p>This annotation is the same as the default behavior (when neither DoNotBatch nor Batch are
+ * applied), however it's preferable to explicitly apply this annotation if you know there are
+ * obstacles to batching a particular test class.
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
