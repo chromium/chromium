@@ -11,7 +11,8 @@
 @protocol GoogleOneControllerFactory
 
 // Create a GoogleOneController.
-- (id<GoogleOneController>)createController;
+- (id<GoogleOneController>)createControllerWithConfiguration:
+    (GoogleOneConfiguration*)configuration;
 
 @end
 
