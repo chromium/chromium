@@ -60,7 +60,7 @@ class DefaultBrowserEventExporterTest : public PlatformTest {
 
   int GetExportEventsCount() { return export_events_.size(); }
 
-  // Initializes the feature engagement tracker  with the default browser
+  // Initializes the feature engagement tracker with the default browser
   // exporter and set basic common conditions for default browser promos.
   void InitTrackerAndSetBasicConditions() {
     // Initialize tracker with the default browser exporter.
@@ -353,4 +353,85 @@ TEST_F(DefaultBrowserEventExporterTest, TestMigrationTailoredOldCondition) {
   // All tabs promo should not trigger.
   EXPECT_FALSE(tracker_->WouldTriggerHelpUI(
       feature_engagement::kIPHiOSPromoAllTabsFeature));
+}
+
+// Checks that the event exporter migrates the events.
+TEST_F(DefaultBrowserEventExporterTest, TestNonModalPromoEventsMigration) {
+  // No events to export.
+  RequestExportEventsAndVerifyCallback();
+  EXPECT_EQ(GetExportEventsCount(), 0);
+
+  ClearDefaultBrowserPromoData();
+
+  // Check when there is only 1 event.
+  LogUserInteractionWithNonModalPromo(0);
+  RequestExportEventsAndVerifyCallback();
+  EXPECT_EQ(GetExportEventsCount(), 1);
+  // Check that exporting second time will not have any events.
+  RequestExportEventsAndVerifyCallback();
+  EXPECT_EQ(GetExportEventsCount(), 0);
+
+  // Check when there is only 2 event.
+  ClearDefaultBrowserPromoData();
+  LogUserInteractionWithNonModalPromo(2);
+  RequestExportEventsAndVerifyCallback();
+  EXPECT_EQ(GetExportEventsCount(), 3);
+  // Check that exporting second time will not have any events.
+  RequestExportEventsAndVerifyCallback();
+  EXPECT_EQ(GetExportEventsCount(), 0);
+}
+
+// Checks that none of the promos trigger when there are no events exported.
+TEST_F(DefaultBrowserEventExporterTest, TestNonModalMigrationNoEvents) {
+  LogUserInteractionWithNonModalPromo(1);
+
+  // Initialize tracker.
+  InitTrackerAndSetBasicConditions();
+
+  // None of the promos should trigger.
+  EXPECT_FALSE(tracker_->WouldTriggerHelpUI(
+      feature_engagement::kIPHiOSPromoNonModalUrlPasteDefaultBrowserFeature));
+}
+
+// Checks that after migration, the promo can be triggered if the last
+// interaction isn't in cooldown and the interaction count is less than 10.
+TEST_F(DefaultBrowserEventExporterTest, TestNonModalMigrationConditionsMet) {
+  SimulateUserInteractionWithNonModalPromo(kMoreThan30Days,
+                                           /*interaction_count=*/1);
+
+  // Initialize tracker.
+  InitTrackerAndSetBasicConditions();
+
+  EXPECT_TRUE(tracker_->WouldTriggerHelpUI(
+      feature_engagement::kIPHiOSPromoNonModalUrlPasteDefaultBrowserFeature));
+}
+
+// Checks that after migration, the promo cannot be triggered if the last
+// interaction is in cooldown and the interaction count is less than 10.
+TEST_F(DefaultBrowserEventExporterTest,
+       TestNonModalMigrationCooldownConditionsNotMet) {
+  // Write to user defaults before creating the tracker.
+  SimulateUserInteractionWithNonModalPromo(kMoreThan3Day,
+                                           /*interaction_count=*/1);
+
+  // Initialize tracker.
+  InitTrackerAndSetBasicConditions();
+
+  EXPECT_FALSE(tracker_->WouldTriggerHelpUI(
+      feature_engagement::kIPHiOSPromoNonModalUrlPasteDefaultBrowserFeature));
+}
+
+// Checks that after migration, the promo cannot be triggered if the last
+// interaction is not in cooldown but the interaction count is more than 10.
+TEST_F(DefaultBrowserEventExporterTest,
+       TestNonModalMigrationInteractionConditionNotMet) {
+  // Write to user defaults before creating the tracker.
+  SimulateUserInteractionWithNonModalPromo(kMoreThan3Day,
+                                           /*interaction_count=*/10);
+
+  // Initialize tracker.
+  InitTrackerAndSetBasicConditions();
+
+  EXPECT_FALSE(tracker_->WouldTriggerHelpUI(
+      feature_engagement::kIPHiOSPromoNonModalUrlPasteDefaultBrowserFeature));
 }

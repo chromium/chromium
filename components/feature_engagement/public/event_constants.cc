@@ -66,6 +66,8 @@ const char kPriceNotificationsUsed[] = "price_notifications_used";
 const char kDefaultBrowserPromoShown[] = "default_browser_promo_shown";
 const char kDefaultBrowserPromoRemindMeLater[] =
     "default_browser_promo_remind_me_later";
+const char kNonModalDefaultBrowserPromoUrlPasteTrigger[] =
+    "non_modal_default_browser_promo_url_paste_trigger";
 const char kPasswordManagerWidgetPromoTriggered[] =
     "password_manager_widget_promo_trigger";
 const char kPasswordManagerWidgetPromoUsed[] =

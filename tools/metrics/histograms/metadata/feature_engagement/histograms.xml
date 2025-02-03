@@ -305,6 +305,9 @@ chromium-metrics-reviews@google.com.
       summary="showing generic default browser promo"/>
   <variant name="IPH_iOSPromoMadeForIOS"
       summary="showing Made for iOS default browser promo"/>
+  <variant name="IPH_iOSPromoNonModalUrlPasteDefaultBrowser"
+      summary="showing the non-modal Default Browser Promo from omnibox paste
+               on iOS"/>
   <variant name="IPH_iOSPromoPasswordManagerWidget"
       summary="showing the Password Manager widget promo on iOS"/>
   <variant name="IPH_iOSPromoPostRestore"

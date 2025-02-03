@@ -289,6 +289,27 @@ std::optional<FeatureConfig> GetCustomConfig(const base::Feature* feature) {
     return config;
   }
 
+  if (kIPHiOSPromoNonModalUrlPasteDefaultBrowserFeature.name == feature->name) {
+    std::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->used =
+        EventConfig("non_modal_default_browser_promo_omnibox_paste_used",
+                    Comparator(ANY, 0), 365, 365);
+    // Should be triggered no more than once every 14 days.
+    config->trigger = EventConfig(
+        feature_engagement::events::kNonModalDefaultBrowserPromoUrlPasteTrigger,
+        Comparator(LESS_THAN, 1), 14, 365);
+    // The limit for promo triggers should be 10.
+    config->event_configs.insert(EventConfig(
+        feature_engagement::events::kNonModalDefaultBrowserPromoUrlPasteTrigger,
+        Comparator(LESS_THAN, 10), feature_engagement::kMaxStoragePeriod,
+        feature_engagement::kMaxStoragePeriod));
+
+    return config;
+  }
+
   if (kIPHiOSDockingPromoRemindMeLaterFeature.name == feature->name) {
     std::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;

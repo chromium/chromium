@@ -4,8 +4,13 @@
 
 #import "ios/chrome/browser/default_browser/model/default_browser_promo_event_exporter.h"
 
+#import <UIKit/UIKit.h>
+
+#import "base/apple/foundation_util.h"
 #import "base/time/time.h"
 #import "components/feature_engagement/public/event_constants.h"
+#import "ios/chrome/browser/default_browser/model/features.h"
+#import "ios/chrome/browser/default_browser/model/utils.h"
 
 namespace {
 
@@ -24,12 +29,16 @@ void DefaultBrowserEventExporter::ExportEvents(ExportEventsCallback callback) {
   std::vector<EventData> events_to_migrate;
 
   // Migrate the FRE promo event.
+  // TODO(crbug.com/382733018): Clean up the default browser promos eligibility
+  // tracking migration code.
   if (!FRETimestampMigrationDone()) {
     AddFREPromoEvent(events_to_migrate);
     LogFRETimestampMigrationDone();
   }
 
   // Migrate promo interest signals
+  // TODO(crbug.com/382733018): Clean up the default browser promos eligibility
+  // tracking migration code.
   if (!IsPromoInterestEventMigrationDone()) {
     AddPromoInterestEvents(
         events_to_migrate, DefaultPromoTypeGeneral,
@@ -46,10 +55,28 @@ void DefaultBrowserEventExporter::ExportEvents(ExportEventsCallback callback) {
     LogPromoInterestEventMigrationDone();
   }
 
+  // TODO(crbug.com/382733018): Clean up the default browser promos eligibility
+  // tracking migration code.
   if (!IsPromoImpressionsMigrationDone()) {
     AddGenericPromoImpressions(events_to_migrate);
     AddTailoredPromoImpressions(events_to_migrate);
     LogPromoImpressionsMigrationDone();
+  }
+
+  // Migrate the default browser's non-modal promo events.
+  // TODO(crbug.com/391166425): Clean up the non-modal promo migration code.
+  if (IsNonModalPromoMigrationEnabled() && !IsNonModalPromoMigrationDone()) {
+    NSDate* last_interaction = LastTimeUserInteractedWithNonModalPromo();
+    if (last_interaction && UserInteractionWithNonModalPromoCount() > 0) {
+      const NSInteger count = UserInteractionWithNonModalPromoCount();
+      for (NSInteger i = 0; i < count; ++i) {
+        events_to_migrate.emplace_back(
+            feature_engagement::events::
+                kNonModalDefaultBrowserPromoUrlPasteTrigger,
+            DaysSinceTime(base::Time::FromNSDate(last_interaction)));
+      }
+    }
+    LogNonModalPromoMigrationDone();
   }
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(

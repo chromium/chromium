@@ -44,11 +44,6 @@ NSString* const kLastSignificantUserEventMadeForIOS =
 NSString* const kLastSignificantUserEventAllTabs =
     @"lastSignificantUserEventAllTabs";
 
-// Key in storage containing an int indicating the number of times the
-// user has interacted with a non-modal promo.
-NSString* const kUserInteractedWithNonModalPromoCount =
-    @"userInteractedWithNonModalPromoCount";
-
 // Action string for "Appear" event of the promo.
 const char kAppearAction[] = "Appear";
 
@@ -360,6 +355,8 @@ void StoreCurrentTimestampForKey(NSString* key) {
 NSString* const kLastHTTPURLOpenTime = @"lastHTTPURLOpenTime";
 NSString* const kLastTimeUserInteractedWithNonModalPromo =
     @"lastTimeUserInteractedWithNonModalPromo";
+NSString* const kUserInteractedWithNonModalPromoCount =
+    @"userInteractedWithNonModalPromoCount";
 NSString* const kLastTimeUserInteractedWithFullscreenPromo =
     @"lastTimeUserInteractedWithFullscreenPromo";
 NSString* const kAllTimestampsAppLaunchColdStart =
@@ -396,6 +393,7 @@ NSString* const kPromoImpressionsMigrationDone =
     @"promo_impressions_migration_done";
 NSString* const kTimestampTriggerCriteriaExperimentStarted =
     @"TimestampTriggerCriteriaExperimentStarted";
+NSString* const kNonModalPromoMigrationDone = @"kNonModalPromoMigrationDone";
 
 std::vector<base::Time> LoadTimestampsForPromoType(DefaultPromoType type) {
   return LoadActiveTimestampsForKey(StorageKeyForDefaultPromoType(type),
@@ -996,6 +994,18 @@ BOOL IsPromoImpressionsMigrationDone() {
   return number.boolValue;
 }
 
+void LogNonModalPromoMigrationDone() {
+  NSDictionary<NSString*, NSObject*>* update =
+      @{kNonModalPromoMigrationDone : @YES};
+  UpdateStorageWithDictionary(update);
+}
+
+bool IsNonModalPromoMigrationDone() {
+  NSNumber* number =
+      GetObjectFromStorageForKey<NSNumber>(kNonModalPromoMigrationDone);
+  return number.boolValue;
+}
+
 void RecordDefaultBrowserPromoLastAction(IOSDefaultBrowserPromoAction action) {
   GetApplicationContext()->GetLocalState()->SetInteger(
       prefs::kIosDefaultBrowserPromoLastAction, static_cast<int>(action));
@@ -1010,4 +1020,9 @@ std::optional<IOSDefaultBrowserPromoAction> DefaultBrowserPromoLastAction() {
   }
   int last_action_int = last_action->GetValue()->GetInt();
   return static_cast<IOSDefaultBrowserPromoAction>(last_action_int);
+}
+
+NSDate* LastTimeUserInteractedWithNonModalPromo() {
+  return GetObjectFromStorageForKey<NSDate>(
+      kLastTimeUserInteractedWithNonModalPromo);
 }

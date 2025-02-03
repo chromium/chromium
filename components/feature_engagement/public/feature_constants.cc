@@ -572,6 +572,9 @@ BASE_FEATURE(kIPHiOSHistoryOnOverflowMenuFeature,
 BASE_FEATURE(kIPHiOSPromoPostRestoreDefaultBrowserFeature,
              "IPH_iOSPromoPostRestoreDefaultBrowser",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHiOSPromoNonModalUrlPasteDefaultBrowserFeature,
+             "IPH_iOSPromoNonModalUrlPasteDefaultBrowser",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHiOSPromoPasswordManagerWidgetFeature,
              "IPH_iOSPromoPasswordManagerWidget",
              base::FEATURE_ENABLED_BY_DEFAULT);

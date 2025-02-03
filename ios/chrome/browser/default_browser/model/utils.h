@@ -68,6 +68,10 @@ extern NSString* const kLastHTTPURLOpenTime;
 // interacted with a non-modal promo.
 extern NSString* const kLastTimeUserInteractedWithNonModalPromo;
 
+// Key in storage containing an int indicating the number of times the
+// user has interacted with a non-modal promo.
+extern NSString* const kUserInteractedWithNonModalPromoCount;
+
 // Key in storage containing an NSDate indicating the last time a user
 // interacted with ANY full screen promo. The string value is kept from when the
 // promos first launched to avoid changing the behavior for users that have
@@ -352,7 +356,7 @@ base::Time GetTailoredDefaultBrowserPromoTimestamp();
 // Log to UserDefaults FRE timestamp migration is done.
 void LogFRETimestampMigrationDone();
 
-// Returns whether FRE timestamp migratin is done.
+// Returns whether FRE timestamp migrating is done.
 BOOL FRETimestampMigrationDone();
 
 // Log to UserDefaults promo interest event migration is done.
@@ -370,6 +374,15 @@ BOOL IsPromoImpressionsMigrationDone();
 // Records the last action the user took when a Default Browser Promo was
 // presented.
 void RecordDefaultBrowserPromoLastAction(IOSDefaultBrowserPromoAction action);
+
+// Log to UserDefaults non-modal promo migration done.
+void LogNonModalPromoMigrationDone();
+
+// Returns whether the non-modal promo migration is done.
+bool IsNonModalPromoMigrationDone();
+
+// Gets the date when the user last interacted with the non-modal promo.
+NSDate* LastTimeUserInteractedWithNonModalPromo();
 
 // Returns the last action, if any, that the user took when a Default Browser
 // Promo was presented.
