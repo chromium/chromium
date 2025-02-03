@@ -56,7 +56,8 @@ ConvertLcppStringFrequencyStatDataToConfidenceStringPairs(
 // data, it returns an empty vector.
 std::vector<std::string> PredictLcpElementLocators(
     const predictors::LcpElementLocatorStat& stat,
-    const double confidence_threshold);
+    const double confidence_threshold,
+    const double total_frequency_threshold);
 
 // Returns possible fonts from past loads for a given `stat`.
 // The returned urls are ordered by descending frequency (the most

@@ -132,6 +132,14 @@ std::vector<GURL> PredictLcpInfluencerScripts(const LcppStat& stat) {
   return lcp_script_urls;
 }
 
+double SumOfFrequency(const predictors::LcpElementLocatorStat& stat) {
+  double sum = stat.other_bucket_frequency();
+  for (const auto& bucket : stat.lcp_element_locator_buckets()) {
+    sum += bucket.frequency();
+  }
+  return sum;
+}
+
 double SumOfFrequency(const std::map<std::string, double>& histogram,
                       double other_bucket_frequency) {
   double sum = other_bucket_frequency;
@@ -724,8 +732,15 @@ ConvertLcppStatToLCPCriticalPathPredictorNavigationTimeHint(
     const LcppStat& lcpp_stat) {
   static const double kConfidenceThreshold =
       blink::features::kLcppAdjustImageLoadPriorityConfidenceThreshold.Get();
-  std::vector<std::string> lcp_element_locators = PredictLcpElementLocators(
-      lcpp_stat.lcp_element_locator_stat(), kConfidenceThreshold);
+  // The value must be greater or equal to 0. The prediction that is below
+  // this threshold will be ignored.
+  static const double kTotalFrequencyThreshold =
+      base::GetFieldTrialParamByFeatureAsDouble(
+          blink::features::kLCPCriticalPathPredictor,
+          "lcpp_adjust_image_load_priority_total_frequency_threshold", 0.0);
+  std::vector<std::string> lcp_element_locators =
+      PredictLcpElementLocators(lcpp_stat.lcp_element_locator_stat(),
+                                kConfidenceThreshold, kTotalFrequencyThreshold);
   std::vector<GURL> lcp_influencer_scripts =
       PredictLcpInfluencerScripts(lcpp_stat);
   std::vector<GURL> fetched_fonts = PredictFetchedFontUrls(lcpp_stat);
@@ -760,7 +775,11 @@ ConvertLcppStringFrequencyStatDataToConfidenceStringPairs(
 
 std::vector<std::string> PredictLcpElementLocators(
     const predictors::LcpElementLocatorStat& stat,
-    const double confidence_threshold) {
+    const double confidence_threshold,
+    const double total_frequency_threshold) {
+  if (SumOfFrequency(stat) < total_frequency_threshold) {
+    return {};
+  }
   std::vector<std::pair<double, std::string>>
       lcp_element_locators_with_confidence =
           ConvertLcpElementLocatorStatToConfidenceStringPairs(stat);

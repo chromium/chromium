@@ -740,7 +740,8 @@ TEST(PredictLcpElementLocatorsTest, Empty) {
   LcpElementLocatorStat stat;
   EXPECT_EQ(std::vector<std::string>(),
             PredictLcpElementLocators(stat,
-                                      /*confidence_threshold=*/0.0));
+                                      /*confidence_threshold=*/0.0,
+                                      /*total_frequency_threshold=*/0.0));
 }
 
 TEST(PredictLcpElementLocatorsTest, ConfidenceThreshold) {
@@ -763,20 +764,34 @@ TEST(PredictLcpElementLocatorsTest, ConfidenceThreshold) {
   EXPECT_EQ(std::vector<std::string>(
                 {kElementLocator3, kElementLocator2, kElementLocator1}),
             PredictLcpElementLocators(stat,
-                                      /*confidence_threshold=*/0.0));
+                                      /*confidence_threshold=*/0.0,
+                                      /*total_frequency_threshold=*/0.0));
   EXPECT_EQ(std::vector<std::string>(
                 {kElementLocator3, kElementLocator2, kElementLocator1}),
             PredictLcpElementLocators(stat,
-                                      /*confidence_threshold=*/0.1));
+                                      /*confidence_threshold=*/0.1,
+                                      /*total_frequency_threshold=*/0.0));
   EXPECT_EQ(std::vector<std::string>({kElementLocator3, kElementLocator2}),
             PredictLcpElementLocators(stat,
-                                      /*confidence_threshold=*/0.2));
+                                      /*confidence_threshold=*/0.2,
+                                      /*total_frequency_threshold=*/0.0));
   EXPECT_EQ(std::vector<std::string>({kElementLocator3}),
             PredictLcpElementLocators(stat,
-                                      /*confidence_threshold=*/0.3));
-  EXPECT_EQ(std::vector<std::string>({}),
+                                      /*confidence_threshold=*/0.3,
+                                      /*total_frequency_threshold=*/0.0));
+  EXPECT_EQ(std::vector<std::string>(),
             PredictLcpElementLocators(stat,
-                                      /*confidence_threshold=*/0.31));
+                                      /*confidence_threshold=*/0.31,
+                                      /*total_frequency_threshold=*/0.0));
+  EXPECT_EQ(std::vector<std::string>(
+                {kElementLocator3, kElementLocator2, kElementLocator1}),
+            PredictLcpElementLocators(stat,
+                                      /*confidence_threshold=*/0.0,
+                                      /*total_frequency_threshold=*/10.0));
+  EXPECT_EQ(std::vector<std::string>(),
+            PredictLcpElementLocators(stat,
+                                      /*confidence_threshold=*/0.0,
+                                      /*total_frequency_threshold=*/10.1));
 }
 
 TEST(PredictFetchedFontUrls, Empty) {
