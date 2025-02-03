@@ -43,13 +43,13 @@ namespace {
 bool ParseAnswer(const std::string& answer_json,
                  omnibox::AnswerType answer_type,
                  omnibox::RichAnswerTemplate* answer) {
-  std::optional<base::Value> value = base::JSONReader::Read(answer_json);
-  if (!value || !value->is_dict()) {
+  std::optional<base::Value::Dict> value =
+      base::JSONReader::ReadDict(answer_json);
+  if (!value) {
     return false;
   }
 
-  return omnibox::answer_data_parser::ParseJsonToAnswerData(value->GetDict(),
-                                                            answer);
+  return omnibox::answer_data_parser::ParseJsonToAnswerData(*value, answer);
 }
 
 }  // namespace
