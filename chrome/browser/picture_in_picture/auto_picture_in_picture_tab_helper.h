@@ -233,19 +233,6 @@ class AutoPictureInPictureTabHelper
   // conditions are met, an empty string will be returned.
   std::string GetHistogramNameForReason() const;
 
-  // Returns the reason for entering auto picture in picture.
-  AutoPipSettingHelper::AutoPipReason GetAutoPipReason() const;
-
-  // Accumulates the total time spent in picture in picture during the lifetime
-  // of `this`, separated by the reason for entering auto picture in picture:
-  // video conferencing or media playback.
-  //
-  // If `is_video_conferencing` is true, `total_pip_time` will be accumulated
-  // for video conferencing, otherwise the time will be accumulated for media
-  // playback.
-  void AccumulateTotalPipTimeForSession(const base::TimeDelta total_pip_time,
-                                        bool is_video_conferencing);
-
   // Records the total time spent on a picture in picture window, regardless of
   // the Picture-in-Picture window type (document vs video) and the reason for
   // closing the window (UI interaction, returning back to opener tab, etc.).
@@ -254,12 +241,6 @@ class AutoPictureInPictureTabHelper
   // place within a short period of time, to account for user reaction time
   // (~273 ms).
   void MaybeRecordPictureInPictureChanged(bool is_picture_in_picture);
-
-  // Records, if needed, the total accumulated picture in picture time,
-  // separated by the reason for entering auto picture in picture: video
-  // conferencing or media playback. This metric is recorded during the tab
-  // helper destruction.
-  void MaybeRecordTotalPipTimeForSession();
 
   // HostContentSettingsMap is tied to the Profile which outlives the
   // WebContents (which we're tied to), so this is safe.
@@ -343,29 +324,9 @@ class AutoPictureInPictureTabHelper
   // `EnterAutoPictureInPicture` method.
   std::optional<base::TimeTicks> current_enter_pip_time_ = std::nullopt;
 
-  // The total accumulated time spent in picture in picture due to video
-  // conferencing. The accumulated time does not differentiate between the
-  // different types of picture in picture windows (document vs video).
-  // Accumulated time is recorded during the destruction of `this`.
-  std::optional<base::TimeDelta>
-      total_video_conferencing_pip_time_for_session_ = std::nullopt;
-
-  // The total accumulated time spent in picture in picture due to media
-  // playback. The accumulated time does not differentiate between the different
-  // types of picture in picture windows (document vs video). Accumulated time
-  // is recorded during the destruction of `this`.
-  std::optional<base::TimeDelta> total_media_playback_pip_time_for_session_ =
-      std::nullopt;
-
   // Clock used for metric related to the total time spent with a
   // picture-in-picture window open.
   raw_ptr<const base::TickClock> clock_;
-
-  // Stores the reason that triggered auto picture in picture. The value is
-  // updated during `MaybeEnterAutoPictureInPicture` and
-  // `MaybeExitAutoPictureInPicture`.
-  AutoPipSettingHelper::AutoPipReason auto_pip_trigger_reason_ =
-      AutoPipSettingHelper::AutoPipReason::kUnknown;
 
   // WeakPtrFactory used only for requesting URL safety. This weak ptr factory
   // is invalidated during calls to `StopAndResetAsyncTasks`.

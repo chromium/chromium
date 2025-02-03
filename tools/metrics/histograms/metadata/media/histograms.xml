@@ -1874,28 +1874,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram
-    name="Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason.{AutomaticReason}.TotalTimeForSession"
-    units="ms" expires_after="2025-07-13">
-  <owner>bkeen@google.com</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Total time spent accross all Picture in Picture windows opened by the
-    `AutoPictureInPictureTabHelper`, for automatic picture in picture reason
-    &quot;{AutomaticReason}&quot;. The timer starts counting every time the
-    AutoPictureInPictureTabHelper calls `EnterAutoPictureInPicture`; the time is
-    accumulated any time the tab helper opens and subsequently closes a picture
-    in picture window. The total picture in picture time is recorded when the
-    `AutoPictureInPictureTabHelper` is destroyed. This metric does not
-    differentiate between the Picture in Picture window types (document vs
-    video).
-  </summary>
-  <token key="AutomaticReason">
-    <variant name="MediaPlayback"/>
-    <variant name="VideoConferencing"/>
-  </token>
-</histogram>
-
 <histogram name="Media.AutoPictureInPicture.PromptResultV2"
     enum="MediaAutoPictureInPicturePromptResult" expires_after="2025-06-08">
   <owner>steimel@chromium.org</owner>

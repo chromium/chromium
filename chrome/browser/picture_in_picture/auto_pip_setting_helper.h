@@ -32,23 +32,6 @@ class HostContentSettingsMap;
 // does not detect navigation; somebody else should get a new instance.
 class AutoPipSettingHelper {
  public:
-  // These values represent the reason for entering picture in picture
-  // automatically.
-  enum class AutoPipReason {
-    // The reason for entering auto picture in picture is not known, or auto
-    // picture in picture has not been triggered.
-    kUnknown = 0,
-
-    // Entered auto picture in picture due to video conferencing (usage of
-    // camera or microphone).
-    kVideoConferencing = 1,
-
-    // Entered auto picture in picture due to media playback.
-    kMediaPlayback = 2,
-
-    kMaxValue = kMediaPlayback,
-  };
-
   using ResultCb =
       base::OnceCallback<void(AutoPipSettingView::UiResult result)>;
   // Convenience function.

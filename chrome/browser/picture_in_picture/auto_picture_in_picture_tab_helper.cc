@@ -5,7 +5,6 @@
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
 
 #include "base/feature_list.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/default_tick_clock.h"
 #include "chrome/browser/browser_process.h"
@@ -70,7 +69,6 @@ AutoPictureInPictureTabHelper::AutoPictureInPictureTabHelper(
 }
 
 AutoPictureInPictureTabHelper::~AutoPictureInPictureTabHelper() {
-  MaybeRecordTotalPipTimeForSession();
   StopAndResetAsyncTasks();
 }
 
@@ -85,24 +83,6 @@ void AutoPictureInPictureTabHelper::PrimaryPageChanged(content::Page& page) {
   auto_pip_setting_helper_.reset();
 
   StopAndResetAsyncTasks();
-}
-
-void AutoPictureInPictureTabHelper::AccumulateTotalPipTimeForSession(
-    const base::TimeDelta total_pip_time,
-    bool is_video_conferencing) {
-  if (is_video_conferencing) {
-    if (!total_video_conferencing_pip_time_for_session_) {
-      total_video_conferencing_pip_time_for_session_ = total_pip_time;
-    } else {
-      total_video_conferencing_pip_time_for_session_.value() += total_pip_time;
-    }
-  } else {
-    if (!total_media_playback_pip_time_for_session_) {
-      total_media_playback_pip_time_for_session_ = total_pip_time;
-    } else {
-      total_media_playback_pip_time_for_session_.value() += total_pip_time;
-    }
-  }
 }
 
 void AutoPictureInPictureTabHelper::MaybeRecordPictureInPictureChanged(
@@ -120,49 +100,17 @@ void AutoPictureInPictureTabHelper::MaybeRecordPictureInPictureChanged(
       clock_->NowTicks() - current_enter_pip_time_.value();
   current_enter_pip_time_ = std::nullopt;
 
-  if (auto_pip_trigger_reason_ ==
-      AutoPipSettingHelper::AutoPipReason::kVideoConferencing) {
+  if (IsUsingCameraOrMicrophone()) {
     UMA_HISTOGRAM_CUSTOM_TIMES(
         "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason."
         "VideoConferencing.TotalTime",
         total_pip_time, base::Milliseconds(1), base::Minutes(2), 50);
-    AccumulateTotalPipTimeForSession(total_pip_time,
-                                     /*is_video_conferencing=*/true);
-  } else if (auto_pip_trigger_reason_ ==
-             AutoPipSettingHelper::AutoPipReason::kMediaPlayback) {
+  } else if (MeetsVideoPlaybackConditions()) {
     UMA_HISTOGRAM_CUSTOM_TIMES(
         "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason."
         "MediaPlayback.TotalTime",
         total_pip_time, base::Milliseconds(1), base::Minutes(2), 50);
-    AccumulateTotalPipTimeForSession(total_pip_time,
-                                     /*is_video_conferencing=*/false);
   }
-}
-
-void AutoPictureInPictureTabHelper::MaybeRecordTotalPipTimeForSession() {
-  if (!total_video_conferencing_pip_time_for_session_ &&
-      !total_media_playback_pip_time_for_session_) {
-    return;
-  }
-
-  if (total_video_conferencing_pip_time_for_session_) {
-    base::UmaHistogramCustomTimes(
-        "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason."
-        "VideoConferencing.TotalTimeForSession",
-        total_video_conferencing_pip_time_for_session_.value(),
-        base::Milliseconds(1), base::Minutes(2), 50);
-  }
-
-  if (total_media_playback_pip_time_for_session_) {
-    base::UmaHistogramCustomTimes(
-        "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason."
-        "MediaPlayback.TotalTimeForSession",
-        total_media_playback_pip_time_for_session_.value(),
-        base::Milliseconds(1), base::Minutes(2), 50);
-  }
-
-  total_video_conferencing_pip_time_for_session_ = std::nullopt;
-  total_media_playback_pip_time_for_session_ = std::nullopt;
 }
 
 void AutoPictureInPictureTabHelper::MediaPictureInPictureChanged(
@@ -182,7 +130,6 @@ void AutoPictureInPictureTabHelper::MediaPictureInPictureChanged(
   if (AreAutoPictureInPicturePreconditionsMet()) {
     is_in_auto_picture_in_picture_ = true;
     auto_picture_in_picture_activation_time_ = base::TimeTicks();
-    MaybeRecordPictureInPictureChanged(true);
 
     // If the tab is activated by the time auto picture-in-picture fires, we
     // should immediately close the auto picture-in-picture.
@@ -279,8 +226,8 @@ void AutoPictureInPictureTabHelper::MaybeEnterAutoPictureInPicture() {
   }
   auto_picture_in_picture_activation_time_ =
       base::TimeTicks::Now() + blink::kActivationLifespan;
-  auto_pip_trigger_reason_ = GetAutoPipReason();
   content::MediaSession::Get(web_contents())->EnterAutoPictureInPicture();
+  MaybeRecordPictureInPictureChanged(true);
 }
 
 void AutoPictureInPictureTabHelper::MaybeScheduleAsyncTasks() {
@@ -320,7 +267,6 @@ void AutoPictureInPictureTabHelper::StopAndResetAsyncTasks() {
 void AutoPictureInPictureTabHelper::MaybeExitAutoPictureInPicture() {
   MaybeRecordPictureInPictureChanged(false);
   StopAndResetAsyncTasks();
-  auto_pip_trigger_reason_ = AutoPipSettingHelper::AutoPipReason::kUnknown;
 
   if (!is_in_auto_picture_in_picture_) {
     return;
@@ -536,17 +482,6 @@ std::string AutoPictureInPictureTabHelper::GetHistogramNameForReason() const {
   }
 
   return std::string();
-}
-
-AutoPipSettingHelper::AutoPipReason
-AutoPictureInPictureTabHelper::GetAutoPipReason() const {
-  if (IsUsingCameraOrMicrophone()) {
-    return AutoPipSettingHelper::AutoPipReason::kVideoConferencing;
-  } else if (MeetsVideoPlaybackConditions()) {
-    return AutoPipSettingHelper::AutoPipReason::kMediaPlayback;
-  }
-
-  return AutoPipSettingHelper::AutoPipReason::kUnknown;
 }
 
 bool AutoPictureInPictureTabHelper::IsInAutoPictureInPicture() const {
