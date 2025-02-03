@@ -93,9 +93,6 @@ class AuthenticatorRequestDialogController
   // Starts the UX flow, by either showing the transport selection screen or
   // the guided flow for them most likely transport.
   //
-  // If |is_conditional_mediation| is true, credentials will be shown on the
-  // password autofill instead of the full-blown page-modal UI.
-  //
   // Valid action when at step: kNotStarted.
   void StartFlow(device::FidoRequestHandlerBase::TransportAvailabilityInfo
                      transport_availability);
