@@ -16,7 +16,7 @@ import {PolymerElement, templatize} from 'chrome://resources/polymer/v3_0/polyme
 
 import {loadTimeData} from '../../i18n_setup.js';
 import {recordOccurence as recordOccurrence} from '../../metrics_utils.js';
-import type {PageHandlerRemote} from '../../new_tab_page.mojom-webui.js';
+import type {PageCallbackRouter, PageHandlerRemote} from '../../new_tab_page.mojom-webui.js';
 import {IphFeature} from '../../new_tab_page.mojom-webui.js';
 import type {ModuleIdName} from '../../new_tab_page.mojom-webui.js';
 import {NewTabPageProxy} from '../../new_tab_page_proxy.js';
@@ -163,12 +163,15 @@ export class ModulesV2Element extends AppElementBase {
   }
 
   modulesShownToUser: boolean;
+  private waitToLoadModules_: boolean =
+      loadTimeData.getBoolean('waitToLoadModules');
   private maxColumnCount_: number;
   private containerMaxWidth_: number;
   private disabledModules_: {all: boolean, ids: string[]};
   private eventTracker_: EventTracker = new EventTracker();
   private undoData_: {message: string, undo?: () => void}|null;
   private setDisabledModulesListenerId_: number|null = null;
+  private setModulesLoadableListenerId_: number|null = null;
   private containerObserver_: MutationObserver|null = null;
   private templateInstances_: TemplateInstanceBase[] = [];
   private modulesLoaded_: boolean = false;
@@ -181,11 +184,13 @@ export class ModulesV2Element extends AppElementBase {
   private moduleWrapperConstructor_: ModuleWrapperConstructor|null = null;
   private newlyEnabledModuleIds_: string[] = [];
 
+  private callbackRouter_: PageCallbackRouter;
   private handler_: PageHandlerRemote;
   private moduleRegistry_: ModuleRegistry;
 
   constructor() {
     super();
+    this.callbackRouter_ = NewTabPageProxy.getInstance().callbackRouter;
     this.handler_ = NewTabPageProxy.getInstance().handler;
     this.moduleRegistry_ = ModuleRegistry.getInstance();
   }
@@ -194,16 +199,23 @@ export class ModulesV2Element extends AppElementBase {
     super.connectedCallback();
 
     this.setDisabledModulesListenerId_ =
-        NewTabPageProxy.getInstance()
-            .callbackRouter.setDisabledModules.addListener(
-                (all: boolean, ids: string[]) => {
-                  if (!this.modulesReloadable_) {
-                    this.disabledModules_ = {all, ids};
-                  } else {
-                    this.maybeLoadModules_({all, ids});
-                  }
-                });
+        this.callbackRouter_.setDisabledModules.addListener(
+            (all: boolean, ids: string[]) => {
+              if (!this.modulesReloadable_) {
+                this.disabledModules_ = {all, ids};
+              } else {
+                this.handleModuleEnablement_({all, ids});
+              }
+            });
     this.handler_.updateDisabledModules();
+
+    this.setModulesLoadableListenerId_ =
+        this.callbackRouter_.setModulesLoadable.addListener(() => {
+          if (this.waitToLoadModules_) {
+            this.waitToLoadModules_ = false;
+            this.loadModules_();
+          }
+        });
 
     const widths: Set<number> = new Set();
     for (let i = 0; i < SUPPORTED_MODULE_WIDTHS.length; i++) {
@@ -262,8 +274,9 @@ export class ModulesV2Element extends AppElementBase {
     super.disconnectedCallback();
 
     assert(this.setDisabledModulesListenerId_);
-    NewTabPageProxy.getInstance().callbackRouter.removeListener(
-        this.setDisabledModulesListenerId_);
+    this.callbackRouter_.removeListener(this.setDisabledModulesListenerId_);
+    assert(this.setModulesLoadableListenerId_);
+    this.callbackRouter_.removeListener(this.setModulesLoadableListenerId_);
 
     this.eventTracker_.removeAll();
 
@@ -282,9 +295,9 @@ export class ModulesV2Element extends AppElementBase {
         this.maxColumnCount_ * SUPPORTED_MODULE_WIDTHS[0].value +
         (this.maxColumnCount_ - 1) * CONTAINER_GAP_WIDTH;
 
-    // If |this.modulesReloadable_| is true, module loading is managed by
-    // |this.setDisabledModulesListenerId_|.
-    if (!this.modulesReloadable_) {
+    if (this.waitToLoadModules_) {
+      this.handler_.updateModulesLoadable();
+    } else {
       this.loadModules_();
     }
   }
@@ -300,7 +313,7 @@ export class ModulesV2Element extends AppElementBase {
    * Manages the loading and reloading of modules within the container based on
    * updates to the disabled modules list.
    *
-   * If this is the first time modules are being loaded, |loadModules_()| is
+   * If no modules have been shown to the user yet, |loadModules_()| is
    * called to populate the container.
    *
    * Subsequent calls handle potential reloads. Newly enabled modules are
@@ -311,15 +324,11 @@ export class ModulesV2Element extends AppElementBase {
    * |maybeLoadModules_()|.
    *
    * @param newDisabledModules - Object specifying which modules are disabled.
-   *    `all: boolean` indicates if all modules are disabled.
-   *    `ids: string[]` lists the IDs of disabled modules.
+   *    `all: If true, all modules are disabled.
+   *    `ids: List of disabled module IDs.
    */
-  private async maybeLoadModules_(
+  private async handleModuleEnablement_(
       newDisabledModules: {all: boolean, ids: string[]}): Promise<void> {
-    // TODO(crbug.com/392707760): Add ability to defer loading until page
-    // handler gives go ahead (supports modules that need to make updates after
-    // this element has been created e.g. Microsoft authentication dependent
-    // modules).
     if (!this.modulesLoaded_ || this.templateInstances_.length === 0) {
       // Update the disabled modules list before attempting load.
       // |loadModules_()| expects the disabled module list to be
@@ -340,6 +349,7 @@ export class ModulesV2Element extends AppElementBase {
       return;
     }
 
+    // Load modules one by one until the queue is empty.
     while (this.newlyEnabledModuleIds_.length > 0) {
       await this.addTemplateInstance_(this.newlyEnabledModuleIds_[0]);
       this.newlyEnabledModuleIds_.shift();
@@ -347,8 +357,8 @@ export class ModulesV2Element extends AppElementBase {
         this.disabledModules_ = newDisabledModules;
         await this.reloadModules_();
       } else {
-        // There are requests being processed already. This
-        // request will be processed along with those.
+        // More modules to load; the next call to this function will continue
+        // the process.
         return;
       }
     }
@@ -360,6 +370,10 @@ export class ModulesV2Element extends AppElementBase {
    * and is called only when the container is empty.
    */
   private async loadModules_(): Promise<void> {
+    if (this.waitToLoadModules_) {
+      return;
+    }
+
     const modulesIdNames = (await this.handler_.getModulesIdNames()).data;
     const modules = await this.moduleRegistry_.initializeModulesHavingIds(
         modulesIdNames.map((m: ModuleIdName) => m.id),

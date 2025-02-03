@@ -458,6 +458,7 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
   bool microsoft_module_enabled = IsMicrosoftModuleEnabledForProfile(profile);
   source->AddBoolean("microsoftModuleEnabled", microsoft_module_enabled);
   source->AddBoolean("modulesReloadable", microsoft_module_enabled);
+  source->AddBoolean("waitToLoadModules", microsoft_module_enabled);
 
   SearchboxHandler::SetupWebUIDataSource(
       source, profile,

@@ -156,6 +156,7 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
   void GetModulesIdNames(GetModulesIdNamesCallback callback) override;
   void SetModulesOrder(const std::vector<std::string>& module_ids) override;
   void GetModulesOrder(GetModulesOrderCallback callback) override;
+  void UpdateModulesLoadable() override;
   void SetCustomizeChromeSidePanelVisible(
       bool visible,
       new_tab_page::mojom::CustomizeChromeSection section) override;
@@ -273,6 +274,11 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
       customize_chrome::SidePanelController* side_panel_controller);
   void SetModuleHiddenInCustomizeChrome(const std::string& module_id,
                                         bool hidden);
+
+  // Synchronizes Microsoft module enablement with their current authentication
+  // state. The return value indicates whether the modules should be considered
+  // loadable.
+  bool SyncMicrosoftModulesWithAuth();
 
   ChooseLocalCustomBackgroundCallback choose_local_custom_background_callback_;
   raw_ptr<NtpBackgroundService> ntp_background_service_;

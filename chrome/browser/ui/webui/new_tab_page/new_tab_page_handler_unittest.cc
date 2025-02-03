@@ -111,6 +111,7 @@ class MockPage : public new_tab_page::mojom::Page {
   MOCK_METHOD(void,
               SetDisabledModules,
               (bool, const std::vector<std::string>&));
+  MOCK_METHOD(void, SetModulesLoadable, ());
   MOCK_METHOD(void, SetModulesFreVisibility, (bool));
   MOCK_METHOD(void, SetCustomizeChromeSidePanelVisibility, (bool));
   MOCK_METHOD(void, SetPromo, (new_tab_page::mojom::PromoPtr));
@@ -987,6 +988,21 @@ TEST_P(NewTabPageHandlerMicrosoftAuthStateTest, OnAuthStateUpdated) {
   EXPECT_EQ(
       profile_->GetPrefs()->GetList(prefs::kNtpCustomizeChromeHiddenModules),
       expected_disabled_modules);
+}
+
+TEST_P(NewTabPageHandlerMicrosoftAuthStateTest,
+       UpdateModulesLoadableTriggersPageCall) {
+  SetAuthState(AuthState());
+
+  handler_->UpdateModulesLoadable();
+
+  if (AuthState() == new_tab_page::mojom::AuthState::kNone) {
+    EXPECT_CALL(mock_page_, SetModulesLoadable()).Times(0);
+  } else {
+    EXPECT_CALL(mock_page_, SetModulesLoadable()).Times(1);
+  }
+
+  mock_page_.FlushForTesting();
 }
 
 INSTANTIATE_TEST_SUITE_P(

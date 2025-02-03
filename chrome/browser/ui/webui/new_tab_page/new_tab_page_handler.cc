@@ -534,7 +534,6 @@ NewTabPageHandler::NewTabPageHandler(
   microsoft_auth_service_ = MicrosoftAuthServiceFactory::GetForProfile(profile);
   if (microsoft_auth_service_) {
     microsoft_auth_service_->AddObserver(this);
-    OnAuthStateUpdated();
   }
 
   if (base::FeatureList::IsEnabled(
@@ -889,6 +888,12 @@ void NewTabPageHandler::GetModulesOrder(GetModulesOrderCallback callback) {
                        });
 
   std::move(callback).Run(std::move(module_ids));
+}
+
+void NewTabPageHandler::UpdateModulesLoadable() {
+  if (!microsoft_auth_service_ || SyncMicrosoftModulesWithAuth()) {
+    page_->SetModulesLoadable();
+  }
 }
 
 void NewTabPageHandler::SetCustomizeChromeSidePanelVisible(
@@ -1280,38 +1285,7 @@ void NewTabPageHandler::OnChangeInFeatureCurrentlyEnabledState(
 }
 
 void NewTabPageHandler::OnAuthStateUpdated() {
-  new_tab_page::mojom::AuthState state =
-      microsoft_auth_service_->GetAuthState();
-
-  const std::vector<std::string> auth_dependent_modules(
-      ntp_modules::kMicrosoftAuthDependentModuleIds.begin(),
-      ntp_modules::kMicrosoftAuthDependentModuleIds.end());
-  const std::string auth_id = ntp_modules::kMicrosoftAuthenticationModuleId;
-  std::vector<std::string> enabled_modules;
-  std::vector<std::string> disabled_modules;
-  switch (state) {
-    case new_tab_page::mojom::AuthState::kNone:
-      break;
-    case new_tab_page::mojom::AuthState::kError:
-      enabled_modules.push_back(auth_id);
-      disabled_modules = auth_dependent_modules;
-      break;
-    case new_tab_page::mojom::AuthState::kSuccess:
-      enabled_modules = auth_dependent_modules;
-      disabled_modules.push_back(auth_id);
-      break;
-    default:
-      NOTREACHED();
-  }
-
-  for (const auto& module_id : enabled_modules) {
-    SetModuleDisabled(module_id, false);
-    SetModuleHiddenInCustomizeChrome(module_id, false);
-  }
-  for (const auto& module_id : disabled_modules) {
-    SetModuleDisabled(module_id, true);
-    SetModuleHiddenInCustomizeChrome(module_id, true);
-  }
+  UpdateModulesLoadable();
 }
 
 void NewTabPageHandler::FileSelected(const ui::SelectedFileInfo& file,
@@ -1733,6 +1707,43 @@ void NewTabPageHandler::SetModuleHiddenInCustomizeChrome(
   } else {
     list.EraseValue(module_id_value);
   }
+}
+
+bool NewTabPageHandler::SyncMicrosoftModulesWithAuth() {
+  new_tab_page::mojom::AuthState state =
+      microsoft_auth_service_->GetAuthState();
+
+  const std::vector<std::string> auth_dependent_modules(
+      ntp_modules::kMicrosoftAuthDependentModuleIds.begin(),
+      ntp_modules::kMicrosoftAuthDependentModuleIds.end());
+  const std::string auth_id = ntp_modules::kMicrosoftAuthenticationModuleId;
+  std::vector<std::string> enabled_modules;
+  std::vector<std::string> disabled_modules;
+  switch (state) {
+    case new_tab_page::mojom::AuthState::kNone:
+      break;
+    case new_tab_page::mojom::AuthState::kError:
+      enabled_modules.push_back(auth_id);
+      disabled_modules = auth_dependent_modules;
+      break;
+    case new_tab_page::mojom::AuthState::kSuccess:
+      enabled_modules = auth_dependent_modules;
+      disabled_modules.push_back(auth_id);
+      break;
+    default:
+      NOTREACHED();
+  }
+
+  for (const auto& module_id : enabled_modules) {
+    SetModuleDisabled(module_id, false);
+    SetModuleHiddenInCustomizeChrome(module_id, false);
+  }
+  for (const auto& module_id : disabled_modules) {
+    SetModuleDisabled(module_id, true);
+    SetModuleHiddenInCustomizeChrome(module_id, true);
+  }
+
+  return state != new_tab_page::mojom::AuthState::kNone;
 }
 
 void NewTabPageHandler::ConnectToParentDocument(

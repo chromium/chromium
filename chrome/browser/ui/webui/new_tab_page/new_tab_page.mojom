@@ -303,6 +303,8 @@ interface PageHandler {
   // Returns the order of modules or an empty array if the user has not
   // reordered them before.
   GetModulesOrder() => (array<string> module_ids);
+  // Triggers a call to |SetModulesLoadable|.
+  UpdateModulesLoadable();
   // Shows or hides the customize chrome in unified side panel.
   SetCustomizeChromeSidePanelVisible(bool visible,
                                      CustomizeChromeSection section);
@@ -367,6 +369,9 @@ interface Page {
   // Disables the modules in |ids|. If |all|, disables all modules and passes an
   // empty list for |ids|.
   SetDisabledModules(bool all, array<string> ids);
+  // Allows modules to load on NTP when the UI has postponed module loading for
+  // some reason.
+  SetModulesLoadable();
   // Sets NTP homepage promo.
   SetPromo(Promo? promo);
   // Shows a toast with information about Chrome Webstore themes.
