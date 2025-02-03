@@ -28,6 +28,7 @@ class ServiceWorkerScriptCachedMetadataHandler : public CachedMetadataHandler {
   void SetCachedMetadata(CodeCacheHost*,
                          uint32_t data_type_id,
                          base::span<const uint8_t>) override;
+  void SetSerializedCachedMetadata(mojo_base::BigBuffer data) override;
   void ClearCachedMetadata(CodeCacheHost*, ClearCacheType) override;
   scoped_refptr<CachedMetadata> GetCachedMetadata(
       uint32_t data_type_id,

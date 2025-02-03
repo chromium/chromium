@@ -46,6 +46,11 @@ void ServiceWorkerScriptCachedMetadataHandler::SetCachedMetadata(
                                                            serialized_data);
 }
 
+void ServiceWorkerScriptCachedMetadataHandler::SetSerializedCachedMetadata(
+    mojo_base::BigBuffer data) {
+  NOTREACHED();
+}
+
 void ServiceWorkerScriptCachedMetadataHandler::ClearCachedMetadata(
     CodeCacheHost* code_cache_host,
     ClearCacheType type) {
