@@ -682,8 +682,8 @@ void ClientSideDetectionHost::MaybeStartPreClassification(
   }
 
   content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
-
   current_url_ = rfh->GetLastCommittedURL();
+  last_committed_url_map_[request_type] = current_url_;
   current_outermost_main_frame_id_ = rfh->GetGlobalId();
   // Check whether we can cassify the current URL for phishing.
   classification_request_ = std::make_unique<ShouldClassifyUrlRequest>(
@@ -756,7 +756,11 @@ void ClientSideDetectionHost::KeyboardLockRequested() {
     return;
   }
 
-  MaybeStartPreClassification(ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED);
+  if (!HasDonePreclassificationCheckOnSameURL(
+          ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED)) {
+    MaybeStartPreClassification(
+        ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED);
+  }
 }
 
 void ClientSideDetectionHost::PointerLockRequested() {
@@ -774,13 +778,12 @@ void ClientSideDetectionHost::VibrationRequested() {
       !base::FeatureList::IsEnabled(kClientSideDetectionVibrationApi)) {
     return;
   }
+
   // Vibration API can be triggered on a page in intervals between 0 and 1
   // seconds. Because of this, we want to only classify once per given URL since
   // a page can send a request multiple vibration at a time.
-  ClientSideDetectionFeatureCache::CreateForWebContents(web_contents());
-  ClientSideDetectionFeatureCache* feature_cache_map =
-      ClientSideDetectionFeatureCache::FromWebContents(web_contents());
-  if (!feature_cache_map->WasVibrationClassificationTriggered(current_url_)) {
+  if (!HasDonePreclassificationCheckOnSameURL(
+          ClientSideDetectionType::VIBRATION_API)) {
     MaybeStartPreClassification(ClientSideDetectionType::VIBRATION_API);
   }
 }
@@ -790,13 +793,20 @@ void ClientSideDetectionHost::DidToggleFullscreenModeForTab(
     bool will_cause_resize) {
   // We do not check for entered_fullscreen, because although the user may never
   // successfully enter fullscreen, we want to proceed with the
-  // preclassification check. Instead, we check for |last_fullscreen_url|
-  // instead which is updated per fresh committed URL on the RenderFrameHost.
-  content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
-  if (rfh->GetLastCommittedURL() != last_fullscreen_url_) {
-    last_fullscreen_url_ = rfh->GetLastCommittedURL();
+  // preclassification check.
+  if (!HasDonePreclassificationCheckOnSameURL(
+          ClientSideDetectionType::FULLSCREEN_API)) {
     MaybeStartPreClassification(ClientSideDetectionType::FULLSCREEN_API);
   }
+}
+
+bool ClientSideDetectionHost::HasDonePreclassificationCheckOnSameURL(
+    ClientSideDetectionType client_side_detection_type) {
+  content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
+  auto last_committed_url =
+      last_committed_url_map_.find(client_side_detection_type);
+  return last_committed_url != last_committed_url_map_.end() &&
+         rfh->GetLastCommittedURL() == last_committed_url->second;
 }
 
 void ClientSideDetectionHost::OnPhishingPreClassificationDone(

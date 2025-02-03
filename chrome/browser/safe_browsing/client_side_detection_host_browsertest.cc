@@ -1010,7 +1010,7 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostVibrateTest,
   // TODO(andysjlim): Navigating to initial page alongside the first page logs
   // the histogram twice. Figure out why.
   histogram_tester.ExpectTotalCount(
-      "SBClientPhishing.PreClassificationCheckResult", 2);
+      "SBClientPhishing.PreClassificationCheckResult.TriggerModel", 2);
 
   VibrationObserverWaiter waiter(GetWebContents());
   EXPECT_FALSE(waiter.DidVibrate());
@@ -1020,12 +1020,11 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostVibrateTest,
   run_loop.Run();
   waiter.Wait();
 
+  // TODO(andysjlim): Just like above, VibrationRequested() in the host class is
+  // hit twice, although the web contents observer notification is hit once, so
+  // the second immediately cancels the first. Observe why this happens.
   histogram_tester.ExpectTotalCount(
-      "SBClientPhishing.PreClassificationCheckResult", 3);
-  ClientSideDetectionFeatureCache* feature_cache_map =
-      ClientSideDetectionFeatureCache::FromWebContents(GetWebContents());
-  EXPECT_TRUE(
-      feature_cache_map->WasVibrationClassificationTriggered(initial_url));
+      "SBClientPhishing.PreClassificationCheckResult.VibrationApi", 2);
   EXPECT_TRUE(waiter.DidVibrate());
 
   // Triggering vibration again on the same page will not trigger
@@ -1034,8 +1033,11 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostVibrateTest,
   TriggerVibrate(1234, second_vibrate_run_loop.QuitClosure());
   second_vibrate_run_loop.Run();
   waiter.Wait();
+
+  // The total count has not changed although the second_vibration_run_loop has
+  // triggered another vibration.
   histogram_tester.ExpectTotalCount(
-      "SBClientPhishing.PreClassificationCheckResult", 3);
+      "SBClientPhishing.PreClassificationCheckResult.VibrationApi", 2);
 }
 
 IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostVibrateTest,

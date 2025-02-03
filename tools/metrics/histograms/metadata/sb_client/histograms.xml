@@ -25,6 +25,7 @@ chromium-metrics-reviews@google.com.
 <variants name="ClientSideDetectionRequestType">
   <variant name="" summary="all request types"/>
   <variant name=".ForceRequest" summary="Force request"/>
+  <variant name=".FullscreenApi" summary="Fullscreen API"/>
   <variant name=".KeyboardLockRequested" summary="Keyboard lock requested"/>
   <variant name=".NotificationPermissionPrompt"
       summary="Notification permission prompt"/>
