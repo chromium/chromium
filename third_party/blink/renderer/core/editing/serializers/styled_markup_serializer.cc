@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/editing/serializers/styled_markup_serializer.h"
 
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
+#include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
@@ -223,6 +224,14 @@ String StyledMarkupSerializer<Strategy>::CreateMarkup() {
   // tag. See http://crbug.com/634482
   bool should_append_parent_tag =
       DetermineParentTagAndUpdateLastClosed(first_node, past_end);
+
+  // `UpdateViewportSize` ensures viewport_size_ is defined.
+  //  See comment on viewport_size_ in style_engine.h
+  //  without `UpdateViewportSize` call to `GetViewportsize()` while
+  //  resolving style causes crash  in other unit tests and resize scenarios
+  if (RuntimeEnabledFeatures::ResolveVarStylesOnCopyEnabled()) {
+    start_.GetDocument()->GetStyleEngine().UpdateViewportSize();
+  }
 
   StyledMarkupTraverser<Strategy> traverser(&markup_accumulator, last_closed_);
   Node* last_closed = traverser.Traverse(first_node, past_end);

@@ -3611,6 +3611,10 @@
       status: "stable",
     },
     {
+      name: "ResolveVarStylesOnCopy",
+      status: "stable",
+    },
+    {
       name: "ResourceTimingContentEncoding",
       status: "experimental",
     },
