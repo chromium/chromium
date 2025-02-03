@@ -97,6 +97,7 @@
 #include "chromeos/ash/experiences/arc/pay/arc_payment_app_bridge.h"
 #include "chromeos/ash/experiences/arc/power/arc_power_bridge.h"
 #include "chromeos/ash/experiences/arc/process/arc_process_service.h"
+#include "chromeos/ash/experiences/arc/safety/arc_safety_bridge.h"
 #include "chromeos/ash/experiences/arc/sensor/arc_iio_sensor_bridge.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "chromeos/ash/experiences/arc/session/arc_session.h"
@@ -356,6 +357,7 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
     // ARCVM-only services.
     ArcVmmManager::GetForBrowserContext(profile)->set_user_id_hash(
         user_id_hash);
+    ArcSafetyBridge::GetForBrowserContext(profile);
     ArcSystemStateBridge::GetForBrowserContext(profile);
 
     if (base::FeatureList::IsEnabled(kEnableArcVmDataMigration)) {
@@ -510,6 +512,7 @@ void ArcServiceLauncher::EnsureFactoriesBuilt() {
   ArcProcessService::EnsureFactoryBuilt();
   ArcProvisionNotificationService::EnsureFactoryBuilt();
   ArcResizeLockManager::EnsureFactoryBuilt();
+  ArcSafetyBridge::EnsureFactoryBuilt();
   ArcScreenCaptureBridge::EnsureFactoryBuilt();
   ArcSettingsService::EnsureFactoryBuilt();
   ArcSharesheetBridge::EnsureFactoryBuilt();
