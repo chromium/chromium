@@ -517,6 +517,40 @@ TEST_P(PDFiumOnDemandSearchifierTest, MetricsCanceledPageWithoutText) {
   histogram_tester.ExpectTotalCount(kSearchifyAddedTextHistogram, 0);
 }
 
+TEST_P(PDFiumOnDemandSearchifierTest, SelectPageBeforeSearchify) {
+  CreateEngine(FILE_PATH_LITERAL("image_alt_text.pdf"));
+
+  PDFiumPage& page = GetPDFiumPageForTest(*engine(), 0);
+
+  // Load the page to trigger searchify checking.
+  page.GetPage();
+  ASSERT_TRUE(engine()->PageNeedsSearchify(0));
+  engine()->SelectAll();
+  ASSERT_TRUE(engine()->GetSelectedText().empty());
+
+  PDFiumOnDemandSearchifier* searchifier = engine()->GetSearchifierForTesting();
+  ASSERT_TRUE(searchifier);
+
+  ASSERT_TRUE(searchifier->IsPageScheduled(0));
+
+  StartSearchify(/*empty_results=*/false);
+
+  base::test::TestFuture<void> future;
+  WaitUntilIdle(searchifier, future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
+  // Perform SelectAll again to select extracted text.
+  engine()->SelectAll();
+
+  // The page has 2 images, so the text contains 2 fake OCR results.
+#if BUILDFLAG(IS_WIN)
+  const char kExpectedSelection[] = "OCR Text 0\r\nOCR Text 1";
+#else
+  const char kExpectedSelection[] = "OCR Text 0\nOCR Text 1";
+#endif
+  ASSERT_EQ(engine()->GetSelectedText(), kExpectedSelection);
+}
+
 INSTANTIATE_TEST_SUITE_P(All, PDFiumOnDemandSearchifierTest, testing::Bool());
 
 }  // namespace chrome_pdf

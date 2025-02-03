@@ -1759,7 +1759,9 @@ bool PDFiumEngine::ExtendSelection(int page_index, int char_index) {
     // First make sure that there are no gaps in selection, i.e. if mousedown on
     // page one but we only get mousemove over page three, we want page two.
     for (int i = last_page_index + 1; i < page_index; ++i) {
-      selection_.push_back(PDFiumRange::AllTextOnPage(pages_[i].get()));
+      if (pages_[i]->GetCharCount()) {
+        selection_.push_back(PDFiumRange::AllTextOnPage(pages_[i].get()));
+      }
     }
 
     int count = pages_[last_page_index]->GetCharCount();
@@ -1775,7 +1777,9 @@ bool PDFiumEngine::ExtendSelection(int page_index, int char_index) {
     // First make sure that there are no gaps in selection, i.e. if mousedown on
     // page three but we only get mousemove over page one, we want page two.
     for (int i = last_page_index - 1; i > page_index; --i) {
-      selection_.push_back(PDFiumRange::AllTextOnPage(pages_[i].get()));
+      if (pages_[i]->GetCharCount()) {
+        selection_.push_back(PDFiumRange::AllTextOnPage(pages_[i].get()));
+      }
     }
 
     int count = pages_[page_index]->GetCharCount();
@@ -2433,7 +2437,7 @@ void PDFiumEngine::SelectAll() {
 
   selection_.clear();
   for (const auto& page : pages_) {
-    if (page->available()) {
+    if (page->GetCharCount()) {
       selection_.push_back(PDFiumRange::AllTextOnPage(page.get()));
     }
   }
