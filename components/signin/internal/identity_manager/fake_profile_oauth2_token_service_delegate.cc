@@ -93,6 +93,21 @@ std::vector<CoreAccountId> FakeProfileOAuth2TokenServiceDelegate::GetAccounts()
   return account_ids;
 }
 
+#if BUILDFLAG(IS_IOS)
+std::vector<AccountInfo>
+FakeProfileOAuth2TokenServiceDelegate::GetAccountsOnDevice() const {
+  // TODO(crbug.com/368409110): Add the capability to set accounts-on-device
+  // separate from accounts-for-profile.
+  std::vector<AccountInfo> accounts;
+  for (const auto& account_id : account_ids_) {
+    accounts.emplace_back();
+    accounts.back().account_id = account_id;
+    accounts.back().gaia = GaiaId(account_id.ToString());
+  }
+  return accounts;
+}
+#endif  // BUILDFLAG(IS_IOS)
+
 void FakeProfileOAuth2TokenServiceDelegate::RevokeAllCredentialsInternal(
     signin_metrics::SourceForRefreshTokenOperation source) {
   std::vector<CoreAccountId> account_ids = GetAccounts();
@@ -175,6 +190,9 @@ void FakeProfileOAuth2TokenServiceDelegate::IssueRefreshTokenForUser(
 
     FireRefreshTokenAvailable(account_id);
   }
+#if BUILDFLAG(IS_IOS)
+  FireAccountsOnDeviceChanged();
+#endif  // BUILDFLAG(IS_IOS)
 }
 
 void FakeProfileOAuth2TokenServiceDelegate::RevokeCredentialsInternal(
