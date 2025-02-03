@@ -32,7 +32,10 @@ suite('ExperimentalAdvancedPage', function() {
     userAnnotationManager = new TestUserAnnotationsManagerProxyImpl();
     UserAnnotationsManagerProxyImpl.setInstance(userAnnotationManager);
 
-    loadTimeData.overrideValues({showAdvancedFeaturesMainControl: true});
+    loadTimeData.overrideValues({
+      showAdvancedFeaturesMainControl: true,
+      showPasswordChangeControl: true,
+    });
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
   });
@@ -40,6 +43,7 @@ suite('ExperimentalAdvancedPage', function() {
   teardown(function() {
     Router.getInstance().resetRouteForTesting();
     metricsBrowserProxy.reset();
+    openWindowProxy.reset();
   });
 
   async function createPage() {
@@ -78,11 +82,12 @@ suite('ExperimentalAdvancedPage', function() {
       showComposeControl: true,
       showTabOrganizationControl: false,
       showWallpaperSearchControl: false,
+      showPasswordChangeControl: false,
     });
     resetRouterForTesting();
     await createPage();
 
-    assertEquals(6, metricsBrowserProxy.getCallCount('recordBooleanHistogram'));
+    assertEquals(7, metricsBrowserProxy.getCallCount('recordBooleanHistogram'));
 
     assertFalse(isChildVisible(page, '#historySearchRowV2'));
     await verifyFeatureVisibilityMetrics(
@@ -108,6 +113,10 @@ suite('ExperimentalAdvancedPage', function() {
     await verifyFeatureVisibilityMetrics(
         'Settings.AiPage.ElementVisibility.AutofillAI', true);
 
+    assertFalse(isChildVisible(page, '#passwordChangeRowV2'));
+    await verifyFeatureVisibilityMetrics(
+        'Settings.AiPage.ElementVisibility.PasswordChange', false);
+
     // The old UI should not be visible if the refresh flag is enabled.
     const toggles1 =
         page.shadowRoot!.querySelectorAll('settings-toggle-button');
@@ -128,10 +137,11 @@ suite('ExperimentalAdvancedPage', function() {
       showComposeControl: false,
       showTabOrganizationControl: true,
       showWallpaperSearchControl: true,
+      showPasswordChangeControl: true,
     });
     resetRouterForTesting();
     await createPage();
-    assertEquals(6, metricsBrowserProxy.getCallCount('recordBooleanHistogram'));
+    assertEquals(7, metricsBrowserProxy.getCallCount('recordBooleanHistogram'));
 
     assertTrue(isChildVisible(page, '#historySearchRowV2'));
     await verifyFeatureVisibilityMetrics(
@@ -156,6 +166,10 @@ suite('ExperimentalAdvancedPage', function() {
     assertFalse(isChildVisible(page, '#autofillAiRowV2'));
     await verifyFeatureVisibilityMetrics(
         'Settings.AiPage.ElementVisibility.AutofillAI', false);
+
+    assertTrue(isChildVisible(page, '#passwordChangeRowV2'));
+    await verifyFeatureVisibilityMetrics(
+        'Settings.AiPage.ElementVisibility.PasswordChange', true);
 
     // The old UI should not be visible if the refresh flag is enabled.
     const toggles2 =
@@ -350,7 +364,6 @@ suite('ExperimentalAdvancedPage', function() {
     loadTimeData.overrideValues({
       showWallpaperSearchControl: true,
     });
-    resetRouterForTesting();
     await createPage();
 
     const wallpaperSearchRow =
@@ -365,6 +378,35 @@ suite('ExperimentalAdvancedPage', function() {
 
     const url = await openWindowProxy.whenCalled('openUrl');
     assertEquals(url, loadTimeData.getString('wallpaperSearchLearnMoreUrl'));
+  });
+
+  test('PasswordChangeRow', async () => {
+    await createPage();
+
+    const passwordChangeRow =
+        page.shadowRoot!.querySelector<HTMLElement>('#passwordChangeRowV2');
+    assertTrue(!!passwordChangeRow);
+    assertTrue(isVisible(passwordChangeRow));
+
+    passwordChangeRow.click();
+    await verifyFeatureInteractionMetrics(
+        AiPageInteractions.PASSWORD_CHANGE_CLICK,
+        'Settings.AiPage.PasswordChangeEntryPointClick');
+
+    const url = await openWindowProxy.whenCalled('openUrl');
+    assertEquals(url, loadTimeData.getString('passwordChangeSettingsUrl'));
+  });
+
+  test('NoPasswordChangeRowWhenFeatureDisabled', async () => {
+    loadTimeData.overrideValues({
+      showPasswordChangeControl: false,
+    });
+    await createPage();
+
+    const passwordChangeRow =
+        page.shadowRoot!.querySelector<HTMLElement>('#passwordChangeRowV2');
+    assertTrue(!!passwordChangeRow);
+    assertFalse(isVisible(passwordChangeRow));
   });
 });
 

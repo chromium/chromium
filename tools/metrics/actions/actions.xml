@@ -34808,6 +34808,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Settings.AiPage.PasswordChangeEntryPointClick">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>rainhard@chromium.org</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <description>
+    Reported when user clicks on the Password Change row in the
+    chrome://settings/ai page.
+  </description>
+</action>
+
 <action name="Settings.AiPage.TabOrganization.LearnMoreClicked">
   <owner>zalmashni@google.com</owner>
   <owner>rainhard@chromium.org</owner>

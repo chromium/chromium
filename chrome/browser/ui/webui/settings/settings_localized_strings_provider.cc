@@ -529,6 +529,8 @@ void AddAiStrings(content::WebUIDataSource* html_source) {
                          chrome::kWallpaperSearchLearnMorePageURL);
   html_source->AddString("wallpaperSearchLearnMoreManagedUrl",
                          chrome::kWallpaperSearchLearnMorePageManagedURL);
+  html_source->AddString("passwordChangeSettingsUrl",
+                         chrome::kChromeUiPasswordChangeUrl);
 }
 
 void AddAppearanceStrings(content::WebUIDataSource* html_source,

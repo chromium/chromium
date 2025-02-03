@@ -306,6 +306,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Tab organization row click"/>
   <int value="4" label="Themes row click"/>
   <int value="5" label="Autofill AI row click"/>
+  <int value="6" label="Automated Password Change"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/resources/settings/metrics_browser_proxy.ts:AiPageInteractions) -->
