@@ -3161,7 +3161,7 @@
     "expiry_milestone": -1
   },
   {
-    "name": "enable-hardware_mirror-mode",
+    "name": "enable-hardware_mirror-mode-deprecated",
     "owners": [
       "vincentchiang@chromium.org",
       "//ui/display/OWNERS"

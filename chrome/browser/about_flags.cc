@@ -4789,7 +4789,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"list-all-display-modes", flag_descriptions::kListAllDisplayModesName,
      flag_descriptions::kListAllDisplayModesDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(display::features::kListAllDisplayModes)},
-    {"enable-hardware_mirror-mode",
+    {"enable-hardware_mirror-mode-deprecated",
      flag_descriptions::kEnableHardwareMirrorModeName,
      flag_descriptions::kEnableHardwareMirrorModeDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(display::features::kEnableHardwareMirrorMode)},
