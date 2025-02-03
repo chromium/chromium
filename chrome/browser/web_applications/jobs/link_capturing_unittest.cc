@@ -204,13 +204,8 @@ TEST_P(LinkCapturingJobTest, UninstallOverlappingRevertsToDefault) {
 INSTANTIATE_TEST_SUITE_P(
     ,
     LinkCapturingJobTest,
-#if BUILDFLAG(IS_CHROMEOS)
-    testing::Values(apps::test::LinkCapturingFeatureVersion::kV1DefaultOff)
-#else
     testing::Values(apps::test::LinkCapturingFeatureVersion::kV2DefaultOff,
-                    apps::test::LinkCapturingFeatureVersion::kV2DefaultOn)
-#endif  // BUILDFLAG(IS_CHROMEOS)
-        ,
+                    apps::test::LinkCapturingFeatureVersion::kV2DefaultOn),
     apps::test::LinkCapturingVersionToString);
 
 }  // namespace
