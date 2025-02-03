@@ -41,6 +41,7 @@ class VIEWS_EXPORT TableHeader : public View {
   int GetResizeBarVerticalPadding() const;
   int GetSeparatorHorizontalPadding() const;
   ui::ColorId GetSeparatorHorizontalColorId() const;
+  ui::ColorId GetSeparatorVerticalColorId() const;
   ui::ColorId GetBackgroundColorId() const;
   int GetSortIndicatorWidth() const;
   gfx::Font::Weight GetFontWeight() const;

@@ -60,6 +60,7 @@ struct TableHeaderStyle {
   std::optional<int> separator_horizontal_padding;
   std::optional<gfx::Font::Weight> font_weight;
   std::optional<ui::ColorId> separator_horizontal_color_id;
+  std::optional<ui::ColorId> separator_vertical_color_id;
   std::optional<ui::ColorId> background_color_id;
 };
 

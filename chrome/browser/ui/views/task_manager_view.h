@@ -155,10 +155,9 @@ class TaskManagerView : public TableViewDelegate,
 
   // Creates all corresponding subcomponents for the header.
   std::unique_ptr<views::TabbedPaneTabStrip> CreateTabbedPane(
-      const gfx::Insets& tab_strip_margin,
-      const gfx::Insets& title_margin,
-      const gfx::Insets& icon_margin,
-      int spacing_between_tabs);
+      const ChromeLayoutProvider* provider,
+      const gfx::Insets& title_insets,
+      const gfx::Outsets& tab_outsets);
   std::unique_ptr<views::View> CreateSearchBar(
       const ChromeLayoutProvider* provider);
   std::unique_ptr<views::MdTextButton> CreateEndProcessButton(

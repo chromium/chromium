@@ -441,28 +441,18 @@ std::unique_ptr<views::View> TaskManagerView::CreateHeaderContent(
   // Header Parent
   auto header_layout = std::make_unique<views::BoxLayout>();
   header_layout->SetOrientation(views::LayoutOrientation::kHorizontal);
-  header_layout->set_cross_axis_alignment(views::LayoutAlignment::kEnd);
+  header_layout->set_cross_axis_alignment(views::LayoutAlignment::kCenter);
 
   auto container = std::make_unique<views::View>();
 
-  const int horizontal_spacing = provider->GetDistanceMetric(
-      DISTANCE_TASK_MANAGER_HEADER_HORIZONTAL_SPACING);
-
-  const int tab_spacing =
-      provider->GetDistanceMetric(DISTANCE_TASK_MANAGER_TAB_SPACING);
-
   auto tabs = CreateTabbedPane(
-      /*tab_strip_margin=*/gfx::Insets::TLBR(0, 0, 0, 0),
-      /*title_margin=*/
-      gfx::Insets::TLBR(0, views::TabbedPaneTab::kDefaultTitleLeftMargin,
-                        horizontal_spacing, 0),
-      /*icon_margin=*/gfx::Insets::TLBR(0, 0, horizontal_spacing, 0),
-      /*spacing_between_tabs=*/tab_spacing);
+      provider,
+      /*title_insets=*/
+      gfx::Insets::TLBR(0, views::TabbedPaneTab::kDefaultTitleLeftMargin, 0, 0),
+      /*tab_outsets=*/gfx::Outsets::VH(0, 16));
 
   // Empty Container, Search Bar
   auto empty_view = std::make_unique<views::View>();
-  empty_view->SetProperty(views::kMarginsKey,
-                          gfx::Insets::VH(0, horizontal_spacing));
   auto search_bar_container = CreateSearchBar(provider);
 
   // Allow empty spacing and the search bar to flex freely.
@@ -506,24 +496,30 @@ void TaskManagerView::PerformFilter(DisplayCategory category,
 }
 
 std::unique_ptr<views::TabbedPaneTabStrip> TaskManagerView::CreateTabbedPane(
-    const gfx::Insets& tab_strip_margin,
-    const gfx::Insets& title_margin,
-    const gfx::Insets& icon_margin,
-    int spacing_between_tabs) {
+    const ChromeLayoutProvider* provider,
+    const gfx::Insets& title_insets,
+    const gfx::Outsets& tab_outsets) {
+  const int tab_height =
+      provider->GetDistanceMetric(DISTANCE_TASK_MANAGER_TAB_HEIGHT);
+  const auto dialog_insets = provider->GetInsetsMetric(INSETS_TASK_MANAGER);
+
   auto tabs = std::make_unique<views::TabbedPaneTabStrip>(
       views::TabbedPane::Orientation::kHorizontal,
       views::TabbedPane::TabStripStyle::kWithIcon,
       /*tabbed_pane=*/nullptr);
   tabs->SetDefaultFlex(0);
   tabs->SetDrawTabDivider(false);
-  tabs->SetProperty(views::kMarginsKey, tab_strip_margin);
-  tabs->SetTabSpacing(spacing_between_tabs);
 
   for (const auto& tab_definition : kTabDefinitions) {
     auto* tab = tabs->AddTab(l10n_util::GetStringUTF16(tab_definition.title_id),
                              tab_definition.icon);
-    tab->SetTitleMargin(title_margin);
-    tab->SetIconMargin(icon_margin);
+    tab->SetTitleMargin(title_insets);
+    tab->SetTabOutsets(tab_outsets);
+
+    // Assume some arbitrary spec_height. Set the height of the tabs as
+    // (spec_height - task_manager_dialog_insets), so that the focus ring around
+    // the tabbed pane isn't touching the title bar.
+    tab->SetHeight(tab_height - dialog_insets.top());
   }
   tabs->set_listener(this);
 
@@ -532,24 +528,19 @@ std::unique_ptr<views::TabbedPaneTabStrip> TaskManagerView::CreateTabbedPane(
 
 std::unique_ptr<views::View> TaskManagerView::CreateSearchBar(
     const ChromeLayoutProvider* provider) {
-  const int vertical_spacing = provider->GetDistanceMetric(
-      DISTANCE_TASK_MANAGER_HEADER_VERTICAL_SPACING);
   const int horizontal_spacing = provider->GetDistanceMetric(
-      DISTANCE_TASK_MANAGER_HEADER_HORIZONTAL_SPACING);
+      DISTANCE_TASK_MANAGER_SEARCH_BAR_ICON_AND_BUTTON_HORIZONTAL_SPACING);
   const int search_bar_container_radius = provider->GetCornerRadiusMetric(
       views::ShapeContextTokens::kOmniboxExpandedRadius);
 
   auto search_bar_layout = std::make_unique<views::BoxLayout>();
   search_bar_layout->SetOrientation(views::LayoutOrientation::kHorizontal);
-  search_bar_layout->set_main_axis_alignment(views::LayoutAlignment::kStretch);
-  search_bar_layout->set_cross_axis_alignment(views::LayoutAlignment::kEnd);
+  search_bar_layout->set_cross_axis_alignment(views::LayoutAlignment::kStart);
 
   auto search_bar_container = std::make_unique<views::View>();
   search_bar_container->SetBackground(views::CreateThemedRoundedRectBackground(
       kColorTaskManagerSearchBarBackground, search_bar_container_radius));
   search_bar_container->SetLayoutManager(std::move(search_bar_layout));
-  search_bar_container->SetProperty(
-      views::kMarginsKey, gfx::Insets::TLBR(0, 0, vertical_spacing, 0));
   const gfx::Size search_bar_size{
       provider->GetDistanceMetric(DISTANCE_TASK_MANAGER_SEARCH_BAR_MIN_WIDTH),
       provider->GetDistanceMetric(DISTANCE_TASK_MANAGER_SEARCH_BAR_MIN_HEIGHT)};
@@ -636,6 +627,7 @@ void TaskManagerView::Init() {
         .separator_horizontal_padding = 0,
         .font_weight = gfx::Font::Weight::MEDIUM,
         .separator_horizontal_color_id = ui::kColorSysDivider,
+        .separator_vertical_color_id = ui::kColorSysDivider,
         .background_color_id = kColorTaskManagerTableHeaderBackground};
     tab_table->SetHeaderStyle(header_style);
   }
@@ -658,8 +650,9 @@ void TaskManagerView::Init() {
   const auto* provider = ChromeLayoutProvider::Get();
 
   // Margins around all contents
-  const gfx::Insets dialog_insets =
-      provider->GetInsetsMetric(views::INSETS_DIALOG);
+  const gfx::Insets dialog_insets = provider->GetInsetsMetric(
+      table_config_.layout_refresh ? static_cast<int>(INSETS_TASK_MANAGER)
+                                   : views::INSETS_DIALOG);
   // We don't use ChromeLayoutProvider::GetDialogInsetsForContentType because we
   // don't have a title.
   const auto content_insets = gfx::Insets::TLBR(

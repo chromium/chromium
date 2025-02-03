@@ -136,6 +136,11 @@ ui::ColorId TableHeader::GetSeparatorHorizontalColorId() const {
       ui::kColorFocusableBorderUnfocused);
 }
 
+ui::ColorId TableHeader::GetSeparatorVerticalColorId() const {
+  return table_->header_style().separator_vertical_color_id.value_or(
+      ui::kColorTableHeaderSeparator);
+}
+
 ui::ColorId TableHeader::GetBackgroundColorId() const {
   return table_->header_style().background_color_id.value_or(
       ui::kColorTableHeaderBackground);
@@ -156,19 +161,19 @@ void TableHeader::OnPaint(gfx::Canvas* canvas) {
   const int horizontal_padding = GetCellHorizontalPadding();
   const SkColor text_color =
       color_provider->GetColor(ui::kColorTableHeaderForeground);
-  const SkColor separator_color =
-      color_provider->GetColor(ui::kColorTableHeaderSeparator);
+  const SkColor separator_vertical_color =
+      color_provider->GetColor(GetSeparatorVerticalColorId());
   const int resize_bar_vertical_padding = GetResizeBarVerticalPadding();
   const int separator_horizontal_padding = GetSeparatorHorizontalPadding();
   // Paint the background and a separator at the bottom. The separator color
   // matches that of the border around the scrollview.
   OnPaintBackground(canvas);
-  SkColor border_color =
+  SkColor separator_horizontal_color =
       color_provider->GetColor(GetSeparatorHorizontalColorId());
   canvas->DrawSharpLine(
       gfx::PointF(separator_horizontal_padding, height() - 1),
       gfx::PointF(width() - separator_horizontal_padding, height() - 1),
-      border_color);
+      separator_horizontal_color);
 
   const Columns& columns = table_->visible_columns();
   const int sorted_column_id = table_->sort_descriptors().empty()
@@ -181,7 +186,7 @@ void TableHeader::OnPaint(gfx::Canvas* canvas) {
       canvas->DrawSharpLine(
           gfx::PointF(separator_x, resize_bar_vertical_padding),
           gfx::PointF(separator_x, height() - resize_bar_vertical_padding),
-          separator_color);
+          separator_vertical_color);
     }
 
     const int x = column.x + horizontal_padding;
