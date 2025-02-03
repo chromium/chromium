@@ -1927,13 +1927,14 @@ TEST_F(ManagePasswordsUIControllerTest, PasswordChangeOngoing) {
       mock_optimization_service;
   PasswordChangeServiceFactory::GetInstance()->SetTestingFactory(
       profile(),
-      base::BindLambdaForTesting(
-          [&mock_affiliation_service,
-           &mock_optimization_service](content::BrowserContext* context)
-              -> std::unique_ptr<KeyedService> {
-            return std::make_unique<ChromePasswordChangeService>(
-                &mock_affiliation_service, &mock_optimization_service);
-          }));
+      base::BindLambdaForTesting([&mock_affiliation_service,
+                                  &mock_optimization_service](
+                                     content::BrowserContext* context)
+                                     -> std::unique_ptr<KeyedService> {
+        return std::make_unique<ChromePasswordChangeService>(
+            &mock_affiliation_service, &mock_optimization_service,
+            std::make_unique<password_manager::MockPasswordFeatureManager>());
+      }));
 
   const GURL kUrl = GURL("https://example.com/");
   EXPECT_CALL(mock_affiliation_service, GetChangePasswordURL(kUrl))
