@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui.android.webid.data;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 
 import org.chromium.url.GURL;
 
@@ -23,7 +24,10 @@ public class ClientIdMetadata {
      * @param brandIconUrl String of URL for the brand icon for this client ID.
      */
     @CalledByNative
-    public ClientIdMetadata(GURL termsOfServiceUrl, GURL privacyPolicyUrl, String brandIconUrl) {
+    public ClientIdMetadata(
+            @JniType("GURL") GURL termsOfServiceUrl,
+            @JniType("GURL") GURL privacyPolicyUrl,
+            @JniType("std::string") String brandIconUrl) {
         mTermsOfServiceUrl = termsOfServiceUrl;
         mPrivacyPolicyUrl = privacyPolicyUrl;
         mBrandIconUrl = brandIconUrl;
