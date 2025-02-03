@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {BookmarksFolderNodeElement, SelectFolderAction} from 'chrome://bookmarks/bookmarks.js';
-import {BookmarkManagerApiProxyImpl, changeFolderOpen, Command, selectFolder} from 'chrome://bookmarks/bookmarks.js';
+import {BookmarkManagerApiProxyImpl, changeFolderOpen, Command, ROOT_NODE_ID, selectFolder} from 'chrome://bookmarks/bookmarks.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -66,7 +66,7 @@ suite('<bookmarks-folder-node>', function() {
     BookmarkManagerApiProxyImpl.setInstance(bookmarkManagerProxy);
 
     rootNode = document.createElement('bookmarks-folder-node');
-    rootNode.itemId = '0';
+    rootNode.itemId = ROOT_NODE_ID;
     rootNode.depth = -1;
     replaceBody(rootNode);
     flush();

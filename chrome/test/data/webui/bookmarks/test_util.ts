@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {BookmarksFolderNodeElement, FolderOpenState, NodeMap} from 'chrome://bookmarks/bookmarks.js';
-import {normalizeNodes} from 'chrome://bookmarks/bookmarks.js';
+import {normalizeNodes, ROOT_NODE_ID} from 'chrome://bookmarks/bookmarks.js';
 import {isMac} from 'chrome://resources/js/platform.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
@@ -24,7 +24,7 @@ export function replaceBody(element: Element) {
  */
 export function testTree(...nodes: chrome.bookmarks.BookmarkTreeNode[]):
     NodeMap {
-  return normalizeNodes(createFolder('0', nodes));
+  return normalizeNodes(createFolder(ROOT_NODE_ID, nodes));
 }
 
 /**
@@ -39,6 +39,7 @@ export function createFolder(
         id: id,
         children: children,
         title: '',
+        syncing: true,
       },
       config || {});
 
@@ -75,6 +76,7 @@ export function createItem(
         id: id,
         title: '',
         url: 'http://www.google.com/',
+        syncing: true,
       },
       config || {});
 }

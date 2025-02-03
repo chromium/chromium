@@ -12,7 +12,7 @@ export {BookmarkManagerApiProxy, BookmarkManagerApiProxyImpl} from './bookmark_m
 export {BookmarksApiProxy, BookmarksApiProxyImpl, Query} from './bookmarks_api_proxy.js';
 export {BrowserProxy, BrowserProxyImpl} from './browser_proxy.js';
 export {BookmarksCommandManagerElement} from './command_manager.js';
-export {Command, DropPosition, IncognitoAvailability, LOCAL_STORAGE_FOLDER_STATE_KEY, LOCAL_STORAGE_TREE_WIDTH_KEY, MenuSource, ROOT_NODE_ID} from './constants.js';
+export {ACCOUNT_HEADING_NODE_ID, Command, DropPosition, IncognitoAvailability, LOCAL_HEADING_NODE_ID, LOCAL_STORAGE_FOLDER_STATE_KEY, LOCAL_STORAGE_TREE_WIDTH_KEY, MenuSource, ROOT_NODE_ID} from './constants.js';
 export {DialogFocusManager} from './dialog_focus_manager.js';
 export {DndManager, DragInfo, overrideFolderOpenerTimeoutDelay} from './dnd_manager.js';
 export {BookmarksEditDialogElement} from './edit_dialog.js';
@@ -25,4 +25,4 @@ export {Store} from './store.js';
 export {StoreClientMixin} from './store_client_mixin.js';
 export {BookmarksToolbarElement} from './toolbar.js';
 export {BookmarkElement, BookmarkNode, BookmarksPageState, FolderOpenState, NodeMap, SelectionState} from './types.js';
-export {canEditNode, canReorderChildren, createEmptyState, getDescendants, getDisplayedList, isShowingSearch, normalizeNode, normalizeNodes, removeIdsFromObject, removeIdsFromSet} from './util.js';
+export {canEditNode, canReorderChildren, createEmptyState, getDescendants, getDisplayedList, isRootNode, isRootOrChildOfRoot, isShowingSearch, normalizeNode, normalizeNodes, removeIdsFromObject, removeIdsFromSet} from './util.js';

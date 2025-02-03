@@ -62,6 +62,7 @@ content::WebUIDataSource* CreateAndAddBookmarksUIHTMLSource(Profile* profile) {
   static constexpr webui::LocalizedString kStrings[] = {
       {"addBookmarkTitle", IDS_BOOKMARK_MANAGER_ADD_BOOKMARK_TITLE},
       {"addFolderTitle", IDS_BOOKMARK_MANAGER_ADD_FOLDER_TITLE},
+      {"accountBookmarksTitle", IDS_BOOKMARKS_ACCOUNT_BOOKMARKS},
       {"cancel", IDS_CANCEL},
       {"clearSearch", IDS_BOOKMARK_MANAGER_CLEAR_SEARCH},
       {"delete", IDS_DELETE},
@@ -77,6 +78,7 @@ content::WebUIDataSource* CreateAndAddBookmarksUIHTMLSource(Profile* profile) {
       {"itemsSelected", IDS_BOOKMARK_MANAGER_ITEMS_SELECTED},
       {"itemsUnselected", IDS_BOOKMARK_MANAGER_ITEMS_UNSELECTED},
       {"listAxLabel", IDS_BOOKMARK_MANAGER_LIST_AX_LABEL},
+      {"localBookmarksTitle", IDS_BOOKMARKS_DEVICE_BOOKMARKS},
       {"menu", IDS_MENU},
       {"menuAddBookmark", IDS_BOOKMARK_MANAGER_MENU_ADD_BOOKMARK},
       {"menuAddFolder", IDS_BOOKMARK_MANAGER_MENU_ADD_FOLDER},
