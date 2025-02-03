@@ -2883,10 +2883,7 @@ void PdfViewWebPlugin::PrepareAndSetAccessibilityViewportInfo() {
 
   std::optional<Selection> selection = engine_->GetSelection();
   if (selection.has_value()) {
-    viewport_info.selection_start_page_index = selection->start.page_index;
-    viewport_info.selection_start_char_index = selection->start.char_index;
-    viewport_info.selection_end_page_index = selection->end.page_index;
-    viewport_info.selection_end_char_index = selection->end.char_index;
+    viewport_info.selection = *selection;
   }
 
   pdf_accessibility_data_handler_->SetAccessibilityViewportInfo(

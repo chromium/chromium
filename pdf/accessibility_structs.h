@@ -17,6 +17,18 @@
 
 namespace chrome_pdf {
 
+struct PageCharacterIndex {
+  // Index of PDF page.
+  uint32_t page_index = 0;
+  // Index of character within the PDF page.
+  uint32_t char_index = 0;
+};
+
+struct Selection {
+  PageCharacterIndex start;
+  PageCharacterIndex end;
+};
+
 struct AccessibilityDocInfo {
   bool operator==(const AccessibilityDocInfo& other) const;
   bool operator!=(const AccessibilityDocInfo& other) const;
@@ -381,10 +393,7 @@ struct AccessibilityViewportInfo {
   gfx::Point scroll;
   gfx::Point offset;
   uint32_t orientation = 0;
-  uint32_t selection_start_page_index = 0;
-  uint32_t selection_start_char_index = 0;
-  uint32_t selection_end_page_index = 0;
-  uint32_t selection_end_char_index = 0;
+  Selection selection;
   AccessibilityFocusInfo focus_info;
 };
 
@@ -429,18 +438,6 @@ enum class AccessibilityScrollAlignment {
   kClosestToEdge,
   // Last enum value marker.
   kMaxValue = kClosestToEdge,
-};
-
-struct PageCharacterIndex {
-  // Index of PDF page.
-  uint32_t page_index = 0;
-  // Index of character within the PDF page.
-  uint32_t char_index = 0;
-};
-
-struct Selection {
-  PageCharacterIndex start;
-  PageCharacterIndex end;
 };
 
 struct AccessibilityActionData {
