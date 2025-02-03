@@ -171,9 +171,4 @@ BASE_FEATURE(kReplaceSupervisionSystemCapabilitiesWithAccountCapabilitiesOnIOS,
              "ReplaceSupervisionSystemCapabilitiesWithAccountCapabilitiesOnIOS",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
-
-BASE_FEATURE(kExemptGuardianApprovalOnGwsRedirector,
-             "ExemptGuardianApprovalOnGwsRedirector",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 }  // namespace supervised_user

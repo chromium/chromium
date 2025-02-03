@@ -13,13 +13,11 @@
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/safe_search_api/fake_url_checker_client.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
-#include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/test_support/supervised_user_url_filter_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -510,32 +508,6 @@ TEST_F(SupervisedUserURLFilterTest, PlayTermsAlwaysAllowed) {
   EXPECT_FALSE(IsURLAllowlisted("https://play.google.com/"));
   EXPECT_FALSE(IsURLAllowlisted("https://play.google/about"));
   EXPECT_FALSE(IsURLAllowlisted("https://play.google.com/about"));
-}
-
-TEST_F(SupervisedUserURLFilterTest, IsGwsRedirectorExemptedFromApprovals) {
-  base::test::ScopedFeatureList feature_list{
-      kExemptGuardianApprovalOnGwsRedirector};
-
-  CHECK(filter_.GetDefaultFilteringBehavior() == FilteringBehavior::kBlock);
-
-  EXPECT_TRUE(IsURLAllowlisted(
-      "http://www.google.com/url?q=http://example.com&source=test"));
-  EXPECT_FALSE(
-      IsURLAllowlisted("http://www.google.com/url?q=http://example.com"))
-      << "GWS urls without source are not exempted.";
-  EXPECT_FALSE(IsURLAllowlisted("http://www.google.com/url?source=test"))
-      << "GWS urls without destination are not exempted.";
-  EXPECT_FALSE(IsURLAllowlisted("http://google.com/url?source=test"))
-      << "GWS urls without www are not exempted.";
-}
-
-TEST_F(SupervisedUserURLFilterTest, IsGwsRedirectorDenied) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kExemptGuardianApprovalOnGwsRedirector);
-
-  CHECK(filter_.GetDefaultFilteringBehavior() == FilteringBehavior::kBlock);
-  EXPECT_FALSE(IsURLAllowlisted(
-      "http://www.google.com/url?q=http://example.com&source=test"));
 }
 
 class SupervisedUserURLFilteringWithConflictsTest
