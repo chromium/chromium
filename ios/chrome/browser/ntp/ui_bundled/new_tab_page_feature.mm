@@ -49,10 +49,6 @@ BASE_FEATURE(kIdentityDiscAccountMenu,
              "IdentityDiscAccountMenu",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kIOSNewFollowingFeedEntryPoints,
-             "IOSNewFollowingFeedEntryPoints",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 #pragma mark - Feature parameters
 
 const char kDiscoverFeedSRSReconstructedTemplatesEnabled[] =
@@ -103,9 +99,4 @@ bool IsSignedOutViewDemotionEnabled() {
 
 bool IsiPadFeedGhostCardsEnabled() {
   return base::FeatureList::IsEnabled(kEnableiPadFeedGhostCards);
-}
-
-bool IsNewFollowingFeedEntryPointsEnabled() {
-  return IsFollowUIUpdateEnabled() &&
-         base::FeatureList::IsEnabled(kIOSNewFollowingFeedEntryPoints);
 }

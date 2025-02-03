@@ -44,10 +44,6 @@ BASE_DECLARE_FEATURE(kEnableiPadFeedGhostCards);
 // disc.
 BASE_DECLARE_FEATURE(kIdentityDiscAccountMenu);
 
-// Feature flag to move the entry point for the following feed into the discover
-// feed.
-BASE_DECLARE_FEATURE(kIOSNewFollowingFeedEntryPoints);
-
 #pragma mark - Feature parameters
 
 // A parameter to indicate whether Reconstructed Templates is enabled for static
@@ -96,9 +92,5 @@ bool IsSignedOutViewDemotionEnabled();
 
 // Whether ghost cards are enabled on the iPad feeds.
 bool IsiPadFeedGhostCardsEnabled();
-
-// Returns whether the user should enter the following feed through the entry
-// points in the discover feed.
-bool IsNewFollowingFeedEntryPointsEnabled();
 
 #endif  // IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_FEATURE_H_

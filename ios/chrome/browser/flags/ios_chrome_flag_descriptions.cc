@@ -592,14 +592,6 @@ const char kIOSDockingPromoDescription[] =
     "When enabled, the user will be presented an animated, instructional "
     "promo showing how to move Chrome to their native iOS dock.";
 
-const char kIOSNewFollowingFeedEntryPointsName[] =
-    "New Following Feed Entry Points [iOS only]";
-const char kIOSNewFollowingFeedEntryPointsDescription[] =
-    "When enabled, users eligible for query follow enter the following feed "
-    "through Homestack/query picker/first following cluster, instead of the "
-    "existing toggle on the top of the feeds. No changes for users ineligible "
-    "for query follow.";
-
 extern const char kIOSEnableDeleteAllSavedCredentialsName[] =
     "Enable delete all saved credentials in PWM";
 extern const char kIOSEnableDeleteAllSavedCredentialsDescription[] =
