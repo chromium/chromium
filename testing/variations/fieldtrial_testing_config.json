@@ -23713,28 +23713,6 @@
             ]
         }
     ],
-    "ToastTimeoutStudy": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWithUpdatedTimeout",
-                    "params": {
-                        "toast_timeout": "8s",
-                        "toast_without_action_timeout": "4s"
-                    },
-                    "enable_features": [
-                        "ToastFramework"
-                    ]
-                }
-            ]
-        }
-    ],
     "ToolbarPinning": [
         {
             "platforms": [
