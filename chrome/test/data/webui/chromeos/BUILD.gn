@@ -213,7 +213,7 @@ build_webui_tests("build") {
     "network/network_proxy_test.ts",
     "network/network_select_test.ts",
     "network/network_siminfo_test.ts",
-    "network/sim_lock_dialogs_test.js",
+    "network/sim_lock_dialogs_test.ts",
     "network/test_utils.ts",
     "set_time_dialog/set_time_dialog_test.js",
     "set_time_dialog/test_set_time_browser_proxy.js",
