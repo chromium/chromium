@@ -419,12 +419,6 @@ std::optional<PrinterBasicInfo> GetBasicPrinterInfo(HANDLE printer) {
         base::WideToUTF8(info_2.get()->pDriverName);
   }
   printer_info.printer_status = info_2.get()->Status;
-
-  std::vector<std::string> driver_info = GetDriverInfo(printer);
-  if (!driver_info.empty()) {
-    printer_info.options[kDriverInfoTagName] =
-        base::JoinString(driver_info, ";");
-  }
   return printer_info;
 }
 
