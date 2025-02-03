@@ -28,6 +28,10 @@
 #include "components/performance_manager/public/resource_attribution/origin_in_browsing_instance_context.h"
 #include "components/performance_manager/public/resource_attribution/resource_contexts.h"
 #include "components/performance_manager/public/resource_attribution/resource_types.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/gurl.h"
 
 namespace performance_manager {
@@ -1026,7 +1030,67 @@ void FreezingPolicy::RecordFreezingEligibilityUKMForPage(
     double highest_cpu_current_interval,
     double highest_cpu_any_interval_without_cannot_freeze_reason,
     CannotFreezeReasonSet cannot_freeze_reasons) {
-  // TODO(crbug.com/391646022): Implement once the UKM collection is approved.
+  RecordFreezingEligibilityUKMForPageStatic(
+      source_id, highest_cpu_current_interval,
+      highest_cpu_any_interval_without_cannot_freeze_reason,
+      cannot_freeze_reasons);
+}
+
+void FreezingPolicy::RecordFreezingEligibilityUKMForPageStatic(
+    ukm::SourceId source_id,
+    double highest_cpu_current_interval,
+    double highest_cpu_any_interval_without_cannot_freeze_reason,
+    CannotFreezeReasonSet cannot_freeze_reasons) {
+  auto ukm = ukm::builders::PerformanceManager_FreezingEligibility(source_id);
+
+  // The bucketing has this effect:
+  //  0      = 0
+  //  1      = 1
+  //  2-3    = 2
+  //  4-7    = 4
+  //  8-15   = 8
+  //  16-31  = 16
+  //  32-63  = 32
+  //  64-127 = 64
+  //  ...
+  //
+  // This precision is sufficient for exploring the coverage of thresholds
+  // between 2% and 25% as we plan to do.
+  ukm.SetHighestCPUCurrentInterval(ukm::GetExponentialBucketMinForUserTiming(
+      highest_cpu_current_interval * 100));
+  ukm.SetHighestCPUAnyIntervalWithoutOptOut(
+      ukm::GetExponentialBucketMinForUserTiming(
+          highest_cpu_any_interval_without_cannot_freeze_reason * 100));
+
+  ukm.SetVisible(cannot_freeze_reasons.Has(CannotFreezeReason::kVisible));
+  ukm.SetRecentlyVisible(
+      cannot_freeze_reasons.Has(CannotFreezeReason::kRecentlyVisible));
+  ukm.SetAudible(cannot_freeze_reasons.Has(CannotFreezeReason::kAudible));
+  ukm.SetRecentlyAudible(
+      cannot_freeze_reasons.Has(CannotFreezeReason::kRecentlyAudible));
+  ukm.SetOriginTrialOptOut(cannot_freeze_reasons.Has(
+      CannotFreezeReason::kFreezingOriginTrialOptOut));
+  ukm.SetHoldingWebLock(
+      cannot_freeze_reasons.Has(CannotFreezeReason::kHoldingWebLock));
+  ukm.SetHoldingBlockingIndexedDBLock(cannot_freeze_reasons.Has(
+      CannotFreezeReason::kHoldingBlockingIndexedDBLock));
+  ukm.SetConnectedToDevice(cannot_freeze_reasons.HasAny(
+      {CannotFreezeReason::kConnectedToUsbDevice,
+       CannotFreezeReason::kConnectedToBluetoothDevice,
+       CannotFreezeReason::kConnectedToHidDevice,
+       CannotFreezeReason::kConnectedToSerialPort}));
+  ukm.SetCapturing(cannot_freeze_reasons.HasAny(
+      {CannotFreezeReason::kCapturingAudio, CannotFreezeReason::kCapturingVideo,
+       CannotFreezeReason::kCapturingWindow,
+       CannotFreezeReason::kCapturingDisplay}));
+  ukm.SetBeingMirrored(
+      cannot_freeze_reasons.Has(CannotFreezeReason::kBeingMirrored));
+  ukm.SetWebRTC(cannot_freeze_reasons.Has(CannotFreezeReason::kWebRTC));
+  ukm.SetLoading(cannot_freeze_reasons.Has(CannotFreezeReason::kLoading));
+  ukm.SetNotificationPermission(
+      cannot_freeze_reasons.Has(CannotFreezeReason::kNotificationPermission));
+
+  ukm.Record(ukm::UkmRecorder::Get());
 }
 
 }  // namespace performance_manager

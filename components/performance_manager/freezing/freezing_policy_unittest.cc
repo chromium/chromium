@@ -31,7 +31,9 @@
 #include "components/performance_manager/public/resource_attribution/query_results.h"
 #include "components/performance_manager/public/resource_attribution/resource_contexts.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/browsing_instance_id.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -1196,7 +1198,7 @@ TEST_F(FreezingPolicyBatterySaverTest, Basic) {
   ReportCumulativeCPUUsage(kContext, base::Seconds(75));
 }
 
-TEST_F(FreezingPolicyBatterySaverTest, UKM) {
+TEST_F(FreezingPolicyBatterySaverTest, RecordFreezingEligibilityUKM) {
   base::test::ScopedFeatureList feature_list(
       features::kRecordFreezingEligibilityUKM);
   base::MetricsSubSampler::ScopedAlwaysSampleForTesting always_sample;
@@ -1325,6 +1327,157 @@ TEST_F(FreezingPolicyBatterySaverTest, UKM) {
     AddCPUMeasurement(cpu_result_map, kContext3, base::Seconds(66));  // 10%
     resource_attribution::QueryResultObserver* observer = policy();
     observer->OnResourceUsageUpdated(std::move(cpu_result_map));
+  }
+}
+
+TEST_F(FreezingPolicyBatterySaverTest,
+       RecordFreezingEligibilityUKMForPageStatic) {
+  // No "opt-out" field is set.
+  // CPU usage is bucketed.
+  {
+    ukm::TestAutoSetUkmRecorder recorder;
+    FreezingPolicy::RecordFreezingEligibilityUKMForPageStatic(
+        ukm::SourceId(), /*highest_cpu_current_interval=*/0.1,
+        /*highest_cpu_any_interval_without_cannot_freeze_reason=*/0.2,
+        CannotFreezeReasonSet{});
+    auto entries = recorder.GetEntriesByName(
+        ukm::builders::PerformanceManager_FreezingEligibility::kEntryName);
+    EXPECT_EQ(entries.size(), 1U);
+    auto& entry = entries.front();
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "Audible", 0);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "BeingMirrored", 0);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "Capturing", 0);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "ConnectedToDevice", 0);
+    ukm::TestUkmRecorder::ExpectEntryMetric(
+        entry, "HighestCPUAnyIntervalWithoutOptOut", 16);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "HighestCPUCurrentInterval",
+                                            8);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry,
+                                            "HoldingBlockingIndexedDBLock", 0);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "HoldingWebLock", 0);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "Loading", 0);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "NotificationPermission", 0);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "OriginTrialOptOut", 0);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "RecentlyAudible", 0);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "RecentlyVisible", 0);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "Visible", 0);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "WebRTC", 0);
+  }
+
+  // All "opt-out" fields are set.
+  // CPU usage is bucketed.
+  {
+    ukm::TestAutoSetUkmRecorder recorder;
+    FreezingPolicy::RecordFreezingEligibilityUKMForPageStatic(
+        ukm::SourceId(), /*highest_cpu_current_interval=*/0.16,
+        /*highest_cpu_any_interval_without_cannot_freeze_reason=*/0.32,
+        CannotFreezeReasonSet{
+            CannotFreezeReason::kAudible, CannotFreezeReason::kBeingMirrored,
+            CannotFreezeReason::kCapturingAudio,
+            CannotFreezeReason::kConnectedToBluetoothDevice,
+            CannotFreezeReason::kHoldingBlockingIndexedDBLock,
+            CannotFreezeReason::kHoldingWebLock, CannotFreezeReason::kLoading,
+            CannotFreezeReason::kNotificationPermission,
+            CannotFreezeReason::kFreezingOriginTrialOptOut,
+            CannotFreezeReason::kRecentlyAudible,
+            CannotFreezeReason::kRecentlyVisible, CannotFreezeReason::kVisible,
+            CannotFreezeReason::kWebRTC});
+    auto entries = recorder.GetEntriesByName(
+        ukm::builders::PerformanceManager_FreezingEligibility::kEntryName);
+    EXPECT_EQ(entries.size(), 1U);
+    auto& entry = entries.front();
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "Audible", 1);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "BeingMirrored", 1);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "Capturing", 1);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "ConnectedToDevice", 1);
+    ukm::TestUkmRecorder::ExpectEntryMetric(
+        entry, "HighestCPUAnyIntervalWithoutOptOut", 32);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "HighestCPUCurrentInterval",
+                                            16);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry,
+                                            "HoldingBlockingIndexedDBLock", 1);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "HoldingWebLock", 1);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "Loading", 1);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "NotificationPermission", 1);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "OriginTrialOptOut", 1);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "RecentlyAudible", 1);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "RecentlyVisible", 1);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "Visible", 1);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "WebRTC", 1);
+  }
+
+  // Opt-out fields from Audible -> Loading are set.
+  // CPU usage is zero.
+  {
+    ukm::TestAutoSetUkmRecorder recorder;
+    FreezingPolicy::RecordFreezingEligibilityUKMForPageStatic(
+        ukm::SourceId(), /*highest_cpu_current_interval=*/0.0,
+        /*highest_cpu_any_interval_without_cannot_freeze_reason=*/0.0,
+        CannotFreezeReasonSet{
+            CannotFreezeReason::kAudible, CannotFreezeReason::kBeingMirrored,
+            CannotFreezeReason::kCapturingVideo,
+            CannotFreezeReason::kConnectedToUsbDevice,
+            CannotFreezeReason::kHoldingBlockingIndexedDBLock,
+            CannotFreezeReason::kHoldingWebLock, CannotFreezeReason::kLoading});
+    auto entries = recorder.GetEntriesByName(
+        ukm::builders::PerformanceManager_FreezingEligibility::kEntryName);
+    EXPECT_EQ(entries.size(), 1U);
+    auto& entry = entries.front();
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "Audible", 1);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "BeingMirrored", 1);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "Capturing", 1);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "ConnectedToDevice", 1);
+    ukm::TestUkmRecorder::ExpectEntryMetric(
+        entry, "HighestCPUAnyIntervalWithoutOptOut", 0);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "HighestCPUCurrentInterval",
+                                            0);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry,
+                                            "HoldingBlockingIndexedDBLock", 1);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "HoldingWebLock", 1);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "Loading", 1);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "NotificationPermission", 0);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "OriginTrialOptOut", 0);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "RecentlyAudible", 0);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "RecentlyVisible", 0);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "Visible", 0);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "WebRTC", 0);
+  }
+
+  // Opt-out fields from Notification -> WebRTC are set.
+  // CPU usage is very low (bucketing has no effect at this level).
+  {
+    ukm::TestAutoSetUkmRecorder recorder;
+    FreezingPolicy::RecordFreezingEligibilityUKMForPageStatic(
+        ukm::SourceId(), /*highest_cpu_current_interval=*/0.01,
+        /*highest_cpu_any_interval_without_cannot_freeze_reason=*/0.02,
+        CannotFreezeReasonSet{CannotFreezeReason::kNotificationPermission,
+                              CannotFreezeReason::kFreezingOriginTrialOptOut,
+                              CannotFreezeReason::kRecentlyAudible,
+                              CannotFreezeReason::kRecentlyVisible,
+                              CannotFreezeReason::kVisible,
+                              CannotFreezeReason::kWebRTC});
+    auto entries = recorder.GetEntriesByName(
+        ukm::builders::PerformanceManager_FreezingEligibility::kEntryName);
+    EXPECT_EQ(entries.size(), 1U);
+    auto& entry = entries.front();
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "Audible", 0);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "BeingMirrored", 0);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "Capturing", 0);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "ConnectedToDevice", 0);
+    ukm::TestUkmRecorder::ExpectEntryMetric(
+        entry, "HighestCPUAnyIntervalWithoutOptOut", 2);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "HighestCPUCurrentInterval",
+                                            1);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry,
+                                            "HoldingBlockingIndexedDBLock", 0);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "HoldingWebLock", 0);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "Loading", 0);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "NotificationPermission", 1);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "OriginTrialOptOut", 1);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "RecentlyAudible", 1);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "RecentlyVisible", 1);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "Visible", 1);
+    ukm::TestUkmRecorder::ExpectEntryMetric(entry, "WebRTC", 1);
   }
 }
 

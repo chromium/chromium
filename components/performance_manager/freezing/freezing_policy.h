@@ -13,6 +13,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/rand_util.h"
@@ -83,6 +84,9 @@ class FreezingPolicy : public PageNodeObserver,
   std::set<std::string> GetCannotFreezeReasons(const PageNode* page_node);
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(FreezingPolicyBatterySaverTest,
+                           RecordFreezingEligibilityUKMForPageStatic);
+
   // State of a browsing instance.
   struct BrowsingInstanceState {
     BrowsingInstanceState();
@@ -209,6 +213,18 @@ class FreezingPolicy : public PageNodeObserver,
 
   // Records freezing eligibility UKM for a page. Virtual for testing.
   virtual void RecordFreezingEligibilityUKMForPage(
+      ukm::SourceId source_id,
+      double highest_cpu_current_interval,
+      double highest_cpu_any_interval_without_cannot_freeze_reason,
+      CannotFreezeReasonSet cannot_freeze_reasons);
+
+  // Records freezing eligibility UKM for a page. Static implementation.
+  //
+  // Note: The virtual method RecordFreezingEligibilityUKMForPage() and the
+  // static method RecordFreezingEligibilityUKMForPageStatic() are separate to
+  // facilitate testing the code that produces the inputs for the UKM event and
+  // the code that records the UKM event based on these inputs separately.
+  static void RecordFreezingEligibilityUKMForPageStatic(
       ukm::SourceId source_id,
       double highest_cpu_current_interval,
       double highest_cpu_any_interval_without_cannot_freeze_reason,
