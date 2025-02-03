@@ -15,6 +15,7 @@
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
@@ -49,19 +50,6 @@ BASE_FEATURE(kAlwaysUploadExtensionInfo,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-std::string GetProfileName(Profile* profile) {
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  // profile manager may not be available in test.
-  if (!profile_manager)
-    return std::string();
-  ProfileAttributesStorage& storage =
-      profile_manager->GetProfileAttributesStorage();
-  ProfileAttributesEntry* entry =
-      storage.GetProfileAttributesWithPath(profile->GetPath());
-  if (!entry)
-    return std::string();
-  return base::UTF16ToUTF8(entry->GetName());
-}
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 bool CanUploadExtensionInfo(Profile* profile) {
@@ -118,8 +106,8 @@ void CloudProfileReportingService::CreateReportScheduler() {
   params.client = cloud_policy_client_.get();
   params.delegate = delegate_factory.GetReportSchedulerDelegate(profile_);
   params.profile_request_generator =
-      std::make_unique<ChromeProfileRequestGenerator>(
-          profile_->GetPath(), GetProfileName(profile_), &delegate_factory);
+      std::make_unique<ChromeProfileRequestGenerator>(profile_->GetPath(),
+                                                      &delegate_factory);
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   params.profile_request_generator->ToggleExtensionReport(
       base::BindRepeating(&CanUploadExtensionInfo, profile_));

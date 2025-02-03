@@ -43,6 +43,8 @@ class ProfileReportGeneratorDelegateBase
   void GetAffiliationInfo(
       enterprise_management::ChromeUserProfileInfo* report) final;
   void GetProfileId(enterprise_management::ChromeUserProfileInfo* report) final;
+  void GetProfileName(
+      enterprise_management::ChromeUserProfileInfo* report) final;
   std::unique_ptr<policy::PolicyConversionsClient> MakePolicyConversionsClient(
       bool is_machine_scope) final;
   policy::CloudPolicyManager* GetCloudPolicyManager(

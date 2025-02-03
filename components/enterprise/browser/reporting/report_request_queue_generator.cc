@@ -94,8 +94,7 @@ void ReportRequestQueueGenerator::GenerateProfileReportWithIndex(
                            .browser_report()
                            .chrome_user_profile_infos(profile_index);
   auto profile_report = profile_report_generator_.MaybeGenerate(
-      base::FilePath::FromUTF8Unsafe(basic_profile.id()), basic_profile.name(),
-      ReportType::kFull);
+      base::FilePath::FromUTF8Unsafe(basic_profile.id()), ReportType::kFull);
 
   // Return if Profile is not loaded and there is no full report.
   if (!profile_report)

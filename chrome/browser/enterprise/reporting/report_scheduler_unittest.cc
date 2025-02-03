@@ -127,7 +127,6 @@ class MockChromeProfileRequestGenerator : public ChromeProfileRequestGenerator {
       ReportingDelegateFactoryDesktop* delegate_factory)
 #endif  // BUILDFLAG(IS_ANDROID)
       : ChromeProfileRequestGenerator(/*profile_path=*/base::FilePath(),
-                                      /*profile_name*/ std::string(),
                                       delegate_factory) {
   }
   void Generate(ReportCallback callback) override { OnGenerate(callback); }

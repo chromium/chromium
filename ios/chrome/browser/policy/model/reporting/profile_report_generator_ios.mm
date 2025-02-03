@@ -72,6 +72,11 @@ void ProfileReportGeneratorIOS::GetProfileId(
   // TODO(crbug.com/389974117): Profile ID is currently unavailable on iOS.
 }
 
+void ProfileReportGeneratorIOS::GetProfileName(
+    enterprise_management::ChromeUserProfileInfo* report) {
+  report->set_name(profile_->GetProfileName());
+}
+
 std::unique_ptr<policy::PolicyConversionsClient>
 ProfileReportGeneratorIOS::MakePolicyConversionsClient(bool is_machine_scope) {
   // Note that profile reporting is not supported on iOS yet, hence we igore

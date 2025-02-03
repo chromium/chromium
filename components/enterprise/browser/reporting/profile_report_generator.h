@@ -59,6 +59,9 @@ class ProfileReportGenerator {
     // Sets profile id in the report.
     virtual void GetProfileId(
         enterprise_management::ChromeUserProfileInfo* report) = 0;
+    // Sets profile name in the report.
+    virtual void GetProfileName(
+        enterprise_management::ChromeUserProfileInfo* report) = 0;
 
     // Returns a new platform-specific policy conversions client.
     virtual std::unique_ptr<policy::PolicyConversionsClient>
@@ -85,7 +88,6 @@ class ProfileReportGenerator {
   // generated.
   std::unique_ptr<enterprise_management::ChromeUserProfileInfo> MaybeGenerate(
       const base::FilePath& path,
-      const std::string& name,
       ReportType report_type);
 
  protected:

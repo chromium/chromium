@@ -50,6 +50,9 @@ void FakeProfileReportGeneratorDelegate::GetExtensionRequest(
 void FakeProfileReportGeneratorDelegate::GetProfileId(
     enterprise_management::ChromeUserProfileInfo* report) {}
 
+void FakeProfileReportGeneratorDelegate::GetProfileName(
+    enterprise_management::ChromeUserProfileInfo* report) {}
+
 std::unique_ptr<policy::PolicyConversionsClient>
 FakeProfileReportGeneratorDelegate::MakePolicyConversionsClient(
     bool is_machine_scope) {

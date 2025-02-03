@@ -45,7 +45,6 @@ void ProfileReportGenerator::SetExtensionsEnabledCallback(
 
 std::unique_ptr<em::ChromeUserProfileInfo>
 ProfileReportGenerator::MaybeGenerate(const base::FilePath& path,
-                                      const std::string& name,
                                       ReportType report_type) {
   if (!delegate_->Init(path)) {
     return nullptr;
@@ -64,10 +63,10 @@ ProfileReportGenerator::MaybeGenerate(const base::FilePath& path,
       NOTREACHED();
   }
 
-  report_->set_name(name);
   report_->set_is_detail_available(true);
 
   delegate_->GetSigninUserInfo(report_.get());
+  delegate_->GetProfileName(report_.get());
 
 #if !BUILDFLAG(IS_CHROMEOS)
   delegate_->GetAffiliationInfo(report_.get());

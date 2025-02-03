@@ -143,18 +143,16 @@ class ProfileReportGeneratorTest : public ::testing::Test {
   }
 
   std::unique_ptr<em::ChromeUserProfileInfo> GenerateReport(
-      const base::FilePath& path,
-      const std::string& name) {
+      const base::FilePath& path) {
     std::unique_ptr<em::ChromeUserProfileInfo> report =
-        generator_.MaybeGenerate(path, name, ReportType::kFull);
+        generator_.MaybeGenerate(path, ReportType::kFull);
     return report;
   }
 
   std::unique_ptr<em::ChromeUserProfileInfo> GenerateReport() {
-    auto report =
-        GenerateReport(profile()->GetPath(), profile()->GetProfileUserName());
+    auto report = GenerateReport(profile()->GetPath());
     EXPECT_TRUE(report);
-    EXPECT_EQ(profile()->GetProfileUserName(), report->name());
+    EXPECT_EQ(GetProfileName(), report->name());
     EXPECT_EQ(profile()->GetPath().AsUTF8Unsafe(), report->id());
     EXPECT_TRUE(report->is_detail_available());
 
@@ -188,8 +186,17 @@ class ProfileReportGeneratorTest : public ::testing::Test {
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
+  std::string GetProfileName() {
+    ProfileAttributesEntry* entry =
+        testing_profile_manager()
+            ->profile_manager()
+            ->GetProfileAttributesStorage()
+            .GetProfileAttributesWithPath(profile()->GetPath());
+    return base::UTF16ToUTF8(entry->GetName());
+  }
+
   TestingProfile* profile() { return profile_; }
-  TestingProfileManager* profile_manager() { return &profile_manager_; }
+  TestingProfileManager* testing_profile_manager() { return &profile_manager_; }
 
   PlatformReportingDelegateFactory reporting_delegate_factory_;
   ProfileReportGenerator generator_;
@@ -205,14 +212,14 @@ class ProfileReportGeneratorTest : public ::testing::Test {
 
 TEST_F(ProfileReportGeneratorTest, ProfileNotActivated) {
   const base::FilePath profile_path =
-      profile_manager()->profiles_dir().AppendASCII(kIdleProfile);
+      testing_profile_manager()->profiles_dir().AppendASCII(kIdleProfile);
   ProfileAttributesInitParams params;
   params.profile_path = profile_path;
   params.profile_name = kIdleProfile16;
-  profile_manager()->profile_attributes_storage()->AddProfile(
+  testing_profile_manager()->profile_attributes_storage()->AddProfile(
       std::move(params));
   std::unique_ptr<em::ChromeUserProfileInfo> response =
-      generator_.MaybeGenerate(profile_path, kIdleProfile, ReportType::kFull);
+      generator_.MaybeGenerate(profile_path, ReportType::kFull);
   ASSERT_FALSE(response.get());
 }
 
@@ -255,24 +262,21 @@ TEST_F(ProfileReportGeneratorTest,
 
 TEST_F(ProfileReportGeneratorTest, ProfileIdObfuscate) {
   auto report = generator_.MaybeGenerate(profile()->GetPath(),
-                                         profile()->GetProfileUserName(),
                                          ReportType::kProfileReport);
   ASSERT_TRUE(report);
-  EXPECT_EQ(profile()->GetProfileUserName(), report->name());
+  EXPECT_EQ(GetProfileName(), report->name());
   EXPECT_NE(profile()->GetPath().AsUTF8Unsafe(), report->id());
   EXPECT_TRUE(report->is_detail_available());
 
   auto report2 = generator_.MaybeGenerate(profile()->GetPath(),
-                                          profile()->GetProfileUserName(),
                                           ReportType::kProfileReport);
   // Profile id is obfuscated with `kProfileReport` type, but the obfuscated
   // result is consistent.
   EXPECT_EQ(report->id(), report2->id());
 
   TestingProfile* another_profile =
-      profile_manager()->CreateTestingProfile("another_profile");
+      testing_profile_manager()->CreateTestingProfile("another_profile");
   auto report3 = generator_.MaybeGenerate(another_profile->GetPath(),
-                                          another_profile->GetProfileUserName(),
                                           ReportType::kProfileReport);
   // Different profiles' id will be different even after obfuscation.
   EXPECT_NE(report->id(), report3->id());
