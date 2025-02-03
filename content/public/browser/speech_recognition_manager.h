@@ -16,7 +16,6 @@
 namespace content {
 
 struct SpeechRecognitionAudioForwarderConfig;
-class SpeechRecognitionEventListener;
 struct SpeechRecognitionSessionConfig;
 struct SpeechRecognitionSessionContext;
 
