@@ -158,7 +158,7 @@ void FormTracker::TextFieldValueChanged(const WebFormControlElement& element) {
   weak_ptr_factory_.InvalidateWeakPtrs();
   unsafe_render_frame()
       ->GetWebFrame()
-      ->GetTaskRunner(blink::TaskType::kInternalUserInteraction)
+      ->GetTaskRunner(blink::TaskType::kInternalAutofill)
       ->PostTask(FROM_HERE,
                  base::BindRepeating(&FormTracker::FormControlDidChangeImpl,
                                      weak_ptr_factory_.GetWeakPtr(),
@@ -176,7 +176,7 @@ void FormTracker::SelectControlSelectionChanged(
   weak_ptr_factory_.InvalidateWeakPtrs();
   unsafe_render_frame()
       ->GetWebFrame()
-      ->GetTaskRunner(blink::TaskType::kInternalUserInteraction)
+      ->GetTaskRunner(blink::TaskType::kInternalAutofill)
       ->PostTask(FROM_HERE,
                  base::BindRepeating(&FormTracker::FormControlDidChangeImpl,
                                      weak_ptr_factory_.GetWeakPtr(),

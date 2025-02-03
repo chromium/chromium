@@ -795,6 +795,7 @@ message RendererMainThreadTaskExecution {
     TASK_TYPE_CLIPBOARD = 85;
     TASK_TYPE_MACHINE_LEARNING = 86;
     TASK_TYPE_MAIN_THREAD_TASK_QUEUE_V8_BEST_EFFORT = 87;
+    TASK_TYPE_INTERNAL_AUTOFILL = 88;
   }
 
   enum FrameType {

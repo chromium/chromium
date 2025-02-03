@@ -213,6 +213,8 @@ RendererMainThreadTaskExecution::TaskType TaskTypeToProto(TaskType task_type) {
     case TaskType::kInternalPostMessageForwarding:
       return RendererMainThreadTaskExecution::
           TASK_TYPE_INTERNAL_POST_MESSAGE_FORWARDING;
+    case TaskType::kInternalAutofill:
+      return RendererMainThreadTaskExecution::TASK_TYPE_INTERNAL_AUTOFILL;
   }
 }
 
