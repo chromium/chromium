@@ -1171,6 +1171,13 @@ public class PaymentRequestService
         return mBrowserPaymentRequest.getDialogController();
     }
 
+    // Implements PaymentAppFactoryDelegate:
+    @Override
+    @Nullable
+    public Integer getPayIntentErrorStringId() {
+        return mBrowserPaymentRequest.getPayIntentErrorStringId();
+    }
+
     /**
      * @param methodDataList A list of PaymentMethodData.
      * @return The validated method data, a mapping of method names to its PaymentMethodData(s);

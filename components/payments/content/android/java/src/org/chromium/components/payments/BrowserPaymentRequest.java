@@ -228,7 +228,9 @@ public interface BrowserPaymentRequest {
         return false;
     }
 
-    /** @return A dialog controller for displaying informational or warning messages. */
+    /**
+     * @return A dialog controller for displaying informational or warning messages.
+     */
     DialogController getDialogController();
 
     /**
@@ -236,5 +238,13 @@ public interface BrowserPaymentRequest {
      *     Can return null when ANDROID_PAYMENT_INTENTS_OMIT_DEPRECATED_PARAMETERS is enabled or
      *     when the page is localhost or is a file.
      */
-    @Nullable byte[][] getCertificateChain();
+    @Nullable
+    byte[][] getCertificateChain();
+
+    /**
+     * @return The string resource ID of the error string to be shown if activity is paused before
+     *     intent results from the Android payment app, or null if no message is required.
+     */
+    @Nullable
+    Integer getPayIntentErrorStringId();
 }

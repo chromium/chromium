@@ -195,13 +195,9 @@ android_library("full_java") {
     "java/src/org/chromium/components/payments/intent/IsReadyToPayServiceHelper.java",
     "java/src/org/chromium/components/payments/intent/WebPaymentIntentHelperTypeConverter.java",
   ]
-  resources_package = "org.chromium.components.payments"
   deps = [
     ":browser_binding_java",
     ":feature_list_java",
-
-    # TODO(crbug.com/382867337): Non-UI code should not depend on UI code.
-    ":java_resources",
     ":minimal_java",
     ":pre_purchase_query_enum_java",
     ":service_java",
@@ -230,7 +226,6 @@ android_library("full_java") {
     ":payments_journey_logger_enum_javagen",
     ":prefs_strings_generated_srcjar",
   ]
-  resources_package = "org.chromium.components.payments"
 }
 
 generate_jni("browser_binding_jni") {

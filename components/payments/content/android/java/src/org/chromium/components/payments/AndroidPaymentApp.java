@@ -98,14 +98,18 @@ public class AndroidPaymentApp extends PaymentApp
      */
     public static class LauncherImpl implements Launcher, WindowAndroid.IntentCallback {
         private final WebContents mWebContents;
+        @Nullable private final Integer mErrorId;
         private Callback<IntentResult> mIntentCallback;
 
         /**
          * @param webContents The web contents whose WindowAndroid should be used for invoking
-         * Android payment apps and receiving the result.
+         *     Android payment apps and receiving the result.
+         * @param errorId The resource identifier of the error string to be shown if activity is
+         *     paused before intent results, or null if no message is required.
          */
-        public LauncherImpl(WebContents webContents) {
+        public LauncherImpl(WebContents webContents, @Nullable Integer errorId) {
             mWebContents = webContents;
+            mErrorId = errorId;
         }
 
         // Launcher implementation.
@@ -129,8 +133,7 @@ public class AndroidPaymentApp extends PaymentApp
 
             mIntentCallback = intentCallback;
             try {
-                if (!window.showIntent(
-                        intent, /* callback= */ this, R.string.payments_android_app_error)) {
+                if (!window.showIntent(intent, /* callback= */ this, mErrorId)) {
                     errorCallback.onResult(ErrorStrings.PAYMENT_APP_LAUNCH_FAIL);
                 }
             } catch (SecurityException e) {

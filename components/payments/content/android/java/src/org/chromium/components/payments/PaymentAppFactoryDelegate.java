@@ -4,6 +4,8 @@
 
 package org.chromium.components.payments;
 
+import androidx.annotation.Nullable;
+
 /**
  * Interface for providing information to a payment app factory and receiving the list of payment
  * apps.
@@ -61,9 +63,18 @@ public interface PaymentAppFactoryDelegate {
     CSPChecker getCSPChecker();
 
     /**
-     * @return An instance of a dailog for displaying informational or warning messages.
+     * @return An instance of a dialog for displaying informational or warning messages.
      */
     default DialogController getDialogController() {
+        return null;
+    }
+
+    /**
+     * @return The string resource ID of the error string to be shown if activity is paused before
+     *     intent results from the Android payment app, or null if no message is required.
+     */
+    @Nullable
+    default Integer getPayIntentErrorStringId() {
         return null;
     }
 }
