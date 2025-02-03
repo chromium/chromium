@@ -1258,10 +1258,10 @@ public class NotificationPlatformBridgeTest {
         // Verify the confirmation notification.
         Notification confirmationNotification = notifications.get(3).getNotification();
         Assert.assertEquals(
-                "Chrome will stop flagging notifications from "
-                        + mPermissionTestRule.getOrigin()
-                        + " as spam",
-                NotificationTestUtil.getExtraTitle(confirmationNotification));
+                "Always allow", NotificationTestUtil.getExtraTitle(confirmationNotification));
+        Assert.assertEquals(
+                "Chrome will stop flagging notifications from this site as spam",
+                NotificationTestUtil.getExtraText(confirmationNotification));
         Assert.assertNull(confirmationNotification.actions);
 
         // Validate histogram is logged.
@@ -1406,10 +1406,10 @@ public class NotificationPlatformBridgeTest {
         // Verify the confirmation notification.
         Notification confirmationNotification = notifications.get(1).getNotification();
         Assert.assertEquals(
-                "Chrome will stop flagging notifications from "
-                        + mPermissionTestRule.getOrigin()
-                        + " as spam",
-                NotificationTestUtil.getExtraTitle(confirmationNotification));
+                "Always allow", NotificationTestUtil.getExtraTitle(confirmationNotification));
+        Assert.assertEquals(
+                "Chrome will stop flagging notifications from this site as spam",
+                NotificationTestUtil.getExtraText(confirmationNotification));
         Assert.assertNull(confirmationNotification.actions);
     }
 

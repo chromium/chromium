@@ -18688,7 +18688,10 @@ Please help our engineers fix this problem. Tell us what happened right before y
 
 
   <message name="IDS_CHROME_NO_LONGER_SHOW_WARNINGS_NOTIFICATION_TITLE" desc="The title for the notification sent by Chrome informing the user that their decision to never show warnings for the url has been applied.">
-    Chrome will stop flagging notifications from <ph name="URL">$1<ex>https://www.example-url.com/</ex></ph> as spam
+    Always allow
+  </message>
+  <message name="IDS_CHROME_NO_LONGER_SHOW_WARNINGS_NOTIFICATION_BODY" desc="The body for the notification sent by Chrome informing the user that their decision to never show warnings for the url has been applied.">
+    Chrome will stop flagging notifications from this site as spam
   </message>
 
      <!-- Merchant Trust IPH strings -->
