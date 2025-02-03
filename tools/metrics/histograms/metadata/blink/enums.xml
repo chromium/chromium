@@ -5873,6 +5873,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5275" label="V8AIWriter_OutputLanguage_AttributeGetter"/>
   <int value="5276" label="GridAutoFlowColumnDense"/>
   <int value="5277" label="GridAutoFlowRowDense"/>
+  <int value="5278" label="SchedulerPostTaskAbortBeforeRunning"/>
+  <int value="5279" label="SchedulerPostTaskAsyncAbort"/>
+  <int value="5280" label="SchedulerPostTaskSelfAbort"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
