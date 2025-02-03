@@ -11,6 +11,9 @@ NSString* const kShortcutQRScanner = @"OpenQRScanner";
 NSString* const kShortcutLensFromAppIconLongPress =
     @"OpenLensFromAppIconLongPress";
 NSString* const kShortcutLensFromSpotlight = @"OpenLensFromSpotlight";
+NSString* const kShortcutChangeWidgetToAppIcon =
+    @"com.apple.springboardhome.application-shortcut-item.change-widget-to-app-"
+     "icon";
 
 NSString* const kSiriShortcutAddBookmarkToChrome = @"AddBookmarkToChromeIntent";
 NSString* const kSiriShortcutAddReadingListItemToChrome =

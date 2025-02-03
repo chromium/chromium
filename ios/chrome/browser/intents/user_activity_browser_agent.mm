@@ -640,6 +640,12 @@ BOOL UserActivityBrowserAgent::HandleShortcutItem(
     startup_params.postOpeningAction = START_LENS_FROM_SPOTLIGHT;
     connection_information_.startupParameters = startup_params;
     return YES;
+  } else if ([shortcut_item.type
+                 isEqualToString:kShortcutChangeWidgetToAppIcon]) {
+    // This intent is already handled by the OS, the default action for this
+    // intent is to open the app, no additional handling is needed. Check
+    // crbug.com/384806920 for additional info.
+    return NO;
   }
 
   // Use 16 as the maximum length of the reported value for this key (15
