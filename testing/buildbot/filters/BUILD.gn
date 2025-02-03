@@ -88,8 +88,6 @@ source_set("browser_tests_filters") {
     "//testing/buildbot/filters/code_coverage.browser_tests.filter",
     "//testing/buildbot/filters/fuchsia.browser_tests.filter",
     "//testing/buildbot/filters/linux-chromeos.browser_tests.pixel_tests.filter",
-    "//testing/buildbot/filters/linux-chromeos.browser_tests.require_lacros.filter",
-    "//testing/buildbot/filters/linux-lacros.browser_tests.filter",
     "//testing/buildbot/filters/linux.linux-rel-cft.browser_tests.filter",
     "//testing/buildbot/filters/mac.mac-rel-cft.browser_tests.filter",
     "//testing/buildbot/filters/mac.mac-rel.browser_tests.filter",
@@ -155,10 +153,8 @@ source_set("chromeos_filters") {
 source_set("components_unittests_filters") {
   testonly = true
 
-  data = [
-    "//testing/buildbot/filters/android.mte.components_unittests.filter",
-    "//testing/buildbot/filters/linux-lacros.components_unittests.filter",
-  ]
+  data =
+      [ "//testing/buildbot/filters/android.mte.components_unittests.filter" ]
 }
 
 bundle_data("base_unittests_filters_bundle_data") {
@@ -219,7 +215,6 @@ source_set("content_browsertests_filters") {
     "//testing/buildbot/filters/cast-linux.content_browsertests.filter",
     "//testing/buildbot/filters/chromium.webrtc.fyi.android.tests.dbg.content_browsertests.filter",
     "//testing/buildbot/filters/fuchsia.coverage.content_browsertests.filter",
-    "//testing/buildbot/filters/linux-lacros.content_browsertests.filter",
     "//testing/buildbot/filters/site_isolation_android.content_browsertests.filter",
     "//testing/buildbot/filters/trees_in_viz.content_browsertests.filter",
     "//testing/buildbot/filters/vulkan.content_browsertests.filter",
@@ -286,10 +281,7 @@ source_set("device_unittests_filters") {
 source_set("sync_integration_tests_filters") {
   testonly = true
 
-  data = [
-    "//testing/buildbot/filters/e2e.sync_integration_tests.filter",
-    "//testing/buildbot/filters/linux-lacros.sync_integration_tests.filter",
-  ]
+  data = [ "//testing/buildbot/filters/e2e.sync_integration_tests.filter" ]
 }
 
 source_set("compositor_unittests_filters") {
@@ -394,8 +386,6 @@ source_set("interactive_ui_tests_filters") {
 
   data = [
     "//testing/buildbot/filters/accessibility-linux.interactive_ui_tests.filter",
-    "//testing/buildbot/filters/linux-lacros.interactive_ui_tests.filter",
-    "//testing/buildbot/filters/linux-lacros.interactive_ui_tests.skew.filter",
     "//testing/buildbot/filters/linux.linux-rel-cft.interactive_ui_tests.filter",
     "//testing/buildbot/filters/mac.mac11-arm64-rel.interactive_ui_tests.filter",
     "//testing/buildbot/filters/mac.mac-rel-cft.interactive_ui_tests.filter",
@@ -434,10 +424,7 @@ source_set("net_unittests_filters") {
 }
 
 source_set("ozone_unittests_filters") {
-  data = [
-    "//testing/buildbot/filters/chromeos.ozone_unittests.filter",
-    "//testing/buildbot/filters/lacros-arm.ozone_unittests.filter",
-  ]
+  data = [ "//testing/buildbot/filters/chromeos.ozone_unittests.filter" ]
 }
 
 source_set("unit_tests_filters") {
@@ -448,7 +435,6 @@ source_set("unit_tests_filters") {
     "//testing/buildbot/filters/android.desktop.emulator_14.unit_tests.filter",
     "//testing/buildbot/filters/android.desktop.emulator_15.unit_tests.filter",
     "//testing/buildbot/filters/android.emulator_14_15_16.unit_tests.filter",
-    "//testing/buildbot/filters/linux-lacros.unit_tests.filter",
     "//testing/buildbot/filters/ozone-linux.unit_tests_wayland.filter",
     "//testing/buildbot/filters/android.device_14_tablet.unit_tests.filter",
   ]
@@ -462,7 +448,6 @@ source_set("viz_unittests_filters") {
     "//testing/buildbot/filters/android.emulator_15.viz_unittests.filter",
     "//testing/buildbot/filters/fuchsia.debug.viz_unittests.filter",
     "//testing/buildbot/filters/fuchsia.viz_unittests.filter",
-    "//testing/buildbot/filters/lacros-arm.viz_unittests.filter",
   ]
 }
 
