@@ -4913,6 +4913,10 @@ const char kOmahaMinSdkVersionAndroidMinSdk1000Description[] =
 const char kVideoTutorialsName[] = "Enable video tutorials";
 const char kVideoTutorialsDescription[] = "Show video tutorials in Chrome";
 
+const char kCCTAdaptiveButtonName[] = "Adaptive button in Custom Tabs";
+const char kCCTAdaptiveButtonDescription[] =
+    "Enables adaptive action button in Custom Tabs toolbar";
+
 const char kAdaptiveButtonInTopToolbarPageSummaryName[] =
     "Adaptive button in top toolbar - Page Summary";
 const char kAdaptiveButtonInTopToolbarPageSummaryDescription[] =

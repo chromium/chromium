@@ -2460,6 +2460,9 @@ extern const char
 extern const char kAccountBookmarksAndReadingListBehindOptInName[];
 extern const char kAccountBookmarksAndReadingListBehindOptInDescription[];
 
+extern const char kCCTAdaptiveButtonName[];
+extern const char kCCTAdaptiveButtonDescription[];
+
 extern const char kAdaptiveButtonInTopToolbarCustomizationName[];
 extern const char kAdaptiveButtonInTopToolbarCustomizationDescription[];
 extern const char kAdaptiveButtonInTopToolbarPageSummaryName[];
