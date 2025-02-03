@@ -34,9 +34,9 @@ SPECIFIC_INCLUDE_RULES_VAR_NAME = 'specific_include_rules'
 SKIP_SUBDIRS_VAR_NAME = 'skip_child_includes'
 
 # Optionally discard rules from parent directories, similar to "noparent" in
-# OWNERS files. For example, if //ash/components has "noparent = True" then
-# it will not inherit rules from //ash/DEPS, forcing each //ash/component/foo
-# to declare all its dependencies.
+# OWNERS files. For example, if //chromeos/ash/experiences has "noparent = True"
+# then it will not inherit rules from //chromeos/ash/DEPS, forcing each
+# //chromeos/ash/experiences/foo to declare all its dependencies.
 NOPARENT_VAR_NAME = 'noparent'
 
 

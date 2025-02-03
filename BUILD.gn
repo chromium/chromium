@@ -459,12 +459,12 @@ group("gn_all") {
     if (is_chromeos_ash) {
       deps += [
         "//ash:ash_unittests",
-        "//ash/components:ash_components_unittests",
         "//ash/keyboard/ui:keyboard_unittests",
         "//ash/webui:ash_webui_unittests",
         "//chrome/browser/ash/child_accounts/time_limit_consistency_test:usage_time_limit_unittests",
         "//chrome/browser/metrics/perf:profile_provider_unittest",
         "//chromeos/ash/components/proximity_auth:proximity_auth_unittests",
+        "//chromeos/ash/experiences:ash_components_unittests",
         "//chromeos/components:chromeos_components_unittests",
         "//components/exo/wayland:wayland_client_compatibility_tests",
         "//components/session_manager/core",

@@ -125,7 +125,7 @@
     "type": "windowed_test_launcher",
   },
   "ash_components_unittests": {
-    "label": "//ash/components:ash_components_unittests",
+    "label": "//chromeos/ash/experiences:ash_components_unittests",
     "type": "windowed_test_launcher",
   },
   "ash_pixeltests": {
