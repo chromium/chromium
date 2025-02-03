@@ -70,6 +70,7 @@ class CORE_EXPORT StyleCascade {
 
   using CSSPendingSubstitutionValue = cssvalue::CSSPendingSubstitutionValue;
   using CSSFlipRevertValue = cssvalue::CSSFlipRevertValue;
+  struct FunctionContext;
 
  public:
   StyleCascade(StyleResolverState& state) : state_(state) {}
@@ -381,6 +382,7 @@ class CORE_EXPORT StyleCascade {
 
   CSSVariableData* ResolveVariableData(CSSVariableData*,
                                        const CSSParserContext&,
+                                       FunctionContext*,
                                        CascadeResolver&);
 
   // Certain parts of CSS function evaluation may need some local context
@@ -398,11 +400,8 @@ class CORE_EXPORT StyleCascade {
   // var()). For a var() that is evaluated in the context of a function, we try
   // the following things, in order:
   //
-  //  1. If there is a matching local variable, resolve any substitution
-  //     functions in its value, and substitute the result.
+  //  1. If there is a matching local variable, substitute its value.
   //  2. Otherwise, if there is a matching argument, substitute its value.
-  //     Note that argument values (stored within FunctionContext) never
-  //     contain substitution functions.
   //  3. Otherwise, if there is a matching custom property, substitute its
   //     computed value.
   //  4. Otherwise, if there is a fallback, resolve any substitution functions
@@ -412,14 +411,21 @@ class CORE_EXPORT StyleCascade {
     STACK_ALLOCATED();
 
    public:
-    // Note that `arguments` only contains resolved values, meaning that
-    // they never contain any substitution functions, such as var().
-    // This is because arguments are evaluated at the call site.
+    // The values within `arguments` and `locals` are the values used
+    // to substitute var() functions that refer to arguments and local
+    // variables (respectively).
+    //
+    // These maps never contain any unresolved substitution functions.
+    // Arguments are resolved eagerly at the call site, and locals are resolved
+    // through the process described in "Application of Local Variables"
+    // near `ApplyLocalVariables` in this file.
     HeapHashMap<String, Member<const CSSValue>> arguments;
-    // Locals, however, are stored here unresolved; they *may* contain
-    // substitution functions, such as var(). This is because locals,
-    // unlike arguments, can refer to other locals using var().
     HeapHashMap<String, Member<const CSSValue>> locals;
+
+    // Contains the *specified* locals, with any var() (etc) intact.
+    // This is needed by the process that populates the `locals` map,
+    // see "Application of Local Variables".
+    const HeapHashMap<String, Member<const CSSValue>>& unresolved_locals;
   };
 
   // The Resolve*Into functions either resolve dependencies, append to the
@@ -433,13 +439,13 @@ class CORE_EXPORT StyleCascade {
   bool ResolveTokensInto(CSSParserTokenStream&,
                          CascadeResolver&,
                          const CSSParserContext&,
-                         const FunctionContext*,
+                         FunctionContext*,
                          CSSParserTokenType stop_type,
                          TokenSequence&);
   bool ResolveVarInto(CSSParserTokenStream&,
                       CascadeResolver&,
                       const CSSParserContext&,
-                      const FunctionContext*,
+                      FunctionContext*,
                       TokenSequence&);
   bool ResolveEnvInto(CSSParserTokenStream&,
                       CascadeResolver&,
@@ -473,22 +479,57 @@ class CORE_EXPORT StyleCascade {
                            CSSParserTokenStream& stream,
                            CascadeResolver& resolver,
                            const CSSParserContext& context,
-                           const FunctionContext* function_context,
+                           FunctionContext* function_context,
                            TokenSequence& out);
-  bool ResolveArgumentOrLocalInto(const CSSValue& value,
+  bool ResolveArgumentOrLocalInto(const CSSValue* value,
                                   CSSParserTokenStream& stream,
                                   CascadeResolver& resolver,
                                   const CSSParserContext& context,
-                                  const FunctionContext* function_context,
                                   const TokenSequence* fallback,
                                   TokenSequence& out);
 
-  const CSSValue* ResolveFunctionExpression(
-      StringView expr,
-      const CSSSyntaxDefinition& type,
-      CascadeResolver& resolver,
-      const CSSParserContext& context,
-      const FunctionContext* function_context);
+  const CSSValue* ResolveFunctionExpression(StringView expr,
+                                            const CSSSyntaxDefinition& type,
+                                            CascadeResolver& resolver,
+                                            const CSSParserContext& context,
+                                            FunctionContext* function_context);
+
+  // Application of Local Variables
+  // ==============================
+  //
+  // Just as custom properties are applied to a ComputedStyle,
+  // local variables are applied to a FunctionContext. In both cases,
+  // a crucial part of the "apply" process is eliminating any substitution
+  // functions in the specified value. This gives rise to a dependency graph
+  // of local variables---one that can even contain cycles.
+  //
+  // ApplyLocalVariables goes though each specified local variable (in an order
+  // determined by the HashMap backing), resolves any substitution functions
+  // (ResolveLocalVariable), and stores the resolved value into
+  // FunctionContext::locals.
+  //
+  //   @function --f() {
+  //     --x: 42px;
+  //     --y: var(--x);
+  //     --z: var(--y);
+  //     /* ... */
+  //   }
+  //
+  // In the example above, --z refers to --y which refers to --x. If we happen
+  // to resolve --z first, then --y is also resolved as part of resolving
+  // the var(--y) within --z's value. This on-demand resolution of referenced
+  // local variables is done by LookupAndApplyLocalVariable.
+  void ApplyLocalVariables(CascadeResolver&,
+                           const CSSParserContext&,
+                           FunctionContext&);
+  void LookupAndApplyLocalVariable(const String& name,
+                                   CascadeResolver&,
+                                   const CSSParserContext&,
+                                   FunctionContext&);
+  const CSSValue* ResolveLocalVariable(const CSSValue&,
+                                       CascadeResolver&,
+                                       const CSSParserContext&,
+                                       FunctionContext&);
 
   CSSVariableData* GetVariableData(const CustomProperty&) const;
   CSSVariableData* GetEnvironmentVariable(const AtomicString&,

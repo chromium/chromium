@@ -187,12 +187,12 @@ bool IsInterpolation(CascadePriority priority) {
   }
 }
 
-const CSSValue* FindOrNull(
+std::optional<const CSSValue*> FindOrNullopt(
     const HeapHashMap<String, Member<const CSSValue>>& map,
     const String& key) {
   auto it = map.find(key);
   if (it == map.end()) {
-    return nullptr;
+    return std::nullopt;
   }
   return it->value.Get();
 }
@@ -1080,7 +1080,8 @@ const CSSValue* StyleCascade::ResolveCustomProperty(
   CSSVariableData* data = decl.VariableDataValue();
 
   if (data->NeedsVariableResolution()) {
-    data = ResolveVariableData(data, *GetParserContext(decl), resolver);
+    data = ResolveVariableData(data, *GetParserContext(decl),
+                               /*function_context=*/nullptr, resolver);
   }
 
   if (HasFontSizeDependency(To<CustomProperty>(property), data)) {
@@ -1325,15 +1326,15 @@ const CSSValue* StyleCascade::ResolveMathFunction(
 CSSVariableData* StyleCascade::ResolveVariableData(
     CSSVariableData* data,
     const CSSParserContext& context,
+    FunctionContext* function_context,
     CascadeResolver& resolver) {
   DCHECK(data && data->NeedsVariableResolution());
 
   TokenSequence sequence(data);
 
   CSSParserTokenStream stream(data->OriginalText());
-  if (!ResolveTokensInto(stream, resolver, context,
-                         /* function_context */ nullptr,
-                         /* stop_type */ kEOFToken, sequence)) {
+  if (!ResolveTokensInto(stream, resolver, context, function_context,
+                         /*stop_type=*/kEOFToken, sequence)) {
     return nullptr;
   }
 
@@ -1343,7 +1344,7 @@ CSSVariableData* StyleCascade::ResolveVariableData(
 bool StyleCascade::ResolveTokensInto(CSSParserTokenStream& stream,
                                      CascadeResolver& resolver,
                                      const CSSParserContext& context,
-                                     const FunctionContext* function_context,
+                                     FunctionContext* function_context,
                                      CSSParserTokenType stop_type,
                                      TokenSequence& out) {
   bool success = true;
@@ -1411,7 +1412,7 @@ bool StyleCascade::ResolveTokensInto(CSSParserTokenStream& stream,
 bool StyleCascade::ResolveVarInto(CSSParserTokenStream& stream,
                                   CascadeResolver& resolver,
                                   const CSSParserContext& context,
-                                  const FunctionContext* function_context,
+                                  FunctionContext* function_context,
                                   TokenSequence& out) {
   AtomicString var_name = ConsumeVariableName(stream);
   DCHECK(stream.AtEnd() || (stream.Peek().GetType() == kCommaToken));
@@ -1452,35 +1453,25 @@ bool StyleCascade::ResolveVarInto(CSSParserTokenStream& stream,
   //
   // https://drafts.csswg.org/css-mixins-1/#locally-substitute-a-var
   if (function_context) {
-    // TODO(crbug.com/325504770): Handle cycles.
-
     // Locals shadow arguments, which shadow custom properties
     // from the element.
-    //
-    // Note that for arguments, there's nothing to actually resolve within
-    // the value; substitution functions were already eliminated at the
-    // call site by ResolveFunctionInto. We're still using ResolveTokensInto,
-    // since it's the most convenient way to "paste" the value into `out`.
-    //
-    // TODO(crbug.com/325504770): Avoid tokenization/ResolveTokensInto
-    // for arguments.
-    //
-    // For locals, we do need to resolve var() (etc) here, but we should
-    // probably find a way to not repeat work for multiple references to
-    // the same substitution. E.g. for --c:var(--a);--b:var(--a)--a:<stuff>,
-    // we should resolve <stuff> only once.
-    //
-    // TODO(crbug.com/325504770): Cache local resolves, as described above.
-    if (const CSSValue* local_variable =
-            FindOrNull(function_context->locals, var_name)) {
+
+    // Ensure that any local variable with a matching name is applied
+    // (i.e. exists on function_context->locals).
+    // TODO(crbug.com/325504770): This may create cycles.
+    LookupAndApplyLocalVariable(var_name, resolver, context, *function_context);
+    if (std::optional<const CSSValue*> local_variable =
+            FindOrNullopt(function_context->locals, var_name)) {
       return ResolveArgumentOrLocalInto(
-          *local_variable, stream, resolver, context, function_context,
+          local_variable.value(), stream, resolver, context,
           (has_fallback ? &fallback : nullptr), out);
     }
-    if (const CSSValue* argument =
-            FindOrNull(function_context->arguments, var_name)) {
+    // Note that there is no "lookup and apply" step for arguments; one argument
+    // cannot reference another using var() or similar.
+    if (std::optional<const CSSValue*> argument =
+            FindOrNullopt(function_context->arguments, var_name)) {
       return ResolveArgumentOrLocalInto(
-          *argument, stream, resolver, context, function_context,
+          argument.value(), stream, resolver, context,
           (has_fallback ? &fallback : nullptr), out);
     }
   }
@@ -1548,7 +1539,7 @@ bool StyleCascade::ResolveFunctionInto(StringView function_name,
                                        CSSParserTokenStream& stream,
                                        CascadeResolver& resolver,
                                        const CSSParserContext& context,
-                                       const FunctionContext* function_context,
+                                       FunctionContext* function_context,
                                        TokenSequence& out) {
   state_.StyleBuilder().SetAffectedByCSSFunction();
 
@@ -1638,16 +1629,16 @@ bool StyleCascade::ResolveFunctionInto(StringView function_name,
   const CSSPropertyValueSet& propety_value_set =
       function_declarations->Properties();
 
-  // Collect local variables. Any substitution functions found within relevant
-  // locals will be substituted during the call to ResolveFunctionExpression
-  // for the 'result' descriptor; they are not substituted here.
-  HeapHashMap<String, Member<const CSSValue>> locals;
+  // Collect local variables from the rule into a map. This is needed
+  // for ApplyLocalVariables, see documentation in the header file.
+  HeapHashMap<String, Member<const CSSValue>> unresolved_locals;
   for (const CSSPropertyValue& property_value :
        propety_value_set.Properties()) {
     if (property_value.PropertyID() == CSSPropertyID::kVariable) {
       const auto& unresolved_local =
           To<CSSUnparsedDeclarationValue>(property_value.Value());
-      locals.insert(property_value.CustomPropertyName(), &unresolved_local);
+      unresolved_locals.insert(property_value.CustomPropertyName(),
+                               &unresolved_local);
     }
   }
 
@@ -1657,7 +1648,12 @@ bool StyleCascade::ResolveFunctionInto(StringView function_name,
     return false;
   }
 
-  FunctionContext local_function_context{function_arguments, locals};
+  FunctionContext local_function_context{
+      .arguments = function_arguments,
+      .locals = {},  // Populated by ApplyLocalVariables.
+      .unresolved_locals = unresolved_locals};
+  ApplyLocalVariables(resolver, context, local_function_context);
+
   const CSSValue* ret_value = ResolveFunctionExpression(
       unresolved_result->VariableDataValue()->OriginalText(),
       function->GetReturnType(), resolver, context, &local_function_context);
@@ -1672,19 +1668,24 @@ bool StyleCascade::ResolveFunctionInto(StringView function_name,
                            /* stop_type */ kEOFToken, out);
 }
 
-bool StyleCascade::ResolveArgumentOrLocalInto(
-    const CSSValue& value,
-    CSSParserTokenStream& stream,
-    CascadeResolver& resolver,
-    const CSSParserContext& context,
-    const FunctionContext* function_context,
-    const TokenSequence* fallback,
-    TokenSequence& out) {
-  String value_str = value.CssText();
-  CSSParserTokenStream value_stream(value_str);
-  bool success =
-      ResolveTokensInto(value_stream, resolver, context, function_context,
-                        /* stop_type */ kEOFToken, out);
+bool StyleCascade::ResolveArgumentOrLocalInto(const CSSValue* value,
+                                              CSSParserTokenStream& stream,
+                                              CascadeResolver& resolver,
+                                              const CSSParserContext& context,
+                                              const TokenSequence* fallback,
+                                              TokenSequence& out) {
+  // Note: `value` may be nullptr when a locals variable became invalid
+  // due to e.g. failed substitutions.
+  bool success = false;
+  if (value) {
+    // TODO(crbug.com/393924687): There is nothing to resolve at this point.
+    // Just append the CSSVariableData directly.
+    String value_str = value->CssText();
+    CSSParserTokenStream value_stream(value_str);
+    success = ResolveTokensInto(value_stream, resolver, context,
+                                /*function_context=*/nullptr,
+                                /*stop_type=*/kEOFToken, out);
+  }
   if (!success && fallback) {
     success = out.AppendFallback(*fallback,
                                  !fallback->GetAttrTaintedRanges()->empty(),
@@ -1706,7 +1707,7 @@ const CSSValue* StyleCascade::ResolveFunctionExpression(
     const CSSSyntaxDefinition& type,
     CascadeResolver& resolver,
     const CSSParserContext& context,
-    const FunctionContext* function_context) {
+    FunctionContext* function_context) {
   TokenSequence resolved_expr;
 
   CSSParserTokenStream argument_stream(expr);
@@ -1729,6 +1730,62 @@ const CSSValue* StyleCascade::ResolveFunctionExpression(
   // extraneous calc(), resolve lengths and so on.
   return &StyleBuilderConverter::ConvertRegisteredPropertyValue(state_, *value,
                                                                 &context);
+}
+
+void StyleCascade::ApplyLocalVariables(CascadeResolver& resolver,
+                                       const CSSParserContext& context,
+                                       FunctionContext& function_context) {
+  for (const auto& [name, value] : function_context.unresolved_locals) {
+    if (function_context.locals.find(name) != function_context.locals.end()) {
+      // Already applied. This can happen because a call to ResolveLocalVariable
+      // may trigger application of other local variables via var().
+    }
+    const CSSValue* resolved =
+        ResolveLocalVariable(*value, resolver, context, function_context);
+    // Note: The following call may insert an explicit nullptr;
+    // this is intentional.
+    function_context.locals.insert(name, resolved);
+  }
+}
+
+void StyleCascade::LookupAndApplyLocalVariable(
+    const String& name,
+    CascadeResolver& resolver,
+    const CSSParserContext& context,
+    FunctionContext& function_context) {
+  auto resolved_it = function_context.locals.find(name);
+  if (resolved_it != function_context.locals.end()) {
+    // Already applied.
+    return;
+  }
+
+  auto unresolved_it = function_context.unresolved_locals.find(name);
+  if (unresolved_it == function_context.unresolved_locals.end()) {
+    // Does not exist.
+    return;
+  }
+
+  const CSSValue* resolved = ResolveLocalVariable(
+      *unresolved_it->value, resolver, context, function_context);
+  // Note: we may insert an explicit nullptr here; this is intentional.
+  function_context.locals.insert(name, resolved);
+}
+
+const CSSValue* StyleCascade::ResolveLocalVariable(
+    const CSSValue& unresolved,
+    CascadeResolver& resolver,
+    const CSSParserContext& context,
+    FunctionContext& function_context) {
+  CSSVariableData* data =
+      To<CSSUnparsedDeclarationValue>(unresolved).VariableDataValue();
+  if (data->NeedsVariableResolution()) {
+    data = ResolveVariableData(data, context, &function_context, resolver);
+  }
+  if (!data) {
+    return nullptr;
+  }
+  // TODO: Work with CSSVariableData directly.
+  return MakeGarbageCollected<CSSUnparsedDeclarationValue>(data, &context);
 }
 
 bool StyleCascade::ResolveEnvInto(CSSParserTokenStream& stream,
