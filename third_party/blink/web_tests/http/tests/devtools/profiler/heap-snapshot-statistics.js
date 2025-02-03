@@ -41,6 +41,7 @@ import * as ProfilerModule from 'devtools/panels/profiler/profiler.js';
     var systemObj =
         new HeapProfilerTestRunner.HeapNode('SystemObject', 900000000, HeapProfilerTestRunner.HeapNode.Type.object);
     strongRoots.linkNode(systemObj, HeapProfilerTestRunner.HeapEdge.Type.internal, '0');
+    builder.extraNativeBytes = 10;
     return builder.generateSnapshot();
   }
 
