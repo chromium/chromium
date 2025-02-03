@@ -97,6 +97,7 @@ origin_files = glob([
     # Note: Cronet currently uses Android's zlib
     # "third_party/zlib/**",
     "url/third_party/mozilla/**",
+    "third_party/simdutf/**",
   ]) + glob([
     # Note: Only used for tests.
     "third_party/quic_trace/**"
