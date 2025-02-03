@@ -2022,8 +2022,6 @@ generated_enumeration_sources_for_testing_in_core = [
 generated_interface_sources_for_testing_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_callback_function_test.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_callback_function_test.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_death_aware_script_wrappable.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_death_aware_script_wrappable.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_dictionary_test.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_dictionary_test.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_garbage_collected_script_wrappable.cc",

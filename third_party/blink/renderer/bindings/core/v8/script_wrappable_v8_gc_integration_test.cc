@@ -6,7 +6,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_controller.h"
-#include "third_party/blink/renderer/core/testing/death_aware_script_wrappable.h"
+#include "third_party/blink/renderer/core/testing/dictionary_test.h"
 #include "third_party/blink/renderer/core/testing/gc_object_liveness_observer.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "v8/include/v8.h"
@@ -29,13 +29,13 @@ TEST_F(ScriptWrappableV8GCIntegrationTest, V8ReportsLiveObjectsDuringFullGc) {
   SetIsolate(scope.GetIsolate());
 
   v8::Persistent<v8::Value> holder;
-  GCObjectLivenessObserver<DeathAwareScriptWrappable> observer;
+  GCObjectLivenessObserver<DictionaryTest> observer;
   {
     v8::HandleScope handle_scope(GetIsolate());
-    auto* object = MakeGarbageCollected<DeathAwareScriptWrappable>();
+    auto* object = MakeGarbageCollected<DictionaryTest>();
     observer.Observe(object);
 
-    holder.Reset(GetIsolate(), ToV8Traits<DeathAwareScriptWrappable>::ToV8(
+    holder.Reset(GetIsolate(), ToV8Traits<DictionaryTest>::ToV8(
                                    scope.GetScriptState(), object));
   }
 
@@ -51,14 +51,14 @@ TEST_F(ScriptWrappableV8GCIntegrationTest,
   SetIsolate(scope.GetIsolate());
 
   v8::Persistent<v8::Value> holder;
-  GCObjectLivenessObserver<DeathAwareScriptWrappable> observer;
+  GCObjectLivenessObserver<DictionaryTest> observer;
   {
     v8::HandleScope handle_scope(GetIsolate());
-    auto* object = MakeGarbageCollected<DeathAwareScriptWrappable>();
+    auto* object = MakeGarbageCollected<DictionaryTest>();
     observer.Observe(object);
 
     // Creates new V8 wrapper and associates it with global scope
-    holder.Reset(GetIsolate(), ToV8Traits<DeathAwareScriptWrappable>::ToV8(
+    holder.Reset(GetIsolate(), ToV8Traits<DictionaryTest>::ToV8(
                                    scope.GetScriptState(), object));
   }
 
@@ -75,15 +75,14 @@ TEST_F(ScriptWrappableV8GCIntegrationTest,
   V8TestingScope scope;
   SetIsolate(scope.GetIsolate());
 
-  GCObjectLivenessObserver<DeathAwareScriptWrappable> observer;
+  GCObjectLivenessObserver<DictionaryTest> observer;
   {
     v8::HandleScope handle_scope(GetIsolate());
-    auto* object = MakeGarbageCollected<DeathAwareScriptWrappable>();
+    auto* object = MakeGarbageCollected<DictionaryTest>();
     observer.Observe(object);
 
     // Creates new V8 wrapper and associates it with global scope
-    ToV8Traits<DeathAwareScriptWrappable>::ToV8(scope.GetScriptState(), object)
-        .IsEmpty();
+    ToV8Traits<DictionaryTest>::ToV8(scope.GetScriptState(), object).IsEmpty();
   }
 
   RunV8MinorGC();
