@@ -4,6 +4,7 @@
 
 #include "content/browser/browsing_topics/browsing_topics_url_loader_interceptor.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "components/browsing_topics/common/common_types.h"
 #include "content/browser/browsing_topics/header_util.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"

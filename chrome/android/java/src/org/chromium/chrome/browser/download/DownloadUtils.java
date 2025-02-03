@@ -22,6 +22,7 @@ import android.text.style.StyleSpan;
 
 import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
+import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
@@ -41,6 +42,7 @@ import org.chromium.chrome.browser.app.download.home.DownloadActivityLauncher;
 import org.chromium.chrome.browser.download.DownloadMetrics.OpenWithExternalAppsSource;
 import org.chromium.chrome.browser.download.items.OfflineContentAggregatorFactory;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.media.MediaViewerUtils;
 import org.chromium.chrome.browser.offlinepages.DownloadUiActionFlags;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
@@ -433,14 +435,15 @@ public class DownloadUtils {
             boolean isAutomotive = BuildInfo.getInstance().isAutomotive;
             Intent intent =
                     MediaViewerUtils.getMediaViewerIntent(
-                            fileUri
-                            /* displayUri= */ ,
-                            contentUri
-                            /* contentUri= */ ,
+                            /* displayUri= */ fileUri,
+                            /* contentUri= */ contentUri,
                             normalizedMimeType,
                             !isAutomotive,
                             !isAutomotive,
                             context);
+            intent.putExtra(
+                    CustomTabsIntent.EXTRA_ENABLE_EPHEMERAL_BROWSING,
+                    ChromeFeatureList.sCCTEphemeralMediaViewerExperiment.isEnabled());
             IntentHandler.startActivityForTrustedIntent(context, intent);
             service.updateLastAccessTime(downloadGuid, otrProfileId);
             return true;

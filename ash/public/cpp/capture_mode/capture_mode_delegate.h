@@ -264,6 +264,9 @@ class ASH_PUBLIC_EXPORT CaptureModeDelegate {
       const std::string& text,
       ash::OnSearchUrlFetchedCallback callback) = 0;
 
+  // Returns true if the network is currently in an offline or unknown state.
+  virtual bool IsNetworkConnectionOffline() const = 0;
+
   // Deletes the remote file under `path` and calls `callback` with result.
   virtual void DeleteRemoteFile(const base::FilePath& path,
                                 base::OnceCallback<void(bool)> callback) = 0;

@@ -5,6 +5,7 @@
 #include "chrome/browser/glic/glic_window_controller.h"
 
 #include "base/check.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic.mojom.h"
 #include "chrome/browser/glic/glic_enabling.h"

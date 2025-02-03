@@ -429,9 +429,9 @@ class ASH_EXPORT CaptureModeSession
   // coordinates.
   gfx::Rect CalculateActionContainerWidgetBounds() const;
 
-  // Removes any existing action buttons from `action_container_view_` if the
-  // `action_container_widget_` exists.
-  void RemoveAllActionButtons();
+  // Clears the contents of `action_container_view_`, including action buttons,
+  // if `action_container_widget_` exists.
+  void ClearActionContainer();
 
   // In default mode, shows the Search button and performs text detection. In
   // sunfish mode, performs image search. This may end the session, in which

@@ -89,11 +89,12 @@ class ASH_EXPORT ActionButtonContainerView : public views::View {
                                     ActionButtonRank rank,
                                     ActionButtonViewID id);
 
-  // Removes and destroys all action buttons from this container.
-  void RemoveAllActionButtons();
-
   // Returns the action buttons in this container.
   const views::View::Views& GetActionButtons() const;
+
+  // Removes and destroys all action buttons from this container. Also hides the
+  // error view if it was visible.
+  void ClearContainer();
 
   // Shows an error view with the given `error_message`. If `try_again_callback`
   // is not null, then the error view will also show a try again link that runs

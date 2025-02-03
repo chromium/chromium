@@ -253,7 +253,7 @@ vars = {
   'screen_ai_windows_386': 'version:127.13',
 
   # siso CIPD package version.
-  'siso_version': 'git_revision:0b6159c39573013a79a47f8544200df07a6a74fc',
+  'siso_version': 'git_revision:ee3af96ef0f88f93a33b9208caad206f672edf35',
 
   # download libaom test data
   'download_libaom_testdata': False,
@@ -276,7 +276,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'src_internal_revision': '873858e167300b7c415020c1a779f06d9a9a5caa',
+  'src_internal_revision': 'c8036be462248c699885f3f3888c8ff1852a72bd',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
@@ -1448,7 +1448,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    'eb8b7635823dae10e788d3a5496706eeb51cfd4f',
+    '7cedf2cc4feb896fb044f9962d9fbd3c79f3f6ec',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
@@ -1943,7 +1943,7 @@ deps = {
 
 
   'src/third_party/depot_tools':
-    Var('chromium_git') + '/chromium/tools/depot_tools.git' + '@' + 'f4ac21ad798e10a3c24cbf7b8e1a59ee19dc5dd0',
+    Var('chromium_git') + '/chromium/tools/depot_tools.git' + '@' + '98b7273c8d49aba8d200a568c0d300fdb4d707fd',
 
   'src/third_party/devtools-frontend/src':
     Var('chromium_git') + '/devtools/devtools-frontend' + '@' + Var('devtools_frontend_revision'),

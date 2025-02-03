@@ -2501,7 +2501,7 @@ void CaptureModeSession::OnLocatedEventPressed(
 
   // The capture region will be changing, so remove any existing action buttons,
   // if any, as they will no longer be applicable.
-  RemoveAllActionButtons();
+  ClearActionContainer();
 
   if (fine_tune_position_ == FineTunePosition::kNone) {
     // If the point is outside the capture region and not on the capture bar or
@@ -3227,7 +3227,7 @@ void CaptureModeSession::UpdateActionContainerWidget() {
     if (action_container_widget_ && action_container_widget_->IsVisible()) {
       // It is inefficient to destroy and recreate the widget if a drag is in
       // progress.
-      RemoveAllActionButtons();
+      ClearActionContainer();
       action_container_widget_->Hide();
     }
     return;
@@ -3267,11 +3267,10 @@ gfx::Rect CaptureModeSession::CalculateActionContainerWidgetBounds() const {
   return bounds;
 }
 
-void CaptureModeSession::RemoveAllActionButtons() {
-  // Remove all children from the action button container, if the widget exists.
+void CaptureModeSession::ClearActionContainer() {
   if (action_container_widget_) {
     CHECK(action_container_view_);
-    action_container_view_->RemoveAllActionButtons();
+    action_container_view_->ClearContainer();
   }
 }
 

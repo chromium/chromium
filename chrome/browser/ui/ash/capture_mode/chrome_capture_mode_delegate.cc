@@ -64,8 +64,10 @@
 #include "content/public/browser/audio_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_manager.h"
+#include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/browser/video_capture_service.h"
+#include "services/network/public/cpp/network_connection_tracker.h"
 #include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"
 #include "services/video_capture/public/mojom/video_capture_service.mojom.h"
 #include "storage/browser/file_system/file_system_context.h"
@@ -593,6 +595,10 @@ void ChromeCaptureModeDelegate::SendMultimodalSearch(
           MULTIMODAL_SEARCH, /*additional_search_query_params=*/
       std::map<std::string, std::string>(),
       /*region_bytes=*/image);
+}
+
+bool ChromeCaptureModeDelegate::IsNetworkConnectionOffline() const {
+  return content::GetNetworkConnectionTracker()->IsOffline();
 }
 
 void ChromeCaptureModeDelegate::DeleteRemoteFile(
