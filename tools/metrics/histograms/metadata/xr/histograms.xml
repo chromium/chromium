@@ -38,27 +38,6 @@ chromium-metrics-reviews@google.com.
   <summary>The type of headset being used for VR.</summary>
 </histogram>
 
-<histogram name="XR.ARCore.DepthBufferSizeInPixels" units="pixels"
-    expires_after="2025-02-02">
-  <owner>bialpio@chromium.org</owner>
-  <owner>xr-dev@chromium.org</owner>
-  <summary>
-    Recorded on every frame for as long as depth data is requested in an XR
-    session backed by ARCore device. Measures the number of pixels (width *
-    height) in the depth buffer obtained from ARCore.
-  </summary>
-</histogram>
-
-<histogram name="XR.ARCore.ImageCopyFastPath" enum="Boolean"
-    expires_after="2024-12-22">
-  <owner>alcooper@chromium.org</owner>
-  <owner>xr-dev@chromium.org</owner>
-  <summary>
-    Recorded every time an image is copied out of ArCore. Measures if we take
-    the &quot;fast&quot; direct copy path or have to copy pixel-by-pixel.
-  </summary>
-</histogram>
-
 <histogram name="XR.RuntimeUsed" enum="XRDeviceId" expires_after="2026-01-07">
   <owner>alcooper@chromium.org</owner>
   <owner>xr-dev@chromium.org</owner>
