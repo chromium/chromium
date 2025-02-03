@@ -216,6 +216,7 @@ enum class CommandEventType {
   // Dialog
   kShowModal,
   kClose,
+  kRequestClose,
   // Details
   kToggle,
   kOpen,
