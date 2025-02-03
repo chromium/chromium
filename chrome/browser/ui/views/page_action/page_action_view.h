@@ -17,6 +17,7 @@ namespace page_actions {
 
 class PageActionController;
 class PageActionModelInterface;
+struct PageActionViewParams;
 
 // PageActionView is the view displaying the page action. There is one per
 // browser, per page action.
@@ -25,7 +26,7 @@ class PageActionView : public IconLabelBubbleView,
   METADATA_HEADER(PageActionView, IconLabelBubbleView)
  public:
   PageActionView(actions::ActionItem* action_item,
-                 IconLabelBubbleView::Delegate* parent_delegate);
+                 const PageActionViewParams& params);
   PageActionView(const PageActionView&) = delete;
   PageActionView& operator=(const PageActionView&) = delete;
   ~PageActionView() override;
@@ -78,6 +79,9 @@ class PageActionView : public IconLabelBubbleView,
   // ActionItem updates. This ensures that updates aren't unnecessarily
   // propagated to every tab's controller.
   base::CallbackListSubscription action_item_controller_subscription_;
+
+  const int icon_size_;
+  const gfx::Insets icon_insets_;
 };
 
 }  // namespace page_actions

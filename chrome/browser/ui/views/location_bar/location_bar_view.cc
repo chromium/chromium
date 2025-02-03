@@ -72,6 +72,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_icon_container.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_params.h"
+#include "chrome/browser/ui/views/page_action/page_action_view_params.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 #include "chrome/browser/ui/views/passwords/manage_passwords_icon_views.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
@@ -375,9 +376,15 @@ void LocationBarView::Init() {
     }
   }
 
+  static constexpr int kBetweenIconSpacing = 8;
+  const page_actions::PageActionViewParams page_action_params{
+      .icon_size = GetLayoutConstant(LOCATION_BAR_TRAILING_ICON_SIZE),
+      .icon_insets = GetLayoutInsets(LOCATION_BAR_PAGE_ACTION_ICON_PADDING),
+      .between_icon_spacing = kBetweenIconSpacing,
+      .icon_label_bubble_delegate = this};
   page_action_container_ =
       AddChildView(std::make_unique<page_actions::PageActionContainerView>(
-          page_action_items, this));
+          page_action_items, page_action_params));
 
   PageActionIconParams params;
   // |browser_| may be null when LocationBarView is used for non-Browser windows
@@ -448,7 +455,7 @@ void LocationBarView::Init() {
   }
 
   params.icon_color = color_provider->GetColor(kColorOmniboxActionIcon);
-  params.between_icon_spacing = 8;
+  params.between_icon_spacing = kBetweenIconSpacing;
   params.font_list = &page_action_font_list;
   params.browser = browser_;
   params.command_updater = command_updater();

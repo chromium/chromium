@@ -14,11 +14,11 @@ source_set("page_action") {
     "page_action_observer.h",
     "page_action_triggers.h",
     "page_action_view.h",
+    "page_action_view_params.h",
     "pwa_install.h",
   ]
 
   sources = [
-    "page_action_constants.h",
     "page_action_container_view.cc",
     "page_action_controller.cc",
     "page_action_model.cc",

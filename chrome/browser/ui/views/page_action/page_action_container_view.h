@@ -15,6 +15,7 @@ namespace page_actions {
 
 class PageActionController;
 class PageActionView;
+struct PageActionViewParams;
 
 // PageActionContainerView is the parent view of all PageActionViews.
 // TODO(crbug.com/376285664): Revisit the Layout View used, and make sure
@@ -24,7 +25,7 @@ class PageActionContainerView : public views::BoxLayoutView {
   METADATA_HEADER(PageActionContainerView, views::BoxLayoutView)
  public:
   PageActionContainerView(const std::vector<actions::ActionItem*>& action_items,
-                          IconLabelBubbleView::Delegate* icon_view_delegate);
+                          const PageActionViewParams& params);
   PageActionContainerView(const PageActionContainerView&) = delete;
   PageActionContainerView& operator=(const PageActionContainerView&) = delete;
   ~PageActionContainerView() override;
@@ -51,6 +52,8 @@ class PageActionContainerView : public views::BoxLayoutView {
   std::map<actions::ActionId, raw_ptr<PageActionView>> page_action_views_;
   std::list<base::CallbackListSubscription>
       page_action_views_visible_subscriptions_;
+
+  const int between_icon_spacing_ = 0;
 };
 
 }  // namespace page_actions

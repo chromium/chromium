@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_model_observer.h"
 #include "chrome/browser/ui/views/page_action/page_action_triggers.h"
+#include "chrome/browser/ui/views/page_action/page_action_view_params.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/vector_icons/vector_icons.h"
@@ -97,7 +98,12 @@ class PageActionViewTest : public ChromeViewsTestBase {
     action_item_ = actions::ActionManager::Get().AddAction(
         actions::ActionItem::Builder().SetActionId(0).SetImage(image).Build());
     test_page_action_view_ = std::make_unique<TestPageActionView>(
-        action_item_, &icon_label_view_delegate_);
+        action_item_,
+        PageActionViewParams{
+            .icon_size = kDefaultIconSize,
+            .icon_label_bubble_delegate = &icon_label_view_delegate_,
+        });
+
     profile_ = std::make_unique<TestingProfile>();
     pinned_actions_model_ =
         std::make_unique<PinnedToolbarActionsModel>(profile_.get());
@@ -149,7 +155,10 @@ class PageActionViewWithMockModelTest : public ChromeViewsTestBase {
 
     action_item_ = actions::ActionItem::Builder().SetActionId(0).Build();
     page_action_view_ = std::make_unique<TestPageActionView>(
-        action_item_.get(), &icon_label_view_delegate_);
+        action_item_.get(),
+        PageActionViewParams{
+            .icon_size = view_icon_size_,
+            .icon_label_bubble_delegate = &icon_label_view_delegate_});
 
     ON_CALL(mock_model_, GetVisible()).WillByDefault(Return(false));
     ON_CALL(mock_model_, GetShowSuggestionChip()).WillByDefault(Return(false));
@@ -167,6 +176,7 @@ class PageActionViewWithMockModelTest : public ChromeViewsTestBase {
 
   TestPageActionView* page_action_view() { return page_action_view_.get(); }
   MockPageActionModel* model() { return &mock_model_; }
+  int view_icon_size() const { return view_icon_size_; }
 
  private:
   std::unique_ptr<actions::ActionItem> action_item_;
@@ -180,6 +190,8 @@ class PageActionViewWithMockModelTest : public ChromeViewsTestBase {
   testing::NiceMock<MockPageActionModel> mock_model_;
   ui::ImageModel mock_image_;
   std::u16string mock_string_;
+
+  const int view_icon_size_ = kDefaultIconSize;
 };
 
 // Tests that calling Show/Hide on an inactive controller will not affect the
@@ -276,21 +288,18 @@ TEST_F(PageActionViewWithMockModelTest, TooltipText) {
 
 // Test that OnThemeChanged updates the icon image correctly.
 TEST_F(PageActionViewWithMockModelTest, OnThemeChangedUpdatesIconImage) {
-  auto icon_image = ui::ImageModel::FromVectorIcon(
-      vector_icons::kBackArrowIcon, ui::kColorSysPrimary, kDefaultIconSize);
-  EXPECT_CALL(*model(), GetImage()).WillRepeatedly(ReturnRef(icon_image));
-
-  const int required_icon_size =
-      GetLayoutConstant(LOCATION_BAR_TRAILING_ICON_SIZE);
   // If the default size is the intended icon size, this test is useless.
-  EXPECT_GT(required_icon_size, kDefaultIconSize);
+  const int kOriginalIconSize = view_icon_size() + 1;
+  auto icon_image = ui::ImageModel::FromVectorIcon(
+      vector_icons::kBackArrowIcon, ui::kColorSysPrimary, kOriginalIconSize);
+  EXPECT_CALL(*model(), GetImage()).WillRepeatedly(ReturnRef(icon_image));
 
   page_action_view()->OnPageActionModelChanged(*model());
   EXPECT_EQ(page_action_view()
                 ->GetImageModel(views::Button::STATE_NORMAL)
                 ->Size()
                 .width(),
-            required_icon_size);
+            view_icon_size());
 
   // Icon maintains required size on theme change.
   page_action_view()->OnThemeChanged();
@@ -298,7 +307,7 @@ TEST_F(PageActionViewWithMockModelTest, OnThemeChangedUpdatesIconImage) {
                 ->GetImageModel(views::Button::STATE_NORMAL)
                 ->Size()
                 .width(),
-            required_icon_size);
+            view_icon_size());
 }
 
 // Test that UpdateBorder adjusts the insets based on label visibility.
