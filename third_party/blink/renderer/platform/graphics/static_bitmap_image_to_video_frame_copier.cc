@@ -49,8 +49,9 @@ void StaticBitmapImageToVideoFrameCopier::Convert(
         context_provider_wrapper,
     FrameReadyCallback callback) {
   can_discard_alpha_ = can_discard_alpha;
-  if (!image)
+  if (!image || !image->IsValid()) {
     return;
+  }
 
   const auto size = image->Size();
   if (!media::VideoFrame::IsValidSize(size, gfx::Rect(size), size)) {
