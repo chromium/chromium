@@ -22,7 +22,8 @@ std::ostream& operator<<(std::ostream& out, const BtmPageVisitInfo& page) {
 
 std::ostream& operator<<(std::ostream& out,
                          const BtmServerRedirectInfo& redirect) {
-  return out << "BtmServerRedirectInfo{url=" << redirect.url << "}";
+  return out << "BtmServerRedirectInfo{url=" << redirect.url
+             << ", did_write_cookies=" << redirect.did_write_cookies << "}";
 }
 
 std::ostream& operator<<(std::ostream& out, const BtmNavigationInfo& nav) {
