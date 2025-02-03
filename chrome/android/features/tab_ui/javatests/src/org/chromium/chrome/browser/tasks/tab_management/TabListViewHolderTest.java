@@ -749,6 +749,13 @@ public class TabListViewHolderTest {
     @UiThreadTest
     @EnableFeatures(ChromeFeatureList.DATA_SHARING)
     public void testTabCardLabel() {
+        // Test initially null state.
+        mGridModel.set(TabProperties.TAB_CARD_LABEL_DATA, null);
+
+        assertNull(mTabGridView.findViewById(R.id.tab_card_label));
+        FrameLayout listContainer = mTabListView.findViewById(R.id.before_description_container);
+        assertEquals(0, listContainer.getChildCount());
+
         TabCardLabelData data =
                 new TabCardLabelData(
                         TabCardLabelType.ACTIVITY_UPDATE,
@@ -760,7 +767,6 @@ public class TabListViewHolderTest {
         TabCardLabelView gridLabel = mTabGridView.findViewById(R.id.tab_card_label);
         assertNotNull(gridLabel);
         assertEquals(View.VISIBLE, gridLabel.getVisibility());
-        FrameLayout listContainer = mTabListView.findViewById(R.id.before_description_container);
         assertEquals(1, listContainer.getChildCount());
         TabCardLabelView listLabel = (TabCardLabelView) listContainer.getChildAt(0);
         assertNotNull(listLabel);
