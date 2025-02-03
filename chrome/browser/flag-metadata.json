@@ -5162,6 +5162,14 @@
     "expiry_milestone": 140
   },
   {
+    "name": "improved-password-change-service",
+    "owners": [
+      "atsvirchkova@google.com",
+      "vsemeniuk@google.com"
+    ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "improved-semantics-activity-indicators",
     "owners": [
       "elklm@chromium.org",
@@ -5828,6 +5836,14 @@
   {
     "name": "mantis-feature-key",
     "owners": [ "cros-mantis@google.com" ],
+    "expiry_milestone": 140
+  },
+  {
+    "name": "mark-all-credentials-as-leaked",
+    "owners": [
+      "atsvirchkova@google.com",
+      "vsemeniuk@google.com"
+    ],
     "expiry_milestone": 140
   },
   {

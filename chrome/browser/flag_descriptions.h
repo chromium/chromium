@@ -2960,6 +2960,9 @@ extern const char kFreezingOnEnergySaverDescription[];
 extern const char kFreezingOnEnergySaverTestingName[];
 extern const char kFreezingOnEnergySaverTestingDescription[];
 
+extern const char kImprovedPasswordChangeServiceName[];
+extern const char kImprovedPasswordChangeServiceDescription[];
+
 extern const char kKeyboardLockPromptName[];
 extern const char kKeyboardLockPromptDescription[];
 
@@ -2983,6 +2986,9 @@ extern const char kReadAnythingDocsLoadMoreButtonDescription[];
 
 extern const char kLinkPreviewName[];
 extern const char kLinkPreviewDescription[];
+
+extern const char kMarkAllCredentialsAsLeakedName[];
+extern const char kMarkAllCredentialsAsLeakedDescription[];
 
 extern const char kMoveThemePrefsToSpecificsName[];
 extern const char kMoveThemePrefsToSpecificsDescription[];
