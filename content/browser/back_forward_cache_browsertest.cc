@@ -2809,12 +2809,12 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserUnloadHandlerTest,
   // 1) Navigate to A.
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
 
-  std::vector<BackForwardCacheMetrics::NotRestoredReason>
+  BackForwardCacheCanStoreDocumentResult::NotRestoredReasons
       expected_blocking_reasons;
   std::vector<blink::scheduler::WebSchedulerTrackedFeature>
       expected_blocklisted_reason;
   if (IsUnloadBlocklisted()) {
-    expected_blocking_reasons.push_back(
+    expected_blocking_reasons.Put(
         BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures);
     expected_blocklisted_reason.push_back(
         blink::scheduler::WebSchedulerTrackedFeature::kUnloadHandler);
@@ -2822,15 +2822,13 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserUnloadHandlerTest,
   switch (GetTestFrameType()) {
     case content::TestFrameType::kMainFrame:
       InstallUnloadHandlerOnMainFrame();
-      expected_blocking_reasons.push_back(
-          BackForwardCacheMetrics::NotRestoredReason::
-              kUnloadHandlerExistsInMainFrame);
+      expected_blocking_reasons.Put(BackForwardCacheMetrics::NotRestoredReason::
+                                        kUnloadHandlerExistsInMainFrame);
       break;
     case content::TestFrameType::kSubFrame:
       InstallUnloadHandlerOnSubFrame();
-      expected_blocking_reasons.push_back(
-          BackForwardCacheMetrics::NotRestoredReason::
-              kUnloadHandlerExistsInSubFrame);
+      expected_blocking_reasons.Put(BackForwardCacheMetrics::NotRestoredReason::
+                                        kUnloadHandlerExistsInSubFrame);
       break;
     default:
       NOTREACHED();
