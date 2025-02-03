@@ -37,7 +37,7 @@ found in the LICENSE file.
             android:singleLine="true"
             android:text="@string/educational_tip_module_title"
             android:textAlignment="viewStart"
-            android:textAppearance="@style/TextAppearance.TextAccentMediumThick.Primary" />
+            android:textAppearance="@style/TextAppearance.TextAccentMediumThick.Secondary" />
     </LinearLayout>
 
     <LinearLayout

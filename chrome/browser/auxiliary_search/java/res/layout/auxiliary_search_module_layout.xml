@@ -38,7 +38,7 @@ found in the LICENSE file.
           android:text="@string/auxiliary_search_module_name"
           android:gravity="start"
           android:layout_marginBottom="@dimen/auxiliary_search_module_title_margin_bottom"
-          android:textAppearance="@style/TextAppearance.TextAccentMediumThick.Primary" />
+          android:textAppearance="@style/TextAppearance.TextAccentMediumThick.Secondary" />
 
       <org.chromium.ui.widget.TextViewWithLeading
           android:id="@+id/auxiliary_search_module_content"
