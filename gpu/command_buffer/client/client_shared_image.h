@@ -187,8 +187,10 @@ class GPU_EXPORT ClientSharedImage
 
   // Signals the service-side that the backing of this SharedImage was modified
   // on the CPU or through external devices. `sync_token` can be passed to order
-  // the processing of the signal.
-  void BackingWasExternallyUpdated(const gpu::SyncToken& sync_token);
+  // the processing of the signal. Returns a SyncToken that the caller can use
+  // to ensure that any future service-side accesses to this SharedImage are
+  // sequenced with respect to this call being processed.
+  gpu::SyncToken BackingWasExternallyUpdated(const gpu::SyncToken& sync_token);
 
   // Creates a ClientSharedImage that is not associated with any
   // SharedImageInterface for testing.
