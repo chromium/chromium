@@ -26556,8 +26556,8 @@ This is true even if the type has been removed from the mojom file.
 <enum name="WindowProxyStorageKeyComparison">
   <int value="0" label="SameKey"/>
   <int value="1" label="SameTopSiteCrossOrigin"/>
-  <int value="3" label="CrossTopSiteSameOrigin"/>
-  <int value="4" label="CrossKey"/>
+  <int value="2" label="CrossTopSiteSameOrigin"/>
+  <int value="3" label="CrossKey"/>
 </enum>
 
 <enum name="WindowProxyUserActivationState">
