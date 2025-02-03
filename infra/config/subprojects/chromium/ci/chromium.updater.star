@@ -1310,6 +1310,41 @@ ci.builder(
 )
 
 ci.thin_tester(
+    name = "win11-arm64-updater-tester-rel",
+    description_html = _UPDATER_LINK + " Windows 11 arm64 release tester.",
+    triggered_by = ["win-arm64-updater-builder-rel"],
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
+        ),
+    ),
+    targets = targets.bundle(
+        targets = [
+            "updater_gtests_win",
+        ],
+        mixins = [
+            "win11-any",
+            "arm64",
+        ],
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "release|win (arm64)",
+        short_name = "11",
+    ),
+    contact_team_email = "omaha@google.com",
+)
+
+ci.thin_tester(
     name = "win11-updater-tester-dbg-uac",
     description_html = _UPDATER_LINK + " Windows 11 x64 debug tester with UAC on.",
     triggered_by = ["win-updater-builder-dbg"],

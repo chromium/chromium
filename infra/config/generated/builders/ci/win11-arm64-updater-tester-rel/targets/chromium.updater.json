@@ -1,9 +1,4 @@
 {
-  "win-arm64-updater-builder-rel": {
-    "additional_compile_targets": [
-      "chrome/updater:all"
-    ]
-  },
   "win11-arm64-updater-tester-rel": {
     "gtest_tests": [
       {
