@@ -106,7 +106,6 @@ class AnimationFrameTimingInfo
   }
 
   void SetRenderEndTime(base::TimeTicks time) { render_end_time = time; }
-  void SetPresentationTime(base::TimeTicks time) { presentation_time = time; }
   void SetFirstUIEventTime(base::TimeTicks time) { first_ui_event_time = time; }
 
   base::TimeTicks FrameStartTime() const { return frame_start_time; }
@@ -115,7 +114,6 @@ class AnimationFrameTimingInfo
     return style_and_layout_start_time;
   }
   base::TimeTicks RenderEndTime() const { return render_end_time; }
-  base::TimeTicks PresentationTime() const { return presentation_time; }
   base::TimeTicks FirstUIEventTime() const { return first_ui_event_time; }
   base::TimeDelta Duration() const {
     return RenderEndTime() - FrameStartTime();
@@ -163,9 +161,6 @@ class AnimationFrameTimingInfo
   // Measured after BeginMainFrame, or at the end of a task that did not trigger
   // a main frame update
   base::TimeTicks render_end_time;
-
-  // Measured when the frame is presented to the user.
-  base::TimeTicks presentation_time;
 
   // The event timestamp of the first UI event that coincided with the frame.
   base::TimeTicks first_ui_event_time;
