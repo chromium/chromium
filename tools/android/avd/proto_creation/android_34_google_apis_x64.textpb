@@ -30,6 +30,8 @@ avd_settings {
     key: "GLESDynamicVersion"
     value: "on"
   }
+  # Trial Increase RAM size to 6GB for Android 34 AVD
+  ram_size: 6144
 }
 avd_variants {
   key: "swarming"
