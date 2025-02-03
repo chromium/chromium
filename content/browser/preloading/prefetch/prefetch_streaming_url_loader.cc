@@ -6,6 +6,7 @@
 
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/trace_event/trace_event.h"
 #include "content/browser/loader/navigation_url_loader.h"
 #include "content/browser/preloading/prefetch/prefetch_response_reader.h"
 #include "net/cookies/cookie_util.h"
@@ -87,6 +88,7 @@ PrefetchStreamingURLLoader::CreateAndStart(
     OnPrefetchRedirectCallback on_prefetch_redirect_callback,
     base::OnceClosure on_determined_head_callback,
     base::WeakPtr<PrefetchResponseReader> response_reader) {
+  TRACE_EVENT("loading", "PrefetchStreamingURLLoader::CreateAndStart");
   std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
       std::make_unique<PrefetchStreamingURLLoader>(
           std::move(on_prefetch_response_started_callback),
