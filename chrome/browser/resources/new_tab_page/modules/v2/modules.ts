@@ -213,7 +213,7 @@ export class ModulesV2Element extends AppElementBase {
         this.callbackRouter_.setModulesLoadable.addListener(() => {
           if (this.waitToLoadModules_) {
             this.waitToLoadModules_ = false;
-            this.loadModules_();
+            this.loadModules_(/*onNtpLoad=*/ true);
           }
         });
 
@@ -298,7 +298,7 @@ export class ModulesV2Element extends AppElementBase {
     if (this.waitToLoadModules_) {
       this.handler_.updateModulesLoadable();
     } else {
-      this.loadModules_();
+      this.loadModules_(/*onNtpLoad=*/ true);
     }
   }
 
@@ -329,12 +329,13 @@ export class ModulesV2Element extends AppElementBase {
    */
   private async handleModuleEnablement_(
       newDisabledModules: {all: boolean, ids: string[]}): Promise<void> {
-    if (!this.modulesLoaded_ || this.templateInstances_.length === 0) {
+    const onNtpLoad = !this.modulesLoaded_;
+    if (onNtpLoad || this.templateInstances_.length === 0) {
       // Update the disabled modules list before attempting load.
       // |loadModules_()| expects the disabled module list to be
       // up-to-date.
       this.disabledModules_ = newDisabledModules;
-      this.loadModules_();
+      this.loadModules_(onNtpLoad);
       return;
     }
 
@@ -368,8 +369,11 @@ export class ModulesV2Element extends AppElementBase {
    * Initializes the module container by loading all currently enabled modules.
    * This method uses |this.moduleRegistry_| to determine which modules to load
    * and is called only when the container is empty.
+   *
+   * @param onNtpLoad `true` if the modules are being loaded during initial NTP
+   *     load, `false` if they're being loaded later in the NTP's lifecycle.
    */
-  private async loadModules_(): Promise<void> {
+  private async loadModules_(onNtpLoad: boolean): Promise<void> {
     if (this.waitToLoadModules_) {
       return;
     }
@@ -412,6 +416,8 @@ export class ModulesV2Element extends AppElementBase {
 
       if (!this.modulesLoaded_) {
         this.onInitialLoadDone_(modules, modulesIdNames);
+      } else if (!onNtpLoad) {
+        this.onReloadDone_();
       }
 
       if (this.templateInstances_.length > 0) {
@@ -454,8 +460,6 @@ export class ModulesV2Element extends AppElementBase {
       modules: Module[], modulesIdNames: ModuleIdName[]) {
     this.modulesLoaded_ = true;
 
-    // TODO(crbug.com/392707563): Decide if any of these metrics should be
-    // recorded again whenever the module container is reloaded.
     chrome.metricsPrivate.recordSmallCount(
         'NewTabPage.Modules.LoadedModulesCount', modules.length);
     modulesIdNames.forEach(({id}) => {
@@ -468,19 +472,35 @@ export class ModulesV2Element extends AppElementBase {
         'NewTabPage.Modules.InstanceCount', this.templateInstances_.length);
     chrome.metricsPrivate.recordBoolean(
         'NewTabPage.Modules.VisibleOnNTPLoad', !this.disabledModules_.all);
-    this.recordModuleLoadedWithModules_(modules);
+    this.recordModuleLoadedWithModules_(/*onNtpLoad=*/ true);
 
     this.dispatchEvent(new Event('modules-loaded'));
   }
 
-  private recordModuleLoadedWithModules_(modules: Module[]) {
-    const moduleDescriptorIds = modules.map(m => m.descriptor.id);
+  /**
+   * Records metrics for module container loads occurring after the initial
+   * load.
+   */
+  private onReloadDone_() {
+    chrome.metricsPrivate.recordSmallCount(
+        'NewTabPage.Modules.ReloadedModulesCount',
+        this.templateInstances_.length);
+    this.recordModuleLoadedWithModules_(/*onNtpLoad=*/ false);
+  }
+
+  private recordModuleLoadedWithModules_(onNtpLoad: boolean) {
+    const moduleDescriptorIds = [...new Set(this.templateInstances_.map(
+        instance =>
+            (instance as unknown as ItemTemplateInstance).item.descriptor.id))];
+
+    const histogramBase = onNtpLoad ? 'NewTabPage.Modules.LoadedWith' :
+                                      'NewTabPage.Modules.ReloadedWith';
 
     for (const moduleDescriptorId of moduleDescriptorIds) {
       moduleDescriptorIds.forEach(id => {
         if (id !== moduleDescriptorId) {
           chrome.metricsPrivate.recordSparseValueWithPersistentHash(
-              `NewTabPage.Modules.LoadedWith.${moduleDescriptorId}`, id);
+              `${histogramBase}.${moduleDescriptorId}`, id);
         }
       });
     }
@@ -525,6 +545,8 @@ export class ModulesV2Element extends AppElementBase {
 
     this.$.container.replaceChildren(
         ...this.templateInstances_.map(t => t.children[0] as HTMLElement));
+
+    this.onReloadDone_();
   }
 
   private forwardHostProp_(property: string, value: any) {

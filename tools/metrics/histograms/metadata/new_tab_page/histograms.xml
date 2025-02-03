@@ -836,6 +836,22 @@ chromium-metrics-reviews@google.com.
   <summary>
     Histogram of the time, in milliseconds since navigation start, it took until
     an NTP module loaded.
+
+    Logged by all modules, regardless of if they loaded at or before NTP load.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.Modules.LoadedAfterNTPLoad" units="ms"
+    expires_after="2025-07-13">
+  <owner>pauladedeji@google.com</owner>
+  <owner>romanarora@chromium.org</owner>
+  <owner>tiborg@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Histogram of the time, in milliseconds since navigation start, it took until
+    an NTP module loaded.
+
+    Logged for modules that were loaded after the initial NTP load.
   </summary>
 </histogram>
 
@@ -851,20 +867,79 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NewTabPage.Modules.LoadedWith.{NtpModule}" enum="NtpModules"
-    expires_after="2025-01-31">
+<histogram name="NewTabPage.Modules.LoadedOnNTPLoad" units="ms"
+    expires_after="2025-07-13">
+  <owner>pauladedeji@google.com</owner>
   <owner>romanarora@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
-    This records the what other modules are loaded with {NtpModule} together.
-    Logged when the module is loaded. Only logged on the 1P NTP. Note that even
-    if the user has Google as their default search engine, Incognito and Guest
-    mode NTPs are not considered 1P and don't log this histogram.
+    Histogram of the time, in milliseconds since navigation start, it took until
+    an NTP module loaded.
+
+    Logged for modules that were loaded during the initial NTP load.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.Modules.LoadedWith.{NtpModule}" enum="NtpModules"
+    expires_after="2025-07-13">
+  <owner>romanarora@chromium.org</owner>
+  <owner>tiborg@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    This records what other modules are loaded with {NtpModule} together. Logged
+    when the module is loaded. Only logged on the 1P NTP. Note that even if the
+    user has Google as their default search engine, Incognito and Guest mode
+    NTPs are not considered 1P and don't log this histogram.
   </summary>
   <token key="NtpModule">
     <variant name="chrome_cart" summary="the Chrome Cart module"/>
     <variant name="drive" summary="the Drive module"/>
+    <variant name="microsoft_authentication"
+        summary="the Microsoft Authentication module"/>
+    <variant name="microsoft_files" summary="the Microsoft Files module"/>
+    <variant name="outlook_calendar" summary="the Outlook Calendar module"/>
+    <variant name="shopping_tasks" summary="the Shopping Tasks module"/>
+    <variant name="tab_resumption" summary="the Tab Resumption module"/>
+  </token>
+</histogram>
+
+<histogram name="NewTabPage.Modules.ReloadedModulesCount" units="count"
+    expires_after="2025-07-27">
+  <owner>pauladedeji@google.com</owner>
+  <owner>romanarora@chromium.org</owner>
+  <owner>tiborg@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    The number of rendered modules in the NTP after the modules container has
+    reloaded, which usually occurs when a module is enabled after the user has
+    previously viewed modules. Only logged on the 1P NTP. Note that even if the
+    user has Google as their default search engine, Incognito and Guest mode
+    NTPs are not considered 1P and don't log this histogram.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.Modules.ReloadedWith.{NtpModule}" enum="NtpModules"
+    expires_after="2025-07-13">
+  <owner>pauladedeji@google.com</owner>
+  <owner>romanarora@chromium.org</owner>
+  <owner>tiborg@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    This records what other modules are loaded with {NtpModule} together. Logged
+    when the module container reloads, which usually occurs when a module is
+    enabled after the user has previously viewed modules. Only logged on the 1P
+    NTP. Note that even if the user has Google as their default search engine,
+    Incognito and Guest mode NTPs are not considered 1P and don't log this
+    histogram.
+  </summary>
+  <token key="NtpModule">
+    <variant name="chrome_cart" summary="the Chrome Cart module"/>
+    <variant name="drive" summary="the Drive module"/>
+    <variant name="microsoft_authentication"
+        summary="the Microsoft Authentication module"/>
+    <variant name="microsoft_files" summary="the Microsoft Files module"/>
+    <variant name="outlook_calendar" summary="the Outlook Calendar module"/>
     <variant name="shopping_tasks" summary="the Shopping Tasks module"/>
     <variant name="tab_resumption" summary="the Tab Resumption module"/>
   </token>

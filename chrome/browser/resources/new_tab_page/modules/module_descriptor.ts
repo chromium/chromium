@@ -34,8 +34,12 @@ export class ModuleDescriptor {
   /**
    * Initializes the module and returns one or more module elements on success.
    * @param timeout Timeout in milliseconds after which initialization aborts.
+   * @param onNtpLoad `true` if the module is being initialized during the
+   *     initial NTP load, `false` if it's being initialized later in the NTP's
+   *     lifecycle.
    */
-  async initialize(timeout: number): Promise<HTMLElement[]|HTMLElement|null> {
+  async initialize(timeout: number, onNtpLoad: boolean = true):
+      Promise<HTMLElement[]|HTMLElement|null> {
     const loadStartTime = WindowProxy.getInstance().now();
     const element = await Promise.race([
       this.initializeCallback_(),
@@ -54,6 +58,11 @@ export class ModuleDescriptor {
     recordLoadDuration(`NewTabPage.Modules.Loaded.${this.id_}`, loadEndTime);
     recordDuration('NewTabPage.Modules.LoadDuration', duration);
     recordDuration(`NewTabPage.Modules.LoadDuration.${this.id_}`, duration);
+
+    const histogramBase = onNtpLoad ? 'NewTabPage.Modules.LoadedOnNTPLoad' :
+                                      'NewTabPage.Modules.LoadedAfterNTPLoad';
+    recordLoadDuration(`${histogramBase}`, loadEndTime);
+    recordLoadDuration(`${histogramBase}.${this.id_}`, loadEndTime);
     return element;
   }
 }

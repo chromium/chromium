@@ -837,6 +837,13 @@ suite('NewTabPageModulesModulesV2Test', () => {
         assertEquals(
             fooDescriptor.id,
             (moduleWrappers[0] as ModuleWrapperElement).module.descriptor.id);
+        assertEquals(1, metrics.count('NewTabPage.Modules.LoadedModulesCount'));
+        assertEquals(
+            1, metrics.count('NewTabPage.Modules.LoadedModulesCount', 0));
+        assertEquals(
+            1, metrics.count('NewTabPage.Modules.ReloadedModulesCount'));
+        assertEquals(
+            1, metrics.count('NewTabPage.Modules.ReloadedModulesCount', 1));
       });
 
       test('reloads module container after initial load', async () => {
@@ -856,6 +863,8 @@ suite('NewTabPageModulesModulesV2Test', () => {
         assertEquals(
             fooDescriptor.id,
             (moduleWrappers[0] as ModuleWrapperElement).module.descriptor.id);
+        assertEquals(0, metrics.count('NewTabPage.Modules.LoadedWith'));
+        assertEquals(0, metrics.count('NewTabPage.Modules.ReloadedWith'));
 
         // Arrange - Prepare to load bar module.
         const barModulePromise = getModulePromise(barDescriptor);
@@ -882,6 +891,12 @@ suite('NewTabPageModulesModulesV2Test', () => {
         assertEquals(
             fooDescriptor.id,
             (moduleWrappers[1] as ModuleWrapperElement).module.descriptor.id);
+        assertEquals(1, metrics.count('NewTabPage.Modules.ReloadedWith.foo'));
+        assertEquals(
+            1, metrics.count('NewTabPage.Modules.ReloadedWith.foo', 'bar'));
+        assertEquals(1, metrics.count('NewTabPage.Modules.ReloadedWith.bar'));
+        assertEquals(
+            1, metrics.count('NewTabPage.Modules.ReloadedWith.bar', 'foo'));
       });
 
       test(
