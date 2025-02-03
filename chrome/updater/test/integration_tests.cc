@@ -2207,11 +2207,11 @@ class IntegrationTestDeviceManagementBase : public IntegrationTest {
       const ::wireless_android_enterprise_devicemanagement::
           OmahaSettingsClientProto& omaha_settings) {
     if (ceca_experiment_enabled_) {
-      ExpectDeviceManagementPolicyFetchRequest(
-          test_server, dm_token, omaha_settings, /*first_request=*/true,
-          /*rotate_public_key=*/false, /*target_url=*/{});
+      ExpectDeviceManagementPolicyValidationRequestViaCompanionApp(test_server,
+                                                                   dm_token);
+    } else {
+      ExpectDeviceManagementPolicyValidationRequest(test_server, dm_token);
     }
-    ExpectDeviceManagementPolicyValidationRequest(test_server, dm_token);
   }
 
   // It is difficult to create a valid app registration when installing the
@@ -2477,6 +2477,15 @@ TEST_P(IntegrationTestDeviceManagement, AppInstall) {
       test_server_.get(), kDMToken, omaha_settings);
   ExpectDeviceManagementPolicyValidationRequestFromDefaultPolicyAgent(
       test_server_.get(), kDMToken, omaha_settings);
+  if (ceca_experiment_enabled_) {
+    // Handle the updater falling back to its own DM client implementation. It
+    // should also fail to validate the fetched policies and upload a policy
+    // validation report.
+    ExpectDeviceManagementPolicyFetchRequest(
+        test_server_.get(), kDMToken, omaha_settings, /*first_request=*/true,
+        /*rotate_public_key=*/false, /*target_url=*/std::nullopt);
+    ExpectDeviceManagementPolicyValidationRequest(test_server_.get(), kDMToken);
+  }
   ASSERT_NO_FATAL_FAILURE(InstallAppViaService(kApp2.appid));
 
   // Repeat App2 installation again, policy validation should pass after the
