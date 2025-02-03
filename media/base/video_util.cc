@@ -103,39 +103,6 @@ VideoPixelFormat ReadbackFormat(const VideoFrame& frame) {
   }
 }
 
-bool ReadbackTexturePlaneToMemorySyncOOP(const VideoFrame& src_frame,
-                                         size_t src_plane,
-                                         gfx::Rect& src_rect,
-                                         uint8_t* dest_pixels,
-                                         size_t dest_stride,
-                                         gpu::raster::RasterInterface* ri) {
-  VideoPixelFormat format = ReadbackFormat(src_frame);
-  if (format == PIXEL_FORMAT_UNKNOWN) {
-    DLOG(ERROR) << "Readback is not possible for this frame: "
-                << src_frame.AsHumanReadableString();
-    return false;
-  }
-
-  bool has_alpha = !IsOpaque(format);
-  SkColorType sk_color_type = SkColorTypeForPlane(format, src_plane);
-  SkAlphaType sk_alpha_type =
-      has_alpha ? kUnpremul_SkAlphaType : kOpaque_SkAlphaType;
-
-  auto info = SkImageInfo::Make(src_rect.width(), src_rect.height(),
-                                sk_color_type, sk_alpha_type);
-
-  // Perform readback passing the appropriate `src_plane` for the mailbox.
-  auto mailbox = src_frame.shared_image()->mailbox();
-  auto sync_token = src_frame.acquire_sync_token();
-  ri->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
-  bool result =
-      ri->ReadbackImagePixels(mailbox, info, dest_stride, src_rect.x(),
-                              src_rect.y(), src_plane, dest_pixels);
-
-  return result && ri->GetGraphicsResetStatusKHR() == GL_NO_ERROR &&
-         ri->GetError() == GL_NO_ERROR;
-}
-
 void LetterboxPlane(const gfx::Rect& view_area_in_bytes,
                     uint8_t* ptr,
                     int rows,
@@ -751,11 +718,36 @@ bool ReadbackTexturePlaneToMemorySync(VideoFrame& src_frame,
                                       size_t dest_stride,
                                       gpu::raster::RasterInterface* ri) {
   DCHECK(ri);
+  VideoPixelFormat format = ReadbackFormat(src_frame);
+  if (format == PIXEL_FORMAT_UNKNOWN) {
+    DLOG(ERROR) << "Readback is not possible for this frame: "
+                << src_frame.AsHumanReadableString();
+    return false;
+  }
 
-  bool result = ReadbackTexturePlaneToMemorySyncOOP(
-      src_frame, src_plane, src_rect, dest_pixels, dest_stride, ri);
-  WaitAndReplaceSyncTokenClient client(ri);
-  src_frame.UpdateReleaseSyncToken(&client);
+  bool has_alpha = !IsOpaque(format);
+  auto sk_color_type = SkColorTypeForPlane(format, src_plane);
+  auto sk_alpha_type = has_alpha ? kUnpremul_SkAlphaType : kOpaque_SkAlphaType;
+
+  auto info = SkImageInfo::Make(src_rect.width(), src_rect.height(),
+                                sk_color_type, sk_alpha_type);
+
+  // Perform readback passing the appropriate `src_plane` for the mailbox.
+  auto mailbox = src_frame.shared_image()->mailbox();
+  auto sync_token = src_frame.acquire_sync_token();
+  ri->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
+  bool readback_result =
+      ri->ReadbackImagePixels(mailbox, info, dest_stride, src_rect.x(),
+                              src_rect.y(), src_plane, dest_pixels);
+
+  bool result = readback_result &&
+                ri->GetGraphicsResetStatusKHR() == GL_NO_ERROR &&
+                ri->GetError() == GL_NO_ERROR;
+  if (result) {
+    WaitAndReplaceSyncTokenClient client(ri);
+    src_frame.UpdateReleaseSyncToken(&client);
+  }
+
   return result;
 }
 
