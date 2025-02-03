@@ -1385,13 +1385,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, ChromeVoxStickyMode) {
 // sending js commands above. This variant may be subject to flakes as it
 // depends on more of the UI events stack and sticky mode invocation has a
 // timing element to it.
-// Consistently failing on ChromiumOS MSan and ASan. http://crbug.com/1182542
-#if defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER)
-#define MAYBE_ChromeVoxStickyModeRawKeys DISABLED_ChromeVoxStickyModeRawKeys
-#else
-#define MAYBE_ChromeVoxStickyModeRawKeys ChromeVoxStickyModeRawKeys
-#endif
-IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, MAYBE_ChromeVoxStickyModeRawKeys) {
+IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, ChromeVoxStickyModeRawKeys) {
   EnableChromeVox();
   StablizeChromeVoxState();
 
