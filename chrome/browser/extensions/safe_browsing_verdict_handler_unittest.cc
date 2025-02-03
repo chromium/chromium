@@ -122,7 +122,7 @@ TEST_F(SafeBrowsingVerdictHandlerUnitTest, GreylistDontEnableManuallyDisabled) {
   // All extensions disabled.
   EXPECT_TRUE(state_tester.ExpectDisabledWithReasons(
       kGood0,
-      disable_reason::DISABLE_GREYLIST | disable_reason::DISABLE_USER_ACTION));
+      {disable_reason::DISABLE_GREYLIST, disable_reason::DISABLE_USER_ACTION}));
   EXPECT_TRUE(state_tester.ExpectDisabledWithSingleReason(
       kGood1, disable_reason::DISABLE_GREYLIST));
   EXPECT_TRUE(state_tester.ExpectDisabledWithSingleReason(

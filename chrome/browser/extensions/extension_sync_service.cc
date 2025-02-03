@@ -675,7 +675,7 @@ void ExtensionSyncService::OnExtensionStateChanged(
 
 void ExtensionSyncService::OnExtensionDisableReasonsChanged(
     const std::string& extension_id,
-    int disabled_reasons) {
+    extensions::DisableReasonSet disabled_reasons) {
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile_);
   const Extension* extension = registry->GetInstalledExtension(extension_id);
   // We can get pref change notifications for extensions that aren't installed

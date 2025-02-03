@@ -210,8 +210,7 @@ void ChromeKioskAppLauncher::SetAppEnabledState(
     // present, enable the app.
     prefs->RemoveDisableReason(id,
                                extensions::disable_reason::DISABLE_USER_ACTION);
-    if (prefs->GetDisableReasons(id) ==
-        extensions::disable_reason::DISABLE_NONE) {
+    if (prefs->GetDisableReasons(id).empty()) {
       service->EnableExtension(id);
     }
   } else {

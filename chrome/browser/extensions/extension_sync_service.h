@@ -98,8 +98,9 @@ class ExtensionSyncService : public syncer::SyncableService,
   // extensions::ExtensionPrefsObserver:
   void OnExtensionStateChanged(const std::string& extension_id,
                                bool state) override;
-  void OnExtensionDisableReasonsChanged(const std::string& extension_id,
-                                        int disabled_reasons) override;
+  void OnExtensionDisableReasonsChanged(
+      const std::string& extension_id,
+      extensions::DisableReasonSet disabled_reasons) override;
   void OnExtensionPrefsWillBeDestroyed(
       extensions::ExtensionPrefs* prefs) override;
 

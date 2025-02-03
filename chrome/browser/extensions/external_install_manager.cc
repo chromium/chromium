@@ -242,14 +242,15 @@ bool ExternalInstallManager::IsUnacknowledgedExternalExtension(
   if (!IsPromptingEnabled())
     return false;
 
-  int disable_reasons = extension_prefs_->GetDisableReasons(extension.id());
+  DisableReasonSet disable_reasons =
+      extension_prefs_->GetDisableReasons(extension.id());
   bool is_from_sideload_wipeout =
-      (disable_reasons & disable_reason::DISABLE_SIDELOAD_WIPEOUT) != 0;
+      disable_reasons.contains(disable_reason::DISABLE_SIDELOAD_WIPEOUT);
   // We don't consider extensions that weren't disabled for being external so
   // that we grandfather in extensions. External extensions are only disabled on
   // install with the "prompt for external extensions" feature enabled.
   bool is_disabled_external =
-      (disable_reasons & disable_reason::DISABLE_EXTERNAL_EXTENSION) != 0;
+      disable_reasons.contains(disable_reason::DISABLE_EXTERNAL_EXTENSION);
   return is_disabled_external && !is_from_sideload_wipeout &&
          Manifest::IsExternalLocation(extension.location()) &&
          !extension_prefs_->IsExternalExtensionAcknowledged(extension.id());

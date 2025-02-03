@@ -151,10 +151,15 @@ void ExtensionRegistrar::AddExtension(
   if (registry_->disabled_extensions().Contains(extension->id())) {
     // Show the extension disabled error if a permissions increase or a remote
     // installation is the reason it was disabled, and no other reasons exist.
-    int reasons = extension_prefs_->GetDisableReasons(extension->id());
-    const int kReasonMask = disable_reason::DISABLE_PERMISSIONS_INCREASE |
-                            disable_reason::DISABLE_REMOTE_INSTALL;
-    if (reasons & kReasonMask && !(reasons & ~kReasonMask)) {
+    DisableReasonSet reasons =
+        extension_prefs_->GetDisableReasons(extension->id());
+    const DisableReasonSet error_reasons = {
+        disable_reason::DISABLE_PERMISSIONS_INCREASE,
+        disable_reason::DISABLE_REMOTE_INSTALL};
+    DisableReasonSet other_reasons =
+        base::STLSetDifference<DisableReasonSet>(reasons, error_reasons);
+
+    if (!reasons.empty() && other_reasons.empty()) {
       delegate_->ShowExtensionDisabledError(
           extension.get(),
           extension_prefs_->HasDisableReason(
@@ -358,8 +363,10 @@ void ExtensionRegistrar::DisableExtensionWithSource(
 void ExtensionRegistrar::EnabledReloadableExtensions() {
   std::vector<std::string> extensions_to_enable;
   for (const auto& e : registry_->disabled_extensions()) {
-    if (extension_prefs_->GetDisableReasons(e->id()) ==
-        disable_reason::DISABLE_RELOAD) {
+    DisableReasonSet disable_reasons =
+        extension_prefs_->GetDisableReasons(e->id());
+    if (disable_reasons.size() == 1 &&
+        disable_reasons.contains(disable_reason::DISABLE_RELOAD)) {
       extensions_to_enable.push_back(e->id());
     }
   }
@@ -382,13 +389,14 @@ void ExtensionRegistrar::RemoveComponentExtension(
 void ExtensionRegistrar::RemoveDisableReasonAndMaybeEnable(
     const std::string& extension_id,
     disable_reason::DisableReason reason_to_remove) {
-  auto disable_reason = extension_prefs_->GetDisableReasons(extension_id);
-  if ((disable_reason & reason_to_remove) == 0) {
+  DisableReasonSet disable_reasons =
+      extension_prefs_->GetDisableReasons(extension_id);
+  if (!disable_reasons.contains(reason_to_remove)) {
     return;
   }
 
   extension_prefs_->RemoveDisableReason(extension_id, reason_to_remove);
-  if (disable_reason == reason_to_remove) {
+  if (disable_reasons.size() == 1) {
     EnableExtension(extension_id);
   }
 }

@@ -474,9 +474,13 @@ void ThemeService::RemoveUnusedThemes() {
       // Only uninstall themes which are not disabled or are disabled with
       // reason DISABLE_USER_ACTION. We cannot blanket uninstall all disabled
       // themes because externally installed themes are initially disabled.
-      int disable_reason = prefs->GetDisableReasons(extension->id());
-      if (!prefs->IsExtensionDisabled(extension->id()) ||
-          disable_reason == extensions::disable_reason::DISABLE_USER_ACTION) {
+      extensions::DisableReasonSet disable_reasons =
+          prefs->GetDisableReasons(extension->id());
+      bool is_disabled_by_user =
+          disable_reasons.size() == 1 &&
+          disable_reasons.contains(
+              extensions::disable_reason::DISABLE_USER_ACTION);
+      if (!prefs->IsExtensionDisabled(extension->id()) || is_disabled_by_user) {
         remove_list.push_back(extension->id());
       }
     }

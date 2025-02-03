@@ -30,6 +30,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_switches.h"
+#include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
@@ -353,8 +354,8 @@ void InstallVerifier::OnVerificationComplete(bool success, OperationType type) {
             ExtensionRegistry::Get(context_)->disabled_extensions();
         for (ExtensionSet::const_iterator iter = disabled_extensions.begin();
              iter != disabled_extensions.end(); ++iter) {
-          int disable_reasons = prefs_->GetDisableReasons((*iter)->id());
-          if (disable_reasons & disable_reason::DISABLE_NOT_VERIFIED &&
+          if (prefs_->HasDisableReason((*iter)->id(),
+                                       disable_reason::DISABLE_NOT_VERIFIED) &&
               !MustRemainDisabled(iter->get(), nullptr)) {
             prefs_->RemoveDisableReason((*iter)->id(),
                                         disable_reason::DISABLE_NOT_VERIFIED);

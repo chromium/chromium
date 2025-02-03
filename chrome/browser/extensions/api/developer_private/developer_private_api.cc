@@ -691,7 +691,7 @@ void DeveloperPrivateEventRouter::OnExtensionCommandRemoved(
 
 void DeveloperPrivateEventRouter::OnExtensionDisableReasonsChanged(
     const ExtensionId& extension_id,
-    int disable_reasons) {
+    DisableReasonSet disable_reasons) {
   BroadcastItemStateChanged(developer::EventType::kPrefsChanged, extension_id);
 }
 

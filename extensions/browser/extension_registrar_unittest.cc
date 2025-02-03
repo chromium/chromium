@@ -147,9 +147,9 @@ class ExtensionRegistrarTest : public ExtensionsTest {
     ExpectInSet(ExtensionRegistry::ENABLED);
     EXPECT_TRUE(IsExtensionReady());
 
-    EXPECT_EQ(disable_reason::DISABLE_NONE,
-              ExtensionPrefs::Get(browser_context())
-                  ->GetDisableReasons(extension()->id()));
+    EXPECT_TRUE(ExtensionPrefs::Get(browser_context())
+                    ->GetDisableReasons(extension()->id())
+                    .empty());
 
     VerifyMock();
   }
@@ -295,9 +295,9 @@ class ExtensionRegistrarTest : public ExtensionsTest {
     // ExtensionRegistrar should have disabled the extension in preparation for
     // a reload.
     ExpectInSet(ExtensionRegistry::DISABLED);
-    EXPECT_EQ(disable_reason::DISABLE_RELOAD,
-              ExtensionPrefs::Get(browser_context())
-                  ->GetDisableReasons(extension()->id()));
+    EXPECT_THAT(ExtensionPrefs::Get(browser_context())
+                    ->GetDisableReasons(extension()->id()),
+                testing::UnorderedElementsAre(disable_reason::DISABLE_RELOAD));
   }
 
   // Directs ExtensionRegistrar to reload the terminated extension and verifies
@@ -315,9 +315,9 @@ class ExtensionRegistrarTest : public ExtensionsTest {
     ExpectInSet(ExtensionRegistry::TERMINATED);
     // Unlike when reloading an enabled extension, the extension hasn't been
     // disabled and shouldn't have the DISABLE_RELOAD disable reason.
-    EXPECT_EQ(disable_reason::DISABLE_NONE,
-              ExtensionPrefs::Get(browser_context())
-                  ->GetDisableReasons(extension()->id()));
+    EXPECT_TRUE(ExtensionPrefs::Get(browser_context())
+                    ->GetDisableReasons(extension()->id())
+                    .empty());
   }
 
   // Verifies that the extension is in the given set in the ExtensionRegistry

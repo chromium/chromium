@@ -21,6 +21,7 @@
 #include "extensions/browser/mock_external_provider.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/extension_features.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace extensions {
 
@@ -83,8 +84,9 @@ class ExternalInstallErrorTest : public ExtensionBrowserTest {
         registry->enabled_extensions().Contains(provided_extension_id));
     ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
     EXPECT_FALSE(prefs->IsExternalExtensionAcknowledged(provided_extension_id));
-    EXPECT_EQ(disable_reason::DISABLE_EXTERNAL_EXTENSION,
-              prefs->GetDisableReasons(provided_extension_id));
+    EXPECT_THAT(prefs->GetDisableReasons(provided_extension_id),
+                testing::UnorderedElementsAre(
+                    disable_reason::DISABLE_EXTERNAL_EXTENSION));
   }
 
  private:

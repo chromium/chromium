@@ -6,6 +6,7 @@
 #define EXTENSIONS_BROWSER_EXTENSION_PREFS_OBSERVER_H_
 
 #include "base/time/time.h"
+#include "extensions/browser/disable_reason.h"
 #include "extensions/common/extension_id.h"
 
 namespace extensions {
@@ -17,8 +18,9 @@ class ExtensionPrefsObserver {
   // Called when the reasons for an extension being disabled have changed.
   // This is *not* called when the disable reasons change due to the extension
   // being enabled/disabled.
-  virtual void OnExtensionDisableReasonsChanged(const ExtensionId& extension_id,
-                                                int disabled_reasons) {}
+  virtual void OnExtensionDisableReasonsChanged(
+      const ExtensionId& extension_id,
+      DisableReasonSet disabled_reasons) {}
 
   // Called when an extension is registered with ExtensionPrefs.
   virtual void OnExtensionRegistered(const ExtensionId& extension_id,

@@ -334,7 +334,7 @@ void AppsStatusChangeChecker::OnExtensionUninstalled(
 
 void AppsStatusChangeChecker::OnExtensionDisableReasonsChanged(
     const std::string& extension_id,
-    int disabled_reasons) {
+    extensions::DisableReasonSet disabled_reasons) {
   CheckExitCondition();
 }
 

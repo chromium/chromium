@@ -70,8 +70,11 @@ class ControlledHomeBubbleDelegateTest : public BrowserWithTestWindowTest {
   bool IsExtensionDisabled(
       const extensions::ExtensionId& id,
       extensions::disable_reason::DisableReason disable_reason) {
+    extensions::DisableReasonSet disable_reasons =
+        extension_prefs_->GetDisableReasons(id);
     return extension_registry_->disabled_extensions().GetByID(id) &&
-           extension_prefs_->GetDisableReasons(id) == disable_reason;
+           disable_reasons.size() == 1 &&
+           disable_reasons.contains(disable_reason);
   }
 
   // Returns true if the extension has been acknowledged by the user.

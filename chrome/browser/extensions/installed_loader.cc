@@ -166,17 +166,15 @@ void RecordDisbleReasonHistogram(int reason) {
 
 // Records the disable reasons for a single extension grouped by
 // disable_reason::DisableReason.
-void RecordDisableReasons(int reasons) {
+void RecordDisableReasons(const DisableReasonSet& reasons) {
   // |reasons| is a bitmask with values from ExtensionDisabledReason
   // which are increasing powers of 2.
-  if (reasons == disable_reason::DISABLE_NONE) {
+  if (reasons.empty()) {
     RecordDisbleReasonHistogram(disable_reason::DISABLE_NONE);
     return;
   }
-  for (int reason = 1; reason < disable_reason::DISABLE_REASON_LAST;
-       reason <<= 1) {
-    if (reasons & reason)
-      RecordDisbleReasonHistogram(reason);
+  for (int reason : reasons) {
+    RecordDisbleReasonHistogram(reason);
   }
 }
 
@@ -327,12 +325,8 @@ void InstalledLoader::Load(const ExtensionInfo& info, bool write_to_prefs) {
       ExtensionSystem::Get(extension_service_->profile())->management_policy();
 
   if (extension_prefs_->IsExtensionDisabled(extension->id())) {
-    // TODO(crbug.com/372186532): Remove this conversion code after
-    // GetDisableReasons() is migrated to return a `DisableReasonSet`.
-    const int disable_reasons_legacy_bitflag =
-        extension_prefs_->GetDisableReasons(extension->id());
     DisableReasonSet disable_reasons =
-        BitflagToIntegerSet(disable_reasons_legacy_bitflag);
+        extension_prefs_->GetDisableReasons(extension->id());
 
     // Update the extension prefs to reflect if the extension is no longer
     // blocked due to admin policy.
@@ -374,7 +368,7 @@ void InstalledLoader::Load(const ExtensionInfo& info, bool write_to_prefs) {
     // remain so.
     disable_reason::DisableReason disable_reason = disable_reason::DISABLE_NONE;
     if (policy->MustRemainDisabled(extension.get(), &disable_reason)) {
-      DCHECK(disable_reason != disable_reason::DISABLE_NONE);
+      DCHECK_NE(disable_reason, disable_reason::DISABLE_NONE);
       extension_prefs_->SetExtensionDisabled(extension->id(), {disable_reason});
     }
   }

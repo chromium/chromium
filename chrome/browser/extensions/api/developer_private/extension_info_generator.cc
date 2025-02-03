@@ -640,25 +640,24 @@ void ExtensionInfoGenerator::CreateExtensionInfoHelper(
   info->description = extension.description();
 
   // Disable reasons.
-  int disable_reasons = extension_prefs_->GetDisableReasons(extension.id());
+  DisableReasonSet disable_reasons =
+      extension_prefs_->GetDisableReasons(extension.id());
   info->disable_reasons.suspicious_install =
-      (disable_reasons & disable_reason::DISABLE_NOT_VERIFIED) != 0;
+      disable_reasons.contains(disable_reason::DISABLE_NOT_VERIFIED);
   info->disable_reasons.corrupt_install =
-      (disable_reasons & disable_reason::DISABLE_CORRUPTED) != 0;
-  info->disable_reasons.update_required =
-      (disable_reasons & disable_reason::DISABLE_UPDATE_REQUIRED_BY_POLICY) !=
-      0;
+      disable_reasons.contains(disable_reason::DISABLE_CORRUPTED);
+  info->disable_reasons.update_required = disable_reasons.contains(
+      disable_reason::DISABLE_UPDATE_REQUIRED_BY_POLICY);
   info->disable_reasons.blocked_by_policy =
-      (disable_reasons & disable_reason::DISABLE_BLOCKED_BY_POLICY) != 0;
+      disable_reasons.contains(disable_reason::DISABLE_BLOCKED_BY_POLICY);
   info->disable_reasons.reloading =
-      (disable_reasons & disable_reason::DISABLE_RELOAD) != 0;
-  bool custodian_approval_required =
-      (disable_reasons & disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED) !=
-      0;
+      disable_reasons.contains(disable_reason::DISABLE_RELOAD);
+  bool custodian_approval_required = disable_reasons.contains(
+      disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED);
   info->disable_reasons.custodian_approval_required =
       custodian_approval_required;
   bool permissions_increase =
-      (disable_reasons & disable_reason::DISABLE_PERMISSIONS_INCREASE) != 0;
+      disable_reasons.contains(disable_reason::DISABLE_PERMISSIONS_INCREASE);
   info->disable_reasons.parent_disabled_permissions =
       supervised_user::AreExtensionsPermissionsEnabled(profile) &&
       !supervised_user::
@@ -666,15 +665,13 @@ void ExtensionInfoGenerator::CreateExtensionInfoHelper(
       !profile->GetPrefs()->GetBoolean(
           prefs::kSupervisedUserExtensionsMayRequestPermissions) &&
       (custodian_approval_required || permissions_increase);
-  info->disable_reasons.published_in_store_required =
-      (disable_reasons &
-       disable_reason::DISABLE_PUBLISHED_IN_STORE_REQUIRED_BY_POLICY) != 0;
-  info->disable_reasons.unsupported_manifest_version =
-      (disable_reasons &
-       disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION) != 0;
+  info->disable_reasons.published_in_store_required = disable_reasons.contains(
+      disable_reason::DISABLE_PUBLISHED_IN_STORE_REQUIRED_BY_POLICY);
+  info->disable_reasons.unsupported_manifest_version = disable_reasons.contains(
+      disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION);
   info->disable_reasons.unsupported_developer_extension =
-      (disable_reasons &
-       disable_reason::DISABLE_UNSUPPORTED_DEVELOPER_EXTENSION) != 0;
+      disable_reasons.contains(
+          disable_reason::DISABLE_UNSUPPORTED_DEVELOPER_EXTENSION);
 
   // Error collection.
   bool error_console_enabled =

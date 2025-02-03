@@ -54,6 +54,8 @@ namespace user_prefs {
 class PrefRegistrySyncable;
 }
 
+FORWARD_DECLARE_TEST(ExtensionSyncServiceTest, ProcessSyncDataEnableDisable);
+
 namespace extensions {
 
 class AppSorting;
@@ -174,6 +176,8 @@ class ExtensionPrefs : public KeyedService {
     friend class UpdateDataProviderTest;
     FRIEND_TEST_ALL_PREFIXES(ExtensionPrefsSimpleTest,
                              DisableReasonsRawManipulation);
+    FRIEND_TEST_ALL_PREFIXES(::ExtensionSyncServiceTest,
+                             ProcessSyncDataEnableDisable);
   };
 
   // Creates an ExtensionPrefs object.
@@ -409,7 +413,7 @@ class ExtensionPrefs : public KeyedService {
   // pass the proper value to SetExtensionState instead when you enable/disable
   // an extension. In particular, AddDisableReason(s) is only legal when the
   // extension is not enabled.
-  int GetDisableReasons(const ExtensionId& extension_id) const;
+  DisableReasonSet GetDisableReasons(const ExtensionId& extension_id) const;
   bool HasDisableReason(const ExtensionId& extension_id,
                         disable_reason::DisableReason disable_reason) const;
   void AddDisableReason(const ExtensionId& extension_id,

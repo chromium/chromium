@@ -139,8 +139,9 @@ class DeveloperPrivateEventRouter : public ExtensionRegistryObserver,
                                  const Command& removed_command) override;
 
   // ExtensionPrefsObserver:
-  void OnExtensionDisableReasonsChanged(const ExtensionId& extension_id,
-                                        int disable_reasons) override;
+  void OnExtensionDisableReasonsChanged(
+      const ExtensionId& extension_id,
+      DisableReasonSet disable_reasons) override;
   void OnExtensionRuntimePermissionsChanged(
       const ExtensionId& extension_id) override;
 

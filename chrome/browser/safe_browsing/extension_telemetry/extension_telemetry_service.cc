@@ -54,6 +54,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/blocklist_state.h"
+#include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
@@ -1361,8 +1362,15 @@ ExtensionTelemetryService::GetExtensionInfoForReport(
   extension_info->set_telemetry_blocklist_state(
       GetExtensionTelemetryServiceBlocklistState(extension.id(),
                                                  extension_prefs_));
-  extension_info->set_disable_reasons(
-      extension_prefs_->GetDisableReasons(extension.id()));
+
+  // TODO(crbug.com/372186532): Update ExtensionInfo to include DisableReasonSet
+  // instead of a bitflag.
+  extensions::DisableReasonSet disable_reasons =
+      extension_prefs_->GetDisableReasons(extension.id());
+  int disable_reasons_bitflag =
+      extensions::IntegerSetToBitflag(disable_reasons);
+  extension_info->set_disable_reasons(disable_reasons_bitflag);
+
   if (base::FeatureList::IsEnabled(kExtensionTelemetryIncludePolicyData)) {
     bool installation_managed =
         extension_management->IsInstallationExplicitlyAllowed(extension.id()) ||

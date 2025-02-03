@@ -102,18 +102,17 @@ bool ShouldReleaseAllocationOnUnload(const ExtensionPrefs* prefs,
                                      const Extension& extension,
                                      UnloadedExtensionReason reason) {
   if (reason == UnloadedExtensionReason::DISABLE) {
-    static constexpr int kReleaseAllocationDisableReasons =
-        disable_reason::DISABLE_BLOCKED_BY_POLICY |
-        disable_reason::DISABLE_USER_ACTION;
-
     // Release allocation on reload of an unpacked extension and treat it as a
     // new install since the extension directory's contents may have changed.
     bool is_unpacked_reload =
         Manifest::IsUnpackedLocation(extension.location()) &&
         prefs->HasDisableReason(extension.id(), disable_reason::DISABLE_RELOAD);
 
-    return is_unpacked_reload || (prefs->GetDisableReasons(extension.id()) &
-                                  kReleaseAllocationDisableReasons) != 0;
+    DisableReasonSet disable_reasons = prefs->GetDisableReasons(extension.id());
+    return is_unpacked_reload ||
+           disable_reasons.contains(
+               disable_reason::DISABLE_BLOCKED_BY_POLICY) ||
+           disable_reasons.contains(disable_reason::DISABLE_USER_ACTION);
   }
 
   return reason == UnloadedExtensionReason::BLOCKLIST;

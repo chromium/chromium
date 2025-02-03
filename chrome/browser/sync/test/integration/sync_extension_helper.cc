@@ -25,6 +25,7 @@
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "components/crx_file/id_util.h"
 #include "components/sync/model/string_ordinal.h"
+#include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
@@ -218,7 +219,10 @@ SyncExtensionHelper::ExtensionStateMap SyncExtensionHelper::GetExtensionStates(
         .enabled_state = extension_service->IsExtensionEnabled(id)
                              ? ExtensionState::ENABLED
                              : ExtensionState::DISABLED,
-        .disable_reasons = ExtensionPrefs::Get(profile)->GetDisableReasons(id),
+        // TODO(crbug.com/372186532): Update ExtensionStateMap to include
+        // DisableReasonSet instead of a bitflag.
+        .disable_reasons = extensions::IntegerSetToBitflag(
+            ExtensionPrefs::Get(profile)->GetDisableReasons(id)),
         .incognito_enabled = extensions::util::IsIncognitoEnabled(id, profile)};
 
     DVLOG(2) << "Extension " << id << " in profile " << profile_debug_name
@@ -236,7 +240,10 @@ SyncExtensionHelper::ExtensionStateMap SyncExtensionHelper::GetExtensionStates(
   for (const std::string& id : pending_crx_ids) {
     extension_state_map[id] = {
         .enabled_state = ExtensionState::PENDING,
-        .disable_reasons = ExtensionPrefs::Get(profile)->GetDisableReasons(id),
+        // TODO(crbug.com/372186532): Update ExtensionStateMap to include
+        // DisableReasonSet instead of a bitflag.
+        .disable_reasons = extensions::IntegerSetToBitflag(
+            ExtensionPrefs::Get(profile)->GetDisableReasons(id)),
         .incognito_enabled = extensions::util::IsIncognitoEnabled(id, profile)};
     DVLOG(2) << "Extension " << id << " in profile " << profile_debug_name
              << " is pending";

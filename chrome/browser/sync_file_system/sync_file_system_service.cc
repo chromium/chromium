@@ -537,9 +537,9 @@ void SyncFileSystemService::OnExtensionUnloaded(
     return;
 
   GURL app_origin = Extension::GetBaseURLFromExtensionId(extension->id());
-  int disable_reasons =
+  extensions::DisableReasonSet disable_reasons =
       ExtensionPrefs::Get(profile_)->GetDisableReasons(extension->id());
-  if (disable_reasons & extensions::disable_reason::DISABLE_RELOAD) {
+  if (disable_reasons.contains(extensions::disable_reason::DISABLE_RELOAD)) {
     // Bypass disabling the origin since the app will be re-enabled soon.
     // NOTE: If re-enabling the app fails, the app is disabled while it is
     // handled as enabled origin in the SyncFS. This should be safe and will be
