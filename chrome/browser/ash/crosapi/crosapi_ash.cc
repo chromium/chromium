@@ -19,7 +19,6 @@
 #include "chrome/browser/apps/digital_goods/digital_goods_ash.h"
 #include "chrome/browser/ash/crosapi/arc_ash.h"
 #include "chrome/browser/ash/crosapi/audio_service_ash.h"
-#include "chrome/browser/ash/crosapi/automation_ash.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/cec_private_ash.h"
 #include "chrome/browser/ash/crosapi/cert_database_ash.h"
@@ -75,7 +74,6 @@
 #include "chrome/browser/ash/crosapi/remoting_ash.h"
 #include "chrome/browser/ash/crosapi/resource_manager_ash.h"
 #include "chrome/browser/ash/crosapi/screen_ai_downloader_ash.h"
-#include "chrome/browser/ash/crosapi/search_provider_ash.h"
 #include "chrome/browser/ash/crosapi/structured_metrics_service_ash.h"
 #include "chrome/browser/ash/crosapi/suggestion_service_ash.h"
 #include "chrome/browser/ash/crosapi/time_zone_service_ash.h"
@@ -170,7 +168,6 @@ Profile* GetAshProfile() {
 CrosapiAsh::CrosapiAsh()
     : arc_ash_(std::make_unique<ArcAsh>()),
       audio_service_ash_(std::make_unique<AudioServiceAsh>()),
-      automation_ash_(std::make_unique<AutomationAsh>()),
       cec_private_ash_(std::make_unique<CecPrivateAsh>()),
       cert_database_ash_(std::make_unique<CertDatabaseAsh>()),
       cert_provisioning_ash_(std::make_unique<CertProvisioningAsh>()),
@@ -251,7 +248,6 @@ CrosapiAsh::CrosapiAsh()
       print_preview_webcontents_adapter_ash_(
           std::make_unique<ash::printing::PrintPreviewWebcontentsAdapterAsh>()),
       screen_ai_downloader_ash_(std::make_unique<ScreenAIDownloaderAsh>()),
-      search_provider_ash_(std::make_unique<SearchProviderAsh>()),
       structured_metrics_service_ash_(
           std::make_unique<StructuredMetricsServiceAsh>()),
       suggestion_service_ash_(std::make_unique<SuggestionServiceAsh>()),
@@ -307,14 +303,6 @@ void CrosapiAsh::BindAudioService(
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
   audio_service_ash_->Initialize(profile);
   audio_service_ash_->BindReceiver(std::move(receiver));
-}
-
-void CrosapiAsh::BindAutomationDeprecated(
-    mojo::PendingReceiver<mojom::Automation> receiver) {}
-
-void CrosapiAsh::BindAutomationFactory(
-    mojo::PendingReceiver<mojom::AutomationFactory> receiver) {
-  automation_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindBrowserCdmFactory(mojo::GenericPendingReceiver receiver) {
@@ -712,16 +700,6 @@ void CrosapiAsh::BindResourceManager(
 void CrosapiAsh::BindScreenAIDownloader(
     mojo::PendingReceiver<mojom::ScreenAIDownloader> receiver) {
   screen_ai_downloader_ash_->Bind(std::move(receiver));
-}
-
-void CrosapiAsh::BindSearchControllerFactory(
-    mojo::PendingRemote<mojom::SearchControllerFactory> remote) {
-  NOTREACHED();
-}
-
-void CrosapiAsh::BindSearchControllerRegistry(
-    mojo::PendingReceiver<mojom::SearchControllerRegistry> receiver) {
-  search_provider_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindSensorHalClient(

@@ -998,7 +998,17 @@ void CertProvisioningWorkerDynamic::ProcessResponseErrors(
   fetch_instruction_backoff_.InformOfRequest(true);
 
   if (backend_error.error() == em::CertProvBackendError::INCONSISTENT_DATA ||
-      backend_error.error() == em::CertProvBackendError::PROFILE_NOT_FOUND) {
+      backend_error.error() == em::CertProvBackendError::PROFILE_NOT_FOUND ||
+      backend_error.error() ==
+          em::CertProvBackendError::IMMEDIATE_RETRY_ERROR_0 ||
+      backend_error.error() ==
+          em::CertProvBackendError::IMMEDIATE_RETRY_ERROR_1 ||
+      backend_error.error() ==
+          em::CertProvBackendError::IMMEDIATE_RETRY_ERROR_2 ||
+      backend_error.error() ==
+          em::CertProvBackendError::IMMEDIATE_RETRY_ERROR_3 ||
+      backend_error.error() ==
+          em::CertProvBackendError::IMMEDIATE_RETRY_ERROR_4) {
     // Report both INCONSISTENT_DATA and PROFILE_NOT_FOUND as
     // kInconsistentDataError because both mean that the locally-cached policy
     // does not match the server's database.

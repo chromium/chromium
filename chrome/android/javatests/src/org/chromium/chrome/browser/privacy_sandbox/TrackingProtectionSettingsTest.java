@@ -7,9 +7,7 @@ package org.chromium.chrome.browser.privacy_sandbox;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -21,7 +19,6 @@ import static org.chromium.ui.test.util.ViewUtils.clickOnClickableSpan;
 import android.content.Context;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
@@ -109,55 +106,14 @@ public class TrackingProtectionSettingsTest {
 
     @Test
     @SmallTest
-    public void launchWithIpAndFpProtection_extraContentDisplayed() {
-        when(mDelegate.isBlockAll3pcEnabled()).thenReturn(true);
-        when(mDelegate.isDoNotTrackEnabled()).thenReturn(true);
-        when(mDelegate.shouldDisplayIpProtection()).thenReturn(true);
-        when(mDelegate.shouldDisplayFingerprintingProtection()).thenReturn(true);
-
-        launchTrackingProtectionSettings();
-
-        Context context = ApplicationProvider.getApplicationContext();
-        String fp_protection =
-                context.getString(R.string.tracking_protection_fingerprinting_protection_learn_more)
-                        .replaceAll("<link>|</link>", "");
-        String ip_protection =
-                context.getString(R.string.tracking_protection_ip_protection_learn_more)
-                        .replaceAll("<link>|</link>", "");
-        onView(withId(R.id.recycler_view))
-                .perform(RecyclerViewActions.scrollTo(hasDescendant(withText(fp_protection))));
-        onView(withText(ip_protection)).check(matches(isDisplayed()));
-        onView(withText(fp_protection)).check(matches(isDisplayed()));
-    }
-
-    @Test
-    @SmallTest
     public void changeToggleValues_propagatedToBackend() {
         when(mDelegate.isBlockAll3pcEnabled()).thenReturn(true);
         when(mDelegate.isDoNotTrackEnabled()).thenReturn(true);
-        when(mDelegate.shouldDisplayIpProtection()).thenReturn(true);
-        when(mDelegate.shouldDisplayFingerprintingProtection()).thenReturn(true);
-        when(mDelegate.isIpProtectionEnabled()).thenReturn(false);
-        when(mDelegate.isFingerprintingProtectionEnabled()).thenReturn(false);
 
         launchTrackingProtectionSettings();
 
         onView(withText(R.string.tracking_protection_block_cookies_toggle_title)).perform(click());
         verify(mDelegate).setBlockAll3pc(/* enabled= */ Mockito.eq(false));
-
-        onView(withId(R.id.recycler_view))
-                .perform(
-                        RecyclerViewActions.scrollTo(
-                                hasDescendant(
-                                        withText(
-                                                R.string
-                                                        .tracking_protection_fingerprinting_protection_title))));
-
-        onView(withText(R.string.tracking_protection_ip_protection_toggle_title)).perform(click());
-        verify(mDelegate).setIpProtection(/* enabled= */ Mockito.eq(true));
-        onView(withText(R.string.tracking_protection_fingerprinting_protection_title))
-                .perform(click());
-        verify(mDelegate).setFingerprintingProtection(/* enabled= */ Mockito.eq(true));
     }
 
     @Test

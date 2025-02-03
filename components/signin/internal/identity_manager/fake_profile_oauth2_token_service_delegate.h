@@ -61,6 +61,10 @@ class FakeProfileOAuth2TokenServiceDelegate
 
   std::vector<CoreAccountId> GetAccounts() const override;
 
+#if BUILDFLAG(IS_IOS)
+  std::vector<AccountInfo> GetAccountsOnDevice() const override;
+#endif  // BUILDFLAG(IS_IOS)
+
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory()
       const override;
 

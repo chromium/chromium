@@ -7,7 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/settings/ui_bundled/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_sync_settings_service_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_sync_settings_table_view_controller_model_delegate.h"
 #import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
@@ -35,11 +34,6 @@ class SyncService;
 @property(nonatomic, weak) id<ManageSyncSettingsConsumer> consumer;
 // Command handler.
 @property(nonatomic, weak) id<ManageSyncSettingsCommandHandler> commandHandler;
-// The initial account sync state at the time this mediator gets created.
-// While the mediator is running it gets updated only if the user signs
-// out.
-@property(nonatomic, assign, readonly)
-    SyncSettingsAccountState initialAccountState;
 // Error command handler.
 @property(nonatomic, weak) id<SyncErrorSettingsCommandHandler> syncErrorHandler;
 // Returns YES if the encryption item should be enabled.
@@ -64,7 +58,6 @@ class SyncService;
     authenticationService:(AuthenticationService*)authenticationService
     accountManagerService:(ChromeAccountManagerService*)accountManagerService
               prefService:(PrefService*)prefService
-      initialAccountState:(SyncSettingsAccountState)initialAccountState
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

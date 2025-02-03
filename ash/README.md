@@ -10,7 +10,6 @@ Ash sits below chrome in the dependency graph (i.e. it cannot depend on code
 in //chrome). For historical reasons, ash has multiple dependency levels:
 
 *   General //ash code is on top (//ash/system, //ash/wm, etc.)
-*   //ash/components sit below //ash, see [README](/ash/components/README.md)
 *   //ash/constants sit near the bottom of the dependency graph, see
     [README](/ash/constants/README.md)
 

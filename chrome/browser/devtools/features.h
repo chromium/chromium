@@ -44,6 +44,9 @@ extern const base::FeatureParam<DevToolsFreestylerUserTier>
     kDevToolsFreestylerUserTier;
 extern const base::FeatureParam<DevToolsFreestylerExecutionMode>
     kDevToolsFreestylerExecutionMode;
+extern const base::FeatureParam<bool> kDevToolsFreestylerPatching;
+extern const base::FeatureParam<bool> kDevToolsFreestylerMultimodal;
+extern const base::FeatureParam<bool> kDevToolsFreestylerFunctionCalling;
 
 BASE_DECLARE_FEATURE(kDevToolsAiAssistanceNetworkAgent);
 extern const base::FeatureParam<std::string>

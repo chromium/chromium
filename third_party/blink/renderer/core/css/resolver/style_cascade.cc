@@ -35,6 +35,9 @@
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/css_variable_data.h"
 #include "third_party/blink/renderer/core/css/document_style_environment_variables.h"
+#include "third_party/blink/renderer/core/css/kleene_value.h"
+#include "third_party/blink/renderer/core/css/media_eval_utils.h"
+#include "third_party/blink/renderer/core/css/parser/container_query_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_fast_paths.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_local_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token.h"
@@ -1370,6 +1373,10 @@ bool StyleCascade::ResolveTokensInto(CSSParserTokenStream& stream,
       CSSParserTokenStream::BlockGuard guard(stream);
       success &=
           ResolveAutoBaseInto(stream, resolver, context, out);
+    } else if (token.FunctionId() == CSSValueID::kIf &&
+               RuntimeEnabledFeatures::CSSInlineIfForStyleQueriesEnabled()) {
+      CSSParserTokenStream::BlockGuard guard(stream);
+      success &= ResolveIfInto(stream, resolver, context, out);
     } else if (token.GetType() == kFunctionToken &&
                CSSVariableParser::IsValidVariableName(token.Value()) &&
                RuntimeEnabledFeatures::CSSFunctionsEnabled()) {
@@ -1870,6 +1877,104 @@ bool StyleCascade::ResolveAutoBaseInto(
   return ResolveTokensInto(stream, resolver, context,
                            /* function_context */ nullptr,
                            /* stop_type */ kCommaToken, out);
+}
+
+KleeneValue StyleCascade::EvalIfStyleFeature(
+    const MediaQueryFeatureExpNode& feature,
+    CascadeResolver& resolver) {
+  const MediaQueryExpBounds& bounds = feature.Bounds();
+
+  // Style features do not support the range syntax.
+  DCHECK(!bounds.IsRange());
+  DCHECK(bounds.right.op == MediaQueryOperator::kNone);
+
+  // TODO(crbug.com/325504770): Take function context into account.
+  AtomicString property_name(feature.Name());
+  CustomProperty property(property_name, GetDocument());
+
+  LookupAndApply(property, resolver);
+  CSSVariableData* computed = GetVariableData(property);
+
+  if (!computed) {
+    return KleeneValue::kFalse;
+  }
+
+  if (!bounds.right.value.IsValid()) {
+    return KleeneValue::kTrue;
+  }
+
+  const CSSValue& query_specified = bounds.right.value.GetCSSValue();
+
+  if (query_specified.IsRevertValue() || query_specified.IsRevertLayerValue()) {
+    return KleeneValue::kFalse;
+  }
+
+  if (query_specified.IsCSSWideKeyword()) {
+    // TODO(crbug.com/346977961): Resolve initial, inherit and unset keywords in
+    // query specified value.
+    return KleeneValue::kFalse;
+  }
+
+  const auto& decl_value = To<CSSUnparsedDeclarationValue>(query_specified);
+
+  // TODO(crbug.com/346977961): Need to resolve substitutions and use computed
+  // value of query_specified value in comparison.
+  CSSVariableData* computed_query_data = decl_value.VariableDataValue();
+
+  if (computed->EqualsIgnoringAttrTainting(*computed_query_data)) {
+    return KleeneValue::kTrue;
+  }
+
+  return KleeneValue::kFalse;
+}
+
+bool StyleCascade::EvalIfCondition(CSSParserTokenStream& stream,
+                                   CascadeResolver& resolver,
+                                   const CSSParserContext& context) {
+  if (stream.Peek().Id() == CSSValueID::kElse) {
+    stream.ConsumeIncludingWhitespace();
+    DCHECK_EQ(stream.Peek().GetType(), kColonToken);
+    stream.ConsumeIncludingWhitespace();
+    return true;
+  }
+
+  ContainerQueryParser parser(context);
+
+  const MediaQueryExpNode* exp_node = parser.ConsumeIfTest(stream);
+  DCHECK(exp_node);
+
+  stream.ConsumeWhitespace();
+  DCHECK_EQ(stream.Peek().GetType(), kColonToken);
+  stream.ConsumeIncludingWhitespace();
+
+  return MediaEval(*exp_node,
+                   [this, &resolver](const MediaQueryFeatureExpNode& feature) {
+                     return EvalIfStyleFeature(feature, resolver);
+                   }) == KleeneValue::kTrue
+             ? true
+             : false;
+}
+
+bool StyleCascade::ResolveIfInto(CSSParserTokenStream& stream,
+                                 CascadeResolver& resolver,
+                                 const CSSParserContext& context,
+                                 TokenSequence& out) {
+  // TODO(crbug.com/346977961):  Handle cycles.
+  stream.ConsumeWhitespace();
+  bool eval_result = EvalIfCondition(stream, resolver, context);
+  while (!eval_result) {
+    stream.SkipUntilPeekedTypeIs<kSemicolonToken>();
+    stream.ConsumeIncludingWhitespace();  // kSemicolonToken
+    if (stream.AtEnd()) {
+      // None of the conditions matched, so should be IACVT.
+      return false;
+    }
+    eval_result = EvalIfCondition(stream, resolver, context);
+  }
+  // TODO(crbug.com/325504770): Take function context into account.
+  return ResolveTokensInto(stream, resolver, context,
+                           /* function_context */ nullptr,
+                           /* stop_type */ kSemicolonToken, out);
 }
 
 CSSVariableData* StyleCascade::GetVariableData(

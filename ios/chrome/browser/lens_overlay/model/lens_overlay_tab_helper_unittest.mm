@@ -15,6 +15,9 @@
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/web/public/navigation/navigation_item.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -43,8 +46,7 @@ class LensOverlayTabHelperTest : public PlatformTest {
         static_cast<int>(
             lens::prefs::LensOverlaySettingsPolicyValue::kEnabled));
 
-    web::WebState::CreateParams params(profile_.get());
-    web_state_ = web::WebState::Create(params);
+    web_state_ = std::make_unique<web::FakeWebState>();
 
     id dispatcher = [[CommandDispatcher alloc] init];
     dispatcher_ = dispatcher;
@@ -66,7 +68,7 @@ class LensOverlayTabHelperTest : public PlatformTest {
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
   raw_ptr<ProfileIOS> profile_;
-  std::unique_ptr<web::WebState> web_state_;
+  std::unique_ptr<web::FakeWebState> web_state_;
   raw_ptr<LensOverlayTabHelper> helper_ = nullptr;
   id handler_;
   id dispatcher_;
@@ -97,11 +99,17 @@ TEST_F(LensOverlayTabHelperTest, ShouldNotDestroyUIOnWebStateDestruction) {
 
 // Tests that a change in the web state is propagated to the commands handler.
 TEST_F(LensOverlayTabHelperTest, ShouldShowTheUIWhenWebStateChanges) {
+  auto fake_navigation_manager = std::make_unique<web::FakeNavigationManager>();
+  std::unique_ptr<web::NavigationItem> item = web::NavigationItem::Create();
+  fake_navigation_manager->SetVisibleItem(item.get());
+  web_state_->SetNavigationManager(std::move(fake_navigation_manager));
+
   // Given a shown lens overlay state.
   helper_->SetLensOverlayUIAttachedAndAlive(true);
+
   // Then the Lens UI should be shown.
   OCMExpect([mock_commands_handler_ showLensUI:YES]);
-  // When the tab helper is notify of a change in the web state.
+  // When the tab helper is notifed of a change in the web state.
   helper_->WasShown(web_state_.get());
 
   EXPECT_OCMOCK_VERIFY(mock_commands_handler_);

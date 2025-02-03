@@ -159,7 +159,7 @@ targets.binaries.windowed_test_launcher(
 
 targets.binaries.windowed_test_launcher(
     name = "ash_components_unittests",
-    label = "//ash/components:ash_components_unittests",
+    label = "//chromeos/ash/experiences:ash_components_unittests",
 )
 
 targets.binaries.windowed_test_launcher(

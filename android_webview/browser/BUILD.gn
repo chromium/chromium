@@ -206,6 +206,8 @@ source_set("browser") {
     "permission/simple_permission_request.h",
     "popup_touch_handle_drawable.cc",
     "popup_touch_handle_drawable.h",
+    "prefetch/aw_prefetch_manager.cc",
+    "prefetch/aw_prefetch_manager.h",
     "prefetch/aw_prefetch_service_delegate.cc",
     "prefetch/aw_prefetch_service_delegate.h",
     "prefetch/aw_preloading_utils.cc",

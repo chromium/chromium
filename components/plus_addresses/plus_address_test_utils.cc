@@ -127,11 +127,12 @@ HandleRequestToPlusAddressWithSuccess(
   }
 
   bool is_refresh = [&]() {
-    std::optional<base::Value> body = base::JSONReader::Read(request.content);
-    if (!body || !body->is_dict() || !body->GetIfDict()) {
+    std::optional<base::Value::Dict> body =
+        base::JSONReader::ReadDict(request.content);
+    if (!body) {
       return false;
     }
-    return body->GetIfDict()->FindBool("refresh_email_address").value_or(false);
+    return body->FindBool("refresh_email_address").value_or(false);
   }();
   std::unique_ptr<net::test_server::BasicHttpResponse> http_response(
       new net::test_server::BasicHttpResponse);

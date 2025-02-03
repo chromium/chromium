@@ -261,7 +261,7 @@
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ash_components_unittests",
-        "test_id_prefix": "ninja://ash/components:ash_components_unittests/"
+        "test_id_prefix": "ninja://chromeos/ash/experiences:ash_components_unittests/"
       },
       {
         "merge": {

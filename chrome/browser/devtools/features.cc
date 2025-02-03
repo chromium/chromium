@@ -52,6 +52,12 @@ const base::FeatureParam<DevToolsFreestylerExecutionMode>
         &kDevToolsFreestyler, "execution_mode",
         /*default_value=*/DevToolsFreestylerExecutionMode::kAllScripts,
         &devtools_freestyler_execution_mode_options};
+const base::FeatureParam<bool> kDevToolsFreestylerPatching{
+    &kDevToolsFreestyler, "patching", /*default_value=*/false};
+const base::FeatureParam<bool> kDevToolsFreestylerMultimodal{
+    &kDevToolsFreestyler, "multimodal", /*default_value=*/false};
+const base::FeatureParam<bool> kDevToolsFreestylerFunctionCalling{
+    &kDevToolsFreestyler, "function_calling", /*default_value=*/false};
 
 // Whether the DevTools AI Assistance Network Agent is enabled.
 BASE_FEATURE(kDevToolsAiAssistanceNetworkAgent,

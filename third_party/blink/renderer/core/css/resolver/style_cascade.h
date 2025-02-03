@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_name.h"
 #include "third_party/blink/renderer/core/css/css_property_value.h"
+#include "third_party/blink/renderer/core/css/kleene_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/css/properties/css_bitset.h"
@@ -41,6 +42,7 @@ class CSSValue;
 class CSSVariableData;
 class CustomProperty;
 class MatchResult;
+class MediaQueryFeatureExpNode;
 class StyleResolverState;
 
 namespace cssvalue {
@@ -448,9 +450,19 @@ class CORE_EXPORT StyleCascade {
                        const CSSParserContext&,
                        TokenSequence&);
   bool ResolveAutoBaseInto(CSSParserTokenStream&,
-                                           CascadeResolver&,
-                                           const CSSParserContext&,
-                                           TokenSequence&);
+                           CascadeResolver&,
+                           const CSSParserContext&,
+                           TokenSequence&);
+  bool ResolveIfInto(CSSParserTokenStream&,
+                     CascadeResolver&,
+                     const CSSParserContext&,
+                     TokenSequence&);
+
+  bool EvalIfCondition(CSSParserTokenStream& stream,
+                       CascadeResolver& resolver,
+                       const CSSParserContext& context);
+  KleeneValue EvalIfStyleFeature(const MediaQueryFeatureExpNode&,
+                                 CascadeResolver&);
 
   // NOTE: The FunctionContext object must be the _caller's_ function context,
   // not the one the function itself sets up. This is because it is used to

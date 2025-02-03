@@ -13,7 +13,6 @@ mojom("mojom") {
     "arc.mojom",
     "audio_service.mojom",
     "authentication.mojom",
-    "automation.mojom",
     "bitmap.mojom",
     "cec_private.mojom",
     "cert_database.mojom",

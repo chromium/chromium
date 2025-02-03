@@ -83,7 +83,6 @@
 #import "ios/chrome/browser/settings/ui_bundled/elements/enterprise_info_popover_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/google_services_settings_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts/manage_accounts_coordinator.h"
-#import "ios/chrome/browser/settings/ui_bundled/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_sync_settings_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/language/language_settings_mediator.h"
 #import "ios/chrome/browser/settings/ui_bundled/language/language_settings_table_view_controller.h"
@@ -1662,14 +1661,9 @@ struct EnhancedSafeBrowsingActivePromoData
     base::debug::DumpWithoutCrashing();
   }
 
-  SyncSettingsAccountState accountState =
-      [self shouldReplaceSyncSettingsWithAccountSettings]
-          ? SyncSettingsAccountState::kSignedIn
-          : SyncSettingsAccountState::kSyncing;
   _manageSyncSettingsCoordinator = [[ManageSyncSettingsCoordinator alloc]
       initWithBaseNavigationController:self.navigationController
-                               browser:_browser
-                          accountState:accountState];
+                               browser:_browser];
   _manageSyncSettingsCoordinator.delegate = self;
   [_manageSyncSettingsCoordinator start];
 }

@@ -13,7 +13,6 @@ import "chromeos/crosapi/mojom/app_service.mojom";
 import "chromeos/crosapi/mojom/arc.mojom";
 import "chromeos/crosapi/mojom/audio_service.mojom";
 import "chromeos/crosapi/mojom/authentication.mojom";
-import "chromeos/crosapi/mojom/automation.mojom";
 import "chromeos/crosapi/mojom/guest_os_sk_forwarder.mojom";
 import "chromeos/crosapi/mojom/cec_private.mojom";
 import "chromeos/crosapi/mojom/cert_database.mojom";
@@ -52,7 +51,6 @@ import "chromeos/crosapi/mojom/image_writer.mojom";
 import "chromeos/crosapi/mojom/input_methods.mojom";
 import "chromeos/crosapi/mojom/kerberos_in_browser.mojom";
 import "chromeos/crosapi/mojom/keystore_service.mojom";
-import "chromeos/crosapi/mojom/launcher_search.mojom";
 import "chromeos/crosapi/mojom/local_printer.mojom";
 import "chromeos/crosapi/mojom/login.mojom";
 import "chromeos/crosapi/mojom/login_screen_storage.mojom";
@@ -119,11 +117,6 @@ import "chromeos/crosapi/mojom/embedded_accessibility_helper.mojom";
 [Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
-  // Deprecated.
-  // Added in M91.
-  [MinVersion=18]
-  BindAutomationDeprecated@23(pending_receiver<Automation> receiver);
-
   // Binds the audio devices service which provides audio info to Lacros
   [MinVersion=82] BindAudioService@85(
       pending_receiver<AudioService> receiver);
@@ -132,12 +125,6 @@ interface Crosapi {
   // Added in M97.
   [MinVersion=58] REMOVED_62@62(
       pending_receiver<AuthenticationDeprecated> receiver);
-
-  // Binds the automation factory interface which allows ash to enableautomation
-  // for Lacros and Lacros to send automation data to Ash.
-  // Added in M91.
-  [MinVersion=21]
-  BindAutomationFactory@26(pending_receiver<AutomationFactory> receiver);
 
   // Binds Chrome OS Account Manager for Identity management.
   // Added in M87.
@@ -155,6 +142,8 @@ interface Crosapi {
   [MinVersion=59]
   BindArc@63(pending_receiver<Arc> receiver);
 
+  // BindAutomationDeprecated@23 was removed.
+  // BindAutomationFactory@26 was removed.
   // BindBrowserServiceHost@20 was removed.
   // BindBrowserVersionService@50 was removed.
   // BindBrowserAppInstanceRegistry@54 was removed.
@@ -597,16 +586,6 @@ interface Crosapi {
   [MinVersion=36] BindResourceManager@41(
       pending_receiver<ResourceManager> receiver);
 
-  // Binds the search controller factory for creating search controllers.
-  // Added in M125.
-  [MinVersion=136] BindSearchControllerFactory@138(
-      pending_remote<SearchControllerFactory> remote);
-
-  // Binds the search controller which send queries from ash to lacros.
-  // Added in M99.
-  [MinVersion=62] BindSearchControllerRegistry@66(
-      pending_receiver<SearchControllerRegistry> receiver);
-
   // Binds the Sync Service interface to enable communication between Ash and
   // Lacros Sync. Ash Sync Service is not always available (e.g. Sync can be
   // disabled via command line flags or after/during profile destruction), in
@@ -619,6 +598,8 @@ interface Crosapi {
   [MinVersion=24] REMOVED_29@29(
       pending_receiver<SystemDisplayDeprecated> receiver);
 
+  // BindSearchControllerFactory@138 was removed.
+  // BindSearchControllerRegistry@66 was removed.
   // BindTaskManager@24 was removed.
 
   // Binds the TelemetryDiagnosticRoutineService interface to allow Lacros to

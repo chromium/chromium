@@ -284,7 +284,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'v8_revision': '4ae73e0a01d924441e0d06dc8ae86897f233fc3e',
+  'v8_revision': '0f87a54dade4353b6ece1d7591ca8c66f90c1c93',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
@@ -372,7 +372,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': '7b31ea284807d8a7153b157b407b55945e544d76',
+  'devtools_frontend_revision': 'd255e0ee3123235d1347261dc00c1187f1cc3bbe',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -1448,7 +1448,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    'a987fb157e02664d915b49c792768b36583c3739',
+    'e8461e20eccc74df3fd7b59dac9fb2a2a02ca4eb',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
@@ -2560,6 +2560,12 @@ deps = {
         'output_file': 'scroll_m132_with_atrace.pftrace'
       },
       {
+        "object_name": "test_data/scroll_m133beta.pftrace-2acc70545be1caeb3fb43218ab52872c2c749b49577b973cb8400057c680fc19",
+        "sha256sum": "2acc70545be1caeb3fb43218ab52872c2c749b49577b973cb8400057c680fc19",
+        "size_bytes": 1448694,
+        "generation": 1738338471679054
+      },
+      {
         'object_name': 'test_data/scroll_with_input_not_forwarded_to_renderer.pftrace-ceb2ff3cb64c99ddb28a29867bc82f1491c4b413bfacd8638551b80936240faf',
         'sha256sum': 'ceb2ff3cb64c99ddb28a29867bc82f1491c4b413bfacd8638551b80936240faf',
         'size_bytes': 729606,
@@ -2870,7 +2876,7 @@ deps = {
       'packages': [
         {
           'package': 'skia/tools/goldctl/mac-amd64',
-          'version': 'w4KjkADnVRHE8TgQXpDuP6qD3uivftyQ3ue-Ee-gqWQC',
+          'version': 'ecrZKwXOg9yKzahtLJvGA9kdhOXbMOXIYbY4aHa_CjoC',
         },
       ],
       'dep_type': 'cipd',
@@ -4531,7 +4537,7 @@ deps = {
 
   'src/ios_internal':  {
       'url': Var('chrome_git') + '/chrome/ios_internal.git' + '@' +
-        '688a6da4b49af8b27f536779b43a1651671a1d80',
+        '23b428f47e1d4b5c2e71789111c797dc28a4f5ef',
       'condition': 'checkout_ios and checkout_src_internal',
   },
 

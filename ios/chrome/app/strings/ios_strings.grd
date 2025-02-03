@@ -1946,9 +1946,6 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_ENTERPRISE_MANAGED_SIGNIN_LEARN_MORE" desc="Text displayed to inform the user that their Sign In/Sync is managed by their administrator. [iOS only]">
           Your browser is managed. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn More<ph name="END_LINK">END_LINK</ph>
       </message>
-      <message name="IDS_IOS_ENTERPRISE_MANAGED_SYNC" desc="Text displayed to inform the user that syncable types are limited (i.e. managed). [iOS only]">
-        Your organization limits what you can sync.
-      </message>
       <message name="IDS_IOS_ENTERPRISE_PROFILE_CREATION_ACCOUNT_KEEP_BROWSING_DATA" desc="Message displayed on the managed profile creation screen asking the user how they want to treat their existing browsing data when creating a managed profile.">
        Choose what to do with the existing browsing data on this device, like passwords, history and more.
       </message>
@@ -2293,9 +2290,6 @@ See your search engine’s instructions for deleting your search history, if app
       </message>
       <message name="IDS_IOS_GOOGLE_SERVICES_SETTINGS_BETTER_SEARCH_AND_BROWSING_TEXT" desc="Title for a feature in the settings for the user to enable/disable, to make searches andn browsing better. Related to 'Sends URLs of pages you visit to Google'. [iOS only]">
         Make searches and browsing better
-      </message>
-      <message name="IDS_IOS_GOOGLE_SERVICES_SETTINGS_ENTER_PASSPHRASE_TO_START_SYNC" desc="Title button to ask the user to tap their passphrase. The sync is blocked until the correct passphrase is entered">
-        To start sync, enter your passphrase
       </message>
       <message name="IDS_IOS_GOOGLE_SERVICES_SETTINGS_IMPROVE_CHROME_DETAIL" desc="Feature detail text in the settings for the user enable or disable. Related with 'Help improve Chrome's features and performance' feature. [iOS only]">
         Automatically sends usage statistics and crash reports to Google.
@@ -3463,9 +3457,6 @@ See your search engine’s instructions for deleting your search history, if app
       </message>
       <message name="IDS_IOS_OPTIONS_ACCOUNTS_SIGNIN_ACCESSIBILITY_LABEL" desc="This string is found on a button on a list of available Google Accounts that the user sees when they open the profile menu on Chrome on iOS. When the user taps this button, Chrome will sign the user in to the selected account (and sign them out of the previous account). This text is a verb phrase. The tone should be factual. [iOS only]">
         Sign in as <ph name="EMAIL">$1<ex>johndoe@gmail.com</ex></ph>
-      </message>
-      <message name="IDS_IOS_OPTIONS_ACCOUNTS_SIGN_OUT_TURN_OFF_SYNC" desc="Title of the button to sign out and turn off sync. [iOS only]">
-        Sign out and turn off sync
       </message>
       <message name="IDS_IOS_OPTIONS_ACCOUNTS_SYNC_IS_OFF" desc="Text informing the user that sync is off [iOS only] [60em]" meaning="The Chrome sync feature is off.">
         Off
@@ -6015,9 +6006,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SYNC_ERROR_TITLE" desc="Title of the error message shown for sync errors. [iOS only]">
         Sync isn't working
       </message>
-      <message name="IDS_IOS_SYNC_EVERYTHING_TITLE" desc="The title for the Sync Everything item [iOS only]">
-        Sync everything
-      </message>
       <message name="IDS_IOS_SYNC_INCORRECT_PASSPHRASE" desc="Message when the passphrase is incorrect.">
         Incorrect passphrase
       </message>
@@ -6028,9 +6016,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         Encrypting…
       </message>
       <message name="IDS_IOS_SYNC_PASSWORDS_ERROR_DESCRIPTION" desc="The error message to display when a generic error prevents encrypted sync datatypes (passwords) from working.">
-        Password sync isn't working
-      </message>
-      <message name="IDS_IOS_SYNC_PASSWORDS_ERROR_TITLE" desc="Title of the error message shown for sync errors when it affects passwords only. [iOS only]">
         Password sync isn't working
       </message>
       <message name="IDS_IOS_SYNC_PROMO_TURN_ON_SYNC" desc="Button that the user can press if they want to turn on sync with this account. [iOS only]">
@@ -7059,9 +7044,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_SIGNIN_DISABLED_ACTION_SHEET_LABEL" desc="Body of a message that is shown when the user starts to sign out. This string precedes the confirmation button 'Sign Out'. If the user chooses to continue to sign out, then the data in their Google Account (such as bookmarks, passwords, history, settings, and more) won't be available on their device. If they sign back in to their Google Account, their data will come back. The tone should be helpful and instructive. [iOS only]">
         After you sign out, the bookmarks, passwords, and more in your Google Account will be removed from this device.
-      </message>
-      <message name="IDS_SYNC_NEEDS_VERIFICATION_TITLE" desc="Title of the error message shown when sync needs to verify the user. [iOS only]">
-        Sync needs to verify it's you
       </message>
       <message name="IDS_UNITS_MEASUREMENTS_AREA" desc="Title of the button that allows the user to use and convert area type units" meaning="Button menu entry that allows the user to change the unit category to Area.">
         Area
