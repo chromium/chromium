@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/core/inspector/protocol/protocol.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
@@ -163,7 +164,7 @@ bool ProtocolTypeTraits<WTF::String>::Deserialize(DeserializerState* state,
   if (tokenizer->TokenTag() == crdtp::cbor::CBORTokenTag::STRING16) {
     const auto str = tokenizer->GetString16WireRep();
     *value = StringUtil::fromUTF16LE(
-        reinterpret_cast<const uint16_t*>(str.data()), str.size() / 2);
+        UNSAFE_TODO(reinterpret_cast<const uint16_t*>(str.data())), str.size() / 2);
     return true;
   }
   state->RegisterError(Error::BINDINGS_STRING_VALUE_EXPECTED);
