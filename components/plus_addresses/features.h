@@ -65,9 +65,6 @@ extern const base::FeatureParam<int> kPlusAddressPreallocationMinimumSize;
 COMPONENT_EXPORT(PLUS_ADDRESSES_FEATURES)
 BASE_DECLARE_FEATURE(kPlusAddressSuggestionsOnUsernameFields);
 
-COMPONENT_EXPORT(PLUS_ADDRESSES_FEATURES)
-BASE_DECLARE_FEATURE(kPlusAddressUserOnboardingEnabled);
-
 }  // namespace plus_addresses::features
 
 #endif  // COMPONENTS_PLUS_ADDRESSES_FEATURES_H_

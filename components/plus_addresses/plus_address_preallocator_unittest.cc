@@ -78,10 +78,6 @@ class PlusAddressPreallocatorTest : public ::testing::Test {
  public:
   PlusAddressPreallocatorTest() {
     prefs::RegisterProfilePrefs(pref_service_.registry());
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kPlusAddressUserOnboardingEnabled,
-                              features::kPlusAddressGlobalToggle},
-        /*disabled_features=*/{});
 
     // By default, assume that the notice has been accepted and plus
     // addresses are enabled.
@@ -113,7 +109,8 @@ class PlusAddressPreallocatorTest : public ::testing::Test {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_{
+      features::kPlusAddressGlobalToggle};
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestingPrefServiceSimple pref_service_;

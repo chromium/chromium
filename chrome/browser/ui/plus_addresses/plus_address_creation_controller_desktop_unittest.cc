@@ -83,11 +83,7 @@ class PlusAddressCreationControllerDesktopEnabledTest
  public:
   PlusAddressCreationControllerDesktopEnabledTest()
       : ChromeRenderViewHostTestHarness(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    features_.InitWithFeatures({features::kPlusAddressesEnabled,
-                                features::kPlusAddressUserOnboardingEnabled},
-                               {});
-  }
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
@@ -142,7 +138,7 @@ class PlusAddressCreationControllerDesktopEnabledTest
  private:
   // Ensures that the feature is known to be enabled, such that
   // `PlusAddressServiceFactory` doesn't bail early with a null return.
-  base::test::ScopedFeatureList features_;
+  base::test::ScopedFeatureList features_{features::kPlusAddressesEnabled};
   base::HistogramTester histogram_tester_;
   autofill::TestAutofillClientInjector<MockAutofillClient>
       autofill_client_injector_;

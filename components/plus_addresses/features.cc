@@ -97,10 +97,4 @@ BASE_FEATURE(kPlusAddressSuggestionsOnUsernameFields,
              "PlusAddressSuggestionsOnUsernameFields",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, the plus address creation dialogs or bottom sheets include
-// extended feature description and usage notice.
-BASE_FEATURE(kPlusAddressUserOnboardingEnabled,
-             "PlusAddressUserOnboardingEnabled",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 }  // namespace plus_addresses::features

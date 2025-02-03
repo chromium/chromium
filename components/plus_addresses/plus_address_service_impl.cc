@@ -574,11 +574,7 @@ void PlusAddressServiceImpl::RecordAutofillSuggestionEvent(
           "PlusAddresses.StandaloneFillSuggestionShown"));
       return;
     case kCreateNewPlusAddressSuggested: {
-      const bool user_acepted_notice =
-          setting_service_->GetHasAcceptedNotice() ||
-          !base::FeatureList::IsEnabled(
-              features::kPlusAddressUserOnboardingEnabled);
-      if (user_acepted_notice) {
+      if (setting_service_->GetHasAcceptedNotice()) {
         base::RecordAction(
             base::UserMetricsAction("PlusAddresses.CreateSuggestionShown"));
       } else {

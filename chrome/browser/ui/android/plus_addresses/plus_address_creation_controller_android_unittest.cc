@@ -147,8 +147,6 @@ class PlusAddressCreationControllerAndroidEnabledTest
 // Tests that accepting the bottomsheet calls Autofill to fill the plus address
 // and records metrics.
 TEST_F(PlusAddressCreationControllerAndroidEnabledTest, AcceptCreation) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures({features::kPlusAddressUserOnboardingEnabled}, {});
   base::UserActionTester user_action_tester;
 
   // The setting service is not called if the notice is already accepted.
@@ -190,13 +188,9 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, AcceptCreation) {
             1);
 }
 
-// Tests that the notice is shown and its acceptance registered if the
-// `kPlusAddressUserOnboardingEnabled` feature is enabled and the notice has not
-// been accepted before.
+// Tests that the notice is shown and its acceptance registered if the notice
+// has not been accepted before.
 TEST_F(PlusAddressCreationControllerAndroidEnabledTest, ShowNoticeAccept) {
-  base::test::ScopedFeatureList features_{
-      features::kPlusAddressUserOnboardingEnabled};
-
   ON_CALL(plus_address_setting_service(), GetHasAcceptedNotice)
       .WillByDefault(Return(false));
   EXPECT_CALL(plus_address_setting_service(), SetHasAcceptedNotice);
@@ -237,9 +231,6 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, ShowNoticeAccept) {
 // Tests that the notice is shown if the  `kPlusAddressUserOnboardingEnabled`,
 // but cancelling the dialog does not call the settings service.
 TEST_F(PlusAddressCreationControllerAndroidEnabledTest, ShowNoticeCancel) {
-  base::test::ScopedFeatureList features_{
-      features::kPlusAddressUserOnboardingEnabled};
-
   ON_CALL(plus_address_setting_service(), GetHasAcceptedNotice)
       .WillByDefault(Return(false));
   EXPECT_CALL(plus_address_setting_service(), SetHasAcceptedNotice).Times(0);
@@ -277,8 +268,6 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, ShowNoticeCancel) {
 // user tries again to create the plus address.
 TEST_F(PlusAddressCreationControllerAndroidEnabledTest,
        AcceptAfterErrorWithNotice) {
-  base::test::ScopedFeatureList features_{
-      features::kPlusAddressUserOnboardingEnabled};
   base::UserActionTester user_action_tester;
 
   ON_CALL(plus_address_setting_service(), GetHasAcceptedNotice)
