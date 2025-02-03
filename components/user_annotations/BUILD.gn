@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/optimization_guide/features.gni")
+
 source_set("types") {
   sources = [
     "user_annotations_types.cc",
@@ -62,9 +64,11 @@ source_set("unit_tests") {
   sources = [
     "user_annotations_database_unittest.cc",
     "user_annotations_features_unittest.cc",
-    "user_annotations_service_unittest.cc",
     "user_annotations_switches_unittest.cc",
   ]
+  if (build_with_model_execution) {
+    sources += [ "user_annotations_service_unittest.cc" ]
+  }
   deps = [
     ":test_support",
     ":user_annotations",

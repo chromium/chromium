@@ -232,7 +232,7 @@ static_library("core") {
     "url_pattern_with_wildcards.cc",
     "url_pattern_with_wildcards.h",
   ]
-  if (!is_fuchsia || !optimize_for_size) {
+  if (build_with_model_execution) {
     sources += [
       "model_execution/aqa_response_parser.cc",
       "model_execution/aqa_response_parser.h",
@@ -351,7 +351,7 @@ static_library("core") {
     "//url:url",
   ]
 
-  if (!is_fuchsia || !optimize_for_size) {
+  if (build_with_model_execution) {
     deps += [
       ":on_device_model_execution_proto_generator",
       "//components/component_updater",
@@ -407,8 +407,6 @@ static_library("test_support") {
   sources = [
     "mock_optimization_guide_decider.cc",
     "mock_optimization_guide_decider.h",
-    "mock_optimization_guide_model_executor.cc",
-    "mock_optimization_guide_model_executor.h",
     "mock_optimization_guide_on_device_capability_provider.cc",
     "mock_optimization_guide_on_device_capability_provider.h",
     "mock_push_notification_manager.cc",
@@ -436,6 +434,12 @@ static_library("test_support") {
       "test_tflite_model_executor.cc",
       "test_tflite_model_executor.h",
       "test_tflite_model_handler.h",
+    ]
+  }
+  if (build_with_model_execution) {
+    sources += [
+      "mock_optimization_guide_model_executor.cc",
+      "mock_optimization_guide_model_executor.h",
     ]
   }
 
@@ -492,7 +496,6 @@ source_set("unit_tests") {
     "insertion_ordered_set_unittest.cc",
     "model_execution/performance_class_unittest.cc",
     "model_handler_unittest.cc",
-    "model_quality/model_execution_logging_wrappers_unittest.cc",
     "model_quality/model_quality_log_entry_unittest.cc",
     "model_quality/model_quality_logs_uploader_service_unittest.cc",
     "model_quality/model_quality_util_unittest.cc",
@@ -520,7 +523,7 @@ source_set("unit_tests") {
     "url_pattern_with_wildcards_unittest.cc",
   ]
 
-  if (!is_fuchsia || !optimize_for_size) {
+  if (build_with_model_execution) {
     sources += [
       "model_execution/aqa_response_parser_unittest.cc",
       "model_execution/json_response_parser_unittest.cc",
@@ -553,6 +556,7 @@ source_set("unit_tests") {
       "model_execution/test/response_holder.h",
       "model_execution/test/test_on_device_model_component_state_manager.cc",
       "model_execution/test/test_on_device_model_component_state_manager.h",
+      "model_quality/model_execution_logging_wrappers_unittest.cc",
     ]
   }
   if (build_with_tflite_lib) {
@@ -606,7 +610,7 @@ source_set("unit_tests") {
     deps += [ "//components/services/unzip/content" ]
   }
 
-  if (!is_fuchsia || !optimize_for_size) {
+  if (build_with_model_execution) {
     deps += [ "//components/component_updater" ]
   }
 
