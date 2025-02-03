@@ -1,0 +1,29 @@
+This is a wdspec test.
+[FAIL] test_add_preload_script[tab]
+  TypeError: add_preload_script() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_add_preload_script[window]
+  TypeError: add_preload_script() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_add_same_preload_script_twice
+  TypeError: add_preload_script() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_script_order
+  TypeError: add_preload_script() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_add_preload_script_in_iframe
+  TypeError: add_preload_script() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_add_preload_script_with_error
+  TypeError: add_preload_script() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_page_script_can_access_preload_script_properties
+  TypeError: add_preload_script() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_add_preload_script_order_with_different_configuration[types0]
+  TypeError: add_preload_script() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_add_preload_script_order_with_different_configuration[types1]
+  TypeError: add_preload_script() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_add_preload_script_order_with_different_configuration[types2]
+  TypeError: add_preload_script() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_add_preload_script_order_with_different_configuration[types3]
+  TypeError: add_preload_script() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_add_preload_script_order_with_different_configuration[types4]
+  TypeError: add_preload_script() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_add_preload_script_order_with_different_configuration[types5]
+  TypeError: add_preload_script() got an unexpected keyword argument 'user_contexts'
+Harness: the test ran to completion.
+

@@ -1,0 +1,9 @@
+This is a wdspec test.
+[FAIL] test_add_preload_script_to_user_context
+  TypeError: add_preload_script() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_add_preload_script_to_multiple_user_contexts
+  TypeError: add_preload_script() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_identical_user_contexts
+  TypeError: add_preload_script() got an unexpected keyword argument 'user_contexts'
+Harness: the test ran to completion.
+

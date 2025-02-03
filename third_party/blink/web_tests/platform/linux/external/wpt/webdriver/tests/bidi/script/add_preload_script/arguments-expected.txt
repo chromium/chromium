@@ -1,0 +1,15 @@
+This is a wdspec test.
+[FAIL] test_channel[default]
+  TypeError: add_preload_script() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_channel[with serializationOptions]
+  TypeError: add_preload_script() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_channel[with ownership]
+  TypeError: add_preload_script() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_channel_with_multiple_arguments
+  TypeError: add_preload_script() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_mutation_observer
+  TypeError: add_preload_script() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_two_channels
+  TypeError: add_preload_script() got an unexpected keyword argument 'user_contexts'
+Harness: the test ran to completion.
+
