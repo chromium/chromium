@@ -9,7 +9,7 @@ interface AITranslatorFactory {
     CallWith=ScriptState,
     RaisesException
   ]
-  Promise<AITranslator> create(optional AITranslatorCreateOptions options = {});
+  Promise<AITranslator> create(AITranslatorCreateOptions options);
   // TODO(crbug.com/390459310): Replace with availability.
   [
     CallWith=ScriptState,
@@ -18,9 +18,12 @@ interface AITranslatorFactory {
   Promise<AITranslatorCapabilities> capabilities();
 };
 
-dictionary AITranslatorCreateOptions {
-  AbortSignal signal;
-  // TODO(crbug.com/322229993): Add AICreateMonitorCallback.
+dictionary AITranslatorCreateCoreOptions {
   required DOMString sourceLanguage;
   required DOMString targetLanguage;
+};
+
+dictionary AITranslatorCreateOptions : AITranslatorCreateCoreOptions {
+  AbortSignal signal;
+  AICreateMonitorCallback monitor;
 };

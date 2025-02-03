@@ -99,13 +99,10 @@ ScriptPromise<AITranslator> AITranslatorFactory::create(
                                       "The execution context is not valid.");
     return EmptyPromise();
   }
-  if (!options->sourceLanguage() || !options->targetLanguage()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "No options are provided.");
-    return EmptyPromise();
-  }
+  // If `sourceLanguage` and `targetLanguage` are not passed, A TypeError should
+  // be thrown before we get here.
+  CHECK(options && options->sourceLanguage() && options->targetLanguage());
 
-  CHECK(options);
   AbortSignal* signal = options->getSignalOr(nullptr);
   if (HandleAbortSignal(signal, script_state, exception_state)) {
     return EmptyPromise();
