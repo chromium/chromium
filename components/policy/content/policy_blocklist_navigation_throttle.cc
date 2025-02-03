@@ -80,6 +80,7 @@ bool PolicyBlocklistNavigationThrottle::IsBlockedViewSourceNavigation() {
 content::NavigationThrottle::ThrottleCheckResult
 PolicyBlocklistNavigationThrottle::WillStartOrRedirectRequest(
     bool is_redirect) {
+  CHECK(!deferring_request_ && !deferring_response_);
   if (request_time_.is_null()) {
     request_time_ = base::TimeTicks::Now();
   }
@@ -108,6 +109,7 @@ PolicyBlocklistNavigationThrottle::WillStartOrRedirectRequest(
 
   ThrottleCheckResult result = CheckSafeSitesFilter(url, is_redirect);
   UpdateRequestThrottleAction(result.action());
+  deferring_request_ = result.action() == DEFER;
   return result;
 }
 
@@ -148,6 +150,7 @@ PolicyBlocklistNavigationThrottle::WillRedirectRequest() {
 
 content::NavigationThrottle::ThrottleCheckResult
 PolicyBlocklistNavigationThrottle::WillProcessResponse() {
+  CHECK(!deferring_request_ && !deferring_response_);
   const base::TimeDelta request_to_response_time =
       base::TimeTicks::Now() - request_time_;
   base::UmaHistogramTimes(
@@ -181,6 +184,9 @@ void PolicyBlocklistNavigationThrottle::OnDeferredSafeSitesResult(
       metrics->response_defer_duration = defer_duration;
     }
     deferring_response_ = false;
+  } else {
+    CHECK(deferring_request_);
+    deferring_request_ = false;
   }
   if (proceed) {
     Resume();
