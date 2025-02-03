@@ -1237,6 +1237,10 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
       return value_id == CSSValueID::kAuto ||
              value_id == CSSValueID::kOptimizespeed ||
              value_id == CSSValueID::kOptimizequality;
+    case CSSPropertyID::kColumnRuleBreak:
+      return value_id == CSSValueID::kNone ||
+             value_id == CSSValueID::kSpanningItem ||
+             value_id == CSSValueID::kIntersection;
     case CSSPropertyID::kDirection:
       return value_id == CSSValueID::kLtr || value_id == CSSValueID::kRtl;
     case CSSPropertyID::kDominantBaseline:
@@ -1743,6 +1747,7 @@ CSSBitset CSSParserFastPaths::handled_by_keyword_fast_paths_properties_{{
     CSSPropertyID::kColorInterpolation,
     CSSPropertyID::kColorInterpolationFilters,
     CSSPropertyID::kColorRendering,
+    CSSPropertyID::kColumnRuleBreak,
     CSSPropertyID::kDirection,
     CSSPropertyID::kDominantBaseline,
     CSSPropertyID::kEmptyCells,

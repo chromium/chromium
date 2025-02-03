@@ -6355,6 +6355,18 @@
       invalidate: ["layout", "paint"],
     },
     {
+      name: "column-rule-break",
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      inherited: false,
+      field_group: "*",
+      field_template: "keyword",
+      keywords: ["none", "spanning-item", "intersection"],
+      default_value: "spanning-item",
+      typedom_types: ["Keyword"],
+      invalidate: ["paint"],
+      runtime_flag: "CSSGapDecoration",
+    },
+    {
       name: "column-rule-color",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "ColorIncludingFallback"],
       interpolable: true,
