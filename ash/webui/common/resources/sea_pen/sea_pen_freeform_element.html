@@ -48,7 +48,9 @@
   }
 
   #seaPenImagesHeading {
-    margin-top: 10px;
+    color: var(--cros-text-color-secondary);
+    font: var(--cros-annotation-1-font);
+    margin-top: 16px;
     padding-inline-end: 0;
   }
 
@@ -62,7 +64,7 @@
     font: var(--cros-button-2-font);
   }
 
-  #promptingGuide{
+  #promptingGuide {
     --text-color: var(--cros-sys-secondary);
     padding: 6px;
     text-decoration: none;
@@ -106,9 +108,7 @@
       hidden="[[!isTabContainerHidden_(seaPenQuery_, thumbnailResponseStatusCode_)]]">
   </div>
   <template is="dom-if" if="[[!isSamplePromptsTabSelected_(freeformTab_)]]">
-    <h2 id="seaPenImagesHeading" class="wallpaper-collections-heading">
-      [[i18n('seaPenFreeformPoweredByGoogle')]]
-    </h2>
+    <p id="seaPenImagesHeading">[[i18n('seaPenFreeformDisclaimer')]]</p>
   </template>
 </div>
 <template is="dom-if" if="[[isSamplePromptsTabSelected_(freeformTab_)]]" restamp>

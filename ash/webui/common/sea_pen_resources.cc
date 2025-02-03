@@ -73,7 +73,6 @@ void AddSeaPenStrings(content::WebUIDataSource* source) {
        IDS_SEA_PEN_FREEFORM_ERROR_UNSUPPORTED_LANGUAGE},
       {"seaPenFreeformErrorBlockedOutputs",
        IDS_SEA_PEN_FREEFORM_ERROR_BLOCKED_OUTPUTS},
-      {"seaPenFreeformPoweredByGoogle", IDS_SEA_PEN_FREEFORM_POWERED_BY_GOOGLE},
       {"seaPenFreeformPreviousPrompts", IDS_SEA_PEN_FREEFORM_PREVIOUS_PROMPTS},
       {"seaPenFreeformPreviousPromptsTooltip",
        IDS_SEA_PEN_FREEFORM_PREVIOUS_PROMPTS_TOOLTIP},
@@ -90,7 +89,7 @@ void AddSeaPenStrings(content::WebUIDataSource* source) {
        IDS_SEA_PEN_FREEFORM_ARIA_LABEL_SUGGESTIONS},
       {"seaPenFreeformAriaLabelShuffleSuggestions",
        IDS_SEA_PEN_FREEFORM_ARIA_LABEL_SHUFFLE_SUGGESTIONS},
-
+      {"seaPenFreeformDisclaimer", IDS_SEA_PEN_FREEFORM_DISCLAIMER},
       {"seaPenDismissError", IDS_PERSONALIZATION_APP_DISMISS},
       {"ariaLabelLoading", IDS_PERSONALIZATION_APP_ARIA_LABEL_LOADING},
       {"seaPenManagedLabel", IDS_ASH_ENTERPRISE_DEVICE_MANAGED_SHORT},

@@ -3554,6 +3554,9 @@
         <message name="IDS_SEA_PEN_FREEFORM_INPUT_PLACEHOLDER" desc="Default text for an input field that is used to generate AI images.">
         Describe the wallpaper you want to create
         </message>
+        <message name="IDS_SEA_PEN_FREEFORM_DISCLAIMER" desc="Aria label for a button that shuffles a list of suggestions (IDS_SEA_PEN_FREEFORM_ARIA_LABEL_SUGGESTIONS)">
+          Generative AI can make mistakes, including about people, so double-check it
+        </message>
         <message name="IDS_SEA_PEN_FREEFORM_ERROR_NO_INTERNET" desc="Error message displayed when there is no internet connection.">
           Make sure you're connected to the internet and try again.
         </message>
@@ -3565,9 +3568,6 @@
         </message>
         <message name="IDS_SEA_PEN_FREEFORM_ERROR_BLOCKED_OUTPUTS" desc="Error message displayed when the search results were blocked.">
           Can't create images of this. Try another prompt.
-        </message>
-        <message name="IDS_SEA_PEN_FREEFORM_POWERED_BY_GOOGLE" desc="Section heading that indicates Google made these wallpapers.">
-          Powered by Google AI
         </message>
         <message name="IDS_SEA_PEN_FREEFORM_PREVIOUS_PROMPTS" desc="Section heading that shows previously-generated wallpapers.">
           Previous prompts
