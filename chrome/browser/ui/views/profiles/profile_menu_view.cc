@@ -1188,18 +1188,22 @@ void ProfileMenuView::MaybeBuildCloseBrowsersButton() {
   }
 
   if (switches::IsImprovedSigninUIOnDesktopEnabled()) {
-    // Show the button only if there are multiple profiles open.
-    bool other_profile_open = false;
-    for (Profile* loaded_profile :
-         g_browser_process->profile_manager()->GetLoadedProfiles()) {
-      if (loaded_profile == profile) {
-        continue;
-      }
-      if (CountBrowsersFor(loaded_profile) > 0) {
-        other_profile_open = true;
-        break;
-      }
+    // Show the button only if the current profile has multiple windows open.
+    if (window_count <= 1) {
+      return;
     }
+
+    // And there are multiple profiles open.
+    std::vector<Profile*> loaded_profiles =
+        g_browser_process->profile_manager()->GetLoadedProfiles();
+    bool other_profile_open =
+        std::any_of(loaded_profiles.begin(), loaded_profiles.end(),
+                    [&profile](Profile* loaded_profile) {
+                      if (loaded_profile == profile) {
+                        return false;
+                      }
+                      return CountBrowsersFor(loaded_profile) > 0;
+                    });
     if (!other_profile_open) {
       return;
     }
