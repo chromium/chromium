@@ -28,7 +28,10 @@ interface PageElementTypes {
   offlinePanel: HTMLElement;
   errorPanel: HTMLElement;
   unavailablePanel: HTMLElement;
-  guestPanel: chrome.webviewTag.WebView;
+  guestPanel: HTMLElement;
+  guestFrame: chrome.webviewTag.WebView;
+  webviewHeader: HTMLDivElement;
+  webviewContainer: HTMLDivElement;
 }
 
 const $: PageElementTypes = new Proxy({}, {
@@ -167,6 +170,7 @@ export class GlicAppController {
       WebUiState.kReady,
       {
         onEnter: () => {
+          $.guestPanel.classList.toggle('show-header', false);
           this.showPanel('guestPanel');
         },
       },
@@ -245,11 +249,9 @@ export class GlicAppController {
   createWebView(): chrome.webviewTag.WebView {
     const webview =
         document.createElement('webview') as chrome.webviewTag.WebView;
-    webview.id = 'guestPanel';
+    webview.id = 'guestFrame';
     webview.setAttribute('partition', 'persist:glicpart');
-    webview.setAttribute('class', 'panel');
-    webview.hidden = true;
-    $.panelContainer.appendChild(webview);
+    $.webviewContainer.appendChild(webview);
 
     webview.addEventListener('loadcommit', this.onLoadCommit);
     webview.addEventListener('contentload', this.contentLoaded);
@@ -289,6 +291,9 @@ export class GlicAppController {
       this.lastWidth = 400;
       this.lastHeight = 800;
       this.setState(WebUiState.kReady);
+      $.guestPanel.classList.toggle('show-header', true);
+    } else {
+      $.guestPanel.classList.toggle('show-header', false);
     }
   }
 
@@ -331,7 +336,7 @@ export class GlicAppController {
     this.webview.removeEventListener(
         'permissionrequest', this.onPermissionRequest);
 
-    $.panelContainer.removeChild(this.webview);
+    this.webview.remove();
 
     this.webview = this.createWebView();
   }

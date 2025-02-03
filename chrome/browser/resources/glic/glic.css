@@ -13,6 +13,7 @@ body {
 
 webview:not([hidden]) {
   display: block;
+  height: 100%;
 }
 
 .dialog {
@@ -36,21 +37,22 @@ webview:not([hidden]) {
   padding-bottom: 0px;
 }
 
-.dialog .header {
+.panel .header {
   padding: 12px 20px 12px 12px;
   height: 24px;
   display: flex;
   justify-content: space-between;
 }
 
-.dialog .logo {
+.panel .logo {
   padding: 6px 0 0 2px;
   height: 13px;
 }
 
-.dialog .close-button {
+.panel .close-button {
   --cr-icon-button-size: 24px;
   --cr-icon-button-icon-size: 14px;
+  color: #C4C7C5;
 }
 
 .dialog .notice {
@@ -62,12 +64,46 @@ webview:not([hidden]) {
   font-weight: 400;
 }
 
+/* Guest panel contains glic webview. If in the show-header state, a header
+   will also be visible. */
 #guestPanel {
   width: 100%;
   height: 100%;
   border: 0;
 }
 
+.hidden {
+ display: none;
+}
+
+.outerheader {
+  background: #1b1c1d;
+  position: absolute;
+  width: 100%;
+  height: 48px;
+}
+
+#webviewHeader {
+  display: none;
+}
+
+#guestPanel.show-header #webviewHeader {
+  display: block;
+}
+
+#webviewContainer {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+#guestPanel.show-header #webviewContainer {
+  position: absolute;
+  width: 100%;
+  /* If showing a login page, the window height will always be 800px */
+  height: 752px;
+  bottom: 0;
+}
 cr-button.tonal-button {
   background-color: #A8C7FA;
   color: #062E6F;
