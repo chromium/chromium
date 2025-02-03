@@ -11,7 +11,10 @@ export function getHtml(this: HeaderElement) {
   return html`<!--_html_template_start_-->
   <img id="logo" srcset="chrome://theme/current-channel-logo@4x 4x"
       role="presentation">
-  <div class="title-text" id="title">$i18n{pageTitle}</div>
+  <div class="title-text" id="title"
+      @click=${this.onPageTitleClick_}>
+    $i18n{pageTitle}
+  </div>
   <div id="divider" ?hidden="${!this.subtitle}"></div>
   ${this.showingInput_ ? html`
     <cr-input id="input" class="stroked" value="${this.subtitle}"

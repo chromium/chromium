@@ -5,14 +5,21 @@
 import 'chrome://compare/header.js';
 
 import type {HeaderElement} from 'chrome://compare/header.js';
+import {ProductSpecificationsBrowserProxyImpl} from 'chrome://resources/cr_components/commerce/product_specifications_browser_proxy.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {$$, eventToPromise, hasStyle, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
+import {TestProductSpecificationsBrowserProxy} from './test_product_specifications_browser_proxy.js';
+
 suite('HeaderTest', () => {
   let header: HeaderElement;
+  const productSpecsProxy = new TestProductSpecificationsBrowserProxy();
 
   setup(async () => {
+    productSpecsProxy.reset();
+    ProductSpecificationsBrowserProxyImpl.setInstance(productSpecsProxy);
+
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     header = document.createElement('product-specifications-header');
     document.body.appendChild(header);
@@ -169,4 +176,29 @@ suite('HeaderTest', () => {
     assertTrue(!!event.detail);
     assertTrue(event.detail.name === 'foo');
   });
+
+  test(
+      'page title click redirects to compare page when clickable', async () => {
+        header.isPageTitleClickable = false;
+        await microtasksFinished();
+
+        const pageTitle = $$(header, '#title');
+        assertTrue(!!pageTitle);
+
+        // Nothing should happen while the title is not clickable.
+        pageTitle.click();
+        await microtasksFinished();
+        assertEquals(0, productSpecsProxy.getCallCount('showComparePage'));
+
+        header.isPageTitleClickable = true;
+        await microtasksFinished();
+
+        // Compare page should open in the same tab.
+        pageTitle.click();
+        await microtasksFinished();
+        assertEquals(1, productSpecsProxy.getCallCount('showComparePage'));
+        assertEquals(
+            /*inNewTab=*/ false,
+            productSpecsProxy.getArgs('showComparePage')[0]);
+      });
 });

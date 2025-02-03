@@ -9,6 +9,7 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import './header_menu.js';
 
+import {ProductSpecificationsBrowserProxyImpl} from 'chrome://resources/cr_components/commerce/product_specifications_browser_proxy.js';
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -37,6 +38,11 @@ export class HeaderElement extends CrLitElement {
 
   static override get properties() {
     return {
+      isPageTitleClickable: {
+        type: Boolean,
+        reflect: true,
+      },
+
       menuButtonDisabled: {type: Boolean},
 
       subtitle: {
@@ -53,6 +59,7 @@ export class HeaderElement extends CrLitElement {
     };
   }
 
+  isPageTitleClickable: boolean = false;
   menuButtonDisabled: boolean = false;
   subtitle: string|null = null;
 
@@ -125,6 +132,14 @@ export class HeaderElement extends CrLitElement {
       event.stopPropagation();
       this.onRenaming_();
     }
+  }
+
+  protected onPageTitleClick_() {
+    if (!this.isPageTitleClickable) {
+      return;
+    }
+
+    ProductSpecificationsBrowserProxyImpl.getInstance().showComparePage(false);
   }
 }
 
