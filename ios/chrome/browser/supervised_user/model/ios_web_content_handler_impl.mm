@@ -50,6 +50,7 @@ void IOSWebContentHandlerImpl::RequestLocalApproval(
       showParentAccessBottomSheetForWebState:web_state_
                                   completion:base::CallbackToBlock(std::move(
                                                  completion_callback))];
+  is_bottomsheet_shown_ = true;
 
   // Runs the `callback` to inform the caller that the flow initiation was
   // successful.
@@ -87,9 +88,12 @@ void IOSWebContentHandlerImpl::GoBack() {
 }
 
 void IOSWebContentHandlerImpl::MaybeCloseLocalApproval() {
-  // TODO(crbug.com/393287184): Record `LocalApprovalResult::kCancel` only
-  // if the bottom sheet is shown on-screen.
+  if (is_bottomsheet_shown_) {
+    WebContentHandler::RecordLocalWebApprovalResultMetric(
+        supervised_user::LocalApprovalResult::kCanceled);
+  }
   [commands_handler_ hideParentAccessBottomSheet];
+  is_bottomsheet_shown_ = false;
 }
 
 void IOSWebContentHandlerImpl::Close() {
@@ -102,6 +106,12 @@ void IOSWebContentHandlerImpl::OnLocalApprovalRequestCompleted(
     const GURL& url,
     base::TimeTicks start_time,
     supervised_user::LocalApprovalResult approval_result) {
+  // If the bottomsheet is closed before the asynchronous callback completion,
+  // do nothing.
+  if (!is_bottomsheet_shown_) {
+    return;
+  }
+  is_bottomsheet_shown_ = false;
   WebContentHandler::OnLocalApprovalRequestCompleted(
       settings_service, url, start_time, approval_result);
 }

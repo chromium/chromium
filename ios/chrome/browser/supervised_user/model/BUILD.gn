@@ -97,6 +97,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "child_account_service_factory_unittest.mm",
+    "ios_web_content_handler_impl_unittest.mm",
     "list_family_members_service_factory_unittest.mm",
     "parent_access_tab_helper_unittest.mm",
     "supervised_user_metrics_service_factory_unittest.mm",
@@ -110,6 +111,7 @@ source_set("unit_tests") {
     ":sync_settings_factory",
     "//base/test:test_support",
     "//components/prefs",
+    "//components/prefs:test_support",
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager:test_support",
     "//components/supervised_user/core/browser",
@@ -120,6 +122,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/first_run/model",
     "//ios/chrome/browser/shared/model/prefs:browser_prefs",
     "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:test_support",
     "//ios/chrome/test:test_support",
@@ -127,6 +130,7 @@ source_set("unit_tests") {
     "//ios/web/public/test",
     "//services/network:test_support",
     "//testing/gtest",
+    "//third_party/ocmock",
   ]
 }
 
