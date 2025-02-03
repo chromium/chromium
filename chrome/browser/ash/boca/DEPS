@@ -50,9 +50,6 @@ include_rules = [
   # Files needed by babelorca/
   "+chrome/browser/accessibility/live_caption/live_caption_controller_factory.h",
   "+chrome/browser/ash/accessibility/live_caption/system_live_caption_service.h",
-  "+chrome/browser/speech/speech_recognition_client_browser_interface.h",
-  "+chrome/browser/speech/speech_recognition_client_browser_interface_factory.h",
-  "+chrome/browser/ash/accessibility/live_caption/system_live_caption_service.h",
   "+chrome/browser/browser_process.h",
   # Files needed by spotlight/
   "+chrome/browser/ash/policy/remote_commands/crd",

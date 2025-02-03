@@ -32,6 +32,8 @@ static_library("babelorca") {
     "pref_names.h",
     "request_data_wrapper.cc",
     "request_data_wrapper.h",
+    "soda_installer.cc",
+    "soda_installer.h",
     "speech_recognition_event_handler.cc",
     "speech_recognition_event_handler.h",
     "tachyon_authed_client.h",
@@ -68,6 +70,7 @@ static_library("babelorca") {
   ]
 
   deps = [
+    "//ash/constants",
     "//base",
     "//chromeos/ash/components/boca",
     "//chromeos/ash/components/boca/babelorca/proto",
@@ -82,6 +85,8 @@ static_library("babelorca") {
     "//components/prefs",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager",
+    "//components/soda",
+    "//components/soda:constants",
     "//content/public/browser",
     "//google_apis",
     "//media/mojo/mojom:speech_recognition",
@@ -137,6 +142,7 @@ source_set("unit_tests") {
     "caption_controller_unittest.cc",
     "consumer_caption_bubble_settings_unittest.cc",
     "oauth_token_fetcher_unittest.cc",
+    "soda_installer_unittest.cc",
     "speech_recognition_event_handler_unittest.cc",
     "tachyon_authed_client_impl_unittest.cc",
     "tachyon_client_impl_unittest.cc",
@@ -153,6 +159,7 @@ source_set("unit_tests") {
   deps = [
     ":babelorca",
     ":test_support",
+    "//ash/constants",
     "//base",
     "//base/test:test_support",
     "//chromeos/ash/components/boca:boca",
@@ -167,6 +174,8 @@ source_set("unit_tests") {
     "//components/prefs:test_support",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager:test_support",
+    "//components/soda",
+    "//components/soda:constants",
     "//google_apis",
     "//media/mojo/mojom:speech_recognition",
     "//mojo/public/cpp/bindings",
