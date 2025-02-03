@@ -799,7 +799,7 @@ bool PaymentsDataManager::HasMaskedBankAccounts() const {
 }
 
 base::span<const BnplIssuer> PaymentsDataManager::GetLinkedBnplIssuers() const {
-  if (!IsAutofillPaymentMethodsEnabled()) {
+  if (!IsAutofillPaymentMethodsEnabled() || !IsAutofillBnplPrefEnabled()) {
     return {};
   }
   return linked_bnpl_issuers_;
@@ -926,14 +926,14 @@ const gfx::Image* PaymentsDataManager::GetCachedCardArtImageForUrl(
 
 base::span<const BnplIssuer> PaymentsDataManager::GetUnlinkedBnplIssuers()
     const {
-  if (!IsAutofillPaymentMethodsEnabled()) {
+  if (!IsAutofillPaymentMethodsEnabled() || !IsAutofillBnplPrefEnabled()) {
     return {};
   }
   return unlinked_bnpl_issuers_;
 }
 
 std::vector<BnplIssuer> PaymentsDataManager::GetBnplIssuers() const {
-  if (!IsAutofillPaymentMethodsEnabled()) {
+  if (!IsAutofillPaymentMethodsEnabled() || !IsAutofillBnplPrefEnabled()) {
     return {};
   }
 
@@ -992,6 +992,10 @@ bool PaymentsDataManager::IsCardBenefitsPrefEnabled() const {
 bool PaymentsDataManager::IsCardBenefitsSyncEnabled() const {
   return base::FeatureList::IsEnabled(
       features::kAutofillEnableCardBenefitsSync);
+}
+
+bool PaymentsDataManager::IsAutofillBnplPrefEnabled() const {
+  return prefs::IsAutofillBnplEnabled(pref_service_);
 }
 
 bool PaymentsDataManager::IsAutofillPaymentMethodsEnabled() const {

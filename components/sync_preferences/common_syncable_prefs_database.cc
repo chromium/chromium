@@ -124,6 +124,7 @@ enum {
   kLastPlusAddressFillingTime = 78,
   kSafeBrowsingEnhanced = 79,
   kFacilitatedPaymentsEwallet = 80,
+  kAutofillBnplEnabled = 81,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -325,6 +326,13 @@ constexpr auto kCommonSyncablePrefsAllowlist =
          {syncable_prefs_ids::kFacilitatedPaymentsEwallet, syncer::PREFERENCES,
           PrefSensitivity::kNone, MergeBehavior::kNone}},
 #endif  // BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+        {autofill::prefs::kAutofillBnplEnabled,
+         {syncable_prefs_ids::kAutofillBnplEnabled, syncer::PREFERENCES,
+          PrefSensitivity::kNone, MergeBehavior::kNone}},
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
     });
 
 }  // namespace

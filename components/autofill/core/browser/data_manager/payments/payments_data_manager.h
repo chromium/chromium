@@ -635,6 +635,9 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Check if credit card benefits sync flag is enabled.
   bool IsCardBenefitsSyncEnabled() const;
 
+  // Returns the value of the AutofillBnplEnabled pref.
+  virtual bool IsAutofillBnplPrefEnabled() const;
+
   // Triggered when all the card art image fetches have been completed,
   // regardless of whether all of them succeeded.
   void OnCardArtImagesFetched(

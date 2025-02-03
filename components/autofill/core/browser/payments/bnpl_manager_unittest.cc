@@ -102,6 +102,9 @@ class BnplManagerTest : public Test {
   raw_ptr<PaymentsNetworkInterfaceMock> payments_network_interface_;
 };
 
+// BNPL is currently only available for desktop platforms.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
 // Tests that the MaybeParseAmountToMonetaryMicroUnits parser converts the input
 // strings to monetary values they represent in micro-units when given empty
 // string or zeros.
@@ -455,5 +458,7 @@ TEST_F(BnplManagerTest,
   bnpl_manager_->OnAmountExtractionReturned("$1,234.56");
   bnpl_manager_->OnSuggestionsShown(suggestions, callback.Get());
 }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace autofill::payments
