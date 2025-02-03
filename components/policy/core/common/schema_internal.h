@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_POLICY_CORE_COMMON_SCHEMA_INTERNAL_H_
 #define COMPONENTS_POLICY_CORE_COMMON_SCHEMA_INTERNAL_H_
 
+#include <stdint.h>
+
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "components/policy/policy_export.h"
@@ -35,7 +37,7 @@ struct POLICY_EXPORT SchemaNode {
   // RestrictionNode describing the restriction on the value.
   //
   // Otherwise extra is -1 and is invalid.
-  short extra;
+  int16_t extra;
 
   // True if this value is sensitive and should be masked before displaying it
   // to the user.
@@ -52,14 +54,14 @@ struct POLICY_EXPORT PropertyNode {
 
   // An offset into SchemaData::schema_nodes that indexes the SchemaNode
   // describing the structure of this key.
-  short schema;
+  int16_t schema;
 };
 
 // Represents the list of keys of a map policy.
 struct POLICY_EXPORT PropertiesNode {
   // An offset into SchemaData::property_nodes that indexes the PropertyNode
   // describing the first known property of this map policy.
-  short begin;
+  int16_t begin;
 
   // An offset into SchemaData::property_nodes that indexes the PropertyNode
   // right beyond the last known property of this map policy.
@@ -69,18 +71,18 @@ struct POLICY_EXPORT PropertiesNode {
   //
   // Note that the range [begin, end) is sorted by PropertyNode::key, so that
   // properties can be looked up by binary searching in the range.
-  short end;
+  int16_t end;
 
   // An offset into SchemaData::property_nodes that indexes the PropertyNode
   // right beyond the last known pattern property.
   //
   // [end, pattern_end) is the range that covers all pattern properties
   // defined. It's not required to be sorted.
-  short pattern_end;
+  int16_t pattern_end;
 
   // An offset into SchemaData::required_properties that indexes the first
   // required property of this map policy.
-  short required_begin;
+  int16_t required_begin;
 
   // An offset into SchemaData::required_properties that indexes the property
   // right beyond the last required property.
@@ -89,14 +91,14 @@ struct POLICY_EXPORT PropertiesNode {
   // PropertiesNode corresponds to does not have any required properties.
   //
   // Note that the range [required_begin, required_end) is not sorted.
-  short required_end;
+  int16_t required_end;
 
   // If this map policy supports keys with any value (besides the well-known
   // values described in the range [begin, end)) then |additional| is an offset
   // into SchemaData::schema_nodes that indexes the SchemaNode describing the
   // structure of the values for those keys. Otherwise |additional| is -1 and
   // is invalid.
-  short additional;
+  int16_t additional;
 };
 
 // Represents the restriction on Type::INTEGER or Type::STRING instance of

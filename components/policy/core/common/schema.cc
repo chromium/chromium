@@ -72,12 +72,12 @@ namespace {
 
 struct ReferencesAndIDs {
   // Maps schema "id" attributes to the corresponding SchemaNode index.
-  std::map<std::string, short> id_map;
+  std::map<std::string, int16_t> id_map;
 
   // List of pairs of references to be assigned later. The string is the "id"
   // whose corresponding index should be stored in the pointer, once all the IDs
   // are available.
-  std::vector<std::pair<std::string, short*>> reference_list;
+  std::vector<std::pair<std::string, int16_t*>> reference_list;
 };
 
 // Sizes for the storage arrays. These are calculated in advance so that the
@@ -97,7 +97,7 @@ struct StorageSizes {
 
 // An invalid index, indicating that a node is not present; similar to a NULL
 // pointer.
-const short kInvalid = -1;
+const int16_t kInvalid = -1;
 
 // Maps a schema key to the corresponding base::Value::Type
 struct SchemaKeyToValueType {
@@ -565,7 +565,7 @@ class Schema::InternalStorage
   //
   // If |schema| is invalid, it returns an error reason.
   base::expected<void, std::string> Parse(const base::Value::Dict& schema,
-                                          short* index,
+                                          int16_t* index,
                                           ReferencesAndIDs* references_and_ids);
 
   // Helper for Parse() that gets an already assigned |schema_node| instead of
@@ -655,7 +655,7 @@ Schema::InternalStorage::ParseSchema(const base::Value::Dict& schema) {
   storage->int_enums_.reserve(sizes.int_enums);
   storage->string_enums_.reserve(sizes.string_enums);
 
-  short root_index = kInvalid;
+  int16_t root_index = kInvalid;
   ReferencesAndIDs references_and_ids;
 
   RETURN_IF_ERROR(storage->Parse(schema, &root_index, &references_and_ids));
@@ -801,7 +801,7 @@ void Schema::InternalStorage::DetermineStorageSizes(
 
 base::expected<void, std::string> Schema::InternalStorage::Parse(
     const base::Value::Dict& schema,
-    short* index,
+    int16_t* index,
     ReferencesAndIDs* references_and_ids) {
   const std::string* ref = schema.FindString(schema::kRef);
   if (ref) {
@@ -822,13 +822,13 @@ base::expected<void, std::string> Schema::InternalStorage::Parse(
     return base::unexpected("Type not supported: " + *type_string);
   }
 
-  if (schema_nodes_.size() > std::numeric_limits<short>::max()) {
+  if (schema_nodes_.size() > std::numeric_limits<int16_t>::max()) {
     return base::unexpected(
         "Can't have more than " +
-        base::NumberToString(std::numeric_limits<short>::max()) +
+        base::NumberToString(std::numeric_limits<int16_t>::max()) +
         " schema nodes.");
   }
-  *index = static_cast<short>(schema_nodes_.size());
+  *index = static_cast<int16_t>(schema_nodes_.size());
   schema_nodes_.push_back(
       {.type = type,
        .extra = kInvalid,
