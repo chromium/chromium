@@ -213,9 +213,71 @@ class SelectDescendantsObserver : public MutationObserver::Delegate {
       node.AddConsoleMessage(
           mojom::blink::ConsoleMessageSource::kRecommendation,
           mojom::blink::ConsoleMessageLevel::kError,
-          "A descendant of a <select> does not follow the content "
-          "model.");
+          GetMessageForReason(issue_reason));
     }
+  }
+
+  String GetMessageForReason(
+      SelectElementAccessibilityIssueReason issue_reason) {
+    switch (issue_reason) {
+      case SelectElementAccessibilityIssueReason::kDisallowedSelectChild:
+        return FormatElementMessage(
+            "<select>", "a ",
+            "an <optgroup> with a <legend> element or <option> elements");
+      case SelectElementAccessibilityIssueReason::kDisallowedOptGroupChild:
+        return FormatElementMessage("<optgroup>", "an ",
+                                    "the <legend> or <option> elements");
+      case SelectElementAccessibilityIssueReason::
+          kNonPhrasingContentOptionChild:
+        return "Non-phrasing content was found within an <option> element. The "
+               "<option> element allows only non-interactive phrasing content, "
+               "text, and <div> elements as its children. The semantics of "
+               "non-phrasing content elements do not make sense as children of "
+               "an <option>, and such semantics will largely be ignored by "
+               "assistive technology since they are inappropriate in this "
+               "context. Consider removing or changing such elements to one of "
+               "the allowed phrasing content elements.";
+      case SelectElementAccessibilityIssueReason::
+          kInteractiveContentOptionChild:
+        return FormatInteractiveElementMessage("<option>", "an ",
+                                               g_empty_string);
+      case SelectElementAccessibilityIssueReason::
+          kInteractiveContentLegendChild:
+        return FormatInteractiveElementMessage(
+            "<legend>", "a ",
+            "Interactive elements are not allowed children of a <legend> "
+            "element when used within an <optgroup> element. ");
+      case SelectElementAccessibilityIssueReason::kValidChild:
+      default:
+        NOTREACHED();
+    }
+  }
+
+  String FormatElementMessage(const String& element,
+                              const String& article,
+                              const String& example) {
+    return "An element which is not allowed in the content model of the " +
+           element + " element was found within " + article + element +
+           " element. These elements will not consistently be accessible to "
+           "people navigating by keyboard or using assistive technology. If "
+           "using disallowed elements for layout structure and styling, "
+           "consider using the allowed <div> element instead. Any text "
+           "existing within the " +
+           element +
+           " element should either be removed or relocated to a valid element "
+           "that allows text descendants, e.g., " +
+           example + ".";
+  }
+
+  String FormatInteractiveElementMessage(const String& element,
+                                         const String& article,
+                                         const String& context) {
+    return "An interactive element which is not allowed in the content model "
+           "of the " +
+           element + " element was found within " + article + element +
+           " element. " + context +
+           "These elements will not consistently be accessible to people "
+           "navigating by keyboard or using assistive technology.";
   }
 
   bool IsAllowedInteractiveElement(const Node& node) {
