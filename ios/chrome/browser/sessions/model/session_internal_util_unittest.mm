@@ -29,56 +29,6 @@ const base::FilePath::CharType kDirname3[] = FILE_PATH_LITERAL("dir3");
 const base::FilePath::CharType kFromName[] = FILE_PATH_LITERAL("from");
 const base::FilePath::CharType kDestName[] = FILE_PATH_LITERAL("dest");
 
-// A sub-class of google::protobuf::MessageLite that cannot be serialized.
-//
-// Note: sub-classing google::protobuf::MessageLite is not supported, so
-// this may break at any point. If this break, we may consider removing
-// this class and the test using it (the class exists to get as much
-// coverage as possible for `WriteProto` function).
-//
-// The implementation is broken, and the only goal is to have the call to
-// `SerializeToArray()` in `WriteProto` to fail. This is achieved by using
-// a mutable state that allow returning a size of serialized data that is
-// increasing each time `ByteSizeLong()` is called (thus resulting in an
-// allocation that is considered too small by `SerializeToArray()`).
-//
-// All the other methods are overridden to be no-op.
-class UnserializableMessage : public google::protobuf::MessageLite {
- public:
-  // google::protobuf::MessageLite
-  std::string GetTypeName() const override { return "UnserializableMessage"; }
-
-  MessageLite* New(google::protobuf::Arena* arena) const override {
-    return nullptr;
-  }
-
-  void Clear() override {}
-
-  bool IsInitialized() const override { return true; }
-
-  void CheckTypeAndMergeFrom(const MessageLite& other) override {}
-
-  size_t ByteSizeLong() const override {
-    return ++call_count_ * sizeof(double);
-  }
-
-  int GetCachedSize() const override {
-    return static_cast<int>(ByteSizeLong());
-  }
-
-  uint8_t* _InternalSerialize(
-      uint8_t* ptr,
-      google::protobuf::io::EpsCopyOutputStream* stream) const override {
-    return ptr;
-  }
-
- private:
-  // Record how many time `ByteSizeLong()` is called, allowing to return a
-  // different size for the serialized data each time it is called, which
-  // eventually leads to a failure of `SerializeToArray()`.
-  mutable size_t call_count_ = 1;
-};
-
 // Creates a SessionWindowIOS* with fake data.
 SessionWindowIOS* CreateSessionWindowIOS() {
   CRWSessionStorage* session_storage = [[CRWSessionStorage alloc] init];
@@ -742,21 +692,6 @@ TEST_F(SessionInternalUtilTest, WriteProto) {
   EXPECT_FALSE(ios::sessions::FileExists(file));
   EXPECT_TRUE(ios::sessions::WriteProto(file, proto));
   EXPECT_NSNE(nil, ios::sessions::ReadFile(file));
-}
-
-// Tests that `WriteProto` fails if it cannot serialize the protobuf message.
-TEST_F(SessionInternalUtilTest, WriteProto_FailureSerializeMessage) {
-  base::ScopedTempDir scoped_temp_dir;
-  ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
-  const base::FilePath root = scoped_temp_dir.GetPath();
-
-  const base::FilePath dir = root.Append(kDirname1);
-  const base::FilePath file = dir.Append(kFilename);
-
-  // Check that writing the protobuf message succeed and that some data
-  // is written to disk.
-  EXPECT_FALSE(ios::sessions::FileExists(file));
-  EXPECT_FALSE(ios::sessions::WriteProto(file, UnserializableMessage{}));
 }
 
 // Tests that `ParseProto` succeed when reading a protobuf message written
