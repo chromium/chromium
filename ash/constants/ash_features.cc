@@ -2549,6 +2549,11 @@ BASE_FEATURE(kSeaPenDemoMode,
              "SeaPenDemoMode",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables sea pen prompt rewrite feature.
+BASE_FEATURE(kSeaPenPromptRewrite,
+             "SeaPenPromptRewrite",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables sea pen feature with next templates.
 BASE_FEATURE(kSeaPenUseExptTemplate,
              "SeaPenUseExptTemplate",
@@ -4338,6 +4343,11 @@ bool IsScannerEnabled() {
 
 bool IsSeaPenDemoModeEnabled() {
   return IsSeaPenEnabled() && base::FeatureList::IsEnabled(kSeaPenDemoMode);
+}
+
+bool IsSeaPenPromptRewriteEnabled() {
+  return IsSeaPenTextInputEnabled() &&
+         base::FeatureList::IsEnabled(kSeaPenPromptRewrite);
 }
 
 bool IsSeaPenEnabled() {
