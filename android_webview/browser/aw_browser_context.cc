@@ -262,6 +262,7 @@ AwBrowserContext::AwBrowserContext(std::string name,
       std::make_unique<AwFormDatabaseService>(context_storage_path_);
 
   EnsureResourceContextInitialized();
+  prefetch_manager_ = std::make_unique<AwPrefetchManager>(this);
 }
 
 AwBrowserContext::~AwBrowserContext() {
@@ -736,7 +737,7 @@ void AwBrowserContext::StartPrefetchRequest(
       request_status_listener =
           std::make_unique<AwPrefetchRequestStatusListener>(obj_, callback,
                                                             callback_executor);
-  StartBrowserPrefetchRequest(
+  prefetch_manager_->StartBrowserPrefetchRequest(
       pf_url,
       GetIsJavaScriptEnabledFromPrefetchParameters(env, prefetch_params),
       expected_no_vary_search, additional_headers,
