@@ -85,7 +85,7 @@ public class PasswordManagerErrorMessageHelperBridgeTest {
 
     @Mock private IdentityManager mIdentityManagerMock;
 
-    @Mock private TrustedVaultClient mTrustedVaultClient;
+    @Mock private TrustedVaultClient.Backend mTrustedVaultBackend;
 
     @Mock private SyncService mSyncService;
 
@@ -108,7 +108,7 @@ public class PasswordManagerErrorMessageHelperBridgeTest {
         when(mIdentityManagerMock.getPrimaryAccountInfo(ConsentLevel.SIGNIN))
                 .thenReturn(mCoreAccountInfo);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
-        TrustedVaultClient.setInstanceForTesting(mTrustedVaultClient);
+        TrustedVaultClient.get().setBackendForTesting(mTrustedVaultBackend);
         SyncServiceFactory.setInstanceForTesting(mSyncService);
     }
 
@@ -291,7 +291,7 @@ public class PasswordManagerErrorMessageHelperBridgeTest {
         when(mSyncService.getAccountInfo()).thenReturn(mCoreAccountInfo);
 
         Promise<PendingIntent> intentPromise = new Promise<>();
-        when(mTrustedVaultClient.createKeyRetrievalIntent(any())).thenReturn(intentPromise);
+        when(mTrustedVaultBackend.createKeyRetrievalIntent(any())).thenReturn(intentPromise);
 
         PasswordManagerErrorMessageHelperBridge.startTrustedVaultKeyRetrievalFlow(
                 mWindowAndroidMock, mProfile);

@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
@@ -183,6 +184,8 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
     private FakeServerHelper mFakeServerHelper;
     private SyncService mSyncService;
     private final SigninTestRule mSigninTestRule = new SigninTestRule();
+    private final BlankCTATabInitialStateRule mBlankCTATabRule =
+            new BlankCTATabInitialStateRule(this, false);
 
     public SigninTestRule getSigninTestRule() {
         return mSigninTestRule;
@@ -201,12 +204,6 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
 
     public SyncService getSyncService() {
         return mSyncService;
-    }
-
-    public void startMainActivityForSyncTest() {
-        // Start the activity by opening about:blank. This URL is ideal because it is not synced as
-        // a typed URL. If another URL is used, it could interfere with test data.
-        startMainActivityOnBlankPage();
     }
 
     /**
@@ -340,16 +337,17 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
     @Override
     public Statement apply(final Statement base, final Description desc) {
         final Statement superStatement = super.apply(base, desc);
-        return mSigninTestRule.apply(superStatement, desc);
+
+        // Start the activity by opening about:blank. This URL is ideal because it is not synced as
+        // a typed URL. If another URL is used, it could interfere with test data.
+        final Statement blankCTATabStatement = mBlankCTATabRule.apply(superStatement, desc);
+        return mSigninTestRule.apply(blankCTATabStatement, desc);
     }
 
     @Override
     protected void before() throws Throwable {
         super.before();
-        TrustedVaultClient.setInstanceForTesting(
-                new TrustedVaultClient(FakeTrustedVaultClientBackend.get()));
-
-        startMainActivityForSyncTest();
+        TrustedVaultClient.get().setBackendForTesting(FakeTrustedVaultClientBackend.get());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

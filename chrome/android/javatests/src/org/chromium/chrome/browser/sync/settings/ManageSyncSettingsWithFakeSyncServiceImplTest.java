@@ -326,7 +326,7 @@ public class ManageSyncSettingsWithFakeSyncServiceImplTest {
         // TODO(crbug.com/334124078): Simplify the test using FakeTrustedVaultClientBackend once the
         // bug is resolved.
         TestTrustedVaultClientBackend backend = new TestTrustedVaultClientBackend();
-        TrustedVaultClient.setInstanceForTesting(new TrustedVaultClient(backend));
+        TrustedVaultClient.get().setBackendForTesting(backend);
 
         final FakeSyncServiceImpl fakeSyncService =
                 (FakeSyncServiceImpl) mSyncTestRule.getSyncService();
