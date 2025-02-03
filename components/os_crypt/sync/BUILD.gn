@@ -7,12 +7,7 @@ import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//components/os_crypt/sync/features.gni")
 
-# Wrapper component to allow dependencies to depend on //components/os_crypt/sync directly.
-group("sync") {
-  public_deps = [ ":os_crypt" ]
-}
-
-component("os_crypt") {
+component("sync") {
   sources = [
     "os_crypt.h",
     "os_crypt_metrics.cc",
@@ -91,7 +86,7 @@ static_library("test_support") {
     "os_crypt_mocker.h",
   ]
   deps = [
-    ":os_crypt",
+    ":sync",
     "//base",
     "//testing/gtest",
   ]
@@ -114,7 +109,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "os_crypt_unittest.cc" ]
   deps = [
-    ":os_crypt",
+    ":sync",
     ":test_support",
     "//base",
     "//base/test:test_support",

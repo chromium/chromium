@@ -3546,7 +3546,7 @@ static_library("ui") {
       "webui/password_manager/promo_cards/relaunch_chrome_promo.cc",
       "webui/password_manager/promo_cards/relaunch_chrome_promo.h",
     ]
-    deps += [ "//components/os_crypt/sync:os_crypt" ]
+    deps += [ "//components/os_crypt/sync" ]
   }
 
   if (is_linux) {
