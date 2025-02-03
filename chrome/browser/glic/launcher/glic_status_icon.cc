@@ -60,6 +60,8 @@ GlicStatusIcon::GlicStatusIcon(GlicController* controller,
   status_icon_->SetIcon(kGlicButtonIcon);
 #else
   native_theme_observer_.Observe(native_theme);
+  // Linux doesn't activate icon on click so no need to observe.
+  status_icon_->AddObserver(this);
 #endif
 #if BUILDFLAG(IS_MAC)
   if (features::kGlicStatusIconOpenMenuWithSecondaryClick.Get()) {
@@ -67,7 +69,6 @@ GlicStatusIcon::GlicStatusIcon(GlicController* controller,
   }
   status_icon_->SetImageTemplate(true);
 #endif
-  status_icon_->AddObserver(this);
 
   std::unique_ptr<StatusIconMenuModel> menu = CreateStatusIconMenu();
   context_menu_ = menu.get();
@@ -77,7 +78,9 @@ GlicStatusIcon::GlicStatusIcon(GlicController* controller,
 GlicStatusIcon::~GlicStatusIcon() {
   context_menu_ = nullptr;
   if (status_icon_) {
+#if !BUILDFLAG(IS_LINUX)
     status_icon_->RemoveObserver(this);
+#endif
     std::unique_ptr<StatusIcon> removed_icon =
         status_tray_->RemoveStatusIcon(status_icon_);
     status_icon_ = nullptr;
