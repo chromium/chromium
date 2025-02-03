@@ -162,8 +162,8 @@ class NET_EXPORT_PRIVATE NoVarySearchCache {
   using DataMapType = std::map<HttpNoVarySearchData, QueryStringList>;
   using OuterMapType = std::map<BaseURLCacheKey, DataMapType, std::less<>>;
 
-  // Erases an entry from the cache if it is full;
-  void EvictIfFull();
+  // Erases an entry from the cache if `size_ > max_size_`.
+  void EvictIfOverfull();
 
   // Erases `query_string` from the cache.
   void EraseQuery(QueryString* query_string);
