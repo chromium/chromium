@@ -31,7 +31,6 @@ class CORE_EXPORT Canvas2DColorParams {
   }
 
   viz::SharedImageFormat GetSharedImageFormat() const;
-  SkColorType GetSkColorType() const;
   gfx::ColorSpace GetGfxColorSpace() const;
 
  private:
