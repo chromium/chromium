@@ -191,6 +191,12 @@ void DataSharingUI::ApiInitComplete() {
   }
 }
 
+void DataSharingUI::ShowErrorDialog(int status_code) {
+  if (delegate_) {
+    delegate_->ShowErrorDialog(status_code);
+  }
+}
+
 void DataSharingUI::BindInterface(
     mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
         pending_receiver) {

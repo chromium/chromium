@@ -166,6 +166,10 @@ void DataSharingSDKDelegateDesktop::ApiInitComplete() {
   callback_subscriptions_.clear();
 }
 
+void DataSharingSDKDelegateDesktop::ShowErrorDialog(int status_code) {
+  // No-op for this class.
+}
+
 void DataSharingSDKDelegateDesktop::Shutdown() {
   // Since WebContents depends on BrowserContext, it needs to be destroyed
   // before the BrowserContext is destroyed.

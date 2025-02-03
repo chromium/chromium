@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
-#include "chrome/browser/ui/webui/data_sharing/data_sharing_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -129,6 +128,7 @@ void DataSharingBubbleController::Show(
           IDS_DATA_SHARING_BUBBLE_DIALOG_TITLE,
           /*esc_closes_ui=*/true,
           /*supports_draggable_regions=*/false);
+  contents_wrapper->GetWebUIController()->SetDelegate(this);
 
   auto bubble_view = std::make_unique<DataSharingBubbleDialogView>(
       &GetBrowser(), anchor_view_for_share, std::move(contents_wrapper));
@@ -167,10 +167,25 @@ void DataSharingBubbleController::SetOnCloseCallback(
   on_close_callback_ = std::move(callback);
 }
 
+void DataSharingBubbleController::SetShowErrorDialogCallback(
+    base::OnceCallback<void()> callback) {
+  on_error_callback_ = std::move(callback);
+}
+
 void DataSharingBubbleController::OnWidgetClosing(views::Widget* widget) {
   bubble_widget_observation_.Reset();
   if (on_close_callback_) {
     std::move(on_close_callback_).Run();
+  }
+}
+
+void DataSharingBubbleController::ApiInitComplete() {
+  // No-op for this class.
+}
+
+void DataSharingBubbleController::ShowErrorDialog(int status_code) {
+  if (on_error_callback_) {
+    std::move(on_error_callback_).Run();
   }
 }
 

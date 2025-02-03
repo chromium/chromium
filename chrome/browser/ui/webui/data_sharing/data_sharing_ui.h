@@ -35,6 +35,9 @@ class DataSharingUI : public UntrustedTopChromeWebUIController,
    public:
     // Called when the api is fully initialized and authenticated.
     virtual void ApiInitComplete() = 0;
+
+    // Called to show the error dialog when an error is occurred.
+    virtual void ShowErrorDialog(int status_code) = 0;
   };
   explicit DataSharingUI(content::WebUI* web_ui);
   ~DataSharingUI() override;
@@ -46,6 +49,8 @@ class DataSharingUI : public UntrustedTopChromeWebUIController,
       mojo::PendingReceiver<data_sharing::mojom::PageHandlerFactory> receiver);
 
   void ApiInitComplete();
+
+  void ShowErrorDialog(int status_code);
 
   DataSharingPageHandler* page_handler() { return page_handler_.get(); }
 
