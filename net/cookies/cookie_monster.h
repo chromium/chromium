@@ -296,8 +296,6 @@ class NET_EXPORT CookieMonster : public CookieStore {
                            FilterCookiesWithOptionsExcludeShadowingDomains);
   FRIEND_TEST_ALL_PREFIXES(CookieMonsterTest,
                            FilterCookiesWithOptionsWarnShadowingDomains);
-  FRIEND_TEST_ALL_PREFIXES(CookieMonsterTest,
-                           FilterCookiesWithOptionsExcludeAlising);
 
   // For StoreLoadedCookies behavior with origin-bound cookies.
   FRIEND_TEST_ALL_PREFIXES(CookieMonsterTest_StoreLoadedCookies,
