@@ -20,7 +20,6 @@
 #include "base/values.h"
 #include "chrome/browser/ash/net/ash_dns_over_https_config_source.h"
 #include "chrome/browser/ash/net/dns_over_https/templates_uri_resolver_impl.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/secure_dns_config.h"
 #include "chrome/browser/net/secure_dns_util.h"
 #include "chrome/browser/net/stub_resolver_config_reader.h"
@@ -129,8 +128,7 @@ SecureDnsManager::SecureDnsManager(PrefService* local_state,
   // The DNS-over-HTTPS config source is reset in the destructor of the
   // `SecureDnsManager`. This means the `SecureDnsManager` instance should
   // outlive the `AshDnsOverHttpsConfigSource` instance.
-  g_browser_process->system_network_context_manager()
-      ->GetStubResolverConfigReader()
+  SystemNetworkContextManager::GetStubResolverConfigReader()
       ->SetOverrideDnsOverHttpsConfigSource(
           std::make_unique<AshDnsOverHttpsConfigSource>(this, local_state));
 }
@@ -196,8 +194,7 @@ SecureDnsManager::~SecureDnsManager() {
     observer.OnSecureDnsManagerShutdown();
   }
 
-  g_browser_process->system_network_context_manager()
-      ->GetStubResolverConfigReader()
+  SystemNetworkContextManager::GetStubResolverConfigReader()
       ->SetOverrideDnsOverHttpsConfigSource(nullptr);
 
   // `local_state_` outlives the SecureDnsManager instance. The value of
