@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/paint/scrollable_area_painter.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
 
@@ -96,6 +97,16 @@ void BoxPainter::RecordScrollHitTestData(
     gfx::Rect cull_rect = fragment->GetContentsCullRect().Rect();
     if (cull_rect.Contains(properties->Scroll()->ContentsRect())) {
       cull_rect = CullRect::Infinite().Rect();
+    } else {
+      // Don't pass the cull rect if it doesn't cover the container rect
+      // because cc can't distinguish the case from paint checkerboarding.
+      gfx::Rect cull_rect_in_container_space = gfx::ToEnclosingRect(
+          gfx::RectF(cull_rect) +
+          properties->ScrollTranslation()->Get2dTranslation());
+      if (!cull_rect_in_container_space.Contains(
+              properties->Scroll()->ContainerRect())) {
+        cull_rect = CullRect::Infinite().Rect();
+      }
     }
     paint_controller.RecordScrollHitTestData(
         background_client, DisplayItem::kScrollHitTest,

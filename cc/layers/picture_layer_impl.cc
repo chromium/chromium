@@ -433,6 +433,9 @@ void PictureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
               scroll_tree.ScrollingContentsCullRect(element_id)) {
         if (const auto* scroll_node =
                 scroll_tree.FindNodeFromElementId(element_id)) {
+          if (!scroll_tree.CanRealizeScrollsOnPendingTree(*scroll_node)) {
+            continue;
+          }
           gfx::RectF visible_rect(
               gfx::Rect(scroll_node->container_origin,
                         scroll_tree.container_bounds(scroll_node->id)));
