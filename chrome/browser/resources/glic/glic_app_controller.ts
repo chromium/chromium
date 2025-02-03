@@ -22,6 +22,10 @@ const kMinHoldLoadingTimeMs = loadTimeData.getInteger('minLoadingTimeMs');
 // Maximum time to wait for load before showing error panel.
 const kMaxWaitTimeMs = loadTimeData.getInteger('maxLoadingTimeMs');
 
+// Whether to enable the debug button on the error panel. Can be enabled with
+// the --enable-features=GlicDebugWebview command-line flag.
+const kEnableDebug = loadTimeData.getBoolean('enableDebug');
+
 interface PageElementTypes {
   panelContainer: HTMLElement;
   loadingPanel: HTMLElement;
@@ -93,6 +97,12 @@ export class GlicAppController {
       this.setState(WebUiState.kBeginLoad);
     } else {
       this.setState(WebUiState.kOffline);
+    }
+
+    if (kEnableDebug) {
+      window.addEventListener('load', () => {
+        this.installDebugButton();
+      });
     }
   }
 
@@ -389,6 +399,38 @@ export class GlicAppController {
   showGuest(): void {
     if (this.state === WebUiState.kReady) {
       this.showPanel('guestPanel');
+    }
+  }
+
+  // TODO: Make this a proper state.
+  showDebug(): void {
+    this.lastWidth = 400;
+    this.lastHeight = 800;
+    this.setState(WebUiState.kReady);
+    $.guestPanel.classList.toggle('show-header', true);
+    $.guestPanel.classList.toggle('debug', true);
+  }
+
+  installDebugButton(): void {
+    const button = document.createElement('cr-icon-button');
+    button.id = 'debug';
+    button.classList.add('tonal-button');
+    button.setAttribute('iron-icon', 'cr:search');
+    document.querySelector('#errorPanel .notice')!.appendChild(button);
+    button.addEventListener('click', () => {
+      this.showDebug();
+    });
+  }
+
+  close(): void {
+    // If we're in the debug view, switch back to error. Otherwise close the
+    // window.
+    if (this.state === WebUiState.kReady &&
+        $.guestPanel.classList.contains('debug')) {
+      $.guestPanel.classList.toggle('debug', false);
+      this.setState(WebUiState.kError);
+    } else {
+      this.browserProxy.handler.closePanel();
     }
   }
 }

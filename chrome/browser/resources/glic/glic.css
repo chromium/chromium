@@ -104,11 +104,15 @@ webview:not([hidden]) {
   height: 752px;
   bottom: 0;
 }
-cr-button.tonal-button {
+.tonal-button {
   background-color: #A8C7FA;
   color: #062E6F;
 }
 
+#debug {
+  position: absolute;
+  right: 30px;
+}
 cr-progress {
   width: 80%;
   margin: 20px 10% 0;
