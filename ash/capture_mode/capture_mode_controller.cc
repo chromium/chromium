@@ -527,8 +527,7 @@ BehaviorType ToBehaviorType(CaptureModeEntryType entry_type) {
 // the given `capture_type`.
 bool ShouldPerformTextDetection(PerformCaptureType capture_type) {
   return features::IsCaptureModeOnDeviceOcrEnabled() &&
-         (capture_type == PerformCaptureType::kSunfish ||
-          capture_type == PerformCaptureType::kTextDetection);
+         capture_type == PerformCaptureType::kTextDetection;
 }
 
 // Returns true if Scanner actions should be fetched for a captured image with
@@ -1996,7 +1995,10 @@ void CaptureModeController::OnImageCapturedForSearch(
         bitmap, user_capture_region_,
         base::BindRepeating(&CaptureModeController::OnSearchUrlFetched,
                             weak_ptr_factory_.GetWeakPtr(),
-                            user_capture_region_, image));
+                            user_capture_region_, image),
+        base::BindRepeating(&CaptureModeController::OnLensTextDetectionComplete,
+                            weak_ptr_factory_.GetWeakPtr(),
+                            image_search_token));
   }
 }
 
@@ -2009,6 +2011,28 @@ void CaptureModeController::OnTextDetectionComplete(
     return;
   }
 
+  AddCopyTextAndSmartActionsButtons(detected_text);
+}
+
+void CaptureModeController::OnLensTextDetectionComplete(
+    base::WeakPtr<BaseCaptureModeSession> image_search_token,
+    std::string detected_text) {
+  if (!image_search_token || detected_text.empty()) {
+    return;
+  }
+
+  // Only use lens to automatically add Copy Text and Smart Actions buttons if
+  // we are in a sunfish session.
+  if (capture_mode_session_->active_behavior()->behavior_type() ==
+      BehaviorType::kSunfish) {
+    AddCopyTextAndSmartActionsButtons(detected_text);
+  }
+}
+
+void CaptureModeController::AddCopyTextAndSmartActionsButtons(
+    std::string detected_text) {
+  CHECK(!detected_text.empty());
+
   // TODO(crbug.com/375967525): Finalize and translate the copy text label.
   capture_mode_util::AddActionButton(
       base::BindOnce(&CaptureModeController::OnCopyTextButtonClicked,
@@ -2017,7 +2041,6 @@ void CaptureModeController::OnTextDetectionComplete(
       u"Copy text", &vector_icons::kContentCopyIcon,
       ActionButtonRank{ActionButtonType::kCopyText, /*weight=*/0},
       ActionButtonViewID::kCopyTextButton);
-
   capture_mode_session_->AddSmartActionsButton();
 }
 

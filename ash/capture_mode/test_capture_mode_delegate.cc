@@ -243,8 +243,12 @@ std::unique_ptr<AshWebView> TestCaptureModeDelegate::CreateSearchResultsView()
 void TestCaptureModeDelegate::SendRegionSearch(
     const SkBitmap& image,
     const gfx::Rect& region,
-    OnSearchUrlFetchedCallback callback) {
-  std::move(callback).Run(GURL("kTestUrl"));
+    ash::OnSearchUrlFetchedCallback search_callback,
+    ash::OnTextDetectionComplete text_callback) {
+  if (!lens_detected_text_.empty()) {
+    std::move(text_callback).Run(lens_detected_text_);
+  }
+  std::move(search_callback).Run(GURL("kTestUrl"));
 }
 
 void TestCaptureModeDelegate::SendMultimodalSearch(

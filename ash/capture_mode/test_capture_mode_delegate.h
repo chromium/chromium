@@ -68,6 +68,9 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
   int num_multimodal_search_requests() const {
     return num_multimodal_search_requests_;
   }
+  void set_lens_detected_text(std::string text) {
+    lens_detected_text_ = std::move(text);
+  }
 
   // Resets |is_allowed_by_policy_| and |is_allowed_by_dlp_| back to true.
   void ResetAllowancesToDefault();
@@ -157,7 +160,8 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
               (override));
   void SendRegionSearch(const SkBitmap& image,
                         const gfx::Rect& region,
-                        OnSearchUrlFetchedCallback callback) override;
+                        ash::OnSearchUrlFetchedCallback search_callback,
+                        ash::OnTextDetectionComplete text_callback) override;
   void SendMultimodalSearch(const SkBitmap& image,
                             const gfx::Rect& region,
                             const std::string& text,
@@ -189,6 +193,7 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
   int64_t fake_drive_fs_free_bytes_ = std::numeric_limits<int64_t>::max();
   PolicyCapturePath policy_capture_path_ = {base::FilePath(),
                                             CapturePathEnforcement::kNone};
+  std::string lens_detected_text_;
 };
 
 }  // namespace ash

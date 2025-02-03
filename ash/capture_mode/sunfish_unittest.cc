@@ -172,6 +172,12 @@ class SunfishTestBase : public AshTestBase {
     Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
         kSunfishConsentDisclaimerAccepted, true);
   }
+  void TearDown() override {
+    // Clear the clipboard in case text was saved during a test.
+    ui::Clipboard::GetForCurrentThread()->Clear(
+        ui::ClipboardBuffer::kCopyPaste);
+    AshTestBase::TearDown();
+  }
 
  private:
   // Calling the factory constructor is enough to set it up.
@@ -2173,6 +2179,44 @@ TEST_F(SunfishTest, CopyTextButtonShownForDetectedText) {
       ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr, &clipboard_data);
   EXPECT_EQ(clipboard_data, u"detected text");
   EXPECT_TRUE(ToastManager::Get()->IsToastShown(kCaptureModeTextCopiedToastId));
+}
+
+// Tests that the copy text button is shown in a sunfish session if text is
+// detected in the selected region.
+TEST_F(SunfishTest, CopyTextButtonShownForLensDetectedText) {
+  auto* controller = CaptureModeController::Get();
+  controller->StartSunfishSession();
+
+  auto* test_delegate =
+      static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
+  test_delegate->set_lens_detected_text("lens\ndetected text");
+
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(0, 0, 50, 200),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  WaitForImageCapturedForSearch(PerformCaptureType::kSunfish);
+
+  // Copy text button should have been created.
+  const CaptureModeSessionTestApi session_test_api(
+      controller->capture_mode_session());
+  const ActionButtonView* copy_text_button =
+      session_test_api.GetButtonWithViewID(ActionButtonViewID::kCopyTextButton);
+  ASSERT_TRUE(copy_text_button);
+
+  // The clipboard should currently be empty.
+  std::u16string clipboard_data;
+  ui::Clipboard::GetForCurrentThread()->ReadText(
+      ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr, &clipboard_data);
+  EXPECT_EQ(clipboard_data, u"");
+
+  // Clicking on the button should copy text to the clipboard and show a toast.
+  LeftClickOn(copy_text_button);
+  ui::Clipboard::GetForCurrentThread()->ReadText(
+      ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr, &clipboard_data);
+  EXPECT_EQ(clipboard_data, u"lens\ndetected text");
+  EXPECT_TRUE(ToastManager::Get()->IsToastShown(kCaptureModeTextCopiedToastId));
+
+  // Clear the clipboard for other tests that may need it.
+  ui::Clipboard::GetForCurrentThread()->Clear(ui::ClipboardBuffer::kCopyPaste);
 }
 
 // Tests that the Sunfish region nudge is dismissed forever when an action
