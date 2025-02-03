@@ -1138,13 +1138,6 @@ void NewTabPageHandler::OnPromoLinkClicked() {
   LogEvent(NTP_MIDDLE_SLOT_PROMO_LINK_CLICKED);
 }
 
-// TODO(crbug.com/386390756): Remove this method once modules.ts stops fetching
-// auth states.
-void NewTabPageHandler::GetMicrosoftAuthState(
-    GetMicrosoftAuthStateCallback callback) {
-  std::move(callback).Run(microsoft_auth_service_->GetAuthState());
-}
-
 void NewTabPageHandler::SetCustomizeChromeSidePanelControllerForTesting(
     customize_chrome::SidePanelController* side_panel_controller) {
   SetCustomizeChromeSidePanelController(side_panel_controller);

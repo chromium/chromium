@@ -183,7 +183,6 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
                       const std::string& doodle_id,
                       const std::optional<std::string>& share_id) override;
   void OnPromoLinkClicked() override;
-  void GetMicrosoftAuthState(GetMicrosoftAuthStateCallback callback) override;
 
   void SetCustomizeChromeSidePanelControllerForTesting(
       customize_chrome::SidePanelController* side_panel_controller);

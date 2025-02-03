@@ -959,18 +959,6 @@ class NewTabPageHandlerMicrosoftAuthStateTest
   raw_ptr<MicrosoftAuthServiceObserver> microsoft_auth_service_observer_;
 };
 
-// TODO(crbug.com/386390756): Remove this test once modules.ts stops fetching
-// auth states.
-TEST_P(NewTabPageHandlerMicrosoftAuthStateTest, GetMicrosoftAuthState) {
-  base::MockCallback<NewTabPageHandler::GetMicrosoftAuthStateCallback> callback;
-  new_tab_page::mojom::AuthState result;
-  SetAuthState(AuthState());
-  EXPECT_CALL(callback, Run).WillOnce(MoveArg<0>(&result));
-  handler_->GetMicrosoftAuthState(callback.Get());
-
-  EXPECT_EQ(result, AuthState());
-}
-
 TEST_P(NewTabPageHandlerMicrosoftAuthStateTest, OnAuthStateUpdated) {
   SetAuthState(AuthState());
 

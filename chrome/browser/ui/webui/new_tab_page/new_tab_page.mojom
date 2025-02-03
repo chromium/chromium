@@ -323,8 +323,6 @@ interface PageHandler {
   OnDismissMobilePromo();
   // Called when the mobile promo's dismissal is undone.
   OnUndoDismissMobilePromo();
-  // Gets the current state of Microsoft authentication.
-  GetMicrosoftAuthState() => (AuthState state);
 
   // ======= METRICS =======
   // Logs that the One Google Bar was added to the DOM / loaded in an iframe at
