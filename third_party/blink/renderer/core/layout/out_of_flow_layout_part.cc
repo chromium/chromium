@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/layout/column_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/disable_layout_side_effects_scope.h"
+#include "third_party/blink/renderer/core/layout/geometry/box_sides.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_placement.h"
@@ -687,27 +688,28 @@ OutOfFlowLayoutPart::ApplyPositionAreaOffsets(
   if (offsets.left.has_value() == offsets.right.has_value()) {
     default_anchor_scroll_shift.left = LayoutUnit();
   }
-  const LayoutUnit top_origin = default_anchor_scroll_shift.top;
-  const LayoutUnit right_origin = -default_anchor_scroll_shift.left;
-  const LayoutUnit bottom_origin = -default_anchor_scroll_shift.top;
-  const LayoutUnit left_origin = default_anchor_scroll_shift.left;
 
-  PhysicalToLogical converter(container_info.writing_direction,
-                              offsets.top.value_or(top_origin),
-                              offsets.right.value_or(right_origin),
-                              offsets.bottom.value_or(bottom_origin),
-                              offsets.left.value_or(left_origin));
+  // Figure out which sides have an inset set, and what they might be.
+  PhysicalBoxSides physical_insets_set(
+      offsets.top.has_value(), offsets.right.has_value(),
+      offsets.bottom.has_value(), offsets.left.has_value());
+  LogicalBoxSides insets_set =
+      physical_insets_set.ToLogical(container_info.writing_direction);
 
-#if DCHECK_IS_ON()
-  PhysicalToLogical origin_converter(container_info.writing_direction,
-                                     top_origin, right_origin, bottom_origin,
-                                     left_origin);
-#endif
+  // Substitute any missing insets with the default anchor scroll shift (or 0,
+  // if it's not applicable).
+  PhysicalBoxStrut physical_insets(
+      offsets.top.value_or(default_anchor_scroll_shift.top),
+      offsets.right.value_or(-default_anchor_scroll_shift.left),
+      offsets.bottom.value_or(-default_anchor_scroll_shift.top),
+      offsets.left.value_or(default_anchor_scroll_shift.left));
+  BoxStrut insets =
+      physical_insets.ConvertToLogical(container_info.writing_direction);
 
   // Reduce the container size and adjust the offset based on the position-area.
   adjusted_container_info.rect.ContractEdges(
-      converter.BlockStart(), converter.InlineEnd(), converter.BlockEnd(),
-      converter.InlineStart());
+      insets.block_start, insets.inline_end, insets.block_end,
+      insets.inline_start);
 
   // For 'center' values (aligned with start and end anchor sides), the
   // containing block is aligned and sized with the anchor, regardless of
@@ -715,32 +717,26 @@ OutOfFlowLayoutPart::ApplyPositionAreaOffsets(
   // ContractEdges above might have created a negative size if the position-area
   // is aligned with an anchor side outside the containing block.
   if (adjusted_container_info.rect.size.inline_size < LayoutUnit()) {
-#if DCHECK_IS_ON()
-    DCHECK(converter.InlineStart() == origin_converter.InlineStart() ||
-           converter.InlineEnd() == origin_converter.InlineEnd())
-        << "If aligned to both anchor edges, the size should never be "
-           "negative.";
-#endif
+    DCHECK(insets_set.inline_start != insets_set.inline_end)
+        << "If aligned to both anchor edges, or both original containing block "
+           "edges, the size should never be negative.";
+
     // Collapse the inline size to 0 and align with the single anchor edge
     // defined by the position-area.
-    if (converter.InlineStart() == LayoutUnit()) {
-      DCHECK(converter.InlineEnd() != LayoutUnit());
+    if (!insets_set.inline_start) {
       adjusted_container_info.rect.offset.inline_offset +=
           adjusted_container_info.rect.size.inline_size;
     }
     adjusted_container_info.rect.size.inline_size = LayoutUnit();
   }
   if (adjusted_container_info.rect.size.block_size < LayoutUnit()) {
-#if DCHECK_IS_ON()
-    DCHECK(converter.BlockStart() == origin_converter.BlockStart() ||
-           converter.BlockEnd() == origin_converter.BlockEnd())
-        << "If aligned to both anchor edges, the size should never be "
-           "negative.";
-#endif
+    DCHECK(insets_set.block_start != insets_set.block_end)
+        << "If aligned to both anchor edges, or both original containing block "
+           "edges, the size should never be negative.";
+
     // Collapse the block size to 0 and align with the single anchor edge
     // defined by the position-area.
-    if (converter.BlockStart() == LayoutUnit()) {
-      DCHECK(converter.BlockEnd() != LayoutUnit());
+    if (!insets_set.block_start) {
       adjusted_container_info.rect.offset.block_offset +=
           adjusted_container_info.rect.size.block_size;
     }
