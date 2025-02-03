@@ -127,8 +127,8 @@ int GetHighestKnownUniversalApiContractVersionForTesting();
 // Returns the UserAgentReductionEnterprisePolicyState enum value corresponding
 // to the provided integer policy value for UserAgentReduction.
 // TODO(crbug.com/40843535): Remove this function with policy.
-embedder_support::UserAgentReductionEnterprisePolicyState
-GetUserAgentReductionFromPrefs(const PrefService* pref_service);
+UserAgentReductionEnterprisePolicyState GetUserAgentReductionFromPrefs(
+    const PrefService* pref_service);
 
 }  // namespace embedder_support
 
