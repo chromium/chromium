@@ -35,7 +35,8 @@ enable_pointer_compression =
 
 # Duplicates the setup Chromium uses to define `DCHECK_IS_ON()`, but avails it
 # as a buildflag.
-dchecks_are_on = is_debug || dcheck_always_on
+partition_alloc_dchecks_are_on =
+    partition_alloc_is_debug || partition_alloc_dcheck_always_on
 
 # Building PartitionAlloc for Windows component build.
 # Currently use build_with_chromium not to affect any third_party code,
@@ -151,7 +152,7 @@ pa_buildflag_header("buildflags") {
     "IS_CASTOS=$is_castos",
     "IS_CAST_ANDROID=$is_cast_android",
     "IS_CHROMEOS=$is_chromeos",
-    "IS_DEBUG=$is_debug",
+    "IS_DEBUG=$partition_alloc_is_debug",
     "RAW_PTR_ZERO_ON_CONSTRUCT=$raw_ptr_zero_on_construct",
     "RAW_PTR_ZERO_ON_DESTRUCT=$raw_ptr_zero_on_destruct",
     "RAW_PTR_ZERO_ON_MOVE=$raw_ptr_zero_on_move",
@@ -171,7 +172,7 @@ pa_buildflag_header("buildflags") {
     "USE_RAW_PTR_BACKUP_REF_IMPL=$use_raw_ptr_backup_ref_impl",
     "USE_RAW_PTR_HOOKABLE_IMPL=$use_raw_ptr_hookable_impl",
     "ENABLE_ALLOCATOR_SHIM_PARTITION_ALLOC_DISPATCH_WITH_ADVANCED_CHECKS_SUPPORT=$enable_allocator_shim_partition_alloc_dispatch_with_advanced_checks_support",
-    "DCHECKS_ARE_ON=$dchecks_are_on",
+    "DCHECKS_ARE_ON=$partition_alloc_dchecks_are_on",
     "EXPENSIVE_DCHECKS_ARE_ON=$enable_expensive_dchecks",
     "DCHECK_IS_CONFIGURABLE=$dcheck_is_configurable",
     "CAN_UNWIND_WITH_FRAME_POINTERS=$can_unwind_with_frame_pointers",
@@ -330,7 +331,7 @@ if (is_clang_or_gcc) {
     }
   }
 
-  if (enable_pkeys && is_debug) {
+  if (enable_pkeys && partition_alloc_is_debug) {
     config("no_stack_protector") {
       cflags = [ "-fno-stack-protector" ]
     }
@@ -567,7 +568,7 @@ if (is_clang_or_gcc) {
 
     # We want to be able to test pkey mode without access to the default pkey.
     # This is incompatible with stack protectors since the TLS won't be pkey-tagged.
-    if (enable_pkeys && is_debug) {
+    if (enable_pkeys && partition_alloc_is_debug) {
       configs += [ ":no_stack_protector" ]
     }
   }
@@ -1015,7 +1016,7 @@ if (build_with_chromium) {
       ]
     }
 
-    if (enable_pkeys && is_debug && !is_component_build) {
+    if (enable_pkeys && partition_alloc_is_debug && !is_component_build) {
       # This test requires RELRO, which is not enabled in component builds.
       # Also, require a debug build, since we only disable stack protectors in
       # debug builds in PartitionAlloc (see below why it's needed).

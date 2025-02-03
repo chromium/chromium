@@ -4,6 +4,56 @@
 
 import("//build_overrides/partition_alloc.gni")
 
+# -----------------------------------------------------------------------------
+# Note on the use of `xxx_default` variable in partition_alloc.
+#
+# GN provides default_args() instruction. It is meant to be used by embedders,
+# to override the default args declared by the embeddees (e.g. partition_alloc).
+# This is the intended way to use GN. It properly interacts with the args.gn
+# user's file.
+#
+# Unfortunately, Chrome and others embedders aren't using it. Instead, they
+# expect embeddees to import global '.gni' file from the embedder, e.g.
+# `//build_overrides/partition_alloc.gni`. This file sets some `xxx_default`
+# variable that will be transferred to the declared args. For instance
+# a library would use:
+# ```
+#     import("//build_overrides/library.gni")
+#     declare_args() {
+#       xxx = xxx_default
+#     }
+# ```
+#
+# We don't really want to break embedders when introducing new args. Ideally,
+# We would have liked to have defaults for default variables. That would be
+# a recursive problem. To resolve it, we sometimes use the `defined(...)`
+# instruction to check if the embedder has defined the `xxx_default` variable or
+# not.
+#
+# In general, we should aim to support the embedders that are using GN normally,
+# and avoid requiring them to define `xxx_default` in the `//build_overrides`
+# -----------------------------------------------------------------------------
+
+# Some embedders uses `is_debug`, it can be used to set the default value of
+# `partition_alloc_is_debug_default`.
+if (!defined(partition_alloc_is_debug_default)) {
+  if (defined(is_debug)) {
+    partition_alloc_is_debug_default = is_debug
+  } else {
+    partition_alloc_is_debug_default = false
+  }
+}
+
+# Some embedders uses `dcheck_always_on`, it can be used to set the default
+# value of `partition_alloc_dcheck_always_on_default`.
+if (!defined(partition_alloc_dcheck_always_on_default)) {
+  if (defined(dcheck_always_on)) {
+    partition_alloc_dcheck_always_on_default = dcheck_always_on
+  } else {
+    partition_alloc_dcheck_always_on_default = false
+  }
+}
+
 # PartitionAlloc have limited support for MSVC's cl.exe compiler. It can only
 # access the generate "buildflags" and the "raw_ptr" definitions implemented
 # with RawPtrNoOpImpl. Everything else is considered not supported.
@@ -42,6 +92,12 @@ has_memory_tagging =
     current_cpu == "arm64" && is_clang && !is_asan && (is_linux || is_android)
 
 declare_args() {
+  # Debug configuration.
+  partition_alloc_is_debug = partition_alloc_is_debug_default
+
+  # Enable PA_DCHECKs in PartitionAlloc in release mode.
+  partition_alloc_dcheck_always_on = partition_alloc_dcheck_always_on_default
+
   # Causes all the allocations to be routed via allocator_shim.cc. Usually,
   # the allocator shim will, in turn, route them to PartitionAlloc, but
   # other allocators are also supported by the allocator shim.
@@ -129,8 +185,8 @@ if (use_allocator_shim && is_win) {
   # If libcxx_is_shared=false, libc++ is a static library. All libc++ code
   # will be run inside the client. The above issue will disappear.
   assert(
-      !is_component_build || (!libcxx_is_shared && !is_debug),
-      "The allocator shim for the Windows component build needs !libcxx_is_shared && !is_debug.")
+      !is_component_build || (!libcxx_is_shared && !partition_alloc_is_debug),
+      "The allocator shim for the Windows component build needs !libcxx_is_shared && !partition_alloc_is_debug.")
 }
 
 declare_args() {
@@ -166,7 +222,8 @@ declare_args() {
   # later verify the pattern remain unchanged to ensure there is no OOB write.
   # It comes with performance and memory cost, hence enabled only in debug.
   use_partition_cookie =
-      is_debug || dcheck_always_on || enable_ios_corruption_hardening
+      partition_alloc_is_debug || partition_alloc_dcheck_always_on ||
+      enable_ios_corruption_hardening
 
   # This will change partition cookie size to 4B or 8B, whichever equivalent to
   # size of InSlotMetadata. This option is useful for InSlotMetadata corruption
