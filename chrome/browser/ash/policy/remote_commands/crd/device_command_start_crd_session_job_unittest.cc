@@ -672,6 +672,8 @@ TEST_P(DeviceCommandStartCrdSessionJobTestParameterized,
 
       case TestSessionType::kGuestSession:
       case TestSessionType::kUnaffiliatedUserSession:
+      // TODO(b:393521569) Update session type supported on default enabled
+      // state for CRD unattended feature flag.
       case TestSessionType::kNoSession:
         // Unsupported session types
         NOTREACHED();
@@ -697,13 +699,21 @@ TEST_P(DeviceCommandStartCrdSessionJobTestParameterized,
   Result result =
       RunJobAndWaitForResult(Payload().Set("ackedUserPresence", true));
 
+  EXPECT_SUCCESS(result);
   // If the user presence is acknowledged we never need to terminate upon user
   // input.
-  const bool terminate_upon_input = false;
+  EXPECT_FALSE(delegate().session_parameters().terminate_upon_input);
+}
+
+TEST_F(DeviceCommandStartCrdSessionJobTest,
+       ShouldNotTerminateUponInputForRemoteSupportAtLoginScreen) {
+  EnableFeature(kEnableCrdSharedSessionToUnattendedDevice);
+
+  StartSessionOfType(TestSessionType::kNoSession);
+  Result result = RunJobAndWaitForResult();
 
   EXPECT_SUCCESS(result);
-  EXPECT_EQ(terminate_upon_input,
-            delegate().session_parameters().terminate_upon_input);
+  EXPECT_FALSE(delegate().session_parameters().terminate_upon_input);
 }
 
 TEST_P(DeviceCommandStartCrdSessionJobTestParameterized,
@@ -1189,6 +1199,16 @@ TEST_F(DeviceCommandStartCrdSessionJobRemoteAccessTest,
   EXPECT_SUCCESS(RunJobAndWaitForResult(
       // This would enable terminate upon input in a Remote Support job.
       RemoteAccessPayload().Set("ackedUserPresense", false)));
+  EXPECT_FALSE(delegate().session_parameters().terminate_upon_input);
+}
+
+TEST_F(DeviceCommandStartCrdSessionJobRemoteAccessTest,
+       ShouldNotTerminateUponInputEvenIfEnabledByCrdUnattendedFeatureFlag) {
+  EnableFeature(kEnableCrdSharedSessionToUnattendedDevice);
+
+  AddActiveManagedNetwork();
+
+  EXPECT_SUCCESS(RunJobAndWaitForResult());
   EXPECT_FALSE(delegate().session_parameters().terminate_upon_input);
 }
 
