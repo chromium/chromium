@@ -9,24 +9,32 @@ import androidx.annotation.IntDef;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/** A set of states that represent the visibility of the tab strip. */
+/**
+ * A set of states that represent the visibility of the tab strip. These types are bit flags, so
+ * they can be or-ed together to test for multiple. Please use bitwise operations to check for a
+ * specific visibility state other than VISIBLE.
+ */
 @Retention(RetentionPolicy.SOURCE)
 @IntDef({
-    StripVisibilityState.UNKNOWN,
     StripVisibilityState.VISIBLE,
-    StripVisibilityState.GONE,
-    StripVisibilityState.INVISIBLE,
+    StripVisibilityState.OBSCURED,
+    StripVisibilityState.HIDDEN_BY_SCROLL,
+    StripVisibilityState.HIDDEN_BY_HEIGHT_TRANSITION,
+    StripVisibilityState.HIDDEN_BY_FADE,
 })
 public @interface StripVisibilityState {
-    /** Strip visibility is unknown. */
-    int UNKNOWN = 0;
-
     /** Strip is visible. */
-    int VISIBLE = 1;
+    int VISIBLE = 0;
+
+    /** Strip is obscured by tab switcher. */
+    int OBSCURED = 1;
+
+    /** Strip is hidden by scroll. */
+    int HIDDEN_BY_SCROLL = 2;
 
     /** Strip is hidden by a height transition. */
-    int GONE = 2;
+    int HIDDEN_BY_HEIGHT_TRANSITION = 4;
 
     /** Strip is hidden by an in-place fade transition. */
-    int INVISIBLE = 3;
+    int HIDDEN_BY_FADE = 8;
 }
