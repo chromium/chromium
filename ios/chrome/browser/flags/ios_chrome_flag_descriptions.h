@@ -167,6 +167,10 @@ extern const char kAutofillUseRendererIDsDescription[];
 extern const char kAutofillVcnEnrollRequestTimeoutName[];
 extern const char kAutofillVcnEnrollRequestTimeoutDescription[];
 
+// Title and description for blue dot promo on tools menu button.
+extern const char kBlueDotOnToolsMenuButtonName[];
+extern const char kBlueDotOnToolsMenuButtonDescription[];
+
 // Title and description for the flag that changes the default setting for the
 // omnibox position.
 extern const char kBottomOmniboxDefaultSettingName[];
@@ -300,9 +304,10 @@ extern const char kDefaultBrowserBannerPromoDescription[];
 extern const char kDefaultBrowserTriggerCriteriaExperimentName[];
 extern const char kDefaultBrowserTriggerCriteriaExperimentDescription[];
 
-// Title and description for blue dot promo on tools menu button.
-extern const char kBlueDotOnToolsMenuButtonName[];
-extern const char kBlueDotOnToolsMenuButtonDescription[];
+// Title and description for the experiment deprecating feed header toggle and
+// repositions elements in the new tab page.
+extern const char kDeprecateFeedHeaderExperimentName[];
+extern const char kDeprecateFeedHeaderExperimentDescription[];
 
 // Title and description for the flag to control if a crash report is generated
 // on main thread freeze.

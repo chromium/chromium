@@ -5280,6 +5280,11 @@
     "expiry_milestone": 138
   },
   {
+    "name": "ios-deprecate-feed-header",
+    "owners": [ "ginnyhuang@chromium.org", "bling-get-set-up@google.com" ],
+    "expiry_milestone": 139
+  },
+  {
     "name": "ios-disable-parcel-tracking",
     "owners": [ "smcgruer@google.com", "chrome-payments-team@google.com" ],
     "expiry_milestone": 138

@@ -452,6 +452,10 @@ BASE_FEATURE(kEnableWebChannels,
              "EnableWebChannels",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kDeprecateFeedHeader,
+             "DeprecateFeedHeader",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kEnableFeedBackgroundRefresh,
              "EnableFeedBackgroundRefresh",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -625,6 +629,9 @@ int HoursInactiveForOldUsersUntilShowingDockingPromo() {
 }
 
 bool IsWebChannelsEnabled() {
+  if (base::FeatureList::IsEnabled(kDeprecateFeedHeader)) {
+    return false;
+  }
   std::string launched_countries[6] = {"AU", "CA", "GB", "NZ", "US", "ZA"};
   if (base::Contains(launched_countries,
                      country_codes::GetCurrentCountryCode())) {

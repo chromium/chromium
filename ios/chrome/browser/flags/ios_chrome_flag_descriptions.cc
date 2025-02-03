@@ -205,6 +205,12 @@ const char kAutofillVcnEnrollRequestTimeoutDescription[] =
     "VCN enrollment request. Upon timeout, the client will terminate the VCN "
     "enrollment UI, but the request may still succeed server-side.";
 
+const char kBlueDotOnToolsMenuButtonName[] =
+    "Show blue dot promo on tools menu button";
+const char kBlueDotOnToolsMenuButtonDescription[] =
+    "When enabled, blue dot promo on tools menu button will be displayed to "
+    "user";
+
 const char kBottomOmniboxDefaultSettingName[] =
     "Bottom Omnibox Default Setting";
 const char kBottomOmniboxDefaultSettingDescription[] =
@@ -363,11 +369,12 @@ const char kDefaultBrowserTriggerCriteriaExperimentDescription[] =
     "When enabled, default browser promo will be displayed to user without "
     "matching all the trigger criteria.";
 
-const char kBlueDotOnToolsMenuButtonName[] =
-    "Show blue dot promo on tools menu button";
-const char kBlueDotOnToolsMenuButtonDescription[] =
-    "When enabled, blue dot promo on tools menu button will be displayed to "
-    "user";
+const char kDeprecateFeedHeaderExperimentName[] =
+    "Deprecate feed header toggle experiment";
+const char kDeprecateFeedHeaderExperimentDescription[] =
+    "When enabled, the feed header toggle would be removed, and users will use "
+    "other ways to access the following feed. New tab page elements will also "
+    "be repositioned according to the variation chosen.";
 
 const char kDetectMainThreadFreezeName[] = "Detect freeze in the main thread.";
 const char kDetectMainThreadFreezeDescription[] =

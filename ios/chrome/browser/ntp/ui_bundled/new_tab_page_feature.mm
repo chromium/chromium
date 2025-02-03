@@ -15,6 +15,11 @@
 
 #pragma mark - Constants
 
+const char kDeprecateFeedHeaderParameterFeedLabel[] = "feed-label";
+const char kDeprecateFeedHeaderParameterTopPadding[] = "top-padding";
+const char kDeprecateFeedHeaderParameterEnlargeLogoAndFakebox[] =
+    "enlarge-logo-n-fakebox";
+
 #pragma mark - Feature declarations
 
 BASE_FEATURE(kEnableDiscoverFeedStaticResourceServing,
@@ -99,4 +104,20 @@ bool IsSignedOutViewDemotionEnabled() {
 
 bool IsiPadFeedGhostCardsEnabled() {
   return base::FeatureList::IsEnabled(kEnableiPadFeedGhostCards);
+}
+
+bool ShouldAddDiscoverLabel() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kDeprecateFeedHeader, kDeprecateFeedHeaderParameterFeedLabel, false);
+}
+
+bool ShouldAddTopPaddingToNTP() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kDeprecateFeedHeader, kDeprecateFeedHeaderParameterTopPadding, false);
+}
+
+bool ShouldEnlargeLogoAndFakebox() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kDeprecateFeedHeader, kDeprecateFeedHeaderParameterEnlargeLogoAndFakebox,
+      false);
 }
