@@ -457,7 +457,6 @@ IN_PROC_BROWSER_TEST_P(WebAppNavigationCapturingIphUiTestParameterized,
                        /* expect_new_browser= */ false),
       TriggerNavigateExisting(kToSiteBTargetBlankNoOpener, ui_controls::LEFT,
                               ui_controls::kNoAccelerator),
-      WaitForWebContentsReady(kDestinationPageId),
       If([this]() { return NavigationCapturingV2Enabled(); },
          InSameContext(WaitForPromo(
              feature_engagement::kIPHDesktopPWAsLinkCapturingLaunchAppInTab))),
