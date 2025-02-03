@@ -91,6 +91,7 @@ if (is_android) {
       "//chrome/browser/profiles/android:java",
       "//chrome/browser/ui/android/hats/test:test_support_java",
       "//components/autofill/android:autofill_java",
+      "//components/autofill/android:payments_interfaces_java",
       "//components/messages/android/test:test_support_java",
       "//components/metrics:metrics_java",
       "//components/payments/content/android:java",

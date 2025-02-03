@@ -305,7 +305,7 @@ android_library("minimal_java") {
     ":service_java",
     "//base:base_java",
     "//build/android:build_java",
-    "//components/autofill/android:payments_autofill_java",
+    "//components/autofill/android:payments_interfaces_java",
     "//components/payments/mojom:mojom_java",
     "//content/public/android:content_java",
     "//mojo/public/java:bindings_java",
