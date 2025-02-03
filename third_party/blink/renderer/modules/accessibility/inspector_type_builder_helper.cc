@@ -38,6 +38,11 @@ String IgnoredReasonName(AXIgnoredReason reason) {
       return "inertElement";
     case kAXInertSubtree:
       return "inertSubtree";
+    case kAXInertStyle:
+      // TODO(crbug.com/370065759): Should either use "inertStyle" when devtools
+      // can handle that, or just drop kAXInertStyle and use kAXInertElement to
+      // indicate that the computed value of interactivity is 'inert'.
+      return "inertElement";
     case kAXLabelContainer:
       return "labelContainer";
     case kAXLabelFor:

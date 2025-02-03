@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Click event should work when interactivity:auto overrides inert attribute UA style
-  promise_test: Unhandled rejection with value: object "Error: element click intercepted error"
-Harness: the test ran to completion.
-

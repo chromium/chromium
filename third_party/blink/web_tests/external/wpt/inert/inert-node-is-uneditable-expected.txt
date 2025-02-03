@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Can edit interactivity:auto contenteditable inside inert
-  assert_not_equals: got disallowed value "I'm editable."
-Harness: the test ran to completion.
-

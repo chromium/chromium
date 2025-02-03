@@ -427,7 +427,7 @@ HTMLSelectElement* HTMLButtonElement::OwnerSelect() const {
 }
 
 bool HTMLButtonElement::IsInertRoot() const {
-  if (OwnerSelect()) {
+  if (OwnerSelect() && !RuntimeEnabledFeatures::CSSInertEnabled()) {
     return true;
   }
   return HTMLFormControlElement::IsInertRoot();

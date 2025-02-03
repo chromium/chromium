@@ -112,6 +112,7 @@ enum AXIgnoredReason {
   kAXEmptyText,
   kAXInertElement,
   kAXInertSubtree,
+  kAXInertStyle,  // Node is made inert by interactivity:inert
   kAXLabelContainer,
   kAXLabelFor,
   kAXNotRendered,
