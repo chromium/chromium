@@ -37,8 +37,11 @@ class GlicCookieSynchronizer
   // The maximum number of retries attempted following a transient error.
   static constexpr int kMaxRetries = 3;
 
+  // If `use_for_fre` the storage partition is configured for use by the glic
+  // FRE webview. Otherwise, it is configured for use by the main glic webview.
   GlicCookieSynchronizer(content::BrowserContext* context,
-                         signin::IdentityManager* identity_manager);
+                         signin::IdentityManager* identity_manager,
+                         bool use_for_fre = false);
   GlicCookieSynchronizer(const GlicCookieSynchronizer&) = delete;
   GlicCookieSynchronizer& operator=(const GlicCookieSynchronizer&) = delete;
   virtual ~GlicCookieSynchronizer();
@@ -72,6 +75,8 @@ class GlicCookieSynchronizer
 
   const raw_ptr<content::BrowserContext> context_;
   const raw_ptr<signin::IdentityManager> identity_manager_;
+  // Whether to configure the storage partiion for use by the glic FRE webview.
+  bool use_for_fre_ = false;
 
   std::vector<base::OnceCallback<void(bool)>> callbacks_;
   std::unique_ptr<signin::AccountsCookieMutator::SetAccountsInCookieTask>

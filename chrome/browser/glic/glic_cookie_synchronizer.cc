@@ -35,13 +35,30 @@ namespace glic {
 
 namespace {
 
-content::StoragePartitionConfig GetGlicStoragePartitionConfig(
+content::StoragePartitionConfig GetGlicMainStoragePartitionConfig(
     content::BrowserContext* browser_context) {
   // This storage partition must match the partition attribute in
   // chrome/browser/resources/glic/glic.html: "persist:glicpart".
   return content::StoragePartitionConfig::Create(browser_context, "glic",
                                                  /*partition_name=*/"glicpart",
                                                  /*in_memory=*/false);
+}
+
+content::StoragePartitionConfig GetGlicFreStoragePartitionConfig(
+    content::BrowserContext* browser_context) {
+  // This storage partition must match the partition attribute in
+  // chrome/browser/resources/glic/glic_fre/fre.html: "glicfrepart".
+  return content::StoragePartitionConfig::Create(
+      browser_context, "glic",
+      /*partition_name=*/"glicfrepart",
+      /*in_memory=*/true);
+}
+
+content::StoragePartitionConfig GetGlicStoragePartitionConfig(
+    content::BrowserContext* browser_context,
+    bool use_for_fre) {
+  return use_for_fre ? GetGlicFreStoragePartitionConfig(browser_context)
+                     : GetGlicMainStoragePartitionConfig(browser_context);
 }
 
 bool IsGoogleEmail(const std::string& email_address) {
@@ -57,8 +74,11 @@ bool IsGoogleEmail(const std::string& email_address) {
 class GlicCookieSynchronizer::SyncCookiesForDevelopmentTask {
  public:
   SyncCookiesForDevelopmentTask(content::BrowserContext* browser_context,
+                                bool use_for_fre,
                                 base::OnceCallback<void(bool)> callback)
-      : browser_context_(browser_context), callback_(std::move(callback)) {
+      : browser_context_(browser_context),
+        use_for_fre_(use_for_fre),
+        callback_(std::move(callback)) {
     network::mojom::CookieManager* cookie_manager =
         browser_context_->GetDefaultStoragePartition()
             ->GetCookieManagerForBrowserProcess();
@@ -101,7 +121,7 @@ class GlicCookieSynchronizer::SyncCookiesForDevelopmentTask {
     --get_cookie_list_request_count_;
     content::StoragePartition* webview_storage =
         browser_context_->GetStoragePartition(
-            GetGlicStoragePartitionConfig(browser_context_));
+            GetGlicStoragePartitionConfig(browser_context_, use_for_fre_));
     network::mojom::CookieManager* webview_cookie_manager =
         webview_storage->GetCookieManagerForBrowserProcess();
 
@@ -151,6 +171,7 @@ class GlicCookieSynchronizer::SyncCookiesForDevelopmentTask {
   }
 
   const raw_ptr<content::BrowserContext> browser_context_;
+  bool use_for_fre_ = false;
   base::OnceCallback<void(bool)> callback_;
   int set_cookie_request_count_ = 0;
   int get_cookie_list_request_count_ = 0;
@@ -160,8 +181,11 @@ class GlicCookieSynchronizer::SyncCookiesForDevelopmentTask {
 
 GlicCookieSynchronizer::GlicCookieSynchronizer(
     content::BrowserContext* context,
-    signin::IdentityManager* identity_manager)
-    : context_(context), identity_manager_(identity_manager) {
+    signin::IdentityManager* identity_manager,
+    bool use_for_fre)
+    : context_(context),
+      identity_manager_(identity_manager),
+      use_for_fre_(use_for_fre) {
   CHECK(context_);
 }
 
@@ -204,7 +228,7 @@ void GlicCookieSynchronizer::CopyCookiesToWebviewStoragePartition(
                         .email)) {
     sync_cookies_for_development_task_ =
         std::make_unique<SyncCookiesForDevelopmentTask>(
-            context_,
+            context_, use_for_fre_,
             base::BindOnce(
                 &GlicCookieSynchronizer::SyncCookiesForDevelopmentComplete,
                 GetWeakPtr()));
@@ -270,8 +294,8 @@ void GlicCookieSynchronizer::CompleteAuth(bool is_success) {
 }
 
 content::StoragePartition* GlicCookieSynchronizer::GetStoragePartition() {
-  content::StoragePartition* partition =
-      context_->GetStoragePartition(GetGlicStoragePartitionConfig(context_));
+  content::StoragePartition* partition = context_->GetStoragePartition(
+      GetGlicStoragePartitionConfig(context_, use_for_fre_));
   return partition;
 }
 
