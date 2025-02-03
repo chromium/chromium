@@ -7,15 +7,18 @@ of the `unsafe-rust-in-chrome@google.com` group and the review must be cc'd to
 the group for visibility.  This policy applies to both third-party code
 (e.g. under `//third_party/rust`) and first-party code.
 
-To facilitate a code review please:
+### How to request a review
 
-* Add `unsafe-rust-in-chrome@google.com` to the CC line of a Gerrit code review.
-    - TODO(https://crbug.com/328789397): Automate this via Tricium or AyeAye.
+To facilitate a code review please:
 
 * For each new or modified `unsafe` block, function, `impl`, etc.,
   add an unresolved "TODO: `unsafe` review" comment in Gerrit.
   You can consider using `tools/crates/create_draft_comments.py` to streamline
   creating such comments.
+
+* Add `chrome-unsafe-rust-reviews@google.com` as a reviewer.
+
+### Scope of review
 
 Note that changes _anywhere_ in a crate that uses `unsafe` blocks may violate
 the internal invariants on which those `unsafe` blocks rely. It is unrealistic
@@ -24,11 +27,38 @@ to require a `unsafe-rust-in-chrome@google.com` review to re-audit all the
 reviewers should be on the lookout for code changes which feel as though they
 could affect invariants on which `unsafe` blocks rely.
 
+### `OWNERS` files guidance
+
+To require `unsafe` review for certain `.rs` files
+(e.g. ones that use `unsafe` Rust)
+you can forward from the file's `OWNERS` to
+`//third_party/rust/UNSAFE_RUST_OWNERS`
+(see comments in the latter for more details).
+
+### Soft SLA
+
+For incremental changes (including updating a minor version of a crate under
+`//third_party/rust/chromium_crates_io`) the usual [Chromium responsiveness
+expectations](cl_respect.md#expect-responsiveness) apply. (i.e. You should expect
+reviewer input within 1 business day.)
+
+For bulk changes (e.g. importing a new crate and its transitive dependencies)
+the turnaround time may be longer.  This depends mostly on the amount of
+`unsafe` code.  To streamline reviews and future maintainability, we ask you
+kindly to prefer crates that do *not* use `unsafe` Rust code.
+
+### Other notes
+
+Bugs that track streamlining application of this policy are tracked under
+the umbrella of https://crbug.com/393394872/dependencies.
+
 ## `cargo vet` Policy {#cargo-vet-policy}
 
-All third-party Rust code in Chromium needs to be covered by `cargo vet` audits.
-In other words, `tools/crates/run_cargo_vet.py check` should always succeed
-(this is enforced by `//third_party/rust/PRESUBMIT.py`).
+Crates in `//third_party/rust/chromium_crates_io` need to be covered by `cargo
+vet` audits.  In other words, `tools/crates/run_cargo_vet.py check` should
+always succeed (this is enforced by `//third_party/rust/PRESUBMIT.py`).
+
+### Audit criteria required for most crates
 
 Audit criteria required for a given crate depend on how the crate is used.  The
 criteria are written to
@@ -40,24 +70,38 @@ environment.  For example, to declare that a crate is `safe` to be used in the
 browser process, it needs to be audited and certified to be `safe-to-deploy`,
 `ub-risk-2` or lower, and either `does-not-implement-crypto` or `crypto-safe`.
 
-Additional notes:
+Note that some audits can be done by any engineer ("ub-risk-0" and
+"safe-to-run") while others will require specialists from the
+`unsafe-rust-in-chrome@google.com` group (see the ["Code Review Policy"
+above](#code-review-policy).  More details about audit criteria and the required
+expertise are explained in the
+[auditing_standards.md](https://github.com/google/rust-crate-audits/blob/main/auditing_standards.md),
+which also provides guidance for conducting delta audits.
 
-* Some audits can be done by any engineer ("ub-risk-0" and "safe-to-run") while
-  others will require specialists from the `unsafe-rust-in-chrome@google.com`
-  group (see the ["Code Review Policy" above](#code-review-policy).  More
-  details about audit criteria and the required expertise are explained in the
-  [auditing_standards.md](https://github.com/google/rust-crate-audits/blob/main/auditing_standards.md),
-  which also provides guidance for conducting delta audits.
-* See
-  [Cargo Vet documentation](https://mozilla.github.io/cargo-vet/recording-audits.html)
-  for how to record the audit in `audits.toml`.
-  The `tools/crates/run_cargo_vet.py` may be used to invoke Chromium's copy of
-  `cargo-vet`.
-* Chromium uses both our own audits
-  (stored in `third_party/rust/chromium_crates_io/supply-chain/audits.toml`)
-  as well as audits imported from other parts of Google
-  (e.g. Android, Fuchsia, etc.).  This means that adding a new crate does not
-  necessarily require a new audit if the crate has already been audited by
-  other projects (in this case, `cargo vet` will record the imported audit
-  in the `third_party/rust/chromium_crates_io/supply-chain/imports.lock` file).
+### Some crates don't require an audit
+
+Chromium implicitly trusts certain crate publishers.  Currently
+there are two scenarios where such trust relationship may be established:
+
+* Trusting crates authored and maintained under https://github.com/rust-lang/
+  (e.g. `libc`, `hashbrown`), because they are closely related to the Rust
+  toolchain (i.e. the same group managed and publishes `rustc`,
+  `rustfmt`, `cargo`, `rustup`, etc.).
+* Trusting crates that are part of an OS SDK (e.g. `windows-...` crates).
+
+Chromium uses both our own audits
+(stored in `third_party/rust/chromium_crates_io/supply-chain/audits.toml`)
+as well as audits imported from other parts of Google
+(e.g. Android, Fuchsia, etc.).  This means that adding a new crate does not
+necessarily require a new audit if the crate has already been audited by
+other projects (in this case, `cargo vet` will record the imported audit
+in the `third_party/rust/chromium_crates_io/supply-chain/imports.lock` file).
+
+### How to run `cargo vet` in Chromium
+
+See
+[Cargo Vet documentation](https://mozilla.github.io/cargo-vet/recording-audits.html)
+for how to record the audit in `audits.toml`.
+The `tools/crates/run_cargo_vet.py` may be used to invoke Chromium's copy of
+`cargo-vet`.
 

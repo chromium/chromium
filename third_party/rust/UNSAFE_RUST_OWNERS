@@ -1,0 +1,45 @@
+# Overview
+# ========
+#
+# This file lists reviewers for CLs that add or interact with `unsafe` Rust.
+# See `//docs/rust-unsafe.md` for Chromium policy for `unsafe` Rust code.
+
+# How to assign reviews
+# =====================
+#
+# Consider assigning reviews to chrome-unsafe-rust-reviews@google.com, rather
+# than to a specific reviewer. This helps distribute review load and knowledge
+# more evenly amongst the team. Automation will select a random reviewer and
+# reassign the review within ~5 minutes. Googlers can read more about this at
+# go/gwsq-gerrit.
+chrome-unsafe-rust-reviews@google.com
+
+# `OWNERS` boilerplate to copy
+# ============================
+#
+# This file should be used to set ownership of `.rs` files that contain
+# `unsafe` Rust code as follows:
+#
+#     ```
+#     # In //foo/bar/OWNERS file:
+#     per-file unsafe_module.rs=set noparent
+#     per-file unsafe_module.rs=file://third_party/rust/UNSAFE_REVIEW_OWNERS
+#     ```
+#
+# Depending on how well the `unsafe` code is encapsulated, it may be necessary
+# to add other `.rs` files from the same crate, even if those other Rust
+# modules don't use `unsafe` themselves.
+
+# Actual list of reviewers
+# ========================
+#
+# The find-owners plugin does not support groups, so the actual `unsafe` Rust
+# reviewers are listed below but tagged with {LAST_RESORT_SUGGESTION} so that
+# Gerrit will preferentially suggest the gwsq review alias above.
+#
+# Please keep this list alphabetized and in sync with the gwsq config (see
+# go/chrome-ipc-review).
+dcheng@chromium.org            #{LAST_RESORT_SUGGESTION}
+lukasza@chromium.org           #{LAST_RESORT_SUGGESTION}
+# TODO: Announce gwsq alias to `unsafe-rust-in-chrome@google.com` and add
+# other volunteers here.
