@@ -12,10 +12,13 @@
 #include "base/gtest_prod_util.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/metrics/metrics_reporting_state.h"
-#include "chrome/common/metrics.mojom.h"
 #include "components/metrics/metrics_service_accessor.h"
 #include "components/variations/synthetic_trials.h"
 #include "ppapi/buildflags/buildflags.h"
+
+#if BUILDFLAG(ENABLE_PPAPI)
+#include "chrome/common/metrics.mojom.h"
+#endif
 
 class BrowserProcessImpl;
 class CampaignsManagerClientImpl;
@@ -30,7 +33,7 @@ namespace {
 class CrashesDOMHandler;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 class ChromeCameraAppUIDelegate;
 
 namespace app_list::federated {
@@ -40,7 +43,7 @@ class FederatedMetricsManager;
 namespace ash::input_method {
 class AutocorrectManager;
 }  // namespace ash::input_method
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace browser_sync {
 class ChromeSyncClient;
@@ -190,19 +193,14 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   friend class DefaultBrowserPromptTrial;
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   friend class ChromeCameraAppUIDelegate;
 
   // The following classes are friended because they check UMA consent status
   // for the purpose of federated metrics collection.
   friend class app_list::federated::FederatedMetricsManager;
   friend class ash::input_method::AutocorrectManager;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // For RegisterSyntheticFieldTrial.
-  friend class FieldTrialObserver;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Testing related friends.
   friend class first_run::FirstRunMasterPrefsVariationsSeedTest;
@@ -256,11 +254,11 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   // ChromeMetricsServiceAccessor for details.
   static void SetForceIsMetricsReportingEnabledPrefLookup(bool value);
 
-#if BUILDFLAG(ENABLE_PLUGINS)
+#if BUILDFLAG(ENABLE_PPAPI)
   // Provides an implementation of chrome::mojom::MetricsService.
   static void BindMetricsServiceReceiver(
       mojo::PendingReceiver<chrome::mojom::MetricsService> receiver);
-#endif  // BUILDFLAG(ENABLE_PLUGINS)
+#endif  // BUILDFLAG(ENABLE_PPAPI)
 };
 
 #endif  // CHROME_BROWSER_METRICS_CHROME_METRICS_SERVICE_ACCESSOR_H_
