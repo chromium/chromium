@@ -901,15 +901,10 @@ def _print_build_status(build_id):
 
   # Print nothing if we never got any tasks.
   if completed_tasks:
+    print(f'Build Server Status: [{completed_tasks}/{total_tasks}]')
     if pending_tasks:
-      print('Build server is still running in the background. ' +
-            f'[{completed_tasks}/{total_tasks}] Tasks Done.')
-      print('Run this to wait for the pending tasks:')
       server_path = os.path.relpath(str(server_utils.SERVER_SCRIPT))
-      print(' '.join([server_path, '--wait-for-build', build_id]))
-    else:
-      print('Build Server is done with all background tasks. ' +
-            f'Completed [{completed_tasks}/{total_tasks}].')
+      print('To wait for jobs:', shlex.join([server_path, '--wait-for-idle']))
   return 0
 
 
