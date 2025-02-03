@@ -183,12 +183,11 @@ const char* ConvertConfidenceToSuffix(double confidence) {
 
 int CalculateScoreFromConfidenceAndTotalFrequency(double confidence,
                                                   double total_frequency) {
-  int normalized_confidence_0_to_10 =
-      static_cast<int>(std::floor(std::clamp(10.0 * confidence, 0.0, 10.0)));
-  int normalized_total_frequency_0_to_10 = static_cast<int>(
-      std::floor(std::clamp(total_frequency / 10.0, 0.0, 10.0)));
-  return 10 * normalized_confidence_0_to_10 +
-         normalized_total_frequency_0_to_10;
+  int normalized_confidence_0_to_9 =
+      static_cast<int>(std::floor(std::clamp(10.0 * confidence, 0.0, 9.9)));
+  int normalized_total_frequency_0_to_9 = static_cast<int>(
+      std::floor(std::clamp(total_frequency / 10.0, 0.0, 9.9)));
+  return 10 * normalized_confidence_0_to_9 + normalized_total_frequency_0_to_9;
 }
 
 void MaybeReportConfidenceUMAs(
@@ -243,7 +242,8 @@ void MaybeReportConfidenceUMAs(
               HISTOGRAM_PREFIX
               "ImageLoadingPriority"
               ".TotalFrequencyOfActualPositive"
-              ".PerConfidence",
+              ".PerConfidence"
+              ".2",
               CalculateScoreFromConfidenceAndTotalFrequency(confidence,
                                                             total_frequency));
         };
@@ -260,7 +260,8 @@ void MaybeReportConfidenceUMAs(
               HISTOGRAM_PREFIX
               "ImageLoadingPriority"
               ".TotalFrequencyOfActualNegative"
-              ".PerConfidence",
+              ".PerConfidence"
+              ".2",
               CalculateScoreFromConfidenceAndTotalFrequency(confidence,
                                                             total_frequency));
         };
@@ -411,14 +412,15 @@ void MaybeReportConfidenceUMAs(
               HISTOGRAM_PREFIX
               "Subresource"
               ".TotalFrequencyOfActualPositive"
-              ".PerConfidence",
+              ".PerConfidence"
+              ".2",
               CalculateScoreFromConfidenceAndTotalFrequency(confidence,
                                                             total_frequency));
           base::UmaHistogramPercentage(
               base::StrCat({HISTOGRAM_PREFIX "Subresource"
                                              ".TotalFrequencyOfActualPositive"
                                              ".PerConfidence",
-                            is_same_site ? ".SameSite" : ".CrossSite"}),
+                            is_same_site ? ".SameSite" : ".CrossSite", ".2"}),
               CalculateScoreFromConfidenceAndTotalFrequency(confidence,
                                                             total_frequency));
         };
@@ -442,14 +444,15 @@ void MaybeReportConfidenceUMAs(
               HISTOGRAM_PREFIX
               "Subresource"
               ".TotalFrequencyOfActualNegative"
-              ".PerConfidence",
+              ".PerConfidence"
+              ".2",
               CalculateScoreFromConfidenceAndTotalFrequency(confidence,
                                                             total_frequency));
           base::UmaHistogramPercentage(
               base::StrCat({HISTOGRAM_PREFIX "Subresource"
                                              ".TotalFrequencyOfActualNegative"
                                              ".PerConfidence",
-                            is_same_site ? ".SameSite" : ".CrossSite"}),
+                            is_same_site ? ".SameSite" : ".CrossSite", ".2"}),
               CalculateScoreFromConfidenceAndTotalFrequency(confidence,
                                                             total_frequency));
         };
