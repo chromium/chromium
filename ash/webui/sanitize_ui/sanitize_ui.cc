@@ -11,7 +11,9 @@
 #include "ash/webui/grit/ash_sanitize_app_resources.h"
 #include "ash/webui/grit/ash_sanitize_app_resources_map.h"
 #include "ash/webui/sanitize_ui/sanitize_ui_delegate.h"
+#include "ash/webui/sanitize_ui/sanitize_ui_uma.h"
 #include "ash/webui/sanitize_ui/url_constants.h"
+#include "base/metrics/histogram_functions.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -22,7 +24,15 @@ namespace {
 // This function chooses which view should be shown based on the url. The done
 // page is only shown if the url query is set to "done".
 bool ShowDone(const GURL url) {
-  return url.has_query() && url.query() == "done";
+  bool show_done = url.has_query() && url.query() == "done";
+  if (show_done) {
+    base::UmaHistogramEnumeration("Sanitize.SanitizeEvent",
+                                  ash::SanitizeEvent::kSanitizeDoneScreen);
+  } else {
+    base::UmaHistogramEnumeration("Sanitize.SanitizeEvent",
+                                  ash::SanitizeEvent::kSanitizeInitialScreen);
+  }
+  return show_done;
 }
 
 }  // namespace
@@ -49,6 +59,9 @@ class SanitizeSettingsResetter : public sanitize_ui::mojom::SettingsResetter {
 
   void PerformSanitizeSettings() override {
     if (sanitize_ui_delegate_) {
+      base::UmaHistogramEnumeration(
+          "Sanitize.SanitizeEvent",
+          ash::SanitizeEvent::kSanitizeProcessStarted);
       sanitize_ui_delegate_->PerformSanitizeSettings();
     }
   }

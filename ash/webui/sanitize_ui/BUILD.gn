@@ -12,6 +12,7 @@ static_library("sanitize_ui") {
     "sanitize_ui.cc",
     "sanitize_ui.h",
     "sanitize_ui_delegate.h",
+    "sanitize_ui_uma.h",
     "url_constants.cc",
     "url_constants.h",
   ]
@@ -25,6 +26,7 @@ static_library("sanitize_ui") {
     "//ash/webui/common:trusted_types_util",
     "//ash/webui/sanitize_ui/mojom",
     "//ash/webui/sanitize_ui/resources:resources",
+    "//base",
     "//chromeos/ash/components/install_attributes:install_attributes",
     "//chromeos/strings/",
     "//content/public/browser:browser",

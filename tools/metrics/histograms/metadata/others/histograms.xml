@@ -8176,6 +8176,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sanitize.SanitizeEvent" enum="SanitizeEvent"
+    expires_after="2026-01-01">
+  <owner>behnoodm@chromium.org</owner>
+  <owner>cryptohome-core@google.com</owner>
+  <summary>
+    This metric is recording users' usage of the Sanitize SWA. Different
+    histograms show the interaction of the user with the SWA. This UMA records
+    when the initial page is opened, when the safety reset starts, and when the
+    done page is shown after the reset is completed.
+  </summary>
+</histogram>
+
 <histogram name="SB2.DownloadChecks" enum="SB2DownloadChecks"
     expires_after="2025-08-22">
   <owner>xinghuilu@chromium.org</owner>

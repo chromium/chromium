@@ -23456,6 +23456,14 @@ Called by update_net_error_codes.py.-->
   <int value="4" label="First frame of stack isn't mapped."/>
 </enum>
 
+<enum name="SanitizeEvent">
+  <summary>Track the events in the Sanitize UI SWA.</summary>
+  <int value="0" label="Sanitize UI is being shown to the user."/>
+  <int value="1"
+      label="The user has decided to proceed with sanitize process."/>
+  <int value="2" label="Sanitize has finished and the done screen is shown."/>
+</enum>
+
 <enum name="SavedTabGroupType">
   <summary>Track the type of saved tab groups.</summary>
   <int value="0" label="Synced tab group."/>
