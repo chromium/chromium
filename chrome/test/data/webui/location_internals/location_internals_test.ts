@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {LAST_NETWORK_REQUEST_TABLE_ID, LAST_NETWORK_RESPONSE_TABLE_ID, POSITION_CACHE_TABLE_ID, WIFI_DATA_TABLE_ID, WIFI_POLLING_POLICY_TABLE_ID} from 'chrome://location-internals/diagnose_info_view.js';
+import {LAST_NETWORK_REQUEST_TABLE_ID, LAST_NETWORK_RESPONSE_TABLE_ID, LOCATION_PROVIDER_MANAGER_MODE_TABLE_ID, POSITION_CACHE_TABLE_ID, WIFI_DATA_TABLE_ID, WIFI_POLLING_POLICY_TABLE_ID} from 'chrome://location-internals/diagnose_info_view.js';
 import type {AccessPointData, GeolocationDiagnostics, GeolocationInternalsInterface, GeolocationInternalsObserverRemote, GeolocationInternalsPendingReceiver, NetworkLocationResponse} from 'chrome://location-internals/geolocation_internals.mojom-webui.js';
 import {GeolocationInternalsReceiver, INVALID_CHANNEL, INVALID_RADIO_SIGNAL_STRENGTH, INVALID_SIGNAL_TO_NOISE} from 'chrome://location-internals/geolocation_internals.mojom-webui.js';
 import {BAD_ACCURACY, BAD_ALTITUDE, BAD_HEADING, BAD_LATITUDE_LONGITUDE, BAD_SPEED} from 'chrome://location-internals/geoposition.mojom-webui.js';
@@ -225,6 +225,7 @@ suite('LocationInternalsUITest', function() {
     // Simulate an update and check that the status message indicates success.
     await simulateDiagnosticsUpdate({
       providerState: 0,
+      locationProviderManagerMode: null,
       networkLocationDiagnostics: null,
       positionCacheDiagnostics: null,
       wifiPollingPolicyDiagnostics: null,
@@ -239,6 +240,7 @@ suite('LocationInternalsUITest', function() {
     // Simulate network location provider not initialized.
     await simulateDiagnosticsUpdate({
       providerState: 0,
+      locationProviderManagerMode: null,
       networkLocationDiagnostics: null,
       positionCacheDiagnostics: null,
       wifiPollingPolicyDiagnostics: null,
@@ -250,6 +252,7 @@ suite('LocationInternalsUITest', function() {
     // Simulate network provider created but no data received yet.
     await simulateDiagnosticsUpdate({
       providerState: 1,
+      locationProviderManagerMode: null,
       networkLocationDiagnostics: {accessPointData: [], wifiTimestamp: null},
       positionCacheDiagnostics: null,
       wifiPollingPolicyDiagnostics: null,
@@ -270,6 +273,7 @@ suite('LocationInternalsUITest', function() {
     // Simulate network provider receiving data for two access points.
     await simulateDiagnosticsUpdate({
       providerState: 1,
+      locationProviderManagerMode: null,
       networkLocationDiagnostics: {
         accessPointData: [
           {
@@ -324,6 +328,7 @@ suite('LocationInternalsUITest', function() {
     // Simulate network provider receiving invalid access point data.
     await simulateDiagnosticsUpdate({
       providerState: 1,
+      locationProviderManagerMode: null,
       networkLocationDiagnostics: {
         accessPointData: [{
           macAddress: '00-11-22-33-44-55',
@@ -357,6 +362,7 @@ suite('LocationInternalsUITest', function() {
     // Simulate uninitialized position cache.
     await simulateDiagnosticsUpdate({
       providerState: 0,
+      locationProviderManagerMode: null,
       networkLocationDiagnostics: null,
       positionCacheDiagnostics: null,
       wifiPollingPolicyDiagnostics: null,
@@ -368,6 +374,7 @@ suite('LocationInternalsUITest', function() {
     // Simulate position cache created but no cached data yet.
     await simulateDiagnosticsUpdate({
       providerState: 1,
+      locationProviderManagerMode: null,
       positionCacheDiagnostics: {
         cacheSize: 0,
         hitRate: null,
@@ -395,6 +402,7 @@ suite('LocationInternalsUITest', function() {
     // `Geoposition`.
     await simulateDiagnosticsUpdate({
       providerState: 1,
+      locationProviderManagerMode: null,
       networkLocationDiagnostics: null,
       positionCacheDiagnostics: {
         cacheSize: 1,
@@ -439,6 +447,7 @@ suite('LocationInternalsUITest', function() {
     // invalid data.
     await simulateDiagnosticsUpdate({
       providerState: 1,
+      locationProviderManagerMode: null,
       positionCacheDiagnostics: {
         cacheSize: 0,
         hitRate: null,
@@ -482,6 +491,7 @@ suite('LocationInternalsUITest', function() {
     // both valid.
     await simulateDiagnosticsUpdate({
       providerState: 1,
+      locationProviderManagerMode: null,
       positionCacheDiagnostics: {
         cacheSize: 0,
         lastNetworkResult: {
@@ -525,6 +535,7 @@ suite('LocationInternalsUITest', function() {
     // Set `lastNetworkResult` to a `GeopositionError`.
     await simulateDiagnosticsUpdate({
       providerState: 1,
+      locationProviderManagerMode: null,
       positionCacheDiagnostics: {
         cacheSize: 0,
         lastNetworkResult: {
@@ -566,6 +577,7 @@ suite('LocationInternalsUITest', function() {
     // Simulate wifi polling policy not initialized.
     await simulateDiagnosticsUpdate({
       providerState: 0,
+      locationProviderManagerMode: null,
       networkLocationDiagnostics: null,
       positionCacheDiagnostics: null,
       wifiPollingPolicyDiagnostics: null,
@@ -577,6 +589,7 @@ suite('LocationInternalsUITest', function() {
     // Simulate valid wifi polling policy data is populated.
     await simulateDiagnosticsUpdate({
       providerState: 1,
+      locationProviderManagerMode: null,
       positionCacheDiagnostics: null,
       networkLocationDiagnostics: null,
       wifiPollingPolicyDiagnostics: {
@@ -623,6 +636,7 @@ suite('LocationInternalsUITest', function() {
     // Updating diagnostics does not display the network request table.
     await simulateDiagnosticsUpdate({
       providerState: 0,
+      locationProviderManagerMode: null,
       networkLocationDiagnostics: null,
       positionCacheDiagnostics: null,
       wifiPollingPolicyDiagnostics: null,
@@ -689,6 +703,7 @@ suite('LocationInternalsUITest', function() {
     // Updating diagnostics does not display the network response table.
     await simulateDiagnosticsUpdate({
       providerState: 0,
+      locationProviderManagerMode: null,
       networkLocationDiagnostics: null,
       positionCacheDiagnostics: null,
       wifiPollingPolicyDiagnostics: null,
@@ -744,5 +759,66 @@ suite('LocationInternalsUITest', function() {
           '37°, -112°',
         ]],
         'Response received at ');
+  });
+
+  test('LocationProviderManagerModeNetworkOnly', async function() {
+    checkTableHidden(LOCATION_PROVIDER_MANAGER_MODE_TABLE_ID);
+    // Simulate LocationProviderManager mode is initialized as 'kNetworkOnly'.
+    await simulateDiagnosticsUpdate({
+      providerState: 1,
+      locationProviderManagerMode: 0,
+      networkLocationDiagnostics: null,
+      positionCacheDiagnostics: null,
+      wifiPollingPolicyDiagnostics: null,
+    });
+    checkTableContents(
+        LOCATION_PROVIDER_MANAGER_MODE_TABLE_ID,
+        LOCATION_PROVIDER_MANAGER_MODE_TABLE_ID,
+        [
+          'Location Provider Manager Mode',
+        ],
+        [[
+          'kNetworkOnly',
+        ]]);
+  });
+
+  test('LocationProviderManagerModeUpdate', async function() {
+    // Simulate LocationProviderManager mode is initialized as
+    // 'kHybridPlatform'.
+    await simulateDiagnosticsUpdate({
+      providerState: 1,
+      locationProviderManagerMode: 3,
+      networkLocationDiagnostics: null,
+      positionCacheDiagnostics: null,
+      wifiPollingPolicyDiagnostics: null,
+    });
+    checkTableContents(
+        LOCATION_PROVIDER_MANAGER_MODE_TABLE_ID,
+        LOCATION_PROVIDER_MANAGER_MODE_TABLE_ID,
+        [
+          'Location Provider Manager Mode',
+        ],
+        [[
+          'kHybridPlatform',
+        ]]);
+
+    // Simulate LocationProviderManager mode is updated as
+    // 'kHybridFallbackNetwork'.
+    await simulateDiagnosticsUpdate({
+      providerState: 1,
+      locationProviderManagerMode: 4,
+      networkLocationDiagnostics: null,
+      positionCacheDiagnostics: null,
+      wifiPollingPolicyDiagnostics: null,
+    });
+    checkTableContents(
+        LOCATION_PROVIDER_MANAGER_MODE_TABLE_ID,
+        LOCATION_PROVIDER_MANAGER_MODE_TABLE_ID,
+        [
+          'Location Provider Manager Mode',
+        ],
+        [[
+          'kHybridFallbackNetwork',
+        ]]);
   });
 });

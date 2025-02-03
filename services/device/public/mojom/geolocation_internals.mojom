@@ -121,6 +121,12 @@ struct GeolocationDiagnostics {
 
   // Internal state of Wi-Fi data polling policy.
   WifiPollingPolicyDiagnostics? wifi_polling_policy_diagnostics;
+
+  // The operational mode of the LocationProviderManager, which determines
+  // the provider used for geolocation requests. This influences provider
+  // initialization, fallback behavior, and error handling. See
+  // LocationProviderManagerMode enum for details on the specific modes.
+  LocationProviderManagerMode? location_provider_manager_mode;
 };
 
 // A position estimate parsed from a location service response.
