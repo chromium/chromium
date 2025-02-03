@@ -101,26 +101,30 @@ class EncryptorTestBase : public ::testing::Test {
   static const Encryptor GetEncryptor(
       Encryptor::KeyRing keys,
       const std::string& provider_for_encryption) {
-    return Encryptor(std::move(keys), provider_for_encryption);
+    return Encryptor(std::move(keys), provider_for_encryption,
+                     provider_for_encryption);
   }
 
-  static Encryptor::Key GenerateRandomAES256TestKey(
-      bool is_os_crypt_sync_compatible = false) {
+  static const Encryptor GetEncryptor(
+      Encryptor::KeyRing keys,
+      const std::string& provider_for_encryption,
+      const std::string& provider_for_os_crypt_sync_compatible_encryption) {
+    return Encryptor(std::move(keys), provider_for_encryption,
+                     provider_for_os_crypt_sync_compatible_encryption);
+  }
+
+  static Encryptor::Key GenerateRandomAES256TestKey() {
     Encryptor::Key key(
         crypto::RandBytesAsVector(Encryptor::Key::kAES256GCMKeySize),
         mojom::Algorithm::kAES256GCM);
-    key.is_os_crypt_sync_compatible_ = is_os_crypt_sync_compatible;
     return key;
   }
 
-  static Encryptor::Key DeriveAES256TestKey(
-      std::string_view seed,
-      bool is_os_crypt_sync_compatible = false) {
+  static Encryptor::Key DeriveAES256TestKey(std::string_view seed) {
     auto key_data =
         crypto::HkdfSha256(seed, {}, {}, Encryptor::Key::kAES256GCMKeySize);
     Encryptor::Key key(base::as_byte_span(key_data),
                        mojom::Algorithm::kAES256GCM);
-    key.is_os_crypt_sync_compatible_ = is_os_crypt_sync_compatible;
     return key;
   }
 
@@ -636,11 +640,9 @@ TEST_F(EncryptorTestBase, AlgorithmEncryptCompatibility) {
 TEST_F(EncryptorTestBase, Clone) {
   {
     Encryptor::KeyRing key_ring;
-    key_ring.emplace("BLAH", GenerateRandomAES256TestKey(
-                                 /*is_os_crypt_sync_compatible=*/true));
+    key_ring.emplace("BLAH", GenerateRandomAES256TestKey());
     key_ring.emplace("TEST", GenerateRandomAES256TestKey());
-    auto encryptor = GetEncryptor(std::move(key_ring), "TEST");
-    EXPECT_EQ(encryptor.provider_for_encryption_, "TEST");
+    auto encryptor = GetEncryptor(std::move(key_ring), "TEST", "BLAH");
 
     {
       auto cloned_encryptor = encryptor.Clone(Encryptor::Option::kNone);
@@ -661,9 +663,8 @@ TEST_F(EncryptorTestBase, Clone) {
   // OSCrypt for encryption).
   {
     Encryptor::KeyRing key_ring;
-    key_ring.emplace("BLAH", GenerateRandomAES256TestKey(
-                                 /*is_os_crypt_sync_compatible=*/false));
-    auto encryptor = GetEncryptor(std::move(key_ring), "BLAH");
+    key_ring.emplace("BLAH", GenerateRandomAES256TestKey());
+    auto encryptor = GetEncryptor(std::move(key_ring), "BLAH", std::string());
     EXPECT_EQ(encryptor.provider_for_encryption_, "BLAH");
 
     {

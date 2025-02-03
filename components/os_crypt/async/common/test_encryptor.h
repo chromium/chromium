@@ -37,7 +37,10 @@ class TestEncryptor : public Encryptor {
  private:
   friend class TestOSCryptAsync;
 
-  TestEncryptor(KeyRing keys, const std::string& provider_for_encryption);
+  TestEncryptor(
+      KeyRing keys,
+      const std::string& provider_for_encryption,
+      const std::string& provider_for_os_crypt_sync_compatible_encryption);
 
   TestEncryptor Clone(Option option) const;
 
