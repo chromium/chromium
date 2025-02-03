@@ -4,6 +4,7 @@
 
 #include "content/browser/interest_group/interest_group_manager_impl.h"
 
+#include <cstddef>
 #include <iterator>
 #include <memory>
 #include <string>
@@ -19,6 +20,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -31,6 +33,7 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "url/origin.h"
 
@@ -162,10 +165,9 @@ TEST_F(InterestGroupManagerImplTest, JoinInterestGroupWithNoAds) {
   interest_group_observer.WaitForAccesses(
       {{/*devtools_auction_id=*/"global",
         InterestGroupManagerImpl::InterestGroupObserver::AccessType::kJoin,
-        /*owner_origin=*/test_origin,
-        /*ig_name=*/"example",
-        /*component_seller_origin=*/std::nullopt,
-        /*bid=*/std::nullopt, /*bid_currency=*/std::nullopt}});
+        /*owner_origin=*/test_origin, /*ig_name=*/"example",
+        /*bid=*/std::nullopt, /*bid_currency=*/std::nullopt,
+        /*component_seller_origin=*/std::nullopt}});
 
   EXPECT_THAT(k_anon_delegate_.queried_ids(), testing::ElementsAre());
 
@@ -201,10 +203,9 @@ TEST_F(InterestGroupManagerImplTest, JoinInterestGroupWithOneAd) {
   interest_group_observer.WaitForAccesses(
       {{/*devtools_auction_id=*/"global",
         InterestGroupManagerImpl::InterestGroupObserver::AccessType::kJoin,
-        /*owner_origin=*/test_origin,
-        /*ig_name=*/"example",
-        /*component_seller_origin=*/std::nullopt,
-        /*bid=*/std::nullopt, /*bid_currency=*/std::nullopt}});
+        /*owner_origin=*/test_origin, /*ig_name=*/"example",
+        /*bid=*/std::nullopt, /*bid_currency=*/std::nullopt,
+        /*component_seller_origin=*/std::nullopt}});
 
   EXPECT_THAT(k_anon_delegate_.queried_ids(), testing::SizeIs(2));
 
@@ -220,6 +221,8 @@ TEST_F(InterestGroupManagerImplTest, JoinInterestGroupWithOneAd) {
 
 TEST_F(InterestGroupManagerImplTest,
        JoinInterestGroupWithOneAdAndSelectableBuyerAndSellerReportingIds) {
+  base::test::ScopedFeatureList feature_list{
+      blink::features::kFledgeAuctionDealSupport};
   base::HistogramTester histograms;
   const url::Origin test_origin =
       url::Origin::Create(GURL("https://owner.example.com"));
@@ -234,31 +237,65 @@ TEST_F(InterestGroupManagerImplTest,
       /*selectable_buyer_and_seller_reporting_ids=*/
       std::vector<std::string>({"selectable1", "selectable2", "selectable3"}));
 
-  TestInterestGroupObserver interest_group_observer;
-  interest_group_manager_->AddInterestGroupObserver(&interest_group_observer);
+  {
+    TestInterestGroupObserver interest_group_observer;
+    interest_group_manager_->AddInterestGroupObserver(&interest_group_observer);
 
-  interest_group_manager_->JoinInterestGroup(test_group, test_origin.GetURL());
-  interest_group_observer.WaitForAccesses(
-      {{/*devtools_auction_id=*/"global",
-        InterestGroupManagerImpl::InterestGroupObserver::AccessType::kJoin,
-        /*owner_origin=*/test_origin,
-        /*ig_name=*/"example",
-        /*component_seller_origin=*/std::nullopt,
-        /*bid=*/std::nullopt, /*bid_currency=*/std::nullopt}});
+    interest_group_manager_->JoinInterestGroup(test_group,
+                                               test_origin.GetURL());
+    interest_group_observer.WaitForAccesses(
+        {{/*devtools_auction_id=*/"global",
+          InterestGroupManagerImpl::InterestGroupObserver::AccessType::kJoin,
+          /*owner_origin=*/test_origin, /*ig_name=*/"example",
+          /*bid=*/std::nullopt, /*bid_currency=*/std::nullopt,
+          /*component_seller_origin=*/std::nullopt}});
 
-  EXPECT_THAT(k_anon_delegate_.queried_ids(), testing::SizeIs(5));
+    EXPECT_THAT(k_anon_delegate_.queried_ids(), testing::SizeIs(5));
 
-  SingleStorageInterestGroup loaded_group = GetSingleInterestGroup(test_origin);
-  ASSERT_EQ(1u, loaded_group->interest_group.ads->size());
-  const blink::InterestGroup::Ad& ad = (*loaded_group->interest_group.ads)[0];
-  EXPECT_EQ(GURL("https://full.example.com/ad1"), ad.render_url());
-  EXPECT_EQ("metadata1", ad.metadata);
-  EXPECT_THAT(
-      *ad.selectable_buyer_and_seller_reporting_ids,
-      testing::ElementsAre("selectable1", "selectable2", "selectable3"));
+    SingleStorageInterestGroup loaded_group =
+        GetSingleInterestGroup(test_origin);
+    ASSERT_EQ(1u, loaded_group->interest_group.ads->size());
+    const blink::InterestGroup::Ad& ad = (*loaded_group->interest_group.ads)[0];
+    EXPECT_EQ(GURL("https://full.example.com/ad1"), ad.render_url());
+    EXPECT_EQ("metadata1", ad.metadata);
+    EXPECT_THAT(
+        *ad.selectable_buyer_and_seller_reporting_ids,
+        testing::ElementsAre("selectable1", "selectable2", "selectable3"));
+
+    interest_group_manager_->RemoveInterestGroupObserver(
+        &interest_group_observer);
+  }
 
   histograms.ExpectUniqueSample(
       "Ads.InterestGroup.NumSelectableBuyerAndSellerReportingIds", 3, 1);
+
+  {
+    base::test::ScopedFeatureList disabled_feature_list;
+    disabled_feature_list.InitAndDisableFeature(
+        blink::features::kFledgeAuctionDealSupport);
+
+    TestInterestGroupObserver interest_group_observer;
+    interest_group_manager_->AddInterestGroupObserver(&interest_group_observer);
+
+    interest_group_manager_->JoinInterestGroup(test_group,
+                                               test_origin.GetURL());
+    interest_group_observer.WaitForAccesses(
+        {{/*devtools_auction_id=*/"global",
+          InterestGroupManagerImpl::InterestGroupObserver::AccessType::kJoin,
+          /*owner_origin=*/test_origin, /*ig_name=*/"example",
+          /*bid=*/std::nullopt, /*bid_currency=*/std::nullopt,
+          /*component_seller_origin=*/std::nullopt}});
+
+    EXPECT_THAT(k_anon_delegate_.queried_ids(), testing::SizeIs(5));
+
+    SingleStorageInterestGroup loaded_group =
+        GetSingleInterestGroup(test_origin);
+    ASSERT_EQ(1u, loaded_group->interest_group.ads->size());
+    const blink::InterestGroup::Ad& ad = (*loaded_group->interest_group.ads)[0];
+    EXPECT_EQ(GURL("https://full.example.com/ad1"), ad.render_url());
+    EXPECT_EQ("metadata1", ad.metadata);
+    EXPECT_EQ(ad.selectable_buyer_and_seller_reporting_ids, std::nullopt);
+  }
 }
 
 TEST_F(InterestGroupManagerImplTest, UpdateInterestGroupWithNoAds) {
@@ -274,10 +311,9 @@ TEST_F(InterestGroupManagerImplTest, UpdateInterestGroupWithNoAds) {
   interest_group_observer.WaitForAccesses(
       {{/*devtools_auction_id=*/"global",
         InterestGroupManagerImpl::InterestGroupObserver::AccessType::kJoin,
-        /*owner_origin=*/test_origin,
-        /*ig_name=*/"example",
-        /*component_seller_origin=*/std::nullopt,
-        /*bid=*/std::nullopt, /*bid_currency=*/std::nullopt}});
+        /*owner_origin=*/test_origin, /*ig_name=*/"example",
+        /*bid=*/std::nullopt, /*bid_currency=*/std::nullopt,
+        /*component_seller_origin=*/std::nullopt}});
 
   InterestGroupUpdate update;
   update.ads.emplace();
@@ -316,10 +352,9 @@ TEST_F(InterestGroupManagerImplTest, UpdateInterestGroupWithOneAd) {
   interest_group_observer.WaitForAccesses(
       {{/*devtools_auction_id=*/"global",
         InterestGroupManagerImpl::InterestGroupObserver::AccessType::kJoin,
-        /*owner_origin=*/test_origin,
-        /*ig_name=*/"example",
-        /*component_seller_origin=*/std::nullopt,
-        /*bid=*/std::nullopt, /*bid_currency=*/std::nullopt}});
+        /*owner_origin=*/test_origin, /*ig_name=*/"example",
+        /*bid=*/std::nullopt, /*bid_currency=*/std::nullopt,
+        /*component_seller_origin=*/std::nullopt}});
 
   InterestGroupUpdate update;
   update.ads.emplace();
@@ -345,6 +380,8 @@ TEST_F(InterestGroupManagerImplTest, UpdateInterestGroupWithOneAd) {
 
 TEST_F(InterestGroupManagerImplTest,
        UpdateInterestGroupWithOneAdAndSelectableBuyerAndSellerReportingIds) {
+  base::test::ScopedFeatureList feature_list{
+      blink::features::kFledgeAuctionDealSupport};
   base::HistogramTester histograms;
   const url::Origin test_origin =
       url::Origin::Create(GURL("https://owner.example.com"));
@@ -357,39 +394,72 @@ TEST_F(InterestGroupManagerImplTest,
   interest_group_observer.WaitForAccesses(
       {{/*devtools_auction_id=*/"global",
         InterestGroupManagerImpl::InterestGroupObserver::AccessType::kJoin,
-        /*owner_origin=*/test_origin,
-        /*ig_name=*/"example",
-        /*component_seller_origin=*/std::nullopt,
-        /*bid=*/std::nullopt, /*bid_currency=*/std::nullopt}});
+        /*owner_origin=*/test_origin, /*ig_name=*/"example",
+        /*bid=*/std::nullopt, /*bid_currency=*/std::nullopt,
+        /*component_seller_origin=*/std::nullopt}});
 
-  InterestGroupUpdate update;
-  update.ads.emplace();
-  update.ads->emplace_back(
-      /*render_gurl=*/GURL("https://full.example.com/ad1"),
-      /*metadata=*/"metadata1",
-      /*size_group=*/std::nullopt,
-      /*buyer_reporting_id=*/std::nullopt,
-      /*buyer_and_seller_reporting_id=*/std::nullopt,
-      /*selectable_buyer_and_seller_reporting_ids=*/
-      std::vector<std::string>({"selectable1", "selectable2", "selectable3"}));
+  {
+    InterestGroupUpdate update;
+    update.ads.emplace();
+    update.ads->emplace_back(
+        /*render_gurl=*/GURL("https://full.example.com/ad1"),
+        /*metadata=*/"metadata1",
+        /*size_group=*/std::nullopt,
+        /*buyer_reporting_id=*/std::nullopt,
+        /*buyer_and_seller_reporting_id=*/std::nullopt,
+        /*selectable_buyer_and_seller_reporting_ids=*/
+        std::vector<std::string>(
+            {"selectable1", "selectable2", "selectable3"}));
 
-  InterestGroupManagerImplTestPeer(interest_group_manager_.get())
-      .UpdateInterestGroup(blink::InterestGroupKey(test_origin, "example"),
-                           std::move(update));
+    InterestGroupManagerImplTestPeer(interest_group_manager_.get())
+        .UpdateInterestGroup(blink::InterestGroupKey(test_origin, "example"),
+                             std::move(update));
 
-  EXPECT_THAT(k_anon_delegate_.queried_ids(), testing::SizeIs(5));
+    EXPECT_THAT(k_anon_delegate_.queried_ids(), testing::SizeIs(5));
 
-  SingleStorageInterestGroup loaded_group = GetSingleInterestGroup(test_origin);
-  ASSERT_EQ(1u, loaded_group->interest_group.ads->size());
-  const blink::InterestGroup::Ad& ad = (*loaded_group->interest_group.ads)[0];
-  EXPECT_EQ(GURL("https://full.example.com/ad1"), ad.render_url());
-  EXPECT_EQ("metadata1", ad.metadata);
-  EXPECT_THAT(
-      *ad.selectable_buyer_and_seller_reporting_ids,
-      testing::ElementsAre("selectable1", "selectable2", "selectable3"));
+    SingleStorageInterestGroup loaded_group =
+        GetSingleInterestGroup(test_origin);
+    ASSERT_EQ(1u, loaded_group->interest_group.ads->size());
+    const blink::InterestGroup::Ad& ad = (*loaded_group->interest_group.ads)[0];
+    EXPECT_EQ(GURL("https://full.example.com/ad1"), ad.render_url());
+    EXPECT_EQ("metadata1", ad.metadata);
+    EXPECT_THAT(
+        *ad.selectable_buyer_and_seller_reporting_ids,
+        testing::ElementsAre("selectable1", "selectable2", "selectable3"));
+  }
 
   histograms.ExpectUniqueSample(
       "Ads.InterestGroup.NumSelectableBuyerAndSellerReportingIds", 3, 1);
+
+  {
+    base::test::ScopedFeatureList disabled_feature_list;
+    disabled_feature_list.InitAndDisableFeature(
+        blink::features::kFledgeAuctionDealSupport);
+
+    InterestGroupUpdate update;
+    update.ads.emplace();
+    update.ads->emplace_back(
+        /*render_gurl=*/GURL("https://full.example.com/ad1"),
+        /*metadata=*/"metadata1",
+        /*size_group=*/std::nullopt,
+        /*buyer_reporting_id=*/std::nullopt,
+        /*buyer_and_seller_reporting_id=*/std::nullopt,
+        /*selectable_buyer_and_seller_reporting_ids=*/
+        std::vector<std::string>(
+            {"selectable1", "selectable2", "selectable3"}));
+
+    InterestGroupManagerImplTestPeer(interest_group_manager_.get())
+        .UpdateInterestGroup(blink::InterestGroupKey(test_origin, "example"),
+                             std::move(update));
+
+    SingleStorageInterestGroup loaded_group =
+        GetSingleInterestGroup(test_origin);
+    ASSERT_EQ(1u, loaded_group->interest_group.ads->size());
+    const blink::InterestGroup::Ad& ad = (*loaded_group->interest_group.ads)[0];
+    EXPECT_EQ(GURL("https://full.example.com/ad1"), ad.render_url());
+    EXPECT_EQ("metadata1", ad.metadata);
+    EXPECT_EQ(ad.selectable_buyer_and_seller_reporting_ids, std::nullopt);
+  }
 }
 }  // namespace
 }  // namespace content

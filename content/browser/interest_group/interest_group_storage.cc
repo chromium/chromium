@@ -549,7 +549,9 @@ DeserializeInterestGroupAdVectorProto(const PassKey& passkey,
       ad.buyer_and_seller_reporting_id =
           std::move(*ad_proto.mutable_buyer_and_seller_reporting_id());
     }
-    if (!ad_proto.selectable_buyer_and_seller_reporting_ids().empty()) {
+    if (base::FeatureList::IsEnabled(
+            blink::features::kFledgeAuctionDealSupport) &&
+        !ad_proto.selectable_buyer_and_seller_reporting_ids().empty()) {
       std::vector<std::string> selectable_buyer_and_seller_reporting_ids;
       for (const auto& id :
            ad_proto.selectable_buyer_and_seller_reporting_ids()) {
@@ -856,7 +858,9 @@ std::set<std::string> GetAllKanonKeys(
       hashed_keys.emplace(blink::HashedKAnonKeyForAdNameReporting(
           interest_group, ad,
           /*selected_buyer_and_seller_reporting_id=*/std::nullopt));
-      if (ad.selectable_buyer_and_seller_reporting_ids) {
+      if (base::FeatureList::IsEnabled(
+              blink::features::kFledgeAuctionDealSupport) &&
+          ad.selectable_buyer_and_seller_reporting_ids) {
         for (const std::string& selectable_id :
              *ad.selectable_buyer_and_seller_reporting_ids) {
           hashed_keys.emplace(blink::HashedKAnonKeyForAdNameReporting(
