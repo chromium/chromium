@@ -3918,13 +3918,18 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Called when we receive the confirmation that a navigation committed in the
   // renderer. Used by both DidCommitSameDocumentNavigation and
-  // DidCommitNavigation.
-  // Returns true if the navigation did commit properly, false if the commit
-  // state should be restored to its pre-commit value.
+  // DidCommitNavigation. Returns true if the navigation did commit properly,
+  // false if the commit state should be restored to its pre-commit value.
+  //
+  // `did_commit_ipc_received_time` is the time at which the browser received
+  // either a DidCommitNavigation IPC or reply to a prior CommitNavigation
+  // IPC, which should be recorded just before a call to this function takes
+  // place.
   bool DidCommitNavigationInternal(
       std::unique_ptr<NavigationRequest> navigation_request,
       mojom::DidCommitProvisionalLoadParamsPtr params,
-      mojom::DidCommitSameDocumentNavigationParamsPtr same_document_params);
+      mojom::DidCommitSameDocumentNavigationParamsPtr same_document_params,
+      const base::TimeTicks& did_commit_ipc_received_time);
 
   // Whether or not to reset DocumentAssociatedData at commit. Normally, this
   // data is reset with each cross-document navigation, but there are some

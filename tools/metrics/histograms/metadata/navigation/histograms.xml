@@ -1384,8 +1384,8 @@ chromium-metrics-reviews@google.com.
                  first HTTP(S) request is sent"/>
     <variant name="LoaderStartToFetchStart"
         summary="when the NavigationURLLoader starts, to when the browser is
-                 ready to fetch the document using an HTTP(S) request (which
-                 is called as fetchStart)"/>
+                 ready to fetch the document using an HTTP(S) (or file)
+                 request (which is called as fetchStart)"/>
     <variant name="LoaderStartToReceiveResponse"
         summary="when the NavigationURLLoader starts, to when the browser
                  process receives the response (HTTP header)"/>
@@ -2449,6 +2449,88 @@ chromium-metrics-reviews@google.com.
     on destructing NavigationThrottleRunner.
   </summary>
   <token key="Condition" variants="NavigationThrottleConditions"/>
+</histogram>
+
+<histogram name="Navigation.Timeline.{DurationFromTo}.Time" units="ms"
+    expires_after="2026-01-15">
+  <owner>alexmos@chromium.org</owner>
+  <owner>creis@chromium.org</owner>
+  <summary>
+    Measures the duration between {DurationFromTo}. Recorded at the point when a
+    navigation finishes committing, i.e. finishes processing the
+    DidCommitNavigation message. A corresponding event is also emitted for
+    tracing.
+  </summary>
+  <token key="DurationFromTo">
+    <variant name="BeforeUnloadToBeginNavigation"
+        summary="when beforeunload handler processing is started to when
+                 beforeunload handler processing is finished and
+                 NavigationRequest::BeginNavigation() is called"/>
+    <variant name="BeginNavigationToCommit"
+        summary="when NavigationRequest::BeginNavigation() is called to start
+                 the navigation, to when the CommitNavigation message is
+                 sent. This is only logged for navigations that don't go
+                 through the network stack, such as about:blank navigations
+                 or browser-initiated same-document navigations"/>
+    <variant name="BeginNavigationToLoaderStart"
+        summary="when NavigationRequest::BeginNavigation() is called to when
+                 the NavigationURLLoader starts. Represents the browser
+                 process initialization work between beforeunload processing
+                 and starting the network request"/>
+    <variant name="CommitToDidCommit"
+        summary="when the CommitNavigation IPC is sent to the renderer
+                 process to when its reply is received by
+                 RenderFrameHostImpl::DidCommitNavigation"/>
+    <variant name="DidCommitToFinish"
+        summary="when the browser process receives the DidCommitNavigation
+                 IPC to when the browser process finishes processing that
+                 IPC, making the navigation committed"/>
+    <variant name="FetchStartToReceiveHeaders"
+        summary="when fetch of the document via an HTTP(S) request starts, to
+                 when the final response headers are received in the network
+                 service. This can include redirects"/>
+    <variant name="LoaderStartToFetchStart"
+        summary="when the NavigationURLLoader starts, to when the browser is
+                 ready to fetch the document using an HTTP(S) request"/>
+    <variant name="LoaderStartToReceiveResponse"
+        summary="when the NavigationURLLoader starts to when
+                 NavigationRequest::OnResponseStarted() is called"/>
+    <variant name="NavigationRequestToBeforeUnload"
+        summary="when the NavigationRequest is created to when beforeunload
+                 handler processing is started. Includes time to pick a
+                 target RenderFrameHost, SiteInstance, and process"/>
+    <variant name="NavigationRequestToBeginNavigation"
+        summary="when the NavigationRequest is created to when
+                 NavigationRequest::BeginNavigation() is called. Logged only
+                 when no beforeunload handler processing occurs (otherwise,
+                 see NavigationRequestToBeforeUnload and
+                 BeforeUnloadToBeginNavigation). Includes time to pick a
+                 target RenderFrameHost, SiteInstance, and process"/>
+    <variant name="ReceiveHeadersToReceiveResponse"
+        summary="when the final response headers are received in the network
+                 service to when NavigationRequest::OnResponseStarted() is
+                 called in the browser process"/>
+    <variant name="ReceiveResponseToCommit"
+        summary="when NavigationRequest::OnResponseStarted() is called to
+                 when the CommitNavigation IPC is sent to the renderer
+                 process"/>
+    <variant name="RendererCommitToDidCommit"
+        summary="when the renderer process receives a CommitNavigation IPC to
+                 when the renderer process sends a DidCommitNavigation reply."/>
+    <variant name="StartToNavigationRequestCreation"
+        summary="when the navigation starts, which could be in the renderer
+                 process, to when the NavigationRequest is created"/>
+    <variant name="Total"
+        summary="when the navigation starts to when the browser process
+                 finishes processing the DidCommitNavigation IPC, at which
+                 point the navigation is committed. Includes the time spent
+                 running any beforeunload handlers/dialogs"/>
+    <variant name="TotalExcludingBeforeUnload"
+        summary="when the navigation starts to when the browser process
+                 finishes processing the DidCommitNavigation IPC, at which
+                 point the navigation is committed. Excludes the time spent
+                 running any beforeunload handlers/dialogs"/>
+  </token>
 </histogram>
 
 <histogram name="Navigation.TimeToActivatePrerender{PreloadingTriggerType}"

@@ -1419,6 +1419,152 @@ class CONTENT_EXPORT NavigationRequest
     return was_reset_for_cross_document_restart_;
   }
 
+  // Called when the browser process is about to process beforeunload handlers
+  // for this navigation, including sending an IPC to the renderer process to
+  // run beforeunload handlers when necessary.
+  void WillStartBeforeUnload();
+
+  // This struct holds timestamps of various stages of one navigation. This is
+  // useful for recording a trace of a navigation, as well as metrics for
+  // durations of all intervals within a navigation once a navigation finishes
+  // committing. Note that a navigation finishes committing once
+  // RenderFrameHostImpl::DidCommitNavigation completes, which could be slightly
+  // after the corresponding NavigationRequest has been destroyed.
+  //
+  // Over the course of a navigation, various timestamps are kept in different
+  // places, such as NavigationRequest fields, NavigationHandleTiming,
+  // CommonNavigationParams, etc. The purpose of this struct is to bring all the
+  // relevant timestamps into one place, and make it possible to record a
+  // complete navigation timeline after NavigationRequest destruction. Note that
+  // this is different from NavigationHandleTiming, because the latter is in
+  // content/public and exposed to content embedders, making it tricky to modify
+  // or extend.
+  //
+  // This struct should be created near the end of NavigationRequest's lifetime
+  // (see `GenerateNavigationTimelineForMetrics()`), and `MarkFinish()` should
+  // be called at the end of a navigation before using the `Timeline`'s
+  // timestamp values in traces and metrics.
+  struct Timeline {
+    Timeline();
+    Timeline(const Timeline& timeline);
+    ~Timeline();
+
+    // Record the timestamp for when the navigation finishes. Should be done at
+    // the end of RenderFrameHostImpl::DidCommitNavigationInternal() before
+    // recording a trace of this timeline.
+    void MarkFinish();
+
+    // The timestamps below are in chronological order. Note that some of them
+    // might be null depending on the navigation (e.g., navigations that don't
+    // use the network stack will not populate the loader-related timestamps,
+    // and renderer-initiated same-document navigations would be missing most
+    // timestamps except for `start`, `finish`, and the DidCommit IPC
+    // timestamps).
+
+    // The time at which the navigation starts. Note that for renderer-initiated
+    // navigations, this will be the time when the navigation starts in the
+    // renderer.
+    //
+    // TODO(alexmos): For renderer-initiated navigations, this timestamp is
+    // recorded when CommonNavigationParams are created in
+    // RenderFrameImpl::BeginNavigationInternal(), just before sending the
+    // BeginNavigation IPC to the browser process, but after processing
+    // renderer-side beforeunload events, doing all blink-side navigation start
+    // work, and dispatching DidStartNavigation() and some other observer
+    // events. Ideally, it should be taken earlier, somewhere closer to when
+    // Frame::Navigate() starts executing in Blink, to more faithfully measure
+    // the user-visible navigation latency.
+    base::TimeTicks start;
+
+    // The time at which the NavigationRequest is created. The delta between
+    // this and `start` covers the time between starting the navigation
+    // (possibly in the renderer process) and the browser process starting
+    // doing work for it.
+    base::TimeTicks navigation_request_creation;
+
+    // The time beforeunload handler processing was started by the browser
+    // process. For renderer-initiated navigations, this is currently set to
+    // when the browser process starts beforeunload processing (e.g., in OOPIFs)
+    // and ignores the beforeunload handler processing done in the renderer
+    // prior to sending the BeginNavigation IPC. Might be null if the navigation
+    // did not need to process beforeunload handlers.
+    //
+    // The delta between this and `navigation_request_creation` captures the
+    // time the browser process spends initializing the navigation, including
+    // creating a speculative RenderFrameHost (if needed) and picking a target
+    // SiteInstance/process.
+    base::TimeTicks beforeunload_start;
+
+    // The time at which NavigationRequest::BeginNavigation() is called. The
+    // delta between this and `beforeunload_start` captures the time spent
+    // running beforeunload handlers in other processes, including any time
+    // spent in beforeunload dialogs.
+    base::TimeTicks begin_navigation;
+
+    // The time at which the NavigationURLLoader for the navigation was started.
+    // This captures the time for additional initialization in the browser
+    // process before the network request is sent, including processing of
+    // WillStartRequest NavigationThrottle events.
+    base::TimeTicks loader_start;
+    // The time when the browser is ready to fetch the document using an HTTP
+    // request.
+    base::TimeTicks loader_fetch_start;
+    // The time when the final (which might also be the first) headers are
+    // received.
+    base::TimeTicks loader_receive_headers;
+    // The time when the HTTP response is received and
+    // NavigationRequest::OnResponseStarted() is called. The delta between this
+    // and `loader_start` captures the time spent waiting for a response from
+    // the network stack.
+    base::TimeTicks receive_response;
+    // The time when the CommitNavigation IPC is sent to the renderer process.
+    // Might be null if a navigation doesn't send the CommitNavigation IPC, such
+    // as for renderer-initiated same-document navigations or synchronous
+    // about:blank navigations. The delta between this and `receive_response`
+    // captures the time spent running throttles and possibly selecting a more
+    // appropriate renderer process.
+    base::TimeTicks commit_ipc_sent;
+    // The time when the renderer receives the CommitNavigation IPC. Taken in
+    // the renderer process. Might be null in the same cases as
+    // `commit_ipc_sent` above. The delta between this and `commit_ipc_sent`
+    // represents the mojo and task delay to deliver the CommitNavigation
+    // message from the browser process to renderer process.
+    base::TimeTicks renderer_commit_ipc_received;
+    // The time when the renderer finishes processing the navigation commit and
+    // replies to the browser's CommitNavigation IPC. Taken in the renderer
+    // process. The delta between this and `renderer_commit_ipc_received`
+    // represents the total time the renderer process spend on committing the
+    // navigation (e.g., swapping in the new frame/document and destroying the
+    // old document).
+    base::TimeTicks renderer_did_commit_ipc_sent;
+    // The time at which the DidCommitNavigation IPC (which is usually a
+    // response to the CommitNavigation IPC) is received by RenderFrameHost. The
+    // delta between `renderer_did_commit_ipc_sent` and this represents the mojo
+    // delay to deliver the response from the renderer process to the browser
+    // process.
+    base::TimeTicks did_commit_ipc_received;
+    // The time at which DidCommitNavigation is completed. This includes the
+    // time to commit the navigation, dispatch events such as
+    // DidFinishNavigation() to observers, and destroy the NavigationRequest.
+    // `MarkFinish()` is used to record this timestamp at the end of navigation.
+    base::TimeTicks finish;
+  };
+
+  // Fill in the timestamps needed to generate a trace of the navigation
+  // timeline. This should only be called when processing the
+  // DidCommitNavigation IPC, once the final DidCommitProvisionalLoadParams are
+  // received from the renderer and timestamps from prior navigation stages are
+  // already collected.
+  //
+  // Note that this leaves the `finish` timestamp empty in the returned
+  // `Timeline` object. `finish` cannot be recorded within NavigationRequest
+  // because a navigation actually ends after a NavigationRequest is destroyed.
+  // `MarkFinish()` should be called on the returned `Timeline` to manually
+  // record that timestamp before using it to record trace events or metrics.
+  NavigationRequest::Timeline GenerateNavigationTimelineForMetrics(
+      const mojom::DidCommitProvisionalLoadParams& params,
+      const base::TimeTicks& did_commit_ipc_received_time);
+
  private:
   friend class NavigationRequestTest;
 
@@ -2426,14 +2572,25 @@ class CONTENT_EXPORT NavigationRequest
   // Tracks whether a beforeunload dialog was shown as part of this navigation.
   bool beforeunload_dialog_shown_ = false;
 
-  // The time this navigation was ready to commit.
-  base::TimeTicks ready_to_commit_time_;
+  // The time this NavigationRequest was created.
+  base::TimeTicks creation_time_ = base::TimeTicks().Now();
+
+  // The time beforeunload handler processing was started by the browser
+  // process. For renderer-initiated navigations, this is currently set to when
+  // the browser process starts beforeunload processing (e.g., in OOPIFs) and
+  // ignores the beforeunload handler processing done in the renderer prior to
+  // sending the BeginNavigation IPC. Might be null if the navigation did
+  // not need to process beforeunload handlers.
+  base::TimeTicks beforeunload_start_time_;
 
   // The time BeginNavigation() was called.
   base::TimeTicks begin_navigation_time_;
 
   // The time OnResponseStarted() was called.
   base::TimeTicks receive_response_time_;
+
+  // The time this navigation was ready to commit.
+  base::TimeTicks ready_to_commit_time_;
 
   // The first `fetchStart` time. This is different from the
   // `first_request_start_time` in `NavigationHandleTiming` since the

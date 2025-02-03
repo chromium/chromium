@@ -1574,6 +1574,173 @@ class DiscardedRFHProcessHelper : public base::SupportsUserData::Data,
   bool keep_alive_timeout_for_testing_ = false;
 };
 
+// Helper to record trace events and metrics for a navigation to `url`, using
+// the timestamps stored in `timeline`.
+//
+// This is similar to NavigationRequest::MaybeRecordTraceEventsAndHistograms(),
+// but improves on it in the following ways: (1) this works for any navigation,
+// whereas the NavigationRequest version was intended to be used in certain
+// narrow cases, (2) this is designed to be called at the very end of navigation
+// commit, which occurs after NavigationRequest destruction, and (3) this
+// introduces additional slices (e.g. CommitToDidCommit) to give a more thorough
+// start-to-finish breakdown of navigation timing, and uses more accurate
+// timestamps for some other slices. Eventually,
+// NavigationRequest::MaybeRecordTraceEventsAndHistograms() should be replaced
+// with this function.
+void RecordNavigationTraceEventsAndMetrics(
+    const NavigationRequest::Timeline& timeline,
+    const GURL& url) {
+  // Record these trace events in a global "Navigations" track, so that it can
+  // be found under "Global Track Events". Since this contains events from
+  // both the browser and renderer processes, this is preferable to nesting
+  // the track under a particular process.
+  constexpr uint64_t kGlobalInstantTrackId = 0;
+  static perfetto::NamedTrack track(
+      "Navigations", base::trace_event::GetNextGlobalTraceId(),
+      perfetto::Track::Global(kGlobalInstantTrackId));
+
+  DCHECK(!timeline.start.is_null());
+
+  // Define a helper to log both a trace event slice and a corresponding metric
+  // for one stage of a navigation.
+  auto log_trace_event_and_uma =
+      [&](const std::string& name, const base::TimeTicks& begin_time,
+          const base::TimeTicks& end_time,
+          const std::string& histogram_name = std::string()) {
+        if (begin_time.is_null() || end_time.is_null()) {
+          return;
+        }
+
+        // TODO(alexmos): These cases should never happen in practice, unless
+        // the renderer provides inaccurate timestamps (either by lying, or due
+        // to inter-process time skew that hasn't yet been adjusted with
+        // InterProcessTimeTicksConverter). This should be tightened up to
+        // validate (and possibly adjust) the renderer-provided timestamps and
+        // then convert this to a CHECK.
+        if (begin_time < timeline.start || end_time > timeline.finish) {
+          return;
+        }
+
+        TRACE_EVENT_BEGIN("navigation", perfetto::DynamicString{name}, track,
+                          begin_time);
+        TRACE_EVENT_END("navigation", track, end_time);
+
+        // When provided, `histogram_name` is used to avoid including variable
+        // or sensitive data in the reported metric name. For example, `name`
+        // may include the navigation URL when measuring the start-to-finish
+        // time, but we only want to use that for trace events and omit the
+        // URL in metric names for UMA.
+        base::UmaHistogramTimes(
+            "Navigation.Timeline." +
+                (histogram_name.empty() ? name : histogram_name) + ".Duration",
+            end_time - begin_time);
+      };
+
+  // Actual navigation events are logged below in contiguous (or nested)
+  // intervals.
+
+  // Record a top-level "Navigation: url" trace event with the duration of the
+  // full navigation, and then break it down into nested intervals which will
+  // show up under it. Do not include `url` in the histogram name. Note that
+  // `url` is the committing URL, which might differ from the starting URL, e.g.
+  // due to redirects.
+  std::string top_level_trace_event_name = "Navigation: " + url.spec();
+  log_trace_event_and_uma(top_level_trace_event_name, timeline.start,
+                          timeline.finish, /*histogram_name=*/"Total");
+
+  // It's possible that there was no CommitNavigation IPC sent. This can happen
+  // for synchronous renderer commits (e.g., renderer-initiated same-document
+  // navigations), where browser only finds out about the navigation from the
+  // DidCommit IPC and creates a NavigationRequest at that time, as well as for
+  // page activations (e.g., restoring from back-forward cache). In those cases,
+  // breaking the navigation down into finer-grained slices is not yet supported
+  // and potentially less useful, so just return early after logging a top-level
+  // event for the navigation above.
+  //
+  // TODO(alexmos): Record a better renderer-side start time for synchronous
+  // renderer commits and create an additional tracing slice for the
+  // renderer-side work involved in synchronous navigations.
+  if (timeline.commit_ipc_sent.is_null()) {
+    return;
+  }
+
+  log_trace_event_and_uma("StartToNavigationRequestCreation", timeline.start,
+                          timeline.navigation_request_creation);
+
+  if (!timeline.beforeunload_start.is_null()) {
+    log_trace_event_and_uma("NavigationRequestToBeforeUnload",
+                            timeline.navigation_request_creation,
+                            timeline.beforeunload_start);
+    log_trace_event_and_uma("BeforeUnloadToBeginNavigation",
+                            timeline.beforeunload_start,
+                            timeline.begin_navigation);
+  } else {
+    log_trace_event_and_uma("NavigationRequestToBeginNavigation",
+                            timeline.navigation_request_creation,
+                            timeline.begin_navigation);
+  }
+
+  // For navigations that don't use a URLLoader, such as about:blank
+  // navigations, record a single interval from BeginNavigation to sending the
+  // CommitNavigation IPC, which will include choosing the target SiteInstance
+  // WillCommitWithoutUrlLoader throttle processing, etc. Do the same for
+  // navigations that encounter an error and never see a response from the
+  // loader. Otherwise, break down the URL loading into several finer-grained
+  // intervals.
+  if (timeline.loader_start.is_null() || timeline.receive_response.is_null()) {
+    log_trace_event_and_uma("BeginNavigationToCommit",
+                            timeline.begin_navigation,
+                            timeline.commit_ipc_sent);
+  } else {
+    log_trace_event_and_uma("BeginNavigationToLoaderStart",
+                            timeline.begin_navigation, timeline.loader_start);
+    log_trace_event_and_uma("LoaderStartToReceiveResponse",
+                            timeline.loader_start, timeline.receive_response);
+
+    // Generate the nested loader events contained within
+    // LoaderStartToReceiveResponse. `loader_fetch_start` can be earlier than
+    // `loader_start` when Prefetch or Prerendering is enabled. Don't record
+    // metrics or traces in such cases to avoid skewing the data.
+    if (timeline.loader_start <= timeline.loader_fetch_start) {
+      log_trace_event_and_uma("LoaderStartToFetchStart", timeline.loader_start,
+                              timeline.loader_fetch_start);
+      log_trace_event_and_uma("FetchStartToReceiveHeaders",
+                              timeline.loader_fetch_start,
+                              timeline.loader_receive_headers);
+      // TODO(alexmos): add events for redirects when they are present.
+      log_trace_event_and_uma("ReceiveHeadersToReceiveResponse",
+                              timeline.loader_receive_headers,
+                              timeline.receive_response);
+    }
+
+    log_trace_event_and_uma("ReceiveResponseToCommit",
+                            timeline.receive_response,
+                            timeline.commit_ipc_sent);
+  }
+
+  log_trace_event_and_uma("CommitToDidCommit", timeline.commit_ipc_sent,
+                          timeline.did_commit_ipc_received);
+  // Generate a nested slice for the renderer side of the navigation commit,
+  // contained within CommitToDidCommit.
+  log_trace_event_and_uma("RendererCommitToDidCommit",
+                          timeline.renderer_commit_ipc_received,
+                          timeline.renderer_did_commit_ipc_sent);
+  log_trace_event_and_uma("DidCommitToFinish", timeline.did_commit_ipc_received,
+                          timeline.finish);
+
+  // Also record total time that excludes the time to process beforeunload
+  // handlers, as this time is not under the browser's control. Note that
+  // this can't have a meaningful trace event due to the adjustment.
+  base::TimeDelta total_excluding_beforeunload =
+      timeline.finish - timeline.start;
+  if (!timeline.beforeunload_start.is_null()) {
+    total_excluding_beforeunload -=
+        timeline.begin_navigation - timeline.beforeunload_start;
+  }
+  base::UmaHistogramTimes(
+      "Navigation.Timeline.TotalExcludingBeforeUnload.Duration",
+      total_excluding_beforeunload);
+}
 }  // namespace
 
 class RenderFrameHostImpl::SubresourceLoaderFactoriesConfig {
@@ -5827,8 +5994,14 @@ void RenderFrameHostImpl::DidCommitPageActivation(
   });
 #endif
 
-  DidCommitNavigationInternal(std::move(owned_request), std::move(params),
-                              /*same_document_params=*/nullptr);
+  DidCommitNavigationInternal(
+      std::move(owned_request), std::move(params),
+      /*same_document_params=*/nullptr,
+      /*did_commit_ipc_received_time=*/base::TimeTicks());
+
+  // NOTE: Navigation metrics assume that not much work is done between
+  // DidCommitNavigationInternal() and the end of this function. Avoid adding
+  // code below unless absolutely needed specifically for page activation.
 
   // If any load events occurred pre-activation and were deferred until
   // activation, dispatch them now. This must happen before DidStopLoading() is
@@ -5895,6 +6068,7 @@ void RenderFrameHostImpl::DidCommitSameDocumentNavigation(
               "RenderFrameHostImpl::DidCommitSameDocumentNavigation",
               ChromeTrackEvent::kRenderFrameHost, this, "url",
               params->url.possibly_invalid_spec());
+  base::TimeTicks did_commit_ipc_received_time = base::TimeTicks().Now();
 
   // TODO(peilinwang): remove after the kAndroidVisibleUrlTruncation experiment
   // is complete.
@@ -5940,9 +6114,14 @@ void RenderFrameHostImpl::DidCommitSameDocumentNavigation(
     return;
   }
   if (!DidCommitNavigationInternal(std::move(request), std::move(params),
-                                   std::move(same_document_params))) {
+                                   std::move(same_document_params),
+                                   did_commit_ipc_received_time)) {
     return;
   }
+
+  // NOTE: Navigation metrics assume that not much work is done between
+  // DidCommitNavigationInternal() and the end of this function. Avoid adding
+  // code below unless absolutely needed.
 
   // Since we didn't early return, it's safe to keep the commit state.
   commit_state_resetter.disable();
@@ -14672,7 +14851,8 @@ void RenderFrameHostImpl::UpdateIsolatableSandboxedIframeTracking(
 bool RenderFrameHostImpl::DidCommitNavigationInternal(
     std::unique_ptr<NavigationRequest> navigation_request,
     mojom::DidCommitProvisionalLoadParamsPtr params,
-    mojom::DidCommitSameDocumentNavigationParamsPtr same_document_params) {
+    mojom::DidCommitSameDocumentNavigationParamsPtr same_document_params,
+    const base::TimeTicks& did_commit_ipc_received_time) {
   const bool is_same_document_navigation = !!same_document_params;
   // Sanity-check the page transition for frame type. Fenced Frames
   // will set page transition to AUTO_SUBFRAME.
@@ -15082,6 +15262,13 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
         same_document_params->navigation_entry_screenshot_destination);
   }
 
+  // Grab the navigation's timestamps for recording metrics at the end of this
+  // function, since the NavigationRequest will be destroyed in the DidNavigate
+  // call below.
+  auto navigation_timeline =
+      navigation_request->GenerateNavigationTimelineForMetrics(
+          *params, did_commit_ipc_received_time);
+
   // TODO(crbug.com/40150370): Do not pass |params| to DidNavigate().
   NavigationRequest* raw_navigation_request = navigation_request.get();
   raw_navigation_request->frame_tree_node()->navigator().DidNavigate(
@@ -15106,6 +15293,13 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
   if (IsOutermostMainFrame()) {
     GetPage().SetLastCommitParams(std::move(params));
   }
+
+  navigation_timeline.MarkFinish();
+
+  // Record navigation trace events and annotate them with the committed URL,
+  // rather than the initial URL.
+  RecordNavigationTraceEventsAndMetrics(navigation_timeline,
+                                        GetLastCommittedURL());
 
   return true;
 }
@@ -15762,6 +15956,7 @@ void RenderFrameHostImpl::DidCommitNavigation(
     NavigationRequest* committing_navigation_request,
     mojom::DidCommitProvisionalLoadParamsPtr params,
     mojom::DidCommitProvisionalLoadInterfaceParamsPtr interface_params) {
+  base::TimeTicks did_commit_ipc_received_time = base::TimeTicks().Now();
   DCHECK(params);
   TRACE_EVENT("navigation", "RenderFrameHostImpl::DidCommitNavigation",
               ChromeTrackEvent::kRenderFrameHost, this, "params", params);
@@ -15879,9 +16074,14 @@ void RenderFrameHostImpl::DidCommitNavigation(
   }
 
   if (!DidCommitNavigationInternal(std::move(request), std::move(params),
-                                   /*same_document_params=*/nullptr)) {
+                                   /*same_document_params=*/nullptr,
+                                   did_commit_ipc_received_time)) {
     return;
   }
+
+  // NOTE: Navigation metrics assume that not much work is done between
+  // DidCommitNavigationInternal() and the end of this function. Avoid adding
+  // code below unless absolutely needed.
 
   // Since we didn't early return, it's safe to keep the commit state.
   commit_state_resetter.disable();
