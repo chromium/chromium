@@ -1,0 +1,62 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "headless/lib/browser/headless_screen_mac.h"
+
+#import <Cocoa/Cocoa.h>
+
+#import "base/apple/scoped_objc_class_swizzler.h"
+#include "base/check_deref.h"
+#include "ui/display/screen.h"
+#import "ui/gfx/mac/coordinate_conversion.h"
+
+// Class to donate the headless screen configuration aware implementation of
+// -[NSScreen frame].
+@interface HeadlessScreenNSScreenDonor : NSObject
+- (NSRect)frame;
+@end
+
+@implementation HeadlessScreenNSScreenDonor
+- (NSRect)frame {
+  display::Screen& screen = CHECK_DEREF(display::Screen::GetScreen());
+  display::Display primary_display = screen.GetPrimaryDisplay();
+  const gfx::Rect bounds = primary_display.bounds();
+  CHECK_EQ(bounds.x(), 0);
+  CHECK_EQ(bounds.y(), 0);
+  return NSMakeRect(0, 0, bounds.width(), bounds.height());
+}
+@end
+
+namespace headless {
+
+// Holds Apple Class Swizzler instance.
+class HeadlessScreenMac::ClassSwizzler {
+ public:
+  ClassSwizzler() {
+    swizzler_ = std::make_unique<base::apple::ScopedObjCClassSwizzler>(
+        [NSScreen class], [HeadlessScreenNSScreenDonor class],
+        @selector(frame));
+  }
+
+ private:
+  std::unique_ptr<base::apple::ScopedObjCClassSwizzler> swizzler_;
+};
+
+// static
+HeadlessScreenMac* HeadlessScreenMac::Create(
+    const gfx::Size& window_size,
+    std::string_view screen_info_spec) {
+  return new HeadlessScreenMac(window_size, screen_info_spec);
+}
+
+HeadlessScreenMac::HeadlessScreenMac(const gfx::Size& window_size,
+                                     std::string_view screen_info_spec)
+    : HeadlessScreen(window_size, screen_info_spec) {
+  // Override [NSScreen frame] with the headless screen aware implementation.
+  class_swizzler_ = std::make_unique<ClassSwizzler>();
+}
+
+HeadlessScreenMac::~HeadlessScreenMac() = default;
+
+}  // namespace headless

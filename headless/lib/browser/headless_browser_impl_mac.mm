@@ -10,7 +10,7 @@
 #include "content/public/browser/popup_menu.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
-#include "headless/lib/browser/headless_screen.h"
+#include "headless/lib/browser/headless_screen_mac.h"
 #include "headless/lib/browser/headless_web_contents_impl.h"
 #include "services/device/public/cpp/geolocation/system_geolocation_source_apple.h"
 #import "ui/base/cocoa/base_view.h"
@@ -37,8 +37,8 @@ void HeadlessBrowserImpl::PlatformInitialize() {
             CreateGeolocationSystemPermissionManager();
   }
 
-  HeadlessScreen* screen = HeadlessScreen::Create(options()->window_size,
-                                                  options()->screen_info_spec);
+  HeadlessScreen* screen = HeadlessScreenMac::Create(
+      options()->window_size, options()->screen_info_spec);
   display::Screen::SetScreenInstance(screen);
 
   content::DontShowPopupMenus();
@@ -64,9 +64,12 @@ void HeadlessBrowserImpl::PlatformSetWebContentsBounds(
     HeadlessWebContentsImpl* web_contents,
     const gfx::Rect& bounds) {
   content::WebContents* content_web_contents = web_contents->web_contents();
+  NSView* ns_view = content_web_contents->GetNativeView().GetNativeNSView();
 
-  NSView* web_view = content_web_contents->GetNativeView().GetNativeNSView();
-  web_view.frame = gfx::ScreenRectToNSRect(bounds);
+  // Note that by now -[NSScreen frame] implementation is overriden with
+  // the headless screen aware version so vertical coordinates conversion works
+  // correctly.
+  ns_view.frame = gfx::ScreenRectToNSRect(bounds);
 
   // Render widget host view is not ready at this point, so post a task to set
   // bounds at later time.
