@@ -345,8 +345,8 @@ IN_PROC_BROWSER_TEST_F(UpdateServiceTest, PolicyCorrupted) {
   // Make sure the extension first got disabled due to corruption.
   EXPECT_TRUE(registry_observer.WaitForExtensionUnloaded());
   ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
-  int reasons = prefs->GetDisableReasons(kExtensionId);
-  EXPECT_TRUE(reasons & disable_reason::DISABLE_CORRUPTED);
+  DisableReasonSet reasons = prefs->GetDisableReasons(kExtensionId);
+  EXPECT_TRUE(reasons.contains(disable_reason::DISABLE_CORRUPTED));
 
   // Make sure the extension then got re-installed, and that after reinstall it
   // is no longer disabled due to corruption.
@@ -354,7 +354,7 @@ IN_PROC_BROWSER_TEST_F(UpdateServiceTest, PolicyCorrupted) {
             WaitOnComponentUpdaterCompleteEvent(kExtensionId));
 
   reasons = prefs->GetDisableReasons(kExtensionId);
-  EXPECT_FALSE(reasons & disable_reason::DISABLE_CORRUPTED);
+  EXPECT_FALSE(reasons.contains(disable_reason::DISABLE_CORRUPTED));
 
   ASSERT_EQ(1, update_interceptor_->GetCount())
       << update_interceptor_->GetRequestsAsString();
@@ -689,8 +689,8 @@ IN_PROC_BROWSER_TEST_F(PolicyUpdateServiceTest, PRE_PolicyCorruptedOnStartup) {
   EXPECT_TRUE(registry_observer.WaitForExtensionUnloaded());
 
   ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
-  int reasons = prefs->GetDisableReasons(id_);
-  EXPECT_TRUE(reasons & disable_reason::DISABLE_CORRUPTED);
+  DisableReasonSet reasons = prefs->GetDisableReasons(id_);
+  EXPECT_TRUE(reasons.contains(disable_reason::DISABLE_CORRUPTED));
   EXPECT_EQ(1u, delay_tracker.calls().size());
 
   EXPECT_EQ(0, update_interceptor_->GetCount())
@@ -708,14 +708,14 @@ IN_PROC_BROWSER_TEST_F(PolicyUpdateServiceTest, PolicyCorruptedOnStartup) {
 
   ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
-  int disable_reasons = prefs->GetDisableReasons(id_);
-  if (disable_reasons & disable_reason::DISABLE_CORRUPTED) {
+  DisableReasonSet disable_reasons = prefs->GetDisableReasons(id_);
+  if (disable_reasons.contains(disable_reason::DISABLE_CORRUPTED)) {
     EXPECT_EQ(update_client::ComponentState::kUpdated,
               WaitOnComponentUpdaterCompleteEvent(id_));
     disable_reasons = prefs->GetDisableReasons(id_);
   }
 
-  EXPECT_FALSE(disable_reasons & disable_reason::DISABLE_CORRUPTED);
+  EXPECT_FALSE(disable_reasons.contains(disable_reason::DISABLE_CORRUPTED));
   EXPECT_TRUE(registry->enabled_extensions().Contains(id_));
 
   ASSERT_EQ(1, update_interceptor_->GetCount())

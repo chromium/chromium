@@ -360,10 +360,6 @@ class PdfAccessibilityTreeTest : public content::RenderViewTest {
     viewport_info_.scale = 1.0;
     viewport_info_.scroll = gfx::Point(0, 0);
     viewport_info_.offset = gfx::Point(0, 0);
-    viewport_info_.selection_start_page_index = 0u;
-    viewport_info_.selection_start_char_index = 0u;
-    viewport_info_.selection_end_page_index = 0u;
-    viewport_info_.selection_end_char_index = 0u;
     doc_info_.is_tagged = false;
     doc_info_.text_accessible = true;
     doc_info_.text_copyable = true;

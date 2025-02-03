@@ -232,8 +232,9 @@ class ContentVerifierHashTest
     ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
     // Make sure the extension got disabled due to corruption (and only due to
     // corruption).
-    int reasons = prefs->GetDisableReasons(id());
-    return reasons == disable_reason::DISABLE_CORRUPTED;
+    DisableReasonSet reasons = prefs->GetDisableReasons(id());
+    return reasons.size() == 1 &&
+           reasons.contains(disable_reason::DISABLE_CORRUPTED);
   }
 
   bool ExtensionIsEnabled() {

@@ -187,7 +187,6 @@ source_set("app_list") {
     "//base",
     "//base:i18n",
     "//cc/paint",
-    "//chromeos",
     "//chromeos/ash/components/feature_usage",
     "//chromeos/ash/services/assistant/public/cpp",
     "//chromeos/ui/vector_icons",

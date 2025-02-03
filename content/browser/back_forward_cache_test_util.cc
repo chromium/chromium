@@ -78,7 +78,7 @@ void BackForwardCacheMetricsTestMatcher::ExpectRestored(
 }
 
 void BackForwardCacheMetricsTestMatcher::ExpectNotRestored(
-    std::vector<BackForwardCacheMetrics::NotRestoredReason> not_restored,
+    BackForwardCacheCanStoreDocumentResult::NotRestoredReasons not_restored,
     std::vector<blink::scheduler::WebSchedulerTrackedFeature> block_listed,
     const std::vector<ShouldSwapBrowsingInstance>& not_swapped,
     const std::vector<BackForwardCache::DisabledReason>&
@@ -157,7 +157,7 @@ void BackForwardCacheMetricsTestMatcher::ExpectEvictedAfterCommitted(
 
 void BackForwardCacheMetricsTestMatcher::ExpectOutcome(
     BackForwardCacheMetrics::HistoryNavigationOutcome outcome,
-    std::vector<BackForwardCacheMetrics::NotRestoredReason> not_restored,
+    BackForwardCacheCanStoreDocumentResult::NotRestoredReasons not_restored,
     base::Location location) {
   base::HistogramBase::Sample32 sample = base::HistogramBase::Sample32(outcome);
   AddSampleToBuckets(&expected_outcomes_, sample);
@@ -198,7 +198,7 @@ void BackForwardCacheMetricsTestMatcher::ExpectOutcome(
 }
 
 void BackForwardCacheMetricsTestMatcher::ExpectReasons(
-    std::vector<BackForwardCacheMetrics::NotRestoredReason> not_restored,
+    BackForwardCacheCanStoreDocumentResult::NotRestoredReasons not_restored,
     std::vector<blink::scheduler::WebSchedulerTrackedFeature> block_listed,
     const std::vector<ShouldSwapBrowsingInstance>& not_swapped,
     const std::vector<BackForwardCache::DisabledReason>&
@@ -230,14 +230,12 @@ void BackForwardCacheMetricsTestMatcher::ExpectReasons(
 }
 
 void BackForwardCacheMetricsTestMatcher::ExpectNotRestoredReasons(
-    std::vector<BackForwardCacheMetrics::NotRestoredReason> reasons,
+    BackForwardCacheCanStoreDocumentResult::NotRestoredReasons reasons,
     base::Location location) {
-  uint64_t not_restored_reasons_bits = 0;
   for (BackForwardCacheMetrics::NotRestoredReason reason : reasons) {
     base::HistogramBase::Sample32 sample =
         base::HistogramBase::Sample32(reason);
     AddSampleToBuckets(&expected_not_restored_, sample);
-    not_restored_reasons_bits |= 1ull << static_cast<int>(reason);
   }
 
   auto delegate_disabled_idx =
@@ -266,10 +264,18 @@ void BackForwardCacheMetricsTestMatcher::ExpectNotRestoredReasons(
 
   std::string not_restored_reasons = "BackForwardCache.NotRestoredReasons";
   expected_ukm_not_restored_reasons_.push_back(
-      {{not_restored_reasons, not_restored_reasons_bits}});
+      {{not_restored_reasons, reasons.GetNth64bitWordBitmask(0).value()}});
   EXPECT_THAT(
       ukm_recorder().GetMetrics("HistoryNavigation", {not_restored_reasons}),
       expected_ukm_not_restored_reasons_)
+      << location.ToString();
+
+  std::string not_restored_reasons2 = "BackForwardCache.NotRestoredReasons2";
+  expected_ukm_not_restored_reasons2_.push_back(
+      {{not_restored_reasons2, reasons.GetNth64bitWordBitmask(1).value()}});
+  EXPECT_THAT(
+      ukm_recorder().GetMetrics("HistoryNavigation", {not_restored_reasons2}),
+      expected_ukm_not_restored_reasons2_)
       << location.ToString();
 }
 

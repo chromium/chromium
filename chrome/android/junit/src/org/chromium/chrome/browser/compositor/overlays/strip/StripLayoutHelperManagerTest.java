@@ -235,7 +235,7 @@ public class StripLayoutHelperManagerTest {
                         mModalDialogManager,
                         mDataSharingTabManager);
         mStripLayoutHelperManager.setTabModelSelector(mTabModelSelector, mTabCreatorManager);
-        mStripLayoutHelperManager.setIsTabStripHidden(false);
+        mStripLayoutHelperManager.setIsTabStripHiddenByHeightTransition(false);
     }
 
     @Test
@@ -871,17 +871,17 @@ public class StripLayoutHelperManagerTest {
     @Test
     public void testGetVirtualViews_TabStripHeightTransition() {
         List<VirtualView> views = new ArrayList<>();
-        mStripLayoutHelperManager.setIsTabStripHidden(true);
+        mStripLayoutHelperManager.setIsTabStripHiddenByHeightTransition(true);
         mStripLayoutHelperManager.getVirtualViews(views);
         assertTrue("Views are empty when tab strip hidden.", views.isEmpty());
         verify(mStatusBarColorController).setTabStripHiddenOnTablet(true);
 
-        mStripLayoutHelperManager.setIsTabStripHidden(false);
+        mStripLayoutHelperManager.setIsTabStripHiddenByHeightTransition(false);
         mStripLayoutHelperManager.onHeightChanged(40, /* applyScrimOverlay= */ true);
         mStripLayoutHelperManager.getVirtualViews(views);
         assertTrue("Views are empty during tab strip transition.", views.isEmpty());
-        // Invoked twice by #setIsTabStripHidden(), once in init and once here, and once by
-        // #onHeightChanged().
+        // Invoked twice by #setIsTabStripHiddenByHeightTransition(), once in init and once here,
+        // and once by #onHeightChanged().
         verify(mStatusBarColorController, times(3)).setTabStripHiddenOnTablet(false);
 
         mStripLayoutHelperManager.onHeightTransitionFinished();
@@ -1288,7 +1288,7 @@ public class StripLayoutHelperManagerTest {
         // Verify the strip visibility.
         assertEquals(
                 "Strip visibility is incorrect.",
-                StripVisibilityState.INVISIBLE,
+                StripVisibilityState.HIDDEN_BY_FADE,
                 mStripLayoutHelperManager.getStripVisibilityState());
         // Verify that a motion event on the strip is not handled.
         assertFalse(
@@ -1303,7 +1303,7 @@ public class StripLayoutHelperManagerTest {
         // Verify the strip visibility.
         assertEquals(
                 "Strip visibility is incorrect.",
-                StripVisibilityState.INVISIBLE,
+                StripVisibilityState.HIDDEN_BY_FADE,
                 mStripLayoutHelperManager.getStripVisibilityState());
         // Verify StatusBarColorController method invocations during the transition.
         InOrder hideTransition = Mockito.inOrder(mStatusBarColorController);
@@ -1351,7 +1351,7 @@ public class StripLayoutHelperManagerTest {
         mStripLayoutHelperManager.onFadeTransitionRequested(newOpacity, 0);
 
         var expectedVisibilityState =
-                showStrip ? StripVisibilityState.VISIBLE : StripVisibilityState.INVISIBLE;
+                showStrip ? StripVisibilityState.VISIBLE : StripVisibilityState.HIDDEN_BY_FADE;
         assertEquals(
                 "Strip visibility after fade transition is incorrect.",
                 expectedVisibilityState,

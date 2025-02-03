@@ -20,7 +20,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "remoting/host/clipboard.h"
 #include "remoting/host/input_injector.h"
 #include "remoting/host/linux/input_injector_constants_linux.h"
@@ -31,7 +30,7 @@
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "ui/gfx/x/xproto.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "remoting/host/chromeos/point_transformer.h"
 #endif
 
@@ -133,7 +132,7 @@ class InputInjectorX11 : public InputInjector {
     static const int kNumPointerButtons = 9;
 
     int pointer_button_map_[kNumPointerButtons];
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     PointTransformer point_transformer_;
 #endif
     std::unique_ptr<Clipboard> clipboard_;

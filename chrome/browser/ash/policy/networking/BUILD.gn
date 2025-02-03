@@ -87,7 +87,7 @@ source_set("browser_tests") {
     "//chrome/common:constants",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
-    "//chromeos:test_utils",
+    "//chromeos:test_support",
     "//chromeos/ash/components/dbus/shill",
     "//chromeos/ash/components/install_attributes:test_support",
     "//chromeos/ash/components/network",

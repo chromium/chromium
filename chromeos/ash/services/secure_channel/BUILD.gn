@@ -168,7 +168,6 @@ static_library("secure_channel") {
   deps = [
     "//ash/constants",
     "//base",
-    "//chromeos",
     "//chromeos/ash/components/multidevice",
     "//chromeos/ash/components/multidevice/logging",
     "//chromeos/ash/components/timer_factory",

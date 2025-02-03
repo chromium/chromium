@@ -492,13 +492,6 @@ bool IsSlowNetwork(WebContents* web_contents) {
 
 }  // namespace
 
-const char kMaxNumOfRunningSpeculationRulesEagerPrerenders[] =
-    "max_num_of_running_speculation_rules_eager_prerenders";
-const char kMaxNumOfRunningSpeculationRulesNonEagerPrerenders[] =
-    "max_num_of_running_speculation_rules_non_eager_prerenders";
-const char kMaxNumOfRunningEmbedderPrerenders[] =
-    "max_num_of_running_embedder_prerenders";
-
 PrerenderHostRegistry::PrerenderHostRegistry(WebContents& web_contents)
     : memory_pressure_listener_(
           FROM_HERE,
@@ -1866,16 +1859,16 @@ bool PrerenderHostRegistry::IsAllowedToStartPrerenderingForTrigger(
   switch (limit_group) {
     case PrerenderLimitGroup::kSpeculationRulesEager: {
       int host_count = GetHostCountByLimitGroup(limit_group);
-      return host_count < base::GetFieldTrialParamByFeatureAsInt(
-                              features::kPrerender2NewLimitAndScheduler,
-                              kMaxNumOfRunningSpeculationRulesEagerPrerenders,
-                              10);
+      return host_count <
+             base::GetFieldTrialParamByFeatureAsInt(
+                 features::kPrerender2NewLimitAndScheduler,
+                 "max_num_of_running_speculation_rules_eager_prerenders", 10);
     }
     case PrerenderLimitGroup::kSpeculationRulesNonEager: {
       int host_count = GetHostCountByLimitGroup(limit_group);
       int limit_non_eager = base::GetFieldTrialParamByFeatureAsInt(
           features::kPrerender2NewLimitAndScheduler,
-          kMaxNumOfRunningSpeculationRulesNonEagerPrerenders, 2);
+          "max_num_of_running_speculation_rules_non_eager_prerenders", 2);
 
       // When the limit on non-eager speculation rules is reached, cancel the
       // oldest host to allow a newly incoming trigger to start.
@@ -1969,11 +1962,8 @@ bool PrerenderHostRegistry::PrerenderCanBeStartedWhenInitiatorIsInBackground() {
 
 bool PrerenderHostRegistry::IsAllowedToStartPrerenderingForEmbedder() {
   int host_count = GetHostCountByLimitGroup(PrerenderLimitGroup::kEmbedder);
-  return base::GetFieldTrialParamByFeatureAsInt(
-             features::kPrerender2NewLimitAndScheduler,
-             kMaxNumOfRunningEmbedderPrerenders, 2) -
-             host_count >
-         0;
+  return web_contents()->GetDelegate()->AllowedPrerenderingCount(
+             *web_contents()) > host_count;
 }
 
 }  // namespace content

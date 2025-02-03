@@ -554,16 +554,21 @@ ThemeSyncableService::ThemeSyncState ThemeSyncableService::MaybeSetTheme(
         theme_service_->SetTheme(extension);
         return ThemeSyncState::kApplied;
       }
-      const auto disabled_reasons =
+      const extensions::DisableReasonSet disable_reasons =
           extensions::ExtensionPrefs::Get(profile_)->GetDisableReasons(id);
-      if (disabled_reasons == extensions::disable_reason::DISABLE_USER_ACTION) {
+      bool is_disabled_by_user =
+          disable_reasons.size() == 1 &&
+          disable_reasons.contains(
+              extensions::disable_reason::DISABLE_USER_ACTION);
+      if (is_disabled_by_user) {
         // The user had installed this theme but disabled it (by installing
         // another atop it); re-enable.
         theme_service_->RevertToExtensionTheme(id);
         return ThemeSyncState::kApplied;
       }
-      DVLOG(1) << "Theme " << id << " is disabled with reason "
-               << disabled_reasons << "; aborting";
+      DVLOG(1) << "Theme " << id
+               << " is disabled with reasons other than DISABLE_USER_ACTION "
+               << "; aborting";
       return ThemeSyncState::kFailed;
     }
 

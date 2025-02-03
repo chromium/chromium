@@ -11,7 +11,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "remoting/base/auto_thread.h"
 #include "remoting/base/url_request_context_getter.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -21,7 +20,7 @@ namespace remoting {
 
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 class ChromotingHostContextChromeOs : public ChromotingHostContext {
  public:
   ChromotingHostContextChromeOs(
@@ -115,7 +114,7 @@ ChromotingHostContextChromeOs::url_loader_factory() {
   }
   return network_shared_url_loader_factory_;
 }
-#else  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#else  // !BUILDFLAG(IS_CHROMEOS)
 void DisallowBlockingOperations() {
   base::DisallowBlocking();
   // TODO(crbug.com/41360128): Re-enable after the underlying issue is fixed.
@@ -203,7 +202,7 @@ ChromotingHostContextDesktop::url_loader_factory() {
   return url_loader_factory_owner_->GetURLLoaderFactory();
 }
 
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
@@ -264,7 +263,7 @@ policy::ManagementService* ChromotingHostContext::management_service() {
   return policy::PlatformManagementService::GetInstance();
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 std::unique_ptr<ChromotingHostContext> ChromotingHostContext::Create(
     scoped_refptr<AutoThreadTaskRunner> ui_task_runner) {
 #if BUILDFLAG(IS_WIN)
@@ -312,7 +311,7 @@ std::unique_ptr<ChromotingHostContext> ChromotingHostContext::Create(
       AutoThread::Create("ChromotingEncodeThread", ui_task_runner),
       base::MakeRefCounted<URLRequestContextGetter>(network_task_runner));
 }
-#else   // BUILDFLAG(IS_CHROMEOS_ASH)
+#else   // BUILDFLAG(IS_CHROMEOS)
 
 // static
 std::unique_ptr<ChromotingHostContext> ChromotingHostContext::CreateForChromeOS(
@@ -349,13 +348,13 @@ std::unique_ptr<ChromotingHostContext> ChromotingHostContext::CreateForChromeOS(
       AutoThread::Create("ChromotingEncodeThread", file_auto_task_runner),
       shared_url_loader_factory);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // static
 std::unique_ptr<ChromotingHostContext> ChromotingHostContext::CreateForTesting(
     scoped_refptr<AutoThreadTaskRunner> ui_task_runner,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return ChromotingHostContext::CreateForChromeOS(
       ui_task_runner, ui_task_runner, ui_task_runner, url_loader_factory);
 #else

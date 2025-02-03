@@ -9,7 +9,6 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/policy/core/common/management/platform_management_service.h"
 
 namespace base {
@@ -33,7 +32,7 @@ class AutoThreadTaskRunner;
 // testing purposes.
 class ChromotingHostContext {
  public:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Attaches task runners to the relevant browser threads for the chromoting
   // host. Must be called on the UI thread of the browser process.
   static std::unique_ptr<ChromotingHostContext> CreateForChromeOS(
@@ -48,7 +47,7 @@ class ChromotingHostContext {
   // nullptr is returned if any threads fail to start.
   static std::unique_ptr<ChromotingHostContext> Create(
       scoped_refptr<AutoThreadTaskRunner> ui_task_runner);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   static std::unique_ptr<ChromotingHostContext> CreateForTesting(
       scoped_refptr<AutoThreadTaskRunner> ui_task_runner,
       scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory);

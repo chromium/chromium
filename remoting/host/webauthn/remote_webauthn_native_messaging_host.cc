@@ -13,7 +13,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/chromoting_host_services_client.h"
@@ -61,11 +60,11 @@ RemoteWebAuthnNativeMessagingHost::RemoteWebAuthnNativeMessagingHost(
 RemoteWebAuthnNativeMessagingHost::~RemoteWebAuthnNativeMessagingHost() {
   DCHECK(task_runner_->BelongsToCurrentThread());
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   // This makes sure the log messages below get sent to the extension before the
   // caller sequence gets terminated.
   log_message_handler_->set_log_synchronously_if_possible(true);
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   if (!id_to_request_canceller_.empty()) {
     LOG(WARNING) << id_to_request_canceller_.size()
@@ -110,12 +109,12 @@ void RemoteWebAuthnNativeMessagingHost::Start(
     extensions::NativeMessageHost::Client* client) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   client_ = client;
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   log_message_handler_ =
       std::make_unique<LogMessageHandler>(base::BindRepeating(
           &RemoteWebAuthnNativeMessagingHost::SendMessageToClient,
           base::Unretained(this)));
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
   HOST_LOG << "Remote WebAuthn native messaging host has started";
 }
 

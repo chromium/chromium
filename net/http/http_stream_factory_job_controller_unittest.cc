@@ -6835,7 +6835,7 @@ TEST_F(HttpStreamFactoryJobControllerPoolTest, Preconnect) {
   FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
   endpoint_request
       ->add_endpoint(ServiceEndpointBuilder().add_v4("127.0.0.1").endpoint())
-      .set_start_result(OK);
+      .CompleteStartSynchronously(OK);
 
   tcp_data_ = std::make_unique<SequencedSocketData>();
   tcp_data_->set_connect_data(MockConnect(ASYNC, OK));

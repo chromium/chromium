@@ -38,7 +38,7 @@ source_set("unit_tests") {
     ":system",
     "//ash/constants",
     "//base/test:test_support",
-    "//chromeos:test_utils",
+    "//chromeos:test_support",
     "//testing/gtest",
   ]
   sources = [

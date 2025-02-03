@@ -1721,6 +1721,8 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   // NOTE: Closes ash and destroys `Shell`.
   ChromeBrowserMainPartsLinux::PostMainMessageLoopRun();
 
+  magic_boost_controller_ash_.reset();
+
   // BrowserManager and CrosapiManager need to outlive the Profile, which
   // is destroyed inside ChromeBrowserMainPartsLinux::PostMainMessageLoopRun().
   browser_manager_.reset();

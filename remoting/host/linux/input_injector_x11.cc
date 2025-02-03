@@ -24,7 +24,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/clipboard.h"
 #include "remoting/host/linux/input_injector_constants_linux.h"
@@ -365,7 +364,7 @@ void InputInjectorX11::Core::InjectMouseEvent(const MouseEvent& event) {
     // apps which assume MotionNotify implies movement. See crbug.com/138075.
     bool inject_motion = true;
     webrtc::DesktopVector new_mouse_position(event.x(), event.y());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // Interim hack to handle display rotation on Chrome OS.
     // TODO(kelvin): Remove this when Chrome OS has completely migrated to
     // Ozone (crbug.com/439287).

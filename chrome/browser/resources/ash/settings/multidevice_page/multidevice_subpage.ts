@@ -17,7 +17,6 @@ import './multidevice_combined_setup_item.js';
 import './multidevice_feature_item.js';
 import './multidevice_feature_toggle.js';
 import './multidevice_task_continuation_item.js';
-import './multidevice_task_continuation_item_lacros.js';
 import './multidevice_tether_item.js';
 import './multidevice_wifi_sync_item.js';
 import './multidevice_forget_device_dialog.js';
@@ -210,10 +209,6 @@ export class SettingsMultideviceSubpageElement extends
 
   private isPhoneHubDisabled_(): boolean {
     return !this.isSuiteOn() || !this.isPhoneHubOn();
-  }
-
-  private isSyncedSessionSharingEnabled_(): boolean {
-    return this.pageContentData.isChromeOSSyncedSessionSharingEnabled;
   }
 }
 

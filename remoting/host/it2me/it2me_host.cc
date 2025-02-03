@@ -19,7 +19,7 @@
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "components/policy/policy_constants.h"
 #include "components/webrtc/thread_wrapper.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -56,7 +56,7 @@
 #include "remoting/signaling/signaling_id_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "base/feature_list.h"
 #include "remoting/host/chromeos/features.h"
 #endif
@@ -120,7 +120,7 @@ It2MeHost::DeferredConnectContext::DeferredConnectContext() = default;
 It2MeHost::DeferredConnectContext::~DeferredConnectContext() = default;
 
 It2MeHost::It2MeHost() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   host_event_reporter_factory_ =
       base::BindRepeating(&HostEventReporter::Create);
 #endif
@@ -133,7 +133,7 @@ It2MeHost::~It2MeHost() {
 
 void It2MeHost::set_chrome_os_enterprise_params(
     ChromeOsEnterpriseParams params) {
-#if BUILDFLAG(IS_CHROMEOS_ASH) || !defined(NDEBUG)
+#if BUILDFLAG(IS_CHROMEOS) || !defined(NDEBUG)
   chrome_os_enterprise_params_ = std::move(params);
 #else
   NOTREACHED() << "It2MeHost::set_chrome_os_enterprise_params is only "
@@ -146,7 +146,7 @@ void It2MeHost::set_authorized_helper(const std::string& authorized_helper) {
 }
 
 void It2MeHost::set_reconnect_params(ReconnectParams reconnect_params) {
-#if BUILDFLAG(IS_CHROMEOS_ASH) || !defined(NDEBUG)
+#if BUILDFLAG(IS_CHROMEOS) || !defined(NDEBUG)
   reconnect_params_.emplace(std::move(reconnect_params));
 #else
   NOTREACHED() << "It2MeHost::set_reconnect_params is only supported on CrOS";
@@ -154,7 +154,7 @@ void It2MeHost::set_reconnect_params(ReconnectParams reconnect_params) {
 }
 
 bool It2MeHost::SessionSupportsReconnections() const {
-#if BUILDFLAG(IS_CHROMEOS_ASH) || !defined(NDEBUG)
+#if BUILDFLAG(IS_CHROMEOS) || !defined(NDEBUG)
   return is_enterprise_session() &&
          chrome_os_enterprise_params_->allow_reconnections;
 #else
@@ -164,7 +164,7 @@ bool It2MeHost::SessionSupportsReconnections() const {
 
 std::optional<ReconnectParams> It2MeHost::CreateReconnectParams() const {
   std::optional<ReconnectParams> reconnect_params;
-#if BUILDFLAG(IS_CHROMEOS_ASH) || !defined(NDEBUG)
+#if BUILDFLAG(IS_CHROMEOS) || !defined(NDEBUG)
   if (!SessionSupportsReconnections()) {
     return reconnect_params;
   }
@@ -382,7 +382,7 @@ void It2MeHost::ConnectOnNetworkThread(
   }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || !defined(NDEBUG)
+#if BUILDFLAG(IS_CHROMEOS) || !defined(NDEBUG)
   if (is_enterprise_session()) {
     options.set_enable_user_interface(
         !chrome_os_enterprise_params_->suppress_user_dialogs);
@@ -407,10 +407,10 @@ void It2MeHost::ConnectOnNetworkThread(
   // Create event logger.
   host_event_logger_ =
       HostEventLogger::Create(host_->status_monitor(), kApplicationName);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   host_event_reporter_ =
       host_event_reporter_factory_.Run(host_->status_monitor());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Connect signaling and start the host.
   signal_strategy_->Connect();
@@ -477,12 +477,12 @@ ValidationCallback It2MeHost::GetValidationCallbackForTesting() {
                              base::Unretained(this));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void It2MeHost::SetHostEventReporterFactoryForTesting(
     HostEventReporterFactory factory) {
   host_event_reporter_factory_ = factory;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void It2MeHost::OnPolicyUpdate(base::Value::Dict policies) {
   // The policy watcher runs on the |ui_task_runner|.
@@ -629,12 +629,12 @@ void It2MeHost::UpdateSessionPolicies(
   local_session_policies->allow_file_transfer = false;
   local_session_policies->allow_uri_forwarding = false;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || !defined(NDEBUG)
+#if BUILDFLAG(IS_CHROMEOS) || !defined(NDEBUG)
   if (is_enterprise_session()) {
     local_session_policies->curtain_required =
         chrome_os_enterprise_params_->curtain_local_user_session;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     bool enterprise_file_transfer_allowed =
         platform_policies
             .FindBool(policy::key::kRemoteAccessHostAllowEnterpriseFileTransfer)
@@ -808,9 +808,9 @@ void It2MeHost::DisconnectOnNetworkThread(protocol::ErrorCode error_code) {
       FROM_HERE, base::DoNothingWithBoundArgs(std::move(ordered_destruction)),
       kDestroyMessagingObjectDelay);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   host_event_reporter_.reset();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   host_event_logger_ = nullptr;
 
   // Post tasks to delete UI objects on the UI thread.

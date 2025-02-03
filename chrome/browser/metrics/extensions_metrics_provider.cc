@@ -277,27 +277,29 @@ std::vector<ExtensionInstallProto::DisableReason> GetDisableReasons(
        ExtensionInstallProto::UNKNOWN},
   };
 
-  int disable_reasons = prefs->GetDisableReasons(id);
-  DCHECK_EQ(
-      0, disable_reasons &
-             extensions::disable_reason::DEPRECATED_DISABLE_UNKNOWN_FROM_SYNC)
-      << "Encountered bad disable reason: " << disable_reasons;
+  extensions::DisableReasonSet disable_reasons = prefs->GetDisableReasons(id);
+  DCHECK(!disable_reasons.contains(
+      extensions::disable_reason::DEPRECATED_DISABLE_UNKNOWN_FROM_SYNC))
+      << "Encountered bad disable reason: DEPRECATED_DISABLE_UNKNOWN_FROM_SYNC";
   std::vector<ExtensionInstallProto::DisableReason> reasons;
   for (const auto& entry : disable_reason_map) {
-    int mask = static_cast<int>(entry.disable_reason);
-    if ((disable_reasons & mask) != 0) {
+    extensions::disable_reason::DisableReason disable_reason =
+        entry.disable_reason;
+    if (disable_reasons.contains(disable_reason)) {
       reasons.push_back(entry.proto_disable_reason);
-      disable_reasons &= ~mask;
+      disable_reasons.erase(disable_reason);
     }
   }
-  if (disable_reasons !=
-      extensions::disable_reason::DisableReason::DISABLE_NONE) {
+  if (!disable_reasons.empty()) {
     // Record any unexpected disable reasons - these are likely deprecated
     // reason(s) that have not been migrated over in a few clients. Use this
     // histogram to determine how many clients are affected to decide what
     // action to take (if any).
+    // TODO(crbug.com/372186532): This histogram has expired. We should either
+    // remove this code or add a new histogram which logs all reasons separately
+    // (instead of as a bitflag).
     base::UmaHistogramSparse("Extensions.DeprecatedDisableReasonsObserved",
-                             disable_reasons);
+                             extensions::IntegerSetToBitflag(disable_reasons));
   }
 
   return reasons;

@@ -112,8 +112,7 @@ class SupervisedUserExtensionTestBase : public ExtensionServiceTestWithInstall {
     EXPECT_TRUE(registry()->enabled_extensions().Contains(extension_id));
     EXPECT_FALSE(IsPendingCustodianApproval(extension_id));
     ExtensionPrefs* extension_prefs = ExtensionPrefs::Get(profile());
-    EXPECT_EQ(disable_reason::DISABLE_NONE,
-              extension_prefs->GetDisableReasons(extension_id));
+    EXPECT_TRUE(extension_prefs->GetDisableReasons(extension_id).empty());
     return registry()->enabled_extensions().GetByID(extension_id);
   }
 

@@ -297,12 +297,8 @@ bool ExtensionService::OnExternalExtensionUpdateUrlFound(
               registry_->GetExtensionById(info.extension_id,
                                           ExtensionRegistry::EVERYTHING),
               nullptr)) {
-        // TODO(crbug.com/372186532): Remove this conversion code after
-        // GetDisableReasons() is migrated to return a `DisableReasonSet`.
-        const int disable_reasons_legacy_bitflag =
-            extension_prefs_->GetDisableReasons(info.extension_id);
         DisableReasonSet disable_reasons =
-            BitflagToIntegerSet(disable_reasons_legacy_bitflag);
+            extension_prefs_->GetDisableReasons(info.extension_id);
 
         const DisableReasonSet to_remove = {
             disable_reason::DISABLE_USER_ACTION,
@@ -315,8 +311,7 @@ bool ExtensionService::OnExternalExtensionUpdateUrlFound(
                                                 disable_reasons);
 
         // Only re-enable the extension if there are no other disable reasons.
-        if (extension_prefs_->GetDisableReasons(info.extension_id) ==
-            disable_reason::DISABLE_NONE) {
+        if (extension_prefs_->GetDisableReasons(info.extension_id).empty()) {
           EnableExtension(info.extension_id);
         }
       }
@@ -1163,12 +1158,8 @@ void ExtensionService::CheckManagementPolicy() {
   // constructed above, since disabled_extensions() and enabled_extensions() are
   // supposed to be mutually exclusive.
   for (const auto& extension : registry_->disabled_extensions()) {
-    // TODO(crbug.com/372186532): Remove this conversion code after
-    // GetDisableReasons() is migrated to return a `DisableReasonSet`.
-    const int disable_reasons_legacy_bitflag =
-        extension_prefs_->GetDisableReasons(extension->id());
     DisableReasonSet disable_reasons =
-        BitflagToIntegerSet(disable_reasons_legacy_bitflag);
+        extension_prefs_->GetDisableReasons(extension->id());
 
     // Find all extensions disabled due to minimum version requirement and
     // management policy but now satisfying it.
@@ -1269,8 +1260,11 @@ void ExtensionService::CheckManagementPolicy() {
     // for update.
     ExtensionUpdater::CheckParams to_recheck;
     for (const auto& extension : registry_->disabled_extensions()) {
-      if (extension_prefs_->GetDisableReasons(extension->id()) ==
-          disable_reason::DISABLE_UPDATE_REQUIRED_BY_POLICY) {
+      DisableReasonSet disable_reasons =
+          extension_prefs_->GetDisableReasons(extension->id());
+      if (disable_reasons.size() == 1 &&
+          disable_reasons.contains(
+              disable_reason::DISABLE_UPDATE_REQUIRED_BY_POLICY)) {
         // The minimum version check is the only thing holding this extension
         // back, so check if it can be updated to fix that.
         to_recheck.ids.push_back(extension->id());
@@ -1484,7 +1478,8 @@ void ExtensionService::CheckPermissionsIncrease(const Extension* extension,
   // still remember that "omnibox" had been granted, so that if the
   // extension once again includes "omnibox" in an upgrade, the extension
   // can upgrade without requiring this user's approval.
-  int disable_reasons = extension_prefs_->GetDisableReasons(extension->id());
+  DisableReasonSet disable_reasons =
+      extension_prefs_->GetDisableReasons(extension->id());
 
   // Silently grant all active permissions to pre-installed apps and apps
   // installed in kiosk mode.
@@ -1539,15 +1534,16 @@ void ExtensionService::CheckPermissionsIncrease(const Extension* extension,
   if (is_extension_loaded && previously_disabled) {
     // Legacy disabled extensions do not have a disable reason. Infer that it
     // was likely disabled by the user.
-    if (disable_reasons == disable_reason::DISABLE_NONE)
-      disable_reasons |= disable_reason::DISABLE_USER_ACTION;
+    if (disable_reasons.empty()) {
+      disable_reasons.insert(disable_reason::DISABLE_USER_ACTION);
+    }
   }
 
   // If the extension is disabled due to a permissions increase, but does in
   // fact have all permissions, remove that disable reason.
-  if (disable_reasons & disable_reason::DISABLE_PERMISSIONS_INCREASE &&
+  if (disable_reasons.contains(disable_reason::DISABLE_PERMISSIONS_INCREASE) &&
       !is_privilege_increase) {
-    disable_reasons &= ~disable_reason::DISABLE_PERMISSIONS_INCREASE;
+    disable_reasons.erase(disable_reason::DISABLE_PERMISSIONS_INCREASE);
     extension_prefs_->RemoveDisableReason(
         extension->id(), disable_reason::DISABLE_PERMISSIONS_INCREASE);
   }
@@ -1557,17 +1553,14 @@ void ExtensionService::CheckPermissionsIncrease(const Extension* extension,
   // disabled because it was installed remotely, don't add another disable
   // reason.
   if (is_privilege_increase &&
-      !(disable_reasons & disable_reason::DISABLE_REMOTE_INSTALL)) {
-    disable_reasons |= disable_reason::DISABLE_PERMISSIONS_INCREASE;
+      !disable_reasons.contains(disable_reason::DISABLE_REMOTE_INSTALL)) {
+    disable_reasons.insert(disable_reason::DISABLE_PERMISSIONS_INCREASE);
   }
 
-  if (disable_reasons == disable_reason::DISABLE_NONE) {
+  if (disable_reasons.empty()) {
     extension_prefs_->SetExtensionEnabled(extension->id());
   } else {
-    // TODO(crbug.com/372186532): Remove the conversion code after
-    // GetDisableReasons() is migrated to return a `DisableReasonSet`.
-    extension_prefs_->SetExtensionDisabled(
-        extension->id(), BitflagToIntegerSet(disable_reasons));
+    extension_prefs_->SetExtensionDisabled(extension->id(), disable_reasons);
   }
 }
 
@@ -2055,14 +2048,13 @@ DisableReasonSet ExtensionService::GetDisableReasonsOnInstalled(
   // An already disabled extension should inherit the disable reasons and
   // remain disabled.
   if (extension_prefs_->IsExtensionDisabled(extension->id())) {
-    int disable_reasons = extension_prefs_->GetDisableReasons(extension->id());
+    DisableReasonSet disable_reasons =
+        extension_prefs_->GetDisableReasons(extension->id());
     // If an extension was disabled without specified reason, presume it's
     // disabled by user.
-    // TODO(crbug.com/372186532): Remove the conversion code after
-    // GetDisableReasons() is migrated to return a DisableReasonSet.
-    return disable_reasons == disable_reason::DISABLE_NONE
+    return disable_reasons.empty()
                ? DisableReasonSet({disable_reason::DISABLE_USER_ACTION})
-               : BitflagToIntegerSet(disable_reasons);
+               : disable_reasons;
   }
 
   if (ExternalInstallManager::IsPromptingEnabled()) {

@@ -266,10 +266,7 @@ class PdfAccessibilityTree : public ui::AXTreeSource<const ui::AXNode*,
   int32_t orientation_ = 0;
   gfx::Vector2dF scroll_;
   gfx::Vector2dF offset_;
-  uint32_t selection_start_page_index_ = 0;
-  uint32_t selection_start_char_index_ = 0;
-  uint32_t selection_end_page_index_ = 0;
-  uint32_t selection_end_char_index_ = 0;
+  chrome_pdf::Selection selection_;
   uint32_t page_count_ = 0;
   bool is_tagged_ = false;
   std::unique_ptr<ui::AXNodeData> doc_node_;

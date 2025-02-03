@@ -493,6 +493,129 @@ TEST(MaybeReportConfidenceUMAsTest, ImageLoadingPriority) {
         confidence_of_b, /*expected_count=*/1);
     expect_empty(histogram_tester);
   }
+
+  {
+    base::HistogramTester histogram_tester;
+    predictors::LcppStat lcpp_stat_prelearn;
+    {
+      auto& stat = *lcpp_stat_prelearn.mutable_lcp_element_locator_stat();
+      {
+        auto& bucket = *stat.add_lcp_element_locator_buckets();
+        bucket.set_lcp_element_locator("#a");
+        bucket.set_frequency(1000);  // confidence = 100%
+      }
+      stat.set_other_bucket_frequency(0);
+    }
+    predictors::LcppDataInputs lcpp_data_inputs;
+    lcpp_data_inputs.lcp_element_locator = "#a";
+    internal::MaybeReportConfidenceUMAsForTesting(
+        GURL("https://a.com"), lcpp_stat_prelearn, lcpp_data_inputs);
+    int total_frequency = 1000;
+    int frequency_of_a = 1000;
+    int confidence_of_a = 100;
+    histogram_tester.ExpectUniqueSample(
+        internal::kHistogramLCPPImageLoadingPriorityFrequencyOfActualPositive,
+        frequency_of_a, /*expected_bucket_count=*/1);
+    histogram_tester.ExpectUniqueSample(
+        internal::kHistogramLCPPImageLoadingPriorityConfidenceOfActualPositive,
+        confidence_of_a, /*expected_bucket_count=*/1);
+    histogram_tester.ExpectTotalCount(
+        internal::kHistogramLCPPImageLoadingPriorityFrequencyOfActualNegative,
+        /*expected_count=*/0);
+    histogram_tester.ExpectTotalCount(
+        internal::kHistogramLCPPImageLoadingPriorityConfidenceOfActualNegative,
+        /*expected_count=*/0);
+    histogram_tester.ExpectUniqueSample(
+        "PageLoad.Clients.LCPP."
+        "ImageLoadingPriority"
+        ".TotalFrequencyOfActualPositive"
+        ".PerConfidence.2",
+        99, /*expected_bucket_count=*/1);
+    histogram_tester.ExpectUniqueSample(
+        "PageLoad.Clients.LCPP."
+        "ImageLoadingPriority"
+        ".TotalFrequencyOfActualPositive"
+        ".WithConfidence"
+        "90To100",
+        total_frequency, /*expected_bucket_count=*/1);
+    histogram_tester.ExpectTotalCount(
+        "PageLoad.Clients.LCPP."
+        "ImageLoadingPriority"
+        ".TotalFrequencyOfActualNegative"
+        ".PerConfidence.2",
+        /*expected_count=*/0);
+    histogram_tester.ExpectTotalCount(
+        "PageLoad.Clients.LCPP."
+        "ImageLoadingPriority"
+        ".TotalFrequencyOfActualNegative"
+        ".WithConfidence"
+        "90To100",
+        /*expected_count=*/0);
+    expect_empty(histogram_tester);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    predictors::LcppStat lcpp_stat_prelearn;
+    {
+      auto& stat = *lcpp_stat_prelearn.mutable_lcp_element_locator_stat();
+      {
+        auto& bucket = *stat.add_lcp_element_locator_buckets();
+        bucket.set_lcp_element_locator("#a");
+        bucket.set_frequency(1000);  // confidence = 100%
+      }
+      stat.set_other_bucket_frequency(0);
+    }
+    predictors::LcppDataInputs lcpp_data_inputs;
+    lcpp_data_inputs.lcp_element_locator = "#b";
+    internal::MaybeReportConfidenceUMAsForTesting(
+        GURL("https://a.com"), lcpp_stat_prelearn, lcpp_data_inputs);
+    // "#a" is an actual positive sample.
+    int total_frequency = 1000;
+    int frequency_of_a = 1000;
+    int confidence_of_a = 100;
+    int frequency_of_b = 0;
+    int confidence_of_b = 0;
+    histogram_tester.ExpectUniqueSample(
+        internal::kHistogramLCPPImageLoadingPriorityFrequencyOfActualPositive,
+        frequency_of_b, /*expected_bucket_count=*/1);
+    histogram_tester.ExpectUniqueSample(
+        internal::kHistogramLCPPImageLoadingPriorityConfidenceOfActualPositive,
+        confidence_of_b, /*expected_bucket_count=*/1);
+    histogram_tester.ExpectUniqueSample(
+        internal::kHistogramLCPPImageLoadingPriorityFrequencyOfActualNegative,
+        frequency_of_a, /*expected_bucket_count=*/1);
+    histogram_tester.ExpectUniqueSample(
+        internal::kHistogramLCPPImageLoadingPriorityConfidenceOfActualNegative,
+        confidence_of_a, /*expected_bucket_count=*/1);
+    histogram_tester.ExpectUniqueSample(
+        "PageLoad.Clients.LCPP"
+        ".ImageLoadingPriority"
+        ".TotalFrequencyOfActualPositive"
+        ".PerConfidence.2",
+        9, /*expected_bucket_count=*/1);
+    histogram_tester.ExpectUniqueSample(
+        "PageLoad.Clients.LCPP"
+        ".ImageLoadingPriority"
+        ".TotalFrequencyOfActualPositive"
+        ".WithConfidence"
+        "0To10",
+        total_frequency, /*expected_bucket_count=*/1);
+    histogram_tester.ExpectUniqueSample(
+        "PageLoad.Clients.LCPP"
+        ".ImageLoadingPriority"
+        ".TotalFrequencyOfActualNegative"
+        ".PerConfidence.2",
+        99, /*expected_bucket_count=*/1);
+    histogram_tester.ExpectUniqueSample(
+        "PageLoad.Clients.LCPP"
+        ".ImageLoadingPriority"
+        ".TotalFrequencyOfActualNegative"
+        ".WithConfidence"
+        "90To100",
+        total_frequency, /*expected_bucket_count=*/1);
+    expect_empty(histogram_tester);
+  }
 }
 
 TEST(MaybeReportConfidenceUMAsTest, Subresource) {
@@ -637,6 +760,54 @@ TEST(MaybeReportConfidenceUMAsTest, Subresource) {
     histogram_tester.ExpectBucketCount(
         internal::kHistogramLCPPSubresourceConfidenceOfActualNegativeCrossSite,
         confidence_of_d, /*expected_count=*/1);
+    expect_empty(histogram_tester);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    predictors::LcppStat lcpp_stat_prelearn;
+    {
+      auto& stat = *lcpp_stat_prelearn.mutable_fetched_subresource_url_stat();
+      auto& buckets = *stat.mutable_main_buckets();
+      buckets.insert({"https://a.com", 1000});  // 100%
+      stat.set_other_bucket_frequency(0);
+    }
+    predictors::LcppDataInputs lcpp_data_inputs;
+    lcpp_data_inputs.subresource_urls.emplace(
+        GURL("https://a.com"),
+        std::make_pair(base::Seconds(0),
+                       network::mojom::RequestDestination::kEmpty));
+    internal::MaybeReportConfidenceUMAsForTesting(
+        GURL("https://a.com"), lcpp_stat_prelearn, lcpp_data_inputs);
+    int total_frequency = 1000;
+    histogram_tester.ExpectUniqueSample(
+        "PageLoad.Clients.LCPP"
+        ".Subresource"
+        ".TotalFrequencyOfActualPositive"
+        ".PerConfidence"
+        ".2",
+        99, /*expected_bucket_count=*/1);
+    histogram_tester.ExpectUniqueSample(
+        "PageLoad.Clients.LCPP"
+        ".Subresource"
+        ".TotalFrequencyOfActualPositive"
+        ".WithConfidence90To100",
+        total_frequency, /*expected_bucket_count=*/1);
+    histogram_tester.ExpectUniqueSample(
+        "PageLoad.Clients.LCPP"
+        ".Subresource"
+        ".TotalFrequencyOfActualPositive"
+        ".PerConfidence"
+        ".SameSite"
+        ".2",
+        99, /*expected_bucket_count=*/1);
+    histogram_tester.ExpectUniqueSample(
+        "PageLoad.Clients.LCPP"
+        ".Subresource"
+        ".TotalFrequencyOfActualPositive"
+        ".WithConfidence90To100"
+        ".SameSite",
+        total_frequency, /*expected_bucket_count=*/1);
     expect_empty(histogram_tester);
   }
 }

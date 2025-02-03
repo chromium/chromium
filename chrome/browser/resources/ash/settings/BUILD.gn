@@ -164,7 +164,6 @@ build_webui("build") {
     "multidevice_page/multidevice_subpage.ts",
     "multidevice_page/multidevice_task_continuation_disabled_link.ts",
     "multidevice_page/multidevice_task_continuation_item.ts",
-    "multidevice_page/multidevice_task_continuation_item_lacros.ts",
     "multidevice_page/multidevice_tether_item.ts",
     "multidevice_page/multidevice_wifi_sync_disabled_link.ts",
     "multidevice_page/multidevice_wifi_sync_item.ts",

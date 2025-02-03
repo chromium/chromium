@@ -438,8 +438,7 @@ void SupervisedUserExtensionsManager::ChangeExtensionStateIfNecessary(
           extension_id,
           extensions::disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED);
       // If not disabled for other reasons, enable it.
-      if (extension_prefs_->GetDisableReasons(extension_id) ==
-          extensions::disable_reason::DISABLE_NONE) {
+      if (extension_prefs_->GetDisableReasons(extension_id).empty()) {
         service->EnableExtension(extension_id);
       }
       break;

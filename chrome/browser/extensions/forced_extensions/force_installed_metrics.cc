@@ -414,12 +414,15 @@ ForceInstalledMetrics::~ForceInstalledMetrics() = default;
 
 void ForceInstalledMetrics::ReportDisableReason(
     const ExtensionId& extension_id) {
-  int disable_reasons =
+  DisableReasonSet all_disable_reasons =
       ExtensionPrefs::Get(profile_)->GetDisableReasons(extension_id);
-  // Choose any disable reason among the disable reasons for this extension.
-  disable_reasons = disable_reasons & ~(disable_reasons - 1);
+  // Choose the disable reason with the lowest value.
+  int smallest_disable_reason =
+      all_disable_reasons.empty()
+          ? 0
+          : *std::ranges::min_element(all_disable_reasons);
   base::UmaHistogramSparse("Extensions.ForceInstalledNotLoadedDisableReason",
-                           disable_reasons);
+                           smallest_disable_reason);
 }
 
 void ForceInstalledMetrics::ReportMetricsOnExtensionsReady() {

@@ -38,7 +38,7 @@
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor_monitor.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "remoting/host/chromeos/frame_sink_desktop_capturer.h"
 #include "remoting/host/chromeos/mouse_cursor_monitor_aura.h"
 #endif
@@ -86,7 +86,7 @@ std::unique_ptr<DesktopCapturer> LegacyInteractionStrategy::CreateVideoCapturer(
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
   scoped_refptr<base::SingleThreadTaskRunner> capture_task_runner;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   capture_task_runner = ui_task_runner_;
 #elif BUILDFLAG(IS_LINUX)
   if (IsRunningWayland()) {
@@ -104,7 +104,7 @@ std::unique_ptr<DesktopCapturer> LegacyInteractionStrategy::CreateVideoCapturer(
   // platforms. For example, if we run the desktop capturer on a different
   // thread on Windows, the cursor shape won't be captured when in GDI mode.
   capture_task_runner = video_capture_task_runner_;
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_LINUX)
+#endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_LINUX)
 
 #if defined(REMOTING_USE_X11)
   if (!IsRunningWayland()) {

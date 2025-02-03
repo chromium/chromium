@@ -47,8 +47,6 @@ suite('<settings-multidevice-feature-item>', () => {
       isPhoneHubPermissionsDialogSupported: false,
       isCameraRollFilePermissionGranted: false,
       isPhoneHubFeatureCombinedSetupSupported: false,
-      isChromeOSSyncedSessionSharingEnabled: false,
-      isLacrosTabSyncEnabled: false,
     };
     flush();
     assertFalse(crToggle.disabled);

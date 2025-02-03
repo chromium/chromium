@@ -146,12 +146,14 @@ class ExtensionPrefsDeprecatedDisableReason : public ExtensionPrefsTest {
   }
 
   void Verify() override {
-    EXPECT_EQ(prefs()->GetDisableReasons(extension1_->id()),
-              disable_reason::DISABLE_USER_ACTION);
+    EXPECT_THAT(
+        prefs()->GetDisableReasons(extension1_->id()),
+        testing::UnorderedElementsAre(disable_reason::DISABLE_USER_ACTION));
     // Verify that if an extension has a disable reason in addition to the
     // deprecated reason, we don't add the user action disable reason.
-    EXPECT_EQ(prefs()->GetDisableReasons(extension2_->id()),
-              disable_reason::DISABLE_PERMISSIONS_INCREASE);
+    EXPECT_THAT(prefs()->GetDisableReasons(extension2_->id()),
+                testing::UnorderedElementsAre(
+                    disable_reason::DISABLE_PERMISSIONS_INCREASE));
   }
 
  private:
@@ -166,12 +168,12 @@ class ExtensionPrefsDisableReasonsBitflagToListMigration
  public:
   void Initialize() override {
     extension_1_ = prefs_.AddExtension("test1");
-    prefs()->SetExtensionDisabled(
-        extension_1_->id(), BitflagToIntegerSet(extension_1_disable_reasons_));
+    prefs()->SetExtensionDisabled(extension_1_->id(),
+                                  extension_1_disable_reasons_);
 
     extension_2_ = prefs_.AddExtension("test2");
-    prefs()->SetExtensionDisabled(
-        extension_2_->id(), BitflagToIntegerSet(extension_2_disable_reasons_));
+    prefs()->SetExtensionDisabled(extension_2_->id(),
+                                  extension_2_disable_reasons_);
   }
 
   void Verify() override {
@@ -193,22 +195,24 @@ class ExtensionPrefsDisableReasonsBitflagToListMigration
   void SimulateLegacyState() {
     // Write the disable reasons to the preference as a bitflag.
     constexpr const char kPrefDisableReasons[] = "disable_reasons";
-    prefs()->UpdateExtensionPref(extension_1_->id(), kPrefDisableReasons,
-                                 base::Value(extension_1_disable_reasons_));
-    prefs()->UpdateExtensionPref(extension_2_->id(), kPrefDisableReasons,
-                                 base::Value(extension_2_disable_reasons_));
+    prefs()->UpdateExtensionPref(
+        extension_1_->id(), kPrefDisableReasons,
+        base::Value(IntegerSetToBitflag(extension_1_disable_reasons_)));
+    prefs()->UpdateExtensionPref(
+        extension_2_->id(), kPrefDisableReasons,
+        base::Value(IntegerSetToBitflag(extension_2_disable_reasons_)));
   }
 
   scoped_refptr<Extension> extension_1_;
-  const int extension_1_disable_reasons_ =
-      disable_reason::DISABLE_USER_ACTION |
-      disable_reason::DISABLE_BLOCKED_BY_POLICY;
+  const DisableReasonSet extension_1_disable_reasons_ = {
+      disable_reason::DISABLE_USER_ACTION,
+      disable_reason::DISABLE_BLOCKED_BY_POLICY};
 
   scoped_refptr<Extension> extension_2_;
-  const int extension_2_disable_reasons_ =
-      disable_reason::DISABLE_PERMISSIONS_INCREASE |
-      disable_reason::DISABLE_NOT_VERIFIED |
-      disable_reason::DISABLE_USER_ACTION;
+  const DisableReasonSet extension_2_disable_reasons_ = {
+      disable_reason::DISABLE_PERMISSIONS_INCREASE,
+      disable_reason::DISABLE_NOT_VERIFIED,
+      disable_reason::DISABLE_USER_ACTION};
 };
 
 TEST_F(ExtensionPrefsDisableReasonsBitflagToListMigration, TestPrefMigration) {}

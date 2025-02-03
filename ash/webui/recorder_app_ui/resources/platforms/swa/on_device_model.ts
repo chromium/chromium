@@ -144,7 +144,26 @@ abstract class OnDeviceModel<T> implements Model<T> {
       responseRouter.$.bindNewPipeAndPassRemote(),
     );
     const result = await promise;
+
+    // When the model returns the canned response, show the same UI as
+    // unsafe content for now.
+    if (this.isCannedResponse(result)) {
+      return {kind: 'error', error: ModelResponseError.UNSAFE};
+    }
     return {kind: 'success', result};
+  }
+
+  private isCannedResponse(response: string): boolean {
+    // Model could return canned response in various formats. e.g. "Sorry, I
+    // am a large language model ..." or "Sorry, I’m a text-based AI ...".
+    // Capture the most common leading phrase.
+    const commonLeadingCannedPhrases = [
+      'Sorry, I’m a',
+      'Sorry, I am a',
+    ];
+    return commonLeadingCannedPhrases.some(
+      (phrase) => response.trimStart().startsWith(phrase),
+    );
   }
 
   private async contentIsUnsafe(

@@ -400,6 +400,10 @@ export class RecordPage extends ReactiveLitElement {
     () => this.platformHandler.getSelectedLanguage(),
   );
 
+  private readonly selectedSodaState = computed(
+    () => this.platformHandler.getSelectedLanguageState()?.value ?? null,
+  );
+
   private transcriptionEnableDispose: Dispose|null = null;
 
   private readonly menu = createRef<CraMenu>();
@@ -465,20 +469,14 @@ export class RecordPage extends ReactiveLitElement {
     this.recordStartTime = performance.now();
 
     this.transcriptionEnableDispose = effect(() => {
-      // TODO(pihsun): This is a bit fragile now since this relies on the
-      // startNewSodaSession and stopSodaSession both calls AsyncJobQueue,
-      // which always run things async so signal won't be tracked as
-      // dependency. Since we only want the transcriptionEnabled as dependency
-      // here, add either watch() to manually specify dependencies for effect,
-      // or add untrack() to specify region that dependencies shouldn't be
-      // tracked.
       if (this.transcriptionEnabled.value &&
           this.transcriptionAvailable.value &&
-          this.selectedLanguage.value !== null) {
-        // TODO(hsuanling): `startNewSodaSession` internally won't start new
+          this.selectedLanguage.value !== null &&
+          this.selectedSodaState.value?.kind === 'installed') {
+        // TODO(hsuanling): `tryStartSodaSession` internally won't start new
         // SODA session if there's already one running. Change implementation to
         // start new SODA session when the language is changed.
-        session.startNewSodaSession(this.selectedLanguage.value);
+        session.tryStartSodaSession(this.selectedLanguage.value);
       } else {
         session.stopSodaSession();
       }
@@ -732,7 +730,7 @@ export class RecordPage extends ReactiveLitElement {
 
     switch (settings.value.transcriptionEnabled) {
       case TranscriptionEnableState.ENABLED: {
-        const sodaState = this.platformHandler.getSelectedLanguageState();
+        const sodaState = this.selectedSodaState.value;
         if (sodaState === null) {
           // When language selection is not available, the
           // getSelectedLanguageState should return the state of the default
@@ -759,7 +757,7 @@ export class RecordPage extends ReactiveLitElement {
         }
         // TODO: b/377885042 - Update unusable state string when the spec is
         // ready.
-        switch (sodaState.value.kind) {
+        switch (sodaState.kind) {
           case 'notInstalled': {
             return html`
               <div id="transcription-consent">
@@ -802,7 +800,7 @@ export class RecordPage extends ReactiveLitElement {
             `;
           }
           default:
-            return assertExhaustive(sodaState.value);
+            return assertExhaustive(sodaState);
         }
       }
       case TranscriptionEnableState.DISABLED:

@@ -18,8 +18,18 @@ enum GetArcSafetySessionResult {
   kBindSafetyServiceError,
 };
 
-// OnDeviceSafetyInstance runs in Android and handles the Android side of the
-// ArcBridge connection.
+// Handles requests from OnDeviceSafetyInstance that interacts with chrome.
+// Next Method ID: 1
+[Stable]
+interface OnDeviceSafetyHost {
+  // Returns true if the chrome safety service feature is enabled.
+  IsCrosSafetyServiceEnabled@0() => (bool is_enabled);
+};
+
+// Forwards requests for Trust & Safety filtering from Chrome to the (on-device)
+// Safety Service application running within ARC.
+// The Safety Service helps maintain a high-quality product experience by
+// filtering abusive or unsafe text/image input.
 // Next Method ID: 1
 [Stable]
 interface OnDeviceSafetyInstance {
@@ -29,4 +39,7 @@ interface OnDeviceSafetyInstance {
   GetArcSafetySession@0(
       pending_receiver<ash.cros_safety.mojom.OnDeviceSafetySession> session)
       => (GetArcSafetySessionResult status);
+
+  // Establishes full-duplex communication with the host.
+  [MinVersion=1] Init@1(pending_remote<OnDeviceSafetyHost> host_remote) => ();
 };

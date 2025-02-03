@@ -422,7 +422,6 @@ shared_library("remoting_core") {
     "//base",
     "//base:base_static",
     "//base:i18n",
-    "//build:chromeos_buildflags",
     "//build/win:default_exe_manifest",
     "//ipc",
     "//mojo/core/embedder:embedder",

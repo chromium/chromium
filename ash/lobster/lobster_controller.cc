@@ -115,7 +115,7 @@ void LobsterController::StartSession(std::unique_ptr<LobsterClient> client,
     lobster_status = LobsterStatus::kConsentNeeded;
   }
 
-  switch (lobster_client_ptr->GetSystemState().status) {
+  switch (lobster_status) {
     case LobsterStatus::kConsentNeeded:
       active_session_->ShowDisclaimerUIAndCacheQuery(query);
       return;

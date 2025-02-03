@@ -38,6 +38,7 @@
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/extension.h"
 #include "extensions/test/extension_test_message_listener.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 using content::BrowserThread;
 using extensions::Extension;
@@ -257,9 +258,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionDisabledGlobalErrorTest,
   ASSERT_TRUE(extension);
   EXPECT_EQ("2", extension->VersionString());
   EXPECT_EQ(1u, extension_registry()->disabled_extensions().size());
-  EXPECT_EQ(extensions::disable_reason::DISABLE_PERMISSIONS_INCREASE,
-            ExtensionPrefs::Get(extension_service()->profile())
-                ->GetDisableReasons(extension_id));
+  EXPECT_THAT(ExtensionPrefs::Get(extension_service()->profile())
+                  ->GetDisableReasons(extension_id),
+              testing::UnorderedElementsAre(
+                  extensions::disable_reason::DISABLE_PERMISSIONS_INCREASE));
   EXPECT_TRUE(GetExtensionDisabledGlobalError());
 }
 
@@ -316,8 +318,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionDisabledGlobalErrorTest, RemoteInstall) {
   ASSERT_TRUE(extension);
   EXPECT_EQ("2", extension->VersionString());
   EXPECT_EQ(1u, extension_registry()->disabled_extensions().size());
-  EXPECT_EQ(extensions::disable_reason::DISABLE_REMOTE_INSTALL,
-            ExtensionPrefs::Get(extension_service()->profile())
-                ->GetDisableReasons(extension_id));
+  EXPECT_THAT(ExtensionPrefs::Get(extension_service()->profile())
+                  ->GetDisableReasons(extension_id),
+              testing::UnorderedElementsAre(
+                  extensions::disable_reason::DISABLE_REMOTE_INSTALL));
   EXPECT_TRUE(GetExtensionDisabledGlobalError());
 }

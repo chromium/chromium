@@ -2045,8 +2045,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, ExtensionMinimumVersionRequired) {
   EXPECT_TRUE(update_extension_count.IsOne());
 
   EXPECT_TRUE(registry->disabled_extensions().Contains(kGoodCrxId));
-  EXPECT_EQ(extensions::disable_reason::DISABLE_UPDATE_REQUIRED_BY_POLICY,
-            extension_prefs->GetDisableReasons(kGoodCrxId));
+  EXPECT_THAT(
+      extension_prefs->GetDisableReasons(kGoodCrxId),
+      testing::UnorderedElementsAre(
+          extensions::disable_reason::DISABLE_UPDATE_REQUIRED_BY_POLICY));
 
   // Provide a new version (1.0.0.1) which is expected to be auto updated to
   // via the update URL in the manifest of the older version.
@@ -2098,8 +2100,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
   // Install the 1.0.0.0 version, it should be installed but disabled.
   EXPECT_TRUE(InstallExtension(kGoodV1CrxName));
   EXPECT_TRUE(registry->disabled_extensions().Contains(kGoodCrxId));
-  EXPECT_EQ(extensions::disable_reason::DISABLE_UPDATE_REQUIRED_BY_POLICY,
-            extension_prefs->GetDisableReasons(kGoodCrxId));
+  EXPECT_THAT(
+      extension_prefs->GetDisableReasons(kGoodCrxId),
+      testing::UnorderedElementsAre(
+          extensions::disable_reason::DISABLE_UPDATE_REQUIRED_BY_POLICY));
   EXPECT_EQ("1.0.0.0",
             registry->GetInstalledExtension(kGoodCrxId)->version().GetString());
 
@@ -2122,8 +2126,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
   EXPECT_EQ(kGoodCrxVersion,
             registry->GetInstalledExtension(kGoodCrxId)->version().GetString());
   EXPECT_TRUE(registry->disabled_extensions().Contains(kGoodCrxId));
-  EXPECT_EQ(extensions::disable_reason::DISABLE_UPDATE_REQUIRED_BY_POLICY,
-            extension_prefs->GetDisableReasons(kGoodCrxId));
+  EXPECT_THAT(
+      extension_prefs->GetDisableReasons(kGoodCrxId),
+      testing::UnorderedElementsAre(
+          extensions::disable_reason::DISABLE_UPDATE_REQUIRED_BY_POLICY));
 
   // Remove the minimum version requirement. The extension should be re-enabled.
   {
@@ -2180,8 +2186,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(registry->enabled_extensions().Contains(kGoodCrxId));
   EXPECT_TRUE(registry->disabled_extensions().Contains(kGoodCrxId));
-  EXPECT_EQ(extensions::disable_reason::DISABLE_UPDATE_REQUIRED_BY_POLICY,
-            extension_prefs->GetDisableReasons(kGoodCrxId));
+  EXPECT_THAT(
+      extension_prefs->GetDisableReasons(kGoodCrxId),
+      testing::UnorderedElementsAre(
+          extensions::disable_reason::DISABLE_UPDATE_REQUIRED_BY_POLICY));
 }
 
 // Verifies that policy host block/allow settings are applied even when

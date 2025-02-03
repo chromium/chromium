@@ -1925,7 +1925,8 @@ public class ToolbarManager
                     stripLayoutHelperManager.getDragListener());
 
             mTabStripTransitionDelegateSupplier.set(stripLayoutHelperManager);
-            stripLayoutHelperManager.setIsTabStripHidden(mToolbar.getTabStripHeight() == 0);
+            stripLayoutHelperManager.setIsTabStripHiddenByHeightTransition(
+                    mToolbar.getTabStripHeight() == 0);
         }
 
         mTabStripHeightObserver =

@@ -8,13 +8,6 @@
 
 namespace features {
 
-// This was used for enabling a new limit and scheduler for prerender triggers
-// (crbug.com/1464021). Now the new implementation is used by default and this
-// flag is just for injecting parameters through field trials.
-BASE_FEATURE(kPrerender2NewLimitAndScheduler,
-             "Prerender2NewLimitAndScheduler",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Allows activation in background tab. For now, this is used only on web
 // platform tests on macOS to run activation with target hint tests that have
 // race conditions between visibility change and activation start on a prerender

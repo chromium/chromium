@@ -8,15 +8,13 @@ import {
   SAMPLES_PER_SLICE,
 } from './audio_constants.js';
 import {PlatformHandler} from './platform_handler.js';
-import {computed, effect, signal} from './reactive/signal.js';
+import {computed, signal} from './reactive/signal.js';
 import {LanguageCode} from './soda/language_info.js';
 import {SodaEventTransformer, Transcription} from './soda/soda.js';
 import {SodaSession} from './soda/types.js';
 import {
   assert,
-  assertExhaustive,
   assertExists,
-  assertNotReached,
 } from './utils/assert.js';
 import {AsyncJobInfo, AsyncJobQueue} from './utils/async_job_queue.js';
 import {InteriorMutableArray} from './utils/interior_mutable_array.js';
@@ -288,9 +286,9 @@ export class RecordingSession {
     console.error(event);
   }
 
-  private async ensureSodaInstalled(
+  private async isSodaInstalled(
     language: LanguageCode,
-  ): Promise<void> {
+  ): Promise<boolean> {
     const {platformHandler} = this.config;
     const sodaState = platformHandler.getSodaState(language);
     assert(
@@ -298,45 +296,25 @@ export class RecordingSession {
       `Trying to install SODA when it's unavailable`,
     );
     // Because there's no `OnSodaUninstalled` event, `installed` state may be
-    // outdated when other process removes the library. Always try installing
-    // SODA and wait for status update to avoid state inconstency.
+    // outdated when other process removes the library. Wait for status update
+    // to avoid state inconsistency.
     // TODO: b/375306309 - Remove "await" when soda states are always consistent
     // after the `OnSodaUninstalled` event is implemented.
     await platformHandler.installSoda(language);
-    await new Promise<void>((resolve, reject) => {
-      effect(({dispose}) => {
-        switch (sodaState.value.kind) {
-          case 'error':
-            dispose();
-            reject(new Error('Install SODA failed'));
-            break;
-          case 'installed':
-            dispose();
-            resolve();
-            break;
-          case 'notInstalled':
-          case 'installing':
-            break;
-          case 'unavailable':
-            return assertNotReached(
-              `Trying to install SODA when it's unavailable`,
-            );
-          default:
-            assertExhaustive(sodaState.value);
-        }
-      });
-    });
+    return sodaState.value.kind === 'installed';
   }
 
-  startNewSodaSession(language: LanguageCode): AsyncJobInfo {
+  tryStartSodaSession(language: LanguageCode): AsyncJobInfo {
     return this.sodaEnableQueue.push(async () => {
+      if (!await this.isSodaInstalled(language)) {
+        return;
+      }
       if (this.currentSodaSession !== null) {
         return;
       }
       if (this.transcription.value === null) {
         this.transcription.value = new Transcription([], language);
       }
-      await this.ensureSodaInstalled(language);
       // Abort current running job if there's a new enable/disable request.
       if (this.sodaEnableQueue.hasPendingJob()) {
         return;
@@ -392,9 +370,9 @@ export class RecordingSession {
     await this.audioCtx.suspend();
 
     if (transcriptionEnabled && language !== null) {
-      // Do not wait for session start to avoid install failure hangs recording.
+      // Do not wait for session start to avoid SODA failure hangs recording.
       // TODO(hsuanling): Have the audio buffered and send to recognizer later?
-      this.startNewSodaSession(language);
+      this.tryStartSodaSession(language);
     }
 
     await Promise.all([

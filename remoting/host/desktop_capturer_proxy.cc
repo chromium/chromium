@@ -15,14 +15,13 @@
 #include "base/memory/ptr_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "remoting/proto/control.pb.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_options.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_region.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "remoting/host/chromeos/frame_sink_desktop_capturer.h"
 #endif
 
@@ -89,7 +88,7 @@ void DesktopCapturerProxy::Core::CreateCapturer(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!capturer_);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   capturer_ = std::make_unique<FrameSinkDesktopCapturer>();
 #elif BUILDFLAG(IS_LINUX)
   static base::nix::SessionType session_type = base::nix::SessionType::kUnset;
@@ -104,9 +103,9 @@ void DesktopCapturerProxy::Core::CreateCapturer(
   } else {
     capturer_ = webrtc::DesktopCapturer::CreateScreenCapturer(options);
   }
-#else   // !BUILDFLAG(IS_CHROMEOS_ASH)
+#else   // !BUILDFLAG(IS_CHROMEOS)
   capturer_ = webrtc::DesktopCapturer::CreateScreenCapturer(options);
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
   if (capturer_) {
     capturer_->SelectSource(id);
   } else {

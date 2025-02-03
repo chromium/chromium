@@ -253,7 +253,7 @@ vars = {
   'screen_ai_windows_386': 'version:127.13',
 
   # siso CIPD package version.
-  'siso_version': 'git_revision:ee3af96ef0f88f93a33b9208caad206f672edf35',
+  'siso_version': 'git_revision:0b6159c39573013a79a47f8544200df07a6a74fc',
 
   # download libaom test data
   'download_libaom_testdata': False,
@@ -280,7 +280,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
-  'skia_revision': '421931e071edc35ceadfec1299c42c46c54d95fa',
+  'skia_revision': 'd046f8abae5515dfb0dbd40762a13d5081255a41',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
@@ -296,7 +296,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling PDFium
   # and whatever else without interference from each other.
-  'pdfium_revision': '012fe571c9fe430da68dbcd2f5ba21758db0ae15',
+  'pdfium_revision': '4d39fb694a019c31cb1899fc9c21bdf11b620289',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling BoringSSL
   # and whatever else without interference from each other.
@@ -372,7 +372,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': '24fcbc83f8f4217c9ec610bd1b1cb6e31d06edfa',
+  'devtools_frontend_revision': 'fb1c40ae65c305a4b7110a4c191e2263e90c75a0',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -1448,7 +1448,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    'ef285409dacc7d76572502441610a61f4630517e',
+    '75a2e66fbcd648756b90677f3f5731de95907e1f',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
@@ -4343,7 +4343,7 @@ deps = {
     'packages' : [
       {
         'package': 'chromeos_internal/inputs/orca',
-        'version': 'u9vK3nIWSWZ0y9DalJGOfXqsbdZOBq4nZCLO3fc6tc0C'
+        'version': '0TLXAzimnpVDxwj9MXCZ5vDkb4NtHI-R0E6z5FkjePEC'
       }
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',

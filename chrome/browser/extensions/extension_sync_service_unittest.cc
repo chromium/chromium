@@ -385,8 +385,9 @@ TEST_F(ExtensionSyncServiceTest, ReenableDisabledExtensionFromSync) {
 
   // The extension should be disabled.
   EXPECT_TRUE(registry()->disabled_extensions().GetByID(kExtensionId));
-  EXPECT_EQ(extensions::disable_reason::DISABLE_USER_ACTION,
-            ExtensionPrefs::Get(profile())->GetDisableReasons(kExtensionId));
+  EXPECT_THAT(ExtensionPrefs::Get(profile())->GetDisableReasons(kExtensionId),
+              testing::UnorderedElementsAre(
+                  extensions::disable_reason::DISABLE_USER_ACTION));
   EXPECT_TRUE(processor_raw->changes().empty());
 
   // Enable the extension. Sync should push the new state.
@@ -1151,7 +1152,7 @@ TEST_F(ExtensionSyncServiceTest, ProcessSyncDataNewExtension) {
     // The disable reason(s) that should be set on the installed extension.
     // This will usually be the same as `sync_disable_reasons`, but see the
     // "Legacy" case.
-    int expect_disable_reasons;
+    extensions::DisableReasonSet expect_disable_reasons;
     // Whether the extension's permissions should be auto-granted during
     // installation.
     bool expect_permissions_granted;
@@ -1159,23 +1160,31 @@ TEST_F(ExtensionSyncServiceTest, ProcessSyncDataNewExtension) {
       // Standard case: Extension comes in enabled; permissions should be
       // granted
       // during installation.
-      {"Standard", true, 0, 0, true},
+      {"Standard", true, 0, {}, true},
       // If the extension comes in disabled, its permissions should still be
       // granted (the user already approved them on another machine).
-      {"Disabled", false, extensions::disable_reason::DISABLE_USER_ACTION,
-       extensions::disable_reason::DISABLE_USER_ACTION, true},
+      {"Disabled",
+       false,
+       extensions::disable_reason::DISABLE_USER_ACTION,
+       {extensions::disable_reason::DISABLE_USER_ACTION},
+       true},
       // Legacy case (<M45): No disable reasons come in from Sync (see
       // crbug.com/484214). After installation, the reason should be set to
       // DISABLE_USER_ACTION (default assumption).
-      {"Legacy", false, -1, extensions::disable_reason::DISABLE_USER_ACTION,
+      {"Legacy",
+       false,
+       -1,
+       {extensions::disable_reason::DISABLE_USER_ACTION},
        true},
       // If the extension came in disabled due to a permissions increase, then
       // the
       // user has *not* approved the permissions, and they shouldn't be granted.
       // crbug.com/484214
-      {"PermissionsIncrease", false,
+      {"PermissionsIncrease",
+       false,
        extensions::disable_reason::DISABLE_PERMISSIONS_INCREASE,
-       extensions::disable_reason::DISABLE_PERMISSIONS_INCREASE, false},
+       {extensions::disable_reason::DISABLE_PERMISSIONS_INCREASE},
+       false},
   };
 
   for (const TestCase& test_case : test_cases) {
@@ -1378,33 +1387,46 @@ TEST_F(ExtensionSyncServiceTest, ProcessSyncDataEnableDisable) {
     // The disable reason(s) coming in from Sync, or -1 for "not set".
     int sync_disable_reasons;
     // The expected set of disable reasons after processing the Sync update. The
-    // extension should be disabled iff this is != 0.
-    int expect_disable_reasons;
+    // extension should be disabled iff this is non empty. Use a set of raw
+    // integers instead of DisableReasonSet because we test for unknown reasons.
+    base::flat_set<int> expect_disable_reasons;
   } test_cases[] = {
-      {"NopEnable", 0, true, 0, 0},
-      {"NopDisable", extensions::disable_reason::DISABLE_USER_ACTION, false,
+      {"NopEnable", 0, true, 0, {}},
+      {"NopDisable",
        extensions::disable_reason::DISABLE_USER_ACTION,
-       extensions::disable_reason::DISABLE_USER_ACTION},
-      {"Enable", extensions::disable_reason::DISABLE_USER_ACTION, true, 0, 0},
-      {"Disable", 0, false, extensions::disable_reason::DISABLE_USER_ACTION,
-       extensions::disable_reason::DISABLE_USER_ACTION},
-      {"AddDisableReason", extensions::disable_reason::DISABLE_REMOTE_INSTALL,
+       false,
+       extensions::disable_reason::DISABLE_USER_ACTION,
+       {extensions::disable_reason::DISABLE_USER_ACTION}},
+      {"Enable", extensions::disable_reason::DISABLE_USER_ACTION, true, 0, {}},
+      {"Disable",
+       0,
+       false,
+       extensions::disable_reason::DISABLE_USER_ACTION,
+       {extensions::disable_reason::DISABLE_USER_ACTION}},
+      {"AddDisableReason",
+       extensions::disable_reason::DISABLE_REMOTE_INSTALL,
        false,
        extensions::disable_reason::DISABLE_REMOTE_INSTALL |
            extensions::disable_reason::DISABLE_USER_ACTION,
-       extensions::disable_reason::DISABLE_REMOTE_INSTALL |
-           extensions::disable_reason::DISABLE_USER_ACTION},
+       {extensions::disable_reason::DISABLE_REMOTE_INSTALL,
+        extensions::disable_reason::DISABLE_USER_ACTION}},
       {"RemoveDisableReason",
        extensions::disable_reason::DISABLE_REMOTE_INSTALL |
            extensions::disable_reason::DISABLE_USER_ACTION,
-       false, extensions::disable_reason::DISABLE_USER_ACTION,
-       extensions::disable_reason::DISABLE_USER_ACTION},
-      {"PreserveLocalDisableReason", extensions::disable_reason::DISABLE_RELOAD,
-       true, 0, extensions::disable_reason::DISABLE_RELOAD},
+       false,
+       extensions::disable_reason::DISABLE_USER_ACTION,
+       {extensions::disable_reason::DISABLE_USER_ACTION}},
+      {"PreserveLocalDisableReason",
+       extensions::disable_reason::DISABLE_RELOAD,
+       true,
+       0,
+       {extensions::disable_reason::DISABLE_RELOAD}},
       {"PreserveOnlyLocalDisableReason",
        extensions::disable_reason::DISABLE_USER_ACTION |
            extensions::disable_reason::DISABLE_RELOAD,
-       true, 0, extensions::disable_reason::DISABLE_RELOAD},
+       true,
+       0,
+       {extensions::disable_reason::DISABLE_RELOAD}},
 
       // The disable reasons not known to the client should be considered as
       // syncable.
@@ -1427,29 +1449,45 @@ TEST_F(ExtensionSyncServiceTest, ProcessSyncDataEnableDisable) {
        // Expected reasons after processing the sync update. Local
        // reasons should be preserved. Syncable reasons should be replaced with
        // the incoming ones.
-       extensions::disable_reason::DISABLE_RELOAD |
-           extensions::disable_reason::DISABLE_PERMISSIONS_INCREASE |
-           kUnknownDisableReason_2},
+       {extensions::disable_reason::DISABLE_RELOAD,
+        extensions::disable_reason::DISABLE_PERMISSIONS_INCREASE,
+        kUnknownDisableReason_2}},
 
       // Interaction with Chrome clients <=M44, which don't sync disable_reasons
       // at all (any existing reasons are preserved).
-      {"M44Enable", extensions::disable_reason::DISABLE_USER_ACTION, true, -1,
-       0},
+      {"M44Enable",
+       extensions::disable_reason::DISABLE_USER_ACTION,
+       true,
+       -1,
+       {}},
       // An M44 client enables an extension that had been disabled on a new
       // client. The disable reasons are still be there, but should be ignored.
-      {"M44ReEnable", extensions::disable_reason::DISABLE_USER_ACTION, true,
-       extensions::disable_reason::DISABLE_USER_ACTION, 0},
-      {"M44Disable", 0, false, -1,
-       extensions::disable_reason::DISABLE_USER_ACTION},
-      {"M44ReDisable", 0, false, 0,
-       extensions::disable_reason::DISABLE_USER_ACTION},
+      {"M44ReEnable",
+       extensions::disable_reason::DISABLE_USER_ACTION,
+       true,
+       extensions::disable_reason::DISABLE_USER_ACTION,
+       {}},
+      {"M44Disable",
+       0,
+       false,
+       -1,
+       {extensions::disable_reason::DISABLE_USER_ACTION}},
+      {"M44ReDisable",
+       0,
+       false,
+       0,
+       {extensions::disable_reason::DISABLE_USER_ACTION}},
       {"M44AlreadyDisabledByUser",
-       extensions::disable_reason::DISABLE_USER_ACTION, false, -1,
-       extensions::disable_reason::DISABLE_USER_ACTION},
+       extensions::disable_reason::DISABLE_USER_ACTION,
+       false,
+       -1,
+       {extensions::disable_reason::DISABLE_USER_ACTION}},
       {"M44AlreadyDisabledWithOtherReason",
-       extensions::disable_reason::DISABLE_REMOTE_INSTALL, false, -1,
-       extensions::disable_reason::DISABLE_REMOTE_INSTALL |
-           extensions::disable_reason::DISABLE_USER_ACTION},
+       extensions::disable_reason::DISABLE_REMOTE_INSTALL,
+       false,
+       -1,
+       {extensions::disable_reason::DISABLE_REMOTE_INSTALL,
+        extensions::disable_reason::DISABLE_USER_ACTION}},
   };
 
   for (const TestCase& test_case : test_cases) {
@@ -1489,9 +1527,12 @@ TEST_F(ExtensionSyncServiceTest, ProcessSyncDataEnableDisable) {
     extension_sync_service()->ProcessSyncChanges(FROM_HERE, list);
 
     // Check expectations.
-    const bool expect_enabled = !test_case.expect_disable_reasons;
+    const bool expect_enabled = test_case.expect_disable_reasons.empty();
     EXPECT_EQ(expect_enabled, service()->IsExtensionEnabled(id));
-    EXPECT_EQ(test_case.expect_disable_reasons, prefs->GetDisableReasons(id));
+    auto passkey =
+        extensions::ExtensionPrefs::DisableReasonRawManipulationPasskey();
+    EXPECT_EQ(test_case.expect_disable_reasons,
+              prefs->GetDisableReasons(passkey, id));
 
     // Remove the extension again, so we can install it again for the next case.
     UninstallExtension(id);
@@ -1672,23 +1713,28 @@ TEST_F(ExtensionSyncServiceCustomGalleryTest,
     int sync_disable_reasons;
     // The expected set of disable reasons after processing the Sync update. The
     // extension should be enabled iff this is 0.
-    int expect_disable_reasons;
+    extensions::DisableReasonSet expect_disable_reasons;
     // Whether the extension's permissions should be auto-granted.
     bool expect_permissions_granted;
   } test_cases[] = {
       // Sync tells us to re-enable an older version. No permissions should be
       // granted, since we can't be sure if the user actually approved the right
       // set of permissions.
-      {"OldVersion", raw_ref(v1), 0,
-       extensions::disable_reason::DISABLE_PERMISSIONS_INCREASE, false},
+      {"OldVersion",
+       raw_ref(v1),
+       0,
+       {extensions::disable_reason::DISABLE_PERMISSIONS_INCREASE},
+       false},
       // Legacy case: Sync tells us to re-enable the extension, but doesn't
       // specify disable reasons. No permissions should be granted.
-      {"Legacy", raw_ref(v2), -1,
-       extensions::disable_reason::DISABLE_PERMISSIONS_INCREASE, false},
+      {"Legacy",
+       raw_ref(v2),
+       -1,
+       {extensions::disable_reason::DISABLE_PERMISSIONS_INCREASE},
+       false},
       // Sync tells us to re-enable the extension and explicitly removes the
       // disable reasons. Now the extension should have its permissions granted.
-      {"GrantPermissions", raw_ref(v2), 0,
-       extensions::disable_reason::DISABLE_NONE, true},
+      {"GrantPermissions", raw_ref(v2), 0, {}, true},
   };
 
   for (const TestCase& test_case : test_cases) {
@@ -1742,7 +1788,7 @@ TEST_F(ExtensionSyncServiceCustomGalleryTest,
     extension_sync_service()->ProcessSyncChanges(FROM_HERE, list);
 
     // Check expectations.
-    const bool expect_enabled = !test_case.expect_disable_reasons;
+    const bool expect_enabled = test_case.expect_disable_reasons.empty();
     EXPECT_EQ(expect_enabled, service()->IsExtensionEnabled(id));
     EXPECT_EQ(test_case.expect_disable_reasons, prefs->GetDisableReasons(id));
     std::unique_ptr<const PermissionSet> granted_permissions =
@@ -2005,7 +2051,8 @@ TEST_F(BlocklistedExtensionSyncServiceTest, InstallBlocklistedExtension) {
   ASSERT_TRUE(registry()->GetInstalledExtension(extension_id));
   EXPECT_FALSE(registry()->enabled_extensions().GetByID(extension_id));
   EXPECT_TRUE(registry()->blocklisted_extensions().GetByID(extension_id));
-  EXPECT_EQ(0, ExtensionPrefs::Get(profile())->GetDisableReasons(extension_id));
+  EXPECT_TRUE(
+      ExtensionPrefs::Get(profile())->GetDisableReasons(extension_id).empty());
   EXPECT_TRUE(processor()->changes().empty());
 }
 

@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/util/process_version.gni")
 import("//remoting/build/config/remoting_build.gni")
 import("//remoting/build/config/remoting_logging.gni")
@@ -142,7 +141,6 @@ source_set("base") {
     ":protobuf_http_client_messages_proto",
     ":remoting_base_version",
     ":session_policies",
-    "//build:chromeos_buildflags",
     "//google_apis",
     "//google_apis/common:request_util",
     "//remoting/proto:internal_structs",
@@ -362,7 +360,7 @@ source_set("run_all_unittests") {
   testonly = true
 
   sources = [ "run_all_unittests.cc" ]
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "chromeos_remoting_test_suite.cc",
       "chromeos_remoting_test_suite.h",
@@ -374,7 +372,7 @@ source_set("run_all_unittests") {
     "//mojo/core/embedder",
     "//testing/gtest",
   ]
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [
       "//ui/aura:test_support",
       "//ui/gl:test_support",
@@ -428,7 +426,7 @@ source_set("unit_tests") {
     "//third_party/webrtc_overrides:webrtc_component",
   ]
 
-  if (is_win || is_chromeos_ash) {
+  if (is_win || is_chromeos) {
     deps += [ "//third_party/breakpad:client" ]
   }
 }

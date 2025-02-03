@@ -10,13 +10,13 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_options.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor_monitor.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "remoting/host/chromeos/mouse_cursor_monitor_aura.h"
 #endif
 
@@ -71,7 +71,7 @@ void MouseCursorMonitorProxy::Core::CreateMouseCursorMonitor(
     const webrtc::DesktopCaptureOptions& options) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   mouse_cursor_monitor_ = std::make_unique<MouseCursorMonitorAura>();
 #elif BUILDFLAG(IS_LINUX)
   if (IsRunningWayland()) {
@@ -80,10 +80,10 @@ void MouseCursorMonitorProxy::Core::CreateMouseCursorMonitor(
     mouse_cursor_monitor_.reset(webrtc::MouseCursorMonitor::CreateForScreen(
         options, webrtc::kFullDesktopScreenId));
   }
-#else   // BUILDFLAG(IS_CHROMEOS_ASH)
+#else   // BUILDFLAG(IS_CHROMEOS)
   mouse_cursor_monitor_.reset(webrtc::MouseCursorMonitor::CreateForScreen(
       options, webrtc::kFullDesktopScreenId));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   if (!mouse_cursor_monitor_) {
     LOG(ERROR) << "Failed to initialize MouseCursorMonitor.";
   }

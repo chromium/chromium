@@ -456,9 +456,10 @@ bool IsChromeApp(const ExtensionId& extension_id,
 
 bool IsAppLaunchable(const ExtensionId& extension_id,
                      content::BrowserContext* context) {
-  int reason = ExtensionPrefs::Get(context)->GetDisableReasons(extension_id);
-  return !((reason & disable_reason::DISABLE_UNSUPPORTED_REQUIREMENT) ||
-           (reason & disable_reason::DISABLE_CORRUPTED));
+  DisableReasonSet reason =
+      ExtensionPrefs::Get(context)->GetDisableReasons(extension_id);
+  return !reason.contains(disable_reason::DISABLE_UNSUPPORTED_REQUIREMENT) &&
+         !reason.contains(disable_reason::DISABLE_CORRUPTED);
 }
 
 bool IsAppLaunchableWithoutEnabling(const ExtensionId& extension_id,

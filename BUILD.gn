@@ -932,7 +932,6 @@ if (is_chromeos_ash) {
   group("traffic_annotation_auditor_dependencies") {
     deps = [
       "//chrome",
-      "//chromeos",
       "//tools/traffic_annotation:annotations_xml",
     ]
   }

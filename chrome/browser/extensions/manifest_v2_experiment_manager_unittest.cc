@@ -781,23 +781,23 @@ TEST_F(ManifestV2ExperimentManagerDisableWithReEnableAndPolicyUnitTest,
   ExtensionPrefs* extension_prefs = ExtensionPrefs::Get(profile());
 
   EXPECT_TRUE(registry()->disabled_extensions().Contains(extension_id));
-  EXPECT_EQ(
-      static_cast<int>(disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION),
-      extension_prefs->GetDisableReasons(extension_id));
+  EXPECT_THAT(extension_prefs->GetDisableReasons(extension_id),
+              testing::UnorderedElementsAre(
+                  disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION));
 
   // Set the MV2 policy to allow all MV2 extensions.
   SetMV2PolicyLevel(MV2PolicyLevel::kAllowed);
 
   // The extension should be enabled, since it's now allowed.
   EXPECT_TRUE(registry()->enabled_extensions().Contains(extension_id));
-  EXPECT_EQ(0, extension_prefs->GetDisableReasons(extension_id));
+  EXPECT_TRUE(extension_prefs->GetDisableReasons(extension_id).empty());
 
   // Clear the MV2 policy. The extension should now be disabled again.
   ClearMV2Policy();
   EXPECT_TRUE(registry()->disabled_extensions().Contains(extension_id));
-  EXPECT_EQ(
-      static_cast<int>(disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION),
-      extension_prefs->GetDisableReasons(extension_id));
+  EXPECT_THAT(extension_prefs->GetDisableReasons(extension_id),
+              testing::UnorderedElementsAre(
+                  disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION));
 }
 
 // Tests that MV2 extensions that are allowed by policy emit `kUnaffected` for

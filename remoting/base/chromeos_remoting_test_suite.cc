@@ -6,15 +6,11 @@
 
 #include "base/path_service.h"
 #include "base/test/test_suite.h"
-#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/env.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_paths.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ui/gl/test/gl_surface_test_support.h"
-#endif
 
 namespace remoting {
 

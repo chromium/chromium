@@ -58,7 +58,7 @@ source_set("unit_tests") {
   deps = [
     "//ash/constants",
     "//base/test:test_support",
-    "//chromeos:test_utils",
+    "//chromeos:test_support",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/network:test_support",
     "//chromeos/components/onc",

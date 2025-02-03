@@ -1251,13 +1251,13 @@ public class TabStripTransitionCoordinatorUnitTest {
         public boolean heightTransitionFinished;
         public float scrimOpacityRequested = NOTHING_OBSERVED;
         public boolean applyScrimOverlay;
-        private @StripVisibilityState int mStripVisibilityState = StripVisibilityState.UNKNOWN;
+        private @StripVisibilityState int mStripVisibilityState;
 
         void reset() {
             heightChanged = NOTHING_OBSERVED;
             heightTransitionFinished = false;
             scrimOpacityRequested = NOTHING_OBSERVED;
-            mStripVisibilityState = StripVisibilityState.UNKNOWN;
+            mStripVisibilityState = StripVisibilityState.VISIBLE;
             applyScrimOverlay = false;
         }
 
@@ -1266,7 +1266,9 @@ public class TabStripTransitionCoordinatorUnitTest {
             heightChanged = newHeight;
             if (applyScrimOverlay) {
                 mStripVisibilityState =
-                        newHeight == 0 ? StripVisibilityState.GONE : StripVisibilityState.VISIBLE;
+                        newHeight == 0
+                                ? StripVisibilityState.HIDDEN_BY_HEIGHT_TRANSITION
+                                : StripVisibilityState.VISIBLE;
             }
             this.applyScrimOverlay = applyScrimOverlay;
         }
@@ -1282,7 +1284,7 @@ public class TabStripTransitionCoordinatorUnitTest {
             mStripVisibilityState =
                     newOpacity == 0f
                             ? StripVisibilityState.VISIBLE
-                            : StripVisibilityState.INVISIBLE;
+                            : StripVisibilityState.HIDDEN_BY_FADE;
         }
 
         @Override
