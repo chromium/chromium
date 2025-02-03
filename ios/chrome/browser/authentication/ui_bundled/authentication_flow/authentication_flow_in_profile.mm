@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_in_current_profile.h"
+#import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_in_profile.h"
 
 #import "base/check_op.h"
 #import "base/notreached.h"
@@ -28,7 +28,7 @@
 
 namespace {
 
-enum class AuthenticationFlowInCurrentProfileState {
+enum class AuthenticationFlowInProfileState {
   kBegin,
   kSignOutIfNeeded,
   kSignInIfNeeded,
@@ -43,16 +43,15 @@ enum class AuthenticationFlowInCurrentProfileState {
 
 }  // namespace
 
-@interface AuthenticationFlowInCurrentProfile () <
-    AuthenticationFlowPerformerDelegate>
+@interface AuthenticationFlowInProfile () <AuthenticationFlowPerformerDelegate>
 @end
 
-@implementation AuthenticationFlowInCurrentProfile {
+@implementation AuthenticationFlowInProfile {
   // State machine tracking for sign-in flow.
-  AuthenticationFlowInCurrentProfileState _state;
-  // This AuthenticationFlowInCurrentProfile keeps a reference to `self` while
-  // a sign-in flow is is in progress to ensure it outlives until the last step.
-  AuthenticationFlowInCurrentProfile* _selfRetainer;
+  AuthenticationFlowInProfileState _state;
+  // This AuthenticationFlowInProfile keeps a reference to `self` while a
+  // sign-in flow is is in progress to ensure it outlives until the last step.
+  AuthenticationFlowInProfile* _selfRetainer;
   signin_ui::SigninCompletionCallback _signInCompletion;
   BOOL _error;
   BOOL _shouldFetchUserPolicy;
@@ -89,14 +88,14 @@ enum class AuthenticationFlowInCurrentProfileState {
     _isManagedIdentity = isManagedIdentity;
     _accessPoint = accessPoint;
     _postSignInActions = postSignInActions;
-    _state = AuthenticationFlowInCurrentProfileState::kBegin;
+    _state = AuthenticationFlowInProfileState::kBegin;
   }
   return self;
 }
 
 - (void)startSignInWithCompletion:
     (signin_ui::SigninCompletionCallback)completion {
-  CHECK_EQ(_state, AuthenticationFlowInCurrentProfileState::kBegin);
+  CHECK_EQ(_state, AuthenticationFlowInProfileState::kBegin);
   CHECK(completion);
   _selfRetainer = self;
   _signInCompletion = completion;
@@ -140,64 +139,64 @@ enum class AuthenticationFlowInCurrentProfileState {
 
 #pragma mark - State machine management
 
-- (AuthenticationFlowInCurrentProfileState)nextStateFailed {
+- (AuthenticationFlowInProfileState)nextStateFailed {
   switch (_state) {
-    case AuthenticationFlowInCurrentProfileState::kBegin:
+    case AuthenticationFlowInProfileState::kBegin:
       NOTREACHED();
-    case AuthenticationFlowInCurrentProfileState::kSignOutIfNeeded:
-    case AuthenticationFlowInCurrentProfileState::kSignInIfNeeded:
-    case AuthenticationFlowInCurrentProfileState::kRegisterForUserPolicy:
-    case AuthenticationFlowInCurrentProfileState::kFetchUserPolicy:
-    case AuthenticationFlowInCurrentProfileState::kFetchCapabilities:
-      return AuthenticationFlowInCurrentProfileState::kCompletionWithFailure;
-    case AuthenticationFlowInCurrentProfileState::kCompletionWithFailure:
-    case AuthenticationFlowInCurrentProfileState::kCompletionWithSuccess:
-      return AuthenticationFlowInCurrentProfileState::kCleanupBeforeDone;
-    case AuthenticationFlowInCurrentProfileState::kCleanupBeforeDone:
-    case AuthenticationFlowInCurrentProfileState::kDone:
-      return AuthenticationFlowInCurrentProfileState::kDone;
+    case AuthenticationFlowInProfileState::kSignOutIfNeeded:
+    case AuthenticationFlowInProfileState::kSignInIfNeeded:
+    case AuthenticationFlowInProfileState::kRegisterForUserPolicy:
+    case AuthenticationFlowInProfileState::kFetchUserPolicy:
+    case AuthenticationFlowInProfileState::kFetchCapabilities:
+      return AuthenticationFlowInProfileState::kCompletionWithFailure;
+    case AuthenticationFlowInProfileState::kCompletionWithFailure:
+    case AuthenticationFlowInProfileState::kCompletionWithSuccess:
+      return AuthenticationFlowInProfileState::kCleanupBeforeDone;
+    case AuthenticationFlowInProfileState::kCleanupBeforeDone:
+    case AuthenticationFlowInProfileState::kDone:
+      return AuthenticationFlowInProfileState::kDone;
   }
 }
 
-- (AuthenticationFlowInCurrentProfileState)nextState {
+- (AuthenticationFlowInProfileState)nextState {
   if (_error) {
     return [self nextStateFailed];
   }
   switch (_state) {
-    case AuthenticationFlowInCurrentProfileState::kBegin:
-      return AuthenticationFlowInCurrentProfileState::kSignOutIfNeeded;
-    case AuthenticationFlowInCurrentProfileState::kSignOutIfNeeded:
-      return AuthenticationFlowInCurrentProfileState::kSignInIfNeeded;
-    case AuthenticationFlowInCurrentProfileState::kSignInIfNeeded:
+    case AuthenticationFlowInProfileState::kBegin:
+      return AuthenticationFlowInProfileState::kSignOutIfNeeded;
+    case AuthenticationFlowInProfileState::kSignOutIfNeeded:
+      return AuthenticationFlowInProfileState::kSignInIfNeeded;
+    case AuthenticationFlowInProfileState::kSignInIfNeeded:
       if (policy::IsAnyUserPolicyFeatureEnabled() && _isManagedIdentity) {
-        return AuthenticationFlowInCurrentProfileState::kRegisterForUserPolicy;
+        return AuthenticationFlowInProfileState::kRegisterForUserPolicy;
       } else if ([self shouldFetchCapabilities]) {
-        return AuthenticationFlowInCurrentProfileState::kFetchCapabilities;
+        return AuthenticationFlowInProfileState::kFetchCapabilities;
       }
-      return AuthenticationFlowInCurrentProfileState::kCompletionWithSuccess;
-    case AuthenticationFlowInCurrentProfileState::kRegisterForUserPolicy:
+      return AuthenticationFlowInProfileState::kCompletionWithSuccess;
+    case AuthenticationFlowInProfileState::kRegisterForUserPolicy:
       if (!_dmToken.length || !_clientID.length) {
         // Skip fetching user policies when registration failed.
         if ([self shouldFetchCapabilities]) {
-          return AuthenticationFlowInCurrentProfileState::kFetchCapabilities;
+          return AuthenticationFlowInProfileState::kFetchCapabilities;
         }
-        return AuthenticationFlowInCurrentProfileState::kCompletionWithSuccess;
+        return AuthenticationFlowInProfileState::kCompletionWithSuccess;
       }
       // Fetch user policies when registration is successful.
-      return AuthenticationFlowInCurrentProfileState::kFetchUserPolicy;
-    case AuthenticationFlowInCurrentProfileState::kFetchUserPolicy:
+      return AuthenticationFlowInProfileState::kFetchUserPolicy;
+    case AuthenticationFlowInProfileState::kFetchUserPolicy:
       if ([self shouldFetchCapabilities]) {
-        return AuthenticationFlowInCurrentProfileState::kFetchCapabilities;
+        return AuthenticationFlowInProfileState::kFetchCapabilities;
       }
-      return AuthenticationFlowInCurrentProfileState::kCompletionWithSuccess;
-    case AuthenticationFlowInCurrentProfileState::kFetchCapabilities:
-      return AuthenticationFlowInCurrentProfileState::kCompletionWithSuccess;
-    case AuthenticationFlowInCurrentProfileState::kCompletionWithSuccess:
-    case AuthenticationFlowInCurrentProfileState::kCompletionWithFailure:
-      return AuthenticationFlowInCurrentProfileState::kCleanupBeforeDone;
-    case AuthenticationFlowInCurrentProfileState::kCleanupBeforeDone:
-    case AuthenticationFlowInCurrentProfileState::kDone:
-      return AuthenticationFlowInCurrentProfileState::kDone;
+      return AuthenticationFlowInProfileState::kCompletionWithSuccess;
+    case AuthenticationFlowInProfileState::kFetchCapabilities:
+      return AuthenticationFlowInProfileState::kCompletionWithSuccess;
+    case AuthenticationFlowInProfileState::kCompletionWithSuccess:
+    case AuthenticationFlowInProfileState::kCompletionWithFailure:
+      return AuthenticationFlowInProfileState::kCleanupBeforeDone;
+    case AuthenticationFlowInProfileState::kCleanupBeforeDone:
+    case AuthenticationFlowInProfileState::kDone:
+      return AuthenticationFlowInProfileState::kDone;
   }
 }
 
@@ -205,37 +204,37 @@ enum class AuthenticationFlowInCurrentProfileState {
   ProfileIOS* profile = [self originalProfile];
   _state = [self nextState];
   switch (_state) {
-    case AuthenticationFlowInCurrentProfileState::kBegin:
+    case AuthenticationFlowInProfileState::kBegin:
       NOTREACHED();
-    case AuthenticationFlowInCurrentProfileState::kSignOutIfNeeded:
+    case AuthenticationFlowInProfileState::kSignOutIfNeeded:
       [self signOutIfNeededStep];
       return;
-    case AuthenticationFlowInCurrentProfileState::kSignInIfNeeded:
+    case AuthenticationFlowInProfileState::kSignInIfNeeded:
       [self signInIfNeededStep];
       return;
-    case AuthenticationFlowInCurrentProfileState::kRegisterForUserPolicy:
+    case AuthenticationFlowInProfileState::kRegisterForUserPolicy:
       [_performer registerUserPolicy:profile forIdentity:_identityToSignIn];
       return;
-    case AuthenticationFlowInCurrentProfileState::kFetchUserPolicy:
+    case AuthenticationFlowInProfileState::kFetchUserPolicy:
       [_performer fetchUserPolicy:profile
                       withDmToken:_dmToken
                          clientID:_clientID
                userAffiliationIDs:_userAffiliationIDs
                          identity:_identityToSignIn];
       return;
-    case AuthenticationFlowInCurrentProfileState::kFetchCapabilities:
+    case AuthenticationFlowInProfileState::kFetchCapabilities:
       [self fetchCapabilitiesStep];
       return;
-    case AuthenticationFlowInCurrentProfileState::kCompletionWithSuccess:
+    case AuthenticationFlowInProfileState::kCompletionWithSuccess:
       [self successCompleteFlowStep];
       return;
-    case AuthenticationFlowInCurrentProfileState::kCompletionWithFailure:
+    case AuthenticationFlowInProfileState::kCompletionWithFailure:
       [self failureCompleteFlowStep];
       return;
-    case AuthenticationFlowInCurrentProfileState::kCleanupBeforeDone:
+    case AuthenticationFlowInProfileState::kCleanupBeforeDone:
       [self cleanupBeforeDoneStep];
       return;
-    case AuthenticationFlowInCurrentProfileState::kDone:
+    case AuthenticationFlowInProfileState::kDone:
       return;
   }
   NOTREACHED();
@@ -376,8 +375,7 @@ enum class AuthenticationFlowInCurrentProfileState {
                                    clientID:(NSString*)clientID
                          userAffiliationIDs:
                              (NSArray<NSString*>*)userAffiliationIDs {
-  CHECK_EQ(AuthenticationFlowInCurrentProfileState::kRegisterForUserPolicy,
-           _state);
+  CHECK_EQ(AuthenticationFlowInProfileState::kRegisterForUserPolicy, _state);
   _dmToken = dmToken;
   _clientID = clientID;
   _userAffiliationIDs = userAffiliationIDs;
@@ -385,7 +383,7 @@ enum class AuthenticationFlowInCurrentProfileState {
 }
 
 - (void)didFetchUserPolicyWithSuccess:(BOOL)success {
-  DCHECK_EQ(AuthenticationFlowInCurrentProfileState::kFetchUserPolicy, _state);
+  DCHECK_EQ(AuthenticationFlowInProfileState::kFetchUserPolicy, _state);
   DLOG_IF(ERROR, !success) << "Error fetching policy for user";
   [self continueFlow];
 }

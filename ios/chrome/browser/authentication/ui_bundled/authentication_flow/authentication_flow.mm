@@ -25,7 +25,7 @@
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/change_profile_commands.h"
 #import "ios/chrome/app/profile/profile_state.h"
-#import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_in_current_profile.h"
+#import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_in_profile.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_performer.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_ui_util.h"
 #import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_capabilities_fetcher.h"
@@ -60,8 +60,8 @@ namespace {
 
 // The states of the sign-in flow state machine.
 // TODO(crbug.com/375605482): Need to remove steps from SIGN_OUT_IF_NEEDED to
-// COMPLETE_WITH_FAILURE can be replaced with
-// `AuthenticationFlowInCurrentProfile` even without multi profile.
+// COMPLETE_WITH_FAILURE can be replaced with `AuthenticationFlowInProfile` even
+// without multi profile.
 enum AuthenticationState {
   BEGIN,
   FETCH_MANAGED_STATUS,
@@ -289,7 +289,7 @@ bool ShouldSkipBrowsingDataMigration(signin_metrics::AccessPoint access_point,
       if (_didSwitchProfile) {
         // Once the profile switch is done, there is nothing more to do in this
         // profile. The COMPLETE_WITH_SUCCESS should be skipped. The completion
-        // block has been passed to `AuthenticationFlowInCurrentProfile`.
+        // block has been passed to `AuthenticationFlowInProfile`.
         CHECK(!_signInCompletion);
         return CLEANUP_BEFORE_DONE;
       }
@@ -803,27 +803,23 @@ bool ShouldSkipBrowsingDataMigration(signin_metrics::AccessPoint access_point,
     return;
   }
   // TODO(crbug.com/375605482): Need to block user until
-  // `AuthenticationFlowInCurrentProfile` is done? Probably with a blur
-  // animation.
+  // `AuthenticationFlowInProfile` is done? Probably with a blur animation.
   // With the profile switching `_browser` and `_presentingViewController` are
   // not valid anymore.
   _browser = nullptr;
   _presentingViewController = nil;
-  // The sign-in flow is passed to `authenticationFlowInCurrentProfile`,
-  // with the completion block.
-  // `AuthenticationFlowInCurrentProfile` retains itself until the sign-in is
-  // done. There is no need to own this instance.
-  AuthenticationFlowInCurrentProfile* authenticationFlowInCurrentProfile =
-      [[AuthenticationFlowInCurrentProfile alloc]
+  // The sign-in flow is passed to `authenticationFlowInProfile`, with the
+  // completion block. `AuthenticationFlowInProfile` retains itself until the
+  // sign-in is done. There is no need to own this instance.
+  AuthenticationFlowInProfile* authenticationFlowInProfile =
+      [[AuthenticationFlowInProfile alloc]
             initWithBrowser:newProfileBrowser
                    identity:_identityToSignIn
           isManagedIdentity:_identityToSignInHostedDomain.length > 0
                 accessPoint:_accessPoint
           postSignInActions:self.postSignInActions];
-  authenticationFlowInCurrentProfile.precedingHistorySync =
-      self.precedingHistorySync;
-  [authenticationFlowInCurrentProfile
-      startSignInWithCompletion:_signInCompletion];
+  authenticationFlowInProfile.precedingHistorySync = self.precedingHistorySync;
+  [authenticationFlowInProfile startSignInWithCompletion:_signInCompletion];
   _signInCompletion = nil;
   _didSwitchProfile = YES;
   [self continueFlow];

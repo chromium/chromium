@@ -10,7 +10,7 @@ source_set("authentication_flow") {
     "authentication_flow.mm",
   ]
   deps = [
-    ":authentication_flow_in_current_profile",
+    ":authentication_flow_in_profile",
     ":authentication_flow_performer",
     "//base",
     "//components/bookmarks/common",
@@ -52,10 +52,10 @@ source_set("authentication_flow") {
   frameworks = [ "UIKit.framework" ]
 }
 
-source_set("authentication_flow_in_current_profile") {
+source_set("authentication_flow_in_profile") {
   sources = [
-    "authentication_flow_in_current_profile.h",
-    "authentication_flow_in_current_profile.mm",
+    "authentication_flow_in_profile.h",
+    "authentication_flow_in_profile.mm",
   ]
   deps = [
     ":authentication_flow_performer",
