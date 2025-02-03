@@ -2279,12 +2279,6 @@ class TabListMediator implements TabListNotificationHandler {
         return TabModel.INVALID_TAB_INDEX;
     }
 
-    /** Provides the tab ID for the most recently swiped tab. */
-    @NonNull
-    ObservableSupplier<Integer> getRecentlySwipedTabSupplier() {
-        return mTabGridItemTouchHelperCallback.getRecentlySwipedTabIdSupplier();
-    }
-
     /**
      * Returns the index in {@link mModelList} of the group with {@code rootId} and the {@link Tab}
      * representing the group. Will be null if the entry is not present, the tab cannot be found, or
