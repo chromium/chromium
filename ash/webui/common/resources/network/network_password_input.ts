@@ -14,8 +14,10 @@ import '//resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import './cr_policy_network_indicator_mojo.js';
 import './network_shared.css.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
+import {assert} from '//resources/js/assert.js';
+import {ManagedProperties} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {NetworkType, OncSource} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 
 import {CrPolicyNetworkBehaviorMojo, CrPolicyNetworkBehaviorMojoInterface} from './cr_policy_network_behavior_mojo.js';
@@ -23,25 +25,17 @@ import {NetworkConfigElementBehavior, NetworkConfigElementBehaviorInterface} fro
 import {getTemplate} from './network_password_input.html.js';
 import {FAKE_CREDENTIAL} from './onc_mojo.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- * @implements {CrPolicyNetworkBehaviorMojoInterface}
- * @implements {NetworkConfigElementBehaviorInterface}
- */
 const NetworkPasswordInputElementBase = mixinBehaviors(
     [
-      I18nBehavior,
       CrPolicyNetworkBehaviorMojo,
       NetworkConfigElementBehavior,
     ],
-    PolymerElement);
+    I18nMixin(PolymerElement));
 
-/** @polymer */
-class NetworkPasswordInputElement extends NetworkPasswordInputElementBase {
+export class NetworkPasswordInputElement extends
+    NetworkPasswordInputElementBase {
   static get is() {
-    return 'network-password-input';
+    return 'network-password-input' as const;
   }
 
   static get template() {
@@ -86,19 +80,28 @@ class NetworkPasswordInputElement extends NetworkPasswordInputElementBase {
         value: '',
       },
 
-      /** {?ManagedProperties} */
       managedProperties: {
         type: Object,
         value: null,
       },
 
-      /** @private */
+      disabled: {
+        type: Boolean,
+      },
+
+      readonly: {
+        type: Boolean,
+      },
+
+      value: {
+        type: String,
+      },
+
       tooltipPosition_: {
         type: String,
         value: '',
       },
 
-      /** @private */
       showPolicyIndicator_: {
         type: Boolean,
         value: false,
@@ -107,52 +110,50 @@ class NetworkPasswordInputElement extends NetworkPasswordInputElementBase {
     };
   }
 
-  /** @override */
-  connectedCallback() {
+  label: string;
+  showPassword: boolean;
+  invalid: boolean;
+  allowErrorMessage: boolean;
+  errorMessage: string;
+  managedProperties: ManagedProperties;
+  disabled: boolean = false;
+  readonly: boolean = false;
+  value: string;
+  override ariaLabel: string;
+  private tooltipPosition_: string;
+  private showPolicyIndicator_: boolean;
+
+  override connectedCallback() {
     super.connectedCallback();
 
     this.tooltipPosition_ =
         window.getComputedStyle(this).direction === 'rtl' ? 'right' : 'left';
   }
 
-  /** @private */
-  focus() {
-    this.shadowRoot.querySelector('cr-input').focus();
+  override focus(): void {
+    const input = this.shadowRoot!.querySelector('cr-input');
+    assert(input);
+
+    input.focus();
 
     // If the input has any contents, the should be selected when focus is
     // applied.
-    this.shadowRoot.querySelector('cr-input').select();
+    input.select();
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getInputType_() {
+  private getInputType_(): string {
     return this.showPassword ? 'text' : 'password';
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  isShowingPlaceholder_() {
+  private isShowingPlaceholder_(): boolean {
     return this.value === FAKE_CREDENTIAL;
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getIconClass_() {
+  private getIconClass_(): string {
     return this.showPassword ? 'icon-visibility-off' : 'icon-visibility';
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getShowPasswordTitle_() {
+  private getShowPasswordTitle_(): string {
     return this.showPassword ? this.i18n('hidePassword') :
                                this.i18n('showPassword');
   }
@@ -161,20 +162,14 @@ class NetworkPasswordInputElement extends NetworkPasswordInputElementBase {
    * TODO(b/328633844): Update this function to make the "show password" button
    * visible for configured WiFi networks.
    * Used to control whether the Show Password button is visible.
-   * @return {boolean}
-   * @private
    */
-  showPasswordIcon_() {
+  private showPasswordIcon_(): boolean {
     return !this.showPolicyIndicator_ &&
         (!this.managedProperties ||
          this.managedProperties.source === OncSource.kNone);
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onShowPasswordTap_(event) {
+  private onShowPasswordTap_(event: Event) {
     if (event.type === 'touchend' && event.cancelable) {
       // Prevent touch from producing secondary mouse events
       // that may cause the tooltip to appear unnecessarily.
@@ -191,12 +186,10 @@ class NetworkPasswordInputElement extends NetworkPasswordInputElementBase {
     event.stopPropagation();
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onKeydown_(event) {
-    if (event.target.id === 'input' && event.key === 'Enter') {
+  private onKeydown_(event: KeyboardEvent) {
+    const target = event.target as HTMLElement;
+    assert(target);
+    if (target.id === 'input' && event.key === 'Enter') {
       event.stopPropagation();
       this.dispatchEvent(
           new CustomEvent('enter', {bubbles: true, composed: true}));
@@ -223,10 +216,8 @@ class NetworkPasswordInputElement extends NetworkPasswordInputElementBase {
   /**
    * If the fake password is showing, delete the password and focus the input
    * when clicked so the user can enter a new password.
-   * @param {!Event} event
-   * @private
    */
-  onMousedown_(event) {
+  private onMousedown_(event: Event) {
     if (!this.isShowingPlaceholder_()) {
       return;
     }
@@ -236,6 +227,12 @@ class NetworkPasswordInputElement extends NetworkPasswordInputElementBase {
       // Focus the field if not already focused.
       this.focus();
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [NetworkPasswordInputElement.is]: NetworkPasswordInputElement;
   }
 }
 

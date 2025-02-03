@@ -203,7 +203,7 @@ suite('network-config-wifi', () => {
                 .querySelector<NetworkPasswordInputElement>('#wifi-passphrase');
         assertTrue(!!passwordInput);
 
-        passwordInput.fire('keypress');
+        passwordInput.dispatchEvent(new Event('keypress'));
         flush();
         assertFalse(!!networkConfig.error);
       });
