@@ -38,6 +38,7 @@
 #include "components/viz/service/frame_sinks/video_capture/frame_sink_video_capturer_manager.h"
 #include "components/viz/test/test_context_provider.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
+#include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "media/base/format_utils.h"
 #include "media/base/limits.h"
 #include "media/base/test_helpers.h"
@@ -212,7 +213,8 @@ class MockFrameSinkManager : public FrameSinkVideoCapturerManager {
 
 class MockConsumer : public mojom::FrameSinkVideoConsumer {
  public:
-  MockConsumer() = default;
+  MockConsumer()
+      : test_sii_(base::MakeRefCounted<gpu::TestSharedImageInterface>()) {}
 
   MOCK_METHOD0(OnFrameCapturedMock, void());
   MOCK_METHOD1(OnNewSubCaptureTargetVersion, void(uint32_t));
@@ -279,17 +281,27 @@ class MockConsumer : public mojom::FrameSinkVideoConsumer {
                          std::move(mapping)));
     } else if (data->is_gpu_memory_buffer_handle()) {
       // kNativeTexture + NV12 / RGBA
-      // Create a fake GpuMemoryBuffer as these test don't run the code to
+      // Create a test GpuMemoryBuffer as these test don't run the code to
       // produce GPU frames. The mailbox values aren't important since
       // IsLetterboxedFrame does no verification for GMB VideoFrames.
-      auto gmb_dummy = std::make_unique<media::FakeGpuMemoryBuffer>(
-          GetBufferSizeInPixelsForVideoPixelFormat(info->pixel_format,
-                                                   info->coded_size),
-          VideoPixelFormatToGfxBufferFormat(info->pixel_format).value());
+      test_sii_->UseTestGMBInSharedImageCreationWithBufferUsage();
 
+      // Setting some default usage in order to get a mappable shared image.
+      const auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
+                            gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+      const auto si_format = GetSharedImageFormat(
+          VideoPixelFormatToGfxBufferFormat(info->pixel_format).value());
+      const auto si_size = GetBufferSizeInPixelsForVideoPixelFormat(
+          info->pixel_format, info->coded_size);
+      // Create a mappable shared image.
+      auto shared_image = test_sii_->CreateSharedImage(
+          {si_format, si_size, gfx::ColorSpace(),
+           gpu::SharedImageUsageSet(si_usage), "FrameSinkVideoCapturerTest"},
+          gpu::kNullSurfaceHandle, gfx::BufferUsage::GPU_READ);
       // The frame is only gonna tell Letterbox to skip the test.
-      frame = media::VideoFrame::WrapExternalGpuMemoryBuffer(
-          info->visible_rect, info->visible_rect.size(), std::move(gmb_dummy),
+      frame = VideoFrame::WrapMappableSharedImage(
+          std::move(shared_image), test_sii_->GenVerifiedSyncToken(),
+          base::NullCallback(), info->visible_rect, info->visible_rect.size(),
           info->timestamp);
       ASSERT_TRUE(frame);
     } else {
@@ -314,6 +326,7 @@ class MockConsumer : public mojom::FrameSinkVideoConsumer {
   mojo::Receiver<mojom::FrameSinkVideoConsumer> receiver_{this};
   std::vector<scoped_refptr<VideoFrame>> frames_;
   std::vector<base::OnceClosure> done_callbacks_;
+  scoped_refptr<gpu::TestSharedImageInterface> test_sii_;
 };
 
 class FakeGpuCopyResult : public CopyOutputResult {
