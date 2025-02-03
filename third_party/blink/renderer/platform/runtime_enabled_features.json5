@@ -4934,7 +4934,7 @@
     {
       name: "WebIdentityDigitalCredentials",
       origin_trial_feature_name: "WebIdentityDigitalCredentials",
-      origin_trial_os: ["android"],
+      origin_trial_os: ["android", "win", "mac"],
       origin_trial_allows_third_party: true,
       implied_by: ["WebIdentityDigitalCredentialsCreation"],
       public: true,
