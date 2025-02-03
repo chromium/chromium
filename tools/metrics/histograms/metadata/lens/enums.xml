@@ -103,6 +103,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/lens/lens_overlay_new_tab_source.h:LensOverlayNewTabSource) -->
 
+<!-- LINT.IfChange(LensOverlaySpeedbumpMenuSelection) -->
+
+<enum name="LensOverlaySpeedbumpMenuSelection">
+  <summary>The selected item in the lens speedbump menu.</summary>
+  <int value="0" label="SearchYourScreen"/>
+  <int value="1" label="SearchWithCamera"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/lens/lens_overlay_metrics.h:LensOverlaySpeedbumpMenuSelection) -->
+
 <!-- LINT.IfChange(LensOverlayUserAction) -->
 
 <enum name="LensOverlayUserAction">

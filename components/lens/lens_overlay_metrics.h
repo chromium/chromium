@@ -20,6 +20,23 @@
 
 namespace lens {
 
+// Designates the selected item in the lens speedbump menu.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(LensOverlaySpeedbumpMenuSelection)
+enum class LensOverlaySpeedbumpMenuSelection {
+  // Item summoning Lens Overlay.
+  kSearchYourScreen = 0,
+
+  // Item summoning Lens Live View Finder (LVF).
+  kSearchWithCamera = 1,
+
+  kMaxValue = kSearchWithCamera
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/lens/enums.xml:LensOverlaySpeedbumpMenuSelection)
+
 // Returns the string representation of the invocation source.
 std::string InvocationSourceToString(
     LensOverlayInvocationSource invocation_source);

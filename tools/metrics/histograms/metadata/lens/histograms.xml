@@ -551,6 +551,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Lens.Overlay.SpeedbumpMenu"
+    enum="LensOverlaySpeedbumpMenuSelection" expires_after="2026-01-31">
+  <owner>stkhapugin@chromium.org</owner>
+  <owner>radunitescu@google.com</owner>
+  <summary>
+    Recorded once when the Lens Overlay speedbump menu is used, enumerated by
+    the selected menu item.
+  </summary>
+</histogram>
+
 <histogram name="Lens.Overlay.TimeToFirstInteraction" units="ms"
     expires_after="2025-05-06">
   <owner>jdonnelly@chromium.org</owner>
