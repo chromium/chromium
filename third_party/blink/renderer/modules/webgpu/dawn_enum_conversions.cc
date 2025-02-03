@@ -32,7 +32,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture_view_dimension.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_vertex_format.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_vertex_step_mode.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_wgsl_feature_name.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 
 namespace blink {
@@ -1026,50 +1025,30 @@ const char* FromDawnEnum(wgpu::AdapterType dawn_enum) {
   NOTREACHED();
 }
 
-bool FromDawnEnum(wgpu::WGSLLanguageFeatureName dawn_enum,
-                  V8WGSLFeatureName* result) {
+const char* FromDawnEnum(wgpu::WGSLLanguageFeatureName dawn_enum) {
   switch (dawn_enum) {
     case wgpu::WGSLLanguageFeatureName::ReadonlyAndReadwriteStorageTextures:
-      *result = V8WGSLFeatureName(
-          V8WGSLFeatureName::Enum::kReadonlyAndReadwriteStorageTextures);
-      return true;
+      return "readonly_and_readwrite_storage_textures";
     case wgpu::WGSLLanguageFeatureName::Packed4x8IntegerDotProduct:
-      *result = V8WGSLFeatureName(
-          V8WGSLFeatureName::Enum::kPacked4X8IntegerDotProduct);
-      return true;
+      return "packed_4x8_integer_dot_product";
     case wgpu::WGSLLanguageFeatureName::UnrestrictedPointerParameters:
-      *result = V8WGSLFeatureName(
-          V8WGSLFeatureName::Enum::kUnrestrictedPointerParameters);
-      return true;
+      return "unrestricted_pointer_parameters";
     case wgpu::WGSLLanguageFeatureName::PointerCompositeAccess:
-      *result =
-          V8WGSLFeatureName(V8WGSLFeatureName::Enum::kPointerCompositeAccess);
-      return true;
+      return "pointer_composite_access";
 
+    // Non-standard.
     case wgpu::WGSLLanguageFeatureName::ChromiumTestingUnimplemented:
-      *result = V8WGSLFeatureName(
-          V8WGSLFeatureName::Enum::kChromiumTestingUnimplemented);
-      return true;
+      return "chromium_testing_unimplemented";
     case wgpu::WGSLLanguageFeatureName::ChromiumTestingUnsafeExperimental:
-      *result = V8WGSLFeatureName(
-          V8WGSLFeatureName::Enum::kChromiumTestingUnsafeExperimental);
-      return true;
+      return "chromium_testing_unsafe_experimental";
     case wgpu::WGSLLanguageFeatureName::ChromiumTestingExperimental:
-      *result = V8WGSLFeatureName(
-          V8WGSLFeatureName::Enum::kChromiumTestingExperimental);
-      return true;
+      return "chromium_testing_experimental";
     case wgpu::WGSLLanguageFeatureName::ChromiumTestingShippedWithKillswitch:
-      *result = V8WGSLFeatureName(
-          V8WGSLFeatureName::Enum::kChromiumTestingShippedWithKillswitch);
-      return true;
+      return "chromium_testing_shipped_with_killswitch";
     case wgpu::WGSLLanguageFeatureName::ChromiumTestingShipped:
-      *result =
-          V8WGSLFeatureName(V8WGSLFeatureName::Enum::kChromiumTestingShipped);
-      return true;
-
-    default:
-      return false;
+      return "chromium_testing_shipped";
   }
+  return nullptr;
 }
 
 }  // namespace blink
