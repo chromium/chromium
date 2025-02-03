@@ -1336,6 +1336,51 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_SETTING_TITLE" desc="The title of the settings to toggle the articles suggestions on the NTP on/off">
         Article suggestions
       </message>
+      <message name="IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_PRICE_TRACKING_CUSTOMIZE_CARDS" desc="Text for Price Tracking ShopCard in Customize Cards in Magic Stack">
+          Tracked products
+      </message>
+      <message name="IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_PRICE_TRACKING_HIDE" desc="Button text indicating price tracking ShopCard module can be removed from Magic Stack">
+          Hide "Price Tracking"
+      </message>
+      <message name="IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_PRICE_TRACKING_SECONDARY_ACTION" desc="Secondary action text for Price Tracking ShopCard in Magic Stack">
+          See more
+      </message>
+      <message name="IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_PRICE_TRACKING_TITLE" desc="Title for Price Tracking ShopCard in Magic Stack">
+          Price tracking
+      </message>
+      <message name="IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_REVIEWS_CUSTOMIZE_CARDS" desc="Text for ShopCard Reviews in Customize Cards in Magic Stack">
+          Read what people are saying
+      </message>
+      <message name="IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_REVIEWS_HIDE" desc="Button text indicating reviews ShopCard module can be removed from Magic Stack">
+          Hide "Product Reviews for You"
+      </message>
+      <message name="IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_REVIEWS_TITLE" desc="Title for Reviews ShopCard in Magic Stack">
+          Product reviews for you
+      </message>
+      <message name="IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_TRACK_PRICE_BUTTON" desc="Text for 'Track' Button in Track Price ShopCard in Magic Stack">
+          Track
+      </message>
+      <message name="IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_TRACK_PRICE_CUSTOMIZE_CARDS" desc="Text for Track Price ShopCard in Customize Cards in Magic Stack">
+          Price tracking
+      </message>
+      <message name="IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_TRACK_PRICE_FAILURE_SNACKBAR" desc="Text for Snackbar if user taps 'Track' on Track price ShopCard in Magic Stack and the action fails">
+          Couldn't track price.
+      </message>
+      <message name="IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_TRACK_PRICE_FAILURE_SNACKBAR_ACTION" desc="Text for Snackbar action if Track Price tap fails on Track Price ShopCard">
+          Try Again
+      </message>
+      <message name="IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_TRACK_PRICE_HIDE" desc="Button text indicating Track Price ShopCard module can be removed from Magic Stack">
+          Hide "Track Price"
+      </message>
+      <message name="IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_TRACK_PRICE_SUCCESS_SNACKBAR" desc="Text for Snackbar if user taps 'Track' on Track price ShopCard in Magic Stack">
+          You'll get notified if the price drops on any site.
+      </message>
+      <message name="IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_TRACK_PRICE_SUCCESS_SNACKBAR_ACTION" desc="Text for Snackbar action for Snackbar displayed after successful price tracking action.">
+          View
+      </message>
+      <message name="IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_TRACK_PRICE_TITLE" desc="Title for Track Price ShopCard in Magic Stack">
+          Track price
+      </message>
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_SHORTCUTS_MODULE_TITLE" desc="The Shortcuts module title on the new tab page [Length: 10em]">
         Shortcuts
       </message>
