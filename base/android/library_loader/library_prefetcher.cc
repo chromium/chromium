@@ -29,6 +29,7 @@
 #include "base/files/file.h"
 #include "base/format_macros.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/process/process_metrics.h"
 #include "base/strings/string_util.h"
@@ -195,6 +196,8 @@ void Prefetch(size_t start, size_t end) {
 
 // These values were used in the past for recording
 // "LibraryLoader.PrefetchDetailedStatus".
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. See PrefetchStatus in enums.xml.
 enum class PrefetchStatus {
   kSuccess = 0,
   kWrongOrdering = 1,
@@ -275,7 +278,12 @@ void NativeLibraryPrefetcher::ForkAndPrefetchNativeLibrary(bool ordered_only) {
   // would create a dump as well.
   return;
 #else
+  base::TimeTicks start_time = base::TimeTicks::Now();
   PrefetchStatus status = ForkAndPrefetch(ordered_only);
+  base::UmaHistogramMediumTimes("Android.LibraryLoader.Prefetch.Duration",
+                                base::TimeTicks::Now() - start_time);
+  base::UmaHistogramEnumeration("Android.LibraryLoader.Prefetch.Status",
+                                status);
   if (status != PrefetchStatus::kSuccess) {
     LOG(WARNING) << "Cannot prefetch the library. status = "
                  << static_cast<int>(status);

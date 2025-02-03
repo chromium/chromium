@@ -1429,6 +1429,14 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Completed"/>
 </enum>
 
+<enum name="PrefetchStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="WrongOrdering"/>
+  <int value="2" label="ForkFailed"/>
+  <int value="3" label="ChildProcessCrashed"/>
+  <int value="4" label="ChildProcessKilled"/>
+</enum>
+
 <enum name="PrimaryCpuAbiBitness">
   <int value="0" label="Unknown"/>
   <int value="1" label="32-bit"/>

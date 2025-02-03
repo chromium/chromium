@@ -2489,6 +2489,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.LibraryLoader.Prefetch.Duration" units="ms"
+    expires_after="2026-01-30">
+  <owner>ziadyoussef@chromium.org</owner>
+  <owner>woa-performance@google.com</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    The time for prefetching the native library code to memory. Recorded once
+    per process start when prefetching is used.
+  </summary>
+</histogram>
+
+<histogram name="Android.LibraryLoader.Prefetch.Status" enum="PrefetchStatus"
+    expires_after="2026-01-30">
+  <owner>ziadyoussef@chromium.org</owner>
+  <owner>woa-performance@google.com</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Reports the result of prefetching native code into memory. Recorded once per
+    process start when prefetching is used.
+  </summary>
+</histogram>
+
 <histogram name="Android.MaybeCopyContentAreaAsBitmap.Time" units="ms"
     expires_after="2025-07-06">
   <owner>chikamune@chromium.org</owner>
