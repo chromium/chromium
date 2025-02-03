@@ -1070,6 +1070,8 @@ void BluetoothAdapterFloss::AdapterPinRequest(
     return;
   }
 
+  pairing->SetPairingExpectation(
+      BluetoothPairingFloss::PairingExpectation::kPinCode);
   pairing_delegate->RequestPinCode(device);
 }
 
