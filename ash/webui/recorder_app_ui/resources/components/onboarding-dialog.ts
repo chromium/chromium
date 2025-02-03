@@ -66,6 +66,11 @@ export class OnboardingDialog extends ReactiveLitElement {
         pointer-events: none;
       }
 
+      /* Turn off display when dialog is not open. (crbug.com/393947100) */
+      &:not(:popover-open) {
+        display: none;
+      }
+
       /* From CrOS dialog style. Min width for Recorder App is 480px. */
       @media (width < 520px) {
         width: 360px;
