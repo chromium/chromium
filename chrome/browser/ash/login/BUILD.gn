@@ -448,7 +448,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui/webui/signin:signin_utils",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
-    "//chromeos:test_utils",
+    "//chromeos:test_support",
     "//chromeos/ash/components/assistant:buildflags",
     "//chromeos/ash/components/attestation:test_support",
     "//chromeos/ash/components/browser_context_helper",

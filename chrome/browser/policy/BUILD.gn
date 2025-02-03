@@ -265,7 +265,7 @@ source_set("policy_specific_browser_tests") {
   if (is_chromeos) {
     deps += [
       "//chrome/browser/policy:onc",
-      "//chromeos:test_utils",
+      "//chromeos:test_support",
       "//chromeos/components/onc:test_support",
       "//components/onc:onc",
       "//crypto:test_support",

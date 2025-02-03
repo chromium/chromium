@@ -32,35 +32,13 @@ source_set("chromeos_export") {
 
 # This must be a static library instead of a source set because some of the
 # files pull in things with dependencies that aren't linked in all cases.
-#
-# TODO this should probably be changed such that it links in all cases and
-# can be converted to a source set.
 static_library("test_support") {
   testonly = true
-  public_deps = [ ":test_support_source_set" ]
-}
-
-source_set("test_support_source_set") {
-  testonly = true
-  public_deps = [ ":test_utils" ]
-  deps = [
-    "//chromeos/ash/components/dbus:test_support",
-    "//chromeos/ash/components/login/login_state:test_support",
-    "//chromeos/ash/components/network:test_support",
-    "//google_apis",
-    "//net:test_support",
-    "//services/network:test_support",
-    "//testing/gmock",
-    "//testing/gtest",
-  ]
-}
-
-source_set("test_utils") {
-  deps = [ "//base" ]
   sources = [
     "test/chromeos_test_utils.cc",
     "test/chromeos_test_utils.h",
   ]
+  deps = [ "//base" ]
 }
 
 test("chromeos_unittests") {
@@ -74,16 +52,13 @@ test("chromeos_unittests") {
     "//base",
     "//base/test:test_support",
     "//build:chromeos_buildflags",
+    "//chromeos/ash/components:test_support",
     "//mojo/core/embedder",
   ]
 
   # Collect the actual tests.
   deps += [
-    ":test_support",
-    "//chromeos/ash/components:test_support",
     "//chromeos/ash/components:unit_tests",
-    "//chromeos/ash/components/dbus:test_support",
-    "//chromeos/ash/components/network:test_support",
     "//chromeos/ash/services:unit_tests",
     "//chromeos/components/firewall_hole:unit_tests",
     "//chromeos/constants:unit_tests",
@@ -97,16 +72,6 @@ test("chromeos_unittests") {
     "//chromeos/ui/base:unit_tests",
     "//chromeos/utils:unit_tests",
     "//chromeos/version:unit_tests",
-    "//components/onc",
-    "//components/prefs:test_support",
-    "//components/proxy_config",
-    "//crypto",
-    "//dbus:test_support",
-    "//google_apis",
-    "//net",
-    "//net:test_support",
-    "//services/network/public/cpp",
-    "//url",
   ]
 }
 

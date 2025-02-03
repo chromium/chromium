@@ -58,7 +58,7 @@ source_set("unit_tests") {
     ":smart_dim",
     "//ash/constants",
     "//base",
-    "//chromeos:test_utils",
+    "//chromeos:test_support",
     "//chromeos/dbus/machine_learning",
     "//chromeos/services/machine_learning/public/cpp",
     "//chromeos/services/machine_learning/public/cpp:stub",
