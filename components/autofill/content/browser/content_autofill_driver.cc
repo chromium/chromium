@@ -414,10 +414,6 @@ bool ContentAutofillDriver::IsActive() const {
   return render_frame_host_->IsActive();
 }
 
-bool ContentAutofillDriver::IsInAnyMainFrame() const {
-  return render_frame_host_->GetMainFrame() == render_frame_host();
-}
-
 bool ContentAutofillDriver::HasSharedAutofillPermission() const {
   return render_frame_host_->IsFeatureEnabled(
       network::mojom::PermissionsPolicyFeature::kSharedAutofill);

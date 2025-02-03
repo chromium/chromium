@@ -161,23 +161,16 @@ bool AutofillDriverIOS::IsActive() const {
   return true;
 }
 
-bool AutofillDriverIOS::IsInAnyMainFrame() const {
-  web::WebFrame* frame = web_frame();
-  // Unlike the content/ implementation, WebKit does not have a distinction
-  // between primary and non-primary main frames.
-  return frame ? frame->IsMainFrame() : true;
-}
-
 bool AutofillDriverIOS::HasSharedAutofillPermission() const {
   // Give the shared-autofill permission to the main frame of the webstate by
   // default.
-  if (IsInAnyMainFrame()) {
+  if (!web_frame() || web_frame()->IsMainFrame()) {
     return true;
   }
 
   // Also propagate that permission to the direct children of the main
   // frame on the same origin as the main frame.
-  if (parent_ && parent_->web_frame() && parent_->IsInAnyMainFrame() &&
+  if (parent_ && parent_->web_frame() && parent_->web_frame()->IsMainFrame() &&
       web_frame()) {
     return parent_->web_frame()->GetSecurityOrigin() ==
            web_frame()->GetSecurityOrigin();
