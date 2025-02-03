@@ -46,6 +46,11 @@
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/download/download_stats.h"
+#include "chrome/browser/glic/glic_enabling.h"
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/glic_keyed_service.h"
+#include "chrome/browser/glic/glic_keyed_service_factory.h"
+#endif  // BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/language/language_model_manager_factory.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_features.h"
@@ -520,13 +525,15 @@ const std::map<int, int>& GetIdcToUmaMap(UmaEnumIdLookupType type) {
        {IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_USE_PASSKEY_FROM_ANOTHER_DEVICE,
         152},
        {IDC_CONTENT_CONTEXT_USE_PASSKEY_FROM_ANOTHER_DEVICE, 153},
+       {IDC_CONTENT_CONTEXT_RELOAD_GLIC, 154},
+       {IDC_CONTENT_CONTEXT_CLOSE_GLIC, 155},
        // To add new items:
        //   - Add one more line above this comment block, using the UMA value
        //     from the line below this comment block.
        //   - Increment the UMA value in that latter line.
        //   - Add the new item to the RenderViewContextMenuItem enum in
        //     tools/metrics/histograms/enums.xml.
-       {0, 154}});
+       {0, 156}});
 
   // These UMA values are for the ContextMenuOptionDesktop enum, used for
   // the ContextMenu.SelectedOptionDesktop histograms.
@@ -833,6 +840,10 @@ void RenderViewContextMenu::AddSpellCheckServiceItem(ui::SimpleMenuModel* menu,
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(RenderViewContextMenu,
                                       kExitFullscreenMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(RenderViewContextMenu, kComposeMenuItem);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(RenderViewContextMenu,
+                                      kGlicCloseMenuItem);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(RenderViewContextMenu,
+                                      kGlicReloadMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(RenderViewContextMenu, kRegionSearchItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(RenderViewContextMenu,
                                       kSearchForImageItem);
@@ -1172,6 +1183,8 @@ void RenderViewContextMenu::InitMenu() {
   if (editable) {
     AppendOtherEditableItems();
   }
+
+  AppendGlicItems();
 
   if (content_type_->SupportsGroup(ContextMenuContentType::ITEM_GROUP_COPY)) {
     DCHECK(!editable);
@@ -2297,6 +2310,30 @@ void RenderViewContextMenu::AppendReadingModeItem() {
   }
 }
 
+void RenderViewContextMenu::AppendGlicItems() {
+#if BUILDFLAG(ENABLE_GLIC)
+  if (GlicEnabling::IsEnabledByFlags()) {
+    auto* glic_service = glic::GlicKeyedServiceFactory::GetGlicKeyedService(
+        browser_context_, false);
+    if (glic_service && glic_service->IsActiveWebContents(
+                            GetWebContents()->GetOuterWebContents())) {
+      menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_RELOAD_GLIC,
+                                      IDS_CONTENT_CONTEXT_RELOAD);
+      menu_model_.SetElementIdentifierAt(
+          menu_model_.GetIndexOfCommandId(IDC_CONTENT_CONTEXT_RELOAD_GLIC)
+              .value(),
+          kGlicReloadMenuItem);
+      menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_CLOSE_GLIC,
+                                      IDS_CONTENT_CONTEXT_CLOSE_GLIC);
+      menu_model_.SetElementIdentifierAt(
+          menu_model_.GetIndexOfCommandId(IDC_CONTENT_CONTEXT_CLOSE_GLIC)
+              .value(),
+          kGlicCloseMenuItem);
+    }
+  }
+#endif  // BUILDFLAG(ENABLE_GLIC)
+}
+
 void RenderViewContextMenu::AppendRotationItems() {
   if (params_.media_flags & ContextMenuData::kMediaCanRotate) {
     menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
@@ -2982,6 +3019,10 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
     case IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE:
       return navigation_allowed;
 
+    case IDC_CONTENT_CONTEXT_RELOAD_GLIC:
+    case IDC_CONTENT_CONTEXT_CLOSE_GLIC:
+      return true;
+
     case IDC_CONTENT_CONTEXT_EXIT_FULLSCREEN:
       return true;
 
@@ -3222,6 +3263,30 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
 
     case IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE:
       ExecOpenInReadAnything();
+      break;
+
+    case IDC_CONTENT_CONTEXT_RELOAD_GLIC:
+#if BUILDFLAG(ENABLE_GLIC)
+      if (GlicEnabling::IsEnabledByFlags()) {
+        auto* glic_service = glic::GlicKeyedServiceFactory::GetGlicKeyedService(
+            browser_context_, false);
+        if (glic_service) {
+          glic_service->ReloadWebview();
+        }
+      }
+#endif  // BUILDFLAG(ENABLE_GLIC)
+      break;
+
+    case IDC_CONTENT_CONTEXT_CLOSE_GLIC:
+#if BUILDFLAG(ENABLE_GLIC)
+      if (GlicEnabling::IsEnabledByFlags()) {
+        auto* glic_service = glic::GlicKeyedServiceFactory::GetGlicKeyedService(
+            browser_context_, false);
+        if (glic_service) {
+          glic_service->Shutdown();
+        }
+      }
+#endif  // BUILDFLAG(ENABLE_GLIC)
       break;
 
     case IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH:

@@ -1073,6 +1073,12 @@ void GlicWindowController::Preload() {
   }
 }
 
+void GlicWindowController::ReloadWebview() {
+  if (contents_) {
+    contents_->web_contents()->ReloadFocusedFrame();
+  }
+}
+
 bool GlicWindowController::IsWarmed() {
   return !!contents_;
 }

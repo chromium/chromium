@@ -143,7 +143,12 @@ class GlicKeyedService : public KeyedService {
   base::CallbackListSubscription AddWebClientCreatedCallback(
       base::OnceCallback<void()> callback);
 
+  bool IsActiveWebContents(content::WebContents* contents) {
+    return contents && contents == window_controller().GetWebContents();
+  }
+
   void TryPreload();
+  void ReloadWebview();
 
   GlicProfileManager* GetProfileManagerForTesting() { return profile_manager_; }
 

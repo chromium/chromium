@@ -146,6 +146,9 @@ class GlicWindowController : public views::WidgetObserver {
   // Warms the glic web contents.
   void Preload();
 
+  // Reloads the glic web contents.
+  void ReloadWebview();
+
   // Returns whether or not the glic web contents are loaded (this can also be
   // true if `IsActive()` (i.e., if the contents are loaded in the glic window).
   bool IsWarmed();

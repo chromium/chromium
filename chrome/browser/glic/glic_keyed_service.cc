@@ -246,6 +246,10 @@ void GlicKeyedService::TryPreload() {
   window_controller_.Preload();
 }
 
+void GlicKeyedService::ReloadWebview() {
+  window_controller_.ReloadWebview();
+}
+
 base::WeakPtr<GlicKeyedService> GlicKeyedService::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
