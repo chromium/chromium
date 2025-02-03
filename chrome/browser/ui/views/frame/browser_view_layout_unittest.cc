@@ -247,6 +247,13 @@ class BrowserViewLayoutTest : public ChromeViewsTestBase {
     browser_view_->SetLayoutManager(std::move(layout));
   }
 
+  void TearDown() override {
+    // Avoid dangling pointers.
+    layout_ = nullptr;
+    browser_view_->SetLayoutManager(nullptr);
+    ChromeViewsTestBase::TearDown();
+  }
+
   // For the purposes of this test, boolean values are directly set on a
   // BrowserViewLayoutDelegate which are checked during layout or child view
   // visibility is directly changed. These calls do not schedule a layout and we
@@ -341,6 +348,9 @@ TEST_F(BrowserViewLayoutTest, LayoutDownloadShelf) {
   constexpr int kTop = kBottom - kHeight;
   EXPECT_EQ(kTop, layout()->LayoutDownloadShelf(kBottom));
   EXPECT_EQ(gfx::Rect(0, kTop, 0, kHeight), download_shelf->bounds());
+
+  // avoid dangling pointer.
+  layout()->set_download_shelf(nullptr);
 }
 
 TEST_F(BrowserViewLayoutTest, LayoutContentsWithTopControlsSlideBehavior) {
