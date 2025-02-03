@@ -31,8 +31,6 @@ enum class LinkCapturingFeatureVersion {
   kV1DefaultOff,
   kV2DefaultOff,
 #if !BUILDFLAG(IS_CHROMEOS)
-  // TODO(https://crbug.com/377522792): Remove this.
-  kV1DefaultOn,
   kV2DefaultOn,
 #endif
 };
