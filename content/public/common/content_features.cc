@@ -706,6 +706,13 @@ BASE_FEATURE(kPrefetchBrowserInitiatedTriggers,
              "PrefetchBrowserInitiatedTriggers",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// This was used for enabling a new limit and scheduler for prerender triggers
+// (crbug.com/40275452). Now the new implementation is used by default and this
+// flag is just for injecting parameters through field trials.
+BASE_FEATURE(kPrerender2NewLimitAndScheduler,
+             "Prerender2NewLimitAndScheduler",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables exposure of ads APIs in the renderer: Attribution Reporting,
 // FLEDGE, Topics, along with a number of other features actively in development
 // within these APIs.

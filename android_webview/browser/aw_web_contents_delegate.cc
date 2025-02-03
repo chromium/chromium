@@ -365,6 +365,12 @@ content::PreloadingEligibility AwWebContentsDelegate::IsPrerender2Supported(
   return content::PreloadingEligibility::kPreloadingUnsupportedByWebContents;
 }
 
+int AwWebContentsDelegate::AllowedPrerenderingCount(
+    content::WebContents& web_contents) {
+  return AwBrowserContext::FromWebContents(&web_contents)
+      ->AllowedPrerenderingCount();
+}
+
 content::NavigationController::UserAgentOverrideOption
 AwWebContentsDelegate::ShouldOverrideUserAgentForPrerender2() {
   // For WebView, always use the user agent override, which is set every time

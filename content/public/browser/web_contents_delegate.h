@@ -754,6 +754,10 @@ class CONTENT_EXPORT WebContentsDelegate {
       WebContents& web_contents,
       PreloadingTriggerType trigger_type);
 
+  // Returns how many prerendering can be triggered by
+  // WebContents::StartPrerendering().
+  virtual int AllowedPrerenderingCount(WebContents& web_contents);
+
   // Returns whether to override user agent for prerendering navigation.
   virtual NavigationController::UserAgentOverrideOption
   ShouldOverrideUserAgentForPrerender2();

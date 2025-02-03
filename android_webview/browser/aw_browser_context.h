@@ -123,6 +123,9 @@ class AwBrowserContext : public content::BrowserContext,
       const base::android::JavaParamRef<jobject>& callback,
       const base::android::JavaParamRef<jobject>& callback_executor);
 
+  int AllowedPrerenderingCount() const;
+  void SetAllowedPrerenderingCount(int allowed_count);
+
   // content::BrowserContext implementation.
   base::FilePath GetPath() override;
   bool IsOffTheRecord() override;
@@ -244,6 +247,10 @@ class AwBrowserContext : public content::BrowserContext,
 
   // The IO thread client that should be used by service workers.
   base::android::ScopedJavaGlobalRef<jobject> sw_io_thread_client_;
+
+  // The maximum number of concurrent prerendering attempts that can be
+  // triggered by AwContents::StartPrerendering().
+  int allowed_prerendering_count_ = 2;
 
   base::WeakPtrFactory<AwBrowserContext> weak_method_factory_{this};
 };
