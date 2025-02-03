@@ -363,10 +363,9 @@
     },
     'blink_clipboard': {
       'filepath': 'third_party/blink/renderer/core/clipboard' \
-                  '|third_party/blink/renderer/core/page/.*drag' \
-                  '|third_party/blink/renderer/platform/.*drag' \
-                  '|third_party/blink/public/platform/.*drag' \
-                  '|third_party/blink/public/web/.*drag',
+                  '|third_party/blink/renderer/modules/clipboard' \
+                  '|third_party/blink/renderer/.*drag' \
+                  '|third_party/blink/public/.*drag',
     },
     'blink_common': {
       'filepath': 'third_party/blink/common'
@@ -903,7 +902,10 @@
                   'content/public/common/user_agent.h',
     },
     'clipboard': {
-      'filepath': 'clipboard|dnd|drag|drop',
+      'filepath': 'content/browser/renderer/clipboard|' \
+                  'content/browser/web_contents/.*drag|' \
+                  'ui/base/clipboard/|'\
+                  'ui/base/dragdrop/|'
     },
     'commerce': {
       'filepath': 'components/commerce/|'\
@@ -2601,7 +2603,7 @@
     'blink_bindings_serialization': ['jbroman+watch@chromium.org'],
     'blink_bluetooth': ['mattreynolds+watch@chromium.org',
                         'odejesush+watch@chromium.org'],
-    'blink_clipboard': ['dcheng@chromium.org'],
+    'blink_clipboard': ['dcheng+clipboard@chromium.org'],
     'blink_common': ['kinuko+watch@chromium.org'],
     'blink_controller': [],
     'blink_css': ['alexis.menard@intel.com',
@@ -2804,7 +2806,7 @@
                      'ukai+watch@chromium.org'],
     'client_hints': ['victortan@chromium.org',
                      'miketaylr@chromium.org'],
-    'clipboard': ['dcheng@chromium.org'],
+    'clipboard': ['dcheng+clipboard@chromium.org'],
     'commerce': ['ayman+watch@chromium.org',
                 'mdjones+watch@chromium.org',
                 'yuezhanggg+watch@chromium.org'],
