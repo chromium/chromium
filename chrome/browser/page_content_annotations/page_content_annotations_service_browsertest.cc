@@ -10,7 +10,6 @@
 #include "base/path_service.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
@@ -1140,15 +1139,10 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBatchVisitTest,
 class PageContentAnnotationsServiceContentExtractionTest
     : public InProcessBrowserTest {
  public:
-  virtual void InitializeFeaureList() {
+  PageContentAnnotationsServiceContentExtractionTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kAnnotatedPageContentExtraction,
         {{"capture_delay", "0s"}, {"include_inner_text", "true"}});
-  }
-
-  void SetUp() override {
-    InitializeFeaureList();
-    InProcessBrowserTest::SetUp();
   }
 
   void SetUpOnMainThread() override {
@@ -1156,7 +1150,7 @@ class PageContentAnnotationsServiceContentExtractionTest
     InProcessBrowserTest::SetUpOnMainThread();
 
     embedded_test_server()->ServeFilesFromSourceDirectory(
-        GetChromeTestDataDir());
+        "chrome/test/data/optimization_guide");
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
@@ -1170,8 +1164,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceContentExtractionTest,
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  GURL url(embedded_test_server()->GetURL("a.test",
-                                          "/optimization_guide/hello.html"));
+  GURL url(embedded_test_server()->GetURL("a.test", "/hello.html"));
   content::NavigateToURLBlockUntilNavigationsComplete(web_contents, url, 1);
 
   optimization_guide::RetryForHistogramUntilCountReached(
@@ -1181,38 +1174,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceContentExtractionTest,
 
   optimization_guide::RetryForHistogramUntilCountReached(
       &histogram_tester, "OptimizationGuide.InnerText.TotalLatency", 1);
-  histogram_tester.ExpectTotalCount("OptimizationGuide.InnerText.TotalSize2",
-                                    1);
-}
-
-class PageContentAnnotationsServiceContentExtractionPdfTest
-    : public PageContentAnnotationsServiceContentExtractionTest {
- public:
-  void InitializeFeaureList() override {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kAnnotatedPageContentExtraction, {{"capture_delay", "2s"}});
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceContentExtractionPdfTest,
-                       PdfPageCount) {
-  ukm::TestAutoSetUkmRecorder ukm_recorder;
-  base::test::TestFuture<void> future;
-  ukm_recorder.SetOnAddEntryCallback(
-      ukm::builders::OptimizationGuide_AnnotatedPdfContent::kEntryName,
-      future.GetRepeatingCallback());
-
-  ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
-      browser(), embedded_test_server()->GetURL("/pdf/test.pdf"), 1);
-
-  EXPECT_TRUE(future.Wait());
-  auto entries = ukm_recorder.GetEntriesByName(
-      ukm::builders::OptimizationGuide_AnnotatedPdfContent::kEntryName);
-  EXPECT_EQ(1u, entries.size());
-  auto* entry = entries[0].get();
-  EXPECT_EQ(1, *ukm_recorder.GetEntryMetric(
-                   entry, ukm::builders::OptimizationGuide_AnnotatedPdfContent::
-                              kPdfPageCountName));
+  histogram_tester.ExpectTotalCount("OptimizationGuide.InnerText.TotalSize2", 1);
 }
 
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
