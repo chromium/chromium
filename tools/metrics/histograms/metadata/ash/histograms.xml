@@ -2291,7 +2291,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.CaptureModeController.ConsecutiveScreenshots"
-    units="consecutive screenshots" expires_after="2025-03-02">
+    units="consecutive screenshots" expires_after="2026-01-31">
   <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <owner>chromeos-wm@google.com</owner>
@@ -2384,7 +2384,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.CaptureModeController.GIFRecordingLength.{TabletOrClamshell}"
-    units="seconds" expires_after="2025-02-13">
+    units="seconds" expires_after="2026-01-31">
   <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <owner>chromeos-wm@google.com</owner>
@@ -2398,7 +2398,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.CaptureModeController.GIFRecordingRegionToScreenRatio.{TabletOrClamshell}"
-    units="% of fullscreen area" expires_after="2025-02-13">
+    units="% of fullscreen area" expires_after="2026-01-31">
   <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <owner>chromeos-wm@google.com</owner>
@@ -2423,7 +2423,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.CaptureModeController.NumberOfConnectedCameras"
-    units="connected cameras" expires_after="2025-02-13">
+    units="connected cameras" expires_after="2026-01-31">
   <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <owner>chromeos-wm@google.com</owner>
@@ -2434,7 +2434,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.CaptureModeController.Projector.CaptureRegionAdjusted.{TabletOrClamshell}"
-    units="adjustments" expires_after="2025-03-23">
+    units="adjustments" expires_after="2026-01-31">
   <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <owner>chromeos-wm@google.com</owner>
@@ -2474,7 +2474,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.CaptureModeController.RecordingCameraSizeOnStart.{TabletOrClamshell}"
-    enum="CaptureModeCameraSize" expires_after="2025-02-10">
+    enum="CaptureModeCameraSize" expires_after="2026-01-31">
   <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <owner>chromeos-wm@google.com</owner>
@@ -2512,7 +2512,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.CaptureModeController.ScreenRecordingFileSize.{TabletOrClamshell}"
-    units="KB" expires_after="2025-02-22">
+    units="KB" expires_after="2026-01-31">
   <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <owner>chromeos-wm@google.com</owner>
@@ -2526,7 +2526,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.CaptureModeController.ScreenRecordingLength.{TabletOrClamshell}"
-    units="seconds" expires_after="2025-03-02">
+    units="seconds" expires_after="2026-01-31">
   <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <owner>chromeos-wm@google.com</owner>
