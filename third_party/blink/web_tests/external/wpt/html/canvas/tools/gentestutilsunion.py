@@ -29,8 +29,8 @@
 #
 # * Test the tests, add new ones to Git, remove deleted ones from Git, etc.
 
-from typing import Any, DefaultDict, FrozenSet, List, Mapping, MutableMapping
-from typing import Set, Union
+from typing import Any, Container, DefaultDict, FrozenSet, List, Mapping
+from typing import MutableMapping, Set, Union
 
 import re
 import collections
@@ -316,12 +316,22 @@ def _write_cairo_images(pycairo_code: str, output_files: _OutputPaths,
 class _Variant():
 
     def __init__(self, params: _MutableTestParams) -> None:
-        self._params = params
+        # Raw parameters, as specified in YAML, defining this test variant.
+        self._params = params  # type: _MutableTestParams
+        # Parameters rendered for each enabled canvas types.
+        self._canvas_type_params = {
+            }  # type: MutableMapping[_CanvasType, _MutableTestParams]
 
     @property
     def params(self) -> _MutableTestParams:
-        """Returns this variant's param dict."""
+        """Returns this variant's raw param dict, as it's defined in YAML."""
         return self._params
+
+    @property
+    def canvas_type_params(self) -> MutableMapping[_CanvasType,
+                                                   _MutableTestParams]:
+        """Returns this variant's param dict for different canvas types."""
+        return self._canvas_type_params
 
     @staticmethod
     def create_with_defaults(test: _TestParams) -> '_Variant':
@@ -450,52 +460,43 @@ class _Variant():
         if isinstance(self._params['size'], list):
             self._params['size'] = tuple(self._params['size'])
 
-        for ref_type in {'reference', 'html_reference', 'cairo_reference'}:
-            if ref_type in self._params:
-                self._params[ref_type] = _preprocess_code(
-                    jinja_env, self._params[ref_type], self._params)
+        for canvas_type in self.params['canvas_types']:
+            params = {'canvas_type': canvas_type}
+            params.update(self._params)
+            self._canvas_type_params[canvas_type] = params
 
-        code_params = dict(self.params)
-        if _CanvasType.HTML_CANVAS in self.params['canvas_types']:
-            code_params['canvas_type'] = _CanvasType.HTML_CANVAS.value
-            self._params['code_element'] = _preprocess_code(
-                jinja_env, self._params['code'], code_params)
-
-        if _CanvasType.OFFSCREEN_CANVAS in self.params['canvas_types']:
-            code_params['canvas_type'] = _CanvasType.OFFSCREEN_CANVAS.value
-            self._params['code_offscreen'] = _preprocess_code(
-                jinja_env, self._params['code'], code_params)
-
-        if _CanvasType.WORKER in self.params['canvas_types']:
-            code_params['canvas_type'] = _CanvasType.WORKER.value
-            self._params['code_worker'] = _preprocess_code(
-                jinja_env, self._params['code'], code_params)
+            for name in ('code', 'reference', 'html_reference',
+                         'cairo_reference'):
+                param = params.get(name)
+                if param is not None:
+                    params[name] = _preprocess_code(jinja_env, param, params)
 
         _validate_test(self._params)
 
     def generate_expected_image(self, output_dirs: _OutputPaths) -> None:
         """Creates an expected image using Cairo and save filename in params."""
         # Expected images are only needed for HTML canvas tests.
-        if _CanvasType.HTML_CANVAS not in self.params['canvas_types']:
+        params = self._canvas_type_params.get(_CanvasType.HTML_CANVAS)
+        if not params:
             return
 
-        expected = self.params['expected']
+        expected = params['expected']
 
         if expected == 'green':
-            self._params['expected_img'] = '/images/green-100x50.png'
+            params['expected_img'] = '/images/green-100x50.png'
             return
         if expected == 'clear':
-            self._params['expected_img'] = '/images/clear-100x50.png'
+            params['expected_img'] = '/images/clear-100x50.png'
             return
         expected = re.sub(
             r'^size (\d+) (\d+)',
             r'surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, \1, \2)'
             r'\ncr = cairo.Context(surface)', expected)
 
-        img_filename = f'{self.params["name"]}.png'
+        img_filename = f'{params["name"]}.png'
         _write_cairo_images(expected, output_dirs.sub_path(img_filename),
                             frozenset({_CanvasType.HTML_CANVAS}))
-        self._params['expected_img'] = img_filename
+        params['expected_img'] = img_filename
 
 
 class _VariantGrid:
@@ -504,7 +505,9 @@ class _VariantGrid:
         self._variants = variants
         self._grid_width = grid_width
 
-        self._params = {}  # type: _MutableTestParams
+        # Parameters rendered for each enabled canvas types.
+        self._canvas_type_params = {
+            }  # type: Mapping[_CanvasType, _MutableTestParams]
         self._file_name = None
         self._canvas_types = None
         self._template_type = None
@@ -515,30 +518,26 @@ class _VariantGrid:
         return self._variants
 
     @property
-    def file_name(self):
+    def file_name(self) -> str:
         """File name to which this grid will be written."""
         if self._file_name is None:
-            self._file_name = self._unique_param('file_name')
+            self._file_name = self._unique_param(_CanvasType, 'file_name')
         return self._file_name
 
     @property
     def canvas_types(self) -> FrozenSet[_CanvasType]:
         """Returns the set of all _CanvasType used by this grid's variants."""
         if self._canvas_types is None:
-            self._canvas_types = self._param_set('canvas_types')
+            self._canvas_types = self._param_set(_CanvasType, 'canvas_types')
         return self._canvas_types
 
     @property
     def template_type(self) -> _TemplateType:
         """Returns the type of Jinja template needed to render this grid."""
         if self._template_type is None:
-            self._template_type = self._unique_param('template_type')
+            self._template_type = self._unique_param(_CanvasType,
+                                                     'template_type')
         return self._template_type
-
-    @property
-    def params(self) -> _TestParams:
-        """This grid's read-only param dict, used to render Jinja templates."""
-        return self._params
 
     def finalize(self, jinja_env: jinja2.Environment):
         """Finalize this grid's variants, adding computed params fields."""
@@ -546,9 +545,9 @@ class _VariantGrid:
             variant.finalize_params(jinja_env, variant_id)
 
         if len(self.variants) == 1:
-            self._params = self.variants[0].params
+            self._canvas_type_params = self.variants[0].canvas_type_params
         else:
-            self._params = self._get_grid_params()
+            self._canvas_type_params = self._get_grid_params()
 
     def add_dimension(self, variants: Mapping[str,
                                               _TestParams]) -> '_VariantGrid':
@@ -590,16 +589,22 @@ class _VariantGrid:
             self, canvas_type: _CanvasType) -> List[_TestParams]:
         """Returns the variants of this grid enabled for `canvas_type`."""
         return [
-            v.params for v in self.variants
-            if canvas_type in v.params['canvas_types']
+            v.canvas_type_params[canvas_type]
+            for v in self.variants
+            if canvas_type in v.canvas_type_params
         ]
 
-    def _unique_param(self, name: str) -> Any:
+    def _unique_param(
+            self, canvas_types: Container[_CanvasType], name: str) -> Any:
         """Returns the value of the `name` param for this grid.
 
-        All the variants in this grid must agree on the same value for this
-        parameter, or else an exception is thrown."""
-        values = {variant.params.get(name) for variant in self.variants}
+        All the variants for all canvas types in `canvas_types` of this grid
+        must agree on the same value for this parameter, or else an exception is
+        thrown."""
+        values = {params.get(name)
+                  for variant in self.variants
+                  for type, params in variant.canvas_type_params.items()
+                  if type in canvas_types}
         if len(values) != 1:
             raise InvalidTestDefinitionError(
                 'All variants in a variant grid must use the same value '
@@ -609,35 +614,39 @@ class _VariantGrid:
                 'file variant dimension)')
         return values.pop()
 
-    def _param_set(self, name: str):
+    def _param_set(self, canvas_types: Container[_CanvasType], name: str):
         """Returns the set of all values this grid has for the `name` param.
 
-        The `name` parameter of each variant is expected to be a sequence.
-        These are all accumulated in a set and returned."""
-        return frozenset(sum([list(v.params[name]) for v in self.variants],
+        The `name` parameter of each variant is expected to be a sequence. These
+        are all accumulated in a set and returned. The values are accumulated
+        across all canvas types in `canvas_types`."""
+        return frozenset(sum([list(params.get(name, []))
+                              for v in self.variants
+                              for type, params in v.canvas_type_params.items()
+                              if type in canvas_types],
                              []))
 
-    def _get_grid_params(self) -> _MutableTestParams:
+    def _get_grid_params(self) -> Mapping[_CanvasType, _MutableTestParams]:
         """Returns the params dict needed to render this grid with Jinja."""
-        filter_variant = self._variants_for_canvas_type
-        grid_params = {
-            'element_variants': filter_variant(_CanvasType.HTML_CANVAS),
-            'offscreen_variants': filter_variant(_CanvasType.OFFSCREEN_CANVAS),
-            'worker_variants': filter_variant(_CanvasType.WORKER),
-            'grid_width': self._grid_width,
-            'name': self._unique_param('name'),
-            'test_type': self._unique_param('test_type'),
-            'fuzzy': self._unique_param('fuzzy'),
-            'timeout': self._unique_param('timeout'),
-            'notes': self._unique_param('notes'),
-            'images': self._param_set('images'),
-            'svgimages': self._param_set('svgimages'),
-            'fonts': self._param_set('fonts'),
-        }
-        if self.template_type in (_TemplateType.REFERENCE,
-                                  _TemplateType.HTML_REFERENCE,
-                                  _TemplateType.CAIRO_REFERENCE):
-            grid_params['desc'] = self._unique_param('desc')
+        grid_params = {}
+        for canvas_type in self.canvas_types:
+            params = grid_params[canvas_type] = {}
+            params.update({
+                'variants': self._variants_for_canvas_type(canvas_type),
+                'grid_width': self._grid_width,
+                'name': self._unique_param([canvas_type], 'name'),
+                'test_type': self._unique_param([canvas_type], 'test_type'),
+                'fuzzy': self._unique_param([canvas_type], 'fuzzy'),
+                'timeout': self._unique_param([canvas_type], 'timeout'),
+                'notes': self._unique_param([canvas_type], 'notes'),
+                'images': self._param_set([canvas_type], 'images'),
+                'svgimages': self._param_set([canvas_type], 'svgimages'),
+                'fonts': self._param_set([canvas_type], 'fonts'),
+            })
+            if self.template_type in (_TemplateType.REFERENCE,
+                                      _TemplateType.HTML_REFERENCE,
+                                      _TemplateType.CAIRO_REFERENCE):
+                params['desc'] = self._unique_param([canvas_type], 'desc')
         return grid_params
 
     def _write_reference_test(self, jinja_env: jinja2.Environment,
@@ -653,60 +662,63 @@ class _VariantGrid:
             for variant in self.variants
         }) != 1
 
-        params = dict(self.params)
-        params['reference_file'] = f'{params["name"]}-expected.html'
-        if _CanvasType.HTML_CANVAS in self.canvas_types:
-            _render(jinja_env, f'reftest_element{grid}.html', params,
-                    f'{output_files.element}.html')
-        if _CanvasType.OFFSCREEN_CANVAS in self.canvas_types:
-            _render(jinja_env, f'reftest_offscreen{grid}.html', params,
-                    f'{output_files.offscreen}.html')
-        if _CanvasType.WORKER in self.canvas_types:
-            if needs_worker_reference:
-                params['reference_file'] = f'{params["name"]}.w-expected.html'
-            _render(jinja_env, f'reftest_worker{grid}.html', params,
-                    f'{output_files.offscreen}.w.html')
-
-        params['is_test_reference'] = True
-        templates = {
+        test_templates = {
+            _CanvasType.HTML_CANVAS: f'reftest_element{grid}.html',
+            _CanvasType.OFFSCREEN_CANVAS: f'reftest_offscreen{grid}.html',
+            _CanvasType.WORKER: f'reftest_worker{grid}.html',
+        }
+        ref_templates = {
             _TemplateType.REFERENCE: f'reftest_element{grid}.html',
             _TemplateType.HTML_REFERENCE: f'reftest{grid}.html',
             _TemplateType.CAIRO_REFERENCE: f'reftest_img{grid}.html'
         }
-        ref_template_name = templates[self.template_type]
+        test_output_paths = {
+            _CanvasType.HTML_CANVAS: f'{output_files.element}.html',
+            _CanvasType.OFFSCREEN_CANVAS: f'{output_files.offscreen}.html',
+            _CanvasType.WORKER: f'{output_files.offscreen}.w.html',
+        }
+        ref_output_paths = {
+            _CanvasType.HTML_CANVAS: f'{output_files.element}-expected.html',
+            _CanvasType.OFFSCREEN_CANVAS:
+                f'{output_files.offscreen}-expected.html',
+            _CanvasType.WORKER: (
+                f'{output_files.offscreen}.w-expected.html'
+                if needs_worker_reference
+                else f'{output_files.offscreen}-expected.html'),
+        }
+        for canvas_type, params in self._canvas_type_params.items():
+            params['reference_file'] = pathlib.Path(
+                ref_output_paths[canvas_type]).name
+            _render(jinja_env, test_templates[canvas_type], params,
+                    test_output_paths[canvas_type])
 
-        if _CanvasType.HTML_CANVAS in self.canvas_types:
-            _render(jinja_env, ref_template_name, params,
-                    f'{output_files.element}-expected.html')
-
-        if self.canvas_types & offscreen_types:
-            # We use the same template for all reference files, so we need to
-            # assign the variant definition to the variable expected by the
-            # template.
-            params['element_variants'] = params.get('offscreen_variants')
-            _render(jinja_env, ref_template_name, params,
-                    f'{output_files.offscreen}-expected.html')
-        if needs_worker_reference:
-            params['element_variants'] = params.get('worker_variants')
-            _render(jinja_env, ref_template_name, params,
-                    f'{output_files.offscreen}.w-expected.html')
+            if canvas_type != _CanvasType.WORKER or needs_worker_reference:
+                params['is_test_reference'] = True
+                _render(jinja_env, ref_templates[self.template_type], params,
+                        ref_output_paths[canvas_type])
 
     def _write_testharness_test(self, jinja_env: jinja2.Environment,
                                 output_files: _OutputPaths):
         grid = '_grid' if len(self.variants) > 1 else ''
 
-        # Create test cases for canvas and offscreencanvas.
-        if _CanvasType.HTML_CANVAS in self.canvas_types:
-            _render(jinja_env, f'testharness_element{grid}.html', self.params,
-                    f'{output_files.element}.html')
-        if _CanvasType.OFFSCREEN_CANVAS in self.canvas_types:
-            _render(jinja_env, f'testharness_offscreen{grid}.html',
-                    self.params, f'{output_files.offscreen}.html')
-        if _CanvasType.WORKER in self.canvas_types:
-            _render(jinja_env, f'testharness_worker{grid}.js', self.params,
-                    f'{output_files.offscreen}.worker.js')
+        templates = {
+            _CanvasType.HTML_CANVAS: f'testharness_element{grid}.html',
+            _CanvasType.OFFSCREEN_CANVAS: f'testharness_offscreen{grid}.html',
+            _CanvasType.WORKER: f'testharness_worker{grid}.js',
+        }
+        test_output_files = {
+            _CanvasType.HTML_CANVAS: f'{output_files.element}.html',
+            _CanvasType.OFFSCREEN_CANVAS: f'{output_files.offscreen}.html',
+            _CanvasType.WORKER: f'{output_files.offscreen}.worker.js',
+        }
+
+        # Create test cases for canvas, offscreencanvas and worker.
+        for canvas_type, params in self._canvas_type_params.items():
+            _render(jinja_env, templates[canvas_type], params,
+                    test_output_files[canvas_type])
 
     def _generate_cairo_reference_grid(self,
+                                       canvas_type: _CanvasType,
                                        output_dirs: _OutputPaths) -> None:
         """Generate this grid's expected image from Cairo code, if needed.
 
@@ -714,17 +726,19 @@ class _VariantGrid:
         of all the variants in this grid are packed into a single PNG. The
         expected HTML then contains a grid of <img> tags, each showing a portion
         of the PNG file."""
-        if not any(v.params.get('cairo_reference') for v in self.variants):
+        if not any(v.canvas_type_params[canvas_type].get('cairo_reference')
+                   for v in self.variants):
             return
 
-        width, height = self._unique_param('size')
+        width, height = self._unique_param([canvas_type], 'size')
         cairo_code = ''
 
         # First generate a function producing a Cairo surface with the expected
         # image for each variant in the grid. The function is needed to provide
         # a scope isolating the variant code from each other.
         for idx, variant in enumerate(self._variants):
-            cairo_ref = variant.params.get('cairo_reference')
+            cairo_ref = variant.canvas_type_params[canvas_type].get(
+                'cairo_reference')
             if not cairo_ref:
                 raise InvalidTestDefinitionError(
                     'When used, "cairo_reference" must be specified for all '
@@ -757,14 +771,19 @@ class _VariantGrid:
 
         img_filename = f'{self.file_name}.png'
         _write_cairo_images(cairo_code, output_dirs.sub_path(img_filename),
-                            self.canvas_types)
-        self._params['img_reference'] = img_filename
+                            frozenset([canvas_type]))
+        self._canvas_type_params[canvas_type]['img_reference'] = img_filename
 
     def _generate_cairo_images(self, output_dirs: _OutputPaths) -> None:
         """Generates the pycairo images found in the YAML test definition."""
-        has_expected = any(v.params.get('expected') for v in self._variants)
+        # 'expected:' is only used for HTML_CANVAS tests.
+        has_expected = any(v.canvas_type_params
+                           .get(_CanvasType.HTML_CANVAS, {})
+                           .get('expected') for v in self._variants)
         has_cairo_reference = any(
-            v.params.get('cairo_reference') for v in self._variants)
+            params.get('cairo_reference')
+            for v in self._variants
+            for params in v.canvas_type_params.values())
 
         if has_expected and has_cairo_reference:
             raise InvalidTestDefinitionError(
@@ -781,7 +800,8 @@ class _VariantGrid:
                     'tests.')
             self.variants[0].generate_expected_image(output_dirs)
         elif has_cairo_reference:
-            self._generate_cairo_reference_grid(output_dirs)
+            for canvas_type in _CanvasType:
+                self._generate_cairo_reference_grid(canvas_type, output_dirs)
 
     def generate_test(self, jinja_env: jinja2.Environment,
                       output_dirs: _OutputPaths) -> None:
