@@ -77,6 +77,11 @@ std::vector<GURL> PredictPreconnectableOrigins(const LcppStat& stat);
 // vector.
 std::vector<GURL> PredictFetchedSubresourceUrls(const LcppStat& stat);
 
+std::vector<GURL> PredictFetchedSubresourceUrlsForTesting(
+    const LcppStat& stat,
+    const double confidence_threshold,
+    const double total_frequency_threshold);
+
 // Returns possible unused preload URLs from past loads for a given `stat`.
 // The returned URLs are ordered by descending frequency (the most
 // frequent one comes first). If there is no data, it returns an empty

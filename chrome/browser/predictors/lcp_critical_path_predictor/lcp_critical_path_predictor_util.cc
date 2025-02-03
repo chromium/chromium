@@ -140,6 +140,17 @@ double SumOfFrequency(const predictors::LcpElementLocatorStat& stat) {
   return sum;
 }
 
+double SumOfFrequency(
+    const std::vector<std::pair<double, std::string>>& frequency_string_pairs,
+    double other_bucket_frequency) {
+  double sum = 0.0;
+  for (const auto& [frequency, element] : frequency_string_pairs) {
+    sum += frequency;
+  }
+  sum += other_bucket_frequency;
+  return sum;
+}
+
 double SumOfFrequency(const std::map<std::string, double>& histogram,
                       double other_bucket_frequency) {
   double sum = other_bucket_frequency;
@@ -725,6 +736,38 @@ void DeleteTables(std::unique_ptr<LcppDataMap::DataTable> data_table,
   data_table.reset();
 }
 
+std::vector<GURL> PredictFetchedSubresourceUrlsInternal(
+    const LcppStat& stat,
+    const double confidence_threshold,
+    const double total_frequency_threshold) {
+  const std::vector<std::pair<double, std::string>>& frequency_string_pairs =
+      ConvertToFrequencyStringPair(stat.fetched_subresource_url_stat());
+  if (SumOfFrequency(
+          frequency_string_pairs,
+          stat.fetched_subresource_url_stat().other_bucket_frequency()) <
+      total_frequency_threshold) {
+    return {};
+  }
+  std::vector<std::pair<double, std::string>> confidence_string_pairs =
+      ConvertToConfidenceStringPairs(
+          frequency_string_pairs,
+          stat.fetched_subresource_url_stat().other_bucket_frequency());
+  std::vector<GURL> subresource_urls;
+  for (const auto& [confidence, subresource_url] : confidence_string_pairs) {
+    GURL parsed_url(subresource_url);
+    if (!parsed_url.is_valid() || !parsed_url.SchemeIsHTTPOrHTTPS()) {
+      continue;
+    }
+    if (confidence < confidence_threshold) {
+      // Since `confidence_string_pairs` are sorted by confidence (from high to
+      // low), we can break here.
+      break;
+    }
+    subresource_urls.push_back(std::move(parsed_url));
+  }
+  return subresource_urls;
+}
+
 }  // namespace
 
 std::optional<blink::mojom::LCPCriticalPathPredictorNavigationTimeHint>
@@ -891,16 +934,28 @@ std::vector<GURL> PredictPreconnectableOrigins(const LcppStat& stat) {
 }
 
 std::vector<GURL> PredictFetchedSubresourceUrls(const LcppStat& stat) {
-  std::vector<GURL> subresource_urls;
-  for (const auto& [frequency, subresource_url] :
-       ConvertToFrequencyStringPair(stat.fetched_subresource_url_stat())) {
-    GURL parsed_url(subresource_url);
-    if (!parsed_url.is_valid() || !parsed_url.SchemeIsHTTPOrHTTPS()) {
-      continue;
-    }
-    subresource_urls.push_back(std::move(parsed_url));
-  }
-  return subresource_urls;
+  // The value must be between 0 and 1 inclusive. The prediction that is below
+  // this threshold will be ignored.
+  static const double kConfidenceThreshold =
+      base::GetFieldTrialParamByFeatureAsDouble(
+          blink::features::kHttpDiskCachePrewarming,
+          "http_disk_cache_prewarming_confidence_threshold", 0.0);
+  // The value must be greater or equal to 0. The prediction that is below
+  // this threshold will be ignored.
+  static const double kTotalFrequencyThreshold =
+      base::GetFieldTrialParamByFeatureAsDouble(
+          blink::features::kHttpDiskCachePrewarming,
+          "http_disk_cache_prewarming_total_frequency_threshold", 0.0);
+  return PredictFetchedSubresourceUrlsInternal(stat, kConfidenceThreshold,
+                                               kTotalFrequencyThreshold);
+}
+
+std::vector<GURL> PredictFetchedSubresourceUrlsForTesting(  // IN-TEST
+    const LcppStat& stat,
+    const double confidence_threshold,
+    const double total_frequency_threshold) {
+  return PredictFetchedSubresourceUrlsInternal(stat, confidence_threshold,
+                                               total_frequency_threshold);
 }
 
 std::vector<GURL> PredictUnusedPreloads(const LcppStat& stat) {
