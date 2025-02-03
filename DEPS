@@ -280,7 +280,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
-  'skia_revision': 'd046f8abae5515dfb0dbd40762a13d5081255a41',
+  'skia_revision': '629fcc5fbeebc92aee0ce55d052566e7fa586a35',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
@@ -288,7 +288,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
-  'angle_revision': '44b5f0a59f2a06b1f889e0c64e641d33a3720095',
+  'angle_revision': '91a559c9b1029a97acf4df69a227cd6d93e39d3d',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling SwiftShader
   # and whatever else without interference from each other.
@@ -1448,7 +1448,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    '75a2e66fbcd648756b90677f3f5731de95907e1f',
+    'a987fb157e02664d915b49c792768b36583c3739',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
@@ -2922,7 +2922,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/boca_app/app',
-        'version': 'sl-mHTmgnVghqE0IoirGi5j356gcXkSWdyHTyyQFE6UC',
+        'version': 'YrzTiXAYTU2FdCCW4A-WEcL3KcZwRh9lupMMjFQxAa4C',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
@@ -2977,7 +2977,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/projector_app/app',
-        'version': '7SRVEdm1Y_dl_O9sekxfsJlo5cWbQOYtLEtBBYRypHUC',
+        'version': 'Ehw9d1OykXTf5quMLYu3t-2rTfwIAablOoXULXRbprgC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
@@ -4531,7 +4531,7 @@ deps = {
 
   'src/ios_internal':  {
       'url': Var('chrome_git') + '/chrome/ios_internal.git' + '@' +
-        'dd3e8c26daebf1c251d484b2d7058f89933d0018',
+        '688a6da4b49af8b27f536779b43a1651671a1d80',
       'condition': 'checkout_ios and checkout_src_internal',
   },
 

@@ -35,12 +35,12 @@ import {BookmarkManagerApiProxyImpl} from './bookmark_manager_api_proxy.js';
 import type {BrowserProxy} from './browser_proxy.js';
 import {BrowserProxyImpl} from './browser_proxy.js';
 import {getTemplate} from './command_manager.html.js';
-import {Command, IncognitoAvailability, MenuSource, OPEN_CONFIRMATION_LIMIT, ROOT_NODE_ID} from './constants.js';
+import {Command, IncognitoAvailability, MenuSource, OPEN_CONFIRMATION_LIMIT} from './constants.js';
 import {DialogFocusManager} from './dialog_focus_manager.js';
 import type {BookmarksEditDialogElement} from './edit_dialog.js';
 import {StoreClientMixin} from './store_client_mixin.js';
 import type {BookmarkNode, OpenCommandMenuDetail} from './types.js';
-import {canEditNode, canReorderChildren, getDisplayedList} from './util.js';
+import {canEditNode, canReorderChildren, getDisplayedList, isRootNode, isRootOrChildOfRoot} from './util.js';
 
 const BookmarksCommandManagerElementBase = StoreClientMixin(PolymerElement);
 
@@ -258,9 +258,7 @@ export class BookmarksCommandManagerElement extends
       case Command.SHOW_IN_FOLDER:
         return this.menuSource_ === MenuSource.ITEM && itemIds.size === 1 &&
             this.getState().search.term !== '' &&
-            !this.containsMatchingNode_(itemIds, function(node) {
-              return !node.parentId || node.parentId === ROOT_NODE_ID;
-            });
+            !isRootOrChildOfRoot(this.getState(), Array.from(itemIds)[0]!);
       case Command.OPEN_NEW_TAB:
       case Command.OPEN_NEW_WINDOW:
       case Command.OPEN_INCOGNITO:
@@ -475,7 +473,7 @@ export class BookmarksCommandManagerElement extends
     const nodes = this.getState().nodes;
     itemIds.forEach(function(itemId) {
       let currentId = itemId;
-      while (currentId !== ROOT_NODE_ID) {
+      while (!isRootNode(currentId)) {
         const parentId = nodes[currentId]!.parentId;
         assert(parentId);
         currentId = parentId;

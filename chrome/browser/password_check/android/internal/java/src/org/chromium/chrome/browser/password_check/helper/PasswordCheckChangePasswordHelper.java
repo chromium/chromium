@@ -44,8 +44,6 @@ public class PasswordCheckChangePasswordHelper {
      */
     public void launchAppOrCctWithChangePasswordUrl(CompromisedCredential credential) {
         if (!canManuallyChangeCredential(credential)) return;
-        // TODO(crbug.com/40134591): Always launch the URL if possible and let Android handle the
-        // match to open it.
         IntentUtils.safeStartActivity(
                 mContext,
                 credential.getAssociatedApp().isEmpty()

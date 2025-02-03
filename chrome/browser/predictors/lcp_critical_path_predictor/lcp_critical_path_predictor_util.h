@@ -56,7 +56,8 @@ ConvertLcppStringFrequencyStatDataToConfidenceStringPairs(
 // data, it returns an empty vector.
 std::vector<std::string> PredictLcpElementLocators(
     const predictors::LcpElementLocatorStat& stat,
-    const double confidence_threshold);
+    const double confidence_threshold,
+    const double total_frequency_threshold);
 
 // Returns possible fonts from past loads for a given `stat`.
 // The returned urls are ordered by descending frequency (the most
@@ -75,6 +76,11 @@ std::vector<GURL> PredictPreconnectableOrigins(const LcppStat& stat);
 // frequent one comes first). If there is no data, it returns an empty
 // vector.
 std::vector<GURL> PredictFetchedSubresourceUrls(const LcppStat& stat);
+
+std::vector<GURL> PredictFetchedSubresourceUrlsForTesting(
+    const LcppStat& stat,
+    const double confidence_threshold,
+    const double total_frequency_threshold);
 
 // Returns possible unused preload URLs from past loads for a given `stat`.
 // The returned URLs are ordered by descending frequency (the most

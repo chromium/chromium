@@ -843,6 +843,16 @@ static bool AnyAttributeMatches(Element& element,
   // localName().
   element.SynchronizeAttribute(selector_attr.LocalName());
 
+#if !DCHECK_IS_ON()
+  // In non-debug builds, we test the Bloom filter here and exit early
+  // if the attribute could not exist on the element. For non-debug builds,
+  // we go through the entire normal operation but verify that the Bloom
+  // filter would not erroneously reject a match.
+  if (!element.CouldHaveAttribute(selector_attr)) {
+    return false;
+  }
+#endif
+
   // NOTE: For kAttributeSet, this is a bogus pointer but never used.
   const AtomicString& selector_value = selector.Value();
 
@@ -875,6 +885,15 @@ static bool AnyAttributeMatches(Element& element,
         continue;
       }
     }
+
+#if DCHECK_IS_ON()
+    // NOTE: Even if the value doesn't match, we want to check that the
+    // attribute name was properly found.
+    DCHECK(element.CouldHaveAttribute(selector_attr))
+        << element << " should have contained attribute " << selector_attr
+        << ", Bloom bits on element are "
+        << element.AttributeBloomFilterForDebug();
+#endif
 
     if (AttributeValueMatches(attribute_item, match, selector_value,
                               case_insensitive)) {

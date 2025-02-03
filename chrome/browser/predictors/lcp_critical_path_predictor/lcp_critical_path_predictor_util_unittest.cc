@@ -740,7 +740,8 @@ TEST(PredictLcpElementLocatorsTest, Empty) {
   LcpElementLocatorStat stat;
   EXPECT_EQ(std::vector<std::string>(),
             PredictLcpElementLocators(stat,
-                                      /*confidence_threshold=*/0.0));
+                                      /*confidence_threshold=*/0.0,
+                                      /*total_frequency_threshold=*/0.0));
 }
 
 TEST(PredictLcpElementLocatorsTest, ConfidenceThreshold) {
@@ -763,20 +764,34 @@ TEST(PredictLcpElementLocatorsTest, ConfidenceThreshold) {
   EXPECT_EQ(std::vector<std::string>(
                 {kElementLocator3, kElementLocator2, kElementLocator1}),
             PredictLcpElementLocators(stat,
-                                      /*confidence_threshold=*/0.0));
+                                      /*confidence_threshold=*/0.0,
+                                      /*total_frequency_threshold=*/0.0));
   EXPECT_EQ(std::vector<std::string>(
                 {kElementLocator3, kElementLocator2, kElementLocator1}),
             PredictLcpElementLocators(stat,
-                                      /*confidence_threshold=*/0.1));
+                                      /*confidence_threshold=*/0.1,
+                                      /*total_frequency_threshold=*/0.0));
   EXPECT_EQ(std::vector<std::string>({kElementLocator3, kElementLocator2}),
             PredictLcpElementLocators(stat,
-                                      /*confidence_threshold=*/0.2));
+                                      /*confidence_threshold=*/0.2,
+                                      /*total_frequency_threshold=*/0.0));
   EXPECT_EQ(std::vector<std::string>({kElementLocator3}),
             PredictLcpElementLocators(stat,
-                                      /*confidence_threshold=*/0.3));
-  EXPECT_EQ(std::vector<std::string>({}),
+                                      /*confidence_threshold=*/0.3,
+                                      /*total_frequency_threshold=*/0.0));
+  EXPECT_EQ(std::vector<std::string>(),
             PredictLcpElementLocators(stat,
-                                      /*confidence_threshold=*/0.31));
+                                      /*confidence_threshold=*/0.31,
+                                      /*total_frequency_threshold=*/0.0));
+  EXPECT_EQ(std::vector<std::string>(
+                {kElementLocator3, kElementLocator2, kElementLocator1}),
+            PredictLcpElementLocators(stat,
+                                      /*confidence_threshold=*/0.0,
+                                      /*total_frequency_threshold=*/10.0));
+  EXPECT_EQ(std::vector<std::string>(),
+            PredictLcpElementLocators(stat,
+                                      /*confidence_threshold=*/0.0,
+                                      /*total_frequency_threshold=*/10.1));
 }
 
 TEST(PredictFetchedFontUrls, Empty) {
@@ -878,29 +893,87 @@ TEST(PredictFetchedFontUrls, MaxUrls) {
 }
 
 TEST(PredictFetchedSubresourceUrls, Empty) {
-  EXPECT_EQ(std::vector<GURL>(), PredictFetchedSubresourceUrls({}));
+  EXPECT_EQ(std::vector<GURL>(), PredictFetchedSubresourceUrlsForTesting(
+                                     {}, /*confidence_threshold=*/0.0,
+                                     /*total_frequency_threshold=*/0.0));
 }
 
 TEST(PredictFetchedSubresourceUrls, SingleEntry) {
   LcppStat lcpp_stat;
-  lcpp_stat.mutable_fetched_subresource_url_stat()
-      ->mutable_main_buckets()
-      ->insert({"https://example.com/a.jpeg", 0.9});
+  auto& stat = *lcpp_stat.mutable_fetched_subresource_url_stat();
+  stat.mutable_main_buckets()->insert({"https://example.com/a.jpeg", 3});
+  stat.set_other_bucket_frequency(7);
   EXPECT_EQ(std::vector<GURL>({GURL("https://example.com/a.jpeg")}),
-            PredictFetchedSubresourceUrls(lcpp_stat));
+            PredictFetchedSubresourceUrlsForTesting(
+                lcpp_stat, /*confidence_threshold=*/0.0,
+                /*total_frequency_threshold=*/0.0));
+  EXPECT_EQ(std::vector<GURL>({GURL("https://example.com/a.jpeg")}),
+            PredictFetchedSubresourceUrlsForTesting(
+                lcpp_stat, /*confidence_threshold=*/0.3,
+                /*total_frequency_threshold=*/0.0));
+  EXPECT_EQ(std::vector<GURL>(), PredictFetchedSubresourceUrlsForTesting(
+                                     lcpp_stat, /*confidence_threshold=*/0.31,
+                                     /*total_frequency_threshold=*/0.0));
+  EXPECT_EQ(std::vector<GURL>({GURL("https://example.com/a.jpeg")}),
+            PredictFetchedSubresourceUrlsForTesting(
+                lcpp_stat, /*confidence_threshold=*/0.0,
+                /*total_frequency_threshold=*/10.0));
+  EXPECT_EQ(std::vector<GURL>(), PredictFetchedSubresourceUrlsForTesting(
+                                     lcpp_stat, /*confidence_threshold=*/0.0,
+                                     /*total_frequency_threshold=*/10.1));
 }
 
 TEST(PredictFetchedSubresourceUrls, SortedByFrequencyInDescendingOrder) {
   LcppStat lcpp_stat;
-  auto* buckets =
-      lcpp_stat.mutable_fetched_subresource_url_stat()->mutable_main_buckets();
-  buckets->insert({"https://example.com/c.jpeg", 0.1});
-  buckets->insert({"https://example.com/a.jpeg", 0.3});
-  buckets->insert({"https://example.com/b.jpeg", 0.2});
+  auto& stat = *lcpp_stat.mutable_fetched_subresource_url_stat();
+  auto& buckets = *stat.mutable_main_buckets();
+  buckets.insert({"https://example.com/c.jpeg", 1});
+  buckets.insert({"https://example.com/a.jpeg", 3});
+  buckets.insert({"https://example.com/b.jpeg", 2});
+  stat.set_other_bucket_frequency(4);
+
   EXPECT_EQ(std::vector<GURL>({GURL("https://example.com/a.jpeg"),
                                GURL("https://example.com/b.jpeg"),
                                GURL("https://example.com/c.jpeg")}),
-            PredictFetchedSubresourceUrls(lcpp_stat));
+            PredictFetchedSubresourceUrlsForTesting(
+                lcpp_stat, /*confidence_threshold=*/0.0,
+                /*total_frequency_threshold=*/0.0));
+  EXPECT_EQ(std::vector<GURL>({GURL("https://example.com/a.jpeg"),
+                               GURL("https://example.com/b.jpeg"),
+                               GURL("https://example.com/c.jpeg")}),
+            PredictFetchedSubresourceUrlsForTesting(
+                lcpp_stat, /*confidence_threshold=*/0.1,
+                /*total_frequency_threshold=*/0.0));
+  EXPECT_EQ(std::vector<GURL>({GURL("https://example.com/a.jpeg"),
+                               GURL("https://example.com/b.jpeg")}),
+            PredictFetchedSubresourceUrlsForTesting(
+                lcpp_stat, /*confidence_threshold=*/0.101,
+                /*total_frequency_threshold=*/0.0));
+  EXPECT_EQ(std::vector<GURL>({GURL("https://example.com/a.jpeg"),
+                               GURL("https://example.com/b.jpeg")}),
+            PredictFetchedSubresourceUrlsForTesting(
+                lcpp_stat, /*confidence_threshold=*/0.2,
+                /*total_frequency_threshold=*/0.0));
+  EXPECT_EQ(std::vector<GURL>({GURL("https://example.com/a.jpeg")}),
+            PredictFetchedSubresourceUrlsForTesting(
+                lcpp_stat, /*confidence_threshold=*/0.201,
+                /*total_frequency_threshold=*/0.0));
+  EXPECT_EQ(std::vector<GURL>({GURL("https://example.com/a.jpeg")}),
+            PredictFetchedSubresourceUrlsForTesting(
+                lcpp_stat, /*confidence_threshold=*/0.3,
+                /*total_frequency_threshold=*/0.0));
+  EXPECT_EQ(std::vector<GURL>(), PredictFetchedSubresourceUrlsForTesting(
+                                     lcpp_stat, /*confidence_threshold=*/0.301,
+                                     /*total_frequency_threshold=*/0.0));
+  EXPECT_EQ(std::vector<GURL>({GURL("https://example.com/a.jpeg"),
+                               GURL("https://example.com/b.jpeg"),
+                               GURL("https://example.com/c.jpeg")}),
+            PredictFetchedSubresourceUrlsForTesting(
+                lcpp_stat, /*confidence_threshold=*/0.0,
+                /*total_frequency_threshold=*/10.0));
+  EXPECT_EQ(std::vector<GURL>(), PredictFetchedSubresourceUrlsForTesting(
+                                     lcpp_stat, /*confidence_threshold=*/0.0,
+                                     /*total_frequency_threshold=*/10.1));
 }
 
 TEST(PredictFetchedSubresourceUrls, FilterUrls) {
@@ -916,7 +989,9 @@ TEST(PredictFetchedSubresourceUrls, FilterUrls) {
   EXPECT_EQ(4U, buckets->size());
   EXPECT_EQ(std::vector<GURL>({GURL("https://example.com/b.jpeg"),
                                GURL("https://example.com/a.jpeg")}),
-            PredictFetchedSubresourceUrls(lcpp_stat));
+            PredictFetchedSubresourceUrlsForTesting(
+                lcpp_stat, /*confidence_threshold=*/0.0,
+                /*total_frequency_threshold=*/0.0));
 }
 
 TEST(PredictPreconnectableOrigins, Empty) {
