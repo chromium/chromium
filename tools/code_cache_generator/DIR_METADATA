@@ -1,0 +1,7 @@
+monorail: {
+  component: "UI>Browser>WebUI Browser"
+}
+team_email: "webui-everywhere@chromium.org"
+buganizer_public: {
+  component_id: 1681552
+}

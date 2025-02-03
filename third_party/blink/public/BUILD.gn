@@ -287,6 +287,7 @@ source_set("blink_headers") {
     "web/web_ax_enums.h",
     "web/web_ax_object.h",
     "web/web_blob.h",
+    "web/web_bundled_code_cache_generator.h",
     "web/web_console_message.h",
     "web/web_content_capture_client.h",
     "web/web_content_holder.h",
