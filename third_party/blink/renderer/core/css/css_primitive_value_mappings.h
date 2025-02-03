@@ -61,35 +61,35 @@ namespace blink {
 template <>
 inline int16_t CSSPrimitiveValue::ConvertTo(
     const CSSLengthResolver& length_resolver) const {
-  DCHECK(IsNumber());
-  return ClampTo<int16_t>(ComputeInteger(length_resolver));
+  DCHECK(IsNumber() || IsPercentage());
+  return ClampTo<int16_t>(ComputeNumber(length_resolver));
 }
 
 template <>
 inline uint16_t CSSPrimitiveValue::ConvertTo(
     const CSSLengthResolver& length_resolver) const {
-  DCHECK(IsNumber());
-  return ClampTo<uint16_t>(ComputeInteger(length_resolver));
+  DCHECK(IsNumber() || IsPercentage());
+  return ClampTo<uint16_t>(ComputeNumber(length_resolver));
 }
 
 template <>
 inline int CSSPrimitiveValue::ConvertTo(
     const CSSLengthResolver& length_resolver) const {
-  DCHECK(IsNumber());
-  return ClampTo<int>(ComputeInteger(length_resolver));
+  DCHECK(IsNumber() || IsPercentage());
+  return ClampTo<int>(ComputeNumber(length_resolver));
 }
 
 template <>
 inline unsigned CSSPrimitiveValue::ConvertTo(
     const CSSLengthResolver& length_resolver) const {
-  DCHECK(IsNumber());
-  return ClampTo<unsigned>(ComputeInteger(length_resolver));
+  DCHECK(IsNumber() || IsPercentage());
+  return ClampTo<unsigned>(ComputeNumber(length_resolver));
 }
 
 template <>
 inline float CSSPrimitiveValue::ConvertTo(
     const CSSLengthResolver& length_resolver) const {
-  DCHECK(IsNumber());
+  DCHECK(IsNumber() || IsPercentage());
   return ClampTo<float>(ComputeNumber(length_resolver));
 }
 
