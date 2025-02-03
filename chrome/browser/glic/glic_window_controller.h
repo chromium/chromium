@@ -34,6 +34,7 @@ class WebUIContentsContainer;
 class GlicWindowResizeAnimation;
 class ScopedGlicButtonIndicator;
 class GlicFreController;
+class GlicButton;
 
 // This class owns and manages the glic window. This class has the same lifetime
 // as the GlicKeyedService, so it exists if and only if the profile exists.
@@ -241,12 +242,11 @@ class GlicWindowController : public views::WidgetObserver {
   void ForceClose();
 
   // Determines the correct position for the glic window when attached to a
-  // browser window.
-  gfx::Point GetTopRightPositionForAttachedGlicWindow(
-      views::View* glic_button_view);
+  // browser window. The top right of the widget should be placed here.
+  gfx::Point GetTopRightPositionForAttachedGlicWindow(GlicButton* glic_button);
 
   // Determines the correct initial position for the glic window when in a
-  // detached state.
+  // detached state. The top right of the widget should be placed here.
   gfx::Point GetTopRightPositionForDetachedGlicWindow();
 
   // Reparents the glic widget under 'browser'.

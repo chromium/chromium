@@ -32,6 +32,11 @@ class GlicButton : public TabStripControlButton {
 
   void SetDropToAttachIndicator(bool indicate);
 
+  // GetBoundsInScreen() gives a rect with some padding that extends beyond the
+  // visible edges of the button. This function returns a rect without that
+  // padding.
+  gfx::Rect GetBoundsWithInset() const;
+
  private:
   // Tab strip that contains this button.
   // TODO(crbug.com/382768227): Remove DanglingUntriaged.
