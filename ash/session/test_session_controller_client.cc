@@ -141,8 +141,9 @@ void TestSessionControllerClient::AddUserSession(
 
   if (std::holds_alternative<bool>(provide_or_pref_service)) {
     bool provide = std::get<bool>(provide_or_pref_service);
-    if (provide && default_provide_pref_service_ &&
-        !controller_->GetUserPrefServiceForUser(account_id)) {
+    if (!default_provide_pref_service_) {
+      CHECK(GetUserPrefService(account_id));
+    } else if (provide && !controller_->GetUserPrefServiceForUser(account_id)) {
       ProvidePrefServiceForUser(account_id, /*notify*=*/false);
     }
   } else {
@@ -213,7 +214,6 @@ void TestSessionControllerClient::SetUnownedUserPrefService(
 
   prefs_provider_->SetUnownedUserPrefs(account_id,
                                        std::move(unowned_pref_service));
-  NotifyUserPrefServiceInitialized(account_id);
 }
 
 void TestSessionControllerClient::RequestLockScreen() {

@@ -42,9 +42,10 @@
 #endif
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/idle_service_ash.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
@@ -53,11 +54,8 @@
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_id.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_test_helper.h"
 #endif
 
 using content::NavigationController;
@@ -75,7 +73,7 @@ void BrowserWithTestWindowTest::SetUp() {
     SetUpProfileManager();
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::CrosDisksClient::InitializeFake();
   if (!ash::disks::DiskMountManager::GetInstance()) {
     ash::disks::DiskMountManager::InitializeForTesting(
@@ -98,13 +96,6 @@ void BrowserWithTestWindowTest::SetUp() {
   }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (!chromeos::LacrosService::Get()) {
-    lacros_service_test_helper_ =
-        std::make_unique<chromeos::ScopedLacrosServiceTestHelper>();
-  }
-#endif
-
   // This must be created after |ash_test_helper_| is set up so that it doesn't
   // create a DeviceDataManager.
   rvh_test_enabler_ = std::make_unique<content::RenderViewHostTestEnabler>();
@@ -116,7 +107,7 @@ void BrowserWithTestWindowTest::SetUp() {
   user_performance_tuning_manager_environment_.SetUp(
       profile_manager_->local_state()->Get());
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   crosapi::IdleServiceAsh::DisableForTesting();
   manager_ = std::make_unique<crosapi::CrosapiManager>();
   kiosk_chrome_app_manager_ = std::make_unique<ash::KioskChromeAppManager>();
@@ -161,14 +152,14 @@ void BrowserWithTestWindowTest::TearDown() {
     SystemNetworkContextManager::DeleteInstance();
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   manager_.reset();
   kiosk_chrome_app_manager_.reset();
 #endif
 
   user_performance_tuning_manager_environment_.TearDown();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash_test_helper_.TearDown();
 #endif
 
@@ -181,7 +172,7 @@ void BrowserWithTestWindowTest::TearDown() {
   lacros_service_test_helper_.reset();
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   test_views_delegate_.reset();
   user_manager_.Reset();
   ash::disks::DiskMountManager::Shutdown();
@@ -203,13 +194,17 @@ void BrowserWithTestWindowTest::SetUpProfileManager(
     std::unique_ptr<ProfileManager> profile_manager) {
   profile_manager_ = std::make_unique<TestingProfileManager>(
       TestingBrowserProcess::GetGlobal());
-
+#if BUILDFLAG(IS_CHROMEOS)
+  profile_manager_->set_on_profile_created_callback(
+      base::BindRepeating(&BrowserWithTestWindowTest::PostUserProfileCreation,
+                          base::Unretained(this)));
+#endif
   ASSERT_TRUE(
       profile_manager_->SetUp(profiles_path, std::move(profile_manager)));
 }
 
 gfx::NativeWindow BrowserWithTestWindowTest::GetContext() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return ash_test_helper_.GetContext();
 #elif defined(TOOLKIT_VIEWS)
   return views_test_helper_->GetContext();
@@ -275,9 +270,6 @@ TestingProfile* BrowserWithTestWindowTest::CreateProfile(
   auto* profile = profile_manager_->CreateTestingProfile(
       profile_name, /*prefs=*/nullptr, /*user_name=*/std::u16string(),
       /*avatar_id=*/0, GetTestingFactories());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  OnUserProfileCreated(profile_name, profile);
-#endif
   return profile;
 }
 
@@ -326,19 +318,16 @@ void BrowserWithTestWindowTest::LogIn(std::string_view email,
                                       const GaiaId& gaia_id) {
   const AccountId account_id = AccountId::FromUserEmailGaiaId(email, gaia_id);
   user_manager_->AddGaiaUser(account_id, user_manager::UserType::kRegular);
-  ash_test_helper()->test_session_controller_client()->AddUserSession(
-      std::string(email));
   user_manager_->UserLoggedIn(
       account_id,
       user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
       /*browser_restart=*/false,
       /*is_child=*/false);
 }
-#endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 void BrowserWithTestWindowTest::OnUserProfileCreated(const std::string& email,
                                                      Profile* profile) {
+  CHECK(profile);
   // TODO(b/40225390): Unset for_test explicit param after subclasses are
   // migrated.
   AccountId account_id = AccountId::FromUserEmail(email);
@@ -384,7 +373,24 @@ BrowserWithTestWindowTest::GetCrosSettingsHelper() {
 ash::StubInstallAttributes* BrowserWithTestWindowTest::GetInstallAttributes() {
   return GetCrosSettingsHelper()->InstallAttributes();
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+void BrowserWithTestWindowTest::PostUserProfileCreation(
+    const std::string& email,
+    Profile* profile) {
+  // The test profile is not for gaia login.
+  if (email != gaia::CanonicalizeEmail(email)) {
+    return;
+  }
+  auto* user = user_manager::UserManager::Get()->FindUser(
+      AccountId::FromUserEmail(email));
+  if (user) {
+    OnUserProfileCreated(email, profile);
+    ash_test_helper()->test_session_controller_client()->AddUserSession(
+        email, user->GetType());
+  }
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 BrowserWithTestWindowTest::BrowserWithTestWindowTest(
     std::unique_ptr<content::BrowserTaskEnvironment> task_environment,

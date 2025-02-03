@@ -148,6 +148,11 @@ TestingProfile* TestingProfileManager::CreateTestingProfile(
   testing_profiles_.insert(std::make_pair(profile_name, profile_ptr));
   profile_observations_.AddObservation(profile_ptr);
 
+#if BUILDFLAG(IS_CHROMEOS)
+  if (!callback_.is_null()) {
+    callback_.Run(profile_name, profile_ptr);
+  }
+#endif
   return profile_ptr;
 }
 
@@ -200,6 +205,11 @@ TestingProfile* TestingProfileManager::CreateGuestProfile(
   testing_profiles_.insert(std::make_pair(kGuestProfileName, profile_ptr));
   profile_observations_.AddObservation(profile_ptr);
 
+#if BUILDFLAG(IS_CHROMEOS)
+  if (!callback_.is_null()) {
+    callback_.Run(kGuestProfileName, profile_ptr);
+  }
+#endif
   return profile_ptr;
 }
 

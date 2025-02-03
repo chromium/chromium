@@ -116,7 +116,6 @@ class EPKChallengeKeyTestBase : public BrowserWithTestWindowTest {
         AccountId::FromUserEmailGaiaId(email, gaia_id),
         /*is_managed=*/true,
         /*is_affiliated=*/true);
-    ash_test_helper()->test_session_controller_client()->AddUserSession(email);
   }
 
   std::unique_ptr<KeyedService> CreateKeyPermissionsManagerService(

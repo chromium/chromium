@@ -224,7 +224,6 @@ class QuickUnlockPrivateUnitTest
     TestingProfile* profile = profile_manager()->CreateTestingProfile(
         profile_name, std::move(pref_service), u"Test profile",
         1 /* avatar_id */, GetTestingFactories());
-    OnUserProfileCreated(profile_name, profile);
 
     // Setup a primary user.
     ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
