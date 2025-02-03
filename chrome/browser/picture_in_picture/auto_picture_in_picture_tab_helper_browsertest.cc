@@ -104,6 +104,14 @@ const char kMediaPlaybackTotalTimeHistogram[] =
     "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason."
     "MediaPlayback.TotalTime";
 
+const char kVideoConferencingTotalTimeForSessionHistogram[] =
+    "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason."
+    "VideoConferencing.TotalTimeForSession";
+
+const char kMediaPlaybackTotalTimeForSessionHistogram[] =
+    "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason."
+    "MediaPlayback.TotalTimeForSession";
+
 class MockInputObserver : public content::RenderWidgetHost::InputEventObserver {
  public:
   MOCK_METHOD(void,
@@ -1203,6 +1211,41 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(0, samples->TotalCount());
 }
 
+IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
+                       VideoConferencing_TotalPipTimeForSessionRecorded) {
+  // Load a page that registers for autopip and starts using camera/microphone.
+  LoadCameraMicrophonePage(browser());
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  GetUserMediaAndAccept(web_contents);
+
+  // Set clock for testing.
+  base::SimpleTestTickClock test_clock;
+  test_clock.SetNowTicks(base::TimeTicks::Now());
+  auto* tab_helper =
+      AutoPictureInPictureTabHelper::FromWebContents(web_contents);
+  tab_helper->set_clock_for_testing(&test_clock);
+
+  // Simulate the accumulatation of video conferencing pip time.
+  base::HistogramTester histograms;
+  SwitchToNewTabAndWaitForAutoPip();
+  test_clock.Advance(base::Milliseconds(5000));
+  SwitchBackToOpenerAndWaitForPipToClose();
+
+  SwitchToNewTabAndWaitForAutoPip();
+  test_clock.Advance(base::Milliseconds(5000));
+  SwitchBackToOpenerAndWaitForPipToClose();
+
+  // Trigger metric recording.
+  CloseBrowserSynchronously(browser());
+
+  // Verify expectations.
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  auto samples = histograms.GetHistogramSamplesSinceCreation(
+      kVideoConferencingTotalTimeForSessionHistogram);
+  EXPECT_EQ(1, samples->TotalCount());
+  EXPECT_EQ(1, samples->GetCount(10000));
+}
+
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
                        DoesNotAutopipWithoutPlayback) {
   // Load a page that registers for autopip but doesn't start playback.
@@ -2074,4 +2117,93 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   auto samples = histograms.GetHistogramSamplesSinceCreation(
       kMediaPlaybackTotalTimeHistogram);
   EXPECT_EQ(0, samples->TotalCount());
+}
+
+IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
+                       MediaPlayback_TotalPipTimeForSessionRecorded) {
+  // Load a page that registers for autopip and start video playback.
+  LoadAutoDocumentPipPage(browser());
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  PlayVideo(web_contents);
+  WaitForAudioFocusGained();
+  WaitForMediaSessionPlaying(web_contents);
+  SetExpectedHasHighEngagement(true);
+  WaitForWasRecentlyAudible(web_contents);
+
+  // Set clock for testing.
+  base::SimpleTestTickClock test_clock;
+  test_clock.SetNowTicks(base::TimeTicks::Now());
+  auto* tab_helper =
+      AutoPictureInPictureTabHelper::FromWebContents(web_contents);
+  tab_helper->set_clock_for_testing(&test_clock);
+
+  // Simulate the accumulatation of media playback pip time.
+  base::HistogramTester histograms;
+  SwitchToNewTabAndWaitForAutoPip();
+  test_clock.Advance(base::Milliseconds(5000));
+  SwitchBackToOpenerAndWaitForPipToClose();
+
+  SwitchToNewTabAndWaitForAutoPip();
+  test_clock.Advance(base::Milliseconds(5000));
+  SwitchBackToOpenerAndWaitForPipToClose();
+
+  // Trigger metric recording.
+  CloseBrowserSynchronously(browser());
+
+  // Verify expectations.
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  auto samples = histograms.GetHistogramSamplesSinceCreation(
+      kMediaPlaybackTotalTimeForSessionHistogram);
+  EXPECT_EQ(1, samples->TotalCount());
+  EXPECT_EQ(1, samples->GetCount(10000));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    AutoPictureInPictureWithVideoPlaybackBrowserTest,
+    VideoConferencingAndMediaPlayback_TotalPipTimeForSessionRecorded) {
+  // Load a page that registers for autopip and start video playback.
+  LoadAutoDocumentPipPage(browser());
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  PlayVideo(web_contents);
+  WaitForAudioFocusGained();
+  WaitForMediaSessionPlaying(web_contents);
+  SetExpectedHasHighEngagement(true);
+  WaitForWasRecentlyAudible(web_contents);
+
+  // Set clock for testing.
+  base::SimpleTestTickClock test_clock;
+  test_clock.SetNowTicks(base::TimeTicks::Now());
+  auto* tab_helper =
+      AutoPictureInPictureTabHelper::FromWebContents(web_contents);
+  tab_helper->set_clock_for_testing(&test_clock);
+
+  // Simulate the accumulatation of media playback pip time.
+  base::HistogramTester histograms;
+  SwitchToNewTabAndWaitForAutoPip();
+  test_clock.Advance(base::Milliseconds(5000));
+  SwitchBackToOpenerAndWaitForPipToClose();
+
+  // Starts using camera/microphone.
+  GetUserMediaAndAccept(web_contents);
+
+  // Simulate the accumulatation of video conferencing pip time.
+  SwitchToNewTabAndWaitForAutoPip();
+  test_clock.Advance(base::Milliseconds(5000));
+  SwitchBackToOpenerAndWaitForPipToClose();
+
+  // Trigger metrics recording.
+  CloseBrowserSynchronously(browser());
+
+  // Verify video conferencing expectations.
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  auto video_conferencing_samples = histograms.GetHistogramSamplesSinceCreation(
+      kVideoConferencingTotalTimeForSessionHistogram);
+  EXPECT_EQ(1, video_conferencing_samples->TotalCount());
+  EXPECT_EQ(1, video_conferencing_samples->GetCount(5000));
+
+  // Verify media playback expectations.
+  auto media_playback_samples = histograms.GetHistogramSamplesSinceCreation(
+      kMediaPlaybackTotalTimeForSessionHistogram);
+  EXPECT_EQ(1, media_playback_samples->TotalCount());
+  EXPECT_EQ(1, media_playback_samples->GetCount(5000));
 }
