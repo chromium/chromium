@@ -371,6 +371,9 @@ class TabStripModelObserver {
   // Notfies us when a Tab Group will be removed from the Tab Group Model.
   virtual void OnTabGroupWillBeRemoved(const tab_groups::TabGroupId& group_id);
 
+  // Notification that a new split view has been added to the TabStripModel.
+  virtual void OnSplitViewAdded(std::vector<tabs::TabInterface*> tabs);
+
   // The specified WebContents at |index| changed in some way. |contents|
   // may be an entirely different object and the old value is no longer
   // available by the time this message is delivered.

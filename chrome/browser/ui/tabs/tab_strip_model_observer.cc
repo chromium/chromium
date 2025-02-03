@@ -209,6 +209,9 @@ void TabStripModelObserver::OnTabGroupAdded(
 void TabStripModelObserver::OnTabGroupWillBeRemoved(
     const tab_groups::TabGroupId& group_id) {}
 
+void TabStripModelObserver::OnSplitViewAdded(
+    std::vector<tabs::TabInterface*> tabs) {}
+
 void TabStripModelObserver::TabChangedAt(WebContents* contents,
                                          int index,
                                          TabChangeType change_type) {}

@@ -47,7 +47,6 @@ class TabModel final : public TabInterface, public TabStripModelObserver {
   bool reset_opener_on_active_tab_change() const {
     return reset_opener_on_active_tab_change_;
   }
-  bool split() const { return split_; }
   bool blocked() const { return blocked_; }
   std::optional<tab_groups::TabGroupId> group() const { return group_; }
 
@@ -144,6 +143,7 @@ class TabModel final : public TabInterface, public TabStripModelObserver {
   BrowserWindowInterface* GetBrowserWindowInterface() override;
   tabs::TabFeatures* GetTabFeatures() override;
   bool IsPinned() const override;
+  bool IsSplit() const override;
   std::optional<tab_groups::TabGroupId> GetGroup() const override;
   bool ShouldAcceptMouseEventsWhileWindowInactive() const override;
   std::unique_ptr<ScopedAcceptMouseEventsWhileWindowInactive>
