@@ -3307,7 +3307,7 @@
           Your Chromebook was reset to safe defaults. You can adjust these changes anytime in Settings.
         </message>
         <message name="IDS_SANITIZE_DONE_ROLLBACK" desc="Summary title">
-          Summary
+          Your Chromebook was reset to safe defaults. You can make changes anytime in Settings.
         </message>
         <message name="IDS_SANITIZE_DONE" desc="Name of the button that will close the safety reset done dialog">
           Done
@@ -3315,32 +3315,53 @@
         <message name="IDS_SANITIZE_DONE_ACCORDION_EXTENSIONS_TITLE" desc="Accordion title for extension resets">
           Extensions
         </message>
+        <message name="IDS_SANITIZE_DONE_ACCORDION_EXTENSIONS_REENABLE_SUBHEADER" desc="Subheader for instructions to re-enable extensions">
+          Extensions
+        </message>
         <message name="IDS_SANITIZE_DONE_ACCORDION_EXTENSIONS_REENABLE" desc="Instructions to re-enable extensions">
-          Only turn on extensions you trust
+          Extensions disabled to prevent changes to settings. Only turn on extensions you trust.
         </message>
         <message name="IDS_SANITIZE_DONE_ACCORDION_CHROMEOS_TITLE" desc="Accordion title for ChromeOS resets">
           ChromeOS Settings
         </message>
-        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROMEOS_INPUT" desc="Instructions to adjust ChromeOS Inputs">
+        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROMEOS_INPUT_SUBHEADER" desc="Subheader for instructions to adjust ChromeOS Inputs">
           Input method
         </message>
-        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROMEOS_NETWORK" desc="Instructions to adjust ChromeOS Network">
+        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROMEOS_INPUT" desc="Instructions to adjust ChromeOS Inputs">
+          Reset to prevent others from accessing data. Only use input methods you trust.
+        </message>
+        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROMEOS_NETWORK_SUBHEADER" desc="Subheader for instructions to adjust ChromeOS Network">
           Network
+        </message>
+        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROMEOS_NETWORK" desc="Instructions to adjust ChromeOS Network">
+          Reset to protect data sent through your networks. Only use networks you trust.
         </message>
         <message name="IDS_SANITIZE_DONE_ACCORDION_CHROME_TITLE" desc="Accordion title for Chrome resets">
           Chrome Settings
         </message>
-        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROME_SITE_CONTENT" desc="Instructions to adjust Chrome site content settings">
+        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROME_SITE_CONTENT_SUBHEADER" desc="Subheader for instructions to adjust Chrome site content settings">
           Site content
         </message>
-        <message name="IDS_SANITZIE_DONE_ACCORDION_CHROME_STARTUP" desc="Instruction to adjust Chrome startup settings">
+        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROME_SITE_CONTENT" desc="Instructions to adjust Chrome site content settings">
+          Reset to stop others from using your microphone or camera. Only grant permissions to sites you trust.
+        </message>
+        <message name="IDS_SANITZIE_DONE_ACCORDION_CHROME_STARTUP_SUBHEADER" desc="Subheader for instruction to adjust Chrome startup settings">
           Startup preferences
         </message>
-        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROME_HOMEPAGE" desc="Instructions to adjust Chrome homepage settings">
+        <message name="IDS_SANITZIE_DONE_ACCORDION_CHROME_STARTUP" desc="Instruction to adjust Chrome startup settings">
+          Reset to make sure the default startup page is not a phishing website. Only use websites you trust.
+        </message>
+        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROME_HOMEPAGE_SUBHEADER" desc="Subheader for instructions to adjust Chrome homepage settings">
           Homepage
         </message>
-        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROME_LANGUAGES" desc="Instruction to adjust Chrome language settings">
+        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROME_HOMEPAGE" desc="Instructions to adjust Chrome homepage settings">
+          Reset to make sure the default homepage is not a phishing site. Only use websites you trust.
+        </message>
+        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROME_LANGUAGES_SUBHEADER" desc="Subheader for instruction to adjust Chrome language settings">
           Language
+        </message>
+        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROME_LANGUAGES" desc="Instruction to adjust Chrome language settings">
+          Reset to make sure you can access information in your preferred language. Check that only preferred languages are used.
         </message>
         <message name="IDS_SANITIZE_DONE_BUTTON_EXTENSIONS" desc="Button label to redirect to Chrome Extensions page">
           Extensions
@@ -3371,7 +3392,7 @@
         </message>
         <message name="IDS_SANITIZE_WARNING" desc="Warning text in the safety reset">
           Safety reset turns off Chrome browser extensions and resets network and other settings to safe defaults.
-          Your tabs, files, cookies, and history won’t be changed.
+          Your default search engine will be reset, but your tabs, files, cookies, and history won’t be changed.
         </message>
         <message name="IDS_SANITIZE_FEEDBACK" translateable="false" desc="Feedback label in the Reset Profile Settings dialog">
           Help make ChromeOS better by reporting the current settings
