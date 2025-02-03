@@ -386,9 +386,7 @@ bool CookieSettings::IsThirdPartyCookiesAllowedScheme(
 }
 
 bool CookieSettings::ShouldBlockThirdPartyCookies() const {
-  return block_third_party_cookies_ ||
-         IsThirdPartyPhaseoutEnabled(std::nullopt,
-                                     net::CookieSettingOverrides());
+  return block_third_party_cookies_;
 }
 
 bool CookieSettings::IsThirdPartyPhaseoutEnabled(
