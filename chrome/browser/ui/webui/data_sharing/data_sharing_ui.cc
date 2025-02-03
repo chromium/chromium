@@ -133,6 +133,9 @@ DataSharingUI::DataSharingUI(content::WebUI* web_ui)
       {"moreOptions", IDS_DATA_SHARING_MORE_OPTIONS},
       {"moreOptionsDescription", IDS_DATA_SHARING_MORE_OPTIONS_DESCRIPTION},
       {"activityLog", IDS_DATA_SHARING_MANAGE_ACTIVITY_LOG_OPTION},
+      {"groupFull", IDS_DATA_SHARING_GROUP_FULL},
+      {"groupFullBody", IDS_DATA_SHARING_GROUP_FULL_BODY},
+      {"ownerCannotShare", IDS_DATA_SHARING_OWNER_CANNOT_SHARE},
 
       // dynamic messages:
       {"shareGroupShareAs", IDS_DATA_SHARING_SHARE_GROUP_SHARE_AS},
@@ -160,8 +163,8 @@ DataSharingUI::DataSharingUI(content::WebUI* web_ui)
        IDS_DATA_SHARING_PREVIEW_DIALOG_TITLE_PLURAL},
       {"previewDialogBody", IDS_DATA_SHARING_PREVIEW_DIALOG_BODY},
       {"manageGroupTitle", IDS_DATA_SHARING_MANAGE_GROUP_TITLE},
-      {"groupFull", IDS_DATA_SHARING_GROUP_FULL},
-      {"ownerCannotShare", IDS_DATA_SHARING_OWNER_CANNOT_SHARE},
+      {"getGroupPreviewAriaLabel",
+       IDS_DATA_SHARING_GET_GROUP_PREVIEW_ARIA_LABEL},
   };
   source->AddLocalizedStrings(kStrings);
   source->AddBoolean(

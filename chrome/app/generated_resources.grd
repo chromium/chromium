@@ -12214,6 +12214,9 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name ="IDS_DATA_SHARING_JOIN_GROUP_JOIN_AS" desc="A sublabel showing which profile the shared group is being joined as.">
           Join as <ph name="OWNER_FULL_NAME">$1<ex>John Doe</ex></ph>
         </message>
+        <message name ="IDS_DATA_SHARING_GET_GROUP_PREVIEW_ARIA_LABEL" desc="Aria label for the group preview card.">
+          View more details about <ph name="GROUP_NAME">$1<ex>vacation group</ex></ph>
+        </message>
       <!-- /Data Sharing Preview Dialog -->
 
       <!-- Data Sharing Leave Dialog -->
