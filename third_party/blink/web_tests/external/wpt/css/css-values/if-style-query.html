@@ -53,7 +53,7 @@
   </style>
   <body>
     <div class="outer">
-      <div id="if" class="inner"></div>
+      <div id="if" class="inner" data-foo="30px"></div>
     </div>
   </body>
 </html>
@@ -375,6 +375,66 @@
   test_if(`if(style(--color: green): true_value;
           else: false_value)`,
         [['--color', 'blue']],
+        'false_value');
+
+  // Valid if() with substitution function in conditions.
+  test_if(`if(style(--x: var(--x)): true_value;
+          else: false_value)`,
+        [['--x', '3']],
+        'true_value');
+  test_if(`if(style(--non-existent: var(--non-existent)): true_value;
+          else: false_value)`,
+        [],
+        'false_value');
+  test_if(`if(style(--x: var(--y)): true_value;
+          else: false_value)`,
+        [['--x', '3'], ['--y', '3']],
+        'true_value');
+  test_if(`if(style(--x: var(--y)): true_value;
+          else: false_value)`,
+        [['--x', '1'], ['--y', '3']],
+        'false_value');
+  test_if(`if(style(--x: attr(data-foo type(<length>))): true_value;
+          else: false_value)`,
+        [['--x', '30px']],
+        'true_value');
+  test_if(`if(style(--x: attr(data-foo)): true_value;
+          else: false_value)`,
+        [['--x', '"30px"']],
+        'true_value');
+  test_if(`if(style(--length: attr(data-foo type(<length>))): true_value;
+          else: false_value)`,
+        [['--length', '30px']],
+          'true_value');
+  test_if(`if(style(--length: attr(data-foo type(<length>))): true_value;
+          else: false_value)`,
+        [['--length', '30']],
+        'false_value');
+
+  // Valid if() with substitution function in custom properties.
+  test_if(`if(style(--x: 3): true_value;
+          else: false_value)`,
+        [['--x', 'var(--y)'], ['--y', '3']],
+        'true_value');
+  test_if(`if(style(--x: 3): true_value;
+          else: false_value)`,
+        [['--x', 'var(--y)'], ['--y', '1']],
+        'false_value');
+  test_if(`if(style(--x: "30px"): true_value;
+          else: false_value)`,
+        [['--x', 'attr(data-foo)']],
+        'true_value');
+  test_if(`if(style(--x: 3): true_value;
+          else: false_value)`,
+        [['--x', 'attr(data-foo)']],
+        'false_value');
+  test_if(`if(style(--length: 30px): true_value;
+          else: false_value)`,
+        [['--length', 'attr(data-foo type(<length>))']],
+        'true_value');
+  test_if(`if(style(--length: 30): true_value;
+          else: false_value)`,
+        [['--length', 'attr(data-foo type(<length>))']],
         'false_value');
 
   // Invalid if() syntax

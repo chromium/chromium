@@ -1918,13 +1918,24 @@ KleeneValue StyleCascade::EvalIfStyleFeature(
 
   const auto& decl_value = To<CSSUnparsedDeclarationValue>(query_specified);
 
-  // TODO(crbug.com/346977961): Need to resolve substitutions in
-  // query_specified.
-  CSSVariableData* computed_query_data = decl_value.VariableDataValue();
+  CSSParserTokenStream decl_value_stream(
+      decl_value.VariableDataValue()->OriginalText());
+  TokenSequence substituted_token_sequence;
+  // TODO(crbug.com/325504770): Take function context into account.
+  if (!ResolveTokensInto(decl_value_stream, resolver, context,
+                         /* function_context */ nullptr,
+                         /* stop_type */ kEOFToken,
+                         substituted_token_sequence)) {
+    return KleeneValue::kFalse;
+  }
+
+  CSSVariableData* computed_query_data =
+      substituted_token_sequence.BuildVariableData();
 
   if (property.IsRegistered()) {
-    const CSSValue* parsed_value = property.Parse(
-        computed_query_data->OriginalText(), context, CSSParserLocalContext());
+    const CSSValue* parsed_value =
+        property.Parse(substituted_token_sequence.OriginalText(), context,
+                       CSSParserLocalContext());
     if (!parsed_value) {
       return KleeneValue::kFalse;
     }
