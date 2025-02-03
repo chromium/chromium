@@ -57,16 +57,19 @@ ScheduledAction::ScheduledAction(ScriptState* script_state,
                                  const HeapVector<ScriptValue>& arguments)
     : script_state_(
           MakeGarbageCollected<ScriptStateProtectingContext>(script_state)) {
-  CHECK(script_state->World().IsWorkerOrWorkletWorld() ||
-        BindingSecurity::ShouldAllowAccessTo(
-            EnteredDOMWindow(script_state->GetIsolate()),
-            To<LocalDOMWindow>(&target)));
-  function_ = handler;
-  arguments_ = arguments;
-  auto* tracker =
-      scheduler::TaskAttributionTracker::From(script_state->GetIsolate());
-  if (tracker && script_state->World().IsMainWorld()) {
-    function_->SetParentTask(tracker->RunningTask());
+  if (script_state->World().IsWorkerOrWorkletWorld() ||
+      BindingSecurity::ShouldAllowAccessTo(
+          EnteredDOMWindow(script_state->GetIsolate()),
+          To<LocalDOMWindow>(&target))) {
+    function_ = handler;
+    arguments_ = arguments;
+    auto* tracker =
+        scheduler::TaskAttributionTracker::From(script_state->GetIsolate());
+    if (tracker && script_state->World().IsMainWorld()) {
+      function_->SetParentTask(tracker->RunningTask());
+    }
+  } else {
+    UseCounter::Count(target, WebFeature::kScheduledActionIgnored);
   }
 }
 
@@ -75,15 +78,18 @@ ScheduledAction::ScheduledAction(ScriptState* script_state,
                                  const String& handler)
     : script_state_(
           MakeGarbageCollected<ScriptStateProtectingContext>(script_state)) {
-  CHECK(script_state->World().IsWorkerOrWorkletWorld() ||
-        BindingSecurity::ShouldAllowAccessTo(
-            EnteredDOMWindow(script_state->GetIsolate()),
-            To<LocalDOMWindow>(&target)));
-  code_ = handler;
-  auto* tracker =
-      scheduler::TaskAttributionTracker::From(script_state->GetIsolate());
-  if (tracker && script_state->World().IsMainWorld()) {
-    code_parent_task_ = tracker->RunningTask();
+  if (script_state->World().IsWorkerOrWorkletWorld() ||
+      BindingSecurity::ShouldAllowAccessTo(
+          EnteredDOMWindow(script_state->GetIsolate()),
+          To<LocalDOMWindow>(&target))) {
+    code_ = handler;
+    auto* tracker =
+        scheduler::TaskAttributionTracker::From(script_state->GetIsolate());
+    if (tracker && script_state->World().IsMainWorld()) {
+      code_parent_task_ = tracker->RunningTask();
+    }
+  } else {
+    UseCounter::Count(target, WebFeature::kScheduledActionIgnored);
   }
 }
 

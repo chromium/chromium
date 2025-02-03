@@ -2241,7 +2241,9 @@ DOMWindow* LocalDOMWindow::open(v8::Isolate* isolate,
   // entered realm should be same origin-domain. However, to be on the safe
   // side and add some defense in depth, we'll check against the entry realm
   // as well here.
-  CHECK(BindingSecurity::ShouldAllowAccessTo(entered_window, this));
+  if (!BindingSecurity::ShouldAllowAccessTo(entered_window, this)) {
+    NOTREACHED();
+  }
 
   UseCounter::Count(*entered_window, WebFeature::kDOMWindowOpen);
   entered_window->CountUseOnlyInCrossOriginIframe(
@@ -2418,7 +2420,9 @@ DOMWindow* LocalDOMWindow::openPictureInPictureWindow(
   // entered realm should be same origin-domain. However, to be on the safe
   // side and add some defense in depth, we'll check against the entry realm
   // as well here.
-  CHECK(BindingSecurity::ShouldAllowAccessTo(entered_window, this));
+  if (!BindingSecurity::ShouldAllowAccessTo(entered_window, this)) {
+    NOTREACHED();
+  }
 
   FrameLoadRequest frame_request(entered_window,
                                  ResourceRequest(KURL(g_empty_string)));
