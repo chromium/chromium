@@ -375,7 +375,8 @@ INSTANTIATE_TEST_SUITE_P(
     IntentPickerIconBrowserTest,
     testing::Combine(testing::Values("", "noopener", "noreferrer", "nofollow"),
 #if BUILDFLAG(IS_CHROMEOS)
-                     testing::Values(LinkCapturingFeatureVersion::kV1DefaultOff)
+                     testing::Values(LinkCapturingFeatureVersion::kV1DefaultOff,
+                                     LinkCapturingFeatureVersion::kV2DefaultOff)
 #else
                      testing::Values(LinkCapturingFeatureVersion::kV2DefaultOn,
                                      LinkCapturingFeatureVersion::kV2DefaultOff)
@@ -511,7 +512,8 @@ INSTANTIATE_TEST_SUITE_P(
     ,
     IntentPickerIconBrowserBubbleTest,
 #if BUILDFLAG(IS_CHROMEOS)
-    testing::Values(LinkCapturingFeatureVersion::kV1DefaultOff)
+    testing::Values(LinkCapturingFeatureVersion::kV1DefaultOff,
+                    LinkCapturingFeatureVersion::kV2DefaultOff)
 #else
     testing::Values(LinkCapturingFeatureVersion::kV2DefaultOn,
                     LinkCapturingFeatureVersion::kV2DefaultOff)
@@ -597,7 +599,8 @@ INSTANTIATE_TEST_SUITE_P(
     IntentPickerIconPrerenderingBrowserTest,
     testing::Combine(testing::Values("", "noopener", "noreferrer", "nofollow"),
 #if BUILDFLAG(IS_CHROMEOS)
-                     testing::Values(LinkCapturingFeatureVersion::kV1DefaultOff)
+                     testing::Values(LinkCapturingFeatureVersion::kV1DefaultOff,
+                                     LinkCapturingFeatureVersion::kV2DefaultOff)
 #else
                      testing::Values(LinkCapturingFeatureVersion::kV2DefaultOff)
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -648,7 +651,8 @@ INSTANTIATE_TEST_SUITE_P(
     IntentPickerIconFencedFrameBrowserTest,
     testing::Combine(testing::Values("", "noopener", "noreferrer", "nofollow"),
 #if BUILDFLAG(IS_CHROMEOS)
-                     testing::Values(LinkCapturingFeatureVersion::kV1DefaultOff)
+                     testing::Values(LinkCapturingFeatureVersion::kV1DefaultOff,
+                                     LinkCapturingFeatureVersion::kV2DefaultOff)
 #else
                      testing::Values(LinkCapturingFeatureVersion::kV2DefaultOn,
                                      LinkCapturingFeatureVersion::kV2DefaultOff)
