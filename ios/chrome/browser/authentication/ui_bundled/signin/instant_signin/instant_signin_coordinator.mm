@@ -273,12 +273,13 @@
   PostSignInActionSet postSigninActions;
   if (_promoAction == signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT) {
     postSigninActions.Put(PostSignInAction::kShowSnackbar);
-  }
-  if (self.accessPoint == signin_metrics::AccessPoint::kBookmarkManager) {
-    postSigninActions.Put(PostSignInAction::kEnableUserSelectableTypeBookmarks);
-  } else if (self.accessPoint == signin_metrics::AccessPoint::kReadingList) {
-    postSigninActions.Put(
-        PostSignInAction::kEnableUserSelectableTypeReadingList);
+    if (self.accessPoint == signin_metrics::AccessPoint::kBookmarkManager) {
+      postSigninActions.Put(
+          PostSignInAction::kEnableUserSelectableTypeBookmarks);
+    } else if (self.accessPoint == signin_metrics::AccessPoint::kReadingList) {
+      postSigninActions.Put(
+          PostSignInAction::kEnableUserSelectableTypeReadingList);
+    }
   }
   AuthenticationFlow* authenticationFlow =
       [[AuthenticationFlow alloc] initWithBrowser:self.browser

@@ -316,13 +316,9 @@ enum class AuthenticationFlowInCurrentProfileState {
   signin_ui::SigninCompletionCallback signInCompletion = _signInCompletion;
   _signInCompletion = nil;
   signInCompletion(SigninCoordinatorResult::SigninCoordinatorResultSuccess);
-  // TODO(crbug.com/375605482): Need to understand what to do with other
-  // post sign-in actions.
-  if (_postSignInActions.Has(PostSignInAction::kShowSnackbar)) {
-    [_performer completePostSignInActions:_postSignInActions
-                             withIdentity:_identityToSignIn
-                                  browser:_browser];
-  }
+  [_performer completePostSignInActions:_postSignInActions
+                           withIdentity:_identityToSignIn
+                                browser:_browser];
   [self continueFlow];
 }
 
