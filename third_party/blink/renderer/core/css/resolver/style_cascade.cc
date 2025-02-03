@@ -1460,19 +1460,22 @@ bool StyleCascade::ResolveVarInto(CSSParserTokenStream& stream,
     // (i.e. exists on function_context->locals).
     // TODO(crbug.com/325504770): This may create cycles.
     LookupAndApplyLocalVariable(var_name, resolver, context, *function_context);
-    if (std::optional<const CSSValue*> local_variable =
-            FindOrNullopt(function_context->locals, var_name)) {
-      return ResolveArgumentOrLocalInto(
-          local_variable.value(), stream, resolver, context,
-          (has_fallback ? &fallback : nullptr), out);
-    }
-    // Note that there is no "lookup and apply" step for arguments; one argument
-    // cannot reference another using var() or similar.
-    if (std::optional<const CSSValue*> argument =
-            FindOrNullopt(function_context->arguments, var_name)) {
-      return ResolveArgumentOrLocalInto(
-          argument.value(), stream, resolver, context,
-          (has_fallback ? &fallback : nullptr), out);
+    for (FunctionContext* frame = function_context; frame;
+         frame = frame->parent) {
+      if (std::optional<const CSSValue*> local_variable =
+              FindOrNullopt(frame->locals, var_name)) {
+        return ResolveArgumentOrLocalInto(
+            local_variable.value(), stream, resolver, context,
+            (has_fallback ? &fallback : nullptr), out);
+      }
+      // Note that there is no "lookup and apply" step for arguments; one
+      // argument cannot reference another using var() or similar.
+      if (std::optional<const CSSValue*> argument =
+              FindOrNullopt(frame->arguments, var_name)) {
+        return ResolveArgumentOrLocalInto(
+            argument.value(), stream, resolver, context,
+            (has_fallback ? &fallback : nullptr), out);
+      }
     }
   }
 
@@ -1651,7 +1654,8 @@ bool StyleCascade::ResolveFunctionInto(StringView function_name,
   FunctionContext local_function_context{
       .arguments = function_arguments,
       .locals = {},  // Populated by ApplyLocalVariables.
-      .unresolved_locals = unresolved_locals};
+      .unresolved_locals = unresolved_locals,
+      .parent = function_context};
   ApplyLocalVariables(resolver, context, local_function_context);
 
   const CSSValue* ret_value = ResolveFunctionExpression(

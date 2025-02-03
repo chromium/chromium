@@ -426,6 +426,9 @@ class CORE_EXPORT StyleCascade {
     // This is needed by the process that populates the `locals` map,
     // see "Application of Local Variables".
     const HeapHashMap<String, Member<const CSSValue>>& unresolved_locals;
+
+    // Parent stack frame (for dynamic scoping).
+    FunctionContext* parent = nullptr;
   };
 
   // The Resolve*Into functions either resolve dependencies, append to the
