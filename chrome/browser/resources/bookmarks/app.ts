@@ -52,7 +52,7 @@ const BookmarksAppElementBase =
 export interface BookmarksAppElement {
   $: {
     splitter: CrSplitterElement,
-    sidebar: HTMLDivElement,
+    sidebar: HTMLElement,
   };
 }
 

@@ -24,7 +24,7 @@ const ToolbarElementBase = WebUiListenerMixinLit(I18nMixinLit(CrLitElement));
 export interface ToolbarElement {
   $: {
     heading: SpHeadingElement,
-    pinningSelectionCard: HTMLDivElement,
+    pinningSelectionCard: HTMLElement,
   };
 }
 

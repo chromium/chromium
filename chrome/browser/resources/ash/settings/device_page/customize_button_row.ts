@@ -29,7 +29,7 @@ import {buttonsAreEqual} from './input_device_settings_utils.js';
 
 export interface CustomizeButtonRowElement {
   $: {
-    container: HTMLDivElement,
+    container: HTMLElement,
     remappingActionDropdown: CustomizeButtonSelectElement,
     renameButton: CrIconButtonElement,
     reorderButton: CrIconButtonElement,

@@ -36,7 +36,7 @@ export interface LensSidePanelAppElement {
   $: {
     results: HTMLIFrameElement,
     ghostLoader: SidePanelGhostLoaderElement,
-    networkErrorPage: HTMLDivElement,
+    networkErrorPage: HTMLElement,
     searchbox: SearchboxElement,
     searchboxContainer: HTMLElement,
     searchboxGhostLoader: SearchboxGhostLoaderElement,

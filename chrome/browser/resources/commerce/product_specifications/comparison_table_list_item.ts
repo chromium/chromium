@@ -50,7 +50,7 @@ export interface ComparisonTableListItemElement {
   $: {
     item: CrUrlListItemElement,
     menu: CrLazyRenderLitElement<CrActionMenuElement>,
-    numItems: HTMLDivElement,
+    numItems: HTMLElement,
   };
 }
 

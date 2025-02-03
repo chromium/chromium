@@ -30,7 +30,7 @@ import {MetaKey, StaticShortcutAction} from './input_device_settings_types.js';
 export interface CustomizeButtonSelectElement {
   $: {
     selectDropdown: HTMLButtonElement,
-    menuContainer: HTMLDivElement,
+    menuContainer: HTMLElement,
   };
 }
 

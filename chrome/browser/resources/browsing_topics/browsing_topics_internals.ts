@@ -15,7 +15,7 @@ let pageHandler: PageHandlerRemote|null = null;
 let hostsClassificationSequenceNumber = 0;
 
 function setElementVisible(id: string, visible: boolean) {
-  const element = document.querySelector<HTMLDivElement>('#' + id);
+  const element = document.querySelector<HTMLElement>('#' + id);
   element!.style.display = visible ? 'block' : 'none';
 }
 

@@ -75,7 +75,7 @@ assert(
 
 export interface OsSettingsUiElement {
   $: {
-    container: HTMLDivElement,
+    container: HTMLElement,
     prefs: SettingsPrefsElement,
   };
 }

@@ -19,7 +19,7 @@ import {getTemplate} from './reporting_history.html.js';
 
 export interface ReportingHistoryElement {
   $: {
-    body: HTMLDivElement,
+    body: HTMLElement,
     erpTableFilter: HTMLSelectElement,
   };
 }

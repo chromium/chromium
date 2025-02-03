@@ -38,11 +38,11 @@ export interface AccessCodeCastElement {
   $: {
     backButton: CrButtonElement,
     castButton: CrButtonElement,
-    codeInputView: HTMLDivElement,
+    codeInputView: HTMLElement,
     codeInput: PasscodeInputElement,
     dialog: CrDialogElement,
     errorMessage: ErrorMessageElement,
-    qrInputView: HTMLDivElement,
+    qrInputView: HTMLElement,
   };
 }
 

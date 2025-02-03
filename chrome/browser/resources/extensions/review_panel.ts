@@ -26,7 +26,7 @@ import {getHtml} from './review_panel.html.js';
 export interface ExtensionsReviewPanelElement {
   $: {
     makeExceptionMenu: CrActionMenuElement,
-    reviewPanelContainer: HTMLDivElement,
+    reviewPanelContainer: HTMLElement,
     expandButton: CrExpandButtonElement,
     safetyHubTitleContainer: HTMLElement,
     headingText: HTMLElement,

@@ -291,14 +291,14 @@ export class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
     // first opt-in.
     if (this.isTosHidden) {
       const useageStatsDiv =
-          this.shadowRoot?.querySelector<HTMLDivElement>('#usageStats');
+          this.shadowRoot?.querySelector<HTMLElement>('#usageStats');
       if (useageStatsDiv instanceof HTMLDivElement) {
         useageStatsDiv.classList.add('first-optin-no-tos');
       }
     }
 
     const loadedContentDiv =
-        this.shadowRoot?.querySelector<HTMLDivElement>('#loadedContent');
+        this.shadowRoot?.querySelector<HTMLElement>('#loadedContent');
     if (loadedContentDiv instanceof HTMLDivElement) {
       if (this.isArcOptInsHidden(this.isArcEnabled, this.isDemo)) {
         loadedContentDiv.classList.remove('landscape-vertical-centered');

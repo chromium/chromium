@@ -38,8 +38,8 @@ let itemCount = 0;
 
 export interface CustomizeChromeComboboxElement {
   $: {
-    input: HTMLDivElement,
-    dropdown: HTMLDivElement,
+    input: HTMLElement,
+    dropdown: HTMLElement,
   };
 }
 

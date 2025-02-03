@@ -35,7 +35,7 @@ const MAX_INPUT_LENGTH = 32;
 export interface CustomizeButtonsSubsectionElement {
   $: {
     keyCombinationInputDialog: KeyCombinationInputDialogElement,
-    subsection: HTMLDivElement,
+    subsection: HTMLElement,
     renamingDialog: CrDialogElement,
   };
 }

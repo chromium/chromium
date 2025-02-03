@@ -19,7 +19,7 @@ type AnchorAlignmentKey = keyof typeof AnchorAlignment;
 export interface CrActionMenuDemoElement {
   $: {
     menu: CrActionMenuElement,
-    minMaxContainer: HTMLDivElement,
+    minMaxContainer: HTMLElement,
     anchorAlignmentDemo: HTMLButtonElement,
   };
 }

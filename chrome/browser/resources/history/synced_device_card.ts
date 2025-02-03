@@ -34,7 +34,7 @@ declare global {
 
 export interface HistorySyncedDeviceCardElement {
   $: {
-    'card-heading': HTMLDivElement,
+    'card-heading': HTMLElement,
     'collapse': CrCollapseElement,
     'collapse-button': HTMLElement,
     'menu-button': HTMLElement,
@@ -155,7 +155,7 @@ export class HistorySyncedDeviceCardElement extends PolymerElement {
   private updateIcons_() {
     setTimeout(() => {
       const icons =
-          this.shadowRoot!.querySelectorAll<HTMLDivElement>('.website-icon');
+          this.shadowRoot!.querySelectorAll<HTMLElement>('.website-icon');
 
       for (let i = 0; i < this.tabs.length; i++) {
         // Entries on this UI are coming strictly from sync, so we can set

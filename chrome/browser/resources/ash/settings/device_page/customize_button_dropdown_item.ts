@@ -27,7 +27,7 @@ export interface DropdownMenuOption {
 
 export interface CustomizeButtonDropdownItemElement {
   $: {
-    container: HTMLDivElement,
+    container: HTMLElement,
   };
 }
 

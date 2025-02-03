@@ -53,7 +53,7 @@ const AppElementBase = HelpBubbleMixinLit(CrLitElement);
 
 export interface AppElement {
   $: {
-    overviewPage: HTMLDivElement,
+    overviewPage: HTMLElement,
     categoriesPage: CategoriesElement,
     themesPage: ThemesElement,
     appearanceElement: AppearanceElement,

@@ -34,7 +34,7 @@ const BookmarksListElementBase =
 export interface BookmarksListElement {
   $: {
     list: IronListElement,
-    message: HTMLDivElement,
+    message: HTMLElement,
   };
 }
 

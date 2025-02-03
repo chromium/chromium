@@ -56,9 +56,9 @@ const EventKeys = {
 
 export interface LensUploadDialogElement {
   $: {
-    dialog: HTMLDivElement,
+    dialog: HTMLElement,
     lensForm: LensFormElement,
-    dragDropArea: HTMLDivElement,
+    dragDropArea: HTMLElement,
     closeButton: CrIconButtonElement,
   };
 }

@@ -266,7 +266,7 @@ class NetworkScreen extends NetworkScreenBase {
    * Returns element of the network list with the given name.
    * Used to simplify testing.
    */
-  getNetworkListItemByNameForTest(name: string): HTMLDivElement|null {
+  getNetworkListItemByNameForTest(name: string): HTMLElement|null {
     const item =
         this.getNetworkSelectLogin()
             ?.shadowRoot?.querySelector<NetworkSelectElement>('#networkSelect')

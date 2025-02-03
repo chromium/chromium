@@ -111,12 +111,12 @@ export class OobeAdaptiveDialog extends PolymerElement {
     return readMoreButton instanceof CrButtonElement ? readMoreButton : null;
   }
 
-  private getScrollContainer(): HTMLDivElement|null {
+  private getScrollContainer(): HTMLElement|null {
     const scrollContainer = this.shadowRoot?.querySelector('#scrollContainer');
     return scrollContainer instanceof HTMLDivElement ? scrollContainer : null;
   }
 
-  private getContentContainer(): HTMLDivElement|null {
+  private getContentContainer(): HTMLElement|null {
     const contentContainer =
         this.shadowRoot?.querySelector('#contentContainer');
     return contentContainer instanceof HTMLDivElement ? contentContainer : null;

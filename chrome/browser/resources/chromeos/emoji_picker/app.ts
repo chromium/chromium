@@ -35,14 +35,14 @@ import {CategoryEnum, Gender, Tone} from './types.js';
 export interface EmojiPickerApp {
   $: {
     'left-chevron': CrIconButtonElement,
-    'list-container': HTMLDivElement,
+    'list-container': HTMLElement,
     'right-chevron': CrIconButtonElement,
     'search-container': EmojiSearch,
-    bar: HTMLDivElement,
-    dummyTab: HTMLDivElement,
-    groups: HTMLDivElement,
-    message: HTMLDivElement,
-    tabs: HTMLDivElement,
+    bar: HTMLElement,
+    dummyTab: HTMLElement,
+    groups: HTMLElement,
+    message: HTMLElement,
+    tabs: HTMLElement,
   };
 }
 
