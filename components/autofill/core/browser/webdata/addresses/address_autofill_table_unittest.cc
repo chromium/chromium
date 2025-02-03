@@ -71,8 +71,10 @@ INSTANTIATE_TEST_SUITE_P(
 // Tests reading/writing name, email, company, address and phone number
 // information.
 TEST_P(AddressAutofillTableProfileTest, AutofillProfile) {
-  base::test::ScopedFeatureList features{
-      features::kAutofillSupportPhoneticNameForJP};
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures({features::kAutofillSupportPhoneticNameForJP,
+                             features::kAutofillSupportLastNamePrefix},
+                            {});
   AutofillProfile home_profile = CreateAutofillProfile();
 
   home_profile.SetRawInfoWithVerificationStatus(NAME_FIRST, u"John",
@@ -80,6 +82,12 @@ TEST_P(AddressAutofillTableProfileTest, AutofillProfile) {
 
   home_profile.SetRawInfoWithVerificationStatus(NAME_MIDDLE, u"Q.",
                                                 VerificationStatus::kObserved);
+
+  home_profile.SetRawInfoWithVerificationStatus(
+      NAME_LAST_CORE, u"Agent 007 Smith", VerificationStatus::kParsed);
+
+  home_profile.SetRawInfoWithVerificationStatus(NAME_LAST_PREFIX, u"von",
+                                                VerificationStatus::kParsed);
 
   home_profile.SetRawInfoWithVerificationStatus(NAME_LAST_FIRST, u"Agent",
                                                 VerificationStatus::kParsed);
@@ -90,11 +98,11 @@ TEST_P(AddressAutofillTableProfileTest, AutofillProfile) {
   home_profile.SetRawInfoWithVerificationStatus(NAME_LAST_SECOND, u"Smith",
                                                 VerificationStatus::kParsed);
 
-  home_profile.SetRawInfoWithVerificationStatus(NAME_LAST, u"Agent 007 Smith",
-                                                VerificationStatus::kParsed);
+  home_profile.SetRawInfoWithVerificationStatus(
+      NAME_LAST, u"von Agent 007 Smith", VerificationStatus::kParsed);
 
   home_profile.SetRawInfoWithVerificationStatus(
-      NAME_FULL, u"John Q. Agent 007 Smith", VerificationStatus::kObserved);
+      NAME_FULL, u"John Q. von Agent 007 Smith", VerificationStatus::kObserved);
 
   // Phonetic names in Hiragana. They should be saved and later returned without
   // any changes.
@@ -298,13 +306,19 @@ TEST_P(AddressAutofillTableProfileTest, UseDates) {
 }
 
 TEST_P(AddressAutofillTableProfileTest, UpdateAutofillProfile) {
-  base::test::ScopedFeatureList features{
-      features::kAutofillSupportPhoneticNameForJP};
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures({features::kAutofillSupportPhoneticNameForJP,
+                             features::kAutofillSupportLastNamePrefix},
+                            {});
   // Add a profile to the db.
   AutofillProfile profile = CreateAutofillProfile();
   profile.SetRawInfo(NAME_FIRST, u"John");
   profile.SetRawInfo(NAME_MIDDLE, u"Q.");
-  profile.SetRawInfo(NAME_LAST, u"Smith");
+  profile.SetRawInfo(NAME_LAST_PREFIX, u"von");
+  profile.SetRawInfo(NAME_LAST_CORE, u"Agent 007 Smith");
+  profile.SetRawInfo(NAME_LAST_FIRST, u"Agent");
+  profile.SetRawInfo(NAME_LAST_CONJUNCTION, u"007");
+  profile.SetRawInfo(NAME_LAST_SECOND, u"Smith");
   profile.SetRawInfo(EMAIL_ADDRESS, u"js@example.com");
   profile.SetRawInfo(COMPANY_NAME, u"Google");
   profile.SetRawInfo(ADDRESS_HOME_LINE1, u"1234 Apple Way");
