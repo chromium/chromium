@@ -35,6 +35,7 @@ TaskManagerSearchBarView::TaskManagerSearchBarView(
   auto* layout_provider = ChromeLayoutProvider::Get();
   auto search_bar_layout = std::make_unique<views::BoxLayout>();
   search_bar_layout->SetOrientation(views::LayoutOrientation::kHorizontal);
+  search_bar_layout->set_main_axis_alignment(views::LayoutAlignment::kStretch);
   search_bar_layout->set_cross_axis_alignment(views::LayoutAlignment::kCenter);
 
   auto search_icon =

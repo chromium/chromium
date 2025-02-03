@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/task_manager/task_manager_columns.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"
@@ -100,7 +101,6 @@ TaskManagerView::~TaskManagerView() {
   // Delete child views now, while our table model still exists.
   tabs_ = nullptr;             // Destroyed by `container` below.
   search_bar_ = nullptr;       // Destroyed by `right_aligned_container` below.
-  end_process_btn_ = nullptr;  // Destroyed by `right_aligned_container` below.
   RemoveAllChildViews();
 
   // When the view is destroyed, the lifecycle of the Task Manager is complete.
@@ -294,9 +294,6 @@ void TaskManagerView::GetGroupRange(size_t model_index,
 
 void TaskManagerView::OnSelectionChanged() {
   DialogModelChanged();
-  if (end_process_btn_) {
-    end_process_btn_->SetEnabled(IsEndProcessButtonEnabled());
-  }
 }
 
 void TaskManagerView::OnDoubleClick() {
@@ -448,8 +445,6 @@ std::unique_ptr<views::View> TaskManagerView::CreateHeaderContent(
 
   auto container = std::make_unique<views::View>();
 
-  const int vertical_spacing = provider->GetDistanceMetric(
-      DISTANCE_TASK_MANAGER_HEADER_VERTICAL_SPACING);
   const int horizontal_spacing = provider->GetDistanceMetric(
       DISTANCE_TASK_MANAGER_HEADER_HORIZONTAL_SPACING);
 
@@ -457,50 +452,30 @@ std::unique_ptr<views::View> TaskManagerView::CreateHeaderContent(
       provider->GetDistanceMetric(DISTANCE_TASK_MANAGER_TAB_SPACING);
 
   auto tabs = CreateTabbedPane(
-      /*tab_strip_margin=*/gfx::Insets::TLBR(0, 10, 0, 0),
+      /*tab_strip_margin=*/gfx::Insets::TLBR(0, 0, 0, 0),
       /*title_margin=*/
       gfx::Insets::TLBR(0, views::TabbedPaneTab::kDefaultTitleLeftMargin,
                         horizontal_spacing, 0),
       /*icon_margin=*/gfx::Insets::TLBR(0, 0, horizontal_spacing, 0),
       /*spacing_between_tabs=*/tab_spacing);
 
-  // Empty Container, Search Bar, End Task Button
+  // Empty Container, Search Bar
   auto empty_view = std::make_unique<views::View>();
   empty_view->SetProperty(views::kMarginsKey,
                           gfx::Insets::VH(0, horizontal_spacing));
   auto search_bar_container = CreateSearchBar(provider);
-  auto end_process_btn = CreateEndProcessButton(
-      gfx::Insets::TLBR(0, horizontal_spacing, vertical_spacing, 0));
 
   // Allow empty spacing and the search bar to flex freely.
-  header_layout->SetFlexForView(empty_view.get(), 2);
+  header_layout->SetFlexForView(empty_view.get(), 7);
   header_layout->SetFlexForView(search_bar_container.get(), 3);
 
   // Set the layout manager for the content container to BoxLayout.
   container->SetLayoutManager(std::move(header_layout));
 
-  auto right_aligned_container = std::make_unique<views::View>();
-  right_aligned_container->SetProperty(views::kMarginsKey,
-                                       gfx::Insets::VH(0, horizontal_spacing));
-  // The content_container holds search bar and end process button, so their
-  // layout can be consistent during resizing.
-  auto right_aligned_container_layout = std::make_unique<views::BoxLayout>();
-  right_aligned_container_layout->SetOrientation(
-      views::LayoutOrientation::kHorizontal);
-  right_aligned_container_layout->set_cross_axis_alignment(
-      views::LayoutAlignment::kCenter);
-  right_aligned_container->SetLayoutManager(
-      std::move(right_aligned_container_layout));
-
-  search_bar_ =
-      right_aligned_container->AddChildView(std::move(search_bar_container));
-  end_process_btn_ =
-      right_aligned_container->AddChildView(std::move(end_process_btn));
-
   // Compose all parts into header.
   tabs_ = container->AddChildView(std::move(tabs));
   container->AddChildView(std::move(empty_view));
-  container->AddChildView(std::move(right_aligned_container));
+  search_bar_ = container->AddChildView(std::move(search_bar_container));
 
   return container;
 }
@@ -527,10 +502,6 @@ void TaskManagerView::PerformFilter(DisplayCategory category,
     // Model row count may differ, leading to off-screen row rendering.
     // Recompute scroll position.
     tab_table_->InvalidateLayout();
-
-    // Switch filters means deselecting all processes, so the end process button
-    // should also be disabled.
-    end_process_btn_->SetEnabled(false);
   }
 }
 
@@ -570,7 +541,7 @@ std::unique_ptr<views::View> TaskManagerView::CreateSearchBar(
 
   auto search_bar_layout = std::make_unique<views::BoxLayout>();
   search_bar_layout->SetOrientation(views::LayoutOrientation::kHorizontal);
-  search_bar_layout->set_main_axis_alignment(views::LayoutAlignment::kEnd);
+  search_bar_layout->set_main_axis_alignment(views::LayoutAlignment::kStretch);
   search_bar_layout->set_cross_axis_alignment(views::LayoutAlignment::kEnd);
 
   auto search_bar_container = std::make_unique<views::View>();
@@ -578,8 +549,11 @@ std::unique_ptr<views::View> TaskManagerView::CreateSearchBar(
       kColorTaskManagerSearchBarBackground, search_bar_container_radius));
   search_bar_container->SetLayoutManager(std::move(search_bar_layout));
   search_bar_container->SetProperty(
-      views::kMarginsKey,
-      gfx::Insets::TLBR(0, 0, vertical_spacing, horizontal_spacing));
+      views::kMarginsKey, gfx::Insets::TLBR(0, 0, vertical_spacing, 0));
+  const gfx::Size search_bar_size{
+      provider->GetDistanceMetric(DISTANCE_TASK_MANAGER_SEARCH_BAR_MIN_WIDTH),
+      provider->GetDistanceMetric(DISTANCE_TASK_MANAGER_SEARCH_BAR_MIN_HEIGHT)};
+  search_bar_container->SetPreferredSize(search_bar_size);
 
   auto search_bar = std::make_unique<TaskManagerSearchBarView>(
       l10n_util::GetStringUTF16(IDS_TASK_MANAGER_SEARCH_PLACEHOLDER),
@@ -650,13 +624,9 @@ void TaskManagerView::Init() {
   tab_table->set_context_menu_controller(this);
   set_context_menu_controller(this);
 
-  if (table_config_.dialog_button_disabled) {
-    SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
-  } else {
-    SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk));
-    SetButtonLabel(ui::mojom::DialogButton::kOk,
-                   l10n_util::GetStringUTF16(IDS_TASK_MANAGER_KILL));
-  }
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk));
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
+                 l10n_util::GetStringUTF16(IDS_TASK_MANAGER_KILL));
 
   if (table_config_.header_style) {
     views::TableHeaderStyle header_style = {

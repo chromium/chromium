@@ -116,6 +116,10 @@ enum ChromeDistanceMetric {
   DISTANCE_TASK_MANAGER_SEARCH_ICON_SIZE,
   // Horizontal spacing between each category tab (e.g. Tabs, System, ...)
   DISTANCE_TASK_MANAGER_TAB_SPACING,
+  // The minimum width for the search bar found in Task Manager.
+  DISTANCE_TASK_MANAGER_SEARCH_BAR_MIN_WIDTH,
+  // The minimum height for the search bar found in Task Manager.
+  DISTANCE_TASK_MANAGER_SEARCH_BAR_MIN_HEIGHT,
   // Distance between most child elements inside the toast.
   DISTANCE_TOAST_BUBBLE_BETWEEN_CHILD_SPACING,
   // Distance between the toast label and action button.

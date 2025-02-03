@@ -177,6 +177,10 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
       return 20;
     case DISTANCE_TASK_MANAGER_TAB_SPACING:
       return 16;
+    case DISTANCE_TASK_MANAGER_SEARCH_BAR_MIN_WIDTH:
+      return 160;
+    case DISTANCE_TASK_MANAGER_SEARCH_BAR_MIN_HEIGHT:
+      return 36;
     case DISTANCE_TOAST_BUBBLE_BETWEEN_CHILD_SPACING:
     case DISTANCE_TOAST_BUBBLE_BROWSER_WINDOW_MARGIN:
       return 4;
