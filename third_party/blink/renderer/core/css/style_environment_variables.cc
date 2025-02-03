@@ -11,7 +11,8 @@ namespace blink {
 
 namespace {
 
-// This is the default value for all safe-area-inset-* variables.
+// This is the default value for all safe-area-inset-* and safe-area-max-inset-*
+// variables.
 static const char kSafeAreaInsetDefault[] = "0px";
 // This is the default value for all keyboard-inset-* variables.
 static const char kKeyboardInsetDefault[] = "0px";
@@ -27,6 +28,16 @@ void SetDefaultEnvironmentVariables(StyleEnvironmentVariables* instance) {
                         kSafeAreaInsetDefault);
   instance->SetVariable(UADefinedVariable::kSafeAreaInsetRight,
                         kSafeAreaInsetDefault);
+  if (RuntimeEnabledFeatures::CSSSafeAreaMaxInsetEnabled()) {
+    instance->SetVariable(UADefinedVariable::kSafeAreaMaxInsetTop,
+                          kSafeAreaInsetDefault);
+    instance->SetVariable(UADefinedVariable::kSafeAreaMaxInsetLeft,
+                          kSafeAreaInsetDefault);
+    instance->SetVariable(UADefinedVariable::kSafeAreaMaxInsetBottom,
+                          kSafeAreaInsetDefault);
+    instance->SetVariable(UADefinedVariable::kSafeAreaMaxInsetRight,
+                          kSafeAreaInsetDefault);
+  }
   instance->SetVariable(UADefinedVariable::kKeyboardInsetTop,
                         kKeyboardInsetDefault);
   instance->SetVariable(UADefinedVariable::kKeyboardInsetLeft,
@@ -67,6 +78,14 @@ const AtomicString StyleEnvironmentVariables::GetVariableName(
       return AtomicString("safe-area-inset-bottom");
     case UADefinedVariable::kSafeAreaInsetRight:
       return AtomicString("safe-area-inset-right");
+    case UADefinedVariable::kSafeAreaMaxInsetTop:
+      return AtomicString("safe-area-max-inset-top");
+    case UADefinedVariable::kSafeAreaMaxInsetLeft:
+      return AtomicString("safe-area-max-inset-left");
+    case UADefinedVariable::kSafeAreaMaxInsetBottom:
+      return AtomicString("safe-area-max-inset-bottom");
+    case UADefinedVariable::kSafeAreaMaxInsetRight:
+      return AtomicString("safe-area-max-inset-right");
     case UADefinedVariable::kKeyboardInsetTop:
       return AtomicString("keyboard-inset-top");
     case UADefinedVariable::kKeyboardInsetLeft:
