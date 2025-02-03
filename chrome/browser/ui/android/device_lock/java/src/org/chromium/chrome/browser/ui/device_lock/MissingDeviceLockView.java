@@ -78,10 +78,15 @@ public class MissingDeviceLockView extends LinearLayout {
         mButtonBar.addView(mCreateDeviceLockButton);
 
         ImageView illustration = findViewById(R.id.missing_device_lock_illustration);
+        MarginLayoutParams illustrationParams = (MarginLayoutParams) illustration.getLayoutParams();
         int illustrationTopMargin;
 
         if (SigninFeatureMap.isEnabled(SigninFeatures.UNO_FOR_AUTO)) {
             illustration.setBackgroundColor(Color.TRANSPARENT);
+            illustrationParams.height =
+                    getContext()
+                            .getResources()
+                            .getDimensionPixelSize(R.dimen.device_lock_dialog_illustration_height);
             illustrationTopMargin =
                     getContext()
                             .getResources()
@@ -98,7 +103,6 @@ public class MissingDeviceLockView extends LinearLayout {
             illustrationTopMargin = 0;
             mButtonBar.setAlignment(DualControlLayout.DualControlLayoutAlignment.APART);
         }
-        MarginLayoutParams illustrationParams = (MarginLayoutParams) illustration.getLayoutParams();
         illustrationParams.setMargins(
                 illustrationParams.leftMargin,
                 illustrationTopMargin,
