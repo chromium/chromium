@@ -2560,10 +2560,11 @@ deps = {
         'output_file': 'scroll_m132_with_atrace.pftrace'
       },
       {
-        "object_name": "test_data/scroll_m133beta.pftrace-2acc70545be1caeb3fb43218ab52872c2c749b49577b973cb8400057c680fc19",
-        "sha256sum": "2acc70545be1caeb3fb43218ab52872c2c749b49577b973cb8400057c680fc19",
-        "size_bytes": 1448694,
-        "generation": 1738338471679054
+        'object_name': 'test_data/scroll_m133beta.pftrace-2acc70545be1caeb3fb43218ab52872c2c749b49577b973cb8400057c680fc19',
+        'sha256sum': '2acc70545be1caeb3fb43218ab52872c2c749b49577b973cb8400057c680fc19',
+        'size_bytes': 1448694,
+        'generation': 1738338471679054,
+        'output_file': 'scroll_m133beta.pftrace'
       },
       {
         'object_name': 'test_data/scroll_with_input_not_forwarded_to_renderer.pftrace-ceb2ff3cb64c99ddb28a29867bc82f1491c4b413bfacd8638551b80936240faf',
