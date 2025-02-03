@@ -136,7 +136,7 @@ PageInfoBubbleView::PageInfoBubbleView(
     const GURL& url,
     base::OnceClosure initialized_callback,
     PageInfoClosingCallback closing_callback,
-    bool allow_about_this_site)
+    bool allow_extended_site_info)
     : PageInfoBubbleViewBase(anchor_view,
                              anchor_rect,
                              parent_window,
@@ -163,7 +163,7 @@ PageInfoBubbleView::PageInfoBubbleView(
   }
   view_factory_ = std::make_unique<PageInfoViewFactory>(
       presenter_.get(), ui_delegate_.get(), this, history_controller_.get(),
-      allow_about_this_site);
+      allow_extended_site_info);
 
   SetShowTitle(false);
   SetShowCloseButton(false);
@@ -201,7 +201,7 @@ views::BubbleDialogDelegateView* PageInfoBubbleView::CreatePageInfoBubble(
     const GURL& url,
     base::OnceClosure initialized_callback,
     PageInfoClosingCallback closing_callback,
-    bool allow_about_this_site,
+    bool allow_extended_site_info,
     std::optional<ContentSettingsType> type,
     bool open_merchant_trust_page) {
   DCHECK(web_contents);
@@ -217,7 +217,7 @@ views::BubbleDialogDelegateView* PageInfoBubbleView::CreatePageInfoBubble(
   PageInfoBubbleView* bubble = new PageInfoBubbleView(
       anchor_view, anchor_rect, parent_view, web_contents, url,
       std::move(initialized_callback), std::move(closing_callback),
-      allow_about_this_site);
+      allow_extended_site_info);
   if (type) {
     CHECK(!open_merchant_trust_page);
     bubble->OpenPermissionPage(*type);
@@ -378,7 +378,7 @@ void ShowPageInfoDialogImpl(Browser* browser,
       PageInfoBubbleView::CreatePageInfoBubble(
           configuration.anchor_view, anchor_rect, parent_window, web_contents,
           virtual_url, std::move(initialized_callback),
-          std::move(closing_callback), /*allow_about_this_site=*/true, type);
+          std::move(closing_callback), /*allow_extended_site_info=*/true, type);
   bubble->SetHighlightedButton(configuration.highlighted_button);
   bubble->SetArrow(configuration.bubble_arrow);
   bubble->GetWidget()->Show();

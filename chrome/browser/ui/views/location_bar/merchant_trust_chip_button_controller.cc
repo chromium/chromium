@@ -174,7 +174,7 @@ void MerchantTrustChipButtonController::OpenPageInfoSubpage() {
           chip_button_->GetWidget()->GetNativeWindow(), web_contents(),
           entry->GetVirtualURL(), std::move(initialized_callback),
           base::DoNothing(),
-          /*allow_about_this_site=*/true, std::nullopt, true);
+          /*allow_extended_site_info=*/true, std::nullopt, true);
   bubble->SetHighlightedButton(chip_button_);
   bubble->GetWidget()->Show();
 }

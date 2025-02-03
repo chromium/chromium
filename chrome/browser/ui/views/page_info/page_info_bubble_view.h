@@ -42,7 +42,7 @@ class PageInfoBubbleView : public PageInfoBubbleViewBase,
       const GURL& url,
       base::OnceClosure initialized_callback,
       PageInfoClosingCallback closing_callback,
-      bool allow_about_this_site,
+      bool allow_extended_site_info,
       std::optional<ContentSettingsType> type = std::nullopt,
       bool open_merchant_trust_page = false);
 
@@ -69,7 +69,7 @@ class PageInfoBubbleView : public PageInfoBubbleViewBase,
                      const GURL& url,
                      base::OnceClosure initialized_callback,
                      PageInfoClosingCallback closing_callback,
-                     bool allow_about_this_site);
+                     bool allow_extended_site_info);
 
   // PageInfoBubbleViewBase:
   gfx::Size CalculatePreferredSize(
