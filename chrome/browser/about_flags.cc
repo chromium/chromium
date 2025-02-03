@@ -9616,14 +9616,6 @@ const FeatureEntry kFeatureEntries[] = {
      PLATFORM_FEATURE_NAME_TYPE("CrOSLateBootMediaDynamicCgroup")},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-    {"autofill-parse-vcn-card-on-file-standalone-cvc-fields",
-     flag_descriptions::kAutofillParseVcnCardOnFileStandaloneCvcFieldsName,
-     flag_descriptions::
-         kAutofillParseVcnCardOnFileStandaloneCvcFieldsDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillParseVcnCardOnFileStandaloneCvcFields)},
-
     {"background-resource-fetch",
      flag_descriptions::kBackgroundResourceFetchName,
      flag_descriptions::kBackgroundResourceFetchDescription, kOsAll,

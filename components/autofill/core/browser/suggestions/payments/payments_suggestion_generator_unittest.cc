@@ -3075,8 +3075,6 @@ TEST_F(
 TEST_F(
     PaymentsSuggestionGeneratorTest,
     GetCreditCardOrCvcFieldSuggestions_GetVirtualCreditCardsForStandaloneCvcField) {
-  base::test::ScopedFeatureList feature(
-      features::kAutofillParseVcnCardOnFileStandaloneCvcFields);
 
   // Set up virtual card usage data and credit cards.
   payments_data().ClearCreditCards();
@@ -3418,15 +3416,13 @@ class CvcStorageAndFillingStandaloneFormEnhancementTest
       scoped_feature_list_.InitWithFeatures(
           /*enabled_features=*/
           {features::kAutofillEnableCvcStorageAndFillingEnhancement,
-           features::kAutofillParseVcnCardOnFileStandaloneCvcFields,
            features::
                kAutofillEnableCvcStorageAndFillingStandaloneFormEnhancement},
           /*disabled_features=*/{});
     } else {
       scoped_feature_list_.InitWithFeatures(
           /*enabled_features=*/
-          {features::kAutofillEnableCvcStorageAndFillingEnhancement,
-           features::kAutofillParseVcnCardOnFileStandaloneCvcFields},
+          {features::kAutofillEnableCvcStorageAndFillingEnhancement},
           /*disabled_features=*/
           {features::
                kAutofillEnableCvcStorageAndFillingStandaloneFormEnhancement});

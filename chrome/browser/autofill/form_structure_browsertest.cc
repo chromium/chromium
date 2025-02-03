@@ -212,8 +212,6 @@ FormStructureBrowserTest::FormStructureBrowserTest()
           features::kAutofillFixValueSemantics,
           // TODO(crbug.com/40741721): Remove once shared labels are launched.
           features::kAutofillEnableSupportForParsingWithSharedLabels,
-          // TODO(crbug.com/40230674): Remove once launched.
-          features::kAutofillParseVcnCardOnFileStandaloneCvcFields,
           // TODO(crbug.com/40266396): Remove once launched.
           features::kAutofillEnableExpirationDateImprovements,
           features::kAutofillUseITAddressModel,

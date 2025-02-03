@@ -1631,13 +1631,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kMetrickitNonCrashReportName,
      flag_descriptions::kMetrickitNonCrashReportDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kMetrickitNonCrashReport)},
-    {"autofill-parse-vcn-card-on-file-standalone-cvc-fields",
-     flag_descriptions::kAutofillParseVcnCardOnFileStandaloneCvcFieldsName,
-     flag_descriptions::
-         kAutofillParseVcnCardOnFileStandaloneCvcFieldsDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillParseVcnCardOnFileStandaloneCvcFields)},
     {"default-browser-banner-promo",
      flag_descriptions::kDefaultBrowserBannerPromoName,
      flag_descriptions::kDefaultBrowserBannerPromoDescription, flags_ui::kOsIos,

@@ -26,8 +26,6 @@ class VirtualCardStandaloneCvcMetricsTest : public AutofillMetricsBaseTest,
   const CreditCard& card() const { return card_; }
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kAutofillParseVcnCardOnFileStandaloneCvcFields);
     SetUpHelper();
 
     // Add a virtual card.

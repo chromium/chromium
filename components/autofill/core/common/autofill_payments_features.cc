@@ -234,15 +234,6 @@ BASE_FEATURE(kAutofillEnableVirtualCardMetadata,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-// When enabled, Autofill will attempt to find standalone CVC fields for VCN
-// card on file when parsing forms.
-BASE_FEATURE(kAutofillParseVcnCardOnFileStandaloneCvcFields,
-             "AutofillParseVcnCardOnFileStandaloneCvcFields",
-#if BUILDFLAG(IS_IOS)
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#else
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
 
 // When enabled, the "Show cards from your Google Account" Autofill suggestion
 // will not be displayed, and Autofill will work as if it had been selected.

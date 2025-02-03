@@ -139,12 +139,6 @@ const char kAutofillIsolatedWorldForJavascriptIOSDescription[] =
     "Use the isolated content world instead of the page content world "
     "for the Autofill JS feature scripts.";
 
-const char kAutofillParseVcnCardOnFileStandaloneCvcFieldsName[] =
-    "Parse standalone CVC fields for VCN card on file in forms";
-const char kAutofillParseVcnCardOnFileStandaloneCvcFieldsDescription[] =
-    "When enabled, Autofill will attempt to find standalone CVC fields for VCN "
-    "card on file when parsing forms.";
-
 const char kAutofillPaymentsSheetV2Name[] =
     "Enable the payments suggestion bottom sheet V2";
 const char kAutofillPaymentsSheetV2Description[] =

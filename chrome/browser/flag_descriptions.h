@@ -439,9 +439,6 @@ extern const char kAutofillEnableVirtualCardMetadataDescription[];
 extern const char kAutofillImprovedLabelsName[];
 extern const char kAutofillImprovedLabelsDescription[];
 
-extern const char kAutofillParseVcnCardOnFileStandaloneCvcFieldsName[];
-extern const char kAutofillParseVcnCardOnFileStandaloneCvcFieldsDescription[];
-
 extern const char kAutofillRemovePaymentsButterDropdownName[];
 extern const char kAutofillRemovePaymentsButterDropdownDescription[];
 

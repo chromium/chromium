@@ -111,11 +111,6 @@ extern const char kAutofillEnableVerveCardSupportDescription[];
 extern const char kAutofillIsolatedWorldForJavascriptIOSName[];
 extern const char kAutofillIsolatedWorldForJavascriptIOSDescription[];
 
-// Title and description for the flag to parse standalone CVC fields for VCN
-// card on file in Autofill.
-extern const char kAutofillParseVcnCardOnFileStandaloneCvcFieldsName[];
-extern const char kAutofillParseVcnCardOnFileStandaloneCvcFieldsDescription[];
-
 // Title and description for the flag to enable the V2 of the Autofill Payments
 // Sheet.
 extern const char kAutofillPaymentsSheetV2Name[];

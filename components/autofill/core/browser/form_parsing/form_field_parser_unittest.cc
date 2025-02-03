@@ -231,9 +231,6 @@ TEST_F(FormFieldParserTest, ParseSingleFieldsIban) {
 
 // Test that `ParseStandaloneCvcField` parses standalone CVC fields.
 TEST_F(FormFieldParserTest, ParseStandaloneCVCFields) {
-  base::test::ScopedFeatureList scoped_feature(
-      features::kAutofillParseVcnCardOnFileStandaloneCvcFields);
-
   AddTextFormFieldData("", "CVC", CREDIT_CARD_STANDALONE_VERIFICATION_CODE);
   EXPECT_EQ(1, ParseStandaloneCVCFields());
   TestClassificationExpectations();

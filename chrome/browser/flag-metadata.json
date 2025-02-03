@@ -765,11 +765,6 @@
     "expiry_milestone": 123
   },
   {
-    "name": "autofill-parse-vcn-card-on-file-standalone-cvc-fields",
-    "owners": [ "alexandertekle@google.com", "jsaul@google.com"],
-    "expiry_milestone": 135
-  },
-  {
     "name": "autofill-payments-sheet-v2",
     "owners": [ "vincb@google.com", "bling-transactions@google.com" ],
     "expiry_milestone": 135
