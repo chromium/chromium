@@ -16,9 +16,7 @@ extern NSString* const kDataFromChromeSyncAccessibilityIdentifier;
 extern NSString* const kManageSyncTableViewAccessibilityIdentifier;
 
 // Accessibility identifiers for sync switch items.
-extern NSString* const kSyncEverythingItemAccessibilityIdentifier;
 extern NSString* const kSyncBookmarksIdentifier;
-extern NSString* const kSyncOmniboxHistoryIdentifier;
 extern NSString* const kSyncHistoryAndTabsIdentifier;
 extern NSString* const kSyncPasswordsIdentifier;
 extern NSString* const kSyncPaymentsIdentifier;
@@ -59,10 +57,8 @@ typedef NS_ENUM(NSInteger, SyncSettingsSectionIdentifier) {
 // Types are used to uniquely identify SyncSwitchItem items.
 typedef NS_ENUM(NSInteger, SyncSettingsItemType) {
   // SyncDataTypeSectionIdentifier section.
-  // Sync everything item.
-  SyncEverythingItemType = kItemTypeEnumZero,
   // kSyncAutofill.
-  AutofillDataTypeItemType,
+  AutofillDataTypeItemType = kItemTypeEnumZero,
   // kSyncBookmarks.
   BookmarksDataTypeItemType,
   // kSyncOmniboxHistory.
@@ -80,8 +76,6 @@ typedef NS_ENUM(NSInteger, SyncSettingsItemType) {
   // Item for the header and the footer of the types list.
   TypesListHeaderOrFooterType,
   // ManageAndSignOutSectionIdentifier section.
-  // Sign out and turn off sync item,
-  SignOutAndTurnOffSyncItemType,
   // Sign out item.
   SignOutItemType,
   // Sign out item footer.
