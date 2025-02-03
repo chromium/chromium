@@ -63,7 +63,6 @@
 #import "ios/chrome/browser/ntp/ui_bundled/feed_sign_in_promo_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/feed_top_section/feed_top_section_coordinator.h"
 #import "ios/chrome/browser/ntp/ui_bundled/feed_wrapper_view_controller.h"
-#import "ios/chrome/browser/ntp/ui_bundled/following_feed_overlay/following_feed_overlay_coordinator.h"
 #import "ios/chrome/browser/ntp/ui_bundled/home_start_data_source.h"
 #import "ios/chrome/browser/ntp/ui_bundled/incognito/incognito_view_controller.h"
 #import "ios/chrome/browser/ntp/ui_bundled/logo_vendor.h"
@@ -286,8 +285,6 @@
   BOOL _showAccountMenuInProgress;
   // Whether the signin menu is displayed on top of this NTP.
   BOOL _showSigninCommandInProgress;
-  // The coordinator to control the overlay modal for the following feed.
-  FollowingFeedOverlayCoordinator* _followingFeedOverlayCoordinator;
 }
 
 // Synthesize NewTabPageConfiguring properties.
@@ -688,11 +685,6 @@
   self.feedMetricsRecorder =
       [componentFactory feedMetricsRecorderForBrowser:browser];
   self.NTPMetricsRecorder = [[NewTabPageMetricsRecorder alloc] init];
-  if (IsNewFollowingFeedEntryPointsEnabled()) {
-    _followingFeedOverlayCoordinator = [[FollowingFeedOverlayCoordinator alloc]
-        initWithBaseViewController:self.NTPViewController
-                           browser:browser];
-  }
 }
 
 #pragma mark - Configurators
@@ -748,10 +740,6 @@
   // always be below the block that sets `feedViewController`.
   if ([self isFeedVisible]) {
     self.feedTopSectionCoordinator = [self createFeedTopSectionCoordinator];
-  }
-
-  if (IsNewFollowingFeedEntryPointsEnabled()) {
-    _followingFeedOverlayCoordinator.feedControlDelegate = self;
   }
 }
 
@@ -1065,15 +1053,6 @@
   // Saves scroll position before changing feed.
   CGFloat scrollPosition = [self.NTPViewController scrollPosition];
 
-  if (IsNewFollowingFeedEntryPointsEnabled()) {
-    if (self.selectedFeed == FeedTypeFollowing) {
-      _followingFeedOverlayCoordinator.animatePresentation = YES;
-      [_followingFeedOverlayCoordinator start];
-    } else {
-      [_followingFeedOverlayCoordinator stop];
-    }
-    return;
-  }
   [self handleChangeInModules];
 
   // Scroll position resets when changing the feed, so we set it back to what it
