@@ -2,12 +2,9 @@ syntax = "proto2";
 
 package remoting.apis.v1;
 
-option optimize_for = LITE_RUNTIME;
+import "duration.proto";
 
-message Duration {
-  optional int64 seconds = 1;
-  optional int32 nanos = 2;
-}
+option optimize_for = LITE_RUNTIME;
 
 // Requests ICE Server configuration for establishing a P2P connection.
 message GetIceConfigRequest {}

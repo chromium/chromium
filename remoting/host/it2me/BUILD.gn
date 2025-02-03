@@ -149,15 +149,13 @@ if (is_chromeos) {
       "//extensions/browser/api/messaging:native_messaging",
       "//remoting/base:base",
       "//remoting/host:common",
+      "//remoting/host:enterprise_params",
       "//remoting/host/chromeos:browser_interop",
-      "//remoting/host/chromeos:enterprise_support",
       "//remoting/host/chromeos:features",
       "//remoting/host/mojom:mojom",
       "//remoting/host/native_messaging",
       "//skia",
     ]
-
-    public_deps = [ ":constants" ]
 
     if (use_ozone) {
       deps += [ "//ui/ozone" ]

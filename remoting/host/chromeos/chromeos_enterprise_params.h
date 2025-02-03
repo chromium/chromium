@@ -5,12 +5,21 @@
 #ifndef REMOTING_HOST_CHROMEOS_CHROMEOS_ENTERPRISE_PARAMS_H_
 #define REMOTING_HOST_CHROMEOS_CHROMEOS_ENTERPRISE_PARAMS_H_
 
+#include "base/time/time.h"
+
 namespace remoting {
 
 // ChromeOS enterprise specific parameters.
 // These parameters are not exposed through the public Mojom APIs, for security
 // reasons.
 struct ChromeOsEnterpriseParams {
+  ChromeOsEnterpriseParams();
+
+  ChromeOsEnterpriseParams(const ChromeOsEnterpriseParams& other);
+  ChromeOsEnterpriseParams& operator=(const ChromeOsEnterpriseParams& other);
+
+  ~ChromeOsEnterpriseParams();
+
   // Local machine configuration.
   bool suppress_user_dialogs = false;
   bool suppress_notifications = false;
@@ -22,6 +31,8 @@ struct ChromeOsEnterpriseParams {
   bool allow_troubleshooting_tools = false;
   bool allow_reconnections = false;
   bool allow_file_transfer = false;
+  bool connection_dialog_required = false;
+  base::TimeDelta connection_auto_accept_timeout;
 };
 
 }  // namespace remoting

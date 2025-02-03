@@ -948,7 +948,9 @@ TEST_F(It2MeHostTest, StartHost_DoesNotUseCorpSessionAuthz) {
 
 #if BUILDFLAG(IS_CHROMEOS)
 TEST_F(It2MeHostTest, ConnectRespectsSuppressDialogsParameter) {
-  StartHost(ChromeOsEnterpriseParams{.suppress_user_dialogs = true});
+  ChromeOsEnterpriseParams params;
+  params.suppress_user_dialogs = true;
+  StartHost(std::move(params));
 
   EXPECT_FALSE(dialog_factory_->dialog_created());
   EXPECT_FALSE(
@@ -956,14 +958,18 @@ TEST_F(It2MeHostTest, ConnectRespectsSuppressDialogsParameter) {
 }
 
 TEST_F(It2MeHostTest, ConnectRespectsSuppressNotificationsParameter) {
-  StartHost(ChromeOsEnterpriseParams{.suppress_notifications = true});
+  ChromeOsEnterpriseParams params;
+  params.suppress_notifications = true;
+  StartHost(std::move(params));
 
   EXPECT_FALSE(dialog_factory_->dialog_created());
   EXPECT_FALSE(GetHost()->desktop_environment_options().enable_notifications());
 }
 
 TEST_F(It2MeHostTest, ConnectRespectsTerminateUponInputParameter) {
-  StartHost(ChromeOsEnterpriseParams{.terminate_upon_input = true});
+  ChromeOsEnterpriseParams params;
+  params.terminate_upon_input = true;
+  StartHost(std::move(params));
 
   EXPECT_TRUE(GetHost()->desktop_environment_options().terminate_upon_input());
 }
@@ -975,7 +981,9 @@ TEST_F(It2MeHostTest, TerminateUponInputDefaultsToFalse) {
 }
 
 TEST_F(It2MeHostTest, ConnectRespectsEnableCurtainingParameter) {
-  StartHost(ChromeOsEnterpriseParams{.curtain_local_user_session = true});
+  ChromeOsEnterpriseParams params;
+  params.curtain_local_user_session = true;
+  StartHost(std::move(params));
 
   EXPECT_TRUE(*get_local_session_policies().curtain_required);
 }
@@ -990,7 +998,9 @@ TEST_F(It2MeHostTest, AllowEnterpriseFileTransferWithPolicyEnabled) {
   SetPolicies({{policy::key::kRemoteAccessHostAllowEnterpriseFileTransfer,
                 base::Value(true)}});
 
-  StartHost(ChromeOsEnterpriseParams{.allow_file_transfer = true});
+  ChromeOsEnterpriseParams params;
+  params.allow_file_transfer = true;
+  StartHost(std::move(params));
 
   EXPECT_TRUE(*get_local_session_policies().allow_file_transfer);
 }
@@ -999,7 +1009,9 @@ TEST_F(It2MeHostTest, AllowEnterpriseFileTransferWithPolicyDisabled) {
   SetPolicies({{policy::key::kRemoteAccessHostAllowEnterpriseFileTransfer,
                 base::Value(false)}});
 
-  StartHost(ChromeOsEnterpriseParams{.allow_file_transfer = true});
+  ChromeOsEnterpriseParams params;
+  params.allow_file_transfer = true;
+  StartHost(std::move(params));
 
   EXPECT_FALSE(*get_local_session_policies().allow_file_transfer);
 }
@@ -1017,7 +1029,9 @@ TEST_F(It2MeHostTest,
 TEST_F(It2MeHostTest, AllowEnterpriseFileTransferWithPolicyNotSet) {
   SetPolicies({});
 
-  StartHost(ChromeOsEnterpriseParams{.allow_file_transfer = true});
+  ChromeOsEnterpriseParams params;
+  params.allow_file_transfer = true;
+  StartHost(std::move(params));
 
   EXPECT_FALSE(*get_local_session_policies().allow_file_transfer);
 }

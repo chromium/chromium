@@ -109,22 +109,25 @@ bool IsValidEmailAddress(const std::string& email) {
 #if BUILDFLAG(IS_CHROMEOS) || !defined(NDEBUG)
 ChromeOsEnterpriseParams BuildEnterpriseParams(
     const base::Value::Dict& message) {
-  return {.suppress_user_dialogs =
-              message.FindBool(kSuppressUserDialogs).value_or(false),
-          .suppress_notifications =
-              message.FindBool(kSuppressNotifications).value_or(false),
-          .terminate_upon_input =
-              message.FindBool(kTerminateUponInput).value_or(false),
-          .curtain_local_user_session =
-              message.FindBool(kCurtainLocalUserSession).value_or(false),
-          .show_troubleshooting_tools =
-              message.FindBool(kShowTroubleshootingTools).value_or(false),
-          .allow_troubleshooting_tools =
-              message.FindBool(kAllowTroubleshootingTools).value_or(false),
-          .allow_reconnections =
-              message.FindBool(kAllowReconnections).value_or(false),
-          .allow_file_transfer =
-              message.FindBool(kAllowFileTransfer).value_or(false)};
+  ChromeOsEnterpriseParams params;
+  params.suppress_user_dialogs =
+      message.FindBool(kSuppressUserDialogs).value_or(false);
+  params.suppress_notifications =
+      message.FindBool(kSuppressNotifications).value_or(false);
+  params.terminate_upon_input =
+      message.FindBool(kTerminateUponInput).value_or(false);
+  params.curtain_local_user_session =
+      message.FindBool(kCurtainLocalUserSession).value_or(false);
+  params.show_troubleshooting_tools =
+      message.FindBool(kShowTroubleshootingTools).value_or(false);
+  params.allow_troubleshooting_tools =
+      message.FindBool(kAllowTroubleshootingTools).value_or(false);
+  params.allow_reconnections =
+      message.FindBool(kAllowReconnections).value_or(false);
+  params.allow_file_transfer =
+      message.FindBool(kAllowFileTransfer).value_or(false);
+  // TODO: joedow - Add new enterprise fields.
+  return params;
 }
 #endif
 
