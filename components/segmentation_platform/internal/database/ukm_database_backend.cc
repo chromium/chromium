@@ -114,8 +114,8 @@ UkmDatabaseBackend::UkmDatabaseBackend(
     : database_path_(database_path),
       in_memory_(in_memory),
       callback_task_runner_(callback_task_runner),
-      db_(sql::DatabaseOptions{.wal_mode = base::FeatureList::IsEnabled(
-                                   kSqlWALModeOnSegmentationDatabase)},
+      db_(sql::DatabaseOptions().set_wal_mode(
+              base::FeatureList::IsEnabled(kSqlWALModeOnSegmentationDatabase)),
           /*tag=*/"UKMMetrics"),
       metrics_table_(&db_),
       url_table_(&db_),

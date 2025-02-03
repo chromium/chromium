@@ -278,9 +278,9 @@ DEFINE_PROTO_FUZZER(const sql_fuzzers::RecoveryFuzzerTestCase& fuzzer_input) {
     std::cout << test_case;
   }
 
-  sql::DatabaseOptions database_options;
-  database_options.wal_mode = test_case.wal_mode();
-  sql::Database database(database_options, sql::test::kTestTag);
+  sql::Database database(
+      sql::DatabaseOptions().set_wal_mode(test_case.wal_mode()),
+      sql::test::kTestTag);
   CHECK(database.Open(env.db_path()));
 
   // Bootstrap the database with SQL queries derived from `fuzzer_input`.

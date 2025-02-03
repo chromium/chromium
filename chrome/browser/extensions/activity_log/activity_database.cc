@@ -39,14 +39,13 @@ static const int kSizeThresholdForFlush = 200;
 
 ActivityDatabase::ActivityDatabase(ActivityDatabase::Delegate* delegate)
     : delegate_(delegate),
-      db_(
-          {
-              .page_size = 4096,
-              .cache_size = 32,
+      db_(sql::DatabaseOptions()
+              .set_page_size(4096)
+              .set_cache_size(32)
               // TODO(pwnall): Add a meta table and remove this option.
-              .mmap_alt_status_discouraged = true,
-              .enable_views_discouraged = true,  // Required by mmap_alt_status.
-          },
+              .set_mmap_alt_status_discouraged(true)
+              .set_enable_views_discouraged(
+                  true),  // Required by mmap_alt_status.
           /*tag=*/"Activity"),
       valid_db_(false),
       batch_mode_(true),

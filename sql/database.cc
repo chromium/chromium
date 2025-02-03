@@ -218,6 +218,9 @@ void RecordOpenDatabaseFailureReason(const std::string& histogram_tag,
 
 }  // namespace
 
+DatabaseOptions::DatabaseOptions() = default;
+DatabaseOptions::~DatabaseOptions() = default;
+
 // static
 Database::ScopedErrorExpecterCallback* Database::current_expecter_cb_ = nullptr;
 
@@ -351,12 +354,12 @@ Database::Database(DatabaseOptions options, Database::Tag tag)
       mmap_disabled_(!enable_mmap_by_default_),
       histogram_tag_(tag.value),
       tracing_track_name_(base::StrCat({"Database: ", histogram_tag_})) {
-  DCHECK_GE(options.page_size, 512);
-  DCHECK_LE(options.page_size, 65536);
-  DCHECK(!(options.page_size & (options.page_size - 1)))
+  DCHECK_GE(options.page_size_, 512);
+  DCHECK_LE(options.page_size_, 65536);
+  DCHECK(!(options.page_size_ & (options.page_size_ - 1)))
       << "page_size must be a power of two";
-  DCHECK(!options_.mmap_alt_status_discouraged ||
-         options_.enable_views_discouraged)
+  DCHECK(!options_.mmap_alt_status_discouraged_ ||
+         options_.enable_views_discouraged_)
       << "mmap_alt_status requires views";
 
   // It's valid to construct a database on a sequence and then pass it to a
@@ -513,7 +516,7 @@ void Database::Preload() {
     return;
   }
 
-  CHECK(!options_.exclusive_database_file_lock)
+  CHECK(!options_.exclusive_database_file_lock_)
       << "Cannot preload an exclusively locked database.";
 
   std::optional<base::ScopedBlockingCall> scoped_blocking_call;
@@ -882,7 +885,7 @@ size_t Database::ComputeMmapSizeForOpen() {
   // sql::MetaTable, otherwise it is tracked in a special view.
   // TODO(pwnall): Migrate all databases to using a meta table.
   int64_t mmap_ofs = 0;
-  if (options_.mmap_alt_status_discouraged) {
+  if (options_.mmap_alt_status_discouraged_) {
     if (!GetMmapAltStatus(&mmap_ofs)) {
       return 0;
     }
@@ -973,7 +976,7 @@ size_t Database::ComputeMmapSizeForOpen() {
         DCHECK(mmap_ofs > 0 || mmap_ofs == MetaTable::kMmapFailure);
       }
 
-      if (options_.mmap_alt_status_discouraged) {
+      if (options_.mmap_alt_status_discouraged_) {
         if (!SetMmapAltStatus(mmap_ofs)) {
           return 0;
         }
@@ -1099,13 +1102,11 @@ bool Database::Raze() {
     return false;
   }
 
-  sql::Database null_db(
-      sql::DatabaseOptions{
-          .exclusive_locking = true,
-          .page_size = options_.page_size,
-          .cache_size = 0,
-          .enable_views_discouraged = options_.enable_views_discouraged,
-      },
+  Database null_db(
+      DatabaseOptions()
+          .set_exclusive_locking(true)
+          .set_page_size(options_.page_size_)
+          .set_enable_views_discouraged(options_.enable_views_discouraged_),
       "RazeNullDB");
   if (!null_db.OpenInMemory()) {
     DLOG(FATAL) << "Unable to open in-memory database.";
@@ -1189,7 +1190,7 @@ bool Database::Raze() {
     // database connection open.
     std::ignore = Execute("PRAGMA journal_mode=TRUNCATE;");
     const std::string page_size_sql = base::StrCat(
-        {"PRAGMA page_size=", base::NumberToString(options_.page_size)});
+        {"PRAGMA page_size=", base::NumberToString(options_.page_size_)});
     if (!Execute(page_size_sql)) {
       return false;
     }
@@ -1989,7 +1990,7 @@ bool Database::OpenInternal(const std::string& db_file_path) {
   int open_flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE |
                    SQLITE_OPEN_EXRESCODE | SQLITE_OPEN_PRIVATECACHE;
   std::string uri_file_path = db_file_path;
-  if (options_.exclusive_database_file_lock) {
+  if (options_.exclusive_database_file_lock_) {
 #if BUILDFLAG(IS_WIN)
     const bool in_memory = db_file_path == kSqliteOpenInMemoryPath;
     if (!in_memory) {
@@ -2026,7 +2027,7 @@ bool Database::OpenInternal(const std::string& db_file_path) {
     for (int i = 1; i <= kMaxOpenAttempts; ++i) {
       sqlite_result_code = ToSqliteResultCode(
           sqlite3_open_v2(uri_file_path.c_str(), &db, open_flags,
-                          options_.vfs_name_discouraged));
+                          options_.vfs_name_discouraged_));
       if (sqlite_result_code != sql::SqliteResultCode::kBusy) {
         // Record how many iterations were required to open the database. The
         // histogram is not emitted if sqlite3_open_v2(...) fails.
@@ -2088,7 +2089,7 @@ bool Database::OpenInternal(const std::string& db_file_path) {
   static_assert(
       SQLITE_DEFAULT_LOCKING_MODE == 1,
       "Chrome assumes SQLite is configured to default to EXCLUSIVE locking");
-  if (!options_.exclusive_locking) {
+  if (!options_.exclusive_locking_) {
     if (!Execute("PRAGMA locking_mode=NORMAL")) {
       RecordOpenDatabaseFailureReason(
           histogram_tag_, OpenDatabaseFailedReason::kLockingModeFailed);
@@ -2132,7 +2133,7 @@ bool Database::OpenInternal(const std::string& db_file_path) {
   // Needs to happen before entering WAL mode. Will only work if this the first
   // time the database is being opened in WAL mode.
   const std::string page_size_sql =
-      base::StringPrintf("PRAGMA page_size=%d", options_.page_size);
+      base::StringPrintf("PRAGMA page_size=%d", options_.page_size_);
   if (!ExecuteWithTimeout(page_size_sql, kBusyTimeout)) {
     RecordOpenDatabaseFailureReason(histogram_tag_,
                                     OpenDatabaseFailedReason::kPageSizeFailed);
@@ -2197,13 +2198,13 @@ bool Database::OpenInternal(const std::string& db_file_path) {
   }
   CHECK(db_);
 
-  if (options_.flush_to_media) {
+  if (options_.flush_to_media_) {
     std::ignore = Execute("PRAGMA fullfsync=1");
   }
 
-  if (options_.cache_size != 0) {
+  if (options_.cache_size_ != 0) {
     const std::string cache_size_sql = base::StrCat(
-        {"PRAGMA cache_size=", base::NumberToString(options_.cache_size)});
+        {"PRAGMA cache_size=", base::NumberToString(options_.cache_size_)});
     std::ignore = ExecuteWithTimeout(cache_size_sql, kBusyTimeout);
   }
 
@@ -2302,7 +2303,7 @@ void Database::ConfigureSqliteDatabaseObject() {
 
   sqlite_result_code = ToSqliteResultCode(
       sqlite3_db_config(db_, SQLITE_DBCONFIG_ENABLE_VIEW,
-                        options_.enable_views_discouraged ? 1 : 0, nullptr));
+                        options_.enable_views_discouraged_ ? 1 : 0, nullptr));
   DCHECK_EQ(sqlite_result_code, SqliteResultCode::kOk)
       << "sqlite3_db_config() should not fail";
 }
@@ -2521,9 +2522,9 @@ bool Database::UseWALMode() const {
   // locking, because this case does not require shared memory support.
   // At the time this was implemented (May 2020), Fuchsia's shared
   // memory support was insufficient for SQLite's needs.
-  return options_.wal_mode && options_.exclusive_locking;
+  return options_.wal_mode_ && options_.exclusive_locking_;
 #else
-  return options_.wal_mode;
+  return options_.wal_mode_;
 #endif  // BUILDFLAG(IS_FUCHSIA)
 }
 

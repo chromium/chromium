@@ -147,18 +147,16 @@ class SQLDatabaseTest : public testing::Test,
   }
 
   DatabaseOptions GetDBOptions() {
-    DatabaseOptions options;
-    options.wal_mode = IsWALEnabled();
+    return DatabaseOptions()
+        .set_wal_mode(IsWALEnabled())
     // TODO(crbug.com/40146017): Remove after switching to exclusive mode on by
     // default.
-    options.exclusive_locking = false;
 #if BUILDFLAG(IS_FUCHSIA)  // Exclusive mode needs to be enabled to enter WAL
-                           // mode on Fuchsia
-    if (IsWALEnabled()) {
-      options.exclusive_locking = true;
-    }
+        .set_exclusive_locking(IsWALEnabled())
+#else
+        .set_exclusive_locking(false)
 #endif  // BUILDFLAG(IS_FUCHSIA)
-    return options;
+        ;
   }
 
   bool IsWALEnabled() { return GetParam(); }
@@ -706,8 +704,7 @@ TEST_P(SQLDatabaseTest, UseVfs) {
   sqlite3_vfs_register(&vfs, /*makeDflt=*/false);
   absl::Cleanup vfs_unregisterer = [&vfs]() { sqlite3_vfs_unregister(&vfs); };
 
-  DatabaseOptions options = GetDBOptions();
-  options.vfs_name_discouraged = kVFSName;
+  DatabaseOptions options = GetDBOptions().set_vfs_name_discouraged(kVFSName);
   Database other_db(options, test::kTestTag);
 
   // Since the vfs's Open function is not implemented `Open()` will fail.
@@ -1050,7 +1047,8 @@ void TestPageSize(const base::FilePath& db_prefix,
   const base::FilePath db_path = db_prefix.InsertBeforeExtensionASCII(
       base::NumberToString(initial_page_size));
   Database::Delete(db_path);
-  Database db({.page_size = initial_page_size}, test::kTestTag);
+  Database db(DatabaseOptions().set_page_size(initial_page_size),
+              test::kTestTag);
   ASSERT_TRUE(db.Open(db_path));
   ASSERT_TRUE(db.Execute(kCreateSql));
   ASSERT_TRUE(db.Execute(kInsertSql1));
@@ -1060,7 +1058,8 @@ void TestPageSize(const base::FilePath& db_prefix,
   db.Close();
 
   // Re-open the database while setting a new |options.page_size| in the object.
-  Database razed_db({.page_size = final_page_size}, test::kTestTag);
+  Database razed_db(DatabaseOptions().set_page_size(final_page_size),
+                    test::kTestTag);
   ASSERT_TRUE(razed_db.Open(db_path));
   // Raze will use the page size set in the connection object, which may not
   // match the file's page size.
@@ -1938,9 +1937,9 @@ TEST_P(SQLDatabaseTest, MmapInitiallyEnabledAltStatus) {
   db_->Close();
   Database::Delete(db_path_);
 
-  DatabaseOptions options = GetDBOptions();
-  options.mmap_alt_status_discouraged = true;
-  options.enable_views_discouraged = true;
+  DatabaseOptions options = GetDBOptions()
+                                .set_mmap_alt_status_discouraged(true)
+                                .set_enable_views_discouraged(true);
   db_ = std::make_unique<Database>(options, test::kTestTag);
   ASSERT_TRUE(db_->Open(db_path_));
 
@@ -2023,9 +2022,9 @@ TEST_P(SQLDatabaseTest, ComputeMmapSizeForOpenAltStatus) {
   ASSERT_FALSE(db_->DoesViewExist("MmapStatus"));
 
   // Using alt status, everything should be mapped, with state in the view.
-  DatabaseOptions options = GetDBOptions();
-  options.mmap_alt_status_discouraged = true;
-  options.enable_views_discouraged = true;
+  DatabaseOptions options = GetDBOptions()
+                                .set_mmap_alt_status_discouraged(true)
+                                .set_enable_views_discouraged(true);
   db_ = std::make_unique<Database>(options, test::kTestTag);
   ASSERT_TRUE(db_->Open(db_path_));
 
@@ -2189,14 +2188,14 @@ TEST_P(SQLDatabaseTest, ReOpenWithDifferentJournalMode) {
   }
 
   // Re-open the database with a different mode (Rollback vs WAL).
-  DatabaseOptions options = GetDBOptions();
-  options.wal_mode = !is_wal;
+  DatabaseOptions options =
+      GetDBOptions()
+          .set_wal_mode(!is_wal)
 #if BUILDFLAG(IS_FUCHSIA)
-  // Exclusive mode needs to be enabled to enter WAL mode on Fuchsia.
-  if (options.wal_mode) {
-    options.exclusive_locking = true;
-  }
+          // Exclusive mode needs to be enabled to enter WAL mode on Fuchsia.
+          .set_exclusive_locking(!is_wal)
 #endif  // BUILDFLAG(IS_FUCHSIA)
+      ;
 
   db_ = std::make_unique<Database>(options, test::kTestTag);
   ASSERT_TRUE(db_->Open(db_path_));
@@ -2210,8 +2209,8 @@ TEST_P(SQLDatabaseTest, ReOpenWithDifferentJournalMode) {
   }
 
   // Ensure appropriate journal file exists.
-  EXPECT_TRUE(IsOpenedInCorrectJournalMode(db_.get(), options.wal_mode));
-  EXPECT_EQ(base::PathExists(wal_path), options.wal_mode);
+  EXPECT_TRUE(IsOpenedInCorrectJournalMode(db_.get(), options.wal_mode_));
+  EXPECT_EQ(base::PathExists(wal_path), options.wal_mode_);
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -2230,11 +2229,10 @@ class SQLDatabaseTestExclusiveFileLockMode
   }
 
   DatabaseOptions GetDBOptions() {
-    DatabaseOptions options;
-    options.wal_mode = IsWALEnabled();
-    options.exclusive_locking = true;
-    options.exclusive_database_file_lock = IsExclusivelockEnabled();
-    return options;
+    return DatabaseOptions()
+        .set_wal_mode(IsWALEnabled())
+        .set_exclusive_locking(true)
+        .set_exclusive_database_file_lock(IsExclusivelockEnabled());
   }
 
   bool IsWALEnabled() { return std::get<0>(GetParam()); }
@@ -2276,7 +2274,8 @@ TEST(SQLInvalidDatabaseFlagsDeathTest, ExclusiveDatabaseLock) {
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   auto db_path = temp_dir.GetPath().AppendASCII("database_test_locked.sqlite");
 
-  Database db({.exclusive_database_file_lock = true}, test::kTestTag);
+  Database db(DatabaseOptions().set_exclusive_database_file_lock(true),
+              test::kTestTag);
 
   EXPECT_CHECK_DEATH_WITH(
       { std::ignore = db.Open(db_path); },
@@ -2298,10 +2297,9 @@ class SQLDatabaseTestExclusiveMode : public testing::Test,
   }
 
   DatabaseOptions GetDBOptions() {
-    DatabaseOptions options;
-    options.wal_mode = IsWALEnabled();
-    options.exclusive_locking = true;
-    return options;
+    return DatabaseOptions()
+        .set_wal_mode(IsWALEnabled())
+        .set_exclusive_locking(true);
   }
 
   bool IsWALEnabled() { return GetParam(); }

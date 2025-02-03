@@ -74,10 +74,7 @@ Recovery::Recovery(Database* database, Strategy strategy)
     : strategy_(strategy),
       db_(database),
       recover_db_(
-          sql::DatabaseOptions{
-              .page_size = database ? database->page_size() : 0,
-              .cache_size = 0,
-          },
+          DatabaseOptions().set_page_size(database ? database->page_size() : 0),
           "Recovery") {
   CHECK(db_);
   CHECK(db_->is_open());

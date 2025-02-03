@@ -47,8 +47,8 @@ namespace sql {
 
 namespace {
 
-using sql::test::ExecuteWithResult;
-using sql::test::ExecuteWithResults;
+using test::ExecuteWithResult;
+using test::ExecuteWithResults;
 
 constexpr char kRecoveryResultHistogramName[] = "Sql.Recovery.Result";
 constexpr char kRecoveryResultCodeHistogramName[] = "Sql.Recovery.ResultCode";
@@ -68,7 +68,7 @@ class SqlRecoveryTest : public testing::Test,
                         public testing::WithParamInterface<bool> {
  public:
   SqlRecoveryTest()
-      : db_(DatabaseOptions{.wal_mode = ShouldEnableWal()}, test::kTestTag) {
+      : db_(DatabaseOptions().set_wal_mode(ShouldEnableWal()), test::kTestTag) {
     scoped_feature_list_.InitWithFeatureStates(
         {{features::kEnableWALModeByDefault, ShouldEnableWal()}});
   }
@@ -160,7 +160,7 @@ TEST_P(SqlRecoveryTest, RecoverCorruptIndex) {
   ASSERT_TRUE(db_.Execute("INSERT INTO rows(indexed, unindexed) VALUES(8, 8)"));
 
   db_.Close();
-  ASSERT_TRUE(sql::test::CorruptIndexRootPage(db_path_, "rows_index"));
+  ASSERT_TRUE(test::CorruptIndexRootPage(db_path_, "rows_index"));
   ASSERT_TRUE(Reopen());
 
   int error = SQLITE_OK;
@@ -238,7 +238,7 @@ TEST_P(SqlRecoveryTest, RecoverCorruptTable) {
         << "Page overflow relies on specific size";
     large_buffer.resize(kDbPageSize * 2);
     std::ranges::fill(large_buffer, '8');
-    sql::Statement insert(db_.GetUniqueStatement(
+    Statement insert(db_.GetUniqueStatement(
         "INSERT INTO rows(indexed,unindexed,filler) VALUES(8,8,?)"));
     insert.BindBlob(0, large_buffer);
     ASSERT_TRUE(insert.Run());
@@ -259,7 +259,7 @@ TEST_P(SqlRecoveryTest, RecoverCorruptTable) {
   }
 
   {
-    sql::test::ScopedErrorExpecter expecter;
+    test::ScopedErrorExpecter expecter;
     expecter.ExpectError(SQLITE_CORRUPT);
     ASSERT_FALSE(Reopen());
     EXPECT_TRUE(expecter.SawExpectedErrors());
@@ -630,7 +630,8 @@ TEST_P(SqlRecoveryTest, RecoverIfPossibleWithPerDatabaseUma) {
 
 TEST_P(SqlRecoveryTest, RecoverDatabaseWithView) {
   db_.Close();
-  sql::Database db({.enable_views_discouraged = true}, test::kTestTag);
+  Database db(DatabaseOptions().set_enable_views_discouraged(true),
+              test::kTestTag);
   ASSERT_TRUE(db.Open(db_path_));
 
   ASSERT_TRUE(db.Execute(
@@ -685,7 +686,7 @@ TEST_P(SqlRecoveryTest, RecoverDatabaseDelete) {
   ASSERT_TRUE(OverwriteDatabaseHeader());
 
   {
-    sql::test::ScopedErrorExpecter expecter;
+    test::ScopedErrorExpecter expecter;
     expecter.ExpectError(SQLITE_NOTADB);
 
     // Reopen() here because it will see SQLITE_NOTADB.
@@ -727,13 +728,13 @@ TEST_P(SqlRecoveryTest, BeginRecoverDatabase) {
   ASSERT_TRUE(db_.Execute("INSERT INTO rows(indexed, unindexed) VALUES(8, 8)"));
 
   db_.Close();
-  ASSERT_TRUE(sql::test::CorruptIndexRootPage(db_path_, "rows_index"));
+  ASSERT_TRUE(test::CorruptIndexRootPage(db_path_, "rows_index"));
   ASSERT_TRUE(Reopen());
 
   static const char kIndexedCountSql[] =
       "SELECT SUM(indexed) FROM rows INDEXED BY rows_index";
   {
-    sql::test::ScopedErrorExpecter expecter;
+    test::ScopedErrorExpecter expecter;
     expecter.ExpectError(SQLITE_CORRUPT);
     EXPECT_EQ("", ExecuteWithResult(&db_, kIndexedCountSql))
         << "Index should still be corrupted after recovery rollback";
@@ -760,7 +761,7 @@ TEST_P(SqlRecoveryTest, AttachFailure) {
   ASSERT_TRUE(OverwriteDatabaseHeader());
 
   {
-    sql::test::ScopedErrorExpecter expecter;
+    test::ScopedErrorExpecter expecter;
     expecter.ExpectError(SQLITE_NOTADB);
 
     // Reopen() here because it will see SQLITE_NOTADB.
@@ -797,7 +798,8 @@ void TestPageSize(const base::FilePath& db_prefix,
   const base::FilePath db_path = db_prefix.InsertBeforeExtensionASCII(
       base::NumberToString(initial_page_size));
   Database::Delete(db_path);
-  Database db({.page_size = initial_page_size}, test::kTestTag);
+  Database db{DatabaseOptions().set_page_size(initial_page_size),
+              test::kTestTag};
   ASSERT_TRUE(db.Open(db_path));
   ASSERT_TRUE(db.Execute(kCreateSql));
   ASSERT_TRUE(db.Execute(kInsertSql1));
@@ -807,7 +809,8 @@ void TestPageSize(const base::FilePath& db_prefix,
   db.Close();
 
   // Re-open the database while setting a new |options.page_size| in the object.
-  Database recover_db({.page_size = final_page_size}, test::kTestTag);
+  Database recover_db(DatabaseOptions().set_page_size(final_page_size),
+                      test::kTestTag);
   ASSERT_TRUE(recover_db.Open(db_path));
   // Recovery will use the page size set in the database object, which may not
   // match the file's page size.
@@ -819,8 +822,7 @@ void TestPageSize(const base::FilePath& db_prefix,
   recover_db.Close();
 
   // Make sure the page size is read from the file.
-  Database recovered_db({.page_size = DatabaseOptions::kDefaultPageSize},
-                        test::kTestTag);
+  Database recovered_db(test::kTestTag);
   ASSERT_TRUE(recovered_db.Open(db_path));
   ASSERT_EQ(expected_final_page_size,
             ExecuteWithResult(&recovered_db, "PRAGMA page_size"));
@@ -901,7 +903,7 @@ TEST_P(SqlRecoveryTest, PRE_RecoverFormerlyWalDbAfterCrash) {
       temp_dir_.GetPath().AppendASCII("recovery_wal_test.sqlite");
 
   // Open the DB in WAL mode to set journal_mode="wal".
-  Database wal_db{{.wal_mode = true}, test::kTestTag};
+  Database wal_db{DatabaseOptions().set_wal_mode(true), test::kTestTag};
   ASSERT_TRUE(wal_db.Open(wal_db_path));
 
   EXPECT_TRUE(wal_db.UseWALMode());
@@ -916,7 +918,7 @@ TEST_P(SqlRecoveryTest, RecoverFormerlyWalDbAfterCrash) {
   base::FilePath wal_db_path =
       temp_dir_.GetPath().AppendASCII("recovery_wal_test.sqlite");
 
-  Database non_wal_db{{.wal_mode = false}, test::kTestTag};
+  Database non_wal_db{DatabaseOptions().set_wal_mode(false), test::kTestTag};
   ASSERT_TRUE(non_wal_db.Open(wal_db_path));
 
   auto run_recovery = base::BindLambdaForTesting([&]() {
