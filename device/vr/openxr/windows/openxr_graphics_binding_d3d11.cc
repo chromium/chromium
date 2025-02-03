@@ -11,6 +11,7 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/win/scoped_handle.h"
 #include "device/vr/openxr/openxr_api_wrapper.h"
 #include "device/vr/openxr/openxr_platform.h"
 #include "device/vr/openxr/openxr_util.h"
@@ -25,6 +26,7 @@
 #include "gpu/ipc/common/gpu_memory_buffer_impl_dxgi.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 #include "ui/gfx/gpu_fence.h"
+#include "ui/gfx/gpu_memory_buffer.h"
 
 namespace device {
 
@@ -216,9 +218,9 @@ void OpenXrGraphicsBindingD3D11::CreateSharedImages(
     }
 
     gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle;
-    gpu_memory_buffer_handle.dxgi_handle.Set(shared_handle);
-    gpu_memory_buffer_handle.dxgi_token = gfx::DXGIHandleToken();
     gpu_memory_buffer_handle.type = gfx::DXGI_SHARED_HANDLE;
+    gpu_memory_buffer_handle.set_dxgi_handle(
+        gfx::DXGIHandle(base::win::ScopedHandle(shared_handle)));
 
     // TODO(crbug.com/40918787): This size is the size of the texture
     // from the OpenXr runtime, which is fine but does not work properly if the
@@ -382,9 +384,8 @@ bool OpenXrGraphicsBindingD3D11::SetOverlayTexture(
     return false;
   }
 
-  CHECK(texture.type == gfx::DXGI_SHARED_HANDLE);
-  return texture_helper_->SetOverlayTexture(std::move(texture.dxgi_handle),
-                                            sync_token, left, right);
+  return texture_helper_->SetOverlayTexture(
+      texture.dxgi_handle().TakeBufferHandle(), sync_token, left, right);
 }
 
 }  // namespace device

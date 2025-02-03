@@ -27,7 +27,9 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
-#include "ui/gfx/gpu_memory_buffer.h"  // for gfx::DXGIHandleToken
+#include "base/memory/unsafe_shared_memory_region.h"
+#include "mojo/public/cpp/platform/platform_handle.h"
+#include "ui/gfx/gpu_memory_buffer.h"
 #endif
 
 namespace mojo {
@@ -107,6 +109,26 @@ struct COMPONENT_EXPORT(GFX_NATIVE_HANDLE_TYPES_SHARED_MOJOM_TRAITS)
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_OZONE)
 
 #if BUILDFLAG(IS_WIN)
+template <>
+struct COMPONENT_EXPORT(GFX_NATIVE_HANDLE_TYPES_SHARED_MOJOM_TRAITS)
+    StructTraits<gfx::mojom::DXGIHandleDataView, gfx::DXGIHandle> {
+  static PlatformHandle buffer_handle(gfx::DXGIHandle& handle) {
+    return PlatformHandle(handle.TakeBufferHandle());
+  }
+
+  static const gfx::DXGIHandleToken& token(const gfx::DXGIHandle& handle) {
+    return handle.token();
+  }
+
+  static base::UnsafeSharedMemoryRegion shared_memory_handle(
+      gfx::DXGIHandle& handle) {
+    return std::move(handle.region());
+  }
+
+  static bool Read(gfx::mojom::DXGIHandleDataView data,
+                   gfx::DXGIHandle* handle);
+};
+
 template <>
 struct COMPONENT_EXPORT(GFX_NATIVE_HANDLE_TYPES_SHARED_MOJOM_TRAITS)
     StructTraits<gfx::mojom::DXGIHandleTokenDataView, gfx::DXGIHandleToken> {

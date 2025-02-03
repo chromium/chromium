@@ -47,13 +47,9 @@ gfx::mojom::GpuMemoryBufferPlatformHandlePtr StructTraits<
     }
     case gfx::DXGI_SHARED_HANDLE:
 #if BUILDFLAG(IS_WIN)
-      DCHECK(handle.dxgi_handle.IsValid());
-      DCHECK(handle.dxgi_token.has_value());
+      DCHECK(handle.dxgi_handle().IsValid());
       return gfx::mojom::GpuMemoryBufferPlatformHandle::NewDxgiHandle(
-          gfx::mojom::DXGIHandle::New(
-              mojo::PlatformHandle(std::move(handle.dxgi_handle)),
-              std::move(handle.dxgi_token.value()),
-              std::move(handle.region())));
+          std::move(handle.dxgi_handle()));
 #else
       break;
 #endif
@@ -122,10 +118,7 @@ bool StructTraits<gfx::mojom::GpuMemoryBufferHandleDataView,
 #elif BUILDFLAG(IS_WIN)
     case gfx::mojom::GpuMemoryBufferPlatformHandleDataView::Tag::kDxgiHandle: {
       out->type = gfx::DXGI_SHARED_HANDLE;
-      auto dxgi_handle = std::move(platform_handle->get_dxgi_handle());
-      out->dxgi_handle = dxgi_handle->buffer_handle.TakeHandle();
-      out->dxgi_token = std::move(dxgi_handle->token);
-      out->set_region(std::move(dxgi_handle->shared_memory_handle));
+      out->set_dxgi_handle(std::move(platform_handle->get_dxgi_handle()));
       return true;
     }
 #elif BUILDFLAG(IS_ANDROID)

@@ -12,6 +12,13 @@
 #include "mojo/public/cpp/system/scope_to_message_pipe.h"
 #endif
 
+#if BUILDFLAG(IS_WIN)
+#include "base/memory/unsafe_shared_memory_region.h"
+#include "mojo/public/cpp/base/shared_memory_mojom_traits.h"
+#include "mojo/public/cpp/platform/platform_handle.h"
+#include "ui/gfx/gpu_memory_buffer.h"
+#endif  // BUILDFLAG(IS_WIN)
+
 namespace mojo {
 
 #if BUILDFLAG(IS_ANDROID)
@@ -129,6 +136,23 @@ bool StructTraits<
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_OZONE)
 
 #if BUILDFLAG(IS_WIN)
+bool StructTraits<gfx::mojom::DXGIHandleDataView, gfx::DXGIHandle>::Read(
+    gfx::mojom::DXGIHandleDataView data,
+    gfx::DXGIHandle* handle) {
+  base::win::ScopedHandle buffer_handle = data.TakeBufferHandle().TakeHandle();
+  gfx::DXGIHandleToken token;
+  if (!data.ReadToken(&token)) {
+    return false;
+  }
+  base::UnsafeSharedMemoryRegion region;
+  if (!data.ReadSharedMemoryHandle(&region)) {
+    return false;
+  }
+  *handle = gfx::DXGIHandle(std::move(buffer_handle), token, std::move(region));
+  DCHECK(handle->IsValid());
+  return true;
+}
+
 bool StructTraits<gfx::mojom::DXGIHandleTokenDataView, gfx::DXGIHandleToken>::
     Read(gfx::mojom::DXGIHandleTokenDataView& input,
          gfx::DXGIHandleToken* output) {

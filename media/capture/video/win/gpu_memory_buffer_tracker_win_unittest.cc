@@ -135,7 +135,7 @@ TEST_F(GpuMemoryBufferTrackerWinTest, InvalidateOnDeviceLoss) {
   EXPECT_FALSE(tracker->IsReusableForFormat(expected_buffer_size,
                                             PIXEL_FORMAT_NV12, nullptr));
   gfx::GpuMemoryBufferHandle gmb = tracker->GetGpuMemoryBufferHandle();
-  EXPECT_FALSE(gmb.dxgi_handle.IsValid());
+  EXPECT_TRUE(gmb.is_null());
 }
 
 TEST_F(GpuMemoryBufferTrackerWinTest, GetMemorySizeInBytes) {

@@ -18,6 +18,7 @@
 #include "media/base/win/mf_helpers.h"
 #include "media/capture/video/video_capture_buffer_handle.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/gpu_memory_buffer.h"
 
 namespace media {
 
@@ -123,8 +124,8 @@ bool GpuMemoryBufferTrackerWin::Init(const gfx::Size& dimensions,
 
   gfx::GpuMemoryBufferHandle gmb_handle;
   gmb_handle.type = gfx::DXGI_SHARED_HANDLE;
-  gmb_handle.dxgi_handle = CreateNV12Texture(d3d_device_.Get(), dimensions);
-  gmb_handle.dxgi_token = gfx::DXGIHandleToken();
+  gmb_handle.set_dxgi_handle(
+      gfx::DXGIHandle(CreateNV12Texture(d3d_device_.Get(), dimensions)));
   return CreateBufferInternal(std::move(gmb_handle), std::move(dimensions));
 }
 
@@ -137,13 +138,13 @@ bool GpuMemoryBufferTrackerWin::IsSameGpuMemoryBuffer(
   // On Windows, we need use 'dxgi_token' to decide whether the two handles
   // point to same gmb instead of handle directly since handle could be
   // duplicated, please see GpuMemoryBufferImplDXGI::CloneHandle.
-  return buffer_->GetToken() == handle.dxgi_token;
+  return buffer_->GetToken() == handle.dxgi_handle().token();
 }
 
 bool GpuMemoryBufferTrackerWin::CreateBufferInternal(
     gfx::GpuMemoryBufferHandle buffer_handle,
     const gfx::Size& dimensions) {
-  if (!buffer_handle.dxgi_handle.IsValid()) {
+  if (!buffer_handle.dxgi_handle().IsValid()) {
     LOG(ERROR) << "dxgi_handle is not valid.";
     return false;
   }

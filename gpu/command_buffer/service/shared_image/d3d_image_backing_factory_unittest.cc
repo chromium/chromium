@@ -26,6 +26,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
+#include "base/win/scoped_handle.h"
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/pixel_test_utils.h"
 #include "components/viz/common/resources/shared_image_format.h"
@@ -1223,9 +1224,9 @@ void D3DImageBackingFactoryTest::RunCreateSharedImageFromHandleTest(
   ASSERT_EQ(hr, S_OK);
 
   gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle;
-  gpu_memory_buffer_handle.dxgi_handle.Set(shared_handle);
-  gpu_memory_buffer_handle.dxgi_token = gfx::DXGIHandleToken();
   gpu_memory_buffer_handle.type = gfx::DXGI_SHARED_HANDLE;
+  gpu_memory_buffer_handle.set_dxgi_handle(
+      gfx::DXGIHandle(base::win::ScopedHandle(shared_handle)));
 
   // Clone before moving the handle in CreateSharedImage.
   auto dup_handle = gpu_memory_buffer_handle.Clone();
@@ -1547,9 +1548,8 @@ D3DImageBackingFactoryTest::CreateVideoImage(const gfx::Size& size,
   if (use_factory) {
     gfx::GpuMemoryBufferHandle gmb_handle;
     gmb_handle.type = gfx::DXGI_SHARED_HANDLE;
-    gmb_handle.dxgi_handle = std::move(shared_handle);
-    DCHECK(gmb_handle.dxgi_handle.IsValid());
-    gmb_handle.dxgi_token = gfx::DXGIHandleToken();
+    gmb_handle.set_dxgi_handle(gfx::DXGIHandle(std::move(shared_handle)));
+    DCHECK(gmb_handle.dxgi_handle().IsValid());
 
     shared_image_backing = shared_image_factory_->CreateSharedImage(
         mailbox, viz::MultiPlaneFormat::kNV12, size, gfx::ColorSpace(),

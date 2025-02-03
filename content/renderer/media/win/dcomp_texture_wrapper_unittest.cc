@@ -10,6 +10,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "base/win/scoped_handle.h"
 #include "content/renderer/media/win/dcomp_texture_factory.h"
 #include "content/renderer/media/win/dcomp_texture_wrapper_impl.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
@@ -20,6 +21,7 @@
 #include "media/base/test_helpers.h"
 #include "media/base/win/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/gpu_memory_buffer.h"
 
 using base::RunLoop;
 using Microsoft::WRL::ComPtr;
@@ -113,13 +115,11 @@ void DCOMPTextureWrapperTest::CreateDXBackedVideoFrameTestTask(
     std::unique_ptr<media::DCOMPTextureWrapper> dcomp_texture_wrapper,
     base::OnceClosure closure) {
   gfx::GpuMemoryBufferHandle dx_handle;
-  base::WaitableEvent wait_event;
-  dx_handle.dxgi_handle =
-      base::win::ScopedHandle(CreateEvent(nullptr, FALSE, FALSE, nullptr));
-  dx_handle.dxgi_token = gfx::DXGIHandleToken();
   dx_handle.type = gfx::GpuMemoryBufferType::DXGI_SHARED_HANDLE;
+  dx_handle.set_dxgi_handle(gfx::DXGIHandle::CreateFakeForTest());
   gfx::Size frame_size(1920, 1080);
 
+  base::WaitableEvent wait_event;
   dcomp_texture_wrapper->CreateVideoFrame(
       frame_size, std::move(dx_handle),
       base::BindOnce(

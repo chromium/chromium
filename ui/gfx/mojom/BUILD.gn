@@ -388,6 +388,11 @@ mojom("native_handle_types") {
         move_only = true
       },
       {
+        mojom = "gfx.mojom.DXGIHandle"
+        cpp = "::gfx::DXGIHandle"
+        move_only = true
+      },
+      {
         mojom = "gfx.mojom.DXGIHandleToken"
         cpp = "::gfx::DXGIHandleToken"
       },

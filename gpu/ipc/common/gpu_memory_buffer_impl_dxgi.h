@@ -22,6 +22,7 @@
 #include "gpu/gpu_export.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl.h"
 #include "ui/gfx/color_space.h"
+#include "ui/gfx/gpu_memory_buffer.h"
 
 namespace gpu {
 
@@ -81,9 +82,7 @@ class GPU_EXPORT GpuMemoryBufferImplDXGI : public GpuMemoryBufferImpl {
                           const gfx::Size& size,
                           gfx::BufferFormat format,
                           DestructionCallback callback,
-                          base::win::ScopedHandle dxgi_handle,
-                          gfx::DXGIHandleToken dxgi_token,
-                          base::UnsafeSharedMemoryRegion region,
+                          gfx::DXGIHandle dxgi_handle,
                           GpuMemoryBufferManager* gpu_memory_buffer_manager,
                           scoped_refptr<base::UnsafeSharedMemoryPool> pool,
                           base::span<uint8_t> premapped_memory);
@@ -94,17 +93,14 @@ class GPU_EXPORT GpuMemoryBufferImplDXGI : public GpuMemoryBufferImpl {
       base::OnceCallback<void(bool)>);
   void CheckAsyncMapResult(bool result);
 
-  base::win::ScopedHandle dxgi_handle_;
-  gfx::DXGIHandleToken dxgi_token_;
-
   // This is currently always set to false until media capture code is converted
   // to use MappableSI.
   bool use_premapped_memory_ = false;
 
-  // |region_| is not used currently. It will be eventually be used to pre-map
-  // the |region_| internally in this class instead of clients doing the
-  // pre-map.
-  const base::UnsafeSharedMemoryRegion region_;
+  // The DXGIHandle's |region_| is not used currently. It will be eventually be
+  // used to pre-map the |region_| internally in this class instead of clients
+  // doing the pre-map.
+  gfx::DXGIHandle dxgi_handle_;
 
   // It is created when |region_| is mapped via Map(). It is to keep the
   // |premapped_memory_| alive till its being used. Destroying this makes the

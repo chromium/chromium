@@ -55,6 +55,70 @@ using GpuMemoryBufferId = GenericSharedMemoryId;
 
 #if BUILDFLAG(IS_WIN)
 using DXGIHandleToken = base::TokenType<class DXGIHandleTokenTypeMarker>;
+
+// A simple type that bundles together the various bits for working with DXGI
+// handles in Chrome. It consists of:
+// - `buffer_handle`: the shared handle to the DXGI resource
+// - `token`: A strongly-typed UnguessableToken used to determine if two
+//            instances of `DXGIHandle` represent the same underlying shared
+//            handle. Needed because the handle itself may be duplicated virtual
+//            `DuplicateHandle()`.
+// - `region`: An optional shared memory region. A DXGI handle's buffer can only
+//             be read in the GPU process; this is used to provide support for
+//             `Map()`ing the buffer in other processes. Under the hood, this is
+//             implemented by having the GPU process copy the buffer into a
+//             shared memory region that other processes can read.
+class COMPONENT_EXPORT(GFX) DXGIHandle {
+ public:
+  // Creates a DXGIHandle suitable for use in a barebones unit test. The
+  // `buffer_handle` won't actually usable as a DXGI shared handle, so this
+  // helper is not suitable for integration tests.
+  static DXGIHandle CreateFakeForTest();
+
+  // Constructs an instance where `IsValid() == false`.
+  DXGIHandle();
+  ~DXGIHandle();
+
+  // Constructs an instance, taking ownership of `scoped_handle` and associating
+  // it with a new DXGIHandleToken. `scoped_handle` must be a valid handle.
+  explicit DXGIHandle(base::win::ScopedHandle scoped_handle);
+  // Typically only used by IPC deserialization. `buffer_handle` must be valid,
+  // but `region` may be invalid.
+  DXGIHandle(base::win::ScopedHandle buffer_handle,
+             const DXGIHandleToken& token,
+             base::UnsafeSharedMemoryRegion region);
+
+  DXGIHandle(DXGIHandle&&);
+  DXGIHandle& operator=(DXGIHandle&&);
+
+  DXGIHandle(const DXGIHandle&) = delete;
+  DXGIHandle& operator=(const DXGIHandle&) = delete;
+
+  // Whether or not `this` has a valid underlying platform handle. This method
+  // can return true even if `region()` is not a valid shmem region.
+  bool IsValid() const;
+  // Creates a copy of `this`. The underlying `buffer_handle` is duplicated into
+  // a new handle, but `token()` will be preserved, so callers should use
+  // `token()` to check if two `DXGIHandle`s actually refer to the same
+  // resource.
+  DXGIHandle Clone() const;
+
+  HANDLE buffer_handle() const { return buffer_handle_.Get(); }
+  base::win::ScopedHandle TakeBufferHandle();
+
+  const DXGIHandleToken& token() const { return token_; }
+
+  const base::UnsafeSharedMemoryRegion& region() const { return region_; }
+  base::UnsafeSharedMemoryRegion& region() { return region_; }
+  void set_region(base::UnsafeSharedMemoryRegion region) {
+    region_ = std::move(region);
+  }
+
+ private:
+  base::win::ScopedHandle buffer_handle_;
+  DXGIHandleToken token_;
+  base::UnsafeSharedMemoryRegion region_;
+};
 #endif
 
 // TODO(crbug.com/40584691): Convert this to a proper class to ensure the state
@@ -82,17 +146,59 @@ struct COMPONENT_EXPORT(GFX) GpuMemoryBufferHandle {
   // the contents into the shmem region so it can be accessed from other
   // processes.
   const base::UnsafeSharedMemoryRegion& region() const {
-    CHECK(type == SHARED_MEMORY_BUFFER || type == DXGI_SHARED_HANDLE);
-    return region_;
+    switch (type) {
+      case SHARED_MEMORY_BUFFER:
+        return region_;
+#if BUILDFLAG(IS_WIN)
+      case DXGI_SHARED_HANDLE:
+        return dxgi_handle_.region();
+#endif  // BUILDFLAG(IS_WIN)
+      default:
+        NOTREACHED();
+    }
   }
   base::UnsafeSharedMemoryRegion& region() {
-    CHECK(type == SHARED_MEMORY_BUFFER || type == DXGI_SHARED_HANDLE);
-    return region_;
+    switch (type) {
+      case SHARED_MEMORY_BUFFER:
+        return region_;
+#if BUILDFLAG(IS_WIN)
+      case DXGI_SHARED_HANDLE:
+        return dxgi_handle_.region();
+#endif  // BUILDFLAG(IS_WIN)
+      default:
+        NOTREACHED();
+    }
   }
   void set_region(base::UnsafeSharedMemoryRegion region) {
-    CHECK(type == SHARED_MEMORY_BUFFER || type == DXGI_SHARED_HANDLE);
-    region_ = std::move(region);
+    switch (type) {
+      case SHARED_MEMORY_BUFFER:
+        region_ = std::move(region);
+        return;
+#if BUILDFLAG(IS_WIN)
+      case DXGI_SHARED_HANDLE:
+        dxgi_handle_.set_region(std::move(region));
+        return;
+#endif  // BUILDFLAG(IS_WIN)
+      default:
+        NOTREACHED();
+    }
   }
+
+#if BUILDFLAG(IS_WIN)
+  const DXGIHandle& dxgi_handle() const {
+    CHECK_EQ(type, DXGI_SHARED_HANDLE);
+    return dxgi_handle_;
+  }
+  DXGIHandle& dxgi_handle() {
+    CHECK_EQ(type, DXGI_SHARED_HANDLE);
+    return dxgi_handle_;
+  }
+  void set_dxgi_handle(DXGIHandle handle) {
+    CHECK_EQ(type, DXGI_SHARED_HANDLE);
+    CHECK(handle.IsValid());
+    dxgi_handle_ = std::move(handle);
+  }
+#endif  // BUILDFLAG(IS_WIN)
 
   GpuMemoryBufferType type = GpuMemoryBufferType::EMPTY_BUFFER;
   GpuMemoryBufferId id{0};
@@ -103,9 +209,6 @@ struct COMPONENT_EXPORT(GFX) GpuMemoryBufferHandle {
   NativePixmapHandle native_pixmap_handle;
 #elif BUILDFLAG(IS_APPLE)
   ScopedIOSurface io_surface;
-#elif BUILDFLAG(IS_WIN)
-  base::win::ScopedHandle dxgi_handle;
-  std::optional<DXGIHandleToken> dxgi_token;
 #elif BUILDFLAG(IS_ANDROID)
   base::android::ScopedHardwareBufferHandle android_hardware_buffer;
 #endif
@@ -114,6 +217,9 @@ struct COMPONENT_EXPORT(GFX) GpuMemoryBufferHandle {
   // This naming isn't entirely styleguide-compliant, but per the TODO, the end
   // goal is to make `this` an encapsulated class.
   base::UnsafeSharedMemoryRegion region_;
+#if BUILDFLAG(IS_WIN)
+  DXGIHandle dxgi_handle_;
+#endif  // BUILDFLAG(IS_WIN)
 };
 
 // This interface typically correspond to a type of shared memory that is also
