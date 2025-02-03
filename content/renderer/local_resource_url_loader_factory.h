@@ -36,12 +36,12 @@ class CONTENT_EXPORT LocalResourceURLLoaderFactory
  public:
   struct Source {
     Source(blink::mojom::LocalResourceSourcePtr source,
-           std::map<const std::string, std::string> replacement_strings);
+           std::map<std::string, std::string> replacement_strings);
     Source(Source&& other);
     Source& operator=(Source&& other);
     ~Source();
     blink::mojom::LocalResourceSourcePtr source;
-    std::map<const std::string, std::string> replacement_strings;
+    std::map<std::string, std::string> replacement_strings;
   };
 
   LocalResourceURLLoaderFactory(
