@@ -1247,6 +1247,33 @@ TEST_F(ShelfViewTest, DragAppAroundSeparator) {
   EXPECT_EQ(1, GetHapticTickEventsCount());
 }
 
+// Verifies that mouse capture loss with a shelf button pressed, but before
+// drag start, clears any preset drag state.
+TEST_F(ShelfViewTest, MouseCaptureLossWithShelfButtonPressedClearsDragState) {
+  std::vector<std::pair<ShelfID, views::View*>> id_map;
+  SetupForDragTest(&id_map);
+
+  ShelfAppButton* button = SimulateButtonPressed(ShelfView::MOUSE, 0);
+  button->OnMouseCaptureLost();
+  auto* shelf_view = GetPrimaryShelf()->GetShelfViewForTesting();
+  EXPECT_FALSE(shelf_view->IsDraggedView(button));
+  ASSERT_NO_FATAL_FAILURE(CheckModelIDs(id_map));
+}
+
+TEST_F(ShelfViewTest, DraggedViewVisibleAfterLosingMouseCapture) {
+  std::vector<std::pair<ShelfID, views::View*>> id_map;
+  SetupForDragTest(&id_map);
+
+  ShelfAppButton* button = SimulateButtonPressed(ShelfView::MOUSE, 0);
+  ContinueDrag(button, ShelfView::MOUSE, 0, 2, false);
+  button->OnMouseCaptureLost();
+
+  auto* shelf_view = GetPrimaryShelf()->GetShelfViewForTesting();
+  EXPECT_FALSE(shelf_view->IsDraggedView(button));
+  EXPECT_EQ(1.0f, button->layer()->opacity());
+  ASSERT_NO_FATAL_FAILURE(CheckModelIDs(id_map));
+}
+
 // Ensure that clicking on one item and then dragging another works as expected.
 TEST_P(LtrRtlShelfViewTest, ClickOneDragAnother) {
   std::vector<std::pair<ShelfID, views::View*>> id_map;
