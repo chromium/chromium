@@ -35,7 +35,6 @@ web_component_files = [
   "network/network_icon.js",
   "network/network_list_item.js",
   "network/network_property_list_mojo.js",
-  "network/sim_lock_dialogs.js",
   "smb_shares/add_smb_share_dialog.js",
 ]
 
@@ -114,6 +113,7 @@ web_component_files_ts = [
   "network/network_proxy_input.ts",
   "network/network_select.ts",
   "network/network_siminfo.ts",
+  "network/sim_lock_dialogs.ts",
   "network_health/network_diagnostics.ts",
   "network_health/network_health_container.ts",
   "network_health/network_health_summary.ts",
@@ -476,6 +476,7 @@ generate_definitions_js_files = [
   "network/network_shared.css.js",
   "network/network_siminfo.html.js",
   "network/onc_mojo.js",
+  "network/sim_lock_dialogs.html.js",
   "network_health/network_diagnostics.html.js",
   "network_health/network_health_container.html.js",
   "network_health/network_health_summary.html.js",
@@ -547,7 +548,6 @@ checked_in_dts_files = [
   "network/network_list_item.d.ts",
   "network/network_list_types.d.ts",
   "network/network_property_list_mojo.d.ts",
-  "network/sim_lock_dialogs.d.ts",
 
   "post_message_api/post_message_api_client.d.ts",
   "post_message_api/post_message_api_request_handler.d.ts",

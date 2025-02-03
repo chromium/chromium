@@ -43,7 +43,7 @@ suite('NetworkSimLockDialogsTest', function() {
    * @param {OncMojo.DeviceStateProperties} deviceState
    */
   async function verifyDialogShown(dialogName, deviceState) {
-    const dialog = simLockDialog.$$(`#${dialogName}`);
+    const dialog = simLockDialog.shadowRoot.querySelector(`#${dialogName}`);
     assertTrue(!!dialog);
     assertFalse(dialog.open);
     simLockDialog.deviceState = deviceState;
@@ -56,7 +56,7 @@ suite('NetworkSimLockDialogsTest', function() {
       simLockStatus: {lockEnabled: false, lockType: '', retriesLeft: 3},
     };
     verifyDialogShown('enterPinDialog', deviceState);
-    const enterPin = simLockDialog.$$(`#enterPin`);
+    const enterPin = simLockDialog.shadowRoot.querySelector(`#enterPin`);
     assertTrue(!!enterPin);
     assertEquals(
         enterPin.ariaLabel, simLockDialog.i18n('networkSimEnterPinTitle'));
@@ -75,12 +75,12 @@ suite('NetworkSimLockDialogsTest', function() {
       simLockStatus: {lockEnabled: true, lockType: 'sim-pin', retriesLeft: 3},
     };
     verifyDialogShown('unlockPinDialog', deviceState);
-    assertFalse(!!simLockDialog.$$(`#adminSubtitle`));
+    assertFalse(!!simLockDialog.shadowRoot.querySelector(`#adminSubtitle`));
     simLockDialog.globalPolicy = {
       allowCellularSimLock: false,
     };
     await flushAsync();
-    assertTrue(!!simLockDialog.$$(`#adminSubtitle`));
+    assertTrue(!!simLockDialog.shadowRoot.querySelector(`#adminSubtitle`));
   });
 
   test('Unlock dialog not displayed when carrier locked', async function() {
@@ -88,7 +88,7 @@ suite('NetworkSimLockDialogsTest', function() {
       simLockStatus:
           {lockEnabled: true, lockType: 'network-pin', retriesLeft: 3},
     };
-    const dialog = simLockDialog.$$(`#unlockPinDialog`);
+    const dialog = simLockDialog.shadowRoot.querySelector(`#unlockPinDialog`);
     assertTrue(!!dialog);
     assertFalse(dialog.open);
     simLockDialog.deviceState = deviceState;
@@ -120,7 +120,8 @@ suite('NetworkSimLockDialogsTest', function() {
       simLockStatus: {lockEnabled: true, lockType: 'sim-pin', retriesLeft: 3},
     };
     await flushAsync();
-    unlockPinDialog = simLockDialog.$$('#unlockPinDialog');
+    unlockPinDialog =
+        simLockDialog.shadowRoot.querySelector('#unlockPinDialog');
     assertTrue(!!unlockPinDialog);
     assertTrue(unlockPinDialog.open);
 
@@ -153,7 +154,8 @@ suite('NetworkSimLockDialogsTest', function() {
               {lockEnabled: true, lockType: 'sim-pin', retriesLeft: 3},
         };
         await flushAsync();
-        unlockPinDialog = simLockDialog.$$('#unlockPinDialog');
+        unlockPinDialog =
+            simLockDialog.shadowRoot.querySelector('#unlockPinDialog');
         assertTrue(!!unlockPinDialog);
         assertTrue(unlockPinDialog.open);
 
@@ -162,7 +164,8 @@ suite('NetworkSimLockDialogsTest', function() {
               {lockEnabled: true, lockType: 'sim-puk', retriesLeft: 3},
         };
         await flushAsync();
-        const unlockPukDialog = simLockDialog.$$('#unlockPukDialog');
+        const unlockPukDialog =
+            simLockDialog.shadowRoot.querySelector('#unlockPukDialog');
         assertTrue(!!unlockPukDialog);
 
         assertFalse(unlockPinDialog.open);
@@ -176,7 +179,8 @@ suite('NetworkSimLockDialogsTest', function() {
           simLockStatus: {lockEnabled: false, lockType: '', retriesLeft: 3},
         };
         await flushAsync();
-        const enterPinDialog = simLockDialog.$$('#enterPinDialog');
+        const enterPinDialog =
+            simLockDialog.shadowRoot.querySelector('#enterPinDialog');
         assertTrue(!!enterPinDialog);
         assertTrue(enterPinDialog.open);
 
@@ -187,7 +191,8 @@ suite('NetworkSimLockDialogsTest', function() {
               {lockEnabled: true, lockType: 'sim-puk', retriesLeft: 0},
         };
 
-        const unlockPukDialog = simLockDialog.$$('#unlockPukDialog');
+        const unlockPukDialog =
+            simLockDialog.shadowRoot.querySelector('#unlockPukDialog');
 
         assertTrue(!!unlockPukDialog);
         assertFalse(enterPinDialog.open);
@@ -205,7 +210,8 @@ suite('NetworkSimLockDialogsTest', function() {
     simLockDialog.deviceState = deviceState;
     await flushAsync();
 
-    const enterPinDialog = simLockDialog.$$('#enterPinDialog');
+    const enterPinDialog =
+        simLockDialog.shadowRoot.querySelector('#enterPinDialog');
     assertTrue(!!enterPinDialog);
     assertTrue(enterPinDialog.open);
 
@@ -225,7 +231,8 @@ suite('NetworkSimLockDialogsTest', function() {
     simLockDialog.deviceState = {...deviceState};
     await flushAsync();
 
-    const unlockPukDialog = simLockDialog.$$('#unlockPukDialog');
+    const unlockPukDialog =
+        simLockDialog.shadowRoot.querySelector('#unlockPukDialog');
 
     assertTrue(!!unlockPukDialog);
     assertFalse(enterPinDialog.open);
@@ -243,7 +250,8 @@ suite('NetworkSimLockDialogsTest', function() {
     networkConfigRemote_.setDeviceStateForTest(deviceState);
     simLockDialog.showChangePin = true;
 
-    const changePinDialog = simLockDialog.$$('#changePinDialog');
+    const changePinDialog =
+        simLockDialog.shadowRoot.querySelector('#changePinDialog');
 
     assertTrue(!!changePinDialog);
     assertFalse(changePinDialog.open);
@@ -275,7 +283,8 @@ suite('NetworkSimLockDialogsTest', function() {
     simLockDialog.deviceState = deviceState;
     await flushAsync();
 
-    const enterPinDialog = simLockDialog.$$('#enterPinDialog');
+    const enterPinDialog =
+        simLockDialog.shadowRoot.querySelector('#enterPinDialog');
 
     const pinInput = enterPinDialog.querySelector('#enterPin');
     pinInput.value = '1111111';
@@ -299,7 +308,8 @@ suite('NetworkSimLockDialogsTest', function() {
     };
 
     await flushAsync();
-    const enterPinDialog = simLockDialog.$$('#enterPinDialog');
+    const enterPinDialog =
+        simLockDialog.shadowRoot.querySelector('#enterPinDialog');
     assertTrue(!!enterPinDialog);
     assertTrue(enterPinDialog.open);
     assertTrue(simLockDialog.isDialogOpen);
@@ -321,7 +331,8 @@ suite('NetworkSimLockDialogsTest', function() {
     simLockDialog.deviceState = deviceState;
     await flushAsync();
 
-    const enterPinDialog = simLockDialog.$$('#enterPinDialog');
+    const enterPinDialog =
+        simLockDialog.shadowRoot.querySelector('#enterPinDialog');
     const enterPin = async function(pin) {
       const pinInput = enterPinDialog.querySelector('#enterPin');
       pinInput.value = pin;

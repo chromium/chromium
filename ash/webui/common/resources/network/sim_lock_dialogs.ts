@@ -15,41 +15,38 @@ import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './network_password_input.js';
 import './network_shared.css.js';
 
-import {assertNotReached} from '//resources/ash/common/assert.js';
-import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
-import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
+import {assert, assertNotReached} from '//resources/js/assert.js';
+import {CellularSimState, CrosNetworkConfigInterface, GlobalPolicy} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+
+import {strictQuery} from '../typescript_utils/strict_query.js';
 
 import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from './mojo_interface_provider.js';
+import {NetworkPasswordInputElement} from './network_password_input.js';
 import {OncMojo} from './onc_mojo.js';
 import {getTemplate} from './sim_lock_dialogs.html.js';
 
-/** @enum {string} */
-const ErrorType = {
-  NONE: 'none',
-  INCORRECT_PIN: 'incorrect-pin',
-  INCORRECT_PUK: 'incorrect-puk',
-  MISMATCHED_PIN: 'mismatched-pin',
-  INVALID_PIN: 'invalid-pin',
-  INVALID_PUK: 'invalid-puk',
-};
+enum ErrorType {
+  NONE = 'none',
+  INCORRECT_PIN = 'incorrect-pin',
+  INCORRECT_PUK = 'incorrect-puk',
+  MISMATCHED_PIN = 'mismatched-pin',
+  INVALID_PIN = 'invalid-pin',
+  INVALID_PUK = 'invalid-puk',
+}
 
 const DIGITS_ONLY_REGEX = /^[0-9]+$/;
 const PIN_MIN_LENGTH = 4;
 const PUK_MIN_LENGTH = 8;
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const SimLockDialogsElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+const SimLockDialogsElementBase = I18nMixin(PolymerElement);
 
-/** @polymer */
-class SimLockDialogsElement extends SimLockDialogsElementBase {
+export class SimLockDialogsElement extends SimLockDialogsElementBase {
   static get is() {
-    return 'sim-lock-dialogs';
+    return 'sim-lock-dialogs' as const;
   }
 
   static get template() {
@@ -58,19 +55,16 @@ class SimLockDialogsElement extends SimLockDialogsElementBase {
 
   static get properties() {
     return {
-      /** @type {?OncMojo.DeviceStateProperties} */
       deviceState: {
         type: Object,
         value: null,
         observer: 'deviceStateChanged_',
       },
 
-      /** @type {!GlobalPolicy|undefined} */
       globalPolicy: Object,
 
       /**
        * Set to true when there is an open dialog.
-       * @type {boolean}
        */
       isDialogOpen: {
         type: Boolean,
@@ -80,7 +74,6 @@ class SimLockDialogsElement extends SimLockDialogsElementBase {
 
       /**
        * Set to true if sim lockEnabled is changed.
-       * @type {boolean}
        */
       showChangePin: {
         type: Boolean,
@@ -90,7 +83,6 @@ class SimLockDialogsElement extends SimLockDialogsElementBase {
       /**
        * Set to true when a SIM operation is in progress. Used to disable
        * buttons.
-       * @private
        */
       inProgress_: {
         type: Boolean,
@@ -100,7 +92,6 @@ class SimLockDialogsElement extends SimLockDialogsElementBase {
 
       /**
        * Set to an ErrorType value after an incorrect PIN or PUK entry.
-       * @private {ErrorType}
        */
       error_: {
         type: Object,
@@ -108,7 +99,6 @@ class SimLockDialogsElement extends SimLockDialogsElementBase {
         observer: 'updateSubmitButtonEnabled_',
       },
 
-      /** @private */
       hasErrorText_: {
         type: Boolean,
         computed: 'computeHasErrorText_(error_, deviceState)',
@@ -118,7 +108,6 @@ class SimLockDialogsElement extends SimLockDialogsElementBase {
       /**
        * Error, if defined, that error_ should be set as the next time
        * deviceState updates.
-       * @private {ErrorType|undefined}
        */
       pendingError_: {
         type: Object,
@@ -126,26 +115,22 @@ class SimLockDialogsElement extends SimLockDialogsElementBase {
 
       /**
        * Used to enable enter button in |enterPin| dialog.
-       * @private
        */
       enterPinEnabled_: Boolean,
 
       /**
        * Used to enable change button in |changePinDialog| dialog.
-       * @private
        */
       changePinEnabled_: Boolean,
 
       /**
        * Used to enable unlock button in |unlockPukDialog| or |unlockPinDialog|
        * dialog.
-       * @private
        */
       enterPukEnabled_: Boolean,
 
       /**
        * Current network pin.
-       * @private
        */
       pin_: {
         type: String,
@@ -155,7 +140,6 @@ class SimLockDialogsElement extends SimLockDialogsElementBase {
       /**
        * New network pin.Property reflecting a new pin when a new pin is
        * created.
-       * @private
        */
       pin_new1_: {
         type: String,
@@ -168,7 +152,6 @@ class SimLockDialogsElement extends SimLockDialogsElementBase {
        * pin, the new pin needs to be entered twice to confirm it was entered
        * correctly. |pin_new2_| is the second entry for confirmation, it is
        * checked against |pin_new1_|, if they match the new pin is set.
-       * @private
        */
       pin_new2_: {
         type: String,
@@ -178,14 +161,12 @@ class SimLockDialogsElement extends SimLockDialogsElementBase {
       /**
        * Code provided by carrier, used when unlocking a locked cellular SIM or
        * eSIM profile.
-       * @private
        */
       puk_: {
         type: String,
         observer: 'pinOrPukChange_',
       },
 
-      /** @private {boolean} */
       isSimPinLockRestricted_: {
         type: Boolean,
         value: false,
@@ -195,17 +176,32 @@ class SimLockDialogsElement extends SimLockDialogsElementBase {
     };
   }
 
-  /** @override */
+  deviceState: OncMojo.DeviceStateProperties|null;
+  globalPolicy: GlobalPolicy|undefined;
+  isDialogOpen: boolean;
+  showChangePin: boolean;
+  private inProgress_: boolean;
+  private error_: ErrorType;
+  private hasErrorText_: boolean;
+  private pendingError_: ErrorType|undefined;
+  private enterPinEnabled_: boolean;
+  private changePinEnabled_: boolean;
+  private enterPukEnabled_: boolean;
+  private pin_: string;
+  private pin_new1_: string;
+  private pin_new2_: string;
+  private puk_: string;
+  private isSimPinLockRestricted_: boolean;
+  private networkConfig_: CrosNetworkConfigInterface;
+
   constructor() {
     super();
 
-    /** @private {?CrosNetworkConfigInterface} */
     this.networkConfig_ =
         MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
   }
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     if (!this.deviceState) {
@@ -215,12 +211,9 @@ class SimLockDialogsElement extends SimLockDialogsElementBase {
     this.updateDialogVisibility_();
   }
 
-  /**
-   * @param {?OncMojo.DeviceStateProperties} newDeviceState
-   * @param {?OncMojo.DeviceStateProperties} oldDeviceState
-   * @private
-   */
-  deviceStateChanged_(newDeviceState, oldDeviceState) {
+  private deviceStateChanged_(
+      newDeviceState: OncMojo.DeviceStateProperties|undefined,
+      oldDeviceState: OncMojo.DeviceStateProperties|undefined): void {
     // Do not attempt to show a dialog if the current deviceState is invalid,
     // or it is set for the first time.
     if (!oldDeviceState || !newDeviceState) {
@@ -235,8 +228,7 @@ class SimLockDialogsElement extends SimLockDialogsElementBase {
     this.updateDialogVisibility_();
   }
 
-  /** @private */
-  updateDialogVisibility_() {
+  private updateDialogVisibility_(): void {
     const simLockStatus = this.deviceState.simLockStatus;
 
     if (!simLockStatus) {
@@ -261,7 +253,8 @@ class SimLockDialogsElement extends SimLockDialogsElementBase {
     // If lock is enabled and PIN/PUK is required show unlock dialog
     // else it's either a change PIN or toggle PIN.
     if (simLockStatus.lockType === 'sim-puk') {
-      if (this.$.unlockPukDialog.open) {
+      if (strictQuery('#unlockPukDialog', this.shadowRoot, CrDialogElement)
+              .open) {
         return;
       }
       // If the PUK was activated while attempting to enter or change a pin,
@@ -280,12 +273,14 @@ class SimLockDialogsElement extends SimLockDialogsElementBase {
 
   /** @private */
   showEnterPinDialog_() {
-    if (this.$.enterPinDialog.open) {
+    if (strictQuery('#enterPinDialog', this.shadowRoot, CrDialogElement).open) {
       return;
     }
 
-    this.$.enterPin.value = '';
-    this.$.enterPinDialog.showModal();
+    strictQuery('#enterPin', this.shadowRoot, NetworkPasswordInputElement)
+        .value = '';
+    strictQuery('#enterPinDialog', this.shadowRoot, CrDialogElement)
+        .showModal();
     requestAnimationFrame(() => {
       this.focusDialogInput_();
     });
@@ -293,14 +288,19 @@ class SimLockDialogsElement extends SimLockDialogsElementBase {
 
   /** @private */
   showChangePinDialog_() {
-    if (this.$.changePinDialog.open) {
+    if (strictQuery('#changePinDialog', this.shadowRoot, CrDialogElement)
+            .open) {
       return;
     }
 
-    this.$.changePinOld.value = '';
-    this.$.changePinNew1.value = '';
-    this.$.changePinNew2.value = '';
-    this.$.changePinDialog.showModal();
+    strictQuery('#changePinOld', this.shadowRoot, NetworkPasswordInputElement)
+        .value = '';
+    strictQuery('#changePinNew1', this.shadowRoot, NetworkPasswordInputElement)
+        .value = '';
+    strictQuery('#changePinNew2', this.shadowRoot, NetworkPasswordInputElement)
+        .value = '';
+    strictQuery('#changePinDialog', this.shadowRoot, CrDialogElement)
+        .showModal();
     requestAnimationFrame(() => {
       this.focusDialogInput_();
     });
@@ -308,62 +308,67 @@ class SimLockDialogsElement extends SimLockDialogsElementBase {
 
   /** @private */
   showUnlockPukDialog_() {
-    if (this.$.unlockPukDialog.open) {
+    if (strictQuery('#unlockPukDialog', this.shadowRoot, CrDialogElement)
+            .open) {
       return;
     }
 
     this.error_ = ErrorType.NONE;
-    this.$.unlockPuk.value = '';
-    this.$.unlockPin1.value = '';
-    this.$.unlockPin2.value = '';
-    this.$.unlockPukDialog.showModal();
+    strictQuery('#unlockPuk', this.shadowRoot, NetworkPasswordInputElement)
+        .value = '';
+    strictQuery('#unlockPin1', this.shadowRoot, NetworkPasswordInputElement)
+        .value = '';
+    strictQuery('#unlockPin2', this.shadowRoot, NetworkPasswordInputElement)
+        .value = '';
+    strictQuery('#unlockPukDialog', this.shadowRoot, CrDialogElement)
+        .showModal();
     requestAnimationFrame(() => {
-      this.$.unlockPuk.focus();
+      strictQuery('#unlockPuk', this.shadowRoot, NetworkPasswordInputElement)
+          .focus();
     });
   }
 
   /** @private */
   showUnlockPinDialog_() {
-    if (this.$.unlockPinDialog.open) {
+    if (strictQuery('#unlockPinDialog', this.shadowRoot, CrDialogElement)
+            .open) {
       return;
     }
 
     this.error_ = ErrorType.NONE;
-    this.$.unlockPin.value = '';
-    this.$.unlockPinDialog.showModal();
+    strictQuery('#unlockPin', this.shadowRoot, NetworkPasswordInputElement)
+        .value = '';
+    strictQuery('#unlockPinDialog', this.shadowRoot, CrDialogElement)
+        .showModal();
     requestAnimationFrame(() => {
-      this.$.unlockPin.focus();
+      strictQuery('#unlockPin', this.shadowRoot, NetworkPasswordInputElement)
+          .focus();
     });
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeIsSimPinLockRestricted_() {
+  private computeIsSimPinLockRestricted_(): boolean {
     return !!this.globalPolicy && !this.globalPolicy.allowCellularSimLock;
   }
 
   /**
-   * Clears error message on user interacion.
-   * @private
+   * Clears error message on user interaction.
    */
-  pinOrPukChange_() {
+  private pinOrPukChange_(): void {
     this.error_ = ErrorType.NONE;
     this.updateSubmitButtonEnabled_();
   }
 
   /**
    * Sends the PIN value from the Enter PIN dialog.
-   * @param {!Event} event
-   * @private
    */
-  sendEnterPin_(event) {
+  private sendEnterPin_(event: Event) {
     event.stopPropagation();
     if (!this.enterPinEnabled_) {
       return;
     }
-    const pin = this.$.enterPin.value;
+    const pin =
+        strictQuery('#enterPin', this.shadowRoot, NetworkPasswordInputElement)
+            .value;
     if (!this.validatePin_(pin)) {
       return;
     }
@@ -375,6 +380,7 @@ class SimLockDialogsElement extends SimLockDialogsElementBase {
     const simState = {
       currentPinOrPuk: pin,
       requirePin: isPinRequired,
+      newPin: null,
     };
 
     this.setCellularSimState_(simState);
@@ -382,17 +388,25 @@ class SimLockDialogsElement extends SimLockDialogsElementBase {
 
   /**
    * Sends the old and new PIN values from the Change PIN dialog.
-   * @param {!Event} event
-   * @private
    */
-  sendChangePin_(event) {
+  private sendChangePin_(event: Event) {
     event.stopPropagation();
-    const newPin = this.$.changePinNew1.value;
-    if (!this.validatePin_(newPin, this.$.changePinNew2.value)) {
+    const newPin =
+        strictQuery(
+            '#changePinNew1', this.shadowRoot, NetworkPasswordInputElement)
+            .value;
+    if (!this.validatePin_(
+            newPin,
+            strictQuery(
+                '#changePinNew2', this.shadowRoot, NetworkPasswordInputElement)
+                .value)) {
       return;
     }
     const simState = {
-      currentPinOrPuk: this.$.changePinOld.value,
+      currentPinOrPuk:
+          strictQuery(
+              '#changePinOld', this.shadowRoot, NetworkPasswordInputElement)
+              .value,
       newPin: newPin,
       requirePin: true,
     };
@@ -401,12 +415,12 @@ class SimLockDialogsElement extends SimLockDialogsElementBase {
 
   /**
    * Sends the PUK value and new PIN value from the Unblock PUK dialog.
-   * @param {!Event} event
-   * @private
    */
-  sendUnlockPuk_(event) {
+  private sendUnlockPuk_(event: Event) {
     event.stopPropagation();
-    const puk = this.$.unlockPuk.value;
+    const puk =
+        strictQuery('#unlockPuk', this.shadowRoot, NetworkPasswordInputElement)
+            .value;
     if (!this.validatePuk_(puk)) {
       return;
     }
@@ -416,8 +430,14 @@ class SimLockDialogsElement extends SimLockDialogsElementBase {
       return;
     }
 
-    const pin = this.$.unlockPin1.value;
-    if (!this.validatePin_(pin, this.$.unlockPin2.value)) {
+    const pin =
+        strictQuery('#unlockPin1', this.shadowRoot, NetworkPasswordInputElement)
+            .value;
+    if (!this.validatePin_(
+            pin,
+            strictQuery(
+                '#unlockPin2', this.shadowRoot, NetworkPasswordInputElement)
+                .value)) {
       return;
     }
     this.unlockCellularSim_(pin, puk);
@@ -425,23 +445,19 @@ class SimLockDialogsElement extends SimLockDialogsElementBase {
 
   /**
    * Sends the PIN value from the Unlock PIN dialog.
-   * @param {!Event} event
-   * @private
    */
-  sendUnlockPin_(event) {
+  private sendUnlockPin_(event: Event) {
     event.stopPropagation();
-    const pin = this.$.unlockPin.value;
+    const pin =
+        strictQuery('#unlockPin', this.shadowRoot, NetworkPasswordInputElement)
+            .value;
     if (!this.validatePin_(pin)) {
       return;
     }
     this.unlockCellularSim_(pin);
   }
 
-  /**
-   * @param {!CellularSimState} cellularSimState
-   * @private
-   */
-  setCellularSimState_(cellularSimState) {
+  private setCellularSimState_(cellularSimState: CellularSimState): void {
     this.setInProgress_();
     this.networkConfig_.setCellularSimState(cellularSimState).then(response => {
       this.inProgress_ = false;
@@ -465,18 +481,21 @@ class SimLockDialogsElement extends SimLockDialogsElementBase {
    * @param {?boolean=} skipIsDialogOpenUpdate
    * @private
    */
-  closeDialogs_(skipIsDialogOpenUpdate) {
-    if (this.$.enterPinDialog.open) {
-      this.$.enterPinDialog.close();
+  closeDialogs_(skipIsDialogOpenUpdate: boolean|undefined = undefined) {
+    if (strictQuery('#enterPinDialog', this.shadowRoot, CrDialogElement).open) {
+      strictQuery('#enterPinDialog', this.shadowRoot, CrDialogElement).close();
     }
-    if (this.$.changePinDialog.open) {
-      this.$.changePinDialog.close();
+    if (strictQuery('#changePinDialog', this.shadowRoot, CrDialogElement)
+            .open) {
+      strictQuery('#changePinDialog', this.shadowRoot, CrDialogElement).close();
     }
-    if (this.$.unlockPinDialog.open) {
-      this.$.unlockPinDialog.close();
+    if (strictQuery('#unlockPinDialog', this.shadowRoot, CrDialogElement)
+            .open) {
+      strictQuery('#unlockPinDialog', this.shadowRoot, CrDialogElement).close();
     }
-    if (this.$.unlockPukDialog.open) {
-      this.$.unlockPukDialog.close();
+    if (strictQuery('#unlockPukDialog', this.shadowRoot, CrDialogElement)
+            .open) {
+      strictQuery('#unlockPukDialog', this.shadowRoot, CrDialogElement).close();
     }
     this.isDialogOpen = skipIsDialogOpenUpdate ? skipIsDialogOpenUpdate : false;
   }
@@ -484,28 +503,22 @@ class SimLockDialogsElement extends SimLockDialogsElementBase {
   /**
    * Used by test to simulate dialog cancel click.
    */
-  closeDialogsForTest() {
+  closeDialogsForTest(): void {
     this.closeDialogs_();
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onCancel_(event) {
+  private onCancel_(event: Event): void {
     event.stopPropagation();
     this.closeDialogs_();
   }
 
-  /** @private */
-  setInProgress_() {
+  private setInProgress_(): void {
     this.error_ = ErrorType.NONE;
     this.pendingError_ = ErrorType.NONE;
     this.inProgress_ = true;
   }
 
-  /** @private */
-  updateSubmitButtonEnabled_() {
+  private updateSubmitButtonEnabled_(): void {
     const hasError = this.error_ !== ErrorType.NONE;
     this.enterPinEnabled_ = !this.inProgress_ && !!this.pin_ && !hasError;
     this.changePinEnabled_ = !this.inProgress_ && !!this.pin_ &&
@@ -515,20 +528,14 @@ class SimLockDialogsElement extends SimLockDialogsElementBase {
          (!!this.pin_new1_ && !!this.pin_new2_));
   }
 
-  /**
-   * @param {string} pin
-   * @param {string=} opt_puk
-   * @private
-   */
-  unlockCellularSim_(pin, opt_puk) {
+  private unlockCellularSim_(
+      pin: string, opt_puk: string|undefined = undefined): void {
     this.setInProgress_();
     const cellularSimState = {
       currentPinOrPuk: opt_puk || pin,
       requirePin: false,
+      newPin: opt_puk ? pin : null,
     };
-    if (opt_puk) {
-      cellularSimState.newPin = pin;
-    }
 
     this.networkConfig_.setCellularSimState(cellularSimState).then(response => {
       this.inProgress_ = false;
@@ -546,20 +553,29 @@ class SimLockDialogsElement extends SimLockDialogsElementBase {
     });
   }
 
-  /** @private */
-  focusDialogInput_() {
-    if (this.$.enterPinDialog.open) {
-      this.$.enterPin.focus();
-    } else if (this.$.changePinDialog.open) {
+  private focusDialogInput_(): void {
+    if (strictQuery('#enterPinDialog', this.shadowRoot, CrDialogElement).open) {
+      strictQuery('#enterPin', this.shadowRoot, NetworkPasswordInputElement)
+          .focus();
+    } else if (strictQuery('#changePinDialog', this.shadowRoot, CrDialogElement)
+                   .open) {
       if (this.isSecondNewPinInvalid_()) {
-        this.$.changePinNew2.focus();
+        strictQuery(
+            '#changePinNew2', this.shadowRoot, NetworkPasswordInputElement)
+            .focus();
       } else {
-        this.$.changePinOld.focus();
+        strictQuery(
+            '#changePinOld', this.shadowRoot, NetworkPasswordInputElement)
+            .focus();
       }
-    } else if (this.$.unlockPinDialog.open) {
-      this.$.unlockPin.focus();
-    } else if (this.$.unlockPukDialog.open) {
-      this.$.unlockPuk.focus();
+    } else if (strictQuery('#unlockPinDialog', this.shadowRoot, CrDialogElement)
+                   .open) {
+      strictQuery('#unlockPin', this.shadowRoot, NetworkPasswordInputElement)
+          .focus();
+    } else if (strictQuery('#unlockPukDialog', this.shadowRoot, CrDialogElement)
+                   .open) {
+      strictQuery('#unlockPuk', this.shadowRoot, NetworkPasswordInputElement)
+          .focus();
     }
   }
 
@@ -568,12 +584,10 @@ class SimLockDialogsElement extends SimLockDialogsElementBase {
    * If opt_pin2 is not undefined, then it also checks whether pin1 and
    * opt_pin2 match. On any failure, sets |this.error_|, focuses the invalid
    * PIN, and returns false.
-   * @param {string} pin1
-   * @param {string=} opt_pin2
-   * @return {boolean} True if the pins match and are of minimum length.
-   * @private
+   * @return True if the pins match and are of minimum length.
    */
-  validatePin_(pin1, opt_pin2) {
+  private validatePin_(pin1: string, opt_pin2: string|undefined = undefined):
+      boolean {
     if (!pin1.length) {
       return false;
     }
@@ -593,11 +607,9 @@ class SimLockDialogsElement extends SimLockDialogsElementBase {
   /**
    * Checks whether |puk| is of the proper length and contains only digits.
    * If not, sets |this.error_| and returns false.
-   * @param {string} puk
-   * @return {boolean} True if the puk is of minimum length.
-   * @private
+   * @return True if the puk is of minimum length.
    */
-  validatePuk_(puk) {
+  private validatePuk_(puk: string): boolean {
     if (puk.length < PUK_MIN_LENGTH || !DIGITS_ONLY_REGEX.test(puk)) {
       this.error_ = ErrorType.INVALID_PUK;
       return false;
@@ -605,21 +617,13 @@ class SimLockDialogsElement extends SimLockDialogsElementBase {
     return true;
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getEnterPinDescription_() {
+  private getEnterPinDescription_(): string {
     return this.isSimPinLockRestricted_ ?
         this.i18n('networkSimLockPolicyAdminSubtitle') :
         this.i18n('networkSimEnterPinDescription');
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getErrorMsg_() {
+  private getErrorMsg_(): string {
     if (this.error_ === ErrorType.NONE) {
       return '';
     } else if (this.error_ === ErrorType.MISMATCHED_PIN) {
@@ -656,11 +660,7 @@ class SimLockDialogsElement extends SimLockDialogsElementBase {
     return this.i18n(errorStringId, retriesLeft);
   }
 
-  /**
-   * @return {number}
-   * @private
-   */
-  getNumRetriesLeft_() {
+  private getNumRetriesLeft_(): number {
     if (!this.deviceState || !this.deviceState.simLockStatus) {
       return 0;
     }
@@ -668,19 +668,11 @@ class SimLockDialogsElement extends SimLockDialogsElementBase {
     return this.deviceState.simLockStatus.retriesLeft;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeHasErrorText_() {
+  private computeHasErrorText_(): boolean {
     return !!this.getErrorMsg_();
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getPinEntrySubtext_() {
+  private getPinEntrySubtext_(): string {
     const errorMessage = this.getErrorMsg_();
     if (errorMessage) {
       return errorMessage;
@@ -689,20 +681,12 @@ class SimLockDialogsElement extends SimLockDialogsElementBase {
     return this.i18n('networkSimEnterPinSubtext');
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  isOldPinInvalid_() {
+  private isOldPinInvalid_(): boolean {
     return this.error_ === ErrorType.INCORRECT_PIN ||
         this.error_ === ErrorType.INVALID_PIN;
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getOldPinErrorMessage_() {
+  private getOldPinErrorMessage_(): string {
     if (this.isOldPinInvalid_()) {
       return this.getErrorMsg_();
     }
@@ -710,19 +694,11 @@ class SimLockDialogsElement extends SimLockDialogsElementBase {
     return '';
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  isSecondNewPinInvalid_() {
+  private isSecondNewPinInvalid_(): boolean {
     return this.error_ === ErrorType.MISMATCHED_PIN;
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getSecondNewPinErrorMessage_() {
+  private getSecondNewPinErrorMessage_(): string {
     if (this.isSecondNewPinInvalid_()) {
       return this.getErrorMsg_();
     }
@@ -730,20 +706,12 @@ class SimLockDialogsElement extends SimLockDialogsElementBase {
     return '';
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  isPukInvalid_() {
+  private isPukInvalid_(): boolean {
     return this.error_ === ErrorType.INCORRECT_PUK ||
         this.error_ === ErrorType.INVALID_PUK;
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getPukErrorMessage_() {
+  private getPukErrorMessage_(): string {
     if (this.isPukInvalid_()) {
       return this.getErrorMsg_();
     }
@@ -751,31 +719,19 @@ class SimLockDialogsElement extends SimLockDialogsElementBase {
     return '';
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getPukWarningMessage_() {
+  private getPukWarningMessage_(): string {
     return this.isSimPinLockRestricted_ ?
         this.getPukWarningSimPinRestrictedMessage_() :
         this.getPukWarningSimPinUnrestrictedMessage_();
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getNetworkSimPukDialogString_() {
+  private getNetworkSimPukDialogString_(): string {
     return this.isSimPinLockRestricted_ ?
         this.i18n('networkSimPukDialogManagedSubtitle') :
         this.i18n('networkSimPukDialogSubtitle');
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getPukWarningSimPinUnrestrictedMessage_() {
+  private getPukWarningSimPinUnrestrictedMessage_(): string {
     if (this.isPukInvalid_()) {
       const retriesLeft = this.getNumRetriesLeft_();
       if (retriesLeft === 1) {
@@ -788,11 +744,7 @@ class SimLockDialogsElement extends SimLockDialogsElementBase {
     return this.i18n('networkSimPukDialogWarningNoFailures');
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getPukWarningSimPinRestrictedMessage_() {
+  private getPukWarningSimPinRestrictedMessage_(): string {
     if (this.isPukInvalid_()) {
       const retriesLeft = this.getNumRetriesLeft_();
       if (retriesLeft === 1) {
@@ -805,6 +757,12 @@ class SimLockDialogsElement extends SimLockDialogsElementBase {
     }
 
     return this.i18n('networkSimPukDialogManagedWarningNoFailures');
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [SimLockDialogsElement.is]: SimLockDialogsElement;
   }
 }
 
