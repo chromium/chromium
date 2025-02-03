@@ -55,7 +55,11 @@
 namespace blink {
 
 namespace {
-
+static constexpr char kScopeExtensionsMissingKeysErrorMessage[] =
+    "scope_extensions entry ignored, required properties 'type' and 'value' "
+    "are missing.";
+static constexpr char kScopeExtensionsTypeKey[] = "type";
+static constexpr char kScopeExtensionsValueKey[] = "value";
 static constexpr char kOriginWildcardPrefix[] = "%2A.";
 // Keep in sync with web_app_origin_association_task.cc.
 static wtf_size_t kMaxScopeExtensionsSize = 10;
@@ -1620,7 +1624,6 @@ ManifestParser::ParseScopeExtensions(const JSONObject* from) {
     return scope_extensions;
   }
 
-  JSONValue::ValueType expected_entry_type = JSONValue::kTypeNull;
   for (wtf_size_t i = 0; i < extensions_list->size(); ++i) {
     if (i == kMaxScopeExtensionsSize) {
       AddErrorInfo("property 'scope_extensions' contains more than " +
@@ -1637,38 +1640,19 @@ ManifestParser::ParseScopeExtensions(const JSONObject* from) {
     }
 
     JSONValue::ValueType entry_type = extensions_entry->GetType();
-    if (entry_type != JSONValue::kTypeString &&
-        entry_type != JSONValue::kTypeObject) {
-      AddErrorInfo(
-          "scope_extensions entry ignored, type string or object expected.");
+    if (entry_type != JSONValue::kTypeObject) {
+      AddErrorInfo("scope_extensions entry ignored, type object expected.");
       continue;
-    }
-
-    // Check whether first scope extension entry in the list is a string or
-    // object to make sure that following entries have the same type, ignoring
-    // entries that are null or other types.
-    if (expected_entry_type != JSONValue::kTypeString &&
-        expected_entry_type != JSONValue::kTypeObject) {
-      expected_entry_type = entry_type;
     }
 
     std::optional<mojom::blink::ManifestScopeExtensionPtr> scope_extension =
         std::nullopt;
-    if (expected_entry_type == JSONValue::kTypeString) {
-      String scope_extension_origin;
-      if (!extensions_entry->AsString(&scope_extension_origin)) {
-        AddErrorInfo("scope_extensions entry ignored, type string expected.");
-        continue;
-      }
-      scope_extension = ParseScopeExtensionOrigin(scope_extension_origin);
-    } else {
-      const JSONObject* extension_object = JSONObject::Cast(extensions_entry);
-      if (!extension_object) {
-        AddErrorInfo("scope_extensions entry ignored, type object expected.");
-        continue;
-      }
-      scope_extension = ParseScopeExtension(extension_object);
+    const JSONObject* extension_object = JSONObject::Cast(extensions_entry);
+    if (!extension_object) {
+      AddErrorInfo("scope_extensions entry ignored, type object expected.");
+      continue;
     }
+    scope_extension = ParseScopeExtension(extension_object);
 
     if (!scope_extension) {
       continue;
@@ -1684,19 +1668,30 @@ ManifestParser::ParseScopeExtension(const JSONObject* object) {
       base::FeatureList::IsEnabled(
           blink::features::kWebAppEnableScopeExtensions) ||
       RuntimeEnabledFeatures::WebAppScopeExtensionsEnabled(execution_context_));
-  if (!object->Get("origin")) {
-    AddErrorInfo(
-        "scope_extensions entry ignored, required property 'origin' is "
-        "missing.");
+  if (!object->Get(kScopeExtensionsTypeKey) ||
+      !object->Get(kScopeExtensionsValueKey)) {
+    AddErrorInfo(kScopeExtensionsMissingKeysErrorMessage);
     return std::nullopt;
   }
-  const std::optional<String> origin_string =
-      ParseString(object, "origin", Trim(true));
-  if (!origin_string.has_value()) {
+  const std::optional<String> scope_extension_type =
+      ParseString(object, kScopeExtensionsTypeKey, Trim(true));
+  if (!scope_extension_type.has_value()) {
+    AddErrorInfo("Scope extension 'type' invalid.");
     return std::nullopt;
   }
-
-  return ParseScopeExtensionOrigin(*origin_string);
+  if (scope_extension_type.value() ==
+      ScopeExtensionTypeMap[static_cast<int>(ScopeExtensionType::kOrigin)]) {
+    const std::optional<String> origin_string =
+        ParseString(object, kScopeExtensionsValueKey, Trim(true));
+    if (!origin_string.has_value()) {
+      AddErrorInfo("Scope extension 'value' invalid.");
+      return std::nullopt;
+    }
+    return ParseScopeExtensionOrigin(*origin_string);
+  } else {
+    AddErrorInfo("Scope extension 'type' invalid.");
+    return std::nullopt;
+  }
 }
 
 std::optional<mojom::blink::ManifestScopeExtensionPtr>
