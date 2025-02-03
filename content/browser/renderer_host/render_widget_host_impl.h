@@ -384,10 +384,10 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   void OnInputEventPreDispatch(const blink::WebInputEvent& event) override;
   void OnInvalidInputEventSource() override;
   void OnInputIgnored(const blink::WebInputEvent& event) override;
-  void IncrementInFlightEventCount() override;
-  void DecrementInFlightEventCount(
-      blink::mojom::InputEventResultSource ack_source) override;
   input::StylusInterface* GetStylusInterface() override;
+  bool IsRendererProcessBlocked() override;
+  void OnInputEventAckTimeout() override;
+  void RendererIsResponsive() override;
 
   // Update the stored set of visual properties for the renderer. If 'propagate'
   // is true, the new properties will be sent to the renderer process.
@@ -770,8 +770,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
                         uint32_t offset,
                         const gfx::Range& range);
 
-  size_t in_flight_event_count() const { return in_flight_event_count_; }
-
   bool renderer_initialized() const { return renderer_widget_created_; }
 
   base::WeakPtr<RenderWidgetHostImpl> GetWeakPtr() {
@@ -795,6 +793,11 @@ class CONTENT_EXPORT RenderWidgetHostImpl
 
   // SyntheticGestureController::Delegate overrides.
   bool HasGestureStopped() override;
+
+  // SyntheticGestureController::Delegate, RenderInputRouterDelegate overrides.
+  // Both of these classes declare this as pure virtual, ensuring that any class
+  // inheriting from both interfaces must provide a concrete implementation,
+  // resolving any ambiguity that could arise from multiple inheritance.
   bool IsHidden() const override;
 
   // Signals that a frame with token |frame_token| was finished processing. If
@@ -884,11 +887,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   void RendererIsUnresponsive(
       RendererIsUnresponsiveReason reason,
       base::RepeatingClosure restart_hang_monitor_timeout);
-
-  // Called if we know the renderer is responsive. When we currently think the
-  // renderer is unresponsive, this will clear that state and call
-  // NotifyRendererResponsive.
-  void RendererIsResponsive();
 
   // Called during frame eviction to return all SurfaceIds in the frame tree.
   // Marks all views in the frame tree as evicted.
@@ -1184,23 +1182,10 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // 4. Register the files with the IsolatedContext.
   void GrantFileAccessFromDropData(DropData* drop_data);
 
-  // Starts a hang monitor timeout. If there's already a hang monitor timeout
-  // the new one will only fire if it has a shorter delay than the time
-  // left on the existing timeouts.
-  void StartInputEventAckTimeout();
-
-  // Stops all existing hang monitor timeouts and assumes the renderer is
-  // responsive.
-  void StopInputEventAckTimeout();
-
   // Implementation of |hang_monitor_restarter| callback passed to
   // RenderWidgetHostDelegate::RendererUnresponsive if the unresponsiveness
   // was noticed because of input event ack timeout.
   void RestartInputEventAckTimeoutIfNecessary();
-
-  // Called by |input_event_ack_timeout_| when an input event timed out without
-  // getting an ack from the renderer.
-  void OnInputEventAckTimeout();
 
   void SetupRenderInputRouter();
   void SetupInputRouter();
@@ -1408,14 +1393,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // This is true if the renderer is currently unresponsive.
   bool is_unresponsive_ = false;
 
-  // We access this value quite a lot, so we cache switches::kDisableHangMonitor
-  // here.
-  const bool should_disable_hang_monitor_;
-
-  // This value denotes the number of input events yet to be acknowledged
-  // by the renderer.
-  int in_flight_event_count_ = 0;
-
   // Set when we update the text direction of the selected input element.
   bool text_direction_updated_ = false;
   base::i18n::TextDirection text_direction_ = base::i18n::LEFT_TO_RIGHT;
@@ -1456,10 +1433,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // awkward.
   std::unique_ptr<SyntheticGestureController> synthetic_gesture_controller_;
 
-  // These need to be destroyed after RenderInputRouter to avoid UAF bugs which
-  // can arise when handling acks.
-  base::OneShotTimer input_event_ack_timeout_;
-
   // The View associated with the RenderWidgetHost. The lifetime of this object
   // is associated with the lifetime of the Render process. If the Renderer
   // crashes, its View is destroyed and this pointer becomes NULL, even though
@@ -1489,9 +1462,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // Indicates whether what the last focus active state that was sent to the
   // renderer.
   bool is_active_ = false;
-
-  // This value indicates how long to wait before we consider a renderer hung.
-  base::TimeDelta hung_renderer_delay_;
 
   // This value indicates how long to wait for a new compositor frame from a
   // renderer process before clearing any previously displayed content.

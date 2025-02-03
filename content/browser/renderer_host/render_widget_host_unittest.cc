@@ -4,6 +4,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+
 #include <memory>
 #include <tuple>
 #include <utility>
@@ -22,6 +23,7 @@
 #include "build/build_config.h"
 #include "cc/mojom/render_frame_metadata.mojom.h"
 #include "cc/trees/render_frame_metadata.h"
+#include "components/input/input_constants.h"
 #include "components/input/switches.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
@@ -1750,16 +1752,16 @@ TEST_F(RenderWidgetHostTest, UnhandledGestureEvent) {
 // Test that the hang monitor timer expires properly if a new timer is started
 // while one is in progress (see crbug.com/11007).
 TEST_F(RenderWidgetHostTest, DontPostponeInputEventAckTimeout) {
-  base::TimeDelta delay = kHungRendererDelay;
+  base::TimeDelta delay = input::kHungRendererDelay;
 
   // Start a timeout.
-  host_->StartInputEventAckTimeout();
+  host_->GetRenderInputRouter()->StartInputEventAckTimeoutForTesting();
 
   task_environment_.FastForwardBy(delay / 2);
 
   // Add another timeout.
   EXPECT_FALSE(delegate_->unresponsive_timer_fired());
-  host_->StartInputEventAckTimeout();
+  host_->GetRenderInputRouter()->StartInputEventAckTimeoutForTesting();
 
   // Wait long enough for first timeout and see if it fired.
   task_environment_.FastForwardBy(delay);
@@ -1770,15 +1772,16 @@ TEST_F(RenderWidgetHostTest, DontPostponeInputEventAckTimeout) {
 // and then started again.
 TEST_F(RenderWidgetHostTest, StopAndStartInputEventAckTimeout) {
   // Start a timeout, then stop it.
-  host_->StartInputEventAckTimeout();
-  host_->StopInputEventAckTimeout();
+  host_->GetRenderInputRouter()->StartInputEventAckTimeoutForTesting();
+  host_->GetRenderInputRouter()->StopInputEventAckTimeout();
 
   // Start it again to ensure it still works.
   EXPECT_FALSE(delegate_->unresponsive_timer_fired());
-  host_->StartInputEventAckTimeout();
+  host_->GetRenderInputRouter()->StartInputEventAckTimeoutForTesting();
 
   // Wait long enough for first timeout and see if it fired.
-  task_environment_.FastForwardBy(kHungRendererDelay + base::Milliseconds(10));
+  task_environment_.FastForwardBy(input::kHungRendererDelay +
+                                  base::Milliseconds(10));
   EXPECT_TRUE(delegate_->unresponsive_timer_fired());
 }
 
@@ -1792,18 +1795,21 @@ TEST_F(RenderWidgetHostTest, InputEventAckTimeoutDisabledForInputWhenHidden) {
 
   // The timeout should not fire.
   EXPECT_FALSE(delegate_->unresponsive_timer_fired());
-  task_environment_.FastForwardBy(kHungRendererDelay + base::Milliseconds(10));
+  task_environment_.FastForwardBy(input::kHungRendererDelay +
+                                  base::Milliseconds(10));
   EXPECT_FALSE(delegate_->unresponsive_timer_fired());
 
   // The timeout should never reactivate while hidden.
   SimulateMouseEvent(WebInputEvent::Type::kMouseMove, 10, 10, 0, false);
-  task_environment_.FastForwardBy(kHungRendererDelay + base::Milliseconds(10));
+  task_environment_.FastForwardBy(input::kHungRendererDelay +
+                                  base::Milliseconds(10));
   EXPECT_FALSE(delegate_->unresponsive_timer_fired());
 
   // Showing the widget should restore the timeout, as the events have
   // not yet been ack'ed.
   host_->WasShown({} /* record_tab_switch_time_request */);
-  task_environment_.FastForwardBy(kHungRendererDelay + base::Milliseconds(10));
+  task_environment_.FastForwardBy(input::kHungRendererDelay +
+                                  base::Milliseconds(10));
   EXPECT_TRUE(delegate_->unresponsive_timer_fired());
 }
 
@@ -1813,7 +1819,7 @@ TEST_F(RenderWidgetHostTest, InputEventAckTimeoutDisabledForInputWhenHidden) {
 TEST_F(RenderWidgetHostTest, MultipleInputEvents) {
   // Send two events but only one ack.
   SimulateKeyboardEvent(WebInputEvent::Type::kRawKeyDown);
-  task_environment_.FastForwardBy(kHungRendererDelay / 2);
+  task_environment_.FastForwardBy(input::kHungRendererDelay / 2);
   SimulateKeyboardEvent(WebInputEvent::Type::kRawKeyDown);
 
   MockWidgetInputHandler::MessageVector dispatched_events =
@@ -1826,7 +1832,8 @@ TEST_F(RenderWidgetHostTest, MultipleInputEvents) {
       blink::mojom::InputEventResultState::kConsumed);
 
   // Wait long enough for second timeout and see if it fired.
-  task_environment_.FastForwardBy(kHungRendererDelay + base::Milliseconds(10));
+  task_environment_.FastForwardBy(input::kHungRendererDelay +
+                                  base::Milliseconds(10));
   EXPECT_TRUE(delegate_->unresponsive_timer_fired());
 }
 
@@ -2029,9 +2036,9 @@ TEST_F(RenderWidgetHostTest, InputEventRWHLatencyComponent) {
 }
 
 TEST_F(RenderWidgetHostTest, RendererExitedResetsInputRouter) {
-  EXPECT_EQ(0u, host_->in_flight_event_count());
+  EXPECT_EQ(0u, host_->GetRenderInputRouter()->in_flight_event_count());
   SimulateKeyboardEvent(WebInputEvent::Type::kRawKeyDown);
-  EXPECT_EQ(1u, host_->in_flight_event_count());
+  EXPECT_EQ(1u, host_->GetRenderInputRouter()->in_flight_event_count());
 
   EXPECT_FALSE(host_->input_router()->HasPendingEvents());
   blink::WebMouseWheelEvent event;
@@ -2060,13 +2067,13 @@ TEST_F(RenderWidgetHostTest, RendererExitedResetsInputRouter) {
   // Make sure the input router is in a fresh state.
   ASSERT_FALSE(host_->input_router()->HasPendingEvents());
   // There should be no in flight events. https://crbug.com/615090#152.
-  EXPECT_EQ(0u, host_->in_flight_event_count());
+  EXPECT_EQ(0u, host_->GetRenderInputRouter()->in_flight_event_count());
 }
 
 TEST_F(RenderWidgetHostTest, DestroyingRenderWidgetResetsInputRouter) {
-  EXPECT_EQ(0u, host_->in_flight_event_count());
+  EXPECT_EQ(0u, host_->GetRenderInputRouter()->in_flight_event_count());
   SimulateKeyboardEvent(WebInputEvent::Type::kRawKeyDown);
-  EXPECT_EQ(1u, host_->in_flight_event_count());
+  EXPECT_EQ(1u, host_->GetRenderInputRouter()->in_flight_event_count());
 
   EXPECT_FALSE(host_->input_router()->HasPendingEvents());
   blink::WebMouseWheelEvent event;
@@ -2096,7 +2103,7 @@ TEST_F(RenderWidgetHostTest, DestroyingRenderWidgetResetsInputRouter) {
   // Make sure the input router is in a fresh state.
   EXPECT_FALSE(host_->input_router()->HasPendingEvents());
   // There should be no in flight events. https://crbug.com/615090#152.
-  EXPECT_EQ(0u, host_->in_flight_event_count());
+  EXPECT_EQ(0u, host_->GetRenderInputRouter()->in_flight_event_count());
 }
 
 TEST_F(RenderWidgetHostTest, RendererExitedResetsScreenRectsAck) {

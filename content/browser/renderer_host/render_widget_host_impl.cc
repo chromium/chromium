@@ -394,10 +394,6 @@ RenderWidgetHostImpl::RenderWidgetHostImpl(
       was_ever_shown_(!hidden),
       last_view_screen_rect_(kInvalidScreenRect),
       last_window_screen_rect_(kInvalidScreenRect),
-      should_disable_hang_monitor_(
-          base::CommandLine::ForCurrentProcess()->HasSwitch(
-              switches::kDisableHangMonitor)),
-      hung_renderer_delay_(kHungRendererDelay),
       new_content_rendering_delay_(blink::kNewContentRenderingDelay),
       frame_token_message_queue_(std::move(frame_token_message_queue)),
       render_frame_metadata_provider_(
@@ -459,8 +455,6 @@ RenderWidgetHostImpl::RenderWidgetHostImpl(
                             weak_factory_.GetWeakPtr()),
         GetUIThreadTaskRunner({BrowserTaskType::kUserInput}));
   }
-  input_event_ack_timeout_.SetTaskRunner(
-      GetUIThreadTaskRunner({BrowserTaskType::kUserInput}));
 
   delegate_->RenderWidgetCreated(this);
   render_frame_metadata_provider_.AddObserver(this);
@@ -820,7 +814,7 @@ void RenderWidgetHostImpl::WasHidden() {
   visual_properties_ack_pending_ = false;
 
   // Don't bother reporting hung state when we aren't active.
-  StopInputEventAckTimeout();
+  GetRenderInputRouter()->StopInputEventAckTimeout();
 
   // Show/Hide state is not sent to the renderer when it has requested for us to
   // wait until it requests them via Init().
@@ -1456,42 +1450,22 @@ bool RenderWidgetHostImpl::RequestRepaintForTesting() {
 
 void RenderWidgetHostImpl::RenderProcessBlockedStateChanged(bool blocked) {
   if (blocked) {
-    StopInputEventAckTimeout();
+    GetRenderInputRouter()->StopInputEventAckTimeout();
   } else {
     RestartInputEventAckTimeoutIfNecessary();
   }
 }
 
-void RenderWidgetHostImpl::StartInputEventAckTimeout() {
-  if (should_disable_hang_monitor_) {
+void RenderWidgetHostImpl::RestartInputEventAckTimeoutIfNecessary() {
+  if (is_hidden_) {
     return;
   }
 
-  if (!input_event_ack_timeout_.IsRunning()) {
-    input_event_ack_timeout_.Start(
-        FROM_HERE, hung_renderer_delay_,
-        base::BindOnce(&RenderWidgetHostImpl::OnInputEventAckTimeout,
-                       weak_factory_.GetWeakPtr()));
-  }
-}
-
-void RenderWidgetHostImpl::RestartInputEventAckTimeoutIfNecessary() {
-  if (!GetProcess()->IsBlocked() && !should_disable_hang_monitor_ &&
-      in_flight_event_count_ > 0 && !is_hidden_) {
-    input_event_ack_timeout_.Start(
-        FROM_HERE, hung_renderer_delay_,
-        base::BindOnce(&RenderWidgetHostImpl::OnInputEventAckTimeout,
-                       weak_factory_.GetWeakPtr()));
-  }
+  GetRenderInputRouter()->RestartInputEventAckTimeoutIfNecessary();
 }
 
 bool RenderWidgetHostImpl::IsCurrentlyUnresponsive() {
   return is_unresponsive_;
-}
-
-void RenderWidgetHostImpl::StopInputEventAckTimeout() {
-  input_event_ack_timeout_.Stop();
-  RendererIsResponsive();
 }
 
 void RenderWidgetHostImpl::DidNavigate() {
@@ -2397,6 +2371,9 @@ void RenderWidgetHostImpl::Destroy(bool also_delete) {
 }
 
 void RenderWidgetHostImpl::OnInputEventAckTimeout() {
+  if (is_hidden_) {
+    return;
+  }
   RendererIsUnresponsive(
       RendererIsUnresponsiveReason::kOnInputEventAckTimeout,
       base::BindRepeating(
@@ -3261,31 +3238,12 @@ bool RenderWidgetHostImpl::KeyPressListenersHandleEvent(
   return false;
 }
 
-void RenderWidgetHostImpl::IncrementInFlightEventCount() {
-  ++in_flight_event_count_;
-
-  if (!is_hidden_) {
-    StartInputEventAckTimeout();
-  }
-}
-
 void RenderWidgetHostImpl::OnInputIgnored(const blink::WebInputEvent& event) {
   delegate_->OnInputIgnored(event);
 }
 
-void RenderWidgetHostImpl::DecrementInFlightEventCount(
-    blink::mojom::InputEventResultSource ack_source) {
-  --in_flight_event_count_;
-  if (in_flight_event_count_ <= 0) {
-    // Cancel pending hung renderer checks since the renderer is responsive.
-    StopInputEventAckTimeout();
-  } else {
-    // Only restart the hang monitor timer if we got a response from the
-    // main thread.
-    if (ack_source == blink::mojom::InputEventResultSource::kMainThread) {
-      RestartInputEventAckTimeoutIfNecessary();
-    }
-  }
+bool RenderWidgetHostImpl::IsRendererProcessBlocked() {
+  return GetProcess()->IsBlocked();
 }
 
 input::StylusInterface* RenderWidgetHostImpl::GetStylusInterface() {
@@ -3697,10 +3655,8 @@ void RenderWidgetHostImpl::SetupRenderInputRouter() {
 }
 
 void RenderWidgetHostImpl::SetupInputRouter() {
-  in_flight_event_count_ = 0;
   suppress_events_until_keydown_ = false;
   monitoring_composition_info_ = false;
-  StopInputEventAckTimeout();
   GetRenderInputRouter()->SetupInputRouter(GetScaleFactorForView(view_.get()));
 }
 

@@ -8,6 +8,11 @@
 
 namespace input::switches {
 
+// Suppresses hang monitor dialogs in renderer processes.  This may allow slow
+// unload handlers on a page to prevent the tab from closing, but the Task
+// Manager can be used to terminate the offending process in this case.
+const char kDisableHangMonitor[] = "disable-hang-monitor";
+
 // Disables compositor-accelerated touch-screen pinch gestures.
 const char kDisablePinch[] = "disable-pinch";
 

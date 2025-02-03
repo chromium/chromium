@@ -136,4 +136,15 @@ input::StylusInterface* RenderInputRouterDelegateImpl::GetStylusInterface() {
   return nullptr;
 }
 
+bool RenderInputRouterDelegateImpl::IsHidden() const {
+  // TODO(391135801): Implement hang renderer detection with InputVizard.
+  // Currently, this returns a default value to stop the input event ack timers
+  // from firing unnecessarily.
+  return true;
+}
+
+bool RenderInputRouterDelegateImpl::IsRendererProcessBlocked() {
+  return is_blocked_;
+}
+
 }  // namespace viz
