@@ -44,7 +44,7 @@ origin_files = glob([
     "testing/buildbot/**",
     # Exclude test files to reduce the number of gn2bp files
     "testing/fuzzer/**",
-    "testing/libfuzzer/**",
+    "testing/libfuzzer/fuzzers/wasm_corpus/**",
   ]) - glob(["**/third_party/**"]) + glob([
     "base/third_party/cityhash/**",
     "base/third_party/cityhash_v103/**",
