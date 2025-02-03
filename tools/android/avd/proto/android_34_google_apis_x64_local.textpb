@@ -19,7 +19,7 @@ avd_package {
   package_name: "chromium/third_party/android_sdk/public/avds/android-34/google_apis/x86_64"
   # Created in https://ci.chromium.org/ui/b/8734060994898362593
   # Patched gmscore version 24.26.32 in https://crrev.com/c/5735581
-  version: "L_POkaq4PcCRYjVlY4GQSri5hdqlQ1VRudXKer7mjQYC"
+  version: "7nk67G7wwctrB0PzyRji78E1NMJTkqRP3zdcpKU7qjMC"
 }
 avd_name: "android_34_google_apis_x64"
 
