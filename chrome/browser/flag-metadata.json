@@ -2824,8 +2824,8 @@
   },
   {
     "name": "enable-desktop-pwas-tab-strip-customizations",
-    "owners": [ "loubrett@google.com", "cros-web-apps-core@google.com" ],
-    "expiry_milestone": 132
+    "owners": [ "cros-web-apps-core@google.com", "pwa-team@google.com" ],
+    "expiry_milestone": 140
   },
   {
     "name": "enable-desktop-pwas-tab-strip-settings",
