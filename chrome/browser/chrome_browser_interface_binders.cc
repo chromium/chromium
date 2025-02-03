@@ -445,12 +445,6 @@
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #endif  // BUILDFLAG(ENABLE_BROWSER_SPEECH_SERVICE)
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "extensions/browser/api/mime_handler_private/mime_handler_private.h"
-#include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
-#include "extensions/common/api/mime_handler.mojom.h"  // nogncheck
-#endif
-
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 #include "chrome/browser/ui/webui/tab_strip/tab_strip.mojom.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui.h"
@@ -608,33 +602,6 @@ template <typename Interface>
 void ForwardToJavaFrame(content::RenderFrameHost* render_frame_host,
                         mojo::PendingReceiver<Interface> receiver) {
   render_frame_host->GetJavaInterfaces()->GetInterface(std::move(receiver));
-}
-#endif
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-void BindMimeHandlerService(
-    content::RenderFrameHost* frame_host,
-    mojo::PendingReceiver<extensions::mime_handler::MimeHandlerService>
-        receiver) {
-  auto* guest_view =
-      extensions::MimeHandlerViewGuest::FromRenderFrameHost(frame_host);
-  if (!guest_view) {
-    return;
-  }
-  extensions::MimeHandlerServiceImpl::Create(guest_view->GetStreamWeakPtr(),
-                                             std::move(receiver));
-}
-
-void BindBeforeUnloadControl(
-    content::RenderFrameHost* frame_host,
-    mojo::PendingReceiver<extensions::mime_handler::BeforeUnloadControl>
-        receiver) {
-  auto* guest_view =
-      extensions::MimeHandlerViewGuest::FromRenderFrameHost(frame_host);
-  if (!guest_view) {
-    return;
-  }
-  guest_view->FuseBeforeUnloadControl(std::move(receiver));
 }
 #endif
 
@@ -845,13 +812,6 @@ void PopulateChromeFrameBinders(
     map->Add<blink::mojom::ShareService>(
         base::BindRepeating(&ShareServiceImpl::Create));
   }
-#endif
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  map->Add<extensions::mime_handler::MimeHandlerService>(
-      base::BindRepeating(&BindMimeHandlerService));
-  map->Add<extensions::mime_handler::BeforeUnloadControl>(
-      base::BindRepeating(&BindBeforeUnloadControl));
 #endif
 
   map->Add<network_hints::mojom::NetworkHintsHandler>(
