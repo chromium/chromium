@@ -252,7 +252,7 @@ void BirchBarController::ProvideFeedbackForCoral() {
     }
   }
   Shell::Get()->coral_controller()->OpenFeedbackDialog(
-      /*description=*/
+      /*group_description=*/
       base::StrCat({kUserFeedbackPrompt, kMarkdownBackticks, "json\n",
                     base::WriteJsonWithOptions(
                         root, base::JSONWriter::OPTIONS_PRETTY_PRINT)
