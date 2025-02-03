@@ -5,6 +5,7 @@
 # found in the LICENSE file.
 
 import argparse
+import json
 import logging
 import os
 import pathlib
@@ -89,8 +90,6 @@ _BLOCKLISTED_EXPECTATION_PATHS = [
     'clank/third_party/google3/cipd/pg_confs/',
 ]
 
-_DUMP_DIR_NAME = 'r8inputs_dir'
-
 
 def _ParseOptions():
   args = build_utils.ExpandFileArgs(sys.argv[1:])
@@ -101,12 +100,13 @@ def _ParseOptions():
                       help='Path to the R8.jar to use.')
   parser.add_argument('--custom-r8-path',
                       required=True,
-                      help='Path to our custom R8 wrapepr to use.')
+                      help='Path to our custom R8 wrapper to use.')
   parser.add_argument('--input-paths',
                       action='append',
                       required=True,
                       help='GN-list of .jar files to optimize.')
   parser.add_argument('--output-path', help='Path to the generated .jar file.')
+  parser.add_argument('--tracerefs-json-out')
   parser.add_argument(
       '--proguard-configs',
       action='append',
@@ -142,10 +142,9 @@ def _ParseOptions():
   parser.add_argument('--repackage-classes',
                       default='',
                       help='Value for -repackageclasses.')
-  parser.add_argument(
-    '--disable-checks',
-    action='store_true',
-    help='Disable -checkdiscard directives and missing symbols check')
+  parser.add_argument('--disable-checks',
+                      action='store_true',
+                      help='Disable -checkdiscard directives')
   parser.add_argument('--source-file', help='Value for source file attribute.')
   parser.add_argument('--package-name',
                       help='Goes into a comment in the mapping file.')
@@ -365,7 +364,7 @@ def _OptimizeWithR8(options, config_paths, libraries, dynamic_config_data):
           ','.join(options.sdk_extension_jars)
       ]
     if options.dump_inputs:
-      cmd += [f'-Dcom.android.tools.r8.dumpinputtodirectory={_DUMP_DIR_NAME}']
+      cmd += ['-Dcom.android.tools.r8.dumpinputtofile=r8inputs.zip']
     if options.dump_unknown_refs:
       cmd += ['-Dcom.android.tools.r8.reportUnknownApiReferences=1']
     cmd += [
@@ -491,104 +490,6 @@ def _OutputKeepRules(r8_path, input_paths, libraries, targets_re_string,
   build_utils.CheckOutput(cmd, print_stderr=False, fail_on_output=False)
 
 
-def _CheckForMissingSymbols(options, dex_files, error_title):
-  cmd = build_utils.JavaCmd(xmx='2G')
-
-  if options.dump_inputs:
-    cmd += [f'-Dcom.android.tools.r8.dumpinputtodirectory={_DUMP_DIR_NAME}']
-
-  cmd += [
-      '-cp', options.r8_path,
-      'com.android.tools.r8.tracereferences.TraceReferences',
-      '--map-diagnostics:MissingDefinitionsDiagnostic', 'error', 'warning',
-      '--check'
-  ]
-
-  for path in options.sdk_jars + options.sdk_extension_jars:
-    cmd += ['--lib', path]
-  for path in dex_files:
-    cmd += ['--source', path]
-
-  failed_holder = [False]
-
-  def stderr_filter(stderr):
-    ignored_lines = [
-        # Summary contains warning count, which our filtering makes wrong.
-        'Warning: Tracereferences found',
-
-        # TODO(agrieve): Create interface jars for these missing classes rather
-        #     than allowlisting here.
-        'dalvik.system',
-        'libcore.io',
-        'sun.misc.Unsafe',
-
-        # Found in: com/facebook/fbui/textlayoutbuilder/StaticLayoutHelper
-        'android.text.StaticLayout.<init>',
-        # TODO(crbug.com/40261573): Remove once chrome builds with Android U
-        # SDK.
-        ' android.',
-
-        # Explicictly guarded by try (NoClassDefFoundError) in Flogger's
-        # PlatformProvider.
-        'com.google.common.flogger.backend.google.GooglePlatform',
-        'com.google.common.flogger.backend.system.DefaultPlatform',
-
-        # TODO(agrieve): Exclude these only when use_jacoco_coverage=true.
-        'java.lang.instrument.ClassFileTransformer',
-        'java.lang.instrument.IllegalClassFormatException',
-        'java.lang.instrument.Instrumentation',
-        'java.lang.management.ManagementFactory',
-        'javax.management.MBeanServer',
-        'javax.management.ObjectInstance',
-        'javax.management.ObjectName',
-        'javax.management.StandardMBean',
-
-        # Explicitly guarded by try (NoClassDefFoundError) in Firebase's
-        # KotlinDetector: com.google.firebase.platforminfo.KotlinDetector.
-        'kotlin.KotlinVersion',
-
-        # Not sure why these two are missing, but they do not seem important.
-        'ResultIgnorabilityUnspecified',
-        'kotlin.DeprecationLevel',
-    ]
-
-    had_unfiltered_items = '  ' in stderr
-    stderr = build_utils.FilterLines(
-        stderr, '|'.join(re.escape(x) for x in ignored_lines))
-    if stderr:
-      if 'Missing' in stderr:
-        failed_holder[0] = True
-        stderr = 'TraceReferences failed: ' + error_title + """
-Tip: Build with:
-        is_java_debug=false
-        treat_warnings_as_errors=false
-        enable_proguard_obfuscation=false
-     and then use dexdump to see which class(s) reference them.
-
-     E.g.:
-       third_party/android_sdk/public/build-tools/*/dexdump -d \
-out/Release/apks/YourApk.apk > dex.txt
-""" + stderr
-      elif had_unfiltered_items:
-        # Left only with empty headings. All indented items filtered out.
-        stderr = ''
-    return stderr
-
-  try:
-    if options.verbose:
-      stderr_filter = None
-    build_utils.CheckOutput(cmd,
-                            print_stdout=True,
-                            stderr_filter=stderr_filter,
-                            fail_on_output=options.warnings_as_errors)
-  except build_utils.CalledProcessError as e:
-    # Do not output command line because it is massive and makes the actual
-    # error message hard to find.
-    sys.stderr.write(e.output)
-    sys.exit(1)
-  return failed_holder[0]
-
-
 def _CombineConfigs(configs,
                     dynamic_config_data,
                     embedded_configs,
@@ -692,7 +593,7 @@ def _IterParentContexts(context_name, split_contexts_by_name):
     context_name = context.parent_name
 
 
-def _DoTraceReferencesChecks(options, split_contexts_by_name):
+def _WriteTraceReferencesJson(options, split_contexts_by_name):
   # Set of all contexts that are a parent to another.
   parent_splits_context_names = {
       c.parent_name
@@ -706,26 +607,25 @@ def _DoTraceReferencesChecks(options, split_contexts_by_name):
   context_sets.sort(key=lambda x: (len(x), x[0].name))
 
   # Ensure there are no missing references when considering all dex files.
-  error_title = 'DEX contains references to non-existent symbols after R8.'
   dex_files = sorted(c.final_output_path
                      for c in split_contexts_by_name.values())
-  if _CheckForMissingSymbols(options, dex_files, error_title):
-    # Failed but didn't raise due to warnings_as_errors=False
-    return
+  payload = {
+      'r8jar': options.r8_path,
+      'libs': options.sdk_jars + options.sdk_extension_jars,
+      'jobs': [],
+  }
 
+  # Ensure there are no missing references when considering all dex files.
+  payload['jobs'].append({'name': '', 'jars': dex_files})
+
+  # Ensure there are no references from base -> chrome module, or from
+  # base+chrome -> feature modules.
   for context_set in context_sets:
-    # Ensure there are no references from base -> chrome module, or from
-    # chrome -> feature modules.
-    error_title = (f'DEX within module "{context_set[0].name}" contains '
-                   'reference(s) to symbols within child splits')
     dex_files = [c.final_output_path for c in context_set]
-    # Each check currently takes about 3 seconds on a fast dev machine, and we
-    # run 3 of them (all, base, base+chrome).
-    # We could run them concurrently, to shave off 5-6 seconds, but would need
-    # to make sure that the order is maintained.
-    if _CheckForMissingSymbols(options, dex_files, error_title):
-      # Failed but didn't raise due to warnings_as_errors=False
-      return
+    payload['jobs'].append({'name': context_set[0].name, 'jars': dex_files})
+
+  with action_helpers.atomic_output(options.tracerefs_json_out, 'wt') as f:
+    json.dump(payload, f, indent=2)
 
 
 def _Run(options):
@@ -764,9 +664,9 @@ def _Run(options):
   split_contexts_by_name = _OptimizeWithR8(options, options.proguard_configs,
                                            libraries, dynamic_config_data)
 
-  if not options.disable_checks:
-    logging.debug('Running tracereferences')
-    _DoTraceReferencesChecks(options, split_contexts_by_name)
+  if options.tracerefs_json_out:
+    logging.debug('Writing TraceReferences .json')
+    _WriteTraceReferencesJson(options, split_contexts_by_name)
 
   for output in options.extra_mapping_output_paths:
     shutil.copy(options.mapping_output, output)
@@ -784,21 +684,8 @@ def main():
   if options.dump_inputs:
     # Dumping inputs causes output to be emitted, avoid failing due to stdout.
     options.warnings_as_errors = False
-    # Use dumpinputtodirectory instead of dumpinputtofile to avoid failing the
-    # build and keep running tracereferences.
-    dump_dir_name = _DUMP_DIR_NAME
-    dump_dir_path = pathlib.Path(dump_dir_name)
-    if dump_dir_path.exists():
-      shutil.rmtree(dump_dir_path)
-    # The directory needs to exist before r8 adds the zip files in it.
-    dump_dir_path.mkdir()
 
-  # This ensure that the final outputs are zipped and easily uploaded to a bug.
-  try:
-    _Run(options)
-  finally:
-    if options.dump_inputs:
-      zip_helpers.zip_directory('r8inputs.zip', _DUMP_DIR_NAME)
+  _Run(options)
 
 
 if __name__ == '__main__':

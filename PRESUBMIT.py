@@ -2302,6 +2302,7 @@ _GENERIC_PYDEPS_FILES = [
     'build/android/gyp/rename_java_classes.pydeps',
     'build/android/gyp/system_image_apks.pydeps',
     'build/android/gyp/trace_event_bytecode_rewriter.pydeps',
+    'build/android/gyp/tracereferences.pydeps',
     'build/android/gyp/turbine.pydeps',
     'build/android/gyp/unused_resources.pydeps',
     'build/android/gyp/validate_static_library_dex_references.pydeps',
