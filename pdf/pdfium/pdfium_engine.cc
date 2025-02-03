@@ -39,6 +39,7 @@
 #include "base/time/time.h"
 #include "base/types/optional_util.h"
 #include "build/build_config.h"
+#include "components/shared_highlighting/core/common/fragment_directives_constants.h"
 #include "gin/array_buffer.h"
 #include "gin/public/gin_embedders.h"
 #include "gin/public/isolate_holder.h"
@@ -1000,10 +1001,15 @@ void PDFiumEngine::SetFormHighlight(bool enable_form) {
 
 void PDFiumEngine::HighlightTextFragments(
     base::span<const std::string> text_fragments) {
-  // TODO(crbug.com/383575917): Add support for rendering text fragment
-  // highlights.
+  HighlightChangeInvalidator invalidator(this);
   PDFiumTextFragmentFinder text_fragment_finder(this);
-  text_fragment_finder.FindTextFragments(text_fragments);
+  text_fragment_highlights_ =
+      text_fragment_finder.FindTextFragments(text_fragments);
+
+  // Scroll to first text fragment if any were found.
+  if (!text_fragment_highlights_.empty()) {
+    ScrollToBoundingRects(text_fragment_highlights_[0]);
+  }
 }
 
 void PDFiumEngine::SearchForFragment(
@@ -3367,6 +3373,9 @@ void PDFiumEngine::DrawSelections(size_t progressive_index,
 
   std::vector<gfx::Rect> highlighted_rects;
   gfx::Rect visible_rect = GetVisibleRect();
+  // First, the selections from find-in-page or mouse selections are drawn. This
+  // ensures that these selection highlights are drawn on top of text fragment
+  // highlights and form highlights.
   for (const auto& range : selection_) {
     if (range.page_index() != page_index) {
       continue;
@@ -3374,6 +3383,16 @@ void PDFiumEngine::DrawSelections(size_t progressive_index,
 
     DrawHighlightOnPage(range, dirty_in_screen, visible_rect, region.value(),
                         kHighlightColor, highlighted_rects);
+  }
+
+  for (const auto& range : text_fragment_highlights_) {
+    if (range.page_index() != page_index) {
+      continue;
+    }
+
+    DrawHighlightOnPage(range, dirty_in_screen, visible_rect, region.value(),
+                        shared_highlighting::kFragmentTextBackgroundColorARGB,
+                        highlighted_rects);
   }
 
   for (const auto& highlight : form_highlights_) {
@@ -3530,11 +3549,38 @@ void PDFiumEngine::Highlight(const RegionData& region,
   }
 }
 
+PDFiumEngine::ChangeInvalidator::ChangeInvalidator(PDFiumEngine* engine)
+    : engine_(engine), previous_origin_(engine_->GetVisibleRect().origin()) {}
+PDFiumEngine::ChangeInvalidator::~ChangeInvalidator() = default;
+
+std::vector<gfx::Rect>
+PDFiumEngine::ChangeInvalidator::GetVisibleScreenRectsFromRanges(
+    const std::vector<PDFiumRange>& ranges) const {
+  std::vector<gfx::Rect> rects;
+  gfx::Point visible_point = engine_->GetVisibleRect().origin();
+  for (const auto& range : ranges) {
+    // Exclude selections on pages that's not currently visible.
+    if (!engine_->IsPageVisible(range.page_index())) {
+      continue;
+    }
+
+    const std::vector<gfx::Rect>& screen_rects = range.GetScreenRects(
+        visible_point, engine_->current_zoom_,
+        engine_->layout_.options().default_page_orientation());
+    rects.insert(rects.end(), screen_rects.begin(), screen_rects.end());
+  }
+  return rects;
+}
+
+void PDFiumEngine::ChangeInvalidator::Invalidate(const gfx::Rect& rect) {
+  gfx::Rect expanded_rect = rect;
+  expanded_rect.Inset(-1);
+  engine_->client_->Invalidate(expanded_rect);
+}
+
 PDFiumEngine::SelectionChangeInvalidator::SelectionChangeInvalidator(
     PDFiumEngine* engine)
-    : engine_(engine),
-      previous_origin_(engine_->GetVisibleRect().origin()),
-      old_selections_(GetVisibleSelections()) {}
+    : ChangeInvalidator(engine), old_selections_(GetVisibleSelections()) {}
 
 PDFiumEngine::SelectionChangeInvalidator::~SelectionChangeInvalidator() {
   // Offset the old selections if the document scrolled since we recorded them.
@@ -3576,26 +3622,47 @@ PDFiumEngine::SelectionChangeInvalidator::~SelectionChangeInvalidator() {
 
 std::vector<gfx::Rect>
 PDFiumEngine::SelectionChangeInvalidator::GetVisibleSelections() const {
-  std::vector<gfx::Rect> rects;
-  gfx::Point visible_point = engine_->GetVisibleRect().origin();
-  for (const auto& range : engine_->selection_) {
-    // Exclude selections on pages that's not currently visible.
-    if (!engine_->IsPageVisible(range.page_index()))
-      continue;
-
-    const std::vector<gfx::Rect>& selection_rects = range.GetScreenRects(
-        visible_point, engine_->current_zoom_,
-        engine_->layout_.options().default_page_orientation());
-    rects.insert(rects.end(), selection_rects.begin(), selection_rects.end());
-  }
-  return rects;
+  return GetVisibleScreenRectsFromRanges(engine_->selection_);
 }
 
-void PDFiumEngine::SelectionChangeInvalidator::Invalidate(
-    const gfx::Rect& selection) {
-  gfx::Rect expanded_selection = selection;
-  expanded_selection.Inset(-1);
-  engine_->client_->Invalidate(expanded_selection);
+PDFiumEngine::HighlightChangeInvalidator::HighlightChangeInvalidator(
+    PDFiumEngine* engine)
+    : ChangeInvalidator(engine), old_highlights_(GetVisibleHighlights()) {}
+
+PDFiumEngine::HighlightChangeInvalidator::~HighlightChangeInvalidator() {
+  // Offset the old selections if the document scrolled since we recorded them.
+  gfx::Vector2d offset = previous_origin_ - engine_->GetVisibleRect().origin();
+  for (auto& old_highlight : old_highlights_) {
+    old_highlight.Offset(offset);
+  }
+
+  std::vector<gfx::Rect> new_highlights = GetVisibleHighlights();
+  for (auto& new_highlight : new_highlights) {
+    for (auto& old_highlight : old_highlights_) {
+      if (!old_highlight.IsEmpty() && new_highlight == old_highlight) {
+        // Rectangle was selected before and after, so no need to invalidate it.
+        // Mark the rectangles by setting them to empty.
+        new_highlight = old_highlight = gfx::Rect();
+        break;
+      }
+    }
+  }
+
+  for (const auto& old_highlight : old_highlights_) {
+    if (!old_highlight.IsEmpty()) {
+      Invalidate(old_highlight);
+    }
+  }
+  for (const auto& new_highlight : new_highlights) {
+    if (!new_highlight.IsEmpty()) {
+      Invalidate(new_highlight);
+    }
+  }
+}
+
+std::vector<gfx::Rect>
+PDFiumEngine::HighlightChangeInvalidator::GetVisibleHighlights() const {
+  return GetVisibleScreenRectsFromRanges(engine_->text_fragment_highlights_);
 }
 
 PDFiumEngine::MouseDownState::MouseDownState(

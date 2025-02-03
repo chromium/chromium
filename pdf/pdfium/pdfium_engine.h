@@ -512,11 +512,31 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
                          AddSearchResultCallback add_result_callback);
 
  private:
+  // This is a base class for shared functions and data needed between change
+  // invalidators for selection and text fragment highlights.
+  class ChangeInvalidator {
+   protected:
+    explicit ChangeInvalidator(PDFiumEngine* engine);
+    ~ChangeInvalidator();
+
+    // Gets all of the visible screen rects from a list of `ranges`.
+    std::vector<gfx::Rect> GetVisibleScreenRectsFromRanges(
+        const std::vector<PDFiumRange>& ranges) const;
+
+    // Invalidates `rect`, but with `rect` slightly expanded to
+    // compensate for any rounding errors.
+    void Invalidate(const gfx::Rect& rect);
+
+    const raw_ptr<PDFiumEngine> engine_;
+    // The origin at the time this object was constructed.
+    const gfx::Point previous_origin_;
+  };
+
   // This helper class is used to detect the difference in selection between
   // construction and destruction.  At destruction, it invalidates all the
   // parts that are newly selected, along with all the parts that used to be
   // selected but are not anymore.
-  class SelectionChangeInvalidator {
+  class SelectionChangeInvalidator : public ChangeInvalidator {
    public:
     explicit SelectionChangeInvalidator(PDFiumEngine* engine);
     ~SelectionChangeInvalidator();
@@ -526,15 +546,28 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
     // coordinates.
     std::vector<gfx::Rect> GetVisibleSelections() const;
 
-    // Invalidates `selection`, but with `selection` slightly expanded to
-    // compensate for any rounding errors.
-    void Invalidate(const gfx::Rect& selection);
-
-    const raw_ptr<PDFiumEngine> engine_;
-    // The origin at the time this object was constructed.
-    const gfx::Point previous_origin_;
     // Screen rectangles that were selected on construction.
     std::vector<gfx::Rect> old_selections_;
+  };
+
+  // This helper class is used to detect the difference in highlights between
+  // construction and destruction. At destruction, it invalidates all the
+  // parts that are newly highlighted, along with all the parts that used to be
+  // highlighted but are not anymore. Almost exactly the same as
+  // `SelectionChangeInvalidator` except this class only invalidates text
+  // fragment highlights rather than selections.
+  class HighlightChangeInvalidator : public ChangeInvalidator {
+   public:
+    explicit HighlightChangeInvalidator(PDFiumEngine* engine);
+    ~HighlightChangeInvalidator();
+
+   private:
+    // Returns all the currently visible highlighted rectangles, in screen
+    // coordinates.
+    std::vector<gfx::Rect> GetVisibleHighlights() const;
+
+    // Screen rectangles that were highlighted on construction.
+    std::vector<gfx::Rect> old_highlights_;
   };
 
   // Used to store mouse down state to handle it in other mouse event handlers.
@@ -1188,6 +1221,9 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   bool read_only_ = false;
 
   PDFiumPrint print_;
+
+  // The list of text fragments to highlight on the PDF.
+  std::vector<PDFiumRange> text_fragment_highlights_;
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
   // Map of zero-based page indices with Ink strokes to page unload preventers.
