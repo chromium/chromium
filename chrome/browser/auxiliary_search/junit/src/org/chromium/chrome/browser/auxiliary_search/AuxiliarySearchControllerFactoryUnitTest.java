@@ -8,9 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
@@ -29,7 +26,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -83,22 +79,6 @@ public class AuxiliarySearchControllerFactoryUnitTest {
 
     @Test
     @SmallTest
-    @DisableFeatures(ChromeFeatureList.ANDROID_APP_INTEGRATION_V2)
-    @Config(sdk = VERSION_CODES.Q)
-    public void testCreateAuxiliarySearchController_LessThanS() {
-        when(mHooks.isEnabled()).thenReturn(false);
-        assertFalse(mFactory.isEnabled());
-        assertNull(mFactory.createAuxiliarySearchController(mContext, mProfile, mTabModelSelector));
-
-        when(mHooks.isEnabled()).thenReturn(true);
-        assertTrue(mFactory.isEnabled());
-        mFactory.createAuxiliarySearchController(mContext, mProfile, mTabModelSelector);
-        verify(mHooks)
-                .createAuxiliarySearchController(eq(mContext), eq(mProfile), eq(mTabModelSelector));
-    }
-
-    @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.ANDROID_APP_INTEGRATION_V2)
     @Config(sdk = VERSION_CODES.S)
     public void testCreateAuxiliarySearchController() {
@@ -113,8 +93,6 @@ public class AuxiliarySearchControllerFactoryUnitTest {
         AuxiliarySearchController controller =
                 mFactory.createAuxiliarySearchController(mContext, mProfile, mTabModelSelector);
         assertTrue(controller instanceof AuxiliarySearchControllerImpl);
-        verify(mHooks, never())
-                .createAuxiliarySearchController(eq(mContext), eq(mProfile), eq(mTabModelSelector));
     }
 
     @Test

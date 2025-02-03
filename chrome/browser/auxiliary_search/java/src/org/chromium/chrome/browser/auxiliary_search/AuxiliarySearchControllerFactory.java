@@ -83,16 +83,8 @@ public class AuxiliarySearchControllerFactory {
             return null;
         }
 
-        if (ChromeFeatureList.sAndroidAppIntegrationV2.isEnabled()
-                && android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-            return new AuxiliarySearchControllerImpl(context, profile, tabModelSelector);
-        }
-
-        return createAuxiliarySearchControllerImp(
-                context,
-                profile,
-                tabModelSelector,
-                mHooksForTesting == null ? mHooks : mHooksForTesting);
+        assert ChromeFeatureList.sAndroidAppIntegrationV2.isEnabled();
+        return new AuxiliarySearchControllerImpl(context, profile, tabModelSelector);
     }
 
     public void setSchemaTypeVisibilityForPackage(
@@ -128,14 +120,6 @@ public class AuxiliarySearchControllerFactory {
         }
 
         return null;
-    }
-
-    private @Nullable AuxiliarySearchController createAuxiliarySearchControllerImp(
-            @NonNull Context context,
-            @NonNull Profile profile,
-            @Nullable TabModelSelector tabModelSelector,
-            @NonNull AuxiliarySearchHooks hooks) {
-        return hooks.createAuxiliarySearchController(context, profile, tabModelSelector);
     }
 
     public void setHooksForTesting(AuxiliarySearchHooks instanceForTesting) {
