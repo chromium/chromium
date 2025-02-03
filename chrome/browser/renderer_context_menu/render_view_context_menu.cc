@@ -1999,11 +1999,16 @@ void RenderViewContextMenu::AppendSearchWebForImageItems() {
   }
 
   const int search_for_image_idc = GetSearchForImageIdc();
-  if (GetBrowser()
-          ->GetFeatures()
-          .lens_overlay_entry_point_controller()
-          ->IsEnabled() &&
+  auto* entry_point_controller =
+      GetBrowser()
+          ? GetBrowser()->GetFeatures().lens_overlay_entry_point_controller()
+          : nullptr;
+  if (entry_point_controller && entry_point_controller->IsEnabled() &&
       lens::features::UseLensOverlayForImageSearch()) {
+    // If the entrypoint is ephermally hidden, don't add the item.
+    if (!entry_point_controller->AreVisible()) {
+      return;
+    }
     const gfx::VectorIcon& icon =
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
         vector_icons::kGoogleLensMonochromeLogoIcon;
@@ -2070,13 +2075,17 @@ void RenderViewContextMenu::AppendVideoItems() {
   // Search for video frame menu item.
   if (base::FeatureList::IsEnabled(media::kContextMenuSearchForVideoFrame)) {
     const int search_for_video_frame_idc = GetSearchForVideoFrameIdc();
-
-    if (GetBrowser() &&
+    auto* entry_point_controller =
         GetBrowser()
-            ->GetFeatures()
-            .lens_overlay_entry_point_controller()
-            ->IsEnabled() &&
+            ? GetBrowser()->GetFeatures().lens_overlay_entry_point_controller()
+            : nullptr;
+    if (entry_point_controller && entry_point_controller->IsEnabled() &&
         lens::features::UseLensOverlayForVideoFrameSearch()) {
+      // If the entrypoint is ephermally hidden, exit early so the item is not
+      // added.
+      if (!entry_point_controller->AreVisible()) {
+        return;
+      }
       const gfx::VectorIcon& icon =
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
           vector_icons::kGoogleLensMonochromeLogoIcon;
@@ -2634,10 +2643,16 @@ void RenderViewContextMenu::AppendClickToCallItem() {
 }
 
 void RenderViewContextMenu::AppendRegionSearchItem() {
-  if (GetBrowser()
-          ->GetFeatures()
-          .lens_overlay_entry_point_controller()
-          ->IsEnabled()) {
+  auto* entry_point_controller =
+      GetBrowser()
+          ? GetBrowser()->GetFeatures().lens_overlay_entry_point_controller()
+          : nullptr;
+  if (entry_point_controller && entry_point_controller->IsEnabled()) {
+    // If the entrypoint is ephermally hidden, exit early so the item is not
+    // added.
+    if (!entry_point_controller->AreVisible()) {
+      return;
+    }
     const gfx::VectorIcon& icon =
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
         vector_icons::kGoogleLensMonochromeLogoIcon;

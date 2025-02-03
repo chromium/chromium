@@ -781,8 +781,8 @@ class LensOverlayController : public LensSearchboxClient,
   // the tab contents view.
   void ShowOverlay();
 
-  // Backgrounds the UI by hiding the overlay.
-  void BackgroundUI();
+  // Hides the overlay view and restores input to the tab contents web view.
+  void HideOverlay();
 
   // Closes the overlay UI and sets state to kOff. This method is the final
   // cleanup of closing the overlay UI. This resets all state internal to the
@@ -1052,6 +1052,10 @@ class LensOverlayController : public LensSearchboxClient,
   // Notifies the overlay or side panel that the page content type has changed.
   void NotifyPageContentUpdated();
 
+  // Notifies the entry point controller to update the state of the entry
+  // points since the state of the overlay has changed.
+  void UpdateEntryPointsState();
+
   // Owns this class.
   raw_ptr<tabs::TabInterface> tab_;
 
@@ -1061,6 +1065,10 @@ class LensOverlayController : public LensSearchboxClient,
 
   // Tracks the internal state machine.
   State state_ = State::kOff;
+
+  // Tracks the state of the overlay when it is backgrounded. This is the state
+  // that the overlay will return to when the tab is foregrounded.
+  State backgrounded_state_ = State::kOff;
 
   // Controller for showing the page screenshot permission bubble.
   std::unique_ptr<lens::LensPermissionBubbleController>

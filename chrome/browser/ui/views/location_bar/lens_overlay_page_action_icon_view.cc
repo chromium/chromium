@@ -173,7 +173,8 @@ void LensOverlayPageActionIconView::UpdateImpl() {
   // LocationBar construction.
   auto* controller =
       browser_->GetFeatures().lens_overlay_entry_point_controller();
-  const bool is_broader_feature_enabled = controller && controller->IsEnabled();
+  const bool is_broader_feature_enabled =
+      controller && controller->AreVisible();
 
   const bool should_show_lens_overlay = enabled_by_pref &&
                                         location_bar_has_focus && !is_ntp &&
