@@ -241,7 +241,6 @@ static_library("protocol") {
   ]
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//components/webrtc:net_address_utils",
     "//components/webrtc:thread_wrapper",
     "//crypto",

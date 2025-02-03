@@ -11,8 +11,4 @@ specific_include_rules = {
     "+ui/message_center/public/cpp/notification_types.h",
     "+ui/message_center/notification_list.h",
   ],
-  "it2me_native_messaging_host_lacros.cc": [
-    "+chromeos/crosapi/mojom/remoting.mojom.h",
-    "+chromeos/lacros/lacros_service.h",
-  ],
 }

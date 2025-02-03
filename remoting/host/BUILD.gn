@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/chrome_build.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/linux/pkg_config.gni")
 import("//build/util/process_version.gni")
 import("//remoting/build/config/remoting_build.gni")
@@ -120,7 +119,7 @@ source_set("common_headers") {
     "usage_stats_consent.h",
     "worker_process_ipc_delegate.h",
   ]
-  if (!is_chromeos_ash) {
+  if (!is_chromeos) {
     sources += [ "me2me_desktop_environment.h" ]
   }
   deps = [
@@ -493,7 +492,6 @@ static_library("common") {
     ":settings",
     "//base:i18n",
     "//build:branding_buildflags",
-    "//build:chromeos_buildflags",
     "//components/named_mojo_ipc_server",
     "//components/policy/core/common",
     "//components/webrtc:thread_wrapper",
@@ -511,9 +509,9 @@ static_library("common") {
     "//remoting/host/remote_open_url:common",
     "//remoting/host/security_key",
     "//remoting/host/webauthn",
+    "//remoting/proto:internal_structs",
     "//remoting/proto/ftl/v1:ftl_messages",
     "//remoting/proto/google/internal/remoting/cloud/v1alpha:messages",
-    "//remoting/proto:internal_structs",
     "//remoting/proto/remoting/v1:chrome_os_enterprise_options",
     "//remoting/proto/remoting/v1:remote_support_host_messages",
     "//remoting/protocol",
@@ -627,7 +625,7 @@ static_library("common") {
     }
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "audio_capturer_chromeos.cc",
       "continue_window_chromeos.cc",
@@ -833,7 +831,7 @@ source_set("unit_tests") {
     "zombie_host_detector_unittest.cc",
   ]
 
-  if (use_ozone || is_chromeos_ash) {
+  if (use_ozone || is_chromeos) {
     sources -= [ "input_monitor/local_input_monitor_unittest.cc" ]
   }
 
@@ -848,7 +846,6 @@ source_set("unit_tests") {
     ":resources",
     ":test_support",
     "//build:branding_buildflags",
-    "//build:chromeos_buildflags",
     "//components/named_mojo_ipc_server",
     "//components/named_mojo_ipc_server:test_support",
     "//net:test_support",
@@ -921,7 +918,7 @@ source_set("unit_tests") {
     deps += [ "//remoting/host/linux:platform_impls" ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "desktop_display_info_loader_chromeos_unittest.cc",
       "input_injector_chromeos_unittest.cc",
@@ -1151,10 +1148,11 @@ if (enable_me2me_host) {
       deps += [ "//components/policy:generated" ]
     }
 
-    if (is_linux || is_chromeos_lacros) {
+    if (is_linux) {
       deps += [ "//build/config/linux/gtk" ]
     }
-    if (is_linux || is_chromeos_lacros || is_mac) {
+
+    if (is_linux || is_mac) {
       libs = [ "pam" ]
     }
 
@@ -1265,8 +1263,7 @@ if (enable_me2me_host) {
       }
     }
   }
-  if (is_chrome_branded && enable_me2me_host &&
-      (is_linux || is_chromeos_lacros)) {
+  if (is_chrome_branded && enable_me2me_host && is_linux) {
     group("remoting_me2me_host_archive") {
       deps = [ "//remoting/host/installer/linux:remoting_me2me_host_archive" ]
     }

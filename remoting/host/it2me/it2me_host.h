@@ -15,7 +15,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "remoting/base/local_session_policies_provider.h"
 #include "remoting/host/chromeos/chromeos_enterprise_params.h"
 #include "remoting/host/host_status_observer.h"
@@ -161,7 +160,7 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
   protocol::ValidatingAuthenticator::ValidationCallback
   GetValidationCallbackForTesting();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void SetHostEventReporterFactoryForTesting(HostEventReporterFactory factory);
 #endif
 
@@ -254,10 +253,10 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
   std::unique_ptr<HostEventLogger> host_event_logger_;
   std::unique_ptr<LocalSessionPoliciesProvider>
       local_session_policies_provider_;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<HostEventReporter> host_event_reporter_;
   HostEventReporterFactory host_event_reporter_factory_;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   bool use_corp_session_authz_ = false;
 

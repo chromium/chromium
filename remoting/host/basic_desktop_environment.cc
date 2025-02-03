@@ -193,7 +193,7 @@ std::unique_ptr<DesktopCapturer> BasicDesktopEnvironment::CreateVideoCapturer(
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
   scoped_refptr<base::SingleThreadTaskRunner> capture_task_runner;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   capture_task_runner = ui_task_runner_;
 #elif BUILDFLAG(IS_LINUX) && defined(REMOTING_USE_WAYLAND)
   // Each capturer instance should get its own thread so the capturers don't
@@ -207,7 +207,7 @@ std::unique_ptr<DesktopCapturer> BasicDesktopEnvironment::CreateVideoCapturer(
   // platforms. For example, if we run the desktop capturer on a different
   // thread on Windows, the cursor shape won't be captured when in GDI mode.
   capture_task_runner = video_capture_task_runner_;
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_LINUX)
+#endif
 
 #if defined(REMOTING_USE_X11)
   if (!IsRunningWayland()) {

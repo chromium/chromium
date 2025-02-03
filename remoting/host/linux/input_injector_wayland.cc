@@ -40,7 +40,7 @@
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "remoting/host/chromeos/point_transformer.h"
 #endif
 
@@ -381,7 +381,7 @@ void InputInjectorWayland::Core::InjectMouseEventHelper(
     // apps which assume MotionNotify implies movement. See crbug.com/138075.
     bool inject_motion = true;
     webrtc::DesktopVector new_mouse_position(event.x(), event.y());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // Interim hack to handle display rotation on Chrome OS.
     // TODO(crbug.com/40396937): Remove this when Chrome OS has completely
     // migrated to Ozone.

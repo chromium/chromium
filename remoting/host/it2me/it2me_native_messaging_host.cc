@@ -29,7 +29,6 @@
 #include "base/uuid.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/policy/policy_constants.h"
 #include "net/base/url_util.h"
 #include "net/socket/client_socket_factory.h"
@@ -107,7 +106,7 @@ bool IsValidEmailAddress(const std::string& email) {
              .size() == 2U;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || !defined(NDEBUG)
+#if BUILDFLAG(IS_CHROMEOS) || !defined(NDEBUG)
 ChromeOsEnterpriseParams BuildEnterpriseParams(
     const base::Value::Dict& message) {
   return {.suppress_user_dialogs =
@@ -254,11 +253,11 @@ void It2MeNativeMessagingHost::OnMessage(const std::string& message) {
 void It2MeNativeMessagingHost::Start(Client* client) {
   DCHECK(task_runner()->BelongsToCurrentThread());
   client_ = client;
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   log_message_handler_ = std::make_unique<LogMessageHandler>(
       base::BindRepeating(&It2MeNativeMessagingHost::SendMessageToClient,
                           base::Unretained(this)));
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
 void It2MeNativeMessagingHost::SendMessageToClient(
@@ -354,7 +353,7 @@ void It2MeNativeMessagingHost::ProcessConnect(base::Value::Dict message,
   }
 
   std::optional<ReconnectParams> reconnect_params;
-#if BUILDFLAG(IS_CHROMEOS_ASH) || !defined(NDEBUG)
+#if BUILDFLAG(IS_CHROMEOS) || !defined(NDEBUG)
   bool is_enterprise_admin_user =
       message.FindBool(kIsEnterpriseAdminUser).value_or(false);
   if (is_enterprise_admin_user) {
@@ -442,7 +441,7 @@ void It2MeNativeMessagingHost::ProcessConnect(base::Value::Dict message,
   it2me_host_->set_authorized_helper(authorized_helper);
 
   auto dialog_style = It2MeConfirmationDialog::DialogStyle::kConsumer;
-#if BUILDFLAG(IS_CHROMEOS_ASH) || !defined(NDEBUG)
+#if BUILDFLAG(IS_CHROMEOS) || !defined(NDEBUG)
   if (is_enterprise_admin_user) {
     dialog_style = It2MeConfirmationDialog::DialogStyle::kEnterprise;
     it2me_host_->set_chrome_os_enterprise_params(

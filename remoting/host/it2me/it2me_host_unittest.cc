@@ -24,7 +24,6 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/policy/policy_constants.h"
 #include "net/base/network_change_notifier.h"
 #include "remoting/base/auto_thread_task_runner.h"
@@ -106,12 +105,12 @@ class FakeRegisterSupportHostRequest : public RegisterSupportHostRequest {
   }
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 std::unique_ptr<HostEventReporter> CreateHostEventReporterStub(
     scoped_refptr<HostStatusMonitor>) {
   return std::make_unique<HostEventReporterStub>();
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
@@ -329,7 +328,7 @@ void It2MeHostTest::SetUp() {
   base::GetLinuxDistro();
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   test_url_loader_factory_ = new network::TestSharedURLLoaderFactory();
 #endif
 
@@ -419,10 +418,10 @@ void It2MeHostTest::StartHost() {
     it2me_host_->set_authorized_helper(*authorized_helper_);
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   it2me_host_->SetHostEventReporterFactoryForTesting(
       base::BindRepeating(CreateHostEventReporterStub));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   auto create_connection_context = base::BindOnce(
       [](std::unique_ptr<SignalStrategy> signal_strategy,
@@ -947,7 +946,7 @@ TEST_F(It2MeHostTest, StartHost_DoesNotUseCorpSessionAuthz) {
   ASSERT_FALSE(has_corp_host_status_logger());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(It2MeHostTest, ConnectRespectsSuppressDialogsParameter) {
   StartHost(ChromeOsEnterpriseParams{.suppress_user_dialogs = true});
 
