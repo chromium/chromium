@@ -28,6 +28,8 @@ namespace ash {
 namespace {
 
 using ::testing::ElementsAre;
+using ::testing::IsEmpty;
+using ::testing::SizeIs;
 
 // Returns true if `action_button` is collapsed (i.e. label hidden, only icon
 // visible).
@@ -169,6 +171,23 @@ TEST_F(ActionButtonContainerViewTest, ShowsErrorViewWithTryAgainLink) {
   event_generator.ClickLeftButton();
 
   EXPECT_TRUE(try_again_future.Wait());
+}
+
+TEST_F(ActionButtonContainerViewTest, ClearsContainer) {
+  ActionButtonContainerView action_button_container;
+  action_button_container.AddActionButton(
+      views::Button::PressedCallback(), u"Copy Text", &kCaptureModeImageIcon,
+      ActionButtonRank(ActionButtonType::kCopyText, 0),
+      ActionButtonViewID::kCopyTextButton);
+  action_button_container.ShowErrorView(u"Error message");
+
+  EXPECT_THAT(action_button_container.GetActionButtons(), SizeIs(1));
+  EXPECT_TRUE(action_button_container.error_view_for_testing()->GetVisible());
+
+  action_button_container.ClearContainer();
+
+  EXPECT_THAT(action_button_container.GetActionButtons(), IsEmpty());
+  EXPECT_FALSE(action_button_container.error_view_for_testing()->GetVisible());
 }
 
 }  // namespace

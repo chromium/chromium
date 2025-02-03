@@ -242,8 +242,9 @@ ActionButtonView* ActionButtonContainerView::AddActionButton(
   return new_action_button_ptr;
 }
 
-void ActionButtonContainerView::RemoveAllActionButtons() {
+void ActionButtonContainerView::ClearContainer() {
   action_button_row_->RemoveAllChildViews();
+  HideErrorView();
 }
 
 const views::View::Views& ActionButtonContainerView::GetActionButtons() const {
