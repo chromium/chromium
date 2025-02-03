@@ -196,11 +196,14 @@ message PageContext {
 
 // The page content represented as a tree of semantic chunks and (in the
 // future) annotated with additional information about the page.
-// Next ID: 3
+// Next ID: 4
 message AnnotatedPageContent {
   AnnotatedPageContentVersion version = 1;
 
   ContentNode root_node = 2;
+
+  // The data for the main frame of the page.
+  FrameData main_frame_data = 3;
 }
 
 // The ContentNode tree is a sparse representation of the DOM tree for a web
@@ -348,15 +351,35 @@ message TextStyle {
 }
 
 // Information about the image. In the future, this may include a pixmap.
-// Next ID: 4
+// Next ID: 5
 message ImageInfo {
   string image_caption = 2;
 
-  // Provides the URL for this image if available. For example, data: URLs for
-  // inline images will be skipped.
+  // DEPRECATED: Provides the URL for this image if available. For example,
+  // data: URLs for inline images will be skipped.
   string source_url = 3;
 
+  // Provides the source origin for the image.
+  SecurityOrigin security_origin = 4;
+
   reserved 1;
+}
+
+// The source origin for the web content in AnnotatedPageContent. This maps to
+// the origin concept in the spec: https://url.spec.whatwg.org/#origin.
+//
+// This is distinct from URLs. There are cases where the URL for a Document,
+// example about:blank, is different from the origin that the Document's data
+// should be attributed to.
+//
+// Next ID: 3
+message SecurityOrigin {
+  // Whether the origin is opaque.
+  bool opaque = 1;
+
+  // The raw value of the origin. It is set to the nonce for opaque origins and
+  // scheme-host-port string for non-opaque origins.
+  string value = 2;
 }
 
 message AnchorData {
@@ -423,12 +446,23 @@ message TableData {
 }
 
 message IframeData {
+  // DEPRECATED in favor of Security Origin in FrameData.
   // The URL of the iframe.
   string url = 1;
+
+  FrameData frame_data = 3;
 
   // Indicates whether the iframe is likely to be an ad frame. This is set for
   // both the root ad frame and its descendants.
   bool likely_ad_frame = 2;
+}
+
+// The data for a frame in the web page. This is the common data structure for
+// both the root frame and embedded iframes.
+// Next ID: 2
+message FrameData {
+  // The security origin of the frame.
+  SecurityOrigin security_origin = 1;
 }
 
 message TableRowData {
