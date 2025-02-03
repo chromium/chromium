@@ -50,4 +50,7 @@ found in the LICENSE file.
     <color name="tab_group_color_picker_red_light">#F28B82</color>
     <color name="tab_group_color_picker_yellow_dark">#F9AB00</color>
     <color name="tab_group_color_picker_yellow_light">#FDD663</color>
+
+    <!-- Colors used in Google Pay icon -->
+    <color name="google_pay_icon_grey_dark">#3C4043</color>
 </resources>
