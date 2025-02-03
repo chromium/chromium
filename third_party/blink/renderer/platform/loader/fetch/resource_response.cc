@@ -54,15 +54,13 @@ namespace blink {
 
 namespace {
 
-constexpr auto kSupportedContentEncodingsValues =
+constexpr auto kSupportedContentEncodingValues =
     base::MakeFixedFlatSet<std::string_view>({
-        "",
         "br",
         "dcb",
         "dcz",
         "deflate",
         "gzip",
-        "identity",
         "zstd",
     });
 
@@ -459,13 +457,16 @@ AtomicString ResourceResponse::HttpContentType() const {
 }
 
 AtomicString ResourceResponse::GetFilteredHttpContentEncoding() const {
-  AtomicString content_encoding =
+  String content_encoding =
       HttpHeaderField(http_names::kContentEncoding).LowerASCII();
-  if (content_encoding.IsNull()) {
+  if (content_encoding.IsNull() || content_encoding.empty()) {
     return g_empty_atom;
   }
-  if (kSupportedContentEncodingsValues.contains(content_encoding.Ascii())) {
-    return content_encoding;
+  if (kSupportedContentEncodingValues.contains(content_encoding.Ascii())) {
+    return AtomicString(content_encoding);
+  }
+  if (content_encoding.find(',') != kNotFound) {
+    return AtomicString("multiple");
   }
   return AtomicString("unknown");
 }
