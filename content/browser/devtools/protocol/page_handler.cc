@@ -914,6 +914,9 @@ void PageHandler::DidStartNavigating(
     const GURL& url,
     const base::UnguessableToken& loader_id,
     const blink::mojom::NavigationType& navigation_type) {
+  if (!enabled_) {
+    return;
+  }
   std::string navigation_type_str;
   switch (navigation_type) {
     case blink::mojom::NavigationType::RELOAD:

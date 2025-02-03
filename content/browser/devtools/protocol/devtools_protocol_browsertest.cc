@@ -1637,7 +1637,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, CrossSiteNoDetach) {
       "B.com", "/devtools/navigation.html");
   NavigateToURLBlockUntilNavigationsComplete(shell(), test_url2, 1);
 
-  EXPECT_TRUE(HasExistingNotification("Page.frameStartedNavigating"));
+  EXPECT_FALSE(HasExistingNotification());
 }
 
 // TODO(crbug.com/40811670): Flaky on MacOS.
