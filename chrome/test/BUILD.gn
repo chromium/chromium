@@ -7658,6 +7658,7 @@ test("unit_tests") {
       "../browser/ui/passwords/bubble_controllers/password_change/password_change_credential_leak_bubble_controller_unittest.cc",
       "../browser/ui/passwords/bubble_controllers/password_change/password_change_info_bubble_controller_unittest.cc",
       "../browser/ui/passwords/bubble_controllers/password_change/privacy_notice_bubble_view_controller_unittest.cc",
+      "../browser/ui/passwords/bubble_controllers/password_change/successful_password_change_bubble_controller_unittest.cc",
       "../browser/ui/passwords/bubble_controllers/post_save_compromised_bubble_controller_unittest.cc",
       "../browser/ui/passwords/bubble_controllers/save_unsynced_credentials_locally_bubble_controller_unittest.cc",
       "../browser/ui/passwords/bubble_controllers/save_update_bubble_controller_unittest.cc",
