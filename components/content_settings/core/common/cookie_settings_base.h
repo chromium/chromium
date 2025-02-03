@@ -509,7 +509,7 @@ class CookieSettingsBase {
   virtual bool ShouldAlwaysAllowCookies(const GURL& url,
                                         const GURL& first_party_url) const = 0;
 
-  // Returns whether the global 3p cookie blocking setting is enabled.
+  // Returns whether third-party cookies are blocked.
   virtual bool ShouldBlockThirdPartyCookies() const = 0;
 
   // Returns whether Third Party Cookie Deprecation mitigations should take

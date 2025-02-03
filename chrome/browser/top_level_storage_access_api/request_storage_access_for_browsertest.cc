@@ -1387,9 +1387,12 @@ INSTANTIATE_TEST_SUITE_P(
         TopLevelStorageExemptionReasonTestData{
             .cookie_set_mechanism = CookieSetMechanism::kBrowserInternal,
             .cookie_name_value = {"cross-site=b.test"},
+            // Note: setting the block-third-party-cookies pref is not
+            // sufficient to unblock third-party cookies, since cookies can be
+            // blocked for other reasons (e.g. CLI switch).
             .block_third_party_cookies = false,
             .expected_cookie_string = "cross-site=b.test",
-            .expected_metric_value = {},
+            .expected_metric_value = {1},
         },
         // One cookie access granted through TopLevelStorage.
         TopLevelStorageExemptionReasonTestData{
