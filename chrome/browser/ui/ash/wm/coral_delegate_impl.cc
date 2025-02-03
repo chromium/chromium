@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/webui/ash/scanner_feedback_dialog/scanner_feedback_dialog.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/services/coral/public/mojom/coral_service.mojom.h"
 #include "chromeos/ui/wm/desks/desks_helper.h"
@@ -110,16 +111,21 @@ std::unique_ptr<app_restore::RestoreData> CoralGroupToRestoreData(
   return restore_data;
 }
 
-// Gets profile from the active user.
-Profile* GetActiveUserProfile() {
+content::BrowserContext* GetActiveUserBrowserContext() {
   const auto* active_user = user_manager::UserManager::Get()->GetActiveUser();
   if (!active_user) {
     return nullptr;
   }
 
-  auto* browser_context =
-      ash::BrowserContextHelper::Get()->GetBrowserContextByUser(active_user);
-  return Profile::FromBrowserContext(browser_context);
+  return ash::BrowserContextHelper::Get()->GetBrowserContextByUser(active_user);
+}
+
+// Gets profile from the active user.
+Profile* GetActiveUserProfile() {
+  if (auto* browser_context = GetActiveUserBrowserContext()) {
+    return Profile::FromBrowserContext(browser_context);
+  }
+  return nullptr;
 }
 
 // Creates a browser on the active desk.
@@ -236,4 +242,13 @@ void CoralDelegateImpl::MoveTabsInGroupToNewDesk(
 
 int CoralDelegateImpl::GetChromeDefaultRestoreId() {
   return Browser::kDefaultRestoreId;
+}
+
+void CoralDelegateImpl::OpenFeedbackDialog(
+    const std::string& group_description,
+    ash::ScannerDelegate::SendFeedbackCallback send_feedback_callback) {
+  auto* dialog = new ash::ScannerFeedbackDialog(
+      ash::ScannerFeedbackInfo(group_description, nullptr),
+      std::move(send_feedback_callback));
+  dialog->ShowSystemDialogForBrowserContext(GetActiveUserBrowserContext());
 }

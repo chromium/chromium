@@ -10,6 +10,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/birch/coral_constants.h"
+#include "ash/public/cpp/scanner/scanner_feedback_info.h"
 #include "base/memory/weak_ptr.h"
 #include "base/token.h"
 #include "chromeos/ash/services/coral/public/mojom/coral_service.mojom.h"
@@ -126,6 +127,8 @@ class ASH_EXPORT CoralController {
   void CreateSavedDeskFromGroup(coral::mojom::GroupPtr group,
                                 aura::Window* root_window);
 
+  void OpenFeedbackDialog(const std::string& group_description);
+
  private:
   using CoralProcessor = coral::mojom::CoralProcessor;
 
@@ -165,6 +168,11 @@ class ASH_EXPORT CoralController {
       std::unique_ptr<aura::WindowTracker> window_tracker,
       desks_storage::DeskModel::AddOrUpdateEntryStatus status,
       std::unique_ptr<DeskTemplate> saved_desk);
+
+  // Sends the feedback when the send button is clicked. The group info was
+  // saved in the `feedback_info`.
+  void OnFeedbackSendButtonClicked(ScannerFeedbackInfo feedback_info,
+                                   const std::string& user_description);
 
   mojo::Remote<coral::mojom::CoralService> coral_service_;
   mojo::Remote<coral::mojom::CoralProcessor> coral_processor_;
