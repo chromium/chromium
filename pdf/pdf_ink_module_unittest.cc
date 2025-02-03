@@ -1262,6 +1262,33 @@ TEST_F(PdfInkModuleStrokeTest, AnnotationWithMouseInterruptedByPenEvents) {
                    /*page_index=*/0, ink::StrokeInput::ToolType::kStylus));
 }
 
+TEST_F(PdfInkModuleStrokeTest, AnnotationWithPenIgnoresMouseEvents) {
+  EnableAnnotationMode();
+  InitializeSimpleSinglePageBasicLayout();
+
+  blink::WebTouchEvent pen_start_event =
+      CreatePenEvent(blink::WebInputEvent::Type::kTouchStart,
+                     base::span_from_ref(kMouseDownPoint));
+  EXPECT_TRUE(ink_module().HandleInputEvent(pen_start_event));
+
+  blink::WebMouseEvent mouse_move_event =
+      CreateMouseMoveWithLeftButtonEventAtPoint(kMouseMovePoint);
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_move_event));
+
+  blink::WebTouchEvent pen_end_event =
+      CreatePenEvent(blink::WebInputEvent::Type::kTouchEnd,
+                     base::span_from_ref(kMouseUpPoint));
+  EXPECT_TRUE(ink_module().HandleInputEvent(pen_end_event));
+
+  EXPECT_EQ(1, client().stroke_finished_count());
+  EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
+                   /*page_index=*/0, ink::StrokeInput::ToolType::kMouse));
+  EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
+                   /*page_index=*/0, ink::StrokeInput::ToolType::kTouch));
+  EXPECT_EQ(2, ink_module().GetInputOfTypeCountForPageForTesting(
+                   /*page_index=*/0, ink::StrokeInput::ToolType::kStylus));
+}
+
 TEST_F(PdfInkModuleStrokeTest, CanonicalAnnotationPoints) {
   // Setup to support examining the page stroke points for a layout that is
   // more complicated than what is provide by
