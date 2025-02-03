@@ -677,9 +677,10 @@ void RecorderAppUI::LoadSpeechRecognizer(
   config->library_dlc_path = soda_library_path.value();
   config->enable_formatting =
       chromeos::machine_learning::mojom::OptionalBool::kTrue;
-  // This forces to use the large model.
+  // Large recognizer will be used because all CPU models starting from v5058
+  // are large size only. (See go/soda-application-domain)
   config->recognition_mode =
-      chromeos::machine_learning::mojom::SodaRecognitionMode::kIme;
+      chromeos::machine_learning::mojom::SodaRecognitionMode::kCaption;
   config->speaker_diarization_mode = chromeos::machine_learning::mojom::
       SpeakerDiarizationMode::kSpeakerLabelDetection;
   config->max_speaker_count = 7;
