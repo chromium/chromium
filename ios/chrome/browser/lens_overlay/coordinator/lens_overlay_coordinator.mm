@@ -206,10 +206,8 @@ const int kExpectedExitAnimationCount = 2;
     [overflowMenuFactory learnMoreAction],
   ];
 
-  // Pass through the soon-to-be deprecated instantiation method until the new
-  // symbol is fully propagated in all repos.
   _selectionViewController = ios::provider::NewChromeLensOverlay(
-      imageSource.snapshot, config, additionalMenuItems);
+      imageSource, config, additionalMenuItems);
 }
 
 - (void)createContainerViewController {
