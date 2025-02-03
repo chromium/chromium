@@ -208,6 +208,8 @@ class HttpStreamPool::AttemptManager
     return ip_endpoint_states_;
   }
 
+  bool HasSSLConfigForTesting() const { return ssl_config_.has_value(); }
+
  private:
   FRIEND_TEST_ALL_PREFIXES(HttpStreamPoolAttemptManagerTest,
                            GetIPEndPointToAttempt);
@@ -299,6 +301,10 @@ class HttpStreamPool::AttemptManager
   // Calculate SSLConfig if it's not calculated yet and `this` has received
   // enough information to calculate it.
   void MaybeCalculateSSLConfig();
+
+  // When SSLConfig is ready and the notification has not yet been sent,
+  // notifies in-flight attempts that SSLConfig is ready.
+  void MaybeNotifySSLConfigReady();
 
   // Attempts QUIC sessions if QUIC can be used and `this` is ready to start
   // cryptographic connection handshakes.
@@ -540,6 +546,7 @@ class HttpStreamPool::AttemptManager
   // TODO(crbug.com/40812426): We need to have separate SSLConfigs when we
   // support multiple HTTPS RR that have different service endpoints.
   std::optional<SSLConfig> ssl_config_;
+  bool ssl_config_ready_notified_ = false;
 
   std::set<std::unique_ptr<InFlightAttempt>, base::UniquePtrComparator>
       in_flight_attempts_;

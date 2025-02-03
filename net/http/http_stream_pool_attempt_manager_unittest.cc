@@ -603,7 +603,7 @@ class HttpStreamPoolAttemptManagerTest : public TestWithTaskEnvironment {
 
 TEST_F(HttpStreamPoolAttemptManagerTest, ResolveEndpointFailedSync) {
   FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
-  endpoint_request->set_start_result(ERR_FAILED);
+  endpoint_request->CompleteStartSynchronously(ERR_FAILED);
   StreamRequester requester;
   requester.RequestStream(pool());
   requester.WaitForResult();
@@ -3188,7 +3188,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
 
   CreateFakeSpdySession(requester_a.GetStreamKey(), kCommonEndPoint);
   requester_a.RequestStream(pool());
-  RunUntilIdle();
+  requester_a.WaitForResult();
   EXPECT_THAT(requester_a.result(), Optional(IsOk()));
 
   FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
@@ -3203,7 +3203,14 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
           ServiceEndpointBuilder().add_ip_endpoint(kCommonEndPoint).endpoint())
       .CallOnServiceEndpointsUpdated()
       .CallOnServiceEndpointRequestFinished(OK);
-  RunUntilIdle();
+  // SSLConfig should be calculated even when an existing session is used.
+  ASSERT_TRUE(pool()
+                  .GetGroupForTesting(requester_b.GetStreamKey())
+                  ->GetAttemptManagerForTesting()
+                  ->HasSSLConfigForTesting());
+
+  requester_b.WaitForResult();
+
   EXPECT_THAT(requester_b.result(), Optional(IsOk()));
   ASSERT_EQ(pool().TotalActiveStreamCount(), 1u);
 }
@@ -3224,7 +3231,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
   endpoint_request
       ->add_endpoint(
           ServiceEndpointBuilder().add_ip_endpoint(kCommonEndPoint).endpoint())
-      .set_start_result(OK);
+      .CompleteStartSynchronously(OK);
 
   StreamRequester requester_b;
   requester_b.set_destination("https://example.test").RequestStream(pool());
@@ -3976,7 +3983,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
     FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
     endpoint_request
         ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
-        .set_start_result(OK);
+        .CompleteStartSynchronously(OK);
   }
 
   auto failed_data = std::make_unique<SequencedSocketData>();

@@ -474,9 +474,6 @@ int HttpStreamPool::AttemptManager::Preconnect(
 }
 
 void HttpStreamPool::AttemptManager::OnServiceEndpointsUpdated() {
-  // For plain HTTP request, we need to wait for HTTPS RR because we could
-  // trigger HTTP -> HTTPS upgrade when HTTPS RR is received during the endpoint
-  // resolution.
   net_log().AddEvent(
       NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_DNS_RESOLUTION_UPDATED,
       [&] {
@@ -484,9 +481,7 @@ void HttpStreamPool::AttemptManager::OnServiceEndpointsUpdated() {
             service_endpoint_request_.get());
       });
 
-  if (UsingTls() || service_endpoint_request_->EndpointsCryptoReady()) {
-    ProcessServiceEndpointChanges();
-  }
+  ProcessServiceEndpointChanges();
 }
 
 void HttpStreamPool::AttemptManager::OnServiceEndpointRequestFinished(int rv) {
@@ -1000,12 +995,21 @@ void HttpStreamPool::AttemptManager::
 }
 
 void HttpStreamPool::AttemptManager::ProcessServiceEndpointChanges() {
+  // For plain HTTP request, we need to wait for HTTPS RR because we could
+  // trigger HTTP -> HTTPS upgrade when HTTPS RR is received during the endpoint
+  // resolution.
+  if (!UsingTls() && !service_endpoint_request_->EndpointsCryptoReady() &&
+      !service_endpoint_request_finished_) {
+    return;
+  }
+
+  // Try to calculate SSLConfig before checking existing SPDY/QUIC sessions,
+  // since `this` may make TCP attempts even after using an existing session
+  // as the session could become inactive later.
+  MaybeCalculateSSLConfig();
+
   if (CanUseExistingSessionAfterEndpointChanges()) {
-    // TODO(crbug.com/383220402): Remove GetInfoAsValue() once we found the root
-    // cause of the associated bug.
-    std::string info = GetInfoAsValue().DebugString();
-    DEBUG_ALIAS_FOR_CSTR(aliased_info, info.c_str(), 512);
-    CHECK(in_flight_attempts_.empty()) << info;
+    CHECK(in_flight_attempts_.empty());
     return;
   }
 
@@ -1013,7 +1017,7 @@ void HttpStreamPool::AttemptManager::ProcessServiceEndpointChanges() {
       StreamAttemptDelayBehavior::kStartTimerOnFirstEndpointUpdate) {
     MaybeRunStreamAttemptDelayTimer();
   }
-  MaybeCalculateSSLConfig();
+  MaybeNotifySSLConfigReady();
   MaybeAttemptQuic();
   MaybeAttemptConnection();
 }
@@ -1118,9 +1122,7 @@ void HttpStreamPool::AttemptManager::MaybeCalculateSSLConfig() {
 
   CHECK(service_endpoint_request_);
   if (!service_endpoint_request_->EndpointsCryptoReady()) {
-    // TODO(crbug.com/383220402): Remove GetInfoAsValue() once we found the root
-    // cause of the associated bug.
-    CHECK(!service_endpoint_request_finished_) << GetInfoAsValue();
+    CHECK(!service_endpoint_request_finished_);
     return;
   }
 
@@ -1146,6 +1148,24 @@ void HttpStreamPool::AttemptManager::MaybeCalculateSSLConfig() {
       stream_key().network_anonymization_key();
 
   ssl_config_.emplace(std::move(ssl_config));
+}
+
+void HttpStreamPool::AttemptManager::MaybeNotifySSLConfigReady() {
+  if (!ssl_config_.has_value()) {
+    return;
+  }
+
+  if (ssl_config_ready_notified_) {
+    // Ensure that there is no in-flight stream attempts that are waiting for
+    // SSLConfig.
+    // TODO(crbug.com/383220402): Put this check behind DCHECK_ALWAYS_ON or
+    // remove this check once we have stabilized the implementation.
+    for (const auto& in_flight_attempt : in_flight_attempts_) {
+      CHECK(!in_flight_attempt->IsWaitingSSLConfig());
+    }
+    return;
+  }
+  ssl_config_ready_notified_ = true;
 
   // Restart slow timer for in-flight attempts that have already completed
   // TCP handshakes. Also collect callbacks from in-flight attempts to invoke
@@ -1674,9 +1694,7 @@ void HttpStreamPool::AttemptManager::CreateSpdyStreamAndNotify() {
     // notifying to jobs. Do another attempt.
 
     spdy_session_.reset();
-    // We may not have calculated SSLConfig yet. Try to calculate it before
-    // attempting connections.
-    MaybeCalculateSSLConfig();
+    CHECK(ssl_config_.has_value());
     MaybeAttemptConnection();
     return;
   }
