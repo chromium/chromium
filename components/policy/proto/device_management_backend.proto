@@ -4492,6 +4492,15 @@ message CertProvBackendError {
     // The requested certificate provisioning process cannot be found on
     // Spanner.
     CERTIFICATE_PROVISIONING_PROCESS_NOT_FOUND = 15;
+    // Placeholders for future errors that require the client to immediately
+    // retry provisioning the certificate from the very beginning (same as for
+    // INCONSISTENT_DATA and PROFILE_NOT_FOUND, all other errors make the client
+    // retry after a restart.)
+    IMMEDIATE_RETRY_ERROR_0 = 16;
+    IMMEDIATE_RETRY_ERROR_1 = 17;
+    IMMEDIATE_RETRY_ERROR_2 = 18;
+    IMMEDIATE_RETRY_ERROR_3 = 19;
+    IMMEDIATE_RETRY_ERROR_4 = 20;
   }
 
   // The specific error type.
