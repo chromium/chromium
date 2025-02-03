@@ -2475,6 +2475,11 @@ RegisterWebContentsCreationCallback(
 // and/or main. This can be useful to enable when the process hosting the window
 // is a standalone executable without an Info.plist.
 bool EnableNativeWindowActivation();
+
+// Ensures that if no key window is set (can happen in apps that are not
+// frontmost), we simulate the frontmost window becoming key, which triggers
+// any logic that would normally run in this case.
+void HandleMissingKeyWindow();
 #endif  // BUILDFLAG(IS_MAC)
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)

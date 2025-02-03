@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/metrics/desktop_session_duration/chrome_visibility_observer.h"
-
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
+#include "chrome/browser/metrics/desktop_session_duration/chrome_visibility_observer.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -45,7 +45,7 @@ class ChromeVisibilityObserverInteractiveTest
   // ChromeVisibilityObserver::visibility_gap_timeout_.
   void WaitForActive(bool active) {
 #if BUILDFLAG(IS_MAC)
-    ui_test_utils::HandleMissingKeyWindow();
+    content::HandleMissingKeyWindow();
 #endif
 
     for (size_t i = 0; is_active_ != active && i < 3; ++i) {
