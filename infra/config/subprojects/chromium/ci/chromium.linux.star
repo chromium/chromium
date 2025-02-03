@@ -872,9 +872,6 @@ ci.builder(
             ),
         },
     ),
-    # Remove the following two lines once the bot is running and green.
-    gardener_rotations = args.ignore_default(None),
-    tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "OriginIsolation",
         short_name = "oi",

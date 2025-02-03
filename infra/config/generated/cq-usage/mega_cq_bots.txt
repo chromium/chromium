@@ -113,6 +113,7 @@ chromium/try/linux-gcc-rel
 chromium/try/linux-libfuzzer-asan-rel
 chromium/try/linux-msan-chained-origins-rel
 chromium/try/linux-msan-no-origins-rel
+chromium/try/linux-oi-rel
 chromium/try/linux-rel
 chromium/try/linux-rel-test-selection
 chromium/try/linux-tsan-dbg
