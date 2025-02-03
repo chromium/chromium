@@ -45,8 +45,7 @@ webview:not([hidden]) {
 }
 
 .panel .logo {
-  padding: 6px 0 0 2px;
-  height: 13px;
+  padding: 0 0 0 2px;
 }
 
 .panel .close-button {
