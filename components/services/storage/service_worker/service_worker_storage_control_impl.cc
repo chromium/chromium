@@ -543,7 +543,7 @@ void ServiceWorkerStorageControlImpl::GetFakeRegistrationForClientUrl(
   data->script = kScript;
   data->script_type = blink::mojom::ScriptType::kModule;
   data->update_via_cache = blink::mojom::ServiceWorkerUpdateViaCache::kNone;
-  data->version_id = blink::mojom::kInvalidServiceWorkerVersionId;
+  data->version_id = blink::mojom::kSyntheticResponseServiceWorkerVersionId;
   data->is_active = true;
   data->fetch_handler_type =
       blink::mojom::ServiceWorkerFetchHandlerType::kNoHandler;
