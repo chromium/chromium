@@ -165,10 +165,6 @@ static_library("crosapi") {
     "resource_manager_ash.h",
     "screen_ai_downloader_ash.cc",
     "screen_ai_downloader_ash.h",
-    "search_controller_ash.cc",
-    "search_controller_ash.h",
-    "search_provider_ash.cc",
-    "search_provider_ash.h",
     "structured_metrics_service_ash.cc",
     "structured_metrics_service_ash.h",
     "suggestion_service_ash.cc",
@@ -222,8 +218,6 @@ static_library("crosapi") {
     "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/app_list/app_service",
     "//chrome/browser/ash/app_list/arc",
-    "//chrome/browser/ash/app_list/search",
-    "//chrome/browser/ash/app_list/search/omnibox",
     "//chrome/browser/ash/app_mode",
     "//chrome/browser/ash/app_mode/web_app",
     "//chrome/browser/ash/app_restore",
@@ -390,7 +384,6 @@ static_library("crosapi") {
     "//components/policy/core/common:common_constants",
     "//components/prefs",
     "//components/printing/browser",
-    "//components/search_engines",
     "//components/services/app_service/public/cpp:instance_update",
     "//components/session_manager/core",
     "//components/ukm:ukm",
@@ -561,7 +554,6 @@ source_set("unit_tests") {
     "payment_app_instance_ash_unittest.cc",
     "primary_profile_creation_waiter_unittest.cc",
     "screen_ai_downloader_ash_unittest.cc",
-    "search_controller_ash_unittest.cc",
   ]
 
   if (use_cups) {

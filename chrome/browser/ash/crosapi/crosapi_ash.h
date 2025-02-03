@@ -109,7 +109,6 @@ class PrintingMetricsAsh;
 class RemotingAsh;
 class ResourceManagerAsh;
 class ScreenAIDownloaderAsh;
-class SearchProviderAsh;
 class StructuredMetricsServiceAsh;
 class SuggestionServiceAsh;
 class TimeZoneServiceAsh;
@@ -295,10 +294,6 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::ResourceManager> receiver) override;
   void BindScreenAIDownloader(
       mojo::PendingReceiver<mojom::ScreenAIDownloader> receiver) override;
-  void BindSearchControllerFactory(
-      mojo::PendingRemote<mojom::SearchControllerFactory> remote) override;
-  void BindSearchControllerRegistry(
-      mojo::PendingReceiver<mojom::SearchControllerRegistry> receiver) override;
   void BindSensorHalClient(
       mojo::PendingRemote<chromeos::sensors::mojom::SensorHalClient> remote)
       override;
@@ -486,10 +481,6 @@ class CrosapiAsh : public mojom::Crosapi {
     return screen_ai_downloader_ash_.get();
   }
 
-  SearchProviderAsh* search_provider_ash() {
-    return search_provider_ash_.get();
-  }
-
   StructuredMetricsServiceAsh* structured_metrics_service_ash() {
     return structured_metrics_service_ash_.get();
   }
@@ -594,7 +585,6 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<ash::printing::PrintPreviewWebcontentsAdapterAsh>
       print_preview_webcontents_adapter_ash_;
   std::unique_ptr<ScreenAIDownloaderAsh> screen_ai_downloader_ash_;
-  std::unique_ptr<SearchProviderAsh> search_provider_ash_;
   std::unique_ptr<StructuredMetricsServiceAsh> structured_metrics_service_ash_;
   std::unique_ptr<SuggestionServiceAsh> suggestion_service_ash_;
   std::unique_ptr<TimeZoneServiceAsh> time_zone_service_ash_;

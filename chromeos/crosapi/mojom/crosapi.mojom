@@ -51,7 +51,6 @@ import "chromeos/crosapi/mojom/image_writer.mojom";
 import "chromeos/crosapi/mojom/input_methods.mojom";
 import "chromeos/crosapi/mojom/kerberos_in_browser.mojom";
 import "chromeos/crosapi/mojom/keystore_service.mojom";
-import "chromeos/crosapi/mojom/launcher_search.mojom";
 import "chromeos/crosapi/mojom/local_printer.mojom";
 import "chromeos/crosapi/mojom/login.mojom";
 import "chromeos/crosapi/mojom/login_screen_storage.mojom";
@@ -587,16 +586,6 @@ interface Crosapi {
   [MinVersion=36] BindResourceManager@41(
       pending_receiver<ResourceManager> receiver);
 
-  // Binds the search controller factory for creating search controllers.
-  // Added in M125.
-  [MinVersion=136] BindSearchControllerFactory@138(
-      pending_remote<SearchControllerFactory> remote);
-
-  // Binds the search controller which send queries from ash to lacros.
-  // Added in M99.
-  [MinVersion=62] BindSearchControllerRegistry@66(
-      pending_receiver<SearchControllerRegistry> receiver);
-
   // Binds the Sync Service interface to enable communication between Ash and
   // Lacros Sync. Ash Sync Service is not always available (e.g. Sync can be
   // disabled via command line flags or after/during profile destruction), in
@@ -609,6 +598,8 @@ interface Crosapi {
   [MinVersion=24] REMOVED_29@29(
       pending_receiver<SystemDisplayDeprecated> receiver);
 
+  // BindSearchControllerFactory@138 was removed.
+  // BindSearchControllerRegistry@66 was removed.
   // BindTaskManager@24 was removed.
 
   // Binds the TelemetryDiagnosticRoutineService interface to allow Lacros to

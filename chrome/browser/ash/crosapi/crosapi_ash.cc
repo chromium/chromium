@@ -74,7 +74,6 @@
 #include "chrome/browser/ash/crosapi/remoting_ash.h"
 #include "chrome/browser/ash/crosapi/resource_manager_ash.h"
 #include "chrome/browser/ash/crosapi/screen_ai_downloader_ash.h"
-#include "chrome/browser/ash/crosapi/search_provider_ash.h"
 #include "chrome/browser/ash/crosapi/structured_metrics_service_ash.h"
 #include "chrome/browser/ash/crosapi/suggestion_service_ash.h"
 #include "chrome/browser/ash/crosapi/time_zone_service_ash.h"
@@ -249,7 +248,6 @@ CrosapiAsh::CrosapiAsh()
       print_preview_webcontents_adapter_ash_(
           std::make_unique<ash::printing::PrintPreviewWebcontentsAdapterAsh>()),
       screen_ai_downloader_ash_(std::make_unique<ScreenAIDownloaderAsh>()),
-      search_provider_ash_(std::make_unique<SearchProviderAsh>()),
       structured_metrics_service_ash_(
           std::make_unique<StructuredMetricsServiceAsh>()),
       suggestion_service_ash_(std::make_unique<SuggestionServiceAsh>()),
@@ -702,16 +700,6 @@ void CrosapiAsh::BindResourceManager(
 void CrosapiAsh::BindScreenAIDownloader(
     mojo::PendingReceiver<mojom::ScreenAIDownloader> receiver) {
   screen_ai_downloader_ash_->Bind(std::move(receiver));
-}
-
-void CrosapiAsh::BindSearchControllerFactory(
-    mojo::PendingRemote<mojom::SearchControllerFactory> remote) {
-  NOTREACHED();
-}
-
-void CrosapiAsh::BindSearchControllerRegistry(
-    mojo::PendingReceiver<mojom::SearchControllerRegistry> receiver) {
-  search_provider_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindSensorHalClient(
