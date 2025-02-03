@@ -559,6 +559,12 @@ template("write_build_config") {
         invoker.main_class,
       ]
     }
+    if (defined(invoker.direct_deps_only) && invoker.direct_deps_only) {
+      args += [ "--direct-deps-only" ]
+    }
+    if (defined(invoker.use_interface_jars) && invoker.use_interface_jars) {
+      args += [ "--use-interface-jars" ]
+    }
     if (defined(invoker.base_module_target)) {
       _dep_label = invoker.base_module_target
       _dep_gen_dir = get_label_info(_dep_label, "target_gen_dir")
@@ -3817,6 +3823,7 @@ if (enable_java_templates) {
                                "aar_path",
                                "annotation_processor_deps",
                                "base_allowlist_rtxt_path",
+                               "direct_deps_only",
                                "gradle_treat_as_prebuilt",
                                "input_jars_paths",
                                "preferred_dep",
@@ -3832,6 +3839,7 @@ if (enable_java_templates) {
                                "r_text_path",
                                "suffix_apk_assets_used_by",
                                "type",
+                               "use_interface_jars",
                                "version_code",
                                "version_name",
                              ])

@@ -1442,14 +1442,11 @@ if (!is_robolectric && enable_java_templates) {
   #   }
   template("dist_jar") {
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+
+    # TODO: Remove uses.
+    not_needed(invoker, [ "use_unprocessed_jars" ])
     _use_interface_jars =
         defined(invoker.use_interface_jars) && invoker.use_interface_jars
-    _use_unprocessed_jars =
-        defined(invoker.use_unprocessed_jars) && invoker.use_unprocessed_jars
-    _direct_deps_only =
-        defined(invoker.direct_deps_only) && invoker.direct_deps_only
-    assert(!(_use_unprocessed_jars && _use_interface_jars),
-           "Cannot set both use_interface_jars and use_unprocessed_jars")
     _supports_android =
         !defined(invoker.supports_android) || invoker.supports_android
     _requires_android =
@@ -1498,8 +1495,9 @@ if (!is_robolectric && enable_java_templates) {
       java_library_impl(target_name) {
         forward_variables_from(invoker,
                                [
-                                 "jar_excluded_patterns",
                                  "deps",
+                                 "direct_deps_only",
+                                 "jar_excluded_patterns",
                                ])
         type = "dist_jar"
         if (!defined(deps)) {
@@ -1511,14 +1509,17 @@ if (!is_robolectric && enable_java_templates) {
         requires_android = _requires_android
         jar_path = invoker.output
         enable_bytecode_checks = false
+        use_interface_jars = _use_interface_jars
       }
     } else {
       write_build_config(_build_config_target_name) {
         type = "dist_jar"
+        forward_variables_from(invoker, [ "direct_deps_only" ])
         supports_android = _supports_android
         requires_android = _requires_android
         possible_config_deps = invoker.deps
         build_config = _build_config
+        use_interface_jars = _use_interface_jars
       }
     }
 
@@ -1554,29 +1555,8 @@ if (!is_robolectric && enable_java_templates) {
         "--output",
         rebase_path(_zip_jar_path, root_build_dir),
         "--no-compress",
+        "--input-zips=@FileArg($_rebased_build_config:dist_jar:jars)",
       ]
-
-      if (_direct_deps_only) {
-        if (_use_interface_jars) {
-          args += [ "--input-zips=@FileArg($_rebased_build_config:javac:interface_classpath)" ]
-        } else if (_use_unprocessed_jars) {
-          args += [
-            "--input-zips=@FileArg($_rebased_build_config:javac:classpath)",
-          ]
-        } else {
-          assert(
-              false,
-              "direct_deps_only does not work without use_interface_jars or use_unprocessed_jars")
-        }
-      } else {
-        if (_use_interface_jars) {
-          args += [ "--input-zips=@FileArg($_rebased_build_config:dist_jar:all_interface_jars)" ]
-        } else if (_use_unprocessed_jars) {
-          args += [ "--input-zips=@FileArg($_rebased_build_config:deps_info:javac_full_classpath)" ]
-        } else {
-          args += [ "--input-zips=@FileArg($_rebased_build_config:deps_info:device_classpath)" ]
-        }
-      }
 
       _excludes = []
       if (defined(invoker.jar_excluded_patterns)) {
