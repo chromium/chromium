@@ -625,19 +625,7 @@ TEST_F(ProcessAdAuctionResponseHeadersTest, AdditionalBid) {
               ::testing::IsEmpty());
 }
 
-class ProcessAdAuctionResponseHeadersWithSellerNonceTest
-    : public ProcessAdAuctionResponseHeadersTest {
- protected:
-  ProcessAdAuctionResponseHeadersWithSellerNonceTest() {
-    feature_list_.InitAndEnableFeature(blink::features::kFledgeSellerNonce);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(ProcessAdAuctionResponseHeadersWithSellerNonceTest,
-       AdditionalBidWithNoSellerNonce) {
+TEST_F(ProcessAdAuctionResponseHeadersTest, AdditionalBidWithNoSellerNonce) {
   net::HttpResponseHeaders::Builder headers_builder({1, 1}, "200 OK");
   headers_builder.AddHeader(kAdAuctionAdditionalBidResponseHeaderKey,
                             "00000000-0000-0000-0000-000000000000:e30=");
@@ -668,8 +656,7 @@ TEST_F(ProcessAdAuctionResponseHeadersWithSellerNonceTest,
               ::testing::IsEmpty());
 }
 
-TEST_F(ProcessAdAuctionResponseHeadersWithSellerNonceTest,
-       AdditionalBidWithSellerNonce) {
+TEST_F(ProcessAdAuctionResponseHeadersTest, AdditionalBidWithSellerNonce) {
   net::HttpResponseHeaders::Builder headers_builder({1, 1}, "200 OK");
   headers_builder.AddHeader(kAdAuctionAdditionalBidResponseHeaderKey,
                             "00000000-0000-0000-0000-000000000000:"
@@ -744,7 +731,7 @@ TEST_F(ProcessAdAuctionResponseHeadersTest,
               ::testing::IsEmpty());
 }
 
-TEST_F(ProcessAdAuctionResponseHeadersWithSellerNonceTest,
+TEST_F(ProcessAdAuctionResponseHeadersTest,
        AdditionalBid_MultipleNoncesAndMultipleBidsPerNonceWithSellerNonce) {
   net::HttpResponseHeaders::Builder headers_builder({1, 1}, "200 OK");
   headers_builder.AddHeader(kAdAuctionAdditionalBidResponseHeaderKey,
@@ -831,7 +818,7 @@ TEST_F(ProcessAdAuctionResponseHeadersTest,
                                        /*seller_nonce=*/std::nullopt)));
 }
 
-TEST_F(ProcessAdAuctionResponseHeadersWithSellerNonceTest,
+TEST_F(ProcessAdAuctionResponseHeadersTest,
        AdditionalBid_InvalidHeaderSkippedWithSellerNonce) {
   net::HttpResponseHeaders::Builder headers_builder({1, 1}, "200 OK");
 
@@ -875,8 +862,7 @@ TEST_F(ProcessAdAuctionResponseHeadersWithSellerNonceTest,
                   /*seller_nonce=*/"00000000-0000-0000-0000-000000000003")));
 }
 
-TEST_F(ProcessAdAuctionResponseHeadersWithSellerNonceTest,
-       AdditionalBid_ErrorMessages) {
+TEST_F(ProcessAdAuctionResponseHeadersTest, AdditionalBid_ErrorMessages) {
   struct {
     std::string input;
     base::expected<void, std::string> result;

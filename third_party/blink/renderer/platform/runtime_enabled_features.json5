@@ -2124,7 +2124,7 @@
       // Enables the ability to set seller nonces on the header response and
       // use bidNonce in bids.
       name: "FledgeSellerNonce",
-      status: "test",
+      status: "stable",
     },
     {
       name: "FledgeTrustedSignalsKVv1CreativeScanning",
