@@ -1059,6 +1059,56 @@ TEST_P(PDFiumEngineTest, SelectLinkAreaWithNoText) {
   EXPECT_EQ(kExpectedText, engine->GetSelectedText());
 }
 
+TEST_P(PDFiumEngineTest, SelectTextAcrossEmptyPage) {
+  NiceMock<MockTestClient> client;
+  std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
+      &client, FILE_PATH_LITERAL("multi_page_hello_world_with_empty_page.pdf"));
+  ASSERT_TRUE(engine);
+
+  // Plugin size chosen so all pages of the document are visible.
+  engine->PluginSizeUpdated({1024, 4096});
+
+  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
+
+  static constexpr gfx::PointF kStartPosition(80, 200);
+  static constexpr gfx::PointF kEndPosition(95, 765);
+
+  // Forward selection.
+  EXPECT_TRUE(engine->HandleInputEvent(
+      CreateLeftClickWebMouseEventAtPosition(kStartPosition)));
+  EXPECT_TRUE(engine->HandleInputEvent(
+      CreateMoveWebMouseEventToPosition(kEndPosition)));
+#if BUILDFLAG(IS_WIN)
+  static constexpr char kExpectedForwardSelection[] = "world!\r\nGoodbye";
+#else
+  static constexpr char kExpectedForwardSelection[] = "world!\nGoodbye";
+#endif
+  EXPECT_EQ(kExpectedForwardSelection, engine->GetSelectedText());
+
+  // Backward selection.
+  EXPECT_TRUE(engine->HandleInputEvent(
+      CreateLeftClickWebMouseEventAtPosition(kEndPosition)));
+  EXPECT_TRUE(engine->HandleInputEvent(
+      CreateMoveWebMouseEventToPosition(kStartPosition)));
+#if BUILDFLAG(IS_WIN)
+  static constexpr char kExpectedBackwardSelection[] = "world!\r\nGoodbye,";
+#else
+  static constexpr char kExpectedBackwardSelection[] = "world!\nGoodbye,";
+#endif
+  EXPECT_EQ(kExpectedBackwardSelection, engine->GetSelectedText());
+
+  // Select all.
+  engine->SelectAll();
+#if BUILDFLAG(IS_WIN)
+  static constexpr char kExpectedAllSelection[] =
+      "Hello, world!\r\nGoodbye, world!";
+#else
+  static constexpr char kExpectedAllSelection[] =
+      "Hello, world!\nGoodbye, world!";
+#endif
+  EXPECT_EQ(kExpectedAllSelection, engine->GetSelectedText());
+}
+
 TEST_P(PDFiumEngineTest, DrawTextSelectionsHelloWorld) {
   constexpr int kPageIndex = 0;
   NiceMock<MockTestClient> client;
