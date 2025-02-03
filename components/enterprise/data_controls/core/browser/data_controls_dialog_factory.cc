@@ -38,6 +38,13 @@ DataControlsDialog* GetCurrentDialog(content::WebContents* web_contents,
 
 void DataControlsDialogFactory::ShowDialogIfNeeded(
     content::WebContents* web_contents,
+    DataControlsDialog::Type type) {
+  ShowDialogIfNeeded(web_contents, type,
+                     base::OnceCallback<void(bool bypassed)>());
+}
+
+void DataControlsDialogFactory::ShowDialogIfNeeded(
+    content::WebContents* web_contents,
     DataControlsDialog::Type type,
     base::OnceCallback<void(bool bypassed)> callback) {
   DCHECK(web_contents);
