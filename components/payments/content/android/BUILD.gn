@@ -203,7 +203,6 @@ android_library("full_java") {
     ":service_java",
     "//base:base_java",
     "//build/android:build_java",
-    "//components/autofill/android:autofill_java",
     "//components/embedder_support/android:util_java",
     "//components/payments/mojom:mojom_java",
     "//components/url_formatter/android:url_formatter_java",
