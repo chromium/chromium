@@ -1736,7 +1736,6 @@
   viewControllerConfig.previewDelegate = self;
   viewControllerConfig.manageDelegate = self;
   viewControllerConfig.signInPromoDelegate = self;
-  viewControllerConfig.controlDelegate = self;
 
   return viewControllerConfig;
 }
