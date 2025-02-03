@@ -18,12 +18,7 @@
 // Opens the "Data from Chrome sync" web page.
 - (void)openDataFromChromeSyncWebPage;
 
-// If the sync feature is disabled, sign-out and display a toast.
-// Otherwise, if the sync feature is enabled, presents the data options
-// available when turning off Sync. `targetRect` rect in table view system
-// coordinate to display the signout popover dialog.
-// TODO(crbug.com/40066949): Update this comment when syncing users no longer
-// exist on iOS.
+// Sign-out and display a toast.
 - (void)signOutFromTargetRect:(CGRect)targetRect;
 
 // Shows a dialog to warn users that addresses are not encrypted by custom

@@ -111,18 +111,4 @@ typedef NS_ENUM(NSInteger, SyncSettingsItemType) {
   ManageAccountStorageType,
 };
 
-// States for Sync Settings page to be in.
-enum class SyncSettingsAccountState {
-  // The user is viewing sync settings page when Sync-the-feature is on.
-  // TODO(crbug.com/40066949): Remove usage of kSyncing after kSync users are
-  // migrated to kSignin in phase 3. See ConsentLevel::kSync documentation for
-  // details.
-  kSyncing,
-  // The user is viewing sync settings page when signed-in not syncing.
-  kSignedIn,
-  // The user signed out from the sync settings page, and the UI is being
-  // dismissed.
-  kSignedOut,
-};
-
 #endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_GOOGLE_SERVICES_MANAGE_SYNC_SETTINGS_CONSTANTS_H_
