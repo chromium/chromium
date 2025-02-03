@@ -2195,6 +2195,7 @@ chromium-metrics-reviews@google.com.
   <int value="1331" label="ExternalStorageAllowlist"/>
   <int value="1332" label="WebAuthenticationRemoteDesktopAllowedOrigins"/>
   <int value="1333" label="ServiceWorkerToControlSrcdocIframeEnabled"/>
+  <int value="1334" label="ProvisionManagedClientCertificateForBrowser"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

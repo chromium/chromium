@@ -2331,6 +2331,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kProvisionManagedClientCertificateForUser,
     client_certificates::prefs::kProvisionManagedClientCertificateForUserPrefs,
     base::Value::Type::INTEGER },
+  { key::kProvisionManagedClientCertificateForBrowser,
+    client_certificates::prefs::kProvisionManagedClientCertificateForBrowserPrefs,
+    base::Value::Type::INTEGER },
 #endif  // BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
 
 #if !BUILDFLAG(IS_ANDROID)
