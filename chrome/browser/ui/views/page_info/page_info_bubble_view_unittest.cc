@@ -126,7 +126,7 @@ class PageInfoBubbleViewTestApi {
             base::DoNothing(),
             base::BindOnce(&PageInfoBubbleViewTestApi::OnPageInfoBubbleClosed,
                            base::Unretained(this), run_loop_.QuitClosure()),
-            /*allow_about_this_site=*/true));
+            /*allow_extended_site_info=*/true));
     presenter_ = bubble->presenter_for_testing();
     navigation_handler_ = bubble;
     bubble_delegate_ = bubble;

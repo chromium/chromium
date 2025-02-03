@@ -72,13 +72,17 @@ class InterestGroupStorageTest : public testing::Test {
 
   void SetUp() override {
     ASSERT_TRUE(temp_directory_.CreateUniqueTempDir());
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        blink::features::kInterestGroupStorage,
-        {{"max_owners", "10"},
-         {"max_groups_per_owner", "10"},
-         {"max_negative_groups_per_owner", "30"},
-         {"max_ops_before_maintenance", "100"},
-         {"max_storage_per_owner", "4096"}});
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{
+             blink::features::kInterestGroupStorage,
+             {{"max_owners", "10"},
+              {"max_groups_per_owner", "10"},
+              {"max_negative_groups_per_owner", "30"},
+              {"max_ops_before_maintenance", "100"},
+              {"max_storage_per_owner", "4096"}},
+         },
+         {blink::features::kFledgeAuctionDealSupport, {}}},
+        {});
   }
 
   // Returns a summary of all interest groups. Each interest group is returned
@@ -2870,6 +2874,53 @@ TEST_F(InterestGroupStorageWithNoIdleFastForwardTest,
       // Leave the interest group so it doesn't affect the next test.
       storage->LeaveInterestGroup(kGroupKey, kOrigin);
     }
+  }
+}
+
+TEST_F(InterestGroupStorageTest,
+       SelectableBuyerAndSellerReportingIdsDisappearWhenDealSupportDisabled) {
+  const url::Origin test_origin =
+      url::Origin::Create(GURL("https://owner.example.com"));
+  GURL ad1_url = GURL("https://owner.example.com/ad1");
+  InterestGroup g = NewInterestGroup(test_origin, "name");
+  g.ads.emplace();
+  g.ads->emplace_back(
+      ad1_url, "metadata1",
+      /*size_group=*/std::nullopt,
+      /*buyer_reporting_id=*/"brid1",
+      /*buyer_and_seller_reporting_id=*/"shrid1",
+      /*selectable_buyer_and_seller_reporting_ids=*/
+      std::vector<std::string>{"selectable_id1", "selectable_id2"});
+
+  std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+  storage->JoinInterestGroup(g, test_origin.GetURL());
+
+  {
+    std::vector<StorageInterestGroup> interest_groups =
+        storage->GetInterestGroupsForOwner(test_origin);
+    ASSERT_EQ(1u, interest_groups.size());
+    EXPECT_EQ("name", interest_groups[0].interest_group.name);
+    ASSERT_EQ(1u, interest_groups[0].interest_group.ads->size());
+    EXPECT_THAT(interest_groups[0]
+                    .interest_group.ads.value()[0]
+                    .selectable_buyer_and_seller_reporting_ids.value(),
+                testing::ElementsAre("selectable_id1", "selectable_id2"));
+  }
+
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndDisableFeature(
+        blink::features::kFledgeAuctionDealSupport);
+
+    std::vector<StorageInterestGroup> interest_groups =
+        storage->GetInterestGroupsForOwner(test_origin);
+    ASSERT_EQ(1u, interest_groups.size());
+    EXPECT_EQ("name", interest_groups[0].interest_group.name);
+    ASSERT_EQ(1u, interest_groups[0].interest_group.ads->size());
+    EXPECT_EQ(interest_groups[0]
+                  .interest_group.ads.value()[0]
+                  .selectable_buyer_and_seller_reporting_ids,
+              std::nullopt);
   }
 }
 

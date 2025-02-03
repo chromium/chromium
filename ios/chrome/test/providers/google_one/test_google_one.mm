@@ -10,11 +10,17 @@ namespace {
 id<GoogleOneControllerFactory> g_google_one_controller_factory;
 }
 
+@implementation GoogleOneConfiguration
+
+@end
+
 namespace ios {
 namespace provider {
 
-id<GoogleOneController> CreateGoogleOneController() {
-  return [g_google_one_controller_factory createController];
+id<GoogleOneController> CreateGoogleOneController(
+    GoogleOneConfiguration* configuration) {
+  return [g_google_one_controller_factory
+      createControllerWithConfiguration:configuration];
 }
 
 namespace test {

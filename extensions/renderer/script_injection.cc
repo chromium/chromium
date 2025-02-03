@@ -102,7 +102,7 @@ ScriptInjection::~ScriptInjection() {
                   ChromeTrackEvent::kRenderProcessHost,
                   content::RenderThread::Get(),
                   ChromeTrackEvent::kChromeExtensionId,
-                  ExtensionIdForTracing(host_id().id));
+                  ExtensionIdForTracing(injection_host_ ? host_id().id : ""));
 }
 
 ScriptInjection::InjectionResult ScriptInjection::TryToInject(

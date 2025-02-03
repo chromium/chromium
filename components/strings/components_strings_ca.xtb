@@ -1234,6 +1234,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3194737229810486521"><ph name="URL" /> vol emmagatzemar dades al dispositiu de manera permanent</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> a <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Pot demanar permís per saber quan estàs utilitzant aquest dispositiu de manera activa</translation>
+<translation id="3201482403106004262">S'ha produït un error amb l'enquesta.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />: prem Tab i després Retorn per gestionar la informació que sincronitzes a la configuració de Chrome</translation>
 <translation id="3203025201812691413">L'URL no pot ser buit</translation>
 <translation id="320323717674993345">Cancel·la el pagament</translation>
@@ -4620,6 +4621,7 @@ Detalls addicionals:
 <translation id="9192361865877479444">Metall (mat)</translation>
 <translation id="9192947025498305328">Cosmètica ètica i sostenible</translation>
 <translation id="9199905725844810519">La impressió està bloquejada</translation>
+<translation id="9201904868909900493">S'està obrint l'enquesta...</translation>
 <translation id="9204089334327209740">Un cop s'hagi completat la pujada, podràs modificar els fitxers a <ph name="CLOUD_PROVIDER" />. L'emmagatzematge local, inclosos els fitxers de la paperera, se suprimirà automàticament.</translation>
 <translation id="9205078245616868884">Les vostres dades estan encriptades amb la vostra frase de contrasenya de sincronització. Introduïu-la per començar la sincronització.</translation>
 <translation id="920643408853370361">Assegurança de viatges</translation>

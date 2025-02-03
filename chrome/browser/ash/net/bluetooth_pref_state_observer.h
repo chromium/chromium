@@ -14,9 +14,7 @@ class PrefService;
 
 namespace ash {
 
-// Class to update CrosBluetoothConfig when the PrefService state changes. The
-// implementation currently relies on g_browser_process since it holds the
-// default PrefService.
+// Class to update CrosBluetoothConfig when the PrefService state changes.
 class BluetoothPrefStateObserver
     : public session_manager::SessionManagerObserver {
  public:

@@ -466,7 +466,9 @@ TEST_F(BrowserViewControllerTest, UpdateWebStateVisibility) {
   EXPECT_EQ(web_state_list->GetWebStateAt(2)->IsVisible(), true);
 }
 
-TEST_F(BrowserViewControllerTest, didInsertWebStateWithAnimation) {
+// TODO(crbug.com/392938083): This test fails when run as part of the entire
+// test suite. Retries seem to pass.
+TEST_F(BrowserViewControllerTest, FLAKY_didInsertWebStateWithAnimation) {
   // Animation is only expected on iPhone, not iPad.
   bool animation_expected =
       ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE;
@@ -504,7 +506,9 @@ TEST_F(BrowserViewControllerTest,
 
 // Tests that an off-the-record web state can be created and inserted in the
 // browser view controller.
-TEST_F(BrowserViewControllerTest, didInsertOffTheRecordWebState) {
+// TODO(crbug.com/392938083): This test fails when run as part of the entire
+// test suite. Retries seem to pass.
+TEST_F(BrowserViewControllerTest, FLAKY_didInsertOffTheRecordWebState) {
   // The animation being tested only runs on the phone form factor.
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     return;
@@ -525,7 +529,9 @@ TEST_F(BrowserViewControllerTest, didInsertOffTheRecordWebState) {
 
 // Tests that when a webstate is inserted, the correct view is used during
 // the animation.
-TEST_F(BrowserViewControllerTest, ViewOnInsert) {
+// TODO(crbug.com/392938083): This test fails when run as part of the entire
+// test suite. Retries seem to pass.
+TEST_F(BrowserViewControllerTest, FLAKY_ViewOnInsert) {
   // The animation being tested only runs on the phone form factor.
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     return;

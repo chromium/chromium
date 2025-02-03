@@ -10,8 +10,9 @@
 #include <limits>
 
 #include "partition_alloc/build_config.h"
+#include "partition_alloc/buildflags.h"
 
-#if !defined(NDEBUG)
+#if PA_BUILDFLAG(IS_DEBUG)
 // In debug builds, we use RAW_CHECK() to print useful error messages, if
 // SafeSPrintf() is called with broken arguments.
 // As our contract promises that SafeSPrintf() can be called from any
@@ -41,7 +42,7 @@
     if (x) {           \
     }                  \
   } while (0)
-#endif
+#endif  // PA_BUILDFLAG(IS_DEBUG)
 
 namespace partition_alloc::internal::base::strings {
 
@@ -74,7 +75,7 @@ const char kUpCaseHexDigits[] = "0123456789ABCDEF";
 const char kDownCaseHexDigits[] = "0123456789abcdef";
 }  // namespace
 
-#if defined(NDEBUG)
+#if !PA_BUILDFLAG(IS_DEBUG)
 // We would like to define kSSizeMax as std::numeric_limits<ssize_t>::max(),
 // but C++ doesn't allow us to do that for constants. Instead, we have to
 // use careful casting and shifting. We later use a static_assert to
@@ -82,7 +83,7 @@ const char kDownCaseHexDigits[] = "0123456789abcdef";
 namespace {
 const size_t kSSizeMax = kSSizeMaxConst;
 }
-#else   // defined(NDEBUG)
+#else   // !PA_BUILDFLAG(IS_DEBUG)
 // For efficiency, we really need kSSizeMax to be a constant. But for unit
 // tests, it should be adjustable. This allows us to verify edge cases without
 // having to fill the entire available address space. As a compromise, we make
@@ -101,7 +102,7 @@ size_t GetSafeSPrintfSSizeMaxForTest() {
   return kSSizeMax;
 }
 }  // namespace internal
-#endif  // defined(NDEBUG)
+#endif  // !PA_BUILDFLAG(IS_DEBUG)
 
 namespace {
 class Buffer {

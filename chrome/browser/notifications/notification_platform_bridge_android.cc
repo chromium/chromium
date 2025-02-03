@@ -33,6 +33,7 @@
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/safe_browsing/content/browser/notification_content_detection/notification_content_detection_constants.h"
+#include "components/url_formatter/url_formatter.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/persistent_notification_status.h"
@@ -439,12 +440,12 @@ void NotificationPlatformBridgeAndroid::AlwaysAllowNotifications(
       base::NumberToString(
           PlatformNotificationServiceFactory::GetForProfile(profile)
               ->ReadNextPersistentNotificationId()),
-      l10n_util::GetStringFUTF16(
-          IDS_CHROME_NO_LONGER_SHOW_WARNINGS_NOTIFICATION_TITLE,
-          base::UTF8ToUTF16(url.spec())),
-      u"", ui::ImageModel(), std::u16string(), url,
-      message_center::NotifierId(), message_center::RichNotificationData(),
-      nullptr);
+      l10n_util::GetStringUTF16(
+          IDS_CHROME_NO_LONGER_SHOW_WARNINGS_NOTIFICATION_TITLE),
+      l10n_util::GetStringUTF16(
+          IDS_CHROME_NO_LONGER_SHOW_WARNINGS_NOTIFICATION_BODY),
+      ui::ImageModel(), std::u16string(), url, message_center::NotifierId(),
+      message_center::RichNotificationData(), nullptr);
   // Create new `PersistentNotificationMetadata`, where `is_suspicious` is set
   // to false by default. Set `skip_ua_buttons` to true so the confirmation
   // notification does not restore any UA buttons.

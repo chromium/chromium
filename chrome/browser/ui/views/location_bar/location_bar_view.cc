@@ -1704,7 +1704,7 @@ bool LocationBarView::ShowPageInfoDialog() {
           entry->GetVirtualURL(), std::move(initialized_callback),
           base::BindOnce(&LocationBarView::OnPageInfoBubbleClosed,
                          weak_factory_.GetWeakPtr()),
-          /*allow_about_this_site=*/true);
+          /*allow_extended_site_info=*/true);
   bubble->SetHighlightedButton(location_icon_view_);
   bubble->GetWidget()->Show();
   RecordPageInfoMetrics();

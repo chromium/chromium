@@ -20,6 +20,7 @@
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_save_manager_impl.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "crypto/random.h"
 
 namespace password_manager {
 namespace {
@@ -318,6 +319,16 @@ void SendUmaHistogramsOnGeneratedPasswordAttributeChanges(
   }
 }
 
+std::u16string CreateRandomString() {
+  constexpr size_t kSyncPasswordSaltLength = 16;
+
+  uint8_t buffer[kSyncPasswordSaltLength];
+  crypto::RandBytes(buffer);
+  // Explicit std::string constructor with a string length must be used in order
+  // to avoid treating '\0' symbols as a string ends.
+  return std::u16string(std::begin(buffer), std::end(buffer));
+}
+
 }  // namespace
 
 PasswordGenerationManager::PasswordGenerationManager(
@@ -370,7 +381,15 @@ void PasswordGenerationManager::PresaveGeneratedPassword(
   // the same username in order to prevent overwriting.
   if (FindUsernameConflict(generated, matches)) {
     generated.username_value.clear();
+
+    // Generate random `username_element` during password change to avoid
+    // overriding any existing credentials with an empty username.
+    if (FindUsernameConflict(generated, matches) &&
+        client_->IsPasswordChangeOngoing()) {
+      generated.username_element = CreateRandomString();
+    }
   }
+
   generated.date_created = base::Time::Now();
   if (presaved_) {
     form_saver->UpdateReplace(generated, {} /* matches */,

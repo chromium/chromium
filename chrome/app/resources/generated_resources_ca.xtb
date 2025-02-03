@@ -784,6 +784,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1542524755306892917">Això permet que l'Assistent de Google proporcioni respostes personalitzades quan <ph name="SUPERVISED_USER_NAME" /> faci preguntes.</translation>
 <translation id="1543284117603151572">Importades d'Edge</translation>
 <translation id="1543538514740974167">Arriba fins aquí més ràpidament</translation>
+<translation id="154420222899071768">No s'ha actualitzat la contrasenya, però hauries de poder continuar accedint al lloc web amb la contrasenya antiga</translation>
 <translation id="1544588554445317666">Prova d'utilitzar un nom de fitxer més curt o desa'l en una altra carpeta</translation>
 <translation id="1545177026077493356">Mode quiosc automàtic</translation>
 <translation id="1545749641540134597">Escaneja el codi QR</translation>
@@ -1940,6 +1941,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2328561734797404498">Reinicia el dispositiu per utilitzar <ph name="APP_NAME" />.</translation>
 <translation id="2328636661627946415">Quan estàs en mode d'incògnit, els llocs web només poden fer servir les galetes per veure la teva activitat de navegació en aquests mateixos llocs web. Les galetes se suprimeixen en finalitzar la sessió d'incògnit.</translation>
 <translation id="2329597144923131178">Inicieu la sessió per tenir adreces d'interès, historial, contrasenyes i altres opcions de configuració en tots els dispositius.</translation>
+<translation id="2331334586452217517">El contingut d'aquest lloc web s'envia a Google i és possible que el vegin revisors humans. Informació sobre <ph name="PASSWORD_CHANGE" />.</translation>
 <translation id="2332115969598251205">No es poden carregar els dispositius desats a <ph name="PRIMARY_EMAIL" />. Comprova la connexió a Internet i torna-ho a provar.</translation>
 <translation id="2332131598580221120">Mostra a la botiga</translation>
 <translation id="2332515770639153015">La funció Navegació segura millorada està activada</translation>
@@ -3831,6 +3833,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="369489984217678710">Contrasenyes i altres dades d'inici de sessió</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{Les comprovacions de seguretat han finalitzat. Les dades es penjaran.}=1{Les comprovacions de seguretat han finalitzat. El fitxer es penjarà.}other{Les comprovacions de seguretat han finalitzat. Els fitxers es penjaran.}}</translation>
 <translation id="3695339288331169103">Des de <ph name="BEGIN_LINK" /><ph name="DISPLAY_REFERRER_URL" /><ph name="END_LINK" /></translation>
+<translation id="3696309329332791122">Comprova la contrasenya</translation>
 <translation id="369736917241079046">menú d'aplicacions+fletxa esquerra</translation>
 <translation id="3697716475445175867">oberta per darrera vegada</translation>
 <translation id="3697732362672163692">{NUM_SITES,plural, =1{Pots impedir que aquest lloc web enviï notificacions en el futur.}other{Pot impedir que aquests llocs web enviïn notificacions en el futur.}}</translation>
@@ -7563,6 +7566,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6383382161803538830">El mode de lectura no està disponible en aquesta pàgina</translation>
 <translation id="638418309848716977">Enllaços admesos</translation>
 <translation id="6384275966486438344">Canviar la configuració de la cerca a: <ph name="SEARCH_HOST" /></translation>
+<translation id="6384512202164833048">{NUM_GROUPS,plural, =1{Conserva aquest grup per afegir-hi pestanyes més tard o suprimeix-lo si ja no el necessites.}other{Conserva aquests grups per afegir-hi pestanyes més tard o suprimeix-los si ja no els necessites.}}</translation>
 <translation id="6385149369087767061">Connecta't a Internet i torna-ho a provar</translation>
 <translation id="6385382178401976503">Targeta: <ph name="CARD" /></translation>
 <translation id="6385994920693662133">Advertiment: el registre detallat està activat; els informes que s'indiquen a continuació poden incloure URL o una altra informació sensible. Consulta aquesta informació i mira si no et fa res que s'enviïn aquestes dades.</translation>
@@ -9177,6 +9181,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7552846755917812628">Prova els consells següents:</translation>
 <translation id="7553012839257224005">S'està comprovant el contenidor de Linux</translation>
 <translation id="7553242001898162573">Introduïu la contrasenya</translation>
+<translation id="7554342082838376298">Canvi de contrasenya automatitzat</translation>
 <translation id="755472745191515939">El teu administrador no permet aquest idioma</translation>
 <translation id="7554791636758816595">Pestanya nova</translation>
 <translation id="7556033326131260574">Smart Lock no ha pogut verificar el vostre compte. Escriviu la contrasenya per accedir-hi.</translation>

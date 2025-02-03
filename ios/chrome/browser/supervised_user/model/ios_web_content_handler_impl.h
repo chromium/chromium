@@ -53,6 +53,7 @@ class IOSWebContentHandlerImpl : public supervised_user::WebContentHandler {
   void Close();
 
   const bool is_main_frame_;
+  bool is_bottomsheet_shown_ = false;
   raw_ptr<web::WebState> web_state_;
   __weak id<ParentAccessCommands> commands_handler_;
   base::WeakPtrFactory<IOSWebContentHandlerImpl> weak_factory_{this};

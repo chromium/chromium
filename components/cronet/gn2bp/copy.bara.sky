@@ -44,7 +44,7 @@ origin_files = glob([
     "testing/buildbot/**",
     # Exclude test files to reduce the number of gn2bp files
     "testing/fuzzer/**",
-    "testing/libfuzzer/**",
+    "testing/libfuzzer/fuzzers/wasm_corpus/**",
   ]) - glob(["**/third_party/**"]) + glob([
     "base/third_party/cityhash/**",
     "base/third_party/cityhash_v103/**",
@@ -97,6 +97,7 @@ origin_files = glob([
     # Note: Cronet currently uses Android's zlib
     # "third_party/zlib/**",
     "url/third_party/mozilla/**",
+    "third_party/simdutf/**",
   ]) + glob([
     # Note: Only used for tests.
     "third_party/quic_trace/**"

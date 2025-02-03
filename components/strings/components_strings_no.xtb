@@ -1873,6 +1873,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4269264543938335308">Badetøy</translation>
 <translation id="4269599248168651462">Tjenersertifikatet er utstedt til et ikke-unikt navn.</translation>
 <translation id="4270541775497538019">Hylle 6</translation>
+<translation id="4271311252511481365">{NUM_REVIEWS,plural, =0{Vis 0 anmeldelser. Gjennomsnittlig vurdering: <ph name="STARS" /> stjerner.}=1{Vis 1 anmeldelse. Gjennomsnittlig vurdering: <ph name="STARS" /> stjerner.}other{Vis alle # anmeldelsene. Gjennomsnittlig vurdering: <ph name="STARS" /> stjerner.}}</translation>
 <translation id="4271652479722040953">Når utvidelser legges til i Chrome, sendes relevante data om disse utvidelsene til tredjeparter for analyse og kan være synlige for administratoren din. Dataene inkluderer informasjon om utvidelsene, for eksempel navn, installeringstidspunkt og installeringskilde, samt aktivitet knyttet til disse utvidelsene (for eksempel bytte av faner, kontakt med nettsteder eller bruk av informasjonskapsler). Disse dataene samles inn både for utvidelser som er installert fra Chrome Nettmarked, og for utvidelser som er installert utenfor nettbutikken.</translation>
 <translation id="4275830172053184480">Start enheten din på nytt</translation>
 <translation id="4276974990916607331">Nei takk</translation>
@@ -2952,6 +2953,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6224281071334553713">Smykkesteiner og smykker</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å gi tilgjengelighetsverktøyene dine personlig preg i Chrome-innstillingene</translation>
 <translation id="6228346913624365233">Luksuskjøretøy</translation>
+<translation id="6228836011612806720">Butikkanmeldelser. Gjennomsnittlig vurdering: <ph name="STARS" /> stjerner.</translation>
 <translation id="6229196330202833460">Film- og TV-strømming</translation>
 <translation id="6234122620015464377">Beskjær etter hvert dokument</translation>
 <translation id="6234310016144827337">Sjekk tilkoblingen og prøv igjen</translation>

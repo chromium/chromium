@@ -190,6 +190,7 @@ class ExtensionServiceTestBase : public testing::Test {
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+ private:
   // If a test uses a feature list, it should be destroyed after
   // |task_environment_|, to avoid tsan data races between the ScopedFeatureList
   // destructor, and any tasks running on different threads that check if a
@@ -197,7 +198,6 @@ class ExtensionServiceTestBase : public testing::Test {
   // finish before |feature_list_| is destroyed.
   base::test::ScopedFeatureList feature_list_;
 
- private:
   // Must be declared before anything that may make use of the
   // directory so as to ensure files are closed before cleanup.
   base::ScopedTempDir temp_dir_;

@@ -5068,6 +5068,12 @@ const char kFreezingOnEnergySaverTestingDescription[] =
     "1) pretend that Energy Saver is active even when it's not and 2) pretend "
     "that all tabs use a lot of CPU.";
 
+const char kImprovedPasswordChangeServiceName[] =
+    "Improved password change service";
+const char kImprovedPasswordChangeServiceDescription[] =
+    "Experimental feature, which offers automatic password change to the user "
+    "when they sign in with a credential known to be leaked.";
+
 const char kKeyboardLockPromptName[] = "Keyboard Lock prompt";
 const char kKeyboardLockPromptDescription[] =
     "Requesting to use the keyboard lock API causes a permission prompt to be "
@@ -5115,6 +5121,13 @@ const char kLinkPreviewDescription[] =
     "understand what's to be the best for users from the viewpoint of "
     "security, privacy, and usability. The feature might be unstable and "
     "unusable on some platforms, e.g. macOS or touch devices.";
+
+const char kMarkAllCredentialsAsLeakedName[] = "Mark all credential as leaked";
+const char kMarkAllCredentialsAsLeakedDescription[] =
+    "Will pop up the leaked check dialog on every password form submission. "
+    "This should be used "
+    "in combination with #improved-password-change-service to better test the "
+    "improved password change service";
 
 const char kMoveThemePrefsToSpecificsName[] =
     "Move theme prefs to ThemeSpecifics";

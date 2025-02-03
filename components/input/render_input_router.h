@@ -195,6 +195,8 @@ class COMPONENT_EXPORT(INPUT) RenderInputRouter
     return input_target_client_;
   }
 
+  size_t in_flight_event_count() const { return in_flight_event_count_; }
+
   void SetInputTargetClientForTesting(
       mojo::Remote<viz::mojom::InputTargetClient> input_target_client);
   void SetWidgetInputHandlerForTesting(
@@ -202,6 +204,13 @@ class COMPONENT_EXPORT(INPUT) RenderInputRouter
   FlingSchedulerBase* GetFlingSchedulerForTesting() {
     return fling_scheduler_.get();
   }
+
+  // Stops all existing hang monitor timeouts and assumes the renderer is
+  // responsive.
+  void StopInputEventAckTimeout();
+  void RestartInputEventAckTimeoutIfNecessary();
+
+  void StartInputEventAckTimeoutForTesting() { StartInputEventAckTimeout(); }
 
  private:
   friend content::MockRenderInputRouter;
@@ -211,7 +220,29 @@ class COMPONENT_EXPORT(INPUT) RenderInputRouter
   void OnInputDispatchedToRendererResult(const blink::WebInputEvent& event,
                                          DispatchToRendererResult result);
 
+  // Starts a hang monitor timeout. If there's already a hang monitor timeout
+  // the new one will only fire if it has a shorter delay than the time
+  // left on the existing timeouts.
+  void StartInputEventAckTimeout();
+
+  // Called by |input_event_ack_timeout_| when an input event timed out without
+  // getting an ack from the renderer.
+  void OnInputEventAckTimeout();
+
   bool is_currently_scrolling_viewport_ = false;
+
+  // We access this value quite a lot, so we cache switches::kDisableHangMonitor
+  // here.
+  const bool should_disable_hang_monitor_;
+
+  // This value denotes the number of input events yet to be acknowledged
+  // by the renderer.
+  int in_flight_event_count_ = 0;
+
+  base::OneShotTimer input_event_ack_timeout_;
+
+  // This value indicates how long to wait before we consider a renderer hung.
+  base::TimeDelta hung_renderer_delay_;
 
   // Must be declared before `input_router_`. The latter is constructed by
   // borrowing a reference to this object, so it must be deleted first.
@@ -244,6 +275,8 @@ class COMPONENT_EXPORT(INPUT) RenderInputRouter
   bool force_enable_zoom_ = false;
 
   base::WeakPtr<RenderWidgetHostViewInput> view_input_;
+
+  base::WeakPtrFactory<RenderInputRouter> weak_factory_{this};
 };
 
 }  // namespace input

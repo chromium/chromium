@@ -35,6 +35,8 @@ struct NameParserTestRecord {
   std::string first;
   std::string middle;
   std::string last;
+  std::string prefix;
+  std::string core;
   std::string last_first;
   std::string last_conjunction;
   std::string last_second;
@@ -50,6 +52,8 @@ struct AlternativeNameParserTestRecord {
 // tree.
 struct LastNameParserTestRecord {
   std::string last_name;
+  std::string prefix;
+  std::string core;
   std::string first;
   std::string conjunction;
   std::string second;
@@ -63,6 +67,8 @@ class AutofillStructuredNameParseLastNameTest
 // * The conjunction, that is optional in Latinx/Hispanic names.
 // * The second part, for Latinx/Hispanic and all other last names.
 TEST_P(AutofillStructuredNameParseLastNameTest, ParseLastName) {
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kAutofillSupportLastNamePrefix};
   auto test_case = GetParam();
   SCOPED_TRACE(test_case.last_name);
   NameLast last_name_component;
@@ -71,6 +77,10 @@ TEST_P(AutofillStructuredNameParseLastNameTest, ParseLastName) {
                                       VerificationStatus::kObserved);
 
   last_name_component.CompleteFullTree();
+  EXPECT_EQ(last_name_component.GetValueForType(NAME_LAST_PREFIX),
+            base::UTF8ToUTF16(test_case.prefix));
+  EXPECT_EQ(last_name_component.GetValueForType(NAME_LAST_CORE),
+            base::UTF8ToUTF16(test_case.core));
   EXPECT_EQ(last_name_component.GetValueForType(NAME_LAST_FIRST),
             base::UTF8ToUTF16(test_case.first));
   EXPECT_EQ(last_name_component.GetValueForType(NAME_LAST_CONJUNCTION),
@@ -84,25 +94,44 @@ INSTANTIATE_TEST_SUITE_P(
     AutofillStructuredNameParseLastNameTest,
     testing::Values(
         // "von" is a known prefix for a surname and should be therefore parsed
-        // into the second last name
-        LastNameParserTestRecord{"von Kitzling", "", "", "von Kitzling"},
-        LastNameParserTestRecord{"Bush", "", "", "Bush"},
-        LastNameParserTestRecord{"Picasso", "", "", "Picasso"},
+        // into the prefix.
+        LastNameParserTestRecord{"von Kitzling", "von", "Kitzling", "", "",
+                                 "Kitzling"},
+        LastNameParserTestRecord{"Bush", "", "Bush", "", "", "Bush"},
+        LastNameParserTestRecord{"Picasso", "", "Picasso", "", "", "Picasso"},
         // Ruiz is a common Spanish name and parsing into first and second last
         // name should be applied. "de la" are known surname prefixes and should
         // be included into the subsequent token.
-        LastNameParserTestRecord{"Ruiz de la Torro", "Ruiz", "", "de la Torro"},
-        LastNameParserTestRecord{"Ruiz Picasso", "Ruiz", "", "Picasso"},
+        LastNameParserTestRecord{"Ruiz de la Torro", "", "Ruiz de la Torro",
+                                 "Ruiz", "", "de la Torro"},
+        LastNameParserTestRecord{"Ruiz Picasso", "", "Ruiz Picasso", "Ruiz", "",
+                                 "Picasso"},
         // "y" and "i" are known conjunctions.
-        LastNameParserTestRecord{"Ruiz Y Picasso", "Ruiz", "Y", "Picasso"},
-        LastNameParserTestRecord{"Ruiz y Picasso", "Ruiz", "y", "Picasso"},
-        LastNameParserTestRecord{"Ruiz i Picasso", "Ruiz", "i", "Picasso"}));
+        LastNameParserTestRecord{"Ruiz Y Picasso", "", "Ruiz Y Picasso", "Ruiz",
+                                 "Y", "Picasso"},
+        LastNameParserTestRecord{"Ruiz y Picasso", "", "Ruiz y Picasso", "Ruiz",
+                                 "y", "Picasso"},
+        LastNameParserTestRecord{"Ruiz i Picasso", "", "Ruiz i Picasso", "Ruiz",
+                                 "i", "Picasso"},
+        // Common dutch prefixes
+        LastNameParserTestRecord{"van der Veen", "van der", "Veen", "", "",
+                                 "Veen"},
+        LastNameParserTestRecord{"Van der Veen", "Van der", "Veen", "", "",
+                                 "Veen"},
+        LastNameParserTestRecord{"de Vries", "de", "Vries", "", "", "Vries"},
+        LastNameParserTestRecord{"van de Velde", "van de", "Velde", "", "",
+                                 "Velde"},
+        LastNameParserTestRecord{"ter Horst", "ter", "Horst", "", "", "Horst"},
+        LastNameParserTestRecord{"von Ruiz y Picasso", "von", "Ruiz y Picasso",
+                                 "Ruiz", "y", "Picasso"}));
 
 class AutofillStructuredNameParseFullNameTest
     : public testing::TestWithParam<NameParserTestRecord> {};
 
 // Tests the parsing of full names into their subcomponents.
 TEST_P(AutofillStructuredNameParseFullNameTest, ParseFullName) {
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kAutofillSupportLastNamePrefix};
   auto test_case = GetParam();
   SCOPED_TRACE(test_case.full);
   NameFull name;
@@ -121,6 +150,10 @@ TEST_P(AutofillStructuredNameParseFullNameTest, ParseFullName) {
   EXPECT_EQ(name.GetValueForType(NAME_MIDDLE),
             base::UTF8ToUTF16(test_case.middle));
   EXPECT_EQ(name.GetValueForType(NAME_LAST), base::UTF8ToUTF16(test_case.last));
+  EXPECT_EQ(name.GetValueForType(NAME_LAST_PREFIX),
+            base::UTF8ToUTF16(test_case.prefix));
+  EXPECT_EQ(name.GetValueForType(NAME_LAST_CORE),
+            base::UTF8ToUTF16(test_case.core));
   EXPECT_EQ(name.GetValueForType(NAME_LAST_FIRST),
             base::UTF8ToUTF16(test_case.last_first));
   EXPECT_EQ(name.GetValueForType(NAME_LAST_CONJUNCTION),
@@ -136,114 +169,139 @@ INSTANTIATE_TEST_SUITE_P(
         // Name starting with a last name, followed by a comma and the first and
         // middle name.
         NameParserTestRecord{"Mueller, Hans Peter", "Hans", "Peter", "Mueller",
-                             "", "", "Mueller"},
+                             "", "Mueller", "", "", "Mueller"},
         // Same with multiple middle names.
         NameParserTestRecord{"Mueller, Hans Walter Peter", "Hans",
-                             "Walter Peter", "Mueller", "", "", "Mueller"},
+                             "Walter Peter", "Mueller", "", "Mueller", "", "",
+                             "Mueller"},
         // Name that includes a hyphen.
         NameParserTestRecord{"Hans-Peter Mueller", "Hans-Peter", "", "Mueller",
-                             "", "", "Mueller"},
+                             "", "Mueller", "", "", "Mueller"},
         // Name but without a middle name.
         NameParserTestRecord{"Albert Einstein", "Albert", "", "Einstein", "",
-                             "", "Einstein"},
+                             "Einstein", "", "", "Einstein"},
         // Name and a middle name.
         NameParserTestRecord{"Richard Phillips Feynman", "Richard", "Phillips",
-                             "Feynman", "", "", "Feynman"},
+                             "Feynman", "", "Feynman", "", "", "Feynman"},
         // Name and multiple middle names.
         NameParserTestRecord{"Richard Phillips Isaac Feynman", "Richard",
-                             "Phillips Isaac", "Feynman", "", "", "Feynman"},
+                             "Phillips Isaac", "Feynman", "", "Feynman", "", "",
+                             "Feynman"},
         // Hispanic/Latinx name with two surname and a conjunction.
         NameParserTestRecord{"Pablo Diego Ruiz y Picasso", "Pablo Diego", "",
-                             "Ruiz y Picasso", "Ruiz", "y", "Picasso"},
+                             "Ruiz y Picasso", "", "Ruiz y Picasso", "Ruiz",
+                             "y", "Picasso"},
         // Hispanic/Latinx name with two surname and a conjunction.
         NameParserTestRecord{"Pablo Ruiz y Picasso", "Pablo", "",
-                             "Ruiz y Picasso", "Ruiz", "y", "Picasso"},
+                             "Ruiz y Picasso", "", "Ruiz y Picasso", "Ruiz",
+                             "y", "Picasso"},
+        // Hispanic/Latinx name with last name prefix.
+        NameParserTestRecord{"Pablo von Ruiz y Picasso", "Pablo", "",
+                             "von Ruiz y Picasso", "von", "Ruiz y Picasso",
+                             "Ruiz", "y", "Picasso"},
         // Name with multiple middle names.
         NameParserTestRecord{"George Walker Junior Bush", "George",
-                             "Walker Junior", "Bush", "", "", "Bush"},
-        // Name with a middle name initial.
-        NameParserTestRecord{"George W Bush", "George", "W", "Bush", "", "",
+                             "Walker Junior", "Bush", "", "Bush", "", "",
                              "Bush"},
         // Name with a middle name initial.
-        NameParserTestRecord{"George W. Bush", "George", "W.", "Bush", "", "",
-                             "Bush"},
+        NameParserTestRecord{"George W Bush", "George", "W", "Bush", "", "Bush",
+                             "", "", "Bush"},
+        // Name with a middle name initial.
+        NameParserTestRecord{"George W. Bush", "George", "W.", "Bush", "",
+                             "Bush", "", "", "Bush"},
         // Name with a single middle name.
         NameParserTestRecord{"George Walker Bush", "George", "Walker", "Bush",
-                             "", "", "Bush"},
+                             "", "Bush", "", "", "Bush"},
         // Name without names.
-        NameParserTestRecord{"George Bush", "George", "", "Bush", "", "",
-                             "Bush"},
+        NameParserTestRecord{"George Bush", "George", "", "Bush", "", "Bush",
+                             "", "", "Bush"},
         // Three character Korean name wit two-character surname.
-        NameParserTestRecord{"欧阳龙", "龙", "", "欧阳", "", "", "欧阳"},
+        NameParserTestRecord{"欧阳龙", "龙", "", "欧阳", "", "欧阳", "", "",
+                             "欧阳"},
         // Four character Korean name wit two-character surname.
-        NameParserTestRecord{"欧阳龙龙", "龙龙", "", "欧阳", "", "", "欧阳"},
+        NameParserTestRecord{"欧阳龙龙", "龙龙", "", "欧阳", "", "欧阳", "", "",
+                             "欧阳"},
         // Full name including given, middle and family names.
         NameParserTestRecord{"Homer Jay Simpson", "Homer", "Jay", "Simpson", "",
-                             "", "Simpson"},
+                             "Simpson", "", "", "Simpson"},
         // No middle name.
-        NameParserTestRecord{"Moe Szyslak", "Moe", "", "Szyslak", "", "",
-                             "Szyslak"},
+        NameParserTestRecord{"Moe Szyslak", "Moe", "", "Szyslak", "", "Szyslak",
+                             "", "", "Szyslak"},
         // Common name.
         NameParserTestRecord{"Timothy Lovejoy", "Timothy", "", "Lovejoy", "",
-                             "", "Lovejoy"},
+                             "Lovejoy", "", "", "Lovejoy"},
         // Only a last name with a preposition.
-        NameParserTestRecord{"von Gutenberg", "", "", "von Gutenberg", "", "",
-                             "von Gutenberg"},
+        NameParserTestRecord{"von Gutenberg", "", "", "von Gutenberg", "von",
+                             "Gutenberg", "", "", "Gutenberg"},
         // Common name suffixes removed.
-        NameParserTestRecord{"John Frink Phd", "John", "", "Frink", "", "",
-                             "Frink"},
+        NameParserTestRecord{"John Frink Phd", "John", "", "Frink", "", "Frink",
+                             "", "", "Frink"},
         // Only lase name with common name suffixes removed.
-        NameParserTestRecord{"Frink Phd", "", "", "Frink", "", "", "Frink"},
+        NameParserTestRecord{"Frink Phd", "", "", "Frink", "", "Frink", "", "",
+                             "Frink"},
         // Since "Ma" is a common last name, "Ma" was removed from the suffixes.
-        NameParserTestRecord{"John Ma", "John", "", "Ma", "", "", "Ma"},
+        NameParserTestRecord{"John Ma", "John", "", "Ma", "", "Ma", "", "",
+                             "Ma"},
         // Common family name prefixes not considered a middle name.
         NameParserTestRecord{"Milhouse Van Houten", "Milhouse", "",
-                             "Van Houten", "", "", "Van Houten"},
+                             "Van Houten", "Van", "Houten", "", "", "Houten"},
+        // Common family name prefix without a space.
+        NameParserTestRecord{"Milhouse VanHouten", "Milhouse", "", "VanHouten",
+                             "", "VanHouten", "", "", "VanHouten"},
         // Chinese name, Unihan
-        NameParserTestRecord{"孫 德明", "德明", "", "孫", "", "", "孫"},
+        NameParserTestRecord{"孫 德明", "德明", "", "孫", "", "孫", "", "",
+                             "孫"},
         // Chinese name, Unihan, 'IDEOGRAPHIC SPACE'
-        NameParserTestRecord{"孫　德明", "德明", "", "孫", "", "", "孫"},
+        NameParserTestRecord{"孫　德明", "德明", "", "孫", "", "孫", "", "",
+                             "孫"},
         // Korean name, Hangul
-        NameParserTestRecord{"홍 길동", "길동", "", "홍", "", "", "홍"},
+        NameParserTestRecord{"홍 길동", "길동", "", "홍", "", "홍", "", "",
+                             "홍"},
         // Japanese name, Unihan
-        NameParserTestRecord{"山田 貴洋", "貴洋", "", "山田", "", "", "山田"},
+        NameParserTestRecord{"山田 貴洋", "貴洋", "", "山田", "", "山田", "",
+                             "", "山田"},
         // In Japanese, foreign names use 'KATAKANA MIDDLE DOT' (U+30FB) as a
         // separator. There is no consensus for the ordering. For now, we use
         // the same ordering as regular Japanese names ("last・first").
         // Foreign name in Japanese, Katakana
-        NameParserTestRecord{"ゲイツ・ビル", "ビル", "", "ゲイツ", "", "",
-                             "ゲイツ"},
+        NameParserTestRecord{"ゲイツ・ビル", "ビル", "", "ゲイツ", "", "ゲイツ",
+                             "", "", "ゲイツ"},
         // 'KATAKANA MIDDLE DOT' is occasionally typo-ed as 'MIDDLE DOT'
         // (U+00B7).
-        NameParserTestRecord{"ゲイツ·ビル", "ビル", "", "ゲイツ", "", "",
-                             "ゲイツ"},
+        NameParserTestRecord{"ゲイツ·ビル", "ビル", "", "ゲイツ", "", "ゲイツ",
+                             "", "", "ゲイツ"},
         // CJK names don't usually have a space in the middle, but most of the
         // time, the surname is only one character (in Chinese & Korean).
-        NameParserTestRecord{"최성훈", "성훈", "", "최", "", "",
+        NameParserTestRecord{"최성훈", "성훈", "", "최", "", "최", "", "",
                              "최"},  // Korean name, Hangul
         // (Simplified) Chinese name, Unihan
-        NameParserTestRecord{"刘翔", "翔", "", "刘", "", "", "刘"},
+        NameParserTestRecord{"刘翔", "翔", "", "刘", "", "刘", "", "", "刘"},
         // (Traditional) Chinese name, Unihan
-        NameParserTestRecord{"劉翔", "翔", "", "劉", "", "", "劉"},
+        NameParserTestRecord{"劉翔", "翔", "", "劉", "", "劉", "", "", "劉"},
         // Korean name, Hangul
-        NameParserTestRecord{"남궁도", "도", "", "남궁", "", "", "남궁"},
+        NameParserTestRecord{"남궁도", "도", "", "남궁", "", "남궁", "", "",
+                             "남궁"},
         // Korean name, Hangul
-        NameParserTestRecord{"황보혜정", "혜정", "", "황보", "", "", "황보"},
+        NameParserTestRecord{"황보혜정", "혜정", "", "황보", "", "황보", "", "",
+                             "황보"},
         // (Traditional) Chinese name, Unihan
-        NameParserTestRecord{"歐陽靖", "靖", "", "歐陽", "", "", "歐陽"},
+        NameParserTestRecord{"歐陽靖", "靖", "", "歐陽", "", "歐陽", "", "",
+                             "歐陽"},
         // In Korean, some 2-character surnames are rare/ambiguous, like "강전":
         // "강" is a common surname, and "전" can be part of a given name. In
         // those cases, we assume it's 1/2 for 3-character names, or 2/2 for
         // 4-character names.
         // Korean name, Hangul
-        NameParserTestRecord{"강전희", "전희", "", "강", "", "", "강"},
+        NameParserTestRecord{"강전희", "전희", "", "강", "", "강", "", "",
+                             "강"},
         // Korean name, Hangul
-        NameParserTestRecord{"황목치승", "치승", "", "황목", "", "", "황목"},
+        NameParserTestRecord{"황목치승", "치승", "", "황목", "", "황목", "", "",
+                             "황목"},
         // It occasionally happens that a full name is 2 characters, 1/1.
         // Korean name, Hangul
-        NameParserTestRecord{"이도", "도", "", "이", "", "", "이"},
+        NameParserTestRecord{"이도", "도", "", "이", "", "이", "", "", "이"},
         // Chinese name, Unihan
-        NameParserTestRecord{"孫文", "文", "", "孫", "", "", "孫"}));
+        NameParserTestRecord{"孫文", "文", "", "孫", "", "孫", "", "", "孫"}));
 
 class AutofillStructuredParseAlternativeNameTest
     : public testing::TestWithParam<AlternativeNameParserTestRecord> {};

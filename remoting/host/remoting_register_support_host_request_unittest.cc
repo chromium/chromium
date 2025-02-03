@@ -72,6 +72,14 @@ decltype(auto) DoValidateEnterpriseOptionsAndRespondOk(
               params.show_troubleshooting_tools);
     ASSERT_EQ(options.allow_reconnections(), params.allow_reconnections);
     ASSERT_EQ(options.allow_file_transfer(), params.allow_file_transfer);
+    ASSERT_EQ(options.connection_dialog_required(),
+              params.connection_dialog_required);
+    if (params.connection_auto_accept_timeout.is_zero()) {
+      ASSERT_FALSE(options.has_connection_auto_accept_timeout());
+    } else {
+      ASSERT_EQ(options.connection_auto_accept_timeout().seconds(),
+                params.connection_auto_accept_timeout.InSeconds());
+    }
     ValidateRegisterHost(*request);
     RespondOk(std::move(callback));
   };
@@ -160,7 +168,14 @@ TEST_F(RemotingRegisterSupportHostTest, RegisterFtl) {
 }
 
 TEST_F(RemotingRegisterSupportHostTest, RegisterWithEnterpriseOptionsDisabled) {
-  ChromeOsEnterpriseParams params{false, false, false};
+  ChromeOsEnterpriseParams params;
+  params.show_troubleshooting_tools = false;
+  params.allow_troubleshooting_tools = false;
+  params.allow_reconnections = false;
+  params.allow_file_transfer = false;
+  params.connection_dialog_required = false;
+  params.connection_auto_accept_timeout = base::Seconds(0);
+
   EXPECT_CALL(*register_host_client_, RegisterSupportHost(_, _))
       .WillOnce(DoValidateEnterpriseOptionsAndRespondOk(params));
 
@@ -179,7 +194,14 @@ TEST_F(RemotingRegisterSupportHostTest, RegisterWithEnterpriseOptionsDisabled) {
 }
 
 TEST_F(RemotingRegisterSupportHostTest, RegisterWithEnterpriseOptionsEnabled) {
-  ChromeOsEnterpriseParams params{true, true, true};
+  ChromeOsEnterpriseParams params;
+  params.show_troubleshooting_tools = true;
+  params.allow_troubleshooting_tools = true;
+  params.allow_reconnections = true;
+  params.allow_file_transfer = true;
+  params.connection_dialog_required = true;
+  params.connection_auto_accept_timeout = base::Seconds(30);
+
   EXPECT_CALL(*register_host_client_, RegisterSupportHost(_, _))
       .WillOnce(DoValidateEnterpriseOptionsAndRespondOk(params));
 

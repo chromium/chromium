@@ -16,13 +16,10 @@ import android.util.Pair;
 import android.view.View;
 import android.view.animation.Interpolator;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 import androidx.recyclerview.widget.SimpleItemAnimator;
 
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
@@ -136,20 +133,13 @@ public class TabListItemAnimator extends SimpleItemAnimator {
         }
     }
 
-    private final AnimatorHolder mAdds = new AnimatorHolder("Add");
-    private final AnimatorHolder mChanges = new AnimatorHolder("Change");
-    private final AnimatorHolder mMoves = new AnimatorHolder("Move");
-    private final AnimatorHolder mRemovals = new AnimatorHolder("Removal");
-    private final @NonNull ObservableSupplierImpl<Boolean> mIsAnimatorRunningSupplier;
+    private AnimatorHolder mAdds = new AnimatorHolder("Add");
+    private AnimatorHolder mChanges = new AnimatorHolder("Change");
+    private AnimatorHolder mMoves = new AnimatorHolder("Move");
+    private AnimatorHolder mRemovals = new AnimatorHolder("Removal");
 
     TabListItemAnimator() {
-        this(new ObservableSupplierImpl<>(false));
-    }
-
-    @VisibleForTesting
-    TabListItemAnimator(@NonNull ObservableSupplierImpl<Boolean> isAnimatorRunningSupplier) {
         setRemoveDuration(DEFAULT_REMOVE_DURATION);
-        mIsAnimatorRunningSupplier = isAnimatorRunningSupplier;
     }
 
     @Override
@@ -237,7 +227,6 @@ public class TabListItemAnimator extends SimpleItemAnimator {
                     @Override
                     public void onAnimationStart(Animator animator) {
                         dispatchAddStarting(holder);
-                        mIsAnimatorRunningSupplier.set(true);
                     }
 
                     @Override
@@ -321,7 +310,6 @@ public class TabListItemAnimator extends SimpleItemAnimator {
                     @Override
                     public void onAnimationStart(Animator animator) {
                         dispatchChangeStarting(oldHolder, true);
-                        mIsAnimatorRunningSupplier.set(true);
                     }
 
                     @Override
@@ -358,7 +346,6 @@ public class TabListItemAnimator extends SimpleItemAnimator {
                         @Override
                         public void onAnimationStart(Animator animator) {
                             dispatchChangeStarting(newHolder, false);
-                            mIsAnimatorRunningSupplier.set(true);
                         }
 
                         @Override
@@ -410,7 +397,6 @@ public class TabListItemAnimator extends SimpleItemAnimator {
                     @Override
                     public void onAnimationStart(Animator animator) {
                         dispatchMoveStarting(holder);
-                        mIsAnimatorRunningSupplier.set(true);
                     }
 
                     @Override
@@ -468,7 +454,6 @@ public class TabListItemAnimator extends SimpleItemAnimator {
                     @Override
                     public void onAnimationStart(Animator animator) {
                         dispatchRemoveStarting(holder);
-                        mIsAnimatorRunningSupplier.set(true);
                     }
 
                     @Override
@@ -512,7 +497,6 @@ public class TabListItemAnimator extends SimpleItemAnimator {
                     @Override
                     public void onAnimationStart(Animator animator) {
                         dispatchRemoveStarting(holder);
-                        mIsAnimatorRunningSupplier.set(true);
                     }
 
                     @Override
@@ -533,15 +517,7 @@ public class TabListItemAnimator extends SimpleItemAnimator {
     void dispatchFinishedWhenAllAnimationsDone() {
         if (!isRunning()) {
             dispatchAnimationsFinished();
-            mIsAnimatorRunningSupplier.set(false);
         }
-    }
-
-    /**
-     * Returns a boolean indicating whether any animator in {@link TabListItemAnimator} is running.
-     */
-    public ObservableSupplier<Boolean> getIsAnimatorRunningSupplier() {
-        return mIsAnimatorRunningSupplier;
     }
 
     private Interpolator getRearrangeInterpolator() {

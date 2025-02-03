@@ -64,7 +64,6 @@
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/navigation/impression.h"
@@ -573,64 +572,6 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcBrowserTest,
   const net::test_server::HttpRequest* request =
       register_response->http_request();
   EXPECT_EQ(request->headers.at("Referer"), page_url.GetWithEmptyPath());
-}
-
-class AttributionSrcCrossAppWebDisabledBrowserTest
-    : public AttributionSrcBrowserTest {
- public:
-  AttributionSrcCrossAppWebDisabledBrowserTest()
-      : AttributionSrcBrowserTest(
-            /*enabled_features=*/{},
-            /*disabled_features=*/{
-                network::features::kAttributionReportingCrossAppWeb}) {}
-};
-INSTANTIATE_TEST_SUITE_P(All,
-                         AttributionSrcCrossAppWebDisabledBrowserTest,
-                         ::testing::Bool());
-
-IN_PROC_BROWSER_TEST_P(AttributionSrcCrossAppWebDisabledBrowserTest,
-                       Img_SetsAttributionReportingEligibleHeader) {
-  // Create a separate server as we cannot register a `ControllableHttpResponse`
-  // after the server starts.
-  std::unique_ptr<EmbeddedTestServer> https_server =
-      CreateAttributionTestHttpsServer();
-
-  auto register_response1 =
-      std::make_unique<net::test_server::ControllableHttpResponse>(
-          https_server.get(), "/register_source1");
-  auto register_response2 =
-      std::make_unique<net::test_server::ControllableHttpResponse>(
-          https_server.get(), "/register_source2");
-  ASSERT_TRUE(https_server->Start());
-
-  GURL page_url =
-      https_server->GetURL("b.test", "/page_with_impression_creator.html");
-  ASSERT_TRUE(NavigateToURL(web_contents(), page_url));
-
-  GURL register_url = https_server->GetURL("d.test", "/register_source1");
-  ASSERT_TRUE(ExecJs(web_contents(),
-                     JsReplace("createAttributionSrcImg($1);", register_url)));
-
-  register_response1->WaitForRequest();
-  ExpectValidAttributionReportingEligibleHeaderForImg(
-      register_response1->http_request()->headers.at(
-          "Attribution-Reporting-Eligible"));
-  ASSERT_FALSE(base::Contains(register_response1->http_request()->headers,
-                              "Attribution-Reporting-Support"));
-
-  auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
-  http_response->set_code(net::HTTP_MOVED_PERMANENTLY);
-  http_response->AddCustomHeader("Location", "/register_source2");
-  register_response1->Send(http_response->ToResponseString());
-  register_response1->Done();
-
-  // Ensure that redirect requests also contain the header.
-  register_response2->WaitForRequest();
-  ExpectValidAttributionReportingEligibleHeaderForImg(
-      register_response2->http_request()->headers.at(
-          "Attribution-Reporting-Eligible"));
-  ASSERT_FALSE(base::Contains(register_response2->http_request()->headers,
-                              "Attribution-Reporting-Support"));
 }
 
 // Regression test for crbug.com/1345955.
@@ -1259,12 +1200,8 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcFencedFrameBrowserTest,
 }
 
 class AttributionSrcCrossAppWebEnabledBrowserTest
-    : public AttributionSrcBrowserTest {
- public:
-  AttributionSrcCrossAppWebEnabledBrowserTest()
-      : AttributionSrcBrowserTest(/*enabled_features=*/{
-            network::features::kAttributionReportingCrossAppWeb}) {}
-};
+    : public AttributionSrcBrowserTest {};
+
 INSTANTIATE_TEST_SUITE_P(All,
                          AttributionSrcCrossAppWebEnabledBrowserTest,
                          ::testing::Bool());

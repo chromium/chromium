@@ -1621,6 +1621,9 @@ void EditingStyle::MergeStyleFromRulesForSerialization(Element* element) {
     mutable_style_->SetLonghandProperty(CSSPropertyID::kTextDecorationColor,
                                         CSSValueID::kInitial, false);
   }
+  if (RuntimeEnabledFeatures::ResolveVarStylesOnCopyEnabled()) {
+    ComputeValues(element);
+  }
 }
 
 static void RemovePropertiesInStyle(
@@ -1966,6 +1969,39 @@ static bool FontWeightNeedsResolving(const CSSValue* font_weight) {
     return true;
   const CSSValueID value = font_weight_identifier_value->GetValueID();
   return value == CSSValueID::kLighter || value == CSSValueID::kBolder;
+}
+
+void EditingStyle::ComputeValues(Element* element) {
+  DCHECK(element);
+  DCHECK(mutable_style_);
+
+  if (!element || !mutable_style_) {
+    return;
+  }
+
+  StyleResolver& resolver = element->GetDocument().GetStyleResolver();
+
+  // Create a new mutable CSS property value set for resolved styles.
+  MutableCSSPropertyValueSet* resolved_property_value_set =
+      MakeGarbageCollected<MutableCSSPropertyValueSet>(
+          mutable_style_->CssParserMode());
+
+  // Resolve each property in the current mutable_style_.
+  for (const CSSPropertyValue& property : mutable_style_->Properties()) {
+    if (property.Value().IsUnparsedDeclaration() ||
+        property.Value().IsPendingSubstitutionValue()) {
+      const CSSValue* resolved_value =
+          resolver.ComputeValue(element, property.Name(), property.Value());
+      resolved_property_value_set->SetProperty(property.Name(), *resolved_value,
+                                               property.IsImportant());
+    } else {
+      resolved_property_value_set->SetProperty(
+          property.Name(), property.Value(), property.IsImportant());
+    }
+  }
+
+  // Update the mutable style with the resolved style set.
+  mutable_style_ = resolved_property_value_set;
 }
 
 MutableCSSPropertyValueSet* GetPropertiesNotIn(

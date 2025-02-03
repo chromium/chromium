@@ -121,10 +121,9 @@ void PageActionModel::RemoveObserver(PageActionModelObserver* observer) {
 void PageActionModel::NotifyChange() {
   CHECK(!is_notifying_observers_)
       << "PageActionModel should not be updated while notifying observers";
-  is_notifying_observers_ = true;
+  base::AutoReset<bool> auto_reset(&is_notifying_observers_, true);
   observer_list_.Notify(&PageActionModelObserver::OnPageActionModelChanged,
                         *this);
-  is_notifying_observers_ = false;
 }
 
 }  // namespace page_actions

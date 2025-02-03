@@ -773,6 +773,24 @@ void SetProfileInfo(AutofillProfile* profile,
   }
 }
 
+void SetProfileInfo(AutofillProfile* profile,
+                    const char* first_name,
+                    const char* middle_name,
+                    const char* last_name,
+                    const char* country,
+                    bool finalize,
+                    VerificationStatus status) {
+  // Set the country first to ensure that the proper address model is used.
+  check_and_set(profile, ADDRESS_HOME_COUNTRY, country, status);
+  check_and_set(profile, NAME_FIRST, first_name, status);
+  check_and_set(profile, NAME_MIDDLE, middle_name, status);
+  check_and_set(profile, NAME_LAST, last_name, status);
+
+  if (finalize) {
+    profile->FinalizeAfterImport();
+  }
+}
+
 void SetProfileInfoWithGuid(AutofillProfile* profile,
                             const char* guid,
                             const char* first_name,

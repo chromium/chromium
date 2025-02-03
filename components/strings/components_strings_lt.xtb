@@ -1235,6 +1235,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3194737229810486521"><ph name="URL" /> prašo leidimo nuolat saugoti duomenis jūsų įrenginyje</translation>
 <translation id="3195213714973468956">„<ph name="PRINTER_NAME" />“ serveryje „<ph name="SERVER_NAME" />“</translation>
 <translation id="3197136577151645743">Gali būti prašoma leisti sužinoti, kada aktyviai naudojate įrenginį</translation>
+<translation id="3201482403106004262">Įvyko apklausos klaida.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />; paspauskite tabuliavimo klavišą, tada „Enter“, jei norite tvarkyti sinchronizuojamą informaciją „Chrome“ nustatymuose</translation>
 <translation id="3203025201812691413">URL laukas negali būti tuščias</translation>
 <translation id="320323717674993345">Atšaukti mokėjimą</translation>
@@ -2347,6 +2348,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5138227688689900538">Rodyti mažiau</translation>
 <translation id="5143309888746105072">„Chromium“ neleidžia svetainėms naudoti trečiųjų šalių slapukų, siekiant jus stebėti, kai naršote.
             <ph name="NEW_LINE" />Jei svetainės funkcijos neveikia, <ph name="START_LINK" />pabandykite laikinai leisti trečiųjų šalių slapukus<ph name="END_LINK" />.</translation>
+<translation id="5144613843429436866">Leidote <ph name="PERMISSION" /> šioje svetainėje</translation>
 <translation id="5145883236150621069">Politikos atsakyme yra klaidos kodas</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" /> pranešimai užblokuoti</translation>
 <translation id="514704532284964975"><ph name="URL" /> nori peržiūrėti ir keisti informaciją NFC įrenginiuose, kurią paliečiate telefonu</translation>
@@ -4403,6 +4405,7 @@ Papildoma išsami informacija:
 <translation id="8792621596287649091">Galite prarasti galimybę pasiekti „<ph name="ORG_NAME" />“ paskyrą arba gali būti pavogta tapatybė. „Chromium“ rekomenduoja pakeisti slaptažodį dabar.</translation>
 <translation id="8792626944327216835">mikrofonas</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> įjungė „Chrome Enterprise Connectors“ jūsų naršyklėje. Naudojant šias jungtis galima pasiekti kai kuriuos jūsų duomenis.</translation>
+<translation id="8796062699363039080">„<ph name="OPERATING_SYSTEM" />“ nustatymai</translation>
 <translation id="8798099450830957504">Numatytasis</translation>
 <translation id="8800034312320686233">Neveikia svetainė?</translation>
 <translation id="8805819170075074995">Sąrašo įrašas „<ph name="LANGUAGE_ID" />“: įrašo nepaisoma, nes jis taip pat įtrauktas į politiką „SpellcheckLanguage“.</translation>
@@ -4623,6 +4626,7 @@ Papildoma išsami informacija:
 <translation id="9192361865877479444">Metalas (matinis)</translation>
 <translation id="9192947025498305328">Švarieji grožio produktai</translation>
 <translation id="9199905725844810519">Spausdinimas užblokuotas</translation>
+<translation id="9201904868909900493">Atidaroma apklausa…</translation>
 <translation id="9204089334327209740">Kai įkėlimas bus baigtas, galėsite keisti failus „<ph name="CLOUD_PROVIDER" />“. Vietinė saugykla, įskaitant visus šiukšliadėžėje esančius failus, bus automatiškai pašalinta.</translation>
 <translation id="9205078245616868884">Duomenys užšifruoti naudojant sinchronizavimo slaptafrazę. Įveskite ją, kad pradėtumėte sinchronizuoti.</translation>
 <translation id="920643408853370361">Kelionių draudimas</translation>

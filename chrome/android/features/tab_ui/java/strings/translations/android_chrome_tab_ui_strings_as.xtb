@@ -25,6 +25,7 @@
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />অধিক জানক<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" />টা টেব এক গোট কৰা হৈছে</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />টা টেব}one{<ph name="TABS_COUNT_MANY" />টা টেব}other{<ph name="TABS_COUNT_MANY" />টা টেব}}</translation>
+<translation id="1909810060368225529">জাননী: এই শ্বেয়াৰ কৰা টেবৰ গোটৰ সালসলনিসমূহ সকলোৰে বাবে দৃশ্যমান। আপোনাৰ শ্বেয়াৰ কৰা টেবৰ গোটত যিকোনো লোকে সালসলনি কৰিব পাৰে</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{বাছনি কৰা <ph name="TABS_COUNT_ONE" /> টা টেব বুকমাৰ্ক কৰক}one{বাছনি কৰা <ph name="TABS_COUNT_MANY" /> টা টেব বুকমাৰ্ক কৰক}other{বাছনি কৰা <ph name="TABS_COUNT_MANY" /> টা টেব বুকমাৰ্ক কৰক}}</translation>
 <translation id="2118649612461486615">ষ্ট’ৰৰ তথ্য</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{আপোনাৰ বন্ধ কৰা টেব আৰু গোটসমূহ শেহতীয়া টেব আৰু টেবৰ গোটসমূহ শাখাৰ পৰা পুনৰ খুলিব পাৰি। আপোনাৰ ইনক’গ্নিট’ টেবটো উপলব্ধ নহ’ব।}one{আপোনাৰ বন্ধ কৰা টেব আৰু গোটসমূহ শেহতীয়া টেব আৰু টেবৰ গোটসমূহ শাখাৰ পৰা পুনৰ খুলিব পাৰি। আপোনাৰ # টা ইনক’গ্নিট’ টেব উপলব্ধ নহ’ব।}other{আপোনাৰ বন্ধ কৰা টেব আৰু গোটসমূহ শেহতীয়া টেব আৰু টেবৰ গোটসমূহ শাখাৰ পৰা পুনৰ খুলিব পাৰি। আপোনাৰ # টা ইনক’গ্নিট’ টেব উপলব্ধ নহ’ব।}}</translation>
@@ -126,11 +127,13 @@
 <translation id="6381032505162537930">আপুনি আপোনাৰ টেবৰ গোটসমূহ ইয়াত বিচাৰি পাব</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{বাছনি কৰা <ph name="TABS_COUNT_ONE" /> টা টেবৰ গোট ভংগ কৰক}one{বাছনি কৰা <ph name="TABS_COUNT_MANY" /> টা টেবৰ গোট ভংগ কৰক}other{বাছনি কৰা <ph name="TABS_COUNT_MANY" /> টা টেবৰ গোট ভংগ কৰক}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> টা টেব}one{<ph name="TABS_COUNT_MANY" /> টা টেব}other{<ph name="TABS_COUNT_MANY" /> টা টেব}}</translation>
+<translation id="6499296376514955580">শ্বেয়াৰ কৰা টেবৰ গোটৰ সালসলনিসমূহৰ বিষয়ে জাননী বন্ধ কৰা হৈছে</translation>
 <translation id="6527303717912515753">শ্বেয়াৰ কৰক</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{১ দিনৰ পাছত}one{<ph name="DAY_COUNT_MANY" /> দিনৰ পাছত}other{<ph name="DAY_COUNT_MANY" /> দিনৰ পাছত}}</translation>
 <translation id="6549021453810473782">ষ্ট’ৰৰ তথ্য চাওক</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /> টা</translation>
 <translation id="6562820390860419811">টেবটো বাওঁফাললৈ নিয়ক</translation>
+<translation id="6589356853295569750">পূৰ্ণ উচ্চতাত শ্বেয়াৰ কৰা টেবৰ গোটৰ সালসলনিসমূহৰ বিষয়ে জাননী খোলা হৈছে</translation>
 <translation id="6590332670428149473">শ্বেয়াৰ কৰা টেবৰ গোট <ph name="TITLE_OF_GROUP" />, ৰং <ph name="COLOR_NAME" />ৰ বাবে টেবৰ গোটৰ কামৰ মেনুখন খোলক।</translation>
 <translation id="6615455863669487791">মোক দেখুৱাওক</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> টা টেব সলনি কৰা হ'ল}one{<ph name="MANY_CHANGED" /> টা টেব সলনি কৰা হ'ল}other{<ph name="MANY_CHANGED" /> টা টেব সলনি কৰা হ'ল}}</translation>
@@ -157,6 +160,7 @@
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> টা বাছনি কৰা টেব শ্বেয়াৰ কৰক}one{<ph name="TABS_COUNT_MANY" /> টা বাছনি কৰা টেব শ্বেয়াৰ কৰক}other{<ph name="TABS_COUNT_MANY" /> টা বাছনি কৰা টেব শ্বেয়াৰ কৰক}}</translation>
 <translation id="7773714564112603605">টেবটো আঁতৰাওক আৰু গোটটো মচি পেলাওক</translation>
 <translation id="7792771145871471484">পৰামৰ্শসমূহ পৰ্যালোচনা কৰক।</translation>
+<translation id="7792860826279960128">অৰ্ধ উচ্চতাত শ্বেয়াৰ কৰা টেবৰ গোটৰ সালসলনিসমূহৰ বিষয়ে জাননী</translation>
 <translation id="7825973332242257878">টেবৰ গোট</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> টা বাছনি কৰা টেবৰ গোট বনাওক}one{<ph name="TABS_COUNT_MANY" /> টা বাছনি কৰা টেবৰ গোট বনাওক}other{<ph name="TABS_COUNT_MANY" /> টা বাছনি কৰা টেবৰ গোট বনাওক}}</translation>
 <translation id="7853202427316060426">কাৰ্যকলাপ</translation>

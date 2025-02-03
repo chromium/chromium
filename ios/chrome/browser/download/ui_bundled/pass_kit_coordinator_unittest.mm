@@ -82,7 +82,13 @@ class PassKitCoordinatorTest : public PlatformTest {
 
 // Tests that PassKitCoordinator presents PKAddPassesViewController for the
 // valid PKPass object.
-TEST_F(PassKitCoordinatorTest, ValidPassKitObject) {
+// TODO(crbug.com/391920782): test fails on iOS18.2 Physical device.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_ValidPassKitObject ValidPassKitObject
+#else
+#define MAYBE_ValidPassKitObject DISABLED_ValidPassKitObject
+#endif
+TEST_F(PassKitCoordinatorTest, MAYBE_ValidPassKitObject) {
   std::string data = testing::GetTestFileContents(testing::kPkPassFilePath);
   NSData* nsdata = [NSData dataWithBytes:data.c_str() length:data.size()];
   PKPass* pass = [[PKPass alloc] initWithData:nsdata error:nil];

@@ -69,7 +69,7 @@ class PageInfoMainView : public views::View,
                    PageInfoNavigationHandler* navigation_handler,
                    PageInfoHistoryController* history_controller,
                    base::OnceClosure initialized_callback,
-                   bool allow_about_this_site);
+                   bool allow_extended_site_info);
   ~PageInfoMainView() override;
 
   // PageInfoUI implementations.

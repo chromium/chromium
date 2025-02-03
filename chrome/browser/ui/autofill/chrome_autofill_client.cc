@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
+#include "base/rand_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -100,6 +101,7 @@
 #include "components/password_manager/core/browser/password_requirements_service.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/plus_addresses/features.h"
+#include "components/plus_addresses/plus_address_hats_utils.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/prefs/pref_service.h"
 #include "components/profile_metrics/browser_profile_type.h"
@@ -172,6 +174,11 @@ namespace autofill {
 
 namespace {
 
+// Default minimum delay in milliseconds for Plus Address HaTS surveys.
+static constexpr base::TimeDelta kDefaultMinDelay = base::Seconds(10);
+// Default maximum delay in milliseconds for Plus Address HaTS surveys.
+static constexpr base::TimeDelta kDefaultMaxDelay = base::Seconds(60);
+
 AutoselectFirstSuggestion ShouldAutofillPopupAutoselectFirstSuggestion(
     AutofillSuggestionTriggerSource source) {
   return AutoselectFirstSuggestion(
@@ -202,73 +209,121 @@ void LaunchPlusAddressUserPerceptionSurvey(
     AutofillPlusAddressDelegate* delegate,
     plus_addresses::hats::SurveyType survey_type) {
   std::string survey_trigger;
+  base::TimeDelta min_delay_ms;
+  base::TimeDelta max_delay_ms;
+
+  const auto get_min_delay = [](const base::Feature* feature) {
+    return base::Milliseconds(
+        base::FeatureParam<int>(feature, plus_addresses::hats::kMinDelayMs, 0)
+            .Get());
+  };
+  const auto get_max_delay = [](const base::Feature* feature) {
+    return base::Milliseconds(
+        base::FeatureParam<int>(feature, plus_addresses::hats::kMaxDelayMs, 0)
+            .Get());
+  };
+
   switch (survey_type) {
     case plus_addresses::hats::SurveyType::kAcceptedFirstTimeCreate:
       if (!base::FeatureList::IsEnabled(
-              autofill::features::kPlusAddressAcceptedFirstTimeCreateSurvey)) {
+              features::kPlusAddressAcceptedFirstTimeCreateSurvey)) {
         return;
       }
       survey_trigger = kHatsSurveyTriggerPlusAddressAcceptedFirstTimeCreate;
+      min_delay_ms =
+          get_min_delay(&features::kPlusAddressAcceptedFirstTimeCreateSurvey);
+      max_delay_ms =
+          get_max_delay(&features::kPlusAddressAcceptedFirstTimeCreateSurvey);
       break;
     case plus_addresses::hats::SurveyType::kDeclinedFirstTimeCreate:
       if (!base::FeatureList::IsEnabled(
-              autofill::features::kPlusAddressDeclinedFirstTimeCreateSurvey)) {
+              features::kPlusAddressDeclinedFirstTimeCreateSurvey)) {
         return;
       }
       survey_trigger = kHatsSurveyTriggerPlusAddressDeclinedFirstTimeCreate;
+      min_delay_ms =
+          get_min_delay(&features::kPlusAddressDeclinedFirstTimeCreateSurvey);
+      max_delay_ms =
+          get_max_delay(&features::kPlusAddressDeclinedFirstTimeCreateSurvey);
       break;
     case plus_addresses::hats::SurveyType::kCreatedMultiplePlusAddresses:
       if (!base::FeatureList::IsEnabled(
-              autofill::features::
-                  kPlusAddressUserCreatedMultiplePlusAddressesSurvey)) {
+              features::kPlusAddressUserCreatedMultiplePlusAddressesSurvey)) {
         return;
       }
       survey_trigger =
           kHatsSurveyTriggerPlusAddressCreatedMultiplePlusAddresses;
+      min_delay_ms = get_min_delay(
+          &features::kPlusAddressUserCreatedMultiplePlusAddressesSurvey);
+      max_delay_ms = get_max_delay(
+          &features::kPlusAddressUserCreatedMultiplePlusAddressesSurvey);
       break;
     case plus_addresses::hats::SurveyType::kCreatedPlusAddressViaManualFallback:
       if (!base::FeatureList::IsEnabled(
-              autofill::features::
+              features::
                   kPlusAddressUserCreatedPlusAddressViaManualFallbackSurvey)) {
         return;
       }
       survey_trigger =
           kHatsSurveyTriggerPlusAddressCreatedPlusAddressViaManualFallback;
+      min_delay_ms = get_min_delay(
+          &features::kPlusAddressUserCreatedPlusAddressViaManualFallbackSurvey);
+      max_delay_ms = get_max_delay(
+          &features::kPlusAddressUserCreatedPlusAddressViaManualFallbackSurvey);
       break;
     case plus_addresses::hats::SurveyType::kDidChoosePlusAddressOverEmail:
       if (!base::FeatureList::IsEnabled(
-              autofill::features::
-                  kPlusAddressUserDidChoosePlusAddressOverEmailSurvey)) {
+              features::kPlusAddressUserDidChoosePlusAddressOverEmailSurvey)) {
         return;
       }
       survey_trigger =
           kHatsSurveyTriggerPlusAddressDidChoosePlusAddressOverEmailSurvey;
+      min_delay_ms = get_min_delay(
+          &features::kPlusAddressUserDidChoosePlusAddressOverEmailSurvey);
+      max_delay_ms = get_max_delay(
+          &features::kPlusAddressUserDidChoosePlusAddressOverEmailSurvey);
       break;
     case plus_addresses::hats::SurveyType::kDidChooseEmailOverPlusAddress:
       if (!base::FeatureList::IsEnabled(
-              autofill::features::
-                  kPlusAddressUserDidChooseEmailOverPlusAddressSurvey)) {
+              features::kPlusAddressUserDidChooseEmailOverPlusAddressSurvey)) {
         return;
       }
       survey_trigger =
           kHatsSurveyTriggerPlusAddressDidChooseEmailOverPlusAddressSurvey;
+      min_delay_ms = get_min_delay(
+          &features::kPlusAddressUserDidChooseEmailOverPlusAddressSurvey);
+      max_delay_ms = get_max_delay(
+          &features::kPlusAddressUserDidChooseEmailOverPlusAddressSurvey);
       break;
     case plus_addresses::hats::SurveyType::kFilledPlusAddressViaManualFallack:
       if (!base::FeatureList::IsEnabled(
-              autofill::features::
-                  kPlusAddressFilledPlusAddressViaManualFallbackSurvey)) {
+              features::kPlusAddressFilledPlusAddressViaManualFallbackSurvey)) {
         return;
       }
       survey_trigger =
           kHatsSurveyTriggerPlusAddressFilledPlusAddressViaManualFallback;
+      min_delay_ms = get_min_delay(
+          &features::kPlusAddressFilledPlusAddressViaManualFallbackSurvey);
+      max_delay_ms = get_max_delay(
+          &features::kPlusAddressFilledPlusAddressViaManualFallbackSurvey);
       break;
   }
 
-  hats_service->LaunchSurveyForWebContents(
-      survey_trigger, web_contents,
+  // Set default delays if the delays are not configured in the finch config or
+  // are configured to invalid values.
+  if (min_delay_ms >= max_delay_ms || min_delay_ms < base::Seconds(0)) {
+    min_delay_ms = kDefaultMinDelay;
+    max_delay_ms = kDefaultMaxDelay;
+  }
+  const base::TimeDelta delay_ms =
+      base::RandTimeDelta(min_delay_ms, max_delay_ms);
+
+  hats_service->LaunchDelayedSurveyForWebContents(
+      survey_trigger, web_contents, delay_ms.InMilliseconds(),
       /*product_specific_bits_data=*/{},
       /*product_specific_string_data=*/
       delegate->GetPlusAddressHatsData(),
+      /*navigation_behaviour=*/HatsService::NavigationBehaviour::ALLOW_ANY,
       /*success_callback=*/base::DoNothing(),
       /*failure_callback=*/base::DoNothing());
 }

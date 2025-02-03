@@ -13751,6 +13751,7 @@ from previous Chrome versions.
   <int value="-147955528" label="BottomBrowserControlsRefactor:enabled"/>
   <int value="-147560822" label="ArcInputOverlay:enabled"/>
   <int value="-147283486" label="enable-network-portal-notification"/>
+  <int value="-147104075" label="ImprovedPasswordChangeService:enabled"/>
   <int value="-146780296" label="EstablishGpuChannelAsync:enabled"/>
   <int value="-146552997" label="enable-affiliation-based-matching"/>
   <int value="-146315671" label="PrivacyAdvisor:enabled"/>
@@ -16230,6 +16231,7 @@ from previous Chrome versions.
   <int value="835018878" label="disable-quic"/>
   <int value="835399079" label="ThreadWrapperUsesMetronome:enabled"/>
   <int value="835726069" label="NtpWebUI:disabled"/>
+  <int value="835743450" label="MarkAllCredentialsAsLeaked:enabled"/>
   <int value="836070100"
       label="AutofillRationalizeStreetAddressAndAddressLine:disabled"/>
   <int value="836406476" label="EnableTouchableAppContextMenu:enabled"/>
@@ -17336,6 +17338,7 @@ from previous Chrome versions.
   <int value="1277695608" label="AIWriterAPI:disabled"/>
   <int value="1278193003" label="SegmentationSurveyPage:disabled"/>
   <int value="1278244152" label="AutofillFillMerchantPromoCodeFields:enabled"/>
+  <int value="1278294677" label="ImprovedPasswordChangeService:disabled"/>
   <int value="1278299178" label="PermissionPredictionsV3:enabled"/>
   <int value="1278438893" label="HistoryEmbeddingsAnswers:enabled"/>
   <int value="1278508900"
@@ -18168,6 +18171,7 @@ from previous Chrome versions.
   <int value="1595208893" label="AudioWorkletRealtimeThread:enabled"/>
   <int value="1595796800" label="CameraAppLowStorageWarning:disabled"/>
   <int value="1595840275" label="TabDragDropAndroid:disabled"/>
+  <int value="1595910832" label="MarkAllCredentialsAsLeaked:disabled"/>
   <int value="1596615083"
       label="AutofillFillCreditCardAsPerFormatString:disabled"/>
   <int value="1596689942" label="OmniboxRevertModelBeforeClosingPopup:enabled"/>

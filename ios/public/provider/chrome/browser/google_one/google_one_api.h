@@ -7,47 +7,38 @@
 
 #import <UIKit/UIKit.h>
 
-// A callback that can be used to open a URL.
-using GoogleOneOpenURLBlock = void (^)(NSURL*);
-
 @protocol SystemIdentity;
 
-enum GoogleOneEntryPoint {
+enum class GoogleOneEntryPoint {
   kSettings,
   kSaveToDriveAlert,
   kSaveToPhotosAlert,
 };
 
-@protocol GoogleOneController <NSObject>
-
-// Initialization properties.
-// A callback that will be used to open URLs.
-@property(nonatomic, strong) GoogleOneOpenURLBlock openURLCallback;
-
-// The identity for which Google One settings will be displayed.
-@property(nonatomic, strong) id<SystemIdentity> identity;
+// The configuration for the GoogleOneController.
+@interface GoogleOneConfiguration : NSObject
 
 // The entry point that triggered the controller.
 @property(nonatomic, assign) GoogleOneEntryPoint entryPoint;
 
-// Finalize the initialization of the controller.
-// ALL the properties aboe must be set before calling this.
-- (void)finalizeInitialization;
+// The identity for which Google One settings will be displayed.
+@property(nonatomic, strong) id<SystemIdentity> identity;
 
-// Display the Google one settings on `viewController`.
-- (void)launchWithViewController:(UIViewController*)viewController
-                      completion:(void (^)(NSError*))completion;
+// A callback that will be used to open URLs.
+@property(nonatomic, strong) void (^openURLCallback)(NSURL*);
 
 @end
 
-namespace ios {
-namespace provider {
+@protocol GoogleOneController <NSObject>
+- (void)launchWithViewController:(UIViewController*)controller
+                      completion:(void (^)(NSError*))completion;
+@end
 
-// Creates a one time GoogleOneController. Can return nil if Google One settings
-// is not supported.
-id<GoogleOneController> CreateGoogleOneController();
+namespace ios::provider {
 
-}  // namespace provider
-}  // namespace ios
+id<GoogleOneController> CreateGoogleOneController(
+    GoogleOneConfiguration* configuration);
+
+}  // namespace ios::provider
 
 #endif  // IOS_PUBLIC_PROVIDER_CHROME_BROWSER_GOOGLE_ONE_GOOGLE_ONE_API_H_

@@ -148,12 +148,17 @@ void ManagePasswordsTest::SetupPasswordChange() {
   affiliations::MockAffiliationService mock_affiliation_service;
   PasswordChangeServiceFactory::GetInstance()->SetTestingFactory(
       browser()->profile(),
-      base::BindLambdaForTesting(
-          [this, &mock_affiliation_service](content::BrowserContext* context)
-              -> std::unique_ptr<KeyedService> {
-            return std::make_unique<ChromePasswordChangeService>(
-                &mock_affiliation_service, mock_optimization_service_.get());
-          }));
+      base::BindLambdaForTesting([this, &mock_affiliation_service](
+                                     content::BrowserContext* context)
+                                     -> std::unique_ptr<KeyedService> {
+        auto feature_manager =
+            std::make_unique<password_manager::MockPasswordFeatureManager>();
+        ON_CALL(*feature_manager.get(), IsGenerationEnabled)
+            .WillByDefault(testing::Return(true));
+        return std::make_unique<ChromePasswordChangeService>(
+            &mock_affiliation_service, mock_optimization_service_.get(),
+            std::move(feature_manager));
+      }));
   mock_optimization_service_.reset();
 
   const GURL kUrl = GURL("https://example.com/");

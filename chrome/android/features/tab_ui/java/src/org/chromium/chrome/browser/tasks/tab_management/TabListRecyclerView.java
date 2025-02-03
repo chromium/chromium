@@ -20,7 +20,6 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.tab_ui.R;
@@ -102,14 +101,6 @@ class TabListRecyclerView extends RecyclerView
             mTabListItemAnimator = new TabListItemAnimator();
             setItemAnimator(mTabListItemAnimator);
         }
-    }
-
-    /**
-     * Returns a boolean indicating whether any animator in {@link TabListItemAnimator} is running.
-     */
-    @NonNull
-    ObservableSupplier<Boolean> getIsAnimatorRunningSupplier() {
-        return mTabListItemAnimator.getIsAnimatorRunningSupplier();
     }
 
     /**

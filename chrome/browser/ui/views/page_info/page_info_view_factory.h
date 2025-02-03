@@ -25,7 +25,7 @@ class PageInfoViewFactory {
                       ChromePageInfoUiDelegate* ui_delegate,
                       PageInfoNavigationHandler* navigation_handler,
                       PageInfoHistoryController* history_controller,
-                      bool allow_about_this_site);
+                      bool allow_extended_site_info);
 
   // Bubble width constraints.
   static constexpr int kMinBubbleWidth = 320;
@@ -149,7 +149,7 @@ class PageInfoViewFactory {
   raw_ptr<ChromePageInfoUiDelegate, DanglingUntriaged> ui_delegate_;
   raw_ptr<PageInfoNavigationHandler> navigation_handler_;
   raw_ptr<PageInfoHistoryController, DanglingUntriaged> history_controller_;
-  const bool allow_about_this_site_;
+  const bool allow_extended_site_info_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_VIEW_FACTORY_H_

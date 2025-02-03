@@ -119,20 +119,6 @@ void CreateIframe(content::RenderFrameHost* parent_frame,
                   const GURL& url,
                   const std::string& permissions_policy);
 
-// Adds an Isolated Web App to the WebAppRegistrar. The IWA will have an empty
-// filepath for |IsolatedWebAppLocation|.
-webapps::AppId AddDummyIsolatedAppToRegistry(
-    Profile* profile,
-    const GURL& start_url,
-    const std::string& name,
-    const IsolationData& isolation_data =
-        IsolationData::Builder(IwaStorageOwnedBundle{/*dir_name_ascii=*/"",
-                                                     /*dev_mode=*/false},
-                               base::Version("1.0.0"))
-            .Build(),
-    webapps::WebappInstallSource install_source =
-        webapps::WebappInstallSource::IWA_GRAPHICAL_INSTALLER);
-
 // Simulates navigating `web_contents` main frame to the provided isolated-app:
 // URL for unit tests. `TestWebContents::NavigateAndCommit` won't work for IWAs
 // because they require COI headers, but the IsolatedWebAppURLLoaderFactory

@@ -218,6 +218,12 @@ void RemotingRegisterSupportHostRequest::RegisterHost() {
         enterprise_params_->allow_reconnections);
     enterprise_options->set_allow_file_transfer(
         enterprise_params_->allow_file_transfer);
+    enterprise_options->set_connection_dialog_required(
+        enterprise_params_->connection_dialog_required);
+    if (!enterprise_params_->connection_auto_accept_timeout.is_zero()) {
+      enterprise_options->mutable_connection_auto_accept_timeout()->set_seconds(
+          enterprise_params_->connection_auto_accept_timeout.InSeconds());
+    }
   }
 
   if (!authorized_helper_.empty()) {

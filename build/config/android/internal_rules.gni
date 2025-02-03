@@ -1228,6 +1228,34 @@ if (enable_java_templates) {
     }
   }
 
+  template("trace_references") {
+    action_with_pydeps(target_name) {
+      forward_variables_from(invoker,
+                             TESTONLY_AND_VISIBILITY + [ "public_deps" ])
+      script = "//build/android/gyp/tracereferences.py"
+      inputs = java_paths_for_inputs + [
+                 _r8_path,
+                 invoker.tracerefs_json,
+               ]
+      depfile = "$target_gen_dir/$target_name.d"
+      outputs = [ "$target_out_dir/$target_name.tracereferences.stamp" ]
+      args = [
+        "--depfile",
+        rebase_path(depfile, root_build_dir),
+        "--tracerefs-json",
+        rebase_path(invoker.tracerefs_json, root_build_dir),
+        "--stamp",
+        rebase_path(outputs[0], root_build_dir),
+      ]
+      if (android_static_analysis == "build_server") {
+        args += [ "--use-build-server" ]
+      }
+      if (treat_warnings_as_errors) {
+        args += [ "--warnings-as-errors" ]
+      }
+    }
+  }
+
   template("proguard") {
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
     _script = "//build/android/gyp/proguard.py"
@@ -1349,8 +1377,9 @@ if (enable_java_templates) {
     }
     _outputs += [ _mapping_path ]
 
-    if (defined(invoker.enable_proguard_checks) &&
-        !invoker.enable_proguard_checks) {
+    _enable_checks = !defined(invoker.enable_proguard_checks) ||
+                     invoker.enable_proguard_checks
+    if (!_enable_checks) {
       _args += [ "--disable-checks" ]
     }
 
@@ -1422,7 +1451,14 @@ if (enable_java_templates) {
       }
       _deps += [ ":$_expectations_target" ]
     }
-    action_with_pydeps(target_name) {
+
+    if (_enable_checks) {
+      _tracerefs_json = "$target_gen_dir/$target_name.tracerefs.json"
+      _proguard_target_name = "${target_name}__r8"
+    } else {
+      _proguard_target_name = target_name
+    }
+    action_with_pydeps(_proguard_target_name) {
       forward_variables_from(invoker,
                              [
                                "data",
@@ -1438,12 +1474,26 @@ if (enable_java_templates) {
                "--depfile",
                rebase_path(depfile, root_build_dir),
              ]
+      if (_enable_checks) {
+        outputs += [ _tracerefs_json ]
+        args += [
+          "--tracerefs-json",
+          rebase_path(_tracerefs_json, root_build_dir),
+        ]
+      }
 
       # http://crbug.com/725224. Fix for bots running out of memory.
       if (defined(java_cmd_pool_size)) {
         pool = "//build/config/android:java_cmd_pool($default_toolchain)"
       } else {
         pool = "//build/toolchain:link_pool($default_toolchain)"
+      }
+    }
+
+    if (_enable_checks) {
+      trace_references(target_name) {
+        tracerefs_json = _tracerefs_json
+        public_deps = [ ":$_proguard_target_name" ]
       }
     }
   }

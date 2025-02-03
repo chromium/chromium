@@ -60,7 +60,6 @@ extern const char kUrlBlocklist[];
 extern const char kUrlAllowlist[];
 extern const char kUserPolicyRefreshRate[];
 extern const char kIntensiveWakeUpThrottlingEnabled[];
-extern const char kUserAgentClientHintsGREASEUpdateEnabled[];
 #if BUILDFLAG(IS_ANDROID)
 extern const char kBackForwardCacheEnabled[];
 extern const char kReadAloudEnabled[];

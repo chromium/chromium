@@ -14,6 +14,7 @@
 #include "components/affiliations/core/browser/affiliation_service.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/password_manager/core/browser/features/password_features.h"
+#include "components/password_manager/core/browser/password_feature_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
@@ -61,9 +62,11 @@ bool IsUrlMatchingOverride(const GURL& url) {
 
 ChromePasswordChangeService::ChromePasswordChangeService(
     affiliations::AffiliationService* affiliation_service,
-    OptimizationGuideKeyedService* optimization_keyed_service)
+    OptimizationGuideKeyedService* optimization_keyed_service,
+    std::unique_ptr<password_manager::PasswordFeatureManager> feature_manager)
     : affiliation_service_(affiliation_service),
       optimization_keyed_service_(optimization_keyed_service),
+      feature_manager_(std::move(feature_manager)),
       new_tab_callback_(base::BindRepeating(&OpenNewTab)) {}
 
 ChromePasswordChangeService::~ChromePasswordChangeService() {
@@ -73,6 +76,10 @@ ChromePasswordChangeService::~ChromePasswordChangeService() {
 bool ChromePasswordChangeService::IsPasswordChangeAvailable() {
   if (HasChangePasswordUrlOverride()) {
     return true;
+  }
+
+  if (!feature_manager_->IsGenerationEnabled()) {
+    return false;
   }
 
   if (!optimization_keyed_service_) {

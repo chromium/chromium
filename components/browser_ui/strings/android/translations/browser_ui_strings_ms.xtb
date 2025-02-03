@@ -25,6 +25,7 @@
 <translation id="1383876407941801731">Carian</translation>
 <translation id="1384959399684842514">Muat turun dijeda</translation>
 <translation id="1396327438254055134">Benarkan laman menggunakan pengoptimum V8.</translation>
+<translation id="1409338233051621926">Ketik Apl kemudian ketik Apl lalai</translation>
 <translation id="1415402041810619267">URL terpangkas</translation>
 <translation id="1415855080660575082">Benarkan Chrome berkongsi tab terbaharu anda dengan peranti anda untuk melihat tab tersebut dalam senarai apl dan hasil carian peranti anda. Anda boleh menghidupkan atau mematikan ciri ini dalam tetapan Chrome.</translation>
 <translation id="1448064542941920355">Zum keluar</translation>
@@ -108,6 +109,7 @@
 <translation id="2597457036804169544">Jangan gunakan tema gelap pada laman</translation>
 <translation id="2606760465469169465">Sahkan secara automatik</translation>
 <translation id="2621115761605608342">Benarkan JavaScript untuk tapak tertentu.</translation>
+<translation id="2626708220538466178">Helaian bawah penyemak imbas lalai ditutup</translation>
 <translation id="2653659639078652383">Serah</translation>
 <translation id="2677748264148917807">Tinggalkan</translation>
 <translation id="2682367912565197520">Padamkan tahap zum yang disimpan</translation>
@@ -176,6 +178,7 @@
 <translation id="3600792891314830896">Redam tapak yang memainkan bunyi</translation>
 <translation id="3602290021589620013">Pratonton</translation>
 <translation id="3628308229821498208">Carian cadangan</translation>
+<translation id="3658847490588580244">Helaian bawah penyemak imbas lalai</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> laman dalam kumpulan laman <ph name="RWS_OWNER" /> yang boleh melihat aktiviti anda dalam kumpulan}other{<ph name="RWS_MEMBERS_COUNT" /> laman dalam kumpulan laman <ph name="RWS_OWNER" /> yang boleh melihat aktiviti anda dalam kumpulan}}</translation>
 <translation id="3697164069658504920">Apabila dihidupkan, laman dapat meminta untuk menggunakan peranti USB. Apabila dimatikan, laman tidak dapat menggunakan peranti USB.</translation>
 <translation id="3707034683772193706">Laman yang anda lawati boleh menyimpan sedikit maklumat dengan Chrome, terutamanya untuk mengesahkan bahawa anda bukan bot</translation>
@@ -241,6 +244,7 @@
 <translation id="4644713492825682049">Padam &amp; tetapkan semula</translation>
 <translation id="4645575059429386691">Diurus oleh ibu bapa anda</translation>
 <translation id="4670064810192446073">Realiti maya</translation>
+<translation id="4672315773691449562">Ketik apl Penyemak imbas kemudian ketik Chrome</translation>
 <translation id="4676059169848868271">Untuk membenarkan <ph name="APP_NAME" /> menggunakan penjejakan tangan, hidupkan penjejakan tangan dalam <ph name="BEGIN_LINK" />tetapan sistem<ph name="END_LINK" />.</translation>
 <translation id="4751476147751820511">Penderia gerakan atau cahaya</translation>
 <translation id="4755971844837804407">Apabila dihidupkan, laman dapat memaparkan sebarang iklan kepada anda. Apabila dimatikan, laman tidak dapat memaparkan iklan yang mengganggu atau mengelirukan.</translation>
@@ -523,6 +527,7 @@
 <translation id="857943718398505171">Dibenarkan (disyorkan)</translation>
 <translation id="8609465669617005112">Alihkan ke atas</translation>
 <translation id="8617611086246832542">Apabila dihidupkan, paparan desktop laman web akan dipaparkan. Apabila dimatikan, paparan mudah alih laman web akan dipaparkan.</translation>
+<translation id="8670078035093027626">Helaian bawah penyemak imbas lalai dibuka pada ketinggian penuh</translation>
 <translation id="8676316391139423634">Apabila pilihan ini dihidupkan, laman boleh meminta untuk menjejaki tangan anda. Apabila pilihan ini dimatikan, laman tidak boleh menjejaki tangan anda.</translation>
 <translation id="8676374126336081632">Kosongkan input</translation>
 <translation id="8681886425883659911">Iklan disekat di laman yang diketahui memaparkan iklan yang mengganggu atau mengelirukan</translation>

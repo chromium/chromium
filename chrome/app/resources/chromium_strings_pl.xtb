@@ -327,6 +327,7 @@
 <translation id="569897634095159764">Nie można połączyć się z internetem. Serwer proxy wymaga uwierzytelnienia.</translation>
 <translation id="5761096224651992291">Ta witryna nie była przez Ciebie ostatnio odwiedzana. Przeglądarka Chromium usunęła te uprawnienia: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i <ph name="PERMISSION_3" />.</translation>
 <translation id="5768371961535086509">Chromium zwalnia pamięć zajętą przez nieaktywne karty. Dzięki temu aktywne karty i inne aplikacje mają więcej zasobów komputerowych, a Chromium działa szybciej. Nieaktywne karty zostaną automatycznie włączone, gdy ponownie je otworzysz. <ph name="BEGIN_LINK" />Więcej informacji o Oszczędzaniu pamięci<ph name="END_LINK" /></translation>
+<translation id="5775198138441669627">Jeśli zapomnisz hasło lub zechcesz zmienić to ustawienie, <ph name="SETTINGS_LINK" /> dane Chromium na swoim koncie</translation>
 <translation id="5800158606660203929">Dostosuj i kontroluj Chromium. Ustaw Chromium jako przeglądarkę domyślną.</translation>
 <translation id="5809516625706423866">Nie można połączyć się z internetem. Kod HTTP 401 (Brak autoryzacji). Sprawdź konfigurację proxy.</translation>
 <translation id="5821520528363214608">Zaktualizuj Chromium, aby móc zapisywać dane z niego na koncie Google i ich używać</translation>

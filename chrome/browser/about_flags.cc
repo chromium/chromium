@@ -11764,6 +11764,19 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(media::kEnforceSystemEchoCancellation)},
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
+#if !BUILDFLAG(IS_ANDROID)
+    {"improved-password-change-service",
+     flag_descriptions::kImprovedPasswordChangeServiceName,
+     flag_descriptions::kImprovedPasswordChangeServiceDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         password_manager::features::kImprovedPasswordChangeService)},
+    {"mark-all-credentials-as-leaked",
+     flag_descriptions::kMarkAllCredentialsAsLeakedName,
+     flag_descriptions::kMarkAllCredentialsAsLeakedDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         password_manager::features::kMarkAllCredentialsAsLeaked)},
+#endif  // !BUILDFLAG(IS_ANDROID)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

@@ -102,7 +102,7 @@ PageInfoMainView::PageInfoMainView(
     PageInfoNavigationHandler* navigation_handler,
     PageInfoHistoryController* history_controller,
     base::OnceClosure initialized_callback,
-    bool allow_about_this_site)
+    bool allow_extended_site_info)
     : presenter_(presenter),
       ui_delegate_(ui_delegate),
       navigation_handler_(navigation_handler) {
@@ -168,15 +168,14 @@ PageInfoMainView::PageInfoMainView(
   // Hide until at least one of the children buttons is visible.
   extended_site_info_section_->SetVisible(false);
 
-  if (allow_about_this_site && page_info::IsAboutThisSiteFeatureEnabled(
-                                   g_browser_process->GetApplicationLocale())) {
+  if (allow_extended_site_info &&
+      page_info::IsAboutThisSiteFeatureEnabled(
+          g_browser_process->GetApplicationLocale())) {
     about_this_site_section_ =
         extended_site_info_section_->AddChildView(CreateContainerView());
   }
 
-  // TODO(crbug.com/381400291): Rename |allow_about_this_site| to
-  // |allow_extended_site_info| and check it for merchant trust too.
-  if (page_info::IsMerchantTrustFeatureEnabled()) {
+  if (allow_extended_site_info && page_info::IsMerchantTrustFeatureEnabled()) {
     merchant_trust_section_ =
         extended_site_info_section_->AddChildView(CreateContainerView());
   }

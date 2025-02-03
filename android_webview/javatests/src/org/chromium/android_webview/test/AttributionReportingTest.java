@@ -47,7 +47,6 @@ import org.chromium.content.browser.AttributionOsLevelManager;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageFinishedHelper;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.net.test.util.TestWebServer;
-import org.chromium.services.network.NetworkServiceFeatures;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -135,11 +134,7 @@ public class AttributionReportingTest {
     @SmallTest
     @Test
     @MinAndroidSdkLevel(Build.VERSION_CODES.R)
-    @CommandLineFlags.Add(
-            "enable-features="
-                    + ContentFeatures.PRIVACY_SANDBOX_ADS_AP_IS_OVERRIDE
-                    + ","
-                    + NetworkServiceFeatures.ATTRIBUTION_REPORTING_CROSS_APP_WEB)
+    @CommandLineFlags.Add("enable-features=" + ContentFeatures.PRIVACY_SANDBOX_ADS_AP_IS_OVERRIDE)
     public void testDefaultBehavior() throws Exception {
         assertEquals(
                 AttributionBehavior.APP_SOURCE_AND_WEB_TRIGGER, mSettings.getAttributionBehavior());
@@ -148,11 +143,7 @@ public class AttributionReportingTest {
     @LargeTest
     @Test
     @MinAndroidSdkLevel(Build.VERSION_CODES.R)
-    @CommandLineFlags.Add(
-            "enable-features="
-                    + ContentFeatures.PRIVACY_SANDBOX_ADS_AP_IS_OVERRIDE
-                    + ","
-                    + NetworkServiceFeatures.ATTRIBUTION_REPORTING_CROSS_APP_WEB)
+    @CommandLineFlags.Add("enable-features=" + ContentFeatures.PRIVACY_SANDBOX_ADS_AP_IS_OVERRIDE)
     public void testDisabledBehavior() throws Exception {
         mSettings.setAttributionBehavior(AttributionBehavior.DISABLED);
         assertEquals(AttributionBehavior.DISABLED, mSettings.getAttributionBehavior());
@@ -193,11 +184,7 @@ public class AttributionReportingTest {
     @LargeTest
     @Test
     @MinAndroidSdkLevel(Build.VERSION_CODES.R)
-    @CommandLineFlags.Add(
-            "enable-features="
-                    + ContentFeatures.PRIVACY_SANDBOX_ADS_AP_IS_OVERRIDE
-                    + ","
-                    + NetworkServiceFeatures.ATTRIBUTION_REPORTING_CROSS_APP_WEB)
+    @CommandLineFlags.Add("enable-features=" + ContentFeatures.PRIVACY_SANDBOX_ADS_AP_IS_OVERRIDE)
     public void testAppSourceAndWebTriggerBehavior() throws Exception {
         mSettings.setAttributionBehavior(AttributionBehavior.APP_SOURCE_AND_WEB_TRIGGER);
         assertEquals(
@@ -239,11 +226,7 @@ public class AttributionReportingTest {
     @LargeTest
     @Test
     @MinAndroidSdkLevel(Build.VERSION_CODES.R)
-    @CommandLineFlags.Add(
-            "enable-features="
-                    + ContentFeatures.PRIVACY_SANDBOX_ADS_AP_IS_OVERRIDE
-                    + ","
-                    + NetworkServiceFeatures.ATTRIBUTION_REPORTING_CROSS_APP_WEB)
+    @CommandLineFlags.Add("enable-features=" + ContentFeatures.PRIVACY_SANDBOX_ADS_AP_IS_OVERRIDE)
     public void testWebSourceAndWebTriggerBehavior() throws Exception {
         mSettings.setAttributionBehavior(AttributionBehavior.WEB_SOURCE_AND_WEB_TRIGGER);
         assertEquals(
@@ -283,11 +266,7 @@ public class AttributionReportingTest {
     @LargeTest
     @Test
     @MinAndroidSdkLevel(Build.VERSION_CODES.R)
-    @CommandLineFlags.Add(
-            "enable-features="
-                    + ContentFeatures.PRIVACY_SANDBOX_ADS_AP_IS_OVERRIDE
-                    + ","
-                    + NetworkServiceFeatures.ATTRIBUTION_REPORTING_CROSS_APP_WEB)
+    @CommandLineFlags.Add("enable-features=" + ContentFeatures.PRIVACY_SANDBOX_ADS_AP_IS_OVERRIDE)
     public void testAppSourceAndAppTriggerBehavior() throws Exception {
         mSettings.setAttributionBehavior(AttributionBehavior.APP_SOURCE_AND_APP_TRIGGER);
         assertEquals(

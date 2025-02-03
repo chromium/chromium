@@ -42,7 +42,9 @@
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/form_interactions_flow.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/plus_addresses/fake_plus_address_service.h"
 #include "components/plus_addresses/features.h"
+#include "components/plus_addresses/plus_address_hats_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/unified_consent/pref_names.h"
@@ -82,11 +84,16 @@ using ::autofill::test::CreateTestFormField;
 using ::testing::_;
 using ::testing::A;
 using ::testing::AllOf;
+using ::testing::Eq;
 using ::testing::Field;
+using ::testing::Ge;
 using ::testing::InSequence;
+using ::testing::Le;
+using ::testing::Pair;
 using ::testing::Ref;
 using ::testing::Return;
 using ::testing::ReturnRef;
+using ::testing::UnorderedElementsAre;
 using ::user_education::test::MockFeaturePromoController;
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -191,8 +198,11 @@ class ChromeAutofillClientTest : public ChromeRenderViewHostTestHarness {
  private:
   TestingProfile::TestingFactories GetTestingFactories() const override {
     return {TestingProfile::TestingFactory{
-        autofill::PersonalDataManagerFactory::GetInstance(),
-        base::BindRepeating(&CreateTestPersonalDataManager)}};
+                autofill::PersonalDataManagerFactory::GetInstance(),
+                base::BindRepeating(&CreateTestPersonalDataManager)},
+            TestingProfile::TestingFactory{
+                PlusAddressServiceFactory::GetInstance(),
+                base::BindRepeating(&BuildFakePlusAddressService)}};
   }
 
   static std::unique_ptr<KeyedService> CreateTestPersonalDataManager(
@@ -204,8 +214,15 @@ class ChromeAutofillClientTest : public ChromeRenderViewHostTestHarness {
     return pdm;
   }
 
+  static std::unique_ptr<KeyedService> BuildFakePlusAddressService(
+      content::BrowserContext* context) {
+    return std::make_unique<plus_addresses::FakePlusAddressService>();
+  }
+
   autofill::test::AutofillUnitTestEnvironment autofill_environment_{
       {.disable_server_communication = true}};
+  base::test::ScopedFeatureList scoped_feature_list_{
+      plus_addresses::features::kPlusAddressesEnabled};
   raw_ptr<MockAutofillFieldPromoController> autofill_field_promo_controller_;
   TestAutofillClientInjector<TestChromeAutofillClient>
       test_autofill_client_injector_;
@@ -356,12 +373,80 @@ TEST_F(ChromeAutofillClientTest, GetFormInteractionsFlowId_AdvancedTwice) {
 // unexpectedly.
 TEST_F(ChromeAutofillClientTest,
        PlusAddressDefaultFeatureStateMeansNullPlusAddressService) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      plus_addresses::features::kPlusAddressesEnabled);
+
   PlusAddressServiceFactory::GetForBrowserContext(
       web_contents()->GetBrowserContext());
   EXPECT_EQ(client()->GetPlusAddressDelegate(), nullptr);
 }
 
 #if !BUILDFLAG(IS_ANDROID)
+// Test the scenario when the plus address survey delay is not configured. The
+// random delay of the survey should be between the 10s and 60s.
+TEST_F(ChromeAutofillClientTest,
+       TriggerPlusAddressUserPerceptionSurvey_DelayNotConfigured) {
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kPlusAddressAcceptedFirstTimeCreateSurvey};
+
+  MockHatsService* mock_hats_service = static_cast<MockHatsService*>(
+      HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+          profile(), base::BindRepeating(&BuildMockHatsService)));
+  EXPECT_CALL(*mock_hats_service, CanShowAnySurvey)
+      .WillRepeatedly(Return(true));
+
+  EXPECT_CALL(
+      *mock_hats_service,
+      LaunchDelayedSurveyForWebContents(
+          kHatsSurveyTriggerPlusAddressAcceptedFirstTimeCreate, _,
+          AllOf(Ge(10000), Le(60000)), _,
+          UnorderedElementsAre(
+              Pair(plus_addresses::hats::kPlusAddressesCount, std::string("0")),
+              Pair(plus_addresses::hats::kFirstPlusAddressCreationTime,
+                   std::string("-1")),
+              Pair(plus_addresses::hats::kLastPlusAddressFillingTime,
+                   std::string("-1"))),
+          HatsService::NavigationBehaviour::ALLOW_ANY, _, _, _, _));
+
+  client()->TriggerPlusAddressUserPerceptionSurvey(
+      plus_addresses::hats::SurveyType::kAcceptedFirstTimeCreate);
+}
+
+// Test that the hats service is called with the expected params for different
+// surveys.
+TEST_F(ChromeAutofillClientTest, TriggerPlusAddressUserPerceptionSurvey) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{features::
+                                 kPlusAddressAcceptedFirstTimeCreateSurvey,
+                             {{plus_addresses::hats::kMinDelayMs, "10"},
+                              {plus_addresses::hats::kMaxDelayMs, "60"}}}},
+      /*disabled_features=*/{});
+
+  MockHatsService* mock_hats_service = static_cast<MockHatsService*>(
+      HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+          profile(), base::BindRepeating(&BuildMockHatsService)));
+  EXPECT_CALL(*mock_hats_service, CanShowAnySurvey)
+      .WillRepeatedly(Return(true));
+
+  EXPECT_CALL(
+      *mock_hats_service,
+      LaunchDelayedSurveyForWebContents(
+          kHatsSurveyTriggerPlusAddressAcceptedFirstTimeCreate, _,
+          AllOf(Ge(10), Le(60)), _,
+          UnorderedElementsAre(
+              Pair(plus_addresses::hats::kPlusAddressesCount, std::string("0")),
+              Pair(plus_addresses::hats::kFirstPlusAddressCreationTime,
+                   std::string("-1")),
+              Pair(plus_addresses::hats::kLastPlusAddressFillingTime,
+                   std::string("-1"))),
+          HatsService::NavigationBehaviour::ALLOW_ANY, _, _, _, _));
+
+  client()->TriggerPlusAddressUserPerceptionSurvey(
+      plus_addresses::hats::SurveyType::kAcceptedFirstTimeCreate);
+}
+
 // Test that the hats service is called with the expected params for different
 // surveys. Note that Surveys are only launched on Desktop.
 TEST_F(ChromeAutofillClientTest, TriggerUserPerceptionOfAutofillAddressSurvey) {

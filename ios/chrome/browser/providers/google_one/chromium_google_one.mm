@@ -6,10 +6,15 @@
 
 #import "ios/public/provider/chrome/browser/google_one/google_one_api.h"
 
+@implementation GoogleOneConfiguration
+
+@end
+
 namespace ios {
 namespace provider {
 
-id<GoogleOneController> CreateGoogleOneController() {
+id<GoogleOneController> CreateGoogleOneController(
+    GoogleOneConfiguration* configuration) {
   return nil;
 }
 

@@ -93,11 +93,11 @@ class VIZ_SERVICE_EXPORT RenderInputRouterDelegateImpl
   void OnInputEventPreDispatch(const blink::WebInputEvent& event) override {}
   void OnInvalidInputEventSource() override;
   void OnInputIgnored(const blink::WebInputEvent& event) override {}
-  // TODO(391135801): Handle renderer unresponsiveness with InputVizard.
-  void IncrementInFlightEventCount() override {}
-  void DecrementInFlightEventCount(
-      blink::mojom::InputEventResultSource ack_source) override {}
   input::StylusInterface* GetStylusInterface() override;
+  bool IsHidden() const override;
+  bool IsRendererProcessBlocked() override;
+  void OnInputEventAckTimeout() override {}
+  void RendererIsResponsive() override {}
 
   void SetIsBlocked(bool blocked) { is_blocked_ = blocked; }
 

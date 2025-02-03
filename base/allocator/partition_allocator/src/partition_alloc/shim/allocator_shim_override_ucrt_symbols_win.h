@@ -276,7 +276,7 @@ errno_t _wdupenv_s(wchar_t** buffer,
 }
 #endif
 
-#if !defined(NDEBUG)
+#if PA_BUILDFLAG(IS_DEBUG)
 typedef void (*_CRT_DUMP_CLIENT)(void*, size_t);
 
 int _crtDbgFlag = 0;
@@ -451,7 +451,7 @@ errno_t _wdupenv_s_dbg(wchar_t** buffer,
 }
 #endif  // defined(COMPONENT_BUILD)
 
-#endif  // !defined(NDEBUG)
+#endif  // PA_BUILDFLAG(IS_DEBUG)
 
 }       // extern "C"
 #endif  // PA_BUILDFLAG(USE_ALLOCATOR_SHIM)

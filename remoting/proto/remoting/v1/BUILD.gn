@@ -10,6 +10,7 @@ proto_library("host_info_proto") {
 
 proto_library("chrome_os_enterprise_options") {
   sources = [ "chrome_os_enterprise_options.proto" ]
+  deps = [ ":duration" ]
 }
 
 proto_library("cloud_proto") {
@@ -35,6 +36,7 @@ if (is_android) {
 
 proto_library("network_traversal_proto") {
   sources = [ "network_traversal_messages.proto" ]
+  deps = [ ":duration" ]
 }
 
 proto_library("remote_support_host_messages") {
@@ -47,6 +49,10 @@ proto_library("remote_support_host_messages") {
 
 proto_library("chromoting_event_proto") {
   sources = [ "chromoting_event.proto" ]
+}
+
+proto_library("duration") {
+  sources = [ "duration.proto" ]
 }
 
 proto_library("telemetry_messages") {

@@ -14,10 +14,12 @@
 #include "base/memory/ptr_util.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "cc/input/browser_controls_offset_tags_info.h"
+#include "components/input/input_constants.h"
 #include "components/input/input_router_config_helper.h"
 #include "components/input/render_input_router_client.h"
 #include "components/input/render_widget_host_input_event_router.h"
 #include "components/input/render_widget_host_view_input.h"
+#include "components/input/switches.h"
 #include "components/input/touch_emulator.h"
 #include "components/input/utils.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -126,17 +128,25 @@ RenderInputRouter::RenderInputRouter(
     std::unique_ptr<FlingSchedulerBase> fling_scheduler,
     RenderInputRouterDelegate* delegate,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : fling_scheduler_(std::move(fling_scheduler)),
+    : should_disable_hang_monitor_(
+          base::CommandLine::ForCurrentProcess()->HasSwitch(
+              switches::kDisableHangMonitor)),
+      hung_renderer_delay_(kHungRendererDelay),
+      fling_scheduler_(std::move(fling_scheduler)),
       latency_tracker_(
           std::make_unique<RenderInputRouterLatencyTracker>(delegate)),
       render_input_router_client_(host),
       delegate_(delegate),
       task_runner_(std::move(task_runner)) {
   TRACE_EVENT("input", "RenderInputRouter::RenderInputRouter");
+  input_event_ack_timeout_.SetTaskRunner(task_runner_);
 }
 
 void RenderInputRouter::SetupInputRouter(float device_scale_factor) {
   TRACE_EVENT("input", "RenderInputRouter::SetupInputRouter");
+
+  in_flight_event_count_ = 0;
+  StopInputEventAckTimeout();
 
   input_router_ = std::make_unique<InputRouterImpl>(
       this, this, fling_scheduler_.get(),
@@ -310,13 +320,62 @@ blink::mojom::InputEventResultState RenderInputRouter::FilterInputEvent(
                      : blink::mojom::InputEventResultState::kNotConsumed;
 }
 
+void RenderInputRouter::StartInputEventAckTimeout() {
+  if (should_disable_hang_monitor_) {
+    return;
+  }
+
+  if (!input_event_ack_timeout_.IsRunning()) {
+    input_event_ack_timeout_.Start(
+        FROM_HERE, hung_renderer_delay_,
+        base::BindOnce(&RenderInputRouter::OnInputEventAckTimeout,
+                       weak_factory_.GetWeakPtr()));
+  }
+}
+
+void RenderInputRouter::StopInputEventAckTimeout() {
+  input_event_ack_timeout_.Stop();
+  delegate_->RendererIsResponsive();
+}
+
+void RenderInputRouter::RestartInputEventAckTimeoutIfNecessary() {
+  if (!delegate_->IsRendererProcessBlocked() && !should_disable_hang_monitor_ &&
+      in_flight_event_count_ > 0) {
+    input_event_ack_timeout_.Start(
+        FROM_HERE, hung_renderer_delay_,
+        base::BindOnce(&RenderInputRouter::OnInputEventAckTimeout,
+                       weak_factory_.GetWeakPtr()));
+  }
+}
+
+void RenderInputRouter::OnInputEventAckTimeout() {
+  delegate_->OnInputEventAckTimeout();
+  // Do not add code after this since the Delegate may delete this
+  // RenderInputRouter in RendererUnresponsive.
+}
+
 void RenderInputRouter::IncrementInFlightEventCount() {
-  delegate_->IncrementInFlightEventCount();
+  ++in_flight_event_count_;
+
+  if (!delegate_->IsHidden()) {
+    StartInputEventAckTimeout();
+  }
 }
 
 void RenderInputRouter::DecrementInFlightEventCount(
     blink::mojom::InputEventResultSource ack_source) {
-  delegate_->DecrementInFlightEventCount(ack_source);
+  --in_flight_event_count_;
+  if (in_flight_event_count_ <= 0) {
+    // Cancel pending hung renderer checks since the renderer is
+    // responsive.
+    StopInputEventAckTimeout();
+  } else {
+    // Only restart the hang monitor timer if we got a response from the
+    // main thread.
+    if (ack_source == blink::mojom::InputEventResultSource::kMainThread) {
+      RestartInputEventAckTimeoutIfNecessary();
+    }
+  }
 }
 
 void RenderInputRouter::OnInputDispatchedToRendererResult(

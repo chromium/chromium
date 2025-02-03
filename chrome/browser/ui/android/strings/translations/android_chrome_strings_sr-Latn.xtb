@@ -131,6 +131,7 @@ Još podešavanja koja koriste podatke za poboljšanje doživljaja Chrome-a potr
 <translation id="1513858653616922153">Izbriši lozinku</translation>
 <translation id="1521774566618522728">Aktivan je danas</translation>
 <translation id="153446405401665083">Dostupna je nova verzija Chrome-a</translation>
+<translation id="1540012742443808215">Traka za adresu je trenutno u vrhu</translation>
 <translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{1 obeleživač je sačuvan samo na ovom uređaju. Da biste ga koristili na drugim uređajima, sačuvajte ga na Google nalogu, <ph name="ACCOUNT_EMAIL" />.}one{# obeleživač je sačuvan samo na ovom uređaju. Da biste ga koristili na drugim uređajima, sačuvajte ga na Google nalogu, <ph name="ACCOUNT_EMAIL" />.}few{# obeleživača su sačuvana samo na ovom uređaju. Da biste ih koristili na drugim uređajima, sačuvajte ih na Google nalogu, <ph name="ACCOUNT_EMAIL" />.}other{# obeleživača je sačuvano samo na ovom uređaju. Da biste ih koristili na drugim uređajima, sačuvajte ih na Google nalogu, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="1544084554881119930">Načini plaćanja i adrese neće biti šifrovani. Istorija pregledanja iz Chrome-a se neće sinhronizovati.
 Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fraza se ne šalje Google-u niti se čuva na Google-u. Ako zaboravite pristupnu frazu ili želite da promenite ovo podešavanje, <ph name="BEGIN_LINK" />obrišite Chrome podatke na nalogu<ph name="END_LINK" />.</translation>
@@ -1185,6 +1186,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="6459045781120991510">Ankete</translation>
 <translation id="6461962085415701688">Ne možete da otvorite datoteku</translation>
 <translation id="6464977750820128603">Možete da vidite sajtove koje posećujete u Chrome-u i da podesite tajmere za njih.\n\nGoogle dobija informacije o sajtovima za koje podesite tajmere i o tome koliko dugo ih posećujete. Te informacije se koriste za poboljšanje Digitalnog blagostanja.</translation>
+<translation id="6468703991511753953">Traka za adresu je trenutno u dnu</translation>
 <translation id="6470181189905173055">Stranice koje ste otvorili u Chrome-u dok koristite aplikaciju <ph name="APP_LABEL" /> će se prikazati ovde.</translation>
 <translation id="6473086018775716761">Lista opcija za deljenje je otvorena do polovine ekrana.</translation>
 <translation id="6475951671322991020">Preuzmi video</translation>

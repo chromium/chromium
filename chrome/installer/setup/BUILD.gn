@@ -77,6 +77,8 @@ if (is_win) {
       "modify_params.h",
       "progress_calculator.cc",
       "progress_calculator.h",
+      "scoped_thread_pool.cc",
+      "scoped_thread_pool.h",
       "setup_constants.cc",
       "setup_constants.h",
       "setup_install_details.cc",
@@ -99,6 +101,7 @@ if (is_win) {
     ]
 
     deps = [
+      "//base",
       "//build:branding_buildflags",
       "//chrome/common:constants",
       "//chrome/common:version_header",

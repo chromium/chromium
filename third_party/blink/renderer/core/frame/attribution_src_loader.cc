@@ -127,15 +127,14 @@ base::expected<attribution_reporting::RegistrationInfo,
 GetRegistrationInfo(const HTTPHeaderMap& map,
                     ExecutionContext* execution_context,
                     const String& request_url,
-                    uint64_t request_id,
-                    bool cross_app_web_enabled) {
+                    uint64_t request_id) {
   AtomicString info_header = map.Get(http_names::kAttributionReportingInfo);
   if (info_header.IsNull()) {
     return attribution_reporting::RegistrationInfo();
   }
   auto parsed_registration_info =
       attribution_reporting::RegistrationInfo::ParseInfo(
-          StringUTF8Adaptor(info_header).AsStringView(), cross_app_web_enabled);
+          StringUTF8Adaptor(info_header).AsStringView());
   if (!parsed_registration_info.has_value()) {
     LogAuditIssue(execution_context,
                   AttributionReportingIssueType::kInvalidInfoHeader,
@@ -207,17 +206,13 @@ struct AttributionSrcLoader::AttributionHeaders {
 
   AttributionHeaders(const HTTPHeaderMap& map,
                      const String& request_url,
-                     uint64_t request_id,
-                     bool cross_app_web_enabled)
+                     uint64_t request_id)
       : web_source(map.Get(http_names::kAttributionReportingRegisterSource)),
         web_trigger(map.Get(http_names::kAttributionReportingRegisterTrigger)),
+        os_source(map.Get(http_names::kAttributionReportingRegisterOSSource)),
+        os_trigger(map.Get(http_names::kAttributionReportingRegisterOSTrigger)),
         request_url(request_url),
-        request_id(request_id) {
-    if (cross_app_web_enabled) {
-      os_source = map.Get(http_names::kAttributionReportingRegisterOSSource);
-      os_trigger = map.Get(http_names::kAttributionReportingRegisterOSTrigger);
-    }
-  }
+        request_id(request_id) {}
 
   int source_count() const {
     return (web_source.IsNull() ? 0 : 1) + (os_source.IsNull() ? 0 : 1);
@@ -744,8 +739,7 @@ AttributionSrcLoader::ReportingOriginForUrlIfValid(
                   invalid_origin ? invalid_origin->ToString() : String());
   };
 
-  if (!RuntimeEnabledFeatures::AttributionReportingEnabled(window) &&
-      !RuntimeEnabledFeatures::AttributionReportingCrossAppWebEnabled(window)) {
+  if (!RuntimeEnabledFeatures::AttributionReportingEnabled(window)) {
     return std::nullopt;
   }
 
@@ -782,19 +776,6 @@ AttributionSrcLoader::ReportingOriginForUrlIfValid(
                     mojom::blink::WebFeature::kAttributionReportingAPIAll);
 
   UseCounter::Count(window, mojom::blink::WebFeature::kPrivacySandboxAdsAPIs);
-
-  // The Attribution-Reporting-Support header is set on the request in the
-  // network service and the context is unavailable. This is an approximate
-  // proxy to when the header is set, and aligned with the counter for regular
-  // Attribution Reporting API that sets the Attribution-Reporting-Eligible
-  // header on the request.
-  if (RuntimeEnabledFeatures::AttributionReportingCrossAppWebEnabled(window) &&
-      base::FeatureList::IsEnabled(
-          network::features::kAttributionReportingCrossAppWeb)) {
-    UseCounter::Count(window,
-                      mojom::blink::WebFeature::
-                          kAttributionReportingCrossAppWebSupportHeader);
-  }
 
   return reporting_origin;
 }
@@ -833,14 +814,9 @@ bool AttributionSrcLoader::MaybeRegisterAttributionHeaders(
 
   const uint64_t request_id = request.InspectorId();
   const KURL& request_url = request.Url();
-  const bool cross_app_web_enabled =
-      RuntimeEnabledFeatures::AttributionReportingCrossAppWebEnabled(
-          local_frame_->DomWindow()) &&
-      base::FeatureList::IsEnabled(
-          network::features::kAttributionReportingCrossAppWeb);
 
   AttributionHeaders headers(response.HttpHeaderFields(), request_url,
-                             request_id, cross_app_web_enabled);
+                             request_id);
 
   // Only handle requests which are attempting to invoke the API.
   if (headers.count() == 0) {
@@ -893,9 +869,9 @@ bool AttributionSrcLoader::MaybeRegisterAttributionHeaders(
     support = GetSupport();
   }
 
-  auto registration_info = GetRegistrationInfo(
-      response.HttpHeaderFields(), local_frame_->DomWindow(), request.Url(),
-      request_id, cross_app_web_enabled);
+  auto registration_info =
+      GetRegistrationInfo(response.HttpHeaderFields(),
+                          local_frame_->DomWindow(), request.Url(), request_id);
   if (!registration_info.has_value()) {
     return false;
   }
@@ -1007,15 +983,10 @@ void AttributionSrcLoader::ResourceClient::Finish() {
 void AttributionSrcLoader::ResourceClient::HandleResponseHeaders(
     Resource* resource,
     const ResourceResponse& response) {
-  const bool cross_app_web_enabled =
-      RuntimeEnabledFeatures::AttributionReportingCrossAppWebEnabled(
-          loader_->local_frame_->DomWindow()) &&
-      base::FeatureList::IsEnabled(
-          network::features::kAttributionReportingCrossAppWeb);
   const KURL& request_url = resource->Url();
   const uint64_t request_id = resource->InspectorId();
   AttributionHeaders headers(response.HttpHeaderFields(), request_url,
-                             request_id, cross_app_web_enabled);
+                             request_id);
   const bool has_header = headers.count() > 0;
   base::UmaHistogramBoolean(
       "Conversions.HasAttributionHeaderInAttributionSrcResponse", has_header);
@@ -1038,7 +1009,7 @@ void AttributionSrcLoader::ResourceClient::HandleResponseHeaders(
 
   auto registration_info = GetRegistrationInfo(
       response.HttpHeaderFields(), loader_->local_frame_->DomWindow(),
-      request_url, request_id, cross_app_web_enabled);
+      request_url, request_id);
   if (!registration_info.has_value()) {
     return;
   }

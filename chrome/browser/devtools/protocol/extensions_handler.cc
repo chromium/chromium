@@ -9,6 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
 #include "chrome/browser/devtools/protocol/extensions.h"
 #include "chrome/browser/devtools/protocol/protocol.h"
@@ -199,6 +200,49 @@ void ExtensionsHandler::OnLoaded(std::unique_ptr<LoadUnpackedCallback> callback,
   }
 
   std::move(callback)->sendFailure(protocol::Response::InvalidRequest(err));
+}
+
+void ExtensionsHandler::Uninstall(const protocol::String& id,
+                                  std::unique_ptr<UninstallCallback> callback) {
+  if (!allow_loading_extensions_) {
+    std::move(callback)->sendFailure(
+        protocol::Response::ServerError("Method not available."));
+    return;
+  }
+
+  content::BrowserContext* context = ProfileManager::GetLastUsedProfile();
+  DCHECK(context);
+  extensions::ExtensionRegistry* registry =
+      extensions::ExtensionRegistry::Get(context);
+  const extensions::Extension* extension = registry->GetInstalledExtension(id);
+  if (!extension) {
+    std::move(callback)->sendFailure(protocol::Response::ServerError(
+        "Uninstall failed. Reason: could not find extension."));
+    return;
+  }
+  if (extension->location() != extensions::mojom::ManifestLocation::kUnpacked) {
+    std::move(callback)->sendFailure(protocol::Response::ServerError(
+        "Uninstall failed. Reason: extension is not an unpacked extension."));
+    return;
+  }
+
+  std::u16string error;
+  bool initiated =
+      extensions::ExtensionSystem::Get(context)
+          ->extension_service()
+          ->UninstallExtension(
+              id, extensions::UNINSTALL_REASON_USER_INITIATED, &error,
+              base::BindOnce(&ExtensionsHandler::OnUninstalled,
+                             weak_factory_.GetWeakPtr(), std::move(callback)));
+  if (!initiated) {
+    std::move(callback)->sendFailure(protocol::Response::ServerError(
+        "Uninstall failed. Reason: " + base::UTF16ToUTF8(error)));
+  }
+}
+
+void ExtensionsHandler::OnUninstalled(
+    std::unique_ptr<UninstallCallback> callback) {
+  std::move(callback)->sendSuccess();
 }
 
 void ExtensionsHandler::GetStorageItems(

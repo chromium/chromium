@@ -172,10 +172,11 @@ constexpr TaskType kAllFrameTaskTypes[] = {
     TaskType::kMachineLearning,
     TaskType::kWebGPU,
     TaskType::kInternalPostMessageForwarding,
-    TaskType::kInternalNavigationCancellation};
+    TaskType::kInternalNavigationCancellation,
+    TaskType::kInternalAutofill};
 
 static_assert(
-    static_cast<int>(TaskType::kMaxValue) == 87,
+    static_cast<int>(TaskType::kMaxValue) == 88,
     "When adding a TaskType, make sure that kAllFrameTaskTypes is updated.");
 
 void AppendToVectorTestTask(Vector<String>* vector, String value) {

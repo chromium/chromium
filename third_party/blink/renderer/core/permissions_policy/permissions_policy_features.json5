@@ -86,7 +86,7 @@
       name: "AttributionReporting",
       permissions_policy_name: "attribution-reporting",
       feature_default: "EnableForAll",
-      depends_on: ["AttributionReporting", "AttributionReportingCrossAppWeb"],
+      depends_on: ["AttributionReporting"],
     },
     {
       name: "Autoplay",

@@ -91,6 +91,18 @@ public class CronetLibraryLoader {
         return ensureInitialized(applicationContext, builder, /* libAlreadyLoaded= */ false);
     }
 
+    /**
+     * This method will be called by the Zygote pre-fork to preload the native code. Which means
+     * that this will be dead code in Chromium but it will be used in AOSP.
+     */
+    public static void preload() {
+        loadLibrary();
+    }
+
+    private static void loadLibrary() {
+        System.loadLibrary(LIBRARY_NAME);
+    }
+
     public static boolean ensureInitialized(
             Context applicationContext,
             final CronetEngineBuilderImpl builder,
@@ -124,7 +136,7 @@ public class CronetLibraryLoader {
                         if (builder.libraryLoader() != null) {
                             builder.libraryLoader().loadLibrary(LIBRARY_NAME);
                         } else {
-                            System.loadLibrary(LIBRARY_NAME);
+                            loadLibrary();
                         }
                     }
                 }

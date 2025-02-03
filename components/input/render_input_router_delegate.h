@@ -87,12 +87,22 @@ class COMPONENT_EXPORT(INPUT) RenderInputRouterDelegate {
   // above.
   virtual void OnInputIgnored(const blink::WebInputEvent& event) = 0;
 
-  // TODO(391135801): Handle renderer unresponsiveness with InputVizard.
-  virtual void IncrementInFlightEventCount() = 0;
-  virtual void DecrementInFlightEventCount(
-      blink::mojom::InputEventResultSource ack_source) = 0;
-
   virtual StylusInterface* GetStylusInterface() = 0;
+
+  // Returns whether the RenderInputRouter is hidden or not.
+  virtual bool IsHidden() const = 0;
+
+  // Returns whether this render process is blocked. If true, input events
+  // should not be sent to it, nor other timely signs of life should be
+  // expected.
+  virtual bool IsRendererProcessBlocked() = 0;
+
+  // Called by |RenderInputRouter::input_event_ack_timeout_| when an input event
+  // timed out without getting an ack from the renderer.
+  virtual void OnInputEventAckTimeout() = 0;
+
+  // Notifies the delegate that RenderInputRouter is responsive.
+  virtual void RendererIsResponsive() = 0;
 };
 
 }  // namespace input

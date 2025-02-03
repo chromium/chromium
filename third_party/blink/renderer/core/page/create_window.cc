@@ -73,9 +73,7 @@ WebWindowFeatures GetWindowFeaturesFromString(const String& feature_string,
 
   const bool attribution_reporting_enabled =
       dom_window &&
-      (RuntimeEnabledFeatures::AttributionReportingEnabled(dom_window) ||
-       RuntimeEnabledFeatures::AttributionReportingCrossAppWebEnabled(
-           dom_window));
+      RuntimeEnabledFeatures::AttributionReportingEnabled(dom_window);
   const bool explicit_opener_enabled =
       RuntimeEnabledFeatures::RelOpenerBcgDependencyHintEnabled(dom_window);
 

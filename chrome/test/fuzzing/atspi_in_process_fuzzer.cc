@@ -287,7 +287,7 @@ void AtspiInProcessFuzzer::SetUpOnMainThread() {
   }
   ATSPI_FUZZER_LOG << "Initial controls inserted into database.";
   merge_mode_ = InMergeMode();
-  ATSPI_FUZZER_LOG << "Merging mode: " << merge_mode_;
+  LOG(INFO) << "Merging mode: " << merge_mode_;
 }
 
 std::string AtspiInProcessFuzzer::DebugPath(const ControlPath& path) {

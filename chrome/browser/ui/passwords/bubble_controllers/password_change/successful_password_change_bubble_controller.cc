@@ -8,8 +8,11 @@
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+
+namespace metrics_util = password_manager::metrics_util;
 
 SuccessfulPasswordChangeBubbleController::
     SuccessfulPasswordChangeBubbleController(
@@ -32,10 +35,13 @@ std::u16string SuccessfulPasswordChangeBubbleController::GetTitle() const {
 }
 
 void SuccessfulPasswordChangeBubbleController::ReportInteractions() {
-  // TODO(crbug.com/381054978): Report metrics.
+  base::UmaHistogramEnumeration("PasswordManager.PasswordChange.SuccessBubble",
+                                dismissal_reason_,
+                                metrics_util::NUM_UI_RESPONSES);
 }
 
 void SuccessfulPasswordChangeBubbleController::OpenPasswordManager() {
+  dismissal_reason_ = metrics_util::CLICKED_MANAGE_PASSWORD;
   if (delegate_) {
     // Stop password change flow for this tab.
     password_change_delegate_->Stop();
@@ -46,6 +52,7 @@ void SuccessfulPasswordChangeBubbleController::OpenPasswordManager() {
 }
 
 void SuccessfulPasswordChangeBubbleController::FinishPasswordChange() {
+  dismissal_reason_ = metrics_util::CLICKED_ACCEPT;
   password_change_delegate_->Stop();
 }
 
@@ -79,6 +86,7 @@ std::u16string SuccessfulPasswordChangeBubbleController::GetNewPassword()
 
 void SuccessfulPasswordChangeBubbleController::
     NavigateToPasswordChangeSettings() {
+  dismissal_reason_ = metrics_util::CLICKED_ABOUT_PASSWORD_CHANGE;
   delegate_->NavigateToPasswordChangeSettings();
 }
 

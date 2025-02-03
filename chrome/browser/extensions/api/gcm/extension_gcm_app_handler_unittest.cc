@@ -55,6 +55,7 @@
 #include "extensions/browser/uninstall_reason.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/permissions/api_permission.h"
@@ -256,7 +257,11 @@ class ExtensionGCMAppHandlerTest : public testing::Test {
       : task_environment_(content::BrowserTaskEnvironment::REAL_IO_THREAD),
         extension_service_(nullptr),
         registration_result_(gcm::GCMClient::UNKNOWN_ERROR),
-        unregistration_result_(gcm::GCMClient::UNKNOWN_ERROR) {}
+        unregistration_result_(gcm::GCMClient::UNKNOWN_ERROR) {
+    // Allow unpacked extensions without developer mode for testing.
+    scoped_feature_list_.InitAndDisableFeature(
+        extensions_features::kExtensionDisableUnsupportedDeveloper);
+  }
 
   ExtensionGCMAppHandlerTest(const ExtensionGCMAppHandlerTest&) = delete;
   ExtensionGCMAppHandlerTest& operator=(const ExtensionGCMAppHandlerTest&) =
@@ -418,6 +423,7 @@ class ExtensionGCMAppHandlerTest : public testing::Test {
   }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<content::InProcessUtilityThreadHelper>
       in_process_utility_thread_helper_;

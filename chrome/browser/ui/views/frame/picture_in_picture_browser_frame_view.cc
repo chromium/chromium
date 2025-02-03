@@ -1069,7 +1069,7 @@ bool PictureInPictureBrowserFrameView::ShowPageInfoDialog() {
           contents, contents->GetLastCommittedURL(),
           /*initialized_callback=*/base::DoNothing(),
           /*closing_callback=*/base::DoNothing(),
-          /*allow_about_this_site=*/false);
+          /*allow_extended_site_info=*/false);
   bubble->SetHighlightedButton(location_icon_view_);
   bubble->GetWidget()->Show();
 

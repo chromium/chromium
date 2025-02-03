@@ -595,10 +595,6 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 UiAndroidFeatures.DEPRECATED_EXTERNAL_PICKER_FUNCTION,
                 "Deprecates old external file picker function."),
-        Flag.baseFeature(
-                NetworkServiceFeatures.ATTRIBUTION_REPORTING_CROSS_APP_WEB,
-                "Enable attribution reporting to cross the app/web barrier by letting "
-                        + "the WebView use OS-level attribution."),
         Flag.baseFeature(BaseFeatures.THREAD_POOL_CAP2, "Sets a fixed thread pool cap"),
         Flag.baseFeature("ThreadGroupSemaphore"),
         Flag.baseFeature(
@@ -851,6 +847,9 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 AwFeatures.WEBVIEW_PRELOAD_CLASSES,
                 "Preloads expensive classes during WebView startup."),
+        Flag.baseFeature(
+                AwFeatures.WEBVIEW_PREFETCH_NATIVE_LIBRARY,
+                "Prefetches the native WebView code to memory during startup."),
         Flag.baseFeature(
                 GfxSwitches.USE_SMART_REF_FOR_GPU_FENCE_HANDLE,
                 "Avoids cloning of gpu fences when possible"),

@@ -2302,6 +2302,7 @@ _GENERIC_PYDEPS_FILES = [
     'build/android/gyp/rename_java_classes.pydeps',
     'build/android/gyp/system_image_apks.pydeps',
     'build/android/gyp/trace_event_bytecode_rewriter.pydeps',
+    'build/android/gyp/tracereferences.pydeps',
     'build/android/gyp/turbine.pydeps',
     'build/android/gyp/unused_resources.pydeps',
     'build/android/gyp/validate_static_library_dex_references.pydeps',
@@ -7788,7 +7789,7 @@ def CheckInlineConstexprDefinitionsInHeaders(input_api, output_api):
 def CheckTodoBugReferences(input_api, output_api):
     """Checks that bugs in TODOs use updated issue tracker IDs."""
 
-    files_to_skip = ['PRESUBMIT_test.py']
+    files_to_skip = ['PRESUBMIT_test.py', r"^third_party/rust/chromium_crates_io/vendor/.*"]
 
     def _FilterFile(affected_file):
         return input_api.FilterSourceFile(

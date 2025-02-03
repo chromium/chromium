@@ -17,6 +17,7 @@
 #include "components/prefs/pref_service.h"
 #include "extensions/browser/uninstall_reason.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/extension_features.h"
 
 namespace extensions {
 
@@ -24,6 +25,12 @@ const char kExtensionID[] = "eplckmlabaanikjjcgnigddmagoglhmp";
 
 class ActivityLogEnabledTest : public ChromeRenderViewHostTestHarness {
  protected:
+  ActivityLogEnabledTest() {
+    // Allow unpacked extensions without developer mode for testing.
+    scoped_feature_list_.InitAndDisableFeature(
+        extensions_features::kExtensionDisableUnsupportedDeveloper);
+  }
+
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
     SetActivityLogTaskRunnerForTesting(
@@ -34,6 +41,8 @@ class ActivityLogEnabledTest : public ChromeRenderViewHostTestHarness {
     ChromeRenderViewHostTestHarness::TearDown();
     SetActivityLogTaskRunnerForTesting(nullptr);
   }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(ActivityLogEnabledTest, NoSwitch) {

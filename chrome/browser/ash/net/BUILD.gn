@@ -51,7 +51,6 @@ static_library("net") {
   deps = [
     "//ash/public/cpp",
     "//base",
-    "//chrome/browser:browser_process",
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/net/dns_over_https",

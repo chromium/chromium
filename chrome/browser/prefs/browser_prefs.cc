@@ -1138,6 +1138,10 @@ inline constexpr char kUsedPolicyCertificates[] =
     "policy.used_policy_certificates";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+// Deprecated 02/2025.
+inline constexpr char kUserAgentClientHintsGREASEUpdateEnabled[] =
+    "policy.user_agent_client_hints_grease_update_enabled";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1245,6 +1249,9 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kLacrosLaunchSwitch, 0);
   registry->RegisterIntegerPref(kLacrosSelection, 0);
 #endif
+
+  // Deprecated 02/2025.
+  registry->RegisterBooleanPref(kUserAgentClientHintsGREASEUpdateEnabled, true);
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
@@ -1698,8 +1705,6 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   // function called above. Please keep this list alphabetized.
   registry->RegisterBooleanPref(
       policy::policy_prefs::kIntensiveWakeUpThrottlingEnabled, false);
-  registry->RegisterBooleanPref(
-      policy::policy_prefs::kUserAgentClientHintsGREASEUpdateEnabled, true);
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   registry->RegisterBooleanPref(prefs::kFeatureNotificationsEnabled, true);
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -2523,6 +2528,9 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   local_state->ClearPref(kLacrosLaunchSwitch);
   local_state->ClearPref(kLacrosSelection);
 #endif
+
+  // Added 02/2025.
+  local_state->ClearPref(kUserAgentClientHintsGREASEUpdateEnabled);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS

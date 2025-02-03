@@ -730,6 +730,7 @@
 <translation id="3522979239100719575">מתבצע חיפוש של פרופילים זמינים. הפעולה עשויה להימשך מספר דקות.</translation>
 <translation id="3526440770046466733">פתיחת הקישור בכרטיסייה חדשה והמשך הגלישה בכרטיסייה הנוכחית</translation>
 <translation id="353086728817903341"><ph name="NUM_DEVICES" /> מכשירים מחוברים</translation>
+<translation id="3532247131850366052">‏לא הצלחנו ליצור את הגיליון אלקטרוני ב-Google Sheets</translation>
 <translation id="3533126039236445965">אפליקציות במדף</translation>
 <translation id="3539957339480430241">הנקודה לשיתוף אינטרנט של <ph name="DEVICE_NAME" /></translation>
 <translation id="3540893133818942399">ביטול ההגדרה של הצגת התמונות והמדיה שבטלפון מהזמן האחרון</translation>
@@ -828,6 +829,7 @@
 <translation id="380165613292957338">היי, איך אפשר לעזור?</translation>
 <translation id="3804737937830804242">כיווץ המצלמה</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{אמוג'י אחד. אין תוצאות נוספות.}one{‫# סמלי אמוג'י. אין תוצאות נוספות.}two{‫# סמלי אמוג'י. אין תוצאות אחרות.}other{‫# סמלי אמוג'י. אין תוצאות אחרות.}}</translation>
+<translation id="3822403841174077928">לא הצלחנו להעתיק עם העיצוב</translation>
 <translation id="3824784079442479685">הפעולה הזו תאפשר גישה למצלמה לאפליקציה <ph name="APP_NAME" /> ולכל האפליקציות והאתרים שיש להם הרשאת גישה למצלמה. יכול להיות שיהיה צורך לרענן את דף האינטרנט או להפעיל מחדש את האפליקציה.</translation>
 <translation id="3826099427150913765">מעבר לסיסמה</translation>
 <translation id="383058930331066723">מצב חיסכון בסוללה מופעל</translation>
@@ -1214,6 +1216,7 @@
 <translation id="5043679421800073804">לחיצה או לחיצה על הסמל האחרון במדף</translation>
 <translation id="504465286040788597">הפיסקה הקודמת</translation>
 <translation id="5045550434625856497">סיסמה שגויה</translation>
+<translation id="5058794129231928255">‏לא הצלחנו ליצור את המסמך ב-Google Docs</translation>
 <translation id="5062496344832867502">RAM</translation>
 <translation id="5068762093486106012">תתקבל הודעה במקרים של דיבור כשההשתקה פועלת. האודיו אף פעם לא נשלח מהמכשיר.</translation>
 <translation id="5077416371682039027">הגדרת ההצגה של התמונות, המדיה, ההתראות והאפליקציות שבטלפון מהזמן האחרון</translation>
@@ -1646,6 +1649,7 @@
 <translation id="6468406072297048412">{0,plural, =1{עליך לעדכן את המכשיר לגרסה הקודמת בתוך דקה}one{עליך לעדכן את המכשיר לגרסה הקודמת בתוך # דקות}two{עליך לעדכן את המכשיר לגרסה הקודמת בתוך # דקות}other{עליך לעדכן את המכשיר לגרסה הקודמת בתוך # דקות}}</translation>
 <translation id="6469104339369989396">החלפת המצב של הנקודה לשיתוף אינטרנט</translation>
 <translation id="6477681113376365978">לא ניתן להוריד את הקובץ</translation>
+<translation id="648135757200234041">לא הצלחנו ליצור את איש הקשר</translation>
 <translation id="6482559668224714696">זכוכית מגדלת במסך מלא</translation>
 <translation id="6485086611007560630">תחזית מזג האוויר (לא זמינה)</translation>
 <translation id="6490471652906364588">‏מכשיר עם יציאת USB-C (יציאה ימנית)</translation>
@@ -2288,6 +2292,7 @@
 <translation id="8653151467777939995">צפייה בהגדרות של הודעות. ההודעות מופעלות</translation>
 <translation id="8657066291275741003">אותיות קטנות</translation>
 <translation id="8660331759611631213">השורש הריבועי של 71</translation>
+<translation id="8662921061190671299">לא הצלחנו להוסיף ליומן</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, עוצמת האות: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">‏כדי לצלם חלק מהמסך, מקישים על Enter</translation>
 <translation id="8676770494376880701">חובר מטען בעל מתח נמוך</translation>

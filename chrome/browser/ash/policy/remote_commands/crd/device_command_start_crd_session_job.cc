@@ -422,6 +422,8 @@ bool DeviceCommandStartCrdSessionJob::ShouldTerminateUponInput() const {
       return !acked_user_presence_;
 
     case UserSessionType::NO_SESSION:
+      return GetCrdSessionType() != CrdSessionType::REMOTE_SUPPORT_SESSION;
+
     case UserSessionType::UNAFFILIATED_USER_SESSION:
     case UserSessionType::GUEST_SESSION:
       return true;

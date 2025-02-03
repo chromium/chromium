@@ -536,17 +536,33 @@ class ASH_EXPORT CaptureModeController
       base::WeakPtr<BaseCaptureModeSession> image_search_token,
       scoped_refptr<base::RefCountedMemory> jpeg_bytes);
 
-  // Called back when text detection is complete to show copy text and smart
-  // actions buttons if needed. `image_search_token` is a weak pointer which is
-  // invalidated every time the selected region or session changes. If the
-  // selected region or session has changed since the request was made, then the
-  // detected text result is discarded and no buttons are shown.
+  // Called back when on-device text detection is complete to show copy text and
+  // smart actions buttons if needed. `image_search_token` is a weak pointer
+  // which is invalidated every time the selected region or session changes. If
+  // the selected region or session has changed since the request was made, then
+  // the detected text result is discarded and no buttons are shown.
   // `ocr_attempt_start_time` is used to record the metric for the the latency
-  // of the on device text detection.
+  // of the on device text detection. Currently only used for regular capture
+  // mode sessions when a region is selected.
   void OnTextDetectionComplete(
       base::WeakPtr<BaseCaptureModeSession> image_search_token,
       base::TimeTicks ocr_attempt_start_time,
       std::string detected_text);
+
+  // Called back when Lens-based text detection is complete to show the copy
+  // text button if needed. `image_search_token` is a weak pointer which is
+  // invalidated every time the selected region or session changes. If the
+  // selected region or session has changed since the request was made, then the
+  // detected text result is discarded and no button is shown. Currently only
+  // used in Sunfish capture mode sessions when a region is selected.
+  void OnLensTextDetectionComplete(
+      base::WeakPtr<BaseCaptureModeSession> image_search_token,
+      std::string detected_text);
+
+  // Helper function that adds a Copy Text button and potentially a Smart
+  // Actions button to the session. Called when both Lens-based and on-device
+  // text detection are completed with non-empty `detected_text`.
+  void AddCopyTextAndSmartActionsButtons(std::string detected_text);
 
   // Called back when the copy text button is clicked. This will copy `text` to
   // clipboard, show a notification, and close the capture session.

@@ -421,9 +421,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
 }
 
 // Tests that submission is detected when change password form is reset.
-// TODO(crbug.com/382342234): Re-enable this test
-IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
-                       DISABLED_ChangePwdFormCleared) {
+IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest, ChangePwdFormCleared) {
   base::HistogramTester histogram_tester;
   // At first let us save credentials to the PasswordManager.
   scoped_refptr<password_manager::TestPasswordStore> password_store =
@@ -466,9 +464,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
 
 // Tests that submission is detected when all password fields in a change
 // password form are cleared and not detected when only some fields are cleared.
-// TODO(crbug.com/382342234): Re-enable this test
 IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
-                       DISABLED_ChangePwdFormFieldsCleared) {
+                       ChangePwdFormFieldsCleared) {
   // At first let us save credentials to the PasswordManager.
   scoped_refptr<password_manager::TestPasswordStore> password_store =
       static_cast<password_manager::TestPasswordStore*>(
@@ -525,9 +522,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
 
 // Tests that submission is detected when the new password field outside the
 // form tag is cleared not detected when other password fields are cleared.
-// TODO(crbug.com/382342234): Re-enable this test
 IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
-                       DISABLED_ChangePwdFormRelevantFormlessFieldsCleared) {
+                       ChangePwdFormRelevantFormlessFieldsCleared) {
   base::HistogramTester histogram_tester;
   // At first let us save credentials to the PasswordManager.
   scoped_refptr<password_manager::TestPasswordStore> password_store =
@@ -586,16 +582,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
 
 // Tests that, when choosing the value for saving, user-typed values are
 // preferred to values coming from JS.
-// TODO(crbug.com/382342234): Re-enable this test
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-#define MAYBE_UserTypedValuesAreSavedInsteadOfJsInputs \
-  DISABLED_UserTypedValuesAreSavedInsteadOfJsInputs
-#else
-#define MAYBE_UserTypedValuesAreSavedInsteadOfJsInputs \
-  UserTypedValuesAreSavedInsteadOfJsInputs
-#endif
 IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
-                       MAYBE_UserTypedValuesAreSavedInsteadOfJsInputs) {
+                       UserTypedValuesAreSavedInsteadOfJsInputs) {
   NavigateToFile("/password/simple_password.html");
 
   // Simulate user typing username and password.

@@ -562,6 +562,7 @@ QueueTraits FrameSchedulerImpl::CreateQueueTraitsForTaskType(TaskType type) {
     case TaskType::kInternalMediaRealTime:
     case TaskType::kInternalUserInteraction:
     case TaskType::kInternalIntersectionObserver:
+    case TaskType::kInternalAutofill:
       return PausableTaskQueueTraits();
     case TaskType::kInternalFindInPage:
       return FindInPageTaskQueueTraits();
@@ -1451,6 +1452,14 @@ bool FrameSchedulerImpl::ComputeCanBeDeferredForRendering(
       // browser, which need to the wait until the initiating task has
       // completed. These tasks should be short and don't need to be deferred.
       if (task_type == TaskType::kInternalPostMessageForwarding) {
+        return false;
+      }
+      // TODO(crbug.com/382342234): This type is used to defer sending autofill
+      // IPCs to the browser until the current input event completes, but this
+      // races with submission, which happens synchronously in other input
+      // events. Exclude this type until that issue is fixed so as not to
+      // exacerbate the problem.
+      if (task_type == TaskType::kInternalAutofill) {
         return false;
       }
       return true;

@@ -93,6 +93,7 @@
 #include "content/public/test/test_launcher.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/buildflags/buildflags.h"
+#include "extensions/common/extension_features.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/device/public/cpp/device_features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -363,6 +364,10 @@ void InProcessBrowserTest::Initialize() {
   // tests to fail.
   disabled_features.push_back(
       features::kRestartNetworkServiceUnsandboxedForFailedLaunch);
+
+  // Allow unpacked extensions without developer mode for testing.
+  disabled_features.push_back(
+      extensions_features::kExtensionDisableUnsupportedDeveloper);
 
   // In-product help can conflict with tests' expected window activation and
   // focus. Individual tests can re-enable IPH.

@@ -1268,6 +1268,9 @@ TEST_F(WebAppRegistrarTest, TestIsDefaultManagementInstalled) {
   EXPECT_FALSE(registrar().IsInstalledByDefaultManagement(app_id1));
 }
 
+// This test uses SetLinkCapturingUserPreference, which is not appropriate for
+// ChromeOS because link capturing preferences & overlapping scopes have custom
+// behavior on CrOS.
 #if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(WebAppRegistrarTest, AppsDoNotOverlapIfNestedScope) {
   StartWebAppProvider();
@@ -1657,7 +1660,6 @@ TEST_F(WebAppRegistrarLacrosTest, SwaSourceNotSupported) {
 
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-#if !BUILDFLAG(IS_CHROMEOS)
 class WebAppRegistrarParameterizedTest
     : public WebAppRegistrarTest,
       public testing::WithParamInterface<
@@ -1672,6 +1674,10 @@ class WebAppRegistrarParameterizedTest
   base::test::ScopedFeatureList link_capturing_feature_list_;
 };
 
+// These tests use SetLinkCapturingUserPreference, which is not appropriate for
+// ChromeOS because link capturing preferences & overlapping scopes have custom
+// behavior on CrOS.
+#if !BUILDFLAG(IS_CHROMEOS)
 TEST_P(WebAppRegistrarParameterizedTest, AppsOverlapIfSharesScope) {
   StartWebAppProvider();
 
@@ -1697,6 +1703,7 @@ TEST_P(WebAppRegistrarParameterizedTest, AppsOverlapIfSharesScope) {
   EXPECT_THAT(registrar().GetOverlappingAppsMatchingScope(app_id1),
               ElementsAre(app_id2));
 }
+
 TEST_P(WebAppRegistrarParameterizedTest, Filter_OpensInBrowserTab) {
   StartWebAppProvider();
 
@@ -1745,6 +1752,7 @@ TEST_P(WebAppRegistrarParameterizedTest, Filter_OpensInBrowserTab) {
   EXPECT_EQ(std::nullopt, registrar().FindBestAppWithUrlInScope(
                               app_url_2, WebAppFilter::OpensInBrowserTab()));
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 TEST_P(WebAppRegistrarParameterizedTest, Filter_IsIsolatedApp) {
   base::test::ScopedFeatureList scoped_feature_list(features::kIsolatedWebApps);
@@ -1776,13 +1784,13 @@ INSTANTIATE_TEST_SUITE_P(
     ,
     WebAppRegistrarParameterizedTest,
 #if BUILDFLAG(IS_CHROMEOS)
-    testing::Values(apps::test::LinkCapturingFeatureVersion::kV1DefaultOff)
+    testing::Values(apps::test::LinkCapturingFeatureVersion::kV1DefaultOff,
+                    apps::test::LinkCapturingFeatureVersion::kV2DefaultOff)
 #else
     testing::Values(apps::test::LinkCapturingFeatureVersion::kV2DefaultOff,
                     apps::test::LinkCapturingFeatureVersion::kV2DefaultOn)
 #endif  // BUILDFLAG(IS_CHROMEOS)
         ,
     apps::test::LinkCapturingVersionToString);
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace web_app

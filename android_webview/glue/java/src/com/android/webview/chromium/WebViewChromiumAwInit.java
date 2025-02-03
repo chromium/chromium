@@ -62,6 +62,7 @@ import org.chromium.base.PathService;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.library_loader.LibraryLoader;
+import org.chromium.base.library_loader.LibraryPrefetcher;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.base.task.PostTask;
@@ -397,6 +398,14 @@ public class WebViewChromiumAwInit {
                         mFactory.setWebViewDisableCHIPSExperimentValue(
                                 AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_DISABLE_CHIPS));
                     });
+
+            if (AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_PREFETCH_NATIVE_LIBRARY)) {
+                PostTask.postTask(
+                        TaskTraits.BEST_EFFORT,
+                        () -> {
+                            LibraryPrefetcher.prefetchNativeLibraryForWebView();
+                        });
+            }
 
             AwCrashyClassUtils.maybeCrashIfEnabled();
             // Must happen right after Chromium initialization is complete.

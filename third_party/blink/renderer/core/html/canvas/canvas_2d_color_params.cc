@@ -29,16 +29,6 @@ viz::SharedImageFormat Canvas2DColorParams::GetSharedImageFormat() const {
   NOTREACHED();
 }
 
-SkColorType Canvas2DColorParams::GetSkColorType() const {
-  switch (pixel_format_) {
-    case CanvasPixelFormat::kF16:
-      return kRGBA_F16_SkColorType;
-    case CanvasPixelFormat::kUint8:
-      return kN32_SkColorType;
-  }
-  NOTREACHED();
-}
-
 gfx::ColorSpace Canvas2DColorParams::GetGfxColorSpace() const {
   return PredefinedColorSpaceToGfxColorSpace(color_space_);
 }

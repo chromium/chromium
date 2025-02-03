@@ -271,6 +271,14 @@ void SetProfileInfo(AutofillProfile* profile,
                     bool finalize = true,
                     VerificationStatus status = VerificationStatus::kObserved);
 
+void SetProfileInfo(AutofillProfile* profile,
+                    const char* first_name,
+                    const char* middle_name,
+                    const char* last_name,
+                    const char* country,
+                    bool finalize = true,
+                    VerificationStatus status = VerificationStatus::kObserved);
+
 void SetProfileInfoWithGuid(AutofillProfile* profile,
                             const char* guid,
                             const char* first_name,

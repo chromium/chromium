@@ -62,7 +62,11 @@ process_version("remoting_version") {
 # ChromeOS enterprise parameters used in common host classes.
 # Split out in its own target to prevent GN from pulling in chromeos deps.
 source_set("enterprise_params") {
-  sources = [ "//remoting/host/chromeos/chromeos_enterprise_params.h" ]
+  sources = [
+    "//remoting/host/chromeos/chromeos_enterprise_params.cc",
+    "//remoting/host/chromeos/chromeos_enterprise_params.h",
+  ]
+  deps = [ "//base" ]
 }
 
 source_set("host") {
@@ -842,6 +846,7 @@ source_set("unit_tests") {
     ":client_session_control",
     ":common",
     ":display_layout",
+    ":enterprise_params",
     ":platform_interfaces",
     ":resources",
     ":test_support",

@@ -8,7 +8,10 @@
 #include "chrome/browser/password_manager/password_change_delegate.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "ui/base/l10n/l10n_util.h"
+
+namespace metrics_util = password_manager::metrics_util;
 
 FailedPasswordChangeBubbleController::FailedPasswordChangeBubbleController(
     base::WeakPtr<PasswordsModelDelegate> delegate)
@@ -39,18 +42,25 @@ std::u16string FailedPasswordChangeBubbleController::GetAcceptButton() const {
 }
 
 void FailedPasswordChangeBubbleController::ReportInteractions() {
-  // TODO(crbug.com/381053884): Report metrics.
+  base::UmaHistogramEnumeration(
+      "PasswordManager.PasswordChange.ChangingFailedBubble", dismissal_reason_,
+      metrics_util::NUM_UI_RESPONSES);
 }
 
 void FailedPasswordChangeBubbleController::FixManually() {
+  dismissal_reason_ = metrics_util::CLICKED_ACCEPT;
   password_change_delegate_->OpenPasswordChangeTab();
   FinishPasswordChange();
 }
 
 void FailedPasswordChangeBubbleController::FinishPasswordChange() {
+  if (dismissal_reason_ == metrics_util::NO_DIRECT_INTERACTION) {
+    dismissal_reason_ = metrics_util::CLICKED_CANCEL;
+  }
   password_change_delegate_->Stop();
 }
 
 void FailedPasswordChangeBubbleController::NavigateToPasswordChangeSettings() {
+  dismissal_reason_ = metrics_util::CLICKED_ABOUT_PASSWORD_CHANGE;
   delegate_->NavigateToPasswordChangeSettings();
 }

@@ -24,6 +24,7 @@
 #include "content/browser/renderer_host/text_input_manager.h"
 #include "content/common/content_switches_internal.h"
 #include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_switches.h"
 #include "ui/accelerated_widget_mac/display_ca_layer_tree.h"
 #include "ui/base/ime/text_input_mode.h"
@@ -85,7 +86,7 @@ RenderWidgetHostViewIOS::RenderWidgetHostViewIOS(RenderWidgetHost* widget)
       gesture_provider_(
           ui::GetGestureProviderConfig(
               ui::GestureProviderConfigType::CURRENT_PLATFORM,
-              content::GetUIThreadTaskRunner({BrowserTaskType::kUserInput})),
+              GetUIThreadTaskRunner({BrowserTaskType::kUserInput})),
           this) {
   ui_view_ = std::make_unique<UIViewHolder>();
   ui_view_->view_ =

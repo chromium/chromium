@@ -1171,6 +1171,13 @@ experimental domain Extensions
     returns
       # Extension id.
       string id
+  # Uninstalls an unpacked extension (others not supported) from the profile.
+  # Available if the client is connected using the --remote-debugging-pipe flag
+  # and the --enable-unsafe-extension-debugging.
+  command uninstall
+    parameters
+      # Extension id.
+      string id
   # Gets data from extension storage in the given `storageArea`. If `keys` is
   # specified, these are used to filter the result.
   command getStorageItems

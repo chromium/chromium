@@ -21,6 +21,8 @@ const FieldTypeSet& GetDatabaseStoredTypesOfAutofillProfile() {
       NAME_LAST_FIRST,
       NAME_LAST_CONJUNCTION,
       NAME_LAST_SECOND,
+      NAME_LAST_PREFIX,
+      NAME_LAST_CORE,
       NAME_LAST,
       NAME_FULL,
       ADDRESS_HOME_STREET_ADDRESS,

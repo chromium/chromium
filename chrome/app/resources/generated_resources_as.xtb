@@ -718,6 +718,7 @@
 <translation id="1486486872607808064">আপুনি <ph name="APP_NAME" />ৰ বাবে এটা পাছকী সৃষ্টি কৰিব বিচৰা ডিভাইচটোত এটা কেমেৰাৰে এই কিউআৰ ক’ডটো স্কেন কৰক</translation>
 <translation id="1486616492435615702">এটা খচৰা সৃষ্টি কৰক বা পূৰ্বৰে পৰা থকা কাৰ্য সংশোধন কৰক।</translation>
 <translation id="1487335504823219454">অন - কাষ্টম ছেটিং</translation>
+<translation id="1489101155914355052">এই নথিখনৰ বাবে পৰামৰ্শ সৃষ্টি কৰি থকা হৈছে…</translation>
 <translation id="1493892686965953381"><ph name="LOAD_STATE_PARAMETER" />লৈ অপেক্ষা কৰি থকা হৈছে...</translation>
 <translation id="1494349716233667318">ছাইটে আপোনাৰ ডিভাইচত ইনষ্টল হৈ থকা ফণ্ট ব্যৱহাৰ কৰিবলৈ বিচাৰিব পাৰে</translation>
 <translation id="1494429729245089920">ভাৰ্চুৱেল মেচিন "<ph name="VM_NAME" />" আছে, কিন্তু এটা মান্য <ph name="APP_NAME" /> ভাৰ্চুৱেল মেচিন যেন লগা নাই। অনুগ্ৰহ কৰি আপোনাৰ প্ৰশাসকৰ সৈতে যোগাযোগ কৰক।</translation>
@@ -2931,6 +2932,7 @@
 <translation id="3013652227108802944">অফ আছে • এই এক্সটেনশ্বনটোৱে Chrome Web Storeৰ নীতি উলংঘন কৰে</translation>
 <translation id="301525898020410885">ভাষা আপোনাৰ প্ৰতিষ্ঠানে ছেট কৰে</translation>
 <translation id="3015639418649705390">এতিয়া পুনৰ লঞ্চ কৰক</translation>
+<translation id="3015651504578568463">নতুন তুলনাৰ তালিকাত টেব যোগ দিয়ক</translation>
 <translation id="3016381065346027039">কোনো লগ অন্তৰ্ভুক্তি নাই</translation>
 <translation id="3019023222666709803">কাঁড়চিহ্নৰ সঁজুলি</translation>
 <translation id="3019285239893817657">উপ-পৃষ্ঠাৰ বুটাম</translation>
@@ -5659,6 +5661,7 @@
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">স্ক্রীণ কাষ্ট কৰক</translation>
 <translation id="496185450405387901">এই এপ্‌টো আপোনাৰ প্ৰশাসকে ইনষ্টল কৰিছে।</translation>
+<translation id="4963079328730030450">আপোনাৰ প্ৰতিষ্ঠানে এই সুবিধাসমূহৰ দ্বাৰা সংগ্ৰহ কৰা ডেটা কেনেদৰে ব্যৱহাৰ কৰিব পাৰি সেইটো নিয়ন্ত্ৰণ কৰে।</translation>
 <translation id="4963603093937263654">আপোনাৰ <ph name="DEVICE_NAME" />ত জাননী লাভ কৰাৰ সুবিধাটো অন হৈ থকাটো নিশ্চিত কৰক</translation>
 <translation id="4963789650715167449">বৰ্তমানৰ টেবটো আঁতৰাওক</translation>
 <translation id="4964455510556214366">সজ্জা</translation>
@@ -5693,6 +5696,7 @@
 <translation id="4989966318180235467">&amp;বেকগ্ৰাউণ্ড পৃষ্ঠা পৰীক্ষা কৰক</translation>
 <translation id="4990673372047946816">কোনো কেমেৰা উপলব্ধ নহয়</translation>
 <translation id="4991420928586866460">ওপৰৰ শাৰীৰ কীসমূহ ফাংশ্বনৰ কী হিচাপে গণ্য কৰক</translation>
+<translation id="4991873517942703737">এই নথিখনৰ বিষয়ে সোধক</translation>
 <translation id="4992443049233195791">Microsoft 365 ফাইলৰ ছেটিং</translation>
 <translation id="4992458225095111526">পাৱাৰৱাশ্ব কৰাটো নিশ্চিত কৰক</translation>
 <translation id="4992473555164495036">আপোনাৰ প্ৰশাসকে উপলব্ধ ইনপুটৰ পদ্ধতিসমূহ সীমিত কৰিছে৷</translation>
@@ -6183,6 +6187,7 @@
 <translation id="535123479159372765">অন্য ডিভাইচৰ পৰা প্ৰতিলিপি কৰা পাঠ</translation>
 <translation id="5352033265844765294">সময়ৰ মোহৰ লগোৱা কাৰ্য</translation>
 <translation id="5352257124367865087">ছাইটৰ অনুমতি পৰিচালনা কৰক</translation>
+<translation id="5352535894553509810">নতুন তুলনাৰ তালিকাত টেব যোগ দিয়ক</translation>
 <translation id="5353252989841766347">Chromeৰ পৰা পাছৱর্ড আমদানি কৰক</translation>
 <translation id="5353769147530541973"><ph name="SITE_NAME" />ক নিষ্ক্ৰিয় কৰিবলৈ ইয়াক টেবসমূহৰ সূচীখনৰ পৰা আঁতৰাওক</translation>
 <translation id="5355099869024327351">আপোনাৰ জাননীসমূহ প্ৰদর্শন কৰিবলৈ Assistantক অনুমতি দিয়ক</translation>
@@ -8461,6 +8466,7 @@
 <translation id="7001036685275644873">Linux এপ্‌ আৰু ফাইলসমূহ বেক আপ কৰি থকা হৈছে</translation>
 <translation id="7001066449188684145"><ph name="PRINTER_NAME" />ত প্ৰিণ্ট কৰিবলৈ চিনাক্তকৰণৰ আৱশ্যক। অনুগ্ৰহ কৰি আপোনাৰ প্ৰশাসকৰ সৈতে যোগাযোগ কৰক।</translation>
 <translation id="7001397294201412227">কোনো ফ’ন, টেবলেট অথবা সুৰক্ষা সম্পৰ্কীয় চাবি ব্যৱহাৰ কৰক</translation>
+<translation id="7001556399332161712">সন্ধান আৰু পৰামৰ্শ</translation>
 <translation id="7003339318920871147">ৱেব ডেটাবেছ</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} টা ফাইল}one{{COUNT} টা ফাইল}other{{COUNT} টা ফাইল}}</translation>
 <translation id="7003644704445046755">উচ্চ গুণগত মানৰ <ph name="LANGUAGE" />ৰ কণ্ঠধ্বনিৰ ফাইলসমূহ ডাউনল’ড কৰা হৈছে</translation>
@@ -9925,6 +9931,7 @@
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" />এ সঁহাৰি দিয়া নাই।</translation>
 <translation id="8044899503464538266">মন্থৰ</translation>
 <translation id="8045253504249021590">Google Dashboardৰ জৰিয়তে ছিংক বন্ধ কৰা হৈছে।</translation>
+<translation id="8045752459073395242">কৰ্মস্থানত Generative AI ব্যৱহাৰ কৰাৰ বিষয়ে অধিক জানক</translation>
 <translation id="8045923671629973368">এপ্লিকেশ্বন আইডি বা ৱেবষ্ট’ৰৰ URL দিয়ক</translation>
 <translation id="804786196054284061">অন্তিম ব্যৱহাৰকাৰীৰ অনুজ্ঞাপত্ৰৰ চুক্তি</translation>
 <translation id="8048596485169033655">মুখ্য ন’ড এন’টেশ্বন ফাইলসমূহ ডাউনল’ড কৰি থকা হৈছে… <ph name="PERCENT" />%</translation>
