@@ -440,11 +440,17 @@ void ManagePasswordsUIController::OnCredentialLeak(
     ClearPopUpFlagForBubble();
   }
 
-  if (password_manager::IsPasswordChangeSupported(details.leak_type) &&
-      GetPasswordChangeService(web_contents())) {
-    GetPasswordChangeService(web_contents())
-        ->OfferPasswordChangeUi(details.origin, details.username,
-                                details.password, web_contents());
+  if (password_manager::IsPasswordChangeSupported(details.leak_type)) {
+    auto* password_change_service = GetPasswordChangeService(web_contents());
+    CHECK(password_change_service);
+
+    // Password change is already ongoing for this tab. Don't do anything.
+    if (password_change_service->GetPasswordChangeDelegate(web_contents())) {
+      return;
+    }
+
+    password_change_service->OfferPasswordChangeUi(
+        details.origin, details.username, details.password, web_contents());
     return;
   }
 
