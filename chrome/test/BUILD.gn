@@ -1792,6 +1792,8 @@ if (is_android) {
         "../browser/extensions/content_security_policy_apitest.cc",
         "../browser/extensions/cross_origin_isolation_browsertest.cc",
         "../browser/extensions/desktop_android/desktop_android_extensions_browsertest.cc",
+        "../browser/extensions/error_console/error_console_test_observer.cc",
+        "../browser/extensions/error_console/error_console_test_observer.h",
         "../browser/extensions/extension_incognito_apitest.cc",
         "../browser/extensions/extension_override_apitest.cc",
         "../browser/extensions/extension_platform_browsertest_browsertest.cc",

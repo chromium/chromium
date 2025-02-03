@@ -182,6 +182,8 @@ static_library("ui") {
     "webui/download_internals/download_internals_ui_message_handler.h",
     "webui/engagement/site_engagement_ui.cc",
     "webui/engagement/site_engagement_ui.h",
+    "webui/extensions/extensions_ui_prefs.cc",
+    "webui/extensions/extensions_ui_prefs.h",
     "webui/family_link_user_internals/family_link_user_internals_message_handler.cc",
     "webui/family_link_user_internals/family_link_user_internals_message_handler.h",
     "webui/family_link_user_internals/family_link_user_internals_ui.cc",

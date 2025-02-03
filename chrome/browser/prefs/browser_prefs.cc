@@ -206,6 +206,7 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/extensions/extension_web_ui.h"
+#include "chrome/browser/ui/webui/extensions/extensions_ui_prefs.h"
 #include "extensions/browser/api/runtime/runtime_api.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/permissions_manager.h"
@@ -2057,6 +2058,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   extensions::PermissionsManager::RegisterProfilePrefs(registry);
   extensions::ExtensionPrefs::RegisterProfilePrefs(registry);
   extensions::RuntimeAPI::RegisterPrefs(registry);
+  extensions_ui_prefs::RegisterProfilePrefs(registry);
   ExtensionWebUI::RegisterProfilePrefs(registry);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
@@ -2064,7 +2066,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   RegisterAnimationPolicyPrefs(registry);
   extensions::ActivityLog::RegisterProfilePrefs(registry);
   extensions::AudioAPI::RegisterUserPrefs(registry);
-  extensions::ExtensionsUI::RegisterProfilePrefs(registry);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   extensions::shared_storage::RegisterProfilePrefs(registry);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

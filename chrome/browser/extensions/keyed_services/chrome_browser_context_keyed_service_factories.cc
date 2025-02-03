@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/keyed_services/chrome_browser_context_keyed_service_factories.h"
 
 #include "build/build_config.h"
+#include "chrome/browser/extensions/error_console/error_console_factory.h"
 #include "chrome/browser/extensions/extension_web_ui_override_registrar.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -37,6 +38,7 @@
 namespace chrome_extensions {
 
 void EnsureChromeBrowserContextKeyedServiceFactoriesBuilt() {
+  extensions::ErrorConsoleFactory::GetInstance();
   extensions::ExtensionWebUIOverrideRegistrar::GetFactoryInstance();
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
