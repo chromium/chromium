@@ -4,7 +4,6 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
