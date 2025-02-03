@@ -205,41 +205,6 @@ void CreateIframe(content::RenderFrameHost* parent_frame,
                       content::EXECUTE_SCRIPT_NO_USER_GESTURE));
 }
 
-// TODO(crbug.com/40274184): This function should probably be built on top of
-// `test::InstallDummyWebApp`, instead of committing the update and triggering
-// `NotifyWebAppInstalled` manually. However, the `InstallFromInfoCommand` used
-// by that function does not currently allow setting the `IsolationData`
-// (which is good for non-test-code, as all real IWA installs must go through
-// the `InstallIsolatedWebAppCommand`).
-webapps::AppId AddDummyIsolatedAppToRegistry(
-    Profile* profile,
-    const GURL& start_url,
-    const std::string& name,
-    const IsolationData& isolation_data,
-    webapps::WebappInstallSource install_source) {
-  CHECK(profile);
-  WebAppProvider* provider = WebAppProvider::GetForTest(profile);
-  CHECK(provider);
-
-  std::unique_ptr<WebApp> isolated_web_app = test::CreateWebApp(
-      start_url, ConvertInstallSurfaceToWebAppSource(install_source));
-  const webapps::AppId app_id = isolated_web_app->app_id();
-  isolated_web_app->SetName(name);
-  isolated_web_app->SetScope(isolated_web_app->start_url());
-  isolated_web_app->SetIsolationData(isolation_data);
-  isolated_web_app->SetLatestInstallSource(install_source);
-
-  base::test::TestFuture<bool> future;
-  {
-    ScopedRegistryUpdate update =
-        provider->sync_bridge_unsafe().BeginUpdate(future.GetCallback());
-    update->CreateApp(std::move(isolated_web_app));
-  }
-  EXPECT_TRUE(future.Take());
-  provider->install_manager().NotifyWebAppInstalled(app_id);
-  return app_id;
-}
-
 void SimulateIsolatedWebAppNavigation(content::WebContents* web_contents,
                                       const GURL& url) {
   auto navigation =
