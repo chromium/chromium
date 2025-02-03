@@ -230,9 +230,13 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
 
         // If not attached to an Activity, we cannot check synchronously and need to defer.
         if (!mHasAttachedToActivity) {
-            // Previous navigation must have timed out waiting for Activity to attach, don't keep
+            // Only wait to attach to an Activity for external app launches. Any other background
+            // launches don't need to wait for an Activity to attach and can just block external
+            // navigations (like Custom Tab prerenders).
+            //
+            // Also, if the previous navigation timed out waiting for Activity to attach, don't keep
             // waiting.
-            if (mTimedOutWaitingForActivity) {
+            if (!mClient.wasTabLaunchedFromExternalApp() || mTimedOutWaitingForActivity) {
                 resultCallback.onResult(false);
                 return;
             }
