@@ -72,7 +72,7 @@ const CGFloat kBottomSpacing = 20;
 // email not being available as used in the sync disclaimer).
 - (NSString*)headerText {
   NSString* syncingUserEmail = [app_group::GetGroupUserDefaults()
-      stringForKey:AppGroupUserDefaultsCredentialProviderUserEmail()];
+      stringForKey:AppGroupUserDefaultsCredentialProviderManagedUserEmail()];
 
   BOOL passwordSyncOn = syncingUserEmail != nil;
 

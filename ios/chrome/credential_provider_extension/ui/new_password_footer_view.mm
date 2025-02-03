@@ -66,7 +66,7 @@ const CGFloat kLabelSpacing = 8;
 
 - (NSString*)footerText {
   NSString* userEmail = [app_group::GetGroupUserDefaults()
-      stringForKey:AppGroupUserDefaultsCredentialProviderUserEmail()];
+      stringForKey:AppGroupUserDefaultsCredentialProviderManagedUserEmail()];
 
   if (userEmail) {
     NSString* baseLocalizedString = NSLocalizedString(

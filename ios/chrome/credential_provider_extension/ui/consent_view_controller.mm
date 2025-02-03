@@ -29,7 +29,7 @@ NSString* const kConsentViewControllerIdentifier =
   self.bannerName = @"consent_view_controller";
 
   NSString* userEmail = [app_group::GetGroupUserDefaults()
-      stringForKey:AppGroupUserDefaultsCredentialProviderUserEmail()];
+      stringForKey:AppGroupUserDefaultsCredentialProviderManagedUserEmail()];
 
   if (userEmail.length) {
     NSString* baseLocalizedString = NSLocalizedString(

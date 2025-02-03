@@ -133,7 +133,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   // available as used in the sync disclaimer), then don't show the "Suggest
   // Strong Password" button.
   NSString* syncingUserEmail = [app_group::GetGroupUserDefaults()
-      stringForKey:AppGroupUserDefaultsCredentialProviderUserEmail()];
+      stringForKey:AppGroupUserDefaultsCredentialProviderManagedUserEmail()];
   BOOL passwordSyncOn = syncingUserEmail != nil;
   return (passwordSyncOn) ? NewPasswordTableCellTypeNumRows
                           : NewPasswordTableCellTypeNumRows - 1;

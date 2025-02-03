@@ -324,13 +324,6 @@ void CredentialProviderService::SyncAllCredentials(
   SyncStore();
 }
 
-bool CredentialProviderService::SaveAccountInfo() {
-  CoreAccountInfo account =
-      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-  return credential_provider_extension::StoreAccountInfoInKeychain(
-      account.gaia.ToNSString(), base::SysUTF8ToNSString(account.email));
-}
-
 void CredentialProviderService::SyncStore() {
   base::UmaHistogramBoolean(kSyncStoreHistogramName, true);
 
@@ -349,7 +342,6 @@ void CredentialProviderService::SyncStore() {
     }
     if (weak_credential_store) {
       SyncASIdentityStore(weak_credential_store);
-      SaveAccountInfo();
     }
   }];
 }
@@ -364,6 +356,12 @@ void CredentialProviderService::AddCredentials(
   }
 }
 
+NSString* CredentialProviderService::PrimaryAccountId() const {
+  CoreAccountInfo account =
+      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  return account.gaia.ToNSString();
+}
+
 void CredentialProviderService::AddCredentialsLegacy(
     MemoryCredentialStore* store,
     std::vector<PasswordForm> forms) {
@@ -371,9 +369,7 @@ void CredentialProviderService::AddCredentialsLegacy(
   const bool should_skip_max_verification = forms.size() == 1;
   const bool fallback_to_google_server_allowed =
       CanSendHistoryData(sync_service_);
-  CoreAccountInfo account =
-      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-  NSString* gaia = account.gaia.ToNSString();
+  NSString* gaia = PrimaryAccountId();
 
   int fetched_favicon_count = 0;
 
@@ -413,9 +409,7 @@ void CredentialProviderService::AddCredentialsRefactored(
   const bool should_skip_max_verification = forms.size() == 1;
   const bool fallback_to_google_server_allowed =
       CanSendHistoryData(sync_service_);
-  CoreAccountInfo account =
-      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-  NSString* gaia = account.gaia.ToNSString();
+  NSString* gaia = PrimaryAccountId();
 
   // Get the list of existing favicon files, along with their creation date.
   NSDictionary<NSString*, NSDate*>* favicon_dict =
@@ -458,9 +452,7 @@ void CredentialProviderService::AddCredentials(
   // User is adding a passkey (not batch add from user login).
   const bool should_skip_max_verification = passkeys.size() == 1;
   const bool fallback_to_google_server = CanSendHistoryData(sync_service_);
-  CoreAccountInfo account =
-      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-  NSString* gaia = account.gaia.ToNSString();
+  NSString* gaia = PrimaryAccountId();
 
   for (const auto& passkey : passkeys) {
     if (passkey.hidden()) {
@@ -512,13 +504,17 @@ void CredentialProviderService::RemoveCredentials(
 void CredentialProviderService::UpdateAccountId() {
   CoreAccountInfo account =
       identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-  NSString* account_id = nil;
-  if (!account.IsEmpty() &&
-      identity_manager_->FindExtendedAccountInfo(account).IsManaged()) {
-    account_id = account.gaia.ToNSString();
-  }
+  NSString* account_id = account.gaia.ToNSString();
+  BOOL is_valid_account = !account.IsEmpty();
+  BOOL is_managed_account =
+      is_valid_account &&
+      identity_manager_->FindExtendedAccountInfo(account).IsManaged();
   [app_group::GetGroupUserDefaults()
-      setObject:account_id
+      setObject:is_managed_account ? account_id : nil
+         forKey:AppGroupUserDefaultsCredentialProviderManagedUserID()];
+
+  [app_group::GetGroupUserDefaults()
+      setObject:is_valid_account ? account_id : nil
          forKey:AppGroupUserDefaultsCredentialProviderUserID()];
 }
 
@@ -528,6 +524,13 @@ void CredentialProviderService::UpdateUserEmail() {
   [app_group::GetGroupUserDefaults()
       setObject:accountForSaving ? base::SysUTF8ToNSString(*accountForSaving)
                                  : nil
+         forKey:AppGroupUserDefaultsCredentialProviderManagedUserEmail()];
+
+  CoreAccountInfo account =
+      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  [app_group::GetGroupUserDefaults()
+      setObject:!account.IsEmpty() ? base::SysUTF8ToNSString(account.email)
+                                   : nil
          forKey:AppGroupUserDefaultsCredentialProviderUserEmail()];
 }
 
@@ -602,6 +605,7 @@ void CredentialProviderService::OnInjectedAffiliationAfterLoginsChanged(
 void CredentialProviderService::OnStateChanged(syncer::SyncService* sync) {
   // When the state changes, it's possible that password syncing has
   // started/stopped, so the user's email must be updated.
+  UpdateAccountId();
   UpdateUserEmail();
   UpdatePasswordSyncSetting();
 }
