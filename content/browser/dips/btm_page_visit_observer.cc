@@ -153,11 +153,14 @@ void BtmPageVisitObserver::OnCookiesAccessed(
     return;
   }
 
-  // Check to see if this is a late report for a redirect.
-  //
-  // TODO: crbug.com/394059601 - once we have support for unit-testing cookie
-  // accesses, add a unit test for this case.
+  // Check to see if this is a late report for a previously-visited page or
+  // redirect.
   for (VisitTuple& visit : pending_visits_) {
+    if (details.url == visit.prev_page.url) {
+      visit.prev_page.had_qualifying_storage_access = true;
+      return;
+    }
+
     for (BtmServerRedirectInfo& redirect : visit.navigation.server_redirects) {
       if (details.url == redirect.url) {
         redirect.did_write_cookies = true;
@@ -166,21 +169,8 @@ void BtmPageVisitObserver::OnCookiesAccessed(
     }
   }
 
-  if (render_frame_host->GetMainFrame()->IsInPrimaryMainFrame()) {
-    // Cookie access within the current page.
+  if (render_frame_host->IsInPrimaryMainFrame()) {
     current_page_.had_qualifying_storage_access = true;
-    return;
-  }
-
-  // If the cookie was accessed by a subresource request in a now-bfcached
-  // page, try to find that page's visit.
-  const GURL& page_url =
-      render_frame_host->GetMainFrame()->GetLastCommittedURL();
-  for (VisitTuple& visit : pending_visits_) {
-    if (page_url == visit.prev_page.url) {
-      visit.prev_page.had_qualifying_storage_access = true;
-      return;
-    }
   }
 }
 
@@ -191,12 +181,6 @@ void BtmPageVisitObserver::OnCookiesAccessed(
   if (details.blocked_by_policy ||
       details.type != CookieAccessDetails::Type::kChange ||
       !IsInPrimaryPage(navigation_handle)) {
-    return;
-  }
-
-  if (!navigation_handle->IsInMainFrame()) {
-    // Subframe navigation
-    current_page_.had_qualifying_storage_access = true;
     return;
   }
 
