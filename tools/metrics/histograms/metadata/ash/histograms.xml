@@ -5291,7 +5291,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.KcerRollbackHelper.Events"
-    enum="NssDbClientCertsRollbackEvent" expires_after="2025-03-05">
+    enum="NssDbClientCertsRollbackEvent" expires_after="2025-09-05">
   <owner>miersh@google.com</owner>
   <owner>olsa@google.com</owner>
   <summary>
