@@ -755,10 +755,13 @@ scoped_refptr<media::VideoFrame>
 MediaStreamVideoTrack::FrameDeliverer::GetBlackFrame(
     const media::VideoFrame& reference_frame) {
   DCHECK(video_task_runner_->RunsTasksInCurrentSequence());
-  if (!black_frame_.get() ||
+  if (!black_frame_ ||
       black_frame_->natural_size() != reference_frame.natural_size()) {
     black_frame_ =
         media::VideoFrame::CreateBlackFrame(reference_frame.natural_size());
+    if (!black_frame_) {
+      return nullptr;
+    }
   }
 
   // Wrap |black_frame_| so we get a fresh timestamp we can modify. Frames
