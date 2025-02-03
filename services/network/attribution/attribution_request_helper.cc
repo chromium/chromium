@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -18,6 +19,7 @@
 #include "net/url_request/url_request.h"
 #include "services/network/attribution/request_headers_internal.h"
 #include "services/network/public/cpp/attribution_utils.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
@@ -83,13 +85,26 @@ net::HttpRequestHeaders ComputeAttributionReportingHeaders(
 
   uint64_t grease_bits = base::RandUint64();
 
-  std::string eligible_header = SerializeAttributionReportingEligibleHeader(
-      effective_eligibility,
-      AttributionReportingHeaderGreaseOptions::FromBits(grease_bits & 0xff));
+  std::string reporting_eligible_header =
+      SerializeAttributionReportingEligibleHeader(
+          effective_eligibility,
+          AttributionReportingHeaderGreaseOptions::FromBits(grease_bits &
+                                                            0xff));
   grease_bits >>= 8;
 
   headers.SetHeader("Attribution-Reporting-Eligible",
-                    std::move(eligible_header));
+                    std::move(reporting_eligible_header));
+
+  if (base::FeatureList::IsEnabled(features::kAdAuctionEventRegistration)) {
+    std::string ad_auction_registration_eligible =
+        SerializeAdAuctionRegistrationEligibleHeader(
+            request.attribution_reporting_eligibility,
+            AttributionReportingHeaderGreaseOptions::FromBits(grease_bits &
+                                                              0xff));
+    grease_bits >>= 8;
+    headers.SetHeader("Ad-Auction-Registration-Eligible",
+                      std::move(ad_auction_registration_eligible));
+  }
 
   base::UmaHistogramEnumeration("Conversions.RequestSupportHeader",
                                 request.attribution_reporting_support);

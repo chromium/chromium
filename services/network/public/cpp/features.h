@@ -145,6 +145,11 @@ BASE_DECLARE_FEATURE(kSRIMessageSignatureEnforcement);
 
 COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kCreateURLLoaderPipeAsync);
 
+// Should Ad-Auction-Registration-Eligible be sent on requests made with
+// attributionsrc, and should Ad-Auction-Register-Event responses on those
+// requests be processed?
+COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kAdAuctionEventRegistration);
+
 }  // namespace network::features
 
 #endif  // SERVICES_NETWORK_PUBLIC_CPP_FEATURES_H_

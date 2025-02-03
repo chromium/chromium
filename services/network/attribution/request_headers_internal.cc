@@ -227,4 +227,52 @@ std::string GetAttributionSupportHeader(
   return std::move(*support_header);
 }
 
+std::string SerializeAdAuctionRegistrationEligibleHeader(
+    mojom::AttributionReportingEligibility eligibility,
+    const AttributionReportingHeaderGreaseOptions& options) {
+  constexpr char kView[] = "view";
+  constexpr char kClick[] = "click";
+
+  std::vector<net::structured_headers::DictionaryMember> eligibilities;
+
+  const char* grease1;
+  const char* grease2;
+  switch (eligibility) {
+    case AttributionReportingEligibility::kUnset:
+      NOTREACHED();
+    case AttributionReportingEligibility::kEmpty:
+      grease1 = kView;
+      grease2 = kClick;
+      break;
+    case AttributionReportingEligibility::kEventSource:
+      AddTrueValuedDictMember(eligibilities, kView);
+      grease1 = kClick;
+      grease2 = kView;
+      break;
+    case AttributionReportingEligibility::kNavigationSource:
+      AddTrueValuedDictMember(eligibilities, kClick);
+      grease1 = kView;
+      grease2 = kClick;
+      break;
+    case AttributionReportingEligibility::kTrigger:
+      grease1 = kView;
+      grease2 = kClick;
+      break;
+    case AttributionReportingEligibility::kEventSourceOrTrigger:
+      AddTrueValuedDictMember(eligibilities, kView);
+      grease1 = kClick;
+      grease2 = kView;
+      break;
+  }
+
+  ApplyGrease(eligibilities, options, grease1, grease2);
+
+  std::optional<std::string> eligible_header =
+      net::structured_headers::SerializeDictionary(
+          net::structured_headers::Dictionary(std::move(eligibilities)));
+  DCHECK(eligible_header.has_value());
+
+  return std::move(*eligible_header);
+}
+
 }  // namespace network

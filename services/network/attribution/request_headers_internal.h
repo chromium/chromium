@@ -59,6 +59,11 @@ std::string GetAttributionSupportHeader(
     mojom::AttributionSupport,
     const AttributionReportingHeaderGreaseOptions&);
 
+// Must not be called with `mojom::AttributionReportingEligibility::kUnset`.
+std::string SerializeAdAuctionRegistrationEligibleHeader(
+    mojom::AttributionReportingEligibility,
+    const AttributionReportingHeaderGreaseOptions&);
+
 }  // namespace network
 
 #endif  // SERVICES_NETWORK_ATTRIBUTION_REQUEST_HEADERS_INTERNAL_H_

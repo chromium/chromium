@@ -347,4 +347,8 @@ BASE_FEATURE(kCreateURLLoaderPipeAsync,
              "CreateURLLoaderPipeAsync",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAdAuctionEventRegistration,
+             "AdAuctionEventRegistration",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace network::features
