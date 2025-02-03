@@ -100,8 +100,6 @@ suite('<settings-multidevice-feature-toggle>', () => {
       isPhoneHubPermissionsDialogSupported: false,
       isCameraRollFilePermissionGranted: false,
       isPhoneHubFeatureCombinedSetupSupported: false,
-      isChromeOSSyncedSessionSharingEnabled: false,
-      isLacrosTabSyncEnabled: false,
       betterTogetherState: MultiDeviceFeatureState.ENABLED_BY_USER,
       [pageContentDataKey]: MultiDeviceFeatureState.DISABLED_BY_USER,
     };
