@@ -24,6 +24,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/font_list.h"
+#include "ui/gfx/geometry/outsets.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
@@ -159,12 +160,24 @@ void TabbedPaneTab::SetTitleText(const std::u16string& text) {
 
 void TabbedPaneTab::SetTitleMargin(const gfx::Insets& margin) {
   title_->SetProperty(views::kMarginsKey, margin);
+  PreferredSizeChanged();
 }
 
 void TabbedPaneTab::SetIconMargin(const gfx::Insets& margin) {
   if (icon_view_) {
     icon_view_->SetProperty(views::kMarginsKey, margin);
   }
+  PreferredSizeChanged();
+}
+
+void TabbedPaneTab::SetTabOutsets(const gfx::Outsets& outsets) {
+  tab_outsets_ = outsets;
+  PreferredSizeChanged();
+}
+
+void TabbedPaneTab::SetHeight(int height) {
+  height_ = height;
+  PreferredSizeChanged();
 }
 
 bool TabbedPaneTab::OnMousePressed(const ui::MouseEvent& event) {
@@ -224,10 +237,12 @@ gfx::Size TabbedPaneTab::CalculatePreferredSize(
 
   if (tab_strip_->GetStyle() == TabbedPane::TabStripStyle::kHighlight &&
       tab_strip_->GetOrientation() == TabbedPane::Orientation::kVertical) {
-    width = std::max(width, 192);
+    width = std::max(width, kMinimumVerticalTabWidth);
   }
 
-  return gfx::Size(width, 32);
+  gfx::Rect preferred(width, height_);
+  preferred.Outset(tab_outsets_);
+  return preferred.size();
 }
 
 bool TabbedPaneTab::HandleAccessibleAction(

@@ -131,8 +131,7 @@ export class ScreenshotElement extends ScreenshotElementBase {
     this.context_.fill();
 
     const dialog = this.$$<CrDialogElement>('#editor')!;
-    const body =
-        dialog.shadowRoot!.querySelector<HTMLDivElement>('#container')!;
+    const body = dialog.shadowRoot!.querySelector<HTMLElement>('#container')!;
     // Make sure that the canvas coordinates are always up-to-date.
     window.addEventListener('scroll', this.onCoordsChanged_.bind(this));
     window.addEventListener('resize', this.onCoordsChanged_.bind(this));

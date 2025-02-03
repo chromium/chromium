@@ -18,10 +18,11 @@ import {installMock} from '../../../test_support.js';
 suite('MicrosoftFilesModule', () => {
   let childDocument: TestMock<MicrosoftAuthUntrustedDocumentRemote>;
   let handler: TestMock<MicrosoftFilesPageHandlerRemote>;
-  const modulesSharepointName = 'SharePoint';
+  const modulesMicrosoftFilesName = 'SharePoint and OneDrive files';
 
   setup(async () => {
-    loadTimeData.overrideValues({modulesSharepointName: modulesSharepointName});
+    loadTimeData.overrideValues(
+        {modulesMicrosoftFilesName: modulesMicrosoftFilesName});
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     handler = installMock(
         MicrosoftFilesPageHandlerRemote,
@@ -89,7 +90,7 @@ suite('MicrosoftFilesModule', () => {
     // Assert.
     const event: DisableModuleEvent = await whenFired;
     assertEquals(
-        ('You won\'t see ' + modulesSharepointName + ' on this page again'),
+        ('You won\'t see ' + modulesMicrosoftFilesName + ' on this page again'),
         event.detail.message);
   });
 
@@ -128,7 +129,7 @@ suite('MicrosoftFilesModule', () => {
     assertTrue(isVisible(microsoftFilesModule.$.moduleHeaderElementV2));
     assertEquals(
         microsoftFilesModule.$.moduleHeaderElementV2.headerText,
-        modulesSharepointName);
+        modulesMicrosoftFilesName);
   });
 
   test('module not created when there are no files', async () => {
@@ -160,8 +161,7 @@ suite('MicrosoftFilesModule', () => {
     dismissButton.click();
 
     const event: DismissModuleInstanceEvent = await whenFired;
-    // TODO(crbug.com/372724129): Update dismiss message.
-    assertEquals('Outlook Calendar hidden', event.detail.message);
+    assertEquals('Files hidden', event.detail.message);
     assertTrue(!!event.detail.restoreCallback);
     assertEquals(1, handler.getCallCount('dismissModule'));
 

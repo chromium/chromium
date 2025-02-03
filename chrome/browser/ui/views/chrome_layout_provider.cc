@@ -85,6 +85,8 @@ gfx::Insets ChromeLayoutProvider::GetInsetsMetric(int metric) const {
       return gfx::Insets::TLBR(0, 0, 0, 10);
     case INSETS_RECENT_ACTIVITY_ROW_MARGIN:
       return gfx::Insets::TLBR(10, 5, 5, 5);
+    case INSETS_TASK_MANAGER:
+      return gfx::Insets::TLBR(4, 20, 20, 20);
     default:
       return LayoutProvider::GetInsetsMetric(metric);
   }
@@ -169,14 +171,16 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
       return 8;
     case DISTANCE_RICH_HOVER_BUTTON_ICON_HORIZONTAL:
       return 8;
-    case DISTANCE_TASK_MANAGER_HEADER_HORIZONTAL_SPACING:
+    case DISTANCE_TASK_MANAGER_SEARCH_BAR_ICON_AND_BUTTON_HORIZONTAL_SPACING:
       return 12;
-    case DISTANCE_TASK_MANAGER_HEADER_VERTICAL_SPACING:
-      return 4;
     case DISTANCE_TASK_MANAGER_SEARCH_ICON_SIZE:
       return 20;
-    case DISTANCE_TASK_MANAGER_TAB_SPACING:
-      return 16;
+    case DISTANCE_TASK_MANAGER_SEARCH_BAR_MIN_WIDTH:
+      return 160;
+    case DISTANCE_TASK_MANAGER_SEARCH_BAR_MIN_HEIGHT:
+      return 36;
+    case DISTANCE_TASK_MANAGER_TAB_HEIGHT:
+      return 54;
     case DISTANCE_TOAST_BUBBLE_BETWEEN_CHILD_SPACING:
     case DISTANCE_TOAST_BUBBLE_BROWSER_WINDOW_MARGIN:
       return 4;

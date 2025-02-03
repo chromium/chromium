@@ -111,6 +111,11 @@ const char* CloudPolicyValidatorBase::StatusToString(Status status) {
 }
 
 CloudPolicyValidatorBase::ValidationResult::ValidationResult() = default;
+CloudPolicyValidatorBase::ValidationResult::ValidationResult(
+    const ValidationResult&) = default;
+CloudPolicyValidatorBase::ValidationResult&
+CloudPolicyValidatorBase::ValidationResult::operator=(const ValidationResult&) =
+    default;
 CloudPolicyValidatorBase::ValidationResult::~ValidationResult() = default;
 
 CloudPolicyValidatorBase::~CloudPolicyValidatorBase() = default;
@@ -421,8 +426,9 @@ void CloudPolicyValidatorBase::RunChecks() {
   for (size_t i = 0; i < std::size(kCheckFunctions); ++i) {
     if (validation_flags_ & kCheckFunctions[i].flag) {
       status_ = (this->*(kCheckFunctions[i].checkFunction))();
-      if (status_ != VALIDATION_OK)
+      if (status_ != VALIDATION_OK) {
         break;
+      }
     }
   }
 }
@@ -649,8 +655,9 @@ CloudPolicyValidatorBase::Status CloudPolicyValidatorBase::CheckEntityId() {
 }
 
 CloudPolicyValidatorBase::Status CloudPolicyValidatorBase::CheckTimestamp() {
-  if (timestamp_option_ == TIMESTAMP_NOT_VALIDATED)
+  if (timestamp_option_ == TIMESTAMP_NOT_VALIDATED) {
     return VALIDATION_OK;
+  }
 
   if (!policy_data_->has_timestamp()) {
     LOG_POLICY(ERROR, POLICY_FETCHING) << "Policy timestamp missing";

@@ -473,14 +473,11 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
     const AccountId account_id(AccountId::FromUserEmailGaiaId(email, gaia_id));
     fake_user_manager_->AddUser(account_id);
     fake_user_manager_->LoginUser(account_id);
-    GetSessionControllerClient()->AddUserSession(std::string(email));
-    GetSessionControllerClient()->SwitchActiveUser(account_id);
   }
 
   TestingProfile* CreateProfile(const std::string& profile_name) override {
     auto* testing_profile = profile_manager()->CreateTestingProfile(
         profile_name, {}, u"user_name", /*avatar_id=*/0, GetTestingFactories());
-    OnUserProfileCreated(profile_name, testing_profile);
     return testing_profile;
   }
 

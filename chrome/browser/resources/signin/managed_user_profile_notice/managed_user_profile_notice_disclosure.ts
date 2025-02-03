@@ -8,6 +8,7 @@ import 'chrome://resources/cr_elements/icons.html.js';
 import '/strings.m.js';
 
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -25,14 +26,6 @@ export class ManagedUserProfileNoticeDisclosureElement extends
 
   static override get styles() {
     return getCss();
-  }
-
-  get titleElement(): HTMLElement|undefined {
-    return this.shadowRoot?.querySelector('.title') || undefined;
-  }
-
-  override firstUpdated() {
-    this.titleElement?.focus();
   }
 
   override render() {
@@ -54,9 +47,16 @@ export class ManagedUserProfileNoticeDisclosureElement extends
   protected isOidcDialog_: boolean = loadTimeData.getBoolean('isOidcDialog');
   protected disclosureTitle_: string = '';
 
+  override firstUpdated() {
+    const titleElement = this.shadowRoot.querySelector<HTMLElement>('.title');
+    assert(titleElement);
+    titleElement.focus();
+  }
+
   protected computeDisclosureTitle_() {
-    return this.isOidcDialog_ ? this.i18n('profileOidcDisclosureTitle') :
-                                this.i18n('profileDisclosureTitle');
+    return this.i18n(
+        this.isOidcDialog_ ? 'profileOidcDisclosureTitle' :
+                             'profileDisclosureTitle');
   }
 }
 

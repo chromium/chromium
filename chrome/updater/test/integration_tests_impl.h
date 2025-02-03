@@ -582,6 +582,9 @@ void ExpectDeviceManagementPolicyFetchRequestViaCompanionApp(
     bool first_request = true,
     bool rotate_public_key = false,
     std::optional<GURL> target_url = std::nullopt);
+void ExpectDeviceManagementPolicyValidationRequestViaCompanionApp(
+    ScopedServer* test_server,
+    const std::string& dm_token);
 void ExpectProxyPacScriptRequest(ScopedServer* test_server);
 
 #if BUILDFLAG(IS_MAC)

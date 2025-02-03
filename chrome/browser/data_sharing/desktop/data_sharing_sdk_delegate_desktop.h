@@ -72,6 +72,7 @@ class DataSharingSDKDelegateDesktop : public DataSharingSDKDelegate,
 
   // DataSharingUI::Delegate:
   void ApiInitComplete() override;
+  void ShowErrorDialog(int status_code) override;
 
   void AddAccessToken(
       const data_sharing_pb::AddAccessTokenParams& params,

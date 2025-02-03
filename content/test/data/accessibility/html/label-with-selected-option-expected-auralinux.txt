@@ -1,0 +1,48 @@
+[document web]
+++[section]
+++++[check box] name='Test 1: Flash the screen 2 times.' checkable labelled-by=[label] checkable:true
+++++[label] label-for=[check box]
+++++++[static] name='Test 1: Flash the screen '
+++++++[combo box]
+++++++++[menu]
+++++++++++[menu item] name='1' selectable
+++++++++++[menu item] name='2' selectable selected
+++++++++++[menu item] name='3' selectable
+++++++[static] name=' times.'
+++[section]
+++++[check box] name='Test 2: Flash the screen 2 times.' checkable labelled-by=[label] checkable:true
+++++[label] label-for=[check box]
+++++++[static] name='Test 2: Flash the screen '
+++++++[list box]
+++++++++[list item] name='1' selectable
+++++++++[list item] name='2' selectable selected
+++++++++[list item] name='3' selectable
+++++++[static] name=' times.'
+++[section]
+++++[check box] name='Test 3: Flash the screen two times.' checkable labelled-by=[label] checkable:true
+++++[label] label-for=[check box]
+++++++[static] name='Test 3: Flash the screen '
+++++++[combo box]
+++++++++[menu]
+++++++++++[menu item] name='1' selectable
+++++++++++[menu item] name='two' selectable selected
+++++++++++[menu item] name='3' selectable
+++++++[static] name=' times.'
+++[section]
+++++[check box] name='Test 4: Flash the screen two times.' checkable labelled-by=[label] checkable:true
+++++[label] label-for=[check box]
+++++++[static] name='Test 4: Flash the screen '
+++++++[list box]
+++++++++[list item] name='1' selectable
+++++++++[list item] name='two' selectable selected
+++++++++[list item] name='3' selectable
+++++++[static] name=' times.'
+++[section]
+++++[check box] name='Test 5: Flash the screen two 3 times.' checkable labelled-by=[label] checkable:true
+++++[label] label-for=[check box]
+++++++[static] name='Test 5: Flash the screen '
+++++++[list box] multiselectable
+++++++++[list item] name='1' selectable
+++++++++[list item] name='two' selectable selected
+++++++++[list item] name='3' selectable selected
+++++++[static] name=' times.'

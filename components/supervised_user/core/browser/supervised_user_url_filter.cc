@@ -27,7 +27,6 @@
 #include "components/supervised_user/core/browser/kids_chrome_management_url_checker_client.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
-#include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/url_matcher/url_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -155,8 +154,9 @@ SupervisedUserURLFilter::ResultCallback WrapCallbackWithMetrics(
   return base::BindOnce(&WrappedCallbackWithMetrics, std::move(callback),
                         context, transition_type);
 }
+}  // namespace
 
-FilteringBehavior GetBehaviorFromSafeSearchClassification(
+supervised_user::FilteringBehavior GetBehaviorFromSafeSearchClassification(
     safe_search_api::Classification classification) {
   switch (classification) {
     case safe_search_api::Classification::SAFE:
@@ -186,13 +186,11 @@ bool IsAlwaysAllowedHost(const GURL& effective_url) {
        "myaccount.google.com", "ogs.google.com", "policies.google.com",
        "support.google.com"});
 
-  // TODO(crbug.com/385299439): Consider extracting to common URL manipulations.
   return base::Contains(kAllowedHosts, effective_url.host_piece());
 }
 
 bool IsAlwaysAllowedUrlPrefix(const GURL& effective_url) {
-  // TODO(crbug.com/385299439): Consider extracting to common URL
-  // manipulations.// A list of allowed URL prefixes.
+  // A list of allowed URL prefixes.
   //
   // Consider using url_matcher::CreateURLPrefixCondition (initialized once at
   // startup) for performance if the set of allowed URL prefixes grows large.
@@ -202,7 +200,6 @@ bool IsAlwaysAllowedUrlPrefix(const GURL& effective_url) {
       // redirects.
       kSyncGoogleDashboardURL, "https://chrome.google.com/sync"};
 
-  // TODO(crbug.com/385299439): Consider extracting to common URL manipulations.
   for (const char* allowedUrlPrefix : kAllowedUrlPrefixes) {
     if (base::StartsWith(effective_url.spec(), allowedUrlPrefix)) {
       return true;
@@ -226,20 +223,7 @@ bool IsPlayStoreTermsOfServiceUrl(const GURL& effective_url) {
            std::string_view::npos));
 }
 
-// See go/gmail-phishing-redirector for details (Google internal).
-bool IsGwsRedirector(const GURL& effective_url) {
-  // TODO(crbug.com/385299439): Consider extracting to common URL manipulations.
-  static const char* kHost = "www.google.com";
-  static const char* kPath = "/url";
-  static const char* kDestinationQuery = "q=";
-  static const char* kSourceQuery = "source=";
-  return effective_url.host_piece() == kHost &&
-         effective_url.path_piece() == kPath && effective_url.has_query() &&
-         effective_url.query_piece().find(kDestinationQuery) !=
-             std::string_view::npos &&
-         effective_url.query_piece().find(kSourceQuery) !=
-             std::string_view::npos;
-}
+namespace {
 
 // UMA histogram FamilyUser.ManagedSiteList.Conflict
 // Reports conflict when the user tries to access a url that has a match in
@@ -408,7 +392,8 @@ SupervisedUserURLFilter::GetManagedSiteListConflictTypeHistogramNameForTest() {
 }
 
 // static
-FilteringBehavior SupervisedUserURLFilter::BehaviorFromInt(int behavior_value) {
+supervised_user::FilteringBehavior SupervisedUserURLFilter::BehaviorFromInt(
+    int behavior_value) {
   // `behavior_value` is external input (from the server) - do not turn
   // DCHECK into CHECK as it might lead to real crashes if the server ever
   // supplies an unsupported value.
@@ -491,11 +476,6 @@ bool SupervisedUserURLFilter::IsExemptedFromGuardianApproval(
 SupervisedUserURLFilter::Result SupervisedUserURLFilter::GetFilteringBehavior(
     const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (base::FeatureList::IsEnabled(kExemptGuardianApprovalOnGwsRedirector) &&
-      IsGwsRedirector(url)) {
-    return {url, FilteringBehavior::kAllow, FilteringBehaviorReason::MANUAL};
-  }
 
   GURL effective_url = url_matcher::util::GetEmbeddedURL(url);
   if (!effective_url.is_valid()) {
@@ -655,7 +635,8 @@ void SupervisedUserURLFilter::SetDefaultFilteringBehavior(
   default_behavior_ = behavior;
 }
 
-FilteringBehavior SupervisedUserURLFilter::GetDefaultFilteringBehavior() const {
+supervised_user::FilteringBehavior
+SupervisedUserURLFilter::GetDefaultFilteringBehavior() const {
   return default_behavior_;
 }
 
@@ -708,7 +689,7 @@ WebFilterType SupervisedUserURLFilter::GetWebFilterType() const {
     return WebFilterType::kCertainSites;
   }
 
-  return IsSafeSitesEnabled(user_prefs_.get())
+  return supervised_user::IsSafeSitesEnabled(user_prefs_.get())
              ? WebFilterType::kTryToBlockMatureSites
              : WebFilterType::kAllowAllSites;
 }
@@ -779,12 +760,13 @@ bool SupervisedUserURLFilter::RunAsyncChecker(const GURL& url,
   // The parental setting may allow all sites to be visited.
   if (GetWebFilterType() == WebFilterType::kAllowAllSites) {
     std::move(callback).Run(
-        {url, FilteringBehavior::kAllow, FilteringBehaviorReason::DEFAULT});
+        {url, FilteringBehavior::kAllow,
+         supervised_user::FilteringBehaviorReason::DEFAULT});
     return true;
   }
 
   // The primary account must be supervised to run async URL classification.
-  CHECK(IsSubjectToParentalControls(user_prefs_.get()));
+  CHECK(supervised_user::IsSubjectToParentalControls(user_prefs_.get()));
   CHECK(async_url_checker_);
   return async_url_checker_->CheckURL(
       url_matcher::util::Normalize(url),
@@ -812,7 +794,7 @@ void SupervisedUserURLFilter::CheckCallback(
       std::move(callback),
       {.url = requested_url,
        .behavior = GetBehaviorFromSafeSearchClassification(classification),
-       .reason = FilteringBehaviorReason::ASYNC_CHECKER,
+       .reason = supervised_user::FilteringBehaviorReason::ASYNC_CHECKER,
        .async_check_details = details});
 }
 

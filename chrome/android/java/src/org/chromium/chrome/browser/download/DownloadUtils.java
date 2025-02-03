@@ -530,11 +530,10 @@ public class DownloadUtils {
         }
         boolean isIncognito = OtrProfileId.isOffTheRecord(otrProfileId);
         // TODO(https://crbug.com/327680567): Ensure the pdf page is opened in the intended window.
-        // TODO(https://crbug.com/378149358): Support filepath which is not content uri.
         if (PdfUtils.shouldOpenPdfInline(isIncognito)
-                && newMimeType.equals(MimeTypeUtils.PDF_MIME_TYPE)
-                && ContentUriUtils.isContentUri(filePath)) {
-            LoadUrlParams params = new LoadUrlParams(PdfUtils.encodePdfPageUrl(filePath));
+                && newMimeType.equals(MimeTypeUtils.PDF_MIME_TYPE)) {
+            String fileUri = getUriForItem(filePath).toString();
+            LoadUrlParams params = new LoadUrlParams(PdfUtils.encodePdfPageUrl(fileUri));
             ChromeAsyncTabLauncher delegate = new ChromeAsyncTabLauncher(isIncognito);
             delegate.launchNewTab(params, TabLaunchType.FROM_CHROME_UI, /* parent= */ null);
             return;

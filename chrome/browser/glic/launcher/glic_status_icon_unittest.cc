@@ -123,10 +123,12 @@ class GlicStatusIconTest : public testing::Test {
   base::HistogramTester histogram_;
 };
 
+#if !BUILDFLAG(IS_LINUX)
 TEST_F(GlicStatusIconTest, OnStatusIconClicked) {
   EXPECT_CALL(*glic_controller(), Show).Times(1);
   status_icon()->DispatchClickEvent();
 }
+#endif
 
 TEST_F(GlicStatusIconTest, ExecuteCommand) {
   EXPECT_CALL(*glic_controller(), Show).Times(1);

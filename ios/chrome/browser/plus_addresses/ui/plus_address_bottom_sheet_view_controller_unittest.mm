@@ -119,8 +119,6 @@ TEST_F(PlusAddressBottomSheetViewControllerTest, ConfirmButtonTapped) {
 // plus_address and collects notice-specific metrics.
 TEST_F(PlusAddressBottomSheetViewControllerTest,
        ConfirmButtonTappedWithNoticeShown) {
-  base::test::ScopedFeatureList feature_list{
-      plus_addresses::features::kPlusAddressUserOnboardingEnabled};
   OCMStub([delegate_ shouldShowNotice]).andReturn(YES);
 
   [view_controller_ loadViewIfNeeded];

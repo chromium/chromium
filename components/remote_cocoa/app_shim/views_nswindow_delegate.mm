@@ -108,7 +108,7 @@
   // Cocoa should already have sent an (unexpected) windowDidExitFullScreen:
   // notification, and the attempt to get back into fullscreen should fail.
   // Nothing to do except verify |parent_| is no longer trying to fullscreen.
-  CHECK(!_parent->target_fullscreen_state());
+  DCHECK(!_parent->target_fullscreen_state());
 }
 
 - (void)windowDidFailToExitFullScreen:(NSWindow*)window {
@@ -116,7 +116,7 @@
   // windowDidExitFullScreen:. Also, failing to exit fullscreen just dumps the
   // window out of fullscreen without an animation; still sending the expected,
   // windowDidExitFullScreen: notification. So, again, nothing to do here.
-  CHECK(!_parent->target_fullscreen_state());
+  DCHECK(!_parent->target_fullscreen_state());
 }
 
 - (void)setAspectRatio:(float)aspectRatio

@@ -134,7 +134,7 @@ If the result is not empty, it's passed through the AcceptCHFrameObserver mojo p
 
 Any storage related to an incognito mode profile is cleared when the last incognito tab is closed, including client hint preferences.
 
-### `--initial-client-hint-storage` Command Line Switch
+### `--initialize-client-hints-storage` Command Line Switch
 
 A command line flag is available for testing to pre-populate the Accept-CH cache. It takes a json dictionary, where each key is an origin and each value is a string in the same format as the Accept-CH response header.
 
@@ -145,7 +145,7 @@ Each new profile will include these pre-populated preferences *except* for "Off 
 An example use might be:
 
 ```
-out/default/chrome --initial-client-hint-storage="{\"https://a.test\":\"Sec-CH-UA-Full-Version\", \"https://b.test\":\"Sec-CH-UA-Model\"}"
+out/default/chrome --initialize-client-hints-storage="{\"https://a.test\":\"Sec-CH-UA-Full-Version\", \"https://b.test\":\"Sec-CH-UA-Model\"}"
 ```
 
 ## Adding a new hint

@@ -29,6 +29,7 @@ void SupervisedUserWebContentHandlerImpl::RequestLocalApproval(
     const GURL& url,
     const std::u16string& child_display_name,
     const supervised_user::UrlFormatter& url_formatter,
+    const supervised_user::FilteringBehaviorReason& filtering_reason,
     ApprovalRequestInitiatedCallback callback) {
   CHECK(base::FeatureList::IsEnabled(supervised_user::kLocalWebApprovals));
   CHECK(web_contents_);
@@ -41,7 +42,8 @@ void SupervisedUserWebContentHandlerImpl::RequestLocalApproval(
       target_url);
 
   weak_parent_access_view_ = ParentAccessView::ShowParentAccessDialog(
-      web_contents_, target_url, std::move(create_observer_callback));
+      web_contents_, target_url, filtering_reason,
+      std::move(create_observer_callback));
 
   // Runs the `callback` to inform the caller that the flow initiation was
   // successful.

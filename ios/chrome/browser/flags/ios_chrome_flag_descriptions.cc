@@ -139,12 +139,6 @@ const char kAutofillIsolatedWorldForJavascriptIOSDescription[] =
     "Use the isolated content world instead of the page content world "
     "for the Autofill JS feature scripts.";
 
-const char kAutofillParseVcnCardOnFileStandaloneCvcFieldsName[] =
-    "Parse standalone CVC fields for VCN card on file in forms";
-const char kAutofillParseVcnCardOnFileStandaloneCvcFieldsDescription[] =
-    "When enabled, Autofill will attempt to find standalone CVC fields for VCN "
-    "card on file when parsing forms.";
-
 const char kAutofillPaymentsSheetV2Name[] =
     "Enable the payments suggestion bottom sheet V2";
 const char kAutofillPaymentsSheetV2Description[] =
@@ -210,6 +204,12 @@ const char kAutofillVcnEnrollRequestTimeoutDescription[] =
     "When enabled, sets a client-side timeout on the Autofill credit card "
     "VCN enrollment request. Upon timeout, the client will terminate the VCN "
     "enrollment UI, but the request may still succeed server-side.";
+
+const char kBlueDotOnToolsMenuButtonName[] =
+    "Show blue dot promo on tools menu button";
+const char kBlueDotOnToolsMenuButtonDescription[] =
+    "When enabled, blue dot promo on tools menu button will be displayed to "
+    "user";
 
 const char kBottomOmniboxDefaultSettingName[] =
     "Bottom Omnibox Default Setting";
@@ -369,11 +369,12 @@ const char kDefaultBrowserTriggerCriteriaExperimentDescription[] =
     "When enabled, default browser promo will be displayed to user without "
     "matching all the trigger criteria.";
 
-const char kBlueDotOnToolsMenuButtonName[] =
-    "Show blue dot promo on tools menu button";
-const char kBlueDotOnToolsMenuButtonDescription[] =
-    "When enabled, blue dot promo on tools menu button will be displayed to "
-    "user";
+const char kDeprecateFeedHeaderExperimentName[] =
+    "Deprecate feed header toggle experiment";
+const char kDeprecateFeedHeaderExperimentDescription[] =
+    "When enabled, the feed header toggle would be removed, and users will use "
+    "other ways to access the following feed. New tab page elements will also "
+    "be repositioned according to the variation chosen.";
 
 const char kDetectMainThreadFreezeName[] = "Detect freeze in the main thread.";
 const char kDetectMainThreadFreezeDescription[] =
@@ -591,14 +592,6 @@ const char kIOSDockingPromoName[] = "Docking Promo";
 const char kIOSDockingPromoDescription[] =
     "When enabled, the user will be presented an animated, instructional "
     "promo showing how to move Chrome to their native iOS dock.";
-
-const char kIOSNewFollowingFeedEntryPointsName[] =
-    "New Following Feed Entry Points [iOS only]";
-const char kIOSNewFollowingFeedEntryPointsDescription[] =
-    "When enabled, users eligible for query follow enter the following feed "
-    "through Homestack/query picker/first following cluster, instead of the "
-    "existing toggle on the top of the feeds. No changes for users ineligible "
-    "for query follow.";
 
 extern const char kIOSEnableDeleteAllSavedCredentialsName[] =
     "Enable delete all saved credentials in PWM";

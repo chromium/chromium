@@ -69,6 +69,9 @@
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
+#include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
@@ -754,6 +757,45 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
     controller->CloseUIAsync(dismissal_source);
     ASSERT_TRUE(base::test::RunUntil(
         [&]() { return controller->state() == State::kOff; }));
+  }
+
+  // Helper to get a test context menu on the active tab.
+  std::unique_ptr<TestRenderViewContextMenu> GetContextMenu() {
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    return TestRenderViewContextMenu::Create(web_contents,
+                                             web_contents->GetURL());
+  }
+
+  void VerifyEntrypoints(bool expected_visible) {
+    // Verify context menu entrypoint matches expected visibility.
+    EXPECT_EQ(expected_visible, GetContextMenu()->IsItemPresent(
+                                    IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH));
+
+    // Verify omnibox (location bar) icon matches expected visibility.
+    auto* location_bar =
+        BrowserView::GetBrowserViewForBrowser(browser())->GetLocationBarView();
+    location_bar->omnibox_view()->RequestFocus();
+    location_bar->page_action_icon_controller()->UpdateAll();
+
+    auto* omnibox_entrypoint =
+        location_bar->page_action_icon_controller()->GetIconView(
+            PageActionIconType::kLensOverlay);
+    ASSERT_TRUE(base::test::RunUntil(
+        [&]() { return omnibox_entrypoint->GetVisible() == expected_visible; }));
+
+    // Verify three dot menu entrypoint matches expected visibility.
+    EXPECT_EQ(expected_visible,
+              browser()->command_controller()->IsCommandEnabled(
+                  IDC_CONTENT_CONTEXT_LENS_OVERLAY));
+
+    // Verify toolbar entrypoint is always enabled and visible.
+    actions::ActionItem* toolbar_entry_point =
+        actions::ActionManager::Get().FindAction(
+            kActionSidePanelShowLensOverlayResults,
+            browser()->browser_actions()->root_action_item());
+    EXPECT_TRUE(toolbar_entry_point->GetVisible());
+    EXPECT_TRUE(toolbar_entry_point->GetEnabled());
   }
 
  protected:
@@ -1923,7 +1965,14 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // Open a side panel to test that the side panel persists between tab
   // switches.
-  controller->results_side_panel_coordinator()->RegisterEntryAndShow();
+  controller->IssueTextSelectionRequestForTesting("test query",
+                                                  /*selection_start_index=*/0,
+                                                  /*selection_end_index=*/0);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlayAndResults; }));
+
+
+  // Verify the side panel is showing.
   auto* coordinator = browser()->GetFeatures().side_panel_coordinator();
   EXPECT_TRUE(coordinator->IsSidePanelShowing());
   EXPECT_EQ(coordinator->GetCurrentEntryId(),
@@ -4193,6 +4242,56 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, EnterprisePolicy) {
                   ->GetFeatures()
                   .lens_overlay_entry_point_controller()
                   ->IsEnabled());
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       OverlayHidesEntrypoints) {
+  WaitForPaint();
+
+  // State should start in off.
+  auto* controller = GetLensOverlayController();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Verify the entrypoints are enabled.
+  VerifyEntrypoints(/*expected_visible=*/true);
+
+  // Open the overlay.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+
+  // Verify the entrypoints are hidden.
+  VerifyEntrypoints(/*expected_visible=*/false);
+
+  // Grab the index of the currently active tab so we can return to it later.
+  int active_controller_tab_index =
+      browser()->tab_strip_model()->active_index();
+
+  // Switch to a new tab.
+  WaitForPaint(kDocumentWithNamedElement,
+               WindowOpenDisposition::NEW_FOREGROUND_TAB,
+               ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB |
+                   ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kBackground; }));
+
+  // Verify the entrypoints are visible again.
+  VerifyEntrypoints(/*expected_visible=*/true);
+
+  // Switch back to the original tab.
+  browser()->tab_strip_model()->ActivateTabAt(active_controller_tab_index);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+
+  // Verify the entrypoints are hidden again.
+  VerifyEntrypoints(/*expected_visible=*/false);
+
+  // Close the overlay.
+  CloseOverlayAndWaitForOff(controller,
+                            LensOverlayDismissalSource::kOverlayCloseButton);
+
+  // Verify the entrypoints are visible again.
+  VerifyEntrypoints(/*expected_visible=*/true);
 }
 
 // TODO(crbug.com/350292135): Flaky on all platforms. Re-enable once flakiness

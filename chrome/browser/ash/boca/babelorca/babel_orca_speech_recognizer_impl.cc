@@ -6,10 +6,9 @@
 
 #include <optional>
 
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/accessibility/live_caption/live_caption_controller_factory.h"
 #include "chrome/browser/ash/accessibility/live_caption/system_live_caption_service.h"
-#include "chrome/browser/speech/speech_recognition_client_browser_interface.h"
-#include "chrome/browser/speech/speech_recognition_client_browser_interface_factory.h"
 #include "chromeos/ash/components/boca/babelorca/babel_orca_speech_recognizer.h"
 #include "chromeos/ash/components/boca/babelorca/speech_recognition_event_handler.h"
 #include "components/live_caption/live_caption_controller.h"
@@ -19,13 +18,21 @@
 
 namespace ash::babelorca {
 
-BabelOrcaSpeechRecognizerImpl::BabelOrcaSpeechRecognizerImpl(Profile* profile)
+BabelOrcaSpeechRecognizerImpl::BabelOrcaSpeechRecognizerImpl(
+    Profile* profile,
+    PrefService* global_prefs,
+    const std::string& application_locale)
     : ash::SystemLiveCaptionService(
           profile,
           ash::SystemLiveCaptionService::AudioSource::kUserMicrophone),
-      speech_recognition_event_handler_(
-          prefs::GetUserMicrophoneCaptionLanguage(profile->GetPrefs())),
-      primary_profile_(profile) {}
+      soda_installer_(global_prefs, profile->GetPrefs(), application_locale),
+      speech_recognition_event_handler_(application_locale),
+      primary_profile_(profile) {
+  // TODO(384026579): Notify Producer of error, then retry or alert user.
+  // We pass DoNothing here as there is no error reporting mechanism and
+  // we don't want to start speech recognition until Start is called.
+  soda_installer_.GetAvailabilityOrInstall(base::DoNothing());
+}
 BabelOrcaSpeechRecognizerImpl::~BabelOrcaSpeechRecognizerImpl() = default;
 
 void BabelOrcaSpeechRecognizerImpl::OnSpeechResult(
@@ -41,17 +48,16 @@ void BabelOrcaSpeechRecognizerImpl::OnLanguageIdentificationEvent(
 }
 
 void BabelOrcaSpeechRecognizerImpl::Start() {
-  SpeechRecognitionClientBrowserInterfaceFactory::GetForProfile(
-      primary_profile_)
-      ->ChangeBabelOrcaSpeechRecognitionAvailability(true);
+  // TODO(384026579): Notify Producer of error, then retry or alert user.
+  soda_installer_.GetAvailabilityOrInstall(base::BindOnce(
+      &SystemLiveCaptionService::SpeechRecognitionAvailabilityChanged,
+      service_ptr_factory_.GetWeakPtr()));
   ::captions::LiveCaptionControllerFactory::GetForProfile(primary_profile_)
       ->ToggleLiveCaptionForBabelOrca(true);
 }
 
 void BabelOrcaSpeechRecognizerImpl::Stop() {
-  SpeechRecognitionClientBrowserInterfaceFactory::GetForProfile(
-      primary_profile_)
-      ->ChangeBabelOrcaSpeechRecognitionAvailability(false);
+  SpeechRecognitionAvailabilityChanged(false);
   ::captions::LiveCaptionControllerFactory::GetForProfile(primary_profile_)
       ->ToggleLiveCaptionForBabelOrca(false);
 }

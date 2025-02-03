@@ -1987,7 +1987,7 @@ const KNOWN_SCREENS: ScreenDefType[] = [
 
 class DebugButton {
   constructor(parent: HTMLElement, title: string, callback: () => void) {
-    this.element = (document.createElement('div')) as HTMLDivElement;
+    this.element = document.createElement('div');
     this.element.textContent = title;
 
     this.element.className = 'debug-tool-button';
@@ -2002,7 +2002,7 @@ class DebugButton {
     this.postCallback_ = () => DebuggerUi.getInstance().hideDebugUi();
   }
 
-  element: HTMLDivElement;
+  element: HTMLElement;
   private callback_: (() => void);
   private postCallback_: (() => void);
 
@@ -2018,10 +2018,10 @@ class DebugButton {
 
 class ToolPanel {
   constructor(parent: HTMLElement|undefined, title: string, id: string) {
-    this.titleDiv = (document.createElement('h2')) as HTMLHeadingElement;
+    this.titleDiv = document.createElement('h2');
     this.titleDiv.textContent = title;
 
-    const panel = (document.createElement('div')) as HTMLDivElement;
+    const panel = document.createElement('div');
     panel.className = 'debug-tool-panel';
     panel.id = id;
     panel.setAttribute('aria-hidden', 'true');
@@ -2033,7 +2033,7 @@ class ToolPanel {
   }
 
   private titleDiv: HTMLHeadingElement;
-  content: HTMLDivElement;
+  content: HTMLElement;
 
   show(): void {
     this.titleDiv.removeAttribute('hidden');
@@ -2077,8 +2077,8 @@ export class DebuggerUi {
   }
 
   private debuggerVisible_: boolean;
-  private debuggerOverlay_: HTMLDivElement|undefined;
-  private debuggerButton_: HTMLDivElement|undefined;
+  private debuggerOverlay_: HTMLElement|undefined;
+  private debuggerButton_: HTMLElement|undefined;
   private screensPanel: ToolPanel|undefined;
   private screenButtons: Record<string, DebugButton>;
   private statesPanel: ToolPanel|undefined;
@@ -2526,7 +2526,7 @@ export class DebuggerUi {
   }
 
   private createCssStyle(name: string, styleSpec: string): void {
-    const style = document.createElement('style') as HTMLStyleElement;
+    const style = document.createElement('style');
     style.innerHTML = sanitizeInnerHtml('.' + name + ' {' + styleSpec + '}');
     document.getElementsByTagName('head')[0].appendChild(style);
   }
@@ -2548,7 +2548,7 @@ export class DebuggerUi {
     }
     {
       // Create UI Debugger button
-      const button = document.createElement('div') as HTMLDivElement;
+      const button = document.createElement('div');
       button.id = 'invokeDebuggerButton';
       button.className = 'debugger-button';
       button.textContent = 'Debug';
@@ -2559,7 +2559,7 @@ export class DebuggerUi {
     }
     {
       // Create base debugger panel.
-      const overlay = (document.createElement('div')) as HTMLDivElement;
+      const overlay = document.createElement('div');
       overlay.id = 'debuggerOverlay';
       overlay.className = 'debugger-overlay';
       overlay.setAttribute('hidden', 'true');

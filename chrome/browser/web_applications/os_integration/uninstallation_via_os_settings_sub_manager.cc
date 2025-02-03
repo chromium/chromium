@@ -16,7 +16,6 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
-#include "chrome/browser/win/uninstallation_via_os_settings.h"
 
 namespace web_app {
 

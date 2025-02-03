@@ -1962,6 +1962,12 @@ std::string SerializeURTLookupPing(const URTLookupRequest& ping) {
 
   request_dict.Set("os", RTLookupRequest_OSType_Name(request.os_type()));
 
+  base::Value::List local_ips;
+  for (const std::string& local_ip : request.local_ips()) {
+    local_ips.Append(local_ip);
+  }
+  request_dict.Set("local_ips", std::move(local_ips));
+
   base::Value::List referrer_chain;
   for (const auto& referrer_chain_entry : request.referrer_chain()) {
     referrer_chain.Append(SerializeReferrer(referrer_chain_entry));
@@ -2130,6 +2136,11 @@ std::string SerializeContentAnalysisRequest(
   request_dict.Set("reason",
                    enterprise_connectors::ContentAnalysisRequest_Reason_Name(
                        request.reason()));
+  base::Value::List local_ips;
+  for (const std::string& local_ip : request.local_ips()) {
+    local_ips.Append(local_ip);
+  }
+  request_dict.Set("local_ips", std::move(local_ips));
 
   if (request.has_request_data()) {
     base::Value::Dict request_data;

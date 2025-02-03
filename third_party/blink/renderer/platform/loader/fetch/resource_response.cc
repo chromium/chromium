@@ -42,7 +42,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_timing.h"
 #include "third_party/blink/renderer/platform/loader/fetch/service_worker_router_info.h"
-#include "third_party/blink/renderer/platform/loader/identity_digest.h"
+#include "third_party/blink/renderer/platform/loader/unencoded_digest.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -54,15 +54,13 @@ namespace blink {
 
 namespace {
 
-constexpr auto kSupportedContentEncodingsValues =
+constexpr auto kSupportedContentEncodingValues =
     base::MakeFixedFlatSet<std::string_view>({
-        "",
         "br",
         "dcb",
         "dcz",
         "deflate",
         "gzip",
-        "identity",
         "zstd",
     });
 
@@ -436,11 +434,11 @@ std::optional<base::Time> ResourceResponse::LastModified(
   return last_modified_;
 }
 
-std::optional<IdentityDigest> ResourceResponse::IdentityDigest() const {
-  if (!RuntimeEnabledFeatures::IdentityDigestEnabled()) {
+std::optional<UnencodedDigest> ResourceResponse::UnencodedDigest() const {
+  if (!RuntimeEnabledFeatures::UnencodedDigestEnabled()) {
     return std::nullopt;
   }
-  return IdentityDigest::Create(HttpHeaderFields());
+  return UnencodedDigest::Create(HttpHeaderFields());
 }
 
 bool ResourceResponse::IsAttachment() const {
@@ -459,13 +457,16 @@ AtomicString ResourceResponse::HttpContentType() const {
 }
 
 AtomicString ResourceResponse::GetFilteredHttpContentEncoding() const {
-  AtomicString content_encoding =
+  String content_encoding =
       HttpHeaderField(http_names::kContentEncoding).LowerASCII();
-  if (content_encoding.IsNull()) {
+  if (content_encoding.IsNull() || content_encoding.empty()) {
     return g_empty_atom;
   }
-  if (kSupportedContentEncodingsValues.contains(content_encoding.Ascii())) {
-    return content_encoding;
+  if (kSupportedContentEncodingValues.contains(content_encoding.Ascii())) {
+    return AtomicString(content_encoding);
+  }
+  if (content_encoding.find(',') != kNotFound) {
+    return AtomicString("multiple");
   }
   return AtomicString("unknown");
 }

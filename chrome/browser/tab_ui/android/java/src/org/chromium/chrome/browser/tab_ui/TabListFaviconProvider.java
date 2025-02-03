@@ -272,7 +272,7 @@ public class TabListFaviconProvider {
 
     private boolean mIsInitialized;
     private Profile mProfile;
-    private FaviconHelper mFaviconHelper;
+    private @Nullable FaviconHelper mFaviconHelper;
 
     /**
      * Construct the provider that provides favicons for tab list.
@@ -327,6 +327,7 @@ public class TabListFaviconProvider {
     public void destroy() {
         if (mFaviconHelper != null) {
             mFaviconHelper.destroy();
+            mFaviconHelper = null;
         }
     }
 
@@ -494,8 +495,11 @@ public class TabListFaviconProvider {
         GURL tabUrl = tab.getUrl();
 
         // Case 1: NTP specialization.
-        if (mFaviconHelper == null || UrlUtilities.isNtpUrl(tabUrl)) {
+        if (UrlUtilities.isNtpUrl(tabUrl)) {
             faviconCallback.onResult(getRoundedChromeFavicon(isIncognito));
+            return;
+        } else if (mFaviconHelper == null) {
+            faviconCallback.onResult(getRoundedGlobeFavicon(isIncognito));
             return;
         }
 
@@ -567,6 +571,10 @@ public class TabListFaviconProvider {
     private void getComposedFaviconImageAsync(
             List<GURL> urls, boolean isIncognito, Callback<TabFavicon> faviconCallback) {
         assert urls != null && urls.size() > 1 && urls.size() <= 4;
+        if (mFaviconHelper == null) {
+            faviconCallback.onResult(getRoundedGlobeFavicon(isIncognito));
+            return;
+        }
         mFaviconHelper.getComposedFaviconImage(
                 getProfile(isIncognito),
                 urls,

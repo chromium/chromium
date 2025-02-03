@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/test/bind.h"
-#include "chromeos/ash/components/boca/babelorca/speech_recognition_event_handler.h"
 #include "media/mojo/mojom/speech_recognition.mojom.h"
 #include "media/mojo/mojom/speech_recognition_result.h"
 #include "testing/gtest/include/gtest/gtest.h"

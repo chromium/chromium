@@ -177,6 +177,8 @@ String IgnoredReasonName(AXIgnoredReason reason) {
       return "inertElement";
     case kAXInertSubtree:
       return "inertSubtree";
+    case kAXInertStyle:
+      return "inertStyle";
     case kAXLabelContainer:
       return "labelContainer";
     case kAXLabelFor:
@@ -3876,38 +3878,54 @@ bool AXObject::ComputeIsInertViaStyle(const ComputedStyle* style,
                : false;
   }
   // TODO(szager): This method is n^2 -- it recurses into itself via
-  // ComputeIsInert(), and InertRoot() does as well.
+  // ComputeIsInert(), and InertRoot() does as well. This is only the case if
+  // CSSInert runtime flag is disabled.
   if (style) {
     if (style->IsInert()) {
       if (ignored_reasons) {
-        const AXObject* ax_inert_root = InertRoot();
-        if (ax_inert_root == this) {
-          ignored_reasons->push_back(IgnoredReason(kAXInertElement));
-          return true;
-        }
-        if (ax_inert_root) {
-          ignored_reasons->push_back(
-              IgnoredReason(kAXInertSubtree, ax_inert_root));
-          return true;
-        }
-        // If there is no inert root, inertness must have been set by a modal
-        // dialog or a fullscreen element (see AdjustStyleForInert).
-        Document& document = GetNode()->GetDocument();
-        if (HTMLDialogElement* dialog = document.ActiveModalDialog()) {
-          if (AXObject* dialog_object = AXObjectCache().Get(dialog)) {
-            ignored_reasons->push_back(
-                IgnoredReason(kAXActiveModalDialog, dialog_object));
+        if (!RuntimeEnabledFeatures::CSSInertEnabled()) {
+          // With CSSInert disabled, the inert attribute causes the style to be
+          // IsHTMLInert. With CSSInert enabled, the inert attribute instead has
+          // a UA style rule that sets the interactivity property, which
+          // cascades along interactivity declarations from other sources, so it
+          // does not make sense to look for InertRoot() separately. The
+          // interactivity value is handled generally where kAXInertStyle is
+          // pushed below.
+          const AXObject* ax_inert_root = InertRoot();
+          if (ax_inert_root == this) {
+            ignored_reasons->push_back(IgnoredReason(kAXInertElement));
             return true;
           }
-        } else if (Element* fullscreen =
-                       Fullscreen::FullscreenElementFrom(document)) {
-          if (AXObject* fullscreen_object = AXObjectCache().Get(fullscreen)) {
+          if (ax_inert_root) {
             ignored_reasons->push_back(
-                IgnoredReason(kAXActiveFullscreenElement, fullscreen_object));
+                IgnoredReason(kAXInertSubtree, ax_inert_root));
             return true;
           }
         }
-        ignored_reasons->push_back(IgnoredReason(kAXInertElement));
+        if (style->IsHTMLInert()) {
+          // HTML inertness is either forced by a modal dialog or a fullscreen
+          // element (see AdjustStyleForInert).
+          Document& document = GetNode()->GetDocument();
+          if (HTMLDialogElement* dialog = document.ActiveModalDialog()) {
+            if (AXObject* dialog_object = AXObjectCache().Get(dialog)) {
+              ignored_reasons->push_back(
+                  IgnoredReason(kAXActiveModalDialog, dialog_object));
+              return true;
+            }
+          } else if (Element* fullscreen =
+                         Fullscreen::FullscreenElementFrom(document)) {
+            if (AXObject* fullscreen_object = AXObjectCache().Get(fullscreen)) {
+              ignored_reasons->push_back(
+                  IgnoredReason(kAXActiveFullscreenElement, fullscreen_object));
+              return true;
+            }
+          }
+        }
+        if (RuntimeEnabledFeatures::CSSInertEnabled()) {
+          // Inertness set by interactivity:inert
+          ignored_reasons->push_back(IgnoredReason(kAXInertStyle));
+          return true;
+        }
       }
       return true;
     } else if (IsBlockedByAriaModalDialog(ignored_reasons)) {
@@ -3928,21 +3946,32 @@ bool AXObject::ComputeIsInertViaStyle(const ComputedStyle* style,
 
   // Either GetNode() is null, or it's locked by content-visibility, or we
   // failed to obtain a ComputedStyle. Make a guess iterating the ancestors.
-  if (const AXObject* ax_inert_root = InertRoot()) {
-    if (ignored_reasons) {
-      if (ax_inert_root == this) {
-        ignored_reasons->push_back(IgnoredReason(kAXInertElement));
-      } else {
-        ignored_reasons->push_back(
-            IgnoredReason(kAXInertSubtree, ax_inert_root));
+  if (!RuntimeEnabledFeatures::CSSInertEnabled()) {
+    // See the comment for the InertRoot() when style is non-null. Looking at
+    // elements with the inert attribute inside a non-rendered subtree does not
+    // make sense on its own as the inertness of that element could be affected
+    // by interactivity declarations that would have applied to the style if it
+    // was computed. Instead we traverse to ancestor at the end of this function
+    // to find the closest ancestor with a ComputedStyle where we can check the
+    // computed interactivity.
+    if (const AXObject* ax_inert_root = InertRoot()) {
+      if (ignored_reasons) {
+        if (ax_inert_root == this) {
+          ignored_reasons->push_back(IgnoredReason(kAXInertElement));
+        } else {
+          ignored_reasons->push_back(
+              IgnoredReason(kAXInertSubtree, ax_inert_root));
+        }
       }
+      return true;
     }
-    return true;
-  } else if (IsBlockedByAriaModalDialog(ignored_reasons)) {
+  }
+  if (IsBlockedByAriaModalDialog(ignored_reasons)) {
     if (ignored_reasons)
       ignored_reasons->push_back(IgnoredReason(kAXAriaModalDialog));
     return true;
-  } else if (GetNode()) {
+  }
+  if (GetNode()) {
     if (const LocalFrame* frame = GetNode()->GetDocument().GetFrame()) {
       // Inert frames don't expose the inertness to the style of their contents,
       // but accessibility should consider them inert anyways.

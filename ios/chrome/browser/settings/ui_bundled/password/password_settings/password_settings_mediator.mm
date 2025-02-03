@@ -398,8 +398,15 @@ bool IsCredentialLocalPassword(const CredentialUIEntry& credential) {
 // Pushes the current state of the credential deletion button to the consumer
 // and update its delete all data button.
 - (void)pushDeleteStateToConsumerAndUpdate {
-  [self.consumer setCanDeleteAllCredentials:self.hasSavedPasswords];
-  [self.consumer updateDeleteAllCredentialsSection];
+  if (_savedPasswordsPresenter) {
+    [self.consumer
+        setCanDeleteAllCredentials:!_savedPasswordsPresenter
+                                        ->GetSavedCredentials()
+                                        .empty() ||
+                                   !_savedPasswordsPresenter->GetBlockedSites()
+                                        .empty()];
+    [self.consumer updateDeleteAllCredentialsSection];
+  }
 }
 
 // Pushes the current state of the exporter to the consumer and updates its

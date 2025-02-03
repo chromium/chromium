@@ -4,10 +4,12 @@
 
 package org.chromium.components.tab_group_sync;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import org.chromium.build.annotations.EnsuresNonNullIf;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** Contains an object of either local ID or sync GUID, never both. */
+@NullMarked
 public class EitherId {
 
     /** The ID type for tab IDs. */
@@ -30,7 +32,7 @@ public class EitherId {
             return new EitherTabId(localId, null);
         }
 
-        public static EitherTabId createSyncId(@NonNull String syncId) {
+        public static EitherTabId createSyncId(String syncId) {
             assert syncId != null;
             return new EitherTabId(INVALID_TAB_ID, syncId);
         }
@@ -47,7 +49,7 @@ public class EitherId {
 
     /** The ID type for tab group IDs. */
     public static class EitherGroupId extends EitherId {
-        private final LocalTabGroupId mLocalId;
+        private final @Nullable LocalTabGroupId mLocalId;
 
         // Must provide either localId or syncId.
         private EitherGroupId(@Nullable LocalTabGroupId localId, @Nullable String syncId) {
@@ -55,12 +57,12 @@ public class EitherId {
             mLocalId = localId;
         }
 
-        public static EitherGroupId createLocalId(@NonNull LocalTabGroupId localId) {
+        public static EitherGroupId createLocalId(LocalTabGroupId localId) {
             assert localId != null;
             return new EitherGroupId(localId, null);
         }
 
-        public static EitherGroupId createSyncId(@NonNull String syncId) {
+        public static EitherGroupId createSyncId(String syncId) {
             assert syncId != null;
             return new EitherGroupId(null, syncId);
         }
@@ -69,24 +71,23 @@ public class EitherId {
             return mLocalId != null;
         }
 
-        @NonNull
-        public LocalTabGroupId getLocalId() {
+        public @Nullable LocalTabGroupId getLocalId() {
             assert isLocalId();
             return mLocalId;
         }
     }
 
-    @Nullable private final String mSyncId;
+    private final @Nullable String mSyncId;
 
     private EitherId(@Nullable String syncId) {
         mSyncId = syncId;
     }
 
+    @EnsuresNonNullIf("mSyncId")
     public boolean isSyncId() {
         return mSyncId != null;
     }
 
-    @NonNull
     public String getSyncId() {
         assert isSyncId();
         return mSyncId;

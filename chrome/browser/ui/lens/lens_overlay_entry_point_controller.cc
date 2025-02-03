@@ -154,6 +154,29 @@ bool LensOverlayEntryPointController::IsEnabled() {
   return phys_mem_mb > lens::features::GetLensOverlayMinRamMb();
 }
 
+bool LensOverlayEntryPointController::AreVisible() {
+  return IsEnabled() && !IsOverlayActive();
+}
+
+void LensOverlayEntryPointController::UpdateEntryPointsState(
+    bool hide_toolbar_entrypoint) {
+  const bool enabled = IsEnabled();
+  const bool visible = AreVisible();
+
+  // Update the 3 dot menu entry point.
+  command_updater_->UpdateCommandEnabled(IDC_CONTENT_CONTEXT_LENS_OVERLAY,
+                                         visible);
+
+  // Update the pinnable toolbar entry point. Toolbar entry point is always
+  // present, therefore, ignore the visibility check.
+  if (auto* const toolbar_entry_point = GetToolbarEntrypoint()) {
+    toolbar_entry_point->SetEnabled(enabled);
+    if (hide_toolbar_entrypoint) {
+      toolbar_entry_point->SetVisible(enabled);
+    }
+  }
+}
+
 // static
 void LensOverlayEntryPointController::InvokeAction(
     tabs::TabInterface* active_tab,
@@ -235,23 +258,6 @@ void LensOverlayEntryPointController::OnTemplateURLServiceShuttingDown() {
   template_url_service_observation_.Reset();
 }
 
-void LensOverlayEntryPointController::UpdateEntryPointsState(
-    bool hide_if_needed) {
-  const bool enabled = IsEnabled();
-
-  // Update the 3 dot menu entry point.
-  command_updater_->UpdateCommandEnabled(IDC_CONTENT_CONTEXT_LENS_OVERLAY,
-                                         enabled);
-
-  // Update the pinnable toolbar entry point
-  if (auto* const toolbar_entry_point = GetToolbarEntrypoint()) {
-    toolbar_entry_point->SetEnabled(enabled);
-    if (hide_if_needed) {
-      toolbar_entry_point->SetVisible(enabled);
-    }
-  }
-}
-
 actions::ActionItem* LensOverlayEntryPointController::GetToolbarEntrypoint() {
   return actions::ActionManager::Get().FindAction(
       kActionSidePanelShowLensOverlayResults,
@@ -322,5 +328,14 @@ void LensOverlayEntryPointController::UpdatePageActionState() {
   // TODO(crbug.com/376283383): We should always use the chip state once that's
   // implemented.
   page_action_controller->Show(page_action_id);
+}
+
+bool LensOverlayEntryPointController::IsOverlayActive() {
+  auto* active_tab = browser_window_interface_->GetActiveTabInterface();
+  if (!active_tab) {
+    return false;
+  }
+  auto* controller = active_tab->GetTabFeatures()->lens_overlay_controller();
+  return controller && controller->IsOverlayActive();
 }
 }  // namespace lens

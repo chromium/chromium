@@ -19,6 +19,9 @@ BASE_DECLARE_FEATURE(kDataSharingFeature);
 BASE_DECLARE_FEATURE(kDataSharingJoinOnly);
 
 extern const base::FeatureParam<std::string> kDataSharingURL;
+extern const base::FeatureParam<std::string> kLearnMoreSharedTabGroupPageURL;
+extern const base::FeatureParam<std::string> kLearnAboutBlockedAccountsURL;
+extern const base::FeatureParam<std::string> kActivityLogsURL;
 
 // Controls how often the group data should be polled from the server in the
 // absence of any other updates (such as upon receiving a CollaboratioGroup

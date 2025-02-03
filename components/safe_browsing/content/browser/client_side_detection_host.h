@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include <map>
 #include <memory>
 #include <optional>
 #include <string>
@@ -183,6 +184,12 @@ class ClientSideDetectionHost
   FRIEND_TEST_ALL_PREFIXES(
       ClientSideDetectionHostTest,
       FullscreenApiCallChecksAllowlistInPreClassificationAndDoesNotProceedWithClassification);
+  FRIEND_TEST_ALL_PREFIXES(
+      ClientSideDetectionHostTest,
+      TwoFullscreenApiTriggersOnSamePageOnlyLogsOnePreclassificationCheck);
+  FRIEND_TEST_ALL_PREFIXES(
+      ClientSideDetectionHostTest,
+      TwoKeyboardLockRequestsOnSamePageOnlyLogsOnePreclassificationCheck);
   FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostVibrateTest,
                            VibrationApiTriggersPreclassificationCheck);
   FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostVibrateTest,
@@ -337,6 +344,11 @@ class ClientSideDetectionHost
       std::optional<bool> did_match_high_confidence_allowlist,
       std::optional<optimization_guide::proto::ScamDetectionResponse> response);
 
+  // Returns bool if for a |client_side_detection_Type|, the last URL is the
+  // same as the last committed URL on the RenderFrameHost.
+  bool HasDonePreclassificationCheckOnSameURL(
+      ClientSideDetectionType client_side_detection_type);
+
   // This pointer may be nullptr if client-side phishing detection is
   // disabled.
   base::WeakPtr<ClientSideDetectionService> csd_service_;
@@ -396,6 +408,11 @@ class ClientSideDetectionHost
   // Modified through tests only. Initial value is set to the const
   // kProbabilityForAcceptingHCAllowlistTrigger.
   float probability_for_accepting_hc_allowlist_trigger_;
+
+  // This map is used to track the last committed URL per
+  // ClientSideDetectionType. This is because for some ClientSideDetectionType,
+  // it can be triggered at a frequent basis per same URL.
+  base::flat_map<ClientSideDetectionType, GURL> last_committed_url_map_;
 
   base::ScopedObservation<AsyncCheckTracker, AsyncCheckTracker::Observer>
       async_check_observation_{this};

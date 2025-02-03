@@ -61,7 +61,7 @@ export interface OsAboutPageElement {
     productLogo: HTMLImageElement,
     regulatoryInfo: HTMLElement,
     relaunchButton: CrButtonElement,
-    updateStatusMessageInner: HTMLDivElement,
+    updateStatusMessageInner: HTMLElement,
   };
 }
 

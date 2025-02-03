@@ -195,7 +195,7 @@ class ServerStartedTest(unittest.TestCase):
     self.waitForTasksDone()
     proc_result = callServer(['--wait-for-idle'])
     self.assertIn('All', proc_result.stdout)
-    self.assertEqual(self.getTtyContents(), '')
+    self.assertIn('Analysis Steps: 1/1', self.getTtyContents())
 
   def testCancelBuildServerCall(self):
     callServer(['--cancel-build', self.id()])
@@ -223,7 +223,7 @@ class ServerStartedTest(unittest.TestCase):
       self.sendTask(['cat', str(fifo_path)])
       proc_result = callServer(['--print-status', self.id()])
       self.assertIn('[1/2]', proc_result.stdout)
-      self.assertIn(f'--wait-for-build {self.id()}', proc_result.stdout)
+      self.assertIn('--wait-for-idle', proc_result.stdout)
 
     self.waitForTasksDone()
     callServer(['--cancel-build', self.id()])

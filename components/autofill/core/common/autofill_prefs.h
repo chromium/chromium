@@ -25,6 +25,12 @@ namespace autofill::prefs {
 // String serving as a seed for ablation studies.
 inline constexpr std::string_view kAutofillAblationSeedPref =
     "autofill.ablation_seed";
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+// Boolean that is true if BNPL on Autofill is enabled.
+inline constexpr char kAutofillBnplEnabled[] = "autofill.bnpl_enabled";
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 // Boolean that is true if Autofill is enabled and allowed to save credit card
 // data.
 inline constexpr char kAutofillCreditCardEnabled[] =
@@ -227,6 +233,14 @@ bool IsFacilitatedPaymentsPixEnabled(const PrefService* prefs);
 void SetFacilitatedPaymentsEwallet(PrefService* prefs, bool value);
 
 bool IsFacilitatedPaymentsEwalletEnabled(const PrefService* prefs);
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+void SetAutofillBnplEnabled(PrefService* prefs, bool value);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
+
+bool IsAutofillBnplEnabled(const PrefService* prefs);
 
 }  // namespace autofill::prefs
 

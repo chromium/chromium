@@ -3694,6 +3694,24 @@ TEST_F(PaymentsDataManagerTest,
   EXPECT_TRUE(payments_data_manager().GetLinkedBnplIssuers().empty());
 }
 
+// Tests that Buy-now-pay-later issuer getters does not return any issuers if
+// `IsAutofillBnplEnabled()` returns `false`.
+TEST_F(PaymentsDataManagerTest, BnplIssuerGetters_AutofillBnplDisabled) {
+  test_api(payments_data_manager())
+      .AddBnplIssuer(test::GetTestLinkedBnplIssuer());
+  test_api(payments_data_manager())
+      .AddBnplIssuer(test::GetTestUnlinkedBnplIssuer());
+
+  ASSERT_EQ(2U, payments_data_manager().GetBnplIssuers().size());
+  ASSERT_EQ(1U, payments_data_manager().GetUnlinkedBnplIssuers().size());
+  ASSERT_EQ(1U, payments_data_manager().GetLinkedBnplIssuers().size());
+
+  prefs::SetAutofillBnplEnabled(prefs_.get(), false);
+
+  EXPECT_TRUE(payments_data_manager().GetBnplIssuers().empty());
+  EXPECT_TRUE(payments_data_manager().GetUnlinkedBnplIssuers().empty());
+  EXPECT_TRUE(payments_data_manager().GetLinkedBnplIssuers().empty());
+}
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 

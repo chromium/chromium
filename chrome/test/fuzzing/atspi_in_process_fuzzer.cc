@@ -1070,12 +1070,9 @@ Database* Database::GetInstance() {
 Database::Database() {
   base::ScopedAllowBlockingForTesting allow_blocking;
   db_ = std::make_unique<sql::Database>(
-      sql::DatabaseOptions{
-          .exclusive_locking =
-              false,  // centipede may run several fuzzers at once
-          .page_size = sql::DatabaseOptions::kDefaultPageSize,
-          .cache_size = 0,
-      },
+      sql::DatabaseOptions()
+          // centipede may run several fuzzers at once
+          .set_exclusive_locking(false),
       sql::test::kTestTag);
   base::FilePath db_path;
   CHECK(base::PathService::Get(base::DIR_TEMP, &db_path));

@@ -5413,9 +5413,8 @@ base::FilePath DBPath(const base::FilePath& base) {
 }
 
 sql::DatabaseOptions GetDatabaseOptions() {
-  return sql::DatabaseOptions{
-      .wal_mode = base::FeatureList::IsEnabled(
-          features::kFledgeEnableWALForInterestGroupStorage)};
+  return sql::DatabaseOptions().set_wal_mode(base::FeatureList::IsEnabled(
+      features::kFledgeEnableWALForInterestGroupStorage));
 }
 
 void ReportCreateSchemaResult(

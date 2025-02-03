@@ -111,11 +111,6 @@ extern const char kAutofillEnableVerveCardSupportDescription[];
 extern const char kAutofillIsolatedWorldForJavascriptIOSName[];
 extern const char kAutofillIsolatedWorldForJavascriptIOSDescription[];
 
-// Title and description for the flag to parse standalone CVC fields for VCN
-// card on file in Autofill.
-extern const char kAutofillParseVcnCardOnFileStandaloneCvcFieldsName[];
-extern const char kAutofillParseVcnCardOnFileStandaloneCvcFieldsDescription[];
-
 // Title and description for the flag to enable the V2 of the Autofill Payments
 // Sheet.
 extern const char kAutofillPaymentsSheetV2Name[];
@@ -171,6 +166,10 @@ extern const char kAutofillUseRendererIDsDescription[];
 // VCN Enroll requests to Google Payments servers.
 extern const char kAutofillVcnEnrollRequestTimeoutName[];
 extern const char kAutofillVcnEnrollRequestTimeoutDescription[];
+
+// Title and description for blue dot promo on tools menu button.
+extern const char kBlueDotOnToolsMenuButtonName[];
+extern const char kBlueDotOnToolsMenuButtonDescription[];
 
 // Title and description for the flag that changes the default setting for the
 // omnibox position.
@@ -305,9 +304,10 @@ extern const char kDefaultBrowserBannerPromoDescription[];
 extern const char kDefaultBrowserTriggerCriteriaExperimentName[];
 extern const char kDefaultBrowserTriggerCriteriaExperimentDescription[];
 
-// Title and description for blue dot promo on tools menu button.
-extern const char kBlueDotOnToolsMenuButtonName[];
-extern const char kBlueDotOnToolsMenuButtonDescription[];
+// Title and description for the experiment deprecating feed header toggle and
+// repositions elements in the new tab page.
+extern const char kDeprecateFeedHeaderExperimentName[];
+extern const char kDeprecateFeedHeaderExperimentDescription[];
 
 // Title and description for the flag to control if a crash report is generated
 // on main thread freeze.
@@ -522,11 +522,6 @@ extern const char kIOSKeyboardAccessoryUpgradeDescription[];
 // with a shorter manual fill menu.
 extern const char kIOSKeyboardAccessoryUpgradeShortManualFillMenuName[];
 extern const char kIOSKeyboardAccessoryUpgradeShortManualFillMenuDescription[];
-
-// Title and description for the flag to enable the new following feed entry
-// points.
-extern const char kIOSNewFollowingFeedEntryPointsName[];
-extern const char kIOSNewFollowingFeedEntryPointsDescription[];
 
 // Title and description for the flag to enable password bottom sheet triggering
 // on autofocus on IOS.

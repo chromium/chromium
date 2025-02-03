@@ -1660,10 +1660,7 @@ class MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest
     // TODO(crbug.com/40286020): Merge into BrowserWithTestWindowTest.
     const AccountId account_id = AccountId::FromUserEmailGaiaId(email, gaia_id);
     // Add a user to the fake user manager.
-    auto* user = user_manager()->AddGaiaUser(account_id,
-                                             user_manager::UserType::kRegular);
-    ash_test_helper()->test_session_controller_client()->AddUserSession(
-        user->GetDisplayEmail());
+    user_manager()->AddGaiaUser(account_id, user_manager::UserType::kRegular);
     user_manager()->UserLoggedIn(
         account_id,
         user_manager::FakeUserManager::GetFakeUsernameHash(account_id),

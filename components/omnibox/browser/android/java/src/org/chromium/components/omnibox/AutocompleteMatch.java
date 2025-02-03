@@ -16,6 +16,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
 import org.chromium.components.omnibox.AnswerTypeProto.AnswerType;
@@ -31,6 +32,7 @@ import java.util.List;
 import java.util.Set;
 
 /** Container class with information about each omnibox suggestion item. */
+@NullMarked
 public class AutocompleteMatch {
     public static final int INVALID_GROUP = GroupId.GROUP_INVALID_VALUE;
     public static final int INVALID_TYPE = -1;
@@ -76,10 +78,10 @@ public class AutocompleteMatch {
     private final String mFillIntoEdit;
     private GURL mUrl;
     private final GURL mImageUrl;
-    private final String mImageDominantColor;
+    private final @Nullable String mImageDominantColor;
     private final int mTransition;
     private final boolean mIsDeletable;
-    private String mPostContentType;
+    private @Nullable String mPostContentType;
     private byte @Nullable [] mPostData;
     private final int mGroupId;
     private byte @Nullable [] mClipboardImageData;
@@ -99,17 +101,17 @@ public class AutocompleteMatch {
             List<MatchClassification> displayTextClassifications,
             String description,
             List<MatchClassification> descriptionClassifications,
-            byte[] serializedAnswerTemplate,
+            byte @Nullable [] serializedAnswerTemplate,
             int answerType,
             String fillIntoEdit,
             GURL url,
             GURL imageUrl,
-            String imageDominantColor,
+            @Nullable String imageDominantColor,
             boolean isDeletable,
-            String postContentType,
-            byte[] postData,
+            @Nullable String postContentType,
+            byte @Nullable [] postData,
             int groupId,
-            byte[] clipboardImageData,
+            byte @Nullable [] clipboardImageData,
             boolean hasTabMatch,
             @Nullable List<OmniboxAction> actions,
             boolean allowedToBeDefaultMatch,
@@ -367,11 +369,11 @@ public class AutocompleteMatch {
         return mIsDeletable;
     }
 
-    public String getPostContentType() {
+    public @Nullable String getPostContentType() {
         return mPostContentType;
     }
 
-    public byte[] getPostData() {
+    public byte @Nullable [] getPostData() {
         return mPostData;
     }
 

@@ -32,7 +32,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.util.Objects;
 
 /** Utilities for inline pdf support. */
 public class PdfUtils {
@@ -253,12 +252,12 @@ public class PdfUtils {
         Uri uri = Uri.parse(pdfFilePath);
         String scheme = uri.getScheme();
         try {
-            if (UrlConstants.CONTENT_SCHEME.equals(scheme)) {
+            if (UrlConstants.CONTENT_SCHEME.equals(scheme)
+                    || UrlConstants.FILE_SCHEME.equals(scheme)) {
+                // PDF androidx library accepts file or content URI.
                 return uri;
-            } else if (UrlConstants.FILE_SCHEME.equals(scheme)) {
-                File file = new File(Objects.requireNonNull(uri.getPath()));
-                return ChromeFileProvider.generateUri(file);
             } else {
+                // Convert filepath to Uri for transient downloads.
                 File file = new File(pdfFilePath);
                 return ChromeFileProvider.generateUri(file);
             }

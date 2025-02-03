@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {DismissModuleInstanceEvent, OutlookCalendarModuleElement} from 'chrome://new-tab-page/lazy_load.js';
+import type {DisableModuleEvent, DismissModuleInstanceEvent, OutlookCalendarModuleElement} from 'chrome://new-tab-page/lazy_load.js';
 import {outlookCalendarDescriptor, OutlookCalendarProxyImpl, ParentTrustedDocumentProxy} from 'chrome://new-tab-page/lazy_load.js';
 import {MicrosoftAuthUntrustedDocumentRemote} from 'chrome://new-tab-page/ntp_microsoft_auth_shared_ui.mojom-webui.js';
 import {OutlookCalendarPageHandlerRemote} from 'chrome://new-tab-page/outlook_calendar.mojom-webui.js';
@@ -54,6 +54,30 @@ suite('NewTabPageModulesOutlookCalendarModuleTest', () => {
     module = await outlookCalendarDescriptor.initialize(0) as
         OutlookCalendarModuleElement;
     assertEquals(module, null);
+  });
+
+  test('clicking the disable button fires a disable module event', async () => {
+    // Arrange.
+    handler.setResultFor(
+        'getEvents', Promise.resolve({events: createEvents(1)}));
+    module = await outlookCalendarDescriptor.initialize(0) as
+        OutlookCalendarModuleElement;
+    assertTrue(!!module);
+    document.body.append(module);
+
+    // Act.
+    const whenFired = eventToPromise('disable-module', module);
+    const disableButton =
+        module.$.moduleHeaderElementV2.shadowRoot!.querySelector<HTMLElement>(
+            '#disable');
+    assertTrue(!!disableButton);
+    disableButton.click();
+
+    // Assert.
+    const event: DisableModuleEvent = await whenFired;
+    assertEquals(
+        ('You won\'t see Outlook Calendar on this page again'),
+        event.detail.message);
   });
 
   test(`dismiss and restore module`, async () => {

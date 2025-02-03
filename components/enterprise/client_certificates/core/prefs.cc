@@ -11,11 +11,19 @@ namespace client_certificates {
 namespace prefs {
 const char kProvisionManagedClientCertificateForUserPrefs[] =
     "client_certificates.provision_for_user.value";
+const char kProvisionManagedClientCertificateForBrowserPrefs[] =
+    "client_certificates.provision_for_browser.value";
 }  // namespace prefs
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       prefs::kProvisionManagedClientCertificateForUserPrefs,
+      /*default_value=*/0);
+}
+
+void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterIntegerPref(
+      prefs::kProvisionManagedClientCertificateForBrowserPrefs,
       /*default_value=*/0);
 }
 

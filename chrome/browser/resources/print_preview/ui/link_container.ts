@@ -19,11 +19,11 @@ import {getTemplate} from './link_container.html.js';
 export interface PrintPreviewLinkContainerElement {
   $: {
     // <if expr="is_macosx">
-    openPdfInPreviewLink: HTMLDivElement,
-    openPdfInPreviewThrobber: HTMLDivElement,
+    openPdfInPreviewLink: HTMLElement,
+    openPdfInPreviewThrobber: HTMLElement,
     // </if>
-    systemDialogLink: HTMLDivElement,
-    systemDialogThrobber: HTMLDivElement,
+    systemDialogLink: HTMLElement,
+    systemDialogThrobber: HTMLElement,
   };
 }
 

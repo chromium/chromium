@@ -1052,15 +1052,13 @@ QuotaError QuotaDatabase::EnsureOpened() {
     return QuotaError::kDatabaseError;
   }
 
-  sql::DatabaseOptions options{
-      // The quota database is a critical storage component. If it's corrupted,
-      // all client-side storage APIs fail, because they don't know where their
-      // data is stored.
-      .flush_to_media = true,
-  };
-
-  db_ = std::make_unique<sql::Database>(std::move(options),
-                                        sql::Database::Tag("Quota"));
+  db_ = std::make_unique<sql::Database>(
+      sql::DatabaseOptions()
+          // The quota database is a critical storage component. If it's
+          // corrupted, all client-side storage APIs fail, because they don't
+          // know where their data is stored.
+          .set_flush_to_media(true),
+      sql::Database::Tag("Quota"));
   meta_table_ = std::make_unique<sql::MetaTable>();
 
   db_->set_error_callback(base::BindRepeating(&QuotaDatabase::OnSqliteError,

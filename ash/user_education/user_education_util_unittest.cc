@@ -24,6 +24,7 @@
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
@@ -79,9 +80,10 @@ TEST_F(UserEducationUtilTest, CreateExtendedProperties) {
 // `GetHelpBubbleBodyIcon()` can be used to retrieve help bubble body icon from
 // extended properties.
 TEST_F(UserEducationUtilTest, CreateExtendedPropertiesWithBodyIcon) {
-  EXPECT_EQ(
-      &GetHelpBubbleBodyIcon(CreateExtendedProperties(gfx::kNoneIcon))->get(),
-      &gfx::kNoneIcon);
+  EXPECT_EQ(&GetHelpBubbleBodyIcon(
+                 CreateExtendedProperties(gfx::VectorIcon::EmptyIcon()))
+                 ->get(),
+            &gfx::VectorIcon::EmptyIcon());
 
   // It is permissible to query help bubble body icon even when absent.
   EXPECT_EQ(GetHelpBubbleBodyIcon(HelpBubbleParams::ExtendedProperties()),

@@ -23,6 +23,13 @@
   <settings-animated-pages id="pages" section="ai"
       focus-config="[[focusConfig_]]">
     <div route-path="default">
+      <cr-link-row id="passwordChangeRowV2" class="hr"
+          hidden="[[!showPasswordChangeControl_]]"
+          start-icon="cr20:password"
+          label="$i18n{passwordChangeSettingLabel}"
+          sub-label="$i18n{passwordChangeSettingSubLabel}"
+          on-click="onPasswordChangeRowClick_" external>
+      </cr-link-row>
       <cr-link-row id="autofillAiRowV2" class="hr"
           hidden="[[!showAutofillAIControl_]]"
           start-icon="settings20:text-analysis"
@@ -63,14 +70,6 @@
           sub-label="$i18n{tabOrganizationSettingSublabelV2}"
           role-description="$i18n{subpageArrowRoleDescription}"
           on-click="onTabOrganizationRowClick_">
-      </cr-link-row>
-      <cr-link-row id="passwordChangeRowV2" class="hr"
-          hidden="[[!showPasswordChangeControl_]]"
-          start-icon="settings20:auto-tab-group"
-          label="$i18n{passwordChangeSettingLabel}"
-          sub-label="$i18n{passwordChangeSettingSubLabel}"
-          role-description="$i18n{subpageArrowRoleDescription}"
-          on-click="onPasswordChangeRowClick_">
       </cr-link-row>
       <cr-link-row id="wallpaperSearchRowV2" class="hr"
           hidden="[[!showWallpaperSearchControl_]]"
@@ -121,17 +120,6 @@
             page-title="$i18n{tabOrganizationSettingLabel}">
           <settings-ai-tab-organization-subpage prefs="{{prefs}}">
           </settings-ai-tab-organization-subpage>
-        </settings-subpage>
-      </template>
-    </template>
-
-    <template is="dom-if" if="[[showPasswordChangeControl_]]">
-      <template is="dom-if" route-path="/ai/passwordChange">
-        <settings-subpage id="passwordChange"
-            associated-control="[[$$('#passwordChangeRowV2')]]"
-            page-title="$i18n{passwordChangeSettingLabel}">
-          <settings-password-change-subpage>
-          </settings-password-change-subpage>
         </settings-subpage>
       </template>
     </template>

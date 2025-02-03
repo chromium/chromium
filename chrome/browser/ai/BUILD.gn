@@ -2,8 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/optimization_guide/features.gni")
 import("//pdf/features.gni")
 
+assert(build_with_model_execution)
 assert(is_win || is_mac || is_linux || is_chromeos || is_android)
 
 source_set("ai") {

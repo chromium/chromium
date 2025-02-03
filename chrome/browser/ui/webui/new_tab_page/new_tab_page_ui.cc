@@ -340,13 +340,15 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
       {"modulesDriveMoreActionsButtonText",
        IDS_NTP_MODULES_DRIVE_MORE_ACTIONS_BUTTON_TEXT},
       {"modulesDriveSentence", IDS_NTP_MODULES_DRIVE_NAME},
-      {"modulesDriveFilesSentence", IDS_NTP_MODULES_DRIVE_FILES_SENTENCE},
+      {"modulesFilesSentence", IDS_NTP_MODULES_FILES_SENTENCE},
       {"modulesDummyLower", IDS_NTP_MODULES_DUMMY_LOWER},
       {"modulesDriveTitle", IDS_NTP_MODULES_DRIVE_NAME},
       {"modulesDriveTitleV2", IDS_NTP_MODULES_DRIVE_NAME},
       {"modulesDriveInfo", IDS_NTP_MODULES_DRIVE_INFO},
-      {"modulesSharepointInfo", IDS_NTP_MODULES_SHAREPOINT_INFO},
-      {"modulesSharepointName", IDS_NTP_MODULES_SHAREPOINT_NAME},
+      {"modulesMicrosoftFilesInfo", IDS_NTP_MODULES_MICROSOFT_FILES_INFO},
+      {"modulesMicrosoftFilesName", IDS_NTP_MODULES_MICROSOFT_FILES_NAME},
+      {"modulesMicrosoftFilesDisableButtonText",
+       IDS_NTP_MODULES_MICROSOFT_FILES_DISABLE_BUTTON_TEXT},
       {"modulesDummyTitle", IDS_NTP_MODULES_DUMMY_TITLE},
       {"modulesDismissForHoursButtonText",
        IDS_NTP_MODULES_DISMISS_FOR_HOURS_BUTTON_TEXT},
@@ -367,6 +369,7 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
        IDS_NTP_MODULES_OUTLOOK_CALENDAR_DISABLE_BUTTON_TEXT},
       {"modulesOutlookCalendarDismissToastMessage",
        IDS_NTP_MODULES_OUTLOOK_CALENDAR_DISMISS_TOAST_MESSAGE},
+      {"modulesOutlookCalendarInfo", IDS_NTP_MODULES_OUTLOOK_CALENDAR_INFO},
       {"modulesCalendarJoinMeetingButtonText",
        IDS_NTP_MODULES_CALENDAR_JOIN_MEETING_BUTTON_TEXT},
       {"modulesCalendarInProgress", IDS_NTP_MODULES_CALENDAR_IN_PROGRESS},
@@ -458,6 +461,7 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
   bool microsoft_module_enabled = IsMicrosoftModuleEnabledForProfile(profile);
   source->AddBoolean("microsoftModuleEnabled", microsoft_module_enabled);
   source->AddBoolean("modulesReloadable", microsoft_module_enabled);
+  source->AddBoolean("waitToLoadModules", microsoft_module_enabled);
 
   SearchboxHandler::SetupWebUIDataSource(
       source, profile,

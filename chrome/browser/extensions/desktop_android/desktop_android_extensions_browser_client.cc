@@ -13,6 +13,7 @@
 #include "chrome/browser/extensions/desktop_android/desktop_android_extension_system.h"
 #include "chrome/browser/extensions/desktop_android/desktop_android_extension_web_contents_observer.h"
 #include "chrome/browser/extensions/desktop_android/desktop_android_runtime_api_delegate.h"
+#include "chrome/browser/extensions/error_console/error_console.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_selections.h"
@@ -25,6 +26,7 @@
 #include "extensions/browser/api/core_extensions_browser_api_provider.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/event_router.h"
+#include "extensions/browser/extension_error.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/extension_web_contents_observer.h"
 #include "extensions/browser/extensions_browser_interface_binders.h"
@@ -290,6 +292,13 @@ bool DesktopAndroidExtensionsBrowserClient::IsBackgroundUpdateAllowed() {
 bool DesktopAndroidExtensionsBrowserClient::IsMinBrowserVersionSupported(
     const std::string& min_version) {
   return true;
+}
+
+void DesktopAndroidExtensionsBrowserClient::ReportError(
+    content::BrowserContext* context,
+    std::unique_ptr<ExtensionError> error) {
+  LOG(ERROR) << error->GetDebugString();
+  ErrorConsole::Get(context)->ReportError(std::move(error));
 }
 
 void DesktopAndroidExtensionsBrowserClient::CreateExtensionWebContentsObserver(

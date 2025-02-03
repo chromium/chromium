@@ -7,9 +7,9 @@
 #include <memory>
 
 #include "base/functional/bind.h"
-#include "chrome/browser/ui/views/page_action/page_action_constants.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
+#include "chrome/browser/ui/views/page_action/page_action_view_params.h"
 #include "ui/actions/actions.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/insets.h"
@@ -18,15 +18,16 @@ namespace page_actions {
 
 PageActionContainerView::PageActionContainerView(
     const std::vector<actions::ActionItem*>& action_items,
-    IconLabelBubbleView::Delegate* icon_view_delegate) {
-  SetBetweenChildSpacing(kPageActionBetweenIconSpacing);
+    const PageActionViewParams& params)
+    : between_icon_spacing_(params.between_icon_spacing) {
+  SetBetweenChildSpacing(between_icon_spacing_);
 
   // Right align to clip the leftmost items first when not enough space.
   SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kEnd);
 
   for (actions::ActionItem* action_item : action_items) {
-    PageActionView* view = AddChildView(
-        std::make_unique<PageActionView>(action_item, icon_view_delegate));
+    PageActionView* view =
+        AddChildView(std::make_unique<PageActionView>(action_item, params));
     page_action_views_[action_item->GetActionId().value()] = view;
 
     page_action_views_visible_subscriptions_.push_back(
@@ -58,7 +59,7 @@ void PageActionContainerView::SetContainerInsideBorderInsets() {
       [](const auto& id_to_view) { return id_to_view.second->GetVisible(); });
 
   SetInsideBorderInsets(gfx::Insets().set_right(
-      at_least_one_visible ? kPageActionBetweenIconSpacing : 0));
+      at_least_one_visible ? between_icon_spacing_ : 0));
 }
 
 BEGIN_METADATA(PageActionContainerView)

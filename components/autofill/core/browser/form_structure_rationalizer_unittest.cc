@@ -183,12 +183,7 @@ class FormStructureRationalizerTest : public testing::Test {
   test::AutofillUnitTestEnvironment autofill_test_environment_;
 };
 
-FormStructureRationalizerTest::FormStructureRationalizerTest() {
-  scoped_features_.InitWithFeatures(
-      /*enabled_features=*/
-      {features::kAutofillParseVcnCardOnFileStandaloneCvcFields},
-      /*disabled_features=*/{});
-}
+FormStructureRationalizerTest::FormStructureRationalizerTest() = default;
 
 TEST_F(FormStructureRationalizerTest, ParseQueryResponse_RationalizeLoneField) {
   std::unique_ptr<FormStructure> form_structure = BuildFormStructure(

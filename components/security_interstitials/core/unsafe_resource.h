@@ -83,7 +83,11 @@ struct UnsafeResource {
   safe_browsing::SBThreatType threat_type;
   safe_browsing::ThreatMetadata threat_metadata;
   safe_browsing::RTLookupResponse rt_lookup_response;
-  UrlCheckCallback callback;  // This is called back on |callback_sequence|.
+  // A callback to deliver the |UrlCheckResult| back to the creator of the
+  // object. Setting this field is optional to the creator, depending on whether
+  // it is interested in knowing the result.
+  // This is called back on |callback_sequence|.
+  UrlCheckCallback callback;
   scoped_refptr<base::SequencedTaskRunner> callback_sequence;
   // TODO(crbug.com/40686246): `weak_web_state` is only used on iOS, and
   // `rfh_locator` is used on all other platforms. This struct should be

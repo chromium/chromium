@@ -100,7 +100,7 @@ export class DriveModuleElement extends DriveModuleElementBase {
       detail: {
         message: loadTimeData.getStringF(
             'dismissModuleToastMessage',
-            loadTimeData.getString('modulesDriveFilesSentence')),
+            loadTimeData.getString('modulesFilesSentence')),
         restoreCallback: () => FileProxy.getHandler().restoreModule(),
       },
     }));

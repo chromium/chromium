@@ -546,8 +546,8 @@ int GetHighestKnownUniversalApiContractVersionForTesting() {
 }
 #endif  // BUILDFLAG(IS_WIN)
 
-embedder_support::UserAgentReductionEnterprisePolicyState
-GetUserAgentReductionFromPrefs(const PrefService* pref_service) {
+UserAgentReductionEnterprisePolicyState GetUserAgentReductionFromPrefs(
+    const PrefService* pref_service) {
   if (!pref_service->HasPrefPath(kReduceUserAgentMinorVersion))
     return UserAgentReductionEnterprisePolicyState::kDefault;
   switch (pref_service->GetInteger(kReduceUserAgentMinorVersion)) {

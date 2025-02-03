@@ -46,7 +46,7 @@ const std::vector<ModuleIdDetail> MakeModuleIdDetails(bool is_managed_profile,
 
   if (IsMicrosoftFilesModuleEnabledForProfile(profile)) {
     details.emplace_back(ntp_modules::kMicrosoftFilesModuleId,
-                         IDS_NTP_MODULES_SHAREPOINT_NAME);
+                         IDS_NTP_MODULES_MICROSOFT_FILES_NAME);
   }
 
   if (IsMicrosoftModuleEnabledForProfile(profile)) {

@@ -26,9 +26,11 @@ namespace {
 constexpr int kDialogWidth = 650;
 constexpr int kDialogHeight = 450;
 
-const GURL GetPacpUrl(const GURL& blocked_url) {
+const GURL GetPacpUrl(
+    const GURL& blocked_url,
+    const supervised_user::FilteringBehaviorReason& filtering_reason) {
   return supervised_user::GetParentAccessURLForDesktop(
-      g_browser_process->GetApplicationLocale(), blocked_url);
+      g_browser_process->GetApplicationLocale(), blocked_url, filtering_reason);
 }
 
 }  // namespace
@@ -45,6 +47,7 @@ ParentAccessView::~ParentAccessView() = default;
 base::WeakPtr<ParentAccessView> ParentAccessView::ShowParentAccessDialog(
     content::WebContents* web_contents,
     const GURL& target_url,
+    const supervised_user::FilteringBehaviorReason& filtering_reason,
     WebContentsObserverCreationCallback web_contents_observer_creation_cb) {
   CHECK(web_contents);
   CHECK(web_contents_observer_creation_cb);
@@ -63,7 +66,8 @@ base::WeakPtr<ParentAccessView> ParentAccessView::ShowParentAccessDialog(
 
   auto parent_access_view =
       std::make_unique<ParentAccessView>(web_contents->GetBrowserContext());
-  parent_access_view->Initialize(GetPacpUrl(target_url), corner_radius);
+  parent_access_view->Initialize(GetPacpUrl(target_url, filtering_reason),
+                                 corner_radius);
 
   // Keeps a pointer to the parent access views as it's ownership is transferred
   // to the delegate.

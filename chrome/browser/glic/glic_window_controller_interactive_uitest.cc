@@ -14,6 +14,7 @@
 #include "chrome/browser/glic/glic_window_controller.h"
 #include "chrome/browser/glic/interactive_glic_test.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
+#include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -63,10 +64,31 @@ class GlicWindowControllerUiTest : public test::InteractiveGlicTest {
 };
 
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, ShowAndCloseAttachedWidget) {
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kAttached),
-                  CheckControllerHasWidget(true),
-                  CheckControllerWidgetMode(GlicWindowMode::kAttached),
-                  CloseGlicWindow(), CheckControllerHasWidget(false));
+  RunTestSequence(
+      OpenGlicWindow(GlicWindowMode::kAttached),
+      // Verify glic is open in attached mode.
+      CheckControllerHasWidget(true),
+      CheckControllerWidgetMode(GlicWindowMode::kAttached),
+      // Top right corner should match the glic button's inset top right corner.
+      CheckResult(
+          [this] {
+            return window_controller()
+                .GetGlicWidget()
+                ->GetWindowBoundsInScreen()
+                .top_right();
+          },
+          browser()
+              ->window()
+              ->AsBrowserView()
+              ->tab_strip_region_view()
+              ->GetGlicButton()
+              ->GetBoundsWithInset()
+              .top_right(),
+          "glic widget top right corner position"
+
+          ),
+
+      CloseGlicWindow(), CheckControllerHasWidget(false));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, ShowAndCloseDetachedWidget) {
@@ -185,6 +207,19 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, ApiDetach) {
       StopObservingState(test::internal::kGlicWindowControllerState),
 
       CheckControllerWidgetMode(GlicWindowMode::kDetached));
+}
+
+// TODO: Re-nable this test when there is a glic state for post-resize.
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
+                       DISABLED_CloseWithContextMenu) {
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kAttached),
+                  CheckControllerHasWidget(true));
+  auto center =
+      window_controller().GetGlicView()->GetBoundsInScreen().CenterPoint();
+  RunTestSequence(
+      MoveMouseTo(center), ClickMouse(ui_controls::RIGHT),
+      InAnyContext(SelectMenuItem(RenderViewContextMenu::kGlicCloseMenuItem)),
+      CheckControllerHasWidget(false));
 }
 
 class GlicWindowControllerWithMemoryPressureUiTest

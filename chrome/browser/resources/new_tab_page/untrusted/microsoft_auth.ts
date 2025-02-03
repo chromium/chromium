@@ -30,6 +30,7 @@ const msalConfig: typeof Configuration = {
     redirectUri: 'https://chromeenterprise.google/ntp-microsoft-auth',
   },
   cache: {cacheLocation: 'localStorage'},
+  system: {iframeHashTimeout: 1500},
 };
 
 const requestConfig: typeof PopupRequest = {

@@ -373,6 +373,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/reading_list/model:unit_tests",
     "//ios/chrome/browser/reading_list/ui_bundled:unit_tests",
     "//ios/chrome/browser/recent_tabs/ui_bundled:unit_tests",
+    "//ios/chrome/browser/reminder_notifications/model:unit_tests",
     "//ios/chrome/browser/sad_tab/ui_bundled:unit_tests",
     "//ios/chrome/browser/safe_browsing/model:unit_tests",
     "//ios/chrome/browser/safe_browsing/model/tailored_security:unit_tests",

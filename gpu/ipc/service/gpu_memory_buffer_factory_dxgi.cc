@@ -212,9 +212,9 @@ gfx::GpuMemoryBufferHandle GpuMemoryBufferFactoryDXGI::CreateGpuMemoryBuffer(
     return handle;
   }
 
-  handle.dxgi_handle.Set(texture_handle);
-  handle.dxgi_token = gfx::DXGIHandleToken();
   handle.type = gfx::DXGI_SHARED_HANDLE;
+  handle.set_dxgi_handle(
+      gfx::DXGIHandle(base::win::ScopedHandle(texture_handle)));
   handle.id = id;
 
   return handle;
@@ -239,7 +239,7 @@ bool GpuMemoryBufferFactoryDXGI::FillSharedMemoryRegionWithBufferContents(
     return false;
   }
 
-  return CopyDXGIBufferToShMem(buffer_handle.dxgi_handle.Get(),
+  return CopyDXGIBufferToShMem(buffer_handle.dxgi_handle().buffer_handle(),
                                mapping.GetMemoryAsSpan<uint8_t>(),
                                d3d11_device.Get(), &staging_texture_);
 }

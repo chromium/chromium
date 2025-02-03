@@ -98,6 +98,10 @@ Matcher<Suggestion> EqualLabels(
   return EqualLabels(suggestion_objects);
 }
 
+// This function is currently only used for BNPL unittests, and BNPL is
+// currently only available for desktop platforms.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
 Matcher<Suggestion> EqualsSuggestion(const Suggestion& suggestion) {
   return AllOf(Field(&Suggestion::type, suggestion.type),
                Field(&Suggestion::main_text, suggestion.main_text),
@@ -105,6 +109,8 @@ Matcher<Suggestion> EqualsSuggestion(const Suggestion& suggestion) {
                Field(&Suggestion::icon, suggestion.icon),
                Field(&Suggestion::labels, suggestion.labels));
 }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
 Matcher<Suggestion> EqualsIbanSuggestion(
     const std::u16string& identifier_string,
@@ -1295,6 +1301,9 @@ TEST_F(PaymentsSuggestionGeneratorTest, IsCreditCardFooterSuggestion) {
                                             footer_suggestions.size()));
 }
 
+// BNPL is currently only available for desktop platforms.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
 // Ensures that the pay over time option is generated with expected content
 // and inserted as the last entry before the footer suggestions.
 TEST_F(PaymentsSuggestionGeneratorTest, MaybeUpdateSuggestionsWithBnpl) {
@@ -1530,6 +1539,8 @@ TEST_F(PaymentsSuggestionGeneratorTest,
                                      payments_data().GetBnplIssuers())
           .is_bnpl_suggestion_added);
 }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
 // Test that the virtual card option is shown when the autofill optimization
 // guide is not present.
@@ -3075,8 +3086,6 @@ TEST_F(
 TEST_F(
     PaymentsSuggestionGeneratorTest,
     GetCreditCardOrCvcFieldSuggestions_GetVirtualCreditCardsForStandaloneCvcField) {
-  base::test::ScopedFeatureList feature(
-      features::kAutofillParseVcnCardOnFileStandaloneCvcFields);
 
   // Set up virtual card usage data and credit cards.
   payments_data().ClearCreditCards();
@@ -3418,15 +3427,13 @@ class CvcStorageAndFillingStandaloneFormEnhancementTest
       scoped_feature_list_.InitWithFeatures(
           /*enabled_features=*/
           {features::kAutofillEnableCvcStorageAndFillingEnhancement,
-           features::kAutofillParseVcnCardOnFileStandaloneCvcFields,
            features::
                kAutofillEnableCvcStorageAndFillingStandaloneFormEnhancement},
           /*disabled_features=*/{});
     } else {
       scoped_feature_list_.InitWithFeatures(
           /*enabled_features=*/
-          {features::kAutofillEnableCvcStorageAndFillingEnhancement,
-           features::kAutofillParseVcnCardOnFileStandaloneCvcFields},
+          {features::kAutofillEnableCvcStorageAndFillingEnhancement},
           /*disabled_features=*/
           {features::
                kAutofillEnableCvcStorageAndFillingStandaloneFormEnhancement});

@@ -85,7 +85,6 @@ Encryptor::Key Encryptor::Key::Clone() const {
 #else
   Encryptor::Key key(key_, *algorithm_, /*encrypted=*/false);
 #endif
-  key.is_os_crypt_sync_compatible_ = is_os_crypt_sync_compatible_;
   return key;
 }
 
@@ -95,20 +94,14 @@ Encryptor::Encryptor(mojo::DefaultConstruct::Tag) : Encryptor() {}
 Encryptor::Encryptor(Encryptor&& other) = default;
 Encryptor& Encryptor::operator=(Encryptor&& other) = default;
 
-Encryptor::Encryptor(KeyRing keys, const std::string& provider_for_encryption)
+Encryptor::Encryptor(
+    KeyRing keys,
+    const std::string& provider_for_encryption,
+    const std::string& provider_for_os_crypt_sync_compatible_encryption)
     : keys_(std::move(keys)),
-      provider_for_encryption_(provider_for_encryption) {
-  // It is not permitted to have multiple keys that mark themselves as OSCrypt
-  // sync compatible.
-  bool already_found_os_crypt_compatible = false;
-  for (const auto& key : keys_) {
-    if (key.second.is_os_crypt_sync_compatible_) {
-      CHECK(!already_found_os_crypt_compatible)
-          << "Cannot have more than one key marked OSCrypt sync compatible.";
-      already_found_os_crypt_compatible = true;
-    }
-  }
-}
+      provider_for_encryption_(provider_for_encryption),
+      provider_for_os_crypt_sync_compatible_encryption_(
+          provider_for_os_crypt_sync_compatible_encryption) {}
 Encryptor::~Encryptor() = default;
 
 std::vector<uint8_t> Encryptor::Key::Encrypt(
@@ -329,24 +322,15 @@ Encryptor Encryptor::Clone(Option option) const {
     keyring.emplace(provider, key.Clone());
   }
 
-  std::string provider_for_encryption;
-
   switch (option) {
     case Option::kNone:
-      provider_for_encryption = provider_for_encryption_;
-      break;
+      return Encryptor(std::move(keyring), provider_for_encryption_,
+                       provider_for_os_crypt_sync_compatible_encryption_);
     case Option::kEncryptSyncCompat:
-      for (const auto& [provider, key] : keyring) {
-        if (key.is_os_crypt_sync_compatible_) {
-          provider_for_encryption = provider;
-          break;
-        }
-      }
-      break;
+      return Encryptor(std::move(keyring),
+                       provider_for_os_crypt_sync_compatible_encryption_,
+                       provider_for_os_crypt_sync_compatible_encryption_);
   }
-
-  // Can be empty provider, if no suitable provider is available.
-  return Encryptor(std::move(keyring), provider_for_encryption);
 }
 
 bool Encryptor::IsEncryptionAvailable() const {

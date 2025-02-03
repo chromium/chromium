@@ -23,6 +23,9 @@ class CoralDelegateImpl : public ash::CoralDelegate {
   void MoveTabsInGroupToNewDesk(const std::vector<coral::mojom::Tab>& tabs,
                                 size_t src_desk_index) override;
   int GetChromeDefaultRestoreId() override;
+  void OpenFeedbackDialog(const std::string& group_description,
+                          ash::ScannerDelegate::SendFeedbackCallback
+                              send_feedback_callback) override;
 
  private:
   // Handles launching apps and creating browsers for post login groups.

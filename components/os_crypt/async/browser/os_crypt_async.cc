@@ -92,11 +92,12 @@ void OSCryptAsync::HandleKey(ProviderIterator current,
   }
 
   if (key) {
-    key->is_os_crypt_sync_compatible_ =
-        ((*current)->IsCompatibleWithOsCryptSync());
     key_ring_.emplace(tag, std::move(*key));
     if ((*current)->UseForEncryption()) {
       provider_for_encryption_ = tag;
+      if ((*current)->IsCompatibleWithOsCryptSync()) {
+        provider_for_os_crypt_sync_compatible_encryption_ = tag;
+      }
     }
   } else {
     // TODO(crbug.com/40241934): Return errors back via a callback.
@@ -105,7 +106,8 @@ void OSCryptAsync::HandleKey(ProviderIterator current,
 
   if (++current == providers_.end()) {
     encryptor_instance_ = base::WrapUnique<Encryptor>(
-        new Encryptor(std::move(key_ring_), provider_for_encryption_));
+        new Encryptor(std::move(key_ring_), provider_for_encryption_,
+                      provider_for_os_crypt_sync_compatible_encryption_));
     callbacks_.Notify();
     is_initialized_ = true;
     is_initializing_ = false;

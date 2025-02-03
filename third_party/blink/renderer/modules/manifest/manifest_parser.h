@@ -377,6 +377,12 @@ class MODULES_EXPORT ManifestParser {
   std::optional<mojom::blink::ManifestShareTargetPtr> ParseShareTarget(
       const JSONObject* object);
 
+  // Keep in sync with ScopeExtensionTypeMap. E.g. kOrigin -> "origin"
+  enum class ScopeExtensionType {
+    kOrigin = 0,
+  };
+  static constexpr const char* ScopeExtensionTypeMap[1] = {"origin"};
+
   // Parses the 'scope_extensions' field of a Manifest, as defined in:
   // https://github.com/WICG/manifest-incubations/blob/gh-pages/scope_extensions-explainer.md
   // Returns the parsed list of ScopeExtensions. The returned ScopeExtensions

@@ -5,9 +5,9 @@
 #ifndef ASH_SESSION_TEST_PREF_SERVICE_PROVIDER_H_
 #define ASH_SESSION_TEST_PREF_SERVICE_PROVIDER_H_
 
-#include <map>
 #include <memory>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 
 class AccountId;
@@ -45,8 +45,8 @@ class TestPrefServiceProvider {
 
  private:
   std::unique_ptr<PrefService> signin_prefs_;
-  std::map<AccountId, std::unique_ptr<PrefService>> user_prefs_map_;
-  std::map<AccountId, raw_ptr<PrefService>> unowned_user_prefs_map_;
+  base::flat_map<AccountId, std::unique_ptr<PrefService>> user_prefs_map_;
+  base::flat_map<AccountId, raw_ptr<PrefService>> unowned_user_prefs_map_;
 };
 
 }  // namespace ash

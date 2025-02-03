@@ -22,7 +22,7 @@ window.addEventListener('load', () => {
   const buttons = document.querySelectorAll('.close-button');
   for (const button of buttons) {
     button.addEventListener('click', () => {
-      browserProxy.handler.closePanel();
+      appController.close();
     });
   }
   document.getElementById('retry')!.addEventListener(
@@ -33,5 +33,8 @@ window.addEventListener('load', () => {
       });
   document.getElementById('reload')?.addEventListener('click', () => {
     appController.reload();
+  });
+  document.getElementById('debug')?.addEventListener('click', () => {
+    appController.showDebug();
   });
 });

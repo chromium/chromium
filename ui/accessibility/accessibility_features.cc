@@ -237,7 +237,7 @@ bool IsAccessibilityBounceKeysEnabled() {
 
 BASE_FEATURE(kAccessibilitySlowKeys,
              "AccessibilitySlowKeys",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsAccessibilitySlowKeysEnabled() {
   return base::FeatureList::IsEnabled(::features::kAccessibilitySlowKeys);
 }

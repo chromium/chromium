@@ -237,11 +237,11 @@ bool FaviconDatabase::IconMappingEnumerator::GetNextIconMapping(
 }
 
 FaviconDatabase::FaviconDatabase()
-    : db_(
-          {// Favicons db only stores favicons, so we don't need that big a page
-           // size or cache.
-           .page_size = 2048,
-           .cache_size = 32},
+    : db_(sql::DatabaseOptions()
+              // Favicons db only stores favicons, so we don't need that big a
+              // page size or cache.
+              .set_page_size(2048)
+              .set_cache_size(32),
           /*tag=*/"Thumbnail") {}
 
 FaviconDatabase::~FaviconDatabase() {

@@ -248,6 +248,10 @@ bool TabModel::IsPinned() const {
   return pinned_;
 }
 
+bool TabModel::IsSplit() const {
+  return split_;
+}
+
 std::optional<tab_groups::TabGroupId> TabModel::GetGroup() const {
   return group_;
 }
@@ -321,7 +325,7 @@ void TabModel::WriteIntoTrace(perfetto::TracedValue context) const {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("web_contents", GetContents());
   dict.Add("pinned", IsPinned());
-  dict.Add("split", split());
+  dict.Add("split", IsSplit());
   dict.Add("blocked", blocked());
 }
 

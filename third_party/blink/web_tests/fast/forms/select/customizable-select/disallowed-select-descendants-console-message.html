@@ -64,6 +64,23 @@
   </optgroup>
 </select>
 
+<!-- <legend> elements should not have interactive elements inside -->
+<select>
+  <optgroup>
+      <legend>
+        <button></button>
+      </legend>
+  </optgroup>
+</select>
+
+<!-- <optgroup> should not have interactive elements inside. -->
+<select>
+  <optgroup>
+    <option>..</option>
+    <input/>
+  </optgroup>
+</select>
+
 <!-- Should print two console messages. -->
 <select>
   <div>

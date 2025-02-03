@@ -17888,6 +17888,98 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="PerformanceManager.FreezingEligibility">
+  <owner>fdoray@chromium.org</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    Properties of a tab involved in determining its freezing eligibility.
+    Recorded for each tab every minute (subsampled).
+  </summary>
+  <metric name="Audible" enum="Boolean">
+    <summary>
+      True if the page was audible over the last minute
+    </summary>
+  </metric>
+  <metric name="BeingMirrored" enum="Boolean">
+    <summary>
+      True if the page was mirrored over the last minute
+    </summary>
+  </metric>
+  <metric name="Capturing" enum="Boolean">
+    <summary>
+      True if the page captured audio, video, a window or the display over the
+      last minute
+    </summary>
+  </metric>
+  <metric name="ConnectedToDevice" enum="Boolean">
+    <summary>
+      True if the the page was connected to a device (USB, Bluetooth, Hid or
+      Serial) over the last minute
+    </summary>
+  </metric>
+  <metric name="HighestCPUAnyIntervalWithoutOptOut">
+    <summary>
+      Highest CPU usage for a group of same-origin frames on the page over any
+      past 1 minute period during which no opt-out reason was applicable, in
+      percentage of a core (100 = 100% of a core used for 1 minute). Exponential
+      bucketing is applied.
+    </summary>
+  </metric>
+  <metric name="HighestCPUCurrentInterval">
+    <summary>
+      Highest CPU usage for a group of same-origin frames on the page over the
+      last 1 minute period, in percentage of a core (100 = 100% of a core used
+      for 1 minute). Exponential bucketing is applied.
+    </summary>
+  </metric>
+  <metric name="HoldingBlockingIndexedDBLock" enum="Boolean">
+    <summary>
+      True if the page held an IndexedDB lock blocking another page over the
+      last minute
+    </summary>
+  </metric>
+  <metric name="HoldingWebLock" enum="Boolean">
+    <summary>
+      True if the page held a Web Lock over the last minute
+    </summary>
+  </metric>
+  <metric name="Loading" enum="Boolean">
+    <summary>
+      True if the page was in the loading state over the last minute
+    </summary>
+  </metric>
+  <metric name="NotificationPermission" enum="Boolean">
+    <summary>
+      True if the page had the notification permission over the last minute
+    </summary>
+  </metric>
+  <metric name="OriginTrialOptOut" enum="Boolean">
+    <summary>
+      True if the page was opted-out via origin trial over the last minute
+    </summary>
+  </metric>
+  <metric name="RecentlyAudible" enum="Boolean">
+    <summary>
+      True if the page was recently audible over the last minute
+    </summary>
+  </metric>
+  <metric name="RecentlyVisible" enum="Boolean">
+    <summary>
+      True if the page was recently visible over the last minute
+    </summary>
+  </metric>
+  <metric name="Visible" enum="Boolean">
+    <summary>
+      True if the page was visible over the last minute
+    </summary>
+  </metric>
+  <metric name="WebRTC" enum="Boolean">
+    <summary>
+      True if the page used WebRTC over the last minute
+    </summary>
+  </metric>
+</event>
+
 <event name="PerformanceManager.PageResourceUsage2">
   <owner>agale@chromium.org</owner>
   <owner>anthonyvd@chromium.org</owner>

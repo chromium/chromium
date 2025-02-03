@@ -1431,7 +1431,9 @@ TEST_F(AccessibilityTest, GetBoundsInFrameCoordinatesSvgText) {
   EXPECT_GT(bounds1.X(), bounds2.X());
 }
 
-TEST_F(AccessibilityTest, ComputeIsInertReason) {
+TEST_F(AccessibilityTest, ComputeIsInertReason_CSSInertDisabled) {
+  ScopedCSSInertForTest feature(false);
+
   NonThrowableExceptionState exception_state;
   SetBodyInnerHTML(R"HTML(
     <div id="div1" inert>inert</div>
@@ -1579,7 +1581,158 @@ TEST_F(AccessibilityTest, ComputeIsInertReason) {
   AssertInertReasons(p2_text, kAXInertSubtree);
 }
 
-TEST_F(AccessibilityTest, ComputeIsInertWithNonHTMLElements) {
+TEST_F(AccessibilityTest, ComputeIsInertReason) {
+  ScopedCSSInertForTest feature(true);
+
+  NonThrowableExceptionState exception_state;
+  SetBodyInnerHTML(R"HTML(
+    <div id="div1" inert>inert</div>
+    <dialog id="dialog1">dialog</dialog>
+    <dialog id="dialog2" inert>inert dialog</dialog>
+    <p id="p1">fullscreen</p>
+    <p id="p2" inert>inert fullscreen</p>
+  )HTML");
+
+  Document& document = GetDocument();
+  Element* body = document.body();
+  Element* div1 = GetElementById("div1");
+  Node* div1_text = div1->firstChild();
+  auto* dialog1 = To<HTMLDialogElement>(GetElementById("dialog1"));
+  Node* dialog1_text = dialog1->firstChild();
+  auto* dialog2 = To<HTMLDialogElement>(GetElementById("dialog2"));
+  Node* dialog2_text = dialog2->firstChild();
+  Element* p1 = GetElementById("p1");
+  Node* p1_text = p1->firstChild();
+  Element* p2 = GetElementById("p2");
+  Node* p2_text = p2->firstChild();
+
+  auto AssertInertReasons = [&](Node* node, AXIgnoredReason expectation) {
+    AXObject* object = GetAXObjectCache().Get(node);
+    ASSERT_NE(object, nullptr);
+    AXObject::IgnoredReasons reasons;
+    ASSERT_TRUE(object->ComputeIsInert(&reasons));
+    ASSERT_EQ(reasons.size(), 1u);
+    ASSERT_EQ(reasons[0].reason, expectation);
+  };
+  auto AssertNotInert = [&](Node* node) {
+    AXObject* object = GetAXObjectCache().Get(node);
+    ASSERT_NE(object, nullptr);
+    AXObject::IgnoredReasons reasons;
+    ASSERT_FALSE(object->ComputeIsInert(&reasons));
+    ASSERT_EQ(reasons.size(), 0u);
+  };
+  auto EnterFullscreen = [&](Element* element) {
+    LocalFrame::NotifyUserActivation(
+        document.GetFrame(), mojom::UserActivationNotificationType::kTest);
+    Fullscreen::RequestFullscreen(*element);
+    Fullscreen::DidResolveEnterFullscreenRequest(document, /*granted*/ true);
+  };
+  auto ExitFullscreen = [&]() {
+    Fullscreen::FullyExitFullscreen(document);
+    Fullscreen::DidExitFullscreen(document);
+  };
+
+  AssertNotInert(body);
+  AssertInertReasons(div1, kAXInertStyle);
+  AssertInertReasons(div1_text, kAXInertStyle);
+  AssertNotInert(dialog1);
+  AssertNotInert(dialog1_text);
+  AssertNotInert(dialog2);
+  AssertNotInert(dialog2_text);
+  AssertNotInert(p1);
+  AssertNotInert(p1_text);
+  AssertInertReasons(p2, kAXInertStyle);
+  AssertInertReasons(p2_text, kAXInertStyle);
+
+  dialog1->showModal(exception_state);
+
+  AssertInertReasons(body, kAXActiveModalDialog);
+  AssertInertReasons(div1, kAXActiveModalDialog);
+  AssertInertReasons(div1_text, kAXActiveModalDialog);
+  AssertNotInert(dialog1);
+  AssertNotInert(dialog1_text);
+  AssertInertReasons(dialog2, kAXActiveModalDialog);
+  AssertInertReasons(dialog2_text, kAXActiveModalDialog);
+  AssertInertReasons(p1, kAXActiveModalDialog);
+  AssertInertReasons(p1_text, kAXActiveModalDialog);
+  AssertInertReasons(p2, kAXActiveModalDialog);
+  AssertInertReasons(p2_text, kAXActiveModalDialog);
+
+  dialog2->showModal(exception_state);
+
+  AssertInertReasons(body, kAXActiveModalDialog);
+  AssertInertReasons(div1, kAXActiveModalDialog);
+  AssertInertReasons(div1_text, kAXActiveModalDialog);
+  AssertInertReasons(dialog1, kAXActiveModalDialog);
+  AssertInertReasons(dialog1_text, kAXActiveModalDialog);
+  AssertInertReasons(dialog2, kAXInertStyle);
+  AssertInertReasons(dialog2_text, kAXInertStyle);
+  AssertInertReasons(p1, kAXActiveModalDialog);
+  AssertInertReasons(p1_text, kAXActiveModalDialog);
+  AssertInertReasons(p2, kAXActiveModalDialog);
+  AssertInertReasons(p2_text, kAXActiveModalDialog);
+
+  EnterFullscreen(p1);
+
+  AssertInertReasons(body, kAXActiveModalDialog);
+  AssertInertReasons(div1, kAXActiveModalDialog);
+  AssertInertReasons(div1_text, kAXActiveModalDialog);
+  AssertInertReasons(dialog1, kAXActiveModalDialog);
+  AssertInertReasons(dialog1_text, kAXActiveModalDialog);
+  AssertInertReasons(dialog2, kAXInertStyle);
+  AssertInertReasons(dialog2_text, kAXInertStyle);
+  AssertInertReasons(p1, kAXActiveModalDialog);
+  AssertInertReasons(p1_text, kAXActiveModalDialog);
+  AssertInertReasons(p2, kAXActiveModalDialog);
+  AssertInertReasons(p2_text, kAXActiveModalDialog);
+
+  dialog1->close();
+  dialog2->close();
+
+  AssertInertReasons(body, kAXActiveFullscreenElement);
+  AssertInertReasons(div1, kAXActiveFullscreenElement);
+  AssertInertReasons(div1_text, kAXActiveFullscreenElement);
+  AssertInertReasons(dialog1, kAXActiveFullscreenElement);
+  AssertInertReasons(dialog1_text, kAXActiveFullscreenElement);
+  AssertInertReasons(dialog2, kAXActiveFullscreenElement);
+  AssertInertReasons(dialog2_text, kAXActiveFullscreenElement);
+  AssertNotInert(p1);
+  AssertNotInert(p1_text);
+  AssertInertReasons(p2, kAXActiveFullscreenElement);
+  AssertInertReasons(p2_text, kAXActiveFullscreenElement);
+
+  ExitFullscreen();
+  EnterFullscreen(p2);
+
+  AssertInertReasons(body, kAXActiveFullscreenElement);
+  AssertInertReasons(div1, kAXActiveFullscreenElement);
+  AssertInertReasons(div1_text, kAXActiveFullscreenElement);
+  AssertInertReasons(dialog1, kAXActiveFullscreenElement);
+  AssertInertReasons(dialog1_text, kAXActiveFullscreenElement);
+  AssertInertReasons(dialog2, kAXActiveFullscreenElement);
+  AssertInertReasons(dialog2_text, kAXActiveFullscreenElement);
+  AssertInertReasons(p1, kAXActiveFullscreenElement);
+  AssertInertReasons(p1_text, kAXActiveFullscreenElement);
+  AssertInertReasons(p2, kAXInertStyle);
+  AssertInertReasons(p2_text, kAXInertStyle);
+
+  ExitFullscreen();
+
+  AssertNotInert(body);
+  AssertInertReasons(div1, kAXInertStyle);
+  AssertInertReasons(div1_text, kAXInertStyle);
+  AssertNotInert(dialog1);
+  AssertNotInert(dialog1_text);
+  AssertNotInert(dialog2);
+  AssertNotInert(dialog2_text);
+  AssertNotInert(p1);
+  AssertNotInert(p1_text);
+  AssertInertReasons(p2, kAXInertStyle);
+  AssertInertReasons(p2_text, kAXInertStyle);
+}
+
+TEST_F(AccessibilityTest, ComputeIsInertWithNonHTMLElements_CSSInertDisabled) {
+  ScopedCSSInertForTest feature(false);
   SetBodyInnerHTML(R"HTML(
     <main inert>
       main

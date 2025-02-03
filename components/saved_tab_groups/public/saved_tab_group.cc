@@ -449,15 +449,6 @@ SavedTabGroup SavedTabGroup::CloneAsSavedTabGroup() const {
   return saved_group;
 }
 
-bool SavedTabGroup::IsPendingSanitization() const {
-  for (const auto& tab : saved_tabs()) {
-    if (tab.is_pending_sanitization()) {
-      return true;
-    }
-  }
-  return false;
-}
-
 // static
 size_t SavedTabGroup::GetMaxLastRemovedTabsMetadataForTesting() {
   return kMaxLastRemovedTabsMetadata;

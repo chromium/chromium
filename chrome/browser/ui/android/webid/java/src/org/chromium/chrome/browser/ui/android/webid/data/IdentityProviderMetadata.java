@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ui.android.webid.data;
 import androidx.annotation.Nullable;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
@@ -26,9 +27,9 @@ public class IdentityProviderMetadata {
     public IdentityProviderMetadata(
             long brandTextColor,
             long brandBackgroundColor,
-            String brandIconUrl,
-            GURL configUrl,
-            GURL loginUrl,
+            @JniType("std::string") String brandIconUrl,
+            @JniType("GURL") GURL configUrl,
+            @JniType("GURL") GURL loginUrl,
             boolean showUseDifferentAccountButton) {
         // Parameters are longs because ColorUtils.INVALID_COLOR does not fit in an int.
         mBrandTextColor =

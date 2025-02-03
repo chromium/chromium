@@ -91,11 +91,11 @@ PredictorDatabaseInternal::PredictorDatabaseInternal(
     scoped_refptr<base::SequencedTaskRunner> db_task_runner)
     : db_path_(profile->GetPath().Append(kPredictorDatabaseName)),
       db_(std::make_unique<sql::Database>(
-          sql::DatabaseOptions{
+          sql::DatabaseOptions()
               // TODO(pwnall): Add a meta table and remove this option.
-              .mmap_alt_status_discouraged = true,
-              .enable_views_discouraged = true,  // Required by mmap_alt_status.
-          },
+              .set_mmap_alt_status_discouraged(true)
+              .set_enable_views_discouraged(
+                  true),  // Required by mmap_alt_status.
           sql::Database::Tag("Predictor"))),
       db_task_runner_(db_task_runner),
       autocomplete_table_(

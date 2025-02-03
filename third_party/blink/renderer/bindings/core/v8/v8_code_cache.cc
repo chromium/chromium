@@ -595,6 +595,11 @@ void V8CodeCache::ProduceCache(v8::Isolate* isolate,
       produce_cache_data->GetProduceCacheOptions());
 }
 
+uint32_t V8CodeCache::TagForBundledCodeCache() {
+  // The bundled code cache will operate only on utf-8 formatted scripts.
+  return CacheTag(kCacheTagCode, WTF::UTF8Encoding().GetName());
+}
+
 uint32_t V8CodeCache::TagForCodeCache(
     const CachedMetadataHandler* cache_handler) {
   return CacheTag(kCacheTagCode, cache_handler->Encoding());

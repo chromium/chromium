@@ -45,4 +45,9 @@ void GlicFrePageHandler::ValidateAndOpenLinkInNewTab(const GURL& url) {
   }
 }
 
+void GlicFrePageHandler::SyncWebviewCookies(
+    SyncWebviewCookiesCallback callback) {
+  GetGlicService()->SyncWebviewCookiesForFre(std::move(callback));
+}
+
 }  // namespace glic

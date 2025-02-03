@@ -14,6 +14,7 @@
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/glic_settings_util.h"
 #include "chrome/browser/glic/launcher/glic_controller.h"
+#include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/status_icons/status_icon.h"
 #include "chrome/browser/status_icons/status_icon_menu_model.h"
 #include "chrome/browser/status_icons/status_tray.h"
@@ -59,6 +60,8 @@ GlicStatusIcon::GlicStatusIcon(GlicController* controller,
   status_icon_->SetIcon(kGlicButtonIcon);
 #else
   native_theme_observer_.Observe(native_theme);
+  // Linux doesn't activate icon on click so no need to observe.
+  status_icon_->AddObserver(this);
 #endif
 #if BUILDFLAG(IS_MAC)
   if (features::kGlicStatusIconOpenMenuWithSecondaryClick.Get()) {
@@ -66,7 +69,6 @@ GlicStatusIcon::GlicStatusIcon(GlicController* controller,
   }
   status_icon_->SetImageTemplate(true);
 #endif
-  status_icon_->AddObserver(this);
 
   std::unique_ptr<StatusIconMenuModel> menu = CreateStatusIconMenu();
   context_menu_ = menu.get();
@@ -76,7 +78,9 @@ GlicStatusIcon::GlicStatusIcon(GlicController* controller,
 GlicStatusIcon::~GlicStatusIcon() {
   context_menu_ = nullptr;
   if (status_icon_) {
+#if !BUILDFLAG(IS_LINUX)
     status_icon_->RemoveObserver(this);
+#endif
     std::unique_ptr<StatusIcon> removed_icon =
         status_tray_->RemoveStatusIcon(status_icon_);
     status_icon_ = nullptr;
@@ -116,6 +120,13 @@ void GlicStatusIcon::ExecuteCommand(int command_id, int event_flags) {
           "GlicOsEntrypoint.ContextMenuSelection.OpenSettings"));
       break;
     }
+    case IDC_GLIC_STATUS_ICON_MENU_EXIT: {
+      chrome::CloseAllBrowsers();
+      base::RecordAction(base::UserMetricsAction("Exit"));
+      base::RecordAction(base::UserMetricsAction(
+          "GlicOsEntrypoint.ContextMenuSelection.Exit"));
+      break;
+    }
     default: {
       NOTREACHED();
     }
@@ -141,16 +152,24 @@ std::unique_ptr<StatusIconMenuModel> GlicStatusIcon::CreateStatusIconMenu() {
   std::unique_ptr<StatusIconMenuModel> menu(new StatusIconMenuModel(this));
   menu->AddItem(IDC_GLIC_STATUS_ICON_MENU_SHOW,
                 l10n_util::GetStringUTF16(IDS_GLIC_STATUS_ICON_MENU_SHOW));
+
   menu->AddSeparator(ui::NORMAL_SEPARATOR);
 
   menu->AddItem(IDC_GLIC_STATUS_ICON_MENU_CUSTOMIZE_KEYBOARD_SHORTCUT,
                 l10n_util::GetStringUTF16(
                     IDS_GLIC_STATUS_ICON_MENU_CUSTOMIZE_KEYBOARD_SHORTCUT));
+  menu->AddItem(IDC_GLIC_STATUS_ICON_MENU_SETTINGS,
+                l10n_util::GetStringUTF16(IDS_GLIC_STATUS_ICON_MENU_SETTINGS));
+
+  menu->AddSeparator(ui::NORMAL_SEPARATOR);
+
   menu->AddItem(
       IDC_GLIC_STATUS_ICON_MENU_REMOVE_ICON,
       l10n_util::GetStringUTF16(IDS_GLIC_STATUS_ICON_MENU_REMOVE_ICON));
-  menu->AddItem(IDC_GLIC_STATUS_ICON_MENU_SETTINGS,
-                l10n_util::GetStringUTF16(IDS_GLIC_STATUS_ICON_MENU_SETTINGS));
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+  menu->AddItem(IDC_GLIC_STATUS_ICON_MENU_EXIT,
+                l10n_util::GetStringUTF16(IDS_GLIC_STATUS_ICON_MENU_EXIT));
+#endif
   return menu;
 }
 

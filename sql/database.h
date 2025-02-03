@@ -73,6 +73,9 @@ struct COMPONENT_EXPORT(SQL) DatabaseOptions {
   // Guaranteed to match SQLITE_DEFAULT_PAGE_SIZE.
   static constexpr int kDefaultPageSize = 4096;
 
+  DatabaseOptions();
+  ~DatabaseOptions();
+
   // If true, the database can only be opened by one process at a time.
   //
   // SQLite supports a locking protocol that allows multiple processes to safely
@@ -93,7 +96,10 @@ struct COMPONENT_EXPORT(SQL) DatabaseOptions {
   // Exclusive mode is strongly recommended. It reduces the I/O cost of setting
   // up a transaction. It also removes the need of handling transaction failures
   // due to lock contention.
-  bool exclusive_locking = true;
+  DatabaseOptions& set_exclusive_locking(bool exclusive_locking) {
+    exclusive_locking_ = exclusive_locking;
+    return *this;
+  }
 
   // If true, enables exclusive=true vfs URI parameter on the database file.
   // This is only supported on Windows.
@@ -112,7 +118,11 @@ struct COMPONENT_EXPORT(SQL) DatabaseOptions {
   // This option is experimental and will be merged into the `exclusive_locking`
   // option above if proven to cause no OS compatibility issues.
   // TODO(crbug.com/40262539): Merge into above option, if possible.
-  bool exclusive_database_file_lock = false;
+  DatabaseOptions& set_exclusive_database_file_lock(
+      bool exclusive_database_file_lock) {
+    exclusive_database_file_lock_ = exclusive_database_file_lock;
+    return *this;
+  }
 
   // If true, enables SQLite's Write-Ahead Logging (WAL).
   //
@@ -127,8 +137,10 @@ struct COMPONENT_EXPORT(SQL) DatabaseOptions {
   // 'PRAGMA page_size = <new-size>' will result in no-ops.
   //
   // More details at https://www.sqlite.org/wal.html
-  bool wal_mode =
-      base::FeatureList::IsEnabled(sql::features::kEnableWALModeByDefault);
+  DatabaseOptions& set_wal_mode(bool wal_mode) {
+    wal_mode_ = wal_mode;
+    return *this;
+  }
 
   // If true, transaction commit waits for data to reach persistent media.
   //
@@ -148,7 +160,10 @@ struct COMPONENT_EXPORT(SQL) DatabaseOptions {
   // until the data is written to the persistent media. This guarantees
   // durability in the event of power loss, which is needed to guarantee the
   // integrity of non-WAL databases.
-  bool flush_to_media = false;
+  DatabaseOptions& set_flush_to_media(bool flush_to_media) {
+    flush_to_media_ = flush_to_media;
+    return *this;
+  }
 
   // Database page size.
   //
@@ -164,7 +179,10 @@ struct COMPONENT_EXPORT(SQL) DatabaseOptions {
   // more I/O when making small changes to existing records.
   //
   // Must be a power of two between 512 and 65536 inclusive.
-  int page_size = kDefaultPageSize;
+  DatabaseOptions& set_page_size(int page_size) {
+    page_size_ = page_size;
+    return *this;
+  }
 
   // The size of in-memory cache, in pages.
   //
@@ -173,7 +191,10 @@ struct COMPONENT_EXPORT(SQL) DatabaseOptions {
   //
   // 0 invokes SQLite's default, which is currently to size up the cache to use
   // exactly 2,048,000 bytes of RAM.
-  int cache_size = 0;
+  DatabaseOptions& set_cache_size(int cache_size) {
+    cache_size_ = cache_size;
+    return *this;
+  }
 
   // Stores mmap failures in the SQL schema, instead of the meta table.
   //
@@ -183,7 +204,11 @@ struct COMPONENT_EXPORT(SQL) DatabaseOptions {
   // If this option is true, the mmap status is stored in the database schema.
   // Like any other schema change, changing the mmap status invalidates all
   // pre-compiled SQL statements.
-  bool mmap_alt_status_discouraged = false;
+  DatabaseOptions& set_mmap_alt_status_discouraged(
+      bool mmap_alt_status_discouraged) {
+    mmap_alt_status_discouraged_ = mmap_alt_status_discouraged;
+    return *this;
+  }
 
   // If true, enables SQL views (a discouraged feature) for this database.
   //
@@ -192,13 +217,37 @@ struct COMPONENT_EXPORT(SQL) DatabaseOptions {
   //
   // If this option is false, CREATE VIEW and DROP VIEW succeed, but SELECT
   // statements targeting views fail.
-  bool enable_views_discouraged = false;
+  DatabaseOptions& set_enable_views_discouraged(bool enable_views_discouraged) {
+    enable_views_discouraged_ = enable_views_discouraged;
+    return *this;
+  }
 
   // If non-null, specifies the vfs implementation for the database to look for.
   // Most use-cases do not require the use of a
   // VFS(https://www.sqlite.org/vfs.html). This option should only be used when
   // there is a clear need for it.
-  const char* vfs_name_discouraged = nullptr;
+  DatabaseOptions& set_vfs_name_discouraged(const char* vfs_name_discouraged) {
+    vfs_name_discouraged_ = vfs_name_discouraged;
+    return *this;
+  }
+
+ private:
+  friend class Database;
+  FRIEND_TEST_ALL_PREFIXES(DatabaseOptionsTest,
+                           EnableViewsDiscouraged_FalseByDefault);
+  FRIEND_TEST_ALL_PREFIXES(DatabaseOptionsTest, FlushToDisk_FalseByDefault);
+  FRIEND_TEST_ALL_PREFIXES(SQLDatabaseTest, ReOpenWithDifferentJournalMode);
+
+  bool exclusive_locking_ = true;
+  bool exclusive_database_file_lock_ = false;
+  bool wal_mode_ =
+      base::FeatureList::IsEnabled(sql::features::kEnableWALModeByDefault);
+  bool flush_to_media_ = false;
+  int page_size_ = kDefaultPageSize;
+  int cache_size_ = 0;
+  bool mmap_alt_status_discouraged_ = false;
+  bool enable_views_discouraged_ = false;
+  const char* vfs_name_discouraged_ = nullptr;
 };
 
 // Holds database diagnostics in a structured format.
@@ -324,7 +373,7 @@ class COMPONENT_EXPORT(SQL) Database {
   // Pre-init configuration ----------------------------------------------------
 
   // The page size that will be used when creating a new database.
-  int page_size() const { return options_.page_size; }
+  int page_size() const { return options_.page_size_; }
 
   // Returns whether a database will be opened in WAL mode.
   bool UseWALMode() const;

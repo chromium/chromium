@@ -14,9 +14,11 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
 
 @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
 @JNINamespace("viz")
+@NullMarked
 public class InputTransferHandlerViz {
     @CalledByNative
     public static boolean transferInput(

@@ -739,14 +739,16 @@ class DXGIHandlePrivateData
           IUnknown> {
  public:
   explicit DXGIHandlePrivateData(base::win::ScopedHandle texture_handle)
-      : texture_handle_(std::move(texture_handle)) {}
+      : handle_(std::move(texture_handle)) {}
 
-  gfx::DXGIHandleToken GetDXGIToken() { return dxgi_token_; }
-  HANDLE GetTextureHandle() { return texture_handle_.get(); }
+  const gfx::DXGIHandleToken& GetDXGIToken() { return handle_.token(); }
+  HANDLE GetTextureHandle() { return handle_.buffer_handle(); }
+
+  gfx::DXGIHandle CloneHandle() { return handle_.Clone(); }
 
  private:
-  gfx::DXGIHandleToken dxgi_token_;
-  const base::win::ScopedHandle texture_handle_;
+  gfx::DXGIHandle handle_;
+
   ~DXGIHandlePrivateData() override = default;
 };
 
@@ -2276,12 +2278,13 @@ HRESULT VideoCaptureDeviceMFWin::DeliverTextureToClient(
   }
 
   auto gmb_handle = capture_buffer.handle_provider->GetGpuMemoryBufferHandle();
-  if (!gmb_handle.dxgi_handle.IsValid()) {
+  if (!gmb_handle.dxgi_handle().IsValid()) {
     // If the device is removed and GMB tracker fails to recreate it,
     // an empty gmb handle may be returned here.
     return MF_E_UNEXPECTED;
   }
-  hr = CopyTextureToGpuMemoryBuffer(texture, gmb_handle.dxgi_handle.Get());
+  hr = CopyTextureToGpuMemoryBuffer(texture,
+                                    gmb_handle.dxgi_handle().buffer_handle());
 
   if (FAILED(hr)) {
     LOG(ERROR) << "Failed to copy camera device texture to output texture: "
@@ -2386,14 +2389,7 @@ HRESULT VideoCaptureDeviceMFWin::DeliverExternalBufferToClient(
   // Set reused |token| and |share_handle| to gmb handle.
   gfx::GpuMemoryBufferHandle gmb_handle;
   gmb_handle.type = gfx::GpuMemoryBufferType::DXGI_SHARED_HANDLE;
-  HANDLE texture_handle_duplicated = nullptr;
-  CHECK(::DuplicateHandle(GetCurrentProcess(), private_data->GetTextureHandle(),
-                          GetCurrentProcess(), &texture_handle_duplicated, 0,
-                          FALSE, DUPLICATE_SAME_ACCESS))
-      << "failed to reuse handle.";
-
-  gmb_handle.dxgi_handle.Set(texture_handle_duplicated);
-  gmb_handle.dxgi_token = private_data->GetDXGIToken();
+  gmb_handle.set_dxgi_handle(private_data->CloneHandle());
 
   media::CapturedExternalVideoBuffer external_buffer =
       media::CapturedExternalVideoBuffer(

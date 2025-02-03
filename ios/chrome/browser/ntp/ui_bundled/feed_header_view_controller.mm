@@ -138,7 +138,7 @@ NSInteger kFeedSymbolPointSize = 17;
 - (void)viewWillLayoutSubviews {
   [super viewWillLayoutSubviews];
 
-  if ([self isFollowingEntryPointInFeedHeader]) {
+  if ([self.feedControlDelegate isFollowingFeedAvailable]) {
     [self updateSegmentedControlFont:self.segmentedControl];
   } else {
     UIFont* font = [self fontForTitleLabel];
@@ -165,14 +165,14 @@ NSInteger kFeedSymbolPointSize = 17;
 #pragma mark - Public
 
 - (CGFloat)feedHeaderHeight {
-  return [self isFollowingEntryPointInFeedHeader]
+  return [self.feedControlDelegate isFollowingFeedAvailable]
              ? kDiscoverFeedHeaderHeightWithFollowing
              : kDiscoverFeedHeaderHeightWithoutFollowing;
 }
 
 - (CGFloat)customSearchEngineViewHeight {
   return [self.NTPDelegate isGoogleDefaultSearchEngine] ||
-                 ![self isFollowingEntryPointInFeedHeader]
+                 ![self.feedControlDelegate isFollowingFeedAvailable]
              ? 0
              : kCustomSearchEngineLabelHeight;
 }
@@ -181,7 +181,7 @@ NSInteger kFeedSymbolPointSize = 17;
   if (!self.viewLoaded) {
     return;
   }
-  if (![self isFollowingEntryPointInFeedHeader]) {
+  if (![self.feedControlDelegate isFollowingFeedAvailable]) {
     [self.titleLabel setText:[self feedHeaderTitleText]];
     [self.titleLabel setNeedsDisplay];
     return;
@@ -199,7 +199,7 @@ NSInteger kFeedSymbolPointSize = 17;
   // When feed visibility changes, the menu content is recreated.
   [self.feedMenuHandler configureManagementMenu:self.managementButton];
 
-  if (![self isFollowingEntryPointInFeedHeader]) {
+  if (![self.feedControlDelegate isFollowingFeedAvailable]) {
     [self.titleLabel setText:[self feedHeaderTitleText]];
     [self.titleLabel setNeedsDisplay];
     return;
@@ -259,15 +259,8 @@ NSInteger kFeedSymbolPointSize = 17;
 
 #pragma mark - Private
 
-// If `YES`, the following fead will be displayed within the feed wrapper view
-// controller when the user requests it using `self.segmentedControl`.
-- (BOOL)isFollowingEntryPointInFeedHeader {
-  return [self.feedControlDelegate isFollowingFeedAvailable] &&
-         !IsNewFollowingFeedEntryPointsEnabled();
-}
-
 - (void)configureHeaderViews {
-  if ([self isFollowingEntryPointInFeedHeader]) {
+  if ([self.feedControlDelegate isFollowingFeedAvailable]) {
     if ([self.feedControlDelegate shouldFeedBeVisible]) {
       [self addViewsForVisibleFeed];
     } else {
@@ -339,7 +332,7 @@ NSInteger kFeedSymbolPointSize = 17;
   managementButton.accessibilityLabel =
       l10n_util::GetNSString(IDS_IOS_DISCOVER_FEED_MENU_ACCESSIBILITY_LABEL);
 
-  if ([self isFollowingEntryPointInFeedHeader]) {
+  if ([self.feedControlDelegate isFollowingFeedAvailable]) {
     buttonConfiguration.image =
         DefaultSymbolTemplateWithPointSize(kMenuSymbol, kFeedSymbolPointSize);
     managementButton.clipsToBounds = YES;
@@ -358,7 +351,7 @@ NSInteger kFeedSymbolPointSize = 17;
 
 // Configures and returns the feed header's sorting button.
 - (UIButton*)createSortButton {
-  DCHECK([self isFollowingEntryPointInFeedHeader]);
+  DCHECK([self.feedControlDelegate isFollowingFeedAvailable]);
 
   UIButton* sortButton = [[UIButton alloc] init];
 
@@ -499,7 +492,7 @@ NSInteger kFeedSymbolPointSize = 17;
 
   CGFloat totalHeaderHeight =
       [self feedHeaderHeight] + [self customSearchEngineViewHeight];
-  totalHeaderHeight += [self isFollowingEntryPointInFeedHeader]
+  totalHeaderHeight += [self.feedControlDelegate isFollowingFeedAvailable]
                            ? kTopVerticalPaddingFollowing
                            : kTopVerticalPadding;
   // Anchor container.
@@ -530,7 +523,7 @@ NSInteger kFeedSymbolPointSize = 17;
     ]];
   }
 
-  if ([self isFollowingEntryPointInFeedHeader]) {
+  if ([self.feedControlDelegate isFollowingFeedAvailable]) {
     // Anchor views based on the feed being visible or hidden.
     if ([self.feedControlDelegate shouldFeedBeVisible]) {
       [self anchorSegmentedControl];
@@ -693,7 +686,7 @@ NSInteger kFeedSymbolPointSize = 17;
 
 // The title text for the Discover feed header based on user prefs.
 - (NSString*)feedHeaderTitleText {
-  DCHECK(![self isFollowingEntryPointInFeedHeader]);
+  DCHECK(![self.feedControlDelegate isFollowingFeedAvailable]);
 
   // Set the title based on the default search engine.
   NSString* feedHeaderTitleText =

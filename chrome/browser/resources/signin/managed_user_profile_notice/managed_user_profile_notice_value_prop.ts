@@ -6,6 +6,7 @@ import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 
+import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './managed_user_profile_notice_value_prop.css.js';
@@ -18,14 +19,6 @@ export class ManagedUserProfileNoticeValuePropElement extends CrLitElement {
 
   static override get styles() {
     return getCss();
-  }
-
-  get titleElement(): HTMLElement|undefined {
-    return this.shadowRoot?.querySelector('.title') || undefined;
-  }
-
-  override firstUpdated() {
-    this.titleElement?.focus();
   }
 
   override render() {
@@ -49,6 +42,12 @@ export class ManagedUserProfileNoticeValuePropElement extends CrLitElement {
   email: string = '';
   accountName: string = '';
   showEnterpriseBadge: boolean = false;
+
+  override firstUpdated() {
+    const titleElement = this.shadowRoot.querySelector<HTMLElement>('.title');
+    assert(titleElement);
+    titleElement.focus();
+  }
 }
 
 declare global {

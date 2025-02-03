@@ -1468,10 +1468,6 @@ class SessionServiceKioskTest : public SessionServiceTest {
 
   void LogIn(std::string_view email, const GaiaId& gaia_id) override {
     chromeos::SetUpFakeKioskSession(std::string(email));
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    ash_test_helper()->test_session_controller_client()->AddUserSession(
-        std::string(email), user_manager::UserType::kKioskApp);
-#endif
   }
 };
 

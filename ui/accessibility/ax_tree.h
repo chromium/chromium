@@ -17,7 +17,6 @@
 
 #include "base/debug/crash_logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
@@ -62,10 +61,6 @@ enum class AXTreeUnserializeError {
   kMaxValue = kPendingChanges
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:AccessibilityTreeUnserializeError)
-
-#define ACCESSIBILITY_TREE_UNSERIALIZE_ERROR_HISTOGRAM(enum_value) \
-  base::UmaHistogramEnumeration(                                   \
-      "Accessibility.Reliability.Tree.UnserializeError", enum_value)
 
 // AXTree is a live, managed tree of AXNode objects that can receive
 // updates from another AXTreeSource via AXTreeUpdates, and it can be

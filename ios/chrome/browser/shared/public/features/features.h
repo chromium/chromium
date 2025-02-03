@@ -485,6 +485,11 @@ BASE_DECLARE_FEATURE(kEnableFeedBackgroundRefresh);
 // Use IsWebChannelsEnabled() instead of this constant directly.
 BASE_DECLARE_FEATURE(kEnableWebChannels);
 
+// Feature flag to deprecate the "Discover / Follow" toggle from the header of
+// the feed. When this feature is enabled, there would not be a separate
+// following feed.
+BASE_DECLARE_FEATURE(kDeprecateFeedHeader);
+
 // Feature flag to disable the feed.
 BASE_DECLARE_FEATURE(kEnableFeedAblation);
 

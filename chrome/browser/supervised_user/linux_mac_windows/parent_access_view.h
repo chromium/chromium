@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -34,6 +35,7 @@ class ParentAccessView : public views::View {
   static base::WeakPtr<ParentAccessView> ShowParentAccessDialog(
       content::WebContents* web_contents,
       const GURL& target_url,
+      const supervised_user::FilteringBehaviorReason& filtering_reason,
       WebContentsObserverCreationCallback web_contents_observer_creation_cb);
 
   base::WeakPtr<ParentAccessView> GetWeakPtr() {

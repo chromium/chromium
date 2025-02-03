@@ -184,6 +184,8 @@ void LensOverlayNavigationManager::OnNavigationListUpdate() const {
 }
 
 void LensOverlayNavigationManager::GoToPreviousSubNavigation() {
+  CHECK(!lens_navigation_items_.empty());
+  CHECK(!lens_navigation_items_.back()->sub_navigations().empty());
   std::vector<LensSubNavigationItem>& sub_navigation =
       lens_navigation_items_.back()->sub_navigations();
   // Removes current sub navigation.
@@ -196,6 +198,7 @@ void LensOverlayNavigationManager::GoToPreviousSubNavigation() {
 }
 
 void LensOverlayNavigationManager::GoToPreviousLensNavigation() {
+  CHECK(!lens_navigation_items_.empty());
   // Remove the current lens navigation.
   lens_navigation_items_.pop_back();
   LensResultItem& previous_item = *lens_navigation_items_.back();

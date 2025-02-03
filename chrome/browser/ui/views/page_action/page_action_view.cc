@@ -6,10 +6,10 @@
 
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
-#include "chrome/browser/ui/views/page_action/page_action_constants.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_model.h"
 #include "chrome/browser/ui/views/page_action/page_action_triggers.h"
+#include "chrome/browser/ui/views/page_action/page_action_view_params.h"
 #include "ui/actions/actions.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/font_list.h"
@@ -19,9 +19,11 @@
 namespace page_actions {
 
 PageActionView::PageActionView(actions::ActionItem* action_item,
-                               IconLabelBubbleView::Delegate* parent_delegate)
-    : IconLabelBubbleView(gfx::FontList(), parent_delegate),
-      action_item_(action_item->GetAsWeakPtr()) {
+                               const PageActionViewParams& params)
+    : IconLabelBubbleView(gfx::FontList(), params.icon_label_bubble_delegate),
+      action_item_(action_item->GetAsWeakPtr()),
+      icon_size_(params.icon_size),
+      icon_insets_(params.icon_insets) {
   CHECK(action_item_->GetActionId().has_value());
 
   image_container_view()->SetFlipCanvasOnPaintForRTLUI(true);
@@ -108,10 +110,9 @@ void PageActionView::SetShouldShowLabelForTesting(bool should_show_label) {
 }
 
 void PageActionView::UpdateBorder() {
-  gfx::Insets new_insets =
-      GetLayoutInsets(LOCATION_BAR_PAGE_ACTION_ICON_PADDING);
+  gfx::Insets new_insets = icon_insets_;
   if (ShouldShowLabel()) {
-    new_insets += gfx::Insets::TLBR(0, 4, 0, kPageActionBetweenIconSpacing);
+    new_insets += gfx::Insets::TLBR(0, 4, 0, 8);
   }
   if (new_insets != GetInsets()) {
     SetBorder(views::CreateEmptyBorder(new_insets));
@@ -152,15 +153,14 @@ void PageActionView::UpdateIconImage() {
   }
 
   // Icon default size may be different from the size used in the location bar.
-  const int icon_size = GetLayoutConstant(LOCATION_BAR_TRAILING_ICON_SIZE);
   const auto& icon_image = observation_.GetSource()->GetImage();
-  if (icon_image.Size() == gfx::Size(icon_size, icon_size)) {
+  if (icon_image.Size() == gfx::Size(icon_size_, icon_size_)) {
     return;
   }
 
   const gfx::ImageSkia image =
       gfx::CreateVectorIcon(*icon_image.GetVectorIcon().vector_icon(),
-                            icon_size, GetForegroundColor());
+                            icon_size_, GetForegroundColor());
 
   if (!image.isNull()) {
     SetImageModel(ui::ImageModel::FromImageSkia(image));

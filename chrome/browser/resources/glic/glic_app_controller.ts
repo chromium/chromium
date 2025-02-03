@@ -22,13 +22,20 @@ const kMinHoldLoadingTimeMs = loadTimeData.getInteger('minLoadingTimeMs');
 // Maximum time to wait for load before showing error panel.
 const kMaxWaitTimeMs = loadTimeData.getInteger('maxLoadingTimeMs');
 
+// Whether to enable the debug button on the error panel. Can be enabled with
+// the --enable-features=GlicDebugWebview command-line flag.
+const kEnableDebug = loadTimeData.getBoolean('enableDebug');
+
 interface PageElementTypes {
   panelContainer: HTMLElement;
   loadingPanel: HTMLElement;
   offlinePanel: HTMLElement;
   errorPanel: HTMLElement;
   unavailablePanel: HTMLElement;
-  guestPanel: chrome.webviewTag.WebView;
+  guestPanel: HTMLElement;
+  guestFrame: chrome.webviewTag.WebView;
+  webviewHeader: HTMLDivElement;
+  webviewContainer: HTMLDivElement;
 }
 
 const $: PageElementTypes = new Proxy({}, {
@@ -90,6 +97,12 @@ export class GlicAppController {
       this.setState(WebUiState.kBeginLoad);
     } else {
       this.setState(WebUiState.kOffline);
+    }
+
+    if (kEnableDebug) {
+      window.addEventListener('load', () => {
+        this.installDebugButton();
+      });
     }
   }
 
@@ -167,6 +180,7 @@ export class GlicAppController {
       WebUiState.kReady,
       {
         onEnter: () => {
+          $.guestPanel.classList.toggle('show-header', false);
           this.showPanel('guestPanel');
         },
       },
@@ -245,11 +259,9 @@ export class GlicAppController {
   createWebView(): chrome.webviewTag.WebView {
     const webview =
         document.createElement('webview') as chrome.webviewTag.WebView;
-    webview.id = 'guestPanel';
+    webview.id = 'guestFrame';
     webview.setAttribute('partition', 'persist:glicpart');
-    webview.setAttribute('class', 'panel');
-    webview.hidden = true;
-    $.panelContainer.appendChild(webview);
+    $.webviewContainer.appendChild(webview);
 
     webview.addEventListener('loadcommit', this.onLoadCommit);
     webview.addEventListener('contentload', this.contentLoaded);
@@ -289,6 +301,9 @@ export class GlicAppController {
       this.lastWidth = 400;
       this.lastHeight = 800;
       this.setState(WebUiState.kReady);
+      $.guestPanel.classList.toggle('show-header', true);
+    } else {
+      $.guestPanel.classList.toggle('show-header', false);
     }
   }
 
@@ -331,7 +346,7 @@ export class GlicAppController {
     this.webview.removeEventListener(
         'permissionrequest', this.onPermissionRequest);
 
-    $.panelContainer.removeChild(this.webview);
+    this.webview.remove();
 
     this.webview = this.createWebView();
   }
@@ -384,6 +399,38 @@ export class GlicAppController {
   showGuest(): void {
     if (this.state === WebUiState.kReady) {
       this.showPanel('guestPanel');
+    }
+  }
+
+  // TODO: Make this a proper state.
+  showDebug(): void {
+    this.lastWidth = 400;
+    this.lastHeight = 800;
+    this.setState(WebUiState.kReady);
+    $.guestPanel.classList.toggle('show-header', true);
+    $.guestPanel.classList.toggle('debug', true);
+  }
+
+  installDebugButton(): void {
+    const button = document.createElement('cr-icon-button');
+    button.id = 'debug';
+    button.classList.add('tonal-button');
+    button.setAttribute('iron-icon', 'cr:search');
+    document.querySelector('#errorPanel .notice')!.appendChild(button);
+    button.addEventListener('click', () => {
+      this.showDebug();
+    });
+  }
+
+  close(): void {
+    // If we're in the debug view, switch back to error. Otherwise close the
+    // window.
+    if (this.state === WebUiState.kReady &&
+        $.guestPanel.classList.contains('debug')) {
+      $.guestPanel.classList.toggle('debug', false);
+      this.setState(WebUiState.kError);
+    } else {
+      this.browserProxy.handler.closePanel();
     }
   }
 }

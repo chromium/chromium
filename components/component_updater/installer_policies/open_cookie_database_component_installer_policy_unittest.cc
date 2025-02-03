@@ -14,8 +14,8 @@
 namespace component_updater {
 
 namespace {
-constexpr base::FilePath::CharType kOpenCookieDatabaseCSVFileName[] =
-    FILE_PATH_LITERAL("open-cookie-database.csv");
+constexpr base::FilePath::CharType kOpenCookieDatabaseFileName[] =
+    FILE_PATH_LITERAL("open_cookie_database.json");
 }  // namespace
 
 class OpenCookieDatabaseComponentInstallerPolicyTest : public ::testing::Test {
@@ -36,7 +36,7 @@ TEST_F(OpenCookieDatabaseComponentInstallerPolicyTest,
   EXPECT_FALSE(policy.VerifyInstallation(base::Value::Dict(),
                                          component_install_dir_.GetPath()));
   ASSERT_TRUE(base::WriteFile(
-      component_install_dir_.GetPath().Append(kOpenCookieDatabaseCSVFileName),
+      component_install_dir_.GetPath().Append(kOpenCookieDatabaseFileName),
       ""));
   EXPECT_TRUE(policy.VerifyInstallation(base::Value::Dict(),
                                         component_install_dir_.GetPath()));

@@ -873,8 +873,9 @@ HRESULT GenerateSampleFromVideoFrame(
     RETURN_ON_HR_FAILURE(hr, "Failed to query ID3D11Device1", hr);
 
     Microsoft::WRL::ComPtr<ID3D11Texture2D> input_texture;
-    hr = device1->OpenSharedResource1(buffer_handle.dxgi_handle.Get(),
-                                      IID_PPV_ARGS(&input_texture));
+    hr = device1->OpenSharedResource1(
+        buffer_handle.dxgi_handle().buffer_handle(),
+        IID_PPV_ARGS(&input_texture));
     RETURN_ON_HR_FAILURE(hr, "Failed to open shared GMB D3D texture", hr);
 
     if (use_dxgi_buffer) {

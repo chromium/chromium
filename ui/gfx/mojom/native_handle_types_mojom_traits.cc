@@ -4,13 +4,30 @@
 
 #include "ui/gfx/mojom/native_handle_types_mojom_traits.h"
 
+#include "base/notreached.h"
 #include "build/build_config.h"
+#include "mojo/public/cpp/base/shared_memory_mojom_traits.h"
+#include "mojo/public/cpp/platform/platform_handle.h"
+
+#if BUILDFLAG(IS_APPLE)
+#include "base/apple/scoped_mach_port.h"
+#include "ui/gfx/mac/io_surface.h"
+#endif  // BUILDFLAG(IS_APPLE)
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_OZONE)
+#include "ui/gfx/native_pixmap_handle.h"
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_OZONE)
+
+#if BUILDFLAG(IS_WIN)
+#include "base/memory/unsafe_shared_memory_region.h"
+#include "ui/gfx/gpu_memory_buffer.h"
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_hardware_buffer_handle.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "mojo/public/cpp/system/scope_to_message_pipe.h"
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace mojo {
 
@@ -129,6 +146,23 @@ bool StructTraits<
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_OZONE)
 
 #if BUILDFLAG(IS_WIN)
+bool StructTraits<gfx::mojom::DXGIHandleDataView, gfx::DXGIHandle>::Read(
+    gfx::mojom::DXGIHandleDataView data,
+    gfx::DXGIHandle* handle) {
+  base::win::ScopedHandle buffer_handle = data.TakeBufferHandle().TakeHandle();
+  gfx::DXGIHandleToken token;
+  if (!data.ReadToken(&token)) {
+    return false;
+  }
+  base::UnsafeSharedMemoryRegion region;
+  if (!data.ReadSharedMemoryHandle(&region)) {
+    return false;
+  }
+  *handle = gfx::DXGIHandle(std::move(buffer_handle), token, std::move(region));
+  DCHECK(handle->IsValid());
+  return true;
+}
+
 bool StructTraits<gfx::mojom::DXGIHandleTokenDataView, gfx::DXGIHandleToken>::
     Read(gfx::mojom::DXGIHandleTokenDataView& input,
          gfx::DXGIHandleToken* output) {
@@ -139,5 +173,110 @@ bool StructTraits<gfx::mojom::DXGIHandleTokenDataView, gfx::DXGIHandleToken>::
   return true;
 }
 #endif  // BUILDFLAG(IS_WIN)
+
+gfx::mojom::GpuMemoryBufferPlatformHandleDataView::Tag UnionTraits<
+    gfx::mojom::GpuMemoryBufferPlatformHandleDataView,
+    gfx::GpuMemoryBufferHandle>::GetTag(const gfx::GpuMemoryBufferHandle&
+                                            handle) {
+  switch (handle.type) {
+    case gfx::EMPTY_BUFFER:
+      NOTREACHED();  // Handled by `IsNull()` and should never reach here.
+    case gfx::SHARED_MEMORY_BUFFER:
+      return Tag::kSharedMemoryHandle;
+    case gfx::IO_SURFACE_BUFFER:
+#if BUILDFLAG(IS_APPLE)
+      return Tag::kMachPort;
+#else
+      NOTREACHED();
+#endif  // BUILDFLAG(IS_APPLE)
+    case gfx::NATIVE_PIXMAP:
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_OZONE)
+      return Tag::kNativePixmapHandle;
+#else
+      NOTREACHED();
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_OZONE)
+    case gfx::DXGI_SHARED_HANDLE:
+#if BUILDFLAG(IS_WIN)
+      return Tag::kDxgiHandle;
+#else
+      NOTREACHED();
+#endif
+    case gfx::ANDROID_HARDWARE_BUFFER:
+#if BUILDFLAG(IS_ANDROID)
+      return Tag::kAndroidHardwareBufferHandle;
+#else
+      NOTREACHED();
+#endif  // BUILDFLAG(IS_ANDROID)
+  }
+  NOTREACHED();
+}
+
+bool UnionTraits<gfx::mojom::GpuMemoryBufferPlatformHandleDataView,
+                 gfx::GpuMemoryBufferHandle>::
+    IsNull(const gfx::GpuMemoryBufferHandle& handle) {
+  return handle.type == gfx::EMPTY_BUFFER;
+}
+
+void UnionTraits<
+    gfx::mojom::GpuMemoryBufferPlatformHandleDataView,
+    gfx::GpuMemoryBufferHandle>::SetToNull(gfx::GpuMemoryBufferHandle* handle) {
+  handle->type = gfx::EMPTY_BUFFER;
+}
+
+#if BUILDFLAG(IS_APPLE)
+PlatformHandle UnionTraits<
+    gfx::mojom::GpuMemoryBufferPlatformHandleDataView,
+    gfx::GpuMemoryBufferHandle>::mach_port(gfx::GpuMemoryBufferHandle& handle) {
+  gfx::ScopedRefCountedIOSurfaceMachPort io_surface_mach_port(
+      IOSurfaceCreateMachPort(handle.io_surface.get()));
+  return PlatformHandle(
+      base::apple::RetainMachSendRight(io_surface_mach_port.get()));
+}
+#endif  // BUILDFLAG(IS_APPLE)
+
+bool UnionTraits<gfx::mojom::GpuMemoryBufferPlatformHandleDataView,
+                 gfx::GpuMemoryBufferHandle>::
+    Read(gfx::mojom::GpuMemoryBufferPlatformHandleDataView data,
+         gfx::GpuMemoryBufferHandle* handle) {
+  switch (data.tag()) {
+    case Tag::kSharedMemoryHandle:
+      handle->type = gfx::SHARED_MEMORY_BUFFER;
+      return data.ReadSharedMemoryHandle(&handle->region());
+#if BUILDFLAG(IS_APPLE)
+    case Tag::kMachPort:
+      handle->type = gfx::IO_SURFACE_BUFFER;
+      PlatformHandle mach_port = data.TakeMachPort();
+      if (!mach_port.is_mach_send()) {
+        return false;
+      }
+      gfx::ScopedRefCountedIOSurfaceMachPort io_surface_mach_port(
+          mach_port.ReleaseMachSendRight());
+      if (io_surface_mach_port) {
+        handle->io_surface.reset(
+            IOSurfaceLookupFromMachPort(io_surface_mach_port.get()));
+      } else {
+        handle->io_surface.reset();
+      }
+      return true;
+#endif  // BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_OZONE)
+    case Tag::kNativePixmapHandle:
+      handle->type = gfx::NATIVE_PIXMAP;
+      return data.ReadNativePixmapHandle(&handle->native_pixmap_handle);
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_OZONE)
+#if BUILDFLAG(IS_WIN)
+    case Tag::kDxgiHandle:
+      handle->type = gfx::DXGI_SHARED_HANDLE;
+      return data.ReadDxgiHandle(&handle->dxgi_handle());
+#endif  // BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_ANDROID)
+    case Tag::kAndroidHardwareBufferHandle:
+      handle->type = gfx::ANDROID_HARDWARE_BUFFER;
+      return data.ReadAndroidHardwareBufferHandle(
+          &handle->android_hardware_buffer);
+#endif  // BUILDFLAG(IS_ANDROID)
+  }
+  return false;
+}
 
 }  // namespace mojo

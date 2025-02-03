@@ -131,6 +131,7 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
     private CancelableRunnable mPendingShouldIgnore;
     private RequiredCallback<Boolean> mShouldIgnoreResultCallback;
     private boolean mHasAttachedToActivity;
+    private boolean mTimedOutWaitingForActivity;
 
     /** Default constructor of {@link InterceptNavigationDelegateImpl}. */
     public InterceptNavigationDelegateImpl(InterceptNavigationDelegateClient client) {
@@ -159,6 +160,7 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
         // Wait until first attached.
         if (!attached) return;
         mHasAttachedToActivity = true;
+        mTimedOutWaitingForActivity = false;
         requestFinishPendingShouldIgnoreCheck();
     }
 
@@ -228,6 +230,16 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
 
         // If not attached to an Activity, we cannot check synchronously and need to defer.
         if (!mHasAttachedToActivity) {
+            // Only wait to attach to an Activity for external app launches. Any other background
+            // launches don't need to wait for an Activity to attach and can just block external
+            // navigations (like Custom Tab prerenders).
+            //
+            // Also, if the previous navigation timed out waiting for Activity to attach, don't keep
+            // waiting.
+            if (!mClient.wasTabLaunchedFromExternalApp() || mTimedOutWaitingForActivity) {
+                resultCallback.onResult(false);
+                return;
+            }
             shouldRunAsync = true;
             startTimeoutForDeferredNavigation();
         }
@@ -457,6 +469,7 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                 () -> {
                     // Don't accidentally cancel subsequent navigations.
                     if (pendingShouldIgnore != mPendingShouldIgnore) return;
+                    mTimedOutWaitingForActivity = true;
                     cancelPendingShouldIgnoreCheck();
                 },
                 DEFER_NAVIGATION_TIMEOUT_MILLIS);

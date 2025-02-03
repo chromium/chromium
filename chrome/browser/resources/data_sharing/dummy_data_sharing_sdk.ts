@@ -8,7 +8,7 @@ import {Code} from './data_sharing_sdk_types.js';
 
 // Add something to the dialog to tell which flow it is.
 function appendTextForTesting(text: string) {
-  const newDiv: HTMLDivElement = document.createElement('div');
+  const newDiv: HTMLElement = document.createElement('div');
   newDiv.textContent = text;
   document.body.appendChild(newDiv);
 }

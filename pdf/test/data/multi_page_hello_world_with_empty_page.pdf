@@ -1,0 +1,85 @@
+%PDF-1.7
+% ò¤ô
+1 0 obj <<
+  /Type /Catalog
+  /Pages 2 0 R
+>>
+endobj
+2 0 obj <<
+  /Type /Pages
+  /Count 3
+  /Kids [4 0 R 6 0 R 7 0 R]
+  /MediaBox [0 0 200 200]
+  /Resources <<
+    /Font <<
+      /F1 3 0 R
+    >>
+  >>
+>>
+endobj
+3 0 obj <<
+  /Type /Font
+  /Subtype /Type1
+  /BaseFont /Times-Roman
+>>
+endobj
+4 0 obj <<
+  /Type /Page
+  /Parent 2 0 R
+  /Contents 5 0 R
+>>
+endobj
+5 0 obj <<
+  /Length 52
+>>
+stream
+BT
+20 50 Td
+/F1 12 Tf
+(Hello, world!) Tj
+0 50 Td
+ET
+endstream
+endobj
+6 0 obj <<
+  /Type /Page
+  /Parent 2 0 R
+  % This page deliberately has no contents.
+>>
+endobj
+7 0 obj <<
+  /Type /Page
+  /Parent 2 0 R
+  /Contents 8 0 R
+>>
+endobj
+8 0 obj <<
+  /Length 54
+>>
+stream
+BT
+20 50 Td
+/F1 12 Tf
+(Goodbye, world!) Tj
+0 50 Td
+ET
+endstream
+endobj
+xref
+0 9
+0000000000 65535 f 
+0000000015 00000 n 
+0000000068 00000 n 
+0000000226 00000 n 
+0000000304 00000 n 
+0000000373 00000 n 
+0000000476 00000 n 
+0000000571 00000 n 
+0000000640 00000 n 
+trailer <<
+  /Root 1 0 R
+  /Size 9
+>>
+startxref
+745
+%%EOF

@@ -41,8 +41,6 @@ class ExtensionsUI : public content::WebUIController {
   static base::RefCountedMemory* GetFaviconResourceBytes(
       ui::ResourceScaleFactor scale_factor);
 
-  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
-
  private:
   // Called when developer mode is toggled.
   void OnDevModeChanged();

@@ -167,11 +167,12 @@ public class FaviconHelper {
     /**
      * Get Favicon bitmap for the requested arguments. Retrieves favicons only for pages the user
      * has visited on the current device.
+     *
      * @param profile Profile used for the FaviconService construction.
      * @param pageUrl The target Page URL to get the favicon.
      * @param desiredSizeInPixel The size of the favicon in pixel we want to get.
      * @param faviconImageCallback A method to be called back when the result is available. Note
-     *         that this callback is not called if this method returns false.
+     *     that this callback is not called if this method returns false.
      * @return True if GetLocalFaviconImageForURL is successfully called.
      */
     public boolean getLocalFaviconImageForURL(
@@ -179,7 +180,12 @@ public class FaviconHelper {
             GURL pageUrl,
             int desiredSizeInPixel,
             FaviconImageCallback faviconImageCallback) {
-        assert mNativeFaviconHelper != 0;
+        // TODO(crbug.com/394146968): Change this back into an assert after all crashes are gone.
+        // assert mNativeFaviconHelper != 0;
+        if (mNativeFaviconHelper == 0) {
+            throw new IllegalStateException(
+                    "Use of FaviconHelper#getLocalFaviconImageForURL after destroy.");
+        }
         return FaviconHelperJni.get()
                 .getLocalFaviconImageForURL(
                         mNativeFaviconHelper,

@@ -23,7 +23,6 @@ SavedTabGroupTab::SavedTabGroupTab(
     std::optional<base::Time> creation_time_windows_epoch_micros,
     std::optional<base::Time> update_time_windows_epoch_micros,
     std::optional<gfx::Image> favicon,
-    bool is_pending_sanitization,
     bool is_pending_ntp)
     : saved_tab_guid_(saved_tab_guid.has_value()
                           ? saved_tab_guid.value()
@@ -44,7 +43,6 @@ SavedTabGroupTab::SavedTabGroupTab(
               ? update_time_windows_epoch_micros.value()
               : base::Time::Now()),
       favicon_(favicon),
-      is_pending_sanitization_(is_pending_sanitization),
       is_pending_ntp_(is_pending_ntp) {}
 
 SavedTabGroupTab::SavedTabGroupTab(const SavedTabGroupTab& other) = default;

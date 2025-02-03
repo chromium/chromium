@@ -1216,6 +1216,79 @@ TEST_F(PdfInkModuleStrokeTest, IgnoreTouchEventsAfterPenEvent) {
                    /*page_index=*/0, ink::StrokeInput::ToolType::kStylus));
 }
 
+TEST_F(PdfInkModuleStrokeTest, AnnotationWithMouseInterruptedByPenEvents) {
+  EnableAnnotationMode();
+  InitializeSimpleSinglePageBasicLayout();
+
+  blink::WebMouseEvent mouse_down_event =
+      MouseEventBuilder().CreateLeftClickAtPosition(kMouseDownPoint).Build();
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
+
+  blink::WebMouseEvent mouse_move_event =
+      CreateMouseMoveWithLeftButtonEventAtPoint(kMouseMovePoint);
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_move_event));
+
+  // Per manual testing on a Windows laptop, pen input causes mouse events to
+  // lose their left-button down state while the pen is active.
+  blink::WebMouseEvent mouse_move_no_left_button_event =
+      MouseEventBuilder()
+          .SetType(blink::WebInputEvent::Type::kMouseMove)
+          .SetPosition(kMouseMovePoint)
+          .Build();
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_move_no_left_button_event));
+
+  const std::vector<base::span<const gfx::PointF>> all_move_points{
+      base::span_from_ref(kMouseMovePoint),
+  };
+  ApplyStrokeWithPenAtPoints(base::span_from_ref(kMouseDownPoint),
+                             all_move_points,
+                             base::span_from_ref(kMouseUpPoint));
+
+  // Per manual testing on a Windows laptop, after the pen inputs finish, the
+  // mouse events regain their left-button down state. PdfInkModule treats these
+  // as spurious events, and ignores them.
+  EXPECT_FALSE(ink_module().HandleInputEvent(mouse_move_event));
+
+  blink::WebMouseEvent mouse_up_event =
+      MouseEventBuilder().CreateLeftMouseUpAtPosition(kMouseUpPoint).Build();
+  EXPECT_FALSE(ink_module().HandleInputEvent(mouse_up_event));
+
+  EXPECT_EQ(2, client().stroke_finished_count());
+  EXPECT_EQ(2, ink_module().GetInputOfTypeCountForPageForTesting(
+                   /*page_index=*/0, ink::StrokeInput::ToolType::kMouse));
+  EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
+                   /*page_index=*/0, ink::StrokeInput::ToolType::kTouch));
+  EXPECT_EQ(3, ink_module().GetInputOfTypeCountForPageForTesting(
+                   /*page_index=*/0, ink::StrokeInput::ToolType::kStylus));
+}
+
+TEST_F(PdfInkModuleStrokeTest, AnnotationWithPenIgnoresMouseEvents) {
+  EnableAnnotationMode();
+  InitializeSimpleSinglePageBasicLayout();
+
+  blink::WebTouchEvent pen_start_event =
+      CreatePenEvent(blink::WebInputEvent::Type::kTouchStart,
+                     base::span_from_ref(kMouseDownPoint));
+  EXPECT_TRUE(ink_module().HandleInputEvent(pen_start_event));
+
+  blink::WebMouseEvent mouse_move_event =
+      CreateMouseMoveWithLeftButtonEventAtPoint(kMouseMovePoint);
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_move_event));
+
+  blink::WebTouchEvent pen_end_event =
+      CreatePenEvent(blink::WebInputEvent::Type::kTouchEnd,
+                     base::span_from_ref(kMouseUpPoint));
+  EXPECT_TRUE(ink_module().HandleInputEvent(pen_end_event));
+
+  EXPECT_EQ(1, client().stroke_finished_count());
+  EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
+                   /*page_index=*/0, ink::StrokeInput::ToolType::kMouse));
+  EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
+                   /*page_index=*/0, ink::StrokeInput::ToolType::kTouch));
+  EXPECT_EQ(2, ink_module().GetInputOfTypeCountForPageForTesting(
+                   /*page_index=*/0, ink::StrokeInput::ToolType::kStylus));
+}
+
 TEST_F(PdfInkModuleStrokeTest, CanonicalAnnotationPoints) {
   // Setup to support examining the page stroke points for a layout that is
   // more complicated than what is provide by

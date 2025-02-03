@@ -7,6 +7,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/data_sharing/collaboration_controller_delegate_desktop.h"
+#include "chrome/browser/ui/views/data_sharing/data_sharing_bubble_controller.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/collaboration/public/collaboration_controller_delegate.h"
@@ -17,6 +18,7 @@
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/status/status.h"
 #include "ui/base/interaction/interactive_test.h"
 #include "ui/views/interaction/interactive_views_test.h"
 
@@ -126,6 +128,32 @@ IN_PROC_BROWSER_TEST_F(CollaborationControllerDelegateDesktopInteractiveUITest,
                                             callback.Get());
                   }),
                   WaitForShow(kDataSharingBubbleElementId));
+}
+
+IN_PROC_BROWSER_TEST_F(CollaborationControllerDelegateDesktopInteractiveUITest,
+                       ShowJoinDialogWithError) {
+  TestCollaborationControllerDelegateDesktop delegate(browser());
+  std::string fake_collab_id = "fake_collab_id";
+  std::string fake_access_token = "fake_access_token";
+  data_sharing::GroupToken token = data_sharing::GroupToken(
+      data_sharing::GroupId(fake_collab_id), fake_access_token);
+  data_sharing::SharedDataPreview preview_data;
+  base::MockCallback<
+      collaboration::CollaborationControllerDelegate::ResultCallback>
+      callback;
+  RunTestSequence(
+      Do([&]() {
+        delegate.ShowJoinDialog(token, preview_data, callback.Get());
+      }),
+      WaitForShow(kDataSharingBubbleElementId), Do([&]() {
+        // Close join dialog and show the error dialog.
+        auto* controller =
+            DataSharingBubbleController::GetOrCreateForBrowser(browser());
+        controller->Close();
+        controller->ShowErrorDialog(
+            static_cast<int>(absl::StatusCode::kUnknown));
+      }),
+      WaitForShow(kDataSharingErrorDialogOkButtonElementId));
 }
 
 IN_PROC_BROWSER_TEST_F(CollaborationControllerDelegateDesktopInteractiveUITest,

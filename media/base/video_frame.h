@@ -23,7 +23,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
-#include "base/notreached.h"
 #include "base/process/memory.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"

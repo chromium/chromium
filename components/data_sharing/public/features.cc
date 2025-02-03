@@ -10,6 +10,10 @@
 namespace data_sharing::features {
 namespace {
 const char kDataSharingDefaultUrl[] = "https://www.google.com/chrome/tabshare/";
+const char kLearnMoreSharedTabGroupPageDefaultUrl[] = "https://support.google.com/chrome/?p=chrome_collaboration";
+const char kLearnAboutBlockedAccountsDefaultUrl[] = "https://support.google.com/accounts/answer/6388749";
+const char kActivityLogsDefaultUrl[] = "https://myactivity.google.com/product/chrome_shared_tab_group_activity?utm_source=chrome_collab";
+
 }
 
 BASE_FEATURE(kDataSharingFeature,
@@ -24,6 +28,21 @@ constexpr base::FeatureParam<std::string> kDataSharingURL(
     &kDataSharingFeature,
     "data_sharing_url",
     kDataSharingDefaultUrl);
+
+constexpr base::FeatureParam<std::string> kLearnMoreSharedTabGroupPageURL(
+    &kDataSharingFeature,
+    "learn_more_shared_tab_group_page_url",
+    kLearnMoreSharedTabGroupPageDefaultUrl);
+
+constexpr base::FeatureParam<std::string> kLearnAboutBlockedAccountsURL(
+    &kDataSharingFeature,
+    "learn_about_blocked_accounts_url",
+    kLearnAboutBlockedAccountsDefaultUrl);
+
+constexpr base::FeatureParam<std::string> kActivityLogsURL(
+    &kDataSharingFeature,
+    "activity_logs_url",
+    kActivityLogsDefaultUrl);
 
 constexpr base::FeatureParam<base::TimeDelta>
     kDataSharingGroupDataPeriodicPollingInterval(

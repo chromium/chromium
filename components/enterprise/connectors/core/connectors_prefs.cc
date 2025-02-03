@@ -86,6 +86,10 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterInt64Pref(kLatestCrashReportCreationTime, 0);
+
+#if BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
+  client_certificates::RegisterLocalStatePrefs(registry);
+#endif  // BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
 }
 
 }  // namespace enterprise_connectors

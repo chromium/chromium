@@ -10270,6 +10270,26 @@
             ]
         }
     ],
+    "GCOnArrayBufferAllocationFailure": [
+        {
+            "platforms": [
+                "android_webview",
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GCOnArrayBufferAllocationFailure"
+                    ]
+                }
+            ]
+        }
+    ],
     "GMSCoreEmoji": [
         {
             "platforms": [
@@ -18729,26 +18749,6 @@
             ]
         }
     ],
-    "ProtectedAudiencesSellerNonce": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "FledgeSellerNonce"
-                    ]
-                }
-            ]
-        }
-    ],
     "ProtectedAudiencesUpdateIfOlderThanMs": [
         {
             "platforms": [
@@ -23708,28 +23708,6 @@
                     "name": "EnabledWithRefinements",
                     "enable_features": [
                         "ToastRefinements"
-                    ]
-                }
-            ]
-        }
-    ],
-    "ToastTimeoutStudy": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWithUpdatedTimeout",
-                    "params": {
-                        "toast_timeout": "8s",
-                        "toast_without_action_timeout": "4s"
-                    },
-                    "enable_features": [
-                        "ToastFramework"
                     ]
                 }
             ]

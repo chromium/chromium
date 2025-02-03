@@ -1289,6 +1289,11 @@ by a child template that "extends" this file.
 
       {% endif %}
 
+      {% if enable_vr == "true" %}
+      <!-- TODO(https://crbug.com/393557658): Investigate removing this. -->
+      <uses-native-library android:name="libopenxr.google.so" android:required="false" />
+      {% endif %}
+
       <!-- Cast support -->
       <meta-data
           android:name=

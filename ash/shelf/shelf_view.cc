@@ -1238,7 +1238,6 @@ void ShelfView::EndDrag(bool cancel) {
         bounds_animator_->SetAnimationDelegate(drag_and_drop_view,
                                                std::move(animation_delegate));
       }
-
     } else {
       // Restore drag and drop view size, which was cleared in `StartDrag` to
       // hide the item view.
@@ -2128,9 +2127,23 @@ gfx::Rect ShelfView::GetBoundsForDragInsertInScreen() {
 }
 
 void ShelfView::CancelDrag() {
+  if (!dragging()) {
+    // Clear any drag state that may have been set before dragging started - for
+    // example, `PointerPressedOnButton()` may set `drag_view_`.
+    if (drag_view_) {
+      ClearDragState();
+    }
+    return;
+  }
+
   FinalizeRipOffDrag(true);
 
   if (drag_view_) {
+    // If the item was pinned for drag and drop, the item view is about to be
+    // removed from shelf view, so there is no point in updating its appearance.
+    if (!drag_and_drop_item_pinned_) {
+      drag_view_->layer()->SetOpacity(1.0f);
+    }
     auto drag_view_index = view_model_->GetIndexOfView(drag_view_);
     drag_view_ = nullptr;
 

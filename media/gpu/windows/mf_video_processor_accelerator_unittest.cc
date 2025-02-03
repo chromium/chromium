@@ -13,6 +13,7 @@
 #include <mfapi.h>
 
 #include "base/test/task_environment.h"
+#include "base/win/scoped_handle.h"
 #include "build/build_config.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl_dxgi.h"
 #include "media/base/bitstream_buffer.h"
@@ -21,6 +22,7 @@
 #include "media/base/win/mf_initializer.h"
 #include "media/gpu/windows/media_foundation_video_encode_accelerator_win.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/gpu_memory_buffer.h"
 
 namespace media {
 
@@ -112,9 +114,9 @@ class MFVideoProcessorAcceleratorTest : public ::testing::Test {
       return nullptr;
     }
     gfx::GpuMemoryBufferHandle gmb_handle;
-    gmb_handle.dxgi_handle.Set(shared_handle);
-    gmb_handle.dxgi_token = gfx::DXGIHandleToken();
     gmb_handle.type = gfx::DXGI_SHARED_HANDLE;
+    gmb_handle.set_dxgi_handle(
+        gfx::DXGIHandle(base::win::ScopedHandle(shared_handle)));
     std::unique_ptr<gfx::GpuMemoryBuffer> gmb =
         gpu::GpuMemoryBufferImplDXGI::CreateFromHandle(
             std::move(gmb_handle), {width, height},

@@ -76,6 +76,13 @@ mojom::PanelState CreatePanelState(bool widget_visible,
   return panel_state;
 }
 
+GlicButton* GetGlicButton(Browser* browser) {
+  return browser->window()
+      ->AsBrowserView()
+      ->tab_strip_region_view()
+      ->GetGlicButton();
+}
+
 }  // namespace
 
 // Helper class for observing mouse and key events from native window.
@@ -390,19 +397,14 @@ gfx::Rect GlicWindowController::GetInitialDetachedBounds() {
 }
 
 void GlicWindowController::OpenAttached(Browser* browser) {
-  GlicButton* glic_button_view = browser ? browser->window()
-                                               ->AsBrowserView()
-                                               ->tab_strip_region_view()
-                                               ->GetGlicButton()
-                                         : nullptr;
+  GlicButton* glic_button = browser ? GetGlicButton(browser) : nullptr;
 
   // If summoned from the tab strip button. This will always show up attached
   // because it is tied to a views::View object within the current browser
   // window.
   gfx::Point top_right_point =
-      GetTopRightPositionForAttachedGlicWindow(glic_button_view);
-  gfx::Rect glic_window_widget_initial_rect =
-      glic_button_view->GetBoundsInScreen();
+      GetTopRightPositionForAttachedGlicWindow(glic_button);
+  gfx::Rect glic_window_widget_initial_rect = glic_button->GetBoundsWithInset();
 
   glic_widget_ = CreateGlicWidget(profile_, glic_window_widget_initial_rect);
   glic_widget_observation_.Observe(glic_widget_.get());
@@ -544,13 +546,10 @@ content::WebContents* GlicWindowController::GetWebContents() {
 }
 
 gfx::Point GlicWindowController::GetTopRightPositionForAttachedGlicWindow(
-    views::View* glic_button_view) {
-  // Initial position determined by glic button bounds. Returns the top right
-  // point of the button.
-  gfx::Point top_right_bounds =
-      glic_button_view->GetBoundsInScreen().top_right();
-
-  return top_right_bounds;
+    GlicButton* glic_button) {
+  // The widget should be placed so its top right corner matches the visible top
+  // right corner of the glic button.
+  return glic_button->GetBoundsWithInset().top_right();
 }
 
 gfx::Point GlicWindowController::GetTopRightPositionForDetachedGlicWindow() {
@@ -654,10 +653,7 @@ void GlicWindowController::AttachToBrowser(Browser* browser) {
 
   // Trigger custom event for testing.
   views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
-      kGlicWidgetAttached, browser->window()
-                               ->AsBrowserView()
-                               ->tab_strip_region_view()
-                               ->GetGlicButton());
+      kGlicWidgetAttached, GetGlicButton(browser));
 }
 
 void GlicWindowController::Resize(const gfx::Size& size,
@@ -763,11 +759,8 @@ void GlicWindowController::Close() {
   if (attached_browser_) {
     state_ = State::kCloseAnimation;
     GetGlicView()->web_view()->SetWebContents(nullptr);
-    GlicButton* glic_button = attached_browser_->window()
-                                  ->AsBrowserView()
-                                  ->tab_strip_region_view()
-                                  ->GetGlicButton();
-    AnimateBounds(glic_button->GetBoundsInScreen(),
+    GlicButton* glic_button = GetGlicButton(attached_browser_);
+    AnimateBounds(glic_button->GetBoundsWithInset(),
                   base::Milliseconds(kAnimationDurationMs),
                   base::BindOnce(&GlicWindowController::CloseFinish,
                                  GetWeakPtr(), reopen_detached));
@@ -878,8 +871,7 @@ void GlicWindowController::HandleGlicButtonIndicator() {
     scoped_glic_button_indicator_.reset();
     return;
   }
-  GlicButton* glic_button =
-      browser->GetBrowserView().tab_strip_region_view()->GetGlicButton();
+  GlicButton* glic_button = GetGlicButton(browser);
   // If there isn't an existing scoped indicator for this button, create one.
   if (!scoped_glic_button_indicator_ ||
       scoped_glic_button_indicator_->GetGlicButton() != glic_button) {
@@ -944,23 +936,15 @@ void GlicWindowController::MovePositionToBrowserGlicButton(Browser* browser,
     return;
   }
 
-  TabStripActionContainer* tab_strip_action_container =
-      browser->window()
-          ->AsBrowserView()
-          ->tab_strip_region_view()
-          ->GetTabStripActionContainer();
-  CHECK(tab_strip_action_container);
-
-  // TODO(andreaxg): Fix exact attachment position.
-  gfx::Rect tab_strip_container_rect =
-      tab_strip_action_container->GetBoundsInScreen();
-  gfx::Point top_right = tab_strip_container_rect.top_right();
-  int tab_strip_padding = GetLayoutConstant(TAB_STRIP_PADDING);
+  GlicButton* glic_button = GetGlicButton(browser);
+  CHECK(glic_button);
+  gfx::Point top_right = GetTopRightPositionForAttachedGlicWindow(glic_button);
 
   gfx::Rect current_bounds = GetGlicWidget()->GetWindowBoundsInScreen();
   gfx::Rect new_bounds = current_bounds;
-  new_bounds.set_x(top_right.x() - current_bounds.width() - tab_strip_padding);
-  new_bounds.set_y(top_right.y() + tab_strip_padding);
+  new_bounds.set_x(top_right.x() - current_bounds.width());
+  new_bounds.set_y(top_right.y());
+
   gfx::Size cur_widget_size(kWidgetDefaultWidth, kWidgetTopBarHeight);
   if (glic_size_) {
     cur_widget_size = *glic_size_;
@@ -1086,6 +1070,12 @@ GlicWindowController::AddWindowActivationChangedCallback(
 void GlicWindowController::Preload() {
   if (!contents_) {
     contents_ = std::make_unique<WebUIContentsContainer>(profile_, this);
+  }
+}
+
+void GlicWindowController::ReloadWebview() {
+  if (contents_) {
+    contents_->web_contents()->ReloadFocusedFrame();
   }
 }
 

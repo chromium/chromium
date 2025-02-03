@@ -765,11 +765,6 @@
     "expiry_milestone": 123
   },
   {
-    "name": "autofill-parse-vcn-card-on-file-standalone-cvc-fields",
-    "owners": [ "alexandertekle@google.com", "jsaul@google.com"],
-    "expiry_milestone": 135
-  },
-  {
     "name": "autofill-payments-sheet-v2",
     "owners": [ "vincb@google.com", "bling-transactions@google.com" ],
     "expiry_milestone": 135
@@ -2824,8 +2819,8 @@
   },
   {
     "name": "enable-desktop-pwas-tab-strip-customizations",
-    "owners": [ "loubrett@google.com", "cros-web-apps-core@google.com" ],
-    "expiry_milestone": 132
+    "owners": [ "cros-web-apps-core@google.com", "pwa-team@google.com" ],
+    "expiry_milestone": 140
   },
   {
     "name": "enable-desktop-pwas-tab-strip-settings",
@@ -5285,6 +5280,11 @@
     "expiry_milestone": 138
   },
   {
+    "name": "ios-deprecate-feed-header",
+    "owners": [ "ginnyhuang@chromium.org", "bling-get-set-up@google.com" ],
+    "expiry_milestone": 139
+  },
+  {
     "name": "ios-disable-parcel-tracking",
     "owners": [ "smcgruer@google.com", "chrome-payments-team@google.com" ],
     "expiry_milestone": 138
@@ -5354,11 +5354,6 @@
     "name": "ios-new-feed-positioning",
     "owners": [ "ginnyhuang@chromium.org", "thegreenfrog@google.com" ],
     "expiry_milestone": 136
-  },
-    {
-    "name": "ios-new-following-feed-entry-points",
-    "owners": [ "ginnyhuang@chromium.org", "huitingyu@google.com" ],
-    "expiry_milestone": 137
   },
   {
     "name": "ios-page-info-last-visited",

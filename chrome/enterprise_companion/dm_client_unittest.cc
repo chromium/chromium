@@ -51,6 +51,7 @@ constexpr int kPublicKey1Version = 100;
 constexpr int kTimestamp1 = 42;
 constexpr int kTimestamp2 = 84;
 
+using ::testing::_;
 using ::testing::ElementsAre;
 
 // Wraps a real DM storage instance allowing behavior to be augmented by tests.
@@ -525,6 +526,16 @@ TEST_F(DMClientTest, FetchPoliciesFailsIfFetchResultInvalid) {
   EnsureRegistered();
 
   EXPECT_CALL(*mock_cloud_policy_client_, FetchPolicy).Times(1);
+  EXPECT_CALL(*mock_cloud_policy_client_,
+              UploadPolicyValidationReport(_, _, _, _, _, _))
+      .WillOnce([&](policy::CloudPolicyValidatorBase::Status,
+                    const std::vector<policy::ValueValidationIssue>&,
+                    policy::ValidationAction, const std::string&,
+                    const std::string&,
+                    policy::CloudPolicyClient::ResultCallback callback) {
+        std::move(callback).Run(policy::CloudPolicyClient::Result(
+            policy::DeviceManagementStatus::DM_STATUS_SUCCESS));
+      });
   SetMockPolicyFetchResponseValidatorResult(
       policy::CloudPolicyValidatorBase::VALIDATION_POLICY_PARSE_ERROR);
 

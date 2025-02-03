@@ -88,6 +88,7 @@
 #include "chrome/browser/ui/sad_tab_helper.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_controller.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_view.h"
+#include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/sync/one_click_signin_links_delegate_impl.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
@@ -1435,6 +1436,20 @@ views::Widget* BrowserView::GetWidgetForAnchoring() {
   return GetWidget();
 }
 
+void BrowserView::ShowSplitView() {
+  // TODO(crbug.com/391894786): Update contents_container_ and/or
+  // contents_web_view_ to show a split view, eliminating the below
+  // placeholder.
+  status_bubble_->SetStatus(u"In split view");
+}
+
+void BrowserView::HideSplitView() {
+  // TODO(crbug.com/391894786): Update contents_container_ and/or
+  // contents_web_view_ to hide a split view if one is currently shown,
+  // eliminating the below placeholder.
+  status_bubble_->SetStatus(u"Out of split view");
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserView, BrowserWindow implementation:
 
@@ -1935,6 +1950,16 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
   // one subscriber per web contents.
   if (AppUsesBorderlessMode() && !old_contents) {
     SetWindowManagementPermissionSubscriptionForBorderlessMode(new_contents);
+  }
+
+  if (base::FeatureList::IsEnabled(features::kSideBySide)) {
+    const tabs::TabInterface* active_tab =
+        tabs::TabInterface::GetFromContents(new_contents);
+    if (active_tab->IsSplit()) {
+      ShowSplitView();
+    } else {
+      HideSplitView();
+    }
   }
 }
 
@@ -3657,6 +3682,14 @@ void BrowserView::TabChangedAt(content::WebContents* contents,
   }
 
   UpdateAccessibleURLForRootView(contents->GetURL());
+}
+
+void BrowserView::OnSplitViewAdded(std::vector<tabs::TabInterface*> tabs) {
+  const tabs::TabInterface* active_tab =
+      browser_->tab_strip_model()->GetActiveTab();
+  if (active_tab->IsSplit()) {
+    ShowSplitView();
+  }
 }
 
 void BrowserView::OnTabStripModelChanged(

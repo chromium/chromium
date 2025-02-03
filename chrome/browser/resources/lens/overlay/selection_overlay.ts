@@ -88,7 +88,7 @@ export interface SelectionOverlayElement {
   $: {
     backgroundImageCanvas: HTMLCanvasElement,
     cursor: HTMLElement,
-    initialFlashScrim: HTMLDivElement,
+    initialFlashScrim: HTMLElement,
     objectSelectionLayer: ObjectLayerElement,
     overlayShimmerCanvas: OverlayShimmerCanvasElement,
     postSelectionRenderer: PostSelectionRendererElement,

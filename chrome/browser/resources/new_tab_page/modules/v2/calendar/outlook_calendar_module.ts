@@ -43,10 +43,12 @@ export class OutlookCalendarModuleElement extends
   static override get properties() {
     return {
       events_: {type: Object},
+      showInfoDialog_: {type: Boolean},
     };
   }
 
   protected events_: CalendarEvent[];
+  protected showInfoDialog_: boolean;
 
   private handler_: OutlookCalendarPageHandlerRemote;
 
@@ -70,6 +72,11 @@ export class OutlookCalendarModuleElement extends
           action: 'disable',
           icon: 'modules:block',
           text: this.i18n('modulesOutlookCalendarDisableButtonText'),
+        },
+        {
+          action: 'info',
+          icon: 'modules:info',
+          text: this.i18n('moduleInfoButtonTitle'),
         },
         {
           action: 'signout',
@@ -97,6 +104,14 @@ export class OutlookCalendarModuleElement extends
       },
     });
     this.dispatchEvent(disableEvent);
+  }
+
+  protected onInfoButtonClick_() {
+    this.showInfoDialog_ = true;
+  }
+
+  protected onInfoDialogClose_() {
+    this.showInfoDialog_ = false;
   }
 
   protected onDismissButtonClick_() {

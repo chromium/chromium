@@ -153,9 +153,7 @@ enum class PlusAddressAction {
 }
 
 - (BOOL)shouldShowNotice {
-  return !_plusAddressSettingService->GetHasAcceptedNotice() &&
-         base::FeatureList::IsEnabled(
-             plus_addresses::features::kPlusAddressUserOnboardingEnabled);
+  return !_plusAddressSettingService->GetHasAcceptedNotice();
 }
 
 #pragma mark - PlusAddressErrorAlertDelegate

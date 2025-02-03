@@ -116,7 +116,7 @@ export class SettingsGraphicsTabletSubpageElement extends
       // cr-link-row with the same device ID when navigating back to the
       // graphics tablet subpage.
       const graphicsTablets =
-          this.shadowRoot!.querySelectorAll<HTMLDivElement>('.device');
+          this.shadowRoot!.querySelectorAll<HTMLElement>('.device');
       for (const graphicsTablet of graphicsTablets) {
         if (Number(graphicsTablet.getAttribute('data-evdev-id')!) ===
             this.deviceId) {
@@ -182,7 +182,7 @@ export class SettingsGraphicsTabletSubpageElement extends
 
   private getSelectedGraphicsTabletUrl(e: PointerEvent): URLSearchParams {
     const customizeTabletButton = cast(e.target, CrLinkRowElement);
-    const closestTablet: HTMLDivElement|null =
+    const closestTablet: HTMLElement|null =
         castExists(customizeTabletButton.closest('.device'));
     const graphicsTabletId = closestTablet.getAttribute('data-evdev-id')!;
     this.deviceId = Number(graphicsTabletId);

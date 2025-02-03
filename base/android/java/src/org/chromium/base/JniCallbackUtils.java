@@ -7,7 +7,10 @@ package org.chromium.base;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+
 @JNINamespace("base::android")
+@NullMarked
 final class JniCallbackUtils {
 
     static void runNativeCallback(JniOnceCallback callback, Object result) {

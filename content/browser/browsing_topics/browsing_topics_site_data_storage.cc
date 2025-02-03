@@ -237,7 +237,7 @@ bool BrowsingTopicsSiteDataStorage::LazyInit() {
     return db_init_status_ == InitStatus::kSuccess;
 
   db_ = std::make_unique<sql::Database>(
-      sql::DatabaseOptions{.page_size = 4096, .cache_size = 32},
+      sql::DatabaseOptions().set_page_size(4096).set_cache_size(32),
       sql::Database::Tag("BrowsingTopics"));
 
   // base::Unretained is safe here because this BrowsingTopicsSiteDataStorage

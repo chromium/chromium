@@ -905,7 +905,7 @@
       'filepath': 'content/browser/renderer/clipboard|' \
                   'content/browser/web_contents/.*drag|' \
                   'ui/base/clipboard/|'\
-                  'ui/base/dragdrop/|'
+                  'ui/base/dragdrop/'
     },
     'commerce': {
       'filepath': 'components/commerce/|'\

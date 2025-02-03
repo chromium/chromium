@@ -295,7 +295,7 @@ D3D12VideoEncodeAccelerator::CreateResourceForGpuMemoryBufferVideoFrame(
   gfx::GpuMemoryBufferHandle handle = frame.GetGpuMemoryBufferHandle();
   Microsoft::WRL::ComPtr<ID3D12Resource> input_texture;
   // TODO(40275246): cache the result
-  HRESULT hr = device_->OpenSharedHandle(handle.dxgi_handle.Get(),
+  HRESULT hr = device_->OpenSharedHandle(handle.dxgi_handle().buffer_handle(),
                                          IID_PPV_ARGS(&input_texture));
   if (FAILED(hr)) {
     NotifyError({EncoderStatus::Codes::kInvalidInputFrame,

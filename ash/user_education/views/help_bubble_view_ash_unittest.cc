@@ -23,6 +23,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/image_view.h"
@@ -120,12 +121,12 @@ INSTANTIATE_TEST_SUITE_P(
     HelpBubbleViewAshBodyIconTest,
     ::testing::Combine(
         /*body_icon_from_params=*/::testing::Values(
-            std::make_optional(std::cref(gfx::kNoneIcon)),
+            std::make_optional(std::cref(gfx::VectorIcon::EmptyIcon())),
             std::make_optional(std::cref(vector_icons::kCelebrationIcon)),
             std::make_optional(std::cref(vector_icons::kHelpIcon)),
             std::nullopt),
         /*body_icon_from_extended_properties=*/::testing::Values(
-            std::make_optional(std::cref(gfx::kNoneIcon)),
+            std::make_optional(std::cref(gfx::VectorIcon::EmptyIcon())),
             std::make_optional(std::cref(vector_icons::kCelebrationIcon)),
             std::make_optional(std::cref(vector_icons::kHelpIcon)),
             std::nullopt)));
@@ -160,7 +161,7 @@ TEST_P(HelpBubbleViewAshBodyIconTest, BodyIcon) {
   // Cache `expected_body_icon` based on order of precedence.
   const gfx::VectorIcon& expected_body_icon =
       body_icon_from_extended_properties().value_or(
-          body_icon_from_params().value_or(gfx::kNoneIcon));
+          body_icon_from_params().value_or(gfx::VectorIcon::EmptyIcon()));
 
   // Confirm body icon exists iff expected and is configured as expected.
   EXPECT_THAT(
@@ -168,7 +169,7 @@ TEST_P(HelpBubbleViewAshBodyIconTest, BodyIcon) {
           ->GetUniqueViewAs<views::ImageView>(
               HelpBubbleViewAsh::kBodyIconIdForTesting,
               views::ElementTrackerViews::GetContextForView(help_bubble_view)),
-      Conditional(&expected_body_icon != &gfx::kNoneIcon,
+      Conditional(&expected_body_icon != &gfx::VectorIcon::EmptyIcon(),
                   Property(&views::ImageView::GetImageModel,
                            Eq(ui::ImageModel::FromVectorIcon(
                                expected_body_icon,

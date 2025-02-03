@@ -6,6 +6,7 @@
 #define ASH_PUBLIC_CPP_CORAL_DELEGATE_H_
 
 #include "ash/public/cpp/ash_public_export.h"
+#include "ash/public/cpp/scanner/scanner_delegate.h"
 #include "chromeos/ash/services/coral/public/mojom/coral_service.mojom.h"
 
 namespace ash {
@@ -31,6 +32,11 @@ class ASH_PUBLIC_EXPORT CoralDelegate {
   // The default restore Id for chrome browser is under chrome/browser/. This
   // lets us get the correct Id in ash/.
   virtual int GetChromeDefaultRestoreId() = 0;
+
+  // We are using the feedback flow of `ScannerFeedbackDialog`.
+  virtual void OpenFeedbackDialog(
+      const std::string& group_description,
+      ScannerDelegate::SendFeedbackCallback send_feedback_callback) = 0;
 };
 
 }  // namespace ash

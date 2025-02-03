@@ -5156,6 +5156,8 @@ RenderFrameImpl::MakeDidCommitProvisionalLoadParams(
   params->commit_navigation_end = GetWebFrame()
                                       ->PerformanceMetricsForNestedContexts()
                                       .CommitNavigationEnd();
+  // Note: this value should be recorded close to sending the DidCommit IPC.
+  params->commit_reply_sent = base::TimeTicks().Now();
 
   return params;
 }
@@ -5256,18 +5258,18 @@ void RenderFrameImpl::DidCommitNavigationInternal(
   if (GetBlinkPreferences().renderer_wide_named_frame_lookup)
     GetWebFrame()->SetAllowsCrossBrowsingInstanceFrameLookup();
 
+  auto params = MakeDidCommitProvisionalLoadParams(
+      commit_type, transition, permissions_policy_header,
+      document_policy_header, embedding_token);
+  NavigationState* navigation_state =
+      DocumentState::FromDocumentLoader(frame_->GetDocumentLoader())
+          ->navigation_state();
+
   // This invocation must precede any calls to allowScripts(), allowImages(),
   // or allowPlugins() for the new page. This ensures that when these functions
   // call chrome::ContentSettingsManager::OnContentBlocked, those calls arrive
   // after the browser process has already been informed of the provisional
   // load committing.
-  auto params = MakeDidCommitProvisionalLoadParams(
-      commit_type, transition, permissions_policy_header,
-      document_policy_header, embedding_token);
-
-  NavigationState* navigation_state =
-      DocumentState::FromDocumentLoader(frame_->GetDocumentLoader())
-          ->navigation_state();
   if (same_document_params) {
     GetFrameHost()->DidCommitSameDocumentNavigation(
         std::move(params), std::move(same_document_params));

@@ -37,6 +37,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/devtools/protocol/devtools_protocol_test_support.h"
 #include "chrome/browser/devtools/url_constants.h"
+#include "chrome/browser/extensions/error_console/error_console.h"
+#include "chrome/browser/extensions/error_console/error_console_test_observer.h"
 #include "chrome/browser/extensions/extension_browser_test_util.h"
 #include "chrome/browser/net/profile_network_context_service.h"
 #include "chrome/browser/net/profile_network_context_service_factory.h"
@@ -134,8 +136,6 @@
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/extensions/error_console/error_console.h"
-#include "chrome/browser/extensions/error_console/error_console_test_observer.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -7261,6 +7261,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
                        u"permission to use blocking webRequest listeners."))
       << errors[0]->message();
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Tests that an extension that doesn't have the `webView` permission cannot
 // manually create and add a WebRequestEvent that specifies a webViewInstanceId.
@@ -7317,6 +7318,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
                     profile(), "webRequest.onBeforeRequest"));
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest, RecordUkmOnNavigation) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   TestExtensionDir test_dir1;

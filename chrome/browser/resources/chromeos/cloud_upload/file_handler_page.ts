@@ -166,12 +166,12 @@ export class FileHandlerPageElement extends HTMLElement {
   addCloudProviderCard(providerCard: CloudProviderCardElement) {
     this.cloudProviderCards.push(providerCard);
     this.cards.push(providerCard);
-    this.$<HTMLDivElement>('#content').appendChild(providerCard);
+    this.$<HTMLElement>('#content').appendChild(providerCard);
     providerCard.addEventListener('click', () => this.selectCard(providerCard));
   }
 
   addTopAccordionCard(topCard: AccordionTopCardElement) {
-    this.$<HTMLDivElement>('#content').appendChild(topCard);
+    this.$<HTMLElement>('#content').appendChild(topCard);
     this.cards.push(topCard);
     topCard.addEventListener('click', () => {
       const expanded = topCard.toggleExpandedState();
@@ -187,7 +187,7 @@ export class FileHandlerPageElement extends HTMLElement {
           }
         }
       }
-      const contentElement = this.$<HTMLDivElement>('#content')!;
+      const contentElement = this.$<HTMLElement>('#content')!;
       if (expanded) {
         window.requestAnimationFrame(() => {
           // Scroll so that the top of the accordion aligns to where the top of
@@ -206,7 +206,7 @@ export class FileHandlerPageElement extends HTMLElement {
     localHandlerCard.hide();
     this.localHandlerCards.push(localHandlerCard);
     this.cards.push(localHandlerCard);
-    this.$<HTMLDivElement>('#content').appendChild(localHandlerCard);
+    this.$<HTMLElement>('#content').appendChild(localHandlerCard);
     localHandlerCard.addEventListener(
         'click', () => this.selectCard(localHandlerCard));
   }

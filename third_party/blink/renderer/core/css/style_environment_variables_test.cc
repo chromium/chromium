@@ -326,6 +326,7 @@ TEST_F(StyleEnvironmentVariablesTest, GlobalVariable_Change) {
 }
 
 TEST_F(StyleEnvironmentVariablesTest, GlobalVariable_DefaultsPresent) {
+  ScopedCSSSafeAreaMaxInsetForTest scoped_feature(true);
   EXPECT_EQ(kSafeAreaInsetExpectedDefault,
             GetRootVariableValue(UADefinedVariable::kSafeAreaInsetTop));
   EXPECT_EQ(kSafeAreaInsetExpectedDefault,
@@ -334,6 +335,14 @@ TEST_F(StyleEnvironmentVariablesTest, GlobalVariable_DefaultsPresent) {
             GetRootVariableValue(UADefinedVariable::kSafeAreaInsetBottom));
   EXPECT_EQ(kSafeAreaInsetExpectedDefault,
             GetRootVariableValue(UADefinedVariable::kSafeAreaInsetRight));
+  EXPECT_EQ(kSafeAreaInsetExpectedDefault,
+            GetRootVariableValue(UADefinedVariable::kSafeAreaMaxInsetTop));
+  EXPECT_EQ(kSafeAreaInsetExpectedDefault,
+            GetRootVariableValue(UADefinedVariable::kSafeAreaMaxInsetLeft));
+  EXPECT_EQ(kSafeAreaInsetExpectedDefault,
+            GetRootVariableValue(UADefinedVariable::kSafeAreaMaxInsetBottom));
+  EXPECT_EQ(kSafeAreaInsetExpectedDefault,
+            GetRootVariableValue(UADefinedVariable::kSafeAreaMaxInsetRight));
 
   EXPECT_EQ(nullptr,
             StyleEnvironmentVariables::GetRootInstance().ResolveVariable(

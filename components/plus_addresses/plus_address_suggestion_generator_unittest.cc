@@ -94,8 +94,6 @@ class PlusAddressSuggestionGeneratorTest : public ::testing::Test {
   FakePlusAddressSettingService& setting_service() { return setting_service_; }
 
  private:
-  base::test::ScopedFeatureList features_{
-      features::kPlusAddressUserOnboardingEnabled};
   autofill::test::AutofillUnitTestEnvironment autofill_env_;
 
   FakePlusAddressAllocator allocator_;

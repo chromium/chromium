@@ -7,6 +7,7 @@ blink_core_sources_exported = [
   "web_array_buffer.cc",
   "web_array_buffer_converter.cc",
   "web_blob.cc",
+  "web_bundled_code_cache_generator.cc",
   "web_console_message.cc",
   "web_content_holder.cc",
   "web_custom_element.cc",
@@ -73,6 +74,7 @@ blink_core_sources_exported = [
 ]
 
 blink_core_tests_exported = [
+  "web_bundled_code_cache_generator_test.cc",
   "web_disallow_transition_scope_test.cc",
   "web_document_subresource_filter_test.cc",
   "web_document_test.cc",

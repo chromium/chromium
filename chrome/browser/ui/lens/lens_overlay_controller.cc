@@ -1917,7 +1917,7 @@ void LensOverlayController::ShowOverlay() {
       ->AddObserver(this);
 }
 
-void LensOverlayController::BackgroundUI() {
+void LensOverlayController::HideOverlay() {
   overlay_view_->SetVisible(false);
   SetLiveBlur(false);
   HidePreselectionBubble();
@@ -1925,9 +1925,6 @@ void LensOverlayController::BackgroundUI() {
   auto* contents_web_view = tab_->GetBrowserWindowInterface()->GetWebView();
   CHECK(contents_web_view);
   contents_web_view->SetEnabled(true);
-  state_ = State::kBackground;
-
-  // TODO(b/335516480): Schedule the UI to be suspended.
 }
 
 void LensOverlayController::CloseUIPart2(
@@ -2029,6 +2026,9 @@ void LensOverlayController::CloseUIPart2(
 
   state_ = State::kOff;
 
+  // Update the entrypoints now that the controller is closed.
+  UpdateEntryPointsState();
+
   RecordEndOfSessionMetrics(dismissal_source);
 }
 
@@ -2110,6 +2110,10 @@ void LensOverlayController::InitializeOverlay(
   }
 
   state_ = State::kOverlay;
+
+  // Update the entry points state to ensure that the entry points are disabled
+  // now that the overlay is showing.
+  UpdateEntryPointsState();
 
   // Only start the query flow again if we don't already have a full image
   // response, unless the early start query flow optimization is enabled.
@@ -2519,20 +2523,25 @@ void LensOverlayController::RenderProcessExited(
 }
 
 void LensOverlayController::TabForegrounded(tabs::TabInterface* tab) {
-  // If the overlay was backgrounded, reshow the overlay view.
-  if (state_ == State::kBackground) {
-    ShowOverlay();
-    state_ = (results_side_panel_coordinator_ &&
-              results_side_panel_coordinator_->IsEntryShowing())
-                 ? State::kOverlayAndResults
-                 : State::kOverlay;
-    if (state_ != State::kOverlayAndResults) {
-      ShowPreselectionBubble();
-    }
-    if (lens::features::IsLensOverlayContextualSearchboxEnabled()) {
-      SuppressGhostLoader();
-    }
+  // Ignore the event if the overlay is not backgrounded.
+  if (state_ != State::kBackground) {
+    return;
   }
+
+  // If the overlay was backgrounded, restore the previous state.
+  if (backgrounded_state_ != State::kLivePageAndResults) {
+    ShowOverlay();
+  }
+  if (backgrounded_state_ != State::kOverlayAndResults &&
+      backgrounded_state_ != State::kLivePageAndResults) {
+    ShowPreselectionBubble();
+  }
+  if (lens::features::IsLensOverlayContextualSearchboxEnabled()) {
+    SuppressGhostLoader();
+  }
+
+  state_ = backgrounded_state_;
+  UpdateEntryPointsState();
 }
 
 void LensOverlayController::TabWillEnterBackground(tabs::TabInterface* tab) {
@@ -2541,15 +2550,18 @@ void LensOverlayController::TabWillEnterBackground(tabs::TabInterface* tab) {
     return;
   }
 
-  // If the live page is showing, we don't need to do anything since the side
-  // panel will hide itself.
-  if (state_ == State::kLivePageAndResults) {
-    return;
-  }
+  // If the overlay is active, background it.
+  if (IsOverlayActive()) {
+    // If the overlay is currently showing, then we should hide the UI.
+    if (IsOverlayShowing()) {
+      HideOverlay();
+    }
 
-  // If the overlay was currently showing, then we should background the UI.
-  if (IsOverlayShowing()) {
-    BackgroundUI();
+    backgrounded_state_ = state_;
+    state_ = State::kBackground;
+    UpdateEntryPointsState();
+
+    // TODO(crbug.com/335516480): Schedule the UI to be suspended.
     return;
   }
 
@@ -2928,7 +2940,7 @@ void LensOverlayController::IssueSearchBoxRequestPart2(
   // If we are in the zero state, this request must have come from CSB. In that
   // case, hide the overlay to allow live page to show through.
   if (state_ == State::kOverlay) {
-    BackgroundUI();
+    HideOverlay();
   }
 
   // If this a search query from the side panel search box with the overlay
@@ -3247,4 +3259,12 @@ void LensOverlayController::NotifyPageContentUpdated() {
   if (side_panel_page_) {
     side_panel_page_->PageContentTypeChanged(page_content_type);
   }
+}
+
+void LensOverlayController::UpdateEntryPointsState() {
+  tab_->GetBrowserWindowInterface()
+      ->GetFeatures()
+      .lens_overlay_entry_point_controller()
+      ->UpdateEntryPointsState(
+          /*hide_toolbar_entrypoint=*/false);
 }

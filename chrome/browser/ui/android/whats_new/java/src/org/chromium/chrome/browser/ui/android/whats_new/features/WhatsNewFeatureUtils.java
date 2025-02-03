@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui.android.whats_new.features;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 import java.lang.annotation.Retention;
@@ -15,6 +16,7 @@ import java.lang.annotation.RetentionPolicy;
  * This class is responsible for keeping track of features added to What's New, and map the type
  * enum to the corresponding {@link WhatsNewFeature}.
  */
+@NullMarked
 public class WhatsNewFeatureUtils {
     // Types for all features added to What's New.
     // TODO(crbug.com/390190615): Add instruction about how to update this list.

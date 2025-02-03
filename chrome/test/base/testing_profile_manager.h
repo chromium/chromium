@@ -64,6 +64,15 @@ class TestingProfileManager : public ProfileObserver {
       const base::FilePath& profiles_path = base::FilePath(),
       std::unique_ptr<ProfileManager> profile_manager = nullptr);
 
+#if BUILDFLAG(IS_CHROMEOS)
+  using OnProfileCreatedCallback =
+      base::RepeatingCallback<void(const std::string&, Profile*)>;
+  void set_on_profile_created_callback(OnProfileCreatedCallback callback) {
+    callback_ = callback;
+  }
+  OnProfileCreatedCallback callback_;
+#endif
+
   // Creates a new TestingProfile whose data lives in a directory related to
   // profile_name, which is a non-user-visible key for the test environment.
   // |prefs| is the PrefService used by the profile. If it is NULL, the profile

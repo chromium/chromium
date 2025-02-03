@@ -5,6 +5,7 @@
 #import "base/functional/bind.h"
 #import "base/ios/ios_util.h"
 #import "base/test/ios/wait_util.h"
+#import "components/feature_engagement/public/feature_constants.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/infobars/ui_bundled/banners/infobar_banner_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -13,6 +14,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/chrome/test/earl_grey/test_switches.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
@@ -46,6 +48,14 @@ id<GREYMatcher> NonModalTitleMatcher() {
 
 - (void)setUp {
   [super setUp];
+
+  AppLaunchConfiguration config;
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  config.additional_args.push_back(
+      std::string("-") + test_switches::kEnableIPH +
+      "=IPH_iOSPromoNonModalUrlPasteDefaultBrowser");
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
   [ChromeEarlGrey clearDefaultBrowserPromoData];
 }

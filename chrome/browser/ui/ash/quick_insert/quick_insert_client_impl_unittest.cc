@@ -191,11 +191,9 @@ class QuickInsertClientImplTest : public BrowserWithTestWindowTest {
   }
 
   TestingProfile* CreateProfile(const std::string& profile_name) override {
-    auto* profile = profile_manager()->CreateTestingProfile(
+    return profile_manager()->CreateTestingProfile(
         profile_name, GetTestingFactories(), /*is_main_profile=*/false,
         test_shared_url_loader_factory_);
-    OnUserProfileCreated(profile_name, profile);
-    return profile;
   }
 
   TestingProfile::TestingFactories GetTestingFactories() override {
@@ -227,8 +225,6 @@ class QuickInsertClientImplTest : public BrowserWithTestWindowTest {
     // DriveFS needs the account to have an ID.
     const AccountId account_id = AccountId::FromUserEmailGaiaId(email, gaia_id);
     user_manager()->AddGaiaUser(account_id, user_manager::UserType::kRegular);
-    ash_test_helper()->test_session_controller_client()->AddUserSession(
-        std::string(email));
     user_manager()->UserLoggedIn(
         account_id,
         user_manager::FakeUserManager::GetFakeUsernameHash(account_id),

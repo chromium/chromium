@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_constants.h"
 #import "ios/chrome/browser/ntp/shared/metrics/feed_refresh_state_tracker.h"
 
+@protocol FeedControlDelegate;
 @protocol NewTabPageFollowDelegate;
 @protocol NewTabPageActionsDelegate;
 @class NewTabPageState;

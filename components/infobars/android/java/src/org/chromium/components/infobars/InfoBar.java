@@ -51,7 +51,7 @@ public abstract class InfoBar implements InfoBarInteractionHandler, InfoBarUiIte
     }
 
     private final int mIconDrawableId;
-    private final Bitmap mIconBitmap;
+    private final @Nullable Bitmap mIconBitmap;
     private final @ColorRes int mIconTintId;
     private final CharSequence mMessage;
 
@@ -69,13 +69,17 @@ public abstract class InfoBar implements InfoBarInteractionHandler, InfoBarUiIte
 
     /**
      * Constructor for regular infobars.
-     * @param iconDrawableId ID of the resource to use for the Icon.  If 0, no icon will be shown.
+     *
+     * @param iconDrawableId ID of the resource to use for the Icon. If 0, no icon will be shown.
      * @param iconTintId The {@link ColorRes} used as tint for the {@code iconDrawableId}.
      * @param message The message to show in the infobar.
-     * @param iconBitmap Icon to draw, in bitmap form.  Used mainly for generated icons.
+     * @param iconBitmap Icon to draw, in bitmap form. Used mainly for generated icons.
      */
     public InfoBar(
-            int iconDrawableId, @ColorRes int iconTintId, CharSequence message, Bitmap iconBitmap) {
+            int iconDrawableId,
+            @ColorRes int iconTintId,
+            CharSequence message,
+            @Nullable Bitmap iconBitmap) {
         mIconDrawableId = iconDrawableId;
         mIconBitmap = iconBitmap;
         mIconTintId = iconTintId;

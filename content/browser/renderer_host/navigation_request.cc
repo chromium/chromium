@@ -6040,6 +6040,7 @@ void NavigationRequest::CommitErrorPage(
   GetRenderFrameHost()->FailedNavigation(
       this, *common_params_, *commit_params_, has_stale_copy_in_cache_,
       net_error_, extended_error_code_, error_page_content, *document_token_);
+  UpdateNavigationHandleTimingsOnCommitSent();
 
   SendDeferredConsoleMessages();
 }
@@ -11238,6 +11239,68 @@ void NavigationRequest::MaybeRecordNavigationStartAdjustments() {
   TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
       "navigation", "NavigationStartAdjustment", trace_id,
       common_params().navigation_start);
+}
+
+void NavigationRequest::WillStartBeforeUnload() {
+  SetWaitingForRendererResponse();
+  beforeunload_start_time_ = base::TimeTicks().Now();
+}
+
+NavigationRequest::Timeline::Timeline() = default;
+NavigationRequest::Timeline::Timeline(
+    const NavigationRequest::Timeline& timeline) = default;
+NavigationRequest::Timeline::~Timeline() = default;
+
+void NavigationRequest::Timeline::MarkFinish() {
+  finish = base::TimeTicks().Now();
+}
+
+NavigationRequest::Timeline
+NavigationRequest::GenerateNavigationTimelineForMetrics(
+    const mojom::DidCommitProvisionalLoadParams& params,
+    const base::TimeTicks& did_commit_ipc_received_time) {
+  NavigationRequest::Timeline timeline;
+
+  if (is_synchronous_renderer_commit()) {
+    // For synchronous renderer commits, the browser finds out about the
+    // navigation when the DidCommit IPC is received, so treat this as the
+    // navigation start time. Note that most other timestamps won't be
+    // meaningful in that case.
+    //
+    // TODO(alexmos): Record a better renderer-side start time for these cases,
+    // so that we can add a tracing slice for the renderer-side work to do the
+    // synchronous commit.
+    timeline.start = did_commit_ipc_received_time;
+  } else {
+    // If the navigation start time was adjusted due to beforeunload processing,
+    // use the original timestamp to ensure that the trace event start time is
+    // still accurate.
+    //
+    // TODO(alexmos): examine whether these timestamps, as well as their other
+    // uses, should use InterProcessTimeTicksConverter since they may come from
+    // the renderer process.
+    timeline.start = !original_navigation_start_.is_null()
+                         ? original_navigation_start_
+                         : common_params().navigation_start;
+  }
+
+  timeline.navigation_request_creation = creation_time_;
+  timeline.beforeunload_start = beforeunload_start_time_;
+  timeline.begin_navigation = begin_navigation_time_;
+  timeline.loader_start = navigation_handle_timing_.loader_start_time;
+  timeline.loader_fetch_start = first_fetch_start_time_;
+  timeline.loader_receive_headers = final_receive_headers_end_time_;
+  timeline.receive_response = receive_response_time_;
+  timeline.commit_ipc_sent =
+      navigation_handle_timing_.navigation_commit_sent_time;
+  // Note that we can't use NavigationRequest's
+  // navigation_handle_timing_.navigation_commit_received_time because it's
+  // not populated yet when this function is called.
+  timeline.renderer_commit_ipc_received = params.commit_navigation_start;
+  timeline.renderer_did_commit_ipc_sent = params.commit_reply_sent;
+  timeline.did_commit_ipc_received = did_commit_ipc_received_time;
+
+  return timeline;
 }
 
 void NavigationRequest::SanitizeDocumentIsolationPolicyHeader() {

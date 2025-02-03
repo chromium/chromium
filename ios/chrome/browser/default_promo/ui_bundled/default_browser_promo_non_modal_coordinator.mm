@@ -5,7 +5,9 @@
 #import "ios/chrome/browser/default_promo/ui_bundled/default_browser_promo_non_modal_coordinator.h"
 
 #import "base/notreached.h"
+#import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
+#import "ios/chrome/browser/default_browser/model/features.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/default_promo/ui_bundled/default_browser_promo_non_modal_commands.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
@@ -125,6 +127,15 @@
 
 - (void)infobarWasDismissed {
   self.bannerViewController = nil;
+
+  if (IsNonModalPromoMigrationEnabled()) {
+    feature_engagement::Tracker* tracker =
+        feature_engagement::TrackerFactory::GetForProfile(
+            self.browser->GetProfile());
+    tracker->Dismissed(
+        feature_engagement::kIPHiOSPromoNonModalUrlPasteDefaultBrowserFeature);
+  }
+
   id<DefaultBrowserPromoNonModalCommands> handler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(),
                          DefaultBrowserPromoNonModalCommands);

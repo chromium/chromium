@@ -217,6 +217,9 @@ TEST_F(AdditionalBidsUtilTest, FailNotDict) {
 }
 
 TEST_F(AdditionalBidsUtilTest, FailNoNonce) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(blink::features::kFledgeSellerNonce);
+
   base::Value::Dict additional_bid_dict = MakeMinimalValid();
   additional_bid_dict.Remove("auctionNonce");
   base::Value input(std::move(additional_bid_dict));
@@ -233,6 +236,9 @@ TEST_F(AdditionalBidsUtilTest, FailNoNonce) {
 }
 
 TEST_F(AdditionalBidsUtilTest, FailInvalidNonce) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(blink::features::kFledgeSellerNonce);
+
   base::Value::Dict additional_bid_dict = MakeMinimalValid();
   additional_bid_dict.Set("auctionNonce", "not-a-nonce");
   base::Value input(std::move(additional_bid_dict));
@@ -248,17 +254,7 @@ TEST_F(AdditionalBidsUtilTest, FailInvalidNonce) {
       result.error());
 }
 
-class AdditionalBidsUtilWithSellerNonceTest : public AdditionalBidsUtilTest {
- protected:
-  AdditionalBidsUtilWithSellerNonceTest() {
-    feature_list_.InitAndEnableFeature(blink::features::kFledgeSellerNonce);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(AdditionalBidsUtilWithSellerNonceTest, FailNoNonce) {
+TEST_F(AdditionalBidsUtilTest, FailNoNonceWithSellerNonce) {
   base::Value::Dict additional_bid_dict = MakeMinimalValid();
   additional_bid_dict.Remove("auctionNonce");
   base::Value input(std::move(additional_bid_dict));
@@ -274,7 +270,7 @@ TEST_F(AdditionalBidsUtilWithSellerNonceTest, FailNoNonce) {
       result.error());
 }
 
-TEST_F(AdditionalBidsUtilWithSellerNonceTest, FailInvalidNonce) {
+TEST_F(AdditionalBidsUtilTest, FailInvalidNonceWithSellerNonce) {
   base::Value::Dict additional_bid_dict = MakeMinimalValid();
   additional_bid_dict.Set("auctionNonce", "not-a-nonce");
   base::Value input(std::move(additional_bid_dict));
@@ -293,7 +289,7 @@ TEST_F(AdditionalBidsUtilWithSellerNonceTest, FailInvalidNonce) {
       result.error());
 }
 
-TEST_F(AdditionalBidsUtilWithSellerNonceTest, FailBothAuctionNonceAndBidNonce) {
+TEST_F(AdditionalBidsUtilTest, FailBothAuctionNonceAndBidNonce) {
   base::Value::Dict additional_bid_dict = MakeMinimalValid();
   additional_bid_dict.Set("auctionNonce", kAuctionNonce.AsLowercaseString());
   additional_bid_dict.Set("bidNonce", kBidNonce);
@@ -311,8 +307,7 @@ TEST_F(AdditionalBidsUtilWithSellerNonceTest, FailBothAuctionNonceAndBidNonce) {
       result.error());
 }
 
-TEST_F(AdditionalBidsUtilWithSellerNonceTest,
-       FailBidNoSellerNonceButNoAuctionNonce) {
+TEST_F(AdditionalBidsUtilTest, FailBidNoSellerNonceButNoAuctionNonce) {
   base::Value::Dict additional_bid_dict = MakeMinimalValid();
   additional_bid_dict.Remove("auctionNonce");
   additional_bid_dict.Set("bidNonce", kBidNonce);
@@ -329,7 +324,7 @@ TEST_F(AdditionalBidsUtilWithSellerNonceTest,
       result.error());
 }
 
-TEST_F(AdditionalBidsUtilWithSellerNonceTest, FailBidSellerNonceButNoBidNonce) {
+TEST_F(AdditionalBidsUtilTest, FailBidSellerNonceButNoBidNonce) {
   base::Value::Dict additional_bid_dict = MakeMinimalValid();
   additional_bid_dict.Set("auctionNonce", kAuctionNonce.AsLowercaseString());
   base::Value input(std::move(additional_bid_dict));
@@ -346,7 +341,7 @@ TEST_F(AdditionalBidsUtilWithSellerNonceTest, FailBidSellerNonceButNoBidNonce) {
       result.error());
 }
 
-TEST_F(AdditionalBidsUtilWithSellerNonceTest, FailInvalidBidNonce) {
+TEST_F(AdditionalBidsUtilTest, FailInvalidBidNonce) {
   base::Value::Dict additional_bid_dict = MakeMinimalValid();
   additional_bid_dict.Remove("auctionNonce");
   // Set bidNonce to base64(sha256("incorrect")).
@@ -679,7 +674,7 @@ TEST_F(AdditionalBidsUtilTest, MinimalValid) {
   EXPECT_EQ(bid_state, bid->bid_state);
 }
 
-TEST_F(AdditionalBidsUtilWithSellerNonceTest, MinimalValid) {
+TEST_F(AdditionalBidsUtilTest, MinimalValidWithSellerNonce) {
   base::Value::Dict additional_bid_dict = MakeMinimalValid();
   additional_bid_dict.Remove("auctionNonce");
   additional_bid_dict.Set("bidNonce", kBidNonce);

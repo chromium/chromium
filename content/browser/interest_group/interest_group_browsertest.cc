@@ -763,10 +763,8 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
          {blink::features::kFledgeReportingTimeout, {}},
          {blink::features::kFledgeAuctionDealSupport, {}},
          {blink::features::kFledgeDeprecatedRenderURLReplacements, {}},
-         {blink::features::kFledgeSellerNonce, {}},
          // TODO(crrev.com/c/6096602): Remove once implementation is removed.
          {blink::features::kFledgeDirectFromSellerSignalsWebBundles, {}},
-         {blink::features::kFledgeSellerNonce, {}},
          {blink::features::kFledgeTrustedSignalsKVv2Support, {}},
          {blink::features::kFledgeTrustedSignalsKVv1CreativeScanning, {}}},
         /*disabled_features=*/

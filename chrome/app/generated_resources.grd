@@ -593,6 +593,9 @@ are declared in tools/grit/grit_args.gni.
           <message name="IDS_CONTENT_CONTEXT_READING_MODE" desc="Context menu menuitem to open page in reading mode view">
            Open in reading mode
           </message>
+          <message name="IDS_CONTENT_CONTEXT_CLOSE_GLIC" desc="Context menu item to close glic view">
+           Close
+          </message>
           <message name="IDS_CONTENT_CONTEXT_RELOAD" desc="The name of the Reload command in the content area context menu">
             &amp;Reload
           </message>
@@ -903,6 +906,9 @@ are declared in tools/grit/grit_args.gni.
           </message>
           <message name="IDS_CONTENT_CONTEXT_READING_MODE" desc="Context menu menuitem to open page in reading mode view">
            Open in Reading Mode
+          </message>
+          <message name="IDS_CONTENT_CONTEXT_CLOSE_GLIC" desc="Context menu item to close glic view">
+           Close
           </message>
           <message name="IDS_CONTENT_CONTEXT_RELOAD" desc="In Title Case: The name of the Reload command in the content area context menu">
             &amp;Reload
@@ -8474,11 +8480,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_MODULES_DRIVE_NAME" desc="Name of the Drive module in sentence case shown in various UIs.">
         Google Drive
       </message>
-      <!-- TODO(crbug.com/372724129): Finalize and translate IDS_NTP_MODULES_SHAREPOINT_NAME. -->
-      <message name="IDS_NTP_MODULES_SHAREPOINT_NAME" translateable="false" desc="Name of the SharePoint module in sentence case shown in various UIs.">
-        SharePoint
-      </message>
-      <message name="IDS_NTP_MODULES_DRIVE_FILES_SENTENCE" desc="Name of the files in the Drive module in sentence case shown in various UIs.">
+      <message name="IDS_NTP_MODULES_FILES_SENTENCE" desc="Name of the files in the Drive and Microsoft files module in sentence case shown in various UIs.">
         Files
       </message>
       <message name="IDS_NTP_MODULES_DUMMY_LOWER" translateable="false" desc="Name of the dummy module in lowercase shown in various UIs.">
@@ -8493,12 +8495,17 @@ Keep your key file in a safe place. You will need it to create new versions of y
         <ph name="BREAK">&lt;br&gt;</ph>
         You can manage settings from the card menu or see more options in Customize Chrome.
       </message>
-      <!-- TODO(crbug.com/372724129): Finalize and translate IDS_NTP_MODULES_SHAREPOINT_INFO. -->
-      <message name="IDS_NTP_MODULES_SHAREPOINT_INFO" translateable="false" desc="Text shown in the body of the info dialog of the SharePoint module.">
-        You’re seeing suggested files to help you easily get back to your most recent activity in Microsoft Sharepoint.
+      <message name="IDS_NTP_MODULES_MICROSOFT_FILES_NAME" desc="Name of the Microsoft files module in sentence case shown in various UIs.">
+        SharePoint and OneDrive files
+      </message>
+      <message name="IDS_NTP_MODULES_MICROSOFT_FILES_INFO" desc="Text shown in the body of the info dialog of the Microsoft files card.">
+        You’re seeing suggested files to help you easily get back to your most recent activity in Microsoft SharePoint and OneDrive.
         <ph name="BREAK">&lt;br&gt;</ph>
         <ph name="BREAK">&lt;br&gt;</ph>
         You can manage settings from the card menu or see more options in Customize Chrome.
+      </message>
+      <message name="IDS_NTP_MODULES_MICROSOFT_FILES_DISABLE_BUTTON_TEXT" desc="Text shown on the disable button of a NTP Microsoft files card.">
+        Don't show SharePoint and OneDrive files
       </message>
       <message name="IDS_NTP_MODULES_DISMISS_FOR_HOURS_BUTTON_TEXT" desc="Text shown on the dismiss button of an NTP module that specifies length of time in hours.">
         Hide for <ph name="MODULE_TITLE">$1<ex>5</ex></ph> hours
@@ -8536,6 +8543,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_MODULES_OUTLOOK_CALENDAR_DISMISS_TOAST_MESSAGE" desc="Text shown on toast on the NTP indicating that the Outlook Calendar card has been dismissed">
         Outlook Calendar hidden
       </message>
+     <message name="IDS_NTP_MODULES_OUTLOOK_CALENDAR_INFO" desc="Text shown in the body of the info dialog of the Outlook calendar module.">
+       You’re seeing your calendar to help you easily navigate to your next event in Outlook Calendar.
+       <ph name="BREAK">&lt;br&gt;</ph>
+       <ph name="BREAK">&lt;br&gt;</ph>
+       You can manage settings from the card menu or see more options in Customize Chrome.
+     </message>
       <message name="IDS_NTP_MODULES_CALENDAR_DOUBLE_BOOKED" desc="Text displaying that the calendar event is booked at the same time as another." meaning="The meeting takes place at the same time as another.">
         Double-Booked
       </message>
@@ -11916,10 +11929,10 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
               Join Tab Group with <ph name="OWNER_FIRST_NAME">$1<ex>Ali</ex></ph>
             </message>
             <message name="IDS_DATA_SHARING_PREVIEW_DIALOG_TITLE_SINGULAR" desc="The title for the dialog that shows a preview of a tab group with 1 other member.">
-              Join Tab Group with <ph name="OWNER_FIRST_NAME">$1<ex>Ali</ex></ph> and <ph name="NUM_OTHER_MEMBERS">$1<ex>1</ex></ph> Other
+              Join Tab Group with <ph name="OWNER_FIRST_NAME">$1<ex>Ali</ex></ph> and <ph name="NUM_OTHER_MEMBERS">$2<ex>1</ex></ph> Other
             </message>
             <message name="IDS_DATA_SHARING_PREVIEW_DIALOG_TITLE_PLURAL" desc="The title for the dialog that shows a preview of a tab group with >1 other members.">
-              Join Tab Group with <ph name="OWNER_FIRST_NAME">$1<ex>Ali</ex></ph> and <ph name="NUM_OTHER_MEMBERS">$1<ex>2</ex></ph> Others
+              Join Tab Group with <ph name="OWNER_FIRST_NAME">$1<ex>Ali</ex></ph> and <ph name="NUM_OTHER_MEMBERS">$2<ex>2</ex></ph> Others
             </message>
             <message name="IDS_DATA_SHARING_PREVIEW_DIALOG_CONFIRM" desc="A button that allows a user to join a shared group.">
               Join and Open
@@ -12068,10 +12081,10 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
               Join tab group with <ph name="OWNER_FIRST_NAME">$1<ex>Ali</ex></ph>
             </message>
             <message name="IDS_DATA_SHARING_PREVIEW_DIALOG_TITLE_SINGULAR" desc="The title for the dialog that shows a preview of a tab group with 1 other member.">
-              Join tab group with <ph name="OWNER_FIRST_NAME">$1<ex>Ali</ex></ph> and <ph name="NUM_OTHER_MEMBERS">$1<ex>1</ex></ph> other
+              Join tab group with <ph name="OWNER_FIRST_NAME">$1<ex>Ali</ex></ph> and <ph name="NUM_OTHER_MEMBERS">$2<ex>1</ex></ph> other
             </message>
             <message name="IDS_DATA_SHARING_PREVIEW_DIALOG_TITLE_PLURAL" desc="The title for the dialog that shows a preview of a tab group with >1 other members.">
-              Join tab group with <ph name="OWNER_FIRST_NAME">$1<ex>Ali</ex></ph> and <ph name="NUM_OTHER_MEMBERS">$1<ex>2</ex></ph> others
+              Join tab group with <ph name="OWNER_FIRST_NAME">$1<ex>Ali</ex></ph> and <ph name="NUM_OTHER_MEMBERS">$2<ex>2</ex></ph> others
             </message>
             <message name="IDS_DATA_SHARING_PREVIEW_DIALOG_CONFIRM" desc="A button that allows a user to join a shared group.">
               Join and open
@@ -12213,6 +12226,9 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         </message>
         <message name ="IDS_DATA_SHARING_JOIN_GROUP_JOIN_AS" desc="A sublabel showing which profile the shared group is being joined as.">
           Join as <ph name="OWNER_FULL_NAME">$1<ex>John Doe</ex></ph>
+        </message>
+        <message name ="IDS_DATA_SHARING_GET_GROUP_PREVIEW_ARIA_LABEL" desc="Aria label for the group preview card.">
+          View more details about <ph name="GROUP_NAME">$1<ex>vacation group</ex></ph>
         </message>
       <!-- /Data Sharing Preview Dialog -->
 
@@ -18645,6 +18661,11 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <if expr="is_win or is_linux">
         <message name="IDS_GLIC_STATUS_ICON_MENU_REMOVE_ICON" translateable="false" desc="This is the menu item for removing the glic icon from the notifications area.">
           Disable glic in notifications area
+        </message>
+      </if>
+      <if expr="is_win or is_linux">
+        <message name="IDS_GLIC_STATUS_ICON_MENU_EXIT" translateable="false" desc="This is the menu item for exiting Chrome.">
+          Exit
         </message>
       </if>
       <message name="IDS_GLIC_STATUS_ICON_MENU_SETTINGS" translateable="false" desc="This is the menu item for opening the glic settings.">

@@ -516,6 +516,11 @@ bool PdfInkModule::ContinueStroke(const gfx::PointF& position,
     return true;
   }
 
+  if (state.input_last_event.value().tool_type != tool_type) {
+    // Ignore if the user is simultaneously using a different input type.
+    return true;
+  }
+
   const int page_index = client_->VisiblePageIndexFromPoint(position);
   const int last_page_index = client_->VisiblePageIndexFromPoint(last_position);
   if (page_index != state.page_index && last_page_index != state.page_index) {

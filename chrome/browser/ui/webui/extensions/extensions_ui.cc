@@ -559,13 +559,6 @@ base::RefCountedMemory* ExtensionsUI::GetFaviconResourceBytes(
   return rb.LoadDataResourceBytesForScale(IDR_EXTENSIONS_FAVICON, scale_factor);
 }
 
-void ExtensionsUI::RegisterProfilePrefs(
-    user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterBooleanPref(
-      prefs::kExtensionsUIDeveloperMode, false,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-}
-
 // Normally volatile data does not belong in loadTimeData, but in this case
 // prevents flickering on a very prominent surface (top of the landing page).
 void ExtensionsUI::OnDevModeChanged() {

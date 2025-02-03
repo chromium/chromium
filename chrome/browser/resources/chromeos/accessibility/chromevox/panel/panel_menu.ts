@@ -15,8 +15,8 @@ import {PanelMenuItem} from './panel_menu_item.js';
 type MenuCallback = () => Promise<any>;
 
 export class PanelMenu {
-  menuBarItemElement: HTMLDivElement;
-  menuContainerElement: HTMLDivElement;
+  menuBarItemElement: HTMLElement;
+  menuContainerElement: HTMLElement;
   menuElement: HTMLTableElement;
   menuMsg: string;
 

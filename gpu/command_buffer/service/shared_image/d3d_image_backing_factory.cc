@@ -625,19 +625,15 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
     return nullptr;
   }
 
-  if (handle.type != gfx::DXGI_SHARED_HANDLE || !handle.dxgi_handle.IsValid()) {
+  if (handle.type != gfx::DXGI_SHARED_HANDLE ||
+      !handle.dxgi_handle().IsValid()) {
     LOG(ERROR) << "Invalid handle with type: " << handle.type;
-    return nullptr;
-  }
-
-  if (!handle.dxgi_token.has_value()) {
-    LOG(ERROR) << "Missing token for DXGI handle";
     return nullptr;
   }
 
   scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state =
       dxgi_shared_handle_manager_->GetOrCreateSharedHandleState(
-          std::move(handle.dxgi_token.value()), std::move(handle.dxgi_handle),
+          handle.dxgi_handle().token(), handle.dxgi_handle().TakeBufferHandle(),
           d3d11_device_);
   if (!dxgi_shared_handle_state) {
     LOG(ERROR) << "Failed to retrieve matching DXGI shared handle state";

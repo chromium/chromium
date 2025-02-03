@@ -105,10 +105,6 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
             map.set(routes.AUTOFILL_AI.path, '#autofillAiRowV2');
           }
 
-          if (routes.PASSWORD_CHANGE) {
-            map.set(routes.PASSWORD_CHANGE.path, '#passwordChangeRowV2');
-          }
-
           return map;
         },
       },
@@ -132,6 +128,7 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
   private showHistorySearchControl_: boolean;
   private showTabOrganizationControl_: boolean;
   private showWallpaperSearchControl_: boolean;
+  private showPasswordChangeControl_: boolean;
   private numericUncheckedValues_: FeatureOptInState[];
   private shouldRecordMetrics_: boolean = true;
   private metricsBrowserProxy_: MetricsBrowserProxy =
@@ -167,6 +164,9 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
     this.metricsBrowserProxy_.recordBooleanHistogram(
         'Settings.AiPage.ElementVisibility.Themes',
         this.showWallpaperSearchControl_);
+    this.metricsBrowserProxy_.recordBooleanHistogram(
+        'Settings.AiPage.ElementVisibility.PasswordChange',
+        this.showPasswordChangeControl_);
   }
 
   private async setShowAutofillAiControl_() {
@@ -234,8 +234,12 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
   }
 
   private onPasswordChangeRowClick_() {
-    const router = Router.getInstance();
-    router.navigateTo(router.getRoutes().PASSWORD_CHANGE);
+    this.recordInteractionMetrics_(
+        AiPageInteractions.PASSWORD_CHANGE_CLICK,
+        'Settings.AiPage.PasswordChangeEntryPointClick');
+
+    OpenWindowProxyImpl.getInstance().openUrl(
+        loadTimeData.getString('passwordChangeSettingsUrl'));
   }
 
   private onWallpaperSearchRowClick_() {

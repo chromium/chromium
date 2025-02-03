@@ -382,7 +382,6 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
         user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
         /*browser_restart=*/false,
         /*is_child=*/false);
-    ash_test_helper()->test_session_controller_client()->AddUserSession(email);
   }
 
   TestingProfile* CreateProfile(const std::string& profile_name) override {
@@ -393,7 +392,6 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
     auto* profile = profile_manager()->CreateTestingProfile(
         profile_name, std::move(prefs), u"Test profile", 1 /*avatar_id*/,
         TestingProfile::TestingFactories());
-    OnUserProfileCreated(profile_name, profile);
     return profile;
   }
 
@@ -407,7 +405,6 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
     TestingProfile* profile = profile_manager()->CreateTestingProfile(
         kSecondProfileName, std::move(prefs), u"second-profile-username",
         /*avatar_id=*/1, TestingProfile::TestingFactories());
-    OnUserProfileCreated(kSecondProfileName, profile);
 
     InitExtensionService(profile);
     InitWebAppProvider(profile);

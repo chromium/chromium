@@ -2749,16 +2749,13 @@ void BrowserAutofillManager::OnFormProcessed(
   // If a standalone cvc field is found in the form, query the DOM for last four
   // combinations. Used to search for the virtual card last four for a virtual
   // card saved on file of a merchant webpage.
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillParseVcnCardOnFileStandaloneCvcFields)) {
-    auto contains_standalone_cvc_field =
-        std::ranges::any_of(form_structure.fields(), [](const auto& field) {
-          return field->Type().GetStorableType() ==
-                 CREDIT_CARD_STANDALONE_VERIFICATION_CODE;
-        });
-    if (contains_standalone_cvc_field) {
-      FetchPotentialCardLastFourDigitsCombinationFromDOM();
-    }
+  auto contains_standalone_cvc_field =
+      std::ranges::any_of(form_structure.fields(), [](const auto& field) {
+        return field->Type().GetStorableType() ==
+               CREDIT_CARD_STANDALONE_VERIFICATION_CODE;
+      });
+  if (contains_standalone_cvc_field) {
+    FetchPotentialCardLastFourDigitsCombinationFromDOM();
   }
   if (data_util::ContainsPhone(data_util::DetermineGroups(form_structure))) {
     metrics_->has_observed_phone_number_field = true;

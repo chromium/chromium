@@ -108,6 +108,8 @@ class RenderViewContextMenu
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kExitFullscreenMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kComposeMenuItem);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kGlicCloseMenuItem);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kGlicReloadMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kRegionSearchItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSearchForImageItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSearchForVideoFrameItem);
@@ -296,6 +298,7 @@ class RenderViewContextMenu
   void AppendTranslateItem();
   void AppendMediaRouterItem();
   void AppendReadingModeItem();
+  void AppendGlicItems();
   void AppendRotationItems();
   void AppendSpellingAndSearchSuggestionItems();
   void AppendOtherEditableItems();

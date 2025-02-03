@@ -36,6 +36,7 @@
 #include "components/gcm_driver/instance_id/instance_id_profile_service.h"
 #include "components/live_caption/live_caption_controller.h"
 #include "components/live_caption/translation_dispatcher.h"
+#include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
 #include "google_apis/google_api_keys.h"
 
@@ -44,6 +45,7 @@ namespace {
 
 std::unique_ptr<boca::BabelOrcaManager> CreateBabelOrcaManager(
     Profile* profile,
+    PrefService* global_prefs,
     const std::string& application_locale,
     bool is_consumer) {
   // Passing `DoNothing` since we do not currently show settings for BabelOrca.
@@ -70,7 +72,8 @@ std::unique_ptr<boca::BabelOrcaManager> CreateBabelOrcaManager(
     return nullptr;
   }
   auto speech_recognizer =
-      std::make_unique<babelorca::BabelOrcaSpeechRecognizerImpl>(profile);
+      std::make_unique<babelorca::BabelOrcaSpeechRecognizerImpl>(
+          profile, global_prefs, application_locale);
   return boca::BabelOrcaManager::CreateAsProducer(
       IdentityManagerFactory::GetForProfile(profile),
       profile->GetURLLoaderFactory(),
@@ -100,6 +103,7 @@ BocaManager::BocaManager(
 }
 
 BocaManager::BocaManager(Profile* profile,
+                         PrefService* global_prefs,
                          const std::string& application_locale)
     : session_client_impl_(std::make_unique<boca::SessionClientImpl>()) {
   auto* user =
@@ -109,8 +113,8 @@ BocaManager::BocaManager(Profile* profile,
       session_client_impl_.get(), user->GetAccountId(),
       /*is_producer=*/!is_consumer);
   if (ash::features::IsBabelOrcaAvailable()) {
-    babel_orca_manager_ =
-        CreateBabelOrcaManager(profile, application_locale, is_consumer);
+    babel_orca_manager_ = CreateBabelOrcaManager(
+        profile, global_prefs, application_locale, is_consumer);
   }
   if (is_consumer) {
     on_task_session_manager_ = std::make_unique<boca::OnTaskSessionManager>(

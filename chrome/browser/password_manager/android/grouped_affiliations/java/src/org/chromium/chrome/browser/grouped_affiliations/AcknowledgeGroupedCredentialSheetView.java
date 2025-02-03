@@ -13,15 +13,16 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.password_manager.PasswordManagerResourceProviderFactory;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.ui.text.SpanApplier;
 
+@NullMarked
 class AcknowledgeGroupedCredentialSheetView implements BottomSheetContent {
     private static final float URL_IN_TITLE_MAX_LINES = 1.5f;
     private final View mContent;
@@ -110,9 +111,8 @@ class AcknowledgeGroupedCredentialSheetView implements BottomSheetContent {
         return mContent;
     }
 
-    @Nullable
     @Override
-    public View getToolbarView() {
+    public @Nullable View getToolbarView() {
         return null;
     }
 
@@ -135,7 +135,7 @@ class AcknowledgeGroupedCredentialSheetView implements BottomSheetContent {
     }
 
     @Override
-    public @NonNull String getSheetContentDescription(Context context) {
+    public String getSheetContentDescription(Context context) {
         return context.getString(R.string.ack_grouped_cred_sheet_title, mCredentialHostname);
     }
 

@@ -87,6 +87,10 @@ interface FrePageHandler {
   // Opens `url` in a new backgrounded tab when a link is clicked in the FRE
   // modal dialog if `url` uses the Google domain.
   ValidateAndOpenLinkInNewTab(url.mojom.Url url);
+
+  // Sync Google account sign-in cookies to the webview, so that it can sign-in
+  // automatically.
+  SyncWebviewCookies() => (bool success);
 };
 
 // Reason why getting tab context failed.

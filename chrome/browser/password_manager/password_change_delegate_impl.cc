@@ -9,7 +9,9 @@
 #include "chrome/browser/password_manager/password_change/change_form_submission_verifier.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
+#include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/save_password_progress_logger.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/core/browser/generation/password_generator.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -33,6 +35,7 @@
 
 namespace {
 
+using password_manager::BrowserSavePasswordProgressLogger;
 using password_manager::PasswordForm;
 using password_manager::PasswordFormCache;
 using password_manager::PasswordFormManager;
@@ -152,6 +155,25 @@ void DisplayChangePasswordBubbleAutomatically(
   }
 }
 
+std::unique_ptr<BrowserSavePasswordProgressLogger> GetLoggerIfAvailable(
+    base::WeakPtr<content::WebContents> web_contents) {
+  if (!web_contents) {
+    return nullptr;
+  }
+  auto* client = static_cast<password_manager::PasswordManagerClient*>(
+      ChromePasswordManagerClient::FromWebContents(web_contents.get()));
+  if (!client) {
+    return nullptr;
+  }
+
+  autofill::LogManager* log_manager = client->GetCurrentLogManager();
+  if (log_manager && log_manager->IsLoggingActive()) {
+    return std::make_unique<BrowserSavePasswordProgressLogger>(log_manager);
+  }
+
+  return nullptr;
+}
+
 }  // namespace
 
 PasswordChangeDelegateImpl::PasswordChangeDelegateImpl(
@@ -164,9 +186,20 @@ PasswordChangeDelegateImpl::PasswordChangeDelegateImpl(
       username_(std::move(username)),
       original_password_(std::move(password)),
       originator_(originator->GetWeakPtr()),
-      open_password_change_tab_callback_(std::move(callback)) {}
+      open_password_change_tab_callback_(std::move(callback)) {
+  if (auto logger = GetLoggerIfAvailable(originator_)) {
+    logger->LogMessage(
+        BrowserSavePasswordProgressLogger::STRING_PASSWORD_CHANGE_STARTED);
+  }
+}
 
-PasswordChangeDelegateImpl::~PasswordChangeDelegateImpl() = default;
+PasswordChangeDelegateImpl::~PasswordChangeDelegateImpl() {
+  if (auto logger = GetLoggerIfAvailable(originator_)) {
+    logger->LogBoolean(
+        BrowserSavePasswordProgressLogger::STRING_PASSWORD_CHANGE_FINISHED,
+        current_state_ == State::kPasswordSuccessfullyChanged);
+  }
+}
 
 void PasswordChangeDelegateImpl::OfferPasswordChangeUi() {
   UpdateState(PasswordChangeDelegate::State::kOfferingPasswordChange);
@@ -339,6 +372,12 @@ void PasswordChangeDelegateImpl::UpdateState(
     case State::kPasswordChangeFailed:
       DisplayChangePasswordBubbleAutomatically(originator_, executor_);
       break;
+  }
+
+  if (auto logger = GetLoggerIfAvailable(originator_)) {
+    logger->LogNumber(
+        BrowserSavePasswordProgressLogger::STRING_PASSWORD_CHANGE_STATE_CHANGED,
+        static_cast<int>(new_state));
   }
 }
 

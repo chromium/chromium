@@ -12,6 +12,11 @@ function toDashCase(name: string): string {
 }
 
 export class CrLitElement extends LitElement {
+  // Change default ShadowRoot|null type to ShadowRoot to avoid forcing all
+  // client code having to use `this.shadowRoot!` given that CrLitElement is
+  // used with a ShadowRoot in the vast majority of cases (possibly all).
+  declare readonly shadowRoot: ShadowRoot;
+
   $: ElementCache;
   private willUpdatePending_: boolean = false;
 
@@ -57,7 +62,7 @@ export class CrLitElement extends LitElement {
         }
 
         // Otherwise query the shadow DOM and cache the reference for later use.
-        const element = self.shadowRoot!.querySelector<HTMLElement>(`#${id}`);
+        const element = self.shadowRoot.querySelector<HTMLElement>(`#${id}`);
         if (element === null) {
           throw new Error(`CrLitElement ${
               self.tagName}: Failed to find child with id ${id}`);

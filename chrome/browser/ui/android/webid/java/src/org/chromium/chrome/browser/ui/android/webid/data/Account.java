@@ -50,12 +50,12 @@ public class Account {
      */
     @CalledByNative
     public Account(
-            String id,
-            String email,
-            String name,
-            String givenName,
+            @JniType("std::string") String id,
+            @JniType("std::string") String email,
+            @JniType("std::string") String name,
+            @JniType("std::string") String givenName,
             @JniType("std::optional<std::string>") @Nullable String secondaryDescription,
-            GURL pictureUrl,
+            @JniType("GURL") GURL pictureUrl,
             Bitmap pictureBitmap,
             boolean isSignIn,
             boolean isBrowserTrustedSignIn,

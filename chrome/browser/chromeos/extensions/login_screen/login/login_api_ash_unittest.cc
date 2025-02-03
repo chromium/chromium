@@ -111,9 +111,11 @@ class ScopedTestingProfile {
  public:
   ScopedTestingProfile(TestingProfile* profile,
                        TestingProfileManager* profile_manager,
+                       ash::TestPrefServiceProvider* pref_service_provider,
                        const AccountId& account_id)
       : profile_(profile),
         profile_manager_(profile_manager),
+        pref_service_provider_(pref_service_provider),
         account_id_(account_id) {
     user_manager::UserManager::Get()->OnUserProfileCreated(account_id,
                                                            profile->GetPrefs());
@@ -126,6 +128,8 @@ class ScopedTestingProfile {
   ~ScopedTestingProfile() {
     user_manager::UserManager::Get()->OnUserProfileWillBeDestroyed(account_id_);
     std::string user_name = profile_->GetProfileUserName();
+    pref_service_provider_->ClearUnownedUserPrefs(
+        AccountId::FromUserEmail(user_name));
     profile_ = nullptr;
     profile_manager_->DeleteTestingProfile(user_name);
   }
@@ -135,6 +139,7 @@ class ScopedTestingProfile {
  private:
   raw_ptr<TestingProfile> profile_;
   const raw_ptr<TestingProfileManager> profile_manager_;
+  const raw_ptr<ash::TestPrefServiceProvider> pref_service_provider_;
   const AccountId account_id_;
 };
 
@@ -191,6 +196,7 @@ class LoginApiUnittest : public ExtensionApiUnittest {
   }
 
   void TearDown() override {
+    mock_lock_handler_.reset();
     mock_existing_user_controller_.reset();
     mock_login_display_host_.reset();
     scoped_user_manager_.reset();
@@ -205,8 +211,9 @@ class LoginApiUnittest : public ExtensionApiUnittest {
         AccountId::FromUserEmail(email));
     TestingProfile* profile = profile_manager()->CreateTestingProfile(email);
 
-    return std::make_unique<ScopedTestingProfile>(profile, profile_manager(),
-                                                  user->GetAccountId());
+    return std::make_unique<ScopedTestingProfile>(
+        profile, profile_manager(), ash_test_helper()->prefs_provider(),
+        user->GetAccountId());
   }
 
   raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged>
@@ -633,8 +640,9 @@ class LoginApiUserSessionUnittest : public LoginApiUnittest {
         /* is_affiliated= */ true);
     TestingProfile* profile = profile_manager()->CreateTestingProfile(email);
 
-    return std::make_unique<ScopedTestingProfile>(profile, profile_manager(),
-                                                  user->GetAccountId());
+    return std::make_unique<ScopedTestingProfile>(
+        profile, profile_manager(), ash_test_helper()->prefs_provider(),
+        user->GetAccountId());
   }
 };
 

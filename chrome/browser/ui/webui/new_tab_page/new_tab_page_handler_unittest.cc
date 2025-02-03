@@ -111,6 +111,7 @@ class MockPage : public new_tab_page::mojom::Page {
   MOCK_METHOD(void,
               SetDisabledModules,
               (bool, const std::vector<std::string>&));
+  MOCK_METHOD(void, SetModulesLoadable, ());
   MOCK_METHOD(void, SetModulesFreVisibility, (bool));
   MOCK_METHOD(void, SetCustomizeChromeSidePanelVisibility, (bool));
   MOCK_METHOD(void, SetPromo, (new_tab_page::mojom::PromoPtr));
@@ -959,18 +960,6 @@ class NewTabPageHandlerMicrosoftAuthStateTest
   raw_ptr<MicrosoftAuthServiceObserver> microsoft_auth_service_observer_;
 };
 
-// TODO(crbug.com/386390756): Remove this test once modules.ts stops fetching
-// auth states.
-TEST_P(NewTabPageHandlerMicrosoftAuthStateTest, GetMicrosoftAuthState) {
-  base::MockCallback<NewTabPageHandler::GetMicrosoftAuthStateCallback> callback;
-  new_tab_page::mojom::AuthState result;
-  SetAuthState(AuthState());
-  EXPECT_CALL(callback, Run).WillOnce(MoveArg<0>(&result));
-  handler_->GetMicrosoftAuthState(callback.Get());
-
-  EXPECT_EQ(result, AuthState());
-}
-
 TEST_P(NewTabPageHandlerMicrosoftAuthStateTest, OnAuthStateUpdated) {
   SetAuthState(AuthState());
 
@@ -994,11 +983,23 @@ TEST_P(NewTabPageHandlerMicrosoftAuthStateTest, OnAuthStateUpdated) {
       break;
   }
 
-  EXPECT_EQ(profile_->GetPrefs()->GetList(prefs::kNtpDisabledModules),
+  EXPECT_EQ(profile_->GetPrefs()->GetList(prefs::kNtpHiddenModules),
             expected_disabled_modules);
-  EXPECT_EQ(
-      profile_->GetPrefs()->GetList(prefs::kNtpCustomizeChromeHiddenModules),
-      expected_disabled_modules);
+}
+
+TEST_P(NewTabPageHandlerMicrosoftAuthStateTest,
+       UpdateModulesLoadableTriggersPageCall) {
+  SetAuthState(AuthState());
+
+  handler_->UpdateModulesLoadable();
+
+  if (AuthState() == new_tab_page::mojom::AuthState::kNone) {
+    EXPECT_CALL(mock_page_, SetModulesLoadable()).Times(0);
+  } else {
+    EXPECT_CALL(mock_page_, SetModulesLoadable()).Times(1);
+  }
+
+  mock_page_.FlushForTesting();
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1108,6 +1109,33 @@ TEST_F(NewTabPageHandlerTest, SetModuleDisabled) {
   disabled_modules_list.Append(ntp_modules::kDriveModuleId);
   EXPECT_EQ(disabled_modules_list,
             profile_->GetPrefs()->GetList(prefs::kNtpDisabledModules));
+}
+
+TEST_F(NewTabPageHandlerTest, SetModuleHiddenAndDisabled) {
+  std::vector<std::string> disabled_module_ids;
+  EXPECT_CALL(mock_page_, SetDisabledModules)
+      .Times(2)
+      .WillRepeatedly(testing::Invoke(
+          [&disabled_module_ids](bool all_arg,
+                                 std::vector<std::string> module_ids_arg) {
+            disabled_module_ids = std::move(module_ids_arg);
+          }));
+  mock_page_.FlushForTesting();
+
+  base::Value::List hidden_modules_list;
+  hidden_modules_list.Append(ntp_modules::kDriveModuleId);
+  profile_->GetPrefs()->SetList(prefs::kNtpHiddenModules,
+                                std::move(hidden_modules_list));
+  mock_page_.FlushForTesting();
+  EXPECT_EQ(1u, disabled_module_ids.size());
+  EXPECT_EQ(disabled_module_ids[0], ntp_modules::kDriveModuleId);
+
+  handler_->SetModuleDisabled(ntp_modules::kDriveModuleId, true);
+  mock_page_.FlushForTesting();
+  // Ensure |disabled_module_ids| still only has one entry for
+  // `ntp_modules::kDriveModuleId`.
+  EXPECT_EQ(1u, disabled_module_ids.size());
+  EXPECT_EQ(disabled_module_ids[0], ntp_modules::kDriveModuleId);
 }
 
 TEST_F(NewTabPageHandlerTest, ModulesVisiblePrefChangeTriggersPageCall) {

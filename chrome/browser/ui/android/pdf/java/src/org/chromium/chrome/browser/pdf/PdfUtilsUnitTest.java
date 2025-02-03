@@ -67,6 +67,10 @@ public class PdfUtilsUnitTest {
                 uri.toString());
         uri = PdfUtils.getUriFromFilePath(FILE_URL);
         Assert.assertNotNull("Uri should not be null.", uri);
+        Assert.assertEquals(
+                "Uri should match the input when it is already a file uri",
+                FILE_URL,
+                uri.toString());
     }
 
     @Test

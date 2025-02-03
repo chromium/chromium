@@ -7,10 +7,12 @@ package org.chromium.chrome.browser.password_manager;
 import android.content.Context;
 import android.os.Bundle;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.components.browser_ui.settings.SettingsNavigation.SettingsFragment;
 
 /** Launches {@link MainSettings} and starts the password export flow. */
+@NullMarked
 public class PasswordExportLauncher {
     // Launch argument for the main settings. If set to to true, the passwords
     // export flow starts immediately.

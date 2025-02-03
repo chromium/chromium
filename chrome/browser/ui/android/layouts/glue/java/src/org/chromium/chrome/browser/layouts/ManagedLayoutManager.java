@@ -4,10 +4,13 @@
 
 package org.chromium.chrome.browser.layouts;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * This interface is intended to be used by glue code to manage the lifecycle and external input to
  * the {@link LayoutManager} implementations.
  */
+@NullMarked
 public interface ManagedLayoutManager extends LayoutManagerProvider.Unowned {
     /**
      * Clean up any state held by the layout manager to prepare for browser shutdown. The object

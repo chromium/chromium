@@ -11,7 +11,7 @@ import {getTemplate} from './graph_tab.html.js';
 
 interface GraphTabElement {
   $: {
-    toolTips: HTMLDivElement,
+    toolTips: HTMLElement,
     graphBody: SVGElement,
   };
 }

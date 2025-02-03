@@ -12,6 +12,8 @@ import static org.chromium.chrome.browser.bottom_sheet.SimpleNoticeSheetProperti
 import android.content.Context;
 import android.text.TextUtils;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
@@ -20,10 +22,11 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** The coordinator of the simple notice sheet. */
+@NullMarked
 public class SimpleNoticeSheetCoordinator {
     private Context mContext;
     private BottomSheetController mSheetController;
-    private SimpleNoticeSheetView mView;
+    private @Nullable SimpleNoticeSheetView mView;
 
     private final BottomSheetObserver mBottomSheetObserver =
             new EmptyBottomSheetObserver() {

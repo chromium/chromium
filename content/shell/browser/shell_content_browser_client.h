@@ -226,6 +226,11 @@ class ShellContentBrowserClient : public ContentBrowserClient {
     override_web_preferences_callback_ = std::move(callback);
   }
 
+#if BUILDFLAG(IS_IOS)
+  bool IsJITEnabled();
+  void SetJITEnabled(bool value);
+#endif
+
  protected:
   // Call this if CreateBrowserMainParts() is overridden in a subclass.
   void set_browser_main_parts(ShellBrowserMainParts* parts);

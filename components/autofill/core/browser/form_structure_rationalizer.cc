@@ -483,9 +483,7 @@ void FormStructureRationalizer::RationalizeCreditCardFieldPredictions(
       case CREDIT_CARD_VERIFICATION_CODE: {
         bool is_standalone_cvc_field = !cc_name_found && !cc_num_found &&
                                        !cc_date_found && !email_address_found;
-        if (base::FeatureList::IsEnabled(
-                features::kAutofillParseVcnCardOnFileStandaloneCvcFields) &&
-            is_standalone_cvc_field) {
+        if (is_standalone_cvc_field) {
           // If there aren't any other credit card fields and no email address
           // field, than we presume this is a credit card saved on file of a
           // merchant webpage.

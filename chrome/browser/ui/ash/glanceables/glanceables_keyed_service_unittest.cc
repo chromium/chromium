@@ -32,11 +32,9 @@ class GlanceablesKeyedServiceTest : public BrowserWithTestWindowTest {
 
   // BrowserWithTestWindowTest:
   TestingProfile* CreateProfile(const std::string& profile_name) override {
-    auto* const profile =
-        profile_manager()->CreateTestingProfile(kPrimaryProfileName,
-                                                /*is_main_profile=*/true);
-    OnUserProfileCreated(profile_name, profile);
-    return profile;
+    EXPECT_EQ(kPrimaryProfileName, profile_name);
+    return profile_manager()->CreateTestingProfile(profile_name,
+                                                   /*is_main_profile=*/true);
   }
 };
 
@@ -66,8 +64,6 @@ TEST_F(GlanceablesKeyedServiceTest, RegisterClientsInAshForNonPrimaryUser) {
   auto* secondary_profile =
       profile_manager()->CreateTestingProfile(kSecondaryProfileName,
                                               /*is_main_profile=*/false);
-  OnUserProfileCreated(kSecondaryProfileName, secondary_profile);
-
   SwitchActiveUser(kSecondaryProfileName);
   auto service_secondary =
       std::make_unique<GlanceablesKeyedService>(secondary_profile);

@@ -68,7 +68,7 @@ TEST_F(CoralPixelDiffTest, CoralSelectorView) {
 
   TabAppSelectionHost* menu = ShowAndGetSelectorMenu(GetEventGenerator());
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "coral_selector_view", /*revision_number=*/4, menu));
+      "coral_selector_view", /*revision_number=*/5, menu));
 }
 
 }  // namespace ash

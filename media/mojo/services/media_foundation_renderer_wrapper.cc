@@ -12,6 +12,7 @@
 #include "media/mojo/services/mojo_media_log.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/system/platform_handle.h"
+#include "ui/gfx/gpu_memory_buffer.h"
 
 namespace media {
 
@@ -210,9 +211,8 @@ void MediaFoundationRendererWrapper::OnFramePoolInitialized(
     auto frame_info = media::mojom::FrameTextureInfo::New();
     gfx::GpuMemoryBufferHandle gpu_handle;
 
-    gpu_handle.dxgi_handle = std::move(texture.dxgi_handle);
-    gpu_handle.dxgi_token = gfx::DXGIHandleToken();
     gpu_handle.type = gfx::GpuMemoryBufferType::DXGI_SHARED_HANDLE;
+    gpu_handle.set_dxgi_handle(gfx::DXGIHandle(std::move(texture.dxgi_handle)));
 
     frame_info->token = texture.token;
     frame_info->texture_handle = std::move(gpu_handle);

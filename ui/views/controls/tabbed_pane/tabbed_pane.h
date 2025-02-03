@@ -169,6 +169,8 @@ class VIEWS_EXPORT TabbedPaneTab : public View {
  public:
   static constexpr int kDefaultIconSize = 16;
   static constexpr int kDefaultTitleLeftMargin = kDefaultIconSize / 2;
+  static constexpr int kDefaultHorizontalTabHeight = 32;
+  static constexpr int kMinimumVerticalTabWidth = 192;
 
   TabbedPaneTab(TabbedPaneTabStrip* tab_strip,
                 const std::u16string& title,
@@ -187,6 +189,8 @@ class VIEWS_EXPORT TabbedPaneTab : public View {
 
   void SetTitleMargin(const gfx::Insets& margin);
   void SetIconMargin(const gfx::Insets& margin);
+  void SetTabOutsets(const gfx::Outsets& outsets);
+  void SetHeight(int height);
 
   // Overridden from View:
   bool OnMousePressed(const ui::MouseEvent& event) override;
@@ -233,9 +237,11 @@ class VIEWS_EXPORT TabbedPaneTab : public View {
   raw_ptr<const gfx::VectorIcon> icon_for_tab_;
   raw_ptr<ImageView> icon_view_ = nullptr;
   raw_ptr<Label> title_ = nullptr;
+  gfx::Outsets tab_outsets_ = gfx::Outsets::VH(0, 0);
   // The preferred title width is the maximum width between inactive and active
   // states (font changes). See UpdatePreferredTitleWidth() for more details.
   int preferred_title_width_;
+  int height_ = kDefaultHorizontalTabHeight;
   State state_ = State::kActive;
   bool selected_ = false;
 

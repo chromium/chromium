@@ -65,6 +65,9 @@ config("mediapipe_internal_config") {
     # TODO(http://crbug.com/372293769): remove once upstream MediaPipe stops
     # relying on implicit `this` capture.
     "-Wno-deprecated-this-capture",
+
+    # TODO(https://crbug.com/393942204) StaticMap::map_lock_ sometimes unused?
+    "-Wno-unused-private-field",
   ]
 }
 

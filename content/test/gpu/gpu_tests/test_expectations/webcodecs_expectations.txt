@@ -144,6 +144,8 @@ crbug.com/371802469 [ amd-0x7340 angle-opengl asan graphite-disabled mac ] WebCo
 
 crbug.com/389978730 [ win11 nvidia-0x2783 ] WebCodecs_EncodeColorSpace_av01.0.04M.08_prefer-hardware [ Failure ]
 
+crbug.com/393557669 [ win11 qualcomm ] WebCodecs_AudioEncoding_AAC* [ Failure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################

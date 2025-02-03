@@ -7,6 +7,7 @@ package org.chromium.base;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 /*
@@ -19,8 +20,9 @@ import org.chromium.build.annotations.Nullable;
  * base::RepeatingCallback.
  */
 @JNINamespace("base::android")
+@NullMarked
 public class JniRepeatingCallback<T extends @Nullable Object> implements Callback<T> {
-    private final LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
+    private final @Nullable LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
     long mNativePointer;
 
     @CalledByNative

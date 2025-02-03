@@ -87,6 +87,8 @@ class COMPONENT_EXPORT(OS_CRYPT_ASYNC) OSCryptAsync {
   base::OnceClosureList callbacks_ GUARDED_BY_CONTEXT(sequence_checker_);
   Encryptor::KeyRing key_ring_ GUARDED_BY_CONTEXT(sequence_checker_);
   std::string provider_for_encryption_ GUARDED_BY_CONTEXT(sequence_checker_);
+  std::string provider_for_os_crypt_sync_compatible_encryption_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

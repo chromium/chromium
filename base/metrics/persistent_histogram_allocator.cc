@@ -335,8 +335,9 @@ std::unique_ptr<HistogramBase> PersistentHistogramAllocator::GetHistogram(
   // Check that metadata is reasonable: metric_name is non-empty,
   // ID fields have been loaded with a hash of the name (0 is considered
   // unset/invalid).
-  if (metric_name.empty() || data->samples_metadata.id == 0 ||
-      data->logged_metadata.id == 0 ||
+  if (metric_name.empty() ||
+      reinterpret_cast<const char*>(data)[alloc_size - 1] != '\0' ||
+      data->samples_metadata.id == 0 || data->logged_metadata.id == 0 ||
       // Note: Sparse histograms use `id + 1` in `logged_metadata`.
       (data->logged_metadata.id != data->samples_metadata.id &&
        data->logged_metadata.id != data->samples_metadata.id + 1) ||

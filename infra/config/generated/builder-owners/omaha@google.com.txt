@@ -30,6 +30,7 @@ ci/win10-updater-tester-dbg-uac
 ci/win10-updater-tester-rel
 ci/win10-updater-tester-rel-uac
 ci/win11-arm64-updater-tester-dbg
+ci/win11-arm64-updater-tester-rel
 ci/win11-updater-tester-dbg-uac
 ci/win11-updater-tester-rel
 ci/win32-updater-builder-dbg

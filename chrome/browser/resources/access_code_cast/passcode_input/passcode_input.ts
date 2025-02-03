@@ -6,12 +6,12 @@ import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/p
 
 import {getTemplate} from './passcode_input.html.js';
 
-type ForEachCallback = (el: HTMLParagraphElement|HTMLDivElement, index: number) => void;
+type ForEachCallback = (el: HTMLElement, index: number) => void;
 
 export interface PasscodeInputElement {
   $: {
     inputElement: HTMLInputElement,
-    container: HTMLDivElement,
+    container: HTMLElement,
   };
 }
 
@@ -99,13 +99,12 @@ export class PasscodeInputElement extends PolymerElement {
   }
 
   getCharBox(boxIndex: number) {
-    const el = this.shadowRoot!.querySelector('#char-box-' + boxIndex)!;
-    return el as HTMLDivElement;
+    return this.shadowRoot!.querySelector<HTMLElement>('#char-box-' + boxIndex)!
+        ;
   }
 
   getDisplayChar(charIndex: number) {
-    const el = this.shadowRoot!.querySelector('#char-' + charIndex)!;
-    return el as HTMLParagraphElement;
+    return this.shadowRoot!.querySelector<HTMLElement>('#char-' + charIndex)!;
   }
 
   focusInput() {
@@ -202,7 +201,7 @@ export class PasscodeInputElement extends PolymerElement {
   }
 
   private forEach(elementType: 'char'|'char-box', callback: ForEachCallback) {
-    let el: HTMLDivElement | HTMLParagraphElement | null;
+    let el: HTMLElement|null;
     for (let i = 0; i < this.length; i++) {
       el = this.shadowRoot!.querySelector('#' + elementType + '-' + i);
       if (el !== null) {

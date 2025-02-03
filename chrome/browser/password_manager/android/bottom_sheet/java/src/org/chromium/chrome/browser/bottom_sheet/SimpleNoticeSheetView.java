@@ -14,15 +14,16 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.password_manager.PasswordManagerResourceProviderFactory;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.ui.widget.TextViewWithClickableSpans;
 
 /** This class is responsible for rendering the simple notice sheet. */
+@NullMarked
 class SimpleNoticeSheetView implements BottomSheetContent {
     private final RelativeLayout mContentView;
 
@@ -62,15 +63,13 @@ class SimpleNoticeSheetView implements BottomSheetContent {
                 });
     }
 
-    @Nullable
     @Override
     public View getContentView() {
         return mContentView;
     }
 
-    @Nullable
     @Override
-    public View getToolbarView() {
+    public @Nullable View getToolbarView() {
         return null;
     }
 
@@ -93,7 +92,7 @@ class SimpleNoticeSheetView implements BottomSheetContent {
     }
 
     @Override
-    public @NonNull String getSheetContentDescription(Context context) {
+    public String getSheetContentDescription(Context context) {
         // TODO(crbug.com/366158726): Make the string configurable.
         return context.getString(R.string.pwd_access_loss_warning_content_description);
     }

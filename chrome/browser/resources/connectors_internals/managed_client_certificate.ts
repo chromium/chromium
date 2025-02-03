@@ -89,8 +89,8 @@ export class ManagedClientCertificateElement extends CustomElement {
   }
 
   private createManagedIdentityElement(
-      prefix: string, managedIdentity: ClientIdentity): HTMLDivElement {
-    const identityElement = document.createElement('div') as HTMLDivElement;
+      prefix: string, managedIdentity: ClientIdentity): HTMLElement {
+    const identityElement = document.createElement('div');
 
     let keyValuePairs =
         [{key: `${prefix} Identity Name`, value: managedIdentity.identityName}];
@@ -168,11 +168,11 @@ export class ManagedClientCertificateElement extends CustomElement {
   }
 
   private createLabelledValueElement(label: string, text: string): HTMLElement {
-    const nameSpan = document.createElement('span') as HTMLSpanElement;
+    const nameSpan = document.createElement('span');
     nameSpan.classList.add('bold');
     nameSpan.textContent = text;
 
-    const containerElement = document.createElement('div') as HTMLDivElement;
+    const containerElement = document.createElement('div');
     containerElement.appendChild(document.createTextNode(`${label}: `));
     containerElement.appendChild(nameSpan);
     return containerElement;

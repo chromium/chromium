@@ -93,6 +93,7 @@
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
+#include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "ui/base/ui_base_features.h"
@@ -142,6 +143,10 @@
 namespace content {
 
 namespace {
+
+#if BUILDFLAG(IS_IOS)
+inline constexpr char kJITEnabled[] = "settings.javascript.jit";
+#endif
 
 using PerformanceManagerRegistry =
     performance_manager::PerformanceManagerRegistry;
@@ -305,6 +310,10 @@ std::unique_ptr<PrefService> CreateLocalState() {
   metrics::MetricsService::RegisterPrefs(pref_registry.get());
   variations::VariationsService::RegisterPrefs(pref_registry.get());
 
+#if BUILDFLAG(IS_IOS)
+  pref_registry->RegisterBooleanPref(kJITEnabled, true);
+#endif
+
   base::FilePath path;
   CHECK(base::PathService::Get(SHELL_DIR_USER_DATA, &path));
   path = path.AppendASCII("Local State");
@@ -467,7 +476,25 @@ void ShellContentBrowserClient::AppendExtraCommandLineSwitches(
       ::content::AreIsolatedWebAppsEnabled()) {
     command_line->AppendSwitch(switches::kEnableIsolatedWebAppsInRenderer);
   }
+
+#if BUILDFLAG(IS_IOS)
+  if (!IsJITEnabled()) {
+    command_line->AppendSwitchASCII(blink::switches::kJavaScriptFlags,
+                                    "--jitless");
+  }
+#endif
 }
+
+#if BUILDFLAG(IS_IOS)
+bool ShellContentBrowserClient::IsJITEnabled() {
+  return GetSharedState().local_state->GetBoolean(kJITEnabled);
+}
+
+void ShellContentBrowserClient::SetJITEnabled(bool value) {
+  GetSharedState().local_state->SetBoolean(kJITEnabled, value);
+  GetSharedState().local_state->CommitPendingWrite();
+}
+#endif
 
 device::GeolocationSystemPermissionManager*
 ShellContentBrowserClient::GetGeolocationSystemPermissionManager() {

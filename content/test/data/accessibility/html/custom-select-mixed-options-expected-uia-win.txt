@@ -1,0 +1,5 @@
+Document
+++Group IsControlElement=false
+++++ComboBox ExpandCollapse.ExpandCollapseState='Collapsed' Value.Value='only text'
+++++ComboBox ExpandCollapse.ExpandCollapseState='Collapsed' Value.Value='only text'
+++++ComboBox ExpandCollapse.ExpandCollapseState='Collapsed' Value.Value='only text'

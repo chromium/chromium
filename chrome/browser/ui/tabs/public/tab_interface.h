@@ -192,6 +192,9 @@ class TabInterface : public SupportsHandles<TabInterface> {
   // Return true if the tab is pinned in its tabstrip, or false otherwise.
   virtual bool IsPinned() const = 0;
 
+  // Return true if the tab is part of a split view, or false otherwise.
+  virtual bool IsSplit() const = 0;
+
   // Returns the id of the tab group this tab belongs to, or nullopt if the tab
   // is not grouped.
   virtual std::optional<tab_groups::TabGroupId> GetGroup() const = 0;

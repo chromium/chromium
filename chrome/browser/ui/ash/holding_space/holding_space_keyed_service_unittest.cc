@@ -607,11 +607,9 @@ class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
     constexpr char kSecondaryProfileName[] = "secondary_profile";
     constexpr char kFakeGaia2[] = "fakegaia2";
     LogIn(kSecondaryProfileName, GaiaId(kFakeGaia2));
-    auto* profile = profile_manager()->CreateTestingProfile(
+    return profile_manager()->CreateTestingProfile(
         kSecondaryProfileName, std::move(prefs), /*user_name=*/std::u16string(),
         /*avatar_id=*/0, GetTestingFactories());
-    OnUserProfileCreated(kSecondaryProfileName, profile);
-    return profile;
   }
 
   using PopulatePrefStoreCallback = base::OnceCallback<void(TestingPrefStore*)>;
@@ -635,7 +633,6 @@ class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
   void ActivateSecondaryProfile() {
     const std::string kSecondaryProfileName = "secondary_profile";
     const AccountId account_id(AccountId::FromUserEmail(kSecondaryProfileName));
-    GetSessionControllerClient()->AddUserSession(kSecondaryProfileName);
     GetSessionControllerClient()->SwitchActiveUser(account_id);
   }
 
@@ -785,7 +782,6 @@ class HoldingSpaceKeyedServiceWithExperimentalFeatureForGuestTest
             user->GetAccountId()),
         /*browser_restart=*/false,
         /*is_child=*/false);
-    ash_test_helper()->test_session_controller_client()->AddUserSession(email);
   }
 
   TestingProfile* CreateProfile(const std::string& profile_name) override {
@@ -805,7 +801,6 @@ class HoldingSpaceKeyedServiceWithExperimentalFeatureForGuestTest
              base::BindRepeating(&BuildVolumeManager)}});
     profile_ =
         profile_manager()->CreateGuestProfile(std::move(guest_profile_builder));
-    OnUserProfileCreated(profile_name, profile_);
     return profile_;
   }
 

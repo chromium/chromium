@@ -14,10 +14,6 @@
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
 
-namespace mojo_base {
-class BigBuffer;
-}
-
 namespace blink {
 
 class CachedMetadata;
@@ -44,6 +40,7 @@ class PLATFORM_EXPORT ScriptCachedMetadataHandler
   void SetCachedMetadata(CodeCacheHost* code_cache_host,
                          uint32_t data_type_id,
                          base::span<const uint8_t> data) override;
+  void SetSerializedCachedMetadata(mojo_base::BigBuffer data) override;
   void ClearCachedMetadata(CodeCacheHost* code_cache_host,
                            ClearCacheType cache_type) override;
   scoped_refptr<CachedMetadata> GetCachedMetadata(
@@ -60,9 +57,6 @@ class PLATFORM_EXPORT ScriptCachedMetadataHandler
   void OnMemoryDump(WebProcessMemoryDump* pmd,
                     const String& dump_prefix) const override;
   size_t GetCodeCacheSize() const override;
-
-  // Sets the serialized metadata retrieved from the platform's cache.
-  virtual void SetSerializedCachedMetadata(mojo_base::BigBuffer data);
 
  protected:
   // Asks sender to send `cached_metadata_` to the `code_cache_host`. Virtual to

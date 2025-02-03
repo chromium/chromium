@@ -27,7 +27,7 @@ const BookmarksItemElementBase = StoreClientMixin(PolymerElement);
 
 export interface BookmarksItemElement {
   $: {
-    icon: HTMLDivElement,
+    icon: HTMLElement,
     menuButton: CrIconButtonElement,
   };
 }

@@ -89,9 +89,11 @@ if (is_android) {
           android_bundle_locales_as_resources,
           [ "java/res/values-{{source_name_part}}/generated_resources.xml" ])
 
-  strings_java_resources = [ "java/res/values/${branding_path_product}_strings.xml" ] + process_file_template(
-                               android_bundle_locales_as_resources,
-                               [ "java/res/values-{{source_name_part}}/${branding_path_product}_strings.xml" ])
+  strings_java_resources =
+      [ "java/res/values/branded_strings.xml" ] +
+      process_file_template(
+          android_bundle_locales_as_resources,
+          [ "java/res/values-{{source_name_part}}/branded_strings.xml" ])
 }
 
 grit("generated_resources") {

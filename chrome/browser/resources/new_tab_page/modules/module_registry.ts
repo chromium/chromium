@@ -98,8 +98,8 @@ export class ModuleRegistry {
         return 0;  // Keep current order.
       });
     }
-    const elements =
-        await Promise.all(descriptors.map(d => d.initialize(timeout)));
+    const elements = await Promise.all(
+        descriptors.map(d => d.initialize(timeout, /*onNtpLoad=*/ true)));
     return elements.map((e, i) => ({elements: e, descriptor: descriptors[i]}))
         .filter(m => !!m.elements)
         .map(m => ({
@@ -128,7 +128,7 @@ export class ModuleRegistry {
       return null;
     }
 
-    const elements = await descriptor.initialize(timeout);
+    const elements = await descriptor.initialize(timeout, /*onNtpLoad=*/ false);
     if (!elements) {
       console.error('No elements initialized for module id ', id);
       return null;

@@ -227,9 +227,7 @@ void FormFieldParser::ParseFormFields(
   ParseFormFieldsPass(CreditCardFieldParser::Parse, context, processed_fields,
                       field_candidates);
   bool found_cc_fields = candidates_size != field_candidates.size();
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillParseVcnCardOnFileStandaloneCvcFields) &&
-      !found_email_field && !found_cc_fields) {
+  if (!found_email_field && !found_cc_fields) {
     // No email or cc fields found. Standalone CVC field pass for the VCN card
     // on file case.
     ParseStandaloneCVCFields(context, fields, field_candidates);

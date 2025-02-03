@@ -195,20 +195,14 @@ android_library("full_java") {
     "java/src/org/chromium/components/payments/intent/IsReadyToPayServiceHelper.java",
     "java/src/org/chromium/components/payments/intent/WebPaymentIntentHelperTypeConverter.java",
   ]
-  resources_package = "org.chromium.components.payments"
   deps = [
     ":browser_binding_java",
     ":feature_list_java",
-
-    # TODO(crbug.com/382867337): Non-UI code should not depend on UI code.
-    ":java_resources",
     ":minimal_java",
     ":pre_purchase_query_enum_java",
     ":service_java",
     "//base:base_java",
     "//build/android:build_java",
-    "//components/autofill/android:autofill_java",
-    "//components/browser_ui/widget/android:java_resources",
     "//components/embedder_support/android:util_java",
     "//components/payments/mojom:mojom_java",
     "//components/url_formatter/android:url_formatter_java",
@@ -222,7 +216,6 @@ android_library("full_java") {
     "//third_party/blink/public/mojom:android_mojo_bindings_java",
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_no_recycler_view_java",
-    "//ui/android:ui_utils_java",
     "//url:gurl_java",
     "//url/mojom:url_mojom_gurl_java",
     "//url/mojom:url_mojom_origin_java",
@@ -232,7 +225,6 @@ android_library("full_java") {
     ":payments_journey_logger_enum_javagen",
     ":prefs_strings_generated_srcjar",
   ]
-  resources_package = "org.chromium.components.payments"
 }
 
 generate_jni("browser_binding_jni") {
@@ -313,7 +305,7 @@ android_library("minimal_java") {
     ":service_java",
     "//base:base_java",
     "//build/android:build_java",
-    "//components/autofill/android:payments_autofill_java",
+    "//components/autofill/android:payments_interfaces_java",
     "//components/payments/mojom:mojom_java",
     "//content/public/android:content_java",
     "//mojo/public/java:bindings_java",

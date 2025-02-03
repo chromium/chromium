@@ -98,9 +98,9 @@
 #include "third_party/blink/renderer/platform/loader/fetch/script_cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/loader/fetch/unique_identifier.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/request_conversion.h"
-#include "third_party/blink/renderer/platform/loader/identity_digest.h"
 #include "third_party/blink/renderer/platform/loader/integrity_report.h"
 #include "third_party/blink/renderer/platform/loader/subresource_integrity.h"
+#include "third_party/blink/renderer/platform/loader/unencoded_digest.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_remote.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/network/network_utils.h"
@@ -483,20 +483,20 @@ class FetchManager::Loader final
                       Response* response,
                       FetchManager::Loader* loader,
                       String integrity_metadata,
-                      std::optional<IdentityDigest> identity_digest,
+                      std::optional<UnencodedDigest> unencoded_digest,
                       const KURL& url)
         : body_(body),
           updater_(updater),
           response_(response),
           loader_(loader),
           integrity_metadata_(integrity_metadata),
-          identity_digest_(identity_digest),
+          unencoded_digest_(unencoded_digest),
           url_(url) {
       // We need to have some kind of integrity metadata to check: either SRI
-      // metadata, or an `Identity-Digest` header.
+      // metadata, or an `Unencoded-Digest` header.
       DCHECK(!integrity_metadata.empty() ||
-             (identity_digest.has_value() &&
-              RuntimeEnabledFeatures::IdentityDigestEnabled()));
+             (unencoded_digest.has_value() &&
+              RuntimeEnabledFeatures::UnencodedDigestEnabled()));
       body_->SetClient(this);
 
       OnStateChange();
@@ -525,8 +525,8 @@ class FetchManager::Loader final
       finished_ = true;
       if (result == Result::kDone) {
         bool integrity_failed = false;
-        if (identity_digest_.has_value() &&
-            !identity_digest_->DoesMatch(&buffer_)) {
+        if (unencoded_digest_.has_value() &&
+            !unencoded_digest_->DoesMatch(&buffer_)) {
           integrity_failed = true;
         }
         if (!integrity_failed && !integrity_metadata_.empty()) {
@@ -579,7 +579,7 @@ class FetchManager::Loader final
     Member<Response> response_;
     Member<FetchManager::Loader> loader_;
     String integrity_metadata_;
-    std::optional<IdentityDigest> identity_digest_;
+    std::optional<UnencodedDigest> unencoded_digest_;
     KURL url_;
     SegmentedBuffer buffer_;
     bool finished_ = false;
@@ -776,9 +776,9 @@ void FetchManager::Loader::DidReceiveResponse(
   Response* r = Response::Create(response_resolver_->GetExecutionContext(),
                                  tainted_response);
   r->headers()->SetGuard(Headers::kImmutableGuard);
-  std::optional<IdentityDigest> identity_digest = response.IdentityDigest();
+  std::optional<UnencodedDigest> unencoded_digest = response.UnencodedDigest();
   if (GetFetchRequestData()->Integrity().empty() &&
-      !identity_digest.has_value()) {
+      !unencoded_digest.has_value()) {
     response_resolver_->Resolve(r);
     response_resolver_.Clear();
   } else {
@@ -790,7 +790,7 @@ void FetchManager::Loader::DidReceiveResponse(
 
     integrity_verifier_ = MakeGarbageCollected<IntegrityVerifier>(
         underlying, verified, r, this, GetFetchRequestData()->Integrity(),
-        identity_digest, response.CurrentRequestUrl());
+        unencoded_digest, response.CurrentRequestUrl());
   }
 }
 

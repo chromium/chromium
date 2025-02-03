@@ -340,6 +340,7 @@ chromium-metrics-reviews@google.com.
   <int value="78" label="LastPlusAddressFillingTime"/>
   <int value="79" label="SafeBrowsingEnhanced"/>
   <int value="80" label="FacilitatedPaymentsEwallet"/>
+  <int value="81" label="AutofillBnplEnabled"/>
 <!-- LINT.ThenChange(/components/sync_preferences/common_syncable_prefs_database.cc:CommonSyncablePref)-->
 
 <!-- LINT.IfChange(ChromeSyncablePref) -->

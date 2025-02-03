@@ -12,7 +12,6 @@ const browserProxy = BrowserProxyImpl.getInstance();
 
 const webview =
     document.getElementById('fre-guest-frame') as chrome.webviewTag.WebView;
-webview.src = getWebviewSrc();
 
 webview.addEventListener('loadcommit', onLoadCommit);
 webview.addEventListener('newwindow', onNewWindow);
@@ -48,8 +47,15 @@ function getWebviewSrc() {
   // parameter to the given FRE URL.
   const glicHotkeyString = loadTimeData.getString('glicHotkeyString');
   const hotkeyQueryParamString =
-      glicHotkeyString ? '?hotkey=' + glicHotkeyString : '';
+      glicHotkeyString ? '&hotkey=' + glicHotkeyString : '';
   // TODO(cuianthony): For now, borrow the configuration of the glic guest URL,
   // to be replaced with the correct configuration set up for the FRE.
   return loadTimeData.getString('glicFreURL') + hotkeyQueryParamString;
 }
+
+// Blocking on cookie syncing here introduces latency, we should consider ways
+// to avoid it.
+browserProxy.freHandler.syncWebviewCookies().then(() => {
+  // Load the web client only after cookie sync is complete.
+  webview.src = getWebviewSrc();
+});

@@ -1332,6 +1332,7 @@ policies:
   1331: ExternalStorageAllowlist
   1332: WebAuthenticationRemoteDesktopAllowedOrigins
   1333: ServiceWorkerToControlSrcdocIframeEnabled
+  1334: ProvisionManagedClientCertificateForBrowser
 
 atomic_groups:
   1: Homepage

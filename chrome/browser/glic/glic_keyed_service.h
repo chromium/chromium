@@ -135,12 +135,20 @@ class GlicKeyedService : public KeyedService {
   void SyncWebviewCookies(
       mojom::PageHandler::SyncWebviewCookiesCallback callback);
 
+  void SyncWebviewCookiesForFre(
+      mojom::PageHandler::SyncWebviewCookiesCallback callback);
+
   void WebClientCreated();
 
   base::CallbackListSubscription AddWebClientCreatedCallback(
       base::OnceCallback<void()> callback);
 
+  bool IsActiveWebContents(content::WebContents* contents) {
+    return contents && contents == window_controller().GetWebContents();
+  }
+
   void TryPreload();
+  void ReloadWebview();
 
   GlicProfileManager* GetProfileManagerForTesting() { return profile_manager_; }
 
@@ -163,6 +171,11 @@ class GlicKeyedService : public KeyedService {
   GlicWindowController window_controller_;
   GlicFocusedTabManager focused_tab_manager_;
   std::unique_ptr<GlicScreenshotCapturer> screenshot_capturer_;
+  // The glic FRE uses a different webview from the main glic WebUI. This also
+  // requires sign-in and synchronizing cookies to the webview. Use separate
+  // instances of `GlicCookieSynchronizer` to handle the two different webviews
+  // as they require different storage partitions.
+  GlicCookieSynchronizer fre_cookie_synchronizer_;
   GlicCookieSynchronizer cookie_synchronizer_;
   std::unique_ptr<GlicMetrics> metrics_;
   // Unowned

@@ -760,7 +760,7 @@ suite('NewTabPageModulesModulesV2Test', () => {
         });
   });
 
-  suite('Reloadable', () => {
+  suite('DynamicLoading', () => {
     function getModulesPromise(
         descriptors: ModuleDescriptor[],
         instanceCount: number = 1): Promise<Module[]> {
@@ -797,129 +797,204 @@ suite('NewTabPageModulesModulesV2Test', () => {
       return modulePromise;
     }
 
-    suiteSetup(() => {
-      loadTimeData.overrideValues({
-        modulesReloadable: true,
-      });
-    });
-
-    test('loads module container with newly enabled module', async () => {
-      // Arrange - Create modules element with no enabled modules.
-      const fooDescriptor = new ModuleDescriptor('foo', initNullModule);
-      handler.setResultFor('getModulesIdNames', {
-        data: [
-          {id: fooDescriptor.id, name: fooDescriptor.id},
-        ],
-      });
-      const modulesElement = await createModulesElement(
-          [], true, SAMPLE_SCREEN_WIDTH,
-          /*disabledModuleIds=*/[fooDescriptor.id]);
-      await waitAfterNextRender(modulesElement);
-      let moduleWrappers =
-          modulesElement.shadowRoot!.querySelectorAll('ntp-module-wrapper');
-      assertEquals(0, moduleWrappers.length);
-      // Mock required data for loading foo module.
-      const fooModulePromise = getModulesPromise([fooDescriptor]);
-      moduleRegistry.setResultFor(
-          'initializeModulesHavingIds', fooModulePromise);
-
-      // Act - Remove foo module from disabled modules list.
-      callbackRouterRemote.setDisabledModules(false, []);
-      await fooModulePromise;
-      await waitAfterNextRender(modulesElement);
-
-      // Assert - Foo module loaded.
-      moduleWrappers =
-          modulesElement.shadowRoot!.querySelectorAll('ntp-module-wrapper');
-      assertEquals(1, moduleWrappers.length);
-      assertEquals(
-          fooDescriptor.id,
-          (moduleWrappers[0] as ModuleWrapperElement).module.descriptor.id);
-    });
-
-    test('reloads module container after initial load', async () => {
-      // Arrange.
-      const fooDescriptor = new ModuleDescriptor('foo', initNullModule);
-      const barDescriptor = new ModuleDescriptor('bar', initNullModule);
-      const bazDescriptor = new ModuleDescriptor('baz', initNullModule);
-      // Initial state: foo enabled, bar and baz disabled.
-      const enabledDescriptors = [fooDescriptor];
-      const modulesElement = await createModulesElementFromDescriptors(
-          enabledDescriptors, /*instanceCount=*/ 1,
-          [barDescriptor, bazDescriptor]);
-      // Ensure only foo module loaded.
-      let moduleWrappers =
-          modulesElement.shadowRoot!.querySelectorAll('ntp-module-wrapper');
-      assertEquals(1, moduleWrappers.length);
-      assertEquals(
-          fooDescriptor.id,
-          (moduleWrappers[0] as ModuleWrapperElement).module.descriptor.id);
-
-      // Arrange - Prepare to load bar module.
-      const barModulePromise = getModulePromise(barDescriptor);
-      moduleRegistry.setResultFor('initializeModuleById', barModulePromise);
-      // Set the module order, to be verified later.
-      handler.setResultFor('getModulesOrder', Promise.resolve({
-        moduleIds: [barDescriptor.id, bazDescriptor.id, fooDescriptor.id],
-      }));
-
-      // Act - Enable the bar module by removing it from the disabled modules
-      // list.
-      callbackRouterRemote.setDisabledModules(false, [bazDescriptor.id]);
-      await barModulePromise;
-      await waitAfterNextRender(modulesElement);
-
-      // Assert.
-      moduleWrappers =
-          modulesElement.shadowRoot!.querySelectorAll('ntp-module-wrapper');
-      assertEquals(2, moduleWrappers.length);
-      //  Ensure bar and foo modules are loaded in the correct order.
-      assertEquals(
-          barDescriptor.id,
-          (moduleWrappers[0] as ModuleWrapperElement).module.descriptor.id);
-      assertEquals(
-          fooDescriptor.id,
-          (moduleWrappers[1] as ModuleWrapperElement).module.descriptor.id);
-    });
-
-    test(
-        'does not reload container for a previously enabled module',
-        async () => {
-          // Arrange.
-          const fooDescriptor = new ModuleDescriptor('foo', initNullModule);
-          const barDescriptor = new ModuleDescriptor('bar', initNullModule);
-          // Initial state: foo enabled, bar disabled.
-          const modulesElement = await createModulesElementFromDescriptors(
-              /*enabledDescriptors=*/[fooDescriptor], /*instanceCount=*/ 1,
-              /*disabledDescriptors=*/[barDescriptor]);
-          // Ensure foo module shows.
-          let moduleWrappers =
-              modulesElement.shadowRoot!.querySelectorAll('ntp-module-wrapper');
-          assertEquals(1, moduleWrappers.length);
-          let fooModule = moduleWrappers[0] as ModuleWrapperElement;
-          assertEquals(fooDescriptor.id, fooModule.module.descriptor.id);
-          assertNotStyle(fooModule, 'display', 'none');
-          // Disable foo module.
-          callbackRouterRemote.setDisabledModules(
-              false, [barDescriptor.id, fooDescriptor.id]);
-          await callbackRouterRemote.$.flushForTesting();
-          assertStyle(fooModule, 'display', 'none');
-          // Set result for `initializeModuleById` so that any reload attempt,
-          // will initialize the bar module instead of foo.
-          const barModulePromise = getModulePromise(barDescriptor);
-          moduleRegistry.setResultFor('initializeModuleById', barModulePromise);
-
-          // Act - Remove foo module from disabled modules list.
-          callbackRouterRemote.setDisabledModules(false, [barDescriptor.id]);
-          await callbackRouterRemote.$.flushForTesting();
-
-          // Assert - Foo module shows and bar module never loaded.
-          moduleWrappers =
-              modulesElement.shadowRoot!.querySelectorAll('ntp-module-wrapper');
-          assertEquals(1, moduleWrappers.length);
-          fooModule = moduleWrappers[0] as ModuleWrapperElement;
-          assertEquals(fooDescriptor.id, fooModule.module.descriptor.id);
-          assertNotStyle(fooModule, 'display', 'none');
+    suite('Reloadable', () => {
+      suiteSetup(() => {
+        loadTimeData.overrideValues({
+          modulesReloadable: true,
+          waitToLoadModules: false,
         });
+      });
+
+      test('loads module container with newly enabled module', async () => {
+        // Arrange - Create modules element with no enabled modules.
+        const fooDescriptor = new ModuleDescriptor('foo', initNullModule);
+        handler.setResultFor('getModulesIdNames', {
+          data: [
+            {id: fooDescriptor.id, name: fooDescriptor.id},
+          ],
+        });
+        const modulesElement = await createModulesElement(
+            [], true, SAMPLE_SCREEN_WIDTH,
+            /*disabledModuleIds=*/[fooDescriptor.id]);
+        await waitAfterNextRender(modulesElement);
+        let moduleWrappers =
+            modulesElement.shadowRoot!.querySelectorAll('ntp-module-wrapper');
+        assertEquals(0, moduleWrappers.length);
+        // Mock required data for loading foo module.
+        const fooModulePromise = getModulesPromise([fooDescriptor]);
+        moduleRegistry.setResultFor(
+            'initializeModulesHavingIds', fooModulePromise);
+
+        // Act - Remove foo module from disabled modules list.
+        callbackRouterRemote.setDisabledModules(false, []);
+        await fooModulePromise;
+        await waitAfterNextRender(modulesElement);
+
+        // Assert - Foo module loaded.
+        moduleWrappers =
+            modulesElement.shadowRoot!.querySelectorAll('ntp-module-wrapper');
+        assertEquals(1, moduleWrappers.length);
+        assertEquals(
+            fooDescriptor.id,
+            (moduleWrappers[0] as ModuleWrapperElement).module.descriptor.id);
+        assertEquals(1, metrics.count('NewTabPage.Modules.LoadedModulesCount'));
+        assertEquals(
+            1, metrics.count('NewTabPage.Modules.LoadedModulesCount', 0));
+        assertEquals(
+            1, metrics.count('NewTabPage.Modules.ReloadedModulesCount'));
+        assertEquals(
+            1, metrics.count('NewTabPage.Modules.ReloadedModulesCount', 1));
+      });
+
+      test('reloads module container after initial load', async () => {
+        // Arrange.
+        const fooDescriptor = new ModuleDescriptor('foo', initNullModule);
+        const barDescriptor = new ModuleDescriptor('bar', initNullModule);
+        const bazDescriptor = new ModuleDescriptor('baz', initNullModule);
+        // Initial state: foo enabled, bar and baz disabled.
+        const enabledDescriptors = [fooDescriptor];
+        const modulesElement = await createModulesElementFromDescriptors(
+            enabledDescriptors, /*instanceCount=*/ 1,
+            [barDescriptor, bazDescriptor]);
+        // Ensure only foo module loaded.
+        let moduleWrappers =
+            modulesElement.shadowRoot!.querySelectorAll('ntp-module-wrapper');
+        assertEquals(1, moduleWrappers.length);
+        assertEquals(
+            fooDescriptor.id,
+            (moduleWrappers[0] as ModuleWrapperElement).module.descriptor.id);
+        assertEquals(0, metrics.count('NewTabPage.Modules.LoadedWith'));
+        assertEquals(0, metrics.count('NewTabPage.Modules.ReloadedWith'));
+
+        // Arrange - Prepare to load bar module.
+        const barModulePromise = getModulePromise(barDescriptor);
+        moduleRegistry.setResultFor('initializeModuleById', barModulePromise);
+        // Set the module order, to be verified later.
+        handler.setResultFor('getModulesOrder', Promise.resolve({
+          moduleIds: [barDescriptor.id, bazDescriptor.id, fooDescriptor.id],
+        }));
+
+        // Act - Enable the bar module by removing it from the disabled modules
+        // list.
+        callbackRouterRemote.setDisabledModules(false, [bazDescriptor.id]);
+        await barModulePromise;
+        await waitAfterNextRender(modulesElement);
+
+        // Assert.
+        moduleWrappers =
+            modulesElement.shadowRoot!.querySelectorAll('ntp-module-wrapper');
+        assertEquals(2, moduleWrappers.length);
+        //  Ensure bar and foo modules are loaded in the correct order.
+        assertEquals(
+            barDescriptor.id,
+            (moduleWrappers[0] as ModuleWrapperElement).module.descriptor.id);
+        assertEquals(
+            fooDescriptor.id,
+            (moduleWrappers[1] as ModuleWrapperElement).module.descriptor.id);
+        assertEquals(1, metrics.count('NewTabPage.Modules.ReloadedWith.foo'));
+        assertEquals(
+            1, metrics.count('NewTabPage.Modules.ReloadedWith.foo', 'bar'));
+        assertEquals(1, metrics.count('NewTabPage.Modules.ReloadedWith.bar'));
+        assertEquals(
+            1, metrics.count('NewTabPage.Modules.ReloadedWith.bar', 'foo'));
+      });
+
+      test(
+          'does not reload container for a previously enabled module',
+          async () => {
+            // Arrange.
+            const fooDescriptor = new ModuleDescriptor('foo', initNullModule);
+            const barDescriptor = new ModuleDescriptor('bar', initNullModule);
+            // Initial state: foo enabled, bar disabled.
+            const modulesElement = await createModulesElementFromDescriptors(
+                /*enabledDescriptors=*/[fooDescriptor], /*instanceCount=*/ 1,
+                /*disabledDescriptors=*/[barDescriptor]);
+            // Ensure foo module shows.
+            let moduleWrappers = modulesElement.shadowRoot!.querySelectorAll(
+                'ntp-module-wrapper');
+            assertEquals(1, moduleWrappers.length);
+            let fooModule = moduleWrappers[0] as ModuleWrapperElement;
+            assertEquals(fooDescriptor.id, fooModule.module.descriptor.id);
+            assertNotStyle(fooModule, 'display', 'none');
+            // Disable foo module.
+            callbackRouterRemote.setDisabledModules(
+                false, [barDescriptor.id, fooDescriptor.id]);
+            await callbackRouterRemote.$.flushForTesting();
+            assertStyle(fooModule, 'display', 'none');
+            // Set result for `initializeModuleById` so that any reload attempt,
+            // will initialize the bar module instead of foo.
+            const barModulePromise = getModulePromise(barDescriptor);
+            moduleRegistry.setResultFor(
+                'initializeModuleById', barModulePromise);
+
+            // Act - Remove foo module from disabled modules list.
+            callbackRouterRemote.setDisabledModules(false, [barDescriptor.id]);
+            await callbackRouterRemote.$.flushForTesting();
+
+            // Assert - Foo module shows and bar module never loaded.
+            moduleWrappers = modulesElement.shadowRoot!.querySelectorAll(
+                'ntp-module-wrapper');
+            assertEquals(1, moduleWrappers.length);
+            fooModule = moduleWrappers[0] as ModuleWrapperElement;
+            assertEquals(fooDescriptor.id, fooModule.module.descriptor.id);
+            assertNotStyle(fooModule, 'display', 'none');
+          });
+    });
+
+    suite('Deferrable', () => {
+      [true, false].forEach((waitToLoadModules: boolean) => {
+        test(`waits to load modules ${waitToLoadModules}`, async () => {
+          // Arrange.
+          loadTimeData.overrideValues({
+            waitToLoadModules: waitToLoadModules,
+          });
+          const fooDescriptor = new ModuleDescriptor('foo', initNullModule);
+
+          // Act.
+          const modulesElement = await createModulesElementFromDescriptors(
+              /*enabledDescriptors=*/[fooDescriptor]);
+          await waitAfterNextRender(modulesElement);
+
+          // Assert.
+          const moduleWrappers =
+              modulesElement.shadowRoot!.querySelectorAll('ntp-module-wrapper');
+          if (waitToLoadModules) {
+            assertEquals(0, moduleWrappers.length);
+          } else {
+            assertEquals(1, moduleWrappers.length);
+            const fooModule = moduleWrappers[0] as ModuleWrapperElement;
+            assertEquals(fooDescriptor.id, fooModule.module.descriptor.id);
+            assertNotStyle(fooModule, 'display', 'none');
+          }
+        });
+      });
+
+      test('loads modules if modules set loadable', async () => {
+        // Arrange.
+        loadTimeData.overrideValues({
+          waitToLoadModules: true,
+        });
+        const fooDescriptor = new ModuleDescriptor('foo', initNullModule);
+        const modulesElement = await createModulesElementFromDescriptors(
+            /*enabledDescriptors=*/[fooDescriptor]);
+        await waitAfterNextRender(modulesElement);
+        let moduleWrappers =
+            modulesElement.shadowRoot!.querySelectorAll('ntp-module-wrapper');
+        assertEquals(0, moduleWrappers.length);
+
+        // Act.
+        callbackRouterRemote.setModulesLoadable();
+        await callbackRouterRemote.$.flushForTesting();
+        await waitAfterNextRender(modulesElement);
+
+        // Assert.
+        moduleWrappers =
+            modulesElement.shadowRoot!.querySelectorAll('ntp-module-wrapper');
+        assertEquals(1, moduleWrappers.length);
+        const fooModule = moduleWrappers[0] as ModuleWrapperElement;
+        assertEquals(fooDescriptor.id, fooModule.module.descriptor.id);
+        assertNotStyle(fooModule, 'display', 'none');
+      });
+    });
   });
 });

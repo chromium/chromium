@@ -266,12 +266,18 @@ android_library("autofill_switches_java") {
   srcjar_deps = [ ":java_switches_srcjar" ]
 }
 
+android_library("payments_interfaces_java") {
+  sources = [
+    "java/src/org/chromium/components/autofill/Completable.java",
+    "java/src/org/chromium/components/autofill/EditableOption.java",
+  ]
+  deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+}
+
 # A library containing the minimal deps for payments, so that ui_java_resources
 # doesn't have to be pulled in.
 android_library("payments_autofill_java") {
   sources = [
-    "java/src/org/chromium/components/autofill/Completable.java",
-    "java/src/org/chromium/components/autofill/EditableOption.java",
     "java/src/org/chromium/components/autofill/payments/AutofillSaveCardUiInfo.java",
     "java/src/org/chromium/components/autofill/payments/AutofillSaveIbanUiInfo.java",
     "java/src/org/chromium/components/autofill/payments/BankAccount.java",
@@ -281,6 +287,7 @@ android_library("payments_autofill_java") {
     "java/src/org/chromium/components/autofill/payments/PaymentInstrument.java",
   ]
   deps = [
+    ":payments_interfaces_java",
     "//third_party/android_deps:guava_android_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",

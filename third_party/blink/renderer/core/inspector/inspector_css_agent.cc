@@ -2061,6 +2061,10 @@ protocol::Response InspectorCSSAgent::resolveValues(
       continue;
     }
 
+    if (!element->GetComputedStyle()) {
+      continue;
+    }
+
     const CSSValue* computed_value =
         StyleResolver::ComputeValue(element, *property_name, *parsed_value);
 

@@ -1987,14 +1987,13 @@ HRESULT MediaFoundationVideoEncodeAccelerator::CopyInputSampleBufferFromGpu(
       VideoFrame::StorageType::STORAGE_GPU_MEMORY_BUFFER) {
     gfx::GpuMemoryBufferHandle buffer_handle =
         frame->GetGpuMemoryBufferHandle();
-    CHECK(!buffer_handle.is_null());
-    CHECK_EQ(buffer_handle.type, gfx::GpuMemoryBufferType::DXGI_SHARED_HANDLE);
 
     ComD3D11Device1 device1;
     hr = d3d_device.As(&device1);
     RETURN_ON_HR_FAILURE(hr, "Failed to query ID3D11Device1", hr);
-    hr = device1->OpenSharedResource1(buffer_handle.dxgi_handle.Get(),
-                                      IID_PPV_ARGS(&input_texture));
+    hr = device1->OpenSharedResource1(
+        buffer_handle.dxgi_handle().buffer_handle(),
+        IID_PPV_ARGS(&input_texture));
     RETURN_ON_HR_FAILURE(hr, "Failed to open shared GMB D3D texture", hr);
   } else if (frame->HasSharedImage()) {
     DCHECK(input_sample);
@@ -2102,8 +2101,6 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBufferGpu(
       VideoFrame::StorageType::STORAGE_GPU_MEMORY_BUFFER) {
     gfx::GpuMemoryBufferHandle buffer_handle =
         frame->GetGpuMemoryBufferHandle();
-    CHECK(!buffer_handle.is_null());
-    CHECK_EQ(buffer_handle.type, gfx::GpuMemoryBufferType::DXGI_SHARED_HANDLE);
 
     auto d3d_device = dxgi_device_manager_->GetDevice();
     if (!d3d_device) {
@@ -2115,8 +2112,9 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBufferGpu(
     hr = d3d_device.As(&device1);
     RETURN_ON_HR_FAILURE(hr, "Failed to query ID3D11Device1", hr);
 
-    hr = device1->OpenSharedResource1(buffer_handle.dxgi_handle.Get(),
-                                      IID_PPV_ARGS(&input_texture));
+    hr = device1->OpenSharedResource1(
+        buffer_handle.dxgi_handle().buffer_handle(),
+        IID_PPV_ARGS(&input_texture));
     RETURN_ON_HR_FAILURE(hr, "Failed to open shared GMB D3D texture", hr);
   } else if (frame->HasSharedImage()) {
     ComMFMediaBuffer texture_buffer;

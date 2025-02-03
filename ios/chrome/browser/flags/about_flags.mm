@@ -1247,6 +1247,25 @@ const FeatureEntry::FeatureVariation kFullscreenTransitionVariations[] = {
     {"Medium offset", kMediumFullscreenTransitionOffset,
      std::size(kMediumFullscreenTransitionOffset), nullptr}};
 
+const FeatureEntry::FeatureParam kDeprecateFeedHeaderVariationAddFeedLabel[] = {
+    {kDeprecateFeedHeaderParameterFeedLabel, "true"}};
+const FeatureEntry::FeatureParam kDeprecateFeedHeaderVariationAddTopPadding[] =
+    {{kDeprecateFeedHeaderParameterTopPadding, "true"}};
+const FeatureEntry::FeatureParam
+    kDeprecateFeedHeaderVariationAddTopPaddingAndEnlargeElements[] = {
+        {kDeprecateFeedHeaderParameterTopPadding, "true"},
+        {kDeprecateFeedHeaderParameterEnlargeLogoAndFakebox, "true"}};
+
+const FeatureEntry::FeatureVariation kDeprecateFeedHeaderVariations[] = {
+    {" (with feed label)", kDeprecateFeedHeaderVariationAddFeedLabel,
+     std::size(kDeprecateFeedHeaderVariationAddFeedLabel), nullptr},
+    {" (with top padding)", kDeprecateFeedHeaderVariationAddTopPadding,
+     std::size(kDeprecateFeedHeaderVariationAddTopPadding), nullptr},
+    {" (with top padding and large doodle)",
+     kDeprecateFeedHeaderVariationAddTopPaddingAndEnlargeElements,
+     std::size(kDeprecateFeedHeaderVariationAddTopPaddingAndEnlargeElements),
+     nullptr}};
+
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
 // . ENABLE_DISABLE_VALUE: entry is either enabled, disabled, or uses the
@@ -1631,13 +1650,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kMetrickitNonCrashReportName,
      flag_descriptions::kMetrickitNonCrashReportDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kMetrickitNonCrashReport)},
-    {"autofill-parse-vcn-card-on-file-standalone-cvc-fields",
-     flag_descriptions::kAutofillParseVcnCardOnFileStandaloneCvcFieldsName,
-     flag_descriptions::
-         kAutofillParseVcnCardOnFileStandaloneCvcFieldsDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillParseVcnCardOnFileStandaloneCvcFields)},
     {"default-browser-banner-promo",
      flag_descriptions::kDefaultBrowserBannerPromoName,
      flag_descriptions::kDefaultBrowserBannerPromoDescription, flags_ui::kOsIos,
@@ -2282,12 +2294,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(set_up_list::kSetUpListShortenedDuration,
                                     kSetUpListDurationVariations,
                                     "SetUpListShortenedDuration")},
-    // TODO(crbug.com/359325090): Update value type to include params needed for
-    // the multi-arm experiment.
-    {"ios-new-following-feed-entry-points",
-     flag_descriptions::kIOSNewFollowingFeedEntryPointsName,
-     flag_descriptions::kIOSNewFollowingFeedEntryPointsDescription,
-     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kIOSNewFollowingFeedEntryPoints)},
     {"enable-lens-overlay-price-insights-counterfactual",
      flag_descriptions::kLensOverlayPriceInsightsCounterfactualName,
      flag_descriptions::kLensOverlayPriceInsightsCounterfactualDescription,
@@ -2357,6 +2363,13 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(kFullscreenTransition,
                                     kFullscreenTransitionVariations,
                                     "IOSFullscreenTransition")},
+    {"ios-deprecate-feed-header",
+     flag_descriptions::kDeprecateFeedHeaderExperimentName,
+     flag_descriptions::kDeprecateFeedHeaderExperimentDescription,
+     flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kDeprecateFeedHeader,
+                                    kDeprecateFeedHeaderVariations,
+                                    "IOSDeprecateFeedHeader")},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

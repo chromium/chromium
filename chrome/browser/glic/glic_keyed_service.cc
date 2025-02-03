@@ -38,6 +38,9 @@ GlicKeyedService::GlicKeyedService(content::BrowserContext* browser_context,
       focused_tab_manager_(Profile::FromBrowserContext(browser_context),
                            window_controller_),
       screenshot_capturer_(std::make_unique<GlicScreenshotCapturer>()),
+      fre_cookie_synchronizer_(browser_context,
+                               identity_manager,
+                               /*use_for_fre=*/true),
       cookie_synchronizer_(browser_context, identity_manager),
       profile_manager_(profile_manager) {
   CHECK(GlicEnabling::IsProfileEligible(
@@ -243,6 +246,10 @@ void GlicKeyedService::TryPreload() {
   window_controller_.Preload();
 }
 
+void GlicKeyedService::ReloadWebview() {
+  window_controller_.ReloadWebview();
+}
+
 base::WeakPtr<GlicKeyedService> GlicKeyedService::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
@@ -250,6 +257,12 @@ base::WeakPtr<GlicKeyedService> GlicKeyedService::GetWeakPtr() {
 void GlicKeyedService::SyncWebviewCookies(
     mojom::PageHandler::SyncWebviewCookiesCallback callback) {
   cookie_synchronizer_.CopyCookiesToWebviewStoragePartition(
+      std::move(callback));
+}
+
+void GlicKeyedService::SyncWebviewCookiesForFre(
+    mojom::PageHandler::SyncWebviewCookiesCallback callback) {
+  fre_cookie_synchronizer_.CopyCookiesToWebviewStoragePartition(
       std::move(callback));
 }
 

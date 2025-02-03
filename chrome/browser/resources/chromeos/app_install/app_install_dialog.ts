@@ -235,19 +235,18 @@ class AppInstallDialogElement extends HTMLElement {
               loadTimeData.getString('iconAlt'), appInfo.name));
 
       if (appInfo.description) {
-        this.$<HTMLDivElement>('#description').textContent =
-            appInfo.description;
-        this.$<HTMLDivElement>('#description-and-screenshots').hidden = false;
+        this.$<HTMLElement>('#description').textContent = appInfo.description;
+        this.$<HTMLElement>('#description-and-screenshots').hidden = false;
         this.$<HTMLHRElement>('#divider').hidden = false;
       }
 
       if (appInfo.screenshots[0]) {
         this.$<HTMLSpanElement>('#description-and-screenshots').hidden = false;
         this.$<HTMLHRElement>('#divider').hidden = false;
-        this.$<HTMLDivElement>('#screenshot-container').hidden = false;
+        this.$<HTMLElement>('#screenshot-container').hidden = false;
         const height = appInfo.screenshots[0].size.height /
             (appInfo.screenshots[0].size.width / 408);
-        this.$<HTMLDivElement>('#screenshot-container').style.height =
+        this.$<HTMLElement>('#screenshot-container').style.height =
             height.toString() + 'px';
         this.$<HTMLImageElement>('#screenshot').onload = () => {
           this.onScreenshotLoad();

@@ -17,6 +17,7 @@
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/gaia_constants.h"
+#include "third_party/abseil-cpp/absl/status/status.h"
 
 namespace {
 constexpr base::TimeDelta kTokenRefreshTimeBuffer = base::Seconds(10);
@@ -46,11 +47,13 @@ void DataSharingPageHandler::ShowUI() {
 }
 
 void DataSharingPageHandler::CloseUI(int status_code) {
-  // TODO(crbug.com/368634445): In addition to closing the WebUI bubble some
-  // special codes should trigger follow up native info dialogs.
   auto embedder = webui_controller_->embedder();
   if (embedder) {
     embedder->CloseUI();
+  }
+
+  if (absl::StatusCode(status_code) != absl::StatusCode::kOk) {
+    webui_controller_->ShowErrorDialog(status_code);
   }
 }
 

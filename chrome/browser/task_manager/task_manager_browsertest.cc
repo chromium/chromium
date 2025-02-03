@@ -2278,9 +2278,9 @@ IN_PROC_BROWSER_TEST_F(TaskManagerDesktopRefreshBrowserTest,
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(0, MatchAnyExtension()));
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(0, MatchAnyUtility()));
 
-  // Load an extension which should not be shown in the default `Tabs` tab of
-  // the task manager. Current the task list is like below. The utility
-  // processes might be different for different systems.
+  // Load an extension which should not be shown in the default
+  // `Tabs & Extensions` tab of the task manager. Current the task list is like
+  // below. The utility processes might be different for different systems.
   // Utility: Network Service
   // Utility: Video Capture
   // Utility: Storage Service
@@ -2293,17 +2293,14 @@ IN_PROC_BROWSER_TEST_F(TaskManagerDesktopRefreshBrowserTest,
                                 .AppendASCII("1.0.0.0")));
   GURL url("chrome-extension://behllobkkfkfnphdnhnkndlbkcpglgmj/page.html");
   ASSERT_TRUE(AddTabAtIndex(0, url, ui::PAGE_TRANSITION_TYPED));
-  ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(0, MatchAnyExtension()));
+  ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(2, MatchAnyExtension()));
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchAnyTab()));
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(0, MatchAnyUtility()));
-
-  // Switch to `Extensions` tab, the extension tasks show be shown.
-  UpdateModel(DisplayCategory::kExtensions, u"");
+  ASSERT_NO_FATAL_FAILURE(
+      WaitForTaskManagerRows(1, MatchTab("Title Of Awesomeness")));
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchExtension("Foobar")));
   ASSERT_NO_FATAL_FAILURE(
       WaitForTaskManagerRows(1, MatchExtension("My extension 1")));
-  ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(2, MatchAnyExtension()));
-  ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(0, MatchAnyTab()));
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(0, MatchAnyUtility()));
 
   // Switch to `System` tab, the extension and tabs should not be shown.

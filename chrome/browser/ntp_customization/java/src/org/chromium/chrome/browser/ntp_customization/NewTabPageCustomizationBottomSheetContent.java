@@ -7,16 +7,16 @@ package org.chromium.chrome.browser.ntp_customization;
 import android.content.Context;
 import android.view.View;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 
 /** Bottom sheet content of the new tab page customization. */
+@NullMarked
 public class NewTabPageCustomizationBottomSheetContent implements BottomSheetContent {
     private final View mContentView;
 
-    public NewTabPageCustomizationBottomSheetContent(@NonNull View view) {
+    public NewTabPageCustomizationBottomSheetContent(View view) {
         mContentView = view;
     }
 
@@ -25,9 +25,8 @@ public class NewTabPageCustomizationBottomSheetContent implements BottomSheetCon
         return mContentView;
     }
 
-    @Nullable
     @Override
-    public View getToolbarView() {
+    public @Nullable View getToolbarView() {
         return null;
     }
 
@@ -59,7 +58,6 @@ public class NewTabPageCustomizationBottomSheetContent implements BottomSheetCon
         return BottomSheetContent.HeightMode.WRAP_CONTENT;
     }
 
-    @NonNull
     @Override
     public String getSheetContentDescription(Context context) {
         return "";

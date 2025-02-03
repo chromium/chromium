@@ -16,10 +16,6 @@ namespace autofill {
 std::unique_ptr<FormFieldParser> StandaloneCvcFieldParser::Parse(
     ParsingContext& context,
     AutofillScanner* scanner) {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillParseVcnCardOnFileStandaloneCvcFields)) {
-    return nullptr;
-  }
 
   // Ignore gift card fields as both |kGiftCardRe| and |kCardCvcRe| matches
   // "gift card pin" and "gift card code" but it should only match

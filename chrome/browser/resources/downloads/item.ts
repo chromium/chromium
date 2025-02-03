@@ -164,10 +164,10 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
   /** Overrides FocusRowMixin. */
   override getCustomEquivalent(sampleElement: HTMLElement): HTMLElement|null {
     if (sampleElement.getAttribute('focus-type') === 'cancel') {
-      return this.shadowRoot!.querySelector('[focus-type="retry"]');
+      return this.shadowRoot.querySelector('[focus-type="retry"]');
     }
     if (sampleElement.getAttribute('focus-type') === 'retry') {
-      return this.shadowRoot!.querySelector('[focus-type="pauseOrResume"]');
+      return this.shadowRoot.querySelector('[focus-type="pauseOrResume"]');
     }
     return null;
   }
@@ -178,12 +178,12 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
 
   getMoreActionsButton(): CrIconButtonElement|null {
     const button =
-        this.shadowRoot!.querySelector<CrIconButtonElement>('#more-actions');
+        this.shadowRoot.querySelector<CrIconButtonElement>('#more-actions');
     return button || null;
   }
 
   getMoreActionsMenu(): CrActionMenuElement {
-    const menu = this.shadowRoot!.querySelector<CrActionMenuElement>(
+    const menu = this.shadowRoot.querySelector<CrActionMenuElement>(
         '#more-actions-menu');
     assert(!!menu);
     return menu;
@@ -1026,7 +1026,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
     const controlledBy = this.computeControlledBy_();
     this.$['controlled-by'].innerHTML = sanitizeInnerHtml(controlledBy);
     if (controlledBy) {
-      const link = this.shadowRoot!.querySelector('#controlled-by a');
+      const link = this.shadowRoot.querySelector('#controlled-by a');
       link!.setAttribute('focus-row-control', '');
       link!.setAttribute('focus-type', 'controlledBy');
     }

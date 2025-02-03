@@ -431,6 +431,9 @@
 // Context menu items that provide fast access to input methods.
 #define IDC_CONTENT_CONTEXT_EMOJI 50220
 #define IDC_CONTEXT_COMPOSE 50230
+// Context menu items to control glic
+#define IDC_CONTENT_CONTEXT_CLOSE_GLIC  50231
+#define IDC_CONTENT_CONTEXT_RELOAD_GLIC  50232
 // Context menu items in the bookmark bar
 #define IDC_BOOKMARK_BAR_OPEN_ALL 51000
 #define IDC_BOOKMARK_BAR_OPEN_ALL_NEW_WINDOW 51001
@@ -557,6 +560,7 @@
 #define IDC_GLIC_STATUS_ICON_MENU_CUSTOMIZE_KEYBOARD_SHORTCUT 53311
 #define IDC_GLIC_STATUS_ICON_MENU_REMOVE_ICON                 53312
 #define IDC_GLIC_STATUS_ICON_MENU_SETTINGS                    53313
+#define IDC_GLIC_STATUS_ICON_MENU_EXIT                        53314
 
 // NOTE: The last valid command value is 57343 (0xDFFF)
 // See http://msdn.microsoft.com/en-us/library/t2zechd4(VS.71).aspx

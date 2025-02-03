@@ -1765,8 +1765,9 @@ static const base::TimeDelta kAccessDelay =
     kLastAccessThreshold + base::Milliseconds(20);
 
 TEST_F(CookieMonsterTest, TestLastAccess) {
-  auto cm = std::make_unique<CookieMonster>(nullptr, kLastAccessThreshold,
-                                            net::NetLog::Get());
+  auto cm = std::make_unique<CookieMonster>(
+      /*store=*/nullptr, kLastAccessThreshold, net::NetLog::Get(),
+      /*pref_delegate=*/nullptr);
 
   EXPECT_TRUE(SetCookie(cm.get(), http_www_foo_.url(), "A=B"));
   const Time last_access_date(GetFirstCookieAccessDate(cm.get()));
@@ -2154,8 +2155,9 @@ TEST_F(CookieMonsterTest, SetCookieableSchemes_StoreInitialized) {
 }
 
 TEST_F(CookieMonsterTest, GetAllCookiesForURL) {
-  auto cm = std::make_unique<CookieMonster>(nullptr, kLastAccessThreshold,
-                                            net::NetLog::Get());
+  auto cm = std::make_unique<CookieMonster>(
+      /*store=*/nullptr, kLastAccessThreshold, net::NetLog::Get(),
+      /*pref_delegate=*/nullptr);
 
   // Create an httponly cookie.
   CookieOptions options = CookieOptions::MakeAllInclusive();
@@ -2262,8 +2264,9 @@ TEST_F(CookieMonsterTest, GetAllCookiesForURL) {
 }
 
 TEST_F(CookieMonsterTest, GetExcludedCookiesForURL) {
-  auto cm = std::make_unique<CookieMonster>(nullptr, kLastAccessThreshold,
-                                            net::NetLog::Get());
+  auto cm = std::make_unique<CookieMonster>(
+      /*store=*/nullptr, kLastAccessThreshold, net::NetLog::Get(),
+      /*pref_delegate=*/nullptr);
 
   // Create an httponly cookie.
   CookieOptions options = CookieOptions::MakeAllInclusive();

@@ -687,7 +687,6 @@ mojom("mojo_bindings") {
     "chrome_render_frame.mojom",
     "google_accounts_private_api_extension.mojom",
     "media/webrtc_logging.mojom",
-    "metrics.mojom",
     "net/net_error_page_support.mojom",
     "net_benchmarking.mojom",
     "network_diagnostics.mojom",
@@ -730,6 +729,10 @@ mojom("mojo_bindings") {
       "conflicts/module_event_sink_win.mojom",
       "font_prewarmer.mojom",
     ]
+  }
+
+  if (enable_ppapi) {
+    sources += [ "metrics.mojom" ]
   }
 
   public_deps = [

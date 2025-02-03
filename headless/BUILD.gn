@@ -309,6 +309,8 @@ component("headless_non_renderer") {
   if (is_mac) {
     sources += [
       "lib/browser/headless_browser_impl_mac.mm",
+      "lib/browser/headless_screen_mac.h",
+      "lib/browser/headless_screen_mac.mm",
       "lib/browser/headless_shell_application_mac.h",
       "lib/browser/headless_shell_application_mac.mm",
       "lib/headless_content_main_delegate_mac.mm",
@@ -628,6 +630,10 @@ test("headless_browsertests") {
     "test/headless_test_launcher.cc",
     "test/headless_web_contents_browsertest.cc",
   ]
+
+  if (is_mac) {
+    sources += [ "test/headless_browser_test_mac.mm" ]
+  }
 
   if (enable_printing && enable_pdf) {
     sources += [ "test/headless_printtopdf_browsertest.cc" ]

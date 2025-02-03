@@ -98,9 +98,6 @@ BASE_DECLARE_FEATURE(
     kReplaceSupervisionSystemCapabilitiesWithAccountCapabilitiesOnIOS);
 #endif
 
-// Throttle will unconditionally allow requests to GWS redirector.
-BASE_DECLARE_FEATURE(kExemptGuardianApprovalOnGwsRedirector);
-
 // Returns whether local parent approvals on Family Link user's device are
 // enabled.
 // Local web approvals are only available when refreshed version of web

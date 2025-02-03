@@ -1061,7 +1061,8 @@ TEST_F(RecentTabHelperFencedFrameTest, FencedFrameDoesNotChangePageQuality) {
       content::NavigationSimulator::CreateRendererInitiated(kFencedFrameUrl,
                                                             fenced_frame_rfh);
   navigation_simulator->Commit();
-  EXPECT_TRUE(fenced_frame_rfh->IsFencedFrameRoot());
+  EXPECT_TRUE(
+      navigation_simulator->GetFinalRenderFrameHost()->IsFencedFrameRoot());
 
   // Navigating the fenced frame to the fenced frame url should not change the
   // current page quality to POOR.

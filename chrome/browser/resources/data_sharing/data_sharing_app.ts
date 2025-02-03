@@ -138,8 +138,10 @@ export function createTranslationMap(): TranslationMap {
           loadTimeData.getString('errorDialogContent'),
       [StaticMessageKey.GROUP_FULL_TITLE]: loadTimeData.getString('groupFull'),
       [StaticMessageKey.GROUP_FULL_CONTENT]:
-          loadTimeData.getString('ownerCannotShare'),
+          loadTimeData.getString('groupFullBody'),
       [StaticMessageKey.ACTIVITY_LOGS]: loadTimeData.getString('activityLog'),
+      [StaticMessageKey.YOUR_GROUP_IS_FULL_DESCRIPTION]:
+          loadTimeData.getString('ownerCannotShare'),
     },
     dynamic: {
       /** Invite flow */
@@ -167,6 +169,11 @@ export function createTranslationMap(): TranslationMap {
               params.payload.mediaCount <= 1 ? 'tabCountSingular' :
                                                'tabCountPlural',
               params.payload.mediaCount),
+      [DynamicMessageKey.GET_GROUP_PREVIEW_ARIA_LABEL]: (
+          params: DynamicMessageParams,
+          ) =>
+          loadTimeData.getStringF(
+              'getGroupPreviewAriaLabel', params.group.name),
       /** Manage flow */
       [DynamicMessageKey.GET_STOP_SHARING_DIALOG_CONTENT]: () =>
           loadTimeData.getStringF(

@@ -1,10 +1,10 @@
 <ntp-module-header-v2
     id="moduleHeaderElementV2"
-    header-text="$i18n{modulesSharepointName}"
+    header-text="$i18n{modulesMicrosoftFilesName}"
     .menuItemGroups="${this.getMenuItemGroups_()}"
     more-actions-text="${this.i18nRecursive('',
                                   'modulesMoreActions',
-                                  'modulesSharepointName')}"
+                                  'modulesMicrosoftFilesName')}"
     @disable-button-click="${this.onDisableButtonClick_}"
     @dismiss-button-click="${this.onDismissButtonClick_}"
     @signout-button-click="${this.onSignOutButtonClick_}"
@@ -17,7 +17,7 @@
 </ntp-file-suggestion>
 ${this.showInfoDialog_ ? html`
   <ntp-info-dialog show-on-attach
-      .innerHTML="${this.i18nAdvanced('modulesSharepointInfo')}"
+      .innerHTML="${this.i18nAdvanced('modulesMicrosoftFilesInfo')}"
       @close="${this.onInfoDialogClose_}">
   </ntp-info-dialog>
 ` : ''}

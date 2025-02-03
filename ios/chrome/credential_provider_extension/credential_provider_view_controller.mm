@@ -42,8 +42,6 @@
 #import "ios/chrome/credential_provider_extension/ui/stale_credentials_view_controller.h"
 #import "ios/components/credential_provider_extension/password_util.h"
 
-using credential_provider_extension::AccountInfo;
-
 namespace {
 
 UIColor* BackgroundColor() {
@@ -540,33 +538,16 @@ enum class PasskeyCreationEligibility {
   [self.extensionContext completeExtensionConfigurationRequest];
 }
 
-// Loads and returns the account information (gaia and email) from the Keychain
-// Services.
-- (AccountInfo)accountInfo {
-  return credential_provider_extension::LoadAccountInfoFromKeychain();
-}
-
 // Returns the gaia ID associated with the current account.
 - (NSString*)gaia {
-  NSString* gaia = [self accountInfo].gaia;
-  if (gaia.length > 0) {
-    return gaia;
-  }
-
-  // As a fallback, attempt to get a valid gaia from existing credentials.
-  NSArray<id<Credential>>* credentials = self.credentialStore.credentials;
-  NSUInteger credentialIndex =
-      [credentials indexOfObjectPassingTest:^BOOL(id<Credential> credential,
-                                                  NSUInteger idx, BOOL* stop) {
-        return credential.gaia.length > 0;
-      }];
-  return credentialIndex != NSNotFound ? credentials[credentialIndex].gaia
-                                       : nil;
+  return [app_group::GetGroupUserDefaults()
+      stringForKey:AppGroupUserDefaultsCredentialProviderUserID()];
 }
 
 // Returns the email address associated with the current account.
 - (NSString*)userEmail {
-  return [self accountInfo].email;
+  return [app_group::GetGroupUserDefaults()
+      stringForKey:AppGroupUserDefaultsCredentialProviderUserEmail()];
 }
 
 #pragma mark - PasskeyKeychainProviderBridgeDelegate
@@ -835,7 +816,7 @@ enum class PasskeyCreationEligibility {
   };
 
   NSString* validationID = [app_group::GetGroupUserDefaults()
-      stringForKey:AppGroupUserDefaultsCredentialProviderUserID()];
+      stringForKey:AppGroupUserDefaultsCredentialProviderManagedUserID()];
   if (validationID) {
     [self.accountVerificator
         validateValidationID:validationID

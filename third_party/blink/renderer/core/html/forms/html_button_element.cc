@@ -196,6 +196,10 @@ CommandEventType HTMLButtonElement::GetCommandEventType() const {
     return CommandEventType::kNone;
   }
 
+  if (EqualIgnoringASCIICase(action, keywords::kRequestClose)) {
+    return CommandEventType::kRequestClose;
+  }
+
   // Input/Select Cases
   if (EqualIgnoringASCIICase(action, keywords::kShowPicker)) {
     return CommandEventType::kShowPicker;
@@ -423,7 +427,7 @@ HTMLSelectElement* HTMLButtonElement::OwnerSelect() const {
 }
 
 bool HTMLButtonElement::IsInertRoot() const {
-  if (OwnerSelect()) {
+  if (OwnerSelect() && !RuntimeEnabledFeatures::CSSInertEnabled()) {
     return true;
   }
   return HTMLFormControlElement::IsInertRoot();

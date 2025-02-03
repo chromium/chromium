@@ -12,12 +12,8 @@
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/node_data_describer.h"
 #include "components/performance_manager/public/graph/page_node.h"
-#include "content/public/browser/web_contents_observer.h"
+#include "content/public/browser/web_contents_capability_type.h"
 #include "url/gurl.h"
-
-namespace content {
-class WebContents;
-}  // namespace content
 
 namespace performance_manager {
 

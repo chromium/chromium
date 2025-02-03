@@ -309,10 +309,8 @@ PlusAddressSuggestionGenerator::CreateNewPlusAddressSuggestion() {
       l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_CREATE_SUGGESTION_MAIN_TEXT),
       SuggestionType::kCreateNewPlusAddress);
 
-  suggestion.labels = CreateLabelsForCreateSuggestion(
-      !base::FeatureList::IsEnabled(
-          features::kPlusAddressUserOnboardingEnabled) ||
-      setting_service_->GetHasAcceptedNotice());
+  suggestion.labels =
+      CreateLabelsForCreateSuggestion(setting_service_->GetHasAcceptedNotice());
   suggestion.icon = Suggestion::Icon::kPlusAddress;
   suggestion.feature_for_new_badge = &features::kPlusAddressesEnabled;
   suggestion.iph_metadata = Suggestion::IPHMetadata(
@@ -326,9 +324,7 @@ PlusAddressSuggestionGenerator::CreateNewPlusAddressSuggestion() {
 
 bool PlusAddressSuggestionGenerator::IsInlineGenerationEnabled() const {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  if (base::FeatureList::IsEnabled(
-          features::kPlusAddressUserOnboardingEnabled) &&
-      !setting_service_->GetHasAcceptedNotice()) {
+  if (!setting_service_->GetHasAcceptedNotice()) {
     return false;
   }
   return true;
@@ -365,10 +361,8 @@ PlusAddressSuggestionGenerator::CreateNewPlusAddressInlineSuggestion(
     SetLoadingStateForSuggestion(/*is_loading=*/true, suggestion);
   }
   suggestion.icon = Suggestion::Icon::kPlusAddress;
-  suggestion.labels = CreateLabelsForCreateSuggestion(
-      !base::FeatureList::IsEnabled(
-          features::kPlusAddressUserOnboardingEnabled) ||
-      setting_service_->GetHasAcceptedNotice());
+  suggestion.labels =
+      CreateLabelsForCreateSuggestion(setting_service_->GetHasAcceptedNotice());
   return suggestion;
 }
 

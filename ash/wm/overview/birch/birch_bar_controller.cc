@@ -251,15 +251,13 @@ void BirchBarController::ProvideFeedbackForCoral() {
           static_cast<BirchCoralItem*>(item.get())->ToCoralItemDetails());
     }
   }
-  Shell::Get()->shell_delegate()->OpenFeedbackDialog(
-      ShellDelegate::FeedbackSource::kOverview,
-      /*description_template=*/
+  Shell::Get()->coral_controller()->OpenFeedbackDialog(
+      /*group_description=*/
       base::StrCat({kUserFeedbackPrompt, kMarkdownBackticks, "json\n",
                     base::WriteJsonWithOptions(
                         root, base::JSONWriter::OPTIONS_PRETTY_PRINT)
                         .value_or(std::string()),
-                    "\n", kMarkdownBackticks}),
-      /*category_tag=*/"Coral");
+                    "\n", kMarkdownBackticks}));
 }
 
 void BirchBarController::ExecuteMenuCommand(int command_id, bool from_chip) {

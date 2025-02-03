@@ -952,11 +952,12 @@ static void AdjustStyleForInert(ComputedStyleBuilder& builder,
   }
 
   Document& document = element->GetDocument();
-  if (element->IsInertRoot()) {
-    UseCounter::Count(document, WebFeature::kInertAttribute);
-    builder.SetIsHTMLInert(true);
-    builder.SetIsHTMLInertIsInherited(false);
-    return;
+  if (!RuntimeEnabledFeatures::CSSInertEnabled()) {
+    if (element->IsInertRoot()) {
+      builder.SetIsHTMLInert(true);
+      builder.SetIsHTMLInertIsInherited(false);
+      return;
+    }
   }
 
   const Element* modal_element = document.ActiveModalDialog();

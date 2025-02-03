@@ -473,16 +473,20 @@ void HistogramExpirationDuration(const CanonicalCookie& cookie,
 }  // namespace
 
 CookieMonster::CookieMonster(scoped_refptr<PersistentCookieStore> store,
-                             NetLog* net_log)
+                             NetLog* net_log,
+                             std::unique_ptr<PrefDelegate> pref_delegate)
     : CookieMonster(std::move(store),
                     base::Seconds(kDefaultAccessUpdateThresholdSeconds),
-                    net_log) {}
+                    net_log,
+                    std::move(pref_delegate)) {}
 
 CookieMonster::CookieMonster(scoped_refptr<PersistentCookieStore> store,
                              base::TimeDelta last_access_threshold,
-                             NetLog* net_log)
+                             NetLog* net_log,
+                             std::unique_ptr<PrefDelegate> pref_delegate)
     : change_dispatcher_(this),
       net_log_(NetLogWithSource::Make(net_log, NetLogSourceType::COOKIE_STORE)),
+      pref_delegate_(std::move(pref_delegate)),
       store_(std::move(store)),
       last_access_threshold_(last_access_threshold),
       last_statistic_record_time_(base::Time::Now()) {

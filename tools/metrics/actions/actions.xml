@@ -12203,6 +12203,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="GlicOsEntrypoint.ContextMenuSelection.Exit">
+  <owner>agale@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>
+    Tracks clicks on the exit option from the glic os launcher context menu.
+  </description>
+</action>
+
 <action name="GlicOsEntrypoint.ContextMenuSelection.OpenGlic">
   <owner>agale@chromium.org</owner>
   <owner>erikchen@chromium.org</owner>
@@ -34800,6 +34808,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Settings.AiPage.PasswordChangeEntryPointClick">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>rainhard@chromium.org</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <description>
+    Reported when user clicks on the Password Change row in the
+    chrome://settings/ai page.
+  </description>
+</action>
+
 <action name="Settings.AiPage.TabOrganization.LearnMoreClicked">
   <owner>zalmashni@google.com</owner>
   <owner>rainhard@chromium.org</owner>
@@ -47531,6 +47549,9 @@ should be able to be added at any place in this file.
       label="For generivc default browser promo."/>
   <suffix name="iOSPromoMadeForIOS"
       label="For Made for iOS default browser promo."/>
+  <suffix name="iOSPromoNonModalUrlPasteDefaultBrowser"
+      label="howing the non-modal Default Browser Promo from omnibox paste on
+             iOS."/>
   <suffix name="iOSPromoPasswordManagerWidget"
       label="For iOSPromoPasswordManagerWidget feature"/>
   <suffix name="iOSPromoPostRestore" label="For iOSPromoPostRestore feature"/>

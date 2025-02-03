@@ -11,6 +11,7 @@
 #include "media/gpu/windows/d3d12_video_encode_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/gpu_memory_buffer.h"
 
 using media::SetComPointeeAndReturnOk;
 using testing::_;
@@ -102,6 +103,10 @@ class MockVideoEncoderDelegateFactory
 
 class MockGpuMemoryBuffer : public gfx::GpuMemoryBuffer {
  public:
+  MockGpuMemoryBuffer() {
+    fake_handle_.type = gfx::DXGI_SHARED_HANDLE;
+    fake_handle_.set_dxgi_handle(gfx::DXGIHandle::CreateFakeForTest());
+  }
   ~MockGpuMemoryBuffer() override = default;
 
   MOCK_METHOD(bool, Map, ());
@@ -112,7 +117,13 @@ class MockGpuMemoryBuffer : public gfx::GpuMemoryBuffer {
   MOCK_METHOD(int, stride, (size_t plane), (const));
   MOCK_METHOD(gfx::GpuMemoryBufferId, GetId, (), (const));
   MOCK_METHOD(gfx::GpuMemoryBufferType, GetType, (), (const));
-  MOCK_METHOD(gfx::GpuMemoryBufferHandle, CloneHandle, (), (const));
+  // Not mocked because:
+  // - no one actually needs the mock and
+  // - the returned handle needs to actually be of the correct type, which
+  //   is much easier with an actual function rather than a function mock.
+  gfx::GpuMemoryBufferHandle CloneHandle() const override {
+    return fake_handle_.Clone();
+  }
   MOCK_METHOD(void,
               OnMemoryDump,
               (base::trace_event::ProcessMemoryDump*,
@@ -120,6 +131,9 @@ class MockGpuMemoryBuffer : public gfx::GpuMemoryBuffer {
                uint64_t,
                int),
               (const));
+
+ private:
+  gfx::GpuMemoryBufferHandle fake_handle_;
 };
 
 }  // namespace

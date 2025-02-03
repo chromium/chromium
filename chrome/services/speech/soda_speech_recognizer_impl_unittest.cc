@@ -51,6 +51,7 @@ class SodaSpeechRecognizerImplTest
     EXPECT_TRUE(!audio_ended_ || (sound_ended_ || !sound_started_));
     EXPECT_TRUE(!recognition_ended_ || (audio_ended_ || !audio_started_));
     EXPECT_TRUE(!recognition_context_updated_ || recognition_started_);
+    EXPECT_TRUE(!recognition_context_updated_ || recognition_started_);
   }
 
   void CheckFinalEventsConsistency() {
@@ -68,7 +69,9 @@ class SodaSpeechRecognizerImplTest
   void MarkDone() override {}
   void UpdateRecognitionContext(
       const media::SpeechRecognitionRecognitionContext& recognition_context)
-      override {}
+      override {
+    recognition_context_updated_ = true;
+  }
 
   // media::mojom::SpeechRecognitionSessionClient implementation.
   void ResultRetrieved(std::vector<media::mojom::WebSpeechRecognitionResultPtr>
@@ -112,11 +115,6 @@ class SodaSpeechRecognizerImplTest
     CheckEventsConsistency();
   }
 
-  void RecognitionContextUpdated() {
-    recognition_context_updated_ = true;
-    CheckEventsConsistency();
-  }
-
   void OnSpeechRecognitionRecognitionEvent() {
     recognizer_->OnSpeechRecognitionRecognitionEvent(
         media::SpeechRecognitionResult(
@@ -137,10 +135,6 @@ class SodaSpeechRecognizerImplTest
   void RecognizerUpdateRecognitionContext(
       const media::SpeechRecognitionRecognitionContext& recognition_context) {
     recognizer_->UpdateRecognitionContext(recognition_context);
-
-    // TODO(crbug.com/388626991): Merge this into SpeechRecognitionSessionClient
-    // and call in the recognizer.
-    RecognitionContextUpdated();
   }
 
  protected:

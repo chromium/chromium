@@ -12,7 +12,9 @@
 #include "ash/public/cpp/desk_template.h"
 #include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/public/cpp/window_properties.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/shell_delegate.h"
 #include "ash/wm/coral/fake_coral_processor.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_controller.h"
@@ -30,6 +32,7 @@
 #include "components/app_constants/constants.h"
 #include "components/app_restore/restore_data.h"
 #include "components/desks_storage/core/desk_model.h"
+#include "components/feedback/feedback_constants.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/cros_system_api/mojo/service_constants.h"
 #include "ui/aura/window_tracker.h"
@@ -271,6 +274,13 @@ void CoralController::CreateSavedDeskFromGroup(coral::mojom::GroupPtr group,
       /*root_window_to_show=*/root_window, app_ids);
 }
 
+void CoralController::OpenFeedbackDialog(const std::string& group_description) {
+  Shell::Get()->coral_delegate()->OpenFeedbackDialog(
+      group_description,
+      base::BindOnce(&CoralController::OnFeedbackSendButtonClicked,
+                     weak_factory_.GetWeakPtr()));
+}
+
 CoralController::CoralProcessor* CoralController::EnsureCoralProcessor() {
   // Generate a fake processor if --force-birch-fake-coral-backend is enabled.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -397,6 +407,19 @@ void CoralController::ShowSavedDeskLibrary(
                                            /*saved_desk_name=*/u"",
                                            root_window);
   }
+}
+
+void CoralController::OnFeedbackSendButtonClicked(
+    ScannerFeedbackInfo feedback_info,
+    const std::string& user_description) {
+  // Combine the group info from action details with the user description.
+  std::string description =
+      base::StrCat({"group items:  ", feedback_info.action_details,
+                    "\nuser_description:  ", user_description, "\n"});
+  Shell::Get()->shell_delegate()->SendSpecializedFeatureFeedback(
+      Shell::Get()->session_controller()->GetActiveAccountId(),
+      feedback::kCoralFeedbackProductId, std::move(description),
+      /*image=*/std::nullopt, /*image_mime_type=*/std::nullopt);
 }
 
 }  // namespace ash

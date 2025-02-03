@@ -534,8 +534,6 @@ source_set("testing") {
     "testing/callback_function_test.h",
     "testing/color_scheme_helper.cc",
     "testing/color_scheme_helper.h",
-    "testing/death_aware_script_wrappable.cc",
-    "testing/death_aware_script_wrappable.h",
     "testing/dictionary_test.cc",
     "testing/dictionary_test.h",
     "testing/dummy_modulator.cc",

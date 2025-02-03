@@ -155,6 +155,12 @@ public class PaymentAppService implements PaymentAppFactoryInterface {
         public DialogController getDialogController() {
             return mDelegate.getDialogController();
         }
+
+        @Override
+        @Nullable
+        public Integer getPayIntentErrorStringId() {
+            return mDelegate.getPayIntentErrorStringId();
+        }
     }
 
     private static Set<PaymentApp> deduplicatePaymentApps(List<PaymentApp> apps) {

@@ -32,6 +32,7 @@
 #include "media/capture/video/win/video_capture_device_factory_win.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/gpu_memory_buffer.h"
 
 using ::testing::_;
 using ::testing::Invoke;
@@ -1170,14 +1171,9 @@ class MockCaptureHandleProvider
 
   // Clone a |GpuMemoryBufferHandle| for IPC.
   gfx::GpuMemoryBufferHandle GetGpuMemoryBufferHandle() override {
-    // Create a fake DXGI buffer handle
-    // (ensure that the fake is still a valid NT handle by using an event
-    // handle)
-    base::win::ScopedHandle fake_dxgi_handle(
-        CreateEvent(nullptr, FALSE, FALSE, nullptr));
     gfx::GpuMemoryBufferHandle handle;
     handle.type = gfx::GpuMemoryBufferType::DXGI_SHARED_HANDLE;
-    handle.dxgi_handle = std::move(fake_dxgi_handle);
+    handle.set_dxgi_handle(gfx::DXGIHandle::CreateFakeForTest());
     return handle;
   }
 };

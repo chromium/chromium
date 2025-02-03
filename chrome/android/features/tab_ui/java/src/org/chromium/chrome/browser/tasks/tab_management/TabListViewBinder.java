@@ -312,14 +312,22 @@ class TabListViewBinder {
 
     private static void updateTabCardLabel(
             ViewGroup view, @Nullable TabCardLabelData tabCardLabelData) {
-        TabCardLabelView labelView = getOrSetupTabCardLabelView(view);
-        labelView.setData(tabCardLabelData);
+        @Nullable
+        TabCardLabelView labelView = getOrSetupTabCardLabelView(view, tabCardLabelData == null);
+        if (labelView != null) {
+            labelView.setData(tabCardLabelData);
+        }
     }
 
-    private static TabCardLabelView getOrSetupTabCardLabelView(ViewGroup view) {
+    private static @Nullable TabCardLabelView getOrSetupTabCardLabelView(
+            ViewGroup view, boolean isDataNull) {
         FrameLayout labelContainer = view.findViewById(R.id.before_description_container);
         if (labelContainer.getChildCount() > 0) {
             return (TabCardLabelView) labelContainer.getChildAt(0);
+        } else if (isDataNull) {
+            // Avoid eagerly creating the view in the event the data is null and it isn't already
+            // created.
+            return null;
         }
         Context context = labelContainer.getContext();
         TabCardLabelView labelView =

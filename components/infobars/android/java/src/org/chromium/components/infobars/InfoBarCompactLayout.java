@@ -54,7 +54,7 @@ public class InfoBarCompactLayout extends LinearLayout implements View.OnClickLi
             InfoBarInteractionHandler infoBar,
             int iconResourceId,
             @ColorRes int iconTintId,
-            Bitmap iconBitmap) {
+            @Nullable Bitmap iconBitmap) {
         super(context);
         mInfoBar = infoBar;
         mCompactInfoBarSize =
@@ -99,11 +99,13 @@ public class InfoBarCompactLayout extends LinearLayout implements View.OnClickLi
 
     /**
      * Adds an icon to the start of the infobar, if the infobar requires one.
+     *
      * @param iconResourceId Resource ID of the icon to use.
      * @param iconTintId The {@link ColorRes} used as tint for {@code iconResourceId}.
      * @param iconBitmap Raw {@link Bitmap} to use instead of a resource.
      */
-    private void prepareIcon(int iconResourceId, @ColorRes int iconTintId, Bitmap iconBitmap) {
+    private void prepareIcon(
+            int iconResourceId, @ColorRes int iconTintId, @Nullable Bitmap iconBitmap) {
         ImageView iconView =
                 InfoBarLayout.createIconView(getContext(), iconResourceId, iconTintId, iconBitmap);
         if (iconView != null) {

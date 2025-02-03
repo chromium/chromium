@@ -84,8 +84,6 @@ std::string ToString(LinkCapturingFeatureVersion version) {
     case LinkCapturingFeatureVersion::kV2DefaultOff:
       return "V2DefaultOff";
 #if !BUILDFLAG(IS_CHROMEOS)
-    case LinkCapturingFeatureVersion::kV1DefaultOn:
-      return "V1DefaultOn";
     case LinkCapturingFeatureVersion::kV2DefaultOn:
       return "V2DefaultOn";
 #endif
@@ -108,9 +106,6 @@ std::vector<base::test::FeatureRefAndParams> GetFeaturesToEnableLinkCapturingUX(
       return GetFeaturesToEnableLinkCapturingUX(
           /*override_captures_by_default=*/false, /*use_v2=*/true);
 #if !BUILDFLAG(IS_CHROMEOS)
-    case LinkCapturingFeatureVersion::kV1DefaultOn:
-      return GetFeaturesToEnableLinkCapturingUX(
-          /*override_captures_by_default=*/true, /*use_v2=*/false);
     case LinkCapturingFeatureVersion::kV2DefaultOn:
       return GetFeaturesToEnableLinkCapturingUX(
           /*override_captures_by_default=*/true, /*use_v2=*/true);

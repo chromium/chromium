@@ -100,13 +100,13 @@ BtmDatabase::BtmDatabase(const std::optional<base::FilePath>& db_path)
     : db_path_(db_path.value_or(base::FilePath())) {
   DCHECK(base::FeatureList::IsEnabled(features::kBtm));
 
-  sql::DatabaseOptions db_options{
-      .wal_mode = base::FeatureList::IsEnabled(kSqlWALModeOnDipsDatabase),
-      .page_size = 4096,
-      .cache_size = 32};
-  if (base::FeatureList::IsEnabled(kDisableExclusiveLockingOnDipsDatabase)) {
-    db_options.exclusive_locking = false;
-  }
+  sql::DatabaseOptions db_options =
+      sql::DatabaseOptions()
+          .set_wal_mode(base::FeatureList::IsEnabled(kSqlWALModeOnDipsDatabase))
+          .set_page_size(4096)
+          .set_cache_size(32)
+          .set_exclusive_locking(!base::FeatureList::IsEnabled(
+              kDisableExclusiveLockingOnDipsDatabase));
 
   db_ = std::make_unique<sql::Database>(db_options, sql::Database::Tag("DIPS"));
 

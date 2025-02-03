@@ -25,6 +25,8 @@ enum ChromeInsetsMetric {
   INSETS_RECENT_ACTIVITY_IMAGE_MARGIN,
   // Margins for rows within the Recent Activity dialog.
   INSETS_RECENT_ACTIVITY_ROW_MARGIN,
+  // Margins for the contents inside in the Task Manager.
+  INSETS_TASK_MANAGER,
 };
 
 enum ChromeDistanceMetric {
@@ -107,15 +109,17 @@ enum ChromeDistanceMetric {
   DISTANCE_PERMISSION_PROMPT_HORIZONTAL_ICON_LABEL_PADDING,
   // Horizontal spacing between icon and label in the rich hover button.
   DISTANCE_RICH_HOVER_BUTTON_ICON_HORIZONTAL,
-  // Horizontal spacing between the search bar and end task button.
-  DISTANCE_TASK_MANAGER_HEADER_HORIZONTAL_SPACING,
-  // Vertical spacing between the header components and the header separator.
-  DISTANCE_TASK_MANAGER_HEADER_VERTICAL_SPACING,
+  // Horizontal spacing for the search bar's magnifying glass icon and x button.
+  DISTANCE_TASK_MANAGER_SEARCH_BAR_ICON_AND_BUTTON_HORIZONTAL_SPACING,
   // Width and height of the vector icons shown in the search bar of the task
   // manager.
   DISTANCE_TASK_MANAGER_SEARCH_ICON_SIZE,
-  // Horizontal spacing between each category tab (e.g. Tabs, System, ...)
-  DISTANCE_TASK_MANAGER_TAB_SPACING,
+  // The minimum width for the search bar found in Task Manager.
+  DISTANCE_TASK_MANAGER_SEARCH_BAR_MIN_WIDTH,
+  // The minimum height for the search bar found in Task Manager.
+  DISTANCE_TASK_MANAGER_SEARCH_BAR_MIN_HEIGHT,
+  // Height of Task Manager tabs.
+  DISTANCE_TASK_MANAGER_TAB_HEIGHT,
   // Distance between most child elements inside the toast.
   DISTANCE_TOAST_BUBBLE_BETWEEN_CHILD_SPACING,
   // Distance between the toast label and action button.

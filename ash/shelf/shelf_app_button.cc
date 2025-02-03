@@ -902,9 +902,13 @@ void ShelfAppButton::OnMouseReleased(const ui::MouseEvent& event) {
 }
 
 void ShelfAppButton::OnMouseCaptureLost() {
+  drag_timer_.Stop();
+
+  ClearState(STATE_DRAGGING);
   ClearState(STATE_HOVERED);
-  shelf_view_->PointerReleasedOnButton(this, ShelfView::MOUSE, true);
   ShelfButton::OnMouseCaptureLost();
+
+  shelf_view_->PointerReleasedOnButton(this, ShelfView::MOUSE, true);
 }
 
 bool ShelfAppButton::OnMouseDragged(const ui::MouseEvent& event) {

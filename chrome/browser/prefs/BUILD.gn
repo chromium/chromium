@@ -245,7 +245,7 @@ source_set("impl") {
   if (is_win || is_mac || is_linux) {
     deps += [ "//chrome/browser/ui/webui/whats_new" ]
     if (is_win || is_mac) {
-      deps += [ "//components/os_crypt/sync:os_crypt" ]
+      deps += [ "//components/os_crypt/sync" ]
     }
   }
 

@@ -55,14 +55,11 @@ ScopedJavaLocalRef<jobject> ConvertToJavaAccount(
     display_name = account->name;
   }
   return Java_Account_Constructor(
-      env, ConvertUTF8ToJavaString(env, account->id),
-      ConvertUTF8ToJavaString(env, account->email),
-      ConvertUTF8ToJavaString(env, account->name),
-      ConvertUTF8ToJavaString(env, display_name),
+      env, account->id, account->email, account->name, display_name,
       is_multi_idp ? std::make_optional<std::string>(
                          account->identity_provider->idp_for_display)
                    : std::nullopt,
-      url::GURLAndroid::FromNativeGURL(env, account->picture), decoded_picture,
+      account->picture, decoded_picture,
       account->login_state == Account::LoginState::kSignIn,
       account->browser_trusted_login_state == Account::LoginState::kSignIn,
       account->is_filtered_out);
@@ -71,15 +68,11 @@ ScopedJavaLocalRef<jobject> ConvertToJavaAccount(
 ScopedJavaLocalRef<jobject> ConvertToJavaIdentityProviderMetadata(
     JNIEnv* env,
     const content::IdentityProviderMetadata& metadata) {
-  ScopedJavaLocalRef<jstring> java_brand_icon_url =
-      base::android::ConvertUTF8ToJavaString(env,
-                                             metadata.brand_icon_url.spec());
   return Java_IdentityProviderMetadata_Constructor(
       env, ui::OptionalSkColorToJavaColor(metadata.brand_text_color),
       ui::OptionalSkColorToJavaColor(metadata.brand_background_color),
-      java_brand_icon_url,
-      url::GURLAndroid::FromNativeGURL(env, metadata.config_url),
-      url::GURLAndroid::FromNativeGURL(env, metadata.idp_login_url),
+      metadata.brand_icon_url.spec(), metadata.config_url,
+      metadata.idp_login_url,
       // The UI code only cares about whether it should show the add account
       // button so consider both options in the same boolean.
       metadata.supports_add_account || metadata.has_filtered_out_account);
@@ -89,21 +82,15 @@ ScopedJavaLocalRef<jobject> ConvertToJavaIdentityCredentialTokenError(
     JNIEnv* env,
     const std::optional<TokenError>& error) {
   return Java_IdentityCredentialTokenError_Constructor(
-      env,
-      base::android::ConvertUTF8ToJavaString(env, error ? error->code : ""),
-      url::GURLAndroid::FromNativeGURL(env, error ? error->url : GURL()));
+      env, error ? error->code : "", error ? error->url : GURL());
 }
 
 ScopedJavaLocalRef<jobject> ConvertToJavaClientIdMetadata(
     JNIEnv* env,
     const content::ClientMetadata& metadata) {
-  ScopedJavaLocalRef<jstring> java_brand_icon_url =
-      base::android::ConvertUTF8ToJavaString(env,
-                                             metadata.brand_icon_url.spec());
-  return Java_ClientIdMetadata_Constructor(
-      env, url::GURLAndroid::FromNativeGURL(env, metadata.terms_of_service_url),
-      url::GURLAndroid::FromNativeGURL(env, metadata.privacy_policy_url),
-      java_brand_icon_url);
+  return Java_ClientIdMetadata_Constructor(env, metadata.terms_of_service_url,
+                                           metadata.privacy_policy_url,
+                                           metadata.brand_icon_url.spec());
 }
 
 ScopedJavaLocalRef<jobjectArray> ConvertToJavaAccounts(

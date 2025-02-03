@@ -1242,6 +1242,11 @@
       status: "stable",
     },
     {
+      // Enables env(safe-area-max-inset-*).
+      // https://github.com/w3c/csswg-drafts/issues/11019
+      name: "CSSSafeAreaMaxInset"
+    },
+    {
       // The "@import scope(...)" syntax.
       // https://github.com/w3c/csswg-drafts/issues/7348
       name: "CSSScopeImport",
@@ -2119,7 +2124,7 @@
       // Enables the ability to set seller nonces on the header response and
       // use bidNonce in bids.
       name: "FledgeSellerNonce",
-      status: "test",
+      status: "stable",
     },
     {
       name: "FledgeTrustedSignalsKVv1CreativeScanning",
@@ -2378,11 +2383,6 @@
     {
       name: "HTMLSelectElementShowPicker",
       status: "stable",
-    },
-    {
-      name: "IdentityDigest",
-      status: "experimental",
-      implied_by: ["SignatureBasedIntegrity"]
     },
     {
       name: "ImageDataPixelFormat",
@@ -3742,6 +3742,10 @@
       name: "ScopedCustomElementRegistry",
       status: "experimental",
     },
+    {
+      // https://github.com/WICG/view-transitions/blob/main/scoped-transitions.md
+      name: "ScopedViewTransitions"
+    },
     // WebSpeech API with both speech recognition and synthesis functionality
     // is not fully enabled on all platforms.
     {
@@ -4454,6 +4458,11 @@
       status: "experimental",
     },
     {
+      name: "UnencodedDigest",
+      status: "experimental",
+      implied_by: ["SignatureBasedIntegrity"]
+    },
+    {
       name: "UnexposedTaskIds",
     },
     // Killswitch to be removed after M133 or M134 reaches stable.
@@ -4929,7 +4938,7 @@
     {
       name: "WebIdentityDigitalCredentials",
       origin_trial_feature_name: "WebIdentityDigitalCredentials",
-      origin_trial_os: ["android"],
+      origin_trial_os: ["android", "win", "mac"],
       origin_trial_allows_third_party: true,
       implied_by: ["WebIdentityDigitalCredentialsCreation"],
       public: true,

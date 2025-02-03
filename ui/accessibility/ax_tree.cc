@@ -42,6 +42,10 @@
 #include "ui/accessibility/ax_tree_observer.h"
 #include "ui/gfx/geometry/transform.h"
 
+#define ACCESSIBILITY_TREE_UNSERIALIZE_ERROR_HISTOGRAM(enum_value) \
+  base::UmaHistogramEnumeration(                                   \
+      "Accessibility.Reliability.Tree.UnserializeError", enum_value)
+
 namespace ui {
 
 namespace {

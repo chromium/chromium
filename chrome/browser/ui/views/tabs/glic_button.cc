@@ -82,6 +82,12 @@ void GlicButton::SetDropToAttachIndicator(bool indicate) {
   }
 }
 
+gfx::Rect GlicButton::GetBoundsWithInset() const {
+  gfx::Rect bounds = GetBoundsInScreen();
+  bounds.Inset(GetInsets());
+  return bounds;
+}
+
 BEGIN_METADATA(GlicButton)
 END_METADATA
 

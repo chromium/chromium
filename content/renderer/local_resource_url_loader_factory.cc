@@ -46,7 +46,7 @@ ConvertConfigToSourcesMap(blink::mojom::LocalResourceLoaderConfigPtr config) {
   for (const auto& source : config->sources) {
     const url::Origin origin = source.first;
     const blink::mojom::LocalResourceSourcePtr& mojo_source = source.second;
-    const std::map<const std::string, std::string> replacement_strings(
+    const std::map<std::string, std::string> replacement_strings(
         mojo_source->replacement_strings.begin(),
         mojo_source->replacement_strings.end());
     LocalResourceURLLoaderFactory::Source local_source(
@@ -60,7 +60,7 @@ ConvertConfigToSourcesMap(blink::mojom::LocalResourceLoaderConfigPtr config) {
 
 LocalResourceURLLoaderFactory::Source::Source(
     blink::mojom::LocalResourceSourcePtr source,
-    std::map<const std::string, std::string> replacement_strings)
+    std::map<std::string, std::string> replacement_strings)
     : source(std::move(source)),
       replacement_strings(std::move(replacement_strings)) {}
 
@@ -152,7 +152,7 @@ void LocalResourceURLLoaderFactory::GetResourceAndRespond(
   CHECK(it != sources->data.end());
 
   const blink::mojom::LocalResourceSourcePtr& source = it->second.source;
-  const std::map<const std::string, std::string>& replacement_strings =
+  const std::map<std::string, std::string>& replacement_strings =
       it->second.replacement_strings;
 
   // Get resource id.

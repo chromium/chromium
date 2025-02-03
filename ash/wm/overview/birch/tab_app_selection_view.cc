@@ -489,6 +489,8 @@ TabAppSelectionView::TabAppSelectionView(const base::Token& group_id,
   scroll_view_->SetViewportRoundedCornerRadius(
       kTabAppItemsContainerCornerRadius);
   scroll_view_->SetDrawOverflowIndicator(false);
+  scroll_view_->SetVerticalScrollBarMode(
+      views::ScrollView::ScrollBarMode::kHiddenButEnabled);
 
   tab_app_items_view->AddChildView(
       views::Builder<views::Separator>()

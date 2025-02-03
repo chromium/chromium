@@ -138,6 +138,7 @@
     {name: "set-cookie", Symbol: "kLowerSetCookie"},
     {name: "signature", Symbol: "kSignature"},
     {name: "signature-input", Symbol: "kSignatureInput"},
+    {name: "unencoded-digest", Symbol: "kUnencodedDigest"},
     {name: "viewport-width", Symbol: "kViewportWidth_DEPRECATED"},
     {name: "width", Symbol: "kResourceWidth_DEPRECATED"},
   ],

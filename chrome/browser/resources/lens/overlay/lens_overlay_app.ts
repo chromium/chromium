@@ -58,7 +58,7 @@ export interface LensOverlayAppElement {
     selectionOverlay: SelectionOverlayElement,
     toast: CrToastElement,
     translateButton: TranslateButtonElement,
-    translateButtonContainer: HTMLDivElement,
+    translateButtonContainer: HTMLElement,
   };
 }
 

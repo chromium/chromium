@@ -934,7 +934,7 @@ void Navigator::Navigate(std::unique_ptr<NavigationRequest> request,
   // is not needed then NavigationRequest::BeginNavigation should be directly
   // called instead.
   if (should_dispatch_beforeunload) {
-    frame_tree_node->navigation_request()->SetWaitingForRendererResponse();
+    frame_tree_node->navigation_request()->WillStartBeforeUnload();
     frame_tree_node->current_frame_host()->DispatchBeforeUnload(
         RenderFrameHostImpl::BeforeUnloadType::BROWSER_INITIATED_NAVIGATION,
         reload_type != ReloadType::NONE);
@@ -1276,7 +1276,7 @@ void Navigator::OnBeginNavigation(
       frame_tree_node->current_frame_host()->ShouldDispatchBeforeUnload(
           true /* check_subframes_only */);
   if (should_dispatch_beforeunload) {
-    frame_tree_node->navigation_request()->SetWaitingForRendererResponse();
+    frame_tree_node->navigation_request()->WillStartBeforeUnload();
     frame_tree_node->current_frame_host()->DispatchBeforeUnload(
         RenderFrameHostImpl::BeforeUnloadType::RENDERER_INITIATED_NAVIGATION,
         NavigationTypeUtils::IsReload(

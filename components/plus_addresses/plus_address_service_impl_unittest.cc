@@ -1557,8 +1557,6 @@ TEST_F(PlusAddressSuggestionsTest,
        RecordCreateSuggestionUserActionFirstTimeNotice) {
   base::HistogramTester histogram_tester;
   base::UserActionTester user_action_tester;
-  base::test::ScopedFeatureList feature_list{
-      features::kPlusAddressUserOnboardingEnabled};
   setting_service().set_has_accepted_notice(false);
   const auto origin = url::Origin::Create(GURL("https://foo.com"));
 
@@ -1594,8 +1592,6 @@ TEST_F(PlusAddressSuggestionsTest, RecordExistingPlusAddressChosenUserAction) {
 TEST_F(PlusAddressSuggestionsTest, RecordCreateSuggestionUserActionShown) {
   base::HistogramTester histogram_tester;
   base::UserActionTester user_action_tester;
-  base::test::ScopedFeatureList feature_list{
-      features::kPlusAddressUserOnboardingEnabled};
   setting_service().set_has_accepted_notice(true);
   const auto origin = url::Origin::Create(GURL("https://foo.com"));
 

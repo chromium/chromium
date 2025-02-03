@@ -849,7 +849,7 @@ bool TabStripModel::IsGroupCollapsed(
 
 bool TabStripModel::IsTabSplit(int index) const {
   CHECK(ContainsIndex(index)) << index;
-  return GetTabModelAtIndex(index)->split();
+  return GetTabModelAtIndex(index)->IsSplit();
 }
 
 bool TabStripModel::IsTabBlocked(int index) const {
@@ -1125,9 +1125,11 @@ void TabStripModel::AddToNewSplit(const std::vector<int> indices) {
   CHECK(std::ranges::is_sorted(indices));
   CHECK(std::ranges::adjacent_find(indices) == indices.end());
 
+  std::vector<tabs::TabInterface*> tabs = {};
   for (int i : indices) {
     tabs::TabModel* tab_model = GetTabModelAtIndex(i);
-    CHECK(!tab_model->split());
+    CHECK(!tab_model->IsSplit());
+    tabs.push_back(tab_model);
     tab_model->set_split(true);
   }
 
@@ -1158,6 +1160,10 @@ void TabStripModel::AddToNewSplit(const std::vector<int> indices) {
   }
 
   MoveTabsAndSetGroupImpl(indices, destination_index, std::nullopt);
+
+  for (TabStripModelObserver& observer : observers_) {
+    observer.OnSplitViewAdded(tabs);
+  }
 }
 
 void TabStripModel::AddTabGroup(const tab_groups::TabGroupId group_id,

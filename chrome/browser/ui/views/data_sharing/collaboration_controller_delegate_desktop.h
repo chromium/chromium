@@ -66,6 +66,7 @@ class CollaborationControllerDelegateDesktop
   void OnBrowserClosing(Browser* browser) override;
 
   void OnJoinDialogClosing(ResultCallback result);
+  void ShowErrorDialog();
   void MaybeShowSignInAndSyncUi();
   void MaybeShowSignInOrSyncPromptDialog();
   void OnPromptDialogOk();

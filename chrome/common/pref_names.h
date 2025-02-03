@@ -2391,6 +2391,8 @@ inline constexpr char kNtpDisabledModules[] = "NewTabPage.DisabledModules";
 // List keeping track of modules hidden in Customize Chrome.
 inline constexpr char kNtpCustomizeChromeHiddenModules[] =
     "NewTabPage.CustomizeChromeHiddenModules";
+// List keeping track of modules not allowed to show on New Tab Page.
+inline constexpr char kNtpHiddenModules[] = "NewTabPage.HiddenModules";
 // Time the Microsoft files module was last dismissed.
 inline constexpr char kNtpMicrosoftFilesModuleLastDismissedTime[] =
     "NewTabPage.MicrosoftFilesModuleLastDismissedTime";

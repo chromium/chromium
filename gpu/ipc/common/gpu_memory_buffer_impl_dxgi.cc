@@ -20,9 +20,11 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/unguessable_token.h"
+#include "base/win/scoped_handle.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "ui/gfx/buffer_format_util.h"
+#include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gl/gl_angle_util_win.h"
 #include "ui/gl/gl_switches.h"
 
@@ -43,13 +45,11 @@ GpuMemoryBufferImplDXGI::CreateFromHandle(
     GpuMemoryBufferManager* gpu_memory_buffer_manager,
     scoped_refptr<base::UnsafeSharedMemoryPool> pool,
     base::span<uint8_t> premapped_memory) {
-  DCHECK(handle.dxgi_handle.IsValid());
-  DCHECK(handle.dxgi_token.has_value());
+  DCHECK(handle.dxgi_handle().IsValid());
   return base::WrapUnique(new GpuMemoryBufferImplDXGI(
       handle.id, size, format, std::move(callback),
-      std::move(handle.dxgi_handle), std::move(handle.dxgi_token.value()),
-      std::move(handle.region()), gpu_memory_buffer_manager, std::move(pool),
-      premapped_memory));
+      std::move(handle.dxgi_handle()), gpu_memory_buffer_manager,
+      std::move(pool), premapped_memory));
 }
 
 base::OnceClosure GpuMemoryBufferImplDXGI::AllocateForTesting(
@@ -98,8 +98,9 @@ base::OnceClosure GpuMemoryBufferImplDXGI::AllocateForTesting(
   DCHECK(SUCCEEDED(hr));
 
   gfx::GpuMemoryBufferId kBufferId(1);
-  handle->dxgi_handle.Set(texture_handle);
   handle->type = gfx::DXGI_SHARED_HANDLE;
+  handle->set_dxgi_handle(
+      gfx::DXGIHandle(base::win::ScopedHandle(texture_handle)));
   handle->id = kBufferId;
   return base::DoNothing();
 }
@@ -152,8 +153,8 @@ GpuMemoryBufferImplDXGI::DoMapAsync(base::OnceCallback<void(bool)> result_cb) {
   // created here internally as below if its not already created.
   if (use_premapped_memory_) {
     if (!premapped_memory_.data()) {
-      CHECK(region_.IsValid());
-      region_mapping_ = region_.Map();
+      CHECK(dxgi_handle_.region().IsValid());
+      region_mapping_ = dxgi_handle_.region().Map();
       CHECK(region_mapping_.IsValid());
       premapped_memory_ = region_mapping_.GetMemoryAsSpan<uint8_t>();
 
@@ -270,25 +271,17 @@ gfx::GpuMemoryBufferHandle GpuMemoryBufferImplDXGI::CloneHandle() const {
   handle.id = id_;
   handle.offset = 0;
   handle.stride = stride(0);
-  base::ProcessHandle process = ::GetCurrentProcess();
-  HANDLE duplicated_handle;
-  BOOL result =
-      ::DuplicateHandle(process, dxgi_handle_.Get(), process,
-                        &duplicated_handle, 0, FALSE, DUPLICATE_SAME_ACCESS);
-  if (!result)
-    DPLOG(ERROR) << "Failed to duplicate DXGI resource handle.";
-  handle.dxgi_handle.Set(duplicated_handle);
-  handle.dxgi_token = dxgi_token_;
+  handle.set_dxgi_handle(dxgi_handle_.Clone());
 
   return handle;
 }
 
 HANDLE GpuMemoryBufferImplDXGI::GetHandle() const {
-  return dxgi_handle_.Get();
+  return dxgi_handle_.buffer_handle();
 }
 
 const gfx::DXGIHandleToken& GpuMemoryBufferImplDXGI::GetToken() const {
-  return dxgi_token_;
+  return dxgi_handle_.token();
 }
 
 void GpuMemoryBufferImplDXGI::SetUsePreMappedMemory(bool use_premapped_memory) {
@@ -304,16 +297,12 @@ GpuMemoryBufferImplDXGI::GpuMemoryBufferImplDXGI(
     const gfx::Size& size,
     gfx::BufferFormat format,
     DestructionCallback callback,
-    base::win::ScopedHandle dxgi_handle,
-    gfx::DXGIHandleToken dxgi_token,
-    base::UnsafeSharedMemoryRegion region,
+    gfx::DXGIHandle dxgi_handle,
     gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
     scoped_refptr<base::UnsafeSharedMemoryPool> pool,
     base::span<uint8_t> premapped_memory)
     : GpuMemoryBufferImpl(id, size, format, std::move(callback)),
       dxgi_handle_(std::move(dxgi_handle)),
-      dxgi_token_(std::move(dxgi_token)),
-      region_(std::move(region)),
       gpu_memory_buffer_manager_(gpu_memory_buffer_manager),
       shared_memory_pool_(std::move(pool)),
       premapped_memory_(premapped_memory) {
