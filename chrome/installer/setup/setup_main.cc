@@ -79,6 +79,7 @@
 #include "chrome/installer/setup/installer_state.h"
 #include "chrome/installer/setup/launch_chrome.h"
 #include "chrome/installer/setup/modify_params.h"
+#include "chrome/installer/setup/scoped_thread_pool.h"
 #include "chrome/installer/setup/setup_constants.h"
 #include "chrome/installer/setup/setup_install_details.h"
 #include "chrome/installer/setup/setup_singleton.h"
@@ -1143,9 +1144,12 @@ bool HandleNonInstallCmdLineOptions(installer::ModifyParams& modify_params,
     *exit_code = installer::DeleteDMToken() ? installer::DELETE_DMTOKEN_SUCCESS
                                             : installer::DELETE_DMTOKEN_FAILED;
   } else if (cmd_line.HasSwitch(installer::switches::kRotateDeviceTrustKey)) {
-    // RotateDeviceTrustKey() expects a single
-    // threaded task runner so creating one here.
+    // RotateDeviceTrustKey() expects a single threaded task runner.
     base::SingleThreadTaskExecutor executor;
+
+    // Part of the logic handling this command depends on a winhttp component
+    // which needs a thread pool.
+    ScopedThreadPool scoped_thread_pool;
 
     const auto result = enterprise_connectors::RotateDeviceTrustKey(
         enterprise_connectors::KeyRotationManager::Create(
