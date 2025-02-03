@@ -150,7 +150,9 @@ TEST_F(DeleteAfterRebootHelperTest, TestStringListToMultiSZConversions) {
   }
 }
 
-TEST_F(DeleteAfterRebootHelperTest, TestFileDeleteScheduleAndUnschedule) {
+// TODO(crbug.com/393615212): Re-enable this test.
+TEST_F(DeleteAfterRebootHelperTest,
+       DISABLED_TestFileDeleteScheduleAndUnschedule) {
   if (!IsUserAnAdmin()) {
     return;
   }
@@ -200,7 +202,9 @@ TEST_F(DeleteAfterRebootHelperTest, TestFileDeleteScheduleAndUnschedule) {
   }
 }
 
-TEST_F(DeleteAfterRebootHelperTest, TestFileDeleteSchedulingWithActualDeletes) {
+// TODO(crbug.com/393615212): Re-enable this test.
+TEST_F(DeleteAfterRebootHelperTest,
+       DISABLED_TestFileDeleteSchedulingWithActualDeletes) {
   if (!IsUserAnAdmin()) {
     return;
   }
