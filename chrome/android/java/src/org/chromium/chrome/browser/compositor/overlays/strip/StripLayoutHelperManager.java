@@ -543,7 +543,9 @@ public class StripLayoutHelperManager
                     mTooltipManager = new TooltipManager((FrameLayout) view, () -> mTopPadding);
                     mNormalHelper.getNewTabButton().setTooltipManager(mTooltipManager);
                     mIncognitoHelper.getNewTabButton().setTooltipManager(mTooltipManager);
-                    mModelSelectorButton.setTooltipManager(mTooltipManager);
+                    if (mModelSelectorButton != null) {
+                        mModelSelectorButton.setTooltipManager(mTooltipManager);
+                    }
                 });
 
         if (tabModelStartupInfoSupplier != null) {
@@ -663,6 +665,9 @@ public class StripLayoutHelperManager
         mModelSelectorButton.setAccessibilityDescription(
                 context.getString(R.string.accessibility_tabstrip_btn_incognito_toggle_standard),
                 context.getString(R.string.accessibility_tabstrip_btn_incognito_toggle_incognito));
+        if (mTooltipManager != null) {
+            mModelSelectorButton.setTooltipManager(mTooltipManager);
+        }
     }
 
     /** Cleans up internal state. */
