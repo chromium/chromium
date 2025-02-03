@@ -35,7 +35,7 @@
             },
             {
                 "domain": "Extensions",
-                "async": [ "loadUnpacked", "getStorageItems", "setStorageItems", "removeStorageItems", "clearStorageItems" ]
+                "async": [ "loadUnpacked", "getStorageItems", "setStorageItems", "removeStorageItems", "clearStorageItems", "uninstall" ]
             },
             {
                 "domain": "Security",
