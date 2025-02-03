@@ -125,6 +125,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
       browsingContextStorage,
       realmStorage,
       preloadScriptStorage,
+      userContextStorage,
       logger,
     );
     this.#sessionProcessor = new SessionProcessor(

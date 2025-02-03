@@ -20,7 +20,6 @@ import {
   type Browser,
   ChromiumBidi,
   InvalidArgumentException,
-  NoSuchUserContextException,
   type BrowsingContext,
 } from '../../../protocol/protocol.js';
 import {Buffer} from '../../../utils/Buffer.js';
@@ -236,27 +235,10 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
     }
 
     // First check if all the contexts are known.
-    for (const contextId of contextIds) {
-      if (contextId !== null) {
-        // Assert the context is known. Throw exception otherwise.
-        this.#browsingContextStorage.getContext(contextId);
-      }
-    }
+    this.#browsingContextStorage.verifyContextsList(contextIds);
 
     // Validate user contexts.
-    if (userContextIds.length) {
-      const userContexts = await this.#userContextStorage.getUserContexts();
-      const knownUserContextIds = new Set(
-        userContexts.map((userContext) => userContext.userContext),
-      );
-      for (const userContextId of userContextIds) {
-        if (!knownUserContextIds.has(userContextId)) {
-          throw new NoSuchUserContextException(
-            `User context ${userContextId} not found`,
-          );
-        }
-      }
-    }
+    await this.#userContextStorage.verifyUserContextIdList(userContextIds);
 
     const unrolledEventNames = new Set(unrollEvents(eventNames));
     const subscribeStepEvents = new Map<ChromiumBidi.EventNames, Set<string>>();

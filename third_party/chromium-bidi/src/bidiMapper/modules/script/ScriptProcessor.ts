@@ -21,8 +21,10 @@ import {
   type BrowsingContext,
   ChromiumBidi,
   NoSuchScriptException,
+  InvalidArgumentException,
 } from '../../../protocol/protocol.js';
 import type {LoggerFn} from '../../../utils/log.js';
+import type {UserContextStorage} from '../browser/UserContextStorage.js';
 import type {CdpTarget} from '../cdp/CdpTarget.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 import type {EventManager} from '../session/EventManager.js';
@@ -37,6 +39,7 @@ export class ScriptProcessor {
   readonly #browsingContextStorage: BrowsingContextStorage;
   readonly #realmStorage: RealmStorage;
   readonly #preloadScriptStorage;
+  readonly #userContextStorage: UserContextStorage;
   readonly #logger?: LoggerFn;
 
   constructor(
@@ -44,11 +47,13 @@ export class ScriptProcessor {
     browsingContextStorage: BrowsingContextStorage,
     realmStorage: RealmStorage,
     preloadScriptStorage: PreloadScriptStorage,
+    userContextStorage: UserContextStorage,
     logger?: LoggerFn,
   ) {
     this.#browsingContextStorage = browsingContextStorage;
     this.#realmStorage = realmStorage;
     this.#preloadScriptStorage = preloadScriptStorage;
+    this.#userContextStorage = userContextStorage;
     this.#logger = logger;
 
     this.#eventManager = eventManager;
@@ -94,6 +99,16 @@ export class ScriptProcessor {
   async addPreloadScript(
     params: Script.AddPreloadScriptParameters,
   ): Promise<Script.AddPreloadScriptResult> {
+    if (params.userContexts?.length && params.contexts?.length) {
+      throw new InvalidArgumentException(
+        'Both userContexts and contexts cannot be specified.',
+      );
+    }
+
+    await this.#userContextStorage.verifyUserContextIdList(
+      params.userContexts ?? [],
+    );
+
     const contexts = this.#browsingContextStorage.verifyTopLevelContextsList(
       params.contexts,
     );

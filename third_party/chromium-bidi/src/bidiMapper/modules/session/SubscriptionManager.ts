@@ -255,10 +255,9 @@ export class SubscriptionManager {
   ) {
     const eventNames = new Set(unrollEvents(inputEventNames));
 
-    for (const contextId of inputContextIds) {
-      // Validation that contexts exist.
-      this.#browsingContextStorage.getContext(contextId);
-    }
+    // Validation that contexts exist.
+    this.#browsingContextStorage.verifyContextsList(inputContextIds);
+
     const topLevelTraversables = new Set(
       inputContextIds.map((contextId) => {
         const topLevelContext =

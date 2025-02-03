@@ -16,7 +16,10 @@
  */
 
 import type {CdpClient} from '../../../cdp/CdpClient.js';
-import type {Browser} from '../../../protocol/protocol.js';
+import {
+  NoSuchUserContextException,
+  type Browser,
+} from '../../../protocol/protocol.js';
 
 export class UserContextStorage {
   #browserClient: CdpClient;
@@ -41,5 +44,23 @@ export class UserContextStorage {
         };
       }),
     ];
+  }
+
+  async verifyUserContextIdList(userContextIds: string[]): Promise<void> {
+    if (!userContextIds.length) {
+      return;
+    }
+
+    const userContexts = await this.getUserContexts();
+    const knownUserContextIds = new Set(
+      userContexts.map((userContext) => userContext.userContext),
+    );
+    for (const userContextId of userContextIds) {
+      if (!knownUserContextIds.has(userContextId)) {
+        throw new NoSuchUserContextException(
+          `User context ${userContextId} not found`,
+        );
+      }
+    }
   }
 }

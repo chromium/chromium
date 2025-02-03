@@ -162,4 +162,14 @@ export class BrowsingContextStorage {
     }
     return foundContexts;
   }
+
+  verifyContextsList(contexts: BrowsingContext.BrowsingContext[]) {
+    if (!contexts.length) {
+      return;
+    }
+
+    for (const contextId of contexts) {
+      this.getContext(contextId);
+    }
+  }
 }
