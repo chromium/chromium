@@ -5,8 +5,8 @@
 #include "chrome/browser/ash/file_manager/cloud_upload_prompt_prefs_handler.h"
 
 #include <memory>
+#include <vector>
 
-#include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
@@ -28,42 +28,39 @@ namespace chromeos::cloud_upload {
 
 namespace {
 
-using LocalToSyncablePrefMap =
-    base::flat_map<const char*,
-                   std::pair<const char*, ash::cloud_upload::CloudProvider>>;
-
-// Maps the names of local "always move to drive/onedrive" prefs to the
-// corresponding syncable prefs.
-const LocalToSyncablePrefMap kAlwaysMoveToCloudPrefMap = {
-    {prefs::kOfficeFilesAlwaysMoveToDrive,
-     {prefs::kOfficeFilesAlwaysMoveToDriveSyncable,
-      ash::cloud_upload::CloudProvider::kGoogleDrive}},
-    {prefs::kOfficeFilesAlwaysMoveToOneDrive,
-     {prefs::kOfficeFilesAlwaysMoveToOneDriveSyncable,
-      ash::cloud_upload::CloudProvider::kOneDrive}},
+// Holds information about local and syncable pref pairs, and the corresponding
+// cloud provider.
+struct PrefInfo {
+  const char* local_pref;
+  const char* syncable_pref;
+  ash::cloud_upload::CloudProvider cloud_provider;
 };
 
-// Maps the names of local "move confirmation shown" prefs to the corresponding
-// syncable prefs.
-const LocalToSyncablePrefMap kMoveConfirmationShownPrefMap = {
+const std::vector<PrefInfo> kCloudUploadPrefs = {
+    {prefs::kOfficeFilesAlwaysMoveToDrive,
+     prefs::kOfficeFilesAlwaysMoveToDriveSyncable,
+     ash::cloud_upload::CloudProvider::kGoogleDrive},
+    {prefs::kOfficeFilesAlwaysMoveToOneDrive,
+     prefs::kOfficeFilesAlwaysMoveToOneDriveSyncable,
+     ash::cloud_upload::CloudProvider::kOneDrive},
     {prefs::kOfficeMoveConfirmationShownForDrive,
-     {prefs::kOfficeMoveConfirmationShownForDriveSyncable,
-      ash::cloud_upload::CloudProvider::kGoogleDrive}},
+     prefs::kOfficeMoveConfirmationShownForDriveSyncable,
+     ash::cloud_upload::CloudProvider::kGoogleDrive},
     {prefs::kOfficeMoveConfirmationShownForLocalToDrive,
-     {prefs::kOfficeMoveConfirmationShownForLocalToDriveSyncable,
-      ash::cloud_upload::CloudProvider::kGoogleDrive}},
+     prefs::kOfficeMoveConfirmationShownForLocalToDriveSyncable,
+     ash::cloud_upload::CloudProvider::kGoogleDrive},
     {prefs::kOfficeMoveConfirmationShownForCloudToDrive,
-     {prefs::kOfficeMoveConfirmationShownForCloudToDriveSyncable,
-      ash::cloud_upload::CloudProvider::kGoogleDrive}},
+     prefs::kOfficeMoveConfirmationShownForCloudToDriveSyncable,
+     ash::cloud_upload::CloudProvider::kGoogleDrive},
     {prefs::kOfficeMoveConfirmationShownForOneDrive,
-     {prefs::kOfficeMoveConfirmationShownForOneDriveSyncable,
-      ash::cloud_upload::CloudProvider::kOneDrive}},
+     prefs::kOfficeMoveConfirmationShownForOneDriveSyncable,
+     ash::cloud_upload::CloudProvider::kOneDrive},
     {prefs::kOfficeMoveConfirmationShownForLocalToOneDrive,
-     {prefs::kOfficeMoveConfirmationShownForLocalToOneDriveSyncable,
-      ash::cloud_upload::CloudProvider::kOneDrive}},
+     prefs::kOfficeMoveConfirmationShownForLocalToOneDriveSyncable,
+     ash::cloud_upload::CloudProvider::kOneDrive},
     {prefs::kOfficeMoveConfirmationShownForCloudToOneDrive,
-     {prefs::kOfficeMoveConfirmationShownForCloudToOneDriveSyncable,
-      ash::cloud_upload::CloudProvider::kOneDrive}},
+     prefs::kOfficeMoveConfirmationShownForCloudToOneDriveSyncable,
+     ash::cloud_upload::CloudProvider::kOneDrive},
 };
 
 bool IsProfileEnterpriseManaged(Profile* profile) {
@@ -92,22 +89,20 @@ bool IsCloudUploadAutomated(Profile* profile,
 
 // Checks the values of local and syncable prefs, and logs if they're different
 // when expected to be the same.
-void MaybeLogMismatchedValues(Profile* profile,
-                              const char* local_pref,
-                              const LocalToSyncablePrefMap& pref_map) {
-  auto it = pref_map.find(local_pref);
-  DCHECK(it != pref_map.end());
+void MaybeLogMismatchedValues(Profile* profile, const PrefInfo& pref_info) {
   // Don't check if the feature isn't enabled.
   if (IsSyncEnabled(profile) ||
-      !IsCloudUploadAutomated(profile, it->second.second)) {
+      !IsCloudUploadAutomated(profile, pref_info.cloud_provider)) {
     return;
   }
-  bool local_value = profile->GetPrefs()->GetBoolean(local_pref);
-  bool syncable_value = profile->GetPrefs()->GetBoolean(it->second.first);
+  bool local_value = profile->GetPrefs()->GetBoolean(pref_info.local_pref);
+  bool syncable_value =
+      profile->GetPrefs()->GetBoolean(pref_info.syncable_pref);
   if (local_value != syncable_value) {
     LOG(WARNING) << "Mismatched preferences during initialization: "
-                 << local_pref << " (" << (local_value ? "true" : "false")
-                 << ") and " << it->second.first << " ("
+                 << pref_info.local_pref << " ("
+                 << (local_value ? "true" : "false") << ") and "
+                 << pref_info.syncable_pref << " ("
                  << (syncable_value ? "true" : "false") << ")";
   }
 }
@@ -115,20 +110,20 @@ void MaybeLogMismatchedValues(Profile* profile,
 // Initializes syncable prefs with local pref values if uninitialized,
 // otherwise logs unexpected mismatches.
 void InitializeSyncablePrefs(Profile* profile,
-                                    const LocalToSyncablePrefMap& pref_map) {
-  for (const auto& [local_pref, syncable_pref] : pref_map) {
+                             const std::vector<PrefInfo>& prefs) {
+  for (const PrefInfo& pref_info : prefs) {
     const PrefService::Preference* pref =
-        profile->GetPrefs()->FindPreference(syncable_pref.first);
+        profile->GetPrefs()->FindPreference(pref_info.syncable_pref);
     if (!pref) {
-      LOG(WARNING) << "Preference " << syncable_pref.first << " not found.";
+      LOG(WARNING) << "Preference " << pref_info.syncable_pref << " not found.";
       continue;
     }
-    bool local_value = profile->GetPrefs()->GetBoolean(local_pref);
+    bool local_value = profile->GetPrefs()->GetBoolean(pref_info.local_pref);
     if (pref->IsDefaultValue()) {
-      profile->GetPrefs()->SetBoolean(syncable_pref.first, local_value);
+      profile->GetPrefs()->SetBoolean(pref_info.syncable_pref, local_value);
       continue;
     }
-    MaybeLogMismatchedValues(profile, local_pref, pref_map);
+    MaybeLogMismatchedValues(profile, pref_info);
   }
 }
 
@@ -154,10 +149,8 @@ class CloudUploadPromptPrefsHandler : public KeyedService {
 
   // Callbacks for pref changes. Synchronize local and syncable prefs, if
   // needed.
-  void OnOfficeFilesAlwaysMoveChanged(const char* local_pref);
-  void OnOfficeFilesAlwaysMoveSyncableChanged(const char* local_pref);
-  void OnOfficeMoveConfirmationShownChanged(const char* local_pref);
-  void OnOfficeMoveConfirmationShownSyncableChanged(const char* local_pref);
+  void OnLocalPrefChanged(const PrefInfo& pref_info);
+  void OnSyncablePrefChanged(const PrefInfo& pref_info);
   void OnCloudUploadPrefChanged();
 
   raw_ptr<Profile> profile_ = nullptr;
@@ -176,30 +169,11 @@ CloudUploadPromptPrefsHandler::~CloudUploadPromptPrefsHandler() = default;
 // static
 void CloudUploadPromptPrefsHandler::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterBooleanPref(
-      prefs::kOfficeFilesAlwaysMoveToDriveSyncable, false,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-  registry->RegisterBooleanPref(
-      prefs::kOfficeFilesAlwaysMoveToOneDriveSyncable, false,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-  registry->RegisterBooleanPref(
-      prefs::kOfficeMoveConfirmationShownForDriveSyncable, false,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-  registry->RegisterBooleanPref(
-      prefs::kOfficeMoveConfirmationShownForOneDriveSyncable, false,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-  registry->RegisterBooleanPref(
-      prefs::kOfficeMoveConfirmationShownForLocalToDriveSyncable, false,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-  registry->RegisterBooleanPref(
-      prefs::kOfficeMoveConfirmationShownForLocalToOneDriveSyncable, false,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-  registry->RegisterBooleanPref(
-      prefs::kOfficeMoveConfirmationShownForCloudToDriveSyncable, false,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-  registry->RegisterBooleanPref(
-      prefs::kOfficeMoveConfirmationShownForCloudToOneDriveSyncable, false,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  for (const PrefInfo& pref_info : kCloudUploadPrefs) {
+    registry->RegisterBooleanPref(
+        pref_info.syncable_pref, false,
+        user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  }
 }
 
 // KeyedService:
@@ -212,35 +186,19 @@ CloudUploadPromptPrefsHandler::CloudUploadPromptPrefsHandler(Profile* profile)
     : profile_(profile),
       pref_change_registrar_(std::make_unique<PrefChangeRegistrar>()) {
   // Initially set the syncable prefs to match the local values.
-  InitializeSyncablePrefs(profile_, kAlwaysMoveToCloudPrefMap);
-  InitializeSyncablePrefs(profile_, kMoveConfirmationShownPrefMap);
+  InitializeSyncablePrefs(profile_, kCloudUploadPrefs);
 
   pref_change_registrar_->Init(profile_->GetPrefs());
-  for (const auto& [local_pref, syncable_pref] : kAlwaysMoveToCloudPrefMap) {
+  for (const PrefInfo& pref_info : kCloudUploadPrefs) {
     pref_change_registrar_->Add(
-        local_pref,
+        pref_info.local_pref,
+        base::BindRepeating(&CloudUploadPromptPrefsHandler::OnLocalPrefChanged,
+                            base::Unretained(this), pref_info));
+    pref_change_registrar_->Add(
+        pref_info.syncable_pref,
         base::BindRepeating(
-            &CloudUploadPromptPrefsHandler::OnOfficeFilesAlwaysMoveChanged,
-            base::Unretained(this), local_pref));
-    pref_change_registrar_->Add(
-        syncable_pref.first,
-        base::BindRepeating(&CloudUploadPromptPrefsHandler::
-                                OnOfficeFilesAlwaysMoveSyncableChanged,
-                            base::Unretained(this), local_pref));
-  }
-
-  for (const auto& [local_pref, syncable_pref] :
-       kMoveConfirmationShownPrefMap) {
-    pref_change_registrar_->Add(
-        local_pref,
-        base::BindRepeating(&CloudUploadPromptPrefsHandler::
-                                OnOfficeMoveConfirmationShownChanged,
-                            base::Unretained(this), local_pref));
-    pref_change_registrar_->Add(
-        syncable_pref.first,
-        base::BindRepeating(&CloudUploadPromptPrefsHandler::
-                                OnOfficeMoveConfirmationShownSyncableChanged,
-                            base::Unretained(this), local_pref));
+            &CloudUploadPromptPrefsHandler::OnSyncablePrefChanged,
+            base::Unretained(this), pref_info));
   }
 
   pref_change_registrar_->Add(
@@ -255,46 +213,21 @@ CloudUploadPromptPrefsHandler::CloudUploadPromptPrefsHandler(Profile* profile)
           base::Unretained(this)));
 }
 
-void CloudUploadPromptPrefsHandler::OnOfficeFilesAlwaysMoveChanged(
-    const char* local_pref) {
-  auto it = kAlwaysMoveToCloudPrefMap.find(local_pref);
-  DCHECK(it != kAlwaysMoveToCloudPrefMap.end());
-  bool always_move = profile_->GetPrefs()->GetBoolean(local_pref);
-  profile_->GetPrefs()->SetBoolean(it->second.first, always_move);
+void CloudUploadPromptPrefsHandler::OnLocalPrefChanged(
+    const PrefInfo& pref_info) {
+  bool local_value = profile_->GetPrefs()->GetBoolean(pref_info.local_pref);
+  profile_->GetPrefs()->SetBoolean(pref_info.syncable_pref, local_value);
 }
 
-void CloudUploadPromptPrefsHandler::OnOfficeFilesAlwaysMoveSyncableChanged(
-    const char* local_pref) {
-  auto it = kAlwaysMoveToCloudPrefMap.find(local_pref);
-  DCHECK(it != kAlwaysMoveToCloudPrefMap.end());
-  if (!IsCloudUploadAutomated(profile_, it->second.second)) {
+void CloudUploadPromptPrefsHandler::OnSyncablePrefChanged(
+    const PrefInfo& pref_info) {
+  if (!IsCloudUploadAutomated(profile_, pref_info.cloud_provider)) {
     return;
   }
 
-  bool always_move_syncable =
-      profile_->GetPrefs()->GetBoolean(it->second.first);
-  profile_->GetPrefs()->SetBoolean(local_pref, always_move_syncable);
-}
-
-void CloudUploadPromptPrefsHandler::OnOfficeMoveConfirmationShownChanged(
-    const char* local_pref) {
-  auto it = kMoveConfirmationShownPrefMap.find(local_pref);
-  DCHECK(it != kMoveConfirmationShownPrefMap.end());
-  bool move_confirmation_shown = profile_->GetPrefs()->GetBoolean(local_pref);
-  profile_->GetPrefs()->SetBoolean(it->second.first, move_confirmation_shown);
-}
-
-void CloudUploadPromptPrefsHandler::
-    OnOfficeMoveConfirmationShownSyncableChanged(const char* local_pref) {
-  auto it = kMoveConfirmationShownPrefMap.find(local_pref);
-  DCHECK(it != kMoveConfirmationShownPrefMap.end());
-  if (!IsCloudUploadAutomated(profile_, it->second.second)) {
-    return;
-  }
-  bool move_confirmation_shown_syncable =
-      profile_->GetPrefs()->GetBoolean(it->second.first);
-  profile_->GetPrefs()->SetBoolean(local_pref,
-                                   move_confirmation_shown_syncable);
+  bool syncable_value =
+      profile_->GetPrefs()->GetBoolean(pref_info.syncable_pref);
+  profile_->GetPrefs()->SetBoolean(pref_info.local_pref, syncable_value);
 }
 
 void CloudUploadPromptPrefsHandler::OnCloudUploadPrefChanged() {
@@ -316,12 +249,8 @@ void CloudUploadPromptPrefsHandler::OnCloudUploadPrefChanged() {
     return;
   }
 
-  for (const auto& [local_pref, syncable_pref] : kAlwaysMoveToCloudPrefMap) {
-    OnOfficeFilesAlwaysMoveSyncableChanged(local_pref);
-  }
-  for (const auto& [local_pref, syncable_pref] :
-       kMoveConfirmationShownPrefMap) {
-    OnOfficeMoveConfirmationShownSyncableChanged(local_pref);
+  for (const PrefInfo& pref_info : kCloudUploadPrefs) {
+    OnSyncablePrefChanged(pref_info);
   }
 }
 
