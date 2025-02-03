@@ -4156,7 +4156,7 @@ enum WebFeature {
   kStorageAccessAPI_hasUnpartitionedCookieAccess = 4790,
   kStorageAccessAPI_requestStorageAccess_BeyondCookies_cookies = 4791,
   kVisualViewportScrollEndFired = 4792,
-  kAttributionReportingCrossAppWebSupportHeader = 4793,
+  kOBSOLETE_AttributionReportingCrossAppWebSupportHeader = 4793,
   kV8Element_AriaActiveDescendantElement_AttributeGetter = 4794,
   kV8Element_AriaActiveDescendantElement_AttributeSetter = 4795,
   kV8Element_AriaControlsElements_AttributeGetter = 4796,

@@ -23,14 +23,11 @@ TEST(RegistrationInfoTest, ParseInfo) {
     const char* description;
     std::string_view header;
     ::testing::Matcher<base::expected<RegistrationInfo, RegistrationInfoError>>
-        matches_cross_app_web_enabled;
-    ::testing::Matcher<base::expected<RegistrationInfo, RegistrationInfoError>>
-        matches_cross_app_web_disabled;
+        matches;
   } kTestCases[] = {
       {
           "empty",
           "",
-          ValueIs(RegistrationInfo()),
           ValueIs(RegistrationInfo()),
       },
       {
@@ -40,14 +37,10 @@ TEST(RegistrationInfoTest, ParseInfo) {
               .preferred_platform = Registrar::kOs,
               .report_header_errors = true,
           }),
-          ValueIs(RegistrationInfo{
-              .report_header_errors = true,
-          }),
       },
       {
           "list",
           R"("foo", "bar")",
-          ErrorIs(RegistrationInfoError::kRootInvalid),
           ErrorIs(RegistrationInfoError::kRootInvalid),
       },
       {
@@ -56,7 +49,6 @@ TEST(RegistrationInfoTest, ParseInfo) {
           ValueIs(RegistrationInfo{
               .preferred_platform = Registrar::kWeb,
           }),
-          ValueIs(RegistrationInfo()),
       },
       {
           "prefer-os",
@@ -64,7 +56,6 @@ TEST(RegistrationInfoTest, ParseInfo) {
           ValueIs(RegistrationInfo{
               .preferred_platform = Registrar::kOs,
           }),
-          ValueIs(RegistrationInfo()),
       },
       {
           "preferred-platform-parameter-ignored",
@@ -72,44 +63,35 @@ TEST(RegistrationInfoTest, ParseInfo) {
           ValueIs(RegistrationInfo{
               .preferred_platform = Registrar::kOs,
           }),
-          ValueIs(RegistrationInfo()),
       },
       {
           "preferred-platform-missing-value",
           "preferred-platform",
           ErrorIs(RegistrationInfoError::kInvalidPreferredPlatform),
-          ValueIs(RegistrationInfo()),
       },
       {
           "preferred-platform-unknown-value",
           "preferred-platform=abc",
           ErrorIs(RegistrationInfoError::kInvalidPreferredPlatform),
-          ValueIs(RegistrationInfo()),
       },
       {
           "preferred-platform-invalid-type",
           "preferred-platform=\"os\"",
           ErrorIs(RegistrationInfoError::kInvalidPreferredPlatform),
-          ValueIs(RegistrationInfo()),
       },
       {
           "preferred-platform-inner-list",
           "preferred-platform=(foo bar)",
           ErrorIs(RegistrationInfoError::kInvalidPreferredPlatform),
-          ValueIs(RegistrationInfo()),
       },
       {
           "unknown-field",
           "unknown",
           ValueIs(RegistrationInfo()),
-          ValueIs(RegistrationInfo()),
       },
       {
           "report-header-errors",
           "report-header-errors",
-          ValueIs(RegistrationInfo{
-              .report_header_errors = true,
-          }),
           ValueIs(RegistrationInfo{
               .report_header_errors = true,
           }),
@@ -120,20 +102,15 @@ TEST(RegistrationInfoTest, ParseInfo) {
           ValueIs(RegistrationInfo{
               .report_header_errors = false,
           }),
-          ValueIs(RegistrationInfo{
-              .report_header_errors = false,
-          }),
       },
       {
           "report-header-errors-invalid-type",
           "report-header-errors=abc",
           ErrorIs(RegistrationInfoError::kInvalidReportHeaderErrors),
-          ErrorIs(RegistrationInfoError::kInvalidReportHeaderErrors),
       },
       {
           "report-header-errors-inner-list",
           "report-header-errors=(foo bar)",
-          ErrorIs(RegistrationInfoError::kInvalidReportHeaderErrors),
           ErrorIs(RegistrationInfoError::kInvalidReportHeaderErrors),
       },
   };
@@ -143,30 +120,15 @@ TEST(RegistrationInfoTest, ParseInfo) {
 
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.description);
-    {
-      base::HistogramTester histograms;
-      auto info = RegistrationInfo::ParseInfo(test_case.header,
-                                              /*cross_app_web_enabled=*/true);
-      EXPECT_THAT(info, test_case.matches_cross_app_web_enabled);
-      if (info.has_value()) {
-        histograms.ExpectTotalCount(kRegistrationInfoErrorMetric, 0);
-      } else {
-        histograms.ExpectUniqueSample(kRegistrationInfoErrorMetric,
-                                      info.error(), 1);
-      }
-    }
 
-    {
-      base::HistogramTester histograms;
-      auto info = RegistrationInfo::ParseInfo(test_case.header,
-                                              /*cross_app_web_enabled=*/false);
-      EXPECT_THAT(info, test_case.matches_cross_app_web_disabled);
-      if (info.has_value()) {
-        histograms.ExpectTotalCount(kRegistrationInfoErrorMetric, 0);
-      } else {
-        histograms.ExpectUniqueSample(kRegistrationInfoErrorMetric,
-                                      info.error(), 1);
-      }
+    base::HistogramTester histograms;
+    auto info = RegistrationInfo::ParseInfo(test_case.header);
+    EXPECT_THAT(info, test_case.matches);
+    if (info.has_value()) {
+      histograms.ExpectTotalCount(kRegistrationInfoErrorMetric, 0);
+    } else {
+      histograms.ExpectUniqueSample(kRegistrationInfoErrorMetric, info.error(),
+                                    1);
     }
   }
 }

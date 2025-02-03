@@ -64,7 +64,6 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -571,70 +570,6 @@ IN_PROC_BROWSER_TEST_P(AttributionsBrowserTest,
   EXPECT_TRUE(ExecJs(web_contents(), JsReplace("createAttributionSrcImg($1);",
                                                register_trigger_url)));
   expected_report.WaitForReport();
-}
-
-class AttributionsCrossAppWebDisabledBrowserTest
-    : public AttributionsBrowserTest {
- public:
-  AttributionsCrossAppWebDisabledBrowserTest()
-      : AttributionsBrowserTest(
-            /*enabled_features=*/{},
-            /*disabled_features=*/{
-                network::features::kAttributionReportingCrossAppWeb}) {}
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         AttributionsCrossAppWebDisabledBrowserTest,
-                         ::testing::Bool());
-
-IN_PROC_BROWSER_TEST_P(AttributionsCrossAppWebDisabledBrowserTest,
-                       AttributionEligibleNavigation_SetsEligibleHeader) {
-  auto register_response1 =
-      std::make_unique<net::test_server::ControllableHttpResponse>(
-          https_server(), "/register_source_redirect");
-  auto register_response2 =
-      std::make_unique<net::test_server::ControllableHttpResponse>(
-          https_server(), "/register_source_redirect2");
-  ASSERT_TRUE(https_server()->Start());
-
-  GURL impression_url = https_server()->GetURL(
-      "a.test", "/attribution_reporting/page_with_impression_creator.html");
-  EXPECT_TRUE(NavigateToURL(web_contents(), impression_url));
-
-  GURL register_source_url =
-      https_server()->GetURL("d.test", "/register_source_redirect");
-
-  // Don't use `CreateAndClickSource()` as we need to observe navigation
-  // redirects prior to the navigation finishing.
-  EXPECT_TRUE(ExecJs(web_contents(), JsReplace(R"(
-    createAttributionSrcAnchor({id: 'link',
-                        url: $1,
-                        attributionsrc: '',
-                        target: $2});)",
-                                               register_source_url, "_top")));
-  EXPECT_TRUE(ExecJs(web_contents(), "simulateClick('link');"));
-
-  // Verify the navigation redirects contain the eligibility header.
-  register_response1->WaitForRequest();
-  ExpectValidAttributionReportingEligibleHeaderForNavigation(
-      register_response1->http_request()->headers.at(
-          "Attribution-Reporting-Eligible"));
-  EXPECT_FALSE(base::Contains(register_response1->http_request()->headers,
-                              "Attribution-Reporting-Support"));
-
-  auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
-  http_response->set_code(net::HTTP_MOVED_PERMANENTLY);
-  http_response->AddCustomHeader("Location", "/register_source_redirect2");
-  register_response1->Send(http_response->ToResponseString());
-  register_response1->Done();
-
-  // Ensure that redirect requests also contain the header.
-  register_response2->WaitForRequest();
-  ExpectValidAttributionReportingEligibleHeaderForNavigation(
-      register_response2->http_request()->headers.at(
-          "Attribution-Reporting-Eligible"));
-  ASSERT_FALSE(base::Contains(register_response2->http_request()->headers,
-                              "Attribution-Reporting-Support"));
 }
 
 IN_PROC_BROWSER_TEST_P(AttributionsBrowserTest,
@@ -1196,13 +1131,7 @@ ATTRIBUTION_PRERENDER_BROWSER_TEST(ConversionsRegisteredOnActivatedPrerender) {
 }
 
 class AttributionsCrossAppWebEnabledBrowserTest
-    : public AttributionsBrowserTest {
- public:
-  AttributionsCrossAppWebEnabledBrowserTest()
-      : AttributionsBrowserTest(
-            /*enabled_features=*/{
-                network::features::kAttributionReportingCrossAppWeb}) {}
-};
+    : public AttributionsBrowserTest {};
 
 INSTANTIATE_TEST_SUITE_P(All,
                          AttributionsCrossAppWebEnabledBrowserTest,

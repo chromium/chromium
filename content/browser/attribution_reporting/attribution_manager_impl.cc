@@ -90,7 +90,6 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "net/base/schemeful_site.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/network_change_manager.mojom-forward.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -575,12 +574,10 @@ bool IsOperationAllowed(
 
 std::unique_ptr<AttributionOsLevelManager> CreateOsLevelManager() {
 #if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(
-          network::features::kAttributionReportingCrossAppWeb)) {
-    return std::make_unique<AttributionOsLevelManagerAndroid>();
-  }
-#endif
+  return std::make_unique<AttributionOsLevelManagerAndroid>();
+#else
   return std::make_unique<NoOpAttributionOsLevelManager>();
+#endif
 }
 
 // Returns new report time if any.

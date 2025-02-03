@@ -35,7 +35,6 @@
 #include "content/test/test_web_contents.h"
 #include "net/http/http_response_headers.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/attribution.mojom-shared.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -85,8 +84,7 @@ class KeepAliveAttributionRequestHelperTest : public RenderViewHostTestHarness {
                 AttributionOsLevelManager::ApiState::kEnabled)) {
     scoped_feature_list_.InitWithFeatures(
         {blink::features::kKeepAliveInBrowserMigration,
-         blink::features::kAttributionReportingInBrowserMigration,
-         network::features::kAttributionReportingCrossAppWeb},
+         blink::features::kAttributionReportingInBrowserMigration},
         {});
   }
 

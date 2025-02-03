@@ -74,7 +74,6 @@
 #include "content/test/test_content_browser_client.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/network_service.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/attribution.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -441,8 +440,6 @@ RunAttributionInteropSimulation(
   std::optional<AttributionOsLevelManager::ScopedApiStateForTesting>
       scoped_api_state;
   if (run.config.needs_cross_app_web) {
-    enabled_features.emplace_back(
-        network::features::kAttributionReportingCrossAppWeb);
     scoped_api_state.emplace(AttributionOsLevelManager::ApiState::kEnabled);
   }
 

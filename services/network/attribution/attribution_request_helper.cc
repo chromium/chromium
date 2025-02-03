@@ -9,7 +9,6 @@
 #include <string>
 #include <utility>
 
-#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -19,7 +18,6 @@
 #include "net/url_request/url_request.h"
 #include "services/network/attribution/request_headers_internal.h"
 #include "services/network/public/cpp/attribution_utils.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
@@ -93,19 +91,16 @@ net::HttpRequestHeaders ComputeAttributionReportingHeaders(
   headers.SetHeader("Attribution-Reporting-Eligible",
                     std::move(eligible_header));
 
-  if (base::FeatureList::IsEnabled(
-          features::kAttributionReportingCrossAppWeb)) {
-    base::UmaHistogramEnumeration("Conversions.RequestSupportHeader",
-                                  request.attribution_reporting_support);
+  base::UmaHistogramEnumeration("Conversions.RequestSupportHeader",
+                                request.attribution_reporting_support);
 
-    if (is_attribution_reporting_support_set) {
-      headers.SetHeader("Attribution-Reporting-Support",
-                        GetAttributionSupportHeader(
-                            request.attribution_reporting_support,
-                            AttributionReportingHeaderGreaseOptions::FromBits(
-                                grease_bits & 0xff)));
-      grease_bits >>= 8;
-    }
+  if (is_attribution_reporting_support_set) {
+    headers.SetHeader("Attribution-Reporting-Support",
+                      GetAttributionSupportHeader(
+                          request.attribution_reporting_support,
+                          AttributionReportingHeaderGreaseOptions::FromBits(
+                              grease_bits & 0xff)));
+    grease_bits >>= 8;
   }
 
   return headers;

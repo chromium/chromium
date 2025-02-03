@@ -163,12 +163,6 @@ BASE_FEATURE(kOpaqueResponseBlockingErrorsForAllFetches,
              "OpaqueResponseBlockingErrorsForAllFetches",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Gate access to Attribution Reporting cross app and web APIs that allow
-// registering with a native attribution API.
-BASE_FEATURE(kAttributionReportingCrossAppWeb,
-             "AttributionReportingCrossAppWeb",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enable support for ACCEPT_CH H2/3 frame as part of Client Hint Reliability.
 // See:
 // https://tools.ietf.org/html/draft-davidben-http-client-hint-reliability-02#section-4.3

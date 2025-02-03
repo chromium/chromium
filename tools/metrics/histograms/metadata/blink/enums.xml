@@ -5328,7 +5328,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4791"
       label="StorageAccessAPI_requestStorageAccess_BeyondCookies_cookies"/>
   <int value="4792" label="VisualViewportScrollEndFired"/>
-  <int value="4793" label="AttributionReportingCrossAppWebSupportHeader"/>
+  <int value="4793"
+      label="OBSOLETE_AttributionReportingCrossAppWebSupportHeader"/>
   <int value="4794"
       label="V8Element_AriaActiveDescendantElement_AttributeGetter"/>
   <int value="4795"

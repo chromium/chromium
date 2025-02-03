@@ -17950,7 +17950,6 @@
                     },
                     "enable_features": [
                         "AllowURNsInIframes",
-                        "AttributionReportingCrossAppWeb",
                         "BiddingAndScoringDebugReportingAPI",
                         "BrowsingTopics",
                         "FencedFrames",

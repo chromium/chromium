@@ -338,9 +338,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            kSetOnlyIfOverridden},
           {"AttributionReporting",
            raw_ref(features::kPrivacySandboxAdsAPIsM1Override)},
-          {"AttributionReportingCrossAppWeb",
-           raw_ref(features::kPrivacySandboxAdsAPIsOverride),
-           kSetOnlyIfOverridden},
           {"AndroidDownloadableFontsMatching",
            raw_ref(features::kAndroidDownloadableFontsMatching)},
 #if BUILDFLAG(IS_ANDROID)
@@ -613,21 +610,6 @@ void ResolveInvalidConfigurations() {
         << attribution_reporting::features::kConversionMeasurement.name
         << " in addition.";
     WebRuntimeFeatures::EnableAttributionReporting(false);
-  }
-
-  if (!base::FeatureList::IsEnabled(
-          attribution_reporting::features::kConversionMeasurement) ||
-      !base::FeatureList::IsEnabled(
-          network::features::kAttributionReportingCrossAppWeb)) {
-    LOG_IF(WARNING,
-           WebRuntimeFeatures::IsAttributionReportingCrossAppWebEnabled())
-        << "AttributionReportingCrossAppWeb cannot be enabled in this "
-           "configuration. Use --"
-        << switches::kEnableFeatures << "="
-        << attribution_reporting::features::kConversionMeasurement.name << ","
-        << network::features::kAttributionReportingCrossAppWeb.name
-        << " in addition.";
-    WebRuntimeFeatures::EnableAttributionReportingCrossAppWeb(false);
   }
 
   if (!base::FeatureList::IsEnabled(blink::features::kInterestGroupStorage)) {

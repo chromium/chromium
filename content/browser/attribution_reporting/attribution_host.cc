@@ -46,7 +46,6 @@
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
-#include "services/network/public/cpp/features.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "url/gurl.h"
@@ -120,11 +119,8 @@ AttributionHost::AttributionHost(WebContents* web_contents)
       attribution_reporting::features::kConversionMeasurement));
 
 #if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(
-          network::features::kAttributionReportingCrossAppWeb)) {
-    input_event_tracker_android_ =
-        std::make_unique<AttributionInputEventTrackerAndroid>(web_contents);
-  }
+  input_event_tracker_android_ =
+      std::make_unique<AttributionInputEventTrackerAndroid>(web_contents);
 #endif
 }
 

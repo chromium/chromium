@@ -11,7 +11,6 @@
 #include "base/functional/bind.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/structured_headers.h"
@@ -21,7 +20,6 @@
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/attribution.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -219,22 +217,7 @@ TEST_F(AttributionRequestHelperTest, SetAttributionReportingHeaders) {
   }
 }
 
-class AttributionCrossAppWebRequestHelperTest
-    : public AttributionRequestHelperTest {
- public:
-  AttributionCrossAppWebRequestHelperTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{network::features::
-                                  kAttributionReportingCrossAppWeb},
-        /*disabled_features=*/{});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(AttributionCrossAppWebRequestHelperTest,
-       SetAttributionReportingSupportHeaders) {
+TEST_F(AttributionRequestHelperTest, SetAttributionReportingSupportHeaders) {
   const struct {
     mojom::AttributionSupport support;
   } kTestCases[] = {
