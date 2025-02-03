@@ -83,8 +83,28 @@ CREATE PERFETTO TABLE chrome_event_latencies(
   ts TIMESTAMP,
   -- The duration of the scroll.
   dur DURATION,
-  -- The id of the scroll update event.
+  -- The id of the scroll update event (aka LatencyInfo.ID).
   scroll_update_id LONG,
+  -- The id of the first frame (pre-surface aggregation) which included the
+  -- scroll update and was presented. NULL if:
+  -- (1) the event is not a scroll update (`event_type` is NOT
+  --     GESTURE_SCROLL_UPDATE, FIRST_GESTURE_SCROLL_UPDATE, or
+  --     INERTIAL_GESTURE_SCROLL_UPDATE),
+  -- (2) the scroll update wasn't presented (e.g. it was an overscroll) or
+  -- (3) the trace comes from an old Chrome version (https://crrev.com/c/6185817
+  --     was first included in version 134.0.6977.0 and was cherry-picked in
+  --     version 133.0.6943.33).
+  surface_frame_trace_id LONG,
+  -- The id of the first frame (post-surface aggregation) which included the
+  -- scroll update and was presented. NULL if:
+  -- (1) the event is not a scroll update (`event_type` is NOT
+  --     GESTURE_SCROLL_UPDATE, FIRST_GESTURE_SCROLL_UPDATE, or
+  --     INERTIAL_GESTURE_SCROLL_UPDATE),
+  -- (2) the scroll update wasn't presented (e.g. it was an overscroll) or
+  -- (3) the trace comes from an old Chrome version (https://crrev.com/c/6185817
+  --     was first included in version 134.0.6977.0 and was cherry-picked in
+  --     version 133.0.6943.33).
+  display_trace_id LONG,
   -- Whether this input event was presented.
   is_presented BOOL,
   -- EventLatency event type.
@@ -116,6 +136,9 @@ SELECT
   slice.ts,
   slice.dur,
   EXTRACT_arg(arg_set_id, 'event_latency.event_latency_id') AS scroll_update_id,
+  EXTRACT_arg(arg_set_id, 'event_latency.surface_frame_trace_id')
+    AS surface_frame_trace_id,
+  EXTRACT_arg(arg_set_id, 'event_latency.display_trace_id') AS display_trace_id,
   _has_descendant_slice_with_name(
     slice.id,
     'SubmitCompositorFrameToPresentationCompositorFrame')
