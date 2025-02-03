@@ -98,7 +98,6 @@ blink::UserAgentMetadata HeadlessBrowser::GetUserAgentMetadata() {
     return metadata;
   }
   std::string significant_version = version_info::GetMajorVersionNumber();
-  constexpr bool kEnableUpdatedGreaseByPolicy = true;
 
   // Use the major version number as a greasing seed
   int seed = 1;
@@ -108,11 +107,9 @@ blink::UserAgentMetadata HeadlessBrowser::GetUserAgentMetadata() {
   // Rengenerate the brand version lists with kHeadlessProductName.
   metadata.brand_version_list = embedder_support::GenerateBrandVersionList(
       seed, kHeadlessProductName, significant_version,
-      kEnableUpdatedGreaseByPolicy,
       blink::UserAgentBrandVersionType::kMajorVersion);
   metadata.brand_full_version_list = embedder_support::GenerateBrandVersionList(
       seed, kHeadlessProductName, metadata.full_version,
-      kEnableUpdatedGreaseByPolicy,
       blink::UserAgentBrandVersionType::kFullVersion);
   return metadata;
 }
