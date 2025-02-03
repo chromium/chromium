@@ -894,7 +894,8 @@ TEST(ParseSRIMessageSignaturesTest, NoSignatures) {
        "signature=:amDAmvl9bsfIcfA/bIJsBuBvInjJAax"
        "xNIlLOzNI3FkrnG2k52UxXJprz89+2aOwEAz3w6KjjZuGkdrOUwxhBQ==:"),
       // No `Signature` header.
-      ("HTTP/1.1 200 OK\r\nSignature-Input: signature=(\"identity-digest\";sf);"
+      ("HTTP/1.1 200 OK\r\nSignature-Input: "
+       "signature=(\"unencoded-digest\";sf);"
        "keyid=\"JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=\";"
        "tag=\"sri\"")};
   for (const char* test : cases) {
@@ -909,7 +910,7 @@ TEST(ParseSRIMessageSignaturesTest, ValidSignature) {
       "HTTP/1.1 200 OK\r\n"
       "Signature: signature=:amDAmvl9bsfIcfA/bIJsBuBvInjJAaxxNIlLOzNI3FkrnG2k52"
       "UxXJprz89+2aOwEAz3w6KjjZuGkdrOUwxhBQ==:\r\n"
-      "Signature-Input: signature=(\"identity-digest\";sf);"
+      "Signature-Input: signature=(\"unencoded-digest\";sf);"
       "keyid=\"JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=\";"
       "tag=\"sri\"\r\n\r\n";
 

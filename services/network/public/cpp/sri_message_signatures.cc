@@ -52,8 +52,8 @@ std::optional<mojom::SRIMessageSignatureComponentPtr> ParseComponent(
   }
 
   std::string name = component.item.GetString();
-  if (name == "identity-digest") {
-    // The "identity-digest" component requires a single `sf` parameter with
+  if (name == "unencoded-digest") {
+    // The "unencoded-digest" component requires a single `sf` parameter with
     // a `true` boolean value.
     if (!ItemHasSingleBooleanParam(component, "sf")) {
       errors.push_back(
@@ -501,7 +501,7 @@ std::optional<std::string> ConstructSignatureBase(
       // other than encoding a list of known headers and their types.
       // Fortunately, we only support one header at the moment, so the list is
       // manageable.
-      if (component->name == "identity-digest") {
+      if (component->name == "unencoded-digest") {
         std::optional<net::structured_headers::Dictionary> dict =
             net::structured_headers::ParseDictionary(header.value());
         if (!dict.has_value()) {
@@ -634,7 +634,7 @@ void MaybeSetAcceptSignatureHeader(
     if (counter) {
       header << ", ";
     }
-    header << "sig" << counter << "=(\"identity-digest\";sf);keyid=\""
+    header << "sig" << counter << "=(\"unencoded-digest\";sf);keyid=\""
            << public_key << "\";tag=\"sri\"";
     ++counter;
   }

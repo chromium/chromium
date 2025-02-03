@@ -831,15 +831,15 @@ TEST_P(SubresourceIntegritySignatureTest, CheckValidSignature) {
   String kValidDigestHeader =
       "sha-256=:X48E9qOokqqrvdts8nOJRJN3OWDUoyWxBf7kbu9DBPE=:";
   String kValidSignatureInputHeader =
-      "signature=(\"identity-digest\";sf);"
+      "signature=(\"unencoded-digest\";sf);"
       "keyid=\"JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=\";tag=\"sri\"";
   String kValidSignatureHeader =
-      "signature=:eTKYITprfJYJmsOZlRTmu0szHbt0yLxHYBU0oXDdkx8najLl59IPO0zUofe5T"
-      "23RGuquHLdZx177tBX45CUcAg==:";
+      "signature=:gHim9e5Pk2H7c9BStOmxSmkyc8+ioZgoxynu3d4INAT4dwfj5LhvaV9DFnEQ9"
+      "p7C0hzW4o4Qpkm5aApd6WLLCw==:";
 
   String raw_headers =
       "HTTP/1.1 200 OK\r\n"
-      "Identity-Digest: " +
+      "Unencoded-Digest: " +
       kValidDigestHeader +
       "\r\n"
       "Signature-Input: " +
@@ -861,7 +861,7 @@ TEST_P(SubresourceIntegritySignatureTest, CheckValidSignature) {
   Resource* resource =
       CreateTestResource(sec_url, RequestMode::kCors, FetchResponseType::kCors);
   ResourceResponse& response = resource->GetMutableResponseForTesting();
-  response.SetHttpHeaderField(http_names::kIdentityDigest,
+  response.SetHttpHeaderField(http_names::kUnencodedDigest,
                               AtomicString(kValidDigestHeader));
   response.SetHttpHeaderField(http_names::kSignatureInput,
                               AtomicString(kValidSignatureInputHeader));
