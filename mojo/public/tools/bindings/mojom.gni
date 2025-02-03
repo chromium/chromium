@@ -1199,8 +1199,11 @@ template("mojom") {
         import_dirs = [ "//" ]
         proto_in_dir = "${root_gen_dir}"
         proto_out_dir = "."
-        proto_deps = [ ":$generator_mojolpm_proto_target_name" ]
-        link_deps = [ "//mojo/public/tools/fuzzers:mojolpm_proto" ]
+        proto_deps = [
+          ":$generator_mojolpm_proto_target_name",
+          "//mojo/public/tools/fuzzers:mojolpm_proto",
+        ]
+        link_deps = []
 
         foreach(d, all_deps) {
           # Resolve the name, so that a target //mojo/something becomes
