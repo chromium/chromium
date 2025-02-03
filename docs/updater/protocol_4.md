@@ -665,17 +665,19 @@ the following members:
      *   "error-inexpressible": The server finds that it is unable to produce a
          list of pipelines for the given product using the set of operations
          provided in `acceptformat`.
- *   `pipelines`: A list of `pipeline` objects.
+
+The following members are only present if the `status` is "ok":
+ *   `nextversion`: The expected version of the product, if any pipeline is
+     able to complete all operations successfully.
+ *   `nextfp`: A `fingerprint` object representing the package fingerprint
+     associated with the all `pipeline` objects.
+ *   `pipeline`: A list of `pipeline` objects.
 
 #### `pipeline` Objects (Update Check Response)
 A pipeline object describes a pipeline process that may be applied in order to
 update the current binary. A pipeline is represented as a series of operations.
 A pipeline object has the following members:
- *  `operations`: A list of `operation` objects.
- *  `nextversion`: The expected version of the product, if this pipeline is
-    able to complete all operations successfully.
- *  `nextfp`: A `fingerprint` object representing the package fingerprint
-    associated with the package file that this pipeline installs.
+ *  `operation`: A list of `operation` objects.
 
 #### `operation` Objects (Update Check Response)
 A operation object describes one of many operations to be performed in order to
@@ -691,7 +693,7 @@ For `type == "download"`: Download a payload.
  *  `size`: The size in bytes of the payload requested for download.
  *  `outhash_sha256`: The SHA256 hash of the payload downloaded, encoded as a
     lowercase hexadecimal string.
- *  `urls`: The ordered list of url objects from which this payload may be
+ *  `url`: The ordered list of url objects from which this payload may be
     obtained. Clients must attempt to download from each URL of the appropriate
     type in the specified order, falling back to the next URL if a TCP or HTTP
     error is encountered. A 4xx or 5xx HTTP response qualifies as an error that
@@ -741,8 +743,8 @@ A url object describes a fully-qualified URL. It has the following members:
 
 ## Downloads
 Download requests occur when an application update is needed, as a result of a
-`response.app.updatecheck.pipelines.operations.urls` member.  Download requests
-are HTTP GET requests and can use any HTTP implementation.
+`response.app.updatecheck.pipeline.operation.url` list element. Download
+requests are HTTP GET requests and can use any HTTP implementation.
 
 ### Request Headers
 In addition to the regular HTTP headers, this protocol defines the following
