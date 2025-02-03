@@ -73,10 +73,11 @@ class WebAppLinkCapturingBrowserTest
             &WebAppLinkCapturingBrowserTest::prerender_web_contents,
             base::Unretained(this))) {
 #if BUILDFLAG(IS_CHROMEOS)
-    CHECK(GetParam() == apps::test::LinkCapturingFeatureVersion::kV1DefaultOff);
+    CHECK(GetParam() ==
+              apps::test::LinkCapturingFeatureVersion::kV1DefaultOff ||
+          GetParam() == apps::test::LinkCapturingFeatureVersion::kV2DefaultOff);
 #else
     CHECK(GetParam() != apps::test::LinkCapturingFeatureVersion::kV1DefaultOff);
-    CHECK(GetParam() != apps::test::LinkCapturingFeatureVersion::kV1DefaultOn);
 #endif
     feature_list_.InitWithFeaturesAndParameters(
         apps::test::GetFeaturesToEnableLinkCapturingUX(GetParam()),
@@ -709,7 +710,8 @@ INSTANTIATE_TEST_SUITE_P(
     ,
     WebAppLinkCapturingBrowserTest,
 #if BUILDFLAG(IS_CHROMEOS)
-    testing::Values(apps::test::LinkCapturingFeatureVersion::kV1DefaultOff),
+    testing::Values(apps::test::LinkCapturingFeatureVersion::kV1DefaultOff,
+                    apps::test::LinkCapturingFeatureVersion::kV2DefaultOff),
 #else
     testing::Values(apps::test::LinkCapturingFeatureVersion::kV2DefaultOff,
                     apps::test::LinkCapturingFeatureVersion::kV2DefaultOn),
@@ -791,7 +793,8 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripLinkCapturingBrowserTest,
 INSTANTIATE_TEST_SUITE_P(
     ,
     WebAppTabStripLinkCapturingBrowserTest,
-    testing::Values(apps::test::LinkCapturingFeatureVersion::kV1DefaultOff),
+    testing::Values(apps::test::LinkCapturingFeatureVersion::kV1DefaultOff,
+                    apps::test::LinkCapturingFeatureVersion::kV2DefaultOff),
     apps::test::LinkCapturingVersionToString);
 #endif
 
