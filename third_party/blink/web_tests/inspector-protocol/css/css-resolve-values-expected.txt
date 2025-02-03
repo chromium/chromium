@@ -110,3 +110,8 @@ Pseudo element with no content
 {"input": [invalid,1em,1rem,calc(3px + 3px),calc(1em + 1px)]}
 {"code":-32000,"message":"Could not retrieve pseudo element."}
 
+Running test: testElementDisplayNone
+Test on element without computed style
+{"input": [invalid,1em,1rem,calc(3px + 3px),calc(1em + 1px)]}
+{"results":[""]}
+

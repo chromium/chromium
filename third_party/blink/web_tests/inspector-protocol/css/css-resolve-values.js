@@ -143,6 +143,10 @@
     async function testPseudoElementsNoElement() {
       testRunner.log('Pseudo element with no content');
       await testResolveValuesForPseudoElement('div', testValues, "width", 'before');
+    },
+    async function testElementDisplayNone() {
+      testRunner.log('Test on element without computed style');
+      await testResolveValues('.display-none', testValues, "height");
     }
   ]);
 });
