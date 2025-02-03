@@ -202,8 +202,7 @@ static_library("test_support") {
       "//chrome/browser/ash/dbus",
       "//chrome/browser/ash/locale",
       "//chrome/browser/ash/schedqos",
-      "//chromeos",
-      "//chromeos/ash/components/memory:memory",
+      "//chromeos/ash/components/memory",
       "//chromeos/ash/experiences/arc:arc_base_utils",
       "//chromeos/dbus/constants",
     ]

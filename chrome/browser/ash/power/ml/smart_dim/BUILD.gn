@@ -36,7 +36,6 @@ static_library("smart_dim") {
     "//chrome/browser/ash/power/ml:user_activity_event_proto",
     "//chrome/browser/ash/power/ml:user_activity_ukm_logger_helpers",
     "//chrome/common:constants",
-    "//chromeos",
     "//chromeos/services/machine_learning/public/cpp",
     "//chromeos/services/machine_learning/public/mojom",
     "//components/assist_ranker",

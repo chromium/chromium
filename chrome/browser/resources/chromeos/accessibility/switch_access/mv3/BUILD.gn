@@ -186,7 +186,6 @@ test_deps = [
   "//chrome/browser/ash/crosapi",
   "//chrome/browser/ash/system_web_apps",
   "//chrome/common",
-  "//chromeos",
 ]
 
 js2gtest("switch_access_mv3_extjs_tests") {

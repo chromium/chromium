@@ -1449,7 +1449,6 @@ group("dependencies") {
       "//chrome/browser/ash/boot_times_recorder",
       "//chrome/browser/ash/dbus",
       "//chrome/browser/ash/schedqos",
-      "//chromeos",
       "//chromeos/ash/components/memory",
       "//chromeos/dbus/constants",
     ]

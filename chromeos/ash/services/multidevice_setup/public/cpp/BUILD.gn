@@ -65,7 +65,6 @@ source_set("first_run_field_trial") {
   deps = [
     "//ash/constants",
     "//base",
-    "//chromeos",
     "//components/variations/proto",
   ]
 }

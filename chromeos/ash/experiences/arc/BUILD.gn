@@ -505,7 +505,6 @@ source_set("unit_tests") {
     "//ash/style/mojom:color_scheme_shared_cpp_sources",
     "//base",
     "//base/test:test_support",
-    "//chromeos",
     "//chromeos/ash/components/audio",
     "//chromeos/ash/components/dbus/concierge",
     "//chromeos/ash/components/dbus/cros_disks",

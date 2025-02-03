@@ -25,15 +25,6 @@ buildflag_header("features") {
   flags = [ "USE_REAL_CHROMEOS_SERVICES=$use_real_chromeos_services" ]
 }
 
-component("chromeos") {
-  configs += [ ":chromeos_implementation" ]
-  sources = []
-  deps = [ "//chromeos/dbus/constants" ]
-  if (current_cpu == "arm" || current_cpu == "x86") {
-    defines = [ "BINDER_IPC_32BIT" ]
-  }
-}
-
 source_set("chromeos_export") {
   deps = [ "//base" ]
   sources = [ "chromeos_export.h" ]
@@ -51,10 +42,7 @@ static_library("test_support") {
 
 source_set("test_support_source_set") {
   testonly = true
-  public_deps = [
-    ":chromeos",
-    ":test_utils",
-  ]
+  public_deps = [ ":test_utils" ]
   deps = [
     "//chromeos/ash/components/dbus:test_support",
     "//chromeos/ash/components/login/login_state:test_support",
