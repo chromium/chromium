@@ -267,14 +267,26 @@ static void CollectElementsByAttributeExact(
   const bool needs_synchronize_attribute =
       NeedsSynchronizeAttribute(selector_attr, is_html_doc);
 
+  const uint32_t filter = Element::FilterForAttribute(selector_attr);
+
   for (Element& element : ElementTraversal::DescendantsOf(root_node)) {
     QUERY_STATS_INCREMENT(fast_scan);
+
     if (needs_synchronize_attribute) {
       // Synchronize the attribute in case it is lazy-computed.
       // Currently all lazy properties have a null namespace, so only pass
       // localName().
       element.SynchronizeAttribute(selector_attr.LocalName());
     }
+#if !DCHECK_IS_ON()
+    // In non-debug builds, we test the Bloom filter here and exit early
+    // if the attribute could not exist on the element. For non-debug builds,
+    // we go through the entire normal operation but verify that the Bloom
+    // filter would not erroneously reject a match.
+    if (!element.CouldHaveAttributeWithPrecomputedFilter(filter)) {
+      continue;
+    }
+#endif
     AttributeCollection attributes = element.AttributesWithoutUpdate();
     for (const auto& attribute_item : attributes) {
       if (!attribute_item.Matches(selector_attr)) {
@@ -293,6 +305,15 @@ static void CollectElementsByAttributeExact(
           continue;
         }
       }
+
+#if DCHECK_IS_ON()
+      // NOTE: Even if the value doesn't match, we want to check that the
+      // attribute name was properly found.
+      DCHECK(element.CouldHaveAttributeWithPrecomputedFilter(filter))
+          << element << " should have contained attribute " << selector_attr
+          << ", Bloom bits on element are "
+          << element.AttributeBloomFilterForDebug();
+#endif
 
       if (AttributeValueMatchesExact(attribute_item, selector_value,
                                      case_insensitive)) {

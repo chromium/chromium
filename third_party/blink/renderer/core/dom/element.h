@@ -744,6 +744,33 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   bool HasEquivalentAttributes(const Element& other) const;
 
+  // Returns false if the element definitely does not have an attribute
+  // matching the given name. Is allowed to return false positives.
+  bool CouldHaveAttribute(const QualifiedName& attribute_name) const {
+    return CouldHaveAttributeWithPrecomputedFilter(
+        FilterForAttribute(attribute_name));
+  }
+
+  // A variant of CouldHaveAttribute() that allows you to compute
+  // the filter ahead-of-time; useful if you want to test many elements
+  // against the same attribute name.
+  static uint32_t FilterForAttribute(const QualifiedName& attribute_name) {
+    unsigned hash = attribute_name.LocalNameUpper().Hash();
+    uint32_t filter = 0;
+    // Build a 32-bit Bloom filter, with k=2. We extract the two
+    // (5-bit) hashes that we need from non-overlapping parts of the
+    // (24-bit) String hash, which should be independent.
+    filter |= 1u << (hash & 31);
+    filter |= 1u << ((hash >> 5) & 31);
+    return filter;
+  }
+  bool CouldHaveAttributeWithPrecomputedFilter(uint32_t filter) const {
+    return (attribute_bloom_ & filter) == filter;
+  }
+#if DCHECK_IS_ON()
+  uint32_t AttributeBloomFilterForDebug() const { return attribute_bloom_; }
+#endif
+
   // Step 5 of https://dom.spec.whatwg.org/#concept-node-clone
   virtual void CloneNonAttributePropertiesFrom(const Element&,
                                                NodeCloningData&) {}
@@ -2063,6 +2090,12 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // performance reasons.
   subtle::UncompressedMember<const ComputedStyle> computed_style_;
   Member<ElementData> element_data_;
+
+  // A tiny Bloom filter for which attribute names we have; saves going to
+  // ElementData if the attribute doesn't exist. May have false positives,
+  // of course. We do not currently update this when attributes are removed,
+  // only when they are added. Attribute _values_ are not part of this filter.
+  uint32_t attribute_bloom_ = 0;
 };
 
 template <>

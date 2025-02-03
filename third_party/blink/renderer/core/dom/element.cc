@@ -3200,6 +3200,11 @@ void Element::ParserSetAttributes(
       element_data_ =
           ShareableElementData::CreateWithAttributes(attribute_vector);
     }
+
+    attribute_bloom_ = 0;
+    for (const Attribute& attribute : attribute_vector) {
+      attribute_bloom_ |= FilterForAttribute(attribute.GetName());
+    }
   }
 
   ParserDidSetAttributes();
@@ -6420,11 +6425,17 @@ void Element::RemoveAttributeInternal(wtf_size_t index,
       AttributeModificationReason::kBySynchronizationOfLazyAttribute) {
     DidRemoveAttribute(name, value_being_removed);
   }
+
+  // TODO(sesse): Consider recalculating attribute_bloom_ filter here,
+  // so that it reflects the removal (but beware of pathological cases
+  // where removing all attributes send us into O(n²)).
 }
 
 void Element::AppendAttributeInternal(const QualifiedName& name,
                                       const AtomicString& value,
                                       AttributeModificationReason reason) {
+  attribute_bloom_ |= FilterForAttribute(name);
+
   if (reason !=
       AttributeModificationReason::kBySynchronizationOfLazyAttribute) {
     WillModifyAttribute(name, g_null_atom, value);
@@ -9806,6 +9817,8 @@ void Element::CloneAttributesFrom(const Element& other) {
   if (other.nonce() != g_null_atom) {
     setNonce(other.nonce());
   }
+
+  attribute_bloom_ = other.attribute_bloom_;
 }
 
 void Element::CreateUniqueElementData() {
