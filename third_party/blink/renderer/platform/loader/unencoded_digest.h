@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_IDENTITY_DIGEST_H_
-#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_IDENTITY_DIGEST_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_UNENCODED_DIGEST_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_UNENCODED_DIGEST_H_
 
 #include <optional>
 #include <vector>
@@ -19,16 +19,16 @@ namespace blink {
 
 class HTTPHeaderMap;
 
-// Represent's a resource's `Identity-Digest` response headers.
+// Represent's a resource's `Unencoded-Digest` response headers.
 //
 // https://datatracker.ietf.org/doc/draft-pardue-http-identity-digest/
-class PLATFORM_EXPORT IdentityDigest {
+class PLATFORM_EXPORT UnencodedDigest {
  public:
-  ~IdentityDigest() = default;
+  ~UnencodedDigest() = default;
 
-  // Parses an HTTPHeaderMap, returning an `IdentityDigest` if a valid
-  // `Identity-Digest` header is present, and `std::nullopt` otherwise.
-  static std::optional<IdentityDigest> Create(const HTTPHeaderMap&);
+  // Parses an HTTPHeaderMap, returning an `UnencodedDigest` if a valid
+  // `Unencoded-Digest` header is present, and `std::nullopt` otherwise.
+  static std::optional<UnencodedDigest> Create(const HTTPHeaderMap&);
 
   const WTF::HashSet<IntegrityMetadataPair>& digests() const {
     return integrity_metadata_.hashes;
@@ -39,12 +39,12 @@ class PLATFORM_EXPORT IdentityDigest {
   bool DoesMatch(WTF::SegmentedBuffer* data);
 
  private:
-  IdentityDigest() = default;
-  explicit IdentityDigest(IntegrityMetadataSet);
+  UnencodedDigest() = default;
+  explicit UnencodedDigest(IntegrityMetadataSet);
 
   IntegrityMetadataSet integrity_metadata_;
 };
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_IDENTITY_DIGEST_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_UNENCODED_DIGEST_H_

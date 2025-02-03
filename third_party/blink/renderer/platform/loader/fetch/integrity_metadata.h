@@ -57,7 +57,7 @@ class PLATFORM_EXPORT IntegrityMetadata {
 enum class ResourceIntegrityDisposition : uint8_t {
   kNotChecked = 0,
   kNetworkError,
-  kFailedIdentityDigest,
+  kFailedUnencodedDigest,
   kFailedIntegrityMetadata,
   kPassed
 };

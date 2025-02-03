@@ -1,13 +1,8 @@
-
 // Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Copyright 2024 The Chromium Authors
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
-#include "third_party/blink/renderer/platform/loader/identity_digest.h"
+#include "third_party/blink/renderer/platform/loader/unencoded_digest.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/loader/fetch/integrity_metadata.h"
@@ -62,13 +57,13 @@ String IntegrityAlgorithmToDictionaryName(IntegrityAlgorithm algorithm) {
 
 }  // namespace
 
-TEST(IdentityDigestParserTest, NoHeader) {
-  HTTPHeaderMap no_identity_digest;
-  auto result = IdentityDigest::Create(no_identity_digest);
+TEST(UnencodedDigestParserTest, NoHeader) {
+  HTTPHeaderMap no_unencoded_digest;
+  auto result = UnencodedDigest::Create(no_unencoded_digest);
   EXPECT_FALSE(result.has_value());
 }
 
-TEST(IdentityDigestParserTest, MalformedHeader) {
+TEST(UnencodedDigestParserTest, MalformedHeader) {
   const char* cases[] = {
       // Non-dictionaries
       "",
@@ -119,15 +114,15 @@ TEST(IdentityDigestParserTest, MalformedHeader) {
   for (const char* test : cases) {
     SCOPED_TRACE(testing::Message() << "Header value: `" << test << "`");
     HTTPHeaderMap headers;
-    headers.Set(http_names::kIdentityDigest, AtomicString(test));
+    headers.Set(http_names::kUnencodedDigest, AtomicString(test));
 
     // As these are malformed headers, we expect parsing to return std::nullopt.
-    auto result = IdentityDigest::Create(headers);
+    auto result = UnencodedDigest::Create(headers);
     EXPECT_FALSE(result.has_value());
   }
 }
 
-TEST(IdentityDigestParserTest, WellFormedHeaderWithSingleDigest) {
+TEST(UnencodedDigestParserTest, WellFormedHeaderWithSingleDigest) {
   struct {
     const char* header;
     IntegrityAlgorithm alg;
@@ -195,20 +190,20 @@ TEST(IdentityDigestParserTest, WellFormedHeaderWithSingleDigest) {
   for (const auto& test : cases) {
     SCOPED_TRACE(testing::Message() << "Header value: `" << test.header << "`");
     HTTPHeaderMap headers;
-    headers.Set(http_names::kIdentityDigest, AtomicString(test.header));
+    headers.Set(http_names::kUnencodedDigest, AtomicString(test.header));
 
     IntegrityMetadata expected;
     expected.SetAlgorithm(test.alg);
     expected.SetDigest(kHelloWorlds.at(test.alg));
 
-    auto result = IdentityDigest::Create(headers);
+    auto result = UnencodedDigest::Create(headers);
     EXPECT_TRUE(result.has_value());
     EXPECT_EQ(1u, result->digests().size());
     EXPECT_TRUE(result->digests().Contains(expected.ToPair()));
   }
 }
 
-TEST(IdentityDigestParserTest, MultipleDigests) {
+TEST(UnencodedDigestParserTest, MultipleDigests) {
   struct {
     const char* header;
     std::vector<IntegrityAlgorithm> alg;
@@ -277,9 +272,9 @@ TEST(IdentityDigestParserTest, MultipleDigests) {
   for (const auto& test : cases) {
     SCOPED_TRACE(testing::Message() << "Header value: `" << test.header << "`");
     HTTPHeaderMap headers;
-    headers.Set(http_names::kIdentityDigest, AtomicString(test.header));
+    headers.Set(http_names::kUnencodedDigest, AtomicString(test.header));
 
-    auto result = IdentityDigest::Create(headers);
+    auto result = UnencodedDigest::Create(headers);
     EXPECT_TRUE(result.has_value());
     EXPECT_EQ(test.alg.size(), result->digests().size());
 
@@ -292,29 +287,29 @@ TEST(IdentityDigestParserTest, MultipleDigests) {
   }
 }
 
-TEST(IdentityDigestMatchingTest, MatchingSingleDigests) {
+TEST(UnencodedDigestMatchingTest, MatchingSingleDigests) {
   for (const auto& [alg, digest] : kHelloWorlds) {
     SCOPED_TRACE(testing::Message() << IntegrityAlgorithmToDictionaryName(alg));
 
     String test = IntegrityAlgorithmToDictionaryName(alg) + "=:" + digest + ":";
 
     HTTPHeaderMap headers;
-    headers.Set(http_names::kIdentityDigest, AtomicString(test));
+    headers.Set(http_names::kUnencodedDigest, AtomicString(test));
 
-    auto identity_digest = IdentityDigest::Create(headers);
-    ASSERT_TRUE(identity_digest.has_value());
+    auto unencoded_digest = UnencodedDigest::Create(headers);
+    ASSERT_TRUE(unencoded_digest.has_value());
 
     WTF::SegmentedBuffer buffer;
     buffer.Append(kHelloWorld);
-    EXPECT_TRUE(identity_digest->DoesMatch(&buffer));
+    EXPECT_TRUE(unencoded_digest->DoesMatch(&buffer));
 
     buffer.Clear();
     buffer.Append(kDlrowOlleh);
-    EXPECT_FALSE(identity_digest->DoesMatch(&buffer));
+    EXPECT_FALSE(unencoded_digest->DoesMatch(&buffer));
   }
 }
 
-TEST(IdentityDigestMatchingTest, MatchingMultipleDigests) {
+TEST(UnencodedDigestMatchingTest, MatchingMultipleDigests) {
   std::vector<IntegrityAlgorithm> cases[] = {
       {IntegrityAlgorithm::kSha256, IntegrityAlgorithm::kSha384},
       {IntegrityAlgorithm::kSha256, IntegrityAlgorithm::kSha384},
@@ -351,23 +346,23 @@ TEST(IdentityDigestMatchingTest, MatchingMultipleDigests) {
                  << "Header value: `" << header_value.ToString() << "`");
 
     HTTPHeaderMap headers;
-    headers.Set(http_names::kIdentityDigest,
+    headers.Set(http_names::kUnencodedDigest,
                 AtomicString(header_value.ToString()));
 
-    auto identity_digest = IdentityDigest::Create(headers);
-    ASSERT_TRUE(identity_digest.has_value());
+    auto unencoded_digest = UnencodedDigest::Create(headers);
+    ASSERT_TRUE(unencoded_digest.has_value());
 
     WTF::SegmentedBuffer buffer;
     buffer.Append(kHelloWorld);
-    EXPECT_TRUE(identity_digest->DoesMatch(&buffer));
+    EXPECT_TRUE(unencoded_digest->DoesMatch(&buffer));
 
     buffer.Clear();
     buffer.Append(kDlrowOlleh);
-    EXPECT_FALSE(identity_digest->DoesMatch(&buffer));
+    EXPECT_FALSE(unencoded_digest->DoesMatch(&buffer));
   }
 }
 
-TEST(IdentityDigestMatchingTest, OneMatchingOneMismatching) {
+TEST(UnencodedDigestMatchingTest, OneMatchingOneMismatching) {
   // Combine a "hello world" hash with a mirror-world "dlrow olleh" twin. We'll
   // then verify that the resulting digest doesn't match either string.
   for (const auto& [alg, digest] : kHelloWorlds) {
@@ -383,18 +378,18 @@ TEST(IdentityDigestMatchingTest, OneMatchingOneMismatching) {
       SCOPED_TRACE(testing::Message() << test);
 
       HTTPHeaderMap headers;
-      headers.Set(http_names::kIdentityDigest, AtomicString(test));
+      headers.Set(http_names::kUnencodedDigest, AtomicString(test));
 
-      auto identity_digest = IdentityDigest::Create(headers);
-      ASSERT_TRUE(identity_digest.has_value());
+      auto unencoded_digest = UnencodedDigest::Create(headers);
+      ASSERT_TRUE(unencoded_digest.has_value());
 
       WTF::SegmentedBuffer buffer;
       buffer.Append(kHelloWorld);
-      EXPECT_FALSE(identity_digest->DoesMatch(&buffer));
+      EXPECT_FALSE(unencoded_digest->DoesMatch(&buffer));
 
       buffer.Clear();
       buffer.Append(kDlrowOlleh);
-      EXPECT_FALSE(identity_digest->DoesMatch(&buffer));
+      EXPECT_FALSE(unencoded_digest->DoesMatch(&buffer));
     }
   }
 }

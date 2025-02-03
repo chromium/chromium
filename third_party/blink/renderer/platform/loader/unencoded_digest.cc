@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/platform/loader/identity_digest.h"
+#include "third_party/blink/renderer/platform/loader/unencoded_digest.h"
 
 #include "base/containers/span.h"
 #include "base/notreached.h"
@@ -32,7 +32,7 @@ HashAlgorithm GetHashAlgorithm(IntegrityAlgorithm integrity) {
       return kHashAlgorithmSha512;
 
     // We don't parse signature algorithms, so we should never generate
-    // a parsed `Identity-Digest` header with such a prefix:
+    // a parsed `Unencoded-Digest` header with such a prefix:
     case IntegrityAlgorithm::kEd25519:
       NOTREACHED();
   }
@@ -40,14 +40,14 @@ HashAlgorithm GetHashAlgorithm(IntegrityAlgorithm integrity) {
 
 }  // namespace
 
-IdentityDigest::IdentityDigest(IntegrityMetadataSet integrity_metadata)
+UnencodedDigest::UnencodedDigest(IntegrityMetadataSet integrity_metadata)
     : integrity_metadata_(integrity_metadata) {
   CHECK(integrity_metadata.signatures.empty());
 }
 
-std::optional<IdentityDigest> IdentityDigest::Create(
+std::optional<UnencodedDigest> UnencodedDigest::Create(
     const HTTPHeaderMap& headers) {
-  AtomicString header_value = headers.Get(http_names::kIdentityDigest);
+  AtomicString header_value = headers.Get(http_names::kUnencodedDigest);
   if (header_value == g_null_atom) {
     return std::nullopt;
   }
@@ -103,10 +103,10 @@ std::optional<IdentityDigest> IdentityDigest::Create(
   if (integrity_metadata.hashes.empty()) {
     return std::nullopt;
   }
-  return IdentityDigest(integrity_metadata);
+  return UnencodedDigest(integrity_metadata);
 }
 
-bool IdentityDigest::DoesMatch(WTF::SegmentedBuffer* data) {
+bool UnencodedDigest::DoesMatch(WTF::SegmentedBuffer* data) {
   for (const IntegrityMetadata& digest : integrity_metadata_.hashes) {
     HashAlgorithm algorithm = GetHashAlgorithm(digest.Algorithm());
     DigestValue computed_digest;

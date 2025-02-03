@@ -1,7 +1,7 @@
 '''
-`Integrity-Digest` helper, generating responses that:
+`Unencoded-Digest` helper, generating responses that:
 
-*   Include or exclude an `Integrity-Digest` header depending on the request's
+*   Include or exclude an `Unencoded-Digest` header depending on the request's
     `digest` parameter.
 
 *   Include or exclude `Access-Control-Allow-Origin: *` depending on the
@@ -14,7 +14,7 @@
 def main(request, response):
   digest = request.GET.first(b'digest', b'')
   if digest:
-    response.headers.set(b'identity-digest', digest)
+    response.headers.set(b'unencoded-digest', digest)
 
   cors = request.GET.first(b'cors', '')
   if cors:

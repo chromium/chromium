@@ -2385,11 +2385,6 @@
       status: "stable",
     },
     {
-      name: "IdentityDigest",
-      status: "experimental",
-      implied_by: ["SignatureBasedIntegrity"]
-    },
-    {
       name: "ImageDataPixelFormat",
       status: "experimental",
     },
@@ -4461,6 +4456,11 @@
     {
       name: "UnclosedFormControlIsInvalid",
       status: "experimental",
+    },
+    {
+      name: "UnencodedDigest",
+      status: "experimental",
+      implied_by: ["SignatureBasedIntegrity"]
     },
     {
       name: "UnexposedTaskIds",

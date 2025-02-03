@@ -46,7 +46,7 @@ function generate_test(data, expectation, desc) {
     data_with_cors.cors = true;
 
     // The integrity check should pass, and nothing about the
-    // `Identity-Digest` check should be affected.
+    // `Unencoded-Digest` check should be affected.
     let fetcher = fetch(resourceURL(data_with_cors), { integrity: `sha256-${hello_hashes['sha-256']}`, mode: "cors" });
     if (expectation == EXPECT_BLOCKED) {
       return promise_rejects_js(test, TypeError, fetcher);
@@ -65,7 +65,7 @@ function generate_test(data, expectation, desc) {
     data_with_cors.cors = true;
 
     // The integrity check should fail, so the resource should be blocked,
-    // even with matching `Identity-Digest`s.
+    // even with matching `Unencoded-Digest`s.
     let fetcher = fetch(resourceURL(data_with_cors), { integrity: `sha256-${dlrow_hashes['sha-256']}`, mode: "cors" });
     return promise_rejects_js(test, TypeError, fetcher);
   }, "Bad integrity metadata blocks everything, even: " + desc);
