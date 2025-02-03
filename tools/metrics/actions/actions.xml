@@ -12203,6 +12203,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="GlicOsEntrypoint.ContextMenuSelection.Exit">
+  <owner>agale@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>
+    Tracks clicks on the exit option from the glic os launcher context menu.
+  </description>
+</action>
+
 <action name="GlicOsEntrypoint.ContextMenuSelection.OpenGlic">
   <owner>agale@chromium.org</owner>
   <owner>erikchen@chromium.org</owner>

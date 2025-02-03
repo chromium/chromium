@@ -18650,6 +18650,11 @@ Please help our engineers fix this problem. Tell us what happened right before y
           Disable glic in notifications area
         </message>
       </if>
+      <if expr="is_win or is_linux">
+        <message name="IDS_GLIC_STATUS_ICON_MENU_EXIT" translateable="false" desc="This is the menu item for exiting Chrome.">
+          Exit
+        </message>
+      </if>
       <message name="IDS_GLIC_STATUS_ICON_MENU_SETTINGS" translateable="false" desc="This is the menu item for opening the glic settings.">
         Settings...
       </message>
