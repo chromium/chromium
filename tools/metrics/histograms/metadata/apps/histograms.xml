@@ -1228,7 +1228,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Apps.AppList.Search.SearchCategoriesEnableState.{SearchCategory}"
-    enum="AppListSearchCategoryState" expires_after="2025-01-31">
+    enum="AppListSearchCategoryState" expires_after="2025-12-31">
   <owner>wcwang@chromium.org</owner>
   <owner>chromeos-launcher@google.com</owner>
   <summary>
@@ -1484,19 +1484,20 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.SortOrderOnSessionStart.{TabletOrClamshell}"
-    enum="AppListSortOrder" expires_after="2024-11-03">
+    enum="AppListSortOrder" expires_after="2025-12-31">
   <owner>andrewxu@chromium.org</owner>
   <owner>chromeos-launcher@google.com</owner>
   <summary>
     The app list sort order preserved in the pref service. Triggered when the
-    pref service for the new session is ready.
+    pref service for the new session is ready. Warning: this histogram was
+    expired from 2024-11-03 to 2025-01-31; data may be missing.
   </summary>
   <token key="TabletOrClamshell" variants="AppDisplayModes"/>
 </histogram>
 
 <histogram
     name="Apps.AppList.SuccessfulFirstUsageByNewUsers{TabletOrClamshell}"
-    enum="Boolean" expires_after="2025-02-18">
+    enum="Boolean" expires_after="2025-12-31">
   <owner>tbarzic@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <owner>chromeos-launcher@google.com</owner>
@@ -1558,7 +1559,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.TimeToUserAction{TabletOrClamshell}" units="ms"
-    expires_after="2025-02-22">
+    expires_after="2025-12-31">
   <owner>tbarzic@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <owner>chromeos-launcher@google.com</owner>
@@ -1876,7 +1877,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppListBubbleAppMovingType" enum="AppListAppMovingType"
-    expires_after="2025-02-22">
+    expires_after="2025-12-31">
   <owner>tbarzic@chromium.org</owner>
   <owner>wcwang@chromium.org</owner>
   <owner>chromeos-launcher@google.com</owner>
@@ -1889,7 +1890,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppListBubbleCreationTime" units="ms"
-    expires_after="2025-02-22">
+    expires_after="2025-12-31">
   <owner>tbarzic@chromium.org</owner>
   <owner>wcwang@chromium.org</owner>
   <owner>chromeos-launcher@google.com</owner>
@@ -1901,7 +1902,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppListBubbleShowSource" enum="AppListShowSource"
-    expires_after="2025-03-09">
+    expires_after="2025-12-31">
   <owner>tbarzic@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <owner>chromeos-launcher@google.com</owner>
@@ -1915,7 +1916,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppListContinueTaskOpenType" enum="AppListSearchResult"
-    expires_after="2025-02-22">
+    expires_after="2025-12-31">
 <!-- Name completed by histogram_suffixes name="TabletOrClamshellMode" -->
 
   <owner>anasalazar@google.com</owner>
@@ -2000,7 +2001,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppListHide.InputLatency" units="ms"
-    expires_after="2025-02-22">
+    expires_after="2025-12-31">
   <owner>newcomer@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>
   <owner>mmourgos@chromium.org</owner>
@@ -2477,25 +2478,27 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.Launcher.AppListSortClearAction.{TabletOrClamshell}"
-    enum="AppListOrderUpdateEvent" expires_after="M125">
+    enum="AppListOrderUpdateEvent" expires_after="2025-12-31">
   <owner>andrewxu@chromium.org</owner>
   <owner>chromeos-launcher@google.com</owner>
   <summary>
     The events that reset the app list pref sort order. Triggered when the pref
-    sort order is reset.
+    sort order is reset. Warning: this histogram was expired from M125 to
+    2025-01-31; data may be missing.
   </summary>
   <token key="TabletOrClamshell" variants="AppDisplayModes"/>
 </histogram>
 
 <histogram
     name="Apps.Launcher.DragReorderAnimationSmoothness.{TabletOrClamshell}"
-    units="%" expires_after="M125">
+    units="%" expires_after="2025-12-31">
   <owner>mmourgos@chromium.org</owner>
   <owner>chromeos-launcher@google.com</owner>
   <summary>
     Emitted when an app list drag reorder animation completes. Reports the
     smoothness of this animation. 100% represents the ideally smooth 60 frames
-    per second.
+    per second. Warning: this histogram was expired from M125 to 2025-01-31;
+    data may be missing.
   </summary>
   <token key="TabletOrClamshell" variants="AppDisplayModes"/>
 </histogram>
@@ -2513,13 +2516,14 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Apps.Launcher.ProductivityReorderAnimationSmoothness.{TabletOrClamshell}"
-    units="%" expires_after="M125">
+    units="%" expires_after="2025-12-31">
   <owner>andrewxu@chromium.org</owner>
   <owner>chromeos-launcher@google.com</owner>
   <summary>
     Emitted when the app list sort reorder animation completes. Reports the
     smoothness of this animation. 100% represents the ideally smooth 60 frames
-    per second.
+    per second. Warning: this histogram was expired from M125 to 2025-01-31;
+    data may be missing.
   </summary>
   <token key="TabletOrClamshell" variants="AppDisplayModes"/>
 </histogram>
