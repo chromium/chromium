@@ -62,7 +62,8 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   struct COMPONENT_EXPORT(NETWORK_CPP_BASE) TrustedParams {
     TrustedParams();
     ~TrustedParams();
-    // TODO(altimin): Make this move-only to avoid cloning mojo interfaces.
+    // TODO(crbug.com/332706093): Make this move-only to avoid cloning mojo
+    // interfaces.
     TrustedParams(const TrustedParams& params);
     TrustedParams& operator=(const TrustedParams& other);
     TrustedParams(TrustedParams&& other);

@@ -42,6 +42,11 @@ BASE_FEATURE_PARAM(int,
                    "ad-auction-signals-max-size-bytes",
                    10000);
 
+// Avoids copying ResourceRequest::TrustedParams when possible.
+BASE_FEATURE(kAvoidTrustedParamsCopies,
+             "AvoidTrustedParamsCopies",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // See https://github.com/WICG/turtledove/blob/main/FLEDGE.md
 // Changes default Permissions Policy for features join-ad-interest-group and
 // run-ad-auction to a more restricted EnableForSelf.
