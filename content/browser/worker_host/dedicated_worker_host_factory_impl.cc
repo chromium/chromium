@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "content/browser/devtools/devtools_throttle_handle.h"
 #include "content/browser/devtools/worker_devtools_manager.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"

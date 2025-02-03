@@ -5,6 +5,7 @@
 #include "content/browser/navigation_transitions/back_forward_transition_animator.h"
 
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/ranges.h"
 #include "base/time/time.h"

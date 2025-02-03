@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/containers/map_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "content/browser/navigation_or_document_handle.h"
 #include "content/browser/renderer_host/frame_tree.h"

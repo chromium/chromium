@@ -18,6 +18,7 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"

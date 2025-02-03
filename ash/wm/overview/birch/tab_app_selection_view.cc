@@ -16,6 +16,7 @@
 #include "ash/style/typography.h"
 #include "ash/wm/overview/birch/birch_bar_controller.h"
 #include "base/containers/flat_tree.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "chromeos/ash/services/coral/public/mojom/coral_service.mojom.h"
 #include "ui/base/l10n/l10n_util.h"

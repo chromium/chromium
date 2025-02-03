@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_tab_list.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/media/webrtc/desktop_media_list_layout_config.h"
