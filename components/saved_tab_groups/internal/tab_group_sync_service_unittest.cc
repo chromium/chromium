@@ -711,12 +711,11 @@ TEST_F(TabGroupSyncServiceTest, AddTab) {
                    std::nullopt, std::nullopt);
 }
 
-// Tests that addubg a tab to a shared group.
+// Tests that adding a tab to a shared group.
 TEST_F(TabGroupSyncServiceTest, AddTabToSharedGroup) {
   std::optional<SavedTabGroup> group =
       tab_group_sync_service_->GetGroup(local_group_id_1_);
   ASSERT_EQ(group->saved_tabs().size(), 1u);
-  ASSERT_FALSE(group->saved_tabs()[0].is_pending_sanitization());
   MakeTabGroupShared(local_group_id_1_, "collaboration");
 
   std::optional<SavedTabGroup> shared_group =

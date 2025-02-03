@@ -226,9 +226,6 @@ class SavedTabGroup {
   // copied. This method should only be called on shared tab groups.
   SavedTabGroup CloneAsSavedTabGroup() const;
 
-  // Whether the TabGroup is pending sanitization.
-  bool IsPendingSanitization() const;
-
   static size_t GetMaxLastRemovedTabsMetadataForTesting();
 
   // Marks the tab group as transitioned to shared.
