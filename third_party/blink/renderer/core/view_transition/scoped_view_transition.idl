@@ -1,0 +1,12 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+[
+    ImplementedAs=ScopedViewTransition,
+    RuntimeEnabled=ScopedViewTransitions
+] partial interface Element {
+  [CallWith=ScriptState, RaisesException] ViewTransition startViewTransition();
+  [CallWith=ScriptState, RaisesException] ViewTransition startViewTransition(ViewTransitionCallback update);
+  [CallWith=ScriptState, RaisesException] ViewTransition startViewTransition(ViewTransitionOptions opts);
+};

@@ -3747,6 +3747,10 @@
       name: "ScopedCustomElementRegistry",
       status: "experimental",
     },
+    {
+      // https://github.com/WICG/view-transitions/blob/main/scoped-transitions.md
+      name: "ScopedViewTransitions"
+    },
     // WebSpeech API with both speech recognition and synthesis functionality
     // is not fully enabled on all platforms.
     {

@@ -766,6 +766,7 @@ static_idl_files_in_core = [
   "//third_party/blink/renderer/core/view_transition/page_swap_event_init.idl",
   "//third_party/blink/renderer/core/view_transition/page_reveal_event.idl",
   "//third_party/blink/renderer/core/view_transition/page_reveal_event_init.idl",
+  "//third_party/blink/renderer/core/view_transition/scoped_view_transition.idl",
   "//third_party/blink/renderer/core/view_transition/view_transition.idl",
   "//third_party/blink/renderer/core/view_transition/view_transition_callback.idl",
   "//third_party/blink/renderer/core/view_transition/view_transition_options.idl",
