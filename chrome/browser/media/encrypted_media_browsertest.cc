@@ -1692,9 +1692,8 @@ IN_PROC_BROWSER_TEST_F(MediaFoundationEncryptedMediaTest,
       false, PlayCount::ONCE, kEmeNotSupportedError);
 }
 
-// TODO(https://crbug.com/393557668): Re-enable the test.
 IN_PROC_BROWSER_TEST_F(MediaFoundationEncryptedMediaTest,
-                       DISABLED_FallbackTest_KeySystemNotSupported) {
+                       FallbackTest_KeySystemNotSupported) {
   if (!IsMediaFoundationEncryptedPlaybackSupported()) {
     GTEST_SKIP() << "MediaFoundationEncryptedPlayback not supported on device.";
   }
