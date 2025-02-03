@@ -311,7 +311,8 @@ class AvatarImageView : public views::ImageView {
     if (has_dotted_ring_) {
       const int size_with_border = image_size_ + 2 * border_size_;
       sized_avatar_image = profiles::GetAvatarWithDottedRing(
-          avatar_image_, size_with_border, GetColorProvider());
+          avatar_image_, size_with_border, /*has_padding=*/true,
+          /*has_background=*/true, GetColorProvider());
       // Dotted ring avatar does not support a border, as the border is already
       // included with the dotted ring.
       CHECK_EQ(border_size_, 0);

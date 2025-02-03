@@ -88,6 +88,41 @@ namespace {
 constexpr float kIconToneDark = 40.f;
 constexpr float kIconToneLight = 80.f;
 
+// Values are expressed as a proportion of resulting image size.
+struct AvatarWithDottedRingParams {
+  // Radius of the dotted ring.
+  float dotted_ring_radius = 0;
+  // The stroke is fully inside the ring.
+  float ring_stroke_width = 0;
+  // Padding around the image to fit it inside the ring.
+  float image_padding = 0;
+};
+
+constexpr AvatarWithDottedRingParams kAvatarWithDottedRingParamsWithPadding = {
+    .dotted_ring_radius = 0.29,
+    .ring_stroke_width = 0.05,
+    .image_padding = 0.3,
+};
+
+constexpr AvatarWithDottedRingParams kAvatarWithDottedRingParamsNoPadding = {
+    .dotted_ring_radius = 0.5,
+    .ring_stroke_width = 0.075,
+    .image_padding = 0.13,
+};
+
+// Sanity check: the dotted ring is smaller than the full image.
+static_assert(kAvatarWithDottedRingParamsWithPadding.dotted_ring_radius <= 0.5);
+static_assert(kAvatarWithDottedRingParamsNoPadding.dotted_ring_radius <= 0.5);
+
+// Sanity check: the avatar image fits inside the dotted ring (taking the ring
+// stroke width into account).
+static_assert(kAvatarWithDottedRingParamsWithPadding.dotted_ring_radius >
+              0.5 - kAvatarWithDottedRingParamsWithPadding.image_padding +
+                  kAvatarWithDottedRingParamsWithPadding.ring_stroke_width);
+static_assert(kAvatarWithDottedRingParamsNoPadding.dotted_ring_radius >
+              0.5 - kAvatarWithDottedRingParamsNoPadding.image_padding +
+                  kAvatarWithDottedRingParamsNoPadding.ring_stroke_width);
+
 #if BUILDFLAG(IS_WIN)
 const int kOldAvatarIconWidth = 38;
 const int kOldAvatarIconHeight = 31;
@@ -466,29 +501,21 @@ ui::ImageModel GetSizedAvatarImageModel(const ui::ImageModel& image, int size) {
 
 #if !BUILDFLAG(IS_ANDROID)
 gfx::ImageSkia GetAvatarWithDottedRing(const ui::ImageModel& image,
-                                       int size_with_padding,
+                                       int size,
+                                       bool has_padding,
+                                       bool has_background,
                                        ui::ColorProvider* color_provider) {
   DCHECK(!image.IsEmpty());
-  // Values are expressed as a proportion of `size`.
-  // Radius of the dotted ring.
-  constexpr float kAvatarDottedRingRadius = 0.29;
-  // Padding around the image to fit it inside the ring.
-  constexpr float kAvatarPaddingForRing = 0.3;
-  // The stroke is fully inside `kAvatarDottedRingRadius`.
-  constexpr float kAvatarRingStrokeWidth = 0.05;
-  // Sanity check: the dotted ring is smaller than the full image.
-  static_assert(kAvatarDottedRingRadius < 0.5);
-  // Sanity check: the avatar image fits inside the dotted ring (taking the ring
-  // stroke width into account).
-  static_assert(kAvatarDottedRingRadius >
-                0.5 - kAvatarPaddingForRing + kAvatarRingStrokeWidth);
 
-  const int avatar_padding =
-      std::nearbyint(kAvatarPaddingForRing * size_with_padding);
+  const AvatarWithDottedRingParams& params =
+      has_padding ? kAvatarWithDottedRingParamsWithPadding
+                  : kAvatarWithDottedRingParamsNoPadding;
+
+  const int avatar_padding = std::nearbyint(params.image_padding * size);
   const int avatar_ring_radius =
-      std::nearbyint(kAvatarDottedRingRadius * size_with_padding);
-  const int avatar_size = size_with_padding - 2 * avatar_padding;
-  const float avatar_ring_stroke = kAvatarRingStrokeWidth * size_with_padding;
+      std::nearbyint(params.dotted_ring_radius * size);
+  const int avatar_size = size - 2 * avatar_padding;
+  const float avatar_ring_stroke = params.ring_stroke_width * size;
 
   // Shrink the avatar to fit inside the dotted ring.
   gfx::ImageSkia sized_avatar_image =
@@ -499,14 +526,16 @@ gfx::ImageSkia GetAvatarWithDottedRing(const ui::ImageModel& image,
   gfx::ImageSkia padded_image = gfx::CanvasImageSource::CreatePadded(
       sized_avatar_image, gfx::Insets(avatar_padding));
   // Add background color.
-  gfx::ImageSkia padded_image_with_background = AddBackgroundToImage(
-      padded_image, color_provider->GetColor(ui::kColorBubbleBackground));
+  if (has_background) {
+    padded_image = AddBackgroundToImage(
+        padded_image, color_provider->GetColor(ui::kColorBubbleBackground));
+  }
   // Add dotted ring.
   return gfx::ImageSkia(
       std::make_unique<ImageWithDottedCircleSource>(
-          padded_image_with_background, avatar_ring_radius, avatar_ring_stroke,
+          padded_image, avatar_ring_radius, avatar_ring_stroke,
           color_provider->GetColor(ui::kColorSysStateInactiveRing)),
-      gfx::Size(size_with_padding, size_with_padding));
+      gfx::Size(size, size));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

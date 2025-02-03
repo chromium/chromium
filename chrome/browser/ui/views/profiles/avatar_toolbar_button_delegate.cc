@@ -40,7 +40,6 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/dotted_icon.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/common/pref_names.h"
@@ -71,8 +70,6 @@ namespace {
 // Timings used for testing purposes. Infinite time for the tests to confidently
 // test the behaviors while a delay is ongoing.
 constexpr base::TimeDelta kInfiniteTimeForTesting = base::TimeDelta::Max();
-
-constexpr float kAvatarIconSigninPendingShrinkRatio = 0.75;
 
 constexpr base::TimeDelta kShowNameDuration = base::Seconds(3);
 static std::optional<base::TimeDelta> g_show_name_duration_for_testing;
@@ -1286,7 +1283,7 @@ base::ScopedClosureRunner AvatarToolbarButtonDelegate::ShowExplicitText(
 
 std::pair<std::u16string, std::optional<SkColor>>
 AvatarToolbarButtonDelegate::GetTextAndColor(
-    const ui::ColorProvider* const color_provider) const {
+    const ui::ColorProvider* color_provider) const {
   std::optional<SkColor> color =
       color_provider->GetColor(kColorAvatarButtonHighlightDefault);
   std::u16string text;
@@ -1424,7 +1421,7 @@ AvatarToolbarButtonDelegate::GetAccessibilityLabel() const {
 }
 
 SkColor AvatarToolbarButtonDelegate::GetHighlightTextColor(
-    const ui::ColorProvider* const color_provider) const {
+    const ui::ColorProvider* color_provider) const {
   switch (state_manager_->GetButtonActiveState()) {
     case ButtonState::kIncognitoProfile:
       return color_provider->GetColor(
@@ -1526,7 +1523,8 @@ AvatarToolbarButtonDelegate::GetInkdropColors() const {
 
 ui::ImageModel AvatarToolbarButtonDelegate::GetAvatarIcon(
     int icon_size,
-    SkColor icon_color) const {
+    SkColor icon_color,
+    const ui::ColorProvider* color_provider) const {
   switch (state_manager_->GetButtonActiveState()) {
     case ButtonState::kIncognitoProfile:
       return ui::ImageModel::FromVectorIcon(kIncognitoRefreshMenuIcon,
@@ -1555,20 +1553,16 @@ ui::ImageModel AvatarToolbarButtonDelegate::GetAvatarIcon(
     case ButtonState::kPassphraseError:
     case ButtonState::kUpgradeClientError:
     case ButtonState::kSigninPending:
-      // First shrink the icon from it's regular size in order to accommodate
-      // for the dotted circle that is drawn around it in `PaintIcon()`.
-      int shrunk_icon_size = icon_size * kAvatarIconSigninPendingShrinkRatio;
-      gfx::Image shrunk_image = profiles::GetSizedAvatarIcon(
-          GetProfileAvatarImage(icon_size), shrunk_icon_size, shrunk_icon_size,
-          profiles::SHAPE_CIRCLE);
-      // Then add a transparent background to the image, with the original size.
-      // This way the whole image is the same as the regular one (so that it
-      // does not affect it's position or other elements such as the text next
-      // to it). The transparent background will have the dotted paint on top of
-      // it in `PaintIcon()`.
-      return ui::ImageModel::FromImageSkia(
-          gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
-              icon_size / 2, SK_ColorTRANSPARENT, shrunk_image.AsImageSkia()));
+      // Square image with a dotted ring.
+      gfx::ImageSkia image_with_ring = profiles::GetAvatarWithDottedRing(
+          ui::ImageModel::FromImage(GetProfileAvatarImage(icon_size)),
+          icon_size, /*has_padding=*/false, /*has_background=*/false,
+          avatar_toolbar_button_->GetColorProvider());
+      // Crop to a circle.
+      return ui::ImageModel::FromImage(profiles::GetSizedAvatarIcon(
+          gfx::Image(image_with_ring), image_with_ring.size().width(),
+          image_with_ring.size().height(),
+          profiles::AvatarShape::SHAPE_CIRCLE));
   }
 }
 
@@ -1645,37 +1639,6 @@ void AvatarToolbarButtonDelegate::OnErrorStateOfRefreshTokenUpdatedForAccount(
       token_operation_source == signin_metrics::SourceForRefreshTokenOperation::
                                     kDiceResponseHandler_Signout) {
     avatar_toolbar_button_->MaybeShowWebSignoutIPH(account_info.gaia);
-  }
-}
-
-void AvatarToolbarButtonDelegate::PaintIcon(
-    gfx::Canvas* canvas,
-    const gfx::Rect& icon_bounds) const {
-  switch (state_manager_->GetButtonActiveState()) {
-    case ButtonState::kGuestSession:
-    case ButtonState::kShowIdentityName:
-    case ButtonState::kNormal:
-    case ButtonState::kIncognitoProfile:
-    case ButtonState::kExplicitTextShowing:
-    case ButtonState::kManagement:
-    case ButtonState::kSyncPaused:
-      return;
-    case ButtonState::kSyncError:
-      if (IdentityManagerFactory::GetForProfile(profile_)->HasPrimaryAccount(
-              signin::ConsentLevel::kSync) ||
-          !switches::IsImprovedSigninUIOnDesktopEnabled()) {
-        return;
-      }
-      [[fallthrough]];
-    case ButtonState::kSigninPending:
-    case ButtonState::kUpgradeClientError:
-    case ButtonState::kPassphraseError:
-      // Paints the dotted circle around the shrunk icon (from
-      // `GetAvatarIcon()`).
-      PaintRingDottedPath(canvas, icon_bounds,
-                          avatar_toolbar_button_->GetColorProvider()->GetColor(
-                              kColorTabDiscardRingFrameActive));
-      return;
   }
 }
 
