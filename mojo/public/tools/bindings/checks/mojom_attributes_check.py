@@ -89,6 +89,105 @@ _STABLE_ONLY_ALLOWLISTED_ENUMS = {
     'crosapi.mojom.TriState',
 }
 
+# TODO(crbug.com/393179188): Remove this allowlist. Do not add new entries here.
+_NATIVE_ALLOWLIST = {
+    'cc.mojom.BrowserControlsParams',
+    'cc.mojom.BrowserControlsState',
+    'cc.mojom.OverscrollBehavior',
+    'cc.mojom.TouchAction',
+    'chrome.mojom.FaviconUsageDataList',
+    'chrome.mojom.ImportedBookmarkEntry',
+    'chrome.mojom.ImporterAutofillFormDataEntry',
+    'chrome.mojom.ImporterIE7PasswordInfo',
+    'chrome.mojom.ImporterURLRow',
+    'chrome.mojom.ImportItem',
+    'chrome.mojom.SafeArchiveAnalyzerResults',
+    'chrome.mojom.SearchEngineInfo',
+    'chrome.mojom.SourceProfile',
+    'content.mojom.DropData',
+    'content.mojom.NavigationGesture',
+    'content.mojom.NetworkConnectionType',
+    'content.mojom.PageState',
+    'content.mojom.PageTransition',
+    'content.mojom.ScrollbarButtonsPlacement',
+    'content.mojom.ScrollerStyle',
+    'content.mojom.SystemThemeColor',
+    'content.mojom.WebPluginInfo',
+    'gpu.mojom.Capabilities',
+    'gpu.mojom.ContextLostReason',
+    'gpu.mojom.Error',
+    'gpu.mojom.GLCapabilities',
+    'gpu.mojom.SwapBuffersCompleteParams',
+    'media.mojom.AudioCodec',
+    'media.mojom.AudioCodecProfile',
+    'media.mojom.AudioDecoderType',
+    'media.mojom.AudioParameters',
+    'media.mojom.BufferingState',
+    'media.mojom.BufferingStateChangeReason',
+    'media.mojom.CdmConfig',
+    'media.mojom.CdmMessageType',
+    'media.mojom.CdmSessionType',
+    'media.mojom.ChannelLayout',
+    'media.mojom.EmeInitDataType',
+    'media.mojom.EncryptionScheme',
+    'media.mojom.Exception',
+    'media.mojom.FullscreenVideoStatus',
+    'media.mojom.HdcpVersion',
+    'media.mojom.KeyType',
+    'media.mojom.MatrixID',
+    'media.mojom.MediaContainerName',
+    'media.mojom.MediaContentType',
+    'media.mojom.MediaLogRecord',
+    'media.mojom.MediaStatusState',
+    'media.mojom.OutputDeviceStatus',
+    'media.mojom.OverlayInfo',
+    'media.mojom.PrimaryID',
+    'media.mojom.RangeID',
+    'media.mojom.SampleFormat',
+    'media.mojom.Status',
+    'media.mojom.StreamType',
+    'media.mojom.SubsampleEntry',
+    'media.mojom.TransferID',
+    'media.mojom.Type',
+    'media.mojom.VideoCodec',
+    'media.mojom.VideoCodecProfile',
+    'media.mojom.VideoDecoderType',
+    'media.mojom.VideoPixelFormat',
+    'media.mojom.WaitingReason',
+    'media.mojom.WatchTimeKey',
+    'mojo.test.NativeEnum',
+    'mojo.test.data_view.TestNativeStruct',
+    'mojo.test.PickledEnum',
+    'mojo.test.PickledStruct',
+    'mojo.test.TestNativeStructMojom',
+    'mojo.test.TestNativeStructWithAttachmentsMojom',
+    'mojo.test.UnmappedNativeStruct',
+    'nacl.mojom.NaClErrorCode',
+    'network.mojom.AuthCredentials',
+    'network.mojom.CertVerifyResult',
+    'network.mojom.ConnectionInfo',
+    'network.mojom.CTPolicyCompliance',
+    'network.mojom.EffectiveConnectionType',
+    'network.mojom.HttpResponseHeaders',
+    'network.mojom.P2PHostAndIPEndPoint',
+    'network.mojom.P2PPacketInfo',
+    'network.mojom.P2PPortRange',
+    'network.mojom.P2PSendPacketMetrics',
+    'network.mojom.P2PSocketOption',
+    'network.mojom.P2PSocketType',
+    'network.mojom.SSLInfo',
+    'network.mojom.URLRequestRedirectInfo',
+    'network.mojom.X509Certificate',
+    'search.mojom.InstantMostVisitedInfo',
+    'search.mojom.NTPLoggingEventType',
+    'search.mojom.NtpTheme',
+    'search.mojom.NTPTileImpression',
+    'search.mojom.OmniboxFocusChangeReason',
+    'search.mojom.OmniboxFocusState',
+    'ui.mojom.EventPointerType',
+    'ui.mojom.ScrollGranularity',
+}
+
 
 class Check(check.Check):
   def __init__(self, *args, **kwargs):
@@ -114,12 +213,16 @@ class Check(check.Check):
   def _CheckEnumAttributes(self, enum):
     if enum.attributes:
       self._CheckAttributes("enum", _ENUM_ATTRIBUTES, enum.attributes)
+      full_name = f"{self.module.mojom_namespace}.{enum.mojom_name}"
       if 'Stable' in enum.attributes and not 'Extensible' in enum.attributes:
-        full_name = f"{self.module.mojom_namespace}.{enum.mojom_name}"
         if full_name not in _STABLE_ONLY_ALLOWLISTED_ENUMS:
           raise check.CheckException(
               self.module,
               f"[Extensible] required on [Stable] enum {full_name}")
+      if 'Native' in enum.attributes and full_name not in _NATIVE_ALLOWLIST:
+        raise check.CheckException(
+            self.module, f"[Native] is not allowed on {full_name}; "
+            "no new uses should be introduced")
     for enumval in enum.fields:
       self._CheckAttributes("enum value", _ENUMVAL_ATTRIBUTES,
                             enumval.attributes)
@@ -144,6 +247,12 @@ class Check(check.Check):
 
   def _CheckStructAttributes(self, struct):
     self._CheckAttributes("struct", _STRUCT_ATTRIBUTES, struct.attributes)
+    if struct.attributes and 'Native' in struct.attributes:
+      full_name = f"{self.module.mojom_namespace}.{struct.mojom_name}"
+      if full_name not in _NATIVE_ALLOWLIST:
+        raise check.CheckException(
+            self.module, f"[Native] is not allowed on {full_name}; "
+            "no new uses should be introduced")
     for field in struct.fields:
       self._CheckAttributes("struct field", _STRUCT_FIELD_ATTRIBUTES,
                             field.attributes)
