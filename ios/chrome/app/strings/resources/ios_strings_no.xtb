@@ -257,6 +257,7 @@
 <translation id="20485545164632846">nytt element</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> kontoer bruker det samme passordet</translation>
 <translation id="2059166748188874810">Kommune</translation>
+<translation id="2060114494785549741">Slett om 1 måned</translation>
 <translation id="20638360198452347">Enhetstypevelger</translation>
 <translation id="2067852168641682340">Lagre i denne kontoen hver gang</translation>
 <translation id="2074119687904553223">{count,plural, =1{1 fane}other{{count} faner}}</translation>
@@ -288,6 +289,7 @@
 <translation id="2202084845446535117">Ingen e-postkontoer</translation>
 <translation id="2214453882118345682">Handle, oversett og identifiser det du ser, med kameraet.</translation>
 <translation id="2220529011494928058">Rapporter et problem</translation>
+<translation id="2220887224562128152">Når filer er planlagt slettet, kan de ikke gjenopprettes.</translation>
 <translation id="2223461067862937305">Lag en QR-kode</translation>
 <translation id="2229345671837147090">Rutenett for eksterne faner</translation>
 <translation id="2230173723195178503">Nettsiden er lastet inn</translation>
@@ -342,6 +344,7 @@ Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din
 <translation id="2394659309569789395">Åpne nettstedet likevel</translation>
 <translation id="2403129868389095715">Pakken kan ikke leveres</translation>
 <translation id="2410754283952462441">Velg en konto</translation>
+<translation id="2422174748424038845">Hvis du sletter den, mister alle umiddelbart tilgangen til fanegruppen «<ph name="GROUP_NAME" />», og den blir slettet fra alle enheter.</translation>
 <translation id="2424805048070062787">Fortsett med denne fanen</translation>
 <translation id="2426805022920575512">Velg en annen konto</translation>
 <translation id="243275146591958220">Avbryt nedlastingen</translation>
@@ -477,6 +480,7 @@ Søkemotoren din er <ph name="DSE_NAME" />. Se eventuelt instruksjonene deres om
 <translation id="3059270601560379555">Nytt søk</translation>
 <translation id="3064547930554042309">Administrer nedlastinger</translation>
 <translation id="3072279342064724558">Passordet finnes allerede</translation>
+<translation id="3074862506644936708">Slå på automatisk sletting</translation>
 <translation id="3076846064362030967">Du blir ikke logget av Google-kontoen din. <ph name="BEGIN_LINK" />Andre typer aktiviteter<ph name="END_LINK" /> kan bli lagret i Google-kontoen din når du er pålogget. Du kan slette dem når som helst.
 
 
@@ -620,6 +624,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3810973564298564668">Administrer</translation>
 <translation id="381219490185664296">Vil du oppheve fanegruppen?</translation>
 <translation id="3812308602011798782">Anmeldelser</translation>
+<translation id="3815668647912194650">Behold denne gruppen for å legge til faner senere, eller forlat den hvis du ikke vil ha tilgang til den lenger.</translation>
 <translation id="3818045793209708987">Sluttet å spore denne pakken</translation>
 <translation id="3819183753496523827">Du er uten nett. Sjekk internettilkoblingen din, og prøv på nytt.</translation>
 <translation id="3828924571679282172">{COUNT,plural, =1{1 betalingsmåte}other{# betalingsmåter}}</translation>
@@ -1192,6 +1197,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6284652193729350524">Tilby å oversette <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Sluttet å følge <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">For å slå på Safe Browsing, åpne <ph name="BEGIN_LINK" />Google-tjenester<ph name="END_LINK" /> og trykk på Safe Browsing.</translation>
+<translation id="6295434468271563378">Slett nedlastingene dine automatisk</translation>
 <translation id="6295751040240588413">Ugyldig kallenavn på kortet</translation>
 <translation id="629730747756840877">Konto</translation>
 <translation id="6301104306974789820">Få varsler om prissporing</translation>
@@ -1453,6 +1459,7 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="741204030948306876">Ja, jeg er med</translation>
 <translation id="7417689656810783109">Gi gruppen nytt navn</translation>
 <translation id="7419565702166471774">Bruk alltid sikre tilkoblinger</translation>
+<translation id="742001653298797675">Planlegg sletting av alle nedlastinger etter én måned for å spare plass på telefonen og ivareta personvernet.</translation>
 <translation id="7425053386765766120">Legg til betalingsmåte…</translation>
 <translation id="7425346204213733349">Endringer i bokmerkene, loggoppføringene, passordene og de andre innstillingene dine blir ikke synkronisert med Google-kontoen din lenger. Data som allerede er lagret i Google-kontoen din, blir imidlertid ikke fjernet.</translation>
 <translation id="742664698522525515">Vil du beholde gruppen?</translation>
@@ -1762,6 +1769,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8680786875305615692">Bidra til å gjøre nettet sikrere for alle</translation>
 <translation id="8680787084697685621">Kontoens påloggingsdetaljer er utdaterte.</translation>
 <translation id="8683563711222071415">Flytt adressen til kontoen</translation>
+<translation id="8690752723634292147">Bekreft sletting</translation>
 <translation id="8692689525339542358">Få beskyttelse mot farlige nettsteder, nedlastinger og utvidelser.</translation>
 <translation id="8694281486652655615">Viser dette elementet</translation>
 <translation id="8696297579102085705">Send til enheten din</translation>

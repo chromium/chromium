@@ -257,6 +257,7 @@
 <translation id="20485545164632846">нова ставка</translation>
 <translation id="2049727122989709386">Налози (<ph name="COUNT" />) користе исту лозинку</translation>
 <translation id="2059166748188874810">Општина</translation>
+<translation id="2060114494785549741">Избриши за 1 месец</translation>
 <translation id="20638360198452347">Бирач типа јединице</translation>
 <translation id="2067852168641682340">Сачувај на овом налогу сваки пут</translation>
 <translation id="2074119687904553223">{count,plural, =1{1 картица}one{{count} картица}few{{count} картице}other{{count} картица}}</translation>
@@ -288,6 +289,7 @@
 <translation id="2202084845446535117">Нема имејл налога</translation>
 <translation id="2214453882118345682">Купујте, преводите и идентификујте оно што видите помоћу камере.</translation>
 <translation id="2220529011494928058">Пријави проблем</translation>
+<translation id="2220887224562128152">Када се фајл закаже за брисање, не може да се врати.</translation>
 <translation id="2223461067862937305">Направи QR кôд</translation>
 <translation id="2229345671837147090">Мрежа удаљених картица</translation>
 <translation id="2230173723195178503">Веб-страница је учитана</translation>
@@ -342,6 +344,7 @@
 <translation id="2394659309569789395">Ипак отвори сајт</translation>
 <translation id="2403129868389095715">Није могуће испоручити пакет</translation>
 <translation id="2410754283952462441">Изаберите налог</translation>
+<translation id="2422174748424038845">Ако је избришете, сви ће одмах изгубити приступ групи картица <ph name="GROUP_NAME" /> и она ће бити избрисана са свих уређаја.</translation>
 <translation id="2424805048070062787">Наставите са овом картицом</translation>
 <translation id="2426805022920575512">Изаберите други налог</translation>
 <translation id="243275146591958220">Откажи преузимање</translation>
@@ -477,6 +480,7 @@
 <translation id="3059270601560379555">Нова претрага</translation>
 <translation id="3064547930554042309">Управљајте преузимањима</translation>
 <translation id="3072279342064724558">Лозинка већ постоји</translation>
+<translation id="3074862506644936708">Омогући аутоматско брисање</translation>
 <translation id="3076846064362030967">Нећемо вас одјавити са Google налога. <ph name="BEGIN_LINK" />Други облици активности<ph name="END_LINK" /> могу да се сачувају на Google налогу када сте пријављени. Можете да их избришете у било ком тренутку.
 
 
@@ -620,6 +624,7 @@
 <translation id="3810973564298564668">Управљај</translation>
 <translation id="381219490185664296">Желите да раздвојите групу картица?</translation>
 <translation id="3812308602011798782">Рецензије</translation>
+<translation id="3815668647912194650">Задржите ову групу да бисте додали картице касније или је напустите ако више не желите да јој приступате.</translation>
 <translation id="3818045793209708987">Праћење овог пакета је заустављено</translation>
 <translation id="3819183753496523827">Офлајн сте. Проверите интернет везу и пробајте поново.</translation>
 <translation id="3828924571679282172">{COUNT,plural, =1{1 начин плаћања}one{# начин плаћања}few{# начина плаћања}other{# начина плаћања}}</translation>
@@ -1192,6 +1197,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6284652193729350524">Понуди превод за <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Опозвали сте праћење канала <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Да бисте укључили Безбедно прегледање, отворите <ph name="BEGIN_LINK" />Google услуге<ph name="END_LINK" /> и додирните Безбедно прегледање.</translation>
+<translation id="6295434468271563378">Аутоматски бришите преузимања</translation>
 <translation id="6295751040240588413">Неважећи надимак картице</translation>
 <translation id="629730747756840877">налог</translation>
 <translation id="6301104306974789820">Добијајте обавештења о праћењу цена</translation>
@@ -1453,6 +1459,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="741204030948306876">Да, омогући</translation>
 <translation id="7417689656810783109">Преименујте групу</translation>
 <translation id="7419565702166471774">Увек користи безбедне везе</translation>
+<translation id="742001653298797675">Закажите брисање свих преузимања после једног месеца да бисте уштедели простор на телефону и заштитили приватност.</translation>
 <translation id="7425053386765766120">Додај начин плаћања…</translation>
 <translation id="7425346204213733349">Промене обележивача, историје, лозинки и других подешавања се више неће синхронизовати са Google налогом. Међутим, постојећи подаци ће остати сачувани на Google налогу.</translation>
 <translation id="742664698522525515">Желите да задржите групу?</translation>
@@ -1762,6 +1769,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8680786875305615692">Побољшајте безбедност на вебу за свакога</translation>
 <translation id="8680787084697685621">Детаљи за пријављивање на налог су застарели.</translation>
 <translation id="8683563711222071415">Премести адресу на налог</translation>
+<translation id="8690752723634292147">Потврда брисања</translation>
 <translation id="8692689525339542358">Добијте заштиту од опасних сајтова, преузимања и додатака.</translation>
 <translation id="8694281486652655615">Приказује ову ставку</translation>
 <translation id="8696297579102085705">Пошаљи на уређај</translation>

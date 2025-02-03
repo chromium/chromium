@@ -25,6 +25,7 @@ Jei ją ištrinsite, visi iš karto neteks prieigos prie skirtukų grupės „<p
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Sužinokite daugiau<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073">Sugrupuota skirtukų: <ph name="TABS_COUNT_ONE" /></translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> skirtukas}one{<ph name="TABS_COUNT_MANY" /> skirtukas}few{<ph name="TABS_COUNT_MANY" /> skirtukai}many{<ph name="TABS_COUNT_MANY" /> skirtuko}other{<ph name="TABS_COUNT_MANY" /> skirtukų}}</translation>
+<translation id="1909810060368225529">Pranešimas: šios bendrinamos skirtukų grupės pakeitimai matomi visiems. Visi žmonės gali keisti bendrinamas skirtukų grupes</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Pažymėti <ph name="TABS_COUNT_ONE" /> pasirinktą skirtuką}one{Pažymėti <ph name="TABS_COUNT_MANY" /> pasirinktą skirtuką}few{Pažymėti <ph name="TABS_COUNT_MANY" /> pasirinktus skirtukus}many{Pažymėti <ph name="TABS_COUNT_MANY" /> pasirinkto skirtuko}other{Pažymėti <ph name="TABS_COUNT_MANY" /> pasirinktų skirtukų}}</translation>
 <translation id="2118649612461486615">Parduotuvės informacija</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Uždarytus skirtukus ir grupes galima iš naujo atidaryti skiltyse „Naujausi skirtukai“ ir „Skirtukų grupės“. Inkognito skirtukas nebus pasiekiamas.}one{Uždarytus skirtukus ir grupes galima iš naujo atidaryti skiltyse „Naujausi skirtukai“ ir „Skirtukų grupės“. # inkognito skirtukas nebus pasiekiamas.}few{Uždarytus skirtukus ir grupes galima iš naujo atidaryti skiltyse „Naujausi skirtukai“ ir „Skirtukų grupės“. # inkognito skirtukai nebus pasiekiami.}many{Uždarytus skirtukus ir grupes galima iš naujo atidaryti skiltyse „Naujausi skirtukai“ ir „Skirtukų grupės“. # inkognito skirtuko nebus pasiekiama.}other{Uždarytus skirtukus ir grupes galima iš naujo atidaryti skiltyse „Naujausi skirtukai“ ir „Skirtukų grupės“. # inkognito skirtukų nebus pasiekiama.}}</translation>
@@ -126,11 +127,13 @@ Jei ją ištrinsite, visi iš karto neteks prieigos prie skirtukų grupės „<p
 <translation id="6381032505162537930">Čia rasite skirtukų grupes</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Išgrupuoti <ph name="TABS_COUNT_ONE" /> pasirinktą skirtuką}one{Išgrupuoti <ph name="TABS_COUNT_MANY" /> pasirinktą skirtuką}few{Išgrupuoti <ph name="TABS_COUNT_MANY" /> pasirinktus skirtukus}many{Išgrupuoti <ph name="TABS_COUNT_MANY" /> pasirinkto skirtuko}other{Išgrupuoti <ph name="TABS_COUNT_MANY" /> pasirinktų skirtukų}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> skirtukas}one{<ph name="TABS_COUNT_MANY" /> skirtukas}few{<ph name="TABS_COUNT_MANY" /> skirtukai}many{<ph name="TABS_COUNT_MANY" /> skirtuko}other{<ph name="TABS_COUNT_MANY" /> skirtukų}}</translation>
+<translation id="6499296376514955580">Pranešimas apie bendrinamos skirtukų grupės pakeitimus uždarytas</translation>
 <translation id="6527303717912515753">Bendrinti</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{Po 1 dienos}one{Po <ph name="DAY_COUNT_MANY" /> dienos}few{Po <ph name="DAY_COUNT_MANY" /> dienų}many{Po <ph name="DAY_COUNT_MANY" /> dienos}other{Po <ph name="DAY_COUNT_MANY" /> dienų}}</translation>
 <translation id="6549021453810473782">Peržiūrėti parduotuvės informaciją</translation>
 <translation id="6557858706263317126">+ <ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Perkelti skirtuką į kairę</translation>
+<translation id="6589356853295569750">Pranešimas apie bendrinamos skirtukų grupės pakeitimus atidarytas per visą ekrano aukštį</translation>
 <translation id="6590332670428149473">Atidaryti bendrinamos skirtukų grupės „<ph name="TITLE_OF_GROUP" />“, kurios spalva <ph name="COLOR_NAME" />, veiksmų meniu.</translation>
 <translation id="6615455863669487791">Rodyti</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{Pakeistas <ph name="ONE_CHANGED" /> skirtukas}one{Pakeistas <ph name="MANY_CHANGED" /> skirtukas}few{Pakeisti <ph name="MANY_CHANGED" /> skirtukai}many{Pakeista <ph name="MANY_CHANGED" /> skirtuko}other{Pakeista <ph name="MANY_CHANGED" /> skirtukų}}</translation>
@@ -157,6 +160,7 @@ Jei ją ištrinsite, visi iš karto neteks prieigos prie skirtukų grupės „<p
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Bendrinti <ph name="TABS_COUNT_ONE" /> pasirinktą skirtuką}one{Bendrinti <ph name="TABS_COUNT_MANY" /> pasirinktą skirtuką}few{Bendrinti <ph name="TABS_COUNT_MANY" /> pasirinktus skirtukus}many{Bendrinti <ph name="TABS_COUNT_MANY" /> pasirinkto skirtuko}other{Bendrinti <ph name="TABS_COUNT_MANY" /> pasirinktus skirtukus}}</translation>
 <translation id="7773714564112603605">Pašalinti skirtuką ir ištrinti grupę</translation>
 <translation id="7792771145871471484">Peržiūrėkite pasiūlymus.</translation>
+<translation id="7792860826279960128">Pranešimas apie bendrinamos skirtukų grupės pakeitimus atidarytas per pusę ekrano aukščio</translation>
 <translation id="7825973332242257878">Skirtukų grupės</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Grupuoti <ph name="TABS_COUNT_ONE" /> pasirinktą skirtuką}one{Grupuoti <ph name="TABS_COUNT_MANY" /> pasirinktą skirtuką}few{Grupuoti <ph name="TABS_COUNT_MANY" /> pasirinktus skirtukus}many{Grupuoti <ph name="TABS_COUNT_MANY" /> pasirinkto skirtuko}other{Grupuoti <ph name="TABS_COUNT_MANY" /> pasirinktų skirtukų}}</translation>
 <translation id="7853202427316060426">Veikla</translation>
