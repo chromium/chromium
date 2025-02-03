@@ -125,6 +125,7 @@ using optimization_guide::proto::
 }
 
 - (void)onGroupTabsButtonPressed:(UIButton*)button {
+  [self disableSubmitButton];
   [self.mutator executeGroupTabsWithStrategy:self.groupingStrategy];
 }
 
@@ -132,6 +133,9 @@ using optimization_guide::proto::
 
 - (void)updateResponseField:(NSString*)response {
   _responseContainer.text = response;
+
+  // Re-enable the submit button as the query has resolved.
+  [self enableSubmitButton];
 }
 
 #pragma mark - Private
@@ -233,6 +237,18 @@ using optimization_guide::proto::
     default:
       NOTREACHED();
   }
+}
+
+// Enable submit button, and style the accordingly.
+- (void)enableSubmitButton {
+  _groupTabsButton.enabled = YES;
+  _groupTabsButton.backgroundColor = [UIColor colorNamed:kBlueColor];
+}
+
+// Disable submit button, and style the accordingly.
+- (void)disableSubmitButton {
+  _groupTabsButton.enabled = NO;
+  _groupTabsButton.backgroundColor = [UIColor colorNamed:kDisabledTintColor];
 }
 
 @end

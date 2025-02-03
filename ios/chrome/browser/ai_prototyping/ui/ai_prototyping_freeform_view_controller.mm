@@ -237,6 +237,8 @@ using optimization_guide::proto::BlingPrototypingRequest_ModelEnum_Name;
 }
 
 - (void)serverSideSubmitButtonPressed:(UIButton*)button {
+  [self disableSubmitButtons];
+
   [self.mutator executeFreeformServerQuery:_queryField.text
                         systemInstructions:_systemInstructionsField.text
                         includePageContext:_includePageContextSwitch.isOn
@@ -245,6 +247,8 @@ using optimization_guide::proto::BlingPrototypingRequest_ModelEnum_Name;
 }
 
 - (void)onDeviceSubmitButtonPressed:(UIButton*)button {
+  [self disableSubmitButtons];
+
   // TODO(crbug.com/387510419): Include stringified page context in prompt when
   // on-device is better supported.
 #if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
@@ -254,26 +258,38 @@ using optimization_guide::proto::BlingPrototypingRequest_ModelEnum_Name;
 #endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 }
 
-- (void)temperatureSliderValueChanged:(UISlider*)slider {
-  // Round the slider value to the nearest step.
-  float multiplier = 1.0 / kTemperatureSliderSteps;
-  _temperatureSlider.value =
-      roundf(_temperatureSlider.value * multiplier) / multiplier;
-
-  _temperatureLabel.text =
-      [NSString stringWithFormat:@"%@ %.01f",
-                                 l10n_util::GetNSString(
-                                     IDS_IOS_AI_PROTOTYPING_TEMPERATURE_SLIDER),
-                                 _temperatureSlider.value];
-}
-
 #pragma mark - AIPrototypingViewControllerProtocol
 
 - (void)updateResponseField:(NSString*)response {
   _responseContainer.text = response;
+
+  // Enable the submit buttons, as the request has resolved.
+  [self enableSubmitButtons];
 }
 
 #pragma mark - Private
+
+// Enable submit buttons, and style the accordingly.
+- (void)enableSubmitButtons {
+  _serverSideSubmitButton.enabled = YES;
+  _serverSideSubmitButton.backgroundColor = [UIColor colorNamed:kBlueColor];
+
+#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
+  _onDeviceSubmitButton.enabled = YES;
+  _onDeviceSubmitButton.backgroundColor = [UIColor colorNamed:kBlueColor];
+#endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
+}
+
+// Disable submit buttons, and style the accordingly.
+- (void)disableSubmitButtons {
+  _serverSideSubmitButton.enabled = NO;
+  _serverSideSubmitButton.backgroundColor =
+      [UIColor colorNamed:kDisabledTintColor];
+
+  _onDeviceSubmitButton.enabled = NO;
+  _onDeviceSubmitButton.backgroundColor =
+      [UIColor colorNamed:kDisabledTintColor];
+}
 
 // Returns a container for a text field in the menu.
 - (UIView*)textFieldContainer {
@@ -337,6 +353,19 @@ using optimization_guide::proto::BlingPrototypingRequest_ModelEnum_Name;
                    BlingPrototypingRequest_ModelEnum_Name(model))
       forState:UIControlStateNormal];
   _modelPickerButton.menu = [self createModelPickerButtonMenu];
+}
+
+- (void)temperatureSliderValueChanged:(UISlider*)slider {
+  // Round the slider value to the nearest step.
+  float multiplier = 1.0 / kTemperatureSliderSteps;
+  _temperatureSlider.value =
+      roundf(_temperatureSlider.value * multiplier) / multiplier;
+
+  _temperatureLabel.text =
+      [NSString stringWithFormat:@"%@ %.01f",
+                                 l10n_util::GetNSString(
+                                     IDS_IOS_AI_PROTOTYPING_TEMPERATURE_SLIDER),
+                                 _temperatureSlider.value];
 }
 
 @end
