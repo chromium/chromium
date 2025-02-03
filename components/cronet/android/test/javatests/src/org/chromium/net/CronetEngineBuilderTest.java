@@ -25,6 +25,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.Batch;
 import org.chromium.net.CronetTestRule.CronetImplementation;
 import org.chromium.net.CronetTestRule.IgnoreFor;
+import org.chromium.net.impl.CronetLibraryLoader;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -51,6 +52,12 @@ public class CronetEngineBuilderTest {
         assertIllegalArgumentException(null, "1.2.3");
         assertIllegalArgumentException("1.2.3", null);
         assertIllegalArgumentException("1.2.3", "1.2.3x");
+    }
+
+    @Test
+    @SmallTest
+    public void testCronetLibraryPreloadMustNotCrash() {
+        CronetLibraryLoader.preload();
     }
 
     /**
