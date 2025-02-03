@@ -129,14 +129,19 @@ class UrlFormatter {
 
 // Returns the URL of the PACP widget for the iOS local web approval flow.
 // `locale` is the display language (go/bcp47).
+// TODO(crbug.com/394051451): Pass the blocked url and blocking reason.
 GURL GetParentAccessURLForIOS(const std::string& locale);
 
 // Returns the URL of the PACP widget for the Desktop local web approval flow.
 // `locale` is the display language (go/bcp47).
 // `blocked_url` is the url subject to approval that is shown in the PACP
 // widget.
-GURL GetParentAccessURLForDesktop(const std::string& locale,
-                                  const GURL& blocked_url);
+// `filtering_reason` is the reason for blocking the url, which is reflected
+// in the subtitle of the PACP widget.
+GURL GetParentAccessURLForDesktop(
+    const std::string& locale,
+    const GURL& blocked_url,
+    const supervised_user::FilteringBehaviorReason& filtering_reason);
 
 }  // namespace supervised_user
 

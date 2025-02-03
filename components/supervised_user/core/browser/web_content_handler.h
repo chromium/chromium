@@ -34,6 +34,7 @@ class WebContentHandler {
       const GURL& url,
       const std::u16string& child_display_name,
       const UrlFormatter& url_formatter,
+      const FilteringBehaviorReason& filtering_behavior_reason,
       ApprovalRequestInitiatedCallback callback) = 0;
 
   // TODO(b/273692421): Add unit (or browser test) coverage for the moved

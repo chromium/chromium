@@ -85,9 +85,9 @@ TEST_F(IOSWebContentHandlerImplTest, HideParentAccessBottomsheet) {
                                   completion:[OCMArg any]]);
   OCMExpect([mock_parent_access_commands_handler_ hideParentAccessBottomSheet]);
 
-  web_content_handler()->RequestLocalApproval(GURL("https://www.example.com"),
-                                              u"Bob", *url_formatter(),
-                                              base::DoNothing());
+  web_content_handler()->RequestLocalApproval(
+      GURL("https://www.example.com"), u"Bob", *url_formatter(),
+      supervised_user::FilteringBehaviorReason::DEFAULT, base::DoNothing());
 
   web_content_handler()->MaybeCloseLocalApproval();
   histogram_tester_.ExpectTotalCount(

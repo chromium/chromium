@@ -31,6 +31,7 @@ void IOSWebContentHandlerImpl::RequestLocalApproval(
     const GURL& url,
     const std::u16string& child_display_name,
     const supervised_user::UrlFormatter& url_formatter,
+    const supervised_user::FilteringBehaviorReason& filtering_behavior_reason,
     ApprovalRequestInitiatedCallback callback) {
   CHECK(base::FeatureList::IsEnabled(supervised_user::kLocalWebApprovals));
 
@@ -44,7 +45,8 @@ void IOSWebContentHandlerImpl::RequestLocalApproval(
           weak_factory_.GetWeakPtr(), std::ref(*settings_service), target_url,
           base::TimeTicks::Now());
 
-  // The command handler must stay alive after initialization.
+  // TODO(crbug.com/394051451): Pass the blocked url and blocking reason in the
+  // bottomshet. The command handler must stay alive after initialization.
   CHECK(commands_handler_);
   [commands_handler_
       showParentAccessBottomSheetForWebState:web_state_
