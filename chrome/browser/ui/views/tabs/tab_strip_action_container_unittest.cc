@@ -213,7 +213,8 @@ TEST_F(TabStripActionContainerTest, OrdersButtonsCorrectlyWithProduct) {
 #if BUILDFLAG(ENABLE_GLIC)
 TEST_F(TabStripActionContainerTest, GlicButtonUpdateLabel) {
   BuildGlicContainer(/*use_otr_profile=*/false);
-  glic_nudge_controller_->UpdateNudgeLabel(web_contents(), "TEST");
+  glic_nudge_controller_->UpdateNudgeLabel(web_contents(), "TEST",
+                                           base::NullCallback());
   ASSERT_EQ(tab_strip_action_container_->glic_nudge_button()->GetText(),
             u"TEST");
 }

@@ -8,11 +8,17 @@
 #include <vector>
 
 #include "base/containers/queue.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_enums.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 class GURL;
+
+namespace tabs {
+enum class GlicNudgeActivity;
+}  // namespace tabs
 
 namespace contextual_cueing {
 
@@ -24,6 +30,11 @@ class ContextualCueingService : public KeyedService {
   // Reports a page load happened to `url`, and is used to keep track of quiet
   // page loads requirement after a cueing UI is shown.
   void ReportPageLoad(const GURL& url);
+
+  // Called when cueing nudge activity happens.
+  void OnNudgeActivity(const GURL& url,
+                       ukm::SourceId source_id,
+                       tabs::GlicNudgeActivity activity);
 
   // Should be called when the cueing UI is shown.
   void CueingNudgeShown();
@@ -37,6 +48,10 @@ class ContextualCueingService : public KeyedService {
   // Returns if a nudge should be shown and is not blocked by feature
   // engagement constraints, and if not, why.
   NudgeDecision CanShowNudge();
+
+  base::WeakPtr<ContextualCueingService> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
 
  private:
   // Returns true if nudge should not be shown due to the backoff rule.
@@ -62,6 +77,8 @@ class ContextualCueingService : public KeyedService {
   // showing a nudge. This is to limit the frequency at which consecutive page
   // loads can trigger nudges.
   size_t remaining_quiet_loads_ = 0;
+
+  base::WeakPtrFactory<ContextualCueingService> weak_ptr_factory_{this};
 };
 
 }  // namespace contextual_cueing

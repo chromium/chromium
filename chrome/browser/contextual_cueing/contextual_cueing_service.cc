@@ -7,6 +7,7 @@
 #include <cmath>
 
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
+#include "chrome/browser/ui/tabs/glic_nudge_controller.h"
 #include "url/gurl.h"
 
 namespace contextual_cueing {
@@ -80,6 +81,23 @@ bool ContextualCueingService::IsNudgeBlockedByNudgeCap() const {
   }
 
   return true;
+}
+
+void ContextualCueingService::OnNudgeActivity(
+    const GURL& url,
+    ukm::SourceId source_id,
+    tabs::GlicNudgeActivity activity) {
+  switch (activity) {
+    case tabs::GlicNudgeActivity::kNudgeShown:
+      CueingNudgeShown();
+      break;
+    case tabs::GlicNudgeActivity::kNudgeClicked:
+      CueingNudgeClicked();
+      break;
+    case tabs::GlicNudgeActivity::kNudgeDismissed:
+      CueingNudgeDismissed();
+      break;
+  }
 }
 
 }  // namespace contextual_cueing

@@ -116,7 +116,8 @@ void ContextualCueingHelper::DidFinishNavigation(
   contextual_cueing_service_->ReportPageLoad(navigation_handle->GetURL());
   auto* glic_nudge_controller = GetGlicNudgeController();
   if (glic_nudge_controller) {
-    glic_nudge_controller->UpdateNudgeLabel(web_contents(), std::string());
+    glic_nudge_controller->UpdateNudgeLabel(web_contents(), std::string(),
+                                            base::DoNothing());
   }
 }
 
@@ -130,10 +131,10 @@ void ContextualCueingHelper::DocumentOnLoadCompletedInPrimaryMainFrame() {
 
   ScopedNudgeDecisionRecorder recorder(
       optimization_guide::proto::GLIC_CONTEXTUAL_CUEING);
+  const GURL& url = web_contents()->GetLastCommittedURL();
   optimization_guide::OptimizationMetadata metadata;
   auto decision = optimization_guide_keyed_service_->CanApplyOptimization(
-      web_contents()->GetLastCommittedURL(),
-      optimization_guide::proto::GLIC_CONTEXTUAL_CUEING, &metadata);
+      url, optimization_guide::proto::GLIC_CONTEXTUAL_CUEING, &metadata);
   if (decision == optimization_guide::OptimizationGuideDecision::kTrue &&
       !metadata.empty()) {
     auto parsed = metadata.ParsedMetadata<
@@ -165,9 +166,12 @@ void ContextualCueingHelper::DocumentOnLoadCompletedInPrimaryMainFrame() {
     // Clear out the label since we didn't show it.
     last_navigation_cue_label_.clear();
   }
-
-  glic_nudge_controller->UpdateNudgeLabel(web_contents(),
-                                          last_navigation_cue_label_);
+  glic_nudge_controller->UpdateNudgeLabel(
+      web_contents(), last_navigation_cue_label_,
+      base::BindRepeating(
+          &ContextualCueingService::OnNudgeActivity,
+          contextual_cueing_service_->GetWeakPtr(), url,
+          web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId()));
 }
 
 // static

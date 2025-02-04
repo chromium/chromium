@@ -18,10 +18,20 @@ class WebContents;
 
 namespace tabs {
 
+// Enumerates the various user action for the Glic nudge.
+enum class GlicNudgeActivity {
+  kNudgeShown,
+  kNudgeClicked,
+  kNudgeDismissed,
+};
+
 // Controller that mediates Glic Nudges and ensures that only the active tab is
 // targeted.
 class GlicNudgeController {
  public:
+  using GlicNudgeActivityCallback =
+      base::RepeatingCallback<void(GlicNudgeActivity)>;
+
   explicit GlicNudgeController(
       BrowserWindowInterface* browser_window_interface);
   GlicNudgeController(const GlicNudgeController&) = delete;
@@ -42,20 +52,23 @@ class GlicNudgeController {
 
   // Updates the `nudge_label` for `web_contents`, if the WebContents is active.
   void UpdateNudgeLabel(content::WebContents* web_contents,
-                        const std::string& nudge_label);
+                        const std::string& nudge_label,
+                        GlicNudgeActivityCallback callback);
+
+  void OnNudgeActivity(GlicNudgeActivity activity);
 
  private:
   // Called when the active tab changes, to update the nudge UI appropriate for
   // the tab.
   void OnActiveTabChanged(BrowserWindowInterface* browser_interface);
 
-  // Returns whether the nudge should be shown in the tabstrip for glic.
-  bool GlicNudgeCriteriaMet();
-
   // The BrowserWindowInterface that owns `this`.
   const raw_ptr<BrowserWindowInterface> browser_window_interface_;
 
   base::ObserverList<GlicNudgeObserver> observers_;
+
+  // Callback to invoke for user actions on the nudge.
+  GlicNudgeActivityCallback nudge_activity_callback_;
 
   std::vector<base::CallbackListSubscription> browser_subscriptions_;
 };
