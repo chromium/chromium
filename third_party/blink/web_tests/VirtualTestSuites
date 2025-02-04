@@ -1660,14 +1660,14 @@
 
   {
     "prefix": "enable-system-cursor-size-for-svg",
-    "owners": ["sahir.vellani@microsoft.com"],
+    "owners": ["gerchiko@microsoft.com"],
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["fast/events/mouse-cursor-image-set-svg.html"],
     "args": [
       "--enable-features=SystemCursorSizeSupported",
       "--disable-headless-mode"
     ],
-    "expires": "Dec 1, 2024"
+    "expires": "Dec 1, 2025"
   },
 
   {
