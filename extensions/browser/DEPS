@@ -1,5 +1,4 @@
 include_rules = [
-  "+chrome/browser/ash/crosapi/browser_util.h",
   "+chromeos",
   "+components/back_forward_cache",
   "+components/crash/core",

@@ -20,7 +20,6 @@ static_library("session") {
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser/apps/app_service",
-    "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/ash/floating_workspace",
     "//chrome/browser/ash/floating_workspace:utils",
     "//chrome/browser/ash/login/demo_mode",

@@ -95,7 +95,6 @@ static_library("shelf") {
     "//chrome/browser/ash/arc/fileapi",
     "//chrome/browser/ash/arc/pip",
     "//chrome/browser/ash/arc/session",
-    "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/ash/crostini",
     "//chrome/browser/ash/eche_app",
     "//chrome/browser/ash/extensions",

@@ -468,7 +468,6 @@ source_set("unit_tests") {
       "//chrome/browser/ash/borealis/testing:test_support",
       "//chrome/browser/ash/bruschetta",
       "//chrome/browser/ash/bruschetta:test_support",
-      "//chrome/browser/ash/crosapi:browser_util",
       "//chrome/browser/ash/crosapi:test_support",
       "//chrome/browser/ash/crostini:test_support",
       "//chrome/browser/ash/file_manager",

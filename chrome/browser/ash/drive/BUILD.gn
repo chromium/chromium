@@ -35,7 +35,6 @@ static_library("drive") {
   deps = [
     "//ash/constants",
     "//chrome/browser:browser_process",
-    "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/chromeos/drivefs",
     "//chrome/browser/chromeos/drivefs:native_message_host_origins",

@@ -24,10 +24,6 @@
 #include "chrome/browser/webauthn/android/cable_module_android.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/crosapi/browser_util.h"
-#endif
-
 namespace browser_sync {
 
 DeviceInfoSyncClientImpl::DeviceInfoSyncClientImpl(Profile* profile)

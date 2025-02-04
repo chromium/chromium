@@ -28,7 +28,6 @@ static_library("artemis") {
 
   public_deps = [
     "//base",
-    "//chrome/browser/ash/crosapi:browser_util",
     "//chromeos/ash/components/dbus/chromebox_for_meetings",
     "//chromeos/services/chromebox_for_meetings/public/cpp",
     "//chromeos/services/chromebox_for_meetings/public/mojom",

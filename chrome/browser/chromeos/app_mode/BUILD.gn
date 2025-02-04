@@ -76,7 +76,6 @@ static_library("app_mode") {
     "//ash/public/cpp",
     "//chrome/browser:browser_process",
     "//chrome/browser/apps/app_service:constants",
-    "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/common:chrome_features",
     "//chrome/common:constants",
     "//components/pref_registry",

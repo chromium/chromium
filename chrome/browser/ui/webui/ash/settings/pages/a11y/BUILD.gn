@@ -43,7 +43,6 @@ static_library("a11y") {
     "//chrome/browser:browser_process",
     "//chrome/browser/accessibility:utils",
     "//chrome/browser/ash/accessibility",
-    "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/webui/ash/settings/search",
     "//chrome/common",

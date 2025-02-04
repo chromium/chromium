@@ -49,7 +49,6 @@ source_set("app_service") {
       "//ash/webui/projector_app/public/cpp",
       "//ash/webui/system_apps/public:system_web_app_type",
       "//chrome/browser/apps/almanac_api_client",
-      "//chrome/browser/ash/crosapi:browser_util",
       "//chrome/browser/ash/file_manager",
       "//chrome/browser/ash/guest_os",
       "//chrome/browser/ash/login/demo_mode",

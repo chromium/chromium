@@ -581,10 +581,7 @@ source_set("browser_sources") {
   ]
 
   if (is_chromeos) {
-    deps += [
-      "//chrome/browser/ash/crosapi:browser_util",
-      "//chromeos/constants",
-    ]
+    deps += [ "//chromeos/constants" ]
   }
 
   public_deps = [
@@ -1001,7 +998,6 @@ source_set("unit_tests") {
 
     deps += [
       "//ash/constants",
-      "//chrome/browser/ash/crosapi:browser_util",
       "//chrome/common:constants",
       "//chromeos:test_support",
       "//chromeos/ash/components/dbus:test_support",

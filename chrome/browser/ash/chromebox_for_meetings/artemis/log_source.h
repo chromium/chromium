@@ -9,7 +9,6 @@
 #include "chrome/browser/ash/chromebox_for_meetings/artemis/local_data_source.h"
 #include "chrome/browser/ash/chromebox_for_meetings/artemis/log_file.h"
 #include "chrome/browser/ash/chromebox_for_meetings/artemis/persistent_db.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chromeos/services/chromebox_for_meetings/public/mojom/meet_devices_data_aggregator.mojom.h"
 
 namespace ash::cfm {

@@ -46,7 +46,6 @@ static_library("account_manager") {
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/arc/auth",
     "//chrome/browser/ash/child_accounts",
-    "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/net",
     "//chromeos/ash/components/browser_context_helper",
