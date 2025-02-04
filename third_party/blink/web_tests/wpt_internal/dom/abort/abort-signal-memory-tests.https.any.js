@@ -51,6 +51,10 @@ promise_test(async t => {
   const controller = new AbortController();
   let promise;
 
+  // Schedule GC tasks before requesting the lock to ensure they run before the
+  // locks request promise is resolved.
+  const gcComplete = runAsyncGC();
+
   (function() {
     let signal = AbortSignal.any([controller.signal]);
     promise = navigator.locks.request("abort-signal-any-test-lock", {signal}, lock => {});
@@ -59,9 +63,7 @@ promise_test(async t => {
 
   // Make sure the composite signal isn't GCed even though the lock request
   // doesn't hold onto it.
-  // Note: use high priority GC tasks to ensure they're scheduled before the
-  // locks request promise is resolved.
-  await runAsyncGC({priority: 'user-blocking'});
+  await gcComplete;
 
   controller.abort();
   return promise_rejects_dom(t, 'AbortError', promise);
