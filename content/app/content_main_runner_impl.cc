@@ -41,6 +41,7 @@
 #include "base/process/memory.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
+#include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
@@ -623,6 +624,10 @@ NO_STACK_PROTECTOR int RunZygote(ContentMainDelegate* delegate) {
     stack_canary_debug_message.ReplaceClosure(
         base::BindOnce(&base::SetStackSmashingEmitsDebugMessage));
   }
+
+  // Reseed the shared subsampler used to subsample UMA histograms, to avoid
+  // having the forked child share the parent process' RNG state.
+  base::ReseedSharedMetricsSubsampler();
 
   // The zygote sets up base::GlobalDescriptors with all of the FDs passed to
   // the new child, so populate base::FileDescriptorStore with a subset of the

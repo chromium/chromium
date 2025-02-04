@@ -8,7 +8,6 @@
 #include <optional>
 
 #include "base/command_line.h"
-#include "base/cpu_reduction_experiment.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -16,6 +15,7 @@
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
+#include "base/rand_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
@@ -442,7 +442,7 @@ void CommandBufferProxyImpl::EnsureWorkVisible() {
   TRACE_EVENT_NESTABLE_ASYNC_END0("gpu,login", kEnsureWorkVisible,
                                   TRACE_ID_LOCAL(kEnsureWorkVisible));
 
-  if (base::ShouldLogHistogramForCpuReductionExperiment()) {
+  if (base::ShouldRecordSubsampledMetric(0.001)) {
     GetUMAHistogramEnsureWorkVisibleDuration()->Add(
         elapsed_timer.Elapsed().InMicroseconds());
 
