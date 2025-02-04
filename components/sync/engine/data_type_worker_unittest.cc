@@ -21,6 +21,7 @@
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "components/sync/base/client_tag_hash.h"
+#include "components/sync/base/collaboration_id.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/engine/cancelation_signal.h"
@@ -3506,14 +3507,14 @@ TEST_F(DataTypeWorkerSharedTabGroupDataTest,
       /*version_offset=*/10,
       ClientTagHash::FromUnhashed(SHARED_TAB_GROUP_DATA, "client_tag_2"),
       specifics,
-      CollaborationMetadata::ForLocalChange(/*changed_by=*/GaiaId(),
-                                            "inactive_collaboration"));
+      CollaborationMetadata::ForLocalChange(
+          /*changed_by=*/GaiaId(), CollaborationId("inactive_collaboration")));
   SyncEntity entity_active = server()->UpdateFromServer(
       /*version_offset=*/10,
       ClientTagHash::FromUnhashed(SHARED_TAB_GROUP_DATA, "client_tag_1"),
       specifics,
-      CollaborationMetadata::ForLocalChange(/*changed_by=*/GaiaId(),
-                                            "active_collaboration"));
+      CollaborationMetadata::ForLocalChange(
+          /*changed_by=*/GaiaId(), CollaborationId("active_collaboration")));
 
   worker()->ProcessGetUpdatesResponse(
       server()->GetProgress(), server()->GetContext(),
@@ -3541,7 +3542,8 @@ TEST_F(DataTypeWorkerSharedTabGroupDataTest,
           .front()
           ->entity.collaboration_metadata;
   ASSERT_TRUE(collaboration_metadata.has_value());
-  EXPECT_EQ(collaboration_metadata->collaboration_id(), "active_collaboration");
+  EXPECT_EQ(collaboration_metadata->collaboration_id(),
+            CollaborationId("active_collaboration"));
 
   // Verify also that the last GC directive is propagated to the processor.
   EXPECT_THAT(processor()

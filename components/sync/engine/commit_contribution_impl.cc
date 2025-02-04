@@ -258,7 +258,7 @@ void CommitContributionImpl::PopulateCommitProto(
     // Only the collaboration ID is needed for the commit. Other fields are
     // populated by the server.
     commit_proto->mutable_collaboration()->set_collaboration_id(
-        entity_data.collaboration_metadata->collaboration_id());
+        entity_data.collaboration_metadata->collaboration_id().value());
   }
 
   if (entity_data.is_deleted()) {

@@ -13,6 +13,7 @@
 #include "base/hash/sha1.h"
 #include "base/test/mock_callback.h"
 #include "components/sync/base/client_tag_hash.h"
+#include "components/sync/base/collaboration_id.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/protocol/collaboration_metadata.h"
@@ -340,7 +341,7 @@ TEST(CommitContributionImplTest, ShouldPopulateIdStringForCommitOnlyTypes) {
 TEST(CommitContributionImplTest, ShouldPopulateCollaborationId) {
   std::unique_ptr<EntityData> data = CreateDefaultPreferenceEntityData();
   data->collaboration_metadata = CollaborationMetadata::ForLocalChange(
-      /*changed_by=*/GaiaId(), "collaboration");
+      /*changed_by=*/GaiaId(), CollaborationId("collaboration"));
 
   CommitRequestData request_data;
   request_data.sequence_number = 2;
