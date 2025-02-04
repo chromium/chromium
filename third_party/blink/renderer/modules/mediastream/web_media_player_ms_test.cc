@@ -22,6 +22,8 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/layers/layer.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
+#include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "media/base/media_content_type.h"
 #include "media/base/media_util.h"
 #include "media/base/test_helpers.h"
@@ -537,6 +539,7 @@ class WebMediaPlayerMSTest
         surface_layer_bridge_(
             std::make_unique<NiceMock<MockSurfaceLayerBridge>>()),
         submitter_(std::make_unique<NiceMock<MockWebVideoFrameSubmitter>>()),
+        test_sii_(base::MakeRefCounted<gpu::TestSharedImageInterface>()),
         layer_set_(false),
         rendering_(false),
         background_rendering_(false) {
@@ -670,6 +673,7 @@ class WebMediaPlayerMSTest
       surface_layer_bridge_ptr_ = nullptr;
   raw_ptr<NiceMock<MockWebVideoFrameSubmitter>, DanglingUntriaged>
       submitter_ptr_ = nullptr;
+  scoped_refptr<gpu::TestSharedImageInterface> test_sii_;
   bool enable_surface_layer_for_video_ = false;
   base::TimeTicks deadline_min_;
   base::TimeTicks deadline_max_;
@@ -1750,11 +1754,20 @@ TEST_P(WebMediaPlayerMSTest, OnContextLost) {
   compositor_->OnContextLost();
   EXPECT_EQ(non_gpu_frame, compositor_->GetCurrentFrame());
 
-  std::unique_ptr<gfx::GpuMemoryBuffer> gmb =
-      std::make_unique<media::FakeGpuMemoryBuffer>(
-          frame_size, gfx::BufferFormat::YUV_420_BIPLANAR);
-  auto gpu_frame = media::VideoFrame::WrapExternalGpuMemoryBuffer(
-      gfx::Rect(frame_size), frame_size, std::move(gmb), base::TimeDelta());
+  test_sii_->UseTestGMBInSharedImageCreationWithBufferUsage();
+  // Setting some default usage in order to get a mappable shared image.
+  const auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
+                        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+  // Create a mappable shared image.
+  auto shared_image = test_sii_->CreateSharedImage(
+      {viz::MultiPlaneFormat::kNV12, frame_size, gfx::ColorSpace(),
+       gpu::SharedImageUsageSet(si_usage), "WebMediaPlayerMSTest"},
+      gpu::kNullSurfaceHandle, gfx::BufferUsage::GPU_READ);
+  auto gpu_frame = media::VideoFrame::WrapMappableSharedImage(
+      std::move(shared_image), test_sii_->GenVerifiedSyncToken(),
+      base::NullCallback(), gfx::Rect(frame_size), frame_size,
+      base::TimeDelta());
+
   compositor_->EnqueueFrame(gpu_frame, true);
   base::RunLoop().RunUntilIdle();
   // frame with gpu resource should be reset if context is lost
