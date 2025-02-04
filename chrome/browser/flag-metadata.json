@@ -8111,7 +8111,7 @@
   {
     "name" : "side-panel-resizing",
     "owners": [ "sunjingqi47@gmail.com", "dljames@chromium.org", "shibalik@chromium.org" ],
-    "expiry_milestone" : 135
+    "expiry_milestone" : 150
   },
   {
     "name": "signature-based-sri",
