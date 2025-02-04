@@ -67,8 +67,11 @@ enum PipelineStatusCodes : StatusCodeType {
   // The remote media component was disconnected unexpectedly, e.g. crash.
   PIPELINE_ERROR_DISCONNECTED = 24,
 
+  // Bitstream format conversion related errors.
+  DEMUXER_ERROR_BITSTREAM_CONVERSION_FAILED = 25,
+
   // Must be equal to the largest value ever logged.
-  PIPELINE_STATUS_MAX = PIPELINE_ERROR_DISCONNECTED,
+  PIPELINE_STATUS_MAX = DEMUXER_ERROR_BITSTREAM_CONVERSION_FAILED,
 };
 
 struct PipelineStatusTraits {

@@ -389,6 +389,7 @@ WebMediaPlayer::NetworkState PipelineErrorToNetworkState(
     case media::DEMUXER_ERROR_NO_SUPPORTED_STREAMS:
     case media::DEMUXER_ERROR_DETECTED_HLS:
     case media::DECODER_ERROR_NOT_SUPPORTED:
+    case media::DEMUXER_ERROR_BITSTREAM_CONVERSION_FAILED:
       return WebMediaPlayer::kNetworkStateFormatError;
 
     case media::PIPELINE_ERROR_DECODE:
