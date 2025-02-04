@@ -4058,7 +4058,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Eche.AppListUpdate.Latency" units="ms"
-    expires_after="2025-05-30">
+    expires_after="2025-08-03">
   <owner>crisrael@google.com</owner>
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -4129,7 +4129,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Eche.MultiDeviceFeatureState" enum="MultiDevice_FeatureState"
-    expires_after="2025-05-30">
+    expires_after="2025-08-03">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -6734,7 +6734,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OriginTrials.PersistentOriginTrial.LevelDbLoadSize"
-    units="origins" expires_after="2025-05-31">
+    units="origins" expires_after="2025-08-03">
   <owner>pbirk@chromium.org</owner>
   <owner>src/components/origin_trials/OWNERS</owner>
   <summary>
@@ -6759,7 +6759,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OriginTrials.PersistentOriginTrial.LevelDbLoadTime" units="ms"
-    expires_after="2025-05-31">
+    expires_after="2025-08-03">
   <owner>pbirk@chromium.org</owner>
   <owner>src/components/origin_trials/OWNERS</owner>
   <summary>
@@ -6772,7 +6772,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OriginTrials.PersistentOriginTrial.OriginLookupsBeforeDbLoad"
-    units="origins" expires_after="2025-05-31">
+    units="origins" expires_after="2025-08-03">
   <owner>pbirk@chromium.org</owner>
   <owner>src/components/origin_trials/OWNERS</owner>
   <summary>
@@ -7148,7 +7148,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ozone.GestureInterpreterLibevdevCros.TouchpadClick.{MaxTime}"
-    units="mm" expires_after="2025-06-01">
+    units="mm" expires_after="2025-08-03">
   <owner>seobrien@chromium.org</owner>
   <owner>chromeos-tango@google.com</owner>
   <summary>
@@ -10069,7 +10069,7 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.StartEventSource"
-    enum="VoiceInteractionEventSource" expires_after="2025-06-01">
+    enum="VoiceInteractionEventSource" expires_after="2025-08-03">
   <owner>basiaz@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -10092,7 +10092,7 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.VoiceSearchResult" enum="BooleanSuccess"
-    expires_after="2025-06-01">
+    expires_after="2025-08-03">
   <owner>basiaz@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>

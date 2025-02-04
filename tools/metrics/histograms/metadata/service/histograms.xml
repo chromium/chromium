@@ -1948,7 +1948,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ServiceWorkerCache.{ServiceWorkerCacheSchedulerOpClientType}.Scheduler.QueueDuration2.{ServiceWorkerSchedulerOp}"
-    units="ms" expires_after="2025-06-01">
+    units="ms" expires_after="2025-08-03">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>

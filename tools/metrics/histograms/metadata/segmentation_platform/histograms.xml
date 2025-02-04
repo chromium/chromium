@@ -600,7 +600,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SegmentationPlatform.ModelExecution.Result.{Index}.{SegmentationModel}"
-    units="score" expires_after="2025-06-01">
+    units="score" expires_after="2025-08-03">
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-segmentation-platform@google.com</owner>
   <summary>
@@ -648,7 +648,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SegmentationPlatform.ModelExecution.Status.{SegmentationModel}"
-    enum="SegmentationPlatformModelExecutionStatus" expires_after="2025-06-01">
+    enum="SegmentationPlatformModelExecutionStatus" expires_after="2025-08-03">
   <owner>nyquist@chromium.org</owner>
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-segmentation-platform@google.com</owner>
@@ -740,7 +740,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SegmentationPlatform.SelectionFailedReason.{SegmentationKey}"
-    enum="SegmentationSelectionFailureReason" expires_after="2025-06-01">
+    enum="SegmentationSelectionFailureReason" expires_after="2025-08-03">
   <owner>ssid@chromium.org</owner>
   <owner>chrome-segmentation-platform@google.com</owner>
   <summary>

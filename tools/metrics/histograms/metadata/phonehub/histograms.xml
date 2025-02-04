@@ -312,7 +312,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PhoneHub.MultiDeviceFeatureState{PhoneHubFeature}"
-    enum="MultiDevice_FeatureState" expires_after="2025-06-01">
+    enum="MultiDevice_FeatureState" expires_after="2025-08-03">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>

@@ -484,7 +484,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.ERP.{ManagementStatus}UploadEncryptedReport"
-    enum="EnterpriseDMServerRequestSuccess" expires_after="2025-06-01">
+    enum="EnterpriseDMServerRequestSuccess" expires_after="2025-08-03">
   <owner>lbaraz@chromium.org</owner>
   <owner>src/components/reporting/OWNERS</owner>
   <summary>
