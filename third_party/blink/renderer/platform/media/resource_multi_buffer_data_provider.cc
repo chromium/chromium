@@ -14,8 +14,6 @@
 #include <utility>
 
 #include "base/containers/contains.h"
-#include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
@@ -35,6 +33,7 @@
 #include "third_party/blink/renderer/platform/media/resource_fetch_context.h"
 #include "third_party/blink/renderer/platform/media/url_index.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -77,8 +76,8 @@ void ResourceMultiBufferDataProvider::Start() {
   DVLOG(1) << __func__ << " @ " << byte_pos();
   if (url_data_->length() > 0 && byte_pos() >= url_data_->length()) {
     task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&ResourceMultiBufferDataProvider::Terminate,
-                                  weak_factory_.GetWeakPtr()));
+        FROM_HERE, WTF::BindOnce(&ResourceMultiBufferDataProvider::Terminate,
+                                 weak_factory_.GetWeakPtr()));
     return;
   }
 
@@ -446,8 +445,8 @@ void ResourceMultiBufferDataProvider::DidFinishLoading() {
       retries_++;
       task_runner_->PostDelayedTask(
           FROM_HERE,
-          base::BindOnce(&ResourceMultiBufferDataProvider::Start,
-                         weak_factory_.GetWeakPtr()),
+          WTF::BindOnce(&ResourceMultiBufferDataProvider::Start,
+                        weak_factory_.GetWeakPtr()),
           base::Milliseconds(kLoaderPartialRetryDelayMs));
       return;
     } else {
@@ -478,8 +477,8 @@ void ResourceMultiBufferDataProvider::DidFail(const WebURLError& error) {
     retries_++;
     task_runner_->PostDelayedTask(
         FROM_HERE,
-        base::BindOnce(&ResourceMultiBufferDataProvider::Start,
-                       weak_factory_.GetWeakPtr()),
+        WTF::BindOnce(&ResourceMultiBufferDataProvider::Start,
+                      weak_factory_.GetWeakPtr()),
         base::Milliseconds(kLoaderFailedRetryDelayMs +
                            kAdditionalDelayPerRetryMs * retries_));
   } else {

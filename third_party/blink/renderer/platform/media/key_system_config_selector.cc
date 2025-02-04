@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
@@ -31,8 +30,10 @@
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/renderer/platform/media/media_player_util.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
+
 namespace {
 
 using ::media::EmeConfig;
@@ -392,7 +393,7 @@ KeySystemConfigSelector::KeySystemConfigSelector(
     : key_systems_(key_systems),
       media_permission_(media_permission),
       web_frame_delegate_(std::move(web_frame_delegate)),
-      is_supported_media_type_cb_(base::BindRepeating(&IsSupportedMediaType)) {
+      is_supported_media_type_cb_(WTF::BindRepeating(&IsSupportedMediaType)) {
   DCHECK(key_systems_);
   DCHECK(media_permission_);
   DCHECK(web_frame_delegate_);
@@ -1099,8 +1100,8 @@ void KeySystemConfigSelector::SelectConfigInternal(
         DVLOG(3) << "Request permission.";
         media_permission_->RequestPermission(
             media::MediaPermission::Type::kProtectedMediaIdentifier,
-            base::BindOnce(&KeySystemConfigSelector::OnPermissionResult,
-                           weak_factory_.GetWeakPtr(), std::move(request)));
+            WTF::BindOnce(&KeySystemConfigSelector::OnPermissionResult,
+                          weak_factory_.GetWeakPtr(), std::move(request)));
         return;
       case CONFIGURATION_SUPPORTED:
         std::string key_system = request->key_system;
@@ -1125,9 +1126,9 @@ void KeySystemConfigSelector::SelectConfigInternal(
             media::kHardwareSecureDecryptionFallbackPerSite.Get()) {
           if (!request->was_hardware_secure_decryption_preferences_requested) {
             media_permission_->IsHardwareSecureDecryptionAllowed(
-                base::BindOnce(&KeySystemConfigSelector::
-                                   OnHardwareSecureDecryptionAllowedResult,
-                               weak_factory_.GetWeakPtr(), std::move(request)));
+                WTF::BindOnce(&KeySystemConfigSelector::
+                                  OnHardwareSecureDecryptionAllowedResult,
+                              weak_factory_.GetWeakPtr(), std::move(request)));
             return;
           }
 

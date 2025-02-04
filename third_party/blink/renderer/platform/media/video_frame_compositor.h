@@ -23,6 +23,7 @@
 #include "third_party/blink/public/platform/web_media_player.h"
 #include "third_party/blink/public/platform/web_video_frame_submitter.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace base {
 class WaitableEvent;
@@ -68,7 +69,7 @@ class PLATFORM_EXPORT VideoFrameCompositor : public media::VideoRendererSink,
  public:
   // Used to report back the time when the new frame has been processed.
   using OnNewProcessedFrameCB =
-      base::OnceCallback<void(base::TimeTicks, bool is_frame_readable)>;
+      CrossThreadOnceFunction<void(base::TimeTicks, bool is_frame_readable)>;
 
   using OnNewFramePresentedCB = base::OnceClosure;
 

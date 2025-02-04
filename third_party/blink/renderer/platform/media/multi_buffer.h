@@ -17,7 +17,6 @@
 #include <vector>
 
 #include "base/containers/lru_cache.h"
-#include "base/functional/callback.h"
 #include "base/hash/hash.h"
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
@@ -27,7 +26,7 @@
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/media/interval_map.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/wtf/ref_counted.h"
+#include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 
 namespace blink {
 
@@ -135,7 +134,7 @@ class PLATFORM_EXPORT MultiBuffer {
   // MultiBuffers use a global shared LRU to free memory.
   // This effectively means that recently used multibuffers can
   // borrow memory from less recently used ones.
-  class PLATFORM_EXPORT GlobalLRU : public RefCounted<GlobalLRU> {
+  class PLATFORM_EXPORT GlobalLRU : public ThreadSafeRefCounted<GlobalLRU> {
    public:
     typedef MultiBufferGlobalBlockId GlobalBlockId;
     explicit GlobalLRU(scoped_refptr<base::SingleThreadTaskRunner> task_runner);
@@ -176,7 +175,7 @@ class PLATFORM_EXPORT MultiBuffer {
     int64_t Size() const;
 
    private:
-    friend class RefCounted<GlobalLRU>;
+    friend class ThreadSafeRefCounted<GlobalLRU>;
     ~GlobalLRU();
 
     // Schedule background pruning, if needed.

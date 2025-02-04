@@ -7,11 +7,11 @@
 #include <cmath>
 #include <limits>
 
-#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
 #include "media/capabilities/bucket_utility.h"
 #include "media/mojo/mojom/media_types.mojom.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -38,8 +38,8 @@ VideoDecodeStatsReporter::VideoDecodeStatsReporter(
   DCHECK(get_pipeline_stats_cb_);
   DCHECK_NE(media::VIDEO_CODEC_PROFILE_UNKNOWN, codec_profile_);
 
-  recorder_remote_.set_disconnect_handler(base::BindOnce(
-      &VideoDecodeStatsReporter::OnIpcConnectionError, base::Unretained(this)));
+  recorder_remote_.set_disconnect_handler(WTF::BindOnce(
+      &VideoDecodeStatsReporter::OnIpcConnectionError, WTF::Unretained(this)));
   stats_cb_timer_.SetTaskRunner(task_runner);
 }
 

@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/platform/media/video_frame_compositor.h"
 
-#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
@@ -23,6 +22,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_video_frame_submitter.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -104,8 +104,8 @@ class VideoFrameCompositorTest
   VideoFrameCompositor* compositor() { return compositor_.get(); }
 
   VideoFrameCompositor::OnNewFramePresentedCB GetNewFramePresentedCB() {
-    return base::BindOnce(&VideoFrameCompositorTest::OnNewFramePresented,
-                          base::Unretained(this));
+    return WTF::BindOnce(&VideoFrameCompositorTest::OnNewFramePresented,
+                         WTF::Unretained(this));
   }
 
  protected:

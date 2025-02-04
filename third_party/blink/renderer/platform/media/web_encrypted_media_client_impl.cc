@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
@@ -21,6 +20,7 @@
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/platform/media/web_content_decryption_module_access_impl.h"
 #include "third_party/blink/renderer/platform/media/web_content_decryption_module_impl.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -268,8 +268,8 @@ void WebEncryptedMediaClientImpl::RequestMediaKeySystemAccess(
 
   pending_requests_.push_back(std::move(request));
   key_systems_->UpdateIfNeeded(
-      base::BindOnce(&WebEncryptedMediaClientImpl::OnKeySystemsUpdated,
-                     weak_factory_.GetWeakPtr()));
+      WTF::BindOnce(&WebEncryptedMediaClientImpl::OnKeySystemsUpdated,
+                    weak_factory_.GetWeakPtr()));
 }
 
 void WebEncryptedMediaClientImpl::CreateCdm(
@@ -278,8 +278,8 @@ void WebEncryptedMediaClientImpl::CreateCdm(
     std::unique_ptr<WebContentDecryptionModuleResult> result) {
   WebContentDecryptionModuleImpl::Create(
       cdm_factory_, key_systems_, security_origin, cdm_config,
-      base::BindOnce(&CompleteWebContentDecryptionModuleResult,
-                     std::move(result)));
+      WTF::BindOnce(&CompleteWebContentDecryptionModuleResult,
+                    std::move(result)));
 }
 
 void WebEncryptedMediaClientImpl::OnKeySystemsUpdated() {
@@ -292,8 +292,8 @@ void WebEncryptedMediaClientImpl::SelectConfig(
     WebEncryptedMediaRequest request) {
   key_system_config_selector_.SelectConfig(
       request.KeySystem(), request.SupportedConfigurations(),
-      base::BindOnce(&WebEncryptedMediaClientImpl::OnConfigSelected,
-                     weak_factory_.GetWeakPtr(), request));
+      WTF::BindOnce(&WebEncryptedMediaClientImpl::OnConfigSelected,
+                    weak_factory_.GetWeakPtr(), request));
 }
 
 void WebEncryptedMediaClientImpl::OnConfigSelected(
