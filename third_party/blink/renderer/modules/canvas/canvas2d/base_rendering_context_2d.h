@@ -30,7 +30,6 @@
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/cached_color.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_path.h"
-#include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_recording_context_2d.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_rendering_context_2d_state.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_deferred_paint_record.h"
@@ -128,7 +127,7 @@ class NotShared;
 class V8CanvasFontStretch;
 class V8CanvasTextRendering;
 
-class MODULES_EXPORT BaseRenderingContext2D : public CanvasRecordingContext2D {
+class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
  public:
   static constexpr unsigned kFallbackToCPUAfterReadbacks = 2;
 
@@ -169,6 +168,15 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRecordingContext2D {
 
   double lineDashOffset() const;
   void setLineDashOffset(double);
+
+  virtual double shadowOffsetX() const;
+  virtual void setShadowOffsetX(double);
+
+  virtual double shadowOffsetY() const;
+  virtual void setShadowOffsetY(double);
+
+  virtual double shadowBlur() const;
+  virtual void setShadowBlur(double);
 
   String shadowColor() const;
   void setShadowColor(const String&);
@@ -590,6 +598,10 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRecordingContext2D {
   virtual bool ResolveFont(const String& new_font) = 0;
   virtual bool CurrentFontResolvedAndUpToDate() const;
 
+  ALWAYS_INLINE CanvasRenderingContext2DState& GetState() const {
+    return *state_stack_.back();
+  }
+
   bool ComputeDirtyRect(const gfx::RectF& local_bounds, SkIRect*);
   bool ComputeDirtyRect(const gfx::RectF& local_bounds,
                         const SkIRect& transformed_clip_bounds,
@@ -628,6 +640,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRecordingContext2D {
                      CanvasRenderingContext2DState::ImageType,
                      BaseRenderingContext2D::OverdrawOp overdraw_op);
 
+  HeapVector<Member<CanvasRenderingContext2DState>> state_stack_;
   unsigned max_state_stack_depth_ = 1;
   // Counts how many states have been pushed with BeginLayer.
   int layer_count_ = 0;

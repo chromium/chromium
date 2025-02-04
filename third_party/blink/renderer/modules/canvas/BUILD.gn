@@ -22,8 +22,6 @@ blink_modules_sources("canvas") {
     "canvas2d/canvas_path.h",
     "canvas2d/canvas_pattern.cc",
     "canvas2d/canvas_pattern.h",
-    "canvas2d/canvas_recording_context_2d.cc",
-    "canvas2d/canvas_recording_context_2d.h",
     "canvas2d/canvas_rendering_context_2d.cc",
     "canvas2d/canvas_rendering_context_2d.h",
     "canvas2d/canvas_rendering_context_2d_state.cc",
