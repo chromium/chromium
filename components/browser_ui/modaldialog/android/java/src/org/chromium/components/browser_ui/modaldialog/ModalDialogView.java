@@ -4,6 +4,8 @@
 
 package org.chromium.components.browser_ui.modaldialog;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -28,6 +30,8 @@ import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TimeUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.BoundedLinearLayout;
@@ -45,6 +49,7 @@ import java.util.List;
 import java.util.Set;
 
 /** Generic dialog view for app modal or tab modal alert dialogs. */
+@NullMarked
 public class ModalDialogView extends BoundedLinearLayout implements View.OnClickListener {
     private static final String TAG_PREFIX = "ModalDialogViewButton";
     static final int NOT_SPECIFIED = -1;
@@ -65,12 +70,12 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
     private LinearLayout mButtonGroup;
     private Button mPositiveButton;
     private Button mNegativeButton;
-    private Callback<Integer> mOnButtonClickedCallback;
-    private Runnable mOnEscapeCallback;
+    private @Nullable Callback<Integer> mOnButtonClickedCallback;
+    private @Nullable Runnable mOnEscapeCallback;
     private boolean mTitleScrollable;
     private boolean mShouldWrapCustomViewScrollable;
     private boolean mFilterTouchForSecurity;
-    private Runnable mOnTouchFilteredCallback;
+    private @Nullable Runnable mOnTouchFilteredCallback;
     private final Set<View> mTouchFilterableViews = new HashSet<>();
     private ViewGroup mFooterContainer;
     private TextView mFooterMessageView;
@@ -80,9 +85,9 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
     // this kind of tap-jacking protection.
     private long mButtonTapProtectionDurationMs;
     private boolean mBlockTouchInput;
-    private CircularProgressDrawable mSpinner;
+    private @Nullable CircularProgressDrawable mSpinner;
     private float mTextScaleX;
-    private LayerDrawable mSpinnerButtonBackground;
+    private @Nullable LayerDrawable mSpinnerButtonBackground;
 
     private int mHorizontalMargin = NOT_SPECIFIED;
     private int mVerticalMargin = NOT_SPECIFIED;
@@ -188,7 +193,7 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
     @Override
     public void onClick(View v) {
         if (isWithinButtonTapProtectionPeriod()) return;
-        mOnButtonClickedCallback.onResult(getButtonTypeForTag(v.getTag()));
+        assumeNonNull(mOnButtonClickedCallback).onResult(getButtonTypeForTag(v.getTag()));
     }
 
     // Dialog buttons will not react to any tap event for a short period after this view is
@@ -234,7 +239,7 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
     /**
      * @param callback The {@link Runnable} to invoke when the keyboard escape key is pressed.
      */
-    void setOnEscapeCallback(Runnable callback) {
+    void setOnEscapeCallback(@Nullable Runnable callback) {
         mOnEscapeCallback = callback;
     }
 

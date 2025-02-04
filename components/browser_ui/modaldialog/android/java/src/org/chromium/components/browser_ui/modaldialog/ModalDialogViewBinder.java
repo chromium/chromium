@@ -7,6 +7,7 @@ package org.chromium.components.browser_ui.modaldialog;
 import android.text.TextUtils;
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
 import org.chromium.ui.modaldialog.ModalDialogProperties.ModalDialogButtonSpec;
@@ -18,6 +19,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  * This class is responsible for binding view properties from {@link ModalDialogProperties} to a
  * {@link ModalDialogView}.
  */
+@NullMarked
 public class ModalDialogViewBinder
         implements PropertyModelChangeProcessor.ViewBinder<
                 PropertyModel, ModalDialogView, PropertyKey> {

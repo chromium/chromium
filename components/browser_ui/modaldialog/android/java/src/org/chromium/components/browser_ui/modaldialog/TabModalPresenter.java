@@ -4,6 +4,8 @@
 
 package org.chromium.components.browser_ui.modaldialog;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
@@ -15,11 +17,12 @@ import android.view.accessibility.AccessibilityEvent;
 import android.widget.FrameLayout;
 
 import androidx.activity.ComponentDialog;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.LayoutInflaterUtils;
@@ -36,17 +39,18 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  *
  * Several abstract methods allow embedder-specific specializations.
  */
+@NullMarked
 public abstract class TabModalPresenter extends ModalDialogManager.Presenter {
     /** Enter and exit animation duration. */
     private static final int ENTER_EXIT_ANIMATION_DURATION_MS = 200;
 
     private final Context mContext;
 
-    private ViewGroup mDialogContainer;
+    private @Nullable ViewGroup mDialogContainer;
 
-    private ModalDialogView mDialogView;
+    private @Nullable ModalDialogView mDialogView;
 
-    private PropertyModelChangeProcessor<PropertyModel, ModalDialogView, PropertyKey>
+    private @Nullable PropertyModelChangeProcessor<PropertyModel, ModalDialogView, PropertyKey>
             mModelChangeProcessor;
 
     /** Whether the action bar on selected text is temporarily cleared for showing dialogs. */
@@ -115,7 +119,7 @@ public abstract class TabModalPresenter extends ModalDialogManager.Presenter {
     protected abstract void setBrowserControlsAccess(boolean restricted);
 
     /** @return the container previously returned by {@link TabModalPresenter#createDialogContainer}. */
-    protected ViewGroup getDialogContainer() {
+    protected @Nullable ViewGroup getDialogContainer() {
         return mDialogContainer;
     }
 
@@ -125,6 +129,7 @@ public abstract class TabModalPresenter extends ModalDialogManager.Presenter {
                         new ContextThemeWrapper(mContext, style), R.layout.modal_dialog_view, null);
     }
 
+    @NullUnmarked
     @Override
     protected void addDialogView(
             PropertyModel model,
@@ -146,6 +151,7 @@ public abstract class TabModalPresenter extends ModalDialogManager.Presenter {
         mModelChangeProcessor =
                 PropertyModelChangeProcessor.create(model, mDialogView, new ViewBinder());
         if (onDialogCreatedCallback != null) {
+            // @NullUnmarked because onResult's parameter is not @Nullable.
             onDialogCreatedCallback.onResult(null);
         }
 
@@ -158,17 +164,17 @@ public abstract class TabModalPresenter extends ModalDialogManager.Presenter {
     }
 
     @Override
-    protected void removeDialogView(PropertyModel model) {
+    protected void removeDialogView(@Nullable PropertyModel model) {
         setBrowserControlsAccess(false);
 
         // The dialog view may not have been added to the container yet, e.g. if the enter animation
         // has not yet started.
-        if (ViewCompat.isAttachedToWindow(mDialogView)) {
+        if (ViewCompat.isAttachedToWindow(assumeNonNull(mDialogView))) {
             runExitAnimation();
         } else {
             // Cancel any existing animations as when the animation completes it may try to make use
             // of objects that have been set to null.
-            mDialogContainer.animate().cancel();
+            assumeNonNull(mDialogContainer).animate().cancel();
         }
 
         if (mModelChangeProcessor != null) {
@@ -185,6 +191,7 @@ public abstract class TabModalPresenter extends ModalDialogManager.Presenter {
      * @param toFront Whether the dialog container should be brought to the front.
      */
     public void updateContainerHierarchy(boolean toFront) {
+        assumeNonNull(mDialogView);
         if (toFront) {
             mDialogView.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
             mDialogView.requestFocus();
@@ -206,19 +213,19 @@ public abstract class TabModalPresenter extends ModalDialogManager.Presenter {
      * @param save true if a dialog is showing and text selection should be saved; false if a dialog
      *         is hiding and text selection should be restored.
      */
-    protected void saveOrRestoreTextSelection(@NonNull WebContents webContents, boolean save) {
+    protected void saveOrRestoreTextSelection(WebContents webContents, boolean save) {
+        SelectionPopupController controller =
+                assumeNonNull(SelectionPopupController.fromWebContents(webContents));
         if (save) {
             // Dismiss the action bar that obscures the dialogs but preserve the text selection.
-            SelectionPopupController controller =
-                    SelectionPopupController.fromWebContents(webContents);
             controller.setPreserveSelectionOnNextLossOfFocus(true);
-            webContents.getViewAndroidDelegate().getContainerView().clearFocus();
+            assumeNonNull(webContents.getViewAndroidDelegate()).getContainerView().clearFocus();
             controller.updateTextSelectionUI(false);
             mDidClearTextControls = true;
         } else if (mDidClearTextControls) {
             // Show the action bar back if it was dismissed when the dialogs were showing.
             mDidClearTextControls = false;
-            SelectionPopupController.fromWebContents(webContents).updateTextSelectionUI(true);
+            controller.updateTextSelectionUI(true);
         }
     }
 
@@ -229,14 +236,14 @@ public abstract class TabModalPresenter extends ModalDialogManager.Presenter {
      * Exposed to subclasses as they may want to control the exact start time of the animation.
      */
     protected void runEnterAnimation() {
-        mDialogContainer.animate().cancel();
+        assumeNonNull(mDialogContainer).animate().cancel();
 
         FrameLayout.LayoutParams params =
                 new FrameLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT,
                         ViewGroup.LayoutParams.WRAP_CONTENT,
                         Gravity.CENTER);
-        mDialogView.setBackgroundResource(R.drawable.dialog_bg_no_shadow);
+        assumeNonNull(mDialogView).setBackgroundResource(R.drawable.dialog_bg_no_shadow);
         mDialogContainer.addView(mDialogView, params);
         mDialogContainer.setAlpha(0f);
         mDialogContainer.setVisibility(View.VISIBLE);
@@ -249,7 +256,8 @@ public abstract class TabModalPresenter extends ModalDialogManager.Presenter {
                         new AnimatorListenerAdapter() {
                             @Override
                             public void onAnimationStart(Animator animation) {
-                                mDialogView.onEnterAnimationStarted(animation.getDuration());
+                                assumeNonNull(mDialogView)
+                                        .onEnterAnimationStarted(animation.getDuration());
                             }
 
                             @Override
@@ -261,10 +269,10 @@ public abstract class TabModalPresenter extends ModalDialogManager.Presenter {
     }
 
     private void runExitAnimation() {
-        final View dialogView = mDialogView;
+        final View dialogView = assumeNonNull(mDialogView);
         // Clear focus so that keyboard can hide accordingly while entering tab switcher.
         dialogView.clearFocus();
-        mDialogContainer.animate().cancel();
+        assumeNonNull(mDialogContainer).animate().cancel();
         mDialogContainer
                 .animate()
                 .setDuration(ENTER_EXIT_ANIMATION_DURATION_MS)
@@ -274,14 +282,14 @@ public abstract class TabModalPresenter extends ModalDialogManager.Presenter {
                         new AnimatorListenerAdapter() {
                             @Override
                             public void onAnimationEnd(Animator animation) {
-                                mDialogContainer.setVisibility(View.GONE);
+                                assumeNonNull(mDialogContainer).setVisibility(View.GONE);
                                 mDialogContainer.removeView(dialogView);
                             }
                         })
                 .start();
     }
 
-    public View getDialogContainerForTest() {
+    public @Nullable View getDialogContainerForTest() {
         return mDialogContainer;
     }
 }
