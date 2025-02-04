@@ -35,17 +35,11 @@ void IOSWebContentHandlerImpl::RequestLocalApproval(
     ApprovalRequestInitiatedCallback callback) {
   CHECK(base::FeatureList::IsEnabled(supervised_user::kLocalWebApprovals));
 
-  // TODO(crbug.com/384514294): Do not bind the settings service here as it can
-  // be accessed within `IOSWebContentHandlerImpl`.
-  supervised_user::SupervisedUserSettingsService* settings_service =
-      SupervisedUserSettingsServiceFactory::GetForProfile(
-          ProfileIOS::FromBrowserState(web_state_->GetBrowserState()));
   GURL target_url = url_formatter.FormatUrl(url);
   base::OnceCallback<void(supervised_user::LocalApprovalResult)>
       completion_callback = base::BindOnce(
           &IOSWebContentHandlerImpl::OnLocalApprovalRequestCompleted,
-          weak_factory_.GetWeakPtr(), std::ref(*settings_service), target_url,
-          base::TimeTicks::Now());
+          weak_factory_.GetWeakPtr(), target_url, base::TimeTicks::Now());
 
   // The command handler must stay alive after initialization.
   CHECK(commands_handler_);
@@ -107,7 +101,6 @@ void IOSWebContentHandlerImpl::Close() {
 }
 
 void IOSWebContentHandlerImpl::OnLocalApprovalRequestCompleted(
-    supervised_user::SupervisedUserSettingsService& settings_service,
     const GURL& url,
     base::TimeTicks start_time,
     supervised_user::LocalApprovalResult approval_result) {
@@ -117,6 +110,10 @@ void IOSWebContentHandlerImpl::OnLocalApprovalRequestCompleted(
     return;
   }
   is_bottomsheet_shown_ = false;
+
+  supervised_user::SupervisedUserSettingsService* settings_service =
+      SupervisedUserSettingsServiceFactory::GetForProfile(
+          ProfileIOS::FromBrowserState(web_state_->GetBrowserState()));
   WebContentHandler::OnLocalApprovalRequestCompleted(
-      settings_service, url, start_time, approval_result);
+      *settings_service, url, start_time, approval_result);
 }

@@ -47,7 +47,6 @@ class IOSWebContentHandlerImpl : public supervised_user::WebContentHandler {
  private:
   // Processes the outcome of the local approval request.
   void OnLocalApprovalRequestCompleted(
-      supervised_user::SupervisedUserSettingsService& settings_service,
       const GURL& url,
       base::TimeTicks start_time,
       supervised_user::LocalApprovalResult approval_result);
