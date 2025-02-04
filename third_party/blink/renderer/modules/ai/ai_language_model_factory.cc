@@ -16,8 +16,11 @@
 #include "third_party/blink/public/mojom/ai/model_download_progress_observer.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_create_monitor_callback.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_language_model_create_options.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ai_language_model_initial_prompt.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_language_model_initial_prompt_role.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ailm_initial_prompt_line_dict.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ailm_prompt_content_dict.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_ailminitialpromptlinedict_ailmpromptcontentdict_string_string.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_ailmpromptcontentdict_string.h"
 #include "third_party/blink/renderer/core/events/progress_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/ai/ai.h"
@@ -275,6 +278,11 @@ ScriptPromise<AILanguageModel> AILanguageModelFactory::create(
       return promise;
     }
 
+    // The API impl does not yet support expectedInputTypes, more to come soon!
+    if (options->hasExpectedInputTypes()) {
+      resolver->RejectWithTypeError("expectedInputTypes not supported");
+    }
+
     if (options->hasSystemPrompt()) {
       system_prompt = options->systemPrompt();
     }
@@ -286,7 +294,14 @@ ScriptPromise<AILanguageModel> AILanguageModelFactory::create(
         // Only the first prompt might have a `system` role, so it's handled
         // separately.
         auto* first_prompt = prompts.begin()->Get();
-        if (first_prompt->role() ==
+        // The API impl only accepts a line dict for now, more to come soon!
+        if (!first_prompt->IsAILMInitialPromptLineDict()) {
+          resolver->RejectWithTypeError("Input type not supported");
+          return promise;
+        }
+        auto* first_prompt_dict =
+            first_prompt->GetAsAILMInitialPromptLineDict();
+        if (first_prompt_dict->role() ==
             V8AILanguageModelInitialPromptRole::Enum::kSystem) {
           if (options->hasSystemPrompt()) {
             // If the system prompt cannot be provided both from system prompt
@@ -295,12 +310,23 @@ ScriptPromise<AILanguageModel> AILanguageModelFactory::create(
                 kExceptionMessageSystemPromptIsDefinedMultipleTimes);
             return promise;
           }
-          system_prompt = first_prompt->content();
+          // The API impl only accepts a string for now, more to come soon!
+          if (!first_prompt_dict->content()->IsString()) {
+            resolver->RejectWithTypeError("Input type not supported");
+            return promise;
+          }
+          system_prompt = first_prompt_dict->content()->GetAsString();
           start_index++;
         }
         for (size_t index = start_index; index < prompts.size(); ++index) {
           auto prompt = prompts[index];
-          if (prompt->role() ==
+          // The API impl only accepts a line dict for now, more to come soon!
+          if (!prompt->IsAILMInitialPromptLineDict()) {
+            resolver->RejectWithTypeError("Input type not supported");
+            return promise;
+          }
+          auto* dict = prompt->GetAsAILMInitialPromptLineDict();
+          if (dict->role() ==
               V8AILanguageModelInitialPromptRole::Enum::kSystem) {
             // If any prompt except the first one has a `system` role, reject
             // with a `TypeError`.
@@ -308,10 +334,15 @@ ScriptPromise<AILanguageModel> AILanguageModelFactory::create(
                 kExceptionMessageSystemPromptIsNotTheFirst);
             return promise;
           }
+          // The API impl only accepts string for now, more to come soon!
+          if (!dict->content()->IsString()) {
+            resolver->RejectWithTypeError("Input type not supported");
+            return promise;
+          }
           initial_prompts.push_back(
               mojom::blink::AILanguageModelInitialPrompt::New(
-                  AILanguageModelInitialPromptRole(prompt->role()),
-                  prompt->content()));
+                  AILanguageModelInitialPromptRole(dict->role()),
+                  dict->content()->GetAsString()));
         }
       }
     }

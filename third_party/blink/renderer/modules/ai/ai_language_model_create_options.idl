@@ -3,18 +3,66 @@
 // found in the LICENSE file.
 
 // https://github.com/webmachinelearning/prompt-api
+// TODO(crbug.com/394123703): Expand AILM abbreviation to AILanguageModel.
 
-dictionary AILanguageModelInitialPrompt {
+// The argument to the prompt() method and others like it
+typedef (AILMPromptLine or sequence<AILMPromptLine>) AILanguageModelPromptInput;
+
+// Initial prompt lines
+dictionary AILMInitialPromptLineDict {
   required AILanguageModelInitialPromptRole role;
-  required DOMString content;
+  required AILMPromptContent content;
 };
+typedef (
+  DOMString                     // interpreted as { role: "user", content: { type: "text", data: providedValue } }
+  or AILMPromptContent          // interpreted as { role: "user", content: providedValue }
+  or AILMInitialPromptLineDict  // canonical form
+) AILMInitialPromptLine;
 
-dictionary AILanguageModelCreateOptions {
-  AbortSignal signal;
-  AICreateMonitorCallback monitor;
+// Prompt lines
+dictionary AILMPromptLineDict {
+  required AILanguageModelPromptRole role;
+  required AILMPromptContent content;
+};
+typedef (
+  DOMString               // interpreted as { role: "user", content: { type: "text", data: providedValue } }
+  or AILMPromptContent    // interpreted as { role: "user", content: providedValue }
+  or AILMPromptLineDict   // canonical form
+) AILMPromptLine;
 
+// Prompt content inside the lines
+dictionary AILMPromptContentDict {
+  required AILanguageModelPromptType type;
+  required AILanguageModelPromptData data;
+};
+typedef (DOMString or AILMPromptContentDict) AILMPromptContent;
+// TODO(crbug.com/394123703): Use ImageBitmapSource and include BufferSource.
+typedef (HTMLImageElement or
+         SVGImageElement or
+         HTMLCanvasElement or
+         Blob or
+         ImageData or
+         ImageBitmap or
+         OffscreenCanvas or
+         AudioBuffer or
+         HTMLAudioElement or
+         DOMString) AILanguageModelPromptData;
+enum AILanguageModelPromptType { "text", "image", "audio" };
+
+// Prompt roles inside the lines
+enum AILanguageModelInitialPromptRole { "system", "user", "assistant" };
+enum AILanguageModelPromptRole { "user", "assistant" };
+
+dictionary AILanguageModelCreateCoreOptions {
   [EnforceRange] unsigned long topK;
   float temperature;
+  sequence<DOMString> expectedInputLanguages;
+  sequence<AILanguageModelPromptType> expectedInputTypes;
+};
+
+dictionary AILanguageModelCreateOptions : AILanguageModelCreateCoreOptions {
+  AbortSignal signal;
+  AICreateMonitorCallback monitor;
   DOMString systemPrompt;
-  sequence<AILanguageModelInitialPrompt> initialPrompts;
+  sequence<AILMInitialPromptLine> initialPrompts;
 };
