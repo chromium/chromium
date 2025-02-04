@@ -38,14 +38,15 @@ reading-list-item:first-of-type:last-of-type {
 }
 
 #readingListList {
+  /* Display the scroll bar in the gutter outside the card. */
+  margin-right: -8px;
   max-height: none;
   overflow: auto;
-  padding-block-start: var(--sp-body-padding);
 }
 
 .sp-card {
   display: flex;
-  height: calc(100% - var(--sp-footer-height) - 4 * var(--sp-body-padding));
+  max-height: calc(100% - var(--sp-footer-height) - 4 * var(--sp-body-padding));
   margin: var(--sp-body-padding);
 }
 

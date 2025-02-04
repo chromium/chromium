@@ -19,8 +19,10 @@ export function getHtml(this: ReadingListAppElement) {
   </sp-empty-state>
 
   <div class="sp-card" ?hidden="${!this.getAllItems_().length}">
-    <cr-lazy-list id="readingListList" .items="${this.getAllItems_()}"
+    <cr-lazy-list id="readingListList" class="sp-scroller"
+        .items="${this.getAllItems_()}"
         .itemSize="${this.itemSize_}"
+        .minViewportHeight="${this.minViewportHeight_}"
         .scrollTarget="${this.scrollTarget_}"
         ?hidden="${!this.shouldShowList_()}"
         @keydown="${this.onItemKeyDown_}"
