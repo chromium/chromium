@@ -25,7 +25,6 @@
 #include "media/base/video_decoder.h"
 #include "media/base/video_types.h"
 #include "media/video/video_encode_accelerator.h"
-#include "ui/gfx/gpu_memory_buffer.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -33,7 +32,6 @@ class SequencedTaskRunner;
 
 namespace gfx {
 class ColorSpace;
-class Size;
 }  // namespace gfx
 
 namespace gpu {
@@ -179,11 +177,6 @@ class MEDIA_EXPORT GpuVideoAcceleratorFactories {
 
   virtual std::unique_ptr<VideoEncodeAccelerator>
   CreateVideoEncodeAccelerator() = 0;
-
-  virtual std::unique_ptr<gfx::GpuMemoryBuffer> CreateGpuMemoryBuffer(
-      const gfx::Size& size,
-      gfx::BufferFormat format,
-      gfx::BufferUsage usage) = 0;
 
   // |for_media_stream| specifies webrtc use case of media streams.
   virtual bool ShouldUseGpuMemoryBuffersForVideoFrames(

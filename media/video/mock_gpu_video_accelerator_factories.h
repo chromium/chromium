@@ -64,11 +64,6 @@ class MockGpuVideoAcceleratorFactories : public GpuVideoAcceleratorFactories {
   MOCK_METHOD1(SetRenderingColorSpace, void(const gfx::ColorSpace&));
   MOCK_CONST_METHOD0(GetRenderingColorSpace, const gfx::ColorSpace&());
 
-  std::unique_ptr<gfx::GpuMemoryBuffer> CreateGpuMemoryBuffer(
-      const gfx::Size& size,
-      gfx::BufferFormat format,
-      gfx::BufferUsage usage) override;
-
   bool ShouldUseGpuMemoryBuffersForVideoFrames(
       bool for_media_stream) const override;
   OutputFormat VideoFrameOutputFormat(VideoPixelFormat pixel_format) override {
