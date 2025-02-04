@@ -4701,15 +4701,6 @@
     "expires": "May 1, 2025"
   },
   {
-    "prefix": "error-iserror-enabled",
-    "platforms": ["Linux"],
-    "bases": ["external/wpt/webidl/ecmascript-binding/es-exceptions/DOMException-is-error.any.js"],
-    "exclusive_tests": "ALL",
-    "args": ["--js-flags=--js-error-iserror"],
-    "owners": ["syg@chromium.org"],
-    "expires": "Feb 1, 2025"
-  },
-  {
     "prefix": "webrtc-h265",
     "owners": ["hbos@chromium.org", "eshr@chromium.org"],
     "platforms": ["Mac", "Win"],
