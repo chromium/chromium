@@ -284,7 +284,7 @@ enum class BtmRedirectCategory {
 // BtmErrorCode is used in UMA enum histograms to monitor certain errors and
 // verify that they are being fixed.
 //
-// When adding an error to this enum, update the BtmErrorCode enum in
+// When adding an error to this enum, update the DIPSErrorCode enum in
 // tools/metrics/histograms/enums.xml as well.
 //
 // These values are persisted to logs. Entries should not be renumbered and
@@ -304,7 +304,7 @@ enum class BtmErrorCode {
 // BtmDeletionAction is used in UMA enum histograms to record the actual
 // deletion action taken on DIPS-eligible (incidental) site.
 //
-// When adding an action to this enum, update the BtmDeletionAction enum in
+// When adding an action to this enum, update the DIPSDeletionAction enum in
 // tools/metrics/histograms/enums.xml as well.
 //
 // These values are persisted to logs. Entries should not be renumbered and

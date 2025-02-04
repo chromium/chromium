@@ -133,7 +133,7 @@ TEST_P(BtmDatabaseErrorHistogramsTest,
       "first_bounce_time,last_bounce_time) VALUES ('site.test',1,3,2,5)"));
   db_->Read("site.test");
   histograms.ExpectUniqueSample(
-      "Privacy.DIPS.BtmErrorCodes",
+      "Privacy.DIPS.DIPSErrorCodes",
       BtmErrorCode::kRead_BounceTimesIsntSupersetOfStatefulBounces, 1);
   // `stateful_bounce` end is outside of `bounce_times`.
   ASSERT_TRUE(db_->ExecuteSqlForTesting(
@@ -142,7 +142,7 @@ TEST_P(BtmDatabaseErrorHistogramsTest,
       "first_bounce_time,last_bounce_time) VALUES ('site.test',2,5,2,3)"));
   db_->Read("site.test");
   histograms.ExpectUniqueSample(
-      "Privacy.DIPS.BtmErrorCodes",
+      "Privacy.DIPS.DIPSErrorCodes",
       BtmErrorCode::kRead_BounceTimesIsntSupersetOfStatefulBounces, 2);
 
   // stateful_bounce is set but `bounce_times` is NULL.
@@ -153,7 +153,7 @@ TEST_P(BtmDatabaseErrorHistogramsTest,
       "('site.test',2,3,NULL,NULL)"));
   db_->Read("site.test");
   histograms.ExpectUniqueSample(
-      "Privacy.DIPS.BtmErrorCodes",
+      "Privacy.DIPS.DIPSErrorCodes",
       BtmErrorCode::kRead_BounceTimesIsntSupersetOfStatefulBounces, 3);
 }
 
@@ -167,9 +167,9 @@ TEST_P(BtmDatabaseErrorHistogramsTest, StatefulBounceTimesIsWithinBounceTimes) {
       "first_bounce_time,last_bounce_time) VALUES ('site.test',2,4,1,5)"));
   db_->Read("site.test");
   histograms.ExpectBucketCount(
-      "Privacy.DIPS.BtmErrorCodes",
+      "Privacy.DIPS.DIPSErrorCodes",
       BtmErrorCode::kRead_BounceTimesIsntSupersetOfStatefulBounces, 0);
-  histograms.ExpectBucketCount("Privacy.DIPS.BtmErrorCodes",
+  histograms.ExpectBucketCount("Privacy.DIPS.DIPSErrorCodes",
                                BtmErrorCode::kRead_None, 1);
 }
 
@@ -182,7 +182,7 @@ TEST_P(BtmDatabaseErrorHistogramsTest, kRead_EmptySite_InDb) {
       "first_bounce_time,last_bounce_time) VALUES ('',2,4,1,5)"));
   EXPECT_EQ(db_->GetEntryCount(BtmDatabaseTable::kBounces), 1u);
   EXPECT_EQ(db_->Read(""), std::nullopt);
-  histograms.ExpectUniqueSample("Privacy.DIPS.BtmErrorCodes",
+  histograms.ExpectUniqueSample("Privacy.DIPS.DIPSErrorCodes",
                                 BtmErrorCode::kRead_EmptySite_InDb, 1);
   // Verify the entry was deleted during the read attempt.
   EXPECT_EQ(db_->GetEntryCount(BtmDatabaseTable::kBounces), 0u);
@@ -191,7 +191,7 @@ TEST_P(BtmDatabaseErrorHistogramsTest, kRead_EmptySite_InDb) {
 TEST_P(BtmDatabaseErrorHistogramsTest, Read_EmptySite_NotInDb) {
   base::HistogramTester histograms;
   EXPECT_EQ(db_->Read(""), std::nullopt);
-  histograms.ExpectUniqueSample("Privacy.DIPS.BtmErrorCodes",
+  histograms.ExpectUniqueSample("Privacy.DIPS.DIPSErrorCodes",
                                 BtmErrorCode::kRead_EmptySite_NotInDb, 1);
 }
 
@@ -203,7 +203,7 @@ TEST_P(BtmDatabaseErrorHistogramsTest, Write_EmptySite) {
       {Time::FromSecondsSinceUnixEpoch(1), Time::FromSecondsSinceUnixEpoch(1)});
   EXPECT_FALSE(db_->Write(empty_site, TimestampRange(), TimestampRange(),
                           TimestampRange(), bounce, TimestampRange()));
-  histograms.ExpectUniqueSample("Privacy.DIPS.BtmErrorCodes",
+  histograms.ExpectUniqueSample("Privacy.DIPS.DIPSErrorCodes",
                                 BtmErrorCode::kWrite_EmptySite, 1);
 }
 
@@ -217,7 +217,7 @@ TEST_P(BtmDatabaseErrorHistogramsTest, Write_None) {
       {Time::FromSecondsSinceUnixEpoch(1), Time::FromSecondsSinceUnixEpoch(1)});
   EXPECT_TRUE(db_->Write(site, TimestampRange(), TimestampRange(),
                          TimestampRange(), bounce, TimestampRange()));
-  histograms.ExpectUniqueSample("Privacy.DIPS.BtmErrorCodes",
+  histograms.ExpectUniqueSample("Privacy.DIPS.DIPSErrorCodes",
                                 BtmErrorCode::kWrite_None, 1);
 }
 
@@ -571,7 +571,7 @@ TEST_P(BtmDatabaseAllColumnTest, ErrorHistograms_OpenEndedRange_NullStart) {
       GetVariableColumnNames().first.c_str(),
       GetVariableColumnNames().second.c_str())));
   db_->Read("site.test");
-  histograms.ExpectUniqueSample("Privacy.DIPS.BtmErrorCodes",
+  histograms.ExpectUniqueSample("Privacy.DIPS.DIPSErrorCodes",
                                 BtmErrorCode::kRead_OpenEndedRange_NullStart,
                                 1);
 }
@@ -583,7 +583,7 @@ TEST_P(BtmDatabaseAllColumnTest, ErrorHistograms_OpenEndedRange_NullEnd) {
       GetVariableColumnNames().first.c_str(),
       GetVariableColumnNames().second.c_str())));
   db_->Read("site.test");
-  histograms.ExpectUniqueSample("Privacy.DIPS.BtmErrorCodes",
+  histograms.ExpectUniqueSample("Privacy.DIPS.DIPSErrorCodes",
                                 BtmErrorCode::kRead_OpenEndedRange_NullEnd, 1);
 }
 
@@ -596,7 +596,7 @@ TEST_P(BtmDatabaseAllColumnTest, ErrorHistograms_EmptyRangeExcluded) {
                          GetVariableColumnNames().first.c_str(),
                          GetVariableColumnNames().second.c_str())));
   db_->Read("empty-site.test");
-  histograms.ExpectUniqueSample("Privacy.DIPS.BtmErrorCodes",
+  histograms.ExpectUniqueSample("Privacy.DIPS.DIPSErrorCodes",
                                 BtmErrorCode::kRead_None, 1);
 }
 

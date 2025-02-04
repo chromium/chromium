@@ -348,7 +348,7 @@ bool BtmDatabase::Write(const std::string& site,
   }
 
   if (site.empty()) {
-    base::UmaHistogramEnumeration("Privacy.DIPS.BtmErrorCodes",
+    base::UmaHistogramEnumeration("Privacy.DIPS.DIPSErrorCodes",
                                   BtmErrorCode::kWrite_EmptySite);
     return false;
   }
@@ -384,7 +384,7 @@ bool BtmDatabase::Write(const std::string& site,
     return false;
   }
 
-  base::UmaHistogramEnumeration("Privacy.DIPS.BtmErrorCodes",
+  base::UmaHistogramEnumeration("Privacy.DIPS.DIPSErrorCodes",
                                 BtmErrorCode::kWrite_None);
   return true;
 }
@@ -454,7 +454,7 @@ std::optional<StateValue> BtmDatabase::Read(const std::string& site) {
 
   if (!statement.Step()) {
     if (statement.Succeeded() && site.empty()) {
-      base::UmaHistogramEnumeration("Privacy.DIPS.BtmErrorCodes",
+      base::UmaHistogramEnumeration("Privacy.DIPS.DIPSErrorCodes",
                                     BtmErrorCode::kRead_EmptySite_NotInDb);
     }
 
@@ -508,11 +508,11 @@ std::optional<StateValue> BtmDatabase::Read(const std::string& site) {
   }
 
   if (errors.empty()) {
-    base::UmaHistogramEnumeration("Privacy.DIPS.BtmErrorCodes",
+    base::UmaHistogramEnumeration("Privacy.DIPS.DIPSErrorCodes",
                                   BtmErrorCode::kRead_None);
   } else {
     for (const BtmErrorCode& error : errors) {
-      base::UmaHistogramEnumeration("Privacy.DIPS.BtmErrorCodes", error);
+      base::UmaHistogramEnumeration("Privacy.DIPS.DIPSErrorCodes", error);
     }
   }
 
