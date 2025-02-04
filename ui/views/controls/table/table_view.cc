@@ -1203,6 +1203,7 @@ void TableView::OnPaintImpl(gfx::Canvas* canvas) {
       color_provider->GetColor(ui::kColorTableRowHighlight);
   const int cell_margin = GetCellMargin();
   const int cell_element_spacing = GetCellElementSpacing();
+  std::optional<cc::PaintFlags> icon_background_paint_flags;
   for (size_t i = region.min_row; i < region.max_row; ++i) {
     const size_t model_index = ViewToModel(i);
     const bool is_selected = selection_model_.IsSelected(model_index);
@@ -1238,6 +1239,29 @@ void TableView::OnPaintImpl(gfx::Canvas* canvas) {
               GetPaintIconDestBounds(cell_bounds, text_bounds.x());
           // The area does not have a width drawing icon.
           if (!dest_image_bounds.IsEmpty()) {
+            // Lazily create paint flags once we reach a row that has an icon.
+            if (!icon_background_paint_flags.has_value() &&
+                table_style().icons_have_background) {
+              icon_background_paint_flags.emplace();
+              icon_background_paint_flags->setAntiAlias(true);
+              icon_background_paint_flags->setColor(
+                  color_provider->GetColor(ui::kColorTableIconBackground));
+              icon_background_paint_flags->setStyle(
+                  cc::PaintFlags::kFill_Style);
+            }
+
+            // Draw icon background, if requested by the table style.
+            if (table_style().icons_have_background) {
+              const auto corner_radius =
+                  LayoutProvider::Get()->GetCornerRadiusMetric(
+                      views::Emphasis::kMedium);
+              gfx::RectF image_background_bounds(dest_image_bounds);
+              image_background_bounds.Outset(corner_radius);
+              canvas->DrawRoundRect(image_background_bounds, corner_radius,
+                                    icon_background_paint_flags.value());
+            }
+
+            // Draw the icon on top of the background.
             gfx::Rect src_image_bounds =
                 GetPaintIconSrcBounds(image.size(), dest_image_bounds.width());
             canvas->DrawImageInt(
