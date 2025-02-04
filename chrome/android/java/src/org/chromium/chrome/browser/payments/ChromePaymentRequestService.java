@@ -629,13 +629,6 @@ public class ChromePaymentRequestService
 
     // Implements BrowserPaymentRequest:
     @Override
-    public boolean onPaymentAppCreated(PaymentApp paymentApp) {
-        paymentApp.setHaveRequestedAutofillData(mPaymentUiService.haveRequestedAutofillData());
-        return true;
-    }
-
-    // Implements BrowserPaymentRequest:
-    @Override
     public void notifyPaymentUiOfPendingApps(List<PaymentApp> pendingApps) {
         mPaymentUiService.setPaymentApps(pendingApps);
     }

@@ -140,13 +140,6 @@ public interface BrowserPaymentRequest {
     }
 
     /**
-     * Called when a new payment app is created.
-     * @param paymentApp The new payment app.
-     * @return True if the payment app should be used; false if it should be ignored.
-     */
-    boolean onPaymentAppCreated(PaymentApp paymentApp);
-
-    /**
      * Patches the given payment response if needed.
      * @param response The payment response to be patched in place.
      * @return Whether the patching is successful.
