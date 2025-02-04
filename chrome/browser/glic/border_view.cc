@@ -265,7 +265,10 @@ void BorderView::OnPaint(gfx::Canvas* canvas) {
   flags.setShader(cc::PaintShader::MakeSkSLCommand(
       shader_, std::move(float_uniforms), std::move(float2_uniforms),
       /*float4_uniforms=*/{}, std::move(int_uniforms)));
-  canvas->DrawRect(gfx::RectF(bounds()), flags);
+
+  // The border view shouldn't have a border.
+  CHECK(GetInsets().IsEmpty());
+  canvas->DrawRect(gfx::RectF(GetLocalBounds()), flags);
 }
 
 void BorderView::OnAnimationStep(base::TimeTicks timestamp) {

@@ -1822,6 +1822,8 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Override to provide rendering in any part of the View's bounds. Typically
   // this is the "contents" of the view. If you override this method you will
   // have to call the subsequent OnPaint*() methods manually.
+  // Note that the paint operation is done with regards to the origin of the
+  // current view.
   virtual void OnPaint(gfx::Canvas* canvas);
 
   // Override to paint a background before any content is drawn. Typically this
