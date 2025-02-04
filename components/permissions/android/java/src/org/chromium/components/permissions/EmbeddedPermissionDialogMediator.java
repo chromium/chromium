@@ -12,6 +12,7 @@ import android.view.View;
 import org.chromium.base.ContextUtils;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.components.location.LocationUtils;
 import org.chromium.ui.base.WindowAndroid.ActivityStateObserver;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -249,8 +250,15 @@ public class EmbeddedPermissionDialogMediator extends PermissionDialogMediator
         super.destroy();
     }
 
-    /** Returns an intent to show Android Location Settings. */
+    /**
+     * This returns an intent to show the Android Location Settings. If the location service is off
+     * for the whole device, it'll show the location source settings; otherwise, it shows the App
+     * details Settings.
+     */
     private Intent getLocationSettingsIntent() {
+        if (LocationUtils.getInstance().isSystemLocationSettingEnabled()) {
+            return getAppInfoSettingsIntent();
+        }
         Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         return intent;
@@ -263,7 +271,7 @@ public class EmbeddedPermissionDialogMediator extends PermissionDialogMediator
         return intent;
     }
 
-    /** Returns an intent to show the Application Setails Settings. */
+    /** Returns an intent to show the Application Details Settings. */
     private Intent getAppInfoSettingsIntent() {
         Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
         intent.setData(
