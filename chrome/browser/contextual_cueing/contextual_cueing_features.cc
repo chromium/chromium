@@ -46,4 +46,9 @@ const base::FeatureParam<int> kVisitedDomainsLimit(&kContextualCueing,
                                                    "VisitedDomainsLimit",
                                                    20);
 
+const base::FeatureParam<base::TimeDelta> kPdfPageCountCaptureDelay(
+    &kContextualCueing,
+    "PdfPageCountCaptureDelay",
+    base::Seconds(4));
+
 }  // namespace contextual_cueing

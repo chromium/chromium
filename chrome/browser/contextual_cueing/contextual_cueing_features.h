@@ -38,6 +38,9 @@ extern const base::FeatureParam<int> kMinPageCountBetweenNudges;
 // used to implement nudge constraints per-domain per 24 hour period.
 extern const base::FeatureParam<int> kVisitedDomainsLimit;
 
+// The amount of time to wait for capturing the page count for a PDF document.
+extern const base::FeatureParam<base::TimeDelta> kPdfPageCountCaptureDelay;
+
 }  // namespace contextual_cueing
 
 #endif  // CHROME_BROWSER_CONTEXTUAL_CUEING_CONTEXTUAL_CUEING_FEATURES_H_
