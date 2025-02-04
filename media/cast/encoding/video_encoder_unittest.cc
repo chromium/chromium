@@ -248,11 +248,6 @@ class VideoEncoderTest : public ::testing::TestWithParam<VideoEncoderTestParam>,
 // complete encode/decode cycle of varied frame sizes that actually checks the
 // frame content.
 TEST_P(VideoEncoderTest, EncodesVariedFrameSizes) {
-  // TODO(issues.chromium.org/282984511): remove when fixed.
-  if (GetParam().enable_media_encoder_feature) {
-    return;
-  }
-
   constexpr int kNumFramesExpected = 10;
   CreateEncoder(kNumFramesExpected);
   SetVEAFactoryAutoRespond(true);

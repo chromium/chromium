@@ -53,7 +53,8 @@ class VideoEncoder {
 
   // If true is returned, the Encoder has accepted the request and will process
   // it asynchronously, running `frame_encoded_callback` on the MAIN
-  // CastEnvironment thread with the result.  If false is returned, nothing
+  // CastEnvironment thread with the result--either a valid SenderEncodedFrame
+  // or nullptr if an encoding error occurred.  If false is returned, nothing
   // happens and the callback will not be run.
   virtual bool EncodeVideoFrame(
       scoped_refptr<media::VideoFrame> video_frame,

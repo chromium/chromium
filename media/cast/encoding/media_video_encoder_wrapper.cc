@@ -27,6 +27,7 @@
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "media/video/video_encode_accelerator_adapter.h"
 #include "media/video/video_encoder_info.h"
+#include "media_video_encoder_wrapper.h"
 #include "third_party/libaom/libaom_buildflags.h"
 
 #if BUILDFLAG(ENABLE_LIBVPX)
@@ -226,13 +227,10 @@ bool MediaVideoEncoderWrapper::EncodeVideoFrame(
   }
 
   recent_metadata_.emplace(CachedMetadata{
-      .capture_begin_time = video_frame->metadata().capture_begin_time,
-      .capture_end_time = video_frame->metadata().capture_end_time,
-      .encode_start_time = base::TimeTicks::Now(),
-      .rtp_timestamp =
-          ToRtpTimeTicks(video_frame->timestamp(), kVideoFrequency),
-      .reference_time = reference_time,
-      .frame_duration = GetFrameDuration(*video_frame)});
+      video_frame->metadata().capture_begin_time,
+      video_frame->metadata().capture_end_time, base::TimeTicks::Now(),
+      ToRtpTimeTicks(video_frame->timestamp(), kVideoFrequency), reference_time,
+      GetFrameDuration(*video_frame), std::move(frame_encoded_callback)});
 
   // Now that `GetFrameDuration` has been called, we can update the last frame
   // timestamp. It must be monotonically increasing.
@@ -241,9 +239,11 @@ bool MediaVideoEncoderWrapper::EncodeVideoFrame(
   }
   last_frame_timestamp_ = video_frame->timestamp();
 
-  CallEncoderOnCorrectThread(
-      base::BindOnce(&CallEncodeVideoFrame, std::ref(*encoder_),
-                     std::move(video_frame), encode_options_, GetDoneCB()));
+  CallEncoderOnCorrectThread(base::BindOnce(
+      &CallEncodeVideoFrame, std::ref(*encoder_), std::move(video_frame),
+      encode_options_,
+      CreateCallback(&MediaVideoEncoderWrapper::OnFrameEncodeDone,
+                     reference_time)));
   encode_options_.key_frame = false;
 
   return true;
@@ -274,10 +274,10 @@ void MediaVideoEncoderWrapper::OnEncodedFrame(
     std::optional<media::VideoEncoder::CodecDescription> description) {
   CHECK(cast_environment_->CurrentlyOn(CastEnvironment::ThreadId::kMain));
 
-  const CachedMetadata& metadata = recent_metadata_.front();
+  CachedMetadata& metadata = recent_metadata_.front();
   auto encoded_frame = std::make_unique<SenderEncodedFrame>();
   encoded_frame->is_key_frame = output.key_frame;
-  encoded_frame->frame_id = ++next_frame_id_;
+  encoded_frame->frame_id = next_frame_id_++;
   encoded_frame->referenced_frame_id = encoded_frame->is_key_frame
                                            ? encoded_frame->frame_id
                                            : encoded_frame->frame_id - 1;
@@ -303,11 +303,10 @@ void MediaVideoEncoderWrapper::OnEncodedFrame(
   encoded_frame->capture_end_time = metadata.capture_end_time;
   encoded_frame->data = std::move(output.data);
 
+  auto frame_encoded_callback = std::move(metadata.frame_encoded_callback);
   recent_metadata_.pop();
   metrics_provider_->IncrementEncodedFrameCount();
-
-  // TODO(jophba): link up to frame_encoded_callback.
-  // output_cb_.Run(std::move(encoded_frame));
+  std::move(frame_encoded_callback).Run(std::move(encoded_frame));
 }
 
 void MediaVideoEncoderWrapper::OnEncoderStatus(EncoderStatus error) {
@@ -333,15 +332,45 @@ void MediaVideoEncoderWrapper::OnEncoderInfo(
   // property.
 }
 
+void MediaVideoEncoderWrapper::SetEncoderForTesting(
+    std::unique_ptr<media::VideoEncoder> encoder) {
+  encoder_is_overridden_for_testing_ = true;
+  encoder_ = std::move(encoder);
+}
+
+MediaVideoEncoderWrapper::CachedMetadata::CachedMetadata(
+    std::optional<base::TimeTicks> capture_begin_time,
+    std::optional<base::TimeTicks> capture_end_time,
+    base::TimeTicks encode_start_time,
+    RtpTimeTicks rtp_timestamp,
+    base::TimeTicks reference_time,
+    base::TimeDelta frame_duration,
+    FrameEncodedCallback frame_encoded_callback)
+    : capture_begin_time(capture_begin_time),
+      capture_end_time(capture_end_time),
+      encode_start_time(encode_start_time),
+      rtp_timestamp(rtp_timestamp),
+      reference_time(reference_time),
+      frame_duration(frame_duration),
+      frame_encoded_callback(std::move(frame_encoded_callback)) {}
+MediaVideoEncoderWrapper::CachedMetadata::CachedMetadata() = default;
+MediaVideoEncoderWrapper::CachedMetadata::CachedMetadata(
+    MediaVideoEncoderWrapper::CachedMetadata&& other) = default;
+MediaVideoEncoderWrapper::CachedMetadata&
+MediaVideoEncoderWrapper::CachedMetadata::operator=(
+    MediaVideoEncoderWrapper::CachedMetadata&& other) = default;
+MediaVideoEncoderWrapper::CachedMetadata::~CachedMetadata() = default;
+
 void MediaVideoEncoderWrapper::ConstructEncoder() {
   CHECK(cast_environment_->CurrentlyOn(CastEnvironment::ThreadId::kMain));
-  // TODO(crbug.com/282984511): consider adding a fake software encoder for
-  // testing.
+
   if (is_hardware_encoder_) {
     CHECK(gpu_factories_);
     encoder_ = CreateHardwareEncoder(
         *gpu_factories_,
         cast_environment_->GetTaskRunner(CastEnvironment::ThreadId::kMain));
+  } else if (encoder_is_overridden_for_testing_) {
+    // Don't construct a new encoder if it is overridden for testing.
   } else {
     encoder_ = CreateSoftwareEncoder(codec_);
   }
@@ -351,9 +380,11 @@ void MediaVideoEncoderWrapper::ConstructEncoder() {
   metrics_provider_->Initialize(profile, options_.frame_size,
                                 is_hardware_encoder_);
 
-  CallEncoderOnCorrectThread(
-      base::BindOnce(&CallInitializeEncoder, std::ref(*encoder_), profile,
-                     options_, GetInfoCB(), GetOutputCB(), GetDoneCB()));
+  CallEncoderOnCorrectThread(base::BindOnce(
+      &CallInitializeEncoder, std::ref(*encoder_), profile, options_,
+      CreateCallback(&MediaVideoEncoderWrapper::OnEncoderInfo),
+      CreateCallback(&MediaVideoEncoderWrapper::OnEncodedFrame),
+      CreateCallback(&MediaVideoEncoderWrapper::OnEncoderStatus)));
 }
 
 base::TimeDelta MediaVideoEncoderWrapper::GetFrameDuration(
@@ -385,7 +416,9 @@ void MediaVideoEncoderWrapper::UpdateEncoderOptions() {
       &CallChangeOptions,
       // NOTE: Here and below, raw reference is safe because the encoder is
       // deleted in a task posted to the video thread.
-      std::ref(*encoder_), options_, GetOutputCB(), GetOptionsUpdateDoneCB());
+      std::ref(*encoder_), options_,
+      CreateCallback(&MediaVideoEncoderWrapper::OnEncodedFrame),
+      CreateCallback(&MediaVideoEncoderWrapper::OnOptionsUpdated));
 
   // Call Flush on the correct thread.
   CallEncoderOnCorrectThread(base::BindOnce(&CallFlush, std::ref(*encoder_),
@@ -408,28 +441,21 @@ void MediaVideoEncoderWrapper::CallEncoderOnCorrectThread(
   }
 }
 
-media::VideoEncoder::EncoderInfoCB MediaVideoEncoderWrapper::GetInfoCB() {
-  CHECK(cast_environment_->CurrentlyOn(CastEnvironment::ThreadId::kMain));
-  return base::BindPostTask(
-      cast_environment_->GetTaskRunner(CastEnvironment::ThreadId::kMain),
-      base::BindRepeating(&MediaVideoEncoderWrapper::OnEncoderInfo,
-                          weak_factory_.GetWeakPtr()));
-}
+void MediaVideoEncoderWrapper::OnFrameEncodeDone(base::TimeTicks reference_time,
+                                                 EncoderStatus status) {
+  // An "OK" status is a no-op: the frame is handled in OnEncodedFrame().
+  if (status.is_ok()) {
+    return;
+  }
 
-media::VideoEncoder::OutputCB MediaVideoEncoderWrapper::GetOutputCB() {
-  CHECK(cast_environment_->CurrentlyOn(CastEnvironment::ThreadId::kMain));
-  return base::BindPostTask(
-      cast_environment_->GetTaskRunner(CastEnvironment::ThreadId::kMain),
-      base::BindRepeating(&MediaVideoEncoderWrapper::OnEncodedFrame,
-                          weak_factory_.GetWeakPtr()));
-}
+  // Otherwise notify the VideoSender that we had a failed encode (so that it
+  // can appropriately update the duration in flight).
+  CachedMetadata& metadata = recent_metadata_.front();
+  CHECK(metadata.reference_time == reference_time);
+  auto callback = std::move(metadata.frame_encoded_callback);
+  recent_metadata_.pop();
 
-media::VideoEncoder::EncoderStatusCB MediaVideoEncoderWrapper::GetDoneCB() {
-  CHECK(cast_environment_->CurrentlyOn(CastEnvironment::ThreadId::kMain));
-  return base::BindPostTask(
-      cast_environment_->GetTaskRunner(CastEnvironment::ThreadId::kMain),
-      base::BindOnce(&MediaVideoEncoderWrapper::OnEncoderStatus,
-                     weak_factory_.GetWeakPtr()));
+  std::move(callback).Run(nullptr);
 }
 
 void MediaVideoEncoderWrapper::OnOptionsUpdated(EncoderStatus status) {
@@ -440,15 +466,6 @@ void MediaVideoEncoderWrapper::OnOptionsUpdated(EncoderStatus status) {
 
   // Call the more generic encode status method as well.
   OnEncoderStatus(status);
-}
-
-media::VideoEncoder::EncoderStatusCB
-MediaVideoEncoderWrapper::GetOptionsUpdateDoneCB() {
-  CHECK(cast_environment_->CurrentlyOn(CastEnvironment::ThreadId::kMain));
-  return base::BindPostTask(
-      cast_environment_->GetTaskRunner(CastEnvironment::ThreadId::kMain),
-      base::BindOnce(&MediaVideoEncoderWrapper::OnOptionsUpdated,
-                     weak_factory_.GetWeakPtr()));
 }
 
 }  //  namespace media::cast
